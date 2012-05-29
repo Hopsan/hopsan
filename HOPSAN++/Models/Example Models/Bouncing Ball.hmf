@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4336" hopsancoreversion="0.6.x_r4334">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3949" hopsancoreversion="0.5.x_r3943">
     <requirements>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
     </requirements>
-    <system logsamples="2048" typename="Subsystem" name="Bouncing Ball">
+    <system typename="Subsystem" name="Bouncing Ball">
         <simulationtime stop="20" timestep="0.0001" start="0" inherit_timestep="true"/>
         <aliases/>
         <parameters/>
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2321.4" y="2793.55" zoom="0.597269"/>
+            <viewport x="2500.77" y="2499.93" zoom="1.18743"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
@@ -57,10 +57,9 @@
             <component typename="MechanicFreeLengthWall" name="Wall with Free Length">
                 <parameters>
                     <parameter value="0" type="double" name="B"/>
-                    <parameter value="1" type="double" name="m_e"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2656.632279" y="3180.980599" flipped="false" a="90"/>
+                    <pose x="2656.632279" y="2584.341265" flipped="false" a="90"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -111,10 +110,10 @@
             <connect endport="Pm1" endcomponent="Wall with Free Length" startport="P1" startcomponent="Translational Spring">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2656.63227899999992587254" y="2564.34126500000002124580"/>
-                        <coordinate x="2656.63227899999992587254" y="2570.84126542080230137799"/>
-                        <coordinate x="2656.63227899999992587254" y="2570.84126542080230137799"/>
-                        <coordinate x="2656.63227899999992587254" y="3160.98059860639432372409"/>
+                        <coordinate x="2656.63227881599823376746" y="2564.34126542080230137799"/>
+                        <coordinate x="2656.63227881599823376746" y="2570.84126542080230137799"/>
+                        <coordinate x="2656.63227881599823376746" y="2570.84126542080230137799"/>
+                        <coordinate x="2656.63227881599823376746" y="2564.34126542080230137799"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -127,10 +126,10 @@
             <connect endport="P2" endcomponent="Translational Mass" startport="P2" startcomponent="Translational Spring">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2656.63227899999992587254" y="2531.34126500000002124580"/>
-                        <coordinate x="2656.63227899999992587254" y="2526.34126542080230137799"/>
-                        <coordinate x="2656.63227899999992587254" y="2526.34126542080230137799"/>
-                        <coordinate x="2656.63227899999992587254" y="2531.34126500000002124580"/>
+                        <coordinate x="2656.63227881599823376746" y="2531.34126542080230137799"/>
+                        <coordinate x="2656.63227881599823376746" y="2526.34126542080230137799"/>
+                        <coordinate x="2656.63227881599823376746" y="2526.34126542080230137799"/>
+                        <coordinate x="2656.63227881599823376746" y="2531.34126542080230137799"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -143,10 +142,10 @@
             <connect endport="P1" endcomponent="Translational Mass" startport="P1" startcomponent="Force Source">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2656.63227899999992587254" y="2467.34126500000002124580"/>
-                        <coordinate x="2656.63227899999992587254" y="2447.34126542080230137799"/>
-                        <coordinate x="2656.63227899999992587254" y="2447.34126542080230137799"/>
-                        <coordinate x="2656.63227899999992587254" y="2467.34126500000002124580"/>
+                        <coordinate x="2656.63227881599823376746" y="2467.34126542080230137799"/>
+                        <coordinate x="2656.63227881599823376746" y="2447.34126542080230137799"/>
+                        <coordinate x="2656.63227881599823376746" y="2447.34126542080230137799"/>
+                        <coordinate x="2656.63227881599823376746" y="2467.34126542080230137799"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>

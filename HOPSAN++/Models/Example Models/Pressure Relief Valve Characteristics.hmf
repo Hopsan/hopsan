@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4335" hopsancoreversion="0.6.x_r4334">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3949" hopsancoreversion="0.5.x_r3943">
     <requirements>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
     </requirements>
-    <system logsamples="2048" typename="Subsystem" name="Pressure Relief Valve Characteristics">
+    <system typename="Subsystem" name="Pressure Relief Valve Characteristics">
         <simulationtime stop="1" timestep="0.001" start="0" inherit_timestep="true"/>
         <aliases/>
         <parameters/>
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2499" y="2378" zoom="1"/>
+            <viewport x="2499.5" y="2498.5" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
@@ -56,7 +56,7 @@
                 <parameters>
                     <parameter value="0" type="double" name="P1::Flow"/>
                     <parameter value="1e5" type="double" name="P1::Pressure"/>
-                    <parameter value="0.005" type="double" name="V"/>
+                    <parameter value="0.001" type="double" name="V"/>
                     <parameter value="1e+009" type="double" name="Beta_e"/>
                     <parameter value="0.1" type="double" name="alpha"/>
                 </parameters>
@@ -75,6 +75,17 @@
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
+            <component typename="SignalStep" name="Step">
+                <parameters>
+                    <parameter value="1e-006" type="double" name="y_0"/>
+                    <parameter value="-7e-007" type="double" name="y_A"/>
+                    <parameter value="0.5" type="double" name="t_step"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2526" y="2314" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
             <component typename="HydraulicTankC" name="Tank C">
                 <parameters>
                     <parameter value="0" type="double" name="P1::Flow"/>
@@ -87,27 +98,15 @@
             </component>
             <component typename="HydraulicFlowSourceQ" name="Prescribed Source Q">
                 <parameters>
-                    <parameter value="0.000" type="double" name="q"/>
+                    <parameter value="0.0005" type="double" name="q"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2388" y="2373" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
-            <component typename="SignalStep" name="Step_1">
-                <parameters>
-                    <parameter value="1e-006" type="double" name="y_0"/>
-                    <parameter value="-7e-007" type="double" name="y_A"/>
-                    <parameter value="0.5" type="double" name="t_step"/>
-                </parameters>
-                <hopsangui>
-                    <pose x="2466" y="2303" flipped="false" a="0"/>
-                    <nametext position="0" visible="0"/>
-                </hopsangui>
-            </component>
             <component typename="HydraulicPressureReliefValve" name="Pressure Relief Valve">
                 <parameters>
-                    <parameter value="0" type="double" name="xv::Value"/>
                     <parameter value="2e+07" type="double" name="p_max"/>
                     <parameter value="0.01" type="double" name="tao"/>
                     <parameter value="1e-008" type="double" name="k_c,s"/>
@@ -117,13 +116,6 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2482.9992" y="2461" flipped="false" a="0"/>
-                    <nametext position="0" visible="0"/>
-                </hopsangui>
-            </component>
-            <component typename="SignalSink" name="Scope">
-                <parameters/>
-                <hopsangui>
-                    <pose x="2622" y="2464" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -151,6 +143,20 @@
                         <coordinate x="2617.00000000000000000000" y="2373.00000000000000000000"/>
                         <coordinate x="2660.00000000000000000000" y="2373.00000000000000000000"/>
                         <coordinate x="2660.00000000000000000000" y="2418.50000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="A" endcomponent="Turbulent Orifice" startport="out" startcomponent="Step">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2538.50000000000000000000" y="2314.00000000000000000000"/>
+                        <coordinate x="2587.00000000000000000000" y="2314.00000000000000000000"/>
+                        <coordinate x="2587.00000000000000000000" y="2358.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -200,32 +206,6 @@
                     <coordinates>
                         <coordinate x="2481.00000000000000000000" y="2501.00000000000000000000"/>
                         <coordinate x="2481.00000000000000000000" y="2537.50000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="A" endcomponent="Turbulent Orifice" startport="out" startcomponent="Step_1">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2478.50000000000000000000" y="2303.00000000000000000000"/>
-                        <coordinate x="2587.00000000000000000000" y="2303.00000000000000000000"/>
-                        <coordinate x="2587.00000000000000000000" y="2358.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="xv" endcomponent="Pressure Relief Valve" startport="in" startcomponent="Scope">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2602.00000000000000000000" y="2464.00000000000000000000"/>
-                        <coordinate x="2524.99920000000020081643" y="2441.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>

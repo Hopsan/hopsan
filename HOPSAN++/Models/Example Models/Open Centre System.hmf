@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4207" hopsancoreversion="0.5.x_r4161">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3872" hopsancoreversion="0.5.x_r3882">
     <requirements>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+        <componentlibrary>PettersComponentLibrary</componentlibrary>
     </requirements>
-    <system logsamples="2048" typename="Subsystem" name="Open Centre System">
+    <system typename="Subsystem" name="Open Centre System">
         <simulationtime stop="10" timestep="0.001" start="0" inherit_timestep="true"/>
         <aliases/>
         <parameters/>
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2592.28" y="2581.71" zoom="0.70922"/>
+            <viewport x="2678.85" y="2006.63" zoom="0.597271"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
@@ -2530,2082 +2531,79 @@
                     </stuff>
                 </post>
                 <post number="195">
-                    <stuff what="deletedconnector">
-                        <connect endport="P1" endcomponent="Q-type Fixed Displacement Pump" startport="P1" startcomponent="C-type Tank_4">
+                    <stuff what="addedtextboxwidget" index="0">
+                        <textboxwidget>
                             <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2593.57999999999992724042" y="3107.40000000000009094947"/>
-                                    <coordinate x="2593.57999999999992724042" y="3068.63700000000017098500"/>
-                                    <coordinate x="2584.08300000000008367351" y="3068.63700000000017098500"/>
-                                    <coordinate x="2584.08300000000008367351" y="3034.13999999999987267074"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
+                                <pose x="2300.000000" y="1744.000000"/>
+                                <textobject fontcolor="#556b2f" text="Text" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                                <size width="100.000000" height="100.000000"/>
+                                <line width="2.000000" visible="1" style="solidline"/>
                             </hopsangui>
-                        </connect>
+                        </textboxwidget>
                     </stuff>
                 </post>
                 <post number="196">
-                    <stuff what="addedconnector">
-                        <connect endport="P1" endcomponent="Q-type Fixed Displacement Pump" startport="P1" startcomponent="C-type Tank_4">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2584.08300000000008367351" y="3107.40000000000009094947"/>
-                                    <coordinate x="2584.08300000000008367351" y="3034.13999999999987267074"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>diagonal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
+                    <stuff h_new="100.000000" what="resizedtextboxwidget" w_old="100.000000" h_old="100.000000" index="0" w_new="347.000000">
+                        <oldpos>2300 1744</oldpos>
+                        <newpos>2300 1744</newpos>
                     </stuff>
                 </post>
                 <post number="197">
-                    <stuff what="movedobject" name="C-type Tank_4">
-                        <oldpos>2574.58 3107.4</oldpos>
-                        <newpos>2574.58 3034.14</newpos>
-                    </stuff>
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="1" linestyle="solidline" linestyle_old="solidline" index="0" text_old="Text" font_old="Calibri,12,-1,5,50,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Example: Open Centre Hydraulic System" font="Calibri,12,-1,5,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
                 </post>
                 <post number="198">
-                    <stuff what="deletedconnector">
-                        <connect endport="PP" endcomponent="6/3 Open Center Valve" startport="P1" startcomponent="Hydraulic Volume Multi Port_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                                    <coordinate x="2564.07940000000007785275" y="2900.30999999999994543032"/>
-                                    <coordinate x="2564.07940000000007785275" y="2845.63639999999986684998"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="1" linestyle="solidline" linestyle_old="solidline" index="0" text_old="Example: Open Centre Hydraulic System" font_old="Calibri,12,-1,5,50,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Example: Open Centre Hydraulic System" font="Calibri,20,-1,5,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
                 </post>
                 <post number="199">
-                    <stuff what="addedconnector">
-                        <connect endport="P1" endcomponent="Hydraulic Volume Multi Port_2" startport="PP" startcomponent="6/3 Open Center Valve">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2564.07940000000007785275" y="2845.63639999999986684998"/>
-                                    <coordinate x="2564.07940000000007785275" y="2867.65297067295887245564"/>
-                                    <coordinate x="2584.07999999999992724042" y="2867.65297067295887245564"/>
-                                    <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
+                    <stuff h_new="50.424503" what="resizedtextboxwidget" w_old="448.000000" h_old="100.000000" index="0" w_new="448.000000">
+                        <oldpos>2300 1744</oldpos>
+                        <newpos>2300 1793.58</newpos>
                     </stuff>
                 </post>
                 <post number="200">
-                    <stuff what="deletedconnector">
-                        <connect endport="P1" endcomponent="Hydraulic Volume Multi Port_2" startport="PP" startcomponent="6/3 Open Center Valve">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2564.07940000000007785275" y="2845.63639999999986684998"/>
-                                    <coordinate x="2564.07940000000007785275" y="2867.65297067295887245564"/>
-                                    <coordinate x="2584.07999999999992724042" y="2867.65297067295887245564"/>
-                                    <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2300 1793.58</oldpos>
+                        <newpos>2354.3 1911.61</newpos>
                     </stuff>
                 </post>
                 <post number="201">
-                    <stuff what="addedconnector">
-                        <connect endport="P1" endcomponent="Hydraulic Volume Multi Port_2" startport="PP" startcomponent="6/3 Open Center Valve">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2564.07940000000007785275" y="2845.63639999999986684998"/>
-                                    <coordinate x="2564.07940000000007785275" y="2870.02783855757434139377"/>
-                                    <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>diagonal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="0" linestyle="solidline" linestyle_old="solidline" index="0" text_old="Example: Open Centre Hydraulic System" font_old="Calibri,20,-1,5,50,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Example: Open Centre Hydraulic System" font="Calibri,20,-1,5,75,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
                 </post>
-                <post number="202" type="movedmultiple">
-                    <stuff what="movedobject" name="C-type Tank_5">
-                        <oldpos>2735.44 3095.47</oldpos>
-                        <newpos>2690.32 3040.6</newpos>
-                    </stuff>
-                    <stuff what="movedobject" name="Pressure Relief Valve">
-                        <oldpos>2695.44 2963.65</oldpos>
-                        <newpos>2659.82 2923.28</newpos>
+                <post number="202">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2354.3 1911.61</oldpos>
+                        <newpos>2349.58 1906.89</newpos>
                     </stuff>
                 </post>
                 <post number="203">
-                    <stuff what="deletedconnector">
-                        <connect endport="P1" endcomponent="Pressure Relief Valve" startport="P1" startcomponent="Hydraulic Volume Multi Port_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                                    <coordinate x="2699.81808173077070023282" y="2900.30999999999994543032"/>
-                                    <coordinate x="2699.81808173077070023282" y="2923.28174596153985476121"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
+                    <stuff h_new="50.424503" what="resizedtextboxwidget" w_old="448.000000" h_old="50.424503" index="0" w_new="461.000000">
+                        <oldpos>2300 1793.58</oldpos>
+                        <newpos>2349.58 1906.89</newpos>
                     </stuff>
                 </post>
                 <post number="204">
-                    <stuff what="deletedconnector">
-                        <connect endport="P2" endcomponent="Pressure Relief Valve" startport="P1" startcomponent="C-type Tank_5">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2699.81808173077070023282" y="3040.59894596154026658041"/>
-                                    <coordinate x="2699.81808173077070023282" y="3023.28174596154076425591"/>
-                                    <coordinate x="2699.81808173077070023282" y="3023.28174596154076425591"/>
-                                    <coordinate x="2699.81808173077070023282" y="3003.28174596154030950856"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2350 1907</oldpos>
+                        <newpos>2313.17 1958.9</newpos>
                     </stuff>
                 </post>
                 <post number="205">
-                    <stuff what="addedconnector">
-                        <connect endport="P1" endcomponent="Hydraulic Volume Multi Port_2" startport="P1" startcomponent="Pressure Relief Valve">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2699.81808173077070023282" y="2923.28174596153985476121"/>
-                                    <coordinate x="2699.81808173077070023282" y="2900.30999999999994543032"/>
-                                    <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2313.17 1958.9</oldpos>
+                        <newpos>2323.21 1957.23</newpos>
                     </stuff>
                 </post>
-                <post number="206">
-                    <stuff what="movedobject" name="Pressure Relief Valve">
-                        <oldpos>2659.82 2923.28</oldpos>
-                        <newpos>2640.82 2900.31</newpos>
-                    </stuff>
-                </post>
-                <post number="207">
-                    <stuff what="movedobject" name="C-type Tank_5">
-                        <oldpos>2690.32 3040.6</oldpos>
-                        <newpos>2674.88 3040.6</newpos>
-                    </stuff>
-                </post>
-                <post number="208">
-                    <stuff what="addedconnector">
-                        <connect endport="P2" endcomponent="Pressure Relief Valve" startport="P1" startcomponent="C-type Tank_5">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2680.81913865384876771714" y="3040.59894596153981183306"/>
-                                    <coordinate x="2680.81913865384876771714" y="2980.30999999999994543032"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>diagonal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="209" type="aligny">
-                    <stuff what="movedobject" name="C-type Tank_5">
-                        <oldpos>2671.32 3040.6</oldpos>
-                        <newpos>2671.32 3034.14</newpos>
-                    </stuff>
-                </post>
-                <post number="210">
-                    <stuff what="movedobject" name="Pressure Relief Valve">
-                        <oldpos>2640.82 2900.31</oldpos>
-                        <newpos>2640.82 2899.12</newpos>
-                    </stuff>
-                </post>
-                <post number="211">
-                    <stuff what="movedobject" name="Pressure Relief Valve">
-                        <oldpos>2640.82 2899.12</oldpos>
-                        <newpos>2642.01 2914.56</newpos>
-                    </stuff>
-                </post>
-                <post number="212">
-                    <stuff what="deletedconnector">
-                        <connect endport="P1" endcomponent="Hydraulic Volume Multi Port_2" startport="P1" startcomponent="Pressure Relief Valve">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2682.00657259615536531783" y="2914.55920730769184956443"/>
-                                    <coordinate x="2682.00657259615536531783" y="2900.30999999999994543032"/>
-                                    <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="213">
-                    <stuff what="movedobject" name="Pressure Relief Valve">
-                        <oldpos>2642.01 2914.56</oldpos>
-                        <newpos>2640.82 2954.14</newpos>
-                    </stuff>
-                </post>
-                <post number="214">
-                    <stuff what="addedconnector">
-                        <connect endport="P1" endcomponent="Hydraulic Volume Multi Port_2" startport="P1" startcomponent="Pressure Relief Valve">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2680.81913865384876771714" y="2954.13999999999987267074"/>
-                                    <coordinate x="2680.81913865384876771714" y="2900.30999999999994543032"/>
-                                    <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="215"/>
-                <post number="216"/>
-                <post number="217"/>
-                <post number="218"/>
-                <post number="219"/>
-                <post number="220"/>
-                <post number="221"/>
-                <post number="222"/>
-                <post number="223"/>
-                <post number="224"/>
-                <post number="225"/>
-                <post number="226"/>
-                <post number="227"/>
-                <post number="228"/>
-                <post number="229"/>
-                <post number="230"/>
-                <post number="231"/>
-                <post number="232"/>
-                <post number="233"/>
-                <post number="234"/>
-                <post number="235">
-                    <stuff what="deletedconnector">
-                        <connect endport="P1" endcomponent="C-type Variable Displacement Machine_2" startport="PA" startcomponent="6/3 Open Center Valve">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2564.07940000000007785275" y="2795.63639999999986684998"/>
-                                    <coordinate x="2564.07940000000007785275" y="2669.60180000000127620297"/>
-                                    <coordinate x="2800.01453300000002855086" y="2669.60180000000127620297"/>
-                                    <coordinate x="2800.01453300000002855086" y="2677.67320000000017898856"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="236">
-                    <stuff what="deletedconnector">
-                        <connect endport="P1" endcomponent="Rotational Inertia_2" startport="P3" startcomponent="C-type Variable Displacement Machine_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2859.72093300000005910988" y="2727.67320000000017898856"/>
-                                    <coordinate x="2922.72133333333431437495" y="2727.67320000000017898856"/>
-                                    <coordinate x="2922.72133333333431437495" y="2727.67320000000017898856"/>
-                                    <coordinate x="2895.00693300000011731754" y="2727.67320000000017898856"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="237">
-                    <stuff what="movedobject" name="C-type Variable Displacement Machine_2">
-                        <oldpos>2859.72 2677.67</oldpos>
-                        <newpos>2857.35 2680.05</newpos>
-                    </stuff>
-                </post>
-                <post number="238">
-                    <stuff what="addedconnector">
-                        <connect endport="PA" endcomponent="6/3 Open Center Valve" startport="P1" startcomponent="C-type Variable Displacement Machine_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2797.63966511538501436007" y="2680.04806788461610267404"/>
-                                    <coordinate x="2797.63966511538501436007" y="2680.03840778835137825808"/>
-                                    <coordinate x="2564.07940000000007785275" y="2680.03840778835137825808"/>
-                                    <coordinate x="2564.07940000000007785275" y="2795.63639999999986684998"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="239">
-                    <stuff what="addedconnector">
-                        <connect endport="P3" endcomponent="C-type Variable Displacement Machine_2" startport="P1" startcomponent="Rotational Inertia_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2895.00693300000011731754" y="2727.67320000000017898856"/>
-                                    <coordinate x="2857.34606511538504491909" y="2730.04806788461610267404"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>diagonal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="240" type="aligny">
-                    <stuff what="movedobject" name="Rotational Inertia_2">
-                        <oldpos>2895.01 2707.67</oldpos>
-                        <newpos>2895.01 2710.05</newpos>
-                    </stuff>
-                    <stuff what="movedobject" name="Torque Source_2">
-                        <oldpos>3032.44 2721.17</oldpos>
-                        <newpos>3032.44 2723.55</newpos>
-                    </stuff>
-                </post>
-                <post number="241">
-                    <stuff what="movedobject" name="Angular Velocity Transducer_2">
-                        <oldpos>2941.97 2550.36</oldpos>
-                        <newpos>2955.44 2631.21</newpos>
-                    </stuff>
-                </post>
-                <post number="242">
-                    <stuff what="deletedconnector">
-                        <connect endport="P1" endcomponent="Angular Velocity Transducer_2" startport="P2" startcomponent="Rotational Inertia_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2959.00693300000011731754" y="2730.05000000000018189894"/>
-                                    <coordinate x="2973.44254471412932616659" y="2730.05000000000018189894"/>
-                                    <coordinate x="2973.44254471412932616659" y="2667.20730428477509121876"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="243">
-                    <stuff what="addedconnector">
-                        <connect endport="P1" endcomponent="Angular Velocity Transducer_2" startport="P2" startcomponent="Rotational Inertia_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2959.00693300000011731754" y="2730.05000000000018189894"/>
-                                    <coordinate x="2973.44254471412932616659" y="2667.20730428477509121876"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>diagonal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="244">
-                    <stuff what="movedobject" name="Angular Velocity Transducer_2">
-                        <oldpos>2955.44 2631.21</oldpos>
-                        <newpos>2957.13 2662.37</newpos>
-                    </stuff>
-                </post>
-                <post number="245">
-                    <stuff what="deletedconnector">
-                        <connect endport="P1" endcomponent="Angular Velocity Transducer_1" startport="P2" startcomponent="Rotational Inertia_1">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2953.04263300000002345769" y="2463.25590000000011059456"/>
-                                    <coordinate x="2962.60737999999992098310" y="2463.25590000000011059456"/>
-                                    <coordinate x="2962.60737999999992098310" y="2327.00000000000000000000"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="246">
-                    <stuff what="addedconnector">
-                        <connect endport="P2" endcomponent="Rotational Inertia_1" startport="P1" startcomponent="Angular Velocity Transducer_1">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2962.60737999999992098310" y="2327.00000000000000000000"/>
-                                    <coordinate x="2953.04263300000002345769" y="2463.25590000000011059456"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>diagonal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="247">
-                    <stuff what="movedobject" name="Angular Velocity Transducer_1">
-                        <oldpos>2944.61 2291</oldpos>
-                        <newpos>2952.19 2397.11</newpos>
-                    </stuff>
-                </post>
-                <post number="248">
-                    <stuff what="addedtextboxwidget" index="1">
-                        <textboxwidget>
-                            <hopsangui>
-                                <pose x="2963.000000" y="2449.000000"/>
-                                <textobject fontcolor="#556b2f" text="Text" font="Ubuntu,12,-1,5,50,0,0,0,0,0"/>
-                                <size width="100.000000" height="100.000000"/>
-                                <line width="2.000000" visible="1" style="solidline"/>
-                            </hopsangui>
-                        </textboxwidget>
-                    </stuff>
-                </post>
-                <post number="249">
-                    <stuff what="movedwidget" index="1">
-                        <oldpos>2963 2449</oldpos>
-                        <newpos>2963 2449.84</newpos>
-                    </stuff>
-                </post>
-                <post number="250">
-                    <stuff what="deletedtextboxwidget" index="1">
-                        <textboxwidget>
-                            <hopsangui>
-                                <pose x="2963.000000" y="2449.842152"/>
-                                <textobject fontcolor="#556b2f" text="Text" font="Ubuntu,12,-1,5,50,0,0,0,0,0"/>
-                                <size width="100.000000" height="100.000000"/>
-                                <line width="2.000000" visible="1" style="solidline"/>
-                            </hopsangui>
-                        </textboxwidget>
-                    </stuff>
-                </post>
-                <post number="251">
-                    <stuff what="deletedconnector">
-                        <connect endport="P1" endcomponent="Angular Velocity Transducer" startport="P2" startcomponent="Rotational Inertia">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2948.30940000000009604264" y="2190.42799999999988358468"/>
-                                    <coordinate x="2965.52516599999989921344" y="2190.42799999999988358468"/>
-                                    <coordinate x="2965.52516599999989921344" y="2060.03188300000010713120"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="252">
-                    <stuff what="addedconnector">
-                        <connect endport="P2" endcomponent="Rotational Inertia" startport="P1" startcomponent="Angular Velocity Transducer">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2965.52516599999989921344" y="2060.03188300000010713120"/>
-                                    <coordinate x="2948.30940000000009604264" y="2190.42799999999988358468"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>diagonal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="253">
-                    <stuff what="movedobject" name="Angular Velocity Transducer">
-                        <oldpos>2947.53 2024.03</oldpos>
-                        <newpos>2945.84 2125.93</newpos>
-                    </stuff>
-                </post>
-                <post number="254" type="alignx">
-                    <stuff what="movedobject" name="Angular Velocity Transducer_1">
-                        <oldpos>2952.19 2397.11</oldpos>
-                        <newpos>2957.13 2397.11</newpos>
-                    </stuff>
-                    <stuff what="movedobject" name="Angular Velocity Transducer">
-                        <oldpos>2945.84 2125.93</oldpos>
-                        <newpos>2957.13 2125.93</newpos>
-                    </stuff>
-                </post>
-                <post number="255" type="alignx">
-                    <stuff what="movedobject" name="Rotational Inertia_2">
-                        <oldpos>2895.01 2710.05</oldpos>
-                        <newpos>2884.31 2710.05</newpos>
-                    </stuff>
-                    <stuff what="movedobject" name="Rotational Inertia_1">
-                        <oldpos>2889.04 2443.26</oldpos>
-                        <newpos>2884.31 2443.26</newpos>
-                    </stuff>
-                </post>
-                <post number="256"/>
-                <post number="257"/>
-                <post number="258"/>
-                <post number="259"/>
-                <post number="260"/>
-                <post number="261"/>
-                <post number="262"/>
-                <post number="263"/>
-                <post number="264"/>
-                <post number="265"/>
-                <post number="266"/>
-                <post number="267"/>
-                <post number="268"/>
-                <post number="269"/>
-                <post number="270"/>
-                <post number="271"/>
-                <post number="272"/>
-                <post number="273"/>
-                <post number="274"/>
-                <post number="275"/>
-                <post number="276"/>
-                <post number="277"/>
-                <post number="278"/>
-                <post number="279"/>
-                <post number="280"/>
-                <post number="281"/>
-                <post number="282"/>
-                <post number="283"/>
-                <post number="284"/>
-                <post number="285">
-                    <stuff what="modifiedconnector" linenumber="1">
-                        <oldpos>0 0</oldpos>
-                        <newpos>5.05291 50.5291</newpos>
-                        <connect endport="P1" endcomponent="C-type Variable Displacement Machine" startport="PA" startcomponent="6/3 Open Center Valve_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2566.47749999999996362021" y="2274.53549999999995634425"/>
-                                    <coordinate x="2566.47749999999996362021" y="2161.88679007701193768298"/>
-                                    <coordinate x="2793.29320000000006984919" y="2161.88679007701193768298"/>
-                                    <coordinate x="2793.29320000000006984919" y="2163.42799999999988358468"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="286"/>
-                <post number="287"/>
-                <post number="288" type="alignx">
-                    <stuff what="movedobject" name="Torque Source_2">
-                        <oldpos>3032.44 2723.55</oldpos>
-                        <newpos>3017.76 2723.55</newpos>
-                    </stuff>
-                    <stuff what="movedobject" name="Torque Source_1">
-                        <oldpos>3026.47 2456.76</oldpos>
-                        <newpos>3017.76 2456.76</newpos>
-                    </stuff>
-                </post>
-                <post number="289" type="alignx">
-                    <stuff what="movedobject" name="Angular Velocity Transducer_2">
-                        <oldpos>2957.13 2662.37</oldpos>
-                        <newpos>2957.13 2662.37</newpos>
-                    </stuff>
-                    <stuff what="movedobject" name="Angular Velocity Transducer_1">
-                        <oldpos>2957.13 2397.11</oldpos>
-                        <newpos>2957.13 2397.11</newpos>
-                    </stuff>
-                </post>
-                <post number="290" type="alignx">
-                    <stuff what="movedobject" name="Rotational Inertia_2">
-                        <oldpos>2884.31 2710.05</oldpos>
-                        <newpos>2884.31 2710.05</newpos>
-                    </stuff>
-                    <stuff what="movedobject" name="Rotational Inertia_1">
-                        <oldpos>2884.31 2443.26</oldpos>
-                        <newpos>2884.31 2443.26</newpos>
-                    </stuff>
-                </post>
-                <post number="291" type="alignx">
-                    <stuff what="movedobject" name="C-type Variable Displacement Machine_2">
-                        <oldpos>2857.35 2680.05</oldpos>
-                        <newpos>2853 2680.05</newpos>
-                    </stuff>
-                    <stuff what="movedobject" name="C-type Variable Displacement Machine_1">
-                        <oldpos>2857.73 2415.24</oldpos>
-                        <newpos>2853 2415.24</newpos>
-                    </stuff>
-                </post>
-                <post number="292">
-                    <stuff what="deletedconnector">
-                        <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Angular Velocity Transducer">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2975.12684817839499373804" y="2146.93224258810323590296"/>
-                                    <coordinate x="2975.12684817839499373804" y="2004.26651982508383298409"/>
-                                    <coordinate x="3238.00000000000000000000" y="2004.26651982508383298409"/>
-                                    <coordinate x="3238.00000000000000000000" y="2252.00000000000000000000"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="293">
-                    <stuff what="addedconnector">
-                        <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Angular Velocity Transducer">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2975.12684817839499373804" y="2146.93224258810323590296"/>
-                                    <coordinate x="2975.12684817839499373804" y="2122.22236497536368915462"/>
-                                    <coordinate x="3158.06899549905301682884" y="2122.22236497536368915462"/>
-                                    <coordinate x="3238.00000000000000000000" y="2252.00000000000000000000"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>diagonal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="294">
-                    <stuff what="deletedconnector">
-                        <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Angular Velocity Transducer_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2975.12684817839499373804" y="2662.36691837369835411664"/>
-                                    <coordinate x="2975.12684817839499373804" y="2502.38222734344981290633"/>
-                                    <coordinate x="3238.00000000000000000000" y="2502.38222734344981290633"/>
-                                    <coordinate x="3238.00000000000000000000" y="2252.00000000000000000000"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="295">
-                    <stuff what="movedobject" name="Sink">
-                        <oldpos>3238 2237</oldpos>
-                        <newpos>3078.83 2365.85</newpos>
-                    </stuff>
-                </post>
-                <post number="296">
-                    <stuff what="deletedconnector">
-                        <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Angular Velocity Transducer">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2975.12684817839499373804" y="2146.93224258810323590296"/>
-                                    <coordinate x="2975.12684817839499373804" y="2122.22236497536368915462"/>
-                                    <coordinate x="3158.06899549905301682884" y="2122.22236497536368915462"/>
-                                    <coordinate x="3078.83332262684825764154" y="2380.84921501636108587263"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>diagonal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="297">
-                    <stuff what="movedobject" name="Sink">
-                        <oldpos>3078.83 2365.85</oldpos>
-                        <newpos>3116.9 2358.8</newpos>
-                    </stuff>
-                </post>
-                <post number="298">
-                    <stuff what="addedconnector">
-                        <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Angular Velocity Transducer">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2975.12684817839499373804" y="2146.93224258810323590296"/>
-                                    <coordinate x="2975.12684817839499373804" y="2119.22952455916811231873"/>
-                                    <coordinate x="3086.48930755822948412970" y="2119.22952455916811231873"/>
-                                    <coordinate x="3086.48930755822948412970" y="2353.28947204873702503392"/>
-                                    <coordinate x="3116.90331408599513451918" y="2373.79921659799992994522"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>diagonal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="299">
-                    <stuff what="deletedconnector">
-                        <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Angular Velocity Transducer">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2975.12684817839499373804" y="2146.93224258810323590296"/>
-                                    <coordinate x="2975.12684817839499373804" y="2119.22952455916811231873"/>
-                                    <coordinate x="3086.48930755822948412970" y="2119.22952455916811231873"/>
-                                    <coordinate x="3086.48930755822948412970" y="2353.28947204873702503392"/>
-                                    <coordinate x="3116.90331408599513451918" y="2373.79921659799992994522"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>diagonal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="300">
-                    <stuff what="movedobject" name="Sink">
-                        <oldpos>3116.9 2358.8</oldpos>
-                        <newpos>3119.72 2100.77</newpos>
-                    </stuff>
-                </post>
-                <post number="301">
-                    <stuff what="deletedconnector">
-                        <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Angular Velocity Transducer_1">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2975.12684817839499373804" y="2397.11111824876797982142"/>
-                                    <coordinate x="2975.12684817839499373804" y="2115.76927448600554271252"/>
-                                    <coordinate x="3119.72331345333941499121" y="2115.76927448600554271252"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="302">
-                    <stuff what="addedconnector">
-                        <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Angular Velocity Transducer">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2975.12684817839499373804" y="2146.93224258810323590296"/>
-                                    <coordinate x="2975.12684817839499373804" y="2115.76927448600554271252"/>
-                                    <coordinate x="3119.72331345333941499121" y="2115.76927448600554271252"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="303">
-                    <stuff what="movedobject" name="Sink">
-                        <oldpos>3119.72 2100.77</oldpos>
-                        <newpos>3091.52 2114.87</newpos>
-                    </stuff>
-                </post>
-                <post number="304">
-                    <stuff what="addedconnector">
-                        <connect endport="out" endcomponent="Angular Velocity Transducer_1" startport="in" startcomponent="Sink">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="3091.52331977989661027095" y="2129.86927132272694507265"/>
-                                    <coordinate x="3066.74931198681997557287" y="2137.55952044690548063954"/>
-                                    <coordinate x="3066.74931198681997557287" y="2378.66946635483463978744"/>
-                                    <coordinate x="2975.12684817839499373804" y="2378.66946635483463978744"/>
-                                    <coordinate x="2975.12684817839499373804" y="2397.11111824876797982142"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>diagonal</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="305">
-                    <stuff what="addedconnector">
-                        <connect endport="out" endcomponent="Angular Velocity Transducer_2" startport="in" startcomponent="Sink">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="3091.52331977989661027095" y="2129.86927132272694507265"/>
-                                    <coordinate x="3078.02930945619664271362" y="2141.78951949792144660023"/>
-                                    <coordinate x="3078.02930945619664271362" y="2642.36691837369835411664"/>
-                                    <coordinate x="2975.12684817839499373804" y="2642.36691837369835411664"/>
-                                    <coordinate x="2975.12684817839499373804" y="2662.36691837369835411664"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>diagonal</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="306">
-                    <stuff what="deletedconnector">
-                        <connect endport="out" endcomponent="Angular Velocity Transducer_1" startport="in" startcomponent="Sink">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="3091.52331977989661027095" y="2129.86927132272694507265"/>
-                                    <coordinate x="3066.74931198681997557287" y="2137.55952044690548063954"/>
-                                    <coordinate x="3066.74931198681997557287" y="2378.66946635483463978744"/>
-                                    <coordinate x="2975.12684817839499373804" y="2378.66946635483463978744"/>
-                                    <coordinate x="2975.12684817839499373804" y="2397.11111824876797982142"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>diagonal</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                    <stuff what="deletedconnector">
-                        <connect endport="out" endcomponent="Angular Velocity Transducer_2" startport="in" startcomponent="Sink">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="3091.52331977989661027095" y="2129.86927132272694507265"/>
-                                    <coordinate x="3078.02930945619664271362" y="2141.78951949792144660023"/>
-                                    <coordinate x="3078.02930945619664271362" y="2642.36691837369835411664"/>
-                                    <coordinate x="2975.12684817839499373804" y="2642.36691837369835411664"/>
-                                    <coordinate x="2975.12684817839499373804" y="2662.36691837369835411664"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>diagonal</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="307">
-                    <stuff what="addedconnector">
-                        <connect endport="out" endcomponent="Angular Velocity Transducer_1" startport="in" startcomponent="Sink">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="3091.52331977989661027095" y="2129.86927132272694507265"/>
-                                    <coordinate x="3065.33931230314783533686" y="2129.86927132272694507265"/>
-                                    <coordinate x="3065.33931230314783533686" y="2377.11111824876797982142"/>
-                                    <coordinate x="2975.12684817839499373804" y="2377.11111824876797982142"/>
-                                    <coordinate x="2975.12684817839499373804" y="2397.11111824876797982142"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="308">
-                    <stuff what="addedconnector">
-                        <connect endport="out" endcomponent="Angular Velocity Transducer_2" startport="in" startcomponent="Sink">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="3091.52331977989661027095" y="2129.86927132272694507265"/>
-                                    <coordinate x="3065.33931230314783533686" y="2129.86927132272694507265"/>
-                                    <coordinate x="3065.33931230314783533686" y="2642.36691837369835411664"/>
-                                    <coordinate x="2975.12684817839499373804" y="2642.36691837369835411664"/>
-                                    <coordinate x="2975.12684817839499373804" y="2662.36691837369835411664"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
+                <post number="206" type="changedparameters">
+                    <stuff newvalue="150" what="changedparameter" oldvalue="200" parametername="T" objectname="Torque Source"/>
                 </post>
-                <post number="309"/>
-                <post number="310"/>
-                <post number="311"/>
-                <post number="312"/>
-                <post number="313"/>
-                <post number="314"/>
-                <post number="315"/>
-                <post number="316"/>
-                <post number="317"/>
-                <post number="318"/>
-                <post number="319"/>
-                <post number="320"/>
-                <post number="321"/>
-                <post number="322"/>
-                <post number="323"/>
-                <post number="324"/>
-                <post number="325"/>
-                <post number="326"/>
-                <post number="327"/>
-                <post number="328"/>
-                <post number="329"/>
-                <post number="330"/>
-                <post number="331"/>
-                <post number="332"/>
-                <post number="333">
-                    <stuff what="deletedconnector">
-                        <connect endport="in" endcomponent="6/3 Open Center Valve" startport="out" startcomponent="Pulse">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2176.21999999999979991117" y="2830.63999999999987267074"/>
-                                    <coordinate x="2433.58999999999832652975" y="2830.63999999999987267074"/>
-                                    <coordinate x="2433.58999999999832652975" y="2830.63639999999986684998"/>
-                                    <coordinate x="2453.59000000000014551915" y="2830.63639999999986684998"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="334">
-                    <stuff what="addedconnector">
-                        <connect endport="in" endcomponent="6/3 Open Center Valve" startport="out" startcomponent="Pulse">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2176.21999999999979991117" y="2830.63639999999986684998"/>
-                                    <coordinate x="2453.59000000000014551915" y="2830.63639999999986684998"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>diagonal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="335">
-                    <stuff what="movedobject" name="Pulse">
-                        <oldpos>2151.22 2818.14</oldpos>
-                        <newpos>2350.71 2818.14</newpos>
-                    </stuff>
-                </post>
-                <post number="336">
-                    <stuff what="deletedconnector">
-                        <connect endport="in" endcomponent="6/3 Open Center Valve_1" startport="out" startcomponent="Pulse_1">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2196.34000000000014551915" y="2575.32000000000016370905"/>
-                                    <coordinate x="2434.57809999999926731107" y="2575.32000000000016370905"/>
-                                    <coordinate x="2434.57809999999926731107" y="2562.82189999999991414370"/>
-                                    <coordinate x="2453.59000000000014551915" y="2562.82189999999991414370"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="337">
-                    <stuff what="addedconnector">
-                        <connect endport="in" endcomponent="6/3 Open Center Valve_1" startport="out" startcomponent="Pulse_1">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2196.34000000000014551915" y="2575.32000000000016370905"/>
-                                    <coordinate x="2453.59000000000014551915" y="2562.82189999999991414370"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>diagonal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="338">
-                    <stuff what="movedobject" name="Pulse_1">
-                        <oldpos>2171.34 2562.82</oldpos>
-                        <newpos>2355.39 2550.95</newpos>
-                    </stuff>
-                </post>
-                <post number="339">
-                    <stuff what="deletedconnector">
-                        <connect endport="in" endcomponent="6/3 Open Center Valve_2" startport="out" startcomponent="Pulse_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2200.32000000000016370905" y="2310.73999999999978172127"/>
-                                    <coordinate x="2435.98810000000003128662" y="2310.73999999999978172127"/>
-                                    <coordinate x="2435.98810000000003128662" y="2309.53549999999995634425"/>
-                                    <coordinate x="2455.98810000000003128662" y="2309.53549999999995634425"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="340">
-                    <stuff what="addedconnector">
-                        <connect endport="in" endcomponent="6/3 Open Center Valve_2" startport="out" startcomponent="Pulse_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2200.32000000000016370905" y="2309.53549999999995634425"/>
-                                    <coordinate x="2455.98810000000003128662" y="2309.53549999999995634425"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>diagonal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="341">
-                    <stuff what="movedobject" name="Pulse_2">
-                        <oldpos>2175.32 2297.04</oldpos>
-                        <newpos>2353.44 2297.04</newpos>
-                    </stuff>
-                </post>
-                <post number="342" type="alignx">
-                    <stuff what="movedobject" name="Pulse_2">
-                        <oldpos>2353.44 2297.04</oldpos>
-                        <newpos>2350.71 2297.04</newpos>
-                    </stuff>
-                    <stuff what="movedobject" name="Pulse_1">
-                        <oldpos>2355.39 2550.95</oldpos>
-                        <newpos>2350.71 2550.95</newpos>
-                    </stuff>
-                </post>
-                <post number="343" type="alignx">
-                    <stuff what="movedobject" name="6/3 Open Center Valve_2">
-                        <oldpos>2455.99 2274.54</oldpos>
-                        <newpos>2453.59 2274.54</newpos>
-                    </stuff>
-                    <stuff what="movedobject" name="6/3 Open Center Valve_1">
-                        <oldpos>2453.59 2527.82</oldpos>
-                        <newpos>2453.59 2527.82</newpos>
-                    </stuff>
-                </post>
-                <post number="344" type="alignx">
-                    <stuff what="movedobject" name="Hydraulic Volume Multi Port_1">
-                        <oldpos>2561.48 2364.4</oldpos>
-                        <newpos>2559.08 2364.4</newpos>
-                    </stuff>
-                    <stuff what="movedobject" name="Hydraulic Volume Multi Port">
-                        <oldpos>2559.08 2614.86</oldpos>
-                        <newpos>2559.08 2614.86</newpos>
-                    </stuff>
-                </post>
-                <post number="345">
-                    <stuff what="movedobject" name="C-type Tank_2">
-                        <oldpos>2658.53 2615.76</oldpos>
-                        <newpos>2635.97 2612.19</newpos>
-                    </stuff>
-                </post>
-                <post number="346" type="aligny">
-                    <stuff what="movedobject" name="C-type Tank_2">
-                        <oldpos>2635.97 2612.19</oldpos>
-                        <newpos>2635.97 2615.36</newpos>
-                    </stuff>
-                </post>
-                <post number="347" type="aligny">
-                    <stuff what="movedobject" name="C-type Tank_3">
-                        <oldpos>2643.87 2360.16</oldpos>
-                        <newpos>2643.87 2364.9</newpos>
-                    </stuff>
-                </post>
-                <post number="348">
-                    <stuff what="movedobject" name="C-type Tank_1">
-                        <oldpos>2801.67 2888.13</oldpos>
-                        <newpos>2594.58 2845.64</newpos>
-                    </stuff>
-                </post>
-                <post number="349">
-                    <stuff what="movedobject" name="C-type Tank_1">
-                        <oldpos>2594.58 2845.64</oldpos>
-                        <newpos>2802.38 2887.2</newpos>
-                    </stuff>
-                </post>
-                <post number="350">
-                    <stuff what="deletedconnector">
-                        <connect endport="P1" endcomponent="C-type Tank_1" startport="PT" startcomponent="6/3 Open Center Valve">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2604.08380000000033760443" y="2845.63639999999986684998"/>
-                                    <coordinate x="2604.08380000000033760443" y="2870.11410000000068976078"/>
-                                    <coordinate x="2811.88473990383818090777" y="2870.11410000000068976078"/>
-                                    <coordinate x="2811.88473990383818090777" y="2887.19658798076761740958"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="351">
-                    <stuff what="addedconnector">
-                        <connect endport="PT" endcomponent="6/3 Open Center Valve" startport="P1" startcomponent="C-type Tank_1">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2811.88473990383818090777" y="2887.19658798076761740958"/>
-                                    <coordinate x="2604.08380000000033760443" y="2845.63639999999986684998"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>diagonal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="352">
-                    <stuff what="movedobject" name="C-type Tank_1">
-                        <oldpos>2802.38 2887.2</oldpos>
-                        <newpos>2594.58 2845.64</newpos>
-                    </stuff>
-                </post>
-                <post number="353">
-                    <stuff what="deletedconnector">
-                        <connect endport="P1" endcomponent="C-type Tank_2" startport="PT" startcomponent="6/3 Open Center Valve_1">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2604.08380000000033760443" y="2577.82189999999991414370"/>
-                                    <coordinate x="2604.08380000000033760443" y="2601.72060000000055879354"/>
-                                    <coordinate x="2645.46895509615524133551" y="2601.72060000000055879354"/>
-                                    <coordinate x="2645.46895509615524133551" y="2615.36000000000012732926"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="354">
-                    <stuff what="movedobject" name="C-type Tank_2">
-                        <oldpos>2635.97 2615.36</oldpos>
-                        <newpos>2616.97 2588.05</newpos>
-                    </stuff>
-                </post>
-                <post number="355">
-                    <stuff what="addedconnector">
-                        <connect endport="PT" endcomponent="6/3 Open Center Valve_1" startport="P1" startcomponent="C-type Tank_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2626.47001201923330881982" y="2588.04901932692428090377"/>
-                                    <coordinate x="2604.08380000000033760443" y="2577.82189999999991414370"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>diagonal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="356">
-                    <stuff what="movedobject" name="C-type Tank_2">
-                        <oldpos>2616.97 2588.05</oldpos>
-                        <newpos>2594.58 2577.82</newpos>
-                    </stuff>
-                </post>
-                <post number="357">
-                    <stuff what="modifiedconnector" linenumber="1">
-                        <oldpos>0 0</oldpos>
-                        <newpos>-1.18743 -1.18743</newpos>
-                        <connect endport="P1" endcomponent="C-type Tank_3" startport="PT" startcomponent="6/3 Open Center Valve_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2604.08380000000033760443" y="2324.53549999999995634425"/>
-                                    <coordinate x="2604.08380000000033760443" y="2346.55636605769313973724"/>
-                                    <coordinate x="2653.36822399999982735608" y="2346.55636605769313973724"/>
-                                    <coordinate x="2653.36822399999982735608" y="2364.90000000000009094947"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="358">
-                    <stuff what="deletedconnector">
-                        <connect endport="P1" endcomponent="C-type Tank_3" startport="PT" startcomponent="6/3 Open Center Valve_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2604.08380000000033760443" y="2324.53549999999995634425"/>
-                                    <coordinate x="2604.08380000000033760443" y="2346.55636605769313973724"/>
-                                    <coordinate x="2653.36822399999982735608" y="2346.55636605769313973724"/>
-                                    <coordinate x="2653.36822399999982735608" y="2364.90000000000009094947"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="359">
-                    <stuff what="addedconnector">
-                        <connect endport="PT" endcomponent="6/3 Open Center Valve_2" startport="P1" startcomponent="C-type Tank_3">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2653.36822399999982735608" y="2364.90000000000009094947"/>
-                                    <coordinate x="2604.08380000000033760443" y="2324.53549999999995634425"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>diagonal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
+                <post number="207" type="changedparameters">
+                    <stuff newvalue="2e-3" what="changedparameter" oldvalue="1e-3" parametername="y_A" objectname="Pulse_2"/>
                 </post>
-                <post number="360">
-                    <stuff what="movedobject" name="C-type Tank_3">
-                        <oldpos>2643.87 2364.9</oldpos>
-                        <newpos>2594.58 2324.54</newpos>
-                    </stuff>
-                </post>
-                <post number="361">
-                    <stuff what="movedobject" name="C-type Tank">
-                        <oldpos>2407.58 2274.94</oldpos>
-                        <newpos>2407.58 2464.92</newpos>
-                    </stuff>
-                </post>
-                <post number="362"/>
-                <post number="363"/>
-                <post number="364"/>
-                <post number="365"/>
-                <post number="366"/>
-                <post number="367"/>
-                <post number="368"/>
-                <post number="369"/>
-                <post number="370"/>
-                <post number="371"/>
-                <post number="372"/>
-                <post number="373"/>
-                <post number="374"/>
-                <post number="375"/>
-                <post number="376"/>
-                <post number="377"/>
-                <post number="378"/>
-                <post number="379"/>
-                <post number="380"/>
-                <post number="381"/>
-                <post number="382"/>
-                <post number="383"/>
-                <post number="384"/>
-                <post number="385"/>
-                <post number="386"/>
-                <post number="387"/>
-                <post number="388"/>
-                <post number="389"/>
-                <post number="390"/>
-                <post number="391"/>
-                <post number="392"/>
-                <post number="393"/>
-                <post number="394"/>
-                <post number="395"/>
-                <post number="396"/>
-                <post number="397"/>
-                <post number="398"/>
-                <post number="399"/>
-                <post number="400"/>
-                <post number="401"/>
-                <post number="402"/>
-                <post number="403"/>
-                <post number="404"/>
-                <post number="405"/>
-                <post number="406"/>
-                <post number="407"/>
-                <post number="408"/>
-                <post number="409"/>
-                <post number="410"/>
-                <post number="411"/>
-                <post number="412"/>
-                <post number="413"/>
-                <post number="414"/>
-                <post number="415"/>
-                <post number="416"/>
-                <post number="417"/>
-                <post number="418"/>
-                <post number="419"/>
-                <post number="420"/>
-                <post number="421"/>
-                <post number="422"/>
-                <post number="423"/>
-                <post number="424"/>
-                <post number="425"/>
-                <post number="426"/>
-                <post number="427"/>
-                <post number="428"/>
-                <post number="429"/>
-                <post number="430"/>
-                <post number="431"/>
-                <post number="432"/>
-                <post number="433"/>
-                <post number="434"/>
-                <post number="435"/>
-                <post number="436"/>
-                <post number="437"/>
-                <post number="438"/>
-                <post number="439"/>
-                <post number="440"/>
-                <post number="441"/>
-                <post number="442"/>
-                <post number="443"/>
-                <post number="444"/>
-                <post number="445"/>
-                <post number="446"/>
-                <post number="447"/>
-                <post number="448"/>
-                <post number="449"/>
-                <post number="450"/>
-                <post number="451"/>
-                <post number="452"/>
-                <post number="453"/>
-                <post number="454"/>
-                <post number="455"/>
-                <post number="456"/>
-                <post number="457"/>
-                <post number="458"/>
-                <post number="459"/>
-                <post number="460"/>
-                <post number="461"/>
-                <post number="462"/>
-                <post number="463"/>
-                <post number="464"/>
-                <post number="465"/>
-                <post number="466"/>
-                <post number="467"/>
-                <post number="468"/>
-                <post number="469"/>
-                <post number="470"/>
-                <post number="471"/>
-                <post number="472"/>
-                <post number="473"/>
-                <post number="474"/>
-                <post number="475"/>
-                <post number="476"/>
-                <post number="477"/>
-                <post number="478"/>
-                <post number="479"/>
-                <post number="480"/>
-                <post number="481"/>
-                <post number="482"/>
-                <post number="483"/>
-                <post number="484"/>
-                <post number="485"/>
-                <post number="486"/>
-                <post number="487"/>
-                <post number="488"/>
-                <post number="489"/>
-                <post number="490"/>
-                <post number="491"/>
-                <post number="492"/>
-                <post number="493"/>
-                <post number="494"/>
-                <post number="495"/>
-                <post number="496"/>
-                <post number="497"/>
-                <post number="498"/>
-                <post number="499"/>
-                <post number="500"/>
-                <post number="501"/>
-                <post number="502"/>
-                <post number="503"/>
-                <post number="504"/>
-                <post number="505"/>
-                <post number="506"/>
-                <post number="507"/>
-                <post number="508"/>
-                <post number="509"/>
-                <post number="510"/>
-                <post number="511"/>
-                <post number="512"/>
-                <post number="513"/>
-                <post number="514"/>
-                <post number="515"/>
-                <post number="516"/>
-                <post number="517"/>
-                <post number="518"/>
-                <post number="519"/>
-                <post number="520"/>
-                <post number="521"/>
-                <post number="522"/>
-                <post number="523"/>
-                <post number="524"/>
-                <post number="525"/>
-                <post number="526"/>
-                <post number="527"/>
-                <post number="528"/>
-                <post number="529"/>
-                <post number="530"/>
-                <post number="531"/>
-                <post number="532"/>
-                <post number="533"/>
-                <post number="534"/>
-                <post number="535"/>
-                <post number="536"/>
-                <post number="537"/>
-                <post number="538"/>
-                <post number="539"/>
-                <post number="540"/>
-                <post number="541"/>
-                <post number="542"/>
-                <post number="543"/>
-                <post number="544"/>
-                <post number="545"/>
-                <post number="546"/>
-                <post number="547"/>
-                <post number="548"/>
-                <post number="549"/>
-                <post number="550"/>
-                <post number="551"/>
-                <post number="552"/>
-                <post number="553"/>
-                <post number="554"/>
-                <post number="555"/>
-                <post number="556"/>
-                <post number="557"/>
-                <post number="558"/>
-                <post number="559"/>
-                <post number="560"/>
-                <post number="561"/>
-                <post number="562"/>
-                <post number="563"/>
-                <post number="564"/>
-                <post number="565"/>
-                <post number="566"/>
-                <post number="567"/>
-                <post number="568"/>
-                <post number="569"/>
-                <post number="570"/>
-                <post number="571"/>
-                <post number="572"/>
-                <post number="573"/>
-                <post number="574"/>
-                <post number="575"/>
-                <post number="576"/>
-                <post number="577"/>
-                <post number="578"/>
-                <post number="579"/>
-                <post number="580"/>
-                <post number="581"/>
-                <post number="582"/>
-                <post number="583"/>
-                <post number="584"/>
-                <post number="585"/>
-                <post number="586"/>
-                <post number="587"/>
-                <post number="588"/>
-                <post number="589"/>
-                <post number="590"/>
-                <post number="591"/>
-                <post number="592"/>
-                <post number="593"/>
-                <post number="594"/>
-                <post number="595"/>
-                <post number="596"/>
-                <post number="597"/>
-                <post number="598"/>
-                <post number="599"/>
-                <post number="600"/>
-                <post number="601"/>
-                <post number="602"/>
-                <post number="603"/>
-                <post number="604"/>
-                <post number="605">
-                    <stuff what="movedobject" name="C-type Tank">
-                        <oldpos>2407.58 2274.54</oldpos>
-                        <newpos>2407.58 2257.91</newpos>
-                    </stuff>
-                </post>
-                <post number="606">
-                    <stuff what="modifiedconnector" linenumber="1">
-                        <oldpos>0 0</oldpos>
-                        <newpos>0 30.8733</newpos>
-                        <connect endport="P1" endcomponent="C-type Tank" startport="PC2" startcomponent="6/3 Open Center Valve_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2584.08159999999998035491" y="2274.53549999999995634425"/>
-                                    <coordinate x="2584.08159999999998035491" y="2229.83878249999952458893"/>
-                                    <coordinate x="2417.07810000000017680577" y="2229.83878249999952458893"/>
-                                    <coordinate x="2417.07810000000017680577" y="2257.91142480769349276670"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="607" type="movedmultiple">
-                    <stuff what="movedobject" name="C-type Variable Displacement Machine_1">
-                        <oldpos>2857.73 2415.24</oldpos>
-                        <newpos>2853 2415.24</newpos>
-                    </stuff>
-                    <stuff what="movedobject" name="C-type Tank_2">
-                        <oldpos>2616.97 2588.05</oldpos>
-                        <newpos>2594.58 2577.82</newpos>
-                    </stuff>
-                    <stuff what="movedobject" name="Rotational Inertia_1">
-                        <oldpos>2889.04 2443.26</oldpos>
-                        <newpos>2884.31 2443.26</newpos>
-                    </stuff>
-                    <stuff what="movedobject" name="Torque Source_1">
-                        <oldpos>3002.97 2463.26</oldpos>
-                        <newpos>3017.76 2456.76</newpos>
-                    </stuff>
-                    <stuff what="movedobject" name="Angular Velocity Transducer_1">
-                        <oldpos>2952.19 2397.11</oldpos>
-                        <newpos>2957.13 2397.11</newpos>
-                    </stuff>
-                    <stuff what="movedobject" name="Pulse_1">
-                        <oldpos>2171.34 2562.82</oldpos>
-                        <newpos>2350.71 2550.95</newpos>
-                    </stuff>
-                    <stuff what="movedobject" name="C-type Tank_3">
-                        <oldpos>2643.87 2364.9</oldpos>
-                        <newpos>2594.58 2324.54</newpos>
-                    </stuff>
-                    <stuff what="movedobject" name="6/3 Open Center Valve_2">
-                        <oldpos>2455.99 2274.54</oldpos>
-                        <newpos>2453.59 2274.54</newpos>
-                    </stuff>
-                    <stuff what="movedobject" name="Pulse_2">
-                        <oldpos>2175.32 2297.04</oldpos>
-                        <newpos>2350.71 2297.04</newpos>
-                    </stuff>
-                    <stuff what="movedobject" name="C-type Tank">
-                        <oldpos>2407.58 2274.54</oldpos>
-                        <newpos>2407.58 2257.91</newpos>
-                    </stuff>
-                    <stuff what="movedobject" name="C-type Variable Displacement Machine">
-                        <oldpos>2853 2140.43</oldpos>
-                        <newpos>2853 2163.43</newpos>
-                    </stuff>
-                    <stuff what="movedobject" name="Torque Source">
-                        <oldpos>2994.26 2190.43</oldpos>
-                        <newpos>3017.76 2206.93</newpos>
-                    </stuff>
-                    <stuff what="movedobject" name="Rotational Inertia">
-                        <oldpos>2884.31 2170.43</oldpos>
-                        <newpos>2884.31 2193.43</newpos>
-                    </stuff>
-                    <stuff what="movedobject" name="Angular Velocity Transducer">
-                        <oldpos>2957.13 2148.93</oldpos>
-                        <newpos>2957.13 2146.93</newpos>
-                    </stuff>
-                    <stuff what="movedobject" name="Sink">
-                        <oldpos>3091.52 2114.87</oldpos>
-                        <newpos>3093.52 2114.87</newpos>
-                    </stuff>
-                </post>
-                <post number="608"/>
-                <post number="609"/>
-                <post number="610"/>
-                <post number="611"/>
-                <post number="612"/>
-                <post number="613"/>
-                <post number="614"/>
-                <post number="615"/>
-                <post number="616"/>
-                <post number="617"/>
-                <post number="618"/>
-                <post number="619"/>
-                <post number="620"/>
-                <post number="621"/>
-                <post number="622"/>
-                <post number="623"/>
-                <post number="624"/>
-                <post number="625"/>
-                <post number="626"/>
-                <post number="627"/>
-                <post number="628"/>
-                <post number="629"/>
-                <post number="630"/>
-                <post number="631"/>
-                <post number="632"/>
-                <post number="633"/>
-                <post number="634"/>
-                <post number="635"/>
-                <post number="636"/>
-                <post number="637"/>
-                <post number="638"/>
-                <post number="639"/>
-                <post number="640">
-                    <stuff what="deletedconnector">
-                        <connect endport="PP" endcomponent="6/3 Open Center Valve_1" startport="P1" startcomponent="Hydraulic Volume Multi Port_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                                    <coordinate x="2416.74000000000023646862" y="2900.30999999999994543032"/>
-                                    <coordinate x="2416.74000000000023646862" y="2593.69059999999990395736"/>
-                                    <coordinate x="2564.07940000000007785275" y="2593.69059999999990395736"/>
-                                    <coordinate x="2564.07940000000007785275" y="2596.82189999999991414370"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="641">
-                    <stuff what="addedconnector">
-                        <connect endport="PP" endcomponent="6/3 Open Center Valve_1" startport="P1" startcomponent="Hydraulic Volume Multi Port_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                                    <coordinate x="2437.80188355759810292511" y="2900.30999999999994543032"/>
-                                    <coordinate x="2437.80188355759810292511" y="2616.82189999999991414370"/>
-                                    <coordinate x="2564.07940000000007785275" y="2616.82189999999991414370"/>
-                                    <coordinate x="2564.07940000000007785275" y="2596.82189999999991414370"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="642">
-                    <stuff what="modifiedconnector" linenumber="1">
-                        <oldpos>0 0</oldpos>
-                        <newpos>-21.3738 3.5623</newpos>
-                        <connect endport="PP" endcomponent="6/3 Open Center Valve_1" startport="P1" startcomponent="Hydraulic Volume Multi Port_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                                    <coordinate x="2416.42807259606024672394" y="2900.30999999999994543032"/>
-                                    <coordinate x="2416.42807259606024672394" y="2616.82189999999991414370"/>
-                                    <coordinate x="2564.07940000000007785275" y="2616.82189999999991414370"/>
-                                    <coordinate x="2564.07940000000007785275" y="2596.82189999999991414370"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="643">
-                    <stuff what="deletedconnector">
-                        <connect endport="PP" endcomponent="6/3 Open Center Valve_2" startport="P1" startcomponent="Hydraulic Volume Multi Port_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                                    <coordinate x="2416.74000000000023646862" y="2900.30999999999994543032"/>
-                                    <coordinate x="2416.74000000000023646862" y="2354.47600000000011277734"/>
-                                    <coordinate x="2564.07940000000007785275" y="2354.47600000000011277734"/>
-                                    <coordinate x="2564.07940000000007785275" y="2346.53549999999995634425"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="644">
-                    <stuff what="addedconnector">
-                        <connect endport="PP" endcomponent="6/3 Open Center Valve_2" startport="P1" startcomponent="Hydraulic Volume Multi Port_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                                    <coordinate x="2416.42807259606024672394" y="2900.30999999999994543032"/>
-                                    <coordinate x="2416.42807259606024672394" y="2366.53549999999995634425"/>
-                                    <coordinate x="2564.07940000000007785275" y="2366.53549999999995634425"/>
-                                    <coordinate x="2564.07940000000007785275" y="2346.53549999999995634425"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="645">
-                    <stuff what="rotate" angle="90.000000" objectname="Hydraulic Volume Multi Port"/>
-                </post>
-                <post number="646">
-                    <stuff what="movedobject" name="Hydraulic Volume Multi Port">
-                        <oldpos>2559.08 2633.86</oldpos>
-                        <newpos>2559.08 2718.17</newpos>
-                    </stuff>
-                </post>
-                <post number="647">
-                    <stuff what="rotate" angle="90.000000" objectname="Hydraulic Volume Multi Port_1"/>
-                </post>
-                <post number="648">
-                    <stuff what="movedobject" name="Hydraulic Volume Multi Port_1">
-                        <oldpos>2559.08 2386.4</oldpos>
-                        <newpos>2559.08 2468.33</newpos>
-                    </stuff>
-                </post>
-                <post number="649" type="aligny">
-                    <stuff what="movedobject" name="Hydraulic Volume Multi Port_1">
-                        <oldpos>2559.08 2468.33</oldpos>
-                        <newpos>2559.08 2469.24</newpos>
-                    </stuff>
-                </post>
-                <post number="650" type="aligny">
-                    <stuff what="movedobject" name="Hydraulic Volume Multi Port">
-                        <oldpos>2559.08 2718.17</oldpos>
-                        <newpos>2559.08 2715.05</newpos>
-                    </stuff>
-                </post>
-                <post number="651"/>
-                <post number="652"/>
-                <post number="653"/>
-                <post number="654"/>
-                <post number="655"/>
-                <post number="656"/>
-                <post number="657"/>
-                <post number="658"/>
-                <post number="659"/>
-                <post number="660"/>
-                <post number="661"/>
-                <post number="662"/>
-                <post number="663"/>
-                <post number="664"/>
-                <post number="665"/>
-                <post number="666"/>
-                <post number="667"/>
-                <post number="668"/>
-                <post number="669"/>
-                <post number="670"/>
-                <post number="671"/>
-                <post number="672"/>
-                <post number="673"/>
-                <post number="674"/>
-                <post number="675"/>
-                <post number="676"/>
-                <post number="677"/>
-                <post number="678"/>
-                <post number="679"/>
-                <post number="680"/>
-                <post number="681"/>
-                <post number="682"/>
-                <post number="683">
-                    <stuff what="modifiedconnector" linenumber="2">
-                        <oldpos>0 0</oldpos>
-                        <newpos>0 1.18743</newpos>
-                        <connect endport="PP" endcomponent="6/3 Open Center Valve_1" startport="P1" startcomponent="Hydraulic Volume Multi Port_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                                    <coordinate x="2416.42807259606024672394" y="2900.30999999999994543032"/>
-                                    <coordinate x="2416.42807259606024672394" y="2618.00933394230787598644"/>
-                                    <coordinate x="2564.07940000000007785275" y="2618.00933394230787598644"/>
-                                    <coordinate x="2564.07940000000007785275" y="2628.82189999999991414370"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="684">
-                    <stuff what="deletedconnector">
-                        <connect endport="PP" endcomponent="6/3 Open Center Valve_1" startport="P1" startcomponent="Hydraulic Volume Multi Port_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                                    <coordinate x="2416.42807259606024672394" y="2900.30999999999994543032"/>
-                                    <coordinate x="2416.42807259606024672394" y="2618.00933394230787598644"/>
-                                    <coordinate x="2564.07940000000007785275" y="2618.00933394230787598644"/>
-                                    <coordinate x="2564.07940000000007785275" y="2628.82189999999991414370"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="685">
-                    <stuff what="addedconnector">
-                        <connect endport="PP" endcomponent="6/3 Open Center Valve_1" startport="P1" startcomponent="Hydraulic Volume Multi Port_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                                    <coordinate x="2416.42807259606024672394" y="2900.30999999999994543032"/>
-                                    <coordinate x="2416.42807259606024672394" y="2648.82189999999991414370"/>
-                                    <coordinate x="2564.07940000000007785275" y="2648.82189999999991414370"/>
-                                    <coordinate x="2564.07940000000007785275" y="2628.82189999999991414370"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
+                <post number="208" type="changedparameters">
+                    <stuff newvalue="200" what="changedparameter" oldvalue="150" parametername="T" objectname="Torque Source"/>
                 </post>
-                <post number="686">
-                    <stuff what="deletedconnector">
-                        <connect endport="PP" endcomponent="6/3 Open Center Valve_2" startport="P1" startcomponent="Hydraulic Volume Multi Port_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                                    <coordinate x="2416.42807259606024672394" y="2900.30999999999994543032"/>
-                                    <coordinate x="2416.42807259606024672394" y="2366.53549999999995634425"/>
-                                    <coordinate x="2564.07940000000007785275" y="2366.53549999999995634425"/>
-                                    <coordinate x="2564.07940000000007785275" y="2378.53549999999995634425"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="687">
-                    <stuff what="addedconnector">
-                        <connect endport="PP" endcomponent="6/3 Open Center Valve_2" startport="P1" startcomponent="Hydraulic Volume Multi Port_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                                    <coordinate x="2416.42807259606024672394" y="2900.30999999999994543032"/>
-                                    <coordinate x="2416.42807259606024672394" y="2398.53549999999995634425"/>
-                                    <coordinate x="2564.07940000000007785275" y="2398.53549999999995634425"/>
-                                    <coordinate x="2564.07940000000007785275" y="2378.53549999999995634425"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="688"/>
-                <post number="689"/>
-                <post number="690"/>
-                <post number="691"/>
-                <post number="692"/>
-                <post number="693"/>
-                <post number="694"/>
-                <post number="695"/>
-                <post number="696"/>
-                <post number="697"/>
-                <post number="698"/>
-                <post number="699"/>
-                <post number="700"/>
-                <post number="701"/>
-                <post number="702"/>
-                <post number="703"/>
-                <post number="704"/>
-                <post number="705"/>
-                <post number="706"/>
-                <post number="707"/>
-                <post number="708"/>
-                <post number="709"/>
-                <post number="710"/>
-                <post number="711"/>
-                <post number="712"/>
-                <post number="713"/>
-                <post number="714"/>
-                <post number="715"/>
-                <post number="716"/>
-                <post number="717"/>
-                <post number="718"/>
-                <post number="719"/>
-                <post number="720"/>
-                <post number="721"/>
-                <post number="722"/>
-                <post number="723"/>
-                <post number="724"/>
-                <post number="725"/>
-                <post number="726"/>
-                <post number="727"/>
-                <post number="728"/>
-                <post number="729"/>
-                <post number="730"/>
-                <post number="731"/>
-                <post number="732"/>
-                <post number="733"/>
-                <post number="734">
-                    <stuff what="deletedconnector">
-                        <connect endport="PP" endcomponent="6/3 Open Center Valve_2" startport="P1" startcomponent="Hydraulic Volume Multi Port_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                                    <coordinate x="2416.42807259606024672394" y="2900.30999999999994543032"/>
-                                    <coordinate x="2416.42807259606024672394" y="2398.53549999999995634425"/>
-                                    <coordinate x="2564.07940000000007785275" y="2398.53549999999995634425"/>
-                                    <coordinate x="2564.07940000000007785275" y="2410.53549999999995634425"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
-                </post>
-                <post number="735">
-                    <stuff what="addedconnector">
-                        <connect endport="PP" endcomponent="6/3 Open Center Valve_2" startport="P1" startcomponent="Hydraulic Volume Multi Port_2">
-                            <hopsangui>
-                                <coordinates>
-                                    <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                                    <coordinate x="2416.42807259606024672394" y="2900.30999999999994543032"/>
-                                    <coordinate x="2416.42807259606024672394" y="2430.53549999999995634425"/>
-                                    <coordinate x="2564.07940000000007785275" y="2430.53549999999995634425"/>
-                                    <coordinate x="2564.07940000000007785275" y="2410.53549999999995634425"/>
-                                </coordinates>
-                                <geometries>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                    <geometry>vertical</geometry>
-                                    <geometry>horizontal</geometry>
-                                </geometries>
-                                <style>solid</style>
-                            </hopsangui>
-                        </connect>
-                    </stuff>
+                <post number="209" type="changedparameters">
+                    <stuff newvalue="4e+007" what="changedparameter" oldvalue="2e+007" parametername="p_max" objectname="Pressure Relief Valve"/>
                 </post>
             </hopsanundo>
         </hopsangui>
@@ -4615,7 +2613,7 @@
                     <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2975.126848" y="2466.111118" flipped="false" a="0"/>
+                    <pose x="2962.60738" y="2309" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4625,7 +2623,7 @@
                     <parameter value="100000" type="double" name="p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2417.0781" y="2358.411425" flipped="false" a="0"/>
+                    <pose x="2417.0781" y="2289.4355" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4634,7 +2632,7 @@
                     <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2975.126848" y="2680.366918" flipped="false" a="0"/>
+                    <pose x="2959.968117" y="2568.360738" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4656,7 +2654,7 @@
                     <parameter value="0" type="double" name="B_m"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2800.9996" y="2516.244" flipped="true" a="0"/>
+                    <pose x="2805.732833" y="2465.244" flipped="true" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4678,7 +2676,7 @@
                     <parameter value="0" type="double" name="B_m"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2800.9996" y="2730.05" flipped="true" a="0"/>
+                    <pose x="2807.720933" y="2727.6732" flipped="true" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4700,7 +2698,7 @@
                     <parameter value="0" type="double" name="B_m"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2800.9996" y="2299.428" flipped="true" a="0"/>
+                    <pose x="2800.9996" y="2190.428" flipped="true" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4724,7 +2722,7 @@
                     <parameter value="1" type="double" name="delta_h"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2564.59" y="2603.8219" flipped="false" a="0"/>
+                    <pose x="2564.59" y="2552.8219" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4733,7 +2731,7 @@
                     <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2975.126848" y="2250.932243" flipped="false" a="0"/>
+                    <pose x="2965.525166" y="2042.031883" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4757,7 +2755,7 @@
                     <parameter value="1" type="double" name="delta_h"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2564.59" y="2385.5355" flipped="false" a="0"/>
+                    <pose x="2566.9881" y="2299.5355" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4769,14 +2767,14 @@
                     <parameter value="1e-3" type="double" name="y_A"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2363.208902" y="2614.445661" flipped="false" a="0"/>
+                    <pose x="2171.343177" y="2562.8219" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="SignalSink" name="Sink">
                 <parameters/>
                 <hopsangui>
-                    <pose x="3113.52332" y="2215.869271" flipped="false" a="0"/>
+                    <pose x="3258" y="2252" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4785,10 +2783,10 @@
                     <parameter value="0" type="double" name="y_0"/>
                     <parameter value="5" type="double" name="t_start"/>
                     <parameter value="6" type="double" name="t_end"/>
-                    <parameter value="1e-3" type="double" name="y_A"/>
+                    <parameter value="2e-3" type="double" name="y_A"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2363.208902" y="2395.5355" flipped="false" a="0"/>
+                    <pose x="2175.319377" y="2298.2436" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4799,7 +2797,7 @@
                     <parameter value="0" type="double" name="k"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2916.3094" y="2299.428" flipped="false" a="0"/>
+                    <pose x="2916.3094" y="2190.428" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4811,7 +2809,7 @@
                     <parameter value="1e-3" type="double" name="y_A"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2363.208902" y="2830.6364" flipped="false" a="0"/>
+                    <pose x="2163.719177" y="2830.6364" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4822,7 +2820,7 @@
                     <parameter value="0" type="double" name="k"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2916.3094" y="2514.2559" flipped="false" a="0"/>
+                    <pose x="2921.042633" y="2463.2559" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4833,7 +2831,7 @@
                     <parameter value="0" type="double" name="k"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2916.3094" y="2730.05" flipped="false" a="0"/>
+                    <pose x="2927.006933" y="2727.6732" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4844,7 +2842,7 @@
                     <parameter value="100" type="double" name="T"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2994.2622" y="2514.2559" flipped="true" a="0"/>
+                    <pose x="3002.971633" y="2463.2559" flipped="true" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4855,7 +2853,7 @@
                     <parameter value="0" type="double" name="T"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2994.2622" y="2730.05" flipped="true" a="0"/>
+                    <pose x="3008.935933" y="2727.6732" flipped="true" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4892,7 +2890,7 @@
                     <parameter value="0.1" type="double" name="alpha"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2584.08" y="2730.05" flipped="false" a="90"/>
+                    <pose x="2584.0816" y="2629.86" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4903,7 +2901,7 @@
                     <parameter value="0" type="double" name="C_l,p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2569.08" y="2966.14" flipped="false" a="0"/>
+                    <pose x="2569.0786" y="2984.1373" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4916,7 +2914,7 @@
                     <parameter value="0.1" type="double" name="alpha"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2584.08" y="2516.244" flipped="false" a="90"/>
+                    <pose x="2586.4797" y="2379.4046" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4929,7 +2927,7 @@
                     <parameter value="0.1" type="double" name="alpha"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2584.08" y="2900.31" flipped="false" a="0"/>
+                    <pose x="2584.0816" y="2900.3064" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4940,7 +2938,7 @@
                     <parameter value="200" type="double" name="T"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2994.2622" y="2299.428" flipped="true" a="0"/>
+                    <pose x="2994.2622" y="2190.428" flipped="true" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4950,7 +2948,7 @@
                     <parameter value="100000" type="double" name="p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2604.0838" y="2860.1364" flipped="false" a="0"/>
+                    <pose x="2811.1734" y="2902.626" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4960,7 +2958,7 @@
                     <parameter value="100000" type="double" name="p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2604.0838" y="2643.3219" flipped="false" a="0"/>
+                    <pose x="2668.0302" y="2630.2563" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4970,7 +2968,7 @@
                     <parameter value="100000" type="double" name="p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2604.0838" y="2425.0355" flipped="false" a="0"/>
+                    <pose x="2653.368224" y="2374.661586" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4980,7 +2978,7 @@
                     <parameter value="100000" type="double" name="p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2584.083" y="3030.64" flipped="false" a="0"/>
+                    <pose x="2584.0816" y="3107.4003" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
@@ -4990,13 +2988,13 @@
                     <parameter value="100000" type="double" name="p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2680.819139" y="3030.64" flipped="false" a="0"/>
+                    <pose x="2735.4411" y="3095.4717" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
             <component typename="HydraulicPressureReliefValve" name="Pressure Relief Valve">
                 <parameters>
-                    <parameter value="2e+007" type="double" name="p_max"/>
+                    <parameter value="4e+007" type="double" name="p_max"/>
                     <parameter value="0.01" type="double" name="tao"/>
                     <parameter value="1e-008" type="double" name="k_c,s"/>
                     <parameter value="1e-008" type="double" name="k_c,f"/>
@@ -5004,18 +3002,40 @@
                     <parameter value="500000" type="double" name="p_h"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2682.818339" y="2976.14" flipped="false" a="0"/>
+                    <pose x="2737.4403" y="3003.6545" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
                 </hopsangui>
             </component>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2323.211490" y="1957.228456"/>
+                    <textobject fontcolor="#556b2f" text="Example: Open Centre Hydraulic System" font="Calibri,20,-1,5,75,0,0,0,0,0"/>
+                    <size width="461.000000" height="50.424503"/>
+                    <line width="2.000000" visible="0" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
         </objects>
         <connections>
             <connect endport="PC2" endcomponent="6/3 Open Center Valve" startport="P1" startcomponent="Hydraulic Volume Multi Port">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2584.07999999999992724042" y="2730.05000000000018189894"/>
-                        <coordinate x="2584.08159999999998035491" y="2730.05000000000018189894"/>
+                        <coordinate x="2584.08159999999998035491" y="2629.86000000000012732926"/>
+                        <coordinate x="2584.08159999999998035491" y="2629.86000000000012732926"/>
                         <coordinate x="2584.08159999999998035491" y="2795.63639999999986684998"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="PC1" endcomponent="6/3 Open Center Valve_1" startport="P1" startcomponent="Hydraulic Volume Multi Port">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2584.08159999999998035491" y="2629.86000000000012732926"/>
+                        <coordinate x="2584.08159999999998035491" y="2629.86000000000012732926"/>
+                        <coordinate x="2584.08159999999998035491" y="2577.82189999999991414370"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -5027,9 +3047,9 @@
             <connect endport="PC1" endcomponent="6/3 Open Center Valve_2" startport="P1" startcomponent="Hydraulic Volume Multi Port_1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2584.07999999999992724042" y="2516.24400000000014188117"/>
-                        <coordinate x="2584.08159999999998035491" y="2516.24400000000014188117"/>
-                        <coordinate x="2584.08159999999998035491" y="2410.53549999999995634425"/>
+                        <coordinate x="2586.47969999999986612238" y="2379.40459999999984574970"/>
+                        <coordinate x="2586.47969999999986612238" y="2379.40459999999984574970"/>
+                        <coordinate x="2586.47969999999986612238" y="2324.53549999999995634425"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -5041,197 +3061,9 @@
             <connect endport="PC2" endcomponent="6/3 Open Center Valve_1" startport="P1" startcomponent="Hydraulic Volume Multi Port_1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2584.07999999999992724042" y="2516.24400000000014188117"/>
-                        <coordinate x="2584.08159999999998035491" y="2516.24400000000014188117"/>
-                        <coordinate x="2584.08159999999998035491" y="2578.82189999999991414370"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="P2" endcomponent="Q-type Fixed Displacement Pump" startport="P1" startcomponent="Hydraulic Volume Multi Port_2">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                        <coordinate x="2584.08300000000008367351" y="2900.30999999999994543032"/>
-                        <coordinate x="2584.08300000000008367351" y="2916.13999999999987267074"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="P1" endcomponent="C-type Tank" startport="PC2" startcomponent="6/3 Open Center Valve_2">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2584.08159999999998035491" y="2360.53549999999995634425"/>
-                        <coordinate x="2584.08159999999998035491" y="2315.83878249999952458893"/>
-                        <coordinate x="2417.07810000000017680577" y="2315.83878249999952458893"/>
-                        <coordinate x="2417.07810000000017680577" y="2343.91142480769349276670"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="P1" endcomponent="C-type Variable Displacement Machine" startport="PA" startcomponent="6/3 Open Center Valve_2">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2564.07940000000007785275" y="2360.53549999999995634425"/>
-                        <coordinate x="2564.07940000000007785275" y="2247.88679007701193768298"/>
-                        <coordinate x="2793.29320000000006984919" y="2247.88679007701193768298"/>
-                        <coordinate x="2793.29320000000006984919" y="2249.42799999999988358468"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="P2" endcomponent="C-type Variable Displacement Machine" startport="PB" startcomponent="6/3 Open Center Valve_2">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2604.08380000000033760443" y="2360.53549999999995634425"/>
-                        <coordinate x="2604.08380000000033760443" y="2350.40419999999858191586"/>
-                        <coordinate x="2793.29320000000006984919" y="2350.40419999999858191586"/>
-                        <coordinate x="2793.29320000000006984919" y="2349.42799999999988358468"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="P1" endcomponent="Rotational Inertia" startport="P3" startcomponent="C-type Variable Displacement Machine">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2852.99960000000010040822" y="2299.42799999999988358468"/>
-                        <coordinate x="2917.98810000000003128662" y="2299.42799999999988358468"/>
-                        <coordinate x="2917.98810000000003128662" y="2299.42799999999988358468"/>
-                        <coordinate x="2884.30940000000009604264" y="2299.42799999999988358468"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="P2" endcomponent="Rotational Inertia" startport="P1" startcomponent="Torque Source">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2970.76220000000012078090" y="2299.42799999999988358468"/>
-                        <coordinate x="2968.30939999999873180059" y="2299.42799999999988358468"/>
-                        <coordinate x="2968.30939999999873180059" y="2299.42799999999988358468"/>
-                        <coordinate x="2948.30940000000009604264" y="2299.42799999999988358468"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="P1" endcomponent="Rotational Inertia_1" startport="P3" startcomponent="C-type Variable Displacement Machine_1">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2852.99960000000010040822" y="2516.24400000000014188117"/>
-                        <coordinate x="2920.73323333333382834098" y="2516.24400000000014188117"/>
-                        <coordinate x="2920.73323333333382834098" y="2514.25590000000011059456"/>
-                        <coordinate x="2884.30940000000009604264" y="2514.25590000000011059456"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="P2" endcomponent="Rotational Inertia_1" startport="P1" startcomponent="Torque Source_1">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2970.76220000000012078090" y="2514.25590000000011059456"/>
-                        <coordinate x="2971.05453333333343834965" y="2514.25590000000011059456"/>
-                        <coordinate x="2971.05453333333343834965" y="2514.25590000000011059456"/>
-                        <coordinate x="2948.30940000000009604264" y="2514.25590000000011059456"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="P2" endcomponent="Rotational Inertia_2" startport="P1" startcomponent="Torque Source_2">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2970.76220000000012078090" y="2730.05000000000018189894"/>
-                        <coordinate x="2973.04263333333392438362" y="2730.05000000000018189894"/>
-                        <coordinate x="2973.04263333333392438362" y="2730.05000000000018189894"/>
-                        <coordinate x="2948.30940000000009604264" y="2730.05000000000018189894"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="P1" endcomponent="C-type Variable Displacement Machine_1" startport="PA" startcomponent="6/3 Open Center Valve_1">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2564.07940000000007785275" y="2578.82189999999991414370"/>
-                        <coordinate x="2564.07940000000007785275" y="2464.13690000000087820808"/>
-                        <coordinate x="2793.29320000000006984919" y="2464.13690000000087820808"/>
-                        <coordinate x="2793.29320000000006984919" y="2466.24400000000014188117"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="P2" endcomponent="C-type Variable Displacement Machine_1" startport="PB" startcomponent="6/3 Open Center Valve_1">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2604.08380000000033760443" y="2578.82189999999991414370"/>
-                        <coordinate x="2604.08380000000033760443" y="2571.27970000000141226337"/>
-                        <coordinate x="2793.29320000000006984919" y="2571.27970000000141226337"/>
-                        <coordinate x="2793.29320000000006984919" y="2566.24400000000014188117"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="PC1" endcomponent="6/3 Open Center Valve_1" startport="P1" startcomponent="Hydraulic Volume Multi Port">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2584.07999999999992724042" y="2730.05000000000018189894"/>
-                        <coordinate x="2584.08159999999998035491" y="2730.05000000000018189894"/>
-                        <coordinate x="2584.08159999999998035491" y="2628.82189999999991414370"/>
+                        <coordinate x="2586.47969999999986612238" y="2379.40459999999984574970"/>
+                        <coordinate x="2584.08159999999998035491" y="2379.40459999999984574970"/>
+                        <coordinate x="2584.08159999999998035491" y="2527.82189999999991414370"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -5243,8 +3075,8 @@
             <connect endport="PC1" endcomponent="6/3 Open Center Valve" startport="P1" startcomponent="Hydraulic Volume Multi Port_2">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                        <coordinate x="2584.08159999999998035491" y="2900.30999999999994543032"/>
+                        <coordinate x="2584.08159999999998035491" y="2900.30639999999993960955"/>
+                        <coordinate x="2584.08159999999998035491" y="2900.30639999999993960955"/>
                         <coordinate x="2584.08159999999998035491" y="2845.63639999999986684998"/>
                     </coordinates>
                     <geometries>
@@ -5254,256 +3086,30 @@
                     <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="P1" endcomponent="Q-type Fixed Displacement Pump" startport="P1" startcomponent="C-type Tank_4">
+            <connect endport="P2" endcomponent="Q-type Fixed Displacement Pump" startport="P1" startcomponent="Hydraulic Volume Multi Port_2">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2584.08300000000008367351" y="3016.13999999999987267074"/>
-                        <coordinate x="2584.08300000000008367351" y="3016.13999999999987267074"/>
+                        <coordinate x="2584.08159999999998035491" y="2900.30639999999993960955"/>
+                        <coordinate x="2584.08159999999998035491" y="2900.30639999999993960955"/>
+                        <coordinate x="2584.08159999999998035491" y="2934.13729999999986830517"/>
                     </coordinates>
                     <geometries>
-                        <geometry>diagonal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
                     </geometries>
                     <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="P1" endcomponent="Hydraulic Volume Multi Port_2" startport="PP" startcomponent="6/3 Open Center Valve">
+            <connect endport="PP" endcomponent="6/3 Open Center Valve" startport="P1" startcomponent="Hydraulic Volume Multi Port_2">
                 <hopsangui>
                     <coordinates>
+                        <coordinate x="2584.08159999999998035491" y="2900.30639999999993960955"/>
+                        <coordinate x="2564.07940000000007785275" y="2900.30639999999993960955"/>
                         <coordinate x="2564.07940000000007785275" y="2845.63639999999986684998"/>
-                        <coordinate x="2564.07940000000007785275" y="2870.02783855757434139377"/>
-                        <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="P2" endcomponent="Pressure Relief Valve" startport="P1" startcomponent="C-type Tank_5">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2680.81913865384876771714" y="3016.13999999999987267074"/>
-                        <coordinate x="2680.81913865384876771714" y="3016.13999999999987267074"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="P1" endcomponent="Hydraulic Volume Multi Port_2" startport="P1" startcomponent="Pressure Relief Valve">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2680.81913865384876771714" y="2936.13999999999987267074"/>
-                        <coordinate x="2680.81913865384876771714" y="2900.30999999999994543032"/>
-                        <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="P2" endcomponent="C-type Variable Displacement Machine_2" startport="PB" startcomponent="6/3 Open Center Valve">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2604.08380000000033760443" y="2795.63639999999986684998"/>
-                        <coordinate x="2604.08380000000033760443" y="2783.19700000000148065737"/>
-                        <coordinate x="2793.29320000000006984919" y="2783.19700000000148065737"/>
-                        <coordinate x="2793.29320000000006984919" y="2780.05000000000018189894"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="PA" endcomponent="6/3 Open Center Valve" startport="P1" startcomponent="C-type Variable Displacement Machine_2">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2793.29320000000006984919" y="2680.05000000000018189894"/>
-                        <coordinate x="2793.29320000000006984919" y="2680.03840778835137825808"/>
-                        <coordinate x="2564.07940000000007785275" y="2680.03840778835137825808"/>
-                        <coordinate x="2564.07940000000007785275" y="2795.63639999999986684998"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="P3" endcomponent="C-type Variable Displacement Machine_2" startport="P1" startcomponent="Rotational Inertia_2">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2884.30940000000009604264" y="2730.05000000000018189894"/>
-                        <coordinate x="2852.99960000000010040822" y="2730.05000000000018189894"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="P1" endcomponent="Angular Velocity Transducer_2" startport="P2" startcomponent="Rotational Inertia_2">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2948.30940000000009604264" y="2730.05000000000018189894"/>
-                        <coordinate x="2975.12684817839499373804" y="2698.36691837369835411664"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                    <style>dashed</style>
-                </hopsangui>
-            </connect>
-            <connect endport="P2" endcomponent="Rotational Inertia_1" startport="P1" startcomponent="Angular Velocity Transducer_1">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2975.12684817839499373804" y="2484.11111824876797982142"/>
-                        <coordinate x="2948.30940000000009604264" y="2514.25590000000011059456"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                    <style>dashed</style>
-                </hopsangui>
-            </connect>
-            <connect endport="P2" endcomponent="Rotational Inertia" startport="P1" startcomponent="Angular Velocity Transducer">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2975.12684817839499373804" y="2268.93224258810323590296"/>
-                        <coordinate x="2948.30940000000009604264" y="2299.42799999999988358468"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                    <style>dashed</style>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Angular Velocity Transducer">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2975.12684817839499373804" y="2232.93224258810323590296"/>
-                        <coordinate x="2975.12684817839499373804" y="2215.86927132272694507265"/>
-                        <coordinate x="3093.52331977989661027095" y="2215.86927132272694507265"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="out" endcomponent="Angular Velocity Transducer_1" startport="in" startcomponent="Sink">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="3093.52331977989661027095" y="2215.86927132272694507265"/>
-                        <coordinate x="3065.33931230314783533686" y="2215.86927132272694507265"/>
-                        <coordinate x="3065.33931230314783533686" y="2428.11111824876797982142"/>
-                        <coordinate x="2975.12684817839499373804" y="2428.11111824876797982142"/>
-                        <coordinate x="2975.12684817839499373804" y="2448.11111824876797982142"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="out" endcomponent="Angular Velocity Transducer_2" startport="in" startcomponent="Sink">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="3093.52331977989661027095" y="2215.86927132272694507265"/>
-                        <coordinate x="3065.33931230314783533686" y="2215.86927132272694507265"/>
-                        <coordinate x="3065.33931230314783533686" y="2642.36691837369835411664"/>
-                        <coordinate x="2975.12684817839499373804" y="2642.36691837369835411664"/>
-                        <coordinate x="2975.12684817839499373804" y="2662.36691837369835411664"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="6/3 Open Center Valve" startport="out" startcomponent="Pulse">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2375.70890230768509354675" y="2830.63639999999986684998"/>
-                        <coordinate x="2453.59000000000014551915" y="2830.63639999999986684998"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="6/3 Open Center Valve_1" startport="out" startcomponent="Pulse_1">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2375.70890230768509354675" y="2614.44566057692327376571"/>
-                        <coordinate x="2453.59000000000014551915" y="2613.82189999999991414370"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="6/3 Open Center Valve_2" startport="out" startcomponent="Pulse_2">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2375.70890230768509354675" y="2395.53549999999995634425"/>
-                        <coordinate x="2453.59000000000014551915" y="2395.53549999999995634425"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="PT" endcomponent="6/3 Open Center Valve" startport="P1" startcomponent="C-type Tank_1">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2604.08380000000033760443" y="2845.63639999999986684998"/>
-                        <coordinate x="2604.08380000000033760443" y="2845.63639999999986684998"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="PT" endcomponent="6/3 Open Center Valve_1" startport="P1" startcomponent="C-type Tank_2">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2604.08380000000033760443" y="2628.82189999999991414370"/>
-                        <coordinate x="2604.08380000000033760443" y="2628.82189999999991414370"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="PT" endcomponent="6/3 Open Center Valve_2" startport="P1" startcomponent="C-type Tank_3">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2604.08380000000033760443" y="2410.53549999999995634425"/>
-                        <coordinate x="2604.08380000000033760443" y="2410.53549999999995634425"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>diagonal</geometry>
                     </geometries>
                     <style>solid</style>
                 </hopsangui>
@@ -5511,11 +3117,11 @@
             <connect endport="PP" endcomponent="6/3 Open Center Valve_1" startport="P1" startcomponent="Hydraulic Volume Multi Port_2">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                        <coordinate x="2416.42807259606024672394" y="2900.30999999999994543032"/>
-                        <coordinate x="2416.42807259606024672394" y="2648.82189999999991414370"/>
-                        <coordinate x="2564.07940000000007785275" y="2648.82189999999991414370"/>
-                        <coordinate x="2564.07940000000007785275" y="2628.82189999999991414370"/>
+                        <coordinate x="2584.08159999999998035491" y="2900.30639999999993960955"/>
+                        <coordinate x="2416.74000000000023646862" y="2900.30639999999993960955"/>
+                        <coordinate x="2416.74000000000023646862" y="2593.69059999999990395736"/>
+                        <coordinate x="2564.07940000000007785275" y="2593.69059999999990395736"/>
+                        <coordinate x="2564.07940000000007785275" y="2577.82189999999991414370"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -5529,15 +3135,453 @@
             <connect endport="PP" endcomponent="6/3 Open Center Valve_2" startport="P1" startcomponent="Hydraulic Volume Multi Port_2">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2584.07999999999992724042" y="2900.30999999999994543032"/>
-                        <coordinate x="2416.42807259606024672394" y="2900.30999999999994543032"/>
-                        <coordinate x="2416.42807259606024672394" y="2430.53549999999995634425"/>
-                        <coordinate x="2564.07940000000007785275" y="2430.53549999999995634425"/>
-                        <coordinate x="2564.07940000000007785275" y="2410.53549999999995634425"/>
+                        <coordinate x="2584.08159999999998035491" y="2900.30639999999993960955"/>
+                        <coordinate x="2416.74000000000023646862" y="2900.30639999999993960955"/>
+                        <coordinate x="2416.74000000000023646862" y="2354.47600000000011277734"/>
+                        <coordinate x="2566.47749999999996362021" y="2354.47600000000011277734"/>
+                        <coordinate x="2566.47749999999996362021" y="2324.53549999999995634425"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="C-type Tank" startport="PC2" startcomponent="6/3 Open Center Valve_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2586.47969999999986612238" y="2274.53549999999995634425"/>
+                        <coordinate x="2586.47969999999986612238" y="2198.96550000000070212991"/>
+                        <coordinate x="2417.07810000000017680577" y="2198.96550000000070212991"/>
+                        <coordinate x="2417.07810000000017680577" y="2274.93550000000004729372"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="C-type Variable Displacement Machine" startport="PA" startcomponent="6/3 Open Center Valve_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2566.47749999999996362021" y="2274.53549999999995634425"/>
+                        <coordinate x="2566.47749999999996362021" y="2111.35768614902690387680"/>
+                        <coordinate x="2793.29320000000006984919" y="2111.35768614902690387680"/>
+                        <coordinate x="2793.29320000000006984919" y="2140.42799999999988358468"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="C-type Variable Displacement Machine" startport="PB" startcomponent="6/3 Open Center Valve_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2606.48190000000022337190" y="2274.53549999999995634425"/>
+                        <coordinate x="2606.48190000000022337190" y="2264.40419999999858191586"/>
+                        <coordinate x="2793.29320000000006984919" y="2264.40419999999858191586"/>
+                        <coordinate x="2793.29320000000006984919" y="2240.42799999999988358468"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Rotational Inertia" startport="P3" startcomponent="C-type Variable Displacement Machine">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2852.99960000000010040822" y="2190.42799999999988358468"/>
+                        <coordinate x="2917.98810000000003128662" y="2190.42799999999988358468"/>
+                        <coordinate x="2917.98810000000003128662" y="2190.42799999999988358468"/>
+                        <coordinate x="2884.30940000000009604264" y="2190.42799999999988358468"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Rotational Inertia" startport="P1" startcomponent="Torque Source">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2970.76220000000012078090" y="2190.42799999999988358468"/>
+                        <coordinate x="2968.30939999999873180059" y="2190.42799999999988358468"/>
+                        <coordinate x="2968.30939999999873180059" y="2190.42799999999988358468"/>
+                        <coordinate x="2948.30940000000009604264" y="2190.42799999999988358468"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Rotational Inertia_1" startport="P3" startcomponent="C-type Variable Displacement Machine_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2857.73283300000002782326" y="2465.24400000000014188117"/>
+                        <coordinate x="2920.73323333333382834098" y="2465.24400000000014188117"/>
+                        <coordinate x="2920.73323333333382834098" y="2463.25590000000011059456"/>
+                        <coordinate x="2889.04263300000002345769" y="2463.25590000000011059456"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Rotational Inertia_1" startport="P1" startcomponent="Torque Source_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2979.47163300000011076918" y="2463.25590000000011059456"/>
+                        <coordinate x="2971.05453333333343834965" y="2463.25590000000011059456"/>
+                        <coordinate x="2971.05453333333343834965" y="2463.25590000000011059456"/>
+                        <coordinate x="2953.04263300000002345769" y="2463.25590000000011059456"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Rotational Inertia_2" startport="P3" startcomponent="C-type Variable Displacement Machine_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2859.72093300000005910988" y="2727.67320000000017898856"/>
+                        <coordinate x="2922.72133333333431437495" y="2727.67320000000017898856"/>
+                        <coordinate x="2922.72133333333431437495" y="2727.67320000000017898856"/>
+                        <coordinate x="2895.00693300000011731754" y="2727.67320000000017898856"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Rotational Inertia_2" startport="P1" startcomponent="Torque Source_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2985.43593300000020462903" y="2727.67320000000017898856"/>
+                        <coordinate x="2973.04263333333392438362" y="2727.67320000000017898856"/>
+                        <coordinate x="2973.04263333333392438362" y="2727.67320000000017898856"/>
+                        <coordinate x="2959.00693300000011731754" y="2727.67320000000017898856"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="C-type Variable Displacement Machine_1" startport="PA" startcomponent="6/3 Open Center Valve_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2564.07940000000007785275" y="2527.82189999999991414370"/>
+                        <coordinate x="2564.07940000000007785275" y="2413.13690000000087820808"/>
+                        <coordinate x="2798.02643299999999726424" y="2413.13690000000087820808"/>
+                        <coordinate x="2798.02643299999999726424" y="2415.24400000000014188117"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="C-type Variable Displacement Machine_2" startport="PA" startcomponent="6/3 Open Center Valve">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2564.07940000000007785275" y="2795.63639999999986684998"/>
+                        <coordinate x="2564.07940000000007785275" y="2669.60180000000127620297"/>
+                        <coordinate x="2800.01453300000002855086" y="2669.60180000000127620297"/>
+                        <coordinate x="2800.01453300000002855086" y="2677.67320000000017898856"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="C-type Variable Displacement Machine_2" startport="PB" startcomponent="6/3 Open Center Valve">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2604.08380000000033760443" y="2795.63639999999986684998"/>
+                        <coordinate x="2604.08380000000033760443" y="2783.19700000000148065737"/>
+                        <coordinate x="2800.01453300000002855086" y="2783.19700000000148065737"/>
+                        <coordinate x="2800.01453300000002855086" y="2777.67320000000017898856"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="C-type Variable Displacement Machine_1" startport="PB" startcomponent="6/3 Open Center Valve_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2604.08380000000033760443" y="2527.82189999999991414370"/>
+                        <coordinate x="2604.08380000000033760443" y="2520.27970000000141226337"/>
+                        <coordinate x="2798.02643299999999726424" y="2520.27970000000141226337"/>
+                        <coordinate x="2798.02643299999999726424" y="2515.24400000000014188117"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="6/3 Open Center Valve_2" startport="out" startcomponent="Pulse_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2187.81937699999980395660" y="2298.24359999999978754204"/>
+                        <coordinate x="2435.98810000000003128662" y="2298.24359999999978754204"/>
+                        <coordinate x="2435.98810000000003128662" y="2309.53549999999995634425"/>
+                        <coordinate x="2455.98810000000003128662" y="2309.53549999999995634425"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="6/3 Open Center Valve_1" startport="out" startcomponent="Pulse_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2183.84317700000019613071" y="2562.82189999999991414370"/>
+                        <coordinate x="2434.57809999999926731107" y="2562.82189999999991414370"/>
+                        <coordinate x="2434.57809999999926731107" y="2562.82189999999991414370"/>
+                        <coordinate x="2453.59000000000014551915" y="2562.82189999999991414370"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="6/3 Open Center Valve" startport="out" startcomponent="Pulse">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2176.21917699999994511018" y="2830.63639999999986684998"/>
+                        <coordinate x="2433.58999999999832652975" y="2830.63639999999986684998"/>
+                        <coordinate x="2433.58999999999832652975" y="2830.63639999999986684998"/>
+                        <coordinate x="2453.59000000000014551915" y="2830.63639999999986684998"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="C-type Tank_1" startport="PT" startcomponent="6/3 Open Center Valve">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2604.08380000000033760443" y="2845.63639999999986684998"/>
+                        <coordinate x="2604.08380000000033760443" y="2870.11410000000068976078"/>
+                        <coordinate x="2811.17340000000012878445" y="2870.11410000000068976078"/>
+                        <coordinate x="2811.17340000000012878445" y="2888.12600000000020372681"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="C-type Tank_2" startport="PT" startcomponent="6/3 Open Center Valve_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2604.08380000000033760443" y="2577.82189999999991414370"/>
+                        <coordinate x="2604.08380000000033760443" y="2601.72060000000055879354"/>
+                        <coordinate x="2668.03020000000014988473" y="2601.72060000000055879354"/>
+                        <coordinate x="2668.03020000000014988473" y="2615.75630000000001018634"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="C-type Tank_3" startport="PT" startcomponent="6/3 Open Center Valve_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2606.48190000000022337190" y="2324.53549999999995634425"/>
+                        <coordinate x="2606.48190000000022337190" y="2347.74380000000064683263"/>
+                        <coordinate x="2653.36822399999982735608" y="2347.74380000000064683263"/>
+                        <coordinate x="2653.36822399999982735608" y="2360.16158600000017031562"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Q-type Fixed Displacement Pump" startport="P1" startcomponent="C-type Tank_4">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2584.08159999999998035491" y="3092.90029999999978826963"/>
+                        <coordinate x="2584.08159999999998035491" y="3054.13729999999986830517"/>
+                        <coordinate x="2584.08159999999998035491" y="3054.13729999999986830517"/>
+                        <coordinate x="2584.08159999999998035491" y="3034.13729999999986830517"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Pressure Relief Valve" startport="P1" startcomponent="Hydraulic Volume Multi Port_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2584.08159999999998035491" y="2900.30639999999993960955"/>
+                        <coordinate x="2735.44110000000000582077" y="2900.30639999999993960955"/>
+                        <coordinate x="2735.44110000000000582077" y="2963.65450000000009822543"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Pressure Relief Valve" startport="P1" startcomponent="C-type Tank_5">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2735.44110000000000582077" y="3080.97170000000005529728"/>
+                        <coordinate x="2735.44110000000000582077" y="3063.65450000000055297278"/>
+                        <coordinate x="2735.44110000000000582077" y="3063.65450000000055297278"/>
+                        <coordinate x="2735.44110000000000582077" y="3043.65450000000009822543"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Angular Velocity Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2965.52516599999989921344" y="2024.03188300000010713120"/>
+                        <coordinate x="2965.52516599999989921344" y="2004.26651982508383298409"/>
+                        <coordinate x="3238.00000000000000000000" y="2004.26651982508383298409"/>
+                        <coordinate x="3238.00000000000000000000" y="2252.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Angular Velocity Transducer_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2962.60737999999992098310" y="2291.00000000000000000000"/>
+                        <coordinate x="2962.60737999999992098310" y="2252.00000000000000000000"/>
+                        <coordinate x="3238.00000000000000000000" y="2252.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Angular Velocity Transducer_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2959.96811699999989286880" y="2550.36073799999985567410"/>
+                        <coordinate x="2959.96811699999989286880" y="2502.38222734344981290633"/>
+                        <coordinate x="3238.00000000000000000000" y="2502.38222734344981290633"/>
+                        <coordinate x="3238.00000000000000000000" y="2252.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Angular Velocity Transducer" startport="P2" startcomponent="Rotational Inertia">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2948.30940000000009604264" y="2190.42799999999988358468"/>
+                        <coordinate x="2965.52516599999989921344" y="2190.42799999999988358468"/>
+                        <coordinate x="2965.52516599999989921344" y="2060.03188300000010713120"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Angular Velocity Transducer_1" startport="P2" startcomponent="Rotational Inertia_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2953.04263300000002345769" y="2463.25590000000011059456"/>
+                        <coordinate x="2962.60737999999992098310" y="2463.25590000000011059456"/>
+                        <coordinate x="2962.60737999999992098310" y="2327.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Angular Velocity Transducer_2" startport="P2" startcomponent="Rotational Inertia_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2959.00693300000011731754" y="2727.67320000000017898856"/>
+                        <coordinate x="2959.96811699999989286880" y="2727.67320000000017898856"/>
+                        <coordinate x="2959.96811699999989286880" y="2586.36073799999985567410"/>
+                    </coordinates>
+                    <geometries>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                     </geometries>

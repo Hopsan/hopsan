@@ -299,6 +299,24 @@ rd /s/q HopsanNG_bd
 cd %hopsanDir%
 
 
+::Perform model testing
+SETLOCAL ENABLEDELAYEDEXPANSION
+
+cd Models\"Example Models"
+copy *.hmf ..\"Validation Models"
+cd  ..\"Validation Models"
+
+for %%x in (*.txt) do (
+    cd ..\..\
+
+    set "name=..\Models\Validation Models\%%x"
+    set name=!name:~0,-4!
+    call :performComponentTest "!name!"
+    cd Models\"Validation Models"
+)
+cd %hopsanDir%
+
+
 :: Create a temporary release directory
 mkdir %tempDir%
 call :abortIfNotExist %tempDir% "Failed to build temporary directory"
@@ -438,6 +456,20 @@ if not exist %1 (
   goto cleanup
 )
 goto:eof
+
+
+:performComponentTest
+cd bin
+FOR /F "tokens=*" %%R IN ('HopsanCLI -t "%~1"') DO SET MY_OUTPUT_VAR=%%R
+echo "!MY_OUTPUT_VAR!"
+IF NOT "!MY_OUTPUT_VAR:~,15!"=="Test successful" (
+    echo Aborting!
+    pause
+    goto cleanup
+)
+cd ..
+goto:eof
+
 
 :cleanup 
 echo.

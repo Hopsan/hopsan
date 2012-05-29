@@ -1,0 +1,3 @@
+Angular Velocity Transducer
+out
+0
