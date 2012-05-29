@@ -14,7 +14,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   SimulationHandler.h
+//! @file   SimulationThreadHandler.h
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2012-05-25
 //!
@@ -22,8 +22,8 @@
 //!
 //$Id$
 
-#ifndef SIMULATIONHANDLER_H
-#define SIMULATIONHANDLER_H
+#ifndef SIMULATIONTHREADHANDLER_H
+#define SIMULATIONTHREADHANDLER_H
 
 #include <QThread>
 #include <QTimer>
@@ -124,4 +124,4 @@ signals:
 };
 
 
-#endif // SIMULATIONHANDLER_H
+#endif // SIMULATIONTHREADHANDLER_H

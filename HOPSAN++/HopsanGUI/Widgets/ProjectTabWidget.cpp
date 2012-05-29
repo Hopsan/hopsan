@@ -41,7 +41,7 @@
 #include "version_gui.h"
 #include "GUIConnector.h"
 
-#include "SimulationHandler.h"
+#include "SimulationThreadHandler.h"
 
 //! @class ProjectTab
 //! @brief The ProjectTab class is a Widget to contain a simulation model
@@ -1216,6 +1216,7 @@ bool ProjectTabWidget::simulateAllOpenModels_nonblocking(bool modelsHaveNotChang
         //! @todo fix return code (maybe remove)
         return true;
     }
+    return false;
 }
 
 void ProjectTabWidget::setCurrentTopLevelSimulationTimeParameters(const QString startTime, const QString timeStep, const QString stopTime)

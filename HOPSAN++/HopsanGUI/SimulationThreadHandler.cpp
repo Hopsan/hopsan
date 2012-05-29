@@ -14,7 +14,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   SimulationHandler.cpp
+//! @file   SimulationThreadHandler.cpp
 //! @author Peter Nordin <peter.nordin@liu.se>
 //! @date   2012-05-25
 //!
@@ -22,7 +22,7 @@
 //!
 //$Id$
 
-#include "SimulationHandler.h"
+#include "SimulationThreadHandler.h"
 
 #include "MainWindow.h"
 #include "Widgets/MessageWidget.h"
