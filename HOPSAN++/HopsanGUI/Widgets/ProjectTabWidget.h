@@ -81,7 +81,7 @@ signals:
 private:
     void setToolBarSimulationTimeParametersFromSystem(SystemContainer *pSystem);
     size_t mNumberOfUntitledTabs;
-    SimulationHandler mSimulationHandler;
+    SimulationThreadHandler mSimulationHandler;
 };
 
 class ProjectTab : public QWidget
@@ -133,7 +133,7 @@ private:
     void saveModel(saveTarget saveAsFlag);
 
     QString mStartTime, mStopTime;
-    SimulationHandler mSimulationHandler;
+    SimulationThreadHandler mSimulationHandler;
 
     bool mIsSaved;
     SystemContainer *mpSystem;

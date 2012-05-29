@@ -280,9 +280,11 @@ bool ProjectTab::simulate_nonblocking()
         return false;
     }
 
-    QVector<SystemContainer*> vec;
-    vec.push_back(mpSystem);
-    mSimulationHandler.simulate(vec, mStartTime.toDouble(), mStopTime.toDouble(), mpSystem->getNumberOfLogSamples());
+    //QVector<SystemContainer*> vec;
+    //vec.push_back(mpSystem);
+    //mSimulationHandler.initSimulateFinalize( vec, mStartTime.toDouble(), mStopTime.toDouble(), mpSystem->getNumberOfLogSamples());
+    mSimulationHandler.setSimulationTimevariables(mStartTime.toDouble(), mStopTime.toDouble(), mpSystem->getNumberOfLogSamples());
+    mSimulationHandler.initSimulateFinalize(mpSystem);
 
     return true;
     //! @todo fix return code
@@ -1043,20 +1045,20 @@ void ProjectTabWidget::showLosses(bool show)
 //! @note This is experimental code to replace other simulation code in the future
 bool ProjectTabWidget::simulateAllOpenModels_nonblocking(bool modelsHaveNotChanged)
 {
-    QVector<SystemContainer*> vpSystems;
-    for(int i=0; i<count(); ++i)
-    {
-        if(!getSystem(i)->getCoreSystemAccessPtr()->isSimulationOk())
-        {
-            emit checkMessages();
-            return false;
-        }
-        vpSystems.append(getSystem(i));
-    }
+//    QVector<SystemContainer*> vpSystems;
+//    for(int i=0; i<count(); ++i)
+//    {
+//        if(!getSystem(i)->getCoreSystemAccessPtr()->isSimulationOk())
+//        {
+//            emit checkMessages();
+//            return false;
+//        }
+//        vpSystems.append(getSystem(i));
+//    }
 
-    mSimulationHandler.simulate(vpSystems, getCurrentTab()->getStartTime().toDouble(), getCurrentTab()->getStopTime().toDouble(), getCurrentContainer()->getNumberOfLogSamples(), modelsHaveNotChanged);
-    return true;
-    //! @todo fix return
+//    mSimulationHandler.initSimulateFinalize(vpSystems, getCurrentTab()->getStartTime().toDouble(), getCurrentTab()->getStopTime().toDouble(), getCurrentContainer()->getNumberOfLogSamples(), modelsHaveNotChanged);
+//    return true;
+//    //! @todo fix return
 }
 
 

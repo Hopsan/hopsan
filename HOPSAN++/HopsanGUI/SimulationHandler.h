@@ -47,7 +47,7 @@ private:
 public:
     SimulationObject(QVector<SystemContainer*> vpSystems, const double startTime, const double stopTime, const unsigned int nLogSamples, const bool noChanges)
         : mvpSystems(vpSystems), mStartTime(startTime), mStopTime(stopTime), mnLogSamples(nLogSamples), mNoChanges(noChanges){}
-    void setProgressDialog(QProgressDialog * pProgressDialog);
+    void connectProgressDialog(QProgressDialog *pProgressDialog);
 
 public slots:
     void doIt();
@@ -60,18 +60,44 @@ signals:
     void finalizeDone(bool, int);
 };
 
-class SimulationHandler  : public QObject
+class ProgressBarObject : public QObject
+{
+    Q_OBJECT
+
+private:
+    QTimer mProgressDialogRefreshTimer;
+    QProgressDialog *mpProgressDialog;
+    SystemContainer *mpSystem; //!< @todo what about multiple systems
+    int mLastProgressRefreshStep;
+    double mStartT, mStopT;
+
+protected slots:
+    void refreshProgressBar();
+
+public:
+    ProgressBarObject(const double startTime, const double stopTime, const int refreshTime, SystemContainer *pSystem);
+    ~ProgressBarObject();
+    QProgressDialog *getProgressDialog();
+
+
+signals:
+    void setProgressBarValue(int);
+};
+
+class SimulationThreadHandler  : public QObject
 {
     Q_OBJECT
 
 public:
-    SimulationHandler() : mpSimulationObject(0), mpProgressDialog(0){}
-    void simulate(QVector<SystemContainer*> vpSystems, const double startTime, const double stopTime, const unsigned int nLogSamples, const bool noChanges=false);
+    SimulationThreadHandler() : mpSimulationObject(0), mpProgressBarObject(0){}
+
+    void setSimulationTimevariables(const double startTime, const double stopTime, const unsigned int nLogSamples);
+    void initSimulateFinalize(SystemContainer* pSystem, const bool noChanges=false);
+    void initSimulateFinalize(QVector<SystemContainer*> vpSystems, const bool noChanges=false);
     bool wasSuccessful();
 
 signals:
     void startSimulation();
-    void setProgressBarValue(int);
     void done(bool);
 
 protected slots:
@@ -79,19 +105,22 @@ protected slots:
     void simulateDone(bool success, int ms);
     void finalizeDone(bool success, int ms);
     void abort();
-    void refreshProgressBar();
+
 
 protected:
-    SimulationObject *mpSimulationObject;
     QVector<SystemContainer*> mvpSystems;
 
-    QThread simulationThread;
-    QTimer mProgressDialogRefreshTimer;
-    QProgressDialog *mpProgressDialog;
+    SimulationObject *mpSimulationObject;
+    ProgressBarObject *mpProgressBarObject;
+
+    QThread mSimulationThread;
+    QThread mProgressBarThread;
 
     double mStartT, mStopT;
+    int mnTthreads, mnLogSamples;
+
     bool mInitSuccess, mSimuSucess, mFiniSucess, mAborted;
-    int mInitTime, mSimuTime, mFiniTime, mLastProgressRefreshStep;
+    int mInitTime, mSimuTime, mFiniTime;
 };
 
 
