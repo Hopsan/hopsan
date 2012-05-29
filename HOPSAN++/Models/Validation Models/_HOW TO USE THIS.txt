@@ -1,0 +1,7 @@
+All validation models in this folder will be verified before each new Hopsan release.
+
+To create a new validation model:
+1. Save the hmf file here
+2. Export plot data that is to be validated to csv file with same name, and put it here
+3. Create a txt file with same name, enter component name on first line, port name on second line and variable number on last line
+4. Commit changes to svn!
