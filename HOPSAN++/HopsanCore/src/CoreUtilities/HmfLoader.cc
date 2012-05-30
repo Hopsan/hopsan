@@ -28,99 +28,12 @@
 #include "CoreUtilities/HmfLoader.h"
 #include "HopsanEssentials.h"
 
-#include "rapidxml.hpp"
-#include "rapidxml_utils.hpp"
-//#include "rapidxml_print.hpp"
+#include "hopsan_rapidxml.hpp"
 
 using namespace std;
 using namespace hopsan;
 
 // vvvvvvvvvv Help Functions vvvvvvvvvv
-
-//! @brief Helpfunction, reads a double xml attribute
-double readDoubleAttribute(const rapidxml::xml_node<> *pNode, const string attrName, const double defaultValue)
-{
-    if (pNode!=0)
-    {
-        rapidxml::xml_attribute<> *pAttr = pNode->first_attribute(attrName.c_str());
-        if (pAttr)
-        {
-            //Convert char* to double, assume null terminated strings
-            return atof(pAttr->value());
-        }
-    }
-
-    return defaultValue;
-}
-
-//! @brief Helpfunction, reads a int xml attribute
-int readIntAttribute(const rapidxml::xml_node<> *pNode, const string attrName, const int defaultValue)
-{
-    if (pNode!=0)
-    {
-        rapidxml::xml_attribute<> *pAttr = pNode->first_attribute(attrName.c_str());
-        if (pAttr)
-        {
-            //Convert char* to int, assume null terminated strings
-            return atoi(pAttr->value());
-        }
-    }
-
-    return defaultValue;
-}
-
-//! @brief Helpfunction, reads a string xml attribute
-string readStringAttribute(const rapidxml::xml_node<> *pNode, const string attrName, const string defaultValue)
-{
-    if (pNode)
-    {
-        rapidxml::xml_attribute<> *pAttr = pNode->first_attribute(attrName.c_str());
-        if (pAttr)
-        {
-            //Convert char* to string, assume null terminated strings
-            return string(pAttr->value());
-        }
-    }
-
-    return defaultValue;
-}
-
-bool readBoolAttribute(const rapidxml::xml_node<> *pNode, const string attrName, const bool defaultValue)
-{
-    if (pNode)
-    {
-        rapidxml::xml_attribute<> *pAttr = pNode->first_attribute(attrName.c_str());
-        if (pAttr)
-        {
-            //Convert char* to string, assume null terminated strings
-            string boolStr = string(pAttr->value());
-            if ((boolStr == "true") || (boolStr == "True") || (boolStr == "1") )
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-    }
-
-    return defaultValue;
-}
-
-//! @brief Check if node has attribute
-bool hasAttribute(rapidxml::xml_node<> *pNode, string attrName)
-{
-    if (pNode)
-    {
-        if(pNode->first_attribute(attrName.c_str()))
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
 //! @brief Helpfunction to strip filename from path
 //! @note Assumes that dir separator is forward slash /
 std::string stripFilenameFromPath(std::string filePath)

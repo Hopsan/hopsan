@@ -150,7 +150,8 @@ HEADERS += \
     Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp \
     include/Parameters.h \
     include/Components/DummyComponent.hpp \
-    include/ComponentUtilities/EquationSystemSolver.h
+    include/ComponentUtilities/EquationSystemSolver.h \
+    Dependencies/rapidxml-1.13/hopsan_rapidxml.hpp
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

@@ -27,8 +27,6 @@
 
 
 #include <string>
-//#include "win32dll.h"
-//#include "ComponentSystem.h"
 
 namespace hopsan {
 
