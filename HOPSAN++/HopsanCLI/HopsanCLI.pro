@@ -69,4 +69,8 @@ win32 {
 # -------------------------------------------------
 # Project files
 # -------------------------------------------------
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    cliFunctions.cpp
+
+HEADERS += \
+    cliFunctions.h
