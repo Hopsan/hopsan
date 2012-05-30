@@ -32,6 +32,10 @@
 #include "HopsanEssentials.h"
 #include "ComponentUtilities/CSVParser.h"
 
+#ifdef WIN32
+#include "windows.h"
+#endif
+
 using namespace std;
 using namespace hopsan;
 
