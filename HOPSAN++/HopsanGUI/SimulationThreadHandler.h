@@ -110,7 +110,7 @@ protected slots:
     void aborted();
 
 public:
-    SimulationThreadHandler() : mpSimulationWorkerObject(0), mpProgressBarWorkerObject(0), mStartT(0), mStopT(1), mnLogSamples(0){}
+    SimulationThreadHandler() : mpSimulationWorkerObject(0), mpProgressBarWorkerObject(0), mpProgressDialog(0), mStartT(0), mStopT(1), mnLogSamples(0){}
 
     void setSimulationTimeVariables(const double startTime, const double stopTime, const unsigned int nLogSamples);
     void initSimulateFinalize(SystemContainer* pSystem, const bool noChanges=false);

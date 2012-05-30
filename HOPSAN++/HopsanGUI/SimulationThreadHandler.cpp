@@ -103,7 +103,8 @@ ProgressBarWorkerObject::ProgressBarWorkerObject(const double startTime, const d
     connect(&mProgressDialogRefreshTimer, SIGNAL(timeout()), this, SLOT(refreshProgressBar()), Qt::UniqueConnection);
     connect(this, SIGNAL(setProgressBarValue(int)), pProgressDialog, SLOT(setValue(int)), Qt::UniqueConnection);
 
-    mProgressDialogRefreshTimer.start(refreshTime);
+    // Start progress bar refresh timer with at least 50ms timestep (20 Hz), low values (close to 1) will freeze everything
+    mProgressDialogRefreshTimer.start(std::max(refreshTime, 50));
 }
 
 void ProgressBarWorkerObject::refreshProgressBar()
