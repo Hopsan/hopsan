@@ -111,3 +111,27 @@ bool hasAttribute(rapidxml::xml_node<> *pNode, std::string attrName)
     }
     return false;
 }
+
+std::string readStringNodeValue(rapidxml::xml_node<> *pNode, const std::string defaultValue)
+{
+    if (pNode)
+    {
+        return std::string(pNode->value());
+    }
+    else
+    {
+        return defaultValue;
+    }
+}
+
+int readIntNodeValue(rapidxml::xml_node<> *pNode, const int defaultValue)
+{
+    if (pNode)
+    {
+        return atoi(pNode->value());
+    }
+    else
+    {
+        return defaultValue;
+    }
+}

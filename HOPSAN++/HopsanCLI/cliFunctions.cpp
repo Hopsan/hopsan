@@ -28,9 +28,12 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
+#include <cstring>
 
 #include "HopsanEssentials.h"
 #include "ComponentUtilities/CSVParser.h"
+
+#include "hopsan_rapidxml.hpp"
 
 #ifdef WIN32
 #include "windows.h"
@@ -38,6 +41,41 @@
 
 using namespace std;
 using namespace hopsan;
+
+// ===== Help functions =====
+
+//! @brief Helpfunction that splits a full path into basepath and filename
+//! @note Assumes that dir separator is forward slash /
+void splitFilePath(const std::string fullPath, std::string &rBasePath, std::string &rFileName)
+{
+    size_t pos = fullPath.rfind('/');
+    if (pos != std::string::npos)
+    {
+        rBasePath = fullPath.substr(0, pos+1) ;
+        rFileName = fullPath.substr(pos+1);
+    }
+    else
+    {
+        rBasePath = "";
+        rFileName = fullPath;
+    }
+}
+
+//! @brief Helpfunction that splits a filename into basename and extesion
+void splitFileName(const std::string fileName, std::string &rBaseName, std::string &rExt)
+{
+    size_t pos = fileName.rfind('.');
+    if (pos != std::string::npos)
+    {
+        rBaseName = fileName.substr(0, pos) ;
+        rExt = fileName.substr(pos+1);
+    }
+    else
+    {
+        rExt = "";
+        rBaseName = fileName;
+    }
+}
 
 // ===== Print functions =====
 //! @brief Prints all waiting messages
@@ -365,5 +403,208 @@ void performModelTest(string modelName)
 
     setColor(15);
 
+}
+
+
+//! @brief Performs a unit test on a model
+//! @param modelName Name of test model
+void performModelTestXML(const std::string hvcFilePath)
+{
+    rapidxml::xml_document<> doc;
+    rapidxml::xml_node<> *pRootNode;
+
+    // figure out basepath and basename
+    string basepath, basename, filename, ext;
+    splitFilePath(hvcFilePath, basepath, filename);
+    splitFileName(filename, basename, ext);
+
+    //cout << basepath << " " << filename << " " << basename << " " << ext << endl;
+
+    try
+    {
+        rapidxml::file<> hmfFile(hvcFilePath.c_str());
+        doc.parse<0>(hmfFile.data());
+        pRootNode = doc.first_node();
+
+        //Check for correct root node name
+        //! @todo should check version also
+        if (strcmp(pRootNode->name(), "hopsanvalidationconfiguration")!=0)
+        {
+            getCoreMessageHandlerPtr()->addErrorMessage(hvcFilePath+" Has wrong root tag name: "+pRootNode->name());
+        }
+    }
+    catch(std::exception &e)
+    {
+        getCoreMessageHandlerPtr()->addErrorMessage("Could not open file: "+hvcFilePath+" "+e.what());
+        cout << "Could not open file, throws: " << e.what() << endl;
+    }
+
+    rapidxml::xml_node<> *pValidationNode = pRootNode->first_node("validation");
+    while (pValidationNode != 0)
+    {
+        // Run each validation
+        string modelfile = readStringNodeValue(pValidationNode->first_node("modelfile"), "");
+        string parameterset = readStringNodeValue(pValidationNode->first_node("parameterset"), "");
+
+        // If no modelfile was given use one with the same basename
+        if (modelfile.empty())
+        {
+            modelfile = basepath + basename + ".hmf";
+        }
+        else
+        {
+            // Assumes that modelfile path was relaitve in xml
+            modelfile = basepath + modelfile;
+        }
+
+        rapidxml::xml_node<> *pComponentNode, *pPortNode, *pVariableNode;
+        pComponentNode = pValidationNode->first_node("component");
+        while (pComponentNode != 0)
+        {
+            string compName = readStringAttribute(pComponentNode, "name", "_noname_");
+            pPortNode = pComponentNode->first_node("port");
+            while (pPortNode != 0)
+            {
+                string portName = readStringAttribute(pPortNode, "name", "_noname_");
+                pVariableNode = pPortNode->first_node("variable");
+                while (pVariableNode != 0)
+                {
+                    string varname = readStringAttribute(pVariableNode, "name", "_noname_");
+                    string csvfile = readStringNodeValue(pVariableNode->first_node("csvfile"), "");
+                    // If no csvfile was given use one with the same basename
+                    if (csvfile.empty())
+                    {
+                        csvfile = basepath + basename + ".csv";
+                    }
+                    else
+                    {
+                        // Assumes that csvfile path was relaitve in xml
+                        csvfile = basepath + csvfile;
+                    }
+
+                    int column = readIntNodeValue(pVariableNode->first_node("column"), 1);
+
+                    // ----- Perform test -----
+                    vector<double> vRef, vSim1, vSim2, vTime;
+
+                    // Load reference data curve
+                    //! @todo should not reload if same as already laoded
+                    bool success=false;
+                    CSVParser refData(success, csvfile, '\n', '"');
+                    if(!success)
+                    {
+                        cout << "Unable to initialize CSV file: " << csvfile << " : " << refData.getErrorString() << endl;
+                        return;
+                    }
+
+                    double startTime=0, stopTime=1;
+                    ComponentSystem* pRootSystem = HopsanEssentials::getInstance()->loadHMFModel(modelfile, startTime, stopTime);
+
+                    if (pRootSystem!=0)
+                    {
+                        //! @todo maybe use simulation handler object
+                        //First simulation
+                        if (pRootSystem->initialize(startTime, stopTime))
+                        {
+                            pRootSystem->simulate(startTime, stopTime);
+                        }
+                        else
+                        {
+                            printWaitingMessages(false);
+                            cout << "Initialize failed, Simulation aborted!" << endl;
+                            return;
+                        }
+                        pRootSystem->finalize();
+
+                        //copy the data
+                        //! @todo with better access function in core we could avoid copying data and work directly with the data stored
+                        Component* pComp = pRootSystem->getSubComponent(compName);
+                        if (!pComp)
+                        {
+                            cout << "Error: No such component name: " << compName << endl;
+                            return;
+                        }
+                        Port *pPort = pComp->getPort(portName);
+                        if (!pPort)
+                        {
+                            cout << "Error: No such port name: " << portName << " in component: " << compName << endl;
+                            return;
+                        }
+
+                        vTime = *pPort->getTimeVectorPtr();
+                        int dataId = pPort->getNodeDataIdFromName(varname);
+                        if (dataId < 0)
+                        {
+                            cout << "Error: No such varaiable name: " << varname << " in: " << pPort->getNodeType() << endl;
+                            return;
+                        }
+
+                        for(size_t i=0; i<vTime.size(); ++i)
+                        {
+                            vSim1.push_back(pRootSystem->getSubComponent(compName)->getPort(portName)->getDataVectorPtr()->at(i).at(dataId));
+                        }
+
+                        //Second simulation
+                        if (pRootSystem->initialize(startTime, stopTime))
+                        {
+                            pRootSystem->simulate(startTime, stopTime);
+                        }
+                        else
+                        {
+                            printWaitingMessages(false);
+                            cout << "Initialize failed, Simulation aborted!" << endl;
+                            return;
+                        }
+                        pRootSystem->finalize();
+
+                        for(size_t i=0; i<vTime.size(); ++i)
+                        {
+                            vSim2.push_back(pRootSystem->getSubComponent(compName)->getPort(portName)->getDataVectorPtr()->at(i).at(dataId));
+                        }
+                    }
+                    else
+                    {
+                        cout << "Error: Could not load modelfile: " << modelfile << endl;
+                        return;
+                    }
+
+
+                    for(size_t i=0; i<vTime.size(); ++i)
+                    {
+                        vRef.push_back(refData.interpolate(vTime[i], column));
+                    }
+
+                    //std::cout.rdbuf(cout_sbuf); // restore the original stream buffer
+
+                    setColor(12);
+
+                    if(!compareVectors(vSim1, vRef, 0.01))
+                    {
+                        cout << "Test failed: " << pRootSystem->getName() << endl;
+                        setColor(15);
+                        return;
+                    }
+
+                    if(!compareVectors(vSim1, vSim2, 0.01))
+                    {
+                        cout << "Test failed (inconsistent result): " << pRootSystem->getName();
+                        setColor(15);
+                        return;
+                    }
+
+                    setColor(10);
+
+                    cout << "Test successful: " << pRootSystem->getName() << endl;
+
+                    setColor(15);
+
+                    pVariableNode = pVariableNode->next_sibling("variable");
+                }
+                pPortNode = pPortNode->next_sibling("port");
+            }
+            pComponentNode = pComponentNode->next_sibling("component");
+        }
+        pValidationNode = pValidationNode->next_sibling("validation");
+    }
 }
 

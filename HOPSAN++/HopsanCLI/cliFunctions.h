@@ -33,6 +33,10 @@ namespace hopsan{
 class ComponentSystem;
 }
 
+// ===== Help Functions =====
+void splitFilePath(const std::string fullPath, std::string &rBasePath, std::string &rFileName);
+void splitFileName(const std::string fileName, std::string &rBaseName, std::string &rExt);
+
 // ===== Print functions =====
 void printWaitingMessages(const bool printDebug=true);
 void printTsInfo(const hopsan::ComponentSystem* pSystem);
@@ -52,6 +56,7 @@ void readNodesToSaveFromTxtFile(const std::string filePath, std::vector<std::str
 // ===== compare Functions =====
 bool compareVectors(const std::vector<double> &rVec, const std::vector<double> &rRef, const double tol);
 void performModelTest(std::string modelName);
+void performModelTestXML(const std::string hvcFilePath);
 
 
 #endif // CLIFUNCTIONS_H

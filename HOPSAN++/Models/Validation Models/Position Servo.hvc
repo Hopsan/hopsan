@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanvalidationconfiguration hvcversion="0.1">
+  <validation>
+    <modelfile>../Example Models/Position Servo.hmf</modelfile>
+    <parameterset></parameterset>
+    <component name="Translational Mass">
+      <port name="P2">
+        <variable name="Position">
+          <csvfile></csvfile>
+          <column>1</column>
+        </variable>
+      </port>
+    </component>
+  </validation>
+</hopsanvalidationconfiguration>

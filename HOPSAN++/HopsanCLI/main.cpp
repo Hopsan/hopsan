@@ -61,6 +61,7 @@ int main(int argc, char *argv[])
         TCLAP::ValueArg<std::string> extLibPathsOption("e","ext","A file containing the external libs to load",false,"","FilePath string", cmd);
         TCLAP::ValueArg<std::string> saveNodesPathsOption("n", "savenodes", "A file containing lines with the ComponentName;PortName to save node data from", false, "", "FilePath string", cmd);
         TCLAP::ValueArg<std::string> modelTestOption("t","test","Model test to perform",false,"","Model name", cmd);
+        TCLAP::ValueArg<std::string> modelTestOptionXML("c","testc","Model test to perform",false,"","Model name", cmd);
 
         // Parse the argv array.
         cmd.parse( argc, argv );
@@ -70,6 +71,8 @@ int main(int argc, char *argv[])
         string extFilePaths = extLibPathsOption.getValue();
         string testFilePath = modelTestOption.getValue();
         string saveNodeFilePath = saveNodesPathsOption.getValue();
+        string testFilePathXML = modelTestOptionXML.getValue();
+
 
         // Load default hopasn component lib
         HopsanEssentials::getInstance()->loadExternalComponentLib(DEFAULTCOMPONENTLIB);
@@ -136,6 +139,10 @@ int main(int argc, char *argv[])
         if(!testFilePath.empty())
         {
             performModelTest(testFilePath);
+        }
+        else if (!testFilePathXML.empty())
+        {
+            performModelTestXML(testFilePathXML);
         }
         else
         {
