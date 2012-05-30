@@ -6,34 +6,25 @@
 # Date:   2012-05-29
 
 searchdir="$1"
+startDir=$(pwd)
+cd bin
+if [ -x HopsanCLI ]; then
+  cmd="./HopsanCLI_d"
+elif [ -x HopsanCLI_d ]; then
+  cmd="./HopsanCLI_d"
+else
+  echo "Error: HopsanCLI not found"
+  exit 1
+fi
 
-startDir=`pwd`
-cliPath="$startDir"/bin/
+echo "Using $cmd for evaluation"
+sleep 1
+
+# Now run HopsanCLI model unit test on all  hopsanvalidationconfig files found
 while read line; do
-  echo $line 
-  txtline=${line%.hmf}.txt
-  echo  $txtline
-  if [ -f "$txtline" ]; then
-    echo "Text exist"
-    basepath=${line%/*}
-    file=${line##*/}
-    name=${file%.hmf}
+  echo "Evaluating $line"
+  $cmd -c "$line"
+done < <(find "$startDir/$searchdir" -name "*.hvc")
+cd $startDir
 
-    echo $basepath
-    echo $file
-    echo $name
-  
-    cd "$basepath"
-    pwd
-
-    echo "$cliPath"/HopsanCLI_d -t "$name"
-    "$cliPath"/HopsanCLI_d -t "$name"
-
-    cd "$startDir"
-    
-  fi
-
-  pwd
-
-done < <(find "$searchdir" -name "*.hmf")
 
