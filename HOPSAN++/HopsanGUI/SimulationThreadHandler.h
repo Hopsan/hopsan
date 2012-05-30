@@ -75,10 +75,14 @@ protected slots:
     void refreshProgressBar();
     void abort();
 
+public slots:
+    void startRefreshTimer(int ts);
+
 public:
-    ProgressBarWorkerObject(const double startTime, const double stopTime, const int refreshTime, const QVector<SystemContainer*> &rvSystems, QProgressDialog *pProgressDialog);
+    ProgressBarWorkerObject(const double startTime, const double stopTime, const QVector<SystemContainer*> &rvSystems, QProgressDialog *pProgressDialog);
 
 signals:
+    void stopRefreshTimer();
     void setProgressBarValue(int);
     void aborted();
 };
@@ -119,7 +123,7 @@ public:
 
 signals:
     void startSimulation();
-    void showProgressBar();
+    void startProgressBarRefreshTimer(int ms);
     void done(bool);
 };
 
