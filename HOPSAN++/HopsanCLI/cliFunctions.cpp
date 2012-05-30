@@ -430,13 +430,12 @@ void performModelTestXML(const std::string hvcFilePath)
         //! @todo should check version also
         if (strcmp(pRootNode->name(), "hopsanvalidationconfiguration")!=0)
         {
-            getCoreMessageHandlerPtr()->addErrorMessage(hvcFilePath+" Has wrong root tag name: "+pRootNode->name());
+            cout << hvcFilePath  << " Has wrong root tag name: " << string(pRootNode->name()) << endl;
         }
     }
     catch(std::exception &e)
     {
-        getCoreMessageHandlerPtr()->addErrorMessage("Could not open file: "+hvcFilePath+" "+e.what());
-        cout << "Could not open file, throws: " << e.what() << endl;
+        cout << "Could not open file: " << hvcFilePath << " " << e.what() << endl;
     }
 
     rapidxml::xml_node<> *pValidationNode = pRootNode->first_node("validation");
