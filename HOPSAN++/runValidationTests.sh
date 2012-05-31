@@ -5,6 +5,7 @@
 # Author: Peter Nordin peter.nordin@liu.se
 # Date:   2012-05-29
 
+failed=0
 searchdir="$1"
 startDir=$(pwd)
 cd bin
@@ -24,7 +25,11 @@ echo "Using $cmd for evaluation"
 while read line; do
   echo "Evaluating $line"
   $cmd -c "$line"
+  if [ $? -ne 0 ]; then
+    failed=1
+  fi
 done < <(find "$startDir/$searchdir" -name "*.hvc")
 cd $startDir
 
+exit $failed
 
