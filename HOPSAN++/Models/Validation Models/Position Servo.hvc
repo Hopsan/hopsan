@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanvalidationconfiguration hvcversion="0.1">
   <validation>
+    <!--Optional path to model file, default is to use the same name (excluding ext) and path as this file-->
     <modelfile>../Example Models/Position Servo.hmf</modelfile>
     <parameterset></parameterset>
     <component name="Translational Mass">
       <port name="P2">
         <variable name="Position">
+          <!--Optional path to csv file, default is to use the same name (excluding ext) and path as this file-->
           <csvfile></csvfile>
-          <column>1</column>
+          <!--Column indexing begins at 0, 0 is usualy time--> 
+          <column>1</column> 
+          <!--Tolerance, allowed deviation 0.01==1%-->
+          <tolerance>0.01</tolerance>
         </variable>
       </port>
     </component>

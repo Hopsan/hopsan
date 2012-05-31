@@ -44,7 +44,8 @@ void printSystemParams(hopsan::ComponentSystem* pSystem);
 void printComponentHierarchy(hopsan::ComponentSystem *pSystem, std::string prefix="",
                              const bool doPrintTsInfo=false,
                              const bool doPrintSystemParams=false);
-void setColor(unsigned int color);
+enum ColorsT {Red, Green, Blue, White, Reset};
+void setColor(const ColorsT color);
 
 // ===== Save Functions =====
 void saveNodeDataToFile(hopsan::ComponentSystem* pSys, const std::string compName, const std::string portName, const std::string fileName);

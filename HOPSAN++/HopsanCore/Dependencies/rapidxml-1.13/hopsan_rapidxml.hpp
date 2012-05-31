@@ -28,7 +28,7 @@
 #include "rapidxml_utils.hpp"
 //#include "rapidxml_print.hpp"
 
-//! @brief Helpfunction, reads a double xml attribute
+//! @brief Reads a double value from node attribute or return default value if attribute does not exist
 double readDoubleAttribute(const rapidxml::xml_node<> *pNode, const std::string attrName, const double defaultValue)
 {
     if (pNode!=0)
@@ -44,7 +44,7 @@ double readDoubleAttribute(const rapidxml::xml_node<> *pNode, const std::string 
     return defaultValue;
 }
 
-//! @brief Helpfunction, reads a int xml attribute
+//! @brief Reads an integer value from node attribute or return default value if attribute does not exist
 int readIntAttribute(const rapidxml::xml_node<> *pNode, const std::string attrName, const int defaultValue)
 {
     if (pNode!=0)
@@ -60,7 +60,7 @@ int readIntAttribute(const rapidxml::xml_node<> *pNode, const std::string attrNa
     return defaultValue;
 }
 
-//! @brief Helpfunction, reads a string xml attribute
+//! @brief Reads a string value from node attribute or return default value if attribute does not exist
 std::string readStringAttribute(const rapidxml::xml_node<> *pNode, const std::string attrName, const std::string defaultValue)
 {
     if (pNode)
@@ -76,6 +76,7 @@ std::string readStringAttribute(const rapidxml::xml_node<> *pNode, const std::st
     return defaultValue;
 }
 
+//! @brief Reads a bool value from node attribute or return default value if attribute does not exist
 bool readBoolAttribute(const rapidxml::xml_node<> *pNode, const std::string attrName, const bool defaultValue)
 {
     if (pNode)
@@ -112,6 +113,7 @@ bool hasAttribute(rapidxml::xml_node<> *pNode, std::string attrName)
     return false;
 }
 
+//! @brief Reads a string value from node or return default value if node = 0
 std::string readStringNodeValue(rapidxml::xml_node<> *pNode, const std::string defaultValue)
 {
     if (pNode)
@@ -124,11 +126,25 @@ std::string readStringNodeValue(rapidxml::xml_node<> *pNode, const std::string d
     }
 }
 
+//! @brief Reads a int value from node or return default value if node = 0
 int readIntNodeValue(rapidxml::xml_node<> *pNode, const int defaultValue)
 {
     if (pNode)
     {
         return atoi(pNode->value());
+    }
+    else
+    {
+        return defaultValue;
+    }
+}
+
+//! @brief Reads a double value from node or return default value if node = 0
+double readDoubleNodeValue(rapidxml::xml_node<> *pNode, const double defaultValue)
+{
+    if (pNode)
+    {
+        return atof(pNode->value());
     }
     else
     {

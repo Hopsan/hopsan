@@ -8,10 +8,10 @@
 searchdir="$1"
 startDir=$(pwd)
 cd bin
-if [ -x HopsanCLI ]; then
+if [ -x HopsanCLI_d ]; then
   cmd="./HopsanCLI_d"
-elif [ -x HopsanCLI_d ]; then
-  cmd="./HopsanCLI_d"
+elif [ -x HopsanCLI ]; then
+  cmd="./HopsanCLI"
 else
   echo "Error: HopsanCLI not found"
   exit 1
