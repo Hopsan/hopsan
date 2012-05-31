@@ -308,7 +308,7 @@ void SensitivityAnalysisDialog::run()
                     pTabs->getContainer(t)->getModelObject(mSelectedComponents.at(p))->setParameterValue(mSelectedParameters.at(p), QString().setNum(randPar));
                 }
             }
-            pTabs->simulateAllOpenModels(noChange);
+            pTabs->simulateAllOpenModels_blocking(noChange);
             noChange=true;
         }
     }
@@ -321,7 +321,7 @@ void SensitivityAnalysisDialog::run()
                 double randPar = normalDistribution(mpParameterAverageLineEdits.at(p)->text().toDouble(), mpParameterSigmaLineEdits.at(p)->text().toDouble());
                 pTabs->getCurrentContainer()->getModelObject(mSelectedComponents.at(p))->setParameterValue(mSelectedParameters.at(p), QString().setNum(randPar));
             }
-            pTabs->getCurrentTab()->simulate();
+            pTabs->getCurrentTab()->simulate_blocking();
         }
     }
 

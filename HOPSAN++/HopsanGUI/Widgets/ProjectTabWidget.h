@@ -69,7 +69,8 @@ public slots:
     void createSimulinkWrapperFromCurrentModel();
     void showLosses(bool show);
     bool simulateAllOpenModels_nonblocking(bool modelsHaveNotChanged=false);
-    bool simulateAllOpenModels(bool modelsHaveNotChanged=false);
+    bool simulateAllOpenModels_blocking(bool modelsHaveNotChanged=false);
+    bool simulateAllOpenModels_old(bool modelsHaveNotChanged=false);
     void setCurrentTopLevelSimulationTimeParameters(const QString startTime, const QString timeStep, const QString stopTime);
     void openAnimation();
 
@@ -112,7 +113,8 @@ public:
 
 public slots:
     bool simulate_nonblocking();
-    bool simulate();
+    bool simulate_blocking();
+    bool simulate_old();
     void save();
     void saveAs();
     void setExternalSystem(bool value);

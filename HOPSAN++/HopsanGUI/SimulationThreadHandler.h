@@ -104,7 +104,7 @@ private:
     double mStartT, mStopT;
     int mnLogSamples;
 
-    bool mInitSuccess, mSimuSucess, mFiniSucess, mAborted;
+    bool mInitSuccess, mSimuSucess, mFiniSucess, mAborted, mProgressBarEnabled, mProgressBarModal;
     int mInitTime, mSimuTime, mFiniTime;
 
 protected slots:
@@ -114,11 +114,13 @@ protected slots:
     void aborted();
 
 public:
-    SimulationThreadHandler() : mpSimulationWorkerObject(0), mpProgressBarWorkerObject(0), mpProgressDialog(0), mStartT(0), mStopT(1), mnLogSamples(0){}
+    SimulationThreadHandler() : mpSimulationWorkerObject(0), mpProgressBarWorkerObject(0), mpProgressDialog(0), mStartT(0), mStopT(1), mnLogSamples(0), mProgressBarEnabled(true), mProgressBarModal(true){}
 
     void setSimulationTimeVariables(const double startTime, const double stopTime, const unsigned int nLogSamples);
+    void setProgressDilaogBehaviour(bool enabled, bool modal);
     void initSimulateFinalize(SystemContainer* pSystem, const bool noChanges=false);
     void initSimulateFinalize(QVector<SystemContainer*> vpSystems, const bool noChanges=false);
+    void initSimulateFinalize_blocking(QVector<SystemContainer*> vpSystems, const bool noChanges=false);
     bool wasSuccessful();
 
 signals:

@@ -228,22 +228,22 @@ public slots:
 
     bool simulate(MainWindow* o)
     {
-        bool previousProgressBarSetting = o->mpConfig->getEnableProgressBar();
-        o->mpConfig->setEnableProgressBar(false);
-        bool success = o->mpProjectTabs->getCurrentTab()->simulate();
-        o->mpConfig->setEnableProgressBar(previousProgressBarSetting);
-        qApp->processEvents();
+        //bool previousProgressBarSetting = o->mpConfig->getEnableProgressBar();
+        //o->mpConfig->setEnableProgressBar(false);
+        bool success = o->mpProjectTabs->getCurrentTab()->simulate_blocking();
+        //o->mpConfig->setEnableProgressBar(previousProgressBarSetting);
+        //qApp->processEvents();
         return success;
     }
 
 
     bool simulateAllOpenModels(MainWindow* o, bool modelsHaveNotChanged)
     {
-        bool previousProgressBarSetting = o->mpConfig->getEnableProgressBar();
-        o->mpConfig->setEnableProgressBar(false);
-        bool success = o->mpProjectTabs->simulateAllOpenModels(modelsHaveNotChanged);
-        o->mpConfig->setEnableProgressBar(previousProgressBarSetting);
-        qApp->processEvents();
+        //bool previousProgressBarSetting = o->mpConfig->getEnableProgressBar();
+        //o->mpConfig->setEnableProgressBar(false);
+        bool success = o->mpProjectTabs->simulateAllOpenModels_blocking(modelsHaveNotChanged);
+        //o->mpConfig->setEnableProgressBar(previousProgressBarSetting);
+        //qApp->processEvents();
         return success;
     }
 

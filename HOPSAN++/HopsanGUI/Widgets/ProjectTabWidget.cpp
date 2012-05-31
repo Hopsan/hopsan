@@ -286,8 +286,20 @@ bool ProjectTab::simulate_nonblocking()
     //! @todo fix return code
 }
 
+bool ProjectTab::simulate_blocking()
+{
+    mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpSystem->getNumberOfLogSamples());
+    mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
+    QVector<SystemContainer*> vec;
+    vec.push_back(mpSystem);
+    mpSimulationThreadHandler->initSimulateFinalize_blocking(vec);
+
+    return true;
+    //! @todo fix return code
+}
+
 //! Simulates the model in the tab in a separate thread, the GUI runs a progressbar parallel to the simulation.
-bool ProjectTab::simulate()
+bool ProjectTab::simulate_old()
 {
     MessageWidget *pMessageWidget = gpMainWindow->mpMessageWidget;
 
@@ -1045,7 +1057,7 @@ void ProjectTabWidget::showLosses(bool show)
     qobject_cast<SystemContainer*>(getCurrentContainer())->showLosses(show);
 }
 
-bool ProjectTabWidget::simulateAllOpenModels(bool modelsHaveNotChanged)
+bool ProjectTabWidget::simulateAllOpenModels_old(bool modelsHaveNotChanged)
 {
     qDebug() << "simulateAllOpenModels()";
 
@@ -1212,6 +1224,37 @@ bool ProjectTabWidget::simulateAllOpenModels_nonblocking(bool modelsHaveNotChang
 
         mpSimulationThreadHandler->setSimulationTimeVariables(startTime, stopTime, nSamples);
         mpSimulationThreadHandler->initSimulateFinalize(systemsVector, modelsHaveNotChanged);
+
+        //! @todo fix return code (maybe remove)
+        return true;
+    }
+    return false;
+}
+
+bool ProjectTabWidget::simulateAllOpenModels_blocking(bool modelsHaveNotChanged)
+{
+    qDebug() << "simulateAllOpenModels()";
+
+    if(count() > 0)
+    {
+        //All systems will use start time, stop time and time step from this system
+        SystemContainer *pMainSystem = getCurrentTopLevelSystem();
+
+            //Setup simulation parameters
+        double startTime = getCurrentTab()->getStartTime().toDouble();
+        double stopTime = getCurrentTab()->getStopTime().toDouble();
+        size_t nSamples = pMainSystem->getNumberOfLogSamples();
+
+        // Ask core to initialize simulation
+        QVector<SystemContainer*> systemsVector;
+        for(int i=0; i<count(); ++i)
+        {
+            systemsVector.append(getSystem(i));
+        }
+
+        mpSimulationThreadHandler->setSimulationTimeVariables(startTime, stopTime, nSamples);
+        mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
+        mpSimulationThreadHandler->initSimulateFinalize_blocking(systemsVector, modelsHaveNotChanged);
 
         //! @todo fix return code (maybe remove)
         return true;

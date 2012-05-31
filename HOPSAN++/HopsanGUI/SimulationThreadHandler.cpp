@@ -144,6 +144,12 @@ void SimulationThreadHandler::setSimulationTimeVariables(const double startTime,
     mnLogSamples = nLogSamples;
 }
 
+void SimulationThreadHandler::setProgressDilaogBehaviour(bool enabled, bool modal)
+{
+    mProgressBarEnabled = enabled;
+    mProgressBarModal = modal;
+}
+
 void SimulationThreadHandler::initSimulateFinalize(SystemContainer* pSystem, const bool noChanges)
 {
     QVector<SystemContainer*> vpSystems;
@@ -165,11 +171,18 @@ void SimulationThreadHandler::initSimulateFinalize(QVector<SystemContainer*> vpS
     connect(mpSimulationWorkerObject, SIGNAL(simulateDone(bool,int)), this, SLOT(simulateDone(bool,int)));
     connect(mpSimulationWorkerObject, SIGNAL(finalizeDone(bool,int)), this, SLOT(finalizeDone(bool,int)));
 
-    if (gConfig.getEnableProgressBar())
+    if (gConfig.getEnableProgressBar() && mProgressBarEnabled)
     {
         mpProgressDialog = new QProgressDialog(gpMainWindow);
         mpProgressDialog->setWindowTitle("Running Simulation");
-        mpProgressDialog->setWindowModality(Qt::WindowModal);
+        if (mProgressBarModal)
+        {
+            mpProgressDialog->setWindowModality(Qt::WindowModal);
+        }
+        else
+        {
+            mpProgressDialog->setModal(false);
+        }
         mpProgressDialog->show();
 
         mpProgressBarWorkerObject = new ProgressBarWorkerObject(mStartT, mStopT, mvpSystems, mpProgressDialog); //!< @todo what about multiple systems
@@ -192,6 +205,15 @@ void SimulationThreadHandler::initSimulateFinalize(QVector<SystemContainer*> vpS
     //simulationThread.start(QThread::TimeCriticalPriority);
     mSimulationWorkerThread.start(QThread::HighestPriority);
     emit startSimulation();
+}
+
+void SimulationThreadHandler::initSimulateFinalize_blocking(QVector<SystemContainer*> vpSystems, const bool noChanges)
+{
+    QEventLoop loop;
+    connect(this, SIGNAL(done(bool)), &loop, SLOT(quit()), Qt::UniqueConnection);
+    initSimulateFinalize(vpSystems, noChanges);
+    loop.exec();
+    //! @todo what happens if the simulation cmopletes before the loop is started, then it will never quit
 }
 
 void SimulationThreadHandler::initDone(bool success, int ms)
