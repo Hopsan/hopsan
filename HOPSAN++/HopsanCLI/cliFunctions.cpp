@@ -160,23 +160,21 @@ void printComponentHierarchy(ComponentSystem *pSystem, std::string prefix,
 void setColor(const ColorsT color)
 {
 #ifdef WIN32
-    int c;
+    WORD c;
     switch (color)
     {
     case Red:
-        c = FOREGROUND_RED;
+        c = 12;//FOREGROUND_RED;
         break;
     case Green:
-        c = FOREGROUND_GREEN;
+        c = 10;//FOREGROUND_GREEN;
         break;
     case Blue:
         c = FOREGROUND_BLUE;
         break;
     case White:
-        c = FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED
-        break;
     default:
-        c = FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED
+        c = 15;//FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED;
     }
 
     HANDLE hcon = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -412,19 +410,19 @@ void performModelTest(string modelName)
 
     std::cout.rdbuf(cout_sbuf); // restore the original stream buffer
 
-    setColor(Red);
+    setColor(White);
 
     if(!compareVectors(vSim1, vRef, 0.01))
     {
         cout << "Test failed: " << pRootSystem->getName() << endl;
-        setColor(White);
+        setColor(Red);
         return;
     }
 
     if(!compareVectors(vSim1, vSim2, 0.01))
     {
         cout << "Test failed (inconsistent result): " << pRootSystem->getName();
-        setColor(White);
+        setColor(Red);
         return;
     }
 
