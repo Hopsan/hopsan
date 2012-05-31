@@ -18,7 +18,7 @@ else
 fi
 
 echo "Using $cmd for evaluation"
-sleep 1
+#sleep 1
 
 # Now run HopsanCLI model unit test on all  hopsanvalidationconfig files found
 while read line; do

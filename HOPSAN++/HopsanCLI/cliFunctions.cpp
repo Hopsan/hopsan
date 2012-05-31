@@ -436,9 +436,14 @@ void performModelTestXML(const std::string hvcFilePath)
     catch(std::exception &e)
     {
         cout << "Could not open file: " << hvcFilePath << " " << e.what() << endl;
+        return;
     }
 
     rapidxml::xml_node<> *pValidationNode = pRootNode->first_node("validation");
+    if (!pValidationNode)
+    {
+        cout << "Error: No validation node found in xml" << endl;
+    }
     while (pValidationNode != 0)
     {
         // Run each validation
@@ -458,21 +463,33 @@ void performModelTestXML(const std::string hvcFilePath)
 
         rapidxml::xml_node<> *pComponentNode, *pPortNode, *pVariableNode;
         pComponentNode = pValidationNode->first_node("component");
+        if (!pComponentNode)
+        {
+            cout << "Error: No component node found in xml" << endl;
+        }
         while (pComponentNode != 0)
         {
             string compName = readStringAttribute(pComponentNode, "name", "_noname_");
             pPortNode = pComponentNode->first_node("port");
+            if (!pPortNode)
+            {
+                cout << "Error: No port node found in xml" << endl;
+            }
             while (pPortNode != 0)
             {
                 string portName = readStringAttribute(pPortNode, "name", "_noname_");
                 pVariableNode = pPortNode->first_node("variable");
+                if (!pVariableNode)
+                {
+                    cout << "Error: No variable node found in xml" << endl;
+                }
                 while (pVariableNode != 0)
                 {
                     string varname = readStringAttribute(pVariableNode, "name", "_noname_");
                     string csvfile = readStringNodeValue(pVariableNode->first_node("csvfile"), "");
-                    // If no csvfile was given use one with the same basename
                     if (csvfile.empty())
                     {
+                        // If no csvfile was given use one with the same basename
                         csvfile = basepath + basename + ".csv";
                     }
                     else

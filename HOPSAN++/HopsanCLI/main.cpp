@@ -142,6 +142,7 @@ int main(int argc, char *argv[])
         }
         else if (!testFilePathXML.empty())
         {
+            cout << "Running Validation Test BAsed on XML Config" << endl;
             performModelTestXML(testFilePathXML);
         }
         else
