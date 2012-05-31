@@ -53,6 +53,7 @@ using namespace hopsan;
 
 int main(int argc, char *argv[])
 {
+    bool returnSuccess=true;
     try {
         TCLAP::CmdLine cmd("HopsanCLI", ' ', HOPSANCLIVERSION);
 
@@ -142,7 +143,7 @@ int main(int argc, char *argv[])
         }
         else if (!testFilePathXML.empty())
         {
-            performModelTestXML(testFilePathXML);
+            returnSuccess = performModelTestXML(testFilePathXML);
         }
         else
         {
@@ -154,7 +155,13 @@ int main(int argc, char *argv[])
     {
         std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;
         std::cout << "error: " << e.error() << " for arg " << e.argId() << std::endl;
+        returnSuccess = false;
     }
 
-
+    if (returnSuccess)
+    {
+        return 0;
+    }
+    // If not success return 1
+    return 1;
 }

@@ -49,6 +49,11 @@ using namespace hopsan;
 void splitFilePath(const std::string fullPath, std::string &rBasePath, std::string &rFileName)
 {
     size_t pos = fullPath.rfind('/');
+    // If not found try a windows backslash isntead
+    if (pos == std::string::npos)
+    {
+        pos = fullPath.rfind('\\');
+    }
     if (pos != std::string::npos)
     {
         rBasePath = fullPath.substr(0, pos+1) ;
@@ -164,17 +169,17 @@ void setColor(const ColorsT color)
     switch (color)
     {
     case Red:
-        c = 12;//FOREGROUND_RED;
+        c = FOREGROUND_INTENSITY | FOREGROUND_RED;
         break;
     case Green:
-        c = 10;//FOREGROUND_GREEN;
+        c = FOREGROUND_INTENSITY | FOREGROUND_GREEN;
         break;
     case Blue:
-        c = FOREGROUND_BLUE;
+        c = FOREGROUND_INTENSITY | FOREGROUND_BLUE;
         break;
     case White:
     default:
-        c = 15;//FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED;
+        c = FOREGROUND_INTENSITY | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED;
     }
 
     HANDLE hcon = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -437,13 +442,13 @@ void performModelTest(string modelName)
 
 //! @brief Performs a unit test on a model
 //! @param modelName Name of test model
-void performModelTestXML(const std::string hvcFilePath)
+bool performModelTestXML(const std::string hvcFilePath)
 {
-    // figure out basepath and basename
+    // Figure out basepath and basename
     string basepath, basename, filename, ext;
     splitFilePath(hvcFilePath, basepath, filename);
     splitFileName(filename, basename, ext);
-    //cout << basepath << " " << filename << " " << basename << " " << ext << endl;
+    //cout << basepath << " :: " << filename << " :: " << basename << " :: " << ext << endl;
 
     try
     {
@@ -457,12 +462,14 @@ void performModelTestXML(const std::string hvcFilePath)
         if (strcmp(pRootNode->name(), "hopsanvalidationconfiguration")!=0)
         {
             cout << hvcFilePath  << " Has wrong root tag name: " << string(pRootNode->name()) << endl;
+            return false;
         }
 
         rapidxml::xml_node<> *pValidationNode = pRootNode->first_node("validation");
         if (!pValidationNode)
         {
             cout << "Error: No validation node found in xml" << endl;
+            return false;
         }
         while (pValidationNode != 0)
         {
@@ -486,6 +493,7 @@ void performModelTestXML(const std::string hvcFilePath)
             if (!pComponentNode)
             {
                 cout << "Error: No component node found in xml" << endl;
+                return false;
             }
             while (pComponentNode != 0)
             {
@@ -494,6 +502,7 @@ void performModelTestXML(const std::string hvcFilePath)
                 if (!pPortNode)
                 {
                     cout << "Error: No port node found in xml" << endl;
+                    return false;
                 }
                 while (pPortNode != 0)
                 {
@@ -502,6 +511,7 @@ void performModelTestXML(const std::string hvcFilePath)
                     if (!pVariableNode)
                     {
                         cout << "Error: No variable node found in xml" << endl;
+                        return false;
                     }
                     while (pVariableNode != 0)
                     {
@@ -531,7 +541,7 @@ void performModelTestXML(const std::string hvcFilePath)
                         if(!success)
                         {
                             cout << "Unable to initialize CSV file: " << csvfile << " : " << refData.getErrorString() << endl;
-                            return;
+                            return false;
                         }
 
                         double startTime=0, stopTime=1;
@@ -549,7 +559,7 @@ void performModelTestXML(const std::string hvcFilePath)
                             {
                                 printWaitingMessages(false);
                                 cout << "Initialize failed, Simulation aborted!" << endl;
-                                return;
+                                return false;
                             }
                             pRootSystem->finalize();
 
@@ -559,13 +569,13 @@ void performModelTestXML(const std::string hvcFilePath)
                             if (!pComp)
                             {
                                 cout << "Error: No such component name: " << compName << endl;
-                                return;
+                                return false;
                             }
                             Port *pPort = pComp->getPort(portName);
                             if (!pPort)
                             {
                                 cout << "Error: No such port name: " << portName << " in component: " << compName << endl;
-                                return;
+                                return false;
                             }
 
                             vTime = *pPort->getTimeVectorPtr();
@@ -573,7 +583,7 @@ void performModelTestXML(const std::string hvcFilePath)
                             if (dataId < 0)
                             {
                                 cout << "Error: No such varaiable name: " << varname << " in: " << pPort->getNodeType() << endl;
-                                return;
+                                return false;
                             }
 
                             for(size_t i=0; i<vTime.size(); ++i)
@@ -590,7 +600,7 @@ void performModelTestXML(const std::string hvcFilePath)
                             {
                                 printWaitingMessages(false);
                                 cout << "Initialize failed, Simulation aborted!" << endl;
-                                return;
+                                return false;
                             }
                             pRootSystem->finalize();
 
@@ -602,7 +612,7 @@ void performModelTestXML(const std::string hvcFilePath)
                         else
                         {
                             cout << "Error: Could not load modelfile: " << modelfile << endl;
-                            return;
+                            return false;
                         }
 
 
@@ -613,26 +623,24 @@ void performModelTestXML(const std::string hvcFilePath)
 
                         //std::cout.rdbuf(cout_sbuf); // restore the original stream buffer
 
-                        setColor(Red);
-
                         if(!compareVectors(vSim1, vRef, tolerance))
                         {
+                            setColor(Red);
                             cout << "Test failed: " << pRootSystem->getName() << endl;
                             setColor(White);
-                            return;
+                            return false;
                         }
 
                         if(!compareVectors(vSim1, vSim2, tolerance))
                         {
+                            setColor(Red);
                             cout << "Test failed (inconsistent result): " << pRootSystem->getName();
                             setColor(White);
-                            return;
+                            return false;
                         }
 
                         setColor(Green);
-
                         cout << "Test successful: " << pRootSystem->getName() << endl;
-
                         setColor(White);
 
                         pVariableNode = pVariableNode->next_sibling("variable");
@@ -647,7 +655,10 @@ void performModelTestXML(const std::string hvcFilePath)
     catch(std::exception &e)
     {
         cout << "Error: Could not open or read file: " << hvcFilePath << " " << e.what() << endl;
-        return;
+        return false;
     }
+
+    // Test was apparently succesfull or else we would not have reached this point
+    return true;
 }
 

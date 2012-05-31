@@ -57,7 +57,7 @@ void readNodesToSaveFromTxtFile(const std::string filePath, std::vector<std::str
 // ===== compare Functions =====
 bool compareVectors(const std::vector<double> &rVec, const std::vector<double> &rRef, const double tol);
 void performModelTest(std::string modelName);
-void performModelTestXML(const std::string hvcFilePath);
+bool performModelTestXML(const std::string hvcFilePath);
 
 
 #endif // CLIFUNCTIONS_H
