@@ -461,6 +461,7 @@ bool performModelTestXML(const std::string hvcFilePath)
         //! @todo should check version also
         if (strcmp(pRootNode->name(), "hopsanvalidationconfiguration")!=0)
         {
+            setColor(Red);
             cout << hvcFilePath  << " Has wrong root tag name: " << string(pRootNode->name()) << endl;
             return false;
         }
@@ -468,6 +469,7 @@ bool performModelTestXML(const std::string hvcFilePath)
         rapidxml::xml_node<> *pValidationNode = pRootNode->first_node("validation");
         if (!pValidationNode)
         {
+            setColor(Red);
             cout << "Error: No validation node found in xml" << endl;
             return false;
         }
@@ -492,6 +494,7 @@ bool performModelTestXML(const std::string hvcFilePath)
             pComponentNode = pValidationNode->first_node("component");
             if (!pComponentNode)
             {
+                setColor(Red);
                 cout << "Error: No component node found in xml" << endl;
                 return false;
             }
@@ -501,22 +504,25 @@ bool performModelTestXML(const std::string hvcFilePath)
                 pPortNode = pComponentNode->first_node("port");
                 if (!pPortNode)
                 {
+                    setColor(Red);
                     cout << "Error: No port node found in xml" << endl;
                     return false;
                 }
                 while (pPortNode != 0)
                 {
                     string portName = readStringAttribute(pPortNode, "name", "_noname_");
+                    string csvfile = readStringNodeValue(pPortNode->first_node("csvfile"), "");
                     pVariableNode = pPortNode->first_node("variable");
                     if (!pVariableNode)
                     {
+                        setColor(Red);
                         cout << "Error: No variable node found in xml" << endl;
                         return false;
                     }
                     while (pVariableNode != 0)
                     {
                         string varname = readStringAttribute(pVariableNode, "name", "_noname_");
-                        string csvfile = readStringNodeValue(pVariableNode->first_node("csvfile"), "");
+                        csvfile = readStringNodeValue(pVariableNode->first_node("csvfile"), csvfile); //Do we have variable specific csv override
                         if (csvfile.empty())
                         {
                             // If no csvfile was given use one with the same basename
@@ -540,6 +546,7 @@ bool performModelTestXML(const std::string hvcFilePath)
                         CSVParser refData(success, csvfile, '\n', '"');
                         if(!success)
                         {
+                            setColor(Red);
                             cout << "Unable to initialize CSV file: " << csvfile << " : " << refData.getErrorString() << endl;
                             return false;
                         }
@@ -558,6 +565,7 @@ bool performModelTestXML(const std::string hvcFilePath)
                             else
                             {
                                 printWaitingMessages(false);
+                                setColor(Red);
                                 cout << "Initialize failed, Simulation aborted!" << endl;
                                 return false;
                             }
@@ -568,12 +576,14 @@ bool performModelTestXML(const std::string hvcFilePath)
                             Component* pComp = pRootSystem->getSubComponent(compName);
                             if (!pComp)
                             {
+                                setColor(Red);
                                 cout << "Error: No such component name: " << compName << endl;
                                 return false;
                             }
                             Port *pPort = pComp->getPort(portName);
                             if (!pPort)
                             {
+                                setColor(Red);
                                 cout << "Error: No such port name: " << portName << " in component: " << compName << endl;
                                 return false;
                             }
@@ -582,6 +592,7 @@ bool performModelTestXML(const std::string hvcFilePath)
                             int dataId = pPort->getNodeDataIdFromName(varname);
                             if (dataId < 0)
                             {
+                                setColor(Red);
                                 cout << "Error: No such varaiable name: " << varname << " in: " << pPort->getNodeType() << endl;
                                 return false;
                             }
@@ -599,6 +610,7 @@ bool performModelTestXML(const std::string hvcFilePath)
                             else
                             {
                                 printWaitingMessages(false);
+                                setColor(Red);
                                 cout << "Initialize failed, Simulation aborted!" << endl;
                                 return false;
                             }
@@ -611,6 +623,7 @@ bool performModelTestXML(const std::string hvcFilePath)
                         }
                         else
                         {
+                            setColor(Red);
                             cout << "Error: Could not load modelfile: " << modelfile << endl;
                             return false;
                         }
@@ -626,22 +639,19 @@ bool performModelTestXML(const std::string hvcFilePath)
                         if(!compareVectors(vSim1, vRef, tolerance))
                         {
                             setColor(Red);
-                            cout << "Test failed: " << pRootSystem->getName() << endl;
-                            setColor(White);
+                            cout << "Test failed: " << pRootSystem->getName() << ":" << compName << ":" << portName << ":" << varname << endl;
                             return false;
                         }
 
                         if(!compareVectors(vSim1, vSim2, tolerance))
                         {
                             setColor(Red);
-                            cout << "Test failed (inconsistent result): " << pRootSystem->getName();
-                            setColor(White);
+                            cout << "Test failed (inconsistent result): " << pRootSystem->getName() << ":" << compName << ":" << portName << ":" << varname << endl;
                             return false;
                         }
 
                         setColor(Green);
-                        cout << "Test successful: " << pRootSystem->getName() << endl;
-                        setColor(White);
+                        cout << "Test successful: " << pRootSystem->getName() << ":" << compName << ":" << portName << ":" << varname << endl;
 
                         pVariableNode = pVariableNode->next_sibling("variable");
                     }

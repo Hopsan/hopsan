@@ -17,6 +17,7 @@ This means that if you add new files some necessary file properties for those fi
 *.prf = svn:eol-style=native
 *.dox = svn:eol-style=native
 *.xml = svn:eol-style=native
+*.hvc = svn:eol-style=native
 *.hmf = svn:eol-style=native
 *.txt = svn:eol-style=native
 *.bat = svn:eol-style=native;svn:executable

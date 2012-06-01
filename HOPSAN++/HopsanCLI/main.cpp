@@ -144,6 +144,7 @@ int main(int argc, char *argv[])
         else if (!testFilePathXML.empty())
         {
             returnSuccess = performModelTestXML(testFilePathXML);
+            setColor(White); //Reset terminal color
         }
         else
         {

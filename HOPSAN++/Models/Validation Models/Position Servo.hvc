@@ -6,10 +6,12 @@
     <parameterset></parameterset>
     <component name="Translational Mass">
       <port name="P2">
+        <!--Optional path to csv file, default is to use the same name (excluding ext) and path as this file-->
+        <csvfile></csvfile>
         <variable name="Position">
-          <!--Optional path to csv file, default is to use the same name (excluding ext) and path as this file-->
-          <csvfile></csvfile>
-          <!--Column indexing begins at 0, 0 is usualy time--> 
+          <!-- Optional csvfile override for variable -->
+          <!-- <csvfile></csvfile> -->
+          <!--Column indexing begins at 0. Time vector is usualy at 0--> 
           <column>1</column> 
           <!--Tolerance, allowed deviation 0.01==1%-->
           <tolerance>0.01</tolerance>

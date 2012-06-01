@@ -2,14 +2,16 @@
 <hopsanvalidationconfiguration hvcversion="0.1">
   <validation>
     <!--Optional path to model file, default is to use the same name (excluding ext) and path as this file-->
-    <modelfile>../Example Models/Load Sensing System.hmf</modelfile>
+    <modelfile>../Example Models/Sub System Example.hmf</modelfile>
     <parameterset></parameterset>
-    <component name="Variable Pump With Pressure Control">
-      <port name="P2">
+    <component name="Position Transducer">
+      <port name="out">
         <!--Optional path to csv file, default is to use the same name (excluding ext) and path as this file-->
         <csvfile></csvfile>
-        <variable name="Pressure">
-          <!--Column indexing begins at 0, 0 is usualy time--> 
+        <variable name="Value">
+          <!-- Optional csvfile override for variable -->
+          <!-- <csvfile></csvfile> -->
+          <!--Column indexing begins at 0. Time vector is usualy at 0--> 
           <column>1</column> 
           <!--Tolerance, allowed deviation 0.01==1%-->
           <tolerance>0.01</tolerance>
