@@ -1916,6 +1916,18 @@ CopyStack *ContainerObject::getDragCopyStackPtr()
     return mpDragCopyStack;
 }
 
+size_t ContainerObject::getNumberOfLogSamples()
+{
+    //Needs to be overloaded
+    assert(false);
+}
+
+void ContainerObject::setNumberOfLogSamples(size_t /*nSamples*/)
+{
+    //Needs to be overloaded
+    assert(false);
+}
+
 
 //! @brief Specifies model file for the container object
 void ContainerObject::setModelFile(QString path)

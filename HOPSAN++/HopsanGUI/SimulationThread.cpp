@@ -27,6 +27,7 @@
 #include "CoreAccess.h"
 #include "Configuration.h"
 #include "common.h"
+#include <QDebug>
 
 
 //! @class SimulationThread
@@ -58,11 +59,11 @@ void SimulationThread::run()
 
     if(gConfig.getUseMulticore())
     {
-        mpCoreSystemAccess->simulate(mStartTime, mFinishTime, MULTICORE, gConfig.getNumberOfThreads());
+        mpCoreSystemAccess->simulate(mStartTime, mFinishTime, gConfig.getNumberOfThreads());
     }
     else
     {
-        mpCoreSystemAccess->simulate(mStartTime, mFinishTime, SINGLECORE);
+        mpCoreSystemAccess->simulate(mStartTime, mFinishTime, -1);
     }
     //! @todo we should run finalize at some other place even if initialize is aborted
     mpCoreSystemAccess->finalize();

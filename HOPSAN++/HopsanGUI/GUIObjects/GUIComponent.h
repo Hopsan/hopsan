@@ -46,7 +46,7 @@ public:
     bool hasPowerPorts();
 
     bool setParameterValue(QString name, QString value, bool force=0);
-    QString getStartValueTxt(QString portName, QString variable);
+    //QString getStartValueTxt(QString portName, QString variable);
     bool setStartValue(QString portName, QString variable, QString sysParName);
 
     QString getTypeName();

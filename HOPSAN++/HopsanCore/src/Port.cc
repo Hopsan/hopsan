@@ -35,7 +35,7 @@
 using namespace std;
 using namespace hopsan;
 
-//! Port base class constructor
+//! @brief Port base class constructor
 Port::Port(const string nodeType, const string portName, Component *pPortOwner, Port *pParentPort)
 {
     mPortType = UNDEFINEDPORT;
@@ -75,14 +75,14 @@ Port::~Port()
 
 
 
-//! Returns the type of node that can be connected to this port
+//! @brief Returns the type of node that can be connected to this port
 const string Port::getNodeType() const
 {
     return mNodeType;
 }
 
 
-//! Returns the parent component
+//! @brief Returns the parent component
 Component* Port::getComponent() const
 {
     if(mpParentPort)
@@ -92,20 +92,20 @@ Component* Port::getComponent() const
 }
 
 
-//! Returns a pointer to the connected node
+//! @brief Returns a pointer to the connected node
 Node* Port::getNodePtr(const size_t /*portIdx*/)
 {
     return mpNode;
 }
 
-//! Adds a subport to a multiport
+//! @brief Adds a subport to a multiport
 Port* Port::addSubPort()
 {
     assert("This should only be implemented and called from multiports" == 0);
     return 0;
 }
 
-//! REmoves a subport from multiport
+//! @brief Removes a subport from multiport
 void Port::removeSubPort(Port* /*ptr*/)
 {
     assert("This should only be implemented and called from multiports" == 0);
@@ -132,7 +132,7 @@ void Port::loadStartValuesFromSimulation()
 }
 
 
-//! Reads a value from the connected node
+//! @brief Reads a value from the connected node
 //! @param [in] idx The data id of the data to read
 //! @return The data value
 double Port::readNode(const size_t idx, const size_t /*portIdx*/)
@@ -153,7 +153,7 @@ double Port::readNode(const size_t idx, const size_t /*portIdx*/)
 }
 
 
-//! Writes a value to the connected node
+//! @brief Writes a value to the connected node
 //! @param [in] idx The data id of the data to write
 //! @param [in] value The value of the data to read
 void Port::writeNode(const size_t &idx, const double &value, const size_t /*portIdx*/)
@@ -170,7 +170,7 @@ double *Port::getNodeDataPtr(const size_t idx, const size_t /*portIdx*/)
     return mpNode->getDataPtr(idx);
 }
 
-//! Get a ptr to the data variable in the node, if node is not created (port not connected) return ptr to dummy node data
+//! @brief Get a ptr to the data variable in the node, if node is not created (port not connected) return ptr to dummy node data
 //! @param [in] idx The id of the data variable to return ptr to
 //! @param [in] defaultValue Default value if port not connected
 double *Port::getSafeNodeDataPtr(const size_t idx, const double defaultValue, const size_t /*portIdx*/)
@@ -192,7 +192,7 @@ double *Port::getSafeNodeDataPtr(const size_t idx, const double defaultValue, co
 
 
 
-//! Set the node that the port is connected to
+//! @brief Set the node that the port is connected to
 //! @param [in] pNode A pointer to the Node
 void Port::setNode(Node* pNode, const size_t /*portIdx*/)
 {
@@ -200,7 +200,7 @@ void Port::setNode(Node* pNode, const size_t /*portIdx*/)
 }
 
 
-//! Adds a pointer to an other connected port to a port
+//! @brief Adds a pointer to an other connected port to a port
 //! @param [in] pPort A pointer to the other port
 void Port::addConnectedPort(Port* pPort, const size_t /*portIdx*/)
 {
@@ -208,7 +208,7 @@ void Port::addConnectedPort(Port* pPort, const size_t /*portIdx*/)
 }
 
 
-//! Removes a pointer to an other connected port from a port
+//! @brief Removes a pointer to an other connected port from a port
 //! @param [in] pPort The pointer to the other port to be removed
 void Port::eraseConnectedPort(Port* pPort, const size_t /*portIdx*/)
 {
@@ -235,7 +235,7 @@ void Port::eraseConnectedPort(Port* pPort, const size_t /*portIdx*/)
 }
 
 
-//! Get a vector of pointers to all other ports connected connected to this one
+//! @brief Get a vector of pointers to all other ports connected connected to this one
 //! @returns A refernce to the internal vector of connected port pointers
 //! @todo maybe should return const vector so that contents my not be changed
 vector<Port*> &Port::getConnectedPorts(const int /*portIdx*/)
@@ -265,7 +265,7 @@ void Port::createStartNode(NodeTypeT nodeType)
 }
 
 
-//! Calls the save log data function of the connected node (if any)
+//! @brief Calls the save log data function of the connected node (if any)
 void Port::saveLogData(string filename, const size_t /*portIdx*/)
 {
     if (mpNode != 0)
@@ -281,7 +281,7 @@ void Port::saveLogData(string filename, const size_t /*portIdx*/)
 }
 
 
-//! Get all data names and units from the connected node
+//! @brief Get all data names and units from the connected node
 //! @param [in,out] rNames This vector will contain the names
 //! @param [in,out] rUnits This vector will contain the units
 void Port::getNodeDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits, const size_t /*portIdx*/)
@@ -368,62 +368,62 @@ vector<double> *Port::getJustTheDataVectorPtr(const size_t /*portIdx*/)
 }
 
 
-//! @brief Read the start values to a start value node in the port
-//! @param[out] rNames is the Vector of names of the star values
-//! @param[out] rValues is the Vector of values of the star values, if it is mapped to a System parameter the value of this will be here
-//! @param[out] rUnits is the Vector of units of the star values
-void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vector<double> &rValues, vector<string> &rUnits, const size_t /*portIdx*/)
-{
-    if(mpStartNode)
-    {
-        mpStartNode->getDataNamesValuesAndUnits(rNames, rValues, rUnits);
-    }
-}
+////! @brief Read the start values to a start value node in the port
+////! @param[out] rNames is the Vector of names of the star values
+////! @param[out] rValues is the Vector of values of the star values, if it is mapped to a System parameter the value of this will be here
+////! @param[out] rUnits is the Vector of units of the star values
+//void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vector<double> &rValues, vector<string> &rUnits, const size_t /*portIdx*/)
+//{
+//    if(mpStartNode)
+//    {
+//        mpStartNode->getDataNamesValuesAndUnits(rNames, rValues, rUnits);
+//    }
+//}
 
 
-//! @brief Read the start values to a start value node in the port
-//! @param[out] rNames is the Vector of names of the star values
-//! @param[out] rValuesTxt is the Vector of values of the star values, if it is mapped to a System parameter the name of this will be here
-//! @param[out] rUnits is the Vector of units of the star values
-void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vector<std::string> &rValuesTxt, std::vector<std::string> &rUnits, const size_t /*portIdx*/)
-{
-    if(mpStartNode)
-    {
-        std::vector<double> values;
-        getStartValueDataNamesValuesAndUnits(rNames, values, rUnits);
-        rValuesTxt.resize(values.size());
-        for(size_t i = 0; i < rNames.size(); ++i)
-        {
-            //Get a pointer to the actual node data
-            //! @note This pointer is commented to avoid a warning, recomment it before using it...
-            //double *nodeDataPtr = mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(rNames[i]));
+////! @brief Read the start values to a start value node in the port
+////! @param[out] rNames is the Vector of names of the star values
+////! @param[out] rValuesTxt is the Vector of values of the star values, if it is mapped to a System parameter the name of this will be here
+////! @param[out] rUnits is the Vector of units of the star values
+//void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vector<std::string> &rValuesTxt, std::vector<std::string> &rUnits, const size_t /*portIdx*/)
+//{
+//    if(mpStartNode)
+//    {
+//        std::vector<double> values;
+//        getStartValueDataNamesValuesAndUnits(rNames, values, rUnits);
+//        rValuesTxt.resize(values.size());
+//        for(size_t i = 0; i < rNames.size(); ++i)
+//        {
+//            //Get a pointer to the actual node data
+//            //! @note This pointer is commented to avoid a warning, recomment it before using it...
+//            //double *nodeDataPtr = mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(rNames[i]));
 
 
-            assert(false); //If you crash here, please report it to Bjorn who don't think it will happen :-)
+//            assert(false); //If you crash here, please report it to Bjorn who don't think it will happen :-)
 
 
-            //Check if the nodeDataPtr is in the System parameters
-            //! @todo Should be done by Bjorn!
+//            //Check if the nodeDataPtr is in the System parameters
+//            //! @todo Should be done by Bjorn!
 
-            std::string valueTxt;//FIXA = getComponent()->getSystemParent()->getSystemParameters().findOccurrence(nodeDataPtr);
-            if(!(valueTxt.empty()))
-            {
-                //The nodeDataPrt is connected to a System parameter, read out this name
-                rValuesTxt[i] = valueTxt;
-            }
-            else
-            {
-                //The nodeDataPrt is not connected to a System parameter, read out the node data value to the string
-                std::ostringstream oss;
-                oss << values[i];
-                rValuesTxt[i] = oss.str();
-            }
-        }
-    }
-}
+//            std::string valueTxt;//FIXA = getComponent()->getSystemParent()->getSystemParameters().findOccurrence(nodeDataPtr);
+//            if(!(valueTxt.empty()))
+//            {
+//                //The nodeDataPrt is connected to a System parameter, read out this name
+//                rValuesTxt[i] = valueTxt;
+//            }
+//            else
+//            {
+//                //The nodeDataPrt is not connected to a System parameter, read out the node data value to the string
+//                std::ostringstream oss;
+//                oss << values[i];
+//                rValuesTxt[i] = oss.str();
+//            }
+//        }
+//    }
+//}
 
 
-//! @brief Get the an actual start value of the port
+//! @brief Get the actual start value of the port
 //! @param[in] idx is the index of the start value e.g. NodeHydraulic::PRESSURE
 //! @returns the start value
 double Port::getStartValue(const size_t idx, const size_t /*portIdx*/)
@@ -481,13 +481,13 @@ void Port::disableStartValue(const size_t idx)
 }
 
 
-//! Check if the port is curently connected
+//! @brief Check if the port is curently connected
 bool Port::isConnected()
 {
     return (mConnectedPorts.size() > 0);
 }
 
-//! Check if this port is connected to other port
+//! @brief Check if this port is connected to other port
 //! @todo how do we handle multiports
 bool Port::isConnectedTo(Port *pOtherPort)
 {
@@ -503,7 +503,7 @@ bool Port::isConnectedTo(Port *pOtherPort)
 }
 
 
-//! Check if the port MUST be connected
+//! @brief Check if the port MUST be connected
 bool Port::isConnectionRequired()
 {
     return mConnectionRequired;
@@ -520,46 +520,46 @@ bool Port::isMultiPort() const
     return (mPortType > MULTIPORT);
 }
 
-//! Get the port type
+//! @brief Get the port type
 PortTypesEnumT Port::getPortType() const
 {
     return mPortType;
 }
 
-//! Get the External port type (virtual, should be overloaded in systemports only)
+//! @brief Get the External port type (virtual, should be overloaded in systemports only)
 PortTypesEnumT Port::getExternalPortType()
 {
     return getPortType();
 }
 
-//! Get the Internal port type (virtual, should be overloaded in systemports only)
+//! @brief Get the Internal port type (virtual, should be overloaded in systemports only)
 PortTypesEnumT Port::getInternalPortType()
 {
     return getPortType();
 }
 
 
-//! Get the port name
+//! @brief Get the port name
 const string Port::getPortName() const
 {
     return mPortName;
 }
 
 
-//! Get the name of the commponent that the port is attached to
+//! @brief Get the name of the commponent that the port is attached to
 const string Port::getComponentName() const
 {
     return getComponent()->getName();
 }
 
 
-//! SystemPort constructor
+//! @brief SystemPort constructor
 SystemPort::SystemPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner, pParentPort)
 {
     mPortType = SYSTEMPORT;
 }
 
-//! Get the External port type (virtual, should be overloaded in systemports only)
+//! @brief Get the External port type (virtual, should be overloaded in systemports only)
 PortTypesEnumT SystemPort::getExternalPortType()
 {
     std::vector<Port*>::iterator pit;
@@ -577,7 +577,7 @@ PortTypesEnumT SystemPort::getExternalPortType()
     return getPortType();
 }
 
-//! Get the Internal port type (virtual, should be overloaded in systemports only)
+//! @brief Get the Internal port type (virtual, should be overloaded in systemports only)
 PortTypesEnumT SystemPort::getInternalPortType()
 {
     std::vector<Port*>::iterator pit;
@@ -596,7 +596,7 @@ PortTypesEnumT SystemPort::getInternalPortType()
 }
 
 
-//! PowerPort constructor
+//! @brief PowerPort constructor
 PowerPort::PowerPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner, pParentPort)
 {
     mPortType = POWERPORT;

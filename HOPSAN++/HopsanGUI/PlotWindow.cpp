@@ -30,6 +30,7 @@
 #include <QAction>
 #include <QDateTime>
 #include <QStandardItemModel>
+#include <cassert>
 
 #include <cstring>
 #include <limits>

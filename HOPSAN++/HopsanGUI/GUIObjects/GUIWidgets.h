@@ -27,7 +27,6 @@
 
 #include <QGraphicsWidget>
 #include <QObject>
-#include <assert.h>
 
 #include "GUIObject.h"
 #include "common.h"

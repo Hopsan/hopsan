@@ -29,6 +29,7 @@
 #include "CoreAccess.h"
 #include "QuickNavigationWidget.h"
 #include "AnimationWidget.h"
+#include "common.h"
 
 //Forward declaration
 class QGraphicsScene;

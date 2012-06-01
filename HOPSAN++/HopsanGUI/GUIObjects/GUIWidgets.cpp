@@ -22,27 +22,17 @@
 //!
 //$Id$
 
-#include "common.h"
+
+#include <QGraphicsWidget>
+#include <cassert>
+
 
 #include "GUIWidgets.h"
 #include "GUISystem.h"
 #include "Widgets/ProjectTabWidget.h"
 #include "MainWindow.h"
+#include "Utilities/GUIUtilities.h"
 #include "UndoStack.h"
-
-#include <QLabel>
-#include <QDialog>
-#include <QPushButton>
-#include <QDialogButtonBox>
-#include <QGridLayout>
-#include <QFontDialog>
-#include <QColorDialog>
-#include <QGroupBox>
-#include <QSpinBox>
-#include <QGraphicsSceneMouseEvent>
-#include <QGraphicsWidget>
-#include <QComboBox>
-
 
 using namespace std;
 

@@ -25,11 +25,10 @@
 #ifndef GUICONTAINEROBJECT_H
 #define GUICONTAINEROBJECT_H
 
+#include <QSlider>
+
 #include "GUIModelObject.h"
-#include "GUIComponent.h"
-#include "GUIWidgets.h"
 #include "CopyStack.h"
-#include "CoreAccess.h"
 
 //Forward Declarations
 class ProjectTab;
@@ -37,6 +36,8 @@ class UndoStack;
 class MainWindow;
 class QGraphicsScene;
 class Port;
+class Widget;
+class TextBoxWidget;
 
 //! @class VariableDescription
 //! @brief Container class for strings describing a plot variable
@@ -186,8 +187,8 @@ public:
     CopyStack *getDragCopyStackPtr();
 
     //These (overloaded versions) are used in containerPropertiesDialog by systems
-    virtual size_t getNumberOfLogSamples(){assert(false);}
-    virtual void setNumberOfLogSamples(size_t /*nSamples*/){assert(false);}
+    virtual size_t getNumberOfLogSamples();
+    virtual void setNumberOfLogSamples(size_t nSamples);
 
     //Model and script file methods
     void setModelFile(QString path);

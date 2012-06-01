@@ -37,6 +37,7 @@
 #include "Configuration.h"
 #include "Utilities/XMLUtilities.h"
 #include "GUIObjects/GUISystem.h"
+#include "GUIObjects/GUIWidgets.h"
 #include "Widgets/LibraryWidget.h"
 #include "version_gui.h"
 #include "GUIConnector.h"
@@ -399,11 +400,11 @@ bool ProjectTab::simulate_old()
     mLastSimulationTime = simTimer.elapsed();
     if (progressBar.wasCanceled() || !initSuccess)
     {
-        pMessageWidget->printGUIInfoMessage(QString(tr("Simulation of '").append(mpSystem->getCoreSystemAccessPtr()->getRootSystemName()).append(tr("' was terminated!"))));
+        pMessageWidget->printGUIInfoMessage(QString(tr("Simulation of '").append(mpSystem->getCoreSystemAccessPtr()->getSystemName()).append(tr("' was terminated!"))));
     }
     else
     {
-        pMessageWidget->printGUIInfoMessage(QString(tr("Simulated '").append(mpSystem->getCoreSystemAccessPtr()->getRootSystemName()).append(tr("' successfully!  Simulation time: ").append(timeString).append(" ms"))));
+        pMessageWidget->printGUIInfoMessage(QString(tr("Simulated '").append(mpSystem->getCoreSystemAccessPtr()->getSystemName()).append(tr("' successfully!  Simulation time: ").append(timeString).append(" ms"))));
         emit simulationFinished();
         //this->mpParentProjectTabWidget->mpParentMainWindow->mpPlotWidget->mpVariableList->updateList();
     }

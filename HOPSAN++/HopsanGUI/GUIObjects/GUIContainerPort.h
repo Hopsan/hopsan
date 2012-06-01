@@ -27,7 +27,6 @@
 
 #include "GUIModelObject.h"
 
-//! @todo Rename this and cpp file
 class ContainerPort : public ModelObject
 {
     Q_OBJECT

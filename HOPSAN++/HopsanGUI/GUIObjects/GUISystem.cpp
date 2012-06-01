@@ -35,6 +35,7 @@
 #include "Widgets/ProjectTabWidget.h"
 #include "Dialogs/ContainerPropertiesDialog.h"
 #include "Utilities/GUIUtilities.h"
+#include "GUIObjects/GUIWidgets.h"
 #include "Widgets/PyDockWidget.h"
 #include "Configuration.h"
 #include "GUIContainerObject.h"
@@ -98,7 +99,7 @@ void SystemContainer::commonConstructorCode()
     else
     {
         //Create subsystem
-        qDebug() << "creating subsystem and setting name in " << mpParentContainerObject->getCoreSystemAccessPtr()->getRootSystemName();
+        qDebug() << "creating subsystem and setting name in " << mpParentContainerObject->getCoreSystemAccessPtr()->getSystemName();
         mName = mpParentContainerObject->getCoreSystemAccessPtr()->createSubSystem(this->getName());
         refreshDisplayName();
         qDebug() << "creating CoreSystemAccess for this subsystem, name: " << this->getName() << " parentname: " << mpParentContainerObject->getName();
@@ -117,7 +118,7 @@ void SystemContainer::setName(QString newName)
 {
     if (mpParentContainerObject == 0)
     {
-        mName = mpCoreSystemAccess->setRootSystemName(newName);
+        mName = mpCoreSystemAccess->setSystemName(newName);
     }
     else
     {
@@ -138,7 +139,7 @@ QString SystemContainer::getTypeName()
 //! @returns A string containing the CQS type
 QString SystemContainer::getTypeCQS()
 {
-    return mpCoreSystemAccess->getRootSystemTypeCQS();
+    return mpCoreSystemAccess->getSystemTypeCQS();
 }
 
 //! @brief get The parameter names of this system

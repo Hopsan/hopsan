@@ -255,7 +255,7 @@ public slots:
             QString strParValue = o->mpProjectTabs->getCurrentTopLevelSystem()->getModelObject(compName)->getParameterValue(parName);
             return strParValue.toDouble(); //! @todo Not good if parameter not double
         }
-        assert(false);
+        //assert(false);
         return 0;
     }
 

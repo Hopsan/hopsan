@@ -81,8 +81,7 @@ public:
 
     //Load and save methods
     virtual void saveToDomElement(QDomElement &rDomElement);
-    virtual void loadFromHMF(QString /*modelFilePath=QString()*/) {assert(false);} //Only available in GUISystem for now
-    virtual void loadFromDomElement(QDomElement &/*rDomElement*/) {assert(false);} //Only available in GUISystem for now
+    virtual void loadFromDomElement(QDomElement &rDomElement);
     virtual void setModelFileInfo(QFile &rFile);
 
     //Connector methods

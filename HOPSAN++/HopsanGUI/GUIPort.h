@@ -74,11 +74,7 @@ public:
     virtual QString getPortType(const CoreSystemAccess::PortTypeIndicatorT ind=CoreSystemAccess::ACTUALPORTTYPE);
     virtual QString getNodeType();
 
-    void getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<double> &rValues, QVector<QString> &rUnits);
-    void getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<QString> &rValuesTxt, QVector<QString> &rUnits);
-//    void setStartValueDataByNames(QVector<QString> names, QVector<double> values);
-//    bool setStartValueDataByNames(QVector<QString> names, QVector<QString> valuesTxt);
-
+    //void getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<QString> &rValuesTxt, QVector<QString> &rUnits);
 
     bool getLastNodeData(QString dataName, double& rData);
     void disconnectAndRemoveAllConnectedConnectors();

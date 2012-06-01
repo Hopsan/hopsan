@@ -18,17 +18,12 @@
 //! @author Flumes <flumes@lists.iei.liu.se>
 //! @date   2010-01-01
 //!
-//! @brief Contains the CoreAccess class, The API class for communication with the HopsanCore
+//! @brief Contains the HopsanCore Qt API classes for communication with the HopsanCore
 //!
 //$Id$
 
 #include "CoreAccess.h"
-#include "MainWindow.h"
-#include "Widgets/ProjectTabWidget.h"
-#include "Widgets/MessageWidget.h"
-#include "GUIObjects/GUISystem.h"
-#include <QString>
-#include <QVector>
+#include <QDebug>
 
 //HopsanCore includes
 #include "HopsanCore.h"
@@ -170,7 +165,7 @@ hopsan::ComponentSystem* CoreSystemAccess::getCoreSystemPtr()
 
 hopsan::ComponentSystem* CoreSystemAccess::getCoreSubSystemPtr(QString name)
 {
-    qDebug() << " corecomponentsystemname: " <<  QString::fromStdString(mpCoreComponentSystem->getName()) << "  Subname: " << name;
+    //qDebug() << " corecomponentsystemname: " <<  QString::fromStdString(mpCoreComponentSystem->getName()) << "  Subname: " << name;
     return mpCoreComponentSystem->getSubComponentSystem(name.toStdString());
 }
 
@@ -230,7 +225,7 @@ double CoreSystemAccess::getDesiredTimeStep()
 }
 
 
-QString CoreSystemAccess::getRootSystemTypeCQS()
+QString CoreSystemAccess::getSystemTypeCQS()
 {
     //qDebug() << "getRootTypeCQS: " << componentName;
     return QString::fromStdString(mpCoreComponentSystem->getTypeCQSString());
@@ -245,7 +240,7 @@ QString CoreSystemAccess::getSubComponentTypeCQS(QString componentName)
 }
 
 
-QString CoreSystemAccess::setRootSystemName(QString name)
+QString CoreSystemAccess::setSystemName(QString name)
 {
     //qDebug() << "setting root system name to: " << name;
     mpCoreComponentSystem->setName(name.toStdString());
@@ -263,7 +258,7 @@ QString CoreSystemAccess::renameSubComponent(QString componentName, QString name
     return QString::fromStdString(pTempComponent->getName());
 }
 
-QString CoreSystemAccess::getRootSystemName()
+QString CoreSystemAccess::getSystemName()
 {
    // qDebug() << "getNAme from core root: " << QString::fromStdString(mpCoreComponentSystem->getName());
     return QString::fromStdString(mpCoreComponentSystem->getName());
@@ -278,25 +273,6 @@ void CoreSystemAccess::stop()
 {
     mpCoreComponentSystem->stopSimulation();
 }
-
-//! @todo move to project tab or somthing
-//void CoreSystemAccess::simulateAllOpenModels(double mStartTime, double mFinishTime, simulationMethod type, size_t nThreads, bool modelsHaveNotChanged)
-//{
-//    std::vector<hopsan::ComponentSystem *> systemVector;
-//    for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
-//    {
-//        systemVector.push_back(gpMainWindow->mpProjectTabs->getSystem(i)->getCoreSystemAccessPtr()->getCoreSystemPtr());
-//    }
-
-//    if(type == MULTICORE)
-//    {
-//        systemVector.at(0)->simulateMultipleSystemsMultiThreaded(mStartTime, mFinishTime, nThreads, systemVector, modelsHaveNotChanged);
-//    }
-//    else
-//    {
-//        systemVector.at(0)->simulateMultipleSystems(mStartTime, mFinishTime, systemVector);
-//    }
-//}
 
 
 QString CoreSystemAccess::getPortType(const QString componentName, const QString portName, const PortTypeIndicatorT portTypeIndicator)
@@ -323,7 +299,7 @@ QString CoreSystemAccess::getPortType(const QString componentName, const QString
     }
     else
     {
-        qDebug() <<  "======== ERROR ========= Could not find Port in getPortType: " << componentName << " " << portName << " in: " << this->getRootSystemName();
+        qDebug() <<  "======== ERROR ========= Could not find Port in getPortType: " << componentName << " " << portName << " in: " << this->getSystemName();
         return QString(); //Empty
     }
 }
@@ -337,52 +313,31 @@ QString CoreSystemAccess::getNodeType(QString componentName, QString portName)
     }
     else
     {
-        qDebug() <<  "======================================== EMPTY nodetype: " << componentName << " " << portName << " in: " << this->getRootSystemName();
+        qDebug() <<  "======================================== EMPTY nodetype: " << componentName << " " << portName << " in: " << this->getSystemName();
         return QString(); //Empty
     }
 }
 
 
-void CoreSystemAccess::getStartValueDataNamesValuesAndUnits(QString componentName, QString portName, QVector<QString> &rNames, QVector<double> &rValues, QVector<QString> &rUnits)
-{
-    std::vector<std::string> stdNames, stdUnits;
-    std::vector<double> stdValues;
-    hopsan::Port *pPort = this->getCorePortPtr(componentName, portName);
-    if(pPort)
-    {
-        pPort->getStartValueDataNamesValuesAndUnits(stdNames, stdValues, stdUnits);
-    }
-    rNames.resize(stdNames.size());
-    rValues.resize(stdValues.size());
-    rUnits.resize(stdUnits.size());
-    for(size_t i=0; i < stdNames.size(); ++i) //! @todo Make a nicer conversion fron std::vector<std::string> --> QVector<QString>
-    {
-        rNames[i] = QString::fromStdString(stdNames[i]);
-        rValues[i] = stdValues[i];
-        rUnits[i] = QString::fromStdString(stdUnits[i]);
-    }
-}
-
-
-void CoreSystemAccess::getStartValueDataNamesValuesAndUnits(QString componentName, QString portName, QVector<QString> &rNames, QVector<QString> &rValuesTxt, QVector<QString> &rUnits)
-{
-    std::vector<std::string> stdNames, stdUnits;
-    std::vector<std::string> stdValuesTxt;
-    hopsan::Port *pPort = this->getCorePortPtr(componentName, portName);
-    if(pPort)
-    {
-        pPort->getStartValueDataNamesValuesAndUnits(stdNames, stdValuesTxt, stdUnits);
-    }
-    rNames.resize(stdNames.size());
-    rValuesTxt.resize(stdValuesTxt.size());
-    rUnits.resize(stdUnits.size());
-    for(size_t i=0; i < stdNames.size(); ++i) //! @todo Make a nicer conversion fron std::vector<std::string> --> QVector<QString>
-    {
-        rNames[i] = QString::fromStdString(stdNames[i]);
-        rValuesTxt[i] = QString::fromStdString(stdValuesTxt[i]);
-        rUnits[i] = QString::fromStdString(stdUnits[i]);
-    }
-}
+//void CoreSystemAccess::getStartValueDataNamesValuesAndUnits(QString componentName, QString portName, QVector<QString> &rNames, QVector<QString> &rValuesTxt, QVector<QString> &rUnits)
+//{
+//    std::vector<std::string> stdNames, stdUnits;
+//    std::vector<std::string> stdValuesTxt;
+//    hopsan::Port *pPort = this->getCorePortPtr(componentName, portName);
+//    if(pPort)
+//    {
+//        pPort->getStartValueDataNamesValuesAndUnits(stdNames, stdValuesTxt, stdUnits);
+//    }
+//    rNames.resize(stdNames.size());
+//    rValuesTxt.resize(stdValuesTxt.size());
+//    rUnits.resize(stdUnits.size());
+//    for(size_t i=0; i < stdNames.size(); ++i) //! @todo Make a nicer conversion fron std::vector<std::string> --> QVector<QString>
+//    {
+//        rNames[i] = QString::fromStdString(stdNames[i]);
+//        rValuesTxt[i] = QString::fromStdString(stdValuesTxt[i]);
+//        rUnits[i] = QString::fromStdString(stdUnits[i]);
+//    }
+//}
 
 
 bool CoreSystemAccess::setParameterValue(QString componentName, QString parameterName, QString value, bool force)
@@ -449,11 +404,11 @@ bool CoreSystemAccess::initialize(double mStartTime, double mFinishTime, int nSa
 }
 
 //! @deprecated use the coresimulation access class instead
-void CoreSystemAccess::simulate(double mStartTime, double mFinishTime, simulationMethod type, size_t nThreads, bool modelHasNotChanged)
+void CoreSystemAccess::simulate(double mStartTime, double mFinishTime, int nThreads, bool modelHasNotChanged)
 {
     //qDebug() << "simulate(), nThreads = " << nThreads;
 
-    if(type == MULTICORE)
+    if(nThreads >= 0)
     {
         qDebug() << "Starting multicore simulation";
         mpCoreComponentSystem->simulateMultiThreaded(mStartTime, mFinishTime, nThreads, modelHasNotChanged);
@@ -536,21 +491,6 @@ void CoreSystemAccess::getParameter(QString componentName, QString parameterName
     }
 }
 
-//! @deprecated
-//void CoreSystemAccess::getParameters(QString componentName, QVector<QString> &qParameterNames, QVector<QString> &qParameterValues, QVector<QString> &qDescriptions, QVector<QString> &qUnits, QVector<QString> &qTypes)
-//{
-//    std::vector<std::string> parameterNames, parameterValues, descriptions, units, types;
-//    //! @todo should check that component found before atempting to get parameter
-//    mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getParameters(parameterNames, parameterValues, descriptions, units, types);
-//    for(size_t i=0; i<parameterNames.size(); ++i)
-//    {
-//        qParameterNames.push_back(QString::fromStdString(parameterNames[i]));
-//        qParameterValues.push_back(QString::fromStdString(parameterValues[i]));
-//        qDescriptions.push_back(QString::fromStdString(descriptions[i]));
-//        qUnits.push_back(QString::fromStdString(units[i]));
-//        qTypes.push_back(QString::fromStdString(types[i]));
-//    }
-//}
 
 QStringList CoreSystemAccess::getParameterNames(QString componentName)
 {
@@ -581,15 +521,6 @@ QStringList CoreSystemAccess::getSystemParameterNames()
     return qParameterNames;
 }
 
-//QString CoreSystemAccess::getParameterUnit(QString /*componentName*/, QString /*parameterName*/)
-//{
-//    return QString("");
-//}
-
-//QString CoreSystemAccess::getParameterDescription(QString /*componentName*/, QString /*parameterName*/)
-//{
-//    return QString("");
-//}
 
 QString CoreSystemAccess::getParameterValue(QString componentName, QString parameterName)
 {
@@ -629,18 +560,6 @@ void CoreSystemAccess::unReserveUniqueName(QString name)
     mpCoreComponentSystem->unReserveUniqueName(name.toStdString());
 }
 
-QString CoreSystemAccess::getPlotDataUnit(const QString compname, const QString portname, const QString dataname)
-{
-    std::string dummy, unit;
-    hopsan::Port* pPort = this->getCorePortPtr(compname, portname);
-    if(pPort)
-    {
-        int idx = pPort->getNodeDataIdFromName(dataname.toStdString());
-        if(idx >= 0)
-            pPort->getNodeDataNameAndUnit(idx,dummy,unit);
-    }
-    return QString::fromStdString(unit);
-}
 
 //! @todo how to handle fetching from systemports, component names will not be found
 void CoreSystemAccess::getPlotDataNamesAndUnits(const QString compname, const QString portname, QVector<QString> &rNames, QVector<QString> &rUnits)

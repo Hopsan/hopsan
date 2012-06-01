@@ -29,7 +29,6 @@
 #include <QObject>
 #include <QPen>
 
-#include <cassert>
 #include "common.h"
 
 class QDomElement;
@@ -48,17 +47,13 @@ public:
     virtual void setParentContainerObject(ContainerObject *pParentContainer);
     virtual ContainerObject *getParentContainerObject();
 
-    //Name methods
-    virtual QString getTypeName() {assert(false);} //Maybe sould not bee here
-    virtual QString getName() {assert(false);} //Maybe sould not bee here
-
     //Position methods
     QPointF getCenterPos();
     void setCenterPos(const QPointF cpos);
 
     //Load and save methods
-    virtual void saveToDomElement(QDomElement &/*rDomElement*/);
-    virtual void loadFromHMF(QString /*modelFilePath=QString()*/) {assert(false);} //Only available in GUISubsystem for now
+    virtual void saveToDomElement(QDomElement &rDomElement);
+    virtual void loadFromHMF(QString modelFilePath=QString());
 
     //Other methods
     bool isFlipped();
@@ -69,7 +64,6 @@ public:
 public slots:
     virtual void flipVertical(undoStatus /*undoSettings = UNDO*/){} //!< @todo nothing for now
     virtual void flipHorizontal(undoStatus /*undoSettings = UNDO*/){}  //!< @todo nothing for now
-    virtual void deleteMe();
     virtual void rotate(qreal angle, undoStatus undoSettings=UNDO);
     void rotate90cw(undoStatus undoSettings=UNDO);
     void rotate90ccw(undoStatus undoSettings=UNDO);
@@ -80,6 +74,8 @@ public slots:
     void moveRight();
     void deselect();
     void select();
+
+    virtual void deleteMe();
 
 signals:
     void objectMoved();

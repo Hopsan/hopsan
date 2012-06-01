@@ -25,14 +25,15 @@
 #include <QtGui>
 
 #include "GUIObject.h"
-#include "GUIContainerObject.h"
+#include "GUIObjects/GUIContainerObject.h"
+#include "GUIObjects/GUIWidgets.h"
 #include "GraphicsView.h"
 #include "Widgets/ProjectTabWidget.h"
 #include "UndoStack.h"
 #include "Utilities/GUIUtilities.h"
+#include <cassert>
 
 
-//! @todo should not pSystem and pParent be teh same ?
 WorkspaceObject::WorkspaceObject(QPointF pos, qreal rot, selectionStatus, ContainerObject *pParentContainer, QGraphicsItem *pParent)
     : QGraphicsWidget(pParent)
 {
@@ -84,6 +85,7 @@ int WorkspaceObject::type() const
     return Type;
 }
 
+//! @brief Returns the position of the  WorkspaceObject center in scene coordinates
 QPointF WorkspaceObject::getCenterPos()
 {
     if (this->scene() != 0)
@@ -96,10 +98,13 @@ QPointF WorkspaceObject::getCenterPos()
     }
 }
 
+//! @brief Set the position of the object so that it center is at given position
+//! @param [in] cpos The center position in scene coordinates
 void WorkspaceObject::setCenterPos(const QPointF cpos)
 {
     if (this->scene() != 0)
     {
+        // We translate pos by the same amout as the diff from our current center pos
         QPointF posDiff = cpos - this->sceneBoundingRect().center();
         this->setPos(this->pos()+posDiff);
     }
@@ -109,8 +114,17 @@ void WorkspaceObject::setCenterPos(const QPointF cpos)
     }
 }
 
-void WorkspaceObject::saveToDomElement(QDomElement &/*rDomElement*/){}  //! @todo nothing for now
+void WorkspaceObject::saveToDomElement(QDomElement &/*rDomElement*/)
+{
+    // Nothing for now
+}
 
+void WorkspaceObject::loadFromHMF(QString /*modelFilePath=QString()*/)
+{
+    //Should only be available in SystemContainers for now
+}
+
+//! @brief Returns the objects parent ContainerObject or 0 if no parent container
 ContainerObject *WorkspaceObject::getParentContainerObject()
 {
     return mpParentContainerObject;
@@ -272,10 +286,10 @@ QVariant WorkspaceObject::itemChange(GraphicsItemChange change, const QVariant &
 }
 
 
-//! @brief Slot that rotates the object to a desired angle (NOT registered in undo stack!)
+//! @brief Slot that rotates an object to the desired angle (NOT registered in undo stack!)
 //! @param angle Angle to rotate to
 //! @param undoSettings Tells whether or not this shall be registered in undo stack
-//! @todo Clean up these rotate functino and make them more similar with those in modelobject, try to share code if possible
+//! @note Undo registration will not work for obejcts or widgets as they have no name
 void WorkspaceObject::rotate(qreal angle, undoStatus /*undoSettings*/)
 {
     this->setTransformOriginPoint(this->boundingRect().center());
@@ -284,14 +298,6 @@ void WorkspaceObject::rotate(qreal angle, undoStatus /*undoSettings*/)
         angle *= -1;
     }
     this->setRotation(normDeg360(this->rotation()+angle));
-
-    //! @todo maybe this function should be pure virtual or somthing we should never use guobjects directly
-    //! @todo undo registration will not work for guiobjects directly as they have no name
-//    if(undoSettings == UNDO)
-//    {
-//        mpParentContainerObject->getUndoStackPtr()->registerRotatedObject(this->getName(), 90);
-//    }
-
     emit objectMoved();
 }
 
@@ -360,7 +366,7 @@ void WorkspaceObject::moveRight()
 
 //! @brief Tells the component to ask its parent to delete it
 //! @todo The name of the function is silly
-//! @todo will not work with gui only objects like textboxes, as they ont have unique names
+//! @todo will not work with gui only objects like textboxes, as they dont have unique names
 void WorkspaceObject::deleteMe()
 {
     //Should not be used

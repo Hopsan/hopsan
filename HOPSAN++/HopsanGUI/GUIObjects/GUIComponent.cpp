@@ -156,31 +156,26 @@ bool Component::setParameterValue(QString name, QString value, bool force)
 }
 
 //! @brief Set a start value to be mapped to a System parameter
-//! @todo What does the "variable" parameter do?
+//! @deprecated
 bool Component::setStartValue(QString portName, QString variable, QString sysParName)
 {
-//    QVector<QString> vVariable;
-//    QVector<QString> vSysParName;
-//    vVariable.append(variable);
-//    vSysParName.append(sysParName);
-//    return this->getPort(portName)->setStartValueDataByNames(vVariable, vSysParName);
     QString dataName;
     dataName = portName + QString("::Value");
     return mpParentContainerObject->getCoreSystemAccessPtr()->setParameterValue(this->getName(), dataName, sysParName);
 }
 
 
-//! @brief Set a start value to be mapped to a System parameter
-QString Component::getStartValueTxt(QString portName, QString variable)
-{
-    QVector<QString> vVariable, vSysParName, vUnit;
-    this->getPort(portName)->getStartValueDataNamesValuesAndUnits(vVariable, vSysParName, vUnit);
-    int idx = vVariable.indexOf(variable);
-    if(idx < 0)
-        return "";
-    else
-        return vSysParName[idx];
-}
+////! @brief Set a start value to be mapped to a System parameter
+//QString Component::getStartValueTxt(QString portName, QString variable)
+//{
+//    QVector<QString> vVariable, vSysParName, vUnit;
+//    this->getPort(portName)->getStartValueDataNamesValuesAndUnits(vVariable, vSysParName, vUnit);
+//    int idx = vVariable.indexOf(variable);
+//    if(idx < 0)
+//        return "";
+//    else
+//        return vSysParName[idx];
+//}
 
 
 //! @brief Slot that opens the parameter dialog for the component

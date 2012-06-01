@@ -27,6 +27,7 @@
 #include "GUIObjects/GUIModelObject.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUISystem.h"
+#include "GUIObjects/GUIWidgets.h"
 #include "GUIConnector.h"
 #include "GUIPort.h"
 #include "Widgets/LibraryWidget.h"

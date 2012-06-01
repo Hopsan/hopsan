@@ -36,6 +36,8 @@
 #include "Configuration.h"
 #include "MainWindow.h"
 
+#include <cassert>
+
 //! @brief Constructor for GUI Objects
 //! @param position Initial scene coordinates where object shall be placed
 //! @param rotation Initial rotation of the object
@@ -748,6 +750,7 @@ QString ModelObject::getStartValueTxt(QString /*portName*/, QString /*variable*/
 //! @param portName Name of port
 //! @param variable Name of variable in port
 //! @param sysParName System parameter name
+//! @deprecated
 bool ModelObject::setStartValue(QString /*portName*/, QString /*variable*/, QString /*sysParName*/)
 {
     //cout << "This function should only be available in GUIComponent and  GUISubsystem" << endl;
@@ -762,6 +765,11 @@ void ModelObject::setModelFileInfo(QFile &/*rFile*/)
     assert(false);
 }
 
+void ModelObject::loadFromDomElement(QDomElement &/*rDomElement*/)
+{
+    //Only available in GUISystem for now
+    assert(false);
+}
 
 void ModelObject::saveToDomElement(QDomElement &rDomElement)
 {

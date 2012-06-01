@@ -31,6 +31,7 @@
 #include "loadFunctions.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUISystem.h"
+#include "GUIObjects/GUIWidgets.h"
 #include "Widgets/MessageWidget.h"
 #include "Widgets/UndoWidget.h"
 

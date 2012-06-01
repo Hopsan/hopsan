@@ -425,7 +425,7 @@ void AnimationWidget::updateAnimation()
         double dT = double(mSimulationSpeed)/double(mSpeedSliderSensitivity)/double(mFps);
 
         //Simulate one interval (does NOT equal one time step, time step is usually much smaller)
-        mpContainer->getCoreSystemAccessPtr()->simulate(mLastAnimationTime, mLastAnimationTime+dT, SINGLECORE, 0, true);
+        mpContainer->getCoreSystemAccessPtr()->simulate(mLastAnimationTime, mLastAnimationTime+dT, -1, true);
 
         //Update last animation time
         mLastAnimationTime = mLastAnimationTime+dT;

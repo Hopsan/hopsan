@@ -631,27 +631,11 @@ QString Port::getNodeType()
 }
 
 
-void Port::getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<double> &rValues, QVector<QString> &rUnits)
-{
-    mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getStartValueDataNamesValuesAndUnits(getGuiModelObjectName(), this->getPortName(), rNames, rValues, rUnits);
-}
-
-
-void Port::getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<QString> &rValuesTxt, QVector<QString> &rUnits)
-{
-    mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getStartValueDataNamesValuesAndUnits(getGuiModelObjectName(), this->getPortName(), rNames, rValuesTxt, rUnits);
-}
-
-
-//void GUIPort::setStartValueDataByNames(QVector<QString> names, QVector<double> values)
+//void Port::getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<QString> &rValuesTxt, QVector<QString> &rUnits)
 //{
-//    mpParentContainerObject->getCoreSystemAccessPtr()->setStartValueDataByNames(getGuiModelObjectName(), this->getName(), names, values);
+//    mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getStartValueDataNamesValuesAndUnits(getGuiModelObjectName(), this->getPortName(), rNames, rValuesTxt, rUnits);
 //}
 
-//bool GUIPort::setStartValueDataByNames(QVector<QString> names, QVector<QString> valuesTxt)
-//{
-//    return mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->setStartValueDataByNames(getGuiModelObjectName(), this->getPortName(), names, valuesTxt);
-//}
 
 PortDirectionT Port::getPortDirection()
 {
