@@ -88,11 +88,11 @@ namespace hopsan {
             else
             {
                 // Make sure that selected data vector is in range
-                if (mOutDataId >= myDataCurve->getNumDataCols())
+                if (mOutDataId >= int(myDataCurve->getNumDataCols()))
                 {
                     std::stringstream ss;
                     ss << "outid:" << mOutDataId << " is out of range, limiting to: ";
-                    mOutDataId = myDataCurve->getNumDataCols()-1;
+                    mOutDataId = int(myDataCurve->getNumDataCols())-1;
                     ss << mOutDataId;
                     addWarningMessage(ss.str());
                 }

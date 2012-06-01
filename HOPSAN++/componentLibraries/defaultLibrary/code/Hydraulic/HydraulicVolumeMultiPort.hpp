@@ -116,7 +116,7 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            int runs=1;
+            size_t runs=1;
 
             bool dontStop = true;
             while(dontStop)
@@ -126,7 +126,7 @@ namespace hopsan {
                 {
                     double cTot = 0.0;
                     double pAvg;
-                    mZc = mNumPorts*mBulkmodulus/(2.0*mVolume)*mTimestep/runs/(1.0-mAlpha);
+                    mZc = mNumPorts*mBulkmodulus/(2.0*mVolume)*mTimestep/double(runs)/(1.0-mAlpha);
 
                     //Equations
                     for (size_t i=0; i<mNumPorts; ++i)
