@@ -49,6 +49,7 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
     mpModelObject = unanimatedComponent;
     mpAnimationWidget = parent;
     mpData = new QList<QVector<double> >();
+    mpNodeDataPtrs = new QList<double *>();
 
     //Store port positions
     for(int i=0; i<unanimatedComponent->getPortListPtrs().size(); ++i)
@@ -76,6 +77,8 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
                 QString portName = mpAnimationData->dataPorts.at(i);
                 QString dataName = mpAnimationData->dataNames.at(i);
                 mpData->insert(i,mpAnimationWidget->getPlotDataPtr()->getPlotData(generations, componentName, portName, dataName));
+
+                mpNodeDataPtrs->insert(i,mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(componentName, portName, dataName));
             }
         }
     }
@@ -110,7 +113,7 @@ void AnimatedComponent::updateAnimation()
     //Loop through all movable icons
     for(int m=0; m<mpMovables.size(); ++m)
     {
-        if(mpAnimationWidget->isRealTimeAnimation() && mpAnimationData->isAdjustable.at(m))   //Adjustable icon, write node data depending on position
+        if(mpAnimationWidget->isRealTimeAnimation() && mpAnimationData->isAdjustable.at(m) && mpAnimationData->adjustableGainX.size() > a)   //Adjustable icon, write node data depending on position
         {
             double value = mpMovables.at(m)->x()*mpAnimationData->adjustableGainX.at(a) + mpMovables.at(m)->y()*mpAnimationData->adjustableGainY.at(a);
             mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->writeNodeData(mpModelObject->getName(), mpAnimationData->adjustablePort.at(a), mpAnimationData->adjustableDataName.at(a), value);
@@ -128,9 +131,14 @@ void AnimatedComponent::updateAnimation()
                 if(mpAnimationWidget->isRealTimeAnimation())    //Real-time simulation, read from node vector directly
                 {
                     if(mpModelObject->getPort(mpAnimationData->dataPorts.at(m))->isConnected())
-                        mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getLastNodeData(mpModelObject->getName(), mpAnimationData->dataPorts.at(m), mpAnimationData->dataNames.at(m), data);
+                    {
+                        data = (*mpNodeDataPtrs->at(m));
+                        //mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getLastNodeData(mpModelObject->getName(), mpAnimationData->dataPorts.at(m), mpAnimationData->dataNames.at(m), data);
+                    }
                     else
+                    {
                         data=0;
+                    }
                 }
                 else                                //Not real-time, so read from predefined data member object
                 {
@@ -162,6 +170,7 @@ void AnimatedComponent::updateAnimation()
                 double y = mpAnimationData->startY[m] - data*mpAnimationData->speedY[m];
                 mpMovables[m]->setPos(x, y);
             }
+
             mpMovables[m]->update();
 
             //Update "port" positions, so that connectors will follow component
@@ -177,6 +186,21 @@ void AnimatedComponent::updateAnimation()
                 mPortPositions.insert(portName, pos);
             }
         }
+    }
+
+
+    //! @todo Hard coded test, make this generic later
+    if(mpModelObject->getTypeName() == "MechanicTranslationalSpring")
+    {
+        double left, right;
+        mpModelObject->getPort("P1")->getLastNodeData("Position", left);
+        mpModelObject->getPort("P2")->getLastNodeData("Position", right);
+        double length = right-left;
+
+        mpBase->resetTransform();
+        mpBase->scale(0.5*length+1,1);
+        mpBase->setPos(mpModelObject->pos().x()-length/4.0*mpBase->size().width(), mpBase->pos().y());
+        qDebug() << "Length = " << length;
     }
 }
 
@@ -259,7 +283,7 @@ void AnimatedComponent::limitMovables()
     int a=0;
     for(int m=0; m<mpMovables.size(); ++m)
     {
-        if(mpAnimationData->isAdjustable.at(m))
+        if(mpAnimationData->isAdjustable.at(m) && mpAnimationData->adjustableGainX.size() > a)
         {
             if(mpMovables.at(m)->x() > mpAnimationData->adjustableMaxX.at(a))
             {

@@ -159,6 +159,7 @@ public:
     void getPlotData(const QString compname, const QString portname, const QString dataname, QPair<QVector<double>, QVector<double> > &rData);
     bool havePlotData(const QString compname, const QString portname, const QString dataname);
     bool getLastNodeData(const QString compname, const QString portname, const QString dataname, double& rData);
+    double *getNodeDataPtr(const QString compname, const QString portname, const QString dataname);
 
 private:
     hopsan::ComponentSystem *getCoreSystemPtr();

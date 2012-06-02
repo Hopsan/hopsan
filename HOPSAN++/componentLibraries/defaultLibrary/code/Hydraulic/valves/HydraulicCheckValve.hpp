@@ -90,6 +90,7 @@ namespace hopsan {
             Zc2 = (*mpND_Zc2);
 
             //Checkvalve equations
+            qTurb_.setFlowCoefficient(mKs);
             if (c1 > c2) { q2 = qTurb_.getFlow(c1, c2, Zc1, Zc2); }
             else { q2 = 0.0; }
 

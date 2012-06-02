@@ -49,6 +49,9 @@ private:
     int mIdx;
     ModelObjectAnimationData *mpData;
 
+    //Adjustable
+    QCheckBox *mpAdjustableCheckBox;
+
     //Multiplier
     QLabel *mpMultplierLabel;
     QLineEdit *mpMultiplierLineEdit;

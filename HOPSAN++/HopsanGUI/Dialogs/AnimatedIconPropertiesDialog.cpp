@@ -50,6 +50,10 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
     mIdx = index;
     mpData = mpAnimatedComponent->getAnimationDataPtr();
 
+    //Adjustable
+    mpAdjustableCheckBox = new QCheckBox("Adjustable");
+    mpAdjustableCheckBox->setChecked(mpData->isAdjustable[mIdx]);
+
     //Multiplier
     mpMultplierLabel = new QLabel("Parameter multiplier: ", this);
     mpMultiplierLineEdit = new QLineEdit(mpData->multipliers[mIdx], this);
@@ -86,17 +90,18 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
 
     //Layout
     mpLayout = new QGridLayout(this);
-    mpLayout->addWidget(mpMultplierLabel,       0, 0);
-    mpLayout->addWidget(mpMultiplierLineEdit,   0, 1);
-    mpLayout->addWidget(mpDivisorLabel,         1, 0);
-    mpLayout->addWidget(mpDivisorLineEdit,      1, 1);
-    mpLayout->addWidget(mpSpeedXLabel,          2, 0);
-    mpLayout->addWidget(mpSpeedXLineEdit,       2, 1);
-    mpLayout->addWidget(mpSpeedYLabel,          3, 0);
-    mpLayout->addWidget(mpSpeedYLineEdit,       3, 1);
-    mpLayout->addWidget(mpSpeedThetaLabel,      4, 0);
-    mpLayout->addWidget(mpSpeedThetaLineEdit,   4, 1);
-    mpLayout->addWidget(mpButtonBox,            5, 0, 1, 2);
+    mpLayout->addWidget(mpAdjustableCheckBox,   0, 0, 1, 2);
+    mpLayout->addWidget(mpMultplierLabel,       1, 0);
+    mpLayout->addWidget(mpMultiplierLineEdit,   1, 1);
+    mpLayout->addWidget(mpDivisorLabel,         2, 0);
+    mpLayout->addWidget(mpDivisorLineEdit,      2, 1);
+    mpLayout->addWidget(mpSpeedXLabel,          3, 0);
+    mpLayout->addWidget(mpSpeedXLineEdit,       3, 1);
+    mpLayout->addWidget(mpSpeedYLabel,          4, 0);
+    mpLayout->addWidget(mpSpeedYLineEdit,       4, 1);
+    mpLayout->addWidget(mpSpeedThetaLabel,      5, 0);
+    mpLayout->addWidget(mpSpeedThetaLineEdit,   5, 1);
+    mpLayout->addWidget(mpButtonBox,            6, 0, 1, 2);
 
     this->setLayout(mpLayout);
 
@@ -110,6 +115,7 @@ void AnimatedIconPropertiesDialog::setValues()
 {
     //! todo Store new values in container object and save to HMF
 
+    mpData->isAdjustable[mIdx] = mpAdjustableCheckBox->isChecked();
     mpData->multipliers[mIdx] = mpMultiplierLineEdit->text();
     mpData->divisors[mIdx] = mpDivisorLineEdit->text();
     mpData->speedX[mIdx] = mpSpeedXLineEdit->text().toDouble();

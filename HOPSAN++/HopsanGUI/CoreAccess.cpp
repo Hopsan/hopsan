@@ -653,6 +653,23 @@ bool CoreSystemAccess::getLastNodeData(const QString compname, const QString por
 }
 
 
+double *CoreSystemAccess::getNodeDataPtr(const QString compname, const QString portname, const QString dataname)
+{
+    int dataId = -1;
+    hopsan::Port* pPort = this->getCorePortPtr(compname, portname);
+    if (pPort)
+    {
+        dataId = pPort->getNodeDataIdFromName(dataname.toStdString());
+
+        if (dataId >= 0)
+        {
+            return pPort->getNodeDataPtr(dataId);
+        }
+    }
+    return 0;
+}
+
+
 bool CoreSystemAccess::isPortConnected(QString componentName, QString portName)
 {
     hopsan::Port* pPort = this->getCorePortPtr(componentName, portName);
