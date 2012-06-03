@@ -161,6 +161,9 @@ public:
     bool getLastNodeData(const QString compname, const QString portname, const QString dataname, double& rData);
     double *getNodeDataPtr(const QString compname, const QString portname, const QString dataname);
 
+    //Time measurements
+    void measureSimulationTime(QStringList &rComponentNames, QList<double> &rTimes);
+
 private:
     hopsan::ComponentSystem *getCoreSystemPtr();
     hopsan::ComponentSystem *getCoreSubSystemPtr(QString name);

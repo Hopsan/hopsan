@@ -2579,7 +2579,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 //! @brief Helper function that simulates all components and measure their average time requirements.
 //! @param steps How many steps to simulate
 //! @todo Could we use the other tictoc to avoid tbb dependency, then we could use it as a bottleneck finder even if tbb not present
-void ComponentSystem::simulateAndMeasureTime(const size_t steps)
+bool ComponentSystem::simulateAndMeasureTime(const size_t steps)
 {
     double time = 0;
 
@@ -2635,6 +2635,8 @@ void ComponentSystem::simulateAndMeasureTime(const size_t steps)
 //        mComponentCptrs[c]->setMeasuredTime(mComponentCptrs[c]->getMeasuredTime()/steps);
 //    for(size_t q=0; q<mComponentQptrs.size(); ++q)
 //        mComponentQptrs[q]->setMeasuredTime(mComponentQptrs[q]->getMeasuredTime()/steps);
+
+    return true;
 }
 
 
@@ -3002,6 +3004,12 @@ void ComponentSystem::distributeNodePointers(vector< vector<Node*> > &rSplitNode
 void ComponentSystem::simulateMultiThreaded(const double startT, const double stopT, const size_t /*nThreads*/, const bool /*noChanges*/)
 {
     this->simulate(startT, stopT);
+}
+
+
+bool ComponentSystem::simulateAndMeasureTime(const size_t steps)
+{
+    return false;
 }
 
 #endif

@@ -69,6 +69,7 @@ public slots:
     void createFMUFromCurrentModel();
     void createSimulinkWrapperFromCurrentModel();
     void showLosses(bool show);
+    void measureSimulationTime();
     bool simulateAllOpenModels_nonblocking(bool modelsHaveNotChanged=false);
     bool simulateAllOpenModels_blocking(bool modelsHaveNotChanged=false);
     bool simulateAllOpenModels_old(bool modelsHaveNotChanged=false);

@@ -142,6 +142,7 @@ public:
     QAction *mpSaveToWrappedCodeAction;
     QAction *mpCreateSimulinkWrapperAction;
     QAction *mpShowLossesAction;
+    QAction *mpMeasureSimulationTimeAction;
 
     QAction *mpDebug1Action;
     QAction *mpDebug2Action;

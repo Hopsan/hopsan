@@ -45,6 +45,10 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+#ifdef USETBB
+    qDebug() << "TBB is used!";
+#endif
+
     //Force locale to English/USA
     qDebug() << QLocale().languageToString(QLocale().language()) << " " << QLocale().countryToString(QLocale().country()) << " Decimal point: " << QLocale().decimalPoint();
     //! @todo this does not seem to help, DomElement.setAttribute still use comma decimal point on swedish ubuntu, maybe a Qt bug

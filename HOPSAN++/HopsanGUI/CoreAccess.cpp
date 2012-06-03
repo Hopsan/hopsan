@@ -670,6 +670,31 @@ double *CoreSystemAccess::getNodeDataPtr(const QString compname, const QString p
 }
 
 
+void CoreSystemAccess::measureSimulationTime(QStringList &rComponentNames, QList<double> &rTimes)
+{
+    if(!getCoreSystemPtr()->isSimulationOk())
+    {
+        return; //! @todo Give user a message?
+    }
+
+    getCoreSystemPtr()->initialize(0, 10);
+
+    if(!getCoreSystemPtr()->simulateAndMeasureTime(5))
+    {
+        return;     //! @todo Do something better, so the user understands why this won't work (TBB is not installed)
+    }
+
+    getCoreSystemPtr()->finalize();
+
+    std::vector<std::string> names = getCoreSystemPtr()->getSubComponentNames();
+    for(size_t i=0; i<names.size(); ++i)
+    {
+        rComponentNames.append(QString(names.at(i).c_str()));
+        rTimes.append(getCoreSystemPtr()->getSubComponent(names.at(i))->getMeasuredTime());
+    }
+}
+
+
 bool CoreSystemAccess::isPortConnected(QString componentName, QString portName)
 {
     hopsan::Port* pPort = this->getCorePortPtr(componentName, portName);

@@ -149,10 +149,10 @@ namespace hopsan {
         void simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads = 0, bool noChanges=false);
         void finalize();
 
-#ifdef USETBB
-        void simulateAndMeasureTime(const size_t steps = 1);
-        double getTotalMeasuredTime();
 
+        bool simulateAndMeasureTime(const size_t steps = 1);
+#ifdef USETBB
+        double getTotalMeasuredTime();
         void sortComponentVectorsByMeasuredTime();
         void distributeCcomponents(std::vector< std::vector<Component*> > &rSplitCVector, size_t nThreads);
         void distributeQcomponents(std::vector< std::vector<Component*> > &rSplitQVector, size_t nThreads);

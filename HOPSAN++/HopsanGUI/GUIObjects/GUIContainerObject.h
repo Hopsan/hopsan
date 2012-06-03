@@ -278,6 +278,9 @@ public slots:
     void showLossesFromDialog();
     void hideLosses();
 
+    //Simulation time measurements
+    void measureSimulationTime();
+
     //External/internal subsystems
     bool isAncestorOfExternalSubsystem();
     bool isExternal();

@@ -49,6 +49,7 @@
 
 #include <limits>
 #include <QDomElement>
+#include <QStandardItemModel>
 
 
 //! @brief Construtor for container objects.
@@ -2674,6 +2675,76 @@ void ContainerObject::hideLosses()
     {
         moit.value()->hideLosses();
     }
+}
+
+
+void ContainerObject::measureSimulationTime()
+{
+    qDebug() << "Measuring!";
+
+    QStringList names;
+    QList<double> times;
+    getCoreSystemAccessPtr()->measureSimulationTime(names, times);
+
+    qDebug() << names;
+    qDebug() << times;
+
+    QList<QStandardItem *> nameList;
+    QList<QStandardItem *> timeList;
+    for(int i=0; i<names.size(); ++i)
+    {
+        QStandardItem *pNameItem = new QStandardItem(names.at(i));
+        QStandardItem *pTimeItem = new QStandardItem(QString::number(times.at(i)*1000, 'f')+" ms");
+        nameList.append(pNameItem);
+        timeList.append(pTimeItem);
+    }
+
+    QStandardItemModel *pModel = new QStandardItemModel();
+    pModel->insertColumn(0, nameList);
+    pModel->insertColumn(1, timeList);
+    QStandardItem *pNameHeaderItem = new QStandardItem("Names");
+    pModel->setHorizontalHeaderItem(0, pNameHeaderItem);
+    QStandardItem *pTimeHeaderItem = new QStandardItem("Times");
+    pModel->setHorizontalHeaderItem(1, pTimeHeaderItem);
+
+    QDialog *pDialog = new QDialog(gpMainWindow);
+    pDialog->setWindowTitle("Simulation Time Measurements");
+    pDialog->setWindowModality(Qt::WindowModal);
+    pDialog->setWindowIcon(QIcon(QString(ICONPATH)+"Hopsan-MeasureSimulationTime.png"));
+
+    QLabel *pDescriptionLabel = new QLabel("The simulation time for each component is measured as the average simulation time over five time steps. Results may differ slightly each measurement due to external factors such as other processes on the computer.");
+    pDescriptionLabel->setWordWrap(true);
+
+    QTableView *pTable = new QTableView(pDialog);
+    pTable->setModel(pModel);
+    pTable->setColumnWidth(0,400);
+    pTable->setColumnWidth(1,200);
+    pTable->setSortingEnabled(true);
+    pTable->setAlternatingRowColors(true);
+    pTable->verticalHeader()->setVisible(false);
+
+    QPushButton *pDoneButton = new QPushButton("Done", pDialog);
+
+    QDialogButtonBox *pButtonBox = new QDialogButtonBox(pDialog);
+    pButtonBox->addButton(pDoneButton, QDialogButtonBox::AcceptRole);
+
+    QVBoxLayout *pLayout = new QVBoxLayout(pDialog);
+    pLayout->addWidget(pDescriptionLabel);
+    pLayout->addWidget(pTable);
+    pLayout->addWidget(pButtonBox);
+
+    connect(pDoneButton, SIGNAL(clicked()), pDialog, SLOT(close()));
+
+    pDialog->setLayout(pLayout);
+    pDialog->show();
+    qApp->processEvents();
+    qDebug() << pTable->size();
+    pDialog->setFixedSize(640, 480);
+    pDialog->adjustSize();
+    pDialog->exec();
+
+
+    delete(pDialog);
 }
 
 

@@ -1058,6 +1058,15 @@ void ProjectTabWidget::showLosses(bool show)
     qobject_cast<SystemContainer*>(getCurrentContainer())->showLosses(show);
 }
 
+
+void ProjectTabWidget::measureSimulationTime()
+{
+    qDebug() << "ProjectTabWidget::measureSimulationTime";
+
+    qobject_cast<SystemContainer*>(getCurrentContainer())->measureSimulationTime();
+}
+
+
 bool ProjectTabWidget::simulateAllOpenModels_old(bool modelsHaveNotChanged)
 {
     qDebug() << "simulateAllOpenModels()";

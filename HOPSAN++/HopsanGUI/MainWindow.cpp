@@ -574,6 +574,11 @@ void MainWindow::createActions()
     connect(mpSensitivityAnalysisAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     connect(mpSensitivityAnalysisAction, SIGNAL(triggered()), mpSensitivityAnalysisDialog, SLOT(open()));
 
+    mpMeasureSimulationTimeAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-MeasureSimulationTime.png"), tr("&Measure Simulation Times"), this);
+    mpMeasureSimulationTimeAction->setToolTip(tr("Measure Simulation Times"));
+    connect(mpMeasureSimulationTimeAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    connect(mpMeasureSimulationTimeAction, SIGNAL(triggered()), mpProjectTabs, SLOT(measureSimulationTime()));
+
     mpPlotAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Plot.png"), tr("&Plot Variables"), this);
     mpPlotAction->setToolTip(tr("Plot Variables (Ctrl+Shift+P)"));
     mpPlotAction->setCheckable(true);
@@ -793,6 +798,7 @@ void MainWindow::createMenus()
 
     mpSimulationMenu->addAction(mpSimulateAction);
     mpSimulationMenu->addAction(mpAnimateAction);
+    mpSimulationMenu->addAction(mpMeasureSimulationTimeAction);
     mpSimulationMenu->addAction(mpOptimizeAction);
     mpSimulationMenu->addAction(mpSensitivityAnalysisAction);
     mpSimulationMenu->addAction(mpPlotAction);
@@ -877,6 +883,7 @@ void MainWindow::createToolbars()
     mpSimToolBar->setAttribute(Qt::WA_MouseTracking);
     mpSimToolBar->addWidget(mpStartTimeLineEdit);
     mpSimToolBar->addWidget(mpTimeLabelDeliminator1);
+
     mpSimToolBar->addWidget(mpTimeStepLineEdit);
     mpSimToolBar->addWidget(mpTimeLabelDeliminator2);
     mpSimToolBar->addWidget(mpStopTimeLineEdit);
@@ -886,6 +893,7 @@ void MainWindow::createToolbars()
     mpSimToolBar->addAction(mpPlotAction);
     mpSimToolBar->addAction(mpShowLossesAction);
     mpSimToolBar->addAction(mpAnimateAction);
+    mpSimToolBar->addAction(mpMeasureSimulationTimeAction);
     mpSimToolBar->addAction(mpPropertiesAction);
     mpSimToolBar->addAction(mpOpenSystemParametersAction);
 
@@ -1057,6 +1065,10 @@ void MainWindow::showToolBarHelpPopup()
     {
         showHelpPopupMessage("Perform sensitivity analysis of current model.");
     }
+    else if(pHoveredAction == mpMeasureSimulationTimeAction)
+    {
+        showHelpPopupMessage("Measure simulation time for each component in current model.");
+    }
     else if(pHoveredAction == mpPlotAction)
     {
         showHelpPopupMessage("Opens the list with all available plot variables from current model.");
@@ -1193,6 +1205,7 @@ void MainWindow::updateToolBarsToNewTab()
     mpSimulateAction->setEnabled(!noTabs);
     mpOptimizeAction->setEnabled(!noTabs);
     mpSensitivityAnalysisAction->setEnabled(!noTabs);
+    mpMeasureSimulationTimeAction->setEnabled(!noTabs);
     mpPlotAction->setEnabled(!noTabs);
     mpShowLossesAction->setEnabled(!noTabs);
     mpAnimateAction->setEnabled(!noTabs);
