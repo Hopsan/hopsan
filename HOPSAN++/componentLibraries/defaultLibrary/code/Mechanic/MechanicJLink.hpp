@@ -9,7 +9,7 @@
 //!
 //! @file MechanicJLink.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Fri 25 May 2012 10:59:06
+//! @date Fri 25 May 2012 13:19:22
 //! @brief Link with inertia
 //! @ingroup MechanicComponents
 //!
@@ -205,7 +205,7 @@ fm1*mlink*Power(mTimestep,2)*Cos(thetamr2))/(4.*mJL);
 
         delayedPart[1][1] = delayParts1[1];
         delayedPart[2][1] = delayParts2[1];
-        delayedPart[2][2] = mDelayedPart22.getIdx(1);
+        delayedPart[2][2] = mDelayedPart22.getIdx(0);
         delayedPart[3][1] = delayParts3[1];
         delayedPart[4][1] = delayParts4[1];
      }
@@ -319,7 +319,7 @@ fm1*mlink*Power(mTimestep,2)*Cos(thetamr2))/(4.*mJL);
 
         delayedPart[1][1] = delayParts1[1];
         delayedPart[2][1] = delayParts2[1];
-        delayedPart[2][2] = mDelayedPart22.getIdx(1);
+        delayedPart[2][2] = mDelayedPart22.getIdx(0);
         delayedPart[3][1] = delayParts3[1];
         delayedPart[4][1] = delayParts4[1];
 
