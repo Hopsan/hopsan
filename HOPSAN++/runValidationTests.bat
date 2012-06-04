@@ -4,7 +4,13 @@
 :: Author: Peter Nordin 2012-05-31
 @echo off
 SETLOCAL EnableDelayedExpansion
+
 set failed=0
+set okPause=1
+if "%~1"=="nopause" (
+  set okPause=0
+)
+
 for /F "delims==" %%x in ('dir /B /S *.hvc') do (
   cd bin
   if not exist HopsanCLI_d.exe (
@@ -15,12 +21,12 @@ for /F "delims==" %%x in ('dir /B /S *.hvc') do (
   )
   if exist HopsanCLI_d.exe (
     echo "Evaluating with HopsanCLI_d: %%x"
-    HopsanCLI_d -c "%%x"
+    HopsanCLI_d.exe -c "%%x"
     if ERRORLEVEL 1 set failed=1 
   )
   if exist HopsanCLI.exe (
     echo "Evaluating with HopsanCLI: %%x"
-    HopsanCLI -c "%%x"
+    HopsanCLI.exe -c "%%x"
     if ERRORLEVEL 1 set failed=1 
   )
   cd ..
@@ -30,5 +36,5 @@ if %failed% EQU 1 (
   pause
   exit /B 1
 )
-pause
+if %okPause% EQU 1 pause
 exit /B 0

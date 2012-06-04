@@ -1,3 +1,0 @@
-Angular Velocity Sensor
-out
-0

@@ -1,3 +1,0 @@
-Position Transducer
-out
-0

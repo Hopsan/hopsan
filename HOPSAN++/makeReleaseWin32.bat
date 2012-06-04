@@ -47,7 +47,6 @@ set qtsdkDir2="C:\QtSDK"
 set msvc2008Dir="C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin"
 set msvc2010Dir="C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin"
 set dependecyBinFiles=hopsan_bincontents_Qt474_MinGW_Py27.7z
-set dependecyBinFiles2=hopsan_bincontents_Qt474_MinGW_Py26.7z
                 
 :: Make sure Qt SDK exist
 if not exist %qtsdkDir% (
@@ -73,10 +72,8 @@ IF NOT EXIST %inkscapeDir% (
 )
 
 :: Make sure the 3d party dependency file exists
-if not exist %dependecyBinFiles% (
-  call :abortIfNotExist %dependecyBinFiles2% "The %dependecyBinFiles% or %dependecyBinFiles2% file containing needed bin files is NOT present. Get it from alice/fluid/programs/hopsan"
-  set dependecyBinFiles=%dependecyBinFiles2%
-)
+call :abortIfNotExist %dependecyBinFiles% "The %dependecyBinFiles% file containing needed bin files is NOT present. Get it from alice/fluid/programs/hopsan"
+set dependecyBinFiles=%dependecyBinFiles%
 
 set dodevrelease=false
 set /P version="Enter release version number on the form a.b.c or leave blank for DEV build release: "
@@ -300,22 +297,12 @@ cd %hopsanDir%
 
 
 ::Perform model testing
-SETLOCAL ENABLEDELAYEDEXPANSION
-
-cd Models\"Example Models"
-copy *.hmf ..\"Validation Models"
-cd  ..\"Validation Models"
-
-for %%x in (*.txt) do (
-    cd ..\..\
-
-    set "name=..\Models\Validation Models\%%x"
-    set name=!name:~0,-4!
-    call :performComponentTest "!name!"
-    cd Models\"Validation Models"
+call runValidationTests.bat nopause
+if ERRORLEVEL 1 (
+    echo Validation failed Aborting!
+    pause
+    goto cleanup
 )
-cd %hopsanDir%
-
 
 :: Create a temporary release directory
 mkdir %tempDir%
@@ -355,7 +342,6 @@ xcopy bin\*.dll %tempDir%\bin /s
 xcopy bin\*.a %tempDir%\bin /s
 xcopy bin\*.lib %tempDir%\bin /s
 xcopy bin\*.exp %tempDir%\bin /s
-xcopy bin\python26.zip %tempDir%\bin /s
 xcopy bin\python27.zip %tempDir%\bin /s
 del %tempDir%\bin\HopsanCLI_d.exe
 del %tempDir%\bin\HopsanGUI_d.exe
@@ -366,10 +352,9 @@ del %tempDir%\bin\tbb_debug.dll
 del %tempDir%\bin\qwtd.dll
 
 set pythonFailed=true
-IF EXIST %tempDir%\bin\python26.zip set pythonFailed=false
 IF EXIST %tempDir%\bin\python27.zip set pythonFailed=false
 IF "%pythonFailed%" == "true" (
-  echo Failed to find python26.zip or python27.zip.
+  echo Failed to find python27.zip.
 )
 call :abortIfStrNotMatch %pythonFailed% "false"
 :: TODO build in OPTIONAL theird argument message support in abortIf subroutine
@@ -455,19 +440,6 @@ if not exist %1 (
   pause
   goto cleanup
 )
-goto:eof
-
-
-:performComponentTest
-cd bin
-FOR /F "tokens=*" %%R IN ('HopsanCLI -t "%~1"') DO SET MY_OUTPUT_VAR=%%R
-echo "!MY_OUTPUT_VAR!"
-IF NOT "!MY_OUTPUT_VAR:~,15!"=="Test successful" (
-    echo Aborting!
-    pause
-    goto cleanup
-)
-cd ..
 goto:eof
 
 

@@ -179,7 +179,7 @@ void setColor(const ColorsT color)
         break;
     case White:
     default:
-        c = FOREGROUND_INTENSITY | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED;
+        c = FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED;
     }
 
     HANDLE hcon = GetStdHandle(STD_OUTPUT_HANDLE);
