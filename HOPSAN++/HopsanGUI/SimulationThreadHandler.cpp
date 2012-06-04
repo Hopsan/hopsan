@@ -48,29 +48,32 @@ void SimulationWorkerObject::initSimulatFinalize()
     initSuccess = simuHandler.initialize(mStartTime, mStopTime, mnLogSamples, coreSystemAccessVector);
     emit initDone(initSuccess, timer.elapsed());
 
-    // Simulating
-    emit setProgressBarText(tr("Simulating..."));
-    emit setProgressBarRange(0,100);
+    if (initSuccess)
+    {
+        // Simulating
+        emit setProgressBarText(tr("Simulating..."));
+        emit setProgressBarRange(0,100);
 
-    // Check if we should simulate multiple systems at the same time using multicore
-    if ((coreSystemAccessVector.size() > 1) && (gConfig.getUseMulticore()))
-    {
-        simuHandler.simulate(mStartTime, mStopTime, gConfig.getNumberOfThreads(), coreSystemAccessVector, mNoChanges);
-    }
-    else if (gConfig.getUseMulticore())
-    {
-        // Choose if we should simulate each system (or just the one system) using multiple cores (but each system in sequence)
-        timer.start();
-        simuHandler.simulate(mStartTime, mStopTime, gConfig.getNumberOfThreads(), coreSystemAccessVector, mNoChanges);
-    }
-    else
-    {
-        timer.start();
-        simuHandler.simulate(mStartTime, mStopTime, -1, coreSystemAccessVector, mNoChanges);
-    }
+        // Check if we should simulate multiple systems at the same time using multicore
+        if ((coreSystemAccessVector.size() > 1) && (gConfig.getUseMulticore()))
+        {
+            simuHandler.simulate(mStartTime, mStopTime, gConfig.getNumberOfThreads(), coreSystemAccessVector, mNoChanges);
+        }
+        else if (gConfig.getUseMulticore())
+        {
+            // Choose if we should simulate each system (or just the one system) using multiple cores (but each system in sequence)
+            timer.start();
+            simuHandler.simulate(mStartTime, mStopTime, gConfig.getNumberOfThreads(), coreSystemAccessVector, mNoChanges);
+        }
+        else
+        {
+            timer.start();
+            simuHandler.simulate(mStartTime, mStopTime, -1, coreSystemAccessVector, mNoChanges);
+        }
 
-    simulateSuccess = true; //! @todo need to check if sucess
-    emit simulateDone(simulateSuccess, timer.elapsed());
+        simulateSuccess = true; //! @todo need to check if sucess
+        emit simulateDone(simulateSuccess, timer.elapsed());
+    }
 
     // Finalizing
     emit setProgressBarText(tr("Finalizing..."));
