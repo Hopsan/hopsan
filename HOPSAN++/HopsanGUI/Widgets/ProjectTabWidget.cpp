@@ -1277,6 +1277,7 @@ void ProjectTabWidget::setCurrentTopLevelSimulationTimeParameters(const QString 
     if (count() > 0)
     {
         getCurrentTab()->setTopLevelSimulationTime(startTime, timeStep, stopTime);
+        getCurrentTab()->hasChanged();
     }
 }
 

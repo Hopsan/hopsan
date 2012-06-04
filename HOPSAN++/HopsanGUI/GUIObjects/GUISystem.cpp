@@ -2569,6 +2569,7 @@ void SystemContainer::setModelFileInfo(QFile &rFile)
 void SystemContainer::setTimeStep(const double timeStep)
 {
     mpCoreSystemAccess->setDesiredTimeStep(timeStep);
+    this->hasChanged();
 }
 
 //! Returns the time step value of the current project.
