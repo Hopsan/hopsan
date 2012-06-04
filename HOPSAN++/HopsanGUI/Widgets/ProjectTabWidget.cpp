@@ -162,6 +162,7 @@ void ProjectTab::setTopLevelSimulationTime(const QString startTime, const QStrin
         getTopLevelSystem()->setTimeStep(timeStep.toDouble());
     }
 
+    this->hasChanged();
     //! @todo Maybe more checks, i.e. the time step should be even divided into the simulation time.
 }
 
@@ -1277,7 +1278,6 @@ void ProjectTabWidget::setCurrentTopLevelSimulationTimeParameters(const QString 
     if (count() > 0)
     {
         getCurrentTab()->setTopLevelSimulationTime(startTime, timeStep, stopTime);
-        getCurrentTab()->hasChanged();
     }
 }
 
