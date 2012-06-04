@@ -34,6 +34,7 @@
 #include "GUIObjects/GUIContainerObject.h"
 #include "Utilities/GUIUtilities.h"
 #include "Widgets/ProjectTabWidget.h"
+#include "CoreAccess.h"
 #include "common.h"
 #include "version_gui.h"
 
@@ -47,7 +48,7 @@ class LibraryComponent;
 
 //! @brief Constructor for the library widget
 //! @param parent Pointer to the parent (main window)
-LibraryWidget::LibraryWidget(MainWindow *parent)
+LibraryWidget::LibraryWidget(QWidget *parent)
         :   QWidget(parent)
 {
     mUpConvertAllCAF = UNDECIDED_TO_ALL;

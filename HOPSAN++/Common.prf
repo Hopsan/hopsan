@@ -9,6 +9,8 @@ CONFIG(debug, debug|release) {
 win32:DLL_EXT = .dll
 unix:DLL_EXT = .so
 
+#Determine if default component lib should be build in
+#DEFINES *= BUILTINDEFAULTCOMPONENTLIB
 
 #Helpfunction to select one of multiple choice paths to includ
 defineReplace(selectPath){

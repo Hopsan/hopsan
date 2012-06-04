@@ -41,10 +41,12 @@
 
 #define HOPSANCLIVERSION "0.5.x_r" HOPSANCLISVNREVISION
 
+#ifndef BUILTINDEFAULTCOMPONENTLIB
 #ifdef WIN32
 #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/components/defaultComponentLibrary.dll"
 #else
 #define DEFAULTCOMPONENTLIB "../componentLibraries/defaultLibrary/components/libdefaultComponentLibrary.so"
+#endif
 #endif
 
 using namespace std;
@@ -72,9 +74,10 @@ int main(int argc, char *argv[])
         string testFilePath = modelTestOption.getValue();
         string saveNodeFilePath = saveNodesPathsOption.getValue();
 
-
+#ifndef BUILTINDEFAULTCOMPONENTLIB
         // Load default hopasn component lib
         HopsanEssentials::getInstance()->loadExternalComponentLib(DEFAULTCOMPONENTLIB);
+#endif
 
         // Load external libs
         vector<string> extLibs;

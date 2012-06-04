@@ -40,8 +40,6 @@ CONFIG(release, debug|release) {
   DEFINES *= RELEASECOMPILING
 }
 
-#DEFINES *= INTERNALDEFAULTCOMPONENTS
-
 # -------------------------------------------------
 # Platform specific additional project options
 # -------------------------------------------------

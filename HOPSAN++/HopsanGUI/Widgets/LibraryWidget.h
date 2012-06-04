@@ -26,8 +26,6 @@
 #define LIBRARYWIDGET_H
 
 #include "common.h"
-//#include "HopsanCore.h"
-#include "CoreAccess.h"
 
 #include <QListWidget>
 #include <QStringList>
@@ -40,11 +38,10 @@
 #include <QToolButton>
 #include <QDir>
 
+// Forward Declaration
 class ModelObjectAppearance;
-class LibraryListWidgetItem;
-
+class CoreLibraryAccess;
 class LibraryComponent;
-class MainWindow;
 class LibraryContentsTree;
 class LibraryTreeWidget;
 class LibraryListWidget;
@@ -56,8 +53,8 @@ class LibraryWidget : public QWidget
     friend class LibraryListWidget;
 
 public:
-    //Member functions
-    LibraryWidget(MainWindow *parent = 0);
+    // Public Member functions
+    LibraryWidget(QWidget *parent=0);
     void update();
     void loadTreeView(LibraryContentsTree *tree, QTreeWidgetItem *parentItem = 0);
     void loadDualView(LibraryContentsTree *tree, QTreeWidgetItem *parentItem = 0);
@@ -74,9 +71,7 @@ public:
     QSize sizeHint() const;
 
     graphicsType mGfxType;
-
     QLabel *mpComponentNameField;
-
     QStringList mLoadedComponents;
 
 public slots:

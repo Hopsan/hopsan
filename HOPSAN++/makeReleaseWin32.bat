@@ -105,12 +105,11 @@ if "%dodevrelease%"=="false" (
   svn revert HopsanGUI\graphics\splash2.svg
 
   REM Make sure development flag is not defined
-  REM ThirdParty\sed-4.2.1\sed "s|.*#define DEVELOPMENT|//#define DEVELOPMENT|" -i HopsanGUI\common.h
   ThirdParty\sed-4.2.1\sed "s|.*DEFINES \*= DEVELOPMENT|#DEFINES *= DEVELOPMENT|" -i HopsanGUI\HopsanGUI.pro
 )
 
 :: Make sure we compile defaultLibrary into core
-ThirdParty\sed-4.2.1\sed "s|.*DEFINES \*= INTERNALDEFAULTCOMPONENTS|DEFINES *= INTERNALDEFAULTCOMPONENTS|g" -i HopsanCore\HopsanCore.pro
+ThirdParty\sed-4.2.1\sed "s|.*DEFINES \*= BUILTINDEFAULTCOMPONENTLIB|DEFINES *= BUILTINDEFAULTCOMPONENTLIB|g" -i Common.prf
 ThirdParty\sed-4.2.1\sed "s|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.cc \\|" -i HopsanCore\HopsanCore.pro
 ThirdParty\sed-4.2.1\sed "s|componentLibraries||" -i HopsanNG.pro
 

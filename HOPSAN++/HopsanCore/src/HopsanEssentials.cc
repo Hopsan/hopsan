@@ -30,7 +30,7 @@
 #include "CoreUtilities/HmfLoader.h"
 #include <string>
 
-#ifdef INTERNALDEFAULTCOMPONENTS
+#ifdef BUILTINDEFAULTCOMPONENTLIB
 #include "defaultComponentLibraryInternal.h"
 #endif
 
@@ -48,7 +48,7 @@ void HopsanEssentials::initialize()
     register_nodes(mpNodeFactory);
     mpComponentFactory->registerCreatorFunction("MissingComponent", DummyComponent::Creator);
     mpComponentFactory->registerCreatorFunction("Subsystem", ComponentSystem::Creator);
-#ifdef INTERNALDEFAULTCOMPONENTS
+#ifdef BUILTINDEFAULTCOMPONENTLIB
     register_components(mpComponentFactory);
 #endif
 
