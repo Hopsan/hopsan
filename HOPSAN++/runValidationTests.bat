@@ -21,12 +21,12 @@ for /F "delims==" %%x in ('dir /B /S *.hvc') do (
   )
   if exist HopsanCLI_d.exe (
     echo "Evaluating with HopsanCLI_d: %%x"
-    HopsanCLI_d.exe -c "%%x"
+    HopsanCLI_d.exe -t "%%x"
     if ERRORLEVEL 1 set failed=1 
   )
   if exist HopsanCLI.exe (
     echo "Evaluating with HopsanCLI: %%x"
-    HopsanCLI.exe -c "%%x"
+    HopsanCLI.exe -t "%%x"
     if ERRORLEVEL 1 set failed=1 
   )
   cd ..

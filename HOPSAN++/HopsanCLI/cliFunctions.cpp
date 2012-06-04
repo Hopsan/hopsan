@@ -308,8 +308,7 @@ bool compareVectors(const std::vector<double> &rVec, const std::vector<double> &
 {
     if(rVec.size() != rRef.size())
     {
-        //! @todo Error message, size mismatch
-        cout << "Size mismatch!";
+        cout << "Error: compareVectors() Size mismatch!" << endl;
         return false;
     }
 
@@ -324,125 +323,10 @@ bool compareVectors(const std::vector<double> &rVec, const std::vector<double> &
     return true;
 }
 
-//! @brief Performs a unit test on a model
-//! @param modelName Name of test model
-void performModelTest(string modelName)
-{
-    std::streambuf* cout_sbuf = std::cout.rdbuf(); // save original sbuf
-    std::ofstream   fout("/dev/null");
-    std::cout.rdbuf(fout.rdbuf()); // redirect 'cout' to a 'fout'
-
-    string compName;
-    string portName;
-    int dataId;
-
-    stringstream ss;
-    ss << modelName << ".txt";
-    ifstream ifs(ss.str().c_str());
-    getline(ifs, compName);
-    getline(ifs, portName);
-    string temp;
-    getline(ifs, temp);
-    ifs.close();
-    stringstream ss2(temp);
-    ss2 >> dataId;
-
-    cout << "Component name: " << compName;
-    cout << "Port name: " << portName;
-    cout << "Data name: " << dataId;
-
-    vector<double> vRef;
-    vector<double> vSim1;
-    vector<double> vSim2;
-    vector<double> vTime;
-
-
-    //Load reference data curve
-    CSVParser *refDataCurve;
-    bool success=false;
-    refDataCurve = new CSVParser(success, modelName+".csv", '\n', '"');
-    if(!success || !refDataCurve->isInDataIncOrDec(0))
-    {
-        cout << "Unable to initialize CSV file: " << modelName+".csv " << refDataCurve->getErrorString();
-        return;
-    }
-
-    double startTime=0, stopTime=1;
-    ComponentSystem* pRootSystem = HopsanEssentials::getInstance()->loadHMFModel(modelName+".hmf", startTime, stopTime);
-    printWaitingMessages();
-
-    if (pRootSystem!=0)
-    {
-        //First simulation
-        if (pRootSystem->initialize(startTime, stopTime))
-        {
-            pRootSystem->simulate(startTime, stopTime);
-        }
-        else
-        {
-            cout << "Initialize failed, Simulation aborted!" << endl;
-            return;
-        }
-
-        for(size_t i=0; i<(*pRootSystem->getSubComponent(compName)->getPort(portName)->getTimeVectorPtr()).size(); ++i)
-        {
-            vTime.push_back((*pRootSystem->getSubComponent(compName)->getPort(portName)->getTimeVectorPtr()).at(i));
-            vSim1.push_back(pRootSystem->getSubComponent(compName)->getPort(portName)->getDataVectorPtr()->at(i).at(dataId));
-        }
-
-        //Second simulation
-        if (pRootSystem->initialize(startTime, stopTime))
-        {
-            pRootSystem->simulate(startTime, stopTime);
-        }
-        else
-        {
-            cout << "Initialize failed, Simulation aborted!" << endl;
-            return;
-        }
-
-        for(size_t i=0; i<(*pRootSystem->getSubComponent(compName)->getPort(portName)->getTimeVectorPtr()).size(); ++i)
-        {
-            vSim2.push_back(pRootSystem->getSubComponent(compName)->getPort(portName)->getDataVectorPtr()->at(i).at(dataId));
-        }
-    }
-
-
-    for(size_t i=0; i<vTime.size(); ++i)
-    {
-        vRef.push_back(refDataCurve->interpolate(vTime.at(i), 1));
-    }
-
-    std::cout.rdbuf(cout_sbuf); // restore the original stream buffer
-
-    setColor(White);
-
-    if(!compareVectors(vSim1, vRef, 0.01))
-    {
-        cout << "Test failed: " << pRootSystem->getName() << endl;
-        setColor(Red);
-        return;
-    }
-
-    if(!compareVectors(vSim1, vSim2, 0.01))
-    {
-        cout << "Test failed (inconsistent result): " << pRootSystem->getName();
-        setColor(Red);
-        return;
-    }
-
-    setColor(Green);
-
-    cout << "Test successful: " << pRootSystem->getName() << endl;
-
-    setColor(White);
-
-}
-
 
 //! @brief Performs a unit test on a model
 //! @param modelName Name of test model
-bool performModelTestXML(const std::string hvcFilePath)
+bool performModelTest(const std::string hvcFilePath)
 {
     // Figure out basepath and basename
     string basepath, basename, filename, ext;

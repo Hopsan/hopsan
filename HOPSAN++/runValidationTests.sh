@@ -24,7 +24,7 @@ echo "Using $cmd for evaluation"
 # Now run HopsanCLI model unit test on all  hopsanvalidationconfig files found
 while read line; do
   echo "Evaluating $line"
-  $cmd -c "$line"
+  $cmd -t "$line"
   if [ $? -ne 0 ]; then
     failed=1
   fi

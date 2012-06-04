@@ -53,7 +53,7 @@ using namespace hopsan;
 
 int main(int argc, char *argv[])
 {
-    bool returnSuccess=true;
+    bool returnSuccess=false;
     try {
         TCLAP::CmdLine cmd("HopsanCLI", ' ', HOPSANCLIVERSION);
 
@@ -62,7 +62,6 @@ int main(int argc, char *argv[])
         TCLAP::ValueArg<std::string> extLibPathsOption("e","ext","A file containing the external libs to load",false,"","FilePath string", cmd);
         TCLAP::ValueArg<std::string> saveNodesPathsOption("n", "savenodes", "A file containing lines with the ComponentName;PortName to save node data from", false, "", "FilePath string", cmd);
         TCLAP::ValueArg<std::string> modelTestOption("t","test","Model test to perform",false,"","Model name", cmd);
-        TCLAP::ValueArg<std::string> modelTestOptionXML("c","testc","Model test to perform",false,"","Model name", cmd);
 
         // Parse the argv array.
         cmd.parse( argc, argv );
@@ -72,7 +71,6 @@ int main(int argc, char *argv[])
         string extFilePaths = extLibPathsOption.getValue();
         string testFilePath = modelTestOption.getValue();
         string saveNodeFilePath = saveNodesPathsOption.getValue();
-        string testFilePathXML = modelTestOptionXML.getValue();
 
 
         // Load default hopasn component lib
@@ -139,16 +137,13 @@ int main(int argc, char *argv[])
         //Perform a unit test
         if(!testFilePath.empty())
         {
-            performModelTest(testFilePath);
-        }
-        else if (!testFilePathXML.empty())
-        {
-            returnSuccess = performModelTestXML(testFilePathXML);
+            returnSuccess = performModelTest(testFilePath);
             setColor(White); //Reset terminal color
         }
         else
         {
             printWaitingMessages();
+            returnSuccess=true;
             cout << endl << "HopsanCLI Done!" << endl;
         }
 
@@ -156,7 +151,6 @@ int main(int argc, char *argv[])
     {
         std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;
         std::cout << "error: " << e.error() << " for arg " << e.argId() << std::endl;
-        returnSuccess = false;
     }
 
     if (returnSuccess)
