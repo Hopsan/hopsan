@@ -4,12 +4,13 @@ HopsanGUI depends on some external libraries. Here is a description on how to bu
 
 \section qwt Build Qwt - Qt Widgets for Technical Applications
 \subsection qwt-ubuntu-auto Ubuntu (Automatically)
-This will build against your system version of the Qt libs, if you have a different version in the QtSDK see how to manually build below
+This will build against your \b system-version of the Qt libs, if you have a different version in the QtSDK see how to manually build below
+-# Make sure that you have the libqt4-dev package installed. "apt-get install libqt4-dev"
 -# Run the unpackPatchAndBuildQwt.sh script in HopsanGUI/Dependencies, it will build Qwt
 -# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file will automatically copy the needed binary files.
 
 \subsection qwt-ubuntu-manual Ubuntu (Manually)
--# First download a version >=6.0.0 from <a href="http://sourceforge.net/projects/qwt/files/" target="_blank">http://sourceforge.net/projects/qwt/files/</a>
+-# First download a version >=6.0.1 from <a href="http://sourceforge.net/projects/qwt/files/" target="_blank">http://sourceforge.net/projects/qwt/files/</a>
 -# Unpack into the HopsanGUI/Dependencies directory
 -# The default on Unix is to build only Release mode, if you want to change this (only if you want to debug into qwt), you can do that in the qwtbuild.pri file.
   -# "Enable debug_and_release + build_all if you want to build both." 
@@ -19,7 +20,7 @@ This will build against your system version of the Qt libs, if you have a differ
   -# \e Note! HopsanGui will have a set of default paths to search for, if you install a newer stable version of QWT you should add this version to the TOP of the defaults list in the HopsanGuiBuild.prf file.
 
 \subsection qwt-windows Windows (minGW and VC++)
--# First download a version >=6.0.0 from <a href="http://sourceforge.net/projects/qwt/files/" target="_blank">http://sourceforge.net/projects/qwt/files/</a>
+-# First download a version >=6.0.1 from <a href="http://sourceforge.net/projects/qwt/files/" target="_blank">http://sourceforge.net/projects/qwt/files/</a>
 -# Unpack into the HopsanGUI\\Dependencies directory
 -# Build the qwt project with qtcreator (you can use shadowbuild)
 -# If the compiler complains about Qwt not being configured with SVG support, comment the line "QWT_CONFIG += QwtSvg" in qwtconfig.pri
@@ -29,13 +30,15 @@ This will build against your system version of the Qt libs, if you have a differ
 \section pythonqt Build PythonQt 
 
 \subsection pythonqt-ubuntu-auto Ubuntu (Automatically)
-This will build against your system version of the Qt libs, if you have a different version in the QtSDK see how to manually build below
--# Install the python-dev package (sudo apt-get install python-dev)
+This will build against your \b system-version of the Qt libs, if you have a different version in the QtSDK see how to manually build below
+-# Make sure that you have the libqt4-dev and the python-dev package installed. "apt-get install libqt4-dev python-dev"
+  -# \e Note! PythonQt will likely not work with Python version >= 3, use 2.7 if you can choose
 -# Run the unpackPatchAndBuildPythonQt.sh script in HopsanGUI/Dependencies, it will build PythonQt, (assumes python 2.7, (second commandline arg to change))
 -# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file will automatically copy the needed binary files.
 
 \subsection pythonqt-ubuntu-manual Ubuntu (Manually)
--# Install the python-dev package (sudo apt-get install python-dev)
+-# Install the python-dev package "apt-get install python-dev"
+  -# \e Note! PythonQt will likely not work with Python version >= 3, use 2.7 if you can choose
 -# Download PythonQt from <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a>
   -# Place the ex: PythonQt2.0.1 directory in HopsanGUI/Dependencies, HopsanGUI.pro will search for it there
 -# Go to the PythonQt directory and open the PythonQt project

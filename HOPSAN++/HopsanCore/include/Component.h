@@ -47,7 +47,8 @@ typedef struct HopsanExternalLibInfo
 class ComponentSystem;
 class HopsanEssentials;
 
-enum ParamDynConstT {dynamic, constant};
+//! @brief Enum type for parameters, describing if they are to be dynamic or constant
+enum ParamDynConstT {Dynamic, Constant};
 
 class DLLIMPORTEXPORT Component
 {
@@ -57,7 +58,7 @@ class DLLIMPORTEXPORT Component
 public:
     virtual ~Component();
 
-    //! @brief Enum typ for all CQS types
+    //! @brief Enum type for all CQS types
     enum CQSEnumT {C, Q, S, UndefinedCQSType};
 
     //==========Public functions==========
@@ -85,7 +86,7 @@ public:
     void initializeDynamicParameters();
     void updateDynamicParameterValues();
 
-    void registerParameter(const std::string name, const std::string description, const std::string unit, double &rValue, const ParamDynConstT dynconst=dynamic);
+    void registerParameter(const std::string name, const std::string description, const std::string unit, double &rValue, const ParamDynConstT dynconst=Dynamic);
     void registerParameter(const std::string name, const std::string description, const std::string unit, int &rValue);
     void registerParameter(const std::string name, const std::string description, const std::string unit, std::string &rValue);
     void registerParameter(const std::string name, const std::string description, const std::string unit, bool &rValue);

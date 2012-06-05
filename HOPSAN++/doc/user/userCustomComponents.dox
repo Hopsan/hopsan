@@ -7,6 +7,7 @@ namespace hopsan::Component {
 -# \subpage writing-components \n
 -# \subpage component-generator \n
 -# \subpage generating-components-mathematica \n
+-# \subpage unittest-components \n
 
 \page introduction-component-libraries Introduction to Component Libraries
 
@@ -236,7 +237,7 @@ New node types can be added through external libraries, but this should be avoid
 For parameter registration the following functions are available. The correct register function will automatically be selected depending on the value type.
 The register functions will register the given name, unit and description and connect this information to a pointer pointing at the variable you specify as the \b rValue argument.
 \code
-void registerParameter(const string name, const string description, const string unit, double &rValue);
+void registerParameter(const string name, const string description, const string unit, double &rValue, const ParamDynConstT dynconst=dynamic);
 void registerParameter(const string name, const string description, const string unit, int &rValue);
 void registerParameter(const string name, const string description, const string unit, string &rValue);
 void registerParameter(const string name, const string description, const string unit, bool &rValue);
@@ -300,6 +301,52 @@ Generated components are loaded automatically into a "Generated Component" libra
 
 \page generating-components-mathematica Generating Components From Mathematica
 This feature is not implemented in the current version of Hopsan. In future releases it will be possible to automatically generate components from equations in Mathematica.
+
+\page unittest-components Model and Component Unit-testing
+When you have finished a component and/or model and you are satisfied with the simulation results you can save you model and some of the simulation results
+as a test model. You can later run this model again and automatically compare the simulation results. This is very important if you want to make sure that 
+your component and models do not change their behaviour when new versions of Hopsan are released.
+
+\section unittest-components_howtocreate How to Create a Validation Model
+-# Open your model in HopsanGUI and simulate it.
+  -# Add the variables (from ports) that you want to use as validation data to a plot window.
+  -# Export the data as a CSV file. The column order is determined by the order you added curves.
+-# Write a HVC (Hopsan Validation Configuration) XML file that specifies which model and data set to use
+-# Store the model, dataset and hvc file in  a safe place. Remember that you can not make any more changes to the model file.
+
+\section unittest-components_howtotest How to Test a Validation Model
+-# Use the HopsanCLI (Hopsan CommandLineInterface) with the -t (for test) switch according to:
+  -# Windows HopsanCLI.exe -t "MyHVCFile.hvc"
+  -# Ubuntu ./HopsanCLI -t "MyHVCFile.hvc"
+
+\section unittest-components_hvc-format The HVC (Hopsan Validation Configuration) Format
+This is an example HVC File. Note that you can have multiple <validation> <component> <port> <variable> tags to perform multiple tests from the same configuration file.
+
+\verbatim
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanvalidationconfiguration hvcversion="0.1">
+  <validation>
+    <!--Optional path to model file, default is to use the same name (excluding ext) and path as this file-->
+    <modelfile>../Example Models/Position Servo.hmf</modelfile>
+    <parameterset></parameterset>
+    <component name="Translational Mass">
+      <port name="P2">
+        <!--Optional path to csv file, default is to use the same name (excluding ext) and path as this file-->
+        <csvfile></csvfile>
+        <variable name="Position">
+          <!-- Optional csvfile override for variable -->
+          <!-- <csvfile></csvfile> -->
+          <!--Column indexing begins at 0. Time vector is usualy at 0--> 
+          <column>1</column> 
+          <!--Tolerance, allowed deviation 0.01==1%-->
+          <tolerance>0.01</tolerance>
+        </variable>
+      </port>
+    </component>
+  </validation>
+</hopsanvalidationconfiguration>
+\endverbatim
+
 */
 }
 

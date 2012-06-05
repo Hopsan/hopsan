@@ -29,7 +29,7 @@ if [ $ubuntuversion -lt "1204" ]; then
 
   # Abort if dir already exist. When running release build script we dont want to build twice
   if [ -d $pythonqtname ]; then
-    echo "Directory $pythonqtname already exist. Remove it if you want build using this script."
+    echo "Directory $pythonqtname already exist. Remove it if you want (re)build using this script."
     exit 0
   fi
 
@@ -46,7 +46,7 @@ else
 
   # Abort if dir already exist. When running release build script we dont want to build twice
   if [ -d $pythonqtname ]; then
-    echo "Directory $pythonqtname already exist. Remove it if you want build using this script."
+    echo "Directory $pythonqtname already exist. Remove it if you want (re)build using this script."
     exit 0
   fi
 

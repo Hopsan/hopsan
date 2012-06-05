@@ -5,7 +5,6 @@ HopsanCLI depends on the Templatized C++ Command Line Parser Library for conveni
 \section tclap Templatized C++ Command Line Parser Library
 \subsection tclap-linux Build tclap on Ubuntu
 -# No build necessary, header-only library, headers are included in HopsanCLI\\Dependencies
-  -# Headers are also present in the pakage repsoitory, (you dont need to install them), sudo apt-get install libtclap-dev
 
 \subsection tclap-windows-mingw Build tclap on Windows
 -# No build necessary, header-only library, headers are included in HopsanCLI\\Dependencies

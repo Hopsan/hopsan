@@ -3,22 +3,24 @@
 HopsanGUI uses the Qt-libs for the GUI components, and qmake to generate makefiles. We are also using Qt Creator and qmake for the HopsanCore even though it is not using any Qt libraris. You need to install the apropriate Qt-libs and the Qt-Creator IDE from <a href="http://qt.nokia.com" target="_blank">http://qt.nokia.com</a>
 
 \section qt-linux gcc in Ubuntu
-On Linux based operationg systems you should use the gcc compiler. Download and install the Qt SDK for Linux. You can use the Qt-libs in you distribution package repository and install Qt-Creator separately but if you want the latest Qt version you should probably use the SDK. To install gcc (ans some other tools) in Ubuntu run "aptitude install build-essential" or use apt-get if you dont want to use aptitude.
+On Linux based operationg systems you should use the gcc compiler. To install gcc (and some other tools) in Ubuntu run "apt-get install build-essential".
+You can use the Qt-libs in you distribution package repository and install Qt-Creator separately through the SDK. In this case make sure that you install Qt development packages, "apt-get install libqt4-dev".
+You can also choose to use the Qt-libs in the SDK if you want to specify which version of Qt-libs to use.
 
-\section qt-mingw minGW (gcc in Windows)
+\section qt-mingw MinGW (gcc in Windows)
 If you want to use the MinGW open-source compiler you should download the Qt SDK as it comes prepackaged with a patched MinGW suitable for Qt-libs. The libs them selfes are also compiled with MinGW. Make sure that you do not mix minGW versions. You need to use the version that comes with Qt as it is patched to work with Qt.
 
 \section qt-mscompiler VC++ (The Microsoft Visual C++ Compiler)
-Follow the guide if you wish to use the Microsoft Visual C++ compiler with Qt Creator for Hopsan development.
+Follow this guide only if you wish to use the Microsoft Visual C++ compiler with Qt Creator for Hopsan development.
 
 The Visual Studio compiled Qt-libraries that are currently available (2010-09-22), were compiled using VisualStudio2008.
 For this reason we should use the VC9 (Visual C++ 2008) compiler package with HopsanGUI and HopsanCore. This may change in the future.
 I (Peter) tried VC++ 2010 but was unable to make it work on my 64-bit computer.
 
-You may either download and install Visual Studio 2008 (requires free registration after 30-days) or install the Windows SDK.
+You may either download and install Visual Studio 2008 (requires free registration after 30-days) or install the Windows SDK (recommended).
 As we already have an IDE (QtCreator) this guide will use the SDK.
 
-The guide assumes that you start from scratch, without the Qt SDK installed. It should be possible to install into the SDK aswell and then select between multiple Qt versions.
+The guide assumes that you start from scratch, without the QtSDK installed. It should be possible to install into the SDK as well and then select between multiple Qt versions.
 
 -# Download and install the Microsoft Windows SDK 7.0 from <a href="http://www.microsoft.com/downloads/en/default.aspx " target="_blank">Microsoft Download Center</a>.
 You don't need to install the .NET stuff, but make sure that you install the "Debugging Tools for Windows"

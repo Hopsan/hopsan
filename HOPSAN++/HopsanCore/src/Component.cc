@@ -346,6 +346,7 @@ void Component::updateDynamicParameterValues()
 //! @param [in] description A description of the parameter
 //! @param [in] unit The unit of the parameter value
 //! @param [in] rValue A reference to the double variable representing the value, its adress will be registered
+//! @param [in] dynconst Choose if parameter is dynamic (default) or constant (one that can not be converted into a port)
 //! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
 void Component::registerParameter(const string name, const string description, const string unit, double &rValue, const ParamDynConstT dynconst)
 {
@@ -357,7 +358,7 @@ void Component::registerParameter(const string name, const string description, c
     stringstream ss;
     if(ss << rValue)
     {
-        if (dynconst == dynamic)
+        if (dynconst == Dynamic)
         {
             // Make a port with same name so that paramter can be switch to dynamic parameter that can be changed during simulation
             this->addReadPort(name, "NodeSignal", Port::NOTREQUIRED);
