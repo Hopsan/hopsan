@@ -143,5 +143,8 @@ void replaceDerivativeFunction(QString &equation, QString f, QString dxf);
 QStringList getSupportedFunctionsList();
 QStringList getCustomFunctionList();
 
+bool findPath(QList<int> &order, QList<QList<int> > dependencies, int level=0);
+bool sortEquationSystem(QStringList &equations, QList<QStringList> symbols, QStringList stateVars, QList<int> &limitedVariableEquations, QList<int> &limitedDerivativeEquations);
+
 
 #endif // COMPONENTGENERATORUTILITIES_H

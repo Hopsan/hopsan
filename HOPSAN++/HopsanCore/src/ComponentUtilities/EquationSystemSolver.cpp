@@ -86,13 +86,10 @@ EquationSystemSolver::EquationSystemSolver(Component *pParentComponent, int n, M
 //! @param iteration How many times the solver has been executed before in the same time step
 void EquationSystemSolver::solve(Matrix &jacobian, Vec &equations, Vec &variables, int iteration)
 {
-    //LU decomposition
-    ludcmp(jacobian, mpOrder, mSingular);
-
     //Stop simulation if LU decomposition failed due to singularity
-    if(mSingular)
+    if(!ludcmp(jacobian, mpOrder))
     {
-        mpParentComponent->addErrorMessage("Unable to perform LU-decomposition: Jacobian matrix is singular.");
+        mpParentComponent->addErrorMessage("Unable to perform LU-decomposition: Jacobian matrix is probably singular.");
         mpParentComponent->stopSimulation();
     }
 
@@ -114,13 +111,10 @@ void EquationSystemSolver::solve(Matrix &jacobian, Vec &equations, Vec &variable
 //! @param variables Vector of state variables
 void EquationSystemSolver::solve(Matrix &jacobian, Vec &equations, Vec &variables)
 {
-    //LU decomposition
-    ludcmp(jacobian, mpOrder, mSingular);
-
     //Stop simulation if LU decomposition failed due to singularity
-    if(mSingular)
+    if(!ludcmp(jacobian, mpOrder))
     {
-        mpParentComponent->addErrorMessage("Unable to perform LU-decomposition: Jacobian matrix is singular.");
+        mpParentComponent->addErrorMessage("Unable to perform LU-decomposition: Jacobian matrix is probably singular.");
         mpParentComponent->stopSimulation();
     }
 
@@ -144,13 +138,10 @@ void EquationSystemSolver::solve(Matrix &jacobian, Vec &equations, Vec &variable
 //! @param iteration How many times the solver has been executed before in the same time step
 void EquationSystemSolver::solve()
 {
-    //LU decomposition
-    ludcmp(*mpJacobian, mpOrder, mSingular);
-
     //Stop simulation if LU decomposition failed due to singularity
-    if(mSingular)
+    if(!ludcmp(*mpJacobian, mpOrder))
     {
-        mpParentComponent->addErrorMessage("Unable to perform LU-decomposition: Jacobian matrix is singular.");
+        mpParentComponent->addErrorMessage("Unable to perform LU-decomposition: Jacobian matrix is probably singular.");
         mpParentComponent->stopSimulation();
     }
 

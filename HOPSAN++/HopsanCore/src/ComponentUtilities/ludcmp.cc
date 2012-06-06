@@ -59,21 +59,20 @@ using namespace hopsan;
 *
 */
 
-int hopsan::ludcmp(Matrix &a, int order[], bool &singular)
+bool hopsan::ludcmp(Matrix &a, int order[])
 {
     int i, j, k, n, nm1;
-    int flag = 1;    /* changes sign with each row interchange */
     double sum, diag;
 
     n = a.rows();
-    assert(a.cols()==n);
+    //assert(a.cols()==n);
 
     /* establish initial ordering in order vector */
 
     for (i=0; i<n; i++) order[i] = i;
 
     /* do pivoting for first column and check for singularity */
-    if (pivot(a,order,0, singular)) flag = -flag;
+    if (pivot(a,order,0)) return false;
 
     diag = 1.0/a[0][0];
     for (i=1; i<n; i++) a[0][i] *= diag;
@@ -94,7 +93,7 @@ int hopsan::ludcmp(Matrix &a, int order[], bool &singular)
             a[i][j] -= sum;
         }
         /* pivot, and check for singularity */
-        if (pivot(a,order,j, singular)) flag = -flag;
+        if(!pivot(a,order,j)) return false;
         /* row of U's */
         diag = 1.0/a[j][j];
         for (k=j+1; k<n; k++) {
@@ -109,7 +108,8 @@ int hopsan::ludcmp(Matrix &a, int order[], bool &singular)
     sum = 0.0;
     for (k=0; k<nm1; k++) sum += a[nm1][k]*a[k][nm1];
     a[nm1][nm1] -= sum;
-    return flag;
+
+    return true;
 }
 
 //!  Find pivot element
@@ -125,7 +125,7 @@ int hopsan::ludcmp(Matrix &a, int order[], bool &singular)
 *  \param    jcol   - column of "a" being searched for pivot element
 *
 */
-int hopsan::pivot(Matrix &a, int order[], int jcol, bool &singular)
+bool hopsan::pivot(Matrix &a, int order[], int jcol)
 {
     int i, ipvt,n;
     double big, anext;
@@ -148,7 +148,7 @@ int hopsan::pivot(Matrix &a, int order[], int jcol, bool &singular)
 
     if(fabs(big) < TINY)
     {
-        singular = true;
+        return false;
     }
     //assert(fabs(big)>TINY); // otherwise Matrix is singular
 
@@ -161,7 +161,7 @@ int hopsan::pivot(Matrix &a, int order[], int jcol, bool &singular)
     i = order[jcol];
     order[jcol] = order[ipvt];
     order[ipvt] = i;
-    return 1;
+    return true;
 }
 
 //!  This function is used to find the solution to a system of equations,

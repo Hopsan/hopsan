@@ -176,7 +176,7 @@ void generateComponentObject(QString typeName, QString displayName, QString cqsT
     if(pProgressBar)
     {
         pProgressBar->setLabelText("Creating component object");
-        pProgressBar->setValue(804);
+        pProgressBar->setValue(81);
     }
 
     ComponentSpecification comp(typeName, displayName, cqsType);
@@ -226,11 +226,6 @@ void generateComponentObject(QString typeName, QString displayName, QString cqsT
         comp.initEquations << "";
         //comp.initEquations << "mpSolver = new EquationSystemSolver(this, "+QString().setNum(sysEquations.size())+");";
         comp.initEquations << "mpSolver = new EquationSystemSolver(this, "+QString().setNum(sysEquations.size())+", &jacobianMatrix, &systemEquations, &stateVariables);";
-    }
-
-    if(pProgressBar)
-    {
-        pProgressBar->setValue(804);
     }
 
     comp.simEquations << "//Initial algorithm section";
@@ -319,7 +314,7 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
     if(pProgressBar)
     {
         pProgressBar->setLabelText("Creating .hpp file");
-        pProgressBar->setValue(804);
+        pProgressBar->setValue(82);
     }
 
     if(!QDir(DATAPATH).exists())
@@ -429,11 +424,6 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
         }
     }
 
-    if(pProgressBar)
-    {
-        pProgressBar->setValue(806);
-    }
-
     fileStream << ";\n";
     fileStream << "        Port ";                              //Declare ports
     for(int i=0; i<comp.portNames.size(); ++i)
@@ -511,11 +501,6 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
             fileStream << ");\n";
         }
         ++portId;
-    }
-
-    if(pProgressBar)
-    {
-        pProgressBar->setValue(806);
     }
 
     fileStream << "\n";
@@ -672,7 +657,7 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
     if(pProgressBar)
     {
         pProgressBar->setLabelText("Creating tempLib.cc");
-        pProgressBar->setValue(807);
+        pProgressBar->setValue(84);
     }
 
     QFile ccLibFile;
@@ -698,12 +683,6 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
     ccLibStream << "}\n";
     ccLibFile.close();
 
-    if(pProgressBar)
-    {
-        pProgressBar->setLabelText("Creating compile script");
-        pProgressBar->setValue(807);
-    }
-
     QFile clBatchFile;
     clBatchFile.setFileName(QString(DATAPATH)+"compile.bat");
     if(!clBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -722,7 +701,7 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
     if(pProgressBar)
     {
         pProgressBar->setLabelText("Creating appearance file");
-        pProgressBar->setValue(808);
+        pProgressBar->setValue(85);
     }
 
     QDir componentsDir(QString(DOCUMENTSPATH));
@@ -762,7 +741,7 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
     if(pProgressBar)
     {
         pProgressBar->setLabelText("Compiling component library");
-        pProgressBar->setValue(810);
+        pProgressBar->setValue(86);
     }
 
     //Execute HopsanFMU compile script
@@ -794,7 +773,7 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
     if(pProgressBar)
     {
         pProgressBar->setLabelText("Moving files");
-        pProgressBar->setValue(965);
+        pProgressBar->setValue(96);
     }
 
     QString libPath = QDir().cleanPath(generatedDir.path());
@@ -803,6 +782,8 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
         //qDebug() << "Updated user libs: " << gConfig.getUserLibs();
         gpMainWindow->mpLibrary->unloadExternalLibrary(libPath);
     }
+
+    if(pProgressBar) { pProgressBar->setValue(97); }
 
     QFile::remove(generatedDir.path() + "/" + xmlFile.fileName());
     xmlFile.copy(generatedDir.path() + "/" + xmlFile.fileName());
@@ -818,9 +799,13 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
     }
     dllFile.copy(generatedDir.path() + "/" + comp.typeName + ".dll");
 
+    if(pProgressBar) { pProgressBar->setValue(98); }
+
     QFile soFile(QString(DATAPATH)+comp.typeName+".so");
     QFile::remove(generatedDir.path() + "/" + comp.typeName + ".so");
     soFile.copy(generatedDir.path() + "/" + comp.typeName + ".so");
+
+    if(pProgressBar) { pProgressBar->setValue(99); }
 
     QFile svgFile(QString(OBJECTICONPATH)+"generatedcomponenticon.svg");
     QFile::remove(generatedDir.path() + "/generatedcomponenticon.svg");
@@ -838,7 +823,7 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
     if(pProgressBar)
     {
         pProgressBar->setLabelText("Loading new library");
-        pProgressBar->setValue(1000);
+        pProgressBar->setValue(100);
     }
 
     //qDebug() << "libPath = " << libPath;
@@ -2171,4 +2156,81 @@ QStringList getSupportedFunctionsList()
 QStringList getCustomFunctionList()
 {
     return QStringList() << "hopsanLimit" << "hopsanDxLimit" << "onPositive" << "onNegative" << "signedSquareL" << "limit";
+}
+
+
+
+
+bool findPath(QList<int> &order, QList<QList<int> > dependencies, int level)
+{
+    if(level > dependencies.size()-1)
+    {
+        return true;
+    }
+
+    for(int i=0; i<dependencies.at(level).size(); ++i)
+    {
+        if(!order.contains(dependencies.at(level).at(i)))
+        {
+            order.append(dependencies.at(level).at(i));
+            if(findPath(order, dependencies, level+1))
+            {
+                return true;
+            }
+            order.removeLast();
+        }
+    }
+    return false;
+}
+
+
+
+
+bool sortEquationSystem(QStringList &equations, QList<QStringList> symbols, QStringList stateVars, QList<int> &limitedVariableEquations, QList<int> &limitedDerivativeEquations)
+{
+    //Generate a dependency tree between equations and variables
+    QList<QList<int> > dependencies;
+    for(int v=0; v<stateVars.size(); ++v)
+    {
+        dependencies.append(QList<int>());
+        for(int e=0; e<stateVars.size(); ++e)
+        {
+            if(symbols[e].contains(stateVars[v]))
+            {
+                dependencies[v].append(e);
+            }
+        }
+    }
+
+    //Recurse dependency tree to find a good sorting order
+    QList<int> order;
+    if(!findPath(order, dependencies))
+    {
+        return false;
+    }
+
+    //Sort equations to new order
+    QStringList sortedEquations;
+    for(int i=0; i<order.size(); ++i)
+    {
+        sortedEquations.append(equations.at(order[i]));
+        for(int j=0; j<limitedVariableEquations.size(); ++j)    //Sort limited variable equation numbers
+        {
+            if(limitedVariableEquations[j] == i)
+            {
+                limitedVariableEquations[j] == order[i];
+            }
+        }
+        for(int j=0; j<limitedDerivativeEquations.size(); ++j)  //Sort limited derivative equation numbers
+        {
+            if(limitedDerivativeEquations[j] == i)
+            {
+                limitedDerivativeEquations[j] == order[i];
+            }
+        }
+    }
+
+    equations = sortedEquations;
+
+    return true;
 }
