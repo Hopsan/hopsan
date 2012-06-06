@@ -185,6 +185,10 @@ ComponentSystem* HopsanEssentials::loadHMFModel(const string filePath, double &r
     return loadHopsanModelFile(filePath, this, rStartTime, rStopTime);
 }
 
+ComponentSystem* HopsanEssentials::loadHMFModel(const std::vector<char> xmlVector, double &rStartTime, double &rStopTime)
+{
+    return loadHopsanModelFile(xmlVector, this, rStartTime, rStopTime);
+}
 
 SimulationHandler *HopsanEssentials::getSimulationHandler()
 {
