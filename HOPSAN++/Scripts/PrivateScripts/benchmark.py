@@ -1,66 +1,30 @@
-filename="output.csv"
-runs=100
-maxload=300
-balance=0.95
-time=10
-timestep=0.001
-
 import random
 
+def runBenchmarking(iterations, threads, maxload):
 
-hopsan.setTimeStep(timestep)
-hopsan.setStartTime(0)
-hopsan.setFinishTime(time)
+    hopsan.turnOffProgressBar()
 
-sfile = open("output_singlethreaded.xml","w")
-mfile = open("output_multithreaded.xml","w")
+    file_list = []
+    for i in range(threads+1):
+        print "output"+str(i)+".csv"
+        file = open("output"+str(i)+".csv", 'w+')
+        file_list.append(file)
 
-sfile.write("<hopsanbenchmarkdata>\n")
-mfile.write("<hopsanbenchmarkdata>\n")
+    for i in range(iterations):
+        t = i%(threads+1)
+        print(t)        
+        if (t == 0):
+            hopsan.useSingleCore()
+        else:
+            hopsan.useMultiCore()
+            hopsan.setNumberOfThreads(t)
 
-multicore=True
+        load = maxload*random.random()
+        print(load)
+        hopsan.setSystemParameter("load", load)
 
-for i in range(runs):
-
-  load = maxload*random.random()
-  hopsan.setSystemParameter("load", load)
-  hopsan.setSystemParameter("sigma", load*0.2)
-
-  hopsan.turnOffProgressBar()
+        hopsan.simulate()
+        time = hopsan.getSimulationTime()
   
-  if multicore:
-    hopsan.useSingleCore()
-    multicore=False
-  else:
-    hopsan.useMultiCore()
-    multicore=True
-    
-  hopsan.simulate()
-  time = hopsan.getSimulationTime()
-  
-  flops=load*48
-  
-  if multicore:
-    mfile.write("  <measurement>\n")
-    mfile.write("    <load>")
-    mfile.write(str(flops))
-    mfile.write("</load>\n")
-    mfile.write("    <time>")
-    mfile.write(str(time))
-    mfile.write("</time>\n")
-    mfile.write("  </measurement>\n")
-  else:
-    sfile.write("  <measurement>\n")
-    sfile.write("    <load>")
-    sfile.write(str(flops))
-    sfile.write("</load>\n")
-    sfile.write("    <time>")
-    sfile.write(str(time))
-    sfile.write("</time>\n")
-    sfile.write("  </measurement>\n")
-  
-sfile.write("</hopsanbenchmarkdata>")
-mfile.write("</hopsanbenchmarkdata>")
+        file_list[t].write(str(time)+", "+str(load)+"\n")
 
-sfile.close()
-mfile.close()
