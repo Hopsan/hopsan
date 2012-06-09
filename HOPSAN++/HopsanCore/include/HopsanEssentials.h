@@ -80,7 +80,7 @@ extern "C" {
         void getExternalComponentLibNames(std::vector<std::string> &rLibNames);
 
         ComponentSystem* loadHMFModel(const std::string filePath, double &rStartTime, double &rStopTime);
-        ComponentSystem* loadHMFModel(const std::vector<char> xmlVector, double &rStartTime, double &rStopTime);
+        ComponentSystem* loadHMFModel(const std::vector<unsigned char> xmlVector);
 
         SimulationHandler *getSimulationHandler();
     };

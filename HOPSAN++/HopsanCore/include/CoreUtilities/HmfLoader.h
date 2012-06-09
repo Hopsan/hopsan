@@ -37,7 +37,7 @@ class HopsanEssentials;
 
 
 ComponentSystem* loadHopsanModelFile(const std::string filePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime);
-ComponentSystem* loadHopsanModelFile(const std::vector<char> xmlVector, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime);
+ComponentSystem* loadHopsanModelFile(const std::vector<unsigned char> xmlVector, HopsanEssentials* pHopsanEssentials);
 
 }
 

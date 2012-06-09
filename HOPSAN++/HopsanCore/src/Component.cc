@@ -736,6 +736,20 @@ Port *Component::getPort(const string portname)
     }
 }
 
+//! @brief Returns a string vector containing names of all ports in the component
+//! @returns A vector with the port names
+std::vector<std::string> Component::getPortNames()
+{
+    vector<string> names;
+    vector<Port*> components = getPortPtrVector();
+
+    for( int i=0; i<components.size(); i++)
+    {
+        names[i] = components[i]->getComponentName();
+    }
+    return names;
+}
+
 //! @brief Get a port as reference to pointer
 //! @todo do we really need this function
 bool Component::getPort(const string portname, Port* &rpPort)

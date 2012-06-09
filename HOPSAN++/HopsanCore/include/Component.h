@@ -110,6 +110,7 @@ public:
     //Ports
     std::vector<Port*> getPortPtrVector();
     Port *getPort(const std::string portname);
+    std::vector<std::string> getPortNames();
 
     //System parent
     ComponentSystem *getSystemParent();

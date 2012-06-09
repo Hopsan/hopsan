@@ -285,14 +285,14 @@ ComponentSystem* hopsan::loadHopsanModelFile(const std::string filePath, HopsanE
 //! @brief This function is used to load a HMF file from model string.
 //! @param [in] xmlModel The xml representation of the model
 //! @returns A pointer to the rootsystem of the loaded model
-ComponentSystem* hopsan::loadHopsanModelFile(std::vector<char> xmlVector, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime)
+ComponentSystem* hopsan::loadHopsanModelFile(std::vector<unsigned char> xmlVector, HopsanEssentials* pHopsanEssentials)
 {
     std::string filePath("");
 
     try
     {
         rapidxml::xml_document<> doc;
-        doc.parse<0>( &xmlVector[0]);
+        doc.parse<0>( (char*) &xmlVector[0]);
 
         rapidxml::xml_node<> *pRootNode = doc.first_node();
 
@@ -303,11 +303,6 @@ ComponentSystem* hopsan::loadHopsanModelFile(std::vector<char> xmlVector, Hopsan
             if (pSysNode != 0)
             {
                 //! @todo more error check
-                //We only want to read toplevel simulation time settings here
-                rapidxml::xml_node<> *pSimtimeNode = pSysNode->first_node("simulationtime");
-                rStartTime = readDoubleAttribute(pSimtimeNode, "start", 0);
-                rStopTime = readDoubleAttribute(pSimtimeNode, "stop", 2);
-
                 ComponentSystem * pSys = pHopsanEssentials->createComponentSystem(); //Create root system
                 loadSystemContents(pSysNode, pSys, pHopsanEssentials, filePath);
 
