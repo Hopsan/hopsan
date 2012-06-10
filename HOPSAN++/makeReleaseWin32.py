@@ -5,17 +5,16 @@ import ctypes
 devversion="0.6."
 tbbversion="tbb30_20110704oss"
 tempDir="C:\\temp_release"
-inkscapeDir="C:\\Program Files\\Inkscape"
-inkscapeDir2="C:\\Program Files (x86)\\Inkscape"
-innoDir="C:\\Program Files\\Inno Setup 5"
-innoDir2="C:\\\"Program Files (x86)\"\\Inno Setup 5"
 scriptFile="HopsanReleaseInnoSetupScript.iss"
 hopsanDir=os.getcwd()
-qtsdkDir="C:\\Qt"
-qtsdkDir2="C:\\QtSDK"
-msvc2008Dir="C:\\\"Program Files\"\\\"Microsoft SDKs\"\\Windows\\v7.0\\Bin"
-msvc2010Dir="C:\\\"Program Files\"\\\"Microsoft SDKs\"\\Windows\\v7.1\\Bin"
 dependecyBinFiles=".\\hopsan_bincontents_Qt474_MinGW_Py27.7z"
+
+inkscapeDirList = ["C:\\Program Files\\Inkscape", "C:\\Program Files (x86)\\Inkscape"]
+innoDirList = ["C:\\Program Files\\Inno Setup 5", "C:\\Program Files (x86)\\Inno Setup 5"]
+qtsdkDirList = ["C:\\Qt", "C:\\QtSDK"]
+msvc2008DirList = ["C:\\Program Files\\Microsoft SDKs\\Windows\\v7.0\\Bin", "C:\\Program (x86)\\Microsoft SDKs\\Windows\\v7.0\\Bin"]
+msvc2010DirList = ["C:\\Program Files\\Microsoft SDKs\\Windows\\v7.1\\Bin", "C:\\Program (x86)\\Microsoft SDKs\\Windows\\v7.1\\Bin"]
+
 
 STD_OUTPUT_HANDLE= -11
 
@@ -24,7 +23,7 @@ class bcolors:
   GREEN= 0x0A
   RED = 0x0C
   YELLOW = 0x0E
-  BLUE = 0x09
+  BLUE = 0x0B
 
 std_out_handle = ctypes.windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
 
@@ -35,6 +34,7 @@ def setColor(color, handle=std_out_handle):
 setColor(bcolors.WHITE)
 
 def runCmd(cmd):
+    print cmd
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     return process.communicate()
 
@@ -59,16 +59,23 @@ def printTodo(text):
     setColor(bcolors.WHITE)
 
 def pathExists(path):
+    print "Checking path:"
+    print path
     return os.path.exists(os.path.dirname(path))
 
+def fileExists(file):
+    return os.path.isfile(file)
+    
 def verifyPaths():
+    print "Verifying path variables..."
+
     global devversion
     global tbbversion
     global tempDir
     global inkscapeDir
     global inkscapeDir2
     global innoDir
-    global innoDir2
+    global innoDirList
     global scriptFile
     global hopsanDir
     global qtsdkDir
@@ -79,43 +86,77 @@ def verifyPaths():
     global jomDir
     global qmakeDir
     global mingwDir
-   # print runCmd('cp dummy dummy2')
-
+   
     #Check if Qt path exists
-    if not pathExists(qtsdkDir):
-        qtsdkDir = qtsdkDir2;
-        if not pathExists(qtsdkDir):
-            printError("Qt SDK could not be found in one of the expected locations.")
-            return False
+    qtsdkDir=""
+    for i in range(len(qtsdkDirList)):
+        if pathExists(qtsdkDirList[i]+"\\"):
+            qtsdkDir = qtsdkDirList[i]
+    if qtsdkDir == "":
+        printError("Qt SDK could not be found in one of the expected locations.")
+        return False   
+    printSuccess("Found Qt SDK!")
     
     jomDir=qtsdkDir+"\\QtCreator\\bin"
     qmakeDir=qtsdkDir+"\\Desktop\\Qt\\4.7.4\\mingw\\bin"
     mingwDir=qtsdkDir+"\\mingw\\bin"
 
     #Make sure the correct inno dir is used, 32 or 64 bit computers (Inno Setup is 32-bit)
-    if not pathExists(innoDir):
-        innoDir = innoDir2    
-        if not pathExists(innoDir):
-            printError("Inno Setup 5 is not installed in expected place.")
-            return False
-
+    innoDir=""
+    for i in range(len(innoDirList)):
+        if pathExists(innoDirList[i]+"\\"):
+            innoDir = innoDirList[i]
+    if innoDir == "":
+        printError("Inno Setup 5 is not installed in expected place.")
+        return False
+    printSuccess("Found Inno Setup!")
+            
     #Make sure the correct incskape dir is used, 32 or 64 bit computers (Inkscape is 32-bit)
-    if not pathExists(inkscapeDir):
-        inkscapeDir = inkscapeDir2
-        if not pathExists(inkscapeDir):
-            printError("Inkscape is not installed in expected place.")
-            return False
+    inkscapeDir=""
+    for i in range(len(inkscapeDirList)):
+        if pathExists(inkscapeDirList[i]+"\\"):
+            inkscapeDir = inkscapeDirList[i]
+    if inkscapeDir == "":
+        printError("Inkscape is not installed in expected place.")
+        return False
+    printSuccess("Found Inkscape!")
 
+    #Make sure Visual Studio 2008 is installed in correct location
+    msvc2008Dir=""
+    for i in range(len(msvc2008DirList)):
+        if pathExists(msvc2008DirList[i]+"\\"):
+            msvc2008Dir = msvc2008DirList[i]
+    if msvc2008Dir == "":
+        printError("Microsoft Visual Studio 2008 is not installed in expected place.")
+        return False
+    printSuccess("Found location of Microsoft Visual Studio 2008!")
+
+    #Make sure Visual Studio 2010 is installed in correct location
+    msvc2010Dir=""
+    for i in range(len(msvc2010DirList)):
+        if pathExists(msvc2010DirList[i]+"\\"):
+            msvc2010Dir = msvc2010DirList[i]
+    if msvc2010Dir == "":
+        printError("Microsoft Visual Studio 2010 is not installed in expected place.")
+        return False
+    printSuccess("Found location of Microsoft Visual Studio 2010!")
+    
     #Make sure the 3d party dependency file exists
-    if not pathExists(dependecyBinFiles):
+    if not pathExists(dependecyBinFiles+"\\"):
         printError("The "+ dependecyBinFiles + " file containing needed bin files is NOT present. Get it from alice/fluid/programs/hopsan")
         return False
-
+    printSuccess("Found dependency binary files!")
+        
+    #Make sure TBB is installed in correct location
+    if not pathExists("HopsanCore\\Dependencies\\"+tbbversion+"\\"):
+        printError("Cannot find correct TBB version, you must use "+ tbbversion+"\\")
+        return False
+    printSuccess("Found correct TBB version!")        
+    
     return True
 
 
 def getRevision():
-
     dodevrelease=False
     version = raw_input('Enter release version number on the form a.b.c or leave blank for DEV build release: ')    
     if version == "": 
@@ -129,74 +170,169 @@ def getRevision():
     print "This is a DEV release: " + str(dodevrelease)
     print "Release version number: " + str(version)
     print "---------------------------------------"
-    print "Is this OK?"
-    ans = raw_input("Answer y or n: ")
-    abort = (ans == "n")
+    while(True):
+        ans = raw_input("Is this OK? (y/n): ")
+        abort = (ans == "n")
+        if ans == "y" or ans == "n":
+            break
+            
     return (version,dodevrelease,abort)
 
 
-if not verifyPaths():
-    printTodo("To implement: Cleanup")
+def msvcCompile(version, architecture):
+    print "Compiling HopsanCore with Microsoft Visual Studio "+version+" "+architecture+"..."
+    
+    #Find correct path (perhaps we should test if it exists first, or this will crash)
+    exec "path = msvc"+version+"Dir"
+    
+    #Remove previous files
+    os.system("del "+hopsanDir+"\\bin\\HopsanCore*.*")
 
-global version
-(version, dodevrelease, abort) = getRevision()
-if abort:
-    printError("Aborted.")
+    print "Debug 1"
+    
+    #Create build directory and enter it
+    os.system("rd \s\q "+hopsanDir+"\\HopsanCore_bd")
+    os.system("mkdir "+hopsanDir+"\\HopsanCore_bd")
+
+    print "Debug 2"
+    
+    os.chdir(hopsanDir+"\\HopsanCore_bd")
+    
+    print "Debug 3"
+    
+    #Setup compiler and compile
+    os.system(str("\""+path+"\"\\SetEnv.cmd /Release /"+architecture))
+    os.system(str("\""+qmakeDir+"\"\\qtenv2.bat"))
+    os.system(str("\""+jomDir+"\"\\jom.exe clean"))
+    os.system(str("\""+qmakeDir+"\\qmake.exe "+hopsanDir+"\\HopsanCore\\HopsanCore.pro -r -spec win32-msvc"+version+" \"CONFIG+=release\" \"QMAKE_CXXFLAGS_RELEASE += -wd4251\""))
+    os.system(str("\""+jomDir+"\"\\jom.exe"))
+
+    print "Debug 4"
+    
+    #Remove build directory
+    os.system("rd /s/q "+hopsanDir+"\\HopsanCore_bd")
+
+    print "Debug 5"
+    
+    if not fileExists(hopsanDir+"\\bin\\HopsanCore.dll"):
+        printError("Failed to build HopsanCore with Visual Studio "+version+" "+architecture)
+        return False
+    
+    print "Debug 6"
+    
+    #Move files to correct MSVC directory
+    targetDir = hopsanDir+"\\bin\\MSVC"+version+"_"+architecture
+    os.system("mkdir "+targetDir)
+    os.system("del /q "+targetDir+"\\*.*")
+    os.system("move "+hopsanDir+"\\bin\\HopsanCore.dll "+targetDir+"\\HopsanCore.dll")
+    os.system("move "+hopsanDir+"\\bin\\HopsanCore.lib "+targetDir+"\\HopsanCore.lib")
+    os.system("move "+hopsanDir+"\\bin\\HopsanCore.exp "+targetDir+"\\HopsanCore.exp")
+    
+    
+def compile():
+    if not verifyPaths():
+        return False
+    else:
+        printSuccess("Verification of path variables.")
+        
+    global version
+    (version, dodevrelease, abort) = getRevision()
+    if abort:
+        printError("Aborted by user.")
+        return False
 
 
-if not dodevrelease:
-	#Set version numbers (by changing .h files) BEFORE build
-	runCmd("ThirdParty\\sed-4.2.1\\sed \"s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION "+version+"|g\" -i HopsanCore\\include\\version.h")
-	runCmd("ThirdParty\\sed-4.2.1\\sed \"s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION "+version+"|g\" -i HopsanGUI\\version_gui.h")
+    if not dodevrelease:
+        #Set version numbers (by changing .h files) BEFORE build
+        runCmd("ThirdParty\\sed-4.2.1\\sed \"s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION  \\\""+version+"\\\"|g\" -i HopsanCore\\include\\version.h")
+        runCmd("ThirdParty\\sed-4.2.1\\sed \"s|#define HOPSANGUIVERSION.*|#define HOPSANGUIVERSION \\\""+version+"\\\"|g\" -i HopsanGUI\\version_gui.h")
 
-    #Set splash screen version number
-	runCmd("ThirdParty\\sed-4.2.1\\sed \"s|X\.X\.X|"+version+"|g\" -i HopsanGUI\\graphics\\splash2.svg")
-	runCmd(inkscapeDir+"\\inkscape.exe HopsanGUI/graphics/splash2.svg --export-background=\"#ffffff\" --export-png HopsanGUI/graphics/splash.png")
-	
-	#Revert changes in svg
-	runCmd("svn revert HopsanGUI\\graphics\\splash2.svg")
+        #Set splash screen version number
+        runCmd("ThirdParty\\sed-4.2.1\\sed \"s|X\.X\.X|"+version+"|g\" -i HopsanGUI\\graphics\\splash2.svg")
+        runCmd("\""+inkscapeDir+"\\inkscape.exe\" HopsanGUI/graphics/splash2.svg --export-background=\"#ffffff\" --export-png HopsanGUI/graphics/splash.png")
+        
+        #Revert changes in svg
+        runCmd("svn revert HopsanGUI\\graphics\\splash2.svg")
 
-	#Make sure development flag is not defined
-	runCmd("ThirdParty\\sed-4.2.1\\sed \"s|.*DEFINES \\*= DEVELOPMENT|#DEFINES *= DEVELOPMENT|\" -i HopsanGUI\\HopsanGUI.pro")
+        #Make sure development flag is not defined
+        runCmd("ThirdParty\\sed-4.2.1\\sed \"s|.*DEFINES \\*= DEVELOPMENT|#DEFINES *= DEVELOPMENT|\" -i HopsanGUI\\HopsanGUI.pro")
 
-#Make sure we compile defaultLibrary into core
-runCmd("ThirdParty\\sed-4.2.1\\sed \"s|.*DEFINES \\*= BUILTINDEFAULTCOMPONENTLIB|DEFINES *= BUILTINDEFAULTCOMPONENTLIB|g\" -i Common.prf")
-runCmd("ThirdParty\\sed-4.2.1\\sed \"s|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.cc \\\\|\" -i HopsanCore\\HopsanCore.pro")
-runCmd("ThirdParty\\sed-4.2.1\\sed \"s|componentLibraries||\" -i HopsanNG.pro")
+    #Make sure we compile defaultLibrary into core
+    runCmd("ThirdParty\\sed-4.2.1\\sed \"s|.*DEFINES \\*= BUILTINDEFAULTCOMPONENTLIB|DEFINES *= BUILTINDEFAULTCOMPONENTLIB|g\" -i Common.prf")
+    runCmd("ThirdParty\\sed-4.2.1\\sed \"s|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.cc \\\\|\" -i HopsanCore\\HopsanCore.pro")
+    runCmd("ThirdParty\\sed-4.2.1\\sed \"s|componentLibraries||\" -i HopsanNG.pro")
 
+    #Rename TBB so it is not found when compiling with Visual Studio
+    os.rename(hopsanDir+"\HopsanCore\Dependencies\\"+tbbversion, hopsanDir+"\HopsanCore\Dependencies\\"+tbbversion+"_nope")
 
-#Rename TBB so it is not found when compiling with Visual Studio
-if not pathExists("HopsanCore\\Dependencies\\"+tbbversion):
-    printError("Cannot find correct TBB version, you must use "+ tbbversion)
+    #BUILD HOPSANCORE WITH MSVC
+    if not msvcCompile("2008", "x86"):
+        return False
+    if not msvcCompile("2008", "x64"):
+        return False
+    if not msvcCompile("2010", "x86"):
+        return False
+    if not msvcCompile("2010", "x64"):
+        return False
 
-os.rename(hopsanDir+"\HopsanCore\Dependencies\\"+tbbversion, hopsanDir+"\HopsanCore\Dependencies\\"+tbbversion+"_nope")
+    #Rename TBB back again (to activate it)
+    os.rename(hopsanDir+"\\HopsanCore\\Dependencies\\"+tbbversion+"_nope", hopsanDir+"\\HopsanCore\\Dependencies\\"+tbbversion)
 
+    #BUILD WITH MINGW32
 
-#BUILD HOPSANCORE WITH MSVC2008 32-bit
+    #Remove previous files
+    # os.system("del "+hopsanDir+"\\bin\\HopsanCore*.*")
+    # os.system("del "+hopsanDir+"\\bin\\HopsanGUI*.*")
+    # os.system("del "+hopsanDir+"\\bin\\HopsanCLI*.*")
 
-#Remove previous files
-os.system("del "+hopsanDir+"\\bin\\HopsanCore*.*")
+    #Create build directory and enter it
+    # os.system("rd \s\q "+hopsanDir+"\\HopsanNG_bd")
+    # os.system("mkdir "+hopsanDir+"\\HopsanNG_bd")
+    # os.chdir(hopsanDir+"\\HopsanNG_bd")
+    
+    #Setup compiler and compile
+    # os.system(qmakeDir+"\\qtenv2.bat")
+    # os.system(mingwDir+"\\mingw32-make.exe clean")
+    # os.system(qmakeDir+"\\qmake.exe "+hopsanDir+"\\HopsanNG.pro -r -spec win32-g++ \"CONFIG+=release\"")
+    # os.system(mingwDir+"\\mingw32-make.exe")
 
-#Create build directory and enter it
-os.system("rd \s\q "+hopsanDir+"\\HopsanCore_bd")
-os.system("mkdir "+hopsanDir+"\\HopsanCore_bd")
+    # if not pathExists(hopsanDir+"\\bin\\HopsanCore.dll") or not pathExists(hopsanDir+"\\bin\\HopsanGUI.exe") or not pathExists(hopsanDir+"\\bin\\HopsanCLI.exe"):
+        # printError("Failed to build Hopsan with MinGW.")
+        # return False
+    
+    return True
+    
+    
+def cleanUp():
+    print "Cleaning up..."
+    printTodo("Implement cleanup function.")
+    
+    #Remove temporary output directory
+    os.system("rd /s/q "+tempDir)
+     
+    #Rename TBB back again (if not done already)
+    if pathExists(hopsanDir+"\\HopsanCore\\Dependencies\\"+tbbversion+"_nope\\"):
+        os.rename(hopsanDir+"\\HopsanCore\\Dependencies\\"+tbbversion+"_nope", hopsanDir+"\\HopsanCore\\Dependencies\\"+tbbversion)
+    
+    
+#################################
+# Execution of file begins here #
+#################################
 
-os.chdir(hopsanDir+"\\HopsanCore_bd")
+print "\n"
+print "/------------------------------------------------------------\\"
+print "| HOPSAN RELEASE COMPILATION SCRIPT                          |"
+print "|                                                            |"
+print "| Written by Robert Braun 2011-10-30                         |"
+print "| Revised by Robert Braun and Peter Nordin 2012-03-05        |"
+print "| Revised and converted to Python by Robert Braun 2012-06-09 |"
+print "\\------------------------------------------------------------/"
+print "\n"
 
-#Setup compiler and compile
-os.system(str(msvc2010Dir+"\\SetEnv.cmd /Release /x86"))
-print "debug1"
-os.system(str(qmakeDir+"\\qtenv2.bat"))
-print "debug2"
-os.system(str(jomDir+"\\jom.exe clean"))
-print "debug3"
-os.system(str(qmakeDir+"\\qmake.exe "+hopsanDir+"\HopsanCore\HopsanCore.pro -r -spec win32-msvc2010 \"CONFIG+=release\" \"QMAKE_CXXFLAGS_RELEASE += -wd4251\""))
-print "debug4"
-os.system(str(jomDir+"\\jom.exe"))
-
-#Remove build directory
-os.system("rd /s/q "+hopsanDir+"\\HopsanCore_bd")
-
-#cd bin
-if not pathExists(hopsanDir+"\\bin\\HopsanCore.dll"):
-	printError("Failed to build HopsanCore with Visual Studio 2010 32-bit")
+if compile():
+    cleanUp()
+    printSuccess("Compilation script finished successfully.")
+else:
+    cleanUp()
+    print "Compilation script finished with errors."
+    
