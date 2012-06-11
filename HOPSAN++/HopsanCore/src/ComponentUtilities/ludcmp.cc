@@ -72,7 +72,7 @@ bool hopsan::ludcmp(Matrix &a, int order[])
     for (i=0; i<n; i++) order[i] = i;
 
     /* do pivoting for first column and check for singularity */
-    if (pivot(a,order,0)) return false;
+    if (!pivot(a,order,0)) return false;
 
     diag = 1.0/a[0][0];
     for (i=1; i<n; i++) a[0][i] *= diag;
@@ -156,7 +156,7 @@ bool hopsan::pivot(Matrix &a, int order[], int jcol)
 	*   Interchange pivot row (ipvt) with current row (jcol).
 	*/
 
-    if (ipvt==jcol) return 0;
+    if (ipvt==jcol) return true;
     a.swaprows(jcol,ipvt);
     i = order[jcol];
     order[jcol] = order[ipvt];
