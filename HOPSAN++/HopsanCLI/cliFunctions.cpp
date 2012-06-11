@@ -456,7 +456,6 @@ bool performModelTest(const std::string hvcFilePath)
                             pRootSystem->finalize();
 
                             //copy the data
-                            //! @todo with better access function in core we could avoid copying data and work directly with the data stored
                             Component* pComp = pRootSystem->getSubComponent(compName);
                             if (!pComp)
                             {
@@ -472,6 +471,7 @@ bool performModelTest(const std::string hvcFilePath)
                                 return false;
                             }
 
+                            //! @todo with better access function in core we could avoid copying data and work directly with the data stored
                             vTime = *pPort->getTimeVectorPtr();
                             int dataId = pPort->getNodeDataIdFromName(varname);
                             if (dataId < 0)

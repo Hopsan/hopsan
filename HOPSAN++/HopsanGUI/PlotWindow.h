@@ -118,6 +118,7 @@ private:
     QMenu *mpExportMenu;
     QAction *mpExportToXmlAction;
     QAction *mpExportToCsvAction;
+    QAction *mpExportToHvcAction;
     QAction *mpExportToMatlabAction;
     QAction *mpExportToGnuplotAction;
     QMenu *mpExportGfxMenu;
@@ -251,6 +252,7 @@ public slots:
     void resetXVector();
     void exportToXml();
     void exportToCsv();
+    void exportToHvc(QString fileName="");
     void exportToMatlab();
     void exportToGnuplot();
     void exportToPdf();

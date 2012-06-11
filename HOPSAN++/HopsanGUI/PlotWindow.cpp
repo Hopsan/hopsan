@@ -118,12 +118,14 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
 
     mpExportToXmlAction = new QAction("Export to Extensible Markup Language File (.xml)", mpToolBar);
     mpExportToCsvAction = new QAction("Export to Comma-Separeted Values File (.csv)", mpToolBar);
+    mpExportToHvcAction = new QAction("Export to Hopsan Validation Files (.hvc and .csv)", mpToolBar);
     mpExportToMatlabAction = new QAction("Export to Matlab Script File (.m)", mpToolBar);
     mpExportToGnuplotAction = new QAction("Export to gnuplot data file(.dat)", mpToolBar);
 
     mpExportMenu = new QMenu(mpToolBar);
     mpExportMenu->addAction(mpExportToXmlAction);
     mpExportMenu->addAction(mpExportToCsvAction);
+    mpExportMenu->addAction(mpExportToHvcAction);
     mpExportMenu->addAction(mpExportToMatlabAction);
     mpExportMenu->addAction(mpExportToGnuplotAction);
 
@@ -1118,13 +1120,15 @@ void PlotTabWidget::tabChanged()
 
     for(int i=0; i<count(); ++i)
     {
+        //! @todo could probably make this more effective by calling disconnect(ptr, SIGNAL, 0 0), then we dont need this loop either
         disconnect(mpParentPlotWindow->mpZoomButton,                SIGNAL(toggled(bool)),  getTab(i),  SLOT(enableZoom(bool)));
         disconnect(mpParentPlotWindow->mpPanButton,                 SIGNAL(toggled(bool)),  getTab(i),  SLOT(enablePan(bool)));
         disconnect(mpParentPlotWindow->mpBackgroundColorButton,     SIGNAL(triggered()),      getTab(i),  SLOT(setBackgroundColor()));
         disconnect(mpParentPlotWindow->mpGridButton,                SIGNAL(toggled(bool)),  getTab(i),  SLOT(enableGrid(bool)));
         disconnect(mpParentPlotWindow->mpResetXVectorButton,        SIGNAL(triggered()),      getTab(i),  SLOT(resetXVector()));
-        disconnect(mpParentPlotWindow->mpExportToCsvAction,         SIGNAL(triggered()),    getTab(i),  SLOT(exportToXml()));
-        disconnect(mpParentPlotWindow->mpExportToXmlAction,         SIGNAL(triggered()),    getTab(i),  SLOT(exportToCsv()));
+        disconnect(mpParentPlotWindow->mpExportToCsvAction,         SIGNAL(triggered()),    getTab(i),  SLOT(exportToCsv()));
+        disconnect(mpParentPlotWindow->mpExportToHvcAction,         SIGNAL(triggered()),    getTab(i),  SLOT(exportToHvc()));
+        disconnect(mpParentPlotWindow->mpExportToXmlAction,         SIGNAL(triggered()),    getTab(i),  SLOT(exportToXml()));
         disconnect(mpParentPlotWindow->mpExportToMatlabAction,      SIGNAL(triggered()),    getTab(i),  SLOT(exportToMatlab()));
         disconnect(mpParentPlotWindow->mpExportToGnuplotAction,     SIGNAL(triggered()),    getTab(i),  SLOT(exportToGnuplot()));
         disconnect(mpParentPlotWindow->mpExportPdfAction,           SIGNAL(triggered()),    getTab(i),  SLOT(exportToPdf()));
@@ -1139,6 +1143,7 @@ void PlotTabWidget::tabChanged()
             mpParentPlotWindow->mpPanButton->setDisabled(true);
             mpParentPlotWindow->mpSaveButton->setDisabled(true);
             mpParentPlotWindow->mpExportToCsvAction->setDisabled(true);
+            mpParentPlotWindow->mpExportToHvcAction->setDisabled(true);
             mpParentPlotWindow->mpExportToGnuplotAction->setDisabled(true);
             mpParentPlotWindow->mpExportToMatlabAction->setDisabled(true);
             mpParentPlotWindow->mpLoadFromXmlButton->setDisabled(true);
@@ -1155,6 +1160,7 @@ void PlotTabWidget::tabChanged()
             mpParentPlotWindow->mpPanButton->setDisabled(false);
             mpParentPlotWindow->mpSaveButton->setDisabled(false);
             mpParentPlotWindow->mpExportToCsvAction->setDisabled(false);
+            mpParentPlotWindow->mpExportToHvcAction->setDisabled(false);
             mpParentPlotWindow->mpExportToGnuplotAction->setDisabled(false);
             mpParentPlotWindow->mpExportToMatlabAction->setDisabled(false);
             mpParentPlotWindow->mpExportGfxButton->setDisabled(false);
@@ -1179,6 +1185,7 @@ void PlotTabWidget::tabChanged()
         connect(mpParentPlotWindow->mpResetXVectorButton,       SIGNAL(triggered()),    getCurrentTab(),    SLOT(resetXVector()));
         connect(mpParentPlotWindow->mpExportToXmlAction,        SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToXml()));
         connect(mpParentPlotWindow->mpExportToCsvAction,        SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToCsv()));
+        connect(mpParentPlotWindow->mpExportToHvcAction,        SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToHvc()));
         connect(mpParentPlotWindow->mpExportToMatlabAction,     SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToMatlab()));
         connect(mpParentPlotWindow->mpExportToGnuplotAction,    SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToGnuplot()));
         connect(mpParentPlotWindow->mpExportPdfAction,          SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToPdf()));
@@ -1984,6 +1991,77 @@ void PlotTab::exportToCsv(QString fileName)
 //        fileStream << "\n";
 //    }
 
+    file.close();
+}
+
+void PlotTab::exportToHvc(QString fileName)
+{
+    if (mPlotCurvePtrs[FIRSTPLOT].size() < 1)
+    {
+        return;
+    }
+
+    QFileInfo fileInfo;
+    if (fileName.isEmpty())
+    {
+        //Open file dialog and initialize the file stream
+
+        QString filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To CSV File"),
+                                                gConfig.getPlotDataDir(),
+                                                tr("HopsanValidationCfg (*.hvc)"));
+        if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
+        fileInfo.setFile(filePath);
+    }
+
+    QFile file(fileInfo.absoluteFilePath());
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open file for writing: " + fileName);
+        return;
+    }
+
+    // Save the csv data
+    QString csvFileName=fileInfo.baseName()+".csv";
+    this->exportToCsv(fileInfo.absolutePath()+"/"+csvFileName);
+
+    qDebug() << fileInfo.absoluteFilePath();
+    qDebug() << fileInfo.absolutePath()+"/"+csvFileName;
+
+
+    // Save HVC xml data
+    QDomDocument doc;
+    QDomElement hvcroot = doc.createElement("hopsanvalidationconfiguration");
+    doc.appendChild(hvcroot);
+    hvcroot.setAttribute("hvcversion", "0.1");
+
+    QString modelPath = relativePath(mPlotCurvePtrs[FIRSTPLOT][0]->getContainerObjectPtr()->getModelFileInfo(), QDir(fileInfo.absolutePath()));
+    QDomElement validation = appendDomElement(hvcroot, "validation");
+    appendDomTextNode(validation, "modelfile", modelPath);
+    appendDomTextNode(validation, "parameterset", "");
+
+    //Cycle plot curves
+    for (int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
+    {
+        PlotCurve *pPlotCurve = mPlotCurvePtrs[FIRSTPLOT][i];
+
+        QDomElement component = appendDomElement(validation, "component");
+        component.setAttribute("name", pPlotCurve->getComponentName());
+
+        QDomElement port = appendDomElement(component, "port");
+        port.setAttribute("name", pPlotCurve->getPortName());
+
+        QDomElement variable = appendDomElement(port, "variable");
+        variable.setAttribute("name", pPlotCurve->getDataName());
+
+        appendDomTextNode(variable, "csvfile", csvFileName);
+        appendDomIntegerNode(variable, "column", i+1);
+
+        appendDomValueNode(variable, "tolerance", 0.01);
+    }
+
+    QTextStream hvcFileStream(&file);
+    appendRootXMLProcessingInstruction(doc); //The xml "comment" on the first line
+    doc.save(hvcFileStream, 2);
     file.close();
 }
 
