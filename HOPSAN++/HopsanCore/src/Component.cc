@@ -741,13 +741,13 @@ Port *Component::getPort(const string portname)
 std::vector<std::string> Component::getPortNames()
 {
     vector<string> names;
-    vector<Port*> components = getPortPtrVector();
+    PortPtrMapT::iterator ports_it;
 
-    for( int i=0; i<components.size(); i++)
+    //Copy every port name
+    for( ports_it = mPortPtrMap.begin(); ports_it != mPortPtrMap.end(); ++ports_it)
     {
-        names[i] = components[i]->getComponentName();
+        names.push_back( ports_it->first);
     }
-    return names;
 }
 
 //! @brief Get a port as reference to pointer
