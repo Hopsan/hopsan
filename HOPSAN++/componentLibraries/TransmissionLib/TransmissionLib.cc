@@ -16,11 +16,11 @@
 // Include your component code code files here
 // If you have lots of them you can include them in separate .h files and then include those files here instead.
 
-#include "component_code/MechanicPlanetaryGearSimple.hpp"
-#include "component_code/MechanicShaftGearRatio.hpp"
+//#include "component_code/MechanicPlanetaryGearSimple.hpp"
+//#include "component_code/MechanicShaftGearRatio.hpp"
 #include "component_code/MechanicShaftSingleGearRatio.hpp"
 #include "component_code/MechanicRotationalPlanetaryGear.hpp"
-#include "component_code/MechanicWHForce.hpp"
+//#include "component_code/MechanicWHForce.hpp"
 
 // You need to include ComponentEssentials.h in order to gain access to the register function and the Factory types
 // Also use the hopsan namespace
@@ -42,10 +42,10 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory,
     // If that name is already in use, use something similar
 
     pComponentFactory->registerCreatorFunction("MechanicRotationalPlanetaryGear", MechanicRotationalPlanetaryGear::Creator);
-    pComponentFactory->registerCreatorFunction("MechanicPlanetaryGearSimple", MechanicPlanetaryGearSimple::Creator);
-    pComponentFactory->registerCreatorFunction("MechanicShaftGearRatio", MechanicShaftGearRatio::Creator);
+    //pComponentFactory->registerCreatorFunction("MechanicPlanetaryGearSimple", MechanicPlanetaryGearSimple::Creator);
+    //pComponentFactory->registerCreatorFunction("MechanicShaftGearRatio", MechanicShaftGearRatio::Creator);
     pComponentFactory->registerCreatorFunction("MechanicShaftSingleGearRatio", MechanicShaftSingleGearRatio::Creator);
-    pComponentFactory->registerCreatorFunction("MechanicWHForce", MechanicWHForce::Creator);
+    //pComponentFactory->registerCreatorFunction("MechanicWHForce", MechanicWHForce::Creator);
 
     // ========== Register Custom Nodes (if any) ==========
     // This is not yet supported

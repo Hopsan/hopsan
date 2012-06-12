@@ -29,11 +29,11 @@ SOURCES += \
     TransmissionLib.cc
 
 HEADERS += \
-    component_code/MechanicPlanetaryGearSimple.hpp \
-    component_code/MechanicShaftGearRatio.hpp \
+    #component_code/MechanicPlanetaryGearSimple.hpp \
+    #component_code/MechanicShaftGearRatio.hpp \
     component_code/MechanicShaftSingleGearRatio.hpp \
     component_code/MechanicRotationalPlanetaryGear.hpp \
-    component_code/MechanicWHForce.hpp
+    #component_code/MechanicWHForce.hpp
 
 OTHER_FILES += \
     hopsanDebugReleaseCompile.prf
