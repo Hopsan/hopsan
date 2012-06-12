@@ -121,12 +121,19 @@ void ProgressBarWorkerObject::refreshProgressBar()
 {
     //! @todo this will give incorrect update for multi system simulations
     const double t = mvSystems[0]->getCoreSystemAccessPtr()->getCurrentTime();
+
     // Round up and truncate
-    const int step = int((t-mStartT)/(mStopT - mStartT)*100.0+0.5);
-    if (step > mLastProgressRefreshStep)
+    const int step = int((t-mStartT)/(mStopT - mStartT)*100.0 + 0.5);
+    if( step > mLastProgressRefreshStep)
     {
         mLastProgressRefreshStep = step;
         emit setProgressBarValue(step);
+    }
+    else
+    {
+        // adapt timer timestep to the simulation model
+        int currentTimeStep = mProgressDialogRefreshTimer.interval();
+        mProgressDialogRefreshTimer.setInterval( currentTimeStep + 10);
     }
 }
 
