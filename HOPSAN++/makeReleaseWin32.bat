@@ -136,7 +136,8 @@ mkdir HopsanCore_bd
 cd HopsanCore_bd
 
 :: Setup compiler and compile
-call %msvc2008Dir%\SetEnv.cmd /Release /x86
+call "C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin"\SetEnv.cmd /Release /x86
+pause
 call %qmakeDir%\qtenv2.bat
 call %jomDir%\jom.exe clean
 call %qmakeDir%\qmake.exe ..\HopsanCore\HopsanCore.pro -r -spec win32-msvc2008 "CONFIG+=release" "QMAKE_CXXFLAGS_RELEASE += -wd4251"

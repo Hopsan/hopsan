@@ -5,18 +5,48 @@ import ctypes
 devversion="0.6."
 tbbversion="tbb30_20110704oss"
 tempDir="C:\\temp_release"
-scriptFile="HopsanReleaseInnoSetupScript.iss"
+scriptFile=".\\HopsanReleaseInnoSetupScript.iss"
 hopsanDir=os.getcwd()
 dependecyBinFiles=".\\hopsan_bincontents_Qt474_MinGW_Py27.7z"
 
 inkscapeDirList = ["C:\\Program Files\\Inkscape", "C:\\Program Files (x86)\\Inkscape"]
 innoDirList = ["C:\\Program Files\\Inno Setup 5", "C:\\Program Files (x86)\\Inno Setup 5"]
-qtsdkDirList = ["C:\\Qt", "C:\\QtSDK"]
-msvc2008DirList = ["C:\\Program Files\\Microsoft SDKs\\Windows\\v7.0\\Bin", "C:\\Program (x86)\\Microsoft SDKs\\Windows\\v7.0\\Bin"]
-msvc2010DirList = ["C:\\Program Files\\Microsoft SDKs\\Windows\\v7.1\\Bin", "C:\\Program (x86)\\Microsoft SDKs\\Windows\\v7.1\\Bin"]
+qtsdkDirList = ["C:\Qt", "C:\QtSDK"]
+msvc2008DirList = ["C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin", "C:\Program (x86)\Microsoft SDKs\Windows\v7.0\Bin"]
+msvc2010DirList = ["C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin", "C:\Program (x86)\Microsoft SDKs\Windows\v7.1\Bin"]
 
 
 STD_OUTPUT_HANDLE= -11
+
+
+escape_dict={'\a':r'\a',
+           '\b':r'\b',
+           '\c':r'\c',
+           '\f':r'\f',
+           '\n':r'\n',
+           '\r':r'\r',
+           '\t':r'\t',
+           '\v':r'\v',
+           '\'':r'\'',
+           '\"':r'\"',
+           '\0':r'\0',
+           '\1':r'\1',
+           '\2':r'\2',
+           '\3':r'\3',
+           '\4':r'\4',
+           '\5':r'\5',
+           '\6':r'\6',
+           '\7':r'\7',
+           '\8':r'\8',
+           '\9':r'\9'}
+
+def raw(text):
+    """Returns a raw string representation of text"""
+    new_string=''
+    for char in text:
+        try: new_string+=escape_dict[char]
+        except KeyError: new_string+=char
+    return new_string
 
 class bcolors:
   WHITE = 0x07
@@ -36,6 +66,7 @@ setColor(bcolors.WHITE)
 def runCmd(cmd):
     print cmd
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    print "Done!"
     return process.communicate()
 
 def printSuccess(text):
@@ -53,18 +84,20 @@ def printError(text):
     print "Error: " + text
     setColor(bcolors.WHITE)
 
-def printTodo(text):
+def printDebug(text):
     setColor(bcolors.BLUE)
-    print "Todo: " + text
+    print "Debug: " + text
     setColor(bcolors.WHITE)
 
 def pathExists(path):
     print "Checking path:"
-    print path
-    return os.path.exists(os.path.dirname(path))
+    print raw(path)
+    return os.path.exists(os.path.dirname(raw(path)))
 
 def fileExists(file):
-    return os.path.isfile(file)
+    print "Checking file:"
+    print raw(file)
+    return os.path.isfile(raw(file))
     
 def verifyPaths():
     print "Verifying path variables..."
@@ -178,7 +211,6 @@ def getRevision():
             
     return (version,dodevrelease,abort)
 
-
 def msvcCompile(version, architecture):
     print "Compiling HopsanCore with Microsoft Visual Studio "+version+" "+architecture+"..."
     
@@ -200,17 +232,17 @@ def msvcCompile(version, architecture):
     
     print "Debug 3"
     
-    #Setup compiler and compile
-    os.system(str("\""+path+"\"\\SetEnv.cmd /Release /"+architecture))
-    os.system(str("\""+qmakeDir+"\"\\qtenv2.bat"))
-    os.system(str("\""+jomDir+"\"\\jom.exe clean"))
-    os.system(str("\""+qmakeDir+"\\qmake.exe "+hopsanDir+"\\HopsanCore\\HopsanCore.pro -r -spec win32-msvc"+version+" \"CONFIG+=release\" \"QMAKE_CXXFLAGS_RELEASE += -wd4251\""))
-    os.system(str("\""+jomDir+"\"\\jom.exe"))
+    
+    #Setup compiler and compile (using auxiliary batch script)
+    os.chdir(hopsanDir)
+    os.system("compileMSVC.bat "+version+" "+architecture+" \""+raw(path)+"\" \""+raw(qmakeDir)+"\" \""+raw(hopsanDir)+"\"\\HopsanCore_bd \""+raw(jomDir)+"\" \""+raw(hopsanDir)+"\"")
 
     print "Debug 4"
     
+    printDebug(os.environ["PATH"])
+    
     #Remove build directory
-    os.system("rd /s/q "+hopsanDir+"\\HopsanCore_bd")
+    os.system("rd /s/q \""+raw(hopsanDir)+r'\HopsanCore_bd"')
 
     print "Debug 5"
     
@@ -227,6 +259,8 @@ def msvcCompile(version, architecture):
     os.system("move "+hopsanDir+"\\bin\\HopsanCore.dll "+targetDir+"\\HopsanCore.dll")
     os.system("move "+hopsanDir+"\\bin\\HopsanCore.lib "+targetDir+"\\HopsanCore.lib")
     os.system("move "+hopsanDir+"\\bin\\HopsanCore.exp "+targetDir+"\\HopsanCore.exp")
+    
+    return True
     
     
 def compile():
@@ -281,31 +315,28 @@ def compile():
     #BUILD WITH MINGW32
 
     #Remove previous files
-    # os.system("del "+hopsanDir+"\\bin\\HopsanCore*.*")
-    # os.system("del "+hopsanDir+"\\bin\\HopsanGUI*.*")
-    # os.system("del "+hopsanDir+"\\bin\\HopsanCLI*.*")
+    os.system("del "+hopsanDir+"\\bin\\HopsanCore*.*")
+    os.system("del "+hopsanDir+"\\bin\\HopsanGUI*.*")
+    os.system("del "+hopsanDir+"\\bin\\HopsanCLI*.*")
 
     #Create build directory and enter it
-    # os.system("rd \s\q "+hopsanDir+"\\HopsanNG_bd")
-    # os.system("mkdir "+hopsanDir+"\\HopsanNG_bd")
-    # os.chdir(hopsanDir+"\\HopsanNG_bd")
+    os.system("rd \s\q "+hopsanDir+"\\HopsanNG_bd")
+    os.system("mkdir "+hopsanDir+"\\HopsanNG_bd")
     
     #Setup compiler and compile
-    # os.system(qmakeDir+"\\qtenv2.bat")
-    # os.system(mingwDir+"\\mingw32-make.exe clean")
-    # os.system(qmakeDir+"\\qmake.exe "+hopsanDir+"\\HopsanNG.pro -r -spec win32-g++ \"CONFIG+=release\"")
-    # os.system(mingwDir+"\\mingw32-make.exe")
+    os.chdir(hopsanDir)    
+    os.system("compileMinGW.bat \""+raw(mingwDir)+"\" \""+raw(qmakeDir)+"\" \""+raw(hopsanDir)+"\"")
 
-    # if not pathExists(hopsanDir+"\\bin\\HopsanCore.dll") or not pathExists(hopsanDir+"\\bin\\HopsanGUI.exe") or not pathExists(hopsanDir+"\\bin\\HopsanCLI.exe"):
-        # printError("Failed to build Hopsan with MinGW.")
-        # return False
+    if not pathExists(hopsanDir+"\\bin\\HopsanCore.dll") or not pathExists(hopsanDir+"\\bin\\HopsanGUI.exe") or not pathExists(hopsanDir+"\\bin\\HopsanCLI.exe"):
+        printError("Failed to build Hopsan with MinGW.")
+        return False
     
     return True
     
     
 def cleanUp():
     print "Cleaning up..."
-    printTodo("Implement cleanup function.")
+    printDebug("Todo: Implement cleanup function.")
     
     #Remove temporary output directory
     os.system("rd /s/q "+tempDir)
