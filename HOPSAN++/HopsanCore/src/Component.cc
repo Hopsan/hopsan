@@ -748,6 +748,8 @@ std::vector<std::string> Component::getPortNames()
     {
         names.push_back( ports_it->first);
     }
+
+    return names;
 }
 
 //! @brief Get a port as reference to pointer
