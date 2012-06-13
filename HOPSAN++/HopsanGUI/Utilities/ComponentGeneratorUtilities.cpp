@@ -173,11 +173,11 @@ void generateComponentObject(QString typeName, QString displayName, QString cqsT
                              QStringList delayTerms, QStringList delaySteps, QStringList localVars,
                              QStringList initAlgorithms, QStringList finalAlgorithms, ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar)
 {
-    if(pProgressBar)
-    {
-        pProgressBar->setLabelText("Creating component object");
-        pProgressBar->setValue(81);
-    }
+            if(pProgressBar)
+            {
+                pProgressBar->setLabelText("Creating component object");
+                pProgressBar->setValue(58);
+            }
 
     ComponentSpecification comp(typeName, displayName, cqsType);
 
@@ -186,6 +186,11 @@ void generateComponentObject(QString typeName, QString displayName, QString cqsT
         comp.utilities << "Delay";
         comp.utilityNames << "mDelay"+QString().setNum(i);
     }
+
+            if(pProgressBar)
+            {
+                pProgressBar->setValue(59);
+            }
 
     for(int i=0; i<ports.size(); ++i)
     {
@@ -196,6 +201,11 @@ void generateComponentObject(QString typeName, QString displayName, QString cqsT
         comp.portDefaults << ports[i].defaultvalue;
     }
 
+            if(pProgressBar)
+            {
+                pProgressBar->setValue(60);
+            }
+
     for(int i=0; i<parameters.size(); ++i)
     {
         comp.parNames << parameters[i].name;
@@ -204,6 +214,11 @@ void generateComponentObject(QString typeName, QString displayName, QString cqsT
         comp.parUnits << parameters[i].unit;
         comp.parInits << parameters[i].init;
     }
+
+            if(pProgressBar)
+            {
+                pProgressBar->setValue(61);
+            }
 
     if(!jacobian.isEmpty())
     {
@@ -216,10 +231,20 @@ void generateComponentObject(QString typeName, QString displayName, QString cqsT
         comp.initEquations << "";
     }
 
+            if(pProgressBar)
+            {
+                pProgressBar->setValue(62);
+            }
+
     for(int i=0; i<delayTerms.size(); ++i)
     {
         comp.initEquations << "mDelay"+QString().setNum(i)+".initialize("+QString().setNum(delaySteps.at(i).toInt()+1)+", "+delayTerms[i]+");";
     }
+
+            if(pProgressBar)
+            {
+                pProgressBar->setValue(63);
+            }
 
     if(!jacobian.isEmpty())
     {
@@ -228,12 +253,23 @@ void generateComponentObject(QString typeName, QString displayName, QString cqsT
         comp.initEquations << "mpSolver = new EquationSystemSolver(this, "+QString().setNum(sysEquations.size())+", &jacobianMatrix, &systemEquations, &stateVariables);";
     }
 
+        if(pProgressBar)
+        {
+            pProgressBar->setValue(64);
+        }
+
     comp.simEquations << "//Initial algorithm section";
     for(int i=0; i<initAlgorithms.size(); ++i)
     {
         comp.simEquations << initAlgorithms[i]+";";
     }
     comp.simEquations << "";
+
+        if(pProgressBar)
+        {
+            pProgressBar->setValue(65);
+        }
+
 
     //! @todo Add support for using more than one iteration
 
@@ -268,6 +304,12 @@ void generateComponentObject(QString typeName, QString displayName, QString cqsT
                     comp.simEquations << "    jacobianMatrix["+QString().setNum(i)+"]["+QString().setNum(j)+"] = "+jacobian[sysEquations.size()*i+j]+";";
             }
         }
+
+                if(pProgressBar)
+                {
+                    pProgressBar->setValue(66);
+                }
+
         comp.simEquations << "";
         comp.simEquations << "    //Solving equation using LU-faktorisation";
         comp.simEquations << "    mpSolver->solve();";
@@ -282,6 +324,12 @@ void generateComponentObject(QString typeName, QString displayName, QString cqsT
             comp.simEquations << "mDelay"+QString().setNum(i)+".update("+delayTerms[i]+");";
         }
     }
+
+            if(pProgressBar)
+            {
+                pProgressBar->setValue(67);
+            }
+
     comp.simEquations << "";
     comp.simEquations << "//Final algorithm section";
     for(int i=0; i<finalAlgorithms.size(); ++i)
@@ -289,17 +337,31 @@ void generateComponentObject(QString typeName, QString displayName, QString cqsT
         comp.simEquations << finalAlgorithms[i]+";";
     }
 
+            if(pProgressBar)
+            {
+                pProgressBar->setValue(68);
+            }
+
     if(!jacobian.isEmpty())
     {
         comp.finalEquations << "delete(mpSolver);";
     }
 
+            if(pProgressBar)
+            {
+                pProgressBar->setValue(69);
+            }
 
     for(int i=0; i<localVars.size(); ++i)
     {
         comp.varNames << localVars[i];
         comp.varTypes << "double";
     }
+
+            if(pProgressBar)
+            {
+                pProgressBar->setValue(70);
+            }
 
     compileComponentObject("equation.hpp", comp, pAppearance, false, pProgressBar);
 }
@@ -314,13 +376,18 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
     if(pProgressBar)
     {
         pProgressBar->setLabelText("Creating .hpp file");
-        pProgressBar->setValue(82);
+        pProgressBar->setValue(71);
     }
 
     if(!QDir(DATAPATH).exists())
     {
         QDir().mkpath(DATAPATH);
     }
+
+        if(pProgressBar)
+        {
+            pProgressBar->setValue(72);
+        }
 
     //Initialize the file stream
     QFileInfo fileInfo;
@@ -333,6 +400,11 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
         return;
     }
     QTextStream fileStream(&file);  //Create a QTextStream object to stream the content of file
+
+        if(pProgressBar)
+        {
+            pProgressBar->setValue(73);
+        }
 
     fileStream << "#ifndef " << comp.typeName.toUpper() << "_HPP_INCLUDED\n";
     fileStream << "#define " << comp.typeName.toUpper() << "_HPP_INCLUDED\n\n";
@@ -347,6 +419,12 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
     fileStream << "    private:\n";                         // Private section
     fileStream << "        double ";
     int portId=1;
+
+        if(pProgressBar)
+        {
+            pProgressBar->setValue(74);
+        }
+
     for(int i=0; i<comp.portNames.size(); ++i)              //Declare variables
     {
         QStringList varNames;
@@ -380,6 +458,12 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
             fileStream << ", ";
         }
     }
+
+        if(pProgressBar)
+        {
+            pProgressBar->setValue(75);
+        }
+
     fileStream << ";\n";
     for(int i=0; i<comp.parNames.size(); ++i)                   //Declare parameters
     {
@@ -415,6 +499,12 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
         }
         ++portId;
     }
+
+        if(pProgressBar)
+        {
+            pProgressBar->setValue(76);
+        }
+
     if(!allVarNames.isEmpty())
     {
         fileStream << "*mpND_" << allVarNames[0];
@@ -434,6 +524,12 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
             fileStream << ", ";
         }
     }
+
+        if(pProgressBar)
+        {
+            pProgressBar->setValue(77);
+        }
+
     fileStream << ";\n\n";
     fileStream << "    public:\n";                              //Public section
     fileStream << "        static Component *Creator()\n";
@@ -447,6 +543,12 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
         fileStream << "            " << comp.parNames[i] << " = " << comp.parInits[i] << ";\n";
     }
     fileStream << "\n";
+
+            if(pProgressBar)
+            {
+                pProgressBar->setValue(78);
+            }
+
     for(int i=0; i<comp.parNames.size(); ++i)
     {
         fileStream << "            registerParameter(\"" << comp.parDisplayNames[i] << "\", \""
@@ -467,6 +569,12 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
             fileStream << ");\n";
         }
     }
+
+            if(pProgressBar)
+            {
+                pProgressBar->setValue(79);
+            }
+
     fileStream << "        }\n\n";
     fileStream << "        void initialize()\n";
     fileStream << "        {\n";
@@ -502,6 +610,11 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
         }
         ++portId;
     }
+
+            if(pProgressBar)
+            {
+                pProgressBar->setValue(80);
+            }
 
     fileStream << "\n";
     if(!comp.initEquations.isEmpty())
@@ -569,6 +682,11 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
     }
     fileStream << "        }\n\n";
 
+    if(pProgressBar)
+    {
+        pProgressBar->setValue(81);
+    }
+
     //Simulate one time step
     fileStream << "        void simulateOneTimestep()\n";
     fileStream << "        {\n";
@@ -605,6 +723,12 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
         }
         ++portId;
     }
+
+    if(pProgressBar)
+    {
+        pProgressBar->setValue(82);
+    }
+
     fileStream << "\n";
     for(int i=0; i<comp.simEquations.size(); ++i)
     {
@@ -639,6 +763,12 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
         }
         ++portId;
     }
+
+            if(pProgressBar)
+            {
+                pProgressBar->setValue(83);
+            }
+
     fileStream << "        }\n\n";
     fileStream << "        void finalize()\n";
     fileStream << "        {\n";

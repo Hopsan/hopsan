@@ -2249,7 +2249,7 @@ void SystemContainer::createSimulinkSourceFiles()
     wrpLineStream << "    pComponentSystem = HopsanEssentials::getInstance()->loadHMFModel(hmfFilePath, startT, stopT);";
     wrpLineStream << "    if (pComponentSystem==0)";
     wrpLineStream << "    {";
-    wrapperStream << "        ssSetErrorStatus(S,\"Error could not open model: " << fileName << "\")" << endl;
+    wrapperStream << "        ssSetErrorStatus(S,\"Error could not open model: " << fileName << "\");" << endl;
     wrpLineStream << "        return;";
     wrpLineStream << "    }";
     wrpLineStream << "    startT = ssGetTStart(S);";
