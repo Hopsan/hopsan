@@ -23,6 +23,7 @@
 //$Id$
 
 // Header guard to avoid inclusion of the same code twice
+// Every hpp file need to have its own UNIQUE header guard
 #ifndef SIGNALSUM_HPP_INCLUDED
 #define SIGNALSUM_HPP_INCLUDED
 

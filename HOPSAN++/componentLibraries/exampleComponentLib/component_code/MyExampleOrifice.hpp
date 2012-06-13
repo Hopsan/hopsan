@@ -14,6 +14,7 @@
 -----------------------------------------------------------------------------*/
 
 // Header guard to avoid inclusion of the same code twice
+// Every hpp file need to have its own UNIQUE header guard
 #ifndef MYEXAMPLEORIFICE_H
 #define MYEXAMPLEORIFICE_H
 
