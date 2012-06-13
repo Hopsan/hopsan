@@ -2218,14 +2218,14 @@ bool sortEquationSystem(QStringList &equations, QList<QStringList> symbols, QStr
         {
             if(limitedVariableEquations[j] == i)
             {
-                limitedVariableEquations[j] == order[i];
+                limitedVariableEquations[j] = order[i];
             }
         }
         for(int j=0; j<limitedDerivativeEquations.size(); ++j)  //Sort limited derivative equation numbers
         {
             if(limitedDerivativeEquations[j] == i)
             {
-                limitedDerivativeEquations[j] == order[i];
+                limitedDerivativeEquations[j] = order[i];
             }
         }
     }
