@@ -136,7 +136,7 @@ mkdir HopsanCore_bd
 cd HopsanCore_bd
 
 :: Setup compiler and compile
-call "C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin"\SetEnv.cmd /Release /x86
+call %msvc2008Dir%\SetEnv.cmd /Release /x86
 pause
 call %qmakeDir%\qtenv2.bat
 call %jomDir%\jom.exe clean
@@ -280,6 +280,7 @@ cd HopsanNG_bd
 call %qmakeDir%\qtenv2.bat
 call %mingwDir%\mingw32-make.exe clean
 call %qmakeDir%\qmake.exe %hopsanDir%\HopsanNG.pro -r -spec win32-g++ "CONFIG+=release"
+
 call %mingwDir%\mingw32-make.exe
 cd ..
 

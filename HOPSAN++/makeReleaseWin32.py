@@ -5,7 +5,7 @@ import ctypes
 devversion="0.6."
 tbbversion="tbb30_20110704oss"
 tempDir="C:\\temp_release"
-scriptFile=".\\HopsanReleaseInnoSetupScript.iss"
+scriptFile="HopsanReleaseInnoSetupScript.iss"
 hopsanDir=os.getcwd()
 dependecyBinFiles=".\\hopsan_bincontents_Qt474_MinGW_Py27.7z"
 
@@ -15,6 +15,9 @@ qtsdkDirList = ["C:\Qt", "C:\QtSDK"]
 msvc2008DirList = ["C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin", "C:\Program (x86)\Microsoft SDKs\Windows\v7.0\Bin"]
 msvc2010DirList = ["C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin", "C:\Program (x86)\Microsoft SDKs\Windows\v7.1\Bin"]
 
+dodevrelease=True
+version=devversion
+innoDir=""
 
 STD_OUTPUT_HANDLE= -11
 
@@ -64,7 +67,6 @@ def setColor(color, handle=std_out_handle):
 setColor(bcolors.WHITE)
 
 def runCmd(cmd):
-    print cmd
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     print "Done!"
     return process.communicate()
@@ -90,13 +92,9 @@ def printDebug(text):
     setColor(bcolors.WHITE)
 
 def pathExists(path):
-    print "Checking path:"
-    print raw(path)
     return os.path.exists(os.path.dirname(raw(path)))
 
 def fileExists(file):
-    print "Checking file:"
-    print raw(file)
     return os.path.isfile(raw(file))
     
 def verifyPaths():
@@ -186,10 +184,14 @@ def verifyPaths():
         return False
     printSuccess("Found correct TBB version!")        
     
+    printSuccess("Verification of path variables.")
+    
     return True
 
 
 def getRevision():
+    global dodevrelease
+    
     dodevrelease=False
     version = raw_input('Enter release version number on the form a.b.c or leave blank for DEV build release: ')    
     if version == "": 
@@ -220,38 +222,25 @@ def msvcCompile(version, architecture):
     #Remove previous files
     os.system("del "+hopsanDir+"\\bin\\HopsanCore*.*")
 
-    print "Debug 1"
-    
     #Create build directory and enter it
     os.system("rd \s\q "+hopsanDir+"\\HopsanCore_bd")
     os.system("mkdir "+hopsanDir+"\\HopsanCore_bd")
-
-    print "Debug 2"
     
     os.chdir(hopsanDir+"\\HopsanCore_bd")
-    
-    print "Debug 3"
-    
-    
+      
     #Setup compiler and compile (using auxiliary batch script)
     os.chdir(hopsanDir)
     os.system("compileMSVC.bat "+version+" "+architecture+" \""+raw(path)+"\" \""+raw(qmakeDir)+"\" \""+raw(hopsanDir)+"\"\\HopsanCore_bd \""+raw(jomDir)+"\" \""+raw(hopsanDir)+"\"")
 
-    print "Debug 4"
-    
     printDebug(os.environ["PATH"])
     
     #Remove build directory
     os.system("rd /s/q \""+raw(hopsanDir)+r'\HopsanCore_bd"')
 
-    print "Debug 5"
-    
     if not fileExists(hopsanDir+"\\bin\\HopsanCore.dll"):
         printError("Failed to build HopsanCore with Visual Studio "+version+" "+architecture)
         return False
-    
-    print "Debug 6"
-    
+
     #Move files to correct MSVC directory
     targetDir = hopsanDir+"\\bin\\MSVC"+version+"_"+architecture
     os.system("mkdir "+targetDir)
@@ -261,21 +250,20 @@ def msvcCompile(version, architecture):
     os.system("move "+hopsanDir+"\\bin\\HopsanCore.exp "+targetDir+"\\HopsanCore.exp")
     
     return True
+   
+
+def getVersionNumber():
+    global dodevrelease
     
-    
-def compile():
-    if not verifyPaths():
-        return False
-    else:
-        printSuccess("Verification of path variables.")
-        
     global version
     (version, dodevrelease, abort) = getRevision()
     if abort:
         printError("Aborted by user.")
         return False
-
-
+    return True
+   
+    
+def compile():
     if not dodevrelease:
         #Set version numbers (by changing .h files) BEFORE build
         runCmd("ThirdParty\\sed-4.2.1\\sed \"s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION  \\\""+version+"\\\"|g\" -i HopsanCore\\include\\version.h")
@@ -324,19 +312,152 @@ def compile():
     os.system("mkdir "+hopsanDir+"\\HopsanNG_bd")
     
     #Setup compiler and compile
-    os.chdir(hopsanDir)    
-    os.system("compileMinGW.bat \""+raw(mingwDir)+"\" \""+raw(qmakeDir)+"\" \""+raw(hopsanDir)+"\"")
+    os.chdir(hopsanDir+"\\HopsanNG_bd")    
+    os.system("..\\compileMinGW.bat \""+raw(mingwDir)+"\" \""+raw(qmakeDir)+"\" \""+raw(hopsanDir)+"\"")
 
-    if not pathExists(hopsanDir+"\\bin\\HopsanCore.dll") or not pathExists(hopsanDir+"\\bin\\HopsanGUI.exe") or not pathExists(hopsanDir+"\\bin\\HopsanCLI.exe"):
+    if not fileExists(hopsanDir+"\\bin\\HopsanCore.dll") or not fileExists(hopsanDir+"\\bin\\HopsanGUI.exe") or not fileExists(hopsanDir+"\\bin\\HopsanCLI.exe"):
         printError("Failed to build Hopsan with MinGW.")
         return False
+    
+    printSuccess("Compilation using MinGW")
+    
+    return True
+    
+
+def runValidation():
+    os.chdir(hopsanDir)
+    return subprocess.call("runValidationTests.bat nopause") == 0
+    
+    
+def copyFiles():
+    global dodevrelease
+    
+    #Create a temporary release directory
+    os.system("mkdir \""+raw(tempDir)+"\"")
+    if not pathExists(tempDir):
+        printError("Failed to create temporary directory")
+        return False
+    
+    os.system("mkdir \""+raw(tempDir)+"\"\\models")
+    os.system("mkdir \""+raw(tempDir)+"\"\\scripts")    
+    os.system("mkdir \""+raw(tempDir)+"\"\\bin")    
+    os.system("mkdir \""+raw(tempDir)+"\"\\HopsanCore")
+    os.system("mkdir \""+raw(tempDir)+"\"\\componentLibraries")    
+    os.system("mkdir \""+raw(tempDir)+"\"\\componentLibraries\\defaultLibrary")
+    os.system("mkdir \""+raw(tempDir)+"\"\\doc")
+    os.system("mkdir \""+raw(tempDir)+"\"\\doc\\user")
+    os.system("mkdir \""+raw(tempDir)+"\"\\doc\\user\\html")
+
+    
+    #Unpack depedency bin files to bin folder
+    os.system("\""+raw(hopsanDir)+"\"\\ThirdParty\\7z\\7z.exe x "+dependecyBinFiles+" -o"+tempDir+"\\bin")
+
+    #Clear old output folder
+    os.system("rd /s/q \""+raw(hopsanDir)+"\"\\output")
+    if pathExists("\""+raw(hopsanDir)+"\"\\output"):
+        printWarning("Unable to clear old output folder.")
+        while(True):
+            ans = raw_input("Continue? (y/n): ")
+            abort = (ans == "n")
+            if ans == "y" or ans == "n":
+                break        
+        if abort:
+            return False
+  
+    #Create new output folder
+    os.system("mkdir "+raw(hopsanDir)+"\\output")
+    if not pathExists(raw(hopsanDir)+"\\output"):
+        printError("Failed to create output folder.")
+        return False
+
+    #Copy "bin" folder to temporary directory
+    os.system("xcopy bin\\*.exe \""+raw(tempDir)+"\"\\bin /s")
+    os.system("xcopy bin\\*.dll \""+raw(tempDir)+"\"\\bin /s")
+    os.system("xcopy bin\\*.a \""+raw(tempDir)+"\"\\bin /s")
+    os.system("xcopy bin\\*.lib \""+raw(tempDir)+"\"\\bin /s")
+    os.system("xcopy bin\\*.exp \""+raw(tempDir)+"\"\\bin /s")
+    os.system("xcopy bin\\python27.zip \""+raw(tempDir)+"\"\\bin /s")
+    pythonFailed=True
+    if not fileExists(tempDir+"\\bin\\python27.zip"):
+        printError("Failed to find python27.zip.")
+        return False
+        
+    #Delete unwanted (debug) files from temporary directory
+    os.system("del \""+tempDir+"\"\\bin\HopsanCLI_d.exe")
+    os.system("del \""+tempDir+"\"\\bin\HopsanCore_d.exe")
+    os.system("del \""+tempDir+"\"\\bin\HopsanGUI_d.exe")
+    os.system("del \""+tempDir+"\"\\bin\libHopsanCore_d.a")
+    os.system("del \""+tempDir+r'"\bin\*_d.dll"')
+    os.system("del \""+tempDir+r'""\bin\tbb_debug.dll"')
+    os.system("del \""+tempDir+"\"\\bin\qwtd.dll")
+
+    #Build user documentation
+    #os.system("buildUserDocumentation")
+    if not fileExists(hopsanDir+"\\doc\\user\\html\\index.html"):
+        printError("Failed to build user documentation")
+
+    #Export "HopsanCore" SVN directory to "include" in temporary directory
+    os.system("svn export HopsanCore\include \""+raw(tempDir)+"\"\\HopsanCore\\include")
+
+    #Copy the svnrevnum.h file Assume it exist, ONLY for DEV builds
+    if dodevrelease:
+        os.system("xcopy HopsanCore\include\svnrevnum.h \""+raw(tempDir)+"\"\\HopsanCore\\include\\ /s")
+
+    #Export "Example Models" SVN directory to temporary directory
+    os.system(r'svn export "Models\Example Models" "'+raw(tempDir)+r'\models\Example Models"')
+
+    #Export "Benchmark Models" SVN directory to temporary directory
+    os.system(r'svn export "Models\Benchmark Models" "'+raw(tempDir)+r'\models\Benchmark Models"')
+
+    #Export and copy "componentData" SVN directory to temporary directory
+    os.system(r'svn export "componentLibraries\defaultLibrary\components" "'+raw(tempDir)+r'\componentLibraries\defaultLibrary\components"')
+
+    #Export "exampleComponentLib" SVN directory to temporary directory
+    os.system(r'svn export "componentLibraries\exampleComponentLib" "'+raw(tempDir)+r'\componentLibraries\exampleComponentLib"')
+
+    #Copy documentation to temporary directory
+    os.system(r'xcopy doc\user\html\* "'+raw(tempDir)+r'"\doc\user\html\ /s')
+    os.system(r'xcopy doc\graphics\* "'+raw(tempDir)+r'"\doc\graphics\ /s')
+
+    #Export "Scripts" folder to temporary directory
+    os.system(r'xcopy Scripts\HopsanOptimization.py "'+raw(tempDir)+r'"\scripts\ /s')
+    os.system(r'xcopy Scripts\OptimizationObjectiveFunctions.py "'+raw(tempDir)+r'"\scripts\ /s')
+    os.system(r'xcopy Scripts\OptimizationObjectiveFunctions.xml "'+raw(tempDir)+r'"\scripts\ /s')
+
+    #Copy "hopsandefaults" file to temporary directory
+    os.system(r'copy hopsandefaults "'+raw(tempDir)+r'"\hopsandefaults')
+    
+    return True
+    
+    
+def createInstallFiles():
+    
+    #Create zip package
+    print "Creating zip package..."
+    os.system(r'""'+raw(hopsanDir)+r'\ThirdParty\7z\7z.exe" a -tzip Hopsan-'+version+r'-win32-zip.zip "'+raw(tempDir)+r'""\*')
+    os.system(r'move Hopsan-'+version+r'-win32-zip.zip output/')
+    if not fileExists("output/Hopsan-"+version+"-win32-zip.zip"):
+        printError("Failed to create zip package.")
+        return False
+    printSuccess("Created zip package!")
+        
+    #Execute Inno compile script
+    print "Generating install executable..."
+    print r'"'+raw(innoDir)+r'\iscc.exe" /o"output" /f"Hopsan-'+version+r'-win32-installer" /dMyAppVersion="'+version+'r" "'+scriptFile+r'"'
+    os.system(r'""'+raw(innoDir)+r'\iscc.exe" /o"output" /f"Hopsan-'+version+r'-win32-installer" /dMyAppVersion="'+version+r'" "'+scriptFile+r'""')
+    if not fileExists("output/Hopsan-"+version+"-win32-installer.exe"):
+        printError("Failed to create installer executable.")
+        return False
+    printSuccess("Generated install executable!")
+
+    #Move release notse to output directory
+    os.system("copy Hopsan-release-notes.txt \"output/\"")
     
     return True
     
     
 def cleanUp():
     print "Cleaning up..."
-    printDebug("Todo: Implement cleanup function.")
     
     #Remove temporary output directory
     os.system("rd /s/q "+tempDir)
@@ -360,10 +481,45 @@ print "| Revised and converted to Python by Robert Braun 2012-06-09 |"
 print "\\------------------------------------------------------------/"
 print "\n"
 
-if compile():
+success=True
+
+if not verifyPaths():
+    success = False
     cleanUp()
-    printSuccess("Compilation script finished successfully.")
-else:
-    cleanUp()
-    print "Compilation script finished with errors."
+    printError("Compilation script failed while verifying paths.")
+
+if success:
+    if not getVersionNumber():
+        success = False
+        cleanUp()
+        printError("Compilation script failed while obtaining version number.")
     
+if success:
+    if not compile():
+        success = False
+        cleanUp()
+        printError("Compilation script failed in compilation error.")
+
+if success:
+    if not runValidation():
+        success = False
+        cleanUp()
+        printError("Compilation script failed in model validation.")
+    
+if success:
+    if not copyFiles():
+        success = False
+        cleanUp()
+        printError("Compilation script failed when copying files.")
+
+if success:
+    if not createInstallFiles():
+        success = False
+        cleanUp()
+        printError("Compilation script failed while generating install files.")
+        
+if success:
+    cleanUp()
+    printSuccess("Compilation script finished successfully.")    
+
+raw_input("Press any key to continue...")
