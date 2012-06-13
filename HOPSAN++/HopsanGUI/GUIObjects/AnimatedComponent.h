@@ -85,12 +85,13 @@ class AnimatedIcon : public WorkspaceObject
     Q_OBJECT
 
 public:
-    AnimatedIcon(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, AnimatedComponent *pAnimatedComponent=0, ContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
+    AnimatedIcon(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, AnimatedComponent *pAnimatedComponent=0, ContainerObject *pParentContainer=0, int idx=-1, QGraphicsItem *pParent=0);
 
     AnimatedComponent *mpAnimatedComponent;
 
     enum { Type = ANIMATEDOBJECT };
     int type() const;
+    int mIdx;
 
 public slots:
     void rotate(qreal angle);

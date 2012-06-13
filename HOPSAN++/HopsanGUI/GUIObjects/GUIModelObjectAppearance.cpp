@@ -173,6 +173,14 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
         QDomElement xmlMovable = rDomElement.firstChildElement("movable");
         while(!xmlMovable.isNull())
         {
+            if(xmlMovable.hasAttribute("idx"))
+            {
+                movableIdx.append(xmlMovable.attribute("idx").toInt());
+            }
+            else
+            {
+                movableIdx.append(-1);
+            }
             movableIconPaths.append(xmlMovable.firstChildElement("icon").attribute("userpath"));
             dataPorts.append(xmlMovable.firstChildElement("data").attribute("port"));
             dataNames.append(xmlMovable.firstChildElement("data").attribute("dataname"));
@@ -225,6 +233,16 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
             movablePortNames.append(portNames);
             movablePortStartX.append(portStartX);
             movablePortStartY.append(portStartY);
+
+            QDomElement xmlRelative = xmlMovable.firstChildElement("relative");
+            if(!xmlRelative.isNull())
+            {
+                movableRelatives.append(xmlRelative.attribute("idx").toInt());
+            }
+            else
+            {
+                movableRelatives.append(-1);
+            }
 
             xmlMovable = xmlMovable.nextSiblingElement("movable");
         }

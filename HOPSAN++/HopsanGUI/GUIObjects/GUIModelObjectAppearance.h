@@ -58,6 +58,7 @@ public:
     void readFromDomElement(QDomElement &rDomElement, QString basePath);
 
     QString baseIconPath;
+    QList<int> movableIdx;
     QStringList movableIconPaths;
     QStringList dataPorts;
     QStringList dataNames;
@@ -83,6 +84,7 @@ public:
     QVector<QStringList> movablePortNames;
     QVector<QList<double> > movablePortStartX;
     QVector<QList<double> > movablePortStartY;
+    QList<int> movableRelatives;
 };
 
 

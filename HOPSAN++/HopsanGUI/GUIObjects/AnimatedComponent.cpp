@@ -266,7 +266,19 @@ void AnimatedComponent::setupAnimationMovable(int m)
 {
     ModelObjectAppearance* pAppearance = new ModelObjectAppearance();
     pAppearance->setIconPath(mpAnimationData->movableIconPaths[m],USERGRAPHICS, RELATIVE);
-    this->mpMovables.append(new AnimatedIcon(QPoint(0,0),0, pAppearance,this, 0, mpBase));
+    int idx = mpAnimationData->movableIdx[m];
+    QGraphicsItem *pBase = mpBase;
+    if(mpAnimationData->movableRelatives[m] > -1)
+    {
+        for(int r=0; r<mpMovables.size(); ++r)
+        {
+            if(mpMovables[r]->mIdx == mpAnimationData->movableRelatives[m])
+            {
+                pBase = mpMovables[r];
+            }
+        }
+    }
+    this->mpMovables.append(new AnimatedIcon(QPoint(0,0),0, pAppearance,this, 0, idx, pBase));
     this->mpMovables.at(m)->setTransformOriginPoint(mpAnimationData->transformOriginX[m],mpAnimationData->transformOriginY[m]);
 
     mpMovables.at(m)->setRotation(mpAnimationData->startTheta.at(m));
@@ -316,7 +328,7 @@ void AnimatedComponent::limitMovables()
 //! @param [in] pAnimatedComponent Pointer to animated component icon belongs to
 //! @param [in] pParentContainer Pointer to container object animation is showing
 //! @param [in] pParent Parent object (QGraphicsItem), used for the coordinate system
-AnimatedIcon::AnimatedIcon(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, AnimatedComponent *pAnimatedComponent, ContainerObject *pParentContainer, QGraphicsItem *pParent)
+AnimatedIcon::AnimatedIcon(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, AnimatedComponent *pAnimatedComponent, ContainerObject *pParentContainer, int idx, QGraphicsItem *pParent)
         : WorkspaceObject(position, rotation, DESELECTED, pParentContainer, pParent)
 {
 
@@ -343,6 +355,8 @@ AnimatedIcon::AnimatedIcon(QPointF position, qreal rotation, const ModelObjectAp
     this->setCenterPos(position);
 
     this->setZValue(MODELOBJECT_Z);
+
+    mIdx = idx;
 }
 
 

@@ -68,7 +68,6 @@ setColor(bcolors.WHITE)
 
 def runCmd(cmd):
     process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    print "Done!"
     return process.communicate()
 
 def printSuccess(text):
