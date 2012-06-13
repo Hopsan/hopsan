@@ -1,2 +1,2 @@
 TEMPLATE = subdirs
-SUBDIRS = defaultLibrary exampleComponentLib
+SUBDIRS = defaultLibrary exampleComponentLib TransmissionLib
