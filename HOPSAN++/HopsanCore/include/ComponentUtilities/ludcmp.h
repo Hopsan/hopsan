@@ -43,6 +43,6 @@ namespace hopsan {
     void DLLIMPORTEXPORT solvlu(const Matrix &a, const Vec &b, Vec &x, const int order[]);
     bool pivot(hopsan::Matrix &a, int order[], int jcol);
 }
-#define TINY 1e-20
+#define TINY 1e-200
 
 #endif // LUDCMP_HPP_INCLUDED

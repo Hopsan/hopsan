@@ -146,7 +146,7 @@ bool hopsan::pivot(Matrix &a, int order[], int jcol)
         }
     }
 
-    if(fabs(big) < TINY)
+    if(!(fabs(big) > 0))
     {
         return false;
     }
