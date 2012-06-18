@@ -4,17 +4,17 @@
 Different parts of Hopsan depend on various third-party projects for some functionality. We would like to acknowledge these projects.
 
 \subsection userAcknowledgements_externalDependecies_core HopsanCore
-- Intel http://threadingbuildingblocks.org/ For multicore thread managment
-- http://code.google.com/p/csv-parser-cplusplus/ For the CSV parser utility
-- http://rapidxml.sourceforge.net/ For Hopsan Model file Loading (if HopsanGUI not used)
+- <a href="http://threadingbuildingblocks.org/">Intel Threading Building Blocks</a> For multicore thread managment
+- <a href="http://code.google.com/p/csv-parser-cplusplus/">CSV Parser</a> For the CSV parser utility
+- <a href="http://rapidxml.sourceforge.net/">RapidXML</a> For Hopsan Model file Loading (if HopsanGUI not used)
 
 \subsection userAcknowledgements_externalDependecies_cli HopsanCLI
-- http://tclap.sourceforge.net/ For command-line argument parsing
+- <a href="http://tclap.sourceforge.net/">TCLAP</a> For command-line argument parsing
 
 \subsection userAcknowledgements_externalDependecies_gui HopsanGUI
-- http://qt.nokia.com/ For Qt - Cross-platform application and UI framework
-- http://pythonqt.sourceforge.net/ For giving python scripts access to GUI functions
-- http://python.org/ For python scripting support
-- http://qwt.sourceforge.net/ For technical plotting support in Qt
+- <a href="http://qt.nokia.com/">Qt Creator</a> For Qt - Cross-platform application and UI framework
+- <a href="http://pythonqt.sourceforge.net/">PythonQt</a> For giving python scripts access to GUI functions
+- <a href="http://python.org/">Python</a> For python scripting support
+- <a href="http://qwt.sourceforge.net/">Qwt</a> For technical plotting support in Qt
 
 */

@@ -85,12 +85,10 @@ public slots:
             res.append(o->getPortName());
             res.append("'.");
         }
-
-
         return res;
     }
 
-    double getLastValue(Port* o, const QString& dataName)
+    double lastData(Port* o, const QString& dataName)
     {
         double data;
 
@@ -100,7 +98,7 @@ public slots:
             return data;
     }
 
-    QVector<double> getDataVector(Port* o, const QString& dataName)
+    QVector<double> data(Port* o, const QString& dataName)
     {
         QPair<QVector<double>, QVector<double> > yData;
         o->getParentContainerObjectPtr()->getCoreSystemAccessPtr()->getPlotData(o->getGuiModelObject()->getName(),o->getPortName(),dataName,yData);
@@ -108,13 +106,27 @@ public slots:
         return yData.second;
     }
 
-    QVector<double> getTimeVector(Port* o)
+    QVector<double> time(Port* o)
     {
         QVector<double> tVector = QVector<double>::fromStdVector(o->getParentContainerObjectPtr()->getCoreSystemAccessPtr()->getTimeVector(o->getGuiModelObject()->getName(),o->getPortName()));
 
         return tVector;
     }
 
+    QStringList variableNames(Port* o)
+    {
+        QStringList retval;
+        QString portName = o->getPortName();
+        QString componentName = o->getGuiModelObject()->getName();
+        QVector<QString> dataNames;
+        QVector<QString> dataUnits;
+        o->getGuiModelObject()->getParentContainerObject()->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(componentName, portName, dataNames, dataUnits);
+        for(int i=0; i<dataNames.size(); ++i)
+        {
+            retval.append(dataNames.at(i));
+        }
+        return retval;
+    }
 };
 
 
@@ -123,7 +135,7 @@ class PyModelObjectClassWrapper : public QObject
     Q_OBJECT
 
 public slots:
-    double getParameter(ModelObject* o, const QString& parName)
+    double parameter(ModelObject* o, const QString& parName)
     {
         QString strParValue = o->getParameterValue(parName);
 
@@ -138,6 +150,16 @@ public slots:
     Port* port(ModelObject* o, const QString& portName)
     {
         return o->getPort(portName);
+    }
+
+    QStringList portNames(ModelObject* o)
+    {
+        QStringList retval;
+        for(int i=0; i<o->getPortListPtrs().size(); ++i)
+        {
+            retval.append(o->getPortListPtrs().at(i)->getPortName());
+        }
+        return retval;
     }
 };
 
@@ -406,6 +428,10 @@ public slots:
         o->mpConfig->setEnableProgressBar(false);
     }
 
+    QStringList componentNames(MainWindow* o)
+    {
+        return o->mpProjectTabs->getCurrentContainer()->getModelObjectNames();
+    }
 
 };
 
