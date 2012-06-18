@@ -66,8 +66,7 @@ void ParamTypeComboBoxDelegate::updateEditorGeometry(QWidget *editor, const QSty
 SysParamTableModel::SysParamTableModel(ContainerObject *pContainerObject, QObject *pParent)
     : QAbstractTableModel(pParent)
 {
-    mpContainerObject = pContainerObject;
-    mpContainerObject->getParameters(mParameterData);
+    this->setContainer(pContainerObject);
 }
 
 int SysParamTableModel::rowCount(const QModelIndex &parent) const
@@ -126,12 +125,22 @@ bool SysParamTableModel::setData(const QModelIndex &index, const QVariant &value
         switch(index.column())
         {
         case 0:
-            isOk = mpContainerObject->renameParameter(mParameterData[index.row()].mName, value.toString());
-            if (isOk)
+            isOk = true;
+            // If new name given try to rename
+            if (value.toString() != mParameterData[index.row()].mName)
             {
-               mParameterData[index.row()].mName = value.toString();
-               mpContainerObject->hasChanged();
-               emit dataChanged(index, index);
+                isOk = mpContainerObject->renameParameter(mParameterData[index.row()].mName, value.toString());
+                if (isOk)
+                {
+                   mParameterData[index.row()].mName = value.toString();
+                   emit dataChanged(index, index);
+                }
+                else
+                {
+                    QMessageBox::critical(0, "Error",
+                                          QString("'%1' is an invalid parameter name or name already exist")
+                                          .arg(value.toString()));
+                }
             }
             break;
         case 1:
@@ -197,6 +206,14 @@ bool SysParamTableModel::removeRows(int row, int count, const QModelIndex &paren
     return true;
 }
 
+bool SysParamTableModel::insertRows(int row, int count, const QModelIndex &parent)
+{
+    beginInsertRows(QModelIndex(), row, row+count-1);
+    // No need to do anything else for now
+    endInsertRows();
+    return true;
+}
+
 bool SysParamTableModel::addOrSetParameter(CoreParameterData &rParameterData)
 {
     bool isOk;
@@ -223,7 +240,9 @@ bool SysParamTableModel::addOrSetParameter(CoreParameterData &rParameterData)
             return false;
         }
 
-        //! @todo check if other stuff then value or type has changed
+        // We dont need to add new row or update because setOrAddParameter should have signald for update already
+
+        //! @todo check if other stuff than value or type has changed
         CoreParameterData newParameter;
         mpContainerObject->getParameter(rParameterData.mName, newParameter);
         if( oldParamData.mValue != newParameter.mValue ||  oldParamData.mType != newParameter.mType )
@@ -240,6 +259,18 @@ bool SysParamTableModel::hasParameter(const QString name)
 {
     return mpContainerObject->getCoreSystemAccessPtr()->hasSystemParameter(name);
 }
+
+void SysParamTableModel::setContainer(ContainerObject *pContainerObject)
+{
+    mpContainerObject = pContainerObject;
+    if (mpContainerObject)
+    {
+        emit layoutAboutToBeChanged();
+        mpContainerObject->getParameters(mParameterData);
+        emit layoutChanged();
+    }
+}
+
 
 void SysParamTableModel::removeParameter(const int row)
 {
@@ -274,19 +305,22 @@ SystemParametersWidget::SystemParametersWidget(QWidget *pParent)
     mpRemoveButton->setEnabled(false);
     mpRemoveButton->setFont(buttonFont);
 
-    mpSysParamListView = new QTableView();
-    mpSysParamListView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    mpSysParamListView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    mpSysParamTableView = new QTableView();
+    mpSysParamTableView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    mpSysParamTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
 
     ParamTypeComboBoxDelegate *pComboBoxDelegate = new ParamTypeComboBoxDelegate();
-    mpSysParamListView->setItemDelegateForColumn(2, pComboBoxDelegate);
+    mpSysParamTableView->setItemDelegateForColumn(2, pComboBoxDelegate);
 
     QGridLayout *pGridLayout = new QGridLayout(this);
-    pGridLayout->addWidget(mpSysParamListView, 0, 0);
+    pGridLayout->addWidget(mpSysParamTableView, 0, 0);
     pGridLayout->addWidget(mpAddButton, 1, 0);
     pGridLayout->addWidget(mpRemoveButton, 2, 0);
 
     pGridLayout->setContentsMargins(4,4,4,4);
+
+    SysParamTableModel *pModel = new SysParamTableModel(mpContainerObject, this);
+    mpSysParamTableView->setModel(pModel);
 
     update();
 
@@ -298,9 +332,14 @@ void SystemParametersWidget::update(ContainerObject *pNewContainer)
 {
     if (mpContainerObject != pNewContainer)
     {
+        // Disconnect all signals from old caontiner
+        disconnect(mpContainerObject, 0, this, 0);
+
+        // Assign new and Connect new signals
         mpContainerObject = pNewContainer;
-        this->update();
+        connect(mpContainerObject, SIGNAL(systemParametersChanged()), this, SLOT(update()), Qt::UniqueConnection);
     }
+    this->update();
 }
 
 void SystemParametersWidget::update()
@@ -310,16 +349,13 @@ void SystemParametersWidget::update()
         mpAddButton->setEnabled(true);
         mpRemoveButton->setEnabled(true);
 
-        QAbstractItemModel *pOldModel = mpSysParamListView->model();
-        SysParamTableModel *pModel = new SysParamTableModel(mpContainerObject, this);
-        mpSysParamListView->setModel(pModel);
-        delete pOldModel;
+        // Set container will refresh the internal parameter data and emit layoutChanged to the view
+        qobject_cast<SysParamTableModel*>(mpSysParamTableView->model())->setContainer(mpContainerObject);
+        mpSysParamTableView->show();
 
-        mpSysParamListView->show();
-
-        qDebug() << "--------------List isEnabled: " << mpSysParamListView->isEnabled();
-        qDebug() << "--------------List isHidden: " << mpSysParamListView->isHidden();
-        qDebug() << "--------------List isVisible: " << mpSysParamListView->isVisible();
+        qDebug() << "--------------List isEnabled: " << mpSysParamTableView->isEnabled();
+        qDebug() << "--------------List isHidden: " << mpSysParamTableView->isHidden();
+        qDebug() << "--------------List isVisible: " << mpSysParamTableView->isVisible();
         qDebug() << "--------------SysParWidget isVisible: " << this->isVisible();
         qDebug() << "--------------SysParWidget Parent isVisible: " << this->parentWidget()->isVisible();
     }
@@ -382,7 +418,7 @@ void SystemParametersWidget::openAddParameterDialog()
 //! @brief Private help slot that adds a parameter from the selected name and value in "Add Parameter" dialog
 bool SystemParametersWidget::addParameter()
 {
-    SysParamTableModel* pModel = qobject_cast<SysParamTableModel*>(mpSysParamListView->model());
+    SysParamTableModel* pModel = qobject_cast<SysParamTableModel*>(mpSysParamTableView->model());
     if (pModel->hasParameter(mpNameBox->text()))
     {
         //! @todo maybe we should warn about overwriting instead
@@ -395,7 +431,6 @@ bool SystemParametersWidget::addParameter()
         CoreParameterData data(mpNameBox->text(), mpValueBox->text(), mpTypeBox->currentText());
         if (pModel->addOrSetParameter(data))
         {
-            update();
             return true;
         }
     }
@@ -414,10 +449,10 @@ void SystemParametersWidget::addParameterAndCloseDialog()
 
 void SystemParametersWidget::removeSelected()
 {
-    QModelIndexList idxList = mpSysParamListView->selectionModel()->selectedRows();
+    QModelIndexList idxList = mpSysParamTableView->selectionModel()->selectedRows();
     while (idxList.size() > 0)
     {
-        mpSysParamListView->model()->removeRows(idxList[0].row(), 1);
-        idxList = mpSysParamListView->selectionModel()->selectedRows();
+        mpSysParamTableView->model()->removeRows(idxList[0].row(), 1);
+        idxList = mpSysParamTableView->selectionModel()->selectedRows();
     }
 }

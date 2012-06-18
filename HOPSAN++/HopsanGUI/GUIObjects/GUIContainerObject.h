@@ -316,6 +316,8 @@ signals:
     void flipSelectedObjectsHorizontal();
     void flipSelectedObjectsVertical();
 
+    void systemParametersChanged();
+
 protected:
 
     //Protected methods

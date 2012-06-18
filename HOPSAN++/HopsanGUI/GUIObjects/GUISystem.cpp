@@ -740,8 +740,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         xmlSubObject = guiStuff.firstChildElement("optimization");
         loadOptSettingsFromDomElement(xmlSubObject);
 
-
-        //Refresh the appearnce of the subsystemem and create the GUIPorts based on the loaded portappearance information
+        //Refresh the appearance of the subsystemem and create the GUIPorts based on the loaded portappearance information
         //! @todo This is a bit strange, refreshAppearance MUST be run before create ports or create ports will not know some necessary stuff
         this->refreshAppearance();
         this->refreshExternalPortsAppearanceAndPosition();
@@ -764,6 +763,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
 
         gpMainWindow->mpPyDockWidget->runPyScript(mScriptFilePath);
 
+        emit systemParametersChanged(); // Make sure we refresh the syspar widget
         emit checkMessages();
     }
     else

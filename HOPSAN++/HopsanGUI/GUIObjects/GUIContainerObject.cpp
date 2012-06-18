@@ -869,17 +869,35 @@ QList<Widget *> ContainerObject::getSelectedGUIWidgetPtrs()
 //! @todo how will this work in groups
 bool ContainerObject::setParameterValue(QString name, QString value, bool force)
 {
-    return this->getCoreSystemAccessPtr()->setSystemParameterValue(name, value, force);
+    const bool rc =  this->getCoreSystemAccessPtr()->setSystemParameterValue(name, value, force);
+    if (rc)
+    {
+        hasChanged();
+        emit systemParametersChanged();
+    }
+    return rc;
 }
 
 bool ContainerObject::setOrAddParameter(const CoreParameterData &rParameter, bool force)
 {
-    return this->getCoreSystemAccessPtr()->setSystemParameter(rParameter, force);
+    const bool rc = this->getCoreSystemAccessPtr()->setSystemParameter(rParameter, force);
+    if (rc)
+    {
+        hasChanged();
+        emit systemParametersChanged();
+    }
+    return rc;
 }
 
 bool ContainerObject::renameParameter(const QString oldName, const QString newName)
 {
-    return this->getCoreSystemAccessPtr()->renameSystemParameter(oldName, newName);
+    const bool rc = this->getCoreSystemAccessPtr()->renameSystemParameter(oldName, newName);
+    if (rc)
+    {
+        hasChanged();
+        emit systemParametersChanged();
+    }
+    return rc;
 }
 
 //! @brief Notifies container object that a gui model object has been selected

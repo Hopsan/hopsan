@@ -65,8 +65,10 @@ public:
     QVariant data(const QModelIndex &index, int role) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role);
     Qt::ItemFlags flags(const QModelIndex &index) const;
-    bool removeRows(int row, int count, const QModelIndex &parent);
+    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex());
+    bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex());
 
+    void setContainer(ContainerObject *pContainerObject);
     bool addOrSetParameter(CoreParameterData &rParameterData);
     bool hasParameter(const QString name);
 
@@ -96,7 +98,7 @@ protected slots:
 
 private:
     ContainerObject *mpContainerObject;
-    QTableView *mpSysParamListView;
+    QTableView *mpSysParamTableView;
 
     QDialog *mpAddParameterDialog;
     QLineEdit *mpNameBox;
