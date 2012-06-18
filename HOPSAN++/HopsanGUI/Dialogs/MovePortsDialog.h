@@ -69,6 +69,7 @@ protected:
     QLineEdit *mpPortXLineEdit;
     QLineEdit *mpPortYLineEdit;
     QLineEdit *mpPortALineEdit;
+    QCheckBox *mpPortAutoCheckBox;
 
     QPushButton *mpOkButton;
     QPushButton *mpCancelButton;
@@ -95,9 +96,10 @@ public slots:
     void updatePortXPos(QString x);
     void updatePortYPos(QString y);
     void updatePortRotation(QString a);
+    void updatePortAutoPlaced(bool ap);
 
 signals:
-    void portSelectedOrMoved(DragPort *pDragPort);
+    void portInfoChanged(DragPort *pDragPort);
 
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);

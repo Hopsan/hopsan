@@ -247,25 +247,30 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
             assert(this->getPort(moit.value()->getName()) != 0);
 
             //We insert into maps for automatic sorting based on x or y position as key value
-            if(this->getPort(moit.value()->getName())->isAutoPlaced()) //Do not place if autoplaced is not set. Maybe a bit ugly to put an if statement here?
+            Port* pPort = this->getPort(moit.value()->getName());
+            if(pPort->isAutoPlaced()) //Do not place if autoplaced is not set. Maybe a bit ugly to put an if statement here?
             {
                 switch (edge) {
                 case RIGHTEDGE:
-                    rightEdge.insertMulti(moit.value()->getCenterPos().y(), this->getPort(moit.value()->getName()));
+                    rightEdge.insertMulti(moit.value()->getCenterPos().y(), pPort);
                     break;
                 case BOTTOMEDGE:
-                    bottomEdge.insertMulti(moit.value()->getCenterPos().x(),this->getPort(moit.value()->getName()));
+                    bottomEdge.insertMulti(moit.value()->getCenterPos().x(), pPort);
                     break;
                 case LEFTEDGE:
-                    leftEdge.insertMulti(moit.value()->getCenterPos().y(), this->getPort(moit.value()->getName()));
+                    leftEdge.insertMulti(moit.value()->getCenterPos().y(), pPort);
                     break;
                 case TOPEDGE:
-                    topEdge.insertMulti(moit.value()->getCenterPos().x(), this->getPort(moit.value()->getName()));
+                    topEdge.insertMulti(moit.value()->getCenterPos().x(), pPort);
                     break;
                 }
             }
             else
             {
+                //! @todo it would be nice if a port pos could be set directly from appearance data with help function
+                PortAppearanceMapT::iterator pamit = mModelObjectAppearance.getPortAppearanceMap().find(pPort->getPortName());
+                pPort->setCenterPosByFraction(pamit.value().x, pamit.value().y);
+                pPort->setRotation(pamit.value().rot);
                 this->createRefreshExternalPort(moit.value()->getName()); //Refresh for ports that are not autoplaced
             }
         }
