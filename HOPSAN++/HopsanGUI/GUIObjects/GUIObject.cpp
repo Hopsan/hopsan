@@ -215,7 +215,7 @@ void WorkspaceObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     }
 
     //! @todo This crashes if we forward the event after calling "replace component". Not really needed, but figure out why.
-   // QGraphicsWidget::mouseReleaseEvent(event);
+    QGraphicsWidget::mouseReleaseEvent(event);
 }
 
 
