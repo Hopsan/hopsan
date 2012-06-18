@@ -147,6 +147,11 @@ public slots:
         o->setParameterValue(parName, QString::number(value));
     }
 
+    void setParameter(ModelObject* o, const QString& parName, const QString& value)
+    {
+        o->setParameterValue(parName, value);
+    }
+
     Port* port(ModelObject* o, const QString& portName)
     {
         return o->getPort(portName);
@@ -215,7 +220,7 @@ public slots:
 
     ModelObject* component(MainWindow* o, const QString& compName)
     {
-        return o->mpProjectTabs->getCurrentTopLevelSystem()->getModelObject(compName);
+        return o->mpProjectTabs->getCurrentContainer()->getModelObject(compName);
     }
 
     void setStartTime(MainWindow* o, const double& start)
@@ -272,9 +277,9 @@ public slots:
 
     double getParameter(MainWindow* o, const QString& compName, const QString& parName)
     {
-        if(o->mpProjectTabs->getCurrentTopLevelSystem()->hasModelObject(compName))
+        if(o->mpProjectTabs->getCurrentContainer()->hasModelObject(compName))
         {
-            QString strParValue = o->mpProjectTabs->getCurrentTopLevelSystem()->getModelObject(compName)->getParameterValue(parName);
+            QString strParValue = o->mpProjectTabs->getCurrentContainer()->getModelObject(compName)->getParameterValue(parName);
             return strParValue.toDouble(); //! @todo Not good if parameter not double
         }
         //assert(false);
@@ -283,9 +288,17 @@ public slots:
 
     void setParameter(MainWindow* o, const QString& compName, const QString& parName, const double& value)
     {
-        if(o->mpProjectTabs->getCurrentTopLevelSystem()->hasModelObject(compName))
+        if(o->mpProjectTabs->getCurrentContainer()->hasModelObject(compName))
         {
-            o->mpProjectTabs->getCurrentTopLevelSystem()->getModelObject(compName)->setParameterValue(parName, QString::number(value));
+            o->mpProjectTabs->getCurrentContainer()->getModelObject(compName)->setParameterValue(parName, QString::number(value));
+        }
+    }
+
+    void setParameter(MainWindow* o, const QString& compName, const QString& parName, const QString& value)
+    {
+        if(o->mpProjectTabs->getCurrentContainer()->hasModelObject(compName))
+        {
+            o->mpProjectTabs->getCurrentContainer()->getModelObject(compName)->setParameterValue(parName, value);
         }
     }
 
@@ -363,7 +376,7 @@ public slots:
 
     void plot(MainWindow* o, const QString& compName, const QString& portName, const QString& dataName)
     {
-        o->mpProjectTabs->getCurrentTopLevelSystem()->getModelObject(compName)->getPort(portName)->plot(dataName, "");
+        o->mpProjectTabs->getCurrentContainer()->getModelObject(compName)->getPort(portName)->plot(dataName, "");
         qApp->processEvents();
     }
 
@@ -374,7 +387,7 @@ public slots:
         QString compName = variableDescription.componentName;
         QString portName = variableDescription.portName;
         QString dataName = variableDescription.dataName;
-        o->mpProjectTabs->getCurrentTopLevelSystem()->getModelObject(compName)->getPort(portName)->plot(dataName, "");
+        o->mpProjectTabs->getCurrentContainer()->getModelObject(compName)->getPort(portName)->plot(dataName, "");
         qApp->processEvents();
     }
 

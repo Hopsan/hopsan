@@ -129,5 +129,6 @@
         <file>graphics/uiicons/Hopsan-Animation.png</file>
         <file>graphics/uiicons/Hopsan-PlayRealTime.png</file>
         <file>graphics/uiicons/Hopsan-MeasureSimulationTime.png</file>
+        <file>graphics/uiicons/Hopsan-Pointer.png</file>
     </qresource>
 </RCC>
