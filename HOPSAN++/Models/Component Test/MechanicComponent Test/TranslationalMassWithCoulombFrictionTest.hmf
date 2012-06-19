@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4408" hopsancoreversion="0.6.x_r4328">
+    <requirements>
+        <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+        <componentlibrary>PettersComponentLibrary</componentlibrary>
+    </requirements>
+    <system logsamples="2048" typename="Subsystem" name="TranslationalMassWithCoulombFrictionTest">
+        <simulationtime stop="15" timestep="0.001" start="0" inherit_timestep="true"/>
+        <aliases/>
+        <parameters/>
+        <hopsangui>
+            <pose x="0" y="0" flipped="false" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2413" y="2499.5" zoom="1"/>
+            <ports hidden="1"/>
+            <names hidden="0"/>
+            <scriptfile path=""/>
+            <hopsanobjectappearance version="0.3">
+                <modelobject typename="Subsystem" displayname="TranslationalMassWithCoulombFrictionTest">
+                    <icons>
+                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
+                    </icons>
+                    <ports/>
+                </modelobject>
+            </hopsanobjectappearance>
+            <favoritevariables/>
+            <optimization>
+                <settings>
+                    <niter>100</niter>
+                    <nsearchp>8</nsearchp>
+                    <refcoeff>1.3</refcoeff>
+                    <randfac>0.3</randfac>
+                    <forgfac>0</forgfac>
+                    <functol>1e-05</functol>
+                    <partol>0.0001</partol>
+                    <plot>true</plot>
+                    <savecsv>false</savecsv>
+                    <logpar>false</logpar>
+                </settings>
+                <parameters/>
+                <objectives/>
+            </optimization>
+        </hopsangui>
+        <objects>
+            <component typename="MechanicForceSensor" name="Force Transducer">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2376" y="2403" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicForceSensor" displayname="Force Transducer">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="MechanicSpeedSensor" name="Velocity Transducer">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2500" y="2407" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicSpeedSensor" displayname="Velocity Transducer">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Scope_1">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2635" y="2544" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSink" displayname="Scope_1">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalSoftStep" name="Soft step">
+                <parameters>
+                    <parameter value="1" type="double" name="t_start"/>
+                    <parameter value="5" type="double" name="t_end"/>
+                    <parameter value="0" type="double" name="y_0"/>
+                    <parameter value=".2" type="double" name="y_A"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2069" y="2494.5" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSoftStep" displayname="Soft step">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="MechanicVelocityTransformer" name="Position &amp; Velocity Source">
+                <parameters>
+                    <parameter value="0" type="double" name="v"/>
+                    <parameter value="10" type="double" name="m_e"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2238" y="2488" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicVelocityTransformer" displayname="Position &amp; Velocity Source">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalIntegrator2" name="Integrator">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2183" y="2461" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalIntegrator2" displayname="Integrator">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalSpring" name="Translational Spring">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Velocity"/>
+                    <parameter value="0" type="double" name="P1::Force"/>
+                    <parameter value="0" type="double" name="P1::Position"/>
+                    <parameter value="0" type="double" name="P2::Velocity"/>
+                    <parameter value="0" type="double" name="P2::Force"/>
+                    <parameter value="0" type="double" name="P2::Position"/>
+                    <parameter value="100000" type="double" name="k"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2322" y="2488" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicTranslationalSpring" displayname="Translational Spring">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="MechanicSpeedSensor" name="Velocity Transducer_1">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2546" y="2579" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicSpeedSensor" displayname="Velocity Transducer_1">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalMassWithCoulumbFriction" name="Translational Mass With Coulomb Friction">
+                <parameters>
+                    <parameter value="10" type="double" name="m"/>
+                    <parameter value="300" type="double" name="b"/>
+                    <parameter value="50" type="double" name="f_s"/>
+                    <parameter value="50" type="double" name="f_k"/>
+                    <parameter value="-1000" type="double" name="x_min"/>
+                    <parameter value="1000" type="double" name="x_max"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2431" y="2492" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicTranslationalMassWithCoulumbFriction" displayname="Translational Mass With Coulomb Friction">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="MechanicForceTransformer" name="Force Source">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Velocity"/>
+                    <parameter value="0" type="double" name="P1::Position"/>
+                    <parameter value="0" type="double" name="F"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2528" y="2488" flipped="true" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicForceTransformer" displayname="Force Source">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalAdd" name="Add">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2123" y="2494.5" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalAdd" displayname="Add">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Scope">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2614" y="2341" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSink" displayname="Scope">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalSoftStep" name="Soft step_1">
+                <parameters>
+                    <parameter value="5" type="double" name="t_start"/>
+                    <parameter value="15" type="double" name="t_end"/>
+                    <parameter value="0" type="double" name="y_0"/>
+                    <parameter value="-.4" type="double" name="y_A"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2070" y="2425" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSoftStep" displayname="Soft step_1">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+        </objects>
+        <connections>
+            <connect endport="P1" endcomponent="Translational Spring" startport="Pm1" startcomponent="Position &amp; Velocity Source">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2257.50000000000000000000" y="2488.00000000000000000000"/>
+                        <coordinate x="2285.50000000000000000000" y="2488.00000000000000000000"/>
+                        <coordinate x="2285.50000000000000000000" y="2488.00000000000000000000"/>
+                        <coordinate x="2305.50000000000000000000" y="2488.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Translational Mass With Coulomb Friction" startport="P2" startcomponent="Translational Spring">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2338.50000000000000000000" y="2488.00000000000000000000"/>
+                        <coordinate x="2372.13500000000021827873" y="2488.00000000000000000000"/>
+                        <coordinate x="2372.13500000000021827873" y="2488.00000000000000000000"/>
+                        <coordinate x="2399.13500000000021827873" y="2488.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Translational Mass With Coulomb Friction" startport="P1" startcomponent="Force Source">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2508.50000000000000000000" y="2488.00000000000000000000"/>
+                        <coordinate x="2482.86499999999978172127" y="2488.00000000000000000000"/>
+                        <coordinate x="2482.86499999999978172127" y="2488.00000000000000000000"/>
+                        <coordinate x="2462.86499999999978172127" y="2488.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Scope" startport="out" startcomponent="Force Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2376.00000000000000000000" y="2385.50000000000000000000"/>
+                        <coordinate x="2376.00000000000000000000" y="2341.00000000000000000000"/>
+                        <coordinate x="2594.00000000000000000000" y="2341.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_bottom" endcomponent="Scope" startport="out" startcomponent="Velocity Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2500.00000000000000000000" y="2389.00000000000000000000"/>
+                        <coordinate x="2500.00000000000000000000" y="2371.00000000000000000000"/>
+                        <coordinate x="2614.00000000000000000000" y="2371.00000000000000000000"/>
+                        <coordinate x="2614.00000000000000000000" y="2356.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="xin" endcomponent="Position &amp; Velocity Source" startport="out" startcomponent="Integrator">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2200.50000000000000000000" y="2461.00000000000000000000"/>
+                        <coordinate x="2209.00000000000000000000" y="2461.00000000000000000000"/>
+                        <coordinate x="2209.00000000000000000000" y="2481.50000000000000000000"/>
+                        <coordinate x="2218.50000000000000000000" y="2481.50000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Translational Mass With Coulomb Friction" startport="P1" startcomponent="Force Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2376.00000000000000000000" y="2420.50000000000000000000"/>
+                        <coordinate x="2376.00000000000000000000" y="2488.00000000000000000000"/>
+                        <coordinate x="2399.13500000000021827873" y="2488.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Translational Mass With Coulomb Friction" startport="P1" startcomponent="Velocity Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2500.00000000000000000000" y="2425.00000000000000000000"/>
+                        <coordinate x="2500.00000000000000000000" y="2488.00000000000000000000"/>
+                        <coordinate x="2462.86499999999978172127" y="2488.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Velocity Transducer_1" startport="P2" startcomponent="Translational Mass With Coulomb Friction">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2462.86499999999978172127" y="2488.00000000000000000000"/>
+                        <coordinate x="2492.00000000000000000000" y="2488.00000000000000000000"/>
+                        <coordinate x="2492.00000000000000000000" y="2616.00000000000000000000"/>
+                        <coordinate x="2546.00000000000000000000" y="2616.00000000000000000000"/>
+                        <coordinate x="2546.00000000000000000000" y="2597.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Scope_1" startport="out" startcomponent="Velocity Transducer_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2546.00000000000000000000" y="2561.00000000000000000000"/>
+                        <coordinate x="2546.00000000000000000000" y="2544.00000000000000000000"/>
+                        <coordinate x="2615.00000000000000000000" y="2544.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="vin" endcomponent="Position &amp; Velocity Source" startport="out" startcomponent="Add">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2135.50000000000000000000" y="2494.50000000000000000000"/>
+                        <coordinate x="2198.50000000000000000000" y="2494.50000000000000000000"/>
+                        <coordinate x="2198.50000000000000000000" y="2494.50000000000000000000"/>
+                        <coordinate x="2218.50000000000000000000" y="2494.50000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Integrator" startport="out" startcomponent="Add">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2135.50000000000000000000" y="2494.50000000000000000000"/>
+                        <coordinate x="2147.00000000000000000000" y="2494.50000000000000000000"/>
+                        <coordinate x="2147.00000000000000000000" y="2461.00000000000000000000"/>
+                        <coordinate x="2165.50000000000000000000" y="2461.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in2" endcomponent="Add" startport="out" startcomponent="Soft step_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2082.50000000000000000000" y="2425.00000000000000000000"/>
+                        <coordinate x="2123.00000000000000000000" y="2425.00000000000000000000"/>
+                        <coordinate x="2123.00000000000000000000" y="2482.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in1" endcomponent="Add" startport="out" startcomponent="Soft step">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2081.50000000000000000000" y="2494.50000000000000000000"/>
+                        <coordinate x="2090.50000000000000000000" y="2494.50000000000000000000"/>
+                        <coordinate x="2090.50000000000000000000" y="2494.50000000000000000000"/>
+                        <coordinate x="2110.50000000000000000000" y="2494.50000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>

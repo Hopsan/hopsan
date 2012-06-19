@@ -2,6 +2,7 @@
 <hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3872" hopsancoreversion="0.5.x_r3882">
     <requirements>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+        <componentlibrary>PettersComponentLibrary</componentlibrary>
     </requirements>
     <system typename="Subsystem" name="ElectricMotorGearTest">
         <simulationtime stop="100" timestep="0.001" start="0" inherit_timestep="true"/>
@@ -10,7 +11,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2439.5" y="2436.5" zoom="1"/>
+            <viewport x="2432" y="2512" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="0"/>
             <scriptfile path=""/>
@@ -499,9 +500,163 @@
                     <stuff newvalue="100" what="changedparameter" oldvalue="50" parametername="t_end" objectname="Soft step"/>
                     <stuff newvalue="500" what="changedparameter" oldvalue="1000" parametername="y_A" objectname="Soft step"/>
                 </post>
+                <post number="61">
+                    <stuff what="addedobject">
+                        <component typename="MechanicAngleSensor" name="Angle Transducer">
+                            <parameters>
+                                <parameter value="0" type="double" name="out::Value"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2627" y="2351" flipped="false" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="62">
+                    <stuff what="addedobject">
+                        <component typename="MechanicAngularVelocitySensor" name="Angular Velocity Transducer">
+                            <parameters>
+                                <parameter value="0" type="double" name="out::Value"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2668" y="2350" flipped="false" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="63">
+                    <stuff what="addedobject">
+                        <component typename="SignalSink" name="Sink_3">
+                            <parameters/>
+                            <hopsangui>
+                                <pose x="2813" y="2386" flipped="false" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="64">
+                    <stuff what="movedobject" name="Angular Velocity Transducer">
+                        <oldpos>2650 2332</oldpos>
+                        <newpos>2613 2267</newpos>
+                    </stuff>
+                </post>
+                <post number="65">
+                    <stuff what="movedobject" name="Angle Transducer">
+                        <oldpos>2609 2333</oldpos>
+                        <newpos>2662 2296</newpos>
+                    </stuff>
+                </post>
+                <post number="66">
+                    <stuff what="movedobject" name="Sink_3">
+                        <oldpos>2793 2371</oldpos>
+                        <newpos>2684 2248</newpos>
+                    </stuff>
+                </post>
+                <post number="67">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink_3" startport="out" startcomponent="Angular Velocity Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2631.00000000000000000000" y="2263.00000000000000000000"/>
+                                    <coordinate x="2631.00000000000000000000" y="2263.00000000000000000000"/>
+                                    <coordinate x="2684.00000000000000000000" y="2263.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="68">
+                    <stuff what="addedconnector">
+                        <connect endport="in_right" endcomponent="Sink_3" startport="out" startcomponent="Angle Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2680.00000000000000000000" y="2296.00000000000000000000"/>
+                                    <coordinate x="2680.00000000000000000000" y="2296.00000000000000000000"/>
+                                    <coordinate x="2747.00000000000000000000" y="2296.00000000000000000000"/>
+                                    <coordinate x="2747.00000000000000000000" y="2263.00000000000000000000"/>
+                                    <coordinate x="2724.00000000000000000000" y="2263.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="69" type="movedmultiple">
+                    <stuff what="movedobject" name="Angular Velocity Transducer">
+                        <oldpos>2650 2332</oldpos>
+                        <newpos>2578 2291</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Angle Transducer">
+                        <oldpos>2609 2333</oldpos>
+                        <newpos>2627 2324</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Sink_3">
+                        <oldpos>2684 2248</oldpos>
+                        <newpos>2649 2276</newpos>
+                    </stuff>
+                </post>
+                <post number="70">
+                    <stuff what="addedconnector">
+                        <connect endport="P1" endcomponent="Angular Velocity Transducer" startport="P1" startcomponent="Torque Transformer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2508.50000000000000000000" y="2514.88500000000021827873"/>
+                                    <coordinate x="2596.00000000000000000000" y="2514.88500000000021827873"/>
+                                    <coordinate x="2596.00000000000000000000" y="2327.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="71">
+                    <stuff what="addedconnector">
+                        <connect endport="P1" endcomponent="Angle Transducer" startport="P1" startcomponent="Torque Transformer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2508.50000000000000000000" y="2514.88500000000021827873"/>
+                                    <coordinate x="2645.00000000000000000000" y="2514.88500000000021827873"/>
+                                    <coordinate x="2645.00000000000000000000" y="2360.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
             </hopsanundo>
         </hopsangui>
         <objects>
+            <component typename="MechanicAngularVelocitySensor" name="Angular Velocity Transducer">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2596" y="2309" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
             <component typename="SignalSink" name="Sink">
                 <parameters/>
                 <hopsangui>
@@ -593,6 +748,22 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2371.5" y="2628" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicAngleSensor" name="Angle Transducer">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2645" y="2342" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink_3">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2669" y="2291" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -969,6 +1140,66 @@
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink_3" startport="out" startcomponent="Angular Velocity Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2596.00000000000000000000" y="2291.00000000000000000000"/>
+                        <coordinate x="2596.00000000000000000000" y="2291.00000000000000000000"/>
+                        <coordinate x="2649.00000000000000000000" y="2291.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_right" endcomponent="Sink_3" startport="out" startcomponent="Angle Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2645.00000000000000000000" y="2324.00000000000000000000"/>
+                        <coordinate x="2645.00000000000000000000" y="2352.00000000000000000000"/>
+                        <coordinate x="2712.00000000000000000000" y="2352.00000000000000000000"/>
+                        <coordinate x="2712.00000000000000000000" y="2291.00000000000000000000"/>
+                        <coordinate x="2689.00000000000000000000" y="2291.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Angular Velocity Transducer" startport="P1" startcomponent="Torque Transformer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2508.50000000000000000000" y="2514.88500000000021827873"/>
+                        <coordinate x="2596.00000000000000000000" y="2514.88500000000021827873"/>
+                        <coordinate x="2596.00000000000000000000" y="2327.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Angle Transducer" startport="P1" startcomponent="Torque Transformer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2508.50000000000000000000" y="2514.88500000000021827873"/>
+                        <coordinate x="2645.00000000000000000000" y="2514.88500000000021827873"/>
+                        <coordinate x="2645.00000000000000000000" y="2360.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
                     </geometries>
                     <style>solid</style>
                 </hopsangui>

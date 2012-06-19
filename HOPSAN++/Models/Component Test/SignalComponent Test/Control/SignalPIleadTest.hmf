@@ -1,0 +1,728 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3872" hopsancoreversion="0.5.x_r3882">
+    <requirements>
+        <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+        <componentlibrary>PettersComponentLibrary</componentlibrary>
+    </requirements>
+    <system typename="Subsystem" name="SignalPIleadTest">
+        <simulationtime stop="10" timestep="0.001" start="0" inherit_timestep="true"/>
+        <aliases/>
+        <parameters/>
+        <hopsangui>
+            <pose x="0" y="0" flipped="false" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2316.63" y="2557.74" zoom="0.70922"/>
+            <ports hidden="1"/>
+            <names hidden="0"/>
+            <scriptfile path=""/>
+            <hopsanobjectappearance version="0.3">
+                <modelobject typename="Subsystem" displayname="SignalPIleadTest">
+                    <icons>
+                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
+                    </icons>
+                    <ports/>
+                </modelobject>
+            </hopsanobjectappearance>
+            <favoritevariables/>
+            <optimization>
+                <settings>
+                    <niter>100</niter>
+                    <nsearchp>8</nsearchp>
+                    <refcoeff>1.3</refcoeff>
+                    <randfac>0.3</randfac>
+                    <forgfac>0</forgfac>
+                    <functol>1e-05</functol>
+                    <partol>0.0001</partol>
+                    <plot>true</plot>
+                    <savecsv>false</savecsv>
+                    <logpar>false</logpar>
+                </settings>
+                <parameters/>
+                <objectives/>
+            </optimization>
+            <hopsanundo>
+                <post number="-1"/>
+                <post number="0" type="changedparameters"/>
+                <post number="1" type="changedparameters"/>
+                <post number="2">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2222 2428</oldpos>
+                        <newpos>2200 2413</newpos>
+                    </stuff>
+                </post>
+                <post number="3">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2200 2413</oldpos>
+                        <newpos>2102 2401</newpos>
+                    </stuff>
+                </post>
+                <post number="4">
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="1" linestyle="solidline" linestyle_old="solidline" index="0" text_old="Put kx in PI-lead to the value of the Gain&#xa;to receive the best step response." font_old="Calibri,12,-1,5,50,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Put kx in PI-lead to the value of the Gain&#xa;of the plant to receive the best step response." font="Calibri,12,-1,5,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
+                <post number="5" type="changedparameters">
+                    <stuff newvalue=".5" what="changedparameter" oldvalue="0" parametername="y_0" objectname="Step"/>
+                </post>
+                <post number="6" type="changedparameters">
+                    <stuff newvalue="5" what="changedparameter" oldvalue="1" parametername="t_step" objectname="Step"/>
+                </post>
+                <post number="7" type="changedparameters">
+                    <stuff newvalue=".5" what="changedparameter" oldvalue="0" parametername="out::Value" objectname="Integrator"/>
+                </post>
+                <post number="8">
+                    <stuff what="movedobject" name="Sink_1">
+                        <oldpos>2614.5 2530.5</oldpos>
+                        <newpos>2613.5 2530.5</newpos>
+                    </stuff>
+                </post>
+                <post number="9">
+                    <stuff what="movedobject" name="SignalPIlead">
+                        <oldpos>2332.5 2522.5</oldpos>
+                        <newpos>2330.5 2522.5</newpos>
+                    </stuff>
+                </post>
+                <post number="10">
+                    <stuff what="movedobject" name="SignalPIlead">
+                        <oldpos>2330.5 2522.5</oldpos>
+                        <newpos>2328.5 2522.5</newpos>
+                    </stuff>
+                </post>
+                <post number="11">
+                    <stuff what="movedobject" name="SignalPIlead">
+                        <oldpos>2328.5 2522.5</oldpos>
+                        <newpos>2326.5 2522.5</newpos>
+                    </stuff>
+                </post>
+                <post number="12" type="changedparameters">
+                    <stuff newvalue=".1" what="changedparameter" oldvalue="0" parametername="Pu::Value" objectname="SignalPIlead"/>
+                </post>
+                <post number="13" type="movedmultiple">
+                    <stuff what="movedobject" name="Sink_3">
+                        <oldpos>2455.36 2812.57</oldpos>
+                        <newpos>2507.27 2901.91</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Sink_4">
+                        <oldpos>2454.36 2730.57</oldpos>
+                        <newpos>2506.27 2819.91</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Integrator_1">
+                        <oldpos>2387.36 2730.57</oldpos>
+                        <newpos>2441.77 2817.41</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Subtract">
+                        <oldpos>2156 2728</oldpos>
+                        <newpos>2240.41 2819.84</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Gain_2">
+                        <oldpos>2210 2730</oldpos>
+                        <newpos>2269.41 2821.84</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Subtract_1">
+                        <oldpos>2254.5 2717.5</oldpos>
+                        <newpos>2326.41 2821.84</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Gain_1">
+                        <oldpos>2335.36 2730.57</oldpos>
+                        <newpos>2394.77 2822.41</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Step_2">
+                        <oldpos>2060.36 2728</oldpos>
+                        <newpos>2119.77 2819.84</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Constant">
+                        <oldpos>2192 2635</oldpos>
+                        <newpos>2251.41 2726.84</newpos>
+                    </stuff>
+                </post>
+                <post number="14" type="paste">
+                    <stuff what="addedtextboxwidget" index="2">
+                        <textboxwidget>
+                            <hopsangui>
+                                <pose x="2080.350000" y="2621.800000"/>
+                                <textobject fontcolor="#556b2f" text="Put kx in PI-lead to the value of the Gain&#xa;of the plant to receive the best step response." font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                                <size width="307.000000" height="56.000000"/>
+                                <line width="2.000000" visible="1" style="solidline"/>
+                            </hopsangui>
+                        </textboxwidget>
+                    </stuff>
+                </post>
+                <post number="15">
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="1" linestyle="solidline" linestyle_old="solidline" index="2" text_old="Put kx in PI-lead to the value of the Gain&#xa;of the plant to receive the best step response." font_old="Calibri,12,-1,5,50,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Reference system" font="Calibri,12,-1,5,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
+                <post number="16">
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="1" linestyle="solidline" linestyle_old="solidline" index="2" text_old="Reference system" font_old="Calibri,12,-1,5,50,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Reference syste. Should give the same&#xa;result" font="Calibri,12,-1,5,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
+                <post number="17">
+                    <stuff h_new="56.000000" what="resizedtextboxwidget" w_old="307.000000" h_old="56.000000" index="2" w_new="271.750000">
+                        <oldpos>2080.35 2621.8</oldpos>
+                        <newpos>2080.35 2621.8</newpos>
+                    </stuff>
+                </post>
+                <post number="18">
+                    <stuff what="movedwidget" index="2">
+                        <oldpos>2080.35 2621.8</oldpos>
+                        <newpos>2117.01 2640.13</newpos>
+                    </stuff>
+                </post>
+            </hopsanundo>
+        </hopsangui>
+        <objects>
+            <component typename="SignalPIlead" name="SignalPIlead_2">
+                <parameters>
+                    <parameter value="0" type="double" name="Pu::Value"/>
+                    <parameter value="1" type="double" name="wa"/>
+                    <parameter value="1" type="double" name="da"/>
+                    <parameter value="-1" type="double" name="umin"/>
+                    <parameter value="1" type="double" name="umax"/>
+                    <parameter value="0" type="double" name="yref"/>
+                    <parameter value="0" type="double" name="y"/>
+                    <parameter value="1" type="double" name="kx"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2561" y="2340" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalPIlead" name="SignalPIlead_3">
+                <parameters>
+                    <parameter value="0" type="double" name="Pu::Value"/>
+                    <parameter value="1" type="double" name="wa"/>
+                    <parameter value="1" type="double" name="da"/>
+                    <parameter value="-1" type="double" name="umin"/>
+                    <parameter value="1" type="double" name="umax"/>
+                    <parameter value="0" type="double" name="yref"/>
+                    <parameter value="0" type="double" name="y"/>
+                    <parameter value="1" type="double" name="kx"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2443" y="2340" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalGain" name="Gain_1">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                    <parameter value="1" type="double" name="k"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2407.267143" y="2834.911429" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSubtract" name="Subtract_1">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2338.91" y="2834.34" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalGain" name="Gain_2">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                    <parameter value="4" type="double" name="k"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2281.91" y="2834.34" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSubtract" name="Subtract_2">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2457" y="2541" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2628" y="2625" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalGain" name="Gain">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                    <parameter value="1" type="double" name="k"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2508" y="2543" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSource" name="Constant_1">
+                <parameters>
+                    <parameter value=".1" type="double" name="y"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2271" y="2502" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSubtract" name="Subtract">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2227.91" y="2832.34" flipped="true" a="180"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalIntegrator2" name="Integrator">
+                <parameters>
+                    <parameter value=".5" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2560" y="2543" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalPIlead" name="SignalPIlead">
+                <parameters>
+                    <parameter value=".1" type="double" name="Pu::Value"/>
+                    <parameter value="5" type="double" name="wa"/>
+                    <parameter value="1" type="double" name="da"/>
+                    <parameter value="-1" type="double" name="umin"/>
+                    <parameter value="2" type="double" name="umax"/>
+                    <parameter value="0" type="double" name="yref"/>
+                    <parameter value="0" type="double" name="y"/>
+                    <parameter value="1" type="double" name="kx"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2365" y="2541" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalStep" name="Step_1">
+                <parameters>
+                    <parameter value="0" type="double" name="y_0"/>
+                    <parameter value=".5" type="double" name="y_A"/>
+                    <parameter value="1" type="double" name="t_step"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2225" y="2286.5" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalStep" name="Step_2">
+                <parameters>
+                    <parameter value="1" type="double" name="y_0"/>
+                    <parameter value=".5" type="double" name="y_A"/>
+                    <parameter value="1" type="double" name="t_step"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2132.267143" y="2832.34" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink_1">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2626" y="2543" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink_2">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2650.5" y="2410" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalStep" name="Step">
+                <parameters>
+                    <parameter value=".5" type="double" name="y_0"/>
+                    <parameter value=".5" type="double" name="y_A"/>
+                    <parameter value="5" type="double" name="t_step"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2197" y="2541" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalIntegrator2" name="Integrator_1">
+                <parameters>
+                    <parameter value="1" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2459.267143" y="2834.911429" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink_3">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2527.267143" y="2916.911429" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink_4">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2526.267143" y="2834.911429" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSource" name="Constant">
+                <parameters>
+                    <parameter value=".1" type="double" name="y"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2263.91" y="2739.34" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2102.000000" y="2401.000000"/>
+                    <textobject fontcolor="#556b2f" text="Put kx in PI-lead to the value of the Gain&#xa;of the plant to receive the best step response." font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                    <size width="307.000000" height="56.000000"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2160.000000" y="2136.000000"/>
+                    <textobject fontcolor="#556b2f" text="PI-lead is a regulator that introduce an integral part and generates a &#xa;pole placement controller for &#xa;integral type systems" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                    <size width="458.000000" height="78.000000"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2117.010000" y="2640.130000"/>
+                    <textobject fontcolor="#556b2f" text="Reference syste. Should give the same&#xa;result" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                    <size width="271.750000" height="56.000000"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
+        </objects>
+        <connections>
+            <connect endport="in" endcomponent="Sink_1" startport="out" startcomponent="Integrator">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2577.50000000000000000000" y="2543.00000000000000000000"/>
+                        <coordinate x="2606.00000000000000000000" y="2543.00000000000000000000"/>
+                        <coordinate x="2606.00000000000000000000" y="2543.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pyref" endcomponent="SignalPIlead_3" startport="out" startcomponent="Step_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2237.50000000000000000000" y="2286.50000000000000000000"/>
+                        <coordinate x="2376.00000000000000000000" y="2286.50000000000000000000"/>
+                        <coordinate x="2376.00000000000000000000" y="2340.00000000000000000000"/>
+                        <coordinate x="2404.50000000000000000000" y="2340.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink_2" startport="Pu" startcomponent="SignalPIlead_3">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2481.50000000000000000000" y="2340.00000000000000000000"/>
+                        <coordinate x="2499.00000000000000000000" y="2340.00000000000000000000"/>
+                        <coordinate x="2499.00000000000000000000" y="2410.00000000000000000000"/>
+                        <coordinate x="2630.50000000000000000000" y="2410.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Py" endcomponent="SignalPIlead_2" startport="out" startcomponent="Step_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2237.50000000000000000000" y="2286.50000000000000000000"/>
+                        <coordinate x="2510.00000000000000000000" y="2286.50000000000000000000"/>
+                        <coordinate x="2510.00000000000000000000" y="2349.25000000000000000000"/>
+                        <coordinate x="2522.50000000000000000000" y="2349.25000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink_2" startport="Pu" startcomponent="SignalPIlead_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2599.50000000000000000000" y="2340.00000000000000000000"/>
+                        <coordinate x="2618.00000000000000000000" y="2340.00000000000000000000"/>
+                        <coordinate x="2618.00000000000000000000" y="2410.00000000000000000000"/>
+                        <coordinate x="2630.50000000000000000000" y="2410.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pyref" endcomponent="SignalPIlead" startport="out" startcomponent="Step">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2209.50000000000000000000" y="2541.00000000000000000000"/>
+                        <coordinate x="2295.50000000000000000000" y="2541.00000000000000000000"/>
+                        <coordinate x="2295.50000000000000000000" y="2541.00000000000000000000"/>
+                        <coordinate x="2326.50000000000000000000" y="2541.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Py" endcomponent="SignalPIlead" startport="out" startcomponent="Integrator">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2577.50000000000000000000" y="2543.00000000000000000000"/>
+                        <coordinate x="2584.00000000000000000000" y="2543.00000000000000000000"/>
+                        <coordinate x="2584.00000000000000000000" y="2582.00000000000000000000"/>
+                        <coordinate x="2285.00000000000000000000" y="2582.00000000000000000000"/>
+                        <coordinate x="2285.00000000000000000000" y="2550.25000000000000000000"/>
+                        <coordinate x="2326.50000000000000000000" y="2550.25000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink" startport="Pu" startcomponent="SignalPIlead">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2403.50000000000000000000" y="2541.00000000000000000000"/>
+                        <coordinate x="2424.00000000000000000000" y="2541.00000000000000000000"/>
+                        <coordinate x="2424.00000000000000000000" y="2625.00000000000000000000"/>
+                        <coordinate x="2608.00000000000000000000" y="2625.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Integrator" startport="out" startcomponent="Gain">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2520.50000000000000000000" y="2543.00000000000000000000"/>
+                        <coordinate x="2522.50000000000000000000" y="2543.00000000000000000000"/>
+                        <coordinate x="2522.50000000000000000000" y="2543.00000000000000000000"/>
+                        <coordinate x="2542.50000000000000000000" y="2543.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink_4" startport="out" startcomponent="Integrator_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2476.76714300000003277091" y="2834.91142899999931614730"/>
+                        <coordinate x="2506.26714300000003277091" y="2834.91142899999931614730"/>
+                        <coordinate x="2506.26714300000003277091" y="2834.91142899999931614730"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Integrator_1" startport="out" startcomponent="Gain_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2419.76714300000003277091" y="2834.91142899999931614730"/>
+                        <coordinate x="2421.76714285714251673198" y="2834.91142899999931614730"/>
+                        <coordinate x="2421.76714285714251673198" y="2834.91142899999931614730"/>
+                        <coordinate x="2441.76714300000003277091" y="2834.91142899999931614730"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in1" endcomponent="Subtract" startport="out" startcomponent="Step_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2144.76714300000003277091" y="2832.33999999999969077180"/>
+                        <coordinate x="2194.40999999999985448085" y="2832.33999999999969077180"/>
+                        <coordinate x="2194.40999999999985448085" y="2832.33999999999969077180"/>
+                        <coordinate x="2215.40999999999985448085" y="2832.33999999999969077180"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Gain_2" startport="out" startcomponent="Subtract">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2240.40999999999985448085" y="2832.33999999999969077180"/>
+                        <coordinate x="2249.40999999999985448085" y="2832.33999999999969077180"/>
+                        <coordinate x="2249.40999999999985448085" y="2834.33999999999969077180"/>
+                        <coordinate x="2269.40999999999985448085" y="2834.33999999999969077180"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in2" endcomponent="Subtract" startport="out" startcomponent="Integrator_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2476.76714300000003277091" y="2834.91142899999931614730"/>
+                        <coordinate x="2493.90999999999985448085" y="2834.91142899999931614730"/>
+                        <coordinate x="2493.90999999999985448085" y="2900.33999999999923602445"/>
+                        <coordinate x="2226.90999999999985448085" y="2900.33999999999923602445"/>
+                        <coordinate x="2226.90999999999985448085" y="2847.83999999999923602445"/>
+                        <coordinate x="2227.90999999999985448085" y="2847.83999999999923602445"/>
+                        <coordinate x="2227.90999999999985448085" y="2844.83999999999923602445"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in1" endcomponent="Subtract_1" startport="out" startcomponent="Gain_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2294.40999999999985448085" y="2834.33999999999969077180"/>
+                        <coordinate x="2306.40999999999985448085" y="2834.33999999999969077180"/>
+                        <coordinate x="2306.40999999999985448085" y="2834.33999999999969077180"/>
+                        <coordinate x="2326.40999999999985448085" y="2834.33999999999969077180"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Gain_1" startport="out" startcomponent="Subtract_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2351.40999999999985448085" y="2834.33999999999969077180"/>
+                        <coordinate x="2374.76714285714251673198" y="2834.33999999999969077180"/>
+                        <coordinate x="2374.76714285714251673198" y="2834.91142899999977089465"/>
+                        <coordinate x="2394.76714300000003277091" y="2834.91142899999977089465"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in2" endcomponent="Subtract_1" startport="out" startcomponent="Constant">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2276.40999999999985448085" y="2739.33999999999969077180"/>
+                        <coordinate x="2338.90999999999985448085" y="2739.33999999999969077180"/>
+                        <coordinate x="2338.90999999999985448085" y="2821.83999999999969077180"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in1" endcomponent="Subtract_2" startport="Pu" startcomponent="SignalPIlead">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2403.50000000000000000000" y="2541.00000000000000000000"/>
+                        <coordinate x="2424.50000000000000000000" y="2541.00000000000000000000"/>
+                        <coordinate x="2424.50000000000000000000" y="2541.00000000000000000000"/>
+                        <coordinate x="2444.50000000000000000000" y="2541.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Gain" startport="out" startcomponent="Subtract_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2469.50000000000000000000" y="2541.00000000000000000000"/>
+                        <coordinate x="2476.00000000000000000000" y="2541.00000000000000000000"/>
+                        <coordinate x="2476.00000000000000000000" y="2543.00000000000000000000"/>
+                        <coordinate x="2495.50000000000000000000" y="2543.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in2" endcomponent="Subtract_2" startport="out" startcomponent="Constant_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2283.50000000000000000000" y="2502.00000000000000000000"/>
+                        <coordinate x="2457.00000000000000000000" y="2502.00000000000000000000"/>
+                        <coordinate x="2457.00000000000000000000" y="2528.50000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>

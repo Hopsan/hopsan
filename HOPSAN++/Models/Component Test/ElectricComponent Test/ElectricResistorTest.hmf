@@ -2,6 +2,7 @@
 <hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3872" hopsancoreversion="0.5.x_r3882">
     <requirements>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+        <componentlibrary>PettersComponentLibrary</componentlibrary>
     </requirements>
     <system typename="Subsystem" name="ElectricResistorTest">
         <simulationtime stop="10" timestep="0.001" start="0" inherit_timestep="true"/>
@@ -10,7 +11,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2501.5" y="2381.5" zoom="1"/>
+            <viewport x="2502.5" y="2382.5" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="0"/>
             <scriptfile path=""/>
@@ -738,6 +739,74 @@
                         <newpos>2260 2523</newpos>
                     </stuff>
                 </post>
+                <post number="52">
+                    <stuff what="movedobject" name="Sink">
+                        <oldpos>2459 2293</oldpos>
+                        <newpos>2457 2293</newpos>
+                    </stuff>
+                </post>
+                <post number="53" type="paste">
+                    <stuff what="addedobject">
+                        <component typename="ElectricIsensor" name="Current sensor_1">
+                            <parameters>
+                                <parameter value="0" type="double" name="Piout::Value"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2383" y="2402.5" flipped="false" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                    <stuff what="rotate" angle="0.000000" objectname="Current sensor_1"/>
+                    <stuff what="movedobject" name="Current sensor_1">
+                        <oldpos>2365 2384.5</oldpos>
+                        <newpos>2279 2355</newpos>
+                    </stuff>
+                </post>
+                <post number="54">
+                    <stuff what="addedconnector">
+                        <connect endport="Pel1" endcomponent="Resistor" startport="Pel1" startcomponent="Current sensor_1">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2279.00000000000000000000" y="2373.00000000000000000000"/>
+                                    <coordinate x="2294.50000000000000000000" y="2373.00000000000000000000"/>
+                                    <coordinate x="2294.50000000000000000000" y="2402.50000000000000000000"/>
+                                    <coordinate x="2313.00000000000000000000" y="2402.50000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="55">
+                    <stuff what="movedobject" name="Current sensor_1">
+                        <oldpos>2279 2355</oldpos>
+                        <newpos>2278 2384.5</newpos>
+                    </stuff>
+                </post>
+                <post number="56">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink" startport="Piout" startcomponent="Current sensor_1">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2296.00000000000000000000" y="2384.50000000000000000000"/>
+                                    <coordinate x="2296.00000000000000000000" y="2308.00000000000000000000"/>
+                                    <coordinate x="2457.00000000000000000000" y="2308.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
             </hopsanundo>
         </hopsangui>
         <objects>
@@ -756,7 +825,7 @@
             <component typename="SignalSink" name="Sink">
                 <parameters/>
                 <hopsangui>
-                    <pose x="2479" y="2308" flipped="false" a="0"/>
+                    <pose x="2477" y="2308" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -799,9 +868,18 @@
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
+            <component typename="ElectricIsensor" name="Current sensor_1">
+                <parameters>
+                    <parameter value="0" type="double" name="Piout::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2296" y="2402.5" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2127.500000" y="2202.500000"/>
+                    <pose x="2128.000000" y="2203.000000"/>
                     <textobject fontcolor="#556b2f" text="The current is plotted as a function of the variable voltage" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
                     <size width="405.000000" height="37.000000"/>
                     <line width="2.000000" visible="1" style="solidline"/>
@@ -878,7 +956,7 @@
                     <coordinates>
                         <coordinate x="2383.00000000000000000000" y="2384.50000000000000000000"/>
                         <coordinate x="2383.00000000000000000000" y="2308.00000000000000000000"/>
-                        <coordinate x="2459.00000000000000000000" y="2308.00000000000000000000"/>
+                        <coordinate x="2457.00000000000000000000" y="2308.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -893,14 +971,44 @@
                         <coordinate x="2204.50000000000000000000" y="2435.50000000000000000000"/>
                         <coordinate x="2236.00000000000000000000" y="2435.50000000000000000000"/>
                         <coordinate x="2236.00000000000000000000" y="2339.00000000000000000000"/>
-                        <coordinate x="2479.00000000000000000000" y="2339.00000000000000000000"/>
-                        <coordinate x="2479.00000000000000000000" y="2323.00000000000000000000"/>
+                        <coordinate x="2477.00000000000000000000" y="2339.00000000000000000000"/>
+                        <coordinate x="2477.00000000000000000000" y="2323.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pel1" endcomponent="Resistor" startport="Pel1" startcomponent="Current sensor_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2278.00000000000000000000" y="2402.50000000000000000000"/>
+                        <coordinate x="2294.50000000000000000000" y="2402.50000000000000000000"/>
+                        <coordinate x="2294.50000000000000000000" y="2402.50000000000000000000"/>
+                        <coordinate x="2313.00000000000000000000" y="2402.50000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink" startport="Piout" startcomponent="Current sensor_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2296.00000000000000000000" y="2384.50000000000000000000"/>
+                        <coordinate x="2296.00000000000000000000" y="2308.00000000000000000000"/>
+                        <coordinate x="2457.00000000000000000000" y="2308.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
                     </geometries>
                     <style>solid</style>
                 </hopsangui>

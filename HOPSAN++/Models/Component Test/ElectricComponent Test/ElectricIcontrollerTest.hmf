@@ -2,6 +2,7 @@
 <hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3872" hopsancoreversion="0.5.x_r3882">
     <requirements>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+        <componentlibrary>PettersComponentLibrary</componentlibrary>
     </requirements>
     <system typename="Subsystem" name="ElectricIcontrollerTest">
         <simulationtime stop="10" timestep="0.01" start="0" inherit_timestep="true"/>
@@ -10,7 +11,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2487" y="2329.5" zoom="1"/>
+            <viewport x="2487.5" y="2330.5" zoom="1"/>
             <ports hidden="0"/>
             <names hidden="0"/>
             <scriptfile path=""/>
@@ -124,10 +125,10 @@
                     <parameter value="7" type="double" name="umin"/>
                     <parameter value="1000" type="double" name="imax"/>
                     <parameter value="1" type="double" name="imin"/>
-                    <parameter value="1000" type="double" name="umax"/>
+                    <parameter value="100" type="double" name="umax"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2363" y="2435" flipped="false" a="0"/>
+                    <pose x="2364" y="2435" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -185,7 +186,7 @@
                     <coordinates>
                         <coordinate x="2230.00000000000000000000" y="2460.00000000000000000000"/>
                         <coordinate x="2230.00000000000000000000" y="2425.24497148159980497439"/>
-                        <coordinate x="2329.00000000000000000000" y="2425.24497148159980497439"/>
+                        <coordinate x="2330.00000000000000000000" y="2425.24497148159980497439"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -197,7 +198,7 @@
             <connect endport="Pel1" endcomponent="Voltage Source_1" startport="Pel2" startcomponent="I-Controller">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2397.00000000000000000000" y="2425.24497148159980497439"/>
+                        <coordinate x="2398.00000000000000000000" y="2425.24497148159980497439"/>
                         <coordinate x="2506.00000000000000000000" y="2425.24497148159980497439"/>
                         <coordinate x="2506.00000000000000000000" y="2454.00000000000000000000"/>
                     </coordinates>
@@ -212,8 +213,8 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2189.50000000000000000000" y="2272.00000000000000000000"/>
-                        <coordinate x="2363.00000000000000000000" y="2272.00000000000000000000"/>
-                        <coordinate x="2363.00000000000000000000" y="2413.00000000000000000000"/>
+                        <coordinate x="2364.00000000000000000000" y="2272.00000000000000000000"/>
+                        <coordinate x="2364.00000000000000000000" y="2413.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -225,7 +226,7 @@
             <connect endport="Pel1" endcomponent="Current sensor" startport="Pel2" startcomponent="I-Controller">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2397.00000000000000000000" y="2425.24497148159980497439"/>
+                        <coordinate x="2398.00000000000000000000" y="2425.24497148159980497439"/>
                         <coordinate x="2403.00000000000000000000" y="2425.24497148159980497439"/>
                         <coordinate x="2403.00000000000000000000" y="2426.24497100000007776543"/>
                         <coordinate x="2433.00000000000000000000" y="2426.24497100000007776543"/>
