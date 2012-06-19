@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3872" hopsancoreversion="0">
+    <system typename="Subsystem" name="PneumaticOrificeTest">
+        <hopsangui>
+            <pose x="0" y="0" flipped="0" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2500.5" y="2501" zoom="1"/>
+            <ports hidden="0"/>
+            <names hidden="0"/>
+            <scriptfile path=""/>
+            <hopsanobjectappearance version="0.3">
+                <modelobject typename="Subsystem" displayname="PneumaticOrificeTest">
+                    <icons>
+                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
+                    </icons>
+                    <ports/>
+                </modelobject>
+            </hopsanobjectappearance>
+            <optimization>
+                <settings>
+                    <niter>100</niter>
+                    <nsearchp>8</nsearchp>
+                    <refcoeff>1.3</refcoeff>
+                    <randfac>0.3</randfac>
+                    <forgfac>0</forgfac>
+                    <functol>1e-05</functol>
+                    <partol>0.0001</partol>
+                    <plot>true</plot>
+                    <savecsv>false</savecsv>
+                    <logpar>false</logpar>
+                </settings>
+                <parameters/>
+                <objectives/>
+            </optimization>
+            <hopsanundo>
+                <post number="-1"/>
+                <post number="0"/>
+                <post number="1">
+                    <stuff what="addedobject">
+                        <component typename="PneumaticOrifice" name="PneumaticOrifice">
+                            <parameters>
+                                <parameter value="0.65" name="Cd"/>
+                                <parameter value="287" name="R"/>
+                                <parameter value="718" name="cv"/>
+                                <parameter value="0.02" name="eps"/>
+                                <parameter value="1e-006" name="A0"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2278" y="2519" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="2">
+                    <stuff what="addedobject">
+                        <component typename="PneumaticPTsrc" name="PneumaticPTsrc">
+                            <parameters>
+                                <parameter value="0" name="P1::MassFlow"/>
+                                <parameter value="0" name="P1::Pressure"/>
+                                <parameter value="0" name="P1::"/>
+                                <parameter value="100000" name="pinput"/>
+                                <parameter value="273" name="Tinput"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2283" y="2592" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="3">
+                    <stuff what="addedobject">
+                        <component typename="PneumaticPTsrc" name="PneumaticPTsrc_1">
+                            <parameters>
+                                <parameter value="0" name="P1::MassFlow"/>
+                                <parameter value="0" name="P1::Pressure"/>
+                                <parameter value="0" name="P1::"/>
+                                <parameter value="100000" name="pinput"/>
+                                <parameter value="273" name="Tinput"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2280" y="2452" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="4">
+                    <stuff what="addedconnector">
+                        <connect endport="Pp2" endcomponent="PneumaticOrifice" startport="P1" startcomponent="PneumaticPTsrc">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2253.00000000000000000000" y="2592.00000000000000000000"/>
+                                    <coordinate x="2253.00000000000000000000" y="2505.66667999999981475412"/>
+                                    <coordinate x="2248.00000000000000000000" y="2505.66667999999981475412"/>
+                                    <coordinate x="2248.00000000000000000000" y="2525.66667999999981475412"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="5">
+                    <stuff what="addedconnector">
+                        <connect endport="P1" endcomponent="PneumaticPTsrc_1" startport="Pp1" startcomponent="PneumaticOrifice">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2248.00000000000000000000" y="2512.33332000000018524588"/>
+                                    <coordinate x="2248.00000000000000000000" y="2432.00000000000000000000"/>
+                                    <coordinate x="2250.00000000000000000000" y="2432.00000000000000000000"/>
+                                    <coordinate x="2250.00000000000000000000" y="2452.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="6">
+                    <stuff what="movedobject" name="PneumaticPTsrc">
+                        <oldpos>2253 2572</oldpos>
+                        <newpos>2248 2572</newpos>
+                    </stuff>
+                </post>
+                <post number="7">
+                    <stuff what="movedobject" name="PneumaticPTsrc_1">
+                        <oldpos>2250 2432</oldpos>
+                        <newpos>2279 2412</newpos>
+                    </stuff>
+                </post>
+                <post number="8">
+                    <stuff what="movedobject" name="PneumaticPTsrc">
+                        <oldpos>2248 2572</oldpos>
+                        <newpos>2173 2565</newpos>
+                    </stuff>
+                </post>
+                <post number="9">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>0 0</oldpos>
+                        <newpos>0 39</newpos>
+                        <connect endport="Pp2" endcomponent="PneumaticOrifice" startport="P1" startcomponent="PneumaticPTsrc">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2173.00000000000000000000" y="2585.00000000000000000000"/>
+                                    <coordinate x="2173.00000000000000000000" y="2544.66667999999981475412"/>
+                                    <coordinate x="2248.00000000000000000000" y="2544.66667999999981475412"/>
+                                    <coordinate x="2248.00000000000000000000" y="2525.66667999999981475412"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="10">
+                    <stuff what="movedobject" name="PneumaticPTsrc">
+                        <oldpos>2173 2565</oldpos>
+                        <newpos>2248 2585</newpos>
+                    </stuff>
+                </post>
+                <post number="11">
+                    <stuff what="movedobject" name="PneumaticPTsrc_1">
+                        <oldpos>2279 2412</oldpos>
+                        <newpos>2248 2412</newpos>
+                    </stuff>
+                </post>
+            </hopsanundo>
+        </hopsangui>
+        <simulationtime stop="10" timestep="0.001" start="0"/>
+        <parameters/>
+        <objects>
+            <component typename="PneumaticOrifice" name="PneumaticOrifice">
+                <parameters>
+                    <parameter value="0.65" name="Cd"/>
+                    <parameter value="287" name="R"/>
+                    <parameter value="718" name="cv"/>
+                    <parameter value="0.02" name="eps"/>
+                    <parameter value="1e-006" name="A0"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2278" y="2519" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="PneumaticPTsrc" name="PneumaticPTsrc_1">
+                <parameters>
+                    <parameter value="0" name="P1::MassFlow"/>
+                    <parameter value="0" name="P1::Pressure"/>
+                    <parameter value="0" name="P1::"/>
+                    <parameter value="100000" name="pinput"/>
+                    <parameter value="273" name="Tinput"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2278" y="2432" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="PneumaticPTsrc" name="PneumaticPTsrc">
+                <parameters>
+                    <parameter value="0" name="P1::MassFlow"/>
+                    <parameter value="0" name="P1::Pressure"/>
+                    <parameter value="0" name="P1::"/>
+                    <parameter value="100000" name="pinput"/>
+                    <parameter value="273" name="Tinput"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2278" y="2605" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+        </objects>
+        <connections>
+            <connect endport="Pp2" endcomponent="PneumaticOrifice" startport="P1" startcomponent="PneumaticPTsrc">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2248.00000000000000000000" y="2605.00000000000000000000"/>
+                        <coordinate x="2248.00000000000000000000" y="2544.66667999999981475412"/>
+                        <coordinate x="2248.00000000000000000000" y="2544.66667999999981475412"/>
+                        <coordinate x="2248.00000000000000000000" y="2525.66667999999981475412"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="PneumaticPTsrc_1" startport="Pp1" startcomponent="PneumaticOrifice">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2248.00000000000000000000" y="2512.33332000000018524588"/>
+                        <coordinate x="2248.00000000000000000000" y="2432.00000000000000000000"/>
+                        <coordinate x="2248.00000000000000000000" y="2432.00000000000000000000"/>
+                        <coordinate x="2248.00000000000000000000" y="2432.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>

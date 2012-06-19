@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r4162" hopsancoreversion="0.5.x_r4161">
+    <requirements>
+        <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+        <componentlibrary>PettersComponentLibrary</componentlibrary>
+    </requirements>
+    <system logsamples="2048" typename="Subsystem" name="SignalWaypointComponentTest">
+        <simulationtime stop="10" timestep="0.001" start="0" inherit_timestep="true"/>
+        <aliases/>
+        <parameters/>
+        <hopsangui>
+            <pose x="0" y="0" flipped="false" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2538" y="2508.5" zoom="1"/>
+            <ports hidden="1"/>
+            <names hidden="0"/>
+            <scriptfile path=""/>
+            <hopsanobjectappearance version="0.3">
+                <modelobject typename="Subsystem" displayname="SignalWaypointComponentTest">
+                    <icons>
+                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
+                    </icons>
+                    <ports/>
+                </modelobject>
+            </hopsanobjectappearance>
+            <favoritevariables/>
+            <optimization>
+                <settings>
+                    <niter>100</niter>
+                    <nsearchp>8</nsearchp>
+                    <refcoeff>1.3</refcoeff>
+                    <randfac>0.3</randfac>
+                    <forgfac>0</forgfac>
+                    <functol>1e-05</functol>
+                    <partol>0.0001</partol>
+                    <plot>true</plot>
+                    <savecsv>false</savecsv>
+                    <logpar>false</logpar>
+                </settings>
+                <parameters/>
+                <objectives/>
+            </optimization>
+        </hopsangui>
+        <objects>
+            <component typename="SignalRamp" name="Ramp">
+                <parameters>
+                    <parameter value="15" type="double" name="y_0"/>
+                    <parameter value="1" type="double" name="y_A"/>
+                    <parameter value="1" type="double" name="t_start"/>
+                    <parameter value="10" type="double" name="t_end"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2242" y="2392" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2547" y="2640" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSource" name="Constant">
+                <parameters>
+                    <parameter value="57.405" type="double" name="y"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2243" y="2342" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalPulse" name="Pulse">
+                <parameters>
+                    <parameter value="0" type="double" name="y_0"/>
+                    <parameter value="1" type="double" name="t_start"/>
+                    <parameter value="10" type="double" name="t_end"/>
+                    <parameter value="1" type="double" name="y_A"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2243" y="2436" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink_1">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2540" y="2579" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink_2">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2549" y="2704" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalWaypoint" name="SignalWaypoint">
+                <parameters>
+                    <parameter value="0" type="double" name="Pset1::Value"/>
+                    <parameter value="0" type="double" name="PaltitudeRef::Value"/>
+                    <parameter value="0" type="double" name="PheadingRef::Value"/>
+                    <parameter value="0" type="double" name="PvelocityRef::Value"/>
+                    <parameter value="0" type="double" name="PdistanceWp::Value"/>
+                    <parameter value="6.3675e+006" type="double" name="R"/>
+                    <parameter value="0" type="double" name="alt1"/>
+                    <parameter value="200" type="double" name="v1"/>
+                    <parameter value="570" type="double" name="wptol"/>
+                    <parameter value="15.63" type="double" name="xcWp1"/>
+                    <parameter value="57.41" type="double" name="ycWp1"/>
+                    <parameter value="0" type="double" name="s1"/>
+                    <parameter value="0" type="double" name="xc"/>
+                    <parameter value="0" type="double" name="yc"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2410" y="2484" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+        </objects>
+        <connections>
+            <connect endport="Ps1" endcomponent="SignalWaypoint" startport="out" startcomponent="Pulse">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2255.50000000000000000000" y="2436.00000000000000000000"/>
+                        <coordinate x="2395.00000000000000000000" y="2436.00000000000000000000"/>
+                        <coordinate x="2395.00000000000000000000" y="2464.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink_1" startport="PdistanceWp" startcomponent="SignalWaypoint">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2429.99998000000005049515" y="2504.00000000000000000000"/>
+                        <coordinate x="2429.99998000000005049515" y="2579.00000000000000000000"/>
+                        <coordinate x="2520.00000000000000000000" y="2579.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink" startport="Pset1" startcomponent="SignalWaypoint">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2390.00001999999994950485" y="2504.00000000000000000000"/>
+                        <coordinate x="2390.00001999999994950485" y="2640.00000000000000000000"/>
+                        <coordinate x="2527.00000000000000000000" y="2640.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink_2" startport="PheadingRef" startcomponent="SignalWaypoint">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2410.00000000000000000000" y="2504.00000000000000000000"/>
+                        <coordinate x="2410.00000000000000000000" y="2704.00000000000000000000"/>
+                        <coordinate x="2529.00000000000000000000" y="2704.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pyc" endcomponent="SignalWaypoint" startport="out" startcomponent="Constant">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2255.50000000000000000000" y="2342.00000000000000000000"/>
+                        <coordinate x="2425.00000000000000000000" y="2342.00000000000000000000"/>
+                        <coordinate x="2425.00000000000000000000" y="2464.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pxc" endcomponent="SignalWaypoint" startport="out" startcomponent="Ramp">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2254.50000000000000000000" y="2392.00000000000000000000"/>
+                        <coordinate x="2410.00000000000000000000" y="2392.00000000000000000000"/>
+                        <coordinate x="2410.00000000000000000000" y="2464.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>

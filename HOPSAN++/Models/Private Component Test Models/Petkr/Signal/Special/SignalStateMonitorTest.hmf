@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3872" hopsancoreversion="0.5.x_r4081">
+    <requirements>
+        <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+        <componentlibrary>PettersComponentLibrary</componentlibrary>
+    </requirements>
+    <system typename="Subsystem" name="SignalStateMonitorTest">
+        <simulationtime stop="15" timestep="0.001" start="0" inherit_timestep="true"/>
+        <aliases/>
+        <parameters/>
+        <hopsangui>
+            <pose x="0" y="0" flipped="false" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2483.5" y="2516.5" zoom="1"/>
+            <ports hidden="1"/>
+            <names hidden="0"/>
+            <scriptfile path=""/>
+            <hopsanobjectappearance version="0.3">
+                <modelobject typename="Subsystem" displayname="SignalStateMonitorTest">
+                    <icons>
+                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
+                    </icons>
+                    <ports/>
+                </modelobject>
+            </hopsanobjectappearance>
+            <favoritevariables/>
+            <optimization>
+                <settings>
+                    <niter>100</niter>
+                    <nsearchp>8</nsearchp>
+                    <refcoeff>1.3</refcoeff>
+                    <randfac>0.3</randfac>
+                    <forgfac>0</forgfac>
+                    <functol>1e-05</functol>
+                    <partol>0.0001</partol>
+                    <plot>true</plot>
+                    <savecsv>false</savecsv>
+                    <logpar>false</logpar>
+                </settings>
+                <parameters/>
+                <objectives/>
+            </optimization>
+        </hopsangui>
+        <objects>
+            <component typename="SignalSink" name="Sink">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2580" y="2621" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalHP1Filter" name="First order high pass filter">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                    <parameter value="10" type="double" name="omega"/>
+                    <parameter value="-1.5e+300" type="double" name="y_min"/>
+                    <parameter value="1.5e+300" type="double" name="y_max"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2332" y="2318" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalStateMonitor" name="SignalStateMonitor">
+                <parameters>
+                    <parameter value="0" type="double" name="Ps1::Value"/>
+                    <parameter value="0" type="double" name="Py1f::Value"/>
+                    <parameter value="0" type="double" name="Py2f::Value"/>
+                    <parameter value="0" type="double" name="Py3f::Value"/>
+                    <parameter value="0.02" type="double" name="y10"/>
+                    <parameter value="0.02" type="double" name="y20"/>
+                    <parameter value="0.02" type="double" name="y30"/>
+                    <parameter value="1" type="double" name="thau"/>
+                    <parameter value="0" type="double" name="y1"/>
+                    <parameter value="0" type="double" name="y2"/>
+                    <parameter value="0" type="double" name="y3"/>
+                    <parameter value="0" type="double" name="sOn"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2485" y="2529" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalPulse" name="Pulse">
+                <parameters>
+                    <parameter value="0" type="double" name="y_0"/>
+                    <parameter value="1" type="double" name="t_start"/>
+                    <parameter value="2" type="double" name="t_end"/>
+                    <parameter value="1" type="double" name="y_A"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2164" y="2466" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalHP1Filter" name="First order high pass filter_1">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                    <parameter value="10" type="double" name="omega"/>
+                    <parameter value="-1.5e+300" type="double" name="y_min"/>
+                    <parameter value="1.5e+300" type="double" name="y_max"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2334" y="2391" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalHP1Filter" name="First order high pass filter_2">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                    <parameter value="10" type="double" name="omega"/>
+                    <parameter value="-1.5e+300" type="double" name="y_min"/>
+                    <parameter value="1.5e+300" type="double" name="y_max"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2336" y="2466" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalPulse" name="Pulse_1">
+                <parameters>
+                    <parameter value="0" type="double" name="y_0"/>
+                    <parameter value="3" type="double" name="t_start"/>
+                    <parameter value="4" type="double" name="t_end"/>
+                    <parameter value="-1" type="double" name="y_A"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2162" y="2391" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalPulse" name="Pulse_2">
+                <parameters>
+                    <parameter value="0" type="double" name="y_0"/>
+                    <parameter value="5" type="double" name="t_start"/>
+                    <parameter value="6" type="double" name="t_end"/>
+                    <parameter value="1" type="double" name="y_A"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2164" y="2318" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalPulse" name="Pulse_3">
+                <parameters>
+                    <parameter value="0" type="double" name="y_0"/>
+                    <parameter value="11" type="double" name="t_start"/>
+                    <parameter value="12" type="double" name="t_end"/>
+                    <parameter value="1" type="double" name="y_A"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2162" y="2242" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+        </objects>
+        <connections>
+            <connect endport="in_right" endcomponent="Sink" startport="Ps1" startcomponent="SignalStateMonitor">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2440.30000000000018189894" y="2554.50000000000000000000"/>
+                        <coordinate x="2440.30000000000018189894" y="2667.00000000000000000000"/>
+                        <coordinate x="2621.00000000000000000000" y="2667.00000000000000000000"/>
+                        <coordinate x="2621.00000000000000000000" y="2621.00000000000000000000"/>
+                        <coordinate x="2600.00000000000000000000" y="2621.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink" startport="Py1f" startcomponent="SignalStateMonitor">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2470.09999999999990905053" y="2554.50000000000000000000"/>
+                        <coordinate x="2470.09999999999990905053" y="2621.00000000000000000000"/>
+                        <coordinate x="2560.00000000000000000000" y="2621.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink" startport="Py2f" startcomponent="SignalStateMonitor">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2499.90000000000009094947" y="2554.50000000000000000000"/>
+                        <coordinate x="2499.90000000000009094947" y="2621.00000000000000000000"/>
+                        <coordinate x="2560.00000000000000000000" y="2621.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink" startport="Py3f" startcomponent="SignalStateMonitor">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2529.69999999999981810106" y="2554.50000000000000000000"/>
+                        <coordinate x="2529.69999999999981810106" y="2621.00000000000000000000"/>
+                        <coordinate x="2560.00000000000000000000" y="2621.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Py1" endcomponent="SignalStateMonitor" startport="out" startcomponent="First order high pass filter_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2361.00000000000000000000" y="2466.00000000000000000000"/>
+                        <coordinate x="2440.30000000000018189894" y="2466.00000000000000000000"/>
+                        <coordinate x="2440.30000000000018189894" y="2503.50000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Py2" endcomponent="SignalStateMonitor" startport="out" startcomponent="First order high pass filter_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2359.00000000000000000000" y="2391.00000000000000000000"/>
+                        <coordinate x="2470.09999999999990905053" y="2391.00000000000000000000"/>
+                        <coordinate x="2470.09999999999990905053" y="2503.50000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Py3" endcomponent="SignalStateMonitor" startport="out" startcomponent="First order high pass filter">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2357.00000000000000000000" y="2318.00000000000000000000"/>
+                        <coordinate x="2499.90000000000009094947" y="2318.00000000000000000000"/>
+                        <coordinate x="2499.90000000000009094947" y="2503.50000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="First order high pass filter" startport="out" startcomponent="Pulse_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2176.50000000000000000000" y="2318.00000000000000000000"/>
+                        <coordinate x="2287.00000000000000000000" y="2318.00000000000000000000"/>
+                        <coordinate x="2287.00000000000000000000" y="2318.00000000000000000000"/>
+                        <coordinate x="2307.00000000000000000000" y="2318.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="First order high pass filter_1" startport="out" startcomponent="Pulse_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2174.50000000000000000000" y="2391.00000000000000000000"/>
+                        <coordinate x="2289.00000000000000000000" y="2391.00000000000000000000"/>
+                        <coordinate x="2289.00000000000000000000" y="2391.00000000000000000000"/>
+                        <coordinate x="2309.00000000000000000000" y="2391.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="First order high pass filter_2" startport="out" startcomponent="Pulse">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2176.50000000000000000000" y="2466.00000000000000000000"/>
+                        <coordinate x="2291.00000000000000000000" y="2466.00000000000000000000"/>
+                        <coordinate x="2291.00000000000000000000" y="2466.00000000000000000000"/>
+                        <coordinate x="2311.00000000000000000000" y="2466.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="PsOn" endcomponent="SignalStateMonitor" startport="out" startcomponent="Pulse_3">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2174.50000000000000000000" y="2242.00000000000000000000"/>
+                        <coordinate x="2529.69999999999981810106" y="2242.00000000000000000000"/>
+                        <coordinate x="2529.69999999999981810106" y="2503.50000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>

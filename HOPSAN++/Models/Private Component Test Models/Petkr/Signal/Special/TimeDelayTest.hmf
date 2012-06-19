@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3872" hopsancoreversion="0.5.x_r3882">
+    <requirements>
+        <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+        <componentlibrary>PettersComponentLibrary</componentlibrary>
+    </requirements>
+    <system typename="Subsystem" name="TimeDelayTest">
+        <simulationtime stop="3" timestep="0.001" start="0" inherit_timestep="true"/>
+        <aliases/>
+        <parameters/>
+        <hopsangui>
+            <pose x="0" y="0" flipped="false" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2502" y="2501" zoom="1"/>
+            <ports hidden="1"/>
+            <names hidden="0"/>
+            <scriptfile path=""/>
+            <hopsanobjectappearance version="0.3">
+                <modelobject typename="Subsystem" displayname="TimeDelayTest">
+                    <icons>
+                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
+                    </icons>
+                    <ports/>
+                </modelobject>
+            </hopsanobjectappearance>
+            <favoritevariables/>
+            <optimization>
+                <settings>
+                    <niter>100</niter>
+                    <nsearchp>8</nsearchp>
+                    <refcoeff>1.3</refcoeff>
+                    <randfac>0.3</randfac>
+                    <forgfac>0</forgfac>
+                    <functol>1e-05</functol>
+                    <partol>0.0001</partol>
+                    <plot>true</plot>
+                    <savecsv>false</savecsv>
+                    <logpar>false</logpar>
+                </settings>
+                <parameters/>
+                <objectives/>
+            </optimization>
+            <hopsanundo>
+                <post number="-1"/>
+                <post number="0"/>
+                <post number="1">
+                    <stuff what="addedobject">
+                        <component typename="SignalTimeDelay" name="Time Delay">
+                            <parameters>
+                                <parameter value="1" name="deltat"/>
+                                <parameter value="0" name="out::Value"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2419" y="2545" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="2">
+                    <stuff what="movedobject" name="Time Delay">
+                        <oldpos>2399 2532.5</oldpos>
+                        <newpos>2396 2509.5</newpos>
+                    </stuff>
+                </post>
+                <post number="3">
+                    <stuff what="addedobject">
+                        <component typename="SignalSink" name="Sink">
+                            <parameters/>
+                            <hopsangui>
+                                <pose x="2561" y="2530" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="4">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Time Delay">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2436.00000000000000000000" y="2530.00000000000000000000"/>
+                                    <coordinate x="2548.50000000000000000000" y="2530.00000000000000000000"/>
+                                    <coordinate x="2548.50000000000000000000" y="2530.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="5">
+                    <stuff what="addedobject">
+                        <component typename="SignalStep" name="Step">
+                            <parameters>
+                                <parameter value="0" name="y_0"/>
+                                <parameter value="1" name="y_A"/>
+                                <parameter value="1" name="t_step"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2245" y="2527" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="6">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Time Delay" startport="out" startcomponent="Step">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2257.50000000000000000000" y="2530.00000000000000000000"/>
+                                    <coordinate x="2376.00000000000000000000" y="2530.00000000000000000000"/>
+                                    <coordinate x="2376.00000000000000000000" y="2530.00000000000000000000"/>
+                                    <coordinate x="2396.00000000000000000000" y="2530.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="7" type="changedparameters">
+                    <stuff newvalue="1" what="changedparameter" oldvalue="0" parametername="y_0" objectname="Step"/>
+                </post>
+                <post number="8">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Step">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2257.50000000000000000000" y="2530.00000000000000000000"/>
+                                    <coordinate x="2336.00000000000000000000" y="2530.00000000000000000000"/>
+                                    <coordinate x="2336.00000000000000000000" y="2569.00000000000000000000"/>
+                                    <coordinate x="2499.00000000000000000000" y="2569.00000000000000000000"/>
+                                    <coordinate x="2499.00000000000000000000" y="2530.00000000000000000000"/>
+                                    <coordinate x="2541.00000000000000000000" y="2530.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="9">
+                    <stuff what="addedtextboxwidget" index="0">
+                        <textboxwidget>
+                            <hopsangui>
+                                <pose x="2287.000000" y="2389.000000"/>
+                                <textobject fontcolor="#556b2f" text="Text" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                                <size width="100.000000" height="100.000000"/>
+                                <line width="2.000000" visible="1" style="solidline"/>
+                            </hopsangui>
+                        </textboxwidget>
+                    </stuff>
+                </post>
+                <post number="10">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2287 2389</oldpos>
+                        <newpos>2278 2389</newpos>
+                    </stuff>
+                </post>
+                <post number="11">
+                    <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="1" linestyle="solidline" linestyle_old="solidline" index="0" text_old="Text" font_old="Calibri,12,-1,5,50,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Component test of time delay" font="Calibri,16,-1,5,75,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
+                <post number="12">
+                    <stuff h_new="38.000000" what="resizedtextboxwidget" w_old="268.000000" h_old="100.000000" index="0" w_new="268.000000">
+                        <oldpos>2278 2389</oldpos>
+                        <newpos>2278 2389</newpos>
+                    </stuff>
+                </post>
+                <post number="13">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2278 2389</oldpos>
+                        <newpos>2283 2423</newpos>
+                    </stuff>
+                </post>
+            </hopsanundo>
+        </hopsangui>
+        <objects>
+            <component typename="SignalSink" name="Sink">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2561" y="2530" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalTimeDelay" name="Time Delay">
+                <parameters>
+                    <parameter value="1" type="double" name="deltat"/>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2416" y="2530" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalStep" name="Step">
+                <parameters>
+                    <parameter value="1" type="double" name="y_0"/>
+                    <parameter value="1" type="double" name="y_A"/>
+                    <parameter value="1" type="double" name="t_step"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2245" y="2530" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2283.000000" y="2423.000000"/>
+                    <textobject fontcolor="#556b2f" text="Component test of time delay" font="Calibri,16,-1,5,75,0,0,0,0,0"/>
+                    <size width="268.000000" height="38.000000"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
+        </objects>
+        <connections>
+            <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Time Delay">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2436.00000000000000000000" y="2530.00000000000000000000"/>
+                        <coordinate x="2541.00000000000000000000" y="2530.00000000000000000000"/>
+                        <coordinate x="2541.00000000000000000000" y="2530.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Time Delay" startport="out" startcomponent="Step">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2257.50000000000000000000" y="2530.00000000000000000000"/>
+                        <coordinate x="2376.00000000000000000000" y="2530.00000000000000000000"/>
+                        <coordinate x="2376.00000000000000000000" y="2530.00000000000000000000"/>
+                        <coordinate x="2396.00000000000000000000" y="2530.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Step">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2257.50000000000000000000" y="2530.00000000000000000000"/>
+                        <coordinate x="2336.00000000000000000000" y="2530.00000000000000000000"/>
+                        <coordinate x="2336.00000000000000000000" y="2569.00000000000000000000"/>
+                        <coordinate x="2499.00000000000000000000" y="2569.00000000000000000000"/>
+                        <coordinate x="2499.00000000000000000000" y="2530.00000000000000000000"/>
+                        <coordinate x="2541.00000000000000000000" y="2530.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>
