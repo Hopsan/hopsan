@@ -58,7 +58,7 @@ SystemContainer::SystemContainer(ProjectTab *parentProjectTab, QGraphicsItem *pP
     this->mSaveUndoStack = false;       //Do not save undo stack by default
 }
 
-SystemContainer::~SystemContainer()
+void SystemContainer::deleteInHopsanCore()
 {
     this->setUndoEnabled(false, true); //The last true means DONT ASK
     //qDebug() << ",,,,,,,,,,,,,,,,,,,,,,,,,GUISystem destructor";

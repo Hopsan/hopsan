@@ -67,7 +67,8 @@ public:
     void addReplacement(QString type1, QString type2);
     QStringList getReplacements(QString type);
 
-    ModelObjectAppearance *getAppearanceData(QString componentType);
+    ModelObjectAppearance *getAppearanceData(const QString fullCompType);
+    ModelObjectAppearance *getAppearanceData(const QString compType, const QString compSubType);
     QSize sizeHint() const;
 
     graphicsType mGfxType;
@@ -81,6 +82,7 @@ public slots:
     void setGfxType(graphicsType gfxType);
     void setListView();
     void setDualView();
+    void clearHoverEffects();
 
 protected:
     virtual void contextMenuEvent(QContextMenuEvent *event);
@@ -91,10 +93,8 @@ private slots:
     void initializeDrag(QListWidgetItem* item);
     void initializeDrag(QTreeWidgetItem* item, int dummy);
 
-public slots:
-    void clearHoverEffects();
-
 private:
+    void initializeDragCommon();
     void loadLibraryFolder(QString libDir, const QString libRootDir, const bool doRecurse, LibraryContentsTree *pParentTree=0);
     void updateLibraryFolder(LibraryContentsTree /**pTree*/);
     void unLoadLibrarySubTree(LibraryContentsTree *pTree);
@@ -157,7 +157,7 @@ public:
     LibraryContentsTree *findChildByName(QString name);
     LibraryContentsTree *findChildByPath(QString path);
     LibraryComponent *addComponent(ModelObjectAppearance *pAppearanceData);
-    LibraryComponent *findComponent(QString typeName);
+    LibraryComponent *findComponent(const QString type, const QString subType);
 
     QString mName;
     QString mLibDir;
@@ -165,23 +165,6 @@ public:
     QVector<LibraryContentsTree *> mChildNodesPtrs;
     QVector<LibraryComponent *> mComponentPtrs;
     LibraryContentsTree* mpParent;
-
-};
-
-
-class LibraryComponent
-{
-public:
-    LibraryComponent(ModelObjectAppearance *pAppearanceData);
-    QIcon getIcon(graphicsType gfxType);
-    QString getName();
-    QString getTypeName();
-    ModelObjectAppearance *getAppearanceData();
-
-private:
-    ModelObjectAppearance *mpAppearanceData;
-    QIcon mUserIcon;
-    QIcon mIsoIcon;
 };
 
 #endif // LIBRARYWIDGET_H

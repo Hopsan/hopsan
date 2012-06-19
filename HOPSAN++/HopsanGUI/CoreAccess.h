@@ -51,7 +51,7 @@ public:
 class CoreMessagesAccess
 {
 public:
-    size_t getNumberOfMessages();
+    unsigned int getNumberOfMessages();
     void getMessage(QString &rMessage, QString &rType, QString &rTag);
 };
 
@@ -89,7 +89,11 @@ public:
     // Name and type functions
     //! @todo maybe we should use name="" (empty) to indicate root system instead, to cut down on the number of functions
     QString getSystemTypeCQS();
-    QString getSubComponentTypeCQS(QString componentName);
+    QString getSubComponentTypeCQS(const QString componentName);
+
+    // Commented by Peter, maybe should be used in the future
+    // QString getSubComponentSubTypeName(const QString componentName) const;
+    // void setSubComponentSubTypeName(const QString componentName, const QString subTypeName);
 
     QString setSystemName(QString name);
     QString getSystemName();

@@ -105,6 +105,7 @@ void verifyConfigurationCompatibility(QDomElement &rConfigElement);
 
 #define HMF_NAMETAG "name"
 #define HMF_TYPENAME "typename"
+#define HMF_SUBTYPENAME "subtypename"
 #define HMF_CQSTYPETAG "cqs_type"
 #define HMF_TYPE "type"
 

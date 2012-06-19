@@ -477,9 +477,9 @@ void ContainerObject::renameExternalPort(const QString oldName, const QString ne
 
 
 //! @brief Helper function that allows calling addGUIModelObject with typeName instead of appearance data
-ModelObject* ContainerObject::addModelObject(QString typeName, QPointF position, qreal rotation, selectionStatus startSelected, nameVisibility nameStatus, undoStatus undoSettings)
+ModelObject* ContainerObject::addModelObject(QString fullTypeName, QPointF position, qreal rotation, selectionStatus startSelected, nameVisibility nameStatus, undoStatus undoSettings)
 {
-    ModelObjectAppearance *pAppearanceData = gpMainWindow->mpLibrary->getAppearanceData(typeName);
+    ModelObjectAppearance *pAppearanceData = gpMainWindow->mpLibrary->getAppearanceData(fullTypeName);
     if(!pAppearanceData)    //Not an existing component
         return 0;       //No error message here, it depends on from where this function is called
     else
@@ -581,7 +581,7 @@ TextBoxWidget *ContainerObject::addTextBoxWidget(QPointF position, undoStatus un
 //! Works for both text and box widgets
 //! @param pWidget Pointer to widget to remove
 //! @param undoSettings Tells whether or not this shall be registered in undo stack
-void ContainerObject::removeWidget(Widget *pWidget, undoStatus undoSettings)
+void ContainerObject::deleteWidget(Widget *pWidget, undoStatus undoSettings)
 {
     if(undoSettings == UNDO)
     {
@@ -591,7 +591,7 @@ void ContainerObject::removeWidget(Widget *pWidget, undoStatus undoSettings)
 
     mSelectedWidgetsList.removeAll(pWidget);
     mWidgetMap.remove(pWidget->getWidgetIndex());
-    delete(pWidget);
+    pWidget->deleteLater();
 }
 
 
@@ -632,7 +632,8 @@ void ContainerObject::deleteModelObject(QString objectName, undoStatus undoSetti
         mModelObjectMap.erase(it);
         mSelectedModelObjectsList.removeOne(obj_ptr);
         mpScene->removeItem(obj_ptr);
-        delete(obj_ptr);
+        obj_ptr->deleteInHopsanCore();
+        obj_ptr->deleteLater();
     }
     else
     {

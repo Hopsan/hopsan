@@ -79,7 +79,7 @@ void CoreLibraryAccess::getLoadedLibNames(QVector<QString> &rLibNames)
 }
 
 
-size_t CoreMessagesAccess::getNumberOfMessages()
+unsigned int CoreMessagesAccess::getNumberOfMessages()
 {
     return hopsan::HopsanEssentials::getInstance()->checkMessage();
 }
@@ -231,13 +231,32 @@ QString CoreSystemAccess::getSystemTypeCQS()
     return QString::fromStdString(mpCoreComponentSystem->getTypeCQSString());
 }
 
-QString CoreSystemAccess::getSubComponentTypeCQS(QString componentName)
+QString CoreSystemAccess::getSubComponentTypeCQS(const QString componentName)
 {
     //qDebug() << "getSubComponentTypeCQS: " << componentName << " in " << QString::fromStdString(mpCoreComponentSystem->getName());
     QString ans = QString::fromStdString(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getTypeCQSString());
     //qDebug() << "cqs answer: " << ans;
     return ans;
 }
+
+// Commented by Peter, maybe should be used in the future
+//QString CoreSystemAccess::getSubComponentSubTypeName(const QString componentName) const
+//{
+//    hopsan::Component *pComp = mpCoreComponentSystem->getSubComponent(componentName.toStdString());
+//    if (pComp)
+//    {
+//        return QString::fromStdString(pComp->getSubTypeName());
+//    }
+//    return QString();
+//}
+//void CoreSystemAccess::setSubComponentSubTypeName(const QString componentName, const QString subTypeName)
+//{
+//    hopsan::Component *pComp = mpCoreComponentSystem->getSubComponent(componentName.toStdString());
+//    if (pComp)
+//    {
+//        pComp->setSubTypeName(subTypeName.toStdString());
+//    }
+//}
 
 
 QString CoreSystemAccess::setSystemName(QString name)

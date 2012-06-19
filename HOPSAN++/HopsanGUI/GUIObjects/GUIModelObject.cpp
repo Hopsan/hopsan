@@ -117,6 +117,11 @@ ModelObject::~ModelObject()
     emit objectDeleted();
 }
 
+void ModelObject::deleteInHopsanCore()
+{
+    //Needs to be overloaded
+}
+
 void ModelObject::setParentContainerObject(ContainerObject *pParentContainer)
 {
     WorkspaceObject::setParentContainerObject(pParentContainer);
@@ -786,6 +791,11 @@ void ModelObject::saveCoreDataToDomElement(QDomElement &rDomElement)
 
 QDomElement ModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
 {
+    if (!getSubTypeName().isEmpty())
+    {
+        rDomElement.setAttribute(HMF_SUBTYPENAME, getSubTypeName());
+    }
+
     //Save GUI realted stuff
     QDomElement xmlGuiStuff = appendDomElement(rDomElement,HMF_HOPSANGUITAG);
 
@@ -1317,6 +1327,31 @@ QString ModelObject::getTypeName()
 {
     assert(false);
     return "";
+}
+
+//! @brief Returns this modelobjects subtype
+//! @todo maybe we should overload this in systems so that the parent can ask itself (usefull in root systems)
+QString ModelObject::getSubTypeName() const
+{
+//    if (mpParentContainerObject)
+//    {
+//        //! @todo should we really sync this info with core, core do not really care right now
+//        return mpParentContainerObject->getCoreSystemAccessPtr()->getSubComponentSubTypeName(mName);
+//    }
+//    return QString();
+    return mModelObjectAppearance.getSubTypeName();
+}
+
+//! @brief Set this modelobjects subtype
+//! @todo maybe we should overload this in systems so that the parent can set itself (usefull in root systems)
+void ModelObject::setSubTypeName(const QString subTypeName)
+{
+//    if (mpParentContainerObject)
+//    {
+//        //! @todo should we really sync this info with core, core do not really care right now
+//        mpParentContainerObject->getCoreSystemAccessPtr()->setSubComponentSubTypeName(mName, subTypeName);
+//    }
+    mModelObjectAppearance.setSubTypeName(subTypeName);
 }
 
 

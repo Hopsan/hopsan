@@ -53,6 +53,7 @@ Component::Component()
 {
     // Set initial values, they will be overwritten soon, but good for debugging
     mTypeName = "NoTypeNameSetYet";
+    mSubTypeName = "";
     mName = "NoNameSetYet";
 
     mTimestep = 0.001;
@@ -258,25 +259,36 @@ string Component::getTypeCQSString() const
 }
 
 
-//! @brief Get the type name of the component
+//! @brief Get the TypeName of the component
 const string Component::getTypeName() const
 {
     return mTypeName;
 }
 
+//! @brief Get the SubType name of the component
+const string Component::getSubTypeName() const
+{
+    return mSubTypeName;
+}
+
+//! @brief Set the SubType name of the component
+void Component::setSubTypeName(const string subTypeName)
+{
+    mSubTypeName = subTypeName;
+}
+
 
 //! @brief Terminate/stop a running simulation
-//!
-//! Typically used inside components simulateOneTimestep method
+//! @details Typically used inside components simulateOneTimestep method
 void Component::stopSimulation()
 {
-    #ifdef USETBB
+#ifdef USETBB
     mpSystemParent->mpStopMutex->lock();
-    #endif
     this->getSystemParent()->stopSimulation();
-    #ifdef USETBB
     mpSystemParent->mpStopMutex->unlock();
-    #endif
+#else
+    this->getSystemParent()->stopSimulation();
+#endif
 }
 
 //void Component::registerDynamicParameter(const std::string name, const std::string description, const std::string unit, double &rValue)

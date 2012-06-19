@@ -34,7 +34,7 @@
 #include "GUIPort.h"
 
 #include "Widgets/MessageWidget.h"
-//#include "Widgets/ProjectTabWidget.h"
+
 #include "Widgets/SystemParametersWidget.h"
 #include "Widgets/LibraryWidget.h"
 
@@ -207,6 +207,11 @@ void ComponentPropertiesDialog::createEditStuff()
     pNameLayout->addWidget(pNameLabel,0,0);
     pNameLayout->addWidget(mpNameEdit,0,1);
     pNameLayout->addWidget(pTypeNameLabel,1,0,1,2);
+    if (!mpComponent->getSubTypeName().isEmpty())
+    {
+        QLabel *pSubTypeNameLabel = new QLabel("SubType Name: \"" + mpComponent->getSubTypeName() + "\"", this);
+        pNameLayout->addWidget(pSubTypeNameLabel,2,0,1,2);
+    }
 
     QGridLayout *mainLayout = new QGridLayout();
     //mainLayout->setSizeConstraint(QLayout::SetFixedSize);

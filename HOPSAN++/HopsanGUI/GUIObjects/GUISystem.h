@@ -86,7 +86,7 @@ class SystemContainer : public ContainerObject
 public:
     SystemContainer(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS);
     SystemContainer(ProjectTab *parentProjectTab, QGraphicsItem *pParent);
-    ~SystemContainer();
+    void deleteInHopsanCore();
 
     double getTimeStep();
     bool doesInheritTimeStep();

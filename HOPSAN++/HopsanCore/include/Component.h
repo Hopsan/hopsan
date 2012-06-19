@@ -78,6 +78,8 @@ public:
     void setName(std::string name, bool doOnlyLocalRename=false);
     const std::string getName() const;
     const std::string getTypeName() const;
+    const std::string getSubTypeName() const;
+    void setSubTypeName(const std::string subTypeName);
     CQSEnumT getTypeCQS() const;
     std::string getTypeCQSString() const;
 
@@ -190,6 +192,7 @@ private:
     //Private member variables
     std::string mName;
     std::string mTypeName;
+    std::string mSubTypeName;
     Parameters *mpParameters;
     PortPtrMapT mPortPtrMap;
     double mMeasuredTime;

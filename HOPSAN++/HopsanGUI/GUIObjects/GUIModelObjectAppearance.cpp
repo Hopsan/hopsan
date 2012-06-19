@@ -34,6 +34,7 @@
 
 // ========== Defines for load/save common strings ==========
 #define CAF_TYPENAME "typename"
+#define CAF_SUBTYPENAME "subtypename"
 #define CAF_TYPE "type"
 #define CAF_DISPLAYNAME "displayname"
 #define CAF_NAME "name"
@@ -56,7 +57,7 @@
 
 #define CAF_REPLACABLES "replacables"
 #define CAF_REPLACABLE "replacable"
-#define CAF_TYPENAME "typename"
+
 
 // =============== Help Functions ===============
 QDomElement appendOrGetCAFRootTag(QDomElement parentElement)
@@ -258,14 +259,19 @@ ModelObjectAppearance::ModelObjectAppearance()
 
 //! @brief get the type-name
 //! @returns The type-name
-QString ModelObjectAppearance::getTypeName()
+QString ModelObjectAppearance::getTypeName() const
 {
     return mTypeName;
 }
 
+QString ModelObjectAppearance::getSubTypeName() const
+{
+    return mSubTypeName;
+}
+
 //! @brief get the display name, even if it is empty
 //! @returns The display name
-QString ModelObjectAppearance::getDisplayName()
+QString ModelObjectAppearance::getDisplayName() const
 {
     return mDisplayName;
 }
@@ -273,7 +279,7 @@ QString ModelObjectAppearance::getDisplayName()
 //! @brief This function returns the name or typename (if name is empty)
 //! Useful if display name has not been specified, then we use the type name
 //! @returns A non-empty name
-QString ModelObjectAppearance::getNonEmptyName()
+QString ModelObjectAppearance::getNonEmptyName() const
 {
     if (mDisplayName.isEmpty())
     {
@@ -286,13 +292,13 @@ QString ModelObjectAppearance::getNonEmptyName()
 }
 
 
-QString ModelObjectAppearance::getHelpPicture()
+QString ModelObjectAppearance::getHelpPicture() const
 {
     return mHelpPicture;
 }
 
 
-QString ModelObjectAppearance::getHelpText()
+QString ModelObjectAppearance::getHelpText() const
 {
     return mHelpText;
 }
@@ -484,7 +490,7 @@ void ModelObjectAppearance::addPortAppearance(const QString portName, PortAppear
 }
 
 //! @brief Get the base path that all icon paths are relative
-QString ModelObjectAppearance::getBasePath()
+QString ModelObjectAppearance::getBasePath() const
 {
     return mBasePath;
 }
@@ -493,6 +499,7 @@ QString ModelObjectAppearance::getBasePath()
 void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
 {
     mTypeName       = domElement.attribute(CAF_TYPENAME, mTypeName);
+    mSubTypeName    = domElement.attribute(CAF_SUBTYPENAME, "");
     mDisplayName    = domElement.attribute(CAF_DISPLAYNAME, mDisplayName);
 
     //Use typename if displayname not set
@@ -650,6 +657,10 @@ QDomElement ModelObjectAppearance::addModelObjectRootElement(QDomElement parentD
     QDomElement more = getOrAppendNewDomElement(parentDomElement, CAF_MODELOBJECT);
     more.setAttribute(CAF_TYPENAME, mTypeName);
     more.setAttribute(CAF_DISPLAYNAME, mDisplayName);
+    if (!mSubTypeName.isEmpty())
+    {
+        more.setAttribute(CAF_SUBTYPENAME, mSubTypeName);
+    }
     return more;
 }
 
@@ -752,25 +763,31 @@ void ModelObjectAppearance::saveToXMLFile(QString filename)
 
 
 //! @brief Access method to manually set the TypeName
-void ModelObjectAppearance::setTypeName(QString name)
+void ModelObjectAppearance::setTypeName(const QString type)
 {
-    mTypeName = name;
+    mTypeName = type;
+}
+
+//! @brief Access method to manually set the SubTypeName
+void ModelObjectAppearance::setSubTypeName(const QString subtype)
+{
+    mSubTypeName = subtype;
 }
 
 //! @brief Access method to manually set the Name
-void ModelObjectAppearance::setDisplayName(QString name)
+void ModelObjectAppearance::setDisplayName(const QString name)
 {
     mDisplayName = name;
 }
 
 //! @brief Access method to manually set the HelpText
-void ModelObjectAppearance::setHelpText(QString text)
+void ModelObjectAppearance::setHelpText(const QString text)
 {
     mHelpText = text;
 }
 
 //! @brief Access method to manually set the BaseIconPath
-void ModelObjectAppearance::setBasePath(QString path)
+void ModelObjectAppearance::setBasePath(const QString path)
 {
     mBasePath = path;
     setRelativePathFromAbsolute(); //Reset relative path to new basepath

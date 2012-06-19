@@ -53,7 +53,7 @@ Information about the component for the graphical interface, such as icon, port 
 \verbatim
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.3">
-  <modelobject typename="HydraulicLaminarOrifice" displayname="Laminar Orifice">
+  <modelobject typename="HydraulicLaminarOrifice" subtypename="Orifice1" displayname="Laminar Orifice">
     <icons>
       <icon type="iso" path="laminarorifice_iso.svg" iconrotation="ON" scale="1.0"/>
       <icon type="user" path="laminarorifice_user.svg" iconrotation="ON" scale="1.0"/>
@@ -79,6 +79,7 @@ The first line contains basic information about the XML code, and should always 
   - \b version Should always be 0.3 with this XML layout
 - \b modelobject Main tag for the component
   - \b typename Name of the component as registered in the simulation core, see \link writing-components Writing Components \endlink. (Required)
+  - \b subtypename Specific version of a typename component, if you have multiple appearance files for the same component code. (Optional)
   - \b displayname Name for the component shown in the graphical interface. (If omitted typename will be used)
 - \b icons Contains information about icons. At least one type, user or iso is required.
   - \b type The icon type, \e user or \e iso (ISO 1219)

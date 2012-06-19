@@ -42,6 +42,7 @@ class ModelObject : public WorkspaceObject
 public:
     ModelObject(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType graphics = USERGRAPHICS, ContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
     virtual ~ModelObject();
+    virtual void deleteInHopsanCore();
 
     virtual void setParentContainerObject(ContainerObject *pParentContainer);
 
@@ -50,6 +51,8 @@ public:
     virtual QString getName();
     virtual void refreshDisplayName(const QString overrideName="");
     virtual QString getTypeName();
+    QString getSubTypeName() const;
+    void setSubTypeName(const QString subTypeName);
     virtual int getNameTextPos();
     virtual void setNameTextPos(int textPos);
 

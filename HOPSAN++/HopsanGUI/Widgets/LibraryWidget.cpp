@@ -43,8 +43,46 @@ using namespace hopsan;
 
 //! @todo Make "External Libraries" a reserved word
 
-// Forward declarations
-class LibraryComponent;
+//! @brief Helpfunction to split full typename into type and subtype
+void splitFullTypeString(const QString str, QString &rType, QString &rSubType)
+{
+    rType.clear(); rSubType.clear();
+    QStringList list = str.split("|");
+    rType = list[0];
+    if (list.size()>1)
+    {
+        rSubType = list[1];
+    }
+}
+
+//! @brief Helpfunction to create full typename from type and subtype
+//! @returns The full typename type|subtype, or type is subtype was empty
+QString makeFullTypeString(const QString &rType, const QString &rSubType)
+{
+    if (rSubType.isEmpty())
+    {
+        return rType;
+    }
+    else
+    {
+       return rType+"|"+rSubType;
+    }
+}
+
+class LibraryComponent
+{
+public:
+    LibraryComponent(ModelObjectAppearance *pAppearanceData);
+    QIcon getIcon(graphicsType gfxType);
+    QString getName();
+    QString getFullTypeName();
+    ModelObjectAppearance *getAppearanceData();
+
+private:
+    ModelObjectAppearance *mpAppearanceData;
+    QIcon mUserIcon;
+    QIcon mIsoIcon;
+};
 
 //! @brief Constructor for the library widget
 //! @param parent Pointer to the parent (main window)
@@ -365,12 +403,12 @@ void LibraryWidget::initializeDrag(QListWidgetItem *item)
     if(!mListItemToContentsMap.contains(item)) return;      //Do nothing if item does not exist in map (= not a component)
 
     //Fetch type name and icon from component in the contents tree
-    QString typeName = mListItemToContentsMap.find(item).value()->getTypeName();
+    QString fullTypeName = mListItemToContentsMap.find(item).value()->getFullTypeName();
     QIcon icon = mListItemToContentsMap.find(item).value()->getIcon(mGfxType);
 
     //Create the mimedata (text with type name)
     QMimeData *mimeData = new QMimeData;
-    mimeData->setText(typeName);
+    mimeData->setText(fullTypeName);
 
     //Initiate the drag operation
     QDrag *drag = new QDrag(this);
@@ -391,12 +429,12 @@ void LibraryWidget::initializeDrag(QTreeWidgetItem *item, int /*dummy*/)
     if(!mTreeItemToContentsMap.contains(item)) return;      //Do nothing if item does not exist in map (= not a component)
 
     //Fetch type name and icon from component in the contents tree
-    QString typeName = mTreeItemToContentsMap.find(item).value()->getTypeName();
+    QString fullTypeName = mTreeItemToContentsMap.find(item).value()->getFullTypeName();
     QIcon icon = mTreeItemToContentsMap.find(item).value()->getIcon(mGfxType);
 
     //Create the mimedata (text with type name)
     QMimeData *mimeData = new QMimeData;
-    mimeData->setText(typeName);
+    mimeData->setText(fullTypeName);
 
     //Initiate the drag operation
     QDrag *drag = new QDrag(this);
@@ -1946,6 +1984,7 @@ void LibraryWidget::unLoadLibrarySubTree(LibraryContentsTree *pTree)
     gpMainWindow->mpMessageWidget->checkMessages();
 }
 
+
 //! @brief Slot that sets view mode to single tree and redraws the library
 void LibraryWidget::setListView()
 {
@@ -2079,14 +2118,15 @@ void LibraryListWidget::mouseMoveEvent(QMouseEvent *event)
 
 
 //! @brief Retrieves the appearance data for a given type name.
-//! @param componentType Type name of the component
-ModelObjectAppearance *LibraryWidget::getAppearanceData(QString componentType)
+//! @param compType The typename of the component
+//! @param compSubType SubType of the component (if any)
+ModelObjectAppearance *LibraryWidget::getAppearanceData(const QString compType, const QString compSubType)
 {
-    LibraryComponent* pLibComp = mpContentsTree->findComponent(componentType);
+    LibraryComponent* pLibComp = mpContentsTree->findComponent(compType, compSubType);
     if(pLibComp == 0)
     {
         // If we cant find in ordinary tree, then try the secret hidden tree
-        pLibComp = mpSecretHiddenContentsTree->findComponent(componentType);
+        pLibComp = mpSecretHiddenContentsTree->findComponent(compType, compSubType);
         if (pLibComp == 0)
         {
             // Nothing found return NULL ptr
@@ -2095,6 +2135,14 @@ ModelObjectAppearance *LibraryWidget::getAppearanceData(QString componentType)
     }
     // If we found something then return appearance data
     return pLibComp->getAppearanceData();
+}
+
+//! @brief Retrieves the appearance data for a given full type name (type|subtype).
+ModelObjectAppearance *LibraryWidget::getAppearanceData(const QString fullCompType)
+{
+    QString type, subtype;
+    splitFullTypeString(fullCompType, type, subtype);
+    return getAppearanceData(type, subtype);
 }
 
 
@@ -2201,16 +2249,17 @@ LibraryComponent *LibraryContentsTree::addComponent(ModelObjectAppearance *pAppe
 //! @brief Recursively searches the tree to find component with specified typename.
 //! @param typeName Type name to look for
 //! @returns Pointer to the component, or zero if not found.
-LibraryComponent *LibraryContentsTree::findComponent(QString typeName)
+LibraryComponent *LibraryContentsTree::findComponent(const QString type, const QString subType)
 {
+    const QString fullType = makeFullTypeString(type, subType);
     for(int i=0; i<mComponentPtrs.size(); ++i)
     {
-        if(mComponentPtrs.at(i)->getTypeName() == typeName)
+        if(mComponentPtrs.at(i)->getFullTypeName() == fullType)
             return mComponentPtrs.at(i);
     }
     for(int i=0; i<mChildNodesPtrs.size(); ++i)
     {
-        LibraryComponent *retval = mChildNodesPtrs.at(i)->findComponent(typeName);
+        LibraryComponent *retval = mChildNodesPtrs.at(i)->findComponent(type, subType);
         if(retval != 0)
             return retval;
     }
@@ -2261,9 +2310,9 @@ QString LibraryComponent::getName()
 
 
 //! @brief Returns the type name of the component.
-QString LibraryComponent::getTypeName()
+QString LibraryComponent::getFullTypeName()
 {
-    return mpAppearanceData->getTypeName();
+    return makeFullTypeString(mpAppearanceData->getTypeName(), mpAppearanceData->getSubTypeName());
 }
 
 

@@ -130,7 +130,7 @@ public:
     void takeOwnershipOf(QList<ModelObject*> &rModeObjectlist, QList<Widget*> &rWidgetList);
 
     //GUIModelObject methods
-    ModelObject *addModelObject(QString typeName, QPointF position, qreal rotation=0, selectionStatus startSelected = DESELECTED, nameVisibility nameStatus = USEDEFAULT, undoStatus undoSettings = UNDO);
+    ModelObject *addModelObject(QString fullTypeName, QPointF position, qreal rotation=0, selectionStatus startSelected = DESELECTED, nameVisibility nameStatus = USEDEFAULT, undoStatus undoSettings = UNDO);
     ModelObject *addModelObject(ModelObjectAppearance* pAppearanceData, QPointF position, qreal rotation=0, selectionStatus startSelected = DESELECTED, nameVisibility nameStatus = USEDEFAULT, undoStatus undoSettings = UNDO);
     ModelObject *getModelObject(const QString modelObjectName);
     Port *getModelObjectPort(const QString modelObjectName, const QString portName);
@@ -144,7 +144,7 @@ public:
 
     //GUIWidgets methods
     TextBoxWidget *addTextBoxWidget(QPointF position, undoStatus undoSettings=UNDO);
-    void removeWidget(Widget *pWidget, undoStatus undoSettings=UNDO);
+    void deleteWidget(Widget *pWidget, undoStatus undoSettings=UNDO);
     void rememberSelectedWidget(Widget *widget);
     void forgetSelectedWidget(Widget *widget);
     QList<Widget *> getSelectedGUIWidgetPtrs();

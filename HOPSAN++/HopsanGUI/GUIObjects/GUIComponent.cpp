@@ -61,7 +61,7 @@ Component::Component(QPointF position, qreal rotation, ModelObjectAppearance* pA
     }
 }
 
-Component::~Component()
+void Component::deleteInHopsanCore()
 {
     //Remove in core
     //! @todo maybe change to delte instead of remove with dodelete yes

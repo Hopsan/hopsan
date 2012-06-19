@@ -131,12 +131,12 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 
 ProjectTab::~ProjectTab()
 {
-    //qDebug() << "projectTab destructor";
     //First make sure that we go to the top level system, we dont want to be inside a subsystem while it is beeing deleted
     this->mpQuickNavigationWidget->gotoContainerAndCloseSubcontainers(0);
-    //Now delete the root system, all subcontents will be automatically removed by the mpSystem destructor
-    delete mpSystem;
-    delete mpSimulationThreadHandler;
+    //Now delete the root system, first remove in core (will also trigger delete for all sub modelobjects)
+    mpSystem->deleteInHopsanCore();
+    mpSystem->deleteLater();
+    mpSimulationThreadHandler->deleteLater();
 }
 
 void ProjectTab::setTopLevelSimulationTime(const QString startTime, const QString timeStep, const QString stopTime)

@@ -53,12 +53,14 @@ std::string stripFilenameFromPath(std::string filePath)
 void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSystem, HopsanEssentials *pHopsanEssentials)
 {
     string typeName = readStringAttribute(pComponentNode, "typename", "ERROR_NO_TYPE_GIVEN");
-    string displayName =  readStringAttribute(pComponentNode, "name", typeName);
+    string subTypeName = readStringAttribute(pComponentNode, "subtypename", "");
+    string displayName = readStringAttribute(pComponentNode, "name", typeName);
 
     Component *pComp = pHopsanEssentials->createComponent(typeName);
     if (pComp != 0)
     {
         pComp->setName(displayName);
+        pComp->setSubTypeName(subTypeName);
         //cout << "------------------------before add comp: "  << typeName << " " << displayName << " " << pComp->getName() << endl;
         pSystem->addComponent(pComp);
         //cout << "------------------------after add comp: "  << typeName << " " << displayName << " " << pComp->getName() << endl;

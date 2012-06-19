@@ -514,7 +514,7 @@ void TextBoxWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 void TextBoxWidget::deleteMe(undoStatus undoSettings)
 {
-    mpParentContainerObject->removeWidget(this, undoSettings);
+    mpParentContainerObject->deleteWidget(this, undoSettings);
 }
 
 

@@ -92,19 +92,21 @@ class ModelObjectAppearance
 {
 public:
     ModelObjectAppearance();
-    void setTypeName(QString name);
-    void setDisplayName(QString name);
-    void setHelpText(QString text);
-    void setBasePath(QString path);
+    void setTypeName(const QString type);
+    void setSubTypeName(const QString subtype);
+    void setDisplayName(const QString name);
+    void setHelpText(const QString text);
+    void setBasePath(const QString path);
     void setIconPath(const QString path, const graphicsType gfxType, const AbsoluteRelativeT absrel);
     void setIconScale(const qreal scale, const graphicsType gfxType);
 
-    QString getTypeName();
-    QString getDisplayName();
-    QString getNonEmptyName();
-    QString getHelpPicture();
-    QString getHelpText();
-    QString getBasePath();
+    QString getTypeName() const;
+    QString getSubTypeName() const;
+    QString getDisplayName() const;
+    QString getNonEmptyName() const;
+    QString getHelpPicture() const;
+    QString getHelpText() const;
+    QString getBasePath() const;
     QString getFullAvailableIconPath(graphicsType gfxType=USERGRAPHICS);
     QString getIconPath(const graphicsType gfxType, const AbsoluteRelativeT absrel);
     qreal   getIconScale(const graphicsType gfxType=USERGRAPHICS);
@@ -127,6 +129,7 @@ public:
 
 private:
     QString mTypeName;
+    QString mSubTypeName;
     QString mDisplayName;
     QString mHelpPicture;
     QString mHelpText;

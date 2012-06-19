@@ -177,6 +177,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, 
 {
     //Read core specific data
     QString type = rDomElement.attribute(HMF_TYPENAME);
+    QString subtype = rDomElement.attribute(HMF_SUBTYPENAME);
     QString name = rDomElement.attribute(HMF_NAMETAG);
 
     //Read gui specific data
@@ -190,7 +191,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, 
     int nameTextPos = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("position").toInt();
     int nameTextVisible = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("visible").toInt(); //should be bool, +0.5 to roound to int on truncation
 
-    ModelObjectAppearance *pAppearanceData = pLibrary->getAppearanceData(type);
+    ModelObjectAppearance *pAppearanceData = pLibrary->getAppearanceData(type, subtype);
     if (pAppearanceData != 0)
     {
         ModelObjectAppearance appearanceData = *pAppearanceData; //Make a copy
@@ -208,6 +209,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, 
 
         ModelObject* pObj = pContainer->addModelObject(&appearanceData, QPointF(posX, posY), 0, DESELECTED, nameStatus, undoSettings);
         pObj->setNameTextPos(nameTextPos);
+        pObj->setSubTypeName(subtype); //!< @todo is this really needed
 
         //First set flip (before rotate, Important!)
         //! @todo For now If flipped than we need to rotate in wrong direction also, saving saves flipped rotation angle i think but changing save and load would couse old models to load incorrectly

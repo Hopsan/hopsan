@@ -41,7 +41,7 @@ class Component : public ModelObject
 
 public:
     Component(QPointF position, qreal rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS);
-    ~Component();
+    void deleteInHopsanCore();
 
     bool hasPowerPorts();
 

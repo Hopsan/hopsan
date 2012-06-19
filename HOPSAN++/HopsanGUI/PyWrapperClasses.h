@@ -322,6 +322,18 @@ public slots:
         return pObj->getName();
     }
 
+    QString addComponent(MainWindow* o, const QString& name, const QString& typeName, const QString& subTypeName, const int& x, const int& y, const int& rot)
+    {
+        ModelObjectAppearance *pAppearance = o->mpLibrary->getAppearanceData(typeName, subTypeName);
+        if(!pAppearance)
+            return "Could not find component type.";
+        pAppearance->setDisplayName(name);
+        ModelObject *pObj = o->mpProjectTabs->getCurrentContainer()->addModelObject(pAppearance, QPointF(x,y),rot);
+        if(!pObj)
+            return "Could not create component.";
+        return pObj->getName();
+    }
+
 
     bool connect(MainWindow* o, const QString& comp1, const QString& port1, const QString& comp2, const QString& port2)
     {

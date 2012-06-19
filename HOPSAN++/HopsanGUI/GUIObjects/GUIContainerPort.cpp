@@ -38,9 +38,8 @@ ContainerPort::ContainerPort(QPointF position, qreal rotation, ModelObjectAppear
     refreshDisplayName();
 }
 
-ContainerPort::~ContainerPort()
+void ContainerPort::deleteInHopsanCore()
 {
-    qDebug() << "GuiContainerPort destructor: " << this->getName();
     if (mIsSystemPort)
     {
         mpParentContainerObject->getCoreSystemAccessPtr()->deleteSystemPort(this->getName());
