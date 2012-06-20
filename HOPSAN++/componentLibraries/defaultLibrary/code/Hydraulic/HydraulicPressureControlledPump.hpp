@@ -46,8 +46,8 @@ namespace hopsan {
         double pdif, speed, qmax, qmin, lp, rp, wp1, Kcp, taov, tp, tm;
         double a1, a2, b1, b2, b3, y1, y2, u1, u2, ud, vd, yd;
         double gamma, qminl, qmaxl;
-        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_p3, *mpND_q3, *mpND_c3, *mpND_eps;
-        Port *mpP1, *mpP2, *mpPREF, *mpOut;
+        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_p3, *mpND_q3, *mpND_c3, *mpND_eps, *mpND_a;
+        Port *mpP1, *mpP2, *mpPREF, *mpOut, *mpOut2;
 
     public:
         static Component *Creator()
@@ -75,6 +75,7 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpPREF = addPowerPort("PREF", "NodeHydraulic");
             mpOut = addWritePort("eps", "NodeSignal", Port::NOTREQUIRED);
+            mpOut2 = addWritePort("a", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("p_dif", "Reference pressure difference", "[Pa]", pdif);
             registerParameter("omega_p", "Pump speed", "[rad/s]", speed);
@@ -107,6 +108,7 @@ namespace hopsan {
             mpND_c3 = getSafeNodeDataPtr(mpPREF, NodeHydraulic::WAVEVARIABLE);
 
             mpND_eps = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
+            mpND_a = getSafeNodeDataPtr(mpOut2, NodeSignal::VALUE);
 
             double p1 = (*mpND_p1);
             double c1 = (*mpND_c1);
@@ -141,6 +143,8 @@ namespace hopsan {
             y1 = y0;
             u1 = u;
             vd = 0.0;
+
+            (*mpND_a) = 0;
         }
 
 
@@ -208,6 +212,7 @@ namespace hopsan {
             (*mpND_p3) = c3;
             (*mpND_q3) = 0.0;
             (*mpND_eps) = q2/qmax;
+            (*mpND_a) += speed/mTimestep;
         }
 
 

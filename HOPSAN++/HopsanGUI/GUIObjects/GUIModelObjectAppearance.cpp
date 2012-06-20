@@ -183,16 +183,36 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
                 movableIdx.append(-1);
             }
             movableIconPaths.append(xmlMovable.firstChildElement("icon").attribute("userpath"));
-            dataPorts.append(xmlMovable.firstChildElement("data").attribute("port"));
-            dataNames.append(xmlMovable.firstChildElement("data").attribute("dataname"));
+            dataPorts.append(QStringList());
+            dataNames.append(QStringList());
+            QDomElement dataElement = xmlMovable.firstChildElement("data");
+            while(!dataElement.isNull())
+            {
+                dataPorts.last().append(dataElement.attribute("port"));
+                dataNames.last().append(dataElement.attribute("dataname"));
+                dataElement = dataElement.nextSiblingElement("data");
+            }
             multipliers.append(xmlMovable.firstChildElement("multiplier").attribute("name"));
             divisors.append(xmlMovable.firstChildElement("divisor").attribute("name"));
             speedX.append(xmlMovable.firstChildElement("speed").attribute("x").toDouble());
             speedY.append(xmlMovable.firstChildElement("speed").attribute("y").toDouble());
             speedTheta.append(xmlMovable.firstChildElement("speed").attribute("a").toDouble());
+            resizeX.append(xmlMovable.firstChildElement("resize").attribute("x").toDouble());
+            resizeY.append(xmlMovable.firstChildElement("resize").attribute("y").toDouble());
+            initScaleX.append(xmlMovable.firstChildElement("initscale").attribute("x").toDouble());
+            initScaleY.append(xmlMovable.firstChildElement("initscale").attribute("y").toDouble());
+            scaleDataIdx1.append(xmlMovable.firstChildElement("resize").attribute("idx1").toInt());
+            scaleDataIdx2.append(xmlMovable.firstChildElement("resize").attribute("idx2").toInt());
             startX.append(xmlMovable.firstChildElement("start").attribute("x").toDouble());
             startY.append(xmlMovable.firstChildElement("start").attribute("y").toDouble());
             startTheta.append(xmlMovable.firstChildElement("start").attribute("a").toDouble());
+            initColorR.append(xmlMovable.firstChildElement("initcolor").attribute("r").toDouble());
+            initColorG.append(xmlMovable.firstChildElement("initcolor").attribute("g").toDouble());
+            initColorB.append(xmlMovable.firstChildElement("initcolor").attribute("b").toDouble());
+            colorR.append(xmlMovable.firstChildElement("color").attribute("r").toDouble());
+            colorG.append(xmlMovable.firstChildElement("color").attribute("g").toDouble());
+            colorB.append(xmlMovable.firstChildElement("color").attribute("b").toDouble());
+            colorDataIdx.append(xmlMovable.firstChildElement("color").attribute("idx").toInt());
             transformOriginX.append(xmlMovable.firstChildElement("transformorigin").attribute("x").toDouble());
             transformOriginY.append(xmlMovable.firstChildElement("transformorigin").attribute("y").toDouble());
             QFileInfo movableIconFileInfo(movableIconPaths.last());

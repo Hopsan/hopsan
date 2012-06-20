@@ -34,10 +34,11 @@
 #include "MainWindow.h"
 #include "../HopsanCore/include/Port.h"
 #include "Dialogs/AnimatedIconPropertiesDialog.h"
+#include "GUIObjects/GUIContainerObject.h"
 #include "Utilities/GUIUtilities.h"
 #include "Widgets/AnimationWidget.h"
 #include "Widgets/ProjectTabWidget.h"
-#include "GUIObjects/GUIContainerObject.h"
+
 
 
 //! @brief Constructor for the animated component class
@@ -48,8 +49,8 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
     mpAnimationWidget = parent;
     mpModelObject = unanimatedComponent;
     mpAnimationWidget = parent;
-    mpData = new QList<QVector<double> >();
-    mpNodeDataPtrs = new QList<double *>();
+    mpData = new QList<QList<QVector<double> > >();
+    mpNodeDataPtrs = new QList<QList<double *> >();
 
     //Store port positions
     for(int i=0; i<unanimatedComponent->getPortListPtrs().size(); ++i)
@@ -70,15 +71,20 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
         for(int i=0; i<mpAnimationData->movableIconPaths.size(); ++i)
         {
             setupAnimationMovable(i);
-            if(unanimatedComponent->getPort(mpAnimationData->dataPorts.at(i))->isConnected())
+            if(!mpAnimationData->dataPorts.at(i).isEmpty() && unanimatedComponent->getPort(mpAnimationData->dataPorts.at(i).first())->isConnected())
             {
+                mpData->append(QList<QVector<double> >());
+                mpNodeDataPtrs->append(QList<double*>());
                 int generations = mpAnimationWidget->getNumberOfPlotGenerations()-1;
                 QString componentName = unanimatedComponent->getName();
-                QString portName = mpAnimationData->dataPorts.at(i);
-                QString dataName = mpAnimationData->dataNames.at(i);
-                mpData->insert(i,mpAnimationWidget->getPlotDataPtr()->getPlotData(generations, componentName, portName, dataName));
-
-                mpNodeDataPtrs->insert(i,mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(componentName, portName, dataName));
+                for(int j=0; j<mpAnimationData->dataPorts.at(i).size(); ++j)
+                {
+                    QString portName = mpAnimationData->dataPorts.at(i).at(j);
+                    QString dataName = mpAnimationData->dataNames.at(i).at(j);
+                    mpData->last().append(mpAnimationWidget->getPlotDataPtr()->getPlotData(generations, componentName, portName, dataName));
+                    mpNodeDataPtrs->last().append(mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(componentName, portName, dataName));
+                    qDebug() << "mpData = " << *mpData;
+                }
             }
         }
     }
@@ -121,55 +127,101 @@ void AnimatedComponent::updateAnimation()
         }
         else        //Not adjustable, so let's move it
         {
-            double data;
-            if(mpData->isEmpty())       //No data (port is not connected)
+            QList<double> data;
+            if(mpData->isEmpty() || mpData->first().isEmpty())       //No data (port is not connected)
             {
-                return;
+                continue;
             }
             else
             {
                 if(mpAnimationWidget->isRealTimeAnimation())    //Real-time simulation, read from node vector directly
                 {
-                    if(mpModelObject->getPort(mpAnimationData->dataPorts.at(m))->isConnected())
+                    if(mpModelObject->getPort(mpAnimationData->dataPorts.at(m).first())->isConnected())
                     {
-                        data = (*mpNodeDataPtrs->at(m));
+                        for(int i=0; i<mpNodeDataPtrs->at(m).size(); ++i)
+                        {
+                            data.append(*mpNodeDataPtrs->at(m).at(i));
+                        }
+                        data.append(0);
                         //mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getLastNodeData(mpModelObject->getName(), mpAnimationData->dataPorts.at(m), mpAnimationData->dataNames.at(m), data);
                     }
                     else
                     {
-                        data=0;
+                        data.append(0);
                     }
                 }
                 else                                //Not real-time, so read from predefined data member object
                 {
-                    data = mpData->at(m).at(mpAnimationWidget->getIndex());
+                    for(int i=0; i<mpData->at(m).size(); ++i)
+                    {
+                        data.append(mpData->at(m).at(i).at(mpAnimationWidget->getIndex()));
+                    }
                 }
             }
 
             //Apply parameter multipliers/divisors
-            if(mpAnimationData->multipliers[m] != QString())
+            if(mpAnimationData->multipliers[m] != QString())    //! @todo Multipliers and divisors currently only work for first data
             {
-                data = data*mpModelObject->getParameterValue(mpAnimationData->multipliers[m]).toDouble();
+                data[0] = data[0]*mpModelObject->getParameterValue(mpAnimationData->multipliers[m]).toDouble();
             }
             if(mpAnimationData->divisors[m] != QString())
             {
-                data = data/mpModelObject->getParameterValue(mpAnimationData->divisors[m]).toDouble();
+                data[0] = data[0]/mpModelObject->getParameterValue(mpAnimationData->divisors[m]).toDouble();
             }
 
             //Set rotation
             if(mpAnimationData->speedTheta[m] != 0.0)
             {
-                double rot = mpAnimationData->startTheta[m] - data*mpAnimationData->speedTheta[m];
+                double rot = mpAnimationData->startTheta[m] - data[0]*mpAnimationData->speedTheta[m];
                 mpMovables[m]->setRotation(rot);
             }
 
             //Set position
             if(mpAnimationData->speedX[m] != 0.0 || mpAnimationData->speedY[m] != 0.0)
             {
-                double x = mpAnimationData->startX[m] - data*mpAnimationData->speedX[m];
-                double y = mpAnimationData->startY[m] - data*mpAnimationData->speedY[m];
+                double x = mpAnimationData->startX[m] - data[0]*mpAnimationData->speedX[m];
+                double y = mpAnimationData->startY[m] - data[0]*mpAnimationData->speedY[m];
                 mpMovables[m]->setPos(x, y);
             }
+
+            //Set scale
+            if(mpAnimationData->resizeX[m] != 0.0 || mpAnimationData->resizeY[m] != 0.0)
+            {
+                int idx1 = mpAnimationData->scaleDataIdx1[m];
+                int idx2 = mpAnimationData->scaleDataIdx2[m];
+                double scaleData;
+                if(idx1 != idx2)
+                {
+                    scaleData = data[idx1]-data[idx2];
+                }
+                else
+                {
+                    scaleData = data[idx1];
+                }
+                double scaleX = mpAnimationData->resizeX[m]*scaleData;
+                double scaleY = mpAnimationData->resizeY[m]*scaleData;
+                double initX = mpAnimationData->initScaleX[m];
+                double initY = mpAnimationData->initScaleY[m];
+                mpMovables[m]->resetTransform();
+                mpMovables[m]->scale(initX-scaleX, initY-scaleY);
+            }
+
+            //Set color
+            if(mpAnimationData->colorR[m] != 0.0 || mpAnimationData->colorG[m] != 0.0 || mpAnimationData->colorB[m] != 0.0)
+            {
+                int idx = mpAnimationData->colorDataIdx[m];
+                int ir = mpAnimationData->initColorR[m];
+                int ig = mpAnimationData->initColorG[m];
+                int ib = mpAnimationData->initColorB[m];
+                int r = std::max(0, std::min(255, ir-int(mpAnimationData->colorR[m]*data[idx])));
+                int g = std::max(0, std::min(255, ig-int(mpAnimationData->colorG[m]*data[idx])));
+                int b = std::max(0, std::min(255, ib-int(mpAnimationData->colorB[m]*data[idx])));
+                QGraphicsColorizeEffect *pEffect = new QGraphicsColorizeEffect();
+                QColor color(r,g,b);
+                pEffect->setColor(color);
+                mpMovables[m]->setGraphicsEffect(pEffect);
+            }
+
 
             mpMovables[m]->update();
 
@@ -181,26 +233,11 @@ void AnimatedComponent::updateAnimation()
                 double portStartY = mpAnimationData->movablePortStartY[m][p];
 
                 QPointF pos;
-                pos.setX(portStartX-data*mpAnimationData->speedX[m]);
-                pos.setY(portStartY-data*mpAnimationData->speedY[m]);
+                pos.setX(portStartX-data[0]*mpAnimationData->speedX[m]);
+                pos.setY(portStartY-data[0]*mpAnimationData->speedY[m]);
                 mPortPositions.insert(portName, pos);
             }
         }
-    }
-
-
-    //! @todo Hard coded test, make this generic later
-    if(mpModelObject->getTypeName() == "MechanicTranslationalSpring")
-    {
-        double left, right;
-        mpModelObject->getPort("P1")->getLastNodeData("Position", left);
-        mpModelObject->getPort("P2")->getLastNodeData("Position", right);
-        double length = right-left;
-
-        mpBase->resetTransform();
-        mpBase->scale(0.5*length+1,1);
-        mpBase->setPos(mpModelObject->pos().x()-length/4.0*mpBase->size().width(), mpBase->pos().y());
-        qDebug() << "Length = " << length;
     }
 }
 

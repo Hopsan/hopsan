@@ -40,10 +40,11 @@ namespace hopsan {
         double n;             // rad/s
         double dp;
         double Kcp;
+        double a;
 
-        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
+        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_a;
 
-        Port *mpP1, *mpP2;
+        Port *mpP1, *mpP2, *mpOut;
 
     public:
         static Component *Creator()
@@ -56,9 +57,11 @@ namespace hopsan {
             n = 250.0;
             dp = 0.00005;
             Kcp = 0;
+            a=0;
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
+            mpOut = addWritePort("a", "NodeSignal");
 
             registerParameter("n_p", "Angular Velocity", "[rad/s]", n);
             registerParameter("D_p", "Displacement", "[m^3/rev]", dp);
@@ -77,6 +80,10 @@ namespace hopsan {
             mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::FLOW);
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE);
             mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP);
+
+            mpND_a = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
+
+            (*mpND_a) = 0;
         }
 
 
@@ -135,6 +142,7 @@ namespace hopsan {
             (*mpND_q1) = q1;
             (*mpND_p2) = p2;
             (*mpND_q2) = q2;
+            (*mpND_a) += n/mTimestep;
         }
     };
 }

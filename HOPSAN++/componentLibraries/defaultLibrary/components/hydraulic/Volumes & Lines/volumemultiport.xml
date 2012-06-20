@@ -8,5 +8,15 @@
         <ports>
             <port x="0.5" y="0.5" a="0" name="P1"/>
         </ports>
+        <animation>
+            <icon userpath="volume_user.svg"/>
+            <movable>
+                <icon userpath="volume_user_movable.svg"/>
+                <data port="P1" dataname="Pressure"/> 
+                <start x="0" y="0" a="0"/>
+                <initcolor r="0" g="0" b="255"/>
+                <color r="-0.00001275" g="0" b="0.00001275" idx="0"/>
+            </movable>
+        </animation>
     </modelobject>
 </hopsanobjectappearance>

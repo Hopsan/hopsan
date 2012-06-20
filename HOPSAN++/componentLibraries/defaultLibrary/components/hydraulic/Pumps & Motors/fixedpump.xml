@@ -8,11 +8,22 @@
         <ports>
             <port x="0.6667" y="1" a="90" name="P1"/>
             <port x="0.6667" y="0" a="270" name="P2"/>
+            <port x="0" y="0.5" a="180" name="a"/>
         </ports>
 		<replacables>
 		    <replacable typename="HydraulicVariableDisplacementPump"/>
 			<replacable typename="HydraulicFixedDisplacementMotorQ"/>
 			<replacable typename="HydraulicVariableDisplacementMotorQ"/>
 		</replacables>
+        <animation>
+            <icon userpath="fixedpump_user.svg"/>
+            <movable>
+                <icon userpath="fixedpump_user_movable.svg"/>
+                <data port="a" dataname="Value"/> 
+                <speed x="0" y="0" a="-1e-06"/>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="60" y="50.5"/>
+            </movable>
+        </animation>
     </modelobject>
 </hopsanobjectappearance>

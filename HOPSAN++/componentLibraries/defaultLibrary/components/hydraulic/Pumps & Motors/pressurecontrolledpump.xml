@@ -9,10 +9,18 @@
             <port x="0.603809016" y="1" a="90" name="P1"/>
             <port x="0.068255977" y="1" a="90" name="PREF"/>
             <port x="0.603809016" y="0" a="270" name="P2"/>
-	    <port x="1.0" y="0.5" a="0" name="eps"/>
+	        <port x="1.0" y="0.5" a="0" name="eps"/>
+            <port x="0.0" y="0.5" a="180" name="a"/>
         </ports>
 	<animation>
 	    <icon userpath="pressurecontrolledpump_user_base.svg"/>
+            <movable>
+                <icon userpath="pressurecontrolledpump_user_movable_2.svg"/>
+                <data port="a" dataname="Value"/> 
+                <speed x="0" y="0" a="-1e-06"/>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="90.726" y="49.998"/>
+            </movable>
             <movable>
                 <icon userpath="pressurecontrolledpump_user_movable.svg"/>
                 <data port="eps" dataname="Value"/> 

@@ -67,8 +67,8 @@ private:
     AnimationWidget *mpAnimationWidget;
     AnimatedIcon *mpBase;
     QList<AnimatedIcon *> mpMovables;
-    QList<QVector<double> > *mpData;
-    QList<double*> *mpNodeDataPtrs;
+    QList<QList<QVector<double> > > *mpData;
+    QList<QList<double*> > *mpNodeDataPtrs;
 
     QMap<QString, QPointF> mPortPositions;
 

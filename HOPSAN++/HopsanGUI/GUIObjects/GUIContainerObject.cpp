@@ -2905,8 +2905,18 @@ void PlotData::updateObjectName(QString oldName, QString newName)
 //! @param[in] componentName Name of component where variable is located
 //! @param[in] portName Name of port where variable is located
 //! @param[in] dataName Name of variable
+//! @warning Do not call this function for multiports unless you know what you are doing. It will return the data from the first node only.
 QVector<double> PlotData::getPlotData(int generation, QString componentName, QString portName, QString dataName)
 {
+    if(mpParentContainerObject->getModelObject(componentName)->getPort(portName)->getPortType() == "POWERMULTIPORT" ||
+       mpParentContainerObject->getModelObject(componentName)->getPort(portName)->getPortType() == "READMULTIPORT")
+    {
+        QString newPortName = mpParentContainerObject->getModelObject(componentName)->getPort(portName)->getConnectedPorts().first()->getPortName();
+        QString newComponentName = mpParentContainerObject->getModelObject(componentName)->getPort(portName)->getConnectedPorts().first()->getGuiModelObject()->getName();
+        portName = newPortName;
+        componentName = newComponentName;
+    }
+
     ComponentMapT componentMap = mPlotData.at(generation);
     PortMapT portMap = componentMap.find(componentName).value();
     DataMapT dataMap = portMap.find(portName).value();

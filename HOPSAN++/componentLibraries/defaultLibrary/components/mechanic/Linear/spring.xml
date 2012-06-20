@@ -12,5 +12,19 @@
             <port x="0" y="0.5" a="0" name="P1"/>
             <port x="1" y="0.5" a="0" name="P2"/>
         </ports>
+        <animation>
+            <icon userpath="spring_user_base.svg"/>
+            <movable>
+                <icon userpath="spring_user.svg"/>
+                <data port="P1" dataname="Position"/> 
+                <data port="P2" dataname="Position"/> 
+                <start x="0" y="0" a="0"/>
+                <speed x="-10" y="0" a="0"/>
+                <resize x="0.5" y="0" idx1="0" idx2="1"/>
+                <initscale x="1" y="1"/>
+		        <movingport portname="P1" startx="0" starty="10"/>
+		        <movingport portname="P2" startx="33.3333333" starty="10"/>
+            </movable>
+        </animation>
     </modelobject>
 </hopsanobjectappearance>
