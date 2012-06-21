@@ -1388,6 +1388,7 @@ void ComponentGeneratorDialog::generateComponent()
                     localVars.removeAll(cVars[v]+num);      //Remove all C-type variables
                 }
             }
+            if(i==mPortList.size()/2) { pProgressBar->setValue(27); }
         }
         for(int i=0; i<mParametersList.size(); ++i)
         {
@@ -1395,7 +1396,7 @@ void ComponentGeneratorDialog::generateComponent()
         }
         localVars.removeAll("s");       //Laplace 's' is not a local variable
 
-                pProgressBar->setValue(27);
+                pProgressBar->setValue(28);
 
         //Add "special" variables to symbols vector
         allSymbols.append("mTime");         //Simulation time
@@ -1403,19 +1404,19 @@ void ComponentGeneratorDialog::generateComponent()
         allSymbols.append("qi00");          //Delay operator
         allSymbols.append("qi00_OLD");      //Temporary replace variable for delay operator
 
-                pProgressBar->setValue(28);
+                pProgressBar->setValue(29);
 
         //Create pointer to Python console
         PyDockWidget *py = gpMainWindow->mpPyDockWidget;
 
                 pProgressBar->setLabelText("Loading SymPy");
-                pProgressBar->setValue(29);
+                pProgressBar->setValue(30);
 
         //Load sympy libraries
         py->runCommand("from sympy import *");
 
                 pProgressBar->setLabelText("Creating symbols");
-                pProgressBar->setValue(30);
+                pProgressBar->setValue(31);
 
         //Create "Symbol" objects for all variables
         for(int i=0; i<allSymbols.size(); ++i)
@@ -1423,7 +1424,7 @@ void ComponentGeneratorDialog::generateComponent()
             py->runCommand(allSymbols[i]+"=Symbol(\""+allSymbols[i]+"\")");
         }
 
-                pProgressBar->setValue(31);
+                pProgressBar->setValue(32);
 
         //Create "Function" objects for all custom functions
         QStringList allFunctions;
@@ -1434,7 +1435,7 @@ void ComponentGeneratorDialog::generateComponent()
         }
 
                 pProgressBar->setLabelText("Defining equations");
-                pProgressBar->setValue(32);
+                pProgressBar->setValue(31);
 
         //Create expressions for all system equations
         for(int i=0; i<equations.size(); ++i)
@@ -1447,11 +1448,11 @@ void ComponentGeneratorDialog::generateComponent()
             py->runCommand("f"+iStr+" = f"+iStr+".as_numer_denom()[0]");
             py->runCommand("f"+iStr+" = simplify(f"+iStr+")");
 
-            pProgressBar->setValue(32+5*(i+1)/equations.size());
+            pProgressBar->setValue(33+5*(i+1)/equations.size());
         }
 
                 pProgressBar->setLabelText("Applying variable limitations");
-                pProgressBar->setValue(37);
+                pProgressBar->setValue(38);
 
         //Apply variable limitations
         for(int i=0; i<limitedVariableEquations.size(); ++i)
@@ -1476,10 +1477,10 @@ void ComponentGeneratorDialog::generateComponent()
                 py->runCommand(dfStr+" = "+dfStr+".subs(qi00_OLD, "+der+"*qi00)");
             }
 
-            pProgressBar->setValue(37+5*(i+1)/limitedVariableEquations.size());
+            pProgressBar->setValue(38+5*(i+1)/limitedVariableEquations.size());
         }
 
-                pProgressBar->setValue(42);
+                pProgressBar->setValue(43);
 
         for(int e=0; e<equations.size(); ++e)
         {
@@ -1490,7 +1491,7 @@ void ComponentGeneratorDialog::generateComponent()
 
 
                 pProgressBar->setLabelText("Generating Jacobian matrix");
-                pProgressBar->setValue(43);
+                pProgressBar->setValue(44);
 
         //Generate each element in the Jacobian matrix
         QStringList jString;
@@ -1507,11 +1508,11 @@ void ComponentGeneratorDialog::generateComponent()
                 jString.append(gpMainWindow->mpPyDockWidget->getLastOutput());      //Create C++ stringlist of Jacobian
             }
 
-            pProgressBar->setValue(43+(i+1)/equations.size()*5);
+            pProgressBar->setValue(44+(i+1)/equations.size()*5);
         }
 
                 pProgressBar->setLabelText("Collecting system equations");
-                pProgressBar->setValue(48);
+                pProgressBar->setValue(49);
 
         //Print each system quation and read output to create C++ strings from them
         QStringList sysEquations;
@@ -1519,15 +1520,6 @@ void ComponentGeneratorDialog::generateComponent()
         {
             py->runCommand("print(f"+QString().setNum(i)+")");
             sysEquations.append(gpMainWindow->mpPyDockWidget->getLastOutput());
-        }
-
-                pProgressBar->setValue(49);
-
-        //Make a list of stringlists from the jacobian, used to sort rows
-        QList<QStringList> jacobian;
-        for(int i=0; i<stateVars.size(); ++i)
-        {
-            jacobian.append(jString.mid(i*stateVars.size(), stateVars.size()));
         }
 
                 pProgressBar->setValue(50);
