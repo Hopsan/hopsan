@@ -107,11 +107,17 @@ public:
     enum ExpressionTypeT {Equality,Symbol,Operator,Function};
     Expression(QString string);
 
+    void replaceBy(Expression expr);
     ExpressionTypeT getType();
     QString toString();
+    bool isPower();
     bool isMultiplyOrDivide();
     bool isAddOrSubtract();
+    bool isNumericalSymbol();
     Expression derivative(Expression x);
+
+    QList<Expression> _getChildren();
+    QString _getString();
 
 private:
     ExpressionTypeT mType;

@@ -82,9 +82,9 @@ void ModelicaHighlighter::highlightBlock(const QString &text)
 ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     : QDialog(parent)
 {
-    Expression dummy = Expression("13-(apa+ko)/gris=12*sin(2+bajs)");
+    Expression dummy = Expression("x^3+4*x^5");//"13-(apa+ko)/gris=12*sin(2+5*bajs^3)");
     qDebug() << "dummy.toString(): " << dummy.toString();
-    Expression derdummy = dummy.derivative(Expression("ko"));
+    Expression derdummy = dummy.derivative(Expression("x"));
     qDebug() << "derdummy.toString(): " << derdummy.toString();
 
     mpAppearance = 0;

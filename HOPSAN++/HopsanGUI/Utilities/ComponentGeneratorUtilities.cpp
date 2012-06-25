@@ -158,7 +158,9 @@ void generateComponentObject(QString outputFile, QDomElement &rDomElement, Model
 
 Expression::Expression(QString string)
 {
+    QString strDummy = string;
     functionDerivatives.insert("sin", "cos");
+    functionDerivatives.insert("cos", "-sin");
 
 
     if(string.startsWith("(") && string.endsWith(")"))
@@ -170,7 +172,12 @@ Expression::Expression(QString string)
         }
     }
 
-    qDebug() << "Creating exprsesion: " << string;
+//    if(string.startsWith("-"))
+//    {
+//        string = string.prepend("0");
+//    }
+
+    qDebug() << "Creating expression: " << string;
 
     QStringList subSymbols;
     bool var = false;
@@ -178,7 +185,6 @@ Expression::Expression(QString string)
     int start=0;
     for(int i=0; i<string.size(); ++i)
     {
-        int lastsize = subSymbols.size();
         if(!var && parBal==0 && string.at(i).isLetterOrNumber())
         {
             var = true;
@@ -213,13 +219,15 @@ Expression::Expression(QString string)
             subSymbols.append(string.at(i));
             start = i+1;
         }
-        else if(i == string.size()-1 && (var || parBal>0))
+
+
+        if(i == string.size()-1 && !var && parBal == 0 && string.at(i) != ')')
+        {
+            subSymbols.append(string.at(i));
+        }
+        else if(i == string.size()-1 && (var || parBal>0) && string.at(i) != ')')
         {
             subSymbols.append(string.mid(start, i-start+1));
-        }
-        if(subSymbols.size() > lastsize)
-        {
-            //qDebug() << "Added: " << subSymbols.last();
         }
     }
     qDebug() << "Symbols: " << subSymbols;
@@ -261,6 +269,189 @@ Expression::Expression(QString string)
         mType = Expression::Symbol;
         mString = string;
     }
+
+
+
+    if(mString == "*")
+    {
+        if(mChildren[0].toString() == "0" || mChildren[1].toString() == "0")
+        {
+            replaceBy(Expression("0"));
+        }
+        else if(mChildren[0].toString() == "1")
+        {
+            replaceBy(mChildren[1]);
+        }
+        else if(mChildren[1].toString() == "1")
+        {
+            replaceBy(mChildren[0]);
+        }
+        else if(mChildren[0].isNumericalSymbol() && mChildren[1].isNumericalSymbol())
+        {
+            double replacement = mChildren[0].toString().toDouble()*mChildren[1].toString().toDouble();
+            replaceBy(Expression(QString::number(replacement)));
+        }
+        else if(mChildren[0].isNumericalSymbol() && mChildren[1]._getString() == "*")
+        {
+            if(mChildren[1]._getChildren()[0].isNumericalSymbol())
+            {
+                double value = mChildren[0].toString().toDouble()*mChildren[1]._getChildren()[0].toString().toDouble();
+                replaceBy(Expression(QString::number(value)+"*("+mChildren[1]._getChildren()[1].toString()+")"));
+            }
+            else if(mChildren[1]._getChildren()[1].isNumericalSymbol())
+            {
+                double value = mChildren[0].toString().toDouble()*mChildren[1]._getChildren()[1].toString().toDouble();
+                replaceBy(Expression(QString::number(value)+"*("+mChildren[1]._getChildren()[0].toString()+")"));
+            }
+        }
+        else if(mChildren[1].isNumericalSymbol() && mChildren[0]._getString() == "*")
+        {
+            if(mChildren[0]._getChildren()[0].isNumericalSymbol())
+            {
+                double value = mChildren[1].toString().toDouble()*mChildren[0]._getChildren()[0].toString().toDouble();
+                replaceBy(Expression(QString::number(value)+"*("+mChildren[0]._getChildren()[1].toString()+")"));
+            }
+            else if(mChildren[0]._getChildren()[1].isNumericalSymbol())
+            {
+                double value = mChildren[1].toString().toDouble()*mChildren[0]._getChildren()[1].toString().toDouble();
+                replaceBy(Expression(QString::number(value)+"*("+mChildren[0]._getChildren()[0].toString()+")"));
+            }
+        }
+        else if(mChildren[0].isNumericalSymbol() && mChildren[1]._getString() == "/")
+        {
+            if(mChildren[1]._getChildren()[0].isNumericalSymbol())
+            {
+                double value = mChildren[0].toString().toDouble()*mChildren[1]._getChildren()[0].toString().toDouble();
+                replaceBy(Expression(QString::number(value)+"*("+mChildren[1]._getChildren()[1].toString()+")"));
+            }
+            else if(mChildren[1]._getChildren()[1].isNumericalSymbol())
+            {
+                double value = mChildren[0].toString().toDouble()*mChildren[1]._getChildren()[1].toString().toDouble();
+                replaceBy(Expression(QString::number(value)+"*("+mChildren[1]._getChildren()[0].toString()+")"));
+            }
+        }
+        else if(mChildren[1].isNumericalSymbol() && mChildren[0]._getString() == "/")
+        {
+            if(mChildren[0]._getChildren()[0].isNumericalSymbol())
+            {
+                double value = mChildren[1].toString().toDouble()/mChildren[0]._getChildren()[0].toString().toDouble();
+                replaceBy(Expression(QString::number(value)+"*("+mChildren[0]._getChildren()[1].toString()+")"));
+            }
+            else if(mChildren[0]._getChildren()[1].isNumericalSymbol())
+            {
+                double value = mChildren[1].toString().toDouble()/mChildren[0]._getChildren()[1].toString().toDouble();
+                replaceBy(Expression(QString::number(value)+"*("+mChildren[0]._getChildren()[0].toString()+")"));
+            }
+        }
+    }
+    else if(mString == "/")
+    {
+        if(mChildren[0].toString() == "0")
+        {
+            replaceBy(Expression("0"));
+        }
+        else if(mChildren[1].toString() == "1")
+        {
+            replaceBy(mChildren[0]);
+        }
+        else if(mChildren[0].isPower() && mChildren[1].isPower())
+        {
+            QString left1 = mChildren[0]._getChildren()[0].toString();
+            QString left2 = mChildren[0]._getChildren()[1].toString();
+            QString right1 = mChildren[1]._getChildren()[0].toString();
+            QString right2 = mChildren[1]._getChildren()[1].toString();
+            if(left1 == right1)
+            {
+                replaceBy(Expression(left1+"^(("+left2+")-("+right2+"))"));
+            }
+        }
+        else if(mChildren[0].isPower())
+        {
+            QString left1 = mChildren[0]._getChildren()[0].toString();
+            QString left2 = mChildren[0]._getChildren()[1].toString();
+            QString right = mChildren[1].toString();
+
+            if(left1 == right)
+            {
+                replaceBy(Expression(left1+"^(("+left2+")-1)"));
+            }
+        }
+        else if(mChildren[1].isPower())
+        {
+            QString left = mChildren[0].toString();
+            QString right1 = mChildren[1]._getChildren()[0].toString();
+            QString right2 = mChildren[1]._getChildren()[1].toString();
+
+            if(left == right1)
+            {
+                replaceBy(Expression(left+"^(1-("+right2+"))"));
+            }
+        }
+        else if(mChildren[0].isNumericalSymbol() && mChildren[1].isNumericalSymbol())
+        {
+            double replacement = mChildren[0].toString().toDouble()/mChildren[1].toString().toDouble();
+            replaceBy(Expression(QString::number(replacement)));
+        }
+    }
+    else if(mString == "+")
+    {
+        if(mChildren[0].isNumericalSymbol() && mChildren[1].isNumericalSymbol())
+        {
+            double replacement = mChildren[0].toString().toDouble()+mChildren[1].toString().toDouble();
+            replaceBy(Expression(QString::number(replacement)));
+        }
+        else if(mChildren[0].toString() == "0")
+        {
+            replaceBy(mChildren[1]);
+        }
+        else if(mChildren[1].toString() == "0")
+        {
+            replaceBy(mChildren[0]);
+        }
+    }
+    else if(mString == "-" && mChildren.size() > 1)
+    {
+        if(mChildren[0].isNumericalSymbol() && mChildren[1].isNumericalSymbol()/* && mChildren[0].toString() != "0"*/)  //Last check will prevent endless loop, because minus without left symbol is not currently supported
+        {
+            double replacement = mChildren[0].toString().toDouble()-mChildren[1].toString().toDouble();
+            replaceBy(Expression(QString::number(replacement)));
+        }
+        else if(mChildren[1].toString() == "0")
+        {
+            replaceBy(mChildren[0]);
+        }
+        else if(mChildren[0].toString() == "0")
+        {
+            replaceBy("-"+mChildren[1].toString());
+        }
+    }
+    else if(mString == "^")
+    {
+        if(mChildren[1].toString() == "1")
+        {
+            replaceBy(mChildren[0]);
+        }
+        else if(mChildren[1].toString().startsWith("-"))
+        {
+            QString pos = mChildren[1].toString();
+            pos.remove(0,1);
+            replaceBy(Expression("1/("+mChildren[0].toString()+"^"+pos+")"));
+        }
+    }
+    else if(mType == Expression::Function && mString == "")
+    {
+        QString temp = this->toString();
+        temp = temp.mid(1, temp.size()-2);
+        replaceBy(Expression(temp));
+    }
+}
+
+
+void Expression::replaceBy(Expression expr)
+{
+    mType = expr.getType();
+    mString = expr._getString();
+    mChildren = expr._getChildren();
 }
 
 
@@ -287,27 +478,57 @@ QString Expression::toString()
         ret.chop(1);
         ret.append(")");
     }
-    else if(mType == Expression::Operator || mType == Expression::Equality)
+    else if((mType == Expression::Operator || mType == Expression::Equality && mChildren.size() > 1))
     {
-        QString leftStr = mChildren[0].toString();
-        QString rightStr = mChildren[1].toString();
+        QString leftStr;
+        QString rightStr;
+        if(mChildren.size() == 1)
+        {
+            leftStr="";
+            rightStr=mChildren[0].toString();
+        }
+        else
+        {
+            leftStr = mChildren[0].toString();
+            rightStr = mChildren[1].toString();
+        }
+
         if(this->isMultiplyOrDivide())
         {
             if(mChildren[0].isAddOrSubtract())
             {
-                leftStr.append("(");
+                leftStr.append(")");
                 leftStr.prepend("(");
             }
             if(mChildren[1].isAddOrSubtract())
             {
-                rightStr.append("(");
+                rightStr.append(")");
                 rightStr.prepend("(");
             }
         }
-        ret = mChildren[0].toString() + mString + mChildren[1].toString();
+        else if(this->isPower())
+        {
+            if(mChildren[0].isAddOrSubtract() || mChildren[0].isMultiplyOrDivide())
+            {
+                leftStr.append(")");
+                leftStr.prepend("(");
+            }
+            if(mChildren[1].isAddOrSubtract() || mChildren[1].isMultiplyOrDivide())
+            {
+                rightStr.append(")");
+                rightStr.prepend("(");
+            }
+        }
+        ret = leftStr + mString + rightStr;
     }
 
     return ret;
+}
+
+
+bool Expression::isPower()
+{
+    return (mString =="^");
 }
 
 
@@ -323,6 +544,14 @@ bool Expression::isAddOrSubtract()
 }
 
 
+bool Expression::isNumericalSymbol()
+{
+    bool isNumber;
+    mString.toDouble(&isNumber);
+    return (mType == Expression::Symbol && isNumber);
+}
+
+
 Expression Expression::derivative(Expression x)
 {
     QString ret;
@@ -330,6 +559,7 @@ Expression Expression::derivative(Expression x)
     {
         mChildren[0] = mChildren[0].derivative(x);
         mChildren[1] = mChildren[1].derivative(x);
+        ret = this->toString();
     }
     if(mType == Expression::Function)
     {
@@ -352,7 +582,7 @@ Expression Expression::derivative(Expression x)
         QString exp2 = mChildren[1].toString();
         QString der1 = mChildren[0].derivative(x).toString();
         QString der2 = mChildren[1].derivative(x).toString();
-        ret = "("+exp2+"*"+der1+"-"+exp1+"*"+der2+")/"+exp2+"^2";
+        ret = "(("+exp2+")*("+der1+")-("+exp1+")*("+der2+"))/("+exp2+")^2";
     }
     else if(mType == Expression::Operator && (mString == "+" || mString == "-"))
     {
@@ -360,19 +590,12 @@ Expression Expression::derivative(Expression x)
     }
     else if(mType == Expression::Operator && mString == "^")
     {
-        QString exp1 = mChildren[0].toString();
-        QString exp2 = mChildren[1].toString();
-        QString der2 = mChildren[1].derivative(x).toString();
-        QString left;
-        if(exp1.toDouble() && exp2.toDouble())
-        {
-            left = QString::number(exp1.toDouble()*exp2.toDouble());
-        }
-        else
-        {
-            left = exp1+"*"+exp2;
-        }
-        ret = left+mString+der2;
+        QString f = mChildren[0].toString();
+        QString df = mChildren[0].derivative(x).toString();
+        QString g = mChildren[1].toString();
+        QString dg = mChildren[1].derivative(x).toString();
+
+        ret = "("+f+")^("+g+"-1)*(("+g+")*("+df+")+("+f+")*log(("+f+"))*("+dg+"))";
     }
     else if(mType == Expression::Symbol)
     {
@@ -392,6 +615,17 @@ Expression Expression::derivative(Expression x)
 }
 
 
+QList<Expression> Expression::_getChildren()
+{
+    return mChildren;
+}
+
+QString Expression::_getString()
+{
+    return mString;
+}
+
+
 bool Expression::splitAtFirstSeparator(QString sep, QStringList subSymbols)
 {
     if(subSymbols.contains(sep))
@@ -408,8 +642,11 @@ bool Expression::splitAtFirstSeparator(QString sep, QStringList subSymbols)
         {
             right.append(subSymbols.at(i));
         }
-        mChildren.append(Expression(left));
-        mChildren.append(Expression(right));
+        if(!left.isEmpty())
+        {
+            mChildren.append(Expression(left));
+        }
+        mChildren.append(Expression(right));        //Right should always have a value
         return true;
     }
     return false;
