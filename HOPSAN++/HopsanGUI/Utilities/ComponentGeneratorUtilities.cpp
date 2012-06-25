@@ -162,6 +162,9 @@ Expression::Expression(QString string)
     functionDerivatives.insert("sin", "cos");
     functionDerivatives.insert("cos", "-sin");
 
+    reservedSymbols << "T_RESERVED" << "Z_RESERVED";
+
+    string.replace(" ", "");
 
     if(string.startsWith("(") && string.endsWith(")"))
     {
@@ -177,7 +180,7 @@ Expression::Expression(QString string)
 //        string = string.prepend("0");
 //    }
 
-    qDebug() << "Creating expression: " << string;
+    //qDebug() << "Creating expression: " << string;
 
     QStringList subSymbols;
     bool var = false;
@@ -185,7 +188,7 @@ Expression::Expression(QString string)
     int start=0;
     for(int i=0; i<string.size(); ++i)
     {
-        if(!var && parBal==0 && string.at(i).isLetterOrNumber())
+        if(!var && parBal==0 && (string.at(i).isLetterOrNumber() || string.at(i) == '_'))
         {
             var = true;
             start = i;
@@ -208,7 +211,7 @@ Expression::Expression(QString string)
                 subSymbols.append(string.mid(start, i-start+1));
             }
         }
-        else if(var && !string.at(i).isLetterOrNumber())
+        else if(var && !(string.at(i).isLetterOrNumber() || string.at(i) == '_'))
         {
             var = false;
             subSymbols.append(string.mid(start, i-start));
@@ -230,7 +233,7 @@ Expression::Expression(QString string)
             subSymbols.append(string.mid(start, i-start+1));
         }
     }
-    qDebug() << "Symbols: " << subSymbols;
+   // qDebug() << "Symbols: " << subSymbols;
 
     if(splitAtFirstSeparator("=", subSymbols))
     {
@@ -563,12 +566,27 @@ Expression Expression::derivative(Expression x)
     }
     if(mType == Expression::Function)
     {
-        ret = this->toString();
-        ret = ret.mid(ret.indexOf("("), ret.size()-1);
-        ret.prepend(functionDerivatives.find(mString).value());
-        ret.append("*");
-        Expression internalExpression = mChildren.first().derivative(x);
-        ret.append(internalExpression.toString());
+        if(mString == "log")
+        {
+            ret = "("+mChildren[0].derivative(x).toString()+")/("+mChildren[0].toString()+")";
+        }
+        else if(mString == "exp")
+        {
+            ret = "("+mChildren[0].derivative(x).toString()+")*("+this->toString()+")";
+        }
+        else if(mString == "tan")
+        {
+            ret = "2*("+mChildren[0].derivative(x).toString()+")/(cos(2*"+mChildren[0].toString()+")+1)";
+        }
+        else        //No special function, so use chain rule
+        {
+            ret = this->toString();
+            ret = ret.mid(ret.indexOf("("), ret.size()-1);
+            ret.prepend(functionDerivatives.find(mString).value());
+            ret.append("*");
+            Expression internalExpression = mChildren.first().derivative(x);
+            ret.append(internalExpression.toString());
+        }
     }
     else if(mType == Expression::Operator && mString == "*")
     {
@@ -609,9 +627,79 @@ Expression Expression::derivative(Expression x)
         }
     }
 
-    qDebug() << "Derivative of " << this->toString() << " = " << ret;
+   // qDebug() << "Derivative of " << this->toString() << " = " << ret;
 
     return Expression(ret);
+}
+
+
+bool Expression::contains(Expression expr)
+{
+    if(expr.toString() == this->toString())
+    {
+        return true;
+    }
+
+    for(int i=0; i<mChildren.size(); ++i)
+    {
+        if(mChildren[i].contains(expr))
+        {
+            return true;
+        }
+    }
+
+    if(mChildren.size() == 0)
+    {
+        return false;
+    }
+}
+
+
+Expression Expression::bilinearTransform()
+{
+    QString res;
+
+    for(int i=0; i<mChildren.size(); ++i)
+    {
+        mChildren[i] = mChildren[i].bilinearTransform();
+    }
+    if(this->mString == "der")
+    {
+        QString arg = mChildren.first().toString();
+
+        res = "2/T_RESERVED*(1-Z_RESERVED^(-1))/(1+Z_RESERVED^(-1))*("+arg+")";
+    }
+    else
+    {
+
+    }
+
+    if(res.isEmpty())
+    {
+        return this->toString();
+    }
+    else
+    {
+        return Expression(res);
+    }
+}
+
+
+QStringList Expression::getSymbols()
+{
+    QStringList retval;
+    for(int i=0; i<mChildren.size(); ++i)
+    {
+        retval.append(mChildren[i].getSymbols());
+    }
+    if(mType == Expression::Symbol && !reservedSymbols.contains(mString) && mString[0].isLetter())
+    {
+        retval.append(mString);
+    }
+
+    retval.removeDuplicates();
+
+    return retval;
 }
 
 
@@ -630,7 +718,7 @@ bool Expression::splitAtFirstSeparator(QString sep, QStringList subSymbols)
 {
     if(subSymbols.contains(sep))
     {
-        qDebug() << "Splitting at " << sep;
+       // qDebug() << "Splitting at " << sep;
         mString = sep;
         int split = subSymbols.indexOf(sep);
         QString right, left;

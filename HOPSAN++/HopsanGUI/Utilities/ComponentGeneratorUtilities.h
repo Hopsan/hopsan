@@ -115,6 +115,9 @@ public:
     bool isAddOrSubtract();
     bool isNumericalSymbol();
     Expression derivative(Expression x);
+    bool contains(Expression expr);
+    Expression bilinearTransform();
+    QStringList getSymbols();
 
     QList<Expression> _getChildren();
     QString _getString();
@@ -124,6 +127,7 @@ private:
     QString mString;
     QList<Expression> mChildren;
     QMap<QString, QString> functionDerivatives;
+    QStringList reservedSymbols;
 
     bool splitAtFirstSeparator(QString sep, QStringList subSymbols);
 };

@@ -82,11 +82,13 @@ void ModelicaHighlighter::highlightBlock(const QString &text)
 ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     : QDialog(parent)
 {
-    Expression dummy = Expression("x^3+4*x^5");//"13-(apa+ko)/gris=12*sin(2+5*bajs^3)");
+    Expression dummy = Expression("x^(3+b) + 5*der(2+3*x/y)");//"13-(apa+ko)/gris=12*sin(2+5*bajs^3)");
     qDebug() << "dummy.toString(): " << dummy.toString();
-    Expression derdummy = dummy.derivative(Expression("x"));
-    qDebug() << "derdummy.toString(): " << derdummy.toString();
-
+    Expression biDummy = dummy.bilinearTransform();
+    qDebug() << "biDummy.toString(): " << biDummy.toString();
+    Expression derDummy = biDummy.derivative(Expression("x"));
+    qDebug() << "derDummy.toString(): " << derDummy.toString();
+    qDebug() << "Symbols in dummy: " << dummy.getSymbols();
     mpAppearance = 0;
 
     //Set the name and size of the main window
