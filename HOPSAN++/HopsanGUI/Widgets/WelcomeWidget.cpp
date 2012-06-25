@@ -431,7 +431,7 @@ void WelcomeWidget::showNews(QNetworkReply *pReply)
 
         QByteArray feedData=pReply->readAll();
         QString feedString(feedData);
-        qDebug() << "Feed: " << feedString;
+        //qDebug() << "Feed: " << feedString;
 
         QDomDocument feedDocument;
         feedDocument.setContent(feedString);

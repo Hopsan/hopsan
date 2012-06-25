@@ -156,6 +156,267 @@ void generateComponentObject(QString outputFile, QDomElement &rDomElement, Model
 }
 
 
+Expression::Expression(QString string)
+{
+    functionDerivatives.insert("sin", "cos");
+
+
+    if(string.startsWith("(") && string.endsWith(")"))
+    {
+        QString testString = string.mid(1, string.size()-2);
+        if(!testString.contains("(") && !testString.contains(")"))
+        {
+            string = testString;
+        }
+    }
+
+    qDebug() << "Creating exprsesion: " << string;
+
+    QStringList subSymbols;
+    bool var = false;
+    int parBal = 0;
+    int start=0;
+    for(int i=0; i<string.size(); ++i)
+    {
+        int lastsize = subSymbols.size();
+        if(!var && parBal==0 && string.at(i).isLetterOrNumber())
+        {
+            var = true;
+            start = i;
+        }
+        else if(var && string.at(i) == '(')
+        {
+            var = false;
+            parBal++;
+        }
+        else if(!var && string.at(i) == '(')
+        {
+            parBal++;
+        }
+        else if(string.at(i) == ')')
+        {
+            parBal--;
+            if(parBal == 0)
+            {
+                var = false;
+                subSymbols.append(string.mid(start, i-start+1));
+            }
+        }
+        else if(var && !string.at(i).isLetterOrNumber())
+        {
+            var = false;
+            subSymbols.append(string.mid(start, i-start));
+            --i;
+        }
+        else if(!var && parBal == 0)
+        {
+            subSymbols.append(string.at(i));
+            start = i+1;
+        }
+        else if(i == string.size()-1 && (var || parBal>0))
+        {
+            subSymbols.append(string.mid(start, i-start+1));
+        }
+        if(subSymbols.size() > lastsize)
+        {
+            //qDebug() << "Added: " << subSymbols.last();
+        }
+    }
+    qDebug() << "Symbols: " << subSymbols;
+
+    if(splitAtFirstSeparator("=", subSymbols))
+    {
+        mType = Expression::Equality;
+    }
+    else if(splitAtFirstSeparator("+", subSymbols) || splitAtFirstSeparator("-", subSymbols))
+    {
+        mType = Expression::Operator;
+    }
+    else if(splitAtFirstSeparator("*", subSymbols) || splitAtFirstSeparator("/", subSymbols))
+    {
+        mType = Expression::Operator;
+    }
+    else if(splitAtFirstSeparator("^", subSymbols))
+    {
+        mType = Expression::Operator;
+    }
+    else if(splitAtFirstSeparator("%", subSymbols))
+    {
+        mType = Expression::Operator;
+    }
+    else if(subSymbols.size() == 1 && string.contains("("))
+    {
+        mType = Expression::Function;
+        mString = string.left(string.indexOf("("));
+        string = string.mid(string.indexOf("(")+1, string.size()-2-string.indexOf("("));
+        QStringList args = string.split(",");
+        qDebug() << "Function: " << mString << ", arguments: " << args;
+        for(int i=0; i<args.size(); ++i)
+        {
+            mChildren.append(Expression(args.at(i)));
+        }
+    }
+    else
+    {
+        mType = Expression::Symbol;
+        mString = string;
+    }
+}
+
+
+Expression::ExpressionTypeT Expression::getType()
+{
+    return mType;
+}
+
+QString Expression::toString()
+{
+    QString ret;
+
+    if(mType == Expression::Symbol)
+    {
+        ret = mString;
+    }
+    else if(mType == Expression::Function)
+    {
+        ret = mString+"(";
+        for(int i=0; i<mChildren.size(); ++i)
+        {
+            ret.append(mChildren[i].toString()+",");
+        }
+        ret.chop(1);
+        ret.append(")");
+    }
+    else if(mType == Expression::Operator || mType == Expression::Equality)
+    {
+        QString leftStr = mChildren[0].toString();
+        QString rightStr = mChildren[1].toString();
+        if(this->isMultiplyOrDivide())
+        {
+            if(mChildren[0].isAddOrSubtract())
+            {
+                leftStr.append("(");
+                leftStr.prepend("(");
+            }
+            if(mChildren[1].isAddOrSubtract())
+            {
+                rightStr.append("(");
+                rightStr.prepend("(");
+            }
+        }
+        ret = mChildren[0].toString() + mString + mChildren[1].toString();
+    }
+
+    return ret;
+}
+
+
+bool Expression::isMultiplyOrDivide()
+{
+    return (mString == "*" || mString == "/");
+}
+
+
+bool Expression::isAddOrSubtract()
+{
+    return (mString == "+" || mString == "-");
+}
+
+
+Expression Expression::derivative(Expression x)
+{
+    QString ret;
+    if(mType == Expression::Equality)
+    {
+        mChildren[0] = mChildren[0].derivative(x);
+        mChildren[1] = mChildren[1].derivative(x);
+    }
+    if(mType == Expression::Function)
+    {
+        ret = this->toString();
+        ret = ret.mid(ret.indexOf("("), ret.size()-1);
+        ret.prepend(functionDerivatives.find(mString).value());
+        ret.append("*");
+        Expression internalExpression = mChildren.first().derivative(x);
+        ret.append(internalExpression.toString());
+    }
+    else if(mType == Expression::Operator && mString == "*")
+    {
+        Expression exp1 = mChildren[0].derivative(x);
+        Expression exp2 = mChildren[1].derivative(x);
+        ret = exp1.toString()+"*"+mChildren[1].toString()+"+"+mChildren[0].toString()+"*"+exp2.toString();
+    }
+    else if(mType == Expression::Operator && mString == "/")
+    {
+        QString exp1 = mChildren[0].toString();
+        QString exp2 = mChildren[1].toString();
+        QString der1 = mChildren[0].derivative(x).toString();
+        QString der2 = mChildren[1].derivative(x).toString();
+        ret = "("+exp2+"*"+der1+"-"+exp1+"*"+der2+")/"+exp2+"^2";
+    }
+    else if(mType == Expression::Operator && (mString == "+" || mString == "-"))
+    {
+        ret = mChildren[0].derivative(x).toString()+mString+mChildren[1].derivative(x).toString();
+    }
+    else if(mType == Expression::Operator && mString == "^")
+    {
+        QString exp1 = mChildren[0].toString();
+        QString exp2 = mChildren[1].toString();
+        QString der2 = mChildren[1].derivative(x).toString();
+        QString left;
+        if(exp1.toDouble() && exp2.toDouble())
+        {
+            left = QString::number(exp1.toDouble()*exp2.toDouble());
+        }
+        else
+        {
+            left = exp1+"*"+exp2;
+        }
+        ret = left+mString+der2;
+    }
+    else if(mType == Expression::Symbol)
+    {
+        if(this->toString() == x.toString())
+        {
+            ret = "1";
+        }
+        else
+        {
+            ret = "0";
+        }
+    }
+
+    qDebug() << "Derivative of " << this->toString() << " = " << ret;
+
+    return Expression(ret);
+}
+
+
+bool Expression::splitAtFirstSeparator(QString sep, QStringList subSymbols)
+{
+    if(subSymbols.contains(sep))
+    {
+        qDebug() << "Splitting at " << sep;
+        mString = sep;
+        int split = subSymbols.indexOf(sep);
+        QString right, left;
+        for(int i=0; i<split; ++i)
+        {
+            left.append(subSymbols.at(i));
+        }
+        for(int i=split+1; i<subSymbols.size(); ++i)
+        {
+            right.append(subSymbols.at(i));
+        }
+        mChildren.append(Expression(left));
+        mChildren.append(Expression(right));
+        return true;
+    }
+    return false;
+
+}
+
+
 //! @brief Generates a ComponentSpecification object from equations and a jacobian
 //! @param typeName Type name of component
 //! @param displayName Display name of component

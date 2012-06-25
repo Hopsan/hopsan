@@ -82,6 +82,11 @@ void ModelicaHighlighter::highlightBlock(const QString &text)
 ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     : QDialog(parent)
 {
+    Expression dummy = Expression("13-(apa+ko)/gris=12*sin(2+bajs)");
+    qDebug() << "dummy.toString(): " << dummy.toString();
+    Expression derdummy = dummy.derivative(Expression("ko"));
+    qDebug() << "derdummy.toString(): " << derdummy.toString();
+
     mpAppearance = 0;
 
     //Set the name and size of the main window

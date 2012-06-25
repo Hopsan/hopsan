@@ -99,6 +99,30 @@ public:
     QStringList simEquations;
     QStringList finalEquations;
 };
+
+
+class Expression
+{
+public:
+    enum ExpressionTypeT {Equality,Symbol,Operator,Function};
+    Expression(QString string);
+
+    ExpressionTypeT getType();
+    QString toString();
+    bool isMultiplyOrDivide();
+    bool isAddOrSubtract();
+    Expression derivative(Expression x);
+
+private:
+    ExpressionTypeT mType;
+    QString mString;
+    QList<Expression> mChildren;
+    QMap<QString, QString> functionDerivatives;
+
+    bool splitAtFirstSeparator(QString sep, QStringList subSymbols);
+};
+
+
 void generateComponentObject(QString outputFile, QDomElement &rDomElement, ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar=0);
 void generateComponentObject(QString typeName, QString displayName, QString cqsType, QList<PortSpecification> ports, QList<ParameterSpecification> parameters, QStringList sysEquations, QStringList stateVars, QStringList jacobian, QStringList delayTerms, QStringList delaySteps, QStringList localVars, QStringList initAlgorithms, QStringList finalAlgorithms, ModelObjectAppearance *pAppearance=0, QProgressDialog *pProgressBar = 0);
 void compileComponentObject(QString outputFile, ComponentSpecification comp, ModelObjectAppearance *pAppearance, bool overwriteStartValues=false, QProgressDialog *pProgressBar = 0);

@@ -363,7 +363,7 @@ void MessageWidget::mouseMoveEvent(QMouseEvent *event)
 {
     mpTextEdit->setFrameShape(QFrame::NoFrame);
 
-    qDebug() << "Mouse move event!";
+    //qDebug() << "Mouse move event!";
 
     QWidget::mouseMoveEvent(event);
 }
@@ -373,7 +373,7 @@ bool MessageWidget::eventFilter(QObject *obj, QEvent *event)
 {
     if (event->type() == QEvent::MouseMove)
     {
-        qDebug() << "Ate an event!";
+        //qDebug() << "Ate an event!";
 
         mpTextEdit->setFrameShape(QFrame::NoFrame);
 
