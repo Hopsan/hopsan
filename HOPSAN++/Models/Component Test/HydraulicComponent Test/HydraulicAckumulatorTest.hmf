@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r4162" hopsancoreversion="0.5.x_r4204">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4459" hopsancoreversion="0.6.x_r4459">
     <requirements>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
         <componentlibrary>PettersComponentLibrary</componentlibrary>
@@ -11,7 +11,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2459" y="2393" zoom="1"/>
+            <viewport x="2589" y="2425" zoom="1"/>
             <ports hidden="0"/>
             <names hidden="0"/>
             <scriptfile path=""/>
@@ -812,6 +812,46 @@
                         <newpos>2353 2237</newpos>
                     </stuff>
                 </post>
+                <post number="100" type="changedparameters">
+                    <stuff newvalue="0.005" what="changedparameter" oldvalue="0" parametername="PVa::Value" objectname="Gas Accumulator"/>
+                </post>
+                <post number="101" type="changedparameters">
+                    <stuff newvalue="0" what="changedparameter" oldvalue="0.01" parametername="V0" objectname="Gas Accumulator"/>
+                </post>
+                <post number="102">
+                    <stuff what="movedobject" name="Sine Wave">
+                        <oldpos>2155.5 2579.5</oldpos>
+                        <newpos>2143.5 2580.5</newpos>
+                    </stuff>
+                </post>
+                <post number="103" type="changedparameters">
+                    <stuff newvalue="1e5" what="changedparameter" oldvalue="1e6" parametername="P1::Pressure" objectname="Hydraulic Volume Multi Port"/>
+                </post>
+                <post number="104" type="changedparameters">
+                    <stuff newvalue="0.1" what="changedparameter" oldvalue="0.01" parametername="V" objectname="Hydraulic Volume Multi Port"/>
+                </post>
+                <post number="105" type="changedparameters">
+                    <stuff newvalue="0" what="changedparameter" oldvalue="0.005" parametername="PVa::Value" objectname="Gas Accumulator"/>
+                    <stuff newvalue="0" what="changedparameter" oldvalue="1e7" parametername="Ppa::Value" objectname="Gas Accumulator"/>
+                </post>
+                <post number="106" type="changedparameters">
+                    <stuff newvalue="1e6" what="changedparameter" oldvalue="1e5" parametername="P1::Pressure" objectname="Hydraulic Volume Multi Port"/>
+                </post>
+                <post number="107" type="changedparameters">
+                    <stuff newvalue="0.001" what="changedparameter" oldvalue="0" parametername="V0" objectname="Gas Accumulator"/>
+                </post>
+                <post number="108" type="changedparameters">
+                    <stuff newvalue="1.5e+007" what="changedparameter" oldvalue="1e+007" parametername="p0" objectname="Gas Accumulator"/>
+                </post>
+                <post number="109" type="changedparameters">
+                    <stuff newvalue="0.001" what="changedparameter" oldvalue="0.1" parametername="V" objectname="Hydraulic Volume Multi Port"/>
+                </post>
+                <post number="110" type="changedparameters">
+                    <stuff newvalue="0" what="changedparameter" oldvalue="1e6" parametername="P1::Pressure" objectname="Hydraulic Volume Multi Port"/>
+                </post>
+                <post number="111" type="changedparameters">
+                    <stuff newvalue=".3e-4" what="changedparameter" oldvalue="1e-3" parametername="y_A" objectname="Sine Wave"/>
+                </post>
             </hopsanundo>
         </hopsangui>
         <objects>
@@ -819,12 +859,17 @@
                 <parameters>
                     <parameter value="0" type="double" name="t_start"/>
                     <parameter value=".1" type="double" name="f"/>
-                    <parameter value="1e-3" type="double" name="y_A"/>
+                    <parameter value=".3e-4" type="double" name="y_A"/>
                     <parameter value="0" type="double" name="y_offset"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2168" y="2592" flipped="false" a="0"/>
+                    <pose x="2156" y="2593" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSineWave" displayname="Sine Wave">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="HydraulicPressureSensor" name="Pressure Transducer">
@@ -834,6 +879,11 @@
                 <hopsangui>
                     <pose x="2424" y="2557" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="HydraulicPressureSensor" displayname="Pressure Transducer">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="SignalSink" name="Sink">
@@ -841,19 +891,29 @@
                 <hopsangui>
                     <pose x="2572" y="2369" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSink" displayname="Sink">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="HydraulicVolumeMultiPort" name="Hydraulic Volume Multi Port">
                 <parameters>
                     <parameter value="0" type="double" name="P1::Flow"/>
-                    <parameter value="1e6" type="double" name="P1::Pressure"/>
-                    <parameter value="0.01" type="double" name="V"/>
+                    <parameter value="0" type="double" name="P1::Pressure"/>
+                    <parameter value="0.001" type="double" name="V"/>
                     <parameter value="1e+009" type="double" name="Beta_e"/>
                     <parameter value="0.1" type="double" name="alpha"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2363" y="2592" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="HydraulicVolumeMultiPort" displayname="Hydraulic Volume Multi Port">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="SignalSink" name="Sink_1">
@@ -861,6 +921,11 @@
                 <hopsangui>
                     <pose x="2669" y="2594" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSink" displayname="Sink_1">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="HydraulicFlowSourceQ" name="Q-type Flow Source">
@@ -870,6 +935,11 @@
                 <hopsangui>
                     <pose x="2238" y="2593" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="HydraulicFlowSourceQ" displayname="Q-type Flow Source">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="SignalIntegrator2" name="Integrator">
@@ -879,6 +949,11 @@
                 <hopsangui>
                     <pose x="2227" y="2644" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalIntegrator2" displayname="Integrator">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="SignalSink" name="Sink_2">
@@ -886,20 +961,30 @@
                 <hopsangui>
                     <pose x="2627" y="2444" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSink" displayname="Sink_2">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="HydraulicAckumulator" name="Gas Accumulator">
                 <parameters>
                     <parameter value="0" type="double" name="PVa::Value"/>
-                    <parameter value="1e7" type="double" name="Ppa::Value"/>
-                    <parameter value="1e+007" type="double" name="p0"/>
-                    <parameter value="0.01" type="double" name="V0"/>
+                    <parameter value="0" type="double" name="Ppa::Value"/>
+                    <parameter value="1.5e+007" type="double" name="p0"/>
+                    <parameter value="0.001" type="double" name="V0"/>
                     <parameter value="1e-008" type="double" name="Kca"/>
                     <parameter value="1.2" type="double" name="kappa"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2363" y="2476" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="HydraulicAckumulator" displayname="Gas Accumulator">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <textboxwidget>
@@ -959,8 +1044,8 @@
             <connect endport="in" endcomponent="Q-type Flow Source" startport="out" startcomponent="Sine Wave">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2180.50000000000000000000" y="2592.00000000000000000000"/>
-                        <coordinate x="2206.00000000000000000000" y="2592.00000000000000000000"/>
+                        <coordinate x="2168.50000000000000000000" y="2593.00000000000000000000"/>
+                        <coordinate x="2206.00000000000000000000" y="2593.00000000000000000000"/>
                         <coordinate x="2206.00000000000000000000" y="2593.00000000000000000000"/>
                         <coordinate x="2226.00000000000000000000" y="2593.00000000000000000000"/>
                     </coordinates>
@@ -975,8 +1060,8 @@
             <connect endport="in" endcomponent="Integrator" startport="out" startcomponent="Sine Wave">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2180.50000000000000000000" y="2592.00000000000000000000"/>
-                        <coordinate x="2189.50000000000000000000" y="2592.00000000000000000000"/>
+                        <coordinate x="2168.50000000000000000000" y="2593.00000000000000000000"/>
+                        <coordinate x="2189.50000000000000000000" y="2593.00000000000000000000"/>
                         <coordinate x="2189.50000000000000000000" y="2644.00000000000000000000"/>
                         <coordinate x="2209.50000000000000000000" y="2644.00000000000000000000"/>
                     </coordinates>
