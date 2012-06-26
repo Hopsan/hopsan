@@ -160,7 +160,6 @@ void hopsan::register_components(hopsan::ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("SignalMin", SignalMin::Creator);
     pComponentFactory->registerCreatorFunction("SignalMax", SignalMax::Creator);
     pComponentFactory->registerCreatorFunction("SignalSoftStep", SignalSoftStep::Creator);
-    pComponentFactory->registerCreatorFunction("SignalRoute", SignalRoute::Creator);
     pComponentFactory->registerCreatorFunction("SignalIntegrator", SignalIntegrator::Creator);
     pComponentFactory->registerCreatorFunction("SignalIntegrator2", SignalIntegrator2::Creator);
     pComponentFactory->registerCreatorFunction("SignalIntegratorLimited", SignalIntegratorLimited::Creator);

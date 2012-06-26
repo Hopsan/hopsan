@@ -79,7 +79,7 @@ namespace hopsan {
             mND_p_vec.resize(mNumPorts);
             mND_c_vec.resize(mNumPorts);
             mND_Zc_vec.resize(mNumPorts);
-            for (size_t i=0; i<mNumPorts; ++i)
+            for (int i=0; i<int(mNumPorts); ++i)
             {
                 mND_p_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::PRESSURE);
                 mND_c_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::WAVEVARIABLE);

@@ -57,7 +57,6 @@ HEADERS += \
     code/Signal/SignalSecondOrderTransferFunction.hpp \
     code/Signal/SignalSecondOrderFilter.hpp \
     code/Signal/SignalSaturation.hpp \
-    code/Signal/SignalRoute.hpp \
     code/Signal/SignalRamp.hpp \
     code/Signal/SignalQuadRoute.hpp \
     code/Signal/SignalPulse.hpp \

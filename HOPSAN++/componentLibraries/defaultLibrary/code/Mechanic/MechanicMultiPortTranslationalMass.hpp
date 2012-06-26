@@ -100,22 +100,22 @@ namespace hopsan {
 
             for (size_t i=0; i<mNumPorts1; ++i)
             {
-                mvpN_f1[i]  = getSafeNodeDataPtr(mpP1, NodeMechanic::FORCE, 0.0, i);
-                mvpN_x1[i]  = getSafeNodeDataPtr(mpP1, NodeMechanic::POSITION, 0.0, i);
-                mvpN_v1[i]  = getSafeNodeDataPtr(mpP1, NodeMechanic::VELOCITY, 0.0, i);
-                mvpN_me1[i]  = getSafeNodeDataPtr(mpP1, NodeMechanic::EQMASS, 0.0, i);
-                mvpN_c1[i]  = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE, 0.0, i);
-                mvpN_Zx1[i] = getSafeNodeDataPtr(mpP1, NodeMechanic::CHARIMP, 0.0, i);
+                mvpN_f1[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::FORCE, 0.0);
+                mvpN_x1[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::POSITION, 0.0);
+                mvpN_v1[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::VELOCITY, 0.0);
+                mvpN_me1[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::EQMASS, 0.0);
+                mvpN_c1[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::WAVEVARIABLE, 0.0);
+                mvpN_Zx1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::CHARIMP, 0.0);
             }
 
             for (size_t i=0; i<mNumPorts2; ++i)
             {
-                mvpN_f2[i]  = getSafeNodeDataPtr(mpP2, NodeMechanic::FORCE, 0.0, i);
-                mvpN_x2[i]  = getSafeNodeDataPtr(mpP2, NodeMechanic::POSITION, 0.0, i);
-                mvpN_v2[i]  = getSafeNodeDataPtr(mpP2, NodeMechanic::VELOCITY, 0.0, i);
-                mvpN_me2[i]  = getSafeNodeDataPtr(mpP2, NodeMechanic::EQMASS, 0.0, i);
-                mvpN_c2[i]  = getSafeNodeDataPtr(mpP2, NodeMechanic::WAVEVARIABLE, 0.0, i);
-                mvpN_Zx2[i] = getSafeNodeDataPtr(mpP2, NodeMechanic::CHARIMP, 0.0, i);
+                mvpN_f2[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanic::FORCE, 0.0);
+                mvpN_x2[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanic::POSITION, 0.0);
+                mvpN_v2[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanic::VELOCITY, 0.0);
+                mvpN_me2[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanic::EQMASS, 0.0);
+                mvpN_c2[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanic::WAVEVARIABLE, 0.0);
+                mvpN_Zx2[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanic::CHARIMP, 0.0);
             }
 
 

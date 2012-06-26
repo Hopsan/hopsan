@@ -112,23 +112,24 @@ class HydraulicCylinderC : public ComponentC
             mvpND_Zc2.resize(mNumPorts2);
 
             //Assign node data pointers
-            for (size_t i=0; i<mNumPorts1; ++i)
+            for (int i=0; i<int(mNumPorts1); ++i)
             {
-                mvpND_p1[i] = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE, 0.0, i);
-                mvpND_q1[i] = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW, 0.0, i);
-                mvpND_c1[i] = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE, 0.0, i);
-                mvpND_Zc1[i] = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP, 0.0, i);
+
+                mvpND_p1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::PRESSURE, 0.0);
+                mvpND_q1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::FLOW, 0.0);
+                mvpND_c1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::WAVEVARIABLE, 0.0);
+                mvpND_Zc1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::CHARIMP, 0.0);
 
                 *mvpND_p1[i] = getStartValue(mpP1, NodeHydraulic::PRESSURE);
                 *mvpND_q1[i] = getStartValue(mpP1, NodeHydraulic::FLOW)/mNumPorts1;
                 *mvpND_c1[i] = getStartValue(mpP1, NodeHydraulic::PRESSURE);
             }
-            for (size_t i=0; i<mNumPorts2; ++i)
+            for (int i=0; i<int(mNumPorts2); ++i)
             {
-                mvpND_p2[i] = getSafeNodeDataPtr(mpP2, NodeHydraulic::PRESSURE, 0.0, i);
-                mvpND_q2[i] = getSafeNodeDataPtr(mpP2, NodeHydraulic::FLOW, 0.0, i);
-                mvpND_c2[i] = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE, 0.0, i);
-                mvpND_Zc2[i] = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP, 0.0, i);
+                mvpND_p2[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeHydraulic::PRESSURE, 0.0);
+                mvpND_q2[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeHydraulic::FLOW, 0.0);
+                mvpND_c2[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeHydraulic::WAVEVARIABLE, 0.0);
+                mvpND_Zc2[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeHydraulic::CHARIMP, 0.0);
 
                 *mvpND_p2[i] = getStartValue(mpP2, NodeHydraulic::PRESSURE);
                 *mvpND_q2[i] = getStartValue(mpP2, NodeHydraulic::FLOW)/mNumPorts2;
@@ -160,8 +161,8 @@ class HydraulicCylinderC : public ComponentC
             if(V1<V1min) V1 = V1min;
             if(V2<V2min) V2 = V2min;
 
-            Zc1 = (mNumPorts1+2) / 2 * betae/V1*mTimestep/(1-alpha);    //Number of ports in volume is 2 internal plus the external ones
-            Zc2 = (mNumPorts2+2) / 2 * betae/V2*mTimestep/(1-alpha);
+            Zc1 = (double(mNumPorts1)+2.0) / 2.0 * betae/V1*mTimestep/(1.0-alpha);    //Number of ports in volume is 2 internal plus the external ones
+            Zc2 = (double(mNumPorts2)+2.0) / 2.0 * betae/V2*mTimestep/(1.0-alpha);
             Zx3 = A1*A1*Zc1 +A2*A2*Zc2 + bp;
 
             //Internal flows
@@ -211,7 +212,7 @@ class HydraulicCylinderC : public ComponentC
             me = (*mpND_me);
 
             //Leakage flow
-            qLeak = cLeak*(cl1-cl2)/(1+cLeak*(Zc1+Zc2));
+            qLeak = cLeak*(cl1-cl2)/(1.0+cLeak*(Zc1+Zc2));
 
             //Internal flows
             qi1 = v3*A1;
@@ -249,26 +250,26 @@ class HydraulicCylinderC : public ComponentC
             //   cl1 = Wave variable for leakage port
 
             //Volume 1
-            Zc1 = (mNumPorts1+2) / 2 * betae/V1*mTimestep/(1-alpha);    //Number of ports in volume is 2 internal plus the external ones
-            p1mean = (ci1 + Zc1*2*qi1) + (cl1 + Zc1*2*(-qLeak));
+            Zc1 = (double(mNumPorts1)+2.0) / 2.0 * betae/V1*mTimestep/(1.0-alpha);    //Number of ports in volume is 2 internal plus the external ones
+            p1mean = (ci1 + Zc1*2.0*qi1) + (cl1 + Zc1*2.0*(-qLeak));
             for(size_t i=0; i<mNumPorts1; ++i)
             {
                 p1mean += (*mvpND_c1[i]) + 2.0*Zc1*(*mvpND_q1[i]);
             }
             p1mean = p1mean/(mNumPorts1+2);
-            ci1 = std::max(0.0, alpha * ci1 + (1.0 - alpha)*(p1mean*2 - ci1 - 2*Zc1*qi1));
-            cl1 = std::max(0.0, alpha * cl1 + (1.0 - alpha)*(p1mean*2 - cl1 - 2*Zc1*(-qLeak)));
+            ci1 = std::max(0.0, alpha * ci1 + (1.0 - alpha)*(p1mean*2.0 - ci1 - 2.0*Zc1*qi1));
+            cl1 = std::max(0.0, alpha * cl1 + (1.0 - alpha)*(p1mean*2.0 - cl1 - 2.0*Zc1*(-qLeak)));
 
             //Volume 2
-            Zc2 = (mNumPorts2+2) / 2 * betae/V2*mTimestep/(1-alpha);
-            p2mean = (ci2 + Zc2*2*qi2) + (cl2 + Zc2*2*qLeak);
+            Zc2 = (double(mNumPorts2)+2.0) / 2.0 * betae/V2*mTimestep/(1.0-alpha);
+            p2mean = (ci2 + Zc2*2.0*qi2) + (cl2 + Zc2*2.0*qLeak);
             for(size_t i=0; i<mNumPorts2; ++i)
             {
                 p2mean += (*mvpND_c2[i]) + 2.0*Zc2*(*mvpND_q2[i]);
             }
-            p2mean = p2mean/(mNumPorts2+2);
-            ci2 = std::max(0.0, alpha * ci2 + (1.0 - alpha)*(p2mean*2 - ci2 - 2*Zc2*qi2));
-            cl2 = std::max(0.0, alpha * cl2 + (1.0 - alpha)*(p2mean*2 - cl2 - 2*Zc2*qLeak));
+            p2mean = p2mean/(double(mNumPorts2)+2.0);
+            ci2 = std::max(0.0, alpha * ci2 + (1.0 - alpha)*(p2mean*2.0 - ci2 - 2.0*Zc2*qi2));
+            cl2 = std::max(0.0, alpha * cl2 + (1.0 - alpha)*(p2mean*2.0 - cl2 - 2.0*Zc2*qLeak));
 
 
             //limitStroke(CxLim, ZxLim, x3, v3, me, sl);
@@ -324,14 +325,14 @@ class HydraulicCylinderC : public ComponentC
             if (-x3 > sl)
             {
                 ZxLim0 = wfak*me/mTimestep;
-                ZxLim = ZxLim0/(1 - alfa);
+                ZxLim = ZxLim0/(1.0 - alfa);
                 FxLim = ZxLim0 * (x3 + sl) / mTimestep;
                 NewCxLim = FxLim + ZxLim*v3;
             }
             else if (-x3 < 0.0)
             {
                 ZxLim0 = wfak*me/mTimestep;
-                ZxLim = ZxLim0/(1 - alfa);
+                ZxLim = ZxLim0/(1.0 - alfa);
                 FxLim = ZxLim0*x3/mTimestep;
                 NewCxLim = FxLim + ZxLim*v3;
             }
@@ -342,7 +343,7 @@ class HydraulicCylinderC : public ComponentC
             }
 
             // Filtering of the characteristics
-            CxLim = alfa * CxLim + (1 - alfa) * NewCxLim;
+            CxLim = alfa * CxLim + (1.0 - alfa) * NewCxLim;
         }
     };
 }

@@ -84,12 +84,12 @@ namespace hopsan {
 
             mZc = mNumPorts*mTimestep/(2.0*mCapacitance)/(1.0-mAlpha);
 
-            for (size_t i=0; i<mNumPorts; ++i)
+            for (int i=0; i<int(mNumPorts); ++i)
             {
-                mvpN_uel[i]  = getSafeNodeDataPtr(mpPel1, NodeElectric::VOLTAGE, 0.0, i);
-                mvpN_iel[i]  = getSafeNodeDataPtr(mpPel1, NodeElectric::CURRENT, 0.0, i);
-                mvpN_cel[i]  = getSafeNodeDataPtr(mpPel1, NodeElectric::WAVEVARIABLE, 0.0, i);
-                mvpN_Zcel[i] = getSafeNodeDataPtr(mpPel1, NodeElectric::CHARIMP, 0.0, i);
+                mvpN_uel[i]  = getSafeMultiPortNodeDataPtr(mpPel1, i, NodeElectric::VOLTAGE, 0.0);
+                mvpN_iel[i]  = getSafeMultiPortNodeDataPtr(mpPel1, i, NodeElectric::CURRENT, 0.0);
+                mvpN_cel[i]  = getSafeMultiPortNodeDataPtr(mpPel1, i, NodeElectric::WAVEVARIABLE, 0.0);
+                mvpN_Zcel[i] = getSafeMultiPortNodeDataPtr(mpPel1, i, NodeElectric::CHARIMP, 0.0);
 
                 *mvpN_uel[i] = getStartValue(mpPel1, NodeElectric::VOLTAGE);
                 *mvpN_iel[i] = getStartValue(mpPel1, NodeElectric::CURRENT)/mNumPorts;
@@ -108,7 +108,7 @@ namespace hopsan {
             {
                 cTot += (*mvpN_cel[i]) + 2.0*mZc*(*mvpN_iel[i]);
             }
-            uAvg = cTot/mNumPorts;
+            uAvg = cTot/double(mNumPorts);
 
             for (size_t i=0; i<mNumPorts; ++i)
             {

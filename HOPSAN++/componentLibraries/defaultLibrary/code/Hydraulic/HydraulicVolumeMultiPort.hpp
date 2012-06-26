@@ -96,17 +96,17 @@ namespace hopsan {
             double pTot=0.0;
             for (size_t i=0; i<mNumPorts; ++i)
             {
-                mvpN_p[i]  = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE, 0.0, i);
-                mvpN_q[i]  = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW, 0.0, i);
-                mvpN_c[i]  = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE, 0.0, i);
-                mvpN_Zc[i] = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP, 0.0, i);
+                mvpN_p[i]  = getSafeMultiPortNodeDataPtr(mpP1, int(i), NodeHydraulic::PRESSURE, 0.0);
+                mvpN_q[i]  = getSafeMultiPortNodeDataPtr(mpP1, int(i), NodeHydraulic::FLOW, 0.0);
+                mvpN_c[i]  = getSafeMultiPortNodeDataPtr(mpP1, int(i), NodeHydraulic::WAVEVARIABLE, 0.0);
+                mvpN_Zc[i] = getSafeMultiPortNodeDataPtr(mpP1, int(i), NodeHydraulic::CHARIMP, 0.0);
 
                 *mvpN_p[i]  = getStartValue(mpP1, NodeHydraulic::PRESSURE, i);
                 *mvpN_q[i]  = getStartValue(mpP1, NodeHydraulic::FLOW, i);
                 pTot       += getStartValue(mpP1,NodeHydraulic::PRESSURE, i)+mZc*getStartValue(mpP1,NodeHydraulic::FLOW, i);
                 *mvpN_Zc[i] = mZc;
             }
-            pTot = pTot/mNumPorts;
+            pTot = pTot/double(mNumPorts);
             for (size_t i=0; i<mNumPorts; ++i)
             {
                 *mvpN_c[i] = pTot*2.0-(*mvpN_p[i]) - mZc*(*mvpN_q[i]);
@@ -133,7 +133,7 @@ namespace hopsan {
                     {
                         cTot += (*mvpN_c[i]) + 2.0*mZc*(*mvpN_q[i]);
                     }
-                    pAvg = cTot/mNumPorts;
+                    pAvg = cTot/double(mNumPorts);
 
                     for (size_t i=0; i<mNumPorts; ++i)
                     {
