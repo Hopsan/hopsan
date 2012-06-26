@@ -92,11 +92,26 @@ void printWaitingMessages(const bool printDebug)
     while (HopsanEssentials::getInstance()->checkMessage() > 0)
     {
         HopsanEssentials::getInstance()->getMessage(msg,type,tag);
+        //! @todo need yellow for warnings, or maybe orange
+        if (type == "error")
+        {
+            setColor(Red);
+        }
+        else if (type == "debug")
+        {
+            setColor(Blue);
+        }
+        else
+        {
+            setColor(White);
+        }
+
         if ((type != "debug") || printDebug)
         {
             cout << msg << endl;
         }
     }
+    setColor(Reset);
 }
 
 //! @brief Helpfunction to print timestep info for a system
@@ -161,7 +176,7 @@ void printComponentHierarchy(ComponentSystem *pSystem, std::string prefix,
 
 //! @brief Changes color on console output
 //! @param color Color number (0-15)
-//! @todo Make this support Linux as well
+//! @todo Need yellow color also
 void setColor(const ColorsT color)
 {
 #ifdef WIN32
@@ -442,6 +457,14 @@ bool performModelTest(const std::string hvcFilePath)
                         {
                             //! @todo maybe use simulation handler object
                             //First simulation
+                            if (!pRootSystem->isSimulationOk())
+                            {
+                                printWaitingMessages(false);
+                                setColor(Red);
+                                cout << "Initialize failed, Simulation aborted!" << endl;
+                                return false;
+                            }
+
                             if (pRootSystem->initialize(startTime, stopTime))
                             {
                                 pRootSystem->simulate(startTime, stopTime);
@@ -523,14 +546,14 @@ bool performModelTest(const std::string hvcFilePath)
                         if(!compareVectors(vSim1, vRef, tolerance))
                         {
                             setColor(Red);
-                            cout << "Test failed: " << pRootSystem->getName() << ":" << compName << ":" << portName << ":" << varname << endl;
+                            cout << "Validation data test failed: " << pRootSystem->getName() << ":" << compName << ":" << portName << ":" << varname << endl;
                             return false;
                         }
 
                         if(!compareVectors(vSim1, vSim2, tolerance))
                         {
                             setColor(Red);
-                            cout << "Test failed (inconsistent result): " << pRootSystem->getName() << ":" << compName << ":" << portName << ":" << varname << endl;
+                            cout << "Consistency test failed (two consecutive simulations gave different results): " << pRootSystem->getName() << ":" << compName << ":" << portName << ":" << varname << endl;
                             return false;
                         }
 

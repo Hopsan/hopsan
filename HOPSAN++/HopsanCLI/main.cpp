@@ -104,8 +104,12 @@ int main(int argc, char *argv[])
 
             if (pRootSystem!=0)
             {
+                //! @todo maybe use simulation handler object instead
+                TicToc isoktimer("IsOkTime");
+                bool initSuccess = pRootSystem->isSimulationOk();
+                isoktimer.TocPrint();
                 TicToc initTimer("InitializeTime");
-                bool initSuccess = pRootSystem->initialize(startTime, stopTime);
+                initSuccess = initSuccess && pRootSystem->initialize(startTime, stopTime);
                 initTimer.TocPrint();
                 if (initSuccess)
                 {
@@ -115,8 +119,12 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
+                    printWaitingMessages(false);
+                    setColor(Red);
                     cout << "Initialize failed, Simulation aborted!" << endl;
                 }
+
+                pRootSystem->finalize();
             }
 
             //cout << endl << "Component Hieararcy:" << endl << endl;
@@ -141,7 +149,6 @@ int main(int argc, char *argv[])
         if(!testFilePath.empty())
         {
             returnSuccess = performModelTest(testFilePath);
-            setColor(White); //Reset terminal color
         }
         else
         {
@@ -156,6 +163,7 @@ int main(int argc, char *argv[])
         std::cout << "error: " << e.error() << " for arg " << e.argId() << std::endl;
     }
 
+    setColor(Reset); //Reset terminal color
     if (returnSuccess)
     {
         return 0;
