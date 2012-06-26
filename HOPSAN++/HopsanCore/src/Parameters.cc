@@ -523,7 +523,7 @@ bool Parameters::setParameter(const std::string name, const std::string value, c
                     }
                     else
                     {
-                        cout << (*parIt)->getName() << endl;//debug
+                        //cout << (*parIt)->getName() << endl;//debug
                         ++parIt;
                     }
                 }
