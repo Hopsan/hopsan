@@ -25,9 +25,12 @@ namespace hopsan {
 
     private:
         double gearRatio, J, B, k;
-        double num[3];
-        double den[3];
-        DoubleIntegratorWithDamping mIntegrator;
+        double mNumTheta[3];
+        double mDenTheta[3];
+        double mNumOmega[2];
+        double mDenOmega[2];
+        SecondOrderTransferFunction mFilterTheta;
+        FirstOrderTransferFunction mFilterOmega;
         double *mpND_t1, *mpND_a1, *mpND_w1, *mpND_c1, *mpND_Zx1,
                *mpND_t2, *mpND_a2, *mpND_w2, *mpND_c2, *mpND_Zx2;
         double t1, a1, w1, c1, Zx1,
@@ -72,39 +75,58 @@ namespace hopsan {
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::WAVEVARIABLE);
             mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::CHARIMP);
 
-            t1 = (*mpND_t1);
-            a1 = (*mpND_a1);
-            w1 = (*mpND_w1);
+            t1 = -(*mpND_t1)*gearRatio;
+            a1 = -(*mpND_a1)/gearRatio;
+            w1 = -(*mpND_w1)/gearRatio;
+            t2 = (*mpND_t2);
+            a2 = (*mpND_a2);
+            w2 = (*mpND_w2);
 
-            mIntegrator.initialize(mTimestep, 0, 0, 0, 0);
+            mNumTheta[0] = 1.0;
+            mNumTheta[1] = 0.0;
+            mNumTheta[2] = 0.0;
+            mDenTheta[0] = 0;
+            mDenTheta[1] = B;
+            mDenTheta[2] = J;
+            mNumOmega[0] = 1.0;
+            mNumOmega[1] = 0.0;
+            mDenOmega[0] = B;
+            mDenOmega[1] = J;
+
+            mFilterTheta.initialize(mTimestep, mNumTheta, mDenTheta, t1-t2, -a1);
+            mFilterOmega.initialize(mTimestep, mNumOmega, mDenOmega, t1-t2, -w1);
         }
 
 
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            c1  = (*mpND_c1)*gearRatio;
+            c1  = -(*mpND_c1)*gearRatio;
             Zx1 = (*mpND_Zx1)*pow(gearRatio, 2.0);
             c2  = (*mpND_c2);
             Zx2 = (*mpND_Zx2);
 
             //Mass equations
-            mIntegrator.setDamping((B+Zx1+Zx2) / J * mTimestep);
-            mIntegrator.integrateWithUndo((c1-c2)/J);
-            w2 = mIntegrator.valueFirst();
-            a2 = mIntegrator.valueSecond();
-            w1 = -w2*gearRatio;
-            a1 = -a2*gearRatio;
-            t1 = (c1 + Zx1*w1)/gearRatio;
+            mDenTheta[1] = (B+Zx1+Zx2);
+            mDenOmega[0] = (B+Zx1+Zx2);
+            mFilterTheta.setDen(mDenTheta);
+            mFilterOmega.setDen(mDenOmega);
+
+            a2 = mFilterTheta.update(c1-c2);
+            w2 = mFilterOmega.update(c1-c2);
             t2 = c2 + Zx2*w2;
+
+            w1 = w2*gearRatio;
+            a1 = a2*gearRatio;
+            t1 = (-c1 - Zx1*w1)/gearRatio;
 
             //Write new values to nodes
             (*mpND_t1) = t1;
             (*mpND_a1) = a1;
             (*mpND_w1) = w1;
-            (*mpND_t2) = -t2;
-            (*mpND_a2) = -a2;
-            (*mpND_w2) = -w2;
+            (*mpND_t2) = t2;
+            (*mpND_a2) = a2;
+            (*mpND_w2) = w2;
         }
     };
 }
