@@ -660,39 +660,36 @@ void Component::deletePort(const string name)
 //! @param[in] pPort A pointer to the port from which to fetch NodeData pointer
 //! @param[in] dataId The enum id for the node value to fetch pointer to
 //! @param[in] defaultValue Optional default value if port should not be connected (optional), if ommitet it will be 0
-//! @param[in] portIdx The index of the subport in a multiport
 //! @returns A pointer to the specified NodeData or a pointer to dummy NodeData
 //! @details It is only ment to be used inside individual component code and automatically handles creation of dummy veriables in case optional ports are not connected
 //! @todo Dont know if name really good, should indicate that you should only run this once in initialize (otherwise a lot of new doubls may be created)
-double *Component::getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue, int portIdx)
+double *Component::getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue)
 {
-    std::stringstream ss;
-    ss << getName() << "::getSafeNodeDataPtr";
-    addLogMess(ss.str());
-
-    //If this is one of the multiports and we have NOT given a subport idx to use then give an error message to the user so that they KNOW that they have made a mistake
-    //! @todo it would be nice to solve this in some other way to avoid unecessary code, duoble implemntation in the function bellow is one way but that is even worse, this check would still be needed
-    if ((pPort->getPortType() >= MULTIPORT) && (portIdx<0))
+    //If this is one of the multiports then give an error message to the user so that they KNOW that they have made a misstake
+    if (pPort->getPortType() >= MULTIPORT)
     {
         gCoreMessageHandler.addErrorMessage(string("Port: ")+pPort->getPortName()+string(" is a multiport. Use getSafeMultiPortNodeDataPtr() instead of getSafeNodeDataPtr()"));
     }
-    portIdx = max(portIdx,0); //Avoid underflow in size_t conversion in getNodeDataPtr()
-
-    return pPort->getSafeNodeDataPtr(dataId, defaultValue, portIdx);
+    return pPort->getSafeNodeDataPtr(dataId, defaultValue, 0);
 }
 
 //! @brief This is a help function that returns a pointer to desired NodeData, only for Advanced Use instead of read/write Node
 //! @ingroup ConvenientPortFunctions
 //! @param[in] pPort A pointer to the port from which to fetch NodeData pointer
+//! @param[in] portIdx The index of the subport in a multiport
 //! @param[in] dataId The enum id for the node value to fetch pointer to
 //! @param[in] defaultValue Optional default value if port should not be connected (optional), if ommitet it will be 0
-//! @param[in] portIdx The index of the subport in a multiport
 //! @returns A pointer to the specified NodeData or a pointer to dummy NodeData
 //! @details It is only ment to be used inside individual component code and automatically handles creation of dummy veriables in case optional ports are not connected
 //! @todo Dont know if name really good, should indicate that you should only run this once in initialize (otherwise a lot of new doubls may be created)
 double *Component::getSafeMultiPortNodeDataPtr(Port* pPort, const int portIdx, const int dataId, const double defaultValue)
 {
-    return getSafeNodeDataPtr(pPort, dataId, defaultValue, portIdx);
+    //If this is not a multiport then give an error message to the user so that they KNOW that they have made a misstake
+    if (pPort->getPortType() < MULTIPORT)
+    {
+        gCoreMessageHandler.addErrorMessage(string("Port: ")+pPort->getPortName()+string(" is NOT a multiport. Use getSafeNodeDataPtr() instead of getSafeMultiPortNodeDataPtr()"));
+    }
+    return actualGetSafeNodeDataPtr(pPort, dataId, defaultValue, portIdx);
 }
 
 
@@ -709,9 +706,35 @@ void Component::setSystemParent(ComponentSystem *pComponentSystem)
     mpSystemParent = pComponentSystem;
 }
 
+//! @brief This is suposed to be used by hopsan essentials to set the typename to the same as the registered key value
 void Component::setTypeName(const string typeName)
 {
     mTypeName = typeName;
+}
+
+//! @brief This is the actual help function that returns a pointer to desired NodeData, only for Advanced Use instead of read/write Node
+//! @param[in] pPort A pointer to the port from which to fetch NodeData pointer
+//! @param[in] dataId The enum id for the node value to fetch pointer to
+//! @param[in] defaultValue Optional default value if port should not be connected (optional), if ommitet it will be 0
+//! @param[in] portIdx The index of the subport in a multiport
+//! @returns A pointer to the specified NodeData or a pointer to dummy NodeData
+//! @details This is the actual function, the others are public wrapers that can give you warning messages
+double *Component::actualGetSafeNodeDataPtr(Port *pPort, const int dataId, const double defaultValue, int portIdx)
+{
+    std::stringstream ss;
+    ss << getName() << "::actualGetSafeNodeDataPtr";
+    addLogMess(ss.str());
+
+    //If this is one of the multiports and we have NOT given a subport idx to use then give an error message to the user so that they KNOW that they have made a mistake
+    //! @todo it would be nice to solve this in some other way to avoid unecessary code, duoble implemntation in the function bellow is one way but that is even worse, this check would still be needed
+    if ((pPort->getPortType() >= MULTIPORT) && (portIdx<0))
+    {
+        gCoreMessageHandler.addErrorMessage(string("Port: ")+pPort->getPortName()+string(" is a multiport. Use getSafeMultiPortNodeDataPtr() instead of getSafeNodeDataPtr()"));
+    }
+    portIdx = max(portIdx,0); //Avoid underflow in size_t conversion in getNodeDataPtr()
+
+    return pPort->getSafeNodeDataPtr(dataId, defaultValue, portIdx);
+
 }
 
 //! @todo Maby not have this function, solve in some other nicer way

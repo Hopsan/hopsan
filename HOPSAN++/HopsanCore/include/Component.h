@@ -163,7 +163,7 @@ protected:
     void deletePort(const std::string name);
 
     //NodeData ptr function
-    double *getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue=0, int portIdx=-1);
+    double *getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue=0);
     double *getSafeMultiPortNodeDataPtr(Port* pPort, const int portIdx, const int dataId, const double defaultValue=0);
 
     //Unique name functions
@@ -176,7 +176,7 @@ protected:
     double mTime;
     bool mIsComponentSystem;
 
-    size_t mModelHierarchyDepth; //This variable containes the depth of the system in the model hierarchy, (used by connect to figure out where to store nodes)
+    size_t mModelHierarchyDepth; //!< This variable containes the depth of the system in the model hierarchy, (used by connect to figure out where to store nodes)
     std::vector< std::pair<double*, double*> > mDynamicParameterDataPtrs;
 
     ComponentSystem* mpSystemParent;
@@ -187,7 +187,8 @@ private:
 
     //Private member functions
     void setSystemParent(ComponentSystem *pComponentSystem);
-    void setTypeName(const std::string typeName); //This is suposed to be used by hopsan essentials to set the typename to the same as the registered key value
+    void setTypeName(const std::string typeName);
+    double *actualGetSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue=0, int portIdx=-1);
 
     //Private member variables
     std::string mName;
