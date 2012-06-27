@@ -164,7 +164,7 @@ protected:
 
     //NodeData ptr function
     double *getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue=0);
-    double *getSafeMultiPortNodeDataPtr(Port* pPort, const int portIdx, const int dataId, const double defaultValue=0);
+    double *getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx, const int dataId, const double defaultValue=0);
 
     //Unique name functions
     virtual std::string determineUniquePortName(std::string portname);
@@ -188,7 +188,6 @@ private:
     //Private member functions
     void setSystemParent(ComponentSystem *pComponentSystem);
     void setTypeName(const std::string typeName);
-    double *actualGetSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue=0, int portIdx=-1);
 
     //Private member variables
     std::string mName;
