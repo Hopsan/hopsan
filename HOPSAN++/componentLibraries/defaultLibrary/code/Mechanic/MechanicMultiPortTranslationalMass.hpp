@@ -98,7 +98,7 @@ namespace hopsan {
             mvpStartX1.resize(mNumPorts1);
             mvpStartX2.resize(mNumPorts2);
 
-            for (int i=0; i<int(mNumPorts1); ++i)
+            for (size_t i=0; i<mNumPorts1; ++i)
             {
                 mvpN_f1[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::FORCE, 0.0);
                 mvpN_x1[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::POSITION, 0.0);
@@ -108,7 +108,7 @@ namespace hopsan {
                 mvpN_Zx1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::CHARIMP, 0.0);
             }
 
-            for (int i=0; i<int(mNumPorts2); ++i)
+            for (size_t i=0; i<mNumPorts2; ++i)
             {
                 mvpN_f2[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanic::FORCE, 0.0);
                 mvpN_x2[i]  = getSafeMultiPortNodeDataPtr(mpP2, i, NodeMechanic::POSITION, 0.0);

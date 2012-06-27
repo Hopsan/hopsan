@@ -112,7 +112,7 @@ class HydraulicCylinderC : public ComponentC
             mvpND_Zc2.resize(mNumPorts2);
 
             //Assign node data pointers
-            for (int i=0; i<int(mNumPorts1); ++i)
+            for (size_t i=0; i<mNumPorts1; ++i)
             {
 
                 mvpND_p1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::PRESSURE, 0.0);
@@ -121,10 +121,10 @@ class HydraulicCylinderC : public ComponentC
                 mvpND_Zc1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::CHARIMP, 0.0);
 
                 *mvpND_p1[i] = getStartValue(mpP1, NodeHydraulic::PRESSURE);
-                *mvpND_q1[i] = getStartValue(mpP1, NodeHydraulic::FLOW)/mNumPorts1;
+                *mvpND_q1[i] = getStartValue(mpP1, NodeHydraulic::FLOW)/double(mNumPorts1);
                 *mvpND_c1[i] = getStartValue(mpP1, NodeHydraulic::PRESSURE);
             }
-            for (int i=0; i<int(mNumPorts2); ++i)
+            for (size_t i=0; i<mNumPorts2; ++i)
             {
                 mvpND_p2[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeHydraulic::PRESSURE, 0.0);
                 mvpND_q2[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeHydraulic::FLOW, 0.0);
@@ -132,7 +132,7 @@ class HydraulicCylinderC : public ComponentC
                 mvpND_Zc2[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeHydraulic::CHARIMP, 0.0);
 
                 *mvpND_p2[i] = getStartValue(mpP2, NodeHydraulic::PRESSURE);
-                *mvpND_q2[i] = getStartValue(mpP2, NodeHydraulic::FLOW)/mNumPorts2;
+                *mvpND_q2[i] = getStartValue(mpP2, NodeHydraulic::FLOW)/double(mNumPorts2);
                 *mvpND_c2[i] = getStartValue(mpP2, NodeHydraulic::PRESSURE);
             }
             mpND_f3 = getSafeNodeDataPtr(mpP3, NodeMechanic::FORCE);
@@ -256,7 +256,7 @@ class HydraulicCylinderC : public ComponentC
             {
                 p1mean += (*mvpND_c1[i]) + 2.0*Zc1*(*mvpND_q1[i]);
             }
-            p1mean = p1mean/(mNumPorts1+2);
+            p1mean = p1mean/(double(mNumPorts1)+2.0);
             ci1 = std::max(0.0, alpha * ci1 + (1.0 - alpha)*(p1mean*2.0 - ci1 - 2.0*Zc1*qi1));
             cl1 = std::max(0.0, alpha * cl1 + (1.0 - alpha)*(p1mean*2.0 - cl1 - 2.0*Zc1*(-qLeak)));
 

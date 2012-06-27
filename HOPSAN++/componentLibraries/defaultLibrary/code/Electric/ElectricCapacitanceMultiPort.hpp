@@ -84,7 +84,7 @@ namespace hopsan {
 
             mZc = mNumPorts*mTimestep/(2.0*mCapacitance)/(1.0-mAlpha);
 
-            for (int i=0; i<int(mNumPorts); ++i)
+            for (size_t i=0; i<mNumPorts; ++i)
             {
                 mvpN_uel[i]  = getSafeMultiPortNodeDataPtr(mpPel1, i, NodeElectric::VOLTAGE, 0.0);
                 mvpN_iel[i]  = getSafeMultiPortNodeDataPtr(mpPel1, i, NodeElectric::CURRENT, 0.0);
