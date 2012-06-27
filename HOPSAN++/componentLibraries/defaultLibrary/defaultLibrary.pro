@@ -30,6 +30,12 @@ CONFIG(release, debug|release) {
     DEFINES *= RELEASECOMPILING
 }
 
+# Reduce compile output clutter, but show warnings
+CONFIG += silent warn_on
+
+# The compiler should be pedantic to catch all errors (optional)
+QMAKE_CXXFLAGS += -pedantic
+
 # -------------------------------------------------
 # Project files
 # -------------------------------------------------

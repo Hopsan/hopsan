@@ -22,6 +22,12 @@ LIBS *= -L$${PWD}/../../bin
 # In debug mode HopsanCore has the debug extension _d
 include(hopsanDebugReleaseCompile.prf)
 
+# Reduce compile output clutter, but show warnings
+CONFIG += silent warn_on
+
+# The compiler should be pedantic to catch all errors (optional)
+QMAKE_CXXFLAGS += -pedantic
+
 # -------------------------------------------------
 # Project files
 # -------------------------------------------------

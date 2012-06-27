@@ -36,6 +36,10 @@ INCLUDEPATH *= $${PWD}/../HopsanCore/include/
 LIBS *= -L$${PWD}/../bin -lHopsanCore$${DEBUG_EXT}
 #--------------------------------------------------------
 
+CONFIG(debug, debug|release) {
+  QMAKE_CXXFLAGS += -pedantic
+}
+
 # -------------------------------------------------
 # Platform specific additional project options
 # -------------------------------------------------
