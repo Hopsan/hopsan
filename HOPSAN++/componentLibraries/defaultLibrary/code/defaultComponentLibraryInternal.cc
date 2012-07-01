@@ -210,6 +210,7 @@ void hopsan::register_components(hopsan::ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("MechanicTranslationalMassWithCoulumbFriction", MechanicTranslationalMassWithCoulombFriction::Creator);
     pComponentFactory->registerCreatorFunction("MechanicTranslationalSpring", MechanicTranslationalSpring::Creator);
     pComponentFactory->registerCreatorFunction("MechanicTorsionalSpring", MechanicTorsionalSpring::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicRotShaft", MechanicRotShaft::Creator);
     pComponentFactory->registerCreatorFunction("MechanicRotationalInertia", MechanicRotationalInertia::Creator);
     pComponentFactory->registerCreatorFunction("MechanicRotationalInertiaWithGearRatio", MechanicRotationalInertiaWithGearRatio::Creator);
     pComponentFactory->registerCreatorFunction("MechanicRotationalInertiaWithSingleGear", MechanicRotationalInertiaWithSingleGear::Creator);
