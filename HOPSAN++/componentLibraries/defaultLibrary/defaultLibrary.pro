@@ -118,6 +118,7 @@ HEADERS += \
     code/Mechanic/MechanicRotationalInertiaWithGearRatio.hpp \
     code/Mechanic/MechanicRotationalInertiaWithCoulumbFriction.hpp \
     code/Mechanic/MechanicRotationalInertia.hpp \
+    code/Mechanic/MechanicRotShaft.hpp \
     code/Mechanic/MechanicRackAndPinion.hpp \
     code/Mechanic/MechanicPositionSensor.hpp \
     code/Mechanic/MechanicMultiPortTranslationalMass.hpp \
