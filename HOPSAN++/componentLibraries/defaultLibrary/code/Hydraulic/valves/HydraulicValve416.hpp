@@ -279,15 +279,6 @@ public:
 
 
         //LocalExpressions
-        double Ks = (1.4142135623730951*mCq)/Sqrt(mrho);
-        double Kspa = 3.14159*Ks*mFrpa*mSd*limit(mXpa0 + xvpa,0.,mmmmmXvmax + \
-mXpa0);
-        double Ksta = 3.14159*Ks*mFrta*mSd*limit(mXta0 + xvta,0.,mmmmmXvmax + \
-mXta0);
-        double Kspb = 3.14159*Ks*mFrpb*mSd*limit(mXpb0 + xvpb,0.,mmmmmXvmax + \
-mXpb0);
-        double Kstb = 3.14159*Ks*mFrtb*mSd*limit(mXtb0 + xvtb,0.,mmmmmXvmax + \
-mXtb0);
 
         //Initialize delays
 
