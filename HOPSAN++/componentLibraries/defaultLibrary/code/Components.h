@@ -180,6 +180,7 @@
 #include "Mechanic/MechanicRotationalInertiaWithCoulumbFriction.hpp"
 #include "Mechanic/MechanicFixedPosition.hpp"
 #include "Mechanic/MechanicFreeLengthWall.hpp"
+#include "Mechanic/MechanicRotShaft.hpp"
 
 /* Electric Components */
 #include "Electric/ElectricBattery.hpp"
