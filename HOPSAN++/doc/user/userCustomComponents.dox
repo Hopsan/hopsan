@@ -22,6 +22,7 @@ Hopsan uses pre-compiled components. An external component library can be loaded
 </tr>
 </table>
 \endhtmlonly
+\image latex "../../graphics/loadlibrary_icon.png" "Load External Library"
 
 A Hopsan component library consists of at least three types of files.
 -# The compiled component library code as a .\b dll Windows (Dynamic Link Library) file or as a .\b so (Shared Object) file (Linux/Mac).
@@ -43,9 +44,8 @@ If you are only a user of the library you can ignore these additional files, com
 \section component_svg Graphical Icons (.svg)
 Icons for the graphical interface are stored in the Scalable Vector Graphics format. A good tool, which is free and open-source, for creating and editing such files is Inkscape. If you want to use bitmaps graphics, .jpg, .png or similar formats, such graphics can be embedded in a .svg file.
 
-\htmlonly
 <a href="http://inkscape.org/">Inkscape Webpage</a>
-\endhtmlonly
+
 
 \section component_xml Appearance Description Files (.xml)
 Information about the component for the graphical interface, such as icon, port positions and component name, is stored in a .xml file. This file contains information about the component that is not part of the actual simulation code. This information can be changed without the need to recompile the actual component code. A typical appearance file looks like this:
@@ -123,6 +123,7 @@ If you install the Qt SDK you will get Qt Creator and the MinGW32 compiler. You 
 \htmlonly
   <br><a href="../../graphics/QtSDK_custom_install_options.png"><img src="../../graphics/QtSDK_custom_install_options.png" width=100 border=0></a><br>
 \endhtmlonly
+\image latex "../../graphics/QtSDK_custom_install_options.png" "QtSDK custom installation options" width=1.0\linewidth
 
 
 \section writingcomponents_libraryfiles Component Library Project Files
