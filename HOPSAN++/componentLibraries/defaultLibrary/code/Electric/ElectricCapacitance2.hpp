@@ -71,7 +71,7 @@ public:
      ElectricCapacitance2() : ComponentC()
      {
         const double Cc = 1.e-9;
-        const double alpha = 0.1;
+        const double alpha = 0.3;
 
         mNstep=9;
         mCc = Cc;

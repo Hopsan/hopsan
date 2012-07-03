@@ -58,7 +58,7 @@ namespace hopsan {
         {
             //Set member attributes
             mCapacitance   = 0.0001;
-            mAlpha         = 0.1;
+            mAlpha         = 0.3;
 
             //Add ports to the component
             mpPel1 = addPowerMultiPort("Pel1", "NodeElectric");
