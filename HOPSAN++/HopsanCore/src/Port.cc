@@ -288,7 +288,8 @@ void Port::getNodeDataNamesAndUnits(vector<string> &rNames, vector<string> &rUni
 {
     if(this->isConnected())
     {
-        mpNode->getDataNamesAndUnits(rNames, rUnits);
+        //! @todo We want all data to be gathered by gui, I have set allData to true here to do that, but plot bahaviour should not be in core, or maybe we should call it somthing else, we dont want c and Zc to show up as start values, or do we ? /Peter
+        mpNode->getDataNamesAndUnits(rNames, rUnits, true);
     }
     else
     {

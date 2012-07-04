@@ -46,7 +46,7 @@ set qtsdkDir="C:\Qt"
 set qtsdkDir2="C:\QtSDK"
 set msvc2008Dir="C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin"
 set msvc2010Dir="C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin"
-set dependecyBinFiles=hopsan_bincontents_Qt474_MinGW_Py27.7z
+set dependecyBinFiles=hopsan_bincontents_Qt474_MinGW_Py273.7z
                 
 :: Make sure Qt SDK exist
 if not exist %qtsdkDir% (
