@@ -1,3 +1,5 @@
+# $Id:
+
 import subprocess
 import os
 import ctypes
@@ -15,8 +17,6 @@ qtsdkDirList = ["C:\Qt", "C:\QtSDK"]
 msvc2008DirList = ["C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin", "C:\Program (x86)\Microsoft SDKs\Windows\v7.0\Bin"]
 msvc2010DirList = ["C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin", "C:\Program (x86)\Microsoft SDKs\Windows\v7.1\Bin"]
 
-dodevrelease=True
-version=devversion
 innoDir=""
 
 STD_OUTPUT_HANDLE= -11
@@ -90,107 +90,93 @@ def printDebug(text):
     print "Debug: " + text
     setColor(bcolors.WHITE)
 
-def pathExists(path):
-    return os.path.exists(os.path.dirname(raw(path)))
+def pathExists(path, failMsg="", okMsg=""):
+    if os.path.exists(os.path.dirname(raw(path))):
+        if okMsg!="":
+            printSuccess(okMsg)
+        return True
+    else:
+        if failMsg!="":
+            printError(failMsg)
+        return False
 
 def fileExists(file):
     return os.path.isfile(raw(file))
     
-def verifyPaths():
-    print "Verifying path variables..."
+def selectPathFromList(list, failMsg, sucessMsg):
+    selected=""
+    for item in list:
+        if pathExists(item+"\\"):
+            selected = item
+    if selected=="":
+        printError(failMsg)
+    else:
+        printSuccess(sucessMsg)
+    return selected
 
-    global devversion
-    global tbbversion
-    global tempDir
+def askYesNoQuestion(msg):
+    # Returns true on yes
+    while(True):
+        ans = raw_input(msg)
+        if ans=="y":
+            return True
+        elif ans=="n":
+            return False
+
+def verifyPaths():
+    print "Verifying and selecting path variables..."
+
     global inkscapeDir
-    global inkscapeDir2
     global innoDir
-    global innoDirList
-    global scriptFile
-    global hopsanDir
     global qtsdkDir
-    global qtsdkDir2
     global msvc2008Dir
     global msvc2010Dir
-    global dependecyBinFiles
     global jomDir
     global qmakeDir
     global mingwDir
    
     #Check if Qt path exists
-    qtsdkDir=""
-    for i in range(len(qtsdkDirList)):
-        if pathExists(qtsdkDirList[i]+"\\"):
-            qtsdkDir = qtsdkDirList[i]
+    qtsdkDir=selectPathFromList(qtsdkDirList, "Qt SDK could not be found in one of the expected locations.", "Found Qt SDK!")
     if qtsdkDir == "":
-        printError("Qt SDK could not be found in one of the expected locations.")
-        return False   
-    printSuccess("Found Qt SDK!")
-    
+        return False;    
+
     jomDir=qtsdkDir+"\\QtCreator\\bin"
     qmakeDir=qtsdkDir+"\\Desktop\\Qt\\4.7.4\\mingw\\bin"
     mingwDir=qtsdkDir+"\\mingw\\bin"
 
     #Make sure the correct inno dir is used, 32 or 64 bit computers (Inno Setup is 32-bit)
-    innoDir=""
-    for i in range(len(innoDirList)):
-        if pathExists(innoDirList[i]+"\\"):
-            innoDir = innoDirList[i]
+    innoDir=selectPathFromList(innoDirList, "Inno Setup 5 is not installed in expected place.", "Found Inno Setup!")
     if innoDir == "":
-        printError("Inno Setup 5 is not installed in expected place.")
-        return False
-    printSuccess("Found Inno Setup!")
+        return False;  
             
     #Make sure the correct incskape dir is used, 32 or 64 bit computers (Inkscape is 32-bit)
-    inkscapeDir=""
-    for i in range(len(inkscapeDirList)):
-        if pathExists(inkscapeDirList[i]+"\\"):
-            inkscapeDir = inkscapeDirList[i]
+    inkscapeDir=selectPathFromList(inkscapeDirList, "Inkscape is not installed in expected place.", "Found Inkscape!")
     if inkscapeDir == "":
-        printError("Inkscape is not installed in expected place.")
         return False
-    printSuccess("Found Inkscape!")
 
     #Make sure Visual Studio 2008 is installed in correct location
-    msvc2008Dir=""
-    for i in range(len(msvc2008DirList)):
-        if pathExists(msvc2008DirList[i]+"\\"):
-            msvc2008Dir = msvc2008DirList[i]
+    msvc2008Dir=selectPathFromList(msvc2008DirList, "Microsoft Visual Studio 2008 is not installed in expected place.", "Found location of Microsoft Visual Studio 2008!")
     if msvc2008Dir == "":
-        printError("Microsoft Visual Studio 2008 is not installed in expected place.")
         return False
-    printSuccess("Found location of Microsoft Visual Studio 2008!")
 
     #Make sure Visual Studio 2010 is installed in correct location
-    msvc2010Dir=""
-    for i in range(len(msvc2010DirList)):
-        if pathExists(msvc2010DirList[i]+"\\"):
-            msvc2010Dir = msvc2010DirList[i]
+    msvc2010Dir=selectPathFromList(msvc2010DirList, "Microsoft Visual Studio 2010 is not installed in expected place.", "Found location of Microsoft Visual Studio 2010!")
     if msvc2010Dir == "":
-        printError("Microsoft Visual Studio 2010 is not installed in expected place.")
         return False
-    printSuccess("Found location of Microsoft Visual Studio 2010!")
     
     #Make sure the 3d party dependency file exists
-    if not pathExists(dependecyBinFiles+"\\"):
-        printError("The "+ dependecyBinFiles + " file containing needed bin files is NOT present. Get it from alice/fluid/programs/hopsan")
+    if not pathExists(dependecyBinFiles+"\\", "The "+ dependecyBinFiles + " file containing needed bin files is NOT present. Get it from alice/fluid/programs/hopsan", "Found dependency binary files!"):
         return False
-    printSuccess("Found dependency binary files!")
         
     #Make sure TBB is installed in correct location
-    if not pathExists("HopsanCore\\Dependencies\\"+tbbversion+"\\"):
-        printError("Cannot find correct TBB version, you must use "+ tbbversion+"\\")
+    if not pathExists("HopsanCore\\Dependencies\\"+tbbversion+"\\", "Cannot find correct TBB version, you must use "+ tbbversion+"\\", "Found correct TBB version!"):
         return False
-    printSuccess("Found correct TBB version!")        
     
     printSuccess("Verification of path variables.")
-    
     return True
 
 
-def getRevision():
-    global dodevrelease
-    
+def askForVersion():
     dodevrelease=False
     version = raw_input('Enter release version number on the form a.b.c or leave blank for DEV build release: ')    
     if version == "": 
@@ -200,17 +186,7 @@ def getRevision():
         version = devversion+"x_r"+revnum
         dodevrelease=True
 
-    print "---------------------------------------"
-    print "This is a DEV release: " + str(dodevrelease)
-    print "Release version number: " + str(version)
-    print "---------------------------------------"
-    while(True):
-        ans = raw_input("Is this OK? (y/n): ")
-        abort = (ans == "n")
-        if ans == "y" or ans == "n":
-            break
-            
-    return (version,dodevrelease,abort)
+    return (version,dodevrelease)
 
 def msvcCompile(version, architecture):
     print "Compiling HopsanCore with Microsoft Visual Studio "+version+" "+architecture+"..."
@@ -250,19 +226,7 @@ def msvcCompile(version, architecture):
     
     return True
    
-
-def getVersionNumber():
-    global dodevrelease
-    
-    global version
-    (version, dodevrelease, abort) = getRevision()
-    if abort:
-        printError("Aborted by user.")
-        return False
-    return True
-   
-    
-def compile():
+def buildRelease():
     if not dodevrelease:
         #Set version numbers (by changing .h files) BEFORE build
         runCmd("ThirdParty\\sed-4.2.1\\sed \"s|#define HOPSANCOREVERSION.*|#define HOPSANCOREVERSION  \\\""+version+"\\\"|g\" -i HopsanCore\\include\\version.h")
@@ -355,13 +319,9 @@ def copyFiles():
     os.system("rd /s/q \""+raw(hopsanDir)+"\"\\output")
     if pathExists("\""+raw(hopsanDir)+"\"\\output"):
         printWarning("Unable to clear old output folder.")
-        while(True):
-            ans = raw_input("Continue? (y/n): ")
-            abort = (ans == "n")
-            if ans == "y" or ans == "n":
-                break        
-        if abort:
+        if not askYesNoQuestion("Continue? (y/n): "):
             return False
+        
   
     #Create new output folder
     os.system("mkdir "+raw(hopsanDir)+"\\output")
@@ -488,19 +448,30 @@ if not verifyPaths():
     printError("Compilation script failed while verifying paths.")
 
 if success:
-    if not getVersionNumber():
+    global dodevrelease
+    global version
+    (version, dodevrelease) = askForVersion()
+
+    abortOnFailValidation = askYesNoQuestion("Shall we abort if validation fail? (y/n)")
+
+    print "---------------------------------------"
+    print "This is a DEV release: " + str(dodevrelease)
+    print "Release version number: " + str(version)
+    print "Abort on faild validation: " + str(abortOnFailValidation)
+    print "---------------------------------------"
+    if not askYesNoQuestion("Is this OK? (y/n): "):
+        printError("Aborted by user.")
         success = False
         cleanUp()
-        printError("Compilation script failed while obtaining version number.")
     
 if success:
-    if not compile():
+    if not buildRelease():
         success = False
         cleanUp()
         printError("Compilation script failed in compilation error.")
 
 if success:
-    if not runValidation():
+    if (not runValidation()) and abortOnFailValidation:
         success = False
         cleanUp()
         printError("Compilation script failed in model validation.")
