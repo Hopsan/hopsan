@@ -30,7 +30,7 @@
 #include "common.h"
 #include "GUIObjects/GUISystem.h"
 
-void SimulationWorkerObject::initSimulatFinalize()
+void SimulationWorkerObject::initSimulateFinalize()
 {
     QTime timer;
     bool initSuccess, simulateSuccess;
@@ -57,21 +57,20 @@ void SimulationWorkerObject::initSimulatFinalize()
         // Check if we should simulate multiple systems at the same time using multicore
         if ((coreSystemAccessVector.size() > 1) && (gConfig.getUseMulticore()))
         {
-            simuHandler.simulate(mStartTime, mStopTime, gConfig.getNumberOfThreads(), coreSystemAccessVector, mNoChanges);
+            simulateSuccess = simuHandler.simulate(mStartTime, mStopTime, gConfig.getNumberOfThreads(), coreSystemAccessVector, mNoChanges);
         }
         else if (gConfig.getUseMulticore())
         {
             // Choose if we should simulate each system (or just the one system) using multiple cores (but each system in sequence)
             timer.start();
-            simuHandler.simulate(mStartTime, mStopTime, gConfig.getNumberOfThreads(), coreSystemAccessVector, mNoChanges);
+            simulateSuccess = simuHandler.simulate(mStartTime, mStopTime, gConfig.getNumberOfThreads(), coreSystemAccessVector, mNoChanges);
         }
         else
         {
             timer.start();
-            simuHandler.simulate(mStartTime, mStopTime, -1, coreSystemAccessVector, mNoChanges);
+            simulateSuccess = simuHandler.simulate(mStartTime, mStopTime, -1, coreSystemAccessVector, mNoChanges);
         }
 
-        simulateSuccess = true; //! @todo need to check if sucess
         emit simulateDone(simulateSuccess, timer.elapsed());
     }
 
@@ -91,8 +90,8 @@ void SimulationWorkerObject::connectProgressDialog(QProgressDialog *pProgressDia
     disconnect(this, SIGNAL(setProgressBarText(QString)), 0, 0);
 
     // Establish new connections
-    connect(this, SIGNAL(setProgressBarRange(int,int)), pProgressDialog, SLOT(setRange(int,int)));
-    connect(this, SIGNAL(setProgressBarText(QString)), pProgressDialog, SLOT(setLabelText(QString)));
+    connect(this, SIGNAL(setProgressBarRange(int,int)), pProgressDialog, SLOT(setRange(int,int)), Qt::UniqueConnection);
+    connect(this, SIGNAL(setProgressBarText(QString)), pProgressDialog, SLOT(setLabelText(QString)), Qt::UniqueConnection);
 }
 
 ProgressBarWorkerObject::ProgressBarWorkerObject(const double startTime, const double stopTime, const QVector<SystemContainer*> &rvSystems, QProgressDialog *pProgressDialog)
@@ -176,10 +175,10 @@ void SimulationThreadHandler::initSimulateFinalize(QVector<SystemContainer*> vpS
     mpSimulationWorkerObject = new SimulationWorkerObject(mvpSystems, mStartT, mStopT, mnLogSamples, noChanges);
     mpSimulationWorkerObject->moveToThread(&mSimulationWorkerThread);
 
-    connect(this, SIGNAL(startSimulation()), mpSimulationWorkerObject, SLOT(initSimulatFinalize()));
-    connect(mpSimulationWorkerObject, SIGNAL(initDone(bool,int)), this, SLOT(initDone(bool,int)));
-    connect(mpSimulationWorkerObject, SIGNAL(simulateDone(bool,int)), this, SLOT(simulateDone(bool,int)));
-    connect(mpSimulationWorkerObject, SIGNAL(finalizeDone(bool,int)), this, SLOT(finalizeDone(bool,int)));
+    connect(this, SIGNAL(startSimulation()), mpSimulationWorkerObject, SLOT(initSimulateFinalize()), Qt::UniqueConnection);
+    connect(mpSimulationWorkerObject, SIGNAL(initDone(bool,int)), this, SLOT(initDone(bool,int)), Qt::UniqueConnection);
+    connect(mpSimulationWorkerObject, SIGNAL(simulateDone(bool,int)), this, SLOT(simulateDone(bool,int)), Qt::UniqueConnection);
+    connect(mpSimulationWorkerObject, SIGNAL(finalizeDone(bool,int)), this, SLOT(finalizeDone(bool,int)), Qt::UniqueConnection);
 
     if (gConfig.getEnableProgressBar() && mProgressBarEnabled)
     {
@@ -196,16 +195,16 @@ void SimulationThreadHandler::initSimulateFinalize(QVector<SystemContainer*> vpS
         mpProgressDialog->show();
 
         mpProgressBarWorkerObject = new ProgressBarWorkerObject(mStartT, mStopT, mvpSystems, mpProgressDialog); //!< @todo what about multiple systems
-        connect(mpProgressDialog, SIGNAL(canceled()), mpProgressBarWorkerObject, SLOT(abort()));
-        connect(mpProgressBarWorkerObject, SIGNAL(aborted()), this, SLOT(aborted()));
-        connect(this, SIGNAL(startProgressBarRefreshTimer(int)), mpProgressBarWorkerObject, SLOT(startRefreshTimer(int)));
-        connect(&mProgressBarWorkerThread, SIGNAL(finished()), mpProgressBarWorkerObject, SIGNAL(stopRefreshTimer())); //When thread finish we need to turn of timer
+        connect(mpProgressDialog, SIGNAL(canceled()), mpProgressBarWorkerObject, SLOT(abort()), Qt::UniqueConnection);
+        connect(mpProgressBarWorkerObject, SIGNAL(aborted()), this, SLOT(aborted()), Qt::UniqueConnection);
+        connect(this, SIGNAL(startProgressBarRefreshTimer(int)), mpProgressBarWorkerObject, SLOT(startRefreshTimer(int)), Qt::UniqueConnection);
+        connect(&mProgressBarWorkerThread, SIGNAL(finished()), mpProgressBarWorkerObject, SIGNAL(stopRefreshTimer()), Qt::UniqueConnection); //When thread finish we need to turn of timer
 
         // Move to worker thread and then connect the progress bar signals when both worker objects are in their respective threads
         mpProgressBarWorkerObject->moveToThread(&mProgressBarWorkerThread);
         mpSimulationWorkerObject->connectProgressDialog(mpProgressDialog);
 
-        // Start the progres bar worker thread and tehn signal the timer to start, so that it is started in the correct thread, will be problems otherwise
+        // Start the progres bar worker thread and then signal the timer to start, so that it is started in the correct thread, will be problems otherwise
         mProgressBarWorkerThread.start(QThread::LowPriority);
         emit startProgressBarRefreshTimer(gConfig.getProgressBarStep());
     }

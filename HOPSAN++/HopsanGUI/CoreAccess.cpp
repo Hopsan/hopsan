@@ -112,19 +112,19 @@ bool CoreSimulationHandler::initialize(const double startTime, const double stop
     return hopsan::HopsanEssentials::getInstance()->getSimulationHandler()->initializeSystem(startTime, stopTime, coreSystems);
 }
 
-void CoreSimulationHandler::simulate(const double startTime, const double stopTime, const int nThreads, CoreSystemAccess* pCoreSystemAccess, bool modelHasNotChanged)
+bool CoreSimulationHandler::simulate(const double startTime, const double stopTime, const int nThreads, CoreSystemAccess* pCoreSystemAccess, bool modelHasNotChanged)
 {
-    hopsan::HopsanEssentials::getInstance()->getSimulationHandler()->simulateSystem(startTime, stopTime, nThreads, pCoreSystemAccess->getCoreSystemPtr(), modelHasNotChanged);
+    return hopsan::HopsanEssentials::getInstance()->getSimulationHandler()->simulateSystem(startTime, stopTime, nThreads, pCoreSystemAccess->getCoreSystemPtr(), modelHasNotChanged);
 }
 
-void CoreSimulationHandler::simulate(const double startTime, const double stopTime, const int nThreads, QVector<CoreSystemAccess*> &rvCoreSystemAccess, bool modelHasNotChanged)
+bool CoreSimulationHandler::simulate(const double startTime, const double stopTime, const int nThreads, QVector<CoreSystemAccess*> &rvCoreSystemAccess, bool modelHasNotChanged)
 {
     std::vector<hopsan::ComponentSystem*> coreSystems;
     for (int i=0; i<rvCoreSystemAccess.size(); ++i)
     {
         coreSystems.push_back(rvCoreSystemAccess[i]->getCoreSystemPtr());
     }
-    hopsan::HopsanEssentials::getInstance()->getSimulationHandler()->simulateSystem(startTime, stopTime, nThreads, coreSystems, modelHasNotChanged);
+    return hopsan::HopsanEssentials::getInstance()->getSimulationHandler()->simulateSystem(startTime, stopTime, nThreads, coreSystems, modelHasNotChanged);
 }
 
 void CoreSimulationHandler::finalize(CoreSystemAccess* pCoreSystemAccess)
@@ -411,7 +411,7 @@ void CoreSystemAccess::setLoadStartValues(bool load)
 //! @deprectaed maybe
 bool CoreSystemAccess::isSimulationOk()
 {
-    return mpCoreComponentSystem->isSimulationOk();
+    return mpCoreComponentSystem->checkModelBeforeSimulation();
 }
 
 //! @deprecated use the coresimulation access class instead
@@ -691,7 +691,7 @@ double *CoreSystemAccess::getNodeDataPtr(const QString compname, const QString p
 
 void CoreSystemAccess::measureSimulationTime(QStringList &rComponentNames, QList<double> &rTimes)
 {
-    if(!getCoreSystemPtr()->isSimulationOk())
+    if(!getCoreSystemPtr()->checkModelBeforeSimulation())
     {
         return; //! @todo Give user a message?
     }

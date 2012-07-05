@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
             {
                 //! @todo maybe use simulation handler object instead
                 TicToc isoktimer("IsOkTime");
-                bool initSuccess = pRootSystem->isSimulationOk();
+                bool initSuccess = pRootSystem->checkModelBeforeSimulation();
                 isoktimer.TocPrint();
                 TicToc initTimer("InitializeTime");
                 initSuccess = initSuccess && pRootSystem->initialize(startTime, stopTime);

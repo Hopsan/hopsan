@@ -67,19 +67,19 @@ namespace hopsan {
         enum SimulationErrorTypesT {NotRedy, InitFailed, SimuFailed, FiniFailed};
 
         //! @todo a doitall function
-        //! @todo error enums
+        //! @todo use the error enums
         bool initializeSystem(const double startT, const double stopT, ComponentSystem* pSystem);
         bool initializeSystem(const double startT, const double stopT, std::vector<ComponentSystem*> &rSystemVector);
 
-        void simulateSystem(const double startT, const double stopT, const int nDesiredThreads, ComponentSystem* pSystem, bool noChanges=false);
-        void simulateSystem(const double startT, const double stopT, const int nDesiredThreads, std::vector<ComponentSystem*> &rSystemVector, bool noChanges=false);
+        bool simulateSystem(const double startT, const double stopT, const int nDesiredThreads, ComponentSystem* pSystem, bool noChanges=false);
+        bool simulateSystem(const double startT, const double stopT, const int nDesiredThreads, std::vector<ComponentSystem*> &rSystemVector, bool noChanges=false);
 
         void finalizeSystem(ComponentSystem* pSystem);
         void finalizeSystem(std::vector<ComponentSystem*> &rSystemVector);
 
     private:
-        void simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, std::vector<ComponentSystem*> &rSystemVector, bool noChanges=false);
-        void simulateMultipleSystems(const double startT, const double stopT, std::vector<ComponentSystem*> &rSystemVector);
+        bool simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, std::vector<ComponentSystem*> &rSystemVector, bool noChanges=false);
+        bool simulateMultipleSystems(const double startT, const double stopT, std::vector<ComponentSystem*> &rSystemVector);
 
         std::vector< std::vector<ComponentSystem*> > distributeSystems(const std::vector<ComponentSystem*> &rSystemVector, size_t nThreads);
         void sortSystemsByTotalMeasuredTime(std::vector<ComponentSystem*> &rSystemVector);
@@ -143,7 +143,7 @@ namespace hopsan {
         void loadStartValuesFromSimulation();
 
         // Initialize and simulate
-        bool isSimulationOk();
+        bool checkModelBeforeSimulation();
         bool initialize(const double startT, const double stopT);
         void simulate(const double startT, const double stopT);
         void simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads = 0, bool noChanges=false);
@@ -174,10 +174,7 @@ namespace hopsan {
 
         //Stop a running init or simulation
         void stopSimulation();
-
-#ifdef USETBB
-        tbb::mutex *mpStopMutex;
-#endif
+        bool wasSimulationAborted();
 
         //System parameters
         bool setSystemParameter(const std::string name, const std::string value, const std::string type, const std::string description="", const std::string unit="", const bool force=false);
@@ -220,6 +217,9 @@ namespace hopsan {
         std::vector<Node*> mSubNodePtrs;
 
         bool volatile mStopSimulation;
+#ifdef USETBB
+        tbb::mutex *mpStopMutex;
+#endif
 
         bool mKeepStartValues;
 

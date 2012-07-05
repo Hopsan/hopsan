@@ -50,7 +50,7 @@ public:
     void connectProgressDialog(QProgressDialog *pProgressDialog);
 
 public slots:
-    void initSimulatFinalize();
+    void initSimulateFinalize();
 
 signals:
     void setProgressBarRange(int, int);

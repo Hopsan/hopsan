@@ -183,8 +183,8 @@ public:
     bool initialize(const double startTime, const double stopTime, const int nLogSamples, CoreSystemAccess* pCoreSystemAccess);
     bool initialize(const double startTime, const double stopTime, const int nLogSamples, QVector<CoreSystemAccess*> &rvCoreSystemAccess);
 
-    void simulate(const double startTime, const double stopTime, const int nThreads, CoreSystemAccess* pCoreSystemAccess, bool modelHasNotChanged=false);
-    void simulate(const double startTime, const double stopTime, const int nThreads, QVector<CoreSystemAccess*> &rvCoreSystemAccess, bool modelHasNotChanged=false);
+    bool simulate(const double startTime, const double stopTime, const int nThreads, CoreSystemAccess* pCoreSystemAccess, bool modelHasNotChanged=false);
+    bool simulate(const double startTime, const double stopTime, const int nThreads, QVector<CoreSystemAccess*> &rvCoreSystemAccess, bool modelHasNotChanged=false);
 
     void finalize(CoreSystemAccess* pCoreSystemAccess);
     void finalize(QVector<CoreSystemAccess*> &rvCoreSystemAccess);

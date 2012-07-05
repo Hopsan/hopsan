@@ -81,7 +81,7 @@ size_t determineActualNumberOfThreads(const size_t nDesiredThreads)
 
 bool SimulationHandler::initializeSystem(const double startT, const double stopT, ComponentSystem* pSystem)
 {
-    if (pSystem->isSimulationOk())
+    if (pSystem->checkModelBeforeSimulation())
     {
         return pSystem->initialize(startT, stopT);
     }
@@ -103,7 +103,7 @@ bool SimulationHandler::initializeSystem(const double startT, const double stopT
     return isOk;
 }
 
-void SimulationHandler::simulateSystem(const double startT, const double stopT, const int nDesiredThreads, ComponentSystem* pSystem, bool noChanges)
+bool SimulationHandler::simulateSystem(const double startT, const double stopT, const int nDesiredThreads, ComponentSystem* pSystem, bool noChanges)
 {
     if (nDesiredThreads < 0)
     {
@@ -113,24 +113,26 @@ void SimulationHandler::simulateSystem(const double startT, const double stopT, 
     {
         pSystem->simulateMultiThreaded(startT, stopT, nDesiredThreads, noChanges);
     }
+
+    return !pSystem->wasSimulationAborted();
 }
 
-void SimulationHandler::simulateSystem(const double startT, const double stopT, const int nDesiredThreads, std::vector<ComponentSystem*> &rSystemVector, bool noChanges)
+bool SimulationHandler::simulateSystem(const double startT, const double stopT, const int nDesiredThreads, std::vector<ComponentSystem*> &rSystemVector, bool noChanges)
 {
     if (rSystemVector.size() > 1)
     {
         if (nDesiredThreads >= 0)
         {
-            simulateMultipleSystemsMultiThreaded(startT, stopT, nDesiredThreads, rSystemVector, noChanges);
+            return simulateMultipleSystemsMultiThreaded(startT, stopT, nDesiredThreads, rSystemVector, noChanges);
         }
         else
         {
-            simulateMultipleSystems(startT, stopT, rSystemVector);
+            return simulateMultipleSystems(startT, stopT, rSystemVector);
         }
     }
     else if (rSystemVector.size() == 1)
     {
-        simulateSystem(startT, stopT, nDesiredThreads, rSystemVector[0], noChanges);
+        return simulateSystem(startT, stopT, nDesiredThreads, rSystemVector[0], noChanges);
     }
 }
 
@@ -215,11 +217,29 @@ size_t ComponentSystem::getNumLogSamples()
 }
 
 
-//! Sets a bool which is looked at in initialization and simulation loops.
-//! This method can be used by users e.g. GUIs to stop an started initializatiion/simulation process
+//! @brief Sets a bool which is looked at in initialization and simulation loops.
+//! This method can be used by users e.g. GUIs to stop an start a initialization/simulation process
 void ComponentSystem::stopSimulation()
 {
+#ifdef USETBB
+    mpStopMutex->lock();
     mStopSimulation = true;
+    mpStopMutex->unlock();
+#else
+    mStopSimulation = true;
+#endif
+    // Now propagate stop signal upwards, to parent
+    if (mpSystemParent != 0)
+    {
+        mpSystemParent->stopSimulation();
+    }
+}
+
+//! @brief Check if the simulation was aborted
+//! @returns true if Initialize, Simulate, or Finalize was aborted
+bool ComponentSystem::wasSimulationAborted()
+{
+    return mStopSimulation;
 }
 
 //! @todo this one (if it should even exist) should be in component as parameter map is there, best is if we can code around having one
@@ -1954,7 +1974,7 @@ void ComponentSystem::setLoadStartValues(bool load)
 
 
 //! @brief Checks that everything is OK before simulation
-bool ComponentSystem::isSimulationOk()
+bool ComponentSystem::checkModelBeforeSimulation()
 {
     //Make sure that there are no components or systems with an undefined cqs_type present
     if (mComponentUndefinedptrs.size() > 0)
@@ -2031,7 +2051,7 @@ bool ComponentSystem::isSimulationOk()
         //Recures testing into subsystems
         if (pComp->isComponentSystem())
         {
-            if (!pComp->isSimulationOk())
+            if (!pComp->checkModelBeforeSimulation())
             {
                 return false;
             }
@@ -2136,7 +2156,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
 
         if (mComponentSignalptrs[s]->isComponentSystem())
         {
-            //! @todo should we use our own nSamples ore the subsystems own ?
+            //! @todo should we use our own nSamples or the subsystems own ?
             static_cast<ComponentSystem*>(mComponentSignalptrs[s])->setNumLogSamples(mnLogSamples);
             mComponentSignalptrs[s]->initialize(startT, stopT);
         }
@@ -3057,8 +3077,9 @@ void ComponentSystem::simulate(const double startT, const double stopT)
 //! @param startT Start time for all systems
 //! @param stopT Stop time for all systems
 //! @param systemVector Vector of pointers to component systems
-void SimulationHandler::simulateMultipleSystems(const double startT, const double stopT, vector<ComponentSystem*> &rSystemVector)
+bool SimulationHandler::simulateMultipleSystems(const double startT, const double stopT, vector<ComponentSystem*> &rSystemVector)
 {
+    bool aborted = false;
     for(size_t i=0; i<rSystemVector.size(); ++i)
     {
         //! @todo why do we need to calc stopT here
@@ -3066,7 +3087,9 @@ void SimulationHandler::simulateMultipleSystems(const double startT, const doubl
         //systemVector[i]->simulate(startT, stopTsafe);
         //! @todo trying without /Peter
         rSystemVector[i]->simulate(startT, stopT);
+        aborted = aborted && rSystemVector[i]->wasSimulationAborted(); //!< @todo this will give abort=true if one the systems fail, maybe we should abort entierly when one do
     }
+    return !aborted;
 }
 
 
@@ -3100,7 +3123,7 @@ void ComponentSystem::finalize()
 //! @param stopT Stop time for all systems
 //! @param nDesiredThreads Desired number of threads (may change due to hardware limitations)
 //! @param systemVector Vector of pointers to systems to simulate
-void SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, vector<ComponentSystem*> &rSystemVector, bool noChanges)
+bool SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, vector<ComponentSystem*> &rSystemVector, bool noChanges)
 {
 #ifdef USETBB
     size_t nThreads = determineActualNumberOfThreads(nDesiredThreads);              //Calculate how many threads to actually use
@@ -3131,8 +3154,15 @@ void SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT
     }
     simTasks->wait();                                                   //Wait for all tasks to finish
     delete(simTasks);
+
+    bool aborted=false;
+    for(size_t i=0; i<rSystemVector.size(); ++i)
+    {
+        aborted = aborted && rSystemVector[i]->wasSimulationAborted();
+    }
+    return !aborted;
 #else
     // Use single core simulation if no TBB support
-    simulateMultipleSystems(startT, stopT, rSystemVector);
+    return simulateMultipleSystems(startT, stopT, rSystemVector);
 #endif
 }

@@ -457,7 +457,7 @@ bool performModelTest(const std::string hvcFilePath)
                         {
                             //! @todo maybe use simulation handler object
                             //First simulation
-                            if (!pRootSystem->isSimulationOk())
+                            if (!pRootSystem->checkModelBeforeSimulation())
                             {
                                 printWaitingMessages(false);
                                 setColor(Red);

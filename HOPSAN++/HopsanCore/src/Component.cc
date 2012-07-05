@@ -282,13 +282,7 @@ void Component::setSubTypeName(const string subTypeName)
 //! @details Typically used inside components simulateOneTimestep method
 void Component::stopSimulation()
 {
-#ifdef USETBB
-    mpSystemParent->mpStopMutex->lock();
-    this->getSystemParent()->stopSimulation();
-    mpSystemParent->mpStopMutex->unlock();
-#else
-    this->getSystemParent()->stopSimulation();
-#endif
+    mpSystemParent->stopSimulation();
 }
 
 //void Component::registerDynamicParameter(const std::string name, const std::string description, const std::string unit, double &rValue)
@@ -475,7 +469,7 @@ bool Component::doesInheritTimestep() const
 }
 
 
-bool Component::isSimulationOk()
+bool Component::checkModelBeforeSimulation()
 {
     cout << "Warning this function isSimulationOk() is only available on subsystem components" << endl;
     assert(false);

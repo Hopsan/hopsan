@@ -72,7 +72,7 @@ public:
     virtual void setDesiredTimestep(const double timestep);
     virtual void setInheritTimestep(const bool inherit=true);
     virtual bool doesInheritTimestep() const;
-    virtual bool isSimulationOk();
+    virtual bool checkModelBeforeSimulation();
 
     //Name and type
     void setName(std::string name, bool doOnlyLocalRename=false);
