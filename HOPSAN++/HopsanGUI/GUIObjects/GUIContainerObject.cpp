@@ -2851,23 +2851,35 @@ void PlotData::collectPlotData()
                 QPair<QVector<double>, QVector<double> > data;
                 mpParentContainerObject->getCoreSystemAccessPtr()->getPlotData(pModelObject->getName(), (*pit)->getPortName(), (*nit), data);
 
-                //Store variable data
-                dataMap.insert((*nit), data.second);
-
-                //Store time data (only once)
-                if(!timeVectorObtained)
+                // Prevent adding data if time or data vector was empty
+                if (!data.first.isEmpty() && !data.second.isEmpty())
                 {
-                    mTimeVectors.append(data.first);
-                    timeVectorObtained = true;
+                    //Store variable data
+                    dataMap.insert((*nit), data.second);
+
+                    //Store time data (only once)
+                    if(!timeVectorObtained)
+                    {
+                        mTimeVectors.append(data.first);
+                        timeVectorObtained = true;
+                    }
                 }
             }
-            portMap.insert((*pit)->getPortName(), dataMap);
+            // Prevent adding data if dataMap was empty
+            if (!dataMap.empty())
+            {
+                portMap.insert((*pit)->getPortName(), dataMap);
+            }
         }
-        componentMap.insert(pModelObject->getName(), portMap);
+        // Prevent adding data if portMap was empty
+        if (!portMap.empty())
+        {
+            componentMap.insert(pModelObject->getName(), portMap);
+        }
     }
 
-    //Insert data to plot data storage
-    if(!componentMap.isEmpty())     //Don't insert a generation if no plot data was collected (= model is empty)
+    //Insert data to plot data storage, unless no data was present
+    if(!componentMap.isEmpty())
     {
         mPlotData.append(componentMap);
     }

@@ -134,6 +134,8 @@ bool SimulationHandler::simulateSystem(const double startT, const double stopT, 
     {
         return simulateSystem(startT, stopT, nDesiredThreads, rSystemVector[0], noChanges);
     }
+
+    return false;
 }
 
 void SimulationHandler::finalizeSystem(ComponentSystem* pSystem)
