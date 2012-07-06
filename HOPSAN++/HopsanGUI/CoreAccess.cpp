@@ -583,19 +583,21 @@ void CoreSystemAccess::unReserveUniqueName(QString name)
 //! @todo how to handle fetching from systemports, component names will not be found
 void CoreSystemAccess::getPlotDataNamesAndUnits(const QString compname, const QString portname, QVector<QString> &rNames, QVector<QString> &rUnits)
 {
-    vector<string> corenames, coreunits;
     rNames.clear();
     rUnits.clear();
 
     hopsan::Port* pPort = this->getCorePortPtr(compname, portname);
     if (pPort && pPort->getPortType() < hopsan::MULTIPORT)
     {
-        pPort->getNodeDataNamesAndUnits(corenames, coreunits);
-        //Copy into QT datatype vector (assumes bothe received vectors same length (should always be same)
-        for (size_t i=0; i<corenames.size(); ++i)
+        const std::vector<hopsan::NodeDataDescription>* pDescs = pPort->getNodeDataDescriptions();
+        if (pDescs != 0)
         {
-            rNames.push_back(QString::fromStdString(corenames[i]));
-            rUnits.push_back(QString::fromStdString(coreunits[i]));
+            //Copy into QT datatype vector (assumes bothe received vectors same length (should always be same)
+            for (size_t i=0; i<pDescs->size(); ++i)
+            {
+                rNames.push_back(QString::fromStdString(pDescs->at(i).name));
+                rUnits.push_back(QString::fromStdString(pDescs->at(i).unit));
+            }
         }
     }
 }

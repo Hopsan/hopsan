@@ -25,12 +25,11 @@
 #define NODES_H_INCLUDED
 
 #include "Node.h"
-
-#include <iostream>
+//#include <iostream>
 
 namespace hopsan {
 
-DLLIMPORTEXPORT void register_nodes(NodeFactory* nfampND_ct);
+DLLIMPORTEXPORT void register_nodes(NodeFactory* pNodeFactory);
 
 //! @brief A signal node
 //! @ingroup NodeSignal
@@ -41,6 +40,22 @@ public:
     //! @ingroup NodeSignal
     enum DataIndexEnumT {VALUE, DATALENGTH};
     static Node* CreatorFunction() {return new NodeSignal;}
+
+    void setSignalDataUnit(const std::string unit)
+    {
+        mDataDescriptions[VALUE].unit = unit;
+    }
+
+    void setSignalDataName(const std::string name)
+    {
+        mDataDescriptions[VALUE].name = name;
+    }
+
+    //! @brief For signals allways return VALUE slot even if name has been changed
+    int getDataIdFromName(const std::string /*name*/)
+    {
+        return VALUE;
+    }
 
 private:
     NodeSignal() : Node(DATALENGTH)
@@ -65,15 +80,15 @@ private:
     {
         setDataCharacteristics(FLOW, "Flow", "m^3/s");
         setDataCharacteristics(PRESSURE, "Pressure", "Pa");
-        setDataCharacteristics(TEMPERATURE, "Temperature", "K", Node::NOPLOT);
-        setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "Pa", Node::NOPLOT);
-        setDataCharacteristics(CHARIMP, "CharImp", "?", Node::NOPLOT);
-        setDataCharacteristics(HEATFLOW, "HeatFlow", "?", Node::NOPLOT);
+        setDataCharacteristics(TEMPERATURE, "Temperature", "K", Hidden);
+        setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "Pa", TLM);
+        setDataCharacteristics(CHARIMP, "CharImp", "?", TLM);
+        setDataCharacteristics(HEATFLOW, "HeatFlow", "?", Hidden);
     }
 
     virtual void setSpecialStartValues(Node *pNode)
     {
-        pNode->setData(WAVEVARIABLE, mDataVector[PRESSURE]);
+        pNode->setDataValue(WAVEVARIABLE, mDataValues[PRESSURE]);
         //std::cout << "SpecialStartValue: Name: " << mDataNames[WAVEVARIABLE] << "  Value: " << mDataVector[WAVEVARIABLE] << "  Unit: " << mDataUnits[WAVEVARIABLE] << std::endl;
         //! todo Maybe also write CHARIMP?
     }
@@ -95,15 +110,15 @@ private:
     {
         setDataCharacteristics(MASSFLOW, "MassFlow", "kg/s");
         setDataCharacteristics(PRESSURE, "Pressure", "Pa");
-        setDataCharacteristics(TEMPERATURE, "Temperature", "K", Node::NOPLOT);
-        setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "Pa", Node::NOPLOT);
-        setDataCharacteristics(CHARIMP, "CharImp", "?", Node::NOPLOT);
-        setDataCharacteristics(ENERGYFLOW, "EnergyFlow", "J/s", Node::NOPLOT);
+        setDataCharacteristics(TEMPERATURE, "Temperature", "K", Hidden);
+        setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "Pa", TLM);
+        setDataCharacteristics(CHARIMP, "CharImp", "?", TLM);
+        setDataCharacteristics(ENERGYFLOW, "EnergyFlow", "J/s", Hidden);
     }
 
     virtual void setSpecialStartValues(Node *pNode)
     {
-        pNode->setData(WAVEVARIABLE, mDataVector[PRESSURE]);
+        pNode->setDataValue(WAVEVARIABLE, mDataValues[PRESSURE]);
         //std::cout << "SpecialStartValue: Name: " << mDataNames[i] << "  Value: " << mDataVector[i] << "  Unit: " << mDataUnits[i] << std::endl;
         //! todo Maybe also write CHARIMP?
     }
@@ -125,14 +140,14 @@ private:
         setDataCharacteristics(VELOCITY, "Velocity", "m/s");
         setDataCharacteristics(FORCE, "Force", "N");
         setDataCharacteristics(POSITION, "Position", "m");
-        setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "N", Node::NOPLOT);
-        setDataCharacteristics(CHARIMP, "CharImp", "N s/m", Node::NOPLOT);
-        setDataCharacteristics(EQMASS, "EquivalentMass", "kg", Node::NOPLOT);
+        setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "N", TLM);
+        setDataCharacteristics(CHARIMP, "CharImp", "N s/m", TLM);
+        setDataCharacteristics(EQMASS, "EquivalentMass", "kg", Hidden);
     }
 
     virtual void setSpecialStartValues(Node *pNode)
     {
-        pNode->setData(WAVEVARIABLE, mDataVector[FORCE]);
+        pNode->setDataValue(WAVEVARIABLE, mDataValues[FORCE]);
         //! todo Maybe also write CHARIMP?
     }
 };
@@ -153,14 +168,14 @@ private:
         setDataCharacteristics(ANGULARVELOCITY, "Angular Velocity", "rad/s");
         setDataCharacteristics(TORQUE, "Torque", "Nm");
         setDataCharacteristics(ANGLE, "Angle", "rad");
-        setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "Nm", Node::NOPLOT);
-        setDataCharacteristics(CHARIMP, "CharImp", "?", Node::NOPLOT);
-        setDataCharacteristics(EQINERTIA, "Equivalent Inertia", "kgm^2", Node::NOPLOT);
+        setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "Nm", TLM);
+        setDataCharacteristics(CHARIMP, "CharImp", "?", TLM);
+        setDataCharacteristics(EQINERTIA, "Equivalent Inertia", "kgm^2", Hidden);
     }
 
     virtual void setSpecialStartValues(Node *pNode)
     {
-        pNode->setData(WAVEVARIABLE, mDataVector[TORQUE]);
+        pNode->setDataValue(WAVEVARIABLE, mDataValues[TORQUE]);
         //! todo Maybe also write CHARIMP?
     }
 };
@@ -182,13 +197,13 @@ private:
     {
         setDataCharacteristics(VOLTAGE, "Voltage", "V");
         setDataCharacteristics(CURRENT, "Current", "A");
-        setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "V", Node::NOPLOT);
-        setDataCharacteristics(CHARIMP, "CharImp", "V/A", Node::NOPLOT);
+        setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "V", TLM);
+        setDataCharacteristics(CHARIMP, "CharImp", "V/A", TLM);
     }
 
     virtual void setSpecialStartValues(Node *pNode)
     {
-        pNode->setData(WAVEVARIABLE, mDataVector[VOLTAGE]);
+        pNode->setDataValue(WAVEVARIABLE, mDataValues[VOLTAGE]);
         //! todo Maybe also write CHARIMP?
     }
 };

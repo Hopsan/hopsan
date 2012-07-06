@@ -57,10 +57,7 @@ Port::~Port()
     if (mpStartNode != 0)
     {
         //! Remove the mapping to eventual system parameters to avoid cowboy-writing in memory after deleted port.
-        //! dataNames and dataUnits are here just to decide the number of elements in the start node.
-        std::vector<std::string> dataNames, dataUnits;
-        mpStartNode->getDataNamesAndUnits(dataNames, dataUnits);
-//        for(size_t i = 0; i < dataNames.size(); ++i)
+//        for(size_t i = 0; i < mpStartNode->getNumDataVariables(); ++i)
 //        {
 //FIXA, the parameters will probably be deleted when parent component is deleted -> no problems            getComponent()->getSystemParent()->getSystemParameters().unMapParameter(mpStartNode->getDataPtr(i));
 //        }
@@ -117,7 +114,7 @@ void Port::loadStartValues()
 {
     if((isConnected()) && mpStartNode)
     {
-        this->mpStartNode->copyNodeVariables(mpNode);
+        this->mpStartNode->copyNodeDataValuesTo(mpNode);
     }
 }
 
@@ -127,7 +124,7 @@ void Port::loadStartValuesFromSimulation()
 {
     if((isConnected()) && mpStartNode)
     {
-        this->mpNode->copyNodeVariables(mpStartNode);
+        this->mpNode->copyNodeDataValuesTo(mpStartNode);
     }
 }
 
@@ -148,7 +145,7 @@ double Port::readNode(const size_t idx, const size_t /*portIdx*/)
     }
     else
     {
-        return mpNode->mDataVector[idx];
+        return mpNode->mDataValues[idx];
     }
 }
 
@@ -161,7 +158,7 @@ void Port::writeNode(const size_t &idx, const double &value, const size_t /*port
     //! @note This if-statement will slow simulation down, but if optimization is desired readNode and writeNode shall not be used anyway.
     if(isConnected())
     {
-        mpNode->mDataVector[idx] = value;       //Write to node if there is a node to write to
+        mpNode->mDataValues[idx] = value;       //Write to node if there is a node to write to
     }
 }
 
@@ -185,7 +182,7 @@ double *Port::getSafeNodeDataPtr(const size_t idx, const double defaultValue, co
         {
             mpNCDummyNode = HopsanEssentials::getInstance()->createNode(mNodeType);
         }
-        mpNCDummyNode->setData(idx, defaultValue);
+        mpNCDummyNode->setDataValue(idx, defaultValue);
         return mpNCDummyNode->getDataPtr(idx);
     }
 }
@@ -251,15 +248,13 @@ void Port::createStartNode(NodeTypeT nodeType)
     // Prevent registering startvalues for subports in multiports, It will be very difficult to ensure that those would actually work as expected
     if (mpParentPort == 0)
     {
-        vector<string> dataNames, units;
-        mpStartNode->getDataNamesAndUnits(dataNames, units);
-
-        for(size_t i = 0; i < dataNames.size(); ++i)
+        for(size_t i = 0; i < mpStartNode->getNumDataVariables(); ++i)
         {
+            const NodeDataDescription* pDesc = mpStartNode->getDataDescription(i);
             stringstream ssName, ssDesc;
             ssDesc << "startvalue:" << "Port " << getPortName();
-            ssName << getPortName() << "::" << dataNames[i];
-            getComponent()->registerParameter(ssName.str(), ssDesc.str(), units[i], *(mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(dataNames[i]))), Constant);
+            ssName << getPortName() << "::" << pDesc->name;
+            getComponent()->registerParameter(ssName.str(), ssDesc.str(), pDesc->unit, *(mpStartNode->getDataPtr(pDesc->id)), Constant);
         }
     }
 }
@@ -284,35 +279,26 @@ void Port::saveLogData(string filename, const size_t /*portIdx*/)
 //! @brief Get all data names and units from the connected node
 //! @param [in,out] rNames This vector will contain the names
 //! @param [in,out] rUnits This vector will contain the units
-void Port::getNodeDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits, const size_t /*portIdx*/)
+const std::vector<NodeDataDescription>* Port::getNodeDataDescriptions(const size_t portIdx /*portIdx*/)
 {
     if(this->isConnected())
     {
-        //! @todo We want all data to be gathered by gui, I have set allData to true here to do that, but plot bahaviour should not be in core, or maybe we should call it somthing else, we dont want c and Zc to show up as start values, or do we ? /Peter
-        mpNode->getDataNamesAndUnits(rNames, rUnits, true);
+        return mpNode->getDataDescriptions();
     }
-    else
-    {
-        return;
-    }
+    return 0;
 }
 
 
 //! @brief Get node data name and unit for specific node data
 //! @param [in] dataid The node data id
-//! @param [in,out] rName This string will contain the name
-//! @param [in,out] rUnit This string will contain the unit
-void Port::getNodeDataNameAndUnit(const size_t dataid, string &rName, string &rUnit, const size_t /*portIdx*/)
+//! @returns A pointer to teh node data description, or 0 if no node exist
+const NodeDataDescription* Port::getNodeDataDescription(const size_t dataid, const size_t portIdx /*portIdx*/)
 {
     if (mpNode != 0)
     {
-        mpNode->getDataNameAndUnit(dataid, rName, rUnit);
+        return mpNode->getDataDescription(dataid);
     }
-    else
-    {
-        rName = "";
-        rUnit = "";
-    }
+    return 0;
 }
 
 
@@ -360,7 +346,7 @@ vector<double> *Port::getJustTheDataVectorPtr(const size_t /*portIdx*/)
 {
     if(mpNode != 0)
     {
-        return &(mpNode->mDataVector);
+        return &(mpNode->mDataValues);
     }
     else
     {
@@ -430,10 +416,10 @@ vector<double> *Port::getJustTheDataVectorPtr(const size_t /*portIdx*/)
 double Port::getStartValue(const size_t idx, const size_t /*portIdx*/)
 {
     if(mpStartNode && !mpComponent->getSystemParent()->doesKeepStartValues())
-        return mpStartNode->getData(idx);
+        return mpStartNode->getDataValue(idx);
     else if(mpStartNode)
     {
-        return mpNode->getData(idx);
+        return mpNode->getDataValue(idx);
     }
     assert(false);
     return 0.0;
@@ -447,7 +433,7 @@ void Port::setStartValue(const size_t idx, const double value, const size_t /*po
 {
     if(mpStartNode)
     {
-        mpStartNode->setData(idx, value);
+        mpStartNode->setDataValue(idx, value);
 
         //! @todo I commented the code bellow to avoid previously dissabled startvalues from reapearing after simulation wher setStartValue was called, I hope this does not screw something up
 //        vector<string> dataNames, units;
@@ -470,15 +456,15 @@ void Port::setStartValue(const size_t idx, const double value, const size_t /*po
 //! @param idx Data index of start value to be disabled
 void Port::disableStartValue(const size_t idx)
 {
+    std::stringstream name, ss;
     //The start value has already been registered as a parameter in the component, so we must unregister it. This is probably not the most beautiful solution.
-    std::stringstream name;
-    name << getPortName() << "::" << mpStartNode->mDataNames.at(idx);
-    stringstream ss;
+    name << getPortName() << "::" << mpStartNode->getDataDescription(idx)->name;
     ss << "Disabling_StartValue: " << name.str();
     mpComponent->addDebugMessage(ss.str());
     mpComponent->unRegisterParameter(name.str());
 
-    mpStartNode->mDataNames.at(idx) = "";
+    //! @todo this is an ugly hack
+    mpStartNode->mDataDescriptions.at(idx).name = "";
 }
 
 
@@ -677,14 +663,14 @@ void MultiPort::saveLogData(std::string filename, const size_t portIdx)
     return mSubPortsVector[portIdx]->saveLogData(filename);
 }
 
-void MultiPort::getNodeDataNamesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rUnits, const size_t portIdx)
+const std::vector<NodeDataDescription>* MultiPort::getNodeDataDescriptions(const size_t portIdx)
 {
-    mSubPortsVector[portIdx]->getNodeDataNamesAndUnits(rNames, rUnits);
+    return mSubPortsVector[portIdx]->getNodeDataDescriptions();
 }
 
-void MultiPort::getNodeDataNameAndUnit(const size_t dataid, std::string &rName, std::string &rUnit, const size_t portIdx)
+const NodeDataDescription* MultiPort::getNodeDataDescription(const size_t dataid, const size_t portIdx)
 {
-    mSubPortsVector[portIdx]->getNodeDataNameAndUnit(dataid, rName, rUnit);
+    return mSubPortsVector[portIdx]->getNodeDataDescription(dataid);
 }
 
 int MultiPort::getNodeDataIdFromName(const std::string name, const size_t portIdx)
@@ -713,10 +699,10 @@ std::vector<double> *MultiPort::getJustTheDataVectorPtr(const size_t portIdx)
 double MultiPort::getStartValue(const size_t idx, const size_t portIdx)
 {
     if(mpStartNode && !mpComponent->getSystemParent()->doesKeepStartValues())
-        return mpStartNode->getData(idx);
+        return mpStartNode->getDataValue(idx);
     else if(mpStartNode)
     {
-        return mSubPortsVector[portIdx]->mpNode->getData(idx);
+        return mSubPortsVector[portIdx]->mpNode->getDataValue(idx);
     }
     assert(false);
     return 0.0;

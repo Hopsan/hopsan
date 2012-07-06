@@ -63,8 +63,8 @@ namespace hopsan {
         virtual double *getSafeNodeDataPtr(const size_t idx, const double defaultValue, const size_t portIdx=0);
 
         virtual void saveLogData(std::string filename, const size_t portIdx=0);
-        virtual void getNodeDataNamesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rUnits, const size_t portIdx=0);
-        virtual void getNodeDataNameAndUnit(const size_t dataid, std::string &rName, std::string &rUnit, const size_t portIdx=0);
+        virtual const std::vector<NodeDataDescription> *getNodeDataDescriptions(const size_t portIdx=0);
+        virtual const NodeDataDescription* getNodeDataDescription(const size_t dataid, const size_t portIdx=0);
         virtual int getNodeDataIdFromName(const std::string name, const size_t portIdx=0);
         virtual std::vector<double> *getTimeVectorPtr(const size_t portIdx=0);
         virtual std::vector<std::vector<double> > *getDataVectorPtr(const size_t portIdx=0);
@@ -164,8 +164,8 @@ namespace hopsan {
         double *getSafeNodeDataPtr(const size_t idx, const double defaultValue, const size_t portIdx);
 
         void saveLogData(std::string filename, const size_t portIdx=0);
-        void getNodeDataNamesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rUnits, const size_t portIdx=0);
-        void getNodeDataNameAndUnit(const size_t dataid, std::string &rName, std::string &rUnit, const size_t portIdx=0);
+        const std::vector<NodeDataDescription>* getNodeDataDescriptions(const size_t portIdx);
+        const NodeDataDescription* getNodeDataDescription(const size_t dataid, const size_t portIdx=0);
         int getNodeDataIdFromName(const std::string name, const size_t portIdx=0);
         std::vector<double> *getTimeVectorPtr(const size_t portIdx=0);
         std::vector<std::vector<double> > *getDataVectorPtr(const size_t portIdx=0);

@@ -1,7 +1,7 @@
 /*-----------------------------------------------------------------------------
  This source file is part of Hopsan NG
 
- Copyright (c) 2011 
+ Copyright (c) 2011
     Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
     Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
@@ -30,96 +30,105 @@
 
 namespace hopsan {
 
-    typedef std::string NodeTypeT;
+typedef std::string NodeTypeT;
 
-    //Forward Declarations
-    class Port;
-    class Component;
-    class ComponentSystem;
-    class ConnectionAssistant;
-    class HopsanEssentials;
+//Forward Declarations
+class Port;
+class Component;
+class ComponentSystem;
+class ConnectionAssistant;
+class HopsanEssentials;
 
-    class DLLIMPORTEXPORT Node
-    {
-        friend class Port;
-        friend class MultiPort;
-        friend class PowerPort;
-        friend class WritePort;
-        friend class Component;
-        friend class ComponentSystem;
-        friend class ConnectionAssistant;
-        friend class HopsanEssentials;
+enum NodeDataVariableTypeT {Default, TLM, Hidden};
 
-    public:
-        //The user should never bother about Nodes
-        void logData(const double time);  //Public because simulation threads must be able to log data
-        void setData(const size_t data_type, const double data);
-        Component *getWritePortComponentPtr();
+class NodeDataDescription
+{
+public:
+    std::string name;
+    std::string unit;
+    NodeDataVariableTypeT varType;
+    unsigned int id;
+};
 
-    protected:
-        //Protected member functions
-        Node(const size_t datalength);
-        const NodeTypeT getNodeType() const;
+class DLLIMPORTEXPORT Node
+{
+    friend class Port;
+    friend class MultiPort;
+    friend class PowerPort;
+    friend class WritePort;
+    friend class Component;
+    friend class ComponentSystem;
+    friend class ConnectionAssistant;
+    friend class HopsanEssentials;
 
-        enum PLOTORNOT {PLOT, NOPLOT}; //!< @todo rename and dont use ALL CAPTIAL letters for enums
+public:
+    const NodeTypeT getNodeType() const;
+    size_t getNumDataVariables() const;
 
-        void copyNodeVariables(Node *pNode);
-        virtual void setSpecialStartValues(Node *pNode);
+    virtual int getDataIdFromName(const std::string name);
+    double getDataValue(const size_t data_type) const;
+    void setDataValue(const size_t data_type, const double data);
+    Component *getWritePortComponentPtr();
 
-        void setLogSettingsNSamples(int nSamples, double start, double stop, double sampletime);
-        void setLogSettingsSkipFactor(double factor, double start, double stop, double sampletime);
-        void setLogSettingsSampleTime(double log_dt, double start, double stop, double sampletime);
-        bool preAllocateLogSpace();
-        void saveLogDataToFile(const std::string filename, const std::string header);
+    const std::vector<NodeDataDescription>* getDataDescriptions() const;
+    const NodeDataDescription* getDataDescription(const size_t id) const;
 
-        //void setData is now public!
-        double getData(const size_t data_type) const;
-        double *getDataPtr(const size_t data_type);
+    virtual void setSignalDataUnit(const std::string unit);
+    virtual void setSignalDataName(const std::string name);
 
-        void setDataCharacteristics(const size_t id, const std::string name, const std::string unit, const Node::PLOTORNOT plotBehaviour = Node::PLOT);
-        void getDataNameAndUnit(const size_t id, std::string &rName, std::string &rUnit);
-        int getDataIdFromName(const std::string name);
-        void getDataNamesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rUnits, const bool getAll=false);
-        void getDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<double> &rValues, std::vector<std::string> &rUnits, bool getAll=false);
-        bool setDataValuesByNames(std::vector<std::string> names, std::vector<double> values);
-        int getNumberOfPortsByType(int type);
+    void logData(const double time);
 
-        ComponentSystem *getOwnerSystem();
+protected:
+    //Protected member functions
+    Node(const size_t datalength);
+    void setDataCharacteristics(const size_t id, const std::string name, const std::string unit, const NodeDataVariableTypeT vartype=Default);
 
-        //Protected member variables
-        std::vector<double> mDataVector;
-        std::vector<Port*> mPortPtrs;
+    void copyNodeDataValuesTo(Node *pNode);
+    virtual void setSpecialStartValues(Node *pNode);
 
-        //WAS: Private member variables, be made them protected to get access in inherented classes
-        std::string mName;
-        std::vector<std::string> mDataNames;
-        std::vector<std::string> mDataUnits;
-        std::vector<Node::PLOTORNOT> mPlotBehaviour;
-        ComponentSystem *mpOwnerSystem;
+    void setLogSettingsNSamples(int nSamples, double start, double stop, double sampletime);
+    void setLogSettingsSkipFactor(double factor, double start, double stop, double sampletime);
+    void setLogSettingsSampleTime(double log_dt, double start, double stop, double sampletime);
+    bool preAllocateLogSpace();
+    void saveLogDataToFile(const std::string filename, const std::string header);
 
-    private:
-        //Private member fuctions
-        void setPort(Port *pPort);
-        void removePort(Port *pPort);
-        bool isConnectedToPort(Port *pPort);
-        void enableLog();
-        void disableLog();
+    double *getDataPtr(const size_t data_type);
 
-        //Private member variables
-        NodeTypeT mNodeType;
+    //bool setDataValuesByNames(std::vector<std::string> names, std::vector<double> values);
+    int getNumberOfPortsByType(int type);
 
-        //Log specific variables
-        std::vector<double> mTimeStorage;
-        std::vector<std::vector<double> > mDataStorage;
-        bool mLogSpaceAllocated;
-        bool mDoLog;
-        double mLogTimeDt;
-        double mLastLogTime;
-        size_t mLogSlots;
-        size_t mLogCtr;
-    };
+    ComponentSystem *getOwnerSystem();
 
-    typedef ClassFactory<NodeTypeT, Node> NodeFactory;
+    //Protected member variables
+    std::vector<Port*> mPortPtrs;
+
+    std::vector<NodeDataDescription> mDataDescriptions;
+    std::vector<double> mDataValues;
+    ComponentSystem *mpOwnerSystem;
+
+private:
+    //Private member fuctions
+    void setPort(Port *pPort);
+    void removePort(Port *pPort);
+    bool isConnectedToPort(Port *pPort);
+    void enableLog();
+    void disableLog();
+
+    //Private member variables
+    NodeTypeT mNodeType;
+
+    //Log specific variables
+    std::vector<double> mTimeStorage;
+    std::vector<std::vector<double> > mDataStorage;
+    bool mLogSpaceAllocated;
+    bool mDoLog;
+    double mLogTimeDt;
+    double mLastLogTime;
+    size_t mLogSlots;
+    size_t mLogCtr;
+};
+
+typedef ClassFactory<NodeTypeT, Node> NodeFactory;
 }
 
 #endif // NODE_H_INCLUDED

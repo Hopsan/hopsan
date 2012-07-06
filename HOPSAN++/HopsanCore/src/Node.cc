@@ -42,7 +42,7 @@ using namespace hopsan;
 Node::Node(const size_t datalength)
 {
     //Make sure clear (should not really be needed)
-    mDataVector.clear();
+    mDataValues.clear();
     mDataStorage.clear();
     mTimeStorage.clear();
     mPortPtrs.clear();
@@ -51,13 +51,11 @@ Node::Node(const size_t datalength)
     mpOwnerSystem = 0;
 
     //Sett initial node type
-    mNodeType = "UndefinedNode";
+    mNodeType = "UndefinedNodeType";
 
     //Resize
-    mDataVector.resize(datalength,0.0);
-    mDataNames.resize(datalength,"");
-    mDataUnits.resize(datalength,"");
-    mPlotBehaviour.resize(datalength, Node::PLOT);
+    mDataDescriptions.resize(datalength);
+    mDataValues.resize(datalength,0.0);
 
     //Set log specific variables
     disableLog();       //Default log node dissabled
@@ -76,15 +74,21 @@ const NodeTypeT Node::getNodeType() const
     return mNodeType;
 }
 
+//! @brief Returns the total number of variables in a node
+size_t Node::getNumDataVariables() const
+{
+    return mDataValues.size();
+}
+
 
 //!
 //! @brief set data in node
 //! @param [in] data_type Identifier for the typ of node data to set
 //! @param [in] data The data value
 //!
-void Node::setData(const size_t data_type, const double data)
+void Node::setDataValue(const size_t data_type, const double data)
 {
-    mDataVector[data_type] = data;
+    mDataValues[data_type] = data;
 }
 
 
@@ -93,38 +97,41 @@ void Node::setData(const size_t data_type, const double data)
 //! @param [in] data_type Identifier for the type of node data to get
 //! @return The data value
 //!
-double Node::getData(const size_t data_type) const
+double Node::getDataValue(const size_t data_type) const
 {
-    return mDataVector[data_type];
+    return mDataValues[data_type];
 }
 
 
 double *Node::getDataPtr(const size_t data_type)
 {
-    return &mDataVector[data_type];
+    return &mDataValues[data_type];
 }
 
 
-//! Set data name and unit for a specified data variable
+//! @brief Set data name and unit for a specified data variable
 //! @param [in] id This is the ENUM data id
 //! @param [in] name The variable name
 //! @param [in] unit The variable unit
-void Node::setDataCharacteristics(const size_t id, const string name, const string unit, const Node::PLOTORNOT plotBehaviour)
+void Node::setDataCharacteristics(const size_t id, const string name, const string unit, const NodeDataVariableTypeT vartype)
 {
-    mDataNames[id] = name;
-    mDataUnits[id] = unit;
-    mPlotBehaviour[id] = plotBehaviour;
+    mDataDescriptions[id].id = id;
+    mDataDescriptions[id].name = name;
+    mDataDescriptions[id].unit = unit;
+    mDataDescriptions[id].varType = vartype;
 }
 
 
 //! Get a specific data name and unit
 //! @param [in] id This is the ENUM data id
-//! @param [out] rName A reference to the name variable
-//! @param [out] rUnit A reference to the Unite variable
-void Node::getDataNameAndUnit(const size_t id, std::string &rName, std::string &rUnit)
+//! @returns A pointer to the desierd description or 0 if out of bounds
+const NodeDataDescription* Node::getDataDescription(const size_t id) const
 {
-    rName = mDataNames[id];
-    rUnit = mDataUnits[id];
+    if (id < mDataDescriptions.size())
+    {
+        return &(mDataDescriptions[id]);
+    }
+    return 0;
 }
 
 
@@ -133,82 +140,50 @@ void Node::getDataNameAndUnit(const size_t id, std::string &rName, std::string &
 //! @return The Id, -1 if requested data name is not found
 int Node::getDataIdFromName(const string name)
 {
-    for (size_t i=0; i<mDataNames.size(); ++i)
+    for (size_t i=0; i<mDataDescriptions.size(); ++i)
     {
-        if (name == mDataNames[i])
+        if (name == mDataDescriptions.at(i).name)
         {
             return i;
         }
     }
-    return -1; //Did not find this name retunr -1 to signal failure
+    return -1; //Did not find this name return -1 to signal failure
 }
 
 
-//! Get all data names, values and units
-//! @param [in,out] rNames This vector will contain the names
-//! @param [in,out] rValues This vector will contain the values
-//! @param [in,out] rUnits This vector will contain the units
-void Node::getDataNamesValuesAndUnits(vector<string> &rNames, std::vector<double> &rValues, vector<string> &rUnits, bool getAll)
+//bool Node::setDataValuesByNames(vector<string> names, std::vector<double> values)
+//{
+//    bool success = true;
+//    for(size_t i=0; i<names.size(); ++i)
+//    {
+//        this->setData(this->getDataIdFromName(names[i]),values[i]);
+//        //! @todo introduce setDataSafe and similar at many places in code
+//    }
+//    return success;
+//}
+
+
+//! @brief Get the vector of data descriptions for the node
+//! @returns A pointer to the descriptions vector
+const std::vector<NodeDataDescription>* Node::getDataDescriptions() const
 {
-    //! @todo should we not clear the vectors first to make sure they are empty
-    for(size_t i=0; i<mDataNames.size(); ++i)
-    {
-        if((mPlotBehaviour[i] == Node::PLOT) || getAll)
-        {
-            rNames.push_back(mDataNames[i]);
-            rValues.push_back(mDataVector[i]);
-            rUnits.push_back(mDataUnits[i]);
-        }
-    }
+    return &mDataDescriptions;
 }
 
 
-bool Node::setDataValuesByNames(vector<string> names, std::vector<double> values)
-{
-    bool success = true;
-    for(size_t i=0; i<names.size(); ++i)
-    {
-        this->setData(this->getDataIdFromName(names[i]),values[i]);
-        //! @todo introduce setDataSafe and similar at many places in code
-    }
-    return success;
-}
-
-
-//! Get all data names and units
-//! @param [out] rNames A referece to a vector that will contain the names
-//! @param [out] rUnits A reference to a vector that will contain the units
-//! @param [in] getAll Should all variables be returned or only the main variables
-void Node::getDataNamesAndUnits(vector<string> &rNames, vector<string> &rUnits, const bool getAll)
-{
-    //std::cout << "mDataNames.size(): " << mPlotBehaviour.size() << std::endl;
-    for(size_t i=0; i<mDataNames.size(); ++i)
-    {
-        //std::cout << "mPlotBehaviour.size(): " << mPlotBehaviour.size() << std::endl;
-        if((mPlotBehaviour[i] == Node::PLOT) || getAll)
-        {
-            rNames.push_back(mDataNames[i]);
-            rUnits.push_back(mDataUnits[i]);
-        }
-    }
-    //rNames = mDataNames;
-    //rUnits = mDataUnits;
-}
-
-
-void Node::copyNodeVariables(Node *pNode)
+void Node::copyNodeDataValuesTo(Node *pNode)
 {
     //this ska kopiera sina varabler till rNode
     if(pNode->getNodeType()==this->getNodeType())
     {
-        for(size_t i=0; i<mDataNames.size(); ++i)
+        for(size_t i=0; i<pNode->getNumDataVariables(); ++i)
         {
             //cout << "Name: " << mDataNames[i] << "  Value: " << mDataVector[i] << "  , " << pNode->mDataVector[i] << "  Unit: " << mDataUnits[i] << endl;
             //! @todo look over if all vector positions should be set or not.
             //if(mPlotBehaviour[i] == Node::PLOT)
             {
                 //pNode->mDataNames[i] = mDataNames[i];
-                pNode->mDataVector[i] = mDataVector[i];
+                pNode->mDataValues[i] = mDataValues[i];
                 //pNode->mDataUnits[i] = mDataUnits[i];
             }
         }
@@ -309,7 +284,7 @@ bool Node::preAllocateLogSpace()
     if (mDoLog)
     {
         // The size of the data vector, how much data do we need to log each time step in this node
-        const size_t data_size = mDataVector.size();
+        const size_t data_size = mDataValues.size();
 
         // Make sure the ctr is 0 if we simulate the same model several times in a row
         mLogCtr = 0;
@@ -350,7 +325,7 @@ void Node::logData(const double time)
             {
                 //! @todo maybe time vector should be in the system instead, since all nodes in the same system will have the same time vector
                 mTimeStorage[mLogCtr] = time;   //We log the "real"  simulation time for the sample
-                mDataStorage[mLogCtr] = mDataVector;
+                mDataStorage[mLogCtr] = mDataValues;
             }else
             {
                 stringstream ss;
@@ -380,6 +355,18 @@ Component *Node::getWritePortComponentPtr()
     return 0;   //Return null pointer if no write port was found
 }
 
+//! @brief This function can be used to set unit string for signal nodes ONLY
+void Node::setSignalDataUnit(const string unit)
+{
+    //Do nothing by default
+}
+
+//! @brief This function can be used to set name string for signal nodes ONLY
+void Node::setSignalDataName(const string name)
+{
+    //Do nothing by default
+}
+
 
 //! @brief Debug function to dump logged node data to a file
 //! @param [in] filename The name of the file to write to
@@ -395,9 +382,9 @@ void Node::saveLogDataToFile(const string filename, const string header)
         //First write HEADER info containing node info
         out_file << header << " " << mNodeType << endl;
         out_file << "time";
-        for (size_t i=0; i<mDataNames.size(); ++i)
+        for (size_t i=0; i<mDataDescriptions.size(); ++i)
         {
-            out_file << " " << mDataNames[i];
+            out_file << " " << mDataDescriptions[i].name;
         }
         out_file << endl;
 
@@ -405,7 +392,7 @@ void Node::saveLogDataToFile(const string filename, const string header)
         for (size_t row=0; row<mTimeStorage.size(); ++row)
         {
             out_file << mTimeStorage[row];
-            for (size_t datacol=0; datacol<mDataVector.size(); ++datacol)
+            for (size_t datacol=0; datacol<mDataValues.size(); ++datacol)
             {
                 out_file << " " << mDataStorage[row][datacol];
             }
