@@ -341,12 +341,14 @@ void Node::logData(const double time)
     {
         //! @todo Danger comparing doubles
         //! @todo is this correct, Subtract a tenth of logDt to avoid numerical problem with double >= double
+        //! @todo since all nodes in a system will all do this calculation maybe we could speed things up by do ing this check once, in the system and only call this function in all nodes when needed
         if (time >= mLastLogTime+mLogTimeDt-mLogTimeDt/10.0)
         {
             //cout << "mLogCtr: " << mLogCtr << endl;
             //! @todo this if check should not be needed if everything else is working
             if (mLogCtr < mTimeStorage.size())
             {
+                //! @todo maybe time vector should be in the system instead, since all nodes in the same system will have the same time vector
                 mTimeStorage[mLogCtr] = time;   //We log the "real"  simulation time for the sample
                 mDataStorage[mLogCtr] = mDataVector;
             }else

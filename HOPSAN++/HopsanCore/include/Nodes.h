@@ -69,22 +69,13 @@ private:
         setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "Pa", Node::NOPLOT);
         setDataCharacteristics(CHARIMP, "CharImp", "?", Node::NOPLOT);
         setDataCharacteristics(HEATFLOW, "HeatFlow", "?", Node::NOPLOT);
-
-        //            setData(NodeHydraulic::PRESSURE, 1.0e5);
-        //            setData(NodeHydraulic::FLOW, 0.0);
     }
 
     virtual void setSpecialStartValues(Node *pNode)
     {
-        for(size_t i=0; i<mDataNames.size(); ++i)
-        {
-            if(WAVEVARIABLE==i)
-            {
-                pNode->setData(i, mDataVector[PRESSURE]);
-                //std::cout << "SpecialStartValue: Name: " << mDataNames[i] << "  Value: " << mDataVector[i] << "  Unit: " << mDataUnits[i] << std::endl;
-            }
-            //! todo Maybe also write CHARIMP?
-        }
+        pNode->setData(WAVEVARIABLE, mDataVector[PRESSURE]);
+        //std::cout << "SpecialStartValue: Name: " << mDataNames[WAVEVARIABLE] << "  Value: " << mDataVector[WAVEVARIABLE] << "  Unit: " << mDataUnits[WAVEVARIABLE] << std::endl;
+        //! todo Maybe also write CHARIMP?
     }
 };
 
@@ -108,22 +99,13 @@ private:
         setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "Pa", Node::NOPLOT);
         setDataCharacteristics(CHARIMP, "CharImp", "?", Node::NOPLOT);
         setDataCharacteristics(ENERGYFLOW, "EnergyFlow", "J/s", Node::NOPLOT);
-
-        //            setData(NodeENERGYFLOW::PRESSURE, 1.0e5);
-        //            setData(NodeENERGYFLOW::FLOW, 0.0);
     }
 
     virtual void setSpecialStartValues(Node *pNode)
     {
-        for(size_t i=0; i<mDataNames.size(); ++i)
-        {
-            if(WAVEVARIABLE==i)
-            {
-                pNode->setData(i, mDataVector[PRESSURE]);
-                //std::cout << "SpecialStartValue: Name: " << mDataNames[i] << "  Value: " << mDataVector[i] << "  Unit: " << mDataUnits[i] << std::endl;
-            }
-            //! todo Maybe also write CHARIMP?
-        }
+        pNode->setData(WAVEVARIABLE, mDataVector[PRESSURE]);
+        //std::cout << "SpecialStartValue: Name: " << mDataNames[i] << "  Value: " << mDataVector[i] << "  Unit: " << mDataUnits[i] << std::endl;
+        //! todo Maybe also write CHARIMP?
     }
 };
 
@@ -150,14 +132,8 @@ private:
 
     virtual void setSpecialStartValues(Node *pNode)
     {
-        for(size_t i=0; i<mDataNames.size(); ++i)
-        {
-            if(WAVEVARIABLE==i)
-            {
-                pNode->setData(i, mDataVector[FORCE]);
-            }
-            //! todo Maybe also write CHARIMP?
-        }
+        pNode->setData(WAVEVARIABLE, mDataVector[FORCE]);
+        //! todo Maybe also write CHARIMP?
     }
 };
 
@@ -184,14 +160,8 @@ private:
 
     virtual void setSpecialStartValues(Node *pNode)
     {
-        for(size_t i=0; i<mDataNames.size(); ++i)
-        {
-            if(WAVEVARIABLE==i)
-            {
-                pNode->setData(i, mDataVector[TORQUE]);
-            }
-            //! todo Maybe also write CHARIMP?
-        }
+        pNode->setData(WAVEVARIABLE, mDataVector[TORQUE]);
+        //! todo Maybe also write CHARIMP?
     }
 };
 
@@ -218,14 +188,8 @@ private:
 
     virtual void setSpecialStartValues(Node *pNode)
     {
-        for(size_t i=0; i<mDataNames.size(); ++i)
-        {
-            if(WAVEVARIABLE==i)
-            {
-                pNode->setData(i, mDataVector[VOLTAGE]);
-            }
-            //! todo Maybe also write CHARIMP?
-        }
+        pNode->setData(WAVEVARIABLE, mDataVector[VOLTAGE]);
+        //! todo Maybe also write CHARIMP?
     }
 };
 
