@@ -3,19 +3,19 @@
     <requirements>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
     </requirements>
-    <system logsamples="2048" typename="Subsystem" name="SignalIntegratorTest">
-        <simulationtime stop="10" timestep="0.001" start="0" inherit_timestep="true"/>
+    <system logsamples="2048" typename="Subsystem" name="SignalFirstOrderFilterTest">
+        <simulationtime stop="5" timestep="0.001" start="0" inherit_timestep="true"/>
         <aliases/>
         <parameters/>
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
             <viewport x="2501" y="2500.5" zoom="1"/>
-            <ports hidden="0"/>
-            <names hidden="0"/>
+            <ports hidden="1"/>
+            <names hidden="1"/>
             <scriptfile path=""/>
             <hopsanobjectappearance version="0.3">
-                <modelobject typename="Subsystem" displayname="SignalIntegratorTest">
+                <modelobject typename="Subsystem" displayname="SignalFirstOrderFilterTest">
                     <icons>
                         <icon path="subsystemDefault.svg" type="defaultmissing"/>
                     </icons>
@@ -41,32 +41,36 @@
             </optimization>
         </hopsangui>
         <objects>
-            <component typename="SignalPulse" name="Pulse">
+            <component typename="SignalStep" name="Step">
                 <parameters>
                     <parameter value="0" type="double" name="y_0"/>
-                    <parameter value="1" type="double" name="t_start"/>
-                    <parameter value="2" type="double" name="t_end"/>
-                    <parameter value="1e-10" type="double" name="y_A"/>
+                    <parameter value="1" type="double" name="y_A"/>
+                    <parameter value="1" type="double" name="t_step"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2317" y="2519" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <pose x="2346" y="2447" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
-                        <modelobject typename="SignalPulse" displayname="Pulse">
+                        <modelobject typename="SignalStep" displayname="Step">
                             <ports/>
                         </modelobject>
                     </hopsanobjectappearance>
                 </hopsangui>
             </component>
-            <component typename="SignalIntegrator2" name="Integrator">
+            <component typename="SignalFirstOrderFilter" name="General first order filter">
                 <parameters>
                     <parameter value="0" type="double" name="out::Value"/>
+                    <parameter value="1" type="double" name="k"/>
+                    <parameter value="2" type="double" name="omega_num"/>
+                    <parameter value="4" type="double" name="omega_den"/>
+                    <parameter value="-1.5e+300" type="double" name="y_min"/>
+                    <parameter value="1.5e+300" type="double" name="y_max"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2471" y="2519" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <pose x="2430" y="2447" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
-                        <modelobject typename="SignalIntegrator2" displayname="Integrator">
+                        <modelobject typename="SignalFirstOrderFilter" displayname="General first order filter">
                             <ports/>
                         </modelobject>
                     </hopsanobjectappearance>
@@ -75,8 +79,8 @@
             <component typename="SignalSink" name="Scope">
                 <parameters/>
                 <hopsangui>
-                    <pose x="2577" y="2520" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <pose x="2518" y="2447" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalSink" displayname="Scope">
                             <ports/>
@@ -86,21 +90,21 @@
             </component>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2379.500000" y="2376.500000"/>
-                    <textobject fontcolor="#556b2f" text="Signal Integrator test" font="Calibri,18,-1,0,75,0,0,0,0,0"/>
-                    <size width="217.000000" height="51.000000"/>
+                    <pose x="2319.000000" y="2325.000000"/>
+                    <textobject fontcolor="#556b2f" text="Signal first order filter" font="Calibri,18,-1,0,75,0,0,0,0,0"/>
+                    <size width="227.000000" height="51.000000"/>
                     <line width="2.000000" visible="0" style="solidline"/>
                 </hopsangui>
             </textboxwidget>
         </objects>
         <connections>
-            <connect endport="in" endcomponent="Integrator" startport="out" startcomponent="Pulse">
+            <connect endport="in" endcomponent="General first order filter" startport="out" startcomponent="Step">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2329.50000000000000000000" y="2519.00000000000000000000"/>
-                        <coordinate x="2433.50000000000000000000" y="2519.00000000000000000000"/>
-                        <coordinate x="2433.50000000000000000000" y="2519.00000000000000000000"/>
-                        <coordinate x="2453.50000000000000000000" y="2519.00000000000000000000"/>
+                        <coordinate x="2358.50000000000000000000" y="2447.00000000000000000000"/>
+                        <coordinate x="2385.00000000000000000000" y="2447.00000000000000000000"/>
+                        <coordinate x="2385.00000000000000000000" y="2447.00000000000000000000"/>
+                        <coordinate x="2405.00000000000000000000" y="2447.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -110,36 +114,16 @@
                     <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="Scope" startport="out" startcomponent="Integrator">
+            <connect endport="in" endcomponent="Scope" startport="out" startcomponent="General first order filter">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2488.50000000000000000000" y="2519.00000000000000000000"/>
-                        <coordinate x="2557.00000000000000000000" y="2519.00000000000000000000"/>
-                        <coordinate x="2557.00000000000000000000" y="2520.00000000000000000000"/>
+                        <coordinate x="2455.00000000000000000000" y="2447.00000000000000000000"/>
+                        <coordinate x="2498.00000000000000000000" y="2447.00000000000000000000"/>
+                        <coordinate x="2498.00000000000000000000" y="2447.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="in_right" endcomponent="Scope" startport="out" startcomponent="Pulse">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2329.50000000000000000000" y="2519.00000000000000000000"/>
-                        <coordinate x="2377.00000000000000000000" y="2519.00000000000000000000"/>
-                        <coordinate x="2377.00000000000000000000" y="2601.00000000000000000000"/>
-                        <coordinate x="2641.00000000000000000000" y="2601.00000000000000000000"/>
-                        <coordinate x="2641.00000000000000000000" y="2520.00000000000000000000"/>
-                        <coordinate x="2597.00000000000000000000" y="2520.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
                     </geometries>
                     <style>solid</style>
                 </hopsangui>
