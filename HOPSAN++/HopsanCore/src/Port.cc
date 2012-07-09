@@ -260,19 +260,62 @@ void Port::createStartNode(NodeTypeT nodeType)
 }
 
 
-//! @brief Calls the save log data function of the connected node (if any)
+//! @brief Debug function to dump logged node data to a file
+//! @param [in] filename The name of the file to write to
 void Port::saveLogData(string filename, const size_t /*portIdx*/)
 {
     if (mpNode != 0)
     {
         string header = getComponentName() + "::" + getPortName();
-        mpNode->saveLogDataToFile(filename, header);
+
+        ofstream out_file;
+        out_file.open(filename.c_str());
+        if (out_file.good())
+        {
+            vector<double>* pTimeStorage = mpNode->getOwnerSystem()->getLogTimeVector();
+            assert(pTimeStorage->size() == mpNode->mDataStorage.size());
+
+            //First write HEADER info containing node info
+            out_file << header << " " << mpNode->getNodeType() << endl;
+            out_file << "time";
+            for (size_t i=0; i<mpNode->getNumDataVariables(); ++i)
+            {
+                out_file << " " << mpNode->getDataDescription(i)->name;
+            }
+            out_file << endl;
+
+            //Write log data to file
+            for (size_t row=0; row<pTimeStorage->size(); ++row)
+            {
+                out_file << pTimeStorage->at(row);
+                for (size_t datacol=0; datacol<mpNode->getNumDataVariables(); ++datacol)
+                {
+                    out_file << " " << mpNode->mDataStorage[row][datacol];
+                }
+                out_file << endl;
+            }
+            out_file.close();
+            cout << "Done! Saving node data to file: " << filename << endl;
+        }
+        else
+        {
+            cout << "Warning! Could not open out file for writing: " << filename << endl;
+        }
     }
     else
     {
         cout << getComponentName() << "-port:" << mPortName << " can not log data, the Port has no Node connected" << endl;
-        assert(false);
     }
+}
+
+bool Port::haveLogData(const size_t /*portIdx*/)
+{
+    if (mpNode)
+    {
+        // Here we assume that timevector DOES exist. If simulation code is correct it should exist
+        return !mpNode->mDataStorage.empty();
+    }
+    return false;
 }
 
 
@@ -316,20 +359,21 @@ int Port::getNodeDataIdFromName(const string name, const size_t /*portIdx*/)
 }
 
 
-vector<double> *Port::getTimeVectorPtr(const size_t /*portIdx*/)
+vector<double> *Port::getLogTimeVectorPtr(const size_t /*portIdx*/)
 {
     if (mpNode != 0)
     {
-        return  &(mpNode->mTimeStorage);
+        ComponentSystem *pOwnerSys = mpNode->getOwnerSystem();
+        if (pOwnerSys)
+        {
+            return pOwnerSys->getLogTimeVector();
+        }
     }
-    else
-    {
-        return 0;
-    }
+    return 0; //Nothing found return 0
 }
 
 
-vector<vector<double> > *Port::getDataVectorPtr(const size_t /*portIdx*/)
+vector<vector<double> > *Port::getLogDataVectorPtr(const size_t /*portIdx*/)
 {
     if (mpNode != 0)
     {
@@ -342,7 +386,7 @@ vector<vector<double> > *Port::getDataVectorPtr(const size_t /*portIdx*/)
 }
 
 
-vector<double> *Port::getJustTheDataVectorPtr(const size_t /*portIdx*/)
+vector<double> *Port::getDataVectorPtr(const size_t /*portIdx*/)
 {
     if(mpNode != 0)
     {
@@ -678,19 +722,24 @@ int MultiPort::getNodeDataIdFromName(const std::string name, const size_t portId
     return mSubPortsVector[portIdx]->getNodeDataIdFromName(name);
 }
 
-std::vector<double> *MultiPort::getTimeVectorPtr(const size_t portIdx)
+bool MultiPort::haveLogData(const size_t portIdx)
 {
-    return mSubPortsVector[portIdx]->getTimeVectorPtr();
+    return mSubPortsVector[portIdx]->haveLogData();
 }
 
-std::vector<std::vector<double> > *MultiPort::getDataVectorPtr(const size_t portIdx)
+std::vector<double> *MultiPort::getLogTimeVectorPtr(const size_t portIdx)
+{
+    return mSubPortsVector[portIdx]->getLogTimeVectorPtr();
+}
+
+std::vector<std::vector<double> > *MultiPort::getLogDataVectorPtr(const size_t portIdx)
+{
+    return mSubPortsVector[portIdx]->getLogDataVectorPtr();
+}
+
+std::vector<double> *MultiPort::getDataVectorPtr(const size_t portIdx)
 {
     return mSubPortsVector[portIdx]->getDataVectorPtr();
-}
-
-std::vector<double> *MultiPort::getJustTheDataVectorPtr(const size_t portIdx)
-{
-    return mSubPortsVector[portIdx]->getJustTheDataVectorPtr();
 }
 
 //! @brief Get the an actual start value of the port

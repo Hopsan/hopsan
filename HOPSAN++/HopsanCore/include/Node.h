@@ -30,8 +30,6 @@
 
 namespace hopsan {
 
-typedef std::string NodeTypeT;
-
 //Forward Declarations
 class Port;
 class Component;
@@ -39,6 +37,7 @@ class ComponentSystem;
 class ConnectionAssistant;
 class HopsanEssentials;
 
+typedef std::string NodeTypeT;
 enum NodeDataVariableTypeT {Default, TLM, Hidden};
 
 class NodeDataDescription
@@ -76,7 +75,10 @@ public:
     virtual void setSignalDataUnit(const std::string unit);
     virtual void setSignalDataName(const std::string name);
 
-    void logData(const double time);
+    //void logData(const double time);
+    void logData(const size_t logSlot);
+
+    ComponentSystem *getOwnerSystem();
 
 protected:
     //Protected member functions
@@ -86,46 +88,33 @@ protected:
     void copyNodeDataValuesTo(Node *pNode);
     virtual void setSpecialStartValues(Node *pNode);
 
-    void setLogSettingsNSamples(int nSamples, double start, double stop, double sampletime);
-    void setLogSettingsSkipFactor(double factor, double start, double stop, double sampletime);
-    void setLogSettingsSampleTime(double log_dt, double start, double stop, double sampletime);
-    bool preAllocateLogSpace();
-    void saveLogDataToFile(const std::string filename, const std::string header);
+    bool preAllocateLogSpace(const size_t nLogSlots);
 
     double *getDataPtr(const size_t data_type);
 
     //bool setDataValuesByNames(std::vector<std::string> names, std::vector<double> values);
     int getNumberOfPortsByType(int type);
 
-    ComponentSystem *getOwnerSystem();
-
     //Protected member variables
-    std::vector<Port*> mPortPtrs;
-
     std::vector<NodeDataDescription> mDataDescriptions;
     std::vector<double> mDataValues;
-    ComponentSystem *mpOwnerSystem;
 
 private:
     //Private member fuctions
-    void setPort(Port *pPort);
-    void removePort(Port *pPort);
+    void addConnectedPort(Port *pPort);
+    void removeConnectedPort(Port *pPort);
     bool isConnectedToPort(Port *pPort);
     void enableLog();
     void disableLog();
 
     //Private member variables
     NodeTypeT mNodeType;
+    std::vector<Port*> mConnectedPorts;
+    ComponentSystem *mpOwnerSystem;
 
     //Log specific variables
-    std::vector<double> mTimeStorage;
     std::vector<std::vector<double> > mDataStorage;
-    bool mLogSpaceAllocated;
     bool mDoLog;
-    double mLogTimeDt;
-    double mLastLogTime;
-    size_t mLogSlots;
-    size_t mLogCtr;
 };
 
 typedef ClassFactory<NodeTypeT, Node> NodeFactory;

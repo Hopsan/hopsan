@@ -61,14 +61,17 @@ namespace hopsan {
 
         virtual double *getNodeDataPtr(const size_t idx, const size_t portIdx=0);
         virtual double *getSafeNodeDataPtr(const size_t idx, const double defaultValue, const size_t portIdx=0);
+        virtual std::vector<double> *getDataVectorPtr(const size_t portIdx=0);
 
-        virtual void saveLogData(std::string filename, const size_t portIdx=0);
-        virtual const std::vector<NodeDataDescription> *getNodeDataDescriptions(const size_t portIdx=0);
+        virtual const std::vector<NodeDataDescription>* getNodeDataDescriptions(const size_t portIdx=0);
         virtual const NodeDataDescription* getNodeDataDescription(const size_t dataid, const size_t portIdx=0);
         virtual int getNodeDataIdFromName(const std::string name, const size_t portIdx=0);
-        virtual std::vector<double> *getTimeVectorPtr(const size_t portIdx=0);
-        virtual std::vector<std::vector<double> > *getDataVectorPtr(const size_t portIdx=0);
-        virtual std::vector<double> *getJustTheDataVectorPtr(const size_t portIdx=0);
+
+        virtual void saveLogData(std::string filename, const size_t portIdx=0);
+        virtual bool haveLogData(const size_t portIdx=0);
+        virtual std::vector<double> *getLogTimeVectorPtr(const size_t portIdx=0);
+        virtual std::vector<std::vector<double> > *getLogDataVectorPtr(const size_t portIdx=0);
+
 
         //virtual void getStartValueDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<double> &rValues, std::vector<std::string> &rUnits, const size_t portIdx=0);
         //virtual void getStartValueDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rValuesTxt, std::vector<std::string> &rUnits, const size_t portIdx=0);
@@ -162,14 +165,17 @@ namespace hopsan {
 
         double *getNodeDataPtr(const size_t idx, const size_t portIdx);
         double *getSafeNodeDataPtr(const size_t idx, const double defaultValue, const size_t portIdx);
+        std::vector<double> *getDataVectorPtr(const size_t portIdx=0);
 
-        void saveLogData(std::string filename, const size_t portIdx=0);
         const std::vector<NodeDataDescription>* getNodeDataDescriptions(const size_t portIdx);
         const NodeDataDescription* getNodeDataDescription(const size_t dataid, const size_t portIdx=0);
         int getNodeDataIdFromName(const std::string name, const size_t portIdx=0);
-        std::vector<double> *getTimeVectorPtr(const size_t portIdx=0);
-        std::vector<std::vector<double> > *getDataVectorPtr(const size_t portIdx=0);
-        std::vector<double> *getJustTheDataVectorPtr(const size_t portIdx=0);
+
+        bool haveLogData(const size_t portIdx=0);
+        void saveLogData(std::string filename, const size_t portIdx=0);
+        std::vector<double> *getLogTimeVectorPtr(const size_t portIdx=0);
+        std::vector<std::vector<double> > *getLogDataVectorPtr(const size_t portIdx=0);
+
 
 //        void getStartValueDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<double> &rValues, std::vector<std::string> &rUnits, const size_t portIdx=0);
 //        void getStartValueDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rValuesTxt, std::vector<std::string> &rUnits, const size_t portIdx=0);

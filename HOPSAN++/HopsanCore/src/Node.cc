@@ -44,8 +44,8 @@ Node::Node(const size_t datalength)
     //Make sure clear (should not really be needed)
     mDataValues.clear();
     mDataStorage.clear();
-    mTimeStorage.clear();
-    mPortPtrs.clear();
+    //mTimeStorage.clear();
+    mConnectedPorts.clear();
 
     //Init pointer
     mpOwnerSystem = 0;
@@ -59,10 +59,10 @@ Node::Node(const size_t datalength)
 
     //Set log specific variables
     disableLog();       //Default log node dissabled
-    mLogTimeDt = -1.0;
-    mLastLogTime = 0.0; //Initial valus should not matter, will be overwritten when selecting log amount
-    mLogSlots = 0;
-    mLogCtr = 0;
+    //mLogTimeDt = -1.0;
+    //mLastLogTime = 0.0; //Initial valus should not matter, will be overwritten when selecting log amount
+    //mLogSlots = 0;
+    //mLogCtr = 0;
 }
 
 
@@ -202,98 +202,16 @@ void Node::setSpecialStartValues(Node* /*pNode*/)
 }
 
 
-//! This function will set the number of log data slots for preallocation and logDt based on the number of samples that should be loged
-//! @param [in] nSamples The desired number of log data samples, <=0 (disableLog)
-void Node::setLogSettingsNSamples(int nSamples, double start, double stop, double sampletime)
-{
-    if (nSamples > 0)
-    {
-        enableLog();
-
-        start = max(start, 0.0);  // Do not log data for negative time
-
-        // Make sure we dont try to log more samples than we will simulate
-        //! @todo may need som rounding tricks here
-        if ( ((stop - start) / sampletime) < nSamples )
-        {
-            mLogSlots = size_t((stop - start) / sampletime);
-            std::stringstream ss;
-            ss << "You requested nSamples: " << nSamples << ". This is more than total simulation samples, limiting to: " << mLogSlots;
-            gCoreMessageHandler.addWarningMessage(ss.str(), "toofewsamples");
-        }
-        else
-        {
-            mLogSlots = nSamples;
-        }
-
-        mLogTimeDt = (stop - start) / double(mLogSlots);
-        mLastLogTime = start-mLogTimeDt;
-    }
-    else
-    {
-        disableLog();
-    }
-}
-
-
-//! This function will set the number of log data slots for preallocation and logDt based on a skip factor to the sample time
-//! @param [in] factor The timestep skip factor, minimum 1.0, but if < 0 then disableLog
-void Node::setLogSettingsSkipFactor(double factor, double start, double stop,  double sampletime)
-{
-    if (factor > 0)
-    {
-        enableLog();
-        //! @todo maybe only use integer factors
-        //make sure factor is not less then 1.0
-        factor = max(1.0, factor);
-        mLogTimeDt = sampletime * factor;
-        mLastLogTime = start-mLogTimeDt;
-        mLogSlots = (size_t)((stop-start)/mLogTimeDt+0.5); //Round to nearest
-    }
-    else
-    {
-        disableLog();
-    }
-}
-
-
-//! This function will set the number of log data slots for preallocation and logDt
-//! @param [in] log_dt The desired log timestep, if log_dt < 0 then disableLog
-void Node::setLogSettingsSampleTime(double log_dt, double start, double stop,  double sampletime)
-{
-    if (log_dt > 0)
-    {
-        enableLog();
-        // Make sure that we dont have log_dt lower than sampletime ( we cant log more then we calc)
-        log_dt = max(sampletime,log_dt);
-        mLogTimeDt = log_dt;
-        mLastLogTime = start-mLogTimeDt;
-        mLogSlots = (size_t)((stop-start)/log_dt+0.5); //Round to nearest
-    }
-    else
-    {
-        disableLog();
-    }
-}
-
-
 //! Pre allocate memory for the needed amount of log data
-bool Node::preAllocateLogSpace()
+bool Node::preAllocateLogSpace(const size_t nLogSlots)
 {
     // Dont try to allocate if we are not going to log
     if (mDoLog)
     {
-        // The size of the data vector, how much data do we need to log each time step in this node
-        const size_t data_size = mDataValues.size();
-
-        // Make sure the ctr is 0 if we simulate the same model several times in a row
-        mLogCtr = 0;
-
         // Now try to allocate log memmory
         try
         {
-            mTimeStorage.resize(mLogSlots);
-            mDataStorage.resize(mLogSlots, vector<double>(data_size));
+            mDataStorage.resize(nLogSlots, vector<double>(mDataValues.size()));
             //cout << "requestedSize: " << mLogSlots << " " << data_size << " Capacities: " << mTimeStorage.capacity() << " " << mDataStorage.capacity() << " " << mDataStorage[1].capacity() << " Size: " << mTimeStorage.size() << " " << mDataStorage.size() << " " << mDataStorage[1].size() << endl;
             return true;
         }
@@ -309,33 +227,42 @@ bool Node::preAllocateLogSpace()
 }
 
 
+////! Copy current data vector into log storage, also adds current time
+//void Node::logData(const double time)
+//{
+//    if (mDoLog)
+//    {
+//        //! @todo Danger comparing doubles
+//        //! @todo is this correct, Subtract a tenth of logDt to avoid numerical problem with double >= double
+//        //! @todo since all nodes in a system will all do this calculation maybe we could speed things up by do ing this check once, in the system and only call this function in all nodes when needed
+//        if (time >= mLastLogTime+mLogTimeDt-mLogTimeDt/10.0)
+//        {
+//            //cout << "mLogCtr: " << mLogCtr << endl;
+//            //! @todo this if check should not be needed if everything else is working
+//            if (mLogCtr < mTimeStorage.size())
+//            {
+//                //! @todo maybe time vector should be in the system instead, since all nodes in the same system will have the same time vector
+//                mTimeStorage[mLogCtr] = time;   //We log the "real"  simulation time for the sample
+//                mDataStorage[mLogCtr] = mDataValues;
+//            }else
+//            {
+//                stringstream ss;
+//                ss << "mLogCtr >= mTimeStorage.size() " << mLogCtr;
+//                //gCoreMessageHandler.addWarningMessage(ss.str());
+//            }
+//            ++mLogCtr;
+
+//            mLastLogTime = mLastLogTime+mLogTimeDt; //Can not use "real" time directly as this may mean that not all log slots will be filled
+//        }
+//    }
+//}
+
 //! Copy current data vector into log storage, also adds current time
-void Node::logData(const double time)
+void Node::logData(const size_t logSlot)
 {
     if (mDoLog)
     {
-        //! @todo Danger comparing doubles
-        //! @todo is this correct, Subtract a tenth of logDt to avoid numerical problem with double >= double
-        //! @todo since all nodes in a system will all do this calculation maybe we could speed things up by do ing this check once, in the system and only call this function in all nodes when needed
-        if (time >= mLastLogTime+mLogTimeDt-mLogTimeDt/10.0)
-        {
-            //cout << "mLogCtr: " << mLogCtr << endl;
-            //! @todo this if check should not be needed if everything else is working
-            if (mLogCtr < mTimeStorage.size())
-            {
-                //! @todo maybe time vector should be in the system instead, since all nodes in the same system will have the same time vector
-                mTimeStorage[mLogCtr] = time;   //We log the "real"  simulation time for the sample
-                mDataStorage[mLogCtr] = mDataValues;
-            }else
-            {
-                stringstream ss;
-                ss << "mLogCtr >= mTimeStorage.size() " << mLogCtr;
-                //gCoreMessageHandler.addWarningMessage(ss.str());
-            }
-            ++mLogCtr;
-
-            mLastLogTime = mLastLogTime+mLogTimeDt; //Can not use "real" time directly as this may mean that not all log slots will be filled
-        }
+        mDataStorage[logSlot] = mDataValues;
     }
 }
 
@@ -344,11 +271,11 @@ void Node::logData(const double time)
 //! If connection is ok, any node can only have one write port. If no write port exists, a null pointer is returned.
 Component *Node::getWritePortComponentPtr()
 {
-    for(size_t i=0; i!=mPortPtrs.size(); ++i)
+    for(size_t i=0; i<mConnectedPorts.size(); ++i)
     {
-        if(mPortPtrs.at(i)->getPortType() == WRITEPORT)
+        if(mConnectedPorts.at(i)->getPortType() == WRITEPORT)
         {
-            return mPortPtrs.at(i)->getComponent();
+            return mConnectedPorts.at(i)->getComponent();
         }
     }
 
@@ -368,55 +295,15 @@ void Node::setSignalDataName(const string name)
 }
 
 
-//! @brief Debug function to dump logged node data to a file
-//! @param [in] filename The name of the file to write to
-//! @param [in] header A string containing Component and Port names
-void Node::saveLogDataToFile(const string filename, const string header)
-{
-    ofstream out_file;
-    out_file.open(filename.c_str());
-
-    if (out_file.good())
-    {
-        assert(mTimeStorage.size() == mDataStorage.size());
-        //First write HEADER info containing node info
-        out_file << header << " " << mNodeType << endl;
-        out_file << "time";
-        for (size_t i=0; i<mDataDescriptions.size(); ++i)
-        {
-            out_file << " " << mDataDescriptions[i].name;
-        }
-        out_file << endl;
-
-        //Write log data to file
-        for (size_t row=0; row<mTimeStorage.size(); ++row)
-        {
-            out_file << mTimeStorage[row];
-            for (size_t datacol=0; datacol<mDataValues.size(); ++datacol)
-            {
-                out_file << " " << mDataStorage[row][datacol];
-            }
-            out_file << endl;
-        }
-        out_file.close();
-        cout << "Done! Saving node data to file: " << filename << endl;
-    }
-    else
-    {
-        cout << "Warning! Could not open out file for writing: " << filename << endl;
-    }
-}
-
-
-//! Adds a pointer to a port connected to this node
+//! @brief Adds a pointer to a port connected to this node
 //! @param [in] pPort The port pointer
-void Node::setPort(Port *pPort)
+void Node::addConnectedPort(Port *pPort)
 {
     //Prevent duplicate port registration that can happen when "merging" nodes
     //The other code (connect) will be easier to write if we handle this in here
     bool found = false;
     vector<Port*>::iterator it;
-    for (it=mPortPtrs.begin(); it!=mPortPtrs.end(); ++it)
+    for (it=mConnectedPorts.begin(); it!=mConnectedPorts.end(); ++it)
     {
         if (*it == pPort)
         {
@@ -428,22 +315,22 @@ void Node::setPort(Port *pPort)
 
     if (!found)
     {
-        mPortPtrs.push_back(pPort);
+        mConnectedPorts.push_back(pPort);
     }
 }
 
 
 //! @brief Removes a port poniter from this node, NOT delete only remove
 //! @param [in] pPort The port pointer to be removed
-void Node::removePort(Port *pPort)
+void Node::removeConnectedPort(Port *pPort)
 {
     bool found = false;
     vector<Port*>::iterator it;
-    for (it=mPortPtrs.begin(); it!=mPortPtrs.end(); ++it)
+    for (it=mConnectedPorts.begin(); it!=mConnectedPorts.end(); ++it)
     {
         if (*it == pPort)
         {
-            mPortPtrs.erase(it);
+            mConnectedPorts.erase(it);
             found = true;
             break;
         }
@@ -462,7 +349,7 @@ void Node::removePort(Port *pPort)
 bool Node::isConnectedToPort(Port *pPort)
 {
     vector<Port*>::iterator it;
-    for (it=mPortPtrs.begin(); it!=mPortPtrs.end(); ++it)
+    for (it=mConnectedPorts.begin(); it!=mConnectedPorts.end(); ++it)
     {
         if (*it == pPort)
         {
@@ -487,17 +374,17 @@ void Node::disableLog()
     mDoLog = false;
     //cout << "disableLog" << endl;
     // If log dissabled then free memory if something has been previously allocated
-    mTimeStorage.clear();
+    //mTimeStorage.clear();
     mDataStorage.clear();
 }
 
 
 int Node::getNumberOfPortsByType(int type)
 {
-    assert(mPortPtrs.size() > 1);
+    assert(mConnectedPorts.size() > 1);
     int n_Ports = 0;
     std::vector<Port*>::iterator it;
-    for (it=mPortPtrs.begin(); it!=mPortPtrs.end(); ++it)
+    for (it=mConnectedPorts.begin(); it!=mConnectedPorts.end(); ++it)
     {
         if ((*it)->getPortType() == type)
         {

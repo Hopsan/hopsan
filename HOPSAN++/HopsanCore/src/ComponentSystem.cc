@@ -189,10 +189,13 @@ ComponentSystem::ComponentSystem() : Component()
     mDesiredTimestep = 0.001;
     mInheritTimestep = true;
     mKeepStartValues = false;
-    mnLogSamples = 2048;
+    mRequestedNumLogSamples = 2048;
 #ifdef USETBB
     mpStopMutex = new tbb::mutex();
 #endif
+
+    // Set default (disabled) values for log data
+    disableLog();
 }
 
 ComponentSystem::~ComponentSystem()
@@ -210,12 +213,12 @@ double ComponentSystem::getDesiredTimeStep() const
 
 void ComponentSystem::setNumLogSamples(const size_t nLogSamples)
 {
-    mnLogSamples = nLogSamples;
+    mRequestedNumLogSamples = nLogSamples;
 }
 
 size_t ComponentSystem::getNumLogSamples()
 {
-    return mnLogSamples;
+    return mRequestedNumLogSamples;
 }
 
 
@@ -670,24 +673,40 @@ void ComponentSystem::removeSubNode(Node* node_ptr)
 //! preAllocates log space (to speed up later access for log writing)
 void ComponentSystem::preAllocateLogSpace(const double startT, const double stopT, const size_t nSamples)
 {
-    //cout << "stopT = " << stopT << ", startT = " << startT << ", mTimestep = " << mTimestep << endl;
     bool success = true;
-
-    // Allocate log data memory for subnodes
-    vector<Node*>::iterator it;
-    for (it=mSubNodePtrs.begin(); it!=mSubNodePtrs.end(); ++it)
+    //cout << "stopT = " << stopT << ", startT = " << startT << ", mTimestep = " << mTimestep << endl;
+    this->setLogSettingsNSamples(nSamples, startT, stopT, mTimestep);
+    mLogCtr = 0;
+    if (mEnableLogData)
     {
-        // Abort if we are told to stop or if memmory allocation fails
-        if (mStopSimulation || !success)
-            break;
+        try
+        {
+            mTimeStorage.resize(mnLogSlots, 0);
 
-        // Prepare the node log data allocation and determine if loggings should be on
-        //! @todo Waht if we want to use one of the other ways of setting logsample time steps
-        (*it)->setLogSettingsNSamples(nSamples, startT, stopT, mTimestep);
-        success = (*it)->preAllocateLogSpace();
+            // Allocate log data memory for subnodes
+            //! @todo we should have an other vector with those nodes that should be logged, if we make individual nodes possible to disable logging
+            vector<Node*>::iterator it;
+            for (it=mSubNodePtrs.begin(); it!=mSubNodePtrs.end(); ++it)
+            {
+                // Abort if we are told to stop or if memmory allocation fails
+                if (mStopSimulation || !success)
+                    break;
+
+                // Prepare the node log data allocation and determine if loggings should be on
+                //! @todo What if we want to use one of the other ways of setting logsample time steps
+                (*it)->enableLog();
+                success = (*it)->preAllocateLogSpace(mnLogSlots);
+            }
+        }
+        catch (exception &e)
+        {
+            gCoreMessageHandler.addErrorMessage("Failed to allocate log data memmory, try reducing the amount of log data", "FailedMemmoryAllocation");
+            disableLog();
+            success = false;
+        }
     }
 
-    // If we faild to allocate log memory then stop
+    // If we faild to allocate log memory then stop simulation
     if (!success)
     {
         mStopSimulation = true;
@@ -695,13 +714,39 @@ void ComponentSystem::preAllocateLogSpace(const double startT, const double stop
 }
 
 
-//! Tells all subnodes contained within a system to store current data in log
-void ComponentSystem::logAllNodes(const double time)
+//! @brief Logs time and tells all subnodes contained within a system to store current data in log
+void ComponentSystem::logTimeAndNodes(const double time)
 {
-    vector<Node*>::iterator it;
-    for (it=mSubNodePtrs.begin(); it!=mSubNodePtrs.end(); ++it)
+    if (mEnableLogData)
     {
-        (*it)->logData(time);
+        // +mLogTimeDt*0.99 is used to make sure we do not get double comparision issues
+        //! @todo is this correct, Subtract a percent of logDt to avoid numerical problem with double >= double
+        //! @todo we should instead make usre that we reun simulation to stopT+mLogTimeDt*0.99 or somthing to make sure that we get last sample logged
+        if (time >= mLastLogTime+mLogTimeDt*0.99)
+        {
+            //cout << "mLogCtr: " << mLogCtr << endl;
+            //            //! @todo this if check should not be needed if everything else is working
+            //            if (mLogCtr < mTimeStorage.size())
+            //            {
+            //                //! @todo maybe time vector should be in the system instead, since all nodes in the same system will have the same time vector
+            mTimeStorage[mLogCtr] = time;   //We log the "real"  simulation time for the sample
+
+            //! @todo we should have an other vector with those nodes that should be logged, if we make individual nodes possible to disable logging
+            vector<Node*>::iterator it;
+            for (it=mSubNodePtrs.begin(); it!=mSubNodePtrs.end(); ++it)
+            {
+                (*it)->logData(mLogCtr);
+            }
+            //            }else
+            //            {
+            //                stringstream ss;
+            //                ss << "mLogCtr >= mTimeStorage.size() " << mLogCtr;
+            //                //gCoreMessageHandler.addWarningMessage(ss.str());
+            //            }
+            ++mLogCtr;
+
+            mLastLogTime = mLastLogTime+mLogTimeDt; //Can not use "real" time directly as this may mean that not all log slots will be filled
+        }
     }
 }
 
@@ -955,8 +1000,8 @@ bool ConnectionAssistant::createNewNodeConnection(Port *pPort1, Port *pPort2, No
         pPort2->setNode(pNode);
 
         //Add port pointers to node
-        pNode->setPort(pPort1);
-        pNode->setPort(pPort2);
+        pNode->addConnectedPort(pPort1);
+        pNode->addConnectedPort(pPort2);
 
         //let the ports know about each other
         pPort1->addConnectedPort(pPort2);
@@ -1061,7 +1106,7 @@ void ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(Node* pNode)
     Component *pMinLevelComp=0;
     //size_t min = std::numeric_limits<size_t>::max();
     size_t min = (size_t)-1;
-    for (pit=pNode->mPortPtrs.begin(); pit!=pNode->mPortPtrs.end(); ++pit)
+    for (pit=pNode->mConnectedPorts.begin(); pit!=pNode->mConnectedPorts.end(); ++pit)
     {
         if ((*pit)->getComponent()->getModelHierarchyDepth() < min)
         {
@@ -1088,18 +1133,18 @@ bool ConnectionAssistant::deleteNodeConnection(Port *pPort1, Port *pPort2)
     stringstream ss;
     assert(pPort1->getNodePtr() == pPort2->getNodePtr());
     Node* node_ptr = pPort1->getNodePtr();
-    cout << "nPorts in node: " << node_ptr->mPortPtrs.size() << endl;
+    cout << "nPorts in node: " << node_ptr->mConnectedPorts.size() << endl;
 
     //Make the ports forget about each other
     pPort1->eraseConnectedPort(pPort2);
     pPort2->eraseConnectedPort(pPort1);
 
     //Make the node forget about the ports
-    node_ptr->removePort(pPort1);
-    node_ptr->removePort(pPort2);
+    node_ptr->removeConnectedPort(pPort1);
+    node_ptr->removeConnectedPort(pPort2);
 
     //If no more connections exist, remove the entier node and free the memory
-    if (node_ptr->mPortPtrs.size() == 0)
+    if (node_ptr->mConnectedPorts.size() == 0)
     {
         cout << "No more connections to the node exists, deleteing the node" << endl;
         node_ptr->getOwnerSystem()->removeSubNode(node_ptr);
@@ -1113,7 +1158,7 @@ bool ConnectionAssistant::deleteNodeConnection(Port *pPort1, Port *pPort2)
 void ConnectionAssistant::recursivelySetNode(Port *pPort, Port *pParentPort, Node *pNode)
 {
     pPort->setNode(pNode);
-    pNode->setPort(pPort);
+    pNode->addConnectedPort(pPort);
     vector<Port*>::iterator pit;
     for (pit=pPort->getConnectedPorts().begin(); pit!=pPort->getConnectedPorts().end(); ++pit)
     {
@@ -1170,7 +1215,7 @@ bool ConnectionAssistant::splitNodeConnection(Port *pPort1, Port *pPort2)
         Node* pKeepNode = pPortToKeep->getNodePtr();
 
         //Make node forget the port to be disconnected
-        pKeepNode->removePort(pPortToBecomeEmpty);
+        pKeepNode->removeConnectedPort(pPortToBecomeEmpty);
 
         //Make the ports forget each other (the disconnected port will also forget node)
         pPortToBecomeEmpty->eraseConnectedPort(pPortToKeep);
@@ -1186,7 +1231,7 @@ bool ConnectionAssistant::splitNodeConnection(Port *pPort1, Port *pPort2)
         Node* pNode1 = pPort1->getNodePtr();
         Node* pNode2 = HopsanEssentials::getInstance()->createNode(pNode1->getNodeType());
 
-        pNode1->mPortPtrs.clear(); //Clear all port knowledge from the port, we will reset it bellow
+        pNode1->mConnectedPorts.clear(); //Clear all port knowledge from the port, we will reset it bellow
 
         //Make the ports forget about each other
         pPort1->eraseConnectedPort(pPort2);
@@ -1390,7 +1435,7 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
 
     //Count the different kind of ports and C,Q components in the node
     vector<Port*>::iterator it;
-    for (it=(*pNode).mPortPtrs.begin(); it!=(*pNode).mPortPtrs.end(); ++it)
+    for (it=(*pNode).mConnectedPorts.begin(); it!=(*pNode).mConnectedPorts.end(); ++it)
     {
         if ((*it)->getPortType() == READPORT)
         {
@@ -2123,7 +2168,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
     }
 
     //preAllocate local logspace
-    this->preAllocateLogSpace(startT, stopT, mnLogSamples);
+    this->preAllocateLogSpace(startT, stopT, mRequestedNumLogSamples);
 
     // If we failed allocation then abort
     if (mStopSimulation)
@@ -2159,7 +2204,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         if (mComponentSignalptrs[s]->isComponentSystem())
         {
             //! @todo should we use our own nSamples or the subsystems own ?
-            static_cast<ComponentSystem*>(mComponentSignalptrs[s])->setNumLogSamples(mnLogSamples);
+            static_cast<ComponentSystem*>(mComponentSignalptrs[s])->setNumLogSamples(mRequestedNumLogSamples);
             mComponentSignalptrs[s]->initialize(startT, stopT);
         }
         else
@@ -2182,7 +2227,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         if (mComponentCptrs[c]->isComponentSystem())
         {
             //! @todo should we use our own nSamples ore the subsystems own ?
-            static_cast<ComponentSystem*>(mComponentCptrs[c])->setNumLogSamples(mnLogSamples);
+            static_cast<ComponentSystem*>(mComponentCptrs[c])->setNumLogSamples(mRequestedNumLogSamples);
             mComponentCptrs[c]->initialize(startT, stopT);
         }
         else
@@ -2205,7 +2250,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         if (mComponentQptrs[q]->isComponentSystem())
         {
             //! @todo should we use our own nSamples ore the subsystems own ?
-            static_cast<ComponentSystem*>(mComponentQptrs[q])->setNumLogSamples(mnLogSamples);
+            static_cast<ComponentSystem*>(mComponentQptrs[q])->setNumLogSamples(mRequestedNumLogSamples);
             mComponentQptrs[q]->initialize(startT, stopT);
         }
         else
@@ -2334,10 +2379,11 @@ public:
             mpBarrier_N->increment();
             while(mpBarrier_N->isLocked()){}                         //Wait at N barrier
 
-            for(size_t i=0; i<mVectorN.size(); ++i)
-            {
-                mVectorN[i]->logData(mTime);
-            }
+            //! @todo Temporary hack by Peter, after rewriting how node data and time is logged this no longer works, now master thread loags all nodes, need to come up with somthing smart
+//            for(size_t i=0; i<mVectorN.size(); ++i)
+//            {
+//                mVectorN[i]->logData(mTime);
+//            }
 
             //! Q Components !//
 
@@ -2445,10 +2491,12 @@ public:
             mpBarrier_Q->lock();
             mpBarrier_N->unlock();
 
-            for(size_t i=0; i<mVectorN.size(); ++i)
-            {
-                mVectorN[i]->logData(mTime);
-            }
+            //! @todo Temporary hack by Peter, after rewriting how node data and time is logged this no longer works, now master thread loags all nodes, need to come up with somthing smart
+//            for(size_t i=0; i<mVectorN.size(); ++i)
+//            {
+//                mVectorN[i]->logData(mTime);
+//            }
+            mVectorN[0]->getOwnerSystem()->logTimeAndNodes(mTime);
 
             //! Q Components !//
 
@@ -2526,7 +2574,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     mTime = startT;
     double stopTsafe = stopT - mTimestep/2.0;                   //Calculate the "actual" stop time, minus half a timestep is here to ensure that no numerical issues occur
 
-    logAllNodes(mTime);                                         //Log the first time step
+    logTimeAndNodes(mTime);                                         //Log the first time step
 
     size_t nThreads = determineActualNumberOfThreads(nDesiredThreads);      //Calculate how many threads to actually use
 
@@ -3062,7 +3110,7 @@ void ComponentSystem::simulate(const double startT, const double stopT)
             mComponentCptrs[c]->simulate(mTime, mTime+mTimestep);
         }
         //! @todo this will log q and p from last Ts but c Zc from this Ts, this is strange
-        logAllNodes(mTime); //MOVED HERE BECAUSE C-COMP ARE SETTING START TIMES
+        logTimeAndNodes(mTime); //MOVED HERE BECAUSE C-COMP ARE SETTING START TIMES
 
         //Q components
         for (size_t q=0; q < mComponentQptrs.size(); ++q)
@@ -3120,6 +3168,107 @@ void ComponentSystem::finalize()
     //loadStartValuesFromSimulation();
 }
 
+//! @brief This function will set the number of log data slots for preallocation and logDt based on the number of samples that should be loged
+//! @param [in] nSamples The desired number of log data samples, <=0 (disableLog)
+void ComponentSystem::setLogSettingsNSamples(int nSamples, double start, double stop, double sampletime)
+{
+    if (nSamples > 0)
+    {
+        enableLog();
+
+        start = max(start, 0.0);  // Do not log data for negative time
+
+        // Make sure we dont try to log more samples than we will simulate
+        //! @todo may need som rounding tricks here
+        if ( ((stop - start) / sampletime) < nSamples )
+        {
+            mnLogSlots = size_t((stop - start) / sampletime);
+            std::stringstream ss;
+            ss << "You requested nSamples: " << nSamples << ". This is more than total simulation samples, limiting to: " << mnLogSlots;
+            gCoreMessageHandler.addWarningMessage(ss.str(), "toofewsamples");
+        }
+        else
+        {
+            mnLogSlots = nSamples;
+        }
+
+        mLogTimeDt = (stop - start) / double(mnLogSlots);
+        mLastLogTime = start-mLogTimeDt;
+    }
+    else
+    {
+        disableLog();
+    }
+}
+
+
+//! @brief This function will set the number of log data slots for preallocation and logDt based on a skip factor to the sample time
+//! @param [in] factor The timestep skip factor, minimum 1.0, but if < 0 then disableLog
+void ComponentSystem::setLogSettingsSkipFactor(double factor, double start, double stop,  double sampletime)
+{
+    if (factor > 0)
+    {
+        enableLog();
+        //! @todo maybe only use integer factors
+        //make sure factor is not less then 1.0
+        factor = max(1.0, factor);
+        mLogTimeDt = sampletime * factor;
+        mLastLogTime = start-mLogTimeDt;
+        mnLogSlots = (size_t)((stop-start)/mLogTimeDt+0.5); //Round to nearest
+    }
+    else
+    {
+        disableLog();
+    }
+}
+
+
+//! @brief This function will set the number of log data slots for preallocation and logDt
+//! @param [in] log_dt The desired log timestep, if log_dt < 0 then disableLog
+void ComponentSystem::setLogSettingsSampleTime(double log_dt, double start, double stop,  double sampletime)
+{
+    if (log_dt > 0)
+    {
+        enableLog();
+        // Make sure that we dont have log_dt lower than sampletime ( we cant log more then we calc)
+        log_dt = max(sampletime,log_dt);
+        mLogTimeDt = log_dt;
+        mLastLogTime = start-mLogTimeDt;
+        mnLogSlots = size_t((stop-start)/log_dt+0.5); //Round to nearest
+    }
+    else
+    {
+        disableLog();
+    }
+}
+
+//! @brief Enable node data logging
+void ComponentSystem::enableLog()
+{
+    mEnableLogData = true;
+}
+
+
+//! @brief Disable node data logging
+void ComponentSystem::disableLog()
+{
+    mEnableLogData = false;
+
+    // If log dissabled then free memory if something has been previously allocated
+    mTimeStorage.clear();
+    //mDataStorage.clear();
+
+    mLogTimeDt = -1.0;
+    mLastLogTime = 0.0; //Initial valus should not matter, will be overwritten when selecting log amount
+    mnLogSlots = 0;
+    mLogCtr = 0;
+}
+
+vector<double> *ComponentSystem::getLogTimeVector()
+{
+    return &mTimeStorage;
+}
+
 //! @brief Simulates a vector of component systems in parallel, by assigning one or more system to each simluation thread
 //! @param startT Start time for all systems
 //! @param stopT Stop time for all systems
@@ -3134,7 +3283,7 @@ bool SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT
     {
         double *pTime = rSystemVector.at(i)->getTimePtr();
         *pTime = startT;
-        rSystemVector.at(i)->logAllNodes(*pTime);                        //Log the first time step
+        rSystemVector.at(i)->logTimeAndNodes(*pTime);                        //Log the first time step
     }
 
     if(!noChanges)

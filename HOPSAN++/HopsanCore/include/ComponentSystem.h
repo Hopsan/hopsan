@@ -160,15 +160,17 @@ namespace hopsan {
         void distributeNodePointers(std::vector< std::vector<Node*> > &rSplitNodeVector, size_t nThreads);
 #endif
 
-        void logAllNodes(const double time);
-
         //Set and get desired timestep
         void setDesiredTimestep(const double timestep);
         void setInheritTimestep(const bool inherit=true);
         bool doesInheritTimestep() const;
         double getDesiredTimeStep() const;
 
-        //Get and set nLogSamples
+        //Log functions
+        void logTimeAndNodes(const double time);
+        void enableLog();
+        void disableLog();
+        std::vector<double>* getLogTimeVector();
         void setNumLogSamples(const size_t nLogSamples);
         size_t getNumLogSamples();
 
@@ -187,6 +189,9 @@ namespace hopsan {
         void adjustTimestep(std::vector<Component*> componentPtrs);
 
         //log specific functions
+        void setLogSettingsSampleTime(double log_dt, double start, double stop, double sampletime);
+        void setLogSettingsSkipFactor(double factor, double start, double stop, double sampletime);
+        void setLogSettingsNSamples(int nSamples, double start, double stop, double sampletime);
         void preAllocateLogSpace(const double startT, const double stopT, const size_t nSamples = 2048);
 
         //Add and Remove sub nodes
@@ -219,6 +224,7 @@ namespace hopsan {
         bool volatile mStopSimulation;
 #ifdef USETBB
         tbb::mutex *mpStopMutex;
+        std::vector<double *> mvTimePtrs;
 #endif
 
         bool mKeepStartValues;
@@ -228,9 +234,11 @@ namespace hopsan {
         std::vector< std::vector<Component*> > mSplitSignalVector;
         std::vector< std::vector<Node*> > mSplitNodeVector;
 
-        std::vector<double *> mvTimePtrs;
-
-        size_t mnLogSamples;
+        // Log related variables
+        size_t mRequestedNumLogSamples, mnLogSlots, mLogCtr;
+        double mLogTimeDt, mLastLogTime;
+        bool mEnableLogData;
+        std::vector<double> mTimeStorage;
 
         //Finns i Component        Parameters *mSystemParameters;
     };

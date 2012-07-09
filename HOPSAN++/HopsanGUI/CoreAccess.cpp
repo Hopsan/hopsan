@@ -374,26 +374,22 @@ void CoreSystemAccess::removeSubComponent(QString componentName, bool doDelete)
 vector<double> CoreSystemAccess::getTimeVector(QString componentName, QString portName)
 {
     //qDebug() << "getTimeVector, " << componentName << ", " << portName;
-
     hopsan::Component* pComp = mpCoreComponentSystem->getSubComponentOrThisIfSysPort(componentName.toStdString());
-    hopsan::Port* pPort = 0;
     if (pComp != 0)
     {
-        pPort = pComp->getPort(portName.toStdString());
-    }
-
-    if (pPort != 0)
-    {
-        vector<double> *ptr = pPort->getTimeVectorPtr();
-        if (ptr != 0)
+        hopsan::Port* pPort = pComp->getPort(portName.toStdString());
+        if (pPort != 0)
         {
-            return *ptr; //Return a copy of the vector
+            vector<double> *ptr = pPort->getLogTimeVectorPtr();
+            if (ptr != 0)
+            {
+                return *ptr; //Return a copy of the vector
+            }
         }
     }
 
-    //Return empty dummy
-    vector<double> dummy;
-    return dummy;
+    // Else Return empty dummy
+    return vector<double>();
 }
 
 
@@ -592,7 +588,7 @@ void CoreSystemAccess::getPlotDataNamesAndUnits(const QString compname, const QS
         const std::vector<hopsan::NodeDataDescription>* pDescs = pPort->getNodeDataDescriptions();
         if (pDescs != 0)
         {
-            //Copy into QT datatype vector (assumes bothe received vectors same length (should always be same)
+            //Copy into QT datatype vector
             for (size_t i=0; i<pDescs->size(); ++i)
             {
                 rNames.push_back(QString::fromStdString(pDescs->at(i).name));
@@ -611,16 +607,14 @@ void CoreSystemAccess::getPlotData(const QString compname, const QString portnam
         if(pPort->isConnected())
         {
             dataId = pPort->getNodeDataIdFromName(dataname.toStdString());
-            if (dataId >= 0)
+            if (dataId > -1)
             {
-                vector< vector<double> > *pData = pPort->getDataVectorPtr();
-                vector<double> *pTime = pPort->getTimeVectorPtr();
+                vector< vector<double> > *pData = pPort->getLogDataVectorPtr();
+                vector<double> *pTime = pPort->getLogTimeVectorPtr();
 
                 //Ok lets copy all of the data to a Qt vector
-                rData.first.clear();
                 rData.first.resize(pTime->size());    //Allocate memory for time
-                rData.second.clear();           //Allocate memory for data
-                rData.second.resize(pData->size());
+                rData.second.resize(pData->size()); //Allocate memory for data
                 for (size_t i=0; i<pData->size() && i<pTime->size(); ++i)
                 {
                     rData.first[i] = pTime->at(i);
@@ -636,19 +630,10 @@ bool CoreSystemAccess::havePlotData(const QString compname, const QString portna
     hopsan::Port* pPort = this->getCorePortPtr(compname, portname);
     if (pPort)
     {
+        //! @todo should we check if dataname exist in the node ?
         if(pPort->isConnected())
         {
-            int dataId = -1;
-            dataId = pPort->getNodeDataIdFromName(dataname.toStdString());
-
-            if (pPort->getDataVectorPtr()->empty() || pPort->getTimeVectorPtr()->empty())
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return pPort->haveLogData();
         }
     }
     return false;
@@ -665,7 +650,7 @@ bool CoreSystemAccess::getLastNodeData(const QString compname, const QString por
 
         if (dataId >= 0)
         {
-            vector<double> *pData = pPort->getJustTheDataVectorPtr();
+            vector<double> *pData = pPort->getDataVectorPtr();
             rData = pData->at(dataId);
             return 1;
         }

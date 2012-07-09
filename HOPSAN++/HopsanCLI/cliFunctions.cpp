@@ -495,7 +495,7 @@ bool performModelTest(const std::string hvcFilePath)
                             }
 
                             //! @todo with better access function in core we could avoid copying data and work directly with the data stored
-                            vTime = *pPort->getTimeVectorPtr();
+                            vTime = *pPort->getLogTimeVectorPtr();
                             int dataId = pPort->getNodeDataIdFromName(varname);
                             if (dataId < 0)
                             {
@@ -506,7 +506,7 @@ bool performModelTest(const std::string hvcFilePath)
 
                             for(size_t i=0; i<vTime.size(); ++i)
                             {
-                                vSim1.push_back(pRootSystem->getSubComponent(compName)->getPort(portName)->getDataVectorPtr()->at(i).at(dataId));
+                                vSim1.push_back(pRootSystem->getSubComponent(compName)->getPort(portName)->getLogDataVectorPtr()->at(i).at(dataId));
                             }
 
                             //Second simulation
@@ -525,7 +525,7 @@ bool performModelTest(const std::string hvcFilePath)
 
                             for(size_t i=0; i<vTime.size(); ++i)
                             {
-                                vSim2.push_back(pRootSystem->getSubComponent(compName)->getPort(portName)->getDataVectorPtr()->at(i).at(dataId));
+                                vSim2.push_back(pRootSystem->getSubComponent(compName)->getPort(portName)->getLogDataVectorPtr()->at(i).at(dataId));
                             }
                         }
                         else
