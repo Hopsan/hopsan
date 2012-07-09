@@ -68,6 +68,7 @@ HEADERS += \
     code/Signal/SignalPulse.hpp \
     code/Signal/SignalPower.hpp \
     code/Signal/SignalPIlead.hpp \
+    code/Signal/SignalPID.hpp \
     code/Signal/SignalOutputInterface.hpp \
     code/Signal/SignalOr.hpp \
     code/Signal/SignalNoiseGenerator.hpp \

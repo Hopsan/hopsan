@@ -104,6 +104,7 @@
 #include "Signal/SignalHP1Filter.hpp"
 #include "Signal/SignalHP2Filter.hpp"
 #include "Signal/SignalPIlead.hpp"
+#include "Signal/SignalPID.hpp"
 #include "Signal/SignalMin.hpp"
 #include "Signal/SignalMax.hpp"
 #include "Signal/SignalPulse.hpp"
