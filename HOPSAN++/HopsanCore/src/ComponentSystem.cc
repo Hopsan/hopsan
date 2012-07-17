@@ -719,10 +719,11 @@ void ComponentSystem::logTimeAndNodes(const double time)
 {
     if (mEnableLogData)
     {
-        // +mLogTimeDt*0.99 is used to make sure we do not get double comparision issues
+        // NO!!! +mLogTimeDt*0.99 is used to make sure we do not get double comparision issues
+        // We add 0.1*Ts to time to avoid double == double comparision issues
         //! @todo is this correct, Subtract a percent of logDt to avoid numerical problem with double >= double
         //! @todo we should instead make usre that we reun simulation to stopT+mLogTimeDt*0.99 or somthing to make sure that we get last sample logged
-        if (time >= mLastLogTime+mLogTimeDt*0.99)
+        if (time+mTimestep*0.1 >= mLastLogTime+mLogTimeDt)
         {
             //cout << "mLogCtr: " << mLogCtr << endl;
             //            //! @todo this if check should not be needed if everything else is working
