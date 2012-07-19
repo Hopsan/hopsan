@@ -28,12 +28,11 @@
 #include <QDialog>
 
 #include "MainWindow.h"
-#include "Utilities/ComponentGeneratorUtilities.h"
+#include "Utilities/ComponentGeneratorUtilities.h"  //Needed because we define lists with classes declared here
 
 class MainWindow;
 class ModelObjectAppearance;
 class QTextDocument;
-
 
 class ModelicaHighlighter : public QSyntaxHighlighter
 {
@@ -99,7 +98,7 @@ private slots:
     void toggleStaticVariablesBox();
 
 private:
-    void showOutputDialog(QStringList jacobian, QStringList equations, QStringList variables);
+    void showOutputDialog(QList<QList<SymHop::Expression> > jacobian, QList<SymHop::Expression> equations, QList<SymHop::Expression> variables);
 
     //Initialization & equations text edits
     QLabel *mpGivenLabel;

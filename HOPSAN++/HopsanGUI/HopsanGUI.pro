@@ -163,7 +163,8 @@ SOURCES += main.cpp \
     Dialogs/AnimatedIconPropertiesDialog.cpp \
     Dialogs/ParameterSettingsLayout.cpp \
     Dialogs/ModelObjectPropertiesDialog.cpp \
-    SimulationThreadHandler.cpp
+    SimulationThreadHandler.cpp \
+    Utilities/SymHop.cpp
 
 
 HEADERS += MainWindow.h \
@@ -226,7 +227,8 @@ HEADERS += MainWindow.h \
     Dialogs/AnimatedIconPropertiesDialog.h \
     Dialogs/ParameterSettingsLayout.h \
     Dialogs/ModelObjectPropertiesDialog.h \
-    SimulationThreadHandler.h
+    SimulationThreadHandler.h \
+    Utilities/SymHop.h
 
 OTHER_FILES += \
     ../hopsandefaults \
