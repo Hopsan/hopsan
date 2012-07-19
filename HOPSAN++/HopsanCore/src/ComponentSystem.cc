@@ -2161,6 +2161,10 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
     //cout << "Initializing SubSystem: " << this->mName << endl;
     mStopSimulation = false; //This variable cannot be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
 
+    // Set initial time
+    //! @note Added for testing, but shall probably be here
+    mTime = startT;
+
     // Make sure timestep is not to low
     if (mTimestep < 10*(std::numeric_limits<double>::min)())
     {
@@ -2211,7 +2215,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         else
         {
             mComponentSignalptrs[s]->initializeDynamicParameters();
-            mComponentSignalptrs[s]->initialize();
+            mComponentSignalptrs[s]->initialize(startT, stopT);
         }
     }
 
@@ -2234,7 +2238,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         else
         {
             mComponentCptrs[c]->initializeDynamicParameters();
-            mComponentCptrs[c]->initialize();
+            mComponentCptrs[c]->initialize(startT, stopT);
         }
     }
 
@@ -2257,7 +2261,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         else
         {
             mComponentQptrs[q]->initializeDynamicParameters();
-            mComponentQptrs[q]->initialize();
+            mComponentQptrs[q]->initialize(startT, stopT);
         }
     }
 
