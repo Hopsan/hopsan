@@ -104,7 +104,7 @@ namespace hopsan {
             Cs = sqrt(pnom)/Kcs;
             Cf = 1/(Kcf * sqrt(pnom));
 
-            double wCutoff = 1 / tao;
+            double wCutoff = 1.0 / tao;
             double num[2] = {1.0, 0.0};
             double den[2] = {1.0, 1.0/wCutoff};
             mFilterLP.initialize(mTimestep, num, den, x0max, x0max, 0.0, x0max);
