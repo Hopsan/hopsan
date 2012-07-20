@@ -58,12 +58,12 @@ namespace hopsan {
 
         HydraulicPressureCompensatingValve() : ComponentQ()
         {
-            pref = 2000000;
+            pref = 2000000.0;
             tao = 0.01;
             Kcs = 0.00000001;
             Kcf = 0.00000001;
             qnom = 0.001;
-            ph = 500000;
+            ph = 500000.0;
             pnom = 7e6f;
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");

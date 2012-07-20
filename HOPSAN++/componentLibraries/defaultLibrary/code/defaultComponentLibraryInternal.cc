@@ -91,7 +91,6 @@ void hopsan::register_components(hopsan::ComponentFactory* pComponentFactory)
 
     // ----- Other Hydraulic Components -----
     pComponentFactory->registerCreatorFunction("HydraulicLaminarOrifice", HydraulicLaminarOrifice::Creator);
-    pComponentFactory->registerCreatorFunction("HydraulicLaminarOrificeDiam", HydraulicLaminarOrificeDiam::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicTurbulentOrifice", HydraulicTurbulentOrifice::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicVolume", HydraulicVolume::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicPressureSourceC", HydraulicPressureSourceC::Creator);

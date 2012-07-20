@@ -218,8 +218,7 @@ HEADERS += \
     code/Signal/SignalSub.hpp \
     code/Hydraulic/valves/HydraulicCheckValvePreLoaded.hpp \
     code/Signal/SignalPulseWave.hpp \
-    code/Signal/SignalAnimationSlider.hpp \
-    code/Hydraulic/HydraulicLaminarOrificeDiam.hpp
+    code/Signal/SignalAnimationSlider.hpp
 
 SOURCES += \
     code/defaultComponentLibrary.cc \
