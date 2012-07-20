@@ -88,7 +88,7 @@ ComponentSpecification::ComponentSpecification(QString typeName, QString display
 //! @brief Transforms a DOM element component description to a ComponentSpecification object and calls actual generator utility
 //! @param outputFile Filename for output
 //! @param rDomElement Reference to dom element with information about component
-void generateComponentObject(QString outputFile, QDomElement &rDomElement, ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar)
+void generateComponentObject(QString outputFile, QDomElement &rDomElement, ModelObjectAppearance appearance, QProgressDialog *pProgressBar)
 {
     QString typeName = rDomElement.attribute("typename");
     QString displayName = rDomElement.attribute("displayname");
@@ -154,30 +154,430 @@ void generateComponentObject(QString outputFile, QDomElement &rDomElement, Model
         equationElement=equationElement.nextSiblingElement("equation");
     }
 
-    compileComponentObject(outputFile, comp, pAppearance, true);
+    compileComponentObject(outputFile, comp, appearance, true);
 }
 
 
 
 
 
-//! @brief Generates a ComponentSpecification object from equations and a jacobian
-//! @param typeName Type name of component
-//! @param displayName Display name of component
-//! @param cqsType CQS type of component
-//! @param ports List of port specifications
-//! @param parameteres List of parameter specifications
-//! @param sysEquations List of system equations
-//! @param stateVars List of state variables
-//! @param jacobian List of Jacobian elements
-//! @param delayTerms List of delay terms
-//! @param delaySteps List of number of delay steps for each delay term
-void generateComponentObject(QString typeName, QString displayName, QString cqsType,
-                             QList<PortSpecification> ports, QList<ParameterSpecification> parameters,
-                             QList<Expression> sysEquations, QList<Expression> stateVars, QList<QList<Expression> > jacobian,
-                             QList<Expression> delayTerms, QStringList delaySteps, QList<Expression> localVars,
-                             QList<Expression> initAlgorithms, QList<Expression> finalAlgorithms, ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar)
+
+//! @brief Generates XML and compiles the new component
+void generateComponentObject(QString &typeName, QString &displayName, QString &cqsType, QStringList &plainInitAlgorithms, QStringList &plainEquations, QStringList &plainFinalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters)
 {
+
+    QProgressDialog *pProgressBar = new QProgressDialog("Verifying", QString(), 0, 0, gpMainWindow);
+    pProgressBar->setWindowFlags(Qt::Window);
+    pProgressBar->setWindowModality(Qt::ApplicationModal);
+    pProgressBar->setWindowTitle("Generating Hopsan Component");
+    pProgressBar->setMinimum(0);
+    pProgressBar->setMaximum(100);
+    pProgressBar->setValue(0);
+    pProgressBar->setMinimumDuration(0);
+    pProgressBar->show();
+
+            pProgressBar->setLabelText("Collecting equations");
+            pProgressBar->setValue(5);
+
+    //Create list of initial algorithms
+    QList<Expression> initAlgorithms;
+    for(int i=0; i<plainInitAlgorithms.size(); ++i)
+    {
+        initAlgorithms.append(Expression(plainInitAlgorithms.at(i)));
+    }
+
+            pProgressBar->setValue(3);
+
+    //Create list of equqtions
+    QList<Expression> equations;
+    for(int i=0; i<plainEquations.size(); ++i)
+    {
+        equations.append(Expression(plainEquations.at(i)));
+    }
+
+    //Create list of final algorithms
+    QList<Expression> finalAlgorithms;
+    for(int i=0; i<plainFinalAlgorithms.size(); ++i)
+    {
+        finalAlgorithms.append(Expression(plainFinalAlgorithms.at(i)));
+    }
+
+            pProgressBar->setValue(4);
+
+    //Identify variable limitations, and remove them from the equations list
+    QList<Expression> limitedVariables;
+    QList<Expression> limitedDerivatives;
+    QList<Expression> limitMinValues;
+    QList<Expression> limitMaxValues;
+    QList<int> limitedVariableEquations;
+    QList<int> limitedDerivativeEquations;
+    for(int i=0; i<equations.size(); ++i)
+    {
+        if(equations[i].getFunctionName() == "VariableLimits")
+        {
+            if(i<1)
+            {
+                //! @todo Use sorting instead?
+                gpMainWindow->mpMessageWidget->printGUIErrorMessage("VariableLimits not preceeded by equations defining variable.");
+                return;
+            }
+
+            limitedVariables << equations[i].getArgument(0);
+            limitedDerivatives << Expression();
+            limitMinValues << equations[i].getArgument(1);
+            limitMaxValues << equations[i].getArgument(2);
+            limitedVariableEquations << i-1;
+            limitedDerivativeEquations << -1;
+
+            equations.removeAt(i);
+            --i;
+        }
+        else if(equations[i].getFunctionName()== "Variable2Limits")
+        {
+            if(i<2)
+            {
+                gpMainWindow->mpMessageWidget->printGUIErrorMessage("Variable2Limits not preeded by equations defining variable and derivative.");
+                return;
+            }
+
+            limitedVariables << equations[i].getArgument(0);
+            limitedDerivatives << equations[i].getArgument(1);
+            limitMinValues << equations[i].getArgument(2);
+            limitMaxValues << equations[i].getArgument(3);
+            limitedVariableEquations << i-2;
+            limitedDerivativeEquations << i-1;
+
+            equations.removeAt(i);
+            --i;
+        }
+        pProgressBar->setValue(4+4*double(i+1)/double(equations.size()));
+    }
+
+            pProgressBar->setValue(8);
+
+    //Verify each equation
+    for(int i=0; i<equations.size(); ++i)
+    {
+        if(!equations[i].verifyExpression())
+        {
+            gpMainWindow->mpMessageWidget->printGUIErrorMessage("Component generation failed: Verification of variables failed.");
+            return;
+        }
+    }
+
+    QList<QList<Expression> > leftSymbols2, rightSymbols2;
+    for(int i=0; i<equations.size(); ++i)
+    {
+        leftSymbols2.append(equations[i].getChild(0).getSymbols());
+        rightSymbols2.append(equations[i].getChild(1).getSymbols());
+    }
+
+            pProgressBar->setValue(9);
+
+    //Sum up all used variables to a single list
+    QList<Expression> allSymbols;
+    for(int i=0; i<equations.size(); ++i)
+    {
+        allSymbols.append(leftSymbols2.at(i));
+        allSymbols.append(rightSymbols2.at(i));
+    }
+
+    QList<Expression> initSymbols2;
+    for(int i=0; i<initAlgorithms.size(); ++i)
+    {
+        if(!initAlgorithms[i].isAssignment())
+        {
+            gpMainWindow->mpMessageWidget->printGUIErrorMessage("Component generation failed: Initial algorithms section contains non-algorithms.");
+            return;
+        }
+        initSymbols2.append(initAlgorithms[i].getChild(0));
+    }
+
+            pProgressBar->setValue(10);
+
+    QList<Expression> finalSymbols2;
+    for(int i=0; i<finalAlgorithms.size(); ++i)
+    {
+        //! @todo We must check that all algorithms are actually algorithms before doing this!
+        if(!finalAlgorithms[i].isAssignment())
+        {
+            gpMainWindow->mpMessageWidget->printGUIErrorMessage("Component generation failed: Final algorithms section contains non-algorithms.");
+            return;
+        }
+        finalSymbols2.append(finalAlgorithms[i].getChild(0));
+    }
+
+    for(int i=0; i<parameters.size(); ++i)
+    {
+        allSymbols.append(Expression(parameters[i].name));
+    }
+    allSymbols.append(initSymbols2);
+    allSymbols.append(finalSymbols2);
+    removeDuplicates(allSymbols);
+
+            pProgressBar->setValue(11);
+
+    //Generate a list of state variables (= "output" variables & local variables)
+    QList<Expression> nonStateVars;
+
+    for(int i=0; i<ports.size(); ++i)
+    {
+        QString num = QString().setNum(i+1);
+        if(ports[i].porttype == "ReadPort")
+        {
+            nonStateVars.append(Expression(ports[i].name));
+        }
+        else if(ports[i].porttype == "PowerPort" && cqsType == "C")
+        {
+            QStringList qVars;
+            qVars << getQVariables(ports[i].nodetype);
+            for(int v=0; v<qVars.size(); ++v)
+            {
+                nonStateVars.append(Expression(qVars[v]+num));
+            }
+        }
+        else if(ports[i].porttype == "PowerPort" && cqsType == "Q")
+        {
+            QStringList cVars;
+            cVars << getCVariables(ports[i].nodetype);
+            for(int v=0; v<cVars.size(); ++v)
+            {
+                nonStateVars.append(Expression(cVars[v]+num));
+            }
+        }
+    }
+
+    for(int i=0; i<parameters.size(); ++i)
+    {
+        nonStateVars.append(Expression(parameters[i].name));
+    }
+    for(int i=0; i<initSymbols2.size(); ++i)
+    {
+        nonStateVars.append(initSymbols2[i]);
+    }
+    for(int i=0; i<finalSymbols2.size(); ++i)
+    {
+        nonStateVars.append(finalSymbols2[i]);
+    }
+
+    QList<Expression> stateVars = allSymbols;
+    for(int i=0; i<nonStateVars.size(); ++i)
+    {
+        stateVars.removeAll(nonStateVars[i]);
+    }
+
+            pProgressBar->setValue(12);
+
+    //Verify equation system
+    if(!verifyEquationSystem(equations, stateVars))
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Verification of equation system failed.");
+        delete(pProgressBar);
+        return;
+    }
+
+
+    //Generate list of local variables (variables that are neither input nor output)
+    QList<Expression> nonLocals;
+
+    for(int i=0; i<ports.size(); ++i)
+    {
+        QString num = QString().setNum(i+1);
+        if(ports[i].porttype == "ReadPort" || ports[i].porttype == "WritePort")
+        {
+            nonLocals.append(Expression(ports[i].name));     //Remove all readport/writeport varibles
+        }
+        else if(ports[i].porttype == "PowerPort")
+        {
+            QStringList qVars;
+            QStringList cVars;
+            qVars << getQVariables(ports[i].nodetype);
+            cVars << getCVariables(ports[i].nodetype);
+            for(int v=0; v<qVars.size(); ++v)
+            {
+                nonLocals.append(Expression(qVars[v]+num));      //Remove all Q-type variables
+            }
+            for(int v=0; v<cVars.size(); ++v)
+            {
+                nonLocals.append(Expression(cVars[v]+num));      //Remove all C-type variables
+            }
+        }
+    }
+    for(int i=0; i<parameters.size(); ++i)
+    {
+        nonLocals.append(Expression(parameters[i].name));   //Remove all parameters
+    }
+
+            pProgressBar->setValue(14);
+
+    QList<Expression> localVars = allSymbols;
+    for(int i=0; i<nonLocals.size(); ++i)
+    {
+        localVars.removeAll(nonLocals[i]);
+    }
+    for(int i=0; i<localVars.size(); ++i)
+    {
+        allSymbols.removeAll(localVars[i]);
+    }
+
+    for(int i=0; i<equations.size(); ++i)
+    {
+        equations[i].toLeftSided();
+        equations[i].replaceBy(equations[i].getChild(0));
+    }
+
+            pProgressBar->setValue(15);
+
+    for(int i=0; i<equations.size(); ++i)
+    {
+        equations[i] = equations[i].bilinearTransform();
+    }
+
+    for(int i=0; i<limitedVariableEquations.size(); ++i)
+    {
+        equations[limitedVariableEquations[i]].factor(limitedVariables[i]);
+
+        QString num = equations[limitedVariableEquations[i]].getChild(1).toString();
+        QString den = equations[limitedVariableEquations[i]].getChild(0).getChild(1).toString();
+        equations[limitedVariableEquations[i]] = Expression(QStringList() << limitedVariables[i].toString() << "-" << "limit((-"+num+")/("+den+"))");
+
+        qDebug() << "Limited: " << equations[limitedVariableEquations[i]].toString();
+
+
+        if(!limitedDerivatives[i].toString().isEmpty())      //Variable2Limits (has a derivative)
+        {
+            equations[limitedDerivativeEquations[i]].factor(limitedDerivatives[i]);
+
+            QString num = equations[limitedDerivativeEquations[i]].getChild(1).toString();
+            QString den = equations[limitedDerivativeEquations[i]].getChild(0).getChild(1).toString();
+            equations[limitedDerivativeEquations[i]] = Expression(QStringList() << limitedDerivatives[i].toString() << "-" << "dxLimit((-"+num+")/("+den+"))");
+
+            qDebug() << "Limited: " << equations[limitedDerivativeEquations[i]].toString();
+        }
+
+        pProgressBar->setValue(16+5*double(i+1)/double(limitedVariableEquations.size()));
+    }
+
+    //Linearize equations
+    for(int e=0; e<equations.size(); ++e)
+    {
+        equations[e].linearize();
+        equations[e].expandPowers();
+    }
+
+           pProgressBar->setValue(21);
+
+
+    //Differentiate each equation for each state variable to generate the Jacobian matrix
+    QList<QList<Expression> > jacobian;
+    for(int e=0; e<equations.size(); ++e)
+    {
+        //Remove all delay operators, since they shall not be in the Jacobian anyway
+        Expression tempExpr = equations[e];
+
+        tempExpr.replace(Expression("Z", Expression::NoSimplifications), Expression("0.0", Expression::NoSimplifications));
+        tempExpr.replace(Expression("-Z",Expression::NoSimplifications), Expression("0.0", Expression::NoSimplifications));
+
+        tempExpr._simplify(Expression::SimplifyWithoutMakingPowers, Expression::Recursive);
+
+        //Now differentiate all jacobian elements
+        jacobian.append(QList<Expression>());
+        for(int j=0; j<stateVars.size(); ++j)
+        {
+            bool ok = true;
+            tempExpr.replace(Expression(stateVars[j].negative()), Expression(stateVars[j], "*", Expression("-1.0", Expression::NoSimplifications), Expression::NoSimplifications));
+            jacobian[e].append(tempExpr.derivative(stateVars[j], ok));
+            if(!ok)
+            {
+                gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to differentiate expression: " + equations[e].toString() + " for variable " + stateVars[j].toString());
+                return;
+            }
+        }
+                pProgressBar->setValue(22+double(e)/double(equations.size())*34);
+    }
+
+
+
+    //Sort equation system so that each equation contains its corresponding state variable
+    if(!sortEquationSystem(equations, jacobian, stateVars, limitedVariableEquations, limitedDerivativeEquations))
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Could not sort equations. System is probably under-determined.");
+        delete(pProgressBar);
+        return;
+    }
+
+
+
+    //Differentiate the diagonal element and divide the equation with it, to get only ones on the diagonal later
+    for(int i=0; i<stateVars.size(); ++i)
+    {
+        bool ok = true;
+        Expression div = jacobian[i][i];
+        equations[i].divideBy(div);
+
+        for(int j=0; j<stateVars.size(); ++j)
+        {
+            if(!(jacobian[i][j] == Expression("0.0", Expression::NoSimplifications)))
+            {
+                jacobian[i][j].divideBy(div);
+            }
+        }
+
+        jacobian[i][i] = Expression("1.0", Expression::NoSimplifications);
+    }
+
+
+    //Transform delay operators to delay functions and store delay terms separately
+    QList<Expression> delayTerms;
+    QStringList delaySteps;
+    for(int e=0; e<equations.size(); ++e)
+    {
+        equations[e].expand();
+        equations[e].toDelayForm(delayTerms, delaySteps);
+    }
+
+            pProgressBar->setValue(56);
+
+            pProgressBar->setLabelText("Compiling component");
+
+    //Generate appearance object
+    ModelObjectAppearance appearance = generateAppearance(ports, cqsType);
+
+            pProgressBar->setValue(57);
+
+    //Display equation system dialog
+    showOutputDialog(jacobian, equations, stateVars);
+
+    //Call utility to generate and compile the source code
+//    generateComponentObject(typeName, displayName, cqsType, ports, parameters, equations, stateVars, jacobian, delayTerms, delaySteps, localVars, algorithms, finalAlgorithms, appearance, pProgressBar);
+
+//    //Delete the progress bar to avoid memory leaks
+//    delete(pProgressBar);
+
+
+//}
+
+
+
+
+
+//////! @brief Generates a ComponentSpecification object from equations and a jacobian
+//////! @param typeName Type name of component
+//////! @param displayName Display name of component
+//////! @param cqsType CQS type of component
+//////! @param ports List of port specifications
+//////! @param parameteres List of parameter specifications
+//////! @param sysEquations List of system equations
+//////! @param stateVars List of state variables
+//////! @param jacobian List of Jacobian elements
+//////! @param delayTerms List of delay terms
+//////! @param delaySteps List of number of delay steps for each delay term
+//void generateComponentObject(QString typeName, QString displayName, QString cqsType,
+//                             QList<PortSpecification> ports, QList<ParameterSpecification> parameters,
+//                             QList<Expression> equations, QList<Expression> stateVars, QList<QList<Expression> > jacobian,
+//                             QList<Expression> delayTerms, QStringList delaySteps, QList<Expression> localVars,
+//                             QList<Expression> initAlgorithms, QList<Expression> finalAlgorithms, ModelObjectAppearance appearance, QProgressDialog *pProgressBar)
+//{
             if(pProgressBar)
             {
                 pProgressBar->setLabelText("Creating component object");
@@ -230,9 +630,9 @@ void generateComponentObject(QString typeName, QString displayName, QString cqsT
         comp.varNames << "order["+QString().setNum(stateVars.size())+"]" << "jacobianMatrix" << "systemEquations" << "stateVariables" << "mpSolver";
         comp.varTypes << "double" << "Matrix" << "Vec" << "Vec" << "EquationSystemSolver*";
 
-        comp.initEquations << "jacobianMatrix.create("+QString().setNum(sysEquations.size())+","+QString().setNum(stateVars.size())+");";
-        comp.initEquations << "systemEquations.create("+QString().setNum(sysEquations.size())+");";
-        comp.initEquations << "stateVariables.create("+QString().setNum(sysEquations.size())+");";
+        comp.initEquations << "jacobianMatrix.create("+QString().setNum(equations.size())+","+QString().setNum(stateVars.size())+");";
+        comp.initEquations << "systemEquations.create("+QString().setNum(equations.size())+");";
+        comp.initEquations << "stateVariables.create("+QString().setNum(equations.size())+");";
         comp.initEquations << "";
     }
 
@@ -255,7 +655,7 @@ void generateComponentObject(QString typeName, QString displayName, QString cqsT
     {
         comp.initEquations << "";
         //comp.initEquations << "mpSolver = new EquationSystemSolver(this, "+QString().setNum(sysEquations.size())+");";
-        comp.initEquations << "mpSolver = new EquationSystemSolver(this, "+QString().setNum(sysEquations.size())+", &jacobianMatrix, &systemEquations, &stateVariables);";
+        comp.initEquations << "mpSolver = new EquationSystemSolver(this, "+QString().setNum(equations.size())+", &jacobianMatrix, &systemEquations, &stateVariables);";
     }
 
         if(pProgressBar)
@@ -287,14 +687,14 @@ void generateComponentObject(QString typeName, QString displayName, QString cqsT
 
         comp.simEquations << "";
         comp.simEquations << "    //System Equations";
-        for(int i=0; i<sysEquations.size(); ++i)
+        for(int i=0; i<equations.size(); ++i)
         {
-            comp.simEquations << "    systemEquations["+QString().setNum(i)+"] = "+sysEquations[i].toString()+";";
+            comp.simEquations << "    systemEquations["+QString().setNum(i)+"] = "+equations[i].toString()+";";
    //         comp.simEquations << "    "+stateVars[i]+" = " + resEquations[i]+";";
         }
         comp.simEquations << "";
         comp.simEquations << "    //Jacobian Matrix";
-        for(int i=0; i<sysEquations.size(); ++i)
+        for(int i=0; i<equations.size(); ++i)
         {
             for(int j=0; j<stateVars.size(); ++j)
             {
@@ -368,7 +768,9 @@ void generateComponentObject(QString typeName, QString displayName, QString cqsT
                 pProgressBar->setValue(70);
             }
 
-    compileComponentObject("equation.hpp", comp, pAppearance, false, pProgressBar);
+    compileComponentObject("equation.hpp", comp, appearance, false, pProgressBar);
+
+    delete(pProgressBar);
 }
 
 
@@ -376,7 +778,7 @@ void generateComponentObject(QString typeName, QString displayName, QString cqsT
 //! @param outputFile Name of output file
 //! @param comp Component specification object
 //! @param overwriteStartValues Tells whether or not this components overrides the built-in start values or not
-void compileComponentObject(QString outputFile, ComponentSpecification comp, ModelObjectAppearance *pAppearance, bool overwriteStartValues, QProgressDialog *pProgressBar)
+void compileComponentObject(QString outputFile, ComponentSpecification comp, ModelObjectAppearance appearance, bool overwriteStartValues, QProgressDialog *pProgressBar)
 {
     if(pProgressBar)
     {
@@ -416,8 +818,8 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
     fileStream << "#include <math.h>\n";
     fileStream << "#include \"ComponentEssentials.h\"\n";
     fileStream << "#include \"ComponentUtilities.h\"\n";
-    fileStream << "#include <sstream>\n";
-    fileStream << "\n";
+    fileStream << "#include <sstream>\n\n";
+    fileStream << "using namespace std;\n\n";
     fileStream << "namespace hopsan {\n\n";
     fileStream << "    class " << comp.typeName << " : public Component" << comp.cqsType << "\n";
     fileStream << "    {\n";
@@ -860,12 +1262,12 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
     xmlStream << "    <icons>\n";
     //! @todo Make it possible to choose icon files
     //! @todo In the meantime, use a default "generated component" icon
-    xmlStream << "      <icon type=\"user\" path=\""+pAppearance->getIconPath(USERGRAPHICS, AbsoluteRelativeT(0))+"\" iconrotation=\""+pAppearance->getIconRotationBehaviour()+"\" scale=\"1\"/>\n";
+    xmlStream << "      <icon type=\"user\" path=\""+appearance.getIconPath(USERGRAPHICS, AbsoluteRelativeT(0))+"\" iconrotation=\""+appearance.getIconRotationBehaviour()+"\" scale=\"1\"/>\n";
     xmlStream << "    </icons>\n";
     xmlStream << "    <ports>\n";
     for(int i=0; i<comp.portNames.size(); ++i)
     {
-        PortAppearance portApp = pAppearance->getPortAppearanceMap().find(comp.portNames[i]).value();
+        PortAppearance portApp = appearance.getPortAppearanceMap().find(comp.portNames[i]).value();
         xmlStream << "      <port name=\"" << comp.portNames[i] << "\" x=\"" << portApp.x << "\" y=\"" << portApp.y << "\" a=\"" << portApp.rot << "\"/>\n";
     }
     xmlStream << "    </ports>\n";
@@ -974,6 +1376,183 @@ void compileComponentObject(QString outputFile, ComponentSpecification comp, Mod
         gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(libPath);
     }
 }
+
+
+ModelObjectAppearance generateAppearance(QList<PortSpecification> portList, QString cqsType)
+{
+    ModelObjectAppearance appearance = ModelObjectAppearance();
+
+    appearance.setIconPath(QString(OBJECTICONPATH)+"generatedcomponenticon.svg", USERGRAPHICS, AbsoluteRelativeT(0));
+
+    QStringList leftPortNames, rightPortNames, topPortNames;
+    QList<PortAppearance> leftPorts, rightPorts, topPorts;
+
+    for(int p=0; p<portList.size(); ++p)
+    {
+        PortAppearanceMapT portMap = appearance.getPortAppearanceMap();
+        if(!portMap.contains(portList.at(p).name))
+        {
+            PortAppearance PortApp;
+            PortApp.selectPortIcon(cqsType, portList.at(p).porttype.toUpper(), portList.at(p).nodetype);
+
+            if(portList.at(p).nodetype == "NodeSignal" && portList.at(p).porttype == "ReadPort")
+            {
+                leftPorts << PortApp;
+                leftPortNames << portList.at(p).name;
+            }
+            else if(portList.at(p).nodetype == "NodeSignal" && portList.at(p).porttype == "WritePort")
+            {
+                rightPorts << PortApp;
+                rightPortNames << portList.at(p).name;
+            }
+            else
+            {
+                topPorts << PortApp;
+                topPortNames << portList.at(p).name;
+            }
+        }
+    }
+
+    PortAppearanceMapT portMap = appearance.getPortAppearanceMap();
+    PortAppearanceMapT::iterator it;
+    QStringList keysToRemove;
+    for(it=portMap.begin(); it!=portMap.end(); ++it)
+    {
+        bool exists=false;
+        for(int j=0; j<portList.size(); ++j)
+        {
+            if(portList.at(j).name == it.key())
+                exists=true;
+        }
+        if(!exists)
+            keysToRemove << it.key();
+    }
+    for(int i=0; i<keysToRemove.size(); ++i)
+    {
+        appearance.getPortAppearanceMap().remove(keysToRemove.at(i));
+    }
+
+    for(int i=0; i<leftPorts.size(); ++i)
+    {
+        leftPorts[i].x = 0.0;
+        leftPorts[i].y = (double(i)+1)/(double(leftPorts.size())+1.0);
+        leftPorts[i].rot = 180;
+        appearance.addPortAppearance(leftPortNames[i], &leftPorts[i]);
+    }
+    for(int i=0; i<rightPorts.size(); ++i)
+    {
+        rightPorts[i].x = 1.0;
+        rightPorts[i].y = (double(i)+1)/(double(rightPorts.size())+1.0);
+        rightPorts[i].rot = 0;
+        appearance.addPortAppearance(rightPortNames[i], &rightPorts[i]);
+    }
+    for(int i=0; i<topPorts.size(); ++i)
+    {
+        topPorts[i].x = (double(i)+1)/(double(topPorts.size())+1.0);
+        topPorts[i].y = 0.0;
+        topPorts[i].rot = 270;
+        appearance.addPortAppearance(topPortNames[i], &topPorts[i]);
+    }
+
+    return appearance;
+}
+
+
+
+
+void showOutputDialog(QList<QList<Expression> > jacobian, QList<Expression> equations, QList<Expression> variables)
+{
+    QDialog *pDialog = new QDialog(gpMainWindow);
+
+    //Description label
+    QLabel *pDescription = new QLabel("Resulting equations:", pDialog);
+
+    //Jacobian matrix
+    QLabel *pJacobianLabel = new QLabel("J", pDialog);
+    pJacobianLabel->setAlignment(Qt::AlignCenter);
+
+    QGridLayout *pJacobianLayout = new QGridLayout(pDialog);
+    for(int i=0; i<equations.size(); ++i)
+    {
+        for(int j=0; j<equations.size(); ++j)
+        {
+            QString element = jacobian[i][j].toString();
+            QString shortElement = element;
+            shortElement.truncate(17);
+            if(shortElement<element)
+            {
+                shortElement.append("...");
+            }
+            QLabel *pElement = new QLabel(shortElement, pDialog);
+            pElement->setToolTip(element);
+            pElement->setAlignment(Qt::AlignCenter);
+            pJacobianLayout->addWidget(pElement, j, i+1);
+        }
+    }
+    QGroupBox *pJacobianBox = new QGroupBox(pDialog);
+    pJacobianBox->setLayout(pJacobianLayout);
+
+    //Variables vector
+    QLabel *pVariablesLabel = new QLabel("x", pDialog);
+    pVariablesLabel->setAlignment(Qt::AlignCenter);
+
+    QGridLayout *pVariablesLayout = new QGridLayout(pDialog);
+    for(int i=0; i<variables.size(); ++i)
+    {
+        QLabel *pElement = new QLabel(variables[i].toString(), pDialog);
+        pElement->setAlignment(Qt::AlignCenter);
+        pVariablesLayout->addWidget(pElement, i, 0);
+    }
+    QGroupBox *pVariablesBox = new QGroupBox(pDialog);
+    pVariablesBox->setLayout(pVariablesLayout);
+
+    //Equality sign
+    QLabel *pEqualityLabel = new QLabel("=", pDialog);
+    pEqualityLabel->setAlignment(Qt::AlignCenter);
+
+    //Equations vector
+    QLabel *pEquationsLabel = new QLabel("b", pDialog);
+    pEquationsLabel->setAlignment(Qt::AlignCenter);
+
+    QGridLayout *pEquationsLayout = new QGridLayout(pDialog);
+    for(int i=0; i<equations.size(); ++i)
+    {
+        QString element = equations[i].toString();
+        QString shortElement = element;
+        shortElement.truncate(17);
+        if(shortElement<element)
+        {
+            shortElement.append("...");
+        }
+        QLabel *pElement = new QLabel(shortElement, pDialog);
+        pElement->setToolTip(element);
+        pElement->setAlignment(Qt::AlignCenter);
+        pEquationsLayout->addWidget(pElement, i, 0);
+    }
+    QGroupBox *pEquationsBox = new QGroupBox(pDialog);
+    pEquationsBox->setLayout(pEquationsLayout);
+
+    QPushButton *pOkButton = new QPushButton("Okay", pDialog);
+    QDialogButtonBox *pButtonGroup = new QDialogButtonBox(pDialog);
+    pButtonGroup->addButton(pOkButton, QDialogButtonBox::AcceptRole);
+    pDialog->connect(pOkButton, SIGNAL(pressed()), pDialog, SLOT(close()));
+
+    QGridLayout *pDialogLayout = new QGridLayout(pDialog);
+    pDialogLayout->addWidget(pDescription,      0, 0);
+    pDialogLayout->addWidget(pJacobianLabel,    1, 0);
+    pDialogLayout->addWidget(pJacobianBox,      2, 0);
+    pDialogLayout->addWidget(pVariablesLabel,   1, 1);
+    pDialogLayout->addWidget(pVariablesBox,     2, 1);
+    pDialogLayout->addWidget(pEqualityLabel,    2, 2);
+    pDialogLayout->addWidget(pEquationsLabel,   1, 3);
+    pDialogLayout->addWidget(pEquationsBox,     2, 3);
+    pDialogLayout->addWidget(pButtonGroup,      3, 0, 1, 4);
+
+    pDialog->setLayout(pDialogLayout);
+
+    pDialog->show();
+}
+
 
 
 //! @brief Verifies that a system of equations is solveable (number of equations = number of unknowns etc)
@@ -1355,22 +1934,26 @@ void parseModelicaModel(QString code, QString &typeName, QString &displayName, Q
         }
     }
 
+    initAlgorithms.removeAll("\n");
+    initAlgorithms.removeAll("");
     equations.removeAll("\n");
     equations.removeAll("");
+    finalAlgorithms.removeAll("\n");
+    finalAlgorithms.removeAll("");
 
     //Remove extra boundary equations (assume that they are the last ones)
-    if(cqsType == "Q")
-    {
-        for(int i=0; i<portList.size(); ++i)
-        {
-            //qDebug() << "Port " << i << " has nodetype " << portList.at(i).nodetype;
-            if(portList.at(i).nodetype != "NodeSignal")
-            {
-                equations.removeLast();
-                //qDebug() << "Removing last equation!";
-            }
-        }
-    }
+//    if(cqsType == "Q")
+//    {
+//        for(int i=0; i<portList.size(); ++i)
+//        {
+//            //qDebug() << "Port " << i << " has nodetype " << portList.at(i).nodetype;
+//            if(portList.at(i).nodetype != "NodeSignal")
+//            {
+//                equations.removeLast();
+//                //qDebug() << "Removing last equation!";
+//            }
+//        }
+//    }
 }
 
 

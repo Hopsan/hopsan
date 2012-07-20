@@ -22,9 +22,12 @@
 //!
 //$Id$
 
-#include "SymHop.h"
+#include <cassert>
 #include <cmath>
+
 #include <QMessageBox>
+
+#include "SymHop.h"
 
 using namespace std;
 using namespace SymHop;
@@ -110,6 +113,23 @@ Expression::Expression(const QList<Expression> children, const QString separator
             mChildren.append(Expression(children.mid(1, children.size()-1), separator));
             _simplify(simplifications);
         }
+    }
+}
+
+
+//! @brief Constructor for creating an expression from a numerical value
+//! @param value Value of new symbol
+Expression::Expression(const double value)
+{
+    mType = Expression::Symbol;
+    mString = QString::number(value);
+
+    //Make sure numerical symbols have double precision
+    bool isInt;
+    mString.toInt(&isInt);
+    if(isInt && !mString.contains("."))
+    {
+        mString.append(".0");
     }
 }
 
@@ -372,6 +392,39 @@ void Expression::replaceBy(const Expression expr)
     mType = expr.getType();
     mString = expr._getString();
     mChildren = expr._getChildren();
+}
+
+
+//! @brief Divides the expression by specified divisor
+//! @param div Divisor expression
+void Expression::divideBy(const Expression div)
+{
+    assert(!(div == Expression(0.0)));
+
+    if(mString == "0.0")    //Dividing zero expression will give zero
+    {
+        return;
+    }
+    QList<Expression> terms = this->getTerms();
+    if(terms.isEmpty())
+    {
+        this->replaceBy(Expression(*this, "/", div));
+    }
+    else
+    {
+        for(int t=0; t<terms.size(); ++t)
+        {
+            if(terms[t] == div)
+            {
+                terms[t] = Expression(1);
+            }
+            else
+            {
+                terms[t] = Expression(terms[t], "/", div, Expression::SimplifyWithoutMakingPowers);
+            }
+        }
+        this->replaceBy(Expression(terms, "+", Expression::SimplifyWithoutMakingPowers));
+    }
 }
 
 
@@ -1153,7 +1206,7 @@ void Expression::removeFactor(const Expression var)
         while(factors.contains(var.negative()))
         {
             factors.removeOne(var.negative());
-            factors.append(Expression("-1.0", NoSimplifications));
+            factors.append(Expression(-1.0));
         }
         Expression tempExpr1;
         Expression tempExpr2;
@@ -1171,11 +1224,11 @@ void Expression::removeFactor(const Expression var)
         else if (!divisors.isEmpty())
         {
             tempExpr2 = Expression(divisors, "*", TrivialSimplifications);
-            this->replaceBy(Expression(Expression("1.0", NoSimplifications), "/", tempExpr2, TrivialSimplifications));
+            this->replaceBy(Expression(Expression(1.0), "/", tempExpr2, TrivialSimplifications));
         }
         else
         {
-            this->replaceBy(Expression("1.0", NoSimplifications));
+            this->replaceBy(Expression(1.0));
         }
     }
 }
@@ -1342,7 +1395,7 @@ void Expression::expandParentheses(const ExpressionSimplificationT simplificatio
                     {
                         divisors.removeOne(factors[f].negative());
                         factors.removeAt(f);
-                        factors.append(Expression("-1.0", TrivialSimplifications));
+                        factors.append(Expression(-1.0));
                         f=0;
                         continue;
                     }
@@ -1513,7 +1566,7 @@ void Expression::linearize()
         QList<Expression> termFactors = terms[0].getFactors();
         for(int f=0; f<termFactors.size(); ++f)
         {
-            if(!(termFactors[f] == Expression("1.0",NoSimplifications)) && !(termFactors[f] == Expression("-1.0",NoSimplifications)))
+            if(!(termFactors[f] == Expression(1.0)) && !(termFactors[f] == Expression(-1.0)))
             {
                 if(!commonFactors.contains(termFactors[f]) && !commonFactors.contains(termFactors[f].negative()))
                 {
@@ -1565,7 +1618,7 @@ void Expression::toLeftSided()
     if(this->isEquation())
     {
         mChildren[0] = Expression(mChildren[0], "+", mChildren[1].negative());
-        mChildren[1] = Expression("0.0", NoSimplifications);
+        mChildren[1] = Expression(0.0);
     }
 }
 
@@ -1637,7 +1690,7 @@ void Expression::factorMostCommonFactor()
         QList<Expression> factors = terms[t].getFactors();
         for(int f=0; f<factors.size(); ++f)
         {
-            if(factors[f] == Expression("-1.0", NoSimplifications) || factors[f] == Expression("1.0", NoSimplifications))       //Ignore "-1.0" and "1.0"
+            if(factors[f] == Expression(-1.0) || factors[f] == Expression(1.0))       //Ignore "-1.0" and "1.0"
             {
                 continue;
             }
@@ -1750,13 +1803,17 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
     {
         if(mChildren[0]._getString() == "0.0" || mChildren[1]._getString() == "0.0")
         {
-            replaceBy(Expression("0.0", NoSimplifications));     //Replace "0*x" and "x*0" with "0.0"
+            replaceBy(Expression(0.0));     //Replace "0*x" and "x*0" with "0.0"
+        }
+        else if(mChildren[0]._getString() == "-0.0" || mChildren[1]._getString() == "-0.0")
+        {
+            replaceBy(Expression(0.0));     //Replace "-0*x" and "x*-0" with "0.0"
         }
         else if(mChildren[0].isNumericalSymbol() && mChildren[1].isNumericalSymbol())
         {
             //Replace "3*2" with "6" (for example)
             double replacement = mChildren[0].toDouble()*mChildren[1].toDouble();
-            replaceBy(Expression(QString::number(replacement), NoSimplifications));
+            replaceBy(Expression(replacement));
         }
         else if(mChildren[0]._getString() == "1.0")
         {
@@ -1784,11 +1841,19 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
     {
         if(mChildren[0]._getString() == "0.0")
         {
-            replaceBy(Expression("0.0", NoSimplifications));
+            replaceBy(Expression(0.0));
+        }
+        else if(mChildren[0]._getString() == "-0.0")
+        {
+            replaceBy(Expression(0.0));
         }
         else if(mChildren[1]._getString() == "1.0")
         {
             replaceBy(mChildren[0]);
+        }
+        else if(mChildren[1]._getString() == "-1.0")
+        {
+            replaceBy(mChildren[0].negative());
         }
     }
     else if(mString == "+")
@@ -1976,7 +2041,7 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
             {
                 divisors.removeOne(factors[f].negative());
                 factors.removeAt(f);
-                factors.append(Expression("-1.0", NoSimplifications));
+                factors.append(Expression(-1.0));
                 --f;
                 didSomething = true;
             }
@@ -2130,16 +2195,17 @@ bool SymHop::findPath(QList<int> &order, QList<QList<int> > dependencies, int le
 //! @param stateVars List of state variables
 //! @param limitedVariableEquations Reference to list with indexes for limitation functions
 //! @param limitedDerivativeEquations Reference to list with indexes for derivative limitation functions
-bool SymHop::sortEquationSystem(QList<Expression> &equations, QList<QList<Expression> > symbols, QList<Expression> stateVars, QList<int> &limitedVariableEquations, QList<int> &limitedDerivativeEquations)
+bool SymHop::sortEquationSystem(QList<Expression> &equations, QList<QList<Expression> > &jacobian, QList<Expression> stateVars, QList<int> &limitedVariableEquations, QList<int> &limitedDerivativeEquations)
 {
     //Generate a dependency tree between equations and variables
+    Expression zero = Expression(0.0);
     QList<QList<int> > dependencies;
     for(int v=0; v<stateVars.size(); ++v)
     {
         dependencies.append(QList<int>());
         for(int e=0; e<stateVars.size(); ++e)
         {
-            if(symbols[e].contains(stateVars[v]))
+            if(!(jacobian[v][e] == zero))
             {
                 dependencies[v].append(e);
             }
@@ -2155,9 +2221,11 @@ bool SymHop::sortEquationSystem(QList<Expression> &equations, QList<QList<Expres
 
     //Sort equations to new order
     QList<Expression> sortedEquations;
+    QList<QList<Expression> > sortedJacobian;
     for(int i=0; i<order.size(); ++i)
     {
         sortedEquations.append(equations.at(order[i]));
+        sortedJacobian.append(jacobian.at(order[i]));
         for(int j=0; j<limitedVariableEquations.size(); ++j)    //Sort limited variable equation numbers
         {
             if(limitedVariableEquations[j] == i)
@@ -2174,6 +2242,7 @@ bool SymHop::sortEquationSystem(QList<Expression> &equations, QList<QList<Expres
         }
     }
 
+    jacobian = sortedJacobian;
     equations = sortedEquations;
 
     return true;

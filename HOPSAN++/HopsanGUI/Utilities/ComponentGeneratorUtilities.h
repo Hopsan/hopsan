@@ -103,9 +103,14 @@ public:
 };
 
 
-void generateComponentObject(QString outputFile, QDomElement &rDomElement, ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar=0);
-void generateComponentObject(QString typeName, QString displayName, QString cqsType, QList<PortSpecification> ports, QList<ParameterSpecification> parameters, QList<SymHop::Expression> sysEquations, QList<SymHop::Expression> stateVars, QList<QList<SymHop::Expression> > jacobian, QList<SymHop::Expression> delayTerms, QStringList delaySteps, QList<SymHop::Expression> localVars, QList<SymHop::Expression> initAlgorithms, QList<SymHop::Expression> finalAlgorithms, ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar);
-void compileComponentObject(QString outputFile, ComponentSpecification comp, ModelObjectAppearance *pAppearance, bool overwriteStartValues=false, QProgressDialog *pProgressBar = 0);
+void generateComponentObject(QString outputFile, QDomElement &rDomElement, ModelObjectAppearance appearance, QProgressDialog *pProgressBar=0);
+void generateComponentObject(QString &typeName, QString &displayName, QString &cqsType, QStringList &initAlgorithms, QStringList &equations, QStringList &finalAlgorithms, QList<PortSpecification> &portList, QList<ParameterSpecification> &parametersList);
+//void generateComponentObject(QString typeName, QString displayName, QString cqsType, QList<PortSpecification> ports, QList<ParameterSpecification> parameters, QList<SymHop::Expression> sysEquations, QList<SymHop::Expression> stateVars, QList<QList<SymHop::Expression> > jacobian, QList<SymHop::Expression> delayTerms, QStringList delaySteps, QList<SymHop::Expression> localVars, QList<SymHop::Expression> initAlgorithms, QList<SymHop::Expression> finalAlgorithms, ModelObjectAppearance *pAppearance, QProgressDialog *pProgressBar);
+void compileComponentObject(QString outputFile, ComponentSpecification comp, ModelObjectAppearance appearance, bool overwriteStartValues=false, QProgressDialog *pProgressBar = 0);
+
+
+ModelObjectAppearance generateAppearance(QList<PortSpecification> portList, QString cqsType);
+void showOutputDialog(QList<QList<SymHop::Expression> > jacobian, QList<SymHop::Expression> equations, QList<SymHop::Expression> variables);
 
 bool verifyParameteres(QList<ParameterSpecification> parameters);
 bool verifyPorts(QList<PortSpecification> ports);

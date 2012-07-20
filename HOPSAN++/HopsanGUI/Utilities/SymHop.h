@@ -45,6 +45,7 @@ public:
     Expression(QStringList symbols, const ExpressionSimplificationT simplifications=FullSimplification, const QString parentSeparator=QString());
     Expression(const Expression left, const QString mid, const Expression right, const ExpressionSimplificationT simplifications=FullSimplification);
     Expression(const QList<Expression> children, const QString separator, const ExpressionSimplificationT simplifications=FullSimplification);
+    Expression(const double value);
 
     void commonConstructorCode(QStringList symbols, const ExpressionSimplificationT simplifications=FullSimplification, const QString parentSeparator=QString());
 
@@ -55,6 +56,7 @@ public:
     int count(const Expression &var) const;
 
     void replaceBy(Expression const expr);
+    void divideBy(Expression const div);
     ExpressionTypeT getType() const;
     QString toString() const;
     void toDelayForm(QList<Expression> &rDelayTerms, QStringList &rDelaySteps);
@@ -123,7 +125,7 @@ QStringList getSupportedFunctionsList();
 QStringList getCustomFunctionList();
 
 bool findPath(QList<int> &order, QList<QList<int> > dependencies, int level=0);
-bool sortEquationSystem(QList<Expression> &equations, QList<QList<Expression> > symbols, QList<Expression> stateVars, QList<int> &limitedVariableEquations, QList<int> &limitedDerivativeEquations);
+bool sortEquationSystem(QList<Expression> &equations, QList<QList<Expression> > &jacobian, QList<Expression> stateVars, QList<int> &limitedVariableEquations, QList<int> &limitedDerivativeEquations);
 void removeDuplicates(QList<Expression> &rList);
 
 }

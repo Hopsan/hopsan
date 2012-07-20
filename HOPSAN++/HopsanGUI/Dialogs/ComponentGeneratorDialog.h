@@ -58,7 +58,7 @@ private:
 
 
 
-class ComponentGeneratorDialog : public QDialog
+class ComponentGeneratorDialog : public QMainWindow
 {
     Q_OBJECT
 
@@ -66,129 +66,29 @@ public:
     ComponentGeneratorDialog(MainWindow *parent = 0);
 
 public slots:
-    virtual void open();
-
-private slots:
-    void autoResize();
-    void update();
-    void addPort();
-    void addParameter();
-    void addUtility();
-    void addStaticVariable();
-    void removePort();
-    void removeParameter();
-    void removeUtility();
-    void removeStaticVariable();
-    void updateValues();
-    void updateGivenSoughtText();
-    void updateBoundaryEquations();
-    void updateRecentList();
-    void removeRecentComponent();
-    void loadRecentComponent();
-    void generateComponent();
+    void addNewTab();
+    void addNewTab(QString code, QString tabName="");
+    void closeTab(int i);
+    void tabChanged();
     void loadFromModelica();
-    void loadFromXml();
-    void loadFromXml(QString fileName);
-    void saveDialogToXml();
-    void generateAppearance();
+    void saveToModelica();
+    void generateComponent();
     void openAppearanceDialog();
-    void togglePortsBox();
-    void toggleParametersBox();
-    void toggleUtilitiesBox();
-    void toggleStaticVariablesBox();
+    void openComponentGeneratorWizard();
 
 private:
-    void showOutputDialog(QList<QList<SymHop::Expression> > jacobian, QList<SymHop::Expression> equations, QList<SymHop::Expression> variables);
 
     //Initialization & equations text edits
-    QLabel *mpGivenLabel;
-    QLabel *mpSoughtLabel;
     QTabWidget *mpEquationTabs;
-    QTabWidget *mpCodeTabs;
-    QGridLayout *mpInitLayout;
-    QWidget *mpInitWidget;
-    QTextEdit *mpInitTextField;
-    QGridLayout *mpSimulateLayout;
-    QWidget *mpSimulateWidget;
-    QTextEdit *mpSimulateTextField;
-    QGridLayout *mpFinalizeLayout;
-    QWidget *mpFinalizeWidget;
-    QTextEdit *mpFinalizeTextField;
-    QGridLayout *mpEquationsLayout;
-    QTextEdit *mpInitAlgorithmsTextField;
-    ModelicaHighlighter *mpInitAlgorithmsHighLighter;
-    QWidget *mpInitAlgorithmsWidget;
-    QGridLayout *mpInitAlgorithmsLayout;
-    QTextEdit *mpFinalAlgorithmsTextField;
-    ModelicaHighlighter *mpFinalAlgorithmsHighLighter;
-    QWidget *mpFinalAlgorithmsWidget;
-    QGridLayout *mpFinalAlgorithmsLayout;
-    QWidget *mpEquationsWidget;
-    QTextEdit *mpEquationsTextField;
-    ModelicaHighlighter *mpEquationHighLighter;
-    QLabel *mpBoundaryEquationsLabel;
-    QTextEdit *mpBoundaryEquationsTextField;
-    ModelicaHighlighter *mpBoundaryEquationHighLighter;
-    QGridLayout *mpCodeLayout;
-    QGroupBox *mpCodeGroupBox;
+    int mNumberOfUntitledTabs;
+    QList<QFileInfo> mModelFiles;
+    QList<bool> mHasChanged;
+    QList<QGridLayout *> mEquationsLayoutPtrs;
+    QList<QPlainTextEdit *> mEquationTextFieldPtrs;
+    QList<ModelicaHighlighter *> mEquationHighLighterPtrs;
+    QList<QScrollArea *> mScrollAreaPtrs;
 
-
-    //General Settings
-    QLabel *mpRecentLabel;
-    QComboBox *mpRecentComboBox;
-    QPushButton *mpLoadRecentButton;
-    QPushButton *mpRemoveRecentButton;
-    QToolButton *mpLoadButton;
-    QMenu *mpLoadMenu;
-    QAction *mpLoadFromModelicaAction;
-    QAction *mpLoadFromXmlAction;
-    QToolButton *mpSaveButton;
-    QLabel *mpGenerateFromLabel;
-    QComboBox *mpGenerateFromComboBox;
-    QLabel *mpComponentNameLabel;
-    QLineEdit *mpComponentNameEdit;
-    QLabel *mpComponentDisplayLabel;
-    QLineEdit *mpComponentDisplayEdit;
-    QLabel *mpComponentTypeLabel;
-    QComboBox *mpComponentTypeComboBox;
-    QToolButton *mpAddItemButton;
-    QMenu *mpAddItemMenu;
-
-    //Port Group Box
-    QGroupBox *mpPortsGroupBox;
-    QGridLayout *mpPortsLayout;
-    QLabel *mpPortNamesLabel;
-    QLabel *mpPortTypeLabel;
-    QLabel *mpNodeTypelabel;
-    QLabel *mpPortRequiredLabel;
-    QLabel *mpPortDefaultLabel;
-    QToolButton *mpAddPortButton;
-    QVector<QLineEdit*> mvPortNameEdits;
-    QVector<QComboBox*> mvPortTypeComboBoxes;
-    QVector<QComboBox*> mvNodeTypeComboBoxes;
-    QVector<QCheckBox*> mvRequiredCheckBoxes;
-    QVector<QLineEdit*> mvPortDefaultEdits;
-    QVector<QToolButton*> mvRemovePortButtons;
-
-    //Parameter Group Box
-    QGroupBox *mpParametersGroupBox;
-    QGridLayout *mpParametersLayout;
-    QLabel *mpParametersNameLabel;
-    QLabel *mpParametersDisplayLabel;
-    QLabel *mpParametersDescriptionLabel;
-    QLabel *mpParametersUnitLabel;
-    QLabel *mpParametersInitLabel;
-    QToolButton *mpAddParameterButton;
-    QVector<QLineEdit*> mvParameterNameEdits;
-    QVector<QLineEdit*> mvParameterDisplayEdits;
-    QVector<QLineEdit*> mvParameterDescriptionEdits;
-    QVector<QLineEdit*> mvParameterUnitEdits;
-    QVector<QLineEdit*> mvParameterInitEdits;
-    QVector<QToolButton*> mvRemoveParameterButtons;
-    QToolButton *mpPortsMinMaxButton;
-    QToolButton *mpParametersMinMaxButton;
-    QToolButton *mpUtilitiesMinMaxButton;
-    QToolButton *mpStaticVariablesMinMaxButton;
+    QPushButton *mpGenerateTemplateButton;
 
     //Utilities Group Box
     QGroupBox *mpUtilitiesGroupBox;
@@ -200,17 +100,6 @@ private:
     QVector<QLineEdit*> mvUtilityNameEdits;
     QVector<QToolButton*> mvRemoveUtilityButtons;
 
-    //Static Variables Group Box
-    QGroupBox *mpStaticVariablesGroupBox;
-    QGridLayout *mpStaticVariablesLayout;
-    QLabel *mpStaticVariableNamesLabel;
-    QToolButton *mpAddStaticVariableButton;
-    QVector<QLineEdit*> mvStaticVariableNameEdits;
-    QVector<QToolButton*> mvRemoveStaticVariableButtons;
-
-    //SymPy Warning
-    QLabel *mpSymPyWarning;
-
     //Buttons
     QPushButton *mpCancelButton;
     QPushButton *mpAppearanceButton;
@@ -220,8 +109,21 @@ private:
     //Main layout
     QGridLayout *mpLayout;
     QWidget *mpCentralWidget;
-    QScrollArea *mpScrollArea;
-    QGridLayout *mpCentralLayout;
+
+    QVBoxLayout *mpCentralLayout;
+
+    //Actions
+    QAction *mpNewAction;
+    QAction *mpLoadAction;
+    QAction *mpSaveAction;
+    QAction *mpWizardAction;
+
+    //Tool bar
+    QToolBar *mpToolBar;
+
+    //Menu bar
+    QMenuBar *mpMenuBar;
+    QMenu *mpFileMenu;
 
     //Member variables
     QList<PortSpecification> mPortList;
@@ -229,14 +131,63 @@ private:
     QList<UtilitySpecification> mUtilitiesList;
     QList<StaticVariableSpecification> mStaticVariablesList;
 
-    QStringList mRecentComponentFileNames;
-
-    ModelObjectAppearance *mpAppearance;
-
     bool mPortsBoxVisible;
     bool mParametersBoxVisible;
     bool mUtilitiesBoxVisible;
     bool mStaticVariablesBoxVisible;
+};
+
+
+class ComponentGeneratorWizard : public QWizard
+{
+    Q_OBJECT
+
+public:
+    ComponentGeneratorWizard(ComponentGeneratorDialog *parent = 0);
+
+private slots:
+    void updatePage(int i);
+    void generate();
+
+private:
+    ComponentGeneratorDialog *mpParent;
+
+    QWizardPage *mpFirstPage;
+    QGridLayout *mpFirstPageLayout;
+    QLabel *mpTypeNameLabel;
+    QLineEdit *mpTypeNameLineEdit;
+    QLabel *mpDisplayNameLabel;
+    QLineEdit *mpDisplayNameLineEdit;
+    QLabel *mpCqsTypeLabel;
+    QComboBox *mpCqsTypeComboBox;
+    QLabel *mpNumberOfPortsLabel;
+    QSpinBox *mpNumberOfPortsSpinBox;
+    QLabel *mpNumberOfParametersLabel;
+    QSpinBox *mpNumberOfParametersSpinBox;
+
+    QWizardPage *mpSecondPage;
+    QGridLayout *mpSecondPageLayout;
+    QLabel *mpPortIdTitle;
+    QLabel *mpPortNameTitle;
+    QLabel *mpPortTypeTitle;
+    QLabel *mpNodeTypeTitle;
+    QLabel *mpDefaultValueTitle;
+    QList<QLabel*> mPortIdPtrs;
+    QList<QLineEdit*> mPortNameLineEditPtrs;
+    QList<QComboBox*> mPortTypeComboBoxPtrs;
+    QList<QDoubleSpinBox*> mPortDefaultSpinBoxPtrs;
+
+    QWizardPage *mpThirdPage;
+    QGridLayout *mpThirdPageLayout;
+    QLabel *mpParameterNameTitle;
+    QLabel *mpParameterUnitTitle;
+    QLabel *mpParameterDescriptionTitle;
+    QLabel *mpParameterValueTitle;
+    QList<QLineEdit*> mParameterNameLineEditPtrs;
+    QList<QLineEdit*> mParameterUnitLineEditPtrs;
+    QList<QLineEdit*> mParameterDescriptionLineEditPtrs;
+    QList<QLineEdit*> mParameterValueLineEditPtrs;
+
 };
 
 #endif // COMPONENTGENERATORDIALOG_H_INCLUDED
