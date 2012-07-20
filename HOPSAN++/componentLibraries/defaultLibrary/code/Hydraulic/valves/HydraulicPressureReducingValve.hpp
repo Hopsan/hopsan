@@ -56,12 +56,12 @@ namespace hopsan {
 
         HydraulicPressureReducingValve() : ComponentQ()
         {
-            pref = 20000000;
+            pref = 20000000.0;
             tao = 0.01;
             Kcs = 0.00000001;
             Kcf = 0.00000001;
             qnom = 0.001;
-            ph = 500000;
+            ph = 500000.0;
             pnom = 7e6f;
             x0max = qnom / sqrt(pnom);
             Cs = sqrt(pnom) / Kcs;
@@ -93,9 +93,9 @@ namespace hopsan {
 
             x0 = 0.00001;
 
-            mPrevX0 = 0;
+            mPrevX0 = 0.0;
 
-            double wCutoff = 1 / tao;
+            double wCutoff = 1.0 / tao;
             double num[2] = {1.0, 0.0};
             double den[2] = {1.0, 1.0/wCutoff};
             mFilterLP.initialize(mTimestep, num, den, 0.0, 0.0, 0.0, x0max);
