@@ -301,9 +301,23 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpSaveAction->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Save.png"));
     mpSaveAction->setToolTip("Save model");
 
+    mpCloseAction = new QAction("Close", this);
+    mpCloseAction->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Close.png"));
+    mpCloseAction->setToolTip("Close");
+
     mpWizardAction = new QAction("Launch template wizard", this);
     mpWizardAction->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Wizard.png"));
     mpWizardAction->setToolTip("Launch template wizard");
+
+    mpModelicaHighlighterAction = new QAction("Modelica", this);
+    mpModelicaHighlighterAction->setToolTip("Modelica Highlighter");
+    mpModelicaHighlighterAction->setCheckable(true);
+    mpModelicaHighlighterAction->setChecked(true);
+
+    mpCppHighlighterAction = new QAction("C++", this);
+    mpCppHighlighterAction->setToolTip("C++ Highlighter");
+    mpCppHighlighterAction->setCheckable(true);
+    mpCppHighlighterAction->setChecked(false);
 
     //Tool bar
     mpToolBar = new QToolBar(this);
@@ -314,13 +328,28 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     this->addToolBar(mpToolBar);
 
     //Menu bar
+    mpRecentMenu = new QMenu("Recent models", this);
+
     mpFileMenu = new QMenu("File", this);
     mpFileMenu->addAction(mpNewAction);
     mpFileMenu->addAction(mpLoadAction);
     mpFileMenu->addAction(mpSaveAction);
+    mpFileMenu->addMenu(mpRecentMenu);
+    mpFileMenu->addSeparator();
     mpFileMenu->addAction(mpWizardAction);
+    mpFileMenu->addSeparator();
+    mpFileMenu->addAction(mpCloseAction);
+
+    mpHighlighterMenu = new QMenu("Highlighter", this);
+    mpHighlighterMenu->addAction(mpModelicaHighlighterAction);
+    mpHighlighterMenu->addAction(mpCppHighlighterAction);
+
+    mpEditMenu = new QMenu("Edit", this);
+    mpEditMenu->addMenu(mpHighlighterMenu);
+
     mpMenuBar = new QMenuBar(this);
     mpMenuBar->addMenu(mpFileMenu);
+    mpMenuBar->addMenu(mpEditMenu);
     this->setMenuBar(mpMenuBar);
 
 
@@ -338,15 +367,21 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
 
     addNewTab();
 
+    updateRecentList();
+
     //Connections
     connect(mpCancelButton,     SIGNAL(clicked()),              this, SLOT(close()));
     connect(mpCompileButton,    SIGNAL(clicked()),              this, SLOT(generateComponent()));
     connect(mpAppearanceButton, SIGNAL(clicked()),              this, SLOT(openAppearanceDialog()));
     connect(mpNewAction,        SIGNAL(triggered()),            this, SLOT(addNewTab()));
-    connect(mpLoadAction,       SIGNAL(triggered()),            this, SLOT(loadFromModelica()));
-    connect(mpSaveAction,       SIGNAL(triggered()),            this, SLOT(saveToModelica()));
+    connect(mpLoadAction,       SIGNAL(triggered()),            this, SLOT(loadModel()));
+    connect(mpSaveAction,       SIGNAL(triggered()),            this, SLOT(saveModel()));
+    connect(mpCloseAction,      SIGNAL(triggered()),            this, SLOT(close()));
     connect(mpWizardAction,     SIGNAL(triggered()),            this, SLOT(openComponentGeneratorWizard()));
     connect(mpEquationTabs,     SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
+
+    connect(mpModelicaHighlighterAction, SIGNAL(triggered(bool)), this, SLOT(setModelicaHighlighter()));
+    connect(mpCppHighlighterAction, SIGNAL(triggered(bool)), this, SLOT(setCppHighlighter()));
 }
 
 
@@ -381,7 +416,7 @@ void ComponentGeneratorDialog::addNewTab()
     mModelFiles.append(QFileInfo());
     mHasChanged.append(false);
 
-    connect(mEquationTextFieldPtrs.last(), SIGNAL(textChanged()), this, SLOT(tabChanged()));
+    connect(mEquationTextFieldPtrs.last()->document(), SIGNAL(modificationChanged(bool)), this, SLOT(tabChanged()));
 }
 
 
@@ -394,7 +429,6 @@ void ComponentGeneratorDialog::addNewTab(QString code, QString tabName)
         mpEquationTabs->setTabText(mpEquationTabs->count()-1, tabName);
     }
     mHasChanged.last() = false;
-
 }
 
 
@@ -411,7 +445,16 @@ void ComponentGeneratorDialog::closeTab(int i)
 
 void ComponentGeneratorDialog::tabChanged()
 {
-    QPlainTextEdit *textEdit = qobject_cast<QPlainTextEdit *>(sender());
+    QTextDocument *doc = qobject_cast<QTextDocument *>(sender());
+    QPlainTextEdit *textEdit;
+
+    for(int t=0; t<mEquationTextFieldPtrs.size(); ++t)
+    {
+        if(mEquationTextFieldPtrs[t]->document() == doc)
+        {
+            textEdit = mEquationTextFieldPtrs[t];
+        }
+    }
 
     int idx = mEquationTextFieldPtrs.indexOf(textEdit);
 
@@ -535,16 +578,22 @@ void ComponentGeneratorDialog::generateComponent()
 
 
 //! @brief Loads a model from a Modelica file
-void ComponentGeneratorDialog::loadFromModelica()
+void ComponentGeneratorDialog::loadModel()
 {
     QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose Modlica File"),
                                                          gConfig.getModelicaModelsDir(),
-                                                         tr("Modelica Model (*.mo)"));
+                                                         tr("Modelica or C++ Models (*.mo *.hpp)"));
     if(modelFileName.isEmpty())
     {
         return;
     }
 
+    loadModel(modelFileName);
+}
+
+
+void ComponentGeneratorDialog::loadModel(QString modelFileName)
+{
     QFile file(modelFileName);
     QFileInfo fileInfo(file);
     gConfig.setModelicaModelsDir(fileInfo.absolutePath());
@@ -560,24 +609,63 @@ void ComponentGeneratorDialog::loadFromModelica()
     code = t.readAll();
     file.close();
 
-    addNewTab(code);
+    addNewTab(code, fileInfo.fileName());
     mModelFiles.last() = fileInfo;
+
+    qDebug() << "Tab name: " << mpEquationTabs->tabText(mpEquationTabs->count()-1);
+
+    if(modelFileName.endsWith(".mo"))
+    {
+        setModelicaHighlighter();
+    }
+
+    qDebug() << "Tab name: " << mpEquationTabs->tabText(mpEquationTabs->count()-1);
+
+    gConfig.addRecentGeneratorModel(modelFileName);
+    updateRecentList();
+
+    qDebug() << "Tab name: " << mpEquationTabs->tabText(mpEquationTabs->count()-1);
 }
 
 
 //! @brief Saves current model to a Modelica file
-void ComponentGeneratorDialog::saveToModelica()
+void ComponentGeneratorDialog::saveModel()
 {
     int idx = mpEquationTabs->currentIndex();
+    bool modelica=false;
+
+    //Check if it is a modelica model
+    QString code = mEquationTextFieldPtrs.at(mpEquationTabs->currentIndex())->toPlainText();
+    while(code.endsWith("\n"))
+    {
+        code.chop(1);   //Remove extra lines at end of code
+    }
+
+    if(code.startsWith("model "))
+    {
+        QString name = code.section(" ",1,1);
+        if(code.endsWith("end "+name+";"))
+        {
+            modelica = true;
+        }
+    }
 
     QFileInfo fileInfo;
+    QString modelFilePath;
     if(mModelFiles.at(idx).fileName().isEmpty())
     {
-        QDir fileDialogSaveDir;
-        QString modelFilePath;
-        modelFilePath = QFileDialog::getSaveFileName(this, tr("Save Model File"),
-                                                     gConfig.getModelicaModelsDir(),
-                                                     tr("Modelica Model (.mo)"));
+        if(modelica)
+        {
+            modelFilePath = QFileDialog::getSaveFileName(this, tr("Save Model File"),
+                                                         gConfig.getModelicaModelsDir(),
+                                                         tr("Modelica models (*.mo)"));
+        }
+        else
+        {
+            modelFilePath = QFileDialog::getSaveFileName(this, tr("Save Model File"),
+                                                         gConfig.getModelicaModelsDir(),
+                                                         tr("C++ header files (*.hpp)"));
+        }
 
         if(modelFilePath.isEmpty())     //Don't save anything if user presses cancel
         {
@@ -612,6 +700,9 @@ void ComponentGeneratorDialog::saveToModelica()
         tabName.remove("*");
         mpEquationTabs->setTabText(idx, tabName);
     }
+
+    gConfig.addRecentGeneratorModel(fileInfo.filePath());
+    updateRecentList();
 }
 
 
@@ -628,6 +719,81 @@ void ComponentGeneratorDialog::openComponentGeneratorWizard()
 {
     ComponentGeneratorWizard *pWizard = new ComponentGeneratorWizard(this);
     pWizard->show();
+}
+
+
+void ComponentGeneratorDialog::setModelicaHighlighter()
+{
+    int i = mpEquationTabs->currentIndex();
+
+    bool wasChanged = mpEquationTabs->tabText(i).endsWith("*");
+
+    delete(mEquationHighLighterPtrs.at(i));
+    mEquationHighLighterPtrs[i] = new ModelicaHighlighter(mEquationTextFieldPtrs[i]->document());
+    mpCppHighlighterAction->setChecked(false);
+
+    //Make sure no asterix is added if model was not changed before
+    if(!wasChanged && mpEquationTabs->tabText(i).endsWith("*"))
+    {
+        QString newText = mpEquationTabs->tabText(i);
+        newText.remove("*");
+        mpEquationTabs->setTabText(i, newText);
+        mHasChanged[i] = wasChanged;
+    }
+}
+
+
+void ComponentGeneratorDialog::setCppHighlighter()
+{
+    int i = mpEquationTabs->currentIndex();
+
+    bool wasChanged = mpEquationTabs->tabText(i).endsWith("*");
+
+    delete(mEquationHighLighterPtrs.at(i));
+    mEquationHighLighterPtrs[i] = new CppHighlighter(mEquationTextFieldPtrs[i]->document());
+    mpModelicaHighlighterAction->setChecked(false);
+
+    //Make sure no asterix is added if model was not changed before
+    if(!wasChanged && mpEquationTabs->tabText(i).endsWith("*"))
+    {
+        QString newText = mpEquationTabs->tabText(i);
+        newText.chop(1);
+        mpEquationTabs->setTabText(i, newText);
+        mHasChanged[i] = wasChanged;
+    }
+}
+
+
+
+//! @brief Updates the "Recent Models" list
+void ComponentGeneratorDialog::updateRecentList()
+{
+    mpRecentMenu->clear();
+
+    mpRecentMenu->setEnabled(!gConfig.getRecentGeneratorModels().empty());
+    if(!gConfig.getRecentGeneratorModels().empty())
+    {
+        for(int i=0; i<gConfig.getRecentGeneratorModels().size(); ++i)
+        {
+            if(gConfig.getRecentGeneratorModels().at(i) != "")
+            {
+                QAction *tempAction;
+                tempAction = mpRecentMenu->addAction(gConfig.getRecentGeneratorModels().at(i));
+                connect(tempAction, SIGNAL(triggered()), this, SLOT(openRecentModel()));
+            }
+        }
+    }
+}
+
+
+void ComponentGeneratorDialog::openRecentModel()
+{
+    QAction *action = qobject_cast<QAction *>(sender());
+    qDebug() << "Trying to open " << action->text();
+    if (action)
+    {
+        loadModel(action->text());
+    }
 }
 
 

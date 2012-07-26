@@ -129,6 +129,13 @@ void Configuration::saveToXml()
         if(mRecentModels.at(i) != "")
             appendDomTextNode(models, "recentmodel", mRecentModels.at(i));
     }
+    for(int i = mRecentGeneratorModels.size()-1; i>-1; --i)
+    {
+        if(mRecentGeneratorModels.at(i) != "")
+            appendDomTextNode(models, "recentgeneratormodel", mRecentGeneratorModels.at(i));
+    }
+
+
 
     QDomElement units = appendDomElement(configRoot, "units");
     QMap<QString, QString>::iterator itdu;
@@ -321,6 +328,13 @@ void Configuration::loadFromXml()
                 mRecentModels.prepend(recentModelElement.text());
                 recentModelElement = recentModelElement.nextSiblingElement("recentmodel");
             }
+            QDomElement recentGeneratorModelElement = modelsElement.firstChildElement("recentgeneratormodel");
+            while (!recentGeneratorModelElement.isNull())
+            {
+                mRecentGeneratorModels.prepend(recentGeneratorModelElement.text());
+                recentGeneratorModelElement = recentGeneratorModelElement.nextSiblingElement("recentgeneratormodel");
+            }
+
 
             QDomElement unitsElement = configRoot.firstChildElement("units");
             QDomElement defaultUnitElement = unitsElement.firstChildElement("defaultunit");
@@ -671,6 +685,14 @@ QStringList Configuration::getRecentModels()
 {
     return this->mRecentModels;
 }
+
+
+//! @brief Returns a list of paths to recently opened models in component generator
+QStringList Configuration::getRecentGeneratorModels()
+{
+    return this->mRecentGeneratorModels;
+}
+
 
 
 //! @brief Returns a list of paths to models that were open last time program was closed
@@ -1045,6 +1067,21 @@ void Configuration::addRecentModel(QString value)
     }
     saveToXml();
 }
+
+
+//! @brief Adds a model to the list of recently opened models by component generator
+//! @brief value Path to the model
+void Configuration::addRecentGeneratorModel(QString value)
+{
+    mRecentGeneratorModels.removeAll(value);
+    mRecentGeneratorModels.prepend(value);
+    while(mRecentGeneratorModels.size() > 10)
+    {
+        mRecentGeneratorModels.pop_back();
+    }
+    saveToXml();
+}
+
 
 
 //! @brief Adds a model to the list of models that was open last time program closed

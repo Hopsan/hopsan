@@ -61,6 +61,7 @@ public:
     QStringList getUserLibs();
     bool getSnapping();
     QStringList getRecentModels();
+    QStringList getRecentGeneratorModels();
     QStringList getLastSessionModels();
     QString getDefaultUnit(QString key);
     QMap<QString, double> getCustomUnits(QString key);
@@ -98,6 +99,7 @@ public:
     bool hasUserLib(QString value);
     void setSnapping(bool value);
     void addRecentModel(QString value);
+    void addRecentGeneratorModel(QString value);
     void addLastSessionModel(QString value);
     void clearLastSessionModels();
     void setDefaultUnit(QString key, QString value);
@@ -134,6 +136,7 @@ private:
     bool mSnapping;
     QStringList mRecentModels;
     QStringList mLastSessionModels;
+    QStringList mRecentGeneratorModels;
     QMap<QString, QString> mDefaultUnits;
     QMap< QString, QMap<QString, double> > mCustomUnits;
     QPalette mPalette;

@@ -96,22 +96,28 @@ private:
 class ComponentGeneratorDialog : public QMainWindow
 {
     Q_OBJECT
+    friend class ComponentGeneratorWizard;
 
 public:
     ComponentGeneratorDialog(MainWindow *parent = 0);
 
-public slots:
+private slots:
     void addNewTab();
-    void addNewTab(QString code, QString tabName="");
     void closeTab(int i);
     void tabChanged();
-    void loadFromModelica();
-    void saveToModelica();
+    void saveModel();
     void generateComponent();
     void openAppearanceDialog();
     void openComponentGeneratorWizard();
+    void loadModel();
+    void setModelicaHighlighter();
+    void setCppHighlighter();
+    void updateRecentList();
+    void openRecentModel();
 
-private:
+  private:
+    void loadModel(QString modelFileName);
+    void addNewTab(QString code, QString tabName="");
 
     //Initialization & equations text edits
     QTabWidget *mpEquationTabs;
@@ -151,7 +157,10 @@ private:
     QAction *mpNewAction;
     QAction *mpLoadAction;
     QAction *mpSaveAction;
+    QAction *mpCloseAction;
     QAction *mpWizardAction;
+    QAction *mpModelicaHighlighterAction;
+    QAction *mpCppHighlighterAction;
 
     //Tool bar
     QToolBar *mpToolBar;
@@ -159,6 +168,9 @@ private:
     //Menu bar
     QMenuBar *mpMenuBar;
     QMenu *mpFileMenu;
+    QMenu *mpEditMenu;
+    QMenu *mpHighlighterMenu;
+    QMenu *mpRecentMenu;
 
     //Member variables
     QList<PortSpecification> mPortList;
