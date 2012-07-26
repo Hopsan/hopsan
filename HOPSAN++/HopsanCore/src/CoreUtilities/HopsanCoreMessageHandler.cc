@@ -23,6 +23,8 @@
 //$Id$
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 
+#include <cmath>
+
 #ifdef USETBB
 #include "mutex.h"
 #endif

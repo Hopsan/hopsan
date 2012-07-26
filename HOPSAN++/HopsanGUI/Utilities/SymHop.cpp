@@ -77,7 +77,7 @@ Expression::Expression(QStringList symbols, const ExpressionSimplificationT simp
 //! @param simplifications Specifies the degree of simplification
 Expression::Expression(const Expression left, const QString mid, const Expression right, const ExpressionSimplificationT simplifications)
 {
-    if(mid == "+" || mid == "*" || mid == "/")
+    if(mid == "+" || mid == "*" || mid == "/" || mid == "=")
     {
         mType = Expression::Operator;
         mString = mid;
@@ -167,6 +167,10 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
         while(str.contains("++"))
         {
             str.replace("++", "+");
+        }
+        while(str.contains("+-+-"))
+        {
+            str.replace("+-+-","+-");
         }
         while(str.contains("-("))
         {
@@ -300,6 +304,7 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
         mType = Expression::Function;
         mString = str.left(str.indexOf("("));
         str = str.mid(str.indexOf("(")+1, str.size()-2-str.indexOf("("));
+
         QStringList args = splitWithRespectToParentheses(str, ',');
         //qDebug() << "Function: " << mString << ", arguments: " << args;
         for(int i=0; i<args.size(); ++i)
@@ -343,6 +348,97 @@ bool Expression::operator==(const Expression &other) const
         return false;
     }
 
+    if(mString == "+")
+    {
+        QList<Expression> terms = getTerms();
+        QList<Expression> otherTerms = other.getTerms();
+        if(terms.size() != otherTerms.size())
+        {
+            return false;
+        }
+        for(int t=0; t<terms.size(); ++t)
+        {
+            otherTerms.removeOne(terms[t]);
+        }
+
+        return otherTerms.isEmpty();
+    }
+    else if(mString == "*" || mString == "/")
+    {
+        QList<Expression> factors = getFactors();
+        QList<Expression> otherFactors = other.getFactors();
+        QList<Expression> divisors = getDivisors();
+        QList<Expression> otherDivisors = other.getDivisors();
+
+        //Collect numerical factors in term 1
+        double num=1;
+        for(int f=0; f<factors.size(); ++f)
+        {
+            if(factors[f].isNumericalSymbol())
+            {
+                num *= factors[f].toDouble();
+                factors.removeAt(f);
+                --f;
+            }
+            else if(factors[f].getType() == Expression::Symbol || factors[f].getType() == Expression::Function)
+            {
+                if(factors[f].isNegative())
+                {
+                    factors[f] = factors[f].negative();
+                    num *= -1;
+                }
+            }
+        }
+        factors.append(Expression(num));
+
+        //Collect numerical factors in term 2
+        num=1;
+        for(int f=0; f<otherFactors.size(); ++f)
+        {
+            if(otherFactors[f].isNumericalSymbol())
+            {
+                num *= otherFactors[f].toDouble();
+                otherFactors.removeAt(f);
+                --f;
+            }
+            else if(otherFactors[f].getType() == Expression::Symbol || otherFactors[f].getType() == Expression::Function)
+            {
+                if(otherFactors[f].isNegative())
+                {
+                    otherFactors[f] = otherFactors[f].negative();
+                    num *= -1;
+                }
+            }
+        }
+        otherFactors.append(Expression(num));
+
+
+        if(factors.size() != otherFactors.size() || divisors.size() != otherDivisors.size())
+        {
+            return false;
+        }
+
+        int neg=1;
+        for(int f=0; f<factors.size(); ++f)
+        {
+            if(!otherFactors.removeOne(factors[f]))
+            {
+                otherFactors.removeOne(factors[f].negative());
+                neg *= -1;
+            }
+        }
+        for(int d=0; d<divisors.size(); ++d)
+        {
+            if(!otherDivisors.removeOne(divisors[d]))
+            {
+                otherDivisors.removeOne(divisors[d].negative());
+                neg *= -1;
+            }
+        }
+
+        return (otherDivisors.isEmpty() && otherFactors.isEmpty() && neg == 1);
+    }
+
     for(int i=0; i<mChildren.size(); ++i)
     {
         if(!(mChildren[i] == other.getChild(i)))
@@ -358,12 +454,21 @@ bool Expression::operator==(const Expression &other) const
 //! @brief Returns the negative of the expression
 Expression Expression::negative() const
 {
-    if(mType == Expression::Symbol)
+    if(mType == Expression::Symbol || mType == Expression::Function)
     {
-        QString ret = "-"+toString();
-        return Expression("-"+toString());
+        QString ret = this->toString();
+        if(ret.startsWith("-"))
+        {
+            ret = ret.right(ret.size()-1);
+            return Expression(ret);
+        }
+        else
+        {
+            ret.prepend("-");
+            return Expression(ret);
+        }
     }
-    return Expression(QStringList() << "-1.0" << "*" << toString());
+    return Expression(Expression(-1), "*", (*this));
 }
 
 
@@ -425,6 +530,46 @@ void Expression::divideBy(const Expression div)
         }
         this->replaceBy(Expression(terms, "+", Expression::SimplifyWithoutMakingPowers));
     }
+}
+
+
+//! @brief Multiplies the expression by specified divisor
+//! @param fac Factor expression
+void Expression::multiplyBy(const Expression fac)
+{
+    if(mString == "0.0")    //Multiplying zero expression will give zero
+    {
+        return;
+    }
+    QList<Expression> terms = this->getTerms();
+    if(terms.isEmpty())
+    {
+        this->replaceBy(Expression(*this, "*", fac));
+    }
+    else
+    {
+        for(int t=0; t<terms.size(); ++t)
+        {
+            terms[t] = Expression(terms[t], "*", fac, Expression::SimplifyWithoutMakingPowers);
+        }
+        this->replaceBy(Expression(terms, "+", Expression::SimplifyWithoutMakingPowers));
+    }
+}
+
+
+//! @brief Adds the expression with specified tern
+//! @param tern Term expression
+void Expression::addBy(const Expression term)
+{
+    this->replaceBy(Expression(*this, "+", term, Expression::SimplifyWithoutMakingPowers));
+}
+
+
+//! @brief Subtracts the expression by specified term
+//! @param tern Term expression
+void Expression::subtractBy(const Expression term)
+{
+    this->replaceBy(Expression(*this, "+", term.negative(), Expression::SimplifyWithoutMakingPowers));
 }
 
 
@@ -527,29 +672,20 @@ void Expression::toDelayForm(QList<Expression> &rDelayTerms, QStringList &rDelay
         int nNeg = terms[t].count(Expression("-Z"));
 
         //Number of Z operators in term
-        int idx = nPos+abs(nNeg);
+        int idx = nPos+nNeg;
 
         //Remove all Z operators
         if(idx > 0)
         {
             terms[t].removeFactor(Expression("Z"));
-            terms[t].removeFactor(Expression("-Z"));
         }
 
         while(termMap.size() < idx+1)
         {
             termMap.append(QList<Expression>());
         }
-        if(nNeg % 2 == 0)
-        {
-            //Store delay term
-            termMap[idx].append(terms[t]);
-        }
-        else
-        {
-            //Store negative of delay term if number of negative Z operators is odd
-            termMap[idx].append(terms[t].negative());
-        }
+        //Store delay term
+        termMap[idx].append(terms[t]);
     }
 
     //Replace delayed terms with delay function and store delay terms and delay steps in reference vectors
@@ -565,9 +701,10 @@ void Expression::toDelayForm(QList<Expression> &rDelayTerms, QStringList &rDelay
             }
             delayTermSymbols.removeLast();
             Expression delayTerm = Expression(delayTermSymbols);
+
             delayTerm.factorMostCommonFactor();
 
-            QString term = "mDelay"+QString::number(rDelayTerms.size())+".getIdx(0)";
+            QString term = "mDelay"+QString::number(rDelayTerms.size())+".getIdx(1.0)";
             ret.append(term);
             ret.append("+");
 
@@ -660,7 +797,7 @@ bool Expression::isEquation() const
 //! @brief Tells whether or not this is a negative symbol
 bool Expression::isNegative() const
 {
-    return (mType == Expression::Symbol && mString.startsWith("-") && mString.size() > 1);
+    return ((mType == Expression::Symbol || mType == Expression::Function) && mString.startsWith("-") && mString.size() > 1);
 }
 
 
@@ -766,6 +903,10 @@ Expression Expression::derivative(const Expression x, bool &ok) const
             ret = "0.0";
         }
         else if(func == "mDelay")
+        {
+            ret = "0.0";
+        }
+        else if(func.startsWith("mDelay"))
         {
             ret = "0.0";
         }
@@ -941,12 +1082,12 @@ Expression Expression::bilinearTransform() const
     if(mString == "-der")
     {
         QString arg = tempExpr.getChild(0).toString();
-        res << "-2" << "/" << "mTime" << "*" << "(1.0-Z)" << "/" << "(1.0+Z)" << "*" << "("+arg+")";
+        res << "-2" << "/" << "mTimestep" << "*" << "(1.0-Z)" << "/" << "(1.0+Z)" << "*" << "("+arg+")";
     }
     if(mString == "der")
     {
         QString arg = tempExpr.getChild(0).toString();
-        res << "2.0" << "/" << "mTime" << "*" << "(1.0-Z)" << "/" << "(1.0+Z)" << "*" << "("+arg+")";
+        res << "2.0" << "/" << "mTimestep" << "*" << "(1.0-Z)" << "/" << "(1.0+Z)" << "*" << "("+arg+")";
     }
     else
     {
@@ -971,6 +1112,15 @@ QList<Expression> Expression::getSymbols() const
     for(int i=0; i<mChildren.size(); ++i)
     {
         retval.append(mChildren[i].getSymbols());
+    }
+    if(mType == Expression::Symbol && mString.startsWith("-"))
+    {
+        QString temp = mString;
+        temp = temp.right(temp.size()-1);
+        if(!reservedSymbols.contains(temp))
+        {
+            retval.append(Expression(temp));
+        }
     }
     if(mType == Expression::Symbol && !reservedSymbols.contains(mString) && mString[0].isLetter())
     {
@@ -1196,6 +1346,12 @@ void Expression::removeFactor(const Expression var)
     for(int i=0; i<mChildren.size(); ++i)
     {
         mChildren[i].removeFactor(var);
+    }
+
+    if(*this == var)
+    {
+        this->replaceBy(Expression(1));
+        return;
     }
 
     QList<Expression> factors = this->getFactors();
@@ -1718,7 +1874,10 @@ void Expression::factorMostCommonFactor()
         }
     }
 
-    factor(mostCommon);
+    if(max>1)
+    {
+        factor(mostCommon);
+    }
 
     return;
 }
@@ -1923,15 +2082,17 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
 
     //Simplify terms (if this is an addition)
     QList<Expression> newTerms;
+    QList<double> termNums;
     QList<Expression> terms = this->getTerms();
 
     if(terms.size() > 0)
     {
-        double num = 0;
+        //Remove terms that are pureley numerical, and sum up their value
+        double numericals = 0;
         for(int t=0; t<terms.size(); ++t)
         {
             bool ok=false;
-            num += terms[t].toDouble(&ok);
+            numericals += terms[t].toDouble(&ok);
             if(ok)
             {
                 terms.removeAt(t);
@@ -1939,29 +2100,81 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
                 didSomething = true;
             }
         }
+
         for(int t=0; t<terms.size(); ++t)
         {
-            if(terms.count(terms[t]) > 1)
+            QList<Expression> factors = terms[t].getFactors();
+            QList<Expression> divisors = terms[t].getDivisors();
+            if(factors.isEmpty())
             {
-                newTerms.append(Expression(Expression(QString::number(terms.count(terms[t])),NoSimplifications), "*", terms[t], TrivialSimplifications));
-                terms.removeAll(terms[t]);
-                t=0;
-                didSomething = true;
+                factors.append(terms[t]);
+            }
+
+            //Remove numerical factors from the term and remember their value
+            double num=1;
+            bool changed=false;
+            for(int f=0; f<factors.size(); ++f)
+            {
+                bool ok;
+                double tempNum = factors[f].toDouble(&ok);
+                if(ok)
+                {
+                    num *= tempNum;
+                    factors.removeAt(f);
+                    changed=true;
+                    --f;
+                }
+            }
+
+            //Recreate the term if a factor was removed
+            if(changed)
+            {
+                if(factors.isEmpty())
+                {
+                    terms[t] = Expression(0);
+                }
+                else
+                {
+                    if(divisors.isEmpty())
+                    {
+                        terms[t] = Expression(factors, "*", TrivialSimplifications);
+                    }
+                    else
+                    {
+                        Expression num = Expression(factors, "*", TrivialSimplifications);
+                        Expression den = Expression(divisors, "*", TrivialSimplifications);
+                        terms[t] = Expression(num, "/", den, TrivialSimplifications);
+                    }
+                }
+            }
+
+            if(newTerms.contains(terms[t]))
+            {
+                termNums[newTerms.indexOf(terms[t])] += num;
+                didSomething=true;
+            }
+            else if(newTerms.contains(terms[t].negative()))
+            {
+                termNums[newTerms.indexOf(terms[t].negative())] -= num;
+                didSomething=true;
+            }
+            else
+            {
+                newTerms.append(terms[t]);
+                termNums.append(num);
             }
         }
-        newTerms.append(terms);
-        if(num != 0.0)
+        if(numericals != 0.0)
         {
-            newTerms.append(Expression(QString::number(num), NoSimplifications));
+            newTerms.append(Expression(QString::number(numericals), NoSimplifications));
+            termNums.append(1);
         }
         if(didSomething)
         {
-//            QStringList ret;
-//            for(int t=0; t<newTerms.size(); ++t)
-//            {
-//                ret << newTerms[t].toString() << "+";
-//            }
-//            ret.removeLast();
+            for(int t=0; t<newTerms.size(); ++t)
+            {
+                newTerms[t] = Expression(newTerms[t], "*", Expression(termNums[t]));
+            }
 
             this->replaceBy(Expression(newTerms, "+", TrivialSimplifications));
 
@@ -2197,6 +2410,18 @@ bool SymHop::findPath(QList<int> &order, QList<QList<int> > dependencies, int le
 //! @param limitedDerivativeEquations Reference to list with indexes for derivative limitation functions
 bool SymHop::sortEquationSystem(QList<Expression> &equations, QList<QList<Expression> > &jacobian, QList<Expression> stateVars, QList<int> &limitedVariableEquations, QList<int> &limitedDerivativeEquations)
 {
+    qDebug() << "Jacobian:";
+    for(int i=0; i<jacobian.size(); ++i)
+    {
+        QString line;
+        for(int j=0; j<jacobian.size(); ++j)
+        {
+            line.append(jacobian[i][j].toString());
+            line.append("  ");
+        }
+        qDebug() << line;
+    }
+
     //Generate a dependency tree between equations and variables
     Expression zero = Expression(0.0);
     QList<QList<int> > dependencies;
@@ -2205,7 +2430,7 @@ bool SymHop::sortEquationSystem(QList<Expression> &equations, QList<QList<Expres
         dependencies.append(QList<int>());
         for(int e=0; e<stateVars.size(); ++e)
         {
-            if(!(jacobian[v][e] == zero))
+            if(!(jacobian[e][v] == zero))
             {
                 dependencies[v].append(e);
             }
@@ -2311,7 +2536,7 @@ QStringList Expression::splitWithRespectToParentheses(const QString str, const Q
         {
             ret.append(str.mid(start,len));
             start=start+len+1;
-            len=0;
+            len=-1;
         }
         ++len;
     }

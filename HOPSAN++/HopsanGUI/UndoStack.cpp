@@ -856,7 +856,7 @@ void UndoStack::registerDeletedObject(ModelObject *item)
     item->saveToDomElement(stuffElement);
     gpMainWindow->mpUndoWidget->refreshList();
 
-    qDebug() << mDomDocument.toString();
+    //qDebug() << mDomDocument.toString();
 }
 
 

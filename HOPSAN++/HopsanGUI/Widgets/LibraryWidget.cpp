@@ -513,7 +513,9 @@ void LibraryWidget::loadLibrary(QString libDir, const InternalExternalEnumT int_
 //! @brief Slots that opens the component generator dialog
 void LibraryWidget::generateComponent()
 {
-    gpMainWindow->getComponentGeneratorDialog()->show();
+    gpMainWindow->getComponentGeneratorDialog()->showMaximized();
+    gpMainWindow->getComponentGeneratorDialog()->raise();
+    gpMainWindow->getComponentGeneratorDialog()->activateWindow();
 }
 
 

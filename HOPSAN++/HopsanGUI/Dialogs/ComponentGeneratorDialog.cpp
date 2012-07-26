@@ -41,6 +41,112 @@
 using namespace SymHop;
 
 
+
+
+CppHighlighter::CppHighlighter(QTextDocument *parent)
+    : QSyntaxHighlighter(parent)
+{
+    HighlightingRule rule;
+
+    keywordFormat.setForeground(Qt::darkYellow);
+    keywordFormat.setFontWeight(QFont::Normal);
+    QStringList keywordPatterns;
+    keywordPatterns << "\\bchar\\b" << "\\bclass\\b" << "\\bconst\\b"
+                    << "\\bdouble\\b" << "\\benum\\b" << "\\bexplicit\\b"
+                    << "\\bfriend\\b" << "\\binline\\b" << "\\bint\\b"
+                    << "\\blong\\b" << "\\bnamespace\\b" << "\\boperator\\b"
+                    << "\\bprivate\\b" << "\\bprotected\\b" << "\\bpublic\\b"
+                    << "\\bshort\\b" << "\\bsignals\\b" << "\\bsigned\\b"
+                    << "\\bslots\\b" << "\\bstatic\\b" << "\\bstruct\\b"
+                    << "\\btemplate\\b" << "\\btypedef\\b" << "\\btypename\\b"
+                    << "\\bunion\\b" << "\\bunsigned\\b" << "\\bvirtual\\b"
+                    << "\\bvoid\\b" << "\\bvolatile\\b" << "\\busing\\b";
+    foreach (const QString &pattern, keywordPatterns) {
+        rule.pattern = QRegExp(pattern);
+        rule.format = keywordFormat;
+        highlightingRules.append(rule);
+    }
+
+    preProcessorFormat.setForeground(Qt::darkBlue);
+    preProcessorFormat.setFontWeight(QFont::Normal);
+    keywordPatterns.clear();
+    keywordPatterns << "^#?\\binclude\\b" << "^#?\\bifdef\\b" << "^#?\\bifndef\\b"
+                    << "^#?\\belseif\\b" << "^#?\\belse\\b" << "^#?\\bendif\\b";
+    foreach (const QString &pattern, keywordPatterns) {
+        rule.pattern = QRegExp(pattern);
+        rule.format = preProcessorFormat;
+        highlightingRules.append(rule);
+    }
+
+    classFormat.setFontWeight(QFont::Bold);
+    classFormat.setForeground(Qt::darkMagenta);
+    rule.pattern = QRegExp("\\bQ[A-Za-z]+\\b");
+    rule.format = classFormat;
+    highlightingRules.append(rule);
+
+    singleLineCommentFormat.setForeground(Qt::red);
+    rule.pattern = QRegExp("//[^\n]*");
+    rule.format = singleLineCommentFormat;
+    highlightingRules.append(rule);
+
+    multiLineCommentFormat.setForeground(Qt::red);
+
+    quotationFormat.setForeground(Qt::darkGreen);
+    rule.pattern = QRegExp("<.*>");
+    rule.format = quotationFormat;
+    highlightingRules.append(rule);
+
+    tagFormat.setForeground(Qt::darkGreen);
+    rule.pattern = QRegExp("\".*\"");
+    rule.format = quotationFormat;
+    highlightingRules.append(rule);
+
+    functionFormat.setFontItalic(true);
+    functionFormat.setForeground(Qt::blue);
+    rule.pattern = QRegExp("\\b[A-Za-z0-9_]+(?=\\()");
+    rule.format = functionFormat;
+    highlightingRules.append(rule);
+
+    commentStartExpression = QRegExp("/\\*");
+    commentEndExpression = QRegExp("\\*/");
+}
+
+void CppHighlighter::highlightBlock(const QString &text)
+{
+    foreach (const HighlightingRule &rule, highlightingRules) {
+        QRegExp expression(rule.pattern);
+        int index = expression.indexIn(text);
+        while (index >= 0) {
+            int length = expression.matchedLength();
+            setFormat(index, length, rule.format);
+            index = expression.indexIn(text, index + length);
+        }
+    }
+    setCurrentBlockState(0);
+
+    int startIndex = 0;
+    if (previousBlockState() != 1)
+        startIndex = commentStartExpression.indexIn(text);
+
+    while (startIndex >= 0) {
+        int endIndex = commentEndExpression.indexIn(text, startIndex);
+        int commentLength;
+        if (endIndex == -1) {
+            setCurrentBlockState(1);
+            commentLength = text.length() - startIndex;
+        } else {
+            commentLength = endIndex - startIndex
+                            + commentEndExpression.matchedLength();
+        }
+        setFormat(startIndex, commentLength, multiLineCommentFormat);
+        startIndex = commentStartExpression.indexIn(text, startIndex + commentLength);
+    }
+}
+
+
+
+
+
 ModelicaHighlighter::ModelicaHighlighter(QTextDocument *parent)
     : QSyntaxHighlighter(parent)
 {
@@ -127,29 +233,25 @@ void ModelicaHighlighter::highlightBlock(const QString &text)
 ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     : QMainWindow(parent)
 {
-    Expression dummy = Expression("(1.0/-Z+1.0)/(1.0/Z+1.0)");
-    dummy.expandParentheses();
-    dummy.expandParentheses();
-
-    dummy = Expression("2.0*x+5.0*y*x-3.0*y/z+pow(x*z,3.0)");
+    Expression dummy = Expression("2.0*x+5.0*y*x-3.0*y/z+pow(x*z,3.0)");
     dummy.factor(Expression("x"));
     dummy.expand();
     dummy.linearize();
-    assert(dummy.toString() == "z*5.0*y*x+z*2.0*x-3.0*y+pow(z,4.0)*pow(x,3.0)");
+    qDebug() << dummy.toString();
+    assert(dummy.toString() == "z*y*5.0*x+z*2.0*x-3.0*y+pow(z,4.0)*pow(x,3.0)");
 
     dummy = Expression("pow(x,3.0)*pow(y,2.0)/x+pow(z,5.0)/pow(z,3.0)");
     dummy.expandPowers();
     assert(dummy.toString() == "x*x*y*y+z*z");
 
-    dummy = Expression("x*y*(x-5.0*(2.0-z))/(2.0*(1.0-x)-5.0)");
-    dummy.expandParentheses();
-
     dummy = Expression("a*b*c + a*b*d + b*c*d");
     dummy.factorMostCommonFactor();
     assert(dummy.toString() == "b*(a*c+a*d+c*d)");
 
-    dummy = Expression("M*4*pow(1/-Z+1.0,2.0)*x1/(T*(1/Z+1.0)*T*(1/Z+1))+B*2/T*(1/-Z+1)/(1/Z+1)*x1+k*x1-F2-F1");
-    dummy.linearize();
+    dummy = Expression("a*b*c + a*b*-c + 3*c*d - d*c*2 + d*5*c + c*d + pow(x,3.0) -pow(x,3.0)");
+    qDebug() << dummy.toString();
+    assert(dummy.toString() == "c*d*7.0");
+
 
     //Set the name and size of the main window
     this->resize(640,480);
@@ -256,7 +358,7 @@ void ComponentGeneratorDialog::addNewTab()
     mEquationTextFieldPtrs.append(new QPlainTextEdit(this));
     mEquationTextFieldPtrs.last()->setFont(monoFont);
     mEquationTextFieldPtrs.last()->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    mEquationHighLighterPtrs.append(new ModelicaHighlighter(mEquationTextFieldPtrs.last()->document()));
+    mEquationHighLighterPtrs.append(new CppHighlighter(mEquationTextFieldPtrs.last()->document()));
 
     mEquationsLayoutPtrs.append(new QGridLayout(this));
     mEquationsLayoutPtrs.last()->addWidget(mEquationTextFieldPtrs.last(), 0, 0);
@@ -323,15 +425,112 @@ void ComponentGeneratorDialog::tabChanged()
 
 void ComponentGeneratorDialog::generateComponent()
 {
-    QString typeName, displayName, cqsType;
-    QStringList initAlgorithms, equations, finalAlgorithms;
-    QList<PortSpecification> portList;
-    QList<ParameterSpecification> parametersList;
+    //Check if it is a modelica model
+    QString code = mEquationTextFieldPtrs.at(mpEquationTabs->currentIndex())->toPlainText();
+    while(code.endsWith("\n"))
+    {
+        code.chop(1);   //Remove extra lines at end of code
+    }
 
-    parseModelicaModel(mEquationTextFieldPtrs.at(mpEquationTabs->currentIndex())->toPlainText(), typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, portList, parametersList);
+    if(code.startsWith("model "))
+    {
+        QString name = code.section(" ",1,1);
+        if(code.endsWith("end "+name+";"))
+        {
+            //It is (probably) a Modelica model, try and compile it
+            QString typeName, displayName, cqsType;
+            QStringList initAlgorithms, equations, finalAlgorithms;
+            QList<PortSpecification> portList;
+            QList<ParameterSpecification> parametersList;
 
-    //Generate component
-    generateComponentObject(typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, portList, parametersList);
+            //Parse Modelica code into SymHop objects
+            parseModelicaModel(code, typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, portList, parametersList);
+
+            //Generate component object and compile new component
+            generateComponentObject(typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, portList, parametersList);
+
+            return;
+        }
+    }
+
+    //Check if it is a C++ model
+    if(code.contains("void simulateOneTimestep()"))
+    {
+        //It is (probably) a C++ model, try and compile it
+
+        qDebug() << "C++";
+
+        //Needed: typeName, displayName, cqsType
+        QString typeName = code.section("class ", 1, 1).section(" ",0,0);
+        QString displayName = typeName;
+        QString cqsType = code.section("public ",1,1).section("\n",0,0);
+        cqsType.remove("Component");
+        cqsType = cqsType[0];
+
+        qDebug() << "Type name: " << typeName;
+        qDebug() << "CQS Type: " << cqsType;
+
+        ComponentSpecification comp = ComponentSpecification(typeName, displayName, cqsType);
+
+        QList<PortSpecification> ports;
+        QStringList lines = code.split("\n");
+        for(int l=0; l<lines.size(); ++l)
+        {
+            if(lines.at(l).contains("addPowerPort"))
+            {
+                QString portType = "PowerPort";
+                QString portName = lines.at(l).section("\"",1,1);
+                QString nodeType = lines.at(l).section("\"",3,3);
+                ports.append(PortSpecification(portType, nodeType, portName, false, 0));
+                comp.portNames.append(portName);
+            }
+            else if(lines.at(l).contains("addReadPort"))
+            {
+                QString portType = "ReadPort";
+                QString portName = lines.at(l).section("\"",1,1);
+                QString nodeType = lines.at(l).section("\"",3,3);
+                ports.append(PortSpecification(portType, nodeType, portName, false, 0));
+                comp.portNames.append(portName);
+            }
+            else if(lines.at(l).contains("addWritePort"))
+            {
+                QString portType = "WritePort";
+                QString portName = lines.at(l).section("\"",1,1);
+                QString nodeType = lines.at(l).section("\"",3,3);
+                ports.append(PortSpecification(portType, nodeType, portName, false, 0));
+                comp.portNames.append(portName);
+            }
+            else if(lines.at(l).contains("addPowerMultiPort"))
+            {
+                QString portType = "PowerMultiPort";
+                QString portName = lines.at(l).section("\"",1,1);
+                QString nodeType = lines.at(l).section("\"",3,3);
+                ports.append(PortSpecification(portType, nodeType, portName, false, 0));
+                comp.portNames.append(portName);
+            }
+            else if(lines.at(l).contains("addReadMultiPort"))
+            {
+                QString portType = "ReadMultiPort";
+                QString portName = lines.at(l).section("\"",1,1);
+                QString nodeType = lines.at(l).section("\"",3,3);
+                ports.append(PortSpecification(portType, nodeType, portName, false, 0));
+                comp.portNames.append(portName);
+            }
+        }
+
+        //Generate appearance object
+        ModelObjectAppearance appearance = generateAppearance(ports, cqsType);
+
+        //Add header guard
+        code.prepend("#ifndef "+typeName.toUpper()+"_HPP_INCLUDED\n#define "+typeName.toUpper()+"_HPP_INCLUDED\n\n");
+        code.append("#endif // "+typeName.toUpper()+"_HPP_INCLUDED\n");
+
+        comp.plainCode = code;
+
+        compileComponent("equation.hpp", comp, appearance);
+    }
+
+    //! @todo Error message
 }
 
 
@@ -579,10 +778,16 @@ void ComponentGeneratorWizard::generate()
 {
     //! @todo Add verifications!
 
-    //Initial declaration
     QString output;
-    output.append("model "+mpTypeNameLineEdit->text()+" \""+mpDisplayNameLineEdit->text()+"\"\n");
-    output.append("  annotation(hopsanCqstype = \""+mpCqsTypeComboBox->currentText()+"\");\n\n");
+
+    QString typeName = mpTypeNameLineEdit->text();
+    QString displayName = mpDisplayNameLineEdit->text();
+    QString cqsType = mpCqsTypeComboBox->currentText();
+    QString cqsTypeLong = mpCqsTypeComboBox->currentText();
+    if(cqsType == "S")
+    {
+        cqsTypeLong.append("ignal");
+    }
 
     //Ports
     QMap<QString, QStringList> nodeToPortMap;
@@ -608,39 +813,291 @@ void ComponentGeneratorWizard::generate()
             nodeToPortMap.insert(portType, QStringList() << mPortNameLineEditPtrs[p]->text());
         }
     }
-    QMap<QString, QStringList>::iterator pit;
-    for(pit=nodeToPortMap.begin(); pit!=nodeToPortMap.end(); ++pit)
-    {
-        output.append("  "+pit.key()+" ");
-        for(int p=0; p<pit.value().size(); ++p)
+
+
+    bool modelica = false;
+    if(modelica)
+    {        //Initial declaration
+
+        output.append("model "+typeName+" \""+displayName+"\"\n");
+        output.append("  annotation(hopsanCqsType = \""+cqsType+"\");\n\n");
+
+        QMap<QString, QStringList>::iterator pit;
+        for(pit=nodeToPortMap.begin(); pit!=nodeToPortMap.end(); ++pit)
         {
-            output.append(pit.value()[p]+", ");
+            output.append("  "+pit.key()+" ");
+            for(int p=0; p<pit.value().size(); ++p)
+            {
+                output.append(pit.value()[p]+", ");
+            }
+            output.chop(2);
+            output.append(";\n");
+        }
+        output.append("\n");
+
+        //Parameters
+        for(int p=0; p<mParameterNameLineEditPtrs.size(); ++p)
+        {
+            QString name = mParameterNameLineEditPtrs[p]->text();
+            QString unit = mParameterUnitLineEditPtrs[p]->text();
+            QString desc = mParameterDescriptionLineEditPtrs[p]->text();
+            QString value = mParameterValueLineEditPtrs[p]->text();
+
+            output.append("  parameter Real "+name+"(unit=\""+unit+"\")="+value+" \""+desc+"\";\n");
+        }
+        if(mParameterNameLineEditPtrs.size() > 0)
+        {
+            output.append("\n");
+        }
+
+        //The rest
+        output.append("algorithm\n  //Place initial algorithms here\n\n");
+        output.append("equation\n  //Place equations here\n\n");
+        output.append("algorithm\n  //Place final algorithms here\n\n");
+        output.append("end "+mpTypeNameLineEdit->text()+";\n");
+    }
+    else
+    {
+        output.append("#include <math.h>\n");
+        output.append("#include \"ComponentEssentials.h\"\n");
+        output.append("#include \"ComponentUtilities.h\"\n\n");
+        output.append("using namespace std;\n\n");
+        output.append("namespace hopsan {\n\n");
+
+
+        output.append("class "+typeName+" : public Component"+cqsTypeLong+"\n{\n");
+        output.append("private:\n");
+
+        //Port local variables
+        output.append("    double ");
+        int np = 1;
+        QMap<QString, QStringList>::iterator pit;
+        for(pit=nodeToPortMap.begin(); pit!=nodeToPortMap.end(); ++pit)
+        {
+            QStringList varNames;
+            varNames << getQVariables(pit.key()) << getCVariables(pit.key());
+            if(pit.key() == "NodeSignal")
+            {
+                varNames << mPortNameLineEditPtrs[np-1]->text();
+            }
+            for(int v=0; v<varNames.size(); ++v)
+            {
+                output.append(varNames[v]+QString::number(np)+", ");
+            }
+            ++np;
         }
         output.chop(2);
         output.append(";\n");
-    }
-    output.append("\n");
 
-    //Parameters
-    for(int p=0; p<mParameterNameLineEditPtrs.size(); ++p)
-    {
-        QString name = mParameterNameLineEditPtrs[p]->text();
-        QString unit = mParameterUnitLineEditPtrs[p]->text();
-        QString desc = mParameterDescriptionLineEditPtrs[p]->text();
-        QString value = mParameterValueLineEditPtrs[p]->text();
+        //Parameter variables
+        output.append("    double ");
+        for(int p=0; p<mParameterNameLineEditPtrs.size(); ++p)
+        {
+            output.append(mParameterNameLineEditPtrs[p]->text()+", ");
+        }
+        output.chop(2);
+        output.append(";\n");
 
-        output.append("  parameter Real "+name+"(unit=\""+unit+"\")="+value+" \""+desc+"\";\n");
-    }
-    if(mParameterNameLineEditPtrs.size() > 0)
-    {
+        //Node data pointers
+        output.append("    double ");
+        np = 1;
+        for(pit=nodeToPortMap.begin(); pit!=nodeToPortMap.end(); ++pit)
+        {
+            QStringList varNames;
+            varNames << getQVariables(pit.key()) << getCVariables(pit.key());
+            QString numStr;
+            if(pit.key() == "NodeSignalIn" || pit.key() == "NodeSignalOut")
+            {
+                varNames << mPortNameLineEditPtrs[np-1]->text();
+            }
+            else
+            {
+                numStr = QString::number(np);
+            }
+            for(int v=0; v<varNames.size(); ++v)
+            {
+                output.append("*mpND_"+varNames[v]+numStr+", ");
+            }
+            ++np;
+        }
+        output.chop(2);
+        output.append(";\n");
+
+        //Node data pointers
+        output.append("    double ");
+        for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
+        {
+            output.append("*mp"+mPortNameLineEditPtrs[p]->text()+", ");
+        }
+        output.chop(2);
+        output.append(";\n\n");
+
+        //Creator function
+        output.append("public:\n");
+        output.append("    static Component *Creator()\n");
+        output.append("    {\n");
+        output.append("        return new "+typeName+"();\n");
+        output.append("    }\n\n");
+
+        //Contructor
+        output.append("    "+typeName+"() : Component"+cqsTypeLong+"()\n");
+        output.append("    {\n");
+
+        //Initiate parameters
+        for(int p=0; p<mParameterNameLineEditPtrs.size(); ++p)
+        {
+            QString name = mParameterNameLineEditPtrs[p]->text();
+            QString value = mParameterValueLineEditPtrs[p]->text();
+            output.append("        "+name+" = "+value+";\n");
+        }
+        if(!mParameterNameLineEditPtrs.isEmpty()) { output.append("\n"); }
+
+        //Register parameters
+        for(int p=0; p<mParameterNameLineEditPtrs.size(); ++p)
+        {
+            QString name = mParameterNameLineEditPtrs[p]->text();
+            QString desc = mParameterDescriptionLineEditPtrs[p]->text();
+            QString unit = mParameterUnitLineEditPtrs[p]->text();
+            output.append("        registerParameter(\""+name+"\", \""+desc+"\", \""+unit+"\", "+name+");\n");
+        }
+        if(!mParameterNameLineEditPtrs.isEmpty()) { output.append("\n"); }
+
+        QStringList portNames, portTypes, nodeTypes;
+
+        for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
+        {
+            portNames << mPortNameLineEditPtrs[p]->text();
+            QString type = mPortTypeComboBoxPtrs[p]->currentText();
+
+            if(type      == "Signal Input")             { portTypes << "ReadPort"; }
+            else if(type == "Signal Output")            { portTypes << "WritePort"; }
+            else                                        { portTypes << "PowerPort"; }
+
+            if(type      == "Signal Input")             { nodeTypes << "NodeSignal"; }
+            else if(type == "Signal Output")            { nodeTypes << "NodeSignal"; }
+            else if(type == "Linear Mechanical")        { nodeTypes << "NodeMechanic"; }
+            else if(type == "Rotational Mechanical")    { nodeTypes << "NodeMechanicRotational"; }
+            else if(type == "Electric")                 { nodeTypes << "NodeElectric"; }
+            else if(type == "Hydraulic")                { nodeTypes << "NodeHydraulic"; }
+            else if(type == "Pneumatic")                { nodeTypes << "NodePneumatic"; }
+
+            output.append("        mp"+portNames[p]+" = add"+portTypes[p]+"(\""+portNames[p]+"\", "+nodeTypes[p]+"\")\n");
+        }
+        output.append("    }\n\n");
+
+        //Initialize
+        output.append("    void initialize()\n");
+        output.append("    {\n");
+
+        //Assign node data pointers
+        for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
+        {
+            QStringList varNames;
+            varNames << getQVariables(nodeTypes[p]) << getCVariables(nodeTypes[p]);
+            if(portTypes[p] == "ReadPort") { varNames << portNames[p]; }
+            if(portTypes[p] == "WritePort") { varNames << portNames[p]; }
+
+            QStringList varLabels = getVariableLabels(nodeTypes[p]);
+            QString numStr, defaultValue;
+            if(portTypes[p] != "ReadPort" && portTypes[p] != "WritePort")
+            {
+                numStr = QString::number(p+1);
+            }
+            else
+            {
+                defaultValue = ", "+mPortDefaultSpinBoxPtrs[p]->text();
+            }
+
+            for(int v=0; v<varNames.size(); ++v)
+            {
+                output.append("        mpND_"+varNames[v]+numStr+" = getSafeNodeDataPtr(mp"+portNames[p]+", "+nodeTypes[p]+"::"+varLabels[v]+defaultValue+");\n");
+            }
+        }
         output.append("\n");
-    }
 
-    //The rest
-    output.append("algorithm\n  //Place initial algorithms here\n\n");
-    output.append("equation\n  //Place equations here\n\n");
-    output.append("algorithm\n  //Place final algorithms here\n\n");
-    output.append("end "+mpTypeNameLineEdit->text()+";\n");
+        //Create local port variables
+        for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
+        {
+            QStringList varNames;
+            varNames << getQVariables(nodeTypes[p]) << getCVariables(nodeTypes[p]);
+            if(portTypes[p] == "ReadPort") { varNames << portNames[p]; }
+            QString numStr;
+            if(portTypes[p] != "ReadPort") { numStr = QString::number(p+1); }
+
+            for(int v=0; v<varNames.size(); ++v)
+            {
+                output.append("        "+varNames[v]+numStr+" = (*mpND_"+varNames[v]+numStr+");\n");
+            }
+        }
+        output.append("\n");
+
+        output.append("        //WRITE INITIALIZATION HERE\n");
+        output.append("    }\n\n");
+
+
+        //SimulateOneTimestep
+        output.append("    void simulateOneTimestep()\n");
+        output.append("    {\n");
+
+        //Create local input port variables
+        for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
+        {
+            QStringList varNames;
+            if(cqsType == "Q")
+            {
+                varNames << getCVariables(nodeTypes[p]);
+            }
+            else if(cqsType == "C")
+            {
+                varNames << getQVariables(nodeTypes[p]);
+            }
+            if(portTypes[p] == "ReadPort") { varNames << portNames[p]; }
+            QString numStr;
+            if(portTypes[p] != "ReadPort") { numStr = QString::number(p+1); }
+
+            for(int v=0; v<varNames.size(); ++v)
+            {
+                output.append("        "+varNames[v]+numStr+" = (*mpND_"+varNames[v]+numStr+");\n");
+            }
+        }
+        output.append("\n");
+
+        output.append("        //WRITE SIMULATION CODE HERE\n\n");
+
+        //Create local output port variables
+        for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
+        {
+            QStringList varNames;
+            if(cqsType == "C")
+            {
+                varNames << getCVariables(nodeTypes[p]);
+            }
+            else if(cqsType == "Q")
+            {
+                varNames << getQVariables(nodeTypes[p]);
+            }
+            if(portTypes[p] == "WritePort") { varNames << portNames[p]; }
+            QString numStr;
+            if(portTypes[p] != "WritePort") { numStr = QString::number(p+1); }
+
+            for(int v=0; v<varNames.size(); ++v)
+            {
+                output.append("        (*mpND_"+varNames[v]+numStr+") = "+varNames[v]+numStr+";\n");
+            }
+        }
+        output.append("\n");
+
+        output.append("    }\n\n");
+
+        //Finalize
+        output.append("    void finalize()\n");
+        output.append("    {\n");
+        output.append("        //WRITE FINALIZE CODE HERE\n");
+        output.append("    }\n");
+
+        output.append("};\n");
+        output.append("}\n");
+    }
 
     mpParent->addNewTab(output);
 

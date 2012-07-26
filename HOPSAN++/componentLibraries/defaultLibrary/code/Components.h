@@ -78,6 +78,8 @@
 
 #include "Hydraulic/HydraulicComponentsInComponentTest.hpp"
 
+#include "Hydraulic/valves/MyPressureReliefValve.hpp"
+
 //#include "Hydraulic/HydraulicPressureReliefValveTolerance.hpp"
 //#include "Hydraulic/HydraulicCylinderCTolerance.hpp"
 //#include "Hydraulic/HydraulicHoseTolerance.hpp"

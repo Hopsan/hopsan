@@ -34,6 +34,41 @@ class MainWindow;
 class ModelObjectAppearance;
 class QTextDocument;
 
+
+
+class CppHighlighter : public QSyntaxHighlighter
+{
+    Q_OBJECT
+
+public:
+    CppHighlighter(QTextDocument *parent = 0);
+
+protected:
+    void highlightBlock(const QString &text);
+
+private:
+    struct HighlightingRule
+    {
+        QRegExp pattern;
+        QTextCharFormat format;
+    };
+    QVector<HighlightingRule> highlightingRules;
+
+    QRegExp commentStartExpression;
+    QRegExp commentEndExpression;
+
+    QTextCharFormat keywordFormat;
+    QTextCharFormat preProcessorFormat;
+    QTextCharFormat classFormat;
+    QTextCharFormat singleLineCommentFormat;
+    QTextCharFormat multiLineCommentFormat;
+    QTextCharFormat quotationFormat;
+    QTextCharFormat tagFormat;
+    QTextCharFormat functionFormat;
+};
+
+
+
 class ModelicaHighlighter : public QSyntaxHighlighter
 {
     Q_OBJECT
@@ -85,7 +120,7 @@ private:
     QList<bool> mHasChanged;
     QList<QGridLayout *> mEquationsLayoutPtrs;
     QList<QPlainTextEdit *> mEquationTextFieldPtrs;
-    QList<ModelicaHighlighter *> mEquationHighLighterPtrs;
+    QList<QSyntaxHighlighter *> mEquationHighLighterPtrs;
     QList<QScrollArea *> mScrollAreaPtrs;
 
     QPushButton *mpGenerateTemplateButton;

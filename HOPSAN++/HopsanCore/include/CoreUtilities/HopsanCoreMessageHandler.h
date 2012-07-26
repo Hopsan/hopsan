@@ -50,6 +50,15 @@ public:
         mTag.clear();
     }
 
+    HopsanCoreMessage &operator=(const HopsanCoreMessage &src)
+    {
+        mType = src.mType;
+        mDebugLevel = src.mDebugLevel;
+        mTag = src.mTag;
+        mMessage = src.mMessage;
+        return (*this);
+    }
+
     int mType;
     int mDebugLevel;
     std::string mMessage;

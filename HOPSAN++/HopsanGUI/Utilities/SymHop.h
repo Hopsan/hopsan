@@ -57,6 +57,9 @@ public:
 
     void replaceBy(Expression const expr);
     void divideBy(Expression const div);
+    void multiplyBy(Expression const fac);
+    void addBy(Expression const term);
+    void subtractBy(Expression const term);
     ExpressionTypeT getType() const;
     QString toString() const;
     void toDelayForm(QList<Expression> &rDelayTerms, QStringList &rDelaySteps);
