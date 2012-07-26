@@ -230,7 +230,7 @@ void MessageWidget::appendOneMessage(GUIMessage msg)
 void MessageWidget::printCoreMessages()
 {
     int nmsg = mpCoreAccess->getNumberOfMessages();
-    nmsg = 0; //!< @warning Fix for Petter should not be checked into the repository
+    //nmsg = 0; //!< @warning Fix for Petter should not be checked into the repository
 
     bool playErrorSound = false;
     for (int idx=0; idx < nmsg; ++idx)
