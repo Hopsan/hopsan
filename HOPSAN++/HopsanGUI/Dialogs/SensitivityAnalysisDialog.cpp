@@ -97,17 +97,26 @@ SensitivityAnalysisDialog::SensitivityAnalysisDialog(MainWindow *parent)
     mpButtonBox->addButton(mpCancelButton, QDialogButtonBox::ActionRole);
     mpButtonBox->addButton(mpRunButton, QDialogButtonBox::ActionRole);
 
+    //Toolbar
+    mpHelpAction = new QAction("Show Context Help", this);
+    mpHelpAction->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Help.png"));
+    mpToolBar = new QToolBar(this);
+    mpToolBar->addAction(mpHelpAction);
+
+
     //Main layout
     mpLayout = new QGridLayout(this);
-    mpLayout->addWidget(mpParametersGroupBox,   0, 1);
-    mpLayout->addWidget(mpOutputGroupBox,       1, 1);
-    mpLayout->addWidget(mpStepsWidget,          2, 1);
-    mpLayout->addWidget(mpButtonBox,            3, 1);
+    mpLayout->addWidget(mpParametersGroupBox,   0, 0, 1, 2);
+    mpLayout->addWidget(mpOutputGroupBox,       1, 0, 1, 2);
+    mpLayout->addWidget(mpStepsWidget,          2, 0, 1, 2);
+    mpLayout->addWidget(mpButtonBox,            3, 1, 1, 1);
+    mpLayout->addWidget(mpToolBar,              3, 0, 1, 1);
     setLayout(mpLayout);
 
     //Connections
     connect(mpCancelButton,                 SIGNAL(clicked()),      this,                   SLOT(reject()));
     connect(mpRunButton,                    SIGNAL(clicked()),      this,                   SLOT(run()));
+    connect(mpHelpAction,                   SIGNAL(triggered()),    gpMainWindow,           SLOT(openContextHelp()));
 }
 
 
@@ -371,4 +380,3 @@ void SensitivityAnalysisDialog::run()
         }
     }
 }
-

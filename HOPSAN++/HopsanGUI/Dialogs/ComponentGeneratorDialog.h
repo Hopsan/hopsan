@@ -161,6 +161,7 @@ private slots:
     QAction *mpWizardAction;
     QAction *mpModelicaHighlighterAction;
     QAction *mpCppHighlighterAction;
+    QAction *mpHelpAction;
 
     //Tool bar
     QToolBar *mpToolBar;

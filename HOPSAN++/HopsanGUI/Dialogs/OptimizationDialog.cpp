@@ -24,6 +24,7 @@
 
 #include <QDebug>
 #include <limits>
+
 #include "Configuration.h"
 #include "GUIPort.h"
 #include "Dialogs/OptimizationDialog.h"
@@ -275,11 +276,18 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     mpButtonBox->addButton(mpGenerateButton, QDialogButtonBox::ActionRole);
     mpButtonBox->addButton(mpRunButton, QDialogButtonBox::ActionRole);
 
+    //Toolbar
+    mpHelpAction = new QAction("Show Context Help", this);
+    mpHelpAction->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Help.png"));
+    mpToolBar = new QToolBar(this);
+    mpToolBar->addAction(mpHelpAction);
+
     //Main layout
     QGridLayout *pLayout = new QGridLayout;
-    pLayout->addWidget(mpTabWidget, 1, 1);
+    pLayout->addWidget(mpTabWidget, 0, 0, 1, 2);
     //pLayout->addWidget(mpOutputBox, 1, 3, 1, 1);
-    pLayout->addWidget(mpButtonBox, 2, 1);
+    pLayout->addWidget(mpButtonBox, 1, 1);
+    pLayout->addWidget(mpToolBar, 1, 0);
     setLayout(pLayout);
 
     //Connections
@@ -288,6 +296,7 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     connect(mpGenerateButton,               SIGNAL(clicked()),      this,                   SLOT(updateOutputBox()));
     connect(mpRunButton,                    SIGNAL(clicked()),      this,                   SLOT(run()));
     connect(mpAddFunctionButton,            SIGNAL(clicked()),      this,                   SLOT(addFunction()));
+    connect(mpHelpAction,                   SIGNAL(triggered()),    gpMainWindow,           SLOT(openContextHelp()));
 }
 
 

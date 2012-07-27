@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="480"
+   height="480"
+   id="svg3215"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="Hopsan-Help.svg"
+   inkscape:export-filename="/home/robbr48/Documents/Subversion/HOPSAN++/HopsanGUI/graphics/uiicons/Hopsan-Help.png"
+   inkscape:export-xdpi="4.5"
+   inkscape:export-ydpi="4.5">
+  <defs
+     id="defs3217">
+    <linearGradient
+       id="linearGradient3890">
+      <stop
+         id="stop3892"
+         offset="0"
+         style="stop-color:#351515;stop-opacity:1;" />
+      <stop
+         id="stop3894"
+         offset="1"
+         style="stop-color:#b31111;stop-opacity:1;" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient3874">
+      <stop
+         style="stop-color:#5f2626;stop-opacity:1;"
+         offset="0"
+         id="stop3876" />
+      <stop
+         style="stop-color:#e91e1e;stop-opacity:1;"
+         offset="1"
+         id="stop3878" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3874"
+       id="linearGradient3880"
+       x1="-122.08635"
+       y1="115.07959"
+       x2="211.36929"
+       y2="-134.97018"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3890"
+       id="linearGradient3888"
+       x1="-122.08635"
+       y1="115.07959"
+       x2="211.36929"
+       y2="-134.97018"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.056233275"
+     inkscape:cx="-422.99934"
+     inkscape:cy="-4702.4609"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1600"
+     inkscape:window-height="1176"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
+     showguides="true"
+     inkscape:guide-bbox="true">
+    <sodipodi:guide
+       orientation="1,0"
+       position="485.75078,484.81664"
+       id="guide5082" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata3220">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-572.36218)">
+    <path
+       sodipodi:type="arc"
+       style="fill:url(#linearGradient3880);fill-opacity:1;stroke:url(#linearGradient3888);stroke-width:10.07377815;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="path3872"
+       sodipodi:cx="46.706806"
+       sodipodi:cy="-9.4873295"
+       sodipodi:rx="162.53969"
+       sodipodi:ry="122.37183"
+       d="m 209.24649,-9.4873295 a 162.53969,122.37183 0 1 1 -325.07937,0 162.53969,122.37183 0 1 1 325.07937,0 z"
+       transform="matrix(1.2919922,0,0,1.7160812,179.65517,828.64321)" />
+    <text
+       xml:space="preserve"
+       style="font-size:500px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:ScalaSans;-inkscape-font-specification:Calibri"
+       x="119.39453"
+       y="978.86609"
+       id="text3896"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3898"
+         x="119.39453"
+         y="978.86609"
+         style="font-size:500px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#ffffff;fill-opacity:1;font-family:Calibri;-inkscape-font-specification:Calibri">?</tspan></text>
+  </g>
+</svg>

@@ -93,6 +93,7 @@ public:
     SystemParametersWidget *mpSystemParametersWidget;
     QStatusBar *mpStatusBar;  //Not used, but gives some nice extra space at bottom :)
     QGridLayout *mpCentralGridLayout;
+    HelpDialog *mpHelpDialog;   //Should not be public but accessable from other widgets somehow
 
     //Actions (public because other widgets connect to them)
     QAction *mpNewAction;
@@ -156,6 +157,7 @@ public slots:
     void registerRecentModel(QFileInfo model);
     void updateRecentList();
     void launchAutoUpdate();
+    void openContextHelp(QString file);
 
 signals:
     void simulateKeyPressed();
@@ -190,7 +192,6 @@ private:
     OptionsDialog *mpOptionsDialog;
     WelcomeDialog *mpWelcomeDialog;
     AboutDialog *mpAboutDialog;
-    HelpDialog *mpHelpDialog;
     OptimizationDialog *mpOptimizationDialog;
     SensitivityAnalysisDialog *mpSensitivityAnalysisDialog;
     ComponentGeneratorDialog *mpComponentGeneratorDialog;

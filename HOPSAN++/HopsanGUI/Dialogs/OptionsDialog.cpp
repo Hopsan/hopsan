@@ -259,7 +259,7 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     pTabWidget->addTab(mpPlottingWidget, "Plotting");
 
     QGridLayout *pLayout = new QGridLayout;
-    pLayout->setSizeConstraint(QLayout::SetFixedSize);
+    //pLayout->setSizeConstraint(QLayout::SetFixedSize);
     pLayout->addWidget(pTabWidget, 0, 0);
 //    pLayout->addWidget(mpInterfaceGroupBox);
 //    pLayout->addWidget(mpSimulationGroupBox);

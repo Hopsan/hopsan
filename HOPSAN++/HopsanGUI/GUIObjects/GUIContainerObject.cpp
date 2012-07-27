@@ -50,6 +50,7 @@
 #include <limits>
 #include <QDomElement>
 #include <QStandardItemModel>
+#include <QToolBar>
 
 
 //! @brief Construtor for container objects.
@@ -2536,19 +2537,29 @@ void ContainerObject::showLosses(bool show)
     QPushButton *pCancelButton = new QPushButton("Cancel");
     QPushButton *pNextButton = new QPushButton("Go!");
 
+    //Toolbar
+    QAction *pHelpAction = new QAction("Show Context Help", this);
+    pHelpAction->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Help.png"));
+    QToolBar *pToolBar = new QToolBar(mpLossesDialog);
+    pToolBar->addAction(pHelpAction);
+
     QGridLayout *pLossesDialogLayout = new QGridLayout;
-    pLossesDialogLayout->addWidget(pInfoLabel, 0, 0, 1, 2);
-    pLossesDialogLayout->addWidget(pIgnoreSmallLossesCheckBox, 1, 0, 1, 2);
-    pLossesDialogLayout->addLayout(pSliderLayout, 2, 0, 1, 2);
-    pLossesDialogLayout->addWidget(pCancelButton, 3, 0, 1, 1);
-    pLossesDialogLayout->addWidget(pNextButton, 3, 1, 1, 1);
+    pLossesDialogLayout->addWidget(pInfoLabel, 0, 0, 1, 3);
+    pLossesDialogLayout->addWidget(pIgnoreSmallLossesCheckBox, 1, 0, 1, 3);
+    pLossesDialogLayout->addLayout(pSliderLayout, 2, 0, 1, 3);
+    pLossesDialogLayout->addWidget(pToolBar, 3, 0, 1, 1);
+    pLossesDialogLayout->addWidget(pCancelButton, 3, 1, 1, 1);
+    pLossesDialogLayout->addWidget(pNextButton, 3, 2, 1, 1);
 
     mpLossesDialog->setLayout(pLossesDialogLayout);
+
+    mpLossesDialog->setPalette(gConfig.getPalette());
 
     mpLossesDialog->show();
 
     connect(pCancelButton, SIGNAL(clicked()), mpLossesDialog, SLOT(close()));
     connect(pNextButton, SIGNAL(clicked()), this, SLOT(showLossesFromDialog()));
+    connect(pHelpAction, SIGNAL(triggered()), gpMainWindow, SLOT(openContextHelp()));
 }
 
 

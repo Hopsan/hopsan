@@ -131,5 +131,6 @@
         <file>graphics/uiicons/Hopsan-MeasureSimulationTime.png</file>
         <file>graphics/uiicons/Hopsan-Pointer.png</file>
         <file>graphics/uiicons/Hopsan-Wizard.png</file>
+        <file>graphics/uiicons/Hopsan-Help.png</file>
     </qresource>
 </RCC>

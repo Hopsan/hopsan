@@ -39,6 +39,8 @@ public:
 
 public slots:
     void open();
+    void open(QString file);
+    void centerOnScreen();
 
 private:
     QWebView *mpHelp;

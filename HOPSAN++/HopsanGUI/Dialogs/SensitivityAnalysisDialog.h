@@ -74,6 +74,10 @@ private:
     QPushButton *mpRunButton;
     QDialogButtonBox *mpButtonBox;
 
+    //Toolbar
+    QAction *mpHelpAction;
+    QToolBar *mpToolBar;
+
     //Main layout
     QGridLayout *mpLayout;
 

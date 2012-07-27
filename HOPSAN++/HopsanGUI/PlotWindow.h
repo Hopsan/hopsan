@@ -82,6 +82,7 @@ public slots:
     void loadFromXml();
     void performFrequencyAnalysis(PlotCurve *curve);
     void performFrequencyAnalysisFromDialog();
+    void showFrequencyAnalysisHelp();
     void createBodePlot();
     void createBodePlotFromDialog();
     void createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve, int Fmax);

@@ -58,3 +58,24 @@ void HelpDialog::open()
     //Using show instead of open for modaless window
     QMainWindow::show();
 }
+
+
+void HelpDialog::open(QString file)
+{
+    mpHelp->load(QUrl::fromLocalFile(QString(HELPPATH) + file));
+
+    //Using show instead of open for modaless window
+    QMainWindow::show();
+}
+
+
+void HelpDialog::centerOnScreen()
+{
+    int sx = qApp->desktop()->screenGeometry().center().x();
+    int sy = qApp->desktop()->screenGeometry().center().y();
+    int w = this->width();
+    int h = this->height();
+
+    this->move(sx-w/2, sy-h/2);
+}
+

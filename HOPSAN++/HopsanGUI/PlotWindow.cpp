@@ -528,19 +528,27 @@ void PlotWindow::performFrequencyAnalysis(PlotCurve *curve)
     QPushButton *pCancelButton = new QPushButton("Cancel");
     QPushButton *pNextButton = new QPushButton("Go!");
 
+    //Toolbar
+    QAction *pHelpAction = new QAction("Show Context Help", this);
+    pHelpAction->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Help.png"));
+    QToolBar *pToolBar = new QToolBar(this);
+    pToolBar->addAction(pHelpAction);
+
     QGridLayout *pFrequencyAnalysisDialogLayout = new QGridLayout(mpFrequencyAnalysisDialog);
-    pFrequencyAnalysisDialogLayout->addWidget(pInfoLabel,               0, 0, 1, 2);
-    pFrequencyAnalysisDialogLayout->addWidget(mpLogScaleCheckBox,       1, 0, 1, 2);
-    pFrequencyAnalysisDialogLayout->addWidget(mpPowerSpectrumCheckBox,  2, 0, 1, 2);
-    pFrequencyAnalysisDialogLayout->addWidget(pCancelButton,            3, 0, 1, 1);
-    pFrequencyAnalysisDialogLayout->addWidget(pNextButton,              3, 1, 1, 1);
+    pFrequencyAnalysisDialogLayout->addWidget(pInfoLabel,               0, 0, 1, 3);
+    pFrequencyAnalysisDialogLayout->addWidget(mpLogScaleCheckBox,       1, 0, 1, 3);
+    pFrequencyAnalysisDialogLayout->addWidget(mpPowerSpectrumCheckBox,  2, 0, 1, 3);
+    pFrequencyAnalysisDialogLayout->addWidget(pToolBar,                 3, 0, 1, 1);
+    pFrequencyAnalysisDialogLayout->addWidget(pCancelButton,            3, 1, 1, 1);
+    pFrequencyAnalysisDialogLayout->addWidget(pNextButton,              3, 2, 1, 1);
 
     mpFrequencyAnalysisDialog->setLayout(pFrequencyAnalysisDialogLayout);
-
+    mpFrequencyAnalysisDialog->setPalette(gConfig.getPalette());
     mpFrequencyAnalysisDialog->show();
 
     connect(pCancelButton, SIGNAL(clicked()), mpFrequencyAnalysisDialog, SLOT(close()));
     connect(pNextButton, SIGNAL(clicked()), this, SLOT(performFrequencyAnalysisFromDialog()));
+    connect(pHelpAction, SIGNAL(triggered()), this, SLOT(showFrequencyAnalysisHelp()));
 }
 
 
@@ -562,6 +570,12 @@ void PlotWindow::performFrequencyAnalysisFromDialog()
         getCurrentPlotTab()->getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLog10ScaleEngine);
     }
     getCurrentPlotTab()->rescaleToCurves();
+}
+
+
+void PlotWindow::showFrequencyAnalysisHelp()
+{
+    gpMainWindow->openContextHelp("userFrequencyAnalysis.html");
 }
 
 
@@ -616,20 +630,28 @@ void PlotWindow::createBodePlot()
     QPushButton *pCancelButton = new QPushButton("Cancel");
     QPushButton *pNextButton = new QPushButton("Go!");
 
+    //Toolbar
+    QAction *pHelpAction = new QAction("Show Context Help", this);
+    pHelpAction->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Help.png"));
+    QToolBar *pToolBar = new QToolBar(this);
+    pToolBar->addAction(pHelpAction);
+
     QGridLayout *pBodeDialogLayout = new QGridLayout;
-    pBodeDialogLayout->addWidget(pInputGroupBox, 0, 0, 1, 2);
-    pBodeDialogLayout->addWidget(pOutputGroupBox, 1, 0, 1, 2);
-    pBodeDialogLayout->addWidget(pMaxFrequencyLabel, 2, 0, 1, 2);
-    pBodeDialogLayout->addLayout(pSliderLayout, 3, 0, 1, 2);
-    pBodeDialogLayout->addWidget(pCancelButton, 4, 0, 1, 1);
-    pBodeDialogLayout->addWidget(pNextButton, 4, 1, 1, 1);
+    pBodeDialogLayout->addWidget(pInputGroupBox, 0, 0, 1, 3);
+    pBodeDialogLayout->addWidget(pOutputGroupBox, 1, 0, 1, 3);
+    pBodeDialogLayout->addWidget(pMaxFrequencyLabel, 2, 0, 1, 3);
+    pBodeDialogLayout->addLayout(pSliderLayout, 3, 0, 1, 3);
+    pBodeDialogLayout->addWidget(pToolBar, 4, 0, 1, 1);
+    pBodeDialogLayout->addWidget(pCancelButton, 4, 1, 1, 1);
+    pBodeDialogLayout->addWidget(pNextButton, 4, 2, 1, 1);
 
     mpCreateBodeDialog->setLayout(pBodeDialogLayout);
-
+    mpCreateBodeDialog->setPalette(gConfig.getPalette());
     mpCreateBodeDialog->show();
 
     connect(pCancelButton, SIGNAL(clicked()), mpCreateBodeDialog, SLOT(close()));
     connect(pNextButton, SIGNAL(clicked()), this, SLOT(createBodePlotFromDialog()));
+    connect(pHelpAction, SIGNAL(triggered()), this, SLOT(showFrequencyAnalysisHelp()));
     //connect(pNextButton, SIGNAL(clicked()), pCreateBodeDialog, SLOT(close()));
 }
 

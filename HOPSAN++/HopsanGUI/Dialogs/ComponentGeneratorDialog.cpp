@@ -254,7 +254,7 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
 
 
     //Set the name and size of the main window
-    this->resize(640,480);
+    this->resize(1024,768);
     this->setWindowTitle("Component Generator (experimental)");
     this->setPalette(gConfig.getPalette());
 
@@ -309,6 +309,10 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpWizardAction->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Wizard.png"));
     mpWizardAction->setToolTip("Launch template wizard");
 
+    mpHelpAction = new QAction("Open Context Help", this);
+    mpHelpAction->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Help.png"));
+    mpHelpAction->setToolTip("Open Context Help");
+
     mpModelicaHighlighterAction = new QAction("Modelica", this);
     mpModelicaHighlighterAction->setToolTip("Modelica Highlighter");
     mpModelicaHighlighterAction->setCheckable(true);
@@ -320,12 +324,21 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     mpCppHighlighterAction->setChecked(false);
 
     //Tool bar
+    QWidget *spacerWidget = new QWidget(this);
+    spacerWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    spacerWidget->setVisible(true);
     mpToolBar = new QToolBar(this);
     mpToolBar->addAction(mpNewAction);
     mpToolBar->addAction(mpLoadAction);
     mpToolBar->addAction(mpSaveAction);
     mpToolBar->addAction(mpWizardAction);
+    mpToolBar->addWidget(spacerWidget);
+    mpToolBar->addAction(mpHelpAction);
     this->addToolBar(mpToolBar);
+
+
+
+
 
     //Menu bar
     mpRecentMenu = new QMenu("Recent models", this);
@@ -370,15 +383,16 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     updateRecentList();
 
     //Connections
-    connect(mpCancelButton,     SIGNAL(clicked()),              this, SLOT(close()));
-    connect(mpCompileButton,    SIGNAL(clicked()),              this, SLOT(generateComponent()));
-    connect(mpAppearanceButton, SIGNAL(clicked()),              this, SLOT(openAppearanceDialog()));
-    connect(mpNewAction,        SIGNAL(triggered()),            this, SLOT(addNewTab()));
-    connect(mpLoadAction,       SIGNAL(triggered()),            this, SLOT(loadModel()));
-    connect(mpSaveAction,       SIGNAL(triggered()),            this, SLOT(saveModel()));
-    connect(mpCloseAction,      SIGNAL(triggered()),            this, SLOT(close()));
-    connect(mpWizardAction,     SIGNAL(triggered()),            this, SLOT(openComponentGeneratorWizard()));
-    connect(mpEquationTabs,     SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
+    connect(mpCancelButton,     SIGNAL(clicked()),              this,           SLOT(close()));
+    connect(mpCompileButton,    SIGNAL(clicked()),              this,           SLOT(generateComponent()));
+    connect(mpAppearanceButton, SIGNAL(clicked()),              this,           SLOT(openAppearanceDialog()));
+    connect(mpNewAction,        SIGNAL(triggered()),            this,           SLOT(addNewTab()));
+    connect(mpLoadAction,       SIGNAL(triggered()),            this,           SLOT(loadModel()));
+    connect(mpSaveAction,       SIGNAL(triggered()),            this,           SLOT(saveModel()));
+    connect(mpCloseAction,      SIGNAL(triggered()),            this,           SLOT(close()));
+    connect(mpWizardAction,     SIGNAL(triggered()),            this,           SLOT(openComponentGeneratorWizard()));
+    connect(mpEquationTabs,     SIGNAL(tabCloseRequested(int)), this,           SLOT(closeTab(int)));
+    connect(mpHelpAction,       SIGNAL(triggered()),            gpMainWindow,   SLOT(openContextHelp()));
 
     connect(mpModelicaHighlighterAction, SIGNAL(triggered(bool)), this, SLOT(setModelicaHighlighter()));
     connect(mpCppHighlighterAction, SIGNAL(triggered(bool)), this, SLOT(setCppHighlighter()));
