@@ -157,6 +157,7 @@ public slots:
     void registerRecentModel(QFileInfo model);
     void updateRecentList();
     void launchAutoUpdate();
+    void openContextHelp();
     void openContextHelp(QString file);
 
 signals:

@@ -1124,38 +1124,41 @@ void MainWindow::launchAutoUpdate()
 }
 
 
-void MainWindow::openContextHelp(QString file)
+void MainWindow::openContextHelp()
 {
-    if(!file.isEmpty())
+    QAction *action = qobject_cast<QAction *>(sender());
+
+    if(action->parent() == mpOptimizationDialog)
     {
-        mpHelpDialog->open(file);
+        mpHelpDialog->open("userOptimization.html");
+    }
+    else if(action->parent() == mpSensitivityAnalysisDialog)
+    {
+        mpHelpDialog->open("userSensitivityAnalysis.html");
+    }
+    else if(action->parent() == mpComponentGeneratorDialog)
+    {
+        mpHelpDialog->open("component-generator.html");
+    }
+    else if(action->parent() == mpProjectTabs->getCurrentContainer())
+    {
+        mpHelpDialog->open("userEnergyLosses.html");
+    }
+    else if(action->parent() == mpLibrary)
+    {
+        mpHelpDialog->open("userCustomComponents.html");
     }
     else
     {
-        QAction *action = qobject_cast<QAction *>(sender());
-
-        if(action->parent() == mpOptimizationDialog)
-        {
-            mpHelpDialog->open("userOptimization.html");
-        }
-        else if(action->parent() == mpSensitivityAnalysisDialog)
-        {
-            mpHelpDialog->open("userSensitivityAnalysis.html");
-        }
-        else if(action->parent() == mpComponentGeneratorDialog)
-        {
-            mpHelpDialog->open("component-generator.html");
-        }
-        else if(action->parent() == mpProjectTabs->getCurrentContainer())
-        {
-            mpHelpDialog->open("userEnergyLosses.html");
-        }
-        else
-        {
-            mpHelpDialog->open();
-        }
+        mpHelpDialog->open();
     }
+    mpHelpDialog->centerOnScreen();
+}
 
+
+void MainWindow::openContextHelp(QString file)
+{
+    mpHelpDialog->open(file);
     mpHelpDialog->centerOnScreen();
 }
 

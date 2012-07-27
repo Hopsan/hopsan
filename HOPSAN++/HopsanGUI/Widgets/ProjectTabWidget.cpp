@@ -726,7 +726,14 @@ SystemContainer *ProjectTabWidget::getCurrentTopLevelSystem()
 //! @brief Returns a pointer to the currently open container object in current tab
 ContainerObject *ProjectTabWidget::getCurrentContainer()
 {
-    return getCurrentTab()->getGraphicsView()->getContainerPtr();
+    if(getCurrentTab())
+    {
+        return getCurrentTab()->getGraphicsView()->getContainerPtr();
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 

@@ -37,6 +37,7 @@
 #include <QVector>
 #include <QToolButton>
 #include <QDir>
+#include <QToolBar>
 
 // Forward Declaration
 class ModelObjectAppearance;
@@ -112,6 +113,8 @@ private:
     QToolButton *mpGenerateComponentButton;
     QToolButton *mpLoadExternalButton;
     QToolButton *mpLoadFmuButton;
+    QAction *mpHelpAction;
+    QToolBar *mpHelpToolBar;
     QGridLayout *mpGrid;
     int mViewMode;
     CoreLibraryAccess *mpCoreAccess;
