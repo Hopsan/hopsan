@@ -50,7 +50,7 @@ Node::Node(const size_t datalength)
     //Init pointer
     mpOwnerSystem = 0;
 
-    //Sett initial node type
+    //Set initial node type
     mNodeType = "UndefinedNodeType";
 
     //Resize
@@ -124,7 +124,7 @@ void Node::setDataCharacteristics(const size_t id, const string name, const stri
 
 //! Get a specific data name and unit
 //! @param [in] id This is the ENUM data id
-//! @returns A pointer to the desierd description or 0 if out of bounds
+//! @returns A pointer to the desired description or 0 if out of bounds
 const NodeDataDescription* Node::getDataDescription(const size_t id) const
 {
     if (id < mDataDescriptions.size())
@@ -173,7 +173,8 @@ const std::vector<NodeDataDescription>* Node::getDataDescriptions() const
 
 void Node::copyNodeDataValuesTo(Node *pNode)
 {
-    //this ska kopiera sina varabler till rNode
+    // this ska kopiera sina varabler till pNode
+    assert(pNode->getNodeType()==this->getNodeType());
     if(pNode->getNodeType()==this->getNodeType())
     {
         for(size_t i=0; i<pNode->getNumDataVariables(); ++i)
@@ -189,10 +190,6 @@ void Node::copyNodeDataValuesTo(Node *pNode)
         }
         setSpecialStartValues(pNode); //Handles Wave, imp variables and similar
     }
-    else
-    {
-        assert(false);
-    }
 }
 
 void Node::setSpecialStartValues(Node* /*pNode*/)
@@ -202,7 +199,7 @@ void Node::setSpecialStartValues(Node* /*pNode*/)
 }
 
 
-//! Pre allocate memory for the needed amount of log data
+//! @brief Pre allocate memory for the needed amount of log data
 bool Node::preAllocateLogSpace(const size_t nLogSlots)
 {
     // Dont try to allocate if we are not going to log
@@ -257,7 +254,8 @@ bool Node::preAllocateLogSpace(const size_t nLogSlots)
 //    }
 //}
 
-//! Copy current data vector into log storage, also adds current time
+//! @brief Copy current data vector into log storage at given logslot
+//! @warning No bounds check is done
 void Node::logData(const size_t logSlot)
 {
     if (mDoLog)
@@ -381,17 +379,16 @@ void Node::disableLog()
 
 int Node::getNumberOfPortsByType(int type)
 {
-    assert(mConnectedPorts.size() > 1);
-    int n_Ports = 0;
+    int nPorts = 0;
     std::vector<Port*>::iterator it;
     for (it=mConnectedPorts.begin(); it!=mConnectedPorts.end(); ++it)
     {
         if ((*it)->getPortType() == type)
         {
-            n_Ports++;
+            nPorts++;
         }
     }
-    return n_Ports;
+    return nPorts;
 }
 
 //! @brief Returns a pointer to the ComponentSystem that own this Node

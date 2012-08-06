@@ -93,17 +93,17 @@ namespace hopsan {
 
     public:
         //==========Public functions==========
-        //Constructor - Destructor- Creator
+        // Constructor - Destructor- Creator
         ComponentSystem();
         ~ComponentSystem();
         static Component* Creator(){ return new ComponentSystem(); }
 
-        //Set the subsystem CQS type
+        // Set the subsystem CQS type
         void setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet=false);
         bool changeSubComponentSystemTypeCQS(const std::string name, const CQSEnumT newType);
         void determineCQSType();
 
-        //adding removing and renaming components
+        // Adding removing and renaming components
         void addComponents(std::vector<Component*> &rComponents);
         void addComponent(Component *pComponent);
         void renameSubComponent(std::string old_name, std::string new_name);
@@ -112,22 +112,22 @@ namespace hopsan {
         std::string reserveUniqueName(std::string desiredName);
         void unReserveUniqueName(std::string name);
 
-        //System Parameter functions
+        // System Parameter functions
         bool renameParameter(const std::string oldName, const std::string newName);
 
-        //Handle system ports
+        // Handle system ports
         Port* addSystemPort(std::string portName);
         std::string renameSystemPort(const std::string oldname, const std::string newname);
         void deleteSystemPort(const std::string name);
 
-        //Getting added components and component names
+        // Getting added components and component names
         Component* getSubComponentOrThisIfSysPort(std::string name);
         Component* getSubComponent(std::string name);
         ComponentSystem* getSubComponentSystem(std::string name);
         std::vector<std::string> getSubComponentNames();
         bool haveSubComponent(std::string name);
 
-        //Connecting and disconnecting components
+        // Connecting and disconnecting components
         bool connect(Port *pPort1, Port *pPort2);
         bool connect(std::string compname1, std::string portname1, std::string compname2, std::string portname2);
         bool disconnect(std::string compname1, std::string portname1, std::string compname2, std::string portname2);
@@ -160,13 +160,13 @@ namespace hopsan {
         void distributeNodePointers(std::vector< std::vector<Node*> > &rSplitNodeVector, size_t nThreads);
 #endif
 
-        //Set and get desired timestep
+        // Set and get desired timestep
         void setDesiredTimestep(const double timestep);
         void setInheritTimestep(const bool inherit=true);
         bool doesInheritTimestep() const;
         double getDesiredTimeStep() const;
 
-        //Log functions
+        // Log functions
         void logTimeAndNodes(const double time);
         void enableLog();
         void disableLog();
@@ -174,38 +174,38 @@ namespace hopsan {
         void setNumLogSamples(const size_t nLogSamples);
         size_t getNumLogSamples();
 
-        //Stop a running init or simulation
+        // Stop a running init or simulation
         void stopSimulation();
         bool wasSimulationAborted();
 
-        //System parameters
+        // System parameters
         bool setSystemParameter(const std::string name, const std::string value, const std::string type, const std::string description="", const std::string unit="", const bool force=false);
         Parameters &getSystemParameters();
 
     private:
         //==========Private functions==========
-        //Time specific functions
+        // Time specific functions
         void setTimestep(const double timestep);
         void adjustTimestep(std::vector<Component*> componentPtrs);
 
-        //log specific functions
+        // log specific functions
         void setLogSettingsSampleTime(double log_dt, double start, double stop, double sampletime);
         void setLogSettingsSkipFactor(double factor, double start, double stop, double sampletime);
         void setLogSettingsNSamples(int nSamples, double start, double stop, double sampletime);
         void preAllocateLogSpace(const double startT, const double stopT, const size_t nSamples = 2048);
 
-        //Add and Remove sub nodes
+        // Add and Remove sub nodes
         void addSubNode(Node* node_ptr);
         void removeSubNode(Node* node_ptr);
 
-        //Add and Remove subcomponent ptrs from storage vectors
+        // Add and Remove subcomponent ptrs from storage vectors
         void addSubComponentPtrToStorage(Component* pComponent);
         void removeSubComponentPtrFromStorage(Component* pComponent);
 
         void sortComponentVector(std::vector<Component*> &rOldSignalVector);
         bool componentVectorContains(std::vector<Component*> vector, Component *pComp);
 
-        //UniqueName specific functions
+        // UniqueName specific functions
         std::string determineUniquePortName(std::string portname);
         std::string determineUniqueComponentName(std::string name);
 

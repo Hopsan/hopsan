@@ -62,7 +62,7 @@ public:
     enum CQSEnumT {C, Q, S, UndefinedCQSType};
 
     //==========Public functions==========
-    //Virtual functions
+    // Virtual functions
     virtual void loadStartValues();
     virtual void loadStartValuesFromSimulation();
     virtual void initialize(); //!< @todo We should really be able to return sucess true or false from components
@@ -74,7 +74,7 @@ public:
     virtual bool doesInheritTimestep() const;
     virtual bool checkModelBeforeSimulation();
 
-    //Name and type
+    // Name and type
     void setName(std::string name, bool doOnlyLocalRename=false);
     const std::string getName() const;
     const std::string getTypeName() const;
@@ -83,7 +83,13 @@ public:
     CQSEnumT getTypeCQS() const;
     std::string getTypeCQSString() const;
 
-    //Parameters
+    // Component type identification
+    bool isComponentC();
+    bool isComponentQ();
+    bool isComponentSystem();
+    bool isComponentSignal();
+
+    // Parameters
     //void registerDynamicParameter(const std::string name, const std::string description, const std::string unit, double &rValue);
     void initializeDynamicParameters();
     void updateDynamicParameterValues();
@@ -104,25 +110,19 @@ public:
     void updateParameters();
     bool checkParameters(std::string &errParName);
 
-    //Start values
+    // Start values
     double getStartValue(Port* pPort, const size_t idx, const size_t portIdx=0);
     void setStartValue(Port* pPort, const size_t idx, const double value);
     void disableStartValue(Port* pPort, const size_t idx);
 
-    //Ports
+    // Ports
     std::vector<Port*> getPortPtrVector();
     Port *getPort(const std::string portname);
     std::vector<std::string> getPortNames();
 
-    //System parent
+    // System parent
     ComponentSystem *getSystemParent();
     size_t getModelHierarchyDepth();
-
-    // Component type identification
-    bool isComponentC();
-    bool isComponentQ();
-    bool isComponentSystem();
-    bool isComponentSignal();
 
     //! @todo Should it be possible to set timestep of a component? Should only be possible for a Systemcomponent
     //void setTimestep(const double timestep);
@@ -137,20 +137,20 @@ public:
     void addErrorMessage(const std::string message);
     void addInfoMessage(const std::string message);
 
-    //Stop a running simulation
+    // Stop a running simulation
     void stopSimulation();
 
 protected:
     //==========Protected member functions==========
-    //Constructor - Destructor
+    // Constructor - Destructor
     Component();
 
-    //Virtual functions
+    // Virtual functions
     virtual void simulateOneTimestep();
     virtual void finalize();
     virtual void setTimestep(const double timestep);
 
-    //Port functions
+    // Port functions
     Port* addPort(const std::string portName, const PortTypesEnumT portType, const NodeTypeT nodeType, const Port::ReqConnEnumT reqConnection);
     Port* addPowerPort(const std::string portName, const std::string nodeType, const Port::ReqConnEnumT reqConnect=Port::REQUIRED);
     Port* addReadPort(const std::string portName, const std::string nodeType, const Port::ReqConnEnumT reqConnect=Port::REQUIRED);
@@ -162,11 +162,11 @@ protected:
     std::string renamePort(const std::string oldname, const std::string newname);
     void deletePort(const std::string name);
 
-    //NodeData ptr function
+    // NodeData ptr function
     double *getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue=0);
     double *getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx, const int dataId, const double defaultValue=0);
 
-    //Unique name functions
+    // Unique name functions
     virtual std::string determineUniquePortName(std::string portname);
 
     //==========Protected member variables==========
@@ -185,11 +185,11 @@ private:
     typedef std::map<std::string, Port*> PortPtrMapT;
     typedef std::pair<std::string, Port*> PortPtrPairT;
 
-    //Private member functions
+    // Private member functions
     void setSystemParent(ComponentSystem *pComponentSystem);
     void setTypeName(const std::string typeName);
 
-    //Private member variables
+    // Private member variables
     std::string mName;
     std::string mTypeName;
     std::string mSubTypeName;

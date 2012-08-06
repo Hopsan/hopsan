@@ -2658,13 +2658,13 @@ bool ComponentSystem::simulateAndMeasureTime(const size_t steps)
 {
     double time = 0;
 
-//    //Reset all measured times first
-//    for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
-//        mComponentSignalptrs[s]->setMeasuredTime(0);
-//    for(size_t c=0; c<mComponentCptrs.size(); ++c)
-//        mComponentCptrs[c]->setMeasuredTime(0);
-//    for(size_t q=0; q<mComponentQptrs.size(); ++q)
-//        mComponentQptrs[q]->setMeasuredTime(0);
+    // Reset all measured times first
+    for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
+        mComponentSignalptrs[s]->setMeasuredTime(0);
+    for(size_t c=0; c<mComponentCptrs.size(); ++c)
+        mComponentCptrs[c]->setMeasuredTime(0);
+    for(size_t q=0; q<mComponentQptrs.size(); ++q)
+        mComponentQptrs[q]->setMeasuredTime(0);
 
     // Measure time for each component during specified amount of steps
     for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
@@ -2702,14 +2702,6 @@ bool ComponentSystem::simulateAndMeasureTime(const size_t steps)
         time = double((comp_end-comp_start).seconds());
         mComponentQptrs[q]->setMeasuredTime(time/double(steps));
     }
-
-//    //Divide measured times with number of steps, to get the average
-//    for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
-//        mComponentSignalptrs[s]->setMeasuredTime(mComponentSignalptrs[s]->getMeasuredTime()/steps);
-//    for(size_t c=0; c<mComponentCptrs.size(); ++c)
-//        mComponentCptrs[c]->setMeasuredTime(mComponentCptrs[c]->getMeasuredTime()/steps);
-//    for(size_t q=0; q<mComponentQptrs.size(); ++q)
-//        mComponentQptrs[q]->setMeasuredTime(mComponentQptrs[q]->getMeasuredTime()/steps);
 
     return true;
 }
