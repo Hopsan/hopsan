@@ -40,7 +40,7 @@ public:
         return new MyExampleOrifice();
     }
 
-    // The Constructor function that is run immediately when a new object of the class is created
+    // The Configure function that is run when a new object of the class is created
     // Use this function to set initial member variable values, and to register Ports, Parameters and Startvalues
     void configure()
     {
