@@ -50,7 +50,7 @@ namespace hopsan {
             return new HydraulicComponentsInComponentTest();
         }
 
-        HydraulicComponentsInComponentTest() : ComponentSystem()
+        void configure()
         {
             //Initialize parameters
             Volume = 1e-3;

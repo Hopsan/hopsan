@@ -61,6 +61,9 @@ class DLLIMPORTEXPORT Node
     friend class HopsanEssentials;
 
 public:
+    Node(const size_t datalength);
+    void setDataCharacteristics(const size_t id, const std::string name, const std::string unit, const NodeDataVariableTypeT vartype=Default);
+
     const NodeTypeT getNodeType() const;
     size_t getNumDataVariables() const;
 
@@ -81,14 +84,11 @@ public:
     ComponentSystem *getOwnerSystem();
 
 protected:
-    //Protected member functions
-    Node(const size_t datalength);
-    void setDataCharacteristics(const size_t id, const std::string name, const std::string unit, const NodeDataVariableTypeT vartype=Default);
-
+    // Protected member functions
     void copyNodeDataValuesTo(Node *pNode);
     virtual void setSpecialStartValues(Node *pNode);
 
-    bool preAllocateLogSpace(const size_t nLogSlots);
+    void preAllocateLogSpace(const size_t nLogSlots);
 
     double *getDataPtr(const size_t data_type);
 
@@ -116,6 +116,9 @@ private:
     std::vector<std::vector<double> > mDataStorage;
     bool mDoLog;
 };
+
+//! @brief Temporary help function for node creation, should bot be needed later /Peter
+DLLIMPORTEXPORT Node* createNodeTemp(HopsanEssentials *pHopEss, NodeTypeT node_type);
 
 typedef ClassFactory<NodeTypeT, Node> NodeFactory;
 }

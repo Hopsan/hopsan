@@ -47,7 +47,7 @@ namespace hopsan {
             return new HydraulicPowerSensor();
         }
 
-        HydraulicPowerSensor() : ComponentSignal()
+        void configure()
         {
 
             mpP1 = addReadPort("P1", "NodeHydraulic");

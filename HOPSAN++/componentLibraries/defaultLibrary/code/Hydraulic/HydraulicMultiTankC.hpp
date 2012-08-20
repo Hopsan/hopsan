@@ -52,7 +52,7 @@ namespace hopsan {
             return new HydraulicMultiTankC();
         }
 
-        HydraulicMultiTankC() : ComponentC()
+        void configure()
         {
             p         = 1.0e5;
             Zc        = 0.0;

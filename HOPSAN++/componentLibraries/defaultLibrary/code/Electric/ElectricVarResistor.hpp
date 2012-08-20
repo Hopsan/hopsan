@@ -64,7 +64,7 @@ public:
         return new ElectricVarResistor();
      }
 
-     ElectricVarResistor() : ComponentQ()
+     void configure()
      {
         const double Conduct = 0.1;
 

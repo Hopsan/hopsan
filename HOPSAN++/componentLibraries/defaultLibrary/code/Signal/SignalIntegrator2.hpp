@@ -48,7 +48,7 @@ namespace hopsan {
             return new SignalIntegrator2();
         }
 
-        SignalIntegrator2() : ComponentSignal()
+        void configure()
         {
 
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);

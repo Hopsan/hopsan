@@ -47,7 +47,7 @@ namespace hopsan {
             return new HydraulicUndefinedConnectionQ();
         }
 
-        HydraulicUndefinedConnectionQ() : ComponentQ()
+        void configure()
         {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
 

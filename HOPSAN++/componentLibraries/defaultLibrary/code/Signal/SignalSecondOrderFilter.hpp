@@ -50,7 +50,7 @@ namespace hopsan {
             return new SignalSecondOrderFilter();
         }
 
-        SignalSecondOrderFilter() : ComponentSignal()
+        void configure()
         {
 
             mMin = -1.5E+300;

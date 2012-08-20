@@ -45,7 +45,7 @@ namespace hopsan {
             return new MechanicInterfaceQ();
         }
 
-        MechanicInterfaceQ() : ComponentQ()
+        void configure()
         {
             mpP1 = addPowerPort("P1", "NodeMechanic");
         }

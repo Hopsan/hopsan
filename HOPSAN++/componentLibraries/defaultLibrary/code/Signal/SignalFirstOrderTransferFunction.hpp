@@ -50,7 +50,7 @@ namespace hopsan {
             return new SignalFirstOrderTransferFunction();
         }
 
-        SignalFirstOrderTransferFunction() : ComponentSignal()
+        void configure()
         {
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);

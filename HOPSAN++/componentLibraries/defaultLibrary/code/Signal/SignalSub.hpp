@@ -50,7 +50,7 @@ namespace hopsan {
             return new SignalSub();
         }
 
-        SignalSub() : ComponentSignal()
+        void configure()
         {
             mpMultiInSumPort = addReadMultiPort("insum", "NodeSignal", Port::NOTREQUIRED);
             mpMultiInSubPort = addReadMultiPort("insub", "NodeSignal", Port::NOTREQUIRED);

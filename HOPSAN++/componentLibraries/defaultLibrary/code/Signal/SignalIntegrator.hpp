@@ -49,7 +49,7 @@ namespace hopsan {
             return new SignalIntegrator();
         }
 
-        SignalIntegrator() : ComponentSignal()
+        void configure()
         {
 
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);

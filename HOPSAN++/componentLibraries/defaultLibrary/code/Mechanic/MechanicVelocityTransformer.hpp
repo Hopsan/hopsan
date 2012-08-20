@@ -44,7 +44,7 @@ namespace hopsan {
             return new MechanicVelocityTransformer();
         }
 
-        MechanicVelocityTransformer() : ComponentQ()
+        void configure()
         {
             //Set member attributes
             v = 0.0;

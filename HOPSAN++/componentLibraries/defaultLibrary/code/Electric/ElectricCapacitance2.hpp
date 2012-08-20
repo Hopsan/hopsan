@@ -68,7 +68,7 @@ public:
         return new ElectricCapacitance2();
      }
 
-     ElectricCapacitance2() : ComponentC()
+     void configure()
      {
         const double Cc = 1.e-9;
         const double alpha = 0.3;

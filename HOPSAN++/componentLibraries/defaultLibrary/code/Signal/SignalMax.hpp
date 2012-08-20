@@ -49,7 +49,7 @@ namespace hopsan {
             return new SignalMax();
         }
 
-        SignalMax() : ComponentSignal()
+        void configure()
         {
             mpMultiInPort = addReadMultiPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOutPort = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);

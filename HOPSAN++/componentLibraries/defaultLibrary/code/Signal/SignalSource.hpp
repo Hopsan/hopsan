@@ -47,7 +47,7 @@ namespace hopsan {
             return new SignalSource();
         }
 
-        SignalSource() : ComponentSignal()
+        void configure()
         {
             mValue = 1.0;
 

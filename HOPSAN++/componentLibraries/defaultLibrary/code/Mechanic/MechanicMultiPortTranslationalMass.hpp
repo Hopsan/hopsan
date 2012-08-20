@@ -52,7 +52,7 @@ namespace hopsan {
             return new MechanicMultiPortTranslationalMass();
         }
 
-        MechanicMultiPortTranslationalMass() : ComponentQ()
+        void configure()
         {
             //Set member attributes
             m = 100.0;

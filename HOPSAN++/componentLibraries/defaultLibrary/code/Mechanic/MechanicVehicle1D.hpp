@@ -108,7 +108,7 @@ public:
         return new MechanicVehicle1D();
      }
 
-     MechanicVehicle1D() : ComponentQ()
+     void configure()
      {
         const double Mc = 1000.;
         const double cfr = 0.02;

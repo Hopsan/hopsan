@@ -59,7 +59,7 @@ namespace hopsan {
             return new HydraulicVolumeMultiPort();
         }
 
-        HydraulicVolumeMultiPort() : ComponentC()
+        void configure()
         {
             //Set member attributes
             mBulkmodulus   = 1.0e9;

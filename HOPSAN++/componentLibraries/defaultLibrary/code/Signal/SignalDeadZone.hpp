@@ -42,7 +42,7 @@ namespace hopsan {
             return new SignalDeadZone();
             }
 
-        SignalDeadZone() : ComponentSignal()
+        void configure()
         {
             mStartDead = -1.0;
             mEndDead = 1.0;

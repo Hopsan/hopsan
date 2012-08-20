@@ -46,7 +46,7 @@ namespace hopsan {
             return new SignalOutputInterface();
         }
 
-        SignalOutputInterface() : ComponentSignal()
+        void configure()
         {
             mpOut = addReadPort("in", "NodeSignal");
         }

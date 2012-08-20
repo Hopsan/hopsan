@@ -46,7 +46,7 @@ namespace hopsan {
             return new SignalTime();
         }
 
-        SignalTime() : ComponentSignal()
+        void configure()
         {
 
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);

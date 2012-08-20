@@ -43,7 +43,7 @@ namespace hopsan {
             return new HydraulicLaminarOrifice();
         }
 
-        HydraulicLaminarOrifice() : ComponentQ()
+        void configure()
         {
             Kc = 1.0e-11;
 

@@ -60,7 +60,7 @@ namespace hopsan {
             return new MechanicTranslationalMassWithCoulombFriction();
         }
 
-        MechanicTranslationalMassWithCoulombFriction() : ComponentQ()
+        void configure()
         {
             //Set member attributes
             m = 100.0;

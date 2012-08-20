@@ -52,6 +52,8 @@ using namespace hopsan;
 Component::Component()
 {
     // Set initial values, they will be overwritten soon, but good for debugging
+    mpHopsanEssentials = 0;
+    mpMessageHandler = 0;
     mTypeName = "NoTypeNameSetYet";
     mSubTypeName = "";
     mName = "NoNameSetYet";
@@ -288,6 +290,11 @@ void Component::setSubTypeName(const string subTypeName)
 void Component::stopSimulation()
 {
     mpSystemParent->stopSimulation();
+}
+
+HopsanEssentials *Component::getHopsanEssentials()
+{
+    return mpHopsanEssentials;
 }
 
 //void Component::registerDynamicParameter(const std::string name, const std::string description, const std::string unit, double &rValue)
@@ -546,7 +553,7 @@ Port* Component::addPort(const string portName, const PortTypesEnumT portType, c
     //Signal autmatic name change
     if (newname != portName)
     {
-        gCoreMessageHandler.addDebugMessage("Automatically changed name of added port from: {" + portName + "} to {" + newname + "}");
+        addDebugMessage("Automatically changed name of added port from: {" + portName + "} to {" + newname + "}");
     }
     return new_port;
 }
@@ -631,7 +638,7 @@ string Component::renamePort(const string oldname, const string newname)
     }
     else
     {
-        gCoreMessageHandler.addWarningMessage("Trying to rename port {" + oldname + "}, but not found");
+        addWarningMessage("Trying to rename port {" + oldname + "}, but not found");
         return oldname;
     }
 }
@@ -650,7 +657,7 @@ void Component::deletePort(const string name)
     }
     else
     {
-        gCoreMessageHandler.addWarningMessage("Trying to delete port {" + name + "}, but not found");
+        addWarningMessage("Trying to delete port {" + name + "}, but not found");
     }
 }
 
@@ -668,7 +675,7 @@ double *Component::getSafeNodeDataPtr(Port* pPort, const int dataId, const doubl
     //If this is one of the multiports then give an error message to the user so that they KNOW that they have made a misstake
     if (pPort->getPortType() >= MULTIPORT)
     {
-        gCoreMessageHandler.addErrorMessage(string("Port: ")+pPort->getPortName()+string(" is a multiport. Use getSafeMultiPortNodeDataPtr() instead of getSafeNodeDataPtr()"));
+        addErrorMessage(string("Port: ")+pPort->getPortName()+string(" is a multiport. Use getSafeMultiPortNodeDataPtr() instead of getSafeNodeDataPtr()"));
     }
     return pPort->getSafeNodeDataPtr(dataId, defaultValue);
 }
@@ -688,7 +695,7 @@ double *Component::getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx
     //If this is not a multiport then give an error message to the user so that they KNOW that they have made a misstake
     if (pPort->getPortType() < MULTIPORT)
     {
-        gCoreMessageHandler.addErrorMessage(string("Port: ")+pPort->getPortName()+string(" is NOT a multiport. Use getSafeNodeDataPtr() instead of getSafeMultiPortNodeDataPtr()"));
+        addErrorMessage(string("Port: ")+pPort->getPortName()+string(" is NOT a multiport. Use getSafeNodeDataPtr() instead of getSafeMultiPortNodeDataPtr()"));
     }
     return pPort->getSafeNodeDataPtr(dataId, defaultValue, portIdx);
 }
@@ -743,7 +750,7 @@ Port *Component::getPort(const string portname)
     else
     {
         //cout << "failed to find port: " << portname << " in component: " << this->mName << endl;
-        gCoreMessageHandler.addDebugMessage("Trying to get port '" + portname + "' in component '" + this->getName() + "', but not found, pointer invalid");
+        addDebugMessage("Trying to get port '" + portname + "' in component '" + this->getName() + "', but not found, pointer invalid");
         return 0;
     }
 }
@@ -804,36 +811,36 @@ double Component::getMeasuredTime() const
 //! @brief Write an Debug message, i.e. for debugging purposes.
 //! @ingroup ConvenientMessageFunctions
 //! @param [in] message The message string
-void Component::addDebugMessage(const string message)
+void Component::addDebugMessage(const string message, const string tag)
 {
-    gCoreMessageHandler.addDebugMessage(getName()+ "::" + message);
+    mpMessageHandler->addDebugMessage(getName()+ "::" + message, tag);
 }
 
 
 //! @brief Write an Warning message.
 //! @ingroup ConvenientMessageFunctions
 //! @param [in] message The message string
-void Component::addWarningMessage(const string message)
+void Component::addWarningMessage(const string message, const string tag)
 {
-    gCoreMessageHandler.addWarningMessage(getName()+ "::" + message);
+    mpMessageHandler->addWarningMessage(getName()+ "::" + message, tag);
 }
 
 
 //! @brief Write an Error message.
 //! @ingroup ConvenientMessageFunctions
 //! @param [in] message The message string
-void Component::addErrorMessage(const string message)
+void Component::addErrorMessage(const string message, const string tag)
 {
-    gCoreMessageHandler.addErrorMessage(getName()+ "::" + message);
+    mpMessageHandler->addErrorMessage(getName()+ "::" + message, tag);
 }
 
 
 //! @brief Write an Info message.
 //! @ingroup ConvenientMessageFunctions
 //! @param [in] message The message string
-void Component::addInfoMessage(const string message)
+void Component::addInfoMessage(const string message, const string tag)
 {
-    gCoreMessageHandler.addInfoMessage(getName()+ "::" + message);
+    mpMessageHandler->addInfoMessage(getName()+ "::" + message, tag);
 }
 
 
@@ -900,6 +907,12 @@ Component::~Component()
     }
 
     delete mpParameters;
+}
+
+void Component::configure()
+{
+    // This function should be overloaded in every component
+    // Does nothing by default
 }
 
 

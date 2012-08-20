@@ -40,7 +40,7 @@ namespace hopsan {
             return new MechanicForceTransformer();
         }
 
-        MechanicForceTransformer() : ComponentC()
+        void configure()
         {
             //Set member attributes
             f = 0.0;

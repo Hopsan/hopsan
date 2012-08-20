@@ -54,7 +54,7 @@ namespace hopsan {
             return new HydraulicCheckValveWithOrifice();
         }
 
-        HydraulicCheckValveWithOrifice() : ComponentQ()
+        void configure()
         {
             mKs = 0.000000025;
             mKr = 0.000000005;

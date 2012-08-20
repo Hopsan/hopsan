@@ -56,7 +56,7 @@ namespace hopsan {
             return new SignalBETest();
         }
 
-        SignalBETest() : ComponentSignal()
+        void configure()
         {
             mGain = 1.0;
 

@@ -48,7 +48,7 @@ namespace hopsan {
             return new HydraulicFlowSourceQ();
         }
 
-        HydraulicFlowSourceQ() : ComponentQ()
+        void configure()
         {
             mFlow = 1.0e-3;
 

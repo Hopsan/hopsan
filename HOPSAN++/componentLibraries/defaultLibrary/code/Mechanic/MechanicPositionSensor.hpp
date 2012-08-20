@@ -47,7 +47,7 @@ namespace hopsan {
             return new MechanicPositionSensor();
         }
 
-        MechanicPositionSensor() : ComponentSignal()
+        void configure()
         {
 
             mpP1 = addReadPort("P1", "NodeMechanic", Port::NOTREQUIRED);

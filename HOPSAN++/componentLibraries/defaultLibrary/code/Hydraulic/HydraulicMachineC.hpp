@@ -58,7 +58,7 @@ namespace hopsan {
             return new HydraulicMachineC();
         }
 
-        HydraulicMachineC() : ComponentC()
+        void configure()
         {
             //Set member attributes
             betae = 1000000000;

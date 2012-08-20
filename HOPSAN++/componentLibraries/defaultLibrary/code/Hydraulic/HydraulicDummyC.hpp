@@ -35,7 +35,7 @@ namespace hopsan {
             return new HydraulicDummyC();
         }
 
-        HydraulicDummyC() : ComponentC()
+        void configure()
         {
             //Set member attributes
 

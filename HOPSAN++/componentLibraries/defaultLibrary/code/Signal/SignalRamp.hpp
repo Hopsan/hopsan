@@ -64,7 +64,7 @@ namespace hopsan {
             return new SignalRamp();
         }
 
-        SignalRamp() : ComponentSignal()
+        void configure()
         {
             mBaseValue = 0.0;
             mAmplitude = 1.0;

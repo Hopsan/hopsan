@@ -54,7 +54,7 @@ namespace hopsan {
             return new HydraulicFixedDisplacementMotorQ();
         }
 
-        HydraulicFixedDisplacementMotorQ() : ComponentQ()
+        void configure()
         {
             dp = 0.00005;
             Bm = 0;

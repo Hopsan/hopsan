@@ -48,7 +48,7 @@ namespace hopsan {
             return new SignalSmallerThan();
         }
 
-        SignalSmallerThan() : ComponentSignal()
+        void configure()
         {
             mLimit = 0.0;
 

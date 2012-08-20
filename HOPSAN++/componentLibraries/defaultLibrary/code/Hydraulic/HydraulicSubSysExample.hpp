@@ -50,7 +50,7 @@ namespace hopsan {
             return new HydraulicSubSysExample();
         }
 
-        HydraulicSubSysExample() : ComponentSystem()
+        void configure()
         {
             volumeL = new HydraulicVolume();
             orificeC = new HydraulicLaminarOrifice();

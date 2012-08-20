@@ -56,7 +56,7 @@ namespace hopsan {
             return new HydraulicOverCenterValve();
         }
 
-        HydraulicOverCenterValve() : ComponentQ()
+        void configure()
         {
             pref = 2000000;
             tao = 0.01;

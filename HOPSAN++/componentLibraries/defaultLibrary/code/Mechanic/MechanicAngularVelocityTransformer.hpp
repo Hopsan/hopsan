@@ -50,7 +50,7 @@ namespace hopsan {
             return new MechanicAngularVelocityTransformer();
         }
 
-        MechanicAngularVelocityTransformer() : ComponentQ()
+        void configure()
         {
             //Set member attributes
             w = 0.0;

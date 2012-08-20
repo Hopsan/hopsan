@@ -47,7 +47,7 @@ namespace hopsan {
             return new SignalSink();
         }
 
-        SignalSink() : ComponentSignal()
+        void configure()
         {
             mpIn = addReadMultiPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpInRight = addReadMultiPort("in_right", "NodeSignal", Port::NOTREQUIRED);

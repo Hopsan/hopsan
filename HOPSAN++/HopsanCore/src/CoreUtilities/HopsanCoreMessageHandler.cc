@@ -42,6 +42,7 @@ HopsanCoreMessageHandler::HopsanCoreMessageHandler()
 
 HopsanCoreMessageHandler::~HopsanCoreMessageHandler()
 {
+    clear();
 #ifdef USETBB
     delete mpMutex;
 #endif
@@ -68,6 +69,24 @@ void HopsanCoreMessageHandler::addMessage(const int type, const string preFix, c
     {
         //If the queue is to long delete old unhandled messages
         delete mMessageQueue.front();
+        mMessageQueue.pop();
+    }
+#ifdef USETBB
+    mpMutex->unlock();
+#endif
+}
+
+//! @brief Clears the message queue
+void HopsanCoreMessageHandler::clear()
+{
+#ifdef USETBB
+    mpMutex->lock();
+#endif
+    while(mMessageQueue.size() > 0)
+    {
+        // First delete the message itself
+        delete mMessageQueue.front();
+        // Now pop dangling pointer
         mMessageQueue.pop();
     }
 #ifdef USETBB
@@ -147,16 +166,4 @@ size_t HopsanCoreMessageHandler::getNumWaitingMessages() const
 #else
     return mMessageQueue.size();
 #endif
-}
-
-//! @brief The global (within HopsanCore) message handler object
-//! @see hopsan::getCoreMessageHandlerPtr()
-HopsanCoreMessageHandler hopsan::gCoreMessageHandler;
-
-//! @brief Returns a pointer to the global (within HopsanCore) message handler object
-//! @details Use this function if you need to access the message handler object from outside the HopsanCore .dll/.so
-//! @returns A ptr to the global message handler object
-DLLIMPORTEXPORT HopsanCoreMessageHandler* hopsan::getCoreMessageHandlerPtr()
-{
-    return &gCoreMessageHandler;
 }

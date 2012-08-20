@@ -1581,22 +1581,27 @@ void SystemContainer::createFMUSourceFilesFromDialog()
 
 
     QTextStream fmuHeaderStream(&fmuHeaderFile);
-    fmuHeaderStream << "#ifndef HOPSANFMU_H\n";
-    fmuHeaderStream << "#define HOPSANFMU_H\n\n";
-    fmuHeaderStream << "#ifdef WRAPPERCOMPILATION\n";
-    fmuHeaderStream << "    #define DLLEXPORT __declspec(dllexport)\n";
-    fmuHeaderStream << "    extern \"C\" {\n";
-    fmuHeaderStream << "#else\n";
-    fmuHeaderStream << "    #define DLLEXPORT\n";
-    fmuHeaderStream << "#endif\n\n";
-    fmuHeaderStream << "DLLEXPORT void initializeHopsanWrapper(char* filename);\n";
-    fmuHeaderStream << "DLLEXPORT void simulateOneStep();\n";
-    fmuHeaderStream << "DLLEXPORT double getVariable(char* component, char* port, size_t idx);\n\n";
-    fmuHeaderStream << "DLLEXPORT void setVariable(char* component, char* port, size_t idx, double value);\n\n";
-    fmuHeaderStream << "#ifdef WRAPPERCOMPILATION\n";
-    fmuHeaderStream << "}\n";
-    fmuHeaderStream << "#endif\n\n";
-    fmuHeaderStream << "#endif // HOPSANFMU_H\n";
+    QTextLineStream fmuHeaderLines(fmuHeaderStream);
+    fmuHeaderLines << "#ifndef HOPSANFMU_H";
+    fmuHeaderLines << "#define HOPSANFMU_H";
+    fmuHeaderLines << "";
+    fmuHeaderLines << "#ifdef WRAPPERCOMPILATION";
+    fmuHeaderLines << "    #define DLLEXPORT __declspec(dllexport)";
+    fmuHeaderLines << "    extern \"C\" {";
+    fmuHeaderLines << "#else";
+    fmuHeaderLines << "    #define DLLEXPORT";
+    fmuHeaderLines << "#endif";
+    fmuHeaderLines << "";
+    fmuHeaderLines << "DLLEXPORT void initializeHopsanWrapper(char* filename);";
+    fmuHeaderLines << "DLLEXPORT void simulateOneStep();";
+    fmuHeaderLines << "DLLEXPORT double getVariable(char* component, char* port, size_t idx);";
+    fmuHeaderLines << "";
+    fmuHeaderLines << "DLLEXPORT void setVariable(char* component, char* port, size_t idx, double value);";
+    fmuHeaderLines << "";
+    fmuHeaderLines << "#ifdef WRAPPERCOMPILATION";
+    fmuHeaderLines << "}";
+    fmuHeaderLines << "#endif";
+    fmuHeaderLines << "#endif // HOPSANFMU_H";
     fmuHeaderFile.close();
 
 
@@ -1605,47 +1610,53 @@ void SystemContainer::createFMUSourceFilesFromDialog()
 
 
     QTextStream fmuSourceStream(&fmuSourceFile);
-    fmuSourceStream << "#include <iostream>\n";
-    fmuSourceStream << "#include <assert.h>\n";
-    fmuSourceStream << "#include \"HopsanFMU.h\"\n";
-    fmuSourceStream << "#include \"include/HopsanCore.h\"\n";
-    fmuSourceStream << "#include \"include/HopsanEssentials.h\"\n";
-    fmuSourceStream << "#include \"include/ComponentEssentials.h\"\n";
-    fmuSourceStream << "#include \"include/ComponentUtilities.h\"\n";
-    fmuSourceStream << "#include \"include/CoreUtilities/HmfLoader.h\"\n\n";
-    fmuSourceStream << "static double fmu_time=0;\n";
-    fmuSourceStream << "static hopsan::ComponentSystem *spCoreComponentSystem;\n";
-    fmuSourceStream << "static std::vector<std::string> sComponentNames;\n\n";
-    fmuSourceStream << "void initializeHopsanWrapper(char* filename)\n";
-    fmuSourceStream << "{\n";
-    fmuSourceStream << "    double startT;      //Dummy variable\n";
-    fmuSourceStream << "    double stopT;       //Dummy variable\n";
-    fmuSourceStream << "    spCoreComponentSystem = hopsan::HopsanEssentials::getInstance()->loadHMFModel(filename, startT, stopT);\n";
-    fmuSourceStream << "    spCoreComponentSystem->setDesiredTimestep(0.001);\n";           //!< @todo Time step should not be hard coded
-    fmuSourceStream << "    spCoreComponentSystem->initialize(0,10,0);\n";
-    fmuSourceStream << "}\n\n";
-    fmuSourceStream << "void simulateOneStep()\n";
-    fmuSourceStream << "{\n";
-    fmuSourceStream << "    if(spCoreComponentSystem->isSimulationOk())\n";
-    fmuSourceStream << "    {\n";
-    fmuSourceStream << "        double timestep = spCoreComponentSystem->getDesiredTimeStep();\n";
-    fmuSourceStream << "        spCoreComponentSystem->simulate(fmu_time, fmu_time+timestep);\n";
-    fmuSourceStream << "        fmu_time = fmu_time+timestep;\n";
-    fmuSourceStream << "    }\n";
-    fmuSourceStream << "    else\n";
-    fmuSourceStream << "    {\n";
-    fmuSourceStream << "        std::cout << \"Simulation failed!\";\n";
-    fmuSourceStream << "    }\n";
-    fmuSourceStream << "}\n\n";
-    fmuSourceStream << "double getVariable(char* component, char* port, size_t idx)\n";
-    fmuSourceStream << "{\n";
-    fmuSourceStream << "    return spCoreComponentSystem->getSubComponentOrThisIfSysPort(component)->getPort(port)->readNode(idx);\n";
-    fmuSourceStream << "}\n\n";
-    fmuSourceStream << "void setVariable(char* component, char* port, size_t idx, double value)\n";
-    fmuSourceStream << "{\n";
-    fmuSourceStream << "    assert(spCoreComponentSystem->getSubComponentOrThisIfSysPort(component)->getPort(port) != 0);\n";
-    fmuSourceStream << "    return spCoreComponentSystem->getSubComponentOrThisIfSysPort(component)->getPort(port)->writeNode(idx, value);\n";
-    fmuSourceStream << "}\n";
+    QTextLineStream fmuSrcLines(fmuSourceStream);
+
+    fmuSrcLines << "#include <iostream>";
+    fmuSrcLines << "#include <assert.h>";
+    fmuSrcLines << "#include \"HopsanFMU.h\"";
+    fmuSrcLines << "#include \"include/HopsanCore.h\"";
+    //fmuSrcLines << "#include \"include/ComponentEssentials.h\"";
+    //fmuSrcLines << "#include \"include/ComponentUtilities.h\"";
+    fmuSrcLines << "";
+    fmuSrcLines << "static double fmu_time=0;";
+    fmuSrcLines << "static hopsan::ComponentSystem *spCoreComponentSystem;";
+    fmuSrcLines << "static std::vector<std::string> sComponentNames;";
+    fmuSrcLines << "HopsanEssentials gHopsanCore;";
+    fmuSrcLines << "";
+    fmuSrcLines << "void initializeHopsanWrapper(char* filename)";
+    fmuSrcLines << "{";
+    fmuSrcLines << "    double startT;      //Dummy variable";
+    fmuSrcLines << "    double stopT;       //Dummy variable";
+    fmuSrcLines << "    spCoreComponentSystem = gHopsanCore->loadHMFModel(filename, startT, stopT);\n";
+    fmuSrcLines << "    spCoreComponentSystem->setDesiredTimestep(0.001);";           //!< @todo Time step should not be hard coded
+    fmuSrcLines << "    spCoreComponentSystem->initialize(0,10,0);";
+    fmuSrcLines << "}";
+    fmuSrcLines << "";
+    fmuSrcLines << "void simulateOneStep()";
+    fmuSrcLines << "{";
+    fmuSrcLines << "    if(spCoreComponentSystem->isSimulationOk())";
+    fmuSrcLines << "    {";
+    fmuSrcLines << "        double timestep = spCoreComponentSystem->getDesiredTimeStep();";
+    fmuSrcLines << "        spCoreComponentSystem->simulate(fmu_time, fmu_time+timestep);";
+    fmuSrcLines << "        fmu_time = fmu_time+timestep;\n";
+    fmuSrcLines << "    }";
+    fmuSrcLines << "    else";
+    fmuSrcLines << "    {";
+    fmuSrcLines << "        std::cout << \"Simulation failed!\";";
+    fmuSrcLines << "    }";
+    fmuSrcLines << "}";
+    fmuSrcLines << "";
+    fmuSrcLines << "double getVariable(char* component, char* port, size_t idx)";
+    fmuSrcLines << "{";
+    fmuSrcLines << "    return spCoreComponentSystem->getSubComponentOrThisIfSysPort(component)->getPort(port)->readNode(idx);";
+    fmuSrcLines << "}";
+    fmuSrcLines << "";
+    fmuSrcLines << "void setVariable(char* component, char* port, size_t idx, double value)";
+    fmuSrcLines << "{";
+    fmuSrcLines << "    assert(spCoreComponentSystem->getSubComponentOrThisIfSysPort(component)->getPort(port) != 0);";
+    fmuSrcLines << "    return spCoreComponentSystem->getSubComponentOrThisIfSysPort(component)->getPort(port)->writeNode(idx, value);";
+    fmuSrcLines << "}";
     fmuSourceFile.close();
 
 
@@ -1687,6 +1698,7 @@ void SystemContainer::createFMUSourceFilesFromDialog()
     }
     else
     {
+        //! @todo this seem a bit hardcoded
         dllFile.setFileName(QString(MSVC2008_X86_PATH) + "HopsanCore.dll");
         dllFile.copy(savePath + "/HopsanCore.dll");
         libFile.setFileName(QString(MSVC2008_X86_PATH) + "HopsanCore.lib");
@@ -1975,6 +1987,7 @@ void SystemContainer::createSimulinkSourceFiles()
             mechanicRotationalCPorts.append("P1");
         }
         //! @todo what about pneumatic and electric nodes
+        //! @todo this should not be hardcoded
     }
 
     int nInputs = inputComponents.size();
@@ -2062,72 +2075,76 @@ void SystemContainer::createSimulinkSourceFiles()
     //double par1 = (*mxGetPr(ssGetSFcnParam(S, 0)));
 
     QTextStream wrapperStream(&wrapperFile);
-    QTextLineStream wrpLineStream(wrapperStream);
+    QTextLineStream wrapperLines(wrapperStream);
 
-    wrapperStream << "/*-----------------------------------------------------------------------------\n";
-    wrapperStream << "This source file is part of Hopsan NG\n\n";
-    wrapperStream << "Copyright (c) 2011\n";
-    wrapperStream << "Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,\n";
-    wrapperStream << "Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack\n";
-    wrapperStream << "\n";
-    wrapperStream << "This file is provided \"as is\", with no guarantee or warranty for the\n";
-    wrapperStream << "functionality or reliability of the contents. All contents in this file is\n";
-    wrapperStream << "the original work of the copyright holders at the Division of Fluid and\n";
-    wrapperStream << "Mechatronic Systems (Flumes) at Linköping University. Modifying, using or\n";
-    wrapperStream << "redistributing any part of this file is prohibited without explicit\n";
-    wrapperStream << "permission from the copyright holders.\n";
-    wrapperStream << "-----------------------------------------------------------------------------*/\n\n";
-    wrapperStream << "#define S_FUNCTION_NAME HopsanSimulink\n";
-    wrapperStream << "#define S_FUNCTION_LEVEL 2\n\n";
-
-    wrapperStream << "#include <sstream>\n";
-    wrapperStream << "#include <string>\n";
-    wrapperStream << "#include <vector>\n";
-    wrapperStream << "#include <fstream>\n";
-    wrapperStream << "#include \"simstruc.h\"\n";
-    wrapperStream << "#include \"include/HopsanCore.h\"\n";
-    wrapperStream << "using namespace hopsan;\n";
-    wrapperStream << endl;
+    //! @todo writing the copyright notice should be a subfunction as it may be used in many places, preferably it should read from file, so that we do not forget to change in many places on changes
+    wrapperLines << "/*-----------------------------------------------------------------------------";
+    wrapperLines << "This source file is part of Hopsan NG";
+    wrapperLines << "";
+    wrapperLines << "Copyright (c) 2011";
+    wrapperLines << "Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,";
+    wrapperLines << "Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack";
+    wrapperLines << "";
+    wrapperLines << "This file is provided \"as is\", with no guarantee or warranty for the";
+    wrapperLines << "functionality or reliability of the contents. All contents in this file is";
+    wrapperLines << "the original work of the copyright holders at the Division of Fluid and";
+    wrapperLines << "Mechatronic Systems (Flumes) at Linköping University. Modifying, using or";
+    wrapperLines << "redistributing any part of this file is prohibited without explicit";
+    wrapperLines << "permission from the copyright holders.";
+    wrapperLines << "-----------------------------------------------------------------------------*/";
+    wrapperLines << "";
+    wrapperLines << "#define S_FUNCTION_NAME HopsanSimulink";
+    wrapperLines << "#define S_FUNCTION_LEVEL 2";
+    wrapperLines << "";
+    wrapperLines << "#include <sstream>";
+    wrapperLines << "#include <string>";
+    wrapperLines << "#include <vector>";
+    wrapperLines << "#include <fstream>";
+    wrapperLines << "#include \"simstruc.h\"";
+    wrapperLines << "#include \"include/HopsanCore.h\"";
+    wrapperLines << "using namespace hopsan;";
+    wrapperLines << "";
 
     //! @todo need to be able to error report if file not fond, or maybe not, if no external libs used you dont want error message
-    wrpLineStream << "void readExternalLibsFromTxtFile(const std::string filePath, std::vector<std::string> &rExtLibFileNames)";
-    wrpLineStream << "{";
-    wrpLineStream << "    rExtLibFileNames.clear();";
-    wrpLineStream << "    std::string line;";
-    wrpLineStream << "    std::ifstream file;";
-    wrpLineStream << "    file.open(filePath.c_str());";
-    wrpLineStream << "    if ( file.is_open() )";
-    wrpLineStream << "    {";
-    wrpLineStream << "        while ( file.good() )";
-    wrpLineStream << "        {";
-    wrpLineStream << "            getline(file, line);";
-    wrpLineStream << "            if ((*line.begin() != '#') && !line.empty())";
-    wrpLineStream << "            {";
-    wrpLineStream << "                rExtLibFileNames.push_back(line);";
-    wrpLineStream << "            }";
-    wrpLineStream << "       }";
-    wrpLineStream << "        file.close();";
-    wrpLineStream << "    }";
-    wrpLineStream << "    else";
-    wrpLineStream << "    {";
-    wrpLineStream << "        //cout << \"error, could not open file: \" << filePath << endl;";
-    wrpLineStream << "    }";
-    wrpLineStream << "}";
-    wrpLineStream << "";
+    wrapperLines << "void readExternalLibsFromTxtFile(const std::string filePath, std::vector<std::string> &rExtLibFileNames)";
+    wrapperLines << "{";
+    wrapperLines << "    rExtLibFileNames.clear();";
+    wrapperLines << "    std::string line;";
+    wrapperLines << "    std::ifstream file;";
+    wrapperLines << "    file.open(filePath.c_str());";
+    wrapperLines << "    if ( file.is_open() )";
+    wrapperLines << "    {";
+    wrapperLines << "        while ( file.good() )";
+    wrapperLines << "        {";
+    wrapperLines << "            getline(file, line);";
+    wrapperLines << "            if ((*line.begin() != '#') && !line.empty())";
+    wrapperLines << "            {";
+    wrapperLines << "                rExtLibFileNames.push_back(line);";
+    wrapperLines << "            }";
+    wrapperLines << "       }";
+    wrapperLines << "        file.close();";
+    wrapperLines << "    }";
+    wrapperLines << "    else";
+    wrapperLines << "    {";
+    wrapperLines << "        //cout << \"error, could not open file: \" << filePath << endl;";
+    wrapperLines << "    }";
+    wrapperLines << "}";
+    wrapperLines << "";
 
-    wrpLineStream << "ComponentSystem* pComponentSystem;";
-    wrpLineStream << "bool isOkToSimulate = false;";
-    wrpLineStream << "";
+    wrapperLines << "HopsanEssentials gHopsanCore";
+    wrapperLines << "ComponentSystem* pComponentSystem;";
+    wrapperLines << "bool isOkToSimulate = false;";
+    wrapperLines << "";
 
-    wrpLineStream << "static void mdlInitializeSizes(SimStruct *S)";
-    wrpLineStream << "{";
-    wrpLineStream << "    ssSetNumSFcnParams(S, 0);";
-    wrpLineStream << "    if (ssGetNumSFcnParams(S) != ssGetSFcnParamsCount(S))";
-    wrpLineStream << "    {";
-    wrpLineStream << "        return;";
-    wrpLineStream << "    }";
-    wrpLineStream << "";
-    wrpLineStream << "    //Define S-function input signals";
+    wrapperLines << "static void mdlInitializeSizes(SimStruct *S)";
+    wrapperLines << "{";
+    wrapperLines << "    ssSetNumSFcnParams(S, 0);";
+    wrapperLines << "    if (ssGetNumSFcnParams(S) != ssGetSFcnParamsCount(S))";
+    wrapperLines << "    {";
+    wrapperLines << "        return;";
+    wrapperLines << "    }";
+    wrapperLines << "";
+    wrapperLines << "    //Define S-function input signals";
     wrapperStream << "    if (!ssSetNumInputPorts(S," << nTotalInputsString << ")) return;				//Number of input signals\n";
     int i,j;
     size_t tot=0;
@@ -2236,87 +2253,87 @@ void SystemContainer::createSimulinkSourceFiles()
     wrapperStream << "    ssSetOptions(S, SS_OPTION_EXCEPTION_FREE_CODE);\n";
     wrapperStream << endl;
 
-    wrpLineStream << "    std::vector<std::string> extLibs;";
-    wrpLineStream << "    readExternalLibsFromTxtFile(\"externalLibs.txt\",extLibs);";
-    wrpLineStream << "    for (size_t i=0; i<extLibs.size(); ++i)";
-    wrpLineStream << "    {";
-    wrpLineStream << "        HopsanEssentials::getInstance()->loadExternalComponentLib(extLibs[i]);";
-    wrpLineStream << "    }";
-    wrpLineStream << "";
+    wrapperLines << "    std::vector<std::string> extLibs;";
+    wrapperLines << "    readExternalLibsFromTxtFile(\"externalLibs.txt\",extLibs);";
+    wrapperLines << "    for (size_t i=0; i<extLibs.size(); ++i)";
+    wrapperLines << "    {";
+    wrapperLines << "        gHopsanCore->loadExternalComponentLib(extLibs[i]);";
+    wrapperLines << "    }";
+    wrapperLines << "";
 
     wrapperStream << "    std::string hmfFilePath = \"" << fileName << "\";\n";
-    wrpLineStream << "    double startT, stopT;";
-    wrpLineStream << "    pComponentSystem = HopsanEssentials::getInstance()->loadHMFModel(hmfFilePath, startT, stopT);";
-    wrpLineStream << "    if (pComponentSystem==0)";
-    wrpLineStream << "    {";
+    wrapperLines << "    double startT, stopT;";
+    wrapperLines << "    gHopsanCore->loadHMFModel(hmfFilePath, startT, stopT);";
+    wrapperLines << "    if (pComponentSystem==0)";
+    wrapperLines << "    {";
     wrapperStream << "        ssSetErrorStatus(S,\"Error could not open model: " << fileName << "\");" << endl;
-    wrpLineStream << "        return;";
-    wrpLineStream << "    }";
-    wrpLineStream << "    startT = ssGetTStart(S);";
-    wrpLineStream << "    stopT = ssGetTFinal(S);";
-    wrpLineStream << "    pComponentSystem->setDesiredTimestep(0.001);";
+    wrapperLines << "        return;";
+    wrapperLines << "    }";
+    wrapperLines << "    startT = ssGetTStart(S);";
+    wrapperLines << "    stopT = ssGetTFinal(S);";
+    wrapperLines << "    pComponentSystem->setDesiredTimestep(0.001);";
     if(!pDisablePortLabels->isChecked())
     {
-        wrpLineStream << "    mexCallMATLAB(0, 0, 0, 0, \"HopsanSimulinkPortLabels\");                              //Run the port label script";
+        wrapperLines << "    mexCallMATLAB(0, 0, 0, 0, \"HopsanSimulinkPortLabels\");                              //Run the port label script";
     }
-    wrpLineStream << "}";
-    wrpLineStream << "";
+    wrapperLines << "}";
+    wrapperLines << "";
 
-    wrpLineStream << "static void mdlInitializeSampleTimes(SimStruct *S)";
-    wrpLineStream << "{";
-    wrpLineStream << "    ssSetSampleTime(S, 0, 0.001);";
-    wrpLineStream << "    ssSetOffsetTime(S, 0, 0.0);";
-    wrpLineStream << "";
-    wrpLineStream << "    //Update tunable parameters";
-    wrpLineStream << "    const mxArray* in;";
-    wrpLineStream << "    const char* c_str;";
-    wrpLineStream << "    std::string str;";
+    wrapperLines << "static void mdlInitializeSampleTimes(SimStruct *S)";
+    wrapperLines << "{";
+    wrapperLines << "    ssSetSampleTime(S, 0, 0.001);";
+    wrapperLines << "    ssSetOffsetTime(S, 0, 0.0);";
+    wrapperLines << "";
+    wrapperLines << "    //Update tunable parameters";
+    wrapperLines << "    const mxArray* in;";
+    wrapperLines << "    const char* c_str;";
+    wrapperLines << "    std::string str;";
 
     /////////////////////////////////////////////////////////////////////
 
     for(int p=0; p<tunableParameters.size(); ++p)
     {
     wrapperStream << "    in = mexGetVariable(\"caller\",\"" << tunableParameters[p] << "\");\n";
-    wrpLineStream << "    if(in == NULL )";
-    wrpLineStream << "    {";
+    wrapperLines << "    if(in == NULL )";
+    wrapperLines << "    {";
     wrapperStream << "        mexErrMsgTxt(\"Unable to read parameter \\\""+tunableParameters[p]+"\\\"!\");\n";
-    wrpLineStream << "    	return;";
-    wrpLineStream << "    }";
-    wrpLineStream << "";
-    wrpLineStream << "    c_str = (const char*)mxGetData(in);";
-    wrpLineStream << "";
-    wrpLineStream << "    str = \"\";";
-    wrpLineStream << "    for(int i=0; i<mxGetNumberOfElements(in); ++i)";
-    wrpLineStream << "    {";
-    wrpLineStream << "    	str.append(c_str);";
-    wrpLineStream << "    	c_str += 2*sizeof(char);";
-    wrpLineStream << "    }";
-    wrpLineStream << "";
+    wrapperLines << "    	return;";
+    wrapperLines << "    }";
+    wrapperLines << "";
+    wrapperLines << "    c_str = (const char*)mxGetData(in);";
+    wrapperLines << "";
+    wrapperLines << "    str = \"\";";
+    wrapperLines << "    for(int i=0; i<mxGetNumberOfElements(in); ++i)";
+    wrapperLines << "    {";
+    wrapperLines << "    	str.append(c_str);";
+    wrapperLines << "    	c_str += 2*sizeof(char);";
+    wrapperLines << "    }";
+    wrapperLines << "";
     wrapperStream << "    pComponentSystem->setParameterValue(\""+tunableParameters[p]+"\", str);\n";
     }
 
     /////////////////////////////////////////////////////////////////////
 
-    wrpLineStream << "";
-    wrpLineStream << "";
-    wrpLineStream << "    isOkToSimulate = pComponentSystem->isSimulationOk();";
-    wrpLineStream << "    if (isOkToSimulate)";
-    wrpLineStream << "    {";
-    wrpLineStream << "        pComponentSystem->initialize(0,10);";
-    wrpLineStream << "    }";
-    wrpLineStream << "    else";
-    wrpLineStream << "    {";
-    wrpLineStream << "        ssSetErrorStatus(S,\"Error isSimulationOk() returned False! Most likely some components could not be loaded or some connections could not be established.\");";
-    wrpLineStream << "        return;";
-    wrpLineStream << "    }";
+    wrapperLines << "";
+    wrapperLines << "";
+    wrapperLines << "    isOkToSimulate = pComponentSystem->isSimulationOk();";
+    wrapperLines << "    if (isOkToSimulate)";
+    wrapperLines << "    {";
+    wrapperLines << "        pComponentSystem->initialize(0,10);";
+    wrapperLines << "    }";
+    wrapperLines << "    else";
+    wrapperLines << "    {";
+    wrapperLines << "        ssSetErrorStatus(S,\"Error isSimulationOk() returned False! Most likely some components could not be loaded or some connections could not be established.\");";
+    wrapperLines << "        return;";
+    wrapperLines << "    }";
 
-    wrpLineStream << "}\n";
+    wrapperLines << "}\n";
 
-    wrpLineStream << "static void mdlOutputs(SimStruct *S, int_T tid)";
-    wrpLineStream << "{";
-    wrpLineStream << "    //S-function input signals";
-    wrpLineStream << "    InputRealPtrsType uPtrs1 = ssGetInputPortRealSignalPtrs(S,0);\n";
-    wrpLineStream << "    //S-function output signals";
+    wrapperLines << "static void mdlOutputs(SimStruct *S, int_T tid)";
+    wrapperLines << "{";
+    wrapperLines << "    //S-function input signals";
+    wrapperLines << "    InputRealPtrsType uPtrs1 = ssGetInputPortRealSignalPtrs(S,0);\n";
+    wrapperLines << "    //S-function output signals";
     for(int i=0; i<nTotalOutputs; ++i)
     {
         wrapperStream << "    real_T *y" << i << " = ssGetOutputPortRealSignal(S," << i << ");\n";

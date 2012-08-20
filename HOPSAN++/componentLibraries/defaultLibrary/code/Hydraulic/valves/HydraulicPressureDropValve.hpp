@@ -54,7 +54,7 @@ namespace hopsan {
             return new HydraulicPressureDropValve();
         }
 
-        HydraulicPressureDropValve() : ComponentQ()
+        void configure()
         {
             pref = 20000000;
             tao = 0.01;

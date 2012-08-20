@@ -65,7 +65,7 @@ namespace hopsan {
             return new Hydraulic43LoadSensingValve();
         }
 
-        Hydraulic43LoadSensingValve() : ComponentQ()
+        void configure()
         {
             Cq = 0.67;
             d = 0.01;

@@ -52,7 +52,7 @@ namespace hopsan {
             return new HydraulicFixedDisplacementPump();
         }
 
-        HydraulicFixedDisplacementPump() : ComponentQ()
+        void configure()
         {
             n = 250.0;
             dp = 0.00005;

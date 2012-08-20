@@ -34,7 +34,7 @@ namespace hopsan {
             return new SignalNoiseGenerator();
         }
 
-        SignalNoiseGenerator() : ComponentSignal()
+        void configure()
         {
             y = 1.0;
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);

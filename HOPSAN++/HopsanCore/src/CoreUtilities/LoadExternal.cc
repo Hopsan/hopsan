@@ -44,6 +44,13 @@ using namespace std;
 using namespace hopsan;
 
 //!This function loads a library with given path
+LoadExternal::LoadExternal(ComponentFactory *pComponentFactory, NodeFactory *pNodeFactory, HopsanCoreMessageHandler *pMessenger)
+{
+    mpComponentFactory = pComponentFactory;
+    mpNodeFactory = pNodeFactory;
+    mpMessageHandler = pMessenger;
+}
+
 bool LoadExternal::load(const string libpath)
 {
     typedef void (*register_contents_t)(ComponentFactory* pComponentFactory, NodeFactory* pNodeFactory);
@@ -73,7 +80,7 @@ bool LoadExternal::load(const string libpath)
         //Set search path for dependencies
         const string libdir = libpath.substr(0,slashidx);
         SetDllDirectoryA(libdir.c_str());
-        getCoreMessageHandlerPtr()->addDebugMessage("SetDllDirectoryA: " + libdir);
+        mpMessageHandler->addDebugMessage("SetDllDirectoryA: " + libdir);
     }
 
     // Load library
@@ -85,14 +92,14 @@ bool LoadExternal::load(const string libpath)
     {
         stringstream ss;
         ss << "Opening external library: " << libpath << " Error: " << GetLastError();
-        gCoreMessageHandler.addErrorMessage(ss.str());
+        mpMessageHandler->addErrorMessage(ss.str());
         return false;
     }
     else
     {
         stringstream ss;
         ss << "Success (probably) opening external library: " << libpath;
-        gCoreMessageHandler.addDebugMessage(ss.str());
+        mpMessageHandler->addDebugMessage(ss.str());
     }
 
     bool isHopsanComponentLib=true;
@@ -103,7 +110,7 @@ bool LoadExternal::load(const string libpath)
     {
         stringstream ss;
         ss << "Cannot load symbol 'get_hopsan_info' for: " << libpath << " Error: " << GetLastError();
-        gCoreMessageHandler.addDebugMessage(ss.str());
+        mpMessageHandler->addDebugMessage(ss.str());
         isHopsanComponentLib=false;
     }
 
@@ -113,7 +120,7 @@ bool LoadExternal::load(const string libpath)
     {
         stringstream ss;
         ss << "Cannot load symbol 'register_contents' for: " << libpath << " Error: " << GetLastError();
-        gCoreMessageHandler.addDebugMessage(ss.str());
+        mpMessageHandler->addDebugMessage(ss.str());
         isHopsanComponentLib=false;
     }
 
@@ -131,14 +138,14 @@ bool LoadExternal::load(const string libpath)
     {
         stringstream ss;
         ss << "Opening external lib: " << libpath << " Error: " << dlerror();
-        gCoreMessageHandler.addErrorMessage(ss.str());
+        mpMessageHandler->addErrorMessage(ss.str());
         return false;
     }
     else
     {
         stringstream ss;
         ss << "Success (probably) opening external lib: " << libpath;
-        gCoreMessageHandler.addDebugMessage(ss.str());
+        mpMessageHandler->addDebugMessage(ss.str());
     }
 
     bool isHopsanComponentLib=true;
@@ -151,7 +158,7 @@ bool LoadExternal::load(const string libpath)
     {
         stringstream ss;
         ss << "Cannot load symbol 'get_hopsan_info' for: " << libpath << " Error: " << dlsym_error;
-        gCoreMessageHandler.addDebugMessage(ss.str());
+        mpMessageHandler->addDebugMessage(ss.str());
         isHopsanComponentLib = false;
     }
 
@@ -162,7 +169,7 @@ bool LoadExternal::load(const string libpath)
     {
         stringstream ss;
         ss << "Cannot load symbol 'register_contents' for: " << libpath << " Error: " << dlsym_error;
-        gCoreMessageHandler.addErrorMessage(ss.str());
+        mpMessageHandler->addErrorMessage(ss.str());
         isHopsanComponentLib=false;
     }
 
@@ -182,20 +189,20 @@ bool LoadExternal::load(const string libpath)
 
     if (string(externalLibInfo.libName).empty())
     {
-        gCoreMessageHandler.addErrorMessage("Lib is missing (non-empty) libName when loading lib: " + libpath);
+        mpMessageHandler->addErrorMessage("Lib is missing (non-empty) libName when loading lib: " + libpath);
         isCorrectVersion = false;
     }
 
     stringstream ss;
     ss << "ExternalLib: " << libpath <<  " compiled as: " << externalLibInfo.libCompiledDebugRelease << " against HopsanCore: " << externalLibInfo.hopsanCoreVersion;
-    gCoreMessageHandler.addDebugMessage(ss.str());
+    mpMessageHandler->addDebugMessage(ss.str());
 
     //Now check if we are compiled against correct version number
     if ( strcmp(externalLibInfo.hopsanCoreVersion, HOPSANCOREVERSION) != 0 )
     {
         stringstream ss;
         ss << "External lib: " << libpath << " compiled against wrong HopsanCore version: " << externalLibInfo.hopsanCoreVersion << ", current version is: " << HOPSANCOREVERSION;
-        gCoreMessageHandler.addErrorMessage(ss.str());
+        mpMessageHandler->addErrorMessage(ss.str());
         isCorrectVersion = false;
     }
 
@@ -204,7 +211,7 @@ bool LoadExternal::load(const string libpath)
     {
         stringstream ss;
         ss << "ExternalLib: " << libpath << " compiled as: " << externalLibInfo.libCompiledDebugRelease << " HopsanCore compiled as: " << DEBUGRELEASECOMPILED << ", You may run into problems!";
-        gCoreMessageHandler.addWarningMessage(ss.str());
+        mpMessageHandler->addWarningMessage(ss.str());
         //isCorrectVersion = false;
     }
 
@@ -222,8 +229,8 @@ bool LoadExternal::load(const string libpath)
     register_contents(mpComponentFactory, mpNodeFactory);
 
     //Check for register errors and status
-    checkClassFactoryStatus(mpComponentFactory);
-    checkClassFactoryStatus(mpNodeFactory);
+    checkClassFactoryStatus(mpComponentFactory, mpMessageHandler);
+    checkClassFactoryStatus(mpNodeFactory, mpMessageHandler);
 
     // Ok everything seems Ok, now register the library ptr and registred components and nodes in map so that we can unload them later
     LoadedLibInfo lelInfo;
@@ -296,22 +303,15 @@ bool LoadExternal::unLoad(const std::string libpath)
         mLoadedExtLibsMap.erase(lelit);
 
         ss << "Successfully unloaded: " << libpath;
-        gCoreMessageHandler.addInfoMessage(ss.str());
+        mpMessageHandler->addInfoMessage(ss.str());
     }
     else
     {
         ss << "Could not unload: " << libpath << ", library not found";
-        gCoreMessageHandler.addWarningMessage(ss.str());
+        mpMessageHandler->addWarningMessage(ss.str());
     }
 
     return true;
-}
-
-//! @brief This function sets the node and component factory pointers
-void LoadExternal::setFactory(ComponentFactory* pComponentFactory, NodeFactory* pNodeFactory)
-{
-    mpComponentFactory = pComponentFactory;
-    mpNodeFactory = pNodeFactory;
 }
 
 void LoadExternal::getLoadedLibNames(std::vector<std::string> &rLibNames)

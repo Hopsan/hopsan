@@ -51,7 +51,7 @@ public:
 
     // The Constructor function that is run immediately when a new object of the class is created
     // Use this function to set initial member variable values, and to register Ports, Parameters and Startvalues
-    SignalSum() : ComponentSignal()
+    void configure()
     {
         // Add ports to the component
         mpMultiInPort = addReadMultiPort("in", "NodeSignal", Port::NOTREQUIRED);

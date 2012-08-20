@@ -57,7 +57,7 @@ namespace hopsan {
             return new HydraulicTurbulentOrifice();
         }
 
-        HydraulicTurbulentOrifice() : ComponentQ()
+        void configure()
         {
             Cq = 0.67;
             A = 0.00001;

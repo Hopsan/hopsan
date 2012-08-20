@@ -61,7 +61,7 @@ public:
         return new ElectricResistor();
      }
 
-     ElectricResistor() : ComponentQ()
+     void configure()
      {
         const double Conduct = 0.1;
 

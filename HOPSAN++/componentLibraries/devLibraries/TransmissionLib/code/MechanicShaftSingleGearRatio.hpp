@@ -42,7 +42,7 @@ namespace hopsan {
             return new MechanicShaftSingleGearRatio();
         }
 
-        MechanicShaftSingleGearRatio() : ComponentQ()
+        void configure()
         {
             //Set member attributes
             gearRatio = 1;

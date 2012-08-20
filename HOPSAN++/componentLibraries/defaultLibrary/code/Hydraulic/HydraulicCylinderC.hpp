@@ -65,7 +65,7 @@ class HydraulicCylinderC : public ComponentC
             return new HydraulicCylinderC();
         }
 
-        HydraulicCylinderC() : ComponentC()
+        void configure()
         {
             //Set member attributes
             wfak = 0.1;
@@ -430,7 +430,7 @@ class HydraulicCylinderC : public ComponentC
 //            return new HydraulicCylinderC("CylinderC");
 //        }
 
-//        HydraulicCylinderC() : ComponentC()
+//        HydraulicCylinderC(name) : ComponentC(name)
 //        {
 //            //Set member attributes
 //            PI = 3.14159265;
@@ -816,7 +816,7 @@ class HydraulicCylinderC : public ComponentC
 //            return new HydraulicCylinderC("CylinderC");
 //        }
 
-//        HydraulicCylinderC() : ComponentC()
+//        HydraulicCylinderC(name) : ComponentC(name)
 //        {
 //            //Set member attributes
 //            alfa = .01;

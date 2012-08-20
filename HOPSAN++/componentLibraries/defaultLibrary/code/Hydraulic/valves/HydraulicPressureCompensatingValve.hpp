@@ -56,7 +56,7 @@ namespace hopsan {
             return new HydraulicPressureCompensatingValve();
         }
 
-        HydraulicPressureCompensatingValve() : ComponentQ()
+        void configure()
         {
             pref = 2000000.0;
             tao = 0.01;

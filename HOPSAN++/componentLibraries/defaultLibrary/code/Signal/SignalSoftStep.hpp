@@ -68,7 +68,7 @@ namespace hopsan {
             return new SignalSoftStep();
         }
 
-        SignalSoftStep() : ComponentSignal()
+        void configure()
         {
             mStartTime = 1.0;
             mStopTime = 2.0;

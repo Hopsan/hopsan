@@ -57,7 +57,7 @@ namespace hopsan {
             return new HydraulicPressureReliefValve();
         }
 
-        HydraulicPressureReliefValve() : ComponentQ()
+        void configure()
         {
             pmax = 20000000;
             tao = 0.01;

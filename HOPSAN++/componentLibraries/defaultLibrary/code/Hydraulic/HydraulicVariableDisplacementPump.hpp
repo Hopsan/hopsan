@@ -46,7 +46,7 @@ namespace hopsan {
             return new HydraulicVariableDisplacementPump();
         }
 
-        HydraulicVariableDisplacementPump() : ComponentQ()
+        void configure()
         {
             n = 250.0;
             dp = 0.00005;

@@ -47,7 +47,7 @@ namespace hopsan {
             return new SignalUndefinedConnection();
         }
 
-        SignalUndefinedConnection() : ComponentSignal()
+        void configure()
         {
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 

@@ -35,7 +35,7 @@ namespace hopsan {
             return new HydraulicDummyQ();
         }
 
-        HydraulicDummyQ() : ComponentQ()
+        void configure()
         {
 
             mpP1 = addReadPort("in", "NodeSignal");

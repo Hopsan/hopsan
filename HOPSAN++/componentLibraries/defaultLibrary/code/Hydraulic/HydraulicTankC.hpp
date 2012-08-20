@@ -50,7 +50,7 @@ namespace hopsan {
             return new HydraulicTankC();
         }
 
-        HydraulicTankC() : ComponentC()
+        void configure()
         {
             mPressure       = 1.0e5;
             mZc             = 0.0;

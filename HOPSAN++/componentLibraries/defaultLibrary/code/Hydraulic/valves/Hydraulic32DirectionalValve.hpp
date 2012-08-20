@@ -61,7 +61,7 @@ namespace hopsan {
             return new Hydraulic32DirectionalValve();
         }
 
-        Hydraulic32DirectionalValve() : ComponentQ()
+        void configure()
         {
             Cq = 0.67;
             d = 0.01;

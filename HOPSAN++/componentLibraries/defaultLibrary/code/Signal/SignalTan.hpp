@@ -47,7 +47,7 @@ namespace hopsan {
             return new SignalTan();
         }
 
-        SignalTan() : ComponentSignal()
+        void configure()
         {
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);

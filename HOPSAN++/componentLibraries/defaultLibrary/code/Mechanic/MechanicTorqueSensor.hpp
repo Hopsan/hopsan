@@ -47,7 +47,7 @@ namespace hopsan {
             return new MechanicTorqueSensor();
         }
 
-        MechanicTorqueSensor() : ComponentSignal()
+        void configure()
         {
 
             mpP1 = addReadPort("P1", "NodeMechanicRotational");

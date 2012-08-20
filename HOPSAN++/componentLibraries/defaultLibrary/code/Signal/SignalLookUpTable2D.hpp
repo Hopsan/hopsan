@@ -54,7 +54,7 @@ namespace hopsan {
             return new SignalLookUpTable2D();
         }
 
-        SignalLookUpTable2D() : ComponentSignal()
+        void configure()
         {
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);

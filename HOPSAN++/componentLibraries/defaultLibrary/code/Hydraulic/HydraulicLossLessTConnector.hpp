@@ -50,7 +50,7 @@ namespace hopsan {
             return new HydraulicLosslessTConnector();
         }
 
-        HydraulicLosslessTConnector() : ComponentQ()
+        void configure()
         {
             Kc = 1.0e-11;
 

@@ -49,7 +49,7 @@ namespace hopsan {
             return new HydraulicPressureSourceC();
         }
 
-        HydraulicPressureSourceC() : ComponentC()
+        void configure()
         {
             p         = 1.0e5;
             Zc        = 0.0;

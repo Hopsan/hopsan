@@ -46,7 +46,7 @@ namespace hopsan {
             return new SignalDivide();
         }
 
-        SignalDivide() : ComponentSignal()
+        void configure()
         {
 
             mpIn1 = addReadPort("in1", "NodeSignal", Port::NOTREQUIRED);

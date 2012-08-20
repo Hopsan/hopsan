@@ -54,7 +54,7 @@ namespace hopsan {
             return new MechanicRackAndPinion();
         }
 
-        MechanicRackAndPinion() : ComponentQ()
+        void configure()
         {
             //Set member attributes
             gearRatio = 1;

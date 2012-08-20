@@ -180,7 +180,8 @@ double *Port::getSafeNodeDataPtr(const size_t idx, const double defaultValue, co
     {
         if (mpNCDummyNode == 0)
         {
-            mpNCDummyNode = HopsanEssentials::getInstance()->createNode(mNodeType);
+            //mpNCDummyNode = getComponent()->getHopsanEssentials()->createNode(mNodeType);
+            mpNCDummyNode = createNodeTemp(getComponent()->getHopsanEssentials(), mNodeType);
         }
         mpNCDummyNode->setDataValue(idx, defaultValue);
         return mpNCDummyNode->getDataPtr(idx);
@@ -243,7 +244,8 @@ vector<Port*> &Port::getConnectedPorts(const int /*portIdx*/)
 
 void Port::createStartNode(NodeTypeT nodeType)
 {
-    mpStartNode = HopsanEssentials::getInstance()->createNode(nodeType); //!< @todo Maye I dont even need to create startnodes for subports in multiports, in that case, move this line into if bellow
+    mpStartNode = createNodeTemp(getComponent()->getHopsanEssentials(), nodeType);
+    //!< @todo Maye I dont even need to create startnodes for subports in multiports, in that case, move this line into if bellow
 
     // Prevent registering startvalues for subports in multiports, It will be very difficult to ensure that those would actually work as expected
     if (mpParentPort == 0)
@@ -489,9 +491,7 @@ void Port::setStartValue(const size_t idx, const double value, const size_t /*po
     }
     else
     {
-        gCoreMessageHandler.addWarningMessage("Tried to add StartValue for to Component: " +\
-                                              getComponentName() + "::" + getPortName() +\
-                                              " This was ignored because this port does not have any StartValue to set.");
+        getComponent()->addWarningMessage("Tried to add StartValue for port: " + getPortName() + " This was ignored because this port does not have any StartValue to set.");
     }
 }
 

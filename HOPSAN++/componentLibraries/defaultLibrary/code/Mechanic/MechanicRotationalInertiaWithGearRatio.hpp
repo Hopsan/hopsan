@@ -44,7 +44,7 @@ namespace hopsan {
             return new MechanicRotationalInertiaWithGearRatio();
         }
 
-        MechanicRotationalInertiaWithGearRatio() : ComponentQ()
+        void configure()
         {
             //Set member attributes
             gearRatio = 1;

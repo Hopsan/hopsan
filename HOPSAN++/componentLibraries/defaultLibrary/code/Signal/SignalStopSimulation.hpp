@@ -47,7 +47,7 @@ namespace hopsan {
             return new SignalStopSimulation();
         }
 
-        SignalStopSimulation() : ComponentSignal()
+        void configure()
         {
 
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);

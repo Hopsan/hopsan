@@ -55,7 +55,7 @@ namespace hopsan {
             return new HydraulicPressureControlledPump();
         }
 
-        HydraulicPressureControlledPump() : ComponentQ()
+        void configure()
         {
             pnom = 7e6;
             speednom = 125;

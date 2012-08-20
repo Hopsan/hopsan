@@ -76,7 +76,7 @@ namespace hopsan {
             return new HydraulicCylinderQ();
         }
 
-        HydraulicCylinderQ() : ComponentQ()
+        void configure()
         {
             mArea1  = 0.0001;
             mArea2  = 0.0001;

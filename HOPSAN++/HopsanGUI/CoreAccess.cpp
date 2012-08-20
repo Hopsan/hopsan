@@ -31,6 +31,8 @@
 
 using namespace std;
 
+hopsan::HopsanEssentials gHopsanCore;
+
 //! @brief Help function to copy parameter data from core to GUI class
 void copyParameterData(const hopsan::Parameter *pCoreParam, CoreParameterData &rGUIParam)
 {
@@ -45,30 +47,30 @@ void copyParameterData(const hopsan::Parameter *pCoreParam, CoreParameterData &r
 
 bool CoreLibraryAccess::hasComponent(QString componentName)
 {
-    return hopsan::HopsanEssentials::getInstance()->hasComponent(componentName.toStdString());
+    return gHopsanCore.hasComponent(componentName.toStdString());
 }
 
 
 bool CoreLibraryAccess::loadComponentLib(QString fileName)
 {
-    return hopsan::HopsanEssentials::getInstance()->loadExternalComponentLib(fileName.toStdString());
+    return gHopsanCore.loadExternalComponentLib(fileName.toStdString());
 }
 
 bool CoreLibraryAccess::unLoadComponentLib(QString fileName)
 {
-    return hopsan::HopsanEssentials::getInstance()->unLoadExternalComponentLib(fileName.toStdString());
+    return gHopsanCore.unLoadExternalComponentLib(fileName.toStdString());
 }
 
 //! @brief Reserves a type name in the Hopsan Core, to prevent external libs from loading components with that specific typename
 bool CoreLibraryAccess::reserveComponentTypeName(const QString typeName)
 {
-    return hopsan::HopsanEssentials::getInstance()->reserveComponentTypeName(typeName.toStdString());
+    return gHopsanCore.reserveComponentTypeName(typeName.toStdString());
 }
 
 void CoreLibraryAccess::getLoadedLibNames(QVector<QString> &rLibNames)
 {
     std::vector<std::string> names;
-    hopsan::HopsanEssentials::getInstance()->getExternalComponentLibNames(names);
+    gHopsanCore.getExternalComponentLibNames(names);
 
     rLibNames.clear();
     rLibNames.reserve(names.size());
@@ -81,13 +83,13 @@ void CoreLibraryAccess::getLoadedLibNames(QVector<QString> &rLibNames)
 
 unsigned int CoreMessagesAccess::getNumberOfMessages()
 {
-    return hopsan::HopsanEssentials::getInstance()->checkMessage();
+    return gHopsanCore.checkMessage();
 }
 
 void CoreMessagesAccess::getMessage(QString &rMessage, QString &rType, QString &rTag)
 {
     std::string msg, tag, type;
-    hopsan::HopsanEssentials::getInstance()->getMessage(msg, type, tag);
+    gHopsanCore.getMessage(msg, type, tag);
     rMessage = QString::fromStdString(msg);
     rTag = QString::fromStdString(tag);
     rType = QString::fromStdString(type);
@@ -97,7 +99,7 @@ bool CoreSimulationHandler::initialize(const double startTime, const double stop
 {
     //! @todo write get set wrappers for n log samples, and use only value in core instead of duplicate in gui
     pCoreSystemAccess->getCoreSystemPtr()->setNumLogSamples(nLogSamples);
-    return  hopsan::HopsanEssentials::getInstance()->getSimulationHandler()->initializeSystem(startTime, stopTime, pCoreSystemAccess->getCoreSystemPtr());
+    return gHopsanCore.getSimulationHandler()->initializeSystem(startTime, stopTime, pCoreSystemAccess->getCoreSystemPtr());
 }
 
 bool CoreSimulationHandler::initialize(const double startTime, const double stopTime, const int nLogSamples, QVector<CoreSystemAccess*> &rvCoreSystemAccess)
@@ -109,12 +111,12 @@ bool CoreSimulationHandler::initialize(const double startTime, const double stop
         rvCoreSystemAccess[i]->getCoreSystemPtr()->setNumLogSamples(nLogSamples);
         coreSystems.push_back(rvCoreSystemAccess[i]->getCoreSystemPtr());
     }
-    return hopsan::HopsanEssentials::getInstance()->getSimulationHandler()->initializeSystem(startTime, stopTime, coreSystems);
+    return gHopsanCore.getSimulationHandler()->initializeSystem(startTime, stopTime, coreSystems);
 }
 
 bool CoreSimulationHandler::simulate(const double startTime, const double stopTime, const int nThreads, CoreSystemAccess* pCoreSystemAccess, bool modelHasNotChanged)
 {
-    return hopsan::HopsanEssentials::getInstance()->getSimulationHandler()->simulateSystem(startTime, stopTime, nThreads, pCoreSystemAccess->getCoreSystemPtr(), modelHasNotChanged);
+    return gHopsanCore.getSimulationHandler()->simulateSystem(startTime, stopTime, nThreads, pCoreSystemAccess->getCoreSystemPtr(), modelHasNotChanged);
 }
 
 bool CoreSimulationHandler::simulate(const double startTime, const double stopTime, const int nThreads, QVector<CoreSystemAccess*> &rvCoreSystemAccess, bool modelHasNotChanged)
@@ -124,12 +126,12 @@ bool CoreSimulationHandler::simulate(const double startTime, const double stopTi
     {
         coreSystems.push_back(rvCoreSystemAccess[i]->getCoreSystemPtr());
     }
-    return hopsan::HopsanEssentials::getInstance()->getSimulationHandler()->simulateSystem(startTime, stopTime, nThreads, coreSystems, modelHasNotChanged);
+    return gHopsanCore.getSimulationHandler()->simulateSystem(startTime, stopTime, nThreads, coreSystems, modelHasNotChanged);
 }
 
 void CoreSimulationHandler::finalize(CoreSystemAccess* pCoreSystemAccess)
 {
-    hopsan::HopsanEssentials::getInstance()->getSimulationHandler()->finalizeSystem(pCoreSystemAccess->getCoreSystemPtr());
+    gHopsanCore.getSimulationHandler()->finalizeSystem(pCoreSystemAccess->getCoreSystemPtr());
 }
 
 void CoreSimulationHandler::finalize(QVector<CoreSystemAccess*> &rvCoreSystemAccess)
@@ -139,7 +141,7 @@ void CoreSimulationHandler::finalize(QVector<CoreSystemAccess*> &rvCoreSystemAcc
     {
         coreSystems.push_back(rvCoreSystemAccess[i]->getCoreSystemPtr());
     }
-    hopsan::HopsanEssentials::getInstance()->getSimulationHandler()->finalizeSystem(coreSystems);
+    gHopsanCore.getSimulationHandler()->finalizeSystem(coreSystems);
 }
 
 
@@ -149,7 +151,7 @@ CoreSystemAccess::CoreSystemAccess(QString name, CoreSystemAccess* pParentCoreSy
     if (pParentCoreSystemAccess == 0)
     {
         //Create new root system
-        mpCoreComponentSystem = hopsan::HopsanEssentials::getInstance()->createComponentSystem();
+        mpCoreComponentSystem = gHopsanCore.createComponentSystem();
     }
     else
     {
@@ -176,7 +178,7 @@ CoreSystemAccess::~CoreSystemAccess()
     //delete mpCoreComponentSystem;
 }
 
-//! @todo This is very strange, needed becouse core systems are deleted from parent if they are subsystems (not if root systems), this is the only way to safely delete the ore object
+//! @todo This is very strange, needed becouse core systems are deleted from parent if they are subsystems (not if root systems), this is the only way to safely delete the core object
 void CoreSystemAccess::deleteRootSystemPtr()
 {
     delete mpCoreComponentSystem;
@@ -198,7 +200,7 @@ bool CoreSystemAccess::disconnect(QString compname1, QString portname1, QString 
 
 QString CoreSystemAccess::getHopsanCoreVersion()
 {
-    return QString::fromStdString(hopsan::HopsanEssentials::getInstance()->getCoreVersion());
+    return QString::fromStdString(gHopsanCore.getCoreVersion());
 }
 
 void CoreSystemAccess::setDesiredTimeStep(double timestep)
@@ -446,7 +448,7 @@ void CoreSystemAccess::finalize()
 QString CoreSystemAccess::createComponent(QString type, QString name)
 {
     //qDebug() << "createComponent: " << "type: " << type << " desired name:  " << name << " in system: " << this->getRootSystemName();
-    hopsan::Component *pCoreComponent = hopsan::HopsanEssentials::getInstance()->createComponent(type.toStdString());
+    hopsan::Component *pCoreComponent = gHopsanCore.createComponent(type.toStdString());
     if (pCoreComponent != 0)
     {
         mpCoreComponentSystem->addComponent(pCoreComponent);
@@ -466,7 +468,7 @@ QString CoreSystemAccess::createComponent(QString type, QString name)
 
 QString CoreSystemAccess::createSubSystem(QString name)
 {
-    hopsan::ComponentSystem *pTempComponentSystem = hopsan::HopsanEssentials::getInstance()->createComponentSystem();
+    hopsan::ComponentSystem *pTempComponentSystem = gHopsanCore.createComponentSystem();
     mpCoreComponentSystem->addComponent(pTempComponentSystem);
     if (!name.isEmpty())
     {

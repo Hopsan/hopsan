@@ -50,7 +50,7 @@ namespace hopsan {
             return new SignalSecondOrderTransferFunction();
         }
 
-        SignalSecondOrderTransferFunction() : ComponentSignal()
+        void configure()
         {
 
             a0 = 1;

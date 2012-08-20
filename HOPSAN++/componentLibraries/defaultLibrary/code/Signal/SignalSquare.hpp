@@ -45,7 +45,7 @@ namespace hopsan {
             return new SignalSquare();
         }
 
-        SignalSquare() : ComponentSignal()
+        void configure()
         {
 
             mpIn = addReadPort("in", "NodeSignal");

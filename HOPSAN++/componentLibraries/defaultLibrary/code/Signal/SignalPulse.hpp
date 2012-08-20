@@ -59,7 +59,7 @@ namespace hopsan {
             return new SignalPulse();
         }
 
-        SignalPulse() : ComponentSignal()
+        void configure()
         {
             mBaseValue = 0.0;
             mStartTime = 1.0;

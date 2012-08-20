@@ -74,7 +74,7 @@ public:
         return new HydraulicAckumulator();
      }
 
-     HydraulicAckumulator() : ComponentQ()
+     void configure()
      {
         const double p0 = 1.e7;
         const double V0 = 0.001;

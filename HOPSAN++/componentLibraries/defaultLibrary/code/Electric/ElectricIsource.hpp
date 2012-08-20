@@ -53,7 +53,7 @@ public:
         return new ElectricIsource();
      }
 
-     ElectricIsource() : ComponentQ()
+     void configure()
      {
         const double iin = 10.;
 

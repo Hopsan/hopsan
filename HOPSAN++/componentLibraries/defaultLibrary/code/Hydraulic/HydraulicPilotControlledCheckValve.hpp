@@ -57,7 +57,7 @@ namespace hopsan {
             return new HydraulicPilotControlledCheckValve();
         }
 
-        HydraulicPilotControlledCheckValve() : ComponentQ()
+        void configure()
         {
             mKs = 0.000000025;
             phi = 3.5;

@@ -64,7 +64,7 @@ public:
         return new ElectricSwitch();
      }
 
-     ElectricSwitch() : ComponentQ()
+     void configure()
      {
         const double state = 0.1;
 

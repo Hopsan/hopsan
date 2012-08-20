@@ -55,7 +55,7 @@ namespace hopsan {
             return new HydraulicAlternativePRV();
         }
 
-        HydraulicAlternativePRV() : ComponentQ()
+        void configure()
         {
             mPref = 20000000;
             mCq = 0.67;

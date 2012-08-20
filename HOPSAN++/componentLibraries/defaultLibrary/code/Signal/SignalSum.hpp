@@ -50,7 +50,7 @@ namespace hopsan {
             return new SignalSum();
         }
 
-        SignalSum() : ComponentSignal()
+        void configure()
         {
             mpMultiInPort = addReadMultiPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOutPort = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);

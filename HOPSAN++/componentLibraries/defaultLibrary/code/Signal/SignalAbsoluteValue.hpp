@@ -46,7 +46,7 @@ namespace hopsan {
             return new SignalAbsoluteValue();
         }
 
-        SignalAbsoluteValue() : ComponentSignal()
+        void configure()
         {
 
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);

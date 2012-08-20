@@ -48,7 +48,7 @@ namespace hopsan {
             return new SignalSaturation();
         }
 
-        SignalSaturation() : ComponentSignal()
+        void configure()
         {
             mUpperLimit = 1.0;
             mLowerLimit = -1.0;

@@ -49,7 +49,7 @@ namespace hopsan {
             return new SignalHP2Filter();
         }
 
-        SignalHP2Filter() : ComponentSignal()
+        void configure()
         {
 
             mMin = -1.5E+300;

@@ -31,7 +31,6 @@ namespace hopsan {
 
     class DummyComponent : public ComponentSignal
     {
-
     private:
 
     public:
@@ -40,7 +39,7 @@ namespace hopsan {
             return new DummyComponent();
         }
 
-        DummyComponent() : ComponentSignal()
+        void configure()
         {
             // Do nothing
         }

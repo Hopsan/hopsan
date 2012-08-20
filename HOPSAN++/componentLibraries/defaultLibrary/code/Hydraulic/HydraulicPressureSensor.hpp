@@ -47,9 +47,8 @@ namespace hopsan {
             return new HydraulicPressureSensor();
         }
 
-        HydraulicPressureSensor() : ComponentSignal()
+        void configure()
         {
-
             mpP1 = addReadPort("P1", "NodeHydraulic");
             mpOut = addWritePort("out", "NodeSignal",  Port::NOTREQUIRED);
         }

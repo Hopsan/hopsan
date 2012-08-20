@@ -63,7 +63,7 @@ namespace hopsan {
             return new SignalSquareWave();
         }
 
-        SignalSquareWave() : ComponentSignal()
+        void configure()
         {
             mStartTime = 0.0;
             mFrequency = 1.0;

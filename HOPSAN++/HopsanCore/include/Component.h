@@ -46,6 +46,7 @@ typedef struct HopsanExternalLibInfo
 //Forward declaration
 class ComponentSystem;
 class HopsanEssentials;
+class HopsanCoreMessageHandler;
 
 //! @brief Enum type for parameters, describing if they are to be dynamic or constant
 enum ParamDynConstT {Dynamic, Constant};
@@ -56,13 +57,12 @@ class DLLIMPORTEXPORT Component
     friend class HopsanEssentials; //Need to be able to set typename
 
 public:
-    virtual ~Component();
-
     //! @brief Enum type for all CQS types
     enum CQSEnumT {C, Q, S, UndefinedCQSType};
 
     //==========Public functions==========
     // Virtual functions
+    virtual void configure();
     virtual void loadStartValues();
     virtual void loadStartValuesFromSimulation();
     virtual void initialize(); //!< @todo We should really be able to return sucess true or false from components
@@ -132,18 +132,22 @@ public:
     void setMeasuredTime(const double time);
     double getMeasuredTime() const;
 
-    void addDebugMessage(const std::string message);
-    void addWarningMessage(const std::string message);
-    void addErrorMessage(const std::string message);
-    void addInfoMessage(const std::string message);
+    void addDebugMessage(const std::string message, const std::string tag="");
+    void addWarningMessage(const std::string message, const std::string tag="");
+    void addErrorMessage(const std::string message, const std::string tag="");
+    void addInfoMessage(const std::string message, const std::string tag="");
 
     // Stop a running simulation
     void stopSimulation();
+
+    // HopsanEssentials
+    HopsanEssentials *getHopsanEssentials();
 
 protected:
     //==========Protected member functions==========
     // Constructor - Destructor
     Component();
+    virtual ~Component();
 
     // Virtual functions
     virtual void simulateOneTimestep();
@@ -196,6 +200,8 @@ private:
     Parameters *mpParameters;
     PortPtrMapT mPortPtrMap;
     double mMeasuredTime;
+    HopsanEssentials *mpHopsanEssentials;
+    HopsanCoreMessageHandler *mpMessageHandler;
 };
 
 

@@ -49,7 +49,7 @@ public:
 
     // The Constructor function that is run immediately when a new object of the class is created
     // Use this function to set initial member variable values, and to register Ports, Parameters and Startvalues
-    MyExampleVolume() : ComponentC()
+    void configure()
     {
         // Set initial member variable values
         mStartPressure = 0.0;

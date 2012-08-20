@@ -53,7 +53,7 @@ public:
         return new ElectricIsensor();
      }
 
-     ElectricIsensor() : ComponentSignal()
+     void configure()
      {
 
         mNstep=9;

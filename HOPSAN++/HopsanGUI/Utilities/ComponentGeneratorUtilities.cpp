@@ -1143,7 +1143,7 @@ QString generateComponentSourceCode(ComponentSpecification comp, bool overwriteS
     codeStream << "        {\n";
     codeStream << "            return new " << comp.typeName << "();\n";
     codeStream << "        }\n\n";
-    codeStream << "        " << comp.typeName << "() : Component" << comp.cqsType << "()\n";
+    codeStream << "        void configure()\n";
     codeStream << "        {\n";
     for(int i=0; i<comp.parNames.size(); ++i)
     {

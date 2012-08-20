@@ -54,7 +54,7 @@ public:
         return new ElectricUsource();
      }
 
-     ElectricUsource() : ComponentC()
+     void configure()
      {
         const double uin = 12.;
 

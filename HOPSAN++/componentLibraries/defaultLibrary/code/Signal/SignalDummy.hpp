@@ -47,7 +47,7 @@ namespace hopsan {
             return new SignalDummy();
         }
 
-        SignalDummy() : ComponentSignal()
+        void configure()
         {
 
             mpIn = addReadPort("in", "NodeSignal");

@@ -65,7 +65,7 @@ namespace hopsan {
             return new SignalSineWave();
         }
 
-        SignalSineWave() : ComponentSignal()
+        void configure()
         {
             mStartTime = 0.0;
             mFrequency = 1.0;

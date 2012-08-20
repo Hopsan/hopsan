@@ -34,7 +34,7 @@ namespace hopsan {
             return new SignalAdditiveNoise();
         }
 
-        SignalAdditiveNoise() : ComponentSignal()
+        void configure()
         {
             y = 1.0;
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);

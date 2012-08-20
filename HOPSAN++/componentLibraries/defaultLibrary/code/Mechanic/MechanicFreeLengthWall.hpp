@@ -49,7 +49,7 @@ namespace hopsan {
             return new MechanicFreeLengthWall();
         }
 
-        MechanicFreeLengthWall() : ComponentQ()
+        void configure()
         {
             //Set member attributes
             B = 0.001;              //Must not be zero - velocity will become very oscillative

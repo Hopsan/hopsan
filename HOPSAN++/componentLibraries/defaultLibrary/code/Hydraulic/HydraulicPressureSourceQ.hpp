@@ -49,7 +49,7 @@ namespace hopsan {
             return new HydraulicPressureSourceQ();
         }
 
-        HydraulicPressureSourceQ() : ComponentQ()
+        void configure()
         {
             p = 1e5;
 

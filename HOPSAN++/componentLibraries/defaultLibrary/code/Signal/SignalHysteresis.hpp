@@ -50,7 +50,7 @@ namespace hopsan {
             return new SignalHysteresis();
         }
 
-        SignalHysteresis() : ComponentSignal()
+        void configure()
         {
             mHysteresisWidth = 1.0;
 

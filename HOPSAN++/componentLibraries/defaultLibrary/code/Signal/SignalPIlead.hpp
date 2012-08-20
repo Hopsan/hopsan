@@ -68,7 +68,7 @@ public:
         return new SignalPIlead();
      }
 
-     SignalPIlead() : ComponentSignal()
+     void configure()
      {
         const double wa = 1.;
         const double da = 1.;

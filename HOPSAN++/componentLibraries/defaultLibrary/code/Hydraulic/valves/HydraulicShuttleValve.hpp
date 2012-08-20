@@ -47,7 +47,7 @@ namespace hopsan {
             return new HydraulicShuttleValve();
         }
 
-        HydraulicShuttleValve() : ComponentQ()
+        void configure()
         {
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");

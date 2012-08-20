@@ -52,6 +52,7 @@
 using namespace std;
 using namespace hopsan;
 
+HopsanEssentials gHopsanCore;
 
 int main(int argc, char *argv[])
 {
@@ -76,7 +77,7 @@ int main(int argc, char *argv[])
 
 #ifndef BUILTINDEFAULTCOMPONENTLIB
         // Load default hopasn component lib
-        HopsanEssentials::getInstance()->loadExternalComponentLib(DEFAULTCOMPONENTLIB);
+        gHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
 #endif
 
         // Load external libs
@@ -86,7 +87,7 @@ int main(int argc, char *argv[])
             readExternalLibsFromTxtFile(extFilePaths,extLibs);
             for (size_t i=0; i<extLibs.size(); ++i)
             {
-                HopsanEssentials::getInstance()->loadExternalComponentLib(extLibs[i]);
+                gHopsanCore.loadExternalComponentLib(extLibs[i]);
             }
         }
 
@@ -95,7 +96,7 @@ int main(int argc, char *argv[])
             printWaitingMessages();
 
             double startTime=0, stopTime=2;
-            ComponentSystem* pRootSystem = HopsanEssentials::getInstance()->loadHMFModel(hmfFilePath, startTime, stopTime);
+            ComponentSystem* pRootSystem = gHopsanCore.loadHMFModel(hmfFilePath, startTime, stopTime);
             printWaitingMessages();
 
             cout << endl << "Component Hieararcy:" << endl << endl;

@@ -42,7 +42,7 @@ public:
 
     // The Constructor function that is run immediately when a new object of the class is created
     // Use this function to set initial member variable values, and to register Ports, Parameters and Startvalues
-    MyExampleOrifice() : ComponentQ()
+    void configure()
     {
         // Set initial member variable values
         mKc = 1.0e-11;

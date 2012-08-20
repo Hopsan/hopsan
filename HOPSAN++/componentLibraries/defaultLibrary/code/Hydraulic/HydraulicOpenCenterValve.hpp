@@ -69,7 +69,7 @@ namespace hopsan {
             return new HydraulicOpenCenterValve();
         }
 
-        HydraulicOpenCenterValve() : ComponentQ()
+        void configure()
         {
             Cq = 0.67;
             d = 0.01;

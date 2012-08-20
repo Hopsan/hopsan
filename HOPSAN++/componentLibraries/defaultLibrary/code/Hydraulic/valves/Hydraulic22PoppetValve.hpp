@@ -64,7 +64,7 @@ namespace hopsan {
             return new Hydraulic22PoppetValve();
         }
 
-        Hydraulic22PoppetValve() : ComponentQ()
+        void configure()
         {
             Cq = 0.67;
             frac_d = 1.0;

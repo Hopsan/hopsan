@@ -61,7 +61,7 @@ namespace hopsan {
             return new Hydraulic22Valve();
         }
 
-        Hydraulic22Valve() : ComponentQ()
+        void configure()
         {
             Cq = 0.67;
             d = 0.01;

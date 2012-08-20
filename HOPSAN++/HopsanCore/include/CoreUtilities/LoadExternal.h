@@ -31,6 +31,9 @@
 
 namespace hopsan {
 
+//Forward Declaration
+class HopsanCoreMessageHandler;
+
 class LoadedLibInfo
 {
 public:
@@ -46,14 +49,16 @@ class LoadExternal
 private:
     ComponentFactory *mpComponentFactory;
     NodeFactory *mpNodeFactory;
+    HopsanCoreMessageHandler *mpMessageHandler;
 
     typedef std::map<std::string, LoadedLibInfo> LoadedExtLibsMapT;
     LoadedExtLibsMapT mLoadedExtLibsMap;
 
 public:
+    LoadExternal(ComponentFactory* pComponentFactory, NodeFactory* pNodefactory, HopsanCoreMessageHandler *pMessenger);
     bool load(const std::string libpath);
     bool unLoad(const std::string libpath);
-    void setFactory(ComponentFactory* cfactory_ptr, NodeFactory* nfactory_ptr);
+    void setFactory();
     void getLoadedLibNames(std::vector<std::string> &rLibNames);
 };
 }

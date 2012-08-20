@@ -88,7 +88,7 @@ public:
         return new ElectricIcontroller();
      }
 
-     ElectricIcontroller() : ComponentQ()
+     void configure()
      {
         const double resist = 0.01;
         const double wf = 10.;

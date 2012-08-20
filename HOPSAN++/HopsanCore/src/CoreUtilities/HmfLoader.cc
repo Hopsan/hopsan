@@ -26,6 +26,7 @@
 #include <cassert>
 #include <cstring>
 #include "CoreUtilities/HmfLoader.h"
+#include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "HopsanEssentials.h"
 
 #include "hopsan_rapidxml.hpp"
@@ -127,7 +128,7 @@ void loadSystemParameters(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSyst
             bool success = pSystem->setSystemParameter(paramName, val, type, "", "", true);
             if(!success)
             {
-                getCoreMessageHandlerPtr()->addErrorMessage("Could not set parameter: " + paramName);
+                pSystem->addErrorMessage("Could not set parameter: " + paramName);
             }
 
             pParameter = pParameter->next_sibling("parameter");
@@ -177,7 +178,7 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
                     double dummy1,dummy2;
                     string externalPath = stripFilenameFromPath(rootFilePath) + readStringAttribute(pObject,"external_path","");
                     cout << "externalPath: " << externalPath << endl;
-                    pSys = loadHopsanModelFile(externalPath,pHopsanEssentials,dummy1,dummy2);
+                    pSys = loadHopsanModelFile(externalPath, pHopsanEssentials, dummy1, dummy2);
                     if (pSys != 0)
                     {
                         // load overwriten parameter values
@@ -265,18 +266,18 @@ ComponentSystem* hopsan::loadHopsanModelFile(const std::string filePath, HopsanE
             }
             else
             {
-                getCoreMessageHandlerPtr()->addErrorMessage(filePath+" Has no system to load");
+                pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(filePath+" Has no system to load");
             }
         }
         else
         {
-            getCoreMessageHandlerPtr()->addErrorMessage(filePath+" Has wrong root tag name: "+pRootNode->name());
+            pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(filePath+" Has wrong root tag name: "+pRootNode->name());
             cout << "Not correct hmf file root node name: " << pRootNode->name() << endl;
         }
     }
     catch(std::exception &e)
     {
-        getCoreMessageHandlerPtr()->addErrorMessage("Could not open file: "+filePath);
+        pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("Could not open file: "+filePath);
         cout << "Could not open file, throws: " << e.what() << endl;
     }
 
@@ -312,18 +313,18 @@ ComponentSystem* hopsan::loadHopsanModelFile(std::vector<unsigned char> xmlVecto
             }
             else
             {
-                getCoreMessageHandlerPtr()->addErrorMessage(filePath+" Has no system to load");
+                pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(filePath+" Has no system to load");
             }
         }
         else
         {
-            getCoreMessageHandlerPtr()->addErrorMessage(filePath+" Has wrong root tag name: "+pRootNode->name());
+            pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(filePath+" Has wrong root tag name: "+pRootNode->name());
             cout << "Not correct hmf file root node name: " << pRootNode->name() << endl;
         }
     }
     catch(std::exception &e)
     {
-        getCoreMessageHandlerPtr()->addErrorMessage("Could not open file: "+filePath);
+        pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("Could not open file: "+filePath);
         cout << "Could not open file, throws: " << e.what() << endl;
     }
 

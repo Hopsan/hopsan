@@ -28,7 +28,11 @@
 #include "CoreUtilities/ClassFactoryStatusCheck.hpp"
 #include "Components/DummyComponent.hpp"
 #include "CoreUtilities/HmfLoader.h"
+#include "CoreUtilities/LoadExternal.h"
+#include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include <string>
+#include <iostream>
+
 
 #ifdef BUILTINDEFAULTCOMPONENTLIB
 #include "defaultComponentLibraryInternal.h"
@@ -37,14 +41,16 @@
 using namespace std;
 using namespace hopsan;
 
-//Set the stacic start values
-bool HopsanEssentials::mHasInstance = false;
-HopsanEssentials* HopsanEssentials::mpInstance = 0;
-
-//! @brief This function initializes the HopsanEssential singleton object
-void HopsanEssentials::initialize()
+//! @brief HopsanEssentials Constructor
+HopsanEssentials::HopsanEssentials()
 {
-    //Make sure that internal Nodes and Components register
+    // Create Factories and handlers
+    mpNodeFactory = new NodeFactory;
+    mpComponentFactory = new ComponentFactory;
+    mpMessageHandler = new HopsanCoreMessageHandler;
+    mpExternalLoader = new LoadExternal(mpComponentFactory, mpNodeFactory, mpMessageHandler);
+
+    // Make sure that internal Nodes and Components register
     register_nodes(mpNodeFactory);
     mpComponentFactory->registerCreatorFunction("MissingComponent", DummyComponent::Creator);
     mpComponentFactory->registerCreatorFunction("Subsystem", ComponentSystem::Creator);
@@ -52,44 +58,20 @@ void HopsanEssentials::initialize()
     register_components(mpComponentFactory);
 #endif
 
-    //Check for register errors and status
-    checkClassFactoryStatus(mpComponentFactory);
-    checkClassFactoryStatus(mpNodeFactory);
+    // Check for register errors and status
+    checkClassFactoryStatus(mpComponentFactory, mpMessageHandler);
+    checkClassFactoryStatus(mpNodeFactory, mpMessageHandler);
 
-    //Clear factory status
+    // Clear factory status
     mpComponentFactory->clearRegisterStatusMap();
     mpNodeFactory->clearRegisterStatusMap();
 
 
-    //Do some other stuff
+    // Do some other stuff
     mpMessageHandler->addInfoMessage("HopsanCore, Version: " + string(HOPSANCOREVERSION));
     hopsanLogFile.open("hopsan_logfile.txt");
     hopsanLogFile << "This file logs the actions done by HopsanCore,\nto trace a program crash one can see what was the last logged action.\nLook at the last rows in this file.\n\n\n";
-}
 
-//! @brief HopsanEssentials Constructor
-HopsanEssentials::HopsanEssentials()
-{
-    mpNodeFactory = new NodeFactory;
-    mpComponentFactory = new ComponentFactory;
-    mpMessageHandler = getCoreMessageHandlerPtr();
-    mExternalLoader.setFactory(mpComponentFactory, mpNodeFactory);
-    initialize();
-}
-
-//! @brief Get a pointer to the HopsanEssentials Singelton, create it if it does not already exist.
-HopsanEssentials* HopsanEssentials::getInstance()
-{
-    if(! mHasInstance)
-    {
-        mpInstance = new HopsanEssentials();
-        mHasInstance = true;
-        return mpInstance;
-    }
-    else
-    {
-        return mpInstance;
-    }
 }
 
 //! @brief HopsanEssentials Destructor
@@ -105,7 +87,8 @@ HopsanEssentials::~HopsanEssentials()
     delete mpNodeFactory;
     delete mpComponentFactory;
 
-    mHasInstance = false;
+    // Delete the messsage handler
+    delete mpMessageHandler;
 }
 
 //! Returns the hopsan core version as a string
@@ -122,12 +105,15 @@ Component* HopsanEssentials::createComponent(const string &rTypeName)
     Component* pComp = mpComponentFactory->createInstance(rTypeName.c_str());
     if (pComp)
     {
+        pComp->mpHopsanEssentials = this;
+        pComp->mpMessageHandler = mpMessageHandler; //!< @todo maybe it should only be in HopsanEssentials but then the core message handler will be accesible in main program also (maybe not a big deal)
         pComp->setTypeName(rTypeName);
         pComp->setName(rTypeName);
+        pComp->configure();
     }
     else
     {
-        checkClassFactoryStatus(mpComponentFactory);
+        checkClassFactoryStatus(mpComponentFactory, mpMessageHandler);
         mpComponentFactory->clearRegisterStatusMap();
     }
     return pComp;
@@ -154,7 +140,6 @@ bool HopsanEssentials::reserveComponentTypeName(const std::string typeName)
 ComponentSystem* HopsanEssentials::createComponentSystem()
 {
     return static_cast<ComponentSystem*>(createComponent("Subsystem"));
-    //return new ComponentSystem();
 }
 
 //! @brief Creates a Node of given node type
@@ -169,10 +154,16 @@ Node* HopsanEssentials::createNode(const NodeTypeT &rNodeType)
     }
     else
     {
-        checkClassFactoryStatus(mpNodeFactory);
+        checkClassFactoryStatus(mpNodeFactory, mpMessageHandler);
         mpNodeFactory->clearRegisterStatusMap();
     }
     return pNode;
+}
+
+//! @brief Returns a pointer to the core message handler, do NOT use this function to get messages
+HopsanCoreMessageHandler *HopsanEssentials::getCoreMessageHandler()
+{
+    return mpMessageHandler;
 }
 
 //! @brief This function is used to load a HMF file.
@@ -234,7 +225,7 @@ size_t HopsanEssentials::checkMessage()
 //! @returns True if loaded sucessfully, otherwise false
 bool HopsanEssentials::loadExternalComponentLib(const string path)
 {
-    return mExternalLoader.load(path);
+    return mpExternalLoader->load(path);
 }
 
 //! @brief Unloads an external component library
@@ -242,14 +233,14 @@ bool HopsanEssentials::loadExternalComponentLib(const string path)
 //! @returns True if unloaded sucessfully, otherwise false
 bool HopsanEssentials::unLoadExternalComponentLib(const std::string path)
 {
-    return mExternalLoader.unLoad(path);
+    return mpExternalLoader->unLoad(path);
 }
 
 //! @brief Get the libNames of the currently loaded libs (the names compiled into libs)
 //! @param [out] rLibNames A reference to the vector that will contain the lib names
 void HopsanEssentials::getExternalComponentLibNames(std::vector<std::string> &rLibNames)
 {
-    mExternalLoader.getLoadedLibNames(rLibNames);
+    mpExternalLoader->getLoadedLibNames(rLibNames);
 }
 
 //! @brief Adds a message to the HopsanCore runtime log

@@ -42,6 +42,8 @@
 using namespace std;
 using namespace hopsan;
 
+extern HopsanEssentials gHopsanCore;
+
 // ===== Help functions =====
 
 //! @brief Helpfunction that splits a full path into basepath and filename
@@ -88,10 +90,10 @@ void splitFileName(const std::string fileName, std::string &rBaseName, std::stri
 void printWaitingMessages(const bool printDebug)
 {
     std::string msg,type,tag;
-    cout << "Check messages: " << HopsanEssentials::getInstance()->checkMessage() << endl;
-    while (HopsanEssentials::getInstance()->checkMessage() > 0)
+    cout << "Check messages: " << gHopsanCore.checkMessage() << endl;
+    while (gHopsanCore.checkMessage() > 0)
     {
-        HopsanEssentials::getInstance()->getMessage(msg,type,tag);
+        gHopsanCore.getMessage(msg,type,tag);
         //! @todo need yellow for warnings, or maybe orange
         if (type == "error")
         {
@@ -451,7 +453,7 @@ bool performModelTest(const std::string hvcFilePath)
                         }
 
                         double startTime=0, stopTime=1;
-                        ComponentSystem* pRootSystem = HopsanEssentials::getInstance()->loadHMFModel(modelfile, startTime, stopTime);
+                        ComponentSystem* pRootSystem = gHopsanCore.loadHMFModel(modelfile, startTime, stopTime);
 
                         if (pRootSystem!=0)
                         {

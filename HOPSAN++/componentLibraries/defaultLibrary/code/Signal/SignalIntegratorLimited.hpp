@@ -49,7 +49,7 @@ namespace hopsan {
             return new SignalIntegratorLimited();
         }
 
-        SignalIntegratorLimited() : ComponentSignal()
+        void configure()
         {
 
             mMin = -1.5E+300;

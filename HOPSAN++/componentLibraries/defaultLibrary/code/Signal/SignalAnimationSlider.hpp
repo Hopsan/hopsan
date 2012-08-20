@@ -45,7 +45,7 @@ namespace hopsan {
             return new SignalAnimationSlider();
         }
 
-        SignalAnimationSlider() : ComponentSignal()
+        void configure()
         {
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
         }

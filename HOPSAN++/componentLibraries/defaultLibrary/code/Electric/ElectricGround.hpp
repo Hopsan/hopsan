@@ -50,7 +50,7 @@ public:
         return new ElectricGround();
      }
 
-     ElectricGround() : ComponentC()
+     void configure()
      {
 
         mNstep=9;

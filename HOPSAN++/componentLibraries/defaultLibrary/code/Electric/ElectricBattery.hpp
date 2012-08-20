@@ -80,7 +80,7 @@ public:
         return new ElectricBattery();
      }
 
-     ElectricBattery() : ComponentQ()
+     void configure()
      {
         const double cond = 0.01;
         const double unom = 12;

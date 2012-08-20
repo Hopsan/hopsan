@@ -55,7 +55,7 @@ namespace hopsan {
             return new HydraulicTLMlossless();
         }
 
-        HydraulicTLMlossless() : ComponentC()
+        void configure()
         {
             //Set member attributes
             mTimeDelay     = 0.1;

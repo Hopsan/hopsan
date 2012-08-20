@@ -47,7 +47,7 @@ namespace hopsan {
             return new SignalQuadRoute();
         }
 
-        SignalQuadRoute() : ComponentSignal()
+        void configure()
         {
             mpRoute = addReadPort("route", "NodeSignal", Port::REQUIRED);
             mpIn1 = addReadPort("in1", "NodeSignal", Port::NOTREQUIRED);

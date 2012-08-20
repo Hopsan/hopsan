@@ -69,7 +69,7 @@ public:
         return new SignalPID();
      }
 
-     SignalPID() : ComponentSignal()
+     void configure()
      {
         const double Kp = 1.;
         const double KI = 1.;

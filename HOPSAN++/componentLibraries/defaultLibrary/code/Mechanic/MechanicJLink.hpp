@@ -92,7 +92,7 @@ public:
         return new MechanicJLink();
      }
 
-     MechanicJLink() : ComponentQ()
+     void configure()
      {
         const double JL = 1.;
         const double BL = 1.;

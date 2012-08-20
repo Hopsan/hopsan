@@ -34,6 +34,7 @@ namespace hopsan {
 //Forward declaration
 class ComponentSystem;
 class HopsanEssentials;
+class HopsanCoreMessageHandler;
 
 
 ComponentSystem* loadHopsanModelFile(const std::string filePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime);

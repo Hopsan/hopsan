@@ -49,7 +49,7 @@ namespace hopsan {
             return new SignalTimeDelay();
         }
 
-        SignalTimeDelay() : ComponentSignal()
+        void configure()
         {
             mTimeDelay = 1.0;
 

@@ -36,7 +36,7 @@ namespace hopsan
 //! @details This functionality is not included in the actual class factory as we want to keep the class factory clean
 //! Hopsan should depend on the ClassFactory but the ClassFactory should not depend on Hopsan
 template<typename FactoryT>
-void checkClassFactoryStatus(FactoryT  *pFactory)
+void checkClassFactoryStatus(FactoryT  *pFactory, HopsanCoreMessageHandler *pMessenger)
 {
     typename FactoryT::RegStatusVectorT statusMap = pFactory->getRegisterStatusMap();
     typename FactoryT::RegStatusVectorT::iterator it;
@@ -45,15 +45,15 @@ void checkClassFactoryStatus(FactoryT  *pFactory)
     {
         if ( it->second == FactoryT::REGISTEREDOK )
         {
-            hopsan::gCoreMessageHandler.addDebugMessage(std::string("Registered: ") + std::string(it->first) + std::string(" in core"), "successfulregister");
+            pMessenger->addDebugMessage(std::string("Registered: ") + std::string(it->first) + std::string(" in core"), "successfulregister");
         }
         else if ( it->second == FactoryT::ALLREADYREGISTERED )
         {
-            hopsan::gCoreMessageHandler.addWarningMessage(std::string("Keyvalue: ") + std::string(it->first) + std::string(" was already registerd in core. Your new Component or Node will NOT be availiable!"), "alreadyregistered");
+            pMessenger->addWarningMessage(std::string("Keyvalue: ") + std::string(it->first) + std::string(" was already registerd in core. Your new Component or Node will NOT be availiable!"), "alreadyregistered");
         }
         else if ( it->second == FactoryT::NOTREGISTERED )
         {
-            hopsan::gCoreMessageHandler.addWarningMessage(std::string("Keyvalue: ") + std::string(it->first) + std::string(" has not been registered in core"), "notregistered");
+            pMessenger->addWarningMessage(std::string("Keyvalue: ") + std::string(it->first) + std::string(" has not been registered in core"), "notregistered");
         }
     }
 }

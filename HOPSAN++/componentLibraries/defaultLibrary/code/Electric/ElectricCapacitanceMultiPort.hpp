@@ -54,7 +54,7 @@ namespace hopsan {
             return new ElectricCapacitanceMultiPort();
         }
 
-        ElectricCapacitanceMultiPort() : ComponentC()
+        void configure()
         {
             //Set member attributes
             mCapacitance   = 0.0001;

@@ -200,27 +200,13 @@ void Node::setSpecialStartValues(Node* /*pNode*/)
 
 
 //! @brief Pre allocate memory for the needed amount of log data
-bool Node::preAllocateLogSpace(const size_t nLogSlots)
+void Node::preAllocateLogSpace(const size_t nLogSlots)
 {
     // Dont try to allocate if we are not going to log
     if (mDoLog)
     {
-        // Now try to allocate log memmory
-        try
-        {
-            mDataStorage.resize(nLogSlots, vector<double>(mDataValues.size()));
-            //cout << "requestedSize: " << mLogSlots << " " << data_size << " Capacities: " << mTimeStorage.capacity() << " " << mDataStorage.capacity() << " " << mDataStorage[1].capacity() << " Size: " << mTimeStorage.size() << " " << mDataStorage.size() << " " << mDataStorage[1].size() << endl;
-            return true;
-        }
-        catch (exception &e)
-        {
-            //cout << "preAllocateLogSpace: Standard exception: " << e.what() << endl;
-            gCoreMessageHandler.addErrorMessage("Failed to allocate log data memmory, try reducing the amount of log data", "FailedMemmoryAllocation");
-            mDoLog = false;
-            return false;
-        }
+        mDataStorage.resize(nLogSlots, vector<double>(mDataValues.size()));
     }
-    return true; //Success allocating nothing
 }
 
 
@@ -395,4 +381,24 @@ int Node::getNumberOfPortsByType(int type)
 ComponentSystem *Node::getOwnerSystem()
 {
     return mpOwnerSystem;
+}
+
+
+#include "HopsanEssentials.h"
+DLLIMPORTEXPORT Node* hopsan::createNodeTemp(HopsanEssentials *pHopEss, NodeTypeT node_type)
+{
+    if (pHopEss != 0)
+    {
+        return pHopEss->createNode(node_type);
+    }
+
+    // Create dummy node
+    //! @warning will leak memory
+    cout << "Error: HopsanEssentials ptr = 0, when creating node. This is VERY BAD !" << endl;
+    Node *pDummy = new Node(20);
+    for (int i=0; i<20; ++i)
+    {
+        pDummy->setDataCharacteristics(i, "name", "unit", Default);
+    }
+    return pDummy;
 }

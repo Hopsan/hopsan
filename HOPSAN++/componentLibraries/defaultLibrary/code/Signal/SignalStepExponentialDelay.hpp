@@ -51,7 +51,7 @@ namespace hopsan {
             return new SignalStepExponentialDelay();
         }
 
-        SignalStepExponentialDelay() : ComponentSignal()
+        void configure()
         {
             mBaseValue = 0.0;
             mAmplitude = 1.0;

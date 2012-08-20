@@ -54,7 +54,7 @@ namespace hopsan {
             return new HydraulicCheckValve();
         }
 
-        HydraulicCheckValve() : ComponentQ()
+        void configure()
         {
             mKs = 0.000000025;
 

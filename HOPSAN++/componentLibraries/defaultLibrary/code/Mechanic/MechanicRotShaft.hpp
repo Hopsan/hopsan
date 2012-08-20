@@ -75,7 +75,7 @@ public:
         return new MechanicRotShaft();
      }
 
-     MechanicRotShaft() : ComponentC()
+     void configure()
      {
         const double Ks = 1000.;
         const double alpha = 0.9;

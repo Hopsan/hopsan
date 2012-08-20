@@ -93,8 +93,6 @@ namespace hopsan {
 
     public:
         //==========Public functions==========
-        // Constructor - Destructor- Creator
-        ComponentSystem();
         ~ComponentSystem();
         static Component* Creator(){ return new ComponentSystem(); }
 
@@ -109,8 +107,8 @@ namespace hopsan {
         void renameSubComponent(std::string old_name, std::string new_name);
         void removeSubComponent(std::string name, bool doDelete=false);
         void removeSubComponent(Component *pComponent, bool doDelete=false);
-        std::string reserveUniqueName(std::string desiredName);
-        void unReserveUniqueName(std::string name);
+        std::string reserveUniqueName(const std::string desiredName);
+        void unReserveUniqueName(const std::string name);
 
         // System Parameter functions
         bool renameParameter(const std::string oldName, const std::string newName);
@@ -125,12 +123,12 @@ namespace hopsan {
         Component* getSubComponent(std::string name);
         ComponentSystem* getSubComponentSystem(std::string name);
         std::vector<std::string> getSubComponentNames();
-        bool haveSubComponent(std::string name);
+        bool haveSubComponent(const std::string name) const;
 
         // Connecting and disconnecting components
         bool connect(Port *pPort1, Port *pPort2);
-        bool connect(std::string compname1, std::string portname1, std::string compname2, std::string portname2);
-        bool disconnect(std::string compname1, std::string portname1, std::string compname2, std::string portname2);
+        bool connect(const std::string compname1, const std::string portname1, const std::string compname2, const std::string portname2);
+        bool disconnect(const std::string compname1, const std::string portname1, const std::string compname2, const std::string portname2);
         bool disconnect(Port *pPort1, Port *pPort2);
 
         // Convenience functions for enable and dissable data logging
@@ -148,7 +146,6 @@ namespace hopsan {
         void simulate(const double startT, const double stopT);
         void simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads = 0, bool noChanges=false);
         void finalize();
-
 
         bool simulateAndMeasureTime(const size_t steps = 1);
 #ifdef USETBB
@@ -181,6 +178,10 @@ namespace hopsan {
         // System parameters
         bool setSystemParameter(const std::string name, const std::string value, const std::string type, const std::string description="", const std::string unit="", const bool force=false);
         Parameters &getSystemParameters();
+
+    protected:
+        // Constructor - Destructor- Creator
+        ComponentSystem();
 
     private:
         //==========Private functions==========
@@ -225,14 +226,13 @@ namespace hopsan {
 #ifdef USETBB
         tbb::mutex *mpStopMutex;
         std::vector<double *> mvTimePtrs;
-#endif
-
-        bool mKeepStartValues;
-
         std::vector< std::vector<Component*> > mSplitCVector;                  //Create split vectors
         std::vector< std::vector<Component*> > mSplitQVector;
         std::vector< std::vector<Component*> > mSplitSignalVector;
         std::vector< std::vector<Node*> > mSplitNodeVector;
+#endif
+
+        bool mKeepStartValues;
 
         // Log related variables
         size_t mRequestedNumLogSamples, mnLogSlots, mLogCtr;

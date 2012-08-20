@@ -67,7 +67,7 @@ namespace hopsan {
             return new Hydraulic43ValveNeutralToTank();
         }
 
-        Hydraulic43ValveNeutralToTank() : ComponentQ()
+        void configure()
         {
             Cq = 0.67;
             d = 0.01;

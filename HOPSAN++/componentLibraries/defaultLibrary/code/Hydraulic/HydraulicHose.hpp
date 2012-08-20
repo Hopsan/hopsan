@@ -66,7 +66,7 @@ namespace hopsan {
             return new HydraulicHose();
         }
 
-        HydraulicHose() : ComponentC()
+        void configure()
         {
             //Set member attributes
             betae = 1e9;

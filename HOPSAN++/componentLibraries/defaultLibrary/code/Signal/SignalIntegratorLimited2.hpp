@@ -50,7 +50,7 @@ namespace hopsan {
             return new SignalIntegratorLimited2();
         }
 
-        SignalIntegratorLimited2() : ComponentSignal()
+        void configure()
         {
             mStartY = 0.0;
 

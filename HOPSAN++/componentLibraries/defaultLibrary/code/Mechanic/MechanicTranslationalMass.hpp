@@ -51,7 +51,7 @@ namespace hopsan {
             return new MechanicTranslationalMass();
         }
 
-        MechanicTranslationalMass() : ComponentQ()
+        void configure()
         {
             //Set member attributes
             m = 100.0;

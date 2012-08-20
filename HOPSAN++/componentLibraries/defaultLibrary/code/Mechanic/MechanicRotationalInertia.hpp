@@ -39,7 +39,7 @@ namespace hopsan {
             return new MechanicRotationalInertia();
         }
 
-        MechanicRotationalInertia() : ComponentQ()
+        void configure()
         {
             //Set member attributes
             J = 0.1;

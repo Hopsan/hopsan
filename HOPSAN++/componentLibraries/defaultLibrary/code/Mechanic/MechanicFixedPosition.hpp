@@ -43,7 +43,7 @@ namespace hopsan {
             return new MechanicFixedPosition();
         }
 
-        MechanicFixedPosition() : ComponentQ()
+        void configure()
         {
             mpPm1 = addPowerPort("Pm1", "NodeMechanic");
 

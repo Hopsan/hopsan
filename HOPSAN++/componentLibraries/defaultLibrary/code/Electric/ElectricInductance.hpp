@@ -77,7 +77,7 @@ public:
         return new ElectricInductance();
      }
 
-     ElectricInductance() : ComponentQ()
+     void configure()
      {
         const double Induct = 0.1;
 

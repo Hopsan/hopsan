@@ -49,7 +49,7 @@ namespace hopsan {
             return new HydraulicLosslessConnector();
         }
 
-        HydraulicLosslessConnector() : ComponentQ()
+        void configure()
         {
             Kc = 1.0e-11;
 

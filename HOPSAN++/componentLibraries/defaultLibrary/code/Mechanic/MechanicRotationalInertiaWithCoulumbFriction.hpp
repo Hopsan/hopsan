@@ -57,7 +57,7 @@ namespace hopsan {
             return new MechanicRotationalInertiaWithCoulombFriction();
         }
 
-        MechanicRotationalInertiaWithCoulombFriction() : ComponentQ()
+        void configure()
         {
             //Set member attributes
             J = 1.0;

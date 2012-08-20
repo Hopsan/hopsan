@@ -45,7 +45,7 @@ namespace hopsan {
             return new HydraulicInterfaceC();
         }
 
-        HydraulicInterfaceC() : ComponentC()
+        void configure()
         {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
         }

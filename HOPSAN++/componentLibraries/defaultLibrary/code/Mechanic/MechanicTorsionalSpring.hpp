@@ -48,7 +48,7 @@ namespace hopsan {
             return new MechanicTorsionalSpring();
         }
 
-        MechanicTorsionalSpring() : ComponentC()
+        void configure()
         {
             //Set member attributes
             k   = 100.0;

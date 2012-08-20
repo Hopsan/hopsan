@@ -42,7 +42,7 @@ namespace hopsan {
             return new MechanicTranslationalMassWithLever();
         }
 
-        MechanicTranslationalMassWithLever() : ComponentQ()
+        void configure()
         {
             //! @todo set eqmass to some good values, should consider lever.
 

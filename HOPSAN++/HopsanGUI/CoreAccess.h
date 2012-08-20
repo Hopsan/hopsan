@@ -37,7 +37,6 @@ class Port;
 class SimulationHandler;
 }
 
-
 class CoreLibraryAccess
 {
 public:

@@ -37,7 +37,7 @@ namespace hopsan {
             return new MechanicTranslationalLosslessConnector();
         }
 
-        MechanicTranslationalLosslessConnector() : ComponentQ()
+        void configure()
         {
             //Set member attributes
 

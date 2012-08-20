@@ -70,6 +70,7 @@ class HopsanCoreMessageHandler
 private:
     std::queue<HopsanCoreMessage*> mMessageQueue;
     void addMessage(const int type, const std::string preFix, const std::string message, const std::string tag, const int debuglevel=0);
+    void clear();
     size_t mMaxQueueSize;
 #ifdef USETBB
     tbb::mutex *mpMutex;
@@ -87,9 +88,6 @@ public:
     HopsanCoreMessage getMessage();
     size_t getNumWaitingMessages() const;
 };
-
-extern HopsanCoreMessageHandler gCoreMessageHandler;
-DLLIMPORTEXPORT HopsanCoreMessageHandler* getCoreMessageHandlerPtr();
 
 }
 

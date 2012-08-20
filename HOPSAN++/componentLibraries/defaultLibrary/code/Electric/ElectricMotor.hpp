@@ -113,7 +113,7 @@ public:
         return new ElectricMotor();
      }
 
-     ElectricMotor() : ComponentQ()
+     void configure()
      {
         const double Ke = 0.13;
         const double Ra = 0.04;

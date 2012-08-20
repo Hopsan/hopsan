@@ -62,7 +62,7 @@ namespace hopsan {
             return new Hydraulic33Valve();
         }
 
-        Hydraulic33Valve() : ComponentQ()
+        void configure()
         {
             Cq = 0.67;
             d = 0.01;

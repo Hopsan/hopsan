@@ -27,6 +27,7 @@
 #include <limits>
 #include <cmath>
 #include <cstdlib>
+#include <iostream>
 
 #include "ComponentSystem.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
@@ -269,7 +270,7 @@ bool ComponentSystem::setSystemParameter(const std::string name, const std::stri
     return success;
 }
 
-
+//! @brief Add multiple components to the system
 void ComponentSystem::addComponents(std::vector<Component*> &rComponents)
 {
     std::vector<Component*>::iterator itx;
@@ -279,7 +280,7 @@ void ComponentSystem::addComponents(std::vector<Component*> &rComponents)
     }
 }
 
-
+//! @brief Add a component to the system
 void ComponentSystem::addComponent(Component *pComponent)
 {
     //First check if the name already exists, in that case change the suffix
@@ -294,7 +295,7 @@ void ComponentSystem::addComponent(Component *pComponent)
 }
 
 
-//! Rename a sub component and automatically fix unique names
+//! @brief Rename a sub component and automatically fix unique names
 void ComponentSystem::renameSubComponent(string oldname, string newname)
 {
     //cout << "Trying to rename: " << old_name << " to " << new_name << endl;
@@ -318,13 +319,12 @@ void ComponentSystem::renameSubComponent(string oldname, string newname)
     }
     else
     {
-        cout << "Error no component with old_name: " << oldname << " found!" << endl;
-        assert(false);
+        addErrorMessage("Error no component with old_name: " + oldname + " found when renaming!");
     }
 }
 
 
-//! Remove a dub component from a system, can also be used to actually delete the component
+//! @brief Remove a dub component from a system, can also be used to actually delete the component
 //! @param[in] name The name of the component to remove from the system
 //! @param[in] doDelete Set this to true if the component should be deleted after removal
 void ComponentSystem::removeSubComponent(string name, bool doDelete)
@@ -334,7 +334,7 @@ void ComponentSystem::removeSubComponent(string name, bool doDelete)
 }
 
 
-//! Remove a sub component from a system, can also be used to actually delete the component
+//! @brief Remove a sub component from a system, can also be used to actually delete the component
 //! @param[in] pComponent A pointer to the component to remove
 //! @param[in] doDelete Set this to true if the component should be deleted after removal
 void ComponentSystem::removeSubComponent(Component* pComponent, bool doDelete)
@@ -364,17 +364,22 @@ void ComponentSystem::removeSubComponent(Component* pComponent, bool doDelete)
         delete pComponent; //! @todo can I really delete here or do I need to use the factory for external components
     }
 
-    gCoreMessageHandler.addDebugMessage("Removed component: \"" + compName + "\" from system: \"" + this->getName() + "\"", "removedcomponent");
+    addDebugMessage("Removed component: \"" + compName + "\" from system: \"" + this->getName() + "\"", "removedcomponent");
 }
 
-string ComponentSystem::reserveUniqueName(string desiredName)
+//! @brief Reserves a unique name in the system
+//! @param [in] desiredName The desired name to reserve
+//! @returns The actual name reserved
+string ComponentSystem::reserveUniqueName(const string desiredName)
 {
     string newname = this->determineUniqueComponentName(desiredName);
     mReservedNames.insert(std::pair<std::string, int>(newname,0)); //The inte 0 is a dummy value that is never used
     return newname;
 }
 
-void ComponentSystem::unReserveUniqueName(string name)
+//! @brief unReserves a unique name in the system
+//! @param [in] name The name to unreserve
+void ComponentSystem::unReserveUniqueName(const string name)
 {
     cout << "unReserveUniqueName: " << name;
     cout << " count before: " << mReservedNames.count(name);
@@ -399,7 +404,7 @@ void ComponentSystem::addSubComponentPtrToStorage(Component* pComponent)
         mComponentUndefinedptrs.push_back(pComponent);
         break;
     default :
-            gCoreMessageHandler.addErrorMessage("Trying to add module with unspecified CQS type: " + pComponent->getTypeCQSString()  + ", (Not added)");
+        addErrorMessage("Trying to add module with unspecified CQS type: " + pComponent->getTypeCQSString()  + ", (Not added)");
         return;
     }
 
@@ -463,7 +468,7 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* pComponent)
     }
     else
     {
-        gCoreMessageHandler.addErrorMessage("The component you are trying to remove: " + pComponent->getName() + " does not exist (Does Nothing)");
+        addErrorMessage("The component you are trying to remove: " + pComponent->getName() + " does not exist (Does Nothing)");
     }
 }
 
@@ -525,11 +530,11 @@ void ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVec
         std::vector<Component*>::iterator it;
 //        for(it=newComponentVector.begin(); it!=newComponentVector.end(); ++it)
 //            ss << (*it)->getName() << "\n";                                                                                               //DEBUG
-//        gCoreMessageHandler.addDebugMessage("Sorted signal components:\n" + ss.str());
+//        addDebugMessage("Sorted signal components:\n" + ss.str());
     }
     else    //Something went wrong, all components were not moved. This is likely due to an algebraic loop.
     {
-        gCoreMessageHandler.addWarningMessage("Components cannot be sorted correctly, either due to algebraic loops or because of multi-threaded partioning.");
+        addWarningMessage("Components cannot be sorted correctly, either due to algebraic loops or because of multi-threaded partioning.");
     }
 }
 
@@ -627,21 +632,16 @@ vector<string> ComponentSystem::getSubComponentNames()
     return names;
 }
 
-
-bool  ComponentSystem::haveSubComponent(string name)
+//! @brief Check if a system has a subcomponent with given name
+//! @param name The name to check for
+//! @returns true or false
+bool ComponentSystem::haveSubComponent(const string name) const
 {
-    if (mSubComponentMap.count(name) > 0)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return (mSubComponentMap.count(name) > 0);
 }
 
 
-//! Adds a node as subnode in the system, if the node is already owned by someone else, trasfere owneship to this system
+//! @brief Add a node as subnode in the system, if the node is already owned by someone else, trasfere owneship to this system
 void ComponentSystem::addSubNode(Node* node_ptr)
 {
     if (node_ptr->getOwnerSystem() != 0)
@@ -653,7 +653,7 @@ void ComponentSystem::addSubNode(Node* node_ptr)
 }
 
 
-//! Removes a previously added node
+//! @brief Removes a previously added node
 void ComponentSystem::removeSubNode(Node* node_ptr)
 {
     vector<Node*>::iterator it;
@@ -670,7 +670,7 @@ void ComponentSystem::removeSubNode(Node* node_ptr)
 }
 
 
-//! preAllocates log space (to speed up later access for log writing)
+//! @brief preAllocates log space (to speed up later access for log writing)
 void ComponentSystem::preAllocateLogSpace(const double startT, const double stopT, const size_t nSamples)
 {
     bool success = true;
@@ -694,13 +694,26 @@ void ComponentSystem::preAllocateLogSpace(const double startT, const double stop
 
                 // Prepare the node log data allocation and determine if loggings should be on
                 //! @todo What if we want to use one of the other ways of setting logsample time steps
-                (*it)->enableLog();
-                success = (*it)->preAllocateLogSpace(mnLogSlots);
+
+                // Now try to allocate log memmory for each node
+                try
+                {
+                    (*it)->enableLog();
+                    (*it)->preAllocateLogSpace(mnLogSlots);
+                    success = true;
+                }
+                catch (exception &e)
+                {
+                    //cout << "preAllocateLogSpace: Standard exception: " << e.what() << endl;
+                    addErrorMessage("Failed to allocate log data memmory, try reducing the amount of log data", "FailedMemmoryAllocation");
+                    (*it)->disableLog();
+                    success = false;
+                }
             }
         }
         catch (exception &e)
         {
-            gCoreMessageHandler.addErrorMessage("Failed to allocate log data memmory, try reducing the amount of log data", "FailedMemmoryAllocation");
+            addErrorMessage("Failed to allocate log data memmory, try reducing the amount of log data", "FailedMemmoryAllocation");
             disableLog();
             success = false;
         }
@@ -742,7 +755,7 @@ void ComponentSystem::logTimeAndNodes(const double time)
             //            {
             //                stringstream ss;
             //                ss << "mLogCtr >= mTimeStorage.size() " << mLogCtr;
-            //                //gCoreMessageHandler.addWarningMessage(ss.str());
+            //                //addWarningMessage(ss.str());
             //            }
             ++mLogCtr;
 
@@ -757,7 +770,7 @@ bool ComponentSystem::renameParameter(const std::string oldName, const std::stri
     return mpParameters->renameParameter(oldName, newName);
 }
 
-//! Adds a transparent SubSystemPort
+//! @brief Adds a transparent SubSystemPort
 Port* ComponentSystem::addSystemPort(string portName)
 {
     if (portName.empty())
@@ -771,7 +784,7 @@ Port* ComponentSystem::addSystemPort(string portName)
 }
 
 
-//! Rename system port
+//! @brief Rename system port
 string ComponentSystem::renameSystemPort(const string oldname, const string newname)
 {
     return renamePort(oldname,newname);
@@ -823,7 +836,7 @@ void ComponentSystem::setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet)
 
             default :
                 cout << "Error: Specified type _" << getTypeCQSString() << "_ does not exist!" << endl;
-                gCoreMessageHandler.addWarningMessage("Specified type: " + getTypeCQSString() + " does not exist!, System CQStype unchanged");
+                addWarningMessage("Specified type: " + getTypeCQSString() + " does not exist!, System CQStype unchanged");
             }
         }
     }
@@ -913,15 +926,20 @@ void ComponentSystem::determineCQSType()
 //        //If we swap from valid type then give warning
 //        if (this->getTypeCQS() != UNDEFINEDCQSTYPE)
 //        {
-//            gCoreMessageHandler.addWarningMessage(string("Your action has caused the CQS type to become invalid in system: ")+this->getName(), "invalidcqstype");
+//            addWarningMessage(string("Your action has caused the CQS type to become invalid in system: ")+this->getName(), "invalidcqstype");
 //        }
         this->setTypeCQS(UndefinedCQSType);
     }
 }
 
 
-//! Connect two commponents string version
-bool ComponentSystem::connect(string compname1, string portname1, string compname2, string portname2)
+//! @brief Connect two commponents, string version
+//! @param [in] compname1 The name of the first component
+//! @param [in] portname1 The name of the port on the first component
+//! @param [in] compname2 The name of the second component
+//! @param [in] portname2 The name of the port on the second component
+//! @returns True if success else False
+bool ComponentSystem::connect(const string compname1, const string portname1, const string compname2, const string portname2)
 {
     Port *pPort1, *pPort2;
 
@@ -935,14 +953,14 @@ bool ComponentSystem::connect(string compname1, string portname1, string compnam
     if (pComp1 == 0)
     {
         ss << "Component1: '"<< compname1 << "' can not be found when atempting connect";
-        gCoreMessageHandler.addErrorMessage(ss.str(), "connectwithoutcomponent");
+        addErrorMessage(ss.str(), "connectwithoutcomponent");
         return false;
     }
 
     if (pComp2 == 0)
     {
         ss << "Component2: '"<< compname2 << "' can not be found when atempting connect";
-        gCoreMessageHandler.addErrorMessage(ss.str(), "connectwithoutcomponent");
+        addErrorMessage(ss.str(), "connectwithoutcomponent");
         return false;
     }
 
@@ -950,7 +968,7 @@ bool ComponentSystem::connect(string compname1, string portname1, string compnam
     if (!pComp1->getPort(portname1, pPort1))
     {
         ss << "Component: '"<< pComp1->getName() << "' does not have a port named '" << portname1 << "'";
-        gCoreMessageHandler.addErrorMessage(ss.str(), "portdoesnotexist");
+        addErrorMessage(ss.str(), "portdoesnotexist");
         return false;
     }
 
@@ -958,7 +976,7 @@ bool ComponentSystem::connect(string compname1, string portname1, string compnam
     {
         //raise Exception('type of port does not exist')
         ss << "Component: '"<< pComp2->getName() << "' does not have a port named '" << portname2 << "'";
-        gCoreMessageHandler.addErrorMessage(ss.str(), "portdoesnotexist");
+        addErrorMessage(ss.str(), "portdoesnotexist");
         return false;
     }
 
@@ -975,13 +993,13 @@ bool ConnectionAssistant::ensureSameNodeType(Port *pPort1, Port *pPort2)
         stringstream ss;
         ss << "You can not connect a {" << pPort1->getNodeType() << "} port to a {" << pPort2->getNodeType()  << "} port." <<
               " When connecting: {" << pPort1->getComponent()->getName() << "::" << pPort1->getPortName() << "} to {" << pPort2->getComponent()->getName() << "::" << pPort2->getPortName() << "}";
-        gCoreMessageHandler.addErrorMessage(ss.str());
+        mpComponentSystem->addErrorMessage(ss.str());
         return false;
     }
     return true;
 }
 
-//! Assumes that nodetype is set in both nodes
+//! @brief Assumes that nodetype is set in both nodes
 bool ConnectionAssistant::createNewNodeConnection(Port *pPort1, Port *pPort2, Node *&rpCreatedNode)
 {
     //std::cout << "-----------------------------createNewNodeConnection" << std::endl;
@@ -991,7 +1009,8 @@ bool ConnectionAssistant::createNewNodeConnection(Port *pPort1, Port *pPort2, No
     }
 
     //Create an instance of the node specified in nodespecifications
-    Node* pNode = HopsanEssentials::getInstance()->createNode(pPort1->getNodeType());
+    //Node* pNode = mpComponentSystem->getHopsanEssentials()->createNode(pPort1->getNodeType());
+    Node* pNode = createNodeTemp(mpComponentSystem->getHopsanEssentials(), pPort1->getNodeType());
 
     // Check so the ports can be connected
     if (ensureConnectionOK(pNode, pPort1, pPort2))
@@ -1016,7 +1035,7 @@ bool ConnectionAssistant::createNewNodeConnection(Port *pPort1, Port *pPort2, No
     {
         stringstream ss;
         ss << "Problem occured at connection" << pPort1->getComponentName() << " and " << pPort2->getComponentName();
-        gCoreMessageHandler.addErrorMessage(ss.str());
+        mpComponentSystem->addErrorMessage(ss.str());
         delete pNode;
         rpCreatedNode = 0;
         return false;
@@ -1063,7 +1082,7 @@ bool ConnectionAssistant::mergeOrJoinNodeConnection(Port *pPort1, Port *pPort2, 
     if (pKeepNode == pDiscardNode)
     {
         //! @todo dont know if this error message is clear, but this should rarely happen
-        gCoreMessageHandler.addErrorMessage("This connection would mean that a node is joined with it self, this does not make any sense and is not allowed");
+        mpComponentSystem->addErrorMessage("This connection would mean that a node is joined with it self, this does not make any sense and is not allowed");
         return false;
     }
 
@@ -1230,7 +1249,8 @@ bool ConnectionAssistant::splitNodeConnection(Port *pPort1, Port *pPort2)
         //! @todo maybe make sure that the ports are really systemports to avoid code misstakes
         //Lets keep the node from port1 and create a copy for port two
         Node* pNode1 = pPort1->getNodePtr();
-        Node* pNode2 = HopsanEssentials::getInstance()->createNode(pNode1->getNodeType());
+        //Node* pNode2 = mpComponentSystem->getHopsanEssentials()->createNode(pNode1->getNodeType());
+        Node* pNode2 = createNodeTemp(mpComponentSystem->getHopsanEssentials(), pNode1->getNodeType());
 
         pNode1->mConnectedPorts.clear(); //Clear all port knowledge from the port, we will reset it bellow
 
@@ -1266,7 +1286,10 @@ void ConnectionAssistant::clearSysPortNodeTypeIfEmpty(Port *pPort)
     }
 }
 
-//! Connect two components with specified ports to each other, reference version
+//! @brief Connect two components with specified ports to each other
+//! @param [in] pPort1 A pointer to the first port
+//! @param [in] pPort2 A pointer to the second port
+//! @returns True if success, False if failed
 bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
 {
     ConnectionAssistant connAssist(this);
@@ -1280,7 +1303,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     //Prevent connection with self
     if (pPort1 == pPort2)
     {
-        gCoreMessageHandler.addErrorMessage("You can not connect a port to it self", "selfconnection");
+        addErrorMessage("You can not connect a port to it self", "selfconnection");
         return false;
     }
 
@@ -1288,7 +1311,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     //! @todo we might want to allow this in the future, right now disconnecting two multiports is also not implemented
     if ( pPort1->isMultiPort() && pPort2->isMultiPort() )
     {
-        gCoreMessageHandler.addErrorMessage("You are not allowed to connect two MultiPorts to each other, (this may be allowed in the future)");
+        addErrorMessage("You are not allowed to connect two MultiPorts to each other, (this may be allowed in the future)");
         return false;
     }
 
@@ -1297,14 +1320,14 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     //! @todo What will happend with multiports
     if (pPort1->isConnectedTo(pPort2))
     {
-        gCoreMessageHandler.addErrorMessage("These two ports are already connected to each other", "allreadyconnected");
+        addErrorMessage("These two ports are already connected to each other", "allreadyconnected");
         return false;
     }
 
     //Preven crossconnection between systems
     if (!connAssist.ensureNotCrossConnecting(pPort1, pPort2))
     {
-        gCoreMessageHandler.addErrorMessage("You can not cross-connect between systems", "crossconnection");
+        addErrorMessage("You can not cross-connect between systems", "crossconnection");
         return false;
     }
 
@@ -1313,7 +1336,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     {
         if ( (!pPort1->isConnected()) && (!pPort2->isConnected()) )
         {
-            gCoreMessageHandler.addErrorMessage("You are not allowed to connect two blank systemports to each other");
+            addErrorMessage("You are not allowed to connect two blank systemports to each other");
             return false;
         }
     }
@@ -1323,7 +1346,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     {
         if ( (pPort1->getPortType() == READPORT) || (pPort1->getPortType() == READPORT) )
         {
-            gCoreMessageHandler.addErrorMessage("You are not allowed to connect a readport to a multiport, (undefined what you will actually read). Connect to the other end of the connector instead");
+            addErrorMessage("You are not allowed to connect a readport to a multiport, (undefined what you will actually read). Connect to the other end of the connector instead");
             return false;
         }
     }
@@ -1414,7 +1437,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     connAssist.determineWhereToStoreNodeAndStoreIt(pResultingNode);
 
     ss << "Connected: {" << pComp1->getName() << "::" << pPort1->getPortName() << "} and {" << pComp2->getName() << "::" << pPort2->getPortName() << "}";
-    gCoreMessageHandler.addDebugMessage(ss.str(), "succesfulconnect");
+    addDebugMessage(ss.str(), "succesfulconnect");
     return true;
 }
 
@@ -1563,33 +1586,33 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
 
     if ((n_PowerPorts > 0) && (n_OwnSystemPorts > 1))
     {
-        gCoreMessageHandler.addErrorMessage("Trying to connect one powerport to two systemports, this is not allowed");
+        mpComponentSystem->addErrorMessage("Trying to connect one powerport to two systemports, this is not allowed");
         return false;
     }
 //    if(n_MultiPorts > 1)
 //    {
-//        gCoreMessageHandler.addErrorMessage("Trying to connect two MultiPorts to each other");
+//        addErrorMessage("Trying to connect two MultiPorts to each other");
 //        return false;
 //    }
     if (n_PowerPorts > 2)
     {
-        gCoreMessageHandler.addErrorMessage("Trying to connect more than two PowerPorts to same node");
+        mpComponentSystem->addErrorMessage("Trying to connect more than two PowerPorts to same node");
         return false;
     }
     if (n_WritePorts > 1)
     {
-        gCoreMessageHandler.addErrorMessage("Trying to connect more than one WritePort to same node");
+        mpComponentSystem->addErrorMessage("Trying to connect more than one WritePort to same node");
         return false;
     }
     if ((n_PowerPorts > 0) && (n_WritePorts > 0))
     {
-        gCoreMessageHandler.addErrorMessage("Trying to connect WritePort and PowerPort to same node");
+        mpComponentSystem->addErrorMessage("Trying to connect WritePort and PowerPort to same node");
         return false;
     }
     if ((n_PowerPorts == 0) && (n_WritePorts == 0) && (n_SystemPorts == 0))
     {
         cout << "Trying to connect only ReadPorts" << endl;
-        gCoreMessageHandler.addErrorMessage("Trying to connect only ReadPorts");
+        mpComponentSystem->addErrorMessage("Trying to connect only ReadPorts");
         return false;
     }
 
@@ -1600,23 +1623,23 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
     //! @todo not 100% sure that this will work allways. Only work if we assume that the subsystem has the correct cqs type when connecting
     if ((n_Ccomponents > 1+n_SYScomponentCs) && (n_PowerPorts > 0))
     {
-        gCoreMessageHandler.addErrorMessage("You can not connect two C-Component power ports to each other");
+        mpComponentSystem->addErrorMessage("You can not connect two C-Component power ports to each other");
         return false;
     }
     if ((n_Qcomponents > 1+n_SYScomponentQs) && (n_PowerPorts > 0))
     {
-        gCoreMessageHandler.addErrorMessage("You can not connect two Q-Component power ports to each other");
+        mpComponentSystem->addErrorMessage("You can not connect two Q-Component power ports to each other");
         return false;
     }
 //    if ((pPort1->getPortType() == Port::READPORT) &&  (pPort2->getPortType() == Port::READPORT))
 //    {
-//        gCoreMessageHandler.addErrorMessage("Trying to connect ReadPort to ReadPort");
+//        addErrorMessage("Trying to connect ReadPort to ReadPort");
 //        return false;
 //    }
 //    if( ((pPort1->getPortType() == Port::READPORT) && pPort2->getPortType() == Port::POWERPORT && n_PowerPorts > 1) or
 //        ((pPort2->getPortType() == Port::READPORT) && pPort1->getPortType() == Port::POWERPORT && n_PowerPorts > 1) )
 //    {
-//        gCoreMessageHandler.addErrorMessage("Trying to connect one ReadPort to more than one PowerPort");
+//        addErrorMessage("Trying to connect one ReadPort to more than one PowerPort");
 //        return false;
 //    }
 
@@ -1633,7 +1656,7 @@ bool ConnectionAssistant::ensureNotCrossConnecting(Port *pPort1, Port *pPort2)
         {
             stringstream ss;
             ss << "The components, {"<< pPort1->getComponentName() << "} and {" << pPort2->getComponentName() << "}, "<< "must belong to the same subsystem";
-            gCoreMessageHandler.addErrorMessage(ss.str());
+            mpComponentSystem->addErrorMessage(ss.str());
             return false;
         }
     }
@@ -1722,8 +1745,12 @@ void ConnectionAssistant::ifMultiportPrepareForDisconnect(Port *&rpPort1, Port *
 
 
 //! @brief Disconnect two ports, string version
-//! @todo need to make sure that components and prots given by name exist here
-bool ComponentSystem::disconnect(string compname1, string portname1, string compname2, string portname2)
+//! @param [in] compname1 The name of the first component
+//! @param [in] portname1 The name of the port on the first component
+//! @param [in] compname2 The name of the second component
+//! @param [in] portname2 The name of the port on the second component
+//! @returns True if success, False if failed
+bool ComponentSystem::disconnect(const string compname1, const string portname1, const string compname2, const string portname2)
 {
     Component *pComp1, *pComp2;
     Port *pPort1, *pPort2;
@@ -1744,14 +1771,13 @@ bool ComponentSystem::disconnect(string compname1, string portname1, string comp
 
     stringstream ss;
     ss << "Disconnect: Could not find either " << compname1 << "->" << portname1 << " or " << compname2 << "->" << portname2 << endl;
-    gCoreMessageHandler.addDebugMessage(ss.str());
+    addDebugMessage(ss.str());
     return false;
 }
 
 //! @brief Disconnects two ports and remove node if no one is using it any more.
 //! @param pPort1 Pointer to first port
 //! @param pPort2 Pointer to second port
-//! @todo whay about system ports they are somewaht speciall
 bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
 {
     cout << "disconnecting " << pPort1->getComponentName() << " " << pPort1->getPortName() << "  and  " << pPort2->getComponentName() << " " << pPort2->getPortName() << endl;
@@ -1827,7 +1853,7 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
     }
     else
     {
-        gCoreMessageHandler.addWarningMessage("In disconnect: At least one of the ports do not seem to be connected, (does nothing)");
+        addWarningMessage("In disconnect: At least one of the ports do not seem to be connected, (does nothing)");
     }
 
     //Update the CQS type
@@ -1842,7 +1868,7 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
 
     ss << "Disconnected: {"<< pPort1->getComponent()->getName() << "::" << pPort1->getPortName() << "} and {" << pPort2->getComponent()->getName() << "::" << pPort2->getPortName() << "}";
     cout << ss.str() << endl;
-    gCoreMessageHandler.addDebugMessage(ss.str(), "succesfuldisconnect");
+    addDebugMessage(ss.str(), "succesfuldisconnect");
 
     return success;
 }
@@ -2030,7 +2056,7 @@ bool ComponentSystem::checkModelBeforeSimulation()
 
         for (size_t i=0; i<mComponentUndefinedptrs.size(); ++i)
         {
-            gCoreMessageHandler.addErrorMessage(string("The component {") + mComponentUndefinedptrs[i]->getName() + string("} does not have a valid CQS type."));
+            addErrorMessage(string("The component {") + mComponentUndefinedptrs[i]->getName() + string("} does not have a valid CQS type."));
         }
         return false;
     }
@@ -2041,14 +2067,14 @@ bool ComponentSystem::checkModelBeforeSimulation()
     {
         if ( ports[i]->isConnectionRequired() && !ports[i]->isConnected() )
         {
-            gCoreMessageHandler.addErrorMessage("Port " + ports[i]->getPortName() + " in " + getName() + " is not connected!");
+            addErrorMessage("Port " + ports[i]->getPortName() + " in " + getName() + " is not connected!");
             return false;
         }
         else if( ports[i]->isConnected() )
         {
             if(ports[i]->getNodePtr()->getNumberOfPortsByType(POWERPORT) == 1)
             {
-                gCoreMessageHandler.addErrorMessage("Port " + ports[i]->getPortName() + " in " + getName() + " is connected to a node with only one attached power port!");
+                addErrorMessage("Port " + ports[i]->getPortName() + " in " + getName() + " is connected to a node with only one attached power port!");
                 return false;
             }
         }
@@ -2067,14 +2093,14 @@ bool ComponentSystem::checkModelBeforeSimulation()
         {
             if ( ports[i]->isConnectionRequired() && !ports[i]->isConnected() )
             {
-                gCoreMessageHandler.addErrorMessage("Port " + ports[i]->getPortName() + " on " + pComp->getName() + " is not connected!");
+                addErrorMessage("Port " + ports[i]->getPortName() + " on " + pComp->getName() + " is not connected!");
                 return false;
             }
             else if( ports[i]->isConnected() )
             {
                 if(ports[i]->getNodePtr()->getNumberOfPortsByType(POWERPORT) == 1)
                 {
-                    gCoreMessageHandler.addErrorMessage("Port " + ports[i]->getPortName() + " in " + getName() + " is connected to a node with only one power port!");
+                    addErrorMessage("Port " + ports[i]->getPortName() + " in " + getName() + " is connected to a node with only one power port!");
                     return false;
                 }
             }
@@ -2083,7 +2109,7 @@ bool ComponentSystem::checkModelBeforeSimulation()
             std::string errParName;
             if(!(pComp->checkParameters(errParName)))
             {
-                gCoreMessageHandler.addErrorMessage("The parameter " + errParName + " in system " + getName() + " and component " + pComp->getName() + " can not be evaluated, a system parameter has maybe been deleted or re-typed.");
+                addErrorMessage("The parameter " + errParName + " in system " + getName() + " and component " + pComp->getName() + " can not be evaluated, a system parameter has maybe been deleted or re-typed.");
                 return false;
             }
         }
@@ -2092,7 +2118,7 @@ bool ComponentSystem::checkModelBeforeSimulation()
         std::string errParName;
         if(!(checkParameters(errParName)))
         {
-            gCoreMessageHandler.addErrorMessage("The system parameter " + errParName + " in system " + getName() + " can not be evaluated, it maybe depend on a deleted system parameter.");
+            addErrorMessage("The system parameter " + errParName + " in system " + getName() + " can not be evaluated, it maybe depend on a deleted system parameter.");
             return false;
         }
 
@@ -2168,7 +2194,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
     // Make sure timestep is not to low
     if (mTimestep < 10*(std::numeric_limits<double>::min)())
     {
-        gCoreMessageHandler.addErrorMessage("The timestep is to low");
+        addErrorMessage("The timestep is to low");
         return false;
     }
 
@@ -2597,19 +2623,19 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         {
             std::stringstream ss;
             ss << "Time for " << mComponentQptrs.at(q)->getName() << ": " << mComponentQptrs.at(q)->getMeasuredTime();
-            gCoreMessageHandler.addDebugMessage(ss.str());
+            addDebugMessage(ss.str());
         }
         for(size_t c=0; c<mComponentCptrs.size(); ++c)
         {
             std::stringstream ss;
             ss << "Time for " << mComponentCptrs.at(c)->getName() << ": " << mComponentCptrs.at(c)->getMeasuredTime();
-            gCoreMessageHandler.addDebugMessage(ss.str());
+            addDebugMessage(ss.str());
         }
         for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
         {
             std::stringstream ss;
             ss << "Time for " << mComponentSignalptrs.at(s)->getName() << ": " << mComponentSignalptrs.at(s)->getMeasuredTime();
-            gCoreMessageHandler.addDebugMessage(ss.str());
+            addDebugMessage(ss.str());
         }
 
         distributeCcomponents(mSplitCVector, nThreads);              //Distribute components and nodes
@@ -2874,7 +2900,7 @@ void ComponentSystem::distributeCcomponents(vector< vector<Component*> > &rSplit
     {
         stringstream ss;
         ss << timeVector[i]*1000;
-        gCoreMessageHandler.addDebugMessage("Creating C-type thread vector, measured time = " + ss.str() + " ms", "cvector");
+        addDebugMessage("Creating C-type thread vector, measured time = " + ss.str() + " ms", "cvector");
     }
 
         //Finally we sort each component vector, so that
@@ -2924,7 +2950,7 @@ void ComponentSystem::distributeQcomponents(vector< vector<Component*> > &rSplit
     {
         stringstream ss;
         ss << timeVector[i]*1000;
-        gCoreMessageHandler.addDebugMessage("Creating Q-type thread vector, measured time = " + ss.str() + " ms", "qvector");
+        addDebugMessage("Creating Q-type thread vector, measured time = " + ss.str() + " ms", "qvector");
     }
 
         //Finally we sort each component vector, so that
@@ -3029,7 +3055,7 @@ void ComponentSystem::distributeSignalcomponents(vector< vector<Component*> > &r
 //    {
 //        std::stringstream ss;
 //        ss << 1000*vectorTime[i];
-//        gCoreMessageHandler.addDebugMessage("Creating S-type thread vector, measured time = " + ss.str() + " ms", "svector");
+//        addDebugMessage("Creating S-type thread vector, measured time = " + ss.str() + " ms", "svector");
 //    }
 //    // END DEBUG
 
@@ -3182,7 +3208,7 @@ void ComponentSystem::setLogSettingsNSamples(int nSamples, double start, double 
             mnLogSlots = size_t((stop - start) / sampletime);
             std::stringstream ss;
             ss << "You requested nSamples: " << nSamples << ". This is more than total simulation samples, limiting to: " << mnLogSlots;
-            gCoreMessageHandler.addWarningMessage(ss.str(), "toofewsamples");
+            addWarningMessage(ss.str(), "toofewsamples");
         }
         else
         {

@@ -57,7 +57,7 @@ namespace hopsan {
             return new HydraulicTLMRlineR();
         }
 
-        HydraulicTLMRlineR() : ComponentC()
+        void configure()
         {
             //Set member attributes
             mTimeDelay     = 0.1;

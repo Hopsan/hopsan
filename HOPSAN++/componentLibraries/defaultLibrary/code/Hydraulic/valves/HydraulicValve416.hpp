@@ -133,7 +133,7 @@ public:
         return new HydraulicValve416();
      }
 
-     HydraulicValve416() : ComponentQ()
+     void configure()
      {
         const double rho = 860.;
         const double Cq = 0.67;

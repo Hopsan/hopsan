@@ -54,7 +54,7 @@ namespace hopsan {
             return new HydraulicVolume4();
         }
 
-        HydraulicVolume4() : ComponentC()
+        void configure()
         {
             //Set member attributes
             mBulkmodulus   = 1.0e9;

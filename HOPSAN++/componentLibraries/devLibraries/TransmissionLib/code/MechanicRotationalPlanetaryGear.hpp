@@ -44,7 +44,7 @@ namespace hopsan {
             return new MechanicRotationalPlanetaryGear();
         }
 
-        MechanicRotationalPlanetaryGear() : ComponentQ()
+        void configure()
         {
             //Set member attributes
             J = 0.1;

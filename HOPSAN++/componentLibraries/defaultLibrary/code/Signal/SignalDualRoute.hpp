@@ -50,7 +50,7 @@ namespace hopsan {
             return new SignalDualRoute();
         }
 
-        SignalDualRoute() : ComponentSignal()
+        void configure()
         {
             mpRoute = addReadPort("route", "NodeSignal", Port::REQUIRED);
             mpIn1 = addReadPort("in1", "NodeSignal", Port::NOTREQUIRED);

@@ -48,7 +48,7 @@ namespace hopsan {
             return new SignalXor();
         }
 
-        SignalXor() : ComponentSignal()
+        void configure()
         {
 
             mpIn1 = addReadPort("in1", "NodeSignal");
