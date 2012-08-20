@@ -37,6 +37,7 @@
 #include "Widgets/MessageWidget.h"
 #include "Widgets/PyDockWidget.h"
 #include "common.h"
+#include "CoreAccess.h"
 
 using namespace SymHop;
 
@@ -494,17 +495,21 @@ void ComponentGeneratorDialog::generateComponent()
         QString name = code.section(" ",1,1);
         if(code.endsWith("end "+name+";"))
         {
+            CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
+            pCoreAccess->generateFromModelica(code);
+            delete(pCoreAccess);
+
             //It is (probably) a Modelica model, try and compile it
-            QString typeName, displayName, cqsType;
-            QStringList initAlgorithms, equations, finalAlgorithms;
-            QList<PortSpecification> portList;
-            QList<ParameterSpecification> parametersList;
+//            QString typeName, displayName, cqsType;
+//            QStringList initAlgorithms, equations, finalAlgorithms;
+//            QList<PortSpecification> portList;
+//            QList<ParameterSpecification> parametersList;
 
-            //Parse Modelica code into SymHop objects
-            parseModelicaModel(code, typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, portList, parametersList);
+//            //Parse Modelica code into SymHop objects
+//            parseModelicaModel(code, typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, portList, parametersList);
 
-            //Generate component object and compile new component
-            generateComponentObject(typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, portList, parametersList);
+//            //Generate component object and compile new component
+//            generateComponentObject(typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, portList, parametersList);
 
             return;
         }

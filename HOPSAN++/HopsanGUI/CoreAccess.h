@@ -37,6 +37,12 @@ class Port;
 class SimulationHandler;
 }
 
+class CoreGeneratorAccess
+{
+public:
+    bool generateFromModelica(QString code);
+};
+
 class CoreLibraryAccess
 {
 public:

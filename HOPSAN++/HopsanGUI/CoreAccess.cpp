@@ -28,6 +28,8 @@
 //HopsanCore includes
 #include "HopsanCore.h"
 #include "ComponentSystem.h"
+#include "CoreUtilities/GeneratorHandler.h"
+#include "common.h"
 
 using namespace std;
 
@@ -44,6 +46,19 @@ void copyParameterData(const hopsan::Parameter *pCoreParam, CoreParameterData &r
     rGUIParam.mIsDynamic = pCoreParam->isDynamic();
     rGUIParam.mIsEnabled = pCoreParam->isEnabled();
 }
+
+
+bool CoreGeneratorAccess::generateFromModelica(QString code)
+{
+    hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
+    if(pHandler->isLoadedSuccessfully())
+    {
+        pHandler->callModelicaGenerator(code.toStdString(), QString(COREINCLUDEPATH).toStdString(), gExecPath.toStdString(), true);
+        return true;
+    }
+    return false;
+}
+
 
 bool CoreLibraryAccess::hasComponent(QString componentName)
 {
