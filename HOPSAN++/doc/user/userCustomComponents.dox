@@ -216,11 +216,11 @@ In the \e public part we first define a static creator function, which is used t
 \skip static Component *Creator()
 \until }
 
-The second member function you need to define is the so called \e Constructor for the class. This function is run once every time a new object of the class is created (added to the model).
-The constructor is used to configure the component and to set default values of member variables.
+The second member function you need to define is the \e Configure function for the component. This function is run every time a new object of the class is created (added to the model).
+The function is used to configure set default values of member variables and to register ports and parameters.
 First we give the restrictor coefficient a default value. Then we create the ports used for communication with surrounding components, in this case two hydraulic powerports.
 Finally we register the restrictor coefficient as parameter with a name, description and unit. This will make it available to the user in the graphical interface. 
-\skip MyExampleOrifice() : ComponentQ()
+\skip void configure()
 \until }
 
 The following functions are available for port creation:

@@ -1928,7 +1928,7 @@ bool ComponentSystem::doesInheritTimestep() const
 
 
 //! @brief Sets the time step in a component system.
-//! Also propagates it to all contained components and systems.
+//! Also propagates it to all contained components
 //! @brief param timestep New time step
 void ComponentSystem::setTimestep(const double timestep)
 {
