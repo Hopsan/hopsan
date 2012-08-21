@@ -28,7 +28,7 @@
 #include <QDialog>
 
 #include "MainWindow.h"
-#include "Utilities/ComponentGeneratorUtilities.h"  //Needed because we define lists with classes declared here
+//#include "Utilities/ComponentGeneratorUtilities.h"  //Needed because we define lists with classes declared here
 
 class MainWindow;
 class ModelObjectAppearance;
@@ -172,12 +172,6 @@ private slots:
     QMenu *mpEditMenu;
     QMenu *mpHighlighterMenu;
     QMenu *mpRecentMenu;
-
-    //Member variables
-    QList<PortSpecification> mPortList;
-    QList<ParameterSpecification> mParametersList;
-    QList<UtilitySpecification> mUtilitiesList;
-    QList<StaticVariableSpecification> mStaticVariablesList;
 
     bool mPortsBoxVisible;
     bool mParametersBoxVisible;

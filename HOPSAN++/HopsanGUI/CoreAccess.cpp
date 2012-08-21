@@ -72,6 +72,18 @@ bool CoreGeneratorAccess::generateFromCpp(QString code)
 }
 
 
+bool CoreGeneratorAccess::generateFromFmu(QString path)
+{
+    hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
+    if(pHandler->isLoadedSuccessfully())
+    {
+        pHandler->callFmuGenerator(path.toStdString(), QString(COREINCLUDEPATH).toStdString(), gExecPath.toStdString(), true);
+        return true;
+    }
+    return false;
+}
+
+
 bool CoreLibraryAccess::hasComponent(QString componentName)
 {
     return gHopsanCore.hasComponent(componentName.toStdString());

@@ -36,6 +36,7 @@
 #include <QVBoxLayout>
 #include <QTextEdit>
 #include <QPushButton>
+#include <QDomElement>
 
 #include "SymHop.h"
 
@@ -116,6 +117,7 @@ public:
     void printMessage(QString msg);
     void printErrorMessage(QString msg);
     void generateFromModelica(QString code);
+    void generateFromFmu(QString code);
     void compileFromComponentObject(QString outputFile, ComponentSpecification comp, bool overwriteStartValues=false);
 
 private:
@@ -145,6 +147,10 @@ private:
     bool mShowDialog;
 };
 
+
+
+QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString rootTagName);
+void removeDir(QString path);
 
 
 

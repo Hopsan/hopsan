@@ -56,6 +56,14 @@ GeneratorHandler::GeneratorHandler()
         return;
     }
 
+    //Load FMU generator function
+    callFmuGenerator = (call_fmu_generator_t)GetProcAddress(lib_ptr, "callFmuGenerator");
+    if (!callFmuGenerator)
+    {
+        //! @todo Error message
+        return;
+    }
+
 #else
     void *lib_ptr;
     lib_ptr = dlopen("libHopsanGenerator.so", RTLD_NOW);  //Load the dll
@@ -76,6 +84,15 @@ GeneratorHandler::GeneratorHandler()
 
     //Load C++ generator function
     callCppGenerator = (call_cpp_generator_t)dlsym(lib_ptr, "callCppGenerator");
+    dlsym_error = dlerror();
+    if (dlsym_error)
+    {
+        //! @todo Error message
+        return;
+    }
+
+    //Load FMU generator function
+    callFmuGenerator = (call_fmu_generator_t)dlsym(lib_ptr, "callFmuGenerator");
     dlsym_error = dlerror();
     if (dlsym_error)
     {

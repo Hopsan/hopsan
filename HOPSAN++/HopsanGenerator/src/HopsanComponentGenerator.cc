@@ -29,6 +29,8 @@
 #include <QTextEdit>
 #include <QApplication>
 #include <QPushButton>
+#include <QProgressDialog>
+#include <QDomElement>
 
 #include "HopsanComponentGenerator.h"
 #include "SymHop.h"
@@ -174,6 +176,749 @@ void HopsanComponentGenerator::generateFromModelica(QString code)
 
     qDebug() << "Finished!";
     printMessage("HopsanGenerator finished!");
+}
+
+
+void HopsanComponentGenerator::generateFromFmu(QString path)
+{
+    printMessage("Initializing FMU import");
+
+    QFileInfo fmuFileInfo = QFileInfo(path);
+    fmuFileInfo.setFile(path);
+
+    //! @todo Make global
+    QString gExecPath = qApp->applicationDirPath().append('/');
+
+    QDir zipDir;
+    zipDir = QDir::cleanPath(gExecPath + "../ThirdParty/7z");
+
+    QDir gccDir;
+    gccDir = QDir::cleanPath(gExecPath + "../ThirdParty/mingw32/bin");
+
+    QString fmuName = fmuFileInfo.fileName();
+    fmuName.chop(4);
+
+    if(!QDir(gExecPath + "../import").exists())
+        QDir().mkdir(gExecPath + "../import");
+
+    if(!QDir(gExecPath + "../import/FMU").exists())
+        QDir().mkdir(gExecPath + "../import/FMU");
+
+    if(!QDir(gExecPath + "../import/FMU/" + fmuName).exists())
+        QDir().mkdir(gExecPath + "../import/FMU/" + fmuName);
+
+    QString fmuPath = gExecPath + "../import/FMU/" + fmuName;
+    QDir fmuDir = QDir::cleanPath(fmuPath);
+
+    printMessage("Unpacking files");
+
+
+    //Unzip .fmu file
+    QProcess zipProcess;
+    zipProcess.setWorkingDirectory(zipDir.path());
+    QStringList arguments;
+    arguments << "x" << fmuFileInfo.filePath() << "-o" + fmuDir.path() << "-aoa";
+    zipProcess.start(zipDir.path() + "/7z.exe", arguments);
+    zipProcess.waitForFinished();
+    QByteArray zipResult = zipProcess.readAll();
+    QList<QByteArray> zipResultList = zipResult.split('\n');
+    for(int i=0; i<zipResultList.size(); ++i)
+    {
+        QString msg = zipResultList.at(i);
+        msg = msg.remove(msg.size()-1, 1);
+        if(!msg.isEmpty())
+        {
+            printMessage(msg);
+        }
+    }
+
+    //Move all binary files to FMU directory
+    QDir win32Dir = QDir::cleanPath(fmuDir.path() + "/binaries/win32");
+    if(!win32Dir.exists())
+    {
+        removeDir(fmuDir.path());
+        printErrorMessage("Import of FMU failed: Unable to unpack files");
+        return;
+    }
+    QFileInfoList binaryFiles = win32Dir.entryInfoList(QDir::Files);
+    for(int i=0; i<binaryFiles.size(); ++i)
+    {
+        QFile tempFile;
+        tempFile.setFileName(binaryFiles.at(i).filePath());
+        tempFile.copy(fmuDir.path() + "/" + binaryFiles.at(i).fileName());
+        printMessage("Copying " + tempFile.fileName() + " to " + fmuDir.path() + "/" + binaryFiles.at(i).fileName());
+        tempFile.remove();
+    }
+
+
+    //Move all resource files to FMU directory
+    QDir resDir = QDir::cleanPath(fmuDir.path() + "/resources");
+    QFileInfoList resFiles = resDir.entryInfoList(QDir::Files);
+    for(int i=0; i<resFiles.size(); ++i)
+    {
+        QFile tempFile;
+        tempFile.setFileName(resFiles.at(i).filePath());
+        tempFile.copy(fmuDir.path() + "/" + resFiles.at(i).fileName());
+        printMessage("Copying " + tempFile.fileName() + " to " + fmuDir.path() + "/" + resFiles.at(i).fileName());
+        tempFile.remove();
+    }
+
+
+    QStringList filters;
+    filters << "*.hmf";
+    fmuDir.setNameFilters(filters);
+    QStringList hmfList = fmuDir.entryList();
+    for (int i = 0; i < hmfList.size(); ++i)
+    {
+        QFile hmfFile;
+        hmfFile.setFileName(fmuDir.path() + "/" + hmfList.at(i));
+        if(hmfFile.exists())
+        {
+            hmfFile.copy(gExecPath + hmfList.at(i));
+            hmfFile.remove();
+            hmfFile.setFileName(gExecPath + hmfList.at(i));
+            printMessage("Copying " + hmfFile.fileName() + " to " + gExecPath + hmfList.at(i));
+        }
+    }
+    fmuDir.setFilter(QDir::NoFilter);
+
+    printMessage("Parsing XML file");
+
+    //Load XML data from ModelDescription.xml
+    //Copy xml-file to this directory
+    QFile modelDescriptionFile;
+    modelDescriptionFile.setFileName(fmuDir.path() + "/ModelDescription.xml");
+    if(!win32Dir.exists())
+    {
+        removeDir(fmuDir.path());
+        printErrorMessage("Import of FMU failed: ModelDescription.xml not found.");
+        return;
+    }
+    QDomDocument fmuDomDocument;
+    QDomElement fmuRoot = loadXMLDomDocument(modelDescriptionFile, fmuDomDocument, "fmiModelDescription");
+    modelDescriptionFile.close();
+
+    if(fmuRoot == QDomElement())
+    {
+        removeDir(fmuDir.path());
+        printErrorMessage("Import of FMU failed: Could not parse ModelDescription.xml.");
+        return;
+    }
+
+    printMessage("Writing fmuLib.cc");
+
+    //Create fmuLib.cc
+    QFile fmuLibFile;
+    fmuLibFile.setFileName(fmuDir.path() + "/fmuLib.cc");
+    if(!fmuLibFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        printErrorMessage("Import of FMU failed: Could not open fmuLib.cc for writing.");
+        removeDir(fmuDir.path());
+        return;
+    }
+
+    printMessage("Writing fmuLib.cc");
+
+    QTextStream fmuLibStream(&fmuLibFile);
+    fmuLibStream << "#include \"component_code/"+fmuName+".hpp\"\n";
+    fmuLibStream << "#include \""+gExecPath+mCoreIncludePath+"ComponentEssentials.h\"\n";
+    fmuLibStream << "using namespace hopsan;\n\n";
+    fmuLibStream << "extern \"C\" DLLEXPORT void register_contents(ComponentFactory* cfact_ptr, NodeFactory* nfact_ptr)\n";
+    fmuLibStream << "{\n";
+    fmuLibStream << "    cfact_ptr->registerCreatorFunction(\"" + fmuName + "\", " + fmuName + "::Creator);\n";
+    fmuLibStream << "}\n\n";
+    fmuLibStream << "extern \"C\" DLLEXPORT void get_hopsan_info(HopsanExternalLibInfoT *pHopsanExternalLibInfo)\n";
+    fmuLibStream << "{\n";
+    fmuLibStream << "    pHopsanExternalLibInfo->libName = (char*)\"HopsanFMULibrary_power\";\n";
+    fmuLibStream << "    pHopsanExternalLibInfo->hopsanCoreVersion = (char*)HOPSANCOREVERSION;\n";
+    fmuLibStream << "    pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)DEBUGRELEASECOMPILED;\n";
+    fmuLibStream << "}\n";
+    fmuLibFile.close();
+
+    printMessage("Writing " + fmuName + ".hpp");
+
+    //Create <fmuname>.hpp
+    QDir().mkdir(fmuDir.path() + "/component_code");
+    QFile fmuComponentHppFile;
+    fmuComponentHppFile.setFileName(fmuDir.path() + "/component_code/" + fmuName + ".hpp");
+    if(!fmuComponentHppFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        printErrorMessage("Import of FMU failed: Could not open "+fmuName+".hpp for writing.");
+        removeDir(fmuDir.path());
+        return;
+    }
+
+    printMessage("Writing " + fmuName + ".hpp");
+
+    QTextStream fmuComponentHppStream(&fmuComponentHppFile);
+    fmuComponentHppStream << "#ifndef "+fmuName+"_H\n";
+    fmuComponentHppStream << "#define "+fmuName+"_H\n\n";
+    fmuComponentHppStream << "#define BUFSIZE 4096\n\n";
+    fmuComponentHppStream << "#define _WIN32_WINNT 0x0502\n";
+    fmuComponentHppStream << "#include \"../fmi_me.h\"\n";
+    fmuComponentHppStream << "#include \"../xml_parser.h\"\n";
+    fmuComponentHppStream << "#include \""+gExecPath+mCoreIncludePath+"ComponentEssentials.h\"\n\n";
+    fmuComponentHppStream << "#include <sstream>\n";
+    fmuComponentHppStream << "#include <string>\n";
+    fmuComponentHppStream << "#include <stdio.h>\n";
+    fmuComponentHppStream << "#include <stdlib.h>\n";
+    fmuComponentHppStream << "#include <string.h>\n";
+    fmuComponentHppStream << "#include <assert.h>\n";
+    fmuComponentHppStream << "#ifdef WIN32\n";
+    fmuComponentHppStream << "#include <windows.h>\n";
+    fmuComponentHppStream << "#endif\n\n";
+    fmuComponentHppStream << "void fmuLogger(fmiComponent c, fmiString instanceName, fmiStatus status,\n";
+    fmuComponentHppStream << "               fmiString category, fmiString message, ...){}\n\n";
+    fmuComponentHppStream << "namespace hopsan {\n\n";
+    fmuComponentHppStream << "    class "+fmuName+" : public ComponentQ\n";
+    fmuComponentHppStream << "    {\n";
+    fmuComponentHppStream << "    private:\n";
+    fmuComponentHppStream << "        FMU mFMU;\n";
+    fmuComponentHppStream << "        FILE* mFile;\n";
+    fmuComponentHppStream << "        fmiComponent c;                  // instance of the fmu\n";
+    fmuComponentHppStream << "        fmiEventInfo eventInfo;          // updated by calls to initialize and eventUpdate\n";
+    fmuComponentHppStream << "        int nx;                          // number of state variables\n";
+    fmuComponentHppStream << "        int nz;                          // number of state event indicators\n";
+    fmuComponentHppStream << "        double *x;                       // continuous states\n";
+    fmuComponentHppStream << "        double *xdot;                    // the crresponding derivatives in same order\n";
+    fmuComponentHppStream << "        double *z;                // state event indicators\n";
+    fmuComponentHppStream << "        double *prez;             // previous values of state event indicators\n\n";
+    QDomElement variablesElement = fmuRoot.firstChildElement("ModelVariables");
+    QDomElement varElement = variablesElement.firstChildElement("ScalarVariable");
+    int i=0;
+    while (!varElement.isNull())
+    {
+        QString numStr;
+        numStr.setNum(i);
+        if(!varElement.hasAttribute("causality"))
+        {
+            fmuComponentHppStream << "        Port *mpIn"+numStr+";\n";
+            fmuComponentHppStream << "        Port *mpOut"+numStr+";\n";
+        }
+        else if(varElement.attribute("causality") == "input")
+            fmuComponentHppStream << "        Port *mpIn"+numStr+";\n";
+        else if(varElement.attribute("causality") == "output")
+            fmuComponentHppStream << "        Port *mpOut"+numStr+";\n";
+        ++i;
+        varElement = varElement.nextSiblingElement("ScalarVariable");
+    }
+    //fmuComponentHppStream << "        Port *mpP1;\n";
+    varElement = variablesElement.firstChildElement("ScalarVariable");
+    i=0;
+    while (!varElement.isNull())
+    {
+        QString numStr;
+        numStr.setNum(i);
+        if(!varElement.hasAttribute("causality") || varElement.attribute("causality") == "input")
+            fmuComponentHppStream << "        double *mpND_in" + numStr + ";\n";
+        if(!varElement.hasAttribute("causality") || varElement.attribute("causality") == "output")
+            fmuComponentHppStream << "        double *mpND_out" + numStr + ";\n";
+        ++i;
+        varElement = varElement.nextSiblingElement("ScalarVariable");
+    }
+    fmuComponentHppStream << "\n";
+    fmuComponentHppStream << "    public:\n";
+    fmuComponentHppStream << "        static Component *Creator()\n";
+    fmuComponentHppStream << "        {\n";
+    fmuComponentHppStream << "            return new "+fmuName+"();\n";
+    fmuComponentHppStream << "        }\n\n";
+    fmuComponentHppStream << "        "+fmuName+"() : ComponentQ()\n";
+    fmuComponentHppStream << "        {\n";
+    fmuComponentHppStream << "            mFMU.modelDescription = parse(\""+fmuDir.path()+"/ModelDescription.xml\");\n";
+    fmuComponentHppStream << "            assert(mFMU.modelDescription);\n";
+    fmuComponentHppStream << "            assert(loadDll(\""+fmuDir.path()+"/"+fmuName+".dll\"));\n";
+    fmuComponentHppStream << "            addInfoMessage(getString(mFMU.modelDescription, att_modelIdentifier));\n\n";
+    varElement = variablesElement.firstChildElement("ScalarVariable");
+    i=0;
+    while (!varElement.isNull())
+    {
+        QString numStr;
+        numStr.setNum(i);
+        if(!varElement.hasAttribute("causality"))
+        {
+            fmuComponentHppStream << "            mpIn"+numStr+" = addReadPort(\""+varElement.attribute("name")+"In\", \"NodeSignal\", Port::NOTREQUIRED);\n";
+            fmuComponentHppStream << "            mpOut"+numStr+" = addWritePort(\""+varElement.attribute("name")+"Out\", \"NodeSignal\", Port::NOTREQUIRED);\n";
+        }
+        else if(varElement.attribute("causality") == "input")
+            fmuComponentHppStream << "            mpIn"+numStr+" = addReadPort(\""+varElement.attribute("name")+"\", \"NodeSignal\", Port::NOTREQUIRED);\n";
+        else if(varElement.attribute("causality") == "output")
+            fmuComponentHppStream << "            mpOut"+numStr+" = addWritePort(\""+varElement.attribute("name")+"\", \"NodeSignal\", Port::NOTREQUIRED);\n";
+        ++i;
+        varElement = varElement.nextSiblingElement("ScalarVariable");
+    }
+    //fmuComponentHppStream << "            mpP1 = addWritePort(\"out\", \"NodeSignal\");\n";
+    fmuComponentHppStream << "        }\n\n";
+    fmuComponentHppStream << "       void initialize()\n";
+    fmuComponentHppStream << "       {\n";
+    fmuComponentHppStream << "           if (!mFMU.modelDescription)\n";
+    fmuComponentHppStream << "           {\n";
+    fmuComponentHppStream << "               addErrorMessage(\"Missing FMU model description\");\n";
+    fmuComponentHppStream << "               stopSimulation();\n";
+    fmuComponentHppStream << "           }\n";
+    varElement = variablesElement.firstChildElement("ScalarVariable");
+    i=0;
+    int nInputs=0;
+    int nOutputs=0;
+    while (!varElement.isNull())
+    {
+        QString numStr;
+        numStr.setNum(i);
+        if(!varElement.hasAttribute("causality") || varElement.attribute("causality") == "input")
+        {
+            fmuComponentHppStream << "          mpND_in"+numStr+" = getSafeNodeDataPtr(mpIn"+numStr+", NodeSignal::VALUE);\n\n";
+            ++nInputs;
+        }
+        if(!varElement.hasAttribute("causality") || varElement.attribute("causality") == "output")
+        {
+            fmuComponentHppStream << "          mpND_out"+numStr+" = getSafeNodeDataPtr(mpOut"+numStr+", NodeSignal::VALUE);\n\n";
+            ++nOutputs;
+        }
+        ++i;
+        varElement = varElement.nextSiblingElement("ScalarVariable");
+    }
+    fmuComponentHppStream << "            //Initialize FMU\n";
+    fmuComponentHppStream << "            ModelDescription* md;            // handle to the parsed XML file\n";
+    fmuComponentHppStream << "            const char* guid;                // global unique id of the fmu\n";
+    fmuComponentHppStream << "            fmiCallbackFunctions callbacks;  // called by the model during simulation\n";
+    fmuComponentHppStream << "            fmiStatus fmiFlag;               // return code of the fmu functions\n";
+    fmuComponentHppStream << "            fmiReal t0 = 0;                  // start time\n";
+    fmuComponentHppStream << "            fmiBoolean toleranceControlled = fmiFalse;\n";
+    fmuComponentHppStream << "            int loggingOn = 0;\n\n";
+    fmuComponentHppStream << "            // instantiate the fmu\n";
+    fmuComponentHppStream << "            md = mFMU.modelDescription;\n";
+    fmuComponentHppStream << "            guid = getString(md, att_guid);\n";
+    fmuComponentHppStream << "            callbacks.logger = fmuLogger;\n";
+    fmuComponentHppStream << "            callbacks.allocateMemory = calloc;\n";
+    fmuComponentHppStream << "            callbacks.freeMemory = free;\n";
+    fmuComponentHppStream << "            c = mFMU.instantiateModel(getModelIdentifier(md), guid, callbacks, loggingOn);\n\n";
+    fmuComponentHppStream << "            // allocate memory\n";
+    fmuComponentHppStream << "            nx = getNumberOfStates(md);\n";
+    fmuComponentHppStream << "            nz = getNumberOfEventIndicators(md);\n";
+    fmuComponentHppStream << "            x    = (double *) calloc(nx, sizeof(double));\n";
+    fmuComponentHppStream << "            xdot = (double *) calloc(nx, sizeof(double));\n";
+    fmuComponentHppStream << "            if (nz>0)\n";
+    fmuComponentHppStream << "            {\n";
+    fmuComponentHppStream << "                z    =  (double *) calloc(nz, sizeof(double));\n";
+    fmuComponentHppStream << "                prez =  (double *) calloc(nz, sizeof(double));\n";
+    fmuComponentHppStream << "            }\n\n";
+    fmuComponentHppStream << "            // set the start time and initialize\n";
+    fmuComponentHppStream << "            fmiFlag =  mFMU.setTime(c, t0);\n";
+    fmuComponentHppStream << "            fmiFlag =  mFMU.initialize(c, toleranceControlled, t0, &eventInfo);\n\n";
+    fmuComponentHppStream << "            z = new double;\n";
+    fmuComponentHppStream << "            prez = new double;\n";
+    fmuComponentHppStream << "            *z = NULL;\n";
+    fmuComponentHppStream << "            *prez = NULL;\n";
+    fmuComponentHppStream << "        }\n\n";
+    fmuComponentHppStream << "        void simulateOneTimestep()\n";
+    fmuComponentHppStream << "        {\n";
+    fmuComponentHppStream << "            ScalarVariable** vars = mFMU.modelDescription->modelVariables;\n";
+    fmuComponentHppStream << "            double value;\n";
+    fmuComponentHppStream << "            ScalarVariable* sv;\n";
+    fmuComponentHppStream << "            fmiValueReference vr;\n\n";
+    fmuComponentHppStream << "            //write input values\n";
+    varElement = variablesElement.firstChildElement("ScalarVariable");
+    i=0;
+    while (!varElement.isNull())
+    {
+        QString numStr;
+        numStr.setNum(i);
+        if(!varElement.hasAttribute("causality") || varElement.attribute("causality") == "input")
+        {
+            fmuComponentHppStream << "            if(mpIn"+numStr+"->isConnected())\n";
+            fmuComponentHppStream << "            {\n";
+            fmuComponentHppStream << "                sv = vars["+numStr+"];\n";
+            fmuComponentHppStream << "                vr = getValueReference(sv);\n";
+            fmuComponentHppStream << "                value = (*mpND_in"+numStr+");\n";
+            fmuComponentHppStream << "                mFMU.setReal(c, &vr, 1, &value);\n\n";
+            fmuComponentHppStream << "            }\n";
+        }
+        ++i;
+        varElement = varElement.nextSiblingElement("ScalarVariable");
+    }
+    fmuComponentHppStream << "            //run simulation\n";
+    fmuComponentHppStream << "            simulateFMU();\n\n";
+    fmuComponentHppStream << "            //write back output values\n";
+    varElement = variablesElement.firstChildElement("ScalarVariable");
+    i=0;
+    while (!varElement.isNull())
+    {
+        QString numStr;
+        numStr.setNum(i);
+        if(!varElement.hasAttribute("causality") || varElement.attribute("causality") == "output")
+        {
+
+            fmuComponentHppStream << "            sv = vars["+numStr+"];\n";
+            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
+            fmuComponentHppStream << "            mFMU.getReal(c, &vr, 1, &value);\n";
+            fmuComponentHppStream << "            (*mpND_out"+numStr+") = value;\n\n";
+        }
+        ++i;
+        varElement = varElement.nextSiblingElement("ScalarVariable");
+    }
+    fmuComponentHppStream << "        }\n";
+    fmuComponentHppStream << "        void finalize()\n";
+    fmuComponentHppStream << "        {\n";
+    fmuComponentHppStream << "            //cleanup\n";
+    fmuComponentHppStream << "            mFMU.terminate(c);\n";
+    fmuComponentHppStream << "            mFMU.freeModelInstance(c);\n";
+    fmuComponentHppStream << "            if (x!=NULL) free(x);\n";
+    fmuComponentHppStream << "            if (xdot!= NULL) free(xdot);\n";
+    fmuComponentHppStream << "            if (z!= NULL) free(z);\n";
+    fmuComponentHppStream << "            if (prez!= NULL) free(prez);\n";
+    fmuComponentHppStream << "        }\n\n";
+    fmuComponentHppStream << "        bool loadDll(std::string dllPath)\n";
+    fmuComponentHppStream << "        {\n";
+    fmuComponentHppStream << "            bool success = true;\n";
+    fmuComponentHppStream << "            HANDLE h;\n";
+    fmuComponentHppStream << "            std::string libdir = dllPath;\n";
+    fmuComponentHppStream << "            while(libdir.at(libdir.size()-1) != '/')\n";
+    fmuComponentHppStream << "            {\n";
+    fmuComponentHppStream << "            libdir.erase(libdir.size()-1, 1);\n";
+    fmuComponentHppStream << "            }\n";
+    fmuComponentHppStream << "            SetDllDirectoryA(libdir.c_str());       //Set search path for dependencies\n";
+    fmuComponentHppStream << "            h = LoadLibraryA(dllPath.c_str());\n";
+    fmuComponentHppStream << "            if (!h)\n";
+    fmuComponentHppStream << "            {\n";
+    //fmuComponentHppStream << "                qDebug() << QString(\"error: Could not load dll\\n\");\n";
+    fmuComponentHppStream << "                success = false; // failure\n";
+    fmuComponentHppStream << "                return success;\n";
+    fmuComponentHppStream << "            }\n";
+    fmuComponentHppStream << "            mFMU.dllHandle = h;\n\n";
+    fmuComponentHppStream << "            mFMU.getModelTypesPlatform   = (fGetModelTypesPlatform) getAdr(&success, \"fmiGetModelTypesPlatform\");\n";
+    fmuComponentHppStream << "            mFMU.instantiateModel        = (fInstantiateModel)   getAdr(&success, \"fmiInstantiateModel\");\n";
+    fmuComponentHppStream << "            mFMU.freeModelInstance       = (fFreeModelInstance)  getAdr(&success, \"fmiFreeModelInstance\");\n";
+    fmuComponentHppStream << "            mFMU.setTime                 = (fSetTime)            getAdr(&success, \"fmiSetTime\");\n";
+    fmuComponentHppStream << "            mFMU.setContinuousStates     = (fSetContinuousStates)getAdr(&success, \"fmiSetContinuousStates\");\n";
+    fmuComponentHppStream << "            mFMU.completedIntegratorStep = (fCompletedIntegratorStep)getAdr(&success, \"fmiCompletedIntegratorStep\");\n";
+    fmuComponentHppStream << "            mFMU.initialize              = (fInitialize)         getAdr(&success, \"fmiInitialize\");\n";
+    fmuComponentHppStream << "            mFMU.getDerivatives          = (fGetDerivatives)     getAdr(&success, \"fmiGetDerivatives\");\n";
+    fmuComponentHppStream << "            mFMU.getEventIndicators      = (fGetEventIndicators) getAdr(&success, \"fmiGetEventIndicators\");\n";
+    fmuComponentHppStream << "            mFMU.eventUpdate             = (fEventUpdate)        getAdr(&success, \"fmiEventUpdate\");\n";
+    fmuComponentHppStream << "            mFMU.getContinuousStates     = (fGetContinuousStates)getAdr(&success, \"fmiGetContinuousStates\");\n";
+    fmuComponentHppStream << "            mFMU.getNominalContinuousStates = (fGetNominalContinuousStates)getAdr(&success, \"fmiGetNominalContinuousStates\");\n";
+    fmuComponentHppStream << "            mFMU.getStateValueReferences = (fGetStateValueReferences)getAdr(&success, \"fmiGetStateValueReferences\");\n";
+    fmuComponentHppStream << "            mFMU.terminate               = (fTerminate)          getAdr(&success, \"fmiTerminate\");\n\n";
+    fmuComponentHppStream << "            mFMU.getVersion              = (fGetVersion)         getAdr(&success, \"fmiGetVersion\");\n";
+    fmuComponentHppStream << "            mFMU.setDebugLogging         = (fSetDebugLogging)    getAdr(&success, \"fmiSetDebugLogging\");\n";
+    fmuComponentHppStream << "            mFMU.setReal                 = (fSetReal)            getAdr(&success, \"fmiSetReal\");\n";
+    fmuComponentHppStream << "            mFMU.setInteger              = (fSetInteger)         getAdr(&success, \"fmiSetInteger\");\n";
+    fmuComponentHppStream << "            mFMU.setBoolean              = (fSetBoolean)         getAdr(&success, \"fmiSetBoolean\");\n";
+    fmuComponentHppStream << "            mFMU.setString               = (fSetString)          getAdr(&success, \"fmiSetString\");\n";
+    fmuComponentHppStream << "            mFMU.getReal                 = (fGetReal)            getAdr(&success, \"fmiGetReal\");\n";
+    fmuComponentHppStream << "            mFMU.getInteger              = (fGetInteger)         getAdr(&success, \"fmiGetInteger\");\n";
+    fmuComponentHppStream << "            mFMU.getBoolean              = (fGetBoolean)         getAdr(&success, \"fmiGetBoolean\");\n";
+    fmuComponentHppStream << "            mFMU.getString               = (fGetString)          getAdr(&success, \"fmiGetString\");\n";
+    fmuComponentHppStream << "            return success;\n";
+    fmuComponentHppStream << "        }\n\n";
+    fmuComponentHppStream << "        void* getAdr(bool* success, const char* functionName)\n";
+    fmuComponentHppStream << "        {\n";
+    fmuComponentHppStream << "            char name[BUFSIZE];\n";
+    fmuComponentHppStream << "            void* fp;\n";
+    fmuComponentHppStream << "            ModelDescription *me = mFMU.modelDescription;\n";
+    fmuComponentHppStream << "            sprintf(name, \"%s_%s\", getModelIdentifier(me), functionName);\n";
+    fmuComponentHppStream << "            fp = (void*)GetProcAddress((HINSTANCE__*)mFMU.dllHandle, name);\n";
+    fmuComponentHppStream << "            //fp = (void*)GetProcAddress((HINSTANCE)fmu->dllHandle, name);        //CASTINGS MAY NOT WORK!!!\n";
+    fmuComponentHppStream << "            if (!fp) {\n";
+    fmuComponentHppStream << "                *success = false; // mark dll load as 'failed'\n";
+    fmuComponentHppStream << "            }\n";
+    fmuComponentHppStream << "            return fp;\n";
+    fmuComponentHppStream << "        }\n\n";
+    fmuComponentHppStream << "        void simulateFMU()\n";
+    fmuComponentHppStream << "        {\n";
+    fmuComponentHppStream << "            int i;                          // For loop index\n";
+    fmuComponentHppStream << "            fmiBoolean timeEvent, stateEvent, stepEvent;\n";
+    fmuComponentHppStream << "            fmiStatus fmiFlag;               // return code of the fmu functions\n\n";
+    fmuComponentHppStream << "            if (eventInfo.terminateSimulation)\n";
+    fmuComponentHppStream << "            {\n";
+    fmuComponentHppStream << "                stopSimulation();\n";
+    fmuComponentHppStream << "            }\n\n";
+    fmuComponentHppStream << "            //Simulate one step\n\n";
+    fmuComponentHppStream << "            // get current state and derivatives\n";
+    fmuComponentHppStream << "            fmiFlag = mFMU.getContinuousStates(c, x, nx);\n";
+    fmuComponentHppStream << "            fmiFlag = mFMU.getDerivatives(c, xdot, nx);\n\n";
+    fmuComponentHppStream << "            // advance time\n";
+    fmuComponentHppStream << "            timeEvent = eventInfo.upcomingTimeEvent && eventInfo.nextEventTime < mTime;\n";
+    fmuComponentHppStream << "            fmiFlag = mFMU.setTime(c, mTime);\n\n";
+    fmuComponentHppStream << "            // perform one step\n";
+    fmuComponentHppStream << "            for (i=0; i<nx; i++) x[i] += mTimestep*xdot[i]; // forward Euler method\n";
+    fmuComponentHppStream << "            fmiFlag = mFMU.setContinuousStates(c, x, nx);\n\n";
+    fmuComponentHppStream << "            // Check for step event, e.g. dynamic state selection\n";
+    fmuComponentHppStream << "            fmiFlag = mFMU.completedIntegratorStep(c, &stepEvent);\n\n";
+    fmuComponentHppStream << "            // Check for state event\n";
+    fmuComponentHppStream << "            for (i=0; i<nz; i++) prez[i] = z[i];\n";
+    fmuComponentHppStream << "            fmiFlag = mFMU.getEventIndicators(c, z, nz);\n";
+    fmuComponentHppStream << "            stateEvent = FALSE;\n";
+    fmuComponentHppStream << "            for (i=0; i<nz; i++)\n";
+    fmuComponentHppStream << "            {\n";
+    fmuComponentHppStream << "                stateEvent = stateEvent || (prez[i] * z[i] < 0);\n";
+    fmuComponentHppStream << "            }\n\n";
+    fmuComponentHppStream << "            //! @todo Event criteria are disabled for now, so there will be a time event every time step no matter what.\n\n";
+    fmuComponentHppStream << "            // handle events\n";
+    fmuComponentHppStream << "            if (timeEvent || stateEvent || stepEvent)\n";
+    fmuComponentHppStream << "            {\n";
+    fmuComponentHppStream << "                // event iteration in one step, ignoring intermediate results\n";
+    fmuComponentHppStream << "                fmiFlag = mFMU.eventUpdate(c, fmiFalse, &eventInfo);\n";
+    fmuComponentHppStream << "                // terminate simulation, if requested by the model\n";
+    fmuComponentHppStream << "                if (eventInfo.terminateSimulation)\n";
+    fmuComponentHppStream << "                {\n";
+    fmuComponentHppStream << "                    stopSimulation();\n";
+    fmuComponentHppStream << "                }\n";
+    fmuComponentHppStream << "            } // if event\n";
+    fmuComponentHppStream << "        }\n";
+    fmuComponentHppStream << "    };\n";
+    fmuComponentHppStream << "}\n\n";
+    fmuComponentHppStream << "#endif // "+fmuName+"_H\n";
+    fmuComponentHppFile.close();
+
+    printMessage("Writing "+fmuName+".xml");
+
+    //Create <fmuname>.xml
+    //! @todo Use dom elements for generating xml (this is just stupid)
+    QFile fmuXmlFile;
+    fmuXmlFile.setFileName(fmuDir.path() + "/" + fmuName + ".xml");
+    if(!fmuXmlFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        printErrorMessage("Import of FMU failed: Could not open "+fmuName+".xml for writing.");
+        removeDir(fmuDir.path());
+        return;
+    }
+
+    QTextStream fmuXmlStream(&fmuXmlFile);
+    fmuXmlStream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+    fmuXmlStream << "<hopsanobjectappearance version=\"0.2\">\n";
+    fmuXmlStream << "    <modelobject typename=\""+fmuName+"\" displayname=\""+fmuName+"\">\n";
+    fmuXmlStream << "        <icons>\n";
+    fmuXmlStream << "            <icon type=\"user\" path=\"fmu.svg\" iconrotation=\"ON\" scale=\"1.0\"/>\n";
+    fmuXmlStream << "        </icons>\n";
+    fmuXmlStream << "        <portpositions>\n";
+    varElement = variablesElement.firstChildElement("ScalarVariable");
+    i=0;
+    double inputPosStep=1.0/(nInputs+1.0);      //These 4 variables are used for port positioning
+    double outputPosStep=1.0/(nOutputs+1.0);
+    double inputPos=0;
+    double outputPos=0;
+    while (!varElement.isNull())
+    {
+        QString numStr, numStr2;
+        numStr.setNum(i);
+        if(!varElement.hasAttribute("causality"))
+        {
+            inputPos += inputPosStep;
+            numStr2.setNum(inputPos);
+            fmuXmlStream << "            <portpose name=\""+varElement.attribute("name")+"In\" x=\"0.0\" y=\""+numStr2+"\" a=\"180\"/>\n";
+            outputPos += outputPosStep;
+            numStr2.setNum(outputPos);
+            fmuXmlStream << "            <portpose name=\""+varElement.attribute("name")+"Out\" x=\"1.0\" y=\""+numStr2+"\" a=\"0\"/>\n";
+        }
+        else if(varElement.attribute("causality") == "input")
+        {
+            inputPos += inputPosStep;
+            numStr2.setNum(inputPos);
+            fmuXmlStream << "            <portpose name=\""+varElement.attribute("name")+"\" x=\"0.0\" y=\""+numStr2+"\" a=\"180\"/>\n";
+        }
+        else if(varElement.attribute("causality") == "output")
+        {
+            outputPos += outputPosStep;
+            numStr2.setNum(outputPos);
+            fmuXmlStream << "            <portpose name=\""+varElement.attribute("name")+"\" x=\"1.0\" y=\""+numStr2+"\" a=\"0\"/>\n";
+        }
+        ++i;
+        varElement = varElement.nextSiblingElement("ScalarVariable");
+    }
+    fmuXmlStream << "        </portpositions>\n";
+    fmuXmlStream << "    </modelobject>\n";
+    fmuXmlStream << "</hopsanobjectappearance>\n";
+    fmuXmlFile.close();
+
+    //Move FMI source files to compile directory
+    QFile simSupportSourceFile;
+    simSupportSourceFile.setFileName(gExecPath + "../ThirdParty/fmi/sim_support.c");
+    if(simSupportSourceFile.copy(fmuDir.path() + "/sim_support.c"))
+    {
+        printMessage("Copying sim_support.c");
+        printMessage("Copying " + simSupportSourceFile.fileName() + " to " + fmuDir.path() + "/sim_support.c");
+    }
+
+    QFile stackSourceFile;
+    stackSourceFile.setFileName(gExecPath + "../ThirdParty/fmi/stack.cc");
+    if(stackSourceFile.copy(fmuDir.path() + "/stack.cc"))
+    {
+        printMessage("Copying stack.cc");
+        printMessage("Copying " + stackSourceFile.fileName() + " to " + fmuDir.path() + "/stack.cc");
+    }
+
+    QFile xmlParserSourceFile;
+    xmlParserSourceFile.setFileName(gExecPath + "../ThirdParty/fmi/xml_parser.h");
+    if(xmlParserSourceFile.copy(fmuDir.path() + "/xml_parser.h"))
+    {
+        printMessage("Copying xml_parser.h");
+        printMessage("Copying " + xmlParserSourceFile.fileName() + " to " + fmuDir.path() + "/xml_parser.h");
+    }
+
+    QFile simSupportHeaderFile;
+    simSupportHeaderFile.setFileName(gExecPath + "../ThirdParty/fmi/sim_support.h");
+    if(simSupportHeaderFile.copy(fmuDir.path() + "/sim_support.h"))
+    {
+        printMessage("Copying sim_support.h");
+        printMessage("Copying " + simSupportHeaderFile.fileName() + " to " + fmuDir.path() + "/sim_support.h");
+    }
+
+    QFile stackHeaderFile;
+    stackHeaderFile.setFileName(gExecPath + "../ThirdParty/fmi/stack.h");
+    if(stackHeaderFile.copy(fmuDir.path() + "/stack.h"))
+    {
+        printMessage("Copying stack.h");
+        printMessage("Copying " + stackHeaderFile.fileName() + " to " + fmuDir.path() + "/stack.h");
+    }
+
+    QFile xmlParserHeaderFile;
+    xmlParserHeaderFile.setFileName(gExecPath + "../ThirdParty/fmi/xml_parser.cc");
+    if(xmlParserHeaderFile.copy(fmuDir.path() + "/xml_parser.cc"))
+    {
+        printMessage("Copying xml_parser.cc");
+        printMessage("Copying " + xmlParserHeaderFile.fileName() + " to " + fmuDir.path() + "/xml_parser.cc");
+    }
+
+    QFile expatFile;
+    expatFile.setFileName(gExecPath + "../ThirdParty/fmi/expat.h");
+    if(expatFile.copy(fmuDir.path() + "/expat.h"))
+    {
+        printMessage("Copying expat.h");
+        printMessage("Copying " + expatFile.fileName() + " to " + fmuDir.path() + "/expat.h");
+    }
+
+    QFile expatExternalFile;
+    expatExternalFile.setFileName(gExecPath + "../ThirdParty/fmi/expat_external.h");
+    if(expatExternalFile.copy(fmuDir.path() + "/expat_external.h"))
+    {
+        printMessage("Copying expat_external.h");
+        printMessage("Copying " + expatExternalFile.fileName() + " to " + fmuDir.path() + "/expat_external.h");
+    }
+
+    QFile libExpatAFile;
+    libExpatAFile.setFileName(gExecPath + "../ThirdParty/fmi/libexpat.a");
+    if(libExpatAFile.copy(fmuDir.path() + "/libexpat.a"))
+    {
+        printMessage("Copying libexpat.a");
+        printMessage("Copying " + libExpatAFile.fileName() + " to " + fmuDir.path() + "/libexpat.a");
+    }
+
+    QFile libExpatDllFile;
+    libExpatDllFile.setFileName(gExecPath + "../ThirdParty/fmi/libexpat.dll");
+    if(libExpatDllFile.copy(fmuDir.path() + "/libexpat.dll"))
+    {
+        printMessage("Copying libexpat.dll");
+        printMessage("Copying " + libExpatDllFile.fileName() + " to " + fmuDir.path() + "/libexpat.dll");
+    }
+
+    QFile libExpatwAFile;
+    libExpatwAFile.setFileName(gExecPath + "../ThirdParty/fmi/libexpatw.a");
+    if(libExpatwAFile.copy(fmuDir.path() + "/libexpatw.a"))
+    {
+        printMessage("Copying libexpatw.a");
+        printMessage("Copying " + libExpatwAFile.fileName() + " to " + fmuDir.path() + "/libexpatw.a");
+    }
+
+    QFile libExpatwDllFile;
+    libExpatwDllFile.setFileName(gExecPath + "../ThirdParty/fmi/libexpatw.dll");
+    if(libExpatwDllFile.copy(fmuDir.path() + "/libexpatw.dll"))
+    {
+        printMessage("Copying libexpatw.dll");
+        printMessage("Copying " + libExpatwDllFile.fileName() + " to " + fmuDir.path() + "/libexpatw.dll");
+    }
+
+    QFile fmiMeFile;
+    fmiMeFile.setFileName(gExecPath + "../ThirdParty/fmi/fmi_me.h");
+    if(fmiMeFile.copy(fmuDir.path() + "/fmi_me.h"))
+    {
+        printMessage("Copying fmi_me.h");
+        printMessage("Copying " + fmiMeFile.fileName() + " to " + fmuDir.path() + "/fmi_me.h");
+    }
+
+    QFile fmiModelFunctionsFile;
+    fmiModelFunctionsFile.setFileName(gExecPath + "../ThirdParty/fmi/fmiModelFunctions.h");
+    if(fmiModelFunctionsFile.copy(fmuDir.path() + "/fmiModelFunctions.h"))
+    {
+        printMessage("Copying fmiModelFunctions.h");
+        printMessage("Copying " + fmiModelFunctionsFile.fileName() + " to " + fmuDir.path() + "/fmiModelFunctions.h");
+    }
+
+    QFile fmiModelTypesFile;
+    fmiModelTypesFile.setFileName(gExecPath + "../ThirdParty/fmi/fmiModelTypes.h");
+    if(fmiModelTypesFile.copy(fmuDir.path() + "/fmiModelTypes.h"))
+    {
+        printMessage("Copying fmiModelTypes.h");
+        printMessage("Copying " + fmiModelTypesFile.fileName() + " to " + fmuDir.path() + "/fmiModelTypes.h");
+    }
+
+    printMessage("Writing compilation script");
+
+    //Create compilation script file
+    QFile clBatchFile;
+    clBatchFile.setFileName(fmuDir.path() + "/compile.bat");
+    if(!clBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        printErrorMessage("Import of FMU failed: Could not open compile.bat for writing.");
+        removeDir(fmuDir.path());
+        return;
+    }
+    QTextStream clBatchStream(&clBatchFile);
+    clBatchStream << "g++.exe -shared fmuLib.cc stack.cc xml_parser.cc -o fmuLib.dll -L../../../bin/ -lHopsanCore -L./ -llibexpat\n";
+    clBatchFile.close();
+
+
+    printMessage("Compiling " + fmuName + ".dll");
+
+
+    //Call compilation script file
+    QProcess gccProcess;
+    gccProcess.start("cmd.exe", QStringList() << "/c" << "cd " + fmuDir.path() + " & compile.bat");
+    gccProcess.waitForFinished();
+    QByteArray gccResult = gccProcess.readAll();
+    QList<QByteArray> gccResultList = gccResult.split('\n');
+    for(int i=0; i<gccResultList.size(); ++i)
+    {
+        QString msg = gccResultList.at(i);
+        msg = msg.remove(msg.size()-1, 1);
+        if(!msg.isEmpty())
+        {
+            printMessage(msg);
+        }
+    }
+
+    if(!fmuDir.exists(fmuName + ".dll"))
+    {
+        printErrorMessage("Import of FMU failed: Compilation error.");
+        removeDir(fmuDir.path());
+        return;
+    }
+
+
+    printMessage("Removing temporary files");
+
+    //Cleanup temporary files
+//    fmuDir.remove("sim_support.h");
+//    fmuDir.remove("sim_support.c");
+//    fmuDir.remove("stack.h");
+//    fmuDir.remove("stack.cc");
+//    fmuDir.remove("xml_parser.h");
+//    fmuDir.remove("xml_parser.cc");
+//    fmuDir.remove("expat.h");
+//    fmuDir.remove("expat_external.h");
+//    fmuDir.remove("fmi_me.h");
+//    fmuDir.remove("fmiModelFunctions.h");
+//    fmuDir.remove("fmiModelTypes.h");
+//    fmuDir.remove("compile.bat");
+//    fmuComponentHppFile.remove();
+//    fmuLibFile.remove();
+//    fmuDir.rmdir("component_code");
+//    QDir binDir;
+//    binDir.setPath(fmuDir.path() + "/binaries");
+//    binDir.rmdir("win32");
+//    fmuDir.rmdir("binaries");
+
+
+    printMessage("Finished!");
 }
 
 
@@ -667,7 +1412,7 @@ void HopsanComponentGenerator::generateComponentObject(ComponentSpecification &c
     //Verify equation system
     if(!verifyEquationSystem(equations, stateVars))
     {
-//        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Verification of equation system failed.");
+//        printErrorMessage("Verification of equation system failed.");
         return;
     }
 
@@ -1845,4 +2590,56 @@ QStringList HopsanComponentGenerator::getVariableLabels(QString nodeType)
         retval << "VALUE";
     }
     return retval;
+}
+
+
+
+//! @brief Function for loading an XML DOM Documunt from file
+//! @param[in] rFile The file to load from
+//! @param[in] rDomDocument The DOM Document to load into
+//! @param[in] rootTagName The expected root tag name to extract from the Dom Document
+//! @returns The extracted DOM root element from the loaded DOM document
+QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString rootTagName)
+{
+    QString errorStr;
+    int errorLine, errorColumn;
+    if (!rDomDocument.setContent(&rFile, false, &errorStr, &errorLine, &errorColumn))
+    {
+        //! @todo Error message somehow
+    }
+    else
+    {
+        QDomElement xmlRoot = rDomDocument.documentElement();
+        if (xmlRoot.tagName() != rootTagName)
+        {
+            //! @todo Error message somehow
+        }
+        else
+        {
+            return xmlRoot;
+        }
+    }
+    return QDomElement(); //NULL
+}
+
+
+
+
+
+void removeDir(QString path)
+{
+    QDir dir;
+    dir.setPath(path);
+    Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst))
+    {
+        if (info.isDir())
+        {
+            removeDir(info.absoluteFilePath());
+        }
+        else
+        {
+            QFile::remove(info.absoluteFilePath());
+        }
+    }
+    dir.rmdir(path);
 }

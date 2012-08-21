@@ -106,3 +106,14 @@ extern "C" DLLIMPORTEXPORT void callCppGenerator(string cppCode, string coreIncl
     pGenerator->compileFromComponentObject(typeName+".hpp", comp, false);
     delete(pGenerator);
 }
+
+
+
+extern "C" DLLIMPORTEXPORT void callFmuGenerator(string path, string coreIncludePath, string binPath, bool showDialog=false)
+{
+    qDebug() << "Called FMU generator (in dll)!";
+
+    HopsanComponentGenerator *pGenerator = new HopsanComponentGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
+    pGenerator->generateFromFmu(QString(path.c_str()));
+    delete(pGenerator);
+}
