@@ -41,6 +41,7 @@ class CoreGeneratorAccess
 {
 public:
     bool generateFromModelica(QString code);
+    bool generateFromCpp(QString code);
 };
 
 class CoreLibraryAccess

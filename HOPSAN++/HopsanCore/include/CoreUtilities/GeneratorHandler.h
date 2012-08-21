@@ -29,7 +29,10 @@ public:
     bool isLoadedSuccessfully();
 
     typedef void (*call_modelica_generator_t)(std::string code, std::string codeIncludeDir, std::string binDir, bool showDialog);
+    typedef void (*call_cpp_generator_t)(std::string cppCode, std::string coreIncludePath, std::string binPath, bool showDialog);
+
     call_modelica_generator_t callModelicaGenerator;
+    call_cpp_generator_t callCppGenerator;
 
 private:
     bool mLoadedSuccessfully;

@@ -116,13 +116,12 @@ public:
     void printMessage(QString msg);
     void printErrorMessage(QString msg);
     void generateFromModelica(QString code);
+    void compileFromComponentObject(QString outputFile, ComponentSpecification comp, bool overwriteStartValues=false);
 
 private:
     void parseModelicaModel(QString code, QString &typeName, QString &displayName, QString &cqsType, QStringList &initAlgorithms, QStringList &equations, QStringList &finalAlgorithms, QList<PortSpecification> &portList, QList<ParameterSpecification> &parametersList);
     void generateComponentObject(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QStringList &initAlgorithms, QStringList &equations, QStringList &finalAlgorithms, QList<PortSpecification> &portList, QList<ParameterSpecification> &parametersList);
     QString generateSourceCodefromComponentObject(ComponentSpecification comp, bool overwriteStartValues=false);
-    void compileFromComponentObject(QString outputFile, ComponentSpecification comp, bool overwriteStartValues=false);
-
 
     bool verifyParameteres(QList<ParameterSpecification> parameters);
     bool verifyPorts(QList<PortSpecification> ports);

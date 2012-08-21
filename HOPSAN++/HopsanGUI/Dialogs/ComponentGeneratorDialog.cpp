@@ -495,11 +495,12 @@ void ComponentGeneratorDialog::generateComponent()
         QString name = code.section(" ",1,1);
         if(code.endsWith("end "+name+";"))
         {
+            //It is (probably) a Modelica model, try and compile it
             CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
             pCoreAccess->generateFromModelica(code);
             delete(pCoreAccess);
 
-            //It is (probably) a Modelica model, try and compile it
+
 //            QString typeName, displayName, cqsType;
 //            QStringList initAlgorithms, equations, finalAlgorithms;
 //            QList<PortSpecification> portList;
@@ -522,74 +523,13 @@ void ComponentGeneratorDialog::generateComponent()
 
         qDebug() << "C++";
 
-        //Needed: typeName, displayName, cqsType
-        QString typeName = code.section("class ", 1, 1).section(" ",0,0);
-        QString displayName = typeName;
-        QString cqsType = code.section("public ",1,1).section("\n",0,0);
-        cqsType.remove("Component");
-        cqsType = cqsType[0];
+        CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
+        pCoreAccess->generateFromCpp(code);
+        delete(pCoreAccess);
 
-        qDebug() << "Type name: " << typeName;
-        qDebug() << "CQS Type: " << cqsType;
+//        comp.plainCode = code;
 
-        ComponentSpecification comp = ComponentSpecification(typeName, displayName, cqsType);
-
-        QList<PortSpecification> ports;
-        QStringList lines = code.split("\n");
-        for(int l=0; l<lines.size(); ++l)
-        {
-            if(lines.at(l).contains("addPowerPort"))
-            {
-                QString portType = "PowerPort";
-                QString portName = lines.at(l).section("\"",1,1);
-                QString nodeType = lines.at(l).section("\"",3,3);
-                ports.append(PortSpecification(portType, nodeType, portName, false, 0));
-                comp.portNames.append(portName);
-            }
-            else if(lines.at(l).contains("addReadPort"))
-            {
-                QString portType = "ReadPort";
-                QString portName = lines.at(l).section("\"",1,1);
-                QString nodeType = lines.at(l).section("\"",3,3);
-                ports.append(PortSpecification(portType, nodeType, portName, false, 0));
-                comp.portNames.append(portName);
-            }
-            else if(lines.at(l).contains("addWritePort"))
-            {
-                QString portType = "WritePort";
-                QString portName = lines.at(l).section("\"",1,1);
-                QString nodeType = lines.at(l).section("\"",3,3);
-                ports.append(PortSpecification(portType, nodeType, portName, false, 0));
-                comp.portNames.append(portName);
-            }
-            else if(lines.at(l).contains("addPowerMultiPort"))
-            {
-                QString portType = "PowerMultiPort";
-                QString portName = lines.at(l).section("\"",1,1);
-                QString nodeType = lines.at(l).section("\"",3,3);
-                ports.append(PortSpecification(portType, nodeType, portName, false, 0));
-                comp.portNames.append(portName);
-            }
-            else if(lines.at(l).contains("addReadMultiPort"))
-            {
-                QString portType = "ReadMultiPort";
-                QString portName = lines.at(l).section("\"",1,1);
-                QString nodeType = lines.at(l).section("\"",3,3);
-                ports.append(PortSpecification(portType, nodeType, portName, false, 0));
-                comp.portNames.append(portName);
-            }
-        }
-
-        //Generate appearance object
-        ModelObjectAppearance appearance = generateAppearance(ports, cqsType);
-
-        //Add header guard
-        code.prepend("#ifndef "+typeName.toUpper()+"_HPP_INCLUDED\n#define "+typeName.toUpper()+"_HPP_INCLUDED\n\n");
-        code.append("#endif // "+typeName.toUpper()+"_HPP_INCLUDED\n");
-
-        comp.plainCode = code;
-
-        compileComponent("equation.hpp", comp, appearance);
+//        compileComponent("equation.hpp", comp, appearance);
     }
 
     //! @todo Error message

@@ -40,12 +40,22 @@ GeneratorHandler::GeneratorHandler()
         return;
     }
 
+    //Load modelica generator function
     callModelicaGenerator = (call_modelica_generator_t)GetProcAddress(lib_ptr, "callModelicaGenerator");
     if (!callModelicaGenerator)
     {
         //! @todo Error message
         return;
     }
+
+    //Load C++ generator function
+    callCppGenerator = (call_cpp_generator_t)GetProcAddress(lib_ptr, "callCppGenerator");
+    if (!callCppGenerator)
+    {
+        //! @todo Error message
+        return;
+    }
+
 #else
     void *lib_ptr;
     lib_ptr = dlopen("libHopsanGenerator.so", RTLD_NOW);  //Load the dll
@@ -55,8 +65,18 @@ GeneratorHandler::GeneratorHandler()
         return;
     }
 
+    //Load modelica generator function
     callModelicaGenerator = (call_modelica_generator_t)dlsym(lib_ptr, "callModelicaGenerator");
     char *dlsym_error = dlerror();
+    if (dlsym_error)
+    {
+        //! @todo Error message
+        return;
+    }
+
+    //Load C++ generator function
+    callCppGenerator = (call_cpp_generator_t)dlsym(lib_ptr, "callCppGenerator");
+    dlsym_error = dlerror();
     if (dlsym_error)
     {
         //! @todo Error message

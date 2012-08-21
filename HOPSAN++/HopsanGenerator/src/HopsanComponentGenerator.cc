@@ -113,6 +113,11 @@ HopsanComponentGenerator::HopsanComponentGenerator(QString coreIncludePath, QStr
         mpDialog->setWindowTitle("HopsanGenerator");
 
         mpDoneButton->connect(mpDoneButton, SIGNAL(clicked()), mpDialog, SLOT(hide()));
+
+        mpDialog->show();
+        QApplication::processEvents();
+
+        printMessage("##########################\n# Loaded HopsanGenerator\n##########################\n");
     }
 }
 
@@ -143,14 +148,6 @@ void HopsanComponentGenerator::printErrorMessage(QString msg)
 
 void HopsanComponentGenerator::generateFromModelica(QString code)
 {
-    if(mShowDialog)
-    {
-        mpDialog->show();
-        QApplication::processEvents();
-    }
-
-    printMessage("##########################\n# Loaded HopsanGenerator\n##########################\n");
-
     QString typeName, displayName, cqsType;
     QStringList initAlgorithms, equations, finalAlgorithms;
     QList<PortSpecification> portList;
