@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="HydraulicLaminarOrifice" displayname="Laminar Orifice">
+    <modelobject typename="HydraulicLaminarOrifice" displayname="Laminar Orifice" sourcecode="HydraulicLaminarOrifice.hpp">
         <icons>
             <icon scale="1" path="laminarorifice_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="laminarorifice_iso.svg" iconrotation="ON" type="iso"/>

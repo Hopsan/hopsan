@@ -37,6 +37,7 @@
 #define CAF_SUBTYPENAME "subtypename"
 #define CAF_TYPE "type"
 #define CAF_DISPLAYNAME "displayname"
+#define CAF_SOURCECODE "sourcecode"
 #define CAF_NAME "name"
 
 #define CAF_ICON "icon"
@@ -464,6 +465,12 @@ QPointF ModelObjectAppearance::getNameTextPos()
 }
 
 
+QString ModelObjectAppearance::getSourceCodeFile()
+{
+    return mSourceCode;
+}
+
+
 ModelObjectAnimationData *ModelObjectAppearance::getAnimationDataPtr()
 {
     return &mAnimationData;
@@ -521,6 +528,7 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
     mTypeName       = domElement.attribute(CAF_TYPENAME, mTypeName);
     mSubTypeName    = domElement.attribute(CAF_SUBTYPENAME, "");
     mDisplayName    = domElement.attribute(CAF_DISPLAYNAME, mDisplayName);
+    mSourceCode     = domElement.attribute(CAF_SOURCECODE, "");
 
     //Use typename if displayname not set
     if (mDisplayName.isEmpty())

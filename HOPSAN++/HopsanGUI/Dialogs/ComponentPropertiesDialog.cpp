@@ -44,6 +44,7 @@
 #include "Utilities/GUIUtilities.h"
 #include "Dialogs/MovePortsDialog.h"
 #include "Dialogs/ParameterSettingsLayout.h"
+#include "Dialogs/ComponentGeneratorDialog.h"
 
 
 //! @class ComponentPropertiesDialog
@@ -259,7 +260,47 @@ void ComponentPropertiesDialog::createEditStuff()
     pScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
     QGridLayout *pPrimaryLayout = new QGridLayout(this);
-    pPrimaryLayout->addWidget(pScrollArea);
+
+    QString filePath = mpComponent->getAppearanceData()->getSourceCodeFile();
+    if(!filePath.isEmpty())
+    {
+        filePath.prepend(mpComponent->getAppearanceData()->getBasePath());
+        QFile file(filePath);
+        file.open(QIODevice::ReadOnly | QIODevice::Text);
+        QString code;
+        QTextStream t(&file);
+        code = t.readAll();
+        file.close();
+
+
+        QTextEdit *pSourceCodeTextEdit = new QTextEdit(this);
+        pSourceCodeTextEdit->setReadOnly(true);
+        pSourceCodeTextEdit->setText(code);
+        if(filePath.endsWith(".hpp"))
+        {
+            CppHighlighter *pHighLighter = new CppHighlighter(pSourceCodeTextEdit->document());
+        }
+        else if(filePath.endsWith(".mo"))
+        {
+            ModelicaHighlighter *pHighLighter = new ModelicaHighlighter(pSourceCodeTextEdit->document());
+        }
+
+        QVBoxLayout *pSourceCodeLayout = new QVBoxLayout(this);
+        pSourceCodeLayout->addWidget(pSourceCodeTextEdit);
+
+        QWidget *pSourceCodeWidget = new QWidget(this);
+        pSourceCodeWidget->setLayout(pSourceCodeLayout);
+
+        QTabWidget *pTabWidget = new QTabWidget(this);
+        pTabWidget->addTab(pScrollArea, "Parameters");
+        pTabWidget->addTab(pSourceCodeWidget, "Source Code");
+        pPrimaryLayout->addWidget(pTabWidget);
+    }
+    else
+    {
+        pPrimaryLayout->addWidget(pScrollArea);
+    }
+
     setLayout(pPrimaryLayout);
 
     pPrimaryWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);

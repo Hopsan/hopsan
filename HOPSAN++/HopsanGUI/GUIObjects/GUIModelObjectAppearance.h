@@ -125,6 +125,7 @@ public:
     qreal   getIconScale(const graphicsType gfxType=USERGRAPHICS);
     QString getIconRotationBehaviour(const graphicsType gfxType=USERGRAPHICS);
     QPointF getNameTextPos();
+    QString getSourceCodeFile();
 
     ModelObjectAnimationData *getAnimationDataPtr();
 
@@ -144,6 +145,7 @@ private:
     QString mTypeName;
     QString mSubTypeName;
     QString mDisplayName;
+    QString mSourceCode;
     QString mHelpPicture;
     QString mHelpText;
     ModelObjectIconAppearance mIsoIconAppearance;
