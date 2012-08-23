@@ -1,21 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.4.0" hopsancoreversion="0">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3872" hopsancoreversion="0">
     <system typename="Subsystem" name="AircraftSystem5">
         <hopsangui>
-            <pose x="0.00000000000000000000" y="0" flipped="0" a="0"/>
+            <pose x="0" y="0" flipped="0" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2123.46" y="2525.31" zoom="0.7092198581560283"/>
+            <viewport x="2216.52" y="2652.92" zoom="0.70922"/>
             <ports hidden="1"/>
             <names hidden="0"/>
             <scriptfile path=""/>
-            <hopsanobjectappearance version="0.2">
+            <hopsanobjectappearance version="0.3">
                 <modelobject typename="Subsystem" displayname="AircraftSystem5">
                     <icons>
-                        <icon scale="1" path="../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="ON" type="user"/>
+                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
                     </icons>
+                    <ports/>
                 </modelobject>
-                <portpositions/>
             </hopsanobjectappearance>
+            <optimization>
+                <settings>
+                    <niter>100</niter>
+                    <nsearchp>8</nsearchp>
+                    <refcoeff>1.3</refcoeff>
+                    <randfac>0.3</randfac>
+                    <forgfac>0</forgfac>
+                    <functol>1e-05</functol>
+                    <partol>0.0001</partol>
+                    <plot>true</plot>
+                    <savecsv>false</savecsv>
+                    <logpar>false</logpar>
+                </settings>
+                <parameters/>
+                <objectives/>
+            </optimization>
             <hopsanundo>
                 <post number="-1"/>
                 <post number="0"/>
@@ -73,6 +89,331 @@
                         </connect>
                     </stuff>
                 </post>
+                <post number="5">
+                    <stuff what="deletedobject">
+                        <component typename="MissingComponent" name="ControlAttitude">
+                            <parameters/>
+                            <hopsangui>
+                                <pose x="1939" y="2527" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="6" type="paste">
+                    <stuff what="addedobject">
+                        <component typename="SignalAttitudeControl" name="SignalAttitudeControl">
+                            <parameters>
+                                <parameter value="0" name="PuaerL::Value"/>
+                                <parameter value="0" name="PuaerR::Value"/>
+                                <parameter value="0" name="Puelev::Value"/>
+                                <parameter value="0" name="Purud::Value"/>
+                                <parameter value="3" name="Kphi"/>
+                                <parameter value="2" name="Kphipsi"/>
+                                <parameter value="-1" name="phimin"/>
+                                <parameter value="1" name="phimax"/>
+                                <parameter value="4" name="Kelev"/>
+                                <parameter value="1" name="Krud"/>
+                                <parameter value="1" name="KRrud"/>
+                                <parameter value="-0.9" name="u1min"/>
+                                <parameter value="0.9" name="u1max"/>
+                                <parameter value="-0.7" name="u2min"/>
+                                <parameter value="0.7" name="u2max"/>
+                                <parameter value="-0.7" name="u3min"/>
+                                <parameter value="0.7" name="u3max"/>
+                                <parameter value="100" name="U0"/>
+                                <parameter value="0" name="phiref"/>
+                                <parameter value="0" name="thetaref"/>
+                                <parameter value="0" name="psiref"/>
+                                <parameter value="0" name="phi"/>
+                                <parameter value="0" name="theta"/>
+                                <parameter value="0" name="psi"/>
+                                <parameter value="0" name="beta"/>
+                                <parameter value="0" name="Rb"/>
+                                <parameter value="0" name="Ub"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="1976.74" y="2524.33" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                    <stuff what="rotate" angle="0.000000" objectname="SignalAttitudeControl"/>
+                    <stuff what="movedobject" name="SignalAttitudeControl">
+                        <oldpos>1944.24 2492.33</oldpos>
+                        <newpos>1913.3 2508.82</newpos>
+                    </stuff>
+                </post>
+                <post number="7">
+                    <stuff what="movedobject" name="SignalAttitudeControl">
+                        <oldpos>1913.3 2508.82</oldpos>
+                        <newpos>1942.91 2508.82</newpos>
+                    </stuff>
+                </post>
+                <post number="8">
+                    <stuff what="addedconnector">
+                        <connect endport="ContainerPort_4" endcomponent="HydraulicActuationSystem" startport="PuaerL" startcomponent="SignalAttitudeControl">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2007.91000028200028282299" y="2523.00000000000000000000"/>
+                                    <coordinate x="2060.40999999999985448085" y="2523.00000000000000000000"/>
+                                    <coordinate x="2060.40999999999985448085" y="2523.00000000000000000000"/>
+                                    <coordinate x="2080.40999999999985448085" y="2523.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="9">
+                    <stuff what="addedconnector">
+                        <connect endport="ContainerPort_3" endcomponent="HydraulicActuationSystem" startport="PuaerR" startcomponent="SignalAttitudeControl">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2007.91000028200028282299" y="2535.79999999999972715159"/>
+                                    <coordinate x="2060.40999999999985448085" y="2535.79999999999972715159"/>
+                                    <coordinate x="2060.40999999999985448085" y="2533.00000000000000000000"/>
+                                    <coordinate x="2080.40999999999985448085" y="2533.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="10">
+                    <stuff what="addedconnector">
+                        <connect endport="ContainerPort_2" endcomponent="HydraulicActuationSystem" startport="Puelev" startcomponent="SignalAttitudeControl">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2007.91000028200028282299" y="2548.59999999999990905053"/>
+                                    <coordinate x="2060.40999999999985448085" y="2548.59999999999990905053"/>
+                                    <coordinate x="2060.40999999999985448085" y="2543.00000000000000000000"/>
+                                    <coordinate x="2080.40999999999985448085" y="2543.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="11">
+                    <stuff what="addedconnector">
+                        <connect endport="ContainerPort_1" endcomponent="HydraulicActuationSystem" startport="Puelev" startcomponent="SignalAttitudeControl">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2007.91000028200028282299" y="2548.59999999999990905053"/>
+                                    <coordinate x="2060.40999999999985448085" y="2548.59999999999990905053"/>
+                                    <coordinate x="2060.40999999999985448085" y="2553.00000000000000000000"/>
+                                    <coordinate x="2080.40999999999985448085" y="2553.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="12">
+                    <stuff what="addedconnector">
+                        <connect endport="ContainerPort" endcomponent="HydraulicActuationSystem" startport="Purud" startcomponent="SignalAttitudeControl">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2007.91000028200028282299" y="2561.39999999999963620212"/>
+                                    <coordinate x="2060.40999999999985448085" y="2561.39999999999963620212"/>
+                                    <coordinate x="2060.40999999999985448085" y="2563.00000000000000000000"/>
+                                    <coordinate x="2080.40999999999985448085" y="2563.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="13">
+                    <stuff what="addedconnector">
+                        <connect endport="Pthetaref" endcomponent="SignalAttitudeControl" startport="Pu" startcomponent="SignalPIlead">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="1833.35000000000013642421" y="2474.46999999999979991117"/>
+                                    <coordinate x="1907.73000000000024556357" y="2474.46999999999979991117"/>
+                                    <coordinate x="1907.73000000000024556357" y="2535.79999999999972715159"/>
+                                    <coordinate x="1942.91000028200028282299" y="2535.79999999999972715159"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="14">
+                    <stuff what="addedconnector">
+                        <connect endport="Ppsiref" endcomponent="SignalAttitudeControl" startport="out" startcomponent="Pulse">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="1633.60999999999989995558" y="2346.42000000000052750693"/>
+                                    <coordinate x="1909.14000000000010004442" y="2346.42000000000052750693"/>
+                                    <coordinate x="1909.14000000000010004442" y="2548.59999999999990905053"/>
+                                    <coordinate x="1942.91000028200028282299" y="2548.59999999999990905053"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="15">
+                    <stuff what="addedconnector">
+                        <connect endport="Ppsi" endcomponent="SignalAttitudeControl" startport="PPsi" startcomponent="AeroAircraft6DOF">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2373.30315999999947962351" y="2637.69486841740763338748"/>
+                                    <coordinate x="2373.30315999999947962351" y="2695.92000000000007275958"/>
+                                    <coordinate x="1975.41000028200028282299" y="2695.92000000000007275958"/>
+                                    <coordinate x="1975.41000028200028282299" y="2574.19999999999981810106"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="16">
+                    <stuff what="addedconnector">
+                        <connect endport="Ptheta" endcomponent="SignalAttitudeControl" startport="PThetao" startcomponent="AeroAircraft6DOF">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2387.14911999999958425178" y="2637.69486841740763338748"/>
+                                    <coordinate x="2387.14911999999958425178" y="2705.79000000000041836756"/>
+                                    <coordinate x="1962.41000028200028282299" y="2705.79000000000041836756"/>
+                                    <coordinate x="1962.41000028200028282299" y="2574.19999999999981810106"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="17">
+                    <stuff what="addedconnector">
+                        <connect endport="Pphi" endcomponent="SignalAttitudeControl" startport="PPhi" startcomponent="AeroAircraft6DOF">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2400.99543999999968946213" y="2637.69486841740763338748"/>
+                                    <coordinate x="2400.99543999999968946213" y="2714.25000000000045474735"/>
+                                    <coordinate x="1949.41000028200028282299" y="2714.25000000000045474735"/>
+                                    <coordinate x="1949.41000028200028282299" y="2574.19999999999981810106"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="18">
+                    <stuff what="addedconnector">
+                        <connect endport="Pbeta" endcomponent="SignalAttitudeControl" startport="PBetaSlip" startcomponent="AeroAircraft6DOF">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2567.14911999999958425178" y="2637.69486841740763338748"/>
+                                    <coordinate x="2567.14911999999958425178" y="2690.28000000000020008883"/>
+                                    <coordinate x="1988.41000028200028282299" y="2690.28000000000020008883"/>
+                                    <coordinate x="1988.41000028200028282299" y="2574.19999999999981810106"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="19">
+                    <stuff what="addedconnector">
+                        <connect endport="PRb" endcomponent="SignalAttitudeControl" startport="PRb" startcomponent="AeroAircraft6DOF">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2484.07227999999940948328" y="2637.69486841740763338748"/>
+                                    <coordinate x="2484.07227999999940948328" y="2691.69000000000005456968"/>
+                                    <coordinate x="1994.91000028200028282299" y="2691.69000000000005456968"/>
+                                    <coordinate x="1994.91000028200028282299" y="2574.19999999999981810106"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="20">
+                    <stuff what="addedconnector">
+                        <connect endport="PUb" endcomponent="SignalAttitudeControl" startport="PUb" startcomponent="AeroAircraft6DOF">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2414.84139999999979409040" y="2637.69486841740763338748"/>
+                                    <coordinate x="2414.84139999999979409040" y="2680.41000000000030922820"/>
+                                    <coordinate x="1999.38000000000010913936" y="2680.41000000000030922820"/>
+                                    <coordinate x="1999.38000000000010913936" y="2594.19999999999981810106"/>
+                                    <coordinate x="2001.41000028200028282299" y="2594.19999999999981810106"/>
+                                    <coordinate x="2001.41000028200028282299" y="2574.19999999999981810106"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
             </hopsanundo>
         </hopsangui>
         <simulationtime stop="50" timestep="0.005" start="0"/>
@@ -83,14 +424,14 @@
                     <parameter value="100" name="y"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="1611.53999999999950887286" y="2474.4699999999997999" flipped="0" a="0"/>
+                    <pose x="1611.54" y="2474.47" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="SignalSink" name="Sink">
                 <parameters/>
                 <hopsangui>
-                    <pose x="2630.66000000000030922820" y="2644" flipped="0" a="0"/>
+                    <pose x="2630.66" y="2644" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -115,7 +456,7 @@
                     <parameter value="0" name="ha"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2547.00000000000000000000" y="2320" flipped="0" a="0"/>
+                    <pose x="2547" y="2320" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -239,7 +580,42 @@
                     <parameter value="0" name="wturbz"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2456.37999999999965439201" y="2533.1948684174076334" flipped="0" a="0"/>
+                    <pose x="2456.38" y="2533.194868" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalAttitudeControl" name="SignalAttitudeControl">
+                <parameters>
+                    <parameter value="0" name="PuaerL::Value"/>
+                    <parameter value="0" name="PuaerR::Value"/>
+                    <parameter value="0" name="Puelev::Value"/>
+                    <parameter value="0" name="Purud::Value"/>
+                    <parameter value="3" name="Kphi"/>
+                    <parameter value="2" name="Kphipsi"/>
+                    <parameter value="-1" name="phimin"/>
+                    <parameter value="1" name="phimax"/>
+                    <parameter value="4" name="Kelev"/>
+                    <parameter value="1" name="Krud"/>
+                    <parameter value="1" name="KRrud"/>
+                    <parameter value="-0.9" name="u1min"/>
+                    <parameter value="0.9" name="u1max"/>
+                    <parameter value="-0.7" name="u2min"/>
+                    <parameter value="0.7" name="u2max"/>
+                    <parameter value="-0.7" name="u3min"/>
+                    <parameter value="0.7" name="u3max"/>
+                    <parameter value="100" name="U0"/>
+                    <parameter value="0" name="phiref"/>
+                    <parameter value="0" name="thetaref"/>
+                    <parameter value="0" name="psiref"/>
+                    <parameter value="0" name="phi"/>
+                    <parameter value="0" name="theta"/>
+                    <parameter value="0" name="psi"/>
+                    <parameter value="0" name="beta"/>
+                    <parameter value="0" name="Rb"/>
+                    <parameter value="0" name="Ub"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="1975.41" y="2542.2" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -251,14 +627,14 @@
                     <parameter value="1.57" name="y_A"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="1621.10999999999989995558" y="2346.4200000000005275" flipped="0" a="0"/>
+                    <pose x="1621.11" y="2346.42" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="SignalSink" name="Sink_1">
                 <parameters/>
                 <hopsangui>
-                    <pose x="2632.64000000000123691279" y="2683.3299999999999272" flipped="0" a="0"/>
+                    <pose x="2632.64" y="2683.33" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -267,14 +643,14 @@
                     <parameter value="0" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2198.41000000000030922820" y="2594" flipped="0" a="0"/>
+                    <pose x="2198.41" y="2594" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="SignalSink" name="Sink_2">
                 <parameters/>
                 <hopsangui>
-                    <pose x="2629.73999999999978172127" y="2770.410000000000764" flipped="0" a="0"/>
+                    <pose x="2629.74" y="2770.41" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -290,47 +666,14 @@
                     <parameter value="1" name="kx"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="1794.85000000000013642421" y="2474.4699999999997999" flipped="0" a="0"/>
-                    <nametext position="0" visible="1"/>
-                </hopsangui>
-            </component>
-            <component typename="ControlAttitude" name="ControlAttitude">
-                <parameters>
-                    <parameter value="0" name="PuaerL::Value"/>
-                    <parameter value="0" name="PuaerR::Value"/>
-                    <parameter value="0" name="Puelev::Value"/>
-                    <parameter value="0" name="Purud::Value"/>
-                    <parameter value="3" name="Kphi"/>
-                    <parameter value="2" name="Kphipsi"/>
-                    <parameter value="-1" name="phimin"/>
-                    <parameter value="1" name="phimax"/>
-                    <parameter value="4" name="Kelev"/>
-                    <parameter value="1" name="Krud"/>
-                    <parameter value="-0.9" name="u1min"/>
-                    <parameter value="0.9" name="u1max"/>
-                    <parameter value="-.7" name="u2min"/>
-                    <parameter value="0.7" name="u2max"/>
-                    <parameter value="-0.7" name="u3min"/>
-                    <parameter value="0.7" name="u3max"/>
-                    <parameter value="100" name="U0"/>
-                    <parameter value="0" name="phiref"/>
-                    <parameter value="0" name="thetaref"/>
-                    <parameter value="0" name="psiref"/>
-                    <parameter value="0" name="phi"/>
-                    <parameter value="0" name="theta"/>
-                    <parameter value="0" name="psi"/>
-                    <parameter value="0" name="beta"/>
-                    <parameter value="0" name="Ub"/>
-                </parameters>
-                <hopsangui>
-                    <pose x="1939.00000000000000000000" y="2527" flipped="0" a="0"/>
+                    <pose x="1794.85" y="2474.47" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <component typename="SignalSink" name="Sink_3">
                 <parameters/>
                 <hopsangui>
-                    <pose x="2140.82000000000061845640" y="2641.9499999999998181" flipped="0" a="0"/>
+                    <pose x="2140.82" y="2641.95" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -350,7 +693,7 @@
                     <parameter value="100" name="speed"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2304.00000000000000000000" y="2288.2799999999988358" flipped="0" a="0"/>
+                    <pose x="2304" y="2288.28" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
@@ -362,37 +705,53 @@
                     <parameter value="0" name="massflow"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2164.00000000000000000000" y="2367" flipped="0" a="0"/>
+                    <pose x="2164" y="2367" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
                 </hopsangui>
             </component>
             <system typename="Subsystem" name="HydraulicActuationSystem">
                 <hopsangui>
-                    <pose x="2125.40999999999985448085" y="2543" flipped="0" a="0"/>
+                    <pose x="2125.41" y="2543" flipped="0" a="0"/>
                     <nametext position="0" visible="1"/>
-                    <viewport x="2123.46" y="2525.31" zoom="0.7092198581560283"/>
+                    <viewport x="2216.52" y="2652.92" zoom="0.70922"/>
                     <ports hidden="1"/>
                     <names hidden="0"/>
                     <scriptfile path=""/>
-                    <hopsanobjectappearance version="0.2">
+                    <hopsanobjectappearance version="0.3">
                         <modelobject typename="Subsystem" displayname="HydraulicActuationSystem">
                             <icons>
-                                <icon scale="1" path="../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="ON" type="user"/>
+                                <icon path="subsystemDefault.svg" type="defaultmissing"/>
                             </icons>
+                            <ports>
+                                <port x="3.262736849e-307" y="6.068239111e-307" a="180" name="ContainerPort_2"/>
+                                <port x="3.262736849e-307" y="6.068239111e-307" a="180" name="ContainerPort_3"/>
+                                <port x="3.262736848e-307" y="6.068239111e-307" a="180" name="ContainerPort_4"/>
+                                <port x="3.262736849e-307" y="6.068239111e-307" a="0" name="ContainerPort_5"/>
+                                <port x="3.262736849e-307" y="6.068239111e-307" a="0" name="ContainerPort_6"/>
+                                <port x="3.262736849e-307" y="6.068239111e-307" a="0" name="ContainerPort_7"/>
+                                <port x="3.262736849e-307" y="6.068239111e-307" a="0" name="ContainerPort_8"/>
+                                <port x="3.262736849e-307" y="6.068239111e-307" a="0" name="ContainerPort_9"/>
+                                <port x="3.262736849e-307" y="6.068239111e-307" a="180" name="ContainerPort"/>
+                                <port x="3.262736849e-307" y="6.068239111e-307" a="180" name="ContainerPort_1"/>
+                            </ports>
                         </modelobject>
-                        <portpositions>
-                            <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="180" name="ContainerPort_2"/>
-                            <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="180" name="ContainerPort_3"/>
-                            <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="180" name="ContainerPort_4"/>
-                            <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="0" name="ContainerPort_5"/>
-                            <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="0" name="ContainerPort_6"/>
-                            <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="0" name="ContainerPort_7"/>
-                            <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="0" name="ContainerPort_8"/>
-                            <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="0" name="ContainerPort_9"/>
-                            <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="180" name="ContainerPort"/>
-                            <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="180" name="ContainerPort_1"/>
-                        </portpositions>
                     </hopsanobjectappearance>
+                    <optimization>
+                        <settings>
+                            <niter>100</niter>
+                            <nsearchp>8</nsearchp>
+                            <refcoeff>1.3</refcoeff>
+                            <randfac>0.3</randfac>
+                            <forgfac>0</forgfac>
+                            <functol>1e-05</functol>
+                            <partol>0.0001</partol>
+                            <plot>true</plot>
+                            <savecsv>false</savecsv>
+                            <logpar>false</logpar>
+                        </settings>
+                        <parameters/>
+                        <objectives/>
+                    </optimization>
                     <hopsanundo>
                         <post number="-1"/>
                         <post number="0" type="paste">
@@ -1416,12 +1775,12 @@
                         </post>
                     </hopsanundo>
                 </hopsangui>
-                <simulationtime stop="10" timestep="0.005" start="0"/>
+                <simulationtime stop="50" timestep="0.005" start="0"/>
                 <parameters/>
                 <objects>
                     <systemport name="ContainerPort_4">
                         <hopsangui>
-                            <pose x="1769.35425592461888300022" y="2317.6500000000000909" flipped="0" a="0"/>
+                            <pose x="1769.354256" y="2317.65" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </systemport>
@@ -1431,55 +1790,71 @@
                             <parameter value="100000" name="p"/>
                         </parameters>
                         <hopsangui>
-                            <pose x="1891.00000000000000000000" y="2795" flipped="0" a="0"/>
+                            <pose x="1891" y="2795" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </component>
                     <systemport name="ContainerPort_5">
                         <hopsangui>
-                            <pose x="2455.35425592461888300022" y="2571.6500000000000909" flipped="0" a="0"/>
+                            <pose x="2455.354256" y="2571.65" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </systemport>
                     <systemport name="ContainerPort_6">
                         <hopsangui>
-                            <pose x="2454.35425592461888300022" y="2491.6500000000000909" flipped="0" a="0"/>
+                            <pose x="2454.354256" y="2491.65" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </systemport>
                     <systemport name="ContainerPort_7">
                         <hopsangui>
-                            <pose x="2453.35425592461888300022" y="2410.6500000000000909" flipped="0" a="0"/>
+                            <pose x="2453.354256" y="2410.65" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </systemport>
                     <systemport name="ContainerPort_8">
                         <hopsangui>
-                            <pose x="2452.35425592461888300022" y="2330.6500000000000909" flipped="0" a="0"/>
+                            <pose x="2452.354256" y="2330.65" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </systemport>
                     <system typename="Subsystem" name="LinkServo">
                         <hopsangui>
-                            <pose x="2289.35425592461888300022" y="2571.6500000000000909" flipped="0" a="0"/>
+                            <pose x="2289.354256" y="2571.65" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
-                            <viewport x="2123.46" y="2525.31" zoom="0.7092198581560283"/>
+                            <viewport x="2216.52" y="2652.92" zoom="0.70922"/>
                             <ports hidden="1"/>
                             <names hidden="0"/>
                             <scriptfile path=""/>
-                            <hopsanobjectappearance version="0.2">
+                            <hopsanobjectappearance version="0.3">
                                 <modelobject typename="Subsystem" displayname="LinkServo">
                                     <icons>
-                                        <icon scale="1" path="../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="ON" type="user"/>
+                                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
                                     </icons>
+                                    <ports>
+                                        <port x="3.262736847e-307" y="6.068239111e-307" a="270" name="ContainerPort_2"/>
+                                        <port x="3.262736847e-307" y="6.068239111e-307" a="0" name="ContainerPort_3"/>
+                                        <port x="3.262736847e-307" y="6.068239111e-307" a="180" name="ContainerPort"/>
+                                        <port x="3.262736847e-307" y="6.068239111e-307" a="270" name="ContainerPort_1"/>
+                                    </ports>
                                 </modelobject>
-                                <portpositions>
-                                    <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="270" name="ContainerPort_2"/>
-                                    <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="0" name="ContainerPort_3"/>
-                                    <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="180" name="ContainerPort"/>
-                                    <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="270" name="ContainerPort_1"/>
-                                </portpositions>
                             </hopsanobjectappearance>
+                            <optimization>
+                                <settings>
+                                    <niter>100</niter>
+                                    <nsearchp>8</nsearchp>
+                                    <refcoeff>1.3</refcoeff>
+                                    <randfac>0.3</randfac>
+                                    <forgfac>0</forgfac>
+                                    <functol>1e-05</functol>
+                                    <partol>0.0001</partol>
+                                    <plot>true</plot>
+                                    <savecsv>false</savecsv>
+                                    <logpar>false</logpar>
+                                </settings>
+                                <parameters/>
+                                <objectives/>
+                            </optimization>
                             <hopsanundo>
                                 <post number="-1"/>
                                 <post number="0">
@@ -2194,18 +2569,18 @@
                                 </post>
                             </hopsanundo>
                         </hopsangui>
-                        <simulationtime stop="10" timestep="0.001" start="0"/>
+                        <simulationtime stop="50" timestep="0.001" start="0"/>
                         <parameters/>
                         <objects>
                             <systemport name="ContainerPort_2">
                                 <hopsangui>
-                                    <pose x="2307.97149999999965075403" y="2304" flipped="0" a="0"/>
+                                    <pose x="2307.9715" y="2304" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
                             <systemport name="ContainerPort_3">
                                 <hopsangui>
-                                    <pose x="2477.00000000000000000000" y="2439" flipped="0" a="0"/>
+                                    <pose x="2477" y="2439" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
@@ -2228,7 +2603,7 @@
                                     <parameter value="0" name="c_leak"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2284.00000000000000000000" y="2485" flipped="1" a="180"/>
+                                    <pose x="2284" y="2485" flipped="1" a="180"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
@@ -2237,7 +2612,7 @@
                                     <parameter value="0" name="out::Value"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2410.00000000000000000000" y="2381" flipped="0" a="0"/>
+                                    <pose x="2410" y="2381" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
@@ -2246,7 +2621,7 @@
                                     <parameter value="0" name="out::Value"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2088.00000000000000000000" y="2381" flipped="1" a="180"/>
+                                    <pose x="2088" y="2381" flipped="1" a="180"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
@@ -2261,7 +2636,7 @@
                                     <parameter value="1.05" name="thetamax"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2411.40999999999939973350" y="2462.0000000000004547" flipped="0" a="0"/>
+                                    <pose x="2411.41" y="2462" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
@@ -2284,13 +2659,13 @@
                                     <parameter value="1" name="delta_h"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2249.00000000000000000000" y="2391" flipped="1" a="180"/>
+                                    <pose x="2249" y="2391" flipped="1" a="180"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
                             <systemport name="ContainerPort">
                                 <hopsangui>
-                                    <pose x="2027.00000000000000000000" y="2381" flipped="0" a="0"/>
+                                    <pose x="2027" y="2381" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
@@ -2300,13 +2675,13 @@
                                     <parameter value="0.0003" name="k"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2133.99999999999954525265" y="2379.5899999999996908" flipped="0" a="0"/>
+                                    <pose x="2134" y="2379.59" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
                             <systemport name="ContainerPort_1">
                                 <hopsangui>
-                                    <pose x="2227.92159999999967112672" y="2304" flipped="0" a="0"/>
+                                    <pose x="2227.9216" y="2304" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
@@ -2496,13 +2871,13 @@
                     </system>
                     <systemport name="ContainerPort_9">
                         <hopsangui>
-                            <pose x="2451.35425592461888300022" y="2250.6500000000000909" flipped="0" a="0"/>
+                            <pose x="2451.354256" y="2250.65" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </systemport>
                     <systemport name="ContainerPort">
                         <hopsangui>
-                            <pose x="1769.35425592461888300022" y="2503.6500000000000909" flipped="0" a="0"/>
+                            <pose x="1769.354256" y="2503.65" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </systemport>
@@ -2519,31 +2894,47 @@
                             <parameter value="0.5" name="xmax"/>
                         </parameters>
                         <hopsangui>
-                            <pose x="2168.76425592461828273372" y="2717.3699999999998909" flipped="0" a="0"/>
+                            <pose x="2168.764256" y="2717.37" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </component>
                     <system typename="Subsystem" name="LinkServo_1">
                         <hopsangui>
-                            <pose x="2291.76425592461873748107" y="2491.6500000000005457" flipped="0" a="0"/>
+                            <pose x="2291.764256" y="2491.65" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
-                            <viewport x="2123.46" y="2525.31" zoom="0.7092198581560283"/>
+                            <viewport x="2216.52" y="2652.92" zoom="0.70922"/>
                             <ports hidden="1"/>
                             <names hidden="0"/>
                             <scriptfile path=""/>
-                            <hopsanobjectappearance version="0.2">
+                            <hopsanobjectappearance version="0.3">
                                 <modelobject typename="Subsystem" displayname="LinkServo_1">
                                     <icons>
-                                        <icon scale="1" path="../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="ON" type="user"/>
+                                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
                                     </icons>
+                                    <ports>
+                                        <port x="3.262736847e-307" y="6.068239111e-307" a="270" name="ContainerPort_2"/>
+                                        <port x="3.262736847e-307" y="6.068239111e-307" a="0" name="ContainerPort_3"/>
+                                        <port x="3.262736847e-307" y="6.068239111e-307" a="180" name="ContainerPort"/>
+                                        <port x="3.262736847e-307" y="6.068239111e-307" a="270" name="ContainerPort_1"/>
+                                    </ports>
                                 </modelobject>
-                                <portpositions>
-                                    <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="270" name="ContainerPort_2"/>
-                                    <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="0" name="ContainerPort_3"/>
-                                    <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="180" name="ContainerPort"/>
-                                    <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="270" name="ContainerPort_1"/>
-                                </portpositions>
                             </hopsanobjectappearance>
+                            <optimization>
+                                <settings>
+                                    <niter>100</niter>
+                                    <nsearchp>8</nsearchp>
+                                    <refcoeff>1.3</refcoeff>
+                                    <randfac>0.3</randfac>
+                                    <forgfac>0</forgfac>
+                                    <functol>1e-05</functol>
+                                    <partol>0.0001</partol>
+                                    <plot>true</plot>
+                                    <savecsv>false</savecsv>
+                                    <logpar>false</logpar>
+                                </settings>
+                                <parameters/>
+                                <objectives/>
+                            </optimization>
                             <hopsanundo>
                                 <post number="-1"/>
                                 <post number="0" type="changedparameters">
@@ -2564,18 +2955,18 @@
                                 </post>
                             </hopsanundo>
                         </hopsangui>
-                        <simulationtime stop="10" timestep="0.001" start="0"/>
+                        <simulationtime stop="50" timestep="0.001" start="0"/>
                         <parameters/>
                         <objects>
                             <systemport name="ContainerPort_2">
                                 <hopsangui>
-                                    <pose x="2307.97149999999965075403" y="2304" flipped="0" a="0"/>
+                                    <pose x="2307.9715" y="2304" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
                             <systemport name="ContainerPort_3">
                                 <hopsangui>
-                                    <pose x="2477.00000000000000000000" y="2439" flipped="0" a="0"/>
+                                    <pose x="2477" y="2439" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
@@ -2598,7 +2989,7 @@
                                     <parameter value="1e-011" name="c_leak"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2284.00000000000000000000" y="2485" flipped="1" a="180"/>
+                                    <pose x="2284" y="2485" flipped="1" a="180"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
@@ -2607,7 +2998,7 @@
                                     <parameter value="0" name="out::Value"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2410.00000000000000000000" y="2381" flipped="0" a="0"/>
+                                    <pose x="2410" y="2381" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
@@ -2616,7 +3007,7 @@
                                     <parameter value="0" name="out::Value"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2088.00000000000000000000" y="2381" flipped="1" a="180"/>
+                                    <pose x="2088" y="2381" flipped="1" a="180"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
@@ -2631,7 +3022,7 @@
                                     <parameter value="1.05" name="thetamax"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2411.41000000000030922820" y="2460.5899999999996908" flipped="0" a="0"/>
+                                    <pose x="2411.41" y="2462" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
@@ -2654,13 +3045,13 @@
                                     <parameter value="1" name="delta_h"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2249.00000000000000000000" y="2391" flipped="1" a="180"/>
+                                    <pose x="2249" y="2391" flipped="1" a="180"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
                             <systemport name="ContainerPort">
                                 <hopsangui>
-                                    <pose x="2027.00000000000000000000" y="2381" flipped="0" a="0"/>
+                                    <pose x="2027" y="2381" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
@@ -2670,13 +3061,13 @@
                                     <parameter value="0.0003" name="k"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2134.00000000000000000000" y="2382" flipped="0" a="0"/>
+                                    <pose x="2134" y="2382" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
                             <systemport name="ContainerPort_1">
                                 <hopsangui>
-                                    <pose x="2227.92159999999967112672" y="2304" flipped="0" a="0"/>
+                                    <pose x="2227.9216" y="2304" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
@@ -2719,7 +3110,7 @@
                                     <coordinates>
                                         <coordinate x="2343.50000000000000000000" y="2485.00000000000000000000"/>
                                         <coordinate x="2411.41000000000030922820" y="2485.00000000000000000000"/>
-                                        <coordinate x="2411.41000000000030922820" y="2483.58999999999969077180"/>
+                                        <coordinate x="2411.41000000000030922820" y="2485.00000000000000000000"/>
                                     </coordinates>
                                     <geometries>
                                         <geometry>vertical</geometry>
@@ -2767,7 +3158,7 @@
                             <connect endport="ContainerPort_3" endcomponent="ContainerPort_3" startport="Pmr2" startcomponent="MechanicJLink">
                                 <hopsangui>
                                     <coordinates>
-                                        <coordinate x="2411.41000000000030922820" y="2437.58999999999969077180"/>
+                                        <coordinate x="2411.41000000000030922820" y="2439.00000000000000000000"/>
                                         <coordinate x="2411.41000000000030922820" y="2439.00000000000000000000"/>
                                         <coordinate x="2477.00000000000000000000" y="2439.00000000000000000000"/>
                                     </coordinates>
@@ -2784,7 +3175,7 @@
                                         <coordinate x="2410.00000000000000000000" y="2399.00000000000000000000"/>
                                         <coordinate x="2410.00000000000000000000" y="2419.00000000000000000000"/>
                                         <coordinate x="2411.41000000000030922820" y="2419.00000000000000000000"/>
-                                        <coordinate x="2411.41000000000030922820" y="2437.58999999999969077180"/>
+                                        <coordinate x="2411.41000000000030922820" y="2439.00000000000000000000"/>
                                     </coordinates>
                                     <geometries>
                                         <geometry>horizontal</geometry>
@@ -2866,25 +3257,41 @@
                     </system>
                     <system typename="Subsystem" name="LinkServo_2">
                         <hopsangui>
-                            <pose x="2288.35425592461888300022" y="2410.6500000000000909" flipped="0" a="0"/>
+                            <pose x="2288.354256" y="2410.65" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
-                            <viewport x="2123.46" y="2525.31" zoom="0.7092198581560283"/>
+                            <viewport x="2216.52" y="2652.92" zoom="0.70922"/>
                             <ports hidden="1"/>
                             <names hidden="0"/>
                             <scriptfile path=""/>
-                            <hopsanobjectappearance version="0.2">
+                            <hopsanobjectappearance version="0.3">
                                 <modelobject typename="Subsystem" displayname="LinkServo_2">
                                     <icons>
-                                        <icon scale="1" path="../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="ON" type="user"/>
+                                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
                                     </icons>
+                                    <ports>
+                                        <port x="3.262736847e-307" y="6.068239111e-307" a="270" name="ContainerPort_2"/>
+                                        <port x="3.262736847e-307" y="6.068239111e-307" a="0" name="ContainerPort_3"/>
+                                        <port x="3.262736847e-307" y="6.068239111e-307" a="180" name="ContainerPort"/>
+                                        <port x="3.262736847e-307" y="6.068239111e-307" a="270" name="ContainerPort_1"/>
+                                    </ports>
                                 </modelobject>
-                                <portpositions>
-                                    <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="270" name="ContainerPort_2"/>
-                                    <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="0" name="ContainerPort_3"/>
-                                    <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="180" name="ContainerPort"/>
-                                    <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="270" name="ContainerPort_1"/>
-                                </portpositions>
                             </hopsanobjectappearance>
+                            <optimization>
+                                <settings>
+                                    <niter>100</niter>
+                                    <nsearchp>8</nsearchp>
+                                    <refcoeff>1.3</refcoeff>
+                                    <randfac>0.3</randfac>
+                                    <forgfac>0</forgfac>
+                                    <functol>1e-05</functol>
+                                    <partol>0.0001</partol>
+                                    <plot>true</plot>
+                                    <savecsv>false</savecsv>
+                                    <logpar>false</logpar>
+                                </settings>
+                                <parameters/>
+                                <objectives/>
+                            </optimization>
                             <hopsanundo>
                                 <post number="-1"/>
                                 <post number="0" type="changedparameters">
@@ -2902,18 +3309,18 @@
                                 </post>
                             </hopsanundo>
                         </hopsangui>
-                        <simulationtime stop="10" timestep="0.001" start="0"/>
+                        <simulationtime stop="50" timestep="0.001" start="0"/>
                         <parameters/>
                         <objects>
                             <systemport name="ContainerPort_2">
                                 <hopsangui>
-                                    <pose x="2307.97149999999965075403" y="2304" flipped="0" a="0"/>
+                                    <pose x="2307.9715" y="2304" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
                             <systemport name="ContainerPort_3">
                                 <hopsangui>
-                                    <pose x="2477.00000000000000000000" y="2439" flipped="0" a="0"/>
+                                    <pose x="2477" y="2439" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
@@ -2936,7 +3343,7 @@
                                     <parameter value="1e-011" name="c_leak"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2284.00000000000000000000" y="2485" flipped="1" a="180"/>
+                                    <pose x="2284" y="2485" flipped="1" a="180"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
@@ -2945,7 +3352,7 @@
                                     <parameter value="0" name="out::Value"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2410.00000000000000000000" y="2381" flipped="0" a="0"/>
+                                    <pose x="2410" y="2381" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
@@ -2954,7 +3361,7 @@
                                     <parameter value="0" name="out::Value"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2088.00000000000000000000" y="2381" flipped="1" a="180"/>
+                                    <pose x="2088" y="2381" flipped="1" a="180"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
@@ -2969,7 +3376,7 @@
                                     <parameter value="1.05" name="thetamax"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2410.00000000000000000000" y="2462" flipped="0" a="0"/>
+                                    <pose x="2410" y="2462" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
@@ -2992,13 +3399,13 @@
                                     <parameter value="1" name="delta_h"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2249.00000000000000000000" y="2391" flipped="1" a="180"/>
+                                    <pose x="2249" y="2391" flipped="1" a="180"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
                             <systemport name="ContainerPort">
                                 <hopsangui>
-                                    <pose x="2027.00000000000000000000" y="2381" flipped="0" a="0"/>
+                                    <pose x="2027" y="2381" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
@@ -3008,13 +3415,13 @@
                                     <parameter value="0.0002" name="k"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2134.00000000000000000000" y="2381" flipped="0" a="0"/>
+                                    <pose x="2134" y="2381" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
                             <systemport name="ContainerPort_1">
                                 <hopsangui>
-                                    <pose x="2227.92159999999967112672" y="2304" flipped="0" a="0"/>
+                                    <pose x="2227.9216" y="2304" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
@@ -3209,31 +3616,47 @@
                             <parameter value="0" name="F"/>
                         </parameters>
                         <hopsangui>
-                            <pose x="1817.47425592461877386086" y="2728.7799999999997453" flipped="0" a="0"/>
+                            <pose x="1817.474256" y="2727.37" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </component>
                     <system typename="Subsystem" name="LinkServo_3">
                         <hopsangui>
-                            <pose x="2288.35425592461888300022" y="2330.6500000000000909" flipped="0" a="0"/>
+                            <pose x="2288.354256" y="2330.65" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
-                            <viewport x="2123.46" y="2525.31" zoom="0.7092198581560283"/>
+                            <viewport x="2216.52" y="2652.92" zoom="0.70922"/>
                             <ports hidden="1"/>
                             <names hidden="0"/>
                             <scriptfile path=""/>
-                            <hopsanobjectappearance version="0.2">
+                            <hopsanobjectappearance version="0.3">
                                 <modelobject typename="Subsystem" displayname="LinkServo_3">
                                     <icons>
-                                        <icon scale="1" path="../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="ON" type="user"/>
+                                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
                                     </icons>
+                                    <ports>
+                                        <port x="3.262736848e-307" y="6.068239111e-307" a="270" name="ContainerPort_2"/>
+                                        <port x="3.262736848e-307" y="6.068239111e-307" a="0" name="ContainerPort_3"/>
+                                        <port x="3.262736848e-307" y="6.068239111e-307" a="180" name="ContainerPort"/>
+                                        <port x="3.262736848e-307" y="6.068239111e-307" a="270" name="ContainerPort_1"/>
+                                    </ports>
                                 </modelobject>
-                                <portpositions>
-                                    <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="270" name="ContainerPort_2"/>
-                                    <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="0" name="ContainerPort_3"/>
-                                    <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="180" name="ContainerPort"/>
-                                    <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="270" name="ContainerPort_1"/>
-                                </portpositions>
                             </hopsanobjectappearance>
+                            <optimization>
+                                <settings>
+                                    <niter>100</niter>
+                                    <nsearchp>8</nsearchp>
+                                    <refcoeff>1.3</refcoeff>
+                                    <randfac>0.3</randfac>
+                                    <forgfac>0</forgfac>
+                                    <functol>1e-05</functol>
+                                    <partol>0.0001</partol>
+                                    <plot>true</plot>
+                                    <savecsv>false</savecsv>
+                                    <logpar>false</logpar>
+                                </settings>
+                                <parameters/>
+                                <objectives/>
+                            </optimization>
                             <hopsanundo>
                                 <post number="-1"/>
                                 <post number="0" type="changedparameters">
@@ -3257,18 +3680,18 @@
                                 </post>
                             </hopsanundo>
                         </hopsangui>
-                        <simulationtime stop="10" timestep="0.001" start="0"/>
+                        <simulationtime stop="50" timestep="0.001" start="0"/>
                         <parameters/>
                         <objects>
                             <systemport name="ContainerPort_2">
                                 <hopsangui>
-                                    <pose x="2307.97149999999965075403" y="2304" flipped="0" a="0"/>
+                                    <pose x="2307.9715" y="2304" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
                             <systemport name="ContainerPort_3">
                                 <hopsangui>
-                                    <pose x="2477.00000000000000000000" y="2439" flipped="0" a="0"/>
+                                    <pose x="2477" y="2439" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
@@ -3291,7 +3714,7 @@
                                     <parameter value="1e-011" name="c_leak"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2284.00000000000000000000" y="2485" flipped="1" a="180"/>
+                                    <pose x="2284" y="2485" flipped="1" a="180"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
@@ -3300,7 +3723,7 @@
                                     <parameter value="0" name="out::Value"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2410.00000000000000000000" y="2381" flipped="0" a="0"/>
+                                    <pose x="2410" y="2381" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
@@ -3309,7 +3732,7 @@
                                     <parameter value="0" name="out::Value"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2088.00000000000000000000" y="2381" flipped="1" a="180"/>
+                                    <pose x="2088" y="2381" flipped="1" a="180"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
@@ -3324,7 +3747,7 @@
                                     <parameter value="1.05" name="thetamax"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2410.00000000000000000000" y="2462" flipped="0" a="0"/>
+                                    <pose x="2410" y="2462" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
@@ -3347,13 +3770,13 @@
                                     <parameter value="1" name="delta_h"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2249.00000000000000000000" y="2391" flipped="1" a="180"/>
+                                    <pose x="2249" y="2391" flipped="1" a="180"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
                             <systemport name="ContainerPort">
                                 <hopsangui>
-                                    <pose x="2027.00000000000000000000" y="2381" flipped="0" a="0"/>
+                                    <pose x="2027" y="2381" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
@@ -3363,13 +3786,13 @@
                                     <parameter value="0.0005" name="k"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2134.00000000000000000000" y="2381" flipped="0" a="0"/>
+                                    <pose x="2134" y="2381" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
                             <systemport name="ContainerPort_1">
                                 <hopsangui>
-                                    <pose x="2227.92159999999967112672" y="2304" flipped="0" a="0"/>
+                                    <pose x="2227.9216" y="2304" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
@@ -3559,25 +3982,41 @@
                     </system>
                     <system typename="Subsystem" name="LinkServo_4">
                         <hopsangui>
-                            <pose x="2289.35425592461888300022" y="2250.6500000000000909" flipped="0" a="0"/>
+                            <pose x="2289.354256" y="2250.65" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
-                            <viewport x="2123.46" y="2525.31" zoom="0.7092198581560283"/>
+                            <viewport x="2216.52" y="2652.92" zoom="0.70922"/>
                             <ports hidden="1"/>
                             <names hidden="0"/>
                             <scriptfile path=""/>
-                            <hopsanobjectappearance version="0.2">
+                            <hopsanobjectappearance version="0.3">
                                 <modelobject typename="Subsystem" displayname="LinkServo_4">
                                     <icons>
-                                        <icon scale="1" path="../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="ON" type="user"/>
+                                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
                                     </icons>
+                                    <ports>
+                                        <port x="3.262736848e-307" y="6.068239111e-307" a="270" name="ContainerPort_2"/>
+                                        <port x="3.262736848e-307" y="6.068239111e-307" a="0" name="ContainerPort_3"/>
+                                        <port x="3.262736848e-307" y="6.068239111e-307" a="180" name="ContainerPort"/>
+                                        <port x="3.262736848e-307" y="6.068239111e-307" a="270" name="ContainerPort_1"/>
+                                    </ports>
                                 </modelobject>
-                                <portpositions>
-                                    <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="270" name="ContainerPort_2"/>
-                                    <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="0" name="ContainerPort_3"/>
-                                    <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="180" name="ContainerPort"/>
-                                    <portpose x="0.00000000000000000000" y="0.00000000000000000000" a="270" name="ContainerPort_1"/>
-                                </portpositions>
                             </hopsanobjectappearance>
+                            <optimization>
+                                <settings>
+                                    <niter>100</niter>
+                                    <nsearchp>8</nsearchp>
+                                    <refcoeff>1.3</refcoeff>
+                                    <randfac>0.3</randfac>
+                                    <forgfac>0</forgfac>
+                                    <functol>1e-05</functol>
+                                    <partol>0.0001</partol>
+                                    <plot>true</plot>
+                                    <savecsv>false</savecsv>
+                                    <logpar>false</logpar>
+                                </settings>
+                                <parameters/>
+                                <objectives/>
+                            </optimization>
                             <hopsanundo>
                                 <post number="-1"/>
                                 <post number="0">
@@ -3659,13 +4098,13 @@
                         <objects>
                             <systemport name="ContainerPort_2">
                                 <hopsangui>
-                                    <pose x="2307.97149999999965075403" y="2304" flipped="0" a="0"/>
+                                    <pose x="2307.9715" y="2304" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
                             <systemport name="ContainerPort_3">
                                 <hopsangui>
-                                    <pose x="2477.00000000000000000000" y="2439" flipped="0" a="0"/>
+                                    <pose x="2477" y="2439" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
@@ -3688,7 +4127,7 @@
                                     <parameter value="1e-012" name="c_leak"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2284.00000000000000000000" y="2485" flipped="1" a="180"/>
+                                    <pose x="2284" y="2485" flipped="1" a="180"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
@@ -3697,7 +4136,7 @@
                                     <parameter value="0" name="out::Value"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2410.00000000000000000000" y="2381" flipped="0" a="0"/>
+                                    <pose x="2410" y="2381" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
@@ -3706,7 +4145,7 @@
                                     <parameter value="0" name="out::Value"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2088.00000000000000000000" y="2381" flipped="1" a="180"/>
+                                    <pose x="2088" y="2381" flipped="1" a="180"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
@@ -3721,7 +4160,7 @@
                                     <parameter value="1.05" name="thetamax"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2410.00000000000000000000" y="2459.1799999999993815" flipped="0" a="0"/>
+                                    <pose x="2410" y="2462" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
@@ -3744,13 +4183,13 @@
                                     <parameter value="1" name="delta_h"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2249.00000000000000000000" y="2391" flipped="1" a="180"/>
+                                    <pose x="2249" y="2391" flipped="1" a="180"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
                             <systemport name="ContainerPort">
                                 <hopsangui>
-                                    <pose x="2027.00000000000000000000" y="2381" flipped="0" a="0"/>
+                                    <pose x="2027" y="2381" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
@@ -3760,13 +4199,13 @@
                                     <parameter value="0.0005" name="k"/>
                                 </parameters>
                                 <hopsangui>
-                                    <pose x="2134.00000000000000000000" y="2381" flipped="0" a="0"/>
+                                    <pose x="2134" y="2381" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </component>
                             <systemport name="ContainerPort_1">
                                 <hopsangui>
-                                    <pose x="2227.92159999999967112672" y="2304" flipped="0" a="0"/>
+                                    <pose x="2227.9216" y="2304" flipped="0" a="0"/>
                                     <nametext position="0" visible="1"/>
                                 </hopsangui>
                             </systemport>
@@ -3809,7 +4248,7 @@
                                     <coordinates>
                                         <coordinate x="2343.50000000000000000000" y="2485.00000000000000000000"/>
                                         <coordinate x="2410.00000000000000000000" y="2485.00000000000000000000"/>
-                                        <coordinate x="2410.00000000000000000000" y="2482.17999999999938154360"/>
+                                        <coordinate x="2410.00000000000000000000" y="2485.00000000000000000000"/>
                                     </coordinates>
                                     <geometries>
                                         <geometry>vertical</geometry>
@@ -3857,7 +4296,7 @@
                             <connect endport="ContainerPort_3" endcomponent="ContainerPort_3" startport="Pmr2" startcomponent="MechanicJLink">
                                 <hopsangui>
                                     <coordinates>
-                                        <coordinate x="2410.00000000000000000000" y="2436.17999999999938154360"/>
+                                        <coordinate x="2410.00000000000000000000" y="2439.00000000000000000000"/>
                                         <coordinate x="2410.00000000000000000000" y="2439.00000000000000000000"/>
                                         <coordinate x="2477.00000000000000000000" y="2439.00000000000000000000"/>
                                     </coordinates>
@@ -3874,7 +4313,7 @@
                                         <coordinate x="2410.00000000000000000000" y="2399.00000000000000000000"/>
                                         <coordinate x="2410.00000000000000000000" y="2419.00000000000000000000"/>
                                         <coordinate x="2410.00000000000000000000" y="2419.00000000000000000000"/>
-                                        <coordinate x="2410.00000000000000000000" y="2436.17999999999938154360"/>
+                                        <coordinate x="2410.00000000000000000000" y="2439.00000000000000000000"/>
                                     </coordinates>
                                     <geometries>
                                         <geometry>horizontal</geometry>
@@ -3961,11 +4400,9 @@
                             <parameter value="0.001" name="V"/>
                             <parameter value="1e+009" name="Beta_e"/>
                             <parameter value="0.1" name="alpha"/>
-                            <parameter value="0" name="noname_subport::Flow"/>
-                            <parameter value="0" name="noname_subport::Pressure"/>
                         </parameters>
                         <hopsangui>
-                            <pose x="2059.35425592461888300022" y="2541.6500000000000909" flipped="0" a="0"/>
+                            <pose x="2059.354256" y="2541.65" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </component>
@@ -3984,7 +4421,7 @@
                             <parameter value="0.12" name="t_m"/>
                         </parameters>
                         <hopsangui>
-                            <pose x="2046.28233743224427598761" y="2622.6500000000000909" flipped="0" a="0"/>
+                            <pose x="2046.282337" y="2622.65" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </component>
@@ -3995,11 +4432,9 @@
                             <parameter value="0.001" name="V"/>
                             <parameter value="1e+009" name="Beta_e"/>
                             <parameter value="0.1" name="alpha"/>
-                            <parameter value="0" name="noname_subport::Flow"/>
-                            <parameter value="0" name="noname_subport::Pressure"/>
                         </parameters>
                         <hopsangui>
-                            <pose x="2050.34105592461946798721" y="2790.6500000000000909" flipped="0" a="0"/>
+                            <pose x="2050.341056" y="2790.65" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </component>
@@ -4009,25 +4444,25 @@
                             <parameter value="100000" name="p"/>
                         </parameters>
                         <hopsangui>
-                            <pose x="2073.00000000000000000000" y="2731" flipped="0" a="0"/>
+                            <pose x="2073" y="2731" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </component>
                     <systemport name="ContainerPort_1">
                         <hopsangui>
-                            <pose x="1770.35425592461888300022" y="2454.6500000000000909" flipped="0" a="0"/>
+                            <pose x="1770.354256" y="2454.65" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </systemport>
                     <systemport name="ContainerPort_2">
                         <hopsangui>
-                            <pose x="1770.35425592461888300022" y="2410.6500000000000909" flipped="0" a="0"/>
+                            <pose x="1770.354256" y="2410.65" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </systemport>
                     <systemport name="ContainerPort_3">
                         <hopsangui>
-                            <pose x="1769.35425592461888300022" y="2365.6500000000000909" flipped="0" a="0"/>
+                            <pose x="1769.354256" y="2365.65" flipped="0" a="0"/>
                             <nametext position="0" visible="1"/>
                         </hopsangui>
                     </systemport>
@@ -4036,8 +4471,8 @@
                     <connect endport="P1" endcomponent="Hydraulic Volume Multi Port" startport="P2" startcomponent="Q-Type Pump With Pressure Control">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="2061.35425592461933774757" y="2561.15000000000009094947"/>
-                                <coordinate x="2061.35425592461933774757" y="2541.65000000000009094947"/>
+                                <coordinate x="2061.35425592224419233389" y="2561.15000000000009094947"/>
+                                <coordinate x="2061.35425592224419233389" y="2541.65000000000009094947"/>
                                 <coordinate x="2059.35425592461888300022" y="2541.65000000000009094947"/>
                             </coordinates>
                             <geometries>
@@ -4399,8 +4834,8 @@
                         <hopsangui>
                             <coordinates>
                                 <coordinate x="2138.76425592461828273372" y="2727.36999999999989086064"/>
-                                <coordinate x="2138.76425592461828273372" y="2728.77999999999974534148"/>
-                                <coordinate x="1836.97425592461877386086" y="2728.77999999999974534148"/>
+                                <coordinate x="2138.76425592461828273372" y="2727.36999999999989086064"/>
+                                <coordinate x="1836.97425592461877386086" y="2727.36999999999989086064"/>
                             </coordinates>
                             <geometries>
                                 <geometry>horizontal</geometry>
@@ -4430,8 +4865,8 @@
                             <coordinates>
                                 <coordinate x="2073.00000000000000000000" y="2716.50000000000000000000"/>
                                 <coordinate x="2073.00000000000000000000" y="2701.65000000000009094947"/>
-                                <coordinate x="2061.35425592461933774757" y="2701.65000000000009094947"/>
-                                <coordinate x="2061.35425592461933774757" y="2684.15000000000009094947"/>
+                                <coordinate x="2061.35425592224419233389" y="2701.65000000000009094947"/>
+                                <coordinate x="2061.35425592224419233389" y="2684.15000000000009094947"/>
                             </coordinates>
                             <geometries>
                                 <geometry>horizontal</geometry>
@@ -4445,20 +4880,6 @@
             </system>
         </objects>
         <connections>
-            <connect endport="Ppsiref" endcomponent="ControlAttitude" startport="out" startcomponent="Pulse">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="1633.60999999999989995558" y="2346.42000000000052750693"/>
-                        <coordinate x="1928.16664500000001680746" y="2346.42000000000052750693"/>
-                        <coordinate x="1928.16664500000001680746" y="2495.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
             <connect endport="in" endcomponent="Sink_2" startport="out" startcomponent="Pulse">
                 <hopsangui>
                     <coordinates>
@@ -4470,86 +4891,6 @@
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="PUb" endcomponent="ControlAttitude" startport="PUb" startcomponent="AeroAircraft6DOF">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2414.84139999999979409040" y="2637.69486841740763338748"/>
-                        <coordinate x="2414.84139999999979409040" y="2676.00000000000000000000"/>
-                        <coordinate x="1964.27778499999999439751" y="2676.00000000000000000000"/>
-                        <coordinate x="1964.27778499999999439751" y="2559.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="Pphi" endcomponent="ControlAttitude" startport="PPhi" startcomponent="AeroAircraft6DOF">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2400.99543999999968946213" y="2637.69486841740763338748"/>
-                        <coordinate x="2400.99543999999968946213" y="2718.00000000000000000000"/>
-                        <coordinate x="1935.38886000000002240995" y="2718.00000000000000000000"/>
-                        <coordinate x="1935.38886000000002240995" y="2559.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="Ptheta" endcomponent="ControlAttitude" startport="PThetao" startcomponent="AeroAircraft6DOF">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2387.14911999999958425178" y="2637.69486841740763338748"/>
-                        <coordinate x="2387.14911999999958425178" y="2707.00000000000000000000"/>
-                        <coordinate x="1942.61113999999997759005" y="2707.00000000000000000000"/>
-                        <coordinate x="1942.61113999999997759005" y="2559.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="Ppsi" endcomponent="ControlAttitude" startport="PPsi" startcomponent="AeroAircraft6DOF">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2373.30315999999947962351" y="2637.69486841740763338748"/>
-                        <coordinate x="2373.30315999999947962351" y="2696.00000000000000000000"/>
-                        <coordinate x="1949.83335499999998319254" y="2696.00000000000000000000"/>
-                        <coordinate x="1949.83335499999998319254" y="2559.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="Pbeta" endcomponent="ControlAttitude" startport="PBetaSlip" startcomponent="AeroAircraft6DOF">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2567.14911999999958425178" y="2637.69486841740763338748"/>
-                        <coordinate x="2567.14911999999958425178" y="2687.00000000000000000000"/>
-                        <coordinate x="1957.05556999999998879503" y="2687.00000000000000000000"/>
-                        <coordinate x="1957.05556999999998879503" y="2559.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
@@ -4751,22 +5092,6 @@
                     <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="Pthetaref" endcomponent="ControlAttitude" startport="Pu" startcomponent="SignalPIlead">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="1833.35000000000013642421" y="2474.46999999999979991117"/>
-                        <coordinate x="1833.35000000000013642421" y="2478.50000000000000000000"/>
-                        <coordinate x="1920.94443000000001120497" y="2478.50000000000000000000"/>
-                        <coordinate x="1920.94443000000001120497" y="2495.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
             <connect endport="Pyref" endcomponent="SignalPIlead" startport="out" startcomponent="Constant_3">
                 <hopsangui>
                     <coordinates>
@@ -4817,38 +5142,6 @@
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="ContainerPort_4" endcomponent="HydraulicActuationSystem" startport="PuaerL" startcomponent="ControlAttitude">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="1971.50000000000000000000" y="2507.80000000000018189894"/>
-                        <coordinate x="2059.00000000000000000000" y="2507.80000000000018189894"/>
-                        <coordinate x="2059.00000000000000000000" y="2523.00000000000000000000"/>
-                        <coordinate x="2080.40999999999985448085" y="2523.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="ContainerPort_3" endcomponent="HydraulicActuationSystem" startport="PuaerR" startcomponent="ControlAttitude">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="1971.50000000000000000000" y="2520.59999999999990905053"/>
-                        <coordinate x="2059.00000000000000000000" y="2520.59999999999990905053"/>
-                        <coordinate x="2059.00000000000000000000" y="2533.00000000000000000000"/>
-                        <coordinate x="2080.40999999999985448085" y="2533.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
                     </geometries>
                     <style>solid</style>
                 </hopsangui>
@@ -4943,70 +5236,6 @@
                     <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="ContainerPort_2" endcomponent="HydraulicActuationSystem" startport="Puelev" startcomponent="ControlAttitude">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="1971.50000000000000000000" y="2533.40000000000009094947"/>
-                        <coordinate x="2055.78000000000020008883" y="2533.40000000000009094947"/>
-                        <coordinate x="2055.78000000000020008883" y="2543.00000000000000000000"/>
-                        <coordinate x="2080.40999999999985448085" y="2543.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="ContainerPort_1" endcomponent="HydraulicActuationSystem" startport="Puelev" startcomponent="ControlAttitude">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="1971.50000000000000000000" y="2533.40000000000009094947"/>
-                        <coordinate x="2054.37000000000034560799" y="2533.40000000000009094947"/>
-                        <coordinate x="2054.37000000000034560799" y="2553.00000000000000000000"/>
-                        <coordinate x="2080.40999999999985448085" y="2553.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="ContainerPort" endcomponent="HydraulicActuationSystem" startport="Purud" startcomponent="ControlAttitude">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="1971.50000000000000000000" y="2546.19999999999981810106"/>
-                        <coordinate x="2047.32000000000016370905" y="2546.19999999999981810106"/>
-                        <coordinate x="2047.32000000000016370905" y="2563.00000000000000000000"/>
-                        <coordinate x="2080.40999999999985448085" y="2563.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Sink_3" startport="PuaerL" startcomponent="ControlAttitude">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="1971.50000000000000000000" y="2507.80000000000018189894"/>
-                        <coordinate x="2028.99000000000023646862" y="2507.80000000000018189894"/>
-                        <coordinate x="2028.99000000000023646862" y="2641.94999999999981810106"/>
-                        <coordinate x="2128.32000000000061845640" y="2641.94999999999981810106"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
             <connect endport="P1" endcomponent="Angle Sensor" startport="ContainerPort_9" startcomponent="HydraulicActuationSystem">
                 <hopsangui>
                     <coordinates>
@@ -5030,6 +5259,218 @@
                         <coordinate x="2128.32000000000061845640" y="2641.94999999999981810106"/>
                     </coordinates>
                     <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="ContainerPort_4" endcomponent="HydraulicActuationSystem" startport="PuaerL" startcomponent="SignalAttitudeControl">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2007.91000028200028282299" y="2523.00000000000000000000"/>
+                        <coordinate x="2060.40999999999985448085" y="2523.00000000000000000000"/>
+                        <coordinate x="2060.40999999999985448085" y="2523.00000000000000000000"/>
+                        <coordinate x="2080.40999999999985448085" y="2523.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="ContainerPort_3" endcomponent="HydraulicActuationSystem" startport="PuaerR" startcomponent="SignalAttitudeControl">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2007.91000028200028282299" y="2535.79999999999972715159"/>
+                        <coordinate x="2060.40999999999985448085" y="2535.79999999999972715159"/>
+                        <coordinate x="2060.40999999999985448085" y="2533.00000000000000000000"/>
+                        <coordinate x="2080.40999999999985448085" y="2533.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="ContainerPort_2" endcomponent="HydraulicActuationSystem" startport="Puelev" startcomponent="SignalAttitudeControl">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2007.91000028200028282299" y="2548.59999999999990905053"/>
+                        <coordinate x="2060.40999999999985448085" y="2548.59999999999990905053"/>
+                        <coordinate x="2060.40999999999985448085" y="2543.00000000000000000000"/>
+                        <coordinate x="2080.40999999999985448085" y="2543.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="ContainerPort_1" endcomponent="HydraulicActuationSystem" startport="Puelev" startcomponent="SignalAttitudeControl">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2007.91000028200028282299" y="2548.59999999999990905053"/>
+                        <coordinate x="2060.40999999999985448085" y="2548.59999999999990905053"/>
+                        <coordinate x="2060.40999999999985448085" y="2553.00000000000000000000"/>
+                        <coordinate x="2080.40999999999985448085" y="2553.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="ContainerPort" endcomponent="HydraulicActuationSystem" startport="Purud" startcomponent="SignalAttitudeControl">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2007.91000028200028282299" y="2561.39999999999963620212"/>
+                        <coordinate x="2060.40999999999985448085" y="2561.39999999999963620212"/>
+                        <coordinate x="2060.40999999999985448085" y="2563.00000000000000000000"/>
+                        <coordinate x="2080.40999999999985448085" y="2563.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pthetaref" endcomponent="SignalAttitudeControl" startport="Pu" startcomponent="SignalPIlead">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1833.35000000000013642421" y="2474.46999999999979991117"/>
+                        <coordinate x="1907.73000000000024556357" y="2474.46999999999979991117"/>
+                        <coordinate x="1907.73000000000024556357" y="2535.79999999999972715159"/>
+                        <coordinate x="1942.91000028200028282299" y="2535.79999999999972715159"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Ppsiref" endcomponent="SignalAttitudeControl" startport="out" startcomponent="Pulse">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1633.60999999999989995558" y="2346.42000000000052750693"/>
+                        <coordinate x="1909.14000000000010004442" y="2346.42000000000052750693"/>
+                        <coordinate x="1909.14000000000010004442" y="2548.59999999999990905053"/>
+                        <coordinate x="1942.91000028200028282299" y="2548.59999999999990905053"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Ppsi" endcomponent="SignalAttitudeControl" startport="PPsi" startcomponent="AeroAircraft6DOF">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2373.30315999999947962351" y="2637.69486841740763338748"/>
+                        <coordinate x="2373.30315999999947962351" y="2695.92000000000007275958"/>
+                        <coordinate x="1975.41000028200028282299" y="2695.92000000000007275958"/>
+                        <coordinate x="1975.41000028200028282299" y="2574.19999999999981810106"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Ptheta" endcomponent="SignalAttitudeControl" startport="PThetao" startcomponent="AeroAircraft6DOF">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2387.14911999999958425178" y="2637.69486841740763338748"/>
+                        <coordinate x="2387.14911999999958425178" y="2705.79000000000041836756"/>
+                        <coordinate x="1962.41000028200028282299" y="2705.79000000000041836756"/>
+                        <coordinate x="1962.41000028200028282299" y="2574.19999999999981810106"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pphi" endcomponent="SignalAttitudeControl" startport="PPhi" startcomponent="AeroAircraft6DOF">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2400.99543999999968946213" y="2637.69486841740763338748"/>
+                        <coordinate x="2400.99543999999968946213" y="2714.25000000000045474735"/>
+                        <coordinate x="1949.41000028200028282299" y="2714.25000000000045474735"/>
+                        <coordinate x="1949.41000028200028282299" y="2574.19999999999981810106"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pbeta" endcomponent="SignalAttitudeControl" startport="PBetaSlip" startcomponent="AeroAircraft6DOF">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2567.14911999999958425178" y="2637.69486841740763338748"/>
+                        <coordinate x="2567.14911999999958425178" y="2690.28000000000020008883"/>
+                        <coordinate x="1988.41000028200028282299" y="2690.28000000000020008883"/>
+                        <coordinate x="1988.41000028200028282299" y="2574.19999999999981810106"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="PRb" endcomponent="SignalAttitudeControl" startport="PRb" startcomponent="AeroAircraft6DOF">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2484.07227999999940948328" y="2637.69486841740763338748"/>
+                        <coordinate x="2484.07227999999940948328" y="2691.69000000000005456968"/>
+                        <coordinate x="1994.91000028200028282299" y="2691.69000000000005456968"/>
+                        <coordinate x="1994.91000028200028282299" y="2574.19999999999981810106"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="PUb" endcomponent="SignalAttitudeControl" startport="PUb" startcomponent="AeroAircraft6DOF">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2414.84139999999979409040" y="2637.69486841740763338748"/>
+                        <coordinate x="2414.84139999999979409040" y="2680.41000000000030922820"/>
+                        <coordinate x="1999.38000000000010913936" y="2680.41000000000030922820"/>
+                        <coordinate x="1999.38000000000010913936" y="2594.19999999999981810106"/>
+                        <coordinate x="2001.41000028200028282299" y="2594.19999999999981810106"/>
+                        <coordinate x="2001.41000028200028282299" y="2574.19999999999981810106"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
