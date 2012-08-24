@@ -598,10 +598,30 @@ void LibraryWidget::loadAndRememberExternalLibrary(const QString libDir)
 //! @todo Lots of duplicate code in this function and otehr load function, should try to break out common sub help functions
 void LibraryWidget::loadHiddenSecretDir(QString dir)
 {
+    qDebug() << "Trying to load secret dir: " << dir;
+
     QDir libDirObject(dir);
 
-    // Append components
+
+        // Load DLL or SO files
     QStringList filters;
+    #ifdef WIN32
+        filters << "*.dll";
+    #else
+        filters << "*.so";
+    #endif
+    libDirObject.setNameFilters(filters);
+    QStringList libList = libDirObject.entryList();
+    for (int i = 0; i < libList.size(); ++i)
+    {
+        QString filename = dir + "/" + libList.at(i);
+        qDebug() << "Trying to load: " << filename << " in Core";
+        mpCoreAccess->loadComponentLib(filename);
+    }
+
+
+    // Append components
+    filters.clear();
     filters << "*.xml";                     //Create the name filter
     libDirObject.setFilter(QDir::NoFilter);
     libDirObject.setNameFilters(filters);   //Set the name filter
@@ -1160,14 +1180,18 @@ void LibraryWidget::updateLibraryFolder(LibraryContentsTree /**pTree*/)
 void LibraryWidget::unloadExternalLibrary(const QString libName)
 {
     //Check both by name, absolute and relative path to be sure
-    LibraryContentsTree* pLibContTree = mpContentsTree->findChildByName("External Libraries")->findChildByName(libName);
-    if (!pLibContTree)
+    LibraryContentsTree* pLibContTree = 0;
+    if(mpContentsTree->findChildByName("External Libraries"))
     {
-        pLibContTree = mpContentsTree->findChildByName("External Libraries")->findChildByPath(QDir::cleanPath(gExecPath+libName));
-    }
-    if (!pLibContTree)
-    {
-        pLibContTree = mpContentsTree->findChildByName("External Libraries")->findChildByPath(QDir::cleanPath(libName));
+        pLibContTree = mpContentsTree->findChildByName("External Libraries")->findChildByName(libName);
+        if (!pLibContTree)
+        {
+            pLibContTree = mpContentsTree->findChildByName("External Libraries")->findChildByPath(QDir::cleanPath(gExecPath+libName));
+        }
+        if (!pLibContTree)
+        {
+            pLibContTree = mpContentsTree->findChildByName("External Libraries")->findChildByPath(QDir::cleanPath(libName));
+        }
     }
 
 

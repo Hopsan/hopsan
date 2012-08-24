@@ -60,12 +60,12 @@ bool CoreGeneratorAccess::generateFromModelica(QString code)
 }
 
 
-bool CoreGeneratorAccess::generateFromCpp(QString code)
+bool CoreGeneratorAccess::generateFromCpp(QString code, bool showOutputDialog)
 {
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callCppGenerator(code.toStdString(), QString(COREINCLUDEPATH).toStdString(), gExecPath.toStdString(), true);
+        pHandler->callCppGenerator(code.toStdString(), QString(COREINCLUDEPATH).toStdString(), gExecPath.toStdString(), showOutputDialog);
         return true;
     }
     return false;

@@ -2341,7 +2341,7 @@ void HopsanComponentGenerator::compileFromComponentObject(QString outputFile, Co
     double yPos = 0;
     for(int i=0; i<comp.portNames.size(); ++i)
     {
-        xmlStream << "      <port name=\"" << comp.portNames[i] << "\" x=\"" << xPos << "\" y=\"" << yPos << "\" a=\"" << 0 << "\"/>\n";
+        xmlStream << "      <port name=\"" << comp.portNames[i] << "\" x=\"" << xPos << "\" y=\"" << yPos << "\" a=\"" << 270 << "\"/>\n";
         xPos += xDelay;
     }
     xmlStream << "    </ports>\n";

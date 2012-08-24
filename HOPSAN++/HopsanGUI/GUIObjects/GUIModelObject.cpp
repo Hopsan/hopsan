@@ -108,6 +108,9 @@ ModelObject::ModelObject(QPointF position, qreal rotation, const ModelObjectAppe
     mpLossesDisplay = new QGraphicsTextItem(this);
     mpLossesDisplay->setFlags(QGraphicsItem::ItemIgnoresTransformations);
     mpLossesDisplay->setVisible(false);
+
+    mnCppInputs = 0;
+    mnCppOutputs = 0;
 }
 
 
@@ -560,6 +563,38 @@ void ModelObject::hideLosses()
 {
     mpLossesDisplay->setVisible(false);
 }
+
+
+void ModelObject::setCppCode(QString code)
+{
+    mCppCode = code;
+}
+
+void ModelObject::setCppInputs(int n)
+{
+    mnCppInputs = n;
+}
+
+void ModelObject::setCppOutputs(int n)
+{
+    mnCppOutputs = n;
+}
+
+QString ModelObject::getCppCode()
+{
+    return mCppCode;
+}
+
+int ModelObject::getCppInputs()
+{
+    return mnCppInputs;
+}
+
+int ModelObject::getCppOutputs()
+{
+    return mnCppOutputs;
+}
+
 
 
 void ModelObject::redrawConnectors()

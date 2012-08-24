@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="CppComponent" displayname="C++ Component">
+        <icons>
+            <icon scale="1" path=":graphics/objecticons/cppcomponent.svg" iconrotation="OFF" type="user"/>
+        </icons>
+        <ports/>
+    </modelobject>
+</hopsanobjectappearance>

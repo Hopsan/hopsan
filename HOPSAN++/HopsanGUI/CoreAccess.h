@@ -41,7 +41,7 @@ class CoreGeneratorAccess
 {
 public:
     bool generateFromModelica(QString code);
-    bool generateFromCpp(QString code);
+    bool generateFromCpp(QString code, bool showOutputDialog=true);
     bool generateFromFmu(QString path);
 };
 

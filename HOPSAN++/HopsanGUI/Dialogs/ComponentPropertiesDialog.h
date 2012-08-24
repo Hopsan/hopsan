@@ -45,11 +45,13 @@ protected slots:
 
 protected:
     void setParametersAndStartValues();
+    void recompileCppFromDialog();
 
 private:
     Component *mpComponent;
 
     void createEditStuff();
+    void createCppEditStuff();
     bool interpretedAsStartValue(QString &parameterDescription);
 
     QLabel *mpLabel;
@@ -64,6 +66,10 @@ private:
     QPushButton *mpCancelButton;
     QPushButton *mpEditPortPos;
     QWidget *mpExtension;
+
+    QSpinBox *mpInputPortsSpinBox;
+    QSpinBox *mpOutputPortsSpinBox;
+    QTextEdit *mpTextEdit;
 };
 
 #endif // COMPONENTPROPERTIESDIALOG_H

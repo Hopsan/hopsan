@@ -118,6 +118,12 @@ public slots:
     void setIcon(graphicsType);
     void showLosses();
     void hideLosses();
+    void setCppCode(QString code);
+    void setCppInputs(int n);
+    void setCppOutputs(int n);
+    QString getCppCode();
+    int getCppInputs();
+    int getCppOutputs();
     void redrawConnectors();
 
 signals:
@@ -166,6 +172,11 @@ protected:
     double mTotalLosses;
     double mHydraulicLosses;
     double mMechanicLosses;
+
+    //Used by C++ components
+    QString mCppCode;
+    int mnCppInputs;
+    int mnCppOutputs;
 
     bool mDragCopying;
 
