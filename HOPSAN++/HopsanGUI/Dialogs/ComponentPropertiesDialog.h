@@ -52,6 +52,7 @@ private:
 
     void createEditStuff();
     void createCppEditStuff();
+    void createModelicaEditStuff();
     bool interpretedAsStartValue(QString &parameterDescription);
 
     QLabel *mpLabel;

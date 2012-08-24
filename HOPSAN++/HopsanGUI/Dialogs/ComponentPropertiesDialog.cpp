@@ -67,6 +67,10 @@ ComponentPropertiesDialog::ComponentPropertiesDialog(Component *pComponent, Main
     {
         createCppEditStuff();
     }
+    else if(mpComponent->getTypeName().startsWith("ModelicaComponent"))
+    {
+        createModelicaEditStuff();
+    }
     else
     {
         createEditStuff();
@@ -357,11 +361,11 @@ void ComponentPropertiesDialog::createCppEditStuff()
 
     mpInputPortsSpinBox = new QSpinBox(this);
     mpInputPortsSpinBox->setValue(mpComponent->getCppInputs());
-    mpInputPortsSpinBox->setSingleStep(0);
+    mpInputPortsSpinBox->setSingleStep(1);
 
     mpOutputPortsSpinBox = new QSpinBox(this);
     mpOutputPortsSpinBox->setValue(mpComponent->getCppOutputs());
-    mpOutputPortsSpinBox->setSingleStep(0);
+    mpOutputPortsSpinBox->setSingleStep(1);
 
     QHBoxLayout *pPortsLayout = new QHBoxLayout();
     pPortsLayout->addWidget(pInputPortsLabel);
@@ -434,6 +438,90 @@ void ComponentPropertiesDialog::createCppEditStuff()
 }
 
 
+void ComponentPropertiesDialog::createModelicaEditStuff()
+{
+    mpNameEdit = new QLineEdit(mpComponent->getName(), this);
+
+    QFont fontH1;
+    fontH1.setBold(true);
+
+    mpEditPortPos = new QPushButton(tr("&Move ports"), this);
+    mpCancelButton = new QPushButton(tr("&Cancel"), this);
+    mpOkButton = new QPushButton(tr("&Ok"), this);
+    mpOkButton->setDefault(true);
+
+    mpButtonBox = new QDialogButtonBox(Qt::Vertical, this);
+    mpButtonBox->addButton(mpOkButton, QDialogButtonBox::ActionRole);
+    mpButtonBox->addButton(mpCancelButton, QDialogButtonBox::ActionRole);
+    mpButtonBox->addButton(mpEditPortPos, QDialogButtonBox::ActionRole);
+
+    connect(mpOkButton, SIGNAL(clicked()), SLOT(okPressed()));
+    connect(mpCancelButton, SIGNAL(clicked()), SLOT(close()));
+    connect(mpEditPortPos, SIGNAL(clicked()), SLOT(editPortPos()));
+
+    mpTextEdit = new QTextEdit(this);
+    mpTextEdit->setPlainText(mpComponent->getModelicaCode());
+    mpTextEdit->setMinimumWidth(640);
+    ModelicaHighlighter *pTextEditHighlighter = new ModelicaHighlighter(mpTextEdit->document());
+
+    QGridLayout *pNameLayout = new QGridLayout();
+    QLabel *pNameLabel = new QLabel("Name: ", this);
+    QLabel *pTypeNameLabel = new QLabel("Type Name: \"" + mpComponent->getTypeName() + "\"", this);
+    pNameLayout->addWidget(pNameLabel,0,0);
+    pNameLayout->addWidget(mpNameEdit,0,1);
+    pNameLayout->addWidget(pTypeNameLabel,1,0,1,2);
+    if (!mpComponent->getSubTypeName().isEmpty())
+    {
+        QLabel *pSubTypeNameLabel = new QLabel("SubType Name: \"" + mpComponent->getSubTypeName() + "\"", this);
+        pNameLayout->addWidget(pSubTypeNameLabel,2,0,1,2);
+    }
+
+    QGridLayout *mainLayout = new QGridLayout();
+    //mainLayout->setSizeConstraint(QLayout::SetFixedSize);
+    int lr = 0; //Layout row
+
+    mainLayout->addLayout(pNameLayout, lr, 0);
+    mainLayout->addWidget(mpButtonBox, lr, 1);
+
+    ++lr;
+
+    mainLayout->addWidget(mpTextEdit, lr, 0, 1, 2);
+
+    QWidget *pPrimaryWidget = new QWidget(this);
+    pPrimaryWidget->setLayout(mainLayout);
+    pPrimaryWidget->setPalette(gConfig.getPalette());
+
+    QScrollArea *pScrollArea = new QScrollArea(this);
+    pScrollArea->setWidget(pPrimaryWidget);
+    pScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+
+    QGridLayout *pPrimaryLayout = new QGridLayout(this);
+
+    pPrimaryLayout->addWidget(pScrollArea);
+
+    setLayout(pPrimaryLayout);
+
+    pPrimaryWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    mainLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+    pPrimaryLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+    int maxHeight = qApp->desktop()->screenGeometry().height()-100;
+    pScrollArea->setFixedHeight(std::min(pPrimaryWidget->height()+3, maxHeight));
+    if(pScrollArea->minimumHeight() == maxHeight)
+    {
+        pScrollArea->setMinimumWidth(pPrimaryWidget->width()+19);
+    }
+    else
+    {
+        pScrollArea->setMinimumWidth(pPrimaryWidget->width()+3);
+    }
+    //pScrollArea->setMinimumWidth(640);
+    pScrollArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    pScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    setWindowTitle(tr("Modelica Component Properties"));
+}
+
+
 //! @brief Reads the values from the dialog and writes them into the core component
 void ComponentPropertiesDialog::okPressed()
 {
@@ -490,6 +578,13 @@ void ComponentPropertiesDialog::recompileCppFromDialog()
     //Generate code
     int nInputs = mpInputPortsSpinBox->value();
     int nOutputs = mpOutputPortsSpinBox->value();
+
+    if(nOutputs == 0)
+    {
+        this->close();
+        return;
+    }
+
     QString plainCode = mpTextEdit->toPlainText();
     QString codeFromDialog=plainCode;
     plainCode.prepend("\n");

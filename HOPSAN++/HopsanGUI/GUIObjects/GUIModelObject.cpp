@@ -111,6 +111,8 @@ ModelObject::ModelObject(QPointF position, qreal rotation, const ModelObjectAppe
 
     mnCppInputs = 0;
     mnCppOutputs = 0;
+
+    mModelicaCode = "model ModelicaComponent \"My Modelica Component\"\nannotation(hopsanCqsType = \"Q\");\n\n//  Add nodes here\n//\n//  Example:\n//\n//  NodeHydraulic P1, P2\n//  NodeSignalOut X, Y;\n\n\n//  Add parameters here\n//\n//  Example:\n//\n//  parameter Real rho(unit=\"kg/m^3\")=870 \"Oil Density\";\n\n// Add local variables here\n//\n// Example:\n//\n//  Real Av \"Valve Cross Section Area\";\n\nalgorithm\n\n//  Write initial algorithms here\n\nequation\n\n//  Write equations here\n\nalgorithm\n\n//  Write final algorithms here\n\nend ModelicaComponent;";
 }
 
 
@@ -593,6 +595,17 @@ int ModelObject::getCppInputs()
 int ModelObject::getCppOutputs()
 {
     return mnCppOutputs;
+}
+
+void ModelObject::setModelicaCode(QString code)
+{
+    mModelicaCode = code;
+}
+
+
+QString ModelObject::getModelicaCode()
+{
+    return mModelicaCode;
 }
 
 

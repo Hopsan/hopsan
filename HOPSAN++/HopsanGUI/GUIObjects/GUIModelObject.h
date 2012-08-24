@@ -124,6 +124,8 @@ public slots:
     QString getCppCode();
     int getCppInputs();
     int getCppOutputs();
+    void setModelicaCode(QString code);
+    QString getModelicaCode();
     void redrawConnectors();
 
 signals:
@@ -177,6 +179,9 @@ protected:
     QString mCppCode;
     int mnCppInputs;
     int mnCppOutputs;
+
+    //Used by Modelica components
+    QString mModelicaCode;
 
     bool mDragCopying;
 

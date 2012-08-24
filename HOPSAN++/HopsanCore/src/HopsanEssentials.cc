@@ -55,6 +55,7 @@ HopsanEssentials::HopsanEssentials()
     mpComponentFactory->registerCreatorFunction("MissingComponent", DummyComponent::Creator);
     mpComponentFactory->registerCreatorFunction("Subsystem", ComponentSystem::Creator);
     mpComponentFactory->registerCreatorFunction("CppComponent", ComponentSystem::Creator);
+    mpComponentFactory->registerCreatorFunction("ModelicaComponent", ComponentSystem::Creator);
 #ifdef BUILTINDEFAULTCOMPONENTLIB
     register_components(mpComponentFactory);
 #endif
