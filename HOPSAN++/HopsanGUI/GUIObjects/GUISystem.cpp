@@ -645,6 +645,12 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
                     xmlStartValue = xmlStartValue.nextSiblingElement(HMF_STARTVALUE);
                 }
             }
+
+            if(pObj->getTypeName().startsWith("CppComponent"))
+            {
+                recompileCppComponents(pObj);
+            }
+
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_COMPONENTTAG);
         }
 

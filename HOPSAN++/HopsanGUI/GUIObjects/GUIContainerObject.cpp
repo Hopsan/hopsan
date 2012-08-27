@@ -2806,6 +2806,186 @@ bool ContainerObject::isExternal()
 }
 
 
+void ContainerObject::recompileCppComponents(ModelObject *pComponent)
+{
+    QList<ModelObject*> componentPtrs;
+    if(pComponent)
+    {
+        componentPtrs.append(pComponent);
+    }
+    else
+    {
+        ModelObjectMapT::iterator it;
+        for(it=mModelObjectMap.begin(); it!=mModelObjectMap.end(); ++it)
+        {
+            if(it.value()->getTypeName().startsWith("CppComponent"))
+            {
+                componentPtrs.append(it.value());
+            }
+        }
+    }
+
+
+    for(int c=0; c<componentPtrs.size(); ++c)
+    {
+
+        //Generate type name
+
+        QDateTime time = QDateTime();
+        uint t = time.currentDateTime().toTime_t();     //Number of milliseconds since 1970
+
+        double rd = rand() / (double)RAND_MAX;
+        int r = int(rd*1000000.0);                      //Random number between 0 and 1000000
+
+        QString typeName = "CppComponent_"+QString::number(t)+QString::number(r);
+
+        qDebug() << typeName;
+
+
+        //Generate code
+        int nInputs = componentPtrs[c]->getCppInputs();
+        int nOutputs = componentPtrs[c]->getCppOutputs();
+
+        if(nOutputs == 0)
+        {
+            this->close();
+            return;
+        }
+
+        QString plainCode = componentPtrs[c]->getCppCode();
+        QString codeFromDialog=plainCode;
+        plainCode.prepend("\n");
+        plainCode.replace("\n", "\n            ");      //Add extra line spacing to code
+
+        QString code;
+        QTextStream codeStream(&code);
+
+       // codeStream << "#ifndef "+typeName.toUpper()+"_HPP_INCLUDED\n";
+       // codeStream << "#define "+typeName.toUpper()+"_HPP_INCLUDED\n\n";
+        codeStream << "#include \"ComponentEssentials.h\"\n\n";
+        codeStream << "#include <math.h>\n\n";
+        codeStream << "namespace hopsan {\n\n";
+        codeStream << "    class "+typeName+" : public ComponentSignal\n";
+        codeStream << "    {\n\n";
+        codeStream << "    private:\n";
+        codeStream << "        Port ";
+        for(int i=0; i<nInputs; ++i)
+        {
+            codeStream << "*mpIn"+QString::number(i);
+            if(i != nInputs-1 || nOutputs>0) { codeStream << ", "; }
+        }
+        for(int o=0; o<nOutputs; ++o)
+        {
+            codeStream << "*mpOut"+QString::number(o);
+            if(o != nOutputs-1) { codeStream << ", "; }
+        }
+        codeStream << ";\n";
+        codeStream << "        double ";
+        for(int i=0; i<nInputs; ++i)
+        {
+            codeStream << "*mpND_in"+QString::number(i);
+            if(i != nInputs-1 || nOutputs>0) { codeStream << ", "; }
+        }
+        for(int o=0; o<nOutputs; ++o)
+        {
+            codeStream << "*mpND_out"+QString::number(o);
+            if(o != nOutputs-1) { codeStream << ", "; }
+        }
+        codeStream << ";\n\n";
+        codeStream << "    public:\n";
+        codeStream << "        static Component *Creator()\n";
+        codeStream << "        {\n";
+        codeStream << "            return new "+typeName+"();\n";
+        codeStream << "        }\n\n";
+        codeStream << "        void configure()\n";
+        codeStream << "        {\n\n";
+        for(int i=0; i<nInputs; ++i)
+        {
+            codeStream << "            mpIn"+QString::number(i)+" = addReadPort(\"in"+QString::number(i)+"\", \"NodeSignal\", Port::NOTREQUIRED);\n";
+        }
+        for(int o=0; o<nOutputs; ++o)
+        {
+            codeStream << "            mpOut"+QString::number(o)+" = addWritePort(\"out"+QString::number(o)+"\", \"NodeSignal\", Port::NOTREQUIRED);\n";
+        }
+        codeStream << "        }\n\n";
+        codeStream << "        void initialize()\n";
+        codeStream << "        {\n";
+        for(int i=0; i<nInputs; ++i)
+        {
+            codeStream << "            mpND_in"+QString::number(i)+" = getSafeNodeDataPtr(mpIn"+QString::number(i)+", NodeSignal::VALUE, 0);\n";
+        }
+        for(int o=0; o<nOutputs; ++o)
+        {
+            codeStream << "            mpND_out"+QString::number(o)+" = getSafeNodeDataPtr(mpOut"+QString::number(o)+", NodeSignal::VALUE);\n";
+        }
+        codeStream << "        }\n\n";
+        codeStream << "        void simulateOneTimestep()\n";
+        codeStream << "        {\n";
+        for(int i=0; i<nInputs; ++i)
+        {
+            codeStream << "            double in"+QString::number(i)+" = *mpND_in"+QString::number(i)+";\n";
+        }
+        for(int o=0; o<nOutputs; ++o)
+        {
+            codeStream << "            double out"+QString::number(o)+" = *mpND_out"+QString::number(o)+";\n";
+        }
+        codeStream << "\n"+plainCode+"\n\n";
+        for(int o=0; o<nOutputs; ++o)
+        {
+            codeStream << "            *mpND_out"+QString::number(o)+" = out"+QString::number(o)+";\n";
+        }
+        codeStream << "        }\n";
+        codeStream << "    };\n";
+        codeStream << "}\n\n";
+        //codeStream << "#endif // "+typeName.toUpper()+"_HPP_INCLUDED\n";
+
+        CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
+        pCoreAccess->generateFromCpp(code, false);
+        delete(pCoreAccess);
+        QDir libDir = QDir();
+        libDir.mkpath(gExecPath+"../componentLibraries/cppLibrary");
+
+        QFile libFile;
+
+    #ifdef WIN32
+        libFile.setFileName(gExecPath+"output/"+typeName+".dll");
+        libFile.copy(gExecPath+"../componentLibraries/cppLibrary/"+typeName+".dll");
+    #else
+        libFile.setFileName(gExecPath+"output/"+typeName+".so");
+        libFile.copy(gExecPath+"../componentLibraries/cppLibrary/"+typeName+".so");
+    #endif
+
+        if(!libFile.exists())
+        {
+            gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to compile C++ component!");
+            return;
+        }
+
+        QFile xmlFile;
+        xmlFile.setFileName(gExecPath+"output/"+typeName+".xml");
+        xmlFile.open(QIODevice::ReadOnly | QIODevice::Text);
+        QString xmlCode = xmlFile.readAll();
+        xmlFile.close();
+        xmlCode.replace("    <icons/>", "    <icons>\n      <icon scale=\"1\" path=\":graphics/objecticons/cppcomponent.svg\" iconrotation=\"OFF\" type=\"user\"/>\n    </icons>");
+        xmlFile.open(QIODevice::WriteOnly | QIODevice::Text);
+        xmlFile.write((const char *)xmlCode.toAscii().data());
+        xmlFile.close();
+        xmlFile.copy(gExecPath+"../componentLibraries/cppLibrary/"+typeName+".xml");
+
+        gpMainWindow->mpLibrary->unloadExternalLibrary(gExecPath+"../componentLibraries/cppLibrary");
+        gpMainWindow->mpLibrary->loadHiddenSecretDir(gExecPath+"../componentLibraries/cppLibrary");
+
+        QString name = componentPtrs[c]->getName();
+        this->replaceComponent(name, typeName);
+
+        componentPtrs[c] = static_cast<Component*>(this->getModelObject(name));
+        componentPtrs[c]->setCppCode(codeFromDialog);
+        componentPtrs[c]->setCppInputs(nInputs);
+        componentPtrs[c]->setCppOutputs(nOutputs);
+    }
+}
+
+
 PlotData *ContainerObject::getPlotDataPtr()
 {
     return mpNewPlotData;

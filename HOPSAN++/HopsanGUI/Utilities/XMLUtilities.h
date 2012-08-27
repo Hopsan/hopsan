@@ -108,6 +108,9 @@ void verifyConfigurationCompatibility(QDomElement &rConfigElement);
 #define HMF_SUBTYPENAME "subtypename"
 #define HMF_CQSTYPETAG "cqs_type"
 #define HMF_TYPE "type"
+#define HMF_CPPCODETAG "cppcode"
+#define HMF_CPPINPUTS "inputs"
+#define HMF_CPPOUTPUTS "outputs"
 
 #define HMF_HOPSANGUITAG "hopsangui"
 #define HMF_COORDINATES "coordinates"

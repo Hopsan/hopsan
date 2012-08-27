@@ -835,6 +835,15 @@ void ModelObject::saveCoreDataToDomElement(QDomElement &rDomElement)
 {
     rDomElement.setAttribute(HMF_TYPENAME, getTypeName());
     rDomElement.setAttribute(HMF_NAMETAG, getName());
+
+    if(getTypeName().startsWith("CppComponent"))
+    {
+        rDomElement.setAttribute(HMF_TYPENAME, "CppComponent");
+        appendDomTextNode(rDomElement, HMF_CPPCODETAG, mCppCode);
+        QDomElement cppElement = rDomElement.firstChildElement(HMF_CPPCODETAG);
+        cppElement.setAttribute(HMF_CPPINPUTS, mnCppInputs);
+        cppElement.setAttribute(HMF_CPPOUTPUTS, mnCppOutputs);
+    }
 }
 
 QDomElement ModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)

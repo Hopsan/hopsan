@@ -60,6 +60,7 @@ bool CoreGeneratorAccess::generateFromModelica(QString code)
 }
 
 
+//! @todo Return false if compilation fails!
 bool CoreGeneratorAccess::generateFromCpp(QString code, bool showOutputDialog)
 {
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
