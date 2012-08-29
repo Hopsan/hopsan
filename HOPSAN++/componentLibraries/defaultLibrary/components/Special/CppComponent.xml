@@ -4,6 +4,10 @@
         <icons>
             <icon scale="1" path=":graphics/objecticons/cppcomponent.svg" iconrotation="OFF" type="user"/>
         </icons>
+        <help>
+            <text>Input ports are called "in0", "in1" and so on. Output ports "Out0", "Out1" etc. All functions from C++ library math.h are available. End each line with a semicolon.</text>
+            <picture>43valvehelp.svg</picture>
+        </help>
         <ports/>
     </modelobject>
 </hopsanobjectappearance>

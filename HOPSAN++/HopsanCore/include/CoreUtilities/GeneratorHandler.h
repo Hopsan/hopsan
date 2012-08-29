@@ -16,7 +16,13 @@
 #ifndef GENERATORHANDLER_H
 #define GENERATORHANDLER_H
 
+#ifdef WIN32
+#define _WIN32_WINNT 0x0502
 #include "win32dll.h"
+#include "Windows.h"
+#else
+#include "dlfcn.h"
+#endif
 
 namespace hopsan {
 

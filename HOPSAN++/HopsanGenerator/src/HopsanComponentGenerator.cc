@@ -32,6 +32,8 @@
 #include <QProgressDialog>
 #include <QDomElement>
 
+#include <windows.h>
+
 #include "HopsanComponentGenerator.h"
 #include "SymHop.h"
 
@@ -131,7 +133,11 @@ void HopsanComponentGenerator::printMessage(QString msg)
         mpTextEdit->setTextColor("BLACK");
         mpTextEdit->append(msg);
         QApplication::processEvents();
+#ifdef WIN32
+        Sleep(10);
+#else
         usleep(10000);
+#endif
     }
 }
 
@@ -143,7 +149,11 @@ void HopsanComponentGenerator::printErrorMessage(QString msg)
         mpTextEdit->setTextColor("RED");
         mpTextEdit->append(msg);
         QApplication::processEvents();
+#ifdef WIN32
+        Sleep(10);
+#else
         usleep(10000);
+#endif
     }
 }
 
@@ -2361,7 +2371,7 @@ void HopsanComponentGenerator::compileFromComponentObject(QString outputFile, Co
     //Execute HopsanFMU compile script
 #ifdef WIN32
     QProcess p;
-    p.start("cmd.exe", QStringList() << "/c" << "cd " + QString(tempPath) + " & compile.bat");
+    p.start("cmd.exe", QStringList() << "/c" << "cd " + mTempPath + " & compile.bat");
     p.waitForFinished();
 #else
     //! @todo Add link path to bin dir! (../?)
