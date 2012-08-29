@@ -1,4 +1,4 @@
 TEMPLATE = subdirs
 
 CONFIG += ordered
-SUBDIRS = HopsanCore  HopsanGUI HopsanCLI HopsanGenerator
+SUBDIRS = HopsanCore componentLibraries HopsanGUI HopsanCLI HopsanGenerator

@@ -86,7 +86,7 @@ unix {
 # -------------------------------------------------
 SOURCES += \
     #DO NOT remove the commented line bellow, it will be autoreplaced by script
-    ../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.cc \
+    #INTERNALCOMPLIB.CC#
     src/Port.cc \
     src/Nodes.cc \
     src/Node.cc \
