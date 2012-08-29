@@ -2943,16 +2943,17 @@ void ContainerObject::recompileCppComponents(ModelObject *pComponent)
         pCoreAccess->generateFromCpp(code, false);
         delete(pCoreAccess);
         QDir libDir = QDir();
-        libDir.mkpath(gExecPath+"../componentLibraries/cppLibrary");
+        QString libDirStr = QString(DATAPATH)+"/componentLibraries/cppLibrary";
+        libDir.mkpath(libDirStr);
 
         QFile libFile;
 
     #ifdef WIN32
-        libFile.setFileName(gExecPath+"output/"+typeName+".dll");
-        libFile.copy(gExecPath+"../componentLibraries/cppLibrary/"+typeName+".dll");
+        libFile.setFileName("c:/HopsanComponentGeneratorTempFiles/output/"+typeName+".dll");
+        libFile.copy(libDirStr+"/"+typeName+".dll");
     #else
         libFile.setFileName(gExecPath+"output/"+typeName+".so");
-        libFile.copy(gExecPath+"../componentLibraries/cppLibrary/"+typeName+".so");
+        libFile.copy(libDirStr+"/"+typeName+".so");
     #endif
 
         if(!libFile.exists())
@@ -2962,7 +2963,11 @@ void ContainerObject::recompileCppComponents(ModelObject *pComponent)
         }
 
         QFile xmlFile;
+#ifdef WIN32
+        xmlFile.setFileName("c:/HopsanComponentGeneratorTempFiles/output/"+typeName+".xml");
+#else
         xmlFile.setFileName(gExecPath+"output/"+typeName+".xml");
+#endif
         xmlFile.open(QIODevice::ReadOnly | QIODevice::Text);
         QString xmlCode = xmlFile.readAll();
         xmlFile.close();
@@ -2970,10 +2975,10 @@ void ContainerObject::recompileCppComponents(ModelObject *pComponent)
         xmlFile.open(QIODevice::WriteOnly | QIODevice::Text);
         xmlFile.write((const char *)xmlCode.toAscii().data());
         xmlFile.close();
-        xmlFile.copy(gExecPath+"../componentLibraries/cppLibrary/"+typeName+".xml");
+        xmlFile.copy(libDirStr+"/"+typeName+".xml");
 
-        gpMainWindow->mpLibrary->unloadExternalLibrary(gExecPath+"../componentLibraries/cppLibrary");
-        gpMainWindow->mpLibrary->loadHiddenSecretDir(gExecPath+"../componentLibraries/cppLibrary");
+        gpMainWindow->mpLibrary->unloadExternalLibrary(libDirStr);
+        gpMainWindow->mpLibrary->loadHiddenSecretDir(libDirStr);
 
         QString name = componentPtrs[c]->getName();
         this->replaceComponent(name, typeName);

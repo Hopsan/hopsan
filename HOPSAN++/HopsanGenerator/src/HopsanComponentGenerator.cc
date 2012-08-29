@@ -32,7 +32,9 @@
 #include <QProgressDialog>
 #include <QDomElement>
 
+#ifdef WIN32
 #include <windows.h>
+#endif
 
 #include "HopsanComponentGenerator.h"
 #include "SymHop.h"
@@ -90,8 +92,13 @@ ComponentSpecification::ComponentSpecification(QString typeName, QString display
 
 HopsanComponentGenerator::HopsanComponentGenerator(QString coreIncludePath, QString binPath, bool showDialog)
 {
+#ifdef WIN32
+    mOutputPath = "C:/HopsanComponentGeneratorTempFiles/output/";
+    mTempPath = "C:/HopsanComponentGeneratorTempFiles/temp/";
+#else
     mOutputPath = QDir::currentPath()+"/output/";
     mTempPath = QDir::currentPath()+"/temp/";
+#endif
     mCoreIncludePath = coreIncludePath;
     mBinPath = binPath;
 
@@ -2326,9 +2333,8 @@ void HopsanComponentGenerator::compileFromComponentObject(QString outputFile, Co
     QTextStream clBatchStream(&clBatchFile);
     QString choppedIncludePath = mCoreIncludePath;
     choppedIncludePath.chop(1);
-    clBatchStream << "g++.exe -shared tempLib.cc -o " << comp.typeName << ".dll -I\"" << choppedIncludePath<< "\"  -I\"" << mCoreIncludePath << "\" -lHopsanCore\n";
+    clBatchStream << "g++.exe -shared tempLib.cc -o " << comp.typeName << ".dll -I\"" << choppedIncludePath<< "\"  -I\"" << mCoreIncludePath + "\" -L\"" + mBinPath << "\" -lHopsanCore\n";
     clBatchFile.close();
-
 
     printMessage("Writing " + comp.typeName + ".xml...");
 
@@ -2400,7 +2406,6 @@ void HopsanComponentGenerator::compileFromComponentObject(QString outputFile, Co
     QFile soFile(mTempPath+libFileName);
     QFile::remove(mOutputPath + libFileName);
     soFile.copy(mOutputPath + libFileName);
-
 }
 
 
