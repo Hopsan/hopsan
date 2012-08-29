@@ -173,7 +173,6 @@ HEADERS += \
     code/Hydraulic/HydraulicDummyC.hpp \
     code/Hydraulic/HydraulicCylinderQ.hpp \
     code/Hydraulic/HydraulicCylinderC.hpp \
-    code/Hydraulic/HydraulicComponentsInComponentTest.hpp \
     code/Hydraulic/HydraulicAlternativePRV.hpp \
     code/Hydraulic/HydraulicAckumulator.hpp \
     code/Hydraulic/valves/HydraulicValves.h \

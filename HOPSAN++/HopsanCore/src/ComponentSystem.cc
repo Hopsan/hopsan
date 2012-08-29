@@ -193,6 +193,8 @@ ComponentSystem::ComponentSystem() : Component()
     mRequestedNumLogSamples = 2048;
 #ifdef USETBB
     mpStopMutex = new tbb::mutex();
+#else
+    mpStopMutex = 0;
 #endif
 
     // Set default (disabled) values for log data

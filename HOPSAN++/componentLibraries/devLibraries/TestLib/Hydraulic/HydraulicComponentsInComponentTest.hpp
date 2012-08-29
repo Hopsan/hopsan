@@ -55,8 +55,6 @@ namespace hopsan {
         // External port pointers
         Port *mpSysPort1, *mpSysPort2, *mpSysPort3, *mpSysPort4;
 
-
-
     public:
         static Component *Creator()
         {

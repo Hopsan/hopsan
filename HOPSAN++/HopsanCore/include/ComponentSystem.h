@@ -93,7 +93,7 @@ namespace hopsan {
 
     public:
         //==========Public functions==========
-        ~ComponentSystem();
+        virtual ~ComponentSystem();
         static Component* Creator(){ return new ComponentSystem(); }
 
         // Set the subsystem CQS type
@@ -226,14 +226,16 @@ namespace hopsan {
         std::vector<Node*> mSubNodePtrs;
 
         bool volatile mStopSimulation;
-#ifdef USETBB
+
+        // This block of variables are only used whith TBB but they must be incuded allways else
+        // components inhereting ComponentSystem will not know that they exist resulting in overwriting memory
         tbb::mutex *mpStopMutex;
         std::vector<double *> mvTimePtrs;
-        std::vector< std::vector<Component*> > mSplitCVector;                  //Create split vectors
+        std::vector< std::vector<Component*> > mSplitCVector;
         std::vector< std::vector<Component*> > mSplitQVector;
         std::vector< std::vector<Component*> > mSplitSignalVector;
         std::vector< std::vector<Node*> > mSplitNodeVector;
-#endif
+        //------------------------------------------------------------------
 
         bool mKeepStartValues;
 
