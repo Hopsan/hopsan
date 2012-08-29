@@ -106,7 +106,7 @@ namespace hopsan {
             }
             else if (mTime > mStartTime && mTime < mStopTime)
             {
-                (*mpND_out) = mBaseValue + 0.5*mAmplitude*sin((mTime-mStartTime)*mFrequency - 3.141592653589/2) + mAmplitude*0.5;
+                (*mpND_out) = mBaseValue + 0.5*mAmplitude*sin((mTime-mStartTime)*mFrequency - 3.141592653589/2.0) + mAmplitude*0.5;
             }
             else
             {

@@ -29,13 +29,13 @@ using namespace hopsan;
 
 double ValveHysteresis::getValue(double xs, double xh, double xd)
 {
-    if (xd < xs-xh/2)
+    if (xd < xs-xh/2.0)
     {
-        return xs-xh/2;
+        return xs-xh/2.0;
     }
-    else if (xd > xs+xh/2)
+    else if (xd > xs+xh/2.0)
     {
-        return xs+xh/2;
+        return xs+xh/2.0;
     }
     else
     {
