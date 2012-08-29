@@ -201,6 +201,8 @@ ComponentSystem::ComponentSystem() : Component()
 
 ComponentSystem::~ComponentSystem()
 {
+    // Clear the contents of the system
+    clear();
 #ifdef USETBB
     delete mpStopMutex;
 #endif
@@ -283,15 +285,23 @@ void ComponentSystem::addComponents(std::vector<Component*> &rComponents)
 //! @brief Add a component to the system
 void ComponentSystem::addComponent(Component *pComponent)
 {
-    //First check if the name already exists, in that case change the suffix
-    string modname = this->determineUniqueComponentName(pComponent->getName());
-    pComponent->setName(modname);
+    // prevent adding null ptr
+    if (pComponent)
+    {
+        //First check if the name already exists, in that case change the suffix
+        string modname = this->determineUniqueComponentName(pComponent->getName());
+        pComponent->setName(modname);
 
-    //Add to the cqs component vectors
-    addSubComponentPtrToStorage(pComponent);
+        //Add to the cqs component vectors
+        addSubComponentPtrToStorage(pComponent);
 
-    pComponent->setSystemParent(this);
-    pComponent->mModelHierarchyDepth = this->mModelHierarchyDepth+1; //Set the ModelHierarchyDepth counter
+        pComponent->setSystemParent(this);
+        pComponent->mModelHierarchyDepth = this->mModelHierarchyDepth+1; //Set the ModelHierarchyDepth counter
+    }
+    else
+    {
+        addErrorMessage("Trying to add NULL component to system");
+    }
 }
 
 
@@ -469,6 +479,16 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* pComponent)
     else
     {
         addErrorMessage("The component you are trying to remove: " + pComponent->getName() + " does not exist (Does Nothing)");
+    }
+}
+
+//! @brief Clear all the contents of a system (deleting any remaning components and connections)
+void ComponentSystem::clear()
+{
+    // Remove and delete every subcomponent, one by one
+    while (!mSubComponentMap.empty())
+    {
+        removeSubComponent((*mSubComponentMap.begin()).second, true);
     }
 }
 
@@ -1292,13 +1312,11 @@ void ConnectionAssistant::clearSysPortNodeTypeIfEmpty(Port *pPort)
 //! @returns True if success, False if failed
 bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
 {
-    ConnectionAssistant connAssist(this);
-    Component* pComp1 = pPort1->getComponent();
-    Component* pComp2 = pPort2->getComponent();
-    bool sucess=false;
-
-    //First some error checking
-    stringstream ss; //Message string stream
+    if ((pPort1==0) || (pPort2==0))
+    {
+        addErrorMessage("Trying to connect NULL port(s)", "nullport");
+        return false;
+    }
 
     //Prevent connection with self
     if (pPort1 == pPort2)
@@ -1306,6 +1324,14 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         addErrorMessage("You can not connect a port to it self", "selfconnection");
         return false;
     }
+
+    ConnectionAssistant connAssist(this);
+    Component* pComp1 = pPort1->getComponent();
+    Component* pComp2 = pPort2->getComponent();
+    bool sucess=false;
+
+    //First some error checking
+    stringstream ss; //Message string stream
 
     //Prevent connection between two multiports
     //! @todo we might want to allow this in the future, right now disconnecting two multiports is also not implemented

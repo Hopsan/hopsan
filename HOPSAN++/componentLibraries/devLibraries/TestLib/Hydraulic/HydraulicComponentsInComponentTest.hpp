@@ -19,10 +19,10 @@
 #define HYDRAULICCOMPONENTINCOMPONENTTEST_HPP_INCLUDED
 
 #include <iostream>
-#include "HydraulicLaminarOrifice.hpp"
-#include "HydraulicVolume.hpp"
 #include "ComponentSystem.h"
 #include "ComponentEssentials.h"
+#include "ComponentUtilities.h"
+#include "HopsanEssentials.h"
 
 namespace hopsan {
 
@@ -33,16 +33,29 @@ namespace hopsan {
     class HydraulicComponentsInComponentTest : public ComponentSystem
     {
     private:
-        //Parameters
+        // Parameters
         double Volume;
 
-        //Components
-        HydraulicLaminarOrifice *mpOrifice1;
-        HydraulicVolume *mpVolume;
-        HydraulicLaminarOrifice *mpOrifice2;
+        // Components
+        Component *mpOrifice1, *mpVolume, *mpOrifice2;
 
-        //External ports
+        // Helpfunction to create components and abort safely if that fails
+        Component* createComponent(const std::string type)
+        {
+            Component* pComp = getHopsanEssentials()->createComponent(type);
+            if (pComp == 0)
+            {
+                addErrorMessage("Could not create subcomponent: " + type);
+                pComp = getHopsanEssentials()->createComponent("DummyComponent");
+                stopSimulation();
+            }
+            return pComp;
+        }
+
+        // External port pointers
         Port *mpSysPort1, *mpSysPort2, *mpSysPort3, *mpSysPort4;
+
+
 
     public:
         static Component *Creator()
@@ -68,15 +81,15 @@ namespace hopsan {
 
 
             //Initialize sub components
-            mpOrifice1 = new HydraulicLaminarOrifice();
+            mpOrifice1 = createComponent("HydraulicLaminarOrifice");
             addComponent(mpOrifice1);
             mpOrifice1->setName("TheFirstOrifice");             //Names are optional (not used yet)
 
-            mpVolume = new HydraulicVolume();
+            mpVolume = createComponent("HydraulicVolume");
             addComponent(mpVolume);
             mpVolume->setName("TheVolume");
 
-            mpOrifice2 = new HydraulicLaminarOrifice();
+            mpOrifice2 = createComponent("HydraulicLaminarOrifice");
             addComponent(mpOrifice2);
             mpOrifice2->setName("TheSecondOrifice");
 

@@ -52,6 +52,7 @@ HopsanEssentials::HopsanEssentials()
 
     // Make sure that internal Nodes and Components register
     register_nodes(mpNodeFactory);
+    mpComponentFactory->registerCreatorFunction("DummyComponent", DummyComponent::Creator);
     mpComponentFactory->registerCreatorFunction("MissingComponent", DummyComponent::Creator);
     mpComponentFactory->registerCreatorFunction("Subsystem", ComponentSystem::Creator);
     mpComponentFactory->registerCreatorFunction("CppComponent", ComponentSystem::Creator);

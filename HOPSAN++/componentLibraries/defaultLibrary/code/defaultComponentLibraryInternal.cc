@@ -132,7 +132,6 @@ void hopsan::register_components(hopsan::ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("HydraulicUndefinedConnectionC", HydraulicUndefinedConnectionC::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicUndefinedConnectionQ", HydraulicUndefinedConnectionQ::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicOverCenterValve", HydraulicOverCenterValve::Creator);
-    pComponentFactory->registerCreatorFunction("HydraulicComponentsInComponentTest", HydraulicComponentsInComponentTest::Creator);
 
     //Signal components
     pComponentFactory->registerCreatorFunction("SignalAnimationSlider", SignalAnimationSlider::Creator);
