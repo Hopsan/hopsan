@@ -329,7 +329,7 @@ void Component::initializeDynamicParameters()
         mpParameters->enableParameter(parNames[i], true);
 
         // Check if dynamic parameter, Port with same name exist
-        //! @todo must make sure that otehr ports with this name do not exist, of other types then signal 1d readport
+        //! @todo must make sure that other ports with this name do not exist, of other types then signal 1d readport
         if (mPortPtrMap.count(parNames[i]) > 0)
         {
             Port* pPort = mPortPtrMap.find(parNames[i])->second;

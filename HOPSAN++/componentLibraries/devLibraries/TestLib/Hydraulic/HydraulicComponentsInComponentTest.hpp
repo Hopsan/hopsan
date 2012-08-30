@@ -39,7 +39,8 @@ namespace hopsan {
         // Components
         Component *mpOrifice1, *mpVolume, *mpOrifice2;
 
-        // Helpfunction to create components and abort safely if that fails
+        //! @brief Helpfunction to create components and abort safely if that fails
+        //! @returns Pointer to created component or dummy
         Component* createComponent(const std::string type)
         {
             Component* pComp = getHopsanEssentials()->createComponent(type);
@@ -50,6 +51,32 @@ namespace hopsan {
                 stopSimulation();
             }
             return pComp;
+        }
+
+        //! @brief Helpfunction to safely get the internal parameter data ptr from a subcomponent, only valid for double parameters
+        //! If parameter or component NULL, then error message instead of crash
+        //! @note circumvents the ordinary parameter system, use only if you know what you are doing
+        //! @returns A pointer to the parameter, or a dummy
+        double* getDoubleParameterDataPtr(Component *pComp, const std::string paramName)
+        {
+            double* pTmp = 0;
+            std::string compType = "NULL";
+
+            // First handle if component ptr is null
+            if (pComp != 0)
+            {
+                pTmp = static_cast<double*>(pComp->getParameterDataPtr(paramName));
+                compType = pComp->getTypeName();
+            }
+
+            // Now check if we found the parameter, if not return dummy, error message and stop simulation
+            if (pTmp == 0)
+            {
+                addErrorMessage("Could not get parameter data ptr from subcomponent: " + compType);
+                pTmp = new double(0);
+                stopSimulation();
+            }
+            return pTmp;
         }
 
         // External port pointers
