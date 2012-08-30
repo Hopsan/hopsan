@@ -41,7 +41,7 @@ namespace hopsan {
 
         //! @brief Helpfunction to create components and abort safely if that fails
         //! @returns Pointer to created component or dummy
-        Component* createComponent(const std::string type)
+        Component* createSafeComponent(const std::string type)
         {
             Component* pComp = getHopsanEssentials()->createComponent(type);
             if (pComp == 0)
@@ -53,11 +53,12 @@ namespace hopsan {
             return pComp;
         }
 
-        //! @brief Helpfunction to safely get the internal parameter data ptr from a subcomponent, only valid for double parameters
+        //! @brief Helpfunction to safely get the internal parameter data ptr from a subcomponent, the type needs to be known
         //! If parameter or component NULL, then error message instead of crash
         //! @note circumvents the ordinary parameter system, use only if you know what you are doing
-        //! @returns A pointer to the parameter, or a dummy
-        double* getDoubleParameterDataPtr(Component *pComp, const std::string paramName)
+        //! @returns A pointer to the parameter or a dummy parameter (to avoid crash on further use)
+        template<typename T>
+        T* getParameterSafeDataPtr(Component *pComp, const std::string paramName)
         {
             double* pTmp = 0;
             std::string compType = "NULL";
@@ -65,7 +66,7 @@ namespace hopsan {
             // First handle if component ptr is null
             if (pComp != 0)
             {
-                pTmp = static_cast<double*>(pComp->getParameterDataPtr(paramName));
+                pTmp = static_cast<T*>(pComp->getParameterDataPtr(paramName));
                 compType = pComp->getTypeName();
             }
 
@@ -73,7 +74,7 @@ namespace hopsan {
             if (pTmp == 0)
             {
                 addErrorMessage("Could not get parameter data ptr from subcomponent: " + compType);
-                pTmp = new double(0);
+                pTmp = new T;
                 stopSimulation();
             }
             return pTmp;
@@ -106,18 +107,17 @@ namespace hopsan {
 
 
             //Initialize sub components
-            mpOrifice1 = createComponent("HydraulicLaminarOrifice");
+            mpOrifice1 = createSafeComponent("HydraulicLaminarOrifice");
             addComponent(mpOrifice1);
             mpOrifice1->setName("TheFirstOrifice");             //Names are optional (not used yet)
 
-            mpVolume = createComponent("HydraulicVolume");
+            mpVolume = createSafeComponent("HydraulicVolume");
             addComponent(mpVolume);
             mpVolume->setName("TheVolume");
 
-            mpOrifice2 = createComponent("HydraulicLaminarOrifice");
+            mpOrifice2 = createSafeComponent("HydraulicLaminarOrifice");
             addComponent(mpOrifice2);
             mpOrifice2->setName("TheSecondOrifice");
-
 
             //Initialize connections
             connect(mpSysPort1, mpOrifice1->getPort("P1"));
