@@ -148,14 +148,12 @@ namespace hopsan {
         void finalize();
 
         bool simulateAndMeasureTime(const size_t steps = 1);
-#ifdef USETBB
         double getTotalMeasuredTime();
         void sortComponentVectorsByMeasuredTime();
         void distributeCcomponents(std::vector< std::vector<Component*> > &rSplitCVector, size_t nThreads);
         void distributeQcomponents(std::vector< std::vector<Component*> > &rSplitQVector, size_t nThreads);
         void distributeSignalcomponents(std::vector< std::vector<Component*> > &rSplitSignalVector, size_t nThreads);
         void distributeNodePointers(std::vector< std::vector<Node*> > &rSplitNodeVector, size_t nThreads);
-#endif
 
         // Set and get desired timestep
         void setDesiredTimestep(const double timestep);

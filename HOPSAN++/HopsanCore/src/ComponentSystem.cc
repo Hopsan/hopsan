@@ -2803,13 +2803,55 @@ void ComponentSystem::distributeNodePointers(vector< vector<Node*> > &rSplitNode
 //! In case multi-threaded support is not available
 void ComponentSystem::simulateMultiThreaded(const double startT, const double stopT, const size_t /*nThreads*/, const bool /*noChanges*/)
 {
+    this->addErrorMessage("Multi-threaded simulation not available, TBB library is not present.");
     this->simulate(startT, stopT);
 }
 
 
 bool ComponentSystem::simulateAndMeasureTime(const size_t steps)
 {
+    this->addErrorMessage("Unable to measure simulation time without TBB library.");
     return false;
+}
+
+double ComponentSystem::getTotalMeasuredTime()
+{
+    this->addErrorMessage("Time measurement results not available without TBB library.");
+    return 0;
+}
+
+
+void SimulationHandler::sortSystemsByTotalMeasuredTime(std::vector<ComponentSystem*> &rSystemVector)
+{
+    if(rSystemVector.size() > 0)
+    {
+        rSystemVector[0]->addErrorMessage("Sorting systems by measured time is not possible without the TBB library.");
+    }
+    return;
+}
+
+
+void ComponentSystem::distributeCcomponents(vector< vector<Component*> > &rSplitCVector, size_t nThreads)
+{
+
+}
+
+
+void ComponentSystem::distributeQcomponents(vector< vector<Component*> > &rSplitQVector, size_t nThreads)
+{
+
+}
+
+
+void ComponentSystem::distributeSignalcomponents(vector< vector<Component*> > &rSplitSignalVector, size_t nThreads)
+{
+
+}
+
+
+void ComponentSystem::distributeNodePointers(vector< vector<Node*> > &rSplitNodeVector, size_t nThreads)
+{
+
 }
 
 #endif
