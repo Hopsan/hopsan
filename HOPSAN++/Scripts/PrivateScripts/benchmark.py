@@ -1,6 +1,6 @@
 import random
 
-def runBenchmarking(iterations, threads, maxload):
+def runFullBenchmarking(iterations, threads, maxload):
 
     hopsan.turnOffProgressBar()
 
@@ -28,3 +28,4 @@ def runBenchmarking(iterations, threads, maxload):
   
         file_list[t].write(str(time)+", "+str(load)+"\n")
 
+print "Benchmarking finished!"

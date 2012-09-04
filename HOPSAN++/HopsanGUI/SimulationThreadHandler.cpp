@@ -322,3 +322,8 @@ bool SimulationThreadHandler::wasSuccessful()
 {
     return mInitSuccess && mSimuSucess && mFiniSucess && !mAborted;
 }
+
+int SimulationThreadHandler::getLastSimulationTime()
+{
+    return mSimuTime;
+}

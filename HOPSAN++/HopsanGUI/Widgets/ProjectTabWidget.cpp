@@ -243,7 +243,8 @@ void ProjectTab::setLastSimulationTime(int time)
 //! @brief Returns last simulation time for tab
 int ProjectTab::getLastSimulationTime()
 {
-    return mLastSimulationTime;
+    return mpSimulationThreadHandler->getLastSimulationTime();
+   // return mLastSimulationTime;
 }
 
 

@@ -112,7 +112,8 @@ SOURCES += \
     src/ComponentUtilities/DoubleIntegratorWithDamping.cc \
     src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc \
     src/ComponentUtilities/EquationSystemSolver.cpp \
-    src/CoreUtilities/GeneratorHandler.cpp
+    src/CoreUtilities/GeneratorHandler.cpp \
+    src/CoreUtilities/MultiThreadingUtilities.cpp
 HEADERS += \
     include/win32dll.h \
     include/version.h \
@@ -152,7 +153,8 @@ HEADERS += \
     include/Components/DummyComponent.hpp \
     include/ComponentUtilities/EquationSystemSolver.h \
     Dependencies/rapidxml-1.13/hopsan_rapidxml.hpp \
-    include/CoreUtilities/GeneratorHandler.h
+    include/CoreUtilities/GeneratorHandler.h \
+    include/CoreUtilities/MultiThreadingUtilities.h
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

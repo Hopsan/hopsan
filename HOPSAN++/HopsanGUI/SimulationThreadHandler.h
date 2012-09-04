@@ -122,6 +122,7 @@ public:
     void initSimulateFinalize(QVector<SystemContainer*> vpSystems, const bool noChanges=false);
     void initSimulateFinalize_blocking(QVector<SystemContainer*> vpSystems, const bool noChanges=false);
     bool wasSuccessful();
+    int getLastSimulationTime();
 
 signals:
     void startSimulation();
