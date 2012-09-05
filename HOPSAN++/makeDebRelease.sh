@@ -13,7 +13,7 @@ devversion=0.6.
 pbuilderBaseTGZpath="/var/cache/pbuilder/"
 
 # Pbuilder dists and archs
-distArchArray=( precise:amd64 precise:i386 oneiric:amd64 oneiric:i386 natty:amd64 natty:i386 )
+distArchArray=( quantal:amd64 quantal:i386 precise:amd64 precise:i386 oneiric:amd64 oneiric:i386 )
 distArchArrayDo=()
 
 # Ask user for version input
@@ -135,30 +135,40 @@ if [ "$doPbuild" = "true" ]; then
 
     if [ "$doBuild" = "true" ]; then
       echo "Building for $dist $arch"
+      sleep 1
       doCreateUpdatePbuilderBaseTGZ="true"
       basetgzFile=$pbuilderBaseTGZpath$dist$arch.tgz
       resultPath="$pbuilderBaseTGZpath/result/$dist"
 
       # Update or create pbuild environments
       extraPackages="debhelper unzip subversion lsb-release libtbb-dev libqt4-dev libqt4-webkit"
+      debootstrapOk="true"
       if [ "$doCreateUpdatePbuilderBaseTGZ" = "true" ]; then
 	    if [ -f $basetgzFile ]; then
 	      sudo pbuilder --update --extrapackages "$extraPackages" --basetgz $basetgzFile
 	    else
 	      sudo pbuilder --create --components "main universe" --extrapackages "$extraPackages" --distribution $dist --architecture $arch --basetgz $basetgzFile
 	    fi
+	    # Check for sucess
+	    if [ $? -ne 0 ]; then
+		debootstrapOk="false"
+		echo "pubulider create or update FAILED! for $dist $arch, aborting!"
+		read -p "press any key to continue"
+	    fi
       fi
       
-      # Now build source package
-      sudo pbuilder --build --basetgz $basetgzFile --buildresult $resultPath $dscFile
-      outputDebName=`ls $resultPath/$outputbasename*_$arch.deb`
-      
-      # Now copy adn rename output deb file to dist output dir
-      mkdir -p $outputDir/$dist
-      cp $outputDebName $outputDir/$dist/$outputbasename\_$dist\_$arch.deb
-      
-      # Check package with lintian
-      lintian --color always -X files $outputDir/$dist/$outputbasename\_$dist\_$arch.deb
+      if [ "$debootstrapOk" = "true" ]; then
+          # Now build source package
+	  sudo pbuilder --build --basetgz $basetgzFile --buildresult $resultPath $dscFile
+	  outputDebName=`ls $resultPath/$outputbasename*_$arch.deb`
+	  
+          # Now copy adn rename output deb file to dist output dir
+	  mkdir -p $outputDir/$dist
+	  cp $outputDebName $outputDir/$dist/$outputbasename\_$dist\_$arch.deb
+	  
+          # Check package with lintian
+	  lintian --color always -X files $outputDir/$dist/$outputbasename\_$dist\_$arch.deb
+      fi
     fi
   done
   
