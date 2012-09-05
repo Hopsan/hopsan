@@ -259,7 +259,11 @@ void CSVParser::quickSort(std::vector<double> &rIndexArray, const size_t left, c
         size_t pivotNewIndex = quickSortPartition(rIndexArray, left, right, pivotIndex);
 
         // Recursively sort elements smaller than the pivot
-        quickSort(rIndexArray, left, pivotNewIndex-1);
+        // but not if it happend to be zero (would lead to underflow in size_t)
+        if (pivotNewIndex>0)
+        {
+            quickSort(rIndexArray, left, pivotNewIndex-1);
+        }
 
         // Recursively sort elements at least as big as the pivot
         quickSort(rIndexArray, pivotNewIndex+1, right);
