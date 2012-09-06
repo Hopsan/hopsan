@@ -531,7 +531,14 @@ double CSVParser::interpolate(const double x, const size_t outCol, const size_t 
     else
     {
         size_t row = intervalHalfSubDiv(inCol, x, 0, mnDataRows-1);
-        return mData[outCol][row] + (x - mData[inCol][row])*(mData[outCol][row+1] -  mData[outCol][row])/(mData[inCol][row+1] -  mData[inCol][row]);
+        if(mData[inCol][row+1] ==  mData[inCol][row])       //Check for division by zero (this means that if several X values have the same value, we will always pick the first one since we cannot interpolate between them)
+        {
+            return mData[outCol][row];
+        }
+        else
+        {
+            return mData[outCol][row] + (x - mData[inCol][row])*(mData[outCol][row+1] -  mData[outCol][row])/(mData[inCol][row+1] -  mData[inCol][row]);
+        }
 
     }
     return x; //!< @todo  Dont know if this is correct, return x if we vere unsucessfull

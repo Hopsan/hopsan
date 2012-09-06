@@ -27,5 +27,7 @@ def runFullBenchmarking(iterations, threads, maxload):
         time = hopsan.getSimulationTime()
   
         file_list[t].write(str(time)+", "+str(load)+"\n")
+        
+        print str(100.0*float(i)/float(iterations))+"% done!"
 
-print "Benchmarking finished!"
+    print "Benchmarking finished!"
