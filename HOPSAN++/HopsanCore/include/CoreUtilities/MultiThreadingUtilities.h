@@ -56,8 +56,13 @@ public:
 
 private:
     int mnThreads;
+#ifdef USETBB
     tbb::atomic<int> mCounter;
     tbb::atomic<bool> mLock;
+#else
+    int mCounter;
+    int mLock;
+#endif
 };
 
 
