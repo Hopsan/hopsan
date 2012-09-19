@@ -60,6 +60,9 @@ private:
     void executeChangeParameterCommand(QString cmd);
     void executeChangeSimulationSettingsCommand(QString cmd);
     void executeHelpCommand(QString cmd);
+    void executeRunScriptCommand(QString cmd);
+    void executeWriteHistoryToFileCommand(QString cmd);
+    void executePrintCommand(QString cmd);
 
     //Help functions
     QString getShortVariableName(QString var);

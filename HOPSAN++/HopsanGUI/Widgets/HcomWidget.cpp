@@ -47,7 +47,7 @@ HcomWidget::HcomWidget(MainWindow *pParent)
 
     mCurrentHistoryItem=-1;
 
-    mCmdList << "SIM" << "EXIT" << "PLOT" << "DIPA" << "CHPA" << "CHSS" << "HELP";
+    mCmdList << "SIM" << "EXIT" << "PLOT" << "DIPA" << "CHPA" << "CHSS" << "HELP" << "EXEC" << "WRHI" << "PRINT";
 
     mCurrentPlotWindow = 0;
 }
@@ -256,7 +256,7 @@ void HcomWidget::cancelRecentHistory()
 
 void HcomWidget::executeCommand(QString cmd)
 {
-    QString majorCmd = cmd.split(" ").first();
+    QString majorCmd = cmd.split(" ").first().toUpper();
     QString subCmd;
     if(cmd.split(" ").size() == 1)
     {
@@ -305,6 +305,15 @@ void HcomWidget::executeCommand(QString cmd)
         break;
     case 6:
         executeHelpCommand(subCmd);
+        break;
+    case 7:
+        executeRunScriptCommand(subCmd);
+        break;
+    case 8:
+        executeWriteHistoryToFileCommand(subCmd);
+        break;
+    case 9:
+        executePrintCommand(subCmd);
         break;
     default:
         this->append("Unrecognized command.");
@@ -472,6 +481,68 @@ void HcomWidget::executeHelpCommand(QString cmd)
     {
         append("\nHelp for " + cmd+"\n");
     }
+}
+
+
+void HcomWidget::executeRunScriptCommand(QString cmd)
+{
+    QStringList splitCmd = cmd.split(" ");
+
+    if(splitCmd.isEmpty()) { return; }
+
+    QFile file(splitCmd[0]);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        append("Unable to read file.");
+        return;
+    }
+
+    QString code;
+    QTextStream t(&file);
+    while(!t.atEnd())
+    {
+        code = t.readLine();
+
+        for(int i=0; i<splitCmd.size()-1; ++i)  //Replace arguments with their values
+        {
+            QString str = "$"+QString::number(i+1);
+            code.replace(str, splitCmd[i+1]);
+        }
+
+        if(!code.startsWith("#"))
+        {
+            this->executeCommand(code);
+        }
+    }
+    file.close();
+}
+
+
+void HcomWidget::executeWriteHistoryToFileCommand(QString cmd)
+{
+    if(cmd.isEmpty()) { return; }
+
+    QFile file(cmd);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        append("Unable to write to file.");
+        return;
+    }
+
+    QTextStream t(&file);
+    for(int h=mHistory.size()-1; h>-1; --h)
+    {
+        t << mHistory[h] << "\n";
+    }
+    file.close();
+}
+
+
+void HcomWidget::executePrintCommand(QString cmd)
+{
+    //! @todo Implement
+
+    append("Function not yet implemented.");
 }
 
 
