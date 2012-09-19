@@ -37,6 +37,7 @@ class QGraphicsScene;
 class LibraryWidget;
 class OptionsDialog;
 class MessageWidget;
+class HcomWidget;
 class PlotTreeWidget;
 class PyDockWidget;
 class SystemParametersWidget;
@@ -88,6 +89,7 @@ public:
     WelcomeWidget *mpWelcomeWidget;
     LibraryWidget *mpLibrary;
     MessageWidget *mpMessageWidget;
+    HcomWidget *mpHcomWidget;
     PlotTreeWidget *mpPlotWidget;
     PyDockWidget *mpPyDockWidget;
     SystemParametersWidget *mpSystemParametersWidget;
@@ -204,6 +206,7 @@ private:
 
     //Dock area widgets
     QDockWidget *mpMessageDock;
+    QDockWidget *mpHcomDock;
     QDockWidget *mpLibDock;
     QDockWidget *mpPlotWidgetDock;
     QDockWidget *mpUndoWidgetDock;

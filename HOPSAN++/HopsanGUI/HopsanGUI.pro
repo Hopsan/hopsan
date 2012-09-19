@@ -164,7 +164,8 @@ SOURCES += main.cpp \
     Dialogs/ParameterSettingsLayout.cpp \
     Dialogs/ModelObjectPropertiesDialog.cpp \
     SimulationThreadHandler.cpp \
-    Utilities/SymHop.cpp
+    Utilities/SymHop.cpp \
+    Widgets/HcomWidget.cpp
 
 
 HEADERS += MainWindow.h \
@@ -228,7 +229,8 @@ HEADERS += MainWindow.h \
     Dialogs/ParameterSettingsLayout.h \
     Dialogs/ModelObjectPropertiesDialog.h \
     SimulationThreadHandler.h \
-    Utilities/SymHop.h
+    Utilities/SymHop.h \
+    Widgets/HcomWidget.h
 
 OTHER_FILES += \
     ../hopsandefaults \

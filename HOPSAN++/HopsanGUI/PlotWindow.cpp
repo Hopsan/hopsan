@@ -38,6 +38,7 @@
 
 #include "Widgets/PlotWidget.h"
 #include "Widgets/MessageWidget.h"
+#include "Widgets/HcomWidget.h"
 #include "Widgets/ProjectTabWidget.h"
 #include "Utilities/GUIUtilities.h"
 #include "Dialogs/OptionsDialog.h"

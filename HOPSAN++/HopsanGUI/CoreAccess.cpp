@@ -27,6 +27,7 @@
 
 //HopsanCore includes
 #include "HopsanCore.h"
+#include "Node.h"
 #include "ComponentSystem.h"
 #include "CoreUtilities/GeneratorHandler.h"
 #include "common.h"
@@ -672,7 +673,19 @@ bool CoreSystemAccess::havePlotData(const QString compname, const QString portna
     hopsan::Port* pPort = this->getCorePortPtr(compname, portname);
     if (pPort)
     {
-        //! @todo should we check if dataname exist in the node ?
+        bool exists=false;
+        for(int i=0; i<pPort->getNodeDataDescriptions()->size(); ++i)
+        {
+            if(pPort->getNodeDataDescriptions()->at(i).name == dataname.toStdString())
+            {
+                exists = true;
+            }
+        }
+        if(!exists)
+        {
+            return false;
+        }
+
         if(pPort->isConnected())
         {
             return pPort->haveLogData();

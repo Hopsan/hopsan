@@ -31,6 +31,7 @@
 
 #include "Widgets/PlotWidget.h"
 #include "Widgets/MessageWidget.h"
+#include "Widgets/HcomWidget.h"
 #include "Widgets/LibraryWidget.h"
 #include "Widgets/ProjectTabWidget.h"
 #include "Widgets/PyDockWidget.h"
@@ -176,11 +177,23 @@ MainWindow::MainWindow(QWidget *parent)
     mpUndoWidgetDock->hide();
     addDockWidget(Qt::RightDockWidgetArea, mpUndoWidgetDock);
 
+    //Create the HCOM widget
+    mpHcomDock = new QDockWidget(tr("HCOM Terminal"), this);
+    mpHcomDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
+    mpHcomWidget = new HcomWidget(this);
+    mpHcomDock->setWidget(mpHcomWidget);
+    mpHcomDock->setFeatures(QDockWidget::DockWidgetVerticalTitleBar | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
+    addDockWidget(Qt::BottomDockWidgetArea, mpHcomDock);
+
+
     //Make dock widgets that share same dock area tabified, instead of stacking them above each other
     tabifyDockWidget(mpPlotWidgetDock, mpSystemParametersDock);
     tabifyDockWidget(mpSystemParametersDock, mpUndoWidgetDock);
     tabifyDockWidget(mpUndoWidgetDock, mpPlotWidgetDock);
+
     tabifyDockWidget(mpPyDockWidget, mpMessageDock);
+    tabifyDockWidget(mpMessageDock, mpHcomDock);
+    tabifyDockWidget(mpHcomDock, mpPyDockWidget);
 
     //Initialize the help message popup
     mpHelpPopup = new QWidget(this);
