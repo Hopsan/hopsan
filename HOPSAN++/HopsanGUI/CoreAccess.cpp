@@ -24,12 +24,15 @@
 
 #include "CoreAccess.h"
 #include <QDebug>
+#include <QDir>
 
 //HopsanCore includes
 #include "HopsanCore.h"
 #include "Node.h"
 #include "ComponentSystem.h"
 #include "CoreUtilities/GeneratorHandler.h"
+#include "MainWindow.h"
+#include "Widgets/LibraryWidget.h"
 #include "common.h"
 
 using namespace std;
@@ -80,7 +83,16 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
     if(pHandler->isLoadedSuccessfully())
     {
         pHandler->callFmuGenerator(path.toStdString(), QString(COREINCLUDEPATH).toStdString(), gExecPath.toStdString(), true);
-        return true;
+
+        QFileInfo fmuFileInfo = QFileInfo(path);
+        fmuFileInfo.setFile(path);
+        QString fmuName = fmuFileInfo.fileName();
+        fmuName.chop(4);
+        if(QDir().exists(gExecPath + "../import/FMU/" + fmuName))
+        {
+            gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(gExecPath + "../import/FMU/" + fmuName);
+            return true;
+        }
     }
     return false;
 }
