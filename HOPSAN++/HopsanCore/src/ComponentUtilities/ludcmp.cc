@@ -128,12 +128,6 @@ bool hopsan::ludcmp(Matrix &a, int order[])
 bool hopsan::pivot(Matrix &a, int order[], int jcol)
 {
     int ipvt;
-
-    if(a[ipvt][ipvt] != 0.0)
-    {
-        return true;
-    }
-
     int i, n;
     double big, anext;
     n = a.rows();
