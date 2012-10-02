@@ -338,7 +338,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
 
     QTextStream fmuLibStream(&fmuLibFile);
     fmuLibStream << "#include \"component_code/"+fmuName+".hpp\"\n";
-    fmuLibStream << "#include \""+gExecPath+mCoreIncludePath+"ComponentEssentials.h\"\n";
+    fmuLibStream << "#include \""+mCoreIncludePath+"ComponentEssentials.h\"\n";
     fmuLibStream << "using namespace hopsan;\n\n";
     fmuLibStream << "extern \"C\" DLLEXPORT void register_contents(ComponentFactory* cfact_ptr, NodeFactory* nfact_ptr)\n";
     fmuLibStream << "{\n";
@@ -374,7 +374,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     fmuComponentHppStream << "#define _WIN32_WINNT 0x0502\n";
     fmuComponentHppStream << "#include \"../fmi_me.h\"\n";
     fmuComponentHppStream << "#include \"../xml_parser.h\"\n";
-    fmuComponentHppStream << "#include \""+gExecPath+mCoreIncludePath+"ComponentEssentials.h\"\n\n";
+    fmuComponentHppStream << "#include \""+mCoreIncludePath+"ComponentEssentials.h\"\n\n";
     fmuComponentHppStream << "#include <sstream>\n";
     fmuComponentHppStream << "#include <string>\n";
     fmuComponentHppStream << "#include <stdio.h>\n";
@@ -439,7 +439,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     fmuComponentHppStream << "        {\n";
     fmuComponentHppStream << "            return new "+fmuName+"();\n";
     fmuComponentHppStream << "        }\n\n";
-    fmuComponentHppStream << "        "+fmuName+"() : ComponentQ()\n";
+    fmuComponentHppStream << "        void configure()\n";
     fmuComponentHppStream << "        {\n";
     fmuComponentHppStream << "            mFMU.modelDescription = parse(\""+fmuDir.path()+"/ModelDescription.xml\");\n";
     fmuComponentHppStream << "            assert(mFMU.modelDescription);\n";
@@ -521,10 +521,10 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     fmuComponentHppStream << "            // set the start time and initialize\n";
     fmuComponentHppStream << "            fmiFlag =  mFMU.setTime(c, t0);\n";
     fmuComponentHppStream << "            fmiFlag =  mFMU.initialize(c, toleranceControlled, t0, &eventInfo);\n\n";
-    fmuComponentHppStream << "            z = new double;\n";
-    fmuComponentHppStream << "            prez = new double;\n";
-    fmuComponentHppStream << "            *z = NULL;\n";
-    fmuComponentHppStream << "            *prez = NULL;\n";
+    fmuComponentHppStream << "            //z = new double;\n";
+    fmuComponentHppStream << "            //prez = new double;\n";
+    fmuComponentHppStream << "            //*z = NULL;\n";
+    fmuComponentHppStream << "            //*prez = NULL;\n";
     fmuComponentHppStream << "        }\n\n";
     fmuComponentHppStream << "        void simulateOneTimestep()\n";
     fmuComponentHppStream << "        {\n";
@@ -577,7 +577,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     fmuComponentHppStream << "        {\n";
     fmuComponentHppStream << "            //cleanup\n";
     fmuComponentHppStream << "            mFMU.terminate(c);\n";
-    fmuComponentHppStream << "            mFMU.freeModelInstance(c);\n";
+    fmuComponentHppStream << "            //mFMU.freeModelInstance(c);\n";
     fmuComponentHppStream << "            if (x!=NULL) free(x);\n";
     fmuComponentHppStream << "            if (xdot!= NULL) free(xdot);\n";
     fmuComponentHppStream << "            if (z!= NULL) free(z);\n";
@@ -702,12 +702,12 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
 
     QTextStream fmuXmlStream(&fmuXmlFile);
     fmuXmlStream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-    fmuXmlStream << "<hopsanobjectappearance version=\"0.2\">\n";
+    fmuXmlStream << "<hopsanobjectappearance version=\"0.3\">\n";
     fmuXmlStream << "    <modelobject typename=\""+fmuName+"\" displayname=\""+fmuName+"\">\n";
     fmuXmlStream << "        <icons>\n";
     fmuXmlStream << "            <icon type=\"user\" path=\"fmu.svg\" iconrotation=\"ON\" scale=\"1.0\"/>\n";
     fmuXmlStream << "        </icons>\n";
-    fmuXmlStream << "        <portpositions>\n";
+    fmuXmlStream << "        <ports>\n";
     varElement = variablesElement.firstChildElement("ScalarVariable");
     i=0;
     double inputPosStep=1.0/(nInputs+1.0);      //These 4 variables are used for port positioning
@@ -722,27 +722,27 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
         {
             inputPos += inputPosStep;
             numStr2.setNum(inputPos);
-            fmuXmlStream << "            <portpose name=\""+varElement.attribute("name")+"In\" x=\"0.0\" y=\""+numStr2+"\" a=\"180\"/>\n";
+            fmuXmlStream << "            <port name=\""+varElement.attribute("name")+"In\" x=\"0.0\" y=\""+numStr2+"\" a=\"180\"/>\n";
             outputPos += outputPosStep;
             numStr2.setNum(outputPos);
-            fmuXmlStream << "            <portpose name=\""+varElement.attribute("name")+"Out\" x=\"1.0\" y=\""+numStr2+"\" a=\"0\"/>\n";
+            fmuXmlStream << "            <port name=\""+varElement.attribute("name")+"Out\" x=\"1.0\" y=\""+numStr2+"\" a=\"0\"/>\n";
         }
         else if(varElement.attribute("causality") == "input")
         {
             inputPos += inputPosStep;
             numStr2.setNum(inputPos);
-            fmuXmlStream << "            <portpose name=\""+varElement.attribute("name")+"\" x=\"0.0\" y=\""+numStr2+"\" a=\"180\"/>\n";
+            fmuXmlStream << "            <port name=\""+varElement.attribute("name")+"\" x=\"0.0\" y=\""+numStr2+"\" a=\"180\"/>\n";
         }
         else if(varElement.attribute("causality") == "output")
         {
             outputPos += outputPosStep;
             numStr2.setNum(outputPos);
-            fmuXmlStream << "            <portpose name=\""+varElement.attribute("name")+"\" x=\"1.0\" y=\""+numStr2+"\" a=\"0\"/>\n";
+            fmuXmlStream << "            <port name=\""+varElement.attribute("name")+"\" x=\"1.0\" y=\""+numStr2+"\" a=\"0\"/>\n";
         }
         ++i;
         varElement = varElement.nextSiblingElement("ScalarVariable");
     }
-    fmuXmlStream << "        </portpositions>\n";
+    fmuXmlStream << "        </ports>\n";
     fmuXmlStream << "    </modelobject>\n";
     fmuXmlStream << "</hopsanobjectappearance>\n";
     fmuXmlFile.close();
