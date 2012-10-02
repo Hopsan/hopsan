@@ -434,6 +434,18 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
         varElement = varElement.nextSiblingElement("ScalarVariable");
     }
     fmuComponentHppStream << "\n";
+    varElement = variablesElement.firstChildElement("ScalarVariable");
+    i=0;
+    while (!varElement.isNull())
+    {
+        if(varElement.attribute("variability") == "parameter")
+        {
+            fmuComponentHppStream << "        double par"+QString::number(i)+";\n";
+            ++i;
+        }
+        varElement = varElement.nextSiblingElement("ScalarVariable");
+    }
+    fmuComponentHppStream << "\n";
     fmuComponentHppStream << "    public:\n";
     fmuComponentHppStream << "        static Component *Creator()\n";
     fmuComponentHppStream << "        {\n";
@@ -464,6 +476,17 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
         varElement = varElement.nextSiblingElement("ScalarVariable");
     }
     //fmuComponentHppStream << "            mpP1 = addWritePort(\"out\", \"NodeSignal\");\n";
+    varElement = variablesElement.firstChildElement("ScalarVariable");
+    i=0;
+    while (!varElement.isNull())
+    {
+        if(varElement.attribute("variability") == "parameter")
+        {
+            fmuComponentHppStream << "            registerParameter(\""+varElement.attribute("name")+"\", \""+varElement.attribute("description")+"\", \"-\", par"+QString::number(i)+");\n";
+            ++i;
+        }
+        varElement = varElement.nextSiblingElement("ScalarVariable");
+    }
     fmuComponentHppStream << "        }\n\n";
     fmuComponentHppStream << "       void initialize()\n";
     fmuComponentHppStream << "       {\n";
@@ -521,10 +544,6 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     fmuComponentHppStream << "            // set the start time and initialize\n";
     fmuComponentHppStream << "            fmiFlag =  mFMU.setTime(c, t0);\n";
     fmuComponentHppStream << "            fmiFlag =  mFMU.initialize(c, toleranceControlled, t0, &eventInfo);\n\n";
-    fmuComponentHppStream << "            //z = new double;\n";
-    fmuComponentHppStream << "            //prez = new double;\n";
-    fmuComponentHppStream << "            //*z = NULL;\n";
-    fmuComponentHppStream << "            //*prez = NULL;\n";
     fmuComponentHppStream << "        }\n\n";
     fmuComponentHppStream << "        void simulateOneTimestep()\n";
     fmuComponentHppStream << "        {\n";
@@ -532,6 +551,21 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     fmuComponentHppStream << "            double value;\n";
     fmuComponentHppStream << "            ScalarVariable* sv;\n";
     fmuComponentHppStream << "            fmiValueReference vr;\n\n";
+    varElement = variablesElement.firstChildElement("ScalarVariable");
+    i=0;
+    while (!varElement.isNull())
+    {
+        if(varElement.attribute("variability") == "parameter")
+        {
+            fmuComponentHppStream << "            sv = vars["+QString(varElement.attribute("valueReference"))+"];\n";
+            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
+            fmuComponentHppStream << "            value=par"+QString::number(i)+";\n";
+            fmuComponentHppStream << "            mFMU.setReal(c, &vr, 1, &value);\n";
+            ++i;
+        }
+        varElement = varElement.nextSiblingElement("ScalarVariable");
+    }
+    fmuComponentHppStream << "\n";
     fmuComponentHppStream << "            //write input values\n";
     varElement = variablesElement.firstChildElement("ScalarVariable");
     i=0;
