@@ -137,9 +137,9 @@ LibraryWidget::LibraryWidget(QWidget *parent)
     mpLoadExternalButton->setIconSize(iconSize);
     mpLoadExternalButton->setToolTip(tr("Load External Library"));
     mpLoadFmuButton = new QToolButton();
-    mpLoadFmuButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Import.png"));
+    mpLoadFmuButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ImportFmu.png"));
     mpLoadFmuButton->setIconSize(iconSize);
-    mpLoadFmuButton->setToolTip(tr("Import Functional Mockup Unit (FMU) (very experimental)"));
+    mpLoadFmuButton->setToolTip(tr("Import Functional Mockup Unit (FMU)"));
     mpHelpAction = new QAction("Open Context Help", this);
     mpHelpAction->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Help.png"));
     mpHelpAction->setToolTip("Open Context Help");

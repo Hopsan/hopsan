@@ -90,7 +90,14 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
         fmuName.chop(4);
         if(QDir().exists(gExecPath + "../import/FMU/" + fmuName))
         {
+            //Copy component icon
+            QFile fmuIcon;
+            fmuIcon.setFileName(QString(GRAPHICSPATH)+"/objecticons/fmucomponent.svg");
+            fmuIcon.copy(gExecPath + "../import/FMU/"+fmuName+"/fmucomponent.svg");
+
+            //Load library
             gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(gExecPath + "../import/FMU/" + fmuName);
+
             return true;
         }
     }

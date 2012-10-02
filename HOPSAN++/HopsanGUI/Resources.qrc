@@ -134,5 +134,7 @@
         <file>graphics/uiicons/Hopsan-Help.png</file>
         <file>graphics/objecticons/cppcomponent.svg</file>
         <file>graphics/objecticons/modelicacomponent.svg</file>
+        <file>graphics/uiicons/Hopsan-ImportFmu.png</file>
+        <file>graphics/objecticons/fmucomponent.svg</file>
     </qresource>
 </RCC>

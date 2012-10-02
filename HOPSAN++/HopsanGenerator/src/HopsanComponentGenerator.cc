@@ -128,7 +128,7 @@ HopsanComponentGenerator::HopsanComponentGenerator(QString coreIncludePath, QStr
         mpDialog->show();
         QApplication::processEvents();
 
-        printMessage("##########################\n# Loaded HopsanGenerator\n##########################\n");
+        printMessage("##########################\n# Loaded HopsanGenerator #\n##########################\n");
     }
 }
 
@@ -739,7 +739,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     fmuXmlStream << "<hopsanobjectappearance version=\"0.3\">\n";
     fmuXmlStream << "    <modelobject typename=\""+fmuName+"\" displayname=\""+fmuName+"\">\n";
     fmuXmlStream << "        <icons>\n";
-    fmuXmlStream << "            <icon type=\"user\" path=\"fmu.svg\" iconrotation=\"ON\" scale=\"1.0\"/>\n";
+    fmuXmlStream << "            <icon type=\"user\" path=\"fmucomponent.svg\" iconrotation=\"ON\" scale=\"1.0\"/>\n";
     fmuXmlStream << "        </icons>\n";
     fmuXmlStream << "        <ports>\n";
     varElement = variablesElement.firstChildElement("ScalarVariable");
