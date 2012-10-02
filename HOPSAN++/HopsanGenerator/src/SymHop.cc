@@ -1111,7 +1111,7 @@ QList<Expression> Expression::getSymbols() const
     {
         retval.append(mChildren[i].getSymbols());
     }
-    if(mType == Expression::Symbol && mString.startsWith("-"))
+    if(mType == Expression::Symbol && mString.startsWith("-") && mString.size() > 1 && mString[1].isLetter())
     {
         QString temp = mString;
         temp = temp.right(temp.size()-1);
@@ -2364,7 +2364,7 @@ bool Expression::splitAtFirstSeparator(const QString sep, const QStringList subS
 //! @brief Returns a list with supported functions for equation-based model genereation
 QStringList SymHop::getSupportedFunctionsList()
 {
-    return QStringList() << "div" << "rem" << "mod" << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "atan2" << "sinh" << "cosh" << "tanh" << "log" << "exp" << "sqrt" << "sign" << "abs" << "der" << "onPositive" << "onNegative" << "signedSquareL" << "limit" << "integer" << "floor" << "ceil";
+    return QStringList() << "div" << "rem" << "mod" << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "atan2" << "sinh" << "cosh" << "tanh" << "log" << "exp" << "sqrt" << "sign" << "abs" << "der" << "onPositive" << "onNegative" << "signedSquareL" << "limit" << "integer" << "floor" << "ceil" << "pow";
 
 }
 
