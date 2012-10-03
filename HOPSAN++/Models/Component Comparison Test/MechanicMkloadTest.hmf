@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3832" hopsancoreversion="0">
-    <system typename="Subsystem" name="MechanicMkloadTest">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4632" hopsancoreversion="0.6.x_r4631">
+    <requirements>
+        <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+        <componentlibrary>HopsanExampleComponentLibrary</componentlibrary>
+        <componentlibrary>PettersComponentLibrary</componentlibrary>
+    </requirements>
+    <system logsamples="2048" typename="Subsystem" name="MechanicMkloadTest">
+        <simulationtime stop="2" timestep="0.001" start="0" inherit_timestep="true"/>
+        <aliases/>
+        <parameters/>
         <hopsangui>
-            <pose x="0" y="0" flipped="0" a="0"/>
+            <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2503.11" y="3261.88" zoom="0.842152"/>
+            <viewport x="2807.09" y="2692.51" zoom="0.842152"/>
             <ports hidden="0"/>
             <names hidden="0"/>
             <scriptfile path=""/>
@@ -16,6 +24,7 @@
                     <ports/>
                 </modelobject>
             </hopsanobjectappearance>
+            <favoritevariables/>
             <optimization>
                 <settings>
                     <niter>100</niter>
@@ -1711,224 +1720,953 @@
                         </component>
                     </stuff>
                 </post>
+                <post number="103">
+                    <stuff what="deletedconnector">
+                        <connect endport="in" endcomponent="Force Source_7" startport="out" startcomponent="Step">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2264.37118400000008477946" y="2745.26289499999984400347"/>
+                                    <coordinate x="2269.18656014591169878258" y="2745.26289499999984400347"/>
+                                    <coordinate x="2269.18656014591169878258" y="3425.06221899999991364894"/>
+                                    <coordinate x="2428.71613399999978355481" y="3425.06221899999991364894"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                    <stuff what="deletedobject">
+                        <component typename="MechanicForceTransformer" name="Force Source_7">
+                            <parameters>
+                                <parameter value="0" type="double" name="P1::Velocity"/>
+                                <parameter value="0" type="double" name="P1::Position"/>
+                                <parameter value="0" type="double" name="P1::WaveVariable"/>
+                                <parameter value="0" type="double" name="P1::CharImp"/>
+                                <parameter value="0" type="double" name="P1::EquivalentMass"/>
+                                <parameter value="0" type="double" name="F"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2448.216134" y="3425.062219" flipped="false" a="0"/>
+                                <nametext position="0" visible="1"/>
+                                <hopsanobjectappearance version="0.3">
+                                    <modelobject typename="MechanicForceTransformer" displayname="Force Source_7">
+                                        <ports/>
+                                    </modelobject>
+                                </hopsanobjectappearance>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="104">
+                    <stuff what="movedobject" name="Force Source_6">
+                        <oldpos>2601.65 3360.06</oldpos>
+                        <newpos>2602.84 3360.06</newpos>
+                    </stuff>
+                </post>
+                <post number="105">
+                    <stuff what="deletedconnector">
+                        <connect endport="in" endcomponent="Force Source_6" startport="out" startcomponent="Constant">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2266.12513200000012147939" y="2650.07230299999991984805"/>
+                                    <coordinate x="2468.67548851038782231626" y="2650.07230299999991984805"/>
+                                    <coordinate x="2468.67548851038782231626" y="3366.55853500000011990778"/>
+                                    <coordinate x="2602.84073909740754970699" y="3366.55853500000011990778"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                    <stuff what="deletedobject">
+                        <component typename="MechanicForceTransformer" name="Force Source_6">
+                            <parameters>
+                                <parameter value="0" type="double" name="P1::Velocity"/>
+                                <parameter value=".2" type="double" name="P1::Position"/>
+                                <parameter value="0" type="double" name="P1::WaveVariable"/>
+                                <parameter value="0" type="double" name="P1::CharImp"/>
+                                <parameter value="0" type="double" name="P1::EquivalentMass"/>
+                                <parameter value="0" type="double" name="F"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2622.340739" y="3366.558535" flipped="false" a="0"/>
+                                <nametext position="0" visible="1"/>
+                                <hopsanobjectappearance version="0.3">
+                                    <modelobject typename="MechanicForceTransformer" displayname="Force Source_6">
+                                        <ports/>
+                                    </modelobject>
+                                </hopsanobjectappearance>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="106" type="changedparameters">
+                    <stuff newvalue="100" what="changedparameter" oldvalue="1000" parametername="B" objectname="Translational Mass"/>
+                </post>
+                <post number="107" type="changedparameters">
+                    <stuff newvalue="0" what="changedparameter" oldvalue="100" parametername="B" objectname="Translational Mass"/>
+                </post>
+                <post number="108">
+                    <stuff what="movedobject" name="Constant">
+                        <oldpos>2241.13 2637.57</oldpos>
+                        <newpos>2389.55 2593.64</newpos>
+                    </stuff>
+                </post>
+                <post number="109">
+                    <stuff what="movedobject" name="Velocity Transducer_2">
+                        <oldpos>2870.56 2470.81</oldpos>
+                        <newpos>2878.87 2511.19</newpos>
+                    </stuff>
+                </post>
+                <post number="110" type="changedparameters">
+                    <stuff newvalue="1000" what="changedparameter" oldvalue="100" parametername="m" objectname="Translational Mass"/>
+                </post>
+                <post number="111" type="changedparameters">
+                    <stuff newvalue="100" what="changedparameter" oldvalue="1000" parametername="mL" objectname="MechanicMkload01D"/>
+                </post>
+                <post number="112" type="changedparameters">
+                    <stuff newvalue="100" what="changedparameter" oldvalue="1000" parametername="m" objectname="Translational Mass"/>
+                </post>
+                <post number="113">
+                    <stuff what="addedobject">
+                        <component typename="SignalSink" name="Scope">
+                            <parameters/>
+                            <hopsangui>
+                                <pose x="2713" y="2612" flipped="false" a="0"/>
+                                <nametext position="0" visible="1"/>
+                                <hopsanobjectappearance version="0.3">
+                                    <modelobject typename="SignalSink" displayname="Scope">
+                                        <ports/>
+                                    </modelobject>
+                                </hopsanobjectappearance>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="114">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Scope" startport="out" startcomponent="Constant">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2414.55439417594925544108" y="2606.13724139591886341805"/>
+                                    <coordinate x="2693.00000000000000000000" y="2606.13724139591886341805"/>
+                                    <coordinate x="2693.00000000000000000000" y="2606.13724139591886341805"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="115">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Scope" startport="out" startcomponent="Step">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2264.37118400000008477946" y="2745.26289499999984400347"/>
+                                    <coordinate x="2618.29218478374468759284" y="2745.26289499999984400347"/>
+                                    <coordinate x="2618.29218478374468759284" y="2606.13724139591886341805"/>
+                                    <coordinate x="2693.00000000000000000000" y="2606.13724139591886341805"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="116" type="changedparameters">
+                    <stuff newvalue="1000" what="changedparameter" oldvalue="10" parametername="y" objectname="Constant"/>
+                </post>
+                <post number="117" type="changedparameters">
+                    <stuff newvalue="-.5" what="changedparameter" oldvalue="-1" parametername="xmin" objectname="MechanicMkload1D"/>
+                </post>
+                <post number="118" type="changedparameters">
+                    <stuff newvalue="-.5" what="changedparameter" oldvalue="0" parametername="x_min" objectname="Translational Mass"/>
+                </post>
+                <post number="119" type="changedparameters">
+                    <stuff newvalue="100" what="changedparameter" oldvalue="0" parametername="B" objectname="Translational Mass"/>
+                </post>
+                <post number="120" type="changedparameters">
+                    <stuff newvalue="100" what="changedparameter" oldvalue="0" parametername="bL" objectname="MechanicMkload1D"/>
+                </post>
+                <post number="121">
+                    <stuff what="deletedconnector">
+                        <connect endport="Pm2" endcomponent="MechanicMkload01D" startport="P1" startcomponent="Force Source_2">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2625.00000000000000000000" y="2815.34999999999990905053"/>
+                                    <coordinate x="2672.91440379223558920785" y="2815.34999999999990905053"/>
+                                    <coordinate x="2672.91440379223558920785" y="2938.00000000000000000000"/>
+                                    <coordinate x="2625.00000000000000000000" y="2938.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                    <stuff what="deletedconnector">
+                        <connect endport="in" endcomponent="Force Source_2" startport="out" startcomponent="Constant">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2414.55439417594925544108" y="2606.13724139591886341805"/>
+                                    <coordinate x="2579.22460525222322758054" y="2606.13724139591886341805"/>
+                                    <coordinate x="2579.22460525222322758054" y="2815.34999999999990905053"/>
+                                    <coordinate x="2586.00000000000000000000" y="2815.34999999999990905053"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                    <stuff what="deletedobject">
+                        <component typename="MechanicForceTransformer" name="Force Source_2">
+                            <parameters>
+                                <parameter value="0" type="double" name="P1::Velocity"/>
+                                <parameter value=".2" type="double" name="P1::Position"/>
+                                <parameter value="0" type="double" name="P1::WaveVariable"/>
+                                <parameter value="0" type="double" name="P1::CharImp"/>
+                                <parameter value="0" type="double" name="P1::EquivalentMass"/>
+                                <parameter value="200" type="double" name="F"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2605.5" y="2815.35" flipped="false" a="0"/>
+                                <nametext position="0" visible="1"/>
+                                <hopsanobjectappearance version="0.3">
+                                    <modelobject typename="MechanicForceTransformer" displayname="Force Source_2">
+                                        <ports/>
+                                    </modelobject>
+                                </hopsanobjectappearance>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                    <stuff what="deletedconnector">
+                        <connect endport="Pm1" endcomponent="MechanicMkload01D" startport="P1" startcomponent="Force Source_1">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2410.99249599999984638998" y="2956.34999999999990905053"/>
+                                    <coordinate x="2545.00000000000000000000" y="2956.34999999999990905053"/>
+                                    <coordinate x="2545.00000000000000000000" y="2938.00000000000000000000"/>
+                                    <coordinate x="2565.00000000000000000000" y="2938.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                    <stuff what="deletedconnector">
+                        <connect endport="P1" endcomponent="Position Transducer_2" startport="Pm2" startcomponent="MechanicMkload01D">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2625.00000000000000000000" y="2938.00000000000000000000"/>
+                                    <coordinate x="2833.59999999999990905053" y="2938.00000000000000000000"/>
+                                    <coordinate x="2833.59999999999990905053" y="2891.78954000000021551386"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                    <stuff what="deletedconnector">
+                        <connect endport="P1" endcomponent="Velocity Transducer_1" startport="Pm2" startcomponent="MechanicMkload01D">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2625.00000000000000000000" y="2938.00000000000000000000"/>
+                                    <coordinate x="2731.09868001872155218734" y="2938.00000000000000000000"/>
+                                    <coordinate x="2731.09868001872155218734" y="3033.00000000000000000000"/>
+                                    <coordinate x="2864.00000000000000000000" y="3033.00000000000000000000"/>
+                                    <coordinate x="2864.00000000000000000000" y="3013.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                    <stuff what="deletedobject">
+                        <component typename="MechanicMkload01D" name="MechanicMkload01D">
+                            <parameters>
+                                <parameter value="100" type="double" name="mL"/>
+                                <parameter value="0" type="double" name="bL"/>
+                                <parameter value="0" type="double" name="kL"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2595" y="2938" flipped="false" a="0"/>
+                                <nametext position="0" visible="1"/>
+                                <hopsanobjectappearance version="0.3">
+                                    <modelobject typename="MechanicMkload01D" displayname="MechanicMkload01D">
+                                        <ports/>
+                                    </modelobject>
+                                </hopsanobjectappearance>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                    <stuff what="deletedconnector">
+                        <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Position Transducer_2">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2833.59999999999990905053" y="2855.78954000000021551386"/>
+                                    <coordinate x="2833.59999999999990905053" y="2678.86637299999983952148"/>
+                                    <coordinate x="2968.27085399999987203046" y="2678.86637299999983952148"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                    <stuff what="deletedobject">
+                        <component typename="MechanicPositionSensor" name="Position Transducer_2">
+                            <parameters>
+                                <parameter value="0" type="double" name="out::Value"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2833.6" y="2873.78954" flipped="false" a="0"/>
+                                <nametext position="0" visible="1"/>
+                                <hopsanobjectappearance version="0.3">
+                                    <modelobject typename="MechanicPositionSensor" displayname="Position Transducer_2">
+                                        <ports/>
+                                    </modelobject>
+                                </hopsanobjectappearance>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                    <stuff what="deletedconnector">
+                        <connect endport="in" endcomponent="Sink_1" startport="out" startcomponent="Velocity Transducer_1">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2864.00000000000000000000" y="2977.00000000000000000000"/>
+                                    <coordinate x="2864.00000000000000000000" y="2922.56230300000015631667"/>
+                                    <coordinate x="3037.49526299999979528366" y="2922.56230300000015631667"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                    <stuff what="deletedobject">
+                        <component typename="MechanicSpeedSensor" name="Velocity Transducer_1">
+                            <parameters>
+                                <parameter value="0" type="double" name="out::Value"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2864" y="2995" flipped="false" a="0"/>
+                                <nametext position="0" visible="1"/>
+                                <hopsanobjectappearance version="0.3">
+                                    <modelobject typename="MechanicSpeedSensor" displayname="Velocity Transducer_1">
+                                        <ports/>
+                                    </modelobject>
+                                </hopsanobjectappearance>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="122">
+                    <stuff what="deletedconnector">
+                        <connect endport="in" endcomponent="Force Source_1" startport="out" startcomponent="Step">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2264.37118400000008477946" y="2745.26289499999984400347"/>
+                                    <coordinate x="2351.99249632943656251882" y="2745.26289499999984400347"/>
+                                    <coordinate x="2351.99249632943656251882" y="2956.34999999999990905053"/>
+                                    <coordinate x="2371.99249599999984638998" y="2956.34999999999990905053"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                    <stuff what="deletedobject">
+                        <component typename="MechanicForceTransformer" name="Force Source_1">
+                            <parameters>
+                                <parameter value="0" type="double" name="P1::Velocity"/>
+                                <parameter value=".2" type="double" name="P1::Position"/>
+                                <parameter value="0" type="double" name="P1::WaveVariable"/>
+                                <parameter value="0" type="double" name="P1::CharImp"/>
+                                <parameter value="0" type="double" name="P1::EquivalentMass"/>
+                                <parameter value="200" type="double" name="F"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2391.492496" y="2956.35" flipped="false" a="0"/>
+                                <nametext position="0" visible="1"/>
+                                <hopsanobjectappearance version="0.3">
+                                    <modelobject typename="MechanicForceTransformer" displayname="Force Source_1">
+                                        <ports/>
+                                    </modelobject>
+                                </hopsanobjectappearance>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="123" type="movedmultiple">
+                    <stuff what="movedobject" name="Position Transducer_1">
+                        <oldpos>2892.18 3095.63</oldpos>
+                        <newpos>2929.99 2888.82</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Force Source_5">
+                        <oldpos>2568 3119</oldpos>
+                        <newpos>2604.31 2923.7</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Velocity Transducer">
+                        <oldpos>2954.25 3136.31</oldpos>
+                        <newpos>2992.06 2929.51</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Force Source_4">
+                        <oldpos>2395.06 3177.5</oldpos>
+                        <newpos>2431.37 2982.2</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="MechanicMkload1D">
+                        <oldpos>2663.17 3157.5</oldpos>
+                        <newpos>2718.98 2968.7</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Sink_1">
+                        <oldpos>3037.5 2907.56</oldpos>
+                        <newpos>3093.3 2718.76</newpos>
+                    </stuff>
+                </post>
+                <post number="124">
+                    <stuff what="movedobject" name="Step">
+                        <oldpos>2239.37 2732.76</oldpos>
+                        <newpos>2250.06 2644.89</newpos>
+                    </stuff>
+                </post>
+                <post number="125">
+                    <stuff what="movedobject" name="Constant">
+                        <oldpos>2389.55 2593.64</oldpos>
+                        <newpos>2395.49 2563.95</newpos>
+                    </stuff>
+                </post>
+                <post number="126">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>55.8094 -188.802</oldpos>
+                        <newpos>58.1843 -187.615</newpos>
+                        <connect endport="in" endcomponent="Force Source_4" startport="out" startcomponent="Step">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2275.05809087666830237140" y="2657.39277179183773114346"/>
+                                    <coordinate x="2338.93874458111531566828" y="2657.39277179183773114346"/>
+                                    <coordinate x="2338.93874458111531566828" y="2988.70166251219234254677"/>
+                                    <coordinate x="2431.37223157815697049955" y="2988.70166251219234254677"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="127">
+                    <stuff what="movedobject" name="Sink">
+                        <oldpos>2968.27 2663.87</oldpos>
+                        <newpos>2981.33 2524.94</newpos>
+                    </stuff>
+                </post>
+                <post number="128">
+                    <stuff what="movedobject" name="Sink_1">
+                        <oldpos>3093.3 2718.76</oldpos>
+                        <newpos>3068.37 2610.7</newpos>
+                    </stuff>
+                </post>
+                <post number="129">
+                    <stuff what="movedobject" name="Sink">
+                        <oldpos>2981.33 2524.94</oldpos>
+                        <newpos>3008.64 2443</newpos>
+                    </stuff>
+                </post>
+                <post number="130">
+                    <stuff what="movedobject" name="Sink_1">
+                        <oldpos>3068.37 2610.7</oldpos>
+                        <newpos>3041.06 2508.58</newpos>
+                    </stuff>
+                </post>
+                <post number="131">
+                    <stuff what="movedobject" name="Sink">
+                        <oldpos>3008.64 2443</oldpos>
+                        <newpos>3039.52 2443</newpos>
+                    </stuff>
+                </post>
+                <post number="132" type="movedmultiple">
+                    <stuff what="movedobject" name="Force Source_5">
+                        <oldpos>2568 3119</oldpos>
+                        <newpos>2605.5 2734.9</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Force Source_4">
+                        <oldpos>2395.06 3177.5</oldpos>
+                        <newpos>2432.56 2793.4</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="MechanicMkload1D">
+                        <oldpos>2718.98 2968.7</oldpos>
+                        <newpos>2720.17 2779.9</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Position Transducer_1">
+                        <oldpos>2892.18 3095.63</oldpos>
+                        <newpos>2931.18 2700.02</newpos>
+                    </stuff>
+                    <stuff what="movedobject" name="Velocity Transducer">
+                        <oldpos>2954.25 3136.31</oldpos>
+                        <newpos>2993.24 2740.71</newpos>
+                    </stuff>
+                </post>
+                <post number="133">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>56.9968 -377.604</oldpos>
+                        <newpos>83.1204 -376.417</newpos>
+                        <connect endport="in" endcomponent="Force Source_5" startport="out" startcomponent="Constant">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2420.49156466298745726817" y="2576.45138896072921852465"/>
+                                    <coordinate x="2574.35735667908693358186" y="2576.45138896072921852465"/>
+                                    <coordinate x="2574.35735667908693358186" y="2742.58339112179237417877"/>
+                                    <coordinate x="2631.62038681853164234781" y="2742.58339112179237417877"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="134">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>85.4953 -375.229</oldpos>
+                        <newpos>58.1843 -381.166</newpos>
+                        <connect endport="in" endcomponent="Force Source_4" startport="out" startcomponent="Step">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2275.05809087666830237140" y="2657.39277179183773114346"/>
+                                    <coordinate x="2338.93874458111531566828" y="2657.39277179183773114346"/>
+                                    <coordinate x="2338.93874458111531566828" y="2795.14990463475442084018"/>
+                                    <coordinate x="2431.37223157815697049955" y="2795.14990463475442084018"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="135">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>55.8094 -382.354</oldpos>
+                        <newpos>84.3078 -382.354</newpos>
+                        <connect endport="in" endcomponent="Force Source_5" startport="out" startcomponent="Constant">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2420.49156466298745726817" y="2576.45138896072921852465"/>
+                                    <coordinate x="2575.54479077649466489675" y="2576.45138896072921852465"/>
+                                    <coordinate x="2575.54479077649466489675" y="2736.64622063475462709903"/>
+                                    <coordinate x="2604.30940257815700533683" y="2736.64622063475462709903"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="136">
+                    <stuff what="movedobject" name="MechanicMkload1D">
+                        <oldpos>2718.98 2775.15</oldpos>
+                        <newpos>2651.29 2775.15</newpos>
+                    </stuff>
+                </post>
+                <post number="137">
+                    <stuff what="movedobject" name="Force Source_4">
+                        <oldpos>2431.37 2788.65</oldpos>
+                        <newpos>2382.69 2788.65</newpos>
+                    </stuff>
+                </post>
+                <post number="138">
+                    <stuff what="movedobject" name="MechanicMkload1D">
+                        <oldpos>2651.29 2775.15</oldpos>
+                        <newpos>2631.11 2773.96</newpos>
+                    </stuff>
+                </post>
+                <post number="139">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>0 0</oldpos>
+                        <newpos>-68.8712 -2.37487</newpos>
+                        <connect endport="Pm2" endcomponent="MechanicMkload1D" startport="P1" startcomponent="Force Source_5">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2643.30940257815700533683" y="2736.64622063475462709903"/>
+                                    <coordinate x="2769.09657592150097116246" y="2736.64622063475462709903"/>
+                                    <coordinate x="2769.09657592150097116246" y="2793.96247053734668952529"/>
+                                    <coordinate x="2691.10776536999537711381" y="2793.96247053734668952529"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="140">
+                    <stuff what="movedobject" name="MechanicMkload1D">
+                        <oldpos>2631.11 2773.96</oldpos>
+                        <newpos>2632.3 2771.59</newpos>
+                    </stuff>
+                </post>
+                <post number="141">
+                    <stuff what="movedobject" name="MechanicMkload1D">
+                        <oldpos>2632.3 2771.59</oldpos>
+                        <newpos>2632.3 2776.34</newpos>
+                    </stuff>
+                </post>
+                <post number="142">
+                    <stuff what="movedobject" name="MechanicMkload1D">
+                        <oldpos>2632.3 2776.34</oldpos>
+                        <newpos>2591.92 2762.09</newpos>
+                    </stuff>
+                </post>
+                <post number="143">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>0 0</oldpos>
+                        <newpos>-47.4974 3.5623</newpos>
+                        <connect endport="Pm1" endcomponent="MechanicMkload1D" startport="P1" startcomponent="Force Source_4">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2421.68743358444589830469" y="2795.14990463475442084018"/>
+                                    <coordinate x="2651.48052499724917652202" y="2795.14990463475442084018"/>
+                                    <coordinate x="2651.48052499724917652202" y="2782.08812956327028587111"/>
+                                    <coordinate x="2591.92244015554479119601" y="2782.08812956327028587111"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="144">
+                    <stuff what="movedobject" name="MechanicMkload1D">
+                        <oldpos>2591.92 2762.09</oldpos>
+                        <newpos>2623.98 2735.96</newpos>
+                    </stuff>
+                </post>
+                <post number="145">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>-47.4974 3.5623</oldpos>
+                        <newpos>-132.993 2.37487</newpos>
+                        <connect endport="Pm1" endcomponent="MechanicMkload1D" startport="P1" startcomponent="Force Source_4">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2421.68743358444589830469" y="2795.14990463475442084018"/>
+                                    <coordinate x="2565.98526998390252629179" y="2795.14990463475442084018"/>
+                                    <coordinate x="2565.98526998390252629179" y="2755.96457942030292542768"/>
+                                    <coordinate x="2623.98316078554989871918" y="2755.96457942030292542768"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="146">
+                    <stuff what="movedobject" name="MechanicMkload1D">
+                        <oldpos>2623.98 2735.96</oldpos>
+                        <newpos>2629.92 2775.15</newpos>
+                    </stuff>
+                </post>
             </hopsanundo>
         </hopsangui>
-        <simulationtime stop="0.1" timestep="0.001" start="0"/>
-        <parameters/>
         <objects>
             <component typename="MechanicPositionSensor" name="Position Transducer_1">
                 <parameters>
-                    <parameter value="0" name="out::Value"/>
+                    <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2892.184276" y="3095.625132" flipped="0" a="0"/>
+                    <pose x="2947.993679" y="2713.271353" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicPositionSensor" displayname="Position Transducer_1">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="MechanicMkload1D" name="MechanicMkload1D">
                 <parameters>
-                    <parameter value="100" name="mL"/>
-                    <parameter value="0" name="bL"/>
-                    <parameter value="0" name="kL"/>
-                    <parameter value="-1" name="xmin"/>
-                    <parameter value="1" name="xmax"/>
+                    <parameter value="100" type="double" name="mL"/>
+                    <parameter value="100" type="double" name="bL"/>
+                    <parameter value="0" type="double" name="kL"/>
+                    <parameter value="-.5" type="double" name="xmin"/>
+                    <parameter value="1" type="double" name="xmax"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2693.168486" y="3177.503684" flipped="0" a="0"/>
+                    <pose x="2659.920331" y="2795.149905" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
-                </hopsangui>
-            </component>
-            <component typename="MechanicPositionSensor" name="Position Transducer_2">
-                <parameters>
-                    <parameter value="0" name="out::Value"/>
-                </parameters>
-                <hopsangui>
-                    <pose x="2833.6" y="2873.78954" flipped="0" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicMkload1D" displayname="MechanicMkload1D">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="MechanicSpeedSensor" name="Velocity Transducer">
                 <parameters>
-                    <parameter value="0" name="out::Value"/>
+                    <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2954.248158" y="3136.314145" flipped="0" a="0"/>
+                    <pose x="3010.057561" y="2753.960366" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicSpeedSensor" displayname="Velocity Transducer">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="SignalSink" name="Sink">
                 <parameters/>
                 <hopsangui>
-                    <pose x="2988.270854" y="2678.866373" flipped="0" a="0"/>
+                    <pose x="3059.5169" y="2458.003631" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
-                </hopsangui>
-            </component>
-            <component typename="MechanicForceTransformer" name="Force Source_1">
-                <parameters>
-                    <parameter value="0" name="P1::Velocity"/>
-                    <parameter value=".2" name="P1::Position"/>
-                    <parameter value="200" name="F"/>
-                </parameters>
-                <hopsangui>
-                    <pose x="2391.492496" y="2956.35" flipped="0" a="0"/>
-                    <nametext position="0" visible="1"/>
-                </hopsangui>
-            </component>
-            <component typename="MechanicForceTransformer" name="Force Source_2">
-                <parameters>
-                    <parameter value="0" name="P1::Velocity"/>
-                    <parameter value=".2" name="P1::Position"/>
-                    <parameter value="200" name="F"/>
-                </parameters>
-                <hopsangui>
-                    <pose x="2611.6" y="2815.35" flipped="0" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSink" displayname="Sink">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="MechanicPositionSensor" name="Position Transducer">
                 <parameters>
-                    <parameter value="0" name="out::Value"/>
+                    <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2825" y="2425" flipped="0" a="0"/>
+                    <pose x="2825" y="2425" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicPositionSensor" displayname="Position Transducer">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="MechanicForceTransformer" name="Force Source_3">
                 <parameters>
-                    <parameter value="0" name="P1::Velocity"/>
-                    <parameter value=".2" name="P1::Position"/>
-                    <parameter value="200" name="F"/>
+                    <parameter value="0" type="double" name="P1::Velocity"/>
+                    <parameter value=".2" type="double" name="P1::Position"/>
+                    <parameter value="0" type="double" name="P1::WaveVariable"/>
+                    <parameter value="0" type="double" name="P1::CharImp"/>
+                    <parameter value="0" type="double" name="P1::EquivalentMass"/>
+                    <parameter value="200" type="double" name="F"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2398.617102" y="2461" flipped="0" a="0"/>
+                    <pose x="2398.617102" y="2461" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicForceTransformer" displayname="Force Source_3">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="MechanicForceTransformer" name="Force Source_4">
                 <parameters>
-                    <parameter value="0" name="P1::Velocity"/>
-                    <parameter value="0" name="P1::Position"/>
-                    <parameter value="0" name="F"/>
+                    <parameter value="0" type="double" name="P1::Velocity"/>
+                    <parameter value="0" type="double" name="P1::Position"/>
+                    <parameter value="0" type="double" name="P1::WaveVariable"/>
+                    <parameter value="0" type="double" name="P1::CharImp"/>
+                    <parameter value="0" type="double" name="P1::EquivalentMass"/>
+                    <parameter value="0" type="double" name="F"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2395.062829" y="3177.503684" flipped="0" a="0"/>
+                    <pose x="2402.187434" y="2795.149905" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicForceTransformer" displayname="Force Source_4">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="MechanicForceTransformer" name="Force Source_5">
                 <parameters>
-                    <parameter value="0" name="P1::Velocity"/>
-                    <parameter value=".2" name="P1::Position"/>
-                    <parameter value="0" name="F"/>
+                    <parameter value="0" type="double" name="P1::Velocity"/>
+                    <parameter value=".2" type="double" name="P1::Position"/>
+                    <parameter value="0" type="double" name="P1::WaveVariable"/>
+                    <parameter value="0" type="double" name="P1::CharImp"/>
+                    <parameter value="0" type="double" name="P1::EquivalentMass"/>
+                    <parameter value="0" type="double" name="F"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2568" y="3119" flipped="0" a="0"/>
+                    <pose x="2623.809403" y="2736.646221" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
-                </hopsangui>
-            </component>
-            <component typename="MechanicSpeedSensor" name="Velocity Transducer_1">
-                <parameters>
-                    <parameter value="0" name="out::Value"/>
-                </parameters>
-                <hopsangui>
-                    <pose x="2864" y="2995" flipped="0" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicForceTransformer" displayname="Force Source_5">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="MechanicSpeedSensor" name="Velocity Transducer_2">
                 <parameters>
-                    <parameter value="0" name="out::Value"/>
+                    <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2888.56125" y="2488.813618" flipped="0" a="0"/>
+                    <pose x="2896.873289" y="2529.186377" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
-                </hopsangui>
-            </component>
-            <component typename="MechanicForceTransformer" name="Force Source_6">
-                <parameters>
-                    <parameter value="0" name="P1::Velocity"/>
-                    <parameter value=".2" name="P1::Position"/>
-                    <parameter value="0" name="F"/>
-                </parameters>
-                <hopsangui>
-                    <pose x="2621.153305" y="3366.558535" flipped="0" a="0"/>
-                    <nametext position="0" visible="1"/>
-                </hopsangui>
-            </component>
-            <component typename="MechanicForceTransformer" name="Force Source_7">
-                <parameters>
-                    <parameter value="0" name="P1::Velocity"/>
-                    <parameter value="0" name="P1::Position"/>
-                    <parameter value="0" name="F"/>
-                </parameters>
-                <hopsangui>
-                    <pose x="2448.216134" y="3425.062219" flipped="0" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicSpeedSensor" displayname="Velocity Transducer_2">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="MechanicTranslationalMass" name="Translational Mass">
                 <parameters>
-                    <parameter value="100" name="m"/>
-                    <parameter value="1000" name="B"/>
-                    <parameter value="0" name="k"/>
-                    <parameter value="0" name="x_min"/>
-                    <parameter value="1" name="x_max"/>
+                    <parameter value="100" type="double" name="m"/>
+                    <parameter value="100" type="double" name="B"/>
+                    <parameter value="0" type="double" name="k"/>
+                    <parameter value="-.5" type="double" name="x_min"/>
+                    <parameter value="1" type="double" name="x_max"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2659" y="2461" flipped="0" a="0"/>
+                    <pose x="2659" y="2461" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicTranslationalMass" displayname="Translational Mass">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="SignalSink" name="Sink_1">
                 <parameters/>
                 <hopsangui>
-                    <pose x="3057.495263" y="2922.562303" flipped="0" a="0"/>
+                    <pose x="3061.057565" y="2523.584446" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSink" displayname="Sink_1">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="SignalStep" name="Step">
                 <parameters>
-                    <parameter value="0" name="y_0"/>
-                    <parameter value="4000" name="y_A"/>
-                    <parameter value="1" name="t_step"/>
+                    <parameter value="0" type="double" name="y_0"/>
+                    <parameter value="4000" type="double" name="y_A"/>
+                    <parameter value="1" type="double" name="t_step"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2251.871184" y="2745.262895" flipped="0" a="0"/>
+                    <pose x="2262.558091" y="2657.392772" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
-                </hopsangui>
-            </component>
-            <component typename="MechanicMkload01D" name="MechanicMkload01D">
-                <parameters>
-                    <parameter value="1000" name="mL"/>
-                    <parameter value="0" name="bL"/>
-                    <parameter value="0" name="kL"/>
-                    <parameter value="0" name="xmin"/>
-                    <parameter value="1" name="xmax"/>
-                </parameters>
-                <hopsangui>
-                    <pose x="2595" y="2938" flipped="0" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalStep" displayname="Step">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="SignalSource" name="Constant">
                 <parameters>
-                    <parameter value="10" name="y"/>
+                    <parameter value="1000" type="double" name="y"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2253.625132" y="2650.072303" flipped="0" a="0"/>
+                    <pose x="2407.991565" y="2576.451389" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSource" displayname="Constant">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Scope">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2713" y="2606.137241" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSink" displayname="Scope">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="MechanicForceTransformer" name="Force Source">
                 <parameters>
-                    <parameter value="0" name="P1::Velocity"/>
-                    <parameter value=".2" name="P1::Position"/>
-                    <parameter value="200" name="F"/>
+                    <parameter value="0" type="double" name="P1::Velocity"/>
+                    <parameter value=".2" type="double" name="P1::Position"/>
+                    <parameter value="0" type="double" name="P1::WaveVariable"/>
+                    <parameter value="0" type="double" name="P1::CharImp"/>
+                    <parameter value="0" type="double" name="P1::EquivalentMass"/>
+                    <parameter value="200" type="double" name="F"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2615" y="2318" flipped="0" a="0"/>
+                    <pose x="2615" y="2318" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicForceTransformer" displayname="Force Source">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
         </objects>
@@ -1968,43 +2706,13 @@
                     <coordinates>
                         <coordinate x="2825.00000000000000000000" y="2407.00000000000000000000"/>
                         <coordinate x="2825.00000000000000000000" y="2372.00000000000000000000"/>
-                        <coordinate x="2975.77085399999987203046" y="2372.00000000000000000000"/>
-                        <coordinate x="2975.77085399999987203046" y="2678.86637299999983952148"/>
+                        <coordinate x="3039.51689984445556547143" y="2372.00000000000000000000"/>
+                        <coordinate x="3039.51689984445556547143" y="2458.00363088218773555127"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Position Transducer_2">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2833.59999999999990905053" y="2855.78954000000021551386"/>
-                        <coordinate x="2833.59999999999990905053" y="2678.86637299999983952148"/>
-                        <coordinate x="2975.77085399999987203046" y="2678.86637299999983952148"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Force Source_2" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2266.12513200000012147939" y="2650.07230299999991984805"/>
-                        <coordinate x="2579.22460525222322758054" y="2650.07230299999991984805"/>
-                        <coordinate x="2579.22460525222322758054" y="2815.34999999999990905053"/>
-                        <coordinate x="2592.09999999999990905053" y="2815.34999999999990905053"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
                     </geometries>
                     <style>solid</style>
                 </hopsangui>
@@ -2012,8 +2720,8 @@
             <connect endport="in" endcomponent="Force Source" startport="out" startcomponent="Constant">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2266.12513200000012147939" y="2650.07230299999991984805"/>
-                        <coordinate x="2575.50000000000000000000" y="2650.07230299999991984805"/>
+                        <coordinate x="2420.49156466298745726817" y="2576.45138896072921852465"/>
+                        <coordinate x="2575.50000000000000000000" y="2576.45138896072921852465"/>
                         <coordinate x="2575.50000000000000000000" y="2318.00000000000000000000"/>
                         <coordinate x="2595.50000000000000000000" y="2318.00000000000000000000"/>
                     </coordinates>
@@ -2031,42 +2739,14 @@
                         <coordinate x="2691.00000000000000000000" y="2461.00000000000000000000"/>
                         <coordinate x="2772.65887732335431792308" y="2461.00000000000000000000"/>
                         <coordinate x="2772.65887732335431792308" y="2526.81361845203537086491"/>
-                        <coordinate x="2888.56125000000020008883" y="2526.81361845203537086491"/>
-                        <coordinate x="2888.56125000000020008883" y="2506.81361800000013317913"/>
+                        <coordinate x="2896.87328868185340979835" y="2526.81361845203537086491"/>
+                        <coordinate x="2896.87328868185340979835" y="2547.18637731185799566447"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Sink_1" startport="out" startcomponent="Velocity Transducer_2">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2888.56125000000020008883" y="2470.81361800000013317913"/>
-                        <coordinate x="2888.56125000000020008883" y="2922.56230300000015631667"/>
-                        <coordinate x="3044.99526299999979528366" y="2922.56230300000015631667"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Sink_1" startport="out" startcomponent="Velocity Transducer_1">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2864.00000000000000000000" y="2977.00000000000000000000"/>
-                        <coordinate x="2864.00000000000000000000" y="2922.56230300000015631667"/>
-                        <coordinate x="3044.99526299999979528366" y="2922.56230300000015631667"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
                     </geometries>
                     <style>solid</style>
                 </hopsangui>
@@ -2087,27 +2767,11 @@
                     <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="in" endcomponent="Force Source_1" startport="out" startcomponent="Step">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2264.37118400000008477946" y="2745.26289499999984400347"/>
-                        <coordinate x="2351.99249632943656251882" y="2745.26289499999984400347"/>
-                        <coordinate x="2351.99249632943656251882" y="2956.34999999999990905053"/>
-                        <coordinate x="2371.99249599999984638998" y="2956.34999999999990905053"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
             <connect endport="in" endcomponent="Force Source_3" startport="out" startcomponent="Step">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2264.37118400000008477946" y="2745.26289499999984400347"/>
-                        <coordinate x="2338.93072003369570666109" y="2745.26289499999984400347"/>
+                        <coordinate x="2275.05809087666830237140" y="2657.39277179183773114346"/>
+                        <coordinate x="2338.93072003369570666109" y="2657.39277179183773114346"/>
                         <coordinate x="2338.93072003369570666109" y="2461.00000000000000000000"/>
                         <coordinate x="2379.11710200000015902333" y="2461.00000000000000000000"/>
                     </coordinates>
@@ -2122,10 +2786,10 @@
             <connect endport="Pm1" endcomponent="MechanicMkload1D" startport="P1" startcomponent="Force Source_4">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2414.56282899999996516271" y="3177.50368399999979374115"/>
-                        <coordinate x="2643.16848631539596681250" y="3177.50368399999979374115"/>
-                        <coordinate x="2643.16848631539596681250" y="3177.50368399999979374115"/>
-                        <coordinate x="2663.16848600000002988963" y="3177.50368399999979374115"/>
+                        <coordinate x="2421.68743358444589830469" y="2795.14990463475442084018"/>
+                        <coordinate x="2565.98526998390252629179" y="2795.14990463475442084018"/>
+                        <coordinate x="2565.98526998390252629179" y="2795.14990463475351134548"/>
+                        <coordinate x="2629.92033127258810054627" y="2795.14990463475351134548"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -2138,42 +2802,10 @@
             <connect endport="Pm2" endcomponent="MechanicMkload1D" startport="P1" startcomponent="Force Source_5">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2587.50000000000000000000" y="3119.00000000000000000000"/>
-                        <coordinate x="2782.15835099298465138418" y="3119.00000000000000000000"/>
-                        <coordinate x="2782.15835099298465138418" y="3177.50368399999979374115"/>
-                        <coordinate x="2723.16848600000002988963" y="3177.50368399999979374115"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Force Source_4" startport="out" startcomponent="Step">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2264.37118400000008477946" y="2745.26289499999984400347"/>
-                        <coordinate x="2280.75447380814284770167" y="2745.26289499999984400347"/>
-                        <coordinate x="2280.75447380814284770167" y="3177.50368399999979374115"/>
-                        <coordinate x="2375.56282899999996516271" y="3177.50368399999979374115"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Force Source_5" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2266.12513200000012147939" y="2650.07230299999991984805"/>
-                        <coordinate x="2491.23696986055529123405" y="2650.07230299999991984805"/>
-                        <coordinate x="2491.23696986055529123405" y="3119.00000000000000000000"/>
-                        <coordinate x="2548.50000000000000000000" y="3119.00000000000000000000"/>
+                        <coordinate x="2643.30940257815700533683" y="2736.64622063475462709903"/>
+                        <coordinate x="2769.09657592150097116246" y="2736.64622063475462709903"/>
+                        <coordinate x="2769.09657592150097116246" y="2795.14990463475351134548"/>
+                        <coordinate x="2689.92033127258810054627" y="2795.14990463475351134548"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -2186,9 +2818,9 @@
             <connect endport="P1" endcomponent="Position Transducer_1" startport="Pm2" startcomponent="MechanicMkload1D">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2723.16848600000002988963" y="3177.50368399999979374115"/>
-                        <coordinate x="2892.18427599999995436519" y="3177.50368399999979374115"/>
-                        <coordinate x="2892.18427599999995436519" y="3113.62513200000012147939"/>
+                        <coordinate x="2689.92033127258810054627" y="2795.14990463475351134548"/>
+                        <coordinate x="2947.99367857815695970203" y="2795.14990463475351134548"/>
+                        <coordinate x="2947.99367857815695970203" y="2731.27135263475474857842"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -2200,9 +2832,9 @@
             <connect endport="P1" endcomponent="Velocity Transducer" startport="Pm2" startcomponent="MechanicMkload1D">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2723.16848600000002988963" y="3177.50368399999979374115"/>
-                        <coordinate x="2954.24815799999987575575" y="3177.50368399999979374115"/>
-                        <coordinate x="2954.24815799999987575575" y="3154.31414499999982581357"/>
+                        <coordinate x="2689.92033127258810054627" y="2795.14990463475351134548"/>
+                        <coordinate x="3010.05756057815688109258" y="2795.14990463475351134548"/>
+                        <coordinate x="3010.05756057815688109258" y="2771.96036563475445291260"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -2214,11 +2846,73 @@
             <connect endport="in" endcomponent="Sink_1" startport="out" startcomponent="Velocity Transducer">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2954.24815799999987575575" y="3118.31414499999982581357"/>
-                        <coordinate x="2954.24815799999987575575" y="2922.56230300000015631667"/>
-                        <coordinate x="3044.99526299999979528366" y="2922.56230300000015631667"/>
+                        <coordinate x="3010.05756057815688109258" y="2735.96036563475445291260"/>
+                        <coordinate x="3010.05756057815688109258" y="2523.58444627104836399667"/>
+                        <coordinate x="3041.05756529222253448097" y="2523.58444627104836399667"/>
                     </coordinates>
                     <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Scope" startport="out" startcomponent="Constant">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2420.49156466298745726817" y="2576.45138896072921852465"/>
+                        <coordinate x="2693.00000000000000000000" y="2576.45138896072921852465"/>
+                        <coordinate x="2693.00000000000000000000" y="2606.13724139591886341805"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Scope" startport="out" startcomponent="Step">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2275.05809087666830237140" y="2657.39277179183773114346"/>
+                        <coordinate x="2618.29218478374468759284" y="2657.39277179183773114346"/>
+                        <coordinate x="2618.29218478374468759284" y="2606.13724139591886341805"/>
+                        <coordinate x="2693.00000000000000000000" y="2606.13724139591886341805"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Force Source_4" startport="out" startcomponent="Step">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2275.05809087666830237140" y="2657.39277179183773114346"/>
+                        <coordinate x="2338.93874458111531566828" y="2657.39277179183773114346"/>
+                        <coordinate x="2338.93874458111531566828" y="2795.14990463475442084018"/>
+                        <coordinate x="2382.68743358444589830469" y="2795.14990463475442084018"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Force Source_5" startport="out" startcomponent="Constant">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2420.49156466298745726817" y="2576.45138896072921852465"/>
+                        <coordinate x="2575.54479077649466489675" y="2576.45138896072921852465"/>
+                        <coordinate x="2575.54479077649466489675" y="2736.64622063475462709903"/>
+                        <coordinate x="2604.30940257815700533683" y="2736.64622063475462709903"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                     </geometries>
@@ -2228,9 +2922,9 @@
             <connect endport="in" endcomponent="Sink" startport="out" startcomponent="Position Transducer_1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2892.18427599999995436519" y="3077.62513200000012147939"/>
-                        <coordinate x="2892.18427599999995436519" y="2678.86637299999983952148"/>
-                        <coordinate x="2975.77085399999987203046" y="2678.86637299999983952148"/>
+                        <coordinate x="2947.99367857815695970203" y="2695.27135263475474857842"/>
+                        <coordinate x="2947.99367857815695970203" y="2458.00363088218773555127"/>
+                        <coordinate x="3039.51689984445556547143" y="2458.00363088218773555127"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -2239,96 +2933,14 @@
                     <style>solid</style>
                 </hopsangui>
             </connect>
-            <connect endport="Pm1" endcomponent="MechanicMkload01D" startport="P1" startcomponent="Force Source_1">
+            <connect endport="in" endcomponent="Sink_1" startport="out" startcomponent="Velocity Transducer_2">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2410.99249599999984638998" y="2956.34999999999990905053"/>
-                        <coordinate x="2545.00000000000000000000" y="2956.34999999999990905053"/>
-                        <coordinate x="2545.00000000000000000000" y="2938.00000000000000000000"/>
-                        <coordinate x="2565.00000000000000000000" y="2938.00000000000000000000"/>
+                        <coordinate x="2896.87328868185340979835" y="2511.18637731185799566447"/>
+                        <coordinate x="2896.87328868185340979835" y="2523.58444627104836399667"/>
+                        <coordinate x="3041.05756529222253448097" y="2523.58444627104836399667"/>
                     </coordinates>
                     <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="Pm2" endcomponent="MechanicMkload01D" startport="P1" startcomponent="Force Source_2">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2631.09999999999990905053" y="2815.34999999999990905053"/>
-                        <coordinate x="2672.91440379223558920785" y="2815.34999999999990905053"/>
-                        <coordinate x="2672.91440379223558920785" y="2938.00000000000000000000"/>
-                        <coordinate x="2625.00000000000000000000" y="2938.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="P1" endcomponent="Position Transducer_2" startport="Pm2" startcomponent="MechanicMkload01D">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2625.00000000000000000000" y="2938.00000000000000000000"/>
-                        <coordinate x="2833.59999999999990905053" y="2938.00000000000000000000"/>
-                        <coordinate x="2833.59999999999990905053" y="2891.78954000000021551386"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="P1" endcomponent="Velocity Transducer_1" startport="Pm2" startcomponent="MechanicMkload01D">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2625.00000000000000000000" y="2938.00000000000000000000"/>
-                        <coordinate x="2731.09868001872155218734" y="2938.00000000000000000000"/>
-                        <coordinate x="2731.09868001872155218734" y="3033.00000000000000000000"/>
-                        <coordinate x="2864.00000000000000000000" y="3033.00000000000000000000"/>
-                        <coordinate x="2864.00000000000000000000" y="3013.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Force Source_7" startport="out" startcomponent="Step">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2264.37118400000008477946" y="2745.26289499999984400347"/>
-                        <coordinate x="2269.18656014591169878258" y="2745.26289499999984400347"/>
-                        <coordinate x="2269.18656014591169878258" y="3425.06221936497922797571"/>
-                        <coordinate x="2428.71613371226067101816" y="3425.06221936497922797571"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Force Source_6" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2266.12513200000012147939" y="2650.07230299999991984805"/>
-                        <coordinate x="2468.67548851038782231626" y="2650.07230299999991984805"/>
-                        <coordinate x="2468.67548851038782231626" y="3366.55853536497943423456"/>
-                        <coordinate x="2601.65330471226070585544" y="3366.55853536497943423456"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                     </geometries>
