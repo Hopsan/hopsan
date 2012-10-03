@@ -13,14 +13,28 @@
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
 
+//!
+//! @file   ComponentGeneratorLib.cc
+//! @author Robert Braun <robert.braun@liu.se
+//! @date   2012-01-08
+//!
+//! @brief Contains the exported functions for component generator library
+//!
+//$Id$
+
 #include "HopsanComponentGenerator.h"
 #include "win32dll.h"
 
 #include <QMessageBox>
 
-
 using namespace std;
 
+
+//! @brief Calls the Modelica generator
+//! @param modelicaCode Modelica code
+//! @param coreIncludePath Path to HopsanCore include files
+//! @param binPath Path to HopsanCore binary files
+//! @param showDialog True if generator output shall be displayed in a dialog window
 extern "C" DLLIMPORTEXPORT void callModelicaGenerator(string modelicaCode, string coreIncludePath, string binPath, bool showDialog=false)
 {
     qDebug() << "Called Modelica generator (in dll)!";
@@ -31,7 +45,11 @@ extern "C" DLLIMPORTEXPORT void callModelicaGenerator(string modelicaCode, strin
 }
 
 
-
+//! @brief Calls the C++ generator
+//! @param cppCode C++ code
+//! @param coreIncludePath Path to HopsanCore include files
+//! @param binPath Path to HopsanCore binary files
+//! @param showDialog True if generator output shall be displayed in a dialog window
 extern "C" DLLIMPORTEXPORT void callCppGenerator(string cppCode, string coreIncludePath, string binPath, bool showDialog=false)
 {
     qDebug() << "Called C++ generator (in dll)!";
@@ -108,7 +126,11 @@ extern "C" DLLIMPORTEXPORT void callCppGenerator(string cppCode, string coreIncl
 }
 
 
-
+//! @brief Calls the functional mockup interface (FMU) generator
+//! @param path Path to the .fmu file
+//! @param coreIncludePath Path to HopsanCore include files
+//! @param binPath Path to HopsanCore binary files
+//! @param showDialog True if generator output shall be displayed in a dialog window
 extern "C" DLLIMPORTEXPORT void callFmuGenerator(string path, string coreIncludePath, string binPath, bool showDialog=false)
 {
     qDebug() << "Called FMU generator (in dll)!";

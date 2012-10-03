@@ -14,7 +14,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   ComponentGeneratorUtilities.h
+//! @file   ComponentGeneratorUtilities.cc
 //! @author Robert Braun <robert.braun@liu.se
 //! @date   2012-01-08
 //!
@@ -222,7 +222,14 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
         QDir().mkdir(gExecPath + "../import/FMU");
 
     if(!QDir(gExecPath + "../import/FMU/" + fmuName).exists())
+    {
         QDir().mkdir(gExecPath + "../import/FMU/" + fmuName);
+    }
+    else
+    {
+        printErrorMessage("Directory already exists. Another FMU with same cannot be imported.");
+        return;
+    }
 
     QString fmuPath = gExecPath + "../import/FMU/" + fmuName;
     QDir fmuDir = QDir::cleanPath(fmuPath);
