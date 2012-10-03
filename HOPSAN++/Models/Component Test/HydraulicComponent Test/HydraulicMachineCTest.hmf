@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4459" hopsancoreversion="0.6.x_r4459">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4632" hopsancoreversion="0.6.x_r4631">
     <requirements>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+        <componentlibrary>HopsanExampleComponentLibrary</componentlibrary>
         <componentlibrary>PettersComponentLibrary</componentlibrary>
     </requirements>
     <system logsamples="2048" typename="Subsystem" name="HydraulicMachineCTest">
-        <simulationtime stop="10" timestep="0.001" start="0" inherit_timestep="true"/>
+        <simulationtime stop="10" timestep="0.001" start="-1" inherit_timestep="true"/>
         <aliases/>
         <parameters/>
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2442.5" y="2490" zoom="1"/>
+            <viewport x="2443.5" y="2491" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="0"/>
             <scriptfile path=""/>
@@ -46,11 +47,22 @@
                 <parameters>
                     <parameter value="0" type="double" name="P1::Flow"/>
                     <parameter value="0" type="double" name="P1::Pressure"/>
+                    <parameter value="0" type="double" name="P1::Temperature"/>
+                    <parameter value="0" type="double" name="P1::WaveVariable"/>
+                    <parameter value="0" type="double" name="P1::CharImp"/>
+                    <parameter value="0" type="double" name="P1::HeatFlow"/>
                     <parameter value="0" type="double" name="P2::Flow"/>
                     <parameter value="0" type="double" name="P2::Pressure"/>
+                    <parameter value="0" type="double" name="P2::Temperature"/>
+                    <parameter value="0" type="double" name="P2::WaveVariable"/>
+                    <parameter value="0" type="double" name="P2::CharImp"/>
+                    <parameter value="0" type="double" name="P2::HeatFlow"/>
                     <parameter value="0" type="double" name="P3::Angular Velocity"/>
                     <parameter value="0" type="double" name="P3::Torque"/>
                     <parameter value="0" type="double" name="P3::Angle"/>
+                    <parameter value="0" type="double" name="P3::WaveVariable"/>
+                    <parameter value="0" type="double" name="P3::CharImp"/>
+                    <parameter value="0" type="double" name="P3::Equivalent Inertia"/>
                     <parameter value="1e+009" type="double" name="Beta_e"/>
                     <parameter value="1" type="double" name="J_e,m"/>
                     <parameter value="0.005" type="double" name="V_1"/>
@@ -64,6 +76,20 @@
                     <nametext position="0" visible="1"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="HydraulicMachineC" displayname="C-type Variable Displacement Machine">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="MechanicAngularVelocitySensor" name="Angular Velocity Transducer">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2567" y="2405" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicAngularVelocitySensor" displayname="Angular Velocity Transducer">
                             <ports/>
                         </modelobject>
                     </hopsanobjectappearance>
@@ -98,6 +124,10 @@
             <component typename="HydraulicPressureSourceC" name="C-type Pressure Source_1">
                 <parameters>
                     <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="0" type="double" name="P1::Temperature"/>
+                    <parameter value="0" type="double" name="P1::WaveVariable"/>
+                    <parameter value="0" type="double" name="P1::CharImp"/>
+                    <parameter value="0" type="double" name="P1::HeatFlow"/>
                     <parameter value="2e7" type="double" name="p"/>
                 </parameters>
                 <hopsangui>
@@ -147,6 +177,9 @@
                 <parameters>
                     <parameter value="0" type="double" name="P1::Angular Velocity"/>
                     <parameter value="0" type="double" name="P1::Angle"/>
+                    <parameter value="0" type="double" name="P1::WaveVariable"/>
+                    <parameter value="0" type="double" name="P1::CharImp"/>
+                    <parameter value="0" type="double" name="P1::Equivalent Inertia"/>
                     <parameter value="0" type="double" name="T"/>
                 </parameters>
                 <hopsangui>
@@ -162,6 +195,10 @@
             <component typename="HydraulicPressureSourceC" name="C-type Pressure Source_2">
                 <parameters>
                     <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="0" type="double" name="P1::Temperature"/>
+                    <parameter value="0" type="double" name="P1::WaveVariable"/>
+                    <parameter value="0" type="double" name="P1::CharImp"/>
+                    <parameter value="0" type="double" name="P1::HeatFlow"/>
                     <parameter value="1e7" type="double" name="p"/>
                 </parameters>
                 <hopsangui>
@@ -340,6 +377,38 @@
                     <geometries>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Angular Velocity Transducer" startport="P1" startcomponent="Rotational Inertia">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2258.00000000000000000000" y="2518.00000000000000000000"/>
+                        <coordinate x="2227.00000000000000000000" y="2518.00000000000000000000"/>
+                        <coordinate x="2227.00000000000000000000" y="2459.00000000000000000000"/>
+                        <coordinate x="2567.00000000000000000000" y="2459.00000000000000000000"/>
+                        <coordinate x="2567.00000000000000000000" y="2423.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_right" endcomponent="Scope_1" startport="out" startcomponent="Angular Velocity Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2567.00000000000000000000" y="2387.00000000000000000000"/>
+                        <coordinate x="2567.00000000000000000000" y="2290.00000000000000000000"/>
+                        <coordinate x="2525.00000000000000000000" y="2290.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
                     </geometries>
                     <style>solid</style>
                 </hopsangui>
