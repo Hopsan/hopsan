@@ -79,6 +79,7 @@ void Configuration::saveToXml()
     appendDomTextNode(settings, "externallibdir", mExternalLibDir);
     appendDomTextNode(settings, "scriptdir", mScriptDir);
     appendDomTextNode(settings, "plotwindowdir", mPlotWindowDir);
+    appendDomTextNode(settings, "fmudir", mFmuDir);
 
 
     QDomElement style = appendDomElement(configRoot, HMF_STYLETAG);
@@ -114,6 +115,10 @@ void Configuration::saveToXml()
     for(int i=0; i<mUserLibs.size(); ++i)
     {
         appendDomTextNode(libs, "userlib", mUserLibs.at(i));
+        if(!mUserLibFolders.at(i).isEmpty())
+        {
+            libs.lastChildElement("userlib").setAttribute("lib", mUserLibFolders.at(i));
+        }
     }
 
     QDomElement models = appendDomElement(configRoot, "models");
@@ -273,6 +278,8 @@ void Configuration::loadFromXml()
                 mScriptDir = settingsElement.firstChildElement("scriptdir").text();
             if(!settingsElement.firstChildElement("plotwindowdir").isNull())
                 mPlotWindowDir = settingsElement.firstChildElement("plotwindowdir").text();
+            if(!settingsElement.firstChildElement("fmudir").isNull())
+                mFmuDir = settingsElement.firstChildElement("fmudir").text();
 
             QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
             QDomElement penElement = styleElement.firstChildElement("penstyle");
@@ -312,6 +319,14 @@ void Configuration::loadFromXml()
             while (!userLibElement.isNull())
             {
                 mUserLibs.prepend(userLibElement.text());
+                if(userLibElement.hasAttribute("lib"))
+                {
+                    mUserLibFolders.append(userLibElement.attribute("lib"));
+                }
+                else
+                {
+                    mUserLibFolders.append("");
+                }
                 userLibElement = userLibElement.nextSiblingElement(("userlib"));
             }
 
@@ -462,6 +477,8 @@ void Configuration::loadDefaultsFromXml()
                 mScriptDir = settingsElement.firstChildElement("scriptdir").text();
             if(!settingsElement.firstChildElement("plotwindowdir").isNull())
                 mPlotWindowDir = settingsElement.firstChildElement("plotwindowdir").text();
+            if(!settingsElement.firstChildElement("fmudir").isNull())
+                mFmuDir = settingsElement.firstChildElement("fmudir").text();
 
                 //Load default GUI style
             QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
@@ -670,6 +687,12 @@ bool Configuration::getAntiAliasing()
 QStringList Configuration::getUserLibs()
 {
     return this->mUserLibs;
+}
+
+
+QStringList Configuration::getUserLibFolders()
+{
+    return this->mUserLibFolders;
 }
 
 
@@ -919,6 +942,16 @@ QString Configuration::getPlotWindowDir()
 }
 
 
+//! @brief Returns the last used directory for importing FMUs
+QString Configuration::getFmuDir()
+{
+    if(mFmuDir.isEmpty())
+    {
+        return QString(DOCUMENTSPATH);
+    }
+    return mFmuDir;
+}
+
 
 //! @brief Set function for library style option
 //! @param value Desired setting
@@ -1016,12 +1049,13 @@ void Configuration::setAntiAliasing(bool value)
 
 //! @brief Adds a user library to the library list
 //! @param value Path to the new library
-void Configuration::addUserLib(QString value)
+void Configuration::addUserLib(QString value, QString libName)
 {
     value.replace("\\","/");
     if(!mUserLibs.contains(value))
     {
         this->mUserLibs.append(value);
+        this->mUserLibFolders.append(libName);
     }
     saveToXml();
 }
@@ -1032,7 +1066,15 @@ void Configuration::addUserLib(QString value)
 void Configuration::removeUserLib(QString value)
 {
     value.replace("\\","/");
-    mUserLibs.removeAll(value);
+    for(int l=0; l<mUserLibs.size(); ++l)
+    {
+        if(mUserLibs.at(l) == value)
+        {
+            mUserLibs.removeAt(l);
+            mUserLibFolders.removeAt(l);
+            --l;
+        }
+    }
     saveToXml();
 }
 
@@ -1198,4 +1240,9 @@ void Configuration::setScriptDir(QString value)
 void Configuration::setPlotWindowDir(QString value)
 {
     mPlotWindowDir = value;
+}
+
+void Configuration::setFmuDir(QString value)
+{
+    mFmuDir = value;
 }

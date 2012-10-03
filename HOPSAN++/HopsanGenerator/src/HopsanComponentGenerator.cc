@@ -482,6 +482,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     {
         if(varElement.attribute("variability") == "parameter")
         {
+            fmuComponentHppStream << "            par"+QString::number(i)+" = "+varElement.firstChildElement("Real").attribute("start")+";\n";
             fmuComponentHppStream << "            registerParameter(\""+varElement.attribute("name")+"\", \""+varElement.attribute("description")+"\", \"-\", par"+QString::number(i)+");\n";
             ++i;
         }

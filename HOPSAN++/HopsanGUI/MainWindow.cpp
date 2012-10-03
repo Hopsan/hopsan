@@ -287,7 +287,7 @@ void MainWindow::initializeWorkspace()
 
     for(int i=0; i<gConfig.getUserLibs().size(); ++i)
     {
-        mpLibrary->loadAndRememberExternalLibrary(gConfig.getUserLibs().at(i));
+        mpLibrary->loadAndRememberExternalLibrary(gConfig.getUserLibs().at(i), gConfig.getUserLibFolders().at(i));
     }
 
     // Create the plot widget, only once! :)
@@ -663,8 +663,12 @@ void MainWindow::createActions()
     mpToggleNamesAction->setChecked(gConfig.getToggleNamesButtonCheckedLastSession());
     mpToggleNamesAction->setShortcut(QKeySequence("Ctrl+n"));
 
-    mpExportPDFAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SaveToPDF.png"), tr("&Export To PDF"), this);
+    mpExportPDFAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportPdf.png"), tr("&Export To PDF"), this);
     mpExportPDFAction->setText("Export Model to PDF");
+
+    mpImportFMUAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ImportFmu.png"), tr("Import Functional Mock-up Unit (FMU)"), this);
+    mpExportToSimulinkAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportSimulink.png"), tr("Export to Simulink S-function Source Files"), this);
+    mpExportToFMUAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportFmu.png"), tr("Export to Functional Mock-up Unit (FMU)"), this);
 
     mpAboutAction = new QAction(this);
     mpAboutAction->setText("About");
@@ -796,9 +800,9 @@ void MainWindow::createMenus()
     mpFileMenu->addAction(mpSaveAction);
     mpFileMenu->addAction(mpSaveAsAction);
     mpFileMenu->addMenu(mpRecentMenu);
-    mpFileMenu->addSeparator();
-    mpFileMenu->addMenu(mpImportMenu);
-    mpFileMenu->addMenu(mpExportMenu);
+    //mpFileMenu->addSeparator();
+    //mpFileMenu->addMenu(mpImportMenu);
+    //mpFileMenu->addMenu(mpExportMenu);
     mpFileMenu->addSeparator();
     mpFileMenu->addAction(mpLoadLibsAction);
     mpFileMenu->addSeparator();
@@ -834,6 +838,7 @@ void MainWindow::createMenus()
     mpViewMenu->addAction(mpLibDock->toggleViewAction());
     mpViewMenu->addAction(mpEditToolBar->toggleViewAction());
     mpViewMenu->addAction(mpFileToolBar->toggleViewAction());
+    mpViewMenu->addAction(mpConnectivityToolBar->toggleViewAction());
     mpViewMenu->addAction(mpMessageDock->toggleViewAction());
     mpViewMenu->addAction(mpPyDockWidget->toggleViewAction());
     mpViewMenu->addAction(mpSimToolBar->toggleViewAction());
@@ -866,29 +871,34 @@ void MainWindow::createToolbars()
     mpFileToolBar->addAction(mpOpenAction);
     mpFileToolBar->addAction(mpSaveAction);
     mpFileToolBar->addAction(mpSaveAsAction);
-    mpFileToolBar->addAction(mpExportPDFAction);
-    //! @note Action and menu shouldn't be here, but it doesn't work otherwise because the menus are created after the toolbars
-    mpImportFMUAction = new QAction(tr("Import Functional Mock-up Unit (FMU)"), this);
-    mpExportToSimulinkAction = new QAction(tr("Export to Simulink S-function Source Files"), this);
-    mpExportToFMUAction = new QAction(tr("Export to Functional Mock-up Unit (FMU)"), this);
-    mpImportMenu = new QMenu("Import");
-    mpImportMenu->addAction(mpImportFMUAction);
-    mpImportButton = new QToolButton(mpFileToolBar);
-    mpImportButton->setToolTip("Import");
-    mpImportButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Import.png"));
-    mpImportButton->setMenu(mpImportMenu);
-    mpImportButton->setPopupMode(QToolButton::InstantPopup);
-    mpFileToolBar->addWidget(mpImportButton);
 
-    mpExportMenu = new QMenu("Export Model");
-    mpExportMenu->addAction(mpExportToSimulinkAction);
-    mpExportMenu->addAction(mpExportToFMUAction);
-    mpExportButton = new QToolButton(mpFileToolBar);
-    mpExportButton->setToolTip("Export");
-    mpExportButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Export.png"));
-    mpExportButton->setMenu(mpExportMenu);
-    mpExportButton->setPopupMode(QToolButton::InstantPopup);
-    mpFileToolBar->addWidget(mpExportButton);
+    mpConnectivityToolBar = addToolBar(tr("Import/Export Toolbar)"));
+    mpConnectivityToolBar->setAllowedAreas(Qt::TopToolBarArea | Qt::LeftToolBarArea | Qt::RightToolBarArea);
+    mpConnectivityToolBar->addAction(mpExportPDFAction);
+    mpConnectivityToolBar->addAction(mpExportToSimulinkAction);
+    mpConnectivityToolBar->addAction(mpExportToFMUAction);
+    mpConnectivityToolBar->addAction(mpImportFMUAction);
+
+
+    //! @note Action and menu shouldn't be here, but it doesn't work otherwise because the menus are created after the toolbars
+    //mpImportMenu = new QMenu("Import");
+    //mpImportMenu->addAction(mpImportFMUAction);
+//    mpImportButton = new QToolButton(mpFileToolBar);
+//    mpImportButton->setToolTip("Import");
+//    mpImportButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Import.png"));
+//    mpImportButton->setMenu(mpImportMenu);
+//    mpImportButton->setPopupMode(QToolButton::InstantPopup);
+    //mpFileToolBar->addWidget(mpImportButton);
+
+//    mpExportMenu = new QMenu("Export Model");
+//    mpExportMenu->addAction(mpExportToSimulinkAction);
+//    mpExportMenu->addAction(mpExportToFMUAction);
+//    mpExportButton = new QToolButton(mpFileToolBar);
+//    mpExportButton->setToolTip("Export");
+//    mpExportButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Export.png"));
+//    mpExportButton->setMenu(mpExportMenu);
+//    mpExportButton->setPopupMode(QToolButton::InstantPopup);
+//    mpFileToolBar->addWidget(mpExportButton);
 
     //Simulation toolbar, contains tools for simulationg, plotting and model preferences
     mpSimToolBar = addToolBar(tr("Simulation Toolbar"));

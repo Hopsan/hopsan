@@ -96,7 +96,7 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
             fmuIcon.copy(gExecPath + "../import/FMU/"+fmuName+"/fmucomponent.svg");
 
             //Load library
-            gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(gExecPath + "../import/FMU/" + fmuName);
+            gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(gExecPath + "../import/FMU/" + fmuName, "FMU");
 
             return true;
         }

@@ -464,7 +464,7 @@ void LibraryWidget::clearHoverEffects()
 //! First loads DLL files, then XML. DLL files are not necessary if component is already loaded.
 //! @param libDir Directory to check
 //! @param external Used to indicate that the library is external (places contents under "External Libraries")
-void LibraryWidget::loadLibrary(QString libDir, const InternalExternalEnumT int_ext)
+void LibraryWidget::loadLibrary(QString libDir, const InternalExternalEnumT int_ext, QString libName)
 {
     // Don't add empty folders to the library
     if (libDir.isEmpty())
@@ -487,13 +487,17 @@ void LibraryWidget::loadLibrary(QString libDir, const InternalExternalEnumT int_
     if(int_ext == EXTERNAL)
     {
         LibraryContentsTree *pExternalTree;
-        if(!mpContentsTree->findChildByName("External Libraries"))
+        if(libName.isEmpty())
         {
-            pExternalTree = mpContentsTree->addChild("External Libraries");
+            libName = "External Libraries";
+        }
+        if(!mpContentsTree->findChildByName(libName))
+        {
+            pExternalTree = mpContentsTree->addChild(libName);
         }
         else
         {
-            pExternalTree = mpContentsTree->findChildByName("External Libraries");
+            pExternalTree = mpContentsTree->findChildByName(libName);
         }
 
         libDirObject.cdUp();
@@ -558,11 +562,13 @@ void LibraryWidget::importFmu()
 {
     //Load .fmu file and create paths
     QString filePath = QFileDialog::getOpenFileName(this, tr("Import Functional Mockup Unit (FMU)"),
-                                          gExecPath + "/../",
-                                          tr("Functional Mockup Unit (*.fmu)"));
+                                                    gConfig.getFmuDir(),
+                                                    tr("Functional Mockup Unit (*.fmu)"));
     if(filePath.isEmpty())      //Cancelled by user
         return;
 
+    QFileInfo fmuFileInfo = QFileInfo(filePath);
+    gConfig.setFmuDir(fmuFileInfo.absolutePath());
 
     CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
     pCoreAccess->generateFromFmu(filePath);
@@ -588,10 +594,10 @@ void LibraryWidget::importFmu()
 
 //! @brief Wrapper function that loads an external library
 //! @param libDir Directory to the library
-void LibraryWidget::loadAndRememberExternalLibrary(const QString libDir)
+void LibraryWidget::loadAndRememberExternalLibrary(const QString libDir, const QString libName)
 {
-    gConfig.addUserLib(libDir);     //Register new library in configuration
-    loadLibrary(libDir, EXTERNAL);
+    gConfig.addUserLib(libDir, libName);     //Register new library in configuration
+    loadLibrary(libDir, EXTERNAL, libName);
 }
 
 //! @brief Load contents (xml files) of dir into SecretHidden library map that is not vissible in the libary
@@ -1177,20 +1183,20 @@ void LibraryWidget::updateLibraryFolder(LibraryContentsTree /**pTree*/)
 
 
 
-void LibraryWidget::unloadExternalLibrary(const QString libName)
+void LibraryWidget::unloadExternalLibrary(const QString libName, const QString parentLibName)
 {
     //Check both by name, absolute and relative path to be sure
     LibraryContentsTree* pLibContTree = 0;
-    if(mpContentsTree->findChildByName("External Libraries"))
+    if(mpContentsTree->findChildByName(parentLibName))
     {
-        pLibContTree = mpContentsTree->findChildByName("External Libraries")->findChildByName(libName);
+        pLibContTree = mpContentsTree->findChildByName(parentLibName)->findChildByName(libName);
         if (!pLibContTree)
         {
-            pLibContTree = mpContentsTree->findChildByName("External Libraries")->findChildByPath(QDir::cleanPath(gExecPath+libName));
+            pLibContTree = mpContentsTree->findChildByName(parentLibName)->findChildByPath(QDir::cleanPath(gExecPath+libName));
         }
         if (!pLibContTree)
         {
-            pLibContTree = mpContentsTree->findChildByName("External Libraries")->findChildByPath(QDir::cleanPath(libName));
+            pLibContTree = mpContentsTree->findChildByName(parentLibName)->findChildByPath(QDir::cleanPath(libName));
         }
     }
 
@@ -1208,7 +1214,7 @@ void LibraryWidget::unloadExternalLibrary(const QString libName)
         if (button == QMessageBox::Ok)
         {
             gConfig.removeUserLib(pLibContTree->mLibDir);
-            unLoadLibrarySubTree(pLibContTree);
+            unLoadLibrarySubTree(pLibContTree, parentLibName);
             update();
         }
     }
@@ -1216,18 +1222,7 @@ void LibraryWidget::unloadExternalLibrary(const QString libName)
 }
 
 
-void LibraryWidget::updateExternalLibraries()
-{
-    QStringList libs = gConfig.getUserLibs();
-    for(int i=0; i<libs.size(); ++i)
-    {
-        unloadExternalLibrary(libs[i]);
-        loadAndRememberExternalLibrary(libs[i]);
-    }
-}
-
-
-void LibraryWidget::unLoadLibrarySubTree(LibraryContentsTree *pTree)
+void LibraryWidget::unLoadLibrarySubTree(LibraryContentsTree *pTree, const QString parentLibDir)
 {
     if(pTree == 0)
         return;
@@ -1238,7 +1233,7 @@ void LibraryWidget::unLoadLibrarySubTree(LibraryContentsTree *pTree)
         mpCoreAccess->unLoadComponentLib(pTree->mLoadedLibraryDLLs[i]);
     }
     //Then remove the tree itself
-    mpContentsTree->findChildByName("External Libraries")->removeChild(pTree->mName);
+    mpContentsTree->findChildByName(parentLibDir)->removeChild(pTree->mName);
     gpMainWindow->mpMessageWidget->checkMessages();
 }
 
@@ -1279,7 +1274,7 @@ void LibraryWidget::contextMenuEvent(QContextMenuEvent *event)
     }
 
     QAction *pUnloadLibraryFolder = new QAction(this);
-    if(pItem->parent() != 0 && pItem->parent()->text(0) == "External Libraries")
+    if(pItem->parent() != 0 && gConfig.getUserLibFolders().contains(pItem->parent()->text(0)) /*pItem->parent()->text(0) == "External Libraries"*/)
     {
         pUnloadLibraryFolder = menu.addAction("Unload External Library");
     }
@@ -1298,7 +1293,7 @@ void LibraryWidget::contextMenuEvent(QContextMenuEvent *event)
 
     if(pSelectedAction == pUnloadLibraryFolder)
     {
-        unloadExternalLibrary(pTree->mName);
+        unloadExternalLibrary(pTree->mName, pTree->mpParent->mName);
     }
 
     QWidget::contextMenuEvent(event);

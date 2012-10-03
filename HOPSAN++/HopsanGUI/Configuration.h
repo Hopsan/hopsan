@@ -59,6 +59,7 @@ public:
     QColor getBackgroundColor();
     bool getAntiAliasing();
     QStringList getUserLibs();
+    QStringList getUserLibFolders();
     bool getSnapping();
     QStringList getRecentModels();
     QStringList getRecentGeneratorModels();
@@ -82,6 +83,7 @@ public:
     QString getExternalLibDir();
     QString getScriptDir();
     QString getPlotWindowDir();
+    QString getFmuDir();
 
     void setLibraryStyle(int value);
     void setAlwaysLoadLastSession(bool value);
@@ -94,7 +96,7 @@ public:
     void setEnableProgressBar(bool value);
     void setBackgroundColor(QColor value);
     void setAntiAliasing(bool value);
-    void addUserLib(QString value);
+    void addUserLib(QString value, QString libName="");
     void removeUserLib(QString value);
     bool hasUserLib(QString value);
     void setSnapping(bool value);
@@ -117,6 +119,7 @@ public:
     void setExternalLibDir(QString value);
     void setScriptDir(QString value);
     void setPlotWindowDir(QString value);
+    void setFmuDir(QString value);
 
 private:
     int mLibraryStyle;
@@ -133,6 +136,7 @@ private:
     QColor mBackgroundColor;
     bool mAntiAliasing;
     QStringList mUserLibs;
+    QStringList mUserLibFolders;
     bool mSnapping;
     QStringList mRecentModels;
     QStringList mLastSessionModels;
@@ -155,6 +159,7 @@ private:
     QString mExternalLibDir;
     QString mScriptDir;
     QString mPlotWindowDir;
+    QString mFmuDir;
 
     QMap < connectorStyle, QMap< QString, QMap<QString, QPen> > > mPenStyles;
 };

@@ -2977,7 +2977,7 @@ void ContainerObject::recompileCppComponents(ModelObject *pComponent)
         xmlFile.close();
         xmlFile.copy(libDirStr+"/"+typeName+".xml");
 
-        gpMainWindow->mpLibrary->unloadExternalLibrary(libDirStr);
+        gpMainWindow->mpLibrary->unloadExternalLibrary(libDirStr, "External Libraries");
         gpMainWindow->mpLibrary->loadHiddenSecretDir(libDirStr);
 
         QString name = componentPtrs[c]->getName();

@@ -136,5 +136,8 @@
         <file>graphics/objecticons/modelicacomponent.svg</file>
         <file>graphics/uiicons/Hopsan-ImportFmu.png</file>
         <file>graphics/objecticons/fmucomponent.svg</file>
+        <file>graphics/uiicons/Hopsan-ExportFmu.png</file>
+        <file>graphics/uiicons/Hopsan-ExportSimulink.png</file>
+        <file>graphics/uiicons/Hopsan-ExportPdf.png</file>
     </qresource>
 </RCC>

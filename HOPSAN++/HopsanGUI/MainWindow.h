@@ -237,6 +237,7 @@ private:
 
     //Toolbar items
     QToolBar *mpFileToolBar;
+    QToolBar *mpConnectivityToolBar;
     QToolBar *mpEditToolBar;
     QToolBar *mpToolsToolBar;
     QToolBar *mpSimToolBar;

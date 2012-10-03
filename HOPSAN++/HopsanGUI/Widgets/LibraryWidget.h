@@ -59,10 +59,9 @@ public:
     void update();
     void loadTreeView(LibraryContentsTree *tree, QTreeWidgetItem *parentItem = 0);
     void loadDualView(LibraryContentsTree *tree, QTreeWidgetItem *parentItem = 0);
-    void loadLibrary(QString libDir, const InternalExternalEnumT int_ext = INTERNAL);
-    void loadAndRememberExternalLibrary(const QString libDir);
-    void unloadExternalLibrary(const QString libName);
-    void updateExternalLibraries();
+    void loadLibrary(QString libDir, const InternalExternalEnumT int_ext = INTERNAL, QString libName="");
+    void loadAndRememberExternalLibrary(const QString libDir, const QString libName="");
+    void unloadExternalLibrary(const QString libName, const QString parentLibName);
     void loadHiddenSecretDir(QString dir);
 
     void addReplacement(QString type1, QString type2);
@@ -98,7 +97,7 @@ private:
     void initializeDragCommon();
     void loadLibraryFolder(QString libDir, const QString libRootDir, const bool doRecurse, LibraryContentsTree *pParentTree=0);
     void updateLibraryFolder(LibraryContentsTree /**pTree*/);
-    void unLoadLibrarySubTree(LibraryContentsTree *pTree);
+    void unLoadLibrarySubTree(LibraryContentsTree *pTree, const QString parentLibDir);
 
     YesNoToAllEnumT mUpConvertAllCAF;
 
