@@ -2362,15 +2362,49 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     mvTimePtrs.push_back(&mTime);
 
     //Execute simulation
-    simTasks->run(taskSimMaster(mSplitSignalVector[0], mSplitCVector[0], mSplitQVector[0],             //Create master thread
-                                mSplitNodeVector[0], mvTimePtrs, mTime, mTimestep, stopTsafe, nThreads, 0,
-                                pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
+//    simTasks->run(taskSimMaster(mSplitSignalVector[0], mSplitCVector[0], mSplitQVector[0],             //Create master thread
+//                                mSplitNodeVector[0], mvTimePtrs, mTime, mTimestep, stopTsafe, nThreads, 0,
+//                                pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
 
-    for(size_t t=1; t < nThreads; ++t)
+//    for(size_t t=1; t < nThreads; ++t)
+//    {
+//        simTasks->run(taskSimSlave(mSplitSignalVector[t], mSplitCVector[t], mSplitQVector[t],          //Create slave threads
+//                                   mSplitNodeVector[t], mTime, mTimestep, stopTsafe, nThreads, t,
+//                                   pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
+//    }
+
+    vector<Component*> tempVector;
+    for(int i=mComponentSignalptrs.size()-1; i>-1; --i)
     {
-        simTasks->run(taskSimSlave(mSplitSignalVector[t], mSplitCVector[t], mSplitQVector[t],          //Create slave threads
-                                   mSplitNodeVector[t], mTime, mTimestep, stopTsafe, nThreads, t,
-                                   pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
+        tempVector.push_back(mComponentSignalptrs[i]);
+    }
+    mComponentSignalptrs = tempVector;
+    tempVector.clear();
+    for(int i=mComponentCptrs.size()-1; i>-1; --i)
+    {
+        tempVector.push_back(mComponentCptrs[i]);
+    }
+    mComponentCptrs = tempVector;
+    tempVector.clear();
+    for(int i=mComponentQptrs.size()-1; i>-1; --i)
+    {
+        tempVector.push_back(mComponentQptrs[i]);
+    }
+    mComponentQptrs = tempVector;
+
+    cout << "Creating task pools!" << endl;
+
+    TaskPool<Component> *sPool = new TaskPool<Component>(mComponentSignalptrs, nThreads);
+    TaskPool<Component> *qPool = new TaskPool<Component>(mComponentQptrs, nThreads);
+    TaskPool<Component> *cPool = new TaskPool<Component>(mComponentCptrs, nThreads);
+    TaskPool<Node> *nPool = new TaskPool<Node>(mSubNodePtrs, nThreads);
+
+    cout << "Starting task threads!";
+   // assert("Starting task threads"==0);
+
+    for(size_t t=0; t < nThreads; ++t)
+    {
+        simTasks->run(taskSimPool(sPool, qPool, cPool, nPool, mTime, mTimestep, stopTsafe, t, this));
     }
     simTasks->wait();                                           //Wait for all tasks to finish
 

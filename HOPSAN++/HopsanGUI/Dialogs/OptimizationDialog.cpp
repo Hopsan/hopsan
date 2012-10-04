@@ -709,13 +709,13 @@ void OptimizationDialog::generateComplexScript()
     for(int i=0; i<mExpLineEditPtrs.size(); ++i)
         scriptStream << "  g"+QString().setNum(i)+"="+QString().setNum(mExpLineEditPtrs.at(i)->text().toDouble())+"\n";
 
-    scriptStream << "  time=hopsan.component(\""+mFunctionComponents.first().first()+"\").port(\""+mFunctionPorts.first().first()+"\").getTimeVector()\n";
+    scriptStream << "  time=hopsan.component(\""+mFunctionComponents.first().first()+"\").port(\""+mFunctionPorts.first().first()+"\").time()\n";
     QMap<QString, QString> addedVariables;
     for(int i=0; i<mFunctionVariables.size(); ++i)
     {
         for(int j=0; j<mFunctionVariables.at(i).size(); ++j)
         {
-            QString variable = "\""+mFunctionComponents.at(i).at(j)+"\").port(\""+mFunctionPorts.at(i).at(j)+"\").getDataVector(\""+mFunctionVariables.at(i).at(j)+"\"";
+            QString variable = "\""+mFunctionComponents.at(i).at(j)+"\").port(\""+mFunctionPorts.at(i).at(j)+"\").data(\""+mFunctionVariables.at(i).at(j)+"\"";
             QString variableId = "data"+QString().setNum(i)+QString().setNum(j);
             if(addedVariables.contains(variable))
             {
@@ -1113,13 +1113,13 @@ void OptimizationDialog::generateParticleSwarmScript()
     for(int i=0; i<mExpLineEditPtrs.size(); ++i)
         scriptStream << "  g"+QString().setNum(i)+"="+QString().setNum(mExpLineEditPtrs.at(i)->text().toDouble())+"\n";
 
-    scriptStream << "  time=hopsan.component(\""+mFunctionComponents.first().first()+"\").port(\""+mFunctionPorts.first().first()+"\").getTimeVector()\n";
+    scriptStream << "  time=hopsan.component(\""+mFunctionComponents.first().first()+"\").port(\""+mFunctionPorts.first().first()+"\").time()\n";
     QMap<QString, QString> addedVariables;
     for(int i=0; i<mFunctionVariables.size(); ++i)
     {
         for(int j=0; j<mFunctionVariables.at(i).size(); ++j)
         {
-            QString variable = "\""+mFunctionComponents.at(i).at(j)+"\").port(\""+mFunctionPorts.at(i).at(j)+"\").getDataVector(\""+mFunctionVariables.at(i).at(j)+"\"";
+            QString variable = "\""+mFunctionComponents.at(i).at(j)+"\").port(\""+mFunctionPorts.at(i).at(j)+"\").data(\""+mFunctionVariables.at(i).at(j)+"\"";
             QString variableId = "data"+QString().setNum(i)+QString().setNum(j);
             if(addedVariables.contains(variable))
             {

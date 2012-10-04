@@ -10,6 +10,10 @@
 #include "atomic.h"
 #include "tick_count.h"
 #include "task_group.h"
+#else
+namespace tbb {
+class mutex;
+}
 #endif
 
 #include "CoreUtilities/MultiThreadingUtilities.h"
@@ -50,6 +54,8 @@ size_t determineActualNumberOfThreads(const size_t nDesiredThreads)
     }
     return nThreads;
 }
+
+
 
 
 

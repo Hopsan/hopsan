@@ -25,6 +25,65 @@ using namespace hopsan;
 size_t determineActualNumberOfThreads(const size_t nDesiredThreads);
 
 
+template <class T>
+class TaskPool
+{
+public:
+    TaskPool(std::vector<T*> data, int nThreads)
+    {
+        mData = data;
+        mStartIdx=mData.size()-1;
+        std::vector<T*> tempData;
+        for(int i=0; i<mData.size(); ++i)
+        {
+            tempData.push_back(mData[i]);
+            tempData.push_back(0);
+            tempData.push_back(0);
+            tempData.push_back(0);
+        }
+        mData = tempData;
+        mnThreads=nThreads;
+        reset();
+//#ifdef USETBB
+//        mpGetMutex = new tbb::mutex();
+//#else
+//        mpGetMutex = 0;
+//#endif
+    }
+
+    inline void reset()
+    {
+        mIdx = mStartIdx;
+    }
+
+
+    inline bool isFinished()
+    {
+        return mIdx <= -mnThreads;
+    }
+
+
+    inline int getAndDecrementIndex()
+    {
+        return mIdx.fetch_and_store(mIdx-1);
+    }
+
+
+    inline T* getDataPtr(int idx)
+    {
+        return mData[idx*4];
+    }
+
+private:
+    int mStartIdx;
+    std::vector<T*> mData;
+    //tbb::mutex *mpGetMutex;
+    tbb::atomic<int> mIdx;
+    int mnThreads;
+};
+
+
+
 //! @brief Class for barrier locks in multi-threaded simulations.
 class BarrierLock
 {
@@ -64,6 +123,125 @@ private:
     int mLock;
 #endif
 };
+
+
+
+
+//! @brief Class for slave simulation threads, which must be syncronized from a master simulation thread
+class taskSimOneComponent
+{
+public:
+    taskSimPool(Compnent* pComponent, double time, double nextTime)
+    {
+        mpComponent = pComponent;
+        mTime = time;
+        mNextTime = nextTime;
+    }
+
+    void operator() ()
+    {
+        mpComponent->simulate(mTime, nextTime);
+    }
+private:
+    Component *mpComponent;
+    double mTime;
+    double mNextTime;
+};
+
+
+
+
+//! @brief Class for slave simulation threads, which must be syncronized from a master simulation thread
+class taskSimPool
+{
+public:
+    taskSimPool(TaskPool<Component> *sPool, TaskPool<Component> *qPool, TaskPool<Component> *cPool, TaskPool<Node> *nPool,
+                double startTime, double timeStep, double stopTime, int threadId, ComponentSystem* pSystem)
+    {
+        mTime = startTime;
+        mStopTime = stopTime;
+        mTimeStep = timeStep;
+        msPool = sPool;
+        mqPool = qPool;
+        mcPool = cPool;
+        mnPool = nPool;
+        mThreadId = threadId;
+        mpSystem = pSystem;
+    }
+
+    void operator() ()
+    {
+        while(mTime < mStopTime)
+        {
+            int idx;
+            double nextTime = mTime+mTimeStep;
+
+            //! Signal Components !//
+
+            idx = msPool->getAndDecrementIndex();
+            while(idx>=0)
+            {
+                Component *pComponent = msPool->getDataPtr(idx);
+                pComponent->simulate(mTime, nextTime);
+                idx = msPool->getAndDecrementIndex();
+            }
+            while(!msPool->isFinished()) {}
+            if(mThreadId == 0) { mnPool->reset(); }
+
+            //! C Components !//
+
+            idx = mcPool->getAndDecrementIndex();
+            while(idx>=0)
+            {
+                Component *pComponent = mcPool->getDataPtr(idx);
+                pComponent->simulate(mTime, nextTime);
+                idx = mcPool->getAndDecrementIndex();
+            }
+            while(!mcPool->isFinished()) {}
+            if(mThreadId == 0) { mqPool->reset(); }
+
+            //! Log Nodes !//
+
+            if(mThreadId == 0)      //Hack because of Peters log data changes, must be fixed
+            {
+                mpSystem->logTimeAndNodes(mTime);
+            }
+            idx = mnPool->getAndDecrementIndex();
+            while(idx>=0)
+            {
+                idx = mnPool->getAndDecrementIndex();
+            }
+            while(!mnPool->isFinished()) {}
+            if(mThreadId == 0) { msPool->reset(); }
+
+            //! Q Components !//
+
+            idx = mqPool->getAndDecrementIndex();
+            while(idx>=0)
+            {
+                Component *pComponent = mqPool->getDataPtr(idx);
+                pComponent->simulate(mTime, nextTime);
+                idx = mqPool->getAndDecrementIndex();
+            }
+            while(!mqPool->isFinished()) {}
+            if(mThreadId == 0) { mcPool->reset(); }
+
+            mTime += mTimeStep;
+        }
+    }
+private:
+    double mStopTime;
+    double mTimeStep;
+    double mTime;
+    TaskPool<Component> *msPool;
+    TaskPool<Component> *mqPool;
+    TaskPool<Component> *mcPool;
+    TaskPool<Node> *mnPool;
+    int mThreadId;
+    ComponentSystem *mpSystem;
+};
+
+
 
 
 //! @brief Class for slave simulation threads, which must be syncronized from a master simulation thread
