@@ -80,6 +80,18 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
     mpSpeedThetaLineEdit->setText(QString::number(mpData->speedTheta[mIdx]));
     mpSpeedThetaLineEdit->setValidator(new QDoubleValidator(this));
 
+    //Resize X
+    mpResizeXLabel = new QLabel("Horizontal Resize Factor: ", this);
+    mpResizeXLineEdit = new QLineEdit(this);
+    mpResizeXLineEdit->setText(QString::number(mpData->resizeX[mIdx]));
+    mpResizeXLineEdit->setValidator(new QDoubleValidator(this));
+
+    //Resize Y
+    mpResizeYLabel = new QLabel("Vertical Resize Factor: ", this);
+    mpResizeYLineEdit = new QLineEdit(this);
+    mpResizeYLineEdit->setText(QString::number(mpData->resizeY[mIdx]));
+    mpResizeYLineEdit->setValidator(new QDoubleValidator(this));
+
     //Buttons
     mpOkButton = new QPushButton("Ok", this);
     mpOkButton->setDefault(true);
@@ -101,7 +113,11 @@ AnimatedIconPropertiesDialog::AnimatedIconPropertiesDialog(AnimatedComponent *pA
     mpLayout->addWidget(mpSpeedYLineEdit,       4, 1);
     mpLayout->addWidget(mpSpeedThetaLabel,      5, 0);
     mpLayout->addWidget(mpSpeedThetaLineEdit,   5, 1);
-    mpLayout->addWidget(mpButtonBox,            6, 0, 1, 2);
+    mpLayout->addWidget(mpResizeXLabel,         6, 0);
+    mpLayout->addWidget(mpResizeXLineEdit,      6, 1);
+    mpLayout->addWidget(mpResizeYLabel,         7, 0);
+    mpLayout->addWidget(mpResizeYLineEdit,      7, 1);
+    mpLayout->addWidget(mpButtonBox,            8, 0, 1, 2);
 
     this->setLayout(mpLayout);
 
@@ -121,6 +137,8 @@ void AnimatedIconPropertiesDialog::setValues()
     mpData->speedX[mIdx] = mpSpeedXLineEdit->text().toDouble();
     mpData->speedY[mIdx] = mpSpeedYLineEdit->text().toDouble();
     mpData->speedTheta[mIdx] = mpSpeedThetaLineEdit->text().toDouble();
+    mpData->resizeX[mIdx] = mpResizeXLineEdit->text().toDouble();
+    mpData->resizeY[mIdx] = mpResizeYLineEdit->text().toDouble();
 
     this->accept();
 }

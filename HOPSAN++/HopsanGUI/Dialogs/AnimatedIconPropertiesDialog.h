@@ -64,9 +64,13 @@ private:
     QLabel *mpSpeedXLabel;
     QLabel *mpSpeedYLabel;
     QLabel *mpSpeedThetaLabel;
+    QLabel *mpResizeXLabel;
+    QLabel *mpResizeYLabel;
     QLineEdit *mpSpeedXLineEdit;
     QLineEdit *mpSpeedYLineEdit;
     QLineEdit *mpSpeedThetaLineEdit;
+    QLineEdit *mpResizeXLineEdit;
+    QLineEdit *mpResizeYLineEdit;
 
     //Buttons
     QDialogButtonBox *mpButtonBox;

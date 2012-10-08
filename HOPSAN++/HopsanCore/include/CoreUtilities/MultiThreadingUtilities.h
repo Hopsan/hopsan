@@ -78,7 +78,11 @@ private:
     int mStartIdx;
     std::vector<T*> mData;
     //tbb::mutex *mpGetMutex;
+#ifdef USETBB
     tbb::atomic<int> mIdx;
+#else
+    int mIdx;
+#endif
     int mnThreads;
 };
 
