@@ -542,6 +542,8 @@ void LibraryWidget::addExternalLibrary(QString libDir)
                                                    QFileDialog::ShowDirsOnly
                                                    | QFileDialog::DontResolveSymlinks);
     }
+    libDir.replace("\\","/");   //Enforce unix-style on path
+
     if(!libDir.isEmpty())
     {
         gConfig.setExternalLibDir(libDir);
