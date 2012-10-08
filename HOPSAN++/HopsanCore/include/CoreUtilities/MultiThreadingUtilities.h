@@ -65,7 +65,11 @@ public:
 
     inline int getAndDecrementIndex()
     {
+#ifdef USETBB
         return mIdx.fetch_and_store(mIdx-1);
+#else
+        return mIdx--;
+#endif
     }
 
 

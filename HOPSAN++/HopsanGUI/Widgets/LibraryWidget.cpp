@@ -1276,7 +1276,7 @@ void LibraryWidget::contextMenuEvent(QContextMenuEvent *event)
     }
 
     QAction *pUnloadLibraryFolder = new QAction(this);
-    QString path = QDir::toNativeSeparators(pTree->mLibDir);
+    QString path = pTree->mLibDir;
     QStringList userLibs = gConfig.getUserLibs();
     if(userLibs.contains(path) /*pItem->parent()->text(0) == "External Libraries"*/)
     {
