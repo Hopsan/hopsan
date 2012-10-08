@@ -1274,7 +1274,9 @@ void LibraryWidget::contextMenuEvent(QContextMenuEvent *event)
     }
 
     QAction *pUnloadLibraryFolder = new QAction(this);
-    if(pItem->parent() != 0 && gConfig.getUserLibFolders().contains(pItem->parent()->text(0)) /*pItem->parent()->text(0) == "External Libraries"*/)
+    QString path = QDir::toNativeSeparators(pTree->mLibDir);
+    QStringList userLibs = gConfig.getUserLibs();
+    if(userLibs.contains(path) /*pItem->parent()->text(0) == "External Libraries"*/)
     {
         pUnloadLibraryFolder = menu.addAction("Unload External Library");
     }
@@ -1287,7 +1289,6 @@ void LibraryWidget::contextMenuEvent(QContextMenuEvent *event)
 
     if(pSelectedAction == pOpenContainingFolder)
     {
-        QString path = QDir::toNativeSeparators(pTree->mLibDir);
         QDesktopServices::openUrl(QUrl("file:///" + path));
     }
 

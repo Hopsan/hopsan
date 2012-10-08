@@ -727,6 +727,7 @@ void OptimizationDialog::generateComplexScript()
                 scriptStream << "  "+variableId+"=hopsan.component("+variable+")\n";
             }
         }
+
     }
     scriptStream << "  return ";
     for(int i=0; i<mFunctionVariables.size(); ++i)

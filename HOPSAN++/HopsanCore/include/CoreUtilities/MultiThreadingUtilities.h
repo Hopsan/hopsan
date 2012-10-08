@@ -131,7 +131,7 @@ private:
 class taskSimOneComponent
 {
 public:
-    taskSimPool(Compnent* pComponent, double time, double nextTime)
+    taskSimOneComponent(Component* pComponent, double time, double nextTime)
     {
         mpComponent = pComponent;
         mTime = time;
@@ -140,7 +140,7 @@ public:
 
     void operator() ()
     {
-        mpComponent->simulate(mTime, nextTime);
+        mpComponent->simulate(mTime, mNextTime);
     }
 private:
     Component *mpComponent;
