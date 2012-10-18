@@ -238,6 +238,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
 
 
     //Unzip .fmu file
+#ifdef win32
     QProcess zipProcess;
     zipProcess.setWorkingDirectory(zipDir.path());
     QStringList arguments;
@@ -255,16 +256,44 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
             printMessage(msg);
         }
     }
+#else
+    QString command = "unzip "+fmuFileInfo.filePath()+" -d "+fmuDir.path();
+    qDebug() << "Command = " << command;
+    FILE *fp;
+    char line[130];
+    command +=" 2>&1";
+    fp = popen(  (const char *) command.toStdString().c_str(), "r");
+    if ( !fp )
+    {
+        printErrorMessage("Could not execute '" + command + "'! err=%d");
+        return;
+    }
+    else
+    {
+        while ( fgets( line, sizeof line, fp))
+        {
+            printMessage((const QString &)line);
+        }
+    }
+#endif
 
     //Move all binary files to FMU directory
-    QDir win32Dir = QDir::cleanPath(fmuDir.path() + "/binaries/win32");
-    if(!win32Dir.exists())
+#ifdef win32
+    QDir binaryDir = QDir::cleanPath(fmuDir.path() + "/binaries/win64");
+#elif win64
+    QDir binaryDir = QDir::cleanPath(fmuDir.path() + "/binaries/win64");
+#elif linux && __i386__
+    QDir binaryDir = QDir::cleanPath(fmuDir.path() + "/binaries/linux64");
+#elif linux && __x86_64__
+    QDir binaryDir = QDir::cleanPath(fmuDir.path() + "/binaries/linux64");
+#endif
+    if(!binaryDir.exists())
     {
         removeDir(fmuDir.path());
         printErrorMessage("Import of FMU failed: Unable to unpack files");
         return;
     }
-    QFileInfoList binaryFiles = win32Dir.entryInfoList(QDir::Files);
+    QFileInfoList binaryFiles = binaryDir.entryInfoList(QDir::Files);
     for(int i=0; i<binaryFiles.size(); ++i)
     {
         QFile tempFile;
@@ -308,14 +337,14 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
 
     printMessage("Parsing XML file");
 
-    //Load XML data from ModelDescription.xml
+    //Load XML data from modelDescription.xml
     //Copy xml-file to this directory
     QFile modelDescriptionFile;
-    modelDescriptionFile.setFileName(fmuDir.path() + "/ModelDescription.xml");
-    if(!win32Dir.exists())
+    modelDescriptionFile.setFileName(fmuDir.path() + "/modelDescription.xml");
+    if(!binaryDir.exists())
     {
         removeDir(fmuDir.path());
-        printErrorMessage("Import of FMU failed: ModelDescription.xml not found.");
+        printErrorMessage("Import of FMU failed: modelDescription.xml not found.");
         return;
     }
     QDomDocument fmuDomDocument;
@@ -325,7 +354,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     if(fmuRoot == QDomElement())
     {
         removeDir(fmuDir.path());
-        printErrorMessage("Import of FMU failed: Could not parse ModelDescription.xml.");
+        printErrorMessage("Import of FMU failed: Could not parse modelDescription.xml.");
         return;
     }
 
@@ -460,9 +489,13 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     fmuComponentHppStream << "        }\n\n";
     fmuComponentHppStream << "        void configure()\n";
     fmuComponentHppStream << "        {\n";
-    fmuComponentHppStream << "            mFMU.modelDescription = parse(\""+fmuDir.path()+"/ModelDescription.xml\");\n";
+    fmuComponentHppStream << "            mFMU.modelDescription = parse(\""+fmuDir.path()+"/modelDescription.xml\");\n";
     fmuComponentHppStream << "            assert(mFMU.modelDescription);\n";
+#ifdef win32
     fmuComponentHppStream << "            assert(loadDll(\""+fmuDir.path()+"/"+fmuName+".dll\"));\n";
+#elif linux
+    fmuComponentHppStream << "            assert(loadSo(\""+fmuDir.path()+"/"+fmuName+".so\"));\n";
+#endif
     fmuComponentHppStream << "            addInfoMessage(getString(mFMU.modelDescription, att_modelIdentifier));\n\n";
     varElement = variablesElement.firstChildElement("ScalarVariable");
     i=0;
@@ -625,17 +658,25 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     fmuComponentHppStream << "            if (z!= NULL) free(z);\n";
     fmuComponentHppStream << "            if (prez!= NULL) free(prez);\n";
     fmuComponentHppStream << "        }\n\n";
-    fmuComponentHppStream << "        bool loadDll(std::string dllPath)\n";
+#ifdef win32
+    fmuComponentHppStream << "        bool loadDll(std::string path)\n";
+#elif linux
+    fmuComponentHppStream << "        bool loadSo(std::string path)\n";
+#endif
     fmuComponentHppStream << "        {\n";
     fmuComponentHppStream << "            bool success = true;\n";
-    fmuComponentHppStream << "            HANDLE h;\n";
-    fmuComponentHppStream << "            std::string libdir = dllPath;\n";
+    fmuComponentHppStream << "            void *h;\n";
+    fmuComponentHppStream << "            std::string libdir = path;\n";
     fmuComponentHppStream << "            while(libdir.at(libdir.size()-1) != '/')\n";
     fmuComponentHppStream << "            {\n";
     fmuComponentHppStream << "            libdir.erase(libdir.size()-1, 1);\n";
     fmuComponentHppStream << "            }\n";
+#ifdef win32
     fmuComponentHppStream << "            SetDllDirectoryA(libdir.c_str());       //Set search path for dependencies\n";
-    fmuComponentHppStream << "            h = LoadLibraryA(dllPath.c_str());\n";
+    fmuComponentHppStream << "            h = LoadLibraryA(path.c_str());\n"
+#elif linux
+     fmuComponentHppStream << "            h = dlopen(path.c_str(), RTLD_NOW);\n";
+#endif
     fmuComponentHppStream << "            if (!h)\n";
     fmuComponentHppStream << "            {\n";
     //fmuComponentHppStream << "                qDebug() << QString(\"error: Could not load dll\\n\");\n";
@@ -669,16 +710,32 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     fmuComponentHppStream << "            mFMU.getString               = (fGetString)          getAdr(&success, \"fmiGetString\");\n";
     fmuComponentHppStream << "            return success;\n";
     fmuComponentHppStream << "        }\n\n";
-    fmuComponentHppStream << "        void* getAdr(bool* success, const char* functionName)\n";
+//    fmuComponentHppStream << "        void* getAdr(bool* success, const char* functionName)\n";
+//    fmuComponentHppStream << "        {\n";
+//    fmuComponentHppStream << "            char name[BUFSIZE];\n";
+//    fmuComponentHppStream << "            void* fp;\n";
+//    fmuComponentHppStream << "            ModelDescription *me = mFMU.modelDescription;\n";
+//    fmuComponentHppStream << "            sprintf(name, \"%s_%s\", getModelIdentifier(me), functionName);\n";
+//    fmuComponentHppStream << "            fp = (void*)GetProcAddress((HINSTANCE__*)mFMU.dllHandle, name);\n";
+//    fmuComponentHppStream << "            //fp = (void*)GetProcAddress((HINSTANCE)fmu->dllHandle, name);        //CASTINGS MAY NOT WORK!!!\n";
+//    fmuComponentHppStream << "            if (!fp) {\n";
+//    fmuComponentHppStream << "                *success = false; // mark dll load as 'failed'\n";
+//    fmuComponentHppStream << "            }\n";
+//    fmuComponentHppStream << "            return fp;\n";
+//    fmuComponentHppStream << "        }\n\n";
+    fmuComponentHppStream << "        void* getAdr(bool* s, const char* functionName)\n";
     fmuComponentHppStream << "        {\n";
     fmuComponentHppStream << "            char name[BUFSIZE];\n";
     fmuComponentHppStream << "            void* fp;\n";
-    fmuComponentHppStream << "            ModelDescription *me = mFMU.modelDescription;\n";
-    fmuComponentHppStream << "            sprintf(name, \"%s_%s\", getModelIdentifier(me), functionName);\n";
-    fmuComponentHppStream << "            fp = (void*)GetProcAddress((HINSTANCE__*)mFMU.dllHandle, name);\n";
-    fmuComponentHppStream << "            //fp = (void*)GetProcAddress((HINSTANCE)fmu->dllHandle, name);        //CASTINGS MAY NOT WORK!!!\n";
-    fmuComponentHppStream << "            if (!fp) {\n";
-    fmuComponentHppStream << "                *success = false; // mark dll load as 'failed'\n";
+    fmuComponentHppStream << "            sprintf(name, \"%s_%s\", getModelIdentifier(mFMU.modelDescription), functionName);\n";
+    fmuComponentHppStream << "#ifdef _MSC_VER\n";
+    fmuComponentHppStream << "            fp = GetProcAddress(mFMU.dllHandle, name);\n";
+    fmuComponentHppStream << "#else\n";
+    fmuComponentHppStream << "            fp = dlsym(mFMU.dllHandle, name);\n";
+    fmuComponentHppStream << "#endif\n";
+    fmuComponentHppStream << "            if (!fp)\n";
+    fmuComponentHppStream << "            {\n";
+    fmuComponentHppStream << "                *s = false; // mark dll load as 'failed'\n";
     fmuComponentHppStream << "            }\n";
     fmuComponentHppStream << "            return fp;\n";
     fmuComponentHppStream << "        }\n\n";
@@ -791,7 +848,12 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
 
     //Move FMI source files to compile directory
     QFile simSupportSourceFile;
-    simSupportSourceFile.setFileName(gExecPath + "../ThirdParty/fmi/sim_support.c");
+#ifdef win32
+    QString fmiSrcPath = gExecPath + "../ThirdParty/fmi/";
+#elif linux
+    QString fmiSrcPath = gExecPath + "../ThirdParty/fmi/linux/";
+#endif
+    simSupportSourceFile.setFileName(fmiSrcPath+"sim_support.c");
     if(simSupportSourceFile.copy(fmuDir.path() + "/sim_support.c"))
     {
         printMessage("Copying sim_support.c");
@@ -799,7 +861,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     }
 
     QFile stackSourceFile;
-    stackSourceFile.setFileName(gExecPath + "../ThirdParty/fmi/stack.cc");
+    stackSourceFile.setFileName(fmiSrcPath+"stack.cc");
     if(stackSourceFile.copy(fmuDir.path() + "/stack.cc"))
     {
         printMessage("Copying stack.cc");
@@ -807,7 +869,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     }
 
     QFile xmlParserSourceFile;
-    xmlParserSourceFile.setFileName(gExecPath + "../ThirdParty/fmi/xml_parser.h");
+    xmlParserSourceFile.setFileName(fmiSrcPath+"xml_parser.h");
     if(xmlParserSourceFile.copy(fmuDir.path() + "/xml_parser.h"))
     {
         printMessage("Copying xml_parser.h");
@@ -815,7 +877,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     }
 
     QFile simSupportHeaderFile;
-    simSupportHeaderFile.setFileName(gExecPath + "../ThirdParty/fmi/sim_support.h");
+    simSupportHeaderFile.setFileName(fmiSrcPath+"sim_support.h");
     if(simSupportHeaderFile.copy(fmuDir.path() + "/sim_support.h"))
     {
         printMessage("Copying sim_support.h");
@@ -823,7 +885,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     }
 
     QFile stackHeaderFile;
-    stackHeaderFile.setFileName(gExecPath + "../ThirdParty/fmi/stack.h");
+    stackHeaderFile.setFileName(fmiSrcPath+"stack.h");
     if(stackHeaderFile.copy(fmuDir.path() + "/stack.h"))
     {
         printMessage("Copying stack.h");
@@ -831,7 +893,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     }
 
     QFile xmlParserHeaderFile;
-    xmlParserHeaderFile.setFileName(gExecPath + "../ThirdParty/fmi/xml_parser.cc");
+    xmlParserHeaderFile.setFileName(fmiSrcPath+"xml_parser.cc");
     if(xmlParserHeaderFile.copy(fmuDir.path() + "/xml_parser.cc"))
     {
         printMessage("Copying xml_parser.cc");
@@ -839,7 +901,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     }
 
     QFile expatFile;
-    expatFile.setFileName(gExecPath + "../ThirdParty/fmi/expat.h");
+    expatFile.setFileName(fmiSrcPath+"expat.h");
     if(expatFile.copy(fmuDir.path() + "/expat.h"))
     {
         printMessage("Copying expat.h");
@@ -847,15 +909,16 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     }
 
     QFile expatExternalFile;
-    expatExternalFile.setFileName(gExecPath + "../ThirdParty/fmi/expat_external.h");
+    expatExternalFile.setFileName(fmiSrcPath+"expat_external.h");
     if(expatExternalFile.copy(fmuDir.path() + "/expat_external.h"))
     {
         printMessage("Copying expat_external.h");
         printMessage("Copying " + expatExternalFile.fileName() + " to " + fmuDir.path() + "/expat_external.h");
     }
 
+#ifdef win32
     QFile libExpatAFile;
-    libExpatAFile.setFileName(gExecPath + "../ThirdParty/fmi/libexpat.a");
+    libExpatAFile.setFileName(fmiSrcPath+"libexpat.a");
     if(libExpatAFile.copy(fmuDir.path() + "/libexpat.a"))
     {
         printMessage("Copying libexpat.a");
@@ -863,15 +926,24 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     }
 
     QFile libExpatDllFile;
-    libExpatDllFile.setFileName(gExecPath + "../ThirdParty/fmi/libexpat.dll");
+    libExpatDllFile.setFileName(fmiSrcPath+"libexpat.dll");
     if(libExpatDllFile.copy(fmuDir.path() + "/libexpat.dll"))
     {
         printMessage("Copying libexpat.dll");
         printMessage("Copying " + libExpatDllFile.fileName() + " to " + fmuDir.path() + "/libexpat.dll");
     }
+#elif linux
+    QFile libExpatMTLibFile;
+    libExpatMTLibFile.setFileName(fmiSrcPath+"libexpatMT.lib");
+    if(libExpatMTLibFile.copy(fmuDir.path() + "/libexpatMT.lib"))
+    {
+        printMessage("Copying libexpatMT.lib");
+        printMessage("Copying " + libExpatMTLibFile.fileName() + " to " + fmuDir.path() + "/libexpatMT.lib");
+    }
+#endif
 
     QFile libExpatwAFile;
-    libExpatwAFile.setFileName(gExecPath + "../ThirdParty/fmi/libexpatw.a");
+    libExpatwAFile.setFileName(fmiSrcPath+"libexpatw.a");
     if(libExpatwAFile.copy(fmuDir.path() + "/libexpatw.a"))
     {
         printMessage("Copying libexpatw.a");
@@ -879,7 +951,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     }
 
     QFile libExpatwDllFile;
-    libExpatwDllFile.setFileName(gExecPath + "../ThirdParty/fmi/libexpatw.dll");
+    libExpatwDllFile.setFileName(fmiSrcPath+"libexpatw.dll");
     if(libExpatwDllFile.copy(fmuDir.path() + "/libexpatw.dll"))
     {
         printMessage("Copying libexpatw.dll");
@@ -887,7 +959,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     }
 
     QFile fmiMeFile;
-    fmiMeFile.setFileName(gExecPath + "../ThirdParty/fmi/fmi_me.h");
+    fmiMeFile.setFileName(fmiSrcPath+"fmi_me.h");
     if(fmiMeFile.copy(fmuDir.path() + "/fmi_me.h"))
     {
         printMessage("Copying fmi_me.h");
@@ -895,7 +967,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     }
 
     QFile fmiModelFunctionsFile;
-    fmiModelFunctionsFile.setFileName(gExecPath + "../ThirdParty/fmi/fmiModelFunctions.h");
+    fmiModelFunctionsFile.setFileName(fmiSrcPath+"fmiModelFunctions.h");
     if(fmiModelFunctionsFile.copy(fmuDir.path() + "/fmiModelFunctions.h"))
     {
         printMessage("Copying fmiModelFunctions.h");
@@ -903,7 +975,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     }
 
     QFile fmiModelTypesFile;
-    fmiModelTypesFile.setFileName(gExecPath + "../ThirdParty/fmi/fmiModelTypes.h");
+    fmiModelTypesFile.setFileName(fmiSrcPath+"fmiModelTypes.h");
     if(fmiModelTypesFile.copy(fmuDir.path() + "/fmiModelTypes.h"))
     {
         printMessage("Copying fmiModelTypes.h");
@@ -913,6 +985,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     printMessage("Writing compilation script");
 
     //Create compilation script file
+#ifdef win32
     QFile clBatchFile;
     clBatchFile.setFileName(fmuDir.path() + "/compile.bat");
     if(!clBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -924,12 +997,16 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     QTextStream clBatchStream(&clBatchFile);
     clBatchStream << "g++.exe -shared fmuLib.cc stack.cc xml_parser.cc -o fmuLib.dll -L../../../bin/ -lHopsanCore -L./ -llibexpat\n";
     clBatchFile.close();
+#endif
 
-
+#ifdef win32
     printMessage("Compiling " + fmuName + ".dll");
-
+#elif linux
+    printMessage("Compiling " + fmuName + ".so");
+#endif
 
     //Call compilation script file
+#ifdef win32
     QProcess gccProcess;
     gccProcess.start("cmd.exe", QStringList() << "/c" << "cd " + fmuDir.path() + " & compile.bat");
     gccProcess.waitForFinished();
@@ -944,13 +1021,40 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
             printMessage(msg);
         }
     }
+#elif linux
+    QString gccCommand = "cd "+fmuDir.path()+" && g++ -fPIC -Wl,--rpath -Wl,"+fmuDir.path()+" -shared fmuLib.cc stack.cc xml_parser.cc -fpermissive -o fmuLib.so -I./ -L../../../bin/ -lHopsanCore";
+    qDebug() << "Command = " << gccCommand;
+    gccCommand +=" 2>&1";
+    fp = popen(  (const char *) gccCommand.toStdString().c_str(), "r");
+    if ( !fp )
+    {
+        printErrorMessage("Could not execute '" + gccCommand + "'! err=%d");
+        return;
+    }
+    else
+    {
+        while ( fgets( line, sizeof line, fp))
+        {
+            printMessage((const QString &)line);
+        }
+    }
+#endif
 
+#ifdef win32
     if(!fmuDir.exists(fmuName + ".dll"))
     {
         printErrorMessage("Import of FMU failed: Compilation error.");
         removeDir(fmuDir.path());
         return;
     }
+#elif linux
+    if(!fmuDir.exists(fmuName + ".so"))
+    {
+        printErrorMessage("Import of FMU failed: Compilation error.");
+        removeDir(fmuDir.path());
+        return;
+    }
+#endif
 
 
     printMessage("Removing temporary files");

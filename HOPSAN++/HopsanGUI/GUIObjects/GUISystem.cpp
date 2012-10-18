@@ -1426,10 +1426,10 @@ void SystemContainer::createFMUSourceFilesFromDialog()
     }
 
     QFile modelDescriptionFile;
-    modelDescriptionFile.setFileName(savePath + "/ModelDescription.xml");
+    modelDescriptionFile.setFileName(savePath + "/modelDescription.xml");
     if(!modelDescriptionFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open ModelDescription.xml for writing.");
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open modelDescription.xml for writing.");
         return;
     }
 
@@ -1457,7 +1457,7 @@ void SystemContainer::createFMUSourceFilesFromDialog()
         return;
     }
 
-    progressBar.setLabelText("Writing ModelDescription.xml");
+    progressBar.setLabelText("Writing modelDescription.xml");
     progressBar.setValue(1);
 
     QTextStream modelDescriptionStream(&modelDescriptionFile);
@@ -1808,7 +1808,7 @@ void SystemContainer::createFMUSourceFilesFromDialog()
     hopsanFMUlibFile.copy(savePath + "/fmu/binaries/win32/HopsanFMU.lib");
     QFile modelFile(savePath + "/" + realModelName + ".hmf");
     modelFile.copy(savePath + "/fmu/resources/" + realModelName + ".hmf");
-    modelDescriptionFile.copy(savePath + "/fmu/ModelDescription.xml");
+    modelDescriptionFile.copy(savePath + "/fmu/modelDescription.xml");
 
     QString fmuFileName = savePath + "/" + modelName + ".fmu";
 
@@ -1818,9 +1818,9 @@ void SystemContainer::createFMUSourceFilesFromDialog()
 
 
 
-    p.start("cmd.exe", QStringList() << "/c" << gExecPath + "../ThirdParty/7z/7z.exe a -tzip " + fmuFileName + " " + savePath + "/fmu/ModelDescription.xml " + savePath + "/fmu/binaries/ " + savePath + "/fmu/resources");
+    p.start("cmd.exe", QStringList() << "/c" << gExecPath + "../ThirdParty/7z/7z.exe a -tzip " + fmuFileName + " " + savePath + "/fmu/modelDescription.xml " + savePath + "/fmu/binaries/ " + savePath + "/fmu/resources");
     p.waitForFinished();
-    qDebug() << "Called: " << gExecPath + "../ThirdParty/7z/7z.exe a -tzip " + fmuFileName + " " + savePath + "/fmu/ModelDescription.xml " + savePath + "/fmu/binaries/ " + savePath + "/fmu/resources";
+    qDebug() << "Called: " << gExecPath + "../ThirdParty/7z/7z.exe a -tzip " + fmuFileName + " " + savePath + "/fmu/modelDescription.xml " + savePath + "/fmu/binaries/ " + savePath + "/fmu/resources";
 
 
     progressBar.setLabelText("Cleaning up");
