@@ -31,6 +31,9 @@
 #include <QPushButton>
 #include <QProgressDialog>
 #include <QDomElement>
+#include <QLineEdit>
+#include <QDialogButtonBox>
+#include <QLabel>
 
 #ifdef WIN32
 #include <windows.h>
@@ -108,6 +111,9 @@ HopsanComponentGenerator::HopsanComponentGenerator(QString coreIncludePath, QStr
     {
         mpTextEdit = new QTextEdit();
         mpTextEdit->setReadOnly(true);
+        QFont monoFont = QFont("Monospace", 10, 50);
+        monoFont.setStyleHint(QFont::Monospace);
+        mpTextEdit->setFont(monoFont);
 
         mpDoneButton = new QPushButton("Close");
         mpDoneButton->setFixedWidth(200);
@@ -220,6 +226,10 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
 
     if(!QDir(gExecPath + "../import/FMU").exists())
         QDir().mkdir(gExecPath + "../import/FMU");
+
+    //DEBUG DEBUG DEBUG
+    removeDir(gExecPath+"../import/FMU/"+fmuName);
+    //END DEBUG
 
     if(!QDir(gExecPath + "../import/FMU/" + fmuName).exists())
     {
@@ -335,7 +345,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     }
     fmuDir.setFilter(QDir::NoFilter);
 
-    printMessage("Parsing XML file");
+    printMessage("Parsing modelDescription.xml");
 
     //Load XML data from modelDescription.xml
     //Copy xml-file to this directory
@@ -357,6 +367,148 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
         printErrorMessage("Import of FMU failed: Could not parse modelDescription.xml.");
         return;
     }
+
+
+    printMessage("Defining variables");
+
+
+    //Define lists with input and output variables
+
+    QStringList inVars, inVarNames;
+    QStringList outVars, outVarNames;
+    QStringList inoutVars, inoutVarNames;
+    QDomElement variablesElement = fmuRoot.firstChildElement("ModelVariables");
+    QDomElement varElement = variablesElement.firstChildElement("ScalarVariable");
+    int i=0;
+    while (!varElement.isNull())
+    {
+        if(!varElement.hasAttribute("causality"))
+        {
+            inoutVars << varElement.attribute("valueReference");
+            inoutVarNames << varElement.attribute("name");
+        }
+        else if(varElement.attribute("causality") == "input")
+        {
+            inVars << varElement.attribute("valueReference");
+            inVarNames << varElement.attribute("name");
+        }
+        else if(varElement.attribute("causality") == "output")
+        {
+            outVars << varElement.attribute("valueReference");
+            outVarNames << varElement.attribute("name");
+        }
+        varElement = varElement.nextSiblingElement("ScalarVariable");
+    }
+
+    QStringList tlmPortTypes;
+    QList<QStringList> tlmPortVars;
+    QList<QStringList> tlmPortRefs;
+
+
+    //Read from [modelName]_TLM.xml if it exists, to define TLM powerports
+    QFile tlmSpecFile;
+    tlmSpecFile.setFileName(fmuFileInfo.path() + "/" + fmuName + "_TLM.xml");
+    QDomDocument tlmDomDocument;
+    QDomElement tlmRoot = loadXMLDomDocument(tlmSpecFile, tlmDomDocument, "hopsanfmu");
+    tlmSpecFile.close();
+
+    if(tlmRoot != QDomElement())
+    {
+        printMessage("Parsing "+fmuName+"_TLM.xml");
+
+        QStringList input;
+
+        QDomElement portElement = tlmRoot.firstChildElement("tlmport");
+        while(!portElement.isNull())
+        {
+            input.clear();
+
+            QString type = portElement.attribute("type");
+            input.append(type);
+
+            QDomElement outputElement = portElement.firstChildElement("output");
+            while(!outputElement.isNull())
+            {
+                QString name = outputElement.text();
+                outputElement = outputElement.nextSiblingElement("output");
+                input.append(name);
+            }
+
+            QDomElement inputElement = portElement.firstChildElement("input");
+            while(!inputElement.isNull())
+            {
+                QString name = inputElement.text();
+                inputElement = inputElement.nextSiblingElement("input");
+                input.append(name);
+            }
+
+
+            if(input.first() == "hydraulic" && input.size() == 5)
+            {
+                if(outVarNames.contains(input[1]) && outVarNames.contains(input[2]) && inVarNames.contains(input[3]) && inVarNames.contains(input[4]))
+                {
+                    printMessage("Adding hydraulic port");
+
+                    tlmPortTypes.append(input[0]);
+                    input.removeFirst();
+                    tlmPortVars.append(input);
+
+                    tlmPortRefs.append(QStringList());
+                    tlmPortRefs.last().append(outVars[outVarNames.indexOf(input[0])]);
+                    tlmPortRefs.last().append(outVars[outVarNames.indexOf(input[1])]);
+                    tlmPortRefs.last().append(inVars[inVarNames.indexOf(input[2])]);
+                    tlmPortRefs.last().append(inVars[inVarNames.indexOf(input[3])]);
+
+                    outVars.removeAt(outVarNames.indexOf(input[0]));
+                    outVars.removeAt(outVarNames.indexOf(input[1]));
+                    inVars.removeAt(inVarNames.indexOf(input[2]));
+                    inVars.removeAt(inVarNames.indexOf(input[3]));
+
+                    outVarNames.removeAll(input[0]);
+                    outVarNames.removeAll(input[1]);
+                    inVarNames.removeAll(input[2]);
+                    inVarNames.removeAll(input[3]);
+                }
+            }
+            else if(input.first() == "mechanic" && input.size() == 6)
+            {
+                if(outVarNames.contains(input[1]) && outVarNames.contains(input[2]) && outVarNames.contains(input[3]) && inVarNames.contains(input[4]) && inVarNames.contains(input[5]))
+                {
+                    printMessage("Adding mechanical port");
+
+                    tlmPortTypes.append(input[0]);
+                    input.removeFirst();
+                    tlmPortVars.append(input);
+
+                    tlmPortRefs.append(QStringList());
+                    tlmPortRefs.last().append(outVars[outVarNames.indexOf(input[0])]);
+                    tlmPortRefs.last().append(outVars[outVarNames.indexOf(input[1])]);
+                    tlmPortRefs.last().append(outVars[outVarNames.indexOf(input[2])]);
+                    tlmPortRefs.last().append(inVars[inVarNames.indexOf(input[3])]);
+                    tlmPortRefs.last().append(inVars[inVarNames.indexOf(input[4])]);
+
+                    outVars.removeAt(outVarNames.indexOf(input[0]));
+                    outVarNames.removeAll(input[0]);
+
+                    outVars.removeAt(outVarNames.indexOf(input[1]));
+                    outVarNames.removeAll(input[1]);
+
+                    outVars.removeAt(outVarNames.indexOf(input[2]));
+                    outVarNames.removeAll(input[2]);
+
+                    inVars.removeAt(inVarNames.indexOf(input[3]));
+                    inVarNames.removeAll(input[3]);
+
+                    inVars.removeAt(inVarNames.indexOf(input[4]));
+                    inVarNames.removeAll(input[4]);
+                }
+            }
+
+            portElement = portElement.nextSiblingElement("tlmport");
+        }
+    }
+
+    //! @todo Make parameters use predefined lists instead
 
     printMessage("Writing fmuLib.cc");
 
@@ -436,40 +588,78 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     fmuComponentHppStream << "        double *xdot;                    // the crresponding derivatives in same order\n";
     fmuComponentHppStream << "        double *z;                // state event indicators\n";
     fmuComponentHppStream << "        double *prez;             // previous values of state event indicators\n\n";
-    QDomElement variablesElement = fmuRoot.firstChildElement("ModelVariables");
-    QDomElement varElement = variablesElement.firstChildElement("ScalarVariable");
-    int i=0;
-    while (!varElement.isNull())
+    //////////////////////////////////////////////////////////////////
+    for(int i=0; i<tlmPortVars.size(); ++i)
     {
-        QString numStr;
-        numStr.setNum(i);
-        if(!varElement.hasAttribute("causality"))
+        QString numStr = QString::number(i);
+        fmuComponentHppStream << "        Port *mpP"+numStr+";\n";
+    }
+    int j=0;
+    for(int i=0; i<inoutVars.size(); ++i)
+    {
+        QString numStr = inoutVars[i];
+        fmuComponentHppStream << "        Port *mpIn"+numStr+";\n";
+        fmuComponentHppStream << "        Port *mpOut"+numStr+";\n";
+        ++j;
+    }
+    for(int i=0; i<inVars.size(); ++i)
+    {
+        QString numStr = inVars[i];
+        fmuComponentHppStream << "        Port *mpIn"+numStr+";\n";
+        ++j;
+    }
+    for(int i=0; i<outVars.size(); ++i)
+    {
+        QString numStr = outVars[i];
+        fmuComponentHppStream << "        Port *mpOut"+numStr+";\n";
+        ++j;
+    }
+
+    qDebug() << "Er";
+
+    //////////////////////////////////////////////////////////////////
+    for(int i=0; i<tlmPortVars.size(); ++i)
+    {
+        QString numStr = QString::number(i);
+        if(tlmPortTypes[i] == "hydraulic")
         {
-            fmuComponentHppStream << "        Port *mpIn"+numStr+";\n";
-            fmuComponentHppStream << "        Port *mpOut"+numStr+";\n";
+            fmuComponentHppStream << "        double *mpND_p"+numStr+";\n";
+            fmuComponentHppStream << "        double *mpND_q"+numStr+";\n";
+            fmuComponentHppStream << "        double *mpND_c"+numStr+";\n";
+            fmuComponentHppStream << "        double *mpND_Zc"+numStr+";\n";
         }
-        else if(varElement.attribute("causality") == "input")
-            fmuComponentHppStream << "        Port *mpIn"+numStr+";\n";
-        else if(varElement.attribute("causality") == "output")
-            fmuComponentHppStream << "        Port *mpOut"+numStr+";\n";
-        ++i;
-        varElement = varElement.nextSiblingElement("ScalarVariable");
+        else if(tlmPortTypes[i] == "mechanic")
+        {
+            fmuComponentHppStream << "        double *mpND_f"+numStr+";\n";
+            fmuComponentHppStream << "        double *mpND_x"+numStr+";\n";
+            fmuComponentHppStream << "        double *mpND_v"+numStr+";\n";
+            fmuComponentHppStream << "        double *mpND_c"+numStr+";\n";
+            fmuComponentHppStream << "        double *mpND_Zc"+numStr+";\n";
+        }
     }
-    //fmuComponentHppStream << "        Port *mpP1;\n";
-    varElement = variablesElement.firstChildElement("ScalarVariable");
-    i=0;
-    while (!varElement.isNull())
+    j=0;
+    for(int i=0; i<inoutVars.size(); ++i)
     {
-        QString numStr;
-        numStr.setNum(i);
-        if(!varElement.hasAttribute("causality") || varElement.attribute("causality") == "input")
-            fmuComponentHppStream << "        double *mpND_in" + numStr + ";\n";
-        if(!varElement.hasAttribute("causality") || varElement.attribute("causality") == "output")
-            fmuComponentHppStream << "        double *mpND_out" + numStr + ";\n";
-        ++i;
-        varElement = varElement.nextSiblingElement("ScalarVariable");
+        QString numStr = inoutVars[i];
+        fmuComponentHppStream << "        double *mpND_in" + numStr + ";\n";
+        fmuComponentHppStream << "        double *mpND_out" + numStr + ";\n";
+        ++j;
     }
+    for(int i=0; i<inVars.size(); ++i)
+    {
+        QString numStr = inVars[i];
+        fmuComponentHppStream << "        double *mpND_in" + numStr + ";\n";
+        ++j;
+    }
+    for(int i=0; i<outVars.size(); ++i)
+    {
+        QString numStr = outVars[i];
+        fmuComponentHppStream << "        double *mpND_out" + numStr + ";\n";
+        ++j;
+    }
+    //////////////////////////////////////////////////////////////////
     fmuComponentHppStream << "\n";
+    //////////////////////////////////////////////////////////////////
     varElement = variablesElement.firstChildElement("ScalarVariable");
     i=0;
     while (!varElement.isNull())
@@ -481,6 +671,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
         }
         varElement = varElement.nextSiblingElement("ScalarVariable");
     }
+    //////////////////////////////////////////////////////////////////
     fmuComponentHppStream << "\n";
     fmuComponentHppStream << "    public:\n";
     fmuComponentHppStream << "        static Component *Creator()\n";
@@ -497,25 +688,43 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     fmuComponentHppStream << "            assert(loadSo(\""+fmuDir.path()+"/"+fmuName+".so\"));\n";
 #endif
     fmuComponentHppStream << "            addInfoMessage(getString(mFMU.modelDescription, att_modelIdentifier));\n\n";
-    varElement = variablesElement.firstChildElement("ScalarVariable");
-    i=0;
-    while (!varElement.isNull())
+    //////////////////////////////////////////////////////////////////
+    for(int i=0; i<tlmPortVars.size(); ++i)
     {
-        QString numStr;
-        numStr.setNum(i);
-        if(!varElement.hasAttribute("causality"))
+        QString numStr = QString::number(i);
+        if(tlmPortTypes[i] == "hydraulic")
         {
-            fmuComponentHppStream << "            mpIn"+numStr+" = addReadPort(\""+varElement.attribute("name")+"In\", \"NodeSignal\", Port::NOTREQUIRED);\n";
-            fmuComponentHppStream << "            mpOut"+numStr+" = addWritePort(\""+varElement.attribute("name")+"Out\", \"NodeSignal\", Port::NOTREQUIRED);\n";
+            fmuComponentHppStream << "            mpP"+numStr+" = addPowerPort(\"P"+numStr+"\", \"NodeHydraulic\");\n";
         }
-        else if(varElement.attribute("causality") == "input")
-            fmuComponentHppStream << "            mpIn"+numStr+" = addReadPort(\""+varElement.attribute("name")+"\", \"NodeSignal\", Port::NOTREQUIRED);\n";
-        else if(varElement.attribute("causality") == "output")
-            fmuComponentHppStream << "            mpOut"+numStr+" = addWritePort(\""+varElement.attribute("name")+"\", \"NodeSignal\", Port::NOTREQUIRED);\n";
-        ++i;
-        varElement = varElement.nextSiblingElement("ScalarVariable");
+        else if(tlmPortTypes[i] == "mechanic")
+        {
+            fmuComponentHppStream << "            mpP"+numStr+" = addPowerPort(\"P"+numStr+"\", \"NodeMechanic\");\n";
+        }
     }
-    //fmuComponentHppStream << "            mpP1 = addWritePort(\"out\", \"NodeSignal\");\n";
+    j=0;
+    for(int i=0; i<inoutVars.size(); ++i)
+    {
+        QString numStr = inoutVars[i];
+        fmuComponentHppStream << "            mpIn"+numStr+" = addReadPort(\""+inoutVarNames[i]+"\", \"NodeSignal\", Port::NOTREQUIRED);\n";
+        fmuComponentHppStream << "            mpOut"+numStr+" = addWritePort(\""+inoutVarNames[i]+"\", \"NodeSignal\", Port::NOTREQUIRED);\n";
+        ++j;
+    }
+    for(int i=0; i<inVars.size(); ++i)
+    {
+        QString numStr = inVars[i];
+        fmuComponentHppStream << "            mpIn"+numStr+" = addReadPort(\""+inVarNames[i]+"\", \"NodeSignal\", Port::NOTREQUIRED);\n";
+        ++j;
+    }
+    for(int i=0; i<outVars.size(); ++i)
+    {
+        QString numStr = outVars[i];
+        fmuComponentHppStream << "            mpOut"+numStr+" = addWritePort(\""+outVarNames[i]+"\", \"NodeSignal\", Port::NOTREQUIRED);\n";
+        ++j;
+    }
+
+    qDebug() << "San";
+
+    //////////////////////////////////////////////////////////////////
     varElement = variablesElement.firstChildElement("ScalarVariable");
     i=0;
     while (!varElement.isNull())
@@ -528,35 +737,57 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
         }
         varElement = varElement.nextSiblingElement("ScalarVariable");
     }
+    //////////////////////////////////////////////////////////////////
     fmuComponentHppStream << "        }\n\n";
-    fmuComponentHppStream << "       void initialize()\n";
-    fmuComponentHppStream << "       {\n";
-    fmuComponentHppStream << "           if (!mFMU.modelDescription)\n";
-    fmuComponentHppStream << "           {\n";
-    fmuComponentHppStream << "               addErrorMessage(\"Missing FMU model description\");\n";
-    fmuComponentHppStream << "               stopSimulation();\n";
-    fmuComponentHppStream << "           }\n";
-    varElement = variablesElement.firstChildElement("ScalarVariable");
-    i=0;
-    int nInputs=0;
-    int nOutputs=0;
-    while (!varElement.isNull())
+    fmuComponentHppStream << "        void initialize()\n";
+    fmuComponentHppStream << "        {\n";
+    fmuComponentHppStream << "            if (!mFMU.modelDescription)\n";
+    fmuComponentHppStream << "            {\n";
+    fmuComponentHppStream << "                addErrorMessage(\"Missing FMU model description\");\n";
+    fmuComponentHppStream << "                stopSimulation();\n";
+    fmuComponentHppStream << "            }\n";
+    //////////////////////////////////////////////////////////////////
+    for(int i=0; i<tlmPortTypes.size(); ++i)
     {
-        QString numStr;
-        numStr.setNum(i);
-        if(!varElement.hasAttribute("causality") || varElement.attribute("causality") == "input")
+        QString numStr = QString::number(i);
+        if(tlmPortTypes[i] == "hydraulic")
         {
-            fmuComponentHppStream << "          mpND_in"+numStr+" = getSafeNodeDataPtr(mpIn"+numStr+", NodeSignal::VALUE);\n\n";
-            ++nInputs;
+            fmuComponentHppStream << "            mpND_p"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeHydraulic::PRESSURE);\n";
+            fmuComponentHppStream << "            mpND_q"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeHydraulic::FLOW);\n";
+            fmuComponentHppStream << "            mpND_c"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeHydraulic::WAVEVARIABLE);\n";
+            fmuComponentHppStream << "            mpND_Zc"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeHydraulic::CHARIMP);\n";
         }
-        if(!varElement.hasAttribute("causality") || varElement.attribute("causality") == "output")
+        else if(tlmPortTypes[i] == "mechanic")
         {
-            fmuComponentHppStream << "          mpND_out"+numStr+" = getSafeNodeDataPtr(mpOut"+numStr+", NodeSignal::VALUE);\n\n";
-            ++nOutputs;
+            fmuComponentHppStream << "            mpND_f"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::FORCE);\n";
+            fmuComponentHppStream << "            mpND_x"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::POSITION);\n";
+            fmuComponentHppStream << "            mpND_v"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::VELOCITY);\n";
+            fmuComponentHppStream << "            mpND_c"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::WAVEVARIABLE);\n";
+            fmuComponentHppStream << "            mpND_Zc"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::CHARIMP);\n";
         }
-        ++i;
-        varElement = varElement.nextSiblingElement("ScalarVariable");
     }
+    j=0;
+    for(int i=0; i<inoutVars.size(); ++i)
+    {
+        QString numStr = inoutVars[i];
+        fmuComponentHppStream << "            mpND_in"+numStr+" = getSafeNodeDataPtr(mpIn"+numStr+", NodeSignal::VALUE);\n";
+        fmuComponentHppStream << "            mpND_out"+numStr+" = getSafeNodeDataPtr(mpOut"+numStr+", NodeSignal::VALUE);\n";
+        ++j;
+    }
+    for(int i=0; i<inVars.size(); ++i)
+    {
+        QString numStr = inVars[i];
+        fmuComponentHppStream << "            mpND_in"+numStr+" = getSafeNodeDataPtr(mpIn"+numStr+", NodeSignal::VALUE);\n";
+        ++j;
+    }
+    for(int i=0; i<outVars.size(); ++i)
+    {
+        QString numStr = outVars[i];
+        fmuComponentHppStream << "            mpND_out"+numStr+" = getSafeNodeDataPtr(mpOut"+numStr+", NodeSignal::VALUE);\n";
+        ++j;
+    }
+    //////////////////////////////////////////////////////////////////
+    fmuComponentHppStream << "           \n";
     fmuComponentHppStream << "            //Initialize FMU\n";
     fmuComponentHppStream << "            ModelDescription* md;            // handle to the parsed XML file\n";
     fmuComponentHppStream << "            const char* guid;                // global unique id of the fmu\n";
@@ -592,6 +823,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     fmuComponentHppStream << "            double value;\n";
     fmuComponentHppStream << "            ScalarVariable* sv;\n";
     fmuComponentHppStream << "            fmiValueReference vr;\n\n";
+    //////////////////////////////////////////////////////////////////
     varElement = variablesElement.firstChildElement("ScalarVariable");
     i=0;
     while (!varElement.isNull())
@@ -606,14 +838,45 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
         }
         varElement = varElement.nextSiblingElement("ScalarVariable");
     }
+    //////////////////////////////////////////////////////////////////
     fmuComponentHppStream << "\n";
     fmuComponentHppStream << "            //write input values\n";
-    varElement = variablesElement.firstChildElement("ScalarVariable");
-    i=0;
-    while (!varElement.isNull())
+    //////////////////////////////////////////////////////////////////
+    for(int i=0; i<tlmPortTypes.size(); ++i)
     {
-        QString numStr;
-        numStr.setNum(i);
+        QString numStr = QString::number(i);
+        if(tlmPortTypes[i] == "hydraulic")
+        {
+            QString refStr = tlmPortRefs[i][2];
+            fmuComponentHppStream << "            sv = vars["+refStr+"];\n";
+            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
+            fmuComponentHppStream << "            value = (*mpND_c"+numStr+");\n";
+            fmuComponentHppStream << "            mFMU.setReal(c, &vr, 1, &value);\n\n";
+
+            refStr = tlmPortRefs[i][3];
+            fmuComponentHppStream << "            sv = vars["+refStr+"];\n";
+            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
+            fmuComponentHppStream << "            value = (*mpND_Zc"+numStr+");\n";
+            fmuComponentHppStream << "            mFMU.setReal(c, &vr, 1, &value);\n\n";
+        }
+        if(tlmPortTypes[i] == "mechanic")
+        {
+            QString refStr = tlmPortRefs[i][3];
+            fmuComponentHppStream << "            sv = vars["+refStr+"];\n";
+            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
+            fmuComponentHppStream << "            value = (*mpND_c"+numStr+");\n";
+            fmuComponentHppStream << "            mFMU.setReal(c, &vr, 1, &value);\n\n";
+
+            refStr = tlmPortRefs[i][4];
+            fmuComponentHppStream << "            sv = vars["+refStr+"];\n";
+            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
+            fmuComponentHppStream << "            value = (*mpND_Zc"+numStr+");\n";
+            fmuComponentHppStream << "            mFMU.setReal(c, &vr, 1, &value);\n\n";
+        }
+    }
+    for(int i=0; i<inoutVars.size(); ++i)
+    {
+        QString numStr = inoutVars[i];
         if(!varElement.hasAttribute("causality") || varElement.attribute("causality") == "input")
         {
             fmuComponentHppStream << "            if(mpIn"+numStr+"->isConnected())\n";
@@ -624,18 +887,67 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
             fmuComponentHppStream << "                mFMU.setReal(c, &vr, 1, &value);\n\n";
             fmuComponentHppStream << "            }\n";
         }
-        ++i;
-        varElement = varElement.nextSiblingElement("ScalarVariable");
     }
+    for(int i=0; i<inVars.size(); ++i)
+    {
+        QString numStr = inVars[i];
+        if(!varElement.hasAttribute("causality") || varElement.attribute("causality") == "input")
+        {
+            fmuComponentHppStream << "            if(mpIn"+numStr+"->isConnected())\n";
+            fmuComponentHppStream << "            {\n";
+            fmuComponentHppStream << "                sv = vars["+numStr+"];\n";
+            fmuComponentHppStream << "                vr = getValueReference(sv);\n";
+            fmuComponentHppStream << "                value = (*mpND_in"+numStr+");\n";
+            fmuComponentHppStream << "                mFMU.setReal(c, &vr, 1, &value);\n\n";
+            fmuComponentHppStream << "            }\n";
+        }
+    }
+    //////////////////////////////////////////////////////////////////
     fmuComponentHppStream << "            //run simulation\n";
     fmuComponentHppStream << "            simulateFMU();\n\n";
     fmuComponentHppStream << "            //write back output values\n";
-    varElement = variablesElement.firstChildElement("ScalarVariable");
-    i=0;
-    while (!varElement.isNull())
+    //////////////////////////////////////////////////////////////////
+    for(int i=0; i<tlmPortTypes.size(); ++i)
     {
-        QString numStr;
-        numStr.setNum(i);
+        QString numStr = QString::number(i);
+        if(tlmPortTypes[i] == "hydraulic")
+        {
+            QString refStr = tlmPortRefs[i][0];
+            fmuComponentHppStream << "            sv = vars["+refStr+"];\n";
+            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
+            fmuComponentHppStream << "            mFMU.getReal(c, &vr, 1, &value);\n";
+            fmuComponentHppStream << "            (*mpND_p"+numStr+") = value;\n\n";
+
+            refStr = tlmPortRefs[i][1];
+            fmuComponentHppStream << "            sv = vars["+refStr+"];\n";
+            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
+            fmuComponentHppStream << "            mFMU.getReal(c, &vr, 1, &value);\n";
+            fmuComponentHppStream << "            (*mpND_q"+numStr+") = value;\n\n";
+        }
+        else if(tlmPortTypes[i] == "mechanic")
+        {
+            QString refStr = tlmPortRefs[i][0];
+            fmuComponentHppStream << "            sv = vars["+refStr+"];\n";
+            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
+            fmuComponentHppStream << "            mFMU.getReal(c, &vr, 1, &value);\n";
+            fmuComponentHppStream << "            (*mpND_f"+numStr+") = value;\n\n";
+
+            refStr = tlmPortRefs[i][1];
+            fmuComponentHppStream << "            sv = vars["+refStr+"];\n";
+            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
+            fmuComponentHppStream << "            mFMU.getReal(c, &vr, 1, &value);\n";
+            fmuComponentHppStream << "            (*mpND_x"+numStr+") = value;\n\n";
+
+            refStr = tlmPortRefs[i][2];
+            fmuComponentHppStream << "            sv = vars["+refStr+"];\n";
+            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
+            fmuComponentHppStream << "            mFMU.getReal(c, &vr, 1, &value);\n";
+            fmuComponentHppStream << "            (*mpND_v"+numStr+") = value;\n\n";
+        }
+    }
+    for(int i=0; i<inoutVars.size(); ++i)
+    {
+        QString numStr = inoutVars[i];
         if(!varElement.hasAttribute("causality") || varElement.attribute("causality") == "output")
         {
 
@@ -644,9 +956,20 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
             fmuComponentHppStream << "            mFMU.getReal(c, &vr, 1, &value);\n";
             fmuComponentHppStream << "            (*mpND_out"+numStr+") = value;\n\n";
         }
-        ++i;
-        varElement = varElement.nextSiblingElement("ScalarVariable");
     }
+    for(int i=0; i<outVars.size(); ++i)
+    {
+        QString numStr = outVars[i];
+        if(!varElement.hasAttribute("causality") || varElement.attribute("causality") == "output")
+        {
+
+            fmuComponentHppStream << "            sv = vars["+numStr+"];\n";
+            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
+            fmuComponentHppStream << "            mFMU.getReal(c, &vr, 1, &value);\n";
+            fmuComponentHppStream << "            (*mpND_out"+numStr+") = value;\n\n";
+        }
+    }
+    //////////////////////////////////////////////////////////////////
     fmuComponentHppStream << "        }\n";
     fmuComponentHppStream << "        void finalize()\n";
     fmuComponentHppStream << "        {\n";
@@ -679,7 +1002,6 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
 #endif
     fmuComponentHppStream << "            if (!h)\n";
     fmuComponentHppStream << "            {\n";
-    //fmuComponentHppStream << "                qDebug() << QString(\"error: Could not load dll\\n\");\n";
     fmuComponentHppStream << "                success = false; // failure\n";
     fmuComponentHppStream << "                return success;\n";
     fmuComponentHppStream << "            }\n";
@@ -786,6 +1108,14 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     fmuComponentHppStream << "#endif // "+fmuName+"_H\n";
     fmuComponentHppFile.close();
 
+    QString iconName = "fmucomponent.svg";
+    QImage *pIconImage = new QImage(fmuPath+"/model.png");
+    if(!pIconImage->isNull())
+    {
+        iconName = "model.svg";
+    }
+
+
     printMessage("Writing "+fmuName+".xml");
 
     //Create <fmuname>.xml
@@ -809,38 +1139,73 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     fmuXmlStream << "        <ports>\n";
     varElement = variablesElement.firstChildElement("ScalarVariable");
     i=0;
-    double inputPosStep=1.0/(nInputs+1.0);      //These 4 variables are used for port positioning
-    double outputPosStep=1.0/(nOutputs+1.0);
+
+    double tlmPosStep=1.0/(tlmPortTypes.size()+1.0);      //These 2 variables are used for TLM port positioning
+    double tlmPos=0;
+
+    double inputPosStep=1.0/(inVars.size()+inoutVars.size()+1.0);      //These 4 variables are used for input/output port positioning
+    double outputPosStep=1.0/(outVars.size()+inoutVars.size()+1.0);
     double inputPos=0;
     double outputPos=0;
-    while (!varElement.isNull())
+
+    QString numStr, numStr2;
+    for(int i=0; i<tlmPortTypes.size(); ++i)
     {
-        QString numStr, numStr2;
-        numStr.setNum(i);
-        if(!varElement.hasAttribute("causality"))
-        {
-            inputPos += inputPosStep;
-            numStr2.setNum(inputPos);
-            fmuXmlStream << "            <port name=\""+varElement.attribute("name")+"In\" x=\"0.0\" y=\""+numStr2+"\" a=\"180\"/>\n";
-            outputPos += outputPosStep;
-            numStr2.setNum(outputPos);
-            fmuXmlStream << "            <port name=\""+varElement.attribute("name")+"Out\" x=\"1.0\" y=\""+numStr2+"\" a=\"0\"/>\n";
-        }
-        else if(varElement.attribute("causality") == "input")
-        {
-            inputPos += inputPosStep;
-            numStr2.setNum(inputPos);
-            fmuXmlStream << "            <port name=\""+varElement.attribute("name")+"\" x=\"0.0\" y=\""+numStr2+"\" a=\"180\"/>\n";
-        }
-        else if(varElement.attribute("causality") == "output")
-        {
-            outputPos += outputPosStep;
-            numStr2.setNum(outputPos);
-            fmuXmlStream << "            <port name=\""+varElement.attribute("name")+"\" x=\"1.0\" y=\""+numStr2+"\" a=\"0\"/>\n";
-        }
-        ++i;
-        varElement = varElement.nextSiblingElement("ScalarVariable");
+        tlmPos += tlmPosStep;
+        numStr = QString::number(i);
+        numStr2.setNum(tlmPos);
+        fmuXmlStream << "            <port name=\"P"+numStr+"\" x=\""+numStr2+"\" y=\"0.0\"  a=\"270\"/>\n";
     }
+    for(int i=0; i<inoutVars.size(); ++i)
+    {
+        inputPos += inputPosStep;
+        numStr2.setNum(inputPos);
+        fmuXmlStream << "            <port name=\""+inoutVarNames[i]+"In\" x=\"0.0\" y=\""+numStr2+"\" a=\"180\"/>\n";
+        outputPos += outputPosStep;
+        numStr2.setNum(outputPos);
+        fmuXmlStream << "            <port name=\""+inoutVarNames[i]+"Out\" x=\"1.0\" y=\""+numStr2+"\" a=\"0\"/>\n";
+    }
+    for(int i=0; i<inVars.size(); ++i)
+    {
+        inputPos += inputPosStep;
+        numStr2.setNum(inputPos);
+        fmuXmlStream << "            <port name=\""+inVarNames[i]+"In\" x=\"0.0\" y=\""+numStr2+"\" a=\"180\"/>\n";
+    }
+    for(int i=0; i<outVars.size(); ++i)
+    {
+        outputPos += outputPosStep;
+        numStr2.setNum(outputPos);
+        fmuXmlStream << "            <port name=\""+outVarNames[i]+"Out\" x=\"1.0\" y=\""+numStr2+"\" a=\"0\"/>\n";
+    }
+
+//    while (!varElement.isNull())
+//    {
+//        QString numStr, numStr2;
+//        numStr.setNum(i);
+//        if(!varElement.hasAttribute("causality"))
+//        {
+//            inputPos += inputPosStep;
+//            numStr2.setNum(inputPos);
+//            fmuXmlStream << "            <port name=\""+varElement.attribute("name")+"In\" x=\"0.0\" y=\""+numStr2+"\" a=\"180\"/>\n";
+//            outputPos += outputPosStep;
+//            numStr2.setNum(outputPos);
+//            fmuXmlStream << "            <port name=\""+varElement.attribute("name")+"Out\" x=\"1.0\" y=\""+numStr2+"\" a=\"0\"/>\n";
+//        }
+//        else if(varElement.attribute("causality") == "input")
+//        {
+//            inputPos += inputPosStep;
+//            numStr2.setNum(inputPos);
+//            fmuXmlStream << "            <port name=\""+varElement.attribute("name")+"\" x=\"0.0\" y=\""+numStr2+"\" a=\"180\"/>\n";
+//        }
+//        else if(varElement.attribute("causality") == "output")
+//        {
+//            outputPos += outputPosStep;
+//            numStr2.setNum(outputPos);
+//            fmuXmlStream << "            <port name=\""+varElement.attribute("name")+"\" x=\"1.0\" y=\""+numStr2+"\" a=\"0\"/>\n";
+//        }
+//        ++i;
+//        varElement = varElement.nextSiblingElement("ScalarVariable");
+//    }
     fmuXmlStream << "        </ports>\n";
     fmuXmlStream << "    </modelobject>\n";
     fmuXmlStream << "</hopsanobjectappearance>\n";
@@ -1022,7 +1387,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
         }
     }
 #elif linux
-    QString gccCommand = "cd "+fmuDir.path()+" && g++ -fPIC -Wl,--rpath -Wl,"+fmuDir.path()+" -shared fmuLib.cc stack.cc xml_parser.cc -fpermissive -o fmuLib.so -I./ -L../../../bin/ -lHopsanCore";
+    QString gccCommand = "cd "+fmuDir.path()+" && g++ -fPIC -w -Wl,--rpath -Wl,"+fmuDir.path()+" -shared fmuLib.cc stack.cc xml_parser.cc -fpermissive -o fmuLib.so -I./ -L../../../bin/ -lHopsanCore";
     qDebug() << "Command = " << gccCommand;
     gccCommand +=" 2>&1";
     fp = popen(  (const char *) gccCommand.toStdString().c_str(), "r");
