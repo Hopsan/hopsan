@@ -289,11 +289,11 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
 
     //Move all binary files to FMU directory
 #ifdef win32
-    QDir binaryDir = QDir::cleanPath(fmuDir.path() + "/binaries/win64");
+    QDir binaryDir = QDir::cleanPath(fmuDir.path() + "/binaries/win32");
 #elif win64
     QDir binaryDir = QDir::cleanPath(fmuDir.path() + "/binaries/win64");
 #elif linux && __i386__
-    QDir binaryDir = QDir::cleanPath(fmuDir.path() + "/binaries/linux64");
+    QDir binaryDir = QDir::cleanPath(fmuDir.path() + "/binaries/linux32");
 #elif linux && __x86_64__
     QDir binaryDir = QDir::cleanPath(fmuDir.path() + "/binaries/linux64");
 #endif
@@ -460,19 +460,21 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
                     tlmPortRefs.last().append(inVars[inVarNames.indexOf(input[3])]);
 
                     outVars.removeAt(outVarNames.indexOf(input[0]));
-                    outVars.removeAt(outVarNames.indexOf(input[1]));
-                    inVars.removeAt(inVarNames.indexOf(input[2]));
-                    inVars.removeAt(inVarNames.indexOf(input[3]));
-
                     outVarNames.removeAll(input[0]);
+
+                    outVars.removeAt(outVarNames.indexOf(input[1]));
                     outVarNames.removeAll(input[1]);
+
+                    inVars.removeAt(inVarNames.indexOf(input[2]));
                     inVarNames.removeAll(input[2]);
+
+                    inVars.removeAt(inVarNames.indexOf(input[3]));
                     inVarNames.removeAll(input[3]);
                 }
             }
-            else if(input.first() == "mechanic" && input.size() == 6)
+            else if(input.first() == "mechanic" && input.size() == 7)
             {
-                if(outVarNames.contains(input[1]) && outVarNames.contains(input[2]) && outVarNames.contains(input[3]) && inVarNames.contains(input[4]) && inVarNames.contains(input[5]))
+                if(outVarNames.contains(input[1]) && outVarNames.contains(input[2]) && outVarNames.contains(input[3]) && outVarNames.contains(input[4]) && inVarNames.contains(input[5]) && inVarNames.contains(input[6]))
                 {
                     printMessage("Adding mechanical port");
 
@@ -484,8 +486,9 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
                     tlmPortRefs.last().append(outVars[outVarNames.indexOf(input[0])]);
                     tlmPortRefs.last().append(outVars[outVarNames.indexOf(input[1])]);
                     tlmPortRefs.last().append(outVars[outVarNames.indexOf(input[2])]);
-                    tlmPortRefs.last().append(inVars[inVarNames.indexOf(input[3])]);
+                    tlmPortRefs.last().append(outVars[outVarNames.indexOf(input[3])]);
                     tlmPortRefs.last().append(inVars[inVarNames.indexOf(input[4])]);
+                    tlmPortRefs.last().append(inVars[inVarNames.indexOf(input[5])]);
 
                     outVars.removeAt(outVarNames.indexOf(input[0]));
                     outVarNames.removeAll(input[0]);
@@ -496,11 +499,14 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
                     outVars.removeAt(outVarNames.indexOf(input[2]));
                     outVarNames.removeAll(input[2]);
 
-                    inVars.removeAt(inVarNames.indexOf(input[3]));
-                    inVarNames.removeAll(input[3]);
+                    outVars.removeAt(outVarNames.indexOf(input[3]));
+                    outVarNames.removeAll(input[3]);
 
                     inVars.removeAt(inVarNames.indexOf(input[4]));
                     inVarNames.removeAll(input[4]);
+
+                    inVars.removeAt(inVarNames.indexOf(input[5]));
+                    inVarNames.removeAll(input[5]);
                 }
             }
 
@@ -568,6 +574,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     fmuComponentHppStream << "#include <stdio.h>\n";
     fmuComponentHppStream << "#include <stdlib.h>\n";
     fmuComponentHppStream << "#include <string.h>\n";
+    fmuComponentHppStream << "#include <iostream>\n";
     fmuComponentHppStream << "#include <assert.h>\n";
     fmuComponentHppStream << "#ifdef WIN32\n";
     fmuComponentHppStream << "#include <windows.h>\n";
@@ -633,6 +640,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
             fmuComponentHppStream << "        double *mpND_f"+numStr+";\n";
             fmuComponentHppStream << "        double *mpND_x"+numStr+";\n";
             fmuComponentHppStream << "        double *mpND_v"+numStr+";\n";
+            fmuComponentHppStream << "        double *mpND_me"+numStr+";\n";
             fmuComponentHppStream << "        double *mpND_c"+numStr+";\n";
             fmuComponentHppStream << "        double *mpND_Zc"+numStr+";\n";
         }
@@ -762,6 +770,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
             fmuComponentHppStream << "            mpND_f"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::FORCE);\n";
             fmuComponentHppStream << "            mpND_x"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::POSITION);\n";
             fmuComponentHppStream << "            mpND_v"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::VELOCITY);\n";
+            fmuComponentHppStream << "            mpND_me"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::EQMASS);\n";
             fmuComponentHppStream << "            mpND_c"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::WAVEVARIABLE);\n";
             fmuComponentHppStream << "            mpND_Zc"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::CHARIMP);\n";
         }
@@ -877,30 +886,24 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     for(int i=0; i<inoutVars.size(); ++i)
     {
         QString numStr = inoutVars[i];
-        if(!varElement.hasAttribute("causality") || varElement.attribute("causality") == "input")
-        {
-            fmuComponentHppStream << "            if(mpIn"+numStr+"->isConnected())\n";
-            fmuComponentHppStream << "            {\n";
-            fmuComponentHppStream << "                sv = vars["+numStr+"];\n";
-            fmuComponentHppStream << "                vr = getValueReference(sv);\n";
-            fmuComponentHppStream << "                value = (*mpND_in"+numStr+");\n";
-            fmuComponentHppStream << "                mFMU.setReal(c, &vr, 1, &value);\n\n";
-            fmuComponentHppStream << "            }\n";
-        }
+        fmuComponentHppStream << "            if(mpIn"+numStr+"->isConnected())\n";
+        fmuComponentHppStream << "            {\n";
+        fmuComponentHppStream << "                sv = vars["+numStr+"];\n";
+        fmuComponentHppStream << "                vr = getValueReference(sv);\n";
+        fmuComponentHppStream << "                value = (*mpND_in"+numStr+");\n";
+        fmuComponentHppStream << "                mFMU.setReal(c, &vr, 1, &value);\n\n";
+        fmuComponentHppStream << "            }\n";
     }
     for(int i=0; i<inVars.size(); ++i)
     {
         QString numStr = inVars[i];
-        if(!varElement.hasAttribute("causality") || varElement.attribute("causality") == "input")
-        {
-            fmuComponentHppStream << "            if(mpIn"+numStr+"->isConnected())\n";
-            fmuComponentHppStream << "            {\n";
-            fmuComponentHppStream << "                sv = vars["+numStr+"];\n";
-            fmuComponentHppStream << "                vr = getValueReference(sv);\n";
-            fmuComponentHppStream << "                value = (*mpND_in"+numStr+");\n";
-            fmuComponentHppStream << "                mFMU.setReal(c, &vr, 1, &value);\n\n";
-            fmuComponentHppStream << "            }\n";
-        }
+        fmuComponentHppStream << "            if(mpIn"+numStr+"->isConnected())\n";
+        fmuComponentHppStream << "            {\n";
+        fmuComponentHppStream << "                sv = vars["+numStr+"];\n";
+        fmuComponentHppStream << "                vr = getValueReference(sv);\n";
+        fmuComponentHppStream << "                value = (*mpND_in"+numStr+");\n";
+        fmuComponentHppStream << "                mFMU.setReal(c, &vr, 1, &value);\n\n";
+        fmuComponentHppStream << "            }\n";
     }
     //////////////////////////////////////////////////////////////////
     fmuComponentHppStream << "            //run simulation\n";
@@ -943,31 +946,29 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
             fmuComponentHppStream << "            vr = getValueReference(sv);\n";
             fmuComponentHppStream << "            mFMU.getReal(c, &vr, 1, &value);\n";
             fmuComponentHppStream << "            (*mpND_v"+numStr+") = value;\n\n";
+
+            refStr = tlmPortRefs[i][2];
+            fmuComponentHppStream << "            sv = vars["+refStr+"];\n";
+            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
+            fmuComponentHppStream << "            mFMU.getReal(c, &vr, 1, &value);\n";
+            fmuComponentHppStream << "            (*mpND_me"+numStr+") = value;\n\n";
         }
     }
     for(int i=0; i<inoutVars.size(); ++i)
     {
         QString numStr = inoutVars[i];
-        if(!varElement.hasAttribute("causality") || varElement.attribute("causality") == "output")
-        {
-
-            fmuComponentHppStream << "            sv = vars["+numStr+"];\n";
-            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
-            fmuComponentHppStream << "            mFMU.getReal(c, &vr, 1, &value);\n";
-            fmuComponentHppStream << "            (*mpND_out"+numStr+") = value;\n\n";
-        }
+        fmuComponentHppStream << "            sv = vars["+numStr+"];\n";
+        fmuComponentHppStream << "            vr = getValueReference(sv);\n";
+        fmuComponentHppStream << "            mFMU.getReal(c, &vr, 1, &value);\n";
+        fmuComponentHppStream << "            (*mpND_out"+numStr+") = value;\n\n";
     }
     for(int i=0; i<outVars.size(); ++i)
     {
         QString numStr = outVars[i];
-        if(!varElement.hasAttribute("causality") || varElement.attribute("causality") == "output")
-        {
-
-            fmuComponentHppStream << "            sv = vars["+numStr+"];\n";
-            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
-            fmuComponentHppStream << "            mFMU.getReal(c, &vr, 1, &value);\n";
-            fmuComponentHppStream << "            (*mpND_out"+numStr+") = value;\n\n";
-        }
+        fmuComponentHppStream << "            sv = vars["+numStr+"];\n";
+        fmuComponentHppStream << "            vr = getValueReference(sv);\n";
+        fmuComponentHppStream << "            mFMU.getReal(c, &vr, 1, &value);\n";
+        fmuComponentHppStream << "            (*mpND_out"+numStr+") = value;\n\n";
     }
     //////////////////////////////////////////////////////////////////
     fmuComponentHppStream << "        }\n";
@@ -998,7 +999,8 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     fmuComponentHppStream << "            SetDllDirectoryA(libdir.c_str());       //Set search path for dependencies\n";
     fmuComponentHppStream << "            h = LoadLibraryA(path.c_str());\n"
 #elif linux
-     fmuComponentHppStream << "            h = dlopen(path.c_str(), RTLD_NOW);\n";
+     fmuComponentHppStream << "            h = dlopen(path.c_str(), RTLD_LAZY);\n";
+     fmuComponentHppStream << "            std::cout << dlerror();\n";
 #endif
     fmuComponentHppStream << "            if (!h)\n";
     fmuComponentHppStream << "            {\n";
@@ -1169,13 +1171,13 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     {
         inputPos += inputPosStep;
         numStr2.setNum(inputPos);
-        fmuXmlStream << "            <port name=\""+inVarNames[i]+"In\" x=\"0.0\" y=\""+numStr2+"\" a=\"180\"/>\n";
+        fmuXmlStream << "            <port name=\""+inVarNames[i]+"\" x=\"0.0\" y=\""+numStr2+"\" a=\"180\"/>\n";
     }
     for(int i=0; i<outVars.size(); ++i)
     {
         outputPos += outputPosStep;
         numStr2.setNum(outputPos);
-        fmuXmlStream << "            <port name=\""+outVarNames[i]+"Out\" x=\"1.0\" y=\""+numStr2+"\" a=\"0\"/>\n";
+        fmuXmlStream << "            <port name=\""+outVarNames[i]+"\" x=\"1.0\" y=\""+numStr2+"\" a=\"0\"/>\n";
     }
 
 //    while (!varElement.isNull())
@@ -1415,8 +1417,10 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
 #elif linux
     if(!fmuDir.exists(fmuName + ".so"))
     {
+        qDebug() << fmuDir.absolutePath();
+        qDebug() << fmuName + ".so";
         printErrorMessage("Import of FMU failed: Compilation error.");
-        removeDir(fmuDir.path());
+        //removeDir(fmuDir.path());
         return;
     }
 #endif

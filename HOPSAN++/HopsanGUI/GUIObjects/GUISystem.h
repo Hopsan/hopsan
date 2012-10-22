@@ -124,9 +124,6 @@ public:
 public slots:
     void setTimeStep(const double timeStep);
 
-private slots:
-    void createFMUSourceFilesFromDialog();
-
 signals:
 
 protected:

@@ -1292,38 +1292,38 @@ void SystemContainer::saveToWrappedCode()
 }
 
 
+//void SystemContainer::createFMUSourceFiles()
+//{
+//    QDialog *pExportFmuDialog = new QDialog(gpMainWindow);
+//    pExportFmuDialog->setWindowTitle("Export to Functional Mockup Interface");
+
+//    QLabel *pExportFmuLabel = new QLabel(gpMainWindow->tr("This will create a Functional Mockup Unit of\ncurrent model. Please choose compiler:"), pExportFmuDialog);
+
+//    mpExportFmuGccRadioButton = new QRadioButton(gpMainWindow->tr("GCC"), pExportFmuDialog);
+//    mpExportFmuGccRadioButton->setChecked(true);
+//    mpExportFmuMsvcRadioButton = new QRadioButton(gpMainWindow->tr("Microsoft Visual C"), pExportFmuDialog);
+
+//    QPushButton *pOkButton = new QPushButton("Okay", pExportFmuDialog);
+//    QPushButton *pCancelButton = new QPushButton("Cancel", pExportFmuDialog);
+
+//    QGridLayout *pExportFmuLayout = new QGridLayout(pExportFmuDialog);
+//    pExportFmuLayout->addWidget(pExportFmuLabel,            0, 0, 1, 2);
+//    pExportFmuLayout->addWidget(mpExportFmuGccRadioButton,  1, 0, 1, 2);
+//    pExportFmuLayout->addWidget(mpExportFmuMsvcRadioButton, 2, 0, 1, 2);
+//    pExportFmuLayout->addWidget(pOkButton,                  3, 0, 1, 1);
+//    pExportFmuLayout->addWidget(pCancelButton,              3, 1, 1, 1);
+
+//    pExportFmuDialog->setLayout(pExportFmuLayout);
+
+//    pExportFmuDialog->show();
+
+//    connect(pOkButton,      SIGNAL(clicked()), pExportFmuDialog,    SLOT(close()));
+//    connect(pOkButton,      SIGNAL(clicked()), this,                SLOT(createFMUSourceFilesFromDialog()));
+//    connect(pCancelButton,  SIGNAL(clicked()), pExportFmuDialog,    SLOT(close()));
+//}
+
+
 void SystemContainer::createFMUSourceFiles()
-{
-    QDialog *pExportFmuDialog = new QDialog(gpMainWindow);
-    pExportFmuDialog->setWindowTitle("Export to Functional Mockup Interface");
-
-    QLabel *pExportFmuLabel = new QLabel(gpMainWindow->tr("This will create a Functional Mockup Unit of\ncurrent model. Please choose compiler:"), pExportFmuDialog);
-
-    mpExportFmuGccRadioButton = new QRadioButton(gpMainWindow->tr("GCC"), pExportFmuDialog);
-    mpExportFmuGccRadioButton->setChecked(true);
-    mpExportFmuMsvcRadioButton = new QRadioButton(gpMainWindow->tr("Microsoft Visual C"), pExportFmuDialog);
-
-    QPushButton *pOkButton = new QPushButton("Okay", pExportFmuDialog);
-    QPushButton *pCancelButton = new QPushButton("Cancel", pExportFmuDialog);
-
-    QGridLayout *pExportFmuLayout = new QGridLayout(pExportFmuDialog);
-    pExportFmuLayout->addWidget(pExportFmuLabel,            0, 0, 1, 2);
-    pExportFmuLayout->addWidget(mpExportFmuGccRadioButton,  1, 0, 1, 2);
-    pExportFmuLayout->addWidget(mpExportFmuMsvcRadioButton, 2, 0, 1, 2);
-    pExportFmuLayout->addWidget(pOkButton,                  3, 0, 1, 1);
-    pExportFmuLayout->addWidget(pCancelButton,              3, 1, 1, 1);
-
-    pExportFmuDialog->setLayout(pExportFmuLayout);
-
-    pExportFmuDialog->show();
-
-    connect(pOkButton,      SIGNAL(clicked()), pExportFmuDialog,    SLOT(close()));
-    connect(pOkButton,      SIGNAL(clicked()), this,                SLOT(createFMUSourceFilesFromDialog()));
-    connect(pCancelButton,  SIGNAL(clicked()), pExportFmuDialog,    SLOT(close()));
-}
-
-
-void SystemContainer::createFMUSourceFilesFromDialog()
 {
     //Open file dialog and initialize the file stream
     QDir fileDialogSaveDir;
@@ -1366,7 +1366,7 @@ void SystemContainer::createFMUSourceFilesFromDialog()
 
 
     //Tells if user selected the gcc compiler or not (= visual studio)
-    bool gccCompiler = mpExportFmuGccRadioButton->isChecked();
+    //bool gccCompiler = mpExportFmuGccRadioButton->isChecked();
 
 
     //Write the FMU ID
@@ -1449,6 +1449,7 @@ void SystemContainer::createFMUSourceFilesFromDialog()
         return;
     }
 
+#ifdef win32
     QFile clBatchFile;
     clBatchFile.setFileName(savePath + "/compile.bat");
     if(!clBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -1456,6 +1457,7 @@ void SystemContainer::createFMUSourceFilesFromDialog()
         gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open compile.bat for writing.");
         return;
     }
+#endif
 
     progressBar.setLabelText("Writing modelDescription.xml");
     progressBar.setValue(1);
@@ -1592,7 +1594,7 @@ void SystemContainer::createFMUSourceFilesFromDialog()
     fmuHeaderLines << "#define HOPSANFMU_H";
     fmuHeaderLines << "";
     fmuHeaderLines << "#ifdef WRAPPERCOMPILATION";
-    fmuHeaderLines << "    #define DLLEXPORT __declspec(dllexport)";
+    //fmuHeaderLines << "    #define DLLEXPORT __declspec(dllexport)";
     fmuHeaderLines << "    extern \"C\" {";
     fmuHeaderLines << "#else";
     fmuHeaderLines << "    #define DLLEXPORT";
@@ -1620,28 +1622,29 @@ void SystemContainer::createFMUSourceFilesFromDialog()
 
     fmuSrcLines << "#include <iostream>";
     fmuSrcLines << "#include <assert.h>";
+    fmuSrcLines << "#include \"HopsanCore.h\"";
     fmuSrcLines << "#include \"HopsanFMU.h\"";
-    fmuSrcLines << "#include \"include/HopsanCore.h\"";
     //fmuSrcLines << "#include \"include/ComponentEssentials.h\"";
     //fmuSrcLines << "#include \"include/ComponentUtilities.h\"";
     fmuSrcLines << "";
     fmuSrcLines << "static double fmu_time=0;";
     fmuSrcLines << "static hopsan::ComponentSystem *spCoreComponentSystem;";
     fmuSrcLines << "static std::vector<std::string> sComponentNames;";
-    fmuSrcLines << "HopsanEssentials gHopsanCore;";
+    fmuSrcLines << "hopsan::HopsanEssentials gHopsanCore;";
     fmuSrcLines << "";
     fmuSrcLines << "void initializeHopsanWrapper(char* filename)";
     fmuSrcLines << "{";
     fmuSrcLines << "    double startT;      //Dummy variable";
     fmuSrcLines << "    double stopT;       //Dummy variable";
-    fmuSrcLines << "    spCoreComponentSystem = gHopsanCore->loadHMFModel(filename, startT, stopT);\n";
+    fmuSrcLines << "    spCoreComponentSystem = gHopsanCore.loadHMFModel(filename, startT, stopT);\n";
+    fmuSrcLines << "    assert(spCoreComponentSystem);";
     fmuSrcLines << "    spCoreComponentSystem->setDesiredTimestep(0.001);";           //!< @todo Time step should not be hard coded
-    fmuSrcLines << "    spCoreComponentSystem->initialize(0,10,0);";
+    fmuSrcLines << "    spCoreComponentSystem->initialize(0,10);";
     fmuSrcLines << "}";
     fmuSrcLines << "";
     fmuSrcLines << "void simulateOneStep()";
     fmuSrcLines << "{";
-    fmuSrcLines << "    if(spCoreComponentSystem->isSimulationOk())";
+    fmuSrcLines << "    if(spCoreComponentSystem->checkModelBeforeSimulation())";
     fmuSrcLines << "    {";
     fmuSrcLines << "        double timestep = spCoreComponentSystem->getDesiredTimeStep();";
     fmuSrcLines << "        spCoreComponentSystem->simulate(fmu_time, fmu_time+timestep);";
@@ -1665,53 +1668,60 @@ void SystemContainer::createFMUSourceFilesFromDialog()
     fmuSrcLines << "}";
     fmuSourceFile.close();
 
-
+#ifdef win32
     progressBar.setLabelText("Writing to compile.bat");
     progressBar.setValue(6);
 
 
+
     //Write the compilation script file
     QTextStream clBatchStream(&clBatchFile);
-    if(gccCompiler)
-    {
+//    if(gccCompiler)
+//    {
         //! @todo Ship Mingw with Hopsan, or check if it exists in system and inform user if it does not.
-        clBatchStream << "g++ -DWRAPPERCOMPILATION -c HopsanFMU.cpp -I./include\n";
-        clBatchStream << "g++ -shared -o HopsanFMU.dll HopsanFMU.o -L./ -lHopsanCore";
-    }
-    else
-    {
-        //! @todo Check that Visual Studio is installed, and warn user if not
-        clBatchStream << "echo Compiling Visual Studio libraries...\n";
-        clBatchStream << "if defined VS90COMNTOOLS (call \"%VS90COMNTOOLS%\\vsvars32.bat\") else ^\n";
-        clBatchStream << "if defined VS80COMNTOOLS (call \"%VS80COMNTOOLS%\\vsvars32.bat\")\n";
-        clBatchStream << "cl -LD -nologo -DWIN32 -DWRAPPERCOMPILATION HopsanFMU.cpp /I \\. /I \\include\\HopsanCore.h HopsanCore.lib\n";
-    }
+    clBatchStream << "g++ -DWRAPPERCOMPILATION -c -Wl,--rpath,'$ORIGIN/.' HopsanFMU.cpp -I./include\n";
+    clBatchStream << "g++ -shared -Wl,--rpath,'$ORIGIN/.' -o HopsanFMU.dll HopsanFMU.o -L./ -lHopsanCore";
+//    }
+//    else
+//    {
+//        //! @todo Check that Visual Studio is installed, and warn user if not
+//        clBatchStream << "echo Compiling Visual Studio libraries...\n";
+//        clBatchStream << "if defined VS90COMNTOOLS (call \"%VS90COMNTOOLS%\\vsvars32.bat\") else ^\n";
+//        clBatchStream << "if defined VS80COMNTOOLS (call \"%VS80COMNTOOLS%\\vsvars32.bat\")\n";
+//        clBatchStream << "cl -LD -nologo -DWIN32 -DWRAPPERCOMPILATION HopsanFMU.cpp /I \\. /I \\include\\HopsanCore.h HopsanCore.lib\n";
+//    }
     clBatchFile.close();
-
+#endif
 
     progressBar.setLabelText("Copying binary files");
     progressBar.setValue(7);
 
 
     //Copy binaries to export directory
+#ifdef win32
     QFile dllFile;
     QFile libFile;
     QFile expFile;
-    if(gccCompiler)
-    {
-        dllFile.setFileName(gExecPath + "HopsanCore_d.dll");
+//    if(gccCompiler)
+//    {
+        dllFile.setFileName(gExecPath + "HopsanCore.dll");
         dllFile.copy(savePath + "/HopsanCore.dll");
-    }
-    else
-    {
-        //! @todo this seem a bit hardcoded
-        dllFile.setFileName(QString(MSVC2008_X86_PATH) + "HopsanCore.dll");
-        dllFile.copy(savePath + "/HopsanCore.dll");
-        libFile.setFileName(QString(MSVC2008_X86_PATH) + "HopsanCore.lib");
-        libFile.copy(savePath + "/HopsanCore.lib");
-        expFile.setFileName(QString(MSVC2008_X86_PATH) + "HopsanCore.exp");
-        expFile.copy(savePath + "/HopsanCore.exp");
-    }
+//    }
+//    else
+//    {
+//        //! @todo this seem a bit hardcoded
+//        dllFile.setFileName(QString(MSVC2008_X86_PATH) + "HopsanCore.dll");
+//        dllFile.copy(savePath + "/HopsanCore.dll");
+//        libFile.setFileName(QString(MSVC2008_X86_PATH) + "HopsanCore.lib");
+//        libFile.copy(savePath + "/HopsanCore.lib");
+//        expFile.setFileName(QString(MSVC2008_X86_PATH) + "HopsanCore.exp");
+//        expFile.copy(savePath + "/HopsanCore.exp");
+//    }
+#elif linux
+    QFile soFile;
+    soFile.setFileName(gExecPath + "libHopsanCore.so");
+    soFile.copy(savePath + "/libHopsanCore.so");
+#endif
 
 
     progressBar.setLabelText("Copying include files");
@@ -1742,15 +1752,57 @@ void SystemContainer::createFMUSourceFilesFromDialog()
     domDocument.save(out, IndentSize);
 
 
+#ifdef win32
     progressBar.setLabelText("Compiling HopsanFMU.dll");
+#elif linux
+    progressBar.setLabelText("Compiling HopsanFMU.so");
+#endif
     progressBar.setValue(11);
 
 
-
+#ifdef win32
     //Execute HopsanFMU compile script
     QProcess p;
     p.start("cmd.exe", QStringList() << "/c" << "cd " + savePath + " & compile.bat");
     p.waitForFinished();
+#elif linux
+    QString gccCommand1 = "cd "+savePath+" && g++ -DWRAPPERCOMPILATION -fPIC -Wl,--rpath,'$ORIGIN/.' -c HopsanFMU.cpp -I./include\n";
+    QString gccCommand2 = "cd "+savePath+" && g++ -shared -Wl,--rpath,'$ORIGIN/.' -o libHopsanFMU.so HopsanFMU.o -L./ -lHopsanCore";
+
+    qDebug() << "Command 1 = " << gccCommand1;
+    qDebug() << "Command 2 = " << gccCommand2;
+
+    char line[130];
+    gccCommand1 +=" 2>&1";
+    FILE *fp = popen(  (const char *) gccCommand1.toStdString().c_str(), "r");
+    if ( !fp )
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Could not execute '" + gccCommand1 + "'! err=%d");
+        return;
+    }
+    else
+    {
+        while ( fgets( line, sizeof line, fp))
+        {
+            gpMainWindow->mpMessageWidget->printGUIInfoMessage((const QString &)line);
+        }
+    }
+
+    gccCommand2 +=" 2>&1";
+    fp = popen(  (const char *) gccCommand2.toStdString().c_str(), "r");
+    if ( !fp )
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Could not execute '" + gccCommand2 + "'! err=%d");
+        return;
+    }
+    else
+    {
+        while ( fgets( line, sizeof line, fp))
+        {
+            gpMainWindow->mpMessageWidget->printGUIInfoMessage((const QString &)line);
+        }
+    }
+#endif
 
 
     progressBar.setLabelText("Copying compilation files");
@@ -1758,16 +1810,18 @@ void SystemContainer::createFMUSourceFilesFromDialog()
 
 
     //Copy FMI compilation files to export directory
+#ifdef win32
     QFile buildFmuFile;
-    if(gccCompiler)
-    {
+//    if(gccCompiler)
+//    {
         buildFmuFile.setFileName(gExecPath + "/../ThirdParty/fmi/build_fmu_gcc.bat");
-    }
-    else
-    {
-        buildFmuFile.setFileName(gExecPath + "/../ThirdParty/fmi/build_fmu_vc.bat");
-    }
+//    }
+//    else
+//    {
+//        buildFmuFile.setFileName(gExecPath + "/../ThirdParty/fmi/build_fmu_vc.bat");
+//    }
     buildFmuFile.copy(savePath + "/build_fmu.bat");
+#endif
     QFile fmuModelFunctionsHFile(gExecPath + "/../ThirdParty/fmi/fmiModelFunctions.h");
     fmuModelFunctionsHFile.copy(savePath + "/fmiModelFunctions.h");
     QFile fmiModelTypesHFile(gExecPath + "/../ThirdParty/fmi/fmiModelTypes.h");
@@ -1777,20 +1831,61 @@ void SystemContainer::createFMUSourceFilesFromDialog()
     QFile fmiTemplateHFile(gExecPath + "/../ThirdParty/fmi/fmuTemplate.h");
     fmiTemplateHFile.copy(savePath + "/fmuTemplate.h");
 
-
+#ifdef win32
     progressBar.setLabelText("Compiling "+modelName+".dll");
+#elif linux
+    progressBar.setLabelText("Compiling "+modelName+".so");
+#endif
     progressBar.setValue(15);
 
-
+#ifdef win32
     //Execute FMU compile script
+    QProcess p;
     p.start("cmd.exe", QStringList() << "/c" << "cd " + savePath + " & build_fmu.bat me " + modelName);
     p.waitForFinished();
+#elif linux
+    gccCommand1 = "cd "+savePath+" && gcc -c -fPIC -Wl,--rpath,'$ORIGIN/.' "+modelName+".c";
+    gccCommand2 = "cd "+savePath+" && gcc -shared -Wl,--rpath,'$ORIGIN/.' -o "+modelName+".so "+modelName+".o -L./ -lHopsanFMU";
 
+    qDebug() << "Command 1 = " << gccCommand1;
+    qDebug() << "Command 2 = " << gccCommand2;
+
+    gccCommand1 +=" 2>&1";
+    fp = popen(  (const char *) gccCommand1.toStdString().c_str(), "r");
+    if ( !fp )
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Could not execute '" + gccCommand1 + "'! err=%d");
+        return;
+    }
+    else
+    {
+        while ( fgets( line, sizeof line, fp))
+        {
+            gpMainWindow->mpMessageWidget->printGUIInfoMessage((const QString &)line);
+        }
+    }
+
+    gccCommand2 +=" 2>&1";
+    fp = popen(  (const char *) gccCommand2.toStdString().c_str(), "r");
+    if ( !fp )
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Could not execute '" + gccCommand2 + "'! err=%d");
+        return;
+    }
+    else
+    {
+        while ( fgets( line, sizeof line, fp))
+        {
+            gpMainWindow->mpMessageWidget->printGUIInfoMessage((const QString &)line);
+        }
+    }
+#endif
 
     progressBar.setLabelText("Sorting files");
     progressBar.setValue(18);
 
 
+#ifdef win32
     saveDir.mkpath("fmu/binaries/win32");
     saveDir.mkpath("fmu/resources");
     QFile modelDllFile(savePath + "/" + modelName + ".dll");
@@ -1798,14 +1893,29 @@ void SystemContainer::createFMUSourceFilesFromDialog()
     QFile modelLibFile(savePath + "/" + modelName + ".lib");
     modelLibFile.copy(savePath + "/fmu/binaries/win32/" + modelName + ".lib");
     dllFile.copy(savePath + "/fmu/binaries/win32/HopsanCore.dll");
-    if(!gccCompiler)
-    {
-        libFile.copy(savePath + "/fmu/binaries/win32/HopsanCore.lib");
-    }
+//    if(!gccCompiler)
+//    {
+//        libFile.copy(savePath + "/fmu/binaries/win32/HopsanCore.lib");
+//    }
     QFile hopsanFMUdllFile(savePath + "/HopsanFMU.dll");
     hopsanFMUdllFile.copy(savePath + "/fmu/binaries/win32/HopsanFMU.dll");
     QFile hopsanFMUlibFile(savePath + "/HopsanFMU.lib");
     hopsanFMUlibFile.copy(savePath + "/fmu/binaries/win32/HopsanFMU.lib");
+#elif linux && __i386__
+    saveDir.mkpath("fmu/binaries/linux32");
+    saveDir.mkpath("fmu/resources");
+    QFile modelSoFile(savePath + "/" + modelName + ".so");
+    modelSoFile.copy(savePath + "/fmu/binaries/linux32/" + modelName + ".so");
+    QFile hopsanFMUsoFile(savePath + "/libHopsanFMU.so");
+    hopsanFMUsoFile.copy(savePath + "/fmu/binaries/linux32/libHopsanFMU.so");
+#elif linux && __x86_64__
+    saveDir.mkpath("fmu/binaries/linux64");
+    saveDir.mkpath("fmu/resources");
+    QFile modelSoFile(savePath + "/" + modelName + ".so");
+    modelSoFile.copy(savePath + "/fmu/binaries/linux64/" + modelName + ".so");
+    QFile hopsanFMUsoFile(savePath + "/libHopsanFMU.so");
+    hopsanFMUsoFile.copy(savePath + "/fmu/binaries/linux64/libHopsanFMU.so");
+#endif
     QFile modelFile(savePath + "/" + realModelName + ".hmf");
     modelFile.copy(savePath + "/fmu/resources/" + realModelName + ".hmf");
     modelDescriptionFile.copy(savePath + "/fmu/modelDescription.xml");
@@ -1817,11 +1927,29 @@ void SystemContainer::createFMUSourceFilesFromDialog()
     progressBar.setValue(19);
 
 
-
+#ifdef win32
+    QProcess p;
     p.start("cmd.exe", QStringList() << "/c" << gExecPath + "../ThirdParty/7z/7z.exe a -tzip " + fmuFileName + " " + savePath + "/fmu/modelDescription.xml " + savePath + "/fmu/binaries/ " + savePath + "/fmu/resources");
     p.waitForFinished();
     qDebug() << "Called: " << gExecPath + "../ThirdParty/7z/7z.exe a -tzip " + fmuFileName + " " + savePath + "/fmu/modelDescription.xml " + savePath + "/fmu/binaries/ " + savePath + "/fmu/resources";
-
+#elif linux
+    QString command = "cd "+savePath+"/fmu && zip -r ../"+modelName+".fmu *";
+    qDebug() << "Command = " << command;
+    command +=" 2>&1";
+    fp = popen(  (const char *) command.toStdString().c_str(), "r");
+    if ( !fp )
+    {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Could not execute '" + command + "'! err=%d");
+        return;
+    }
+    else
+    {
+        while ( fgets( line, sizeof line, fp))
+        {
+            gpMainWindow->mpMessageWidget->printGUIInfoMessage((const QString &)line);
+        }
+    }
+#endif
 
     progressBar.setLabelText("Cleaning up");
     progressBar.setValue(20);
