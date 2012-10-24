@@ -1636,10 +1636,13 @@ void SystemContainer::createFMUSourceFiles()
     fmuSrcLines << "{";
     fmuSrcLines << "    double startT;      //Dummy variable";
     fmuSrcLines << "    double stopT;       //Dummy variable";
+    fmuSrcLines << "    gHopsanCore.loadExternalComponentLib(\"../componentLibraries/defaultLibrary/components/libdefaultComponentLibrary.so\");";
     fmuSrcLines << "    spCoreComponentSystem = gHopsanCore.loadHMFModel(filename, startT, stopT);\n";
     fmuSrcLines << "    assert(spCoreComponentSystem);";
     fmuSrcLines << "    spCoreComponentSystem->setDesiredTimestep(0.001);";           //!< @todo Time step should not be hard coded
     fmuSrcLines << "    spCoreComponentSystem->initialize(0,10);";
+    fmuSrcLines << "";
+    fmuSrcLines << "    fmu_time = 0;";
     fmuSrcLines << "}";
     fmuSrcLines << "";
     fmuSrcLines << "void simulateOneStep()";
