@@ -136,10 +136,6 @@ LibraryWidget::LibraryWidget(QWidget *parent)
     mpLoadExternalButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LoadLibrary.png"));
     mpLoadExternalButton->setIconSize(iconSize);
     mpLoadExternalButton->setToolTip(tr("Load External Library"));
-    mpLoadFmuButton = new QToolButton();
-    mpLoadFmuButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ImportFmu.png"));
-    mpLoadFmuButton->setIconSize(iconSize);
-    mpLoadFmuButton->setToolTip(tr("Import Functional Mockup Unit (FMU)"));
     mpHelpAction = new QAction("Open Context Help", this);
     mpHelpAction->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Help.png"));
     mpHelpAction->setToolTip("Open Context Help");
@@ -150,7 +146,6 @@ LibraryWidget::LibraryWidget(QWidget *parent)
     connect(mpDualViewButton, SIGNAL(clicked()), this, SLOT(setDualView()));
     connect(mpGenerateComponentButton, SIGNAL(clicked()), this, SLOT(generateComponent()));
     connect(mpLoadExternalButton, SIGNAL(clicked()), this, SLOT(addExternalLibrary()));
-    connect(mpLoadFmuButton, SIGNAL(clicked()), this, SLOT(importFmu()));
     connect(mpHelpAction, SIGNAL(triggered()), gpMainWindow, SLOT(openContextHelp()));
 
     mpGrid = new QGridLayout(this);
@@ -162,7 +157,6 @@ LibraryWidget::LibraryWidget(QWidget *parent)
     mpGrid->addWidget(mpGenerateComponentButton,    3,2,1,1);
     mpGrid->addWidget(mpLoadExternalButton,         3,3,1,1);
 #ifdef DEVELOPMENT
-    mpGrid->addWidget(mpLoadFmuButton,              3,4,1,1);
     mpGrid->addWidget(mpHelpToolBar,                3,5,1,1);
 #endif
     mpGrid->setContentsMargins(4,4,4,4);

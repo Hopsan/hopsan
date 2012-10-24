@@ -111,7 +111,6 @@ private:
     QToolButton *mpDualViewButton;
     QToolButton *mpGenerateComponentButton;
     QToolButton *mpLoadExternalButton;
-    QToolButton *mpLoadFmuButton;
     QAction *mpHelpAction;
     QToolBar *mpHelpToolBar;
     QGridLayout *mpGrid;
