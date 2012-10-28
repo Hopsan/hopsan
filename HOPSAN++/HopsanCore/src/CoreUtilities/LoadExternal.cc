@@ -324,3 +324,23 @@ void LoadExternal::getLoadedLibNames(std::vector<std::string> &rLibNames)
         rLibNames.push_back(lelit->second.mLibName);
     }
 }
+
+//! @brief Returns the components and nodes registered by specified library
+//! @param libpath Path to library
+//! @param rComponents Reference to vector with components
+//! @param rNodes Reference to vector with nodes
+void LoadExternal::getLibContents(const std::string libpath, std::vector<std::string> &rComponents, std::vector<std::string> &rNodes)
+{
+    LoadedExtLibsMapT::iterator lelit = mLoadedExtLibsMap.find(libpath);
+    if (lelit != mLoadedExtLibsMap.end())
+    {
+        for (size_t i=0; i<lelit->second.mRegistredComponents.size(); ++i)
+        {
+            rComponents.push_back(lelit->second.mRegistredComponents[i]);
+        }
+        for (size_t i=0; i<lelit->second.mRegistredNodes.size(); ++i)
+        {
+            rNodes.push_back(lelit->second.mRegistredNodes[i]);
+        }
+    }
+}

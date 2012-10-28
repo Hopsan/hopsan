@@ -151,7 +151,7 @@ public:
     QAction *mpDebug2Action;
 
 public slots:
-    void show();
+//    void show();
     void initializeWorkspace();
     void updateToolBarsToNewTab();
     void refreshUndoWidgetList();

@@ -294,95 +294,6 @@ void MainWindow::initializeWorkspace()
     mpPlotWidget = new PlotTreeWidget(this);
     mpPlotWidget->hide();
 
-
-    //DEBUG
-//    QStringList equations;
-//    equations << "q2 = Kc*(p1 - p2)";
-//    equations << "q1 = -q2";
-//    equations << "p1 = c1 + Zc1*q1";
-//    equations << "p2 = c2 + Zc2*q2";
-
-//    QStringList stateVars;
-//    stateVars << "p1" << "q1" << "p2" << "q2";
-
-//    QList<QStringList> leftSymbols, rightSymbols;
-//    for(int i=0; i<equations.size(); ++i)
-//    {
-//        leftSymbols.append(QStringList());
-//        rightSymbols.append(QStringList());
-//        identifyVariables(equations[i], leftSymbols[i], rightSymbols[i]);
-//    }
-
-//    QStringList allSymbols;
-//    for(int i=0; i<equations.size(); ++i)
-//    {
-//        allSymbols.append(leftSymbols.at(i));
-//        allSymbols.append(rightSymbols.at(i));
-//    }
-//    allSymbols.removeDuplicates();
-
-//    mpPyDockWidget->runCommand("from sympy import *");
-//    for(int i=0; i<allSymbols.size(); ++i)
-//    {
-//        mpPyDockWidget->runCommand(allSymbols[i]+"=Symbol(\""+allSymbols[i]+"\")");
-//    }
-//    QString command = "X=Matrix([[";
-//    for(int i=0; i<allSymbols.size(); ++i)
-//    {
-//        command.append(allSymbols.at(i)+"],[");
-//    }
-//    command.chop(2);
-//    command.append("])");
-//    mpPyDockWidget->runCommand(command);
-
-//    for(int i=0; i<equations.size(); ++i)
-//    {
-//        QString iStr = QString().setNum(i);
-//        mpPyDockWidget->runCommand("left"+iStr+" = " + equations.at(i).section("=",0,0));
-//        mpPyDockWidget->runCommand("right"+iStr+" = " + equations.at(i).section("=",1,1));
-//        mpPyDockWidget->runCommand("f"+iStr+" = left"+iStr+"-right"+iStr);
-//    }
-
-//    QStringList jString;
-//    for(int i=0; i<equations.size(); ++i)
-//    {
-//        for(int j=0; j<stateVars.size(); ++j)
-//        {
-//            QString iStr = QString().setNum(i);
-//            QString jStr = QString().setNum(j);
-//            mpPyDockWidget->runCommand("j"+iStr+jStr+" = diff(f"+iStr+", "+stateVars.at(j)+")");
-//            mpPyDockWidget->runCommand("print(j"+iStr+jStr+")");
-//            jString.append(mpPyDockWidget->getLastOutput());
-//        }
-//    }
-
-//    QStringList sysEquations;
-//    for(int i=0; i<equations.size(); ++i)
-//    {
-//        mpPyDockWidget->runCommand("print(f"+QString().setNum(i)+")");
-//        sysEquations.append(mpPyDockWidget->getLastOutput());
-//    }
-
-//    qDebug() << "Jacobian = " << jString;
-//    qDebug() << "System Equations = " << sysEquations;
-
-//    QString typeName = "EquationComponent";
-//    QString displayName = "Equation Generated Component";
-//    QString cqsType = "Q";
-
-//    generateComponentSourceCode(typeName, displayName, cqsType, sysEquations, stateVars, jString);
-
-    //END DEBUG
-
-
-//    for(int i=0; i<mpLibrary->mLoadedComponents.size(); ++i)
-//    {
-//        if(!mpLibrary->getAppearanceData(mpLibrary->mLoadedComponents.at(i))->getHelpText().isEmpty())
-//        {
-//            qDebug() << mpLibrary->mLoadedComponents.at(i) << ":\n" << mpLibrary->getAppearanceData(mpLibrary->mLoadedComponents.at(i))->getHelpText();
-//        }
-//    }
-
     // File association - ignore everything else and open the specified file if there is a hmf file in the argument list
     for(int i=0; i<qApp->arguments().size(); ++i)
     {
@@ -396,12 +307,6 @@ void MainWindow::initializeWorkspace()
 
     if(gConfig.getAlwaysLoadLastSession())
     {
-//        mpWelcomeDialog = new WelcomeDialog(this);
-//        mpWelcomeDialog->setModal(true);
-//        mpWelcomeDialog->show();
-//    }
-//    else
-//    {
         if(!gConfig.getLastSessionModels().empty())
         {
             for(int i=0; i<gConfig.getLastSessionModels().size(); ++i)
@@ -419,13 +324,13 @@ void MainWindow::initializeWorkspace()
 
 
 
-//! @brief Overloaded function for showing the mainwindow. This is to make sure the view is centered when the program starts.
-//! @todo This function is supposed to do something, but doesn't do anything?!
-void MainWindow::show()
-{
-    QMainWindow::show();
-    //! @todo this should not be done here should happen when a new tab is created, OK! MainWindow must be shown before center works, maybe we can go through projecttabwidget instead, leaveing it for now
-}
+////! @brief Overloaded function for showing the mainwindow. This is to make sure the view is centered when the program starts.
+////! @todo This function is supposed to do something, but doesn't do anything?!
+//void MainWindow::show()
+//{
+//    QMainWindow::show();
+//    //! @todo this should not be done here should happen when a new tab is created, OK! MainWindow must be shown before center works, maybe we can go through projecttabwidget instead, leaveing it for now
+//}
 
 
 //! @brief Opens the plot widget.

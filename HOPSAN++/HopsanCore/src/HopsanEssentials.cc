@@ -246,6 +246,17 @@ void HopsanEssentials::getExternalComponentLibNames(std::vector<std::string> &rL
     mpExternalLoader->getLoadedLibNames(rLibNames);
 }
 
+
+//! @brief Get the contents (components and nodes) registered by an external library
+//! @param [in] libpath Path to the external library
+//! @param [out] rComponents A reference to the vector that will contain the component names
+//! @param [out] rNodes A reference to the vector that will contain the node names
+void HopsanEssentials::getExternalLibraryContents(const std::string libpath, std::vector<std::string> &rComponents, std::vector<std::string> &rNodes)
+{
+    mpExternalLoader->getLibContents(libpath, rComponents, rNodes);
+}
+
+
 //! @brief Adds a message to the HopsanCore runtime log
 void hopsan::addLogMess(const std::string log)
 {

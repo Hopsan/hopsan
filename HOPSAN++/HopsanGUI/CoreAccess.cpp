@@ -140,6 +140,26 @@ void CoreLibraryAccess::getLoadedLibNames(QVector<QString> &rLibNames)
     }
 }
 
+void CoreLibraryAccess::getLibraryContents(QString libPath, QStringList &rComponents, QStringList &rNodes)
+{
+    std::vector<std::string> components, nodes;
+    gHopsanCore.getExternalLibraryContents(libPath.toStdString(), components, nodes);
+
+    rComponents.clear();
+    rComponents.reserve(components.size());
+    for (unsigned int i=0; i<components.size(); ++i)
+    {
+        rComponents.push_back(QString::fromStdString(components[i]));
+    }
+
+    rNodes.clear();
+    rNodes.reserve(nodes.size());
+    for (unsigned int i=0; i<nodes.size(); ++i)
+    {
+        rNodes.push_back(QString::fromStdString(nodes[i]));
+    }
+}
+
 
 unsigned int CoreMessagesAccess::getNumberOfMessages()
 {

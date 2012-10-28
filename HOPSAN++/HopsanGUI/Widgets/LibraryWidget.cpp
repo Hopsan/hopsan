@@ -1199,11 +1199,31 @@ void LibraryWidget::unloadExternalLibrary(const QString libName, const QString p
 
     if (pLibContTree)
     {
+        QStringList components, nodes;
+        getSubTreeComponentsAndNodes(pLibContTree, components, nodes);
+
+        qDebug() << "Components in library: " << components;
+        qDebug() << "Nodes in library: " << nodes;
+
+        bool doWarn = false;
+        for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
+        {
+            QStringList modelComponents = gpMainWindow->mpProjectTabs->getContainer(i)->getModelObjectNames();
+            for(int c=0; c<modelComponents.size(); ++c)
+            {
+                QString type = gpMainWindow->mpProjectTabs->getContainer(i)->getModelObject(modelComponents[c])->getTypeName();
+                if(components.contains(type))
+                {
+                    doWarn = true;
+                }
+            }
+        }
+
         QMessageBox::StandardButton button = QMessageBox::Ok;
-        if (gpMainWindow->mpProjectTabs->count() > 0)
+        if (gpMainWindow->mpProjectTabs->count() > 0 && doWarn)
         {
             button = QMessageBox::question(this, "Unload Warning!",
-                                           "You have open models.\nIf any one of them are using components from the library you are going to unload, Hopsan will crash.\nYou should close your models first if you are not sure.\nDo you want to continue?",
+                                           "You have open models containing components from the library you are trying to unload. Unloading will likely result in a program crash.\n\nDo you want to continue?",
                                            QMessageBox::Ok | QMessageBox::Cancel );
         }
 
@@ -1213,6 +1233,20 @@ void LibraryWidget::unloadExternalLibrary(const QString libName, const QString p
             unLoadLibrarySubTree(pLibContTree, parentLibName);
             update();
         }
+    }
+
+}
+
+
+void LibraryWidget::getSubTreeComponentsAndNodes(const LibraryContentsTree *pTree, QStringList &rComponents, QStringList &rNodes)
+{
+    if(pTree == 0)
+        return;
+
+    //First call unload on all dlls in core
+    for (int i=0; i<pTree->mLoadedLibraryDLLs.size(); ++i)
+    {
+        mpCoreAccess->getLibraryContents(pTree->mLoadedLibraryDLLs[i], rComponents, rNodes);
     }
 
 }

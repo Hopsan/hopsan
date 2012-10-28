@@ -53,6 +53,7 @@ public:
     bool unLoadComponentLib(QString fileName);
     bool reserveComponentTypeName(const QString typeName);
     void getLoadedLibNames(QVector<QString> &rLibNames);
+    void getLibraryContents(QString libPath, QStringList &rComponents, QStringList &rNodes);
 };
 
 class CoreMessagesAccess

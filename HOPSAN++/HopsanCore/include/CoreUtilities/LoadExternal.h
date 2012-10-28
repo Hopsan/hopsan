@@ -60,6 +60,7 @@ public:
     bool unLoad(const std::string libpath);
     void setFactory();
     void getLoadedLibNames(std::vector<std::string> &rLibNames);
+    void getLibContents(const std::string libpath, std::vector<std::string> &rComponents, std::vector<std::string> &rNodes);
 };
 }
 

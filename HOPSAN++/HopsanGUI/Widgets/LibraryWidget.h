@@ -98,6 +98,7 @@ private:
     void loadLibraryFolder(QString libDir, const QString libRootDir, const bool doRecurse, LibraryContentsTree *pParentTree=0);
     void updateLibraryFolder(LibraryContentsTree /**pTree*/);
     void unLoadLibrarySubTree(LibraryContentsTree *pTree, const QString parentLibDir);
+    void getSubTreeComponentsAndNodes(const LibraryContentsTree *pTree, QStringList &rComponents, QStringList &rNodes);
 
     YesNoToAllEnumT mUpConvertAllCAF;
 
