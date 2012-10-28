@@ -1449,7 +1449,7 @@ void SystemContainer::createFMUSourceFiles()
         return;
     }
 
-#ifdef win32
+#ifdef WIN32
     QFile clBatchFile;
     clBatchFile.setFileName(savePath + "/compile.bat");
     if(!clBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -1671,7 +1671,7 @@ void SystemContainer::createFMUSourceFiles()
     fmuSrcLines << "}";
     fmuSourceFile.close();
 
-#ifdef win32
+#ifdef WIN32
     progressBar.setLabelText("Writing to compile.bat");
     progressBar.setValue(6);
 
@@ -1701,7 +1701,7 @@ void SystemContainer::createFMUSourceFiles()
 
 
     //Copy binaries to export directory
-#ifdef win32
+#ifdef WIN32
     QFile dllFile;
     QFile libFile;
     QFile expFile;
@@ -1755,7 +1755,7 @@ void SystemContainer::createFMUSourceFiles()
     domDocument.save(out, IndentSize);
 
 
-#ifdef win32
+#ifdef WIN32
     progressBar.setLabelText("Compiling HopsanFMU.dll");
 #elif linux
     progressBar.setLabelText("Compiling HopsanFMU.so");
@@ -1763,7 +1763,7 @@ void SystemContainer::createFMUSourceFiles()
     progressBar.setValue(11);
 
 
-#ifdef win32
+#ifdef WIN32
     //Execute HopsanFMU compile script
     QProcess p;
     p.start("cmd.exe", QStringList() << "/c" << "cd " + savePath + " & compile.bat");
@@ -1813,7 +1813,7 @@ void SystemContainer::createFMUSourceFiles()
 
 
     //Copy FMI compilation files to export directory
-#ifdef win32
+#ifdef WIN32
     QFile buildFmuFile;
 //    if(gccCompiler)
 //    {
@@ -1834,16 +1834,15 @@ void SystemContainer::createFMUSourceFiles()
     QFile fmiTemplateHFile(gExecPath + "/../ThirdParty/fmi/fmuTemplate.h");
     fmiTemplateHFile.copy(savePath + "/fmuTemplate.h");
 
-#ifdef win32
+#ifdef WIN32
     progressBar.setLabelText("Compiling "+modelName+".dll");
 #elif linux
     progressBar.setLabelText("Compiling "+modelName+".so");
 #endif
     progressBar.setValue(15);
 
-#ifdef win32
+#ifdef WIN32
     //Execute FMU compile script
-    QProcess p;
     p.start("cmd.exe", QStringList() << "/c" << "cd " + savePath + " & build_fmu.bat me " + modelName);
     p.waitForFinished();
 #elif linux
@@ -1888,7 +1887,7 @@ void SystemContainer::createFMUSourceFiles()
     progressBar.setValue(18);
 
 
-#ifdef win32
+#ifdef WIN32
     saveDir.mkpath("fmu/binaries/win32");
     saveDir.mkpath("fmu/resources");
     QFile modelDllFile(savePath + "/" + modelName + ".dll");
@@ -1930,8 +1929,7 @@ void SystemContainer::createFMUSourceFiles()
     progressBar.setValue(19);
 
 
-#ifdef win32
-    QProcess p;
+#ifdef WIN32
     p.start("cmd.exe", QStringList() << "/c" << gExecPath + "../ThirdParty/7z/7z.exe a -tzip " + fmuFileName + " " + savePath + "/fmu/modelDescription.xml " + savePath + "/fmu/binaries/ " + savePath + "/fmu/resources");
     p.waitForFinished();
     qDebug() << "Called: " << gExecPath + "../ThirdParty/7z/7z.exe a -tzip " + fmuFileName + " " + savePath + "/fmu/modelDescription.xml " + savePath + "/fmu/binaries/ " + savePath + "/fmu/resources";

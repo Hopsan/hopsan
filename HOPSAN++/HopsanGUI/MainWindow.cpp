@@ -1273,7 +1273,6 @@ void MainWindow::updateToolBarsToNewTab()
     mpAnimateAction->setEnabled(!noTabs);
     mpPropertiesAction->setEnabled(!noTabs);
     mpOpenSystemParametersAction->setEnabled(!noTabs);
-    mpImportFMUAction->setEnabled(!noTabs);
     mpExportToFMUAction->setEnabled(!noTabs);
     mpExportToSimulinkAction->setEnabled(!noTabs);
 
