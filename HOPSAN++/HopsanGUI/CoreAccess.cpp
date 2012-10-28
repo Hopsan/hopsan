@@ -33,7 +33,9 @@
 #include "CoreUtilities/GeneratorHandler.h"
 #include "MainWindow.h"
 #include "Widgets/LibraryWidget.h"
+#include "Widgets/MessageWidget.h"
 #include "common.h"
+#include "Utilities/GUIUtilities.h"
 
 using namespace std;
 
@@ -82,21 +84,44 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callFmuGenerator(path.toStdString(), QString(COREINCLUDEPATH).toStdString(), gExecPath.toStdString(), true);
-
         QFileInfo fmuFileInfo = QFileInfo(path);
         fmuFileInfo.setFile(path);
         QString fmuName = fmuFileInfo.fileName();
         fmuName.chop(4);
-        if(QDir().exists(gExecPath + "../import/FMU/" + fmuName))
+        if(QDir().exists(QString(FMUPATH) + fmuName))
+        {
+            QMessageBox existWarningBox(QMessageBox::Warning, "Warning","Another FMU with same name exist. Do you want unload this library and then overwrite it?", 0, 0);
+            existWarningBox.addButton("Yes", QMessageBox::AcceptRole);
+            existWarningBox.addButton("No", QMessageBox::RejectRole);
+            existWarningBox.setWindowIcon(gpMainWindow->windowIcon());
+            bool doIt = (existWarningBox.exec() == QMessageBox::AcceptRole);
+
+            if(doIt)
+            {
+                gpMainWindow->mpLibrary->unloadExternalLibrary(fmuName, "FMU");
+                removeDir(QDir::cleanPath(QString(FMUPATH)+fmuName));
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        pHandler->callFmuGenerator(path.toStdString(), QString(COREINCLUDEPATH).toStdString(), gExecPath.toStdString(), true);
+
+        if(QDir().exists(QString(FMUPATH) + fmuName))
         {
             //Copy component icon
             QFile fmuIcon;
             fmuIcon.setFileName(QString(GRAPHICSPATH)+"/objecticons/fmucomponent.svg");
-            fmuIcon.copy(gExecPath + "../import/FMU/"+fmuName+"/fmucomponent.svg");
+            fmuIcon.copy(QString(FMUPATH)+fmuName+"/fmucomponent.svg");
+            fmuIcon.close();
+            fmuIcon.setFileName(QString(FMUPATH)+fmuName+"/fmucomponent.svg");
+            fmuIcon.setPermissions(QFile::WriteUser);
+            fmuIcon.close();
 
             //Load library
-            gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(gExecPath + "../import/FMU/" + fmuName, "FMU");
+            gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(QString(FMUPATH) + fmuName, "FMU");
 
             return true;
         }

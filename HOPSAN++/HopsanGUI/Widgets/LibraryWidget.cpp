@@ -569,21 +569,6 @@ void LibraryWidget::importFmu()
     CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
     pCoreAccess->generateFromFmu(filePath);
     delete(pCoreAccess);
-
-
-
-    //! @todo Make the loading work again!
-
-    //Load the library
-//    fmuDir.cdUp();
-//    if(gConfig.hasUserLib(fmuDir.path()))
-//    {
-//        gConfig.removeUserLib(fmuDir.path());
-//        mpContentsTree->findChildByName("External Libraries")->removeChild(fmuDir.path());
-//        update();
-//    }
-//    gConfig.addUserLib(fmuDir.path());     //Register new library in configuration
-//    loadAndRememberExternalLibrary(fmuDir.path());    //Load the library
 }
 
 
@@ -1485,6 +1470,10 @@ bool LibraryContentsTree::removeChild(QString name)
     {
         if(mChildNodesPtrs.at(i)->mName == name)
         {
+            for(int j=0; j<mChildNodesPtrs[i]->mComponentPtrs.size(); ++j)
+            {
+                delete(mChildNodesPtrs[i]->mComponentPtrs[j]);
+            }
             mChildNodesPtrs.remove(i);
             return true;
         }
@@ -1565,6 +1554,7 @@ LibraryComponent::LibraryComponent(ModelObjectAppearance *pAppearanceData)
         iconPath = QString(OBJECTICONPATH) + QString("missingcomponenticon.svg");
     }
     mUserIcon.addFile(iconPath,QSize(55,55));
+    iconFile.close();
     iconPath = mpAppearanceData->getFullAvailableIconPath(ISOGRAPHICS);
     iconFile.setFileName(iconPath);
     if (!iconFile.exists())     //Check if specified file exist, else use unknown icon
@@ -1572,6 +1562,7 @@ LibraryComponent::LibraryComponent(ModelObjectAppearance *pAppearanceData)
         iconPath = QString(OBJECTICONPATH) + QString("missingcomponenticon.svg");
     }
     mIsoIcon.addFile(iconPath,QSize(55,55));
+    iconFile.close();
 }
 
 

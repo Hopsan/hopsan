@@ -61,6 +61,7 @@
 #define DOCUMENTSPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/"
 #define BACKUPPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Backup/"
 
+#define FMUPATH gExecPath+"../import/FMU/"
 // Paths that needs two alternatives, DEV = development, REL = release
 #define MODELS_DEV_PATH gExecPath+"../Models/"
 #define SCRIPTS_DEV_PATH gExecPath+"../Scripts/"

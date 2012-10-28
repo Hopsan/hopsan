@@ -30,6 +30,9 @@
 #include <limits>
 #include <math.h>
 #include <complex>
+#ifdef WIN32
+#include <windows.h>
+#endif
 
 #include "GUIUtilities.h"
 #include "MainWindow.h"
@@ -450,7 +453,14 @@ void removeDir(QString path)
         }
         else
         {
+#ifdef WIN32
+            QStringList s;
+            s << "del "+info.absoluteFilePath();
+            QProcess browser;
+            browser.start("cmd", s);
+#else
             QFile::remove(info.absoluteFilePath());
+#endif
         }
     }
     dir.rmdir(path);
