@@ -110,7 +110,7 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
             }
         }
 
-        pHandler->callFmuGenerator(path.toStdString(), QString(COREINCLUDEPATH).toStdString(), gExecPath.toStdString(), true);
+        pHandler->callFmuImportGenerator(path.toStdString(), QString(COREINCLUDEPATH).toStdString(), gExecPath.toStdString(), true);
 
         if(QDir().exists(QString(FMUPATH) + fmuName))
         {
