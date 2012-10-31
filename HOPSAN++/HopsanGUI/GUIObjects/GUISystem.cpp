@@ -1292,51 +1292,21 @@ void SystemContainer::saveToWrappedCode()
 }
 
 
-//void SystemContainer::createFMUSourceFiles()
-//{
-//    QDialog *pExportFmuDialog = new QDialog(gpMainWindow);
-//    pExportFmuDialog->setWindowTitle("Export to Functional Mockup Interface");
-
-//    QLabel *pExportFmuLabel = new QLabel(gpMainWindow->tr("This will create a Functional Mockup Unit of\ncurrent model. Please choose compiler:"), pExportFmuDialog);
-
-//    mpExportFmuGccRadioButton = new QRadioButton(gpMainWindow->tr("GCC"), pExportFmuDialog);
-//    mpExportFmuGccRadioButton->setChecked(true);
-//    mpExportFmuMsvcRadioButton = new QRadioButton(gpMainWindow->tr("Microsoft Visual C"), pExportFmuDialog);
-
-//    QPushButton *pOkButton = new QPushButton("Okay", pExportFmuDialog);
-//    QPushButton *pCancelButton = new QPushButton("Cancel", pExportFmuDialog);
-
-//    QGridLayout *pExportFmuLayout = new QGridLayout(pExportFmuDialog);
-//    pExportFmuLayout->addWidget(pExportFmuLabel,            0, 0, 1, 2);
-//    pExportFmuLayout->addWidget(mpExportFmuGccRadioButton,  1, 0, 1, 2);
-//    pExportFmuLayout->addWidget(mpExportFmuMsvcRadioButton, 2, 0, 1, 2);
-//    pExportFmuLayout->addWidget(pOkButton,                  3, 0, 1, 1);
-//    pExportFmuLayout->addWidget(pCancelButton,              3, 1, 1, 1);
-
-//    pExportFmuDialog->setLayout(pExportFmuLayout);
-
-//    pExportFmuDialog->show();
-
-//    connect(pOkButton,      SIGNAL(clicked()), pExportFmuDialog,    SLOT(close()));
-//    connect(pOkButton,      SIGNAL(clicked()), this,                SLOT(createFMUSourceFilesFromDialog()));
-//    connect(pCancelButton,  SIGNAL(clicked()), pExportFmuDialog,    SLOT(close()));
-//}
-
-
 void SystemContainer::createFMUSourceFiles()
 {
     //Open file dialog and initialize the file stream
     QDir fileDialogSaveDir;
     QString savePath;
     savePath = QFileDialog::getExistingDirectory(gpMainWindow, tr("Create Functional Mockup Unit"),
-                                                    fileDialogSaveDir.currentPath(),
+                                                    gConfig.getFmuExportDir(),
                                                     QFileDialog::ShowDirsOnly
                                                     | QFileDialog::DontResolveSymlinks);
     if(savePath.isEmpty()) return;    //Don't save anything if user presses cancel
 
     QDir saveDir;
     saveDir.setPath(savePath);
-    saveDir.setFilter(QDir::NoDotAndDotDot);
+    gConfig.setFmuExportDir(saveDir.absolutePath());
+    saveDir.setFilter(QDir::AllEntries | QDir::NoDotAndDotDot);
     if(!saveDir.entryList().isEmpty())
     {
         qDebug() << saveDir.entryList();
@@ -1356,15 +1326,10 @@ void SystemContainer::createFMUSourceFiles()
     saveDir.setFilter(QDir::NoFilter);
 
 
-    QProgressDialog progressBar(tr("Initializing"), QString(), 0, 0, gpMainWindow);
-    progressBar.show();
-    progressBar.setMaximum(10);
-    progressBar.setWindowModality(Qt::WindowModal);
-    progressBar.setWindowTitle(tr("Creating FMU"));
-    progressBar.setMaximum(20);
-    progressBar.setValue(0);
 
 
+<<<<<<< .mine
+=======
     //Tells if user selected the gcc compiler or not (= visual studio)
     //bool gccCompiler = mpExportFmuGccRadioButton->isChecked();
 
@@ -1739,6 +1704,7 @@ void SystemContainer::createFMUSourceFiles()
     progressBar.setValue(9);
 
 
+>>>>>>> .r4753
     //Save model to hmf in export directory
     //! @todo This code is duplicated from ProjectTab::saveModel(), make it a common function somehow
     QDomDocument domDocument;
@@ -1748,12 +1714,18 @@ void SystemContainer::createFMUSourceFiles()
     QFile xmlhmf(savePath + "/" + mModelFileInfo.fileName());
     if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
+        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Unable to open "+savePath+"/"+mModelFileInfo.fileName()+" for writing.");
         return;
     }
     QTextStream out(&xmlhmf);
     appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
     domDocument.save(out, IndentSize);
 
+<<<<<<< .mine
+    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
+    pCoreAccess->generateToFmu(savePath, this);
+    delete(pCoreAccess);
+=======
 
 #ifdef WIN32
     progressBar.setLabelText("Compiling HopsanFMU.dll");
@@ -1977,6 +1949,7 @@ void SystemContainer::createFMUSourceFiles()
 //    saveDir.remove("HopsanFMU.h");
 //    removeDir(savePath + "/include");
 //    removeDir(savePath + "/fmu");
+>>>>>>> .r4753
 }
 
 

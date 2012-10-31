@@ -558,13 +558,13 @@ void LibraryWidget::importFmu()
 {
     //Load .fmu file and create paths
     QString filePath = QFileDialog::getOpenFileName(this, tr("Import Functional Mockup Unit (FMU)"),
-                                                    gConfig.getFmuDir(),
+                                                    gConfig.getFmuImportDir(),
                                                     tr("Functional Mockup Unit (*.fmu)"));
     if(filePath.isEmpty())      //Cancelled by user
         return;
 
     QFileInfo fmuFileInfo = QFileInfo(filePath);
-    gConfig.setFmuDir(fmuFileInfo.absolutePath());
+    gConfig.setFmuImportDir(fmuFileInfo.absolutePath());
 
     CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
     pCoreAccess->generateFromFmu(filePath);

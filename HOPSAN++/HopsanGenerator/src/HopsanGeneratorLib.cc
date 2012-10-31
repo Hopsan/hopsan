@@ -126,16 +126,28 @@ extern "C" DLLIMPORTEXPORT void callCppGenerator(string cppCode, string coreIncl
 }
 
 
-//! @brief Calls the functional mockup interface (FMU) generator
+//! @brief Calls the functional mockup interface (FMU) import generator
 //! @param path Path to the .fmu file
 //! @param coreIncludePath Path to HopsanCore include files
 //! @param binPath Path to HopsanCore binary files
 //! @param showDialog True if generator output shall be displayed in a dialog window
-extern "C" DLLIMPORTEXPORT void callFmuGenerator(string path, string coreIncludePath, string binPath, bool showDialog=false)
+extern "C" DLLIMPORTEXPORT void callFmuImportGenerator(string path, string coreIncludePath, string binPath, bool showDialog=false)
 {
-    qDebug() << "Called FMU generator (in dll)!";
-
     HopsanComponentGenerator *pGenerator = new HopsanComponentGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
     pGenerator->generateFromFmu(QString(path.c_str()));
+    delete(pGenerator);
+}
+
+
+//! @brief Calls the functional mockup interface (FMU) exportgenerator
+//! @param path Path to export to
+//! @param pSystem Pointer to system that shall be exported
+//! @param coreIncludePath Path to HopsanCore include files
+//! @param binPath Path to HopsanCore binary files
+//! @param showDialog True if generator output shall be displayed in a dialog window
+extern "C" DLLIMPORTEXPORT void callFmuExportGenerator(string path, hopsan::ComponentSystem *pSystem, string coreIncludePath, string binPath, bool showDialog=false)
+{
+    HopsanComponentGenerator *pGenerator = new HopsanComponentGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
+    pGenerator->generateToFmu(QString(path.c_str()), pSystem);
     delete(pGenerator);
 }

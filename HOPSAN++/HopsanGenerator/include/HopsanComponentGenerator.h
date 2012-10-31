@@ -42,6 +42,10 @@
 
 //class ModelObjectAppearance;
 
+namespace hopsan {
+class ComponentSystem;
+}
+
 
 class PortSpecification
 {
@@ -118,6 +122,7 @@ public:
     void printErrorMessage(QString msg);
     void generateFromModelica(QString code);
     void generateFromFmu(QString code);
+    void generateToFmu(QString savePath, hopsan::ComponentSystem *pSystem);
     void compileFromComponentObject(QString outputFile, ComponentSpecification comp, bool overwriteStartValues=false);
 
 private:
@@ -151,7 +156,24 @@ private:
 
 QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString rootTagName);
 void removeDir(QString path);
+void copyDir(const QString fromPath, QString toPath);
+void copyIncludeFilesToDir(QString path);
 
+
+
+//! @brief This utility class wraps a QTextStream and have stream operators to write whole lines. You do not need to add the newline char yourself.
+class QTextLineStream
+{
+public:
+    QTextLineStream(QTextStream &rTextStream)
+    {
+        mpQTextSream = &rTextStream;
+    }
+    friend QTextLineStream& operator <<(QTextLineStream &rLineStream, const char* input);
+
+private:
+    QTextStream* mpQTextSream;
+};
 
 
 #endif // COMPONENTGENERATORUTILITIES_H

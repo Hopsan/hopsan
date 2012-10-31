@@ -14,6 +14,7 @@
 -----------------------------------------------------------------------------*/
 
 #include <string>
+#include <stdio.h>
 #ifdef WIN32
 #define _WIN32_WINNT 0x0502
 #include "Windows.h"
@@ -57,18 +58,26 @@ GeneratorHandler::GeneratorHandler()
     }
 
     //Load FMU generator function
-    callFmuGenerator = (call_fmu_generator_t)GetProcAddress(lib_ptr, "callFmuGenerator");
-    if (!callFmuGenerator)
+    callFmuImportGenerator = (call_fmu_import_generator_t)GetProcAddress(lib_ptr, "callFmuImportGenerator");
+    if (!callFmuImportGenerator)
     {
         //! @todo Error message
         return;
     }
 
+    //Load FMU generator function
+    callFmuExportGenerator = (call_fmu_export_generator_t)GetProcAddress(lib_ptr, "callFmuExportGenerator");
+    if (!callFmuExportGenerator)
+    {
+        //! @todo Error message
+        return;
+    }
 #else
     void *lib_ptr;
     lib_ptr = dlopen("libHopsanGenerator.so", RTLD_NOW);  //Load the dll
     if (!lib_ptr)
     {
+        fprintf (stderr, "%s\n", dlerror());
         //! @todo Error message
         return;
     }
@@ -92,7 +101,16 @@ GeneratorHandler::GeneratorHandler()
     }
 
     //Load FMU generator function
-    callFmuGenerator = (call_fmu_generator_t)dlsym(lib_ptr, "callFmuGenerator");
+    callFmuImportGenerator = (call_fmu_import_generator_t)dlsym(lib_ptr, "callFmuImportGenerator");
+    dlsym_error = dlerror();
+    if (dlsym_error)
+    {
+        //! @todo Error message
+        return;
+    }
+
+    //Load FMU generator function
+    callFmuExportGenerator = (call_fmu_export_generator_t)dlsym(lib_ptr, "callFmuExportGenerator");
     dlsym_error = dlerror();
     if (dlsym_error)
     {

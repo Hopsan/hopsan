@@ -83,7 +83,8 @@ public:
     QString getExternalLibDir();
     QString getScriptDir();
     QString getPlotWindowDir();
-    QString getFmuDir();
+    QString getFmuImportDir();
+    QString getFmuExportDir();
 
     void setLibraryStyle(int value);
     void setAlwaysLoadLastSession(bool value);
@@ -119,7 +120,8 @@ public:
     void setExternalLibDir(QString value);
     void setScriptDir(QString value);
     void setPlotWindowDir(QString value);
-    void setFmuDir(QString value);
+    void setFmuImportDir(QString value);
+    void setFmuExportDir(QString value);
 
 private:
     int mLibraryStyle;
@@ -159,7 +161,8 @@ private:
     QString mExternalLibDir;
     QString mScriptDir;
     QString mPlotWindowDir;
-    QString mFmuDir;
+    QString mFmuImportDir;
+    QString mFmuExportDir;
 
     QMap < connectorStyle, QMap< QString, QMap<QString, QPen> > > mPenStyles;
 };

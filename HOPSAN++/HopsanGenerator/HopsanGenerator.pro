@@ -12,8 +12,13 @@ TARGET = $${TARGET}$${DEBUG_EXT}
 
 
 #--------------------------------------------------
-# Add the include path to our self, (HopsanCore)
+# Add the include path to our self, (HopsanGenerator)
 INCLUDEPATH *= $${PWD}/include/
+#--------------------------------------------------
+
+#--------------------------------------------------
+# Add the include path to (HopsanCore)
+INCLUDEPATH *= $${PWD}/../HopsanCore/include/
 #--------------------------------------------------
 
 # -------------------------------------------------

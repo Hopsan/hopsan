@@ -25,6 +25,7 @@
 #include "CoreAccess.h"
 #include <QDebug>
 #include <QDir>
+#include "GUIObjects/GUISystem.h"
 
 //HopsanCore includes
 #include "HopsanCore.h"
@@ -84,6 +85,8 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
+        pHandler->callFmuImportGenerator(path.toStdString(), QString(COREINCLUDEPATH).toStdString(), gExecPath.toStdString(), true);
+
         QFileInfo fmuFileInfo = QFileInfo(path);
         fmuFileInfo.setFile(path);
         QString fmuName = fmuFileInfo.fileName();
@@ -125,6 +128,19 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
 
             return true;
         }
+    }
+    return false;
+}
+
+
+bool CoreGeneratorAccess::generateToFmu(QString path, SystemContainer *pSystem)
+{
+    hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
+    if(pHandler->isLoadedSuccessfully())
+    {
+        pHandler->callFmuExportGenerator(path.toStdString(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), QString(COREINCLUDEPATH).toStdString(), gExecPath.toStdString(), true);
+
+        return true;
     }
     return false;
 }

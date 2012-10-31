@@ -30,6 +30,8 @@
 #include <QPair>
 #include <QStringList>
 
+class SystemContainer;
+
 //Forward declaration of hopsan core classes
 namespace hopsan {
 class ComponentSystem;
@@ -43,6 +45,7 @@ public:
     bool generateFromModelica(QString code);
     bool generateFromCpp(QString code, bool showOutputDialog=true);
     bool generateFromFmu(QString path);
+    bool generateToFmu(QString path, SystemContainer *pSystem);
 };
 
 class CoreLibraryAccess
@@ -85,6 +88,7 @@ class CoreSimulationHandler;
 class CoreSystemAccess
 {
     friend class CoreSimulationHandler;
+    friend class CoreGeneratorAccess;
 public:
     enum PortTypeIndicatorT {INTERNALPORTTYPE, ACTUALPORTTYPE, EXTERNALPORTTYPE};
 

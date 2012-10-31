@@ -79,7 +79,8 @@ void Configuration::saveToXml()
     appendDomTextNode(settings, "externallibdir", mExternalLibDir);
     appendDomTextNode(settings, "scriptdir", mScriptDir);
     appendDomTextNode(settings, "plotwindowdir", mPlotWindowDir);
-    appendDomTextNode(settings, "fmudir", mFmuDir);
+    appendDomTextNode(settings, "fmuimportdir", mFmuImportDir);
+    appendDomTextNode(settings, "fmuexportdir", mFmuExportDir);
 
 
     QDomElement style = appendDomElement(configRoot, HMF_STYLETAG);
@@ -278,8 +279,10 @@ void Configuration::loadFromXml()
                 mScriptDir = settingsElement.firstChildElement("scriptdir").text();
             if(!settingsElement.firstChildElement("plotwindowdir").isNull())
                 mPlotWindowDir = settingsElement.firstChildElement("plotwindowdir").text();
-            if(!settingsElement.firstChildElement("fmudir").isNull())
-                mFmuDir = settingsElement.firstChildElement("fmudir").text();
+            if(!settingsElement.firstChildElement("fmuimportdir").isNull())
+                mFmuImportDir = settingsElement.firstChildElement("fmuimportdir").text();
+            if(!settingsElement.firstChildElement("fmuexportdir").isNull())
+                mFmuExportDir = settingsElement.firstChildElement("fmuexportdir").text();
 
             QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
             QDomElement penElement = styleElement.firstChildElement("penstyle");
@@ -478,7 +481,11 @@ void Configuration::loadDefaultsFromXml()
             if(!settingsElement.firstChildElement("plotwindowdir").isNull())
                 mPlotWindowDir = settingsElement.firstChildElement("plotwindowdir").text();
             if(!settingsElement.firstChildElement("fmudir").isNull())
-                mFmuDir = settingsElement.firstChildElement("fmudir").text();
+                mFmuImportDir = settingsElement.firstChildElement("fmudir").text();
+            if(!settingsElement.firstChildElement("fmuimportdir").isNull())
+                mFmuImportDir = settingsElement.firstChildElement("fmuimportdir").text();
+            if(!settingsElement.firstChildElement("fmuexportdir").isNull())
+                mFmuExportDir = settingsElement.firstChildElement("fmuexportdir").text();
 
                 //Load default GUI style
             QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
@@ -943,13 +950,24 @@ QString Configuration::getPlotWindowDir()
 
 
 //! @brief Returns the last used directory for importing FMUs
-QString Configuration::getFmuDir()
+QString Configuration::getFmuImportDir()
 {
-    if(mFmuDir.isEmpty())
+    if(mFmuImportDir.isEmpty())
     {
         return QString(DOCUMENTSPATH);
     }
-    return mFmuDir;
+    return mFmuImportDir;
+}
+
+
+//! @brief Returns the last used directory for importing FMUs
+QString Configuration::getFmuExportDir()
+{
+    if(mFmuExportDir.isEmpty())
+    {
+        return QString(DOCUMENTSPATH);
+    }
+    return mFmuExportDir;
 }
 
 
@@ -1242,7 +1260,12 @@ void Configuration::setPlotWindowDir(QString value)
     mPlotWindowDir = value;
 }
 
-void Configuration::setFmuDir(QString value)
+void Configuration::setFmuImportDir(QString value)
 {
-    mFmuDir = value;
+    mFmuImportDir = value;
+}
+
+void Configuration::setFmuExportDir(QString value)
+{
+    mFmuExportDir = value;
 }
