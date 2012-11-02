@@ -19,6 +19,7 @@ INCLUDEPATH *= $${PWD}/include/
 #--------------------------------------------------
 # Add the include path to (HopsanCore)
 INCLUDEPATH *= $${PWD}/../HopsanCore/include/
+LIBS *= -L$${PWD}/../bin -lHopsanCore$${DEBUG_EXT}
 #--------------------------------------------------
 
 # -------------------------------------------------
