@@ -85,8 +85,6 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callFmuImportGenerator(path.toStdString(), QString(COREINCLUDEPATH).toStdString(), gExecPath.toStdString(), true);
-
         QFileInfo fmuFileInfo = QFileInfo(path);
         fmuFileInfo.setFile(path);
         QString fmuName = fmuFileInfo.fileName();
@@ -120,8 +118,10 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
             fmuIcon.copy(QString(FMUPATH)+fmuName+"/fmucomponent.svg");
             fmuIcon.close();
             fmuIcon.setFileName(QString(FMUPATH)+fmuName+"/fmucomponent.svg");
-            fmuIcon.setPermissions(QFile::WriteUser);
+            fmuIcon.setPermissions(QFile::WriteUser | QFile::ReadUser);
             fmuIcon.close();
+
+            qDebug() << "Copying icon file!";
 
             //Load library
             gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(QString(FMUPATH) + fmuName, "FMU");

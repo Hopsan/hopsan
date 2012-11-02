@@ -35,6 +35,8 @@
 #include <QDialogButtonBox>
 #include <QLabel>
 
+#include <cassert>
+
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -384,7 +386,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
     QDomElement variablesElement = fmuRoot.firstChildElement("ModelVariables");
     QDomElement varElement = variablesElement.firstChildElement("ScalarVariable");
     int i=0;
-    while (!varElement.isNull())
+    while (!varElement.isNull() && varElement.attribute("variability") != "parameter")
     {
         if(!varElement.hasAttribute("causality"))
         {
@@ -520,7 +522,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
 
     //! @todo Make parameters use predefined lists instead
 
-    printMessage("Writing fmuLib.cc");
+    printMessage("Creating fmuLib.cc");
 
     //Create fmuLib.cc
     QFile fmuLibFile;
@@ -534,23 +536,23 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
 
     printMessage("Writing fmuLib.cc");
 
+    QFile fmuLibTemplateFile(":templates/fmuLibTemplate.cc");
+    assert(fmuLibTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text));
+    QString fmuLibCode;
+    QTextStream t(&fmuLibTemplateFile);
+    fmuLibCode = t.readAll();
+    fmuLibTemplateFile.close();
+    assert(!fmuLibCode.isEmpty());
+
+    fmuLibCode.replace("<<<0>>>", fmuName);
+    fmuLibCode.replace("<<<1>>>", mCoreIncludePath);
+
     QTextStream fmuLibStream(&fmuLibFile);
-    fmuLibStream << "#include \"component_code/"+fmuName+".hpp\"\n";
-    fmuLibStream << "#include \""+mCoreIncludePath+"ComponentEssentials.h\"\n";
-    fmuLibStream << "using namespace hopsan;\n\n";
-    fmuLibStream << "extern \"C\" DLLEXPORT void register_contents(ComponentFactory* cfact_ptr, NodeFactory* nfact_ptr)\n";
-    fmuLibStream << "{\n";
-    fmuLibStream << "    cfact_ptr->registerCreatorFunction(\"" + fmuName + "\", " + fmuName + "::Creator);\n";
-    fmuLibStream << "}\n\n";
-    fmuLibStream << "extern \"C\" DLLEXPORT void get_hopsan_info(HopsanExternalLibInfoT *pHopsanExternalLibInfo)\n";
-    fmuLibStream << "{\n";
-    fmuLibStream << "    pHopsanExternalLibInfo->libName = (char*)\"HopsanFMULibrary_power\";\n";
-    fmuLibStream << "    pHopsanExternalLibInfo->hopsanCoreVersion = (char*)HOPSANCOREVERSION;\n";
-    fmuLibStream << "    pHopsanExternalLibInfo->libCompiledDebugRelease = (char*)DEBUGRELEASECOMPILED;\n";
-    fmuLibStream << "}\n";
+    fmuLibStream << fmuLibCode;
     fmuLibFile.close();
 
-    printMessage("Writing " + fmuName + ".hpp");
+
+    printMessage("Creating " + fmuName + ".hpp");
 
     //Create <fmuname>.hpp
     QDir().mkdir(fmuDir.path() + "/component_code");
@@ -565,554 +567,345 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
 
     printMessage("Writing " + fmuName + ".hpp");
 
-    QTextStream fmuComponentHppStream(&fmuComponentHppFile);
-    fmuComponentHppStream << "#ifndef "+fmuName+"_H\n";
-    fmuComponentHppStream << "#define "+fmuName+"_H\n\n";
-    fmuComponentHppStream << "#define BUFSIZE 4096\n\n";
-    fmuComponentHppStream << "#define _WIN32_WINNT 0x0502\n";
-    fmuComponentHppStream << "#include \"../fmi_me.h\"\n";
-    fmuComponentHppStream << "#include \"../xml_parser.h\"\n";
-    fmuComponentHppStream << "#include \""+mCoreIncludePath+"ComponentEssentials.h\"\n\n";
-    fmuComponentHppStream << "#include <sstream>\n";
-    fmuComponentHppStream << "#include <string>\n";
-    fmuComponentHppStream << "#include <stdio.h>\n";
-    fmuComponentHppStream << "#include <stdlib.h>\n";
-    fmuComponentHppStream << "#include <string.h>\n";
-    fmuComponentHppStream << "#include <iostream>\n";
-    fmuComponentHppStream << "#include <assert.h>\n";
-    fmuComponentHppStream << "#ifdef WIN32\n";
-    fmuComponentHppStream << "#include <windows.h>\n";
-    fmuComponentHppStream << "#endif\n\n";
-    fmuComponentHppStream << "void fmuLogger(fmiComponent c, fmiString instanceName, fmiStatus status,\n";
-    fmuComponentHppStream << "               fmiString category, fmiString message, ...){}\n\n";
-    fmuComponentHppStream << "namespace hopsan {\n\n";
-    fmuComponentHppStream << "    class "+fmuName+" : public ComponentQ\n";
-    fmuComponentHppStream << "    {\n";
-    fmuComponentHppStream << "    private:\n";
-    fmuComponentHppStream << "        FMU mFMU;\n";
-    fmuComponentHppStream << "        FILE* mFile;\n";
-    fmuComponentHppStream << "        fmiComponent c;                  // instance of the fmu\n";
-    fmuComponentHppStream << "        fmiEventInfo eventInfo;          // updated by calls to initialize and eventUpdate\n";
-    fmuComponentHppStream << "        int nx;                          // number of state variables\n";
-    fmuComponentHppStream << "        int nz;                          // number of state event indicators\n";
-    fmuComponentHppStream << "        double *x;                       // continuous states\n";
-    fmuComponentHppStream << "        double *xdot;                    // the crresponding derivatives in same order\n";
-    fmuComponentHppStream << "        double *z;                // state event indicators\n";
-    fmuComponentHppStream << "        double *prez;             // previous values of state event indicators\n\n";
-    //////////////////////////////////////////////////////////////////
+    QFile fmuComponentTemplateFile(":templates/fmuComponentTemplate.hpp");
+    assert(fmuComponentTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text));
+    QString fmuComponentCode;
+    QTextStream t2(&fmuComponentTemplateFile);
+    fmuComponentCode = t2.readAll();
+    fmuComponentTemplateFile.close();
+    assert(!fmuComponentCode.isEmpty());
+
+    QString fmuComponentReplace2;
     for(int i=0; i<tlmPortVars.size(); ++i)
     {
         QString numStr = QString::number(i);
-        fmuComponentHppStream << "        Port *mpP"+numStr+";\n";
+        fmuComponentReplace2.append("        Port *mpP"+numStr+";\n");
     }
     int j=0;
     for(int i=0; i<inoutVars.size(); ++i)
     {
         QString numStr = inoutVars[i];
-        fmuComponentHppStream << "        Port *mpIn"+numStr+";\n";
-        fmuComponentHppStream << "        Port *mpOut"+numStr+";\n";
+        fmuComponentReplace2.append("        Port *mpIn"+numStr+";\n");
+        fmuComponentReplace2.append("        Port *mpOut"+numStr+";\n");
         ++j;
     }
     for(int i=0; i<inVars.size(); ++i)
     {
         QString numStr = inVars[i];
-        fmuComponentHppStream << "        Port *mpIn"+numStr+";\n";
+        fmuComponentReplace2.append("        Port *mpIn"+numStr+";\n");
         ++j;
     }
     for(int i=0; i<outVars.size(); ++i)
     {
         QString numStr = outVars[i];
-        fmuComponentHppStream << "        Port *mpOut"+numStr+";\n";
+        fmuComponentReplace2.append("        Port *mpOut"+numStr+";\n");
         ++j;
     }
 
-    qDebug() << "Er";
-
-    //////////////////////////////////////////////////////////////////
+    QString fmuComponentReplace3;
     for(int i=0; i<tlmPortVars.size(); ++i)
     {
         QString numStr = QString::number(i);
         if(tlmPortTypes[i] == "hydraulic")
         {
-            fmuComponentHppStream << "        double *mpND_p"+numStr+";\n";
-            fmuComponentHppStream << "        double *mpND_q"+numStr+";\n";
-            fmuComponentHppStream << "        double *mpND_c"+numStr+";\n";
-            fmuComponentHppStream << "        double *mpND_Zc"+numStr+";\n";
+            fmuComponentReplace3.append("        double *mpND_p"+numStr+";\n");
+            fmuComponentReplace3.append("        double *mpND_q"+numStr+";\n");
+            fmuComponentReplace3.append("        double *mpND_c"+numStr+";\n");
+            fmuComponentReplace3.append("        double *mpND_Zc"+numStr+";\n");
         }
         else if(tlmPortTypes[i] == "mechanic")
         {
-            fmuComponentHppStream << "        double *mpND_f"+numStr+";\n";
-            fmuComponentHppStream << "        double *mpND_x"+numStr+";\n";
-            fmuComponentHppStream << "        double *mpND_v"+numStr+";\n";
-            fmuComponentHppStream << "        double *mpND_me"+numStr+";\n";
-            fmuComponentHppStream << "        double *mpND_c"+numStr+";\n";
-            fmuComponentHppStream << "        double *mpND_Zc"+numStr+";\n";
+            fmuComponentReplace3.append("        double *mpND_f"+numStr+";\n");
+            fmuComponentReplace3.append("        double *mpND_x"+numStr+";\n");
+            fmuComponentReplace3.append("        double *mpND_v"+numStr+";\n");
+            fmuComponentReplace3.append("        double *mpND_me"+numStr+";\n");
+            fmuComponentReplace3.append("        double *mpND_c"+numStr+";\n");
+            fmuComponentReplace3.append("        double *mpND_Zc"+numStr+";\n");
         }
     }
     j=0;
     for(int i=0; i<inoutVars.size(); ++i)
     {
         QString numStr = inoutVars[i];
-        fmuComponentHppStream << "        double *mpND_in" + numStr + ";\n";
-        fmuComponentHppStream << "        double *mpND_out" + numStr + ";\n";
+        fmuComponentReplace3.append("        double *mpND_in" + numStr + ";\n");
+        fmuComponentReplace3.append("        double *mpND_out" + numStr + ";\n");
         ++j;
     }
     for(int i=0; i<inVars.size(); ++i)
     {
         QString numStr = inVars[i];
-        fmuComponentHppStream << "        double *mpND_in" + numStr + ";\n";
+        fmuComponentReplace3.append("        double *mpND_in" + numStr + ";\n");
         ++j;
     }
     for(int i=0; i<outVars.size(); ++i)
     {
         QString numStr = outVars[i];
-        fmuComponentHppStream << "        double *mpND_out" + numStr + ";\n";
+        fmuComponentReplace3.append("        double *mpND_out" + numStr + ";\n");
         ++j;
     }
-    //////////////////////////////////////////////////////////////////
-    fmuComponentHppStream << "\n";
-    //////////////////////////////////////////////////////////////////
+
+    QString fmuComponentReplace4;
     varElement = variablesElement.firstChildElement("ScalarVariable");
     i=0;
     while (!varElement.isNull())
     {
         if(varElement.attribute("variability") == "parameter")
         {
-            fmuComponentHppStream << "        double par"+QString::number(i)+";\n";
+            fmuComponentReplace4.append("        double par"+QString::number(i)+";\n");
             ++i;
         }
         varElement = varElement.nextSiblingElement("ScalarVariable");
     }
-    //////////////////////////////////////////////////////////////////
-    fmuComponentHppStream << "\n";
-    fmuComponentHppStream << "    public:\n";
-    fmuComponentHppStream << "        static Component *Creator()\n";
-    fmuComponentHppStream << "        {\n";
-    fmuComponentHppStream << "            return new "+fmuName+"();\n";
-    fmuComponentHppStream << "        }\n\n";
-    fmuComponentHppStream << "        void configure()\n";
-    fmuComponentHppStream << "        {\n";
-    fmuComponentHppStream << "            mFMU.modelDescription = parse(\""+fmuDir.path()+"/modelDescription.xml\");\n";
-    fmuComponentHppStream << "            assert(mFMU.modelDescription);\n";
+
+    QString fmuComponentReplace6;
 #ifdef WIN32
-    fmuComponentHppStream << "            assert(loadDll(\""+fmuDir.path()+"/"+fmuName+".dll\"));\n";
+    fmuComponentReplace6 = "assert(loadDll(\""+fmuDir.path()+"/"+fmuName+".dll\"));\n";
 #elif linux
-    fmuComponentHppStream << "            assert(loadSo(\""+fmuDir.path()+"/"+fmuName+".so\"));\n";
+    fmuComponentReplace6 = "assert(loadSo(\""+fmuDir.path()+"/"+fmuName+".so\"));\n";
 #endif
-    fmuComponentHppStream << "            addInfoMessage(getString(mFMU.modelDescription, att_modelIdentifier));\n\n";
-    //////////////////////////////////////////////////////////////////
+
+    QString fmuComponentReplace7;
     for(int i=0; i<tlmPortVars.size(); ++i)
     {
         QString numStr = QString::number(i);
         if(tlmPortTypes[i] == "hydraulic")
         {
-            fmuComponentHppStream << "            mpP"+numStr+" = addPowerPort(\"P"+numStr+"\", \"NodeHydraulic\");\n";
+            fmuComponentReplace7.append("            mpP"+numStr+" = addPowerPort(\"P"+numStr+"\", \"NodeHydraulic\");\n");
         }
         else if(tlmPortTypes[i] == "mechanic")
         {
-            fmuComponentHppStream << "            mpP"+numStr+" = addPowerPort(\"P"+numStr+"\", \"NodeMechanic\");\n";
+            fmuComponentReplace7.append("            mpP"+numStr+" = addPowerPort(\"P"+numStr+"\", \"NodeMechanic\");\n");
         }
     }
     j=0;
     for(int i=0; i<inoutVars.size(); ++i)
     {
         QString numStr = inoutVars[i];
-        fmuComponentHppStream << "            mpIn"+numStr+" = addReadPort(\""+inoutVarNames[i]+"\", \"NodeSignal\", Port::NOTREQUIRED);\n";
-        fmuComponentHppStream << "            mpOut"+numStr+" = addWritePort(\""+inoutVarNames[i]+"\", \"NodeSignal\", Port::NOTREQUIRED);\n";
+        fmuComponentReplace7.append("            mpIn"+numStr+" = addReadPort(\""+inoutVarNames[i]+"In\", \"NodeSignal\", Port::NOTREQUIRED);\n");
+        fmuComponentReplace7.append("            mpOut"+numStr+" = addWritePort(\""+inoutVarNames[i]+"Out\", \"NodeSignal\", Port::NOTREQUIRED);\n");
         ++j;
     }
     for(int i=0; i<inVars.size(); ++i)
     {
         QString numStr = inVars[i];
-        fmuComponentHppStream << "            mpIn"+numStr+" = addReadPort(\""+inVarNames[i]+"\", \"NodeSignal\", Port::NOTREQUIRED);\n";
+        fmuComponentReplace7.append("            mpIn"+numStr+" = addReadPort(\""+inVarNames[i]+"In\", \"NodeSignal\", Port::NOTREQUIRED);\n");
         ++j;
     }
     for(int i=0; i<outVars.size(); ++i)
     {
         QString numStr = outVars[i];
-        fmuComponentHppStream << "            mpOut"+numStr+" = addWritePort(\""+outVarNames[i]+"\", \"NodeSignal\", Port::NOTREQUIRED);\n";
+        fmuComponentReplace7.append("            mpOut"+numStr+" = addWritePort(\""+outVarNames[i]+"Out\", \"NodeSignal\", Port::NOTREQUIRED);\n");
         ++j;
     }
 
-    qDebug() << "San";
-
-    //////////////////////////////////////////////////////////////////
+    QString fmuComponentReplace8;
     varElement = variablesElement.firstChildElement("ScalarVariable");
     i=0;
     while (!varElement.isNull())
     {
         if(varElement.attribute("variability") == "parameter")
         {
-            fmuComponentHppStream << "            par"+QString::number(i)+" = "+varElement.firstChildElement("Real").attribute("start")+";\n";
-            fmuComponentHppStream << "            registerParameter(\""+varElement.attribute("name")+"\", \""+varElement.attribute("description")+"\", \"-\", par"+QString::number(i)+");\n";
+            fmuComponentReplace8.append("            par"+QString::number(i)+" = "+varElement.firstChildElement("Real").attribute("start")+";\n");
+            fmuComponentReplace8.append("            registerParameter(\""+varElement.attribute("name")+"\", \""+varElement.attribute("description")+"\", \"-\", par"+QString::number(i)+");\n");
             ++i;
         }
         varElement = varElement.nextSiblingElement("ScalarVariable");
     }
-    //////////////////////////////////////////////////////////////////
-    fmuComponentHppStream << "        }\n\n";
-    fmuComponentHppStream << "        void initialize()\n";
-    fmuComponentHppStream << "        {\n";
-    fmuComponentHppStream << "            if (!mFMU.modelDescription)\n";
-    fmuComponentHppStream << "            {\n";
-    fmuComponentHppStream << "                addErrorMessage(\"Missing FMU model description\");\n";
-    fmuComponentHppStream << "                stopSimulation();\n";
-    fmuComponentHppStream << "            }\n";
-    //////////////////////////////////////////////////////////////////
+
+    QString fmuComponentReplace9;
     for(int i=0; i<tlmPortTypes.size(); ++i)
     {
         QString numStr = QString::number(i);
         if(tlmPortTypes[i] == "hydraulic")
         {
-            fmuComponentHppStream << "            mpND_p"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeHydraulic::PRESSURE);\n";
-            fmuComponentHppStream << "            mpND_q"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeHydraulic::FLOW);\n";
-            fmuComponentHppStream << "            mpND_c"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeHydraulic::WAVEVARIABLE);\n";
-            fmuComponentHppStream << "            mpND_Zc"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeHydraulic::CHARIMP);\n";
+            fmuComponentReplace9.append("            mpND_p"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeHydraulic::PRESSURE);\n");
+            fmuComponentReplace9.append("            mpND_q"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeHydraulic::FLOW);\n");
+            fmuComponentReplace9.append("            mpND_c"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeHydraulic::WAVEVARIABLE);\n");
+            fmuComponentReplace9.append("            mpND_Zc"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeHydraulic::CHARIMP);\n");
         }
         else if(tlmPortTypes[i] == "mechanic")
         {
-            fmuComponentHppStream << "            mpND_f"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::FORCE);\n";
-            fmuComponentHppStream << "            mpND_x"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::POSITION);\n";
-            fmuComponentHppStream << "            mpND_v"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::VELOCITY);\n";
-            fmuComponentHppStream << "            mpND_me"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::EQMASS);\n";
-            fmuComponentHppStream << "            mpND_c"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::WAVEVARIABLE);\n";
-            fmuComponentHppStream << "            mpND_Zc"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::CHARIMP);\n";
+            fmuComponentReplace9.append("            mpND_f"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::FORCE);\n");
+            fmuComponentReplace9.append("            mpND_x"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::POSITION);\n");
+            fmuComponentReplace9.append("            mpND_v"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::VELOCITY);\n");
+            fmuComponentReplace9.append("            mpND_me"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::EQMASS);\n");
+            fmuComponentReplace9.append("            mpND_c"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::WAVEVARIABLE);\n");
+            fmuComponentReplace9.append("            mpND_Zc"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::CHARIMP);\n");
         }
     }
     j=0;
     for(int i=0; i<inoutVars.size(); ++i)
     {
         QString numStr = inoutVars[i];
-        fmuComponentHppStream << "            mpND_in"+numStr+" = getSafeNodeDataPtr(mpIn"+numStr+", NodeSignal::VALUE);\n";
-        fmuComponentHppStream << "            mpND_out"+numStr+" = getSafeNodeDataPtr(mpOut"+numStr+", NodeSignal::VALUE);\n";
+        fmuComponentReplace9.append("            mpND_in"+numStr+" = getSafeNodeDataPtr(mpIn"+numStr+", NodeSignal::VALUE);\n");
+        fmuComponentReplace9.append("            mpND_out"+numStr+" = getSafeNodeDataPtr(mpOut"+numStr+", NodeSignal::VALUE);\n");
         ++j;
     }
     for(int i=0; i<inVars.size(); ++i)
     {
         QString numStr = inVars[i];
-        fmuComponentHppStream << "            mpND_in"+numStr+" = getSafeNodeDataPtr(mpIn"+numStr+", NodeSignal::VALUE);\n";
+        fmuComponentReplace9.append("            mpND_in"+numStr+" = getSafeNodeDataPtr(mpIn"+numStr+", NodeSignal::VALUE);\n");
         ++j;
     }
     for(int i=0; i<outVars.size(); ++i)
     {
         QString numStr = outVars[i];
-        fmuComponentHppStream << "            mpND_out"+numStr+" = getSafeNodeDataPtr(mpOut"+numStr+", NodeSignal::VALUE);\n";
+        fmuComponentReplace9.append("            mpND_out"+numStr+" = getSafeNodeDataPtr(mpOut"+numStr+", NodeSignal::VALUE);\n");
         ++j;
     }
-    //////////////////////////////////////////////////////////////////
-    fmuComponentHppStream << "           \n";
-    fmuComponentHppStream << "            //Initialize FMU\n";
-    fmuComponentHppStream << "            ModelDescription* md;            // handle to the parsed XML file\n";
-    fmuComponentHppStream << "            const char* guid;                // global unique id of the fmu\n";
-    fmuComponentHppStream << "            fmiCallbackFunctions callbacks;  // called by the model during simulation\n";
-    fmuComponentHppStream << "            fmiStatus fmiFlag;               // return code of the fmu functions\n";
-    fmuComponentHppStream << "            fmiReal t0 = 0;                  // start time\n";
-    fmuComponentHppStream << "            fmiBoolean toleranceControlled = fmiFalse;\n";
-    fmuComponentHppStream << "            int loggingOn = 0;\n\n";
-    fmuComponentHppStream << "            // instantiate the fmu\n";
-    fmuComponentHppStream << "            md = mFMU.modelDescription;\n";
-    fmuComponentHppStream << "            guid = getString(md, att_guid);\n";
-    fmuComponentHppStream << "            callbacks.logger = fmuLogger;\n";
-    fmuComponentHppStream << "            callbacks.allocateMemory = calloc;\n";
-    fmuComponentHppStream << "            callbacks.freeMemory = free;\n";
-    fmuComponentHppStream << "            c = mFMU.instantiateModel(getModelIdentifier(md), guid, callbacks, loggingOn);\n\n";
-    fmuComponentHppStream << "            // allocate memory\n";
-    fmuComponentHppStream << "            nx = getNumberOfStates(md);\n";
-    fmuComponentHppStream << "            nz = getNumberOfEventIndicators(md);\n";
-    fmuComponentHppStream << "            x    = (double *) calloc(nx, sizeof(double));\n";
-    fmuComponentHppStream << "            xdot = (double *) calloc(nx, sizeof(double));\n";
-    fmuComponentHppStream << "            if (nz>0)\n";
-    fmuComponentHppStream << "            {\n";
-    fmuComponentHppStream << "                z    =  (double *) calloc(nz, sizeof(double));\n";
-    fmuComponentHppStream << "                prez =  (double *) calloc(nz, sizeof(double));\n";
-    fmuComponentHppStream << "            }\n\n";
-    fmuComponentHppStream << "            // set the start time and initialize\n";
-    fmuComponentHppStream << "            fmiFlag =  mFMU.setTime(c, t0);\n";
-    fmuComponentHppStream << "            fmiFlag =  mFMU.initialize(c, toleranceControlled, t0, &eventInfo);\n\n";
-    fmuComponentHppStream << "        }\n\n";
-    fmuComponentHppStream << "        void simulateOneTimestep()\n";
-    fmuComponentHppStream << "        {\n";
-    fmuComponentHppStream << "            ScalarVariable** vars = mFMU.modelDescription->modelVariables;\n";
-    fmuComponentHppStream << "            double value;\n";
-    fmuComponentHppStream << "            ScalarVariable* sv;\n";
-    fmuComponentHppStream << "            fmiValueReference vr;\n\n";
-    //////////////////////////////////////////////////////////////////
+
+    QString fmuComponentReplace10;
     varElement = variablesElement.firstChildElement("ScalarVariable");
     i=0;
     while (!varElement.isNull())
     {
         if(varElement.attribute("variability") == "parameter")
         {
-            fmuComponentHppStream << "            sv = vars["+QString(varElement.attribute("valueReference"))+"];\n";
-            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
-            fmuComponentHppStream << "            value=par"+QString::number(i)+";\n";
-            fmuComponentHppStream << "            mFMU.setReal(c, &vr, 1, &value);\n";
+            fmuComponentReplace10.append("            sv = vars["+QString(varElement.attribute("valueReference"))+"];\n");
+            fmuComponentReplace10.append("            vr = getValueReference(sv);\n");
+            fmuComponentReplace10.append("            value=par"+QString::number(i)+";\n");
+            fmuComponentReplace10.append("            mFMU.setReal(c, &vr, 1, &value);\n");
             ++i;
         }
         varElement = varElement.nextSiblingElement("ScalarVariable");
     }
-    //////////////////////////////////////////////////////////////////
-    fmuComponentHppStream << "\n";
-    fmuComponentHppStream << "            //write input values\n";
-    //////////////////////////////////////////////////////////////////
+
+    QString fmuComponentReplace11;
     for(int i=0; i<tlmPortTypes.size(); ++i)
     {
         QString numStr = QString::number(i);
         if(tlmPortTypes[i] == "hydraulic")
         {
             QString refStr = tlmPortRefs[i][2];
-            fmuComponentHppStream << "            sv = vars["+refStr+"];\n";
-            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
-            fmuComponentHppStream << "            value = (*mpND_c"+numStr+");\n";
-            fmuComponentHppStream << "            mFMU.setReal(c, &vr, 1, &value);\n\n";
+            fmuComponentReplace11.append("            sv = vars["+refStr+"];\n");
+            fmuComponentReplace11.append("            vr = getValueReference(sv);\n");
+            fmuComponentReplace11.append("            value = (*mpND_c"+numStr+");\n");
+            fmuComponentReplace11.append("            mFMU.setReal(c, &vr, 1, &value);\n\n");
 
             refStr = tlmPortRefs[i][3];
-            fmuComponentHppStream << "            sv = vars["+refStr+"];\n";
-            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
-            fmuComponentHppStream << "            value = (*mpND_Zc"+numStr+");\n";
-            fmuComponentHppStream << "            mFMU.setReal(c, &vr, 1, &value);\n\n";
+            fmuComponentReplace11.append("            sv = vars["+refStr+"];\n");
+            fmuComponentReplace11.append("            vr = getValueReference(sv);\n");
+            fmuComponentReplace11.append("            value = (*mpND_Zc"+numStr+");\n");
+            fmuComponentReplace11.append("            mFMU.setReal(c, &vr, 1, &value);\n\n");
         }
         if(tlmPortTypes[i] == "mechanic")
         {
             QString refStr = tlmPortRefs[i][3];
-            fmuComponentHppStream << "            sv = vars["+refStr+"];\n";
-            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
-            fmuComponentHppStream << "            value = (*mpND_c"+numStr+");\n";
-            fmuComponentHppStream << "            mFMU.setReal(c, &vr, 1, &value);\n\n";
+            fmuComponentReplace11.append("            sv = vars["+refStr+"];\n");
+            fmuComponentReplace11.append("            vr = getValueReference(sv);\n");
+            fmuComponentReplace11.append("            value = (*mpND_c"+numStr+");\n");
+            fmuComponentReplace11.append("            mFMU.setReal(c, &vr, 1, &value);\n\n");
 
             refStr = tlmPortRefs[i][4];
-            fmuComponentHppStream << "            sv = vars["+refStr+"];\n";
-            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
-            fmuComponentHppStream << "            value = (*mpND_Zc"+numStr+");\n";
-            fmuComponentHppStream << "            mFMU.setReal(c, &vr, 1, &value);\n\n";
+            fmuComponentReplace11.append("            sv = vars["+refStr+"];\n");
+            fmuComponentReplace11.append("            vr = getValueReference(sv);\n");
+            fmuComponentReplace11.append("            value = (*mpND_Zc"+numStr+");\n");
+            fmuComponentReplace11.append("            mFMU.setReal(c, &vr, 1, &value);\n\n");
         }
     }
     for(int i=0; i<inoutVars.size(); ++i)
     {
         QString numStr = inoutVars[i];
-        fmuComponentHppStream << "            if(mpIn"+numStr+"->isConnected())\n";
-        fmuComponentHppStream << "            {\n";
-        fmuComponentHppStream << "                sv = vars["+numStr+"];\n";
-        fmuComponentHppStream << "                vr = getValueReference(sv);\n";
-        fmuComponentHppStream << "                value = (*mpND_in"+numStr+");\n";
-        fmuComponentHppStream << "                mFMU.setReal(c, &vr, 1, &value);\n\n";
-        fmuComponentHppStream << "            }\n";
+        fmuComponentReplace11.append("            if(mpIn"+numStr+"->isConnected())\n");
+        fmuComponentReplace11.append("            {\n");
+        fmuComponentReplace11.append("                sv = vars["+numStr+"];\n");
+        fmuComponentReplace11.append("                vr = getValueReference(sv);\n");
+        fmuComponentReplace11.append("                value = (*mpND_in"+numStr+");\n");
+        fmuComponentReplace11.append("                mFMU.setReal(c, &vr, 1, &value);\n\n");
+        fmuComponentReplace11.append("            }\n");
     }
     for(int i=0; i<inVars.size(); ++i)
     {
         QString numStr = inVars[i];
-        fmuComponentHppStream << "            if(mpIn"+numStr+"->isConnected())\n";
-        fmuComponentHppStream << "            {\n";
-        fmuComponentHppStream << "                sv = vars["+numStr+"];\n";
-        fmuComponentHppStream << "                vr = getValueReference(sv);\n";
-        fmuComponentHppStream << "                value = (*mpND_in"+numStr+");\n";
-        fmuComponentHppStream << "                mFMU.setReal(c, &vr, 1, &value);\n\n";
-        fmuComponentHppStream << "            }\n";
+        fmuComponentReplace11.append("            if(mpIn"+numStr+"->isConnected())\n");
+        fmuComponentReplace11.append("            {\n");
+        fmuComponentReplace11.append("                sv = vars["+numStr+"];\n");
+        fmuComponentReplace11.append("                vr = getValueReference(sv);\n");
+        fmuComponentReplace11.append("                value = (*mpND_in"+numStr+");\n");
+        fmuComponentReplace11.append("                mFMU.setReal(c, &vr, 1, &value);\n\n");
+        fmuComponentReplace11.append("            }\n");
     }
-    //////////////////////////////////////////////////////////////////
-    fmuComponentHppStream << "            //run simulation\n";
-    fmuComponentHppStream << "            simulateFMU();\n\n";
-    fmuComponentHppStream << "            //write back output values\n";
-    //////////////////////////////////////////////////////////////////
+
+    QString fmuComponentReplace12;
     for(int i=0; i<tlmPortTypes.size(); ++i)
     {
         QString numStr = QString::number(i);
         if(tlmPortTypes[i] == "hydraulic")
         {
             QString refStr = tlmPortRefs[i][0];
-            fmuComponentHppStream << "            sv = vars["+refStr+"];\n";
-            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
-            fmuComponentHppStream << "            mFMU.getReal(c, &vr, 1, &value);\n";
-            fmuComponentHppStream << "            (*mpND_p"+numStr+") = value;\n\n";
+            fmuComponentReplace12.append("            sv = vars["+refStr+"];\n");
+            fmuComponentReplace12.append("            vr = getValueReference(sv);\n");
+            fmuComponentReplace12.append("            mFMU.getReal(c, &vr, 1, &value);\n");
+            fmuComponentReplace12.append("            (*mpND_p"+numStr+") = value;\n\n");
 
             refStr = tlmPortRefs[i][1];
-            fmuComponentHppStream << "            sv = vars["+refStr+"];\n";
-            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
-            fmuComponentHppStream << "            mFMU.getReal(c, &vr, 1, &value);\n";
-            fmuComponentHppStream << "            (*mpND_q"+numStr+") = value;\n\n";
+            fmuComponentReplace12.append("            sv = vars["+refStr+"];\n");
+            fmuComponentReplace12.append("            vr = getValueReference(sv);\n");
+            fmuComponentReplace12.append("            mFMU.getReal(c, &vr, 1, &value);\n");
+            fmuComponentReplace12.append("            (*mpND_q"+numStr+") = value;\n\n");
         }
         else if(tlmPortTypes[i] == "mechanic")
         {
             QString refStr = tlmPortRefs[i][0];
-            fmuComponentHppStream << "            sv = vars["+refStr+"];\n";
-            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
-            fmuComponentHppStream << "            mFMU.getReal(c, &vr, 1, &value);\n";
-            fmuComponentHppStream << "            (*mpND_f"+numStr+") = value;\n\n";
+            fmuComponentReplace12.append("            sv = vars["+refStr+"];\n");
+            fmuComponentReplace12.append("            vr = getValueReference(sv);\n");
+            fmuComponentReplace12.append("            mFMU.getReal(c, &vr, 1, &value);\n");
+            fmuComponentReplace12.append("            (*mpND_f"+numStr+") = value;\n\n");
 
             refStr = tlmPortRefs[i][1];
-            fmuComponentHppStream << "            sv = vars["+refStr+"];\n";
-            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
-            fmuComponentHppStream << "            mFMU.getReal(c, &vr, 1, &value);\n";
-            fmuComponentHppStream << "            (*mpND_x"+numStr+") = value;\n\n";
+            fmuComponentReplace12.append("            sv = vars["+refStr+"];\n");
+            fmuComponentReplace12.append("            vr = getValueReference(sv);\n");
+            fmuComponentReplace12.append("            mFMU.getReal(c, &vr, 1, &value);\n");
+            fmuComponentReplace12.append("            (*mpND_x"+numStr+") = value;\n\n");
 
             refStr = tlmPortRefs[i][2];
-            fmuComponentHppStream << "            sv = vars["+refStr+"];\n";
-            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
-            fmuComponentHppStream << "            mFMU.getReal(c, &vr, 1, &value);\n";
-            fmuComponentHppStream << "            (*mpND_v"+numStr+") = value;\n\n";
+            fmuComponentReplace12.append("            sv = vars["+refStr+"];\n");
+            fmuComponentReplace12.append("            vr = getValueReference(sv);\n");
+            fmuComponentReplace12.append("            mFMU.getReal(c, &vr, 1, &value);\n");
+            fmuComponentReplace12.append("            (*mpND_v"+numStr+") = value;\n\n");
 
             refStr = tlmPortRefs[i][2];
-            fmuComponentHppStream << "            sv = vars["+refStr+"];\n";
-            fmuComponentHppStream << "            vr = getValueReference(sv);\n";
-            fmuComponentHppStream << "            mFMU.getReal(c, &vr, 1, &value);\n";
-            fmuComponentHppStream << "            (*mpND_me"+numStr+") = value;\n\n";
+            fmuComponentReplace12.append("            sv = vars["+refStr+"];\n");
+            fmuComponentReplace12.append("            vr = getValueReference(sv);\n");
+            fmuComponentReplace12.append("            mFMU.getReal(c, &vr, 1, &value);\n");
+            fmuComponentReplace12.append("            (*mpND_me"+numStr+") = value;\n\n");
         }
     }
     for(int i=0; i<inoutVars.size(); ++i)
     {
         QString numStr = inoutVars[i];
-        fmuComponentHppStream << "            sv = vars["+numStr+"];\n";
-        fmuComponentHppStream << "            vr = getValueReference(sv);\n";
-        fmuComponentHppStream << "            mFMU.getReal(c, &vr, 1, &value);\n";
-        fmuComponentHppStream << "            (*mpND_out"+numStr+") = value;\n\n";
+        fmuComponentReplace12.append("            sv = vars["+numStr+"];\n");
+        fmuComponentReplace12.append("            vr = getValueReference(sv);\n");
+        fmuComponentReplace12.append("            mFMU.getReal(c, &vr, 1, &value);\n");
+        fmuComponentReplace12.append("            (*mpND_out"+numStr+") = value;\n\n");
     }
     for(int i=0; i<outVars.size(); ++i)
     {
         QString numStr = outVars[i];
-        fmuComponentHppStream << "            sv = vars["+numStr+"];\n";
-        fmuComponentHppStream << "            vr = getValueReference(sv);\n";
-        fmuComponentHppStream << "            mFMU.getReal(c, &vr, 1, &value);\n";
-        fmuComponentHppStream << "            (*mpND_out"+numStr+") = value;\n\n";
+        fmuComponentReplace12.append("            sv = vars["+numStr+"];\n");
+        fmuComponentReplace12.append("            vr = getValueReference(sv);\n");
+        fmuComponentReplace12.append("            mFMU.getReal(c, &vr, 1, &value);\n");
+        fmuComponentReplace12.append("            (*mpND_out"+numStr+") = value;\n\n");
     }
-    //////////////////////////////////////////////////////////////////
-    fmuComponentHppStream << "        }\n";
-    fmuComponentHppStream << "        void finalize()\n";
-    fmuComponentHppStream << "        {\n";
-    fmuComponentHppStream << "            //cleanup\n";
-    fmuComponentHppStream << "            mFMU.terminate(c);\n";
-    fmuComponentHppStream << "            //mFMU.freeModelInstance(c);\n";
-    fmuComponentHppStream << "            if (x!=NULL) free(x);\n";
-    fmuComponentHppStream << "            if (xdot!= NULL) free(xdot);\n";
-    fmuComponentHppStream << "            if (z!= NULL) free(z);\n";
-    fmuComponentHppStream << "            if (prez!= NULL) free(prez);\n";
-    fmuComponentHppStream << "        }\n\n";
-#ifdef WIN32
-    fmuComponentHppStream << "        bool loadDll(std::string path)\n";
-#elif linux
-    fmuComponentHppStream << "        bool loadSo(std::string path)\n";
-#endif
-    fmuComponentHppStream << "        {\n";
-    fmuComponentHppStream << "            bool success = true;\n";
-    fmuComponentHppStream << "            void *h;\n";
-    fmuComponentHppStream << "            std::string libdir = path;\n";
-    fmuComponentHppStream << "            while(libdir.at(libdir.size()-1) != '/')\n";
-    fmuComponentHppStream << "            {\n";
-    fmuComponentHppStream << "            libdir.erase(libdir.size()-1, 1);\n";
-    fmuComponentHppStream << "            }\n";
-#ifdef WIN32
-    fmuComponentHppStream << "            SetDllDirectoryA(libdir.c_str());       //Set search path for dependencies\n";
-    fmuComponentHppStream << "            h = LoadLibraryA(path.c_str());\n";
-#elif linux
-     fmuComponentHppStream << "            h = dlopen(path.c_str(), RTLD_LAZY);\n";
-     fmuComponentHppStream << "            std::cout << dlerror();\n";
-#endif
-    fmuComponentHppStream << "            if (!h)\n";
-    fmuComponentHppStream << "            {\n";
-    fmuComponentHppStream << "                success = false; // failure\n";
-    fmuComponentHppStream << "                return success;\n";
-    fmuComponentHppStream << "            }\n";
-    fmuComponentHppStream << "            mFMU.dllHandle = h;\n\n";
-    fmuComponentHppStream << "            mFMU.getModelTypesPlatform   = (fGetModelTypesPlatform) getAdr(&success, \"fmiGetModelTypesPlatform\");\n";
-    fmuComponentHppStream << "            mFMU.instantiateModel        = (fInstantiateModel)   getAdr(&success, \"fmiInstantiateModel\");\n";
-    fmuComponentHppStream << "            mFMU.freeModelInstance       = (fFreeModelInstance)  getAdr(&success, \"fmiFreeModelInstance\");\n";
-    fmuComponentHppStream << "            mFMU.setTime                 = (fSetTime)            getAdr(&success, \"fmiSetTime\");\n";
-    fmuComponentHppStream << "            mFMU.setContinuousStates     = (fSetContinuousStates)getAdr(&success, \"fmiSetContinuousStates\");\n";
-    fmuComponentHppStream << "            mFMU.completedIntegratorStep = (fCompletedIntegratorStep)getAdr(&success, \"fmiCompletedIntegratorStep\");\n";
-    fmuComponentHppStream << "            mFMU.initialize              = (fInitialize)         getAdr(&success, \"fmiInitialize\");\n";
-    fmuComponentHppStream << "            mFMU.getDerivatives          = (fGetDerivatives)     getAdr(&success, \"fmiGetDerivatives\");\n";
-    fmuComponentHppStream << "            mFMU.getEventIndicators      = (fGetEventIndicators) getAdr(&success, \"fmiGetEventIndicators\");\n";
-    fmuComponentHppStream << "            mFMU.eventUpdate             = (fEventUpdate)        getAdr(&success, \"fmiEventUpdate\");\n";
-    fmuComponentHppStream << "            mFMU.getContinuousStates     = (fGetContinuousStates)getAdr(&success, \"fmiGetContinuousStates\");\n";
-    fmuComponentHppStream << "            mFMU.getNominalContinuousStates = (fGetNominalContinuousStates)getAdr(&success, \"fmiGetNominalContinuousStates\");\n";
-    fmuComponentHppStream << "            mFMU.getStateValueReferences = (fGetStateValueReferences)getAdr(&success, \"fmiGetStateValueReferences\");\n";
-    fmuComponentHppStream << "            mFMU.terminate               = (fTerminate)          getAdr(&success, \"fmiTerminate\");\n\n";
-    fmuComponentHppStream << "            mFMU.getVersion              = (fGetVersion)         getAdr(&success, \"fmiGetVersion\");\n";
-    fmuComponentHppStream << "            mFMU.setDebugLogging         = (fSetDebugLogging)    getAdr(&success, \"fmiSetDebugLogging\");\n";
-    fmuComponentHppStream << "            mFMU.setReal                 = (fSetReal)            getAdr(&success, \"fmiSetReal\");\n";
-    fmuComponentHppStream << "            mFMU.setInteger              = (fSetInteger)         getAdr(&success, \"fmiSetInteger\");\n";
-    fmuComponentHppStream << "            mFMU.setBoolean              = (fSetBoolean)         getAdr(&success, \"fmiSetBoolean\");\n";
-    fmuComponentHppStream << "            mFMU.setString               = (fSetString)          getAdr(&success, \"fmiSetString\");\n";
-    fmuComponentHppStream << "            mFMU.getReal                 = (fGetReal)            getAdr(&success, \"fmiGetReal\");\n";
-    fmuComponentHppStream << "            mFMU.getInteger              = (fGetInteger)         getAdr(&success, \"fmiGetInteger\");\n";
-    fmuComponentHppStream << "            mFMU.getBoolean              = (fGetBoolean)         getAdr(&success, \"fmiGetBoolean\");\n";
-    fmuComponentHppStream << "            mFMU.getString               = (fGetString)          getAdr(&success, \"fmiGetString\");\n";
-    fmuComponentHppStream << "            return success;\n";
-    fmuComponentHppStream << "        }\n\n";
-//    fmuComponentHppStream << "        void* getAdr(bool* success, const char* functionName)\n";
-//    fmuComponentHppStream << "        {\n";
-//    fmuComponentHppStream << "            char name[BUFSIZE];\n";
-//    fmuComponentHppStream << "            void* fp;\n";
-//    fmuComponentHppStream << "            ModelDescription *me = mFMU.modelDescription;\n";
-//    fmuComponentHppStream << "            sprintf(name, \"%s_%s\", getModelIdentifier(me), functionName);\n";
-//    fmuComponentHppStream << "            fp = (void*)GetProcAddress((HINSTANCE__*)mFMU.dllHandle, name);\n";
-//    fmuComponentHppStream << "            //fp = (void*)GetProcAddress((HINSTANCE)fmu->dllHandle, name);        //CASTINGS MAY NOT WORK!!!\n";
-//    fmuComponentHppStream << "            if (!fp) {\n";
-//    fmuComponentHppStream << "                *success = false; // mark dll load as 'failed'\n";
-//    fmuComponentHppStream << "            }\n";
-//    fmuComponentHppStream << "            return fp;\n";
-//    fmuComponentHppStream << "        }\n\n";
-    fmuComponentHppStream << "        void* getAdr(bool* s, const char* functionName)\n";
-    fmuComponentHppStream << "        {\n";
-    fmuComponentHppStream << "            char name[BUFSIZE];\n";
-    fmuComponentHppStream << "            void* fp;\n";
-    fmuComponentHppStream << "            sprintf(name, \"%s_%s\", getModelIdentifier(mFMU.modelDescription), functionName);\n";
-    fmuComponentHppStream << "#ifdef WIN32\n";
-    fmuComponentHppStream << "            fp = (void*)GetProcAddress(static_cast<HINSTANCE__*>(mFMU.dllHandle), name);\n";
-    fmuComponentHppStream << "#else\n";
-    fmuComponentHppStream << "            fp = dlsym(mFMU.dllHandle, name);\n";
-    fmuComponentHppStream << "#endif\n";
-    fmuComponentHppStream << "            if (!fp)\n";
-    fmuComponentHppStream << "            {\n";
-    fmuComponentHppStream << "                *s = false; // mark dll load as 'failed'\n";
-    fmuComponentHppStream << "            }\n";
-    fmuComponentHppStream << "            return fp;\n";
-    fmuComponentHppStream << "        }\n\n";
-    fmuComponentHppStream << "        void simulateFMU()\n";
-    fmuComponentHppStream << "        {\n";
-    fmuComponentHppStream << "            int i;                          // For loop index\n";
-    fmuComponentHppStream << "            fmiBoolean timeEvent, stateEvent, stepEvent;\n";
-    fmuComponentHppStream << "            fmiStatus fmiFlag;               // return code of the fmu functions\n\n";
-    fmuComponentHppStream << "            if (eventInfo.terminateSimulation)\n";
-    fmuComponentHppStream << "            {\n";
-    fmuComponentHppStream << "                stopSimulation();\n";
-    fmuComponentHppStream << "            }\n\n";
-    fmuComponentHppStream << "            //Simulate one step\n\n";
-    fmuComponentHppStream << "            // get current state and derivatives\n";
-    fmuComponentHppStream << "            fmiFlag = mFMU.getContinuousStates(c, x, nx);\n";
-    fmuComponentHppStream << "            fmiFlag = mFMU.getDerivatives(c, xdot, nx);\n\n";
-    fmuComponentHppStream << "            // advance time\n";
-    fmuComponentHppStream << "            timeEvent = eventInfo.upcomingTimeEvent && eventInfo.nextEventTime < mTime;\n";
-    fmuComponentHppStream << "            fmiFlag = mFMU.setTime(c, mTime);\n\n";
-    fmuComponentHppStream << "            // perform one step\n";
-    fmuComponentHppStream << "            for (i=0; i<nx; i++) x[i] += mTimestep*xdot[i]; // forward Euler method\n";
-    fmuComponentHppStream << "            fmiFlag = mFMU.setContinuousStates(c, x, nx);\n\n";
-    fmuComponentHppStream << "            // Check for step event, e.g. dynamic state selection\n";
-    fmuComponentHppStream << "            fmiFlag = mFMU.completedIntegratorStep(c, &stepEvent);\n\n";
-    fmuComponentHppStream << "            // Check for state event\n";
-    fmuComponentHppStream << "            for (i=0; i<nz; i++) prez[i] = z[i];\n";
-    fmuComponentHppStream << "            fmiFlag = mFMU.getEventIndicators(c, z, nz);\n";
-    fmuComponentHppStream << "            stateEvent = FALSE;\n";
-    fmuComponentHppStream << "            for (i=0; i<nz; i++)\n";
-    fmuComponentHppStream << "            {\n";
-    fmuComponentHppStream << "                stateEvent = stateEvent || (prez[i] * z[i] < 0);\n";
-    fmuComponentHppStream << "            }\n\n";
-    fmuComponentHppStream << "            //! @todo Event criteria are disabled for now, so there will be a time event every time step no matter what.\n\n";
-    fmuComponentHppStream << "            // handle events\n";
-    fmuComponentHppStream << "            if (timeEvent || stateEvent || stepEvent)\n";
-    fmuComponentHppStream << "            {\n";
-    fmuComponentHppStream << "                // event iteration in one step, ignoring intermediate results\n";
-    fmuComponentHppStream << "                fmiFlag = mFMU.eventUpdate(c, fmiFalse, &eventInfo);\n";
-    fmuComponentHppStream << "                // terminate simulation, if requested by the model\n";
-    fmuComponentHppStream << "                if (eventInfo.terminateSimulation)\n";
-    fmuComponentHppStream << "                {\n";
-    fmuComponentHppStream << "                    stopSimulation();\n";
-    fmuComponentHppStream << "                }\n";
-    fmuComponentHppStream << "            } // if event\n";
-    fmuComponentHppStream << "        }\n";
-    fmuComponentHppStream << "    };\n";
-    fmuComponentHppStream << "}\n\n";
-    fmuComponentHppStream << "#endif // "+fmuName+"_H\n";
+
+    fmuComponentCode.replace("<<<0>>>", fmuName);
+    fmuComponentCode.replace("<<<1>>>", mCoreIncludePath);
+    fmuComponentCode.replace("<<<2>>>", fmuComponentReplace2);
+    fmuComponentCode.replace("<<<3>>>", fmuComponentReplace3);
+    fmuComponentCode.replace("<<<4>>>", fmuComponentReplace4);
+    fmuComponentCode.replace("<<<5>>>", fmuDir.path());
+    fmuComponentCode.replace("<<<6>>>", fmuComponentReplace6);
+    fmuComponentCode.replace("<<<7>>>", fmuComponentReplace7);
+    fmuComponentCode.replace("<<<8>>>", fmuComponentReplace8);
+    fmuComponentCode.replace("<<<9>>>", fmuComponentReplace9);
+    fmuComponentCode.replace("<<<10>>>", fmuComponentReplace10);
+    fmuComponentCode.replace("<<<11>>>", fmuComponentReplace11);
+    fmuComponentCode.replace("<<<12>>>", fmuComponentReplace12);
+
+    QTextStream fmuComponentHppStream(&fmuComponentHppFile);
+    fmuComponentHppStream << fmuComponentCode;
     fmuComponentHppFile.close();
+
 
     QString iconName = "fmucomponent.svg";
     QImage *pIconImage = new QImage(fmuPath+"/model.png");
@@ -1563,210 +1356,143 @@ void HopsanComponentGenerator::generateToFmu(QString savePath, hopsan::Component
 
     printMessage("Writing modelDescription.xml");
 
-    QTextStream modelDescriptionStream(&modelDescriptionFile);
-    modelDescriptionStream << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";       //!< @todo Encoding, should it be UTF-8?
-    modelDescriptionStream << "<fmiModelDescription\n";
-    modelDescriptionStream << "  fmiVersion=\"1.0\"\n";
-    modelDescriptionStream << "  modelName=\"" << modelName << "\"\n";               //!< @todo What's the difference between name and identifier?
-    modelDescriptionStream << "  modelIdentifier=\"" << modelName << "\"\n";
-    modelDescriptionStream << "  guid=\"" << ID << "\"\n";
-    modelDescriptionStream << "  numberOfContinuousStates=\"" << inputVariables.size() + outputVariables.size() << "\"\n";
-    modelDescriptionStream << "  numberOfEventIndicators=\"0\">\n";
-    modelDescriptionStream << "<ModelVariables>\n";
+    QFile xmlTemplatefile(":templates/fmuModelDescriptionTemplate.xml");
+    assert(xmlTemplatefile.open(QIODevice::ReadOnly | QIODevice::Text));
+
+    QString xmlCode;
+    QTextStream t(&xmlTemplatefile);
+    xmlCode = t.readAll();
+    xmlTemplatefile.close();
+    assert(!xmlCode.isEmpty());
+
+    QString xmlReplace3;
     int i, j;
     for(i=0; i<inputVariables.size(); ++i)
     {
         QString refString = QString().setNum(i);
-        modelDescriptionStream << "  <ScalarVariable name=\"" << inputVariables.at(i) << "\" valueReference=\""+refString+"\" description=\"input variable\" causality=\"input\">\n";
-        modelDescriptionStream << "     <Real start=\"0\" fixed=\"false\"/>\n";
-        modelDescriptionStream << "  </ScalarVariable>\n";
+        xmlReplace3.append("  <ScalarVariable name=\""+inputVariables.at(i)+"\" valueReference=\""+refString+"\" description=\"input variable\" causality=\"input\">\n");
+        xmlReplace3.append("     <Real start=\"0\" fixed=\"false\"/>\n");
+        xmlReplace3.append("  </ScalarVariable>\n");
     }
     for(j=0; j<outputVariables.size(); ++j)
     {
         QString refString = QString().setNum(i+j);
-        modelDescriptionStream << "  <ScalarVariable name=\"" << outputVariables.at(j) << "\" valueReference=\""+refString+"\" description=\"output variable\" causality=\"output\">\n";
-        modelDescriptionStream << "     <Real start=\"0\" fixed=\"false\"/>\n";
-        modelDescriptionStream << "  </ScalarVariable>\n";
+        xmlReplace3.append("  <ScalarVariable name=\""+outputVariables.at(j)+"\" valueReference=\""+refString+"\" description=\"output variable\" causality=\"output\">\n");
+        xmlReplace3.append("     <Real start=\"0\" fixed=\"false\"/>\n");
+        xmlReplace3.append("  </ScalarVariable>\n");
     }
-    modelDescriptionStream << "</ModelVariables>\n";
-    modelDescriptionStream << "</fmiModelDescription>\n";
+
+    xmlCode.replace("<<<0>>>", modelName);
+    xmlCode.replace("<<<1>>>", ID);
+    xmlCode.replace("<<<2>>>", QString::number(inputVariables.size() + outputVariables.size()));
+    xmlCode.replace("<<<3>>>", xmlReplace3);
+
+    QTextStream modelDescriptionStream(&modelDescriptionFile);
+    modelDescriptionStream << xmlCode;
     modelDescriptionFile.close();
 
 
     printMessage("Writing " + modelName + ".c");
 
-    QTextStream modelSourceStream(&modelSourceFile);
-    modelSourceStream << "// Define class name and unique id\n";
-    modelSourceStream << "    #define MODEL_IDENTIFIER " << modelName << "\n";
-    modelSourceStream << "    #define MODEL_GUID \"" << ID << "\"\n\n";
-    modelSourceStream << "    // Define model size\n";
-    modelSourceStream << "    #define NUMBER_OF_REALS " << inputVariables.size() + outputVariables.size() << "\n";
-    modelSourceStream << "    #define NUMBER_OF_INTEGERS 0\n";
-    modelSourceStream << "    #define NUMBER_OF_BOOLEANS 0\n";
-    modelSourceStream << "    #define NUMBER_OF_STRINGS 0\n";
-    modelSourceStream << "    #define NUMBER_OF_STATES "<< inputVariables.size() + outputVariables.size() << "\n";        //!< @todo Does number of variables equal number of states?
-    modelSourceStream << "    #define NUMBER_OF_EVENT_INDICATORS 0\n\n";
-    modelSourceStream << "    // Include fmu header files, typedefs and macros\n";
-    modelSourceStream << "    #include \"fmuTemplate.h\"\n";
-    modelSourceStream << "    #include \"HopsanFMU.h\"\n\n";
-    modelSourceStream << "    // Define all model variables and their value references\n";
+    QFile sourceTemplateFile(":templates/fmuModelSourceTemplate.c");
+    assert(sourceTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text));
+    QString modelSourceCode;
+    QTextStream t2(&sourceTemplateFile);
+    modelSourceCode = t2.readAll();
+    sourceTemplateFile.close();
+    assert(!modelSourceCode.isEmpty());
+
+    QString sourceReplace4;
     for(i=0; i<inputVariables.size(); ++i)
-        modelSourceStream << "    #define " << inputVariables.at(i) << "_ " << i << "\n\n";
+        sourceReplace4.append("    #define " + inputVariables.at(i) + "_ " + QString::number(i) + "\n\n");
     for(j=0; j<outputVariables.size(); ++j)
-        modelSourceStream << "    #define " << outputVariables.at(j) << "_ " << j+i << "\n\n";
-    modelSourceStream << "    // Define state vector as vector of value references\n";
-    modelSourceStream << "    #define STATES { ";
+        sourceReplace4.append("    #define " + outputVariables.at(j) + "_ " + QString::number(j+i) + "\n\n");
+
+    QString sourceReplace5;
     i=0;
     j=0;
     if(!inputVariables.isEmpty())
     {
-        modelSourceStream << inputVariables.at(0) << "_";
+        sourceReplace5.append(inputVariables.at(0)+"_");
         ++i;
     }
     else if(!outputVariables.isEmpty())
     {
-        modelSourceStream << outputVariables.at(0) << "_";
+        sourceReplace5.append(outputVariables.at(0)+"_");
         ++j;
     }
     for(; i<inputVariables.size(); ++i)
-        modelSourceStream << ", " << inputVariables.at(i) << "_";
+        sourceReplace5.append(", "+inputVariables.at(i)+"_");
     for(; j<outputVariables.size(); ++j)
-        modelSourceStream << ", " << outputVariables.at(j) << "_";
-    modelSourceStream << " }\n\n";
-    modelSourceStream << "    //Set start values\n";
-    modelSourceStream << "    void setStartValues(ModelInstance *comp) \n";
-    modelSourceStream << "    {\n";
+        sourceReplace5.append(", "+outputVariables.at(j)+"_");
+
+    QString sourceReplace6;
     for(i=0; i<inputVariables.size(); ++i)
-        modelSourceStream << "        r(" << inputVariables.at(i) << "_) = 0;\n";        //!< Fix start value handling
+        sourceReplace6.append("        r("+inputVariables.at(i)+"_) = 0;\n");        //!< Fix start value handling
     for(j=0; j<outputVariables.size(); ++j)
-        modelSourceStream << "        r(" << outputVariables.at(j) << "_) = 0;\n";        //!< Fix start value handling
-    modelSourceStream << "    }\n\n";
-    modelSourceStream << "    //Initialize\n";
-    modelSourceStream << "    void initialize(ModelInstance* comp, fmiEventInfo* eventInfo)\n";
-    modelSourceStream << "    {\n";
-    modelSourceStream << "        initializeHopsanWrapper(\""+realModelName+".hmf\");\n";
-    modelSourceStream << "        eventInfo->upcomingTimeEvent   = fmiTrue;\n";
-    modelSourceStream << "        eventInfo->nextEventTime       = 0.0005 + comp->time;\n";
-    modelSourceStream << "    }\n\n";
-    modelSourceStream << "    //Return variable of real type\n";
-    modelSourceStream << "    fmiReal getReal(ModelInstance* comp, fmiValueReference vr)\n";
-    modelSourceStream << "    {\n";
-    modelSourceStream << "        switch (vr) \n";
-    modelSourceStream << "       {\n";
+        sourceReplace6.append("        r("+outputVariables.at(j)+"_) = 0;\n");        //!< Fix start value handling
+
+    QString sourceReplace8;
     for(i=0; i<inputVariables.size(); ++i)
-        modelSourceStream << "           case " << inputVariables.at(i) << "_: return getVariable(\"" << inputComponents.at(i) << "\", \"" << inputPorts.at(i) << "\", " << inputDatatypes.at(i) << ");\n";
+        sourceReplace8.append("           case "+inputVariables.at(i)+"_: return getVariable(\""+inputComponents.at(i)+"\", \""+inputPorts.at(i)+"\", "+QString::number(inputDatatypes.at(i))+");\n");
     for(j=0; j<outputVariables.size(); ++j)
-        modelSourceStream << "           case " << outputVariables.at(j) << "_: return getVariable(\"" << outputComponents.at(j) << "\", \"" << outputPorts.at(j) << "\", " << outputDatatypes.at(j) << ");\n";
-    modelSourceStream << "            default: return 1;\n";
-    modelSourceStream << "       }\n";
-    modelSourceStream << "    }\n\n";
-    modelSourceStream << "    void setReal(ModelInstance* comp, fmiValueReference vr, fmiReal value)\n";
-    modelSourceStream << "    {\n";
-    modelSourceStream << "        switch (vr) \n";
-    modelSourceStream << "       {\n";
+        sourceReplace8.append("           case "+outputVariables.at(j)+"_: return getVariable(\""+outputComponents.at(j)+"\", \""+outputPorts.at(j)+"\", "+QString::number(outputDatatypes.at(j))+");\n");
+
+    QString sourceReplace9;
     for(i=0; i<inputVariables.size(); ++i)
-        modelSourceStream << "           case " << inputVariables.at(i) << "_: setVariable(\"" << inputComponents.at(i) << "\", \"" << inputPorts.at(i) << "\", " << inputDatatypes.at(i) << ", value);\n";
+        sourceReplace9.append("           case "+inputVariables.at(i)+"_: setVariable(\""+inputComponents.at(i)+"\", \""+inputPorts.at(i)+"\", "+QString::number(inputDatatypes.at(i))+", value);\n");
     for(j=0; j<outputVariables.size(); ++j)
-        modelSourceStream << "           case " << outputVariables.at(j) << "_: setVariable(\"" << outputComponents.at(j) << "\", \"" << outputPorts.at(j) << "\", " << outputDatatypes.at(j) << ", value);\n";
-    modelSourceStream << "            default: return;\n";
-    modelSourceStream << "       }\n";
-    modelSourceStream << "    }\n\n";
-    modelSourceStream << "    //Update at time event\n";
-    modelSourceStream << "    void eventUpdate(ModelInstance* comp, fmiEventInfo* eventInfo)\n";
-    modelSourceStream << "    {\n";
-    modelSourceStream << "        simulateOneStep();\n";
-    modelSourceStream << "        eventInfo->upcomingTimeEvent   = fmiTrue;\n";
-    modelSourceStream << "        eventInfo->nextEventTime       = 0.0005 + comp->time;\n";      //!< @todo Hardcoded timestep
-    modelSourceStream << "    }\n\n";
-    modelSourceStream << "    // Include code that implements the FMI based on the above definitions\n";
-    modelSourceStream << "    #include \"fmuTemplate.c\"\n";
+        sourceReplace9.append("           case "+outputVariables.at(j)+"_: setVariable(\""+outputComponents.at(j)+"\", \""+outputPorts.at(j)+"\", "+QString::number(outputDatatypes.at(j))+", value);\n");
+
+    modelSourceCode.replace("<<<0>>>", modelName);
+    modelSourceCode.replace("<<<1>>>", ID);
+    modelSourceCode.replace("<<<2>>>", QString::number(inputVariables.size() + outputVariables.size()));
+    modelSourceCode.replace("<<<3>>>", QString::number(inputVariables.size() + outputVariables.size()));  //!< @todo Does number of variables equal number of states?
+    modelSourceCode.replace("<<<4>>>", sourceReplace4);
+    modelSourceCode.replace("<<<5>>>", sourceReplace5);
+    modelSourceCode.replace("<<<6>>>", sourceReplace6);
+    modelSourceCode.replace("<<<7>>>", modelName);
+    modelSourceCode.replace("<<<8>>>", sourceReplace8);
+    modelSourceCode.replace("<<<9>>>", sourceReplace9);
+
+    QTextStream modelSourceStream(&modelSourceFile);
+    modelSourceStream << modelSourceCode;
     modelSourceFile.close();
 
 
     printMessage("Writing HopsanFMU.h");
 
+    QFile fmuHeaderTemplateFile(":templates/fmuHeaderTemplate.h");
+    assert(fmuHeaderTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text));
+
+    QString fmuHeaderCode;
+    QTextStream t3(&fmuHeaderTemplateFile);
+    fmuHeaderCode = t3.readAll();
+    fmuHeaderTemplateFile.close();
+    assert(!fmuHeaderCode.isEmpty());
 
     QTextStream fmuHeaderStream(&fmuHeaderFile);
-    QTextLineStream fmuHeaderLines(fmuHeaderStream);
-    fmuHeaderLines << "#ifndef HOPSANFMU_H";
-    fmuHeaderLines << "#define HOPSANFMU_H";
-    fmuHeaderLines << "";
-    fmuHeaderLines << "#ifdef WRAPPERCOMPILATION";
-    //fmuHeaderLines << "    #define DLLEXPORT __declspec(dllexport)";
-    fmuHeaderLines << "    extern \"C\" {";
-    fmuHeaderLines << "#else";
-    fmuHeaderLines << "    #define DLLEXPORT";
-    fmuHeaderLines << "#endif";
-    fmuHeaderLines << "";
-    fmuHeaderLines << "DLLEXPORT void initializeHopsanWrapper(char* filename);";
-    fmuHeaderLines << "DLLEXPORT void simulateOneStep();";
-    fmuHeaderLines << "DLLEXPORT double getVariable(char* component, char* port, size_t idx);";
-    fmuHeaderLines << "";
-    fmuHeaderLines << "DLLEXPORT void setVariable(char* component, char* port, size_t idx, double value);";
-    fmuHeaderLines << "";
-    fmuHeaderLines << "#ifdef WRAPPERCOMPILATION";
-    fmuHeaderLines << "}";
-    fmuHeaderLines << "#endif";
-    fmuHeaderLines << "#endif // HOPSANFMU_H";
+    fmuHeaderStream << fmuHeaderCode;
     fmuHeaderFile.close();
 
 
     printMessage("Writing HopsanFMU.cpp");
+    //! @todo Time step should not be hard coded
 
+    QFile fmuSourceTemplateFile(":templates/fmuSourceTemplate.c");
+    assert(fmuSourceTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text));
+
+    QString fmuSourceCode;
+    QTextStream t4(&fmuSourceTemplateFile);
+    fmuSourceCode = t4.readAll();
+    fmuSourceTemplateFile.close();
+    assert(!fmuSourceCode.isEmpty());
 
     QTextStream fmuSourceStream(&fmuSourceFile);
-    QTextLineStream fmuSrcLines(fmuSourceStream);
-
-    fmuSrcLines << "#include <iostream>";
-    fmuSrcLines << "#include <assert.h>";
-    fmuSrcLines << "#include \"HopsanCore.h\"";
-    fmuSrcLines << "#include \"HopsanFMU.h\"";
-    //fmuSrcLines << "#include \"include/ComponentEssentials.h\"";
-    //fmuSrcLines << "#include \"include/ComponentUtilities.h\"";
-    fmuSrcLines << "";
-    fmuSrcLines << "static double fmu_time=0;";
-    fmuSrcLines << "static hopsan::ComponentSystem *spCoreComponentSystem;";
-    fmuSrcLines << "static std::vector<std::string> sComponentNames;";
-    fmuSrcLines << "hopsan::HopsanEssentials gHopsanCore;";
-    fmuSrcLines << "";
-    fmuSrcLines << "void initializeHopsanWrapper(char* filename)";
-    fmuSrcLines << "{";
-    fmuSrcLines << "    double startT;      //Dummy variable";
-    fmuSrcLines << "    double stopT;       //Dummy variable";
-    fmuSrcLines << "    gHopsanCore.loadExternalComponentLib(\"../componentLibraries/defaultLibrary/components/libdefaultComponentLibrary.so\");";
-    fmuSrcLines << "    spCoreComponentSystem = gHopsanCore.loadHMFModel(filename, startT, stopT);\n";
-    fmuSrcLines << "    assert(spCoreComponentSystem);";
-    fmuSrcLines << "    spCoreComponentSystem->setDesiredTimestep(0.001);";           //!< @todo Time step should not be hard coded
-    fmuSrcLines << "    spCoreComponentSystem->initialize(0,10);";
-    fmuSrcLines << "";
-    fmuSrcLines << "    fmu_time = 0;";
-    fmuSrcLines << "}";
-    fmuSrcLines << "";
-    fmuSrcLines << "void simulateOneStep()";
-    fmuSrcLines << "{";
-    fmuSrcLines << "    if(spCoreComponentSystem->checkModelBeforeSimulation())";
-    fmuSrcLines << "    {";
-    fmuSrcLines << "        double timestep = spCoreComponentSystem->getDesiredTimeStep();";
-    fmuSrcLines << "        spCoreComponentSystem->simulate(fmu_time, fmu_time+timestep);";
-    fmuSrcLines << "        fmu_time = fmu_time+timestep;\n";
-    fmuSrcLines << "    }";
-    fmuSrcLines << "    else";
-    fmuSrcLines << "    {";
-    fmuSrcLines << "        std::cout << \"Simulation failed!\";";
-    fmuSrcLines << "    }";
-    fmuSrcLines << "}";
-    fmuSrcLines << "";
-    fmuSrcLines << "double getVariable(char* component, char* port, size_t idx)";
-    fmuSrcLines << "{";
-    fmuSrcLines << "    return spCoreComponentSystem->getSubComponentOrThisIfSysPort(component)->getPort(port)->readNode(idx);";
-    fmuSrcLines << "}";
-    fmuSrcLines << "";
-    fmuSrcLines << "void setVariable(char* component, char* port, size_t idx, double value)";
-    fmuSrcLines << "{";
-    fmuSrcLines << "    assert(spCoreComponentSystem->getSubComponentOrThisIfSysPort(component)->getPort(port) != 0);";
-    fmuSrcLines << "    return spCoreComponentSystem->getSubComponentOrThisIfSysPort(component)->getPort(port)->writeNode(idx, value);";
-    fmuSrcLines << "}";
+    fmuSourceStream << fmuSourceCode;
     fmuSourceFile.close();
+
+
 
 #ifdef WIN32
     printMessage("Writing to compile.bat");
@@ -1831,21 +1557,6 @@ void HopsanComponentGenerator::generateToFmu(QString savePath, hopsan::Component
 
 
     //! @todo Use core save function
-//    //Save model to hmf in export directory
-//    //! @todo This code is duplicated from ProjectTab::saveModel(), make it a common function somehow
-//    QDomDocument domDocument;
-//    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, "0");
-//    saveToDomElement(hmfRoot);
-//    const int IndentSize = 4;
-//    QFile xmlhmf(savePath + "/" + mModelFileInfo.fileName());
-//    if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-//    {
-//        return;
-//    }
-//    QTextStream out(&xmlhmf);
-//    appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
-//    domDocument.save(out, IndentSize);
-
 
 #ifdef WIN32
     printMessage("Compiling HopsanFMU.dll");

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+  <fmiModelDescription
+  fmiVersion="1.0"
+  modelName="<<<0>>>"
+  modelIdentifier="<<<0>>>"
+  guid="<<<1>>>"
+  numberOfContinuousStates="<<<2>>>"
+  numberOfEventIndicators="0">
+<ModelVariables>
+<<<3>>></ModelVariables>
+</fmiModelDescription>

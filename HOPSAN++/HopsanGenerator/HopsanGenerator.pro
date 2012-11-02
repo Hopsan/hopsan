@@ -57,6 +57,9 @@ HEADERS += \
 OTHER_FILES += \
     HopsanCoreBuild.prf
 
+RESOURCES += \
+    templates.qrc
+
 
 
 
