@@ -123,6 +123,7 @@ public:
     void generateFromModelica(QString code);
     void generateFromFmu(QString code);
     void generateToFmu(QString savePath, hopsan::ComponentSystem *pSystem);
+    void generateToSimulink(QString savePath, hopsan::ComponentSystem *pSystem, bool disablePortLabels=false, int compiler=0);
     void compileFromComponentObject(QString outputFile, ComponentSpecification comp, bool overwriteStartValues=false);
 
 private:
