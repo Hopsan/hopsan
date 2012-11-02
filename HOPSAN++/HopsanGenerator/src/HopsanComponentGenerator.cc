@@ -44,8 +44,8 @@
 #include "HopsanComponentGenerator.h"
 #include "SymHop.h"
 
-#include "../HopsanCore/include/ComponentSystem.h"
-#include "../HopsanCore/include/version.h"
+#include "ComponentSystem.h"
+#include "version.h"
 
 
 using namespace std;
@@ -2261,21 +2261,21 @@ void HopsanComponentGenerator::generateToSimulink(QString savePath, hopsan::Comp
 
     //Select path to MSVC library depending on user selection
     QString msvcPath;
-    if(pMSVC2008RadioButton->isChecked() && p32bitRadioButton->isChecked())
+    if(compiler == 0)   //MSVC2008 32-bit
     {
-        msvcPath = QString(MSVC2008_X86_PATH);
+        //msvcPath = QString(MSVC2008_X86_PATH);
     }
-    else if(pMSVC2008RadioButton->isChecked() && p64bitRadioButton->isChecked())
+    else if(compiler == 1)  //MSVC2008 64-bit
     {
-        msvcPath = QString(MSVC2008_X64_PATH);
+       // msvcPath = QString(MSVC2008_X64_PATH);
     }
-    else if(pMSVC2010RadioButton->isChecked() && p32bitRadioButton->isChecked())
+    else if(compiler == 2)  //MSVC2010 32-bit
     {
-        msvcPath = QString(MSVC2010_X86_PATH);
+        //msvcPath = QString(MSVC2010_X86_PATH);
     }
-    else if(pMSVC2010RadioButton->isChecked() && p64bitRadioButton->isChecked())
+    else if(compiler == 3)  //MSVC2010 64-bit
     {
-        msvcPath = QString(MSVC2010_X64_PATH);
+        //msvcPath = QString(MSVC2010_X64_PATH);
     }
 
 
