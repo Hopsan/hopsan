@@ -100,7 +100,7 @@ ComponentSpecification::ComponentSpecification(QString typeName, QString display
 
 
 
-HopsanComponentGenerator::HopsanComponentGenerator(QString coreIncludePath, QString binPath, bool showDialog)
+HopsanGenerator::HopsanGenerator(QString coreIncludePath, QString binPath, bool showDialog)
 {
 #ifdef WIN32
     mOutputPath = "C:/HopsanComponentGeneratorTempFiles/output/";
@@ -146,7 +146,7 @@ HopsanComponentGenerator::HopsanComponentGenerator(QString coreIncludePath, QStr
 }
 
 
-void HopsanComponentGenerator::printMessage(QString msg)
+void HopsanGenerator::printMessage(QString msg)
 {
     if(mShowDialog)
     {
@@ -162,7 +162,7 @@ void HopsanComponentGenerator::printMessage(QString msg)
 }
 
 
-void HopsanComponentGenerator::printErrorMessage(QString msg)
+void HopsanGenerator::printErrorMessage(QString msg)
 {
     if(mShowDialog)
     {
@@ -178,7 +178,7 @@ void HopsanComponentGenerator::printErrorMessage(QString msg)
 }
 
 
-void HopsanComponentGenerator::generateFromModelica(QString code)
+void HopsanGenerator::generateFromModelica(QString code)
 {
     QString typeName, displayName, cqsType;
     QStringList initAlgorithms, equations, finalAlgorithms;
@@ -209,7 +209,7 @@ void HopsanComponentGenerator::generateFromModelica(QString code)
 }
 
 
-void HopsanComponentGenerator::generateFromFmu(QString path)
+void HopsanGenerator::generateFromFmu(QString path)
 {
     printMessage("Initializing FMU import");
 
@@ -1252,7 +1252,7 @@ void HopsanComponentGenerator::generateFromFmu(QString path)
 }
 
 
-void HopsanComponentGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem *pSystem)
+void HopsanGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem *pSystem)
 {
     printMessage("Initializing FMU export");
 
@@ -1268,7 +1268,7 @@ void HopsanComponentGenerator::generateToFmu(QString savePath, hopsan::Component
 
     //Write the FMU ID
     int random = rand() % 1000;
-    QString randomString = QString().setNum(random);
+    QString randomString = QString::number(random);
     QString ID = "{8c4e810f-3df3-4a00-8276-176fa3c9f"+randomString+"}";  //!< @todo How is this ID defined?
 
     //Collect information about input ports
@@ -1370,14 +1370,14 @@ void HopsanComponentGenerator::generateToFmu(QString savePath, hopsan::Component
     int i, j;
     for(i=0; i<inputVariables.size(); ++i)
     {
-        QString refString = QString().setNum(i);
+        QString refString = QString::number(i);
         xmlReplace3.append("  <ScalarVariable name=\""+inputVariables.at(i)+"\" valueReference=\""+refString+"\" description=\"input variable\" causality=\"input\">\n");
         xmlReplace3.append("     <Real start=\"0\" fixed=\"false\"/>\n");
         xmlReplace3.append("  </ScalarVariable>\n");
     }
     for(j=0; j<outputVariables.size(); ++j)
     {
-        QString refString = QString().setNum(i+j);
+        QString refString = QString::number(i+j);
         xmlReplace3.append("  <ScalarVariable name=\""+outputVariables.at(j)+"\" valueReference=\""+refString+"\" description=\"output variable\" causality=\"output\">\n");
         xmlReplace3.append("     <Real start=\"0\" fixed=\"false\"/>\n");
         xmlReplace3.append("  </ScalarVariable>\n");
@@ -1779,7 +1779,7 @@ void HopsanComponentGenerator::generateToFmu(QString savePath, hopsan::Component
 
 
 
-void HopsanComponentGenerator::generateToSimulink(QString savePath, hopsan::ComponentSystem *pSystem, bool disablePortLabels, int compiler)
+void HopsanGenerator::generateToSimulink(QString savePath, hopsan::ComponentSystem *pSystem, bool disablePortLabels, int compiler)
 {
     printMessage("Initializing FMU export");
 
@@ -2001,7 +2001,7 @@ void HopsanComponentGenerator::generateToSimulink(QString savePath, hopsan::Comp
     portLabelsStream << "set_param(gcb,'MaskVariables','";
     for(int p=0; p<tunableParameters.size(); ++p)
     {
-        portLabelsStream << tunableParameters[p]+"=&"+QString().setNum(p+1)+";";
+        portLabelsStream << tunableParameters[p]+"=&"+QString::number(p+1)+";";
     }
     portLabelsStream << "')\n";
     portLabelsFile.close();
@@ -2317,17 +2317,27 @@ void HopsanComponentGenerator::generateToSimulink(QString savePath, hopsan::Comp
 }
 
 
-void HopsanComponentGenerator::generateToLabViewSIT(QString savePath, hopsan::ComponentSystem *pSystem)
+void HopsanGenerator::generateToLabViewSIT(QString savePath, hopsan::ComponentSystem *pSystem)
 {
+    printMessage("Initializing LabVIEW/SIT export");
+
+
     QFileInfo fileInfo;
-    QFile file;
     fileInfo.setFile(savePath);
+
+
+    printMessage("Creating "+fileInfo.fileName());
+
+
+    QFile file;
     file.setFileName(fileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         printErrorMessage("Failed to open file for writing: " + savePath);
         return;
     }
+
+    printMessage("Generating lists for input and output ports");
 
     //Create lists for input and output interface components
     QStringList inputs;
@@ -2367,6 +2377,8 @@ void HopsanComponentGenerator::generateToLabViewSIT(QString savePath, hopsan::Co
         }
     }
 
+    printMessage("Writing " + fileInfo.fileName());
+
     QFile wrapperTemplateFile(":templates/labviewWrapperTemplate.cpp");
     assert(wrapperTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text));
     QString wrapperCode;
@@ -2380,24 +2392,18 @@ void HopsanComponentGenerator::generateToLabViewSIT(QString savePath, hopsan::Co
     QString replaceInports;
     for(int i=0; i<inputs.size(); ++i)
     {
-        QString tempString = inputs.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(inputs.at(i));
         replaceInports.append("    double "+tempString+";\n");
     }
     for(int i=0; i<mechCinterfaces.size(); ++i)
     {
-        QString tempString = mechCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(mechCinterfaces.at(i));
         replaceInports.append("    double "+tempString+"C;\n");
         replaceInports.append("    double "+tempString+"Zc;\n");
     }
     for(int i=0; i<mechQinterfaces.size(); ++i)
     {
-        QString tempString = mechQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(mechQinterfaces.at(i));
         replaceInports.append("    double "+tempString+"F;\n");
         replaceInports.append("    double "+tempString+"X;\n");
         replaceInports.append("    double "+tempString+"V;\n");
@@ -2405,17 +2411,13 @@ void HopsanComponentGenerator::generateToLabViewSIT(QString savePath, hopsan::Co
     }
     for(int i=0; i<hydCinterfaces.size(); ++i)
     {
-        QString tempString = hydCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(hydCinterfaces.at(i));
         replaceInports.append("    double "+tempString+"C;\n");
         replaceInports.append("    double "+tempString+"Zc;\n");
     }
     for(int i=0; i<hydQinterfaces.size(); ++i)
     {
-        QString tempString = hydQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(hydQinterfaces.at(i));
         replaceInports.append("    double "+tempString+"P;\n");
         replaceInports.append("    double "+tempString+"Q;\n");
     }
@@ -2423,16 +2425,12 @@ void HopsanComponentGenerator::generateToLabViewSIT(QString savePath, hopsan::Co
     QString replaceOutports;
     for(int i=0; i<outputs.size(); ++i)
     {
-        QString tempString = outputs.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(outputs.at(i));
         replaceOutports.append("    double "+tempString+";\n");
     }
     for(int i=0; i<mechCinterfaces.size(); ++i)
     {
-        QString tempString = mechCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(mechCinterfaces.at(i));
         replaceOutports.append("    double "+tempString+"F;\n");
         replaceOutports.append("    double "+tempString+"X;\n");
         replaceOutports.append("    double "+tempString+"V;\n");
@@ -2440,53 +2438,41 @@ void HopsanComponentGenerator::generateToLabViewSIT(QString savePath, hopsan::Co
     }
     for(int i=0; i<mechQinterfaces.size(); ++i)
     {
-        QString tempString = mechQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(mechQinterfaces.at(i));
         replaceOutports.append("    double "+tempString+"C;\n");
         replaceOutports.append("    double "+tempString+"Zc;\n");
     }
     for(int i=0; i<hydCinterfaces.size(); ++i)
     {
-        QString tempString = hydCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(hydCinterfaces.at(i));
         replaceOutports.append("    double "+tempString+"P;\n");
         replaceOutports.append("    double "+tempString+"Q;\n");
     }
     for(int i=0; i<hydQinterfaces.size(); ++i)
     {
-        QString tempString = hydQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(hydQinterfaces.at(i));
         replaceOutports.append("    double "+tempString+"C;\n");
         replaceOutports.append("    double "+tempString+"Zc;\n");
     }
 
-    QString replaceInportSize = QString().setNum(inputs.size()+2*mechCinterfaces.size()+4*mechQinterfaces.size()+2*hydCinterfaces.size()+2*hydQinterfaces.size());
-    QString replaceOutportSize = QString().setNum(outputs.size()+4*mechCinterfaces.size()+2*mechQinterfaces.size()+2*hydCinterfaces.size()+2*hydQinterfaces.size());
+    QString replaceInportSize = QString::number(inputs.size()+2*mechCinterfaces.size()+4*mechQinterfaces.size()+2*hydCinterfaces.size()+2*hydQinterfaces.size());
+    QString replaceOutportSize = QString::number(outputs.size()+4*mechCinterfaces.size()+2*mechQinterfaces.size()+2*hydCinterfaces.size()+2*hydQinterfaces.size());
 
     QString replaceInportAttribs;
     for(int i=0; i<inputs.size(); ++i)
     {
-        QString tempString = inputs.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(inputs.at(i));
         replaceInportAttribs.append("    { \""+tempString+"\", 1, 1},\n");
     }
     for(int i=0; i<mechCinterfaces.size(); ++i)
     {
-        QString tempString = mechCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(mechCinterfaces.at(i));
         replaceInportAttribs.append("    { \""+tempString+"C\", 1, 1},\n");
         replaceInportAttribs.append("    { \""+tempString+"Zc\", 1, 1},\n");
     }
     for(int i=0; i<mechQinterfaces.size(); ++i)
     {
-        QString tempString = mechQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(mechQinterfaces.at(i));
         replaceInportAttribs.append("    { \""+tempString+"F\", 1, 1},\n");
         replaceInportAttribs.append("    { \""+tempString+"X\", 1, 1},\n");
         replaceInportAttribs.append("    { \""+tempString+"V\", 1, 1},\n");
@@ -2494,17 +2480,13 @@ void HopsanComponentGenerator::generateToLabViewSIT(QString savePath, hopsan::Co
     }
     for(int i=0; i<hydQinterfaces.size(); ++i)
     {
-        QString tempString = hydQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(hydQinterfaces.at(i));
         replaceInportAttribs.append("    { \""+tempString+"P\", 1, 1},\n");
         replaceInportAttribs.append("    { \""+tempString+"Q\", 1, 1},\n");
     }
     for(int i=0; i<hydCinterfaces.size(); ++i)
     {
-        QString tempString = hydCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(hydCinterfaces.at(i));
         replaceInportAttribs.append("    { \""+tempString+"C\", 1, 1},\n");
         replaceInportAttribs.append("    { \""+tempString+"Zc\", 1, 1},\n");
     }
@@ -2512,16 +2494,12 @@ void HopsanComponentGenerator::generateToLabViewSIT(QString savePath, hopsan::Co
     QString replaceOutportAttribs;
     for(int i=0; i<outputs.size(); ++i)
     {
-        QString tempString = outputs.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(outputs.at(i));
         replaceOutportAttribs.append("    { \""+tempString+"\", 1, 1},\n");
     }
     for(int i=0; i<mechCinterfaces.size(); ++i)
     {
-        QString tempString = mechCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(mechCinterfaces.at(i));
         replaceInportAttribs.append("    { \""+tempString+"F\", 1, 1},\n");
         replaceOutportAttribs.append("    { \""+tempString+"X\", 1, 1},\n");
         replaceOutportAttribs.append("    { \""+tempString+"V\", 1, 1},\n");
@@ -2529,25 +2507,19 @@ void HopsanComponentGenerator::generateToLabViewSIT(QString savePath, hopsan::Co
     }
     for(int i=0; i<mechQinterfaces.size(); ++i)
     {
-        QString tempString = mechQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(mechQinterfaces.at(i));
         replaceOutportAttribs.append("    { \""+tempString+"C\", 1, 1},\n");
         replaceOutportAttribs.append("    { \""+tempString+"Zc\", 1, 1},\n");
     }
     for(int i=0; i<hydCinterfaces.size(); ++i)
     {
-        QString tempString = hydCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(hydCinterfaces.at(i));
         replaceOutportAttribs.append("    { \""+tempString+"P\", 1, 1},\n");
         replaceOutportAttribs.append("    { \""+tempString+"Q\", 1, 1},\n");
     }
     for(int i=0; i<hydQinterfaces.size(); ++i)
     {
-        QString tempString = hydQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(hydQinterfaces.at(i));
         replaceOutportAttribs.append("    { \""+tempString+"C\", 1, 1},\n");
         replaceOutportAttribs.append("    { \""+tempString+"Zc\", 1, 1},\n");
     }
@@ -2617,67 +2589,51 @@ void HopsanComponentGenerator::generateToLabViewSIT(QString savePath, hopsan::Co
     QString replaceIndata;
     for(int i=0; i<inputs.size(); ++i)
     {
-        QString tempString = inputs.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        replaceIndata.append("        rtInport."+tempString+" = inData["+QString().setNum(i)+"];\n");
+        QString tempString = toVarName(inputs.at(i));
+        replaceIndata.append("        rtInport."+tempString+" = inData["+QString::number(i)+"];\n");
     }
     for(int i=0; i<mechCinterfaces.size(); ++i)
     {
-        QString tempString = mechCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        replaceIndata.append("        rtInport."+tempString+"C = inData["+QString().setNum(2*i+inputs.size())+"];\n");
-        replaceIndata.append("        rtInport."+tempString+"Zc = inData["+QString().setNum(2*i+1+inputs.size())+"];\n");
+        QString tempString = toVarName(mechCinterfaces.at(i));
+        replaceIndata.append("        rtInport."+tempString+"C = inData["+QString::number(2*i+inputs.size())+"];\n");
+        replaceIndata.append("        rtInport."+tempString+"Zc = inData["+QString::number(2*i+1+inputs.size())+"];\n");
     }
     for(int i=0; i<mechQinterfaces.size(); ++i)
     {
-        QString tempString = mechQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        replaceIndata.append("        rtInport."+tempString+"F = inData["+QString().setNum(4*i+inputs.size()+2*mechCinterfaces.size())+"];\n");
-        replaceIndata.append("        rtInport."+tempString+"X = inData["+QString().setNum(4*i+1+inputs.size()+2*mechCinterfaces.size())+"];\n");
-        replaceIndata.append("        rtInport."+tempString+"V = inData["+QString().setNum(4*i+2+inputs.size()+2*mechCinterfaces.size())+"];\n");
-        replaceIndata.append("        rtInport."+tempString+"M = inData["+QString().setNum(4*i+3+inputs.size()+2*mechCinterfaces.size())+"];\n");
+        QString tempString = toVarName(mechQinterfaces.at(i));
+        replaceIndata.append("        rtInport."+tempString+"F = inData["+QString::number(4*i+inputs.size()+2*mechCinterfaces.size())+"];\n");
+        replaceIndata.append("        rtInport."+tempString+"X = inData["+QString::number(4*i+1+inputs.size()+2*mechCinterfaces.size())+"];\n");
+        replaceIndata.append("        rtInport."+tempString+"V = inData["+QString::number(4*i+2+inputs.size()+2*mechCinterfaces.size())+"];\n");
+        replaceIndata.append("        rtInport."+tempString+"M = inData["+QString::number(4*i+3+inputs.size()+2*mechCinterfaces.size())+"];\n");
     }
     for(int i=0; i<hydCinterfaces.size(); ++i)
     {
-        QString tempString = hydCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        replaceIndata.append("        rtInport."+tempString+"C = inData["+QString().setNum(2*i+inputs.size()+2*mechCinterfaces.size()+4*mechQinterfaces.size())+"];\n");
-        replaceIndata.append("        rtInport."+tempString+"Zc = inData["+QString().setNum(2*i+1+inputs.size()+2*mechCinterfaces.size()+4*mechQinterfaces.size())+"];\n");
+        QString tempString = toVarName(hydCinterfaces.at(i));
+        replaceIndata.append("        rtInport."+tempString+"C = inData["+QString::number(2*i+inputs.size()+2*mechCinterfaces.size()+4*mechQinterfaces.size())+"];\n");
+        replaceIndata.append("        rtInport."+tempString+"Zc = inData["+QString::number(2*i+1+inputs.size()+2*mechCinterfaces.size()+4*mechQinterfaces.size())+"];\n");
     }
     for(int i=0; i<hydQinterfaces.size(); ++i)
     {
-        QString tempString = hydQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        replaceIndata.append("        rtInport."+tempString+"P = inData["+QString().setNum(2*i+inputs.size()+2*mechCinterfaces.size()+4*mechQinterfaces.size()+2*hydCinterfaces.size())+"];\n");
-        replaceIndata.append("        rtInport."+tempString+"Q = inData["+QString().setNum(2*i+1+inputs.size()+2*mechCinterfaces.size()+4*mechQinterfaces.size()+2*hydCinterfaces.size())+"];\n");
+        QString tempString = toVarName(hydQinterfaces.at(i));
+        replaceIndata.append("        rtInport."+tempString+"P = inData["+QString::number(2*i+inputs.size()+2*mechCinterfaces.size()+4*mechQinterfaces.size()+2*hydCinterfaces.size())+"];\n");
+        replaceIndata.append("        rtInport."+tempString+"Q = inData["+QString::number(2*i+1+inputs.size()+2*mechCinterfaces.size()+4*mechQinterfaces.size()+2*hydCinterfaces.size())+"];\n");
     }
 
     QString replaceWriteNodeData;
     for(int i=0; i<inputs.size(); ++i)
     {
-        QString tempString = inputs.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(inputs.at(i));
         replaceWriteNodeData.append("    writeNodeData(\""+inputs.at(i)+"\", \"out\", 0, rtInport."+tempString+");\n");
     }
     for(int i=0; i<mechCinterfaces.size(); ++i)
     {
-        QString tempString = mechCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(mechCinterfaces.at(i));
         replaceWriteNodeData.append("    writeNodeData(\""+mechCinterfaces.at(i)+"\", \"P1\", 3, rtInport."+tempString+"C);\n");
         replaceIndata.append("    writeNodeData(\""+mechCinterfaces.at(i)+"\", \"P1\", 4, rtInport."+tempString+"Zc);\n");
     }
     for(int i=0; i<mechQinterfaces.size(); ++i)
     {
-        QString tempString = mechQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(mechQinterfaces.at(i));
         replaceWriteNodeData.append("    writeNodeData(\""+mechQinterfaces.at(i)+"\", \"P1\", 1, rtInport."+tempString+"F);\n");
         replaceWriteNodeData.append("    writeNodeData(\""+mechQinterfaces.at(i)+"\", \"P1\", 2, rtInport."+tempString+"X);\n");
         replaceWriteNodeData.append("    writeNodeData(\""+mechQinterfaces.at(i)+"\", \"P1\", 0, rtInport."+tempString+"V);\n");
@@ -2685,17 +2641,13 @@ void HopsanComponentGenerator::generateToLabViewSIT(QString savePath, hopsan::Co
     }
     for(int i=0; i<hydCinterfaces.size(); ++i)
     {
-        QString tempString = hydCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(hydCinterfaces.at(i));
         replaceWriteNodeData.append("    writeNodeData(\""+hydCinterfaces.at(i)+"\", \"P1\", 3, rtInport."+tempString+"C);\n");
         replaceWriteNodeData.append("    writeNodeData(\""+hydCinterfaces.at(i)+"\", \"P1\", 4, rtInport."+tempString+"Zc);\n");
     }
     for(int i=0; i<hydQinterfaces.size(); ++i)
     {
-        QString tempString = hydQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(hydQinterfaces.at(i));
         replaceWriteNodeData.append("    writeNodeData(\""+hydQinterfaces.at(i)+"\", \"P1\", 1, rtInport."+tempString+"P);\n");
         replaceWriteNodeData.append("    writeNodeData(\""+hydQinterfaces.at(i)+"\", \"P1\", 0, rtInport."+tempString+"Q);\n");
     }
@@ -2703,16 +2655,12 @@ void HopsanComponentGenerator::generateToLabViewSIT(QString savePath, hopsan::Co
     QString replaceReadNodeData;
     for(int i=0; i<outputs.size(); ++i)
     {
-        QString tempString = outputs.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(outputs.at(i));
         replaceReadNodeData.append("    rtOutport."+tempString+" = readNodeData(\""+outputs.at(i)+"\", \"in\", 0);\n");
     }
     for(int i=0; i<mechCinterfaces.size(); ++i)
     {
-        QString tempString = mechCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(mechCinterfaces.at(i));
         replaceReadNodeData.append("    rtOutport."+tempString+"F = readNodeData(\""+mechCinterfaces.at(i)+"\", \"P1\", 1);\n");
         replaceReadNodeData.append("    rtOutport."+tempString+"X = readNodeData(\""+mechCinterfaces.at(i)+"\", \"P1\", 2);\n");
         replaceReadNodeData.append("    rtOutport."+tempString+"V = readNodeData(\""+mechCinterfaces.at(i)+"\", \"P1\", 0);\n");
@@ -2720,25 +2668,19 @@ void HopsanComponentGenerator::generateToLabViewSIT(QString savePath, hopsan::Co
     }
     for(int i=0; i<mechQinterfaces.size(); ++i)
     {
-        QString tempString = mechQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(mechQinterfaces.at(i));
         replaceReadNodeData.append("    rtOutport."+tempString+"C = readNodeData(\""+mechQinterfaces.at(i)+"\", \"P1\", 3);\n");
         replaceReadNodeData.append("    rtOutport."+tempString+"Zc = readNodeData(\""+mechQinterfaces.at(i)+"\", \"P1\", 4);\n");
     }
     for(int i=0; i<hydCinterfaces.size(); ++i)
     {
-        QString tempString = hydCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(hydCinterfaces.at(i));
         replaceReadNodeData.append("    rtOutport."+tempString+"P = readNodeData(\""+hydCinterfaces.at(i)+"\", \"P1\", 1);\n");
         replaceReadNodeData.append("    rtOutport."+tempString+"Q = readNodeData(\""+hydCinterfaces.at(i)+"\", \"P1\", 0);\n");
     }
     for(int i=0; i<hydQinterfaces.size(); ++i)
     {
-        QString tempString = hydQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
+        QString tempString = toVarName(hydQinterfaces.at(i));
         replaceReadNodeData.append("    rtOutport."+tempString+"C = readNodeData(\""+hydQinterfaces.at(i)+"\", \"P1\", 3);\n");
         replaceReadNodeData.append("    rtOutport."+tempString+"Zc = readNodeData(\""+hydQinterfaces.at(i)+"\", \"P1\", 4);\n");
     }
@@ -2746,44 +2688,34 @@ void HopsanComponentGenerator::generateToLabViewSIT(QString savePath, hopsan::Co
     QString replaceOutData;
     for(int i=0; i<outputs.size(); ++i)
     {
-        QString tempString = outputs.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        replaceOutData.append("        outData["+QString().setNum(i)+"] = rtOutport."+tempString+";\n");
+        QString tempString = toVarName(outputs.at(i));
+        replaceOutData.append("        outData["+QString::number(i)+"] = rtOutport."+tempString+";\n");
     }
     for(int i=0; i<mechCinterfaces.size(); ++i)
     {
-        QString tempString = mechCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        replaceOutData.append("        outData["+QString().setNum(4*i+outputs.size())+"] = rtOutport."+tempString+"F;\n");
-        replaceOutData.append("        outData["+QString().setNum(4*i+1+outputs.size())+"] = rtOutport."+tempString+"X;\n");
-        replaceOutData.append("        outData["+QString().setNum(4*i+2+outputs.size())+"] = rtOutport."+tempString+"V;\n");
-        replaceOutData.append("        outData["+QString().setNum(4*i+3+outputs.size())+"] = rtOutport."+tempString+"M;\n");
+        QString tempString = toVarName(mechCinterfaces.at(i));
+        replaceOutData.append("        outData["+QString::number(4*i+outputs.size())+"] = rtOutport."+tempString+"F;\n");
+        replaceOutData.append("        outData["+QString::number(4*i+1+outputs.size())+"] = rtOutport."+tempString+"X;\n");
+        replaceOutData.append("        outData["+QString::number(4*i+2+outputs.size())+"] = rtOutport."+tempString+"V;\n");
+        replaceOutData.append("        outData["+QString::number(4*i+3+outputs.size())+"] = rtOutport."+tempString+"M;\n");
     }
     for(int i=0; i<mechQinterfaces.size(); ++i)
     {
-        QString tempString = mechQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        replaceOutData.append("        outData["+QString().setNum(2*i+outputs.size()+4*mechCinterfaces.size())+"] = rtOutport."+tempString+"C;\n");
-        replaceOutData.append("        outData["+QString().setNum(2*i+1+outputs.size()+4*mechCinterfaces.size())+"] = rtOutport."+tempString+"Zc;\n");
+        QString tempString = toVarName(mechQinterfaces.at(i));
+        replaceOutData.append("        outData["+QString::number(2*i+outputs.size()+4*mechCinterfaces.size())+"] = rtOutport."+tempString+"C;\n");
+        replaceOutData.append("        outData["+QString::number(2*i+1+outputs.size()+4*mechCinterfaces.size())+"] = rtOutport."+tempString+"Zc;\n");
     }
     for(int i=0; i<hydCinterfaces.size(); ++i)
     {
-        QString tempString = hydCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        replaceOutData.append("        outData["+QString().setNum(2*i+outputs.size()+4*mechCinterfaces.size()+2*mechQinterfaces.size())+"] = rtOutport."+tempString+"P;\n");
-        replaceOutData.append("        outData["+QString().setNum(2*i+1+outputs.size()+4*mechCinterfaces.size()+2*mechQinterfaces.size())+"] = rtOutport."+tempString+"Q;\n");
+        QString tempString = toVarName(hydCinterfaces.at(i));
+        replaceOutData.append("        outData["+QString::number(2*i+outputs.size()+4*mechCinterfaces.size()+2*mechQinterfaces.size())+"] = rtOutport."+tempString+"P;\n");
+        replaceOutData.append("        outData["+QString::number(2*i+1+outputs.size()+4*mechCinterfaces.size()+2*mechQinterfaces.size())+"] = rtOutport."+tempString+"Q;\n");
     }
     for(int i=0; i<hydQinterfaces.size(); ++i)
     {
-        QString tempString = hydQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        replaceOutData.append("        outData["+QString().setNum(2*i+outputs.size()+4*mechCinterfaces.size()+2*mechQinterfaces.size()+2*hydCinterfaces.size())+"] = rtOutport."+tempString+"C;\n");
-        replaceOutData.append("        outData["+QString().setNum(2*i+1+outputs.size()+4*mechCinterfaces.size()+2*mechQinterfaces.size()+2*hydCinterfaces.size())+"] = rtOutport."+tempString+"Zc;\n");
+        QString tempString = toVarName(hydQinterfaces.at(i));
+        replaceOutData.append("        outData["+QString::number(2*i+outputs.size()+4*mechCinterfaces.size()+2*mechQinterfaces.size()+2*hydCinterfaces.size())+"] = rtOutport."+tempString+"C;\n");
+        replaceOutData.append("        outData["+QString::number(2*i+1+outputs.size()+4*mechCinterfaces.size()+2*mechQinterfaces.size()+2*hydCinterfaces.size())+"] = rtOutport."+tempString+"Zc;\n");
     }
 
     wrapperCode.replace("<<<inports>>>", replaceInports);
@@ -2804,6 +2736,9 @@ void HopsanComponentGenerator::generateToLabViewSIT(QString savePath, hopsan::Co
     QTextStream fileStream(&file);  //Create a QTextStream object to stream the content of file
     fileStream << wrapperCode;
     file.close();
+
+    //! @todo Check if success, otherwise tell user with error message
+    printMessage("Finished!");
 }
 
 
@@ -2816,7 +2751,7 @@ void HopsanComponentGenerator::generateToLabViewSIT(QString savePath, hopsan::Co
 //! @param equations Equations for new component
 //! @param portList List of port specifications for new component
 //! @param parametersList List of parameter specifications for new component
-void HopsanComponentGenerator::parseModelicaModel(QString code, QString &typeName, QString &displayName, QString &cqsType, QStringList &initAlgorithms, QStringList &equations,
+void HopsanGenerator::parseModelicaModel(QString code, QString &typeName, QString &displayName, QString &cqsType, QStringList &initAlgorithms, QStringList &equations,
                         QStringList &finalAlgorithms, QList<PortSpecification> &portList, QList<ParameterSpecification> &parametersList)
 {
     QStringList lines = code.split("\n");
@@ -3002,7 +2937,7 @@ void HopsanComponentGenerator::parseModelicaModel(QString code, QString &typeNam
                         int idx2=idx+temp.size()+1;
                         while(idx2 < initAlgorithms.last().size()+1 && initAlgorithms.last().at(idx2).isLetterOrNumber())
                             ++idx2;
-                        initAlgorithms.last().insert(idx2, QString().setNum(i+1));
+                        initAlgorithms.last().insert(idx2, QString::number(i+1));
                         initAlgorithms.last().remove(idx, temp.size());
                     }
                 }
@@ -3048,7 +2983,7 @@ void HopsanComponentGenerator::parseModelicaModel(QString code, QString &typeNam
                         int idx2=idx+temp.size()+1;
                         while(idx2 < equations.last().size()+1 && equations.last().at(idx2).isLetterOrNumber())
                             ++idx2;
-                        equations.last().insert(idx2, QString().setNum(i+1));
+                        equations.last().insert(idx2, QString::number(i+1));
                         equations.last().remove(idx, temp.size());
                     }
                 }
@@ -3089,7 +3024,7 @@ void HopsanComponentGenerator::parseModelicaModel(QString code, QString &typeNam
                         int idx2=idx+temp.size()+1;
                         while(idx2 < finalAlgorithms.last().size()+1 && finalAlgorithms.last().at(idx2).isLetterOrNumber())
                             ++idx2;
-                        finalAlgorithms.last().insert(idx2, QString().setNum(i+1));
+                        finalAlgorithms.last().insert(idx2, QString::number(i+1));
                         finalAlgorithms.last().remove(idx, temp.size());
                     }
                 }
@@ -3109,7 +3044,7 @@ void HopsanComponentGenerator::parseModelicaModel(QString code, QString &typeNam
 
 
 //! @brief Generates XML and compiles the new component
-void HopsanComponentGenerator::generateComponentObject(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QStringList &plainInitAlgorithms, QStringList &plainEquations, QStringList &plainFinalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters)
+void HopsanGenerator::generateComponentObject(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QStringList &plainInitAlgorithms, QStringList &plainEquations, QStringList &plainFinalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters)
 {
 
     //Create list of initial algorithms
@@ -3250,7 +3185,7 @@ void HopsanComponentGenerator::generateComponentObject(ComponentSpecification &c
 
     for(int i=0; i<ports.size(); ++i)
     {
-        QString num = QString().setNum(i+1);
+        QString num = QString::number(i+1);
         if(ports[i].porttype == "ReadPort")
         {
             nonStateVars.append(Expression(ports[i].name));
@@ -3307,7 +3242,7 @@ void HopsanComponentGenerator::generateComponentObject(ComponentSpecification &c
 
     for(int i=0; i<ports.size(); ++i)
     {
-        QString num = QString().setNum(i+1);
+        QString num = QString::number(i+1);
         if(ports[i].porttype == "ReadPort" || ports[i].porttype == "WritePort")
         {
             nonLocals.append(Expression(ports[i].name));     //Remove all readport/writeport varibles
@@ -3642,7 +3577,7 @@ void HopsanComponentGenerator::generateComponentObject(ComponentSpecification &c
     for(int i=0; i<delayTerms.size(); ++i)
     {
         comp.utilities << "Delay";
-        comp.utilityNames << "mDelay"+QString().setNum(i);
+        comp.utilityNames << "mDelay"+QString::number(i);
     }
 
     for(int i=0; i<ports.size(); ++i)
@@ -3665,25 +3600,25 @@ void HopsanComponentGenerator::generateComponentObject(ComponentSpecification &c
 
     if(!jacobian.isEmpty())
     {
-        comp.varNames << "order["+QString().setNum(stateVars.size())+"]" << "jacobianMatrix" << "systemEquations" << "stateVariables" << "mpSolver";
+        comp.varNames << "order["+QString::number(stateVars.size())+"]" << "jacobianMatrix" << "systemEquations" << "stateVariables" << "mpSolver";
         comp.varTypes << "double" << "Matrix" << "Vec" << "Vec" << "EquationSystemSolver*";
 
-        comp.initEquations << "jacobianMatrix.create("+QString().setNum(equations.size())+","+QString().setNum(stateVars.size())+");";
-        comp.initEquations << "systemEquations.create("+QString().setNum(equations.size())+");";
-        comp.initEquations << "stateVariables.create("+QString().setNum(equations.size())+");";
+        comp.initEquations << "jacobianMatrix.create("+QString::number(equations.size())+","+QString::number(stateVars.size())+");";
+        comp.initEquations << "systemEquations.create("+QString::number(equations.size())+");";
+        comp.initEquations << "stateVariables.create("+QString::number(equations.size())+");";
         comp.initEquations << "";
     }
 
     for(int i=0; i<delayTerms.size(); ++i)
     {
-        comp.initEquations << "mDelay"+QString().setNum(i)+".initialize("+QString().setNum(delaySteps.at(i).toInt())+", "+delayTerms[i].toString()+");";
+        comp.initEquations << "mDelay"+QString::number(i)+".initialize("+QString::number(delaySteps.at(i).toInt())+", "+delayTerms[i].toString()+");";
     }
 
     if(!jacobian.isEmpty())
     {
         comp.initEquations << "";
-        //comp.initEquations << "mpSolver = new EquationSystemSolver(this, "+QString().setNum(sysEquations.size())+");";
-        comp.initEquations << "mpSolver = new EquationSystemSolver(this, "+QString().setNum(equations.size())+", &jacobianMatrix, &systemEquations, &stateVariables);";
+        //comp.initEquations << "mpSolver = new EquationSystemSolver(this, "+QString::number(sysEquations.size())+");";
+        comp.initEquations << "mpSolver = new EquationSystemSolver(this, "+QString::number(equations.size())+", &jacobianMatrix, &systemEquations, &stateVariables);";
     }
 
     comp.simEquations << "//Initial algorithm section";
@@ -3722,14 +3657,14 @@ void HopsanComponentGenerator::generateComponentObject(ComponentSpecification &c
     {
         for(int i=0; i<stateVars.size(); ++i)
         {
-            comp.simEquations << "stateVariables["+QString().setNum(i)+"] = "+stateVars[i].toString()+";";
+            comp.simEquations << "stateVariables["+QString::number(i)+"] = "+stateVars[i].toString()+";";
         }
 
         comp.simEquations << "";
         comp.simEquations << "    //System Equations";
         for(int i=0; i<equations.size(); ++i)
         {
-            comp.simEquations << "    systemEquations["+QString().setNum(i)+"] = "+equations[i].toString()+";";
+            comp.simEquations << "    systemEquations["+QString::number(i)+"] = "+equations[i].toString()+";";
    //         comp.simEquations << "    "+stateVars[i]+" = " + resEquations[i]+";";
         }
         comp.simEquations << "";
@@ -3738,7 +3673,7 @@ void HopsanComponentGenerator::generateComponentObject(ComponentSpecification &c
         {
             for(int j=0; j<stateVars.size(); ++j)
             {
-                comp.simEquations << "    jacobianMatrix["+QString().setNum(i)+"]["+QString().setNum(j)+"] = "+jacobian[i][j].toString()+";";
+                comp.simEquations << "    jacobianMatrix["+QString::number(i)+"]["+QString::number(j)+"] = "+jacobian[i][j].toString()+";";
             }
         }
 
@@ -3748,7 +3683,7 @@ void HopsanComponentGenerator::generateComponentObject(ComponentSpecification &c
         comp.simEquations << "";
         for(int i=0; i<stateVars.size(); ++i)
         {
-            comp.simEquations << "    "+stateVars[i].toString()+"=stateVariables["+QString().setNum(i)+"];";
+            comp.simEquations << "    "+stateVars[i].toString()+"=stateVariables["+QString::number(i)+"];";
         }
     }
 
@@ -3756,7 +3691,7 @@ void HopsanComponentGenerator::generateComponentObject(ComponentSpecification &c
     comp.simEquations << "";
     for(int i=0; i<delayTerms.size(); ++i)
     {
-        comp.simEquations << "mDelay"+QString().setNum(i)+".update("+delayTerms[i].toString()+");";
+        comp.simEquations << "mDelay"+QString::number(i)+".update("+delayTerms[i].toString()+");";
     }
 
     comp.simEquations << "";
@@ -3780,7 +3715,7 @@ void HopsanComponentGenerator::generateComponentObject(ComponentSpecification &c
 
 
 
-QString HopsanComponentGenerator::generateSourceCodefromComponentObject(ComponentSpecification comp, bool overwriteStartValues)
+QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecification comp, bool overwriteStartValues)
 {
     if(comp.cqsType == "S") { comp.cqsType = "Signal"; }
 
@@ -3820,14 +3755,14 @@ QString HopsanComponentGenerator::generateSourceCodefromComponentObject(Componen
             if(comp.portNodeTypes[i] == "NodeSignal")
                 varName = varNames[v];
             else
-                varName = varNames[v] + QString().setNum(portId);
+                varName = varNames[v] + QString::number(portId);
             codeStream << varName << ", ";
         }
         QString varName;
         if(comp.portNodeTypes[i] == "NodeSignal")
             varName = varNames.last();
         else
-            varName = varNames.last() + QString().setNum(portId);
+            varName = varNames.last() + QString::number(portId);
         codeStream << varName;
         ++portId;
         if(i < comp.portNames.size()-1)
@@ -3854,7 +3789,7 @@ QString HopsanComponentGenerator::generateSourceCodefromComponentObject(Componen
     QStringList allVarNames;                                    //Declare node data pointers
     for(int i=0; i<comp.portNames.size(); ++i)
     {
-        QString id = QString().setNum(portId);
+        QString id = QString::number(portId);
         if(comp.portNodeTypes[i] == "NodeSignal")
         {
             allVarNames << comp.portNames[i];
@@ -3952,7 +3887,7 @@ QString HopsanComponentGenerator::generateSourceCodefromComponentObject(Componen
             if(comp.portNodeTypes[i] == "NodeSignal")
                 varName = varNames[v];
             else
-                varName = varNames[v]+QString().setNum(portId);
+                varName = varNames[v]+QString::number(portId);
             codeStream << "            mpND_" << varName << " = getSafeNodeDataPtr(mp" << comp.portNames[i] << ", " << comp.portNodeTypes[i] << "::" << varLabels[v];
             if(comp.portNotReq[i])
             {
@@ -3985,7 +3920,7 @@ QString HopsanComponentGenerator::generateSourceCodefromComponentObject(Componen
                 if(comp.portNodeTypes[i] == "NodeSignal")
                     varName = varNames[v];
                 else
-                    varName = varNames[v] + QString().setNum(portId);
+                    varName = varNames[v] + QString::number(portId);
                 codeStream << "            " << varName << " = (*mpND_" << varName << ");\n";
             }
             ++portId;
@@ -4020,7 +3955,7 @@ QString HopsanComponentGenerator::generateSourceCodefromComponentObject(Componen
                     if(comp.portNodeTypes[i] == "NodeSignal")
                         varName = varNames[v];
                     else
-                        varName = varNames[v] + QString().setNum(portId);
+                        varName = varNames[v] + QString::number(portId);
                     codeStream << "            (*mpND_" << varName << ") = " << varName << ";\n";
                 }
             }
@@ -4060,7 +3995,7 @@ QString HopsanComponentGenerator::generateSourceCodefromComponentObject(Componen
             if(comp.portNodeTypes[i] == "NodeSignal")
                 varName = varNames[v];
             else
-                varName = varNames[v] + QString().setNum(portId);
+                varName = varNames[v] + QString::number(portId);
             codeStream << "            " << varName << " = (*mpND_" << varName << ");\n";
         }
         ++portId;
@@ -4095,7 +4030,7 @@ QString HopsanComponentGenerator::generateSourceCodefromComponentObject(Componen
             if(comp.portNodeTypes[i] == "NodeSignal")
                 varName = varNames[v];
             else
-                varName = varNames[v] + QString().setNum(portId);
+                varName = varNames[v] + QString::number(portId);
             codeStream << "            (*mpND_" << varName << ") = " << varName << ";\n";
         }
         ++portId;
@@ -4123,7 +4058,7 @@ QString HopsanComponentGenerator::generateSourceCodefromComponentObject(Componen
 //! @param outputFile Name of output file
 //! @param comp Component specification object
 //! @param overwriteStartValues Tells whether or not this components overrides the built-in start values or not
-void HopsanComponentGenerator::compileFromComponentObject(QString outputFile, ComponentSpecification comp, /*ModelObjectAppearance appearance,*/ bool overwriteStartValues)
+void HopsanGenerator::compileFromComponentObject(QString outputFile, ComponentSpecification comp, /*ModelObjectAppearance appearance,*/ bool overwriteStartValues)
 {
     QString code;
 
@@ -4281,7 +4216,7 @@ void HopsanComponentGenerator::compileFromComponentObject(QString outputFile, Co
 
 
 //! @brief Verifies that a system of equations is solveable (number of equations = number of unknowns etc)
-bool HopsanComponentGenerator::verifyEquationSystem(QList<Expression> equations, QList<Expression> stateVars)
+bool HopsanGenerator::verifyEquationSystem(QList<Expression> equations, QList<Expression> stateVars)
 {
     bool retval = true;
 
@@ -4301,7 +4236,7 @@ bool HopsanComponentGenerator::verifyEquationSystem(QList<Expression> equations,
         }
         qDebug() << "State vars: " << stateVarList;
 
-        printErrorMessage("Number of equations = " + QString().setNum(equations.size()) + ", number of state variables = " + QString().setNum(stateVars.size()));
+        printErrorMessage("Number of equations = " + QString::number(equations.size()) + ", number of state variables = " + QString::number(stateVars.size()));
         retval = false;
     }
 
@@ -4311,18 +4246,18 @@ bool HopsanComponentGenerator::verifyEquationSystem(QList<Expression> equations,
 
 //! @brief Verifies that a list of parameter specifications is correct
 //! @param parameters List of parameter specifications
-bool HopsanComponentGenerator::verifyParameteres(QList<ParameterSpecification> parameters)
+bool HopsanGenerator::verifyParameteres(QList<ParameterSpecification> parameters)
 {
     for(int i=0; i<parameters.size(); ++i)
     {
         if(parameters.at(i).name.isEmpty())
         {
-            printErrorMessage("Parameter " + QString().setNum(i+1) + " has no name specified.");
+            printErrorMessage("Parameter " + QString::number(i+1) + " has no name specified.");
             return false;
         }
         if(parameters.at(i).init.isEmpty())
         {
-            printErrorMessage("Parameter " + QString().setNum(i+1) + " has no initial value specified.");
+            printErrorMessage("Parameter " + QString::number(i+1) + " has no initial value specified.");
             return false;
         }
     }
@@ -4332,13 +4267,13 @@ bool HopsanComponentGenerator::verifyParameteres(QList<ParameterSpecification> p
 
 //! @brief Verifies that a list of ports specifications is correct
 //! @param ports List of ports specifications
-bool HopsanComponentGenerator::verifyPorts(QList<PortSpecification> ports)
+bool HopsanGenerator::verifyPorts(QList<PortSpecification> ports)
 {
     for(int i=0; i<ports.size(); ++i)
     {
         if(ports.at(i).name.isEmpty())
         {
-            printErrorMessage("Port " + QString().setNum(i+1) + " has no name specified.");
+            printErrorMessage("Port " + QString::number(i+1) + " has no name specified.");
             return false;
         }
         if(ports.at(i).notrequired && ports.at(i).defaultvalue.isEmpty())
@@ -4353,13 +4288,13 @@ bool HopsanComponentGenerator::verifyPorts(QList<PortSpecification> ports)
 
 //! @brief Verifies that a list of utilities specifications is correct
 //! @param utilities List of utilities specifications
-bool HopsanComponentGenerator::verifyUtilities(QList<UtilitySpecification> utilities)
+bool HopsanGenerator::verifyUtilities(QList<UtilitySpecification> utilities)
 {
     for(int i=0; i<utilities.size(); ++i)
     {
         if(utilities.at(i).name.isEmpty())
         {
-            printErrorMessage("Utility " + QString().setNum(i+1) + " has no name specified.");
+            printErrorMessage("Utility " + QString::number(i+1) + " has no name specified.");
             return false;
         }
     }
@@ -4369,13 +4304,13 @@ bool HopsanComponentGenerator::verifyUtilities(QList<UtilitySpecification> utili
 
 //! @brief Verifies that a list of variables specifications is correct
 //! @param variables List of variables specifications
-bool HopsanComponentGenerator::verifyStaticVariables(QList<StaticVariableSpecification> variables)
+bool HopsanGenerator::verifyStaticVariables(QList<StaticVariableSpecification> variables)
 {
     for(int i=0; i<variables.size(); ++i)
     {
         if(variables.at(i).name.isEmpty())
         {
-            printErrorMessage("Static variable " + QString().setNum(i+1) + " has no name specified.");
+            printErrorMessage("Static variable " + QString::number(i+1) + " has no name specified.");
             return false;
         }
     }
@@ -4387,7 +4322,7 @@ bool HopsanComponentGenerator::verifyStaticVariables(QList<StaticVariableSpecifi
 
 
 //! @note First and last q-type variable must represent intensity and flow
-QStringList HopsanComponentGenerator::getQVariables(QString nodeType)
+QStringList HopsanGenerator::getQVariables(QString nodeType)
 {
     QStringList retval;
     if(nodeType == "NodeMechanic")
@@ -4415,7 +4350,7 @@ QStringList HopsanComponentGenerator::getQVariables(QString nodeType)
 
 
 //! @note c must come first and Zc last
-QStringList HopsanComponentGenerator::getCVariables(QString nodeType)
+QStringList HopsanGenerator::getCVariables(QString nodeType)
 {
     QStringList retval;
     if(nodeType == "NodeMechanic")
@@ -4445,7 +4380,7 @@ QStringList HopsanComponentGenerator::getCVariables(QString nodeType)
 //! @brief Returns list of variable enum names for specified node type
 //! @param nodeType Node type to use
 //! @note c must come first and Zc last
-QStringList HopsanComponentGenerator::getVariableLabels(QString nodeType)
+QStringList HopsanGenerator::getVariableLabels(QString nodeType)
 {
     QStringList retval;
     if(nodeType == "NodeMechanic")
@@ -4566,6 +4501,28 @@ void copyIncludeFilesToDir(QString path)
     saveDir.cd("include");
 
     copyDir( QString("../HopsanCore/include"), saveDir.path() );
+}
+
+
+//! @brief Removes all illegal characters from the string, so that it can be used as a variable name.
+//! @param org Original string
+//! @returns String without illegal characters
+inline QString HopsanGenerator::toVarName(const QString org)
+{
+    QString ret = org;
+    while(!ret.isEmpty() && !ret[0].isLetter())
+    {
+        ret = ret.right(ret.size()-1);
+    }
+    for(int i=1; i<ret.size(); ++i)
+    {
+        if(!ret[i].isLetterOrNumber())
+        {
+            ret.remove(i,1);
+            i--;
+        }
+    }
+    return ret;
 }
 
 

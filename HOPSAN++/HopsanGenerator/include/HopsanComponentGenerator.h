@@ -114,10 +114,10 @@ public:
 };
 
 
-class HopsanComponentGenerator
+class HopsanGenerator
 {
 public:
-    HopsanComponentGenerator(QString coreIncludePath, QString binPath, bool showDialog=false);
+    HopsanGenerator(QString coreIncludePath, QString binPath, bool showDialog=false);
     void printMessage(QString msg);
     void printErrorMessage(QString msg);
     void generateFromModelica(QString code);
@@ -140,6 +140,7 @@ private:
     QStringList getQVariables(QString nodeType);
     QStringList getCVariables(QString nodeType);
     QStringList getVariableLabels(QString nodeType);
+    inline QString toVarName(const QString org);
 
     QString mOutputPath;
     QString mTempPath;

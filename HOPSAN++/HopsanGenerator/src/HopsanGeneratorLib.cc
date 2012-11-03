@@ -39,7 +39,7 @@ extern "C" DLLIMPORTEXPORT void callModelicaGenerator(string modelicaCode, strin
 {
     qDebug() << "Called Modelica generator (in dll)!";
 
-    HopsanComponentGenerator *pGenerator = new HopsanComponentGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
+    HopsanGenerator *pGenerator = new HopsanGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
     pGenerator->generateFromModelica(QString(modelicaCode.c_str()));
     delete(pGenerator);
 }
@@ -120,7 +120,7 @@ extern "C" DLLIMPORTEXPORT void callCppGenerator(string cppCode, string coreIncl
 
     comp.plainCode = code;
 
-    HopsanComponentGenerator *pGenerator = new HopsanComponentGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
+    HopsanGenerator *pGenerator = new HopsanGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
     pGenerator->compileFromComponentObject(typeName+".hpp", comp, false);
     delete(pGenerator);
 }
@@ -133,7 +133,7 @@ extern "C" DLLIMPORTEXPORT void callCppGenerator(string cppCode, string coreIncl
 //! @param showDialog True if generator output shall be displayed in a dialog window
 extern "C" DLLIMPORTEXPORT void callFmuImportGenerator(string path, string coreIncludePath, string binPath, bool showDialog=false)
 {
-    HopsanComponentGenerator *pGenerator = new HopsanComponentGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
+    HopsanGenerator *pGenerator = new HopsanGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
     pGenerator->generateFromFmu(QString(path.c_str()));
     delete(pGenerator);
 }
@@ -147,7 +147,7 @@ extern "C" DLLIMPORTEXPORT void callFmuImportGenerator(string path, string coreI
 //! @param showDialog True if generator output shall be displayed in a dialog window
 extern "C" DLLIMPORTEXPORT void callFmuExportGenerator(string path, hopsan::ComponentSystem *pSystem, string coreIncludePath, string binPath, bool showDialog=false)
 {
-    HopsanComponentGenerator *pGenerator = new HopsanComponentGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
+    HopsanGenerator *pGenerator = new HopsanGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
     pGenerator->generateToFmu(QString(path.c_str()), pSystem);
     delete(pGenerator);
 }
@@ -163,7 +163,7 @@ extern "C" DLLIMPORTEXPORT void callFmuExportGenerator(string path, hopsan::Comp
 //! @param showDialog True if generator output shall be displayed in a dialog window
 extern "C" DLLIMPORTEXPORT void callSimulinkExportGenerator(string path, hopsan::ComponentSystem *pSystem, bool disablePortLabels, int compiler, string coreIncludePath, string binPath, bool showDialog=false)
 {
-    HopsanComponentGenerator *pGenerator = new HopsanComponentGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
+    HopsanGenerator *pGenerator = new HopsanGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
     pGenerator->generateToSimulink(QString(path.c_str()), pSystem, disablePortLabels, compiler);
     delete(pGenerator);
 }
@@ -177,7 +177,7 @@ extern "C" DLLIMPORTEXPORT void callSimulinkExportGenerator(string path, hopsan:
 //! @param showDialog True if generator output shall be displayed in a dialog window
 extern "C" DLLIMPORTEXPORT void callLabViewSITGenerator(string path, hopsan::ComponentSystem *pSystem, string coreIncludePath, string binPath, bool showDialog=false)
 {
-    HopsanComponentGenerator *pGenerator = new HopsanComponentGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
+    HopsanGenerator *pGenerator = new HopsanGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
     pGenerator->generateToLabViewSIT(QString(path.c_str()), pSystem);
     delete(pGenerator);
 }
