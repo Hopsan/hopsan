@@ -6,5 +6,7 @@
         <file>templates/fmuSourceTemplate.c</file>
         <file>templates/fmuLibTemplate.cc</file>
         <file>templates/fmuComponentTemplate.hpp</file>
+        <file>templates/simulinkWrapperTemplate.cpp</file>
+        <file>templates/labviewWrapperTemplate.cpp</file>
     </qresource>
 </RCC>

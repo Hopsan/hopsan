@@ -784,511 +784,16 @@ void SystemContainer::saveToWrappedCode()
     //Open file dialog and initialize the file stream
     QDir fileDialogSaveDir;
     QString filePath;
-    QFileInfo fileInfo;
-    QFile file;
+    //QFileInfo fileInfo;
+    //QFile file;
     filePath = QFileDialog::getSaveFileName(gpMainWindow, tr("Export Project to HopsanRT Wrapper Code"),
                                             fileDialogSaveDir.currentPath(),
                                             tr("Text file (*.txt)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
-    fileInfo.setFile(filePath);
-    file.setFileName(fileInfo.filePath());   //Create a QFile object
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open file for writing: " + filePath);
-        return;
-    }
-    QTextStream fileStream(&file);  //Create a QTextStream object to stream the content of file
 
-    //Create lists for input and output interface components
-    QStringList inputs;
-    QStringList outputs;
-    QStringList mechCinterfaces;
-    QStringList mechQinterfaces;
-    QStringList hydCinterfaces;
-    QStringList hydQinterfaces;
-    ModelObjectMapT::iterator it;
-    for(it = mModelObjectMap.begin(); it!=mModelObjectMap.end(); ++it)
-    {
-        if(it.value()->getTypeName() == "SignalInputInterface")
-        {
-            inputs.append(it.value()->getName());
-        }
-        else if(it.value()->getTypeName() == "SignalOutputInterface")
-        {
-            outputs.append(it.value()->getName());
-        }
-        else if(it.value()->getTypeName() == "MechanicInterfaceC")
-        {
-            mechCinterfaces.append(it.value()->getName());
-        }
-        else if(it.value()->getTypeName() == "MechanicInterfaceQ")
-        {
-            mechQinterfaces.append(it.value()->getName());
-        }
-        else if(it.value()->getTypeName() == "HydraulicInterfaceC")
-        {
-            hydCinterfaces.append(it.value()->getName());
-        }
-        else if(it.value()->getTypeName() == "HydraulicInterfaceQ")
-        {
-            hydQinterfaces.append(it.value()->getName());
-        }
-    }
-
-
-
-        //Write initial comment
-    fileStream << "// Code from exported Hopsan model. This can be used in conjunction with HopsanCore by using HopsanWrapper. Subsystems probably don't work.\n\n";
-    fileStream << "\n";
-    fileStream << "#include \"hopsanrt-wrapper.h\"\n";
-    fileStream << "#include \"SIT_API.h\"\n";
-    fileStream << "#include \"model.h\"\n";
-    fileStream << "#include <stddef.h>\n";
-    fileStream << "#include <math.h>\n";
-    fileStream << "#include \"codegen.c\"\n";
-    fileStream << "\n";
-    fileStream << "#define rtDBL	0\n";
-    fileStream << "\n";
-    fileStream << "extern Parameters rtParameter[2];\n";
-    fileStream << "extern long READSIDE;\n";
-    fileStream << "\n";
-    fileStream << "#define readParam rtParameter[READSIDE]\n";
-    fileStream << "\n";
-    fileStream << "typedef struct \n";
-    fileStream << "{\n";
-    for(int i=0; i<inputs.size(); ++i)
-    {
-        QString tempString = inputs.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    double "+tempString+";\n";
-    }
-    for(int i=0; i<mechCinterfaces.size(); ++i)
-    {
-        QString tempString = mechCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    double "+tempString+"C;\n";
-        fileStream << "    double "+tempString+"Zc;\n";
-    }
-    for(int i=0; i<mechQinterfaces.size(); ++i)
-    {
-        QString tempString = mechQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    double "+tempString+"F;\n";
-        fileStream << "    double "+tempString+"X;\n";
-        fileStream << "    double "+tempString+"V;\n";
-        fileStream << "    double "+tempString+"M;\n";
-    }
-    for(int i=0; i<hydCinterfaces.size(); ++i)
-    {
-        QString tempString = hydCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    double "+tempString+"C;\n";
-        fileStream << "    double "+tempString+"Zc;\n";
-    }
-    for(int i=0; i<hydQinterfaces.size(); ++i)
-    {
-        QString tempString = hydQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    double "+tempString+"P;\n";
-        fileStream << "    double "+tempString+"Q;\n";
-    }
-    fileStream << "} Inports;\n";
-    fileStream << "\n";
-    fileStream << "typedef struct\n";
-    fileStream << "{\n";
-    for(int i=0; i<outputs.size(); ++i)
-    {
-        QString tempString = outputs.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    double "+tempString+";\n";
-    }
-    for(int i=0; i<mechCinterfaces.size(); ++i)
-    {
-        QString tempString = mechCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    double "+tempString+"F;\n";
-        fileStream << "    double "+tempString+"X;\n";
-        fileStream << "    double "+tempString+"V;\n";
-        fileStream << "    double "+tempString+"M;\n";
-    }
-    for(int i=0; i<mechQinterfaces.size(); ++i)
-    {
-        QString tempString = mechQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    double "+tempString+"C;\n";
-        fileStream << "    double "+tempString+"Zc;\n";
-    }
-    for(int i=0; i<hydCinterfaces.size(); ++i)
-    {
-        QString tempString = hydCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    double "+tempString+"P;\n";
-        fileStream << "    double "+tempString+"Q;\n";
-    }
-    for(int i=0; i<hydQinterfaces.size(); ++i)
-    {
-        QString tempString = hydQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    double "+tempString+"C;\n";
-        fileStream << "    double "+tempString+"Zc;\n";
-    }
-    fileStream << "} Outports;\n";
-    fileStream << "\n";
-    fileStream << "typedef struct\n";
-    fileStream << "{\n";
-    fileStream << "    double Time;\n";
-    fileStream << "} Signals;\n";
-    fileStream << "\n";
-    fileStream << "Inports rtInport;\n";
-    fileStream << "Outports rtOutport;\n";
-    fileStream << "Signals rtSignal;\n";
-    fileStream << "\n";
-    fileStream << "long SetValueByDataType(void* ptr, int subindex, double value, int type)\n";
-    fileStream << "{\n";
-    fileStream << "    switch (type)\n";
-    fileStream << "    {\n";
-    fileStream << "        case rtDBL:\n";
-    fileStream << "        ((double *)ptr)[subindex] = (double)value;\n";
-    fileStream << "        return NI_OK;\n";
-    fileStream << "    }\n";
-    fileStream << "    return NI_ERROR;\n";
-    fileStream << "}\n";
-    fileStream << "\n";
-    fileStream << "double GetValueByDataType(void* ptr, int subindex, int type)\n";
-    fileStream << "{\n";
-    fileStream << "    switch (type)\n";
-    fileStream << "    {\n";
-    fileStream << "        case rtDBL:\n";
-    fileStream << "        return (double)(((double *)ptr)[subindex]);\n";
-    fileStream << "    }\n";
-    fileStream << "    return 0x7FFFFFFFFFFFFFFF; /* NAN */\n";
-    fileStream << "}\n";
-    fileStream << "\n";
-    fileStream << "const long ParameterSize = 1;\n";
-    fileStream << "const ParameterAttributes rtParamAttribs[] = \n";
-    fileStream << "{\n";
-    fileStream << "        { \"HopsanRT/sine/Amplitude\", offsetof(Parameters, HopsanRT_sine_Amp), rtDBL, 1, 1}\n";
-    fileStream << "};\n";
-    fileStream << "\n";
-    fileStream << "const Parameters initParams = {0.0 /*time*/};\n";
-    fileStream << "\n";
-    fileStream << "const long SignalSize = 1;\n";
-    fileStream << "const SignalAttributes rtSignalAttribs[] = \n";
-    fileStream << "{\n";
-    fileStream << "    { \"HopsanRT/Time\", 0, \"Time\", &rtSignal.Time, rtDBL, 1, 1}\n";
-    fileStream << "};\n";
-    fileStream << "\n";
-    fileStream << "const long InportSize = "+QString().setNum(inputs.size()+2*mechCinterfaces.size()+4*mechQinterfaces.size()+2*hydCinterfaces.size()+2*hydQinterfaces.size())+";\n";
-    fileStream << "const ExtIOAttributes rtInportAttribs[] = \n";
-    fileStream << "{\n";
-    for(int i=0; i<inputs.size(); ++i)
-    {
-        QString tempString = inputs.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    { \""+tempString+"\", 1, 1},\n";
-    }
-    for(int i=0; i<mechCinterfaces.size(); ++i)
-    {
-        QString tempString = mechCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    { \""+tempString+"C\", 1, 1},\n";
-        fileStream << "    { \""+tempString+"Zc\", 1, 1},\n";
-    }
-    for(int i=0; i<mechQinterfaces.size(); ++i)
-    {
-        QString tempString = mechQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    { \""+tempString+"F\", 1, 1},\n";
-        fileStream << "    { \""+tempString+"X\", 1, 1},\n";
-        fileStream << "    { \""+tempString+"V\", 1, 1},\n";
-        fileStream << "    { \""+tempString+"M\", 1, 1},\n";
-    }
-    for(int i=0; i<hydQinterfaces.size(); ++i)
-    {
-        QString tempString = hydQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    { \""+tempString+"P\", 1, 1},\n";
-        fileStream << "    { \""+tempString+"Q\", 1, 1},\n";
-    }
-    for(int i=0; i<hydCinterfaces.size(); ++i)
-    {
-        QString tempString = hydCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    { \""+tempString+"C\", 1, 1},\n";
-        fileStream << "    { \""+tempString+"Zc\", 1, 1},\n";
-    }
-    fileStream << "};\n";
-    fileStream << "\n";
-    fileStream << "const long OutportSize = "+QString().setNum(outputs.size()+4*mechCinterfaces.size()+2*mechQinterfaces.size()+2*hydCinterfaces.size()+2*hydQinterfaces.size())+";\n";
-    fileStream << "const ExtIOAttributes rtOutportAttribs[] = \n";
-    fileStream << "{\n";
-    for(int i=0; i<outputs.size(); ++i)
-    {
-        QString tempString = outputs.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    { \""+tempString+"\", 1, 1},\n";
-    }
-    for(int i=0; i<mechCinterfaces.size(); ++i)
-    {
-        QString tempString = mechCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    { \""+tempString+"F\", 1, 1},\n";
-        fileStream << "    { \""+tempString+"X\", 1, 1},\n";
-        fileStream << "    { \""+tempString+"V\", 1, 1},\n";
-        fileStream << "    { \""+tempString+"M\", 1, 1},\n";
-    }
-    for(int i=0; i<mechQinterfaces.size(); ++i)
-    {
-        QString tempString = mechQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    { \""+tempString+"C\", 1, 1},\n";
-        fileStream << "    { \""+tempString+"Zc\", 1, 1},\n";
-    }
-    for(int i=0; i<hydCinterfaces.size(); ++i)
-    {
-        QString tempString = hydCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    { \""+tempString+"P\", 1, 1},\n";
-        fileStream << "    { \""+tempString+"Q\", 1, 1},\n";
-    }
-    for(int i=0; i<hydQinterfaces.size(); ++i)
-    {
-        QString tempString = hydQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    { \""+tempString+"C\", 1, 1},\n";
-        fileStream << "    { \""+tempString+"Zc\", 1, 1},\n";
-    }
-    fileStream << "};\n";
-    fileStream << "\n";
-    fileStream << "const char * const ModelName = \"HopsanRT\";\n";
-    fileStream << "const char * const build = \"5.0.1 SIT Custom DLL\";\n";
-    fileStream << "\n";
-    fileStream << "const double baserate = .001;\n";
-    fileStream << "\n";
-    fileStream << "long USER_Initialize() \n";
-    fileStream << "{\n";
-    fileStream << "    createSystem(1e-3);\n\n";
-    for(it = mModelObjectMap.begin(); it!=mModelObjectMap.end(); ++it)
-        fileStream << "    addComponent(\"" << it.value()->getName() << "\", \"" << it.value()->getTypeName() << "\");\n";
-    fileStream << "    \n";
-    for(int i = 0; i != mSubConnectorList.size(); ++i)
-        fileStream <<    "    connect(\"" << mSubConnectorList[i]->getStartComponentName() << "\", \"" << mSubConnectorList[i]->getStartPortName() <<
-                      "\", \"" << mSubConnectorList[i]->getEndComponentName() << "\", \"" << mSubConnectorList[i]->getEndPortName() << "\");\n";
-    fileStream << "    \n";
-    for(it = mModelObjectMap.begin(); it!=mModelObjectMap.end(); ++it)
-        for(int i=0; i<it.value()->getParameterNames().size(); ++i)
-            fileStream << "    setParameter(\"" << it.value()->getName() << "\", \"" << it.value()->getParameterNames().at(i) <<  "\", " << it.value()->getParameterValue(it.value()->getParameterNames().at(i)) << ");\n";
-    fileStream << "    \n";
-    fileStream << "    initSystem();\n";
-    fileStream << "    rtSignal.Time = 0;\n";
-    fileStream << "\n";
-    fileStream << "    return NI_OK;\n";
-    fileStream << "}\n";
-    fileStream << "\n";
-    fileStream << "void USER_TakeOneStep(double *inData, double *outData, double timestamp)\n";
-    fileStream << "{\n";
-    fileStream << "    rtSignal.Time += 0.001;\n";
-    fileStream << "    if (inData)\n";
-    fileStream << "    {\n";
-    for(int i=0; i<inputs.size(); ++i)
-    {
-        QString tempString = inputs.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "        rtInport."+tempString+" = inData["+QString().setNum(i)+"];\n";
-    }
-    for(int i=0; i<mechCinterfaces.size(); ++i)
-    {
-        QString tempString = mechCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "        rtInport."+tempString+"C = inData["+QString().setNum(2*i+inputs.size())+"];\n";
-        fileStream << "        rtInport."+tempString+"Zc = inData["+QString().setNum(2*i+1+inputs.size())+"];\n";
-    }
-    for(int i=0; i<mechQinterfaces.size(); ++i)
-    {
-        QString tempString = mechQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "        rtInport."+tempString+"F = inData["+QString().setNum(4*i+inputs.size()+2*mechCinterfaces.size())+"];\n";
-        fileStream << "        rtInport."+tempString+"X = inData["+QString().setNum(4*i+1+inputs.size()+2*mechCinterfaces.size())+"];\n";
-        fileStream << "        rtInport."+tempString+"V = inData["+QString().setNum(4*i+2+inputs.size()+2*mechCinterfaces.size())+"];\n";
-        fileStream << "        rtInport."+tempString+"M = inData["+QString().setNum(4*i+3+inputs.size()+2*mechCinterfaces.size())+"];\n";
-    }
-    for(int i=0; i<hydCinterfaces.size(); ++i)
-    {
-        QString tempString = hydCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "        rtInport."+tempString+"C = inData["+QString().setNum(2*i+inputs.size()+2*mechCinterfaces.size()+4*mechQinterfaces.size())+"];\n";
-        fileStream << "        rtInport."+tempString+"Zc = inData["+QString().setNum(2*i+1+inputs.size()+2*mechCinterfaces.size()+4*mechQinterfaces.size())+"];\n";
-    }
-    for(int i=0; i<hydQinterfaces.size(); ++i)
-    {
-        QString tempString = hydQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "        rtInport."+tempString+"P = inData["+QString().setNum(2*i+inputs.size()+2*mechCinterfaces.size()+4*mechQinterfaces.size()+2*hydCinterfaces.size())+"];\n";
-        fileStream << "        rtInport."+tempString+"Q = inData["+QString().setNum(2*i+1+inputs.size()+2*mechCinterfaces.size()+4*mechQinterfaces.size()+2*hydCinterfaces.size())+"];\n";
-    }
-    fileStream << "    }\n";
-    fileStream << "    \n";
-    for(int i=0; i<inputs.size(); ++i)
-    {
-        QString tempString = inputs.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    writeNodeData(\""+inputs.at(i)+"\", \"out\", 0, rtInport."+tempString+");\n";
-    }
-    for(int i=0; i<mechCinterfaces.size(); ++i)
-    {
-        QString tempString = mechCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    writeNodeData(\""+mechCinterfaces.at(i)+"\", \"P1\", 3, rtInport."+tempString+"C);\n";
-        fileStream << "    writeNodeData(\""+mechCinterfaces.at(i)+"\", \"P1\", 4, rtInport."+tempString+"Zc);\n";
-    }
-    for(int i=0; i<mechQinterfaces.size(); ++i)
-    {
-        QString tempString = mechQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    writeNodeData(\""+mechQinterfaces.at(i)+"\", \"P1\", 1, rtInport."+tempString+"F);\n";
-        fileStream << "    writeNodeData(\""+mechQinterfaces.at(i)+"\", \"P1\", 2, rtInport."+tempString+"X);\n";
-        fileStream << "    writeNodeData(\""+mechQinterfaces.at(i)+"\", \"P1\", 0, rtInport."+tempString+"V);\n";
-        fileStream << "    writeNodeData(\""+mechQinterfaces.at(i)+"\", \"P1\", 5, rtInport."+tempString+"M);\n";
-    }
-    for(int i=0; i<hydCinterfaces.size(); ++i)
-    {
-        QString tempString = hydCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    writeNodeData(\""+hydCinterfaces.at(i)+"\", \"P1\", 3, rtInport."+tempString+"C);\n";
-        fileStream << "    writeNodeData(\""+hydCinterfaces.at(i)+"\", \"P1\", 4, rtInport."+tempString+"Zc);\n";
-    }
-    for(int i=0; i<hydQinterfaces.size(); ++i)
-    {
-        QString tempString = hydQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    writeNodeData(\""+hydQinterfaces.at(i)+"\", \"P1\", 1, rtInport."+tempString+"P);\n";
-        fileStream << "    writeNodeData(\""+hydQinterfaces.at(i)+"\", \"P1\", 0, rtInport."+tempString+"Q);\n";
-    }
-    fileStream << "    simulateOneTimestep(rtSignal.Time);\n";
-    for(int i=0; i<outputs.size(); ++i)
-    {
-        QString tempString = outputs.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    rtOutport."+tempString+" = readNodeData(\""+outputs.at(i)+"\", \"in\", 0);\n";
-    }
-    for(int i=0; i<mechCinterfaces.size(); ++i)
-    {
-        QString tempString = mechCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    rtOutport."+tempString+"F = readNodeData(\""+mechCinterfaces.at(i)+"\", \"P1\", 1);\n";
-        fileStream << "    rtOutport."+tempString+"X = readNodeData(\""+mechCinterfaces.at(i)+"\", \"P1\", 2);\n";
-        fileStream << "    rtOutport."+tempString+"V = readNodeData(\""+mechCinterfaces.at(i)+"\", \"P1\", 0);\n";
-        fileStream << "    rtOutport."+tempString+"M = readNodeData(\""+mechCinterfaces.at(i)+"\", \"P1\", 5);\n";
-    }
-    for(int i=0; i<mechQinterfaces.size(); ++i)
-    {
-        QString tempString = mechQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    rtOutport."+tempString+"C = readNodeData(\""+mechQinterfaces.at(i)+"\", \"P1\", 3);\n";
-        fileStream << "    rtOutport."+tempString+"Zc = readNodeData(\""+mechQinterfaces.at(i)+"\", \"P1\", 4);\n";
-    }
-    for(int i=0; i<hydCinterfaces.size(); ++i)
-    {
-        QString tempString = hydCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    rtOutport."+tempString+"P = readNodeData(\""+hydCinterfaces.at(i)+"\", \"P1\", 1);\n";
-        fileStream << "    rtOutport."+tempString+"Q = readNodeData(\""+hydCinterfaces.at(i)+"\", \"P1\", 0);\n";
-    }
-    for(int i=0; i<hydQinterfaces.size(); ++i)
-    {
-        QString tempString = hydQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "    rtOutport."+tempString+"C = readNodeData(\""+hydQinterfaces.at(i)+"\", \"P1\", 3);\n";
-        fileStream << "    rtOutport."+tempString+"Zc = readNodeData(\""+hydQinterfaces.at(i)+"\", \"P1\", 4);\n";
-    }
-    fileStream << "    \n";
-    fileStream << "    if (outData)\n";
-    fileStream << "    {\n";
-    for(int i=0; i<outputs.size(); ++i)
-    {
-        QString tempString = outputs.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "        outData["+QString().setNum(i)+"] = rtOutport."+tempString+";\n";
-    }
-    for(int i=0; i<mechCinterfaces.size(); ++i)
-    {
-        QString tempString = mechCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "        outData["+QString().setNum(4*i+outputs.size())+"] = rtOutport."+tempString+"F;\n";
-        fileStream << "        outData["+QString().setNum(4*i+1+outputs.size())+"] = rtOutport."+tempString+"X;\n";
-        fileStream << "        outData["+QString().setNum(4*i+2+outputs.size())+"] = rtOutport."+tempString+"V;\n";
-        fileStream << "        outData["+QString().setNum(4*i+3+outputs.size())+"] = rtOutport."+tempString+"M;\n";
-    }
-    for(int i=0; i<mechQinterfaces.size(); ++i)
-    {
-        QString tempString = mechQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "        outData["+QString().setNum(2*i+outputs.size()+4*mechCinterfaces.size())+"] = rtOutport."+tempString+"C;\n";
-        fileStream << "        outData["+QString().setNum(2*i+1+outputs.size()+4*mechCinterfaces.size())+"] = rtOutport."+tempString+"Zc;\n";
-    }
-    for(int i=0; i<hydCinterfaces.size(); ++i)
-    {
-        QString tempString = hydCinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "        outData["+QString().setNum(2*i+outputs.size()+4*mechCinterfaces.size()+2*mechQinterfaces.size())+"] = rtOutport."+tempString+"P;\n";
-        fileStream << "        outData["+QString().setNum(2*i+1+outputs.size()+4*mechCinterfaces.size()+2*mechQinterfaces.size())+"] = rtOutport."+tempString+"Q;\n";
-    }
-    for(int i=0; i<hydQinterfaces.size(); ++i)
-    {
-        QString tempString = hydQinterfaces.at(i);
-        tempString.remove(" ");
-        tempString.remove("-");
-        fileStream << "        outData["+QString().setNum(2*i+outputs.size()+4*mechCinterfaces.size()+2*mechQinterfaces.size()+2*hydCinterfaces.size())+"] = rtOutport."+tempString+"C;\n";
-        fileStream << "        outData["+QString().setNum(2*i+1+outputs.size()+4*mechCinterfaces.size()+2*mechQinterfaces.size()+2*hydCinterfaces.size())+"] = rtOutport."+tempString+"Zc;\n";
-    }
-    fileStream << "    }\n";
-    fileStream << "}\n";
-    fileStream << "\n";
-    fileStream << "long USER_Finalize()\n";
-    fileStream << "{\n";
-    fileStream << "    return NI_OK;\n";
-    fileStream << "}\n";
-
-    file.close();
+    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
+    pCoreAccess->generateToLabViewSIT(filePath, this);
+    delete(pCoreAccess);
 }
 
 
@@ -1435,623 +940,625 @@ void SystemContainer::createSimulinkSourceFiles()
     QFileInfo file(savePath);
     gConfig.setSimulinkExportDir(file.absolutePath());
 
-    QProgressDialog progressBar(tr("Initializing"), QString(), 0, 0, gpMainWindow);
-    progressBar.show();
-    progressBar.setMaximum(10);
-    progressBar.setWindowModality(Qt::WindowModal);
-    progressBar.setWindowTitle(tr("Creating Simulink Source Files"));
-    progressBar.setMaximum(10);
-    progressBar.setValue(0);
-
-    QStringList tunableParameters = this->getParameterNames();
-
-    QStringList inputComponents;
-    QStringList inputPorts;
-    QStringList outputComponents;
-    QStringList outputPorts;
-    QStringList mechanicQComponents;
-    QStringList mechanicQPorts;
-    QStringList mechanicCComponents;
-    QStringList mechanicCPorts;
-    QStringList mechanicRotationalQComponents;
-    QStringList mechanicRotationalQPorts;
-    QStringList mechanicRotationalCComponents;
-    QStringList mechanicRotationalCPorts;
-
-    ModelObjectMapT::iterator it;
-    for(it = mModelObjectMap.begin(); it!=mModelObjectMap.end(); ++it)
-    {
-        if(it.value()->getTypeName() == "SignalInputInterface")
-        {
-            inputComponents.append(it.value()->getName());
-            inputPorts.append("out");
-        }
-        else if(it.value()->getTypeName() == "SignalOutputInterface")
-        {
-            outputComponents.append(it.value()->getName());
-            outputPorts.append("in");
-        }
-        else if(it.value()->getTypeName() == "MechanicInterfaceQ")
-        {
-            mechanicQComponents.append(it.value()->getName());
-            mechanicQPorts.append("P1");
-        }
-        else if(it.value()->getTypeName() == "MechanicInterfaceC")
-        {
-            mechanicCComponents.append(it.value()->getName());
-            mechanicCPorts.append("P1");
-        }
-        else if(it.value()->getTypeName() == "MechanicRotationalInterfaceQ")
-        {
-            mechanicRotationalQComponents.append(it.value()->getName());
-            mechanicRotationalQPorts.append("P1");
-        }
-        else if(it.value()->getTypeName() == "MechanicRotationalInterfaceC")
-        {
-            mechanicRotationalCComponents.append(it.value()->getName());
-            mechanicRotationalCPorts.append("P1");
-        }
-        //! @todo what about pneumatic and electric nodes
-        //! @todo this should not be hardcoded
-    }
-
-    int nInputs = inputComponents.size();
-    QString nInputsString;
-    nInputsString.setNum(nInputs);
-
-    int nOutputs = outputComponents.size();
-    QString nOutputsString;
-    nOutputsString.setNum(nOutputs);
-
-    int nMechanicQ = mechanicQComponents.size();
-    QString nMechanicQString;
-    nMechanicQString.setNum(nMechanicQ);
-
-    int nMechanicC = mechanicCComponents.size();
-    QString nMechanicCString;
-    nMechanicCString.setNum(nMechanicC);
-
-    int nMechanicRotationalQ = mechanicRotationalQComponents.size();
-    QString nMechanicRotationalQString;
-    nMechanicRotationalQString.setNum(nMechanicRotationalQ);
-
-    int nMechanicRotationalC = mechanicRotationalCComponents.size();
-    QString nMechanicRotationalCString;
-    nMechanicRotationalCString.setNum(nMechanicRotationalC);
-
-    int nTotalInputs = nInputs+nMechanicQ*2+nMechanicC*2+nMechanicRotationalQ*2+nMechanicRotationalC*2;
-    QString nTotalInputsString;
-    nTotalInputsString.setNum(nTotalInputs);
-
-    int nTotalOutputs = nOutputs+nMechanicQ*2+nMechanicC*2+nMechanicRotationalQ*2+nMechanicRotationalC*2+1;
-    QString nTotalOutputsString;
-    nTotalOutputsString.setNum(nTotalOutputs);
 
 
-    qDebug() << "Selected path: " << savePath;
-    QDir saveDir;
-    saveDir.setPath(savePath);    
+//    QProgressDialog progressBar(tr("Initializing"), QString(), 0, 0, gpMainWindow);
+//    progressBar.show();
+//    progressBar.setMaximum(10);
+//    progressBar.setWindowModality(Qt::WindowModal);
+//    progressBar.setWindowTitle(tr("Creating Simulink Source Files"));
+//    progressBar.setMaximum(10);
+//    progressBar.setValue(0);
+
+//    QStringList tunableParameters = this->getParameterNames();
+
+//    QStringList inputComponents;
+//    QStringList inputPorts;
+//    QStringList outputComponents;
+//    QStringList outputPorts;
+//    QStringList mechanicQComponents;
+//    QStringList mechanicQPorts;
+//    QStringList mechanicCComponents;
+//    QStringList mechanicCPorts;
+//    QStringList mechanicRotationalQComponents;
+//    QStringList mechanicRotationalQPorts;
+//    QStringList mechanicRotationalCComponents;
+//    QStringList mechanicRotationalCPorts;
+
+//    ModelObjectMapT::iterator it;
+//    for(it = mModelObjectMap.begin(); it!=mModelObjectMap.end(); ++it)
+//    {
+//        if(it.value()->getTypeName() == "SignalInputInterface")
+//        {
+//            inputComponents.append(it.value()->getName());
+//            inputPorts.append("out");
+//        }
+//        else if(it.value()->getTypeName() == "SignalOutputInterface")
+//        {
+//            outputComponents.append(it.value()->getName());
+//            outputPorts.append("in");
+//        }
+//        else if(it.value()->getTypeName() == "MechanicInterfaceQ")
+//        {
+//            mechanicQComponents.append(it.value()->getName());
+//            mechanicQPorts.append("P1");
+//        }
+//        else if(it.value()->getTypeName() == "MechanicInterfaceC")
+//        {
+//            mechanicCComponents.append(it.value()->getName());
+//            mechanicCPorts.append("P1");
+//        }
+//        else if(it.value()->getTypeName() == "MechanicRotationalInterfaceQ")
+//        {
+//            mechanicRotationalQComponents.append(it.value()->getName());
+//            mechanicRotationalQPorts.append("P1");
+//        }
+//        else if(it.value()->getTypeName() == "MechanicRotationalInterfaceC")
+//        {
+//            mechanicRotationalCComponents.append(it.value()->getName());
+//            mechanicRotationalCPorts.append("P1");
+//        }
+//        //! @todo what about pneumatic and electric nodes
+//        //! @todo this should not be hardcoded
+//    }
+
+//    int nInputs = inputComponents.size();
+//    QString nInputsString;
+//    nInputsString.setNum(nInputs);
+
+//    int nOutputs = outputComponents.size();
+//    QString nOutputsString;
+//    nOutputsString.setNum(nOutputs);
+
+//    int nMechanicQ = mechanicQComponents.size();
+//    QString nMechanicQString;
+//    nMechanicQString.setNum(nMechanicQ);
+
+//    int nMechanicC = mechanicCComponents.size();
+//    QString nMechanicCString;
+//    nMechanicCString.setNum(nMechanicC);
+
+//    int nMechanicRotationalQ = mechanicRotationalQComponents.size();
+//    QString nMechanicRotationalQString;
+//    nMechanicRotationalQString.setNum(nMechanicRotationalQ);
+
+//    int nMechanicRotationalC = mechanicRotationalCComponents.size();
+//    QString nMechanicRotationalCString;
+//    nMechanicRotationalCString.setNum(nMechanicRotationalC);
+
+//    int nTotalInputs = nInputs+nMechanicQ*2+nMechanicC*2+nMechanicRotationalQ*2+nMechanicRotationalC*2;
+//    QString nTotalInputsString;
+//    nTotalInputsString.setNum(nTotalInputs);
+
+//    int nTotalOutputs = nOutputs+nMechanicQ*2+nMechanicC*2+nMechanicRotationalQ*2+nMechanicRotationalC*2+1;
+//    QString nTotalOutputsString;
+//    nTotalOutputsString.setNum(nTotalOutputs);
 
 
-    progressBar.setValue(2);
-    progressBar.setLabelText("Generating files");
+//    qDebug() << "Selected path: " << savePath;
+//    QDir saveDir;
+//    saveDir.setPath(savePath);
 
 
-    QFile wrapperFile;
-    wrapperFile.setFileName(savePath + "/HopsanSimulink.cpp");
-    if(!wrapperFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open HopsanSimulink.cpp for writing.");
-        return;
-    }
-
-    QFile portLabelsFile;
-    portLabelsFile.setFileName(savePath + "/HopsanSimulinkPortLabels.m");
-    if(!portLabelsFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open HopsanSimulinkPortLabels.m for writing.");
-        return;
-    }
+//    progressBar.setValue(2);
+//    progressBar.setLabelText("Generating files");
 
 
-    QFile compileFile;
-    compileFile.setFileName(savePath + "/HopsanSimulinkCompile.m");
-    if(!compileFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open HopsanSimulinkCompile.m for writing.");
-        return;
-    }
+//    QFile wrapperFile;
+//    wrapperFile.setFileName(savePath + "/HopsanSimulink.cpp");
+//    if(!wrapperFile.open(QIODevice::WriteOnly | QIODevice::Text))
+//    {
+//        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open HopsanSimulink.cpp for writing.");
+//        return;
+//    }
+
+//    QFile portLabelsFile;
+//    portLabelsFile.setFileName(savePath + "/HopsanSimulinkPortLabels.m");
+//    if(!portLabelsFile.open(QIODevice::WriteOnly | QIODevice::Text))
+//    {
+//        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open HopsanSimulinkPortLabels.m for writing.");
+//        return;
+//    }
 
 
-    progressBar.setValue(3);
-    progressBar.setLabelText("Writing HopsanSimulinkPortLabels.m");
+//    QFile compileFile;
+//    compileFile.setFileName(savePath + "/HopsanSimulinkCompile.m");
+//    if(!compileFile.open(QIODevice::WriteOnly | QIODevice::Text))
+//    {
+//        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open HopsanSimulinkCompile.m for writing.");
+//        return;
+//    }
 
 
-    QTextStream portLabelsStream(&portLabelsFile);
-    portLabelsStream << "set_param(gcb,'Mask','on')\n";
-    portLabelsStream << "set_param(gcb,'MaskDisplay','";
+//    progressBar.setValue(3);
+//    progressBar.setLabelText("Writing HopsanSimulinkPortLabels.m");
 
 
-    progressBar.setValue(4);
-    progressBar.setLabelText("Writing HopsanSimulink.cpp");
+//    QTextStream portLabelsStream(&portLabelsFile);
+//    portLabelsStream << "set_param(gcb,'Mask','on')\n";
+//    portLabelsStream << "set_param(gcb,'MaskDisplay','";
 
 
-    //How to access dialog parameters:
-    //double par1 = (*mxGetPr(ssGetSFcnParam(S, 0)));
-
-    QTextStream wrapperStream(&wrapperFile);
-    QTextLineStream wrapperLines(wrapperStream);
-
-    //! @todo writing the copyright notice should be a subfunction as it may be used in many places, preferably it should read from file, so that we do not forget to change in many places on changes
-    wrapperLines << "/*-----------------------------------------------------------------------------";
-    wrapperLines << "This source file is part of Hopsan NG";
-    wrapperLines << "";
-    wrapperLines << "Copyright (c) 2011";
-    wrapperLines << "Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,";
-    wrapperLines << "Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack";
-    wrapperLines << "";
-    wrapperLines << "This file is provided \"as is\", with no guarantee or warranty for the";
-    wrapperLines << "functionality or reliability of the contents. All contents in this file is";
-    wrapperLines << "the original work of the copyright holders at the Division of Fluid and";
-    wrapperLines << "Mechatronic Systems (Flumes) at Linköping University. Modifying, using or";
-    wrapperLines << "redistributing any part of this file is prohibited without explicit";
-    wrapperLines << "permission from the copyright holders.";
-    wrapperLines << "-----------------------------------------------------------------------------*/";
-    wrapperLines << "";
-    wrapperLines << "#define S_FUNCTION_NAME HopsanSimulink";
-    wrapperLines << "#define S_FUNCTION_LEVEL 2";
-    wrapperLines << "";
-    wrapperLines << "#include <sstream>";
-    wrapperLines << "#include <string>";
-    wrapperLines << "#include <vector>";
-    wrapperLines << "#include <fstream>";
-    wrapperLines << "#include \"simstruc.h\"";
-    wrapperLines << "#include \"include/HopsanCore.h\"";
-    wrapperLines << "using namespace hopsan;";
-    wrapperLines << "";
-
-    //! @todo need to be able to error report if file not fond, or maybe not, if no external libs used you dont want error message
-    wrapperLines << "void readExternalLibsFromTxtFile(const std::string filePath, std::vector<std::string> &rExtLibFileNames)";
-    wrapperLines << "{";
-    wrapperLines << "    rExtLibFileNames.clear();";
-    wrapperLines << "    std::string line;";
-    wrapperLines << "    std::ifstream file;";
-    wrapperLines << "    file.open(filePath.c_str());";
-    wrapperLines << "    if ( file.is_open() )";
-    wrapperLines << "    {";
-    wrapperLines << "        while ( file.good() )";
-    wrapperLines << "        {";
-    wrapperLines << "            getline(file, line);";
-    wrapperLines << "            if ((*line.begin() != '#') && !line.empty())";
-    wrapperLines << "            {";
-    wrapperLines << "                rExtLibFileNames.push_back(line);";
-    wrapperLines << "            }";
-    wrapperLines << "       }";
-    wrapperLines << "        file.close();";
-    wrapperLines << "    }";
-    wrapperLines << "    else";
-    wrapperLines << "    {";
-    wrapperLines << "        //cout << \"error, could not open file: \" << filePath << endl;";
-    wrapperLines << "    }";
-    wrapperLines << "}";
-    wrapperLines << "";
-
-    wrapperLines << "HopsanEssentials gHopsanCore";
-    wrapperLines << "ComponentSystem* pComponentSystem;";
-    wrapperLines << "bool isOkToSimulate = false;";
-    wrapperLines << "";
-
-    wrapperLines << "static void mdlInitializeSizes(SimStruct *S)";
-    wrapperLines << "{";
-    wrapperLines << "    ssSetNumSFcnParams(S, 0);";
-    wrapperLines << "    if (ssGetNumSFcnParams(S) != ssGetSFcnParamsCount(S))";
-    wrapperLines << "    {";
-    wrapperLines << "        return;";
-    wrapperLines << "    }";
-    wrapperLines << "";
-    wrapperLines << "    //Define S-function input signals";
-    wrapperStream << "    if (!ssSetNumInputPorts(S," << nTotalInputsString << ")) return;				//Number of input signals\n";
-    int i,j;
-    size_t tot=0;
-    for(i=0; i<nMechanicQ; ++i)
-    {
-        j=tot+i*2;
-        wrapperStream << "    ssSetInputPortWidth(S, " << j << ", DYNAMICALLY_SIZED);		//Input signal " << j << "\n";
-        wrapperStream << "    ssSetInputPortDirectFeedThrough(S, " << j << ", 1);\n";
-        portLabelsStream << "port_label(''input''," << j+1 << ",''" << mechanicQComponents.at(i) << ".x''); ";
-        wrapperStream << "    ssSetInputPortWidth(S, " << j+1 << ", DYNAMICALLY_SIZED);		//Input signal " << j+1 << "\n";
-        wrapperStream << "    ssSetInputPortDirectFeedThrough(S, " << j+1 << ", 1);\n";
-        portLabelsStream << "port_label(''input''," << j+2 << ",''" << mechanicQComponents.at(i) << ".v''); ";
-    }
-    tot+=nMechanicQ*2;
-    for(i=0; i<nMechanicC; ++i)
-    {
-        j=tot+i*2;
-        wrapperStream << "    ssSetInputPortWidth(S, " << j << ", DYNAMICALLY_SIZED);		//Input signal " << j << "\n";
-        wrapperStream << "    ssSetInputPortDirectFeedThrough(S, " << j << ", 1);\n";
-        portLabelsStream << "port_label(''input''," << j+1 << ",''" << mechanicCComponents.at(i) << ".cx''); ";
-        wrapperStream << "    ssSetInputPortWidth(S, " << j+1 << ", DYNAMICALLY_SIZED);		//Input signal " << j+1 << "\n";
-        wrapperStream << "    ssSetInputPortDirectFeedThrough(S, " << j+1 << ", 1);\n";
-        portLabelsStream << "port_label(''input''," << j+2 << ",''" << mechanicCComponents.at(i) << ".Zx''); ";
-    }
-    tot+=nMechanicC*2;
-    for(i=0; i<nMechanicRotationalQ; ++i)
-    {
-        j=tot+i*2;
-        wrapperStream << "    ssSetInputPortWidth(S, " << j << ", DYNAMICALLY_SIZED);		//Input signal " << j << "\n";
-        wrapperStream << "    ssSetInputPortDirectFeedThrough(S, " << j << ", 1);\n";
-        portLabelsStream << "port_label(''input''," << j+1 << ",''" << mechanicRotationalQComponents.at(i) << ".a''); ";
-        wrapperStream << "    ssSetInputPortWidth(S, " << j+1 << ", DYNAMICALLY_SIZED);		//Input signal " << j+1 << "\n";
-        wrapperStream << "    ssSetInputPortDirectFeedThrough(S, " << j+1 << ", 1);\n";
-        portLabelsStream << "port_label(''input''," << j+2 << ",''" << mechanicRotationalQComponents.at(i) << ".w''); ";
-    }
-    tot+=nMechanicRotationalQ*2;
-    progressBar.setValue(5);
-    for(i=0; i<nMechanicRotationalC; ++i)
-    {
-        j=tot+i*2;
-        wrapperStream << "    ssSetInputPortWidth(S, " << j << ", DYNAMICALLY_SIZED);		//Input signal " << j << "\n";
-        wrapperStream << "    ssSetInputPortDirectFeedThrough(S, " << j << ", 1);\n";
-        portLabelsStream << "port_label(''input''," << j+1 << ",''" << mechanicRotationalCComponents.at(i) << ".cx''); ";
-        wrapperStream << "    ssSetInputPortWidth(S, " << j+1 << ", DYNAMICALLY_SIZED);		//Input signal " << j+1 << "\n";
-        wrapperStream << "    ssSetInputPortDirectFeedThrough(S, " << j+1 << ", 1);\n";
-        portLabelsStream << "port_label(''input''," << j+2 << ",''" << mechanicRotationalCComponents.at(i) << ".Zx''); ";
-    }
-    tot+=nMechanicRotationalC*2;
-    for(i=0; i<nInputs; ++i)
-    {
-        j=tot+i;
-        wrapperStream << "    ssSetInputPortWidth(S, " << j << ", DYNAMICALLY_SIZED);		//Input signal " << j << "\n";
-        wrapperStream << "    ssSetInputPortDirectFeedThrough(S, " << j << ", 1);\n";
-        portLabelsStream << "port_label(''input''," << j+1 << ",''" << inputComponents.at(i) << "''); ";
-    }
-    wrapperStream << "\n";
-    wrapperStream << "    //Define S-function output signals\n";
-    wrapperStream << "    if (!ssSetNumOutputPorts(S," + nTotalOutputsString + ")) return;				//Number of output signals\n";
-    tot=0;
-    for(i=0; i<nMechanicQ; ++i)
-    {
-        j=tot+i*2;
-        wrapperStream << "    ssSetOutputPortWidth(S, " << j << ", DYNAMICALLY_SIZED);		//Output signal " << j << "\n";
-        portLabelsStream << "port_label(''output''," << j+1 << ",''" << mechanicQComponents.at(i) << ".cx''); ";
-        wrapperStream << "    ssSetOutputPortWidth(S, " << j+1 << ", DYNAMICALLY_SIZED);		//Output signal " << j+1 << "\n";
-        portLabelsStream << "port_label(''output''," << j+2 << ",''" << mechanicQComponents.at(i) << ".Zx''); ";
-    }
-    tot+=nMechanicQ*2;
-    for(i=0; i<nMechanicC; ++i)
-    {
-        j=tot+i*2;
-        wrapperStream << "    ssSetOutputPortWidth(S, " << j << ", DYNAMICALLY_SIZED);		//Output signal " << j << "\n";
-        portLabelsStream << "port_label(''output''," << j+1 << ",''" << mechanicCComponents.at(i) << ".x''); ";
-        wrapperStream << "    ssSetOutputPortWidth(S, " << j+1 << ", DYNAMICALLY_SIZED);		//Output signal " << j+1 << "\n";
-        portLabelsStream << "port_label(''output''," << j+2 << ",''" << mechanicCComponents.at(i) << ".v''); ";
-    }
-    tot+=nMechanicC*2;
-    for(i=0; i<nMechanicRotationalQ; ++i)
-    {
-        j=tot+i*2;
-        wrapperStream << "    ssSetOutputPortWidth(S, " << j << ", DYNAMICALLY_SIZED);		//Output signal " << j << "\n";
-        portLabelsStream << "port_label(''output''," << j+1 << ",''" << mechanicRotationalQComponents.at(i) << ".Zx''); ";
-        wrapperStream << "    ssSetOutputPortWidth(S, " << j+1 << ", DYNAMICALLY_SIZED);		//Output signal " << j+1 << "\n";
-        portLabelsStream << "port_label(''output''," << j+2 << ",''" << mechanicRotationalQComponents.at(i) << ".cx''); ";
-    }
-    tot+=nMechanicRotationalQ*2;
-    for(i=0; i<nMechanicRotationalC; ++i)
-    {
-        j=tot+i*2;
-        wrapperStream << "    ssSetOutputPortWidth(S, " << j << ", DYNAMICALLY_SIZED);		//Output signal " << j << "\n";
-        portLabelsStream << "port_label(''output''," << j+1 << ",''" << mechanicRotationalCComponents.at(i) << ".a''); ";
-        wrapperStream << "    ssSetOutputPortWidth(S, " << j+1 << ", DYNAMICALLY_SIZED);		//Output signal " << j+1 << "\n";
-        portLabelsStream << "port_label(''output''," << j+2 << ",''" << mechanicRotationalCComponents.at(i) << ".w''); ";
-    }
-    tot+=nMechanicRotationalC*2;
-    for(i=0; i<nOutputs; ++i)
-    {
-        j=tot+i;
-        wrapperStream << "    ssSetOutputPortWidth(S, " << j << ", DYNAMICALLY_SIZED);		//Output signal " << j << "\n";
-        portLabelsStream << "port_label(''output''," << j+1 << ",''" << outputComponents.at(i) << "''); ";
-    }
-    j=nTotalOutputs-1;
-    wrapperStream << "    ssSetOutputPortWidth(S, " << j << ", DYNAMICALLY_SIZED);		//Debug output signal\n";
-    portLabelsStream << "port_label(''output''," << j+1 << ",''DEBUG'')'); \n";
-    wrapperStream << "    ssSetNumSampleTimes(S, 1);\n\n";
-    wrapperStream << "    ssSetOptions(S, SS_OPTION_EXCEPTION_FREE_CODE);\n";
-    wrapperStream << endl;
-
-    wrapperLines << "    std::vector<std::string> extLibs;";
-    wrapperLines << "    readExternalLibsFromTxtFile(\"externalLibs.txt\",extLibs);";
-    wrapperLines << "    for (size_t i=0; i<extLibs.size(); ++i)";
-    wrapperLines << "    {";
-    wrapperLines << "        gHopsanCore->loadExternalComponentLib(extLibs[i]);";
-    wrapperLines << "    }";
-    wrapperLines << "";
-
-    wrapperStream << "    std::string hmfFilePath = \"" << fileName << "\";\n";
-    wrapperLines << "    double startT, stopT;";
-    wrapperLines << "    gHopsanCore->loadHMFModel(hmfFilePath, startT, stopT);";
-    wrapperLines << "    if (pComponentSystem==0)";
-    wrapperLines << "    {";
-    wrapperStream << "        ssSetErrorStatus(S,\"Error could not open model: " << fileName << "\");" << endl;
-    wrapperLines << "        return;";
-    wrapperLines << "    }";
-    wrapperLines << "    startT = ssGetTStart(S);";
-    wrapperLines << "    stopT = ssGetTFinal(S);";
-    wrapperLines << "    pComponentSystem->setDesiredTimestep(0.001);";
-    if(!pDisablePortLabels->isChecked())
-    {
-        wrapperLines << "    mexCallMATLAB(0, 0, 0, 0, \"HopsanSimulinkPortLabels\");                              //Run the port label script";
-    }
-    wrapperLines << "}";
-    wrapperLines << "";
-
-    wrapperLines << "static void mdlInitializeSampleTimes(SimStruct *S)";
-    wrapperLines << "{";
-    wrapperLines << "    ssSetSampleTime(S, 0, 0.001);";
-    wrapperLines << "    ssSetOffsetTime(S, 0, 0.0);";
-    wrapperLines << "";
-    wrapperLines << "    //Update tunable parameters";
-    wrapperLines << "    const mxArray* in;";
-    wrapperLines << "    const char* c_str;";
-    wrapperLines << "    std::string str;";
-
-    /////////////////////////////////////////////////////////////////////
-
-    for(int p=0; p<tunableParameters.size(); ++p)
-    {
-    wrapperStream << "    in = mexGetVariable(\"caller\",\"" << tunableParameters[p] << "\");\n";
-    wrapperLines << "    if(in == NULL )";
-    wrapperLines << "    {";
-    wrapperStream << "        mexErrMsgTxt(\"Unable to read parameter \\\""+tunableParameters[p]+"\\\"!\");\n";
-    wrapperLines << "    	return;";
-    wrapperLines << "    }";
-    wrapperLines << "";
-    wrapperLines << "    c_str = (const char*)mxGetData(in);";
-    wrapperLines << "";
-    wrapperLines << "    str = \"\";";
-    wrapperLines << "    for(int i=0; i<mxGetNumberOfElements(in); ++i)";
-    wrapperLines << "    {";
-    wrapperLines << "    	str.append(c_str);";
-    wrapperLines << "    	c_str += 2*sizeof(char);";
-    wrapperLines << "    }";
-    wrapperLines << "";
-    wrapperStream << "    pComponentSystem->setParameterValue(\""+tunableParameters[p]+"\", str);\n";
-    }
-
-    /////////////////////////////////////////////////////////////////////
-
-    wrapperLines << "";
-    wrapperLines << "";
-    wrapperLines << "    isOkToSimulate = pComponentSystem->isSimulationOk();";
-    wrapperLines << "    if (isOkToSimulate)";
-    wrapperLines << "    {";
-    wrapperLines << "        pComponentSystem->initialize(0,10);";
-    wrapperLines << "    }";
-    wrapperLines << "    else";
-    wrapperLines << "    {";
-    wrapperLines << "        ssSetErrorStatus(S,\"Error isSimulationOk() returned False! Most likely some components could not be loaded or some connections could not be established.\");";
-    wrapperLines << "        return;";
-    wrapperLines << "    }";
-
-    wrapperLines << "}\n";
-
-    wrapperLines << "static void mdlOutputs(SimStruct *S, int_T tid)";
-    wrapperLines << "{";
-    wrapperLines << "    //S-function input signals";
-    wrapperLines << "    InputRealPtrsType uPtrs1 = ssGetInputPortRealSignalPtrs(S,0);\n";
-    wrapperLines << "    //S-function output signals";
-    for(int i=0; i<nTotalOutputs; ++i)
-    {
-        wrapperStream << "    real_T *y" << i << " = ssGetOutputPortRealSignal(S," << i << ");\n";
-    }
-    wrapperStream << "    int_T width1 = ssGetOutputPortWidth(S,0);\n";
-    wrapperStream << "\n";
-    wrapperStream << "    //Input parameters\n";
-    for(int i=0; i<nTotalInputs; ++i)
-    {
-        wrapperStream << "    double input" << i << " = (*uPtrs1[" << i << "]);\n";
-    }
-    wrapperStream << "\n";
-    wrapperStream << "    //Equations\n";
-    progressBar.setValue(6);
-    for(int i=0; i<nTotalOutputs; ++i)
-    {
-        wrapperStream << "    double output" << i << ";\n";
-    }
-    wrapperStream << "    output" << nTotalOutputs-1 << " = 0;		//Error code 0: Nothing is wrong\n";
-    wrapperStream << "    if(pComponentSystem == 0)\n";
-    wrapperStream << "    {\n";
-    wrapperStream << "      output" << nTotalOutputs-1 << " = -1;		//Error code -1: Component system failed to load\n";
-    wrapperStream << "    }\n";
-    //! @todo should remove this check from here
-    wrapperStream << "    else if(!pComponentSystem->isSimulationOk())\n";
-    wrapperStream << "    {\n";
-    wrapperStream << "      output" << nTotalOutputs-1 << " = -2;		//Error code -2: Simulation not possible due to errors in model\n";
-    wrapperStream << "    }\n";
-    wrapperStream << "    else\n";
-    wrapperStream << "    {\n";
-    tot = 0;
-    for(int i=0; i<nMechanicQ; ++i)
-    {
-        j = tot+i*2;
-        wrapperStream << "        pComponentSystem->getSubComponent(\"" << mechanicQComponents.at(i) << "\")->getPort(\"" << mechanicQPorts.at(i) << "\")->writeNode(2, input" << j << ");\n";
-        wrapperStream << "        pComponentSystem->getSubComponent(\"" << mechanicQComponents.at(i) << "\")->getPort(\"" << mechanicQPorts.at(i) << "\")->writeNode(0, input" << j+1 << ");\n";
-    }
-    tot+=nMechanicQ*2;
-    for(int i=0; i<nMechanicC; ++i)
-    {
-        j = tot+i*2;
-        wrapperStream << "        pComponentSystem->getSubComponent(\"" << mechanicCComponents.at(i) << "\")->getPort(\"" << mechanicCPorts.at(i) << "\")->writeNode(3, input" << j << ");\n";
-        wrapperStream << "        pComponentSystem->getSubComponent(\"" << mechanicCComponents.at(i) << "\")->getPort(\"" << mechanicCPorts.at(i) << "\")->writeNode(4, input" << j+1 << ");\n";
-    }
-    tot+=nMechanicC*2;
-    for(int i=0; i<nMechanicRotationalQ; ++i)
-    {
-        j = tot+i*2;
-        wrapperStream << "        pComponentSystem->getSubComponent(\"" << mechanicRotationalQComponents.at(i) << "\")->getPort(\"" << mechanicRotationalQPorts.at(i) << "\")->writeNode(2, input" << j << ");\n";
-        wrapperStream << "        pComponentSystem->getSubComponent(\"" << mechanicRotationalQComponents.at(i) << "\")->getPort(\"" << mechanicRotationalQPorts.at(i) << "\")->writeNode(0, input" << j+1 << ");\n";
-    }
-    tot+=nMechanicRotationalQ*2;
-    for(int i=0; i<nMechanicRotationalC; ++i)
-    {
-        j = tot+i*2;
-        wrapperStream << "        pComponentSystem->getSubComponent(\"" << mechanicRotationalCComponents.at(i) << "\")->getPort(\"" << mechanicRotationalCPorts.at(i) << "\")->writeNode(3, input" << j << ");\n";
-        wrapperStream << "        pComponentSystem->getSubComponent(\"" << mechanicRotationalCComponents.at(i) << "\")->getPort(\"" << mechanicRotationalCPorts.at(i) << "\")->writeNode(4, input" << j+1 << ");\n";
-    }
-    tot+=nMechanicRotationalC*2;
-    for(int i=0; i<nInputs; ++i)
-    {
-        j = tot+i;
-        wrapperStream << "        pComponentSystem->getSubComponent(\"" << inputComponents.at(i) << "\")->getPort(\"" << inputPorts.at(i) << "\")->writeNode(0, input" << i << ");\n";
-    }
-    wrapperStream << "        double timestep = pComponentSystem->getDesiredTimeStep();\n";
-    wrapperStream << "        double time = ssGetT(S);\n";
-    wrapperStream << "        pComponentSystem->simulate(time, time+timestep);\n";
-    wrapperStream << "\n";
-    tot = 0;
-    for(int i=0; i<nMechanicQ; ++i)
-    {
-        j = tot+i*2;
-        wrapperStream << "        output" << j << " = pComponentSystem->getSubComponent(\"" << mechanicQComponents.at(i) << "\")->getPort(\"" << mechanicQPorts.at(i) << "\")->readNode(3);\n";
-        wrapperStream << "        output" << j+1 << " = pComponentSystem->getSubComponent(\"" << mechanicQComponents.at(i) << "\")->getPort(\"" << mechanicQPorts.at(i) << "\")->readNode(4);\n";
-    }
-    tot+=nMechanicQ*2;
-    for(int i=0; i<nMechanicC; ++i)
-    {
-        j = tot+i*2;
-        wrapperStream << "        output" << j << " = pComponentSystem->getSubComponent(\"" << mechanicCComponents.at(i) << "\")->getPort(\"" << mechanicCPorts.at(i) << "\")->readNode(2);\n";
-        wrapperStream << "        output" << j+1 << " = pComponentSystem->getSubComponent(\"" << mechanicCComponents.at(i) << "\")->getPort(\"" << mechanicCPorts.at(i) << "\")->readNode(0);\n";
-    }
-    tot+=nMechanicC*2;
-    for(int i=0; i<nMechanicRotationalQ; ++i)
-    {
-        j = tot+i*2;
-        wrapperStream << "        output" << j << " = pComponentSystem->getSubComponent(\"" << mechanicRotationalQComponents.at(i) << "\")->getPort(\"" << mechanicRotationalQPorts.at(i) << "\")->readNode(3);\n";
-        wrapperStream << "        output" << j+1 << " = pComponentSystem->getSubComponent(\"" << mechanicRotationalQComponents.at(i) << "\")->getPort(\"" << mechanicRotationalQPorts.at(i) << "\")->readNode(4);\n";
-    }
-    tot+=nMechanicRotationalQ*2;
-    for(int i=0; i<nMechanicRotationalC; ++i)
-    {
-        j = tot+i*2;
-        wrapperStream << "        output" << j << " = pComponentSystem->getSubComponent(\"" << mechanicRotationalCComponents.at(i) << "\")->getPort(\"" << mechanicRotationalCPorts.at(i) << "\")->readNode(2);\n";
-        wrapperStream << "        output" << j+1 << " = pComponentSystem->getSubComponent(\"" << mechanicRotationalCComponents.at(i) << "\")->getPort(\"" << mechanicRotationalCPorts.at(i) << "\")->readNode(0);\n";
-    }
-    tot+=nMechanicRotationalC*2;
-    for(int i=0; i<nOutputs; ++i)
-    {
-        j = tot+i;
-        wrapperStream << "        output" << j << " = pComponentSystem->getSubComponent(\"" << outputComponents.at(i) << "\")->getPort(\"" << outputPorts.at(i) << "\")->readNode(0);\n";
-    }
-    wrapperStream << "    }\n";
-    wrapperStream << "\n";
-    wrapperStream << "    //Output parameters\n";
-    for(int i=0; i<nTotalOutputs; ++i)
-    {
-        wrapperStream << "    *y" << i << " = output" << i << ";\n";
-    }
-    wrapperStream << "}\n";
-    wrapperStream << "\n";
-    wrapperStream << "static void mdlTerminate(SimStruct *S){}\n";
-    wrapperStream << "\n";
-    wrapperStream << "\n";
-    wrapperStream << "/* Simulink/Simulink Coder Interfaces */\n";
-    wrapperStream << "#ifdef MATLAB_MEX_FILE /* Is this file being compiled as a MEX-file? */\n";
-    wrapperStream << "#include \"simulink.c\" /* MEX-file interface mechanism */\n";
-    wrapperStream << "#else\n";
-    wrapperStream << "#include \"cg_sfun.h\" /* Code generation registration function */\n";
-    wrapperStream << "#endif\n";
-    wrapperStream << "\n";
-    wrapperFile.close();
-
-    portLabelsStream << "set_param(gcb,'BackgroundColor','[0.721569, 0.858824, 0.905882]')\n";
-    portLabelsStream << "set_param(gcb,'Name','" << this->getName() << "')\n";
-    portLabelsStream << "set_param(gcb,'MaskPrompts',{";
-    for(int p=0; p<tunableParameters.size(); ++p)
-    {
-        portLabelsStream << "'"+tunableParameters[p]+"'";
-        if(p<tunableParameters.size()-1)
-            portLabelsStream << ",";
-    }
-    portLabelsStream << "})\n";
-    portLabelsStream << "set_param(gcb,'MaskVariables','";
-    for(int p=0; p<tunableParameters.size(); ++p)
-    {
-        portLabelsStream << tunableParameters[p]+"=&"+QString().setNum(p+1)+";";
-    }
-    portLabelsStream << "')\n";
-
-    portLabelsFile.close();
-
-    progressBar.setValue(7);
-    progressBar.setLabelText("Writing HopsanSimulinkCompile.m");
+//    progressBar.setValue(4);
+//    progressBar.setLabelText("Writing HopsanSimulink.cpp");
 
 
-    QTextStream compileStream(&compileFile);
-#ifdef WIN32
-    //compileStream << "%mex -DWIN32 -DSTATICCORE HopsanSimulink.cpp /include/Component.cc /include/ComponentSystem.cc /include/HopsanEssentials.cc /include/Node.cc /include/Port.cc /include/Components/Components.cc /include/CoreUtilities/HmfLoader.cc /include/CoreUtilities/HopsanCoreMessageHandler.cc /include/CoreUtilities/LoadExternal.cc /include/Nodes/Nodes.cc /include/ComponentUtilities/AuxiliarySimulationFunctions.cpp /include/ComponentUtilities/Delay.cc /include/ComponentUtilities/DoubleIntegratorWithDamping.cpp /include/ComponentUtilities/FirstOrderFilter.cc /include/ComponentUtilities/Integrator.cc /include/ComponentUtilities/IntegratorLimited.cc /include/ComponentUtilities/ludcmp.cc /include/ComponentUtilities/matrix.cc /include/ComponentUtilities/SecondOrderFilter.cc /include/ComponentUtilities/SecondOrderTransferFunction.cc /include/ComponentUtilities/TurbulentFlowFunction.cc /include/ComponentUtilities/ValveHysteresis.cc\n";
-    compileStream << "mex -DWIN32 -DSTATICCORE -L./ -Iinclude -lHopsanCore HopsanSimulink.cpp\n";
+//    //How to access dialog parameters:
+//    //double par1 = (*mxGetPr(ssGetSFcnParam(S, 0)));
 
-    progressBar.setValue(8);
-    progressBar.setLabelText("Copying Visual Studio binaries");
+//    QTextStream wrapperStream(&wrapperFile);
+//    QTextLineStream wrapperLines(wrapperStream);
+
+//    //! @todo writing the copyright notice should be a subfunction as it may be used in many places, preferably it should read from file, so that we do not forget to change in many places on changes
+//    wrapperLines << "/*-----------------------------------------------------------------------------";
+//    wrapperLines << "This source file is part of Hopsan NG";
+//    wrapperLines << "";
+//    wrapperLines << "Copyright (c) 2011";
+//    wrapperLines << "Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,";
+//    wrapperLines << "Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack";
+//    wrapperLines << "";
+//    wrapperLines << "This file is provided \"as is\", with no guarantee or warranty for the";
+//    wrapperLines << "functionality or reliability of the contents. All contents in this file is";
+//    wrapperLines << "the original work of the copyright holders at the Division of Fluid and";
+//    wrapperLines << "Mechatronic Systems (Flumes) at Linköping University. Modifying, using or";
+//    wrapperLines << "redistributing any part of this file is prohibited without explicit";
+//    wrapperLines << "permission from the copyright holders.";
+//    wrapperLines << "-----------------------------------------------------------------------------*/";
+//    wrapperLines << "";
+//    wrapperLines << "#define S_FUNCTION_NAME HopsanSimulink";
+//    wrapperLines << "#define S_FUNCTION_LEVEL 2";
+//    wrapperLines << "";
+//    wrapperLines << "#include <sstream>";
+//    wrapperLines << "#include <string>";
+//    wrapperLines << "#include <vector>";
+//    wrapperLines << "#include <fstream>";
+//    wrapperLines << "#include \"simstruc.h\"";
+//    wrapperLines << "#include \"include/HopsanCore.h\"";
+//    wrapperLines << "using namespace hopsan;";
+//    wrapperLines << "";
+
+//    //! @todo need to be able to error report if file not fond, or maybe not, if no external libs used you dont want error message
+//    wrapperLines << "void readExternalLibsFromTxtFile(const std::string filePath, std::vector<std::string> &rExtLibFileNames)";
+//    wrapperLines << "{";
+//    wrapperLines << "    rExtLibFileNames.clear();";
+//    wrapperLines << "    std::string line;";
+//    wrapperLines << "    std::ifstream file;";
+//    wrapperLines << "    file.open(filePath.c_str());";
+//    wrapperLines << "    if ( file.is_open() )";
+//    wrapperLines << "    {";
+//    wrapperLines << "        while ( file.good() )";
+//    wrapperLines << "        {";
+//    wrapperLines << "            getline(file, line);";
+//    wrapperLines << "            if ((*line.begin() != '#') && !line.empty())";
+//    wrapperLines << "            {";
+//    wrapperLines << "                rExtLibFileNames.push_back(line);";
+//    wrapperLines << "            }";
+//    wrapperLines << "       }";
+//    wrapperLines << "        file.close();";
+//    wrapperLines << "    }";
+//    wrapperLines << "    else";
+//    wrapperLines << "    {";
+//    wrapperLines << "        //cout << \"error, could not open file: \" << filePath << endl;";
+//    wrapperLines << "    }";
+//    wrapperLines << "}";
+//    wrapperLines << "";
+
+//    wrapperLines << "HopsanEssentials gHopsanCore";
+//    wrapperLines << "ComponentSystem* pComponentSystem;";
+//    wrapperLines << "bool isOkToSimulate = false;";
+//    wrapperLines << "";
+
+//    wrapperLines << "static void mdlInitializeSizes(SimStruct *S)";
+//    wrapperLines << "{";
+//    wrapperLines << "    ssSetNumSFcnParams(S, 0);";
+//    wrapperLines << "    if (ssGetNumSFcnParams(S) != ssGetSFcnParamsCount(S))";
+//    wrapperLines << "    {";
+//    wrapperLines << "        return;";
+//    wrapperLines << "    }";
+//    wrapperLines << "";
+//    wrapperLines << "    //Define S-function input signals";
+//    wrapperStream << "    if (!ssSetNumInputPorts(S," << nTotalInputsString << ")) return;				//Number of input signals\n";
+//    int i,j;
+//    size_t tot=0;
+//    for(i=0; i<nMechanicQ; ++i)
+//    {
+//        j=tot+i*2;
+//        wrapperStream << "    ssSetInputPortWidth(S, " << j << ", DYNAMICALLY_SIZED);		//Input signal " << j << "\n";
+//        wrapperStream << "    ssSetInputPortDirectFeedThrough(S, " << j << ", 1);\n";
+//        portLabelsStream << "port_label(''input''," << j+1 << ",''" << mechanicQComponents.at(i) << ".x''); ";
+//        wrapperStream << "    ssSetInputPortWidth(S, " << j+1 << ", DYNAMICALLY_SIZED);		//Input signal " << j+1 << "\n";
+//        wrapperStream << "    ssSetInputPortDirectFeedThrough(S, " << j+1 << ", 1);\n";
+//        portLabelsStream << "port_label(''input''," << j+2 << ",''" << mechanicQComponents.at(i) << ".v''); ";
+//    }
+//    tot+=nMechanicQ*2;
+//    for(i=0; i<nMechanicC; ++i)
+//    {
+//        j=tot+i*2;
+//        wrapperStream << "    ssSetInputPortWidth(S, " << j << ", DYNAMICALLY_SIZED);		//Input signal " << j << "\n";
+//        wrapperStream << "    ssSetInputPortDirectFeedThrough(S, " << j << ", 1);\n";
+//        portLabelsStream << "port_label(''input''," << j+1 << ",''" << mechanicCComponents.at(i) << ".cx''); ";
+//        wrapperStream << "    ssSetInputPortWidth(S, " << j+1 << ", DYNAMICALLY_SIZED);		//Input signal " << j+1 << "\n";
+//        wrapperStream << "    ssSetInputPortDirectFeedThrough(S, " << j+1 << ", 1);\n";
+//        portLabelsStream << "port_label(''input''," << j+2 << ",''" << mechanicCComponents.at(i) << ".Zx''); ";
+//    }
+//    tot+=nMechanicC*2;
+//    for(i=0; i<nMechanicRotationalQ; ++i)
+//    {
+//        j=tot+i*2;
+//        wrapperStream << "    ssSetInputPortWidth(S, " << j << ", DYNAMICALLY_SIZED);		//Input signal " << j << "\n";
+//        wrapperStream << "    ssSetInputPortDirectFeedThrough(S, " << j << ", 1);\n";
+//        portLabelsStream << "port_label(''input''," << j+1 << ",''" << mechanicRotationalQComponents.at(i) << ".a''); ";
+//        wrapperStream << "    ssSetInputPortWidth(S, " << j+1 << ", DYNAMICALLY_SIZED);		//Input signal " << j+1 << "\n";
+//        wrapperStream << "    ssSetInputPortDirectFeedThrough(S, " << j+1 << ", 1);\n";
+//        portLabelsStream << "port_label(''input''," << j+2 << ",''" << mechanicRotationalQComponents.at(i) << ".w''); ";
+//    }
+//    tot+=nMechanicRotationalQ*2;
+//    progressBar.setValue(5);
+//    for(i=0; i<nMechanicRotationalC; ++i)
+//    {
+//        j=tot+i*2;
+//        wrapperStream << "    ssSetInputPortWidth(S, " << j << ", DYNAMICALLY_SIZED);		//Input signal " << j << "\n";
+//        wrapperStream << "    ssSetInputPortDirectFeedThrough(S, " << j << ", 1);\n";
+//        portLabelsStream << "port_label(''input''," << j+1 << ",''" << mechanicRotationalCComponents.at(i) << ".cx''); ";
+//        wrapperStream << "    ssSetInputPortWidth(S, " << j+1 << ", DYNAMICALLY_SIZED);		//Input signal " << j+1 << "\n";
+//        wrapperStream << "    ssSetInputPortDirectFeedThrough(S, " << j+1 << ", 1);\n";
+//        portLabelsStream << "port_label(''input''," << j+2 << ",''" << mechanicRotationalCComponents.at(i) << ".Zx''); ";
+//    }
+//    tot+=nMechanicRotationalC*2;
+//    for(i=0; i<nInputs; ++i)
+//    {
+//        j=tot+i;
+//        wrapperStream << "    ssSetInputPortWidth(S, " << j << ", DYNAMICALLY_SIZED);		//Input signal " << j << "\n";
+//        wrapperStream << "    ssSetInputPortDirectFeedThrough(S, " << j << ", 1);\n";
+//        portLabelsStream << "port_label(''input''," << j+1 << ",''" << inputComponents.at(i) << "''); ";
+//    }
+//    wrapperStream << "\n";
+//    wrapperStream << "    //Define S-function output signals\n";
+//    wrapperStream << "    if (!ssSetNumOutputPorts(S," + nTotalOutputsString + ")) return;				//Number of output signals\n";
+//    tot=0;
+//    for(i=0; i<nMechanicQ; ++i)
+//    {
+//        j=tot+i*2;
+//        wrapperStream << "    ssSetOutputPortWidth(S, " << j << ", DYNAMICALLY_SIZED);		//Output signal " << j << "\n";
+//        portLabelsStream << "port_label(''output''," << j+1 << ",''" << mechanicQComponents.at(i) << ".cx''); ";
+//        wrapperStream << "    ssSetOutputPortWidth(S, " << j+1 << ", DYNAMICALLY_SIZED);		//Output signal " << j+1 << "\n";
+//        portLabelsStream << "port_label(''output''," << j+2 << ",''" << mechanicQComponents.at(i) << ".Zx''); ";
+//    }
+//    tot+=nMechanicQ*2;
+//    for(i=0; i<nMechanicC; ++i)
+//    {
+//        j=tot+i*2;
+//        wrapperStream << "    ssSetOutputPortWidth(S, " << j << ", DYNAMICALLY_SIZED);		//Output signal " << j << "\n";
+//        portLabelsStream << "port_label(''output''," << j+1 << ",''" << mechanicCComponents.at(i) << ".x''); ";
+//        wrapperStream << "    ssSetOutputPortWidth(S, " << j+1 << ", DYNAMICALLY_SIZED);		//Output signal " << j+1 << "\n";
+//        portLabelsStream << "port_label(''output''," << j+2 << ",''" << mechanicCComponents.at(i) << ".v''); ";
+//    }
+//    tot+=nMechanicC*2;
+//    for(i=0; i<nMechanicRotationalQ; ++i)
+//    {
+//        j=tot+i*2;
+//        wrapperStream << "    ssSetOutputPortWidth(S, " << j << ", DYNAMICALLY_SIZED);		//Output signal " << j << "\n";
+//        portLabelsStream << "port_label(''output''," << j+1 << ",''" << mechanicRotationalQComponents.at(i) << ".Zx''); ";
+//        wrapperStream << "    ssSetOutputPortWidth(S, " << j+1 << ", DYNAMICALLY_SIZED);		//Output signal " << j+1 << "\n";
+//        portLabelsStream << "port_label(''output''," << j+2 << ",''" << mechanicRotationalQComponents.at(i) << ".cx''); ";
+//    }
+//    tot+=nMechanicRotationalQ*2;
+//    for(i=0; i<nMechanicRotationalC; ++i)
+//    {
+//        j=tot+i*2;
+//        wrapperStream << "    ssSetOutputPortWidth(S, " << j << ", DYNAMICALLY_SIZED);		//Output signal " << j << "\n";
+//        portLabelsStream << "port_label(''output''," << j+1 << ",''" << mechanicRotationalCComponents.at(i) << ".a''); ";
+//        wrapperStream << "    ssSetOutputPortWidth(S, " << j+1 << ", DYNAMICALLY_SIZED);		//Output signal " << j+1 << "\n";
+//        portLabelsStream << "port_label(''output''," << j+2 << ",''" << mechanicRotationalCComponents.at(i) << ".w''); ";
+//    }
+//    tot+=nMechanicRotationalC*2;
+//    for(i=0; i<nOutputs; ++i)
+//    {
+//        j=tot+i;
+//        wrapperStream << "    ssSetOutputPortWidth(S, " << j << ", DYNAMICALLY_SIZED);		//Output signal " << j << "\n";
+//        portLabelsStream << "port_label(''output''," << j+1 << ",''" << outputComponents.at(i) << "''); ";
+//    }
+//    j=nTotalOutputs-1;
+//    wrapperStream << "    ssSetOutputPortWidth(S, " << j << ", DYNAMICALLY_SIZED);		//Debug output signal\n";
+//    portLabelsStream << "port_label(''output''," << j+1 << ",''DEBUG'')'); \n";
+//    wrapperStream << "    ssSetNumSampleTimes(S, 1);\n\n";
+//    wrapperStream << "    ssSetOptions(S, SS_OPTION_EXCEPTION_FREE_CODE);\n";
+//    wrapperStream << endl;
+
+//    wrapperLines << "    std::vector<std::string> extLibs;";
+//    wrapperLines << "    readExternalLibsFromTxtFile(\"externalLibs.txt\",extLibs);";
+//    wrapperLines << "    for (size_t i=0; i<extLibs.size(); ++i)";
+//    wrapperLines << "    {";
+//    wrapperLines << "        gHopsanCore->loadExternalComponentLib(extLibs[i]);";
+//    wrapperLines << "    }";
+//    wrapperLines << "";
+
+//    wrapperStream << "    std::string hmfFilePath = \"" << fileName << "\";\n";
+//    wrapperLines << "    double startT, stopT;";
+//    wrapperLines << "    gHopsanCore->loadHMFModel(hmfFilePath, startT, stopT);";
+//    wrapperLines << "    if (pComponentSystem==0)";
+//    wrapperLines << "    {";
+//    wrapperStream << "        ssSetErrorStatus(S,\"Error could not open model: " << fileName << "\");" << endl;
+//    wrapperLines << "        return;";
+//    wrapperLines << "    }";
+//    wrapperLines << "    startT = ssGetTStart(S);";
+//    wrapperLines << "    stopT = ssGetTFinal(S);";
+//    wrapperLines << "    pComponentSystem->setDesiredTimestep(0.001);";
+//    if(!pDisablePortLabels->isChecked())
+//    {
+//        wrapperLines << "    mexCallMATLAB(0, 0, 0, 0, \"HopsanSimulinkPortLabels\");                              //Run the port label script";
+//    }
+//    wrapperLines << "}";
+//    wrapperLines << "";
+
+//    wrapperLines << "static void mdlInitializeSampleTimes(SimStruct *S)";
+//    wrapperLines << "{";
+//    wrapperLines << "    ssSetSampleTime(S, 0, 0.001);";
+//    wrapperLines << "    ssSetOffsetTime(S, 0, 0.0);";
+//    wrapperLines << "";
+//    wrapperLines << "    //Update tunable parameters";
+//    wrapperLines << "    const mxArray* in;";
+//    wrapperLines << "    const char* c_str;";
+//    wrapperLines << "    std::string str;";
+
+//    /////////////////////////////////////////////////////////////////////
+
+//    for(int p=0; p<tunableParameters.size(); ++p)
+//    {
+//    wrapperStream << "    in = mexGetVariable(\"caller\",\"" << tunableParameters[p] << "\");\n";
+//    wrapperLines << "    if(in == NULL )";
+//    wrapperLines << "    {";
+//    wrapperStream << "        mexErrMsgTxt(\"Unable to read parameter \\\""+tunableParameters[p]+"\\\"!\");\n";
+//    wrapperLines << "    	return;";
+//    wrapperLines << "    }";
+//    wrapperLines << "";
+//    wrapperLines << "    c_str = (const char*)mxGetData(in);";
+//    wrapperLines << "";
+//    wrapperLines << "    str = \"\";";
+//    wrapperLines << "    for(int i=0; i<mxGetNumberOfElements(in); ++i)";
+//    wrapperLines << "    {";
+//    wrapperLines << "    	str.append(c_str);";
+//    wrapperLines << "    	c_str += 2*sizeof(char);";
+//    wrapperLines << "    }";
+//    wrapperLines << "";
+//    wrapperStream << "    pComponentSystem->setParameterValue(\""+tunableParameters[p]+"\", str);\n";
+//    }
+
+//    /////////////////////////////////////////////////////////////////////
+
+//    wrapperLines << "";
+//    wrapperLines << "";
+//    wrapperLines << "    isOkToSimulate = pComponentSystem->isSimulationOk();";
+//    wrapperLines << "    if (isOkToSimulate)";
+//    wrapperLines << "    {";
+//    wrapperLines << "        pComponentSystem->initialize(0,10);";
+//    wrapperLines << "    }";
+//    wrapperLines << "    else";
+//    wrapperLines << "    {";
+//    wrapperLines << "        ssSetErrorStatus(S,\"Error isSimulationOk() returned False! Most likely some components could not be loaded or some connections could not be established.\");";
+//    wrapperLines << "        return;";
+//    wrapperLines << "    }";
+
+//    wrapperLines << "}\n";
+
+//    wrapperLines << "static void mdlOutputs(SimStruct *S, int_T tid)";
+//    wrapperLines << "{";
+//    wrapperLines << "    //S-function input signals";
+//    wrapperLines << "    InputRealPtrsType uPtrs1 = ssGetInputPortRealSignalPtrs(S,0);\n";
+//    wrapperLines << "    //S-function output signals";
+//    for(int i=0; i<nTotalOutputs; ++i)
+//    {
+//        wrapperStream << "    real_T *y" << i << " = ssGetOutputPortRealSignal(S," << i << ");\n";
+//    }
+//    wrapperStream << "    int_T width1 = ssGetOutputPortWidth(S,0);\n";
+//    wrapperStream << "\n";
+//    wrapperStream << "    //Input parameters\n";
+//    for(int i=0; i<nTotalInputs; ++i)
+//    {
+//        wrapperStream << "    double input" << i << " = (*uPtrs1[" << i << "]);\n";
+//    }
+//    wrapperStream << "\n";
+//    wrapperStream << "    //Equations\n";
+//    progressBar.setValue(6);
+//    for(int i=0; i<nTotalOutputs; ++i)
+//    {
+//        wrapperStream << "    double output" << i << ";\n";
+//    }
+//    wrapperStream << "    output" << nTotalOutputs-1 << " = 0;		//Error code 0: Nothing is wrong\n";
+//    wrapperStream << "    if(pComponentSystem == 0)\n";
+//    wrapperStream << "    {\n";
+//    wrapperStream << "      output" << nTotalOutputs-1 << " = -1;		//Error code -1: Component system failed to load\n";
+//    wrapperStream << "    }\n";
+//    //! @todo should remove this check from here
+//    wrapperStream << "    else if(!pComponentSystem->isSimulationOk())\n";
+//    wrapperStream << "    {\n";
+//    wrapperStream << "      output" << nTotalOutputs-1 << " = -2;		//Error code -2: Simulation not possible due to errors in model\n";
+//    wrapperStream << "    }\n";
+//    wrapperStream << "    else\n";
+//    wrapperStream << "    {\n";
+//    tot = 0;
+//    for(int i=0; i<nMechanicQ; ++i)
+//    {
+//        j = tot+i*2;
+//        wrapperStream << "        pComponentSystem->getSubComponent(\"" << mechanicQComponents.at(i) << "\")->getPort(\"" << mechanicQPorts.at(i) << "\")->writeNode(2, input" << j << ");\n";
+//        wrapperStream << "        pComponentSystem->getSubComponent(\"" << mechanicQComponents.at(i) << "\")->getPort(\"" << mechanicQPorts.at(i) << "\")->writeNode(0, input" << j+1 << ");\n";
+//    }
+//    tot+=nMechanicQ*2;
+//    for(int i=0; i<nMechanicC; ++i)
+//    {
+//        j = tot+i*2;
+//        wrapperStream << "        pComponentSystem->getSubComponent(\"" << mechanicCComponents.at(i) << "\")->getPort(\"" << mechanicCPorts.at(i) << "\")->writeNode(3, input" << j << ");\n";
+//        wrapperStream << "        pComponentSystem->getSubComponent(\"" << mechanicCComponents.at(i) << "\")->getPort(\"" << mechanicCPorts.at(i) << "\")->writeNode(4, input" << j+1 << ");\n";
+//    }
+//    tot+=nMechanicC*2;
+//    for(int i=0; i<nMechanicRotationalQ; ++i)
+//    {
+//        j = tot+i*2;
+//        wrapperStream << "        pComponentSystem->getSubComponent(\"" << mechanicRotationalQComponents.at(i) << "\")->getPort(\"" << mechanicRotationalQPorts.at(i) << "\")->writeNode(2, input" << j << ");\n";
+//        wrapperStream << "        pComponentSystem->getSubComponent(\"" << mechanicRotationalQComponents.at(i) << "\")->getPort(\"" << mechanicRotationalQPorts.at(i) << "\")->writeNode(0, input" << j+1 << ");\n";
+//    }
+//    tot+=nMechanicRotationalQ*2;
+//    for(int i=0; i<nMechanicRotationalC; ++i)
+//    {
+//        j = tot+i*2;
+//        wrapperStream << "        pComponentSystem->getSubComponent(\"" << mechanicRotationalCComponents.at(i) << "\")->getPort(\"" << mechanicRotationalCPorts.at(i) << "\")->writeNode(3, input" << j << ");\n";
+//        wrapperStream << "        pComponentSystem->getSubComponent(\"" << mechanicRotationalCComponents.at(i) << "\")->getPort(\"" << mechanicRotationalCPorts.at(i) << "\")->writeNode(4, input" << j+1 << ");\n";
+//    }
+//    tot+=nMechanicRotationalC*2;
+//    for(int i=0; i<nInputs; ++i)
+//    {
+//        j = tot+i;
+//        wrapperStream << "        pComponentSystem->getSubComponent(\"" << inputComponents.at(i) << "\")->getPort(\"" << inputPorts.at(i) << "\")->writeNode(0, input" << i << ");\n";
+//    }
+//    wrapperStream << "        double timestep = pComponentSystem->getDesiredTimeStep();\n";
+//    wrapperStream << "        double time = ssGetT(S);\n";
+//    wrapperStream << "        pComponentSystem->simulate(time, time+timestep);\n";
+//    wrapperStream << "\n";
+//    tot = 0;
+//    for(int i=0; i<nMechanicQ; ++i)
+//    {
+//        j = tot+i*2;
+//        wrapperStream << "        output" << j << " = pComponentSystem->getSubComponent(\"" << mechanicQComponents.at(i) << "\")->getPort(\"" << mechanicQPorts.at(i) << "\")->readNode(3);\n";
+//        wrapperStream << "        output" << j+1 << " = pComponentSystem->getSubComponent(\"" << mechanicQComponents.at(i) << "\")->getPort(\"" << mechanicQPorts.at(i) << "\")->readNode(4);\n";
+//    }
+//    tot+=nMechanicQ*2;
+//    for(int i=0; i<nMechanicC; ++i)
+//    {
+//        j = tot+i*2;
+//        wrapperStream << "        output" << j << " = pComponentSystem->getSubComponent(\"" << mechanicCComponents.at(i) << "\")->getPort(\"" << mechanicCPorts.at(i) << "\")->readNode(2);\n";
+//        wrapperStream << "        output" << j+1 << " = pComponentSystem->getSubComponent(\"" << mechanicCComponents.at(i) << "\")->getPort(\"" << mechanicCPorts.at(i) << "\")->readNode(0);\n";
+//    }
+//    tot+=nMechanicC*2;
+//    for(int i=0; i<nMechanicRotationalQ; ++i)
+//    {
+//        j = tot+i*2;
+//        wrapperStream << "        output" << j << " = pComponentSystem->getSubComponent(\"" << mechanicRotationalQComponents.at(i) << "\")->getPort(\"" << mechanicRotationalQPorts.at(i) << "\")->readNode(3);\n";
+//        wrapperStream << "        output" << j+1 << " = pComponentSystem->getSubComponent(\"" << mechanicRotationalQComponents.at(i) << "\")->getPort(\"" << mechanicRotationalQPorts.at(i) << "\")->readNode(4);\n";
+//    }
+//    tot+=nMechanicRotationalQ*2;
+//    for(int i=0; i<nMechanicRotationalC; ++i)
+//    {
+//        j = tot+i*2;
+//        wrapperStream << "        output" << j << " = pComponentSystem->getSubComponent(\"" << mechanicRotationalCComponents.at(i) << "\")->getPort(\"" << mechanicRotationalCPorts.at(i) << "\")->readNode(2);\n";
+//        wrapperStream << "        output" << j+1 << " = pComponentSystem->getSubComponent(\"" << mechanicRotationalCComponents.at(i) << "\")->getPort(\"" << mechanicRotationalCPorts.at(i) << "\")->readNode(0);\n";
+//    }
+//    tot+=nMechanicRotationalC*2;
+//    for(int i=0; i<nOutputs; ++i)
+//    {
+//        j = tot+i;
+//        wrapperStream << "        output" << j << " = pComponentSystem->getSubComponent(\"" << outputComponents.at(i) << "\")->getPort(\"" << outputPorts.at(i) << "\")->readNode(0);\n";
+//    }
+//    wrapperStream << "    }\n";
+//    wrapperStream << "\n";
+//    wrapperStream << "    //Output parameters\n";
+//    for(int i=0; i<nTotalOutputs; ++i)
+//    {
+//        wrapperStream << "    *y" << i << " = output" << i << ";\n";
+//    }
+//    wrapperStream << "}\n";
+//    wrapperStream << "\n";
+//    wrapperStream << "static void mdlTerminate(SimStruct *S){}\n";
+//    wrapperStream << "\n";
+//    wrapperStream << "\n";
+//    wrapperStream << "/* Simulink/Simulink Coder Interfaces */\n";
+//    wrapperStream << "#ifdef MATLAB_MEX_FILE /* Is this file being compiled as a MEX-file? */\n";
+//    wrapperStream << "#include \"simulink.c\" /* MEX-file interface mechanism */\n";
+//    wrapperStream << "#else\n";
+//    wrapperStream << "#include \"cg_sfun.h\" /* Code generation registration function */\n";
+//    wrapperStream << "#endif\n";
+//    wrapperStream << "\n";
+//    wrapperFile.close();
+
+//    portLabelsStream << "set_param(gcb,'BackgroundColor','[0.721569, 0.858824, 0.905882]')\n";
+//    portLabelsStream << "set_param(gcb,'Name','" << this->getName() << "')\n";
+//    portLabelsStream << "set_param(gcb,'MaskPrompts',{";
+//    for(int p=0; p<tunableParameters.size(); ++p)
+//    {
+//        portLabelsStream << "'"+tunableParameters[p]+"'";
+//        if(p<tunableParameters.size()-1)
+//            portLabelsStream << ",";
+//    }
+//    portLabelsStream << "})\n";
+//    portLabelsStream << "set_param(gcb,'MaskVariables','";
+//    for(int p=0; p<tunableParameters.size(); ++p)
+//    {
+//        portLabelsStream << tunableParameters[p]+"=&"+QString().setNum(p+1)+";";
+//    }
+//    portLabelsStream << "')\n";
+
+//    portLabelsFile.close();
+
+//    progressBar.setValue(7);
+//    progressBar.setLabelText("Writing HopsanSimulinkCompile.m");
 
 
-    //Select path to MSVC library depending on user selection
-    QString msvcPath;
-    if(pMSVC2008RadioButton->isChecked() && p32bitRadioButton->isChecked())
-    {
-        msvcPath = QString(MSVC2008_X86_PATH);
-    }
-    else if(pMSVC2008RadioButton->isChecked() && p64bitRadioButton->isChecked())
-    {
-        msvcPath = QString(MSVC2008_X64_PATH);
-    }
-    else if(pMSVC2010RadioButton->isChecked() && p32bitRadioButton->isChecked())
-    {
-        msvcPath = QString(MSVC2010_X86_PATH);
-    }
-    else if(pMSVC2010RadioButton->isChecked() && p64bitRadioButton->isChecked())
-    {
-        msvcPath = QString(MSVC2010_X64_PATH);
-    }
+//    QTextStream compileStream(&compileFile);
+//#ifdef WIN32
+//    //compileStream << "%mex -DWIN32 -DSTATICCORE HopsanSimulink.cpp /include/Component.cc /include/ComponentSystem.cc /include/HopsanEssentials.cc /include/Node.cc /include/Port.cc /include/Components/Components.cc /include/CoreUtilities/HmfLoader.cc /include/CoreUtilities/HopsanCoreMessageHandler.cc /include/CoreUtilities/LoadExternal.cc /include/Nodes/Nodes.cc /include/ComponentUtilities/AuxiliarySimulationFunctions.cpp /include/ComponentUtilities/Delay.cc /include/ComponentUtilities/DoubleIntegratorWithDamping.cpp /include/ComponentUtilities/FirstOrderFilter.cc /include/ComponentUtilities/Integrator.cc /include/ComponentUtilities/IntegratorLimited.cc /include/ComponentUtilities/ludcmp.cc /include/ComponentUtilities/matrix.cc /include/ComponentUtilities/SecondOrderFilter.cc /include/ComponentUtilities/SecondOrderTransferFunction.cc /include/ComponentUtilities/TurbulentFlowFunction.cc /include/ComponentUtilities/ValveHysteresis.cc\n";
+//    compileStream << "mex -DWIN32 -DSTATICCORE -L./ -Iinclude -lHopsanCore HopsanSimulink.cpp\n";
+
+//    progressBar.setValue(8);
+//    progressBar.setLabelText("Copying Visual Studio binaries");
 
 
-    //Copy MSVC binaries to export folder
-    QFile dllFile(msvcPath + "HopsanCore.dll");
-    dllFile.copy(savePath + "/HopsanCore.dll");
-    QFile libFile(msvcPath + "HopsanCore.lib");
-    libFile.copy(savePath + "/HopsanCore.lib");
-    QFile expFile(msvcPath + "HopsanCore.exp");
-    expFile.copy(savePath + "/HopsanCore.exp");
-
-#else
-    compileStream << "% You need to copy the .so files here or change the -L lib search path" << endl;
-    compileStream << "mex -L./ -Iinclude -lHopsanCore HopsanSimulink.cpp" << endl;
-
-    //! @todo copy all of the symolic links and the .so
-
-#endif
-    compileFile.close();
-
-    progressBar.setValue(9);
-    progressBar.setLabelText("Copying include files");
-
-    copyIncludeFilesToDir(savePath);
-
-    //! @todo should not overwrite this wile if it already exists
-    QFile externalLibsFile;
-    externalLibsFile.setFileName(savePath + "/externalLibs.txt");
-    if(!externalLibsFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open externalLibs.txt for writing.");
-        return;
-    }
-    QTextStream externalLibsFileStream(&externalLibsFile);
-    externalLibsFileStream << "#Enter the relative path to each external component lib that needs to be loaded" << endl;
-    externalLibsFileStream << "#Enter one per line, the filename is enough if you put the lib file (.dll or.so) in this directory.";
-    externalLibsFile.close();
+//    //Select path to MSVC library depending on user selection
+//    QString msvcPath;
+//    if(pMSVC2008RadioButton->isChecked() && p32bitRadioButton->isChecked())
+//    {
+//        msvcPath = QString(MSVC2008_X86_PATH);
+//    }
+//    else if(pMSVC2008RadioButton->isChecked() && p64bitRadioButton->isChecked())
+//    {
+//        msvcPath = QString(MSVC2008_X64_PATH);
+//    }
+//    else if(pMSVC2010RadioButton->isChecked() && p32bitRadioButton->isChecked())
+//    {
+//        msvcPath = QString(MSVC2010_X86_PATH);
+//    }
+//    else if(pMSVC2010RadioButton->isChecked() && p64bitRadioButton->isChecked())
+//    {
+//        msvcPath = QString(MSVC2010_X64_PATH);
+//    }
 
 
-    progressBar.setValue(10);
-    progressBar.setLabelText("Writing " + mModelFileInfo.fileName() + " .hmf");
+//    //Copy MSVC binaries to export folder
+//    QFile dllFile(msvcPath + "HopsanCore.dll");
+//    dllFile.copy(savePath + "/HopsanCore.dll");
+//    QFile libFile(msvcPath + "HopsanCore.lib");
+//    libFile.copy(savePath + "/HopsanCore.lib");
+//    QFile expFile(msvcPath + "HopsanCore.exp");
+//    expFile.copy(savePath + "/HopsanCore.exp");
+
+//#else
+//    compileStream << "% You need to copy the .so files here or change the -L lib search path" << endl;
+//    compileStream << "mex -L./ -Iinclude -lHopsanCore HopsanSimulink.cpp" << endl;
+
+//    //! @todo copy all of the symolic links and the .so
+
+//#endif
+//    compileFile.close();
+
+//    progressBar.setValue(9);
+//    progressBar.setLabelText("Copying include files");
+
+//    copyIncludeFilesToDir(savePath);
+
+//    //! @todo should not overwrite this wile if it already exists
+//    QFile externalLibsFile;
+//    externalLibsFile.setFileName(savePath + "/externalLibs.txt");
+//    if(!externalLibsFile.open(QIODevice::WriteOnly | QIODevice::Text))
+//    {
+//        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open externalLibs.txt for writing.");
+//        return;
+//    }
+//    QTextStream externalLibsFileStream(&externalLibsFile);
+//    externalLibsFileStream << "#Enter the relative path to each external component lib that needs to be loaded" << endl;
+//    externalLibsFileStream << "#Enter one per line, the filename is enough if you put the lib file (.dll or.so) in this directory.";
+//    externalLibsFile.close();
+
+
+//    progressBar.setValue(10);
+//    progressBar.setLabelText("Writing " + mModelFileInfo.fileName() + " .hmf");
 
 
     //! @todo This code is duplicated from ProjectTab::saveModel(), make it a common function somehow
@@ -2069,6 +1576,31 @@ void SystemContainer::createSimulinkSourceFiles()
     appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
     domDocument.save(out, IndentSize);
     xmlhmf.close();
+
+
+    int compiler;
+    if(pMSVC2008RadioButton->isChecked() && p32bitRadioButton->isChecked())
+    {
+        compiler=0;
+    }
+    else if(pMSVC2008RadioButton->isChecked() && p64bitRadioButton->isChecked())
+    {
+        compiler=1;
+    }
+    else if(pMSVC2010RadioButton->isChecked() && p32bitRadioButton->isChecked())
+    {
+        compiler=2;
+    }
+    else if(pMSVC2010RadioButton->isChecked() && p64bitRadioButton->isChecked())
+    {
+        compiler=3;
+    }
+
+
+    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
+    pCoreAccess->generateToSimulink(savePath, this, pDisablePortLabels->isChecked());
+    delete(pCoreAccess);
+
 
     //Clean up widgets that do not have a parent
     delete(pDisablePortLabels);

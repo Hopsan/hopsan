@@ -1,6 +1,8 @@
 # -------------------------------------------------
 # Global project options
 # -------------------------------------------------
+include( ../Common.prf )
+
 TARGET = HopsanGenerator
 TEMPLATE = lib
 CONFIG += shared
@@ -8,7 +10,7 @@ DESTDIR = $${PWD}/../bin
 
 QT += xml
 
-TARGET = $${TARGET}$${DEBUG_EXT}
+TARGET = $${TARGET}
 
 
 #--------------------------------------------------

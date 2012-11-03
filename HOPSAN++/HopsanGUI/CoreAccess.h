@@ -46,6 +46,8 @@ public:
     bool generateFromCpp(QString code, bool showOutputDialog=true);
     bool generateFromFmu(QString path);
     bool generateToFmu(QString path, SystemContainer *pSystem);
+    bool generateToSimulink(QString path, SystemContainer *pSystem, bool disablePortLabels=false, int compiler=0);
+    bool generateToLabViewSIT(QString path, SystemContainer *pSystem);
 };
 
 class CoreLibraryAccess

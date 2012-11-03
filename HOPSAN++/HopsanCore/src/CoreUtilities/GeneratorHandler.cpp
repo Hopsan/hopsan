@@ -72,6 +72,23 @@ GeneratorHandler::GeneratorHandler()
         //! @todo Error message
         return;
     }
+
+    //Load Simulink generator function
+    callSimulinkExportGenerator = (call_simulink_export_generator_t)GetProcAddress(lib_ptr, "callSimulinkExportGenerator");
+    if (!callSimulinkExportGenerator)
+    {
+        //! @todo Error message
+        return;
+    }
+
+    //Load LabVIEW/SIT generator function
+    callLabViewSITGenerator = (call_lvsit_export_generator_t)GetProcAddress(lib_ptr, "callLabViewSITGenerator");
+    if (!callLabViewSITGenerator)
+    {
+        //! @todo Error message
+        return;
+    }
+
 #else
     void *lib_ptr;
     lib_ptr = dlopen("libHopsanGenerator.so", RTLD_NOW);  //Load the dll

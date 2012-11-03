@@ -551,6 +551,11 @@ bool Port::isMultiPort() const
     return (mPortType > MULTIPORT);
 }
 
+Port *Port::getParentPort() const
+{
+    return mpParentPort;
+}
+
 //! @brief Get the port type
 PortTypesEnumT Port::getPortType() const
 {

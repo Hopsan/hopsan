@@ -70,7 +70,7 @@ static void mdlInitializeSizes(SimStruct *S)
 
     //Define S-function output signals\n
     if (!ssSetNumOutputPorts(S,<<<2>>>)) return;				//Number of output signals\n
-    <<<3>>>
+<<<3>>>
     ssSetOutputPortWidth(S, <<<14>>>, DYNAMICALLY_SIZED);		//Debug output signal\n
     ssSetNumSampleTimes(S, 1);\n\n
     ssSetOptions(S, SS_OPTION_EXCEPTION_FREE_CODE);\n
@@ -93,7 +93,7 @@ static void mdlInitializeSizes(SimStruct *S)
     startT = ssGetTStart(S);
     stopT = ssGetTFinal(S);
     pComponentSystem->setDesiredTimestep(0.001);
-    <<<5>>>
+<<<5>>>
 }
 
 
@@ -132,10 +132,10 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     int_T width1 = ssGetOutputPortWidth(S,0);
 
     //Input parameters
-    <<<8>>>
+<<<8>>>
 
     //Equations
-    <<<9>>>
+<<<9>>>
     output<<<10>>> = 0;		//Error code 0: Nothing is wrong
 
     if(pComponentSystem == 0)
@@ -150,16 +150,16 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     }
     else
     {
-        <<<11>>>
+<<<11>>>
         double timestep = pComponentSystem->getDesiredTimeStep();
         double time = ssGetT(S);
         pComponentSystem->simulate(time, time+timestep);
 
-        <<<12>>>
+<<<12>>>
     }
     
     //Output parameters
-    <<<13>>>
+<<<13>>>
      }
      
      static void mdlTerminate(SimStruct *S){}

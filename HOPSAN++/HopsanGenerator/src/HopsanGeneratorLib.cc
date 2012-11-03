@@ -139,7 +139,7 @@ extern "C" DLLIMPORTEXPORT void callFmuImportGenerator(string path, string coreI
 }
 
 
-//! @brief Calls the functional mockup interface (FMU) exportgenerator
+//! @brief Calls the functional mockup interface (FMU) export generator
 //! @param path Path to export to
 //! @param pSystem Pointer to system that shall be exported
 //! @param coreIncludePath Path to HopsanCore include files
@@ -149,5 +149,35 @@ extern "C" DLLIMPORTEXPORT void callFmuExportGenerator(string path, hopsan::Comp
 {
     HopsanComponentGenerator *pGenerator = new HopsanComponentGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
     pGenerator->generateToFmu(QString(path.c_str()), pSystem);
+    delete(pGenerator);
+}
+
+
+//! @brief Calls the Simulink S-function generator
+//! @param path Path to export to
+//! @param pSystem Pointer to system that shall be exported
+//! @param compiler Compiler to use, 0 = MSVC2008 32-bit, 1 = MSVC2008 64-bit, 2 = MSVC2010 32-bit, 3 = MSVC2010 64-bit
+//! @param disablePortLabels Tells whether or not port labels shall be disabled (for compatibility with older MATLAB versions)
+//! @param coreIncludePath Path to HopsanCore include files
+//! @param binPath Path to HopsanCore binary files
+//! @param showDialog True if generator output shall be displayed in a dialog window
+extern "C" DLLIMPORTEXPORT void callSimulinkExportGenerator(string path, hopsan::ComponentSystem *pSystem, bool disablePortLabels, int compiler, string coreIncludePath, string binPath, bool showDialog=false)
+{
+    HopsanComponentGenerator *pGenerator = new HopsanComponentGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
+    pGenerator->generateToSimulink(QString(path.c_str()), pSystem, disablePortLabels, compiler);
+    delete(pGenerator);
+}
+
+
+//! @brief Calls the LabVIEW SIT generator
+//! @param path Path to export to
+//! @param pSystem Pointer to system that shall be exported
+//! @param coreIncludePath Path to HopsanCore include files
+//! @param binPath Path to HopsanCore binary files
+//! @param showDialog True if generator output shall be displayed in a dialog window
+extern "C" DLLIMPORTEXPORT void callLabViewSITGenerator(string path, hopsan::ComponentSystem *pSystem, string coreIncludePath, string binPath, bool showDialog=false)
+{
+    HopsanComponentGenerator *pGenerator = new HopsanComponentGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
+    pGenerator->generateToLabViewSIT(QString(path.c_str()), pSystem);
     delete(pGenerator);
 }

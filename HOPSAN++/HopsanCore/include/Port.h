@@ -87,6 +87,7 @@ namespace hopsan {
         virtual size_t getNumPorts();
 
         bool isMultiPort() const;
+        Port *getParentPort() const;
         const std::string getNodeType() const;
         PortTypesEnumT getPortType() const;
         virtual PortTypesEnumT getExternalPortType();
@@ -100,6 +101,7 @@ namespace hopsan {
 
         Component* getComponent() const;
 
+        virtual std::vector<Port*> &getConnectedPorts(const int portIdx=-1);
 
     protected:
         PortTypesEnumT mPortType;
@@ -120,7 +122,6 @@ namespace hopsan {
 
         void addConnectedPort(Port* pPort, const size_t portIdx=0);
         void eraseConnectedPort(Port* pPort, const size_t portIdx=0);
-        virtual std::vector<Port*> &getConnectedPorts(const int portIdx=-1);
 
         void createStartNode(NodeTypeT nodeType);
 
@@ -191,13 +192,14 @@ namespace hopsan {
         bool isConnected();
         size_t getNumPorts();
 
+        std::vector<Port*> &getConnectedPorts(const int portIdx=-1);
+
     protected:
         std::vector<Port*> mSubPortsVector;
 
         void removeSubPort(Port* ptr);
         Node *getNodePtr(const size_t portIdx=0);
 
-        std::vector<Port*> &getConnectedPorts(const int portIdx=-1);
         std::vector<Port*> mAllConnectedPorts;
     };
 

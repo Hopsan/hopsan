@@ -121,11 +121,8 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
             fmuIcon.setPermissions(QFile::WriteUser | QFile::ReadUser);
             fmuIcon.close();
 
-            qDebug() << "Copying icon file!";
-
             //Load library
             gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(QString(FMUPATH) + fmuName, "FMU");
-
             return true;
         }
     }
@@ -139,7 +136,30 @@ bool CoreGeneratorAccess::generateToFmu(QString path, SystemContainer *pSystem)
     if(pHandler->isLoadedSuccessfully())
     {
         pHandler->callFmuExportGenerator(path.toStdString(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), QString(COREINCLUDEPATH).toStdString(), gExecPath.toStdString(), true);
+        return true;
+    }
+    return false;
+}
 
+
+bool CoreGeneratorAccess::generateToSimulink(QString path, SystemContainer *pSystem, bool disablePortLabels, int compiler)
+{
+    hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
+    if(pHandler->isLoadedSuccessfully())
+    {
+        pHandler->callSimulinkExportGenerator(path.toStdString(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), disablePortLabels, compiler, QString(COREINCLUDEPATH).toStdString(), gExecPath.toStdString(), true);
+        return true;
+    }
+    return false;
+}
+
+
+bool CoreGeneratorAccess::generateToLabViewSIT(QString path, SystemContainer *pSystem)
+{
+    hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
+    if(pHandler->isLoadedSuccessfully())
+    {
+        pHandler->callLabViewSITGenerator(path.toStdString(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), QString(COREINCLUDEPATH).toStdString(), gExecPath.toStdString(), true);
         return true;
     }
     return false;
