@@ -141,6 +141,9 @@ private:
     QStringList getCVariables(QString nodeType);
     QStringList getVariableLabels(QString nodeType);
     inline QString toVarName(const QString org);
+    QString extractTaggedSection(QString str, QString tag);
+    void replaceTaggedSection(QString &str, QString tag, QString replacement);
+    QString replaceTag(QString str, QString tag, QString replacement);
 
     QString mOutputPath;
     QString mTempPath;

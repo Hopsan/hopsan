@@ -119,7 +119,7 @@ HopsanGenerator::HopsanGenerator(QString coreIncludePath, QString binPath, bool 
         mpTextEdit = new QTextEdit();
         mpTextEdit->setReadOnly(true);
         QFont monoFont = QFont("Monospace", 10, 50);
-        monoFont.setStyleHint(QFont::Monospace);
+        monoFont.setStyleHint(QFont::TypeWriter);
         mpTextEdit->setFont(monoFont);
 
         mpDoneButton = new QPushButton("Close");
@@ -150,7 +150,7 @@ void HopsanGenerator::printMessage(QString msg)
 {
     if(mShowDialog)
     {
-        mpTextEdit->setTextColor("BLACK");
+        mpTextEdit->setTextColor(QColor("Black"));
         mpTextEdit->append(msg);
         QApplication::processEvents();
 #ifdef WIN32
@@ -166,7 +166,7 @@ void HopsanGenerator::printErrorMessage(QString msg)
 {
     if(mShowDialog)
     {
-        mpTextEdit->setTextColor("RED");
+        mpTextEdit->setTextColor(QColor("Red"));
         mpTextEdit->append(msg);
         QApplication::processEvents();
 #ifdef WIN32
@@ -577,82 +577,85 @@ void HopsanGenerator::generateFromFmu(QString path)
     assert(!fmuComponentCode.isEmpty());
 
     QString fmuComponentReplace2;
+    QString portLine = extractTaggedSection(fmuComponentCode, "2");
     for(int i=0; i<tlmPortVars.size(); ++i)
     {
         QString numStr = QString::number(i);
-        fmuComponentReplace2.append("        Port *mpP"+numStr+";\n");
+        fmuComponentReplace2.append(replaceTag(portLine, "Portname", "P"+numStr));
     }
     int j=0;
     for(int i=0; i<inoutVars.size(); ++i)
     {
         QString numStr = inoutVars[i];
-        fmuComponentReplace2.append("        Port *mpIn"+numStr+";\n");
-        fmuComponentReplace2.append("        Port *mpOut"+numStr+";\n");
+        fmuComponentReplace2.append(replaceTag(portLine, "Portname", "In"+numStr));
+        fmuComponentReplace2.append(replaceTag(portLine, "Portname", "Out"+numStr));
         ++j;
     }
     for(int i=0; i<inVars.size(); ++i)
     {
         QString numStr = inVars[i];
-        fmuComponentReplace2.append("        Port *mpIn"+numStr+";\n");
+        fmuComponentReplace2.append(replaceTag(portLine, "Portname", "In"+numStr));
         ++j;
     }
     for(int i=0; i<outVars.size(); ++i)
     {
         QString numStr = outVars[i];
-        fmuComponentReplace2.append("        Port *mpOut"+numStr+";\n");
+        fmuComponentReplace2.append(replaceTag(portLine, "Portname", "Out"+numStr));
         ++j;
     }
 
     QString fmuComponentReplace3;
+    QString mpndLine = extractTaggedSection(fmuComponentCode, "3");
     for(int i=0; i<tlmPortVars.size(); ++i)
     {
         QString numStr = QString::number(i);
         if(tlmPortTypes[i] == "hydraulic")
         {
-            fmuComponentReplace3.append("        double *mpND_p"+numStr+";\n");
-            fmuComponentReplace3.append("        double *mpND_q"+numStr+";\n");
-            fmuComponentReplace3.append("        double *mpND_c"+numStr+";\n");
-            fmuComponentReplace3.append("        double *mpND_Zc"+numStr+";\n");
+            fmuComponentReplace3.append(replaceTag(mpndLine, "portname", "p"+numStr));
+            fmuComponentReplace3.append(replaceTag(mpndLine, "portname", "q"+numStr));
+            fmuComponentReplace3.append(replaceTag(mpndLine, "portname", "c"+numStr));
+            fmuComponentReplace3.append(replaceTag(mpndLine, "portname", "Zc"+numStr));
         }
         else if(tlmPortTypes[i] == "mechanic")
         {
-            fmuComponentReplace3.append("        double *mpND_f"+numStr+";\n");
-            fmuComponentReplace3.append("        double *mpND_x"+numStr+";\n");
-            fmuComponentReplace3.append("        double *mpND_v"+numStr+";\n");
-            fmuComponentReplace3.append("        double *mpND_me"+numStr+";\n");
-            fmuComponentReplace3.append("        double *mpND_c"+numStr+";\n");
-            fmuComponentReplace3.append("        double *mpND_Zc"+numStr+";\n");
-        }
+            fmuComponentReplace3.append(replaceTag(mpndLine, "portname", "f"+numStr));
+            fmuComponentReplace3.append(replaceTag(mpndLine, "portname", "x"+numStr));
+            fmuComponentReplace3.append(replaceTag(mpndLine, "portname", "v"+numStr));
+            fmuComponentReplace3.append(replaceTag(mpndLine, "portname", "me"+numStr));
+            fmuComponentReplace3.append(replaceTag(mpndLine, "portname", "c"+numStr));
+            fmuComponentReplace3.append(replaceTag(mpndLine, "portname", "Zc"+numStr));
+         }
     }
     j=0;
     for(int i=0; i<inoutVars.size(); ++i)
     {
         QString numStr = inoutVars[i];
-        fmuComponentReplace3.append("        double *mpND_in" + numStr + ";\n");
-        fmuComponentReplace3.append("        double *mpND_out" + numStr + ";\n");
+        fmuComponentReplace3.append(replaceTag(mpndLine, "portname", "in"+numStr));
+        fmuComponentReplace3.append(replaceTag(mpndLine, "portname", "out"+numStr));
         ++j;
     }
     for(int i=0; i<inVars.size(); ++i)
     {
         QString numStr = inVars[i];
-        fmuComponentReplace3.append("        double *mpND_in" + numStr + ";\n");
+        fmuComponentReplace3.append(replaceTag(mpndLine, "portname", "in"+numStr));
         ++j;
     }
     for(int i=0; i<outVars.size(); ++i)
     {
         QString numStr = outVars[i];
-        fmuComponentReplace3.append("        double *mpND_out" + numStr + ";\n");
+        fmuComponentReplace3.append(replaceTag(mpndLine, "portname", "out"+numStr));
         ++j;
     }
 
     QString fmuComponentReplace4;
+    QString parLine = extractTaggedSection(fmuComponentCode, "4");
     varElement = variablesElement.firstChildElement("ScalarVariable");
     i=0;
     while (!varElement.isNull())
     {
         if(varElement.attribute("variability") == "parameter")
         {
-            fmuComponentReplace4.append("        double par"+QString::number(i)+";\n");
+            fmuComponentReplace4.append(replaceTag(parLine, "parnum", QString::number(i)));
             ++i;
         }
         varElement = varElement.nextSiblingElement("ScalarVariable");
@@ -891,9 +894,9 @@ void HopsanGenerator::generateFromFmu(QString path)
 
     fmuComponentCode.replace("<<<0>>>", fmuName);
     fmuComponentCode.replace("<<<1>>>", mCoreIncludePath);
-    fmuComponentCode.replace("<<<2>>>", fmuComponentReplace2);
-    fmuComponentCode.replace("<<<3>>>", fmuComponentReplace3);
-    fmuComponentCode.replace("<<<4>>>", fmuComponentReplace4);
+    replaceTaggedSection(fmuComponentCode, "2", fmuComponentReplace2);
+    replaceTaggedSection(fmuComponentCode, "3", fmuComponentReplace3);
+    replaceTaggedSection(fmuComponentCode, "4", fmuComponentReplace4);
     fmuComponentCode.replace("<<<5>>>", fmuDir.path());
     fmuComponentCode.replace("<<<6>>>", fmuComponentReplace6);
     fmuComponentCode.replace("<<<7>>>", fmuComponentReplace7);
@@ -4523,6 +4526,38 @@ inline QString HopsanGenerator::toVarName(const QString org)
         }
     }
     return ret;
+}
+
+
+QString HopsanGenerator::extractTaggedSection(QString str, QString tag)
+{
+    QString startStr = ">>>"+tag+">>>";
+    QString endStr = "<<<"+tag+"<<<";
+    if(!str.contains(startStr) || !str.contains(endStr))
+    {
+        return QString();
+    }
+    else
+    {
+        int i = str.indexOf(startStr)+startStr.size();
+        int n = str.indexOf(endStr)-i;
+        return str.mid(i, n);
+    }
+}
+
+
+void HopsanGenerator::replaceTaggedSection(QString &str, QString tag, QString replacement)
+{
+    QString taggedSection = ">>>"+tag+">>>"+extractTaggedSection(str, tag)+"<<<"+tag+"<<<";
+    str.replace(taggedSection, replacement);
+}
+
+
+QString HopsanGenerator::replaceTag(QString str, QString tag, QString replacement)
+{
+    QString retval = str;
+    retval.replace("<<<"+tag+">>>", replacement);
+    return retval;
 }
 
 

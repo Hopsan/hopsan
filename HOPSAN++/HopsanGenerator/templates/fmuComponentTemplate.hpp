@@ -38,9 +38,12 @@ namespace hopsan {
         double *z;                // state event indicators
         double *prez;             // previous values of state event indicators
 
-<<<2>>>
-<<<3>>>
-<<<4>>>
+>>>2>>>        Port *mp<<<Portname>>>;
+<<<2<<<
+>>>3>>>        double *mpND_<<<portname>>>;
+<<<3<<<
+>>>4>>>        double par<<<parnum>>>;
+<<<4<<<
 
     public:
         static Component *Creator()
