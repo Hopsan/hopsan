@@ -55,10 +55,11 @@ namespace hopsan {
         {
             mFMU.modelDescription = parse("<<<5>>>/modelDescription.xml");
             assert(mFMU.modelDescription);
-<<<6>>>
+            assert(<<<6>>>("<<<5>>>/<<<0>>>.<<<13>>>"));
             addInfoMessage(getString(mFMU.modelDescription, att_modelIdentifier));
 
-<<<7>>>
+>>>7>>>            mp<<<Portname>>> = add<<<porttype>>>("<<<portname>>>", "<<<nodetype>>>"<<<notrequired>>>);
+<<<7<<<
 <<<8>>>        }
 
         void initialize()

@@ -663,42 +663,43 @@ void HopsanGenerator::generateFromFmu(QString path)
 
     QString fmuComponentReplace6;
 #ifdef WIN32
-    fmuComponentReplace6 = "assert(loadDll(\""+fmuDir.path()+"/"+fmuName+".dll\"));\n";
+    fmuComponentReplace6 = "loadDll";
 #elif linux
-    fmuComponentReplace6 = "assert(loadSo(\""+fmuDir.path()+"/"+fmuName+".so\"));\n";
+    fmuComponentReplace6 = "loadSo";
 #endif
 
     QString fmuComponentReplace7;
+    QString addPortLine = extractTaggedSection(fmuComponentCode, "7");
     for(int i=0; i<tlmPortVars.size(); ++i)
     {
         QString numStr = QString::number(i);
         if(tlmPortTypes[i] == "hydraulic")
         {
-            fmuComponentReplace7.append("            mpP"+numStr+" = addPowerPort(\"P"+numStr+"\", \"NodeHydraulic\");\n");
+            fmuComponentReplace7.append(replaceTag(replaceTag(replaceTag(replaceTag(replaceTag(addPortLine, "Portname", "P"+numStr), "portname", "P"+numStr), "porttype", "PowerPort"), "nodetype", "NodeHydraulic"), "notrequired", ""));
         }
         else if(tlmPortTypes[i] == "mechanic")
         {
-            fmuComponentReplace7.append("            mpP"+numStr+" = addPowerPort(\"P"+numStr+"\", \"NodeMechanic\");\n");
+            fmuComponentReplace7.append(replaceTag(replaceTag(replaceTag(replaceTag(replaceTag(addPortLine, "Portname", "P"+numStr), "portname", "P"+numStr), "porttype", "PowerPort"), "nodetype", "NodeMechanic"), "notrequired", ""));
         }
     }
     j=0;
     for(int i=0; i<inoutVars.size(); ++i)
     {
         QString numStr = inoutVars[i];
-        fmuComponentReplace7.append("            mpIn"+numStr+" = addReadPort(\""+inoutVarNames[i]+"In\", \"NodeSignal\", Port::NOTREQUIRED);\n");
-        fmuComponentReplace7.append("            mpOut"+numStr+" = addWritePort(\""+inoutVarNames[i]+"Out\", \"NodeSignal\", Port::NOTREQUIRED);\n");
+        fmuComponentReplace7.append(replaceTag(replaceTag(replaceTag(replaceTag(replaceTag(addPortLine, "Portname", "In"+numStr), "portname", inoutVarNames[i]+"In"), "porttype", "ReadPort"), "nodetype", "NodeSignal"), "notrequired", ", Port::NOTREQUIRED"));
+        fmuComponentReplace7.append(replaceTag(replaceTag(replaceTag(replaceTag(replaceTag(addPortLine, "Portname", "Out"+numStr), "portname", inoutVarNames[i]+"Out"), "porttype", "WritePort"), "nodetype", "NodeSignal"), "notrequired", ", Port::NOTREQUIRED"));
         ++j;
     }
     for(int i=0; i<inVars.size(); ++i)
     {
         QString numStr = inVars[i];
-        fmuComponentReplace7.append("            mpIn"+numStr+" = addReadPort(\""+inVarNames[i]+"In\", \"NodeSignal\", Port::NOTREQUIRED);\n");
+        fmuComponentReplace7.append(replaceTag(replaceTag(replaceTag(replaceTag(replaceTag(addPortLine, "Portname", "In"+numStr), "portname", inoutVarNames[i]+"In"), "porttype", "ReadPort"), "nodetype", "NodeSignal"), "notrequired", ", Port::NOTREQUIRED"));
         ++j;
     }
     for(int i=0; i<outVars.size(); ++i)
     {
         QString numStr = outVars[i];
-        fmuComponentReplace7.append("            mpOut"+numStr+" = addWritePort(\""+outVarNames[i]+"Out\", \"NodeSignal\", Port::NOTREQUIRED);\n");
+        fmuComponentReplace7.append(replaceTag(replaceTag(replaceTag(replaceTag(replaceTag(addPortLine, "Portname", "Out"+numStr), "portname", inoutVarNames[i]+"Out"), "porttype", "WritePort"), "nodetype", "NodeSignal"), "notrequired", ", Port::NOTREQUIRED"));
         ++j;
     }
 
@@ -892,6 +893,13 @@ void HopsanGenerator::generateFromFmu(QString path)
         fmuComponentReplace12.append("            (*mpND_out"+numStr+") = value;\n\n");
     }
 
+    QString fmuComponentReplace13;
+#ifdef WIN32
+    fmuComponentReplace13 = "dll";
+#elif linux
+    fmuComponentReplace13 = "so";
+#endif
+
     fmuComponentCode.replace("<<<0>>>", fmuName);
     fmuComponentCode.replace("<<<1>>>", mCoreIncludePath);
     replaceTaggedSection(fmuComponentCode, "2", fmuComponentReplace2);
@@ -899,12 +907,13 @@ void HopsanGenerator::generateFromFmu(QString path)
     replaceTaggedSection(fmuComponentCode, "4", fmuComponentReplace4);
     fmuComponentCode.replace("<<<5>>>", fmuDir.path());
     fmuComponentCode.replace("<<<6>>>", fmuComponentReplace6);
-    fmuComponentCode.replace("<<<7>>>", fmuComponentReplace7);
+    replaceTaggedSection(fmuComponentCode, "7", fmuComponentReplace7);
     fmuComponentCode.replace("<<<8>>>", fmuComponentReplace8);
     fmuComponentCode.replace("<<<9>>>", fmuComponentReplace9);
     fmuComponentCode.replace("<<<10>>>", fmuComponentReplace10);
     fmuComponentCode.replace("<<<11>>>", fmuComponentReplace11);
     fmuComponentCode.replace("<<<12>>>", fmuComponentReplace12);
+    fmuComponentCode.replace("<<<13>>>", fmuComponentReplace13);
 
     QTextStream fmuComponentHppStream(&fmuComponentHppFile);
     fmuComponentHppStream << fmuComponentCode;
