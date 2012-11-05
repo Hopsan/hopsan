@@ -1,0 +1,163 @@
+            <component typename="AeroAircraft6DOF" name="AeroAircraft6DOF">
+                <parameters>
+                    <parameter value="0" name="Pa1l::Angular Velocity"/>
+                    <parameter value="0" name="Pa1l::Torque"/>
+                    <parameter value="0" name="Pa1l::Angle"/>
+                    <parameter value="0" name="Pa1r::Angular Velocity"/>
+                    <parameter value="0" name="Pa1r::Torque"/>
+                    <parameter value="0" name="Pa1r::Angle"/>
+                    <parameter value="0" name="Pa2l::Angular Velocity"/>
+                    <parameter value="0" name="Pa2l::Torque"/>
+                    <parameter value="0" name="Pa2l::Angle"/>
+                    <parameter value="0" name="Pa2r::Angular Velocity"/>
+                    <parameter value="0" name="Pa2r::Torque"/>
+                    <parameter value="0" name="Pa2r::Angle"/>
+                    <parameter value="0" name="Pfin::Angular Velocity"/>
+                    <parameter value="0" name="Pfin::Torque"/>
+                    <parameter value="0" name="Pfin::Angle"/>
+                    <parameter value="0" name="Pxcg::Value"/>
+                    <parameter value="0" name="Pycg::Value"/>
+                    <parameter value="0" name="Pzcg::Value"/>
+                    <parameter value="0" name="Pvx::Value"/>
+                    <parameter value="0" name="Pvy::Value"/>
+                    <parameter value="0" name="Pvz::Value"/>
+                    <parameter value="0" name="PPsi::Value"/>
+                    <parameter value="0" name="PThetao::Value"/>
+                    <parameter value="0" name="PPhi::Value"/>
+                    <parameter value="200" name="PUb::Value"/>
+                    <parameter value="0" name="PVb::Value"/>
+                    <parameter value="0" name="PWb::Value"/>
+                    <parameter value="0" name="PPb::Value"/>
+                    <parameter value="0" name="PQb::Value"/>
+                    <parameter value="0" name="PRb::Value"/>
+                    <parameter value="0" name="Pq0::Value"/>
+                    <parameter value="0" name="Pq1::Value"/>
+                    <parameter value="0" name="Pq2::Value"/>
+                    <parameter value="0" name="Pq3::Value"/>
+                    <parameter value="0" name="PAlphaAttack::Value"/>
+                    <parameter value="0" name="PBetaSlip::Value"/>
+                    <parameter value="0" name="Paltitude::Value"/>
+                    <parameter value="0" name="Pgfx::Value"/>
+                    <parameter value="0" name="Pgfy::Value"/>
+                    <parameter value="0" name="Pgfz::Value"/>
+                    <parameter value="0.3" name="afin"/>
+                    <parameter value="0.3" name="an1"/>
+                    <parameter value="0.3" name="an2"/>
+                    <parameter value="0.4" name="ap1"/>
+                    <parameter value="0.3" name="ap2"/>
+                    <parameter value="2.24537" name="AR1"/>
+                    <parameter value="2.20884" name="AR2"/>
+                    <parameter value="0.576369" name="ARfin"/>
+                    <parameter value="0.00662822" name="Cd01"/>
+                    <parameter value="0.00631223" name="Cd02"/>
+                    <parameter value="0.04" name="Cd0b"/>
+                    <parameter value="0.0054" name="Cd0fin"/>
+                    <parameter value="2.07733" name="CLalpha1"/>
+                    <parameter value="2.06032" name="CLalpha2"/>
+                    <parameter value="2" name="CLalphabh"/>
+                    <parameter value="2" name="CLalphabv"/>
+                    <parameter value="0.804668" name="CLalphafin"/>
+                    <parameter value="0.0247248" name="CLde1"/>
+                    <parameter value="0.51508" name="CLde2"/>
+                    <parameter value="0.0827084" name="CLdefin"/>
+                    <parameter value="0.6" name="dah"/>
+                    <parameter value="0.95" name="e1"/>
+                    <parameter value="0.949716" name="e2"/>
+                    <parameter value="0.949985" name="efin"/>
+                    <parameter value="6" name="expclfin"/>
+                    <parameter value="6" name="expcln1"/>
+                    <parameter value="6" name="expcln2"/>
+                    <parameter value="9" name="expclp1"/>
+                    <parameter value="6" name="expclp2"/>
+                    <parameter value="-0.0872665" name="gamma1"/>
+                    <parameter value="-0.0872665" name="gamma2"/>
+                    <parameter value="0" name="hthrust"/>
+                    <parameter value="0" name="ia1"/>
+                    <parameter value="0.1" name="ia2"/>
+                    <parameter value="1000" name="Ix"/>
+                    <parameter value="500" name="Ixz"/>
+                    <parameter value="3000" name="Iy"/>
+                    <parameter value="3000" name="Iz"/>
+                    <parameter value="0.436332" name="lambda1"/>
+                    <parameter value="0.436332" name="lambda2"/>
+                    <parameter value="0.785398" name="lambdafin"/>
+                    <parameter value="0.1" name="lc1"/>
+                    <parameter value="0.1" name="lc2"/>
+                    <parameter value="0.1" name="lcfin"/>
+                    <parameter value="5000" name="Me"/>
+                    <parameter value="2.425" name="rc1"/>
+                    <parameter value="1.375" name="rc2"/>
+                    <parameter value="1" name="rcfin"/>
+                    <parameter value="41.904" name="S1"/>
+                    <parameter value="13.695" name="S2"/>
+                    <parameter value="10.5" name="Sbh"/>
+                    <parameter value="10.5" name="Sbv"/>
+                    <parameter value="6.94" name="Sfin"/>
+                    <parameter value="8.5" name="xbach"/>
+                    <parameter value="8.5" name="xbacv"/>
+                    <parameter value="6" name="xbcge"/>
+                    <parameter value="6" name="xcargo"/>
+                    <parameter value="6" name="xfuel"/>
+                    <parameter value="6.2525" name="xw1"/>
+                    <parameter value="11" name="xw2"/>
+                    <parameter value="10" name="xwfin"/>
+                    <parameter value="0" name="yeng"/>
+                    <parameter value="9.81" name="g0"/>
+                    <parameter value="10000" name="kground"/>
+                    <parameter value="0" name="thrustl"/>
+                    <parameter value="0" name="thrustr"/>
+                    <parameter value="0" name="dezthrust"/>
+                    <parameter value="0" name="Mfuel"/>
+                    <parameter value="0" name="Mcargo"/>
+                    <parameter value="1.25" name="rho"/>
+                    <parameter value="0" name="vturbx"/>
+                    <parameter value="0" name="vturby"/>
+                    <parameter value="0" name="vturbz"/>
+                </parameters>
+                <startvalues>
+                    <startvalue portname="Pa2r" variable="Angular Velocity" value="0"/>
+                    <startvalue portname="Pa2r" variable="Torque" value="0"/>
+                    <startvalue portname="Pa2r" variable="Angle" value="0"/>
+                    <startvalue portname="PBetaSlip" variable="Value" value="0"/>
+                    <startvalue portname="Pzcg" variable="Value" value="0"/>
+                    <startvalue portname="PThetao" variable="Value" value="0"/>
+                    <startvalue portname="Pfin" variable="Angular Velocity" value="0"/>
+                    <startvalue portname="Pfin" variable="Torque" value="0"/>
+                    <startvalue portname="Pfin" variable="Angle" value="0"/>
+                    <startvalue portname="PPb" variable="Value" value="0"/>
+                    <startvalue portname="Pycg" variable="Value" value="0"/>
+                    <startvalue portname="PAlphaAttack" variable="Value" value="0"/>
+                    <startvalue portname="Pq0" variable="Value" value="0"/>
+                    <startvalue portname="Pq1" variable="Value" value="0"/>
+                    <startvalue portname="Pq2" variable="Value" value="0"/>
+                    <startvalue portname="Paltitude" variable="Value" value="0"/>
+                    <startvalue portname="Pq3" variable="Value" value="0"/>
+                    <startvalue portname="Pxcg" variable="Value" value="0"/>
+                    <startvalue portname="PUb" variable="Value" value="200"/>
+                    <startvalue portname="Pgfx" variable="Value" value="0"/>
+                    <startvalue portname="PPsi" variable="Value" value="0"/>
+                    <startvalue portname="Pgfy" variable="Value" value="0"/>
+                    <startvalue portname="PQb" variable="Value" value="0"/>
+                    <startvalue portname="Pgfz" variable="Value" value="0"/>
+                    <startvalue portname="Pvx" variable="Value" value="0"/>
+                    <startvalue portname="Pvy" variable="Value" value="0"/>
+                    <startvalue portname="PVb" variable="Value" value="0"/>
+                    <startvalue portname="Pvz" variable="Value" value="0"/>
+                    <startvalue portname="Pa1l" variable="Angular Velocity" value="0"/>
+                    <startvalue portname="Pa1l" variable="Torque" value="0"/>
+                    <startvalue portname="Pa1l" variable="Angle" value="0"/>
+                    <startvalue portname="PRb" variable="Value" value="0"/>
+                    <startvalue portname="Pa1r" variable="Angular Velocity" value="0"/>
+                    <startvalue portname="Pa1r" variable="Torque" value="0"/>
+                    <startvalue portname="Pa1r" variable="Angle" value="0"/>
+                    <startvalue portname="PPhi" variable="Value" value="0"/>
+                    <startvalue portname="PWb" variable="Value" value="0"/>
+                    <startvalue portname="Pa2l" variable="Angular Velocity" value="0"/>
+                    <startvalue portname="Pa2l" variable="Torque" value="0"/>
+                    <startvalue portname="Pa2l" variable="Angle" value="0"/>
+                </startvalues>
+                <hopsangui>
+                    <pose x="2530.00000000000000000000" y="2530" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>

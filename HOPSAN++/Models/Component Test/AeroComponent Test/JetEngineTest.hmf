@@ -4,19 +4,19 @@
         <componentlibrary>PettersComponentLibrary</componentlibrary>
         <componentlibrary>PettersComponentLibrary</componentlibrary>
     </requirements>
-    <system logsamples="2048" typename="Subsystem" name="AeroJetEngineTest">
+    <system logsamples="2048" typename="Subsystem" name="JetEngineTest">
         <simulationtime stop="100" timestep="0.001" start="0" inherit_timestep="true"/>
         <aliases/>
         <parameters/>
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2501.5" y="2584.5" zoom="1"/>
+            <viewport x="2501.5" y="2453.5" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="0"/>
             <scriptfile path=""/>
             <hopsanobjectappearance version="0.3">
-                <modelobject typename="Subsystem" displayname="AeroJetEngineTest">
+                <modelobject typename="Subsystem" displayname="JetEngineTest">
                     <icons>
                         <icon path="subsystemDefault.svg" type="defaultmissing"/>
                     </icons>

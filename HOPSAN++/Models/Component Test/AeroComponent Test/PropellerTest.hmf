@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4730" hopsancoreversion="0.6.x_r4718">
+    <requirements>
+        <componentlibrary>PettersComponentLibrary</componentlibrary>
+        <componentlibrary>PettersComponentLibrary</componentlibrary>
+    </requirements>
+    <system logsamples="2048" typename="Subsystem" name="PropellerTest">
+        <simulationtime stop="40" timestep="0.01" start="0" inherit_timestep="true"/>
+        <aliases/>
+        <parameters/>
+        <hopsangui>
+            <pose x="0" y="0" flipped="false" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2446" y="2431" zoom="0.999999"/>
+            <ports hidden="1"/>
+            <names hidden="0"/>
+            <scriptfile path=""/>
+            <hopsanobjectappearance version="0.3">
+                <modelobject typename="Subsystem" displayname="PropellerTest">
+                    <icons>
+                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
+                    </icons>
+                    <ports/>
+                </modelobject>
+            </hopsanobjectappearance>
+            <favoritevariables/>
+            <optimization>
+                <settings>
+                    <niter>100</niter>
+                    <nsearchp>8</nsearchp>
+                    <refcoeff>1.3</refcoeff>
+                    <randfac>0.3</randfac>
+                    <forgfac>0</forgfac>
+                    <functol>1e-05</functol>
+                    <partol>0.0001</partol>
+                    <plot>true</plot>
+                    <savecsv>false</savecsv>
+                    <logpar>false</logpar>
+                </settings>
+                <parameters/>
+                <objectives/>
+            </optimization>
+        </hopsangui>
+        <objects>
+            <component typename="AeroPropeller" name="AeroPropeller">
+                <parameters>
+                    <parameter value="0" type="double" name="Pmr1::Angular Velocity"/>
+                    <parameter value="0" type="double" name="Pmr1::Torque"/>
+                    <parameter value="0" type="double" name="Pmr1::Angle"/>
+                    <parameter value="0" type="double" name="Pmr1::WaveVariable"/>
+                    <parameter value="0" type="double" name="Pmr1::CharImp"/>
+                    <parameter value="0" type="double" name="Pmr1::Equivalent Inertia"/>
+                    <parameter value="0" type="double" name="Pthrust::Value"/>
+                    <parameter value="0" type="double" name="Ptorque::Value"/>
+                    <parameter value="0" type="double" name="PPin::Value"/>
+                    <parameter value="0" type="double" name="PPout::Value"/>
+                    <parameter value="1" type="double" name="PJp::Value"/>
+                    <parameter value=".8" type="double" name="dp"/>
+                    <parameter value="0.2" type="double" name="b1"/>
+                    <parameter value="0.2" type="double" name="b2"/>
+                    <parameter value="0.205" type="double" name="g1"/>
+                    <parameter value="0.2" type="double" name="g2"/>
+                    <parameter value="1.25" type="double" name="Up"/>
+                    <parameter value="1.25" type="double" name="rho"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2248.999729" y="2451.000001" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="AeroPropeller" displayname="AeroPropeller">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="MechanicThetaSource" name="Angle &amp; Velocity Source">
+                <parameters>
+                    <parameter value="300" type="double" name="omega"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2151.000091" y="2451.000001" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicThetaSource" displayname="Angle &amp; Velocity Source">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalDivide" name="Divide">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2421.610787" y="2663.071768" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalDivide" displayname="Divide">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Scope_1">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2624.436534" y="2538.778166" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSink" displayname="Scope_1">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Scope_2">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2509.999873" y="2663.071768" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSink" displayname="Scope_2">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalRamp" name="Ramp_1">
+                <parameters>
+                    <parameter value="0" type="double" name="y_0"/>
+                    <parameter value="50" type="double" name="y_A"/>
+                    <parameter value="10" type="double" name="t_start"/>
+                    <parameter value="40" type="double" name="t_end"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2096.999892" y="2348.000053" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalRamp" displayname="Ramp_1">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalAdd" name="Add">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2397.017075" y="2614.515422" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalAdd" displayname="Add">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalSource" name="Constant">
+                <parameters>
+                    <parameter value="0.00001" type="double" name="y"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2122.999783" y="2625.015445" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSource" displayname="Constant">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Scope">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2467.665372" y="2561.890835" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSink" displayname="Scope">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2178.000052" y="2246.999979"/>
+                    <textobject fontcolor="#556b2f" text="Test model for propeller" font="Calibri,18,-1,0,50,0,0,0,0,0"/>
+                    <size width="245.000000" height="46.999947"/>
+                    <line width="2.000000" visible="0" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2156.999994" y="2291.999986"/>
+                    <textobject fontcolor="#556b2f" text="The air speed is vaired, while the rotational&#xa;speed is constant" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
+                    <size width="291.000000" height="46.000000"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
+        </objects>
+        <connections>
+            <connect endport="PUp" endcomponent="AeroPropeller" startport="out" startcomponent="Ramp_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2109.49989199999981792644" y="2348.00005300000020724838"/>
+                        <coordinate x="2244.99972100000013597310" y="2348.00005300000020724838"/>
+                        <coordinate x="2244.99972100000013597310" y="2393.50000099999988378840"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Scope" startport="Pthrust" startcomponent="AeroPropeller">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2240.99973700000009557698" y="2508.50000099999988378840"/>
+                        <coordinate x="2240.99973700000009557698" y="2561.89083500000015192199"/>
+                        <coordinate x="2447.66537199999993390520" y="2561.89083500000015192199"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_right" endcomponent="Scope" startport="Ptorque" startcomponent="AeroPropeller">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2244.99972100000013597310" y="2508.50000099999988378840"/>
+                        <coordinate x="2244.99972100000013597310" y="2530.12631338212486298289"/>
+                        <coordinate x="2523.99987322558172309073" y="2530.12631338212486298289"/>
+                        <coordinate x="2523.99987322558172309073" y="2561.89083500000015192199"/>
+                        <coordinate x="2487.66537199999993390520" y="2561.89083500000015192199"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Scope_1" startport="PPin" startcomponent="AeroPropeller">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2248.99972900000011577504" y="2508.50000099999988378840"/>
+                        <coordinate x="2248.99972900000011577504" y="2538.77816599999869140447"/>
+                        <coordinate x="2604.43653399999993780511" y="2538.77816599999869140447"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Scope_1" startport="PPout" startcomponent="AeroPropeller">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2252.99973700000009557698" y="2508.50000099999988378840"/>
+                        <coordinate x="2252.99973700000009557698" y="2538.77816599999869140447"/>
+                        <coordinate x="2604.43653399999993780511" y="2538.77816599999869140447"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_bottom" endcomponent="Scope_1" startport="PJp" startcomponent="AeroPropeller">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2256.99972100000013597310" y="2508.50000099999988378840"/>
+                        <coordinate x="2256.99972100000013597310" y="2506.83104392150744388346"/>
+                        <coordinate x="2652.44952322438712144503" y="2506.83104392150744388346"/>
+                        <coordinate x="2652.44952322438712144503" y="2580.21358434670401038602"/>
+                        <coordinate x="2624.43653399999993780511" y="2580.21358434670401038602"/>
+                        <coordinate x="2624.43653399999993780511" y="2553.77816599999869140447"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in2" endcomponent="Divide" startport="out" startcomponent="Add">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2409.51707500000020445441" y="2614.51542199999994409154"/>
+                        <coordinate x="2421.61078700000007302151" y="2614.51542199999994409154"/>
+                        <coordinate x="2421.61078700000007302151" y="2650.57176799999979266431"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in1" endcomponent="Divide" startport="PPout" startcomponent="AeroPropeller">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2252.99973700000009557698" y="2508.50000099999988378840"/>
+                        <coordinate x="2252.99973700000009557698" y="2573.64359605322852075915"/>
+                        <coordinate x="2253.13093519184440083336" y="2573.64359605322852075915"/>
+                        <coordinate x="2253.13093519184440083336" y="2663.07176799999979266431"/>
+                        <coordinate x="2409.11078700000007302151" y="2663.07176799999979266431"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in1" endcomponent="Add" startport="PPin" startcomponent="AeroPropeller">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2248.99972900000011577504" y="2508.50000099999988378840"/>
+                        <coordinate x="2248.99972900000011577504" y="2584.39448598800663603470"/>
+                        <coordinate x="2350.23006172451823658776" y="2584.39448598800663603470"/>
+                        <coordinate x="2350.23006172451823658776" y="2614.51542199999994409154"/>
+                        <coordinate x="2384.51707500000020445441" y="2614.51542199999994409154"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in2" endcomponent="Add" startport="out" startcomponent="Constant">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2135.49978300000020681182" y="2625.01544499999999970896"/>
+                        <coordinate x="2397.01707500000020445441" y="2625.01544499999999970896"/>
+                        <coordinate x="2397.01707500000020445441" y="2602.01542199999994409154"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Scope_2" startport="out" startcomponent="Divide">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2434.11078700000007302151" y="2663.07176799999979266431"/>
+                        <coordinate x="2489.99987300000020695734" y="2663.07176799999979266431"/>
+                        <coordinate x="2489.99987300000020695734" y="2663.07176799999979266431"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pmr1" endcomponent="AeroPropeller" startport="Pmr1" startcomponent="Angle &amp; Velocity Source">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2174.50009100009083340410" y="2451.00000099999988378840"/>
+                        <coordinate x="2236.99972900000011577504" y="2451.00000099999988378840"/>
+                        <coordinate x="2236.99972900000011577504" y="2451.00000099999988378840"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>

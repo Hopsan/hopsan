@@ -1,0 +1,1873 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.4.x_r3691" hopsancoreversion="0">
+    <system typename="Subsystem" name="Aircraft6DOFflapTest2">
+        <hopsangui>
+            <pose x="0" y="0" flipped="0" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2273.5" y="2458.5" zoom="1"/>
+            <ports hidden="1"/>
+            <names hidden="0"/>
+            <scriptfile path=""/>
+            <hopsanobjectappearance version="0.2">
+                <modelobject typename="Subsystem" displayname="Aircraft6DOFflapTest2">
+                    <icons>
+                        <icon scale="1" path="../../HopsanGUI/componentData/Subsystem/subsystemDefault.svg" iconrotation="ON" type="user"/>
+                    </icons>
+                </modelobject>
+                <portpositions/>
+            </hopsanobjectappearance>
+            <optimization>
+                <settings>
+                    <niter>100</niter>
+                    <nsearchp>8</nsearchp>
+                    <refcoeff>1.3</refcoeff>
+                    <randfac>0.3</randfac>
+                    <forgfac>0</forgfac>
+                    <functol>1e-05</functol>
+                    <partol>0.0001</partol>
+                    <plot>true</plot>
+                    <savecsv>false</savecsv>
+                    <logpar>false</logpar>
+                </settings>
+                <parameters/>
+                <objectives>
+                    <objective>
+                        <weight>7.74332e+268</weight>
+                        <norm>1.53477e-315</norm>
+                        <exp>5.73114e-205</exp>
+                        <variables/>
+                    </objective>
+                </objectives>
+            </optimization>
+            <hopsanundo>
+                <post number="-1"/>
+                <post number="0"/>
+                <post number="1">
+                    <stuff what="addedobject">
+                        <component typename="AeroAircraft6DOFflap" name="AeroAircraft6DOFflap">
+                            <parameters>
+                                <parameter value="0" name="Pa1l::Angular Velocity"/>
+                                <parameter value="0" name="Pa1l::Torque"/>
+                                <parameter value="0" name="Pa1l::Angle"/>
+                                <parameter value="0" name="Pa1r::Angular Velocity"/>
+                                <parameter value="0" name="Pa1r::Torque"/>
+                                <parameter value="0" name="Pa1r::Angle"/>
+                                <parameter value="0" name="Pa12l::Angular Velocity"/>
+                                <parameter value="0" name="Pa12l::Torque"/>
+                                <parameter value="0" name="Pa12l::Angle"/>
+                                <parameter value="0" name="Pa12r::Angular Velocity"/>
+                                <parameter value="0" name="Pa12r::Torque"/>
+                                <parameter value="0" name="Pa12r::Angle"/>
+                                <parameter value="0" name="Pa2l::Angular Velocity"/>
+                                <parameter value="0" name="Pa2l::Torque"/>
+                                <parameter value="0" name="Pa2l::Angle"/>
+                                <parameter value="0" name="Pa2r::Angular Velocity"/>
+                                <parameter value="0" name="Pa2r::Torque"/>
+                                <parameter value="0" name="Pa2r::Angle"/>
+                                <parameter value="0" name="Pfin::Angular Velocity"/>
+                                <parameter value="0" name="Pfin::Torque"/>
+                                <parameter value="0" name="Pfin::Angle"/>
+                                <parameter value="0" name="Pxcg::Value"/>
+                                <parameter value="0" name="Pycg::Value"/>
+                                <parameter value="0" name="Pzcg::Value"/>
+                                <parameter value="0" name="Pvx::Value"/>
+                                <parameter value="0" name="Pvy::Value"/>
+                                <parameter value="0" name="Pvz::Value"/>
+                                <parameter value="0" name="PPsi::Value"/>
+                                <parameter value="0" name="PThetao::Value"/>
+                                <parameter value="0" name="PPhi::Value"/>
+                                <parameter value="0" name="PUb::Value"/>
+                                <parameter value="0" name="PVb::Value"/>
+                                <parameter value="0" name="PWb::Value"/>
+                                <parameter value="0" name="PPb::Value"/>
+                                <parameter value="0" name="PQb::Value"/>
+                                <parameter value="0" name="PRb::Value"/>
+                                <parameter value="0" name="Pq0::Value"/>
+                                <parameter value="0" name="Pq1::Value"/>
+                                <parameter value="0" name="Pq2::Value"/>
+                                <parameter value="0" name="Pq3::Value"/>
+                                <parameter value="0" name="PAlphaAttack::Value"/>
+                                <parameter value="0" name="PBetaSlip::Value"/>
+                                <parameter value="0" name="Paltitude::Value"/>
+                                <parameter value="0" name="Pgfx::Value"/>
+                                <parameter value="0" name="Pgfy::Value"/>
+                                <parameter value="0" name="Pgfz::Value"/>
+                                <parameter value="0" name="PCL1::Value"/>
+                                <parameter value="0" name="PCd1::Value"/>
+                                <parameter value="0.3" name="afin"/>
+                                <parameter value="0.3" name="an1"/>
+                                <parameter value="0.3" name="an2"/>
+                                <parameter value="0.4" name="ap1"/>
+                                <parameter value="0.3" name="ap2"/>
+                                <parameter value="2.24537" name="AR1"/>
+                                <parameter value="2.20884" name="AR2"/>
+                                <parameter value="0.576369" name="ARfin"/>
+                                <parameter value="0.00662822" name="Cd01"/>
+                                <parameter value="0.00631223" name="Cd02"/>
+                                <parameter value="0.04" name="Cd0b"/>
+                                <parameter value="0.0054" name="Cd0fin"/>
+                                <parameter value="2.07733" name="CLalpha1"/>
+                                <parameter value="2.06032" name="CLalpha2"/>
+                                <parameter value="2" name="CLalphabh"/>
+                                <parameter value="2" name="CLalphabv"/>
+                                <parameter value="0.804668" name="CLalphafin"/>
+                                <parameter value="0.0247248" name="CLde1"/>
+                                <parameter value="0.51508" name="CLde2"/>
+                                <parameter value="0.2" name="CLde12"/>
+                                <parameter value="0.014" name="Cdide1"/>
+                                <parameter value="0.007" name="Cdide12"/>
+                                <parameter value="0.01" name="Cdide112"/>
+                                <parameter value="0.01" name="de10"/>
+                                <parameter value="0.01" name="de120"/>
+                                <parameter value="0.0827084" name="CLdefin"/>
+                                <parameter value="0.6" name="dah"/>
+                                <parameter value="0.95" name="e1"/>
+                                <parameter value="0.949716" name="e2"/>
+                                <parameter value="0.949985" name="efin"/>
+                                <parameter value="6" name="expclfin"/>
+                                <parameter value="6" name="expcln1"/>
+                                <parameter value="6" name="expcln2"/>
+                                <parameter value="9" name="expclp1"/>
+                                <parameter value="6" name="expclp2"/>
+                                <parameter value="-0.0872665" name="gamma1"/>
+                                <parameter value="-0.0872665" name="gamma2"/>
+                                <parameter value="0" name="hthrust"/>
+                                <parameter value="0" name="ia1"/>
+                                <parameter value="0.1" name="ia2"/>
+                                <parameter value="1000" name="Ix"/>
+                                <parameter value="500" name="Ixz"/>
+                                <parameter value="3000" name="Iy"/>
+                                <parameter value="3000" name="Iz"/>
+                                <parameter value="0.436332" name="lambda1"/>
+                                <parameter value="0.436332" name="lambda2"/>
+                                <parameter value="0.785398" name="lambdafin"/>
+                                <parameter value="0.1" name="lc1"/>
+                                <parameter value="0.1" name="lc2"/>
+                                <parameter value="0.1" name="lc12"/>
+                                <parameter value="0.1" name="lcfin"/>
+                                <parameter value="5000" name="Me"/>
+                                <parameter value="2.425" name="rc1"/>
+                                <parameter value="1.375" name="rc2"/>
+                                <parameter value="1" name="rcfin"/>
+                                <parameter value="41.904" name="S1"/>
+                                <parameter value="13.695" name="S2"/>
+                                <parameter value="10.5" name="Sbh"/>
+                                <parameter value="10.5" name="Sbv"/>
+                                <parameter value="6.94" name="Sfin"/>
+                                <parameter value="8.5" name="xbach"/>
+                                <parameter value="8.5" name="xbacv"/>
+                                <parameter value="6" name="xbcge"/>
+                                <parameter value="6" name="xcargo"/>
+                                <parameter value="6" name="xfuel"/>
+                                <parameter value="6.2525" name="xw1"/>
+                                <parameter value="11" name="xw2"/>
+                                <parameter value="10" name="xwfin"/>
+                                <parameter value="0" name="yeng"/>
+                                <parameter value="9.81" name="g0"/>
+                                <parameter value="10000" name="kground"/>
+                                <parameter value="0" name="thrustl"/>
+                                <parameter value="0" name="thrustr"/>
+                                <parameter value="0" name="dezthrust"/>
+                                <parameter value="0" name="Mfuel"/>
+                                <parameter value="0" name="Mcargo"/>
+                                <parameter value="1.25" name="rho"/>
+                                <parameter value="0" name="vturbx"/>
+                                <parameter value="0" name="vturby"/>
+                                <parameter value="0" name="vturbz"/>
+                                <parameter value="0" name="wturbx"/>
+                                <parameter value="0" name="wturby"/>
+                                <parameter value="0" name="wturbz"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2356" y="2444" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="2">
+                    <stuff what="movedobject" name="AeroAircraft6DOFflap">
+                        <oldpos>2176 2339.5</oldpos>
+                        <newpos>2306 2369.5</newpos>
+                    </stuff>
+                </post>
+                <post number="3">
+                    <stuff what="addedobject">
+                        <component typename="MechanicThetaSource" name="Angle &amp; Velocity Source">
+                            <parameters>
+                                <parameter value="0" name="omega"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2209" y="2392" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="4">
+                    <stuff what="addedobject">
+                        <component typename="MechanicThetaSource" name="Angle &amp; Velocity Source_1">
+                            <parameters>
+                                <parameter value="0" name="omega"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2128" y="2460" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="5">
+                    <stuff what="addedobject">
+                        <component typename="MechanicThetaSource" name="Angle &amp; Velocity Source_2">
+                            <parameters>
+                                <parameter value="0" name="omega"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2092" y="2531" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="6">
+                    <stuff what="addedobject">
+                        <component typename="MechanicThetaSource" name="Angle &amp; Velocity Source_3">
+                            <parameters>
+                                <parameter value="0" name="omega"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2061" y="2582" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="7">
+                    <stuff what="addedobject">
+                        <component typename="MechanicThetaSource" name="Angle &amp; Velocity Source_4">
+                            <parameters>
+                                <parameter value="0" name="omega"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2116" y="2633" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="8">
+                    <stuff what="movedobject" name="Angle &amp; Velocity Source">
+                        <oldpos>2185.5 2385.5</oldpos>
+                        <newpos>2218.5 2359.5</newpos>
+                    </stuff>
+                </post>
+                <post number="9">
+                    <stuff what="movedobject" name="Angle &amp; Velocity Source_1">
+                        <oldpos>2104.5 2453.5</oldpos>
+                        <newpos>2211.5 2390.5</newpos>
+                    </stuff>
+                </post>
+                <post number="10">
+                    <stuff what="movedobject" name="Angle &amp; Velocity Source_2">
+                        <oldpos>2068.5 2524.5</oldpos>
+                        <newpos>2202.5 2429.5</newpos>
+                    </stuff>
+                </post>
+                <post number="11">
+                    <stuff what="movedobject" name="Angle &amp; Velocity Source_3">
+                        <oldpos>2037.5 2575.5</oldpos>
+                        <newpos>2188.5 2477.5</newpos>
+                    </stuff>
+                </post>
+                <post number="12">
+                    <stuff what="movedobject" name="Angle &amp; Velocity Source_4">
+                        <oldpos>2092.5 2626.5</oldpos>
+                        <newpos>2172.5 2551.5</newpos>
+                    </stuff>
+                </post>
+                <post number="13">
+                    <stuff what="addedconnector">
+                        <connect endport="Pa1l" endcomponent="AeroAircraft6DOFflap" startport="Pmr1" startcomponent="Angle &amp; Velocity Source">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2265.50000000000000000000" y="2366.00000000000000000000"/>
+                                    <coordinate x="2306.00000000000000000000" y="2366.00000000000000000000"/>
+                                    <coordinate x="2306.00000000000000000000" y="2395.62500000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="14">
+                    <stuff what="addedconnector">
+                        <connect endport="Pa1r" endcomponent="AeroAircraft6DOFflap" startport="Pmr1" startcomponent="Angle &amp; Velocity Source_1">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2258.50000000000000000000" y="2397.00000000000000000000"/>
+                                    <coordinate x="2306.00000000000000000000" y="2397.00000000000000000000"/>
+                                    <coordinate x="2306.00000000000000000000" y="2421.75000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="15">
+                    <stuff what="addedconnector">
+                        <connect endport="Pa12l" endcomponent="AeroAircraft6DOFflap" startport="Pmr1" startcomponent="Angle &amp; Velocity Source_2">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2249.50000000000000000000" y="2436.00000000000000000000"/>
+                                    <coordinate x="2306.00000000000000000000" y="2436.00000000000000000000"/>
+                                    <coordinate x="2306.00000000000000000000" y="2447.87500000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="16">
+                    <stuff what="addedconnector">
+                        <connect endport="Pa12r" endcomponent="AeroAircraft6DOFflap" startport="Pmr1" startcomponent="Angle &amp; Velocity Source_3">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2235.50000000000000000000" y="2484.00000000000000000000"/>
+                                    <coordinate x="2306.00000000000000000000" y="2484.00000000000000000000"/>
+                                    <coordinate x="2306.00000000000000000000" y="2474.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="17">
+                    <stuff what="addedconnector">
+                        <connect endport="Pa2l" endcomponent="AeroAircraft6DOFflap" startport="Pmr1" startcomponent="Angle &amp; Velocity Source_4">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2219.50000000000000000000" y="2558.00000000000000000000"/>
+                                    <coordinate x="2306.00000000000000000000" y="2558.00000000000000000000"/>
+                                    <coordinate x="2306.00000000000000000000" y="2500.12500000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="18">
+                    <stuff what="movedobject" name="Angle &amp; Velocity Source_4">
+                        <oldpos>2172.5 2551.5</oldpos>
+                        <newpos>2200.5 2506.5</newpos>
+                    </stuff>
+                </post>
+                <post number="19">
+                    <stuff what="movedobject" name="Angle &amp; Velocity Source_3">
+                        <oldpos>2188.5 2477.5</oldpos>
+                        <newpos>2205.5 2456.5</newpos>
+                    </stuff>
+                </post>
+                <post number="20">
+                    <stuff what="addedobject">
+                        <component typename="MechanicThetaSource" name="Angle &amp; Velocity Source_5">
+                            <parameters>
+                                <parameter value="0" name="omega"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2183" y="2558" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="21">
+                    <stuff what="addedobject">
+                        <component typename="MechanicThetaSource" name="Angle &amp; Velocity Source_6">
+                            <parameters>
+                                <parameter value="0" name="omega"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="2143" y="2620" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="22">
+                    <stuff what="addedconnector">
+                        <connect endport="Pa2r" endcomponent="AeroAircraft6DOFflap" startport="Pmr1" startcomponent="Angle &amp; Velocity Source_5">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2206.50000000000000000000" y="2558.00000000000000000000"/>
+                                    <coordinate x="2306.00000000000000000000" y="2558.00000000000000000000"/>
+                                    <coordinate x="2306.00000000000000000000" y="2526.25000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="23">
+                    <stuff what="addedconnector">
+                        <connect endport="Pfin" endcomponent="AeroAircraft6DOFflap" startport="Pmr1" startcomponent="Angle &amp; Velocity Source_6">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2166.50000000000000000000" y="2620.00000000000000000000"/>
+                                    <coordinate x="2306.00000000000000000000" y="2620.00000000000000000000"/>
+                                    <coordinate x="2306.00000000000000000000" y="2552.37500000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="24">
+                    <stuff what="movedobject" name="Angle &amp; Velocity Source_5">
+                        <oldpos>2159.5 2551.5</oldpos>
+                        <newpos>2141.5 2519.75</newpos>
+                    </stuff>
+                </post>
+                <post number="25">
+                    <stuff what="movedobject" name="Angle &amp; Velocity Source_4">
+                        <oldpos>2200.5 2506.5</oldpos>
+                        <newpos>2212.5 2493.62</newpos>
+                    </stuff>
+                </post>
+                <post number="26">
+                    <stuff what="movedobject" name="Angle &amp; Velocity Source_5">
+                        <oldpos>2141.5 2519.75</oldpos>
+                        <newpos>2206.5 2519.75</newpos>
+                    </stuff>
+                </post>
+                <post number="27">
+                    <stuff what="movedobject" name="Angle &amp; Velocity Source_6">
+                        <oldpos>2119.5 2613.5</oldpos>
+                        <newpos>2200.5 2545.88</newpos>
+                    </stuff>
+                </post>
+                <post number="28">
+                    <stuff what="movedobject" name="Angle &amp; Velocity Source_3">
+                        <oldpos>2205.5 2456.5</oldpos>
+                        <newpos>2206.5 2467.5</newpos>
+                    </stuff>
+                </post>
+                <post number="29">
+                    <stuff what="movedobject" name="Angle &amp; Velocity Source_2">
+                        <oldpos>2202.5 2429.5</oldpos>
+                        <newpos>2207.5 2441.38</newpos>
+                    </stuff>
+                </post>
+                <post number="30">
+                    <stuff what="movedobject" name="Angle &amp; Velocity Source_1">
+                        <oldpos>2211.5 2390.5</oldpos>
+                        <newpos>2208.5 2415.25</newpos>
+                    </stuff>
+                </post>
+                <post number="31">
+                    <stuff what="movedobject" name="Angle &amp; Velocity Source">
+                        <oldpos>2218.5 2359.5</oldpos>
+                        <newpos>2210.5 2389.12</newpos>
+                    </stuff>
+                </post>
+                <post number="32">
+                    <stuff what="addedobject">
+                        <component typename="SignalSink" name="Sink">
+                            <parameters/>
+                            <hopsangui>
+                                <pose x="2727" y="2615" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="33">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink" startport="PPhi" startcomponent="AeroAircraft6DOFflap">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2421.71444000000019514118" y="2578.50000000000000000000"/>
+                                    <coordinate x="2421.71444000000019514118" y="2615.00000000000000000000"/>
+                                    <coordinate x="2714.50000000000000000000" y="2615.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="34">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink" startport="PThetao" startcomponent="AeroAircraft6DOFflap">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2408.85703999999986990588" y="2578.50000000000000000000"/>
+                                    <coordinate x="2408.85703999999986990588" y="2615.00000000000000000000"/>
+                                    <coordinate x="2714.50000000000000000000" y="2615.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="35">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink" startport="PPsi" startcomponent="AeroAircraft6DOFflap">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2396.00000000000000000000" y="2578.50000000000000000000"/>
+                                    <coordinate x="2396.00000000000000000000" y="2615.00000000000000000000"/>
+                                    <coordinate x="2714.50000000000000000000" y="2615.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="36">
+                    <stuff what="addedconnector">
+                        <connect endport="in_right" endcomponent="Sink" startport="PUb" startcomponent="AeroAircraft6DOFflap">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2434.57148000000006504706" y="2578.50000000000000000000"/>
+                                    <coordinate x="2434.57148000000006504706" y="2592.00000000000000000000"/>
+                                    <coordinate x="2761.00000000000000000000" y="2592.00000000000000000000"/>
+                                    <coordinate x="2761.00000000000000000000" y="2615.00000000000000000000"/>
+                                    <coordinate x="2739.50000000000000000000" y="2615.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="37">
+                    <stuff what="addedobject">
+                        <component typename="SignalSink" name="Sink_1">
+                            <parameters/>
+                            <hopsangui>
+                                <pose x="2722" y="2671" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="38">
+                    <stuff what="movedobject" name="Sink_1">
+                        <oldpos>2709.5 2658.5</oldpos>
+                        <newpos>2717.5 2658.5</newpos>
+                    </stuff>
+                </post>
+                <post number="39">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Sink_1" startport="Paltitude" startcomponent="AeroAircraft6DOFflap">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2588.85703999999986990588" y="2578.50000000000000000000"/>
+                                    <coordinate x="2588.85703999999986990588" y="2671.00000000000000000000"/>
+                                    <coordinate x="2717.50000000000000000000" y="2671.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="40">
+                    <stuff what="addedconnector">
+                        <connect endport="in_bottom" endcomponent="Sink_1" startport="Pxcg" startcomponent="AeroAircraft6DOFflap">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2318.85714800000005197944" y="2578.50000000000000000000"/>
+                                    <coordinate x="2318.85714800000005197944" y="2695.00000000000000000000"/>
+                                    <coordinate x="2730.00000000000000000000" y="2695.00000000000000000000"/>
+                                    <coordinate x="2730.00000000000000000000" y="2683.50000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="41" type="changedparameters">
+                    <stuff newvalue="150" what="changedparameter" oldvalue="0" parametername="PUb::Value" objectname="AeroAircraft6DOFflap"/>
+                </post>
+                <post number="42">
+                    <stuff what="addedobject">
+                        <component typename="SignalPIlead" name="SignalPIlead">
+                            <parameters>
+                                <parameter value="0" name="Pu::Value"/>
+                                <parameter value="1" name="wa"/>
+                                <parameter value="1" name="da"/>
+                                <parameter value="-1" name="umin"/>
+                                <parameter value="1" name="umax"/>
+                                <parameter value="0" name="yref"/>
+                                <parameter value="0" name="y"/>
+                                <parameter value="1" name="kx"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="1936" y="2441" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="43">
+                    <stuff what="addedobject">
+                        <component typename="SignalAttitudeControl" name="SignalAttitudeControl">
+                            <parameters>
+                                <parameter value="0" name="PuaerL::Value"/>
+                                <parameter value="0" name="PuaerR::Value"/>
+                                <parameter value="0" name="Puelev::Value"/>
+                                <parameter value="0" name="Purud::Value"/>
+                                <parameter value="3" name="Kphi"/>
+                                <parameter value="2" name="Kphipsi"/>
+                                <parameter value="-1" name="phimin"/>
+                                <parameter value="1" name="phimax"/>
+                                <parameter value="4" name="Kelev"/>
+                                <parameter value="1" name="Krud"/>
+                                <parameter value="1" name="KRrud"/>
+                                <parameter value="-0.9" name="u1min"/>
+                                <parameter value="0.9" name="u1max"/>
+                                <parameter value="-0.7" name="u2min"/>
+                                <parameter value="0.7" name="u2max"/>
+                                <parameter value="-0.7" name="u3min"/>
+                                <parameter value="0.7" name="u3max"/>
+                                <parameter value="100" name="U0"/>
+                                <parameter value="0" name="phiref"/>
+                                <parameter value="0" name="thetaref"/>
+                                <parameter value="0" name="psiref"/>
+                                <parameter value="0" name="phi"/>
+                                <parameter value="0" name="theta"/>
+                                <parameter value="0" name="psi"/>
+                                <parameter value="0" name="beta"/>
+                                <parameter value="0" name="Rb"/>
+                                <parameter value="0" name="Ub"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="1968" y="2543" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="44">
+                    <stuff what="movedobject" name="SignalAttitudeControl">
+                        <oldpos>1935.5 2511</oldpos>
+                        <newpos>2035.5 2424</newpos>
+                    </stuff>
+                </post>
+                <post number="45">
+                    <stuff what="addedconnector">
+                        <connect endport="Pthetaref" endcomponent="SignalAttitudeControl" startport="Pu" startcomponent="SignalPIlead">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="1974.50000000000000000000" y="2449.59999999999990905053"/>
+                                    <coordinate x="2015.50000000000000000000" y="2449.59999999999990905053"/>
+                                    <coordinate x="2015.50000000000000000000" y="2449.59999999999990905053"/>
+                                    <coordinate x="2035.50000000000000000000" y="2449.59999999999990905053"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="46">
+                    <stuff what="addedconnector">
+                        <connect endport="thetain" endcomponent="Angle &amp; Velocity Source_4" startport="Puelev" startcomponent="SignalAttitudeControl">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2100.50000000000000000000" y="2462.40000000000009094947"/>
+                                    <coordinate x="2192.50000000000000000000" y="2462.40000000000009094947"/>
+                                    <coordinate x="2192.50000000000000000000" y="2493.62500000000000000000"/>
+                                    <coordinate x="2212.50000000000000000000" y="2493.62500000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="47">
+                    <stuff what="addedconnector">
+                        <connect endport="thetain" endcomponent="Angle &amp; Velocity Source_5" startport="Puelev" startcomponent="SignalAttitudeControl">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2100.50000000000000000000" y="2462.40000000000009094947"/>
+                                    <coordinate x="2148.00000000000000000000" y="2462.40000000000009094947"/>
+                                    <coordinate x="2148.00000000000000000000" y="2519.75000000000000000000"/>
+                                    <coordinate x="2206.50000000000000000000" y="2519.75000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="48">
+                    <stuff what="movedobject" name="SignalAttitudeControl">
+                        <oldpos>2035.5 2424</oldpos>
+                        <newpos>2016.5 2421</newpos>
+                    </stuff>
+                </post>
+                <post number="49">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>0 0</oldpos>
+                        <newpos>-31 -1</newpos>
+                        <connect endport="thetain" endcomponent="Angle &amp; Velocity Source_5" startport="Puelev" startcomponent="SignalAttitudeControl">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2081.50000000000000000000" y="2459.40000000000009094947"/>
+                                    <coordinate x="2117.00000000000000000000" y="2459.40000000000009094947"/>
+                                    <coordinate x="2117.00000000000000000000" y="2519.75000000000000000000"/>
+                                    <coordinate x="2206.50000000000000000000" y="2519.75000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="50">
+                    <stuff what="deletedconnector">
+                        <connect endport="thetain" endcomponent="Angle &amp; Velocity Source_4" startport="Puelev" startcomponent="SignalAttitudeControl">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2081.50000000000000000000" y="2459.40000000000009094947"/>
+                                    <coordinate x="2192.50000000000000000000" y="2459.40000000000009094947"/>
+                                    <coordinate x="2192.50000000000000000000" y="2493.62500000000000000000"/>
+                                    <coordinate x="2212.50000000000000000000" y="2493.62500000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="51">
+                    <stuff what="addedconnector">
+                        <connect endport="thetain" endcomponent="Angle &amp; Velocity Source_4" startport="Puelev" startcomponent="SignalAttitudeControl">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2081.50000000000000000000" y="2459.40000000000009094947"/>
+                                    <coordinate x="2123.00000000000000000000" y="2459.40000000000009094947"/>
+                                    <coordinate x="2123.00000000000000000000" y="2493.62500000000000000000"/>
+                                    <coordinate x="2212.50000000000000000000" y="2493.62500000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="52">
+                    <stuff what="addedconnector">
+                        <connect endport="Ppsi" endcomponent="SignalAttitudeControl" startport="PPhi" startcomponent="AeroAircraft6DOFflap">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2421.71444000000019514118" y="2578.50000000000000000000"/>
+                                    <coordinate x="2421.71444000000019514118" y="2670.00000000000000000000"/>
+                                    <coordinate x="2049.00000000000000000000" y="2670.00000000000000000000"/>
+                                    <coordinate x="2049.00000000000000000000" y="2485.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="53">
+                    <stuff what="deletedconnector">
+                        <connect endport="Ppsi" endcomponent="SignalAttitudeControl" startport="PPhi" startcomponent="AeroAircraft6DOFflap">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2421.71444000000019514118" y="2578.50000000000000000000"/>
+                                    <coordinate x="2421.71444000000019514118" y="2670.00000000000000000000"/>
+                                    <coordinate x="2049.00000000000000000000" y="2670.00000000000000000000"/>
+                                    <coordinate x="2049.00000000000000000000" y="2485.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="54">
+                    <stuff what="addedconnector">
+                        <connect endport="Pphi" endcomponent="SignalAttitudeControl" startport="PPhi" startcomponent="AeroAircraft6DOFflap">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2421.71444000000019514118" y="2578.50000000000000000000"/>
+                                    <coordinate x="2421.71444000000019514118" y="2685.00000000000000000000"/>
+                                    <coordinate x="2023.00000000000000000000" y="2685.00000000000000000000"/>
+                                    <coordinate x="2023.00000000000000000000" y="2485.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="55">
+                    <stuff what="addedconnector">
+                        <connect endport="Ptheta" endcomponent="SignalAttitudeControl" startport="PThetao" startcomponent="AeroAircraft6DOFflap">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2408.85703999999986990588" y="2578.50000000000000000000"/>
+                                    <coordinate x="2408.85703999999986990588" y="2671.00000000000000000000"/>
+                                    <coordinate x="2036.00000000000000000000" y="2671.00000000000000000000"/>
+                                    <coordinate x="2036.00000000000000000000" y="2485.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="56">
+                    <stuff what="addedconnector">
+                        <connect endport="Ppsi" endcomponent="SignalAttitudeControl" startport="PPsi" startcomponent="AeroAircraft6DOFflap">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2396.00000000000000000000" y="2578.50000000000000000000"/>
+                                    <coordinate x="2396.00000000000000000000" y="2656.00000000000000000000"/>
+                                    <coordinate x="2049.00000000000000000000" y="2656.00000000000000000000"/>
+                                    <coordinate x="2049.00000000000000000000" y="2485.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="57">
+                    <stuff what="addedconnector">
+                        <connect endport="Pbeta" endcomponent="SignalAttitudeControl" startport="PBetaSlip" startcomponent="AeroAircraft6DOFflap">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2576.00000000000000000000" y="2578.50000000000000000000"/>
+                                    <coordinate x="2576.00000000000000000000" y="2641.00000000000000000000"/>
+                                    <coordinate x="2062.00000000000000000000" y="2641.00000000000000000000"/>
+                                    <coordinate x="2062.00000000000000000000" y="2485.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="58">
+                    <stuff what="addedconnector">
+                        <connect endport="PRb" endcomponent="AeroAircraft6DOFflap" startport="PRb" startcomponent="SignalAttitudeControl">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2068.50000000000000000000" y="2485.00000000000000000000"/>
+                                    <coordinate x="2068.50000000000000000000" y="2632.00000000000000000000"/>
+                                    <coordinate x="2498.85703999999986990588" y="2632.00000000000000000000"/>
+                                    <coordinate x="2498.85703999999986990588" y="2578.50000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="59">
+                    <stuff what="addedconnector">
+                        <connect endport="PUb" endcomponent="AeroAircraft6DOFflap" startport="PUb" startcomponent="SignalAttitudeControl">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2075.00000000000000000000" y="2485.00000000000000000000"/>
+                                    <coordinate x="2075.00000000000000000000" y="2625.00000000000000000000"/>
+                                    <coordinate x="2434.57148000000006504706" y="2625.00000000000000000000"/>
+                                    <coordinate x="2434.57148000000006504706" y="2578.50000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="60">
+                    <stuff what="addedconnector">
+                        <connect endport="Paltitude" endcomponent="AeroAircraft6DOFflap" startport="Py" startcomponent="SignalPIlead">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="1897.50000000000000000000" y="2458.84999999999990905053"/>
+                                    <coordinate x="1864.00000000000000000000" y="2458.84999999999990905053"/>
+                                    <coordinate x="1864.00000000000000000000" y="2701.00000000000000000000"/>
+                                    <coordinate x="2588.85703999999986990588" y="2701.00000000000000000000"/>
+                                    <coordinate x="2588.85703999999986990588" y="2578.50000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="61">
+                    <stuff what="addedconnector">
+                        <connect endport="PUb" endcomponent="AeroAircraft6DOFflap" startport="Pkx" startcomponent="SignalPIlead">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="1936.00000000000000000000" y="2431.09999999999990905053"/>
+                                    <coordinate x="1936.00000000000000000000" y="2372.00000000000000000000"/>
+                                    <coordinate x="1976.00000000000000000000" y="2372.00000000000000000000"/>
+                                    <coordinate x="1976.00000000000000000000" y="2716.00000000000000000000"/>
+                                    <coordinate x="2434.57148000000006504706" y="2716.00000000000000000000"/>
+                                    <coordinate x="2434.57148000000006504706" y="2578.50000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="62" type="changedparameters">
+                    <stuff newvalue=".2" what="changedparameter" oldvalue="1" parametername="wa" objectname="SignalPIlead"/>
+                </post>
+                <post number="63">
+                    <stuff what="addedobject">
+                        <component typename="SignalPulse" name="Pulse">
+                            <parameters>
+                                <parameter value="0" name="y_0"/>
+                                <parameter value="1" name="t_start"/>
+                                <parameter value="2" name="t_end"/>
+                                <parameter value="1" name="y_A"/>
+                            </parameters>
+                            <hopsangui>
+                                <pose x="1958" y="2303" flipped="0" a="0"/>
+                                <nametext position="0" visible="1"/>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="64">
+                    <stuff what="addedconnector">
+                        <connect endport="thetain" endcomponent="Angle &amp; Velocity Source_1" startport="out" startcomponent="Pulse">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="1970.50000000000000000000" y="2303.00000000000000000000"/>
+                                    <coordinate x="2188.50000000000000000000" y="2303.00000000000000000000"/>
+                                    <coordinate x="2188.50000000000000000000" y="2415.25000000000000000000"/>
+                                    <coordinate x="2208.50000000000000000000" y="2415.25000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="65" type="changedparameters">
+                    <stuff newvalue="4" what="changedparameter" oldvalue="1" parametername="t_start" objectname="Pulse"/>
+                    <stuff newvalue="5" what="changedparameter" oldvalue="2" parametername="t_end" objectname="Pulse"/>
+                    <stuff newvalue=".4" what="changedparameter" oldvalue="1" parametername="y_A" objectname="Pulse"/>
+                </post>
+                <post number="66" type="changedparameters">
+                    <stuff newvalue="-.4" what="changedparameter" oldvalue=".4" parametername="y_A" objectname="Pulse"/>
+                </post>
+                <post number="67">
+                    <stuff what="deletedconnector">
+                        <connect endport="thetain" endcomponent="Angle &amp; Velocity Source_1" startport="out" startcomponent="Pulse">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="1970.50000000000000000000" y="2303.00000000000000000000"/>
+                                    <coordinate x="2188.50000000000000000000" y="2303.00000000000000000000"/>
+                                    <coordinate x="2188.50000000000000000000" y="2415.25000000000000000000"/>
+                                    <coordinate x="2208.50000000000000000000" y="2415.25000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="68">
+                    <stuff what="addedconnector">
+                        <connect endport="thetain" endcomponent="Angle &amp; Velocity Source" startport="out" startcomponent="Pulse">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="1970.50000000000000000000" y="2303.00000000000000000000"/>
+                                    <coordinate x="2199.50000000000000000000" y="2303.00000000000000000000"/>
+                                    <coordinate x="2199.50000000000000000000" y="2389.12500000000000000000"/>
+                                    <coordinate x="2219.50000000000000000000" y="2389.12500000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="69">
+                    <stuff what="movedobject" name="Pulse">
+                        <oldpos>1945.5 2290.5</oldpos>
+                        <newpos>1944.5 2290.5</newpos>
+                    </stuff>
+                </post>
+                <post number="70" type="changedparameters">
+                    <stuff newvalue="6" what="changedparameter" oldvalue="5" parametername="t_end" objectname="Pulse"/>
+                </post>
+                <post number="71" type="changedparameters">
+                    <stuff newvalue="7" what="changedparameter" oldvalue="6" parametername="t_end" objectname="Pulse"/>
+                </post>
+                <post number="72" type="changedparameters">
+                    <stuff newvalue="1.5" what="changedparameter" oldvalue="0.576369" parametername="ARfin" objectname="AeroAircraft6DOFflap"/>
+                </post>
+                <post number="73" type="changedparameters">
+                    <stuff newvalue="10" what="changedparameter" oldvalue="6.94" parametername="Sfin" objectname="AeroAircraft6DOFflap"/>
+                </post>
+                <post number="74" type="changedparameters">
+                    <stuff newvalue=".001" what="changedparameter" oldvalue="10" parametername="Sfin" objectname="AeroAircraft6DOFflap"/>
+                </post>
+                <post number="75" type="changedparameters">
+                    <stuff newvalue="15" what="changedparameter" oldvalue=".001" parametername="Sfin" objectname="AeroAircraft6DOFflap"/>
+                </post>
+                <post number="76" type="changedparameters">
+                    <stuff newvalue="12" what="changedparameter" oldvalue="10" parametername="xwfin" objectname="AeroAircraft6DOFflap"/>
+                </post>
+                <post number="77">
+                    <stuff what="deletedconnector">
+                        <connect endport="thetain" endcomponent="Angle &amp; Velocity Source" startport="out" startcomponent="Pulse">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="1969.50000000000000000000" y="2303.00000000000000000000"/>
+                                    <coordinate x="2199.50000000000000000000" y="2303.00000000000000000000"/>
+                                    <coordinate x="2199.50000000000000000000" y="2389.12500000000000000000"/>
+                                    <coordinate x="2219.50000000000000000000" y="2389.12500000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="78">
+                    <stuff what="addedconnector">
+                        <connect endport="thetain" endcomponent="Angle &amp; Velocity Source_6" startport="out" startcomponent="Pulse">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="1969.50000000000000000000" y="2303.00000000000000000000"/>
+                                    <coordinate x="2109.00000000000000000000" y="2303.00000000000000000000"/>
+                                    <coordinate x="2109.00000000000000000000" y="2545.87500000000000000000"/>
+                                    <coordinate x="2203.50000000000000000000" y="2545.87500000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+            </hopsanundo>
+        </hopsangui>
+        <simulationtime stop="20" timestep="0.001" start="0"/>
+        <parameters/>
+        <objects>
+            <component typename="SignalSink" name="Sink">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2727" y="2615" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalAttitudeControl" name="SignalAttitudeControl">
+                <parameters>
+                    <parameter value="0" name="PuaerL::Value"/>
+                    <parameter value="0" name="PuaerR::Value"/>
+                    <parameter value="0" name="Puelev::Value"/>
+                    <parameter value="0" name="Purud::Value"/>
+                    <parameter value="3" name="Kphi"/>
+                    <parameter value="2" name="Kphipsi"/>
+                    <parameter value="-1" name="phimin"/>
+                    <parameter value="1" name="phimax"/>
+                    <parameter value="4" name="Kelev"/>
+                    <parameter value="1" name="Krud"/>
+                    <parameter value="1" name="KRrud"/>
+                    <parameter value="-0.9" name="u1min"/>
+                    <parameter value="0.9" name="u1max"/>
+                    <parameter value="-0.7" name="u2min"/>
+                    <parameter value="0.7" name="u2max"/>
+                    <parameter value="-0.7" name="u3min"/>
+                    <parameter value="0.7" name="u3max"/>
+                    <parameter value="100" name="U0"/>
+                    <parameter value="0" name="phiref"/>
+                    <parameter value="0" name="thetaref"/>
+                    <parameter value="0" name="psiref"/>
+                    <parameter value="0" name="phi"/>
+                    <parameter value="0" name="theta"/>
+                    <parameter value="0" name="psi"/>
+                    <parameter value="0" name="beta"/>
+                    <parameter value="0" name="Rb"/>
+                    <parameter value="0" name="Ub"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2049" y="2453" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicThetaSource" name="Angle &amp; Velocity Source">
+                <parameters>
+                    <parameter value="0" name="omega"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2243" y="2395.625" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalPulse" name="Pulse">
+                <parameters>
+                    <parameter value="0" name="y_0"/>
+                    <parameter value="4" name="t_start"/>
+                    <parameter value="7" name="t_end"/>
+                    <parameter value="-.4" name="y_A"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="1957" y="2303" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink_1">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2730" y="2671" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalPIlead" name="SignalPIlead">
+                <parameters>
+                    <parameter value="0" name="Pu::Value"/>
+                    <parameter value=".2" name="wa"/>
+                    <parameter value="1" name="da"/>
+                    <parameter value="-1" name="umin"/>
+                    <parameter value="1" name="umax"/>
+                    <parameter value="0" name="yref"/>
+                    <parameter value="0" name="y"/>
+                    <parameter value="1" name="kx"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="1936" y="2449.6" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="AeroAircraft6DOFflap" name="AeroAircraft6DOFflap">
+                <parameters>
+                    <parameter value="0" name="Pa1l::Angular Velocity"/>
+                    <parameter value="0" name="Pa1l::Torque"/>
+                    <parameter value="0" name="Pa1l::Angle"/>
+                    <parameter value="0" name="Pa1r::Angular Velocity"/>
+                    <parameter value="0" name="Pa1r::Torque"/>
+                    <parameter value="0" name="Pa1r::Angle"/>
+                    <parameter value="0" name="Pa12l::Angular Velocity"/>
+                    <parameter value="0" name="Pa12l::Torque"/>
+                    <parameter value="0" name="Pa12l::Angle"/>
+                    <parameter value="0" name="Pa12r::Angular Velocity"/>
+                    <parameter value="0" name="Pa12r::Torque"/>
+                    <parameter value="0" name="Pa12r::Angle"/>
+                    <parameter value="0" name="Pa2l::Angular Velocity"/>
+                    <parameter value="0" name="Pa2l::Torque"/>
+                    <parameter value="0" name="Pa2l::Angle"/>
+                    <parameter value="0" name="Pa2r::Angular Velocity"/>
+                    <parameter value="0" name="Pa2r::Torque"/>
+                    <parameter value="0" name="Pa2r::Angle"/>
+                    <parameter value="0" name="Pfin::Angular Velocity"/>
+                    <parameter value="0" name="Pfin::Torque"/>
+                    <parameter value="0" name="Pfin::Angle"/>
+                    <parameter value="0" name="Pxcg::Value"/>
+                    <parameter value="0" name="Pycg::Value"/>
+                    <parameter value="0" name="Pzcg::Value"/>
+                    <parameter value="0" name="Pvx::Value"/>
+                    <parameter value="0" name="Pvy::Value"/>
+                    <parameter value="0" name="Pvz::Value"/>
+                    <parameter value="0" name="PPsi::Value"/>
+                    <parameter value="0" name="PThetao::Value"/>
+                    <parameter value="0" name="PPhi::Value"/>
+                    <parameter value="150" name="PUb::Value"/>
+                    <parameter value="0" name="PVb::Value"/>
+                    <parameter value="0" name="PWb::Value"/>
+                    <parameter value="0" name="PPb::Value"/>
+                    <parameter value="0" name="PQb::Value"/>
+                    <parameter value="0" name="PRb::Value"/>
+                    <parameter value="0" name="Pq0::Value"/>
+                    <parameter value="0" name="Pq1::Value"/>
+                    <parameter value="0" name="Pq2::Value"/>
+                    <parameter value="0" name="Pq3::Value"/>
+                    <parameter value="0" name="PAlphaAttack::Value"/>
+                    <parameter value="0" name="PBetaSlip::Value"/>
+                    <parameter value="0" name="Paltitude::Value"/>
+                    <parameter value="0" name="Pgfx::Value"/>
+                    <parameter value="0" name="Pgfy::Value"/>
+                    <parameter value="0" name="Pgfz::Value"/>
+                    <parameter value="0" name="PCL1::Value"/>
+                    <parameter value="0" name="PCd1::Value"/>
+                    <parameter value="0.3" name="afin"/>
+                    <parameter value="0.3" name="an1"/>
+                    <parameter value="0.3" name="an2"/>
+                    <parameter value="0.4" name="ap1"/>
+                    <parameter value="0.3" name="ap2"/>
+                    <parameter value="2.24537" name="AR1"/>
+                    <parameter value="2.20884" name="AR2"/>
+                    <parameter value="1.5" name="ARfin"/>
+                    <parameter value="0.00662822" name="Cd01"/>
+                    <parameter value="0.00631223" name="Cd02"/>
+                    <parameter value="0.04" name="Cd0b"/>
+                    <parameter value="0.0054" name="Cd0fin"/>
+                    <parameter value="2.07733" name="CLalpha1"/>
+                    <parameter value="2.06032" name="CLalpha2"/>
+                    <parameter value="2" name="CLalphabh"/>
+                    <parameter value="2" name="CLalphabv"/>
+                    <parameter value="0.804668" name="CLalphafin"/>
+                    <parameter value="0.0247248" name="CLde1"/>
+                    <parameter value="0.51508" name="CLde2"/>
+                    <parameter value="0.2" name="CLde12"/>
+                    <parameter value="0.014" name="Cdide1"/>
+                    <parameter value="0.007" name="Cdide12"/>
+                    <parameter value="0.01" name="Cdide112"/>
+                    <parameter value="0.01" name="de10"/>
+                    <parameter value="0.01" name="de120"/>
+                    <parameter value="0.0827084" name="CLdefin"/>
+                    <parameter value="0.6" name="dah"/>
+                    <parameter value="0.95" name="e1"/>
+                    <parameter value="0.949716" name="e2"/>
+                    <parameter value="0.949985" name="efin"/>
+                    <parameter value="6" name="expclfin"/>
+                    <parameter value="6" name="expcln1"/>
+                    <parameter value="6" name="expcln2"/>
+                    <parameter value="9" name="expclp1"/>
+                    <parameter value="6" name="expclp2"/>
+                    <parameter value="-0.0872665" name="gamma1"/>
+                    <parameter value="-0.0872665" name="gamma2"/>
+                    <parameter value="0" name="hthrust"/>
+                    <parameter value="0" name="ia1"/>
+                    <parameter value="0.1" name="ia2"/>
+                    <parameter value="1000" name="Ix"/>
+                    <parameter value="500" name="Ixz"/>
+                    <parameter value="3000" name="Iy"/>
+                    <parameter value="3000" name="Iz"/>
+                    <parameter value="0.436332" name="lambda1"/>
+                    <parameter value="0.436332" name="lambda2"/>
+                    <parameter value="0.785398" name="lambdafin"/>
+                    <parameter value="0.1" name="lc1"/>
+                    <parameter value="0.1" name="lc2"/>
+                    <parameter value="0.1" name="lc12"/>
+                    <parameter value="0.1" name="lcfin"/>
+                    <parameter value="5000" name="Me"/>
+                    <parameter value="2.425" name="rc1"/>
+                    <parameter value="1.375" name="rc2"/>
+                    <parameter value="1" name="rcfin"/>
+                    <parameter value="41.904" name="S1"/>
+                    <parameter value="13.695" name="S2"/>
+                    <parameter value="10.5" name="Sbh"/>
+                    <parameter value="10.5" name="Sbv"/>
+                    <parameter value="15" name="Sfin"/>
+                    <parameter value="8.5" name="xbach"/>
+                    <parameter value="8.5" name="xbacv"/>
+                    <parameter value="6" name="xbcge"/>
+                    <parameter value="6" name="xcargo"/>
+                    <parameter value="6" name="xfuel"/>
+                    <parameter value="6.2525" name="xw1"/>
+                    <parameter value="11" name="xw2"/>
+                    <parameter value="12" name="xwfin"/>
+                    <parameter value="0" name="yeng"/>
+                    <parameter value="9.81" name="g0"/>
+                    <parameter value="10000" name="kground"/>
+                    <parameter value="0" name="thrustl"/>
+                    <parameter value="0" name="thrustr"/>
+                    <parameter value="0" name="dezthrust"/>
+                    <parameter value="0" name="Mfuel"/>
+                    <parameter value="0" name="Mcargo"/>
+                    <parameter value="1.25" name="rho"/>
+                    <parameter value="0" name="vturbx"/>
+                    <parameter value="0" name="vturby"/>
+                    <parameter value="0" name="vturbz"/>
+                    <parameter value="0" name="wturbx"/>
+                    <parameter value="0" name="wturby"/>
+                    <parameter value="0" name="wturbz"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2486" y="2474" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicThetaSource" name="Angle &amp; Velocity Source_1">
+                <parameters>
+                    <parameter value="0" name="omega"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2232" y="2421.75" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicThetaSource" name="Angle &amp; Velocity Source_2">
+                <parameters>
+                    <parameter value="0" name="omega"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2231" y="2447.875" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicThetaSource" name="Angle &amp; Velocity Source_3">
+                <parameters>
+                    <parameter value="0" name="omega"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2230" y="2474" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicThetaSource" name="Angle &amp; Velocity Source_4">
+                <parameters>
+                    <parameter value="0" name="omega"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2236" y="2500.125" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicThetaSource" name="Angle &amp; Velocity Source_5">
+                <parameters>
+                    <parameter value="0" name="omega"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2230" y="2526.25" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicThetaSource" name="Angle &amp; Velocity Source_6">
+                <parameters>
+                    <parameter value="0" name="omega"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2227" y="2552.375" flipped="0" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+        </objects>
+        <connections>
+            <connect endport="Pa1l" endcomponent="AeroAircraft6DOFflap" startport="Pmr1" startcomponent="Angle &amp; Velocity Source">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2266.50000000000000000000" y="2395.62500000000000000000"/>
+                        <coordinate x="2306.00000000000000000000" y="2395.62500000000000000000"/>
+                        <coordinate x="2306.00000000000000000000" y="2395.62500000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pa1r" endcomponent="AeroAircraft6DOFflap" startport="Pmr1" startcomponent="Angle &amp; Velocity Source_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2255.50000000000000000000" y="2421.75000000000000000000"/>
+                        <coordinate x="2306.00000000000000000000" y="2421.75000000000000000000"/>
+                        <coordinate x="2306.00000000000000000000" y="2421.75000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pa12l" endcomponent="AeroAircraft6DOFflap" startport="Pmr1" startcomponent="Angle &amp; Velocity Source_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2254.50000000000000000000" y="2447.87500000000000000000"/>
+                        <coordinate x="2306.00000000000000000000" y="2447.87500000000000000000"/>
+                        <coordinate x="2306.00000000000000000000" y="2447.87500000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pa12r" endcomponent="AeroAircraft6DOFflap" startport="Pmr1" startcomponent="Angle &amp; Velocity Source_3">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2253.50000000000000000000" y="2474.00000000000000000000"/>
+                        <coordinate x="2306.00000000000000000000" y="2474.00000000000000000000"/>
+                        <coordinate x="2306.00000000000000000000" y="2474.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pa2l" endcomponent="AeroAircraft6DOFflap" startport="Pmr1" startcomponent="Angle &amp; Velocity Source_4">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2259.50000000000000000000" y="2500.12500000000000000000"/>
+                        <coordinate x="2306.00000000000000000000" y="2500.12500000000000000000"/>
+                        <coordinate x="2306.00000000000000000000" y="2500.12500000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pa2r" endcomponent="AeroAircraft6DOFflap" startport="Pmr1" startcomponent="Angle &amp; Velocity Source_5">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2253.50000000000000000000" y="2526.25000000000000000000"/>
+                        <coordinate x="2306.00000000000000000000" y="2526.25000000000000000000"/>
+                        <coordinate x="2306.00000000000000000000" y="2526.25000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pfin" endcomponent="AeroAircraft6DOFflap" startport="Pmr1" startcomponent="Angle &amp; Velocity Source_6">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2250.50000000000000000000" y="2552.37500000000000000000"/>
+                        <coordinate x="2306.00000000000000000000" y="2552.37500000000000000000"/>
+                        <coordinate x="2306.00000000000000000000" y="2552.37500000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink" startport="PPhi" startcomponent="AeroAircraft6DOFflap">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2421.71444000000019514118" y="2578.50000000000000000000"/>
+                        <coordinate x="2421.71444000000019514118" y="2615.00000000000000000000"/>
+                        <coordinate x="2714.50000000000000000000" y="2615.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink" startport="PThetao" startcomponent="AeroAircraft6DOFflap">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2408.85703999999986990588" y="2578.50000000000000000000"/>
+                        <coordinate x="2408.85703999999986990588" y="2615.00000000000000000000"/>
+                        <coordinate x="2714.50000000000000000000" y="2615.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink" startport="PPsi" startcomponent="AeroAircraft6DOFflap">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2396.00000000000000000000" y="2578.50000000000000000000"/>
+                        <coordinate x="2396.00000000000000000000" y="2615.00000000000000000000"/>
+                        <coordinate x="2714.50000000000000000000" y="2615.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_right" endcomponent="Sink" startport="PUb" startcomponent="AeroAircraft6DOFflap">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2434.57148000000006504706" y="2578.50000000000000000000"/>
+                        <coordinate x="2434.57148000000006504706" y="2592.00000000000000000000"/>
+                        <coordinate x="2761.00000000000000000000" y="2592.00000000000000000000"/>
+                        <coordinate x="2761.00000000000000000000" y="2615.00000000000000000000"/>
+                        <coordinate x="2739.50000000000000000000" y="2615.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Sink_1" startport="Paltitude" startcomponent="AeroAircraft6DOFflap">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2588.85703999999986990588" y="2578.50000000000000000000"/>
+                        <coordinate x="2588.85703999999986990588" y="2671.00000000000000000000"/>
+                        <coordinate x="2717.50000000000000000000" y="2671.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_bottom" endcomponent="Sink_1" startport="Pxcg" startcomponent="AeroAircraft6DOFflap">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2318.85714800000005197944" y="2578.50000000000000000000"/>
+                        <coordinate x="2318.85714800000005197944" y="2695.00000000000000000000"/>
+                        <coordinate x="2730.00000000000000000000" y="2695.00000000000000000000"/>
+                        <coordinate x="2730.00000000000000000000" y="2683.50000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pthetaref" endcomponent="SignalAttitudeControl" startport="Pu" startcomponent="SignalPIlead">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1974.50000000000000000000" y="2449.59999999999990905053"/>
+                        <coordinate x="2015.50000000000000000000" y="2449.59999999999990905053"/>
+                        <coordinate x="2015.50000000000000000000" y="2446.59999999999990905053"/>
+                        <coordinate x="2016.50000000000000000000" y="2446.59999999999990905053"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="thetain" endcomponent="Angle &amp; Velocity Source_5" startport="Puelev" startcomponent="SignalAttitudeControl">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2081.50000000000000000000" y="2459.40000000000009094947"/>
+                        <coordinate x="2117.00000000000000000000" y="2459.40000000000009094947"/>
+                        <coordinate x="2117.00000000000000000000" y="2519.75000000000000000000"/>
+                        <coordinate x="2206.50000000000000000000" y="2519.75000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="thetain" endcomponent="Angle &amp; Velocity Source_4" startport="Puelev" startcomponent="SignalAttitudeControl">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2081.50000000000000000000" y="2459.40000000000009094947"/>
+                        <coordinate x="2123.00000000000000000000" y="2459.40000000000009094947"/>
+                        <coordinate x="2123.00000000000000000000" y="2493.62500000000000000000"/>
+                        <coordinate x="2212.50000000000000000000" y="2493.62500000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pphi" endcomponent="SignalAttitudeControl" startport="PPhi" startcomponent="AeroAircraft6DOFflap">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2421.71444000000019514118" y="2578.50000000000000000000"/>
+                        <coordinate x="2421.71444000000019514118" y="2685.00000000000000000000"/>
+                        <coordinate x="2023.00000000000000000000" y="2685.00000000000000000000"/>
+                        <coordinate x="2023.00000000000000000000" y="2485.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Ptheta" endcomponent="SignalAttitudeControl" startport="PThetao" startcomponent="AeroAircraft6DOFflap">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2408.85703999999986990588" y="2578.50000000000000000000"/>
+                        <coordinate x="2408.85703999999986990588" y="2671.00000000000000000000"/>
+                        <coordinate x="2036.00000000000000000000" y="2671.00000000000000000000"/>
+                        <coordinate x="2036.00000000000000000000" y="2485.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Ppsi" endcomponent="SignalAttitudeControl" startport="PPsi" startcomponent="AeroAircraft6DOFflap">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2396.00000000000000000000" y="2578.50000000000000000000"/>
+                        <coordinate x="2396.00000000000000000000" y="2656.00000000000000000000"/>
+                        <coordinate x="2049.00000000000000000000" y="2656.00000000000000000000"/>
+                        <coordinate x="2049.00000000000000000000" y="2485.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pbeta" endcomponent="SignalAttitudeControl" startport="PBetaSlip" startcomponent="AeroAircraft6DOFflap">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2576.00000000000000000000" y="2578.50000000000000000000"/>
+                        <coordinate x="2576.00000000000000000000" y="2641.00000000000000000000"/>
+                        <coordinate x="2062.00000000000000000000" y="2641.00000000000000000000"/>
+                        <coordinate x="2062.00000000000000000000" y="2485.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="PRb" endcomponent="AeroAircraft6DOFflap" startport="PRb" startcomponent="SignalAttitudeControl">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2068.50000000000000000000" y="2485.00000000000000000000"/>
+                        <coordinate x="2068.50000000000000000000" y="2632.00000000000000000000"/>
+                        <coordinate x="2498.85703999999986990588" y="2632.00000000000000000000"/>
+                        <coordinate x="2498.85703999999986990588" y="2578.50000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="PUb" endcomponent="AeroAircraft6DOFflap" startport="PUb" startcomponent="SignalAttitudeControl">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2075.00000000000000000000" y="2485.00000000000000000000"/>
+                        <coordinate x="2075.00000000000000000000" y="2625.00000000000000000000"/>
+                        <coordinate x="2434.57148000000006504706" y="2625.00000000000000000000"/>
+                        <coordinate x="2434.57148000000006504706" y="2578.50000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Paltitude" endcomponent="AeroAircraft6DOFflap" startport="Py" startcomponent="SignalPIlead">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1897.50000000000000000000" y="2458.84999999999990905053"/>
+                        <coordinate x="1864.00000000000000000000" y="2458.84999999999990905053"/>
+                        <coordinate x="1864.00000000000000000000" y="2701.00000000000000000000"/>
+                        <coordinate x="2588.85703999999986990588" y="2701.00000000000000000000"/>
+                        <coordinate x="2588.85703999999986990588" y="2578.50000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="PUb" endcomponent="AeroAircraft6DOFflap" startport="Pkx" startcomponent="SignalPIlead">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1936.00000000000000000000" y="2431.09999999999990905053"/>
+                        <coordinate x="1936.00000000000000000000" y="2372.00000000000000000000"/>
+                        <coordinate x="1976.00000000000000000000" y="2372.00000000000000000000"/>
+                        <coordinate x="1976.00000000000000000000" y="2716.00000000000000000000"/>
+                        <coordinate x="2434.57148000000006504706" y="2716.00000000000000000000"/>
+                        <coordinate x="2434.57148000000006504706" y="2578.50000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="thetain" endcomponent="Angle &amp; Velocity Source_6" startport="out" startcomponent="Pulse">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1969.50000000000000000000" y="2303.00000000000000000000"/>
+                        <coordinate x="2109.00000000000000000000" y="2303.00000000000000000000"/>
+                        <coordinate x="2109.00000000000000000000" y="2545.87500000000000000000"/>
+                        <coordinate x="2203.50000000000000000000" y="2545.87500000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>

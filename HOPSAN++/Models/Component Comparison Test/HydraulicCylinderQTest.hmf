@@ -12,7 +12,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2279" y="2394.5" zoom="1"/>
+            <viewport x="2394.5" y="2272" zoom="1"/>
             <ports hidden="0"/>
             <names hidden="0"/>
             <scriptfile path=""/>
@@ -1324,6 +1324,70 @@
                         <newpos>2106 2180</newpos>
                     </stuff>
                 </post>
+                <post number="83">
+                    <stuff what="addedobject">
+                        <component typename="SignalSink" name="Scope_1">
+                            <parameters/>
+                            <hopsangui>
+                                <pose x="2598" y="2187" flipped="false" a="0"/>
+                                <nametext position="0" visible="1"/>
+                                <hopsanobjectappearance version="0.3">
+                                    <modelobject typename="SignalSink" displayname="Scope_1">
+                                        <ports/>
+                                    </modelobject>
+                                </hopsanobjectappearance>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="84">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Scope_1" startport="out" startcomponent="Position Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2574.00000000000000000000" y="2306.00000000000000000000"/>
+                                    <coordinate x="2574.00000000000000000000" y="2187.00000000000000000000"/>
+                                    <coordinate x="2574.00000000000000000000" y="2187.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="85">
+                    <stuff what="movedobject" name="Scope_1">
+                        <oldpos>2574 2172</oldpos>
+                        <newpos>2632 2194</newpos>
+                    </stuff>
+                </post>
+                <post number="86">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Scope_1" startport="out" startcomponent="Position Transducer_1">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2603.00000000000000000000" y="2597.00000000000000000000"/>
+                                    <coordinate x="2603.00000000000000000000" y="2209.00000000000000000000"/>
+                                    <coordinate x="2632.00000000000000000000" y="2209.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="87">
+                    <stuff what="movedobject" name="Scope_1">
+                        <oldpos>2632 2194</oldpos>
+                        <newpos>2653 2189</newpos>
+                    </stuff>
+                </post>
             </hopsanundo>
         </hopsangui>
         <objects>
@@ -1664,6 +1728,18 @@
                     <nametext position="0" visible="1"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="HydraulicPressureSensor" displayname="Pressure Transducer_2">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Scope_1">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2673" y="2204" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSink" displayname="Scope_1">
                             <ports/>
                         </modelobject>
                     </hopsanobjectappearance>
@@ -2133,6 +2209,34 @@
                         <coordinate x="2603.00000000000000000000" y="2597.00000000000000000000"/>
                         <coordinate x="2603.00000000000000000000" y="2561.00000000000000000000"/>
                         <coordinate x="2542.00000000000000000000" y="2561.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Scope_1" startport="out" startcomponent="Position Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2574.00000000000000000000" y="2306.00000000000000000000"/>
+                        <coordinate x="2574.00000000000000000000" y="2204.00000000000000000000"/>
+                        <coordinate x="2653.00000000000000000000" y="2204.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Scope_1" startport="out" startcomponent="Position Transducer_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2603.00000000000000000000" y="2597.00000000000000000000"/>
+                        <coordinate x="2603.00000000000000000000" y="2204.00000000000000000000"/>
+                        <coordinate x="2653.00000000000000000000" y="2204.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
