@@ -1322,26 +1322,23 @@ void HopsanGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem *p
     assert(!xmlCode.isEmpty());
 
     QString xmlReplace3;
+    QString scalarVarLines = extractTaggedSection(xmlCode, "3");
     int i, j;
     for(i=0; i<inputVariables.size(); ++i)
     {
         QString refString = QString::number(i);
-        xmlReplace3.append("  <ScalarVariable name=\""+inputVariables.at(i)+"\" valueReference=\""+refString+"\" description=\"input variable\" causality=\"input\">\n");
-        xmlReplace3.append("     <Real start=\"0\" fixed=\"false\"/>\n");
-        xmlReplace3.append("  </ScalarVariable>\n");
+        xmlReplace3.append(replaceTags(scalarVarLines, QStringList() << "varname" << "varref" << "causality", QStringList() << inputVariables.at(i) << refString << "input"));
     }
     for(j=0; j<outputVariables.size(); ++j)
     {
         QString refString = QString::number(i+j);
-        xmlReplace3.append("  <ScalarVariable name=\""+outputVariables.at(j)+"\" valueReference=\""+refString+"\" description=\"output variable\" causality=\"output\">\n");
-        xmlReplace3.append("     <Real start=\"0\" fixed=\"false\"/>\n");
-        xmlReplace3.append("  </ScalarVariable>\n");
+        xmlReplace3.append(replaceTags(scalarVarLines, QStringList() << "varname" << "varref" << "causality", QStringList() << outputVariables.at(i) << refString << "output"));
     }
 
     xmlCode.replace("<<<0>>>", modelName);
     xmlCode.replace("<<<1>>>", ID);
     xmlCode.replace("<<<2>>>", QString::number(inputVariables.size() + outputVariables.size()));
-    xmlCode.replace("<<<3>>>", xmlReplace3);
+    replaceTaggedSection(xmlCode, "3", xmlReplace3);
 
     QTextStream modelDescriptionStream(&modelDescriptionFile);
     modelDescriptionStream << xmlCode;
@@ -1359,10 +1356,11 @@ void HopsanGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem *p
     assert(!modelSourceCode.isEmpty());
 
     QString sourceReplace4;
+    QString varDefLine = extractTaggedSection(modelSourceCode, "4");
     for(i=0; i<inputVariables.size(); ++i)
-        sourceReplace4.append("    #define " + inputVariables.at(i) + "_ " + QString::number(i) + "\n\n");
+        sourceReplace4.append(replaceTags(varDefLine, QStringList() << "varname" << "varref", QStringList() << inputVariables.at(i) << QString::number(i)));
     for(j=0; j<outputVariables.size(); ++j)
-        sourceReplace4.append("    #define " + outputVariables.at(j) + "_ " + QString::number(j+i) + "\n\n");
+        sourceReplace4.append(replaceTags(varDefLine, QStringList() << "varname" << "varref", QStringList() << outputVariables.at(i) << QString::number(i)));
 
     QString sourceReplace5;
     i=0;
@@ -1383,10 +1381,11 @@ void HopsanGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem *p
         sourceReplace5.append(", "+outputVariables.at(j)+"_");
 
     QString sourceReplace6;
+    QString startValueLine = extractTaggedSection(modelSourceCode, "6");
     for(i=0; i<inputVariables.size(); ++i)
-        sourceReplace6.append("        r("+inputVariables.at(i)+"_) = 0;\n");        //!< Fix start value handling
+        sourceReplace6.append(replaceTag(startValueLine, "varname", inputVariables.at(i)));         //!< Fix start value handling
     for(j=0; j<outputVariables.size(); ++j)
-        sourceReplace6.append("        r("+outputVariables.at(j)+"_) = 0;\n");        //!< Fix start value handling
+        sourceReplace6.append(replaceTag(startValueLine, "varname", outputVariables.at(i)));        //!< Fix start value handling
 
     QString sourceReplace8;
     for(i=0; i<inputVariables.size(); ++i)
@@ -1404,9 +1403,9 @@ void HopsanGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem *p
     modelSourceCode.replace("<<<1>>>", ID);
     modelSourceCode.replace("<<<2>>>", QString::number(inputVariables.size() + outputVariables.size()));
     modelSourceCode.replace("<<<3>>>", QString::number(inputVariables.size() + outputVariables.size()));  //!< @todo Does number of variables equal number of states?
-    modelSourceCode.replace("<<<4>>>", sourceReplace4);
+    replaceTaggedSection(modelSourceCode, "4", sourceReplace4);
     modelSourceCode.replace("<<<5>>>", sourceReplace5);
-    modelSourceCode.replace("<<<6>>>", sourceReplace6);
+    replaceTaggedSection(modelSourceCode, "6", sourceReplace6);
     modelSourceCode.replace("<<<7>>>", modelName);
     modelSourceCode.replace("<<<8>>>", sourceReplace8);
     modelSourceCode.replace("<<<9>>>", sourceReplace9);

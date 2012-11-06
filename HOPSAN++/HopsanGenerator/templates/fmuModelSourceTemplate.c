@@ -15,14 +15,16 @@
     #include "HopsanFMU.h"
 
     // Define all model variables and their value references
-<<<4>>>
+>>>4>>>   #define <<<varname>>>_ <<<varref>>>
+<<<4<<<
     // Define state vector as vector of value references
     #define STATES { <<<5>>> }
 
     //Set start values
     void setStartValues(ModelInstance *comp) 
     {
-<<<6>>>    }
+>>>6>>>        r(<<<varname>>>_) = 0;
+<<<6<<<
     //Initialize
     void initialize(ModelInstance* comp, fmiEventInfo* eventInfo)
     {
