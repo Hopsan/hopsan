@@ -1,12 +1,12 @@
-#ifndef <<<0>>>_H
-#define <<<0>>>_H
+#ifndef <<<modelname>>>_H
+#define <<<modelname>>>_H
 
 #define BUFSIZE 4096
 
 #define _WIN32_WINNT 0x0502
 #include "../fmi_me.h"
 #include "../xml_parser.h"
-#include "<<<1>>>ComponentEssentials.h"
+#include "<<<includepath>>>ComponentEssentials.h"
 
 #include <sstream>
 #include <string>
@@ -24,7 +24,7 @@ void fmuLogger(fmiComponent c, fmiString instanceName, fmiStatus status,
 
 namespace hopsan {
 
-    class <<<0>>> : public ComponentQ
+    class <<<modelname>>> : public ComponentQ
     {
     private:
         FMU mFMU;
@@ -48,19 +48,21 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new <<<0>>>();
+            return new <<<modelname>>>();
         }
 
         void configure()
         {
-            mFMU.modelDescription = parse("<<<5>>>/modelDescription.xml");
+            mFMU.modelDescription = parse("<<<fmudir>>>/modelDescription.xml");
             assert(mFMU.modelDescription);
-            assert(<<<6>>>("<<<5>>>/<<<0>>>.<<<13>>>"));
+            assert(loadLib("<<<fmudir>>>/<<<modelname>>>.<<<13>>>"));
             addInfoMessage(getString(mFMU.modelDescription, att_modelIdentifier));
 
 >>>7>>>            mp<<<Portname>>> = add<<<porttype>>>("<<<portname>>>", "<<<nodetype>>>"<<<notrequired>>>);
 <<<7<<<
-<<<8>>>        }
+>>>8>>>            par<<<parnum>>> = <<<parvalue>>>;
+            registerParameter("<<<parname>>>", "<<<pardesc>>>", "-", par<<<parnum>>>);
+<<<8<<<        }
 
         void initialize()
         {
@@ -70,7 +72,8 @@ namespace hopsan {
                 stopSimulation();
             }
 
-<<<9>>>
+>>>9>>>            mpND_<<<varname>>> = getSafeNodeDataPtr(mp<<<portname>>>, <<<datatype>>>);
+<<<9<<<
            
             //Initialize FMU
             ModelDescription* md;            // handle to the parsed XML file
@@ -114,14 +117,35 @@ namespace hopsan {
             fmiValueReference vr;
 
             //Set parameters
-<<<10>>>
+>>>10>>>            sv = vars[<<<valueref>>>];
+            vr = getValueReference(sv);
+            value=par<<<parnum>>>;
+            mFMU.setReal(c, &vr, 1, &value);
+<<<10<<<
             //write input values
-<<<11>>>
+>>>11>>>            sv = vars[<<<valueref>>>];
+            vr = getValueReference(sv);
+            value = (*mpND_<<<varname>>>);
+            mFMU.setReal(c, &vr, 1, &value);
+<<<11<<<
+>>>6>>>            if(mpIn<<<valueref>>>->isConnected())
+            {
+                sv = vars[<<<valueref>>>];
+                vr = getValueReference(sv);
+                value = (*mpND_in<<<valueref>>>);
+                mFMU.setReal(c, &vr, 1, &value);
+            }
+<<<6<<<
             //run simulation
             simulateFMU();
 
             //write back output values
-<<<12>>>        }
+>>>12>>>            sv = vars[<<<valueref>>>];
+            vr = getValueReference(sv);
+            mFMU.getReal(c, &vr, 1, &value);
+            (*mpND_<<<varname>>>) = value;
+<<<12<<<
+        }
         void finalize()
         {
             //cleanup
@@ -133,11 +157,7 @@ namespace hopsan {
             if (prez!= NULL) free(prez);
         }
 
-#ifdef WIN32
-        bool loadDll(std::string path)
-#elif linux
-        bool loadSo(std::string path)
-#endif
+        bool loadLib(std::string path)
         {
             bool success = true;
             void *h;
@@ -259,4 +279,4 @@ namespace hopsan {
     };
 }
 
-#endif // <<<0>>>_H
+#endif // <<<modelname>>>_H

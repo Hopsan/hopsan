@@ -661,13 +661,6 @@ void HopsanGenerator::generateFromFmu(QString path)
         varElement = varElement.nextSiblingElement("ScalarVariable");
     }
 
-    QString fmuComponentReplace6;
-#ifdef WIN32
-    fmuComponentReplace6 = "loadDll";
-#elif linux
-    fmuComponentReplace6 = "loadSo";
-#endif
-
     QString fmuComponentReplace7;
     QString addPortLine = extractTaggedSection(fmuComponentCode, "7");
     for(int i=0; i<tlmPortVars.size(); ++i)
@@ -675,223 +668,173 @@ void HopsanGenerator::generateFromFmu(QString path)
         QString numStr = QString::number(i);
         if(tlmPortTypes[i] == "hydraulic")
         {
-            fmuComponentReplace7.append(replaceTag(replaceTag(replaceTag(replaceTag(replaceTag(addPortLine, "Portname", "P"+numStr), "portname", "P"+numStr), "porttype", "PowerPort"), "nodetype", "NodeHydraulic"), "notrequired", ""));
+            fmuComponentReplace7.append(replaceTags(addPortLine, QStringList() << "Portname" << "portname" << "porttype" << "nodetype" << "notrequired",
+                                                                 QStringList() << "P"+numStr << "P"+numStr << "PowerPort" << "NodeHydraulic" << ""));
         }
         else if(tlmPortTypes[i] == "mechanic")
         {
-            fmuComponentReplace7.append(replaceTag(replaceTag(replaceTag(replaceTag(replaceTag(addPortLine, "Portname", "P"+numStr), "portname", "P"+numStr), "porttype", "PowerPort"), "nodetype", "NodeMechanic"), "notrequired", ""));
+            fmuComponentReplace7.append(replaceTags(addPortLine, QStringList() << "Portname" << "portname" << "porttype" << "nodetype" << "notrequired",
+                                                                 QStringList() << "P"+numStr << "P"+numStr << "PowerPort" << "NodeMechanic" << ""));
         }
     }
     j=0;
     for(int i=0; i<inoutVars.size(); ++i)
     {
         QString numStr = inoutVars[i];
-        fmuComponentReplace7.append(replaceTag(replaceTag(replaceTag(replaceTag(replaceTag(addPortLine, "Portname", "In"+numStr), "portname", inoutVarNames[i]+"In"), "porttype", "ReadPort"), "nodetype", "NodeSignal"), "notrequired", ", Port::NOTREQUIRED"));
-        fmuComponentReplace7.append(replaceTag(replaceTag(replaceTag(replaceTag(replaceTag(addPortLine, "Portname", "Out"+numStr), "portname", inoutVarNames[i]+"Out"), "porttype", "WritePort"), "nodetype", "NodeSignal"), "notrequired", ", Port::NOTREQUIRED"));
+        fmuComponentReplace7.append(replaceTags(addPortLine, QStringList() << "Portname" << "portname" << "porttype" << "nodetype" << "notrequired",
+                                                             QStringList() << "In"+numStr << inoutVarNames[i]+"In" << "ReadPort" << "NodeSignal" << ", Port::NOTREQUIRED"));
+        fmuComponentReplace7.append(replaceTags(addPortLine, QStringList() << "Portname" << "portname" << "porttype" << "nodetype" << "notrequired",
+                                                             QStringList() << "Out"+numStr << inoutVarNames[i]+"Out" << "WritePort" << "NodeSignal" << ", Port::NOTREQUIRED"));
+
         ++j;
     }
     for(int i=0; i<inVars.size(); ++i)
     {
         QString numStr = inVars[i];
-        fmuComponentReplace7.append(replaceTag(replaceTag(replaceTag(replaceTag(replaceTag(addPortLine, "Portname", "In"+numStr), "portname", inoutVarNames[i]+"In"), "porttype", "ReadPort"), "nodetype", "NodeSignal"), "notrequired", ", Port::NOTREQUIRED"));
+        fmuComponentReplace7.append(replaceTags(addPortLine, QStringList() << "Portname" << "portname" << "porttype" << "nodetype" << "notrequired",
+                                                             QStringList() << "In"+numStr << inoutVarNames[i]+"In" << "ReadPort" << "NodeSignal" << ", Port::NOTREQUIRED"));
         ++j;
     }
     for(int i=0; i<outVars.size(); ++i)
     {
         QString numStr = outVars[i];
-        fmuComponentReplace7.append(replaceTag(replaceTag(replaceTag(replaceTag(replaceTag(addPortLine, "Portname", "Out"+numStr), "portname", inoutVarNames[i]+"Out"), "porttype", "WritePort"), "nodetype", "NodeSignal"), "notrequired", ", Port::NOTREQUIRED"));
+        fmuComponentReplace7.append(replaceTags(addPortLine, QStringList() << "Portname" << "portname" << "porttype" << "nodetype" << "notrequired",
+                                                             QStringList() << "Out"+numStr << inoutVarNames[i]+"Out" << "WritePort" << "NodeSignal" << ", Port::NOTREQUIRED"));
         ++j;
     }
 
     QString fmuComponentReplace8;
+    QString regParLine = extractTaggedSection(fmuComponentCode, "8");
     varElement = variablesElement.firstChildElement("ScalarVariable");
     i=0;
     while (!varElement.isNull())
     {
         if(varElement.attribute("variability") == "parameter")
         {
-            fmuComponentReplace8.append("            par"+QString::number(i)+" = "+varElement.firstChildElement("Real").attribute("start")+";\n");
-            fmuComponentReplace8.append("            registerParameter(\""+varElement.attribute("name")+"\", \""+varElement.attribute("description")+"\", \"-\", par"+QString::number(i)+");\n");
+            QStringList tags = QStringList() << "parvalue" << "parnum" << "parname" << "pardesc";
+            QStringList replacements = QStringList() << varElement.firstChildElement("Real").attribute("start") << QString::number(i) << varElement.attribute("name") << varElement.attribute("description");
+            fmuComponentReplace8.append(replaceTags(regParLine, tags, replacements));
             ++i;
         }
         varElement = varElement.nextSiblingElement("ScalarVariable");
     }
 
     QString fmuComponentReplace9;
+    QString getNodePtrLine = extractTaggedSection(fmuComponentCode, "9");
     for(int i=0; i<tlmPortTypes.size(); ++i)
     {
         QString numStr = QString::number(i);
         if(tlmPortTypes[i] == "hydraulic")
         {
-            fmuComponentReplace9.append("            mpND_p"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeHydraulic::PRESSURE);\n");
-            fmuComponentReplace9.append("            mpND_q"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeHydraulic::FLOW);\n");
-            fmuComponentReplace9.append("            mpND_c"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeHydraulic::WAVEVARIABLE);\n");
-            fmuComponentReplace9.append("            mpND_Zc"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeHydraulic::CHARIMP);\n");
+            fmuComponentReplace9.append(replaceTags(getNodePtrLine,QStringList() << "varname" << "portname" << "datatype", QStringList() << "p"+numStr << "P"+numStr << "NodeHydraulic::PRESSURE"));
+            fmuComponentReplace9.append(replaceTags(getNodePtrLine,QStringList() << "varname" << "portname" << "datatype", QStringList() << "q"+numStr << "P"+numStr << "NodeHydraulic::PRESSURE"));
+            fmuComponentReplace9.append(replaceTags(getNodePtrLine,QStringList() << "varname" << "portname" << "datatype", QStringList() << "c"+numStr << "P"+numStr << "NodeHydraulic::PRESSURE"));
+            fmuComponentReplace9.append(replaceTags(getNodePtrLine,QStringList() << "varname" << "portname" << "datatype", QStringList() << "Zc"+numStr << "P"+numStr << "NodeHydraulic::PRESSURE"));
         }
         else if(tlmPortTypes[i] == "mechanic")
         {
-            fmuComponentReplace9.append("            mpND_f"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::FORCE);\n");
-            fmuComponentReplace9.append("            mpND_x"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::POSITION);\n");
-            fmuComponentReplace9.append("            mpND_v"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::VELOCITY);\n");
-            fmuComponentReplace9.append("            mpND_me"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::EQMASS);\n");
-            fmuComponentReplace9.append("            mpND_c"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::WAVEVARIABLE);\n");
-            fmuComponentReplace9.append("            mpND_Zc"+numStr+" = getSafeNodeDataPtr(mpP"+numStr+", NodeMechanic::CHARIMP);\n");
-        }
+            fmuComponentReplace9.append(replaceTags(getNodePtrLine,QStringList() << "varname" << "portname" << "datatype", QStringList() << "f"+numStr << "P"+numStr << "NodeHydraulic::PRESSURE"));
+            fmuComponentReplace9.append(replaceTags(getNodePtrLine,QStringList() << "varname" << "portname" << "datatype", QStringList() << "x"+numStr << "P"+numStr << "NodeHydraulic::PRESSURE"));
+            fmuComponentReplace9.append(replaceTags(getNodePtrLine,QStringList() << "varname" << "portname" << "datatype", QStringList() << "v"+numStr << "P"+numStr << "NodeHydraulic::PRESSURE"));
+            fmuComponentReplace9.append(replaceTags(getNodePtrLine,QStringList() << "varname" << "portname" << "datatype", QStringList() << "me"+numStr << "P"+numStr << "NodeHydraulic::PRESSURE"));
+            fmuComponentReplace9.append(replaceTags(getNodePtrLine,QStringList() << "varname" << "portname" << "datatype", QStringList() << "c"+numStr << "P"+numStr << "NodeHydraulic::PRESSURE"));
+            fmuComponentReplace9.append(replaceTags(getNodePtrLine,QStringList() << "varname" << "portname" << "datatype", QStringList() << "Zc"+numStr << "P"+numStr << "NodeHydraulic::PRESSURE"));
+       }
     }
     j=0;
     for(int i=0; i<inoutVars.size(); ++i)
     {
         QString numStr = inoutVars[i];
-        fmuComponentReplace9.append("            mpND_in"+numStr+" = getSafeNodeDataPtr(mpIn"+numStr+", NodeSignal::VALUE);\n");
-        fmuComponentReplace9.append("            mpND_out"+numStr+" = getSafeNodeDataPtr(mpOut"+numStr+", NodeSignal::VALUE);\n");
+        fmuComponentReplace9.append(replaceTags(getNodePtrLine,QStringList() << "varname" << "portname" << "datatype", QStringList() << "in"+numStr << "In"+numStr << "NodeSignal::VALUE"));
+        fmuComponentReplace9.append(replaceTags(getNodePtrLine,QStringList() << "varname" << "portname" << "datatype", QStringList() << "out"+numStr << "Out"+numStr << "NodeSignal::VALUE"));
         ++j;
     }
     for(int i=0; i<inVars.size(); ++i)
     {
         QString numStr = inVars[i];
-        fmuComponentReplace9.append("            mpND_in"+numStr+" = getSafeNodeDataPtr(mpIn"+numStr+", NodeSignal::VALUE);\n");
+        fmuComponentReplace9.append(replaceTags(getNodePtrLine,QStringList() << "varname" << "portname" << "datatype", QStringList() << "in"+numStr << "In"+numStr << "NodeSignal::VALUE"));
         ++j;
     }
     for(int i=0; i<outVars.size(); ++i)
     {
         QString numStr = outVars[i];
-        fmuComponentReplace9.append("            mpND_out"+numStr+" = getSafeNodeDataPtr(mpOut"+numStr+", NodeSignal::VALUE);\n");
+        fmuComponentReplace9.append(replaceTags(getNodePtrLine,QStringList() << "varname" << "portname" << "datatype", QStringList() << "out"+numStr << "Out"+numStr << "NodeSignal::VALUE"));
         ++j;
     }
 
     QString fmuComponentReplace10;
+    QString writeParLines = extractTaggedSection(fmuComponentCode, "10");
     varElement = variablesElement.firstChildElement("ScalarVariable");
     i=0;
     while (!varElement.isNull())
     {
         if(varElement.attribute("variability") == "parameter")
         {
-            fmuComponentReplace10.append("            sv = vars["+QString(varElement.attribute("valueReference"))+"];\n");
-            fmuComponentReplace10.append("            vr = getValueReference(sv);\n");
-            fmuComponentReplace10.append("            value=par"+QString::number(i)+";\n");
-            fmuComponentReplace10.append("            mFMU.setReal(c, &vr, 1, &value);\n");
+            fmuComponentReplace10.append(replaceTags(writeParLines, QStringList() << "valueref" << "parnum", QStringList() << varElement.attribute("valueReference") << QString::number(i)));
             ++i;
         }
         varElement = varElement.nextSiblingElement("ScalarVariable");
     }
 
     QString fmuComponentReplace11;
+    QString writeVarLines = extractTaggedSection(fmuComponentCode, "11");
     for(int i=0; i<tlmPortTypes.size(); ++i)
     {
         QString numStr = QString::number(i);
         if(tlmPortTypes[i] == "hydraulic")
         {
-            QString refStr = tlmPortRefs[i][2];
-            fmuComponentReplace11.append("            sv = vars["+refStr+"];\n");
-            fmuComponentReplace11.append("            vr = getValueReference(sv);\n");
-            fmuComponentReplace11.append("            value = (*mpND_c"+numStr+");\n");
-            fmuComponentReplace11.append("            mFMU.setReal(c, &vr, 1, &value);\n\n");
-
-            refStr = tlmPortRefs[i][3];
-            fmuComponentReplace11.append("            sv = vars["+refStr+"];\n");
-            fmuComponentReplace11.append("            vr = getValueReference(sv);\n");
-            fmuComponentReplace11.append("            value = (*mpND_Zc"+numStr+");\n");
-            fmuComponentReplace11.append("            mFMU.setReal(c, &vr, 1, &value);\n\n");
+           fmuComponentReplace11.append(replaceTags(writeVarLines, QStringList() << "valueref" << "varname", QStringList() << tlmPortRefs[i][2] << "c"+numStr));
+            fmuComponentReplace11.append(replaceTags(writeVarLines, QStringList() << "valueref" << "varname", QStringList() << tlmPortRefs[i][3] << "Zc"+numStr));
         }
         if(tlmPortTypes[i] == "mechanic")
         {
-            QString refStr = tlmPortRefs[i][3];
-            fmuComponentReplace11.append("            sv = vars["+refStr+"];\n");
-            fmuComponentReplace11.append("            vr = getValueReference(sv);\n");
-            fmuComponentReplace11.append("            value = (*mpND_c"+numStr+");\n");
-            fmuComponentReplace11.append("            mFMU.setReal(c, &vr, 1, &value);\n\n");
-
-            refStr = tlmPortRefs[i][4];
-            fmuComponentReplace11.append("            sv = vars["+refStr+"];\n");
-            fmuComponentReplace11.append("            vr = getValueReference(sv);\n");
-            fmuComponentReplace11.append("            value = (*mpND_Zc"+numStr+");\n");
-            fmuComponentReplace11.append("            mFMU.setReal(c, &vr, 1, &value);\n\n");
+            fmuComponentReplace11.append(replaceTags(writeVarLines, QStringList() << "valueref" << "varname", QStringList() << tlmPortRefs[i][3] << "c"+numStr));
+            fmuComponentReplace11.append(replaceTags(writeVarLines, QStringList() << "valueref" << "varname", QStringList() << tlmPortRefs[i][4] << "Zc"+numStr));
         }
     }
+
+
+    QString fmuComponentReplace6;
+    QString writeVarSignalLines = extractTaggedSection(fmuComponentCode, "6");
     for(int i=0; i<inoutVars.size(); ++i)
     {
         QString numStr = inoutVars[i];
-        fmuComponentReplace11.append("            if(mpIn"+numStr+"->isConnected())\n");
-        fmuComponentReplace11.append("            {\n");
-        fmuComponentReplace11.append("                sv = vars["+numStr+"];\n");
-        fmuComponentReplace11.append("                vr = getValueReference(sv);\n");
-        fmuComponentReplace11.append("                value = (*mpND_in"+numStr+");\n");
-        fmuComponentReplace11.append("                mFMU.setReal(c, &vr, 1, &value);\n\n");
-        fmuComponentReplace11.append("            }\n");
+        fmuComponentReplace6.append(replaceTag(writeVarSignalLines, "valueref", numStr));
     }
     for(int i=0; i<inVars.size(); ++i)
     {
         QString numStr = inVars[i];
-        fmuComponentReplace11.append("            if(mpIn"+numStr+"->isConnected())\n");
-        fmuComponentReplace11.append("            {\n");
-        fmuComponentReplace11.append("                sv = vars["+numStr+"];\n");
-        fmuComponentReplace11.append("                vr = getValueReference(sv);\n");
-        fmuComponentReplace11.append("                value = (*mpND_in"+numStr+");\n");
-        fmuComponentReplace11.append("                mFMU.setReal(c, &vr, 1, &value);\n\n");
-        fmuComponentReplace11.append("            }\n");
+        fmuComponentReplace6.append(replaceTag(writeVarSignalLines, "valueref", numStr));
     }
 
     QString fmuComponentReplace12;
+    QString readVarLines = extractTaggedSection(fmuComponentCode, "12");
     for(int i=0; i<tlmPortTypes.size(); ++i)
     {
         QString numStr = QString::number(i);
         if(tlmPortTypes[i] == "hydraulic")
         {
-            QString refStr = tlmPortRefs[i][0];
-            fmuComponentReplace12.append("            sv = vars["+refStr+"];\n");
-            fmuComponentReplace12.append("            vr = getValueReference(sv);\n");
-            fmuComponentReplace12.append("            mFMU.getReal(c, &vr, 1, &value);\n");
-            fmuComponentReplace12.append("            (*mpND_p"+numStr+") = value;\n\n");
-
-            refStr = tlmPortRefs[i][1];
-            fmuComponentReplace12.append("            sv = vars["+refStr+"];\n");
-            fmuComponentReplace12.append("            vr = getValueReference(sv);\n");
-            fmuComponentReplace12.append("            mFMU.getReal(c, &vr, 1, &value);\n");
-            fmuComponentReplace12.append("            (*mpND_q"+numStr+") = value;\n\n");
+            fmuComponentReplace12.append(replaceTags(readVarLines, QStringList() << "valueref" << "varname", QStringList() << tlmPortRefs[i][0] << "p"+numStr));
+            fmuComponentReplace12.append(replaceTags(readVarLines, QStringList() << "valueref" << "varname", QStringList() << tlmPortRefs[i][1] << "q"+numStr));
         }
         else if(tlmPortTypes[i] == "mechanic")
         {
-            QString refStr = tlmPortRefs[i][0];
-            fmuComponentReplace12.append("            sv = vars["+refStr+"];\n");
-            fmuComponentReplace12.append("            vr = getValueReference(sv);\n");
-            fmuComponentReplace12.append("            mFMU.getReal(c, &vr, 1, &value);\n");
-            fmuComponentReplace12.append("            (*mpND_f"+numStr+") = value;\n\n");
-
-            refStr = tlmPortRefs[i][1];
-            fmuComponentReplace12.append("            sv = vars["+refStr+"];\n");
-            fmuComponentReplace12.append("            vr = getValueReference(sv);\n");
-            fmuComponentReplace12.append("            mFMU.getReal(c, &vr, 1, &value);\n");
-            fmuComponentReplace12.append("            (*mpND_x"+numStr+") = value;\n\n");
-
-            refStr = tlmPortRefs[i][2];
-            fmuComponentReplace12.append("            sv = vars["+refStr+"];\n");
-            fmuComponentReplace12.append("            vr = getValueReference(sv);\n");
-            fmuComponentReplace12.append("            mFMU.getReal(c, &vr, 1, &value);\n");
-            fmuComponentReplace12.append("            (*mpND_v"+numStr+") = value;\n\n");
-
-            refStr = tlmPortRefs[i][2];
-            fmuComponentReplace12.append("            sv = vars["+refStr+"];\n");
-            fmuComponentReplace12.append("            vr = getValueReference(sv);\n");
-            fmuComponentReplace12.append("            mFMU.getReal(c, &vr, 1, &value);\n");
-            fmuComponentReplace12.append("            (*mpND_me"+numStr+") = value;\n\n");
+            fmuComponentReplace12.append(replaceTags(readVarLines, QStringList() << "valueref" << "varname", QStringList() << tlmPortRefs[i][0] << "f"+numStr));
+            fmuComponentReplace12.append(replaceTags(readVarLines, QStringList() << "valueref" << "varname", QStringList() << tlmPortRefs[i][1] << "x"+numStr));
+            fmuComponentReplace12.append(replaceTags(readVarLines, QStringList() << "valueref" << "varname", QStringList() << tlmPortRefs[i][2] << "v"+numStr));
+            fmuComponentReplace12.append(replaceTags(readVarLines, QStringList() << "valueref" << "varname", QStringList() << tlmPortRefs[i][3] << "me"+numStr));
         }
     }
     for(int i=0; i<inoutVars.size(); ++i)
     {
         QString numStr = inoutVars[i];
-        fmuComponentReplace12.append("            sv = vars["+numStr+"];\n");
-        fmuComponentReplace12.append("            vr = getValueReference(sv);\n");
-        fmuComponentReplace12.append("            mFMU.getReal(c, &vr, 1, &value);\n");
-        fmuComponentReplace12.append("            (*mpND_out"+numStr+") = value;\n\n");
+        fmuComponentReplace12.append(replaceTags(readVarLines, QStringList() << "valueref" << "varname", QStringList() << numStr << "out"+numStr));
     }
     for(int i=0; i<outVars.size(); ++i)
     {
         QString numStr = outVars[i];
-        fmuComponentReplace12.append("            sv = vars["+numStr+"];\n");
-        fmuComponentReplace12.append("            vr = getValueReference(sv);\n");
-        fmuComponentReplace12.append("            mFMU.getReal(c, &vr, 1, &value);\n");
-        fmuComponentReplace12.append("            (*mpND_out"+numStr+") = value;\n\n");
-    }
+        fmuComponentReplace12.append(replaceTags(readVarLines, QStringList() << "valueref" << "varname", QStringList() << numStr << "out"+numStr));
+     }
 
     QString fmuComponentReplace13;
 #ifdef WIN32
@@ -900,19 +843,19 @@ void HopsanGenerator::generateFromFmu(QString path)
     fmuComponentReplace13 = "so";
 #endif
 
-    fmuComponentCode.replace("<<<0>>>", fmuName);
-    fmuComponentCode.replace("<<<1>>>", mCoreIncludePath);
+    fmuComponentCode.replace("<<<modelname>>>", fmuName);
+    fmuComponentCode.replace("<<<includepath>>>", mCoreIncludePath);
     replaceTaggedSection(fmuComponentCode, "2", fmuComponentReplace2);
     replaceTaggedSection(fmuComponentCode, "3", fmuComponentReplace3);
     replaceTaggedSection(fmuComponentCode, "4", fmuComponentReplace4);
-    fmuComponentCode.replace("<<<5>>>", fmuDir.path());
-    fmuComponentCode.replace("<<<6>>>", fmuComponentReplace6);
+    fmuComponentCode.replace("<<<fmudir>>>", fmuDir.path());
     replaceTaggedSection(fmuComponentCode, "7", fmuComponentReplace7);
-    fmuComponentCode.replace("<<<8>>>", fmuComponentReplace8);
-    fmuComponentCode.replace("<<<9>>>", fmuComponentReplace9);
-    fmuComponentCode.replace("<<<10>>>", fmuComponentReplace10);
-    fmuComponentCode.replace("<<<11>>>", fmuComponentReplace11);
-    fmuComponentCode.replace("<<<12>>>", fmuComponentReplace12);
+    replaceTaggedSection(fmuComponentCode, "8", fmuComponentReplace8);
+    replaceTaggedSection(fmuComponentCode, "9", fmuComponentReplace9);
+    replaceTaggedSection(fmuComponentCode, "10", fmuComponentReplace10);
+    replaceTaggedSection(fmuComponentCode, "11", fmuComponentReplace11);
+    replaceTaggedSection(fmuComponentCode, "6", fmuComponentReplace6);
+    replaceTaggedSection(fmuComponentCode, "12", fmuComponentReplace12);
     fmuComponentCode.replace("<<<13>>>", fmuComponentReplace13);
 
     QTextStream fmuComponentHppStream(&fmuComponentHppFile);
@@ -1290,7 +1233,7 @@ void HopsanGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem *p
     QList<int> inputDatatypes;
 
     std::vector<std::string> names = pSystem->getSubComponentNames();
-    for(int i=0; i<names.size(); ++i)
+    for(size_t i=0; i<names.size(); ++i)
     {
         if(pSystem->getSubComponent(names[i])->getTypeName() == "SignalInputInterface")
         {
@@ -1308,7 +1251,7 @@ void HopsanGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem *p
     QList<int> outputDatatypes;
 
     names = pSystem->getSubComponentNames();
-    for(int i=0; i<names.size(); ++i)
+    for(size_t i=0; i<names.size(); ++i)
     {
         if(pSystem->getSubComponent(names[i])->getTypeName() == "SignalOutputInterface")
         {
@@ -1805,7 +1748,7 @@ void HopsanGenerator::generateToSimulink(QString savePath, hopsan::ComponentSyst
     std::vector<std::string> parameterNames;
     pSystem->getParameterNames(parameterNames);
     QStringList tunableParameters;
-    for(int i=0; i<parameterNames.size(); ++i)
+    for(size_t i=0; i<parameterNames.size(); ++i)
     {
         tunableParameters.append(QString(parameterNames[i].c_str()));
     }
@@ -1823,7 +1766,7 @@ void HopsanGenerator::generateToSimulink(QString savePath, hopsan::ComponentSyst
     QStringList mechanicRotationalCPorts;
 
     std::vector<std::string> names = pSystem->getSubComponentNames();
-    for(int i=0; i<names.size(); ++i)
+    for(size_t i=0; i<names.size(); ++i)
     {
         Component *pComponent = pSystem->getSubComponent(names[i]);
         if(pComponent->getTypeName() == "SignalInputInterface")
@@ -2360,7 +2303,7 @@ void HopsanGenerator::generateToLabViewSIT(QString savePath, hopsan::ComponentSy
     QStringList hydQinterfaces;
 
     std::vector<std::string> compNames = pSystem->getSubComponentNames();
-    for(int n=0; n<compNames.size(); ++n)
+    for(size_t n=0; n<compNames.size(); ++n)
     {
         Component *pComp = pSystem->getSubComponent(compNames[n]);
         if(pComp->getTypeName() == "SignalInputInterface")
@@ -2537,7 +2480,7 @@ void HopsanGenerator::generateToLabViewSIT(QString savePath, hopsan::ComponentSy
     }
 
     QString replaceComponents;
-    for(int n=0; n<compNames.size(); ++n)
+    for(size_t n=0; n<compNames.size(); ++n)
     {
         Component *pComp = pSystem->getSubComponent(compNames[n]);
         replaceComponents.append("    addComponent(\"" + QString(compNames[n].c_str()) + QString("\", \"") + QString(pComp->getTypeName().c_str())+QString("\");\n"));
@@ -2545,17 +2488,17 @@ void HopsanGenerator::generateToLabViewSIT(QString savePath, hopsan::ComponentSy
 
     QString replaceConnections;
     QList<QPair<QPair<QString, QString>, QPair<QString, QString> > > connections;
-    for(int n=0; n<compNames.size(); ++n)
+    for(size_t n=0; n<compNames.size(); ++n)
     {
         Component *pComp = pSystem->getSubComponent(compNames[n]);
-        for(int p=0; p<pComp->getPortNames().size(); ++p)
+        for(size_t p=0; p<pComp->getPortNames().size(); ++p)
         {
             Port *pPort = pComp->getPortPtrVector()[p];
             if(pPort->isMultiPort())
             {
                 continue;
             }
-            for(int c=0; c<pPort->getConnectedPorts().size(); ++c)
+            for(size_t c=0; c<pPort->getConnectedPorts().size(); ++c)
             {
                 Port *pPort2 = pPort->getConnectedPorts()[c];
                 if(pPort2->getParentPort())
@@ -2585,12 +2528,12 @@ void HopsanGenerator::generateToLabViewSIT(QString savePath, hopsan::ComponentSy
     }
 
     QString replaceParameters;
-    for(int n=0; n<compNames.size(); ++n)
+    for(size_t n=0; n<compNames.size(); ++n)
     {
         Component *pComp = pSystem->getSubComponent(compNames[n]);
         std::vector<std::string> parNames;
         pComp->getParameterNames(parNames);
-        for(int p=0; p<parNames.size(); ++p)
+        for(size_t p=0; p<parNames.size(); ++p)
         {
             std::string parValue;
             pComp->getParameterValue(parNames[p], parValue);
@@ -4566,6 +4509,17 @@ QString HopsanGenerator::replaceTag(QString str, QString tag, QString replacemen
 {
     QString retval = str;
     retval.replace("<<<"+tag+">>>", replacement);
+    return retval;
+}
+
+
+QString HopsanGenerator::replaceTags(QString str, QStringList tags, QStringList replacements)
+{
+    QString retval = str;
+    for(int i=0; i<tags.size(); ++i)
+    {
+        retval.replace("<<<"+tags[i]+">>>", replacements[i]);
+    }
     return retval;
 }
 
