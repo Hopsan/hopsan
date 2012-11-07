@@ -99,8 +99,8 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     mpTimeSlider = new QSlider(Qt::Horizontal);
 
     mpSpeedSlider = new QSlider(Qt::Horizontal);
-    mpSpeedSlider->setMinimum(-20);
-    mpSpeedSlider->setMaximum(20);
+    mpSpeedSlider->setMinimum(-200);
+    mpSpeedSlider->setMaximum(200);
     mpSpeedSlider->setSingleStep(1);
 
     //Create the layout and add widgets
@@ -133,7 +133,7 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     mSimulationSpeed = 0;
     mTimeStep = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getTimeStep(); //! @todo This is not used, but it should be
     mFps=60;   //Frames per second
-    mSpeedSliderSensitivity=10;
+    mSpeedSliderSensitivity=100;
 
     mIntensityMaxMap.insert("NodeHydraulic", 2e7);
     mIntensityMinMap.insert("NodeHydraulic", 0);
