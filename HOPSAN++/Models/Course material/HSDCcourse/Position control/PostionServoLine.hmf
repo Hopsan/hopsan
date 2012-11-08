@@ -1,0 +1,890 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r4162" hopsancoreversion="0.5.x_r4204">
+    <requirements>
+        <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+        <componentlibrary>PettersComponentLibrary</componentlibrary>
+    </requirements>
+    <system logsamples="2048" typename="Subsystem" name="PostionServoLine">
+        <simulationtime stop="5" timestep="0.001" start="0" inherit_timestep="true"/>
+        <aliases/>
+        <parameters/>
+        <hopsangui>
+            <pose x="0" y="0" flipped="false" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2584.45" y="2541.11" zoom="0.842152"/>
+            <ports hidden="1"/>
+            <names hidden="1"/>
+            <scriptfile path=""/>
+            <hopsanobjectappearance version="0.3">
+                <modelobject typename="Subsystem" displayname="PostionServoLine">
+                    <icons>
+                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
+                    </icons>
+                    <ports/>
+                </modelobject>
+            </hopsanobjectappearance>
+            <favoritevariables/>
+            <optimization>
+                <settings>
+                    <niter>100</niter>
+                    <nsearchp>8</nsearchp>
+                    <refcoeff>1.3</refcoeff>
+                    <randfac>0.3</randfac>
+                    <forgfac>0</forgfac>
+                    <functol>1e-05</functol>
+                    <partol>0.0001</partol>
+                    <plot>true</plot>
+                    <savecsv>false</savecsv>
+                    <logpar>false</logpar>
+                </settings>
+                <parameters/>
+                <objectives/>
+            </optimization>
+            <hopsanundo>
+                <post number="-1"/>
+                <post number="0"/>
+                <post number="1" type="changedparameters"/>
+                <post number="2" type="changedparameters"/>
+                <post number="3" type="changedparameters"/>
+                <post number="4" type="changedparameters"/>
+                <post number="5" type="changedparameters"/>
+                <post number="6" type="changedparameters"/>
+                <post number="7" type="changedparameters"/>
+                <post number="8" type="changedparameters"/>
+                <post number="9"/>
+                <post number="10"/>
+                <post number="11"/>
+                <post number="12" type="changedparameters"/>
+                <post number="13" type="changedparameters"/>
+                <post number="14"/>
+                <post number="15"/>
+                <post number="16"/>
+                <post number="17"/>
+                <post number="18"/>
+                <post number="19">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>0 0</oldpos>
+                        <newpos>-47 -2</newpos>
+                        <connect endport="P2" endcomponent="Long Line With Visco Elastic Walls" startport="P2" startcomponent="Lossless Q-type Connector">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2467.00000000000000000000" y="2453.28000000000065483619"/>
+                                    <coordinate x="2447.50000000000000000000" y="2453.28000000000065483619"/>
+                                    <coordinate x="2447.50000000000000000000" y="2481.28000000000020008883"/>
+                                    <coordinate x="2434.00000000000000000000" y="2481.28000000000020008883"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="20" type="movedmultiple"/>
+                <post number="21">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>0 0</oldpos>
+                        <newpos>2.36074 -94.4295</newpos>
+                        <connect endport="in2" endcomponent="Subtract" startport="out" startcomponent="Position Sensor">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2768.36073795032461930532" y="2282.89933739092748510302"/>
+                                    <coordinate x="2768.36073795032461930532" y="2242.57048198703932939679"/>
+                                    <coordinate x="2388.00000000000000000000" y="2242.57048198703932939679"/>
+                                    <coordinate x="2388.00000000000000000000" y="2512.50000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="22"/>
+                <post number="23"/>
+                <post number="24"/>
+                <post number="25"/>
+                <post number="26"/>
+                <post number="27"/>
+                <post number="28"/>
+                <post number="29"/>
+                <post number="30"/>
+                <post number="31"/>
+                <post number="32"/>
+                <post number="33"/>
+                <post number="34">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>0 0</oldpos>
+                        <newpos>26.79 1.41</newpos>
+                        <connect endport="P2" endcomponent="Long Line With Visco Elastic Walls_1" startport="P1" startcomponent="Lossless Q-type Connector_1">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2706.57213795032384950900" y="2389.61999999999989086064"/>
+                                    <coordinate x="2720.28999999999996362021" y="2389.61999999999989086064"/>
+                                    <coordinate x="2720.28999999999996362021" y="2470.28000000000020008883"/>
+                                    <coordinate x="2678.00000000000000000000" y="2470.28000000000020008883"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="35"/>
+                <post number="36"/>
+                <post number="37"/>
+                <post number="38">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>26.79 1.41</oldpos>
+                        <newpos>15.51 1.41</newpos>
+                        <connect endport="P2" endcomponent="Long Line With Visco Elastic Walls_1" startport="P1" startcomponent="Lossless Q-type Connector_1">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2695.29213795032410416752" y="2389.62000000000034560799"/>
+                                    <coordinate x="2709.00999999999976353138" y="2389.62000000000034560799"/>
+                                    <coordinate x="2709.00999999999976353138" y="2470.28000000000020008883"/>
+                                    <coordinate x="2678.00000000000000000000" y="2470.28000000000020008883"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="39">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>0 0</oldpos>
+                        <newpos>9.87 0</newpos>
+                        <connect endport="P2" endcomponent="Lossless Q-type Connector" startport="P2" startcomponent="Long Line With Visco Elastic Walls">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2504.95468366522845826694" y="2467.11557229805566748837"/>
+                                    <coordinate x="2463.23073795032451016596" y="2467.11557229805566748837"/>
+                                    <coordinate x="2463.23073795032451016596" y="2389.99933739092784890090"/>
+                                    <coordinate x="2473.59073795032418274786" y="2389.99933739092784890090"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="40">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>15.51 1.41</oldpos>
+                        <newpos>12.69 1.41</newpos>
+                        <connect endport="P2" endcomponent="Long Line With Visco Elastic Walls_1" startport="P1" startcomponent="Lossless Q-type Connector_1">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2695.29213795032410416752" y="2389.62000000000034560799"/>
+                                    <coordinate x="2706.18999999999959982233" y="2389.62000000000034560799"/>
+                                    <coordinate x="2706.18999999999959982233" y="2470.28000000000020008883"/>
+                                    <coordinate x="2678.00000000000000000000" y="2470.28000000000020008883"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="41"/>
+                <post number="42"/>
+                <post number="43" type="changedparameters"/>
+                <post number="44"/>
+                <post number="45"/>
+                <post number="46"/>
+                <post number="47"/>
+                <post number="48"/>
+                <post number="49"/>
+                <post number="50"/>
+                <post number="51"/>
+                <post number="52"/>
+                <post number="53"/>
+                <post number="54"/>
+                <post number="55"/>
+                <post number="56"/>
+                <post number="57"/>
+                <post number="58"/>
+                <post number="59"/>
+                <post number="60">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>0 0</oldpos>
+                        <newpos>-42.3 0</newpos>
+                        <connect endport="P2" endcomponent="Lossless Q-type Connector" startport="P2" startcomponent="Lossless Transmission Line">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2421.17000000000052750693" y="2442.21000000000094587449"/>
+                                    <coordinate x="2411.29073795032400084892" y="2442.21000000000094587449"/>
+                                    <coordinate x="2411.29073795032400084892" y="2389.99933739092784890090"/>
+                                    <coordinate x="2473.59073795032418274786" y="2389.99933739092784890090"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="61"/>
+                <post number="62"/>
+                <post number="63">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>0 0</oldpos>
+                        <newpos>-22.56 -1.41</newpos>
+                        <connect endport="P2" endcomponent="Lossless Transmission Line_1" startport="P1" startcomponent="Lossless Q-type Connector_1">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2695.29213795032410416752" y="2389.62000000000034560799"/>
+                                    <coordinate x="2745.61000000000012732926" y="2389.62000000000034560799"/>
+                                    <coordinate x="2745.61000000000012732926" y="2438.90000000000009094947"/>
+                                    <coordinate x="2728.42999999999983629095" y="2438.90000000000009094947"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="64" type="changedparameters"/>
+                <post number="65" type="changedparameters"/>
+                <post number="66"/>
+                <post number="67"/>
+                <post number="68"/>
+                <post number="69"/>
+                <post number="70"/>
+                <post number="71"/>
+                <post number="72"/>
+                <post number="73"/>
+                <post number="74"/>
+                <post number="75"/>
+                <post number="76"/>
+                <post number="77">
+                    <stuff what="modifiedconnector" linenumber="1">
+                        <oldpos>0 0</oldpos>
+                        <newpos>14.1 0</newpos>
+                        <connect endport="P1" endcomponent="Lossless Q-type Connector_1" startport="P2" startcomponent="Long Line With Visco Elastic Walls">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2680.80000000000018189894" y="2472.18000000000029103830"/>
+                                    <coordinate x="2710.02000000000089130481" y="2472.18000000000029103830"/>
+                                    <coordinate x="2710.02000000000089130481" y="2389.62000000000034560799"/>
+                                    <coordinate x="2695.29213795032410416752" y="2389.62000000000034560799"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="78"/>
+                <post number="79" type="changedparameters"/>
+                <post number="80" type="changedparameters"/>
+                <post number="81">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2015 2562</oldpos>
+                        <newpos>2024.87 2380.11</newpos>
+                    </stuff>
+                </post>
+                <post number="82">
+                    <stuff what="deletedtextboxwidget" index="0">
+                        <textboxwidget>
+                            <hopsangui>
+                                <pose x="2024.870000" y="2380.110000"/>
+                                <textobject fontcolor="#005500" text="This example model consists of a&#xa;simple position servo controlled &#xa;by a proportional feedback. A step &#xa;signal is used as input. Analyzing &#xa;step responses can give important &#xa;information about the dynamic &#xa;behaviour of a system." font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                                <size width="235.000000" height="141.000000"/>
+                                <line width="2.000000" visible="1" style="solidline"/>
+                            </hopsangui>
+                        </textboxwidget>
+                    </stuff>
+                </post>
+                <post number="83" type="paste">
+                    <stuff what="addedtextboxwidget" index="2">
+                        <textboxwidget>
+                            <hopsangui>
+                                <pose x="1955.700000" y="2365.427632"/>
+                                <textobject fontcolor="#005500" text="In this example long transmission lines has been added &#xa;to the piston in the position servo system." font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                                <size width="373.000000" height="55.504737"/>
+                                <line width="2.000000" visible="1" style="solidline"/>
+                            </hopsangui>
+                        </textboxwidget>
+                    </stuff>
+                </post>
+                <post number="84">
+                    <stuff what="movedwidget" index="2">
+                        <oldpos>1955.7 2365.43</oldpos>
+                        <newpos>1943.01 2431.7</newpos>
+                    </stuff>
+                </post>
+                <post number="85">
+                    <stuff color_old="#005500" what="modifiedtextboxwidget" box_visible="0" linestyle="solidline" linestyle_old="solidline" index="1" text_old="Example: Position Servo" font_old="Calibri,20,-1,5,50,0,0,0,0,0" color="#005500" box_visible_before="0" text="Example: Position Servo with Long Lines" font="Calibri,20,-1,5,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
+                <post number="86">
+                    <stuff what="movedwidget" index="0">
+                        <oldpos>2421 2199</oldpos>
+                        <newpos>2358.96 2163.75</newpos>
+                    </stuff>
+                </post>
+                <post number="87">
+                    <stuff color_old="#005500" what="modifiedtextboxwidget" box_visible="0" linestyle="solidline" linestyle_old="solidline" index="0" text_old="Example: Position Servo with Long Lines" font_old="Calibri,20,-1,5,50,0,0,0,0,0" color="#005500" box_visible_before="0" text="Example: Position Servo with Long Lines" font="Calibri,20,-1,5,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+                </post>
+            </hopsanundo>
+        </hopsangui>
+        <objects>
+            <component typename="Hydraulic43Valve" name="4/3 Servo Valve">
+                <parameters>
+                    <parameter value="0" type="double" name="xv::Value"/>
+                    <parameter value="0.67" type="double" name="C_q"/>
+                    <parameter value="890" type="double" name="rho"/>
+                    <parameter value="0.01" type="double" name="d"/>
+                    <parameter value="1" type="double" name="f_pa"/>
+                    <parameter value="1" type="double" name="f_pb"/>
+                    <parameter value="1" type="double" name="f_at"/>
+                    <parameter value="1" type="double" name="f_bt"/>
+                    <parameter value="0.01" type="double" name="x_v,max"/>
+                    <parameter value="-1e-5" type="double" name="x_pa"/>
+                    <parameter value="-1e-5" type="double" name="x_pb"/>
+                    <parameter value="-1e-5" type="double" name="x_at"/>
+                    <parameter value="-1e-5" type="double" name="x_bt"/>
+                    <parameter value="200" type="double" name="omega_h"/>
+                    <parameter value="1" type="double" name="delta_h"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2562" y="2515" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicTankC" name="Tank C_1">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="100000" type="double" name="p"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2573.0008" y="2763" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicTankC" name="Tank C_2">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="100000" type="double" name="p"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2481.003" y="2763" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2712" y="2515" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicForceTransformer" name="Force Transformer">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Velocity"/>
+                    <parameter value="0.2" type="double" name="P1::Position"/>
+                    <parameter value="10" type="double" name="F"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2800.360738" y="2355.899337" flipped="false" a="180"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicLosslessConnector" name="Lossless Q-type Connector_1">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2655.422138" y="2389.62" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalGain" name="Gain">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                    <parameter value="0.003" type="double" name="k"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2436" y="2525" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalSubtract" name="Subtract">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2388" y="2525" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicVolumeMultiPort" name="Hydraulic Volume Multi Port">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="0" type="double" name="P1::Pressure"/>
+                    <parameter value="0.001" type="double" name="V"/>
+                    <parameter value="1e+009" type="double" name="Beta_e"/>
+                    <parameter value="0.3" type="double" name="alpha"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2573" y="2602" flipped="false" a="90"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalMass" name="Translational Mass">
+                <parameters>
+                    <parameter value="100" type="double" name="m"/>
+                    <parameter value="0" type="double" name="B"/>
+                    <parameter value="0" type="double" name="k"/>
+                    <parameter value="0" type="double" name="x_min"/>
+                    <parameter value="1" type="double" name="x_max"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2712.360738" y="2355.899337" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicFixedDisplacementPump" name="Q-type Fixed Displacement Pump">
+                <parameters>
+                    <parameter value="1000" type="double" name="n_p"/>
+                    <parameter value="5e-005" type="double" name="D_p"/>
+                    <parameter value="1e-012" type="double" name="C_l,p"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2466" y="2680" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicHose" name="Long Line With Visco Elastic Walls_1">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="0" type="double" name="P1::Pressure"/>
+                    <parameter value="0" type="double" name="P2::Flow"/>
+                    <parameter value="0" type="double" name="P2::Pressure"/>
+                    <parameter value="1e+009" type="double" name="beta_e"/>
+                    <parameter value="870" type="double" name="rho"/>
+                    <parameter value="0.03" type="double" name="eta"/>
+                    <parameter value="0.03" type="double" name="eta_w"/>
+                    <parameter value="0.03" type="double" name="d"/>
+                    <parameter value="10" type="double" name="l"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2505.48" y="2477.77" flipped="true" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalStep" name="Step">
+                <parameters>
+                    <parameter value="0.2" type="double" name="y_0"/>
+                    <parameter value="0.5" type="double" name="y_A"/>
+                    <parameter value="1" type="double" name="t_step"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2304" y="2525" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicHose" name="Long Line With Visco Elastic Walls">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="0" type="double" name="P1::Pressure"/>
+                    <parameter value="0" type="double" name="P2::Flow"/>
+                    <parameter value="0" type="double" name="P2::Pressure"/>
+                    <parameter value="1e+009" type="double" name="beta_e"/>
+                    <parameter value="870" type="double" name="rho"/>
+                    <parameter value="0.03" type="double" name="eta"/>
+                    <parameter value="0.03" type="double" name="eta_w"/>
+                    <parameter value="0.03" type="double" name="d"/>
+                    <parameter value="10" type="double" name="l"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2660.8" y="2476.9" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicLosslessConnector" name="Lossless Q-type Connector">
+                <parameters/>
+                <hopsangui>
+                    <pose x="2503.590738" y="2389.999337" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicTankC" name="Tank C">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="100000" type="double" name="p"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2593" y="2554" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="MechanicPositionSensor" name="Position Sensor">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2768.360738" y="2300.899337" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicCylinderC" name="Cylinder C">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="0" type="double" name="P1::Pressure"/>
+                    <parameter value="0" type="double" name="P2::Flow"/>
+                    <parameter value="0" type="double" name="P2::Pressure"/>
+                    <parameter value="0" type="double" name="P3::Velocity"/>
+                    <parameter value="0" type="double" name="P3::Force"/>
+                    <parameter value="0" type="double" name="P3::Position"/>
+                    <parameter value="0.001" type="double" name="A_1"/>
+                    <parameter value="0.001" type="double" name="A_2"/>
+                    <parameter value="1" type="double" name="s_l"/>
+                    <parameter value="0.0003" type="double" name="V_1"/>
+                    <parameter value="0.0003" type="double" name="V_2"/>
+                    <parameter value="0" type="double" name="B_p"/>
+                    <parameter value="1e+009" type="double" name="Beta_e"/>
+                    <parameter value="0" type="double" name="c_leak"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2600.360738" y="2355.899337" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicPressureReliefValve" name="Pressure Relief Valve">
+                <parameters>
+                    <parameter value="2e+007" type="double" name="p_max"/>
+                    <parameter value="0.001" type="double" name="tao"/>
+                    <parameter value="1e-008" type="double" name="k_c,s"/>
+                    <parameter value="1e-008" type="double" name="k_c,f"/>
+                    <parameter value="0.01" type="double" name="q_nom"/>
+                    <parameter value="0" type="double" name="p_h"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2575" y="2682" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                </hopsangui>
+            </component>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2358.960012" y="2163.750007"/>
+                    <textobject fontcolor="#005500" text="Example: Position Servo with Long Lines" font="Calibri,20,-1,5,50,0,0,0,0,0"/>
+                    <size width="446.000000" height="41.000000"/>
+                    <line width="2.000000" visible="0" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="1943.000000" y="2432.000000"/>
+                    <textobject fontcolor="#005500" text="In this example long transmission lines has been added &#xa;to the piston in the position servo system." font="Calibri,12,-1,5,50,0,0,0,0,0"/>
+                    <size width="373.000000" height="55.504737"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
+        </objects>
+        <connections>
+            <connect endport="P3" endcomponent="Cylinder C" startport="P1" startcomponent="Translational Mass">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2680.36073799999985567410" y="2355.89933699999983218731"/>
+                        <coordinate x="2670.86073795032461930532" y="2355.89933699999983218731"/>
+                        <coordinate x="2670.86073795032461930532" y="2355.89933699999983218731"/>
+                        <coordinate x="2659.86073799999985567410" y="2355.89933699999983218731"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Translational Mass" startport="P1" startcomponent="Force Transformer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2780.86073799999985567410" y="2355.89933699999983218731"/>
+                        <coordinate x="2766.36073795032461930532" y="2355.89933699999983218731"/>
+                        <coordinate x="2766.36073795032461930532" y="2355.89933699999983218731"/>
+                        <coordinate x="2744.36073799999985567410" y="2355.89933699999983218731"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Translational Mass" startport="P1" startcomponent="Position Sensor">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2768.36073799999985567410" y="2318.89933699999983218731"/>
+                        <coordinate x="2744.36073799999985567410" y="2355.89933699999983218731"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>dashed</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in2" endcomponent="Subtract" startport="out" startcomponent="Position Sensor">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2768.36073799999985567410" y="2282.89933699999983218731"/>
+                        <coordinate x="2768.36073799999985567410" y="2242.57048198703932939679"/>
+                        <coordinate x="2388.00000000000000000000" y="2242.57048198703932939679"/>
+                        <coordinate x="2388.00000000000000000000" y="2512.50000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="PT" endcomponent="4/3 Servo Valve" startport="P1" startcomponent="Tank C">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2593.00000000000000000000" y="2539.50000000000000000000"/>
+                        <coordinate x="2591.97150000000010550139" y="2540.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Gain" startport="out" startcomponent="Subtract">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2400.50000000000000000000" y="2525.00000000000000000000"/>
+                        <coordinate x="2423.50000000000000000000" y="2525.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="4/3 Servo Valve" startport="out" startcomponent="Gain">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2448.50000000000000000000" y="2525.00000000000000000000"/>
+                        <coordinate x="2482.50000000000000000000" y="2525.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Q-type Fixed Displacement Pump" startport="P1" startcomponent="Tank C_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2481.00300000000015643309" y="2748.50000000000000000000"/>
+                        <coordinate x="2481.00300000000015643309" y="2730.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Pressure Relief Valve" startport="P1" startcomponent="Hydraulic Volume Multi Port">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2573.00000000000000000000" y="2602.00000000000000000000"/>
+                        <coordinate x="2573.00079999999979918357" y="2642.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="PP" endcomponent="4/3 Servo Valve" startport="P1" startcomponent="Hydraulic Volume Multi Port">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2573.00000000000000000000" y="2602.00000000000000000000"/>
+                        <coordinate x="2571.92160000000012587407" y="2540.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Hydraulic Volume Multi Port" startport="P2" startcomponent="Q-type Fixed Displacement Pump">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2481.00300000000015643309" y="2630.00000000000000000000"/>
+                        <coordinate x="2481.00300000000015643309" y="2602.00000000000000000000"/>
+                        <coordinate x="2573.00000000000000000000" y="2602.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in1" endcomponent="Subtract" startport="out" startcomponent="Step">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2316.50000000000000000000" y="2525.00000000000000000000"/>
+                        <coordinate x="2375.50000000000000000000" y="2525.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="xv" endcomponent="4/3 Servo Valve" startport="in" startcomponent="Sink">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2692.00000000000000000000" y="2515.00000000000000000000"/>
+                        <coordinate x="2641.50000000000000000000" y="2515.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Pressure Relief Valve" startport="P1" startcomponent="Tank C_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2573.00079999999979918357" y="2748.50000000000000000000"/>
+                        <coordinate x="2573.00079999999979918357" y="2722.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Cylinder C" startport="P1" startcomponent="Lossless Q-type Connector">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2533.59073799999987386400" y="2389.99933700000019598519"/>
+                        <coordinate x="2545.83493799999996554106" y="2389.99933700000019598519"/>
+                        <coordinate x="2545.83493799999996554106" y="2375.89933699999983218731"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Lossless Q-type Connector_1" startport="P2" startcomponent="Cylinder C">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2625.42213799999990442302" y="2375.89933699999983218731"/>
+                        <coordinate x="2625.42213799999990442302" y="2389.61999999999989086064"/>
+                        <coordinate x="2625.42213799999990442302" y="2389.61999999999989086064"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="PA" endcomponent="4/3 Servo Valve" startport="P1" startcomponent="Long Line With Visco Elastic Walls_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2525.48000000000001818989" y="2473.05000000000018189894"/>
+                        <coordinate x="2571.92160000000012587407" y="2473.05000000000018189894"/>
+                        <coordinate x="2571.92160000000012587407" y="2490.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Lossless Q-type Connector" startport="P2" startcomponent="Long Line With Visco Elastic Walls_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2485.48000000000001818989" y="2473.05000000000018189894"/>
+                        <coordinate x="2458.59073795032418274786" y="2473.05000000000018189894"/>
+                        <coordinate x="2458.59073795032418274786" y="2389.99933700000019598519"/>
+                        <coordinate x="2473.59073799999987386400" y="2389.99933700000019598519"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="PB" endcomponent="4/3 Servo Valve" startport="P1" startcomponent="Long Line With Visco Elastic Walls">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2640.80000000000018189894" y="2472.18000000000029103830"/>
+                        <coordinate x="2591.97150000000010550139" y="2472.18000000000029103830"/>
+                        <coordinate x="2591.97150000000010550139" y="2490.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Lossless Q-type Connector_1" startport="P2" startcomponent="Long Line With Visco Elastic Walls">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2680.80000000000018189894" y="2472.18000000000029103830"/>
+                        <coordinate x="2710.02000000000089130481" y="2472.18000000000029103830"/>
+                        <coordinate x="2710.02000000000089130481" y="2389.61999999999989086064"/>
+                        <coordinate x="2685.42213799999990442302" y="2389.61999999999989086064"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>

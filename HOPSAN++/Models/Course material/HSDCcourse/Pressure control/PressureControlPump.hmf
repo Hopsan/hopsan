@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r4162" hopsancoreversion="0.5.x_r4204">
+    <requirements>
+        <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+        <componentlibrary>PettersComponentLibrary</componentlibrary>
+    </requirements>
+    <system logsamples="2048" typename="Subsystem" name="PressureControlPump">
+        <simulationtime stop="1" timestep="0.001" start="-1" inherit_timestep="true"/>
+        <aliases/>
+        <parameters/>
+        <hopsangui>
+            <pose x="0" y="0" flipped="false" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2594" y="2460" zoom="1"/>
+            <ports hidden="1"/>
+            <names hidden="0"/>
+            <scriptfile path=""/>
+            <hopsanobjectappearance version="0.3">
+                <modelobject typename="Subsystem" displayname="PressureControlPump">
+                    <icons>
+                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
+                    </icons>
+                    <ports/>
+                </modelobject>
+            </hopsanobjectappearance>
+            <favoritevariables/>
+            <optimization>
+                <settings>
+                    <niter>100</niter>
+                    <nsearchp>8</nsearchp>
+                    <refcoeff>1.3</refcoeff>
+                    <randfac>0.3</randfac>
+                    <forgfac>0</forgfac>
+                    <functol>1e-05</functol>
+                    <partol>0.0001</partol>
+                    <plot>true</plot>
+                    <savecsv>false</savecsv>
+                    <logpar>false</logpar>
+                </settings>
+                <parameters/>
+                <objectives/>
+            </optimization>
+            <hopsanundo>
+                <post number="-1"/>
+                <post number="0"/>
+                <post number="1"/>
+                <post number="2"/>
+                <post number="3"/>
+                <post number="4"/>
+                <post number="5"/>
+                <post number="6"/>
+                <post number="7"/>
+                <post number="8"/>
+                <post number="9"/>
+                <post number="10"/>
+                <post number="11"/>
+                <post number="12"/>
+                <post number="13"/>
+                <post number="14"/>
+                <post number="15"/>
+                <post number="16" type="changedparameters"/>
+                <post number="17" type="changedparameters"/>
+                <post number="18" type="changedparameters"/>
+                <post number="19" type="changedparameters"/>
+                <post number="20" type="changedparameters"/>
+                <post number="21"/>
+                <post number="22" type="changedparameters"/>
+                <post number="23" type="changedparameters"/>
+                <post number="24"/>
+                <post number="25"/>
+                <post number="26"/>
+                <post number="27" type="changedparameters"/>
+                <post number="28" type="changedparameters"/>
+                <post number="29"/>
+                <post number="30"/>
+                <post number="31"/>
+                <post number="32" type="changedparameters"/>
+                <post number="33" type="changedparameters"/>
+                <post number="34" type="changedparameters"/>
+                <post number="35" type="changedparameters"/>
+                <post number="36" type="changedparameters"/>
+                <post number="37" type="changedparameters"/>
+                <post number="38" type="changedparameters"/>
+                <post number="39" type="changedparameters"/>
+                <post number="40" type="changedparameters"/>
+                <post number="41" type="changedparameters"/>
+                <post number="42" type="changedparameters"/>
+                <post number="43" type="changedparameters"/>
+                <post number="44" type="changedparameters"/>
+                <post number="45" type="changedparameters"/>
+                <post number="46" type="changedparameters"/>
+                <post number="47">
+                    <stuff what="movedobject" name="Tank C">
+                        <oldpos>2471.5 2617.87</oldpos>
+                        <newpos>2471.5 2609.87</newpos>
+                    </stuff>
+                </post>
+            </hopsanundo>
+        </hopsangui>
+        <objects>
+            <component typename="HydraulicTurbulentOrifice" name="Turbulent Orifice">
+                <parameters>
+                    <parameter value="0.67" type="double" name="C_q"/>
+                    <parameter value="3e-007" type="double" name="A"/>
+                    <parameter value="890" type="double" name="rho"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2587" y="2373" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicTankC" name="C-type Tank">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="100000" type="double" name="p"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2400" y="2625" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicVolumeMultiPort" name="Hydraulic Volume Multi Port">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="1e7" type="double" name="P1::Pressure"/>
+                    <parameter value="0.001" type="double" name="V"/>
+                    <parameter value="1e+009" type="double" name="Beta_e"/>
+                    <parameter value="0.1" type="double" name="alpha"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2481" y="2373" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicTankC" name="Tank C_1">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="100000" type="double" name="p"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2660" y="2433" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="SignalStep" name="Step">
+                <parameters>
+                    <parameter value="1e-007" type="double" name="y_0"/>
+                    <parameter value="-1e-007" type="double" name="y_A"/>
+                    <parameter value="0.5" type="double" name="t_step"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2526" y="2314" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicTankC" name="Tank C">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="100000" type="double" name="p"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2481" y="2624.37" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicPressureControlledPump" name="Q-Type Pump With Pressure Control">
+                <parameters>
+                    <parameter value="28e6" type="double" name="p_dif"/>
+                    <parameter value="125" type="double" name="omega_p"/>
+                    <parameter value="0.00125" type="double" name="q_max"/>
+                    <parameter value="0" type="double" name="q_min"/>
+                    <parameter value="7e7" type="double" name="l_p"/>
+                    <parameter value="1e9" type="double" name="r_p"/>
+                    <parameter value="200" type="double" name="omega_p,1"/>
+                    <parameter value="1e-012" type="double" name="C_l,p"/>
+                    <parameter value="0.003" type="double" name="tao_v"/>
+                    <parameter value="0.15" type="double" name="t_p"/>
+                    <parameter value="0.12" type="double" name="t_m"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2465.928082" y="2497.3" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                </hopsangui>
+            </component>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2342.000000" y="2213.000000"/>
+                    <textobject fontcolor="#005500" text="Example: Pressure Control Pump" font="Calibri,20,-1,5,50,0,0,0,0,0"/>
+                    <size width="368.000000" height="41.000000"/>
+                    <line width="2.000000" visible="0" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
+        </objects>
+        <connections>
+            <connect endport="P1" endcomponent="Tank C_1" startport="P1" startcomponent="Turbulent Orifice">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2617.00000000000000000000" y="2373.00000000000000000000"/>
+                        <coordinate x="2660.00000000000000000000" y="2373.00000000000000000000"/>
+                        <coordinate x="2660.00000000000000000000" y="2418.50000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="A" endcomponent="Turbulent Orifice" startport="out" startcomponent="Step">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2538.50000000000000000000" y="2314.00000000000000000000"/>
+                        <coordinate x="2587.00000000000000000000" y="2314.00000000000000000000"/>
+                        <coordinate x="2587.00000000000000000000" y="2358.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P2" endcomponent="Turbulent Orifice" startport="P1" startcomponent="Hydraulic Volume Multi Port">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2481.00000000000000000000" y="2373.00000000000000000000"/>
+                        <coordinate x="2557.00000000000000000000" y="2373.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Hydraulic Volume Multi Port" startport="P2" startcomponent="Q-Type Pump With Pressure Control">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2481.00000048999982027453" y="2435.80000000000018189894"/>
+                        <coordinate x="2481.00000048999982027453" y="2373.00000000000000000000"/>
+                        <coordinate x="2481.00000000000000000000" y="2373.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Q-Type Pump With Pressure Control" startport="P1" startcomponent="Tank C">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2481.00000000000000000000" y="2609.86999999999989086064"/>
+                        <coordinate x="2481.00000000000000000000" y="2580.21000000000003637979"/>
+                        <coordinate x="2481.00000048999982027453" y="2580.21000000000003637979"/>
+                        <coordinate x="2481.00000048999982027453" y="2558.80000000000018189894"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="PREF" endcomponent="Q-Type Pump With Pressure Control" startport="P1" startcomponent="C-type Tank">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2400.00000000000000000000" y="2610.50000000000000000000"/>
+                        <coordinate x="2400.00000000000000000000" y="2578.79999999999927240424"/>
+                        <coordinate x="2400.91658199999983480666" y="2578.79999999999927240424"/>
+                        <coordinate x="2400.91658199999983480666" y="2558.80000000000018189894"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>
