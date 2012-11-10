@@ -254,6 +254,7 @@ void GraphicsView::setZoomFactor(double zoomFactor)
     resetZoom();
     scale(zoomFactor, zoomFactor);
     mZoomFactor = zoomFactor;
+    emit zoomChange(zoomFactor);
 }
 
 
