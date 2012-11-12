@@ -56,6 +56,7 @@ class ModelObjectAnimationData
 {
 public:
     void readFromDomElement(QDomElement &rDomElement, QString basePath);
+    void saveToDomElement(QDomElement &rDomElement);
 
     QString baseIconPath;
     QList<int> movableIdx;
@@ -98,6 +99,9 @@ public:
     QVector<QList<double> > movablePortStartX;
     QVector<QList<double> > movablePortStartY;
     QList<int> movableRelatives;
+
+    //Container-specific data
+    double flowSpeed;
 };
 
 

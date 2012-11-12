@@ -68,6 +68,7 @@ class QTimer;
 class MainWindow;
 class ModelObject;
 class PlotData;
+class ModelObjectAnimationData;
 
 class AnimationWidget : public QWidget
 {
@@ -92,6 +93,7 @@ public:
     //Public member pointers
     AnimatedGraphicsView *mpGraphicsView;
     ContainerObject *mpContainer;
+    ModelObjectAnimationData *mpAnimationData;
 
     //Maps that stores maximum and minimum values for simulation variables ("Pressure", "Velocity" etc)
     //! @todo These are not used, shall we use them or remove them?

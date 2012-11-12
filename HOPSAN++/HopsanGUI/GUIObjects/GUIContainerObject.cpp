@@ -2242,7 +2242,7 @@ void ContainerObject::updateMainWindowButtons()
 
     gpMainWindow->mpPlotAction->setDisabled(mpNewPlotData->isEmpty());
     gpMainWindow->mpShowLossesAction->setDisabled(mpNewPlotData->isEmpty());
-    gpMainWindow->mpAnimateAction->setDisabled(mpNewPlotData->isEmpty());
+    //gpMainWindow->mpAnimateAction->setDisabled(mpNewPlotData->isEmpty());
 }
 
 

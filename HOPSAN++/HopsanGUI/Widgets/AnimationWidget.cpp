@@ -46,6 +46,8 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     //Define public member pointer variables
     mpContainer = gpMainWindow->mpProjectTabs->getCurrentContainer();
 
+    mpAnimationData = mpContainer->getAppearanceData()->getAnimationDataPtr();
+
     //Set palette
     this->setPalette(gConfig.getPalette());
 
@@ -138,23 +140,33 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     mIntensityMaxMap.insert("NodeHydraulic", 2e7);
     mIntensityMinMap.insert("NodeHydraulic", 0);
 
-    mFlowSpeedMap.insert("NodeHydraulic",100);
+    mFlowSpeedMap.insert("NodeHydraulic",mpAnimationData->flowSpeed);
 
     //Collect plot data from container (for non-realtime animations)
     //mpContainer->collectPlotData();
     mpPlotData = mpContainer->getPlotDataPtr();
+    mpPlayButton->setDisabled(mpPlotData->isEmpty());
+    mpRewindButton->setDisabled(mpPlotData->isEmpty());
 
-    //Obtain time values from plot data
-    mpTimeValues = getTimeValues();
+    if(!mpPlotData->isEmpty())
+    {
+        //Obtain time values from plot data
+        mpTimeValues = getTimeValues();
 
-    //Calculate total simulation time and number of samples
-    mTotalTime = mpTimeValues->last();
-    mnSamples = mpTimeValues->size();
+        //Calculate total simulation time and number of samples
+        mTotalTime = mpTimeValues->last();
+        mnSamples = mpTimeValues->size();
 
-    //Set min, max and step values for time slider
-    mpTimeSlider->setMinimum(0);
-    mpTimeSlider->setMaximum(mpTimeValues->size());
-    mpTimeSlider->setSingleStep(mpTimeValues->size()/mFps);
+        //Set min, max and step values for time slider
+        mpTimeSlider->setMinimum(0);
+        mpTimeSlider->setMaximum(mpTimeValues->size());
+        mpTimeSlider->setSingleStep(mpTimeValues->size()/mFps);
+    }
+    else
+    {
+        mpTimeSlider->setMinimum(0);
+        mpTimeSlider->setMaximum(0);
+    }
 
     //Set initial values for speed slider
     mpSpeedSlider->setValue(mSimulationSpeed);
@@ -298,6 +310,12 @@ void AnimationWidget::openPreferencesDialog()
 
     if(pDialog->exec() == QDialog::Accepted)
     {
+        if(pFlowSpeedLineEdit->text().toDouble() != mpAnimationData->flowSpeed)
+        {
+            mpContainer->mpParentProjectTab->hasChanged();
+            mpAnimationData->flowSpeed = pFlowSpeedLineEdit->text().toDouble();
+        }
+
         mFps = pFpsLineEdit->text().toInt();
         mIntensityMinMap.insert("NodeHydraulic", pLowPressureLineEdit->text().toDouble());
         mIntensityMaxMap.insert("NodeHydraulic", pHighPressureLineEdit->text().toDouble());
@@ -363,9 +381,18 @@ void AnimationWidget::changeSpeed(int newSpeed)
 //! @brief Slot that changes time index of animation (used when time slider is moved)
 void AnimationWidget::changeIndex(int newIndex)
 {
-    mIndex = std::min(std::max(newIndex,0), mpTimeValues->size()-1);
-    mLastAnimationTime = mpTimeValues->at(mIndex);
-    mpTimeDisplay->setText(QString::number(mpTimeValues->at(mIndex)));
+    if(isRealTimeAnimation())
+    {
+        mIndex = newIndex;
+        mLastAnimationTime = 0;
+        mpTimeDisplay->setText(0);
+    }
+    else
+    {
+        mIndex = std::min(std::max(newIndex,0), mpTimeValues->size()-1);
+        mLastAnimationTime = mpTimeValues->at(mIndex);
+        mpTimeDisplay->setText(QString::number(mpTimeValues->at(mIndex)));
+    }
 }
 
 

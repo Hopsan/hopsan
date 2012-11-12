@@ -81,7 +81,10 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
                 {
                     QString portName = mpAnimationData->dataPorts.at(i).at(j);
                     QString dataName = mpAnimationData->dataNames.at(i).at(j);
-                    mpData->last().append(mpAnimationWidget->getPlotDataPtr()->getPlotData(generations, componentName, portName, dataName));
+                    if(!mpAnimationWidget->getPlotDataPtr()->isEmpty())
+                    {
+                        mpData->last().append(mpAnimationWidget->getPlotDataPtr()->getPlotData(generations, componentName, portName, dataName));
+                    }
                     mpNodeDataPtrs->last().append(mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getNodeDataPtr(componentName, portName, dataName));
                     qDebug() << "mpData = " << *mpData;
                 }
@@ -128,35 +131,34 @@ void AnimatedComponent::updateAnimation()
         else        //Not adjustable, so let's move it
         {
             QList<double> data;
-            if(mpData->isEmpty() || mpData->first().isEmpty())       //No data (port is not connected)
+
+            if(mpAnimationWidget->isRealTimeAnimation() && !mpNodeDataPtrs->isEmpty())    //Real-time simulation, read from node vector directly
+            {
+                if(mpModelObject->getPort(mpAnimationData->dataPorts.at(m).first())->isConnected())
+                {
+                    for(int i=0; i<mpNodeDataPtrs->at(m).size(); ++i)
+                    {
+                        data.append(*mpNodeDataPtrs->at(m).at(i));
+                    }
+                    data.append(0);
+                    //mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getLastNodeData(mpModelObject->getName(), mpAnimationData->dataPorts.at(m), mpAnimationData->dataNames.at(m), data);
+                }
+                else
+                {
+                    data.append(0);
+                }
+            }
+            else if(!mpData->isEmpty())                                //Not real-time, so read from predefined data member object
+            {
+                for(int i=0; i<mpData->at(m).size(); ++i)
+                {
+                    data.append(mpData->at(m).at(i).at(mpAnimationWidget->getIndex()));
+                }
+            }
+
+            if(data.isEmpty())
             {
                 continue;
-            }
-            else
-            {
-                if(mpAnimationWidget->isRealTimeAnimation())    //Real-time simulation, read from node vector directly
-                {
-                    if(mpModelObject->getPort(mpAnimationData->dataPorts.at(m).first())->isConnected())
-                    {
-                        for(int i=0; i<mpNodeDataPtrs->at(m).size(); ++i)
-                        {
-                            data.append(*mpNodeDataPtrs->at(m).at(i));
-                        }
-                        data.append(0);
-                        //mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getLastNodeData(mpModelObject->getName(), mpAnimationData->dataPorts.at(m), mpAnimationData->dataNames.at(m), data);
-                    }
-                    else
-                    {
-                        data.append(0);
-                    }
-                }
-                else                                //Not real-time, so read from predefined data member object
-                {
-                    for(int i=0; i<mpData->at(m).size(); ++i)
-                    {
-                        data.append(mpData->at(m).at(i).at(mpAnimationWidget->getIndex()));
-                    }
-                }
             }
 
             //Apply parameter multipliers/divisors

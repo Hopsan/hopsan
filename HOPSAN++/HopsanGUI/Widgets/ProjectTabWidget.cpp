@@ -507,7 +507,7 @@ void ProjectTab::collectPlotData()
     //If we collect plot data, we can plot and calculate losses, so enable these buttons
     gpMainWindow->mpPlotAction->setEnabled(true);
     gpMainWindow->mpShowLossesAction->setEnabled(true);
-    gpMainWindow->mpAnimateAction->setEnabled(true);
+   // gpMainWindow->mpAnimateAction->setEnabled(true);
 
     //Tell container to do the job
     this->mpGraphicsView->getContainerPtr()->collectPlotData();

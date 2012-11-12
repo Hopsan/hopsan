@@ -60,17 +60,22 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *pAn
             int g = pConnector->getParentContainer()->getPlotDataPtr()->size()-1;
             QString componentName = pConnector->getEndPort()->getGuiModelObject()->getName();
             QString portName = pConnector->getEndPort()->getPortName();
-            mvIntensityData = pConnector->getParentContainer()->getPlotDataPtr()->getPlotData(g, componentName, portName, "Pressure");
-            mvFlowData = pConnector->getParentContainer()->getPlotDataPtr()->getPlotData(g, componentName, portName, "Flow");
+            if(!pConnector->getParentContainer()->getPlotDataPtr()->isEmpty())
+            {
+                mvIntensityData = pConnector->getParentContainer()->getPlotDataPtr()->getPlotData(g, componentName, portName, "Pressure");
+                mvFlowData = pConnector->getParentContainer()->getPlotDataPtr()->getPlotData(g, componentName, portName, "Flow");
+            }
         }
         else
         {
             int g = pConnector->getParentContainer()->getPlotDataPtr()->size()-1;
             QString componentName = pConnector->getStartPort()->getGuiModelObject()->getName();
             QString portName = pConnector->getStartPort()->getPortName();
-            mvIntensityData = pConnector->getParentContainer()->getPlotDataPtr()->getPlotData(g, componentName, portName, "Pressure");
-            mvFlowData = pConnector->getParentContainer()->getPlotDataPtr()->getPlotData(g, componentName, portName, "Flow");
-
+            if(!pConnector->getParentContainer()->getPlotDataPtr()->isEmpty())
+            {
+                mvIntensityData = pConnector->getParentContainer()->getPlotDataPtr()->getPlotData(g, componentName, portName, "Pressure");
+                mvFlowData = pConnector->getParentContainer()->getPlotDataPtr()->getPlotData(g, componentName, portName, "Flow");
+            }
         }
 
         if(mpConnector->getStartPort()->getPortType() == "POWERMULTIPORT")
@@ -132,36 +137,33 @@ AnimatedConnector::~AnimatedConnector()
 //! @brief Updates the animated connector
 void AnimatedConnector::updateAnimation()
 {
-    if(!mvIntensityData.isEmpty())
+    double max = mpAnimationWidget->mIntensityMaxMap.find("NodeHydraulic").value();
+    double min = mpAnimationWidget->mIntensityMinMap.find("NodeHydraulic").value();
+
+    QPen tempPen = mpLines.first()->pen();
+    tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
+
+    double data, flowData;
+    if(mpAnimationWidget->isRealTimeAnimation())    //Real-time animation
     {
-        double max = mpAnimationWidget->mIntensityMaxMap.find("NodeHydraulic").value();
-        double min = mpAnimationWidget->mIntensityMinMap.find("NodeHydraulic").value();
+        mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getLastNodeData(mComponentName, mPortName, "Pressure", data);
+        mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getLastNodeData(mComponentName, mPortName, "Flow", flowData);
+    }
+    else if(!mvIntensityData.isEmpty())             //Replay animation
+    {
+        int index = mpAnimationWidget->getIndex();
+        data = mvIntensityData[index];
+        flowData = mvFlowData[index];
+    }
 
-        QPen tempPen = mpLines.first()->pen();
-        tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
+    int red = std::min(255.0, 255*(data-min)/(0.8*max-min));
+    int blue = 255-red;
+    tempPen.setColor(QColor(red,0,blue));
+    tempPen.setDashOffset(tempPen.dashOffset()+mDirectionCorrection*mpAnimationWidget->mFlowSpeedMap.find("NodeHydraulic").value()*flowData/* *fmod(mpAnimationWidget->getLastAnimationTime(),10.0)/10.0*/);
 
-        double data, flowData;
-        if(mpAnimationWidget->isRealTimeAnimation())
-        {
-            mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getLastNodeData(mComponentName, mPortName, "Pressure", data);
-            mpAnimationWidget->mpContainer->getCoreSystemAccessPtr()->getLastNodeData(mComponentName, mPortName, "Flow", flowData);
-        }
-        else
-        {
-            int index = mpAnimationWidget->getIndex();
-            data = mvIntensityData[index];
-            flowData = mvFlowData[index];
-        }
-
-        int red = std::min(255.0, 255*(data-min)/(0.8*max-min));
-        int blue = 255-red;
-        tempPen.setColor(QColor(red,0,blue));
-        tempPen.setDashOffset(tempPen.dashOffset()+mDirectionCorrection*mpAnimationWidget->mFlowSpeedMap.find("NodeHydraulic").value()*flowData/* *fmod(mpAnimationWidget->getLastAnimationTime(),10.0)/10.0*/);
-
-        for(int i=0; i<mpLines.size(); ++i)
-        {
-            mpLines[i]->setPen(tempPen);
-        }
+    for(int i=0; i<mpLines.size(); ++i)
+    {
+        mpLines[i]->setPen(tempPen);
     }
 
     QPointF startPos = mapFromItem(mpStartComponent->mpModelObject, mpStartComponent->getPortPos(mStartPortName));

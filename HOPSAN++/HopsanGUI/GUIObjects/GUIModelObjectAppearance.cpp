@@ -59,6 +59,7 @@
 #define CAF_REPLACABLES "replacables"
 #define CAF_REPLACABLE "replacable"
 
+#define CAF_ANIMATION "animation"
 
 // =============== Help Functions ===============
 QDomElement appendOrGetCAFRootTag(QDomElement parentElement)
@@ -172,6 +173,15 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
             baseIconPath = baseIconFileInfo.absoluteFilePath();
         }
 
+        if(rDomElement.hasAttribute("flowspeed"))
+        {
+            flowSpeed = rDomElement.attribute("flowspeed").toDouble();
+        }
+        else
+        {
+            flowSpeed = 100;
+        }
+
         QDomElement xmlMovable = rDomElement.firstChildElement("movable");
         while(!xmlMovable.isNull())
         {
@@ -272,10 +282,20 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
 }
 
 
+void ModelObjectAnimationData::saveToDomElement(QDomElement &rDomElement)
+{
+    rDomElement.setAttribute("flowspeed", flowSpeed);
+}
+
+
 ModelObjectAppearance::ModelObjectAppearance()
 {
     mPortAppearanceMap.clear();
     mDefaultMissingIconPath = "missingcomponenticon.svg";
+
+    //Defaults for animation
+    //! @todo This should maybe be somewhere else...
+    mAnimationData.flowSpeed = 100;
 }
 
 //! @brief get the type-name
@@ -643,7 +663,7 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
         xmlPorts_02 = xmlPorts_02.nextSiblingElement(CAF_PORTPOSITIONS);
     }
     
-    QDomElement xmlAnimation = domElement.firstChildElement("animation");
+    QDomElement xmlAnimation = domElement.firstChildElement(CAF_ANIMATION);
     mAnimationData.readFromDomElement(xmlAnimation, mBasePath);
     
 
@@ -754,6 +774,17 @@ void ModelObjectAppearance::saveToDomElement(QDomElement &rDomElement)
     {
         appendPortDomElement(xmlPorts, pit.key(), pit.value());
     }
+
+    QDomElement xmlAnimation;
+    if(xmlObject.firstChildElement(CAF_ANIMATION).isNull())
+    {
+        xmlAnimation = appendDomElement(xmlObject, CAF_ANIMATION);
+    }
+    else
+    {
+        xmlAnimation = xmlObject.firstChildElement(CAF_ANIMATION);
+    }
+    mAnimationData.saveToDomElement(xmlAnimation);
 }
 
 //! @brief Convenience function to save only specific ports to dom element, used to save dynamic parameter ports
