@@ -41,11 +41,10 @@
 AboutDialog::AboutDialog(MainWindow *parent)
     : QDialog(parent)
 {
-
         //Set the name and size of the main window
     this->setObjectName("AboutDialog");
     this->resize(480,640);
-    this->setWindowTitle("About Hopsan");
+    this->setWindowTitle(tr("About Hopsan"));
     this->setPalette(QPalette(QColor("gray"), QColor("whitesmoke")));
     this->num = 0;
     this->title = "";
@@ -61,38 +60,38 @@ AboutDialog::AboutDialog(MainWindow *parent)
     mpHopsanLogotype->setAlignment(Qt::AlignCenter);
 
     QLabel *pVersionText = new QLabel();
-    pVersionText->setText("\nHopsan GUI version " + QString(HOPSANGUIVERSION) + "\n");
+    pVersionText->setText(tr("\nHopsan GUI version ") + QString(HOPSANGUIVERSION) + "\n");
     QFont tempFont = pVersionText->font();
     tempFont.setBold(true);
     pVersionText->setFont(tempFont);
 
     QLabel *pAuthorsHeading = new QLabel();
-    pAuthorsHeading->setText("Main Authors:");
+    pAuthorsHeading->setText(tr("Main Authors:"));
     pAuthorsHeading->setFont(tempFont);
     pAuthorsHeading->setAlignment(Qt::AlignCenter);
 
     QLabel *pAuthorsText = new QLabel();
-    pAuthorsText->setText(QString::fromUtf8("Björn Eriksson, Peter Nordin, Robert Braun\n"));
+    pAuthorsText->setText(tr("Björn Eriksson, Peter Nordin, Robert Braun\n"));
     pAuthorsText->setWordWrap(true);
     pAuthorsText->setAlignment(Qt::AlignCenter);
 
     QLabel *pContributorsHeading = new QLabel();
-    pContributorsHeading->setText("Contributors:");
+    pContributorsHeading->setText(tr("Contributors:"));
     pContributorsHeading->setFont(tempFont);
     pContributorsHeading->setAlignment(Qt::AlignCenter);
 
     QLabel *pContributorsText = new QLabel();
-    pContributorsText->setText("Alessandro Dell'Amico, Ingo Staack, Isak Demir, Karl Pettersson, Mikael Axin, Petter Krus\n");
+    pContributorsText->setText(tr("Alessandro Dell'Amico, Ingo Staack, Isak Demir, Karl Pettersson, Mikael Axin, Petter Krus, Pratik Deshpande, Sheryar Khan\n"));
     pContributorsText->setWordWrap(true);
     pContributorsText->setAlignment(Qt::AlignCenter);
 
     QLabel *pSpecialThanksHeading = new QLabel();
-    pSpecialThanksHeading->setText("Special Thanks To:");
+    pSpecialThanksHeading->setText(tr("Special Thanks To:"));
     pSpecialThanksHeading->setFont(tempFont);
     pSpecialThanksHeading->setAlignment(Qt::AlignCenter);
 
     QLabel *pSpecialThanksText = new QLabel();
-    pSpecialThanksText->setText("Atlas Copco\nThe Swedish Foundation for Strategic Research\n");
+    pSpecialThanksText->setText(tr("Atlas Copco\nThe Swedish Foundation for Strategic Research\n"));
     pSpecialThanksText->setWordWrap(true);
     pSpecialThanksText->setAlignment(Qt::AlignCenter);
 
@@ -107,12 +106,12 @@ AboutDialog::AboutDialog(MainWindow *parent)
 //    pLicenseText->setAlignment(Qt::AlignJustify);
 
     QLabel *pContactHeading = new QLabel();
-    pContactHeading->setText("Contact Information:");
+    pContactHeading->setText(tr("Contact Information:"));
     pContactHeading->setFont(tempFont);
     pContactHeading->setAlignment(Qt::AlignCenter);
 
     QLabel *pContactText = new QLabel();
-    pContactText->setText(QString::fromUtf8("Linköping University\nDepartment of Management and Engineering (IEI)\nDivision of Fluid and Mechatronic Systems (Flumes)\nPhone: +4613281000\nE-Mail: robert.braun@liu.se"));
+    pContactText->setText(tr("Linköping University\nDepartment of Management and Engineering (IEI)\nDivision of Fluid and Mechatronic Systems (Flumes)\nPhone: +4613281000\nE-Mail: robert.braun@liu.se"));
     pContactText->setWordWrap(true);
     pContactText->setAlignment(Qt::AlignCenter);
 

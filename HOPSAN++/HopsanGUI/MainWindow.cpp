@@ -82,7 +82,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpMessageDock->setFeatures(QDockWidget::DockWidgetVerticalTitleBar | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
     addDockWidget(Qt::BottomDockWidgetArea, mpMessageDock);
     mpMessageWidget->checkMessages();
-    mpMessageWidget->printGUIInfoMessage("HopsanGUI, Version: " + QString(HOPSANGUIVERSION));
+    mpMessageWidget->printGUIInfoMessage(tr("HopsanGUI, Version: ") + QString(HOPSANGUIVERSION));
 
     //Load configuration from settings file
     gConfig.loadFromXml();      //!< @todo This does not really belong in main window constructor, but it depends on main window so keep it for now
@@ -97,11 +97,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     //Set name and icon of main window
 #ifdef DEVELOPMENT
-    this->setWindowTitle("Hopsan (development version)");
+    this->setWindowTitle(tr("Hopsan (development version)"));
 #else
-    this->setWindowTitle("Hopsan");
+    this->setWindowTitle(tr("Hopsan");
 #endif
-    this->setWindowIcon(QIcon(QString(QString(ICONPATH) + "hopsan.png")));
+    this->setWindowIcon(QIcon(QString(QString(ICONPATH) + tr("hopsan.png"))));
 
     //Set dock widget corner owner
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
