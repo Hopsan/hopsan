@@ -646,7 +646,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
                 }
             }
 
-            if(pObj->getTypeName().startsWith("CppComponent"))
+            if(pObj && pObj->getTypeName().startsWith("CppComponent"))
             {
                 recompileCppComponents(pObj);
             }

@@ -129,7 +129,7 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     mpTime = new QTime();
 
     //Set default values for animation variables
-    mRealTime=false;
+    mRealTime=true;
     mCurrentAnimationTime = 0;
     mLastAnimationTime = 0;
     mSimulationSpeed = 0;

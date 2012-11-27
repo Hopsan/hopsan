@@ -92,6 +92,11 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
         }
     }
 
+    if(mpModelObject->getSubTypeName() == "XmasSky")
+    {
+        mpBase->setZValue(mpBase->zValue()-1);
+    }
+
     //Draw itself to the scene
     draw();
 }
@@ -118,6 +123,13 @@ void AnimatedComponent::draw()
 void AnimatedComponent::updateAnimation()
 {
     int a=0;    //Adjustables use a different indexing, because all movables are not adjustable
+
+    if(mpModelObject->getTypeName() == "SignalDisplay")
+    {
+        double textData;
+        mpModelObject->getPort("in")->getLastNodeData("Value", textData);
+        mpText->setPlainText(QString::number(textData,'g', 4));
+    }
 
     //Loop through all movable icons
     for(int m=0; m<mpMovables.size(); ++m)
@@ -209,17 +221,45 @@ void AnimatedComponent::updateAnimation()
             }
 
             //Set color
-            if(mpAnimationData->colorR[m] != 0.0 || mpAnimationData->colorG[m] != 0.0 || mpAnimationData->colorB[m] != 0.0)
+            if(mpAnimationData->colorR[m] != 0.0 || mpAnimationData->colorG[m] != 0.0 || mpAnimationData->colorB[m] != 0.0 || mpAnimationData->colorA[m] != 0.0)
             {
                 int idx = mpAnimationData->colorDataIdx[m];
+
                 int ir = mpAnimationData->initColorR[m];
+                int r=ir;
+                if(mpAnimationData->colorR[m] != 0)
+                {
+                    r = std::max(0, std::min(255, ir-int(mpAnimationData->colorR[m]*data[idx])));
+                }
+
                 int ig = mpAnimationData->initColorG[m];
+                int g = ig;
+                if(mpAnimationData->colorG[m] != 0)
+                {
+                    g = std::max(0, std::min(255, ig-int(mpAnimationData->colorG[m]*data[idx])));
+                }
+
                 int ib = mpAnimationData->initColorB[m];
-                int r = std::max(0, std::min(255, ir-int(mpAnimationData->colorR[m]*data[idx])));
-                int g = std::max(0, std::min(255, ig-int(mpAnimationData->colorG[m]*data[idx])));
-                int b = std::max(0, std::min(255, ib-int(mpAnimationData->colorB[m]*data[idx])));
+                int b = ib;
+                if(mpAnimationData->colorB[m] != 0)
+                {
+                    b = std::max(0, std::min(255, ib-int(mpAnimationData->colorB[m]*data[idx])));
+                }
+
+                int ia = mpAnimationData->initColorA[m];
+                if(ia == 0)
+                {
+                    ia = 255;
+                }
+                int a = ia;
+                if(mpAnimationData->colorA[m] != 0)
+                {
+                    a = std::max(0, std::min(255, ia-int(mpAnimationData->colorA[m]*data[idx])));
+                }
+
+
                 QGraphicsColorizeEffect *pEffect = new QGraphicsColorizeEffect();
-                QColor color(r,g,b);
+                QColor color(r,g,b,a);
                 pEffect->setColor(color);
                 mpMovables[m]->setGraphicsEffect(pEffect);
             }
@@ -296,6 +336,15 @@ void AnimatedComponent::setupAnimationBase(QString basePath)
     mpBase->setFlag(QGraphicsItem::ItemIsMovable, false);
 
    // mpBase->refreshIconPosition();
+
+    mpText = new QGraphicsTextItem(mpBase, 0);
+    mpText->setPlainText("0");
+    mpText->setFont(QFont("Arial", 16));
+    mpText->setPos(7,0);
+    if(mpModelObject->getTypeName() != "SignalDisplay")
+    {
+        mpText->hide();
+    }
 }
 
 
@@ -394,6 +443,11 @@ AnimatedIcon::AnimatedIcon(QPointF position, qreal rotation, const ModelObjectAp
     this->setCenterPos(position);
 
     this->setZValue(MODELOBJECT_Z);
+
+    if(mpAnimatedComponent->mpModelObject->getSubTypeName() == "XmasSky")
+    {
+        this->setZValue(this->zValue()-1);
+    }
 
     mIdx = idx;
 }

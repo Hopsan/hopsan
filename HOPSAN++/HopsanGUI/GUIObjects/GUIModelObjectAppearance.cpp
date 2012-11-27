@@ -220,9 +220,11 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
             initColorR.append(xmlMovable.firstChildElement("initcolor").attribute("r").toDouble());
             initColorG.append(xmlMovable.firstChildElement("initcolor").attribute("g").toDouble());
             initColorB.append(xmlMovable.firstChildElement("initcolor").attribute("b").toDouble());
+            initColorA.append(xmlMovable.firstChildElement("initcolor").attribute("a").toDouble());
             colorR.append(xmlMovable.firstChildElement("color").attribute("r").toDouble());
             colorG.append(xmlMovable.firstChildElement("color").attribute("g").toDouble());
             colorB.append(xmlMovable.firstChildElement("color").attribute("b").toDouble());
+            colorA.append(xmlMovable.firstChildElement("color").attribute("a").toDouble());
             colorDataIdx.append(xmlMovable.firstChildElement("color").attribute("idx").toInt());
             transformOriginX.append(xmlMovable.firstChildElement("transformorigin").attribute("x").toDouble());
             transformOriginY.append(xmlMovable.firstChildElement("transformorigin").attribute("y").toDouble());

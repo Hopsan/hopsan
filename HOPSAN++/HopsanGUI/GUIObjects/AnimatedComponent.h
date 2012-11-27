@@ -70,6 +70,8 @@ private:
     QList<QList<QVector<double> > > *mpData;
     QList<QList<double*> > *mpNodeDataPtrs;
 
+    QGraphicsTextItem *mpText;
+
     QMap<QString, QPointF> mPortPositions;
 
     ModelObjectAnimationData *mpAnimationData;

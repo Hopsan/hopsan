@@ -80,9 +80,11 @@ public:
     QVector<double> initColorR;
     QVector<double> initColorG;
     QVector<double> initColorB;
+    QVector<double> initColorA;
     QVector<double> colorR;
     QVector<double> colorG;
     QVector<double> colorB;
+    QVector<double> colorA;
     QVector<int> colorDataIdx;
     QVector<double> transformOriginX;
     QVector<double> transformOriginY;
