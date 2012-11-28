@@ -13,6 +13,7 @@ DESTDIR = $${PWD}/../bin
 QT += svg xml
 QT += core gui webkit network
 
+
 TARGET = $${TARGET}$${DEBUG_EXT}
 
 #--------------------------------------------------------
@@ -164,8 +165,10 @@ SOURCES += main.cpp \
     Dialogs/ParameterSettingsLayout.cpp \
     Dialogs/ModelObjectPropertiesDialog.cpp \
     SimulationThreadHandler.cpp \
+    Dialogs/ComponentPropertiesDialog2.cpp \
     Utilities/SymHop.cpp \
     Widgets/HcomWidget.cpp
+
 
 
 HEADERS += MainWindow.h \
@@ -229,6 +232,7 @@ HEADERS += MainWindow.h \
     Dialogs/ParameterSettingsLayout.h \
     Dialogs/ModelObjectPropertiesDialog.h \
     SimulationThreadHandler.h \
+    Dialogs/ComponentPropertiesDialog2.h \
     Utilities/SymHop.h \
     Widgets/HcomWidget.h
 

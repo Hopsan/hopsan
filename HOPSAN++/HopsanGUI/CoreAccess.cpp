@@ -507,6 +507,43 @@ bool CoreSystemAccess::setParameterValue(QString componentName, QString paramete
     return mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), value.toStdString(), force);
 }
 
+void CoreSystemAccess::setVariableAlias(QString compName, QString portName, QString varName, QString alias)
+{
+    hopsan::Port* pPort = getCorePortPtr(compName,portName);
+    if (pPort)
+    {
+        int id = pPort->getNodeDataIdFromName(varName.toStdString());
+        mpCoreComponentSystem->getAliasHandler().setVariableAlias(alias.toStdString(), compName.toStdString(),
+                                                                  portName.toStdString(), id);
+    }
+}
+
+void CoreSystemAccess::setParameterAlias(QString compName, QString paramName, QString alias)
+{
+    mpCoreComponentSystem->getAliasHandler().setParameterAlias(alias.toStdString(), compName.toStdString(), paramName.toStdString());
+}
+
+void CoreSystemAccess::getFullVariableNameByAlias(QString alias, QString &rCompName, QString &rPortName, QString &rVarName)
+{
+    std::string comp, port, var;
+    mpCoreComponentSystem->getAliasHandler().getVariableFromAlias(alias.toStdString(), comp, port, var);
+    rCompName = QString::fromStdString(comp);
+    rPortName = QString::fromStdString(port);
+    rVarName = QString::fromStdString(var);
+}
+
+QStringList CoreSystemAccess::getAliasNames() const
+{
+    std::vector<std::string> str_vec = mpCoreComponentSystem->getAliasHandler().getAliases();
+    QStringList qvec;
+    qvec.reserve(str_vec.size());
+    for (int i=0; i<str_vec.size(); ++i)
+    {
+        qvec.push_back(QString::fromStdString(str_vec[i]));
+    }
+    return qvec;
+}
+
 
 void CoreSystemAccess::removeSubComponent(QString componentName, bool doDelete)
 {

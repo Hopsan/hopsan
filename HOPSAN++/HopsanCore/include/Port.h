@@ -46,6 +46,7 @@ namespace hopsan {
         friend class Component;
         friend class ComponentSystem;
         friend class ConnectionAssistant;
+        friend class AliasHandler;
         friend class MultiPort;
 
     public:
@@ -101,7 +102,10 @@ namespace hopsan {
 
         Component* getComponent() const;
 
+        std::string getVariableAlias(const int id) const;
+        int getVariableIdByAlias(const std::string alias) const;
         virtual std::vector<Port*> &getConnectedPorts(const int portIdx=-1);
+
 
     protected:
         PortTypesEnumT mPortType;
@@ -125,10 +129,13 @@ namespace hopsan {
 
         void createStartNode(NodeTypeT nodeType);
 
+        void setVariableAlias(const std::string alias, const int id);
+
     private:
         std::string mPortName;
         Node* mpNode;
         Node* mpNCDummyNode; //NotConnected dummy node
+        std::map<std::string, int> mVariableAliasMap;
 
         bool mConnectionRequired;
 

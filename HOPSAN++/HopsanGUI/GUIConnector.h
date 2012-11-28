@@ -103,6 +103,7 @@ public slots:
     void makeDiagonal(bool diagonal);
     void doSelect(bool lineSelected, int lineNumber);
     void selectIfBothComponentsSelected();
+    void setColor(QColor color);
     void setActive();
     void setPassive();
     void setHovered();

@@ -261,6 +261,58 @@ void Port::createStartNode(NodeTypeT nodeType)
     }
 }
 
+//! @note This one should be called by system, do not call this manually (that will create a mess)
+void Port::setVariableAlias(const string alias, const int id)
+{
+    //! @todo check id
+    // First remove it if already set
+    std::map<std::string, int>::iterator it = mVariableAliasMap.begin();
+    while (it!=mVariableAliasMap.end())
+    {
+        if (it->second == id)
+        {
+            mVariableAliasMap.erase(it);
+            // Restart search if something was removed as itterator breaks
+            it = mVariableAliasMap.begin();
+        }
+        else
+        {
+             ++it;
+        }
+    }
+
+    // Replace with new name, if not empty
+    if (!alias.empty())
+    {
+        mVariableAliasMap.insert(std::pair<std::string, int>(alias, id));
+    }
+}
+
+string Port::getVariableAlias(const int id) const
+{
+    std::map<std::string, int>::const_iterator it;
+    for(it=mVariableAliasMap.begin();it!=mVariableAliasMap.end();++it)
+    {
+        if (it->second == id)
+        {
+            return it->first;
+        }
+    }
+    return string();
+}
+
+int Port::getVariableIdByAlias(const string alias) const
+{
+    std::map<std::string, int>::const_iterator it = mVariableAliasMap.find(alias);
+    {
+        if (it!=mVariableAliasMap.end())
+        {
+            return it->second;
+        }
+    }
+    return -1;
+}
+
 
 //! @brief Debug function to dump logged node data to a file
 //! @param [in] filename The name of the file to write to
@@ -676,7 +728,12 @@ MultiPort::MultiPort(std::string node_type, std::string portname, Component *por
 MultiPort::~MultiPort()
 {
     //Deleate all subports thay may remain, if everything is working this shoudl be zero
-    assert(mSubPortsVector.size() == 0); //should be removed by other code, use this assert to check if that is working
+    //! @todo removed assert, BUT problem needs to be fixed /Peter
+    if (mSubPortsVector.size() != 0)
+    {
+        getComponent()->addErrorMessage("mSubPortsVector.size() != 0 in multiport destructor (will fix later)");
+    }
+    //assert(mSubPortsVector.size() == 0); //should be removed by other code, use this assert to check if that is working
 }
 
 double MultiPort::readNode(const size_t idx, const size_t portIdx)

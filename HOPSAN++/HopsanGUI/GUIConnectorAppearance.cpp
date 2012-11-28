@@ -71,8 +71,25 @@ QPen ConnectorAppearance::getPen(QString situation)
     return getPen(mConnectorStyle, mGfxType, situation);
 }
 
+void ConnectorAppearance::setCustomColor(QColor color)
+{
+    mCustomColor = color;
+}
+
+QColor ConnectorAppearance::getCustomColor()
+{
+    return mCustomColor;
+}
+
+
 //! Get function for primary pen style
 QPen ConnectorAppearance::getPen(connectorStyle style, graphicsType gfxType, QString situation)
 {
+    if(situation == "Primary" && mCustomColor != QColor())
+    {
+        QPen retval = gConfig.getPen(style, gfxType, situation);
+        retval.setColor(mCustomColor);
+        return retval;
+    }
     return gConfig.getPen(style, gfxType, situation);
 }

@@ -34,7 +34,7 @@
 #include "Utilities/ComponentGeneratorUtilities.h"
 #include "Utilities/SymHop.h"
 #include "Utilities/XMLUtilities.h"
-#include "Widgets/MessageWidget.h"
+#include "Widgets/HcomWidget.h"
 #include "Widgets/PyDockWidget.h"
 #include "common.h"
 #include "CoreAccess.h"
@@ -645,7 +645,7 @@ void ComponentGeneratorDialog::saveModel()
     QFile file(fileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open file: "+fileInfo.filePath());
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to open file: "+fileInfo.filePath());
         return;
     }
 

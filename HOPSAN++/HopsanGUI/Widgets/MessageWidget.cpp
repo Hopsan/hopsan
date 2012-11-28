@@ -26,6 +26,7 @@
 #include "MainWindow.h"
 #include "CoreAccess.h"
 #include "Configuration.h"
+#include "HcomWidget.h"
 #include <QDateTime>
 
 using namespace hopsan;
@@ -223,6 +224,8 @@ void MessageWidget::appendOneMessage(GUIMessage msg)
             mLastTag =msg.tag;
         }
     }
+
+    //gpMainWindow->mpHcomWidget->mpConsole->appendOneMessage(msg);
 }
 
 
@@ -300,6 +303,7 @@ void MessageWidget::clear()
 //! @todo Is this function necessary? All it does is calling another one...
 void MessageWidget::checkMessages()
 {
+    gpMainWindow->mpTerminalWidget->checkMessages(); //!< @todo quickhack by peter to make terminal print all messages
     printCoreMessages();
 }
 

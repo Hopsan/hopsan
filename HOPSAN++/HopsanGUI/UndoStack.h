@@ -44,6 +44,7 @@ class Connector;
 class MainWindow;
 class ContainerObject;
 class Widget;
+class UndoWidget;
 
 class UndoStack : public QObject
 {

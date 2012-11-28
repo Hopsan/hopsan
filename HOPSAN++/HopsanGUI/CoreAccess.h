@@ -76,6 +76,7 @@ public:
         : mName(name), mValue(value), mType(type), mUnit(unit), mDescription(desc), mIsDynamic(false), mIsEnabled(true) {}
 
     QString mName;
+    QString mAlias;
     QString mValue;
     QString mType;
     QString mUnit;
@@ -120,6 +121,14 @@ public:
     QString getParameterValue(QString componentName, QString parameterName);
     //void getStartValueDataNamesValuesAndUnits(QString componentName, QString portName, QVector<QString> &rNames, QVector<QString> &rStartDataValuesTxt, QVector<QString> &rUnits);
     bool setParameterValue(QString componentName, QString parameterName, QString value, bool force=0);
+
+    // Alias functions
+    void setVariableAlias(QString compName, QString portName, QString varName, QString alias);
+    void setParameterAlias(QString compName, QString paramName, QString alias);
+    void getFullVariableNameByAlias(QString alias, QString &rCompName, QString &rPortName, QString &rVarName);
+    QStringList getAliasNames() const;
+
+
 
     // Port Functions
     QString getPortType(const QString componentName, const QString portName, const PortTypeIndicatorT portTypeIndicator=ACTUALPORTTYPE);

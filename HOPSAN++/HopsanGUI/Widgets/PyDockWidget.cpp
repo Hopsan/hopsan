@@ -47,6 +47,7 @@ PyDockWidget::PyDockWidget(MainWindow *pMainWindow, QWidget * parent)
     PythonQt::self()->registerClass(&MainWindow::staticMetaObject, NULL, PythonQtCreateObject<PyMainWindowClassWrapper>);
     PythonQt::self()->registerClass(&ModelObject::staticMetaObject, NULL, PythonQtCreateObject<PyModelObjectClassWrapper>);
     PythonQt::self()->registerClass(&Port::staticMetaObject, NULL, PythonQtCreateObject<PyPortClassWrapper>);
+    PythonQt::self()->registerClass(&LogDataHandler::staticMetaObject, NULL, PythonQtCreateObject<PyLogDataHandlerClassWrapper>);
 
     PythonQtObjectPtr  mainContext = PythonQt::self()->getMainModule();
     mainContext.addObject("hopsan", pMainWindow);

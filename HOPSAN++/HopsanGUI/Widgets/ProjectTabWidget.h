@@ -119,6 +119,7 @@ public slots:
     bool simulate_old();
     void save();
     void saveAs();
+    void ExportModel();
     void setExternalSystem(bool value);
     void setEditingEnabled(bool value);
     void openAnimation();

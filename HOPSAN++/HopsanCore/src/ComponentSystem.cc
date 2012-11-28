@@ -148,7 +148,7 @@ vector< vector<ComponentSystem *> > SimulationHandler::distributeSystems(const s
 }
 
 //Constructor
-ComponentSystem::ComponentSystem() : Component()
+ComponentSystem::ComponentSystem() : Component(), mAliasHandler(this)
 {
     mTypeName = "ComponentSystem";
     mName = mTypeName; //Make sure intial name is same as typename
@@ -626,6 +626,11 @@ vector<string> ComponentSystem::getSubComponentNames()
 bool ComponentSystem::haveSubComponent(const string name) const
 {
     return (mSubComponentMap.count(name) > 0);
+}
+
+AliasHandler &ComponentSystem::getAliasHandler()
+{
+    return mAliasHandler;
 }
 
 
@@ -3128,4 +3133,206 @@ bool SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT
     // Use single core simulation if no TBB support
     return simulateMultipleSystems(startT, stopT, rSystemVector);
 #endif
+}
+
+AliasHandler::AliasHandler(ComponentSystem *pSystem)
+{
+    mpSystem = pSystem;
+}
+
+bool AliasHandler::setVariableAlias(const string alias, const string compName, const string portName, const int varId)
+{
+    //! @todo must check if existing alias is set for the same component that already have it to avoid warning
+    if (!hasAlias(alias))
+    {
+        //string concatName = concatFullName(compName, portName);
+        Component *pComp = mpSystem->getSubComponent(compName);
+        if (pComp)
+        {
+            Port *pPort = pComp->getPort(portName);
+            if (pPort)
+            {
+                //! @todo do nothing if prev and new alias same
+                string prevAlias = pPort->getVariableAlias(varId);
+                if (!prevAlias.empty())
+                {
+                    //! @todo the remove will search for port agin all the way, maybe have a special remove to use when we know the port and id already
+                    removeAlias(prevAlias);
+                }
+
+                if (!alias.empty())
+                {
+                    //! @todo do we need to check if this is OK ??
+                    pPort->setVariableAlias(alias, varId);
+
+                    ParamOrVariableT data = {Variable, compName, portName};
+                    mAliasMap.insert(std::pair<string, ParamOrVariableT>(alias, data));
+                }
+                return true;
+            }
+        }
+        mpSystem->addErrorMessage("Component or Port not found");
+        return false;
+    }
+    mpSystem->addErrorMessage(string("Alias: ")+alias+string(" already exist"));
+    return false;
+}
+
+bool AliasHandler::setParameterAlias(const string alias, const string compName, const string parameterName)
+{
+    mpSystem->addErrorMessage("AliasHandler::setParameterAlias has not been implemented");
+    return false;
+}
+
+void AliasHandler::componentRenamed(const string oldCompName, const string newCompName)
+{
+    std::map<std::string, ParamOrVariableT>::iterator it;
+    for (it=mAliasMap.begin(); it!=mAliasMap.end(); ++it)
+    {
+        if (it->second.componentName == oldCompName)
+        {
+            string alias = it->first;
+            ParamOrVariableT data = it->second;
+            mAliasMap.erase(it);
+            data.componentName = newCompName;
+
+            // Re-insert data (with new comp name)
+            mAliasMap.insert(std::pair<string, ParamOrVariableT>(alias, data));
+
+            // Restart search for more components
+            it = mAliasMap.begin();
+        }
+    }
+}
+
+void AliasHandler::portRenamed(const string compName, const string oldPortName, const string newPortName)
+{
+    mpSystem->addErrorMessage("AliasHandler::portRenamed has not been implemented");
+}
+
+void AliasHandler::componentRemoved(const string compName)
+{
+    std::map<std::string, ParamOrVariableT>::iterator it;
+    for (it=mAliasMap.begin(); it!=mAliasMap.end(); ++it)
+    {
+        if (it->second.componentName == compName)
+        {
+            mAliasMap.erase(it);
+            it = mAliasMap.begin(); //Restart search for more components
+        }
+    }
+}
+
+void AliasHandler::portRemoved(const string compName, const string portName)
+{
+    mpSystem->addErrorMessage("AliasHandler::portRemoved has not been implemented");
+}
+
+bool AliasHandler::hasAlias(const string alias)
+{
+    if (mAliasMap.count(alias)>0)
+    {
+        return true;
+    }
+    return false;
+}
+
+bool AliasHandler::removeAlias(const string alias)
+{
+    std::map<std::string, ParamOrVariableT>::iterator it = mAliasMap.find(alias);
+    if (it != mAliasMap.end())
+    {
+        if (it->second.type = Variable)
+        {
+            Component *pComp = mpSystem->getSubComponent(it->second.componentName);
+            if (pComp)
+            {
+                Port *pPort = pComp->getPort(it->second.name);
+                if (pPort)
+                {
+                    int id = pPort->getVariableIdByAlias(alias);
+                    pPort->setVariableAlias("",id); //Remove variable alias
+                }
+            }
+        }
+        mAliasMap.erase(it);
+        return true;
+    }
+    return false;
+}
+
+std::vector<std::string> AliasHandler::getAliases() const
+{
+    vector<string> aliasNames;
+    aliasNames.reserve(mAliasMap.size());
+
+    std::map<std::string, ParamOrVariableT>::const_iterator it;
+    for (it=mAliasMap.begin(); it!=mAliasMap.end(); ++it)
+    {
+        aliasNames.push_back(it->first);
+    }
+    return aliasNames;
+}
+
+void AliasHandler::getVariableFromAlias(const string alias, string &rCompName, string &rPortName, int &rVarId)
+{
+    // Clear return vars to indicate any failure
+    rCompName.clear(); rPortName.clear(); rVarId=-1;
+
+    // Search through map for specified alias
+    std::map<std::string, ParamOrVariableT>::iterator it;
+    it = mAliasMap.find(alias);
+    if (it != mAliasMap.end())
+    {
+        if (it->second.type == Variable)
+        {
+            rCompName = it->second.componentName;
+            rPortName = it->second.name;
+
+            // Lookup varName from port
+            Component* pComp = mpSystem->getSubComponent(rCompName);
+            if (pComp)
+            {
+                Port *pPort = pComp->getPort(rPortName);
+                if (pPort)
+                {
+                    rVarId = pPort->getVariableIdByAlias(alias);
+                }
+            }
+        }
+    }
+}
+
+void AliasHandler::getVariableFromAlias(const string alias, string &rCompName, string &rPortName, string &rVarName)
+{
+    // Clear return vars to indicate any failure
+    rCompName.clear(); rPortName.clear(); rVarName.clear();
+
+    // Search through map for specified alias
+    std::map<std::string, ParamOrVariableT>::iterator it = mAliasMap.find(alias);
+    if (it != mAliasMap.end())
+    {
+        if (it->second.type == Variable)
+        {
+            rCompName = it->second.componentName;
+            rPortName = it->second.name;
+
+            // Lookup varName from port
+            Component* pComp = mpSystem->getSubComponent(rCompName);
+            if (pComp)
+            {
+                Port *pPort = pComp->getPort(rPortName);
+                if (pPort)
+                {
+                    int id = pPort->getVariableIdByAlias(alias);
+                    rVarName = pPort->getNodeDataDescription(id)->name;
+                }
+            }
+        }
+    }
+}
+
+void AliasHandler::getParameterFromAlias(const string alias, string &rCompName, string &rParameterName)
+{
+    mpSystem->addErrorMessage("AliasHandler::getParameterFromAlias has not been implemented");
 }

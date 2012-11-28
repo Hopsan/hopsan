@@ -29,7 +29,7 @@
 #include <QtGui>
 #include <QtNetwork/QNetworkReply>
 
-#include "Widgets/UndoWidget.h"
+//#include "Widgets/UndoWidget.h"
 
 class ProjectTabWidget;
 class GraphicsView;
@@ -37,7 +37,7 @@ class QGraphicsScene;
 class LibraryWidget;
 class OptionsDialog;
 class MessageWidget;
-class HcomWidget;
+class TerminalConsole;
 class PlotTreeWidget;
 class PyDockWidget;
 class SystemParametersWidget;
@@ -50,6 +50,8 @@ class HelpDialog;
 class OptimizationDialog;
 class SensitivityAnalysisDialog;
 class ComponentGeneratorDialog;
+class TerminalWidget;
+class UndoWidget;
 
 class MainWindow : public QMainWindow
 {
@@ -89,7 +91,7 @@ public:
     WelcomeWidget *mpWelcomeWidget;
     LibraryWidget *mpLibrary;
     MessageWidget *mpMessageWidget;
-    HcomWidget *mpHcomWidget;
+    TerminalWidget *mpTerminalWidget;
     PlotTreeWidget *mpPlotWidget;
     PyDockWidget *mpPyDockWidget;
     SystemParametersWidget *mpSystemParametersWidget;
@@ -102,6 +104,7 @@ public:
     QAction *mpOpenAction;
     QAction *mpSaveAction;
     QAction *mpSaveAsAction;
+    QAction *mpExportModelAction;
     QAction *mpImportFMUAction;
     QAction *mpExportToSimulinkAction;
     QAction *mpExportToFMUAction;
@@ -167,6 +170,7 @@ signals:
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *);
+    virtual void keyPressEvent(QKeyEvent *);
 
 private slots:
     void simulateKeyWasPressed();
@@ -206,7 +210,7 @@ private:
 
     //Dock area widgets
     QDockWidget *mpMessageDock;
-    QDockWidget *mpHcomDock;
+    QDockWidget *mpTerminalDock;
     QDockWidget *mpLibDock;
     QDockWidget *mpPlotWidgetDock;
     QDockWidget *mpUndoWidgetDock;

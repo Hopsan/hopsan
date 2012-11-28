@@ -35,10 +35,12 @@
 #include "CopyStack.h"
 #include "Widgets/ProjectTabWidget.h"
 #include "Widgets/MessageWidget.h"
+#include "Widgets/HcomWidget.h"
 #include "Widgets/LibraryWidget.h"
 #include "Widgets/PlotWidget.h"
 #include "Widgets/SystemParametersWidget.h"
 #include "Widgets/PyDockWidget.h"
+#include "Widgets/UndoWidget.h"
 #include "Utilities/GUIUtilities.h"
 #include "GUIComponent.h"
 #include "GUIGroup.h"
@@ -46,11 +48,54 @@
 #include "GUIWidgets.h"
 #include "GUISystem.h"
 #include "Configuration.h"
+#include "qfile.h"
+#include "version_gui.h"
 
 #include <limits>
 #include <QDomElement>
 #include <QStandardItemModel>
 #include <QToolBar>
+
+using namespace std;
+
+//! @todo this should not be here should be togheter with plotsvariable stuf in some other file later
+QString makeConcatName(const QString componentName, const QString portName, const QString dataName)
+{
+    if (componentName.isEmpty() && portName.isEmpty())
+    {
+
+        return dataName;
+    }
+    else
+    {
+        //! @todo default separator should be DEFINED
+        return componentName+"#"+portName+"#"+dataName;
+    }
+    return "ERRORinConcatName";
+}
+
+//! @todo this should not be here should be togheter with plotsvariable stuf in some other file later
+void splitConcatName(const QString fullName, QString &rCompName, QString &rPortName, QString &rVarName)
+{
+    rCompName.clear();
+    rPortName.clear();
+    rVarName.clear();
+    QStringList slist = fullName.split('#');
+    if (slist.size() == 1)
+    {
+        rVarName = slist[0];
+    }
+    else if (slist.size() == 3)
+    {
+        rCompName = slist[0];
+        rPortName = slist[1];
+        rVarName = slist[2];
+    }
+    else
+    {
+        rVarName = "ERRORinsplitConcatName";
+    }
+}
 
 
 //! @brief Construtor for container objects.
@@ -85,10 +130,10 @@ ContainerObject::ContainerObject(QPointF position, qreal rotation, const ModelOb
 
     mpDragCopyStack = new CopyStack();
 
-    mpNewPlotData = new PlotData(this);
+    mpNewPlotData = new LogDataHandler(this);
 
     //Establish connections that should always remain
-    connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()), Qt::UniqueConnection);
+    connect(this, SIGNAL(checkMessages()), gpMainWindow->mpTerminalWidget, SLOT(checkMessages()), Qt::UniqueConnection);
 
 }
 
@@ -525,7 +570,7 @@ ModelObject* ContainerObject::addModelObject(ModelObjectAppearance *pAppearanceD
 
     if ( mModelObjectMap.contains(mpTempGUIModelObject->getName()) )
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Trying to add component with name: " + mpTempGUIModelObject->getName() + " that already exist in GUIObjectMap, (Not adding)");
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Trying to add component with name: " + mpTempGUIModelObject->getName() + " that already exist in GUIObjectMap, (Not adding)");
         //! @todo Is this check really necessary? Two objects cannot have the same name anyway...
     }
     else
@@ -639,7 +684,7 @@ void ContainerObject::deleteModelObject(QString objectName, undoStatus undoSetti
     else
     {
         //qDebug() << "In delete GUIObject: could not find object with name " << objectName;
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Error: Could not delete object with name " + objectName + ", object not found");
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Error: Could not delete object with name " + objectName + ", object not found");
     }
     emit checkMessages();
     mpParentProjectTab->getGraphicsView()->updateViewPort();
@@ -1148,7 +1193,7 @@ void ContainerObject::removeSubConnector(Connector* pConnector, undoStatus undoS
                      {
                          if (disconStartRealPort && disconEndRealPort)
                          {
-                             gpMainWindow->mpMessageWidget->printGUIErrorMessage("This is not supported yet, FAILURE! UNDEFINED BEHAVIOUR");
+                             gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("This is not supported yet, FAILURE! UNDEFINED BEHAVIOUR");
                              success = false;
                          }
 
@@ -1266,7 +1311,7 @@ Connector* ContainerObject::createConnector(Port *pPort1, Port *pPort2, undoStat
     else
     {
         // This should never happen, but just in case
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Could not create connector, connector creation already in progress");
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not create connector, connector creation already in progress");
         return 0;
     }
 }
@@ -1322,14 +1367,14 @@ bool ContainerObject::finilizeConnector(Port *endPort)
     //! @todo this must work in the future, connect will probably be OK, but disconnect is a bit more tricky
     if ( startPortIsGroupPort && endPortIsGroupPort )
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("You are not allowed to connect two groups to each other yet. This will be suported in the future");
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("You are not allowed to connect two groups to each other yet. This will be suported in the future");
         return false;
     }
 
     // Abort with error if trying to connect two undefined group ports to each other
     if ( (pStartRealPort==0) && (pEndRealPort==0) )
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("You are not allowed to connect two undefined group ports to each other");
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("You are not allowed to connect two undefined group ports to each other");
         return false;
     }
 
@@ -1410,7 +1455,7 @@ void ContainerObject::cutSelected(CopyStack *xmlStack)
 void ContainerObject::copySelected(CopyStack *xmlStack)
 {
     //Don't copy if python widget or message widget as focus (they also use ctrl-c key sequence)
-    if(gpMainWindow->mpMessageWidget->textEditHasFocus())
+    if(gpMainWindow->mpMessageWidget->textEditHasFocus() || gpMainWindow->mpTerminalWidget->mpConsole->hasFocus())
         return;
 
     QDomElement *copyRoot;
@@ -1464,7 +1509,7 @@ void ContainerObject::copySelected(CopyStack *xmlStack)
 void ContainerObject::paste(CopyStack *xmlStack)
 {
 
-    //gpMainWindow->mpMessageWidget->printGUIDebugMessage(gCopyStack.getXML());
+    //gpMainWindow->mpHcomWidget->mpConsole->printDebugMessage(gCopyStack.getXML());
 
     mpUndoStack->newPost("paste");
     mpParentProjectTab->hasChanged();
@@ -1919,6 +1964,23 @@ void ContainerObject::clearUndo()
 bool ContainerObject::isSubObjectSelected()
 {
     return (mSelectedModelObjectsList.size() > 0);
+}
+
+void ContainerObject::setVariableAlias(QString compName, QString portName, QString varName, QString alias)
+{
+    getCoreSystemAccessPtr()->setVariableAlias(compName, portName, varName, alias);
+}
+
+QString ContainerObject::getFullNameFromAlias(const QString alias)
+{
+    QString comp, port, var;
+    getCoreSystemAccessPtr()->getFullVariableNameByAlias(alias, comp, port, var);
+    return makeConcatName(comp,port,var);
+}
+
+QStringList ContainerObject::getAliasNames()
+{
+    return getCoreSystemAccessPtr()->getAliasNames();
 }
 
 
@@ -2402,7 +2464,7 @@ void ContainerObject::enterContainer()
 
     refreshInternalContainerPortGraphics();
 
-    mpNewPlotData->collectPlotData();
+    mpNewPlotData->collectPlotDataFromModel();
 
     mpParentProjectTab->setExternalSystem((this->isExternal() &&
                                            this != mpParentProjectTab->getTopLevelSystem()) ||
@@ -2488,7 +2550,7 @@ void ContainerObject::flipSubObjectsVertical()
 //! @brief Collects the plot data from the last simulation for all plot variables from the core and stores them locally.
 void ContainerObject::collectPlotData()
 {
-    mpNewPlotData->collectPlotData();
+    mpNewPlotData->collectPlotDataFromModel();
 }
 
 
@@ -2577,7 +2639,7 @@ void ContainerObject::showLossesFromDialog()
     //We should not be here if there is no plot data, but let's check to be sure
     if(mpNewPlotData->isEmpty())
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Attempted to calculate losses for a model that has not been simulated (or is empty).");
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Attempted to calculate losses for a model that has not been simulated (or is empty).");
         return;
     }
 
@@ -2806,6 +2868,13 @@ bool ContainerObject::isExternal()
 }
 
 
+
+LogDataHandler *ContainerObject::getPlotDataPtr()
+{
+    return mpNewPlotData;
+}
+
+
 void ContainerObject::recompileCppComponents(ModelObject *pComponent)
 {
     QList<ModelObject*> componentPtrs;
@@ -2958,7 +3027,7 @@ void ContainerObject::recompileCppComponents(ModelObject *pComponent)
 
         if(!libFile.exists())
         {
-            gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to compile C++ component!");
+            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to compile C++ component!");
             return;
         }
 
@@ -2991,48 +3060,359 @@ void ContainerObject::recompileCppComponents(ModelObject *pComponent)
 }
 
 
-PlotData *ContainerObject::getPlotDataPtr()
-{
-    return mpNewPlotData;
-}
 
 
 //! @brief Constructor for plot data object
 //! @param pParent Pointer to parent container object
-PlotData::PlotData(ContainerObject *pParent)
+LogDataHandler::LogDataHandler(ContainerObject *pParent)
 {
     mpParentContainerObject = pParent;
     mnPlotCurves = 0;
+    mGenerationNumber = 0;
+    mTempVarCtr = 0;
+}
+
+
+void LogDataHandler::exportToPlo(QString filePath, QStringList variables)
+{
+    if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
+
+    QFile file;
+    file.setFileName(filePath);   //Create a QFile object
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + filePath);
+        return;
+    }
+
+    QTextStream fileStream(&file);  //Create a QTextStream object to stream the content of file
+    QDateTime dateTime = QDateTime::currentDateTime();
+    QString dateTimeString = dateTime.toString();
+    QFileInfo fii(filePath);
+    QString namez = fii.baseName();
+    QStringList ScalingvaluesList;
+    QStringList StartvaluesList;
+    QVector<double> Scalings;
+    //QString ScaleVal;
+
+    QString modelPathwayy = gpMainWindow->mpProjectTabs->getCurrentContainer()->getModelFileInfo().filePath();
+    QFileInfo fiz(modelPathwayy);
+    QString namemodel = fiz.baseName();
+
+    QList<LogVariableData*> dataPtrs;
+    for(int v=0; v<variables.size(); ++v)
+    {
+        dataPtrs.append(getPlotData(variables[v],-1));
+    }
+
+        //Write initial comment
+    fileStream << "    'VERSION' " << QString(HOPSANGUIVERSION) << " " << dateTimeString << "\n";
+    fileStream << "    1 " << "\n";
+    fileStream << "    '"<<namez<<".PLO"<<"'"<<"\n";
+    fileStream << "        " << dataPtrs.size() <<"    "<< dataPtrs[0]->mDataVector.size()<<"\n";
+    fileStream << "    'Time      '";
+    for(int i=0; i<dataPtrs.size(); ++i)
+    {
+        fileStream << ",    'Y" << i<<"      '";
+    }
+    fileStream <<",    '"<< "\n";
+
+        //Write time and data vectors
+    QString dummy;
+
+    for(int kk=0; kk<dataPtrs.size()+1; ++kk)
+    {
+
+        ScalingvaluesList.append(dummy.setNum(1.0,'E',6));
+        fileStream <<"  "<< dummy;
+        for(int j=0; j<12-dummy.size(); ++j) { fileStream << " "; }
+
+
+    }
+    fileStream << "\n";
+
+
+    for(int i=0; i<dataPtrs[0]->mDataVector.size(); ++i)
+    {
+        dummy.setNum(dataPtrs[0]->mTimeVector[i],'E',6);
+        fileStream <<"  "<<dummy;
+        for(int j=0; j<12-dummy.size(); ++j) { fileStream << " "; }
+
+        for(int k=0; k<dataPtrs.size(); ++k)
+        {
+            dummy.setNum(dataPtrs[k]->mDataVector[i],'E',6);
+            Scalings = dataPtrs[k]->mDataVector;
+            if(i == 0)
+            {
+                StartvaluesList.append(dummy.setNum(dataPtrs[k]->mDataVector[i],'E',6));
+            }
+
+            fileStream <<"  "<< dummy;
+            for(int j=0; j<12-dummy.size(); ++j) { fileStream << " "; }
+
+        }
+        fileStream << "\n";
+    }
+    fileStream << "  "+namez+".PLO.DAT_-1" <<"\n";
+    fileStream << "  "+namemodel+".for" <<"\n";
+    fileStream <<"   Variable     Startvalue     Scaling" <<"\n";
+    fileStream <<"------------------------------------------------------" <<"\n";
+    for(int ii=0; ii<dataPtrs.size(); ++ii)
+    {
+        fileStream << "  Y" << ii << "     " << StartvaluesList[ii]<<"      "<<ScalingvaluesList[ii]<<"\n";
+    }
+
+    file.close();
+}
+
+
+void LogDataHandler::importFromPlo()
+{
+    QString ImportFileName = QFileDialog::getOpenFileName(0,tr("Choose Old Hopsan File"),
+                                                          gConfig.getModelicaModelsDir(),
+                                                          tr("Old Hopsan File (*.plo)"));
+    if(ImportFileName.isEmpty())
+    {
+        return;
+    }
+
+    QFile file(ImportFileName);
+    QFileInfo fileInfo(file);
+    gConfig.setModelicaModelsDir(fileInfo.absolutePath());
+
+    QProgressDialog progressImportBar(tr("Initializing"), QString(), 0, 0, gpMainWindow);
+    progressImportBar.show();
+
+    progressImportBar.setMaximum(10);
+    progressImportBar.setWindowModality(Qt::WindowModal);
+    progressImportBar.setWindowTitle(tr("Importing PLO"));
+    progressImportBar.setValue(0);
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"), "Unable to read Old Hopsan file.");
+        return;
+    }
+
+
+    QString tt;
+    //QStringList Imcode;
+    int colNum = 0;
+    int lineNumber = 0;
+    int tempcounter = 999000;
+    int rowdepth = 0;
+    //HopImpData stateList;
+    QVector<HopImpData> hopOldVector;
+
+    // Stream all data and then manipulate
+    QTextStream t(&file);
+    //Imcode = t.readAll();
+    while(true)
+    {
+        QString line = t.readLine();
+        if(line.isNull())
+        {
+            break;
+        }
+        else
+        {
+            QString linet = line.trimmed();
+            progressImportBar.setValue(1);
+            progressImportBar.setLabelText("Reading file (.plo).");
+            ++lineNumber;
+
+            if(lineNumber == 4)
+            {
+                QStringList tempholder = linet.split(" ");
+                colNum = tempholder[0].toInt();
+                hopOldVector.resize(colNum+1);
+                rowdepth = tempholder[4].toInt();
+                progressImportBar.setMaximum(rowdepth);
+
+            }
+
+            else if(linet.startsWith("'Time"))
+            {
+
+                QStringList tempheader = linet.split(",");
+                tempcounter = lineNumber;
+                for(int yy=0; yy<colNum+1; ++yy)
+                {
+                    QString word;
+                    //int bb = tempheader[yy].size();
+                    word = tempheader[yy].remove(QRegExp("'"));
+                    word = word.remove(QRegExp(" "));
+                    hopOldVector[yy].mDataName = word.trimmed();
+                    progressImportBar.setLabelText("Finding variables.");
+
+                }
+                //tt = tempheader[0];
+
+
+            }
+            else if (lineNumber > 6)
+           {
+               if( (lineNumber< (rowdepth+tempcounter+1)))
+                {
+                    //rowdepth = depth;
+                    //break;
+                   int bb = 0;
+                   int occurences = linet.count(QRegExp(" -"));
+                   for(int nn=0;nn<occurences+1; ++nn)
+                   {
+                       if(occurences == 0)
+                       {
+                           break;
+                       }
+                       else if (nn == occurences)
+                       {
+                           break;
+                       }
+                       else
+                       {
+                           QString cc = " -";
+                           int pp = linet.indexOf(cc,bb);
+                           linet = linet.insert(pp, QString(" "));
+                           bb = pp + 5;
+                       }
+                   }
+
+                    QStringList tempdataObj = linet.split("  ");
+
+                    for(int kk=0; kk<colNum+1; ++kk)
+                    {
+                        hopOldVector[kk].mDataValues.append(tempdataObj[kk].toDouble());
+                    }
+                }
+               else
+               {
+                   break;
+               }
+
+            }
+            //            else if (depth > (rowdepth-1+5))
+            //            {
+            //                for(int ss; ss<counter+1; ++ss)
+            //                {
+            //                    int aa = QString::compare(HopOldVector[ss].ImpHopString, linet, Qt::CaseInsensitive);
+            //                    if(aa == 0)
+            //                    {
+            //                        HopOldVector[ss].startvalue = linet.section(" ",1,1).toDouble();
+            //                        HopOldVector[ss].scale = linet.section(" ",2,2).toDouble();
+            //                    }
+            //                }
+
+            //            }
+
+
+
+        }
+    }
+    file.close();
+
+    progressImportBar.setValue(10);
+    progressImportBar.setLabelText("Data Fetched.");
+
+    bool foundData = false;
+    //for(QVector<HopImpData>::iterator git=hopOldVector.begin(); git!=hopOldVector.end(); ++git)
+    {
+        //! @todo use this instead of time vector copy in every data
+        mTimeVectors.append(hopOldVector.first().mDataValues);
+        //timeVectorObtained = true;
+
+        for (int i=1; i<hopOldVector.size(); ++i)
+        {
+            foundData=true;
+            VariableDescription varDesc;
+            varDesc.mDataName = hopOldVector[i].mDataName;
+            varDesc.mVarType = VariableDescription::I;
+            //! @todo what about reading the unit
+
+            // First check if a data variable with this name alread exist
+            QString catName = varDesc.getFullName();
+            DataMapT::iterator dit = mAllPlotData.find(catName);
+            // If it exist insert into it
+            if (dit != mAllPlotData.end())
+            {
+                // Insert it into the generations map
+                dit.value()->addDataGeneration(mGenerationNumber, hopOldVector.first().mDataValues, hopOldVector[i].mDataValues);
+            }
+            else
+            {
+                // Create a new toplevel map item and insert data into the generations map
+                LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc);
+                pDataContainer->addDataGeneration(mGenerationNumber, hopOldVector.first().mDataValues, hopOldVector[i].mDataValues);
+                mAllPlotData.insert(catName, pDataContainer);
+            }
+        }
+
+        if (foundData)
+        {
+            ++mGenerationNumber;
+            emit newDataAvailable();
+        }
+    }
+
+       //    //Store time data (only once)
+//    if(!HopOldVector.isEmpty())
+//    {
+//        mTimeVectors.append(HopOldVector.first().mDataValues);
+//        //timeVectorObtained = true;
+
+//        for (int i=1; i<HopOldVector.size(); ++i)
+//        {
+
+//            //QPair<QVector<double>, QVector<double> > dataImported;
+
+//            //Store variable data
+
+//            ImpdataMap.insert(HopOldVector[i].mDataName, HopOldVector[i].mDataValues);
+//            ImpPortMap.insert(HopOldVector[i].mDataName, ImpdataMap);
+
+//            ImpcomponentMap.insert(HopOldVector[i].mDataName, ImpPortMap);
+
+//            //register alias
+//            definePlotAlias(HopOldVector[i].mDataName, HopOldVector[i].mDataName, HopOldVector[i].mDataName, HopOldVector[i].mDataName);
+//            setFavoriteVariable(HopOldVector[i].mDataName, HopOldVector[i].mDataName, HopOldVector[i].mDataName, HopOldVector[i].mDataName);
+
+//        }
+
+//    }
+
+//    if(!ImpcomponentMap.isEmpty())     //Don't insert a generation if no plot data was collected (= model is empty)
+//    {
+//        mPlotData.append(ImpcomponentMap);
+//    }
+
+//    //Limit number of plot generations if there are too many
+    limitPlotGenerations();
+    //gpMainWindow->mpPlotWidget->mpPlotVariableTree->updateList();
+
+
+
+
 }
 
 
 //! @brief Returns whether or not plot data is empty
-bool PlotData::isEmpty()
+bool LogDataHandler::isEmpty()
 {
-    return mPlotData.isEmpty();
-}
-
-
-//! @brief Returns the number of generations in the plot data
-int PlotData::size()
-{
-    return mPlotData.size();
+    return mAllPlotData.isEmpty();
 }
 
 
 //! @brief Collects plot data from last simulation
-void PlotData::collectPlotData()
+void LogDataHandler::collectPlotDataFromModel()
 {
-    bool timeVectorObtained = false;
+    //bool timeVectorObtained = false;
+    bool foundData = false;
 
     //Iterate components
-    ComponentMapT componentMap;
     for(int m=0; m<mpParentContainerObject->getModelObjectNames().size(); ++m)
     {
+        //! @todo getting names every time is very ineffecient it creates and copies a new vector every freaking time
         ModelObject *pModelObject = mpParentContainerObject->getModelObject(mpParentContainerObject->getModelObjectNames().at(m));
 
-        //Iterate ports
-        PortMapT portMap;
         for(QList<Port*>::iterator pit=pModelObject->getPortListPtrs().begin(); pit!=pModelObject->getPortListPtrs().end(); ++pit)
         {
             QVector<QString> names;
@@ -3040,48 +3420,95 @@ void PlotData::collectPlotData()
             mpParentContainerObject->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(pModelObject->getName(), (*pit)->getPortName(), names, units);
 
             //Iterate variables
-            DataMapT dataMap;
-            for(QVector<QString>::iterator nit=names.begin(); nit!=names.end(); ++nit)
+            for(int i=0; i<names.size(); ++i)
             {
                 //Fetch variables
                 QPair<QVector<double>, QVector<double> > data;
-                mpParentContainerObject->getCoreSystemAccessPtr()->getPlotData(pModelObject->getName(), (*pit)->getPortName(), (*nit), data);
+                mpParentContainerObject->getCoreSystemAccessPtr()->getPlotData(pModelObject->getName(), (*pit)->getPortName(), names[i], data);
 
                 // Prevent adding data if time or data vector was empty
                 if (!data.first.isEmpty() && !data.second.isEmpty())
                 {
-                    //Store variable data
-                    dataMap.insert((*nit), data.second);
+                    foundData=true;
+                    VariableDescription varDesc;
+                    varDesc.mComponentName = pModelObject->getName();
+                    varDesc.mPortName = (*pit)->getPortName();
+                    varDesc.mDataName = names[i];
+                    varDesc.mDataUnit = units[i];
+                    varDesc.mVarType = VariableDescription::M;
+                    //! @todo what about alias name, should ha such info in the port
 
-                    //Store time data (only once)
-                    if(!timeVectorObtained)
+                    // First check if a data variable with this name alread exist
+                    QString catName = varDesc.getFullName();
+                    DataMapT::iterator it = mAllPlotData.find(catName);
+                    // If it exist insert into it
+                    if (it != mAllPlotData.end())
                     {
-                        mTimeVectors.append(data.first);
-                        timeVectorObtained = true;
+                        // Insert it into the generations map
+                        it.value()->addDataGeneration(mGenerationNumber, data.first, data.second);
                     }
+                    else
+                    {
+                        // Create a new toplevel map item and insert data into the generations map
+                        LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc);
+                        pDataContainer->addDataGeneration(mGenerationNumber, data.first, data.second);
+                        mAllPlotData.insert(catName, pDataContainer);
+                    }
+
+                    //! @todo Think about improving time vector and only store one copy of each
+//                    //Store time data (only once)
+//                    if(!timeVectorObtained)
+//                    {
+//                        mTimeVectors.append(data.first);
+//                        timeVectorObtained = true;
+//                    }
                 }
             }
-            // Prevent adding data if dataMap was empty
-            if (!dataMap.empty())
-            {
-                portMap.insert((*pit)->getPortName(), dataMap);
-            }
-        }
-        // Prevent adding data if portMap was empty
-        if (!portMap.empty())
-        {
-            componentMap.insert(pModelObject->getName(), portMap);
         }
     }
 
-    //Insert data to plot data storage, unless no data was present
-    if(!componentMap.isEmpty())
+    // Iterate and create/add aliases
+    //! @todo maybe a function that retreives alias and fullnames in one
+    QStringList aliasNames = mpParentContainerObject->getAliasNames();
+
+    AliasMapT::iterator ait = mPlotAliasMap.begin();
+    while(ait!=mPlotAliasMap.end())
     {
-        mPlotData.append(componentMap);
+        if (!aliasNames.contains(ait.key()))
+        {
+            ait.value()->setAliasName("");
+            mPlotAliasMap.erase(ait);
+            ait=mPlotAliasMap.begin(); //Restart since itarator breaks
+        }
+        else
+        {
+            ++ait;
+        }
     }
+
+    for (int i=0; i<aliasNames.size(); ++i)
+    {
+        QString fullName = mpParentContainerObject->getFullNameFromAlias(aliasNames[i]);
+//        DataMapT::iterator it = mAllPlotData.find(fullName);
+//        if (it != mAllPlotData.end())
+//        {
+//            it->second->setAliasName(aliasNames[i]);
+//        }
+
+        //! @todo This will not work when a alias have chenged as this function will reject it, but that coude should change anyhow
+        //! @todo Do not register parameter aliases as variable aliases
+        definePlotAlias(aliasNames[i], fullName);
+    }
+
 
     //Limit number of plot generations if there are too many
     limitPlotGenerations();
+
+    // Increment generation counter
+    if (foundData)
+    {
+        ++mGenerationNumber;
+    }
 }
 
 
@@ -3089,22 +3516,23 @@ void PlotData::collectPlotData()
 //! @note Always call this after renaming an object, or plot data for the object will not be accessible.
 //! @param[in] oldName Previous name of object
 //! @param[in] newName New name of object
-void PlotData::updateObjectName(QString oldName, QString newName)
+void LogDataHandler::updateObjectName(QString oldName, QString newName)
 {
-    for(int i=0; i<mPlotData.size(); ++i)
-    {
-        if(mPlotData.at(i).contains(oldName))
-        {
-            ComponentMapT generation;
-            generation = mPlotData.at(i);
-            PortMapT oldPlotData;
-            oldPlotData = mPlotData.at(i).find(oldName).value();
-            generation.insert(newName, oldPlotData);
-            generation.remove(oldName);
-            mPlotData.removeAt(i);
-            mPlotData.insert(i, generation);
-        }
-    }
+    //! @todo FIXA /Peter (or do we even need it at all)
+//    for(int i=0; i<mPlotData.size(); ++i)
+//    {
+//        if(mPlotData.at(i).contains(oldName))
+//        {
+//            DataMapT generation;
+//            generation = mPlotData.at(i);
+//            DataMapT oldPlotData;
+//            oldPlotData = mPlotData.at(i).find(oldName).value();
+//            generation.insert(newName, oldPlotData);
+//            generation.remove(oldName);
+//            mPlotData.removeAt(i);
+//            mPlotData.insert(i, generation);
+//        }
+//    }
 }
 
 
@@ -3114,27 +3542,75 @@ void PlotData::updateObjectName(QString oldName, QString newName)
 //! @param[in] portName Name of port where variable is located
 //! @param[in] dataName Name of variable
 //! @warning Do not call this function for multiports unless you know what you are doing. It will return the data from the first node only.
-QVector<double> PlotData::getPlotData(int generation, QString componentName, QString portName, QString dataName)
+//! @deprecated
+QVector<double> LogDataHandler::getPlotDataValues(int generation, QString componentName, QString portName, QString dataName)
 {
+    LogVariableData *pData = getPlotData(generation, componentName, portName, dataName);
+    if (pData)
+    {
+        return pData->mDataVector;
+    }
+
+    return QVector<double>();
+}
+
+QVector<double> LogDataHandler::getPlotDataValues(const QString fullName, int generation)
+{
+    LogVariableData *pData = getPlotData(fullName, generation);
+    if (pData)
+    {
+        return pData->mDataVector;
+    }
+
+    return QVector<double>();
+}
+
+//! @deprecated
+LogVariableData *LogDataHandler::getPlotData(int generation, QString componentName, QString portName, QString dataName)
+{
+    //! @todo how to handle request by alias
+    QString concName = componentName+"#"+portName+"#"+dataName;
+
+    //! @todo this should probalby be handled in collectData
     if(mpParentContainerObject->getModelObject(componentName)->getPort(portName)->getPortType() == "POWERMULTIPORT" ||
        mpParentContainerObject->getModelObject(componentName)->getPort(portName)->getPortType() == "READMULTIPORT")
     {
         QString newPortName = mpParentContainerObject->getModelObject(componentName)->getPort(portName)->getConnectedPorts().first()->getPortName();
         QString newComponentName = mpParentContainerObject->getModelObject(componentName)->getPort(portName)->getConnectedPorts().first()->getGuiModelObject()->getName();
-        portName = newPortName;
-        componentName = newComponentName;
+
+        concName= newComponentName+"#"+newPortName+"#"+dataName;
     }
 
-    ComponentMapT componentMap = mPlotData.at(generation);
-    PortMapT portMap = componentMap.find(componentName).value();
-    DataMapT dataMap = portMap.find(portName).value();
-    return dataMap.find(dataName).value();
+    return getPlotData(concName, generation);
+}
+
+LogVariableData *LogDataHandler::getPlotData(const QString fullName, const int generation)
+{
+    // First find the data variable
+    DataMapT::iterator dit = mAllPlotData.find(fullName);
+    if (dit != mAllPlotData.end())
+    {
+        return dit.value()->getDataGeneration(generation);
+    }
+    return 0;
+}
+
+//! @todo maybe would be better if ONE getPlotData function could handle all cases
+LogVariableData *LogDataHandler::getPlotDataByAlias(const QString alias, const int generation)
+{
+    // First find the data variable
+    AliasMapT::iterator dit = mPlotAliasMap.find(alias);
+    if (dit != mPlotAliasMap.end())
+    {
+        return dit.value()->getDataGeneration(generation);
+    }
+    return 0;
 }
 
 
 //! @brief Returns the time vector for specified generation
 //! @param[in] generation Generation
-QVector<double> PlotData::getTimeVector(int generation)
+QVector<double> LogDataHandler::getTimeVector(int generation)
 {
     return mTimeVectors.at(generation);
 }
@@ -3143,11 +3619,12 @@ QVector<double> PlotData::getTimeVector(int generation)
 //! @brief Returns whether or not the specified component exists in specified plot generation
 //! @param[in] generation Generation
 //! @param[in] componentName Component name
-bool PlotData::componentHasPlotGeneration(int generation, QString componentName)
+bool LogDataHandler::componentHasPlotGeneration(int generation, QString fullName)
 {
-    if(mPlotData.size() > generation)
+    DataMapT::iterator it = mAllPlotData.find(fullName);
+    if( it != mAllPlotData.end())
     {
-        return mPlotData.at(generation).contains(componentName);
+        return it.value()->hasDataGeneration(generation);
     }
     else
     {
@@ -3161,16 +3638,14 @@ bool PlotData::componentHasPlotGeneration(int generation, QString componentName)
 //! @param[in] portName Name of port
 //! @param[in] dataName Name of data variable
 //! @param[in] dataUnit Unit of variable
-void PlotData::definePlotAlias(QString componentName, QString portName, QString dataName, QString dataUnit)
+void LogDataHandler::definePlotAlias(QString fullName)
 {
     bool ok;
-    QString d = QInputDialog::getText(gpMainWindow, "Define Variable Alias",
+    QString alias = QInputDialog::getText(gpMainWindow, "Define Variable Alias",
                                      "Alias:", QLineEdit::Normal, "", &ok);
-
     if(ok)
     {
-       QString alias = d;
-       definePlotAlias(alias, componentName, portName, dataName, dataUnit);
+       definePlotAlias(alias, fullName);
     }
 }
 
@@ -3181,34 +3656,68 @@ void PlotData::definePlotAlias(QString componentName, QString portName, QString 
 //! @param[in] portName Name of port
 //! @param[in] dataName Name of data variable
 //! @param[in] dataUnit Unit of variable
-bool PlotData::definePlotAlias(QString alias, QString componentName, QString portName, QString dataName, QString dataUnit)
+//! @todo this code should no longer be in LogDataHandler it should be in system or similar
+bool LogDataHandler::definePlotAlias(const QString alias, const QString fullName)
 {
     //! @todo Check that alias is not already used, and deal with it somehow if it is
+    if (mPlotAliasMap.contains(alias))
+    {
+        return false;
+    }
+    else
+    {
+        DataMapT::iterator dit = mAllPlotData.find(fullName);
+        if (dit!=mAllPlotData.end())
+        {
+            //First remove old alias
+            mPlotAliasMap.remove(dit.value()->getAliasName());
 
-    VariableDescription variable;
-    variable.componentName = componentName;
-    variable.portName = portName;
-    variable.dataName = dataName;
-    variable.dataUnit = dataUnit;
+            // Assign alias
+            dit.value()->setAliasName(alias);
 
-    mPlotAliasMap.insert(alias, variable);
-    return true;
+            // Insert into alias map
+            mPlotAliasMap.insert(alias, dit.value());
+
+            //! @todo maybe should only be in core
+            QString comp,port,var;
+            splitConcatName(fullName, comp,port,var);
+            mpParentContainerObject->setVariableAlias(comp,port,var,alias);
+            //! @todo instead of bool return the uniqe changed alias should be returned
+
+        }
+        return true;
+    }
 }
 
 
 //! @brief Removes specified variable alias
 //! @param[in] alias Alias to remove
-void PlotData::undefinePlotAlias(QString alias)
+void LogDataHandler::undefinePlotAlias(QString alias)
 {
-    mPlotAliasMap.remove(alias);
+    LogVariableContainer *pDataContainer = mPlotAliasMap.value(alias, 0);
+    if(pDataContainer)
+    {
+        QString fullName = pDataContainer->getFullVariableName();
+        QString comp,port,var;
+        splitConcatName(fullName, comp,port,var);
+        mpParentContainerObject->setVariableAlias(comp,port,var,""); //! @todo maybe a remove alias function would be nice
+
+        pDataContainer->setAliasName("");
+        mPlotAliasMap.remove(alias);
+    }
 }
 
 
 //! @brief Returns plot variable for specified alias
 //! @param[in] alias Alias of variable
-VariableDescription PlotData::getPlotVariableFromAlias(QString alias)
+QString LogDataHandler::getFullNameFromAlias(QString alias)
 {
-    return mPlotAliasMap.find(alias).value();
+    LogVariableContainer *pDataContainer = mPlotAliasMap.value(alias, 0);
+    if(pDataContainer)
+    {
+        return pDataContainer->getFullVariableName();
+    }
+    return QString();
 }
 
 
@@ -3216,26 +3725,27 @@ VariableDescription PlotData::getPlotVariableFromAlias(QString alias)
 //! @param[in] componentName Name of component
 //! @param[in] portName Name of port
 //! @param[in] dataName Name of data variable
-QString PlotData::getPlotAlias(QString componentName, QString portName, QString dataName)
+QString LogDataHandler::getAliasFromFullName(QString fullName)
 {
-    AliasMapT::iterator it;
-    for(it=mPlotAliasMap.begin(); it!=mPlotAliasMap.end(); ++it)
+    LogVariableContainer *pDataContainer = mAllPlotData.value(fullName, 0);
+    if (pDataContainer)
     {
-        if(it.value().componentName == componentName && it.value().portName == portName && it.value().dataName == dataName)
-        {
-            return it.key();
-        }
+        return pDataContainer->getAliasName();
     }
     return QString();
 }
 
 
 //! @brief Limits number of plot generations to value specified in configuration
-void PlotData::limitPlotGenerations()
+void LogDataHandler::limitPlotGenerations()
 {
-    while(mPlotData.size() > gConfig.getGenerationLimit())
+    if ( (mGenerationNumber - gConfig.getGenerationLimit()) > 0 )
     {
-        mPlotData.removeFirst();
+        DataMapT::iterator dit = mAllPlotData.begin();
+        for ( ; dit!=mAllPlotData.end(); ++dit)
+        {
+            dit.value()->removeGenerationsOlderThen(mGenerationNumber - gConfig.getGenerationLimit());
+        }
     }
 }
 
@@ -3244,7 +3754,7 @@ void PlotData::limitPlotGenerations()
 //! @note Used to decide if warning message shall be shown when closing model
 //! @see PlotData::decrementOpenPlotCurves()
 //! @see PlotData::hasOpenPlotCurves()
-void PlotData::incrementOpenPlotCurves()
+void LogDataHandler::incrementOpenPlotCurves()
 {
     ++mnPlotCurves;
 }
@@ -3254,9 +3764,397 @@ void PlotData::incrementOpenPlotCurves()
 //! @note Used to decide if warning message shall be shown when closing model
 //! @see PlotData::incrementOpenPlotCurves()
 //! @see PlotData::hasOpenPlotCurves()
-void PlotData::decrementOpenPlotCurves()
+void LogDataHandler::decrementOpenPlotCurves()
 {
     --mnPlotCurves;
+}
+
+
+QString LogDataHandler::addVariableWithScalar(const QString &a, const double x)
+{
+    LogVariableData* pData1 = getPlotData(a, -1);
+    if( (pData1 == NULL))
+    {
+        return NULL;
+    }
+    else
+    {
+        LogVariableData* pTemp = addVariableWithScalar(pData1,x);
+        return pTemp->getFullVariableName();
+    }
+}
+
+LogVariableData *LogDataHandler::addVariableWithScalar(const LogVariableData *a, const double x)
+{
+    LogVariableData* pTempVar = defineTempVariable(a->getFullVariableName()+"AddedWith"+QString::number(x));
+    pTempVar->assigntoData(a);
+    pTempVar->addtoData(x);
+    return pTempVar;
+}
+
+
+QString LogDataHandler::subVariableWithScalar(const QString &a, const double x)
+{
+    LogVariableData* pData1 = getPlotData(a, -1);
+    if( (pData1 == NULL))
+    {
+        return NULL;
+    }
+    else
+    {
+        LogVariableData* pTemp = subVariableWithScalar(pData1,x);
+        return pTemp->getFullVariableName();
+    }
+}
+
+LogVariableData *LogDataHandler::subVariableWithScalar(const LogVariableData *a, const double x)
+{
+    LogVariableData* pTempVar = defineTempVariable(a->getFullVariableName()+"SubtractedWith"+QString::number(x));
+    pTempVar->assigntoData(a);
+    pTempVar->subtoData(x);
+    return pTempVar;
+}
+
+
+QString LogDataHandler::mulVariableWithScalar(const QString &a, const double x)
+{
+    LogVariableData* pData1 = getPlotData(a, -1);
+    if( (pData1 == NULL))
+    {
+        return NULL;
+    }
+    else
+    {
+        LogVariableData* pTemp = mulVariableWithScalar(pData1,x);
+        return pTemp->getFullVariableName();
+    }
+}
+
+LogVariableData *LogDataHandler::mulVariableWithScalar(const LogVariableData *a, const double x)
+{
+    LogVariableData* pTempVar = defineTempVariable(a->getFullVariableName()+"MultiplicatedWith"+QString::number(x));
+    pTempVar->assigntoData(a);
+    pTempVar->multtoData(x);
+    return pTempVar;
+}
+
+
+QString LogDataHandler::divVariableWithScalar(const QString &a, const double x)
+{
+    LogVariableData* pData1 = getPlotData(a, -1);
+    if( (pData1 == NULL))
+    {
+        return NULL;
+    }
+    else
+    {
+        LogVariableData* pTemp = divVariableWithScalar(pData1,x);
+        return pTemp->getFullVariableName();
+    }
+}
+
+LogVariableData *LogDataHandler::divVariableWithScalar(const LogVariableData *a, const double x)
+{
+    LogVariableData* pTempVar = defineTempVariable(a->getFullVariableName()+"dividedWith"+QString::number(x));
+    pTempVar->assigntoData(a);
+    pTempVar->divtoData(x);
+    return pTempVar;
+}
+
+
+QString LogDataHandler::addVariables(const QString &a, const QString &b)
+{
+    LogVariableData* pData1 = getPlotData(a, -1);
+    LogVariableData* pData2 = getPlotData(b, -1);
+    //! @todo check if ptrs not 0
+    if( (pData1 == NULL) || (pData2 == NULL) )
+    {
+        return NULL;
+    }
+    else
+    {
+        LogVariableData* pTemp = addVariables(pData1,pData2);
+        return pTemp->getFullVariableName();
+    }
+}
+
+LogVariableData *LogDataHandler::addVariables(const LogVariableData *a, const LogVariableData *b)
+{
+    LogVariableData* pTempVar = defineTempVariable(a->getFullVariableName()+b->getFullVariableName());
+    pTempVar->assigntoData(a);
+    pTempVar->addtoData(b);
+    return pTempVar;
+}
+
+QString LogDataHandler::subVariables(const QString &a, const QString &b)
+{
+    LogVariableData* pData1 = getPlotData(a, -1);
+    LogVariableData* pData2 = getPlotData(b, -1);
+    //! @todo check if ptrs not 0
+    if( (pData1 == NULL) || (pData2 == NULL) )
+    {
+        return NULL;
+    }
+    else
+    {
+        LogVariableData* pTemp = subVariables(pData1,pData2);
+        return pTemp->getFullVariableName();
+    }
+}
+
+QString LogDataHandler::multVariables(const QString &a, const QString &b)
+{
+    LogVariableData* pData1 = getPlotData(a, -1);
+    LogVariableData* pData2 = getPlotData(b, -1);
+    //! @todo check if ptrs not 0
+    if( (pData1 == NULL) || (pData2 == NULL) )
+    {
+        return NULL;
+    }
+    else
+    {
+        LogVariableData* pTemp = multVariables(pData1,pData2);
+        return pTemp->getFullVariableName();
+    }
+}
+
+QString LogDataHandler::divVariables(const QString &a, const QString &b)
+{
+    LogVariableData* pData1 = getPlotData(a, -1);
+    LogVariableData* pData2 = getPlotData(b, -1);
+    //! @todo check if ptrs not 0
+    if( (pData1 == NULL) || (pData2 == NULL) )
+    {
+        return NULL;
+    }
+    else
+    {
+        LogVariableData* pTemp = divVariables(pData1,pData2);
+        return pTemp->getFullVariableName();
+    }
+}
+
+QString LogDataHandler::assignVariables(const QString &a, const QString &b)
+{
+    LogVariableData* pData1 = getPlotData(a, -1);
+    LogVariableData* pData2 = getPlotData(b, -1);
+    //! @todo check if ptrs not 0
+    if(pData2 == NULL)
+    {
+        return NULL;
+    }
+    else if(pData1 == NULL)
+    {
+        VariableDescription varDesc;
+        varDesc.mDataName = a;
+        LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc);
+        pDataContainer->addDataGeneration(mGenerationNumber, QVector<double>(), QVector<double>());
+        mAllPlotData.insert(a, pDataContainer);
+        ++mGenerationNumber;
+        pData1 = getPlotData(a,-1);
+        LogVariableData* pTemp = assignVariables(pData1,pData2);
+        return pTemp->getFullVariableName();
+    }
+    else
+    {
+        LogVariableData* pTemp = assignVariables(pData1,pData2);
+        return pTemp->getFullVariableName();
+    }
+}
+
+bool LogDataHandler::pokeVariables(const QString &a, const int index, const double value)
+{
+    LogVariableData* pData1 = getPlotData(a, -1);
+    //! @todo check if ptrs not 0
+    if(pData1 == NULL)
+    {
+        return NULL;
+    }
+    else
+    {
+        return pokeVariables(pData1, index, value);
+
+    }
+}
+
+QString LogDataHandler::delVariables(const QString &a)
+{
+    LogVariableData* pData1 = getPlotData(a, -1);
+    //! @todo check if ptrs not 0
+    if( (pData1 == NULL) )
+    {
+        return NULL;
+    }
+    else
+    {
+        delVariables(pData1);
+        return NULL;
+    }
+}
+
+double LogDataHandler::peekVariables(const QString &a, const int index)
+{
+    LogVariableData* pData1 = getPlotData(a, -1);
+    //! @todo check if ptrs not 0
+    if( (pData1 == NULL) )
+    {
+        return NULL;
+    }
+    else
+    {
+        return peekVariables(pData1,index);
+    }
+}
+
+QString LogDataHandler::saveVariables(const QString &currName, const QString &newName)
+{
+    LogVariableData* pCurrData = getPlotData(currName, -1);
+    LogVariableData* pNewData = getPlotData(newName, -1);
+    // If curr data exist and new data does not exist
+    if( (pNewData == NULL) && (pCurrData != NULL) )
+    {
+        LogVariableData* pNewData = defineNewVariable(newName);
+        pNewData->assigntoData(pCurrData);
+        return pNewData->getFullVariableName();
+    }
+    else
+    {
+        return NULL;
+    }
+}
+
+LogVariableData *LogDataHandler::subVariables(const LogVariableData *a, const LogVariableData *b)
+{
+    LogVariableData* pTempVar = defineTempVariable(a->getFullVariableName()+b->getFullVariableName());
+    pTempVar->assigntoData(a);
+    pTempVar->subtoData(b);
+    return pTempVar;
+}
+
+LogVariableData *LogDataHandler::multVariables(const LogVariableData *a, const LogVariableData *b)
+{
+    LogVariableData* pTempVar = defineTempVariable(a->getFullVariableName()+b->getFullVariableName());
+    pTempVar->assigntoData(a);
+    pTempVar->multtoData(b);
+    return pTempVar;
+}
+
+LogVariableData *LogDataHandler::divVariables(const LogVariableData *a, const LogVariableData *b)
+{
+    LogVariableData* pTempVar = defineTempVariable(a->getFullVariableName()+b->getFullVariableName());
+    pTempVar->assigntoData(a);
+    pTempVar->divtoData(b);
+    return pTempVar;
+}
+
+//! @todo Should this function really return a value?
+LogVariableData *LogDataHandler::assignVariables(LogVariableData *a, const LogVariableData *b)
+{
+    a->assigntoData(b);
+    //LogVariableData* pTempVar = defineTempVariable(a->getFullVariableName()+b->getFullVariableName());
+    //pTempVar->assigntoData(a);
+    //pTempVar->divtoData(b);
+    //return pTempVar;
+    return a;
+}
+
+bool LogDataHandler::pokeVariables(LogVariableData *a, const int index, const double value)
+{
+    return a->poketoData(index,value);
+}
+
+void LogDataHandler::delVariables(LogVariableData *a)
+{
+    removeTempVariable(a->getFullVariableName());
+}
+
+LogVariableData *LogDataHandler::saveVariables(LogVariableData *a)
+{
+    LogVariableData* pTempVar = defineTempVariable(a->getFullVariableName());
+    pTempVar->assigntoData(a);
+    return pTempVar;
+}
+
+double LogDataHandler::peekVariables(LogVariableData *a, const int index)
+{
+    return a->peekFromData(index);
+}
+
+LogVariableData *LogDataHandler::defineTempVariable(const QString desiredname)
+{
+    QString numStr;
+    VariableDescription varDesc;
+    numStr.setNum(mTempVarCtr);
+    varDesc.mDataName = desiredname+numStr;
+    varDesc.mVarType = VariableDescription::ST;
+    QString catName = varDesc.getFullName();
+    LogVariableContainer *pDataContainer;
+    //pDataContainer->getTypeVarString(LogVariableContainer::ST);
+    //mVarTypeT = LogVariableContainer::ST;
+    const QVector<double> dummy;
+    DataMapT::iterator dit = mAllPlotData.find(catName);
+    if(dit != mAllPlotData.end())
+    {
+        dit.value()->addDataGeneration(mGenerationNumber, dummy, dummy );
+    }
+    else
+    {
+
+        pDataContainer = new LogVariableContainer(varDesc);
+        pDataContainer->addDataGeneration(mGenerationNumber, dummy, dummy);
+       // pDataContainer->getTypeVarString(ST);
+        mAllPlotData.insert(catName, pDataContainer);
+        ++mTempVarCtr;
+    }
+    //! @todo Check if exists so that it does not overwrite it
+    // Create a new toplevel map item and insert data into the generations map
+
+    //mAllPlotData.insert(catName, pDataContainer);
+    return pDataContainer->getDataGeneration(mGenerationNumber);
+}
+
+LogVariableData *LogDataHandler::defineNewVariable(const QString desiredname)
+{
+    VariableDescription varDesc;
+    varDesc.mDataName = desiredname;
+    varDesc.mVarType = VariableDescription::S;
+    QString catName = varDesc.getFullName();
+    LogVariableContainer *pDataContainer;
+    //pDataContainer->getTypeVarString(LogVariableContainer::ST);
+    //mVarTypeT = LogVariableContainer::ST;
+    const QVector<double> dummy;
+    DataMapT::iterator dit = mAllPlotData.find(catName);
+    if(dit != mAllPlotData.end())
+    {
+        dit.value()->addDataGeneration(mGenerationNumber, dummy, dummy );
+    }
+    else
+    {
+
+        pDataContainer = new LogVariableContainer(varDesc);
+        pDataContainer->addDataGeneration(mGenerationNumber, dummy, dummy);
+       // pDataContainer->getTypeVarString(ST);
+        mAllPlotData.insert(catName, pDataContainer);
+    }
+    //! @todo Check if exists so that it does not overwrite it
+    // Create a new toplevel map item and insert data into the generations map
+
+    //mAllPlotData.insert(catName, pDataContainer);
+    return pDataContainer->getDataGeneration(mGenerationNumber);
+}
+
+void LogDataHandler::removeTempVariable(const QString fullName)
+{
+       DataMapT::iterator it = mAllPlotData.find(fullName);
+       if(it != mAllPlotData.end())
+       {
+           it.value()->removeDataGeneration(it.value()->getHighestGeneration());
+           mAllPlotData.erase(it);
+       }
+       else
+       {
+           cout << "Warning: you are trying to remove a variable that does not exist in this node  (does nothing)" << endl;
+       }
 }
 
 
@@ -3264,7 +4162,7 @@ void PlotData::decrementOpenPlotCurves()
 //! @note Used to decide if warning message shall be shown when closing model
 //! @see PlotData::incrementOpenPlotCurves()
 //! @see PlotData::decrementOpenPlotCurves()
-bool PlotData::hasOpenPlotCurves()
+bool LogDataHandler::hasOpenPlotCurves()
 {
     return (mnPlotCurves > 0);
 }
@@ -3272,14 +4170,14 @@ bool PlotData::hasOpenPlotCurves()
 
 //! @brief Returns the plot alias map
 //! @note Used for saving aliases when saving model
-PlotData::AliasMapT PlotData::getPlotAliasMap()
-{
-    return mPlotAliasMap;
-}
+//AllDataGenerations::AliasMapT AllDataGenerations::getPlotAliasMap()
+//{
+//    //return mPlotAliasMap;
+//}
 
 
 //! @brief Returns the list of favorite variables
-PlotData::FavoriteListT PlotData::getFavoriteVariableList()
+LogDataHandler::FavoriteListT LogDataHandler::getFavoriteVariableList()
 {
     return mFavoriteVariables;
 }
@@ -3290,13 +4188,13 @@ PlotData::FavoriteListT PlotData::getFavoriteVariableList()
 //! @param[in] portName Name of port
 //! @param[in] dataName Name of data variable
 //! @param[in] dataUnit Unit of the variable
-void PlotData::setFavoriteVariable(QString componentName, QString portName, QString dataName, QString dataUnit)
+void LogDataHandler::setFavoriteVariable(QString componentName, QString portName, QString dataName, QString dataUnit)
 {
     VariableDescription tempVariable;
-    tempVariable.componentName = componentName;
-    tempVariable.portName = portName;
-    tempVariable.dataName = dataName;
-    tempVariable.dataUnit = dataUnit;
+    tempVariable.mComponentName = componentName;
+    tempVariable.mPortName = portName;
+    tempVariable.mDataName = dataName;
+    tempVariable.mDataUnit = dataUnit;
     if(!mFavoriteVariables.contains(tempVariable))
     {
         mFavoriteVariables.append(tempVariable);
@@ -3309,12 +4207,12 @@ void PlotData::setFavoriteVariable(QString componentName, QString portName, QStr
 
 //! @brief Removse a favorite variable
 //! @param[in] componentName Name of component
-void PlotData::removeFavoriteVariableByComponentName(QString componentName)
+void LogDataHandler::removeFavoriteVariableByComponentName(QString componentName)
 {
     FavoriteListT::iterator it;
     for(it=mFavoriteVariables.begin(); it!=mFavoriteVariables.end(); ++it)
     {
-        if((*it).componentName == componentName)
+        if((*it).mComponentName == componentName)
         {
             mFavoriteVariables.removeAll((*it));
             gpMainWindow->mpPlotWidget->mpPlotVariableTree->updateList();
@@ -3323,9 +4221,468 @@ void PlotData::removeFavoriteVariableByComponentName(QString componentName)
     }
 }
 
+PlotWindow* LogDataHandler::openNewPlotWindow(const QString fullName)
+{
+    LogVariableData *pData = getPlotData(fullName, -1);
+    if(pData)
+    {
+        return gpMainWindow->mpPlotWidget->mpPlotVariableTree->createPlotWindow(pData);
+    }
+    return 0;
+}
+
+//! @todo this is incompletete maybe replace openNewPlotwindow with this one
+PlotWindow *LogDataHandler::plotToWindow(const QString fullName, const int gen, int axis, PlotWindow *pPlotWindow, QColor color)
+{
+    LogVariableData *pData = getPlotData(fullName, gen);
+    if(pData)
+    {
+        if (pPlotWindow)
+        {
+            pPlotWindow->addPlotCurve(pData, axis, "", color);
+            return pPlotWindow;
+            //! @todo completet this, maybe need more input arguments for gneeration custom unit axis color and stuff,
+        }
+        else
+        {
+            //! @todo axis color etc..
+            return gpMainWindow->mpPlotWidget->mpPlotVariableTree->createPlotWindow(pData);
+        }
+    }
+    return 0;
+}
+
+QVector<LogVariableData *> LogDataHandler::getAllVariablesAtNewestGeneration()
+{
+    QVector<LogVariableData *> dataPtrVector;
+
+    // First go through all data variable
+    DataMapT::iterator dit = mAllPlotData.begin();
+    for ( ; dit!=mAllPlotData.end(); ++dit)
+    {
+        LogVariableData *pData = dit.value()->getDataGeneration(-1);
+        if (pData)
+        {
+            dataPtrVector.push_back(pData);
+        }
+    }
+
+    return dataPtrVector;
+}
+
+QVector<LogVariableData *> LogDataHandler::getOnlyVariablesAtGeneration(const int generation)
+{
+    QVector<LogVariableData *> dataPtrVector;
+
+    // First go through all data variable
+    DataMapT::iterator dit = mAllPlotData.begin();
+    for ( ; dit!=mAllPlotData.end(); ++dit)
+    {
+        // Now try to find given generation
+        LogVariableData *pData = dit.value()->getDataGeneration(generation);
+        if (pData)
+        {
+            dataPtrVector.push_back(pData);
+        }
+    }
+
+    return dataPtrVector;
+}
+
+int LogDataHandler::getLatestGeneration() const
+{
+    // Since we post increment the counter after sucessfull import / collect we need to subtract one
+    return mGenerationNumber-1;
+}
+
+
+QStringList LogDataHandler::getPlotDataNames()
+{
+    QStringList retval;
+    DataMapT::iterator dit = mAllPlotData.begin();
+    for ( ; dit!=mAllPlotData.end(); ++dit)
+    {
+        retval.append(dit.value()->getFullVariableNameWithSeparator("."));
+    }
+    return retval;
+}
+
 
 //! @brief Equality operator for variable description class
+QString VariableDescription::getFullName() const
+{
+    return makeConcatName(mComponentName,mPortName,mDataName);
+}
+
+void VariableDescription::setFullName(const QString compName, const QString portName, const QString dataName)
+{
+    mComponentName = compName;
+    mPortName = portName;
+    mDataName = dataName;
+}
+
 bool VariableDescription::operator==(const VariableDescription &other) const
 {
-    return (componentName == other.componentName && portName == other.portName && dataName == other.dataName && dataUnit == other.dataUnit);
+    return (mComponentName == other.mComponentName && mPortName == other.mPortName && mDataName == other.mDataName && mDataUnit == other.mDataUnit);
+}
+
+void LogVariableData::setValueOffset(double offset)
+{
+    mAppliedValueOffset += offset;
+    for (int i=0; i<mDataVector.size(); ++i)
+    {
+        mDataVector[i] += offset;
+    }
+
+    emit dataChanged();
+}
+
+void LogVariableData::setTimeOffset(double offset)
+{
+    mAppliedTimeOffset += offset;
+    for (int i=0; mTimeVector.size(); ++i)
+    {
+        mTimeVector[i] += offset;
+    }
+
+    emit dataChanged();
+}
+
+LogVariableData::LogVariableData(const int generation, const QVector<double> &rTime, const QVector<double> &rData,  LogVariableContainer *pParent)
+{
+    mpParentVariableContainer = pParent;
+    mAppliedValueOffset = 0;
+    mAppliedTimeOffset = 0;
+    mGeneration = generation;
+    mTimeVector = rTime;
+    mDataVector = rData;
+}
+
+LogVariableData::~LogVariableData()
+{
+    emit beginDeleted(getGeneration());
+}
+
+VariableDescription LogVariableData::getVariableDescription() const
+{
+    return mpParentVariableContainer->getVariableDescription();
+}
+
+QString LogVariableData::getAliasName() const
+{
+    return mpParentVariableContainer->getAliasName();
+}
+
+QString LogVariableData::getFullVariableName() const
+{
+    return mpParentVariableContainer->getFullVariableName();
+}
+
+QString LogVariableData::getFullVariableNameWithSeparator(const QString sep) const
+{
+    return mpParentVariableContainer->getFullVariableNameWithSeparator(sep);
+}
+
+QString LogVariableData::getComponentName() const
+{
+    return mpParentVariableContainer->getComponentName();
+}
+
+QString LogVariableData::getPortName() const
+{
+    return mpParentVariableContainer->getPortName();
+}
+
+QString LogVariableData::getDataName() const
+{
+    return mpParentVariableContainer->getDataName();
+}
+
+QString LogVariableData::getDataUnit() const
+{
+    return mpParentVariableContainer->getDataUnit();
+}
+
+int LogVariableData::getGeneration() const
+{
+    return mGeneration;
+}
+
+int LogVariableData::getLowestGeneration() const
+{
+    return mpParentVariableContainer->getLowestGeneration();
+}
+
+int LogVariableData::getHighestGeneration() const
+{
+    return mpParentVariableContainer->getHighestGeneration();
+}
+
+int LogVariableData::getNumGenerations() const
+{
+    return mpParentVariableContainer->getNumGenerations();
+}
+
+void LogVariableData::addtoData(const LogVariableData *pOther)
+{
+    for (int i=0; i<mDataVector.size(); ++i)
+    {
+       mDataVector[i] += pOther->mDataVector[i];
+    }
+}
+void LogVariableData::addtoData(const double other)
+{
+    for (int i=0; i<mDataVector.size(); ++i)
+    {
+        mDataVector[i] += other;
+    }
+}
+void LogVariableData::subtoData(const LogVariableData *pOther)
+{
+    for (int i=0; i<mDataVector.size(); ++i)
+    {
+        mDataVector[i] -= pOther->mDataVector[i];
+    }
+}
+void LogVariableData::subtoData(const double other)
+{
+    for (int i=0; i<mDataVector.size(); ++i)
+    {
+        mDataVector[i] -= other;
+    }
+}
+
+void LogVariableData::multtoData(const LogVariableData *pOther)
+{
+    for (int i=0; i<mDataVector.size(); ++i)
+    {
+       mDataVector[i] *= pOther->mDataVector[i];
+    }
+
+}
+
+void LogVariableData::multtoData(const double other)
+{
+    for (int i=0; i<mDataVector.size(); ++i)
+    {
+        mDataVector[i] *= other;
+    }
+}
+
+void LogVariableData::divtoData(const LogVariableData *pOther)
+{
+    for (int i=0; i<mDataVector.size(); ++i)
+    {
+       mDataVector[i] /= pOther->mDataVector[i];
+    }
+}
+
+void LogVariableData::divtoData(const double other)
+{
+    for (int i=0; i<mDataVector.size(); ++i)
+    {
+        mDataVector[i] /= other;
+    }
+}
+void LogVariableData::assigntoData(const LogVariableData *pOther)
+{
+    mDataVector = pOther->mDataVector;
+    mTimeVector = pOther->mTimeVector;
+}
+
+bool LogVariableData::poketoData(const int index, const double value)
+{
+
+    if (index >= 0 && index < mDataVector.size())
+    {
+        mDataVector[index] = value;
+        emit dataChanged();
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+double LogVariableData::peekFromData(const int index)
+{
+    //! @todo check index range, figure out whay kind of error to return
+    return mDataVector[index];
+}
+
+QString LogVariableContainer::getAliasName() const
+{
+    return mVariableDescription.mAliasName;
+}
+
+QString LogVariableContainer::getFullVariableName() const
+{
+    return mVariableDescription.getFullName();
+}
+
+QString LogVariableContainer::getFullVariableNameWithSeparator(const QString sep) const
+{
+    if (mVariableDescription.mComponentName.isEmpty())
+    {
+        return mVariableDescription.mDataName;
+    }
+    else
+    {
+        return mVariableDescription.mComponentName+sep+
+               mVariableDescription.mPortName+sep+
+               mVariableDescription.mDataName;
+    }
+}
+
+QString LogVariableContainer::getComponentName() const
+{
+    return mVariableDescription.mComponentName;
+}
+
+QString LogVariableContainer::getPortName() const
+{
+    return mVariableDescription.mPortName;
+}
+
+QString LogVariableContainer::getDataName() const
+{
+    return mVariableDescription.mDataName;
+}
+
+QString LogVariableContainer::getDataUnit() const
+{
+    return mVariableDescription.mDataUnit;
+}
+
+void LogVariableContainer::setAliasName(const QString alias)
+{
+    mVariableDescription.mAliasName = alias;
+    emit nameChanged();
+}
+
+QString VariableDescription::getTypeVarString() const
+{
+    switch (mVarType)
+    {
+    case S :
+        return "Script";
+        break;
+    case ST :
+        return "Script_Temp";
+        break;
+    case M :
+        return "Model";
+        break;
+    case I :
+        return "Import";
+        break;
+    default :
+        return "UNDEFINEDTYPE";
+    }
+    return "";           //Needed for VC compilations
+}
+
+//! @brief This slot is called when someone else delets a data object
+void LogVariableContainer::forgetDataGeneration(int gen)
+{
+    LogVariableData *pData =  mDataGenerations.value(gen, 0);
+    if (pData)
+    {
+        mDataGenerations.remove(gen);
+    }
+}
+
+int LogVariableContainer::getLowestGeneration() const
+{
+    if (mDataGenerations.empty())
+    {
+        return -1;
+    }
+    else
+    {
+        return mDataGenerations.begin().key();
+    }
+}
+
+int LogVariableContainer::getHighestGeneration() const
+{
+    if (mDataGenerations.empty())
+    {
+        return -1;
+    }
+    else
+    {
+        return (--mDataGenerations.end()).key();
+    }
+}
+
+int LogVariableContainer::getNumGenerations() const
+{
+    return mDataGenerations.size();
+}
+
+VariableDescription LogVariableContainer::getVariableDescription() const
+{
+    return mVariableDescription;
+}
+
+LogVariableData *LogVariableContainer::getDataGeneration(const int gen)
+{
+    // If generation not specified (<0), then take latest (if not empty),
+    if ( (gen < 0) && !mDataGenerations.empty() )
+    {
+        return (--mDataGenerations.end()).value();
+    }
+
+    // Else try to find specified generation
+    // Return 0 ptr if generation not found
+    return mDataGenerations.value(gen, 0);
+}
+
+bool LogVariableContainer::hasDataGeneration(const int gen)
+{
+    return mDataGenerations.contains(gen);
+}
+
+void LogVariableContainer::addDataGeneration(const int generation, const QVector<double> &rTime, const QVector<double> &rData)
+{
+    //! @todo what if a generation already exist, then we must properly delete the old data before we add new one
+    LogVariableData *pData = new LogVariableData(generation, rTime, rData, this);
+    connect(pData, SIGNAL(beginDeleted(int)), this, SLOT(forgetDataGeneration(int)));
+    connect(this, SIGNAL(nameChanged()), pData, SIGNAL(nameChanged()));
+    mDataGenerations.insert(generation, pData);
+}
+
+//! @todo Need to remove this class if final generation is deleted
+void LogVariableContainer::removeDataGeneration(const int generation)
+{
+    LogVariableData *pData =  mDataGenerations.value(generation, 0);
+    if (pData)
+    {
+        //! @todo should send signals
+        mDataGenerations.remove(generation);
+        disconnect(pData, SIGNAL(beginDeleted(int))); //Disconect this signal to avoid delete loop
+        delete pData;
+    }
+}
+
+void LogVariableContainer::removeGenerationsOlderThen(const int gen)
+{
+    // it is assumed that the generation map is sorted by key which it should be since adding will allways append
+    QList<int> keys = mDataGenerations.keys();
+    if (!keys.empty())
+    {
+        int it=0;
+        while (keys[it] < gen)
+        {
+            removeDataGeneration(keys[it]);
+            ++it;
+        }
+    }
+}
+
+LogVariableContainer::LogVariableContainer(const VariableDescription &rVarDesc) : QObject()
+{
+    mVariableDescription = rVarDesc;
 }

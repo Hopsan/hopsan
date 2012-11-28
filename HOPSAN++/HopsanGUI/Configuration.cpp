@@ -28,7 +28,7 @@
 #include "Utilities/XMLUtilities.h"
 #include "Utilities/GUIUtilities.h"
 #include "MainWindow.h"
-#include "Widgets/MessageWidget.h"
+#include "Widgets/HcomWidget.h"
 #include "Widgets/PyDockWidget.h"
 
 #include <QDomElement>
@@ -168,6 +168,12 @@ void Configuration::saveToXml()
     QDomElement python = appendDomElement(configRoot, "python");
     gpMainWindow->getPythonDock()->saveSettingsToDomElement(python);
 
+    QDomElement hcom = appendDomElement(configRoot, "hcom");
+    for(int i=0; i<mTerminalHistory.size(); ++i)
+    {
+        appendDomTextNode(hcom, "command", mTerminalHistory.at(i));
+    }
+
     appendRootXMLProcessingInstruction(domDocument);
 
     //Save to file
@@ -198,7 +204,7 @@ void Configuration::loadFromXml()
     qDebug() << "Reading config from " << file.fileName();
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        gpMainWindow->mpMessageWidget->printGUIWarningMessage("Unable to find configuration file. Configuration file was recreated with default settings.");
+        gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Unable to find configuration file. Configuration file was recreated with default settings.");
         return;
     }
 
@@ -385,6 +391,16 @@ void Configuration::loadFromXml()
                 mLastScriptFile = lastScriptElement.attribute("file");
             }
 
+            QDomElement hcomElement = configRoot.firstChildElement("hcom");
+            if(!hcomElement.isNull())
+            {
+                QDomElement commandElement = hcomElement.firstChildElement("command");
+                while(!commandElement.isNull())
+                {
+                    mTerminalHistory.append(commandElement.text());
+                    commandElement = commandElement.nextSiblingElement("command");
+                }
+            }
 
         }
     }
@@ -959,6 +975,10 @@ QString Configuration::getFmuImportDir()
     return mFmuImportDir;
 }
 
+QStringList Configuration::getTerminalHistory()
+{
+    return mTerminalHistory;
+}
 
 //! @brief Returns the last used directory for importing FMUs
 QString Configuration::getFmuExportDir()
@@ -1258,6 +1278,11 @@ void Configuration::setScriptDir(QString value)
 void Configuration::setPlotWindowDir(QString value)
 {
     mPlotWindowDir = value;
+}
+
+void Configuration::storeTerminalHistory(QStringList value)
+{
+    mTerminalHistory = value;
 }
 
 void Configuration::setFmuImportDir(QString value)

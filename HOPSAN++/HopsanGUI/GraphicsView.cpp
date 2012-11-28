@@ -170,9 +170,10 @@ void GraphicsView::dropEvent(QDropEvent *event)
         }
 
         //Check if dropped item is a plot data string, and attempt to open a plot window if so
-        else if(text.startsWith("HOPSANPLOTDATA"))
+        else if(text.startsWith("HOPSANPLOTDATA:"))
         {
-            gpMainWindow->mpPlotWidget->mpPlotVariableTree->createPlotWindow(text.section("\"", 1, 1), text.section("\"", 3, 3), text.section("\"", 5, 5), ""/*text.section("\"", 7, 7)*/);
+            text.remove("HOPSANPLOTDATA:");
+            getContainerPtr()->getPlotDataPtr()->openNewPlotWindow(text);
             return;
         }
 
@@ -456,6 +457,10 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
     else if (ctrlPressed && event->key() == Qt::Key_A)
     {
         mpContainerObject->selectAll();
+    }
+    else if(ctrlPressed && event->key() == Qt::Key_Space)
+    {
+        //gpMainWindow->mpTerminalDock->setFocus();
     }
     else if (ctrlPressed)
     {

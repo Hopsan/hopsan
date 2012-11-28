@@ -33,7 +33,7 @@
 #include "Widgets/LibraryWidget.h"
 #include "MainWindow.h"
 #include "UndoStack.h"
-#include "Widgets/MessageWidget.h"
+#include "Widgets/HcomWidget.h"
 #include "Utilities/GUIUtilities.h"
 
 #include <QMap>
@@ -84,6 +84,15 @@ bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, undoSt
     {
         isDashed = false;
     }
+    QDomElement colorTag = guiData.firstChildElement(HMF_COLORTAG);
+    QColor color =  QColor();
+    if(!colorTag.isNull())
+    {
+        QString rgb = colorTag.text();
+        double r, g, b;
+        parseRgbString(rgb, r, g, b);
+        color.setRgb(r, g, b);
+    }
 
     // -----Now establish the connection-----
     bool success=false;
@@ -97,6 +106,7 @@ bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, undoSt
             pConn->setPointsAndGeometries(pointVector, geometryList);
             pConn->setDashed(isDashed);
             pConn->refreshConnectorAppearance();
+            pConn->setColor(color);
 
             if(undoSettings == UNDO)
             {
@@ -106,14 +116,14 @@ bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, undoSt
         }
     }
 
-    gpMainWindow->mpMessageWidget->checkMessages();
+    gpMainWindow->mpTerminalWidget->checkMessages();
 
     if (!success)
     {
         QString str;
         str = QString("Failed to load connector between: ") + startComponentName + QString("->") + startPortName
             + QString(" and ") + endComponentName + QString("->") + endPortName;
-        gpMainWindow->mpMessageWidget->printGUIWarningMessage(str, "FailedLoadConnector");
+        gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage(str, "FailedLoadConnector");
     }
 
     return success;
@@ -138,7 +148,7 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, undoStat
     //Use the setParameter method that mapps to System parameter
     if(!parameterName.startsWith("noname_subport:") && !pObject->getParameterNames().contains(parameterName))
     {
-        gpMainWindow->mpMessageWidget->printGUIWarningMessage("Parameter name " + parameterName + " in component " + pObject->getName() + " mismatch. Parameter ignored.", "parametermismatch");
+        gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Parameter name " + parameterName + " in component " + pObject->getName() + " mismatch. Parameter ignored.", "parametermismatch");
         return;
     }
     pObject->setParameterValue(parameterName, parameterValue, true);
@@ -376,7 +386,10 @@ void loadPlotAlias(QDomElement &rDomElement, ContainerObject* pContainer)
     QString portName = rDomElement.attribute("port");
     QString dataName = rDomElement.attribute("data");
 
-    pContainer->getPlotDataPtr()->definePlotAlias(alias, componentName, portName, dataName);
+    //! @todo we need a help function to build and to split a full variable name
+    QString fullName = componentName+"#"+portName+"#"+dataName;
+
+    pContainer->getPlotDataPtr()->definePlotAlias(alias, fullName);
 }
 
 

@@ -28,7 +28,7 @@
 #include "Configuration.h"
 #include "LibraryWidget.h"
 #include "MainWindow.h"
-#include "MessageWidget.h"
+#include "Widgets/HcomWidget.h"
 #include "Dialogs/ComponentGeneratorDialog.h"
 #include "GUIObjects/GUIModelObjectAppearance.h"
 #include "GUIObjects/GUIContainerObject.h"
@@ -549,7 +549,7 @@ void LibraryWidget::addExternalLibrary(QString libDir)
     }
     else
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Error: Library " + libDir + " is already loaded!");
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Error: Library " + libDir + " is already loaded!");
     }
 }
 
@@ -620,7 +620,7 @@ void LibraryWidget::loadHiddenSecretDir(QString dir)
         QFile file(filename);   //Create a QFile object
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open each file
         {
-            gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open file or not a text file: " + filename);
+            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to open file or not a text file: " + filename);
             continue;
         }
 
@@ -635,7 +635,7 @@ void LibraryWidget::loadHiddenSecretDir(QString dir)
             QDomElement cafRoot = domDocument.documentElement();
             if (cafRoot.tagName() != CAF_ROOT)
             {
-                gpMainWindow->mpMessageWidget->printGUIDebugMessage(file.fileName() + ": The file is not an Hopsan Component Appearance Data file. Incorrect caf root tag name: " + cafRoot.tagName() + "!=" + CAF_ROOT);
+                gpMainWindow->mpTerminalWidget->mpConsole->printDebugMessage(file.fileName() + ": The file is not an Hopsan Component Appearance Data file. Incorrect caf root tag name: " + cafRoot.tagName() + "!=" + CAF_ROOT);
                 continue;
             }
             else
@@ -648,7 +648,7 @@ void LibraryWidget::loadHiddenSecretDir(QString dir)
         }
         else
         {
-            gpMainWindow->mpMessageWidget->printGUIDebugMessage(file.fileName() + ": The file is not an Hopsan ComponentAppearance Data file.");
+            gpMainWindow->mpTerminalWidget->mpConsole->printDebugMessage(file.fileName() + ": The file is not an Hopsan ComponentAppearance Data file.");
             continue;
         }
 
@@ -661,7 +661,7 @@ void LibraryWidget::loadHiddenSecretDir(QString dir)
             success = mpCoreAccess->hasComponent(pAppearanceData->getTypeName()); //Check so that there is such component availible in the Core
             if (!success)
             {
-                gpMainWindow->mpMessageWidget->printGUIWarningMessage("When loading graphics, ComponentType: " + pAppearanceData->getTypeName() + " is not registered in core, (Will not be availiable)", "componentnotregistered");
+                gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("When loading graphics, ComponentType: " + pAppearanceData->getTypeName() + " is not registered in core, (Will not be availiable)", "componentnotregistered");
             }
         }
 
@@ -759,14 +759,14 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
 
     if(!success && libList.size()>0)
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage(libDirObject.path() + ": Could not find any working Hopsan library in specified folder!");
-        gpMainWindow->mpMessageWidget->checkMessages();
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(libDirObject.path() + ": Could not find any working Hopsan library in specified folder!");
+        gpMainWindow->mpTerminalWidget->checkMessages();
         pParentTree->removeChild(libName);
         gConfig.removeUserLib(libDirObject.path());
         delete pTree;
         return;     //No point in continuing since no library was found
     }
-    gpMainWindow->mpMessageWidget->checkMessages();
+    gpMainWindow->mpTerminalWidget->checkMessages();
 
     // Load Component XML (CAF Files)
     filters.clear();
@@ -781,7 +781,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
         QFile file(filename);   //Create a QFile object
         if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open each file
         {
-            gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open file or not a text file: " + filename);
+            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to open file or not a text file: " + filename);
             continue;
         }
 
@@ -799,7 +799,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
                 //QMessageBox::information(window(), tr("Hopsan GUI read AppearanceData"),
 //                                         "The file is not an Hopsan Component Appearance Data file. Incorrect caf root tag name: "
 //                                         + cafRoot.tagName() + "!=" + CAF_ROOT);
-                gpMainWindow->mpMessageWidget->printGUIDebugMessage(file.fileName() + ": The file is not an Hopsan Component Appearance Data file. Incorrect caf root tag name: " + cafRoot.tagName() + "!=" + CAF_ROOT);
+                gpMainWindow->mpTerminalWidget->mpConsole->printDebugMessage(file.fileName() + ": The file is not an Hopsan Component Appearance Data file. Incorrect caf root tag name: " + cafRoot.tagName() + "!=" + CAF_ROOT);
                 continue;
             }
             else
@@ -902,7 +902,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
             success = mpCoreAccess->hasComponent(pAppearanceData->getTypeName()); //Check so that there is such component availible in the Core
             if (!success)
             {
-                gpMainWindow->mpMessageWidget->printGUIWarningMessage("When loading graphics, ComponentType: " + pAppearanceData->getTypeName() + " is not registered in core, (Will not be availiable)", "componentnotregistered");
+                gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("When loading graphics, ComponentType: " + pAppearanceData->getTypeName() + " is not registered in core, (Will not be availiable)", "componentnotregistered");
             }
         }
 
@@ -985,7 +985,7 @@ void LibraryWidget::updateLibraryFolder(LibraryContentsTree /**pTree*/)
 
 //    if(!success && libList.size()>0)
 //    {
-//        gpMainWindow->mpMessageWidget->printGUIInfoMessage(libDirObject.path() + ": Could not find any new library files in specified folder.");
+//        gpMainWindow->mpHcomWidget->mpConsole->printInfoMessage(libDirObject.path() + ": Could not find any new library files in specified folder.");
 //        gpMainWindow->mpMessageWidget->checkMessages();
 //        return;     //Nothing to do since no new libraries found
 //    }
@@ -1018,7 +1018,7 @@ void LibraryWidget::updateLibraryFolder(LibraryContentsTree /**pTree*/)
 //        QFile file(filename);   //Create a QFile object
 //        if (!file.open(QIODevice::ReadOnly | QIODevice::Text))  //open each file
 //        {
-//            gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open file or not a text file: " + filename);
+//            gpMainWindow->mpHcomWidget->mpConsole->printErrorMessage("Failed to open file or not a text file: " + filename);
 //            continue;
 //        }
 
@@ -1032,7 +1032,7 @@ void LibraryWidget::updateLibraryFolder(LibraryContentsTree /**pTree*/)
 //            QDomElement cafRoot = domDocument.documentElement();
 //            if (cafRoot.tagName() != CAF_ROOT)                      //Not an appearance file
 //            {
-//                gpMainWindow->mpMessageWidget->printGUIDebugMessage(file.fileName() + ": The file is not an Hopsan Component Appearance Data file. Incorrect caf root tag name: " + cafRoot.tagName() + "!=" + CAF_ROOT);
+//                gpMainWindow->mpHcomWidget->mpConsole->printDebugMessage(file.fileName() + ": The file is not an Hopsan Component Appearance Data file. Incorrect caf root tag name: " + cafRoot.tagName() + "!=" + CAF_ROOT);
 //                continue;
 //            }
 //            else
@@ -1135,7 +1135,7 @@ void LibraryWidget::updateLibraryFolder(LibraryContentsTree /**pTree*/)
 //            success = mpCoreAccess->hasComponent(pAppearanceData->getTypeName()); //Check so that there is such component availible in the Core
 //            if (!success)
 //            {
-//                gpMainWindow->mpMessageWidget->printGUIWarningMessage("When loading graphics, ComponentType: " + pAppearanceData->getTypeName() + " is not registered in core, (Will not be availiable)", "componentnotregistered");
+//                gpMainWindow->mpHcomWidget->mpConsole->printWarningMessage("When loading graphics, ComponentType: " + pAppearanceData->getTypeName() + " is not registered in core, (Will not be availiable)", "componentnotregistered");
 //            }
 //        }
 
@@ -1249,7 +1249,7 @@ void LibraryWidget::unLoadLibrarySubTree(LibraryContentsTree *pTree, const QStri
     }
     //Then remove the tree itself
     mpContentsTree->findChildByName(parentLibDir)->removeChild(pTree->mName);
-    gpMainWindow->mpMessageWidget->checkMessages();
+    gpMainWindow->mpTerminalWidget->checkMessages();
 }
 
 

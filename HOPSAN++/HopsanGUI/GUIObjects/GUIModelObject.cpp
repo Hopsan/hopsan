@@ -402,7 +402,7 @@ void ModelObject::showLosses()
     if(getTypeCQS() == "S")
         return;
 
-    int generation = mpParentContainerObject->getPlotDataPtr()->size()-1;
+    int generation = mpParentContainerObject->getPlotDataPtr()->getLatestGeneration();
 
     time.start();
 
@@ -427,8 +427,8 @@ void ModelObject::showLosses()
                     }
                     QString componentName = vConnectedPorts.at(i)->mpParentGuiModelObject->getName();
                     QString portName = vConnectedPorts.at(i)->getPortName();
-                    QVector<double> vPressure = mpParentContainerObject->getPlotDataPtr()->getPlotData(generation, componentName, portName, "Pressure");
-                    QVector<double> vFlow = mpParentContainerObject->getPlotDataPtr()->getPlotData(generation, componentName, portName, "Flow");
+                    QVector<double> vPressure = mpParentContainerObject->getPlotDataPtr()->getPlotDataValues(generation, componentName, portName, "Pressure");
+                    QVector<double> vFlow = mpParentContainerObject->getPlotDataPtr()->getPlotDataValues(generation, componentName, portName, "Flow");
                     for(int s=0; s<vPressure.size()-1; ++s) //Minus one because of integration method
                     {
                         mTotalLosses += vPressure.at(s) * vFlow.at(s) * (mpParentContainerObject->getPlotDataPtr()->getTimeVector(generation).at(s+1)-mpParentContainerObject->getPlotDataPtr()->getTimeVector(generation).at(s));
@@ -438,8 +438,8 @@ void ModelObject::showLosses()
             }
             else    //Normal port!
             {
-                QVector<double> vPressure = mpParentContainerObject->getPlotDataPtr()->getPlotData(generation, getName(), mPortListPtrs[p]->getPortName(), "Pressure");
-                QVector<double> vFlow = mpParentContainerObject->getPlotDataPtr()->getPlotData(generation, getName(), mPortListPtrs[p]->getPortName(), "Flow");
+                QVector<double> vPressure = mpParentContainerObject->getPlotDataPtr()->getPlotDataValues(generation, getName(), mPortListPtrs[p]->getPortName(), "Pressure");
+                QVector<double> vFlow = mpParentContainerObject->getPlotDataPtr()->getPlotDataValues(generation, getName(), mPortListPtrs[p]->getPortName(), "Flow");
 
                 for(int s=0; s<vPressure.size()-1; ++s) //Minus one because of integration method
                 {
@@ -462,8 +462,8 @@ void ModelObject::showLosses()
                 {
                     QString componentName = vConnectedPorts.at(i)->mpParentGuiModelObject->getName();
                     QString portName = vConnectedPorts.at(i)->getPortName();
-                    QVector<double> vForce = mpParentContainerObject->getPlotDataPtr()->getPlotData(generation, componentName, portName, "Force");
-                    QVector<double> vVelocity = mpParentContainerObject->getPlotDataPtr()->getPlotData(generation, componentName, portName, "Velocity");
+                    QVector<double> vForce = mpParentContainerObject->getPlotDataPtr()->getPlotDataValues(generation, componentName, portName, "Force");
+                    QVector<double> vVelocity = mpParentContainerObject->getPlotDataPtr()->getPlotDataValues(generation, componentName, portName, "Velocity");
                     for(int s=0; s<vForce.size()-1; ++s) //Minus one because of integration method
                     {
                         mTotalLosses += vForce.at(s) * vVelocity.at(s) *
@@ -477,8 +477,8 @@ void ModelObject::showLosses()
             }
             else    //Normal port!
             {
-                QVector<double> vForce = mpParentContainerObject->getPlotDataPtr()->getPlotData(generation, getName(), mPortListPtrs[p]->getPortName(), "Force");
-                QVector<double> vVelocity = mpParentContainerObject->getPlotDataPtr()->getPlotData(generation, getName(), mPortListPtrs[p]->getPortName(), "Velocity");
+                QVector<double> vForce = mpParentContainerObject->getPlotDataPtr()->getPlotDataValues(generation, getName(), mPortListPtrs[p]->getPortName(), "Force");
+                QVector<double> vVelocity = mpParentContainerObject->getPlotDataPtr()->getPlotDataValues(generation, getName(), mPortListPtrs[p]->getPortName(), "Velocity");
                 for(int s=0; s<vForce.size()-1; ++s)
                 {
                     mTotalLosses += vForce.at(s) * vVelocity.at(s) *
@@ -747,6 +747,25 @@ QString ModelObject::getDefaultParameterValue(const QString paramName) const
     {
         return QString();
     }
+}
+
+QVector<QPair<QString, QString> > ModelObject::getVariableAliasList()
+{
+    //! @todo this fetching multiple times is madness
+    QVector<QPair<QString, QString> > output;
+    QStringList aliasNames = getParentContainerObject()->getCoreSystemAccessPtr()->getAliasNames();
+    for (int i=0; i<aliasNames.size(); ++i)
+    {
+        QString comp,port,var;
+        getParentContainerObject()->getCoreSystemAccessPtr()->getFullVariableNameByAlias(aliasNames[i],comp,port,var);
+
+        QString fullname=makeConcatName(comp,port,var);
+        QString alias = aliasNames[i];
+
+        QPair<QString, QString> aliasVarPair(alias, fullname );
+        output.push_back(aliasVarPair);
+    }
+    return output;
 }
 
 
@@ -1059,6 +1078,7 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
         groupAction = new QAction(this);
 
     QAction *showNameAction = rMenu.addAction(tr("Show name"));
+    QAction *ExportComponentParam = rMenu.addAction(tr("Export Component Parameters"));
     QAction *rotateRightAction = rMenu.addAction(tr("Rotate Clockwise (Ctrl+R)"));
     QAction *rotateLeftAction = rMenu.addAction(tr("Rotate Counter-Clockwise (Ctrl+E)"));
     QAction *flipVerticalAction = rMenu.addAction(tr("Flip Vertically (Ctrl+D)"));
@@ -1091,6 +1111,24 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     {
         mpParentContainerObject->getUndoStackPtr()->newPost();
         this->rotate90cw();
+    }
+    else if (selectedAction == ExportComponentParam)
+    {
+//        QVector<CoreParameterData> paramDataVector;
+//        this->getParameters(paramDataVector);
+//        for(int i=0; i<paramDataVector.size(); ++i)
+//        {
+//            //mvParameterLayoutPtrs.push_back(new ParameterSettingsLayout(paramDataVector[i], mpContainerObject));
+//        }
+//        QDomDocument doc;
+
+//        QFile File("fitxer");
+//        if ( File.open( QIODevice::WriteOnly ) )
+//        {
+//            QTextStream TextStream(&File);
+//            TextStream << doc.toString(paramDataVector) ;
+//            File.close();
+//        }
     }
     else if (selectedAction == rotateLeftAction)
     {

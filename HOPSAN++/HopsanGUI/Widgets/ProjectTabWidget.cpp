@@ -27,7 +27,7 @@
 #include <QHash>
 
 #include "ProjectTabWidget.h"
-#include "MessageWidget.h"
+#include "HcomWidget.h"
 
 #include "MainWindow.h"
 #include "GraphicsView.h"
@@ -41,6 +41,7 @@
 #include "Widgets/LibraryWidget.h"
 #include "version_gui.h"
 #include "GUIConnector.h"
+#include "Widgets/HcomWidget.h"
 
 #include "SimulationThreadHandler.h"
 
@@ -304,7 +305,7 @@ bool ProjectTab::simulate_blocking()
 //! Simulates the model in the tab in a separate thread, the GUI runs a progressbar parallel to the simulation.
 bool ProjectTab::simulate_old()
 {
-    MessageWidget *pMessageWidget = gpMainWindow->mpMessageWidget;
+    TerminalWidget *pTerminalWidget = gpMainWindow->mpTerminalWidget;
 
     // Setup simulation parameters
     double startTime = mStartTime.toDouble();
@@ -358,9 +359,9 @@ bool ProjectTab::simulate_old()
         if (!progressBar.wasCanceled())
         {
             if(gConfig.getUseMulticore())
-                gpMainWindow->mpMessageWidget->printGUIInfoMessage("Starting Multi Threaded Simulation");
+                gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Starting Multi Threaded Simulation");
             else
-                gpMainWindow->mpMessageWidget->printGUIInfoMessage("Starting Single Threaded Simulation");
+                gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Starting Single Threaded Simulation");
 
             simTimer.start();
             SimulationThread actualSimulation(mpSystem->getCoreSystemAccessPtr(), startTime, finishTime, this);
@@ -402,11 +403,11 @@ bool ProjectTab::simulate_old()
     mLastSimulationTime = simTimer.elapsed();
     if (progressBar.wasCanceled() || !initSuccess)
     {
-        pMessageWidget->printGUIInfoMessage(QString(tr("Simulation of '").append(mpSystem->getCoreSystemAccessPtr()->getSystemName()).append(tr("' was terminated!"))));
+        pTerminalWidget->mpConsole->printInfoMessage(QString(tr("Simulation of '").append(mpSystem->getCoreSystemAccessPtr()->getSystemName()).append(tr("' was terminated!"))));
     }
     else
     {
-        pMessageWidget->printGUIInfoMessage(QString(tr("Simulated '").append(mpSystem->getCoreSystemAccessPtr()->getSystemName()).append(tr("' successfully!  Simulation time: ").append(timeString).append(" ms"))));
+        pTerminalWidget->mpConsole->printInfoMessage(QString(tr("Simulated '").append(mpSystem->getCoreSystemAccessPtr()->getSystemName()).append(tr("' successfully!  Simulation time: ").append(timeString).append(" ms"))));
         emit simulationFinished();
         //this->mpParentProjectTabWidget->mpParentMainWindow->mpPlotWidget->mpVariableList->updateList();
     }
@@ -429,6 +430,93 @@ void ProjectTab::save()
 void ProjectTab::saveAs()
 {
     saveModel(NEWFILE);
+}
+
+void ProjectTab::ExportModel()
+{
+    //saveModel(NEWFILE);
+
+    QDir fileDialogSaveDir;
+    QString modelFilePath;
+    modelFilePath = QFileDialog::getSaveFileName(this, tr("Save Model File"),
+                                                 gConfig.getLoadModelDir(),
+                                                 tr("Hopsan Parameter File (*.hmf)"));
+
+    if(modelFilePath.isEmpty())     //Don't save anything if user presses cancel
+    {
+        return;
+    }
+
+    mpSystem->setModelFile(modelFilePath);
+    QFileInfo fileInfo = QFileInfo(modelFilePath);
+    gConfig.setLoadModelDir(fileInfo.absolutePath());
+
+    QFile file(mpSystem->getModelFileInfo().filePath());   //Create a QFile object
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+    {
+        return;
+    }
+
+    //Sets the model name (must set this name before saving or else systemports wont know the real name of their rootsystem parent)
+    mpSystem->setName(mpSystem->getModelFileInfo().baseName());
+
+    //Update the basepath for relative appearance data info
+    mpSystem->setAppearanceDataBasePath(mpSystem->getModelFileInfo().absolutePath());
+
+    //Save xml document
+    QDomDocument domDocument;
+    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, mpSystem->getCoreSystemAccessPtr()->getHopsanCoreVersion());
+
+    // Save the required external lib names
+    QVector<QString> extLibNames;
+    CoreParameterData coreParaAccess;
+    //coreParaAccess.getLoadedLibNames(extLibNames);
+
+
+//    //! @todo need HMF defines for hardcoded strings
+//    QDomElement reqDom = appendDomElement(hmfRoot, "requirements");
+//    for (int i=0; i<coreParaAccess.size(); ++i)
+//    {
+//        appendDomTextNode(reqDom, "Parameters", extLibNames[i]);
+//    }
+
+//    QDomElement XMLparameters = appendDomElement(hmfRoot, "parameters");
+//    for(int i = 0; i < gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mOptSettings.mParamters.size(); ++i)
+//    {
+//        QDomElement XMLparameter = appendDomElement(XMLparameters, "parameter");
+//        appendDomTextNode(XMLparameter, "componentname", gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mComponentName);
+//        appendDomTextNode(XMLparameter, "parametername", gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mParameterName);
+//        appendDomValueNode2(XMLparameter, "minmax", gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mMin, gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mMax);
+//    }
+
+//    //Save the model component hierarcy
+//    //! @todo maybe use a saveload object instead of calling save imediately (only load object exist for now), or maybe this is fine
+    mpSystem->saveToDomElement(hmfRoot);
+
+    //Save to file
+    const int IndentSize = 4;
+    QFile xmlhmf(mpSystem->getModelFileInfo().filePath());
+    if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+    {
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not save to file: " + mpSystem->getModelFileInfo().filePath());
+        return;
+    }
+    QTextStream out(&xmlhmf);
+    appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
+    domDocument.save(out, IndentSize);
+
+    //Close the file
+    xmlhmf.close();
+
+    //Set the tab name to the model name, efectively removing *, also mark the tab as saved
+    QString tabName = mpSystem->getModelFileInfo().baseName();
+    mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
+    gConfig.addRecentModel(mpSystem->getModelFileInfo().filePath());
+    gpMainWindow->updateRecentList();
+    this->setSaved(true);
+
+    gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Saved model: " + tabName);
+
 }
 
 
@@ -641,7 +729,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     QFile xmlhmf(mpSystem->getModelFileInfo().filePath());
     if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Could not save to file: " + mpSystem->getModelFileInfo().filePath());
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not save to file: " + mpSystem->getModelFileInfo().filePath());
         return;
     }
     QTextStream out(&xmlhmf);
@@ -658,7 +746,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     gpMainWindow->updateRecentList();
     this->setSaved(true);
 
-    gpMainWindow->mpMessageWidget->printGUIInfoMessage("Saved model: " + tabName);
+    gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Saved model: " + tabName);
 }
 
 
@@ -677,7 +765,7 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
 {
     this->setPalette(gConfig.getPalette());
 
-    connect(this, SIGNAL(checkMessages()), gpMainWindow->mpMessageWidget, SLOT(checkMessages()), Qt::UniqueConnection);
+    connect(this, SIGNAL(checkMessages()), gpMainWindow->mpTerminalWidget, SLOT(checkMessages()), Qt::UniqueConnection);
     connect(this, SIGNAL(currentChanged(int)), gpMainWindow, SLOT(updateToolBarsToNewTab()), Qt::UniqueConnection);
     connect(this, SIGNAL(currentChanged(int)), gpMainWindow, SLOT(refreshUndoWidgetList()), Qt::UniqueConnection);
 
@@ -863,7 +951,7 @@ bool ProjectTabWidget::closeProjectTab(int index)
 
     disconnect(gpMainWindow,                 SIGNAL(simulateKeyPressed()),    getTab(index),                      SLOT(simulate()));
     disconnect(gpMainWindow->mpSaveAction,            SIGNAL(triggered()),    getTab(index),                      SLOT(save()));
-    disconnect(gpMainWindow->mpSaveAsAction,          SIGNAL(triggered()),    getTab(index),                      SLOT(saveAs()));
+    disconnect(gpMainWindow->mpExportModelAction,     SIGNAL(triggered()),    getTab(index),                      SLOT(ExportModel()));
 
     getContainer(index)->disconnectMainWindowActions();
 
@@ -934,7 +1022,7 @@ void ProjectTabWidget::loadModel(QString modelFileName, bool ignoreAlreadyOpen)
     if(!file.exists())
     {
         qDebug() << "File not found: " + file.fileName();
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("File not found: " + file.fileName());
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("File not found: " + file.fileName());
         return;
     }
     QFileInfo fileInfo(file);
@@ -976,7 +1064,7 @@ void ProjectTabWidget::loadModel(QString modelFileName, bool ignoreAlreadyOpen)
         QDomElement compLib = reqDom.firstChildElement("componentlibrary");
         while (!compLib.isNull())
         {
-            gpMainWindow->mpMessageWidget->printGUIDebugMessage("This model MIGHT require Lib: " + compLib.text());
+            gpMainWindow->mpTerminalWidget->mpConsole->printDebugMessage("This model MIGHT require Lib: " + compLib.text());
             compLib = compLib.nextSiblingElement("componentlibrary");
         }
     }
@@ -1013,6 +1101,7 @@ void ProjectTabWidget::tabChanged()
         disconnect(gpMainWindow,                    SIGNAL(simulateKeyPressed()),   getTab(i),  SLOT(simulate_nonblocking()));
         disconnect(gpMainWindow->mpSaveAction,      SIGNAL(triggered()),            getTab(i),  SLOT(save()));
         disconnect(gpMainWindow->mpSaveAsAction,    SIGNAL(triggered()),            getTab(i),  SLOT(saveAs()));
+        disconnect(gpMainWindow->mpExportModelAction,SIGNAL(triggered()),           getTab(i),  SLOT(ExportModel()));
     }
     if(this->count() != 0)
     {
@@ -1020,6 +1109,7 @@ void ProjectTabWidget::tabChanged()
         connect(gpMainWindow,                       SIGNAL(simulateKeyPressed()),   getCurrentTab(),        SLOT(simulate_nonblocking()), Qt::UniqueConnection);
         connect(gpMainWindow->mpSaveAction,         SIGNAL(triggered()),            getCurrentTab(),        SLOT(save()), Qt::UniqueConnection);
         connect(gpMainWindow->mpSaveAsAction,       SIGNAL(triggered()),            getCurrentTab(),        SLOT(saveAs()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpExportModelAction,  SIGNAL(triggered()),            getCurrentTab(),        SLOT(ExportModel()), Qt::UniqueConnection);
 
         connect(gpMainWindow->mpResetZoomAction,    SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(resetZoom()), Qt::UniqueConnection);
         connect(gpMainWindow->mpZoomInAction,       SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(zoomIn()), Qt::UniqueConnection);
@@ -1084,7 +1174,7 @@ bool ProjectTabWidget::simulateAllOpenModels_old(bool modelsHaveNotChanged)
     {
         SystemContainer *pMainSystem = getCurrentTopLevelSystem();     //All systems will use start time, stop time and time step from this system
 
-        MessageWidget *pMessageWidget = gpMainWindow->mpMessageWidget;
+        TerminalWidget *pTerminal = gpMainWindow->mpTerminalWidget;
 
             //Setup simulation parameters
         double startTime = getCurrentTab()->getStartTime().toDouble();
@@ -1151,9 +1241,9 @@ bool ProjectTabWidget::simulateAllOpenModels_old(bool modelsHaveNotChanged)
             if (!progressBar.wasCanceled())
             {
                 if(gConfig.getUseMulticore())
-                    gpMainWindow->mpMessageWidget->printGUIInfoMessage("Starting multi-threaded simulation of all models");
+                    gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Starting multi-threaded simulation of all models");
                 else
-                    gpMainWindow->mpMessageWidget->printGUIInfoMessage("Starting single-threaded simulation of all models");
+                    gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Starting single-threaded simulation of all models");
 
                 simTimer.start();
                 MultipleSimulationThread actualSimulation(coreAccessVector, startTime, finishTime, modelsHaveNotChanged, this);
@@ -1199,11 +1289,11 @@ bool ProjectTabWidget::simulateAllOpenModels_old(bool modelsHaveNotChanged)
         }
         if (progressBar.wasCanceled() || !initSuccess)
         {
-            pMessageWidget->printGUIInfoMessage(QString(tr("Simulation of all systems was terminated!")));
+            pTerminal->mpConsole->printInfoMessage(QString(tr("Simulation of all systems was terminated!")));
         }
         else
         {
-            pMessageWidget->printGUIInfoMessage(QString(tr("Simulated all systems successfully!  Simulation time: ").append(timeString).append(" ms")));
+            pTerminal->mpConsole->printInfoMessage(QString(tr("Simulated all systems successfully!  Simulation time: ").append(timeString).append(" ms")));
             emit simulationFinished();
             //this->mpParentProjectTabWidget->mpParentMainWindow->mpPlotWidget->mpVariableList->updateList();
         }

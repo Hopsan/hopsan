@@ -40,10 +40,13 @@ public:
     void setTypeAndIsoStyle(QString porttype, graphicsType gfxType);
     QPen getPen(connectorStyle style, graphicsType gfxType, QString situation);
     QPen getPen(QString situation);
+    void setCustomColor(QColor color);
+    QColor getCustomColor();
 
 private:
     connectorStyle mConnectorStyle;
     graphicsType mGfxType;
+    QColor mCustomColor;
 
 };
 

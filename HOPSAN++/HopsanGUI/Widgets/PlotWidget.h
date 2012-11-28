@@ -70,17 +70,17 @@ class PlotVariableTree;
 class PlotVariableTreeItem : public QTreeWidgetItem
 {
 public:
-    PlotVariableTreeItem(QString componentName, QString portName, QString dataName, QString dataUnit, QTreeWidgetItem *parent = 0);
+    PlotVariableTreeItem(LogVariableData *pData, QTreeWidgetItem *parent);
+    LogVariableData *getDataPtr();
+    QString getFullName() const;
     QString getComponentName();
     QString getPortName();
     QString getDataName();
     QString getDataUnit();
+    QString getAliasName();
 
 private:
-    QString mComponentName;
-    QString mPortName;
-    QString mDataName;
-    QString mDataUnit;
+    LogVariableData *mpData;
 };
 
 
@@ -91,12 +91,9 @@ class PlotVariableTree : public QTreeWidget
     friend class PlotTreeWidget;
 public:
     PlotVariableTree(MainWindow *parent = 0);
-    PlotWindow *createPlotWindow(QString componentName, QString portName, QString dataName, QString dataUnit, QColor desiredColor=QColor());
-    PlotWindow *createPlotWindow(QVector<double> xVector, QVector<double> yVector, int axis, QString componentName, QString portName, QString dataName, QString dataUnit);
-    PlotWindow *getPlotWindow(int number);
-    PlotWindow *getLastPlotWindow();
-    void closeLastPlotWindow();
-    void refreshLastPlotWindow();
+    PlotWindow *createPlotWindow(LogVariableData *pData, QColor desiredColor=QColor(), QString name="");
+    PlotWindow *createPlotWindow(QVector<double> xVector, QVector<double> yVector, int axis, QString componentName, QString portName, QString dataName, QString dataUnit, QString name="");
+    PlotWindow *getPlotWindow(QString name);
     void reportClosedPlotWindow(PlotWindow *window);
 
     //MainWindow *mpParentMainWindow;
@@ -115,7 +112,7 @@ public slots:
 
 private:
     QList<VariableDescription> mAvailableVariables;
-    QList<PlotWindow *> mOpenPlotWindows;
+    QMap<QString, PlotWindow*> mOpenPlotWindows;
 };
 
 

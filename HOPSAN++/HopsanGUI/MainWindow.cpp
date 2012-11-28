@@ -81,8 +81,21 @@ MainWindow::MainWindow(QWidget *parent)
     mpMessageDock->setWidget(mpMessageWidget);
     mpMessageDock->setFeatures(QDockWidget::DockWidgetVerticalTitleBar | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
     addDockWidget(Qt::BottomDockWidgetArea, mpMessageDock);
-    mpMessageWidget->checkMessages();
-    mpMessageWidget->printGUIInfoMessage(tr("HopsanGUI, Version: ") + QString(HOPSANGUIVERSION));
+    mpMessageDock->hide();
+    //mpMessageWidget->checkMessages();
+    //mpMessageWidget->printGUIInfoMessage(tr("HopsanGUI, Version: ") + QString(HOPSANGUIVERSION));
+
+    //Create the terminal widget
+    mpTerminalDock = new QDockWidget(tr("Terminal"), this);
+    mpTerminalDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
+    mpTerminalWidget = new TerminalWidget(this);
+    mpTerminalWidget->mpConsole->printFirstInfo();
+    mpTerminalDock->setWidget(mpTerminalWidget);
+    mpTerminalDock->setFeatures(QDockWidget::DockWidgetVerticalTitleBar | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
+    addDockWidget(Qt::BottomDockWidgetArea, mpTerminalDock);
+
+    mpTerminalWidget->checkMessages();
+    mpTerminalWidget->mpConsole->printInfoMessage("HopsanGUI, Version: " + QString(HOPSANGUIVERSION));
 
     //Load configuration from settings file
     gConfig.loadFromXml();      //!< @todo This does not really belong in main window constructor, but it depends on main window so keep it for now
@@ -177,23 +190,15 @@ MainWindow::MainWindow(QWidget *parent)
     mpUndoWidgetDock->hide();
     addDockWidget(Qt::RightDockWidgetArea, mpUndoWidgetDock);
 
-    //Create the HCOM widget
-    mpHcomDock = new QDockWidget(tr("HCOM Terminal"), this);
-    mpHcomDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);
-    mpHcomWidget = new HcomWidget(this);
-    mpHcomDock->setWidget(mpHcomWidget);
-    mpHcomDock->setFeatures(QDockWidget::DockWidgetVerticalTitleBar | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
-    addDockWidget(Qt::BottomDockWidgetArea, mpHcomDock);
-
-
     //Make dock widgets that share same dock area tabified, instead of stacking them above each other
     tabifyDockWidget(mpPlotWidgetDock, mpSystemParametersDock);
     tabifyDockWidget(mpSystemParametersDock, mpUndoWidgetDock);
     tabifyDockWidget(mpUndoWidgetDock, mpPlotWidgetDock);
 
+    tabifyDockWidget(mpTerminalDock, mpPyDockWidget);
     tabifyDockWidget(mpPyDockWidget, mpMessageDock);
-    tabifyDockWidget(mpMessageDock, mpHcomDock);
-    tabifyDockWidget(mpHcomDock, mpPyDockWidget);
+    tabifyDockWidget(mpMessageDock, mpTerminalDock);
+
 
     //Initialize the help message popup
     mpHelpPopup = new QWidget(this);
@@ -234,9 +239,10 @@ MainWindow::MainWindow(QWidget *parent)
     this->createToolbars();
     this->createMenus();
 
-    connect(mpCopyAction, SIGNAL(triggered()), mpMessageWidget, SLOT(copy()));
+   // connect(mpCopyAction, SIGNAL(triggered()), mpMessageWidget, SLOT(copy()));
+    connect(mpCopyAction, SIGNAL(triggered()), mpTerminalWidget->mpConsole, SLOT(copy()));
 
-    mpMessageWidget->loadConfig();
+    mpTerminalWidget->loadConfig();
 
     initializeWorkspace();
 
@@ -372,6 +378,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
         event->ignore();
     }
 
+    mpTerminalWidget->saveConfig();
+
     //this->saveSettings();
     gConfig.saveToXml();
 }
@@ -427,6 +435,10 @@ void MainWindow::createActions()
     mpSaveAsAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SaveAs.png"), tr("&Save As"), this);
     mpSaveAsAction->setShortcut(QKeySequence("Ctrl+Alt+s"));
     mpSaveAsAction->setToolTip(tr("Save Model File As (Ctrl+Alt+S)"));
+
+    mpExportModelAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SaveAs.png"), tr("&Export"), this);
+    mpExportModelAction->setShortcut(QKeySequence("Ctrl+Alt+E"));
+    mpExportModelAction->setToolTip(tr("Export Model Parameters (Ctrl+Alt+P)"));
 
     mpCloseAction = new QAction(this);
     mpCloseAction->setText("Close");
@@ -704,6 +716,7 @@ void MainWindow::createMenus()
     mpFileMenu->addAction(mpOpenAction);
     mpFileMenu->addAction(mpSaveAction);
     mpFileMenu->addAction(mpSaveAsAction);
+    mpFileMenu->addAction(mpExportModelAction);
     mpFileMenu->addMenu(mpRecentMenu);
     //mpFileMenu->addSeparator();
     //mpFileMenu->addMenu(mpImportMenu);
@@ -743,6 +756,7 @@ void MainWindow::createMenus()
     mpViewMenu->addAction(mpLibDock->toggleViewAction());
     mpViewMenu->addAction(mpEditToolBar->toggleViewAction());
     mpViewMenu->addAction(mpFileToolBar->toggleViewAction());
+    mpViewMenu->addAction(mpTerminalDock->toggleViewAction());
     mpViewMenu->addAction(mpConnectivityToolBar->toggleViewAction());
     mpViewMenu->addAction(mpMessageDock->toggleViewAction());
     mpViewMenu->addAction(mpPyDockWidget->toggleViewAction());
@@ -775,6 +789,7 @@ void MainWindow::createToolbars()
     mpFileToolBar->addAction(mpNewAction);
     mpFileToolBar->addAction(mpOpenAction);
     mpFileToolBar->addAction(mpSaveAction);
+    mpFileToolBar->addAction(mpExportModelAction);
     mpFileToolBar->addAction(mpSaveAsAction);
 
     mpConnectivityToolBar = addToolBar(tr("Import/Export Toolbar)"));
@@ -1110,7 +1125,7 @@ void MainWindow::commenceAutoUpdate(QNetworkReply* reply)
     QUrl url = reply->url();
     if (reply->error())
     {
-        mpMessageWidget->printGUIErrorMessage("Download of " + QString(url.toEncoded().constData()) + "failed: "+reply->errorString()+"\n");
+        mpTerminalWidget->mpConsole->printErrorMessage("Download of " + QString(url.toEncoded().constData()) + "failed: "+reply->errorString()+"\n");
         qDebug() << "Dewnlewd Prewblem";
         return;
     }
@@ -1118,7 +1133,7 @@ void MainWindow::commenceAutoUpdate(QNetworkReply* reply)
     {
         QFile file(QString(DATAPATH)+"/update.exe");
         if (!file.open(QIODevice::WriteOnly)) {
-            mpMessageWidget->printGUIErrorMessage("Could not open update.exe for writing.");
+            mpTerminalWidget->mpConsole->printErrorMessage("Could not open update.exe for writing.");
             qDebug() << "Feil Prewblem";
             return;
         }
@@ -1146,6 +1161,7 @@ void MainWindow::updateToolBarsToNewTab()
     bool noTabs = !(mpProjectTabs->count() > 0);
     mpSaveAction->setEnabled(!noTabs);
     mpSaveAsAction->setEnabled(!noTabs);
+    mpExportModelAction->setEnabled(!noTabs);
     mpCutAction->setEnabled(!noTabs);
     mpCopyAction->setEnabled(!noTabs);
     mpPasteAction->setEnabled(!noTabs);
@@ -1236,6 +1252,14 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
     }
 
     QMainWindow::mouseMoveEvent(event);
+}
+
+
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    qDebug() << "Mainwindow caught keypress: " << event->key();
+
+    QMainWindow::keyPressEvent(event);
 }
 
 

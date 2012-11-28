@@ -31,11 +31,16 @@
 #include <QDateTime>
 #include <QStandardItemModel>
 #include <cassert>
+#include <QtGlobal>
+#include <qwt_plot_legenditem.h>
+
+
 
 #include <cstring>
 #include <limits>
 #include <complex>
 
+#include "GUIObjects/GUIContainerObject.h"
 #include "Widgets/PlotWidget.h"
 #include "Widgets/MessageWidget.h"
 #include "Widgets/HcomWidget.h"
@@ -57,11 +62,22 @@
 #include "qwt_plot_renderer.h"
 #include "qwt_scale_map.h"
 #include "qwt_plot.h"
+//#include "qwt_legend_item.h"
+#include "qwt_legend.h"
+//#include "q_layout.h"
+#include "qwt_scale_draw.h"
+#include "qwt_scale_widget.h"
+#include <qwt_dyngrid_layout.h>
+#include <QtGui>
+
 
 #include "Dependencies/BarChartPlotter/barchartplotter.h"
 #include "Dependencies/BarChartPlotter/axisbase.h"
 
+
 const double DBLMAX = std::numeric_limits<double>::max();
+
+
 
 //! @brief Constructor for the plot window, where plots are displayed.
 //! @param plotVariableTree is a pointer to the variable tree from where the plot window was created
@@ -70,14 +86,22 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
     : QMainWindow(parent)
 
 {
+
+    // Set Window attributes
     setAttribute(Qt::WA_DeleteOnClose, true);
     setAttribute(Qt::WA_MouseTracking, true);
 
-    setWindowTitle("Hopsan Plot Window");
+    // Set name of Window from the container object
+    QString modelPathway = gpMainWindow->mpProjectTabs->getCurrentContainer()->getModelFileInfo().filePath();
+    QFileInfo fi(modelPathway);
+    QString namer = fi.baseName();
+    setWindowTitle(QString(namer) + " Plot");
+
     //setAcceptDrops(false);
     //setAttribute(Qt::WA_TransparentForMouseEvents, false);
     setPalette(gConfig.getPalette());
 
+    // Set size of Window
     int sh = qApp->desktop()->screenGeometry().height();
     int sw = qApp->desktop()->screenGeometry().width();
     resize(sw*0.7, sh*0.7);   //Resize plot window to 70% of screen height and width
@@ -89,13 +113,29 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
 
     mpPlotVariableTree = plotVariableTree;
 
-        //Create the toolbar and its buttons
+    //Create the toolbar and its buttons
     mpToolBar = new QToolBar(this);
 
     mpNewPlotButton = new QAction(this);
     mpNewPlotButton->setToolTip("Create New Plot");
     mpNewPlotButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-NewPlot.png"));
     connect(mpNewPlotButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+
+    mpArrowButton = new QAction(this);
+    mpArrowButton->setToolTip("Arrow (P)");
+    mpArrowButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Pointer.png"));
+    mpArrowButton->setCheckable((true));
+    mpArrowButton->setShortcut(QKeySequence("p"));
+    //! @todo Check short cut if to confirm if there is a conflict or not
+    connect(mpArrowButton, SIGNAL(hovered()),this, SLOT(showToolBarHelpPopup()));
+
+    mpLegendButton = new QAction(this);
+    mpLegendButton->setToolTip("Legend (L)");
+    mpLegendButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotLegends.png"));
+    //mpLegendButton->setCheckable((true));
+    mpLegendButton->setShortcut(QKeySequence("p"));
+    //! @todo Check short cut if to confirm if there is a conflict or not
+    connect(mpLegendButton, SIGNAL(hovered()),this, SLOT(showToolBarHelpPopup()));
 
     mpZoomButton = new QAction(this);
     mpZoomButton->setToolTip("Zoom (Z)");
@@ -117,11 +157,19 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
     mpSaveButton->setShortcut(QKeySequence("Ctrl+s"));
     connect(mpSaveButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
+    mpImportClassicData = new QAction(this);
+    mpImportClassicData->setToolTip("Import from Old Hopsan File (.plo)");
+    mpImportClassicData->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ExportPlot.png"));
+    mpImportClassicData->setShortcut(QKeySequence("Ctrl+I"));
+    connect(mpImportClassicData, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+
+
     mpExportToXmlAction = new QAction("Export to Extensible Markup Language File (.xml)", mpToolBar);
     mpExportToCsvAction = new QAction("Export to Comma-Separeted Values File (.csv)", mpToolBar);
     mpExportToHvcAction = new QAction("Export to Hopsan Validation Files (.hvc and .csv)", mpToolBar);
     mpExportToMatlabAction = new QAction("Export to Matlab Script File (.m)", mpToolBar);
     mpExportToGnuplotAction = new QAction("Export to gnuplot data file(.dat)", mpToolBar);
+    mpExportToOldHopAction = new QAction("Export to Hopsan Classic file(.plo)", mpToolBar);
 
     mpExportMenu = new QMenu(mpToolBar);
     mpExportMenu->addAction(mpExportToXmlAction);
@@ -129,6 +177,7 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
     mpExportMenu->addAction(mpExportToHvcAction);
     mpExportMenu->addAction(mpExportToMatlabAction);
     mpExportMenu->addAction(mpExportToGnuplotAction);
+    mpExportMenu->addAction(mpExportToOldHopAction);
 
     mpExportButton = new QToolButton(mpToolBar);
     mpExportButton->setToolTip("Export Plot Tab");
@@ -139,10 +188,13 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
 
     mpExportPdfAction = new QAction("Export to PDF", mpToolBar);
     mpExportPngAction = new QAction("Export to PNG", mpToolBar);
+    //mpExportToGraphicsAction = new QAction("Export to Graphics", mpToolBar);
+
 
     mpExportGfxMenu = new QMenu(mpToolBar);
     mpExportGfxMenu->addAction(mpExportPdfAction);
     mpExportGfxMenu->addAction(mpExportPngAction);
+//    mpExportGfxMenu->addAction(mpExportToGraphicsAction);
 
     mpExportGfxButton = new QToolButton(mpToolBar);
     mpExportGfxButton->setToolTip("Export to Graphics File");
@@ -177,12 +229,19 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
     mpShowCurveInfoButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowLists.png"));
     connect(mpShowCurveInfoButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpShowLegendsAction = new QAction(this);
-    mpShowLegendsAction->setCheckable(true);
-    mpShowLegendsAction->setChecked(true);
-    mpShowLegendsAction->setToolTip("Toggle Legends");
-    mpShowLegendsAction->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotLegends.png"));
-    connect(mpShowLegendsAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    //    mpShowLegendsAction = new QAction(this);
+    //    mpShowLegendsAction->setCheckable(true);
+    //    mpShowLegendsAction->setChecked(true);
+    //    mpShowLegendsAction->setToolTip("Toggle Legends");
+    //    mpShowLegendsAction->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotLegends.png"));
+    //    connect(mpShowLegendsAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+
+    mpLocktheAxis = new QAction(this);
+    //mpLocktheAxis->setCheckable(true);
+    //mpLocktheAxis->setChecked(true);
+    mpLocktheAxis->setToolTip("Lock Axis");
+    mpLocktheAxis->setIcon(QIcon(QString(ICONPATH) + "Hopsan-PlotCurveScale.png"));
+    connect(mpLocktheAxis, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpShowPlotWidgetButton = new QAction(this);
     mpShowPlotWidgetButton->setCheckable(true);
@@ -210,9 +269,11 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
     mpToolBar->addAction(mpNewPlotButton);
     mpToolBar->addAction(mpLoadFromXmlButton);
     mpToolBar->addAction(mpSaveButton);
+    mpToolBar->addAction(mpImportClassicData);
     mpToolBar->addWidget(mpExportButton);
     mpToolBar->addWidget(mpExportGfxButton);
     mpToolBar->addSeparator();
+    mpToolBar->addAction(mpArrowButton);
     mpToolBar->addAction(mpZoomButton);
     mpToolBar->addAction(mpPanButton);
     mpToolBar->addAction(mpGridButton);
@@ -222,7 +283,9 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
     mpToolBar->addSeparator();
     mpToolBar->addAction(mpShowCurveInfoButton);
     mpToolBar->addAction(mpShowPlotWidgetButton);
-    mpToolBar->addAction(mpShowLegendsAction);
+    // mpToolBar->addAction(mpShowLegendsAction);
+    mpToolBar->addAction(mpLegendButton);
+    mpToolBar->addAction(mpLocktheAxis);
     mpToolBar->addAction(mpNewWindowFromTabButton);
     mpToolBar->setMouseTracking(true);
 
@@ -259,21 +322,51 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
 
     mpPlotInfoLayout = new QVBoxLayout();
     mpPlotInfoWidget = new QWidget();
+
+    mpPlotInfoWidget->setAutoFillBackground(true);
+    mpPlotInfoWidget->setPalette(gConfig.getPalette());
+    mpPlotInfoLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+    mpPlotInfoLayout->setSpacing(1);
+    mpPlotInfoLayout->setMargin(1);
+
     mpPlotInfoWidget->setLayout(mpPlotInfoLayout);
-    mpPlotInfoWidget->hide();
+
+    mpPlotInfoScrollArea = new QScrollArea();
+    mpPlotInfoScrollArea->setWidget(mpPlotInfoWidget);
+    mpPlotInfoScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    mpPlotInfoScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    mpPlotInfoScrollArea->setPalette(gConfig.getPalette());
+
+    QDockWidget *pInfoxBoxWidgetDock= new QDockWidget(tr("Plot InfoBox"), this);
+    pInfoxBoxWidgetDock->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
+    addDockWidget(Qt::BottomDockWidgetArea, pInfoxBoxWidgetDock);
+    pInfoxBoxWidgetDock->setWidget(mpPlotInfoScrollArea);
+    pInfoxBoxWidgetDock->setFeatures(QDockWidget::AllDockWidgetFeatures);
+    pInfoxBoxWidgetDock->setPalette(gConfig.getPalette());
+    pInfoxBoxWidgetDock->setMinimumHeight(120);
+
+
+
+    pInfoxBoxWidgetDock->show();
+
+
+
 
     this->setDockOptions(QMainWindow::AllowNestedDocks);
 
     mpLayout = new QGridLayout(this);
     mpLayout->addWidget(mpPlotTabs,0,0,2,4);
     mpLayout->addWidget(mpHelpPopup, 0,0,1,4);
-    mpLayout->addWidget(mpPlotInfoWidget, 2, 0, 1, 4);
+    //mpLayout->addWidget(ptableWidgetDock,0,0,8,1);
+    //mpLayout->addWidget(mpPlotInfoWidget, 2, 0, 1, 1);
+
+    //setLayout(mpLayout);
 
     //Set the correct position of the help popup message in the central widget
-    mpLayout->setColumnMinimumWidth(0,5);
+    mpLayout->setColumnMinimumWidth(0,2);
     mpLayout->setColumnStretch(0,0);
     mpLayout->setColumnStretch(1,1);
-    mpLayout->setRowMinimumHeight(0,25);
+    mpLayout->setRowMinimumHeight(0,2);
     mpLayout->setRowStretch(0,0);
     mpLayout->setRowStretch(1,1);
     mpLayout->setRowStretch(2,0);
@@ -289,17 +382,18 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
     pPlotWidgetDock->setWidget(pLocalPlotWidget);
     pLocalPlotWidget->mpPlotVariableTree->updateList();
 
-        //Establish signal and slots connections
+    //Establish signal and slots connections
     connect(mpNewPlotButton,                    SIGNAL(triggered()),        this,               SLOT(addPlotTab()));
     connect(mpLoadFromXmlButton,                SIGNAL(triggered()),        this,               SLOT(loadFromXml()));
+    connect(mpImportClassicData,                SIGNAL(triggered()),        this,               SLOT(ImportPlo()));
     connect(mpSaveButton,                       SIGNAL(triggered()),        this,               SLOT(saveToXml()));
     connect(mpBodePlotButton,                   SIGNAL(triggered()),        this,               SLOT(createBodePlot()));
     connect(mpNewWindowFromTabButton,           SIGNAL(triggered()),        this,               SLOT(createPlotWindowFromTab()));
     connect(gpMainWindow->getOptionsDialog(),   SIGNAL(paletteChanged()),   this,               SLOT(updatePalette()));
     connect(mpShowPlotWidgetButton,             SIGNAL(toggled(bool)),      pPlotWidgetDock,    SLOT(setVisible(bool)));
-    connect(mpShowLegendsAction,                SIGNAL(toggled(bool)),      this,               SLOT(setLegendsVisible(bool)));
+    connect(mpShowCurveInfoButton,              SIGNAL(toggled(bool)),      pInfoxBoxWidgetDock,SLOT(setVisible(bool)));
 
-        //Hide lists and curve areas by default if screen size is small
+    //Hide lists and curve areas by default if screen size is small
     if(sh*sw <= 800*1280)
     {
         mpShowCurveInfoButton->toggle();
@@ -307,12 +401,22 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
     }
 
     this->setMouseTracking(true);
+
+}
+
+PlotWindow::~PlotWindow()
+{
+    //! @todo should close tabs here before window is closed
+    while (mpPlotTabs->getTab(0)!=0)
+    {
+        mpPlotTabs->closePlotTab(0);
+    }
 }
 
 
-void PlotWindow::changeXVector(QVector<double> xarray, QString componentName, QString portName, QString dataName, QString dataUnit)
+void PlotWindow::changeXVector(QVector<double> xarray, VariableDescription &rVarDesc)
 {
-    getCurrentPlotTab()->changeXVector(xarray, componentName, portName, dataName, dataUnit, FIRSTPLOT);
+    getCurrentPlotTab()->changeXVector(xarray, rVarDesc, FIRSTPLOT);
 }
 
 
@@ -349,6 +453,8 @@ void PlotWindow::addPlotTab(QString requestedName)
     mpPlotTabs->addTab(mpNewTab, tabName);
 
     mpPlotTabs->setCurrentIndex(mpPlotTabs->count()-1);
+
+
 }
 
 
@@ -394,12 +500,16 @@ void PlotWindow::hideHelpPopupMessage()
 //! @param portName Name of port where variable is located
 //! @param dataName Name of variable
 //! @param dataUnit Unit of variable
-void PlotWindow::addPlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit, int axisY, QString modelPath, QColor desiredColor)
+void PlotWindow::addPlotCurve(LogVariableData *pData, int axisY, QString modelPath, QColor desiredColor)
 {
-    if(dataUnit.isEmpty()) { dataUnit = gConfig.getDefaultUnit(dataName); }
-    PlotCurve *pTempCurve = new PlotCurve(generation, componentName, portName, dataName, dataUnit, axisY, modelPath, getCurrentPlotTab());
+    //    if(dataUnit.isEmpty())
+    //    {
+    //        dataUnit = gConfig.getDefaultUnit(dataName);
+    //    }
+    PlotCurve *pTempCurve = new PlotCurve(pData, axisY, modelPath, getCurrentPlotTab());
     getCurrentPlotTab()->addCurve(pTempCurve, desiredColor);
     pTempCurve->updatePlotInfoVisibility();
+
 }
 
 
@@ -408,12 +518,23 @@ void PlotWindow::addBarChart(QStandardItemModel *pItemModel)
     getCurrentPlotTab()->addBarChart(pItemModel);
 }
 
+//! @brief Imports .Plo files from Old Hopsan
+//! Imports Plot Data Only
+
+void PlotWindow::ImportPlo()
+{
+    LogDataHandler *pAllData = gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr();
+    pAllData->importFromPlo();
+
+    gpMainWindow->mpPlotWidget->mpPlotVariableTree->updateList();
+    mpPlotVariableTree->updateList();
+}
 
 //! @brief Saves the plot window to XML
 //! All generations of all open curves will be saved, together with all cosmetic information about the plot window.
 void PlotWindow::saveToXml()
 {
-        //Open file dialog and initialize the file stream
+    //Open file dialog and initialize the file stream
     QDir fileDialogSaveDir;
     QString filePath = QFileDialog::getSaveFileName(this, tr("Save Plot Window Description to XML"),
                                                     gConfig.getPlotWindowDir(),
@@ -428,8 +549,7 @@ void PlotWindow::saveToXml()
         gConfig.setPlotWindowDir(fileInfo.absolutePath());
     }
 
-
-        //Write to xml file
+    //Write to xml file
     QDomDocument domDocument;
     QDomElement xmlRootElement = domDocument.createElement("hopsanplot");
     domDocument.appendChild(xmlRootElement);
@@ -446,7 +566,7 @@ void PlotWindow::saveToXml()
     timeElement.setAttribute("minute", time.minute());
     timeElement.setAttribute("second", time.second());
 
-        //Add tab elements
+    //Add tab elements
     for(int i=0; i<mpPlotTabs->count(); ++i)
     {
         QDomElement tabElement = appendDomElement(xmlRootElement,"plottab");
@@ -463,26 +583,28 @@ void PlotWindow::saveToXml()
         if(mpPlotTabs->getTab(i)->mHasSpecialXAxis)
         {
             QDomElement specialXElement = appendDomElement(tabElement,"specialx");
-            specialXElement.setAttribute("generation",  mpPlotTabs->getTab(i)->mVectorXGeneration);
-            specialXElement.setAttribute("component",   mpPlotTabs->getTab(i)->mVectorXComponent);
-            specialXElement.setAttribute("port",        mpPlotTabs->getTab(i)->mVectorXPortName);
-            specialXElement.setAttribute("data",        mpPlotTabs->getTab(i)->mVectorXDataName);
-            specialXElement.setAttribute("unit",        mpPlotTabs->getTab(i)->mVectorXDataUnit);
-            specialXElement.setAttribute("model",       mpPlotTabs->getTab(i)->mVectorXModelPath);
+            //! @todo FIXA /Peter
+            //specialXElement.setAttribute("generation",  mpPlotTabs->getTab(i)->mVectorXGeneration);
+            specialXElement.setAttribute("component",   mpPlotTabs->getTab(i)->mSpecialXVectorDescription.mComponentName);
+            specialXElement.setAttribute("port",        mpPlotTabs->getTab(i)->mSpecialXVectorDescription.mPortName);
+            specialXElement.setAttribute("data",        mpPlotTabs->getTab(i)->mSpecialXVectorDescription.mDataName);
+            specialXElement.setAttribute("unit",        mpPlotTabs->getTab(i)->mSpecialXVectorDescription.mDataUnit);
+            specialXElement.setAttribute("model",       mpPlotTabs->getTab(i)->mSpecialXVectorModelPath);
         }
 
-            //Add curve elements
+        //Add curve elements
         for(int j=0; j<mpPlotTabs->getTab(i)->getCurves().size(); ++j)
         {
             QDomElement curveElement = appendDomElement(tabElement,"curve");
-            curveElement.setAttribute("generation", mpPlotTabs->getTab(i)->getCurves().at(j)->getGeneration());
+            //! @todo FIXA /Peter
+            //curveElement.setAttribute("generation", mpPlotTabs->getTab(i)->getCurves().at(j)->getGeneration());
             curveElement.setAttribute("component",  mpPlotTabs->getTab(i)->getCurves().at(j)->getComponentName());
             curveElement.setAttribute("port",       mpPlotTabs->getTab(i)->getCurves().at(j)->getPortName());
             curveElement.setAttribute("data",       mpPlotTabs->getTab(i)->getCurves().at(j)->getDataName());
             curveElement.setAttribute("unit",       mpPlotTabs->getTab(i)->getCurves().at(j)->getDataUnit());
             curveElement.setAttribute("axis",       mpPlotTabs->getTab(i)->getCurves().at(j)->getAxisY());
-            curveElement.setAttribute("width",      mpPlotTabs->getTab(i)->getCurves().at(j)->getCurvePtr()->pen().width());
-            curveElement.setAttribute("color",      makeRgbString(mpPlotTabs->getTab(i)->getCurves().at(j)->getCurvePtr()->pen().color()));
+            curveElement.setAttribute("width",      mpPlotTabs->getTab(i)->getCurves().at(j)->getQwtPlotCurvePtr()->pen().width());
+            curveElement.setAttribute("color",      makeRgbString(mpPlotTabs->getTab(i)->getCurves().at(j)->getQwtPlotCurvePtr()->pen().color()));
             curveElement.setAttribute("model",      mpPlotTabs->getTab(i)->getCurves().at(j)->getContainerObjectPtr()->getModelFileInfo().filePath());
         }
     }
@@ -508,7 +630,53 @@ void PlotWindow::loadFromXml()
     gpMainWindow->mpPlotWidget->loadFromXml();
 }
 
+//! @todo currently only supports settings axis for top plot
+void PlotTab::openAxisSettingsDialog()
+{
+    mpXminSpinBox->setValue(mAxisLimits[FIRSTPLOT].xbMin);
+    mpXmaxSpinBox->setValue(mAxisLimits[FIRSTPLOT].xbMax);
 
+    mpYLminSpinBox->setValue(mAxisLimits[FIRSTPLOT].yLMin);
+    mpYLmaxSpinBox->setValue(mAxisLimits[FIRSTPLOT].yLMax);
+
+    mpYRminSpinBox->setValue(mAxisLimits[FIRSTPLOT].yRMin);
+    mpYRmaxSpinBox->setValue(mAxisLimits[FIRSTPLOT].yRMax);
+
+    mpSetAxisDialog->exec();
+}
+
+//! @todo currently only supports settings axis for top plot
+void PlotTab::applyAxisSettings()
+{
+    //If a box is checked for axis lcok then set axis value AND remember the value since we do not know how to ask for it later
+
+    if(mpXbSetLockCheckBox->isChecked())
+    {
+        this->getPlot(FIRSTPLOT)->setAxisScale(QwtPlot::xBottom, mpXminSpinBox->value(),mpXmaxSpinBox->value());
+        mAxisLimits[FIRSTPLOT].xbMin = mpXminSpinBox->value();
+        mAxisLimits[FIRSTPLOT].xbMax = mpXmaxSpinBox->value();
+    }
+
+    if(mpYLSetLockCheckBox->isChecked())
+    {
+        this->getPlot(FIRSTPLOT)->setAxisScale(QwtPlot::yLeft, mpYLminSpinBox->value(),mpYLmaxSpinBox->value());
+        mAxisLimits[FIRSTPLOT].yLMin = mpYLminSpinBox->value();
+        mAxisLimits[FIRSTPLOT].yLMax = mpYLmaxSpinBox->value();
+    }
+
+    if(mpYRSetLockCheckBox->isChecked())
+    {
+        this->getPlot(FIRSTPLOT)->setAxisScale(QwtPlot::yRight, mpYRminSpinBox->value(),mpYRmaxSpinBox->value());
+        mAxisLimits[FIRSTPLOT].yRMin = mpYRminSpinBox->value();
+        mAxisLimits[FIRSTPLOT].yRMax = mpYRmaxSpinBox->value();
+    }
+
+    // If anyone of the boxes are not checked we call rescale in case we just unchecked it as it needs to auto refresh
+    if (!mpXbSetLockCheckBox->isChecked() || !mpYLSetLockCheckBox->isChecked() || !mpYRSetLockCheckBox->isChecked())
+    {
+        this->rescaleToCurves();
+    }
+}
 void PlotWindow::performFrequencyAnalysis(PlotCurve *curve)
 {
     mpFrequencyAnalysisCurve = curve;
@@ -560,15 +728,18 @@ void PlotWindow::performFrequencyAnalysisFromDialog()
     addPlotTab();
     getCurrentPlotTab()->getPlot()->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
     getCurrentPlotTab()->updateLabels();
-    PlotCurve *pNewCurve = new PlotCurve(mpFrequencyAnalysisCurve->getGeneration(), mpFrequencyAnalysisCurve->getComponentName(), mpFrequencyAnalysisCurve->getPortName(), mpFrequencyAnalysisCurve->getDataName(), mpFrequencyAnalysisCurve->getDataUnit(), mpFrequencyAnalysisCurve->getAxisY(), mpFrequencyAnalysisCurve->getContainerObjectPtr()->getModelFileInfo().filePath(), getCurrentPlotTab(), FIRSTPLOT, FREQUENCYANALYSIS);
+    PlotCurve *pNewCurve = new PlotCurve(mpFrequencyAnalysisCurve->getPlotLogDataVariable(),
+                                         mpFrequencyAnalysisCurve->getAxisY(),
+                                         mpFrequencyAnalysisCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
+                                         getCurrentPlotTab(), FIRSTPLOT, FREQUENCYANALYSIS);
     getCurrentPlotTab()->addCurve(pNewCurve);
     pNewCurve->toFrequencySpectrum();
     pNewCurve->updatePlotInfoVisibility();
     //! @todo Make logged axis an option for user
     if(mpLogScaleCheckBox->isChecked())
     {
-        getCurrentPlotTab()->getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::yLeft, new QwtLog10ScaleEngine);
-        getCurrentPlotTab()->getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLog10ScaleEngine);
+        getCurrentPlotTab()->getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::yLeft, new QwtLogScaleEngine(10));
+        getCurrentPlotTab()->getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLogScaleEngine(10));
     }
     getCurrentPlotTab()->rescaleToCurves();
 }
@@ -776,39 +947,49 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
 
 
     addPlotTab("Nyquist Plot");
-    PlotCurve *pNyquistCurve1 = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
-                                        pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
-                                        getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
+    //    PlotCurve *pNyquistCurve1 = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
+    //                                        pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
+    //                                        getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
+    PlotCurve *pNyquistCurve1 = new PlotCurve(pOutputCurve->getPlotLogDataVariable()->getVariableDescription(),
+                                              vRe, vIm, pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
+                                              getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
     getCurrentPlotTab()->addCurve(pNyquistCurve1);
-    pNyquistCurve1->setData(vIm, vRe);
     pNyquistCurve1->updatePlotInfoVisibility();
-    PlotCurve *pNyquistCurve2 = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
-                                        pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
-                                        getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
+    //    PlotCurve *pNyquistCurve2 = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
+    //                                        pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
+    //                                        getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
+    PlotCurve *pNyquistCurve2 = new PlotCurve(pOutputCurve->getPlotLogDataVariable()->getVariableDescription(),
+                                              vRe, vImNeg, pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
+                                              getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
     getCurrentPlotTab()->addCurve(pNyquistCurve2);
-    pNyquistCurve2->setData(vImNeg, vRe);
     pNyquistCurve2->updatePlotInfoVisibility();
     getCurrentPlotTab()->getPlot()->replot();
     getCurrentPlotTab()->rescaleToCurves();
+    getCurrentPlotTab()->updateGeometry();
 
     addPlotTab("Bode Diagram");
-    PlotCurve *pGainCurve = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
-                                          pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
+    //    PlotCurve *pGainCurve = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
+    //                                          pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
+    //                                          getCurrentPlotTab(), FIRSTPLOT, BODEGAIN);
+    PlotCurve *pGainCurve = new PlotCurve(pOutputCurve->getPlotLogDataVariable()->getVariableDescription(),
+                                          F, vBodeGain, pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
                                           getCurrentPlotTab(), FIRSTPLOT, BODEGAIN);
     getCurrentPlotTab()->addCurve(pGainCurve);
-    pGainCurve->setData(vBodeGain, F);
     pGainCurve->updatePlotInfoVisibility();
 
-    PlotCurve *pPhaseCurve = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
-                                          pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
-                                          getCurrentPlotTab(), SECONDPLOT, BODEPHASE);
+    //    PlotCurve *pPhaseCurve = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
+    //                                          pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
+    //                                          getCurrentPlotTab(), SECONDPLOT, BODEPHASE);
+    PlotCurve *pPhaseCurve = new PlotCurve(pOutputCurve->getPlotLogDataVariable()->getVariableDescription(),
+                                           F, vBodePhase, pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
+                                           getCurrentPlotTab(), SECONDPLOT, BODEPHASE);
     getCurrentPlotTab()->addCurve(pPhaseCurve, QColor(), SECONDPLOT);
-    pPhaseCurve->setData(vBodePhase, F);
     pPhaseCurve->updatePlotInfoVisibility();
 
     getCurrentPlotTab()->showPlot(SECONDPLOT, true);
     getCurrentPlotTab()->getPlot(FIRSTPLOT)->replot();
     getCurrentPlotTab()->getPlot(SECONDPLOT)->replot();
+    getCurrentPlotTab()->updateGeometry();
 
     //getCurrentPlotTab()->getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::yLeft, new QwtLog10ScaleEngine);
     getCurrentPlotTab()->setBottomAxisLogarithmic(true);
@@ -855,6 +1036,10 @@ void PlotWindow::showToolBarHelpPopup()
     {
         showHelpPopupMessage("Performs transfer function analysis to generate nyquist plot and bode diagram.");
     }
+    else if(pHoveredAction == mpArrowButton)
+    {
+        showHelpPopupMessage("Enables to select/revert-back-to the Arrow Pointer.");
+    }
     else if(pHoveredAction == mpZoomButton)
     {
         showHelpPopupMessage("Enable zooming tool.");
@@ -895,6 +1080,18 @@ void PlotWindow::showToolBarHelpPopup()
     {
         showHelpPopupMessage("Show/hide plot curve control panel.");
     }
+    else if(pHoveredAction == mpImportClassicData)
+    {
+        showHelpPopupMessage("Import Data from Old Hopsan.");
+    }
+    else if(pHoveredAction == mpLegendButton)
+    {
+        showHelpPopupMessage("Legend settings.");
+    }
+    else if(pHoveredAction == mpLocktheAxis)
+    {
+        showHelpPopupMessage("Lock Axis.");
+    }
 }
 
 
@@ -932,7 +1129,6 @@ void PlotWindow::hideCurveInfo()
 
 void PlotWindow::setLegendsVisible(bool value)
 {
-    mLegendsVisible = value;
     for(int i=0; i<mpPlotTabs->count(); ++i)
     {
         mpPlotTabs->getTab(i)->setLegendsVisible(value);
@@ -949,10 +1145,10 @@ void PlotWindow::mouseMoveEvent(QMouseEvent *event)
 
 
 //! @brief Reimplementation of close function for plot window. Notifies plot widget that window no longer exists.
-void PlotWindow::close()
+void PlotWindow::closeEvent(QCloseEvent *event)
 {
     gpMainWindow->mpPlotWidget->mpPlotVariableTree->reportClosedPlotWindow(this);
-    QMainWindow::close();
+    event->accept();
 }
 
 
@@ -970,7 +1166,8 @@ void PlotWindow::createPlotWindowFromTab()
     pPlotWindow->show();
     for(int i=0; i<getCurrentPlotTab()->getCurves().size(); ++i)
     {
-        pPlotWindow->addPlotCurve(getCurrentPlotTab()->getCurves().at(i)->getGeneration(), getCurrentPlotTab()->getCurves().at(i)->getComponentName(), getCurrentPlotTab()->getCurves().at(i)->getPortName(), getCurrentPlotTab()->getCurves().at(i)->getDataName(), getCurrentPlotTab()->getCurves().at(i)->getDataUnit(), getCurrentPlotTab()->getCurves().at(i)->getAxisY());
+        //pPlotWindow->addPlotCurve(getCurrentPlotTab()->getCurves().at(i)->getGeneration(), getCurrentPlotTab()->getCurves().at(i)->getComponentName(), getCurrentPlotTab()->getCurves().at(i)->getPortName(), getCurrentPlotTab()->getCurves().at(i)->getDataName(), getCurrentPlotTab()->getCurves().at(i)->getDataUnit(), getCurrentPlotTab()->getCurves().at(i)->getAxisY());
+        pPlotWindow->addPlotCurve(getCurrentPlotTab()->getCurves().at(i)->getPlotLogDataVariable(), getCurrentPlotTab()->getCurves().at(i)->getAxisY());
     }
 }
 
@@ -983,7 +1180,10 @@ PlotInfoBox::PlotInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
 {
     mpParentPlotCurve = pParentPlotCurve;
 
-    mpTitle = new QLabel(pParentPlotCurve->mComponentName+", "+pParentPlotCurve->mPortName+", "+pParentPlotCurve->mDataName+" ["+pParentPlotCurve->mDataUnit+"]",this);
+
+    QString title = pParentPlotCurve->getPlotLogDataVariable()->getFullVariableNameWithSeparator(", ");
+    title.append(" ["+pParentPlotCurve->getDataUnit()+"]");
+    mpTitle = new QLabel(title,this);
 
     mpColorBlob = new QToolButton(this);
     QColor color = mpParentPlotCurve->mLineColor;
@@ -1018,6 +1218,12 @@ PlotInfoBox::PlotInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     mpFrequencyAnalysisButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     mpFrequencyAnalysisButton->setFixedSize(25, 25);
 
+    //    mpSetAxisButton = new QToolButton(this);
+    //    mpSetAxisButton->setToolTip("Lock Axis");
+    //    mpSetAxisButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-PlotCurveScale.png"));
+    //    mpSetAxisButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    //    mpSetAxisButton->setFixedSize(25, 25);
+
     mpScaleButton = new QToolButton(this);
     mpScaleButton->setToolTip("Scale Curve");
     mpScaleButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-PlotCurveScale.png"));
@@ -1032,6 +1238,35 @@ PlotInfoBox::PlotInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     mpSizeSpinBox->setSingleStep(1);
     mpSizeSpinBox->setValue(2);
     mpSizeSpinBox->setSuffix(" pt");
+
+    // New Combo Box for Line Style
+    mpLineStyleCombo = new QComboBox;
+    mpLineStyleCombo->addItem(tr("Solid Line"));
+    mpLineStyleCombo->addItem(tr("Dash Line"));
+    mpLineStyleCombo->addItem(tr("Dot Line"));
+    mpLineStyleCombo->addItem(tr("Dash Dot Line"));
+    mpLineStyleCombo->addItem(tr("Dash Dot Dot Line"));
+    mpLineStyleCombo->addItem(tr("No Curve")); //CustomDashLine
+
+    // New Combo Box for Symbol Style
+    mpLineSymbol = new QComboBox;
+    mpLineSymbol->addItem(tr("None"));
+    mpLineSymbol->addItem(tr("Cross"));
+    mpLineSymbol->addItem(tr("Ellipse"));
+    mpLineSymbol->addItem(tr("XCross"));
+    mpLineSymbol->addItem(tr("Triangle"));
+    mpLineSymbol->addItem(tr("Rectangle"));
+    mpLineSymbol->addItem(tr("Diamond"));
+    mpLineSymbol->addItem(tr("Down Triangle"));
+    mpLineSymbol->addItem(tr("Up Triangle"));
+    mpLineSymbol->addItem(tr("Right Triangle"));
+    mpLineSymbol->addItem(tr("Hexagon"));
+    mpLineSymbol->addItem(tr("Horizontal Line"));
+    mpLineSymbol->addItem(tr("Vertical Line"));
+    mpLineSymbol->addItem(tr("Star 1"));
+    mpLineSymbol->addItem(tr("Star 2"));
+    //mpLineSymbol->addItem(tr("Dots"));
+
 
     mpPreviousButton = new QToolButton(this);
     mpPreviousButton->setToolTip("Previous Generation");
@@ -1055,43 +1290,56 @@ PlotInfoBox::PlotInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     mpCloseButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Discard.png"));
     mpCloseButton->setFixedSize(20, 20);
 
+
     QLabel *pDummy = new QLabel((" "), this);       //This is used to avoid "stretching" the icons with the window
 
-    mpLayout = new QGridLayout(this);
-    mpLayout->addWidget(mpColorBlob,                0,  0);
-    mpLayout->addWidget(mpTitle,                    0,  1);
-    mpLayout->addWidget(mpGenerationLabel,          0,  2);
-    mpLayout->addWidget(mpPreviousButton,           0,  3);
-    mpLayout->addWidget(mpNextButton,               0,  4);
-    mpLayout->addWidget(mpAutoUpdateCheckBox,       0,  5);
-    mpLayout->addWidget(mpFrequencyAnalysisButton,  0,  6);
-    mpLayout->addWidget(mpScaleButton,              0,  7);
-    mpLayout->addWidget(mpSizeSpinBox,              0,  8);
-    mpLayout->addWidget(mpColorButton,              0,  9);
-    mpLayout->addWidget(mpCloseButton,              0,  10);
-    mpLayout->addWidget(pDummy,                     0,  11);
+    mpInfBoxLayout = new QGridLayout(this);
+    mpInfBoxLayout->addWidget(mpColorBlob,                0,  0);
+    mpInfBoxLayout->addWidget(mpTitle,                    0,  1);
+    mpInfBoxLayout->addWidget(mpGenerationLabel,          0,  2);
+    mpInfBoxLayout->addWidget(mpPreviousButton,           0,  3);
+    mpInfBoxLayout->addWidget(mpNextButton,               0,  4);
+    mpInfBoxLayout->addWidget(mpAutoUpdateCheckBox,       0,  5);
+    mpInfBoxLayout->addWidget(mpFrequencyAnalysisButton,  0,  6);
+    //mpInfBoxLayout->addWidget(mpSetAxisButton,            0,  7);
+    mpInfBoxLayout->addWidget(mpScaleButton,              0,  7);
+    mpInfBoxLayout->addWidget(mpSizeSpinBox,              0,  8);
+    mpInfBoxLayout->addWidget(mpColorButton,              0,  9);
+    mpInfBoxLayout->addWidget(mpLineStyleCombo,           0,  10);
+    mpInfBoxLayout->addWidget(mpLineSymbol,               0,  11);
+    mpInfBoxLayout->addWidget(mpCloseButton,              0,  12);
+    mpInfBoxLayout->addWidget(pDummy,                     0,  13);
 
 
-    mpLayout->setColumnStretch(0, 0);
-    mpLayout->setColumnStretch(1, 0);
-    mpLayout->setColumnStretch(2, 0);
-    mpLayout->setColumnStretch(3, 0);
-    mpLayout->setColumnStretch(4, 0);
-    mpLayout->setColumnStretch(5, 0);
-    mpLayout->setColumnStretch(6, 0);
-    mpLayout->setColumnStretch(7, 0);
-    mpLayout->setColumnStretch(8, 0);
-    mpLayout->setColumnStretch(9, 0);
-    mpLayout->setColumnStretch(10, 0);
-    mpLayout->setColumnStretch(11, 1);
 
-    setLayout(mpLayout);
+    mpInfBoxLayout->setColumnStretch(0, 0);
+    mpInfBoxLayout->setColumnStretch(1, 0);
+    mpInfBoxLayout->setColumnStretch(2, 0);
+    mpInfBoxLayout->setColumnStretch(3, 0);
+    mpInfBoxLayout->setColumnStretch(4, 0);
+    mpInfBoxLayout->setColumnStretch(5, 0);
+    mpInfBoxLayout->setColumnStretch(6, 0);
+    mpInfBoxLayout->setColumnStretch(7, 0);
+    mpInfBoxLayout->setColumnStretch(8, 0);
+    mpInfBoxLayout->setColumnStretch(9, 0);
+    mpInfBoxLayout->setColumnStretch(10, 0);
+    mpInfBoxLayout->setColumnStretch(11, 0);
+    mpInfBoxLayout->setColumnStretch(12, 0);
+    mpInfBoxLayout->setColumnStretch(13, 0);
+    //mpInfBoxLayout->setColumnStretch(14, 0);
+
+
+    setLayout(mpInfBoxLayout);
 
     connect(mpColorBlob,                SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(setActive(bool)));
     connect(mpPreviousButton,           SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(setPreviousGeneration()));
     connect(mpNextButton,               SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(setNextGeneration()));
     connect(mpAutoUpdateCheckBox,       SIGNAL(toggled(bool)),  mpParentPlotCurve,  SLOT(setAutoUpdate(bool)));
     connect(mpFrequencyAnalysisButton,  SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(performFrequencyAnalysis()));
+    //connect(mpSetAxisButton,            SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(performSetAxis()));
+
+    this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
 }
 
 
@@ -1107,6 +1355,8 @@ PlotTabWidget::PlotTabWidget(PlotWindow *parent)
     //connect(this,SIGNAL(tabCloseRequested(int)),SLOT(tabChanged()));
     connect(this, SIGNAL(tabCloseRequested(int)), this, SLOT(closePlotTab(int)));
     connect(this,SIGNAL(currentChanged(int)),SLOT(tabChanged()));
+
+
 }
 
 
@@ -1145,29 +1395,37 @@ void PlotTabWidget::tabChanged()
     {
         //! @todo could probably make this more effective by calling disconnect(ptr, SIGNAL, 0 0), then we dont need this loop either
         disconnect(mpParentPlotWindow->mpZoomButton,                SIGNAL(toggled(bool)),  getTab(i),  SLOT(enableZoom(bool)));
+        disconnect(mpParentPlotWindow->mpArrowButton,               SIGNAL(toggled(bool)),  getTab(i),  SLOT(enableArrow(bool))); // Arrow Button Action
         disconnect(mpParentPlotWindow->mpPanButton,                 SIGNAL(toggled(bool)),  getTab(i),  SLOT(enablePan(bool)));
-        disconnect(mpParentPlotWindow->mpBackgroundColorButton,     SIGNAL(triggered()),      getTab(i),  SLOT(setBackgroundColor()));
+        disconnect(mpParentPlotWindow->mpBackgroundColorButton,     SIGNAL(triggered()),    getTab(i),  SLOT(setBackgroundColor()));
         disconnect(mpParentPlotWindow->mpGridButton,                SIGNAL(toggled(bool)),  getTab(i),  SLOT(enableGrid(bool)));
-        disconnect(mpParentPlotWindow->mpResetXVectorButton,        SIGNAL(triggered()),      getTab(i),  SLOT(resetXVector()));
+        disconnect(mpParentPlotWindow->mpResetXVectorButton,        SIGNAL(triggered()),    getTab(i),  SLOT(resetXVector()));
         disconnect(mpParentPlotWindow->mpExportToCsvAction,         SIGNAL(triggered()),    getTab(i),  SLOT(exportToCsv()));
         disconnect(mpParentPlotWindow->mpExportToHvcAction,         SIGNAL(triggered()),    getTab(i),  SLOT(exportToHvc()));
         disconnect(mpParentPlotWindow->mpExportToXmlAction,         SIGNAL(triggered()),    getTab(i),  SLOT(exportToXml()));
+        disconnect(mpParentPlotWindow->mpExportToOldHopAction,      SIGNAL(triggered()),    getTab(i),  SLOT(exportToOldHop()));
         disconnect(mpParentPlotWindow->mpExportToMatlabAction,      SIGNAL(triggered()),    getTab(i),  SLOT(exportToMatlab()));
         disconnect(mpParentPlotWindow->mpExportToGnuplotAction,     SIGNAL(triggered()),    getTab(i),  SLOT(exportToGnuplot()));
         disconnect(mpParentPlotWindow->mpExportPdfAction,           SIGNAL(triggered()),    getTab(i),  SLOT(exportToPdf()));
+        //disconnect(mpParentPlotWindow->mpExportToGraphicsAction,    SIGNAL(triggered()),    getTab(i),  SLOT(exportToGraphics()));
         disconnect(mpParentPlotWindow->mpExportPngAction,           SIGNAL(triggered()),    getTab(i),  SLOT(exportToPng()));
+        disconnect(mpParentPlotWindow->mpLegendButton,              SIGNAL(triggered()),    getTab(i),  SLOT(openLegendSettingsDialog()));
+        disconnect(mpParentPlotWindow->mpLocktheAxis,               SIGNAL(triggered()),    getTab(i),  SLOT(openAxisSettingsDialog()));
     }
 
     if(this->count() != 0)
     {
         if(getCurrentTab()->isSpecialPlot())
         {
+            mpParentPlotWindow->mpArrowButton->setDisabled(true);
             mpParentPlotWindow->mpZoomButton->setDisabled(true);
+            //mpParentPlotWindow->mpImportClassicData>setDisabled(true);
             mpParentPlotWindow->mpPanButton->setDisabled(true);
             mpParentPlotWindow->mpSaveButton->setDisabled(true);
             mpParentPlotWindow->mpExportToCsvAction->setDisabled(true);
             mpParentPlotWindow->mpExportToHvcAction->setDisabled(true);
             mpParentPlotWindow->mpExportToGnuplotAction->setDisabled(true);
+            mpParentPlotWindow->mpExportToOldHopAction->setDisabled(true);
             mpParentPlotWindow->mpExportToMatlabAction->setDisabled(true);
             mpParentPlotWindow->mpLoadFromXmlButton->setDisabled(true);
             mpParentPlotWindow->mpGridButton->setDisabled(true);
@@ -1176,15 +1434,19 @@ void PlotTabWidget::tabChanged()
             mpParentPlotWindow->mpResetXVectorButton->setDisabled(true);
             mpParentPlotWindow->mpBodePlotButton->setDisabled(true);
             mpParentPlotWindow->mpExportPdfAction->setDisabled(true);
+            mpParentPlotWindow->mpExportToGraphicsAction->setDisabled(true);
         }
         else
         {
+            mpParentPlotWindow->mpArrowButton->setDisabled(false);
             mpParentPlotWindow->mpZoomButton->setDisabled(false);
             mpParentPlotWindow->mpPanButton->setDisabled(false);
+            mpParentPlotWindow->mpImportClassicData->setDisabled(false);
             mpParentPlotWindow->mpSaveButton->setDisabled(false);
             mpParentPlotWindow->mpExportToCsvAction->setDisabled(false);
             mpParentPlotWindow->mpExportToHvcAction->setDisabled(false);
             mpParentPlotWindow->mpExportToGnuplotAction->setDisabled(false);
+            mpParentPlotWindow->mpExportToOldHopAction->setDisabled(false);
             mpParentPlotWindow->mpExportToMatlabAction->setDisabled(false);
             mpParentPlotWindow->mpExportGfxButton->setDisabled(false);
             mpParentPlotWindow->mpLoadFromXmlButton->setDisabled(false);
@@ -1194,6 +1456,7 @@ void PlotTabWidget::tabChanged()
             mpParentPlotWindow->mpResetXVectorButton->setDisabled(false);
             mpParentPlotWindow->mpBodePlotButton->setDisabled(false);
             mpParentPlotWindow->mpExportPdfAction->setDisabled(false);
+            //mpParentPlotWindow->mpExportToGraphicsAction->setDisabled(false);
             mpParentPlotWindow->mpZoomButton->setChecked(getCurrentTab()->mpZoomer[FIRSTPLOT]->isEnabled());
             mpParentPlotWindow->mpPanButton->setChecked(getCurrentTab()->mpPanner[FIRSTPLOT]->isEnabled());
             mpParentPlotWindow->mpGridButton->setChecked(getCurrentTab()->mpGrid[FIRSTPLOT]->isVisible());
@@ -1202,6 +1465,7 @@ void PlotTabWidget::tabChanged()
         }
 
         connect(mpParentPlotWindow->mpZoomButton,               SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enableZoom(bool)));
+        connect(mpParentPlotWindow->mpArrowButton,              SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enableArrow(bool))); // Arrow
         connect(mpParentPlotWindow->mpPanButton,                SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enablePan(bool)));
         connect(mpParentPlotWindow->mpBackgroundColorButton,    SIGNAL(triggered()),    getCurrentTab(),    SLOT(setBackgroundColor()));
         connect(mpParentPlotWindow->mpGridButton,               SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enableGrid(bool)));
@@ -1211,8 +1475,12 @@ void PlotTabWidget::tabChanged()
         connect(mpParentPlotWindow->mpExportToHvcAction,        SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToHvc()));
         connect(mpParentPlotWindow->mpExportToMatlabAction,     SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToMatlab()));
         connect(mpParentPlotWindow->mpExportToGnuplotAction,    SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToGnuplot()));
+        connect(mpParentPlotWindow->mpExportToOldHopAction,     SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToOldHop()));
         connect(mpParentPlotWindow->mpExportPdfAction,          SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToPdf()));
         connect(mpParentPlotWindow->mpExportPngAction,          SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToPng()));
+//        connect(mpParentPlotWindow->mpExportToGraphicsAction,   SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToGraphics()));
+        connect(mpParentPlotWindow->mpLegendButton,             SIGNAL(triggered()),    getCurrentTab(),    SLOT(openLegendSettingsDialog()));
+        connect(mpParentPlotWindow->mpLocktheAxis,              SIGNAL(triggered()),    getCurrentTab(),    SLOT(openAxisSettingsDialog()));
     }
 }
 
@@ -1226,13 +1494,13 @@ PlotTab::PlotTab(PlotWindow *parent)
     setAcceptDrops(true);
     setMouseTracking(true);
     mHasSpecialXAxis=false;
-    mVectorXLabel = QString("Time [s]");
+    mSpecialXVectorLabel = QString("Time [s]");
     mLeftAxisLogarithmic = false;
     mRightAxisLogarithmic = false;
     mBottomAxisLogarithmic = false;
     mIsSpecialPlot = false;
 
-        //Initiate default values for left y-axis
+    //Initiate default values for left y-axis
     mCurrentUnitsLeft.insert("Value", gConfig.getDefaultUnit("Value"));
     mCurrentUnitsLeft.insert("Pressure", gConfig.getDefaultUnit("Pressure"));
     mCurrentUnitsLeft.insert("Flow", gConfig.getDefaultUnit("Flow"));
@@ -1243,7 +1511,7 @@ PlotTab::PlotTab(PlotWindow *parent)
     mCurrentUnitsLeft.insert("Angle", gConfig.getDefaultUnit("Angle"));
     mCurrentUnitsLeft.insert("Angular Velocity", gConfig.getDefaultUnit("Angular Velocity"));
 
-        //Initiate default values for right y-axis
+    //Initiate default values for right y-axis
     mCurrentUnitsRight.insert("Value", gConfig.getDefaultUnit("Value"));
     mCurrentUnitsRight.insert("Pressure", gConfig.getDefaultUnit("Pressure"));
     mCurrentUnitsRight.insert("Flow", gConfig.getDefaultUnit("Flow"));
@@ -1259,19 +1527,19 @@ PlotTab::PlotTab(PlotWindow *parent)
     for(int plotID=0; plotID<2; ++plotID)
     {
         //Plots
-        mpPlot[plotID] = new QwtPlot(mpParentPlotWindow);
-        mpPlot[plotID]->setMouseTracking(true);
-        mpPlot[plotID]->setAcceptDrops(false);
-        mpPlot[plotID]->setCanvasBackground(QColor(Qt::white));
-        mpPlot[plotID]->setAutoReplot(true);
+        mpQwtPlots[plotID] = new QwtPlot(mpParentPlotWindow);
+        mpQwtPlots[plotID]->setMouseTracking(true);
+        mpQwtPlots[plotID]->setAcceptDrops(false);
+        mpQwtPlots[plotID]->setCanvasBackground(QColor(Qt::white));
+        mpQwtPlots[plotID]->setAutoReplot(true);
 
         //Panning Tool
-        mpPanner[plotID] = new QwtPlotPanner(mpPlot[plotID]->canvas());
+        mpPanner[plotID] = new QwtPlotPanner(mpQwtPlots[plotID]->canvas());
         mpPanner[plotID]->setMouseButton(Qt::LeftButton);
         mpPanner[plotID]->setEnabled(false);
 
         //Rubber Band Zoom
-        mpZoomer[plotID] = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, mpPlot[plotID]->canvas());      //Zoomer for left y axis
+        mpZoomer[plotID] = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, mpQwtPlots[plotID]->canvas());      //Zoomer for left y axis
         mpZoomer[plotID]->setMaxStackDepth(10000);
         mpZoomer[plotID]->setRubberBand(QwtPicker::NoRubberBand);
         mpZoomer[plotID]->setRubberBandPen(QColor(Qt::green));
@@ -1282,7 +1550,7 @@ PlotTab::PlotTab(PlotWindow *parent)
         mpZoomer[plotID]->setZoomBase(QRectF());
         mpZoomer[plotID]->setEnabled(false);
 
-        mpZoomerRight[plotID] = new QwtPlotZoomer( QwtPlot::xTop, QwtPlot::yRight, mpPlot[plotID]->canvas());   //Zoomer for right y axis
+        mpZoomerRight[plotID] = new QwtPlotZoomer( QwtPlot::xTop, QwtPlot::yRight, mpQwtPlots[plotID]->canvas());   //Zoomer for right y axis
         mpZoomerRight[plotID]->setMaxStackDepth(10000);
         mpZoomerRight[plotID]->setRubberBand(QwtPicker::NoRubberBand);
         mpZoomerRight[plotID]->setRubberBandPen(QColor(Qt::green));
@@ -1293,7 +1561,7 @@ PlotTab::PlotTab(PlotWindow *parent)
         mpZoomerRight[plotID]->setEnabled(false);
 
         //Wheel Zoom
-        mpMagnifier[plotID] = new QwtPlotMagnifier(mpPlot[plotID]->canvas());
+        mpMagnifier[plotID] = new QwtPlotMagnifier(mpQwtPlots[plotID]->canvas());
         mpMagnifier[plotID]->setAxisEnabled(QwtPlot::yLeft, true);
         mpMagnifier[plotID]->setAxisEnabled(QwtPlot::yRight, true);
         mpMagnifier[plotID]->setZoomInKey(Qt::Key_Plus, Qt::ControlModifier);
@@ -1306,34 +1574,47 @@ PlotTab::PlotTab(PlotWindow *parent)
         mpGrid[plotID]->enableYMin(true);
         mpGrid[plotID]->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
         mpGrid[plotID]->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
-        mpGrid[plotID]->attach(mpPlot[plotID]);
+        mpGrid[plotID]->attach(mpQwtPlots[plotID]);
     }
 
     mpBarPlot = new QSint::BarChartPlotter(this);
 
-        //Curve Marker Symbol
+    //Curve Marker Symbol
     mpMarkerSymbol = new QwtSymbol();
     mpMarkerSymbol->setStyle(QwtSymbol::XCross);
     mpMarkerSymbol->setSize(10,10);
 
-    QwtLegend *tempLegend = new QwtLegend();
-    tempLegend->setAutoFillBackground(false);
+    // Legend Stuff
+    constructLegendSettingsDialog();
 
-    QList<QWidget *> tempList = tempLegend->findChildren<QWidget *>();
-    for(int i=0; i<tempList.size(); ++i)
-    {
-        tempList.at(i)->setAutoFillBackground(false);
-    }
+    mpExternalLegend = 0; //No external legend by default
 
-    mpLayout = new QGridLayout(this);
-    mpPlot[FIRSTPLOT]->insertLegend(tempLegend, QwtPlot::TopLegend);
+    mpRightPlotLegend = new PlotLegend(QwtPlot::yRight);
+    mpRightPlotLegend->attach(this->getPlot());
+    mpRightPlotLegend->setAlignment(Qt::AlignRight);
+
+    mpLeftPlotLegend = new PlotLegend(QwtPlot::yLeft);
+    mpLeftPlotLegend->attach(this->getPlot());
+    mpLeftPlotLegend->setAlignment(Qt::AlignLeft);
+
+
+    // Create the lock axis dialog
+    constructAxisSettingsDialog();
+
+
+    mpLayouta = new QGridLayout(this);
+
+
+
     for(int plotID=0; plotID<2; ++plotID)
     {
-        mpPlot[plotID]->setAutoFillBackground(false);
-        mpLayout->addWidget(mpPlot[plotID]);
+        mpQwtPlots[plotID]->setAutoFillBackground(true);
+        mpQwtPlots[plotID]->setPalette(gConfig.getPalette());
+        mpLayouta->addWidget(mpQwtPlots[plotID]);
+
     }
 
-    this->setLayout(mpLayout);
+    connect(mpQwtPlots[FIRSTPLOT], SIGNAL(legendClicked(QwtPlotItem*)), this, SLOT(updateLegend(QwtPlotItem *)));//QwtPlotItem *, bool)));
 
     for(int plotID=1; plotID<2; ++plotID)       //Hide all plots except first one by default
     {
@@ -1341,8 +1622,8 @@ PlotTab::PlotTab(PlotWindow *parent)
     }
     mpBarPlot->setVisible(false);
 
-    mpPlot[FIRSTPLOT]->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    mpQwtPlots[FIRSTPLOT]->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 }
 
 
@@ -1358,6 +1639,184 @@ PlotTab::~PlotTab()
     }
 }
 
+void PlotTab::applyLegendSettings()
+{
+    // Show/change internal legneds
+    if(mpLegendsInternalEnabledCheckBox->isChecked())
+    {
+        mpRightPlotLegend->show();
+        mpLeftPlotLegend->show();
+
+        mpRightPlotLegend->setMaxColumns(mpLegendCol->value());
+        mpLeftPlotLegend->setMaxColumns(mpLegendCol->value());
+
+        int SymStyle = mpLegendSym->currentIndex();
+
+
+        for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT].size(); ++j)
+        {
+            if( SymStyle == 0)
+            {
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendNoAttribute, true);
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowLine, false);
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowSymbol, false);
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowBrush, false);
+            }
+            else if( SymStyle == 1)
+            {
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendNoAttribute, false);
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowLine, true);
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowSymbol, false);
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowBrush, false);
+            }
+            else if( SymStyle == 2)
+            {
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendNoAttribute, false);
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowLine, false);
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowSymbol, true);
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowBrush, false);
+            }
+            else if( SymStyle == 3)
+            {
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendNoAttribute, false);
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowLine, false);
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowSymbol, false);
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowBrush, true);
+
+            }
+
+        }
+
+        mpRightPlotLegend->setBackgroundMode(HopQwtPlotLegendItem::BackgroundMode(mpLegendBg->currentIndex()));
+        mpLeftPlotLegend->setBackgroundMode(HopQwtPlotLegendItem::BackgroundMode(mpLegendBg->currentIndex()));
+
+        int alignL = mpLegendLPosition->currentIndex();
+        int alignR = mpLegendRPosition->currentIndex();
+
+        if ( alignL == 0 )
+        {
+            mpLeftPlotLegend->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+        }
+        else if ( alignL == 1 )
+        {
+            mpLeftPlotLegend->setAlignment(Qt::AlignBottom | Qt::AlignLeft);
+        }
+        else
+        {
+            mpLeftPlotLegend->setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
+        }
+
+        if ( alignR == 0 )
+        {
+            mpRightPlotLegend->setAlignment(Qt::AlignTop | Qt::AlignRight);
+        }
+        else if ( alignR == 1 )
+        {
+            mpRightPlotLegend->setAlignment(Qt::AlignBottom | Qt::AlignRight);
+        }
+        else
+        {
+            mpRightPlotLegend->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+        }
+
+        QColor LegColBlob = QColor(mpLegendBlob->currentText());
+        mpRightPlotLegend->setBackgroundBrush(LegColBlob);
+        mpLeftPlotLegend->setBackgroundBrush(LegColBlob);
+
+        QFont fontl = mpLeftPlotLegend->font();
+        fontl.setPointSize(mpLegendSize->value());
+        mpLeftPlotLegend->setFont(fontl);
+
+        QFont fontr = mpRightPlotLegend->font();
+        fontr.setPointSize(mpLegendSize->value());
+        mpRightPlotLegend->setFont(fontr);
+    }
+    else
+    {
+        mpRightPlotLegend->hide();
+        mpLeftPlotLegend->hide();
+    }
+
+    // Handle external legend
+    if (mpLegendsExternalEnabledCheckBox->isChecked())
+    {
+        if (mpExternalLegend == 0)
+        {
+            mpExternalLegend = new QwtLegend();
+            mpExternalLegend->setAutoFillBackground(false);
+            mpExternalLegend->setFrameStyle(QFrame::NoFrame | QFrame::Sunken);
+            mpExternalLegend->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+            mpQwtPlots[FIRSTPLOT]->insertLegend(mpExternalLegend, QwtPlot::TopLegend);
+        }
+
+        QFont font = mpExternalLegend->font();
+        font.setPointSize(mpLegendSize->value());
+        mpExternalLegend->setFont(font);
+
+        int SymStyle = mpLegendSym->currentIndex();
+
+        for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT].size(); ++j)
+        {
+            if( SymStyle == 0)
+            {
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendNoAttribute, true);
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowLine, false);
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowSymbol, false);
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowBrush, false);
+            }
+            else if( SymStyle == 1)
+            {
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendNoAttribute, false);
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowLine, true);
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowSymbol, false);
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowBrush, false);
+            }
+            else if( SymStyle == 2)
+            {
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendNoAttribute, false);
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowLine, false);
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowSymbol, true);
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowBrush, false);
+            }
+            else if( SymStyle == 3)
+            {
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendNoAttribute, false);
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowLine, false);
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowSymbol, false);
+                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowBrush, true);
+
+            }
+
+        }
+    }
+    else
+    {
+        mpQwtPlots[FIRSTPLOT]->insertLegend(NULL, QwtPlot::TopLegend);
+        // Since it is deleted set ptr to NULL
+        mpExternalLegend = 0;
+    }
+
+    if(mpLegendsOffEnabledCheckBox->isChecked())
+    {
+        bufferoffset = mpLegendOff->value();
+
+        rescaleToCurves();
+    }
+
+//    if(mpLegendsOffYREnabledCheckBox->isChecked())
+//    {
+//        bufferoffsetYR = mpLegendOffYR->value();
+//        rescaleToCurves();
+//    }
+
+
+}
+
+void PlotTab::openLegendSettingsDialog()
+{
+    mpLegendSettingsDialog->exec();
+}
+
 
 void PlotTab::setTabName(QString name)
 {
@@ -1369,11 +1828,14 @@ void PlotTab::addBarChart(QStandardItemModel *pItemModel)
 {
     mIsSpecialPlot = true;
     mpParentPlotWindow->mpZoomButton->setDisabled(true);
+    mpParentPlotWindow->mpImportClassicData->setDisabled(true);
+    mpParentPlotWindow->mpArrowButton->setDisabled(true); // Arrow
     mpParentPlotWindow->mpPanButton->setDisabled(true);
     mpParentPlotWindow->mpSaveButton->setDisabled(true);
     //mpParentPlotWindow->mpExportButton->setDisabled(true);
     mpParentPlotWindow->mpExportToCsvAction->setDisabled(true);
     mpParentPlotWindow->mpExportToGnuplotAction->setDisabled(true);
+    mpParentPlotWindow->mpExportToOldHopAction->setDisabled(true);
     mpParentPlotWindow->mpExportToMatlabAction->setDisabled(true);
     mpParentPlotWindow->mpLoadFromXmlButton->setDisabled(true);
     mpParentPlotWindow->mpGridButton->setDisabled(true);
@@ -1381,11 +1843,12 @@ void PlotTab::addBarChart(QStandardItemModel *pItemModel)
     mpParentPlotWindow->mpNewWindowFromTabButton->setDisabled(true);
     mpParentPlotWindow->mpResetXVectorButton->setDisabled(true);
     mpParentPlotWindow->mpBodePlotButton->setDisabled(true);
-    mpParentPlotWindow->mpExportPdfAction->setDisabled(true);
+//    mpParentPlotWindow->mpExportPdfAction->setDisabled(true);
+    mpParentPlotWindow->mpExportToGraphicsAction->setDisabled(true);
 
     for(int i=0; i<2; ++i)
     {
-        mpPlot[i]->setVisible(false);
+        mpQwtPlots[i]->setVisible(false);
     }
     mpBarPlot->setVisible(true);
 
@@ -1443,7 +1906,7 @@ void PlotTab::addBarChart(QStandardItemModel *pItemModel)
 
     mpBarPlot->setModel(pItemModel);
 
-    mpLayout->addWidget(mpBarPlot);
+    mpLayouta->addWidget(mpBarPlot);
 }
 
 
@@ -1454,7 +1917,7 @@ void PlotTab::addCurve(PlotCurve *curve, QColor desiredColor, HopsanPlotID plotI
 {
     if(mHasSpecialXAxis)
     {
-        curve->getCurvePtr()->setSamples(mVectorX, curve->getDataVector());
+        curve->getQwtPlotCurvePtr()->setSamples(mSpecialXVector, curve->getDataVector());
     }
 
 
@@ -1501,12 +1964,13 @@ void PlotTab::addCurve(PlotCurve *curve, QColor desiredColor, HopsanPlotID plotI
         curve->setLineColor(desiredColor);
     }
 
-    mpPlot[plotID]->enableAxis(curve->getAxisY());
+    mpQwtPlots[plotID]->enableAxis(curve->getAxisY());
     rescaleToCurves();
     updateLabels();
-    mpPlot[plotID]->replot();
-
+    mpQwtPlots[plotID]->replot();
+    mpQwtPlots[plotID]->updateGeometry();
     curve->setLineWidth(2);
+    //curve->setSymbol;
 
     mpParentPlotWindow->mpBodePlotButton->setEnabled(mPlotCurvePtrs[FIRSTPLOT].size() > 1);
 }
@@ -1518,7 +1982,7 @@ void PlotTab::rescaleToCurves()
     //Cycle plots and rescale each of them
     for(int plotID=0; plotID<2; ++plotID)
     {
-        double xMin, xMax, yMinLeft, yMaxLeft, yMinRight, yMaxRight;
+        double xMin, xMax, yMinLeft, yMaxLeft, yMinRight, yMaxRight, heightLeft, heightRight;
 
         //Cycle plots
         if(!mPlotCurvePtrs[plotID].empty())
@@ -1534,11 +1998,12 @@ void PlotTab::rescaleToCurves()
             bool foundFirstRight = false;       //Tells that first right axis curve was found
 
             //Initialize values for X axis by using the first curve
-            xMin=mPlotCurvePtrs[plotID].first()->getCurvePtr()->minXValue();
-            xMax=mPlotCurvePtrs[plotID].first()->getCurvePtr()->maxXValue();
+            xMin=mPlotCurvePtrs[plotID].first()->getQwtPlotCurvePtr()->minXValue();
+            xMax=mPlotCurvePtrs[plotID].first()->getQwtPlotCurvePtr()->maxXValue();
 
             for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
             {
+                //! @todo we could speed this up by not checking min max values in case an axis is set to be locked
                 if(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yLeft)
                 {
                     if(foundFirstLeft == false)     //First left-axis curve, use min and max Y values as initial values
@@ -1549,9 +2014,9 @@ void PlotTab::rescaleToCurves()
                         }
                         else
                         {
-                            yMinLeft=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minYValue();
+                            yMinLeft=mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->minYValue();
                         }
-                        yMaxLeft=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->maxYValue();
+                        yMaxLeft=mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->maxYValue();
                         foundFirstLeft = true;
                     }
                     else    //Compare min/max Y value with previous and change if the new one is smaller/larger
@@ -1565,14 +2030,14 @@ void PlotTab::rescaleToCurves()
                         }
                         else
                         {
-                            if(mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minYValue() < yMinLeft)
+                            if(mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->minYValue() < yMinLeft)
                             {
-                                yMinLeft=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minYValue();
+                                yMinLeft=mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->minYValue();
                             }
                         }
-                        if(mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->maxYValue() > yMaxLeft)
+                        if(mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->maxYValue() > yMaxLeft)
                         {
-                            yMaxLeft=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->maxYValue();
+                            yMaxLeft=mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->maxYValue();
                         }
                     }
                 }
@@ -1587,9 +2052,9 @@ void PlotTab::rescaleToCurves()
                         }
                         else
                         {
-                            yMinRight=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minYValue();
+                            yMinRight=mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->minYValue();
                         }
-                        yMaxRight=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->maxYValue();
+                        yMaxRight=mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->maxYValue();
                         foundFirstRight = true;
                     }
                     else    //Compare min/max Y value with previous and change if the new one is smaller/larger
@@ -1603,23 +2068,23 @@ void PlotTab::rescaleToCurves()
                         }
                         else
                         {
-                            if(mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minYValue() < yMinRight)
+                            if(mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->minYValue() < yMinRight)
                             {
-                                yMinRight=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minYValue();
+                                yMinRight=mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->minYValue();
                             }
                         }
-                        if(mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->maxYValue() > yMaxRight)
+                        if(mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->maxYValue() > yMaxRight)
                         {
-                            yMaxRight=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->maxYValue();
+                            yMaxRight=mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->maxYValue();
                         }
                     }
                 }
 
                 //Compare min/max X value with previous and change if the new one is smaller/larger
-                if(mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minXValue() < xMin)
-                    xMin=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->minXValue();
-                if(mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->maxXValue() > xMax)
-                    xMax=mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->maxXValue();
+                if(mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->minXValue() < xMin)
+                    xMin=mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->minXValue();
+                if(mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->maxXValue() > xMax)
+                    xMax=mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->maxXValue();
             }
         }
         else    //No curves
@@ -1676,30 +2141,159 @@ void PlotTab::rescaleToCurves()
         }
 
         //Calculate heights (used for calculating margins at top and bottom
-        double heightLeft = yMaxLeft-yMinLeft;
-        double heightRight = yMaxRight-yMinRight;
+        heightLeft = yMaxLeft-yMinLeft;
+        heightRight = yMaxRight-yMinRight;
 
         //If plot has log scale, we use a different approach for calculating margins
         //(fixed margins would not make sense with a log scale)
-        if(mpPlot[plotID]->axisScaleEngine(QwtPlot::yLeft)->transformation()->type() == QwtScaleTransformation::Log10)
+
+        //! @todo In new qwt the type in the transform has been removed, Trying with dynamic cast instead
+        if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlots[plotID]->axisScaleEngine(QwtPlot::yLeft)))
         {
             heightLeft = 0;
-            yMaxLeft = yMaxLeft*2;
-            yMinLeft = yMinLeft/2;
+            yMaxLeft = yMaxLeft*2.0;
+            yMinLeft = yMinLeft/2.0;
         }
-        if(mpPlot[plotID]->axisScaleEngine(QwtPlot::yRight)->transformation()->type() == QwtScaleTransformation::Log10)
+        if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlots[plotID]->axisScaleEngine(QwtPlot::yRight)))
         {
             heightRight = 0;
-            yMaxRight = yMaxRight*2;
-            yMinRight = yMinRight/2;
+            yMaxRight = yMaxRight*2.0;
+            yMinRight = yMinRight/2.0;
         }
 
-        //Scale the axes
-        mpPlot[plotID]->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft);
-        mpPlot[plotID]->setAxisScale(QwtPlot::yRight, yMinRight-0.05*heightRight, yMaxRight+0.05*heightRight);
-        mpPlot[plotID]->setAxisScale(QwtPlot::xBottom, xMin, xMax);
-        mpPlot[plotID]->updateAxes();
 
+        //Scale the axes
+        if (!mpXbSetLockCheckBox->isChecked())
+        {
+            mpQwtPlots[plotID]->setAxisScale(QwtPlot::xBottom, xMin, xMax);
+            mAxisLimits[plotID].xbMin = xMin;
+            mAxisLimits[plotID].xbMax = xMax;
+        }
+
+        if (!mpYLSetLockCheckBox->isChecked())
+        {
+            mpQwtPlots[plotID]->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft);
+            mAxisLimits[plotID].yLMin = yMinLeft-0.05*heightLeft;
+            mAxisLimits[plotID].yLMax =  yMaxLeft+0.05*heightLeft;
+        }
+
+        if (!mpYRSetLockCheckBox->isChecked())
+        {
+            mpQwtPlots[plotID]->setAxisScale(QwtPlot::yRight, yMinRight-0.05*heightRight, yMaxRight+0.05*heightRight);
+            mAxisLimits[plotID].yRMin = yMinRight-0.05*heightRight;
+            mAxisLimits[plotID].yRMax = yMaxRight+0.05*heightRight;
+        }
+
+        if(mpLegendsOffEnabledCheckBox->isChecked())
+        {
+
+            if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlots[plotID]->axisScaleEngine(QwtPlot::yLeft)))
+            {
+                double leftlegendheigh = mpLeftPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
+                double rightlegendheigh = mpRightPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
+                bufferoffset = max(leftlegendheigh,rightlegendheigh);
+                double rheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yRight)->size().height();
+                double rinterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yRight).width();
+//                double rscale = rinterval/rheight; //change
+                double lheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yLeft)->size().height();
+                double linterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yLeft).width();
+                double lscale = linterval/lheight;
+                heightLeft = 0;
+                yMaxLeft = yMaxLeft*2.0;
+                yMinLeft = yMinLeft/2.0;
+                heightRight = 0;
+                yMaxRight = yMaxRight*2.0;
+                yMinRight = yMinRight/2.0;
+                double bufferoffsetL =  bufferoffset*lscale;//marginss1;
+//                double bufferoffsetR =  bufferoffset*rscale;//marginss2;
+                mpQwtPlots[plotID]->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft+bufferoffsetL);
+                mAxisLimits[plotID].yLMin = yMinLeft-0.05*heightLeft;
+                mAxisLimits[plotID].yLMax =  yMaxLeft+0.05*heightLeft+bufferoffsetL;
+//                mpQwtPlots[plotID]->setAxisScale(QwtPlot::yRight, yMinRight-0.05*heightRight, yMaxRight+0.05*heightRight+bufferoffsetR);
+//                mAxisLimits[plotID].yRMin = yMinRight-0.05*heightRight;
+//                mAxisLimits[plotID].yRMax = yMaxRight+0.05*heightRight+bufferoffsetR;
+            }
+            else
+            {
+
+                    double lheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yLeft)->size().height();
+                    double linterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yLeft).width();
+                    double lscale = linterval/lheight;
+                    double rheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yRight)->size().height();
+                    double rinterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yRight).width();
+                    double rscale = rinterval/rheight;
+                     double leftlegendheigh = mpLeftPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
+                    double rightlegendheigh = mpRightPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
+                    bufferoffset = max(leftlegendheigh,rightlegendheigh);
+                    double bufferoffsetL =  bufferoffset*lscale;
+//                    double bufferoffsetR =  bufferoffset*rscale;
+                    mpQwtPlots[plotID]->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft+bufferoffsetL);
+                    mAxisLimits[plotID].yLMin = yMinLeft-0.05*heightLeft;
+                    mAxisLimits[plotID].yLMax =  yMaxLeft+0.05*heightLeft+bufferoffsetL;
+//                    mpQwtPlots[plotID]->setAxisScale(QwtPlot::yRight, yMinRight-0.05*heightRight, yMaxRight+0.05*heightRight+bufferoffsetR);
+//                    mAxisLimits[plotID].yRMin = yMinRight-0.05*heightRight;
+//                    mAxisLimits[plotID].yRMax = yMaxRight+0.05*heightRight+bufferoffsetR;
+
+
+            }
+            if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlots[plotID]->axisScaleEngine(QwtPlot::yRight)))
+            {
+                double leftlegendheigh = mpLeftPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
+                double rightlegendheigh = mpRightPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
+                bufferoffset = max(leftlegendheigh,rightlegendheigh);
+
+                double rheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yRight)->size().height();
+                double rinterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yRight).width();
+                double rscale = rinterval/rheight; //change
+
+                double lheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yLeft)->size().height();
+                double linterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yLeft).width();
+//                double lscale = linterval/lheight;
+                heightLeft = 0;
+                yMaxLeft = yMaxLeft*2.0;
+                yMinLeft = yMinLeft/2.0;
+                heightRight = 0;
+                yMaxRight = yMaxRight*2.0;
+                yMinRight = yMinRight/2.0;
+//                double bufferoffsetL =  bufferoffset*lscale;
+                double bufferoffsetR =  bufferoffset*rscale;
+//                mpQwtPlots[plotID]->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft+bufferoffsetL);
+//                mAxisLimits[plotID].yLMin = yMinLeft-0.05*heightLeft;
+//                mAxisLimits[plotID].yLMax =  yMaxLeft+0.05*heightLeft+bufferoffsetL;
+                mpQwtPlots[plotID]->setAxisScale(QwtPlot::yRight, yMinRight-0.05*heightRight, yMaxRight+0.05*heightRight+bufferoffsetR);
+                mAxisLimits[plotID].yRMin = yMinRight-0.05*heightRight;
+                mAxisLimits[plotID].yRMax = yMaxRight+0.05*heightRight+bufferoffsetR;
+            }
+            else
+            {
+
+                    double lheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yLeft)->size().height();
+                    double linterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yLeft).width();
+//                    double lscale = linterval/lheight;
+
+                    double rheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yRight)->size().height();
+                    double rinterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yRight).width();
+                    double rscale = rinterval/rheight;
+
+                     double leftlegendheigh = mpLeftPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
+                    double rightlegendheigh = mpRightPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
+                    bufferoffset = max(leftlegendheigh,rightlegendheigh);
+
+//                    double bufferoffsetL =  bufferoffset*lscale;
+                    double bufferoffsetR =  bufferoffset*rscale;
+//                    mpQwtPlots[plotID]->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft+bufferoffsetL);
+//                    mAxisLimits[plotID].yLMin = yMinLeft-0.05*heightLeft;
+//                    mAxisLimits[plotID].yLMax =  yMaxLeft+0.05*heightLeft+bufferoffsetL;
+                    mpQwtPlots[plotID]->setAxisScale(QwtPlot::yRight, yMinRight-0.05*heightRight, yMaxRight+0.05*heightRight+bufferoffsetR);
+                    mAxisLimits[plotID].yRMin = yMinRight-0.05*heightRight;
+                    mAxisLimits[plotID].yRMax = yMaxRight+0.05*heightRight+bufferoffsetR;
+
+
+            }
+
+
+        mpQwtPlots[plotID]->updateAxes();
+        }
         //Scale the zoom base (maximum zoom)
         QRectF tempDoubleRect;
         tempDoubleRect.setX(xMin);
@@ -1717,9 +2311,11 @@ void PlotTab::rescaleToCurves()
     }
 
     //Curve Marker
+    //! @hmmm memmmory leek? create new markr every time
     mpMarkerSymbol = new QwtSymbol();
     mpMarkerSymbol->setStyle(QwtSymbol::XCross);
     mpMarkerSymbol->setSize(10,10);
+
 }
 
 
@@ -1733,7 +2329,7 @@ void PlotTab::removeCurve(PlotCurve *curve)
     {
         if(mMarkerPtrs[plotID].at(i)->getCurve() == curve)
         {
-            mpPlot[plotID]->canvas()->removeEventFilter(mMarkerPtrs[plotID].at(i));
+            mpQwtPlots[plotID]->canvas()->removeEventFilter(mMarkerPtrs[plotID].at(i));
             mMarkerPtrs[plotID].at(i)->detach();
             mMarkerPtrs[plotID].removeAt(i);
             --i;
@@ -1742,14 +2338,14 @@ void PlotTab::removeCurve(PlotCurve *curve)
 
     for(int i=0; i<mUsedColors.size(); ++i)
     {
-        if(curve->getCurvePtr()->pen().color() == mUsedColors.at(i))
+        if(curve->getQwtPlotCurvePtr()->pen().color() == mUsedColors.at(i))
         {
             mUsedColors.removeAt(i);
             break;
         }
     }
 
-    curve->getCurvePtr()->detach();
+    curve->getQwtPlotCurvePtr()->detach();
     for(int plotID=0; plotID<2; ++plotID)
     {
         mPlotCurvePtrs[plotID].removeAll(curve);
@@ -1758,6 +2354,7 @@ void PlotTab::removeCurve(PlotCurve *curve)
     rescaleToCurves();
     updateLabels();
     update();
+
 }
 
 
@@ -1767,31 +2364,26 @@ void PlotTab::removeCurve(PlotCurve *curve)
 //! @param portName Name of port form which new data origins
 //! @param dataName Data name (physical quantity) of new data
 //! @param dataUnit Unit of new data
-void PlotTab::changeXVector(QVector<double> xArray, QString componentName, QString portName, QString dataName, QString dataUnit, HopsanPlotID plotID)
+void PlotTab::changeXVector(QVector<double> xArray, const VariableDescription &rVarDesc, HopsanPlotID plotID)
 {
+    //! @todo maybe create a LogVariableData object and use that instead of maunal hack
     mHasSpecialXAxis = true;
-
-    mVectorX = xArray;
+    mSpecialXVector = xArray;
 
     for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
     {
-        mPlotCurvePtrs[plotID].at(i)->getCurvePtr()->setSamples(mVectorX, mPlotCurvePtrs[plotID].at(i)->getDataVector());
+        mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->setSamples(mSpecialXVector, mPlotCurvePtrs[plotID].at(i)->getDataVector());
         mPlotCurvePtrs[plotID].at(i)->setDataUnit(mPlotCurvePtrs[plotID].at(i)->getDataUnit());
     }
 
     rescaleToCurves();
 
-    mVectorXModelPath = gpMainWindow->mpProjectTabs->getCurrentContainer()->getModelFileInfo().filePath();
-    mVectorXComponent = componentName;
-    mVectorXPortName = portName;
-    mVectorXDataName = dataName;
-    mVectorXDataUnit = dataUnit;
-    mVectorXGeneration = gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->size()-1;
+    mSpecialXVectorModelPath = gpMainWindow->mpProjectTabs->getCurrentContainer()->getModelFileInfo().filePath();
+    mSpecialXVectorDescription = rVarDesc;
 
-    mVectorXLabel = QString(dataName + " [" + dataUnit + "]");
+    mSpecialXVectorLabel = QString(rVarDesc.mDataName + " [" + rVarDesc.mDataUnit + "]");
     updateLabels();
     update();
-    mVectorX = xArray;
     mpParentPlotWindow->mpResetXVectorButton->setEnabled(true);
 }
 
@@ -1801,8 +2393,8 @@ void PlotTab::updateLabels()
 {
     for(int plotID=0; plotID<2; ++plotID)
     {
-        mpPlot[plotID]->setAxisTitle(QwtPlot::yLeft, QwtText());
-        mpPlot[plotID]->setAxisTitle(QwtPlot::yRight, QwtText());
+        mpQwtPlots[plotID]->setAxisTitle(QwtPlot::yLeft, QwtText());
+        mpQwtPlots[plotID]->setAxisTitle(QwtPlot::yRight, QwtText());
 
         if(mPlotCurvePtrs[plotID].size()>0 && mPlotCurvePtrs[plotID][0]->getCurveType() == PORTVARIABLE)
         {
@@ -1812,11 +2404,11 @@ void PlotTab::updateLabels()
                 QString newUnit = QString(mPlotCurvePtrs[plotID].at(i)->getDataName() + " [" + mPlotCurvePtrs[plotID].at(i)->getDataUnit() + "]");
                 if( !(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yLeft && leftUnits.contains(newUnit)) && !(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yRight && rightUnits.contains(newUnit)) )
                 {
-                    if(!mpPlot[plotID]->axisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY()).isEmpty())
+                    if(!mpQwtPlots[plotID]->axisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY()).isEmpty())
                     {
-                        mpPlot[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), QwtText(QString(mpPlot[plotID]->axisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY()).text().append(", "))));
+                        mpQwtPlots[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), QwtText(QString(mpQwtPlots[plotID]->axisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY()).text().append(", "))));
                     }
-                    mpPlot[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), QwtText(QString(mpPlot[plotID]->axisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY()).text().append(newUnit))));
+                    mpQwtPlots[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), QwtText(QString(mpQwtPlots[plotID]->axisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY()).text().append(newUnit))));
                     if(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yLeft)
                     {
                         leftUnits.append(newUnit);
@@ -1827,43 +2419,42 @@ void PlotTab::updateLabels()
                     }
                 }
             }
-            mpPlot[plotID]->setAxisTitle(QwtPlot::xBottom, QwtText(mVectorXLabel));
+            mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, QwtText(mSpecialXVectorLabel));
         }
         else if(mPlotCurvePtrs[plotID].size()>0 && mPlotCurvePtrs[plotID][0]->getCurveType() == FREQUENCYANALYSIS)
         {
             for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
             {
-                mpPlot[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), "Relative Magnitude [-]");
-                mpPlot[plotID]->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
+                mpQwtPlots[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), "Relative Magnitude [-]");
+                mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
             }
         }
         else if(mPlotCurvePtrs[plotID].size()>0 && mPlotCurvePtrs[plotID][0]->getCurveType() == NYQUIST)
         {
             for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
             {
-                mpPlot[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), "Im");
-                mpPlot[plotID]->setAxisTitle(QwtPlot::xBottom, "Re");
+                mpQwtPlots[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), "Im");
+                mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, "Re");
             }
         }
         else if(mPlotCurvePtrs[plotID].size()>0 && mPlotCurvePtrs[plotID][0]->getCurveType() == BODEGAIN)
         {
             for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
             {
-                mpPlot[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), "Magnitude [dB]");
-                mpPlot[plotID]->setAxisTitle(QwtPlot::xBottom, QwtText());      //No label, because there will be a phase plot bellow with same label
+                mpQwtPlots[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), "Magnitude [dB]");
+                mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, QwtText());      //No label, because there will be a phase plot bellow with same label
             }
         }
         else if(mPlotCurvePtrs[plotID].size()>0 && mPlotCurvePtrs[plotID][0]->getCurveType() == BODEPHASE)
         {
             for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
             {
-                mpPlot[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), "Phase [deg]");
-                mpPlot[plotID]->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
+                mpQwtPlots[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), "Phase [deg]");
+                mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
             }
         }
     }
 }
-
 
 bool PlotTab::isGridVisible()
 {
@@ -1877,16 +2468,17 @@ void PlotTab::resetXVector()
 
     for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
     {
-        mPlotCurvePtrs[FIRSTPLOT].at(i)->getCurvePtr()->setSamples(mPlotCurvePtrs[FIRSTPLOT].at(i)->getTimeVector(), mPlotCurvePtrs[FIRSTPLOT].at(i)->getDataVector());
+        mPlotCurvePtrs[FIRSTPLOT].at(i)->getQwtPlotCurvePtr()->setSamples(mPlotCurvePtrs[FIRSTPLOT].at(i)->getTimeVector(), mPlotCurvePtrs[FIRSTPLOT].at(i)->getDataVector());
         mPlotCurvePtrs[FIRSTPLOT].at(i)->setDataUnit(mPlotCurvePtrs[FIRSTPLOT].at(i)->getDataUnit());
     }
 
-    mVectorXLabel = QString("Time [s]");
+    mSpecialXVectorLabel = QString("Time [s]");
     updateLabels();
     update();
 
     rescaleToCurves();
-    mpPlot[FIRSTPLOT]->replot();
+    mpQwtPlots[FIRSTPLOT]->replot();
+    mpQwtPlots[FIRSTPLOT]->updateGeometry();
 
     mpParentPlotWindow->mpResetXVectorButton->setEnabled(false);
 }
@@ -1896,7 +2488,7 @@ void PlotTab::resetXVector()
 void PlotTab::exportToXml()
 {
 
-        //Open a dialog where text and font can be selected
+    //Open a dialog where text and font can be selected
     mpExportXmlDialog = new QDialog(gpMainWindow);
     mpExportXmlDialog->setWindowTitle("Export Plot Tab To XML");
 
@@ -1950,7 +2542,7 @@ void PlotTab::exportToXml()
 //! @brief Slot that exports plot tab to a specified comma-separated value file (.csv)
 void PlotTab::exportToCsv()
 {
-        //Open file dialog and initialize the file stream
+    //Open file dialog and initialize the file stream
     QString filePath;
     QFileInfo fileInfo;
     filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To CSV File"),
@@ -1972,19 +2564,19 @@ void PlotTab::exportToCsv(QString fileName)
     file.setFileName(fileName);   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open file for writing: " + fileName);
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + fileName);
         return;
     }
 
     QTextStream fileStream(&file);  //Create a QTextStream object to stream the content of file
 
 
-        //Cycle plot curves
+    //Cycle plot curves
     if(mHasSpecialXAxis)
     {
-        for(int i=0; i<mVectorX.size(); ++i)
+        for(int i=0; i<mSpecialXVector.size(); ++i)
         {
-            fileStream << mVectorX[i];
+            fileStream << mSpecialXVector[i];
             for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT].size(); ++j)
             {
                 fileStream << ", " << mPlotCurvePtrs[FIRSTPLOT][j]->getDataVector()[i];
@@ -2006,33 +2598,33 @@ void PlotTab::exportToCsv(QString fileName)
     }
 
 
-//        //Cycle plot curves
-//    for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
-//    {
-//        fileStream << "x" << i;                                         //Write time/X vector
-//        if(mHasSpecialXAxis)
-//        {
-//            for(int j=0; j<mVectorX.size(); ++j)
-//            {
-//                fileStream << "," << mVectorX[j];
-//            }
-//        }
-//        else
-//        {
-//            for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT][i]->getTimeVector().size(); ++j)
-//            {
-//                fileStream << "," << mPlotCurvePtrs[FIRSTPLOT][i]->getTimeVector()[j];
-//            }
-//        }
-//        fileStream << "\n";
+    //        //Cycle plot curves
+    //    for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
+    //    {
+    //        fileStream << "x" << i;                                         //Write time/X vector
+    //        if(mHasSpecialXAxis)
+    //        {
+    //            for(int j=0; j<mVectorX.size(); ++j)
+    //            {
+    //                fileStream << "," << mVectorX[j];
+    //            }
+    //        }
+    //        else
+    //        {
+    //            for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT][i]->getTimeVector().size(); ++j)
+    //            {
+    //                fileStream << "," << mPlotCurvePtrs[FIRSTPLOT][i]->getTimeVector()[j];
+    //            }
+    //        }
+    //        fileStream << "\n";
 
-//        fileStream << "y" << i;                                             //Write data vector
-//        for(int k=0; k<mPlotCurvePtrs[FIRSTPLOT][i]->getDataVector().size(); ++k)
-//        {
-//            fileStream << "," << mPlotCurvePtrs[FIRSTPLOT][i]->getDataVector()[k];
-//        }
-//        fileStream << "\n";
-//    }
+    //        fileStream << "y" << i;                                             //Write data vector
+    //        for(int k=0; k<mPlotCurvePtrs[FIRSTPLOT][i]->getDataVector().size(); ++k)
+    //        {
+    //            fileStream << "," << mPlotCurvePtrs[FIRSTPLOT][i]->getDataVector()[k];
+    //        }
+    //        fileStream << "\n";
+    //    }
 
     file.close();
 }
@@ -2050,8 +2642,8 @@ void PlotTab::exportToHvc(QString fileName)
         //Open file dialog and initialize the file stream
 
         QString filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To CSV File"),
-                                                gConfig.getPlotDataDir(),
-                                                tr("HopsanValidationCfg (*.hvc)"));
+                                                        gConfig.getPlotDataDir(),
+                                                        tr("HopsanValidationCfg (*.hvc)"));
         if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
         fileInfo.setFile(filePath);
     }
@@ -2059,7 +2651,7 @@ void PlotTab::exportToHvc(QString fileName)
     QFile file(fileInfo.absoluteFilePath());
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open file for writing: " + fileName);
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + fileName);
         return;
     }
 
@@ -2112,7 +2704,7 @@ void PlotTab::exportToHvc(QString fileName)
 //! @brief Slot that exports plot tab to a specified matlab script file (.m)
 void PlotTab::exportToMatlab()
 {
-        //Open file dialog and initialize the file stream
+    //Open file dialog and initialize the file stream
     QDir fileDialogSaveDir;
     QString filePath;
     QFileInfo fileInfo;
@@ -2126,26 +2718,26 @@ void PlotTab::exportToMatlab()
     file.setFileName(fileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open file for writing: " + filePath);
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + filePath);
         return;
     }
     QTextStream fileStream(&file);  //Create a QTextStream object to stream the content of file
     QDateTime dateTime = QDateTime::currentDateTime();
     QString dateTimeString = dateTime.toString();
 
-        //Write initial comment
+    //Write initial comment
     fileStream << "% MATLAB File Exported From Hopsan " << QString(HOPSANGUIVERSION) << " " << dateTimeString << "\n";
 
-        //Cycle plot curves
+    //Cycle plot curves
     for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
     {
         fileStream << "x" << i << "=[";                                         //Write time/X vector
         if(mHasSpecialXAxis)
         {
-            for(int j=0; j<mVectorX.size(); ++j)
+            for(int j=0; j<mSpecialXVector.size(); ++j)
             {
                 if(j>0) fileStream << ",";
-                fileStream << mVectorX[j];
+                fileStream << mSpecialXVector[j];
             }
         }
         else
@@ -2167,16 +2759,16 @@ void PlotTab::exportToMatlab()
         fileStream << "];\n";
     }
 
-        //Cycle plot curves
+    //Cycle plot curves
     for(int i=0; i<mPlotCurvePtrs[SECONDPLOT].size(); ++i)
     {
         fileStream << "x" << i+mPlotCurvePtrs[FIRSTPLOT].size() << "=[";                                         //Write time/X vector
         if(mHasSpecialXAxis)
         {
-            for(int j=0; j<mVectorX.size(); ++j)
+            for(int j=0; j<mSpecialXVector.size(); ++j)
             {
                 if(j>0) fileStream << ",";
-                fileStream << mVectorX[j];
+                fileStream << mSpecialXVector[j];
             }
         }
         else
@@ -2198,7 +2790,7 @@ void PlotTab::exportToMatlab()
         fileStream << "];\n";
     }
 
-        //Write plot functions
+    //Write plot functions
     QStringList matlabColors;
     matlabColors << "r" << "g" << "b" << "c" << "m" << "y";
     fileStream << "hold on\n";
@@ -2219,7 +2811,7 @@ void PlotTab::exportToMatlab()
             else
                 fileStream << "plot";
         }
-        fileStream << "(x" << i << ",y" << i << ",'-" << matlabColors[i%6] << "','linewidth'," << mPlotCurvePtrs[FIRSTPLOT][i]->getCurvePtr()->pen().width() << ")\n";
+        fileStream << "(x" << i << ",y" << i << ",'-" << matlabColors[i%6] << "','linewidth'," << mPlotCurvePtrs[FIRSTPLOT][i]->getQwtPlotCurvePtr()->pen().width() << ")\n";
     }
     if(mPlotCurvePtrs[SECONDPLOT].size() > 0)
     {
@@ -2240,7 +2832,7 @@ void PlotTab::exportToMatlab()
                 else
                     fileStream << "plot";
             }
-            fileStream << "(x" << i+mPlotCurvePtrs[FIRSTPLOT].size() << ",y" << i+mPlotCurvePtrs[FIRSTPLOT].size() << ",'-" << matlabColors[i%6] << "','linewidth'," << mPlotCurvePtrs[SECONDPLOT][i]->getCurvePtr()->pen().width() << ")\n";
+            fileStream << "(x" << i+mPlotCurvePtrs[FIRSTPLOT].size() << ",y" << i+mPlotCurvePtrs[FIRSTPLOT].size() << ",'-" << matlabColors[i%6] << "','linewidth'," << mPlotCurvePtrs[SECONDPLOT][i]->getQwtPlotCurvePtr()->pen().width() << ")\n";
         }
     }
 
@@ -2251,7 +2843,7 @@ void PlotTab::exportToMatlab()
 //! @brief Slot that exports plot tab to specified gnuplot file  (.dat)
 void PlotTab::exportToGnuplot()
 {
-        //Open file dialog and initialize the file stream
+    //Open file dialog and initialize the file stream
     QDir fileDialogSaveDir;
     QString filePath;
     QFileInfo fileInfo;
@@ -2265,7 +2857,7 @@ void PlotTab::exportToGnuplot()
     file.setFileName(fileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open file for writing: " + filePath);
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + filePath);
         return;
     }
 
@@ -2273,7 +2865,7 @@ void PlotTab::exportToGnuplot()
     QDateTime dateTime = QDateTime::currentDateTime();
     QString dateTimeString = dateTime.toString();
 
-        //Write initial comment
+    //Write initial comment
     fileStream << "# gnuplot File Exported From Hopsan " << QString(HOPSANGUIVERSION) << " " << dateTimeString << "\n";
     fileStream << "# T";
     for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
@@ -2282,7 +2874,7 @@ void PlotTab::exportToGnuplot()
     }
     fileStream << "\n";
 
-        //Write time and data vectors
+    //Write time and data vectors
     QString dummy;
     for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].first()->getTimeVector().size(); ++i)
     {
@@ -2302,6 +2894,97 @@ void PlotTab::exportToGnuplot()
     file.close();
 }
 
+void PlotTab::exportToGraphics()
+{
+
+    mpGraphicsSettingsDialog = new QDialog(this);
+    mpGraphicsSettingsDialog->setWindowTitle("Graphic Controls");
+    mpGraphicsSettingsDialog->setWindowModality(Qt::WindowModal);
+
+    mpGraphicsSize = new QSpinBox(this);
+    mpGraphicsSize->setRange(1,10000);
+    mpGraphicsSize->setSingleStep(1);
+    mpGraphicsSize->setValue(500);
+
+    mpGraphicsSizeW = new QSpinBox(this);
+    mpGraphicsSizeW->setRange(1,10000);
+    mpGraphicsSizeW->setSingleStep(1);
+    mpGraphicsSizeW->setValue(500);
+
+    mpGraphicsQuality = new QSpinBox(this);
+    mpGraphicsQuality->setRange(1,10);
+    mpGraphicsQuality->setSingleStep(1);
+    mpGraphicsQuality->setValue(1);
+
+    mpGraphicsForm = new QComboBox(this);
+    mpGraphicsForm->addItem("PNG");
+    mpGraphicsForm->addItem("PDF");
+    mpGraphicsForm->addItem("SVG");
+
+    QGroupBox *graphicsBox = new QGroupBox( "Graphics" );
+    QGridLayout *graphicsBoxLayout = new QGridLayout( graphicsBox );
+
+    int row = 0;
+    graphicsBoxLayout->addWidget( new QLabel( "Export Format" ), row, 0 );
+    graphicsBoxLayout->addWidget( mpGraphicsForm, row, 1 );
+    row++;
+    graphicsBoxLayout->addWidget( new QLabel( "Height" ), row, 0 );
+    graphicsBoxLayout->addWidget( mpGraphicsSize, row, 1 );
+    row++;
+    graphicsBoxLayout->addWidget( new QLabel( "Width" ), row, 0 );
+    graphicsBoxLayout->addWidget( mpGraphicsSizeW, row, 1 );
+    row++;
+    graphicsBoxLayout->addWidget( new QLabel( "Quality" ), row, 0 );
+    graphicsBoxLayout->addWidget( mpGraphicsQuality, row, 1 );
+
+    mpGraphicsSettingsDialog->setLayout(graphicsBoxLayout);
+
+    connect(mpGraphicsSize, SIGNAL(valueChanged(int)), this, SLOT(applyGraphicsSettings()));
+    connect(mpGraphicsSizeW, SIGNAL(valueChanged(int)), this, SLOT(applyGraphicsSettings()));
+    connect(mpGraphicsQuality, SIGNAL(valueChanged(int)), this, SLOT(applyGraphicsSettings()));
+    connect(mpGraphicsForm, SIGNAL(indexChanged(int)), this, SLOT(applyGraphicsSettings()));
+
+}
+
+//void PlotTab::applyGraphicsSettings()
+//{
+//    //        QString fileName = QFileDialog::getSaveFileName(this, "Export File Name", gConfig.getPlotGfxDir(), "Portable Document Format (*.pdf)");
+//    //        if ( !fileName.isEmpty() )
+//    //        {
+//    //            QFileInfo file(fileName);
+//    //            gConfig.setPlotGfxDir(file.absolutePath());
+
+//    //            QwtPlotRenderer renderer;
+
+//    //            QPrinter *printer = new QPrinter(QPrinter::HighResolution);
+//    //            printer->setPaperSize(QPrinter::Custom);
+//    //            printer->setPaperSize(mpQwtPlots[FIRSTPLOT]->size(), QPrinter::Point);
+//    //            printer->setOrientation(QPrinter::Landscape);
+//    //            printer->setFullPage(false);
+//    //            printer->setOutputFormat(QPrinter::PdfFormat);
+//    //            printer->setOutputFileName(fileName);
+//    //            renderer.renderTo(mpQwtPlots[FIRSTPLOT],*printer);
+//    //        }
+
+//    //        QString fileName = QFileDialog::getSaveFileName(this, "Export File Name", gConfig.getPlotGfxDir(), "Portable Document Format (*.pdf)");
+//    //        if ( !fileName.isEmpty() )
+//    //        {
+//    //            QFileInfo file(fileName);
+//    //            gConfig.setPlotGfxDir(file.absolutePath());
+
+//    //            QwtPlotRenderer renderer;
+
+//    //            QPrinter *printer = new QPrinter(QPrinter::HighResolution);
+//    //            printer->setPaperSize(QPrinter::Custom);
+//    //            printer->setPaperSize(mpQwtPlots[FIRSTPLOT]->size(), QPrinter::Point);
+//    //            printer->setOrientation(QPrinter::Landscape);
+//    //            printer->setFullPage(false);
+//    //            printer->setOutputFormat(QPrinter::PdfFormat);
+//    //            printer->setOutputFileName(fileName);
+//    //            renderer.renderTo(mpQwtPlots[FIRSTPLOT],*printer);
+//        //        }
+//}
+
 
 //! @brief Slot that exports plot tab as vector graphics to specified .pdf file
 void PlotTab::exportToPdf()
@@ -2315,22 +2998,144 @@ void PlotTab::exportToPdf()
         QwtPlotRenderer renderer;
 
         QPrinter *printer = new QPrinter(QPrinter::HighResolution);
-        printer->setPaperSize(QPrinter::A4);
+        printer->setPaperSize(QPrinter::Custom);
+        printer->setPaperSize(mpQwtPlots[FIRSTPLOT]->size(), QPrinter::Point);
         printer->setOrientation(QPrinter::Landscape);
         printer->setFullPage(false);
         printer->setOutputFormat(QPrinter::PdfFormat);
         printer->setOutputFileName(fileName);
-        renderer.renderTo(mpPlot[FIRSTPLOT],*printer);
+        renderer.renderTo(mpQwtPlots[FIRSTPLOT],*printer);
     }
 }
 
+void PlotTab::exportToOldHop()
+{
+    //Open file dialog and initialize the file stream
+    QDir fileDialogSaveDir;
+    QString filePath;
+    QFileInfo fileInfo;
+    filePath = QFileDialog::getSaveFileName(this, tr("Export Plot Tab To OldHopsan Format File"),
+                                            gConfig.getPlotDataDir(),
+                                            tr("Hopsan Classic file (*.PLO)"));
+    if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
+    fileInfo.setFile(filePath);
+    gConfig.setPlotDataDir(fileInfo.absolutePath());
+
+    QStringList variables;
+    for(int c=0; c<mPlotCurvePtrs[FIRSTPLOT].size(); ++c)
+    {
+        variables.append(mPlotCurvePtrs[FIRSTPLOT][c]->getPlotLogDataVariable()->getFullVariableName());
+    }
+
+    mPlotCurvePtrs[FIRSTPLOT].first()->getContainerObjectPtr()->getPlotDataPtr()->exportToPlo(filePath, variables);
+
+    //    file.setFileName(fileInfo.filePath());   //Create a QFile object
+    //    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    //    {
+    //        gpMainWindow->mpHcomWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + filePath);
+    //        return;
+    //    }
+
+    //    QTextStream fileStream(&file);  //Create a QTextStream object to stream the content of file
+    //    QDateTime dateTime = QDateTime::currentDateTime();
+    //    QString dateTimeString = dateTime.toString();
+    //    QFileInfo fii(filePath);
+    //    QString namez = fii.baseName();
+    //    QStringList ScalingvaluesList;
+    //    QStringList StartvaluesList;
+    //    QVector<double> Scalings;
+    //    QString ScaleVal;
+
+    //    QString modelPathwayy = gpMainWindow->mpProjectTabs->getCurrentContainer()->getModelFileInfo().filePath();
+    //    QFileInfo fiz(modelPathwayy);
+    //    QString namemodel = fiz.baseName();
+
+    //        //Write initial comment
+    //    fileStream << "    'VERSION' " << QString(HOPSANGUIVERSION) << " " << dateTimeString << "\n";
+    //    fileStream << "    1 " << "\n";
+    //    fileStream << "    '"<<namez<<".PLO"<<"'"<<"\n";
+    //    fileStream << "        " << mPlotCurvePtrs[FIRSTPLOT].size()<<"    "<< mPlotCurvePtrs[FIRSTPLOT].first()->getTimeVector().size()<<"\n";
+    //    fileStream << "    'Time      '";
+    //    for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
+    //    {
+    //        fileStream << ",    'Y" << i<<"      '";
+    //    }
+    //    fileStream <<",    '"<< "\n";
+
+    //        //Write time and data vectors
+    //    QString dummy;
+
+
+    ////    double iMax = Scalings[0]; //set min and max as the first element
+    ////    double iMin = Scalings[0];
+    ////    for (int xi=0; xi<Scalings.size(); xi++)
+    ////    {
+    ////        if (Scalings[xi] < iMin)
+    ////            iMin = Scalings[xi];
+    ////        if (Scalings[xi] > iMax)
+    ////            iMax = Scalings[xi];
+
+    ////        double Scale = (iMax-iMin)/(Scalings.size());
+
+
+    ////    }
+
+
+
+
+    //    for(int kk=0; kk<mPlotCurvePtrs[FIRSTPLOT].size()+1; ++kk)
+    //    {
+
+    //        ScalingvaluesList.append(dummy.setNum(1.0,'E',6));
+    //        fileStream <<"  "<< dummy;
+    //        for(int j=0; j<12-dummy.size(); ++j) { fileStream << " "; }
+
+
+    //    }
+    //    fileStream << "\n";
+
+
+    //    for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].first()->getTimeVector().size(); ++i)
+    //    {
+    //        dummy.setNum(mPlotCurvePtrs[FIRSTPLOT].first()->getTimeVector()[i],'E',6);
+    //        fileStream <<"  "<<dummy;
+    //        for(int j=0; j<12-dummy.size(); ++j) { fileStream << " "; }
+
+    //        for(int k=0; k<mPlotCurvePtrs[FIRSTPLOT].size(); ++k)
+    //        {
+    //            dummy.setNum(mPlotCurvePtrs[FIRSTPLOT][k]->getDataVector()[i],'E',6);
+    //            Scalings = mPlotCurvePtrs[FIRSTPLOT][k]->getDataVector();
+    //            if(i == 0)
+    //            {
+    //               StartvaluesList.append(dummy.setNum(mPlotCurvePtrs[FIRSTPLOT][k]->getDataVector()[i],'E',6));
+    //            }
+
+    //            fileStream <<"  "<< dummy;
+    //            for(int j=0; j<12-dummy.size(); ++j) { fileStream << " "; }
+
+    //        }
+    //        fileStream << "\n";
+    //    }
+    //    fileStream << "  "+namez+".PLO.DAT_-1" <<"\n";
+    //    fileStream << "  "+namemodel+".for" <<"\n";
+    //    fileStream <<"   Variable     Startvalue     Scaling" <<"\n";
+    //    fileStream <<"------------------------------------------------------" <<"\n";
+    //    for(int ii=0; ii<mPlotCurvePtrs[FIRSTPLOT].size(); ++ii)
+    //    {
+    //        fileStream << "  Y" << ii << "     " << StartvaluesList[ii]<<"      "<<ScalingvaluesList[ii]<<"\n";
+    //    }
+
+
+
+    //    file.close();
+}
 
 //! @brief Slot that exports plot tab as bitmap to specified .png file
 void PlotTab::exportToPng()
 {
     QString fileName = QFileDialog::getSaveFileName(
-       this, "Export File Name", gConfig.getPlotGfxDir(),
-       "Portable Network Graphics (*.png)");
+                this, "Export File Name", gConfig.getPlotGfxDir(),
+                "Portable Network Graphics (*.png)");
 
     if(!fileName.isEmpty())
     {
@@ -2344,10 +3149,10 @@ void PlotTab::exportToPng()
         }
         else
         {
-            QPixmap pixmap(mpPlot[FIRSTPLOT]->width(), mpPlot[FIRSTPLOT]->height());
+            QPixmap pixmap(mpQwtPlots[FIRSTPLOT]->width(), mpQwtPlots[FIRSTPLOT]->height());
             pixmap.fill();
             QwtPlotRenderer renderer;
-            renderer.renderTo(mpPlot[FIRSTPLOT], pixmap);
+            renderer.renderTo(mpQwtPlots[FIRSTPLOT], pixmap);
             pixmap.save(fileName);
         }
     }
@@ -2362,6 +3167,10 @@ void PlotTab::enableZoom(bool value)
         mpPanner[FIRSTPLOT]->setEnabled(false);
         mpPanner[SECONDPLOT]->setEnabled(false);
     }
+    if(mpParentPlotWindow->mpArrowButton->isChecked() && value)
+    {
+        mpParentPlotWindow->mpArrowButton->setChecked(false);
+    }
     mpZoomer[FIRSTPLOT]->setEnabled(value);
     if(value)   { mpZoomer[FIRSTPLOT]->setRubberBand(QwtPicker::RectRubberBand); }
     else        { mpZoomer[FIRSTPLOT]->setRubberBand(QwtPicker::NoRubberBand); }
@@ -2373,8 +3182,7 @@ void PlotTab::enableZoom(bool value)
     mpParentPlotWindow->mpResetXVectorButton->setEnabled(false);
 }
 
-
-void PlotTab::enablePan(bool value)
+void PlotTab::enableArrow(bool value)
 {
     if(mpParentPlotWindow->mpZoomButton->isChecked() && value)
     {
@@ -2385,6 +3193,33 @@ void PlotTab::enablePan(bool value)
         mpZoomer[SECONDPLOT]->setEnabled(false);
         mpZoomer[SECONDPLOT]->setRubberBand(QwtPicker::NoRubberBand);
         mpZoomerRight[SECONDPLOT]->setEnabled(false);
+    }
+    if(mpParentPlotWindow->mpPanButton->isChecked() && value)
+    {
+        mpParentPlotWindow->mpPanButton->setChecked(false);
+        mpPanner[FIRSTPLOT]->setEnabled(false);
+        mpPanner[SECONDPLOT]->setEnabled(false);
+    }
+
+}
+
+
+void PlotTab::enablePan(bool value)
+{
+    if(mpParentPlotWindow->mpZoomButton->isChecked() && value)
+    {
+        mpParentPlotWindow->mpZoomButton->setChecked(false);
+        //mpParentPlotWindow->mpArrowButton->setChecked(false);
+        mpZoomer[FIRSTPLOT]->setEnabled(false);
+        mpZoomer[FIRSTPLOT]->setRubberBand(QwtPicker::NoRubberBand);
+        mpZoomerRight[FIRSTPLOT]->setEnabled(false);
+        mpZoomer[SECONDPLOT]->setEnabled(false);
+        mpZoomer[SECONDPLOT]->setRubberBand(QwtPicker::NoRubberBand);
+        mpZoomerRight[SECONDPLOT]->setEnabled(false);
+    }
+    if(mpParentPlotWindow->mpArrowButton->isChecked() && value)
+    {
+        mpParentPlotWindow->mpArrowButton->setChecked(false);
     }
     mpPanner[FIRSTPLOT]->setEnabled(value);
     mpPanner[SECONDPLOT]->setEnabled(value);
@@ -2402,13 +3237,15 @@ void PlotTab::enableGrid(bool value)
 
 void PlotTab::setBackgroundColor()
 {
-    QColor color = QColorDialog::getColor(mpPlot[FIRSTPLOT]->canvasBackground().color(), this);
+    QColor color = QColorDialog::getColor(mpQwtPlots[FIRSTPLOT]->canvasBackground().color(), this);
     if (color.isValid())
     {
-        mpPlot[FIRSTPLOT]->setCanvasBackground(color);
-        mpPlot[FIRSTPLOT]->replot();
-        mpPlot[SECONDPLOT]->setCanvasBackground(color);
-        mpPlot[SECONDPLOT]->replot();
+        mpQwtPlots[FIRSTPLOT]->setCanvasBackground(color);
+        mpQwtPlots[FIRSTPLOT]->replot();
+        mpQwtPlots[FIRSTPLOT]->updateGeometry();
+        mpQwtPlots[SECONDPLOT]->setCanvasBackground(color);
+        mpQwtPlots[SECONDPLOT]->replot();
+        mpQwtPlots[SECONDPLOT]->updateGeometry();
     }
 }
 
@@ -2433,13 +3270,13 @@ PlotCurve *PlotTab::getActivePlotCurve()
 
 QwtPlot *PlotTab::getPlot(HopsanPlotID plotID)
 {
-    return mpPlot[plotID];
+    return mpQwtPlots[plotID];
 }
 
 
 void PlotTab::showPlot(HopsanPlotID plotID, bool visible)
 {
-    mpPlot[plotID]->setVisible(visible);
+    mpQwtPlots[plotID]->setVisible(visible);
 }
 
 
@@ -2449,30 +3286,32 @@ int PlotTab::getNumberOfCurves(HopsanPlotID plotID)
 }
 
 
+
 void PlotTab::update()
 {
     for(int plotID=0; plotID<1; ++plotID)
     {
-        mpPlot[plotID]->enableAxis(QwtPlot::yLeft, false);
-        mpPlot[plotID]->enableAxis(QwtPlot::yRight, false);
+        mpQwtPlots[plotID]->enableAxis(QwtPlot::yLeft, false);
+        mpQwtPlots[plotID]->enableAxis(QwtPlot::yRight, false);
         QList<PlotCurve *>::iterator cit;
         for(cit=mPlotCurvePtrs[plotID].begin(); cit!=mPlotCurvePtrs[plotID].end(); ++cit)
         {
-            if(!mpPlot[plotID]->axisEnabled((*cit)->getAxisY())) { mpPlot[plotID]->enableAxis((*cit)->getAxisY()); }
-            (*cit)->getCurvePtr()->attach(mpPlot[plotID]);
+            if(!mpQwtPlots[plotID]->axisEnabled((*cit)->getAxisY())) { mpQwtPlots[plotID]->enableAxis((*cit)->getAxisY()); }
+            (*cit)->getQwtPlotCurvePtr()->attach(mpQwtPlots[plotID]);
         }
 
         for(int i=0; i<mMarkerPtrs[plotID].size(); ++i)
         {
             QPointF posF = mMarkerPtrs[plotID].at(i)->value();
-            double x = mpPlot[plotID]->transform(QwtPlot::xBottom, posF.x());
-            double y = mpPlot[plotID]->transform(QwtPlot::yLeft, posF.y());
+            double x = mpQwtPlots[plotID]->transform(QwtPlot::xBottom, posF.x());
+            double y = mpQwtPlots[plotID]->transform(QwtPlot::yLeft, posF.y());
             QPoint pos = QPoint(x,y);
-            QwtPlotCurve *pCurve = mMarkerPtrs[plotID].at(i)->getCurve()->getCurvePtr();
+            HopQwtPlotCurve *pCurve = mMarkerPtrs[plotID].at(i)->getCurve()->getQwtPlotCurvePtr();
             mMarkerPtrs[plotID].at(i)->setXValue(pCurve->sample(pCurve->closestPoint(pos)).x());
-            mMarkerPtrs[plotID].at(i)->setYValue(mpPlot[plotID]->invTransform(QwtPlot::yLeft, mpPlot[plotID]->transform(pCurve->yAxis(), pCurve->sample(pCurve->closestPoint(pos)).y())));
+            mMarkerPtrs[plotID].at(i)->setYValue(mpQwtPlots[plotID]->invTransform(QwtPlot::yLeft, mpQwtPlots[plotID]->transform(pCurve->yAxis(), pCurve->sample(pCurve->closestPoint(pos)).y())));
         }
-        mpPlot[plotID]->replot();
+        mpQwtPlots[plotID]->replot();
+        mpQwtPlots[plotID]->updateGeometry();
     }
 }
 
@@ -2483,11 +3322,11 @@ void PlotTab::insertMarker(PlotCurve *pCurve, double x, double y, QString altLab
 
     int plotID = getPlotIDFromCurve(pCurve);
 
-    mpMarkerSymbol->setPen(QPen(pCurve->getCurvePtr()->pen().brush().color(), 3));
-    PlotMarker *tempMarker = new PlotMarker(pCurve, this, *mpMarkerSymbol);
+    mpMarkerSymbol->setPen(QPen(pCurve->getQwtPlotCurvePtr()->pen().brush().color(), 3));
+    PlotMarker *tempMarker = new PlotMarker(pCurve, this, mpMarkerSymbol);
     mMarkerPtrs[plotID].append(tempMarker);
 
-    tempMarker->attach(mpPlot[plotID]);
+    tempMarker->attach(mpQwtPlots[plotID]);
     QCursor cursor;
     tempMarker->setXValue(x);
     tempMarker->setYValue(y);
@@ -2505,14 +3344,14 @@ void PlotTab::insertMarker(PlotCurve *pCurve, double x, double y, QString altLab
     {
         tempLabel.setText("("+xString+", "+yString+")");
     }
-    tempLabel.setColor(pCurve->getCurvePtr()->pen().brush().color());
+    tempLabel.setColor(pCurve->getQwtPlotCurvePtr()->pen().brush().color());
     tempLabel.setBackgroundBrush(QColor(255,255,255,220));
     tempLabel.setFont(QFont("Calibri", 12, QFont::Normal));
     tempMarker->setLabel(tempLabel);
     tempMarker->setLabelAlignment(Qt::AlignTop);
 
-    mpPlot[plotID]->canvas()->installEventFilter(tempMarker);
-    mpPlot[plotID]->canvas()->setMouseTracking(true);
+    mpQwtPlots[plotID]->canvas()->installEventFilter(tempMarker);
+    mpQwtPlots[plotID]->canvas()->setMouseTracking(true);
 
     tempMarker->setMovable(movable);
 }
@@ -2524,31 +3363,31 @@ void PlotTab::insertMarker(PlotCurve *pCurve, QPoint pos, bool movable)
 {
     int plotID = getPlotIDFromCurve(pCurve);
 
-    mpMarkerSymbol->setPen(QPen(pCurve->getCurvePtr()->pen().brush().color(), 3));
-    PlotMarker *tempMarker = new PlotMarker(pCurve, this, *mpMarkerSymbol);
+    mpMarkerSymbol->setPen(QPen(pCurve->getQwtPlotCurvePtr()->pen().brush().color(), 3));
+    PlotMarker *tempMarker = new PlotMarker(pCurve, this, mpMarkerSymbol);
     mMarkerPtrs[plotID].append(tempMarker);
 
-    tempMarker->attach(mpPlot[plotID]);
+    tempMarker->attach(mpQwtPlots[plotID]);
     QCursor cursor;
-    tempMarker->setXValue(pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(pos)).x());
-    tempMarker->setYValue(mpPlot[plotID]->invTransform(QwtPlot::yLeft, mpPlot[plotID]->transform(pCurve->getCurvePtr()->yAxis(), pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(pos)).y())));
+    tempMarker->setXValue(pCurve->getQwtPlotCurvePtr()->sample(pCurve->getQwtPlotCurvePtr()->closestPoint(pos)).x());
+    tempMarker->setYValue(mpQwtPlots[plotID]->invTransform(QwtPlot::yLeft, mpQwtPlots[plotID]->transform(pCurve->getQwtPlotCurvePtr()->yAxis(), pCurve->getQwtPlotCurvePtr()->sample(pCurve->getQwtPlotCurvePtr()->closestPoint(pos)).y())));
 
     QString xString;
     QString yString;
-    double x = pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(pos)).x();
-    double y = pCurve->getCurvePtr()->sample(pCurve->getCurvePtr()->closestPoint(mpPlot[plotID]->canvas()->mapFromGlobal(cursor.pos()))).y();
+    double x = pCurve->getQwtPlotCurvePtr()->sample(pCurve->getQwtPlotCurvePtr()->closestPoint(pos)).x();
+    double y = pCurve->getQwtPlotCurvePtr()->sample(pCurve->getQwtPlotCurvePtr()->closestPoint(mpQwtPlots[plotID]->canvas()->mapFromGlobal(cursor.pos()))).y();
     xString.setNum(x);
     yString.setNum(y);
     QwtText tempLabel;
     tempLabel.setText("("+xString+", "+yString+")");
-    tempLabel.setColor(pCurve->getCurvePtr()->pen().brush().color());
+    tempLabel.setColor(pCurve->getQwtPlotCurvePtr()->pen().brush().color());
     tempLabel.setBackgroundBrush(QColor(255,255,255,220));
     tempLabel.setFont(QFont("Calibri", 12, QFont::Normal));
     tempMarker->setLabel(tempLabel);
     tempMarker->setLabelAlignment(Qt::AlignTop);
 
-    mpPlot[plotID]->canvas()->installEventFilter(tempMarker);
-    mpPlot[plotID]->canvas()->setMouseTracking(true);
+    mpQwtPlots[plotID]->canvas()->installEventFilter(tempMarker);
+    mpQwtPlots[plotID]->canvas()->setMouseTracking(true);
 
     tempMarker->setMovable(movable);
 }
@@ -2590,14 +3429,14 @@ void PlotTab::saveToDomElement(QDomElement &rDomElement, bool dateTime, bool des
     else
     {
 
-            //Cycle plot curves and write data tags
+        //Cycle plot curves and write data tags
         for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT][0]->getTimeVector().size(); ++j)
         {
             QDomElement dataTag = appendDomElement(rDomElement, "data");
 
             if(mHasSpecialXAxis)        //Special x-axis, replace time with x-data
             {
-                setQrealAttribute(dataTag, mVectorXDataName, mVectorX[j], 10, 'g');
+                setQrealAttribute(dataTag, mSpecialXVectorDescription.mDataName, mSpecialXVector[j], 10, 'g');
             }
             else                        //X-axis = time
             {
@@ -2639,8 +3478,8 @@ void PlotTab::setBottomAxisLogarithmic(bool value)
     mBottomAxisLogarithmic = value;
     if(value)
     {
-        getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLog10ScaleEngine);
-        getPlot(SECONDPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLog10ScaleEngine);
+        getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLogScaleEngine(10));
+        getPlot(SECONDPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLogScaleEngine(10));
     }
     else
     {
@@ -2657,19 +3496,20 @@ bool PlotTab::hasLogarithmicBottomAxis()
 }
 
 
+//! @todo this only tunrs on internal legend automatically, maybe need an otehr version with two arguments
 void PlotTab::setLegendsVisible(bool value)
 {
-    for(int c=0; c<mPlotCurvePtrs[FIRSTPLOT].size(); ++c)
+    if (value)
     {
-        mPlotCurvePtrs[FIRSTPLOT].at(c)->getCurvePtr()->setItemAttribute(QwtPlotItem::Legend, value);
+        //Only turn on internal automatically
+        mpLegendsInternalEnabledCheckBox->setChecked(true);
     }
-
-    for(int c=0; c<mPlotCurvePtrs[FIRSTPLOT].size(); ++c)
+    else
     {
-        mPlotCurvePtrs[FIRSTPLOT].at(c)->getCurvePtr()->setItemAttribute(QwtPlotItem::Legend, value);
+        mpLegendsInternalEnabledCheckBox->setChecked(false);
+        mpLegendsExternalEnabledCheckBox->setChecked(false);
     }
-
-    update();
+    applyLegendSettings();
 }
 
 
@@ -2744,7 +3584,7 @@ QString PlotTab::updateXmlOutputTextInDialog()
 //! @note Don't call this directly, call exportToXml() first and it will subsequently call this slot
 void PlotTab::saveToXml()
 {
-        //Open file dialog and initialize the file stream
+    //Open file dialog and initialize the file stream
     QDir fileDialogSaveDir;
     QString filePath;
     QFileInfo fileInfo;
@@ -2758,7 +3598,7 @@ void PlotTab::saveToXml()
     file.setFileName(fileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open file for writing: " + filePath);
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + filePath);
         return;
     }
 
@@ -2787,6 +3627,260 @@ int PlotTab::getPlotIDFromCurve(PlotCurve *pCurve)
     return -1;
 }
 
+//! @brief HelpFunction for constructor
+void PlotTab::constructLegendSettingsDialog()
+{
+    mpLegendSettingsDialog = new QDialog(this);
+    mpLegendSettingsDialog->setWindowTitle("Legend Controls");
+    mpLegendSettingsDialog->setWindowModality(Qt::WindowModal);
+
+    mpLegendSize = new QSpinBox(this);
+    mpLegendSize->setRange(1,20);
+    mpLegendSize->setSingleStep(1);
+    mpLegendSize->setValue(11);
+
+    mpLegendCol = new QSpinBox(this);
+    mpLegendCol->setRange(1,20);
+    mpLegendCol->setSingleStep(1);
+    mpLegendCol->setValue(1);
+
+    mpLegendOff = new QDoubleSpinBox(this);
+    mpLegendOff->setRange(-DBLMAX, DBLMAX);
+    mpLegendOff->setDecimals(10);
+    mpLegendOff->setSingleStep(0.1);
+    mpLegendOff->setValue(0);
+
+//    mpLegendOffYR = new QDoubleSpinBox(this);
+//    mpLegendOffYR->setRange(-DBLMAX, DBLMAX);
+//    mpLegendOffYR->setDecimals(10);
+//    mpLegendOffYR->setSingleStep(0.1);
+//    mpLegendOffYR->setValue(0);
+
+    mpLegendsOffEnabledCheckBox = new QCheckBox(this);
+    mpLegendsOffEnabledCheckBox->setCheckable(true);
+
+//    mpLegendsOffYREnabledCheckBox = new QCheckBox(this);
+//    mpLegendsOffYREnabledCheckBox->setCheckable(true);
+
+    mpLegendsInternalEnabledCheckBox = new QCheckBox(this);
+    mpLegendsInternalEnabledCheckBox->setCheckable(true);
+    mpLegendsInternalEnabledCheckBox->setChecked(true); //Internal on by default
+
+    mpLegendsExternalEnabledCheckBox = new QCheckBox(this);
+    mpLegendsExternalEnabledCheckBox->setCheckable(true);
+
+    mpLegendLPosition = new QComboBox(this);
+    mpLegendLPosition->addItem("Top");
+    mpLegendLPosition->addItem("Bottom");
+    mpLegendLPosition->addItem("Centre");
+
+    mpLegendRPosition = new QComboBox(this);
+    mpLegendRPosition->addItem("Top");
+    mpLegendRPosition->addItem("Bottom");
+    mpLegendRPosition->addItem("Centre");
+
+    mpLegendBlob = new QComboBox(this);
+    mpLegendBlob->addItem("White");
+    mpLegendBlob->addItem("Red");
+    mpLegendBlob->addItem("Blue");
+    mpLegendBlob->addItem("Black");
+    mpLegendBlob->addItem("Maroon");
+    mpLegendBlob->addItem("Gray");
+    mpLegendBlob->addItem("LightSalmon");
+    mpLegendBlob->addItem("SteelBlue");
+    mpLegendBlob->addItem("Yellow");
+    mpLegendBlob->addItem("Gray");
+    mpLegendBlob->addItem("Fuchsia");
+    mpLegendBlob->addItem("PaleGreen");
+    mpLegendBlob->addItem("PaleTurquoise");
+    mpLegendBlob->addItem("Cornsilk");
+    mpLegendBlob->addItem("HotPink");
+    mpLegendBlob->addItem("Peru");
+    mpLegendBlob->addItem("Pink");
+
+    mpLegendBg = new QComboBox(this);
+    mpLegendBg->addItem("Legends", HopQwtPlotLegendItem::LegendBackground);
+    mpLegendBg->addItem("Items", HopQwtPlotLegendItem::ItemBackground);
+
+    mpLegendSym = new QComboBox(this);
+    mpLegendSym->addItem("Rectangle", QwtPlotCurve::LegendNoAttribute );
+    mpLegendSym->addItem("Line", QwtPlotCurve::LegendShowLine );
+    mpLegendSym->addItem("Default Symbol", QwtPlotCurve::LegendShowSymbol );
+    mpLegendSym->addItem("Brush", QwtPlotCurve::LegendShowBrush );
+
+    QGroupBox *legendBox = new QGroupBox( "Legend" );
+    QGridLayout *legendBoxLayout = new QGridLayout( legendBox );
+
+    int row = 0;
+    legendBoxLayout->addWidget( new QLabel( "Size" ), row, 0 );
+    legendBoxLayout->addWidget( mpLegendSize, row, 1 );
+
+    row++;
+    legendBoxLayout->addWidget( new QLabel( "Columns" ), row, 0 );
+    legendBoxLayout->addWidget( mpLegendCol, row, 1 );
+
+    row++;
+    legendBoxLayout->addWidget( new QLabel( "Left Legend Position" ), row, 0 );
+    legendBoxLayout->addWidget( mpLegendLPosition, row, 1 );
+
+    row++;
+    legendBoxLayout->addWidget( new QLabel( "Right Legend Position" ), row, 0 );
+    legendBoxLayout->addWidget( mpLegendRPosition, row, 1 );
+
+    row++;
+    legendBoxLayout->addWidget( new QLabel( "Background" ), row, 0 );
+    legendBoxLayout->addWidget( mpLegendBg, row, 1 );
+
+    QPushButton *pFinishedLegButton = new QPushButton("Close", mpLegendSettingsDialog);
+    QDialogButtonBox *pFinishedLegButtonBox = new QDialogButtonBox(Qt::Horizontal);
+    pFinishedLegButtonBox->addButton(pFinishedLegButton, QDialogButtonBox::ActionRole);
+
+    row++;
+    legendBoxLayout->addWidget( new QLabel( "Internal Legends" ), row, 0 );
+    legendBoxLayout->addWidget( mpLegendsInternalEnabledCheckBox, row, 1 );
+
+    row++;
+    legendBoxLayout->addWidget( new QLabel( "External Legends" ), row, 0 );
+    legendBoxLayout->addWidget( mpLegendsExternalEnabledCheckBox, row, 1 );
+
+    row++;
+    legendBoxLayout->addWidget( new QLabel( "Legend Color" ), row, 0 );
+    legendBoxLayout->addWidget( mpLegendBlob, row, 1 );
+
+    row++;
+    legendBoxLayout->addWidget( new QLabel( "Legend Symbol" ), row, 0 );
+    legendBoxLayout->addWidget( mpLegendSym, row, 1 );
+
+    row++;
+    legendBoxLayout->addWidget( new QLabel( "Legend OffsetYL" ), row, 0 );
+    legendBoxLayout->addWidget( mpLegendOff, row, 1 );
+
+    //row++;
+//    legendBoxLayout->addWidget( new QLabel( "Legend OffsetYR" ), row, 2 );
+//    legendBoxLayout->addWidget( mpLegendOffYR, row, 3 );
+
+    row++;
+    legendBoxLayout->addWidget( new QLabel( "Offset conditionYL" ), row, 0 );
+    legendBoxLayout->addWidget( mpLegendsOffEnabledCheckBox, row, 1 );
+
+//    legendBoxLayout->addWidget( new QLabel( "Offset conditionYR" ), row, 2 );
+//    legendBoxLayout->addWidget( mpLegendsOffYREnabledCheckBox, row, 3 );
+
+    row++;
+    legendBoxLayout->addWidget( pFinishedLegButton, row, 1 );
+
+    mpLegendSettingsDialog->setLayout(legendBoxLayout);
+
+    connect(mpLegendSize, SIGNAL(valueChanged(int)), this, SLOT(applyLegendSettings()));
+    connect(mpLegendCol, SIGNAL(valueChanged(int)), this, SLOT(applyLegendSettings()));
+    connect(mpLegendsInternalEnabledCheckBox, SIGNAL(toggled(bool)), this, SLOT(applyLegendSettings()));
+    connect(mpLegendsExternalEnabledCheckBox, SIGNAL(toggled(bool)), this, SLOT(applyLegendSettings()));
+    connect(mpLegendBg, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
+    connect(mpLegendSym, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
+    connect(mpLegendLPosition, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
+    connect(mpLegendRPosition, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
+    connect(mpLegendBlob, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
+    connect(mpLegendOff, SIGNAL(valueChanged(double)), this, SLOT(applyLegendSettings()));
+    connect(mpLegendsOffEnabledCheckBox, SIGNAL(toggled(bool)), this, SLOT(applyLegendSettings()));
+//    connect(mpLegendOffYR, SIGNAL(valueChanged(double)), this, SLOT(applyLegendSettings()));
+//    connect(mpLegendsOffYREnabledCheckBox, SIGNAL(toggled(bool)), this, SLOT(applyLegendSettings()));
+    connect(pFinishedLegButton, SIGNAL(clicked()), mpLegendSettingsDialog, SLOT(close()));
+}
+
+//! @brief HelpFunction for constructor
+void PlotTab::constructAxisSettingsDialog()
+{
+    mpSetAxisDialog = new QDialog(this);
+    mpSetAxisDialog->setWindowTitle("Set Lock on Axis");
+    //mpSetAxisDialog->setWindowModality(Qt::WindowModal);
+
+    mpXbSetLockCheckBox = new QCheckBox("Lock X-Axis");
+    mpXbSetLockCheckBox->setCheckable(true);
+    mpYLSetLockCheckBox = new QCheckBox("Lock YL-Axis");
+    mpYLSetLockCheckBox->setCheckable(true);
+    mpYRSetLockCheckBox = new QCheckBox("Lock YR-Axis");
+    mpYRSetLockCheckBox->setCheckable(true);
+
+    mpXbSetLockCheckBox->setChecked(false);
+    mpYLSetLockCheckBox->setChecked(false);
+    mpYRSetLockCheckBox->setChecked(false);
+
+    QLabel *pXminLabel = new QLabel("X Axis Min: ", mpSetAxisDialog);
+    mpXminSpinBox = new QDoubleSpinBox(mpSetAxisDialog);
+    mpXminSpinBox->setRange(-DBLMAX, DBLMAX);
+    mpXminSpinBox->setDecimals(10);
+    mpXminSpinBox->setSingleStep(0.1);
+
+    QLabel *pXmaxLabel = new QLabel("X Axis Max: ", mpSetAxisDialog);
+    mpXmaxSpinBox = new QDoubleSpinBox(mpSetAxisDialog);
+    mpXmaxSpinBox->setRange(-DBLMAX, DBLMAX);
+    mpXmaxSpinBox->setDecimals(10);
+    mpXmaxSpinBox->setSingleStep(0.1);
+
+    QLabel *pYLminLabel = new QLabel("YL Axis Min: ", mpSetAxisDialog);
+    mpYLminSpinBox = new QDoubleSpinBox(mpSetAxisDialog);
+    mpYLminSpinBox->setRange(-DBLMAX, DBLMAX);
+    mpYLminSpinBox->setDecimals(10);
+    mpYLminSpinBox->setSingleStep(0.1);
+
+    QLabel *pYLmaxLabel = new QLabel("YL Axis Max: ", mpSetAxisDialog);
+    mpYLmaxSpinBox = new QDoubleSpinBox(mpSetAxisDialog);
+    mpYLmaxSpinBox->setRange(-DBLMAX, DBLMAX);
+    mpYLmaxSpinBox->setDecimals(10);
+    mpYLmaxSpinBox->setSingleStep(0.1);
+
+    QLabel *pYRminLabel = new QLabel("YR Axis Min: ", mpSetAxisDialog);
+    mpYRminSpinBox = new QDoubleSpinBox(mpSetAxisDialog);
+    mpYRminSpinBox->setRange(-DBLMAX, DBLMAX);
+    mpYRminSpinBox->setDecimals(10);
+    mpYRminSpinBox->setSingleStep(0.1);
+
+    QLabel *pYRmaxLabel = new QLabel("YR Axis Max: ", mpSetAxisDialog);
+    mpYRmaxSpinBox = new QDoubleSpinBox(mpSetAxisDialog);
+    mpYRmaxSpinBox->setRange(-DBLMAX, DBLMAX);
+    mpYRmaxSpinBox->setDecimals(10);
+    mpYRmaxSpinBox->setSingleStep(0.1);
+
+    QPushButton *pFinishedButton = new QPushButton("Done", mpSetAxisDialog);
+    QDialogButtonBox *pFinishedButtonBox = new QDialogButtonBox(Qt::Horizontal);
+    pFinishedButtonBox->addButton(pFinishedButton, QDialogButtonBox::ActionRole);
+
+    QGridLayout *pLockAxisDialogLayout = new QGridLayout(mpSetAxisDialog);
+
+    pLockAxisDialogLayout->addWidget(pXminLabel,                0, 0);
+    pLockAxisDialogLayout->addWidget(mpXminSpinBox,             0, 1);
+    pLockAxisDialogLayout->addWidget(pXmaxLabel,                0, 2);
+    pLockAxisDialogLayout->addWidget(mpXmaxSpinBox,             0, 3);
+    pLockAxisDialogLayout->addWidget(mpXbSetLockCheckBox,         0, 4);
+    pLockAxisDialogLayout->addWidget(pYLminLabel,                1, 0);
+    pLockAxisDialogLayout->addWidget(mpYLminSpinBox,             1, 1);
+    pLockAxisDialogLayout->addWidget(pYLmaxLabel,                1, 2);
+    pLockAxisDialogLayout->addWidget(mpYLmaxSpinBox,             1, 3);
+    pLockAxisDialogLayout->addWidget(mpYLSetLockCheckBox,         1, 4);
+    pLockAxisDialogLayout->addWidget(pYRminLabel,                2, 0);
+    pLockAxisDialogLayout->addWidget(mpYRminSpinBox,             2, 1);
+    pLockAxisDialogLayout->addWidget(pYRmaxLabel,                2, 2);
+    pLockAxisDialogLayout->addWidget(mpYRmaxSpinBox,             2, 3);
+    pLockAxisDialogLayout->addWidget(mpYRSetLockCheckBox,         2, 4);
+    //pLockAxisDialogLayout->addWidget(mpSetLockCheckBox,         6, 0, 1, 2);
+    pLockAxisDialogLayout->addWidget(pFinishedButtonBox,       6, 1, 1, 2);
+    //pLockAxisDialogLayout->addWidget(pNextButton,              3, 1, 1, 1);
+
+    mpSetAxisDialog->setLayout(pLockAxisDialogLayout);
+
+    connect(mpXminSpinBox, SIGNAL(valueChanged(double)), this, SLOT(applyAxisSettings()));
+    connect(mpXmaxSpinBox, SIGNAL(valueChanged(double)), this, SLOT(applyAxisSettings()));
+    connect(mpYLminSpinBox, SIGNAL(valueChanged(double)), this, SLOT(applyAxisSettings()));
+    connect(mpYLmaxSpinBox, SIGNAL(valueChanged(double)), this, SLOT(applyAxisSettings()));
+    connect(mpYRminSpinBox, SIGNAL(valueChanged(double)), this, SLOT(applyAxisSettings()));
+    connect(mpYRmaxSpinBox, SIGNAL(valueChanged(double)), this, SLOT(applyAxisSettings()));
+    connect(mpXbSetLockCheckBox, SIGNAL(toggled(bool)), this, SLOT(applyAxisSettings()));
+    connect(mpYLSetLockCheckBox, SIGNAL(toggled(bool)), this, SLOT(applyAxisSettings()));
+    connect(mpYRSetLockCheckBox, SIGNAL(toggled(bool)), this, SLOT(applyAxisSettings()));
+    connect(pFinishedButton, SIGNAL(clicked()), mpSetAxisDialog, SLOT(close()));
+
+}
+
 
 //! @brief Defines what happens when used drags something into the plot window
 void PlotTab::dragEnterEvent(QDragEnterEvent *event)
@@ -2796,7 +3890,7 @@ void PlotTab::dragEnterEvent(QDragEnterEvent *event)
 
     if (event->mimeData()->hasText())
     {
-            //Create the hover rectangle (size will be changed by dragMoveEvent)
+        //Create the hover rectangle (size will be changed by dragMoveEvent)
         mpHoverRect = new QRubberBand(QRubberBand::Rectangle,this);
         mpHoverRect->setGeometry(0, 0, this->width(), this->height());
         mpHoverRect->setWindowOpacity(1);
@@ -2857,35 +3951,26 @@ void PlotTab::dropEvent(QDropEvent *event)
         delete(mpHoverRect);
 
         QString mimeText = event->mimeData()->text();
-        QTextStream mimeStream;
-        mimeStream.setString(&mimeText);
-
-        QString discardedText;
-        QString componentName;
-        QString portName;
-        QString dataName;
-
-        if(mimeText.startsWith("HOPSANPLOTDATA"))
+        if(mimeText.startsWith("HOPSANPLOTDATA:"))
         {
             qDebug() << mimeText;
-
-            discardedText = readName(mimeStream);
-            componentName = readName(mimeStream);
-            portName = readName(mimeStream);
-            dataName = readName(mimeStream);
+            mimeText.remove("HOPSANPLOTDATA:");
 
             QCursor cursor;
+            //! @todo should not be half heigh should be slightly lower (Peters opinion)
             if(this->mapFromGlobal(cursor.pos()).y() > getPlot()->canvas()->height()/2+getPlot()->canvas()->y()+10 && getNumberOfCurves(FIRSTPLOT) >= 1)
             {
-                changeXVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getPlotData(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->size()-1, componentName, portName, dataName), componentName, portName, dataName, gConfig.getDefaultUnit(dataName));
+                VariableDescription desc = gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getPlotData(mimeText, -1)->getVariableDescription();
+                desc.mDataUnit = gConfig.getDefaultUnit(desc.mDataName);
+                changeXVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getPlotDataValues(desc.getFullName(), -1), desc );
             }
             else if(this->mapFromGlobal(cursor.pos()).x() < getPlot()->canvas()->x()+9 + getPlot()->canvas()->width()/2)
             {
-                mpParentPlotWindow->addPlotCurve(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->size()-1, componentName, portName, dataName, "", QwtPlot::yLeft);
+                mpParentPlotWindow->addPlotCurve(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getPlotData(mimeText, -1), QwtPlot::yLeft);
             }
             else
             {
-                mpParentPlotWindow->addPlotCurve(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->size()-1, componentName, portName, dataName, "", QwtPlot::yRight);
+                mpParentPlotWindow->addPlotCurve(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getPlotData(mimeText, -1), QwtPlot::yRight);
             }
         }
     }
@@ -2897,7 +3982,7 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
 {
     QWidget::contextMenuEvent(event);
 
- //   return;
+    //   return;
     if(this->mpZoomer[FIRSTPLOT]->isEnabled())
     {
         return;
@@ -2917,10 +4002,10 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
     yAxisLeftMenu = menu.addMenu(QString("Left Y Axis"));
     yAxisRightMenu = menu.addMenu(QString("Right Y Axis"));
 
-    yAxisLeftMenu->setEnabled(mpPlot[FIRSTPLOT]->axisEnabled(QwtPlot::yLeft));
-    yAxisRightMenu->setEnabled(mpPlot[FIRSTPLOT]->axisEnabled(QwtPlot::yRight));
+    yAxisLeftMenu->setEnabled(mpQwtPlots[FIRSTPLOT]->axisEnabled(QwtPlot::yLeft));
+    yAxisRightMenu->setEnabled(mpQwtPlots[FIRSTPLOT]->axisEnabled(QwtPlot::yRight));
 
-        //Create menu and actions for changing units
+    //Create menu and actions for changing units
     changeUnitsMenu = menu.addMenu(QString("Change Units"));
     QMap<QAction *, PlotCurve *> actionToCurveMap;
     QMap<QString, double> unitMap;
@@ -2938,14 +4023,14 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
     }
 
 
-        //Create actions for making axis logarithmic
-    if(mpPlot[FIRSTPLOT]->axisEnabled(QwtPlot::yLeft))
+    //Create actions for making axis logarithmic
+    if(mpQwtPlots[FIRSTPLOT]->axisEnabled(QwtPlot::yLeft))
     {
         setLeftAxisLogarithmic = yAxisLeftMenu->addAction("Logarithmic Scale");
         setLeftAxisLogarithmic->setCheckable(true);
         setLeftAxisLogarithmic->setChecked(mLeftAxisLogarithmic);
     }
-    if(mpPlot[FIRSTPLOT]->axisEnabled(QwtPlot::yRight))
+    if(mpQwtPlots[FIRSTPLOT]->axisEnabled(QwtPlot::yRight))
     {
         setRightAxisLogarithmic = yAxisRightMenu->addAction("Logarithmic Scale");
         setRightAxisLogarithmic->setCheckable(true);
@@ -2953,7 +4038,7 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
     }
 
 
-        //Create menu for insereting curve markers
+    //Create menu for insereting curve markers
     insertMarkerMenu = menu.addMenu(QString("Insert Curve Marker"));
     for(int plotID=0; plotID<2; ++plotID)
     {
@@ -2975,35 +4060,37 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
 
 
 
-        // Check if user did not click on a menu item
+    // Check if user did not click on a menu item
     if(selectedAction == 0)
     {
         return;
     }
 
 
-        // Change unit on selected curve
+    // Change unit on selected curve
     if(selectedAction->parentWidget()->parentWidget() == changeUnitsMenu)
     {
         actionToCurveMap.find(selectedAction).value()->setDataUnit(selectedAction->text());
     }
 
 
-        //Make axis logarithmic
+    //Make axis logarithmic
     if (selectedAction == setRightAxisLogarithmic)
     {
         mRightAxisLogarithmic = !mRightAxisLogarithmic;
         if(mRightAxisLogarithmic)
         {
-            mpPlot[FIRSTPLOT]->setAxisScaleEngine(QwtPlot::yRight, new QwtLog10ScaleEngine);
+            mpQwtPlots[FIRSTPLOT]->setAxisScaleEngine(QwtPlot::yRight, new QwtLogScaleEngine(10));
             rescaleToCurves();
-            mpPlot[FIRSTPLOT]->replot();
+            mpQwtPlots[FIRSTPLOT]->replot();
+            mpQwtPlots[FIRSTPLOT]->updateGeometry();
         }
         else
         {
-            mpPlot[FIRSTPLOT]->setAxisScaleEngine(QwtPlot::yRight, new QwtLinearScaleEngine);
+            mpQwtPlots[FIRSTPLOT]->setAxisScaleEngine(QwtPlot::yRight, new QwtLinearScaleEngine);
             rescaleToCurves();
-            mpPlot[FIRSTPLOT]->replot();
+            mpQwtPlots[FIRSTPLOT]->replot();
+            mpQwtPlots[FIRSTPLOT]->updateGeometry();
         }
     }
     else if (selectedAction == setLeftAxisLogarithmic)
@@ -3012,21 +4099,23 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
         if(mLeftAxisLogarithmic)
         {
             qDebug() << "Logarithmic!";
-            mpPlot[FIRSTPLOT]->setAxisScaleEngine(QwtPlot::yLeft, new QwtLog10ScaleEngine);
+            mpQwtPlots[FIRSTPLOT]->setAxisScaleEngine(QwtPlot::yLeft, new QwtLogScaleEngine(10));
             rescaleToCurves();
-            mpPlot[FIRSTPLOT]->replot();
+            mpQwtPlots[FIRSTPLOT]->replot();
+            mpQwtPlots[FIRSTPLOT]->updateGeometry();
         }
         else
         {
             qDebug() << "Linear!";
-            mpPlot[FIRSTPLOT]->setAxisScaleEngine(QwtPlot::yLeft, new QwtLinearScaleEngine);
+            mpQwtPlots[FIRSTPLOT]->setAxisScaleEngine(QwtPlot::yLeft, new QwtLinearScaleEngine);
             rescaleToCurves();
-            mpPlot[FIRSTPLOT]->replot();
+            mpQwtPlots[FIRSTPLOT]->replot();
+            mpQwtPlots[FIRSTPLOT]->updateGeometry();
         }
     }
 
 
-        //Insert curve marker
+    //Insert curve marker
     if(selectedAction->parentWidget() == insertMarkerMenu)
     {
         insertMarker(actionToCurveMap.find(selectedAction).value(), event->pos());
@@ -3038,6 +4127,106 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
 class PlotInfoBox;
 
 
+////! @brief Constructor for plot curves.
+////! @param generation Generation of plot data to use
+////! @param componentName Name of component where plot data is located
+////! @param portName Name of port where plot data is located
+////! @param dataName Name of physical quantity to use (e.g. "Pressure", "Velocity"...)
+////! @param dataUnit Name of unit to show data in
+////! @param axisY Which Y-axis to use (QwtPlot::yLeft or QwtPlot::yRight)
+////! @param parent Pointer to plot tab which curve shall be created it
+//PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit, int axisY, QString modelPath, PlotTab *parent, HopsanPlotID plotID, HopsanPlotCurveType curveType)
+//{
+//    mCurveType = curveType;
+
+//        //Set all member variables
+//    mpParentPlotTab = parent;
+//    if(modelPath.isEmpty())
+//    {
+//        mpContainerObject = gpMainWindow->mpProjectTabs->getCurrentContainer();
+//    }
+//    else
+//    {
+//        for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
+//        {
+//            if(gpMainWindow->mpProjectTabs->getTab(i)->getTopLevelSystem()->getModelFileInfo().filePath() == modelPath)
+//            {
+//                mpContainerObject = gpMainWindow->mpProjectTabs->getContainer(i);
+//                break;
+//            }
+//        }
+//    }
+//    assert(!mpContainerObject == 0);        //Container not found, should never happen! Caller to the function has supplied a model name that does not exist.
+
+//    mpContainerObject->getPlotDataPtr()->incrementOpenPlotCurves();
+//    mGeneration = generation;
+//    mComponentName = componentName;
+//    mPortName = portName;
+//    mDataName = dataName;
+//    if(dataUnit.isEmpty())
+//    {
+//        mDataUnit = gConfig.getDefaultUnit(dataName);   //Apply default unit if not specified
+//    }
+//    else
+//    {
+//        mDataUnit = dataUnit;
+//    }
+//    mAxisY = axisY;
+//    mAutoUpdate = true;
+//    mScaleX = 1.0;
+//    mScaleY = 1.0;
+//    mOffsetX = 0.0;
+//    mOffsetY = 0.0;
+
+//        //Get data from container object
+//    mDataVector = mpContainerObject->getPlotDataPtr()->getPlotData(generation, componentName, portName, dataName);
+//    mTimeVector = mpContainerObject->getPlotDataPtr()->getTimeVector(generation);
+
+//        //Create the actual curve
+//    mpQwtPlotCurve = new HopQwtPlotCurve(QString(mComponentName+", "+mPortName+", "+mDataName));
+//    updateCurve();
+//    mpQwtPlotCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
+//    mpQwtPlotCurve->setYAxis(axisY);
+//    mpQwtPlotCurve->attach(parent->getPlot(plotID));
+
+//        //Create the plot info box
+//    mpPlotInfoBox = new PlotInfoBox(this, mpParentPlotTab);
+//    mpPlotInfoBox->setPalette(gConfig.getPalette());
+//    updatePlotInfoBox();
+//    mpPlotInfoBox->mpSizeSpinBox->setValue(2);
+//    //mpPlotInfoBox->mpLineStyleCombo->setStyle("SolidLine");
+
+//    mpParentPlotTab->mpParentPlotWindow->mpPlotInfoLayout->addWidget(mpPlotInfoBox);
+
+//    if(curveType != PORTVARIABLE)
+//    {
+//        setAutoUpdate(false);
+//        mpPlotInfoBox->mpAutoUpdateCheckBox->setDisabled(true);
+//        mpPlotInfoBox->mpNextButton->setDisabled(true);
+//        mpPlotInfoBox->mpPreviousButton->setDisabled(true);
+//        mpPlotInfoBox->mpFrequencyAnalysisButton->setDisabled(true);
+//    }
+
+//    mpQwtPlotCurve->setItemAttribute(QwtPlotItem::Legend, mpParentPlotTab->mpParentPlotWindow->mLegendsVisible);
+
+//        //Create connections
+//    connect(mpPlotInfoBox->mpLineStyleCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(setLineStyle(QString)));
+//    connect(mpPlotInfoBox->mpLineSymbol, SIGNAL(currentIndexChanged(QString)),  this, SLOT(setLineSymbol(QString)));
+//    connect(mpPlotInfoBox->mpSizeSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setLineWidth(int)));
+//    connect(mpPlotInfoBox->mpColorButton, SIGNAL(clicked()), this, SLOT(setLineColor()));
+//    connect(mpPlotInfoBox->mpScaleButton, SIGNAL(clicked()), this, SLOT(openScaleDialog()));
+//    connect(mpParentPlotTab->mpParentPlotWindow->getPlotTabWidget(), SIGNAL(currentChanged(int)), this, SLOT(updatePlotInfoVisibility()));
+//    connect(mpParentPlotTab->mpParentPlotWindow->mpShowCurveInfoButton, SIGNAL(toggled(bool)), SLOT(updatePlotInfoVisibility()));
+//    connect(mpPlotInfoBox->mpCloseButton, SIGNAL(clicked()), this, SLOT(removeMe()));
+//    connect(gpMainWindow->mpProjectTabs->getCurrentTab(),SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
+//    connect(gpMainWindow->mpProjectTabs,SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
+//    connect(mpContainerObject, SIGNAL(objectDeleted()), this, SLOT(removeMe()));
+//    connect(mpContainerObject, SIGNAL(objectDeleted()), mpParentPlotTab->mpParentPlotWindow, SLOT(closeIfEmpty()), Qt::UniqueConnection);
+//    connect(mpContainerObject->getModelObject(mComponentName), SIGNAL(objectDeleted()), this, SLOT(removeMe()));
+//    connect(mpContainerObject->getModelObject(mComponentName), SIGNAL(nameChanged()), this, SLOT(removeMe()));
+//    connect(mpContainerObject, SIGNAL(connectorRemoved()), this, SLOT(removeIfNotConnected()));
+//}
+
 //! @brief Constructor for plot curves.
 //! @param generation Generation of plot data to use
 //! @param componentName Name of component where plot data is located
@@ -3046,12 +4235,46 @@ class PlotInfoBox;
 //! @param dataUnit Name of unit to show data in
 //! @param axisY Which Y-axis to use (QwtPlot::yLeft or QwtPlot::yRight)
 //! @param parent Pointer to plot tab which curve shall be created it
-PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit, int axisY, QString modelPath, PlotTab *parent, HopsanPlotID plotID, HopsanPlotCurveType curveType)
+PlotCurve::PlotCurve(LogVariableData *pData,
+                     int axisY,
+                     QString modelPath,
+                     PlotTab *parent,
+                     HopsanPlotID plotID,
+                     HopsanPlotCurveType curveType)
+{
+    mHaveCustomData = false;
+    mpData = pData;
+    commonConstructorCode(axisY, modelPath, parent, plotID, curveType);
+}
+
+//! @brief Consturctor for custom data
+PlotCurve::PlotCurve(const VariableDescription &rVarDesc,
+                     const QVector<double> &rXVector,
+                     const QVector<double> &rYVector,
+                     int axisY,
+                     QString modelPath,
+                     PlotTab *parent,
+                     HopsanPlotID plotID,
+                     HopsanPlotCurveType curveType)
+{
+    LogVariableContainer *pDataContainer = new LogVariableContainer(rVarDesc);
+    pDataContainer->addDataGeneration(0, rXVector, rYVector);
+    mHaveCustomData = true;
+    mpData = pDataContainer->getDataGeneration(0);
+    commonConstructorCode(axisY, modelPath, parent, plotID, curveType);
+}
+
+void PlotCurve::commonConstructorCode(int axisY,
+                                      QString modelPath,
+                                      PlotTab* parent,
+                                      HopsanPlotID plotID,
+                                      HopsanPlotCurveType curveType)
 {
     mCurveType = curveType;
-
-        //Set all member variables
     mpParentPlotTab = parent;
+
+    //! @todo send in continer ptr directly instead of madness searching
+    //Set all member variables
     if(modelPath.isEmpty())
     {
         mpContainerObject = gpMainWindow->mpProjectTabs->getCurrentContainer();
@@ -3069,42 +4292,40 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
     }
     assert(!mpContainerObject == 0);        //Container not found, should never happen! Caller to the function has supplied a model name that does not exist.
 
-    mpContainerObject->getPlotDataPtr()->incrementOpenPlotCurves();
-    mGeneration = generation;
-    mComponentName = componentName;
-    mPortName = portName;
-    mDataName = dataName;
+    mpContainerObject->getPlotDataPtr()->incrementOpenPlotCurves(); //!< why is this necessary
+
+    QString dataUnit = mpData->getDataUnit();
     if(dataUnit.isEmpty())
     {
-        mDataUnit = gConfig.getDefaultUnit(dataName);   //Apply default unit if not specified
+        dataUnit = gConfig.getDefaultUnit(mpData->getDataName());   //Apply default unit if not specified
     }
-    else
-    {
-        mDataUnit = dataUnit;
-    }
+
     mAxisY = axisY;
     mAutoUpdate = true;
     mScaleX = 1.0;
     mScaleY = 1.0;
-    mOffsetX = 0.0;
-    mOffsetY = 0.0;
 
-        //Get data from container object
-    mDataVector = mpContainerObject->getPlotDataPtr()->getPlotData(generation, componentName, portName, dataName);
-    mTimeVector = mpContainerObject->getPlotDataPtr()->getTimeVector(generation);
+    //! @todo FIX /Peter (should not be here)
+    mOffsetX = mpData->mAppliedTimeOffset;
+    mOffsetY = mpData->mAppliedValueOffset;
 
-        //Create the actual curve
-    mpCurve = new QwtPlotCurve(QString(mComponentName+", "+mPortName+", "+mDataName));
+    //Create the actual curve
+    mpQwtPlotCurve = new HopQwtPlotCurve(this->getCurveName());
     updateCurve();
-    mpCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
-    mpCurve->setYAxis(axisY);
-    mpCurve->attach(parent->getPlot(plotID));
+    mpQwtPlotCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
+    mpQwtPlotCurve->setYAxis(axisY);
+    mpQwtPlotCurve->attach(parent->getPlot(plotID));
+    //mpQwtPlotCurve->setItemAttribute(QwtPlotItem::Legend, mpParentPlotTab->mpParentPlotWindow->mLegendsVisible);
 
-        //Create the plot info box
+
+    //Create the plot info box
     mpPlotInfoBox = new PlotInfoBox(this, mpParentPlotTab);
+    mpPlotInfoBox->setPalette(gConfig.getPalette());
     updatePlotInfoBox();
     mpPlotInfoBox->mpSizeSpinBox->setValue(2);
+    //mpPlotInfoBox->mpLineStyleCombo->setStyle("SolidLine");
 
+    // Maybe tab should add this instad of the curve istelf, and info box speak with curve
     mpParentPlotTab->mpParentPlotWindow->mpPlotInfoLayout->addWidget(mpPlotInfoBox);
 
     if(curveType != PORTVARIABLE)
@@ -3116,24 +4337,33 @@ PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QS
         mpPlotInfoBox->mpFrequencyAnalysisButton->setDisabled(true);
     }
 
-    mpCurve->setItemAttribute(QwtPlotItem::Legend, mpParentPlotTab->mpParentPlotWindow->mLegendsVisible);
+    //! @todo for now allways create a legend (wheter it is visible or not is an
+    mpQwtPlotCurve->setItemAttribute(QwtPlotItem::Legend, true);
 
-        //Create connections
+    //Create connections
+    connect(mpPlotInfoBox->mpLineStyleCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(setLineStyle(QString)));
+    connect(mpPlotInfoBox->mpLineSymbol, SIGNAL(currentIndexChanged(QString)),  this, SLOT(setLineSymbol(QString)));
     connect(mpPlotInfoBox->mpSizeSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setLineWidth(int)));
     connect(mpPlotInfoBox->mpColorButton, SIGNAL(clicked()), this, SLOT(setLineColor()));
     connect(mpPlotInfoBox->mpScaleButton, SIGNAL(clicked()), this, SLOT(openScaleDialog()));
     connect(mpParentPlotTab->mpParentPlotWindow->getPlotTabWidget(), SIGNAL(currentChanged(int)), this, SLOT(updatePlotInfoVisibility()));
-    connect(mpParentPlotTab->mpParentPlotWindow->mpShowCurveInfoButton, SIGNAL(toggled(bool)), SLOT(updatePlotInfoVisibility()));
+    ////connect(mpParentPlotTab->mpParentPlotWindow->mpShowCurveInfoButton, SIGNAL(toggled(bool)), SLOT(updatePlotInfoVisibility()));
     connect(mpPlotInfoBox->mpCloseButton, SIGNAL(clicked()), this, SLOT(removeMe()));
     connect(gpMainWindow->mpProjectTabs->getCurrentTab(),SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
     connect(gpMainWindow->mpProjectTabs,SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
-    connect(mpContainerObject, SIGNAL(objectDeleted()), this, SLOT(removeMe()));
-    connect(mpContainerObject, SIGNAL(objectDeleted()), mpParentPlotTab->mpParentPlotWindow, SLOT(closeIfEmpty()), Qt::UniqueConnection);
-    connect(mpContainerObject->getModelObject(mComponentName), SIGNAL(objectDeleted()), this, SLOT(removeMe()));
-    connect(mpContainerObject->getModelObject(mComponentName), SIGNAL(nameChanged()), this, SLOT(removeMe()));
-    connect(mpContainerObject, SIGNAL(connectorRemoved()), this, SLOT(removeIfNotConnected()));
-}
 
+
+    //! @todo FIXA /Peter
+    //connect(mpContainerObject, SIGNAL(objectDeleted()), this, SLOT(removeMe()));
+    //connect(mpContainerObject, SIGNAL(objectDeleted()), mpParentPlotTab->mpParentPlotWindow, SLOT(closeIfEmpty()), Qt::UniqueConnection);
+    //connect(mpContainerObject->getModelObject(mComponentName), SIGNAL(objectDeleted()), this, SLOT(removeMe()));
+    //connect(mpContainerObject->getModelObject(mComponentName), SIGNAL(nameChanged()), this, SLOT(removeMe()));
+    //connect(mpContainerObject, SIGNAL(connectorRemoved()), this, SLOT(removeIfNotConnected()));
+
+
+    connectDataSignals();
+
+}
 
 //! @brief Destructor for plot curves
 //! Deletes the info box and its dock widgets before the curve is removed.
@@ -3142,19 +4372,31 @@ PlotCurve::~PlotCurve()
     mpContainerObject->getPlotDataPtr()->decrementOpenPlotCurves();
     delete(mpPlotInfoBox);
     //delete(mpPlotInfoDockWidget);
+
+    // Delete custom data if any
+    deleteCustomData();
 }
 
 
 //! @brief Returns the current generation a plot curve is representing
-int PlotCurve::getGeneration()
+int PlotCurve::getGeneration() const
 {
-    return mGeneration;
+    return mpData->getGeneration();
 }
 
-QString PlotCurve::getCurveName()
+QString PlotCurve::getCurveName() const
 {
     if(mCurveType == PORTVARIABLE)
-        return QString(mComponentName + ", " + mPortName + ", " + mDataName);
+    {
+        if (mpData->getAliasName().isEmpty())
+        {
+            return mpData->getFullVariableNameWithSeparator(", ");
+        }
+        else
+        {
+            return mpData->getAliasName();
+        }
+    }
     else if(mCurveType == FREQUENCYANALYSIS)
         return "Frequency Spectrum";
     else if(mCurveType == NYQUIST)
@@ -3176,9 +4418,9 @@ HopsanPlotCurveType PlotCurve::getCurveType()
 
 
 //! @brief Returns a pointer to the actual Qwt curve in a plot curve object
-QwtPlotCurve *PlotCurve::getCurvePtr()
+HopQwtPlotCurve *PlotCurve::getQwtPlotCurvePtr()
 {
-    return mpCurve;
+    return mpQwtPlotCurve;
 }
 
 
@@ -3192,28 +4434,28 @@ QwtPlotCurve *PlotCurve::getCurvePtr()
 //! @brief Returns the name of the component a plot curve is created from
 QString PlotCurve::getComponentName()
 {
-    return mComponentName;
+    return mpData->getComponentName();
 }
 
 
 //! @brief Returns the name of the port a plot curve is created from
 QString PlotCurve::getPortName()
 {
-    return mPortName;
+    return mpData->getPortName();
 }
 
 
 //! @brief Returns the data name (physical quantity) of a plot curve
 QString PlotCurve::getDataName()
 {
-    return mDataName;
+    return mpData->getDataName();
 }
 
 
 //! @brief Returns the current data unit of a plot curve
 QString PlotCurve::getDataUnit()
 {
-    return mDataUnit;
+    return mpData->getDataUnit();
 }
 
 
@@ -3227,7 +4469,7 @@ int PlotCurve::getAxisY()
 //! @brief Returns the (unscaled) data vector of a plot curve
 const QVector<double> &PlotCurve::getDataVector() const
 {
-    return mDataVector;
+    return mpData->mDataVector;
 }
 
 
@@ -3235,7 +4477,7 @@ const QVector<double> &PlotCurve::getDataVector() const
 //! This returns the TIME vector, NOT any special X-axes if they are used.
 const QVector<double> &PlotCurve::getTimeVector() const
 {
-    return mTimeVector;
+    return mpData->mTimeVector;
 }
 
 
@@ -3251,21 +4493,29 @@ ContainerObject *PlotCurve::getContainerObjectPtr()
 //! @param genereation Genereation to use
 void PlotCurve::setGeneration(int generation)
 {
-    mGeneration = generation;
-    mDataVector = mpContainerObject->getPlotDataPtr()->getPlotData(mGeneration, mComponentName, mPortName, mDataName);
-    if(mpParentPlotTab->mVectorX.size() == 0)
-        mTimeVector = mpContainerObject->getPlotDataPtr()->getTimeVector(mGeneration);
-    else
+    LogVariableData *pNewData = mpContainerObject->getPlotDataPtr()->getPlotData(mpData->getFullVariableName(), generation);
+    if (pNewData)
     {
-        mpParentPlotTab->mVectorX = mpContainerObject->getPlotDataPtr()->getPlotData(mGeneration, mpParentPlotTab->mVectorXComponent,
-                                                                   mpParentPlotTab->mVectorXPortName, mpParentPlotTab->mVectorXDataName);
-        mTimeVector = mpParentPlotTab->mVectorX;
+        mpData = pNewData;
     }
 
-    updateCurve();
+    //! @todo should not all updates happen automatically from one command
     mpParentPlotTab->rescaleToCurves();
     mpParentPlotTab->update();
+    updateCurve();
     updatePlotInfoBox();
+
+    //! @todo FIXA What about special X-axis /Peter
+    //    mGeneration = generation;
+    //    mDataVector = mpContainerObject->getPlotDataPtr()->getPlotDataValues(mGeneration, mComponentName, mPortName, mDataName);
+    //    if(mpParentPlotTab->mVectorX.size() == 0)
+    //        mTimeVector = mpContainerObject->getPlotDataPtr()->getTimeVector(mGeneration);
+    //    else
+    //    {
+    //        mpParentPlotTab->mVectorX = mpContainerObject->getPlotDataPtr()->getPlotDataValues(mGeneration, mpParentPlotTab->mVectorXComponent,
+    //                                                                   mpParentPlotTab->mVectorXPortName, mpParentPlotTab->mVectorXDataName);
+    //        mTimeVector = mpParentPlotTab->mVectorX;
+    //    }
 }
 
 
@@ -3273,7 +4523,8 @@ void PlotCurve::setGeneration(int generation)
 //! @param unit Name of new unit
 void PlotCurve::setDataUnit(QString unit)
 {
-    mDataUnit = unit;
+    //! @todo FIXA /Peter
+    //mDataUnit = unit;
     updateCurve();
     mpParentPlotTab->updateLabels();
     mpParentPlotTab->rescaleToCurves();
@@ -3296,10 +4547,23 @@ void PlotCurve::setScaling(double scaleX, double scaleY, double offsetX, double 
 }
 
 
-void PlotCurve::setData(QVector<double> vData, QVector<double> vTime)
+void PlotCurve::setCustomData(const VariableDescription &rVarDesc, const QVector<double> &rvTime, const QVector<double> &rvData)
 {
-    mDataVector = vData;
-    mTimeVector = vTime;
+    //First disconnect all signals from the old data
+    this->disconnect(mpData);
+
+    //If we already have custom data, then delete it from memory as it is being replaced
+    deleteCustomData();
+
+    //Create new custom data
+    LogVariableContainer *pDataContainer = new LogVariableContainer(rVarDesc);
+    pDataContainer->addDataGeneration(0, rvTime, rvData);
+    mHaveCustomData = true;
+    mpData = pDataContainer->getDataGeneration(0);
+
+    //Connect signals
+    connectDataSignals();
+
     updateCurve();
 }
 
@@ -3307,72 +4571,82 @@ void PlotCurve::setData(QVector<double> vData, QVector<double> vTime)
 //! @brief Converts the plot curve to its frequency spectrum by using FFT
 void PlotCurve::toFrequencySpectrum()
 {
+    QVector<double> timeVec, dataVec;
+    timeVec = mpData->mTimeVector;
+    dataVec = mpData->mDataVector;
+
     //Vector size has to be an even potential of 2.
     //Calculate largets potential that is smaller than or equal to the vector size.
-    int n = pow(2, int(log2(mDataVector.size())));
-    if(n != mDataVector.size())     //Vector is not an exact potential, so reduce it
+    int n = pow(2, int(log2(dataVec.size())));
+    if(n != dataVec.size())     //Vector is not an exact potential, so reduce it
     {
         QString oldString, newString;
-        oldString.setNum(mDataVector.size());
+        oldString.setNum(dataVec.size());
         newString.setNum(n);
         QMessageBox::information(gpMainWindow, gpMainWindow->tr("Wrong Vector Size"),
                                  "Size of data vector must be an even power of 2. Number of log samples was reduced from " + oldString + " to " + newString + ".");
-        reduceVectorSize(mDataVector, n);
-        reduceVectorSize(mTimeVector, n);
+        reduceVectorSize(dataVec, n);
+        reduceVectorSize(timeVec, n);
     }
 
     //Create a complex vector
-    QVector< std::complex<double> > vComplex = realToComplex(mDataVector);
+    QVector< std::complex<double> > vComplex = realToComplex(dataVec);
 
     //Apply the fourier transform
     FFT(vComplex);
 
     //Scalar multiply complex vector with its conjugate, and divide it with its size
-    mDataVector.clear();
+    dataVec.clear();
     for(int i=1; i<n/2; ++i)        //FFT is symmetric, so only use first half
     {
         if(mpParentPlotTab->mpParentPlotWindow->mpPowerSpectrumCheckBox->isChecked())
         {
-            mDataVector.append(real(vComplex[i]*conj(vComplex[i]))/n);
+            dataVec.append(real(vComplex[i]*conj(vComplex[i]))/n);
         }
         else
         {
-            mDataVector.append(sqrt(vComplex[i].real()*vComplex[i].real() + vComplex[i].imag()*vComplex[i].imag()));
+            dataVec.append(sqrt(vComplex[i].real()*vComplex[i].real() + vComplex[i].imag()*vComplex[i].imag()));
         }
     }
 
     //Create the x vector (frequency)
-    double max = mTimeVector.last();
-    mTimeVector.clear();
+    double max = timeVec.last();
+    timeVec.clear();
     for(int i=1; i<n/2; ++i)
     {
-        mTimeVector.append(double(i)/max);
+        timeVec.append(double(i)/max);
     }
 
-    mDataName = "Value";
-    mDataUnit = "-";
-
+    VariableDescription varDesc;
+    varDesc.mDataName = "Value";
+    varDesc.mDataUnit = "-";
+    this->setCustomData(varDesc, timeVec, dataVec);
     updateCurve();
-    mpParentPlotTab->changeXVector(mTimeVector, "", "", "Frequency", "Hz");
+
+    varDesc.mDataName = "Frequency";
+    varDesc.mDataUnit = "Hz";
+    mpParentPlotTab->changeXVector(timeVec, varDesc);
     mpParentPlotTab->update();
     updatePlotInfoBox();
+}
+
+LogVariableData *PlotCurve::getPlotLogDataVariable()
+{
+    return mpData;
 }
 
 
 //! @brief Changes a curve to the previous available gneraetion of its data
 void PlotCurve::setPreviousGeneration()
 {
-    //if(mGeneration>0)       //This check should not really be necessary since button is disabled anyway, but just to be sure...
-    if(mGeneration>0 && mpContainerObject->getPlotDataPtr()->componentHasPlotGeneration(mGeneration-1, mComponentName))
-        setGeneration(mGeneration-1);
+    setGeneration(getGeneration()-1);
 }
 
 
 //! @brief Changes a curve to the next available generation of its data
 void PlotCurve::setNextGeneration()
 {
-    if(mGeneration<mpContainerObject->getPlotDataPtr()->size()-1)       //This check should not really be necessary since button is disabled anyway, but just to be sure...
-        setGeneration(mGeneration+1);
+    setGeneration(getGeneration()+1);
 }
 
 
@@ -3381,20 +4655,163 @@ void PlotCurve::setNextGeneration()
 void PlotCurve::setLineWidth(int lineWidth)
 {
     mLineWidth = lineWidth;
-    QPen tempPen = mpCurve->pen();
+    QPen tempPen = mpQwtPlotCurve->pen();
     tempPen.setWidth(lineWidth);
-    mpCurve->setPen(tempPen);
+    mpQwtPlotCurve->setPen(tempPen);
 }
 
+
+void PlotCurve::setLineStyle(QString LStyle)
+{
+    mLineStyle = LStyle;
+    QPen tempPen = mpQwtPlotCurve->pen();
+    if(LStyle == "Solid Line")
+    {
+        tempPen.setStyle(Qt::SolidLine);
+        mpQwtPlotCurve->setStyle(HopQwtPlotCurve::Lines);
+    }
+    else if(LStyle == "Dash Line")
+    {
+        tempPen.setStyle(Qt::DashLine);
+    }
+    else if(LStyle == "Dot Line")
+    {
+        tempPen.setStyle(Qt::DotLine);
+    }
+    else if(LStyle == "Dash Dot Line")
+    {
+        tempPen.setStyle(Qt::DashDotLine);
+    }
+    else if(LStyle == "Dash Dot Dot Line")
+    {
+        tempPen.setStyle(Qt::DashDotDotLine);
+    }
+    else
+    {
+
+        mpQwtPlotCurve->setStyle(HopQwtPlotCurve::NoCurve);
+
+    }
+    mpQwtPlotCurve->setPen(tempPen);
+}
+// End setLineStyle
+
+void PlotCurve::setLineSymbol(QString LSymbol)
+{
+    mLineSymbol = LSymbol;
+    //mpCurve->setStyle(HopQwtPlotCurve::NoSymbol);
+    QPen tempPen = mpQwtPlotCurve->pen();
+    mpCurveSymbol = new QwtSymbol();
+    if(LSymbol == "Cross")
+    {
+        mpCurveSymbol->setStyle(QwtSymbol::Cross);
+        mpCurveSymbol->setSize(5,5);
+        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
+    }
+    else if(LSymbol == "XCross")
+    {
+        mpCurveSymbol->setStyle(QwtSymbol::XCross);
+        mpCurveSymbol->setSize(5,5);
+        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
+    }
+    else if(LSymbol == "Ellipse")
+    {
+        mpCurveSymbol->setStyle(QwtSymbol::Ellipse);
+        mpCurveSymbol->setSize(5,5);
+        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
+    }
+    else if(LSymbol == "Star 1")
+    {
+        mpCurveSymbol->setStyle(QwtSymbol::Star1);
+        mpCurveSymbol->setSize(5,5);
+        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
+    }
+    else if(LSymbol == "Star 2")
+    {
+        mpCurveSymbol->setStyle(QwtSymbol::Star2);
+        mpCurveSymbol->setSize(5,5);
+        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
+    }
+    else if(LSymbol == "Hexagon")
+    {
+        mpCurveSymbol->setStyle(QwtSymbol::Hexagon);
+        mpCurveSymbol->setSize(5,5);
+        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
+    }
+    else if(LSymbol == "Rectangle")
+    {
+        mpCurveSymbol->setStyle(QwtSymbol::Rect);
+        mpCurveSymbol->setSize(5,5);
+        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
+    }
+    else if(LSymbol == "Horizontal Line")
+    {
+        mpCurveSymbol->setStyle(QwtSymbol::HLine);
+        mpCurveSymbol->setSize(5,5);
+        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
+    }
+    else if(LSymbol == "Vertical Line")
+    {
+        mpCurveSymbol->setStyle(QwtSymbol::VLine);
+        mpCurveSymbol->setSize(5,5);
+        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
+    }
+    else if(LSymbol == "Diamond")
+    {
+        mpCurveSymbol->setStyle(QwtSymbol::Diamond);
+        mpCurveSymbol->setSize(5,5);
+        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
+    }
+    else if(LSymbol == "Triangle")
+    {
+        mpCurveSymbol->setStyle(QwtSymbol::Triangle);
+        mpCurveSymbol->setSize(5,5);
+        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
+    }
+    else if(LSymbol == "Up Triangle")
+    {
+        mpCurveSymbol->setStyle(QwtSymbol::UTriangle);
+        mpCurveSymbol->setSize(5,5);
+        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
+    }
+    else if(LSymbol == "Down Triangle")
+    {
+        mpCurveSymbol->setStyle(QwtSymbol::DTriangle);
+        mpCurveSymbol->setSize(5,5);
+        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
+    }
+    else if(LSymbol == "Right Triangle")
+    {
+        mpCurveSymbol->setStyle(QwtSymbol::RTriangle);
+        mpCurveSymbol->setSize(5,5);
+        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
+    }
+    else if(LSymbol == "Left Triangle")
+    {
+        mpCurveSymbol->setStyle(QwtSymbol::LTriangle);
+        mpCurveSymbol->setSize(5,5);
+        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
+    }
+    else
+    {
+        //mpCurve->setStyle(HopQwtPlotCurve::Dots);
+        mpCurveSymbol->setStyle(QwtSymbol::NoSymbol);
+        //mpCurveSymbol->setSize(10,10);
+        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
+        //mpCurve->setStyle(HopQwtPlotCurve::Lines);
+    }
+    mpCurveSymbol->setPen(tempPen);
+    //! @todo Add a color picker for the markers
+}
 
 //! @brief Sets the color of a line
 //! @brief color Color to give the line.
 void PlotCurve::setLineColor(QColor color)
 {
     mLineColor = color;
-    QPen tempPen = mpCurve->pen();
+    QPen tempPen = mpQwtPlotCurve->pen();
     tempPen.setColor(color);
-    mpCurve->setPen(tempPen);
+    mpQwtPlotCurve->setPen(tempPen);
 
     //Update color blob in plot info box
     QString redString, greenString, blueString;
@@ -3422,7 +4839,7 @@ void PlotCurve::setLineColor(QString colorName)
     QColor color;
     if(colorName.isEmpty())
     {
-        color = QColorDialog::getColor(mpCurve->pen().color(), gpMainWindow);
+        color = QColorDialog::getColor(mpQwtPlotCurve->pen().color(), gpMainWindow);
         if (!color.isValid()) { return; }
     }
     else
@@ -3506,18 +4923,28 @@ void PlotCurve::updatePlotInfoVisibility()
 {
     if(mpParentPlotTab == mpParentPlotTab->mpParentPlotWindow->getCurrentPlotTab() && mpParentPlotTab->mpParentPlotWindow->mpShowCurveInfoButton->isChecked())
     {
+        // mpParentPlotTab->mpParentPlotWindow->mpPlotInfoWidget->show();
+        mpPlotInfoBox->show();
         //mpParentPlotTab->mpParentPlotWindow->addDockWidget(Qt::BottomDockWidgetArea, mpPlotInfoDockWidget, Qt::Vertical);
         mpParentPlotTab->mpParentPlotWindow->mpPlotInfoLayout->addWidget(mpPlotInfoBox);
-        mpParentPlotTab->mpParentPlotWindow->mpPlotInfoWidget->show();
+
     }
     else
     {
+        //mpParentPlotTab->mpParentPlotWindow->mpPlotInfoLayout->removeWidget(mpPlotInfoBox);
+        //mpParentPlotTab->mpParentPlotWindow->mpPlotInfoScrollArea->hide();
+        //mpParentPlotTab->mpParentPlotWindow->mpPlotInfoWidget->hide();
+        //! @todo FIXA /Peter
+        mpPlotInfoBox->hide();
+        //                if(mpParentPlotTab->mpParentPlotWindow->mpPlotInfoLayout->isEmpty())
+        //                {
+        // mpParentPlotTab->mpParentPlotWindow->mpPlotInfoWidget->hide();
+        //                    //mpParentPlotTab->mpParentPlotWindow->mpPlotInfoScrollArea;
+        //                }
         mpParentPlotTab->mpParentPlotWindow->mpPlotInfoLayout->removeWidget(mpPlotInfoBox);
-        mpParentPlotTab->mpParentPlotWindow->mpPlotInfoWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-        if(mpParentPlotTab->mpParentPlotWindow->mpPlotInfoLayout->isEmpty())
-        {
-            mpParentPlotTab->mpParentPlotWindow->mpPlotInfoWidget->hide();
-        }
+
+        //mpParentPlotTab->mpParentPlotWindow->mpPlotInfoWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+
     }
 }
 
@@ -3532,17 +4959,18 @@ void PlotCurve::removeMe()
 //! @brief Slot that checks that the plotted port is still connected, and removes the curve if not
 void PlotCurve::removeIfNotConnected()
 {
-    if(!mpContainerObject->getModelObject(mComponentName)->getPort(mPortName)->isConnected())
-    {
-        removeMe();
-    }
+    //! @todo FiXA Peter
+    //    if(!mpContainerObject->getModelObject(mComponentName)->getPort(mPortName)->isConnected())
+    //    {
+    //        removeMe();
+    //    }
 }
 
 //! @brief Updates a plot curve to the most recent available generation of its data
 void PlotCurve::updateToNewGeneration()
 {
     if(mAutoUpdate)     //Only change the generation if auto update is on
-        setGeneration(mpContainerObject->getPlotDataPtr()->size()-1);
+        setGeneration(-1);
     updatePlotInfoBox();    //Update the plot info box regardless of auto update setting, to show number of available generations correctly
     mpParentPlotTab->rescaleToCurves();
 }
@@ -3551,13 +4979,20 @@ void PlotCurve::updateToNewGeneration()
 //! @brief Updates buttons and text in plot info box to correct values
 void PlotCurve::updatePlotInfoBox()
 {
-    mpPlotInfoBox->mpPreviousButton->setEnabled(mGeneration > 0 && mpContainerObject->getPlotDataPtr()->size() > 1);
-    mpPlotInfoBox->mpNextButton->setEnabled(mGeneration < mpContainerObject->getPlotDataPtr()->size()-1 && mpContainerObject->getPlotDataPtr()->size() > 1);
+    // Enable/diable generation buttons
+    mpPlotInfoBox->mpPreviousButton->setEnabled( (getGeneration() > mpData->getLowestGeneration()) && (mpData->getNumGenerations() > 1) );
+    mpPlotInfoBox->mpNextButton->setEnabled( (getGeneration() < mpData->getHighestGeneration()) && ( mpData->getNumGenerations() > 1) );
 
-    QString numString1, numString2;
-    numString1.setNum(mGeneration+1);
-    numString2.setNum(mpContainerObject->getPlotDataPtr()->size());
-    mpPlotInfoBox->mpGenerationLabel->setText(numString1 + "(" + numString2 + ")");
+    // Set generation number strings
+    QString numString1, numString2, numString3;
+    numString1.setNum(getGeneration()+1);
+    //! @todo this will show strange when we have deleted old generations, maybe we should reassign all generations when we delete old data (costly)
+    numString2.setNum(mpData->getLowestGeneration()+1);
+    numString3.setNum(mpData->getHighestGeneration()+1);
+    mpPlotInfoBox->mpGenerationLabel->setText(numString1 + " (" + numString2 + "," + numString3 + ")");
+
+    // Update curve name
+    mpPlotInfoBox->mpTitle->setText(getCurveName());
 }
 
 
@@ -3568,8 +5003,10 @@ void PlotCurve::setActive(bool value)
     if(value)
     {
         setLineWidth(mpPlotInfoBox->mpSizeSpinBox->value()+1);
-        mpPlotInfoBox->setPalette(QPalette(QColor("lightgray"), QColor("lightgray")));
+        //mpPlotInfoBox->setPalette(QPalette(QColor("lightgray"), QColor("lightgray")));
         mpPlotInfoBox->setAutoFillBackground(true);
+        mpPlotInfoBox->setPalette(gConfig.getPalette());
+
 
         for(int i=0; i<mpParentPlotTab->getCurves().size(); ++i)
         {
@@ -3583,7 +5020,7 @@ void PlotCurve::setActive(bool value)
     else
     {
         setLineWidth(mpPlotInfoBox->mpSizeSpinBox->value());
-        mpPlotInfoBox->setAutoFillBackground(false);
+        mpPlotInfoBox->setAutoFillBackground(true);
         mpPlotInfoBox->mpColorBlob->setChecked(false);
     }
 }
@@ -3591,34 +5028,65 @@ void PlotCurve::setActive(bool value)
 
 //! @brief Updates the values of a curve
 //! Updates a curve with regard to special X-axis, units and scaling.
+//! @todo after updating from python, scale is not refreshed maybe this should be done in here
 void PlotCurve::updateCurve()
 {
     double unitScale = 1;
-    if (gConfig.getCustomUnits(mDataName).contains(mDataUnit))
+    if (gConfig.getCustomUnits(getDataName()).contains(getDataUnit()))
     {
-        unitScale = gConfig.getCustomUnits(mDataName).find(mDataUnit).value();
+        unitScale = gConfig.getCustomUnits(getDataName()).find(getDataUnit()).value();
     }
 
     QVector<double> tempX;
     QVector<double> tempY;
     if(mpParentPlotTab->mHasSpecialXAxis)
     {
-        for(int i=0; i<mpParentPlotTab->mVectorX.size() && i<mDataVector.size(); ++i)
+        for(int i=0; i<mpParentPlotTab->mSpecialXVector.size() && i<mpData->mDataVector.size(); ++i)
         {
-            tempX.append(mpParentPlotTab->mVectorX[i]*mScaleX + mOffsetX);
-            tempY.append(mDataVector[i]*unitScale*mScaleY + mOffsetY);
+            tempX.append(mpParentPlotTab->mSpecialXVector[i]*mScaleX + mOffsetX);
+            tempY.append(mpData->mDataVector[i]*unitScale*mScaleY + mOffsetY);
         }
     }
     else
     {
-        for(int i=0; i<mTimeVector.size() && i<mDataVector.size(); ++i)
+        for(int i=0; i<mpData->mTimeVector.size() && i<mpData->mDataVector.size(); ++i)
         {
-            tempX.append(mTimeVector[i]*mScaleX + mOffsetX);
-            tempY.append(mDataVector[i]*unitScale*mScaleY + mOffsetY);
+            tempX.append(mpData->mTimeVector[i]*mScaleX + mOffsetX);
+            tempY.append(mpData->mDataVector[i]*unitScale*mScaleY + mOffsetY);
         }
     }
-    mpCurve->setSamples(tempX, tempY);
+    mpQwtPlotCurve->setSamples(tempX, tempY);
 }
+
+void PlotCurve::updateCurveName()
+{
+    if (mpData->getAliasName().isEmpty())
+    {
+        mpQwtPlotCurve->setTitle(mpData->getFullVariableNameWithSeparator(", "));
+    }
+    else
+    {
+        mpQwtPlotCurve->setTitle(mpData->getAliasName());
+    }
+    updatePlotInfoBox();
+}
+
+void PlotCurve::deleteCustomData()
+{
+    if (mHaveCustomData)
+    {
+        delete mpData;
+        mHaveCustomData = false;
+    }
+}
+
+void PlotCurve::connectDataSignals()
+{
+    connect(mpData,SIGNAL(dataChanged()), this, SLOT(updateCurve()));
+    connect(mpData,SIGNAL(nameChanged()), this, SLOT(updateCurveName()));
+}
+
+
 
 
 //! @brief Sets auto update flag for a plot curve
@@ -3634,19 +5102,24 @@ void PlotCurve::performFrequencyAnalysis()
     mpParentPlotTab->mpParentPlotWindow->performFrequencyAnalysis(this);
 }
 
+//void PlotCurve::performSetAxis()
+//{
+//    mpParentPlotTab->mpParentPlotWindow->performSetAxis(this);
+//}
+
 
 //! @brief Constructor for plot markers
 //! @param pCurve Pointer to curve the marker belongs to
 //! @param pPlotTab Plot tab the marker is located in
 //! @param markerSymbol The symbol the marker shall use
-PlotMarker::PlotMarker(PlotCurve *pCurve, PlotTab *pPlotTab, QwtSymbol markerSymbol)
+PlotMarker::PlotMarker(PlotCurve *pCurve, PlotTab *pPlotTab, QwtSymbol *markerSymbol)
     : QwtPlotMarker()
 {
     mpCurve = pCurve;
     mpPlotTab = pPlotTab;
     mIsBeingMoved = false;
-    mMarkerSymbol = markerSymbol;
-    setSymbol(&mMarkerSymbol);
+    mpMarkerSymbol = markerSymbol;
+    setSymbol(mpMarkerSymbol);
     mIsMovable = true;
 }
 
@@ -3661,7 +5134,7 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
     if(!mIsMovable)
         return false;
 
-        // Mouse press events, used to initiate moving of a marker if mouse cursor is close enough
+    // Mouse press events, used to initiate moving of a marker if mouse cursor is close enough
     if (event->type() == QEvent::MouseButtonPress)
     {
         QCursor cursor;
@@ -3679,7 +5152,7 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
         }
     }
 
-        // Mouse move (hover) events, used to change marker color or move marker if cursor is close enough.
+    // Mouse move (hover) events, used to change marker color or move marker if cursor is close enough.
     else if (event->type() == QEvent::MouseMove)
     {
         bool retval = false;
@@ -3689,27 +5162,29 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
         midPoint.setY(this->plot()->transform(QwtPlot::yLeft, value().y()));
         if((this->plot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
         {
-            mMarkerSymbol.setPen(QPen(mpCurve->getCurvePtr()->pen().brush().color().lighter(165), 3));
-            this->setSymbol(&mMarkerSymbol);
+            mpMarkerSymbol->setPen(QPen(mpCurve->getQwtPlotCurvePtr()->pen().brush().color().lighter(165), 3));
+            this->setSymbol(mpMarkerSymbol);
             this->plot()->replot();
+            this->plot()->updateGeometry();
             retval=true;
         }
         else
         {
             if(!mIsBeingMoved)
             {
-                mMarkerSymbol.setPen(QPen(mpCurve->getCurvePtr()->pen().brush().color(), 3));
-                this->setSymbol(&mMarkerSymbol);
+                mpMarkerSymbol->setPen(QPen(mpCurve->getQwtPlotCurvePtr()->pen().brush().color(), 3));
+                this->setSymbol(mpMarkerSymbol);
                 this->plot()->replot();
+                this->plot()->updateGeometry();
             }
         }
 
         if(mIsBeingMoved)
         {
-            double x = mpCurve->getCurvePtr()->sample(mpCurve->getCurvePtr()->closestPoint(this->plot()->canvas()->mapFromGlobal(cursor.pos()))).x();
-            double y = mpCurve->getCurvePtr()->sample(mpCurve->getCurvePtr()->closestPoint(this->plot()->canvas()->mapFromGlobal(cursor.pos()))).y();
+            double x = mpCurve->getQwtPlotCurvePtr()->sample(mpCurve->getQwtPlotCurvePtr()->closestPoint(this->plot()->canvas()->mapFromGlobal(cursor.pos()))).x();
+            double y = mpCurve->getQwtPlotCurvePtr()->sample(mpCurve->getQwtPlotCurvePtr()->closestPoint(this->plot()->canvas()->mapFromGlobal(cursor.pos()))).y();
             setXValue(x);
-            setYValue(this->plot()->invTransform(QwtPlot::yLeft, this->plot()->transform(mpCurve->getCurvePtr()->yAxis(), y)));
+            setYValue(this->plot()->invTransform(QwtPlot::yLeft, this->plot()->transform(mpCurve->getQwtPlotCurvePtr()->yAxis(), y)));
 
             QString xString;
             QString yString;
@@ -3717,7 +5192,7 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
             yString.setNum(y);
             QwtText tempLabel;
             tempLabel.setText("("+xString+", "+yString+")");
-            tempLabel.setColor(mpCurve->getCurvePtr()->pen().brush().color());
+            tempLabel.setColor(mpCurve->getQwtPlotCurvePtr()->pen().brush().color());
             tempLabel.setBackgroundBrush(QColor(255,255,255,220));
             tempLabel.setFont(QFont("Calibri", 12, QFont::Normal));
             setLabel(tempLabel);
@@ -3725,14 +5200,14 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
         return retval;
     }
 
-        //Mouse release event, will stop moving marker
+    //Mouse release event, will stop moving marker
     else if (event->type() == QEvent::MouseButtonRelease && mIsBeingMoved == true)
     {
         mIsBeingMoved = false;
         return false;
     }
 
-        //!Keypress event, will delete marker if delete key is pressed
+    //!Keypress event, will delete marker if delete key is pressed
     else if (event->type() == QEvent::KeyPress)
     {
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
@@ -3741,7 +5216,7 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
             QCursor cursor;
             QPointF midPoint;
             midPoint.setX(this->plot()->transform(QwtPlot::xBottom, value().x()));
-            midPoint.setY(this->plot()->transform(mpCurve->getCurvePtr()->yAxis(), value().y()));
+            midPoint.setY(this->plot()->transform(mpCurve->getQwtPlotCurvePtr()->yAxis(), value().y()));
             if((this->plot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
             {
                 plot()->canvas()->removeEventFilter(this);
@@ -3770,4 +5245,57 @@ void PlotMarker::setMovable(bool movable)
 PlotCurve *PlotMarker::getCurve()
 {
     return mpCurve;
+}
+
+
+
+HopQwtPlotCurve::HopQwtPlotCurve(QString label) :
+    QwtPlotCurve(label)
+{
+    //nothing for now
+}
+
+QList<QwtLegendData> HopQwtPlotCurve::legendData() const
+{
+    // This is more or less a copy of the code from qwt_plot_item.cpp
+    // with the adtionon of axis property
+    QwtLegendData data;
+
+    QwtText label = title();
+    label.setRenderFlags( label.renderFlags() & Qt::AlignLeft );
+
+    QVariant titleValue;
+    qVariantSetValue( titleValue, label );
+    data.setValue( QwtLegendData::TitleRole, titleValue );
+
+    const QwtGraphic graphic = legendIcon( 0, legendIconSize() );
+    if ( !graphic.isNull() )
+    {
+        QVariant iconValue;
+        qVariantSetValue( iconValue, graphic );
+        data.setValue( QwtLegendData::IconRole, iconValue );
+    }
+
+    data.setValue( AxisIdRole, this->yAxis());
+
+    QList<QwtLegendData> list;
+    list += data;
+
+    return list;
+}
+
+PlotLegend::PlotLegend(QwtPlot::Axis axisId) :
+    HopQwtPlotLegendItem(axisId)
+{
+    setMaxColumns(1);
+    setRenderHint( QwtPlotItem::RenderAntialiased );
+    setBackgroundMode(HopQwtPlotLegendItem::LegendBackground);
+    setBackgroundBrush(QColor(Qt::white));
+    setBorderRadius(8);
+    setMargin(4);
+    setSpacing(2);
+    setItemMargin(0);
+    QFont font = this->font();
+    font.setPointSize(11);
+    setFont(font);
 }

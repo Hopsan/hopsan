@@ -29,6 +29,7 @@
 #include "GUIPort.h"
 #include "PlotWindow.h"
 #include "Dialogs/ComponentPropertiesDialog.h"
+#include "Dialogs/ComponentPropertiesDialog2.h"
 #include "GUIObjects/GUIComponent.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "Widgets/ProjectTabWidget.h"
@@ -133,10 +134,13 @@ void Component::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         }
         if(this->getPort("in_bottom")->isConnected() && pPlotWindow)
         {
-            QString componentName = getPort("in_bottom")->getConnectedPorts().at(0)->mpParentGuiModelObject->getName();
-            QString portName = getPort("in_bottom")->getConnectedPorts().at(0)->getPortName();
-            QString dataName = "Value";
-            pPlotWindow->changeXVector(mpParentContainerObject->getPlotDataPtr()->getPlotData(mpParentContainerObject->getPlotDataPtr()->size()-1, componentName, portName, dataName), componentName, portName, dataName, gConfig.getDefaultUnit(dataName));
+            VariableDescription varDesc;
+            varDesc.mComponentName = getPort("in_bottom")->getConnectedPorts().at(0)->mpParentGuiModelObject->getName();
+            varDesc.mPortName = getPort("in_bottom")->getConnectedPorts().at(0)->getPortName();
+            varDesc.mDataName = "Value";
+            varDesc.mDataUnit = gConfig.getDefaultUnit(varDesc.mDataName);
+
+            pPlotWindow->changeXVector(mpParentContainerObject->getPlotDataPtr()->getPlotDataValues(varDesc.getFullName(), -1), varDesc);
         }
 
         //No plot window was opened, so it is a non-connected sink - open properties instead
@@ -197,6 +201,7 @@ bool Component::setStartValue(QString portName, QString variable, QString sysPar
 void Component::openPropertiesDialog()
 {
     ComponentPropertiesDialog dialog(this, gpMainWindow);
+    //ComponentPropertiesDialog2 dialog(this, gpMainWindow);
     dialog.exec();
 }
 

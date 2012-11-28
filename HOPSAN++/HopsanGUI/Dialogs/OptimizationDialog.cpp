@@ -30,7 +30,7 @@
 #include "Dialogs/OptimizationDialog.h"
 #include "GUIObjects/GUISystem.h"
 #include "Utilities/GUIUtilities.h"
-#include "Widgets/MessageWidget.h"
+#include "Widgets/HcomWidget.h"
 #include "Widgets/ProjectTabWidget.h"
 #include "Widgets/PyDockWidget.h"
 
@@ -568,13 +568,13 @@ void OptimizationDialog::generateScriptFile()
 
     if(mSelectedParameters.isEmpty())
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("No parameters specified for optimization.");
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("No parameters specified for optimization.");
         return;
     }
 
     if(mSelectedFunctions.isEmpty())
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("No objective functions specified for optimization.");
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("No objective functions specified for optimization.");
         return;
     }
 
@@ -587,7 +587,7 @@ void OptimizationDialog::generateScriptFile()
         generateParticleSwarmScript();
         break;
     default :
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Algorithm type undefined.");
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Algorithm type undefined.");
     }
 }
 
@@ -1666,7 +1666,7 @@ void OptimizationDialog::run()
     QFile pyFile(pyPath);
     if (!pyFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Failed to open file for writing: " + pyPath);
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + pyPath);
         return;
     }
     QTextStream pyStream(&pyFile);
@@ -1685,7 +1685,7 @@ void OptimizationDialog::run()
     //gpMainWindow->mpPyDockWidget->runCommand("sys.path.append(\""+scriptPath+"\")");
     gpMainWindow->mpPyDockWidget->runPyScript(pyPath);
     QString timeString = QString().setNum(simTimer.elapsed());
-    gpMainWindow->mpMessageWidget->printGUIInfoMessage("Optimization finished after " + timeString + " ms");
+    gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Optimization finished after " + timeString + " ms");
     close();
 }
 
@@ -1698,12 +1698,12 @@ bool OptimizationDialog::verifyNumberOfVariables(int idx, int nSelVar)
 
     if(nSelVar > nVar)
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Too many variables selected for this function.");
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Too many variables selected for this function.");
         return false;
     }
     else if(nSelVar < nVar)
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Too few variables selected for this function.");
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Too few variables selected for this function.");
         return false;
     }
     return true;

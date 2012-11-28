@@ -25,7 +25,7 @@
 #include "SimulationThreadHandler.h"
 
 #include "MainWindow.h"
-#include "Widgets/MessageWidget.h"
+#include "Widgets/HcomWidget.h"
 #include "Configuration.h"
 #include "common.h"
 #include "GUIObjects/GUISystem.h"
@@ -247,24 +247,24 @@ void SimulationThreadHandler::finalizeDone(bool success, int ms)
     mProgressBarWorkerThread.quit();
 
     //! @todo maybe use signals and slots for messages instead
-    gpMainWindow->mpMessageWidget->checkMessages();
+    gpMainWindow->mpTerminalWidget->checkMessages();
 
     // Handle printing of all the error messages
     if (mAborted)
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage(tr("Simulation was canceled by user"));
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(tr("Simulation was canceled by user"));
     }
     else if (!mInitSuccess)
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage(tr("Initialize was aborted due to some error"));
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(tr("Initialize was aborted due to some error"));
     }
     else if (!mSimuSucess)
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage(tr("Simulation was aborted due to some error"));
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(tr("Simulation was aborted due to some error"));
     }
     else if (!mFiniSucess)
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage(tr("Finalize was aborted due to some error"));
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(tr("Finalize was aborted due to some error"));
     }
     else
     {
@@ -280,7 +280,7 @@ void SimulationThreadHandler::finalizeDone(bool success, int ms)
         QString msg = tr("Simulated").append(" '").append(name).append("' ").append(tr("successfully!"));
         msg.append(" ").append(tr("Initialization time: ")).append(QString::number(mInitTime).append(" ms"));
         msg.append(", ").append(tr("Simulation time: ").append(QString::number(mSimuTime)).append(" ms"));
-        gpMainWindow->mpMessageWidget->printGUIInfoMessage(msg);
+        gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage(msg);
     }
 
     // Wait until threads have been shut down before we delete objects

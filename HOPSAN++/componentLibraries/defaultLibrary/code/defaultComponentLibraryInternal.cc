@@ -23,8 +23,8 @@
 
 #include "defaultComponentLibraryInternal.h"
 #include "Components.h"
-#include "signal.h"
-#include "stdlib.h"
+//#include "signal.h"
+#include <stdlib.h>
 
 //! @defgroup Components Components
 //!

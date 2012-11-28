@@ -128,7 +128,7 @@ private:
     tbb::atomic<bool> mLock;
 #else
     int mCounter;
-    int mLock;
+    bool mLock;
 #endif
 };
 

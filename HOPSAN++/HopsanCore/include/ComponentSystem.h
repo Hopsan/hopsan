@@ -61,6 +61,38 @@ namespace hopsan {
         ComponentSystem *mpComponentSystem; //The system to assist
     };
 
+    class DLLIMPORTEXPORT AliasHandler
+    {
+    public:
+        AliasHandler(ComponentSystem *pSystem);
+        bool setVariableAlias(const std::string alias, const std::string compName, const std::string portName, const int varId);
+        bool setParameterAlias(const std::string alias, const std::string compName, const std::string parameterName);
+        void componentRenamed(const std::string oldCompName, const std::string newCompName);
+        void portRenamed(const std::string compName, const std::string oldPortName, const std::string newPortName);
+        void componentRemoved(const std::string compName);
+        void portRemoved(const std::string compName, const std::string portName);
+        bool hasAlias(const std::string alias);
+        bool removeAlias(const std::string alias);
+
+        std::vector<std::string> getAliases() const;
+
+        void getVariableFromAlias(const std::string alias, std::string &rCompName, std::string &rPortName, int &rVarId);
+        void getVariableFromAlias(const std::string alias, std::string &rCompName, std::string &rPortName, std::string &rVarName);
+        void getParameterFromAlias(const std::string alias, std::string &rCompName, std::string &rParameterName);
+
+    private:
+        enum {Parameter, Variable};
+        typedef struct _ParamOrVariable
+        {
+            int type;
+            std::string componentName;
+            std::string name;
+        } ParamOrVariableT;
+
+        std::map<std::string, ParamOrVariableT> mAliasMap;
+        ComponentSystem *mpSystem;
+    };
+
     class DLLIMPORTEXPORT SimulationHandler
     {
     public:
@@ -124,6 +156,9 @@ namespace hopsan {
         ComponentSystem* getSubComponentSystem(std::string name);
         std::vector<std::string> getSubComponentNames();
         bool haveSubComponent(const std::string name) const;
+
+        // Alias handler
+        AliasHandler &getAliasHandler();
 
         // Connecting and disconnecting components
         bool connect(Port *pPort1, Port *pPort2);
@@ -236,6 +271,8 @@ namespace hopsan {
         //------------------------------------------------------------------
 
         bool mKeepStartValues;
+
+        AliasHandler mAliasHandler;
 
         // Log related variables
         size_t mRequestedNumLogSamples, mnLogSlots, mLogCtr;

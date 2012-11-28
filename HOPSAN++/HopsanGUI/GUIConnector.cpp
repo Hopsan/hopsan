@@ -554,6 +554,11 @@ void Connector::saveToDomElement(QDomElement &rDomElement)
         appendDomTextNode(xmlConnectGUI, HMF_STYLETAG, "dashed");
     else
         appendDomTextNode(xmlConnectGUI, HMF_STYLETAG, "solid");
+    QColor customColor = mpConnectorAppearance->getCustomColor();
+    if(customColor != QColor())
+    {
+        appendDomTextNode(xmlConnectGUI, HMF_COLORTAG, makeRgbString(customColor));
+    }
 }
 
 
@@ -811,6 +816,13 @@ void Connector::selectIfBothComponentsSelected()
         mpLines[0]->setSelected(true);
         doSelect(true,0);
     }
+}
+
+
+void Connector::setColor(QColor color)
+{
+    mpConnectorAppearance->setCustomColor(color);
+    setPassive();
 }
 
 
@@ -1266,7 +1278,7 @@ void ConnectorLine::hoverLeaveEvent(QGraphicsSceneHoverEvent */*event*/)
 //! @brief Handles context menu events for connector
 void ConnectorLine::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
-    if (!mpParentConnector->isConnected() || mpParentConnector->getStartPort()->getNodeType() == "NodeSignal")
+    if (!mpParentConnector->isConnected())
     {
         event->ignore();
         return;
@@ -1277,15 +1289,29 @@ void ConnectorLine::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     QAction *pMakeDashedAction = 0;
     QAction *pMakeSolidAction = 0;
 
-    if(!mpParentConnector->mIsDashed)
+    if(mpParentConnector->getStartPort()->getNodeType() != "NodeSignal")
     {
-        pMakeDashedAction = menu.addAction("Make Connector Dashed");
-    }
-    else
-    {
-        pMakeSolidAction = menu.addAction("Make Connector Solid");
+        if(!mpParentConnector->mIsDashed)
+        {
+            pMakeDashedAction = menu.addAction("Make Connector Dashed");
+        }
+        else
+        {
+            pMakeSolidAction = menu.addAction("Make Connector Solid");
+        }
     }
 
+    QMenu *pColorMenu = new QMenu("Change Color");
+    QAction *pResetAction = pColorMenu->addAction("Reset Default");
+    QAction *pBlueAction = pColorMenu->addAction("Blue");
+    QAction *pRedAction = pColorMenu->addAction("Red");
+    QAction *pGreenAction = pColorMenu->addAction("Green");
+    QAction *pYellowAction = pColorMenu->addAction("Yellow");
+    QAction *pPurpleAction = pColorMenu->addAction("Purple");
+    QAction *pBrownAction = pColorMenu->addAction("Brown");
+    QAction *pOrangeAction = pColorMenu->addAction("Orange");
+    QAction *pPinkAction = pColorMenu->addAction("Pink");
+    menu.addMenu(pColorMenu);
 
     //-- User interaction --//
     QAction *selectedAction = menu.exec(event->screenPos());
@@ -1299,6 +1325,60 @@ void ConnectorLine::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     if(pMakeSolidAction != 0 && selectedAction == pMakeSolidAction)          //Make connector solid
     {
         mpParentConnector->setDashed(false);
+    }
+    if(selectedAction == pResetAction)
+    {
+        mpParentConnector->setColor(QColor());
+        mpParentConnector->setPassive();
+        mpParentConnector->mpParentContainerObject->mpParentProjectTab->hasChanged();
+    }
+    if(selectedAction == pBlueAction)
+    {
+        mpParentConnector->setColor(QColor("Blue"));
+        mpParentConnector->setPassive();
+        mpParentConnector->mpParentContainerObject->mpParentProjectTab->hasChanged();
+    }
+    if(selectedAction == pRedAction)
+    {
+        mpParentConnector->setColor(QColor("Red"));
+        mpParentConnector->setPassive();
+        mpParentConnector->mpParentContainerObject->mpParentProjectTab->hasChanged();
+    }
+    if(selectedAction == pGreenAction)
+    {
+        mpParentConnector->setColor(QColor("Green"));
+        mpParentConnector->setPassive();
+        mpParentConnector->mpParentContainerObject->mpParentProjectTab->hasChanged();
+    }
+    if(selectedAction == pYellowAction)
+    {
+        mpParentConnector->setColor(QColor("Yellow"));
+        mpParentConnector->setPassive();
+        mpParentConnector->mpParentContainerObject->mpParentProjectTab->hasChanged();
+    }
+    if(selectedAction == pPurpleAction)
+    {
+        mpParentConnector->setColor(QColor("Purple"));
+        mpParentConnector->setPassive();
+        mpParentConnector->mpParentContainerObject->mpParentProjectTab->hasChanged();
+    }
+    if(selectedAction == pBrownAction)
+    {
+        mpParentConnector->setColor(QColor("Brown"));
+        mpParentConnector->setPassive();
+        mpParentConnector->mpParentContainerObject->mpParentProjectTab->hasChanged();
+    }
+    if(selectedAction == pOrangeAction)
+    {
+        mpParentConnector->setColor(QColor("Orange"));
+        mpParentConnector->setPassive();
+        mpParentConnector->mpParentContainerObject->mpParentProjectTab->hasChanged();
+    }
+    if(selectedAction == pPinkAction)
+    {
+        mpParentConnector->setColor(QColor("Pink"));
+        mpParentConnector->setPassive();
+        mpParentConnector->mpParentContainerObject->mpParentProjectTab->hasChanged();
     }
 }
 

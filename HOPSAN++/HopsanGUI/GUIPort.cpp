@@ -595,7 +595,11 @@ PlotWindow *Port::plot(QString dataName, QString dataUnit, QColor desiredCurveCo
 {
     if(this->isConnected())
     {
-        return gpMainWindow->mpPlotWidget->mpPlotVariableTree->createPlotWindow(mpParentGuiModelObject->getName(), this->getPortName(), dataName, dataUnit, desiredCurveColor);
+        //! @todo need help function to create full name
+        QString fullName = mpParentGuiModelObject->getName()+"#"+this->getPortName()+"#"+dataName;
+        //! @todo Need to readd support for color /Peter, but why do we have unit here
+        return getParentContainerObjectPtr()->getPlotDataPtr()->openNewPlotWindow(fullName);
+        //return gpMainWindow->mpPlotWidget->mpPlotVariableTree->createPlotWindow(mpParentGuiModelObject->getName(), this->getPortName(), dataName, dataUnit, desiredCurveColor);
     }
 
     return 0;       //Fail!
@@ -608,12 +612,10 @@ PlotWindow *Port::plot(QString dataName, QString dataUnit, QColor desiredCurveCo
 //! @param dataUnit Desired data unit (empty = use default)
 void Port::plotToPlotWindow(PlotWindow *pPlotWindow, QString dataName, QString dataUnit, int axisY)
 {
-    //Make sure plot data exists
-    if (mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->havePlotData(mpParentGuiModelObject->getName(), this->getPortName(), dataName))
-    {
-        //Add new curve to the plot window
-        pPlotWindow->addPlotCurve(mpParentGuiModelObject->getParentContainerObject()->getPlotDataPtr()->size()-1, mpParentGuiModelObject->getName(), this->getPortName(), dataName, dataUnit, axisY);
-    }
+    //! @todo FIXA /Peter Dataunit is ignored
+    // Add new curve to the plot window, we assume hat the data exist, if not nothing will happen
+    QString fullName = makeConcatName(mpParentGuiModelObject->getName(),this->getPortName(),dataName);
+    pPlotWindow->addPlotCurve(getParentContainerObjectPtr()->getPlotDataPtr()->getPlotData(fullName, -1), axisY);
 }
 
 

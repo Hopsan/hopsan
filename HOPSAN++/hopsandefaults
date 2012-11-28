@@ -90,7 +90,7 @@
 
 			QTreeWidget 						{ background-color: rgb(244,247,251); padding: 0px; }
 
-			QTextEdit 							{ background-color: rgb(244,247,251); border: 1px solid gray; }
+                        QTextEdit 						{ background-color: rgb(244,247,251); border: 1px solid gray; }
 
 			QListWidget 						{ background-color: rgb(244,247,251); padding: 0px; }
 			QListWidget:item 					{ background-color: rgb(244,247,251); }

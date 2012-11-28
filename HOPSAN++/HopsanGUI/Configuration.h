@@ -83,6 +83,7 @@ public:
     QString getExternalLibDir();
     QString getScriptDir();
     QString getPlotWindowDir();
+    QStringList getTerminalHistory();
     QString getFmuImportDir();
     QString getFmuExportDir();
 
@@ -120,6 +121,7 @@ public:
     void setExternalLibDir(QString value);
     void setScriptDir(QString value);
     void setPlotWindowDir(QString value);
+    void storeTerminalHistory(QStringList value);
     void setFmuImportDir(QString value);
     void setFmuExportDir(QString value);
 
@@ -161,6 +163,7 @@ private:
     QString mExternalLibDir;
     QString mScriptDir;
     QString mPlotWindowDir;
+    QStringList mTerminalHistory;
     QString mFmuImportDir;
     QString mFmuExportDir;
 

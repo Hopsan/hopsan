@@ -67,7 +67,7 @@ class QPushButton;
 class QTimer;
 class MainWindow;
 class ModelObject;
-class PlotData;
+class LogDataHandler;
 class ModelObjectAnimationData;
 
 class AnimationWidget : public QWidget
@@ -82,8 +82,8 @@ public:
     //Get functions
     QVector<double> *getTimeValues();
     QGraphicsScene* getGraphicsScene();
-    PlotData* getPlotDataPtr();
-    int getNumberOfPlotGenerations();
+    LogDataHandler* getPlotDataPtr();
+
     int getIndex(); // returns the current position inside the time vector
     int getLastIndex();
     bool isRealTimeAnimation();
@@ -149,7 +149,7 @@ private:
     QGridLayout *mpLayout;
 
     //Copy of plot data object
-    PlotData *mpPlotData;
+    LogDataHandler *mpPlotData;
 
     //Copy of time values
     QVector<double>* mpTimeValues;
@@ -165,7 +165,6 @@ private:
     double mLastAnimationTime;
     int mSimulationSpeed;
     double mTimeStep;
-    int mnPlotGenerations;
     int mIndex;
     bool mRealTime;
     int mFps;

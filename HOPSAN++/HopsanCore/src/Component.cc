@@ -338,7 +338,7 @@ void Component::initializeDynamicParameters()
                 mpParameters->enableParameter(parNames[i], false);
                 //! @todo Not getNodeData(0) not hardcoded 0
                 //! @todo this assumes signal node and double data ptr in parameter
-                mDynamicParameterDataPtrs.push_back(make_pair(pPort->getNodeDataPtr(0),
+                mDynamicParameterDataPtrs.push_back(std::pair<double*, double*>(pPort->getNodeDataPtr(0),
                                                               static_cast<double*>(mpParameters->getParameterDataPtr(parNames[i]))));
 
             }

@@ -257,21 +257,17 @@ AnimationWidget::~AnimationWidget()
 //! @brief Calculates time values from plot data object
 QVector<double> *AnimationWidget::getTimeValues()
 {
-    mnPlotGenerations = mpContainer->getPlotDataPtr()->size();
-    QString componentName;
-    QString portName;
-    int i=0;
-    while(true)
-    {
-        componentName = mpContainer->getModelObjectNames().at(i);
-        portName = mpContainer->getModelObject(componentName)->getPortListPtrs().first()->getPortName();
-        if(mpContainer->getModelObject(componentName)->getPort(portName)->isConnected() && mpContainer->getModelObject(componentName)->getPort(portName)->getPortType() != "POWERMULTIPORT")
-            break;
-        else
-            ++i;
-    }
+    int latestGen = mpContainer->getPlotDataPtr()->getLatestGeneration();
+    QVector<LogVariableData *> vData = mpContainer->getPlotDataPtr()->getOnlyVariablesAtGeneration(latestGen);
 
-    return new QVector<double>((mpContainer->getPlotDataPtr()->getTimeVector(mnPlotGenerations-1)));
+    if (!vData.empty())
+    {
+        return &(vData.first()->mTimeVector);
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 
@@ -546,17 +542,11 @@ QGraphicsScene* AnimationWidget::getGraphicsScene()
 
 
 //! @brief Returns a pointer to the plot data object
-PlotData* AnimationWidget::getPlotDataPtr()
+LogDataHandler* AnimationWidget::getPlotDataPtr()
 {
     return mpPlotData;
 }
 
-
-//! @brief Returns number of plot generations in the plot data
-int AnimationWidget::getNumberOfPlotGenerations()
-{
-    return mnPlotGenerations;
-}
 
 
 //! @brief Returns current time index of animation

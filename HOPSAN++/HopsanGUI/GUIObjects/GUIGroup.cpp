@@ -40,7 +40,7 @@
 #include "GUIConnector.h"
 #include "Utilities/GUIUtilities.h"
 #include "UndoStack.h"
-#include "Widgets/MessageWidget.h"
+#include "Widgets/HcomWidget.h"
 #include "GraphicsView.h"
 #include "Widgets/LibraryWidget.h"
 #include "loadFunctions.h"
@@ -90,7 +90,7 @@ GroupContainer::GroupContainer(QPointF position, qreal rotation, const ModelObje
     //! @todo this is not good all mpParentProjectTab should be set in one common place not in guigroup and guisystem
     this->mpParentProjectTab = pParentContainer->mpParentProjectTab;
 
-    gpMainWindow->mpMessageWidget->printGUIWarningMessage("Groups are not yet fully implemented, DO NOT use them, it will only end in tears!");
+    gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Groups are not yet fully implemented, DO NOT use them, it will only end in tears!");
 }
 
 

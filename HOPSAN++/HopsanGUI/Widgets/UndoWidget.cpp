@@ -24,6 +24,7 @@
 
 #include <QtGui>
 
+#include "Widgets/UndoWidget.h"
 #include "UndoStack.h"
 #include "MainWindow.h"
 #include "ProjectTabWidget.h"

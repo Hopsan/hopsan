@@ -46,7 +46,7 @@ public:
 
     virtual void setParentContainerObject(ContainerObject *pParentContainer);
 
-    //Name methods
+    // Name methods
     virtual void setName(QString name);
     virtual QString getName();
     virtual void refreshDisplayName(const QString overrideName="");
@@ -56,20 +56,20 @@ public:
     virtual int getNameTextPos();
     virtual void setNameTextPos(int textPos);
 
-    //CQS methods
+    // CQS methods
     virtual QString getTypeCQS(){return "hasNoCqsType";} //Overloaded in GUISystem and GUIComponent
 
-    //Appearance methods
+    // Appearance methods
     void setAppearanceDataBasePath(const QString basePath);
     virtual ModelObjectAppearance* getAppearanceData();
     bool isVisible();
     QGraphicsSvgItem *getIcon();
 
-    //Help methods
+    // Help methods
     QString getHelpPicture();
     QString getHelpText();
 
-    //Parameter methods
+    // Parameter methods
     virtual QStringList getParameterNames();
     virtual void getParameters(QVector<CoreParameterData> &rParameterDataVec);
     virtual void getParameter(const QString paramName, CoreParameterData &rData);
@@ -77,22 +77,25 @@ public:
 
     virtual QString getDefaultParameterValue(const QString paramName) const;
 
+    // VariableAlias method
+    //! @todo parameters and portvaraibles should be more similar in the future, so that we do not need handle them separately
+    virtual QVector< QPair<QString,QString> > getVariableAliasList();
 
     virtual bool setParameterValue(QString name, QString valueTxt, bool force=false);
     virtual QString getStartValueTxt(QString portName, QString variable);
     virtual bool setStartValue(QString portName, QString variable, QString sysParName);
 
-    //Load and save methods
+    // Load and save methods
     virtual void saveToDomElement(QDomElement &rDomElement);
     virtual void loadFromDomElement(QDomElement &rDomElement);
     virtual void setModelFileInfo(QFile &rFile);
 
-    //Connector methods
+    // Connector methods
     QList<Connector*> getConnectorPtrs();
     void rememberConnector(Connector *item);
     void forgetConnector(Connector *item);
 
-    //Port methods
+    // Port methods
     void showPorts(bool visible);
     Port *getPort(QString name);
     QList<Port*> &getPortListPtrs();
@@ -132,11 +135,11 @@ signals:
     void nameChanged();
 
 protected:
-    //Protected methods
+    // Protected methods
     virtual void openPropertiesDialog(){}
     virtual QAction *buildBaseContextMenu(QMenu &rMenue, QGraphicsSceneContextMenuEvent* pEvent);
 
-    //Reimplemented Qt methods
+    // Reimplemented Qt methods
     virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
     virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -145,11 +148,11 @@ protected:
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
 
-    //Save and load methods
+    // Save and load methods
     virtual QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
     virtual void saveCoreDataToDomElement(QDomElement &rDomElement);
 
-    //Protected members
+    // Protected members
     ModelObjectAppearance mModelObjectAppearance;
 
     QString mName;
@@ -175,12 +178,12 @@ protected:
     double mHydraulicLosses;
     double mMechanicLosses;
 
-    //Used by C++ components
+    // Used by C++ components
     QString mCppCode;
     int mnCppInputs;
     int mnCppOutputs;
 
-    //Used by Modelica components
+    // Used by Modelica components
     QString mModelicaCode;
 
     bool mDragCopying;
@@ -210,12 +213,12 @@ signals:
     void textMoved(QPointF pos);
 
 protected:
-    //Reimplemented Qt methods
+    // Reimplemented Qt methods
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 protected:
-    //Protected members
+    // Protected members
     ModelObject* mpParentModelObject;
 };
 

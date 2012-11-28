@@ -64,69 +64,45 @@ private:
     QVector<double> *mpVector;
 };
 
+//class PyLogVariableDataWrapper : public QObject
+//{
+//    Q_OBJECT
+//public slots:
+
+//};
+
+class PyLogDataHandlerClassWrapper : public QObject
+{
+    Q_OBJECT
+public slots:
+    QString addVariables(LogDataHandler* o, const QString &a, const QString &b);
+    QString subVariables(LogDataHandler* o, const QString &a, const QString &b);
+    QString multVariables(LogDataHandler* o, const QString &a, const QString &b);
+    QString divVariables(LogDataHandler* o, const QString &a, const QString &b);
+    QString assignVariables(LogDataHandler* o, const QString &a, const QString &b);
+    bool pokeVariables(LogDataHandler* o, const QString &a, const int index, const double value);
+    double peekVariables(LogDataHandler* o, const QString &varName, const int index);
+    QString delVariables(LogDataHandler* o, const QString &a);
+    QString saveVariables(LogDataHandler* o, const QString &currName, const QString &newName);
+    QString addVariablesWithScalar(LogDataHandler* o, const QString &VarName, const int &ScaName);
+    QString subVariablesWithScalar(LogDataHandler* o, const QString &VarName, const int &ScaName);
+    QString multVariablesWithScalar(LogDataHandler* o, const QString &VarName, const int &ScaName);
+    QString divVariablesWithScalar(LogDataHandler* o, const QString &VarName, const int &ScaName);
+    QVector<double> data(LogDataHandler* o, const QString fullName);
+    //LogVariableData* getcurrentVariable(LogDataHandler* o, QString name);
+    //LogVariableContainer getcurrentContainer(LogDataHandler* o, QString name);
+};
+
 
 class PyPortClassWrapper : public QObject
 {
     Q_OBJECT
-
 public slots:
-    QString plot(Port* o, const QString& dataName)
-    {
-        QString res;
-        if(!(o->plot(dataName)))
-            res = "Sorry, for some reason this couldn't be plotted";
-        else
-        {
-            res = "Plotted '"; //Kanske inte ska skriva massa skit till Pythonkonsollen
-            res.append(dataName);
-            res.append("' at component '");
-            res.append(o->getGuiModelObjectName());
-            res.append("' and port '");
-            res.append(o->getPortName());
-            res.append("'.");
-        }
-        return res;
-    }
-
-    double lastData(Port* o, const QString& dataName)
-    {
-        double data;
-
-        if(!o->getLastNodeData(dataName, data))
-            return  -1.0; //! @todo this is not very smart
-        else
-            return data;
-    }
-
-    QVector<double> data(Port* o, const QString& dataName)
-    {
-        QPair<QVector<double>, QVector<double> > yData;
-        o->getParentContainerObjectPtr()->getCoreSystemAccessPtr()->getPlotData(o->getGuiModelObject()->getName(),o->getPortName(),dataName,yData);
-
-        return yData.second;
-    }
-
-    QVector<double> time(Port* o)
-    {
-        QVector<double> tVector = QVector<double>::fromStdVector(o->getParentContainerObjectPtr()->getCoreSystemAccessPtr()->getTimeVector(o->getGuiModelObject()->getName(),o->getPortName()));
-
-        return tVector;
-    }
-
-    QStringList variableNames(Port* o)
-    {
-        QStringList retval;
-        QString portName = o->getPortName();
-        QString componentName = o->getGuiModelObject()->getName();
-        QVector<QString> dataNames;
-        QVector<QString> dataUnits;
-        o->getGuiModelObject()->getParentContainerObject()->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(componentName, portName, dataNames, dataUnits);
-        for(int i=0; i<dataNames.size(); ++i)
-        {
-            retval.append(dataNames.at(i));
-        }
-        return retval;
-    }
+    QString plot(Port* o, const QString& dataName);
+    double lastData(Port* o, const QString& dataName);
+    QVector<double> data(Port* o, const QString& dataName);
+    QVector<double> time(Port* o);
+    QStringList variableNames(Port* o);
 };
 
 
@@ -135,37 +111,11 @@ class PyModelObjectClassWrapper : public QObject
     Q_OBJECT
 
 public slots:
-    double parameter(ModelObject* o, const QString& parName)
-    {
-        QString strParValue = o->getParameterValue(parName);
-
-        return strParValue.toDouble(); //! @todo This is not good if parameter is not double
-    }
-
-    void setParameter(ModelObject* o, const QString& parName, const double& value)
-    {
-        o->setParameterValue(parName, QString::number(value));
-    }
-
-    void setParameter(ModelObject* o, const QString& parName, const QString& value)
-    {
-        o->setParameterValue(parName, value);
-    }
-
-    Port* port(ModelObject* o, const QString& portName)
-    {
-        return o->getPort(portName);
-    }
-
-    QStringList portNames(ModelObject* o)
-    {
-        QStringList retval;
-        for(int i=0; i<o->getPortListPtrs().size(); ++i)
-        {
-            retval.append(o->getPortListPtrs().at(i)->getPortName());
-        }
-        return retval;
-    }
+    double parameter(ModelObject* o, const QString& parName);
+    void setParameter(ModelObject* o, const QString& parName, const double& value);
+    void setParameter(ModelObject* o, const QString& parName, const QString& value);
+    Port* port(ModelObject* o, const QString& portName);
+    QStringList portNames(ModelObject* o);
 };
 
 
@@ -174,290 +124,47 @@ class PyMainWindowClassWrapper : public QObject
     Q_OBJECT
 
 public slots:
-    void newModel(MainWindow* o)
-    {
-        o->mpProjectTabs->addNewProjectTab();
-    }
-
-    void loadModel(MainWindow* o, const QString& modelFileName)
-    {
-        o->mpProjectTabs->loadModel(modelFileName, true);
-    }
-
-    void closeAllModels(MainWindow* o)
-    {
-        o->mpProjectTabs->closeAllProjectTabs();
-    }
-
-    void gotoTab(MainWindow* o, int tab)
-    {
-        o->mpProjectTabs->setCurrentIndex(tab);
-    }
-
-    void printMessage(MainWindow* o, const QString& message)
-    {
-        o->mpMessageWidget->printGUIInfoMessage(QString("pyMessage: ").append(message));
-        o->mpMessageWidget->checkMessages();
-    }
-
-    void printInfo(MainWindow* o, const QString& message)
-    {
-        o->mpMessageWidget->printGUIInfoMessage(QString("pyInfo: ").append(message));
-        o->mpMessageWidget->checkMessages();
-    }
-
-    void printWarning(MainWindow* o, const QString& message)
-    {
-        o->mpMessageWidget->printGUIWarningMessage(QString("pyWarning: ").append(message));
-        o->mpMessageWidget->checkMessages();
-    }
-
-    void printError(MainWindow* o, const QString& message)
-    {
-        o->mpMessageWidget->printGUIErrorMessage(QString("pyError: ").append(message));
-        o->mpMessageWidget->checkMessages();
-    }
-
-    ModelObject* component(MainWindow* o, const QString& compName)
-    {
-        return o->mpProjectTabs->getCurrentContainer()->getModelObject(compName);
-    }
-
-    void setStartTime(MainWindow* o, const double& start)
-    {
-        o->setStartTimeInToolBar(start);
-    }
-
-    void setTimeStep(MainWindow* o, const double& timestep)
-    {
-        o->setTimeStepInToolBar(timestep);
-    }
-
-    void setFinishTime(MainWindow* o, const double& stop)
-    {
-        o->setStopTimeInToolBar(stop);
-    }
-
-    double getStartTime(MainWindow* o)
-    {
-        return o->getStartTimeFromToolBar();
-    }
-
-    double getTimeStep(MainWindow* o)
-    {
-        return o->getTimeStepFromToolBar();
-    }
-
-    double getFinishTime(MainWindow* o)
-    {
-        return o->getFinishTimeFromToolBar();
-    }
-
-    bool simulate(MainWindow* o)
-    {
-        //bool previousProgressBarSetting = o->mpConfig->getEnableProgressBar();
-        //o->mpConfig->setEnableProgressBar(false);
-        bool success = o->mpProjectTabs->getCurrentTab()->simulate_blocking();
-        //o->mpConfig->setEnableProgressBar(previousProgressBarSetting);
-        //qApp->processEvents();
-        return success;
-    }
-
-
-    bool simulateAllOpenModels(MainWindow* o, bool modelsHaveNotChanged)
-    {
-        //bool previousProgressBarSetting = o->mpConfig->getEnableProgressBar();
-        //o->mpConfig->setEnableProgressBar(false);
-        bool success = o->mpProjectTabs->simulateAllOpenModels_blocking(modelsHaveNotChanged);
-        //o->mpConfig->setEnableProgressBar(previousProgressBarSetting);
-        //qApp->processEvents();
-        return success;
-    }
-
-
-    double getParameter(MainWindow* o, const QString& compName, const QString& parName)
-    {
-        if(o->mpProjectTabs->getCurrentContainer()->hasModelObject(compName))
-        {
-            QString strParValue = o->mpProjectTabs->getCurrentContainer()->getModelObject(compName)->getParameterValue(parName);
-            return strParValue.toDouble(); //! @todo Not good if parameter not double
-        }
-        //assert(false);
-        return 0;
-    }
-
-    void setParameter(MainWindow* o, const QString& compName, const QString& parName, const double& value)
-    {
-        if(o->mpProjectTabs->getCurrentContainer()->hasModelObject(compName))
-        {
-            o->mpProjectTabs->getCurrentContainer()->getModelObject(compName)->setParameterValue(parName, QString::number(value));
-        }
-    }
-
-    void setParameter(MainWindow* o, const QString& compName, const QString& parName, const QString& value)
-    {
-        if(o->mpProjectTabs->getCurrentContainer()->hasModelObject(compName))
-        {
-            o->mpProjectTabs->getCurrentContainer()->getModelObject(compName)->setParameterValue(parName, value);
-        }
-    }
-
-    void setSystemParameter(MainWindow* o, const QString& parName, const double& value)
-    {
-        CoreParameterData paramData(parName, "", "double");
-        paramData.mValue.setNum(value);
-        o->mpProjectTabs->getCurrentContainer()->setOrAddParameter(paramData);
-        o->mpSystemParametersWidget->update();
-    }
-
-    QString addComponent(MainWindow* o, const QString& name, const QString& typeName, const int& x, const int& y, const int& rot)
-    {
-        ModelObjectAppearance *pAppearance = o->mpLibrary->getAppearanceData(typeName);
-        if(!pAppearance)
-            return "Could not find component type.";
-        pAppearance->setDisplayName(name);
-        ModelObject *pObj = o->mpProjectTabs->getCurrentContainer()->addModelObject(pAppearance, QPointF(x,y),rot);
-        if(!pObj)
-            return "Could not create component.";
-        return pObj->getName();
-    }
-
-    QString addComponent(MainWindow* o, const QString& name, const QString& typeName, const QString& subTypeName, const int& x, const int& y, const int& rot)
-    {
-        ModelObjectAppearance *pAppearance = o->mpLibrary->getAppearanceData(typeName, subTypeName);
-        if(!pAppearance)
-            return "Could not find component type.";
-        pAppearance->setDisplayName(name);
-        ModelObject *pObj = o->mpProjectTabs->getCurrentContainer()->addModelObject(pAppearance, QPointF(x,y),rot);
-        if(!pObj)
-            return "Could not create component.";
-        return pObj->getName();
-    }
-
-
-    bool connect(MainWindow* o, const QString& comp1, const QString& port1, const QString& comp2, const QString& port2)
-    {
-        Port *pPort1 = o->mpProjectTabs->getCurrentContainer()->getModelObject(comp1)->getPort(port1);
-        Port *pPort2 = o->mpProjectTabs->getCurrentContainer()->getModelObject(comp2)->getPort(port2);
-        Connector *pConn = o->mpProjectTabs->getCurrentContainer()->createConnector(pPort1, pPort2);
-
-        if (pConn != 0)
-        {
-            QVector<QPointF> pointVector;
-            pointVector.append(pPort1->pos());
-            pointVector.append(pPort2->pos());
-
-            QStringList geometryList;
-            geometryList.append("diagonal");
-
-            pConn->setPointsAndGeometries(pointVector, geometryList);
-            pConn->refreshConnectorAppearance();
-
-            //! @todo Register undo!
-
-            return true;
-        }
-        return false;
-    }
-
-
-    void enterSystem(MainWindow* o, const QString& sysName)
-    {
-        ModelObject *sysObj = o->mpProjectTabs->getCurrentContainer()->getModelObject(sysName);
-        SystemContainer *system = dynamic_cast<SystemContainer *>(sysObj);
-        system->enterContainer();
-    }
-
-
-    void exitSystem(MainWindow* o)
-    {
-        //o->mpProjectTabs->getCurrentContainer()->exitContainer();
-        int id = o->mpProjectTabs->getCurrentTab()->getQuickNavigationWidget()->getCurrentId();
-        o->mpProjectTabs->getCurrentTab()->getQuickNavigationWidget()->gotoContainerAndCloseSubcontainers(id-1);
-    }
-
-
-    void clear(MainWindow* o)
-    {
-        while(!o->mpProjectTabs->getCurrentContainer()->getModelObjectNames().isEmpty())
-        {
-            o->mpProjectTabs->getCurrentContainer()->deleteModelObject(o->mpProjectTabs->getCurrentContainer()->getModelObjectNames().first());
-        }
-    }
-
-
-    void plot(MainWindow* o, const QString& compName, const QString& portName, const QString& dataName)
-    {
-        o->mpProjectTabs->getCurrentContainer()->getModelObject(compName)->getPort(portName)->plot(dataName, "");
-        qApp->processEvents();
-    }
-
-    void plot(MainWindow* o, const QString &portAlias)
-    {
-        VariableDescription variableDescription;
-        variableDescription = o->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getPlotVariableFromAlias(portAlias);
-        QString compName = variableDescription.componentName;
-        QString portName = variableDescription.portName;
-        QString dataName = variableDescription.dataName;
-        o->mpProjectTabs->getCurrentContainer()->getModelObject(compName)->getPort(portName)->plot(dataName, "");
-        qApp->processEvents();
-    }
-
-    void plotToWindow(MainWindow* o, const int& generation, const QString& compName, const QString& portName, const QString& dataName, const int& windowNumber)
-    {
-        o->mpPlotWidget->mpPlotVariableTree->getPlotWindow(windowNumber)->addPlotCurve(generation, compName, portName, dataName);
-    }
-
-    void savePlotData(MainWindow* o, const QString& fileName, const int& windowNumber)
-    {
-        o->mpPlotWidget->mpPlotVariableTree->getPlotWindow(windowNumber)->getCurrentPlotTab()->exportToCsv(fileName);
-    }
-
-    void closeLastPlotWindow(MainWindow* o)
-    {
-        o->mpPlotWidget->mpPlotVariableTree->closeLastPlotWindow();
-    }
-
-    void refreshLastPlotWindow(MainWindow* o)
-    {
-        o->mpPlotWidget->mpPlotVariableTree->refreshLastPlotWindow();
-    }
-
-    int getSimulationTime(MainWindow* o)
-    {
-        return o->mpProjectTabs->getCurrentTab()->getLastSimulationTime();
-    }
-
-    void useMultiCore(MainWindow* o)
-    {
-        o->mpConfig->setUseMultiCore(true);
-    }
-
-    void useSingleCore(MainWindow* o)
-    {
-        o->mpConfig->setUseMultiCore(false);
-    }
-
-    void setNumberOfThreads(MainWindow* o, const int& value)
-    {
-        o->mpConfig->setNumberOfThreads(value);
-    }
-
-    void turnOnProgressBar(MainWindow* o)
-    {
-        o->mpConfig->setEnableProgressBar(true);
-    }
-
-    void turnOffProgressBar(MainWindow* o)
-    {
-        o->mpConfig->setEnableProgressBar(false);
-    }
-
-    QStringList componentNames(MainWindow* o)
-    {
-        return o->mpProjectTabs->getCurrentContainer()->getModelObjectNames();
-    }
-
+    void newModel(MainWindow* o);
+    void loadModel(MainWindow* o, const QString& modelFileName);
+    void closeAllModels(MainWindow* o);
+    void gotoTab(MainWindow* o, int tab);
+    void printMessage(MainWindow* o, const QString& message);
+    void printInfo(MainWindow* o, const QString& message);
+    void printWarning(MainWindow* o, const QString& message);
+    void printError(MainWindow* o, const QString& message);
+    ModelObject* component(MainWindow* o, const QString& compName);
+    void setStartTime(MainWindow* o, const double& start);
+    void setTimeStep(MainWindow* o, const double& timestep);
+    void setFinishTime(MainWindow* o, const double& stop);
+    double getStartTime(MainWindow* o);
+    double getTimeStep(MainWindow* o);
+    double getFinishTime(MainWindow* o);
+    bool simulate(MainWindow* o);
+    bool simulateAllOpenModels(MainWindow* o, bool modelsHaveNotChanged);
+    double getParameter(MainWindow* o, const QString& compName, const QString& parName);
+    void setParameter(MainWindow* o, const QString& compName, const QString& parName, const double& value);
+    void setParameter(MainWindow* o, const QString& compName, const QString& parName, const QString& value);
+    void setSystemParameter(MainWindow* o, const QString& parName, const double& value);
+    QString addComponent(MainWindow* o, const QString& name, const QString& typeName, const int& x, const int& y, const int& rot);
+    QString addComponent(MainWindow* o, const QString& name, const QString& typeName, const QString& subTypeName, const int& x, const int& y, const int& rot);
+    bool connect(MainWindow* o, const QString& comp1, const QString& port1, const QString& comp2, const QString& port2);
+    void enterSystem(MainWindow* o, const QString& sysName);
+    void exitSystem(MainWindow* o);
+    void clear(MainWindow* o);
+    void plot(MainWindow* o, const QString& compName, const QString& portName, const QString& dataName);
+    void plot(MainWindow* o, const QString &portAlias);
+    //! @todo maybe need a version for alias too,
+    void plotToWindow(MainWindow* o, const int& generation, const QString& compName, const QString& portName, const QString& dataName, const QString& windowName);
+    void offset(MainWindow* o, const QString aliasName, const double value, const int gen=-1);
+    void savePlotData(MainWindow* o, const QString& fileName, const QString &windowName);
+    int getSimulationTime(MainWindow* o);
+    void useMultiCore(MainWindow* o);
+    void useSingleCore(MainWindow* o);
+    void setNumberOfThreads(MainWindow* o, const int& value);
+    void turnOnProgressBar(MainWindow* o);
+    void turnOffProgressBar(MainWindow* o);
+    QStringList componentNames(MainWindow* o);
+    LogDataHandler* getLogDataHandler(MainWindow* o);
 };
 
 #endif // PYWRAPPERCLASSES_H

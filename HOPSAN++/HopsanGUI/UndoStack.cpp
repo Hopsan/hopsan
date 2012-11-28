@@ -32,7 +32,7 @@
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUISystem.h"
 #include "GUIObjects/GUIWidgets.h"
-#include "Widgets/MessageWidget.h"
+#include "Widgets/HcomWidget.h"
 #include "Widgets/UndoWidget.h"
 
 
@@ -68,7 +68,7 @@ void UndoStack::fromXml(QDomElement &undoElement)
     mCurrentStackPosition = mUndoRoot.lastChildElement().attribute("number").toInt();
     gpMainWindow->mpUndoWidget->refreshList();
 
-    //gpMainWindow->mpMessageWidget->printGUIDebugMessage(mDomDocument.toString());
+    //gpMainWindow->mpHcomWidget->mpConsole->printDebugMessage(mDomDocument.toString());
 }
 
 
@@ -76,7 +76,7 @@ void UndoStack::fromXml(QDomElement &undoElement)
 //! @param errorMsg (optional) Error message that will be displayed in message widget
 void UndoStack::clear(QString errorMsg)
 {
-    //gpMainWindow->mpMessageWidget->printGUIDebugMessage(mDomDocument.toString());
+    //gpMainWindow->mpHcomWidget->mpConsole->printDebugMessage(mDomDocument.toString());
 
     mCurrentStackPosition = -1;
     mUndoRoot.clear();
@@ -89,7 +89,7 @@ void UndoStack::clear(QString errorMsg)
 
     if(!errorMsg.isEmpty())
     {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage(errorMsg);
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(errorMsg);
     }
 }
 
@@ -514,7 +514,7 @@ void UndoStack::undoOneStep()
 //! @see undoOneStep()
 void UndoStack::redoOneStep()
 {
-    //gpMainWindow->mpMessageWidget->printGUIDebugMessage(mDomDocument.toString(2));
+    //gpMainWindow->mpHcomWidget->mpConsole->printDebugMessage(mDomDocument.toString(2));
 
     bool didSomething = false;
     ++mCurrentStackPosition;

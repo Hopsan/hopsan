@@ -36,6 +36,17 @@
 #include <qwt_plot_panner.h>
 #include <qwt_plot_marker.h>
 #include <qwt_symbol.h>
+#include "qwt_legend.h"
+
+//#include "hop_qwt_plot_legenditem.h"
+#include "qwt_plot_legenditem.h"
+
+#include <QObject>
+#include <QFile>
+#include <QObject>
+#include <QString>
+
+
 
 #include "GUIObjects/GUIContainerObject.h"
 #include "Dependencies/BarChartPlotter/barchartplotter.h"
@@ -50,6 +61,53 @@ class PlotTab;
 class PlotMarker;
 class PlotCurve;
 
+enum {AxisIdRole=QwtLegendData::UserRole+1};
+//! @todo Merge this class with PlotLegend
+class HopQwtPlotLegendItem : public QwtPlotLegendItem
+{
+private:
+    QwtPlot::Axis mAxis;
+    int mnItems;
+
+public:
+    HopQwtPlotLegendItem(QwtPlot::Axis axisId) :
+        QwtPlotLegendItem()
+    {
+        mAxis = axisId;
+    }
+
+    void updateLegend( const QwtPlotItem *plotItem, const QList<QwtLegendData> &data )
+    {
+        // Use only those curve pointers that should belong to this particular legend
+        QList<QwtLegendData> myData;
+        for (int i=0; i<data.size(); ++i)
+        {
+            if (data[i].value(AxisIdRole) == mAxis)
+            {
+                myData.push_back(data[i]);
+            }
+        }
+
+        QwtPlotLegendItem::updateLegend( plotItem, myData );
+    }
+};
+
+class PlotLegend : public HopQwtPlotLegendItem
+{
+public:
+    PlotLegend(QwtPlot::Axis axisId);
+};
+
+
+//! @todo we should merge this with plotcurve, and plotcurve should inherit QwtPlotCurve (containing this info)
+class HopQwtPlotCurve : public QwtPlotCurve
+{
+public:
+    HopQwtPlotCurve(QString label);
+    QList<QwtLegendData> legendData() const;
+
+};
+
 class PlotWindow : public QMainWindow
 {
     Q_OBJECT
@@ -60,28 +118,32 @@ class PlotWindow : public QMainWindow
     friend class PlotCurve;
 public:
     PlotWindow(PlotVariableTree *PlotVariableTree, MainWindow *parent);
-    void addPlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit="", int axisY=QwtPlot::yLeft, QString modelPath = QString(), QColor desiredColor=QColor());
+    ~PlotWindow();
+    void addPlotCurve(LogVariableData *pData, int axisY=QwtPlot::yLeft, QString modelPath = QString(), QColor desiredColor=QColor());
     void addBarChart(QStandardItemModel *pItemModel);
-    void setGeneration(int gen);
+
     PlotTabWidget *getPlotTabWidget();
     PlotTab *getCurrentPlotTab();
     void showHelpPopupMessage(QString message);
     void hideHelpPopupMessage();
-    SystemContainer *mpCurrentGUISystem;
+    //SystemContainer *mpCurrentGUISystem;
 
 signals:
     void curveAdded();
 
 public slots:
-    void changeXVector(QVector<double> xarray, QString componentName, QString portName, QString dataName, QString dataUnit);
+    void changeXVector(QVector<double> xarray, VariableDescription &rVarDesc);
     void addPlotTab(QString requestedName=QString());
-    void close();
     void updatePalette();
     void createPlotWindowFromTab();
     void saveToXml();
+    void ImportPlo();
+
     void loadFromXml();
     void performFrequencyAnalysis(PlotCurve *curve);
     void performFrequencyAnalysisFromDialog();
+
+
     void showFrequencyAnalysisHelp();
     void createBodePlot();
     void createBodePlotFromDialog();
@@ -93,15 +155,19 @@ public slots:
 
 protected:
     void mouseMoveEvent(QMouseEvent *event);
+    void closeEvent(QCloseEvent *event);
 
 private:
     QGridLayout *mpLayout;
+    QGridLayout *mpInfoBoxLayout;
     PlotVariableTree *mpPlotVariableTree;
     QPointF dragStartPosition;
 
     QToolBar *mpToolBar;
 
     QAction *mpNewPlotButton;
+    QAction *mpArrowButton;
+    QAction *mpLegendButton;
     QAction *mpZoomButton;
     QAction *mpPanButton;
     QAction *mpSaveButton;
@@ -112,20 +178,25 @@ private:
     QAction *mpBackgroundColorButton;
     QAction *mpNewWindowFromTabButton;
     QAction *mpResetXVectorButton;
+
     QAction *mpShowCurveInfoButton;
     QAction *mpShowPlotWidgetButton;
-    QAction *mpShowLegendsAction;
+
+//    QAction *mpShowLegendsAction;
     QAction *mpBodePlotButton;
     QMenu *mpExportMenu;
     QAction *mpExportToXmlAction;
+    QAction *mpImportClassicData;
     QAction *mpExportToCsvAction;
     QAction *mpExportToHvcAction;
     QAction *mpExportToMatlabAction;
     QAction *mpExportToGnuplotAction;
+    QAction *mpExportToOldHopAction;
     QMenu *mpExportGfxMenu;
     QAction *mpExportPdfAction;
     QAction *mpExportPngAction;
-
+    QAction *mpExportToGraphicsAction;
+    QAction *mpLocktheAxis;
 
     PlotTabWidget *mpPlotTabs;
 
@@ -144,15 +215,17 @@ private:
     QDialog *mpCreateBodeDialog;
     QSlider *mpMaxFrequencySlider;
 
+
+
     QDialog *mpFrequencyAnalysisDialog;
     QCheckBox *mpLogScaleCheckBox;
     QCheckBox *mpPowerSpectrumCheckBox;
     PlotCurve *mpFrequencyAnalysisCurve;
 
     QWidget *mpPlotInfoWidget;
+    QScrollArea *mpPlotInfoScrollArea;
     QVBoxLayout *mpPlotInfoLayout;
-
-    bool mLegendsVisible;
+    QAbstractItemModel *model;
 };
 
 
@@ -174,15 +247,19 @@ private:
     QToolButton *mpNextButton;
     QToolButton *mpCloseButton;
 
-    QGridLayout *mpLayout;
+    QGridLayout *mpInfBoxLayout;
     QSpinBox *mpSizeSpinBox;
+    QComboBox *mpLineStyleCombo;
+    QComboBox *mpLineSymbol;
     QToolButton *mpColorButton;
     QToolButton *mpFrequencyAnalysisButton;
+    //QToolButton *mpSetAxisButton;
     QToolButton *mpScaleButton;
     QCheckBox *mpAutoUpdateCheckBox;
     QLabel *mpLabel;
     QLabel *mpSizeLabel;
     QLabel *mpGenerationLabel;
+
 };
 
 
@@ -199,6 +276,7 @@ public:
 public slots:
     void closePlotTab(int index);
     void tabChanged();
+
 };
 
 
@@ -210,12 +288,14 @@ class PlotTab : public QWidget
     friend class PlotCurve;
     friend class PlotTabWidget;
     friend class PlotMarker;
+    friend class QItemSelectionModel;
 public:
     PlotTab(PlotWindow *parent);
     ~PlotTab();
     PlotWindow *mpParentPlotWindow;
 
     void setTabName(QString name);
+
     void addBarChart(QStandardItemModel *pItemModel);
     void addCurve(PlotCurve *curve, QColor desiredColor=QColor(), HopsanPlotID plotID=FIRSTPLOT);
     void rescaleToCurves();
@@ -224,11 +304,12 @@ public:
     void setActivePlotCurve(PlotCurve *pCurve);
     PlotCurve *getActivePlotCurve();
     QwtPlot *getPlot(HopsanPlotID plotID=FIRSTPLOT);
+
     void showPlot(HopsanPlotID plotID, bool visible);
     int getNumberOfCurves(HopsanPlotID plotID);
     void update();
-    void insertMarker(QwtPlotCurve *curve);
-    void changeXVector(QVector<double> xarray, QString componentName, QString portName, QString dataName, QString dataUnit, HopsanPlotID plotID=FIRSTPLOT);
+    void insertMarker(HopQwtPlotCurve *curve);
+    void changeXVector(QVector<double> xarray, const VariableDescription &rVarDesc, HopsanPlotID plotID=FIRSTPLOT);
     void updateLabels();
     bool isGridVisible();
     void saveToDomElement(QDomElement &rDomElement, bool dateTime, bool descriptions);
@@ -239,6 +320,7 @@ public:
     void exportToCsv(QString fileName);
 
 protected:
+
     virtual void dragEnterEvent(QDragEnterEvent *event);
     virtual void dragLeaveEvent(QDragLeaveEvent *event);
     virtual void dragMoveEvent(QDragMoveEvent *event);
@@ -246,7 +328,12 @@ protected:
     virtual void contextMenuEvent(QContextMenuEvent *);
 
 public slots:
+    void openLegendSettingsDialog();
+    void openAxisSettingsDialog();
+    void applyAxisSettings();
+    void applyLegendSettings();
     void enableZoom(bool value);
+    void enableArrow(bool value);
     void enablePan(bool value);
     void enableGrid(bool value);
     void setBackgroundColor();
@@ -257,7 +344,11 @@ public slots:
     void exportToMatlab();
     void exportToGnuplot();
     void exportToPdf();
+    void exportToGraphics();
+    //void applyGraphicsSettings();
+    void exportToOldHop();
     void exportToPng();
+
     void insertMarker(PlotCurve *pCurve, double x, double y, QString altLabel=QString(), bool movable=true);
     void insertMarker(PlotCurve *pCurve, QPoint pos, bool movable=true);
 
@@ -267,11 +358,13 @@ private slots:
 
 private:
     int getPlotIDFromCurve(PlotCurve *pCurve);
+    void constructLegendSettingsDialog();
+    void constructAxisSettingsDialog();
 
-    QwtPlot *mpPlot[2];
+    QwtPlot *mpQwtPlots[2];
     QSint::BarChartPlotter *mpBarPlot;
 
-    QGridLayout *mpLayout;
+    QGridLayout *mpLayouta;
 
     QList<PlotCurve *> mPlotCurvePtrs[2];
     PlotCurve *mpActivePlotCurve;
@@ -287,31 +380,74 @@ private:
     QMap<QString, QString> mCurrentUnitsRight;
     QwtSymbol *mpMarkerSymbol;
 
+
     bool mRightAxisLogarithmic;
     bool mLeftAxisLogarithmic;
     bool mBottomAxisLogarithmic;
 
+
     QRubberBand *mpHoverRect;
 
     bool mHasSpecialXAxis;
-    QVector<double> mVectorX;
-    QString mVectorXLabel;
-
-    QString mVectorXModelPath;
-    QString mVectorXComponent;
-    QString mVectorXPortName;
-    QString mVectorXDataName;
-    QString mVectorXDataUnit;
-    int mVectorXGeneration;
+    QVector<double> mSpecialXVector;
+    QString mSpecialXVectorLabel;
+    VariableDescription mSpecialXVectorDescription;
+    QString mSpecialXVectorModelPath; //!< @todo Maybe modelpath should be part of the description
 
     //Stuff used in export to xml dialog
     QDialog *mpExportXmlDialog;
+
     QSpinBox *mpXmlIndentationSpinBox;
     QCheckBox *mpIncludeTimeCheckBox;
     QCheckBox *mpIncludeDescriptionsCheckBox;
     QTextEdit *mpXmlOutputTextBox;
 
     bool mIsSpecialPlot;
+
+    // Legend related member variables
+    QwtLegend *mpExternalLegend;
+    HopQwtPlotLegendItem *mpLeftPlotLegend, *mpRightPlotLegend;
+    QCheckBox *mpLegendsInternalEnabledCheckBox;
+    QCheckBox *mpLegendsExternalEnabledCheckBox;
+    QCheckBox *mpLegendsOffEnabledCheckBox;
+    //QCheckBox *mpLegendsOffYREnabledCheckBox;
+    QDialog *mpLegendSettingsDialog;
+    QComboBox *mpLegendLPosition;
+    QComboBox *mpLegendRPosition;
+    QComboBox *mpLegendBg;
+    QComboBox *mpLegendSym;
+    QSpinBox *mpLegendCol;
+    QDoubleSpinBox *mpLegendOff;
+    //QDoubleSpinBox *mpLegendOffYR;
+    QSpinBox *mpLegendSize;
+    QComboBox *mpLegendBlob;
+
+    QDialog *mpGraphicsSettingsDialog;
+    QSpinBox *mpGraphicsSize;
+    QSpinBox *mpGraphicsSizeW;
+    QSpinBox *mpGraphicsQuality;
+    QComboBox *mpGraphicsForm;
+
+    // Axis settings related member variables
+    QDialog *mpSetAxisDialog;
+    QCheckBox *mpXbSetLockCheckBox;
+    QCheckBox *mpYLSetLockCheckBox;
+    QCheckBox *mpYRSetLockCheckBox;
+    QDoubleSpinBox *mpXminSpinBox;
+    QDoubleSpinBox *mpXmaxSpinBox;
+    QDoubleSpinBox *mpYLminSpinBox;
+    QDoubleSpinBox *mpYLmaxSpinBox;
+    QDoubleSpinBox *mpYRminSpinBox;
+    QDoubleSpinBox *mpYRmaxSpinBox;
+    typedef struct _AxisLimits
+    {
+        double xbMin, xbMax;
+        double yLMin, yLMax;
+        double yRMin, yRMax;
+    }AxisLimitsT;
+    AxisLimitsT mAxisLimits[2];     // Persistent axis limits
+    double bufferoffset;
+    double bufferoffsetYR;
 };
 
 
@@ -320,32 +456,58 @@ class PlotCurve : public QObject
 {
     Q_OBJECT
     friend class PlotInfoBox;
+    friend class PlotWindow;
 public:
-    PlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit="", int axisY=QwtPlot::yLeft, QString modelPath="", PlotTab *parent=0, HopsanPlotID plotID=FIRSTPLOT, HopsanPlotCurveType curveType=PORTVARIABLE);
+
+    PlotCurve(LogVariableData *pData,
+              int axisY=QwtPlot::yLeft,
+              QString modelPath="",
+              PlotTab *parent=0,
+              HopsanPlotID plotID=FIRSTPLOT,
+              HopsanPlotCurveType curveType=PORTVARIABLE);
+
+    PlotCurve(const VariableDescription &rVarDesc,
+              const QVector<double> &rXVector,
+              const QVector<double> &rYVector,
+              int axisY=QwtPlot::yLeft,
+              QString modelPath="",
+              PlotTab *parent=0,
+              HopsanPlotID plotID=FIRSTPLOT,
+              HopsanPlotCurveType curveType=PORTVARIABLE);
     ~PlotCurve();
     PlotTab *mpParentPlotTab;
 
-    int getGeneration();
-    QString getCurveName();
+    QString getCurveName() const;
     HopsanPlotCurveType getCurveType();
-    QwtPlotCurve *getCurvePtr();
+    int getAxisY();
+    HopQwtPlotCurve *getQwtPlotCurvePtr();
     //QDockWidget *getPlotInfoDockWidget();
+
+    LogVariableData *getPlotLogDataVariable();
+    int getGeneration() const;
     QString getComponentName();
     QString getPortName();
     QString getDataName();
     QString getDataUnit();
-    int getAxisY();
+
+
     const QVector<double> &getDataVector() const;
     const QVector<double> &getTimeVector() const;
     ContainerObject *getContainerObjectPtr();
+
     void setGeneration(int generation);
     void setDataUnit(QString unit);
     void setScaling(double scaleX, double scaleY, double offsetX, double offsetY);
-    void setData(QVector<double> vData, QVector<double> vTime);
+
+    void setCustomData(const VariableDescription &rVarDesc, const QVector<double> &rvTime, const QVector<double> &rvData);
+
     void toFrequencySpectrum();
 
 public slots:
+
     void setLineWidth(int);
+    void setLineStyle(QString);
+    void setLineSymbol(QString);
     void setLineColor(QColor color);
     void setLineColor(QString colorName=QString());
     void openScaleDialog();
@@ -359,36 +521,45 @@ public slots:
     void setNextGeneration();
     void setAutoUpdate(bool value);
     void performFrequencyAnalysis();
+    //void performSetAxis();
 
 private slots:
     void setActive(bool value);
     void updateCurve();
+    void updateCurveName();
 
 private:
+    LogVariableData *mpData;
+    PlotInfoBox *mpPlotInfoBox;
+
     HopsanPlotCurveType mCurveType;
-    QwtPlotCurve *mpCurve;
-    int mGeneration;
-    QString mComponentName;
-    QString mPortName;
-    QString mDataName;
-    QString mDataUnit;
+    HopQwtPlotCurve *mpQwtPlotCurve;
+
     ContainerObject *mpContainerObject;
-    QVector<double> mDataVector;
-    QVector<double> mTimeVector;
+
     QColor mLineColor;
+    QString mLineStyle;
+    QString mLineSymbol;
     int mLineWidth;
     int mAxisY;
-    PlotInfoBox *mpPlotInfoBox;
+
     bool mAutoUpdate;
+    bool mHaveCustomData;
     double mScaleX;
     double mScaleY;
     double mOffsetX;
     double mOffsetY;
 
+    QwtSymbol *mpCurveSymbol;
+
     QDoubleSpinBox *mpXScaleSpinBox;
     QDoubleSpinBox *mpXOffsetSpinBox;
     QDoubleSpinBox *mpYScaleSpinBox;
     QDoubleSpinBox *mpYOffsetSpinBox;
+
+    void deleteCustomData();
+    void connectDataSignals();
+    void commonConstructorCode(int axisY, QString modelPath, PlotTab *parent, HopsanPlotID plotID, HopsanPlotCurveType curveType);
 };
 
 
@@ -397,7 +568,7 @@ class PlotMarker : public QObject, public QwtPlotMarker
 {
     Q_OBJECT
 public:
-    PlotMarker(PlotCurve *pCurve, PlotTab *pPlotTab, QwtSymbol markerSymbol);
+    PlotMarker(PlotCurve *pCurve, PlotTab *pPlotTab, QwtSymbol *markerSymbol);
     PlotCurve *getCurve();
     virtual bool eventFilter (QObject *, QEvent *);
     void setMovable(bool movable);
@@ -407,7 +578,7 @@ private:
     PlotTab *mpPlotTab;
     bool mIsBeingMoved;
     bool mIsMovable;
-    QwtSymbol mMarkerSymbol;
+    QwtSymbol *mpMarkerSymbol;
 };
 
 
