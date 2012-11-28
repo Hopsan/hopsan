@@ -72,6 +72,7 @@ class TextBoxWidget : public Widget
 
 public:
     TextBoxWidget(QString text, QPointF pos, qreal rot, selectionStatus startSelected, ContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent=0);
+    TextBoxWidget(const TextBoxWidget &other, ContainerObject *pSystem);
     void saveToDomElement(QDomElement &rDomElement);
 
     void setText(QString text);

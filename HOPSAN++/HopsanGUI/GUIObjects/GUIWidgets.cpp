@@ -42,7 +42,10 @@ Widget::Widget(QPointF pos, qreal rot, selectionStatus startSelected, ContainerO
 {
     setFlag(QGraphicsItem::ItemIsMovable, true);
     setFlag(QGraphicsItem::ItemIsSelectable, true);
-    pSystem->getContainedScenePtr()->addItem(this);
+    if(pSystem)
+    {
+        pSystem->getContainedScenePtr()->addItem(this);
+    }
     this->setPos(pos);
     mIsResizing = false;        //Only used for resizable widgets
 }
@@ -166,6 +169,27 @@ TextBoxWidget::TextBoxWidget(QString text, QPointF pos, qreal rot, selectionStat
 
     mWidgetIndex = widgetIndex;
 }
+
+
+TextBoxWidget::TextBoxWidget(const TextBoxWidget &other, ContainerObject *pSystem)
+    : Widget(other.pos(), other.rotation(), DESELECTED, pSystem, 0)
+{
+    mType = other.mType;
+    mpRectItem = new QGraphicsRectItem(other.mpRectItem->rect(), this, pSystem->getContainedScenePtr());
+    if(other.mpRectItem->isVisible())
+    {
+        mpRectItem->show();
+    }
+    else
+    {
+        mpRectItem->hide();
+    }
+    mpTextItem = new QGraphicsTextItem(other.mpTextItem->toPlainText(), this, pSystem->getContainedScenePtr());
+    mpTextItem->setFont(other.mpTextItem->font());
+    mpTextItem->show();
+    setColor(other.mpTextItem->defaultTextColor());
+}
+
 
 void TextBoxWidget::saveToDomElement(QDomElement &rDomElement)
 {

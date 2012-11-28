@@ -260,8 +260,10 @@ void AnimatedComponent::updateAnimation()
 
                 QGraphicsColorizeEffect *pEffect = new QGraphicsColorizeEffect();
                 QColor color(r,g,b,a);
+             //   qDebug() << "Color: " << r << " " << g << " " << b << " " << a;
                 pEffect->setColor(color);
                 mpMovables[m]->setGraphicsEffect(pEffect);
+                mpMovables[m]->setOpacity(double(a)/255.0);
             }
 
 

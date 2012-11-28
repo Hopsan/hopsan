@@ -34,6 +34,7 @@
 #include "GUIObjects/AnimatedComponent.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUISystem.h"
+#include "GUIObjects/GUIWidgets.h"
 #include "Widgets/AnimationWidget.h"
 #include "Widgets/LibraryWidget.h"
 #include "Widgets/ProjectTabWidget.h"
@@ -213,6 +214,16 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
         AnimatedConnector *pAnimatedConnector = new AnimatedConnector(mConnectorList.at(f), this);
         mpGraphicsScene->addItem(pAnimatedConnector);
         mAnimatedConnectorList.append(pAnimatedConnector);
+    }
+
+    //Generate list of widgets from container object
+    QList<Widget*> widgets = mpContainer->getWidgets();
+    for(int i=0; i<widgets.size(); ++i)
+    {
+        TextBoxWidget *pWidget = new TextBoxWidget(*qobject_cast<TextBoxWidget*>(widgets[i]), mpContainer);
+        //pWidget->setParent(this);
+        mpGraphicsScene->addItem(pWidget);
+        pWidget->setPos(widgets[i]->pos());
     }
 
     //Define button connections

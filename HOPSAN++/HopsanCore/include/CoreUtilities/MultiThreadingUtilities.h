@@ -34,7 +34,7 @@ public:
         mData = data;
         mStartIdx=mData.size()-1;
         std::vector<T*> tempData;
-        for(int i=0; i<mData.size(); ++i)
+        for(size_t i=0; i<mData.size(); ++i)
         {
             tempData.push_back(mData[i]);
             tempData.push_back(0);
