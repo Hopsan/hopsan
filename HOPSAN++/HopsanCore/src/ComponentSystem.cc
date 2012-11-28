@@ -876,6 +876,12 @@ void ComponentSystem::determineCQSType()
             {
                 if ( (*cpit)->getComponent()->getSystemParent() == this )
                 {
+                    if( (*cpit)->getPortType() == READPORT || (*cpit)->getPortType() == WRITEPORT)
+                    {
+                        ++s_ctr;
+                        continue;
+                    }
+
                     switch ((*cpit)->getComponent()->getTypeCQS())
                     {
                     case C :
