@@ -381,15 +381,33 @@ void loadFavoriteVariable(QDomElement &rDomElement, ContainerObject* pContainer)
 //! @todo We should remove Plot from the name as this is suposed to be useable for more then plotting only
 void loadPlotAlias(QDomElement &rDomElement, ContainerObject* pContainer)
 {
-    QString alias = rDomElement.attribute("alias");
-    QString componentName = rDomElement.attribute("component");
-    QString portName = rDomElement.attribute("port");
-    QString dataName = rDomElement.attribute("data");
+    QString aliasname, fullName;
 
-    //! @todo we need a help function to build and to split a full variable name
-    QString fullName = componentName+"#"+portName+"#"+dataName;
+    //! @todo not hardcoded attrnames
+    //! @todo what about type
+    //! @todo actually Core should load this data
+    QString type = rDomElement.attribute("type", "UnknownAliasType");
+    aliasname = rDomElement.attribute("name", "UnknownAliasName");
+    fullName = rDomElement.firstChildElement("fullname").text();
 
-    pContainer->getPlotDataPtr()->definePlotAlias(alias, fullName);
+    // try the old format
+    //! @todo dont know if this works, but likely only atlas cares
+    if (type=="UnknownAliasType")
+    {
+        aliasname = rDomElement.attribute("alias");
+        QString componentName = rDomElement.attribute("component");
+        QString portName = rDomElement.attribute("port");
+        QString dataName = rDomElement.attribute("data");
+
+        //! @todo we need a help function to build and to split a full variable name
+        fullName = componentName+"#"+portName+"#"+dataName;
+    }
+
+    //! @todo maybe should only be in core
+    QString comp,port,var;
+    splitConcatName(fullName, comp,port,var);
+    pContainer->setVariableAlias(comp,port,var,aliasname);
+    //! @todo instead of bool return the uniqe changed alias should be returned
 }
 
 
