@@ -1643,16 +1643,36 @@ void PlotTab::rescaleToCurves()
             yMaxRight = 10;
         }
 
-        //Max and min must not be same value; if they are, decrease/increase them by one
-        if(yMaxLeft == yMinLeft)
+        //Max and min must not be same value; if they are, decrease/increase
+        if(yMaxLeft == 0 && yMinLeft == 0)
         {
-            yMaxLeft = yMaxLeft+1;
-            yMinLeft = yMinLeft-1;
+            yMaxLeft = 1;
+            yMinLeft = -1;
         }
-        if(yMaxRight == yMinRight)
+        else if(yMaxLeft == yMinLeft && yMaxLeft > 0)
         {
-            yMaxRight = yMaxRight+1;
-            yMinRight = yMinRight-1;
+            yMaxLeft = yMaxLeft*2;
+            yMinLeft = 0;
+        }
+        else if(yMaxLeft == yMinLeft && yMaxLeft < 0)
+        {
+            yMaxLeft = 0;
+            yMinLeft = yMinLeft*2;
+        }
+        if(yMaxRight == 0 && yMinRight == 0)
+        {
+            yMaxRight = 1;
+            yMinRight = -1;
+        }
+        else if(yMaxRight == yMinRight && yMaxRight > 0)
+        {
+            yMaxRight = yMaxRight*2;
+            yMinRight = 0;
+        }
+        else if(yMaxRight == yMinRight && yMaxRight < 0)
+        {
+            yMaxRight = 0;
+            yMinRight = yMinRight*2;
         }
 
         //Calculate heights (used for calculating margins at top and bottom
