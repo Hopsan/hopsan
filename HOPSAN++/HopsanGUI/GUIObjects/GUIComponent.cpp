@@ -176,7 +176,7 @@ bool Component::setParameterValue(QString name, QString value, bool force)
 
 //! @brief Set a start value to be mapped to a System parameter
 //! @deprecated
-bool Component::setStartValue(QString portName, QString variable, QString sysParName)
+bool Component::setStartValue(QString portName, QString /*variable*/, QString sysParName)
 {
     QString dataName;
     dataName = portName + QString("::Value");

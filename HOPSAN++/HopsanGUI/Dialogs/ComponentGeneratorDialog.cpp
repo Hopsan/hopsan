@@ -253,7 +253,7 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     dummy = Expression("a*b*c + a*b*-c + 3*c*d - d*c*2 + d*5*c + c*d + pow(x,3.0) -pow(x,3.0)");
     qDebug() << dummy.toString();
     assert(dummy.toString() == "c*d*7.0");
-#endif VALIDATE_GUI
+#endif
 
     //Set the name and size of the main window
     this->resize(1024,768);

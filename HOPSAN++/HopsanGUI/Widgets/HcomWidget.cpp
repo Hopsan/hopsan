@@ -1867,10 +1867,10 @@ void HcomHandler::changePlotVariables(QString cmd, int axis)
         }
     }
     splitCmdMajor.append(cmd.right(cmd.size()-start));
-    for(int i=0; i<splitCmdMajor.size(); ++i)
-    {
-        splitCmdMajor[i].remove("\"");
-    }
+//    for(int i=0; i<splitCmdMajor.size(); ++i)
+//    {
+//        splitCmdMajor[i].remove("\"");
+//    }
 
     if(axis == -1 || axis == 0)
     {
@@ -2691,6 +2691,11 @@ QString HcomHandler::getParameterValue(QString parameter)
     parameter.remove("\"");
     QString compName = parameter.split(".").first();
     QString parName = parameter.split(".").last();
+
+    if(gpMainWindow->mpProjectTabs->count() == 0)
+    {
+        return "NaN";
+    }
 
     SystemContainer *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
     ModelObject *pComp = pSystem->getModelObject(compName);

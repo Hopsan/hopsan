@@ -537,7 +537,7 @@ QStringList CoreSystemAccess::getAliasNames() const
     std::vector<std::string> str_vec = mpCoreComponentSystem->getAliasHandler().getAliases();
     QStringList qvec;
     qvec.reserve(str_vec.size());
-    for (int i=0; i<str_vec.size(); ++i)
+    for (size_t i=0; i<str_vec.size(); ++i)
     {
         qvec.push_back(QString::fromStdString(str_vec[i]));
     }
@@ -811,7 +811,7 @@ bool CoreSystemAccess::havePlotData(const QString compname, const QString portna
     if (pPort)
     {
         bool exists=false;
-        for(int i=0; i<pPort->getNodeDataDescriptions()->size(); ++i)
+        for(size_t i=0; i<pPort->getNodeDataDescriptions()->size(); ++i)
         {
             if(pPort->getNodeDataDescriptions()->at(i).name == dataname.toStdString())
             {
