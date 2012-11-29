@@ -262,7 +262,7 @@ QVector<double> *AnimationWidget::getTimeValues()
 
     if (!vData.empty())
     {
-        return &(vData.first()->mTimeVector);
+        return vData.first()->mSharedTimeVectorPtr.data();
     }
     else
     {

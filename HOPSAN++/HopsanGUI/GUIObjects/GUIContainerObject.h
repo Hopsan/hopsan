@@ -27,6 +27,7 @@
 
 #include <QSlider>
 //#include "PlotWindow.h"
+#include <QSharedPointer>
 
 #include "GUIModelObject.h"
 #include "CopyStack.h"
@@ -43,6 +44,15 @@ class TextBoxWidget;
 
 using namespace std;
 
+typedef QSharedPointer<QVector<double> > SharedTimeVectorPtrT;
+class UniqueSharedTimeVectorPtrHelper
+{
+public:
+    SharedTimeVectorPtrT makeSureUnique(QVector<double> &rTimeVector);
+
+private:
+    QVector< SharedTimeVectorPtrT > mSharedTimeVecPointers;
+};
 
 QString makeConcatName(const QString componentName, const QString portName, const QString dataName);
 void splitConcatName(const QString fullName, QString &rCompName, QString &rPortName, QString &rVarName);
@@ -92,6 +102,7 @@ public:
     //! @todo also need qucik constructor for creating a container with one generation directly
     LogVariableContainer(const VariableDescription &rVarDesc);
     void addDataGeneration(const int generation, const QVector<double> &rTime, const QVector<double> &rData);
+    void addDataGeneration(const int generation, const SharedTimeVectorPtrT time, const QVector<double> &rData);
     void removeDataGeneration(const int generation);
     void removeGenerationsOlderThen(const int gen);
 
@@ -135,13 +146,14 @@ class LogVariableData : public QObject
 public:
     //! @todo maybe have protected constructor, to avoid creating these objects manually (need to be friend with container)
     LogVariableData(const int generation, const QVector<double> &rTime, const QVector<double> &rData, LogVariableContainer *pParent);
+    LogVariableData(const int generation, SharedTimeVectorPtrT time, const QVector<double> &rData, LogVariableContainer *pParent);
     ~LogVariableData();
 
     double mAppliedValueOffset;
     double mAppliedTimeOffset;
     int mGeneration;
     QVector<double> mDataVector;
-    QVector<double> mTimeVector; //! @todo should be smart pointer, or store by Time vector Id
+    SharedTimeVectorPtrT mSharedTimeVectorPtr;
 
     VariableDescription getVariableDescription() const;
     QString getAliasName() const;
@@ -184,6 +196,7 @@ signals:
 private:
     LogVariableContainer *mpParentVariableContainer;
 
+    QVector<double> mTimeVector; //! @todo should be smart pointer, or store by Time vector Id
 
 };
 

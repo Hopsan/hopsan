@@ -3134,7 +3134,7 @@ void LogDataHandler::exportToPlo(QString filePath, QStringList variables)
 
     for(int i=0; i<dataPtrs[0]->mDataVector.size(); ++i)
     {
-        dummy.setNum(dataPtrs[0]->mTimeVector[i],'E',6);
+        dummy.setNum(dataPtrs[0]->mSharedTimeVectorPtr.data()->at(i),'E',6);
         fileStream <<"  "<<dummy;
         for(int j=0; j<12-dummy.size(); ++j) { fileStream << " "; }
 
@@ -3405,6 +3405,7 @@ bool LogDataHandler::isEmpty()
 void LogDataHandler::collectPlotDataFromModel()
 {
     //bool timeVectorObtained = false;
+    UniqueSharedTimeVectorPtrHelper timeVecHelper;
     bool foundData = false;
 
     //Iterate components
@@ -3429,6 +3430,9 @@ void LogDataHandler::collectPlotDataFromModel()
                 // Prevent adding data if time or data vector was empty
                 if (!data.first.isEmpty() && !data.second.isEmpty())
                 {
+                    // Make sure we use the same time vector
+                    SharedTimeVectorPtrT timeVecPtr = timeVecHelper.makeSureUnique(data.first);
+
                     foundData=true;
                     VariableDescription varDesc;
                     varDesc.mComponentName = pModelObject->getName();
@@ -3445,13 +3449,13 @@ void LogDataHandler::collectPlotDataFromModel()
                     if (it != mAllPlotData.end())
                     {
                         // Insert it into the generations map
-                        it.value()->addDataGeneration(mGenerationNumber, data.first, data.second);
+                        it.value()->addDataGeneration(mGenerationNumber, timeVecPtr, data.second);
                     }
                     else
                     {
                         // Create a new toplevel map item and insert data into the generations map
                         LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc);
-                        pDataContainer->addDataGeneration(mGenerationNumber, data.first, data.second);
+                        pDataContainer->addDataGeneration(mGenerationNumber, timeVecPtr, data.second);
                         mAllPlotData.insert(catName, pDataContainer);
                     }
 
@@ -4339,10 +4343,16 @@ void LogVariableData::setValueOffset(double offset)
 
 void LogVariableData::setTimeOffset(double offset)
 {
-    mAppliedTimeOffset += offset;
-    for (int i=0; mTimeVector.size(); ++i)
+    mAppliedTimeOffset += offset; //! @todo this does not make sense any more
+//    for (int i=0; mTimeVector.size(); ++i)
+//    {
+//        mTimeVector[i] += offset;
+//    }
+
+    for (int i=0; mSharedTimeVectorPtr.data()->size(); ++i)
     {
-        mTimeVector[i] += offset;
+        //! @todo FIX
+        //mSharedTimeVectorPtr.data()->at(i) += offset;
     }
 
     emit dataChanged();
@@ -4355,6 +4365,17 @@ LogVariableData::LogVariableData(const int generation, const QVector<double> &rT
     mAppliedTimeOffset = 0;
     mGeneration = generation;
     mTimeVector = rTime;
+    mSharedTimeVectorPtr = SharedTimeVectorPtrT(&mTimeVector);
+    mDataVector = rData;
+}
+
+LogVariableData::LogVariableData(const int generation, SharedTimeVectorPtrT time, const QVector<double> &rData,  LogVariableContainer *pParent)
+{
+    mpParentVariableContainer = pParent;
+    mAppliedValueOffset = 0;
+    mAppliedTimeOffset = 0;
+    mGeneration = generation;
+    mSharedTimeVectorPtr = time;
     mDataVector = rData;
 }
 
@@ -4488,6 +4509,7 @@ void LogVariableData::assigntoData(const LogVariableData *pOther)
 {
     mDataVector = pOther->mDataVector;
     mTimeVector = pOther->mTimeVector;
+    mSharedTimeVectorPtr = pOther->mSharedTimeVectorPtr;
 }
 
 bool LogVariableData::poketoData(const int index, const double value)
@@ -4654,6 +4676,15 @@ void LogVariableContainer::addDataGeneration(const int generation, const QVector
     mDataGenerations.insert(generation, pData);
 }
 
+void LogVariableContainer::addDataGeneration(const int generation, const SharedTimeVectorPtrT time, const QVector<double> &rData)
+{
+    //! @todo what if a generation already exist, then we must properly delete the old data before we add new one
+    LogVariableData *pData = new LogVariableData(generation, time, rData, this);
+    connect(pData, SIGNAL(beginDeleted(int)), this, SLOT(forgetDataGeneration(int)));
+    connect(this, SIGNAL(nameChanged()), pData, SIGNAL(nameChanged()));
+    mDataGenerations.insert(generation, pData);
+}
+
 //! @todo Need to remove this class if final generation is deleted
 void LogVariableContainer::removeDataGeneration(const int generation)
 {
@@ -4685,4 +4716,32 @@ void LogVariableContainer::removeGenerationsOlderThen(const int gen)
 LogVariableContainer::LogVariableContainer(const VariableDescription &rVarDesc) : QObject()
 {
     mVariableDescription = rVarDesc;
+}
+
+SharedTimeVectorPtrT UniqueSharedTimeVectorPtrHelper::makeSureUnique(QVector<double> &rTimeVector)
+{
+    const int nElements = rTimeVector.size();
+    if (nElements > 0)
+    {
+        const double newFirst = rTimeVector[0];
+        const double newLast = rTimeVector[nElements-1];
+
+        for (int idx=0; idx<mSharedTimeVecPointers.size(); ++idx)
+        {
+            const int oldElements = mSharedTimeVecPointers[idx].data()->size();
+            const double oldFirst = mSharedTimeVecPointers[idx].data()->at(0);
+            const double oldLast = mSharedTimeVecPointers[idx].data()->at(oldElements-1);
+            if ( (oldElements == nElements) &&
+                 fuzzyEqual(newFirst, oldFirst, 1e-10) &&
+                 fuzzyEqual(newLast, oldLast, 1e-10) )
+            {
+                return mSharedTimeVecPointers[idx];
+            }
+        }
+
+        // If we did not already return then add this pointer
+        QVector<double>* pNewVector = new QVector<double>(rTimeVector);
+        mSharedTimeVecPointers.append(SharedTimeVectorPtrT(pNewVector));
+        return mSharedTimeVecPointers.last();
+    }
 }

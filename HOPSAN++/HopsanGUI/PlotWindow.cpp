@@ -4477,7 +4477,7 @@ const QVector<double> &PlotCurve::getDataVector() const
 //! This returns the TIME vector, NOT any special X-axes if they are used.
 const QVector<double> &PlotCurve::getTimeVector() const
 {
-    return mpData->mTimeVector;
+    return *(mpData->mSharedTimeVectorPtr.data());
 }
 
 
@@ -4572,7 +4572,7 @@ void PlotCurve::setCustomData(const VariableDescription &rVarDesc, const QVector
 void PlotCurve::toFrequencySpectrum()
 {
     QVector<double> timeVec, dataVec;
-    timeVec = mpData->mTimeVector;
+    timeVec = *(mpData->mSharedTimeVectorPtr.data());
     dataVec = mpData->mDataVector;
 
     //Vector size has to be an even potential of 2.
@@ -5049,9 +5049,9 @@ void PlotCurve::updateCurve()
     }
     else
     {
-        for(int i=0; i<mpData->mTimeVector.size() && i<mpData->mDataVector.size(); ++i)
+        for(int i=0; i<mpData->mSharedTimeVectorPtr.data()->size() && i<mpData->mDataVector.size(); ++i)
         {
-            tempX.append(mpData->mTimeVector[i]*mScaleX + mOffsetX);
+            tempX.append(mpData->mSharedTimeVectorPtr.data()->at(i)*mScaleX + mOffsetX);
             tempY.append(mpData->mDataVector[i]*unitScale*mScaleY + mOffsetY);
         }
     }
