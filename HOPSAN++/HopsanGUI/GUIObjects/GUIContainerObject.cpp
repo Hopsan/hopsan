@@ -130,7 +130,7 @@ ContainerObject::ContainerObject(QPointF position, qreal rotation, const ModelOb
 
     mpDragCopyStack = new CopyStack();
 
-    mpNewPlotData = new LogDataHandler(this);
+    mpLogDataHandler = new LogDataHandler(this);
 
     //Establish connections that should always remain
     connect(this, SIGNAL(checkMessages()), gpMainWindow->mpTerminalWidget, SLOT(checkMessages()), Qt::UniqueConnection);
@@ -646,7 +646,7 @@ void ContainerObject::deleteWidget(Widget *pWidget, undoStatus undoSettings)
 void ContainerObject::deleteModelObject(QString objectName, undoStatus undoSettings)
 {
     //qDebug() << "deleteGUIModelObject(): " << objectName << " in: " << this->getName() << " coresysname: " << this->getCoreSystemAccessPtr()->getRootSystemName() ;
-    mpNewPlotData->removeFavoriteVariableByComponentName(objectName);   //Does nothing unless this is a system
+    mpLogDataHandler->removeFavoriteVariableByComponentName(objectName);   //Does nothing unless this is a system
 
     ModelObjectMapT::iterator it = mModelObjectMap.find(objectName);
     ModelObject* obj_ptr = it.value();
@@ -738,7 +738,7 @@ void ContainerObject::renameModelObject(QString oldName, QString newName, undoSt
             //! @todo Maybe we should give the user a message?
         }
 
-        mpNewPlotData->updateObjectName(oldName, newName);
+        mpLogDataHandler->updateObjectName(oldName, newName);
 
         if (undoSettings == UNDO)
         {
@@ -2302,8 +2302,8 @@ void ContainerObject::updateMainWindowButtons()
     gpMainWindow->mpUndoAction->setDisabled(mUndoDisabled);
     gpMainWindow->mpRedoAction->setDisabled(mUndoDisabled);
 
-    gpMainWindow->mpPlotAction->setDisabled(mpNewPlotData->isEmpty());
-    gpMainWindow->mpShowLossesAction->setDisabled(mpNewPlotData->isEmpty());
+    gpMainWindow->mpPlotAction->setDisabled(mpLogDataHandler->isEmpty());
+    gpMainWindow->mpShowLossesAction->setDisabled(mpLogDataHandler->isEmpty());
     //gpMainWindow->mpAnimateAction->setDisabled(mpNewPlotData->isEmpty());
 }
 
@@ -2464,7 +2464,7 @@ void ContainerObject::enterContainer()
 
     refreshInternalContainerPortGraphics();
 
-    mpNewPlotData->collectPlotDataFromModel();
+    mpLogDataHandler->collectPlotDataFromModel();
 
     mpParentProjectTab->setExternalSystem((this->isExternal() &&
                                            this != mpParentProjectTab->getTopLevelSystem()) ||
@@ -2550,7 +2550,7 @@ void ContainerObject::flipSubObjectsVertical()
 //! @brief Collects the plot data from the last simulation for all plot variables from the core and stores them locally.
 void ContainerObject::collectPlotData()
 {
-    mpNewPlotData->collectPlotDataFromModel();
+    mpLogDataHandler->collectPlotDataFromModel();
 }
 
 
@@ -2637,7 +2637,7 @@ void ContainerObject::showLossesFromDialog()
     }
 
     //We should not be here if there is no plot data, but let's check to be sure
-    if(mpNewPlotData->isEmpty())
+    if(mpLogDataHandler->isEmpty())
     {
         gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Attempted to calculate losses for a model that has not been simulated (or is empty).");
         return;
@@ -2871,7 +2871,7 @@ bool ContainerObject::isExternal()
 
 LogDataHandler *ContainerObject::getPlotDataPtr()
 {
-    return mpNewPlotData;
+    return mpLogDataHandler;
 }
 
 
@@ -3064,12 +3064,24 @@ void ContainerObject::recompileCppComponents(ModelObject *pComponent)
 
 //! @brief Constructor for plot data object
 //! @param pParent Pointer to parent container object
-LogDataHandler::LogDataHandler(ContainerObject *pParent)
+LogDataHandler::LogDataHandler(ContainerObject *pParent) : QObject(pParent)
 {
     mpParentContainerObject = pParent;
     mnPlotCurves = 0;
     mGenerationNumber = 0;
     mTempVarCtr = 0;
+}
+
+LogDataHandler::~LogDataHandler()
+{
+    qDebug() << "in LogDataHandler destructor" << endl;
+
+    // Clear all data
+    QList<LogVariableContainer*> data = mAllPlotData.values();
+    for (int i=0; i<data.size(); ++i)
+    {
+        delete data[i];
+    }
 }
 
 
@@ -3134,7 +3146,7 @@ void LogDataHandler::exportToPlo(QString filePath, QStringList variables)
 
     for(int i=0; i<dataPtrs[0]->mDataVector.size(); ++i)
     {
-        dummy.setNum(dataPtrs[0]->mSharedTimeVectorPtr.data()->at(i),'E',6);
+        dummy.setNum(dataPtrs[0]->mSharedTimeVectorPtr->at(i),'E',6);
         fileStream <<"  "<<dummy;
         for(int j=0; j<12-dummy.size(); ++j) { fileStream << " "; }
 
@@ -4349,10 +4361,12 @@ void LogVariableData::setTimeOffset(double offset)
 //        mTimeVector[i] += offset;
 //    }
 
-    for (int i=0; mSharedTimeVectorPtr.data()->size(); ++i)
+    for (int i=0; mSharedTimeVectorPtr->size(); ++i)
     {
         //! @todo FIX
-        //mSharedTimeVectorPtr.data()->at(i) += offset;
+        //QVector<double>* ptr = mSharedTimeVectorPtr.data();
+        (*mSharedTimeVectorPtr)[i] += offset;
+        //(*ptr)[i] += offset;
     }
 
     emit dataChanged();
@@ -4718,6 +4732,17 @@ LogVariableContainer::LogVariableContainer(const VariableDescription &rVarDesc) 
     mVariableDescription = rVarDesc;
 }
 
+LogVariableContainer::~LogVariableContainer()
+{
+    // Clear all data
+    //! @todo iterating over map would be better, also in container
+    QList<LogVariableData*> data = mDataGenerations.values();
+    for (int i=0; i<data.size(); ++i)
+    {
+        delete data[i];
+    }
+}
+
 SharedTimeVectorPtrT UniqueSharedTimeVectorPtrHelper::makeSureUnique(QVector<double> &rTimeVector)
 {
     const int nElements = rTimeVector.size();
@@ -4728,9 +4753,9 @@ SharedTimeVectorPtrT UniqueSharedTimeVectorPtrHelper::makeSureUnique(QVector<dou
 
         for (int idx=0; idx<mSharedTimeVecPointers.size(); ++idx)
         {
-            const int oldElements = mSharedTimeVecPointers[idx].data()->size();
-            const double oldFirst = mSharedTimeVecPointers[idx].data()->at(0);
-            const double oldLast = mSharedTimeVecPointers[idx].data()->at(oldElements-1);
+            const int oldElements = mSharedTimeVecPointers[idx]->size();
+            const double oldFirst = mSharedTimeVecPointers[idx]->at(0);
+            const double oldLast = mSharedTimeVecPointers[idx]->at(oldElements-1);
             if ( (oldElements == nElements) &&
                  fuzzyEqual(newFirst, oldFirst, 1e-10) &&
                  fuzzyEqual(newLast, oldLast, 1e-10) )
@@ -4744,4 +4769,5 @@ SharedTimeVectorPtrT UniqueSharedTimeVectorPtrHelper::makeSureUnique(QVector<dou
         mSharedTimeVecPointers.append(SharedTimeVectorPtrT(pNewVector));
         return mSharedTimeVecPointers.last();
     }
+    return SharedTimeVectorPtrT();
 }

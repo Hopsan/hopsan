@@ -101,6 +101,7 @@ public:
 
     //! @todo also need qucik constructor for creating a container with one generation directly
     LogVariableContainer(const VariableDescription &rVarDesc);
+    ~LogVariableContainer();
     void addDataGeneration(const int generation, const QVector<double> &rTime, const QVector<double> &rData);
     void addDataGeneration(const int generation, const SharedTimeVectorPtrT time, const QVector<double> &rData);
     void removeDataGeneration(const int generation);
@@ -208,6 +209,7 @@ class LogDataHandler : public QObject
 
 public:
     LogDataHandler(ContainerObject *pParent);
+    ~LogDataHandler();
 
 
     typedef QMap<QString, LogVariableContainer*> DataMapT;
@@ -584,7 +586,7 @@ protected:
     graphicsType mGfxType;
 
     //Plot members
-    LogDataHandler *mpNewPlotData;
+    LogDataHandler *mpLogDataHandler;
 
     //Undo-redo members
     UndoStack *mpUndoStack;

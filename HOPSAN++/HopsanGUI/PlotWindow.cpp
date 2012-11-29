@@ -5049,9 +5049,9 @@ void PlotCurve::updateCurve()
     }
     else
     {
-        for(int i=0; i<mpData->mSharedTimeVectorPtr.data()->size() && i<mpData->mDataVector.size(); ++i)
+        for(int i=0; i<mpData->mSharedTimeVectorPtr->size() && i<mpData->mDataVector.size(); ++i)
         {
-            tempX.append(mpData->mSharedTimeVectorPtr.data()->at(i)*mScaleX + mOffsetX);
+            tempX.append(mpData->mSharedTimeVectorPtr->at(i)*mScaleX + mOffsetX);
             tempY.append(mpData->mDataVector[i]*unitScale*mScaleY + mOffsetY);
         }
     }
