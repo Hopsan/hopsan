@@ -139,6 +139,11 @@ AnimatedConnector::~AnimatedConnector()
 //! @brief Updates the animated connector
 void AnimatedConnector::updateAnimation()
 {
+    if(mpConnector->getStartPort()->getNodeType() != "NodeHydraulic")
+    {
+        return;
+    }
+
     double max = mpAnimationWidget->mIntensityMaxMap.find("NodeHydraulic").value();
     double min = mpAnimationWidget->mIntensityMinMap.find("NodeHydraulic").value();
 
