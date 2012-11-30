@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="HydraulicValvePlate" displayname="ValvePlate">
+	    <icons>
+            <icon type="user" path="svg/valveplate.svg" iconrotation="ON" scale="1.0"/>
+        </icons>
+        <help picture="svg/valveplate_help.svg"/>
+        <ports>
+            <port x="0.5" y="0" a="270" name="speed"/>
+            <port x="0" y="0.5" a="0" name="P1"/>
+            <port x="1" y="0.3" a="0" name="PB"/>
+            <port x="1" y="0.7" a="0" name="PA"/>
+            <port x="0.3" y="1" a="90" name="DEBUG1"/>
+            <port x="0.5" y="1" a="90" name="DEBUG2"/>
+            <port x="0.7" y="1" a="90" name="DEBUG3"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

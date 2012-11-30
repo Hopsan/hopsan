@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="SignalStaircase" displayname="Staircase">
+	    <icons>
+            <icon type="user" path="svg/staircase.svg" iconrotation="OFF" scale="1.0"/>
+        </icons>
+        <ports>
+            <port x="1.0" y="0.5" a="0" name="out"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="MechanicMotor" displayname="Motor">
+        <icons>
+            <icon scale="1" path="svg/motor.svg" iconrotation="OFF" type="user"/>
+        </icons>
+        <ports>
+            <port x="1.0" y="0.5" a="0" name="P1"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>
