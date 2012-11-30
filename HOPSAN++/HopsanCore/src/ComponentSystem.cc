@@ -2365,25 +2365,34 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     tbb::task_group *simTasks;                                  //Initialize TBB routines for parallel  simulation
     simTasks = new tbb::task_group;
 
+    //Execute simulation
+#define BARRIER_SYNC
+#ifdef BARRIER_SYNC
+    mvTimePtrs.push_back(&mTime);
     BarrierLock *pBarrierLock_S = new BarrierLock(nThreads);    //Create synchronization barriers
     BarrierLock *pBarrierLock_C = new BarrierLock(nThreads);
     BarrierLock *pBarrierLock_Q = new BarrierLock(nThreads);
     BarrierLock *pBarrierLock_N = new BarrierLock(nThreads);
 
-    mvTimePtrs.push_back(&mTime);
+    simTasks->run(taskSimMaster(mSplitSignalVector[0], mSplitCVector[0], mSplitQVector[0],             //Create master thread
+                                mSplitNodeVector[0], mvTimePtrs, mTime, mTimestep, stopTsafe, nThreads, 0,
+                                pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
 
-    //Execute simulation
-//    simTasks->run(taskSimMaster(mSplitSignalVector[0], mSplitCVector[0], mSplitQVector[0],             //Create master thread
-//                                mSplitNodeVector[0], mvTimePtrs, mTime, mTimestep, stopTsafe, nThreads, 0,
-//                                pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
+    for(size_t t=1; t < nThreads; ++t)
+    {
+        simTasks->run(taskSimSlave(mSplitSignalVector[t], mSplitCVector[t], mSplitQVector[t],          //Create slave threads
+                                   mSplitNodeVector[t], mTime, mTimestep, stopTsafe, nThreads, t,
+                                   pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
+    }
 
-//    for(size_t t=1; t < nThreads; ++t)
-//    {
-//        simTasks->run(taskSimSlave(mSplitSignalVector[t], mSplitCVector[t], mSplitQVector[t],          //Create slave threads
-//                                   mSplitNodeVector[t], mTime, mTimestep, stopTsafe, nThreads, t,
-//                                   pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
-//    }
+    simTasks->wait();                                           //Wait for all tasks to finish
 
+    delete(simTasks);                                           //Clean up
+    delete(pBarrierLock_S);
+    delete(pBarrierLock_C);
+    delete(pBarrierLock_Q);
+    delete(pBarrierLock_N);
+#else
     vector<Component*> tempVector;
     for(int i=mComponentSignalptrs.size()-1; i>-1; --i)
     {
@@ -2420,10 +2429,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     simTasks->wait();                                           //Wait for all tasks to finish
 
     delete(simTasks);                                           //Clean up
-    delete(pBarrierLock_S);
-    delete(pBarrierLock_C);
-    delete(pBarrierLock_Q);
-    delete(pBarrierLock_N);
+#endif
 }
 
 
