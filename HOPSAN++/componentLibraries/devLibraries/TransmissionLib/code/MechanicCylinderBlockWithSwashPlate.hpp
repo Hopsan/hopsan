@@ -157,12 +157,12 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
+            //Get variable values from nodes
             c2 = (*mpND_c2);
             Zx2 = (*mpND_Zx2);
 
-            //Get variable values from nodes
+            //Calculate constants
             double angle = (*mpND_in1);
-
             double s = r*tan(angle);
             double diff = 2*3.1416/mNumPorts1;
 

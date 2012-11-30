@@ -35,7 +35,8 @@ HEADERS += \
     code/MechanicMotor.hpp \
     code/SignalStaircase.hpp \
     code/SignalAnimationGauge.hpp \
-    code/MechanicCylinderBlockWithSwashPlate.hpp
+    code/MechanicCylinderBlockWithSwashPlate.hpp \
+    code/SignalDisplay.hpp
 
 OTHER_FILES += \
     hopsanDebugReleaseCompile.prf

@@ -23,6 +23,7 @@
 #include "code/SignalStaircase.hpp"
 #include "code/SignalAnimationGauge.hpp"
 #include "code/MechanicCylinderBlockWithSwashPlate.hpp"
+#include "code/SignalDisplay.hpp"
 
 // You need to include ComponentEssentials.h in order to gain access to the register function and the Factory types
 // Also use the hopsan namespace
@@ -50,6 +51,7 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory,
     pComponentFactory->registerCreatorFunction("SignalStaircase", SignalStaircase::Creator);
     pComponentFactory->registerCreatorFunction("SignalAnimationGauge", SignalAnimationGauge::Creator);
     pComponentFactory->registerCreatorFunction("MechanicCylinderBlockWithSwashPlate", MechanicCylinderBlockWithSwashPlate::Creator);
+    pComponentFactory->registerCreatorFunction("SignalDisplay", SignalDisplay::Creator);
 
     // ========== Register Custom Nodes (if any) ==========
     // This is not yet supported
