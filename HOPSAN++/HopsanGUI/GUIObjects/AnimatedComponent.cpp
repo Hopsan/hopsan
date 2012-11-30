@@ -98,6 +98,14 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
     {
         mpBase->setZValue(mpBase->zValue()-1);
     }
+    if(mpModelObject->getSubTypeName() == "XmasSnow")
+    {
+        mpBase->setZValue(mpBase->zValue()+2);
+    }
+    if(mpModelObject->getSubTypeName() == "XmasSnowFlake")
+    {
+        mpBase->setZValue(mpBase->zValue()+1);
+    }
 
     //Draw itself to the scene
     draw();
@@ -451,6 +459,14 @@ AnimatedIcon::AnimatedIcon(QPointF position, qreal rotation, const ModelObjectAp
     if(mpAnimatedComponent->mpModelObject->getSubTypeName() == "XmasSky")
     {
         this->setZValue(this->zValue()-1);
+    }
+    if(mpAnimatedComponent->mpModelObject->getSubTypeName() == "XmasSnow")
+    {
+        this->setZValue(this->zValue()+2);
+    }
+    if(mpAnimatedComponent->mpModelObject->getSubTypeName() == "XmasSnowFlake")
+    {
+        this->setZValue(this->zValue()+1);
     }
 
     mIdx = idx;
