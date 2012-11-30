@@ -4378,8 +4378,7 @@ LogVariableData::LogVariableData(const int generation, const QVector<double> &rT
     mAppliedValueOffset = 0;
     mAppliedTimeOffset = 0;
     mGeneration = generation;
-    mTimeVector = rTime;
-    mSharedTimeVectorPtr = SharedTimeVectorPtrT(&mTimeVector);
+    mSharedTimeVectorPtr = SharedTimeVectorPtrT(new QVector<double>(rTime));
     mDataVector = rData;
 }
 
@@ -4522,7 +4521,6 @@ void LogVariableData::divtoData(const double other)
 void LogVariableData::assigntoData(const LogVariableData *pOther)
 {
     mDataVector = pOther->mDataVector;
-    mTimeVector = pOther->mTimeVector;
     mSharedTimeVectorPtr = pOther->mSharedTimeVectorPtr;
 }
 
