@@ -486,7 +486,7 @@ void TerminalConsole::handleEnterKeyPress()
     QString cmd = this->document()->lastBlock().text();
     cmd = cmd.right(cmd.size()-3);
 
-    if(cmd.startsWith("--- "))
+    if(cmd.startsWith("--- "))  //! @todo What does this do?
     {
         return;
     }
@@ -1130,6 +1130,7 @@ void HcomHandler::executeChangeParameterCommand(QString cmd)
             }
             else
             {
+                parameterNames[p].remove("\"");
                 QStringList splitFirstCmd = parameterNames[p].split(".");
                 if(splitFirstCmd.size() == 2)
                 {
@@ -1867,10 +1868,6 @@ void HcomHandler::changePlotVariables(QString cmd, int axis)
         }
     }
     splitCmdMajor.append(cmd.right(cmd.size()-start));
-//    for(int i=0; i<splitCmdMajor.size(); ++i)
-//    {
-//        splitCmdMajor[i].remove("\"");
-//    }
 
     if(axis == -1 || axis == 0)
     {
