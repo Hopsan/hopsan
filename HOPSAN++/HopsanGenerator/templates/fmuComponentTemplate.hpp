@@ -262,8 +262,6 @@ namespace hopsan {
                 stateEvent = stateEvent || (prez[i] * z[i] < 0);
             }
 
-            //! @todo Event criteria are disabled for now, so there will be a time event every time step no matter what.
-
             // handle events
             if (timeEvent || stateEvent || stepEvent)
             {
