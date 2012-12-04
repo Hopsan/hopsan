@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+  <modelobject typename="MyPressureReliefValve" displayname="My Hydraulic Pressure Relief Valve">
+    <icons>
+      <icon type="user" path=":graphics/objecticons/generatedcomponenticon.svg" iconrotation="ON" scale="1"/>
+    </icons>
+    <ports>
+      <port name="P1" x="0.333333" y="0" a="270"/>
+      <port name="P2" x="0.666667" y="0" a="270"/>
+      <port name="xv" x="1" y="0.333333" a="0"/>
+      <port name="dxv" x="1" y="0.666667" a="0"/>
+    </ports>
+  </modelobject>
+</hopsanobjectappearance>

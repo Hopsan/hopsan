@@ -76,6 +76,9 @@
 #include "Hydraulic/HydraulicInterfaceQ.hpp"
 #include "Hydraulic/valves/HydraulicCheckValvePreLoaded.hpp"
 
+#include "Hydraulic/HydraulicValvePlate.hpp"
+#include "Hydraulic/HydraulicPumpPiston.hpp"
+
 //#include "Hydraulic/HydraulicPressureReliefValveTolerance.hpp"
 //#include "Hydraulic/HydraulicCylinderCTolerance.hpp"
 //#include "Hydraulic/HydraulicHoseTolerance.hpp"
@@ -146,6 +149,9 @@
 #include "Signal/SignalLookUpTable2D.hpp"
 #include "Signal/SignalSign.hpp"
 #include "Signal/SignalSub.hpp"
+#include "Signal/SignalStaircase.hpp"
+#include "Signal/SignalAnimationGauge.hpp"
+#include "Signal/SignalDisplay.hpp"
 
 /* Mechanical Components */
 #include "Mechanic/MechanicForceTransformer.hpp"
@@ -180,6 +186,9 @@
 #include "Mechanic/MechanicFixedPosition.hpp"
 #include "Mechanic/MechanicFreeLengthWall.hpp"
 #include "Mechanic/MechanicRotShaft.hpp"
+#include "Mechanic/MechanicSwashPlate.hpp"
+#include "Mechanic/MechanicMotor.hpp"
+#include "Mechanic/MechanicCylinderBlockWithSwashPlate.hpp"
 
 /* Electric Components */
 #include "Electric/ElectricBattery.hpp"

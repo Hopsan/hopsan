@@ -7,8 +7,8 @@
 //!
 //$Id$
 
-#ifndef MECHANICVAGGA_HPP_INCLUDED
-#define MECHANICVAGGA_HPP_INCLUDED
+#ifndef MECHANICSEESAW_HPP_INCLUDED
+#define MECHANICSEESAW_HPP_INCLUDED
 
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
@@ -20,7 +20,7 @@ namespace hopsan {
     //! @brief
     //! @ingroup MechanicalComponents
     //!
-    class MechanicVagga : public ComponentQ
+    class MechanicSeesaw : public ComponentQ
     {
 
     private:
@@ -39,7 +39,7 @@ namespace hopsan {
     public:
         static Component *Creator()
         {
-            return new MechanicVagga();
+            return new MechanicSeesaw();
         }
 
         void configure()
@@ -128,5 +128,5 @@ namespace hopsan {
     };
 }
 
-#endif // MECHANICVAGGA_HPP_INCLUDED
+#endif // MECHANICSEESAW_HPP_INCLUDED
 

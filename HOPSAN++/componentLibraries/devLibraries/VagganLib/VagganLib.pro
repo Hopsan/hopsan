@@ -29,7 +29,7 @@ SOURCES += \
     VagganLib.cc
 
 HEADERS += \
-    code/MechanicVagga.hpp
+    code/MechanicSeesaw.hpp
 
 OTHER_FILES += \
     hopsanDebugReleaseCompile.prf

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="SignalAnimationGauge" displayname="Gauge">
+        <icons>
+            <icon scale="1" path="gauge.svg" iconrotation="OFF" type="user"/>
+        </icons>
+        <ports>
+            <port x="0.5" y="1.0" a="90" name="in"/>
+        </ports>
+        <animation>
+            <icon userpath="gauge_base.svg"/>
+            <movable>
+                <icon userpath="gauge_movable.svg"/>
+                <data port="in" dataname="Value"/> 
+				<divisor name="max"/>
+                <speed x="0" y="0" a="-300"/>
+                <start x="0" y="0" a="-150"/>
+                <transformorigin x="35" y="35"/>
+            </movable>
+        </animation>
+    </modelobject>
+</hopsanobjectappearance>

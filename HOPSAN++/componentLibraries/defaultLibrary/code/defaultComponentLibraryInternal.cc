@@ -132,6 +132,8 @@ void hopsan::register_components(hopsan::ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("HydraulicUndefinedConnectionC", HydraulicUndefinedConnectionC::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicUndefinedConnectionQ", HydraulicUndefinedConnectionQ::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicOverCenterValve", HydraulicOverCenterValve::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicValvePlate", HydraulicValvePlate::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicPumpPiston", HydraulicPumpPiston::Creator);
 
     //Signal components
     pComponentFactory->registerCreatorFunction("SignalAnimationSlider", SignalAnimationSlider::Creator);
@@ -196,6 +198,9 @@ void hopsan::register_components(hopsan::ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("SignalLookUpTable2D", SignalLookUpTable2D::Creator);
     pComponentFactory->registerCreatorFunction("SignalSign", SignalSign::Creator);
     pComponentFactory->registerCreatorFunction("SignalSub", SignalSub::Creator);
+    pComponentFactory->registerCreatorFunction("SignalDisplay", SignalDisplay::Creator);
+    pComponentFactory->registerCreatorFunction("SignalAnimationGauge", SignalAnimationGauge::Creator);
+    pComponentFactory->registerCreatorFunction("SignalStaircase", SignalStaircase::Creator);
 
     pComponentFactory->registerCreatorFunction("SignalUndefinedConnection", SignalUndefinedConnection::Creator);
 
@@ -233,6 +238,9 @@ void hopsan::register_components(hopsan::ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("MechanicRotationalInertiaWithCoulumbFriction", MechanicRotationalInertiaWithCoulombFriction::Creator);
     pComponentFactory->registerCreatorFunction("MechanicFixedPosition", MechanicFixedPosition::Creator);
     pComponentFactory->registerCreatorFunction("MechanicFreeLengthWall", MechanicFreeLengthWall::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicCylinderBlockWithSwashPlate", MechanicCylinderBlockWithSwashPlate::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicSwashPlate", MechanicSwashPlate::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicMotor", MechanicMotor::Creator);
 
     //Electric components
     pComponentFactory->registerCreatorFunction("ElectricBattery", ElectricBattery::Creator);

@@ -217,7 +217,15 @@ HEADERS += \
     code/Signal/SignalSub.hpp \
     code/Hydraulic/valves/HydraulicCheckValvePreLoaded.hpp \
     code/Signal/SignalPulseWave.hpp \
-    code/Signal/SignalAnimationSlider.hpp
+    code/Signal/SignalAnimationSlider.hpp \
+    code/Hydraulic/HydraulicValvePlate.hpp \
+    code/Hydraulic/HydraulicPumpPiston.hpp \
+    code/Mechanic/MechanicSwashPlate.hpp \
+    code/Mechanic/MechanicMotor.hpp \
+    code/Mechanic/MechanicCylinderBlockWithSwashPlate.hpp \
+    code/Signal/SignalStaircase.hpp \
+    code/Signal/SignalDisplay.hpp \
+    code/Signal/SignalAnimationGauge.hpp
 
 SOURCES += \
     code/defaultComponentLibrary.cc \
