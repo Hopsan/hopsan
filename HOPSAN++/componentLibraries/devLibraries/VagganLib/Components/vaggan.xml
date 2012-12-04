@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="MechanicVagga" displayname="Vagga">
+        <icons>
+            <icon scale="1" path="svg/vagga.svg" iconrotation="ON" type="user"/>
+        </icons>
+        <ports>
+            <port x="0.25" y="0.5" a="90" name="P1"/>
+            <port x="0.75" y="0.5" a="90" name="P2"/>
+            <port x="0.5" y="0.0" a="270" name="out"/>
+        </ports>
+        <animation>
+            <icon userpath="svg/vagga_base.svg"/>
+            <movable>
+                <icon userpath="svg/vagga_movable1.svg"/>
+                <data port="out" dataname="Value"/> 
+                <speed x="0" y="0" a="-30"/>
+                <start x="0" y="0" a="0"/> 
+                <transformorigin x="200" y="30"/>
+            </movable>
+            <movable>
+                <icon userpath="svg/vagga_movable2.svg"/>
+                <data port="out" dataname="Value"/> 
+                <speed x="0" y="0" a="0"/>
+                <start x="0" y="0" a="0"/>
+            </movable>
+        </animation>
+    </modelobject>
+</hopsanobjectappearance>
