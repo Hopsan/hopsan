@@ -4712,15 +4712,18 @@ void LogVariableContainer::removeDataGeneration(const int generation)
 
 void LogVariableContainer::removeGenerationsOlderThen(const int gen)
 {
-    // it is assumed that the generation map is sorted by key which it should be since adding will allways append
-    QList<int> keys = mDataGenerations.keys();
-    if (!keys.empty())
+    // It is assumed that the generation map is sorted by key which it should be since adding will allways append
+    QList<int> gens = mDataGenerations.keys();
+    for (int it=0; it<gens.size(); ++it)
     {
-        int it=0;
-        while (keys[it] < gen)
+        if ( gens[it] < gen )
         {
-            removeDataGeneration(keys[it]);
-            ++it;
+            removeDataGeneration(gens[it]);
+        }
+        else
+        {
+            // There is no reason to continue the loop if we have found  gens[it] = gen
+            break;
         }
     }
 }
