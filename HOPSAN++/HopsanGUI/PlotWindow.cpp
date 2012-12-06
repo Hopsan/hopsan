@@ -1434,7 +1434,7 @@ void PlotTabWidget::tabChanged()
             mpParentPlotWindow->mpResetXVectorButton->setDisabled(true);
             mpParentPlotWindow->mpBodePlotButton->setDisabled(true);
             mpParentPlotWindow->mpExportPdfAction->setDisabled(true);
-            mpParentPlotWindow->mpExportToGraphicsAction->setDisabled(true);
+            //mpParentPlotWindow->mpExportToGraphicsAction->setDisabled(true);
         }
         else
         {

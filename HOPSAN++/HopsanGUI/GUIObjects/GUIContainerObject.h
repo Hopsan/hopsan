@@ -305,7 +305,7 @@ private:
     int mGenerationNumber;
     unsigned long int mTempVarCtr;
 
-    TimeListT mTimeVectors;
+    QList<SharedTimeVectorPtrT> mTimeVectorPtrs;
     AliasMapT mPlotAliasMap;
     FavoriteListT mFavoriteVariables;
     int mnPlotCurves;

@@ -3415,12 +3415,20 @@ void LogDataHandler::importFromPlo()
     progressImportBar.setValue(10);
     progressImportBar.setLabelText("Data Fetched.");
 
+    UniqueSharedTimeVectorPtrHelper timeVecHelper;
     bool foundData = false;
     //for(QVector<HopImpData>::iterator git=hopOldVector.begin(); git!=hopOldVector.end(); ++git)
     {
-        //! @todo use this instead of time vector copy in every data
-        mTimeVectors.append(hopOldVector.first().mDataValues);
-        //timeVectorObtained = true;
+        bool timeVectorObtained = false;
+        SharedTimeVectorPtrT timeVecPtr = timeVecHelper.makeSureUnique(hopOldVector.first().mDataValues);
+        //! @todo Should be possible to have multiple timevectors per generation
+        //Store time data (only once)
+        if(!timeVectorObtained)
+        {
+            mTimeVectorPtrs.append(timeVecPtr);
+            timeVectorObtained = true;
+        }
+
 
         for (int i=1; i<hopOldVector.size(); ++i)
         {
@@ -3437,7 +3445,7 @@ void LogDataHandler::importFromPlo()
             if (dit != mAllPlotData.end())
             {
                 // Insert it into the generations map
-                dit.value()->addDataGeneration(mGenerationNumber, hopOldVector.first().mDataValues, hopOldVector[i].mDataValues);
+                dit.value()->addDataGeneration(mGenerationNumber, timeVecPtr, hopOldVector[i].mDataValues);
             }
             else
             {
@@ -3509,6 +3517,7 @@ void LogDataHandler::collectPlotDataFromModel()
     //bool timeVectorObtained = false;
     UniqueSharedTimeVectorPtrHelper timeVecHelper;
     bool foundData = false;
+    bool timeVectorObtained = false;
 
     //Iterate components
     for(int m=0; m<mpParentContainerObject->getModelObjectNames().size(); ++m)
@@ -3535,6 +3544,16 @@ void LogDataHandler::collectPlotDataFromModel()
                     // Make sure we use the same time vector
                     SharedTimeVectorPtrT timeVecPtr = timeVecHelper.makeSureUnique(data.first);
 
+                    //! @todo Should be possible to have multiple timevectors per generation
+                    //Store time data (only once)
+                    if(!timeVectorObtained)
+                    {
+                        //! @todo this vector is never cleared when generations are removed
+                        mTimeVectorPtrs.append(timeVecPtr);
+                        timeVectorObtained = true;
+                    }
+
+
                     foundData=true;
                     VariableDescription varDesc;
                     varDesc.mComponentName = pModelObject->getName();
@@ -3560,14 +3579,6 @@ void LogDataHandler::collectPlotDataFromModel()
                         pDataContainer->addDataGeneration(mGenerationNumber, timeVecPtr, data.second);
                         mAllPlotData.insert(catName, pDataContainer);
                     }
-
-                    //! @todo Think about improving time vector and only store one copy of each
-//                    //Store time data (only once)
-//                    if(!timeVectorObtained)
-//                    {
-//                        mTimeVectors.append(data.first);
-//                        timeVectorObtained = true;
-//                    }
                 }
             }
         }
@@ -3718,7 +3729,7 @@ LogVariableData *LogDataHandler::getPlotDataByAlias(const QString alias, const i
 //! @param[in] generation Generation
 QVector<double> LogDataHandler::getTimeVector(int generation)
 {
-    return mTimeVectors.at(generation);
+    return *mTimeVectorPtrs.at(generation);
 }
 
 
