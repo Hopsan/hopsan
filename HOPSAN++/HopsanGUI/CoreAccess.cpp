@@ -868,7 +868,7 @@ double *CoreSystemAccess::getNodeDataPtr(const QString compname, const QString p
 }
 
 
-void CoreSystemAccess::measureSimulationTime(QStringList &rComponentNames, QList<double> &rTimes)
+void CoreSystemAccess::measureSimulationTime(QStringList &rComponentNames, QList<double> &rTimes, int nSteps)
 {
     if(!getCoreSystemPtr()->checkModelBeforeSimulation())
     {
@@ -877,7 +877,7 @@ void CoreSystemAccess::measureSimulationTime(QStringList &rComponentNames, QList
 
     getCoreSystemPtr()->initialize(0, 10);
 
-    if(!getCoreSystemPtr()->simulateAndMeasureTime(5))
+    if(!getCoreSystemPtr()->simulateAndMeasureTime(nSteps))
     {
         return;     //! @todo Do something better, so the user understands why this won't work (TBB is not installed)
     }

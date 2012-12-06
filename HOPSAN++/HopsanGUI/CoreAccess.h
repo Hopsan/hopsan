@@ -189,7 +189,7 @@ public:
     double *getNodeDataPtr(const QString compname, const QString portname, const QString dataname);
 
     //Time measurements
-    void measureSimulationTime(QStringList &rComponentNames, QList<double> &rTimes);
+    void measureSimulationTime(QStringList &rComponentNames, QList<double> &rTimes, int nSteps=5);
 
 private:
     hopsan::ComponentSystem *getCoreSystemPtr();

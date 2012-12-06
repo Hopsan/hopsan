@@ -1844,7 +1844,7 @@ void PlotTab::addBarChart(QStandardItemModel *pItemModel)
     mpParentPlotWindow->mpResetXVectorButton->setDisabled(true);
     mpParentPlotWindow->mpBodePlotButton->setDisabled(true);
 //    mpParentPlotWindow->mpExportPdfAction->setDisabled(true);
-    mpParentPlotWindow->mpExportToGraphicsAction->setDisabled(true);
+    //mpParentPlotWindow->mpExportToGraphicsAction->setDisabled(true);
 
     for(int i=0; i<2; ++i)
     {
@@ -1852,15 +1852,15 @@ void PlotTab::addBarChart(QStandardItemModel *pItemModel)
     }
     mpBarPlot->setVisible(true);
 
-    int min=0;
-    int max=0;
+    double min=0;
+    double max=0;
     for(int c=0; c<pItemModel->columnCount(); ++c)
     {
-        int componentMin = 0;
-        int componentMax = 0;
+        double componentMin = 0;
+        double componentMax = 0;
         for(int r=0; r<pItemModel->rowCount(); ++r)
         {
-            double data = pItemModel->data(pItemModel->index(r, c)).toInt();
+            double data = pItemModel->data(pItemModel->index(r, c)).toDouble();
             if(data > 0)
             {
                 componentMax += data;

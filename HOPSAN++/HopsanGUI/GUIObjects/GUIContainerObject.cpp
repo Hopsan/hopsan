@@ -2777,14 +2777,36 @@ void ContainerObject::hideLosses()
 
 void ContainerObject::measureSimulationTime()
 {
-    qDebug() << "Measuring!";
+    int nSteps = QInputDialog::getInt(gpMainWindow, tr("Measure Simulation Time"),
+                                 tr("Number of steps:"), 5, 1);
 
     QStringList names;
     QList<double> times;
-    getCoreSystemAccessPtr()->measureSimulationTime(names, times);
+    getCoreSystemAccessPtr()->measureSimulationTime(names, times, nSteps);
 
-    qDebug() << names;
-    qDebug() << times;
+    //Use component-wise results to generate lists for type-wise results
+    QStringList typeNames;
+    QList<double> typeTimes;
+    QList<int> typeCounter;
+    for(int n=0; n<names.size(); ++n)
+    {
+        QString typeName = getModelObject(names[n])->getTypeName();
+        if(typeNames.contains(typeName))
+        {
+            int i=typeNames.indexOf(typeName);
+            typeCounter[i] = typeCounter[i]+1;
+            typeTimes[i] = (typeTimes[i] + times[n]/(typeCounter[i]-1))*(typeCounter[i]-1)/(typeCounter[i]);
+        }
+        else
+        {
+            typeNames.append(typeName);
+            typeTimes.append(times[n]);
+            typeCounter.append(1);
+        }
+    }
+
+    qDebug() << "typeNames: " << typeNames;
+    qDebug() << "typeTimes: " << typeTimes;
 
     QList<QStandardItem *> nameList;
     QList<QStandardItem *> timeList;
@@ -2796,48 +2818,116 @@ void ContainerObject::measureSimulationTime()
         timeList.append(pTimeItem);
     }
 
-    QStandardItemModel *pModel = new QStandardItemModel();
-    pModel->insertColumn(0, nameList);
-    pModel->insertColumn(1, timeList);
-    QStandardItem *pNameHeaderItem = new QStandardItem("Names");
-    pModel->setHorizontalHeaderItem(0, pNameHeaderItem);
-    QStandardItem *pTimeHeaderItem = new QStandardItem("Times");
-    pModel->setHorizontalHeaderItem(1, pTimeHeaderItem);
+    QList<QStandardItem *> typeNameList;
+    QList<QStandardItem *> typeTimeList;
+    for(int i=0; i<typeNames.size(); ++i)
+    {
+        QStandardItem *pNameItem = new QStandardItem(typeNames.at(i));
+        QStandardItem *pTimeItem = new QStandardItem(QString::number(typeTimes.at(i)*1000, 'f')+" ms");
+        typeNameList.append(pNameItem);
+        typeTimeList.append(pTimeItem);
+    }
+
+    QStandardItemModel *pComponentModel = new QStandardItemModel();
+    pComponentModel->insertColumn(0, nameList);
+    pComponentModel->insertColumn(1, timeList);
+    QStandardItem *pComponentNameHeaderItem = new QStandardItem("Componetn Name");
+    pComponentModel->setHorizontalHeaderItem(0, pComponentNameHeaderItem);
+    QStandardItem *pComponentTimeHeaderItem = new QStandardItem("Time");
+    pComponentModel->setHorizontalHeaderItem(1, pComponentTimeHeaderItem);
+
+    QStandardItemModel *pTypeModel = new QStandardItemModel();
+    pTypeModel->insertColumn(0, typeNameList);
+    pTypeModel->insertColumn(1, typeTimeList);
+    QStandardItem *pTypeNameHeaderItem = new QStandardItem("Component Type");
+    pTypeModel->setHorizontalHeaderItem(0, pTypeNameHeaderItem);
+    QStandardItem *pTypeTimeHeaderItem = new QStandardItem("Times");
+    pTypeModel->setHorizontalHeaderItem(1, pTypeTimeHeaderItem);
 
     QDialog *pDialog = new QDialog(gpMainWindow);
     pDialog->setWindowTitle("Simulation Time Measurements");
     pDialog->setWindowModality(Qt::WindowModal);
     pDialog->setWindowIcon(QIcon(QString(ICONPATH)+"Hopsan-MeasureSimulationTime.png"));
 
-    QLabel *pDescriptionLabel = new QLabel("The simulation time for each component is measured as the average simulation time over five time steps. Results may differ slightly each measurement due to external factors such as other processes on the computer.");
+    QLabel *pDescriptionLabel = new QLabel("The simulation time for each component is measured as the average simulation time over specified number of time steps. Results may differ slightly each measurement due to external factors such as other processes on the computer.");
     pDescriptionLabel->setWordWrap(true);
 
-    QTableView *pTable = new QTableView(pDialog);
-    pTable->setModel(pModel);
-    pTable->setColumnWidth(0,400);
-    pTable->setColumnWidth(1,200);
-    pTable->setSortingEnabled(true);
-    pTable->setAlternatingRowColors(true);
-    pTable->verticalHeader()->setVisible(false);
+    QTableView *pComponentTable = new QTableView(pDialog);
+    pComponentTable->setModel(pComponentModel);
+    pComponentTable->setColumnWidth(0,400);
+    pComponentTable->setColumnWidth(1,200);
+    pComponentTable->setSortingEnabled(true);
+    pComponentTable->setAlternatingRowColors(true);
+    pComponentTable->verticalHeader()->setVisible(false);
+    pComponentTable->setVisible(false);
+
+    QTableView *pTypeTable = new QTableView(pDialog);
+    pTypeTable->setModel(pTypeModel);
+    pTypeTable->setColumnWidth(0,400);
+    pTypeTable->setColumnWidth(1,200);
+    pTypeTable->setSortingEnabled(true);
+    pTypeTable->setAlternatingRowColors(true);
+    pTypeTable->verticalHeader()->setVisible(false);
+    pTypeTable->setVisible(true);
+
+    QGroupBox *pHowToShowResultsGroupBox = new QGroupBox(pDialog);
+    QRadioButton *pTypeRadioButton = new QRadioButton(tr("Show results for component types"));
+    QRadioButton *pComponentRadioButton = new QRadioButton(tr("Show results for individual components"));
+    pTypeRadioButton->setChecked(true);
+    QVBoxLayout *pHowToShowResultsLayout = new QVBoxLayout;
+    pHowToShowResultsLayout->addWidget(pTypeRadioButton);
+    pHowToShowResultsLayout->addWidget(pComponentRadioButton);
+    //pHowToShowResultsLayout->addStretch(1);
+    pHowToShowResultsGroupBox->setLayout(pHowToShowResultsLayout);
+
+
+    //Bar chart model for typenames
+    QStandardItemModel *pBarChartModel = new QStandardItemModel(1,typeNames.size(),this);
+    pBarChartModel->setHeaderData(0, Qt::Vertical, QColor("crimson"), Qt::BackgroundRole);
+    for(int i=0; i<typeNames.size(); ++i)
+    {
+        pBarChartModel->setData(pBarChartModel->index(0,i), typeTimes[i]);
+    }
+    pBarChartModel->setVerticalHeaderLabels(QStringList() << "Time");
+    pBarChartModel->setHorizontalHeaderLabels(typeNames);
+
+    //Plot window for typename bar charts
+    PlotWindow *pPlotWindow = new PlotWindow(gpMainWindow->mpPlotWidget->mpPlotVariableTree, gpMainWindow);
+    pPlotWindow->getCurrentPlotTab()->setTabName("Time measurements");
+    pPlotWindow->addBarChart(pBarChartModel);
+    pPlotWindow->hide();
+
 
     QPushButton *pDoneButton = new QPushButton("Done", pDialog);
-
+    QPushButton *pChartButton = new QPushButton("Show Bar Chart", pDialog);
+    pChartButton->setCheckable(true);
+    pChartButton->setChecked(false);
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(pDialog);
     pButtonBox->addButton(pDoneButton, QDialogButtonBox::AcceptRole);
+    pButtonBox->addButton(pChartButton, QDialogButtonBox::ActionRole);
 
     QVBoxLayout *pLayout = new QVBoxLayout(pDialog);
+    pLayout->addWidget(pHowToShowResultsGroupBox);
     pLayout->addWidget(pDescriptionLabel);
-    pLayout->addWidget(pTable);
+    pLayout->addWidget(pComponentTable);
+    pLayout->addWidget(pTypeTable);
     pLayout->addWidget(pButtonBox);
 
+
+
+
+    connect(pTypeRadioButton, SIGNAL(toggled(bool)), pTypeTable, SLOT(setVisible(bool)));
+    connect(pComponentRadioButton, SIGNAL(toggled(bool)), pComponentTable, SLOT(setVisible(bool)));
     connect(pDoneButton, SIGNAL(clicked()), pDialog, SLOT(close()));
+    connect(pChartButton, SIGNAL(toggled(bool)), pPlotWindow, SLOT(setVisible(bool)));
 
     pDialog->setLayout(pLayout);
     pDialog->show();
     qApp->processEvents();
-    qDebug() << pTable->size();
+    qDebug() << pComponentTable->size();
     pDialog->setFixedSize(640, 480);
     pDialog->adjustSize();
+    pDialog->setModal(false);
     pDialog->exec();
 
 
