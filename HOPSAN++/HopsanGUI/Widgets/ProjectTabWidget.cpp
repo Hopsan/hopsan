@@ -993,7 +993,7 @@ void ProjectTabWidget::loadModel()
     QDir fileDialogOpenDir;
     QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose Model File"),
                                                          gConfig.getLoadModelDir(),
-                                                         tr("Hopsan Model Files (*.hmf)"));
+                                                         tr("Hopsan Model Files (*.hmf *.xml)"));
     if(!modelFileName.isEmpty())
     {
         loadModel(modelFileName);

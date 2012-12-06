@@ -3893,6 +3893,7 @@ void PlotTab::dragEnterEvent(QDragEnterEvent *event)
         //Create the hover rectangle (size will be changed by dragMoveEvent)
         mpHoverRect = new QRubberBand(QRubberBand::Rectangle,this);
         mpHoverRect->setGeometry(0, 0, this->width(), this->height());
+        mpHoverRect->setStyleSheet("selection-background-color: blue");
         mpHoverRect->setWindowOpacity(1);
         mpHoverRect->show();
 
