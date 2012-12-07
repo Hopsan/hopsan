@@ -102,7 +102,7 @@ namespace hopsan {
 
             double num[3] = {1.0, 0.0, 0.0};
             double den[3] = {1.0, 2.0*deltah/omegah, 1.0/(omegah*omegah)};
-            filter.initialize(mTimestep, num, den, 0, 0, -xvmax, xvmax);
+            filter.initialize(mTimestep, num, den, 0, 0, 0, xvmax);
         }
 
 
@@ -126,7 +126,7 @@ namespace hopsan {
             }
             else
             {
-                filter.update(-xvmax);
+                filter.update(0);
             }
 
             xv = filter.value();
@@ -164,13 +164,12 @@ namespace hopsan {
             {
                 q = qTurb.getFlow(c1, c2, Zc1, Zc2);
 
-                q1 = q;
-                q2 = -q;
+                q1 = -q;
+                q2 = q;
 
                 p1 = c1 + q1*Zc1;
                 p2 = c2 + q2*Zc2;
             }
-
 
             //Write new values to nodes
 
@@ -178,7 +177,7 @@ namespace hopsan {
             (*mpND_q1) = q1;
             (*mpND_p2) = p2;
             (*mpND_q2) = q2;
-            (*mpND_xvout) = xv;
+            (*mpND_xvout) = Kc;
         }
     };
 }
