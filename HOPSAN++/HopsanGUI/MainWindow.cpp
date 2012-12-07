@@ -244,6 +244,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     mpTerminalWidget->loadConfig();
 
+    mpWelcomeWidget = 0;
+
     initializeWorkspace();
 
 
@@ -1197,7 +1199,10 @@ void MainWindow::updateToolBarsToNewTab()
     mpExportToFMUAction->setEnabled(!noTabs);
     mpExportToSimulinkAction->setEnabled(!noTabs);
 
-    mpWelcomeWidget->setVisible(noTabs);
+    if(mpWelcomeWidget)
+    {
+        mpWelcomeWidget->setVisible(noTabs);
+    }
 }
 
 
