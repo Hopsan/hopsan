@@ -16,6 +16,7 @@ permission from the copyright holders.
 #define S_FUNCTION_NAME HopsanSimulink
 #define S_FUNCTION_LEVEL 2
 
+#include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -46,16 +47,16 @@ void readExternalLibsFromTxtFile(const std::string filePath, std::vector<std::st
     }
     else
     {
-        cout << "error, could not open file: " << filePath << endl;
+        std::cout << "error, could not open file: " << filePath << std::endl;
     }
 }
 
 
-HopsanEssentials gHopsanCore
+HopsanEssentials gHopsanCore;
 ComponentSystem* pComponentSystem;
 bool isOkToSimulate = false;
 
-
+<<<15>>>
 static void mdlInitializeSizes(SimStruct *S)
 {
     ssSetNumSFcnParams(S, 0);
@@ -65,36 +66,34 @@ static void mdlInitializeSizes(SimStruct *S)
     }
 
     //Define S-function input signals
-    if (!ssSetNumInputPorts(S,<<<0>>>)) return;				//Number of input signals\n
+    if (!ssSetNumInputPorts(S,<<<0>>>)) return;				//Number of input signals
 <<<1>>>
-
-    //Define S-function output signals\n
-    if (!ssSetNumOutputPorts(S,<<<2>>>)) return;				//Number of output signals\n
+    //Define S-function output signals
+    if (!ssSetNumOutputPorts(S,<<<2>>>)) return;				//Number of output signals
 <<<3>>>
-    ssSetOutputPortWidth(S, <<<14>>>, DYNAMICALLY_SIZED);		//Debug output signal\n
-    ssSetNumSampleTimes(S, 1);\n\n
-    ssSetOptions(S, SS_OPTION_EXCEPTION_FREE_CODE);\n
+    ssSetOutputPortWidth(S, <<<14>>>, DYNAMICALLY_SIZED);		//Debug output signal
+    ssSetNumSampleTimes(S, 1);
+    ssSetOptions(S, SS_OPTION_EXCEPTION_FREE_CODE);
   
     std::vector<std::string> extLibs;
     readExternalLibsFromTxtFile("externalLibs.txt",extLibs);
     for (size_t i=0; i<extLibs.size(); ++i)
     {
-        gHopsanCore->loadExternalComponentLib(extLibs[i]);
+        gHopsanCore.loadExternalComponentLib(extLibs[i]);
     }
 
     std::string hmfFilePath = "<<<4>>>";
     double startT, stopT;
-    gHopsanCore->loadHMFModel(hmfFilePath, startT, stopT);
+    pComponentSystem = gHopsanCore.loadHMFModel(hmfFilePath, startT, stopT);
     if (pComponentSystem==0)
     {
-        ssSetErrorStatus(S,"Error could not open model: <<<4>>>");" << endl;
+        ssSetErrorStatus(S,"Error could not open model: <<<4>>>");
         return;
     }
     startT = ssGetTStart(S);
     stopT = ssGetTFinal(S);
     pComponentSystem->setDesiredTimestep(0.001);
-<<<5>>>
-}
+<<<5>>>}
 
 
 static void mdlInitializeSampleTimes(SimStruct *S)
@@ -109,17 +108,20 @@ static void mdlInitializeSampleTimes(SimStruct *S)
 <<<6>>>
 
 
-    isOkToSimulate = pComponentSystem->isSimulationOk();
+    isOkToSimulate = pComponentSystem->checkModelBeforeSimulation();
     if (isOkToSimulate)
     {
-        pComponentSystem->initialize(0,10);
+        pComponentSystem->setNumLogSamples(0);
+        pComponentSystem->disableLog();
+        pComponentSystem->initialize(0,1);
     }
     else
     {
         ssSetErrorStatus(S,"Error isSimulationOk() returned False! Most likely some components could not be loaded or some connections could not be established.");
         return;
     }
-}
+    
+<<<16>>>}
 
 
 static void mdlOutputs(SimStruct *S, int_T tid)
@@ -133,7 +135,6 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 
     //Input parameters
 <<<8>>>
-
     //Equations
 <<<9>>>
     output<<<10>>> = 0;		//Error code 0: Nothing is wrong
@@ -144,7 +145,7 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     }
 
     //! @todo should remove this check from here
-    else if(!pComponentSystem->isSimulationOk())
+    else if(!pComponentSystem->checkModelBeforeSimulation())
     {
         output<<<10>>> = -2;		//Error code -2: Simulation not possible due to errors in model
     }
@@ -155,21 +156,19 @@ static void mdlOutputs(SimStruct *S, int_T tid)
         double time = ssGetT(S);
         pComponentSystem->simulate(time, time+timestep);
 
-<<<12>>>
-    }
+<<<12>>>    }
     
     //Output parameters
-<<<13>>>
-     }
+<<<13>>>}
      
      static void mdlTerminate(SimStruct *S){}
      
      
-     /* Simulink/Simulink Coder Interfaces */
-     #ifdef MATLAB_MEX_FILE /* Is this file being compiled as a MEX-file? */
-     #include "simulink.c" /* MEX-file interface mechanism */
-     #else
-     #include "cg_sfun.h" /* Code generation registration function */
-     #endif
+ /* Simulink/Simulink Coder Interfaces */
+ #ifdef MATLAB_MEX_FILE /* Is this file being compiled as a MEX-file? */
+ #include "simulink.c" /* MEX-file interface mechanism */
+ #else
+ #include "cg_sfun.h" /* Code generation registration function */
+ #endif
 
      

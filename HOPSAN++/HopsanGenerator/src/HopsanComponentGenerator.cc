@@ -1735,7 +1735,7 @@ void HopsanGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem *p
 
 void HopsanGenerator::generateToSimulink(QString savePath, hopsan::ComponentSystem *pSystem, bool disablePortLabels, int compiler)
 {
-    printMessage("Initializing FMU export");
+    printMessage("Initializing Simulink S-function export");
 
     QDir saveDir;
     saveDir.setPath(savePath);
@@ -2061,7 +2061,7 @@ void HopsanGenerator::generateToSimulink(QString savePath, hopsan::ComponentSyst
     QString wrapperReplace5;
     if(!disablePortLabels)
     {
-        wrapperReplace5 = "    mexCallMATLAB(0, 0, 0, 0, \"HopsanSimulinkPortLabels\");                              //Run the port label script";
+        wrapperReplace5 = "    mexCallMATLAB(0, 0, 0, 0, \"HopsanSimulinkPortLabels\");                              //Run the port label script\n";
     }
 
     QString wrapperReplace6;
@@ -2089,19 +2089,19 @@ void HopsanGenerator::generateToSimulink(QString savePath, hopsan::ComponentSyst
     QString wrapperReplace7;
     for(int i=0; i<nTotalOutputs; ++i)
     {
-        wrapperReplace7 = "    real_T *y" + QString::number(i) + " = ssGetOutputPortRealSignal(S," + QString::number(i) + ");\n";
+        wrapperReplace7.append("    real_T *y" + QString::number(i) + " = ssGetOutputPortRealSignal(S," + QString::number(i) + ");\n");
     }
 
     QString wrapperReplace8;
     for(int i=0; i<nTotalInputs; ++i)
     {
-        wrapperReplace7 = "    double input" + QString::number(i) + " = (*uPtrs1[" + QString::number(i) + "]);\n";
+        wrapperReplace7.append("    double input" + QString::number(i) + " = (*uPtrs1[" + QString::number(i) + "]);\n");
     }
 
     QString wrapperReplace9;
     for(int i=0; i<nTotalOutputs; ++i)
     {
-        wrapperReplace9 = "    double output" + QString::number(i) + ";\n";
+        wrapperReplace9.append("    double output" + QString::number(i) + ";\n");
     }
 
     QString wrapperReplace11;
@@ -2109,35 +2109,35 @@ void HopsanGenerator::generateToSimulink(QString savePath, hopsan::ComponentSyst
     for(int i=0; i<nMechanicQ; ++i)
     {
         j = tot+i*2;
-        wrapperReplace11.append("        pComponentSystem->getSubComponent(\"" + mechanicQComponents.at(i) + "\")->getPort(\"" + mechanicQPorts.at(i) + "\")->writeNode(2, input" + QString::number(j) + ");\n");
-        wrapperReplace11.append("        pComponentSystem->getSubComponent(\"" + mechanicQComponents.at(i) + "\")->getPort(\"" + mechanicQPorts.at(i) + "\")->writeNode(0, input" + QString::number(j+1) + ");\n");
+        wrapperReplace11.append("        (*pInputNode"+QString::number(j)+") = input"+QString::number(j)+";\n");
+        wrapperReplace11.append("        (*pInputNode"+QString::number(j+1)+") = input"+QString::number(j+1)+";\n");
     }
     tot+=nMechanicQ*2;
     for(int i=0; i<nMechanicC; ++i)
     {
         j = tot+i*2;
-        wrapperReplace11.append("        pComponentSystem->getSubComponent(\"" + mechanicCComponents.at(i) + "\")->getPort(\"" + mechanicCPorts.at(i) + "\")->writeNode(3, input" + QString::number(j) + ");\n");
-        wrapperReplace11.append("        pComponentSystem->getSubComponent(\"" + mechanicCComponents.at(i) + "\")->getPort(\"" + mechanicCPorts.at(i) + "\")->writeNode(4, input" + QString::number(j+1) + ");\n");
+        wrapperReplace11.append("        (*pInputNode"+QString::number(j)+") = input"+QString::number(j)+";\n");
+        wrapperReplace11.append("        (*pInputNode"+QString::number(j+1)+") = input"+QString::number(j+1)+";\n");
     }
     tot+=nMechanicC*2;
     for(int i=0; i<nMechanicRotationalQ; ++i)
     {
         j = tot+i*2;
-        wrapperReplace11.append("        pComponentSystem->getSubComponent(\"" + mechanicRotationalQComponents.at(i) + "\")->getPort(\"" + mechanicRotationalQPorts.at(i) + "\")->writeNode(2, input" + QString::number(j) + ");\n");
-        wrapperReplace11.append("        pComponentSystem->getSubComponent(\"" + mechanicRotationalQComponents.at(i) + "\")->getPort(\"" + mechanicRotationalQPorts.at(i) + "\")->writeNode(0, input" + QString::number(j+1) + ");\n");
+        wrapperReplace11.append("        (*pInputNode"+QString::number(j)+") = input"+QString::number(j)+";\n");
+        wrapperReplace11.append("        (*pInputNode"+QString::number(j+1)+") = input"+QString::number(j+1)+";\n");
     }
     tot+=nMechanicRotationalQ*2;
     for(int i=0; i<nMechanicRotationalC; ++i)
     {
         j = tot+i*2;
-        wrapperReplace11.append("        pComponentSystem->getSubComponent(\"" + mechanicRotationalCComponents.at(i) + "\")->getPort(\"" + mechanicRotationalCPorts.at(i) + "\")->writeNode(3, input" + QString::number(j) + ");\n");
-        wrapperReplace11.append("        pComponentSystem->getSubComponent(\"" + mechanicRotationalCComponents.at(i) + "\")->getPort(\"" + mechanicRotationalCPorts.at(i) + "\")->writeNode(4, input" + QString::number(j+1) + ");\n");
+        wrapperReplace11.append("        (*pInputNode"+QString::number(j)+") = input"+QString::number(j)+";\n");
+        wrapperReplace11.append("        (*pInputNode"+QString::number(j+1)+") = input"+QString::number(j+1)+";\n");
     }
     tot+=nMechanicRotationalC*2;
     for(int i=0; i<nInputs; ++i)
     {
         j = tot+i;
-        wrapperReplace11.append("        pComponentSystem->getSubComponent(\"" + inputComponents.at(i) + "\")->getPort(\"" + inputPorts.at(i) + "\")->writeNode(0, input" + QString::number(i) + ");\n");
+        wrapperReplace11.append("        (*pInputNode"+QString::number(j)+") = input"+QString::number(j)+";\n");
     }
 
     QString wrapperReplace12;
@@ -2146,49 +2146,120 @@ void HopsanGenerator::generateToSimulink(QString savePath, hopsan::ComponentSyst
     for(int i=0; i<nMechanicQ; ++i)
     {
         j = tot+i*2;
-        wrapperReplace12.append("        output" + QString::number(j) + " = pComponentSystem->getSubComponent(\"" + mechanicQComponents.at(i) + "\")->getPort(\"" + mechanicQPorts.at(i) + "\")->readNode(3);\n");
-        wrapperReplace12.append("        output" + QString::number(j+1) + " = pComponentSystem->getSubComponent(\"" + mechanicQComponents.at(i) + "\")->getPort(\"" + mechanicQPorts.at(i) + "\")->readNode(4);\n");
+        wrapperReplace12.append("        output"+QString::number(j)+" = (*pOutputNode"+QString::number(j)+");\n");
+        wrapperReplace12.append("        output"+QString::number(j+1)+" = (*pOutputNode"+QString::number(j+1)+");\n");
     }
     tot+=nMechanicQ*2;
     for(int i=0; i<nMechanicC; ++i)
     {
         j = tot+i*2;
-        wrapperReplace12.append("        output" + QString::number(j) + " = pComponentSystem->getSubComponent(\"" + mechanicCComponents.at(i) + "\")->getPort(\"" + mechanicCPorts.at(i) + "\")->readNode(2);\n");
-        wrapperReplace12.append("        output" + QString::number(j+1) + " = pComponentSystem->getSubComponent(\"" + mechanicCComponents.at(i) + "\")->getPort(\"" + mechanicCPorts.at(i) + "\")->readNode(0);\n");
+        wrapperReplace12.append("        output"+QString::number(j)+" = (*pOutputNode"+QString::number(j)+");\n");
+        wrapperReplace12.append("        output"+QString::number(j+1)+" = (*pOutputNode"+QString::number(j+1)+");\n");
     }
     tot+=nMechanicC*2;
     for(int i=0; i<nMechanicRotationalQ; ++i)
     {
         j = tot+i*2;
-        wrapperReplace12.append("        output" + QString::number(j) + " = pComponentSystem->getSubComponent(\"" + mechanicRotationalQComponents.at(i) + "\")->getPort(\"" + mechanicRotationalQPorts.at(i) + "\")->readNode(3);\n");
-        wrapperReplace12.append("        output" + QString::number(j+1) + " = pComponentSystem->getSubComponent(\"" + mechanicRotationalQComponents.at(i) + "\")->getPort(\"" + mechanicRotationalQPorts.at(i) + "\")->readNode(4);\n");
+        wrapperReplace12.append("        output"+QString::number(j)+" = (*pOutputNode"+QString::number(j)+");\n");
+        wrapperReplace12.append("        output"+QString::number(j+1)+" = (*pOutputNode"+QString::number(j+1)+");\n");
     }
     tot+=nMechanicRotationalQ*2;
     for(int i=0; i<nMechanicRotationalC; ++i)
     {
         j = tot+i*2;
-        wrapperReplace12.append("        output" + QString::number(j) + " = pComponentSystem->getSubComponent(\"" + mechanicRotationalCComponents.at(i) + "\")->getPort(\"" + mechanicRotationalCPorts.at(i) + "\")->readNode(2);\n");
-        wrapperReplace12.append("        output" + QString::number(j+1) + " = pComponentSystem->getSubComponent(\"" + mechanicRotationalCComponents.at(i) + "\")->getPort(\"" + mechanicRotationalCPorts.at(i) + "\")->readNode(0);\n");
+        wrapperReplace12.append("        output"+QString::number(j)+" = (*pOutputNode"+QString::number(j)+");\n");
+        wrapperReplace12.append("        output"+QString::number(j+1)+" = (*pOutputNode"+QString::number(j+1)+");\n");
     }
     tot+=nMechanicRotationalC*2;
     for(int i=0; i<nOutputs; ++i)
     {
         j = tot+i;
-        wrapperReplace12.append("        output" + QString::number(j) + " = pComponentSystem->getSubComponent(\"" + outputComponents.at(i) + "\")->getPort(\"" + outputPorts.at(i) + "\")->readNode(0);\n");
+        wrapperReplace12.append("        output"+QString::number(j)+" = (*pOutputNode"+QString::number(j)+");\n");
     }
 
     QString wrapperReplace13;
     for(int i=0; i<nTotalOutputs; ++i)
     {
-        wrapperReplace13 = "    *y" + QString::number(i) + " = output" + QString::number(i) + ";\n";
+        wrapperReplace13.append("    *y" + QString::number(i) + " = output" + QString::number(i) + ";\n");
     }
+
+    QString wrapperReplace15;
+    for(int i=0; i<nTotalInputs; ++i)
+    {
+        wrapperReplace15.append("double *pInputNode"+QString::number(i)+";\n");
+    }
+    for(int i=0; i<nTotalOutputs-1; ++i)
+    {
+        wrapperReplace15.append("double *pOutputNode"+QString::number(i)+";\n");
+    }
+
+    QString wrapperReplace16;
+    int totIn = 0;
+    int totOut = 0;
+    int jin, jout;
+    for(int i=0; i<nMechanicQ; ++i)
+    {
+        jin = totIn+i*2;
+        jout = totOut+i*2;
+        wrapperReplace16.append("    pInputNode"+QString::number(jin)+" = pComponentSystem->getSubComponent(\""+mechanicQComponents.at(i)+"\")->getPort(\""+mechanicQPorts.at(i)+"\")->getSafeNodeDataPtr(2, 0);\n");
+        wrapperReplace16.append("    pInputNode"+QString::number(jin+1)+" = pComponentSystem->getSubComponent(\""+mechanicQComponents.at(i)+"\")->getPort(\""+mechanicQPorts.at(i)+"\")->getSafeNodeDataPtr(0, 0);\n");
+        wrapperReplace16.append("    pOutputNode"+QString::number(jout)+" = pComponentSystem->getSubComponent(\""+mechanicQComponents.at(i)+"\")->getPort(\""+mechanicQPorts.at(i)+"\")->getSafeNodeDataPtr(3, 0);\n");
+        wrapperReplace16.append("    pOutputNode"+QString::number(jout+1)+" = pComponentSystem->getSubComponent(\""+mechanicQComponents.at(i)+"\")->getPort(\""+mechanicQPorts.at(i)+"\")->getSafeNodeDataPtr(4, 0);\n");
+    }
+    totIn+=nMechanicQ*2;
+    totOut+=nMechanicQ*2;
+    for(int i=0; i<nMechanicC; ++i)
+    {
+        jin = totIn+i*2;
+        jout = totOut+i*2;
+        wrapperReplace16.append("    pInputNode"+QString::number(jin)+" = pComponentSystem->getSubComponent(\""+mechanicCComponents.at(i)+"\")->getPort(\""+mechanicCPorts.at(i)+"\")->getSafeNodeDataPtr(3, 0);\n");
+        wrapperReplace16.append("    pInputNode"+QString::number(jin+1)+" = pComponentSystem->getSubComponent(\""+mechanicCComponents.at(i)+"\")->getPort(\""+mechanicCPorts.at(i)+"\")->getSafeNodeDataPtr(4, 0);\n");
+        wrapperReplace16.append("    pOutputNode"+QString::number(jout)+" = pComponentSystem->getSubComponent(\""+mechanicCComponents.at(i)+"\")->getPort(\""+mechanicCPorts.at(i)+"\")->getSafeNodeDataPtr(2, 0;\n)");
+        wrapperReplace16.append("    pOutputNode"+QString::number(jout+1)+" = pComponentSystem->getSubComponent(\""+mechanicCComponents.at(i)+"\")->getPort(\""+mechanicCPorts.at(i)+"\")->getSafeNodeDataPtr(0, 0);\n");
+   }
+    totIn+=nMechanicC*2;
+    totOut+=nMechanicC*2;
+    for(int i=0; i<nMechanicRotationalQ; ++i)
+    {
+        jin = totIn+i*2;
+        jout = totOut+i*2;
+        wrapperReplace16.append("    pInputNode"+QString::number(jin)+" = pComponentSystem->getSubComponent(\""+mechanicRotationalQComponents.at(i)+"\")->getPort(\""+mechanicRotationalQPorts.at(i)+"\")->getSafeNodeDataPtr(2, 0);\n");
+        wrapperReplace16.append("    pInputNode"+QString::number(jin+1)+" = pComponentSystem->getSubComponent(\""+mechanicRotationalQComponents.at(i)+"\")->getPort(\""+mechanicRotationalQPorts.at(i)+"\")->getSafeNodeDataPtr(0, 0);\n");
+        wrapperReplace16.append("    pOutputNode"+QString::number(jout)+" = pComponentSystem->getSubComponent(\""+mechanicRotationalQComponents.at(i)+"\")->getPort(\""+mechanicRotationalQPorts.at(i)+"\")->getSafeNodeDataPtr(3, 0);\n");
+        wrapperReplace16.append("    pOutputNode"+QString::number(jout+1)+" = pComponentSystem->getSubComponent(\""+mechanicRotationalQComponents.at(i)+"\")->getPort(\""+mechanicRotationalQPorts.at(i)+"\")->getSafeNodeDataPtr(4, 0);\n");
+    }
+    totIn+=nMechanicRotationalQ*2;
+    totOut+=nMechanicRotationalQ*2;
+    for(int i=0; i<nMechanicRotationalC; ++i)
+    {
+        jin = totIn+i*2;
+        jout = totOut+i*2;
+        wrapperReplace16.append("    pInputNode"+QString::number(jin)+" = pComponentSystem->getSubComponent(\""+mechanicRotationalCComponents.at(i)+"\")->getPort(\""+mechanicRotationalCPorts.at(i)+"\")->getSafeNodeDataPtr(3, 0);\n");
+        wrapperReplace16.append("    pInputNode"+QString::number(jin+1)+" = pComponentSystem->getSubComponent(\""+mechanicRotationalCComponents.at(i)+"\")->getPort(\""+mechanicRotationalCPorts.at(i)+"\")->getSafeNodeDataPtr(4, 0);\n");
+        wrapperReplace16.append("    pOutputNode"+QString::number(jout)+" = pComponentSystem->getSubComponent(\""+mechanicRotationalCComponents.at(i)+"\")->getPort(\""+mechanicRotationalCPorts.at(i)+"\")->getSafeNodeDataPtr(2, 0);\n");
+        wrapperReplace16.append("    pOutputNode"+QString::number(jout+1)+" = pComponentSystem->getSubComponent(\""+mechanicRotationalCComponents.at(i)+"\")->getPort(\""+mechanicRotationalCPorts.at(i)+"\")->getSafeNodeDataPtr(0, 0);\n");
+    }
+    totIn+=nMechanicRotationalC*2;
+    totOut+=nMechanicRotationalC*2;
+    for(int i=0; i<nOutputs; ++i)
+    {
+        jout = totOut+i;
+        wrapperReplace16.append("    pOutputNode"+QString::number(jout)+" = pComponentSystem->getSubComponent(\""+outputComponents.at(i)+"\")->getPort(\""+outputPorts.at(i)+"\")->getSafeNodeDataPtr(0, 0);\n");
+    }
+    for(int i=0; i<nOutputs; ++i)
+    {
+        jin = totIn+i*2;
+        wrapperReplace16.append("    pInputNode"+QString::number(jin)+" = pComponentSystem->getSubComponent(\""+inputComponents.at(i)+"\")->getPort(\""+inputPorts.at(i)+"\")->getSafeNodeDataPtr(0, 0);\n");
+    }
+
+    savePath.replace("\\", "\\\\");
 
     wrapperCode.replace("<<<0>>>", nTotalInputsString);
     wrapperCode.replace("<<<1>>>", wrapperReplace1);
     wrapperCode.replace("<<<2>>>", nTotalOutputsString);
     wrapperCode.replace("<<<3>>>", wrapperReplace3);
     wrapperCode.replace("<<<14>>>", QString::number(nTotalOutputs-1));
-    wrapperCode.replace("<<<4>>>", savePath);
+    wrapperCode.replace("<<<4>>>", savePath+"\\\\"+pSystem->getName().c_str()+".hmf");
     wrapperCode.replace("<<<5>>>", wrapperReplace5);
     wrapperCode.replace("<<<6>>>", wrapperReplace6);
     wrapperCode.replace("<<<7>>>", wrapperReplace7);
@@ -2198,6 +2269,8 @@ void HopsanGenerator::generateToSimulink(QString savePath, hopsan::ComponentSyst
     wrapperCode.replace("<<<11>>>", wrapperReplace11);
     wrapperCode.replace("<<<12>>>", wrapperReplace12);
     wrapperCode.replace("<<<13>>>", wrapperReplace13);
+    wrapperCode.replace("<<<15>>>", wrapperReplace15);
+    wrapperCode.replace("<<<16>>>", wrapperReplace16);
 
     QTextStream wrapperStream(&wrapperFile);
     wrapperStream << wrapperCode;
@@ -2268,6 +2341,8 @@ void HopsanGenerator::generateToSimulink(QString savePath, hopsan::ComponentSyst
     externalLibsFileStream << "#Enter the relative path to each external component lib that needs to be loaded" << endl;
     externalLibsFileStream << "#Enter one per line, the filename is enough if you put the lib file (.dll or.so) in this directory.";
     externalLibsFile.close();
+
+    printMessage("Finished!");
 }
 
 

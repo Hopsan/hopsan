@@ -595,6 +595,7 @@ Component* ComponentSystem::getSubComponent(string name)
     }
     else
     {
+        addLogMess("ComponentSystem::getSubComponent(): The requested component does not exist.");
         //cout << "getSubComponent: The component you requested: " << name << " does not exist in: " << this->mName << endl;
         return 0;
     }
@@ -2012,6 +2013,7 @@ void ComponentSystem::setAllNodesDoLogData(const bool logornot)
     // Do this systems nodes
     if (logornot)
     {
+
         for (size_t i=0; i<mSubNodePtrs.size(); ++i)
         {
             mSubNodePtrs[i]->enableLog();
@@ -2189,6 +2191,8 @@ void ComponentSystem::loadStartValuesFromSimulation()
 //! @param nSamples Number of log samples
 bool ComponentSystem::initialize(const double startT, const double stopT)
 {
+    addLogMess("ComponentSystem::initialize()");
+
     //cout << "Initializing SubSystem: " << this->mName << endl;
     mStopSimulation = false; //This variable cannot be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.
 

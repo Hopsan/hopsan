@@ -176,6 +176,7 @@ HopsanCoreMessageHandler *HopsanEssentials::getCoreMessageHandler()
 //! @returns A pointer to the rootsystem of the loaded model
 ComponentSystem* HopsanEssentials::loadHMFModel(const string filePath, double &rStartTime, double &rStopTime)
 {
+    addLogMess("HopsanEssentials::loadHMFModel()");
     return loadHopsanModelFile(filePath, this, rStartTime, rStopTime);
 }
 

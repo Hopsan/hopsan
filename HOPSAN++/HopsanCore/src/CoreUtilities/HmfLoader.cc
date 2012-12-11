@@ -238,6 +238,7 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
 //! @returns A pointer to the rootsystem of the loaded model
 ComponentSystem* hopsan::loadHopsanModelFile(const std::string filePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime)
 {
+    addLogMess("hopsan::loadHopsanModelFile("+filePath+")");
     try
     {
         rapidxml::file<> hmfFile(filePath.c_str());
@@ -258,7 +259,6 @@ ComponentSystem* hopsan::loadHopsanModelFile(const std::string filePath, HopsanE
                 rapidxml::xml_node<> *pSimtimeNode = pSysNode->first_node("simulationtime");
                 rStartTime = readDoubleAttribute(pSimtimeNode, "start", 0);
                 rStopTime = readDoubleAttribute(pSimtimeNode, "stop", 2);
-
                 ComponentSystem * pSys = pHopsanEssentials->createComponentSystem(); //Create root system
                 loadSystemContents(pSysNode, pSys, pHopsanEssentials, filePath);
 
@@ -266,20 +266,25 @@ ComponentSystem* hopsan::loadHopsanModelFile(const std::string filePath, HopsanE
             }
             else
             {
+                addLogMess("hopsan::loadHopsanModelFile(): No system found in file.");
                 pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(filePath+" Has no system to load");
             }
         }
         else
         {
+            addLogMess("hopsan::loadHopsanModelFile(): Wrong root tag name.");
             pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(filePath+" Has wrong root tag name: "+pRootNode->name());
             cout << "Not correct hmf file root node name: " << pRootNode->name() << endl;
         }
     }
     catch(std::exception &e)
     {
+        addLogMess("hopsan::loadHopsanModelFile(): Unable to open file.");
         pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("Could not open file: "+filePath);
         cout << "Could not open file, throws: " << e.what() << endl;
     }
+
+    addLogMess("hopsan::loadHopsanModelFile(): Failed.");
 
     // We failed, return 0 ptr
     return 0;
