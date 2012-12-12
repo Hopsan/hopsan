@@ -81,6 +81,14 @@ GeneratorHandler::GeneratorHandler()
         return;
     }
 
+    //Load Simulink Co-Simulation generator function
+    callSimulinkCoSimExportGenerator = (call_simulink_cosim_export_generator_t)GetProcAddress(lib_ptr, "callSimulinkCoSimExportGenerator");
+    if (!callSimulinkCoSimExportGenerator)
+    {
+        //! @todo Error message
+        return;
+    }
+
     //Load LabVIEW/SIT generator function
     callLabViewSITGenerator = (call_lvsit_export_generator_t)GetProcAddress(lib_ptr, "callLabViewSITGenerator");
     if (!callLabViewSITGenerator)
@@ -128,6 +136,16 @@ GeneratorHandler::GeneratorHandler()
 
     //Load FMU generator function
     callFmuExportGenerator = (call_fmu_export_generator_t)dlsym(lib_ptr, "callFmuExportGenerator");
+    dlsym_error = dlerror();
+    if (dlsym_error)
+    {
+        //! @todo Error message
+        return;
+    }
+
+    //! @todo Shall not be here, since Simulink export does not currently work under Linux
+    //Load Simulink Co-Simulation generator function
+    callSimulinkCoSimExportGenerator = (call_simulink_cosim_export_generator_t)dlsym(lib_ptr, "callSimulinkCoSimExportGenerator");
     dlsym_error = dlerror();
     if (dlsym_error)
     {

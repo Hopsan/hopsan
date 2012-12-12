@@ -124,6 +124,7 @@ public:
     void generateFromFmu(QString code);
     void generateToFmu(QString savePath, hopsan::ComponentSystem *pSystem);
     void generateToSimulink(QString savePath, hopsan::ComponentSystem *pSystem, bool disablePortLabels, int compiler);
+    void generateToSimulinkCoSim(QString savePath, hopsan::ComponentSystem *pSystem, bool disablePortLabels, int compiler);
     void generateToLabViewSIT(QString savePath, hopsan::ComponentSystem *pSystem);
     void compileFromComponentObject(QString outputFile, ComponentSpecification comp, bool overwriteStartValues=false);
 

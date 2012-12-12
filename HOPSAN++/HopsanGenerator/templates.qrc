@@ -8,5 +8,7 @@
         <file>templates/fmuComponentTemplate.hpp</file>
         <file>templates/simulinkWrapperTemplate.cpp</file>
         <file>templates/labviewWrapperTemplate.cpp</file>
+        <file>templates/simulinkCoSimWrapperTemplate.cpp</file>
+        <file>templates/simulinkSocketDeclarationTemplate.cpp</file>
     </qresource>
 </RCC>

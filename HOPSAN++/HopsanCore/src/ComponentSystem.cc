@@ -29,6 +29,12 @@
 #include <cstdlib>
 #include <iostream>
 
+//#define USEBOOST
+#ifdef USEBOOST
+#include <boost/interprocess/shared_memory_object.hpp>
+#include <boost/interprocess/mapped_region.hpp>
+#endif
+
 #include "ComponentSystem.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "CoreUtilities/FindUniqueName.h"
@@ -117,6 +123,83 @@ void SimulationHandler::finalizeSystem(std::vector<ComponentSystem*> &rSystemVec
     {
         finalizeSystem(rSystemVector[i]);
     }
+}
+
+void SimulationHandler::runCoSimulation(ComponentSystem *pSystem, bool send)
+{
+#ifdef USEBOOST
+    if(send)
+    {
+        boost::interprocess::shared_memory_object::remove("hopsan_input1");
+    }
+
+    //Initialize shared memory sockets
+
+    //Input
+    boost::interprocess::shared_memory_object shdmem_in1(boost::interprocess::open_or_create, "hopsan_in1", boost::interprocess::read_write);
+    shdmem_in1.truncate(64);
+    boost::interprocess::mapped_region region_in1(shdmem_in1, boost::interprocess::read_write);
+    double *in1_socket = static_cast<double*>(region_in1.get_address());
+
+    //Simulate
+    boost::interprocess::shared_memory_object shdmem_sim(boost::interprocess::open_or_create, "hopsan_simulate", boost::interprocess::read_write);
+    shdmem_in1.truncate(64);
+    boost::interprocess::mapped_region region_sim(shdmem_sim, boost::interprocess::read_write);
+    bool *sim_socket1 = static_cast<bool*>(region_sim.get_address());
+
+    //Stop
+    boost::interprocess::shared_memory_object shdmem_stop(boost::interprocess::open_or_create, "hopsan_stop", boost::interprocess::read_write);
+    shdmem_in1.truncate(64);
+    boost::interprocess::mapped_region region_stop(shdmem_stop, boost::interprocess::read_write);
+    bool *sim_stop = static_cast<bool*>(region_stop.get_address());
+
+    //Output
+    boost::interprocess::shared_memory_object shdmem_out1(boost::interprocess::open_or_create, "hopsan_out1", boost::interprocess::read_write);
+    shdmem_out1.truncate(64);
+    boost::interprocess::mapped_region region_out1(shdmem_out1, boost::interprocess::read_write);
+    double *out_socket1 = static_cast<double*>(region_out1.get_address());
+
+    if(send)
+    {
+        (*in1_socket) = 43;
+        std::stringstream ss;
+        ss << "Sent = " << 43;
+        pSystem->addInfoMessage(ss.str());
+    }
+    else
+    {
+        std::stringstream ss;
+        ss << "Received = " << (*in1_socket);
+        pSystem->addInfoMessage(ss.str());
+
+        boost::interprocess::shared_memory_object::remove("hopsan_input1");
+    }
+
+
+
+
+//    //Initialize simulation (also make sure to disable logging)
+//    initialize();
+
+//    while(!(*stop_socket))
+//    {
+//        while(!(*simulate_socket))
+//        {
+//            //Set input variables
+//            setVariable("input variable 1", (*in1_socket));
+
+//            //Simulate one step
+//            simulate(mTime, mTime+mTimestep);
+
+//            //Write back output variables
+//            (*out1_socket) = getVariable("output variable 1");
+
+//            //Reset simulation flag
+//            (*simulate_socket) = false;
+//        }
+//    }
+
+#endif
 }
 
 //! @brief Distributes component system pointers evenly over one vector per thread, depending on their simulation time

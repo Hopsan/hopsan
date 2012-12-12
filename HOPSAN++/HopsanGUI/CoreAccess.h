@@ -47,6 +47,7 @@ public:
     bool generateFromFmu(QString path);
     bool generateToFmu(QString path, SystemContainer *pSystem);
     bool generateToSimulink(QString path, SystemContainer *pSystem, bool disablePortLabels=false, int compiler=0);
+    bool generateToSimulinkCoSim(QString path, SystemContainer *pSystem, bool disablePortLabels=false, int compiler=0);
     bool generateToLabViewSIT(QString path, SystemContainer *pSystem);
 };
 
@@ -211,6 +212,8 @@ public:
 
     void finalize(CoreSystemAccess* pCoreSystemAccess);
     void finalize(QVector<CoreSystemAccess*> &rvCoreSystemAccess);
+
+    void runCoSimulation(CoreSystemAccess* pCoreSystemAccess, bool send = false);
 
 private:
 

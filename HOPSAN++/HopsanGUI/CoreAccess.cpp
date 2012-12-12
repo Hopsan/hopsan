@@ -154,6 +154,18 @@ bool CoreGeneratorAccess::generateToSimulink(QString path, SystemContainer *pSys
 }
 
 
+bool CoreGeneratorAccess::generateToSimulinkCoSim(QString path, SystemContainer *pSystem, bool disablePortLabels, int compiler)
+{
+    hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
+    if(pHandler->isLoadedSuccessfully())
+    {
+        pHandler->callSimulinkCoSimExportGenerator(path.toStdString(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), disablePortLabels, compiler, QString(COREINCLUDEPATH).toStdString(), gExecPath.toStdString(), true);
+        return true;
+    }
+    return false;
+}
+
+
 bool CoreGeneratorAccess::generateToLabViewSIT(QString path, SystemContainer *pSystem)
 {
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
@@ -258,6 +270,11 @@ bool CoreSimulationHandler::initialize(const double startTime, const double stop
 bool CoreSimulationHandler::simulate(const double startTime, const double stopTime, const int nThreads, CoreSystemAccess* pCoreSystemAccess, bool modelHasNotChanged)
 {
     return gHopsanCore.getSimulationHandler()->simulateSystem(startTime, stopTime, nThreads, pCoreSystemAccess->getCoreSystemPtr(), modelHasNotChanged);
+}
+
+void CoreSimulationHandler::runCoSimulation(CoreSystemAccess* pCoreSystemAccess, bool send)
+{
+    gHopsanCore.getSimulationHandler()->runCoSimulation(pCoreSystemAccess->getCoreSystemPtr(), send);
 }
 
 bool CoreSimulationHandler::simulate(const double startTime, const double stopTime, const int nThreads, QVector<CoreSystemAccess*> &rvCoreSystemAccess, bool modelHasNotChanged)
