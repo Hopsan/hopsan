@@ -22,16 +22,15 @@ permission from the copyright holders.
 #include <fstream>
 #include "simstruc.h"
 #include "include/HopsanCore.h"
+#include "boost/boost/interprocess/shared_memory_object.hpp"
+#include "boost/boost/interprocess/mapped_region.hpp"
+
 using namespace hopsan;
 
 
 bool *sim_socket;
 bool *stop_socket;
 <<<0>>>
-HopsanEssentials gHopsanCore
-ComponentSystem* pComponentSystem;
-bool isOkToSimulate = false;
-
 
 static void mdlInitializeSizes(SimStruct *S)
 {
@@ -49,8 +48,8 @@ static void mdlInitializeSizes(SimStruct *S)
     if (!ssSetNumOutputPorts(S,<<<3>>>)) return;				//Number of output signals\n
 <<<4>>>
     ssSetOutputPortWidth(S, <<<5>>>, DYNAMICALLY_SIZED);		//Debug output signal\n
-    ssSetNumSampleTimes(S, 1);\n\n
-    ssSetOptions(S, SS_OPTION_EXCEPTION_FREE_CODE);\n
+    ssSetNumSampleTimes(S, 1);
+    ssSetOptions(S, SS_OPTION_EXCEPTION_FREE_CODE);
   
 <<<6>>>
 }
@@ -92,11 +91,6 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 <<<13>>>
     output<<<14>>> = 0;		//Error code 0: Nothing is wrong
 
-    if(pComponentSystem == 0)
-    {
-        output<<<14>>> = -1;		//Error code -1: Component system failed to load
-    }
-
     //Write input values
 <<<15>>>
     //Tell Hopsan to simulate
@@ -107,7 +101,6 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 
     //Read output values
 <<<16>>>
-    }
     
     //Output parameters
 <<<17>>>}

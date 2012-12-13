@@ -105,6 +105,7 @@ public:
     void saveToWrappedCode();
     void createFMUSourceFiles();
     void createSimulinkSourceFiles();
+    void createSimulinkCoSimSourceFiles();
 
     // Parameter methods
     QStringList getParameterNames();

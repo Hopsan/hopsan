@@ -80,7 +80,6 @@ void SimulationWorkerObject::initSimulateFinalize()
     timer.start();
     simuHandler.finalize(coreSystemAccessVector);
     emit finalizeDone(true, timer.elapsed());
-
 }
 
 void SimulationWorkerObject::connectProgressDialog(QProgressDialog *pProgressDialog)

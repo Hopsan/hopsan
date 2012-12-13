@@ -272,9 +272,9 @@ bool CoreSimulationHandler::simulate(const double startTime, const double stopTi
     return gHopsanCore.getSimulationHandler()->simulateSystem(startTime, stopTime, nThreads, pCoreSystemAccess->getCoreSystemPtr(), modelHasNotChanged);
 }
 
-void CoreSimulationHandler::runCoSimulation(CoreSystemAccess* pCoreSystemAccess, bool send)
+void CoreSimulationHandler::runCoSimulation(CoreSystemAccess* pCoreSystemAccess)
 {
-    gHopsanCore.getSimulationHandler()->runCoSimulation(pCoreSystemAccess->getCoreSystemPtr(), send);
+    gHopsanCore.getSimulationHandler()->runCoSimulation(pCoreSystemAccess->getCoreSystemPtr());
 }
 
 bool CoreSimulationHandler::simulate(const double startTime, const double stopTime, const int nThreads, QVector<CoreSystemAccess*> &rvCoreSystemAccess, bool modelHasNotChanged)

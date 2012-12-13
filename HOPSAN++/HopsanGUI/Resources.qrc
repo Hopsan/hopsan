@@ -139,5 +139,6 @@
         <file>graphics/uiicons/Hopsan-ExportFmu.png</file>
         <file>graphics/uiicons/Hopsan-ExportSimulink.png</file>
         <file>graphics/uiicons/Hopsan-ExportPdf.png</file>
+        <file>graphics/uiicons/Hopsan-ExportSimulinkCoSim.png</file>
     </qresource>
 </RCC>

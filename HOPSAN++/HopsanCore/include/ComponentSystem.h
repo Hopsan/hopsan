@@ -109,7 +109,7 @@ namespace hopsan {
         void finalizeSystem(ComponentSystem* pSystem);
         void finalizeSystem(std::vector<ComponentSystem*> &rSystemVector);
 
-        void runCoSimulation(ComponentSystem *pSystem, bool send);
+        void runCoSimulation(ComponentSystem *pSystem);
 
     private:
         bool simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, std::vector<ComponentSystem*> &rSystemVector, bool noChanges=false);

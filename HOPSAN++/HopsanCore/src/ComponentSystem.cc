@@ -31,8 +31,8 @@
 
 //#define USEBOOST
 #ifdef USEBOOST
-#include <boost/interprocess/shared_memory_object.hpp>
-#include <boost/interprocess/mapped_region.hpp>
+#include "Dependencies/boost/boost/interprocess/shared_memory_object.hpp"
+#include "Dependencies/boost/boost/interprocess/mapped_region.hpp"
 #endif
 
 #include "ComponentSystem.h"
@@ -125,79 +125,114 @@ void SimulationHandler::finalizeSystem(std::vector<ComponentSystem*> &rSystemVec
     }
 }
 
-void SimulationHandler::runCoSimulation(ComponentSystem *pSystem, bool send)
+void SimulationHandler::runCoSimulation(ComponentSystem *pSystem)
 {
 #ifdef USEBOOST
-    if(send)
+
+    std::vector<std::string> inputComponents;
+    std::vector<std::string> inputPorts;
+    std::vector<int> inputData;
+
+    std::vector<std::string> outputComponents;
+    std::vector<std::string> outputPorts;
+    std::vector<int> outputData;
+
+    //////////////////////////
+
+    std::vector<std::string> names = pSystem->getSubComponentNames();
+    for(size_t i=0; i<names.size(); ++i)
     {
-        boost::interprocess::shared_memory_object::remove("hopsan_input1");
+        Component *pComponent = pSystem->getSubComponent(names[i]);
+        if(pComponent->getTypeName() == "SignalInputInterface")
+        {
+            inputComponents.push_back(names[i]);
+            inputPorts.push_back("out");
+            inputData.push_back(0);
+        }
+        else if(pComponent->getTypeName() == "SignalOutputInterface")
+        {
+            outputComponents.push_back(names[i]);
+            outputPorts.push_back("in");
+            outputData.push_back(0);
+        }
     }
+
+    //////////////////////////
+
+    std::vector<double*> inputSockets;
+    std::vector<double*> outputSockets;
 
     //Initialize shared memory sockets
 
-    //Input
-    boost::interprocess::shared_memory_object shdmem_in1(boost::interprocess::open_or_create, "hopsan_in1", boost::interprocess::read_write);
-    shdmem_in1.truncate(64);
-    boost::interprocess::mapped_region region_in1(shdmem_in1, boost::interprocess::read_write);
-    double *in1_socket = static_cast<double*>(region_in1.get_address());
-
     //Simulate
-    boost::interprocess::shared_memory_object shdmem_sim(boost::interprocess::open_or_create, "hopsan_simulate", boost::interprocess::read_write);
-    shdmem_in1.truncate(64);
+    boost::interprocess::shared_memory_object shdmem_sim(boost::interprocess::open_or_create, "hopsan_sim", boost::interprocess::read_write);
+    shdmem_sim.truncate(64);
     boost::interprocess::mapped_region region_sim(shdmem_sim, boost::interprocess::read_write);
-    bool *sim_socket1 = static_cast<bool*>(region_sim.get_address());
+    bool *sim_socket = static_cast<bool*>(region_sim.get_address());
 
     //Stop
     boost::interprocess::shared_memory_object shdmem_stop(boost::interprocess::open_or_create, "hopsan_stop", boost::interprocess::read_write);
-    shdmem_in1.truncate(64);
+    shdmem_stop.truncate(64);
     boost::interprocess::mapped_region region_stop(shdmem_stop, boost::interprocess::read_write);
-    bool *sim_stop = static_cast<bool*>(region_stop.get_address());
+    bool *stop_socket = static_cast<bool*>(region_stop.get_address());
+
+
+    //Input
+    for(int i=0; i<inputData.size(); ++i)
+    {
+        std::stringstream ss;
+        ss << "hopsan_in" << i;
+        boost::interprocess::shared_memory_object shdmem_in(boost::interprocess::open_or_create, ss.str().c_str(), boost::interprocess::read_write);
+        shdmem_in.truncate(64);
+        boost::interprocess::mapped_region region_in(shdmem_in, boost::interprocess::read_write);
+        inputSockets.push_back(static_cast<double*>(region_in.get_address()));
+    }
+
 
     //Output
-    boost::interprocess::shared_memory_object shdmem_out1(boost::interprocess::open_or_create, "hopsan_out1", boost::interprocess::read_write);
-    shdmem_out1.truncate(64);
-    boost::interprocess::mapped_region region_out1(shdmem_out1, boost::interprocess::read_write);
-    double *out_socket1 = static_cast<double*>(region_out1.get_address());
-
-    if(send)
-    {
-        (*in1_socket) = 43;
-        std::stringstream ss;
-        ss << "Sent = " << 43;
-        pSystem->addInfoMessage(ss.str());
-    }
-    else
+    for(int i=0; i<inputData.size(); ++i)
     {
         std::stringstream ss;
-        ss << "Received = " << (*in1_socket);
-        pSystem->addInfoMessage(ss.str());
-
-        boost::interprocess::shared_memory_object::remove("hopsan_input1");
+        ss << "hopsan_out" << i;
+        boost::interprocess::shared_memory_object shdmem_out(boost::interprocess::open_or_create, ss.str().c_str(), boost::interprocess::read_write);
+        shdmem_out.truncate(64);
+        boost::interprocess::mapped_region region_out(shdmem_out, boost::interprocess::read_write);
+        outputSockets.push_back(static_cast<double*>(region_out.get_address()));
     }
 
 
 
+    //Initialize simulation
+    //! @todo We must be able to log data without knowing the stop time
+    //pSystem->setNumLogSamples(0);
+    //pSystem->disableLog();
+    pSystem->initialize(0, 100);
 
-//    //Initialize simulation (also make sure to disable logging)
-//    initialize();
+    while(!(*stop_socket))
+    {
+        while(!(*sim_socket))
+        {
+            //Set input variables
+            for(int i=0; i<inputSockets.size(); ++i)
+            {
+                pSystem->getSubComponent(inputComponents[i])->getPort(inputPorts[i])->writeNode(inputData[i], (*inputSockets[i]));
+            }
 
-//    while(!(*stop_socket))
-//    {
-//        while(!(*simulate_socket))
-//        {
-//            //Set input variables
-//            setVariable("input variable 1", (*in1_socket));
+            //Simulate one step
+            double time = (*pSystem->getTimePtr());
+            double timestep = pSystem->getDesiredTimeStep();
+            pSystem->simulate(time, time+timestep);
 
-//            //Simulate one step
-//            simulate(mTime, mTime+mTimestep);
+            //Write back output variables
+            for(int i=0; i<outputSockets.size(); ++i)
+            {
+                (*outputSockets[i]) = pSystem->getSubComponent(outputComponents[i])->getPort(outputPorts[i])->readNode(outputData[i]);
+            }
 
-//            //Write back output variables
-//            (*out1_socket) = getVariable("output variable 1");
-
-//            //Reset simulation flag
-//            (*simulate_socket) = false;
-//        }
-//    }
+            //Reset simulation flag
+            (*sim_socket) = false;
+        }
+    }
 
 #endif
 }

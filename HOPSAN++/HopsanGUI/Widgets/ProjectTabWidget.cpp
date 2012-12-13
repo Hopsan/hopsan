@@ -280,6 +280,7 @@ void ProjectTab::setSaved(bool value)
 //! @note this is experimental code to replace madness simulation code in the future
 bool ProjectTab::simulate_nonblocking()
 {
+    qDebug() << "Calling simulate_nonblocking()";
     //QVector<SystemContainer*> vec;
     //vec.push_back(mpSystem);
     //mSimulationHandler.initSimulateFinalize( vec, mStartTime.toDouble(), mStopTime.toDouble(), mpSystem->getNumberOfLogSamples());
@@ -1149,6 +1150,12 @@ void ProjectTabWidget::createFMUFromCurrentModel()
 void ProjectTabWidget::createSimulinkWrapperFromCurrentModel()
 {
     qobject_cast<SystemContainer*>(getCurrentContainer())->createSimulinkSourceFiles();
+}
+
+
+void ProjectTabWidget::createSimulinkCoSimWrapperFromCurrentModel()
+{
+    qobject_cast<SystemContainer*>(getCurrentContainer())->createSimulinkCoSimSourceFiles();
 }
 
 

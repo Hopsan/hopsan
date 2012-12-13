@@ -213,7 +213,7 @@ public:
     void finalize(CoreSystemAccess* pCoreSystemAccess);
     void finalize(QVector<CoreSystemAccess*> &rvCoreSystemAccess);
 
-    void runCoSimulation(CoreSystemAccess* pCoreSystemAccess, bool send = false);
+    void runCoSimulation(CoreSystemAccess* pCoreSystemAccess);
 
 private:
 

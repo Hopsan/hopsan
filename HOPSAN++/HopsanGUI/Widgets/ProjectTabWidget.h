@@ -68,6 +68,7 @@ public slots:
     void saveCurrentModelToWrappedCode();
     void createFMUFromCurrentModel();
     void createSimulinkWrapperFromCurrentModel();
+    void createSimulinkCoSimWrapperFromCurrentModel();
     void showLosses(bool show);
     void measureSimulationTime();
     bool simulateAllOpenModels_nonblocking(bool modelsHaveNotChanged=false);

@@ -28,6 +28,7 @@ INCLUDEPATH *= $${PWD}/../componentLibraries/defaultLibrary/code
 # Set the rappidxml and csv_parser include paths
 INCLUDEPATH *= $${PWD}/Dependencies/rapidxml-1.13
 INCLUDEPATH *= $${PWD}/Dependencies/libcsv_parser++-1.0.0/include/csv_parser
+INCLUDEPATH *= $${PWD}/Dependencies/boost
 #--------------------------------------------------------
 
 # -------------------------------------------------
@@ -48,6 +49,9 @@ win32 {
     #DEFINES += STATICCORE      #Use this if you are compiling the core into a program directly or building a static lib
     DEFINES += DOCOREDLLEXPORT  #Use this if you are compiling the core as a DLL or SO
     DEFINES -= UNICODE
+ #   LIBS += -L"C:\Program Files\Microsoft SDKs\Windows\v7.1\Lib"
+    LIBS += -lole32
+    LIBS += -loleaut32
 
     #--------------------------------------------------------
     # Set the TBB LIBS and INCLUDEPATH (helpfunction for Windows)

@@ -587,6 +587,7 @@ void MainWindow::createActions()
 
     mpImportFMUAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ImportFmu.png"), tr("Import Functional Mock-up Unit (FMU)"), this);
     mpExportToSimulinkAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportSimulink.png"), tr("Export to Simulink S-function Source Files"), this);
+    mpExportToSimulinkCoSimAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportSimulinkCoSim.png"), tr("Export to Simulink Co-Simulation S-function Source Files"), this);
     mpExportToFMUAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportFmu.png"), tr("Export to Functional Mock-up Unit (FMU)"), this);
 
     mpAboutAction = new QAction(this);
@@ -643,11 +644,6 @@ void MainWindow::createActions()
     mpDebug2Action->setShortcut(QKeySequence("Ctrl+D+2"));
     this->addAction(mpDebug2Action);
     //connect(mpDebug2Action, SIGNAL(triggered()), mpProjectTabs, SLOT(simulateAllOpenModelsWithoutSplit()));
-
-    mpCreateSimulinkWrapperAction = new QAction(this);
-    //mpCreateSimulinkWrapperAction->setShortcut(QKeySequence("Ctrl+Shift+Alt+S"));
-    this->addAction(mpCreateSimulinkWrapperAction);
-    connect(mpCreateSimulinkWrapperAction, SIGNAL(triggered()), mpProjectTabs, SLOT(createSimulinkWrapperFromCurrentModel()));
 
     mpShowLossesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Losses.png"), tr("Calculate Losses"), this);
     mpShowLossesAction->setShortcut(QKeySequence("Ctrl+L"));
@@ -798,6 +794,7 @@ void MainWindow::createToolbars()
     mpConnectivityToolBar->setAllowedAreas(Qt::TopToolBarArea | Qt::LeftToolBarArea | Qt::RightToolBarArea);
     mpConnectivityToolBar->addAction(mpExportPDFAction);
     mpConnectivityToolBar->addAction(mpExportToSimulinkAction);
+    mpConnectivityToolBar->addAction(mpExportToSimulinkCoSimAction);
     mpConnectivityToolBar->addAction(mpExportToFMUAction);
     mpConnectivityToolBar->addAction(mpImportFMUAction);
 
@@ -901,6 +898,7 @@ void MainWindow::createToolbars()
 
     connect(mpImportFMUAction, SIGNAL(triggered()), mpLibrary, SLOT(importFmu()));
     connect(mpExportToSimulinkAction, SIGNAL(triggered()), mpProjectTabs, SLOT(createSimulinkWrapperFromCurrentModel()));
+    connect(mpExportToSimulinkCoSimAction, SIGNAL(triggered()), mpProjectTabs, SLOT(createSimulinkCoSimWrapperFromCurrentModel()));
     connect(mpExportToFMUAction, SIGNAL(triggered()), mpProjectTabs, SLOT(createFMUFromCurrentModel()));
 }
 
@@ -1198,6 +1196,7 @@ void MainWindow::updateToolBarsToNewTab()
     mpOpenSystemParametersAction->setEnabled(!noTabs);
     mpExportToFMUAction->setEnabled(!noTabs);
     mpExportToSimulinkAction->setEnabled(!noTabs);
+    mpExportToSimulinkCoSimAction->setEnabled(!noTabs);
 
     if(mpWelcomeWidget)
     {
