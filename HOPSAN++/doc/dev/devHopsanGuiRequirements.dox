@@ -10,7 +10,7 @@ This will build against your \b system-version of the Qt libs, if you have a dif
 -# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file will automatically copy the needed binary files.
 
 \subsection qwt-ubuntu-manual Ubuntu (Manually)
--# First download a version >=6.0.1 from <a href="http://sourceforge.net/projects/qwt/files/" target="_blank">http://sourceforge.net/projects/qwt/files/</a>
+-# First download a version >=trunk from <a href="http://sourceforge.net/projects/qwt/files/" target="_blank">http://sourceforge.net/projects/qwt/files/</a>
 -# Unpack into the HopsanGUI/Dependencies directory
 -# The default on Unix is to build only Release mode, if you want to change this (only if you want to debug into qwt), you can do that in the qwtbuild.pri file.
   -# "Enable debug_and_release + build_all if you want to build both." 
@@ -20,7 +20,7 @@ This will build against your \b system-version of the Qt libs, if you have a dif
   -# \e Note! HopsanGui will have a set of default paths to search for, if you install a newer stable version of QWT you should add this version to the TOP of the defaults list in the HopsanGuiBuild.prf file.
 
 \subsection qwt-windows Windows (minGW and VC++)
--# First download a version >=6.0.1 from <a href="http://sourceforge.net/projects/qwt/files/" target="_blank">http://sourceforge.net/projects/qwt/files/</a>
+-# First download a version >=trunk from <a href="http://sourceforge.net/projects/qwt/files/" target="_blank">http://sourceforge.net/projects/qwt/files/</a>
 -# Unpack into the HopsanGUI\\Dependencies directory
 -# Build the qwt project with qtcreator (you can use shadowbuild)
 -# If the compiler complains about Qwt not being configured with SVG support, comment the line "QWT_CONFIG += QwtSvg" in qwtconfig.pri
@@ -40,16 +40,15 @@ This will build against your \b system-version of the Qt libs, if you have a dif
 -# Install the python-dev package "apt-get install python-dev"
   -# \e Note! PythonQt will likely not work with Python version >= 3, use 2.7 if you can choose
 -# Download PythonQt from <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a>
-  -# Place the ex: PythonQt2.0.1 directory in HopsanGUI/Dependencies, HopsanGUI.pro will search for it there
+  -# Place the ex: PythonQt2.1 directory in HopsanGUI/Dependencies, HopsanGUI.pro will search for it there
 -# Go to the PythonQt directory and open the PythonQt project
   -# Make sure that you select, (uncomment) "CONFIG += debug_and_release build_all only" in build/common.prf (We need both a debug and a release build)
-  -# If you build PythonQt2.0.1 against Qt 4.7 or later you need to blockcomment "CocoaRequestModal = QEvent::CocoaRequestModal," in "generated_cpp/com_trolltech_qt_core/com_trolltech_qt_core0.h"
   -# In build/python.prf, replace the line unix:PYTHON_VERSION=2.6 with your version of Python
   -# \b DEACTIVATE shadow build in both debug and release config
   -# Build the PythonQt project, if you are using a Qt SDK, make sure that you are compiling PythonQt against the same libQt version as the rest of the code. (You may have one version installed in your system and an other in you SDK)
 -# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file will automatically copy the needed binary files.
 
-\subsection pythonqt-windows-vc Windows (with Visual C++) --Needs update after new project files--
+\subsection pythonqt-windows-vc Windows (with Visual C++) --OBSOLETE Needs update--
 -# Download and install Python 2.6, can be found at <a href="http://python.org/" target="_blank">http://python.org/</a>
 -# Download and unzip PythonQt, it is found here: <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a> or check out it direct from its SVN reposotory, "https://pythonqt.svn.sourceforge.net/svnroot/pythonqt"
 -# Open QT Creator and the PythonQT project. Use release settings. Deactivate shadowbuild.
@@ -63,74 +62,10 @@ PYTHON_LIB  = c:\\Python26\\libs
 -# Add the  C:\\Users\\petno25\\Downloads\\PythonQt2.0.1\\lib (or whatever your path is) to the PATH variable in your HopsanGui build environment
 
 \subsection pythonqt-windows-mingw Windows (with MinGW)
--# Download and install Python 2.6 or 2.7 (for better compatibility with external python tools use 2.6) that can be found at <a href="http://python.org/" target="_blank">http://python.org/</a>
--# Download and unzip PythonQt, it is found here: <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a> or check out it direct from its SVN repository, "https://pythonqt.svn.sourceforge.net/svnroot/pythonqt"
-  -# Make sure that PythonQt2.0.1 is located in the HopsanGUI\\Dependencies folder in the HopsanNg project
--# Open QT Creator and the PythonQT project.
-  -# Go to the project tab and add the following variables in BOTH Debug and Release mode:\n
-PYTHON_PATH = c:\\Python26 or c:\\Python27 \n
-PYTHON_LIB  = c:\\Python26\\libs or c:\\Python27\\libs
-  -# \b DEACTIVATE shadow build in both debug and release config under the projects tab
-  -# PythonQt uses strange includes, you will need to add the PythonQt/src dir to the INCLUDEPATH, one way to do this is to add (your own version of): "INCLUDEPATH += C:\Users\petno25\Desktop\subversion\HOPSAN++MinGW\HopsanGUI\Dependencies\PythonQt2.0.1\src" to the build/common.prf file. 
-  -# Make sure that you select, (uncomment) "CONFIG += debug_and_release build_all" only, in build/common.prf (We need both a debug and a release build)
-  -# Change the \#ifdef WIN32 in the code in file "PythonQtConversion.cpp" row 676 and 1041 to something else e.g. apaWIN32 so it is NOT true when you compile. 
-  -# If you build PythonQt2.0.1 against Qt 4.7 or later you need to blockcomment "CocoaRequestModal = QEvent::CocoaRequestModal," in "generated_cpp/com_trolltech_qt_core/com_trolltech_qt_core0.h"
-  -# In the file 'build/python.prf' make sure that "win32:PYTHON_VERSION=26" is correct, 26 or 27 depending on your python version\n
-  -# In the file 'build/python.prf' Change the row:\n
-"win32:LIBS += $(PYTHON_LIB)/python$${PYTHON_VERSION}$${DEBUG_EXT}.lib",  to:\n
-"win32:LIBS += -L$(PYTHON_LIB) -lpython$${PYTHON_VERSION}"
-  -# In the file 'build/pythonQt.prf' Change the row:\n
-"win32::LIBS += $$PWD/../lib/PythonQt$${DEBUG_EXT}.lib",  to:\n
-"win32::LIBS += -L$$PWD/../lib -lPythonQt$${DEBUG_EXT}"
-  -# In the file 'build/pythonQt_QtAll.prf' Change the row:\n
-"win32::LIBS += $$PWD/../lib/PythonQt_QtAll$${DEBUG_EXT}.lib",  to:\n
-"win32::LIBS += -L$$PWD/../lib/ -lPythonQt_QtAll$${DEBUG_EXT}"
--# Build PythonQt in release and debug mode. (Both will be build at once if you have selected that in common.prf)
+-# Download and install Python 2.7 that can be found at <a href="http://python.org/" target="_blank">http://python.org/</a>
+-# Run the unpackPatchAndBuildPythonQt.bat script in the HopsanGUI\\Dependencies directory
+-# Build PythonQt in release and debug mode with shadowbuild ACTIVATED. (Both will be build at once, as patch will have selected that in the common.prf file)
 -# After a successful compilation you are done. You do not need to install or copy any files. The HopsanGUI.pro file will automatically copy the needed binary files.
-
-\subsection pythonqt-windows-mingw_old Windows (with MinGW) OLD VERSION (Try the one above first)
-Some useful information can be found at <a href="http://www.emmestech.com/moron_guides/moron1.html" target="_blank">http://www.emmestech.com/moron_guides/moron1.html</a> and <a href="http://www.mingw.org/wiki/FAQ" target="_blank">http://www.mingw.org/wiki/FAQ</a>
--# Download and install Python 2.6, can be found at <a href="http://python.org/" target="_blank">http://python.org/</a>
--# Download Pexports from MinGW at <a href="http://sourceforge.net/projects/mingw/files/" target="_blank">http://sourceforge.net/projects/mingw/files/</a> (Browse to MinGW/pexports/pexports-0.44-1)
-  -# Put the pexports program (pexports.exe) in MinGW/bin 
-  -# Create a file called "pydistutils.cfg" that contain:\n
-[build]\n
-compiler=mingw32
-  -# Next, use pexports to export the python dll symbols. The library can typically be found under C:\\WINDOWS\\system32. Use the following command:\n
-pexports c:/WINDOWS/system32/python26.dll >python26.def\n
-Or the following for 64-bit Windows:\n
-pexports c:/WINDOWS/syswow64/python26.dll >python26.def\n
--# Then, build an import library
-  -# Use the following command to build the library:\n
-dlltool -D c:/WINDOWS/system32/python26.dll -d python26.def -l libpython26.a\n
-Or the following for 64-bit Windows:\n
-dlltool -D c:/WINDOWS/syswow64/python26.dll -d python26.def -l libpython26.a\n
-  -# Move "libpython26.a" to "/mingw/lib" in your Qt directory.
--# Download and unzip PythonQt, it is found here: <a href="http://pythonqt.sourceforge.net/" target="_blank">http://pythonqt.sourceforge.net/</a> or check out it direct from its SVN reposotory, "https://pythonqt.svn.sourceforge.net/svnroot/pythonqt"
--# Open QT Creator and the PythonQT project. Use release settings.
-  -# Go to the project tab and add the following variables:\n
-PYTHON_PATH = c:\\Python26 \n
-PYTHON_LIB  = c:\\Python26\\libs
-  -# Add c:\\pythonqt\\lib or similar to LD_LIBRARY_PATH environment variable under the project tab. 
-  -# Change the win32 in the code in file "PythonQtConversion.cpp" row 676 and 1041 to something else e.g. apwin32 so it is NOT true when you compile. 
-  -# Change the row:\n
-win32:LIBS += $(PYTHON_LIB)/python$${PYTHON_VERSION}$${DEBUG_EXT}.lib\n
-in the file 'python.prf' to:\n
-win32:LIBS += -L. -lpython$${PYTHON_VERSION}
-  -# Change the row:\n
-win32::LIBS += $$PWD/../lib/PythonQt$${DEBUG_EXT}.lib\n
-in the file 'pythonQt.prf' to:\n
-win32::LIBS += -L$$PWD/../lib -lPythonQt$${DEBUG_EXT}
-  -# Change the row:\n
-win32::LIBS += $$PWD/../lib/PythonQt_QtAll$${DEBUG_EXT}.lib\n
-in the file 'pythonQt_QtAll.prf' to:\n
-win32::LIBS += -L$$PWD/../lib/ -lPythonQt_QtAll$${DEBUG_EXT}
-  -# Build PythonQt in release mode.
-  -# In the HopsanGUI project. Go to the project tab and add the following variables:\n
-PYTHONQT_PATH = c:\\pythonqt\n
-PYTHON_PATH = c:\\python26 or whatever your paths are
-  -# Also add the path to the PythonQt libs in PATH (in Qt or in system) e.g. c:\\pythonqt\\lib
--# Enjoy!
 
 \section hopsancore Build The Hopsan Core
 This will be handled automatically when you build the entire Hopsan project.
