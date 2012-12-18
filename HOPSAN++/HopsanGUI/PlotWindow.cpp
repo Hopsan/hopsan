@@ -1566,14 +1566,14 @@ PlotTab::PlotTab(PlotWindow *parent)
         mpMagnifier[plotID]->setAxisEnabled(QwtPlot::yRight, true);
         mpMagnifier[plotID]->setZoomInKey(Qt::Key_Plus, Qt::ControlModifier);
         mpMagnifier[plotID]->setWheelFactor(1.1);
-        mpMagnifier[plotID]->setMouseButton(Qt::NoButton, Qt::NoButton);
+        mpMagnifier[plotID]->setMouseButton(Qt::NoButton, Qt::NoModifier);
         mpMagnifier[plotID]->setEnabled(true);
 
         mpGrid[plotID] = new QwtPlotGrid;
         mpGrid[plotID]->enableXMin(true);
         mpGrid[plotID]->enableYMin(true);
-        mpGrid[plotID]->setMajPen(QPen(Qt::black, 0, Qt::DotLine));
-        mpGrid[plotID]->setMinPen(QPen(Qt::gray, 0 , Qt::DotLine));
+        mpGrid[plotID]->setMajorPen(QPen(Qt::black, 0, Qt::DotLine));
+        mpGrid[plotID]->setMinorPen(QPen(Qt::gray, 0 , Qt::DotLine));
         mpGrid[plotID]->attach(mpQwtPlots[plotID]);
     }
 
