@@ -38,11 +38,11 @@ if [ $ubuntuversion -lt "1204" ]; then
     
   echo "Applying Hopsan fixes to code"
   # Apply patch to remove qt all extensions and cocoa thing
-  patch -p0 < PythonQt201_ubuntu.patch
+  patch -p0 < PythonQt2.0.1_ubuntu.patch
 
 else
 
-  pythonqtname="PythonQtR219"
+  pythonqtname="PythonQt2.1_Qt4.8"
 
   # Abort if dir already exist. When running release build script we dont want to build twice
   if [ -d $pythonqtname ]; then
@@ -55,11 +55,14 @@ else
 
   cd $pythonqtname
   echo "Applying Hopsan fixes to code"
-  # Apply patch to remove qt all extensions and cocoa thing
-  patch -p0 < ../$pythonqtname\_ubuntu.patch
+  
+  # Apply patch to remove qt all extensions and other things
+  if [ -f ../$pythonqtname\_ubuntu.patch ]; then
+    patch -p0 < ../$pythonqtname\_ubuntu.patch
+  fi
 
   # Remove tests and examples, allways (test would not build at all for r209)
-  sed "s|tests examples||" -i PythonQt.pro
+  #sed "s|tests examples||" -i PythonQt.pro
   cd ..
 fi
 
@@ -79,4 +82,5 @@ sed "s|unix:PYTHON_VERSION=2.6|unix:PYTHON_VERSION=$pyversion|" -i build/python.
 qmake PythonQt.pro -r -spec linux-g++
 make -w
 cd $basepwd
+
 

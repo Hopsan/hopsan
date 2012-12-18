@@ -5,7 +5,8 @@
 # Author: Peter Nordin peter.nordin@liu.se
 # Date:   2012-03-29
 
-qwtname="qwt-6.0.1"
+qwtname="qwt-trunk"
+qwtrev="r1590"
 basepwd=`pwd`
 
 # Abort if dir already exist. When running release build script we dont want to build twice
@@ -16,7 +17,7 @@ fi
 
 rm -rf $qwtname
 rm -rf $qwtname\_shb
-unzip -q $qwtname.zip
+unzip -q $qwtname\_$qwtrev.zip
 mkdir $qwtname\_shb #Shadowbbuild directory
 cd $qwtname\_shb
 qmake ../$qwtname/qwt.pro -r -spec linux-g++
