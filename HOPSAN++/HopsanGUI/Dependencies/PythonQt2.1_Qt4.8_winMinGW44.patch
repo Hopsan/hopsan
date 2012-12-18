@@ -1,0 +1,188 @@
+diff -ur PythonQt2.1_Qt4.8/build/common.prf PythonQt2.1_Qt4.8_mod_org/build/common.prf
+--- PythonQt2.1_Qt4.8/build/common.prf	2007-11-18 21:54:56.000000000 +0100
++++ PythonQt2.1_Qt4.8_mod_org/build/common.prf	2012-12-18 07:47:25.780510400 +0100
+@@ -4,7 +4,7 @@
+ # the default of your Qt installation will used)
+ 
+ # build with both debug and release mode
+-#CONFIG += debug_and_release build_all
++CONFIG += debug_and_release build_all
+ 
+ # build with release mode only
+ #CONFIG += release
+diff -ur PythonQt2.1_Qt4.8/build/python.prf PythonQt2.1_Qt4.8_mod_org/build/python.prf
+--- PythonQt2.1_Qt4.8/build/python.prf	2010-03-20 23:00:24.000000000 +0100
++++ PythonQt2.1_Qt4.8_mod_org/build/python.prf	2012-12-18 08:02:53.631593600 +0100
+@@ -1,7 +1,7 @@
+ # profile to include and link Python
+ 
+ # Change this variable to your python version (2.5, 2.6)
+-win32:PYTHON_VERSION=26
++win32:PYTHON_VERSION=27
+ unix:PYTHON_VERSION=2.6
+ 
+ macx {
+@@ -31,7 +31,8 @@
+   }
+ 
+   win32:INCLUDEPATH += $(PYTHON_PATH)/PC $(PYTHON_PATH)/include
+-  win32:LIBS += $(PYTHON_LIB)/python$${PYTHON_VERSION}$${DEBUG_EXT}.lib
++  #win32:LIBS += $(PYTHON_LIB)/python$${PYTHON_VERSION}$${DEBUG_EXT}.lib
++  win32:LIBS += -L$(PYTHON_LIB) -lpython$${PYTHON_VERSION}
+ 
+ } else:unix {
+   # on linux, python-config is used to autodetect Python.
+diff -ur PythonQt2.1_Qt4.8/build/PythonQt.prf PythonQt2.1_Qt4.8_mod_org/build/PythonQt.prf
+--- PythonQt2.1_Qt4.8/build/PythonQt.prf	2007-11-15 14:40:58.000000000 +0100
++++ PythonQt2.1_Qt4.8_mod_org/build/PythonQt.prf	2012-12-18 08:41:00.501794200 +0100
+@@ -11,5 +11,6 @@
+   DEBUG_EXT = 
+ }
+ 
+-win32::LIBS += $$PWD/../lib/PythonQt$${DEBUG_EXT}.lib
++#win32::LIBS += $$PWD/../lib/PythonQt$${DEBUG_EXT}.lib
++win32::LIBS += -L$$PWD/../lib -lPythonQt$${DEBUG_EXT}
+ unix::LIBS += -L$$PWD/../lib -lPythonQt$${DEBUG_EXT}
+diff -ur PythonQt2.1_Qt4.8/build/PythonQt_QtAll.prf PythonQt2.1_Qt4.8_mod_org/build/PythonQt_QtAll.prf
+--- PythonQt2.1_Qt4.8/build/PythonQt_QtAll.prf	2009-04-09 10:39:56.000000000 +0200
++++ PythonQt2.1_Qt4.8_mod_org/build/PythonQt_QtAll.prf	2012-12-18 08:51:25.900739700 +0100
+@@ -9,5 +9,6 @@
+   DEBUG_EXT = 
+ }
+ 
+-win32::LIBS += $$PWD/../lib/PythonQt_QtAll$${DEBUG_EXT}.lib
++#win32::LIBS += $$PWD/../lib/PythonQt_QtAll$${DEBUG_EXT}.lib
++win32::LIBS += -L$$PWD/../lib -lPythonQt_QtAll$${DEBUG_EXT}
+ unix::LIBS += -L$$PWD/../lib -lPythonQt_QtAll$${DEBUG_EXT}
+diff -ur PythonQt2.1_Qt4.8/examples/CPPPyWrapperExample/CPPPyWrapperExample.pro PythonQt2.1_Qt4.8_mod_org/examples/CPPPyWrapperExample/CPPPyWrapperExample.pro
+--- PythonQt2.1_Qt4.8/examples/CPPPyWrapperExample/CPPPyWrapperExample.pro	2009-04-09 10:39:56.000000000 +0200
++++ PythonQt2.1_Qt4.8_mod_org/examples/CPPPyWrapperExample/CPPPyWrapperExample.pro	2012-12-18 08:30:33.519259200 +0100
+@@ -4,7 +4,7 @@
+ 
+ mac:CONFIG -= app_bundle
+ 
+-DESTDIR           = ../../lib
++DESTDIR           = $${PWD}/../../lib
+ 
+ include ( ../../build/common.prf )  
+ include ( ../../build/PythonQt.prf )  
+diff -ur PythonQt2.1_Qt4.8/examples/PyCPPWrapperExample/PyCPPWrapperExample.pro PythonQt2.1_Qt4.8_mod_org/examples/PyCPPWrapperExample/PyCPPWrapperExample.pro
+--- PythonQt2.1_Qt4.8/examples/PyCPPWrapperExample/PyCPPWrapperExample.pro	2007-11-15 14:40:58.000000000 +0100
++++ PythonQt2.1_Qt4.8_mod_org/examples/PyCPPWrapperExample/PyCPPWrapperExample.pro	2012-12-18 08:30:33.534859400 +0100
+@@ -7,7 +7,7 @@
+ TARGET   = PyCPPWrapperExample
+ TEMPLATE = app
+ 
+-DESTDIR           = ../../lib
++DESTDIR           = $${PWD}/../../lib
+ 
+ include ( ../../build/common.prf )  
+ include ( ../../build/PythonQt.prf )  
+diff -ur PythonQt2.1_Qt4.8/examples/PyCustomMetaTypeExample/PyCustomMetaTypeExample.pro PythonQt2.1_Qt4.8_mod_org/examples/PyCustomMetaTypeExample/PyCustomMetaTypeExample.pro
+--- PythonQt2.1_Qt4.8/examples/PyCustomMetaTypeExample/PyCustomMetaTypeExample.pro	2007-11-15 14:40:58.000000000 +0100
++++ PythonQt2.1_Qt4.8_mod_org/examples/PyCustomMetaTypeExample/PyCustomMetaTypeExample.pro	2012-12-18 08:30:33.550459600 +0100
+@@ -7,7 +7,7 @@
+ TARGET   = PyCustomMetaTypeExample
+ TEMPLATE = app
+ 
+-DESTDIR           = ../../lib
++DESTDIR           = $${PWD}/../../lib
+ 
+ include ( ../../build/common.prf )  
+ include ( ../../build/PythonQt.prf )  
+diff -ur PythonQt2.1_Qt4.8/examples/PyDecoratorsExample/PyDecoratorsExample.pro PythonQt2.1_Qt4.8_mod_org/examples/PyDecoratorsExample/PyDecoratorsExample.pro
+--- PythonQt2.1_Qt4.8/examples/PyDecoratorsExample/PyDecoratorsExample.pro	2007-11-15 14:40:58.000000000 +0100
++++ PythonQt2.1_Qt4.8_mod_org/examples/PyDecoratorsExample/PyDecoratorsExample.pro	2012-12-18 08:30:33.550459600 +0100
+@@ -7,7 +7,7 @@
+ TARGET   = PyDecoratorsExample
+ TEMPLATE = app
+ 
+-DESTDIR           = ../../lib
++DESTDIR           = $${PWD}/../../lib
+ 
+ include ( ../../build/common.prf )  
+ include ( ../../build/PythonQt.prf )  
+diff -ur PythonQt2.1_Qt4.8/examples/PyGettingStarted/PyGettingStarted.pro PythonQt2.1_Qt4.8_mod_org/examples/PyGettingStarted/PyGettingStarted.pro
+--- PythonQt2.1_Qt4.8/examples/PyGettingStarted/PyGettingStarted.pro	2007-11-15 14:40:58.000000000 +0100
++++ PythonQt2.1_Qt4.8_mod_org/examples/PyGettingStarted/PyGettingStarted.pro	2012-12-18 08:30:33.566059800 +0100
+@@ -7,7 +7,7 @@
+ TARGET   = PyGettingStarted
+ TEMPLATE = app
+ 
+-DESTDIR           = ../../lib
++DESTDIR           = $${PWD}/../../lib
+ 
+ CONFIG += console
+ 
+diff -ur PythonQt2.1_Qt4.8/examples/PyGuiExample/PyGuiExample.pro PythonQt2.1_Qt4.8_mod_org/examples/PyGuiExample/PyGuiExample.pro
+--- PythonQt2.1_Qt4.8/examples/PyGuiExample/PyGuiExample.pro	2009-04-09 10:39:56.000000000 +0200
++++ PythonQt2.1_Qt4.8_mod_org/examples/PyGuiExample/PyGuiExample.pro	2012-12-18 08:30:33.581660000 +0100
+@@ -9,7 +9,7 @@
+ 
+ mac:CONFIG -= app_bundle
+ 
+-DESTDIR           = ../../lib
++DESTDIR           = $${PWD}/../../lib
+ 
+ include ( ../../build/common.prf )  
+ include ( ../../build/PythonQt.prf )  
+diff -ur PythonQt2.1_Qt4.8/examples/PyLauncher/PyLauncher.pro PythonQt2.1_Qt4.8_mod_org/examples/PyLauncher/PyLauncher.pro
+--- PythonQt2.1_Qt4.8/examples/PyLauncher/PyLauncher.pro	2009-04-09 16:41:14.000000000 +0200
++++ PythonQt2.1_Qt4.8_mod_org/examples/PyLauncher/PyLauncher.pro	2012-12-18 08:30:33.581660000 +0100
+@@ -9,7 +9,7 @@
+ 
+ mac:CONFIG -= app_bundle
+ 
+-DESTDIR           = ../../lib
++DESTDIR           = $${PWD}/../../lib
+ 
+ include ( ../../build/common.prf )  
+ include ( ../../build/PythonQt.prf )  
+diff -ur PythonQt2.1_Qt4.8/examples/PyScriptingConsole/PyScriptingConsole.pro PythonQt2.1_Qt4.8_mod_org/examples/PyScriptingConsole/PyScriptingConsole.pro
+--- PythonQt2.1_Qt4.8/examples/PyScriptingConsole/PyScriptingConsole.pro	2009-04-09 10:39:56.000000000 +0200
++++ PythonQt2.1_Qt4.8_mod_org/examples/PyScriptingConsole/PyScriptingConsole.pro	2012-12-18 08:30:03.537460400 +0100
+@@ -7,7 +7,7 @@
+ TARGET   = PyScriptingConsole
+ TEMPLATE = app
+ 
+-DESTDIR           = ../../lib
++DESTDIR           = $${PWD}/../../lib
+ 
+ mac:CONFIG-= app_bundle
+ 
+diff -ur PythonQt2.1_Qt4.8/extensions/PythonQt_QtAll/PythonQt_QtAll.pro PythonQt2.1_Qt4.8_mod_org/extensions/PythonQt_QtAll/PythonQt_QtAll.pro
+--- PythonQt2.1_Qt4.8/extensions/PythonQt_QtAll/PythonQt_QtAll.pro	2010-03-05 23:59:52.000000000 +0100
++++ PythonQt2.1_Qt4.8_mod_org/extensions/PythonQt_QtAll/PythonQt_QtAll.pro	2012-12-18 08:28:24.620885000 +0100
+@@ -2,7 +2,7 @@
+ TARGET   = PythonQt_QtAll
+ TEMPLATE = lib
+ 
+-DESTDIR    = ../../lib
++DESTDIR    = $${PWD}/../../lib
+ 
+ include ( ../../build/common.prf )  
+ include ( ../../build/PythonQt.prf )  
+diff -ur PythonQt2.1_Qt4.8/generator/generator.pro PythonQt2.1_Qt4.8_mod_org/generator/generator.pro
+--- PythonQt2.1_Qt4.8/generator/generator.pro	2010-02-21 16:44:58.000000000 +0100
++++ PythonQt2.1_Qt4.8_mod_org/generator/generator.pro	2012-12-18 08:28:56.538648800 +0100
+@@ -1,7 +1,7 @@
+ TARGET = pythonqt_generator
+ CONFIG -= debug
+ CONFIG += release
+-DESTDIR = .
++DESTDIR = $${PWD}/.
+ 
+ include(generator.pri)
+ 
+diff -ur PythonQt2.1_Qt4.8/src/src.pro PythonQt2.1_Qt4.8_mod_org/src/src.pro
+--- PythonQt2.1_Qt4.8/src/src.pro	2009-04-14 09:56:22.000000000 +0200
++++ PythonQt2.1_Qt4.8_mod_org/src/src.pro	2012-12-18 08:29:03.891575100 +0100
+@@ -8,7 +8,7 @@
+ TEMPLATE = lib
+ 
+ 
+-DESTDIR    = ../lib
++DESTDIR    = $${PWD}/../lib
+ 
+ CONFIG += qt dll
+ CONFIG -= flat
