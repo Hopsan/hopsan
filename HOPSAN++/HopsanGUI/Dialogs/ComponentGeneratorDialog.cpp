@@ -32,15 +32,11 @@
 #include "Dialogs/MovePortsDialog.h"
 #include "GUIObjects/GUIModelObjectAppearance.h"
 #include "Utilities/ComponentGeneratorUtilities.h"
-#include "Utilities/SymHop.h"
 #include "Utilities/XMLUtilities.h"
 #include "Widgets/HcomWidget.h"
 #include "Widgets/PyDockWidget.h"
 #include "common.h"
 #include "CoreAccess.h"
-
-using namespace SymHop;
-
 
 
 
@@ -234,27 +230,6 @@ void ModelicaHighlighter::highlightBlock(const QString &text)
 ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
     : QMainWindow(parent)
 {
-#ifdef VALIDATE_GUI
-    Expression dummy = Expression("2.0*x+5.0*y*x-3.0*y/z+pow(x*z,3.0)");
-    dummy.factor(Expression("x"));
-    dummy.expand();
-    dummy.linearize();
-    qDebug() << dummy.toString();
-    assert(dummy.toString() == "z*y*5.0*x+z*2.0*x-3.0*y+pow(z,4.0)*pow(x,3.0)");
-
-    dummy = Expression("pow(x,3.0)*pow(y,2.0)/x+pow(z,5.0)/pow(z,3.0)");
-    dummy.expandPowers();
-    assert(dummy.toString() == "x*x*y*y+z*z");
-
-    dummy = Expression("a*b*c + a*b*d + b*c*d");
-    dummy.factorMostCommonFactor();
-    assert(dummy.toString() == "b*(a*c+a*d+c*d)");
-
-    dummy = Expression("a*b*c + a*b*-c + 3*c*d - d*c*2 + d*5*c + c*d + pow(x,3.0) -pow(x,3.0)");
-    qDebug() << dummy.toString();
-    assert(dummy.toString() == "c*d*7.0");
-#endif
-
     //Set the name and size of the main window
     this->resize(1024,768);
     this->setWindowTitle("Component Generator (experimental)");

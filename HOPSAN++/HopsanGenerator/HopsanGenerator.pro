@@ -53,10 +53,12 @@ SOURCES += \
     src/HopsanComponentGenerator.cc \
     src/SymHop.cc \
     src/HopsanGeneratorLib.cc
+
 HEADERS += \
     include/HopsanComponentGenerator.h \
     include/SymHop.h \
     include/win32dll.h
+
 OTHER_FILES += \
     HopsanCoreBuild.prf
 

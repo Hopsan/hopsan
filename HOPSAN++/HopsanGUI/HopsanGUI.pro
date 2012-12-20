@@ -166,7 +166,6 @@ SOURCES += main.cpp \
     Dialogs/ModelObjectPropertiesDialog.cpp \
     SimulationThreadHandler.cpp \
     Dialogs/ComponentPropertiesDialog2.cpp \
-    Utilities/SymHop.cpp \
     Widgets/HcomWidget.cpp \
     LogDataHandler.cpp
 
@@ -234,7 +233,6 @@ HEADERS += MainWindow.h \
     Dialogs/ModelObjectPropertiesDialog.h \
     SimulationThreadHandler.h \
     Dialogs/ComponentPropertiesDialog2.h \
-    Utilities/SymHop.h \
     Widgets/HcomWidget.h \
     LogDataHandler.h
 

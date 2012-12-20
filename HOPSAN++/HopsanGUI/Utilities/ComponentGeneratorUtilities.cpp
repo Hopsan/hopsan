@@ -30,7 +30,6 @@
 #include "MainWindow.h"
 #include "GUIObjects/GUIModelObjectAppearance.h"
 #include "Utilities/ComponentGeneratorUtilities.h"
-#include "Utilities/SymHop.h"
 #include "Widgets/LibraryWidget.h"
 #include "Widgets/MessageWidget.h"
 #include "common.h"
@@ -126,4 +125,20 @@ QStringList getVariableLabels(QString nodeType)
         retval << "VALUE";
     }
     return retval;
+}
+
+
+//! @brief Returns a list with supported functions for equation-based model genereation
+//! @todo Duplicated with HopsanGenerator
+QStringList getSupportedFunctionsList()
+{
+    return QStringList() << "div" << "rem" << "mod" << "tan" << "cos" << "sin" << "atan" << "acos" << "asin" << "atan2" << "sinh" << "cosh" << "tanh" << "log" << "exp" << "sqrt" << "sign" << "abs" << "der" << "onPositive" << "onNegative" << "signedSquareL" << "limit" << "integer" << "floor" << "ceil" << "pow";
+}
+
+
+//! @brief Returns a list of custom Hopsan functions that need to be allowed in the symbolic library
+//! @todo Duplicated with HopsanGenerator
+QStringList getCustomFunctionList()
+{
+    return QStringList() << "hopsanLimit" << "hopsanDxLimit" << "onPositive" << "onNegative" << "signedSquareL" << "limit";
 }

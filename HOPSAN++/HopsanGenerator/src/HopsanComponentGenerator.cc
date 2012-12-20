@@ -180,6 +180,18 @@ void HopsanGenerator::printErrorMessage(QString msg)
 
 void HopsanGenerator::generateFromModelica(QString code)
 {
+    Expression test1 = Expression("2*x-b=sin(5)");
+    qDebug() << "Expression: " << test1.toString();
+
+    Expression test2 = Expression("2*(x+3)^-y");
+    qDebug() << "Expression: " << test2.toString();
+
+    Expression test3 = Expression("b*2/(x*-y+5)/3");
+    qDebug() << "Expression: " << test3.toString();
+
+    return;
+
+
     QString typeName, displayName, cqsType;
     QStringList initAlgorithms, equations, finalAlgorithms;
     QList<PortSpecification> portList;
@@ -3646,8 +3658,8 @@ void HopsanGenerator::generateComponentObject(ComponentSpecification &comp, QStr
     QList<QList<Expression> > leftSymbols2, rightSymbols2;
     for(int i=0; i<equations.size(); ++i)
     {
-        leftSymbols2.append(equations[i].getChild(0).getSymbols());
-        rightSymbols2.append(equations[i].getChild(1).getSymbols());
+        leftSymbols2.append(equations[i].getLeft()->getSymbols());
+        rightSymbols2.append(equations[i].getRight()->getSymbols());
     }
 
     //Sum up all used variables to a single list
@@ -3674,7 +3686,7 @@ void HopsanGenerator::generateComponentObject(ComponentSpecification &comp, QStr
             printErrorMessage("Component generation failed: Initial algorithms section contains non-algorithms.");
             return;
         }
-        initSymbols2.append(initAlgorithms[i].getChild(0));
+        initSymbols2.append((*initAlgorithms[i].getLeft()));
     }
 
     QList<Expression> finalSymbols2;
@@ -3686,7 +3698,7 @@ void HopsanGenerator::generateComponentObject(ComponentSpecification &comp, QStr
             printErrorMessage("Component generation failed: Final algorithms section contains non-algorithms.");
             return;
         }
-        finalSymbols2.append(finalAlgorithms[i].getChild(0));
+        finalSymbols2.append((*finalAlgorithms[i].getLeft()));
     }
 
     for(int i=0; i<parameters.size(); ++i)
@@ -3798,7 +3810,7 @@ void HopsanGenerator::generateComponentObject(ComponentSpecification &comp, QStr
     for(int i=0; i<equations.size(); ++i)
     {
         equations[i].toLeftSided();
-        equations[i].replaceBy(equations[i].getChild(0));
+        equations[i].replaceBy((*equations[i].getLeft()));
     }
 
     for(int i=0; i<equations.size(); ++i)
@@ -3811,7 +3823,6 @@ void HopsanGenerator::generateComponentObject(ComponentSpecification &comp, QStr
     for(int e=0; e<equations.size(); ++e)
     {
         equations[e].linearize();
-        equations[e].expandPowers();
         equations[e]._simplify(Expression::FullSimplification, Expression::Recursive);
         qDebug() << "\nLINEARIZED: " << equations[e].toString();
     }
@@ -3841,19 +3852,19 @@ void HopsanGenerator::generateComponentObject(ComponentSpecification &comp, QStr
         Expression div = equations[limitedVariableEquations[i]];
         div.subtractBy(rem);
         div.replace(limitedVariables[i], Expression(1));
-        div.expandParentheses();
+        div.expand();
        // div._simplify(Expression::FullSimplification, Expression::Recursive);
 
         qDebug() << "DIV: " << div.toString();
 
-        rem = Expression(rem, "/", div);
-        rem = rem.negative();
+        rem = Expression::fromFactorDivisor(rem, div);
+        rem.changeSign();
         rem._simplify(Expression::FullSimplification, Expression::Recursive);
 
         qDebug() << "REM AGAIN: " << rem.toString();
 
         qDebug() << "Limit string: -limit(("+rem.toString()+"),"+limitMinValues[i].toString()+","+limitMaxValues[i].toString()+")";
-        equations[limitedVariableEquations[i]] = Expression(limitedVariables[i], "+", Expression("-limit(("+rem.toString()+"),"+limitMinValues[i].toString()+","+limitMaxValues[i].toString()+")"));
+        equations[limitedVariableEquations[i]] = Expression::fromTwoTerms(limitedVariables[i], Expression("-limit(("+rem.toString()+"),"+limitMinValues[i].toString()+","+limitMaxValues[i].toString()+")"));
 
         qDebug() << "Limited: " << equations[limitedVariableEquations[i]].toString();
 
@@ -3868,13 +3879,13 @@ void HopsanGenerator::generateComponentObject(ComponentSpecification &comp, QStr
             Expression div = equations[limitedDerivativeEquations[i]];
             div.subtractBy(rem);
             div.replace(limitedDerivatives[i], Expression(1));
-            div.expandParentheses();
+            div.expand();
             div.factorMostCommonFactor();
 
-            rem = Expression(rem, "/", div);
-            rem = rem.negative();
+            rem = Expression::fromFactorDivisor(rem, div);
+            rem.changeSign();
 
-            equations[limitedDerivativeEquations[i]] = Expression(limitedDerivatives[i], "+", Expression("-dxLimit("+limitedVariables[i].toString()+","+limitMinValues[i].toString()+","+limitMaxValues[i].toString()+")", "*", rem));
+            equations[limitedDerivativeEquations[i]] = Expression::fromTwoTerms(limitedDerivatives[i], Expression::fromTwoFactors(Expression("-dxLimit("+limitedVariables[i].toString()+","+limitMinValues[i].toString()+","+limitMaxValues[i].toString()+")"), rem));
         }
     }
 
@@ -3888,22 +3899,23 @@ void HopsanGenerator::generateComponentObject(ComponentSpecification &comp, QStr
        // tempExpr.replace(Expression("Z", Expression::NoSimplifications), Expression("0.0", Expression::NoSimplifications));
        // tempExpr.replace(Expression("-Z",Expression::NoSimplifications), Expression("0.0", Expression::NoSimplifications));
 
-        tempExpr._simplify(Expression::SimplifyWithoutMakingPowers, Expression::Recursive);
+        tempExpr._simplify(Expression::FullSimplification, Expression::Recursive);
 
         //Now differentiate all jacobian elements
         jacobian.append(QList<Expression>());
         for(int j=0; j<stateVars.size(); ++j)
         {
             bool ok = true;
-            tempExpr.replace(Expression(stateVars[j].negative()), Expression(stateVars[j], "*", Expression("-1.0", Expression::NoSimplifications), Expression::NoSimplifications));
+            Expression negExpr = stateVars[j];
+            negExpr.changeSign();
+            tempExpr.replace(negExpr, Expression::fromFactorsDivisors(QList<Expression>() << stateVars[j] << Expression("-1.0", Expression::NoSimplifications), QList<Expression>()));
             jacobian[e].append(tempExpr.derivative(stateVars[j], ok));
             if(!ok)
             {
                 printErrorMessage("Failed to differentiate expression: " + equations[e].toString() + " for variable " + stateVars[j].toString());
                 return;
             }
-            jacobian[e].last().expandPowers();
-            jacobian[e].last()._simplify(Expression::SimplifyWithoutMakingPowers);
+            jacobian[e].last()._simplify(Expression::FullSimplification);
         }
     }
 
@@ -3919,8 +3931,7 @@ void HopsanGenerator::generateComponentObject(ComponentSpecification &comp, QStr
 
     for(int e=0; e<equations.size(); ++e)
     {
-        equations[e].expandPowers();
-        equations[e]._simplify(Expression::SimplifyWithoutMakingPowers);
+        equations[e]._simplify(Expression::FullSimplification);
     }
 
     //Generate appearance object

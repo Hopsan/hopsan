@@ -35,12 +35,12 @@
 #include <QDomElement>
 #include <QProgressDialog>
 
-#include "SymHop.h"
-
 class ModelObjectAppearance;
 
 QStringList getQVariables(QString nodeType);
 QStringList getCVariables(QString nodeType);
 QStringList getVariableLabels(QString nodeType);
+QStringList getSupportedFunctionsList();
+QStringList getCustomFunctionList();
 
 #endif // COMPONENTGENERATORUTILITIES_H
