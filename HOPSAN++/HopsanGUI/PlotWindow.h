@@ -360,6 +360,7 @@ private:
     int getPlotIDFromCurve(PlotCurve *pCurve);
     void constructLegendSettingsDialog();
     void constructAxisSettingsDialog();
+    void setLegendSymbol(const QString symStyle);
 
     QwtPlot *mpQwtPlots[2];
     QSint::BarChartPlotter *mpBarPlot;
@@ -409,7 +410,7 @@ private:
     HopQwtPlotLegendItem *mpLeftPlotLegend, *mpRightPlotLegend;
     QCheckBox *mpLegendsInternalEnabledCheckBox;
     QCheckBox *mpLegendsExternalEnabledCheckBox;
-    QCheckBox *mpLegendsOffEnabledCheckBox;
+    QCheckBox *mpLegendsAutoOffsetCheckBox;
     //QCheckBox *mpLegendsOffYREnabledCheckBox;
     QDialog *mpLegendSettingsDialog;
     QComboBox *mpLegendLPosition;
@@ -417,8 +418,8 @@ private:
     QComboBox *mpLegendBg;
     QComboBox *mpLegendSym;
     QSpinBox *mpLegendCol;
-    QDoubleSpinBox *mpLegendOff;
-    //QDoubleSpinBox *mpLegendOffYR;
+    QDoubleSpinBox *mpLegendLeftOffset;
+    QDoubleSpinBox *mpLegendRightOffset;
     QSpinBox *mpLegendSize;
     QComboBox *mpLegendBlob;
 
@@ -446,8 +447,6 @@ private:
         double yRMin, yRMax;
     }AxisLimitsT;
     AxisLimitsT mAxisLimits[2];     // Persistent axis limits
-    double bufferoffset;
-    double bufferoffsetYR;
 };
 
 

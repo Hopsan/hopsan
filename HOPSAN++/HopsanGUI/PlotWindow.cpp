@@ -1650,42 +1650,9 @@ void PlotTab::applyLegendSettings()
         mpRightPlotLegend->setMaxColumns(mpLegendCol->value());
         mpLeftPlotLegend->setMaxColumns(mpLegendCol->value());
 
-        int SymStyle = mpLegendSym->currentIndex();
+        QString symStyle = mpLegendSym->currentText();
 
-
-        for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT].size(); ++j)
-        {
-            if( SymStyle == 0)
-            {
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendNoAttribute, true);
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowLine, false);
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowSymbol, false);
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowBrush, false);
-            }
-            else if( SymStyle == 1)
-            {
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendNoAttribute, false);
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowLine, true);
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowSymbol, false);
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowBrush, false);
-            }
-            else if( SymStyle == 2)
-            {
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendNoAttribute, false);
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowLine, false);
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowSymbol, true);
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowBrush, false);
-            }
-            else if( SymStyle == 3)
-            {
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendNoAttribute, false);
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowLine, false);
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowSymbol, false);
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowBrush, true);
-
-            }
-
-        }
+        setLegendSymbol(symStyle);
 
         mpRightPlotLegend->setBackgroundMode(HopQwtPlotLegendItem::BackgroundMode(mpLegendBg->currentIndex()));
         mpLeftPlotLegend->setBackgroundMode(HopQwtPlotLegendItem::BackgroundMode(mpLegendBg->currentIndex()));
@@ -1753,41 +1720,8 @@ void PlotTab::applyLegendSettings()
         font.setPointSize(mpLegendSize->value());
         mpExternalLegend->setFont(font);
 
-        int SymStyle = mpLegendSym->currentIndex();
-
-        for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT].size(); ++j)
-        {
-            if( SymStyle == 0)
-            {
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendNoAttribute, true);
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowLine, false);
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowSymbol, false);
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowBrush, false);
-            }
-            else if( SymStyle == 1)
-            {
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendNoAttribute, false);
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowLine, true);
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowSymbol, false);
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowBrush, false);
-            }
-            else if( SymStyle == 2)
-            {
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendNoAttribute, false);
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowLine, false);
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowSymbol, true);
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowBrush, false);
-            }
-            else if( SymStyle == 3)
-            {
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendNoAttribute, false);
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowLine, false);
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowSymbol, false);
-                mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowBrush, true);
-
-            }
-
-        }
+        QString symStyle = mpLegendSym->currentText();
+        setLegendSymbol(symStyle);
     }
     else
     {
@@ -1796,20 +1730,19 @@ void PlotTab::applyLegendSettings()
         mpExternalLegend = 0;
     }
 
-    if(mpLegendsOffEnabledCheckBox->isChecked())
+    // Decide if we should hide or show manual legend offset controls
+    if (mpLegendsAutoOffsetCheckBox->isChecked())
     {
-        bufferoffset = mpLegendOff->value();
-
-        rescaleToCurves();
+        mpLegendLeftOffset->setDisabled(true);
+        mpLegendRightOffset->setDisabled(true);
+    }
+    else
+    {
+        mpLegendLeftOffset->setDisabled(false);
+        mpLegendRightOffset->setDisabled(false);
     }
 
-//    if(mpLegendsOffYREnabledCheckBox->isChecked())
-//    {
-//        bufferoffsetYR = mpLegendOffYR->value();
-//        rescaleToCurves();
-//    }
-
-
+    rescaleToCurves();
 }
 
 void PlotTab::openLegendSettingsDialog()
@@ -1970,7 +1903,8 @@ void PlotTab::addCurve(PlotCurve *curve, QColor desiredColor, HopsanPlotID plotI
     mpQwtPlots[plotID]->replot();
     mpQwtPlots[plotID]->updateGeometry();
     curve->setLineWidth(2);
-    //curve->setSymbol;
+
+    setLegendSymbol(mpLegendSym->currentText());
 
     mpParentPlotWindow->mpBodePlotButton->setEnabled(mPlotCurvePtrs[FIRSTPLOT].size() > 1);
 }
@@ -2183,117 +2117,146 @@ void PlotTab::rescaleToCurves()
             mAxisLimits[plotID].yRMin = yMinRight-0.05*heightRight;
             mAxisLimits[plotID].yRMax = yMaxRight+0.05*heightRight;
         }
+        //! @todo will these Locks be overridden by ybuffer ? below
 
-        if(mpLegendsOffEnabledCheckBox->isChecked())
+        // Auto calculate mLegendYBufferOffset
+        //! @todo only works for linear scale right now, need to check for log scale also
+        double leftLegendHeight = mpLeftPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
+        double rightLegendHeight = mpRightPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
+        double leftTopBufferOffset, leftBottomBufferOffset, rightTopBufferOffset, rightBottomBufferOffset;
+        if(mpLegendsAutoOffsetCheckBox->isChecked())
         {
-
-            if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlots[plotID]->axisScaleEngine(QwtPlot::yLeft)))
+            if ((mpLegendLPosition->currentText() == mpLegendRPosition->currentText()) && (mpLegendRPosition->currentText() == "Top"))
             {
-                double leftlegendheigh = mpLeftPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
-                double rightlegendheigh = mpRightPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
-                bufferoffset = max(leftlegendheigh,rightlegendheigh);
-                double rheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yRight)->size().height();
-                double rinterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yRight).width();
-//                double rscale = rinterval/rheight; //change
-                double lheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yLeft)->size().height();
-                double linterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yLeft).width();
-                double lscale = linterval/lheight;
-                heightLeft = 0;
-                yMaxLeft = yMaxLeft*2.0;
-                yMinLeft = yMinLeft/2.0;
-                heightRight = 0;
-                yMaxRight = yMaxRight*2.0;
-                yMinRight = yMinRight/2.0;
-                double bufferoffsetL =  bufferoffset*lscale;//marginss1;
-//                double bufferoffsetR =  bufferoffset*rscale;//marginss2;
-                mpQwtPlots[plotID]->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft+bufferoffsetL);
-                mAxisLimits[plotID].yLMin = yMinLeft-0.05*heightLeft;
-                mAxisLimits[plotID].yLMax =  yMaxLeft+0.05*heightLeft+bufferoffsetL;
-//                mpQwtPlots[plotID]->setAxisScale(QwtPlot::yRight, yMinRight-0.05*heightRight, yMaxRight+0.05*heightRight+bufferoffsetR);
-//                mAxisLimits[plotID].yRMin = yMinRight-0.05*heightRight;
-//                mAxisLimits[plotID].yRMax = yMaxRight+0.05*heightRight+bufferoffsetR;
+                leftTopBufferOffset = rightTopBufferOffset = max(leftLegendHeight,rightLegendHeight);
+                leftBottomBufferOffset = rightBottomBufferOffset = 0;
             }
-            else
+            if ((mpLegendLPosition->currentText() == mpLegendRPosition->currentText()) && (mpLegendRPosition->currentText() == "Bottom"))
             {
-
-                    double lheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yLeft)->size().height();
-                    double linterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yLeft).width();
-                    double lscale = linterval/lheight;
-                    double rheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yRight)->size().height();
-                    double rinterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yRight).width();
-                    double rscale = rinterval/rheight;
-                     double leftlegendheigh = mpLeftPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
-                    double rightlegendheigh = mpRightPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
-                    bufferoffset = max(leftlegendheigh,rightlegendheigh);
-                    double bufferoffsetL =  bufferoffset*lscale;
-//                    double bufferoffsetR =  bufferoffset*rscale;
-                    mpQwtPlots[plotID]->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft+bufferoffsetL);
-                    mAxisLimits[plotID].yLMin = yMinLeft-0.05*heightLeft;
-                    mAxisLimits[plotID].yLMax =  yMaxLeft+0.05*heightLeft+bufferoffsetL;
-//                    mpQwtPlots[plotID]->setAxisScale(QwtPlot::yRight, yMinRight-0.05*heightRight, yMaxRight+0.05*heightRight+bufferoffsetR);
-//                    mAxisLimits[plotID].yRMin = yMinRight-0.05*heightRight;
-//                    mAxisLimits[plotID].yRMax = yMaxRight+0.05*heightRight+bufferoffsetR;
-
-
+                leftTopBufferOffset = rightTopBufferOffset = 0;
+                leftBottomBufferOffset = rightBottomBufferOffset = max(leftLegendHeight,rightLegendHeight);
             }
-            if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlots[plotID]->axisScaleEngine(QwtPlot::yRight)))
+            else if (mpLegendLPosition->currentText() == "Bottom")
             {
-                double leftlegendheigh = mpLeftPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
-                double rightlegendheigh = mpRightPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
-                bufferoffset = max(leftlegendheigh,rightlegendheigh);
-
-                double rheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yRight)->size().height();
-                double rinterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yRight).width();
-                double rscale = rinterval/rheight; //change
-
-                double lheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yLeft)->size().height();
-                double linterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yLeft).width();
-//                double lscale = linterval/lheight;
-                heightLeft = 0;
-                yMaxLeft = yMaxLeft*2.0;
-                yMinLeft = yMinLeft/2.0;
-                heightRight = 0;
-                yMaxRight = yMaxRight*2.0;
-                yMinRight = yMinRight/2.0;
-//                double bufferoffsetL =  bufferoffset*lscale;
-                double bufferoffsetR =  bufferoffset*rscale;
-//                mpQwtPlots[plotID]->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft+bufferoffsetL);
-//                mAxisLimits[plotID].yLMin = yMinLeft-0.05*heightLeft;
-//                mAxisLimits[plotID].yLMax =  yMaxLeft+0.05*heightLeft+bufferoffsetL;
-                mpQwtPlots[plotID]->setAxisScale(QwtPlot::yRight, yMinRight-0.05*heightRight, yMaxRight+0.05*heightRight+bufferoffsetR);
-                mAxisLimits[plotID].yRMin = yMinRight-0.05*heightRight;
-                mAxisLimits[plotID].yRMax = yMaxRight+0.05*heightRight+bufferoffsetR;
+                leftBottomBufferOffset = leftLegendHeight;
+                rightTopBufferOffset = rightLegendHeight;
+                leftTopBufferOffset = rightBottomBufferOffset = 0;
             }
-            else
+            else if (mpLegendRPosition->currentText() == "Bottom")
             {
-
-                    double lheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yLeft)->size().height();
-                    double linterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yLeft).width();
-//                    double lscale = linterval/lheight;
-
-                    double rheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yRight)->size().height();
-                    double rinterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yRight).width();
-                    double rscale = rinterval/rheight;
-
-                     double leftlegendheigh = mpLeftPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
-                    double rightlegendheigh = mpRightPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
-                    bufferoffset = max(leftlegendheigh,rightlegendheigh);
-
-//                    double bufferoffsetL =  bufferoffset*lscale;
-                    double bufferoffsetR =  bufferoffset*rscale;
-//                    mpQwtPlots[plotID]->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft+bufferoffsetL);
-//                    mAxisLimits[plotID].yLMin = yMinLeft-0.05*heightLeft;
-//                    mAxisLimits[plotID].yLMax =  yMaxLeft+0.05*heightLeft+bufferoffsetL;
-                    mpQwtPlots[plotID]->setAxisScale(QwtPlot::yRight, yMinRight-0.05*heightRight, yMaxRight+0.05*heightRight+bufferoffsetR);
-                    mAxisLimits[plotID].yRMin = yMinRight-0.05*heightRight;
-                    mAxisLimits[plotID].yRMax = yMaxRight+0.05*heightRight+bufferoffsetR;
-
-
+                rightBottomBufferOffset = rightLegendHeight;
+                leftTopBufferOffset = leftLegendHeight;
+                rightTopBufferOffset = leftBottomBufferOffset = 0;
             }
-
-
-        mpQwtPlots[plotID]->updateAxes();
         }
+        else
+        {
+            if (mpLegendLPosition->currentText() == "Top")
+            {
+                leftTopBufferOffset = mpLegendLeftOffset->value()*leftLegendHeight;
+                leftBottomBufferOffset = 0;
+            }
+            else if (mpLegendLPosition->currentText() == "Bottom")
+            {
+                leftTopBufferOffset = 0;
+                leftBottomBufferOffset = mpLegendLeftOffset->value()*leftLegendHeight;
+            }
+            //! @todo Center? than what to do
+
+            if (mpLegendRPosition->currentText() == "Top")
+            {
+                rightTopBufferOffset = mpLegendRightOffset->value()*rightLegendHeight;
+                rightBottomBufferOffset = 0;
+            }
+            else if (mpLegendRPosition->currentText() == "Bottom")
+            {
+                rightTopBufferOffset = 0;
+                rightBottomBufferOffset = mpLegendRightOffset->value()*rightLegendHeight;
+            }
+            //! @todo Center? than what to do
+        }
+
+        // Rescale axis to include mLegendYBufferOffset
+        //! @todo only works for top buffer right now
+        if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlots[plotID]->axisScaleEngine(QwtPlot::yLeft)))
+        {
+            //! @todo what shoul happen here ?
+            //                double leftlegendheigh = mpLeftPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
+            //                double rightlegendheigh = mpRightPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
+            //                bufferoffset = max(leftlegendheigh,rightlegendheigh);
+            //                double rheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yRight)->size().height();
+            //                double rinterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yRight).width();
+            //                //                double rscale = rinterval/rheight; //change
+            //                double lheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yLeft)->size().height();
+            //                double linterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yLeft).width();
+            //                double lscale = linterval/lheight;
+            //                heightLeft = 0;
+            //                yMaxLeft = yMaxLeft*2.0;
+            //                yMinLeft = yMinLeft/2.0;
+            //                heightRight = 0;
+            //                yMaxRight = yMaxRight*2.0;
+            //                yMinRight = yMinRight/2.0;
+            //                double bufferoffsetL =  bufferoffset*lscale;//marginss1;
+            //                //                double bufferoffsetR =  bufferoffset*rscale;//marginss2;
+            //                mpQwtPlots[plotID]->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft+bufferoffsetL);
+            //                mAxisLimits[plotID].yLMin = yMinLeft-0.05*heightLeft;
+            //                mAxisLimits[plotID].yLMax =  yMaxLeft+0.05*heightLeft+bufferoffsetL;
+            //                //                mpQwtPlots[plotID]->setAxisScale(QwtPlot::yRight, yMinRight-0.05*heightRight, yMaxRight+0.05*heightRight+bufferoffsetR);
+            //                //                mAxisLimits[plotID].yRMin = yMinRight-0.05*heightRight;
+            //                //                mAxisLimits[plotID].yRMax = yMaxRight+0.05*heightRight+bufferoffsetR;
+        }
+        else
+        {
+            const double lheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yLeft)->size().height();
+            const double linterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yLeft).width();
+            const double lscale = linterval/lheight;
+
+            mAxisLimits[plotID].yLMin = yMinLeft-0.05*heightLeft-leftBottomBufferOffset*lscale;
+            mAxisLimits[plotID].yLMax =  yMaxLeft+0.05*heightLeft+leftTopBufferOffset*lscale;
+            mpQwtPlots[plotID]->setAxisScale(QwtPlot::yLeft, mAxisLimits[plotID].yLMin, mAxisLimits[plotID].yLMax);
+        }
+        if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlots[plotID]->axisScaleEngine(QwtPlot::yRight)))
+        {
+            //! @todo what shoul happen here ?
+            //                double leftlegendheigh = mpLeftPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
+            //                double rightlegendheigh = mpRightPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
+            //                bufferoffset = max(leftlegendheigh,rightlegendheigh);
+
+            //                double rheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yRight)->size().height();
+            //                double rinterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yRight).width();
+            //                double rscale = rinterval/rheight; //change
+
+            //                double lheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yLeft)->size().height();
+            //                double linterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yLeft).width();
+            //                //                double lscale = linterval/lheight;
+            //                heightLeft = 0;
+            //                yMaxLeft = yMaxLeft*2.0;
+            //                yMinLeft = yMinLeft/2.0;
+            //                heightRight = 0;
+            //                yMaxRight = yMaxRight*2.0;
+            //                yMinRight = yMinRight/2.0;
+            //                //                double bufferoffsetL =  bufferoffset*lscale;
+            //                double bufferoffsetR =  bufferoffset*rscale;
+            //                //                mpQwtPlots[plotID]->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft+bufferoffsetL);
+            //                //                mAxisLimits[plotID].yLMin = yMinLeft-0.05*heightLeft;
+            //                //                mAxisLimits[plotID].yLMax =  yMaxLeft+0.05*heightLeft+bufferoffsetL;
+            //                mpQwtPlots[plotID]->setAxisScale(QwtPlot::yRight, yMinRight-0.05*heightRight, yMaxRight+0.05*heightRight+bufferoffsetR);
+            //                mAxisLimits[plotID].yRMin = yMinRight-0.05*heightRight;
+            //                mAxisLimits[plotID].yRMax = yMaxRight+0.05*heightRight+bufferoffsetR;
+        }
+        else
+        {
+            const double rheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yRight)->size().height();
+            const double rinterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yRight).width();
+            const double rscale = rinterval/rheight;
+
+            mAxisLimits[plotID].yRMin = yMinRight-0.05*heightRight-rightBottomBufferOffset*rscale;
+            mAxisLimits[plotID].yRMax = yMaxRight+0.05*heightRight+rightTopBufferOffset*rscale;
+            mpQwtPlots[plotID]->setAxisScale(QwtPlot::yRight, mAxisLimits[plotID].yRMin, mAxisLimits[plotID].yRMax);
+        }
+        mpQwtPlots[plotID]->updateAxes();
+        //! @todo left only applies to left even if the right is overshadowed, problem is that if left, right are bottom and top calculated buffers will be different on each axis
+
         //Scale the zoom base (maximum zoom)
         QRectF tempDoubleRect;
         tempDoubleRect.setX(xMin);
@@ -2311,11 +2274,10 @@ void PlotTab::rescaleToCurves()
     }
 
     //Curve Marker
-    //! @hmmm memmmory leek? create new markr every time
+    //! @todo hmmm memmmory leek? create new markr every time
     mpMarkerSymbol = new QwtSymbol();
     mpMarkerSymbol->setStyle(QwtSymbol::XCross);
     mpMarkerSymbol->setSize(10,10);
-
 }
 
 
@@ -3644,20 +3606,21 @@ void PlotTab::constructLegendSettingsDialog()
     mpLegendCol->setSingleStep(1);
     mpLegendCol->setValue(1);
 
-    mpLegendOff = new QDoubleSpinBox(this);
-    mpLegendOff->setRange(-DBLMAX, DBLMAX);
-    mpLegendOff->setDecimals(10);
-    mpLegendOff->setSingleStep(0.1);
-    mpLegendOff->setValue(0);
+    mpLegendLeftOffset = new QDoubleSpinBox(this);
+    mpLegendLeftOffset->setRange(-DBLMAX, DBLMAX);
+    mpLegendLeftOffset->setDecimals(2);
+    mpLegendLeftOffset->setSingleStep(0.1);
+    mpLegendLeftOffset->setValue(0);
 
-//    mpLegendOffYR = new QDoubleSpinBox(this);
-//    mpLegendOffYR->setRange(-DBLMAX, DBLMAX);
-//    mpLegendOffYR->setDecimals(10);
-//    mpLegendOffYR->setSingleStep(0.1);
-//    mpLegendOffYR->setValue(0);
+    mpLegendRightOffset = new QDoubleSpinBox(this);
+    mpLegendRightOffset->setRange(-DBLMAX, DBLMAX);
+    mpLegendRightOffset->setDecimals(2);
+    mpLegendRightOffset->setSingleStep(0.1);
+    mpLegendRightOffset->setValue(0);
 
-    mpLegendsOffEnabledCheckBox = new QCheckBox(this);
-    mpLegendsOffEnabledCheckBox->setCheckable(true);
+    mpLegendsAutoOffsetCheckBox = new QCheckBox(this);
+    mpLegendsAutoOffsetCheckBox->setCheckable(true);
+    mpLegendsAutoOffsetCheckBox->setChecked(true);
 
 //    mpLegendsOffYREnabledCheckBox = new QCheckBox(this);
 //    mpLegendsOffYREnabledCheckBox->setCheckable(true);
@@ -3703,10 +3666,10 @@ void PlotTab::constructLegendSettingsDialog()
     mpLegendBg->addItem("Items", HopQwtPlotLegendItem::ItemBackground);
 
     mpLegendSym = new QComboBox(this);
-    mpLegendSym->addItem("Rectangle", QwtPlotCurve::LegendNoAttribute );
-    mpLegendSym->addItem("Line", QwtPlotCurve::LegendShowLine );
-    mpLegendSym->addItem("Default Symbol", QwtPlotCurve::LegendShowSymbol );
-    mpLegendSym->addItem("Brush", QwtPlotCurve::LegendShowBrush );
+    mpLegendSym->addItem("Line", HopQwtPlotCurve::LegendShowLine ); //Line first (default)
+    mpLegendSym->addItem("Rectangle", HopQwtPlotCurve::LegendNoAttribute );
+    mpLegendSym->addItem("Default Symbol", HopQwtPlotCurve::LegendShowSymbol );
+    mpLegendSym->addItem("Brush", HopQwtPlotCurve::LegendShowBrush );
 
     QGroupBox *legendBox = new QGroupBox( "Legend" );
     QGridLayout *legendBoxLayout = new QGridLayout( legendBox );
@@ -3744,7 +3707,7 @@ void PlotTab::constructLegendSettingsDialog()
     legendBoxLayout->addWidget( mpLegendsExternalEnabledCheckBox, row, 1 );
 
     row++;
-    legendBoxLayout->addWidget( new QLabel( "Legend Color" ), row, 0 );
+    legendBoxLayout->addWidget( new QLabel( "Legend BG Color" ), row, 0 );
     legendBoxLayout->addWidget( mpLegendBlob, row, 1 );
 
     row++;
@@ -3752,19 +3715,16 @@ void PlotTab::constructLegendSettingsDialog()
     legendBoxLayout->addWidget( mpLegendSym, row, 1 );
 
     row++;
-    legendBoxLayout->addWidget( new QLabel( "Legend OffsetYL" ), row, 0 );
-    legendBoxLayout->addWidget( mpLegendOff, row, 1 );
-
-    //row++;
-//    legendBoxLayout->addWidget( new QLabel( "Legend OffsetYR" ), row, 2 );
-//    legendBoxLayout->addWidget( mpLegendOffYR, row, 3 );
+    legendBoxLayout->addWidget( new QLabel( "Auto Offset" ), row, 0 );
+    legendBoxLayout->addWidget( mpLegendsAutoOffsetCheckBox, row, 1 );
 
     row++;
-    legendBoxLayout->addWidget( new QLabel( "Offset conditionYL" ), row, 0 );
-    legendBoxLayout->addWidget( mpLegendsOffEnabledCheckBox, row, 1 );
+    legendBoxLayout->addWidget( new QLabel( "Left Legend Offset" ), row, 0 );
+    legendBoxLayout->addWidget( mpLegendLeftOffset, row, 1 );
 
-//    legendBoxLayout->addWidget( new QLabel( "Offset conditionYR" ), row, 2 );
-//    legendBoxLayout->addWidget( mpLegendsOffYREnabledCheckBox, row, 3 );
+    row++;
+    legendBoxLayout->addWidget( new QLabel( "Right Legend Offset" ), row, 0 );
+    legendBoxLayout->addWidget( mpLegendRightOffset, row, 1 );
 
     row++;
     legendBoxLayout->addWidget( pFinishedLegButton, row, 1 );
@@ -3780,10 +3740,9 @@ void PlotTab::constructLegendSettingsDialog()
     connect(mpLegendLPosition, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
     connect(mpLegendRPosition, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
     connect(mpLegendBlob, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
-    connect(mpLegendOff, SIGNAL(valueChanged(double)), this, SLOT(applyLegendSettings()));
-    connect(mpLegendsOffEnabledCheckBox, SIGNAL(toggled(bool)), this, SLOT(applyLegendSettings()));
-//    connect(mpLegendOffYR, SIGNAL(valueChanged(double)), this, SLOT(applyLegendSettings()));
-//    connect(mpLegendsOffYREnabledCheckBox, SIGNAL(toggled(bool)), this, SLOT(applyLegendSettings()));
+    connect(mpLegendLeftOffset, SIGNAL(valueChanged(double)), this, SLOT(applyLegendSettings()));
+    connect(mpLegendRightOffset, SIGNAL(valueChanged(double)), this, SLOT(applyLegendSettings()));
+    connect(mpLegendsAutoOffsetCheckBox, SIGNAL(toggled(bool)), this, SLOT(applyLegendSettings()));
     connect(pFinishedLegButton, SIGNAL(clicked()), mpLegendSettingsDialog, SLOT(close()));
 }
 
@@ -3879,6 +3838,36 @@ void PlotTab::constructAxisSettingsDialog()
     connect(mpYRSetLockCheckBox, SIGNAL(toggled(bool)), this, SLOT(applyAxisSettings()));
     connect(pFinishedButton, SIGNAL(clicked()), mpSetAxisDialog, SLOT(close()));
 
+}
+
+//! @brief Help function to set legend symbole style
+//! @todo allways sets for all curves, maybe should only set for one
+void PlotTab::setLegendSymbol(const QString symStyle)
+{
+    for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT].size(); ++j)
+    {
+        mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendNoAttribute, false);
+        mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowLine, false);
+        mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowSymbol, false);
+        mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowBrush, false);
+
+        if( symStyle == "Rectangle")
+        {
+            mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendNoAttribute, true);
+        }
+        else if( symStyle == "Line")
+        {
+            mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowLine, true);
+        }
+        else if( symStyle == "Default Symbol")
+        {
+            mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowSymbol, true);
+        }
+        else if( symStyle == "Brush")
+        {
+            mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowBrush, true);
+        }
+    }
 }
 
 
