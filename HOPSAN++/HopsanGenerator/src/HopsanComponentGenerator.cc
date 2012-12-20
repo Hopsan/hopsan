@@ -180,14 +180,24 @@ void HopsanGenerator::printErrorMessage(QString msg)
 
 void HopsanGenerator::generateFromModelica(QString code)
 {
-    Expression test1 = Expression("2*x-b=sin(5)");
+    Expression test1 = Expression("2*x-b=sin(5+2*x)");
     qDebug() << "Expression: " << test1.toString();
 
-    Expression test2 = Expression("2*(x+3)^-y");
+    Expression test2 = Expression("2*(x+3)^-x");
     qDebug() << "Expression: " << test2.toString();
 
     Expression test3 = Expression("b*2/(x*-y+5)/3");
     qDebug() << "Expression: " << test3.toString();
+
+    bool ok;
+    Expression der1 = test1.derivative(Expression("x"),ok);
+    qDebug() << "Derivative: " << der1.toString();
+
+    Expression der2 = test2.derivative(Expression("x"),ok);
+    qDebug() << "Derivative: " << der2.toString();
+
+    Expression der3 = test3.derivative(Expression("x"),ok);
+    qDebug() << "Derivative: " << der3.toString();
 
     return;
 

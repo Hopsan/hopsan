@@ -69,11 +69,9 @@ public:
     void multiplyBy(Expression const fac);
     void addBy(Expression const term);
     void subtractBy(Expression const term);
-    ExpressionTypeT getType() const;
     QString toString() const;
     void toDelayForm(QList<Expression> &rDelayTerms, QStringList &rDelaySteps);
     double toDouble(bool *ok=0) const;
-    bool isNull() const;
     bool isPower() const;
     bool isMultiplyOrDivide() const;
     bool isAdd() const;
@@ -127,7 +125,7 @@ public:
     void _simplify(ExpressionSimplificationT type = Expression::FullSimplification, const ExpressionRecursiveT recursive=NonRecursive);
 
     //! @todo Must be public for the object-less constructor functions, solve later (AND DON't USE THEM ANYWHERE ELSE!!!)
-    ExpressionTypeT mType;
+    //ExpressionTypeT mType;
     QString mString;                //Used for symbols
     QString mFunction;              //Used for functions
     QList<Expression> mArguments;   //Used for functions

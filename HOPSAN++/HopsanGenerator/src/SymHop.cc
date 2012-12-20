@@ -53,7 +53,6 @@ using namespace SymHop;
 //FIXED
 Expression::Expression(const QString indata, const ExpressionSimplificationT simplifications)
 {
-    mType == Null;
     commonConstructorCode(QStringList() << indata, simplifications);
 }
 
@@ -118,7 +117,12 @@ Expression::Expression(const QList<Expression> children, const QString separator
 //FIXED
 Expression::Expression(const double value)
 {
-    mType = Expression::Symbol;
+    mpLeft = 0;
+    mpRight = 0;
+    mpBase = 0;
+    mpPower = 0;
+    mpDividend = 0;
+
     mString = QString::number(value);
 
     //Make sure numerical symbols have double precision
@@ -280,28 +284,28 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
     //Find top level symbol, set correct string and type, generate children
     if(splitAtSeparator("=", symbols, simplifications))                        //Equality
     {
-        mType = Expression::Equality;
+        //mType = Expression::Equality;
     }
     else if(splitAtSeparator("+", symbols, simplifications))                   //Addition
     {
-        mType = Expression::Operator;
+        //mType = Expression::Operator;
     }
     else if(splitAtSeparator("*", symbols, simplifications))                   //Multiplication/division
     {
-        mType = Expression::Operator;
+       // mType = Expression::Operator;
     }
     else if(splitAtSeparator("^", symbols, simplifications))                   //Power
     {
-        mType = Expression::Operator;
+        //mType = Expression::Operator;
     }
     else if(splitAtSeparator("%", symbols, simplifications))                   //Modulus
     {
-        mType = Expression::Operator;
+        //mType = Expression::Operator;
     }
     else if(symbols.size() == 1 && symbols.first().contains("("))                   //Function
     {
         QString str = symbols.first();
-        mType = Expression::Function;
+        //mType = Expression::Function;
         mFunction = str.left(str.indexOf("("));
         str = str.mid(str.indexOf("(")+1, str.size()-2-str.indexOf("("));
 
@@ -314,7 +318,7 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
     }
     else                                                                            //Symbol
     {
-        mType = Expression::Symbol;
+        //mType = Expression::Symbol;
         mString = symbols.first();
 
         //Make sure numerical symbols have double precision
@@ -335,7 +339,7 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
 
 
     //Perform simplifications (but not for symbols, because that is pointless)
-    if(mType != Expression::Symbol)
+    if(this->isVariable() || this->isNumericalSymbol())
     {
         _simplify(simplifications);
     }
@@ -346,21 +350,29 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
 //FIXED
 bool Expression::operator==(const Expression &other) const
 {
-    return (mType == other.getType() &&
-            mString == other._getString() &&
-            mTerms == other.getTerms() &&
-            mDivisors == other.getDivisors() &&
-            mFactors == other.getFactors() &&
-            mpBase && other.getBase() &&
-            *mpBase == (*other.getBase()) &&
-            mpPower && other.getPower() &&
-            *mpPower == (*other.getPower()) &&
-            mpLeft && other.getLeft() &&
-            *mpLeft == (*other.getLeft()) &&
-            mpRight && other.getRight() &&
-            *mpRight == (*other.getRight()) &&
-            mpDividend && other.getDividends() &&
-            *mpDividend == (*other.getDividends()));
+    bool baseOk = !(mpBase && other.getBase()) || (mpBase && other.getBase() && *mpBase == (*other.getBase()));
+    bool powerOk = !(mpPower && other.getPower()) || (mpPower && other.getPower() && *mpPower == (*other.getPower()));
+    bool leftOk = !(mpLeft && other.getLeft()) || (mpLeft && other.getLeft() && *mpLeft == (*other.getLeft()));
+    bool rightOk = !(mpRight && other.getRight()) || (mpRight && other.getRight() && *mpRight == (*other.getRight()));
+    bool dividendOk = !(mpDividend && other.getDividends()) || (mpDividend && other.getDividends() && *mpDividend == (*other.getDividends()));
+    bool termsOk=true;
+    if(this->isAdd() && other.isAdd())
+    {
+        termsOk = (mTerms == other.getTerms());
+    }
+    bool stringOk = mString == other._getString();
+    bool divisorOk = mDivisors == other.getDivisors();
+    bool factorOk = true;
+    if(this->isMultiplyOrDivide() && other.isMultiplyOrDivide())
+    {
+        factorOk = mFactors == other.getFactors();
+    }
+
+    return (stringOk &&
+            termsOk &&
+            divisorOk &&
+            factorOk &&
+            baseOk && powerOk && leftOk && rightOk && dividendOk);
 }
 
 
@@ -395,6 +407,7 @@ Expression Expression::fromFactorDivisor(const Expression factor, const Expressi
 //FIXED
 Expression Expression::fromFactorsDivisors(const QList<Expression> factors, const QList<Expression> divisors)
 {
+    assert(factors.size()+divisors.size() > 1);
     Expression ret;
     ret.mFactors = factors;
     ret.mDivisors = divisors;
@@ -468,7 +481,6 @@ int Expression::count(const Expression &var) const
 //FIXED
 void Expression::replaceBy(const Expression expr)
 {
-    mType = expr.getType();
     mString = expr._getString();
     mFactors = expr.getFactors();
     mDivisors = expr.getDivisors();
@@ -536,25 +548,17 @@ void Expression::subtractBy(const Expression term)
 }
 
 
-//! @brief Returns the type of the expression
-//FIXED
-Expression::ExpressionTypeT Expression::getType() const
-{
-    return mType;
-}
-
-
 //! @brief Returns the expression converted to a string
 //FIXED
 QString Expression::toString() const
 {
     QString ret;
 
-    if(mType == Expression::Symbol)
+    if(this->isVariable() || this->isNumericalSymbol())
     {
         ret = mString;
     }
-    else if(mType == Expression::Function)
+    else if(this->isFunction())
     {
         ret = mFunction+"(";
         for(int i=0; i<mArguments.size(); ++i)
@@ -564,7 +568,7 @@ QString Expression::toString() const
         ret.chop(1);
         ret.append(")");
     }
-    else if((mType == Expression::Equality))
+    else if(this->isEquation())
     {
         QString leftStr =mpLeft->toString();
         QString rightStr = mpRight->toString();
@@ -731,7 +735,7 @@ void Expression::toDelayForm(QList<Expression> &rDelayTerms, QStringList &rDelay
 //FIXED
 double Expression::toDouble(bool *ok) const
 {
-    if(mType == Expression::Symbol)
+    if(this->isVariable() || this->isNumericalSymbol())
     {
         return mString.toDouble(ok);
     }
@@ -743,18 +747,12 @@ double Expression::toDouble(bool *ok) const
 }
 
 
-//FIXED
-bool Expression::isNull() const
-{
-    return mType == Null;
-}
-
 
 //! @brief Tells whether or not this is a power operator
 //FIXED
 bool Expression::isPower() const
 {
-    return !(mpPower == 0 || mpPower->isNull());
+    return !(mpPower == 0);
 }
 
 
@@ -785,23 +783,14 @@ bool Expression::isFunction() const
 //FIXED
 bool Expression::isNumericalSymbol() const
 {
-    if(mType == Expression::Symbol)
-    {
-        bool isNumber;
-        mString.toDouble(&isNumber);
-        return  isNumber;
-    }
-    else
-    {
-        return false;
-    }
+    return !mString.isEmpty();
 }
 
 
 //FIXED
 bool Expression::isVariable() const
 {
-    return (mType == Expression::Symbol && mString[0].isLetter());
+    return (mString[0].isLetter());
 }
 
 
@@ -809,7 +798,7 @@ bool Expression::isVariable() const
 //FIXED
 bool Expression::isAssignment() const
 {
-    return (mType == Expression::Equality && mpLeft->getType() == Expression::Symbol);
+    return (this->isEquation() && (mpLeft->isVariable() || mpLeft->isNumericalSymbol()));
 }
 
 
@@ -817,7 +806,7 @@ bool Expression::isAssignment() const
 //FIXED
 bool Expression::isEquation() const
 {
-    return (mType == Expression::Equality);
+    return (this->isEquation());
 }
 
 
@@ -825,7 +814,7 @@ bool Expression::isEquation() const
 //FIXED
 bool Expression::isNegative() const
 {
-    if(mType == Expression::Symbol && mString == "-1")
+    if(this->isVariable() || this->isNumericalSymbol() && mString == "-1")
     {
         return true;
     }
@@ -878,7 +867,7 @@ Expression Expression::derivative(const Expression x, bool &ok) const
         if(!success) { ok = false; }
     }
     //Function
-    else if(mType == Expression::Function)
+    else if(this->isFunction())
     {
         QString f = this->toString();
         QString g;
@@ -1047,7 +1036,15 @@ Expression Expression::derivative(const Expression x, bool &ok) const
             if(!success) { ok = false; }
             QList<Expression> rest = mFactors;
             rest.removeFirst();
-            Expression exp2 = Expression::fromFactorsDivisors(rest, QList<Expression>());
+            Expression exp2;
+            if(rest.size() == 1)
+            {
+                exp2 = rest.first();
+            }
+            else
+            {
+                exp2 = Expression::fromFactorsDivisors(rest, QList<Expression>());
+            }
             Expression der2 = exp2.derivative(x, success);
             if(!success) { ok = false; }
 
@@ -1065,11 +1062,11 @@ Expression Expression::derivative(const Expression x, bool &ok) const
         {
             derSet << term.derivative(x, ok);
         }
-        ret = Expression(derSet, "+").toString();
+        ret = Expression::fromTerms(derSet).toString();
     }
 
     //Power, d/dx(f(x)^g(x)) = (g(x)*f'(x)+f(x)*log(f(x))*g'(x)) * f(x)^(g(x)-1)
-    else if(mType == Expression::Operator && mString == "^")
+    else if(this->isPower())
     {
         bool success;
         QString f = mpBase->toString();
