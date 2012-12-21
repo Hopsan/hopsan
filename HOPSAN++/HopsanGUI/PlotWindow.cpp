@@ -320,37 +320,32 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
     mpHelpPopupTimer = new QTimer(this);
     connect(mpHelpPopupTimer, SIGNAL(timeout()), mpHelpPopup, SLOT(hide()));
 
-    mpPlotInfoLayout = new QVBoxLayout();
-    mpPlotInfoWidget = new QWidget();
+    mpPlotCurveInfoLayout = new QVBoxLayout();
+    QWidget *pPlotCurveInfoWidget = new QWidget(this);
 
-    mpPlotInfoWidget->setAutoFillBackground(true);
-    mpPlotInfoWidget->setPalette(gConfig.getPalette());
-    mpPlotInfoLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
-    mpPlotInfoLayout->setSpacing(1);
-    mpPlotInfoLayout->setMargin(1);
+    pPlotCurveInfoWidget->setAutoFillBackground(true);
+    pPlotCurveInfoWidget->setPalette(gConfig.getPalette());
+    mpPlotCurveInfoLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+    mpPlotCurveInfoLayout->setSpacing(1);
+    mpPlotCurveInfoLayout->setMargin(1);
 
-    mpPlotInfoWidget->setLayout(mpPlotInfoLayout);
+    pPlotCurveInfoWidget->setLayout(mpPlotCurveInfoLayout);
 
-    mpPlotInfoScrollArea = new QScrollArea();
-    mpPlotInfoScrollArea->setWidget(mpPlotInfoWidget);
-    mpPlotInfoScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    mpPlotInfoScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    mpPlotInfoScrollArea->setPalette(gConfig.getPalette());
+    QScrollArea *pPlotCurveInfoScrollArea = new QScrollArea();
+    pPlotCurveInfoScrollArea->setWidget(pPlotCurveInfoWidget);
+    pPlotCurveInfoScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    pPlotCurveInfoScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    pPlotCurveInfoScrollArea->setPalette(gConfig.getPalette());
 
-    QDockWidget *pInfoxBoxWidgetDock= new QDockWidget(tr("Plot InfoBox"), this);
+    QDockWidget *pInfoxBoxWidgetDock= new QDockWidget(tr("PlotCurve Settings"), this);
     pInfoxBoxWidgetDock->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
     addDockWidget(Qt::BottomDockWidgetArea, pInfoxBoxWidgetDock);
-    pInfoxBoxWidgetDock->setWidget(mpPlotInfoScrollArea);
+    pInfoxBoxWidgetDock->setWidget(pPlotCurveInfoScrollArea);
     pInfoxBoxWidgetDock->setFeatures(QDockWidget::AllDockWidgetFeatures);
     pInfoxBoxWidgetDock->setPalette(gConfig.getPalette());
     pInfoxBoxWidgetDock->setMinimumHeight(120);
 
-
-
     pInfoxBoxWidgetDock->show();
-
-
-
 
     this->setDockOptions(QMainWindow::AllowNestedDocks);
 
@@ -1175,19 +1170,20 @@ void PlotWindow::createPlotWindowFromTab()
 //! @brief Constructor for plot info box
 //! @param pParentPlotCurve pointer to parent plot curve
 //! @param parent Pointer to parent widget
-PlotInfoBox::PlotInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
+PlotCurveInfoBox::PlotCurveInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     : QWidget(parent)
 {
     mpParentPlotCurve = pParentPlotCurve;
 
     mpColorBlob = new QToolButton(this);
-    //mpColorBlob->setFixedSize(24,24);
-    //mpColorBlob->setAutoRaise(true);
     setLineColor(mpParentPlotCurve->mLineColor);
+    mpColorBlob->setFixedSize(20,20);
     mpColorBlob->setCheckable(true);
     mpColorBlob->setChecked(false);
 
     mpTitle = new QLabel(this);
+    mpTitle->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    mpTitle->setAlignment(Qt::AlignHCenter);
     refreshTitle();
 
     mpPreviousButton = new QToolButton(this);
@@ -1260,25 +1256,25 @@ PlotInfoBox::PlotInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     pCloseButton->setToolTip("Remove Curve");
     pCloseButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Discard.png"));
 
-    QLabel *pDummy = new QLabel((" "), this);       //This is used to avoid "stretching" the icons with the window
+    QLabel *pDummy = new QLabel("", this);
 
-    QHBoxLayout *pInfBoxLayout = new QHBoxLayout(this);
-    pInfBoxLayout->addWidget(mpColorBlob);
-    pInfBoxLayout->addWidget(mpTitle);
-    pInfBoxLayout->addWidget(mpGenerationLabel);
-    pInfBoxLayout->addWidget(mpPreviousButton);
-    pInfBoxLayout->addWidget(mpNextButton);
-    pInfBoxLayout->addWidget(pAutoUpdateCheckBox);
-    pInfBoxLayout->addWidget(pFrequencyAnalysisButton);
-    pInfBoxLayout->addWidget(pScaleButton);
-    pInfBoxLayout->addWidget(pSizeSpinBox);
-    pInfBoxLayout->addWidget(pColorButton);
-    pInfBoxLayout->addWidget(pLineStyleCombo);
-    pInfBoxLayout->addWidget(pLineSymbol);
-    pInfBoxLayout->addWidget(pCloseButton);
-    //mpInfBoxLayout->addWidget(pDummy);
+    QHBoxLayout *pInfoBoxLayout = new QHBoxLayout(this);
+    pInfoBoxLayout->addWidget(mpColorBlob);
+    pInfoBoxLayout->addWidget(mpTitle);
+    pInfoBoxLayout->addWidget(mpGenerationLabel);
+    pInfoBoxLayout->addWidget(mpPreviousButton);
+    pInfoBoxLayout->addWidget(mpNextButton);
+    pInfoBoxLayout->addWidget(pAutoUpdateCheckBox);
+    pInfoBoxLayout->addWidget(pFrequencyAnalysisButton);
+    pInfoBoxLayout->addWidget(pScaleButton);
+    pInfoBoxLayout->addWidget(pSizeSpinBox);
+    pInfoBoxLayout->addWidget(pColorButton);
+    pInfoBoxLayout->addWidget(pLineStyleCombo);
+    pInfoBoxLayout->addWidget(pLineSymbol);
+    pInfoBoxLayout->addWidget(pCloseButton);
+    pInfoBoxLayout->addWidget(pDummy); // This one must be here to prevent colorblob from having a very small clickable area, (really strange)
 
-    setLayout(pInfBoxLayout);
+    setLayout(pInfoBoxLayout);
 
     connect(mpColorBlob,               SIGNAL(clicked(bool)),  this,               SLOT(actiavateCurve(bool)));
     connect(mpPreviousButton,          SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(setPreviousGeneration()));
@@ -1292,7 +1288,7 @@ PlotInfoBox::PlotInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     connect(pLineStyleCombo, SIGNAL(currentIndexChanged(QString)), mpParentPlotCurve, SLOT(setLineStyle(QString)));
     connect(pLineSymbol,     SIGNAL(currentIndexChanged(QString)), mpParentPlotCurve, SLOT(setLineSymbol(QString)));
 
-    this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     if(mpParentPlotCurve->getCurveType() != PORTVARIABLE)
     {
@@ -1303,38 +1299,35 @@ PlotInfoBox::PlotInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     }
 }
 
-void PlotInfoBox::setLineColor(const QColor color)
+void PlotCurveInfoBox::setLineColor(const QColor color)
 {
     QString buttonStyle;
-//    buttonStyle.append("QToolButton                 { border: 1px solid gray;               border-style: outset;	border-radius: 0px;    	padding: 2px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-//    buttonStyle.append("QToolButton:pressed 		{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 0px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-//    buttonStyle.append("QToolButton:hover:pressed   { border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 0px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-//    buttonStyle.append("QToolButton:hover           { border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 0px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-//    buttonStyle.append("QToolButton:checked         { border: 1px solid gray;               border-style: inset;    border-radius: 0px;    	padding: 1px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-//    buttonStyle.append("QToolButton:hover:checked   { border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 0px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-//    buttonStyle.append("QToolButton:unchecked		{ border: 1px solid gray;               border-style: outset;	border-radius: 0px;    	padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-//    buttonStyle.append("QToolButton:hover:unchecked { border: 1px solid gray;               border-style: outset;   border-radius: 0px;     padding: 2px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
+//    buttonStyle.append(QString("QToolButton                 { border: 1px solid gray;               border-style: outset;	border-radius: 0px;    	padding: 2px;   background-color: rgb(%1,%2,%3) } ").arg(color.red()).arg(color.green()).arg(color.blue()));
+//    buttonStyle.append(QString("QToolButton:pressed 		{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 0px;     padding: 0px;   background-color: rgb(%1,%2,%3) } ").arg(color.red()).arg(color.green()).arg(color.blue()));
+//    buttonStyle.append(QString("QToolButton:hover:pressed   { border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 0px;     padding: 0px;   background-color: rgb(%1,%2,%3) } ").arg(color.red()).arg(color.green()).arg(color.blue()));
+//    buttonStyle.append(QString("QToolButton:hover           { border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 0px;     padding: 0px;   background-color: rgb(%1,%2,%3) } ").arg(color.red()).arg(color.green()).arg(color.blue()));
+//    buttonStyle.append(QString("QToolButton:checked         { border: 1px solid gray;               border-style: inset;    border-radius: 0px;    	padding: 1px;   background-color: rgb(%1,%2,%3) } ").arg(color.red()).arg(color.green()).arg(color.blue()));
+//    buttonStyle.append(QString("QToolButton:hover:checked   { border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 0px;     padding: 0px;   background-color: rgb(%1,%2,%3) } ").arg(color.red()).arg(color.green()).arg(color.blue()));
+//    buttonStyle.append(QString("QToolButton:unchecked		{ border: 1px solid gray;               border-style: outset;	border-radius: 0px;    	padding: 0px;   background-color: rgb(%1,%2,%3) } ").arg(color.red()).arg(color.green()).arg(color.blue()));
+//    buttonStyle.append(QString("QToolButton:hover:unchecked { border: 1px solid gray;               border-style: outset;   border-radius: 0px;     padding: 2px;   background-color: rgb(%1,%2,%3) } ").arg(color.red()).arg(color.green()).arg(color.blue()));
 
-    //Update color blob in plot info box
-    buttonStyle.append(QString("QToolButton         {border: 1px solid gray;  border-radius: 5px;   padding: 2px;   background-color: rgb(%1,%2,%3)}").arg(color.red()).arg(color.green()).arg(color.blue()));
-    buttonStyle.append(QString("QToolButton:hover   {border: 2px solid gray;  border-radius: 10px;  padding: 0px;   background-color: rgb(%1,%2,%3)}").arg(color.red()).arg(color.green()).arg(color.blue()));
-//    buttonStyle.append("QToolButton                 { border: 1px solid gray;               border-style: outset;	border-radius: 5px;    	padding: 2px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-//    buttonStyle.append("QToolButton:pressed 		{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-//    buttonStyle.append("QToolButton:hover:pressed   { border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
+    // Update color blob in plot info box
+    buttonStyle.append(QString("QToolButton                 { border: 1px solid gray;           border-style: outset;   border-radius: 5px;     padding: 2px;   background-color: rgb(%1,%2,%3)}").arg(color.red()).arg(color.green()).arg(color.blue()));
+    buttonStyle.append(QString("QToolButton:unchecked		{ border: 1px solid gray;           border-style: outset;	border-radius: 5px;    	padding: 0px;   background-color: rgb(%1,%2,%3)}").arg(color.red()).arg(color.green()).arg(color.blue()));
+    buttonStyle.append(QString("QToolButton:checked         { border: 1px solid gray;           border-style: inset;    border-radius: 5px;    	padding: 1px;   background-color: rgb(%1,%2,%3)}").arg(color.red()).arg(color.green()).arg(color.blue()));
+    buttonStyle.append(QString("QToolButton:pressed 		{ border: 2px solid rgb(70,70,150); border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: rgb(%1,%2,%3)}").arg(color.red()).arg(color.green()).arg(color.blue()));
+    buttonStyle.append(QString("QToolButton:hover           { border: 2px solid gray;           border-style: outset;   border-radius: 10px;    padding: 0px;   background-color: rgb(%1,%2,%3)}").arg(color.red()).arg(color.green()).arg(color.blue()));
+    buttonStyle.append(QString("QToolButton:hover:unchecked { border: 1px solid gray;           border-style: outset;   border-radius: 5px;     padding: 2px;   background-color: rgb(%1,%2,%3)}").arg(color.red()).arg(color.green()).arg(color.blue()));
+    buttonStyle.append(QString("QToolButton:hover:checked   { border: 2px solid rgb(70,70,150); border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: rgb(%1,%2,%3)}").arg(color.red()).arg(color.green()).arg(color.blue()));
+    buttonStyle.append(QString("QToolButton:hover:pressed   { border: 2px solid rgb(70,70,150); border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: rgb(%1,%2,%3)}").arg(color.red()).arg(color.green()).arg(color.blue()));
 
-//    buttonStyle.append("QToolButton:checked         { border: 1px solid gray;               border-style: inset;    border-radius: 5px;    	padding: 1px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-//    buttonStyle.append("QToolButton:hover:checked   { border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-//    buttonStyle.append("QToolButton:unchecked		{ border: 1px solid gray;               border-style: outset;	border-radius: 5px;    	padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-//    buttonStyle.append("QToolButton:hover:unchecked { border: 1px solid gray;               border-style: outset;   border-radius: 5px;     padding: 2px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-    buttonStyle.append(QString("QToolButton:checked   {border: 2px solid black;  border-radius: 5px;   padding: 2px;   background-color: rgb(%1,%2,%3)}").arg(color.red()).arg(color.green()).arg(color.blue()));
+    //! @todo need to fix the syle so that it is shown which is activated
 
     mpColorBlob->setStyleSheet(buttonStyle);
-
-
 }
 
 //! @brief Updates buttons and text in plot info box to correct values
-void PlotInfoBox::updateInfo()
+void PlotCurveInfoBox::updateInfo()
 {
     // Enable/diable generation buttons
     const int lowGen = mpParentPlotCurve->getConstLogDataVariablePtr()->getLowestGeneration();
@@ -1358,19 +1351,19 @@ void PlotInfoBox::updateInfo()
 
 }
 
-void PlotInfoBox::refreshTitle()
+void PlotCurveInfoBox::refreshTitle()
 {
     QString title = mpParentPlotCurve->getPlotLogDataVariable()->getFullVariableNameWithSeparator(", ");
     title.append(" ["+mpParentPlotCurve->getDataUnit()+"]");
     mpTitle->setText(title);
 }
 
-void PlotInfoBox::refreshActive(bool active)
+void PlotCurveInfoBox::refreshActive(bool active)
 {
     mpColorBlob->setChecked(active);
 }
 
-void PlotInfoBox::actiavateCurve(bool active)
+void PlotCurveInfoBox::actiavateCurve(bool active)
 {
     if(active)
     {
@@ -4362,16 +4355,15 @@ void PlotCurve::commonConstructorCode(int axisY,
     mpQwtPlotCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
     mpQwtPlotCurve->setYAxis(axisY);
     mpQwtPlotCurve->attach(parent->getPlot(plotID));
-    //mpQwtPlotCurve->setItemAttribute(QwtPlotItem::Legend, mpParentPlotTab->mpParentPlotWindow->mLegendsVisible);
 
 
     //Create the plot info box
-    mpPlotInfoBox = new PlotInfoBox(this, mpParentPlotTab);
-    mpPlotInfoBox->setPalette(gConfig.getPalette());
+    mpPlotCurveInfoBox = new PlotCurveInfoBox(this, mpParentPlotTab);
+    mpPlotCurveInfoBox->setPalette(gConfig.getPalette());
     updatePlotInfoBox();
 
     // Maybe tab should add this instad of the curve istelf, and info box speak with curve
-    mpParentPlotTab->mpParentPlotWindow->mpPlotInfoLayout->addWidget(mpPlotInfoBox);
+    mpParentPlotTab->mpParentPlotWindow->mpPlotCurveInfoLayout->addWidget(mpPlotCurveInfoBox);
 
     if(curveType != PORTVARIABLE)
     {
@@ -4406,7 +4398,7 @@ void PlotCurve::commonConstructorCode(int axisY,
 PlotCurve::~PlotCurve()
 {
     mpContainerObject->getPlotDataPtr()->decrementOpenPlotCurves();
-    delete(mpPlotInfoBox);
+    delete(mpPlotCurveInfoBox);
     //delete(mpPlotInfoDockWidget);
 
     // Delete custom data if any
@@ -4861,7 +4853,7 @@ void PlotCurve::setLineColor(QColor color)
     QPen tempPen = mpQwtPlotCurve->pen();
     tempPen.setColor(color);
     mpQwtPlotCurve->setPen(tempPen);
-    mpPlotInfoBox->setLineColor(color);
+    mpPlotCurveInfoBox->setLineColor(color);
 }
 
 
@@ -4958,9 +4950,9 @@ void PlotCurve::updatePlotInfoVisibility()
     if(mpParentPlotTab == mpParentPlotTab->mpParentPlotWindow->getCurrentPlotTab() && mpParentPlotTab->mpParentPlotWindow->mpShowCurveInfoButton->isChecked())
     {
         // mpParentPlotTab->mpParentPlotWindow->mpPlotInfoWidget->show();
-        mpPlotInfoBox->show();
+        mpPlotCurveInfoBox->show();
         //mpParentPlotTab->mpParentPlotWindow->addDockWidget(Qt::BottomDockWidgetArea, mpPlotInfoDockWidget, Qt::Vertical);
-        mpParentPlotTab->mpParentPlotWindow->mpPlotInfoLayout->addWidget(mpPlotInfoBox);
+        mpParentPlotTab->mpParentPlotWindow->mpPlotCurveInfoLayout->addWidget(mpPlotCurveInfoBox);
 
     }
     else
@@ -4969,13 +4961,13 @@ void PlotCurve::updatePlotInfoVisibility()
         //mpParentPlotTab->mpParentPlotWindow->mpPlotInfoScrollArea->hide();
         //mpParentPlotTab->mpParentPlotWindow->mpPlotInfoWidget->hide();
         //! @todo FIXA /Peter
-        mpPlotInfoBox->hide();
+        mpPlotCurveInfoBox->hide();
         //                if(mpParentPlotTab->mpParentPlotWindow->mpPlotInfoLayout->isEmpty())
         //                {
         // mpParentPlotTab->mpParentPlotWindow->mpPlotInfoWidget->hide();
         //                    //mpParentPlotTab->mpParentPlotWindow->mpPlotInfoScrollArea;
         //                }
-        mpParentPlotTab->mpParentPlotWindow->mpPlotInfoLayout->removeWidget(mpPlotInfoBox);
+        mpParentPlotTab->mpParentPlotWindow->mpPlotCurveInfoLayout->removeWidget(mpPlotCurveInfoBox);
 
         //mpParentPlotTab->mpParentPlotWindow->mpPlotInfoWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
@@ -5011,7 +5003,7 @@ void PlotCurve::updateToNewGeneration()
 
 void PlotCurve::updatePlotInfoBox()
 {
-    mpPlotInfoBox->updateInfo();
+    mpPlotCurveInfoBox->updateInfo();
 }
 
 
@@ -5022,17 +5014,17 @@ void PlotCurve::markActive(bool value)
     {
         mIsActive = true;
         //mpPlotInfoBox->setPalette(QPalette(QColor("lightgray"), QColor("lightgray")));
-        mpPlotInfoBox->setAutoFillBackground(true);
-        mpPlotInfoBox->setPalette(gConfig.getPalette());
+        mpPlotCurveInfoBox->setAutoFillBackground(true);
+        mpPlotCurveInfoBox->setPalette(gConfig.getPalette());
     }
     else
     {
         mIsActive = false;
-        mpPlotInfoBox->setAutoFillBackground(true);
+        mpPlotCurveInfoBox->setAutoFillBackground(true);
     }
 
     setLineWidth(mLineWidth);
-    mpPlotInfoBox->refreshActive(mIsActive);
+    mpPlotCurveInfoBox->refreshActive(mIsActive);
 }
 
 

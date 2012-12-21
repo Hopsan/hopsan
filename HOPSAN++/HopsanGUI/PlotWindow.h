@@ -222,9 +222,9 @@ private:
     QCheckBox *mpPowerSpectrumCheckBox;
     PlotCurve *mpFrequencyAnalysisCurve;
 
-    QWidget *mpPlotInfoWidget;
-    QScrollArea *mpPlotInfoScrollArea;
-    QVBoxLayout *mpPlotInfoLayout;
+    //QWidget *mpPlotCurveInfoWidget;
+    //QScrollArea *mpPlotCurveInfoScrollArea;
+    QVBoxLayout *mpPlotCurveInfoLayout;
     QAbstractItemModel *model;
 };
 
@@ -232,12 +232,12 @@ private:
 class PlotCurve;
 
 
-class PlotInfoBox : public QWidget
+class PlotCurveInfoBox : public QWidget
 {
     Q_OBJECT
     friend class PlotCurve;
 public:
-    PlotInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent);
+    PlotCurveInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent);
     void setLineColor(const QColor color);
     void updateInfo();
 
@@ -448,7 +448,7 @@ private:
 class PlotCurve : public QObject
 {
     Q_OBJECT
-    friend class PlotInfoBox;
+    friend class PlotCurveInfoBox;
     friend class PlotWindow;
 public:
 
@@ -523,7 +523,7 @@ private slots:
 
 private:
     LogVariableData *mpData;
-    PlotInfoBox *mpPlotInfoBox;
+    PlotCurveInfoBox *mpPlotCurveInfoBox;
 
     HopsanPlotCurveType mCurveType;
     HopQwtPlotCurve *mpQwtPlotCurve;
