@@ -238,27 +238,21 @@ class PlotInfoBox : public QWidget
     friend class PlotCurve;
 public:
     PlotInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent);
-    PlotCurve *mpParentPlotCurve;
+    void setLineColor(const QColor color);
+    void updateInfo();
 
 private:
+    void refreshTitle();
+    void refreshActive(bool active);
+    PlotCurve *mpParentPlotCurve;
     QLabel *mpTitle;
     QToolButton *mpColorBlob;
     QToolButton *mpPreviousButton;
     QToolButton *mpNextButton;
-    QToolButton *mpCloseButton;
-
-    QGridLayout *mpInfBoxLayout;
-    QSpinBox *mpSizeSpinBox;
-    QComboBox *mpLineStyleCombo;
-    QComboBox *mpLineSymbol;
-    QToolButton *mpColorButton;
-    QToolButton *mpFrequencyAnalysisButton;
-    //QToolButton *mpSetAxisButton;
-    QToolButton *mpScaleButton;
-    QCheckBox *mpAutoUpdateCheckBox;
-    QLabel *mpLabel;
-    QLabel *mpSizeLabel;
     QLabel *mpGenerationLabel;
+
+private slots:
+    void actiavateCurve(bool active);
 
 };
 
@@ -482,14 +476,14 @@ public:
     HopQwtPlotCurve *getQwtPlotCurvePtr();
     //QDockWidget *getPlotInfoDockWidget();
 
-    LogVariableData *getPlotLogDataVariable();
+    LogVariableData *getPlotLogDataVariable(); //! @todo is this needed
     int getGeneration() const;
     QString getComponentName();
     QString getPortName();
     QString getDataName();
     QString getDataUnit();
 
-
+    const LogVariableData* getConstLogDataVariablePtr() const;
     const QVector<double> &getDataVector() const;
     const QVector<double> &getTimeVector() const;
     ContainerObject *getContainerObjectPtr();
@@ -521,9 +515,9 @@ public slots:
     void setAutoUpdate(bool value);
     void performFrequencyAnalysis();
     //void performSetAxis();
+    void markActive(bool value);
 
 private slots:
-    void setActive(bool value);
     void updateCurve();
     void updateCurveName();
 
@@ -544,6 +538,7 @@ private:
 
     bool mAutoUpdate;
     bool mHaveCustomData;
+    bool mIsActive;
     double mScaleX;
     double mScaleY;
     double mOffsetX;

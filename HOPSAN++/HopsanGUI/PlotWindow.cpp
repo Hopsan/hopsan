@@ -1180,98 +1180,19 @@ PlotInfoBox::PlotInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
 {
     mpParentPlotCurve = pParentPlotCurve;
 
-
-    QString title = pParentPlotCurve->getPlotLogDataVariable()->getFullVariableNameWithSeparator(", ");
-    title.append(" ["+pParentPlotCurve->getDataUnit()+"]");
-    mpTitle = new QLabel(title,this);
-
     mpColorBlob = new QToolButton(this);
-    QColor color = mpParentPlotCurve->mLineColor;
-    QString redString, greenString, blueString;
-    redString.setNum(color.red());
-    greenString.setNum(color.green());
-    blueString.setNum(color.blue());
-    QString buttonStyle;
-    buttonStyle.append("QToolButton			{ border: 1px solid gray;               border-style: outset;	border-radius: 0px;    	padding: 2px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-    buttonStyle.append("QToolButton:pressed 		{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 0px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-    buttonStyle.append("QToolButton:hover:pressed   	{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 0px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-    buttonStyle.append("QToolButton:hover		{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 0px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-    buttonStyle.append("QToolButton:checked		{ border: 1px solid gray;               border-style: inset;    border-radius: 0px;    	padding: 1px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-    buttonStyle.append("QToolButton:hover:checked   	{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 0px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-    buttonStyle.append("QToolButton:unchecked		{ border: 1px solid gray;               border-style: outset;	border-radius: 0px;    	padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-    buttonStyle.append("QToolButton:hover:unchecked   	{ border: 1px solid gray;               border-style: outset;   border-radius: 0px;     padding: 2px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-    mpColorBlob->setStyleSheet(buttonStyle);
-
-    mpColorBlob->setFixedSize(20, 20);
+    //mpColorBlob->setFixedSize(24,24);
+    //mpColorBlob->setAutoRaise(true);
+    setLineColor(mpParentPlotCurve->mLineColor);
     mpColorBlob->setCheckable(true);
     mpColorBlob->setChecked(false);
 
-    mpColorButton = new QToolButton(this);
-    mpColorButton->setToolTip("Select Line Color");
-    mpColorButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LineColor.png"));
-    mpColorButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    mpColorButton->setFixedSize(25, 25);
-
-    mpFrequencyAnalysisButton = new QToolButton(this);
-    mpFrequencyAnalysisButton->setToolTip("Frequency Analysis");
-    mpFrequencyAnalysisButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-FrequencyAnalysis.png"));
-    mpFrequencyAnalysisButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    mpFrequencyAnalysisButton->setFixedSize(25, 25);
-
-    //    mpSetAxisButton = new QToolButton(this);
-    //    mpSetAxisButton->setToolTip("Lock Axis");
-    //    mpSetAxisButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-PlotCurveScale.png"));
-    //    mpSetAxisButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    //    mpSetAxisButton->setFixedSize(25, 25);
-
-    mpScaleButton = new QToolButton(this);
-    mpScaleButton->setToolTip("Scale Curve");
-    mpScaleButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-PlotCurveScale.png"));
-    mpScaleButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    mpScaleButton->setFixedSize(25, 25);
-
-    mpSizeLabel = new QLabel(tr("Line Width: "));
-    mpSizeLabel->setAcceptDrops(false);
-    mpSizeSpinBox = new QSpinBox(this);
-    mpSizeSpinBox->setAcceptDrops(false);
-    mpSizeSpinBox->setRange(1,10);
-    mpSizeSpinBox->setSingleStep(1);
-    mpSizeSpinBox->setValue(2);
-    mpSizeSpinBox->setSuffix(" pt");
-
-    // New Combo Box for Line Style
-    mpLineStyleCombo = new QComboBox;
-    mpLineStyleCombo->addItem(tr("Solid Line"));
-    mpLineStyleCombo->addItem(tr("Dash Line"));
-    mpLineStyleCombo->addItem(tr("Dot Line"));
-    mpLineStyleCombo->addItem(tr("Dash Dot Line"));
-    mpLineStyleCombo->addItem(tr("Dash Dot Dot Line"));
-    mpLineStyleCombo->addItem(tr("No Curve")); //CustomDashLine
-
-    // New Combo Box for Symbol Style
-    mpLineSymbol = new QComboBox;
-    mpLineSymbol->addItem(tr("None"));
-    mpLineSymbol->addItem(tr("Cross"));
-    mpLineSymbol->addItem(tr("Ellipse"));
-    mpLineSymbol->addItem(tr("XCross"));
-    mpLineSymbol->addItem(tr("Triangle"));
-    mpLineSymbol->addItem(tr("Rectangle"));
-    mpLineSymbol->addItem(tr("Diamond"));
-    mpLineSymbol->addItem(tr("Down Triangle"));
-    mpLineSymbol->addItem(tr("Up Triangle"));
-    mpLineSymbol->addItem(tr("Right Triangle"));
-    mpLineSymbol->addItem(tr("Hexagon"));
-    mpLineSymbol->addItem(tr("Horizontal Line"));
-    mpLineSymbol->addItem(tr("Vertical Line"));
-    mpLineSymbol->addItem(tr("Star 1"));
-    mpLineSymbol->addItem(tr("Star 2"));
-    //mpLineSymbol->addItem(tr("Dots"));
-
+    mpTitle = new QLabel(this);
+    refreshTitle();
 
     mpPreviousButton = new QToolButton(this);
     mpPreviousButton->setToolTip("Previous Generation");
     mpPreviousButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-StepLeft.png"));
-    mpPreviousButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
     mpNextButton = new QToolButton(this);
     mpNextButton->setToolTip("Next Generation");
@@ -1282,64 +1203,183 @@ PlotInfoBox::PlotInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     tempFont.setBold(true);
     mpGenerationLabel->setFont(tempFont);
 
-    mpAutoUpdateCheckBox = new QCheckBox("Auto Update");
-    mpAutoUpdateCheckBox->setChecked(true);
+    QCheckBox *pAutoUpdateCheckBox = new QCheckBox("Auto Update");
+    pAutoUpdateCheckBox->setChecked(true);
 
-    mpCloseButton = new QToolButton(this);
-    mpCloseButton->setToolTip("Next Generation");
-    mpCloseButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Discard.png"));
-    mpCloseButton->setFixedSize(20, 20);
+    QToolButton *pColorButton = new QToolButton(this);
+    pColorButton->setToolTip("Select Line Color");
+    pColorButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LineColor.png"));
 
+    QToolButton *pFrequencyAnalysisButton = new QToolButton(this);
+    pFrequencyAnalysisButton->setToolTip("Frequency Analysis");
+    pFrequencyAnalysisButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-FrequencyAnalysis.png"));
+
+    QToolButton *pScaleButton = new QToolButton(this);
+    pScaleButton->setToolTip("Scale Curve");
+    pScaleButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-PlotCurveScale.png"));
+
+    QLabel *pSizeLabel = new QLabel(tr("Line Width: "));
+    pSizeLabel->setAcceptDrops(false);
+    QSpinBox *pSizeSpinBox = new QSpinBox(this);
+    pSizeSpinBox->setAcceptDrops(false);
+    pSizeSpinBox->setRange(1,10);
+    pSizeSpinBox->setSingleStep(1);
+    pSizeSpinBox->setValue(2);
+    pSizeSpinBox->setSuffix(" pt");
+
+    // New Combo Box for Line Style
+    QComboBox *pLineStyleCombo = new QComboBox;
+    pLineStyleCombo->addItem(tr("Solid Line"));
+    pLineStyleCombo->addItem(tr("Dash Line"));
+    pLineStyleCombo->addItem(tr("Dot Line"));
+    pLineStyleCombo->addItem(tr("Dash Dot Line"));
+    pLineStyleCombo->addItem(tr("Dash Dot Dot Line"));
+    pLineStyleCombo->addItem(tr("No Curve")); //CustomDashLine
+
+    // New Combo Box for Symbol Style
+    QComboBox *pLineSymbol = new QComboBox;
+    pLineSymbol->addItem(tr("None"));
+    pLineSymbol->addItem(tr("Cross"));
+    pLineSymbol->addItem(tr("Ellipse"));
+    pLineSymbol->addItem(tr("XCross"));
+    pLineSymbol->addItem(tr("Triangle"));
+    pLineSymbol->addItem(tr("Rectangle"));
+    pLineSymbol->addItem(tr("Diamond"));
+    pLineSymbol->addItem(tr("Down Triangle"));
+    pLineSymbol->addItem(tr("Up Triangle"));
+    pLineSymbol->addItem(tr("Right Triangle"));
+    pLineSymbol->addItem(tr("Hexagon"));
+    pLineSymbol->addItem(tr("Horizontal Line"));
+    pLineSymbol->addItem(tr("Vertical Line"));
+    pLineSymbol->addItem(tr("Star 1"));
+    pLineSymbol->addItem(tr("Star 2"));
+    //mpLineSymbol->addItem(tr("Dots"));
+
+
+    QToolButton *pCloseButton = new QToolButton(this);
+    pCloseButton->setToolTip("Remove Curve");
+    pCloseButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Discard.png"));
 
     QLabel *pDummy = new QLabel((" "), this);       //This is used to avoid "stretching" the icons with the window
 
-    mpInfBoxLayout = new QGridLayout(this);
-    mpInfBoxLayout->addWidget(mpColorBlob,                0,  0);
-    mpInfBoxLayout->addWidget(mpTitle,                    0,  1);
-    mpInfBoxLayout->addWidget(mpGenerationLabel,          0,  2);
-    mpInfBoxLayout->addWidget(mpPreviousButton,           0,  3);
-    mpInfBoxLayout->addWidget(mpNextButton,               0,  4);
-    mpInfBoxLayout->addWidget(mpAutoUpdateCheckBox,       0,  5);
-    mpInfBoxLayout->addWidget(mpFrequencyAnalysisButton,  0,  6);
-    //mpInfBoxLayout->addWidget(mpSetAxisButton,            0,  7);
-    mpInfBoxLayout->addWidget(mpScaleButton,              0,  7);
-    mpInfBoxLayout->addWidget(mpSizeSpinBox,              0,  8);
-    mpInfBoxLayout->addWidget(mpColorButton,              0,  9);
-    mpInfBoxLayout->addWidget(mpLineStyleCombo,           0,  10);
-    mpInfBoxLayout->addWidget(mpLineSymbol,               0,  11);
-    mpInfBoxLayout->addWidget(mpCloseButton,              0,  12);
-    mpInfBoxLayout->addWidget(pDummy,                     0,  13);
+    QHBoxLayout *pInfBoxLayout = new QHBoxLayout(this);
+    pInfBoxLayout->addWidget(mpColorBlob);
+    pInfBoxLayout->addWidget(mpTitle);
+    pInfBoxLayout->addWidget(mpGenerationLabel);
+    pInfBoxLayout->addWidget(mpPreviousButton);
+    pInfBoxLayout->addWidget(mpNextButton);
+    pInfBoxLayout->addWidget(pAutoUpdateCheckBox);
+    pInfBoxLayout->addWidget(pFrequencyAnalysisButton);
+    pInfBoxLayout->addWidget(pScaleButton);
+    pInfBoxLayout->addWidget(pSizeSpinBox);
+    pInfBoxLayout->addWidget(pColorButton);
+    pInfBoxLayout->addWidget(pLineStyleCombo);
+    pInfBoxLayout->addWidget(pLineSymbol);
+    pInfBoxLayout->addWidget(pCloseButton);
+    //mpInfBoxLayout->addWidget(pDummy);
 
+    setLayout(pInfBoxLayout);
 
-
-    mpInfBoxLayout->setColumnStretch(0, 0);
-    mpInfBoxLayout->setColumnStretch(1, 0);
-    mpInfBoxLayout->setColumnStretch(2, 0);
-    mpInfBoxLayout->setColumnStretch(3, 0);
-    mpInfBoxLayout->setColumnStretch(4, 0);
-    mpInfBoxLayout->setColumnStretch(5, 0);
-    mpInfBoxLayout->setColumnStretch(6, 0);
-    mpInfBoxLayout->setColumnStretch(7, 0);
-    mpInfBoxLayout->setColumnStretch(8, 0);
-    mpInfBoxLayout->setColumnStretch(9, 0);
-    mpInfBoxLayout->setColumnStretch(10, 0);
-    mpInfBoxLayout->setColumnStretch(11, 0);
-    mpInfBoxLayout->setColumnStretch(12, 0);
-    mpInfBoxLayout->setColumnStretch(13, 0);
-    //mpInfBoxLayout->setColumnStretch(14, 0);
-
-
-    setLayout(mpInfBoxLayout);
-
-    connect(mpColorBlob,                SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(setActive(bool)));
-    connect(mpPreviousButton,           SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(setPreviousGeneration()));
-    connect(mpNextButton,               SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(setNextGeneration()));
-    connect(mpAutoUpdateCheckBox,       SIGNAL(toggled(bool)),  mpParentPlotCurve,  SLOT(setAutoUpdate(bool)));
-    connect(mpFrequencyAnalysisButton,  SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(performFrequencyAnalysis()));
-    //connect(mpSetAxisButton,            SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(performSetAxis()));
+    connect(mpColorBlob,               SIGNAL(clicked(bool)),  this,               SLOT(actiavateCurve(bool)));
+    connect(mpPreviousButton,          SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(setPreviousGeneration()));
+    connect(mpNextButton,              SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(setNextGeneration()));
+    connect(pAutoUpdateCheckBox,       SIGNAL(toggled(bool)),  mpParentPlotCurve,  SLOT(setAutoUpdate(bool)));
+    connect(pFrequencyAnalysisButton,  SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(performFrequencyAnalysis()));
+    connect(pColorButton,              SIGNAL(clicked()),      mpParentPlotCurve,  SLOT(setLineColor()));
+    connect(pScaleButton,              SIGNAL(clicked()),      mpParentPlotCurve,  SLOT(openScaleDialog()));
+    connect(pCloseButton,              SIGNAL(clicked()),      mpParentPlotCurve,  SLOT(removeMe()));
+    connect(pSizeSpinBox,    SIGNAL(valueChanged(int)),            mpParentPlotCurve, SLOT(setLineWidth(int)));
+    connect(pLineStyleCombo, SIGNAL(currentIndexChanged(QString)), mpParentPlotCurve, SLOT(setLineStyle(QString)));
+    connect(pLineSymbol,     SIGNAL(currentIndexChanged(QString)), mpParentPlotCurve, SLOT(setLineSymbol(QString)));
 
     this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
+    if(mpParentPlotCurve->getCurveType() != PORTVARIABLE)
+    {
+        pAutoUpdateCheckBox->setDisabled(true);
+        mpNextButton->setDisabled(true);
+        mpPreviousButton->setDisabled(true);
+        pFrequencyAnalysisButton->setDisabled(true);
+    }
+}
+
+void PlotInfoBox::setLineColor(const QColor color)
+{
+    QString buttonStyle;
+//    buttonStyle.append("QToolButton                 { border: 1px solid gray;               border-style: outset;	border-radius: 0px;    	padding: 2px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
+//    buttonStyle.append("QToolButton:pressed 		{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 0px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
+//    buttonStyle.append("QToolButton:hover:pressed   { border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 0px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
+//    buttonStyle.append("QToolButton:hover           { border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 0px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
+//    buttonStyle.append("QToolButton:checked         { border: 1px solid gray;               border-style: inset;    border-radius: 0px;    	padding: 1px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
+//    buttonStyle.append("QToolButton:hover:checked   { border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 0px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
+//    buttonStyle.append("QToolButton:unchecked		{ border: 1px solid gray;               border-style: outset;	border-radius: 0px;    	padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
+//    buttonStyle.append("QToolButton:hover:unchecked { border: 1px solid gray;               border-style: outset;   border-radius: 0px;     padding: 2px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
+
+    //Update color blob in plot info box
+    buttonStyle.append(QString("QToolButton         {border: 1px solid gray;  border-radius: 5px;   padding: 2px;   background-color: rgb(%1,%2,%3)}").arg(color.red()).arg(color.green()).arg(color.blue()));
+    buttonStyle.append(QString("QToolButton:hover   {border: 2px solid gray;  border-radius: 10px;  padding: 0px;   background-color: rgb(%1,%2,%3)}").arg(color.red()).arg(color.green()).arg(color.blue()));
+//    buttonStyle.append("QToolButton                 { border: 1px solid gray;               border-style: outset;	border-radius: 5px;    	padding: 2px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
+//    buttonStyle.append("QToolButton:pressed 		{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
+//    buttonStyle.append("QToolButton:hover:pressed   { border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
+
+//    buttonStyle.append("QToolButton:checked         { border: 1px solid gray;               border-style: inset;    border-radius: 5px;    	padding: 1px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
+//    buttonStyle.append("QToolButton:hover:checked   { border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
+//    buttonStyle.append("QToolButton:unchecked		{ border: 1px solid gray;               border-style: outset;	border-radius: 5px;    	padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
+//    buttonStyle.append("QToolButton:hover:unchecked { border: 1px solid gray;               border-style: outset;   border-radius: 5px;     padding: 2px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
+    buttonStyle.append(QString("QToolButton:checked   {border: 2px solid black;  border-radius: 5px;   padding: 2px;   background-color: rgb(%1,%2,%3)}").arg(color.red()).arg(color.green()).arg(color.blue()));
+
+    mpColorBlob->setStyleSheet(buttonStyle);
+
+
+}
+
+//! @brief Updates buttons and text in plot info box to correct values
+void PlotInfoBox::updateInfo()
+{
+    // Enable/diable generation buttons
+    const int lowGen = mpParentPlotCurve->getConstLogDataVariablePtr()->getLowestGeneration();
+    const int highGen = mpParentPlotCurve->getConstLogDataVariablePtr()->getHighestGeneration();
+    const int gen = mpParentPlotCurve->getGeneration();
+    const int nGen = mpParentPlotCurve->getConstLogDataVariablePtr()->getNumGenerations();
+    mpPreviousButton->setEnabled( (gen > lowGen) && (nGen > 1) );
+    mpNextButton->setEnabled( (gen < highGen) && ( nGen > 1) );
+
+    // Set generation number strings
+    QString numString1, numString2, numString3;
+    numString1.setNum(gen+1);
+    //! @todo this will show strange when we have deleted old generations, maybe we should reassign all generations when we delete old data (costly)
+    numString2.setNum(lowGen+1);
+    numString3.setNum(highGen+1);
+    mpGenerationLabel->setText(numString1 + " (" + numString2 + "," + numString3 + ")");
+
+    // Update curve name
+    refreshTitle();
+
+
+}
+
+void PlotInfoBox::refreshTitle()
+{
+    QString title = mpParentPlotCurve->getPlotLogDataVariable()->getFullVariableNameWithSeparator(", ");
+    title.append(" ["+mpParentPlotCurve->getDataUnit()+"]");
+    mpTitle->setText(title);
+}
+
+void PlotInfoBox::refreshActive(bool active)
+{
+    mpColorBlob->setChecked(active);
+}
+
+void PlotInfoBox::actiavateCurve(bool active)
+{
+    if(active)
+    {
+        mpParentPlotCurve->mpParentPlotTab->setActivePlotCurve(mpParentPlotCurve);
+    }
+    else
+    {
+        mpParentPlotCurve->mpParentPlotTab->setActivePlotCurve(0);
+    }
 }
 
 
@@ -3220,6 +3260,22 @@ QList<PlotCurve *> PlotTab::getCurves(HopsanPlotID plotID)
 
 void PlotTab::setActivePlotCurve(PlotCurve *pCurve)
 {
+    // Mark deactive all others
+    //! @todo if only one can be active it should be enough to deactivate that one
+    for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
+    {
+        if(mPlotCurvePtrs[FIRSTPLOT].at(i) != pCurve)
+        {
+            mPlotCurvePtrs[FIRSTPLOT].at(i)->markActive(false);
+        }
+    }
+    // Mark active the one
+    if (pCurve!=0)
+    {
+        pCurve->markActive(true);
+    }
+
+    // Remember active curve
     mpActivePlotCurve = pCurve;
 }
 
@@ -4114,7 +4170,7 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
 }
 
 
-class PlotInfoBox;
+//class PlotInfoBox;
 
 
 ////! @brief Constructor for plot curves.
@@ -4260,6 +4316,7 @@ void PlotCurve::commonConstructorCode(int axisY,
                                       HopsanPlotID plotID,
                                       HopsanPlotCurveType curveType)
 {
+    mIsActive = false;
     mCurveType = curveType;
     mpParentPlotTab = parent;
 
@@ -4312,8 +4369,6 @@ void PlotCurve::commonConstructorCode(int axisY,
     mpPlotInfoBox = new PlotInfoBox(this, mpParentPlotTab);
     mpPlotInfoBox->setPalette(gConfig.getPalette());
     updatePlotInfoBox();
-    mpPlotInfoBox->mpSizeSpinBox->setValue(2);
-    //mpPlotInfoBox->mpLineStyleCombo->setStyle("SolidLine");
 
     // Maybe tab should add this instad of the curve istelf, and info box speak with curve
     mpParentPlotTab->mpParentPlotWindow->mpPlotInfoLayout->addWidget(mpPlotInfoBox);
@@ -4321,24 +4376,15 @@ void PlotCurve::commonConstructorCode(int axisY,
     if(curveType != PORTVARIABLE)
     {
         setAutoUpdate(false);
-        mpPlotInfoBox->mpAutoUpdateCheckBox->setDisabled(true);
-        mpPlotInfoBox->mpNextButton->setDisabled(true);
-        mpPlotInfoBox->mpPreviousButton->setDisabled(true);
-        mpPlotInfoBox->mpFrequencyAnalysisButton->setDisabled(true);
     }
 
     //! @todo for now allways create a legend (wheter it is visible or not is an
     mpQwtPlotCurve->setItemAttribute(QwtPlotItem::Legend, true);
 
     //Create connections
-    connect(mpPlotInfoBox->mpLineStyleCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(setLineStyle(QString)));
-    connect(mpPlotInfoBox->mpLineSymbol, SIGNAL(currentIndexChanged(QString)),  this, SLOT(setLineSymbol(QString)));
-    connect(mpPlotInfoBox->mpSizeSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setLineWidth(int)));
-    connect(mpPlotInfoBox->mpColorButton, SIGNAL(clicked()), this, SLOT(setLineColor()));
-    connect(mpPlotInfoBox->mpScaleButton, SIGNAL(clicked()), this, SLOT(openScaleDialog()));
+
     connect(mpParentPlotTab->mpParentPlotWindow->getPlotTabWidget(), SIGNAL(currentChanged(int)), this, SLOT(updatePlotInfoVisibility()));
     ////connect(mpParentPlotTab->mpParentPlotWindow->mpShowCurveInfoButton, SIGNAL(toggled(bool)), SLOT(updatePlotInfoVisibility()));
-    connect(mpPlotInfoBox->mpCloseButton, SIGNAL(clicked()), this, SLOT(removeMe()));
     connect(gpMainWindow->mpProjectTabs->getCurrentTab(),SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
     connect(gpMainWindow->mpProjectTabs,SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
 
@@ -4446,6 +4492,11 @@ QString PlotCurve::getDataName()
 QString PlotCurve::getDataUnit()
 {
     return mpData->getDataUnit();
+}
+
+const LogVariableData *PlotCurve::getConstLogDataVariablePtr() const
+{
+    return mpData;
 }
 
 
@@ -4646,7 +4697,15 @@ void PlotCurve::setLineWidth(int lineWidth)
 {
     mLineWidth = lineWidth;
     QPen tempPen = mpQwtPlotCurve->pen();
-    tempPen.setWidth(lineWidth);
+    // Add one pt extra width for active curves
+    if (mIsActive)
+    {
+        tempPen.setWidth(lineWidth+1);
+    }
+    else
+    {
+        tempPen.setWidth(lineWidth);
+    }
     mpQwtPlotCurve->setPen(tempPen);
 }
 
@@ -4802,22 +4861,7 @@ void PlotCurve::setLineColor(QColor color)
     QPen tempPen = mpQwtPlotCurve->pen();
     tempPen.setColor(color);
     mpQwtPlotCurve->setPen(tempPen);
-
-    //Update color blob in plot info box
-    QString redString, greenString, blueString;
-    redString.setNum(color.red());
-    greenString.setNum(color.green());
-    blueString.setNum(color.blue());
-    QString buttonStyle;
-    buttonStyle.append("QToolButton			{ border: 1px solid gray;               border-style: outset;	border-radius: 5px;    	padding: 2px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-    buttonStyle.append("QToolButton:pressed 		{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-    buttonStyle.append("QToolButton:hover:pressed   	{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-    buttonStyle.append("QToolButton:hover		{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-    buttonStyle.append("QToolButton:checked		{ border: 1px solid gray;               border-style: inset;    border-radius: 5px;    	padding: 1px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-    buttonStyle.append("QToolButton:hover:checked   	{ border: 2px solid rgb(70,70,150);   	border-style: outset;   border-radius: 5px;     padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-    buttonStyle.append("QToolButton:unchecked		{ border: 1px solid gray;               border-style: outset;	border-radius: 5px;    	padding: 0px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-    buttonStyle.append("QToolButton:hover:unchecked   	{ border: 1px solid gray;               border-style: outset;   border-radius: 5px;     padding: 2px;   background-color: rgb(" + redString + "," + greenString + "," + blueString + ") } ");
-    mpPlotInfoBox->mpColorBlob->setStyleSheet(buttonStyle);
+    mpPlotInfoBox->setLineColor(color);
 }
 
 
@@ -4965,54 +5009,30 @@ void PlotCurve::updateToNewGeneration()
     mpParentPlotTab->rescaleToCurves();
 }
 
-
-//! @brief Updates buttons and text in plot info box to correct values
 void PlotCurve::updatePlotInfoBox()
 {
-    // Enable/diable generation buttons
-    mpPlotInfoBox->mpPreviousButton->setEnabled( (getGeneration() > mpData->getLowestGeneration()) && (mpData->getNumGenerations() > 1) );
-    mpPlotInfoBox->mpNextButton->setEnabled( (getGeneration() < mpData->getHighestGeneration()) && ( mpData->getNumGenerations() > 1) );
-
-    // Set generation number strings
-    QString numString1, numString2, numString3;
-    numString1.setNum(getGeneration()+1);
-    //! @todo this will show strange when we have deleted old generations, maybe we should reassign all generations when we delete old data (costly)
-    numString2.setNum(mpData->getLowestGeneration()+1);
-    numString3.setNum(mpData->getHighestGeneration()+1);
-    mpPlotInfoBox->mpGenerationLabel->setText(numString1 + " (" + numString2 + "," + numString3 + ")");
-
-    // Update curve name
-    mpPlotInfoBox->mpTitle->setText(getCurveName());
+    mpPlotInfoBox->updateInfo();
 }
 
 
 //! @brief Activates (highlights) the plot curve
-//! This will also de-activate any other active plot curve.
-void PlotCurve::setActive(bool value)
+void PlotCurve::markActive(bool value)
 {
     if(value)
     {
-        setLineWidth(mpPlotInfoBox->mpSizeSpinBox->value()+1);
+        mIsActive = true;
         //mpPlotInfoBox->setPalette(QPalette(QColor("lightgray"), QColor("lightgray")));
         mpPlotInfoBox->setAutoFillBackground(true);
         mpPlotInfoBox->setPalette(gConfig.getPalette());
-
-
-        for(int i=0; i<mpParentPlotTab->getCurves().size(); ++i)
-        {
-            if(mpParentPlotTab->getCurves().at(i) != this)
-            {
-                mpParentPlotTab->getCurves().at(i)->setActive(false);
-            }
-        }
-        mpParentPlotTab->setActivePlotCurve(this);
     }
     else
     {
-        setLineWidth(mpPlotInfoBox->mpSizeSpinBox->value());
+        mIsActive = false;
         mpPlotInfoBox->setAutoFillBackground(true);
-        mpPlotInfoBox->mpColorBlob->setChecked(false);
     }
+
+    setLineWidth(mLineWidth);
+    mpPlotInfoBox->refreshActive(mIsActive);
 }
 
 
