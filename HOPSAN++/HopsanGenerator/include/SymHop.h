@@ -46,12 +46,13 @@ public:
     Expression(QString const indata=QString(), const ExpressionSimplificationT simplifications=FullSimplification);
     Expression(QStringList symbols, const ExpressionSimplificationT simplifications=FullSimplification, const QString parentSeparator=QString());
     //Expression(const Expression left, const QString mid, const Expression right, const ExpressionSimplificationT simplifications=FullSimplification);
-    Expression(const QList<Expression> children, const QString separator);
+    //Expression(const QList<Expression> children, const QString separator);
     Expression(const double value);
 
     void commonConstructorCode(QStringList symbols, const ExpressionSimplificationT simplifications=FullSimplification, const QString parentSeparator=QString());
 
     bool operator==(const Expression &other) const;
+    void operator=( const Expression &other);
 
     static Expression fromTwoTerms(const Expression term1, const Expression term2);
     static Expression fromTerms(const QList<Expression> terms);
@@ -61,8 +62,6 @@ public:
     static Expression fromBasePower(const Expression base, const Expression power);
     static Expression fromFunctionArguments(const QString function, const QList<Expression> arguments);
     static Expression fromEquation(const Expression left, const Expression right);
-
-    int count(const Expression &var) const;
 
     void replaceBy(Expression const expr);
     void divideBy(Expression const div);
@@ -76,6 +75,7 @@ public:
     bool isMultiplyOrDivide() const;
     bool isAdd() const;
     bool isFunction() const;
+    bool isSymbol() const;
     bool isNumericalSymbol() const;
     bool isVariable() const;
     bool isAssignment() const;
@@ -92,7 +92,7 @@ public:
     QString getFunctionName() const;
     QString getSymbolName() const;
 
-    QList<Expression> getSymbols() const;
+    QList<Expression> getVariables() const;
 
     QList<Expression> getArguments() const;
     QList<Expression> getTerms() const;
@@ -120,9 +120,13 @@ public:
     bool verifyExpression();
 
     //Public functions that are not intended to be used externally
-    QString _getString() const;
     bool _verifyFunctions() const;
     void _simplify(ExpressionSimplificationT type = Expression::FullSimplification, const ExpressionRecursiveT recursive=NonRecursive);
+
+    int countTerm(const Expression &expr) const;
+    void removeTerm(const Expression &term);
+    Expression removeNumericalFactors() const;
+    double getNumericalFactor() const;
 
     //! @todo Must be public for the object-less constructor functions, solve later (AND DON't USE THEM ANYWHERE ELSE!!!)
     //ExpressionTypeT mType;
@@ -142,7 +146,7 @@ private:
     QMap<QString, QString> mFunctionDerivatives;
     QStringList reservedSymbols;
 
-    bool splitAtSeparator(const QString sep, const QStringList subSymbols, const ExpressionSimplificationT simplifications, const QString parentSeparator=QString());
+    bool splitAtSeparator(const QString sep, const QStringList subSymbols, const ExpressionSimplificationT simplifications);
     bool verifyParantheses(const QString str) const;
     QStringList splitWithRespectToParentheses(const QString str, const QChar c);
 };
@@ -156,6 +160,8 @@ bool sortEquationSystem(QList<Expression> &equations, QList<QList<Expression> > 
 void removeDuplicates(QList<Expression> &rSet);
 
 bool isWhole(const double value);
+
+void validateFunctions();
 }
 
 #endif // SYMHOP_H

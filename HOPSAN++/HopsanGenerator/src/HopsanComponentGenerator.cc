@@ -180,27 +180,9 @@ void HopsanGenerator::printErrorMessage(QString msg)
 
 void HopsanGenerator::generateFromModelica(QString code)
 {
-    Expression test1 = Expression("2*x-b=sin(5+2*x)");
-    qDebug() << "Expression: " << test1.toString();
-
-    Expression test2 = Expression("2*(x+3)^-x");
-    qDebug() << "Expression: " << test2.toString();
-
-    Expression test3 = Expression("b*2/(x*-y+5)/3");
-    qDebug() << "Expression: " << test3.toString();
-
-    bool ok;
-    Expression der1 = test1.derivative(Expression("x"),ok);
-    qDebug() << "Derivative: " << der1.toString();
-
-    Expression der2 = test2.derivative(Expression("x"),ok);
-    qDebug() << "Derivative: " << der2.toString();
-
-    Expression der3 = test3.derivative(Expression("x"),ok);
-    qDebug() << "Derivative: " << der3.toString();
+    validateFunctions();
 
     return;
-
 
     QString typeName, displayName, cqsType;
     QStringList initAlgorithms, equations, finalAlgorithms;
@@ -3668,8 +3650,8 @@ void HopsanGenerator::generateComponentObject(ComponentSpecification &comp, QStr
     QList<QList<Expression> > leftSymbols2, rightSymbols2;
     for(int i=0; i<equations.size(); ++i)
     {
-        leftSymbols2.append(equations[i].getLeft()->getSymbols());
-        rightSymbols2.append(equations[i].getRight()->getSymbols());
+        leftSymbols2.append(equations[i].getLeft()->getVariables());
+        rightSymbols2.append(equations[i].getRight()->getVariables());
     }
 
     //Sum up all used variables to a single list
