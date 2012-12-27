@@ -2865,7 +2865,15 @@ void SymHop::validateFunctions()
     expr.toDelayForm(delayTerms, delaySteps);
     assert(expr == Expression("mDelay0.getIdx(1)+mDelay1.getIdx(1)"));
 
-    //! @todo Validate bilinearTransform()
+    //Validate bilinearTransform()
+    expr = Expression("der(x)");
+    expr1 = expr.bilinearTransform();
+    expr1._simplify(Expression::FullSimplification, Expression::Recursive);
+    QString dummy = expr1.toString();
+    expr2 = Expression("x*2/mTimestep*(1-Z)/(1+Z)");
+    expr2._simplify(Expression::FullSimplification, Expression::Recursive);
+    QString dummy2 = expr2.toString();
+    assert(expr1 == expr2);
 
     //Validate toString()
     expr = Expression(exprStr);
