@@ -31,6 +31,9 @@
 #include "Widgets/PlotWidget.h"
 #include "Widgets/ProjectTabWidget.h"
 
+#ifndef WIN32
+#include <unistd.h> //Needed for sysctl
+#endif
 
 
 //! @brief Constructor
