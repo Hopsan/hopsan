@@ -38,6 +38,7 @@
 #include "Widgets/HcomWidget.h"
 #include "Widgets/LibraryWidget.h"
 #include "Widgets/PlotWidget.h"
+#include "PlotTab.h"
 #include "Widgets/SystemParametersWidget.h"
 #include "Widgets/PyDockWidget.h"
 #include "Widgets/UndoWidget.h"
@@ -56,7 +57,7 @@
 #include <QStandardItemModel>
 #include <QToolBar>
 
-using namespace std;
+
 
 //! @brief Construtor for container objects.
 //! @param position Initial position where container object is to be placed in its parent container

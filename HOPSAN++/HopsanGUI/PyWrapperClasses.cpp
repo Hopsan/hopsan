@@ -24,6 +24,8 @@
 
 #include "PyWrapperClasses.h"
 #include "Widgets/HcomWidget.h"
+#include "PlotWindow.h"
+#include "PlotTab.h"
 
 //Implementations are done in h-file right now
 QString PyPortClassWrapper::plot(Port* o, const QString& dataName)

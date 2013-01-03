@@ -167,7 +167,9 @@ SOURCES += main.cpp \
     SimulationThreadHandler.cpp \
     Dialogs/ComponentPropertiesDialog2.cpp \
     Widgets/HcomWidget.cpp \
-    LogDataHandler.cpp
+    LogDataHandler.cpp \
+    PlotTab.cpp \
+    PlotCurve.cpp
 
 
 
@@ -234,7 +236,9 @@ HEADERS += MainWindow.h \
     SimulationThreadHandler.h \
     Dialogs/ComponentPropertiesDialog2.h \
     Widgets/HcomWidget.h \
-    LogDataHandler.h
+    LogDataHandler.h \
+    PlotTab.h \
+    PlotCurve.h
 
 OTHER_FILES += \
     ../hopsandefaults \

@@ -36,6 +36,8 @@
 #include "Widgets/MessageWidget.h"
 #include <QDateTime>
 #include <math.h>
+#include "PlotTab.h"
+#include "PlotCurve.h"
 
 
 
@@ -1934,6 +1936,7 @@ void HcomHandler::addPlotCurve(QString cmd, int axis)
     else
     {
         pPlotWindow = gpMainWindow->mpPlotWidget->mpPlotVariableTree->createPlotWindow(pData, QColor(), mCurrentPlotWindow);
+        //! @todo this below looks strange rewrite code so we don need strange things like this, what is it doing by the way?
         pPlotWindow->getPlotTabWidget()->getCurrentTab()->removeCurve(pPlotWindow->getPlotTabWidget()->getCurrentTab()->getCurves().first());
         pPlotWindow->addPlotCurve(pData, axis);
 

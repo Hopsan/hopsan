@@ -33,6 +33,7 @@
 #include "GUIObjects/GUIComponent.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "Widgets/ProjectTabWidget.h"
+#include "PlotTab.h"
 
 
 Component::Component(QPointF position, qreal rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
@@ -106,6 +107,7 @@ void Component::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         else if(getPort("in_right")->isConnected())
         {
             pPlotWindow = getPort("in_right")->getConnectedPorts().first()->plot("Value");
+            //! @todo this below looks strange rewrite code so we don need strange things like this
             pPlotWindow->getPlotTabWidget()->removeTab(0);
             pPlotWindow->addPlotTab();
         }
