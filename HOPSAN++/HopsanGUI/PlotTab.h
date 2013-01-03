@@ -25,29 +25,11 @@
 
 //Forward Declarations
 class PlotWindow;
-class PlotTab;
 class PlotCurve;
 class PlotMarker;
 
 class HopQwtPlotCurve;
 class HopQwtPlotLegendItem;
-
-//! @brief Tab widget for plots in plot window
-class PlotTabWidget : public QTabWidget
-{
-    Q_OBJECT
-public:
-    PlotTabWidget(PlotWindow *parent);
-    PlotWindow *mpParentPlotWindow;
-    PlotTab *getCurrentTab();
-    PlotTab *getTab(int i);
-
-public slots:
-    void closePlotTab(int index);
-    void tabChanged();
-
-};
-
 
 //! @brief Plot window tab containing a plot area with plot curves
 class PlotTab : public QWidget

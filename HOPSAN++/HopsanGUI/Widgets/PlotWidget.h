@@ -26,39 +26,11 @@
 #define PlotWidget_H
 
 #include <QGridLayout>
-#include <iostream>
-#include <QWidget>
-#include <QDialog>
-#include <QDialogButtonBox>
-#include <QVector>
-#include <QTreeWidget>
 #include <QTreeWidgetItem>
-#include <QHash>
-#include <QToolBar>
-#include <QToolButton>
-#include <QMainWindow>
-#include <QColor>
-#include <QMouseEvent>
-#include <QApplication>
-#include <QDragMoveEvent>
-#include <qwt_legend.h>
-#include <QFileDialog>
-#include <QSvgGenerator>
-#include <QSpinBox>
-#include <QLabel>
-#include <QCheckBox>
-#include <QGridLayout>
+#include <QPushButton>
+#include <QString>
 
-#include <qwt_plot.h>
-#include <qwt_plot_curve.h>
-//#include <qwt_data.h>
-#include <qwt_plot_grid.h>
-#include <qwt_plot_marker.h>
-#include <qwt_plot_zoomer.h>
-#include <qwt_plot_magnifier.h>
-#include <qwt_plot_panner.h>
-
-#include "GUIObjects/GUIContainerObject.h"
+#include "LogDataHandler.h"
 
 class MainWindow;
 class ContainerObject;
@@ -96,7 +68,6 @@ public:
     PlotWindow *getPlotWindow(QString name);
     void reportClosedPlotWindow(PlotWindow *window);
 
-    //MainWindow *mpParentMainWindow;
     ContainerObject *mpCurrentContainer;
 
 protected:
@@ -131,7 +102,6 @@ protected:
     virtual void mouseMoveEvent(QMouseEvent *event);
 
 private:
-    //MainWindow *mpParentMainWindow;
     QPushButton *mpLoadButton;
     QGridLayout *mpLayout;
 };

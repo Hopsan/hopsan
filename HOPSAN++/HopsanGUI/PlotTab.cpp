@@ -4,6 +4,8 @@
 #include "Configuration.h"
 #include "PlotCurve.h"
 
+#include "GUIObjects/GUIContainerObject.h"
+
 #include "Utilities/GUIUtilities.h"
 #include <limits>
 
@@ -26,148 +28,14 @@
 
 #include "version_gui.h"
 
+#include <cmath>
+
 const double DBLMAX = std::numeric_limits<double>::max();
 
-//! @brief Constructor for the plot tab widget
-//! @param parent Pointer to the plot window the plot tab widget belongs to
-PlotTabWidget::PlotTabWidget(PlotWindow *parent)
-    : QTabWidget(parent)
-{
-    mpParentPlotWindow = parent;
-    setTabsClosable(true);
-    setMouseTracking(true);
-
-    //connect(this,SIGNAL(tabCloseRequested(int)),SLOT(tabChanged()));
-    connect(this, SIGNAL(tabCloseRequested(int)), this, SLOT(closePlotTab(int)));
-    connect(this,SIGNAL(currentChanged(int)),SLOT(tabChanged()));
 
 
-}
 
 
-//! @brief Closes the plot tab with specified index
-//! @param index Index of tab to close
-void PlotTabWidget::closePlotTab(int index)
-{
-    PlotTab *theTab = getTab(index);
-    theTab->close();
-    delete(theTab);
-}
-
-
-//! @brief Returns a pointer to current plot tab
-PlotTab *PlotTabWidget::getCurrentTab()
-{
-    return qobject_cast<PlotTab *>(currentWidget());
-}
-
-
-//! @brief Returns a pointer to plot tab with index i
-//! @param i Index of plot tab
-PlotTab *PlotTabWidget::getTab(int i)
-{
-    return qobject_cast<PlotTab *>(widget(i));
-}
-
-
-//! @brief Slot that updates all necessary things when plot tab changes
-void PlotTabWidget::tabChanged()
-{
-    if(count() > 0) { this->show(); }
-    else { this->hide(); }
-
-    for(int i=0; i<count(); ++i)
-    {
-        //! @todo could probably make this more effective by calling disconnect(ptr, SIGNAL, 0 0), then we dont need this loop either
-        disconnect(mpParentPlotWindow->mpZoomButton,                SIGNAL(toggled(bool)),  getTab(i),  SLOT(enableZoom(bool)));
-        disconnect(mpParentPlotWindow->mpArrowButton,               SIGNAL(toggled(bool)),  getTab(i),  SLOT(enableArrow(bool))); // Arrow Button Action
-        disconnect(mpParentPlotWindow->mpPanButton,                 SIGNAL(toggled(bool)),  getTab(i),  SLOT(enablePan(bool)));
-        disconnect(mpParentPlotWindow->mpBackgroundColorButton,     SIGNAL(triggered()),    getTab(i),  SLOT(setBackgroundColor()));
-        disconnect(mpParentPlotWindow->mpGridButton,                SIGNAL(toggled(bool)),  getTab(i),  SLOT(enableGrid(bool)));
-        disconnect(mpParentPlotWindow->mpResetXVectorButton,        SIGNAL(triggered()),    getTab(i),  SLOT(resetXVector()));
-        disconnect(mpParentPlotWindow->mpExportToCsvAction,         SIGNAL(triggered()),    getTab(i),  SLOT(exportToCsv()));
-        disconnect(mpParentPlotWindow->mpExportToHvcAction,         SIGNAL(triggered()),    getTab(i),  SLOT(exportToHvc()));
-        disconnect(mpParentPlotWindow->mpExportToXmlAction,         SIGNAL(triggered()),    getTab(i),  SLOT(exportToXml()));
-        disconnect(mpParentPlotWindow->mpExportToOldHopAction,      SIGNAL(triggered()),    getTab(i),  SLOT(exportToOldHop()));
-        disconnect(mpParentPlotWindow->mpExportToMatlabAction,      SIGNAL(triggered()),    getTab(i),  SLOT(exportToMatlab()));
-        disconnect(mpParentPlotWindow->mpExportToGnuplotAction,     SIGNAL(triggered()),    getTab(i),  SLOT(exportToGnuplot()));
-        disconnect(mpParentPlotWindow->mpExportPdfAction,           SIGNAL(triggered()),    getTab(i),  SLOT(exportToPdf()));
-        //disconnect(mpParentPlotWindow->mpExportToGraphicsAction,    SIGNAL(triggered()),    getTab(i),  SLOT(exportToGraphics()));
-        disconnect(mpParentPlotWindow->mpExportPngAction,           SIGNAL(triggered()),    getTab(i),  SLOT(exportToPng()));
-        disconnect(mpParentPlotWindow->mpLegendButton,              SIGNAL(triggered()),    getTab(i),  SLOT(openLegendSettingsDialog()));
-        disconnect(mpParentPlotWindow->mpLocktheAxis,               SIGNAL(triggered()),    getTab(i),  SLOT(openAxisSettingsDialog()));
-    }
-
-    if(this->count() != 0)
-    {
-        if(getCurrentTab()->isSpecialPlot())
-        {
-            mpParentPlotWindow->mpArrowButton->setDisabled(true);
-            mpParentPlotWindow->mpZoomButton->setDisabled(true);
-            //mpParentPlotWindow->mpImportClassicData>setDisabled(true);
-            mpParentPlotWindow->mpPanButton->setDisabled(true);
-            mpParentPlotWindow->mpSaveButton->setDisabled(true);
-            mpParentPlotWindow->mpExportToCsvAction->setDisabled(true);
-            mpParentPlotWindow->mpExportToHvcAction->setDisabled(true);
-            mpParentPlotWindow->mpExportToGnuplotAction->setDisabled(true);
-            mpParentPlotWindow->mpExportToOldHopAction->setDisabled(true);
-            mpParentPlotWindow->mpExportToMatlabAction->setDisabled(true);
-            mpParentPlotWindow->mpLoadFromXmlButton->setDisabled(true);
-            mpParentPlotWindow->mpGridButton->setDisabled(true);
-            mpParentPlotWindow->mpBackgroundColorButton->setDisabled(true);
-            mpParentPlotWindow->mpNewWindowFromTabButton->setDisabled(true);
-            mpParentPlotWindow->mpResetXVectorButton->setDisabled(true);
-            mpParentPlotWindow->mpBodePlotButton->setDisabled(true);
-            mpParentPlotWindow->mpExportPdfAction->setDisabled(true);
-            //mpParentPlotWindow->mpExportToGraphicsAction->setDisabled(true);
-        }
-        else
-        {
-            mpParentPlotWindow->mpArrowButton->setDisabled(false);
-            mpParentPlotWindow->mpZoomButton->setDisabled(false);
-            mpParentPlotWindow->mpPanButton->setDisabled(false);
-            mpParentPlotWindow->mpImportClassicData->setDisabled(false);
-            mpParentPlotWindow->mpSaveButton->setDisabled(false);
-            mpParentPlotWindow->mpExportToCsvAction->setDisabled(false);
-            mpParentPlotWindow->mpExportToHvcAction->setDisabled(false);
-            mpParentPlotWindow->mpExportToGnuplotAction->setDisabled(false);
-            mpParentPlotWindow->mpExportToOldHopAction->setDisabled(false);
-            mpParentPlotWindow->mpExportToMatlabAction->setDisabled(false);
-            mpParentPlotWindow->mpExportGfxButton->setDisabled(false);
-            mpParentPlotWindow->mpLoadFromXmlButton->setDisabled(false);
-            mpParentPlotWindow->mpGridButton->setDisabled(false);
-            mpParentPlotWindow->mpBackgroundColorButton->setDisabled(false);
-            mpParentPlotWindow->mpNewWindowFromTabButton->setDisabled(false);
-            mpParentPlotWindow->mpResetXVectorButton->setDisabled(false);
-            mpParentPlotWindow->mpBodePlotButton->setDisabled(false);
-            mpParentPlotWindow->mpExportPdfAction->setDisabled(false);
-            //mpParentPlotWindow->mpExportToGraphicsAction->setDisabled(false);
-            mpParentPlotWindow->mpZoomButton->setChecked(getCurrentTab()->mpZoomer[FIRSTPLOT]->isEnabled());
-            mpParentPlotWindow->mpPanButton->setChecked(getCurrentTab()->mpPanner[FIRSTPLOT]->isEnabled());
-            mpParentPlotWindow->mpGridButton->setChecked(getCurrentTab()->mpGrid[FIRSTPLOT]->isVisible());
-            mpParentPlotWindow->mpResetXVectorButton->setEnabled(getCurrentTab()->mHasSpecialXAxis);
-            mpParentPlotWindow->mpBodePlotButton->setEnabled(getCurrentTab()->getCurves(FIRSTPLOT).size() > 1);
-        }
-
-        connect(mpParentPlotWindow->mpZoomButton,               SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enableZoom(bool)));
-        connect(mpParentPlotWindow->mpArrowButton,              SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enableArrow(bool))); // Arrow
-        connect(mpParentPlotWindow->mpPanButton,                SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enablePan(bool)));
-        connect(mpParentPlotWindow->mpBackgroundColorButton,    SIGNAL(triggered()),    getCurrentTab(),    SLOT(setBackgroundColor()));
-        connect(mpParentPlotWindow->mpGridButton,               SIGNAL(toggled(bool)),  getCurrentTab(),    SLOT(enableGrid(bool)));
-        connect(mpParentPlotWindow->mpResetXVectorButton,       SIGNAL(triggered()),    getCurrentTab(),    SLOT(resetXVector()));
-        connect(mpParentPlotWindow->mpExportToXmlAction,        SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToXml()));
-        connect(mpParentPlotWindow->mpExportToCsvAction,        SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToCsv()));
-        connect(mpParentPlotWindow->mpExportToHvcAction,        SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToHvc()));
-        connect(mpParentPlotWindow->mpExportToMatlabAction,     SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToMatlab()));
-        connect(mpParentPlotWindow->mpExportToGnuplotAction,    SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToGnuplot()));
-        connect(mpParentPlotWindow->mpExportToOldHopAction,     SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToOldHop()));
-        connect(mpParentPlotWindow->mpExportPdfAction,          SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToPdf()));
-        connect(mpParentPlotWindow->mpExportPngAction,          SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToPng()));
-//        connect(mpParentPlotWindow->mpExportToGraphicsAction,   SIGNAL(triggered()),    getCurrentTab(),    SLOT(exportToGraphics()));
-        connect(mpParentPlotWindow->mpLegendButton,             SIGNAL(triggered()),    getCurrentTab(),    SLOT(openLegendSettingsDialog()));
-        connect(mpParentPlotWindow->mpLocktheAxis,              SIGNAL(triggered()),    getCurrentTab(),    SLOT(openAxisSettingsDialog()));
-    }
-}
 
 
 //! @brief Constructor for plot tabs.
@@ -438,7 +306,7 @@ void PlotTab::openLegendSettingsDialog()
 
 void PlotTab::setTabName(QString name)
 {
-    mpParentPlotWindow->mpPlotTabs->setTabText(mpParentPlotWindow->mpPlotTabs->indexOf(this), name);
+    mpParentPlotWindow->mpPlotTabWidget->setTabText(mpParentPlotWindow->mpPlotTabWidget->indexOf(this), name);
 }
 
 
@@ -813,13 +681,13 @@ void PlotTab::rescaleToCurves()
         {
             if ((mpLegendLPosition->currentText() == mpLegendRPosition->currentText()) && (mpLegendRPosition->currentText() == "Top"))
             {
-                leftTopBufferOffset = rightTopBufferOffset = max(leftLegendHeight,rightLegendHeight);
+                leftTopBufferOffset = rightTopBufferOffset = qMax(leftLegendHeight,rightLegendHeight);
                 leftBottomBufferOffset = rightBottomBufferOffset = 0;
             }
             if ((mpLegendLPosition->currentText() == mpLegendRPosition->currentText()) && (mpLegendRPosition->currentText() == "Bottom"))
             {
                 leftTopBufferOffset = rightTopBufferOffset = 0;
-                leftBottomBufferOffset = rightBottomBufferOffset = max(leftLegendHeight,rightLegendHeight);
+                leftBottomBufferOffset = rightBottomBufferOffset = qMax(leftLegendHeight,rightLegendHeight);
             }
             else if (mpLegendLPosition->currentText() == "Bottom")
             {

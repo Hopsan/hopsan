@@ -36,10 +36,6 @@
 
 
 
-//#include <cstring>
-#include <limits>
-//#include <complex>
-
 #include "GUIObjects/GUIContainerObject.h"
 #include "Widgets/PlotWidget.h"
 #include "Widgets/MessageWidget.h"
@@ -79,8 +75,50 @@
 #include "PlotTab.h"
 #include "PlotCurve.h"
 
-const double DBLMAX = std::numeric_limits<double>::max();
 
+//! @brief Closes the plot tab with specified index
+//! @param index Index of tab to close
+void PlotTabWidget::closePlotTab(int index)
+{
+    PlotTab *theTab = getTab(index);
+    theTab->close();
+    delete(theTab);
+}
+
+
+//! @brief Returns a pointer to current plot tab
+PlotTab *PlotTabWidget::getCurrentTab()
+{
+    return qobject_cast<PlotTab*>(currentWidget());
+}
+
+
+//! @brief Returns a pointer to plot tab with index i
+//! @param i Index of plot tab
+PlotTab *PlotTabWidget::getTab(const int i)
+{
+    return qobject_cast<PlotTab*>(widget(i));
+}
+
+void PlotTabWidget::closeAllTabs()
+{
+    while (count()>0)
+    {
+        closePlotTab(0);
+    }
+}
+
+
+//! @brief Constructor for the plot tab widget
+//! @param parent Pointer to the plot window the plot tab widget belongs to
+PlotTabWidget::PlotTabWidget(PlotWindow *pParentPlotWindow)
+    : QTabWidget(pParentPlotWindow)
+{
+    setTabsClosable(true);
+    setMouseTracking(true);
+
+    connect(this, SIGNAL(tabCloseRequested(int)), this, SLOT(closePlotTab(int)));
+}
 
 
 //! @brief Constructor for the plot window, where plots are displayed.
@@ -90,7 +128,6 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
     : QMainWindow(parent)
 
 {
-
     // Set Window attributes
     setAttribute(Qt::WA_DeleteOnClose, true);
     setAttribute(Qt::WA_MouseTracking, true);
@@ -192,13 +229,13 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
 
     mpExportPdfAction = new QAction("Export to PDF", mpToolBar);
     mpExportPngAction = new QAction("Export to PNG", mpToolBar);
-    //mpExportToGraphicsAction = new QAction("Export to Graphics", mpToolBar);
+    mpExportToGraphicsAction = new QAction("Export to Graphics", mpToolBar);
 
 
     mpExportGfxMenu = new QMenu(mpToolBar);
     mpExportGfxMenu->addAction(mpExportPdfAction);
     mpExportGfxMenu->addAction(mpExportPngAction);
-//    mpExportGfxMenu->addAction(mpExportToGraphicsAction);
+    mpExportGfxMenu->addAction(mpExportToGraphicsAction);
 
     mpExportGfxButton = new QToolButton(mpToolBar);
     mpExportGfxButton->setToolTip("Export to Graphics File");
@@ -232,13 +269,6 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
     mpShowCurveInfoButton->setToolTip("Toggle Variable Lists");
     mpShowCurveInfoButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowLists.png"));
     connect(mpShowCurveInfoButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
-
-    //    mpShowLegendsAction = new QAction(this);
-    //    mpShowLegendsAction->setCheckable(true);
-    //    mpShowLegendsAction->setChecked(true);
-    //    mpShowLegendsAction->setToolTip("Toggle Legends");
-    //    mpShowLegendsAction->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotLegends.png"));
-    //    connect(mpShowLegendsAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpLocktheAxis = new QAction(this);
     //mpLocktheAxis->setCheckable(true);
@@ -287,7 +317,6 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
     mpToolBar->addSeparator();
     mpToolBar->addAction(mpShowCurveInfoButton);
     mpToolBar->addAction(mpShowPlotWidgetButton);
-    // mpToolBar->addAction(mpShowLegendsAction);
     mpToolBar->addAction(mpLegendButton);
     mpToolBar->addAction(mpLocktheAxis);
     mpToolBar->addAction(mpNewWindowFromTabButton);
@@ -295,8 +324,9 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
 
     addToolBar(mpToolBar);
 
-    mpPlotTabs = new PlotTabWidget(this);
+    mpPlotTabWidget = new PlotTabWidget(this);
     this->addPlotTab();
+    this->establishPlotTabConnections();
 
     //Initialize the help message popup
     mpHelpPopup = new QWidget(this);
@@ -354,12 +384,10 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
     this->setDockOptions(QMainWindow::AllowNestedDocks);
 
     mpLayout = new QGridLayout(this);
-    mpLayout->addWidget(mpPlotTabs,0,0,2,4);
+    mpLayout->addWidget(mpPlotTabWidget,0,0,2,4);
     mpLayout->addWidget(mpHelpPopup, 0,0,1,4);
     //mpLayout->addWidget(ptableWidgetDock,0,0,8,1);
     //mpLayout->addWidget(mpPlotInfoWidget, 2, 0, 1, 1);
-
-    //setLayout(mpLayout);
 
     //Set the correct position of the help popup message in the central widget
     mpLayout->setColumnMinimumWidth(0,2);
@@ -382,34 +410,30 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
     pLocalPlotWidget->mpPlotVariableTree->updateList();
 
     //Establish signal and slots connections
-    connect(mpNewPlotButton,                    SIGNAL(triggered()),        this,               SLOT(addPlotTab()));
-    connect(mpLoadFromXmlButton,                SIGNAL(triggered()),        this,               SLOT(loadFromXml()));
-    connect(mpImportClassicData,                SIGNAL(triggered()),        this,               SLOT(ImportPlo()));
-    connect(mpSaveButton,                       SIGNAL(triggered()),        this,               SLOT(saveToXml()));
-    connect(mpBodePlotButton,                   SIGNAL(triggered()),        this,               SLOT(createBodePlot()));
-    connect(mpNewWindowFromTabButton,           SIGNAL(triggered()),        this,               SLOT(createPlotWindowFromTab()));
-    connect(gpMainWindow->getOptionsDialog(),   SIGNAL(paletteChanged()),   this,               SLOT(updatePalette()));
-    connect(mpShowPlotWidgetButton,             SIGNAL(toggled(bool)),      pPlotWidgetDock,    SLOT(setVisible(bool)));
-    connect(mpShowCurveInfoButton,              SIGNAL(toggled(bool)),      pInfoxBoxWidgetDock,SLOT(setVisible(bool)));
+    connect(mpNewPlotButton,                    SIGNAL(triggered()),            this,               SLOT(addPlotTab()));
+    connect(mpLoadFromXmlButton,                SIGNAL(triggered()),            this,               SLOT(loadFromXml()));
+    connect(mpImportClassicData,                SIGNAL(triggered()),            this,               SLOT(ImportPlo()));
+    connect(mpSaveButton,                       SIGNAL(triggered()),            this,               SLOT(saveToXml()));
+    connect(mpBodePlotButton,                   SIGNAL(triggered()),            this,               SLOT(createBodePlot()));
+    connect(mpNewWindowFromTabButton,           SIGNAL(triggered()),            this,               SLOT(createPlotWindowFromTab()));
+    connect(gpMainWindow->getOptionsDialog(),   SIGNAL(paletteChanged()),       this,               SLOT(updatePalette()));
+    connect(mpShowPlotWidgetButton,             SIGNAL(toggled(bool)),          pPlotWidgetDock,    SLOT(setVisible(bool)));
+    connect(mpShowCurveInfoButton,              SIGNAL(toggled(bool)),          pInfoxBoxWidgetDock,SLOT(setVisible(bool)));
+    connect(mpPlotTabWidget,                    SIGNAL(currentChanged(int)),    this,               SLOT(establishPlotTabConnections()));
 
     //Hide lists and curve areas by default if screen size is small
     if(sh*sw <= 800*1280)
     {
         mpShowCurveInfoButton->toggle();
-        //mpShowCurvesButton->toggle();
     }
 
     this->setMouseTracking(true);
-
 }
 
 PlotWindow::~PlotWindow()
 {
-    // Need to close tabs before window is closed
-    while (mpPlotTabs->getTab(0)!=0)
-    {
-        mpPlotTabs->closePlotTab(0);
-    }
+    // Need to close tabs before window is closed and destructors are run
+    mpPlotTabWidget->closeAllTabs();
 }
 
 
@@ -431,9 +455,9 @@ void PlotWindow::addPlotTab(QString requestedName)
         {
             numString.setNum(tabID);
             bool found = false;
-            for(int i=0; i<mpPlotTabs->count(); ++i)
+            for(int i=0; i<mpPlotTabWidget->count(); ++i)
             {
-                if(mpPlotTabs->tabText(i) == "Plot " + numString)
+                if(mpPlotTabWidget->tabText(i) == "Plot " + numString)
                 {
                     found=true;
                     break;
@@ -449,9 +473,9 @@ void PlotWindow::addPlotTab(QString requestedName)
         tabName = requestedName;
     }
 
-    mpPlotTabs->addTab(mpNewTab, tabName);
+    mpPlotTabWidget->addTab(mpNewTab, tabName);
 
-    mpPlotTabs->setCurrentIndex(mpPlotTabs->count()-1);
+    mpPlotTabWidget->setCurrentIndex(mpPlotTabWidget->count()-1);
 
 
 }
@@ -459,13 +483,13 @@ void PlotWindow::addPlotTab(QString requestedName)
 
 PlotTabWidget *PlotWindow::getPlotTabWidget()
 {
-    return mpPlotTabs;
+    return mpPlotTabWidget;
 }
 
 
 PlotTab *PlotWindow::getCurrentPlotTab()
 {
-    return qobject_cast<PlotTab *>(mpPlotTabs->currentWidget());
+    return mpPlotTabWidget->getCurrentTab();
 }
 
 
@@ -566,10 +590,10 @@ void PlotWindow::saveToXml()
     timeElement.setAttribute("second", time.second());
 
     //Add tab elements
-    for(int i=0; i<mpPlotTabs->count(); ++i)
+    for(int i=0; i<mpPlotTabWidget->count(); ++i)
     {
         QDomElement tabElement = appendDomElement(xmlRootElement,"plottab");
-        if(mpPlotTabs->getTab(i)->isGridVisible())
+        if(mpPlotTabWidget->getTab(i)->isGridVisible())
         {
             tabElement.setAttribute("grid", "true");
         }
@@ -577,34 +601,34 @@ void PlotWindow::saveToXml()
         {
             tabElement.setAttribute("grid", "false");
         }
-        tabElement.setAttribute("color", makeRgbString(mpPlotTabs->getTab(i)->getPlot()->canvasBackground().color()));
+        tabElement.setAttribute("color", makeRgbString(mpPlotTabWidget->getTab(i)->getPlot()->canvasBackground().color()));
 
-        if(mpPlotTabs->getTab(i)->mHasSpecialXAxis)
+        if(mpPlotTabWidget->getTab(i)->mHasSpecialXAxis)
         {
             QDomElement specialXElement = appendDomElement(tabElement,"specialx");
             //! @todo FIXA /Peter
             //specialXElement.setAttribute("generation",  mpPlotTabs->getTab(i)->mVectorXGeneration);
-            specialXElement.setAttribute("component",   mpPlotTabs->getTab(i)->mSpecialXVectorDescription.mComponentName);
-            specialXElement.setAttribute("port",        mpPlotTabs->getTab(i)->mSpecialXVectorDescription.mPortName);
-            specialXElement.setAttribute("data",        mpPlotTabs->getTab(i)->mSpecialXVectorDescription.mDataName);
-            specialXElement.setAttribute("unit",        mpPlotTabs->getTab(i)->mSpecialXVectorDescription.mDataUnit);
-            specialXElement.setAttribute("model",       mpPlotTabs->getTab(i)->mSpecialXVectorModelPath);
+            specialXElement.setAttribute("component",   mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription.mComponentName);
+            specialXElement.setAttribute("port",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription.mPortName);
+            specialXElement.setAttribute("data",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription.mDataName);
+            specialXElement.setAttribute("unit",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription.mDataUnit);
+            specialXElement.setAttribute("model",       mpPlotTabWidget->getTab(i)->mSpecialXVectorModelPath);
         }
 
         //Add curve elements
-        for(int j=0; j<mpPlotTabs->getTab(i)->getCurves().size(); ++j)
+        for(int j=0; j<mpPlotTabWidget->getTab(i)->getCurves().size(); ++j)
         {
             QDomElement curveElement = appendDomElement(tabElement,"curve");
             //! @todo FIXA /Peter
             //curveElement.setAttribute("generation", mpPlotTabs->getTab(i)->getCurves().at(j)->getGeneration());
-            curveElement.setAttribute("component",  mpPlotTabs->getTab(i)->getCurves().at(j)->getComponentName());
-            curveElement.setAttribute("port",       mpPlotTabs->getTab(i)->getCurves().at(j)->getPortName());
-            curveElement.setAttribute("data",       mpPlotTabs->getTab(i)->getCurves().at(j)->getDataName());
-            curveElement.setAttribute("unit",       mpPlotTabs->getTab(i)->getCurves().at(j)->getDataUnit());
-            curveElement.setAttribute("axis",       mpPlotTabs->getTab(i)->getCurves().at(j)->getAxisY());
-            curveElement.setAttribute("width",      mpPlotTabs->getTab(i)->getCurves().at(j)->getQwtPlotCurvePtr()->pen().width());
-            curveElement.setAttribute("color",      makeRgbString(mpPlotTabs->getTab(i)->getCurves().at(j)->getQwtPlotCurvePtr()->pen().color()));
-            curveElement.setAttribute("model",      mpPlotTabs->getTab(i)->getCurves().at(j)->getContainerObjectPtr()->getModelFileInfo().filePath());
+            curveElement.setAttribute("component",  mpPlotTabWidget->getTab(i)->getCurves().at(j)->getComponentName());
+            curveElement.setAttribute("port",       mpPlotTabWidget->getTab(i)->getCurves().at(j)->getPortName());
+            curveElement.setAttribute("data",       mpPlotTabWidget->getTab(i)->getCurves().at(j)->getDataName());
+            curveElement.setAttribute("unit",       mpPlotTabWidget->getTab(i)->getCurves().at(j)->getDataUnit());
+            curveElement.setAttribute("axis",       mpPlotTabWidget->getTab(i)->getCurves().at(j)->getAxisY());
+            curveElement.setAttribute("width",      mpPlotTabWidget->getTab(i)->getCurves().at(j)->getQwtPlotCurvePtr()->pen().width());
+            curveElement.setAttribute("color",      makeRgbString(mpPlotTabWidget->getTab(i)->getCurves().at(j)->getQwtPlotCurvePtr()->pen().color()));
+            curveElement.setAttribute("model",      mpPlotTabWidget->getTab(i)->getCurves().at(j)->getContainerObjectPtr()->getModelFileInfo().filePath());
         }
     }
 
@@ -1098,17 +1122,17 @@ void PlotWindow::showToolBarHelpPopup()
 void PlotWindow::closeIfEmpty()
 {
     int curves=0;
-    for(int i=0; i<mpPlotTabs->count(); ++i)
+    for(int i=0; i<mpPlotTabWidget->count(); ++i)
     {
         int nCurvesInTab = 0;
         for(int plotId=0; plotId<2; ++plotId)
         {
-            nCurvesInTab += mpPlotTabs->getTab(i)->getNumberOfCurves(HopsanPlotID(plotId));
+            nCurvesInTab += mpPlotTabWidget->getTab(i)->getNumberOfCurves(HopsanPlotID(plotId));
         }
 
         if(nCurvesInTab == 0)
         {
-            mpPlotTabs->closePlotTab(i);
+            mpPlotTabWidget->closePlotTab(i);
             --i;
         }
 
@@ -1128,9 +1152,9 @@ void PlotWindow::hideCurveInfo()
 
 void PlotWindow::setLegendsVisible(bool value)
 {
-    for(int i=0; i<mpPlotTabs->count(); ++i)
+    for(int i=0; i<mpPlotTabWidget->count(); ++i)
     {
-        mpPlotTabs->getTab(i)->setLegendsVisible(value);
+        mpPlotTabWidget->getTab(i)->setLegendsVisible(value);
     }
 }
 
@@ -1146,8 +1170,109 @@ void PlotWindow::mouseMoveEvent(QMouseEvent *event)
 //! @brief Reimplementation of close function for plot window. Notifies plot widget that window no longer exists.
 void PlotWindow::closeEvent(QCloseEvent *event)
 {
-    gpMainWindow->mpPlotWidget->mpPlotVariableTree->reportClosedPlotWindow(this);
+    gpMainWindow->mpPlotWidget->mpPlotVariableTree->reportClosedPlotWindow(this); //!< @deprecated
+    emit windowClosed(this);
     event->accept();
+}
+
+void PlotWindow::establishPlotTabConnections()
+{
+    // First disconnect all current connections (in case the tab is being changed)
+    disconnect(mpZoomButton,                SIGNAL(toggled(bool)),  0,  0);
+    disconnect(mpArrowButton,               SIGNAL(toggled(bool)),  0,  0);
+    disconnect(mpPanButton,                 SIGNAL(toggled(bool)),  0,  0);
+    disconnect(mpBackgroundColorButton,     SIGNAL(triggered()),    0,  0);
+    disconnect(mpGridButton,                SIGNAL(toggled(bool)),  0,  0);
+    disconnect(mpResetXVectorButton,        SIGNAL(triggered()),    0,  0);
+    disconnect(mpExportToCsvAction,         SIGNAL(triggered()),    0,  0);
+    disconnect(mpExportToHvcAction,         SIGNAL(triggered()),    0,  0);
+    disconnect(mpExportToXmlAction,         SIGNAL(triggered()),    0,  0);
+    disconnect(mpExportToOldHopAction,      SIGNAL(triggered()),    0,  0);
+    disconnect(mpExportToMatlabAction,      SIGNAL(triggered()),    0,  0);
+    disconnect(mpExportToGnuplotAction,     SIGNAL(triggered()),    0,  0);
+    disconnect(mpExportPdfAction,           SIGNAL(triggered()),    0,  0);
+    disconnect(mpExportToGraphicsAction,    SIGNAL(triggered()),    0,  0);
+    disconnect(mpExportPngAction,           SIGNAL(triggered()),    0,  0);
+    disconnect(mpLegendButton,              SIGNAL(triggered()),    0,  0);
+    disconnect(mpLocktheAxis,               SIGNAL(triggered()),    0,  0);
+
+    // If there are any tabs then show the widget and reestablish connections to the current tab
+    if(mpPlotTabWidget->count() > 0)
+    {
+        mpPlotTabWidget->show();
+        PlotTab* pCurrentTab = mpPlotTabWidget->getCurrentTab();
+
+        if(pCurrentTab->isSpecialPlot())
+        {
+            mpArrowButton->setDisabled(true);
+            mpZoomButton->setDisabled(true);
+            //mpParentPlotWindow->mpImportClassicData>setDisabled(true);
+            mpPanButton->setDisabled(true);
+            mpSaveButton->setDisabled(true);
+            mpExportToCsvAction->setDisabled(true);
+            mpExportToHvcAction->setDisabled(true);
+            mpExportToGnuplotAction->setDisabled(true);
+            mpExportToOldHopAction->setDisabled(true);
+            mpExportToMatlabAction->setDisabled(true);
+            mpLoadFromXmlButton->setDisabled(true);
+            mpGridButton->setDisabled(true);
+            mpBackgroundColorButton->setDisabled(true);
+            mpNewWindowFromTabButton->setDisabled(true);
+            mpResetXVectorButton->setDisabled(true);
+            mpBodePlotButton->setDisabled(true);
+            mpExportPdfAction->setDisabled(true);
+            mpExportToGraphicsAction->setDisabled(true);
+        }
+        else
+        {
+            mpArrowButton->setDisabled(false);
+            mpZoomButton->setDisabled(false);
+            mpPanButton->setDisabled(false);
+            mpImportClassicData->setDisabled(false);
+            mpSaveButton->setDisabled(false);
+            mpExportToCsvAction->setDisabled(false);
+            mpExportToHvcAction->setDisabled(false);
+            mpExportToGnuplotAction->setDisabled(false);
+            mpExportToOldHopAction->setDisabled(false);
+            mpExportToMatlabAction->setDisabled(false);
+            mpExportGfxButton->setDisabled(false);
+            mpLoadFromXmlButton->setDisabled(false);
+            mpGridButton->setDisabled(false);
+            mpBackgroundColorButton->setDisabled(false);
+            mpNewWindowFromTabButton->setDisabled(false);
+            mpResetXVectorButton->setDisabled(false);
+            mpBodePlotButton->setDisabled(false);
+            mpExportPdfAction->setDisabled(false);
+            mpExportToGraphicsAction->setDisabled(false);
+            mpZoomButton->setChecked(pCurrentTab->mpZoomer[FIRSTPLOT]->isEnabled());
+            mpPanButton->setChecked(pCurrentTab->mpPanner[FIRSTPLOT]->isEnabled());
+            mpGridButton->setChecked(pCurrentTab->mpGrid[FIRSTPLOT]->isVisible());
+            mpResetXVectorButton->setEnabled(pCurrentTab->mHasSpecialXAxis);
+            mpBodePlotButton->setEnabled(pCurrentTab->getCurves(FIRSTPLOT).size() > 1);
+        }
+
+        connect(mpZoomButton,               SIGNAL(toggled(bool)),  pCurrentTab,    SLOT(enableZoom(bool)));
+        connect(mpArrowButton,              SIGNAL(toggled(bool)),  pCurrentTab,    SLOT(enableArrow(bool))); // Arrow
+        connect(mpPanButton,                SIGNAL(toggled(bool)),  pCurrentTab,    SLOT(enablePan(bool)));
+        connect(mpBackgroundColorButton,    SIGNAL(triggered()),    pCurrentTab,    SLOT(setBackgroundColor()));
+        connect(mpGridButton,               SIGNAL(toggled(bool)),  pCurrentTab,    SLOT(enableGrid(bool)));
+        connect(mpResetXVectorButton,       SIGNAL(triggered()),    pCurrentTab,    SLOT(resetXVector()));
+        connect(mpExportToXmlAction,        SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToXml()));
+        connect(mpExportToCsvAction,        SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToCsv()));
+        connect(mpExportToHvcAction,        SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToHvc()));
+        connect(mpExportToMatlabAction,     SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToMatlab()));
+        connect(mpExportToGnuplotAction,    SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToGnuplot()));
+        connect(mpExportToOldHopAction,     SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToOldHop()));
+        connect(mpExportPdfAction,          SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToPdf()));
+        connect(mpExportPngAction,          SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToPng()));
+        connect(mpExportToGraphicsAction,   SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToGraphics()));
+        connect(mpLegendButton,             SIGNAL(triggered()),    pCurrentTab,    SLOT(openLegendSettingsDialog()));
+        connect(mpLocktheAxis,              SIGNAL(triggered()),    pCurrentTab,    SLOT(openAxisSettingsDialog()));
+    }
+    else
+    {
+        mpPlotTabWidget->hide();
+    }
 }
 
 

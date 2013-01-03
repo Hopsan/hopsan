@@ -169,7 +169,8 @@ SOURCES += main.cpp \
     Widgets/HcomWidget.cpp \
     LogDataHandler.cpp \
     PlotTab.cpp \
-    PlotCurve.cpp
+    PlotCurve.cpp \
+    PlotHandler.cpp
 
 
 
@@ -238,7 +239,8 @@ HEADERS += MainWindow.h \
     Widgets/HcomWidget.h \
     LogDataHandler.h \
     PlotTab.h \
-    PlotCurve.h
+    PlotCurve.h \
+    PlotHandler.h
 
 OTHER_FILES += \
     ../hopsandefaults \

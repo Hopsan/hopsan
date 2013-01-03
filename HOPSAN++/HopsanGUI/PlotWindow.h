@@ -26,46 +26,39 @@
 #define PlotWindow_H
 
 #include <QtGui>
-
-#include <qwt_plot.h>
-#include <qwt_plot_curve.h>
-#include <qwt_plot_grid.h>
-#include <qwt_plot_marker.h>
-#include <qwt_plot_zoomer.h>
-#include <qwt_plot_magnifier.h>
-#include <qwt_plot_panner.h>
-#include <qwt_plot_marker.h>
-#include <qwt_symbol.h>
-#include "qwt_legend.h"
-
-#include "qwt_plot_legenditem.h"
-
-#include <QObject>
-#include <QFile>
 #include <QObject>
 #include <QString>
 
-
-
-#include "GUIObjects/GUIContainerObject.h"
-#include "Dependencies/BarChartPlotter/barchartplotter.h"
-#include "Dependencies/BarChartPlotter/axisbase.h"
+#include <qwt_plot.h>
 
 class MainWindow;
 class PlotVariableTree;
 class PlotTreeWidget;
-class SystemContainer;
-class PlotTabWidget;
+
 class PlotTab;
-class PlotMarker;
 class PlotCurve;
+class LogVariableData;
+class VariableDescription;
+class PlotWindow;
+
+//! @brief Tab widget for plots in plot window
+class PlotTabWidget : public QTabWidget
+{
+    Q_OBJECT
+public:
+    PlotTabWidget(PlotWindow *pParentPlotWindow);
+    PlotTab *getCurrentTab();
+    PlotTab *getTab(const int i);
+    void closeAllTabs();
+
+public slots:
+    void closePlotTab(int index);
+};
 
 class PlotWindow : public QMainWindow
 {
     Q_OBJECT
     friend class PlotTreeWidget;                //! @todo Should plot window really be friend with everything?
-    friend class VariableListWidget;
-    friend class PlotTabWidget;
     friend class PlotTab;
     friend class PlotCurve;
 public:
@@ -76,12 +69,13 @@ public:
 
     PlotTabWidget *getPlotTabWidget();
     PlotTab *getCurrentPlotTab();
+
     void showHelpPopupMessage(QString message);
     void hideHelpPopupMessage();
-    //SystemContainer *mpCurrentGUISystem;
 
 signals:
     void curveAdded();
+    void windowClosed(PlotWindow *pWindow);
 
 public slots:
     void changeXVector(QVector<double> xarray, VariableDescription &rVarDesc);
@@ -109,10 +103,13 @@ protected:
     void mouseMoveEvent(QMouseEvent *event);
     void closeEvent(QCloseEvent *event);
 
+protected slots:
+    void establishPlotTabConnections();
+
 private:
     QGridLayout *mpLayout;
     QGridLayout *mpInfoBoxLayout;
-    PlotVariableTree *mpPlotVariableTree;
+    PlotVariableTree *mpPlotVariableTree; //!< @todo this seems to be completely useless
     QPointF dragStartPosition;
 
     QToolBar *mpToolBar;
@@ -134,7 +131,6 @@ private:
     QAction *mpShowCurveInfoButton;
     QAction *mpShowPlotWidgetButton;
 
-//    QAction *mpShowLegendsAction;
     QAction *mpBodePlotButton;
     QMenu *mpExportMenu;
     QAction *mpExportToXmlAction;
@@ -150,7 +146,7 @@ private:
     QAction *mpExportToGraphicsAction;
     QAction *mpLocktheAxis;
 
-    PlotTabWidget *mpPlotTabs;
+    PlotTabWidget *mpPlotTabWidget;
 
     QMap<QRadioButton *, PlotCurve *> mBodeInputButtonToCurveMap;
     QMap<QRadioButton *, PlotCurve *> mBodeOutputButtonToCurveMap;
@@ -174,8 +170,6 @@ private:
     QCheckBox *mpPowerSpectrumCheckBox;
     PlotCurve *mpFrequencyAnalysisCurve;
 
-    //QWidget *mpPlotCurveInfoWidget;
-    //QScrollArea *mpPlotCurveInfoScrollArea;
     QVBoxLayout *mpPlotCurveInfoLayout;
     QAbstractItemModel *model;
 };
