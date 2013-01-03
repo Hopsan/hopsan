@@ -184,8 +184,6 @@ void HopsanGenerator::generateFromModelica(QString code)
 {
     validateFunctions();
 
-    return;
-
     QString typeName, displayName, cqsType;
     QStringList initAlgorithms, equations, finalAlgorithms;
     QList<PortSpecification> portList;
@@ -3579,9 +3577,10 @@ void HopsanGenerator::generateComponentObject(ComponentSpecification &comp, QStr
 
     //Create list of equqtions
     QList<Expression> equations;
-    for(int i=0; i<plainEquations.size(); ++i)
+    for(int e=0; e<plainEquations.size(); ++e)
     {
-        equations.append(Expression(plainEquations.at(i)));
+        equations.append(Expression(plainEquations.at(e)));
+        qDebug() << "EQUATION: " << equations[e].toString();
     }
 
     //Create list of final algorithms
@@ -3801,15 +3800,19 @@ void HopsanGenerator::generateComponentObject(ComponentSpecification &comp, QStr
         allSymbols.removeAll(localVars[i]);
     }
 
-    for(int i=0; i<equations.size(); ++i)
+    //Make all equations left-sided
+    for(int e=0; e<equations.size(); ++e)
     {
-        equations[i].toLeftSided();
-        equations[i].replaceBy((*equations[i].getLeft()));
+        equations[e].toLeftSided();
+        qDebug() << "LEFT SIDED: " << equations[e].toString();
     }
 
-    for(int i=0; i<equations.size(); ++i)
+    //Apply bilinear transform
+    for(int e=0; e<equations.size(); ++e)
     {
-        equations[i] = equations[i].bilinearTransform();
+        equations[e] = equations[e].bilinearTransform();
+        equations[e]._simplify(Expression::FullSimplification, Expression::Recursive);
+        qDebug() << "BILINEAR TRANSFORM: " << equations[e].toString();
     }
 
 
@@ -3818,7 +3821,8 @@ void HopsanGenerator::generateComponentObject(ComponentSpecification &comp, QStr
     {
         equations[e].linearize();
         equations[e]._simplify(Expression::FullSimplification, Expression::Recursive);
-        qDebug() << "\nLINEARIZED: " << equations[e].toString();
+        qDebug() << "LINEARIZED: " << equations[e].toString();
+        equations[e].replaceBy((*equations[e].getLeft()));
     }
 
 
@@ -3830,6 +3834,7 @@ void HopsanGenerator::generateComponentObject(ComponentSpecification &comp, QStr
         equations[e].expand();
         equations[e].toDelayForm(delayTerms, delaySteps);
         equations[e]._simplify(Expression::FullSimplification);
+        qDebug() << "TRANSFORMED TO DELAYS: " << equations[e].toString();
     }
 
 
@@ -3900,10 +3905,13 @@ void HopsanGenerator::generateComponentObject(ComponentSpecification &comp, QStr
         for(int j=0; j<stateVars.size(); ++j)
         {
             bool ok = true;
-            Expression negExpr = stateVars[j];
-            negExpr.changeSign();
-            tempExpr.replace(negExpr, Expression::fromFactorsDivisors(QList<Expression>() << stateVars[j] << Expression("-1.0", Expression::NoSimplifications), QList<Expression>()));
-            jacobian[e].append(tempExpr.derivative(stateVars[j], ok));
+            //Expression negExpr = stateVars[j];
+            //negExpr.changeSign();
+            //tempExpr.replace(negExpr, Expression::fromFactorsDivisors(QList<Expression>() << stateVars[j] << Expression("-1.0", Expression::NoSimplifications), QList<Expression>()));
+            Expression derExpr = tempExpr.derivative(stateVars[j], ok);
+            qDebug() << "Derivating \""+tempExpr.toString()+"\" with respect to \""+stateVars[j].toString();
+            qDebug() << "Result: \""+derExpr.toString()+"\"";
+            jacobian[e].append(derExpr);
             if(!ok)
             {
                 printErrorMessage("Failed to differentiate expression: " + equations[e].toString() + " for variable " + stateVars[j].toString());

@@ -360,8 +360,8 @@ bool Expression::operator==(const Expression &other) const
 
     bool stringOk = (mString == other.mString);
 
-    bool factorOk = true;
-    if(this->isMultiplyOrDivide() && other.isMultiplyOrDivide())
+    bool factorOk = (mFactors.size() == other.mFactors.size());
+    if(this->isMultiplyOrDivide() && other.isMultiplyOrDivide() && factorOk)
     {
         Q_FOREACH(const Expression &factor, mFactors)
         {
@@ -469,8 +469,21 @@ Expression Expression::fromBasePower(const Expression base, const Expression pow
 Expression Expression::fromFunctionArguments(const QString function, const QList<Expression> arguments)
 {
     Expression ret;
-    ret.mFunction = function;
+    bool neg=false;
+    if(function.startsWith("-"))
+    {
+        ret.mFunction = function.right(function.size()-1);
+        neg = true;
+    }
+    else
+    {
+        ret.mFunction = function;
+    }
     ret.mArguments = arguments;
+    if(neg)
+    {
+        ret.changeSign();
+    }
     return ret;
 }
 
@@ -631,14 +644,11 @@ QString Expression::toString() const
         {
             ret.chop(1);
         }
+        if(!mDivisors.isEmpty()) { ret.append("/"); }
+        if(mDivisors.size() > 1) { ret.append("("); }
         Q_FOREACH(const Expression &divisor, mDivisors)
         {
             QString divString = divisor.toString();
-            ret.append("/");
-            if(mDivisors.size() > 1)
-            {
-                ret.append("(");
-            }
             if(divisor.isAdd())
             {
                 divString.prepend("(");
@@ -647,14 +657,8 @@ QString Expression::toString() const
             ret.append(divString);
             ret.append("*");
         }
-        if(mDivisors.size() > 0)
-        {
-            ret.chop(1);
-        }
-        else if(mDivisors.size() > 1)
-        {
-            ret.append(")");
-        }
+        if(mDivisors.size() > 0) { ret.chop(1); }
+        if(mDivisors.size() > 1) { ret.append(")"); }
     }
     else if(this->isPower())
     {
@@ -685,9 +689,10 @@ QString Expression::toString() const
 //! @details This function assumes that the function is linearized, so that there are no Z operators in divisors.
 //! @param delayTerms Reference to list of delayed terms; new terms are appended
 //! @param delaySteps Reference to list of delay steps for each term; new values are appended
-//FIXED
 void Expression::toDelayForm(QList<Expression> &rDelayTerms, QStringList &rDelaySteps)
 {
+    //! @todo Make recursive or something, (Z*x+y)/z will not be converted as it is now...
+
     //Generate list of terms
     QList<QList<Expression> > termMap;
     QList<Expression> terms = getTerms();
@@ -915,29 +920,29 @@ void Expression::changeSign()
 Expression Expression::derivative(const Expression x, bool &ok) const
 {
     ok = true;
-    QString ret;
+    Expression ret;
 
     //Equality, differentiate left and right expressions
     if(this->isEquation())
     {
         bool success;
-        ret.append(mpLeft->derivative(x, success).toString());
+        Expression left = mpLeft->derivative(x, success);
         if(!success) { ok = false; }
-        ret.append("=");
-        ret.append(mpRight->derivative(x, success).toString());
+        Expression right = mpRight->derivative(x, success);
         if(!success) { ok = false; }
+        ret = Expression::fromEquation(left, right);
     }
     //Function
     else if(this->isFunction())
     {
-        QString f = this->toString();
-        QString g;
-        QString dg;
+        Expression f = *this;
+        Expression g;
+        Expression dg;
         if(!mArguments.isEmpty())
         {
-            g = mArguments[0].toString();    //First argument
+            g = mArguments[0];    //First argument
             bool success;
-            dg = mArguments[0].derivative(x, success).toString();    //Derivative of first argument
+            dg = mArguments[0].derivative(x, success);    //Derivative of first argument
             if(!success) { ok = false; }
         }
 
@@ -952,89 +957,114 @@ Expression Expression::derivative(const Expression x, bool &ok) const
         //Custom functions
         if(func == "log")
         {
-            ret = "("+dg+")/("+g+")";
+            ret = Expression::fromFactorDivisor(dg, g);
         }
         else if(func == "exp")
         {
-            ret = "("+dg+")*("+f+")";
+            ret = Expression::fromTwoFactors(dg, f);
         }
         else if(func == "tan")
         {
-            ret = "2*("+dg+")/(cos(2*"+g+")+1)";
+            Expression factor = fromTwoFactors(Expression(2), dg);
+            Expression funcExpr = fromFunctionArguments("cos", QList<Expression>() << fromTwoFactors(Expression(2), g));
+            Expression divisor = fromTwoTerms(funcExpr, Expression(1));
+            ret = fromFactorDivisor(factor, divisor);
         }
         else if(func == "atan" || func == "atan2")
         {
-            ret = "("+dg+")/(("+g+")^2+1)";
+            Expression divisor = fromTwoTerms(fromTwoFactors(g, g), Expression(1));
+            ret = fromFactorDivisor(dg, divisor);
         }
         else if(func == "asin")
         {
-            ret = "("+dg+")/sqrt(1-("+g+")^2)";
+            Expression term1 = Expression(1);
+            Expression term2 = fromFactorsDivisors(QList<Expression>() << g << g << Expression(-1), QList<Expression>());
+            Expression arg = fromTwoTerms(term1, term2);
+            Expression root = fromFunctionArguments("sqrt", QList<Expression>() << arg);
+            ret = fromFactorDivisor(dg, root);
         }
         else if(func == "acos")
         {
-            ret = "-("+dg+")/sqrt(1-("+g+")^2)";
+            Expression gNeg = g;
+            gNeg.changeSign();
+            Expression dgNeg = dg;
+            dgNeg.changeSign();
+            Expression arg = fromTwoTerms(Expression(1), fromTwoFactors(g, gNeg));
+            Expression root = fromFunctionArguments("sqrt", QList<Expression>() << arg);
+            ret = fromFactorDivisor(dgNeg, root);
         }
         else if(func == "mod")
         {
-            ret = "0.0";
+            ret = Expression(0);
         }
         else if(func == "rem")
         {
-            ret = "0.0";
+            ret = Expression(0);
         }
         else if(func == "sqrt")
         {
-            ret = "("+dg+")/(2*sqrt("+g+"))";
+            Expression funcExpr = fromFunctionArguments("sqrt", QList<Expression>() << g);
+            Expression divisor = fromTwoTerms(Expression(2), funcExpr);
+            ret = fromFactorDivisor(dg, divisor);
         }
         else if(func == "sign")
         {
-            ret = "0.0";
+            ret = Expression(0);
         }
         else if(func == "re")
         {
-            ret = "0.0";
+            ret = Expression(0);
         }
         else if(func == "ceil")
         {
-            ret = "0.0";
+            ret = Expression(0);
         }
         else if(func == "floor")
         {
-            ret = "0.0";
+            ret = Expression(0);
         }
         else if(func == "int")
         {
-            ret = "0.0";
+            ret = Expression(0);
         }
         else if(func == "dxLimit")
         {
-            ret = "0.0";
+            ret = Expression(0);
         }
         else if(func == "mDelay")
         {
-            ret = "0.0";
+            ret = Expression(0);
         }
         else if(func.startsWith("mDelay"))
         {
-            ret = "0.0";
+            ret = Expression(0);
         }
         else if(func == "pow")
         {
-            if(g == "Z" || g == "-Z")
+            if(g == Expression("Z") || g == Expression("-Z"))
             {
-                ret = "0.0";
+                ret = Expression(0);
             }
             else
             {
                 bool success;
-                QString f = mArguments[0].toString();
-                QString df = mArguments[0].derivative(x, success).toString();
+                Expression f = mArguments[0];
+                Expression df = mArguments[0].derivative(x, success);
                 if(!success) { ok = false; }
-                QString g = mArguments[1].toString();
-                QString dg = mArguments[1].derivative(x, success).toString();
+                Expression g = mArguments[1];
+                Expression dg = mArguments[1].derivative(x, success);
                 if(!success) { ok = false; }
 
-                ret = "pow("+f+","+g+"-1)*(("+g+")*("+df+")+("+f+")*log(("+f+"))*("+dg+"))";
+
+                Expression factor1 = fromBasePower(f, fromTwoTerms(g, Expression("-1")));
+                Expression term1 = fromTwoFactors(df, f);
+                Expression funcExpr = fromFunctionArguments("log", QList<Expression>() << f);
+                Expression term2 = fromFactorsDivisors(QList<Expression>() << f << funcExpr << dg, QList<Expression>());
+                Expression factor2 = fromTwoTerms(term1, term2);
+
+                ret = fromTwoFactors(factor1, factor2);
+
+                //ret = "pow("+f+","+g+"-1)*(("+g+")*("+df+")+("+f+")*log(("+f+"))*("+dg+"))";
             }
         }
         //No special function, so use chain rule
@@ -1047,19 +1077,16 @@ Expression Expression::derivative(const Expression x, bool &ok) const
             }
             else
             {
-                ret = this->toString();
-                ret = ret.mid(ret.indexOf("("), ret.size()-1);
-                ret.prepend(mFunctionDerivatives.find(func).value());
-                ret.append("*");
+                ret = fromFunctionArguments(mFunctionDerivatives.find(mFunction).value(), mArguments);
                 bool success;
-                ret.append("("+mArguments.first().derivative(x, success).toString()+")");
-                if(!success) { ok = false; }
+                ret = fromTwoFactors(ret, mArguments.first().derivative(x, success));
+                if(!success) {ok = false; }
             }
         }
 
         if(negative)
         {
-            ret.prepend("-");
+            ret.changeSign();
         }
     }
 
@@ -1069,7 +1096,7 @@ Expression Expression::derivative(const Expression x, bool &ok) const
         //Derivative of Z is zero
         if(mFactors.contains(Expression("Z")))
         {
-            ret = "0.0";
+            ret = Expression(0);
         }
         else if(!mDivisors.isEmpty())
         {
@@ -1082,12 +1109,12 @@ Expression Expression::derivative(const Expression x, bool &ok) const
             Expression der2 = exp2.derivative(x, success);
             if(!success) { ok = false; }
 
-            QString expstr1 = exp1.toString();
-            QString expstr2 = exp2.toString();
-            QString derstr1 = der1.toString();
-            QString derstr2 = der2.toString();
-
-            ret = "(("+expstr2+")*("+derstr1+")-("+expstr1+")*("+derstr2+"))/("+expstr2+")^2";
+            Expression term1 = fromTwoFactors(exp2, der1);
+            Expression term2 = fromTwoFactors(exp1, der2);
+            term2.changeSign();
+            Expression factor = fromTwoTerms(term1, term2);
+            Expression divisor = fromTwoFactors(exp2, exp2);
+            ret = fromFactorDivisor(factor, divisor);
         }
         else
         {
@@ -1113,8 +1140,7 @@ Expression Expression::derivative(const Expression x, bool &ok) const
 
             Expression firstTerm = Expression::fromTwoFactors(der1, exp2);
             Expression secondTerm = Expression::fromTwoFactors(exp1, der2);
-            return Expression::fromTwoTerms(firstTerm, secondTerm);
-            //! @todo Only this part is returning an expression, make the other ones do the same
+            ret = fromTwoTerms(firstTerm, secondTerm);
         }
     }
     //Addition
@@ -1125,7 +1151,7 @@ Expression Expression::derivative(const Expression x, bool &ok) const
         {
             derSet << term.derivative(x, ok);
         }
-        ret = Expression::fromTerms(derSet).toString();
+        ret = Expression::fromTerms(derSet);
     }
 
     //Power, d/dx(f(x)^g(x)) = (g(x)*f'(x)+f(x)*log(f(x))*g'(x)) * f(x)^(g(x)-1)
@@ -1139,7 +1165,8 @@ Expression Expression::derivative(const Expression x, bool &ok) const
         QString dg = mpPower->derivative(x, success).toString();
         if(!success) { ok = false; }
 
-        ret = "("+f+")^("+g+"-1)*(("+g+")*("+df+")+("+f+")*log(("+f+"))*("+dg+"))";
+        //! @todo Make this without using string
+        ret = Expression("("+f+")^("+g+"-1)*(("+g+")*("+df+")+("+f+")*log(("+f+"))*("+dg+"))");
     }
 
     //Symbol
@@ -1147,16 +1174,18 @@ Expression Expression::derivative(const Expression x, bool &ok) const
     {
         if(*this == x)
         {
-            ret = "1.0";
+            ret = Expression(1);
         }
         else
         {
-            ret = "0.0";
+            ret = Expression(0);
         }
     }
 
     Expression retExp = Expression(ret);
     retExp._simplify(FullSimplification, Recursive);
+
+    assert(retExp.toString() != "");
 
     return retExp;
 }
@@ -1239,7 +1268,7 @@ Expression Expression::bilinearTransform() const
         QList<Expression>::iterator it;
         for(it=newTerms.begin(); it!=newTerms.end(); ++it)
         {
-            (*it).bilinearTransform();
+            (*it) = (*it).bilinearTransform();
         }
         retExpr = Expression::fromTerms(newTerms);
     }
@@ -1247,8 +1276,8 @@ Expression Expression::bilinearTransform() const
     {
         Expression newLeft = *mpLeft;
         Expression newRight = *mpRight;
-        newLeft.bilinearTransform();
-        newRight.bilinearTransform();
+        newLeft = newLeft.bilinearTransform();
+        newRight = newRight.bilinearTransform();
         retExpr = Expression::fromEquation(newLeft, newRight);
     }
     else if(this->isMultiplyOrDivide())
@@ -1257,12 +1286,12 @@ Expression Expression::bilinearTransform() const
         QList<Expression>::iterator it;
         for(it=newFactors.begin(); it!=newFactors.end(); ++it)
         {
-            (*it).bilinearTransform();
+            (*it) = (*it).bilinearTransform();
         }
         QList<Expression> newDivisors = mDivisors;
         for(it=newDivisors.begin(); it!=newDivisors.end(); ++it)
         {
-            (*it).bilinearTransform();
+            (*it) = (*it).bilinearTransform();
         }
         retExpr = Expression::fromFactorsDivisors(newFactors, newDivisors);
     }
@@ -1333,7 +1362,6 @@ QList<Expression> Expression::getVariables() const
 
 
 //! @brief Returns a list with all used functions in the expression
-//FIXED
 QStringList Expression::getFunctions() const
 {
     QStringList retval;
@@ -1382,7 +1410,6 @@ QStringList Expression::getFunctions() const
 
 
 //! @brief Returns the function name, or an empty string is this is not a function
-//FIXED
 QString Expression::getFunctionName() const
 {
     return mFunction;
@@ -1390,7 +1417,6 @@ QString Expression::getFunctionName() const
 
 
 //! @brief Returns the symbol name, or an empty string is this is not a symbol
-//FIXED
 QString Expression::getSymbolName() const
 {
      return mString;
@@ -1399,7 +1425,6 @@ QString Expression::getSymbolName() const
 
 //! @brief Returns the specified function argument, or an empty string if this is not a function or if it has too few arguments
 //! @param idx Index of argument to return
-//FIXED
 Expression Expression::getArgument(const int idx) const
 {
     if(mArguments.size() > idx)
@@ -1411,7 +1436,6 @@ Expression Expression::getArgument(const int idx) const
 
 
 //! @brief Returns a list of function arguments, or an empty list if this is not a function
-//FIXED
 QList<Expression> Expression::getArguments() const
 {
     return mArguments;
@@ -1419,7 +1443,6 @@ QList<Expression> Expression::getArguments() const
 
 
 //! @brief Internal function, returns a list with all terms
-//FIXED
 QList<Expression> Expression::getTerms() const
 {
     if(this->isAdd())
@@ -1433,14 +1456,12 @@ QList<Expression> Expression::getTerms() const
 }
 
 //! @brief Internal function, returns a list with all divisors
-//FIXED
 QList<Expression> Expression::getDivisors() const
 {
     return mDivisors;
 }
 
 //! @brief Internal function, returns a list with all factors
-//FIXED
 QList<Expression> Expression::getFactors() const
 {
     if(this->isMultiplyOrDivide())
@@ -1454,35 +1475,30 @@ QList<Expression> Expression::getFactors() const
 }
 
 //! @brief Internal function, returns a list with all exponential bases
-//FIXED
 Expression *Expression::getBase() const
 {
     return mpBase;
 }
 
 //! @brief Internal function, returns a list with all powers
-//FIXED
 Expression *Expression::getPower() const
 {
     return mpPower;
 }
 
 //! @brief Internal function, returns a list with all left sides
-//FIXED
 Expression *Expression::getLeft() const
 {
     return mpLeft;
 }
 
 //! @brief Internal function, returns a list with all right sides
-//FIXED
 Expression *Expression::getRight() const
 {
     return mpRight;
 }
 
 //! @brief Internal function, returns a list with all dividends
-//FIXED
 Expression *Expression::getDividends() const
 {
     return mpDividend;
@@ -1492,7 +1508,6 @@ Expression *Expression::getDividends() const
 
 
 //! @brief Removes all divisors in the expression
-//FIXED
 void Expression::removeDivisors()
 {
     mDivisors.clear();
@@ -1501,7 +1516,6 @@ void Expression::removeDivisors()
 
 //! @brief Removes specified factor in the expression
 //! @param var Factor to remove
-//FIXED
 void Expression::removeFactor(const Expression var)
 {
     if(*this == var)
@@ -1518,7 +1532,6 @@ void Expression::removeFactor(const Expression var)
 //! @brief Replaces all expressions specified with a new expression
 //! @param oldExpr Old expression to replace
 //! @param newExpr New expression
-//FIXED
 void Expression::replace(const Expression oldExpr, const Expression newExpr)
 {
     if(*this == oldExpr)
@@ -1571,7 +1584,6 @@ void Expression::replace(const Expression oldExpr, const Expression newExpr)
 
 //! @brief Expands all parentheses in the expression
 //! @param simplifications Specifies the degree of simplification
-//FIXED
 void Expression::expand(const ExpressionSimplificationT simplifications)
 {
     if(!this->isMultiplyOrDivide()) { return; }
@@ -1890,6 +1902,7 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
         }
 
         if(mFactors.size() > 1) { mFactors.removeAll(Expression(1.0)); }    //Replace 1*x with x
+        if(mFactors.isEmpty()) { replaceBy(Expression(1)); }                //Make sure 1*1 = 1 (don't remove all 1s)
 
         if(mFactors.size() == 1 && mDivisors.isEmpty()) { replaceBy(mFactors.first()); }
 
@@ -1920,16 +1933,23 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
 
 
         mTerms.removeAll(Expression("0.0"));
+        if(mTerms.isEmpty())
+        {
+            replaceBy(Expression("0.0"));
+        }
 
         //Join all similar terms together (i.e. replace "2*x+x+x+y" with "4*x+y")
         for(int t=0; t<mTerms.size(); ++t)
         {
-            if(this->countTerm(mTerms[t]) > mTerms[t].getNumericalFactor())
+            int cnt = this->countTerm(mTerms[t]);
+            int num = mTerms[t].getNumericalFactor();
+            if(cnt != num)
             {
                 Expression tempTerm = mTerms[t].removeNumericalFactors();
                 tempTerm.multiplyBy(Expression(this->countTerm(mTerms[t])));
                 this->removeTerm(mTerms[t]);
-                mTerms.append(tempTerm);
+                if(!this->isAdd()) { this->replaceBy(fromTwoTerms(*this, tempTerm)); }    //Only one term was left, so it was converted to symbol - convert back
+                else { mTerms.append(tempTerm); }
                 --t;
             }
         }
@@ -1997,10 +2017,13 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
 
     if(this->isMultiplyOrDivide())
     {
-        expand(NoSimplifications);
-        if(isAdd())
+        if(mFactors.size() > 1)
         {
-            this->_simplify(FullSimplification, Recursive);
+            expand(NoSimplifications);
+            if(isAdd() || mFactors.size() == 1)
+            {
+                this->_simplify(FullSimplification, Recursive);
+            }
         }
 
         //Multiply all numericals together (except for -1)
@@ -2284,6 +2307,11 @@ void Expression::removeTerm(const Expression &term)
             mTerms.removeAt(t);
             --t;
         }
+    }
+
+    if(mTerms.size() == 1)
+    {
+        replaceBy(mTerms.first());
     }
 }
 
@@ -2839,6 +2867,12 @@ void SymHop::validateFunctions()
     assert(expr == Expression("x*y+3*x+2*y+14"));
     expr = Expression("x*x^4/x^2");
     assert(expr == Expression("x^3"));
+    expr = Expression("0+0");
+    assert(expr == Expression("0"));
+    expr = Expression("1*1");
+    assert(expr == Expression("1"));
+    expr = Expression("mTimestep*x2*-1*2*Z*Z+Z*mTimestep*x2*2+mTimestep*x2*-1*Z*2+mTimestep*x2*2");
+    assert(!(expr == Expression(0)));
 
     //Validate countTerm()
     expr = Expression("4*sin(x)+3*cos(x)-2*sin(x)+sin(x)");
@@ -2866,11 +2900,11 @@ void SymHop::validateFunctions()
     assert(expr == Expression("mDelay0.getIdx(1)+mDelay1.getIdx(1)"));
 
     //Validate bilinearTransform()
-    expr = Expression("der(x)");
+    expr = Expression("der(x)+3");
     expr1 = expr.bilinearTransform();
     expr1._simplify(Expression::FullSimplification, Expression::Recursive);
     QString dummy = expr1.toString();
-    expr2 = Expression("x*2/mTimestep*(1-Z)/(1+Z)");
+    expr2 = Expression("x*2/mTimestep*(1-Z)/(1+Z)+3");
     expr2._simplify(Expression::FullSimplification, Expression::Recursive);
     QString dummy2 = expr2.toString();
     assert(expr1 == expr2);
@@ -2890,6 +2924,4 @@ void SymHop::validateFunctions()
     expr1 = expr.derivative(Expression("x"),ok);
     retString = expr1.toString();
     assert(ok && expr1 == Expression("-sin(2.0*x^2.0)*x*4.0"));
-
-    assert(false);
 }
