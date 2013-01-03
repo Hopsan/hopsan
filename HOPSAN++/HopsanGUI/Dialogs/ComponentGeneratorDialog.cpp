@@ -355,7 +355,14 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
 
     this->setCentralWidget(pCentralWidget);
 
-    addNewTab();
+    if(!gConfig.getRecentGeneratorModels().isEmpty())
+    {
+        loadModel(gConfig.getRecentGeneratorModels().first());
+    }
+    else
+    {
+        addNewTab();
+    }
 
     updateRecentList();
 

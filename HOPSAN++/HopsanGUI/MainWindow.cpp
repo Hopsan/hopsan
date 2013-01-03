@@ -123,7 +123,6 @@ MainWindow::MainWindow(QWidget *parent)
     mpAboutDialog = new AboutDialog(this);
     mpOptimizationDialog = new OptimizationDialog(this);
     mpSensitivityAnalysisDialog = new SensitivityAnalysisDialog(this);
-    mpComponentGeneratorDialog = new ComponentGeneratorDialog(this);
     mpHelpDialog = new HelpDialog(this);
 
     //Create the Python widget
@@ -252,6 +251,8 @@ MainWindow::MainWindow(QWidget *parent)
     mpWelcomeWidget = new WelcomeWidget(this);
     mpCentralGridLayout->addWidget(mpWelcomeWidget,0,0,4,4);
     mpCentralGridLayout->setAlignment(mpWelcomeWidget, Qt::AlignTop);
+
+    mpComponentGeneratorDialog = new ComponentGeneratorDialog(this);    //Needs configuration
 
     //Set the size and position of the main window
     int sh = qApp->desktop()->screenGeometry().height();
