@@ -45,7 +45,7 @@ class ProjectTabWidget : public QTabWidget
     Q_OBJECT
 
 public:
-    ProjectTabWidget(MainWindow *parent = 0);
+    ProjectTabWidget(MainWindow *pParentMainWindow = 0);
     ~ProjectTabWidget();
     ProjectTab *getCurrentTab();
     ProjectTab *getTab(int index);

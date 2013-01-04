@@ -18,11 +18,14 @@ class PlotHandler : public QObject
 public:
     explicit PlotHandler(ContainerObject *pContainerObject = 0);
 
-    void createPlotWindow(QString name="");
+
     PlotWindow *createNewPlotWindowOrGetCurrentOne(QString name="");
     PlotWindow *getPlotWindow(const QString name);
 
-    void addPlotCurve(QString windowName, LogVariableData *pData, int axis, QColor curveColor=QColor());
+    void createPlotWindow(QString name="");
+    QString plotDataToWindow(QString windowName, LogVariableData *pData, int axis, QColor curveColor=QColor());
+    PlotWindow *plotDataToWindow(PlotWindow *pPlotWindow, LogVariableData *pData, int axis, QColor curveColor=QColor());
+
     PlotWindow *createPlotWindow(LogVariableData *pData, QColor desiredColor=QColor(), QString name="");
     PlotWindow *createPlotWindow(QVector<double> xVector, QVector<double> yVector, int axis, QString componentName, QString portName, QString dataName, QString dataUnit, QString name="");
     

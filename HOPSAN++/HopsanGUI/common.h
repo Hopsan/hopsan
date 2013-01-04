@@ -102,6 +102,9 @@ extern Configuration gConfig;
 class CopyStack;
 extern CopyStack gCopyStack;
 
+class PlotHandler;
+extern PlotHandler *gpPlotHandler;
+
 extern QString gExecPath;
 extern QString gModelsPath;
 extern QString gScriptsPath;

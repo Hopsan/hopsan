@@ -316,10 +316,10 @@ void PyMainWindowClassWrapper::plot(MainWindow* o, const QString& compName, cons
 
 void PyMainWindowClassWrapper::plot(MainWindow* o, const QString &portAlias)
 {
-    QString fullName = o->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getFullNameFromAlias(portAlias);
+    QString fullName = o->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getFullNameFromAlias(portAlias);
     if (!fullName.isEmpty())
     {
-        o->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->openNewPlotWindow(fullName);
+        o->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->plotVariable("", fullName, -1, 0);
     }
     qApp->processEvents();
 }
@@ -328,12 +328,12 @@ void PyMainWindowClassWrapper::plot(MainWindow* o, const QString &portAlias)
 void PyMainWindowClassWrapper::plotToWindow(MainWindow* o, const int& generation, const QString& compName, const QString& portName, const QString& dataName, const QString& windowName)
 {
     QString fullName = makeConcatName(compName, portName, dataName);
-    o->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->plotToWindow(fullName, generation, 0, o->mpPlotWidget->mpPlotVariableTree->getPlotWindow(windowName));
+    o->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->plotVariable(windowName, fullName, generation, 0);
 }
 
 void  PyMainWindowClassWrapper::offset(MainWindow* o, const QString aliasName, const double value, const int gen)
 {
-    LogVariableData *pData = o->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getPlotDataByAlias(aliasName, gen);
+    LogVariableData *pData = o->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotDataByAlias(aliasName, gen);
     if (pData)
     {
         pData->setValueOffset(value);
@@ -383,7 +383,7 @@ QStringList PyMainWindowClassWrapper::componentNames(MainWindow* o)
 
 LogDataHandler *PyMainWindowClassWrapper::getLogDataHandler(MainWindow *o)
 {
-    return o->mpProjectTabs->getCurrentContainer()->getPlotDataPtr();
+    return o->mpProjectTabs->getCurrentContainer()->getLogDataHandler();
 }
 
 QString PyLogDataHandlerClassWrapper::addVariables(LogDataHandler* o, const QString &a, const QString &b)

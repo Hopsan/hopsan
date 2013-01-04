@@ -37,6 +37,7 @@
 
 #include "PlotWindow.h"
 #include "Widgets/PlotWidget.h"
+#include "PlotHandler.h"
 
 //! @todo this should not be here should be togheter with plotsvariable stuf in some other file later
 QString makeConcatName(const QString componentName, const QString portName, const QString dataName)
@@ -1264,36 +1265,56 @@ void LogDataHandler::removeFavoriteVariableByComponentName(QString componentName
     }
 }
 
-PlotWindow* LogDataHandler::openNewPlotWindow(const QString fullName)
+QString LogDataHandler::plotVariable(const QString plotName, const QString fullVarName, const int gen, const int axis, QColor color)
 {
-    LogVariableData *pData = getPlotData(fullName, -1);
+    LogVariableData *pData = getPlotData(fullVarName, gen);
     if(pData)
     {
-        return gpMainWindow->mpPlotWidget->mpPlotVariableTree->createPlotWindow(pData);
+        return gpPlotHandler->plotDataToWindow(plotName, pData, axis, color);
+    }
+    return "";
+}
+
+PlotWindow *LogDataHandler::plotVariable(PlotWindow *pPlotWindow, const QString fullVarName, const int gen, const int axis, QColor color)
+{
+    LogVariableData *pData = getPlotData(fullVarName, gen);
+    if(pData)
+    {
+        return gpPlotHandler->plotDataToWindow(pPlotWindow, pData, axis, color);
     }
     return 0;
 }
 
-//! @todo this is incompletete maybe replace openNewPlotwindow with this one
-PlotWindow *LogDataHandler::plotToWindow(const QString fullName, const int gen, int axis, PlotWindow *pPlotWindow, QColor color)
-{
-    LogVariableData *pData = getPlotData(fullName, gen);
-    if(pData)
-    {
-        if (pPlotWindow)
-        {
-            pPlotWindow->addPlotCurve(pData, axis, "", color);
-            return pPlotWindow;
-            //! @todo completet this, maybe need more input arguments for gneeration custom unit axis color and stuff,
-        }
-        else
-        {
-            //! @todo axis color etc..
-            return gpMainWindow->mpPlotWidget->mpPlotVariableTree->createPlotWindow(pData);
-        }
-    }
-    return 0;
-}
+//PlotWindow* LogDataHandler::openNewPlotWindow(const QString fullName)
+//{
+//    LogVariableData *pData = getPlotData(fullName, -1);
+//    if(pData)
+//    {
+//        return gpMainWindow->mpPlotWidget->mpPlotVariableTree->createPlotWindow(pData);
+//    }
+//    return 0;
+//}
+
+////! @todo this is incompletete maybe replace openNewPlotwindow with this one
+//PlotWindow *LogDataHandler::plotToWindow(const QString fullName, const int gen, int axis, PlotWindow *pPlotWindow, QColor color)
+//{
+//    LogVariableData *pData = getPlotData(fullName, gen);
+//    if(pData)
+//    {
+//        if (pPlotWindow)
+//        {
+//            pPlotWindow->addPlotCurve(pData, axis, "", color);
+//            return pPlotWindow;
+//            //! @todo completet this, maybe need more input arguments for gneeration custom unit axis color and stuff,
+//        }
+//        else
+//        {
+//            //! @todo axis color etc..
+//            return gpMainWindow->mpPlotWidget->mpPlotVariableTree->createPlotWindow(pData);
+//        }
+//    }
+//    return 0;
+//}
 
 QVector<LogVariableData *> LogDataHandler::getAllVariablesAtNewestGeneration()
 {

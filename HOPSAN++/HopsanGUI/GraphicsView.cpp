@@ -173,7 +173,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
         else if(text.startsWith("HOPSANPLOTDATA:"))
         {
             text.remove("HOPSANPLOTDATA:");
-            getContainerPtr()->getPlotDataPtr()->openNewPlotWindow(text);
+            getContainerPtr()->getLogDataHandler()->plotVariable("", text, -1, 0);
             return;
         }
 

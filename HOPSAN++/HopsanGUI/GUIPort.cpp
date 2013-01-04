@@ -595,29 +595,13 @@ PlotWindow *Port::plot(QString dataName, QString dataUnit, QColor desiredCurveCo
 {
     if(this->isConnected())
     {
-        //! @todo need help function to create full name
-        QString fullName = mpParentGuiModelObject->getName()+"#"+this->getPortName()+"#"+dataName;
-        //! @todo Need to readd support for color /Peter, but why do we have unit here
-        return getParentContainerObjectPtr()->getPlotDataPtr()->openNewPlotWindow(fullName);
+        QString fullName = makeConcatName(mpParentGuiModelObject->getName(),this->getPortName(),dataName);
+        //! @todo  why do we have unit here
+        return getParentContainerObjectPtr()->getLogDataHandler()->plotVariable(0, fullName, -1, 0, desiredCurveColor);
         //return gpMainWindow->mpPlotWidget->mpPlotVariableTree->createPlotWindow(mpParentGuiModelObject->getName(), this->getPortName(), dataName, dataUnit, desiredCurveColor);
     }
-
     return 0;       //Fail!
 }
-
-
-//! @brief Plots specified data curve to specified plot window
-//! @param pPlotWindow Pointer to plot window to add curve to
-//! @param dataName Name of the data variable to plot
-//! @param dataUnit Desired data unit (empty = use default)
-void Port::plotToPlotWindow(PlotWindow *pPlotWindow, QString dataName, QString dataUnit, int axisY)
-{
-    //! @todo FIXA /Peter Dataunit is ignored
-    // Add new curve to the plot window, we assume hat the data exist, if not nothing will happen
-    QString fullName = makeConcatName(mpParentGuiModelObject->getName(),this->getPortName(),dataName);
-    pPlotWindow->addPlotCurve(getParentContainerObjectPtr()->getPlotDataPtr()->getPlotData(fullName, -1), axisY);
-}
-
 
 //! Wrapper for the Core getPortTypeString() function
 QString Port::getPortType(const CoreSystemAccess::PortTypeIndicatorT ind)

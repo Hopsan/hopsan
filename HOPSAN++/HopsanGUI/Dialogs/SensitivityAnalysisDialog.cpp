@@ -353,10 +353,10 @@ void SensitivityAnalysisDialog::run()
             pPlotWindow->hideCurveInfo();
             pPlotWindow->setLegendsVisible(false);
 
-            int nGenerations = pTabs->getContainer(0)->getPlotDataPtr()->getLatestGeneration()+1;
+            int nGenerations = pTabs->getContainer(0)->getLogDataHandler()->getLatestGeneration()+1;
             for(int g=nGenerations-nSteps/nThreads; g<nGenerations-1; ++g)
             {
-                pTabs->getContainer(0)->getPlotDataPtr()->plotToWindow(fullName, g, QwtPlot::yLeft, pPlotWindow, QColor("Blue"));
+                pTabs->getContainer(0)->getLogDataHandler()->plotVariable(pPlotWindow, fullName, g, QwtPlot::yLeft, QColor("Blue"));
                 //gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->addPlotCurve(g, component, port, variable, QString(), QwtPlot::yLeft, QString(), QColor("Blue"));
             }
 
@@ -366,7 +366,7 @@ void SensitivityAnalysisDialog::run()
                 pTabs->setCurrentIndex(t);
                 for(int g=nGenerations-nSteps/nThreads; g<nGenerations; ++g)
                 {
-                    pTabs->getContainer(t)->getPlotDataPtr()->plotToWindow(fullName, g, QwtPlot::yLeft, pPlotWindow, QColor("Blue"));
+                    pTabs->getContainer(t)->getLogDataHandler()->plotVariable(pPlotWindow, fullName, g, QwtPlot::yLeft, QColor("Blue"));
                     //gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->addPlotCurve(g, component, port, variable, QString(), QwtPlot::yLeft, QString(), QColor("Blue"));
                 }
             }
@@ -384,10 +384,10 @@ void SensitivityAnalysisDialog::run()
             pPlotWindow->setLegendsVisible(false);
 
             QString fullName = makeConcatName(component,port,variable);
-            int nGenerations = pTabs->getContainer(0)->getPlotDataPtr()->getLatestGeneration()+1;
+            int nGenerations = pTabs->getContainer(0)->getLogDataHandler()->getLatestGeneration()+1;
             for(int g=nGenerations - nSteps; g<nGenerations; ++g)
             {
-                pTabs->getCurrentContainer()->getPlotDataPtr()->plotToWindow(fullName, g, QwtPlot::yLeft, pPlotWindow, QColor("Blue"));
+                pTabs->getCurrentContainer()->getLogDataHandler()->plotVariable(pPlotWindow, fullName, g, QwtPlot::yLeft, QColor("Blue"));
                 //gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLastPlotWindow()->addPlotCurve(g, component, port, variable, QString(), QwtPlot::yLeft, QString(), QColor("Blue"));
             }
         }

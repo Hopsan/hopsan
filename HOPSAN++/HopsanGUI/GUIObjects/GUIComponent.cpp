@@ -35,6 +35,8 @@
 #include "Widgets/ProjectTabWidget.h"
 #include "PlotTab.h"
 
+#include "PlotHandler.h"
+
 
 Component::Component(QPointF position, qreal rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
     : ModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
@@ -94,46 +96,28 @@ void Component::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         return;
 
     QGraphicsWidget::mouseDoubleClickEvent(event);
-    //std::cout << "GUIComponent.cpp: " << "mouseDoubleClickEvent " << std::endl;
 
-    //If this is a sink component that has plot data, plot it instead of showing the dialog
-    if(this->getTypeName() == "SignalSink" && !this->mpParentContainerObject->getPlotDataPtr()->isEmpty() && !mpParentContainerObject->isCreatingConnector())   //Not very nice code, but a nice feature...
+    // If this is a sink component that has plot data, plot it instead of showing the dialog
+    if( (this->getTypeName() == "SignalSink") &&
+        !mpParentContainerObject->getLogDataHandler()->isEmpty() &&
+        !mpParentContainerObject->isCreatingConnector() )   //Not very nice code, but a nice feature...
     {
-        PlotWindow *pPlotWindow;
-        if(getPort("in")->isConnected())
+        QString plotName = "";
+        for(int i=0; i<getPort("in")->getConnectedPorts().size(); ++i)
         {
-            pPlotWindow = getPort("in")->getConnectedPorts().first()->plot("Value");
+            QString fullName = makeConcatName(getPort("in")->getConnectedPorts().at(i)->getGuiModelObjectName(),
+                                              getPort("in")->getConnectedPorts().at(i)->getPortName(),"Value");
+            plotName = getParentContainerObject()->getLogDataHandler()->plotVariable(plotName, fullName, -1, 0);
         }
-        else if(getPort("in_right")->isConnected())
+        for(int i=0; i<getPort("in_right")->getConnectedPorts().size(); ++i)
         {
-            pPlotWindow = getPort("in_right")->getConnectedPorts().first()->plot("Value");
-            //! @todo this below looks strange rewrite code so we don need strange things like this
-            pPlotWindow->getPlotTabWidget()->removeTab(0);
-            pPlotWindow->addPlotTab();
-        }
-        else
-        {
-            pPlotWindow = 0;
+            QString fullName = makeConcatName(getPort("in_right")->getConnectedPorts().at(i)->getGuiModelObjectName(),
+                                              getPort("in_right")->getConnectedPorts().at(i)->getPortName(),"Value");
+            plotName = getParentContainerObject()->getLogDataHandler()->plotVariable(plotName, fullName, -1, 1);
         }
 
-        for(int i=1; (i<getPort("in")->getConnectedPorts().size() && pPlotWindow != 0); ++i)
-        {
-            if(!pPlotWindow)
-            {
-                pPlotWindow = getPort("in")->getConnectedPorts().at(i)->plot("Value");
-            }
-            else
-            {
-                getPort("in")->getConnectedPorts().at(i)->plotToPlotWindow(pPlotWindow, "Value");
-            }
-        }
-        if(this->getPort("in_right")->isConnected() && pPlotWindow)
-        {
-            for(int i=0; (i<getPort("in_right")->getConnectedPorts().size() && pPlotWindow != 0); ++i)
-            {
-                getPort("in_right")->getConnectedPorts().at(i)->plotToPlotWindow(pPlotWindow, "Value", QString(), 1);
-            }
-        }
+        //! @todo try to solve this without needding the actual plotwindow pointer
+        PlotWindow *pPlotWindow = gpPlotHandler->getPlotWindow(plotName);
         if(this->getPort("in_bottom")->isConnected() && pPlotWindow)
         {
             VariableDescription varDesc;
@@ -142,10 +126,10 @@ void Component::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
             varDesc.mDataName = "Value";
             varDesc.mDataUnit = gConfig.getDefaultUnit(varDesc.mDataName);
 
-            pPlotWindow->changeXVector(mpParentContainerObject->getPlotDataPtr()->getPlotDataValues(varDesc.getFullName(), -1), varDesc);
+            pPlotWindow->changeXVector(mpParentContainerObject->getLogDataHandler()->getPlotDataValues(varDesc.getFullName(), -1), varDesc);
         }
 
-        //No plot window was opened, so it is a non-connected sink - open properties instead
+        // No plot window was opened, so it is a non-connected sink - open properties instead
         if(!pPlotWindow)
         {
             openPropertiesDialog();

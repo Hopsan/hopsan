@@ -32,9 +32,13 @@
 #include "Configuration.h"
 #include "CopyStack.h"
 #include "Dialogs/WelcomeDialog.h"
+#include "PlotHandler.h"
 
 //Global stuff
 MainWindow* gpMainWindow = 0;
+PlotHandler* gpPlotHandler = 0;
+Configuration gConfig;
+CopyStack gCopyStack;
 QString gExecPath;
 QString gModelsPath;
 QString gScriptsPath;
@@ -49,7 +53,7 @@ int main(int argc, char *argv[])
     qDebug() << "TBB is used!";
 #endif
 
-    //Force locale to English/USA
+    //  Force locale to English/USA
     qDebug() << QLocale().languageToString(QLocale().language()) << " " << QLocale().countryToString(QLocale().country()) << " Decimal point: " << QLocale().decimalPoint();
     //! @todo this does not seem to help, DomElement.setAttribute still use comma decimal point on swedish ubuntu, maybe a Qt bug
     QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
@@ -62,15 +66,10 @@ int main(int argc, char *argv[])
         backupDir.mkpath(BACKUPPATH);
     }
 
-    //Create global variables
+    // Create global objects
     gExecPath = qApp->applicationDirPath().append('/');
     gConfig = Configuration();
     gCopyStack = CopyStack();
-
-
-//    // Use development place for models and scripts
-//    gModelsPath = MODELS_DEV_PATH;
-//    gScriptsPath = SCRIPTS_DEV_PATH;
 
     // Make sure model folder exists, create it if not, if create not sucessfull use dev dir
     QDir modelsDir(MODELS_REL_PATH);
@@ -112,8 +111,12 @@ int main(int argc, char *argv[])
     QSplashScreen splash(pixmap);
     splash.show();
 
-    //Create the mainwindow
+    // Create the mainwindow
     MainWindow mainwindow;
+    gpMainWindow = &mainwindow;
+
+    // Create plothandler after mainwindow
+    gpPlotHandler = new PlotHandler(); //! @todo parent ?
 
     //Show splash screen, show main window and initialize workspace
     QTimer::singleShot(1000, &splash, SLOT(close()));

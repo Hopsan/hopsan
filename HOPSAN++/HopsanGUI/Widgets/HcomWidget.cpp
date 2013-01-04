@@ -1474,7 +1474,7 @@ void HcomHandler::executeDefineAliasCommand(QString cmd)
 
     LogVariableData *pVariable = getVariablePtr(variable);
 
-    if(!pVariable || !gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getPlotDataPtr()->definePlotAlias(alias, pVariable->getFullVariableName()))
+    if(!pVariable || !gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->definePlotAlias(alias, pVariable->getFullVariableName()))
     {
         mpConsole->print("Failed to assign variable alias.");
     }
@@ -1624,7 +1624,7 @@ void HcomHandler::executeSaveToPloCommand(QString cmd)
         //splitCmdMajor[i] = getVariablePtr(splitCmdMajor[i])->getFullVariableName();
     }
 
-    gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getPlotDataPtr()->exportToPlo(path, allVariables);
+    gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->exportToPlo(path, allVariables);
 }
 
 
@@ -2127,19 +2127,19 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
             *returnType = DataVector;
             leftRes = getVariablePtr(leftRes)->getFullVariableName();
             rightRes = getVariablePtr(rightRes)->getFullVariableName();
-            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getPlotDataPtr()->addVariables(leftRes, rightRes);
+            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->addVariables(leftRes, rightRes);
         }
         else if(leftType == DataVector && rightType == Scalar)
         {
             *returnType = DataVector;
             leftRes = getVariablePtr(leftRes)->getFullVariableName();
-            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getPlotDataPtr()->addVariableWithScalar(leftRes, rightRes.toDouble());
+            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->addVariableWithScalar(leftRes, rightRes.toDouble());
         }
         else if(leftType == Scalar && rightType == DataVector)
         {
             *returnType = DataVector;
             rightRes = getVariablePtr(rightRes)->getFullVariableName();
-            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getPlotDataPtr()->addVariableWithScalar(rightRes, leftRes.toDouble());
+            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->addVariableWithScalar(rightRes, leftRes.toDouble());
         }
         if(leftOk && rightOk)
         {
@@ -2164,19 +2164,19 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
             *returnType = DataVector;
             leftRes = getVariablePtr(leftRes)->getFullVariableName();
             rightRes = getVariablePtr(rightRes)->getFullVariableName();
-            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getPlotDataPtr()->subVariables(leftRes, rightRes);
+            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->subVariables(leftRes, rightRes);
         }
         else if(leftType == DataVector && rightType == Scalar)
         {
             *returnType = DataVector;
             leftRes = getVariablePtr(leftRes)->getFullVariableName();
-            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getPlotDataPtr()->subVariableWithScalar(leftRes, rightRes.toDouble());
+            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->subVariableWithScalar(leftRes, rightRes.toDouble());
         }
         else if(leftType == Scalar && rightType == DataVector)
         {
             *returnType = DataVector;
             rightRes = getVariablePtr(rightRes)->getFullVariableName();
-            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getPlotDataPtr()->subVariableWithScalar(rightRes, leftRes.toDouble());
+            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->subVariableWithScalar(rightRes, leftRes.toDouble());
         }
         if(leftOk && rightOk)
         {
@@ -2201,19 +2201,19 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
             *returnType = DataVector;
             leftRes = getVariablePtr(leftRes)->getFullVariableName();
             rightRes = getVariablePtr(rightRes)->getFullVariableName();
-            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getPlotDataPtr()->multVariables(leftRes, rightRes);
+            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->multVariables(leftRes, rightRes);
         }
         else if(leftType == DataVector && rightType == Scalar)
         {
             *returnType = DataVector;
             leftRes = getVariablePtr(leftRes)->getFullVariableName();
-            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getPlotDataPtr()->mulVariableWithScalar(leftRes, rightRes.toDouble());
+            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->mulVariableWithScalar(leftRes, rightRes.toDouble());
         }
         else if(leftType == Scalar && rightType == DataVector)
         {
             *returnType = DataVector;
             rightRes = getVariablePtr(rightRes)->getFullVariableName();
-            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getPlotDataPtr()->mulVariableWithScalar(rightRes, leftRes.toDouble());
+            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->mulVariableWithScalar(rightRes, leftRes.toDouble());
         }
         if(leftOk && rightOk)
         {
@@ -2238,19 +2238,19 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
             *returnType = DataVector;
             leftRes = getVariablePtr(leftRes)->getFullVariableName();
             rightRes = getVariablePtr(rightRes)->getFullVariableName();
-            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getPlotDataPtr()->divVariables(leftRes, rightRes);
+            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->divVariables(leftRes, rightRes);
         }
         else if(leftType == DataVector && rightType == Scalar)
         {
             *returnType = DataVector;
             leftRes = getVariablePtr(leftRes)->getFullVariableName();
-            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getPlotDataPtr()->divVariableWithScalar(leftRes, rightRes.toDouble());
+            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->divVariableWithScalar(leftRes, rightRes.toDouble());
         }
         else if(leftType == Scalar && rightType == DataVector)
         {
             *returnType = DataVector;
             rightRes = getVariablePtr(rightRes)->getFullVariableName();
-            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getPlotDataPtr()->divVariableWithScalar(rightRes, leftRes.toDouble());
+            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->divVariableWithScalar(rightRes, leftRes.toDouble());
         }
         if(leftOk && rightOk)
         {
@@ -2718,7 +2718,7 @@ void HcomHandler::getVariables(QString str, QStringList &variables)
     if(gpMainWindow->mpProjectTabs->count() == 0) { return; }
 
     SystemContainer *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
-    QStringList names = pSystem->getPlotDataPtr()->getPlotDataNames();
+    QStringList names = pSystem->getLogDataHandler()->getPlotDataNames();
     names.append(pSystem->getAliasNames());
 
     //Add quotation marks around component name if it contains spaces
@@ -2841,7 +2841,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
             if(pLeftData != 0) { left = pLeftData->getFullVariableName(); }
             if(pValueData != 0) { value = pValueData->getFullVariableName(); }
 
-            gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getPlotDataPtr()->assignVariables(left, value);
+            gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->assignVariables(left, value);
             return true;
         }
         else
@@ -2944,10 +2944,10 @@ LogVariableData *HcomHandler::getVariablePtr(QString fullName)
         fullName.append("#Temperature");
     }
 
-    LogVariableData *pRetVal = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getPlotDataPtr()->getPlotDataByAlias(fullName,generation);
+    LogVariableData *pRetVal = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->getPlotDataByAlias(fullName,generation);
     if(!pRetVal)
     {
-        pRetVal = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getPlotDataPtr()->getPlotData(fullName,generation);
+        pRetVal = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->getPlotData(fullName,generation);
     }
     return pRetVal;
 }

@@ -28,13 +28,17 @@ PlotWindow *PlotHandler::createNewPlotWindowOrGetCurrentOne(QString name)
 {
     if(name.isEmpty())
     {
-        name = "PlotWindow"+mOpenPlotWindows.size();
+        int ctr = 0;
+        do
+        {
+            name = QString("PlotWindow%1").arg(ctr++);
+        }while(mOpenPlotWindows.contains(name));
     }
 
     PlotWindow* pPlotWindow = getPlotWindow(name);
     if (pPlotWindow==0)
     {
-        pPlotWindow = new PlotWindow(gpMainWindow->mpPlotWidget->mpPlotVariableTree, gpMainWindow);
+        pPlotWindow = new PlotWindow(name, gpMainWindow->mpPlotWidget->mpPlotVariableTree, gpMainWindow);
         pPlotWindow->show();
         mOpenPlotWindows.insert(name, pPlotWindow);
         connect(pPlotWindow, SIGNAL(windowClosed(PlotWindow*)), this, SLOT(forgetPlotWindow(PlotWindow*)));
@@ -55,13 +59,15 @@ PlotWindow *PlotHandler::createPlotWindow(QVector<double> xVector, QVector<doubl
     if((xVector.isEmpty()) || (yVector.isEmpty()))
         return 0;
 
-    PlotWindow *plotWindow = new PlotWindow(gpMainWindow->mpPlotWidget->mpPlotVariableTree, gpMainWindow);
-    plotWindow->show();
-
     if(name.isEmpty())
     {
         name = "PlotWindow"+mOpenPlotWindows.size();
     }
+
+    PlotWindow *plotWindow = new PlotWindow(name, gpMainWindow->mpPlotWidget->mpPlotVariableTree, gpMainWindow);
+    plotWindow->show();
+
+
 
     mOpenPlotWindows.insert(name, plotWindow);
 
@@ -80,12 +86,20 @@ PlotWindow *PlotHandler::getPlotWindow(const QString name)
     return 0;
 }
 
-void PlotHandler::addPlotCurve(QString windowName, LogVariableData *pData, int axis, QColor curveColor)
+QString PlotHandler::plotDataToWindow(QString windowName, LogVariableData *pData, int axis, QColor curveColor)
 {
-    PlotWindow *pWindow = getPlotWindow(windowName);
-    if (pWindow)
+    PlotWindow *pWindow = createNewPlotWindowOrGetCurrentOne(windowName);
+    plotDataToWindow(pWindow, pData, axis, curveColor);
+    return pWindow->getName();
+}
+
+PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, LogVariableData *pData, int axis, QColor curveColor)
+{
+    if(!pPlotWindow)
     {
-        pWindow->addPlotCurve(pData, axis, QString(), curveColor);
+        pPlotWindow = createNewPlotWindowOrGetCurrentOne();
     }
-    //! @todo add some error/warning message else
+    pPlotWindow->addPlotCurve(pData, axis, QString(), curveColor);
+
+    return pPlotWindow;
 }

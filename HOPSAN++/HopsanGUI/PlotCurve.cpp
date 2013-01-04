@@ -395,7 +395,7 @@ void PlotCurve::commonConstructorCode(int axisY,
     }
     Q_ASSERT(!mpContainerObject == 0);        //Container not found, should never happen! Caller to the function has supplied a model name that does not exist.
 
-    mpContainerObject->getPlotDataPtr()->incrementOpenPlotCurves(); //!< why is this necessary
+    mpContainerObject->getLogDataHandler()->incrementOpenPlotCurves(); //!< why is this necessary
 
     QString dataUnit = mpData->getDataUnit();
     if(dataUnit.isEmpty())
@@ -460,7 +460,7 @@ void PlotCurve::commonConstructorCode(int axisY,
 //! Deletes the info box and its dock widgets before the curve is removed.
 PlotCurve::~PlotCurve()
 {
-    mpContainerObject->getPlotDataPtr()->decrementOpenPlotCurves();
+    mpContainerObject->getLogDataHandler()->decrementOpenPlotCurves();
     delete(mpPlotCurveInfoBox);
     //delete(mpPlotInfoDockWidget);
 
@@ -589,7 +589,7 @@ ContainerObject *PlotCurve::getContainerObjectPtr()
 //! @param genereation Genereation to use
 void PlotCurve::setGeneration(int generation)
 {
-    LogVariableData *pNewData = mpContainerObject->getPlotDataPtr()->getPlotData(mpData->getFullVariableName(), generation);
+    LogVariableData *pNewData = mpContainerObject->getLogDataHandler()->getPlotData(mpData->getFullVariableName(), generation);
     if (pNewData)
     {
         mpData = pNewData;

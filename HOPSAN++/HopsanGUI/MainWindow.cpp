@@ -56,10 +56,6 @@
 #include "GraphicsView.h"
 #include "GUIObjects/GUISystem.h"
 
-//Declaration of global variables
-Configuration gConfig;
-CopyStack gCopyStack;
-
 //! @brief Constructor for main window
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -67,6 +63,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->hide();
     gpMainWindow = this;        //!< @todo It would be nice to not declare this pointer here, but in main.cpp instead if possible
                                 //! @note This is however not possible, because the gpMainWindow pointer is needed by the MainWindow constructor code.
+                                //! @todo needs some code rewrite to fix this, it is madness
 
     //Set main window options
     this->setDockOptions(QMainWindow::ForceTabbedDocks);

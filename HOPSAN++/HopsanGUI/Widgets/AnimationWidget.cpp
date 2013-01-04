@@ -145,7 +145,7 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
 
     //Collect plot data from container (for non-realtime animations)
     //mpContainer->collectPlotData();
-    mpPlotData = mpContainer->getPlotDataPtr();
+    mpPlotData = mpContainer->getLogDataHandler();
     mpPlayButton->setDisabled(mpPlotData->isEmpty());
     mpRewindButton->setDisabled(mpPlotData->isEmpty());
 
@@ -257,8 +257,8 @@ AnimationWidget::~AnimationWidget()
 //! @brief Calculates time values from plot data object
 QVector<double> *AnimationWidget::getTimeValues()
 {
-    int latestGen = mpContainer->getPlotDataPtr()->getLatestGeneration();
-    QVector<LogVariableData *> vData = mpContainer->getPlotDataPtr()->getOnlyVariablesAtGeneration(latestGen);
+    int latestGen = mpContainer->getLogDataHandler()->getLatestGeneration();
+    QVector<LogVariableData *> vData = mpContainer->getLogDataHandler()->getOnlyVariablesAtGeneration(latestGen);
 
     if (!vData.empty())
     {

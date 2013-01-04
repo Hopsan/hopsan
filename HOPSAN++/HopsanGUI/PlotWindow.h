@@ -62,7 +62,7 @@ class PlotWindow : public QMainWindow
     friend class PlotTab;
     friend class PlotCurve;
 public:
-    PlotWindow(PlotVariableTree *PlotVariableTree, MainWindow *parent);
+    PlotWindow(const QString name, PlotVariableTree *PlotVariableTree, MainWindow *parent);
     ~PlotWindow();
     void addPlotCurve(LogVariableData *pData, int axisY=QwtPlot::yLeft, QString modelPath = QString(), QColor desiredColor=QColor());
     void addBarChart(QStandardItemModel *pItemModel);
@@ -72,6 +72,8 @@ public:
 
     void showHelpPopupMessage(QString message);
     void hideHelpPopupMessage();
+
+    QString getName() const;
 
 signals:
     void curveAdded();
@@ -107,6 +109,7 @@ protected slots:
     void establishPlotTabConnections();
 
 private:
+    QString mName;
     QGridLayout *mpLayout;
     QGridLayout *mpInfoBoxLayout;
     PlotVariableTree *mpPlotVariableTree; //!< @todo this seems to be completely useless

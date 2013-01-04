@@ -57,26 +57,26 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *pAn
     {
         if(pConnector->getStartPort()->getPortType() == "POWERMULTIPORT")
         {
-            int g = pConnector->getParentContainer()->getPlotDataPtr()->getLatestGeneration();
+            int g = pConnector->getParentContainer()->getLogDataHandler()->getLatestGeneration();
             QString componentName = pConnector->getEndPort()->getGuiModelObject()->getName();
             QString portName = pConnector->getEndPort()->getPortName();
 
-            if(!pConnector->getParentContainer()->getPlotDataPtr()->isEmpty())
+            if(!pConnector->getParentContainer()->getLogDataHandler()->isEmpty())
             {
-                mvIntensityData = pConnector->getParentContainer()->getPlotDataPtr()->getPlotDataValues(g, componentName, portName, "Pressure");
-                mvFlowData = pConnector->getParentContainer()->getPlotDataPtr()->getPlotDataValues(g, componentName, portName, "Flow");
+                mvIntensityData = pConnector->getParentContainer()->getLogDataHandler()->getPlotDataValues(g, componentName, portName, "Pressure");
+                mvFlowData = pConnector->getParentContainer()->getLogDataHandler()->getPlotDataValues(g, componentName, portName, "Flow");
             }
         }
         else
         {
-            int g = pConnector->getParentContainer()->getPlotDataPtr()->getLatestGeneration();
+            int g = pConnector->getParentContainer()->getLogDataHandler()->getLatestGeneration();
             QString componentName = pConnector->getStartPort()->getGuiModelObject()->getName();
             QString portName = pConnector->getStartPort()->getPortName();
 
-            if(!pConnector->getParentContainer()->getPlotDataPtr()->isEmpty())
+            if(!pConnector->getParentContainer()->getLogDataHandler()->isEmpty())
             {
-                mvIntensityData = pConnector->getParentContainer()->getPlotDataPtr()->getPlotDataValues(g, componentName, portName, "Pressure");
-                mvFlowData = pConnector->getParentContainer()->getPlotDataPtr()->getPlotDataValues(g, componentName, portName, "Flow");
+                mvIntensityData = pConnector->getParentContainer()->getLogDataHandler()->getPlotDataValues(g, componentName, portName, "Pressure");
+                mvFlowData = pConnector->getParentContainer()->getLogDataHandler()->getPlotDataValues(g, componentName, portName, "Flow");
             }
         }
 

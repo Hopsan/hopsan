@@ -375,7 +375,7 @@ void loadFavoriteVariable(QDomElement &rDomElement, ContainerObject* pContainer)
     QString dataName = rDomElement.attribute("dataname");
     QString dataUnit = rDomElement.attribute("dataunit");
 
-    dynamic_cast<SystemContainer *>(pContainer)->getPlotDataPtr()->setFavoriteVariable(componentName, portName, dataName, dataUnit);
+    dynamic_cast<SystemContainer *>(pContainer)->getLogDataHandler()->setFavoriteVariable(componentName, portName, dataName, dataUnit);
 }
 
 //! @todo We should remove Plot from the name as this is suposed to be useable for more then plotting only

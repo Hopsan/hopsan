@@ -2719,7 +2719,7 @@ void ContainerObject::showLossesFromDialog()
     pItemModel->setVerticalHeaderLabels(QStringList() << "Added" << "Losses");
     pItemModel->setHorizontalHeaderLabels(componentNames);
 
-    PlotWindow *pPlotWindow = new PlotWindow(gpMainWindow->mpPlotWidget->mpPlotVariableTree, gpMainWindow);
+    PlotWindow *pPlotWindow = new PlotWindow("Energy Losses", gpMainWindow->mpPlotWidget->mpPlotVariableTree, gpMainWindow);
     pPlotWindow->getCurrentPlotTab()->setTabName("Energy Losses");
     pPlotWindow->addBarChart(pItemModel);
     pPlotWindow->show();
@@ -2853,7 +2853,7 @@ void ContainerObject::measureSimulationTime()
     pBarChartModel->setHorizontalHeaderLabels(typeNames);
 
     //Plot window for typename bar charts
-    PlotWindow *pPlotWindow = new PlotWindow(gpMainWindow->mpPlotWidget->mpPlotVariableTree, gpMainWindow);
+    PlotWindow *pPlotWindow = new PlotWindow("Time measurements", gpMainWindow->mpPlotWidget->mpPlotVariableTree, gpMainWindow);
     pPlotWindow->getCurrentPlotTab()->setTabName("Time measurements");
     pPlotWindow->addBarChart(pBarChartModel);
     pPlotWindow->hide();
@@ -2920,7 +2920,7 @@ bool ContainerObject::isExternal()
 
 
 
-LogDataHandler *ContainerObject::getPlotDataPtr()
+LogDataHandler *ContainerObject::getLogDataHandler()
 {
     return mpLogDataHandler;
 }

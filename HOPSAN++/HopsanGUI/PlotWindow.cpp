@@ -124,10 +124,11 @@ PlotTabWidget::PlotTabWidget(PlotWindow *pParentPlotWindow)
 //! @brief Constructor for the plot window, where plots are displayed.
 //! @param plotVariableTree is a pointer to the variable tree from where the plot window was created
 //! @param parent is a pointer to the main window
-PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
+PlotWindow::PlotWindow(const QString name, PlotVariableTree *plotVariableTree, MainWindow *parent)
     : QMainWindow(parent)
-
 {
+    mName = name;
+
     // Set Window attributes
     setAttribute(Qt::WA_DeleteOnClose, true);
     setAttribute(Qt::WA_MouseTracking, true);
@@ -136,7 +137,9 @@ PlotWindow::PlotWindow(PlotVariableTree *plotVariableTree, MainWindow *parent)
     QString modelPathway = gpMainWindow->mpProjectTabs->getCurrentContainer()->getModelFileInfo().filePath();
     QFileInfo fi(modelPathway);
     QString namer = fi.baseName();
-    setWindowTitle(QString(namer) + " Plot");
+    //setWindowTitle(QString(namer) + " Plot");
+    setWindowTitle(mName);
+    //! @todo show model name somwhere else mybe in paranthesis
 
     //setAcceptDrops(false);
     //setAttribute(Qt::WA_TransparentForMouseEvents, false);
@@ -516,6 +519,11 @@ void PlotWindow::hideHelpPopupMessage()
     mpHelpPopup->hide();
 }
 
+QString PlotWindow::getName() const
+{
+    return mName;
+}
+
 
 //! @brief Creates a new plot curve from a plot variable in current container object and adds it to the current plot tab
 //! @param generation Generation of plot data
@@ -546,7 +554,7 @@ void PlotWindow::addBarChart(QStandardItemModel *pItemModel)
 
 void PlotWindow::ImportPlo()
 {
-    LogDataHandler *pAllData = gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr();
+    LogDataHandler *pAllData = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler();
     pAllData->importFromPlo();
 
     gpMainWindow->mpPlotWidget->mpPlotVariableTree->updateList();
@@ -1286,7 +1294,8 @@ void PlotWindow::updatePalette()
 //! @brief Creates a new plot window and adds the curves from current plot tab
 void PlotWindow::createPlotWindowFromTab()
 {
-    PlotWindow *pPlotWindow = new PlotWindow(mpPlotVariableTree, gpMainWindow);
+    //! @todo use plot handler instead
+    PlotWindow *pPlotWindow = new PlotWindow("apa",mpPlotVariableTree, gpMainWindow);
     pPlotWindow->show();
     for(int i=0; i<getCurrentPlotTab()->getCurves().size(); ++i)
     {

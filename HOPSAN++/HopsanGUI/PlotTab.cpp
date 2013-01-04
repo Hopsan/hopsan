@@ -1542,7 +1542,7 @@ void PlotTab::exportToOldHop()
         variables.append(mPlotCurvePtrs[FIRSTPLOT][c]->getPlotLogDataVariable()->getFullVariableName());
     }
 
-    mPlotCurvePtrs[FIRSTPLOT].first()->getContainerObjectPtr()->getPlotDataPtr()->exportToPlo(filePath, variables);
+    mPlotCurvePtrs[FIRSTPLOT].first()->getContainerObjectPtr()->getLogDataHandler()->exportToPlo(filePath, variables);
 
     //    file.setFileName(fileInfo.filePath());   //Create a QFile object
     //    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -2520,17 +2520,17 @@ void PlotTab::dropEvent(QDropEvent *event)
             //! @todo should not be half heigh should be slightly lower (Peters opinion)
             if(this->mapFromGlobal(cursor.pos()).y() > getPlot()->canvas()->height()/2+getPlot()->canvas()->y()+10 && getNumberOfCurves(FIRSTPLOT) >= 1)
             {
-                VariableDescription desc = gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getPlotData(mimeText, -1)->getVariableDescription();
+                VariableDescription desc = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotData(mimeText, -1)->getVariableDescription();
                 desc.mDataUnit = gConfig.getDefaultUnit(desc.mDataName);
-                changeXVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getPlotDataValues(desc.getFullName(), -1), desc );
+                changeXVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotDataValues(desc.getFullName(), -1), desc );
             }
             else if(this->mapFromGlobal(cursor.pos()).x() < getPlot()->canvas()->x()+9 + getPlot()->canvas()->width()/2)
             {
-                mpParentPlotWindow->addPlotCurve(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getPlotData(mimeText, -1), QwtPlot::yLeft);
+                mpParentPlotWindow->addPlotCurve(gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotData(mimeText, -1), QwtPlot::yLeft);
             }
             else
             {
-                mpParentPlotWindow->addPlotCurve(gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getPlotData(mimeText, -1), QwtPlot::yRight);
+                mpParentPlotWindow->addPlotCurve(gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotData(mimeText, -1), QwtPlot::yRight);
             }
         }
     }

@@ -761,21 +761,21 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
 
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
-ProjectTabWidget::ProjectTabWidget(MainWindow *parent)
-        :   QTabWidget(parent)
+ProjectTabWidget::ProjectTabWidget(MainWindow *pParentMainWindow)
+        :   QTabWidget(pParentMainWindow)
 {
     this->setPalette(gConfig.getPalette());
 
-    connect(this, SIGNAL(checkMessages()), gpMainWindow->mpTerminalWidget, SLOT(checkMessages()), Qt::UniqueConnection);
-    connect(this, SIGNAL(currentChanged(int)), gpMainWindow, SLOT(updateToolBarsToNewTab()), Qt::UniqueConnection);
-    connect(this, SIGNAL(currentChanged(int)), gpMainWindow, SLOT(refreshUndoWidgetList()), Qt::UniqueConnection);
+    connect(this, SIGNAL(checkMessages()),      pParentMainWindow->mpTerminalWidget,    SLOT(checkMessages()), Qt::UniqueConnection);
+    connect(this, SIGNAL(currentChanged(int)),  pParentMainWindow,                      SLOT(updateToolBarsToNewTab()), Qt::UniqueConnection);
+    connect(this, SIGNAL(currentChanged(int)),  pParentMainWindow,                      SLOT(refreshUndoWidgetList()), Qt::UniqueConnection);
 
     setTabsClosable(true);
     mNumberOfUntitledTabs = 0;
 
-    connect(this,SIGNAL(currentChanged(int)),SLOT(tabChanged()), Qt::UniqueConnection);
-    connect(this,SIGNAL(tabCloseRequested(int)),SLOT(closeProjectTab(int)), Qt::UniqueConnection);
-    connect(this,SIGNAL(tabCloseRequested(int)),SLOT(tabChanged()), Qt::UniqueConnection);
+    connect(this,   SIGNAL(currentChanged(int)),    SLOT(tabChanged()),         Qt::UniqueConnection);
+    connect(this,   SIGNAL(tabCloseRequested(int)), SLOT(closeProjectTab(int)), Qt::UniqueConnection);
+    connect(this,   SIGNAL(tabCloseRequested(int)), SLOT(tabChanged()),         Qt::UniqueConnection);
 
     mpSimulationThreadHandler = new SimulationThreadHandler();
     connect(mpSimulationThreadHandler, SIGNAL(done(bool)), this, SIGNAL(simulationFinished()));
@@ -916,7 +916,7 @@ bool ProjectTabWidget::closeProjectTab(int index)
     }
 
 
-    if (getTab(index)->getTopLevelSystem()->getPlotDataPtr()->hasOpenPlotCurves())
+    if (getTab(index)->getTopLevelSystem()->getLogDataHandler()->hasOpenPlotCurves())
     {
         QMessageBox msgBox;
         msgBox.setWindowIcon(gpMainWindow->windowIcon());

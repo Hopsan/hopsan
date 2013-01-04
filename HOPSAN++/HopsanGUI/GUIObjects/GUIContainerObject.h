@@ -120,7 +120,7 @@ public:
     void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y); //!< @todo maybe not public
 
     //Plot and simulation results methods
-    LogDataHandler *getPlotDataPtr();
+    LogDataHandler *getLogDataHandler();
 
     //Undo/redo methods
     UndoStack *getUndoStackPtr();
