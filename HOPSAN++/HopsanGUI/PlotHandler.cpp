@@ -5,10 +5,11 @@
 #include "LogDataHandler.h"
 #include "MainWindow.h"
 
-PlotHandler::PlotHandler(ContainerObject *pContainerObject) :
-    QObject(pContainerObject)
+PlotHandler::PlotHandler(QObject *pParent) : QObject(pParent){}
+
+PlotHandler::~PlotHandler()
 {
-    mpContainerObject = pContainerObject;
+    closeAllOpenWindows();
 }
 
 //! @brief Creates a new PlotWindow or nothing if window with desired name already exist
@@ -88,6 +89,15 @@ QString PlotHandler::plotDataToWindow(QString windowName, LogVariableData *pData
     PlotWindow *pWindow = createNewPlotWindowOrGetCurrentOne(windowName);
     plotDataToWindow(pWindow, pData, axis, curveColor);
     return pWindow->getName();
+}
+
+void PlotHandler::closeAllOpenWindows()
+{
+    while (!mOpenPlotWindows.empty())
+    {
+        PlotWindow* pPW = mOpenPlotWindows.begin().value();
+        pPW->close();
+    }
 }
 
 PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, LogVariableData *pData, int axis, QColor curveColor)

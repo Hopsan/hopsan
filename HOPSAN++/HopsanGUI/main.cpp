@@ -32,11 +32,9 @@
 #include "Configuration.h"
 #include "CopyStack.h"
 #include "Dialogs/WelcomeDialog.h"
-#include "PlotHandler.h"
 
 //Global stuff
 MainWindow* gpMainWindow = 0;
-PlotHandler* gpPlotHandler = 0;
 Configuration gConfig;
 CopyStack gCopyStack;
 QString gExecPath;
@@ -114,9 +112,6 @@ int main(int argc, char *argv[])
     // Create the mainwindow
     MainWindow mainwindow;
     gpMainWindow = &mainwindow;
-
-    // Create plothandler after mainwindow
-    gpPlotHandler = new PlotHandler(); //! @todo parent ?
 
     //Show splash screen, show main window and initialize workspace
     QTimer::singleShot(1000, &splash, SLOT(close()));

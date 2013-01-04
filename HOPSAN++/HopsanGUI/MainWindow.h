@@ -29,8 +29,6 @@
 #include <QtGui>
 #include <QtNetwork/QNetworkReply>
 
-//#include "Widgets/UndoWidget.h"
-
 class ProjectTabWidget;
 class GraphicsView;
 class QGraphicsScene;

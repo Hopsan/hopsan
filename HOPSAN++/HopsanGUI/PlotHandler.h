@@ -16,15 +16,17 @@ class PlotHandler : public QObject
 {
     Q_OBJECT
 public:
-    explicit PlotHandler(ContainerObject *pContainerObject = 0);
-
+    explicit PlotHandler(QObject *pParent=0);
+    ~PlotHandler();
 
     PlotWindow *createNewPlotWindowOrGetCurrentOne(QString name="");
+    PlotWindow *plotDataToWindow(PlotWindow *pPlotWindow, LogVariableData *pData, int axis, QColor curveColor=QColor());
     PlotWindow *getPlotWindow(const QString name);
 
     void createPlotWindow(QString name="");
     QString plotDataToWindow(QString windowName, LogVariableData *pData, int axis, QColor curveColor=QColor());
-    PlotWindow *plotDataToWindow(PlotWindow *pPlotWindow, LogVariableData *pData, int axis, QColor curveColor=QColor());
+
+    void closeAllOpenWindows();
 
     PlotWindow *createPlotWindow(QVector<double> xVector, QVector<double> yVector, int axis, QString componentName, QString portName, QString dataName, QString dataUnit, QString name="");
     
@@ -34,7 +36,6 @@ protected slots:
     void forgetPlotWindow(PlotWindow *pWindow);
 
 private:
-    ContainerObject *mpContainerObject;
     QMap<QString, PlotWindow*> mOpenPlotWindows;
     
 };

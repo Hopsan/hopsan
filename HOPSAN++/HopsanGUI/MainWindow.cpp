@@ -52,9 +52,14 @@
 #include "CopyStack.h"
 #include "Utilities/GUIUtilities.h"
 
+#include "PlotHandler.h"
+
 //! @todo maybe we can make sure that we dont need to include these here
 #include "GraphicsView.h"
 #include "GUIObjects/GUISystem.h"
+
+// Global
+PlotHandler* gpPlotHandler = 0;
 
 //! @brief Constructor for main window
 MainWindow::MainWindow(QWidget *parent)
@@ -64,6 +69,9 @@ MainWindow::MainWindow(QWidget *parent)
     gpMainWindow = this;        //!< @todo It would be nice to not declare this pointer here, but in main.cpp instead if possible
                                 //! @note This is however not possible, because the gpMainWindow pointer is needed by the MainWindow constructor code.
                                 //! @todo needs some code rewrite to fix this, it is madness
+
+    // Create plothandler as child to mainwindo but assign to global ptr
+    gpPlotHandler = new PlotHandler(this);
 
     //Set main window options
     this->setDockOptions(QMainWindow::ForceTabbedDocks);
@@ -269,6 +277,7 @@ MainWindow::MainWindow(QWidget *parent)
 //! @todo Shouldn't all member pointers be deleted here?
 MainWindow::~MainWindow()
 {
+    delete gpPlotHandler;
     delete mpProjectTabs;
     delete mpMenuBar;
     delete mpStatusBar;
@@ -369,6 +378,10 @@ void MainWindow::openPlotWidget()
 //! @param event contains information of the closing operation.
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    // Must close all open windows before closing project tabs
+    //! @todo need to restore function that closes those plots beloning to a particular tab/model automatically /Peter
+    gpPlotHandler->closeAllOpenWindows();
+
     if (mpProjectTabs->closeAllProjectTabs())
     {
         event->accept();
