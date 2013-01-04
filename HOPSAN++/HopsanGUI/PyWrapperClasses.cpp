@@ -26,6 +26,7 @@
 #include "Widgets/HcomWidget.h"
 #include "PlotWindow.h"
 #include "PlotTab.h"
+#include "PlotHandler.h"
 
 //Implementations are done in h-file right now
 QString PyPortClassWrapper::plot(Port* o, const QString& dataName)
@@ -343,7 +344,12 @@ void  PyMainWindowClassWrapper::offset(MainWindow* o, const QString aliasName, c
 
 void PyMainWindowClassWrapper::savePlotData(MainWindow* o, const QString& fileName, const QString& windowName)
 {
-    o->mpPlotWidget->mpPlotVariableTree->getPlotWindow(windowName)->getCurrentPlotTab()->exportToCsv(fileName);
+    PlotWindow *pPW = gpPlotHandler->getPlotWindow(windowName);
+    if (pPW)
+    {
+        pPW->getCurrentPlotTab()->exportToCsv(fileName);
+    }
+    //! @todo error message if not found
 }
 
 int PyMainWindowClassWrapper::getSimulationTime(MainWindow* o)

@@ -313,101 +313,15 @@ void PlotVariableTree::updateList()
 //! @param *item Pointer to the tree widget item whos arrays will be looked up from the map and plotted
 PlotWindow *PlotVariableTree::createPlotWindow(QTreeWidgetItem *item)
 {
-    ////! @todo This is a kind of dumb check; it assumes that component items have bold font and variables not.
-    //if(!item->font(0).bold() && !item->isDisabled())     //Top level items cannot be plotted (they represent the components)
-
     // QTreeWidgetItem must be casted to a PlotVariableTreeItem. This is a necessary because double click event can not know which kind of tree item is clicked.
     // Top level items cannot be plotted (they represent the components)
     PlotVariableTreeItem *tempItem = dynamic_cast<PlotVariableTreeItem *>(item);
     if(tempItem)
     {
-        //return createPlotWindow(tempItem->getComponentName(), tempItem->getPortName(), tempItem->getDataName(), ""/*tempItem->getDataUnit()*/);
-        return createPlotWindow(tempItem->getDataPtr());
+        return gpPlotHandler->plotDataToWindow(0, tempItem->getDataPtr(), QwtPlot::yLeft);
     }
     return 0; //! @todo Should this return 0?
 }
-
-
-PlotWindow *PlotVariableTree::getPlotWindow(QString name)
-{
-//    if(!mOpenPlotWindows.contains(name))
-//    {
-//        return 0;
-//    }
-//    else
-//    {
-//        return mOpenPlotWindows.find(name).value();
-//    }
-    return gpPlotHandler->getPlotWindow(name);
-}
-
-
-void PlotVariableTree::reportClosedPlotWindow(PlotWindow *window)
-{
-//    QMap<QString, PlotWindow*>::iterator it;
-//    for(it=mOpenPlotWindows.begin(); it!=mOpenPlotWindows.end(); ++it)
-//    {
-//        if(it.value() == window)
-//        {
-//            break;
-//        }
-//    }
-
-//    mOpenPlotWindows.remove(it.key());
-}
-
-
-//! @brief Creates a new plot window from specified component and variable.
-//! @param componentName Name of the component where the port with the variable is located
-//! @param portName Name of the port where the variable is located
-//! @param dataName Name of the variable
-//! @param dataUnit Name of the unit of the variable
-PlotWindow *PlotVariableTree::createPlotWindow(LogVariableData *pData, QColor desiredColor, QString name)
-{
-    PlotWindow *pPW;
-    pPW = gpPlotHandler->createNewPlotWindowOrGetCurrentOne(name);
-    pPW->addPlotCurve(pData, QwtPlot::yLeft, QString(), desiredColor);
-
-    return pPW;
-
-//    PlotWindow *plotWindow = new PlotWindow(this, gpMainWindow);
-//    plotWindow->show();
-//    plotWindow->addPlotCurve(pData, QwtPlot::yLeft, QString(), desiredColor);
-
-//    if(name.isEmpty())
-//    {
-//        name = "PlotWindow"+mOpenPlotWindows.size();
-//    }
-
-//    mOpenPlotWindows.insert(name, plotWindow);
-
-//    return plotWindow;
-}
-
-
-PlotWindow *PlotVariableTree::createPlotWindow(QVector<double> xVector, QVector<double> yVector, int axis, QString componentName, QString portName, QString dataName, QString dataUnit, QString name)
-{
-//    if((xVector.isEmpty()) || (yVector.isEmpty()))
-//        return 0;
-
-//    PlotWindow *plotWindow = new PlotWindow(this, gpMainWindow);
-//    plotWindow->show();
-
-//    if(name.isEmpty())
-//    {
-//        name = "PlotWindow"+mOpenPlotWindows.size();
-//    }
-
-//    mOpenPlotWindows.insert(name, plotWindow);
-
-//    //plotWindow->addPlotCurve(0, componentName, portName, dataName, dataUnit, axis);
-//    //!< @todo FIXA /Peter
-
-//    return plotWindow;
-    return 0;
-    //! @todo FIXA /Peter
-}
-
 
 //! @brief Defines what happens when clicking in the variable list. Used to initiate drag operations.
 void PlotVariableTree::mousePressEvent(QMouseEvent *event)

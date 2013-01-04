@@ -30,10 +30,8 @@
 #include <QAction>
 #include <QDateTime>
 #include <QStandardItemModel>
-#include <cassert>
 #include <QtGlobal>
-#include <qwt_plot_legenditem.h>
-
+#include <QtGui>
 
 
 #include "GUIObjects/GUIContainerObject.h"
@@ -64,7 +62,10 @@
 #include "qwt_scale_draw.h"
 #include "qwt_scale_widget.h"
 #include <qwt_dyngrid_layout.h>
-#include <QtGui>
+#include <qwt_plot_legenditem.h>
+
+
+#include "PlotHandler.h"
 
 
 #include "Dependencies/BarChartPlotter/barchartplotter.h"
@@ -124,7 +125,7 @@ PlotTabWidget::PlotTabWidget(PlotWindow *pParentPlotWindow)
 //! @brief Constructor for the plot window, where plots are displayed.
 //! @param plotVariableTree is a pointer to the variable tree from where the plot window was created
 //! @param parent is a pointer to the main window
-PlotWindow::PlotWindow(const QString name, PlotVariableTree *plotVariableTree, MainWindow *parent)
+PlotWindow::PlotWindow(const QString name, MainWindow *parent)
     : QMainWindow(parent)
 {
     mName = name;
@@ -154,8 +155,6 @@ PlotWindow::PlotWindow(const QString name, PlotVariableTree *plotVariableTree, M
     int x = (sw - w)/2;
     int y = (sh - h)/2;
     move(x, y);       //Move plot window to center of screen
-
-    mpPlotVariableTree = plotVariableTree;
 
     //Create the toolbar and its buttons
     mpToolBar = new QToolBar(this);
@@ -415,7 +414,7 @@ PlotWindow::PlotWindow(const QString name, PlotVariableTree *plotVariableTree, M
     //Establish signal and slots connections
     connect(mpNewPlotButton,                    SIGNAL(triggered()),            this,               SLOT(addPlotTab()));
     connect(mpLoadFromXmlButton,                SIGNAL(triggered()),            this,               SLOT(loadFromXml()));
-    connect(mpImportClassicData,                SIGNAL(triggered()),            this,               SLOT(ImportPlo()));
+    connect(mpImportClassicData,                SIGNAL(triggered()),            this,               SLOT(importPlo()));
     connect(mpSaveButton,                       SIGNAL(triggered()),            this,               SLOT(saveToXml()));
     connect(mpBodePlotButton,                   SIGNAL(triggered()),            this,               SLOT(createBodePlot()));
     connect(mpNewWindowFromTabButton,           SIGNAL(triggered()),            this,               SLOT(createPlotWindowFromTab()));
@@ -552,13 +551,9 @@ void PlotWindow::addBarChart(QStandardItemModel *pItemModel)
 //! @brief Imports .Plo files from Old Hopsan
 //! Imports Plot Data Only
 
-void PlotWindow::ImportPlo()
+void PlotWindow::importPlo()
 {
-    LogDataHandler *pAllData = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler();
-    pAllData->importFromPlo();
-
-    gpMainWindow->mpPlotWidget->mpPlotVariableTree->updateList();
-    mpPlotVariableTree->updateList();
+    gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->importFromPlo();;
 }
 
 //! @brief Saves the plot window to XML
@@ -1178,7 +1173,7 @@ void PlotWindow::mouseMoveEvent(QMouseEvent *event)
 //! @brief Reimplementation of close function for plot window. Notifies plot widget that window no longer exists.
 void PlotWindow::closeEvent(QCloseEvent *event)
 {
-    gpMainWindow->mpPlotWidget->mpPlotVariableTree->reportClosedPlotWindow(this); //!< @deprecated
+    //gpMainWindow->mpPlotWidget->mpPlotVariableTree->reportClosedPlotWindow(this); //!< @deprecated
     emit windowClosed(this);
     event->accept();
 }
@@ -1294,13 +1289,12 @@ void PlotWindow::updatePalette()
 //! @brief Creates a new plot window and adds the curves from current plot tab
 void PlotWindow::createPlotWindowFromTab()
 {
-    //! @todo use plot handler instead
-    PlotWindow *pPlotWindow = new PlotWindow("apa",mpPlotVariableTree, gpMainWindow);
-    pPlotWindow->show();
+    //! @todo should be in tab instead and have signal slot
+    PlotWindow *pPW = 0;
     for(int i=0; i<getCurrentPlotTab()->getCurves().size(); ++i)
     {
         //pPlotWindow->addPlotCurve(getCurrentPlotTab()->getCurves().at(i)->getGeneration(), getCurrentPlotTab()->getCurves().at(i)->getComponentName(), getCurrentPlotTab()->getCurves().at(i)->getPortName(), getCurrentPlotTab()->getCurves().at(i)->getDataName(), getCurrentPlotTab()->getCurves().at(i)->getDataUnit(), getCurrentPlotTab()->getCurves().at(i)->getAxisY());
-        pPlotWindow->addPlotCurve(getCurrentPlotTab()->getCurves().at(i)->getPlotLogDataVariable(), getCurrentPlotTab()->getCurves().at(i)->getAxisY());
+        pPW = gpPlotHandler->plotDataToWindow(pPW,getCurrentPlotTab()->getCurves().at(i)->getPlotLogDataVariable(), getCurrentPlotTab()->getCurves().at(i)->getAxisY());
     }
 }
 

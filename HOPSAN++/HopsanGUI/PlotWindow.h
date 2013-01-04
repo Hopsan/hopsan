@@ -32,9 +32,6 @@
 #include <qwt_plot.h>
 
 class MainWindow;
-class PlotVariableTree;
-class PlotTreeWidget;
-
 class PlotTab;
 class PlotCurve;
 class LogVariableData;
@@ -58,11 +55,11 @@ public slots:
 class PlotWindow : public QMainWindow
 {
     Q_OBJECT
-    friend class PlotTreeWidget;                //! @todo Should plot window really be friend with everything?
+    //! @todo Should plot window really be friend with everything?
     friend class PlotTab;
     friend class PlotCurve;
 public:
-    PlotWindow(const QString name, PlotVariableTree *PlotVariableTree, MainWindow *parent);
+    PlotWindow(const QString name, MainWindow *parent);
     ~PlotWindow();
     void addPlotCurve(LogVariableData *pData, int axisY=QwtPlot::yLeft, QString modelPath = QString(), QColor desiredColor=QColor());
     void addBarChart(QStandardItemModel *pItemModel);
@@ -85,7 +82,7 @@ public slots:
     void updatePalette();
     void createPlotWindowFromTab();
     void saveToXml();
-    void ImportPlo();
+    void importPlo();
 
     void loadFromXml();
     void performFrequencyAnalysis(PlotCurve *curve);
@@ -112,7 +109,6 @@ private:
     QString mName;
     QGridLayout *mpLayout;
     QGridLayout *mpInfoBoxLayout;
-    PlotVariableTree *mpPlotVariableTree; //!< @todo this seems to be completely useless
     QPointF dragStartPosition;
 
     QToolBar *mpToolBar;

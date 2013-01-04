@@ -5,10 +5,6 @@
 #include "LogDataHandler.h"
 #include "MainWindow.h"
 
-
-#include "Widgets/PlotWidget.h" //!< @todo remove this later /Peter
-
-
 PlotHandler::PlotHandler(ContainerObject *pContainerObject) :
     QObject(pContainerObject)
 {
@@ -28,6 +24,7 @@ PlotWindow *PlotHandler::createNewPlotWindowOrGetCurrentOne(QString name)
 {
     if(name.isEmpty())
     {
+        // Make sure we find a unique name
         int ctr = 0;
         do
         {
@@ -38,7 +35,7 @@ PlotWindow *PlotHandler::createNewPlotWindowOrGetCurrentOne(QString name)
     PlotWindow* pPlotWindow = getPlotWindow(name);
     if (pPlotWindow==0)
     {
-        pPlotWindow = new PlotWindow(name, gpMainWindow->mpPlotWidget->mpPlotVariableTree, gpMainWindow);
+        pPlotWindow = new PlotWindow(name, gpMainWindow);
         pPlotWindow->show();
         mOpenPlotWindows.insert(name, pPlotWindow);
         connect(pPlotWindow, SIGNAL(windowClosed(PlotWindow*)), this, SLOT(forgetPlotWindow(PlotWindow*)));
@@ -64,7 +61,7 @@ PlotWindow *PlotHandler::createPlotWindow(QVector<double> xVector, QVector<doubl
         name = "PlotWindow"+mOpenPlotWindows.size();
     }
 
-    PlotWindow *plotWindow = new PlotWindow(name, gpMainWindow->mpPlotWidget->mpPlotVariableTree, gpMainWindow);
+    PlotWindow *plotWindow = new PlotWindow(name, gpMainWindow);
     plotWindow->show();
 
 

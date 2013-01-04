@@ -38,9 +38,6 @@ class HcomHandler;
 class HcomCommand;
 class CoreMessagesAccess;
 
-
-
-
 class TerminalWidget : public QWidget
 {
     Q_OBJECT
@@ -212,7 +209,7 @@ private:
     QList<HcomCommand> mCmdList;
 
     //Plotting
-    QString mCurrentPlotWindow;
+    QString mCurrentPlotWindowName;
 
     //Local variables
     QMap<QString, double> mLocalVars;

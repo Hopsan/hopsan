@@ -253,9 +253,6 @@ public:
     QString plotVariable(const QString plotName, const QString fullVarName, const int gen, const int axis, QColor color=QColor());
     PlotWindow *plotVariable(PlotWindow *pPlotWindow, const QString fullVarName, const int gen, const int axis, QColor color=QColor());
 
-    //PlotWindow *openNewPlotWindow(const QString fullName);
-    //PlotWindow *plotToWindow(const QString fullName, const int gen, int axis=0, PlotWindow *pPlotWindow=0, QColor color=QColor());
-
     LogVariableData *addVariableWithScalar(const LogVariableData *a, const double x);
     LogVariableData *subVariableWithScalar(const LogVariableData *a, const double x);
     LogVariableData *mulVariableWithScalar(const LogVariableData *a, const double x);

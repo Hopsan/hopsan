@@ -59,16 +59,14 @@ private:
 class PlotVariableTree : public QTreeWidget
 {
     Q_OBJECT
-    friend class PlotWindow;
     friend class PlotTreeWidget;
 public:
     PlotVariableTree(MainWindow *parent = 0);
-    PlotWindow *createPlotWindow(LogVariableData *pData, QColor desiredColor=QColor(), QString name="");
-    PlotWindow *createPlotWindow(QVector<double> xVector, QVector<double> yVector, int axis, QString componentName, QString portName, QString dataName, QString dataUnit, QString name="");
-    PlotWindow *getPlotWindow(QString name);
-    void reportClosedPlotWindow(PlotWindow *window);
-
     ContainerObject *mpCurrentContainer;
+
+public slots:
+    void updateList();
+    PlotWindow *createPlotWindow(QTreeWidgetItem *item);
 
 protected:
     virtual void mousePressEvent(QMouseEvent *event);
@@ -77,13 +75,8 @@ protected:
 
     QPointF dragStartPosition;
 
-public slots:
-    void updateList();
-    PlotWindow *createPlotWindow(QTreeWidgetItem *item);
-
 private:
     QList<VariableDescription> mAvailableVariables;
-    QMap<QString, PlotWindow*> mOpenPlotWindows;
 };
 
 

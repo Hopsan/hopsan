@@ -869,7 +869,18 @@ void PlotTab::removeCurve(PlotCurve *curve)
     rescaleToCurves();
     updateLabels();
     update();
+}
 
+void PlotTab::removeAllCurvesOnAxis(const int axis)
+{
+    QList<PlotCurve*> curvePtrs = getCurves();
+    for(int c=0; c<curvePtrs.size(); ++c)
+    {
+        if(curvePtrs[c]->getAxisY() == axis)
+        {
+            removeCurve(curvePtrs.at(c));
+        }
+    }
 }
 
 

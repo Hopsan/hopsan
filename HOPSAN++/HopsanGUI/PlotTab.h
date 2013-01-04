@@ -51,6 +51,7 @@ public:
     void addCurve(PlotCurve *curve, QColor desiredColor=QColor(), HopsanPlotID plotID=FIRSTPLOT);
     void rescaleToCurves();
     void removeCurve(PlotCurve *curve);
+    void removeAllCurvesOnAxis(const int axis);
     QList<PlotCurve *> getCurves(HopsanPlotID plotID=FIRSTPLOT);
     void setActivePlotCurve(PlotCurve *pCurve);
     PlotCurve *getActivePlotCurve();

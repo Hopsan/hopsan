@@ -1285,37 +1285,6 @@ PlotWindow *LogDataHandler::plotVariable(PlotWindow *pPlotWindow, const QString 
     return 0;
 }
 
-//PlotWindow* LogDataHandler::openNewPlotWindow(const QString fullName)
-//{
-//    LogVariableData *pData = getPlotData(fullName, -1);
-//    if(pData)
-//    {
-//        return gpMainWindow->mpPlotWidget->mpPlotVariableTree->createPlotWindow(pData);
-//    }
-//    return 0;
-//}
-
-////! @todo this is incompletete maybe replace openNewPlotwindow with this one
-//PlotWindow *LogDataHandler::plotToWindow(const QString fullName, const int gen, int axis, PlotWindow *pPlotWindow, QColor color)
-//{
-//    LogVariableData *pData = getPlotData(fullName, gen);
-//    if(pData)
-//    {
-//        if (pPlotWindow)
-//        {
-//            pPlotWindow->addPlotCurve(pData, axis, "", color);
-//            return pPlotWindow;
-//            //! @todo completet this, maybe need more input arguments for gneeration custom unit axis color and stuff,
-//        }
-//        else
-//        {
-//            //! @todo axis color etc..
-//            return gpMainWindow->mpPlotWidget->mpPlotVariableTree->createPlotWindow(pData);
-//        }
-//    }
-//    return 0;
-//}
-
 QVector<LogVariableData *> LogDataHandler::getAllVariablesAtNewestGeneration()
 {
     QVector<LogVariableData *> dataPtrVector;

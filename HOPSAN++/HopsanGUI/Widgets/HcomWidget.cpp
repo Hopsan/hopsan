@@ -35,9 +35,10 @@
 #include "PlotWindow.h"
 #include "Widgets/MessageWidget.h"
 #include <QDateTime>
-#include <math.h>
+#include <cmath>
 #include "PlotTab.h"
 #include "PlotCurve.h"
+#include "PlotHandler.h"
 
 
 
@@ -669,7 +670,7 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole)
 {
     mpConsole = pConsole;
 
-    mCurrentPlotWindow = "PlotWindow0";
+    mCurrentPlotWindowName = "PlotWindow0";
 
     mPwd = QString(DOCUMENTSPATH);
     mPwd.chop(1);
@@ -1351,7 +1352,7 @@ void HcomHandler::executePrintCommand(QString cmd)
 //! @param cmd Command with first word removed
 void HcomHandler::executeChangePlotWindowCommand(QString cmd)
 {
-    mCurrentPlotWindow = cmd;
+    mCurrentPlotWindowName = cmd;
 }
 
 
@@ -1359,7 +1360,7 @@ void HcomHandler::executeChangePlotWindowCommand(QString cmd)
 //! @param cmd Command with first word removed
 void HcomHandler::executeDisplayPlotWindowCommand(QString cmd)
 {
-    mpConsole->print(mCurrentPlotWindow);
+    mpConsole->print(mCurrentPlotWindowName);
 }
 
 
@@ -1927,20 +1928,7 @@ void HcomHandler::addPlotCurve(QString cmd, int axis)
         return;
     }
 
-    PlotWindow *pPlotWindow = gpMainWindow->mpPlotWidget->mpPlotVariableTree->getPlotWindow(mCurrentPlotWindow);
-    if(pPlotWindow)
-    {
-        pPlotWindow->addPlotCurve(pData, axis);
-        pPlotWindow->show();
-    }
-    else
-    {
-        pPlotWindow = gpMainWindow->mpPlotWidget->mpPlotVariableTree->createPlotWindow(pData, QColor(), mCurrentPlotWindow);
-        //! @todo this below looks strange rewrite code so we don need strange things like this, what is it doing by the way?
-        pPlotWindow->getPlotTabWidget()->getCurrentTab()->removeCurve(pPlotWindow->getPlotTabWidget()->getCurrentTab()->getCurves().first());
-        pPlotWindow->addPlotCurve(pData, axis);
-
-    }
+    gpPlotHandler->plotDataToWindow(mCurrentPlotWindowName, pData, axis);
 }
 
 
@@ -1948,17 +1936,10 @@ void HcomHandler::addPlotCurve(QString cmd, int axis)
 //! @param axis Axis to remove from
 void HcomHandler::removePlotCurves(int axis)
 {
-    PlotWindow *pPlotWindow = gpMainWindow->mpPlotWidget->mpPlotVariableTree->getPlotWindow(mCurrentPlotWindow);
+    PlotWindow *pPlotWindow = gpPlotHandler->getPlotWindow(mCurrentPlotWindowName);
     if(pPlotWindow)
     {
-        QList<PlotCurve *> curvePtrs = pPlotWindow->getCurrentPlotTab()->getCurves();
-        for(int c=0; c<curvePtrs.size(); ++c)
-        {
-            if(curvePtrs[c]->getAxisY() == axis)
-            {
-                pPlotWindow->getCurrentPlotTab()->removeCurve(curvePtrs.at(c));
-            }
-        }
+        pPlotWindow->getCurrentPlotTab()->removeAllCurvesOnAxis(axis);
     }
 }
 

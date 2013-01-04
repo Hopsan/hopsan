@@ -26,7 +26,6 @@ public:
     QString plotDataToWindow(QString windowName, LogVariableData *pData, int axis, QColor curveColor=QColor());
     PlotWindow *plotDataToWindow(PlotWindow *pPlotWindow, LogVariableData *pData, int axis, QColor curveColor=QColor());
 
-    PlotWindow *createPlotWindow(LogVariableData *pData, QColor desiredColor=QColor(), QString name="");
     PlotWindow *createPlotWindow(QVector<double> xVector, QVector<double> yVector, int axis, QString componentName, QString portName, QString dataName, QString dataUnit, QString name="");
     
 signals:
