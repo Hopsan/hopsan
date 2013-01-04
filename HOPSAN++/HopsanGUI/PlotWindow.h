@@ -55,7 +55,7 @@ public slots:
 class PlotWindow : public QMainWindow
 {
     Q_OBJECT
-    //! @todo Should plot window really be friend with everything?
+    //! @todo should plot window really be friend with everything?
     friend class PlotTab;
     friend class PlotCurve;
 public:

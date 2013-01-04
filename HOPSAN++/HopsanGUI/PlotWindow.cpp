@@ -447,7 +447,8 @@ void PlotWindow::changeXVector(QVector<double> xarray, VariableDescription &rVar
 
 void PlotWindow::addPlotTab(QString requestedName)
 {
-    PlotTab *mpNewTab = new PlotTab(this);
+    PlotTab *mpNewTab = new PlotTab(mpPlotTabWidget);
+    mpNewTab->mpParentPlotWindow = this; //!< @todo figure out some better solution to this
 
     QString tabName;
     QString numString;
@@ -546,6 +547,7 @@ void PlotWindow::addPlotCurve(LogVariableData *pData, int axisY, QString modelPa
 void PlotWindow::addBarChart(QStandardItemModel *pItemModel)
 {
     getCurrentPlotTab()->addBarChart(pItemModel);
+    establishPlotTabConnections(); //Refresh buttons on/off
 }
 
 //! @brief Imports .Plo files from Old Hopsan

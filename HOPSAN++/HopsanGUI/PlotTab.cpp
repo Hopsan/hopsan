@@ -32,18 +32,13 @@
 
 const double DBLMAX = std::numeric_limits<double>::max();
 
-
-
-
-
-
-
 //! @brief Constructor for plot tabs.
 //! @param parent Pointer to the plot window the tab belongs to
-PlotTab::PlotTab(PlotWindow *parent)
-    : QWidget(parent)
+PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget)
+    : QWidget(pParentPlotTabWidget)
 {
-    mpParentPlotWindow = parent;
+    mpParentPlotTabWidget = pParentPlotTabWidget;
+    //mpParentPlotWindow = parent;
     setAcceptDrops(true);
     setMouseTracking(true);
     mHasSpecialXAxis=false;
@@ -80,7 +75,7 @@ PlotTab::PlotTab(PlotWindow *parent)
     for(int plotID=0; plotID<2; ++plotID)
     {
         //Plots
-        mpQwtPlots[plotID] = new QwtPlot(mpParentPlotWindow);
+        mpQwtPlots[plotID] = new QwtPlot(this);
         mpQwtPlots[plotID]->setMouseTracking(true);
         mpQwtPlots[plotID]->setAcceptDrops(false);
         mpQwtPlots[plotID]->setCanvasBackground(QColor(Qt::white));
@@ -306,31 +301,13 @@ void PlotTab::openLegendSettingsDialog()
 
 void PlotTab::setTabName(QString name)
 {
-    mpParentPlotWindow->mpPlotTabWidget->setTabText(mpParentPlotWindow->mpPlotTabWidget->indexOf(this), name);
+    mpParentPlotTabWidget->setTabText(mpParentPlotTabWidget->indexOf(this), name);
 }
 
 
 void PlotTab::addBarChart(QStandardItemModel *pItemModel)
 {
     mIsSpecialPlot = true;
-    mpParentPlotWindow->mpZoomButton->setDisabled(true);
-    mpParentPlotWindow->mpImportClassicData->setDisabled(true);
-    mpParentPlotWindow->mpArrowButton->setDisabled(true); // Arrow
-    mpParentPlotWindow->mpPanButton->setDisabled(true);
-    mpParentPlotWindow->mpSaveButton->setDisabled(true);
-    //mpParentPlotWindow->mpExportButton->setDisabled(true);
-    mpParentPlotWindow->mpExportToCsvAction->setDisabled(true);
-    mpParentPlotWindow->mpExportToGnuplotAction->setDisabled(true);
-    mpParentPlotWindow->mpExportToOldHopAction->setDisabled(true);
-    mpParentPlotWindow->mpExportToMatlabAction->setDisabled(true);
-    mpParentPlotWindow->mpLoadFromXmlButton->setDisabled(true);
-    mpParentPlotWindow->mpGridButton->setDisabled(true);
-    mpParentPlotWindow->mpBackgroundColorButton->setDisabled(true);
-    mpParentPlotWindow->mpNewWindowFromTabButton->setDisabled(true);
-    mpParentPlotWindow->mpResetXVectorButton->setDisabled(true);
-    mpParentPlotWindow->mpBodePlotButton->setDisabled(true);
-//    mpParentPlotWindow->mpExportPdfAction->setDisabled(true);
-    //mpParentPlotWindow->mpExportToGraphicsAction->setDisabled(true);
 
     for(int i=0; i<2; ++i)
     {

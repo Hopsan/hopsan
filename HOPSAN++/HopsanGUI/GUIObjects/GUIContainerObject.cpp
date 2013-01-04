@@ -2719,6 +2719,7 @@ void ContainerObject::showLossesFromDialog()
     pItemModel->setVerticalHeaderLabels(QStringList() << "Added" << "Losses");
     pItemModel->setHorizontalHeaderLabels(componentNames);
 
+    //! @todo meamory leak, should use PlotHandler instead
     PlotWindow *pPlotWindow = new PlotWindow("Energy Losses", gpMainWindow);
     pPlotWindow->getCurrentPlotTab()->setTabName("Energy Losses");
     pPlotWindow->addBarChart(pItemModel);

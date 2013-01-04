@@ -25,6 +25,7 @@
 
 //Forward Declarations
 class PlotWindow;
+class PlotTabWidget;
 class PlotCurve;
 class PlotMarker;
 
@@ -39,15 +40,15 @@ class PlotTab : public QWidget
     friend class PlotCurve;
     friend class PlotTabWidget;
     friend class PlotMarker;
-    friend class QItemSelectionModel;
+
 public:
-    PlotTab(PlotWindow *parent);
+    PlotTab(PlotTabWidget *pParentPlotTabWidget);
     ~PlotTab();
+    PlotTabWidget *mpParentPlotTabWidget;
     PlotWindow *mpParentPlotWindow;
 
     void setTabName(QString name);
 
-    void addBarChart(QStandardItemModel *pItemModel);
     void addCurve(PlotCurve *curve, QColor desiredColor=QColor(), HopsanPlotID plotID=FIRSTPLOT);
     void rescaleToCurves();
     void removeCurve(PlotCurve *curve);
@@ -72,6 +73,7 @@ public:
     void exportToCsv(QString fileName);
 
 protected:
+    void addBarChart(QStandardItemModel *pItemModel);
 
     virtual void dragEnterEvent(QDragEnterEvent *event);
     virtual void dragLeaveEvent(QDragLeaveEvent *event);
