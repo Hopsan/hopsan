@@ -2856,6 +2856,7 @@ void ContainerObject::measureSimulationTime()
     PlotWindow *pPlotWindow = new PlotWindow("Time measurements", gpMainWindow->mpPlotWidget->mpPlotVariableTree, gpMainWindow);
     pPlotWindow->getCurrentPlotTab()->setTabName("Time measurements");
     pPlotWindow->addBarChart(pBarChartModel);
+    pPlotWindow->setAttribute(Qt::WA_DeleteOnClose, false);
     pPlotWindow->hide();
 
 
@@ -2873,9 +2874,6 @@ void ContainerObject::measureSimulationTime()
     pLayout->addWidget(pComponentTable);
     pLayout->addWidget(pTypeTable);
     pLayout->addWidget(pButtonBox);
-
-
-
 
     connect(pTypeRadioButton, SIGNAL(toggled(bool)), pTypeTable, SLOT(setVisible(bool)));
     connect(pComponentRadioButton, SIGNAL(toggled(bool)), pComponentTable, SLOT(setVisible(bool)));

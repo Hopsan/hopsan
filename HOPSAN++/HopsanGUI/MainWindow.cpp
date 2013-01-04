@@ -1142,7 +1142,9 @@ void MainWindow::commenceAutoUpdate(QNetworkReply* reply)
     reply->deleteLater();
 
     QProcess *pProcess = new QProcess();
-    pProcess->start(QString(DATAPATH)+"/update.exe", QStringList() << "/silent");
+    QString dir = gExecPath;
+    dir.chop(4);    //Remove "bin"
+    pProcess->start(QString(DATAPATH)+"/update.exe", QStringList() << "/silent" << "/dir=\""+dir+"\"");
     pProcess->waitForStarted();
     this->close();
 }
