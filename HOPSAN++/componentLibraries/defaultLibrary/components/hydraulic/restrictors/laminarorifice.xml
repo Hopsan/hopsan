@@ -13,6 +13,9 @@
 	    <replacables>
 	        <replacable typename="HydraulicTurbulentOrifice"/>
 			<replacable typename="HydraulicLosslessConnector"/>
+            <replacable typename="HydraulicCheckValve"/>
+            <replacable typename="HydraulicCheckValveWithOrifice"/>
+            <replacable typename="HydraulicCheckValvePreLoaded"/>           
 		</replacables>
         <animation>
             <icon userpath="laminarorifice_user_base.svg"/>

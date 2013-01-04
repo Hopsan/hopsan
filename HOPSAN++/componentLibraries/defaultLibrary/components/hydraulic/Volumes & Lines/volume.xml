@@ -9,6 +9,10 @@
             <port x="0" y="0.5" a="0" name="P1"/>
             <port x="1" y="0.5" a="0" name="P2"/>
         </ports>
+        <replacables>
+            <replacable typename="HydraulicTLMlossless"/>
+	        <replacable typename="HydraulicHose"/>
+		</replacables>
         <animation>
             <icon userpath="volume_user.svg"/>
             <movable>

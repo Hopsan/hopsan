@@ -5,6 +5,13 @@
             <icon scale="1" path="checkvalve_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="checkvalve_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
+        <replacables>
+            <replacable typename="HydraulicLaminarOrifice"/>
+	        <replacable typename="HydraulicTurbulentOrifice"/>
+			<replacable typename="HydraulicLosslessConnector"/>
+            <replacable typename="HydraulicCheckValveWithOrifice"/>
+            <replacable typename="HydraulicCheckValvePreLoaded"/>   
+        </replacables>
         <help>
             <text>Hydraulic check valve with turbulent flow equation. This is a Q-type component.</text>
             <picture>checkvalvehelp.svg</picture>

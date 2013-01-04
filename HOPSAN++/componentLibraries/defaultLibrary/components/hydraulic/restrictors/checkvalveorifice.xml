@@ -5,6 +5,13 @@
             <icon scale="1" path="checkvalveorifice_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="checkvalveorifice_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
+        <replacables>
+            <replacable typename="HydraulicLaminarOrifice"/>
+	        <replacable typename="HydraulicTurbulentOrifice"/>
+			<replacable typename="HydraulicLosslessConnector"/>
+            <replacable typename="HydraulicCheckValve"/>
+            <replacable typename="HydraulicCheckValvePreLoaded"/>   
+        </replacables>
         <help>
             <text>Hydraulic check valve with turbulent flow equations. Flow in opposite direction will pass through an orifice. This is a Q-type component.</text>
         </help>

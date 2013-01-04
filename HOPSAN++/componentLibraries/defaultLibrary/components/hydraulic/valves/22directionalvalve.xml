@@ -5,6 +5,10 @@
             <icon scale="1" path="22directionalvalve_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="22directionalvalve_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
+        <replacables>
+            <replacable typename="Hydraulic22Valve"/>
+ 
+        </replacables>
         <help>
             <text>Hydraulic on/off valve with second order dynamics. Spool moves to position 1 if input signal is false (&lt; 0.5) or to position 2 if input signal is true (> 0.5). Dynamics is modelled as a low-pass filter with bandwith and damping.</text>
         </help>

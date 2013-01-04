@@ -5,6 +5,10 @@
             <icon scale="1" path="prv_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="prv_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
+        <replacables>
+            <replacable typename="HydraulicPressureDropValve"/>
+	        <replacable typename="HydraulicPressureReducingValve"/>
+        </replacables>
         <ports>
             <port x="0.4762" y="0" a="270" name="P1"/>
             <port x="0.4762" y="1" a="90" name="P2"/>

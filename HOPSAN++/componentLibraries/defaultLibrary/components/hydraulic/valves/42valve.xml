@@ -9,6 +9,14 @@
             <text>Hydraulic two way flow control valve with second order dynamics. Dynamics is modelled as a low-pass filter with bandwith and damping. Overlap (or underlap) can be specified individually for each flow direction.</text>
             <picture>42valvehelp.svg</picture>
         </help>
+        <replacables>
+            <replacable typename="Hydraulic43Valve"/>
+	        <replacable typename="Hydraulic43ValveNeutralSupplyToTank"/>
+			<replacable typename="Hydraulic43ValveNeutralToTank"/>
+            <replacable typename="HydraulicCheckValve"/>
+            <replacable typename="HydraulicCheckValveWithOrifice"/>
+            <replacable typename="HydraulicCheckValvePreLoaded"/>   
+        </replacables>
         <ports>
             <port x="0.415966" y="1" a="90" name="PP"/>
             <port x="0.415966" y="0" a="270" name="PA"/>

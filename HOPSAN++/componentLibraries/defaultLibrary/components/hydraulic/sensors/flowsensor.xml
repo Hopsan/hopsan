@@ -5,6 +5,9 @@
             <icon scale="1" path="flowsensor_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="flowsensor_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
+        <replacables>
+            <replacable typename="HydraulicPressureSensor"/>
+        </replacables>
         <ports>
             <port x="0.5" y="1" a="90" name="P1"/>
             <port x="0.5" y="0" a="270" name="out"/>

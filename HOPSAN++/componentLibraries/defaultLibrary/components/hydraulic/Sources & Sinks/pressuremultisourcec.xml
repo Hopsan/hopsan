@@ -5,6 +5,9 @@
             <icon scale="1" path="pressuresource_user.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="pressuresource_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
+        <replacables>
+            <replacable typename="HydraulicMultiTankC"/>
+        </replacables>
         <help>
             <text>Supplies the hydraulic port with the pressure obtained from signal port. Default pressure parameter value is used if signal port is not connected. Flow will be as large as is required. This component is slightly slower than the one without multiport.</text>
         </help>

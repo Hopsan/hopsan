@@ -5,6 +5,9 @@
             <icon scale="1" path="flowsource_user.svg" iconrotation="OFF" type="user"/>
             <icon scale="1" path="flowsource_iso.svg" iconrotation="OFF" type="iso"/>
         </icons>
+        <replacables>
+            <replacable typename="HydraulicPressureSourceQ"/>
+        </replacables>
         <ports>
             <port x="1" y="0.5" a="0" name="P1"/>
             <port x="0" y="0.5" a="180" name="in"/>
