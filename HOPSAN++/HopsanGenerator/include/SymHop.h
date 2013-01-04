@@ -128,7 +128,7 @@ public:
     Expression removeNumericalFactors() const;
     double getNumericalFactor() const;
 
-    //! @todo Must be public for the object-less constructor functions, solve later (AND DON't USE THEM ANYWHERE ELSE!!!)
+    //! @todo Must be public for the object-less constructor functions, solve later (AND DON'T USE THEM ANYWHERE ELSE!!!)
     //ExpressionTypeT mType;
     QString mString;                //Used for symbols
     QString mFunction;              //Used for functions
@@ -143,7 +143,6 @@ public:
     Expression *mpDividend;   //Used in modulo
 
 private:
-    QMap<QString, QString> mFunctionDerivatives;
     QStringList reservedSymbols;
 
     bool splitAtSeparator(const QString sep, const QStringList subSymbols, const ExpressionSimplificationT simplifications);
@@ -151,7 +150,7 @@ private:
     QStringList splitWithRespectToParentheses(const QString str, const QChar c);
 };
 
-
+QString getFunctionDerivative(const QString &key);
 QStringList getSupportedFunctionsList();
 QStringList getCustomFunctionList();
 

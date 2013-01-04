@@ -242,17 +242,6 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
         }
     }
 
-
-    //Store function derivatives in object
-    //! @todo This shall probably not be stored in every expression
-    mFunctionDerivatives.insert("sin", "cos");
-    mFunctionDerivatives.insert("cos", "-sin");
-    mFunctionDerivatives.insert("abs", "sign");
-    mFunctionDerivatives.insert("onPositive", "dxOnPositive");
-    mFunctionDerivatives.insert("onNegative", "dxOnNegative");
-    mFunctionDerivatives.insert("signedSquareL", "dxSignedSquareL");
-    mFunctionDerivatives.insert("limit", "dxLimit");
-
     //Store reserved symbols in object
     reservedSymbols << "mTime" << "Z";
 
@@ -691,8 +680,6 @@ QString Expression::toString() const
 //! @param delaySteps Reference to list of delay steps for each term; new values are appended
 void Expression::toDelayForm(QList<Expression> &rDelayTerms, QStringList &rDelaySteps)
 {
-    //! @todo Make recursive or something, (Z*x+y)/z will not be converted as it is now...
-
     //Generate list of terms
     QList<QList<Expression> > termMap;
     QList<Expression> terms = getTerms();
@@ -730,6 +717,7 @@ void Expression::toDelayForm(QList<Expression> &rDelayTerms, QStringList &rDelay
     }
 
     //Replace delayed terms with delay function and store delay terms and delay steps in reference vectors
+    Expression retExpr = Expression(0);
     QStringList ret;
     for(int i=termMap.size()-1; i>0; --i)
     {
@@ -745,6 +733,8 @@ void Expression::toDelayForm(QList<Expression> &rDelayTerms, QStringList &rDelay
 
             delayTerm.factorMostCommonFactor();
 
+            retExpr.addBy(fromFunctionArguments("mDelay"+QString::number(rDelayTerms.size())+".getIdx", QList<Expression>() << Expression(1)));
+
             QString term = "mDelay"+QString::number(rDelayTerms.size())+".getIdx(1.0)";
             ret.append(term);
             ret.append("+");
@@ -755,16 +745,32 @@ void Expression::toDelayForm(QList<Expression> &rDelayTerms, QStringList &rDelay
     }
     for(int t=0; t<termMap[0].size(); ++t)
     {
+        retExpr.addBy(termMap[0][t]);
         ret.append("("+termMap[0][t].toString()+")");
         ret.append("+");
     }
     ret.removeLast();
 
     //Replace this expression by the new one
-    this->replaceBy(Expression(ret));
+    //this->replaceBy(Expression(ret));
+    this->replaceBy(retExpr);
 
     //Simplify
     this->_simplify(Expression::FullSimplification, Recursive);
+
+
+
+    if(mpLeft) { mpLeft->toDelayForm(rDelayTerms, rDelaySteps); }
+    if(mpRight) { mpRight->toDelayForm(rDelayTerms, rDelaySteps); }
+    if(mpBase) { mpBase->toDelayForm(rDelayTerms, rDelaySteps); }
+    if(mpPower) { mpPower->toDelayForm(rDelayTerms, rDelaySteps); }
+    if(mpDividend) { mpDividend->toDelayForm(rDelayTerms, rDelaySteps); }
+
+    for(int i=0; i<mFactors.size(); ++i) { mFactors[i].toDelayForm(rDelayTerms, rDelaySteps); }
+    for(int i=0; i<mDivisors.size(); ++i) { mDivisors[i].toDelayForm(rDelayTerms, rDelaySteps); }
+    for(int i=0; i<mArguments.size(); ++i) { mArguments[i].toDelayForm(rDelayTerms, rDelaySteps); }
+    for(int i=0; i<mDivisors.size(); ++i) { mDivisors[i].toDelayForm(rDelayTerms, rDelaySteps); }
+    for(int i=0; i<mTerms.size(); ++i) { mTerms[i].toDelayForm(rDelayTerms, rDelaySteps); }
 }
 
 
@@ -938,6 +944,7 @@ Expression Expression::derivative(const Expression x, bool &ok) const
         Expression f = *this;
         Expression g;
         Expression dg;
+        QString func = mFunction;
         if(!mArguments.isEmpty())
         {
             g = mArguments[0];    //First argument
@@ -946,7 +953,6 @@ Expression Expression::derivative(const Expression x, bool &ok) const
             if(!success) { ok = false; }
         }
 
-        QString func = mFunction;
         bool negative = false;
         if(func.startsWith('-'))        //Rememver that the function was negative
         {
@@ -1070,14 +1076,14 @@ Expression Expression::derivative(const Expression x, bool &ok) const
         //No special function, so use chain rule
         else
         {
-            if(!mFunctionDerivatives.contains(func))
+            if(getFunctionDerivative(func) == "")
             {
                 //QMessageBox::critical(0, "SymHop", "Could not compute function derivative of \"" + func +"\": Not implemented.");
                 ok = false;
             }
             else
             {
-                ret = fromFunctionArguments(mFunctionDerivatives.find(mFunction).value(), mArguments);
+                ret = fromFunctionArguments(getFunctionDerivative(func), mArguments);
                 bool success;
                 ret = fromTwoFactors(ret, mArguments.first().derivative(x, success));
                 if(!success) {ok = false; }
@@ -1679,13 +1685,23 @@ void Expression::linearize()
     QList<Expression> leftTerms = mpLeft->getTerms();
     for(int i=0; i<leftTerms.size(); ++i)
     {
-        leftTerms[i].replaceBy(Expression::fromFactorsDivisors(QList<Expression>() << leftTerms[i].getFactors() << allDivisors, leftTerms[i].getDivisors()));
+        QList<Expression> tempDivisors = allDivisors;
+        for(int d=0; d<leftTerms[i].getDivisors().size(); ++d)
+        {
+            tempDivisors.removeOne(leftTerms[i].getDivisors()[d]);
+        }
+        leftTerms[i].replaceBy(Expression::fromFactorsDivisors(QList<Expression>() << leftTerms[i].getFactors() << tempDivisors, QList<Expression>()));
     }
     mpLeft->replaceBy(Expression::fromTerms(leftTerms));
     QList<Expression> rightTerms = mpRight->getTerms();
     for(int i=0; i<rightTerms.size(); ++i)
     {
-        rightTerms[i].replaceBy(Expression::fromFactorsDivisors(QList<Expression>() << rightTerms[i].getFactors() << allDivisors, rightTerms[i].getDivisors()));
+        QList<Expression> tempDivisors = allDivisors;
+        for(int d=0; d<rightTerms[i].getDivisors().size(); ++d)
+        {
+            tempDivisors.removeOne(rightTerms[i].getDivisors()[d]);
+        }
+        rightTerms[i].replaceBy(Expression::fromFactorsDivisors(QList<Expression>() << rightTerms[i].getFactors() << tempDivisors, rightTerms[i].getDivisors()));
     }
     mpRight->replaceBy(Expression::fromTerms(rightTerms));
 
@@ -2369,6 +2385,20 @@ double Expression::getNumericalFactor() const
     }
 
     return ret;
+}
+
+
+//! @brief Returns derivative to specified function, or an empty string if function is not supported
+QString SymHop::getFunctionDerivative(const QString &key)
+{
+    if(key == "sin") { return "cos"; }
+    if(key == "cos") { return "-sin"; }
+    if(key == "abs") { return "sign"; }
+    if(key == "onPositive") { return "dxOnPositive"; }
+    if(key == "onNegative") { return "dxOnNegative"; }
+    if(key == "signedSquareL") { return "dxSignedSquareL"; }
+    if(key == "limit") { return "dxLimit"; }
+    return "";
 }
 
 
