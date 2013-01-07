@@ -441,6 +441,11 @@ bool LogDataHandler::isEmpty()
 //! @brief Collects plot data from last simulation
 void LogDataHandler::collectPlotDataFromModel()
 {
+    if(mpParentContainerObject->getCoreSystemAccessPtr()->getNSamples() == 0)
+    {
+        return;         //Don't collect plot data if logging is disabled (to avoid empty generations)
+    }
+
     //bool timeVectorObtained = false;
     UniqueSharedTimeVectorPtrHelper timeVecHelper;
     bool foundData = false;

@@ -278,7 +278,8 @@ void Port::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     {
         //std::cout << "GUIPort.cpp: " << "contextMenuEvent" << std::endl;
 
-        if ((!this->isConnected()) || (mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getTimeVector(getGuiModelObjectName(), this->getPortName()).empty()))
+        //! @todo Check with the log data handler if port is plottable, and disable menu if not (outcommented condition does not work anymore...)
+        if ((!this->isConnected()) /*|| (mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getTimeVector(getGuiModelObjectName(), this->getPortName()).empty())*/)
         {
             event->ignore();
         }

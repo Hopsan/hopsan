@@ -606,7 +606,18 @@ QString Expression::toString() const
     {
         Q_FOREACH(const Expression &term, mTerms)
         {
-            QString termString = term.toString();
+            Expression tempTerm = term;
+            QString termString;
+            if(tempTerm.isNegative())
+            {
+                tempTerm.changeSign();
+                if(ret.endsWith("+"))
+                {
+                    ret.chop(1);
+                }
+                ret.append("-");
+            }
+            termString = tempTerm.toString();
             ret.append(termString);
             ret.append("+");
         }
@@ -2940,6 +2951,9 @@ void SymHop::validateFunctions()
     assert(expr1 == expr2);
 
     //Validate toString()
+    expr = Expression("x-2*y+3-z");
+    retString = expr.toString();
+    assert(retString == QString("x-y*2.0-z+3.0"));
     expr = Expression(exprStr);
     retString = expr.toString();
     assert(retString == QString("x*5.0+(y+5.0)/3.0^z=tan(sin(x))"));

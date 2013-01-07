@@ -164,6 +164,7 @@ public:
     void setInheritTimeStep(bool inherit);
     bool doesInheritTimeStep();
     double getDesiredTimeStep();
+    size_t getNSamples();
 
     // System Port Functions
     void deleteSystemPort(QString portname);

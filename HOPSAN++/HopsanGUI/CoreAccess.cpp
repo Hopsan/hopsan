@@ -385,6 +385,12 @@ double CoreSystemAccess::getDesiredTimeStep()
 }
 
 
+size_t CoreSystemAccess::getNSamples()
+{
+    return mpCoreComponentSystem->getNumLogSamples();
+}
+
+
 QString CoreSystemAccess::getSystemTypeCQS()
 {
     //qDebug() << "getRootTypeCQS: " << componentName;
