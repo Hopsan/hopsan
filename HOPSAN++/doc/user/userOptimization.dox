@@ -25,7 +25,7 @@ To optimize a model with n tunable parameters, we use k≥n+1 points in an n-dim
 
 5.   Reduce objective value for the non-mirrored point with the forgetting factor
 
-6.   Restart
+6.   Restart at point 2
 
 \section References
 Spendley W., Hext G. R., and Himsworth F. R., “Sequential application of Simplex designs in
@@ -42,7 +42,28 @@ Guin J. A., “Modification of the Complex method of constraint optimization,”
 
 
 \page particle-swarm-algorithm Particle Swarm Algorithm
-\todo write this
+The particle swarm algorithm was first presented by (Eberhard and Kennedy, 1995). It is inspired by the social behaviour in a flock of individuals. It is generally slower than the complex algorithm, but may offer a higher chance for convergence. The method works as follows:
+
+1.   Generate a population of random particle in the parameter space.
+
+2.   Initialize the best known point for each particle to its own position: \f$p_{i}=x_{i}\f$
+
+3.   Initialize the velocity of the particle to a random value
+
+4.   Simulate each particle and evaluate objective functions
+
+5.   Update each particle's velocity, by using two "gravities", one towards the particle's own best point and one towards the global best known points, with randomization factors: \f$v_{i} = \omega v_{i}+\psi_{p}r_{p}(p_{i}-x_{i})+\psi_{g}r_{g}(g, x_{i}\f$
+
+5.   Update each particle's best known point if the new position is better: \f$if(f(x_{i})>f(p_{i})): p_{i}=x_{i}\f$
+
+5.   Update the swarms best known point if one of the new points is better: \f$if(f(p_{i})>f(g)): g=p_{i}\f$
+
+6.   Repeat from point 4 until convergance
+
+\section References
+Eberhart, R. C. and Kennedy, J. A new optimizer using particle swarm theory. Proceedings of the
+Sixth International Symposium on Micromachine and Human Science, Nagoya, Japan. pp. 39-43,
+1995.
 
 \page optimization-example Step-By-Step Example
 1.	Build the model. Obviously there must be a model to simulate. In this example a hydraulic position servo with a PI-controller is used. This model can be found among the example models in Hopsan.
