@@ -8,7 +8,24 @@
 
 \page constrained-simplex-algorithm Constrained Simplex Algorithm
 The constrained simplex algorithm, also known as the complex algorithm, is based upon the simplex method developed by (Spendley et al, 1962) and (Nelder & Mead, 1965). It was first presented by (Box, 1965) and later improved by (Guin, 1968).
-\todo write this
+
+To optimize a model with n tunable parameters, we use k≥n+1 points in an n-dimensional parameter space, typically k=2n. The most important settings are the reflection coefficient \f$\alpha\f$, the randomization factor \f$\beta\f$ and the forgetting factor \f$\gamma\f$. The following proceedure is used:
+
+1.   Assign random values to each point.
+
+2.   Simulate and evaluate the objective function for each point.
+
+3.   Reflect the worst point \f$(x_{w})\f$ through the geometrical center \f$(x_{c})\f$ of the other points, using the following formula:
+
+     \f$x_{new}=x_{c}+\alpha(x_{c}-x_{w})+r\f$
+
+4.   Check for convergence in function values
+
+5.   Check for convergence in parameter values
+
+5.   Reduce objective value for the non-mirrored point with the forgetting factor
+
+6.   Restart
 
 \section References
 Spendley W., Hext G. R., and Himsworth F. R., “Sequential application of Simplex designs in
