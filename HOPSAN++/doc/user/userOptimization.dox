@@ -52,7 +52,7 @@ The particle swarm algorithm was first presented by (Eberhard and Kennedy, 1995)
 
 4.   Simulate each particle and evaluate objective functions
 
-5.   Update each particle's velocity, by using two "gravities", one towards the particle's own best point and one towards the global best known points, with randomization factors: \f$v_{i} = \omega v_{i}+\psi_{p}r_{p}(p_{i}-x_{i})+\psi_{g}r_{g}(g, x_{i}\f$
+5.   Update each particle's velocity, by using a weight factor \f$(\omega)\f$, two "gravities", one towards the particle's own best point \f$(\phi_{p})\f$ and one towards the global best known points \f$(\phi_{g})\f$, with randomization factors \f$(r_{p},r_{g})\f$: \f$v_{i} = \omega v_{i}+\phi_{p}r_{p}(p_{i}-x_{i})+\phi_{g}r_{g}(g-x_{i})\f$
 
 5.   Update each particle's best known point if the new position is better: \f$if(f(x_{i})>f(p_{i})): p_{i}=x_{i}\f$
 
