@@ -105,7 +105,7 @@ HEADERS += \
     code/Mechanic/MechanicVehicle1D.hpp \
     code/Mechanic/MechanicTranslationalSpring.hpp \
     code/Mechanic/MechanicTranslationalMassWithLever.hpp \
-    code/Mechanic/MechanicTranslationalMassWithCoulumbFriction.hpp \
+    code/Mechanic/MechanicTranslationalMassWithCoulombFriction.hpp \
     code/Mechanic/MechanicTranslationalMass.hpp \
     code/Mechanic/MechanicTranslationalLosslessConnector.hpp \
     code/Mechanic/MechanicTorsionalSpring.hpp \

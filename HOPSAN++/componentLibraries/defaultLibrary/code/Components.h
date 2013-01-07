@@ -160,7 +160,7 @@
 #include "Mechanic/MechanicTorqueTransformer.hpp"
 #include "Mechanic/MechanicTranslationalMass.hpp"
 #include "Mechanic/MechanicTranslationalMassWithLever.hpp"
-#include "Mechanic/MechanicTranslationalMassWithCoulumbFriction.hpp"
+#include "Mechanic/MechanicTranslationalMassWithCoulombFriction.hpp"
 #include "Mechanic/MechanicTranslationalSpring.hpp"
 #include "Mechanic/MechanicRotationalInertia.hpp"
 #include "Mechanic/MechanicRotationalInertiaWithGearRatio.hpp"

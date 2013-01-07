@@ -226,6 +226,7 @@ public:
     }
 
     QString cmd;
+    QString description;
     QString help;
     void (HcomHandler::*fnc)(QString);
 };

@@ -27,6 +27,8 @@
 #include <QMessageBox>
 #include <QLocale>
 
+#include "GUIObjects/GUIModelObjectAppearance.h"
+
 //! @brief Help function to get "correct" string representation of bool
 QString bool2str(const bool in)
 {
@@ -447,13 +449,29 @@ void parseRgbString(QString rgb, double &red, double &green, double &blue)
 //! @todo Add check for separate orifice areas in the rest of the valves
 void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion)
 {
+    //Typos (no specific version)
+    if(element.attribute("typename") == "MechanicTranslationalMassWithCoulumbFriction")
+    {
+        element.setAttribute("typename", "MechanicTranslationalMassWithCoulombFriction");
+        QDomElement guiElement = element.firstChildElement(HMF_HOPSANGUITAG);
+        if(!guiElement.isNull())
+        {
+            QDomElement cafElement = guiElement.firstChildElement(CAF_ROOT);
+            if(!cafElement.isNull())
+            {
+                QDomElement objectElement = cafElement.firstChildElement(CAF_MODELOBJECT);
+                objectElement.setAttribute("typename", "MechanicTranslationalMassWithCoulombFriction");
+            }
+        }
+    }
+
     if(hmfVersion <= 0.2)
     {
         if(element.attribute("typename") == "HydraulicPressureSource")
         {
             element.setAttribute("typename", "HydraulicPressureSourceC");
         }
-        if(element.attribute("typename") == "Hydraulic43Valve")     //Correct individual orifices for 4/3 valve
+        else if(element.attribute("typename") == "Hydraulic43Valve")     //Correct individual orifices for 4/3 valve
         {
             QDomElement xPaElement = appendDomElement(element, HMF_PARAMETERTAG);
             xPaElement.setAttribute(HMF_NAMETAG, "f_pa");

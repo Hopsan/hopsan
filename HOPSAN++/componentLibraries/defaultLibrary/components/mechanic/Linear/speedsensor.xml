@@ -2,8 +2,8 @@
 <hopsanobjectappearance version="0.3">
     <modelobject typename="MechanicSpeedSensor" displayname="Velocity Transducer">
         <icons>
-            <icon scale="1" path="movementsensor_user.svg" iconrotation="ON" type="user"/>
-            <icon scale="1" path="movementsensor_iso.svg" iconrotation="ON" type="iso"/>
+            <icon scale="1" path="speedsensor_user.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="speedsensor_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
         <ports>
             <port x="0.5" y="1" a="90" name="P1"/>

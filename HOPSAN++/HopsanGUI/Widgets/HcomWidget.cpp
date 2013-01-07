@@ -677,276 +677,216 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole)
 
     HcomCommand helpCmd;
     helpCmd.cmd = "help";
-    helpCmd.help.append("-------------------------\n");
-    helpCmd.help.append(" Shows help information.\n");
-    helpCmd.help.append(" Usage: help [command]\n");
-    helpCmd.help.append("-------------------------");
+    helpCmd.description.append("Shows help information.");
+    helpCmd.help.append("Usage: help [command]");
     helpCmd.fnc = &HcomHandler::executeHelpCommand;
     mCmdList << helpCmd;
 
     HcomCommand simCmd;
     simCmd.cmd = "sim";
-    simCmd.help.append("---------------------------\n");
-    simCmd.help.append(" Simulates current model.\n");
-    simCmd.help.append(" Usage: sim [no arguments]\n");
-    simCmd.help.append("---------------------------");
+    simCmd.description.append("Simulates current model.");
+    simCmd.help.append("Usage: sim [no arguments]");
     simCmd.fnc = &HcomHandler::executeSimulateCommand;
     mCmdList << simCmd;
 
     HcomCommand chpvCmd;
     chpvCmd.cmd = "chpv";
-    chpvCmd.help.append("---------------------------------------------------------------------\n");
-    chpvCmd.help.append(" Change plot variables in current plot.\n");
-    chpvCmd.help.append(" Usage: chpv [leftvar1 [leftvar2] ... [-r rightvar1 rightvar2 ... ]]\n");
-    chpvCmd.help.append("---------------------------------------------------------------------");
+    chpvCmd.description.append("Change plot variables in current plot.");
+    chpvCmd.help.append("Usage: chpv [leftvar1 [leftvar2] ... [-r rightvar1 rightvar2 ... ]]");
     chpvCmd.fnc = &HcomHandler::executePlotCommand;
     mCmdList << chpvCmd;
 
     HcomCommand exitCmd;
     exitCmd.cmd = "exit";
-    exitCmd.help.append("---------------------------\n");
-    exitCmd.help.append(" Exits the program.\n");
-    exitCmd.help.append(" Usage: exit [no arguments]\n");
-    exitCmd.help.append("----------------------------");
+    exitCmd.description.append("Exits the program.");
+    exitCmd.help.append("Usage: exit [no arguments]");
     exitCmd.fnc = &HcomHandler::executeExitCommand;
     mCmdList << exitCmd;
 
     HcomCommand dipaCmd;
     dipaCmd.cmd = "dipa";
-    dipaCmd.help.append("--------------------------\n");
-    dipaCmd.help.append(" Display parameter value.\n");
-    dipaCmd.help.append(" Usage: dipa [parameter]\n");
-    dipaCmd.help.append("--------------------------");
+    dipaCmd.description.append("Display parameter value.");
+    dipaCmd.help.append("Usage: dipa [parameter]");
     dipaCmd.fnc = &HcomHandler::executeDisplayParameterCommand;
     mCmdList << dipaCmd;
 
     HcomCommand chpaCmd;
     chpaCmd.cmd = "chpa";
-    chpaCmd.help.append("-------------------------------\n");
-    chpaCmd.help.append(" Change parameter value.\n");
-    chpaCmd.help.append(" Usage: chpa [parameter value]\n");
-    chpaCmd.help.append("-------------------------------");
+    chpaCmd.description.append("Change parameter value.");
+    chpaCmd.help.append("Usage: chpa [parameter value]");
     chpaCmd.fnc = &HcomHandler::executeChangeParameterCommand;
     mCmdList << chpaCmd;
 
     HcomCommand chssCmd;
     chssCmd.cmd = "chss";
-    chssCmd.help.append("-----------------------------------------------------\n");
-    chssCmd.help.append(" Change simulation settings.\n");
-    chssCmd.help.append(" Usage: chss [starttime timestep stoptime [samples]]\n");
-    chssCmd.help.append("-----------------------------------------------------");
+    chssCmd.description.append("Change simulation settings.");
+    chssCmd.help.append("Usage: chss [starttime timestep stoptime [samples]]");
     chssCmd.fnc = &HcomHandler::executeChangeSimulationSettingsCommand;
     mCmdList << chssCmd;
 
     HcomCommand execCmd;
     execCmd.cmd = "exec";
-    execCmd.help.append("----------------------------\n");
-    execCmd.help.append(" Executes a script file\n");
-    execCmd.help.append(" Usage: exec [filepath]\n");
-    execCmd.help.append("----------------------------");
+    execCmd.description.append("Executes a script file");
+    execCmd.help.append("Usage: exec [filepath]");
     execCmd.fnc = &HcomHandler::executeRunScriptCommand;
     mCmdList << execCmd;
 
     HcomCommand wrhiCmd;
     wrhiCmd.cmd = "wrhi";
-    wrhiCmd.help.append("----------------------------\n");
-    wrhiCmd.help.append(" Writes history to file.\n");
-    wrhiCmd.help.append(" Usage: wrhi [filepath]\n");
-    wrhiCmd.help.append("----------------------------");
+    wrhiCmd.description.append("Writes history to file.");
+    wrhiCmd.help.append("Usage: wrhi [filepath]");
     wrhiCmd.fnc = &HcomHandler::executeWriteHistoryToFileCommand;
     mCmdList << wrhiCmd;
 
     HcomCommand printCmd;
     printCmd.cmd = "print";
-    printCmd.help.append("------------------------------------\n");
-    printCmd.help.append(" Prints arguments on the screen.\n");
-    printCmd.help.append(" Usage: print [\"Text\" (variable)]\n");
-    printCmd.help.append(" Note: Not implemented yet.\n");
-    printCmd.help.append("------------------------------------");
+    printCmd.description.append("Prints arguments on the screen.");
+    printCmd.help.append("Usage: print [\"Text\" (variable)]\n");
+    printCmd.help.append("Note: Not implemented yet.");
     printCmd.fnc = &HcomHandler::executePrintCommand;
     mCmdList << printCmd;
 
     HcomCommand chpwCmd;
     chpwCmd.cmd = "chpw";
-    chpwCmd.help.append("--------------------------------\n");
-    chpwCmd.help.append(" Changes current plot window.\n");
-    chpwCmd.help.append(" Usage: chpw [number]\n");
-    chpwCmd.help.append("--------------------------------");
+    chpwCmd.description.append("Changes current plot window.");
+    chpwCmd.help.append("Usage: chpw [number]");
     chpwCmd.fnc = &HcomHandler::executeChangePlotWindowCommand;
     mCmdList << chpwCmd;
 
     HcomCommand dipwCmd;
     dipwCmd.cmd = "dipw";
-    dipwCmd.help.append("-------------------------------\n");
-    dipwCmd.help.append(" Displays current plot window.\n");
-    dipwCmd.help.append(" Usage: dipw [no arguments]\n");
-    dipwCmd.help.append("-------------------------------");
+    dipwCmd.description.append("Displays current plot window.");
+    dipwCmd.help.append(" Usage: dipw [no arguments]");
     dipwCmd.fnc = &HcomHandler::executeDisplayPlotWindowCommand;
     mCmdList << dipwCmd;
 
     HcomCommand chpvlCmd;
     chpvlCmd.cmd = "chpvl";
-    chpvlCmd.help.append("------------------------------------------------------\n");
-    chpvlCmd.help.append(" Changes plot variables on left axis in current plot.\n");
-    chpvlCmd.help.append(" Usage: chpvl [var1 var2 ... ]\n");
-    chpvlCmd.help.append("------------------------------------------------------");
+    chpvlCmd.description.append("Changes plot variables on left axis in current plot.");
+    chpvlCmd.help.append(" Usage: chpvl [var1 var2 ... ]");
     chpvlCmd.fnc = &HcomHandler::executePlotLeftAxisCommand;
     mCmdList << chpvlCmd;
 
     HcomCommand chpvrCmd;
     chpvrCmd.cmd = "chpvr";
-    chpvrCmd.help.append("------------------------------------------------------\n");
-    chpvrCmd.help.append(" Changes plot variables on right axis in current plot.\n");
-    chpvrCmd.help.append(" Usage: chpvr [var1 var2 ... ]\n");
-    chpvrCmd.help.append("-------------------------------------------------------");
+    chpvrCmd.description.append("Changes plot variables on right axis in current plot.");
+    chpvrCmd.help.append(" Usage: chpvr [var1 var2 ... ]");
     chpvrCmd.fnc = &HcomHandler::executePlotRightAxisCommand;
     mCmdList << chpvrCmd;
 
     HcomCommand dispCmd;
     dispCmd.cmd = "disp";
-    dispCmd.help.append("---------------------------------------------------------------------------------\n");
-    dispCmd.help.append(" Shows a list of all variables matching specified name filter (using asterisks).\n");
-    dispCmd.help.append(" Usage: disp [filter]\n");
-    dispCmd.help.append("---------------------------------------------------------------------------------");
+    dispCmd.description.append("Shows a list of all variables matching specified name filter (using asterisks).");
+    dispCmd.help.append("Usage: disp [filter]");
     dispCmd.fnc = &HcomHandler::executeDisplayVariablesCommand;
     mCmdList << dispCmd;
 
     HcomCommand peekCmd;
     peekCmd.cmd = "peek";
-    peekCmd.help.append("--------------------------------------------------------------------\n");
-    peekCmd.help.append(" Shows the value at a specified index in a specified data variable.\n");
-    peekCmd.help.append(" Usage: peek [variable index]\n");
-    peekCmd.help.append("--------------------------------------------------------------------");
+    peekCmd.description.append("Shows the value at a specified index in a specified data variable.");
+    peekCmd.help.append("Usage: peek [variable index]");
     peekCmd.fnc = &HcomHandler::executePeekCommand;
     mCmdList << peekCmd;
 
     HcomCommand pokeCmd;
     pokeCmd.cmd = "poke";
-    pokeCmd.help.append("----------------------------------------------------------------------\n");
-    pokeCmd.help.append(" Changes the value at a specified index in a specified data variable.\n");
-    pokeCmd.help.append(" Usage: poke [variable index newvalue]\n");
-    pokeCmd.help.append("----------------------------------------------------------------------");
+    pokeCmd.description.append("Changes the value at a specified index in a specified data variable.");
+    pokeCmd.help.append("Usage: poke [variable index newvalue]");
     pokeCmd.fnc = &HcomHandler::executePokeCommand;
     mCmdList << pokeCmd;
 
     HcomCommand aliasCmd;
     aliasCmd.cmd = "alias";
-    aliasCmd.help.append("----------------------------------\n");
-    aliasCmd.help.append(" Defines an alias for a variable. \n");
-    aliasCmd.help.append(" Usage: alias [variable alias]    \n");
-    aliasCmd.help.append("----------------------------------");
+    aliasCmd.description.append("Defines an alias for a variable.");
+    aliasCmd.help.append("Usage: alias [variable alias]");
     aliasCmd.fnc = &HcomHandler::executeDefineAliasCommand;
     mCmdList << aliasCmd;
 
     HcomCommand setCmd;
     setCmd.cmd = "set";
-    setCmd.help.append("-------------------------------\n");
-    setCmd.help.append(" Sets Hopsan preferences.      \n");
-    setCmd.help.append(" Usage: set [preference value] \n\n");
-    setCmd.help.append(" Available commands:           \n");
-    setCmd.help.append("  multicore [on/off]           \n");
-    setCmd.help.append("  threads [number]             \n");
-    setCmd.help.append("-------------------------------");
+    setCmd.description.append("Sets Hopsan preferences.");
+    setCmd.help.append(" Usage: set [preference value]\n");
+    setCmd.help.append(" Available commands:\n");
+    setCmd.help.append("  multicore [on/off]\n");
+    setCmd.help.append("  threads [number]");
     setCmd.fnc = &HcomHandler::executeSetCommand;
     mCmdList << setCmd;
 
     HcomCommand saplCmd;
     saplCmd.cmd = "sapl";
-    saplCmd.help.append("----------------------------------\n");
-    saplCmd.help.append(" Saves plot file to .PLO          \n");
-    saplCmd.help.append(" Usage: sapl [filepath variables] \n");
-    saplCmd.help.append("----------------------------------");
+    saplCmd.description.append("Saves plot file to .PLO");
+    saplCmd.help.append("Usage: sapl [filepath variables]");
     saplCmd.fnc = &HcomHandler::executeSaveToPloCommand;
     mCmdList << saplCmd;
 
     HcomCommand loadCmd;
     loadCmd.cmd = "load";
-    loadCmd.help.append("----------------------------------\n");
-    loadCmd.help.append(" Loads a model file.              \n");
-    loadCmd.help.append(" Usage: load [filepath variables] \n");
-    loadCmd.help.append("----------------------------------");
+    loadCmd.description.append("Loads a model file.");
+    loadCmd.help.append("Usage: load [filepath variables]");
     loadCmd.fnc = &HcomHandler::executeLoadModelCommand;
     mCmdList << loadCmd;
 
     HcomCommand loadrCmd;
     loadrCmd.cmd = "loadr";
-    loadrCmd.help.append("----------------------------------\n");
-    loadrCmd.help.append(" Loads most recent model file.    \n");
-    loadrCmd.help.append(" Usage: loadr [no arguments]      \n");
-    loadrCmd.help.append("----------------------------------");
+    loadrCmd.description.append("Loads most recent model file.");
+    loadrCmd.help.append("Usage: loadr [no arguments]");
     loadrCmd.fnc = &HcomHandler::executeLoadRecentCommand;
     mCmdList << loadrCmd;
 
     HcomCommand pwdCmd;
     pwdCmd.cmd = "pwd";
-    pwdCmd.help.append("-------------------------------------\n");
-    pwdCmd.help.append(" Displays present working directory. \n");
-    pwdCmd.help.append(" Usage: pwd [no arguments]           \n");
-    pwdCmd.help.append("-------------------------------------");
+    pwdCmd.description.append("Displays present working directory.");
+    pwdCmd.help.append("Usage: pwd [no arguments]");
     pwdCmd.fnc = &HcomHandler::executePwdCommand;
     mCmdList << pwdCmd;
 
     HcomCommand cdCmd;
     cdCmd.cmd = "cd";
-    cdCmd.help.append("------------------------------------\n");
-    cdCmd.help.append(" Changes present working directory. \n");
-    cdCmd.help.append(" Usage: cd [directory]              \n");
-    cdCmd.help.append("------------------------------------");
+    cdCmd.description.append("Changes present working directory.");
+    cdCmd.help.append(" Usage: cd [directory]");
     cdCmd.fnc = &HcomHandler::executeChangeDirectoryCommand;
     mCmdList << cdCmd;
 
     HcomCommand lsCmd;
     lsCmd.cmd = "ls";
-    lsCmd.help.append("----------------------------------\n");
-    lsCmd.help.append(" List files in current directory. \n");
-    lsCmd.help.append(" Usage: ls [no arguments]         \n");
-    lsCmd.help.append("----------------------------------");
+    lsCmd.description.append("List files in current directory.");
+    lsCmd.help.append("Usage: ls [no arguments]");
     lsCmd.fnc = &HcomHandler::executeListFilesCommand;
     mCmdList << lsCmd;
 
     HcomCommand closeCmd;
     closeCmd.cmd = "close";
-    closeCmd.help.append("-----------------------------\n");
-    closeCmd.help.append(" Closes current model.       \n");
-    closeCmd.help.append(" Usage: close [no arguments] \n");
-    closeCmd.help.append("-----------------------------");
+    closeCmd.description.append("Closes current model.");
+    closeCmd.help.append("Usage: close [no arguments]");
     closeCmd.fnc = &HcomHandler::executeCloseModelCommand;
     mCmdList << closeCmd;
 
     HcomCommand chtabCmd;
     chtabCmd.cmd = "chtab";
-    chtabCmd.help.append("----------------------------\n");
-    chtabCmd.help.append(" Changes current model tab. \n");
-    chtabCmd.help.append(" Usage: chtab [index]       \n");
-    chtabCmd.help.append("----------------------------");
+    chtabCmd.description.append("Changes current model tab.");
+    chtabCmd.help.append("Usage: chtab [index]");
     chtabCmd.fnc = &HcomHandler::executeChangeTabCommand;
     mCmdList << chtabCmd;
 
     HcomCommand adcoCmd;
     adcoCmd.cmd = "adco";
-    adcoCmd.help.append("----------------------------------------\n");
-    adcoCmd.help.append(" Adds a new component to current model. \n");
-    adcoCmd.help.append(" Usage: adco [typename name -flag value]     \n");
-    adcoCmd.help.append("----------------------------------------");
+    adcoCmd.description.append("Adds a new component to current model.");
+    adcoCmd.help.append(" Usage: adco [typename name -flag value]");
     adcoCmd.fnc = &HcomHandler::executeAddComponentCommand;
     mCmdList << adcoCmd;
 
     HcomCommand cocoCmd;
     cocoCmd.cmd = "coco";
-    cocoCmd.help.append("---------------------------------------\n");
-    cocoCmd.help.append(" Connect components in current model.  \n");
-    cocoCmd.help.append(" Usage: coco [comp1 port1 comp2 port2] \n");
-    cocoCmd.help.append("---------------------------------------");
+    cocoCmd.description.append("Connect components in current model.");
+    cocoCmd.help.append("Usage: coco [comp1 port1 comp2 port2]");
     cocoCmd.fnc = &HcomHandler::executeConnectCommand;
     mCmdList << cocoCmd;
 
 
     HcomCommand crmoCmd;
     crmoCmd.cmd = "crmo";
-    crmoCmd.help.append("----------------------------\n");
-    crmoCmd.help.append(" Creates a new model.       \n");
-    crmoCmd.help.append(" Usage: crmo [no arguments] \n");
-    crmoCmd.help.append("----------------------------");
+    crmoCmd.description.append("Creates a new model.");
+    crmoCmd.help.append("Usage: crmo [no arguments]");
     crmoCmd.fnc = &HcomHandler::executeCreateModelCommand;
     mCmdList << crmoCmd;
 }
@@ -1220,14 +1160,25 @@ void HcomHandler::executeHelpCommand(QString cmd)
     {
         mpConsole->print("-------------------------------------------------------------------------");
         mpConsole->print(" Hopsan HCOM Terminal v0.1\n");
-        mpConsole->print(" Available commands:");
+        mpConsole->print(" Available commands:\n");
         QString commands;
+        int n=0;
+        for(int c=0; c<mCmdList.size(); ++c)
+        {
+            n=max(mCmdList[c].cmd.size(), n);
+        }
         for(int c=0; c<mCmdList.size(); ++c)
         {
             commands.append(" ");
             commands.append(mCmdList[c].cmd);
+            for(int i=0; i<n+3-mCmdList[c].cmd.size(); ++i)
+            {
+                commands.append(" ");
+            }
+            commands.append(mCmdList[c].description);
+            commands.append("\n");
         }
-        mpConsole->print(commands+"\n");
+        mpConsole->print(commands);
         mpConsole->print(" Type: \"help [command]\" for more information about a specific command.");
         mpConsole->print("-------------------------------------------------------------------------");
     }
@@ -1245,7 +1196,18 @@ void HcomHandler::executeHelpCommand(QString cmd)
         }
         else
         {
-            mpConsole->print(mCmdList[idx].help);
+            int length=max(mCmdList[idx].description.size(), mCmdList[idx].help.size())+2;
+            QString delimiterLine;
+            for(int i=0; i<length; ++i)
+            {
+                delimiterLine.append("-");
+            }
+            QString descLine = mCmdList[idx].description;
+            descLine.prepend(" ");
+            QString helpLine = mCmdList[idx].help;
+            helpLine.prepend(" ");
+            helpLine.replace("\n", "\n ");
+            mpConsole->print(delimiterLine+"\n"+descLine+"\n"+helpLine+"\n"+delimiterLine);
         }
     }
 }
