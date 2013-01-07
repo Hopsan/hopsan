@@ -7,7 +7,22 @@
 -# \subpage optimization-example \n
 
 \page constrained-simplex-algorithm Constrained Simplex Algorithm
+The constrained simplex algorithm, also known as the complex algorithm, is based upon the simplex method developed by (Spendley et al, 1962) and (Nelder & Mead, 1965). It was first presented by (Box, 1965) and later improved by (Guin, 1968).
 \todo write this
+
+\section References
+Spendley W., Hext G. R., and Himsworth F. R., “Sequential application of Simplex designs in
+ optimisation and evolutionary operation,” Technometrics, vol. 4, pp. 441-462, 1962.
+
+Nelder J. A. and Mead R., “A simplex method for function minimization,” Computer Journal, vol. 7,
+pp. 308-313, 1965.
+
+Box M. J., “A new method of constraint optimization and a comparison with other methods,”
+Computer Journal, vol. 8, pp. 42-52, 1965.
+
+Guin J. A., “Modification of the Complex method of constraint optimization,” Computer Journal,
+   vol. 10, pp. 416-417, 1968.
+
 
 \page particle-swarm-algorithm Particle Swarm Algorithm
 \todo write this
