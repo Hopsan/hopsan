@@ -86,7 +86,7 @@ namespace hopsan {
             registerParameter("rho", "Oil Density", "[kg/m^3]", rho);
 
             //Add ports to the component
-            mpIn1 = addReadPort("speed", "NodeSignal");
+            mpIn1 = addReadPort("movement", "NodeSignal");
             mpP1 = addPowerMultiPort("P1", "NodeHydraulic");
             mpPA = addPowerPort("PA", "NodeHydraulic");
             mpPB = addPowerPort("PB", "NodeHydraulic");

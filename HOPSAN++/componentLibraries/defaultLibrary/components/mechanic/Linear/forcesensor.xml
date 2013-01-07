@@ -14,7 +14,7 @@
             <movable>
                 <icon userpath="sensor_user_movable.svg"/>
                 <data port="out" dataname="Value"/> 
-                <speed x="0" y="0" a="-1.2"/>
+                <movement x="0" y="0" a="-1.2"/>
                 <start x="0" y="0" a="-60"/>
                 <transformorigin x="18" y="18"/>                
             </movable>

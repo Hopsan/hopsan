@@ -6,7 +6,7 @@
         </icons>
         <help picture="svg/valveplate_help.svg"/>
         <ports>
-            <port x="0.5" y="0" a="270" name="speed"/>
+            <port x="0.5" y="0" a="270" name="movement"/>
             <port x="0" y="0.5" a="0" name="P1"/>
             <port x="1" y="0.3" a="0" name="PB"/>
             <port x="1" y="0.7" a="0" name="PA"/>

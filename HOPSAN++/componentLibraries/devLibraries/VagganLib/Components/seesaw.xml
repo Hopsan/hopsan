@@ -14,14 +14,14 @@
             <movable>
                 <icon userpath="svg/seesaw_movable1.svg"/>
                 <data port="out" dataname="Value"/> 
-                <speed x="0" y="0" a="-30"/>
+                <movement x="0" y="0" a="-30"/>
                 <start x="0" y="0" a="0"/> 
                 <transformorigin x="200" y="30"/>
             </movable>
             <movable>
                 <icon userpath="svg/seesaw_movable2.svg"/>
                 <data port="out" dataname="Value"/> 
-                <speed x="0" y="0" a="0"/>
+                <movement x="0" y="0" a="0"/>
                 <start x="0" y="0" a="0"/>
             </movable>
         </animation>

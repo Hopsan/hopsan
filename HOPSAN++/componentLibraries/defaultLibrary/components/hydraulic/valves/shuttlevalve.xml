@@ -16,7 +16,7 @@
             <movable>
                 <icon userpath="shuttlevalve_user_movable.svg"/>
                 <data port="out" dataname="Value"/> 
-                <speed x="15.815" y="0" a="0"/>
+                <movement x="15.815" y="0" a="0"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
             </movable>

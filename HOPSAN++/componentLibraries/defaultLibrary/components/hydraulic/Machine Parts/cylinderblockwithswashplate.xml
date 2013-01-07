@@ -5,7 +5,7 @@
             <icon scale="1" path="svg/swashplate.svg" iconrotation="ON" type="user"/>
         </icons>
         <ports>
-            <port x="0.0" y="0.3" a="180" name="speed"/>
+            <port x="0.0" y="0.3" a="180" name="movement"/>
             <port x="0.0" y="0.7" a="180" name="torque"/>
             <port x="1.0" y="0.5" a="0" name="angle"/>
             <port x="0.5" y="0" a="270" name="P2"/>
@@ -16,7 +16,7 @@
             <movable>
                 <icon userpath="svg/swashplate_movable.svg"/>
                 <data port="angle" dataname="Value"/> 
-                <speed x="0" y="0" a="57.3"/>
+                <movement x="0" y="0" a="57.3"/>
                 <start x="0" y="0" a="0"/> 
                 <resize x="0" y="0"/>
                 <initscale x="1" y="1"/>

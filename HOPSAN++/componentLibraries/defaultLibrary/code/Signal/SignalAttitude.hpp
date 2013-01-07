@@ -180,7 +180,7 @@ mu2max);
 mu3min);
         registerParameter("u3max", "Maximum output signal yaw", "rad", \
 mu3max);
-        registerParameter("U0", "Reference speed for compensation", "m/s", \
+        registerParameter("U0", "Reference movement for compensation", "m/s", \
 mU0);
         registerParameter("phiref", "Reference signal roll", "rad", mphiref);
         registerParameter("thetaref", "Reference signal tip", "rad", \
@@ -190,7 +190,7 @@ mthetaref);
         registerParameter("theta", "tipp angle", "rad", mtheta);
         registerParameter("psi", "yaw angle", "rad", mpsi);
         registerParameter("beta", "side slip angle", "rad", mbeta);
-        registerParameter("Ub", "actual speed", "m/s", mUb);
+        registerParameter("Ub", "actual movement", "m/s", mUb);
      }
 
     void initialize()

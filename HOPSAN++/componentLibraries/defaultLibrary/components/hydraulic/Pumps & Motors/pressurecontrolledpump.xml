@@ -17,14 +17,14 @@
             <movable>
                 <icon userpath="pressurecontrolledpump_user_movable_2.svg"/>
                 <data port="a" dataname="Value"/> 
-                <speed x="0" y="0" a="-1e-06"/>
+                <movement x="0" y="0" a="-1e-06"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="90.726" y="49.998"/>
             </movable>
             <movable>
                 <icon userpath="pressurecontrolledpump_user_movable.svg"/>
                 <data port="eps" dataname="Value"/> 
-                <speed x="0" y="0" a="-90"/>
+                <movement x="0" y="0" a="-90"/>
                 <start x="45.653" y="9.941" a="0"/>
                 <transformorigin x="44.4925" y="44.4735"/>
             </movable>

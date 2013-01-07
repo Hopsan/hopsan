@@ -1,0 +1,102 @@
+/*!
+\page userAnimation Animation
+
+Hopsan models can be animated, either in real-time or as replays. Animation is accessed through the Animate icon in the simulation toolbar, or from the menues.
+
+\htmlonly
+<table border="0">
+<tr>
+<td>&nbsp;&nbsp;&nbsp;<img src="../../graphics/animation_icon.png" border=0>
+</td>
+<td><b>Animate</b></td>
+</tr>
+</table>
+\endhtmlonly
+
+This opens the model in animation mode. There is a toolbar where it is possible to replay, rewind, stop or play in real-time. Animation speed can also be adjusted. Some animation parameters can be adjusted by the parameters icon, or by double-clicking on movable icons in the workspace.
+
+\section xmlFormat XML Format
+The animation pattern for a component is described by a tag in the component's XML file, typically looking like this:
+
+\verbatim
+<animation>
+    <icon userpath="base.svg"/>
+    <movable idx="0">
+        <icon userpath="movable1.svg"/>
+        <data port="P1" dataname="Position"/> 
+        <multiplier name="parameter1"/>
+        <start x="0" y="0" a="0"/>
+        <movement x="10" y="0" a="0"/>
+        <initscale x="1" y="1"/>
+        <resize x="0.5" y="0"/>
+        <adjustable xmin="-40" xmax="40" ymin="0" ymax="0" port="in" dataname="Value" xgain="0.00025" ygain="0"/>
+        <movingport portname="P1" startx="100" starty="20"/>
+    </movable>
+    <movable idx="1">
+        <icon userpath="movable2.svg"/>
+        <data port="P2" dataname="Angle"/> 
+        <divisor name="parameter2"/>
+        <start x="0" y="0" a="0"/>
+        <transformorigin x="5" y="7"/>
+        <movement x="0" y="0" a="1"/>
+        <relative idx="0"/>
+        <initcolor r="0" g="0" b="255"/>
+        <color r="-0.00001275" g="0" b="0.00001275" idx="1"/>
+    </movable>
+</animation>
+\endverbatim
+
+<b><animation></b>\n
+Main tag for animations
+
+<b><icon></b>\n 
+Used to define the icon, either base icon (that is not moving) or a moving icon, if placed inside a <movable> tag
+
+<b><movable></b>\n 
+Defines a movable, i.e. an icon that moves somehow. Index number can be specified if required (see relative movement below).
+
+<b><data></b>\n
+Defines the data variable that is used to calculate the positions for the movement
+
+<b><multiplier></b>\n
+Adds a parameter multiplier. Data from the data variable will be multiplied with the value from this parameter.
+
+<b><divisor></b>\n
+Adds a parameter divisor. Data from the data variable will be divided with the value from this parameter.
+
+<b><start></b>\n
+Defines the start position for the movable in horizontal, vertical and rotational dimensions.
+
+<b><movement></b>\n
+Defines the movement factors for horizontal, vertical and rotational direction. Position will be the start position added by the movement factor times the data variable.
+
+<b><transformorigin></b>\n
+Specifies transform origin for rotating movables.
+
+<b><initscale></b>\n
+Defines the initial scale of the movable. Only needed when the <resize> tag is used.
+
+<b><resize></b>\n
+Defines the resize factors for horizontal and vertical directions. Movable size will be the initscale added by the resize factor times the data variable.
+
+<b><adjustable></b>\n
+Defines that the movable will be adjustable by the user during real-time animation. Specified variable in specified port will get the value from the position of the movable multiplied by the gain value.
+
+<b><movingport></b>\n
+Specifies that a port shall follow with the movable, starting at specified coordinates.
+
+<b><relative></b>\n
+Specifies that this movable moves relative to the movable with specified index. Position and rotation of this movable will be added with those of the other movable.
+
+<b><initcolor></b>\n
+Specifies initial colors for the movable. The SVG icon should be black for this to work properly.
+
+<b><color></b>\n
+Specifies the color factors for the movable. Red, green, blue and alpha channel will change with the data variable multiplied by these factors. Be careful so that values will not become outside the 0:255 range. Colors outside are not defined.
+
+*/
+
+
+
+
+

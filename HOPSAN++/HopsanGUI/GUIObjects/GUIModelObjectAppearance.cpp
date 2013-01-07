@@ -205,9 +205,9 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
             }
             multipliers.append(xmlMovable.firstChildElement("multiplier").attribute("name"));
             divisors.append(xmlMovable.firstChildElement("divisor").attribute("name"));
-            speedX.append(xmlMovable.firstChildElement("speed").attribute("x").toDouble());
-            speedY.append(xmlMovable.firstChildElement("speed").attribute("y").toDouble());
-            speedTheta.append(xmlMovable.firstChildElement("speed").attribute("a").toDouble());
+            speedX.append(xmlMovable.firstChildElement("movement").attribute("x").toDouble());
+            speedY.append(xmlMovable.firstChildElement("movement").attribute("y").toDouble());
+            speedTheta.append(xmlMovable.firstChildElement("movement").attribute("a").toDouble());
             resizeX.append(xmlMovable.firstChildElement("resize").attribute("x").toDouble());
             resizeY.append(xmlMovable.firstChildElement("resize").attribute("y").toDouble());
             initScaleX.append(xmlMovable.firstChildElement("initscale").attribute("x").toDouble());

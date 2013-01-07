@@ -20,7 +20,7 @@
             <movable>
                 <icon userpath="fixedpump_user_movable.svg"/>
                 <data port="a" dataname="Value"/> 
-                <speed x="0" y="0" a="-1e-06"/>
+                <movement x="0" y="0" a="-1e-06"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="60" y="50.5"/>
             </movable>

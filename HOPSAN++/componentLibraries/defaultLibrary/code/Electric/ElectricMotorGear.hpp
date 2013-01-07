@@ -175,8 +175,8 @@ Port::NOTREQUIRED);
         //Register changable parameters to the HOPSAN++ core
         registerParameter("Ke", "emf constant", "V/rpm", mKe);
         registerParameter("Ra", "motor resistance", "Ohm", mRa);
-        registerParameter("Tm0", "zero speed friction of motor", "Nm", mTm0);
-        registerParameter("wc", "Friction speed (for numerics)", "rad/s", \
+        registerParameter("Tm0", "zero movement friction of motor", "Nm", mTm0);
+        registerParameter("wc", "Friction movement (for numerics)", "rad/s", \
 mwc);
         registerParameter("Bm", "Visc. fric. coeff., motor", "Ns/m", mBm);
         registerParameter("Jm", "Moment of inertia, motor", "kg m^2", mJm);

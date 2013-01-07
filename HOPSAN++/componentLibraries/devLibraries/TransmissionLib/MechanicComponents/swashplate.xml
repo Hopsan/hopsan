@@ -7,7 +7,7 @@
         <ports>
             <port x="0.0" y="0.5" a="180" name="torque"/>
             <port x="0.5" y="0" a="270" name="angle"/>
-            <port x="0.6" y="0" a="270" name="speed"/>
+            <port x="0.6" y="0" a="270" name="movement"/>
             <port x="0.5" y="0.705" a="0" name="P1"/>
         </ports>
         <animation>
@@ -15,7 +15,7 @@
             <movable>
                 <icon userpath="svg/swashplate_movable.svg"/>
                 <data port="angle" dataname="Value"/> 
-                <speed x="0" y="0" a="57.3"/>
+                <movement x="0" y="0" a="57.3"/>
                 <start x="0" y="0" a="0"/> 
                 <resize x="0" y="0"/>
                 <initscale x="1" y="1"/>

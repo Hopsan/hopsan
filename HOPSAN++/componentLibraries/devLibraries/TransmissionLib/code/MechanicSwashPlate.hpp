@@ -66,7 +66,7 @@ namespace hopsan {
 
             //Add ports to the component
             mpIn1 = addReadPort("angle", "NodeSignal");
-            mpIn2 = addReadPort("speed", "NodeSignal");
+            mpIn2 = addReadPort("movement", "NodeSignal");
             mpOut1 = addWritePort("torque", "NodeSignal");
 
             mpP1 = addPowerMultiPort("P1", "NodeMechanic");

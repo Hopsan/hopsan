@@ -32,7 +32,7 @@
                 <data port="P3" dataname="Position"/> 
                 <data port="P2" dataname="Pressure"/>
 				<divisor name="s_l"/>
-                <speed x="77" y="0" a="0"/>
+                <movement x="77" y="0" a="0"/>
                 <start x="11" y="1.5" a="0"/> 
                 <resize x="-1" y="0"/>
                 <initscale x="1" y="1"/>
@@ -45,7 +45,7 @@
                 <icon userpath="cylinderc_user_movable.svg"/>
                 <data port="P3" dataname="Position"/> 
 				<divisor name="s_l"/>
-                <speed x="77.5" y="0" a="0"/>
+                <movement x="77.5" y="0" a="0"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
 		        <movingport portname="P3" startx="100" starty="20"/>

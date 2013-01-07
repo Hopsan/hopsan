@@ -15,7 +15,7 @@
                 <data port="P3" dataname="Position"/> 
                 <data port="P1" dataname="Pressure"/>
                 <divisor name="s_l"/>
-                <speed x="0" y="0" a="0"/>
+                <movement x="0" y="0" a="0"/>
                 <start x="1" y="21" a="0"/> 
                 <initscale x="1" y="1"/>
                 <initcolor r="0" g="0" b="255"/>
@@ -27,7 +27,7 @@
                 <icon userpath="svg/piston_movable.svg"/>
                 <data port="P3" dataname="Position"/> 
                 <divisor name="s_l"/>
-                <speed x="0" y="-55" a="0"/>
+                <movement x="0" y="-55" a="0"/>
                 <start x="0" y="-45" a="0"/>
                 <transformorigin x="0" y="0"/>
 		        <movingport portname="P3" startx="10" starty="10"/>
@@ -35,7 +35,7 @@
             <movable>
                 <icon userpath="svg/piston_base.svg"/>
                 <data port="P3" dataname="Position"/> 
-                <speed x="0" y="0" a="0"/>
+                <movement x="0" y="0" a="0"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
             </movable>

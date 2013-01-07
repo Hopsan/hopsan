@@ -42,8 +42,8 @@ namespace hopsan {
     class HydraulicPressureControlledPump : public ComponentQ
     {
     private:
-        double pnom, speednom;
-        double pdif, speed, qmax, qmin, lp, rp, wp1, Kcp, taov, tp, tm;
+        double pnom, movementnom;
+        double pdif, movement, qmax, qmin, lp, rp, wp1, Kcp, taov, tp, tm;
         double a1, a2, b1, b2, b3, y1, y2, u1, u2, ud, vd, yd;
         double gamma, qminl, qmaxl;
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_p3, *mpND_q3, *mpND_c3, *mpND_eps, *mpND_a;
@@ -58,9 +58,9 @@ namespace hopsan {
         void configure()
         {
             pnom = 7e6;
-            speednom = 125;
+            movementnom = 125;
             pdif = 1000000;
-            speed = 125;
+            movement = 125;
             qmax = 0.00125;
             qmin = 0;
             lp = 70000000;
@@ -78,7 +78,7 @@ namespace hopsan {
             mpOut2 = addWritePort("a", "NodeSignal", Port::NOTREQUIRED);
 
             registerParameter("p_dif", "Reference pressure difference", "[Pa]", pdif);
-            registerParameter("omega_p", "Pump speed", "[rad/s]", speed);
+            registerParameter("omega_p", "Pump movement", "[rad/s]", movement);
             registerParameter("q_max", "Nomainal maximal flow", "[m^3/s]", qmax);
             registerParameter("q_min", "Nominal minimal flow", "[m^3/s]", qmin);
             registerParameter("l_p", "Regulator inductance at nominal pressure", "[]", lp);
@@ -122,16 +122,16 @@ namespace hopsan {
             double y0, lpe/*, vmin, vmax*/;
 
             gamma = 1 / (Kcp * (Zc1 + Zc2) + 1);
-            if (speed < .001) { speed = .001; }
+            if (movement < .001) { movement = .001; }
             if (p2 < 1.0) { p2 = 1.0; }
-            lpe = lp * sqrt(pnom / p2) * (speednom / speed);
+            lpe = lp * sqrt(pnom / p2) * (movementnom / movement);
             y0 = q2 * (lpe + rp * taov + Zc2 * gamma / wp1);
 
             (*mpND_p1) = p1;
             (*mpND_p2) = p2;
 
-            qmaxl = qmax * (speed / speednom);
-            qminl = qmin * (speed / speednom);
+            qmaxl = qmax * (movement / movementnom);
+            qminl = qmin * (movement / movementnom);
 
             //vmax = qmaxl * sqrt(fabs(p2 - 1e5) / (pnom * tp));
             //vmin = -qmaxl * sqrt(fabs(p2 - 1e5) / (pnom * tm));
@@ -162,7 +162,7 @@ namespace hopsan {
             double lpe, c1e, c2e, qp, ql, q1, q2, ymin, ymax, vmin, vmax;
 
             if (p2 < 1.0) { p2 = 1.0; }
-            lpe = lp * sqrt(pnom / p2) * (speednom / speed);
+            lpe = lp * sqrt(pnom / p2) * (movementnom / movement);
             if (c3 < 0.0) { c3 = 0.0; }
             gamma = 1 / (Kcp * (Zc1 + Zc2) + 1);
 
@@ -212,7 +212,7 @@ namespace hopsan {
             (*mpND_p3) = c3;
             (*mpND_q3) = 0.0;
             (*mpND_eps) = q2/qmax;
-            (*mpND_a) += speed/mTimestep;
+            (*mpND_a) += movement/mTimestep;
         }
 
 

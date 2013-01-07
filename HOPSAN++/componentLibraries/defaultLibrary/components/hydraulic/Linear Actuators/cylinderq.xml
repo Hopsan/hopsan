@@ -20,7 +20,7 @@
                 <icon userpath="cylinderq_user_movable.svg"/>
                 <data port="P3" dataname="Position"/> 
 		<divisor name="s_l"/>
-                <speed x="77.5" y="0" a="0"/>
+                <movement x="77.5" y="0" a="0"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
             </movable>
