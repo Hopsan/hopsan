@@ -22,6 +22,13 @@
 //!
 //$Id$
 
+#define MINSTARTTIME -1000000
+#define MAXSTARTTIME 1000000
+#define MINTIMESTEP 0.0
+#define MAXTIMESTEP 1000000
+#define MINSTOPTIME -1000000
+#define MAXSTOPTIME 1000000
+
 #include <QDebug>
 #include <QFontDatabase>
 #include <QtNetwork/QNetworkReply>
@@ -668,13 +675,13 @@ void MainWindow::createActions()
     mpStartTimeLineEdit = new QLineEdit("0.0");
     mpStartTimeLineEdit->setMaximumWidth(70);
     mpStartTimeLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
-    mpStartTimeLineEdit->setValidator(new QDoubleValidator(-1e4, 1e6, 10, mpStartTimeLineEdit));
+    //mpStartTimeLineEdit->setValidator(new QDoubleValidator(-1e4, 1e6, 10, mpStartTimeLineEdit));
     mpTimeStepLineEdit = new QLineEdit("0.001");
     mpTimeStepLineEdit->setMaximumWidth(70);
     mpTimeStepLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
-    mpTimeStepLineEdit->setValidator(new QDoubleValidator(0.0, 1e3, 10, mpTimeStepLineEdit));
+    //mpTimeStepLineEdit->setValidator(new QDoubleValidator(0.0, 1e3, 10, mpTimeStepLineEdit));
     mpStopTimeLineEdit = new QLineEdit("10.0");
-    mpStopTimeLineEdit->setValidator(new QDoubleValidator(-1e4, 1e6, 10, mpStopTimeLineEdit));
+    //mpStopTimeLineEdit->setValidator(new QDoubleValidator(-10000, 1000000, 10, this));
     mpStopTimeLineEdit->setMaximumWidth(70);
     mpStopTimeLineEdit->setAlignment(Qt::AlignVCenter | Qt::AlignCenter);
     mpTimeLabelDeliminator1 = new QLabel(tr(" :: "));
@@ -1039,6 +1046,11 @@ void MainWindow::showToolBarHelpPopup()
     {
         showHelpPopupMessage("Opens a dialog with settings for the current model.");
     }
+
+    if(mpTimeStepLineEdit->underMouse())
+    {
+        qDebug() << "Hovering time step!";
+    }
 }
 
 
@@ -1364,7 +1376,16 @@ double MainWindow::getFinishTimeFromToolBar()
 
 void MainWindow::setProjectSimulationTimeParameterValues()
 {
+    if(mpStartTimeLineEdit->text().toDouble() < MINSTARTTIME) { mpStartTimeLineEdit->setText(QString::number(MINSTARTTIME)); }
+    if(mpStartTimeLineEdit->text().toDouble() > MAXSTARTTIME) { mpStartTimeLineEdit->setText(QString::number(MAXSTARTTIME)); }
+    if(mpTimeStepLineEdit->text().toDouble() < MINTIMESTEP) { mpTimeStepLineEdit->setText(QString::number(MINTIMESTEP)); }
+    if(mpTimeStepLineEdit->text().toDouble() > MAXTIMESTEP) { mpTimeStepLineEdit->setText(QString::number(MAXTIMESTEP)); }
+    if(mpStopTimeLineEdit->text().toDouble() < MINSTOPTIME) { mpStopTimeLineEdit->setText(QString::number(MINSTOPTIME)); }
+    if(mpStopTimeLineEdit->text().toDouble() > MAXSTOPTIME) { mpStopTimeLineEdit->setText(QString::number(MAXSTOPTIME)); }
+
+
     mpProjectTabs->setCurrentTopLevelSimulationTimeParameters(mpStartTimeLineEdit->text(), mpTimeStepLineEdit->text(), mpStopTimeLineEdit->text() );
+
 }
 
 void MainWindow::simulateKeyWasPressed()
