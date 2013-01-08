@@ -1441,6 +1441,21 @@ void ContainerObject::copySelected(CopyStack *xmlStack)
     {
         qDebug() << "Copying " << (*it)->getName();
         (*it)->saveToDomElement(*copyRoot);
+
+        QStringList parNames = (*it)->getParameterNames();
+        for(int n=0; n<parNames.size(); ++n)
+        {
+            if(getParameterNames().contains((*it)->getParameterValue(parNames[n])))
+            {
+                qDebug() << "Component depends on system parameter: " << (*it)->getParameterValue(parNames[n]);
+                CoreParameterData parData;
+                getParameter((*it)->getParameterValue(parNames[n]), parData);
+                QDomElement parElement = appendDomElement(*copyRoot, "parameter");
+                parElement.setAttribute("name", parData.mName);
+                parElement.setAttribute("value", parData.mValue);
+                parElement.setAttribute("type", parData.mType);
+            }
+        }
     }
 
         //Copy connectors
@@ -1589,6 +1604,22 @@ void ContainerObject::paste(CopyStack *xmlStack)
         mpUndoStack->registerAddedWidget(pWidget);
         textBoxElement = textBoxElement.nextSiblingElement(HMF_TEXTBOXWIDGETTAG);
     }
+
+        //Paste system parameters
+    QDomElement parElement = copyRoot->firstChildElement("parameter");
+    while(!parElement.isNull())
+    {
+        QString name = parElement.attribute("name");
+        QString value = parElement.attribute("value");
+        QString type = parElement.attribute("type");
+        if(!getParameterNames().contains(name))
+        {
+            CoreParameterData parData = CoreParameterData(name, value, type);
+            setOrAddParameter(parData);
+        }
+        parElement = parElement.nextSiblingElement("parameter");
+    }
+
 
         //Select all pasted components
     QHash<QString, QString>::iterator itn;
