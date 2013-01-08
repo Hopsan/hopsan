@@ -72,6 +72,7 @@ public slots:
     void zoomOut();
     void centerView();
     void exportToPDF();
+    void exportToPNG();
 
 protected:
     virtual void dragMoveEvent(QDragMoveEvent *event);

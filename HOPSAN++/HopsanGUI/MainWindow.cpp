@@ -596,6 +596,9 @@ void MainWindow::createActions()
     mpExportPDFAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportPdf.png"), tr("&Export To PDF"), this);
     mpExportPDFAction->setText("Export Model to PDF");
 
+    mpExportPNGAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportPng.png"), tr("&Export To PNG"), this);
+    mpExportPNGAction->setText("Export Model to PNG");
+
     mpImportFMUAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ImportFmu.png"), tr("Import Functional Mock-up Unit (FMU)"), this);
     mpExportToSimulinkAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportSimulink.png"), tr("Export to Simulink S-function Source Files"), this);
     mpExportToSimulinkCoSimAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportSimulinkCoSim.png"), tr("Export to Simulink Co-Simulation S-function Source Files"), this);
@@ -804,6 +807,7 @@ void MainWindow::createToolbars()
     mpConnectivityToolBar = addToolBar(tr("Import/Export Toolbar)"));
     mpConnectivityToolBar->setAllowedAreas(Qt::TopToolBarArea | Qt::LeftToolBarArea | Qt::RightToolBarArea);
     mpConnectivityToolBar->addAction(mpExportPDFAction);
+    mpConnectivityToolBar->addAction(mpExportPNGAction);
     mpConnectivityToolBar->addAction(mpExportToSimulinkAction);
     mpConnectivityToolBar->addAction(mpExportToSimulinkCoSimAction);
     mpConnectivityToolBar->addAction(mpExportToFMUAction);
@@ -1189,6 +1193,7 @@ void MainWindow::updateToolBarsToNewTab()
     mpTogglePortsAction->setEnabled(!noTabs);
     mpTogglePortsAction->setEnabled(!noTabs);
     mpExportPDFAction->setEnabled(!noTabs);
+    mpExportPNGAction->setEnabled(!noTabs);
     mpAlignXAction->setEnabled(!noTabs);
     mpAlignYAction->setEnabled(!noTabs);
     mpRotateLeftAction->setEnabled(!noTabs);

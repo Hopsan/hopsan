@@ -657,7 +657,35 @@ void GraphicsView::exportToPDF()
 }
 
 
+//! Exports the graphics view to PNG
+void GraphicsView::exportToPNG()
+{
+    int res = QInputDialog::getDouble(gpMainWindow, tr("Export to PNG"), tr("Choose resolution:"), 1.0);
 
+    QString fileName = QFileDialog::getSaveFileName(
+        this, "Export File Name", gConfig.getModelGfxDir(),
+        "Portable Network Graphics (*.png)");
+
+    if(!fileName.isEmpty())
+    {
+        QFileInfo file(fileName);
+        gConfig.setModelGfxDir(file.absolutePath());
+
+        QGraphicsScene *pScene = this->getContainerPtr()->getContainedScenePtr();
+        pScene->clearSelection();
+        pScene->setSceneRect(pScene->itemsBoundingRect());
+        QImage image(pScene->sceneRect().width()*res, pScene->sceneRect().height()*res, QImage::Format_ARGB32);
+        image.fill(Qt::transparent);
+        QPainter painter(&image);
+        painter.setRenderHint(QPainter::HighQualityAntialiasing);
+        painter.setWorldTransform(QTransform::fromScale(1,1));
+        pScene->render(&painter);
+        image.save(fileName);
+
+        //QPixmap pixmap = QPixmap::grabWidget(this);
+        //pixmap.save(fileName);
+    }
+}
 
 
 
