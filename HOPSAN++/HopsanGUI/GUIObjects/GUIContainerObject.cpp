@@ -2305,9 +2305,14 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     QMenu menu;
     QAction *loadAction = menu.addAction(tr("Load Subsystem File"));
+    QAction *saveAction = menu.addAction(tr("Save Subsystem As"));
     if(!mModelFileInfo.filePath().isEmpty())
     {
         loadAction->setDisabled(true);
+    }
+    if(isExternal())
+    {
+        saveAction->setDisabled(true);
     }
     QAction *pAction = this->buildBaseContextMenu(menu, event);
     if (pAction == loadAction)
@@ -2350,6 +2355,68 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
                 }
             }
         }
+    }
+    else if(pAction == saveAction)
+    {
+        //! @todo This code is mostly duplicated from ProjectTab::saveModel(), it should either be moved to a save object or to a function in container object
+
+        //Get file name in case this is a save as operation
+        QString modelFilePath;
+        modelFilePath = QFileDialog::getSaveFileName(gpMainWindow, tr("Save Subsystem As"),
+                                                     gConfig.getLoadModelDir(),
+                                                     gpMainWindow->tr("Hopsan Model Files (*.hmf)"));
+
+        if(modelFilePath.isEmpty())     //Don't save anything if user presses cancel
+        {
+            return;
+        }
+
+        QFileInfo fileInfo = QFileInfo(modelFilePath);
+        gConfig.setLoadModelDir(fileInfo.absolutePath());
+
+        QFile file(modelFilePath);   //Create a QFile object
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+        {
+            return;
+        }
+
+
+            //Save xml document
+        QDomDocument domDocument;
+        QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getCoreSystemAccessPtr()->getHopsanCoreVersion());
+
+            // Save the required external lib names
+        QVector<QString> extLibNames;
+        CoreLibraryAccess coreLibAccess;
+        coreLibAccess.getLoadedLibNames(extLibNames);
+
+        QDomElement reqDom = appendDomElement(hmfRoot, "requirements");
+        for (int i=0; i<extLibNames.size(); ++i)
+        {
+            appendDomTextNode(reqDom, "componentlibrary", extLibNames[i]);
+        }
+
+            //Save the model component hierarcy
+        saveToDomElement(hmfRoot);
+
+        setModelFile(modelFilePath);
+        setName(getModelFileInfo().baseName());
+        setAppearanceDataBasePath(getModelFileInfo().absolutePath());
+
+            //Save to file
+        const int IndentSize = 4;
+        QFile xmlhmf(getModelFileInfo().filePath());
+        if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+        {
+            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not save to file: " + getModelFileInfo().filePath());
+            return;
+        }
+        QTextStream out(&xmlhmf);
+        appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
+        domDocument.save(out, IndentSize);
+
+        //Close the file
+        xmlhmf.close();
     }
 
     //Dont call GUIModelObject::contextMenuEvent as that will open an other menu after this one is closed
