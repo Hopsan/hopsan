@@ -938,6 +938,13 @@ void AnimatedGraphicsView::mousePressEvent(QMouseEvent *event)
 
 void AnimatedGraphicsView::mouseReleaseEvent(QMouseEvent *event)
 {
+    if(!mCtrlKeyPressed && this->dragMode() != RubberBandDrag)
+    {
+        this->setDragMode(NoDrag);
+        QCursor cursor;
+        cursor.setShape(Qt::ArrowCursor);
+    }
+
     mLeftMouseButtonPressed = false;
     QGraphicsView::mouseReleaseEvent(event);
 }
