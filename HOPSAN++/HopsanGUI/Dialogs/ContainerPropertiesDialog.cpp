@@ -165,13 +165,22 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
         mpTimeStepLabel = new QLabel(" Time Step:", this);
         mpTimeStepLabel->setDisabled(mpTimeStepCheckBox->isChecked());
         QString TimeStepText;
-        TimeStepText.setNum(mpContainerObject->getCoreSystemAccessPtr()->getDesiredTimeStep());
+        if(mpTimeStepCheckBox->isChecked())
+        {
+            TimeStepText.setNum(mpContainerObject->getParentContainerObject()->getCoreSystemAccessPtr()->getDesiredTimeStep());
+        }
+        else
+        {
+            TimeStepText.setNum(mpContainerObject->getCoreSystemAccessPtr()->getDesiredTimeStep());
+        }
         mpTimeStepEdit = new QLineEdit(this);
         mpTimeStepEdit->setValidator(new QDoubleValidator(0.0, 2000000000.0, 10, this));
         mpTimeStepEdit->setText(TimeStepText);
         mpTimeStepEdit->setDisabled(mpTimeStepCheckBox->isChecked());
+
         connect(mpTimeStepCheckBox, SIGNAL(toggled(bool)), mpTimeStepLabel, SLOT(setDisabled(bool)));
         connect(mpTimeStepCheckBox, SIGNAL(toggled(bool)), mpTimeStepEdit, SLOT(setDisabled(bool)));
+        connect(mpTimeStepCheckBox, SIGNAL(toggled(bool)), this, SLOT(fixTimeStepInheritance(bool)));
         mpSettingsLayout->addWidget(mpTimeStepCheckBox, 4, 0, 1, 2);
         mpSettingsLayout->addWidget(mpTimeStepLabel, 5, 0, 1, 1);
         mpSettingsLayout->addWidget(mpTimeStepEdit, 5, 1, 1, 1);
@@ -285,6 +294,21 @@ void ContainerPropertiesDialog::editPortPos()
     //! @warning memory leak, should not create new dialogs every time, they are never removed
     MovePortsDialog *dialog = new MovePortsDialog(mpContainerObject->getAppearanceData(), mpContainerObject->getGfxType());
     connect(dialog, SIGNAL(finished()), mpContainerObject, SLOT(refreshAppearance()), Qt::UniqueConnection);
+}
+
+
+void ContainerPropertiesDialog::fixTimeStepInheritance(bool value)
+{
+    QString TimeStepText;
+    if(value)
+    {
+        TimeStepText.setNum(mpContainerObject->getParentContainerObject()->getCoreSystemAccessPtr()->getDesiredTimeStep());
+    }
+    else
+    {
+        TimeStepText.setNum(mpContainerObject->getCoreSystemAccessPtr()->getDesiredTimeStep());
+    }
+    mpTimeStepEdit->setText(TimeStepText);
 }
 
 

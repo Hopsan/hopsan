@@ -96,6 +96,7 @@ protected slots:
     void editPortPos();
 
 private slots:
+    void fixTimeStepInheritance(bool value);
     void setValues();
     void browseUser();
     void browseIso();
