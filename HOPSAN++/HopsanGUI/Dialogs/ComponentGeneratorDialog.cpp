@@ -357,12 +357,14 @@ ComponentGeneratorDialog::ComponentGeneratorDialog(MainWindow *parent)
 
     if(!gConfig.getRecentGeneratorModels().isEmpty())
     {
-        loadModel(gConfig.getRecentGeneratorModels().first());
+        QFile modelFile(gConfig.getRecentGeneratorModels().first());
+        if(modelFile.exists())
+            loadModel(gConfig.getRecentGeneratorModels().first());
+        else
+            addNewTab();
     }
     else
-    {
         addNewTab();
-    }
 
     updateRecentList();
 

@@ -391,22 +391,26 @@ void HopsanGenerator::generateFromFmu(QString path)
     QDomElement variablesElement = fmuRoot.firstChildElement("ModelVariables");
     QDomElement varElement = variablesElement.firstChildElement("ScalarVariable");
     int i=0;
-    while (!varElement.isNull() && varElement.attribute("variability") != "parameter")
+    //! @todo We cannot use value reference as port names, because several ports can point to the same value
+    while (!varElement.isNull())
     {
-        if(!varElement.hasAttribute("causality"))
+        if(varElement.attribute("variability") != "parameter" && varElement.attribute("variability") != "constant")
         {
-            inoutVars << varElement.attribute("valueReference");
-            inoutVarNames << varElement.attribute("name");
-        }
-        else if(varElement.attribute("causality") == "input")
-        {
-            inVars << varElement.attribute("valueReference");
-            inVarNames << varElement.attribute("name");
-        }
-        else if(varElement.attribute("causality") == "output")
-        {
-            outVars << varElement.attribute("valueReference");
-            outVarNames << varElement.attribute("name");
+            if(!varElement.hasAttribute("causality"))
+            {
+                inoutVars << varElement.attribute("valueReference");
+                inoutVarNames << varElement.attribute("name");
+            }
+            else if(varElement.attribute("causality") == "input")
+            {
+                inVars << varElement.attribute("valueReference");
+                inVarNames << varElement.attribute("name");
+            }
+            else if(varElement.attribute("causality") == "output")
+            {
+                outVars << varElement.attribute("valueReference");
+                outVarNames << varElement.attribute("name");
+            }
         }
         varElement = varElement.nextSiblingElement("ScalarVariable");
     }
