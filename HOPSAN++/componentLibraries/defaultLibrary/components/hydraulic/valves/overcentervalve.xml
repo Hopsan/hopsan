@@ -3,7 +3,7 @@
     <modelobject typename="HydraulicOverCenterValve" displayname="Over Center Valve">
         <icons>
             <icon scale="1" path="overcentervalve_user.svg" iconrotation="ON" type="user"/>
-            <icon scale="1" path="overcentervalve_user.svg" iconrotation="ON" type="iso"/>
+            <icon scale="1" path="overcentervalve_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
         <ports>
             <port x="0.4762" y="0" a="90" name="P1"/>
