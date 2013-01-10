@@ -41,6 +41,13 @@ LIBS *= -L$${PWD}/../bin -lHopsanCore$${DEBUG_EXT}
 #--------------------------------------------------------
 
 #--------------------------------------------------------
+# Set HopsanGenerator Paths
+INCLUDEPATH *= $${PWD}/../HopsanGenerator/include/
+LIBS *= -L$${PWD}/../bin -lHopsanGenerator$${DEBUG_EXT}
+#--------------------------------------------------------
+
+
+#--------------------------------------------------------
 # Set our own HopsanGUI Include Path
 INCLUDEPATH *= $${PWD}/
 #--------------------------------------------------------

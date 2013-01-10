@@ -172,6 +172,9 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
             str.replace("/+", "/");
             str.replace("*+", "*");
             str.replace("^+", "^");
+            str.replace("==", "!"); //! @todo Ugly solutions to rename like this
+            str.replace(">=", "?");
+            str.replace("<=", "|");
         }
         while(str.contains("++")) { str.replace("++", "+"); }
         while(str.contains("+-+-")) { str.replace("+-+-","+-"); }
@@ -252,6 +255,11 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
     else if(splitAtSeparator("*", symbols, simplifications)) {}                  //Multiplication/division
     else if(splitAtSeparator("^", symbols, simplifications)) {}                  //Power
     else if(splitAtSeparator("%", symbols, simplifications)) {}                  //Modulus
+    else if(splitAtSeparator("!", symbols, simplifications)) {}                  //Logical equality (replace with function)
+    else if(splitAtSeparator(">", symbols, simplifications)) {}                  //Logical greater than (replace with function)
+    else if(splitAtSeparator("?", symbols, simplifications)) {}                  //Logical greaater than or equal (replace with function)
+    else if(splitAtSeparator("<", symbols, simplifications)) {}                  //Logical smaller than (replace with function)
+    else if(splitAtSeparator("|", symbols, simplifications)) {}                  //Logical smaller than or equal (replace with function)
     else if(symbols.size() == 1 && symbols.first().contains("("))                   //Function
     {
         QString str = symbols.first();
@@ -552,6 +560,42 @@ double Expression::evaluate(const QMap<QString, double> variables) const
         else if(mFunction == "atan2") { retval = atan2(mArguments[0].evaluate(variables), mArguments[1].evaluate(variables)); }
         else if(mFunction == "pow") { retval = pow(mArguments[0].evaluate(variables), mArguments[1].evaluate(variables)); }
 
+        else if(mFunction == "equal")
+        {
+            if(mArguments[0].evaluate(variables) == mArguments[1].evaluate(variables))
+                return 1.0;
+            else
+                return 0.0;
+        }
+        else if(mFunction == "greaterThan")
+        {
+            if(mArguments[0].evaluate(variables) > mArguments[1].evaluate(variables))
+                return 1.0;
+            else
+                return 0.0;
+        }
+        else if(mFunction == "greaterThanOrEqual")
+        {
+            if(mArguments[0].evaluate(variables) >= mArguments[1].evaluate(variables))
+                return 1.0;
+            else
+                return 0.0;
+        }
+        else if(mFunction == "smallerThan")
+        {
+            if(mArguments[0].evaluate(variables) < mArguments[1].evaluate(variables))
+                return 1.0;
+            else
+                return 0.0;
+        }
+        else if(mFunction == "smallerThanOrEqual")
+        {
+            if(mArguments[0].evaluate(variables) <= mArguments[1].evaluate(variables))
+                return 1.0;
+            else
+                return 0.0;
+        }
+
         else if(mFunction == "sign")
         {
             if(mArguments[0].evaluate(variables) >= 0.0) { retval = 1.0; }
@@ -579,6 +623,13 @@ double Expression::evaluate(const QMap<QString, double> variables) const
             retval = variables.find(mString).value();
         else
             retval = 0;
+    }
+    else if(isEquation())
+    {
+        if(mpLeft->evaluate(variables) == mpRight->evaluate(variables))
+            return 1;
+        else
+            return 0;
     }
 
     return retval;
@@ -2275,6 +2326,10 @@ bool Expression::splitAtSeparator(const QString sep, const QStringList subSymbol
                     right.append(subSymbols[i]);
                 }
             }
+            if(!onRight)
+            {
+                return false;
+            }
             mpLeft = new Expression(left);
             mpRight = new Expression(right);
         }
@@ -2394,6 +2449,121 @@ bool Expression::splitAtSeparator(const QString sep, const QStringList subSymbol
                 }
             }
             mpDividend = new Expression(dividend);
+        }
+        else if(sep == "!")
+        {
+            QStringList left, right;
+            bool onRight=false;
+            for(int i=0; i<subSymbols.size(); ++i)
+            {
+                if(subSymbols[i] == "!")
+                {
+                    onRight = true;
+                }
+                else if(!onRight)
+                {
+                    left.append(subSymbols[i]);
+                }
+                else
+                {
+                    right.append(subSymbols[i]);
+                }
+            }
+            mFunction = "equal";
+            mArguments.append(Expression(left));
+            mArguments.append(Expression(right));
+        }
+        else if(sep == ">")
+        {
+            QStringList left, right;
+            bool onRight=false;
+            for(int i=0; i<subSymbols.size(); ++i)
+            {
+                if(subSymbols[i] == ">")
+                {
+                    onRight = true;
+                }
+                else if(!onRight)
+                {
+                    left.append(subSymbols[i]);
+                }
+                else
+                {
+                    right.append(subSymbols[i]);
+                }
+            }
+            mFunction = "greaterThan";
+            mArguments.append(Expression(left));
+            mArguments.append(Expression(right));
+        }
+        else if(sep == "?")
+        {
+            QStringList left, right;
+            bool onRight=false;
+            for(int i=0; i<subSymbols.size(); ++i)
+            {
+                if(subSymbols[i] == "?")
+                {
+                    onRight = true;
+                }
+                else if(!onRight)
+                {
+                    left.append(subSymbols[i]);
+                }
+                else
+                {
+                    right.append(subSymbols[i]);
+                }
+            }
+            mFunction = "greaterThanOrEqual";
+            mArguments.append(Expression(left));
+            mArguments.append(Expression(right));
+        }
+        else if(sep == "<")
+        {
+            QStringList left, right;
+            bool onRight=false;
+            for(int i=0; i<subSymbols.size(); ++i)
+            {
+                if(subSymbols[i] == "<")
+                {
+                    onRight = true;
+                }
+                else if(!onRight)
+                {
+                    left.append(subSymbols[i]);
+                }
+                else
+                {
+                    right.append(subSymbols[i]);
+                }
+            }
+            mFunction = "smallerThan";
+            mArguments.append(Expression(left));
+            mArguments.append(Expression(right));
+        }
+        else if(sep == "|")
+        {
+            QStringList left, right;
+            bool onRight=false;
+            for(int i=0; i<subSymbols.size(); ++i)
+            {
+                if(subSymbols[i] == "|")
+                {
+                    onRight = true;
+                }
+                else if(!onRight)
+                {
+                    left.append(subSymbols[i]);
+                }
+                else
+                {
+                    right.append(subSymbols[i]);
+                }
+            }
+            mFunction = "smallerThanOrEqual";
+            mArguments.append(Expression(left));
+            mArguments.append(Expression(right));
         }
         return true;
     }

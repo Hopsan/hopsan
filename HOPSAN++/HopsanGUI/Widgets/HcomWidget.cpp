@@ -39,7 +39,7 @@
 #include "PlotTab.h"
 #include "PlotCurve.h"
 #include "PlotHandler.h"
-
+#include "SymHop.h"
 
 
 TerminalWidget::TerminalWidget(MainWindow *pParent)
@@ -1911,7 +1911,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
     *evalOk = true;
     *returnType = Scalar;
 
-    expr.replace("==", "§§§§§");
+    //expr.replace("==", "§§§§§");
     expr.replace("**", "%%%%%");
 
     //Remove parentheses around expression
@@ -1929,6 +1929,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
         }
     }
 
+    //Numerical value, return it
     bool ok;
     expr.toDouble(&ok);
     if(ok)
@@ -1936,18 +1937,19 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
         return expr;
     }
 
+    //Pre-defined variable, return its value
     if(mLocalVars.contains(expr))
     {
         return QString::number(mLocalVars.find(expr).value());
     }
 
+    //Parameter name, return its value
     if(getParameterValue(expr) != "NaN")
     {
         return getParameterValue(expr);
     }
-    //DEBUG
 
-
+    //Data variable, return it
     QStringList variables;
     getVariables(expr,variables);
     if(!variables.isEmpty())
@@ -1956,345 +1958,9 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
         return variables.first();
     }
 
-
-//    if(expr.count("+")+expr.count("*")+expr.count("-")+expr.count("/") > 1)
-//    {
-//        append("Only single operations allowed.");
-//        *evalOk = false;
-//        return 0;
-//    }
-
-    else if(containsOutsideParentheses(expr, ">"))
-    {
-        QString left, right;
-        splitAtFirst(expr,">",left,right);
-        bool leftOk, rightOk;
-        VariableType leftType, rightType;
-        double leftVal = evaluateExpression(left,&leftType,&leftOk).toDouble();
-        double rightVal = evaluateExpression(right,&rightType,&rightOk).toDouble();
-        if(leftType == DataVector || rightType == DataVector)
-        {
-            mpConsole->print("Logical operations with data vectors is not allowed.");
-            evalOk = false;
-            return 0;
-        }
-        if(leftOk && rightOk)
-        {
-            if(leftVal > rightVal)
-            {
-                return "1";
-            }
-            else
-            {
-                return "0";
-            }
-        }
-        else
-        {
-            *evalOk = false;
-            return "0";
-        }
-    }
-    else if(containsOutsideParentheses(expr, "<"))
-    {
-        QString left, right;
-        splitAtFirst(expr,"<",left,right);
-        bool leftOk, rightOk;
-        VariableType leftType, rightType;
-        double leftVal = evaluateExpression(left,&leftType,&leftOk).toDouble();
-        double rightVal = evaluateExpression(right,&rightType,&rightOk).toDouble();
-        if(leftType == DataVector || rightType == DataVector)
-        {
-            mpConsole->print("Logical operations with data vectors is not allowed.");
-            evalOk = false;
-            return 0;
-        }
-        if(leftOk && rightOk)
-        {
-            if(leftVal < rightVal)
-            {
-                return "1";
-            }
-            else
-            {
-                return "0";
-            }
-        }
-        else
-        {
-            *evalOk = false;
-            return "0";
-        }
-    }
-    else if(containsOutsideParentheses(expr, "§§§§§"))
-    {
-        QString left, right;
-        splitAtFirst(expr,"§§§§§",left,right);
-        bool leftOk, rightOk;
-        VariableType leftType, rightType;
-        double leftVal = evaluateExpression(left,&leftType,&leftOk).toDouble();
-        double rightVal = evaluateExpression(right,&rightType,&rightOk).toDouble();
-        if(leftType == DataVector || rightType == DataVector)
-        {
-            mpConsole->print("Logical operations with data vectors is not allowed.");
-            evalOk = false;
-            return 0;
-        }
-        if(leftOk && rightOk)
-        {
-            if(leftVal == rightVal)
-            {
-                return "1";
-            }
-            else
-            {
-                return "0";
-            }
-        }
-        else
-        {
-            *evalOk = false;
-            return "0";
-        }
-    }
-    else if(containsOutsideParentheses(expr, "+"))
-    {
-        QString left, right;
-        splitAtFirst(expr,"+",left,right);
-        bool leftOk, rightOk;
-        VariableType leftType, rightType;
-        QString leftRes = evaluateExpression(left,&leftType,&leftOk);
-        QString rightRes = evaluateExpression(right,&rightType,&rightOk);
-        if(leftType == DataVector && rightType == DataVector)
-        {
-            *returnType = DataVector;
-            leftRes = getVariablePtr(leftRes)->getFullVariableName();
-            rightRes = getVariablePtr(rightRes)->getFullVariableName();
-            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->addVariables(leftRes, rightRes);
-        }
-        else if(leftType == DataVector && rightType == Scalar)
-        {
-            *returnType = DataVector;
-            leftRes = getVariablePtr(leftRes)->getFullVariableName();
-            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->addVariableWithScalar(leftRes, rightRes.toDouble());
-        }
-        else if(leftType == Scalar && rightType == DataVector)
-        {
-            *returnType = DataVector;
-            rightRes = getVariablePtr(rightRes)->getFullVariableName();
-            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->addVariableWithScalar(rightRes, leftRes.toDouble());
-        }
-        if(leftOk && rightOk)
-        {
-            return QString::number(leftRes.toDouble()+rightRes.toDouble());
-        }
-        else
-        {
-            *evalOk = false;
-            return "0";
-        }
-    }
-    else if(containsOutsideParentheses(expr, "-"))
-    {
-        QString left, right;
-        splitAtFirst(expr,"-",left,right);
-        bool leftOk, rightOk;
-        VariableType leftType, rightType;
-        QString leftRes = evaluateExpression(left,&leftType,&leftOk);
-        QString rightRes = evaluateExpression(right,&rightType,&rightOk);
-        if(leftType == DataVector && rightType == DataVector)
-        {
-            *returnType = DataVector;
-            leftRes = getVariablePtr(leftRes)->getFullVariableName();
-            rightRes = getVariablePtr(rightRes)->getFullVariableName();
-            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->subVariables(leftRes, rightRes);
-        }
-        else if(leftType == DataVector && rightType == Scalar)
-        {
-            *returnType = DataVector;
-            leftRes = getVariablePtr(leftRes)->getFullVariableName();
-            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->subVariableWithScalar(leftRes, rightRes.toDouble());
-        }
-        else if(leftType == Scalar && rightType == DataVector)
-        {
-            *returnType = DataVector;
-            rightRes = getVariablePtr(rightRes)->getFullVariableName();
-            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->subVariableWithScalar(rightRes, leftRes.toDouble());
-        }
-        if(leftOk && rightOk)
-        {
-            return QString::number(leftRes.toDouble()-rightRes.toDouble());
-        }
-        else
-        {
-            *evalOk = false;
-            return "0";
-        }
-    }
-    else if(containsOutsideParentheses(expr, "*"))
-    {
-        QString left, right;
-        splitAtFirst(expr,"*",left,right);
-        bool leftOk, rightOk;
-        VariableType leftType, rightType;
-        QString leftRes = evaluateExpression(left,&leftType,&leftOk);
-        QString rightRes = evaluateExpression(right,&rightType,&rightOk);
-        if(leftType == DataVector && rightType == DataVector)
-        {
-            *returnType = DataVector;
-            leftRes = getVariablePtr(leftRes)->getFullVariableName();
-            rightRes = getVariablePtr(rightRes)->getFullVariableName();
-            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->multVariables(leftRes, rightRes);
-        }
-        else if(leftType == DataVector && rightType == Scalar)
-        {
-            *returnType = DataVector;
-            leftRes = getVariablePtr(leftRes)->getFullVariableName();
-            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->mulVariableWithScalar(leftRes, rightRes.toDouble());
-        }
-        else if(leftType == Scalar && rightType == DataVector)
-        {
-            *returnType = DataVector;
-            rightRes = getVariablePtr(rightRes)->getFullVariableName();
-            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->mulVariableWithScalar(rightRes, leftRes.toDouble());
-        }
-        if(leftOk && rightOk)
-        {
-            return QString::number(leftRes.toDouble()*rightRes.toDouble());
-        }
-        else
-        {
-            *evalOk = false;
-            return "0";
-        }
-    }
-    else if(containsOutsideParentheses(expr, "/"))
-    {
-        QString left, right;
-        splitAtFirst(expr,"/",left,right);
-        bool leftOk, rightOk;
-        VariableType leftType, rightType;
-        QString leftRes = evaluateExpression(left,&leftType,&leftOk);
-        QString rightRes = evaluateExpression(right,&rightType,&rightOk);
-        if(leftType == DataVector && rightType == DataVector)
-        {
-            *returnType = DataVector;
-            leftRes = getVariablePtr(leftRes)->getFullVariableName();
-            rightRes = getVariablePtr(rightRes)->getFullVariableName();
-            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->divVariables(leftRes, rightRes);
-        }
-        else if(leftType == DataVector && rightType == Scalar)
-        {
-            *returnType = DataVector;
-            leftRes = getVariablePtr(leftRes)->getFullVariableName();
-            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->divVariableWithScalar(leftRes, rightRes.toDouble());
-        }
-        else if(leftType == Scalar && rightType == DataVector)
-        {
-            *returnType = DataVector;
-            rightRes = getVariablePtr(rightRes)->getFullVariableName();
-            return gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->divVariableWithScalar(rightRes, leftRes.toDouble());
-        }
-        if(leftOk && rightOk)
-        {
-            return QString::number(leftRes.toDouble()/rightRes.toDouble());
-        }
-        else
-        {
-            *evalOk = false;
-            return "0";
-        }
-    }
-    else if(containsOutsideParentheses(expr, "%%%%%"))
-    {
-        QString left, right;
-        splitAtFirst(expr,"%%%%%",left,right);
-        bool leftOk, rightOk;
-        VariableType leftType, rightType;
-        double leftVal = evaluateExpression(left,&leftType,&leftOk).toDouble();
-        double rightVal = evaluateExpression(right,&rightType,&rightOk).toDouble();
-        if(leftType == DataVector || rightType == DataVector)
-        {
-            mpConsole->print("Power operations with data vectors is not supported.");
-            evalOk = false;
-            return 0;
-        }
-        if(leftOk && rightOk)
-        {
-            return QString::number(pow(leftVal, rightVal));
-        }
-        else
-        {
-            *evalOk = false;
-            return "0";
-        }
-    }
-    else
-    {
-        QString before = expr.split("(").first();
-        bool beforeOk=before[0].isLetter();
-        for(int i=0; i<before.size(); ++i)
-        {
-            if(!before[i].isLetterOrNumber())
-            {
-                beforeOk=false;
-            }
-        }
-        if(expr.split("(").size() > 1 && beforeOk)
-        {
-            QString fnc = expr.split("(").first();
-            QString arg = expr.split("(").at(1).split(")").first();
-            if(!containsOutsideParentheses(arg, ","))
-            {
-                bool argOk, numOk;
-                VariableType argType;
-                double argValue = evaluateExpression(arg, &argType, &argOk).toDouble(&numOk);
-                if(argOk && numOk && argType == Scalar)
-                {
-                    if(fnc == "abs") { return QString::number(fabs(argValue)); }
-                    if(fnc == "ceil") { return QString::number(ceil(argValue)); }
-                    if(fnc == "floor") { return QString::number(floor(argValue)); }
-                    if(fnc == "sqrt") { return QString::number(sqrt(argValue)); }
-                    if(fnc == "sin") { return QString::number(sin(argValue)); }
-                    if(fnc == "cos") { return QString::number(cos(argValue)); }
-                    if(fnc == "tan") { return QString::number(tan(argValue)); }
-                    if(fnc == "asin") { return QString::number(asin(argValue)); }
-                    if(fnc == "acos") { return QString::number(acos(argValue)); }
-                    if(fnc == "atan") { return QString::number(atan(argValue)); }
-                    if(fnc == "sinh") { return QString::number(sinh(argValue)); }
-                    if(fnc == "cosh") { return QString::number(cosh(argValue)); }
-                    if(fnc == "tanh") { return QString::number(tanh(argValue)); }
-                    if(fnc == "asinh") { return QString::number(asinh(argValue)); }
-                    if(fnc == "acosh") { return QString::number(acosh(argValue)); }
-                    if(fnc == "atanh") { return QString::number(atanh(argValue)); }
-                    if(fnc == "exp") { return QString::number(exp(argValue)); }
-                    if(fnc == "log") { return QString::number(log(argValue)); }
-                    if(fnc == "log2") { return QString::number(log2(argValue)); }
-                    if(fnc == "log10") { return QString::number(log10(argValue)); }
-                }
-            }
-            else
-            {
-                bool arg1Ok, num1Ok, arg2Ok, num2Ok;
-                VariableType argType1,argType2;
-                QString arg1, arg2;
-                splitAtFirst(arg, ",",arg1,arg2);
-                double argValue1 = evaluateExpression(arg1, &argType1, &arg1Ok).toDouble(&num1Ok);
-                double argValue2 = evaluateExpression(arg2, &argType2, &arg2Ok).toDouble(&num2Ok);
-                if(arg1Ok && num1Ok && argType1 == Scalar && arg2Ok && num2Ok && argType2 == Scalar)
-                {
-                    if(fnc == "pow") { return QString::number(pow(argValue1,argValue2)); }
-                    if(fnc == "mod") { return QString::number(fmod(argValue1,argValue2)); }
-                    if(fnc == "atan2") { return QString::number(atan2(argValue1,argValue2)); }
-                }
-            }
-
-            *evalOk=false;
-            return "0";
-        }
-        *evalOk = false;
-        return "0";
-    }
+    //Evaluate expression using SymHop
+    SymHop::Expression symHopExpr = SymHop::Expression(expr);
+    return QString::number(symHopExpr.evaluate(mLocalVars));
 }
 
 
@@ -2733,43 +2399,60 @@ QString HcomHandler::getWorkingDirectory()
 //! @returns True if it is a correct exrpession, otherwise false
 bool HcomHandler::evaluateArithmeticExpression(QString cmd)
 {
-    cmd.replace("==", "§§§§§");
+    //cmd.replace("==", "§§§§§");
     cmd.replace("**", "%%%%%");
 
-    if(cmd.count("=") > 1)
+/*    if(cmd.count("=") > 1)
     {
         mpConsole->print("Multiple assignments not allowed.");
         return false;
     }
-    else if(cmd.count("=") == 1)     //Assignment
-    {
-        QString left = cmd.split("=").first();
-        left.remove("=");
-        left.remove(" ");
+    else */
 
-        bool leftIsOk = left[0].isLetter();
-        for(int i=1; i<left.size(); ++i)
-        {
-            if(!left.at(i).isLetterOrNumber())
-            {
-                leftIsOk = false;
-            }
-        }
+//    cmd.replace(">=", "!!!gtoe!!!");
+//    cmd.replace("<=", "!!!stoe!!!");
+
+//    cmd.replace("!!!gtoe!!!", ">=");
+//    cmd.replace("!!!stoe!!!", "<=");
+    SymHop::Expression expr = SymHop::Expression(cmd);
+
+    //if(cmd.count("=") == 1)     //Assignment
+    if(expr.isAssignment())
+    {
+        QString left = expr.getLeft()->toString();
+
+
+//        QString left = cmd.split("=").first();
+//        left.remove("=");
+//        left.remove(" ");
+
+//        bool leftIsOk = left[0].isLetter();
+//        for(int i=1; i<left.size(); ++i)
+//        {
+//            if(!left.at(i).isLetterOrNumber())
+//            {
+//                leftIsOk = false;
+//            }
+//        }
 
         //QStringList plotDataNames = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getPlotDataPtr()->getPlotDataNames();
         //if(!leftIsOk && !plotDataNames.contains(left))
-        if(!leftIsOk && !getVariablePtr(left))
-        {
-            mpConsole->print("Illegal variable name.");
-            return false;
-        }
+//        if(!leftIsOk && (gpMainWindow->mpProjectTabs->count() == 0 || !getVariablePtr(left)))
+//        {
+//            mpConsole->print("Illegal variable name.");
+//            return false;
+//        }
 
-        QString right = cmd.split("=").at(1);
-        right.remove(" ");
-
-        bool evalOk;
         VariableType type;
-        QString value=evaluateExpression(right,&type,&evalOk);
+        bool evalOk;
+        QString value = evaluateExpression(expr.getRight()->toString(), &type, &evalOk);
+
+        //QString right = cmd.split("=").at(1);
+        //right.remove(" ");
+
+        //bool evalOk;
+        //VariableType type;
+        //QString value=evaluateExpression(right,&type,&evalOk);
 
         if(evalOk && type==Scalar)
         {
@@ -2794,6 +2477,9 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
     }
     else
     {
+//        cmd.replace("!!!gtoe!!!", ">=");
+//        cmd.replace("!!!stoe!!!", "<=");
+
         //! @todo Should we allow pure expessions without assignment?
         bool evalOk;
         VariableType type;

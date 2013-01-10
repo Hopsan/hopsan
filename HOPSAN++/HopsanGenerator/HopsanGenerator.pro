@@ -10,7 +10,7 @@ DESTDIR = $${PWD}/../bin
 
 QT += xml
 
-TARGET = $${TARGET}
+TARGET = $${TARGET}$${DEBUG_EXT}
 
 
 #--------------------------------------------------
