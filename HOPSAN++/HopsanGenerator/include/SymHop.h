@@ -63,6 +63,8 @@ public:
     static Expression fromFunctionArguments(const QString function, const QList<Expression> arguments);
     static Expression fromEquation(const Expression left, const Expression right);
 
+    double evaluate(const QMap<QString, double> variables) const;
+
     void replaceBy(Expression const expr);
     void divideBy(Expression const div);
     void multiplyBy(Expression const fac);

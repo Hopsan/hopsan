@@ -488,6 +488,102 @@ Expression Expression::fromEquation(const Expression left, const Expression righ
 }
 
 
+//! @brief Evaluates the expression and returns the value
+//!
+//! Variables not included in the variables map will be treated as zero.
+//! Unsupported functions will by definition return zero.
+//! Derivatives will by definition return zero.
+//! Equations cannot be evaluated and will by definition return zero.
+//!
+//! @param variables Map with variable names and values
+//! @returns Evaluated value of expression
+double Expression::evaluate(const QMap<QString, double> variables) const
+{
+    double retval = 0;
+
+    if(isAdd())
+    {
+        Q_FOREACH(const Expression &term, mTerms)
+        {
+            retval += term.evaluate(variables);
+        }
+    }
+    else if(isMultiplyOrDivide())
+    {
+        retval = 1;
+        Q_FOREACH(const Expression &factor, mFactors)
+        {
+            retval *= factor.evaluate(variables);
+        }
+        Q_FOREACH(const Expression &divisor, mDivisors)
+        {
+            retval /= divisor.evaluate(variables);
+        }
+    }
+    else if(isPower())
+    {
+        retval = pow(mpBase->evaluate(variables), mpPower->evaluate(variables));
+    }
+    else if(isFunction())
+    {
+        if(mFunction == "sin") { retval = sin(mArguments[0].evaluate(variables)); }
+        else if(mFunction == "cos") { retval = cos(mArguments[0].evaluate(variables)); }
+        else if(mFunction == "tan") { retval = tan(mArguments[0].evaluate(variables)); }
+        else if(mFunction == "asin") { retval = asin(mArguments[0].evaluate(variables)); }
+        else if(mFunction == "acos") { retval = acos(mArguments[0].evaluate(variables)); }
+        else if(mFunction == "atan") { retval = atan(mArguments[0].evaluate(variables)); }
+        else if(mFunction == "sinh") { retval = sinh(mArguments[0].evaluate(variables)); }
+        else if(mFunction == "cosh") { retval = cosh(mArguments[0].evaluate(variables)); }
+        else if(mFunction == "tanh") { retval = tanh(mArguments[0].evaluate(variables)); }
+        else if(mFunction == "log") { retval = log(mArguments[0].evaluate(variables)); }
+        else if(mFunction == "exp") { retval = exp(mArguments[0].evaluate(variables)); }
+        else if(mFunction == "sqrt") { retval = sqrt(mArguments[0].evaluate(variables)); }
+        else if(mFunction == "abs") { retval = fabs(mArguments[0].evaluate(variables)); }
+        else if(mFunction == "integer") { retval = int(mArguments[0].evaluate(variables)); }
+        else if(mFunction == "floor") { retval = floor(mArguments[0].evaluate(variables)); }
+        else if(mFunction == "ceil") { retval = ceil(mArguments[0].evaluate(variables)); }
+
+        else if(mFunction == "der") { retval = 0; }
+
+        else if(mFunction == "rem") { retval = fmod(mArguments[0].evaluate(variables), mArguments[1].evaluate(variables)); }
+
+        else if(mFunction == "mod") { retval = fmod(mArguments[0].evaluate(variables), mArguments[1].evaluate(variables)); }
+        else if(mFunction == "div") { retval = mArguments[0].evaluate(variables)/mArguments[1].evaluate(variables); }
+        else if(mFunction == "atan2") { retval = atan2(mArguments[0].evaluate(variables), mArguments[1].evaluate(variables)); }
+        else if(mFunction == "pow") { retval = pow(mArguments[0].evaluate(variables), mArguments[1].evaluate(variables)); }
+
+        else if(mFunction == "sign")
+        {
+            if(mArguments[0].evaluate(variables) >= 0.0) { retval = 1.0; }
+            else { retval = 0.0; }
+        }
+        else if(mFunction == "limit")
+        {
+            double val = mArguments[0].evaluate(variables);
+            double min = mArguments[1].evaluate(variables);
+            double max = mArguments[2].evaluate(variables);
+            if(val > max) { retval = max; }
+            else if(val < min) { retval = min; }
+            else { retval = val; }
+        }
+
+
+    }
+    else if(isNumericalSymbol())
+    {
+        retval = this->toDouble();
+    }
+    else if(isVariable())
+    {
+        if(variables.contains(mString))
+            retval = variables.find(mString).value();
+        else
+            retval = 0;
+    }
+
+    return retval;
+}
+
 
 //! @brief Replaces this expression by another one
 //! @param expr Expression to replace by
@@ -2968,4 +3064,33 @@ void SymHop::validateFunctions()
     expr1 = expr.derivative(Expression("x"),ok);
     retString = expr1.toString();
     assert(ok && expr1 == Expression("-sin(2.0*x^2.0)*x*4.0"));
+
+    //Validate evaluate(variable)
+    double x=5.1;
+    double y=32.12;
+    double z=12.3;
+    QMap<QString, double> variables;
+    variables.insert("x", x);
+    variables.insert("y", y);
+    variables.insert("z", z);
+    expr = Expression("sin(x)");
+    assert(expr.evaluate(variables) == sin(x));
+    expr = Expression("floor(x)");
+    assert(expr.evaluate(variables) == floor(x));
+    expr = Expression("limit(x,0,4)");
+    assert(expr.evaluate(variables) == 4);
+    expr = Expression("x*y/z");
+    assert(expr.evaluate(variables) == x*y/z);
+    expr = Expression("x^y");
+    assert(expr.evaluate(variables) == pow(x,y));
+    expr = Expression("x*y+z");
+    assert(expr.evaluate(variables) == x*y+z);
+    expr = Expression("x=y");
+    assert(expr.evaluate(variables) == 0);
+    expr = Expression("der(x)+y");
+    assert(expr.evaluate(variables) == y);
+    expr = Expression("undefinedfunction(x)+y");
+    assert(expr.evaluate(variables) == y);
+    expr = Expression("x+A");
+    assert(expr.evaluate(variables) == x);
 }
