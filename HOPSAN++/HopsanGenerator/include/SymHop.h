@@ -30,14 +30,13 @@
 #include <QList>
 #include <QStringList>
 #include <QDebug>
+#include "win32dll.h"
 
 using namespace std;
 
 namespace SymHop {
 
-class Expression;
-
-class Expression
+class DLLIMPORTEXPORT Expression
 {
 public:
     enum ExpressionTypeT {Null, Equality,Symbol,Operator,Function};

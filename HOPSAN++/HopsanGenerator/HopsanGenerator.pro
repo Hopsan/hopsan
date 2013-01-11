@@ -8,7 +8,7 @@ TEMPLATE = lib
 CONFIG += shared
 DESTDIR = $${PWD}/../bin
 
-QT += xml
+QT += xml core gui
 
 TARGET = $${TARGET}$${DEBUG_EXT}
 

@@ -37,6 +37,7 @@
 #include <QTextEdit>
 #include <QPushButton>
 #include <QDomElement>
+#include "win32dll.h"
 
 #include "SymHop.h"
 
@@ -114,7 +115,7 @@ public:
 };
 
 
-class HopsanGenerator
+class DLLIMPORTEXPORT HopsanGenerator
 {
 public:
     HopsanGenerator(QString coreIncludePath, QString binPath, bool showDialog=false);
