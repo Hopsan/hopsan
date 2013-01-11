@@ -581,7 +581,7 @@ void ComponentSystem::clear()
 
 //! @brief Sorts a component vector
 //! Components are sorted so that they are always simulated after the components they receive signals from. Algebraic loops can be detected, in that case this function does nothing.
-void ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVector)
+bool ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVector)
 {
     std::vector<Component*> newComponentVector;
 
@@ -641,8 +641,12 @@ void ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVec
     }
     else    //Something went wrong, all components were not moved. This is likely due to an algebraic loop.
     {
-        addWarningMessage("Components cannot be sorted correctly, either due to algebraic loops or because of multi-threaded partioning.");
+        addErrorMessage("Initialize: Algebraic loops was found, signal components could not be sorted.");
+        addInfoMessage("Initialize: Hint: Use unit delay components to resolve loops.");
+        return false;
     }
+
+    return true;
 }
 
 
@@ -2339,7 +2343,10 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
     adjustTimestep(mComponentCptrs);
     adjustTimestep(mComponentQptrs);
 
-    this->sortComponentVector(mComponentSignalptrs);
+    if(!this->sortComponentVector(mComponentSignalptrs))
+    {
+        return false;
+    }
     this->sortComponentVector(mComponentCptrs);
     this->sortComponentVector(mComponentQptrs);
 

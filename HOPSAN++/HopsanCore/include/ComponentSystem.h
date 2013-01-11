@@ -241,7 +241,7 @@ namespace hopsan {
         // Celar all contents of the system (use in destructor)
         void clear();
 
-        void sortComponentVector(std::vector<Component*> &rOldSignalVector);
+        bool sortComponentVector(std::vector<Component*> &rOldSignalVector);
         bool componentVectorContains(std::vector<Component*> vector, Component *pComp);
 
         // UniqueName specific functions
