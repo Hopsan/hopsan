@@ -4153,6 +4153,7 @@ void HopsanGenerator::generateComponentObject(ComponentSpecification &comp, QStr
         comp.initEquations << "";
         //comp.initEquations << "mpSolver = new EquationSystemSolver(this, "+QString::number(sysEquations.size())+");";
         comp.initEquations << "mpSolver = new EquationSystemSolver(this, "+QString::number(equations.size())+", &jacobianMatrix, &systemEquations, &stateVariables);";
+        comp.finalEquations << "delete mpSolver;";
     }
 
     comp.simEquations << "//Initial algorithm section";
