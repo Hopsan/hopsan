@@ -141,5 +141,6 @@
         <file>graphics/uiicons/Hopsan-ExportPdf.png</file>
         <file>graphics/uiicons/Hopsan-ExportSimulinkCoSim.png</file>
         <file>graphics/uiicons/Hopsan-ExportPng.png</file>
+        <file>graphics/uiicons/Hopsan-Script.png</file>
     </qresource>
 </RCC>

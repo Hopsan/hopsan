@@ -51,11 +51,17 @@ public slots:
 
 private slots:
     void loadPyScript();
+    void openInitScriptDialog();
+    void setInitScriptFromDialog();
 
 private:
     PythonQtScriptingConsole *mpPyConsole;
     QLineEdit *mpScriptFileLineEdit;
+    QToolButton *mpInitScriptButton;
     QToolButton *mpLoadScriptButton;
+    QString mInitScript;
+    QDialog *mpDialog;
+    QTextEdit *mpTextEdit;
 };
 
 

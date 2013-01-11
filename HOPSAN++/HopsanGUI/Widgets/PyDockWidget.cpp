@@ -68,6 +68,11 @@ PyDockWidget::PyDockWidget(MainWindow *pMainWindow, QWidget * parent)
     mpLoadScriptButton->setToolTip("Load Script File");
     connect(mpLoadScriptButton, SIGNAL(clicked()), this, SLOT(loadPyScript()));
 
+    mpInitScriptButton = new QToolButton(this);
+    mpInitScriptButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Script.png"));
+    mpInitScriptButton->setToolTip("Define Initialization Script");
+    connect(mpInitScriptButton, SIGNAL(clicked()), this, SLOT(openInitScriptDialog()));
+
     QPushButton *pPyCustomButton = new QPushButton(this);
     pPyCustomButton->setText("Run .py-file");
     pPyCustomButton->connect(pPyCustomButton,SIGNAL(clicked()), this, SLOT(runPyScript()));
@@ -75,6 +80,7 @@ PyDockWidget::PyDockWidget(MainWindow *pMainWindow, QWidget * parent)
     QHBoxLayout *pScriptFileLayout = new QHBoxLayout();
     pScriptFileLayout->addWidget(mpScriptFileLineEdit);
     pScriptFileLayout->addWidget(mpLoadScriptButton);
+    pScriptFileLayout->addWidget(mpInitScriptButton);
     pScriptFileLayout->addWidget(pPyCustomButton);
 
     QVBoxLayout *pPyLayout = new QVBoxLayout();
@@ -84,6 +90,8 @@ PyDockWidget::PyDockWidget(MainWindow *pMainWindow, QWidget * parent)
 
     PyWidget *pPyWidget = new PyWidget();
     pPyWidget->setLayout(pPyLayout);
+
+    runCommand(gConfig.getInitScript());
 
     mpScriptFileLineEdit->setText(gConfig.getLastScriptFile());
 
@@ -105,6 +113,9 @@ void PyDockWidget::saveSettingsToDomElement(QDomElement &rDomElement)
 {
     QDomElement lastscript = appendDomElement(rDomElement, "lastscript");
     lastscript.setAttribute("file", mpScriptFileLineEdit->text());
+
+    if(!mInitScript.isEmpty())
+        appendDomTextNode(rDomElement, "initscript", mInitScript);
 }
 
 
@@ -144,6 +155,32 @@ void PyDockWidget::loadPyScript()
     }
 }
 
+
+void PyDockWidget::openInitScriptDialog()
+{
+    mpDialog = new QDialog(this);
+    mpTextEdit = new QTextEdit(this);
+    mpTextEdit->setPlainText(gConfig.getInitScript());
+    QPushButton *pOkButton = new QPushButton("Done", mpDialog);
+    QVBoxLayout *pLayout = new QVBoxLayout();
+    pLayout->addWidget(mpTextEdit);
+    pLayout->addWidget(pOkButton);
+    mpDialog->setLayout(pLayout);
+
+    connect(pOkButton, SIGNAL(clicked()), this, SLOT(setInitScriptFromDialog()));
+
+    mpDialog->exec();
+}
+
+
+void PyDockWidget::setInitScriptFromDialog()
+{
+    mInitScript = mpTextEdit->toPlainText();
+
+    mpDialog->close();
+    delete(mpTextEdit);
+    delete(mpDialog);
+}
 
 void PyDockWidget::runPyScript(QString path)
 {

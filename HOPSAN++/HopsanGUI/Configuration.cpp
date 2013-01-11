@@ -389,6 +389,9 @@ void Configuration::loadFromXml()
             {
                 QDomElement lastScriptElement = pythonElement.firstChildElement("lastscript");
                 mLastScriptFile = lastScriptElement.attribute("file");
+
+                QDomElement initScriptElement = pythonElement.firstChildElement("initscript");
+                mInitScript = initScriptElement.text();
             }
 
             QDomElement hcomElement = configRoot.firstChildElement("hcom");
@@ -841,6 +844,13 @@ QString Configuration::getLastScriptFile()
 }
 
 
+//! @brief Returns the last used script file
+QString Configuration::getInitScript()
+{
+    return mInitScript;
+}
+
+
 //! @brief Returns the group message by tag setting
 bool Configuration::getGroupMessagesByTag()
 {
@@ -1210,6 +1220,12 @@ void Configuration::setLastScriptFile(QString file)
     saveToXml();
 }
 
+
+void Configuration::setInitScript(QString script)
+{
+    mInitScript = script;
+    saveToXml();
+}
 
 void Configuration::setGroupMessagesByTag(bool value)
 {

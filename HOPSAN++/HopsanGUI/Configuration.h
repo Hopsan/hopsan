@@ -71,6 +71,7 @@ public:
     QFont getFont();
     QString getStyleSheet();
     QString getLastScriptFile();
+    QString getInitScript();
     bool getGroupMessagesByTag();
     int getGenerationLimit();
     QString getLoadModelDir();
@@ -109,6 +110,7 @@ public:
     void setDefaultUnit(QString key, QString value);
     void addCustomUnit(QString dataname, QString unitname, double scale);
     void setLastScriptFile(QString file);
+    void setInitScript(QString script);
     void setGroupMessagesByTag(bool value);
     void setGenerationLimit(int value);
     void setLoadModelDir(QString value);
@@ -151,6 +153,7 @@ private:
     QFont mFont;
     QString mStyleSheet;
     QString mLastScriptFile;
+    QString mInitScript;
     bool mGroupMessagesByTag;
     int mGenerationLimit;
     QString mLoadModelDir;
