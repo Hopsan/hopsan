@@ -451,6 +451,12 @@ QDomElement SystemContainer::saveGuiDataToDomElement(QDomElement &rDomElement)
         QDomElement namesHiddenElement = appendDomElement(guiStuff, HMF_NAMESTAG);
         namesHiddenElement.setAttribute("hidden", mSubComponentNamesHidden);
 
+        QString gfxType = "iso";
+        if(mGfxType == USERGRAPHICS)
+            gfxType = "user";
+        QDomElement gfxTypeElement = appendDomElement(guiStuff, HMF_GFXTAG);
+        gfxTypeElement.setAttribute("type", gfxType);
+
         QDomElement scriptFileElement = appendDomElement(guiStuff, HMF_SCRIPTFILETAG);
         scriptFileElement.setAttribute("path", mScriptFilePath);
 
@@ -576,6 +582,9 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         this->refreshDisplayName(); // This must be done becouse in some occations the loadAppearanceDataline above will overwrite the correct name
         this->mSubComponentNamesHidden = guiStuff.firstChildElement(HMF_NAMESTAG).attribute("hidden").toInt();
         this->mSubComponentPortsHidden = guiStuff.firstChildElement(HMF_PORTSTAG).attribute("hidden").toInt();
+        QString gfxType = guiStuff.firstChildElement(HMF_GFXTAG).attribute("type");
+        if(gfxType == "user") { mGfxType = USERGRAPHICS; }
+        else if(gfxType == "iso") { mGfxType = ISOGRAPHICS; }
         gpMainWindow->mpToggleNamesAction->setChecked(!mSubComponentNamesHidden);
         gpMainWindow->mpTogglePortsAction->setChecked(!mSubComponentPortsHidden);
         double x = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("x").toDouble();
