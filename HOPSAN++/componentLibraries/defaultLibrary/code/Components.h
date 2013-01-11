@@ -152,6 +152,7 @@
 #include "Signal/SignalStaircase.hpp"
 #include "Signal/SignalAnimationGauge.hpp"
 #include "Signal/SignalDisplay.hpp"
+#include "Signal/SignalUnitDelay.hpp"
 
 /* Mechanical Components */
 #include "Mechanic/MechanicForceTransformer.hpp"

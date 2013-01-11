@@ -599,8 +599,9 @@ void ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVec
                 std::vector<Port*> portVector = (*it)->getPortPtrVector();
                 for(itp=portVector.begin(); itp!=portVector.end(); ++itp) //Ask each port for its node, then ask the node for its write port component
                 {
-                    if((*itp)->getPortType() == READPORT && (*itp)->isConnected() &&
-                       (*itp)->getNodePtr()->getWritePortComponentPtr() != 0)
+                    if(((*itp)->getPortType() == READPORT || (*itp)->getPortType() == READMULTIPORT) && (*itp)->isConnected() &&
+                       (*itp)->getNodePtr()->getWritePortComponentPtr() != 0 &&
+                       (*itp)->getNodePtr()->getWritePortComponentPtr()->getTypeName() != "SignalUnitDelay")
                     {
                         if((*itp)->getNodePtr()->getWritePortComponentPtr()->mpSystemParent == this)
                         {
@@ -632,8 +633,8 @@ void ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVec
     if(newComponentVector.size() == rComponentVector.size())   //All components moved to new vector = success!
     {
         rComponentVector = newComponentVector;
-        stringstream ss;
-        std::vector<Component*>::iterator it;
+//        stringstream ss;
+//        std::vector<Component*>::iterator it;
 //        for(it=newComponentVector.begin(); it!=newComponentVector.end(); ++it)
 //            ss << (*it)->getName() << "\n";                                                                                               //DEBUG
 //        addDebugMessage("Sorted signal components:\n" + ss.str());

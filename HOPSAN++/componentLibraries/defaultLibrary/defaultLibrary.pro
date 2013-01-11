@@ -225,7 +225,8 @@ HEADERS += \
     code/Mechanic/MechanicCylinderBlockWithSwashPlate.hpp \
     code/Signal/SignalStaircase.hpp \
     code/Signal/SignalDisplay.hpp \
-    code/Signal/SignalAnimationGauge.hpp
+    code/Signal/SignalAnimationGauge.hpp \
+    code/Signal/SignalUnitDelay.hpp
 
 SOURCES += \
     code/defaultComponentLibrary.cc \

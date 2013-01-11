@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="SignalUnitDelay" displayname="Unit Delay">
+        <icons>
+            <icon scale="1" path="delay.svg" iconrotation="OFF" type="user"/>
+        </icons>
+        <ports>
+            <port x="0" y="0.5" a="180" name="in"/>
+            <port x="1" y="0.5" a="0" name="out"/>
+        </ports>
+        <help>
+          <text>Used to resolve algebraic loops. Will not delay a signal if not connected in a loop.</text>
+        </help>
+    </modelobject>
+</hopsanobjectappearance>

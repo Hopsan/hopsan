@@ -201,6 +201,7 @@ void hopsan::register_components(hopsan::ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("SignalDisplay", SignalDisplay::Creator);
     pComponentFactory->registerCreatorFunction("SignalAnimationGauge", SignalAnimationGauge::Creator);
     pComponentFactory->registerCreatorFunction("SignalStaircase", SignalStaircase::Creator);
+    pComponentFactory->registerCreatorFunction("SignalUnitDelay", SignalUnitDelay::Creator);
 
     pComponentFactory->registerCreatorFunction("SignalUndefinedConnection", SignalUndefinedConnection::Creator);
 
