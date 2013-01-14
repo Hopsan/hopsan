@@ -187,7 +187,9 @@ bool Component::setStartValue(QString portName, QString /*variable*/, QString sy
 void Component::openPropertiesDialog()
 {
     ComponentPropertiesDialog dialog(this, gpMainWindow);
+    dialog.setModal(false);
     //ComponentPropertiesDialog2 dialog(this, gpMainWindow);
+    dialog.show();
     dialog.exec();
 }
 

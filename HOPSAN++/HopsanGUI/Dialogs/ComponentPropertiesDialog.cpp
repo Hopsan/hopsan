@@ -45,6 +45,7 @@
 #include "Dialogs/MovePortsDialog.h"
 #include "Dialogs/ParameterSettingsLayout.h"
 #include "Dialogs/ComponentGeneratorDialog.h"
+#include "Widgets/ProjectTabWidget.h"
 
 #include "CoreAccess.h"
 
@@ -75,6 +76,8 @@ ComponentPropertiesDialog::ComponentPropertiesDialog(Component *pComponent, Main
     {
         createEditStuff();
     }
+
+    mpComponent->getParentContainerObject()->mpParentProjectTab->setDisabled(true);
 }
 
 
@@ -551,6 +554,7 @@ void ComponentPropertiesDialog::editPortPos()
 //! @see setParametersAndStartValues(QVector<ParameterLayout *> vParLayout)
 void ComponentPropertiesDialog::setParametersAndStartValues()
 {
+    mpComponent->getParentContainerObject()->mpParentProjectTab->setDisabled(false);
     if(setParameterValues(mvParameterLayout) && setParameterValues(mvStartValueLayout))
     {
         qDebug() << "Parameters and start values updated.";
