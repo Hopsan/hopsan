@@ -52,18 +52,40 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
     this->setWindowTitle("System Properties");
     this->setPalette(gConfig.getPalette());
 
-    //CQS Type
+    //Info
+    QString author, email, affiliation, description;
+    mpContainerObject->getModelInfo(author, email, affiliation, description);
     QGroupBox *pInfoGroupBox = new QGroupBox("Info", this);
     QGridLayout *pInfoLayout = new QGridLayout();
+
+    mpAuthorLabel = new QLabel("Author: ", this);
+    mpEmailLabel = new QLabel("Email: ", this);
+    mpAffiliationLabel = new QLabel("Affiliation: ", this);
+    mpDescriptionLabel = new QLabel("Description: ", this);
     mpCQSLabel = new QLabel("CQS-type: ", this);
     mpCQSTypeLabel = new QLabel(mpContainerObject->getTypeCQS(), this);
-    pInfoLayout->addWidget(mpCQSLabel, 0, 0);
-    pInfoLayout->addWidget(mpCQSTypeLabel, 0, 1);
     QLabel *pBasePathLabel = new QLabel("BasePath: ", this);
+
+    mpAuthorEdit = new QLineEdit(author, this);
+    mpEmailEdit = new QLineEdit(email, this);
+    mpAffiliationEdit = new QLineEdit(affiliation, this);
+    mpDescriptionEdit = new QTextEdit(description, this);
+    mpDescriptionEdit->setFixedHeight(60);
     QLineEdit *pBasePathEdit = new QLineEdit(mpContainerObject->getAppearanceData()->getBasePath(), this);
     pBasePathEdit->setReadOnly(true);
-    pInfoLayout->addWidget(pBasePathLabel, 1, 0);
-    pInfoLayout->addWidget(pBasePathEdit, 1, 1);
+
+    pInfoLayout->addWidget(mpAuthorLabel,       0, 0);
+    pInfoLayout->addWidget(mpAuthorEdit,        0, 1);
+    pInfoLayout->addWidget(mpEmailLabel,        1, 0);
+    pInfoLayout->addWidget(mpEmailEdit,         1, 1);
+    pInfoLayout->addWidget(mpAffiliationLabel,  2, 0);
+    pInfoLayout->addWidget(mpAffiliationEdit,   2, 1);
+    pInfoLayout->addWidget(mpDescriptionLabel,  3, 0);
+    pInfoLayout->addWidget(mpDescriptionEdit,   3, 1);
+    pInfoLayout->addWidget(mpCQSLabel,          4, 0);
+    pInfoLayout->addWidget(mpCQSTypeLabel,      4, 1);
+    pInfoLayout->addWidget(pBasePathLabel,      5, 0);
+    pInfoLayout->addWidget(pBasePathEdit,       5, 1);
     pInfoGroupBox->setLayout(pInfoLayout);
 
     //Define items in the dialog box
@@ -370,6 +392,9 @@ void ContainerPropertiesDialog::setValues()
         mpContainerObject->setNumberOfLogSamples(mpNSamplesEdit->text().toInt());
         mpContainerObject->setScriptFile(mpPyScriptPath->text());
     }
+
+    //Set model info
+    mpContainerObject->setModelInfo(mpAuthorEdit->text(), mpEmailEdit->text(), mpAffiliationEdit->text(), mpDescriptionEdit->toPlainText());
 
     bool success = this->setParameterValues(mvParameterLayoutPtrs);
 

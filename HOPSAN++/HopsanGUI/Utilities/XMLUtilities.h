@@ -149,4 +149,10 @@ void verifyConfigurationCompatibility(QDomElement &rConfigElement);
 
 #define HMF_UNDO "hopsanundo"
 
+#define HMF_INFOTAG "info"
+#define HMF_AUTHORTAG "author"
+#define HMF_EMAILTAG "email"
+#define HMF_AFFILIATIONTAG "affiliation"
+#define HMF_DESCRIPTIONTAG "description"
+
 #endif // XMLUTILITIES_H

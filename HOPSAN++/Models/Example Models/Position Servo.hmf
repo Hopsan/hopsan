@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4694" hopsancoreversion="0.6.x_r4685">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4872" hopsancoreversion="0.6.x_r4833">
     <requirements>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
     </requirements>
+    <info>
+        <author>Fluid &amp; Mechatronic Systems (Flumes)</author>
+        <email>robert.braun@liu.se</email>
+        <affiliation>Linköping University</affiliation>
+        <description>This example model consists of a simple position servo controlled by a proportional feedback. A step signal is used as input. Analyzing step responses can give important information about the dynamic behaviour of a system.</description>
+    </info>
     <system logsamples="2048" typename="Subsystem" name="Position Servo">
         <simulationtime stop="3" timestep="0.001" start="0" inherit_timestep="true"/>
         <parameters/>
@@ -13,6 +19,7 @@
             <viewport x="2365.5" y="2367.5" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="1"/>
+            <graphics type="user"/>
             <scriptfile path=""/>
             <hopsanobjectappearance version="0.3">
                 <modelobject typename="Subsystem" displayname="Position Servo">
@@ -20,6 +27,7 @@
                         <icon path="subsystemDefault.svg" type="defaultmissing"/>
                     </icons>
                     <ports/>
+                    <animation flowspeed="100"/>
                 </modelobject>
             </hopsanobjectappearance>
             <favoritevariables/>
@@ -398,9 +406,9 @@
             </component>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2015.000000" y="2562.000000"/>
+                    <pose x="2017.000000" y="2560.000000"/>
                     <textobject fontcolor="#005500" text="This example model consists of a&#xa;simple position servo controlled &#xa;by a proportional feedback. A step &#xa;signal is used as input. Analyzing &#xa;step responses can give important &#xa;information about the dynamic &#xa;behaviour of a system." font="Calibri,12,-1,5,50,0,0,0,0,0"/>
-                    <size width="235.000000" height="141.000000"/>
+                    <size width="236.406250" height="148.000000"/>
                     <line width="2.000000" visible="1" style="solidline"/>
                 </hopsangui>
             </textboxwidget>

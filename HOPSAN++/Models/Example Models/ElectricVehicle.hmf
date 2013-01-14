@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4459" hopsancoreversion="0.6.x_r4459">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4872" hopsancoreversion="0.6.x_r4833">
     <requirements>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
-        <componentlibrary>PettersComponentLibrary</componentlibrary>
     </requirements>
+    <info>
+        <author>Fluid &amp; Mechatronic Systems (Flumes)</author>
+        <email>petter.krus@liu.se</email>
+        <affiliation>Linköping University</affiliation>
+        <description>Example model of an electic vehicle.</description>
+    </info>
     <system logsamples="2048" typename="Subsystem" name="ElectricVehicle">
         <simulationtime stop="140" timestep="0.01" start="0" inherit_timestep="true"/>
-        <aliases/>
         <parameters/>
+        <aliases/>
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
             <viewport x="2315.5" y="2483.5" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="1"/>
+            <graphics type="user"/>
             <scriptfile path=""/>
             <hopsanobjectappearance version="0.3">
                 <modelobject typename="Subsystem" displayname="ElectricVehicle">
@@ -21,6 +27,7 @@
                         <icon path="subsystemDefault.svg" type="defaultmissing"/>
                     </icons>
                     <ports/>
+                    <animation flowspeed="100"/>
                 </modelobject>
             </hopsanobjectappearance>
             <favoritevariables/>
@@ -1462,6 +1469,9 @@
                 <parameters>
                     <parameter value="0" type="double" name="P1::Angular Velocity"/>
                     <parameter value="0" type="double" name="P1::Angle"/>
+                    <parameter value="0" type="double" name="P1::WaveVariable"/>
+                    <parameter value="0" type="double" name="P1::CharImp"/>
+                    <parameter value="0" type="double" name="P1::Equivalent Inertia"/>
                     <parameter value="-100" type="double" name="T"/>
                 </parameters>
                 <hopsangui>
@@ -1478,6 +1488,8 @@
                 <parameters>
                     <parameter value="0" type="double" name="Pel1::Voltage"/>
                     <parameter value="0" type="double" name="Pel1::Current"/>
+                    <parameter value="0" type="double" name="Pel1::WaveVariable"/>
+                    <parameter value="0" type="double" name="Pel1::CharImp"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2248.5" y="2673" flipped="false" a="0"/>
@@ -1512,8 +1524,12 @@
                 <parameters>
                     <parameter value="0" type="double" name="Pel1::Voltage"/>
                     <parameter value="0" type="double" name="Pel1::Current"/>
+                    <parameter value="0" type="double" name="Pel1::WaveVariable"/>
+                    <parameter value="0" type="double" name="Pel1::CharImp"/>
                     <parameter value="0" type="double" name="Pel2::Voltage"/>
                     <parameter value="0" type="double" name="Pel2::Current"/>
+                    <parameter value="0" type="double" name="Pel2::WaveVariable"/>
+                    <parameter value="0" type="double" name="Pel2::CharImp"/>
                     <parameter value="0.01" type="double" name="Cc"/>
                     <parameter value="0.3" type="double" name="alpha"/>
                 </parameters>
@@ -1628,8 +1644,12 @@
                 <parameters>
                     <parameter value="0" type="double" name="Pel1::Voltage"/>
                     <parameter value="0" type="double" name="Pel1::Current"/>
+                    <parameter value="0" type="double" name="Pel1::WaveVariable"/>
+                    <parameter value="0" type="double" name="Pel1::CharImp"/>
                     <parameter value="0" type="double" name="Pel2::Voltage"/>
                     <parameter value="0" type="double" name="Pel2::Current"/>
+                    <parameter value="0" type="double" name="Pel2::WaveVariable"/>
+                    <parameter value="0" type="double" name="Pel2::CharImp"/>
                     <parameter value="0.01" type="double" name="Cc"/>
                     <parameter value="0.3" type="double" name="alpha"/>
                 </parameters>
@@ -1749,9 +1769,15 @@
                     <parameter value="0" type="double" name="Pmr1::Angular Velocity"/>
                     <parameter value="0" type="double" name="Pmr1::Torque"/>
                     <parameter value="0" type="double" name="Pmr1::Angle"/>
+                    <parameter value="0" type="double" name="Pmr1::WaveVariable"/>
+                    <parameter value="0" type="double" name="Pmr1::CharImp"/>
+                    <parameter value="0" type="double" name="Pmr1::Equivalent Inertia"/>
                     <parameter value="0" type="double" name="Pmr2::Angular Velocity"/>
                     <parameter value="0" type="double" name="Pmr2::Torque"/>
                     <parameter value="0" type="double" name="Pmr2::Angle"/>
+                    <parameter value="0" type="double" name="Pmr2::WaveVariable"/>
+                    <parameter value="0" type="double" name="Pmr2::CharImp"/>
+                    <parameter value="0" type="double" name="Pmr2::Equivalent Inertia"/>
                     <parameter value="3000" type="double" name="Ks"/>
                     <parameter value="0.9" type="double" name="alpha"/>
                 </parameters>

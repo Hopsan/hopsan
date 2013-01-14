@@ -2009,6 +2009,23 @@ void ContainerObject::setNumberOfLogSamples(size_t /*nSamples*/)
 }
 
 
+void ContainerObject::setModelInfo(const QString &author, const QString &email, const QString &affiliation, const QString &description)
+{
+    mAuthor = author;
+    mEmail = email;
+    mAffiliation = affiliation;
+    mDescription = description;
+}
+
+void ContainerObject::getModelInfo(QString &author, QString &email, QString &affiliation, QString &description) const
+{
+    author = mAuthor;
+    email = mEmail;
+    affiliation = mAffiliation;
+    description = mDescription;
+}
+
+
 //! @brief Specifies model file for the container object
 void ContainerObject::setModelFile(QString path)
 {

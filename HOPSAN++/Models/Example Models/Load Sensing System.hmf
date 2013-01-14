@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4586" hopsancoreversion="0.6.x_r4581">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4872" hopsancoreversion="0.6.x_r4833">
     <requirements>
-        <componentlibrary>HopsanGeneratedComponent_MyGain</componentlibrary>
-        <componentlibrary>HopsanGeneratedComponent_MyMass</componentlibrary>
-        <componentlibrary>HopsanGeneratedComponent_MyMass5</componentlibrary>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
     </requirements>
+    <info>
+        <author>Fluid &amp; Mechatronic Systems (Flumes)</author>
+        <email>robert.braun@liu.se</email>
+        <affiliation>Linköping University</affiliation>
+        <description>An example model demonstrating how a load sensing system can be modelled in Hopsan.</description>
+    </info>
     <system logsamples="2048" typename="Subsystem" name="Load Sensing System">
         <simulationtime stop="30" timestep="0.001" start="0" inherit_timestep="true"/>
-        <aliases/>
         <parameters>
             <parameter value="0.001" type="double" name="Cyl_A1"/>
             <parameter value="0.001" type="double" name="Cyl_A2"/>
@@ -19,12 +21,14 @@
             <parameter value="0.016" type="double" name="k_p"/>
             <parameter value="0.0025" type="double" name="d_spool"/>
         </parameters>
+        <aliases/>
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2506.67" y="2498.66" zoom="1.18743"/>
+            <viewport x="2070.59" y="2582.42" zoom="0.709217"/>
             <ports hidden="1"/>
             <names hidden="1"/>
+            <graphics type="user"/>
             <scriptfile path=""/>
             <hopsanobjectappearance version="0.3">
                 <modelobject typename="Subsystem" displayname="Load Sensing System">
@@ -32,6 +36,7 @@
                         <icon path="subsystemDefault.svg" type="defaultmissing"/>
                     </icons>
                     <ports/>
+                    <animation flowspeed="100"/>
                 </modelobject>
             </hopsanobjectappearance>
             <favoritevariables/>
@@ -1416,8 +1421,8 @@
             <connect endport="PREF" endcomponent="Variable Pump With Pressure Control" startport="P1" startcomponent="Hydraulic Volume_1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2111.96699584213320122217" y="2830.30644818347400359926"/>
-                        <coordinate x="1949.26839655000026141352" y="2830.30644818347400359926"/>
+                        <coordinate x="2111.96699600000010832446" y="2830.30644799999981842120"/>
+                        <coordinate x="1949.26839655000026141352" y="2830.30644799999981842120"/>
                         <coordinate x="1949.26839655000026141352" y="2760.00743400000010296935"/>
                     </coordinates>
                     <geometries>
@@ -1456,8 +1461,8 @@
             <connect endport="P2" endcomponent="Hydraulic Volume_1" startport="P2" startcomponent="Laminar Orifice">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2237.37430084213292502682" y="2830.30594818347390173585"/>
-                        <coordinate x="2161.96699584213320122217" y="2830.30644818347400359926"/>
+                        <coordinate x="2237.37430099999983212911" y="2830.30594800000017130515"/>
+                        <coordinate x="2161.96699600000010832446" y="2830.30644799999981842120"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -1468,8 +1473,8 @@
             <connect endport="P1" endcomponent="Hydraulic Volume_2" startport="P1" startcomponent="Laminar Orifice">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2307.37430084213292502682" y="2830.30594818347390173585"/>
-                        <coordinate x="2384.35896584213287496823" y="2830.45725918347443439416"/>
+                        <coordinate x="2307.37430099999983212911" y="2830.30594800000017130515"/>
+                        <coordinate x="2384.35896599999978207052" y="2830.45725899999979446875"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -1530,9 +1535,9 @@
             <connect endport="PB" endcomponent="4/3 Servo Valve with Load Sensing Port" startport="P2" startcomponent="Cylinder C">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2129.59474000000000160071" y="2332.50528600000052392716"/>
-                        <coordinate x="2211.21459995999975944869" y="2332.50528600000052392716"/>
-                        <coordinate x="2211.21459995999975944869" y="2443.12793400000055044075"/>
+                        <coordinate x="2129.59474000000000160071" y="2332.50528600000006917980"/>
+                        <coordinate x="2211.21459995999975944869" y="2332.50528600000006917980"/>
+                        <coordinate x="2211.21459995999975944869" y="2443.12793400000009569339"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -1572,8 +1577,8 @@
             <connect endport="P3" endcomponent="Cylinder C_1" startport="P1" startcomponent="Translational Mass_1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2374.82999999999992724042" y="2307.06999999999970896170"/>
-                        <coordinate x="2374.82649200000014388934" y="2298.06668600000057267607"/>
+                        <coordinate x="2374.82999999999992724042" y="2307.07000000000016370905"/>
+                        <coordinate x="2374.82649200000014388934" y="2298.06668600000011792872"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -1596,8 +1601,8 @@
             <connect endport="PA" endcomponent="4/3 Servo Valve with Load Sensing Port_3" startport="P1" startcomponent="Cylinder C_1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2394.82649200000014388934" y="2412.09248600000046280911"/>
-                        <coordinate x="2435.21000000000003637979" y="2412.09248600000046280911"/>
+                        <coordinate x="2394.82649200000014388934" y="2412.09248600000000806176"/>
+                        <coordinate x="2435.21000000000003637979" y="2412.09248600000000806176"/>
                         <coordinate x="2435.21000000000003637979" y="2515.94000000000005456968"/>
                     </coordinates>
                     <geometries>
@@ -1610,8 +1615,8 @@
             <connect endport="PB" endcomponent="4/3 Servo Valve with Load Sensing Port_3" startport="P2" startcomponent="Cylinder C_1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2394.82649200000014388934" y="2332.50528600000052392716"/>
-                        <coordinate x="2475.20999996000000464846" y="2332.50528600000052392716"/>
+                        <coordinate x="2394.82649200000014388934" y="2332.50528600000006917980"/>
+                        <coordinate x="2475.20999996000000464846" y="2332.50528600000006917980"/>
                         <coordinate x="2475.20999996000000464846" y="2515.94000000000005456968"/>
                     </coordinates>
                     <geometries>
@@ -1686,8 +1691,8 @@
             <connect endport="P3" endcomponent="Cylinder C_3" startport="P1" startcomponent="Translational Mass_3">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2662.38000000000010913936" y="2307.07000000000061845640"/>
-                        <coordinate x="2662.37510299999985363684" y="2298.06668600000057267607"/>
+                        <coordinate x="2662.38000000000010913936" y="2307.07000000000016370905"/>
+                        <coordinate x="2662.37510299999985363684" y="2298.06668600000011792872"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -1747,8 +1752,8 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2723.99496300000009796349" y="2443.03884599999992133235"/>
-                        <coordinate x="2723.99496300000009796349" y="2412.09248600000046280911"/>
-                        <coordinate x="2682.37510299999985363684" y="2412.09248600000046280911"/>
+                        <coordinate x="2723.99496300000009796349" y="2412.09248600000000806176"/>
+                        <coordinate x="2682.37510299999985363684" y="2412.09248600000000806176"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -1760,8 +1765,8 @@
             <connect endport="PB" endcomponent="4/3 Servo Valve with Load Sensing Port_1" startport="P2" startcomponent="Cylinder C_3">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2682.37510299999985363684" y="2332.50528600000052392716"/>
-                        <coordinate x="2763.99496296000006623217" y="2332.50528600000052392716"/>
+                        <coordinate x="2682.37510299999985363684" y="2332.50528600000006917980"/>
+                        <coordinate x="2763.99496296000006623217" y="2332.50528600000006917980"/>
                         <coordinate x="2763.99496296000006623217" y="2443.03884599999992133235"/>
                     </coordinates>
                     <geometries>
@@ -1802,8 +1807,8 @@
             <connect endport="P3" endcomponent="Cylinder C_2" startport="P1" startcomponent="Translational Mass_2">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2938.60685499999999592546" y="2307.06999999999970896170"/>
-                        <coordinate x="2938.60685499999999592546" y="2298.06668600000057267607"/>
+                        <coordinate x="2938.60685499999999592546" y="2307.07000000000016370905"/>
+                        <coordinate x="2938.60685499999999592546" y="2298.06668600000011792872"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -1826,8 +1831,8 @@
             <connect endport="PA" endcomponent="4/3 Servo Valve with Load Sensing Port_2" startport="P1" startcomponent="Cylinder C_2">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2958.60685499999999592546" y="2412.09248600000046280911"/>
-                        <coordinate x="2995.98999999999978172127" y="2412.09248600000046280911"/>
+                        <coordinate x="2958.60685499999999592546" y="2412.09248600000000806176"/>
+                        <coordinate x="2995.98999999999978172127" y="2412.09248600000000806176"/>
                         <coordinate x="2995.98999999999978172127" y="2515.84999999999990905053"/>
                     </coordinates>
                     <geometries>
@@ -1840,8 +1845,8 @@
             <connect endport="PB" endcomponent="4/3 Servo Valve with Load Sensing Port_2" startport="P2" startcomponent="Cylinder C_2">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2958.60685499999999592546" y="2332.50528600000052392716"/>
-                        <coordinate x="3035.98999995999974998995" y="2332.50528600000052392716"/>
+                        <coordinate x="2958.60685499999999592546" y="2332.50528600000006917980"/>
+                        <coordinate x="3035.98999995999974998995" y="2332.50528600000006917980"/>
                         <coordinate x="3035.98999995999974998995" y="2515.84999999999990905053"/>
                     </coordinates>
                     <geometries>
@@ -1985,8 +1990,8 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2634.16125300000021525193" y="2775.41098999999985608156"/>
-                        <coordinate x="2634.16125300000021525193" y="2830.45725918347443439416"/>
-                        <coordinate x="2434.35896584213287496823" y="2830.45725918347443439416"/>
+                        <coordinate x="2634.16125300000021525193" y="2830.45725899999979446875"/>
+                        <coordinate x="2434.35896599999978207052" y="2830.45725899999979446875"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -2052,10 +2057,10 @@
             <connect endport="P3" endcomponent="Cylinder C" startport="P1" startcomponent="Translational Mass">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2109.59000000000014551915" y="2307.06999999999970896170"/>
+                        <coordinate x="2109.59000000000014551915" y="2307.07000000000016370905"/>
                         <coordinate x="2109.59000000000014551915" y="2222.50914324254881648812"/>
                         <coordinate x="2109.59474000000000160071" y="2222.50914324254881648812"/>
-                        <coordinate x="2109.59474000000000160071" y="2298.06668600000057267607"/>
+                        <coordinate x="2109.59474000000000160071" y="2298.06668600000011792872"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>

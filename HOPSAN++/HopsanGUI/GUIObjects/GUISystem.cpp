@@ -499,6 +499,18 @@ QDomElement SystemContainer::saveGuiDataToDomElement(QDomElement &rDomElement)
 //! @param[in] rDomElement The DOM Element to save to
 void SystemContainer::saveToDomElement(QDomElement &rDomElement)
 {
+    if(this == mpParentProjectTab->getTopLevelSystem())
+    {
+        //Append model info
+        QString author, email, affiliation, description;
+        getModelInfo(author, email, affiliation, description);
+        QDomElement infoElement = appendDomElement(rDomElement, HMF_INFOTAG);
+        appendDomTextNode(infoElement, HMF_AUTHORTAG, author);
+        appendDomTextNode(infoElement, HMF_EMAILTAG, email);
+        appendDomTextNode(infoElement, HMF_AFFILIATIONTAG, affiliation);
+        appendDomTextNode(infoElement, HMF_DESCRIPTIONTAG, description);
+    }
+
     //qDebug() << "Saving to dom node in: " << this->mModelObjectAppearance.getName();
     QDomElement xmlSubsystem = appendDomElement(rDomElement, mHmfTagName);
 
@@ -564,6 +576,35 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
     else if(hmfVersion != QString(HMF_VERSIONNUM).toDouble() && hmfVersion != 0.0)
     {
         gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Model file is saved with an older version of Hopsan, but versions are compatible.");
+    }
+
+    //Load model info
+    QDomElement infoElement = rDomElement.parentNode().firstChildElement(HMF_INFOTAG);
+    if(!infoElement.isNull())
+    {
+        QString author, email, affiliation, description;
+        QDomElement authorElement = infoElement.firstChildElement(HMF_AUTHORTAG);
+        if(!authorElement.isNull())
+        {
+            author = authorElement.text();
+        }
+        QDomElement emailElement = infoElement.firstChildElement(HMF_EMAILTAG);
+        if(!emailElement.isNull())
+        {
+            email = emailElement.text();
+        }
+        QDomElement affiliationElement = infoElement.firstChildElement(HMF_AFFILIATIONTAG);
+        if(!affiliationElement.isNull())
+        {
+            affiliation = affiliationElement.text();
+        }
+        QDomElement descriptionElement = infoElement.firstChildElement(HMF_DESCRIPTIONTAG);
+        if(!descriptionElement.isNull())
+        {
+            description = descriptionElement.text();
+        }
+
+        this->setModelInfo(author, email, affiliation, description);
     }
 
     //Check if the subsystem is external or internal, and load appropriately

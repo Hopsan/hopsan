@@ -81,6 +81,14 @@ private:
     QHBoxLayout *mpCQSLayout;
     QLabel *mpCQSLabel;
     QLabel *mpCQSTypeLabel;
+    QLabel *mpAuthorLabel;
+    QLabel *mpEmailLabel;
+    QLabel *mpAffiliationLabel;
+    QLabel *mpDescriptionLabel;
+    QLineEdit *mpAuthorEdit;
+    QLineEdit *mpEmailEdit;
+    QLineEdit *mpAffiliationEdit;
+    QTextEdit *mpDescriptionEdit;
     QVBoxLayout *mpScrollLayout;
     QWidget *mpPrimaryWidget;
     QVBoxLayout *mpMainLayout;

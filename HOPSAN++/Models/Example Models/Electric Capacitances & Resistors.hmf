@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r3872" hopsancoreversion="0.5.x_r3882">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4872" hopsancoreversion="0.6.x_r4833">
     <requirements>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
-        <componentlibrary>PettersComponentLibrary</componentlibrary>
     </requirements>
-    <system typename="Subsystem" name="Electric Capacitances &amp; Resistors">
+    <info>
+        <author>Fluid &amp; Mechatronic Systems (Flumes)</author>
+        <email>robert.braun@liu.se</email>
+        <affiliation>Linköping University</affiliation>
+        <description>Example model for electric capacitors and resistors.</description>
+    </info>
+    <system logsamples="2048" typename="Subsystem" name="Electric Capacitances &amp; Resistors">
         <simulationtime stop="0.2" timestep="0.001" start="0" inherit_timestep="true"/>
-        <aliases/>
         <parameters/>
+        <aliases/>
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2500.12" y="2500.61" zoom="1.03255"/>
+            <viewport x="2499.15" y="2500.12" zoom="1.03255"/>
             <ports hidden="0"/>
             <names hidden="1"/>
+            <graphics type="user"/>
             <scriptfile path=""/>
             <hopsanobjectappearance version="0.3">
                 <modelobject typename="Subsystem" displayname="Electric Capacitances &amp; Resistors">
@@ -21,6 +27,7 @@
                         <icon path="subsystemDefault.svg" type="defaultmissing"/>
                     </icons>
                     <ports/>
+                    <animation flowspeed="100"/>
                 </modelobject>
             </hopsanobjectappearance>
             <favoritevariables/>
@@ -49,6 +56,11 @@
                 <hopsangui>
                     <pose x="2562.809637" y="2502.940372" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="ElectricResistor" displayname="ElectricResistor">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="SignalRamp" name="Ramp">
@@ -61,6 +73,11 @@
                 <hopsangui>
                     <pose x="2257.908226" y="2539.197278" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalRamp" displayname="Ramp">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="SignalSink" name="Sink">
@@ -68,34 +85,57 @@
                 <hopsangui>
                     <pose x="2812.094572" y="2417.756574" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSink" displayname="Sink">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="ElectricCapacitance2" name="ElectricCapacitance2">
                 <parameters>
                     <parameter value="0" type="double" name="Pel1::Voltage"/>
                     <parameter value="0" type="double" name="Pel1::Current"/>
+                    <parameter value="0" type="double" name="Pel1::WaveVariable"/>
+                    <parameter value="0" type="double" name="Pel1::CharImp"/>
                     <parameter value="0" type="double" name="Pel2::Voltage"/>
                     <parameter value="0" type="double" name="Pel2::Current"/>
+                    <parameter value="0" type="double" name="Pel2::WaveVariable"/>
+                    <parameter value="0" type="double" name="Pel2::CharImp"/>
                     <parameter value="0.001" type="double" name="Cc"/>
                     <parameter value="0.1" type="double" name="alpha"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2475.184097" y="2524.203272" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="ElectricCapacitance2" displayname="ElectricCapacitance2">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="ElectricCapacitance2" name="ElectricCapacitance2_1">
                 <parameters>
                     <parameter value="0" type="double" name="Pel1::Voltage"/>
                     <parameter value="0" type="double" name="Pel1::Current"/>
+                    <parameter value="0" type="double" name="Pel1::WaveVariable"/>
+                    <parameter value="0" type="double" name="Pel1::CharImp"/>
                     <parameter value="0" type="double" name="Pel2::Voltage"/>
                     <parameter value="0" type="double" name="Pel2::Current"/>
+                    <parameter value="0" type="double" name="Pel2::WaveVariable"/>
+                    <parameter value="0" type="double" name="Pel2::CharImp"/>
                     <parameter value="0.001" type="double" name="Cc"/>
                     <parameter value="0.1" type="double" name="alpha"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2638.224491" y="2524.203272" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="ElectricCapacitance2" displayname="ElectricCapacitance2_1">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="ElectricResistor" name="ElectricResistor_1">
@@ -105,27 +145,46 @@
                 <hopsangui>
                     <pose x="2391.287841" y="2502.940372" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="ElectricResistor" displayname="ElectricResistor_1">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="ElectricUsource" name="ElectricUsource">
                 <parameters>
                     <parameter value="0" type="double" name="Pel1::Voltage"/>
                     <parameter value="0" type="double" name="Pel1::Current"/>
+                    <parameter value="0" type="double" name="Pel1::WaveVariable"/>
+                    <parameter value="0" type="double" name="Pel1::CharImp"/>
                     <parameter value="12" type="double" name="uin"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2314.561629" y="2538.95167" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="ElectricUsource" displayname="ElectricUsource">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="ElectricGround" name="ElectricGround">
                 <parameters>
                     <parameter value="0" type="double" name="Pel1::Voltage"/>
                     <parameter value="0" type="double" name="Pel1::Current"/>
+                    <parameter value="0" type="double" name="Pel1::WaveVariable"/>
+                    <parameter value="0" type="double" name="Pel1::CharImp"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2770.694919" y="2539.346778" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="ElectricGround" displayname="ElectricGround">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="ElectricResistor" name="ElectricResistor_2">
@@ -135,6 +194,11 @@
                 <hopsangui>
                     <pose x="2723.104984" y="2502.940372" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="ElectricResistor" displayname="ElectricResistor_2">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="ElectricUsensor" name="Voltage sensor_1">
@@ -144,6 +208,11 @@
                 <hopsangui>
                     <pose x="2679" y="2459" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="ElectricUsensor" displayname="Voltage sensor_1">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="ElectricUsensor" name="Voltage sensor">
@@ -153,11 +222,16 @@
                 <hopsangui>
                     <pose x="2538.220667" y="2458.031524" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="ElectricUsensor" displayname="Voltage sensor">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2345.063048" y="2358.229432"/>
+                    <pose x="2345.000000" y="2358.000000"/>
                     <textobject fontcolor="#005500" text="Example: Capacitances &amp; Resistors" font="Calibri,20,-1,5,50,0,0,0,0,0"/>
                     <size width="388.000000" height="41.000000"/>
                     <line width="2.000000" visible="0" style="solidline"/>
@@ -260,9 +334,9 @@
             <connect endport="in" endcomponent="Sink" startport="Puout" startcomponent="Voltage sensor">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2538.22066728003574098693" y="2440.03152389714750825078"/>
-                        <coordinate x="2538.22066728003574098693" y="2417.75657353154838347109"/>
-                        <coordinate x="2792.09457169144388899440" y="2417.75657353154838347109"/>
+                        <coordinate x="2538.22066700000004857429" y="2440.03152399999999033753"/>
+                        <coordinate x="2538.22066700000004857429" y="2417.75657400000000052387"/>
+                        <coordinate x="2792.09457199999997101258" y="2417.75657400000000052387"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -275,8 +349,8 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2679.00000000000000000000" y="2441.00000000000000000000"/>
-                        <coordinate x="2679.00000000000000000000" y="2417.75657353154838347109"/>
-                        <coordinate x="2792.09457169144388899440" y="2417.75657353154838347109"/>
+                        <coordinate x="2679.00000000000000000000" y="2417.75657400000000052387"/>
+                        <coordinate x="2792.09457199999997101258" y="2417.75657400000000052387"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -302,8 +376,8 @@
             <connect endport="Pel1" endcomponent="ElectricResistor" startport="Pel1" startcomponent="Voltage sensor">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2538.22066728003574098693" y="2476.03152389714750825078"/>
-                        <coordinate x="2538.22066728003574098693" y="2502.54224976998648344306"/>
+                        <coordinate x="2538.22066700000004857429" y="2476.03152399999999033753"/>
+                        <coordinate x="2538.22066700000004857429" y="2502.54224976998648344306"/>
                         <coordinate x="2535.30963699999983873568" y="2502.54224976998648344306"/>
                         <coordinate x="2535.30963699999983873568" y="2502.94037200000002485467"/>
                         <coordinate x="2536.80963699999983873568" y="2502.94037200000002485467"/>
@@ -322,8 +396,8 @@
                     <coordinates>
                         <coordinate x="2270.40822600000001330045" y="2539.19727800000009665382"/>
                         <coordinate x="2288.50903103965902118944" y="2539.19727800000009665382"/>
-                        <coordinate x="2288.50903103965902118944" y="2417.75657353154838347109"/>
-                        <coordinate x="2792.09457169144388899440" y="2417.75657353154838347109"/>
+                        <coordinate x="2288.50903103965902118944" y="2417.75657400000000052387"/>
+                        <coordinate x="2792.09457199999997101258" y="2417.75657400000000052387"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>

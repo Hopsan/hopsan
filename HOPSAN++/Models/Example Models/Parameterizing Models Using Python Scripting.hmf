@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4277" hopsancoreversion="0.6.x_r4269">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4872" hopsancoreversion="0.6.x_r4833">
     <requirements>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
     </requirements>
+    <info>
+        <author>Fluid &amp; Mechatronic Systems (Flumes)</author>
+        <email>robert.braun@liu.se</email>
+        <affiliation>Linköping University</affiliation>
+        <description>Models can easily be parameterized by using Python scripting code. This example model demonstrates this. Running the embedded script file will enable a function called "generateConstantPressureServo(n)". This function will create a constant pressure position servo with n actuators. 
+
+1. Go to Python console
+2. Load "parameterizingExample.py"
+3. Run generateConstantPressureServo(n)</description>
+    </info>
     <system logsamples="2048" typename="Subsystem" name="Parameterizing Models Using Python Scripting">
         <simulationtime stop="10" timestep="0.001" start="0" inherit_timestep="true"/>
-        <aliases/>
         <parameters/>
+        <aliases/>
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2500.5" y="2500" zoom="1"/>
+            <viewport x="2500.5" y="2499.5" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="1"/>
+            <graphics type="user"/>
             <scriptfile path=""/>
             <hopsanobjectappearance version="0.3">
                 <modelobject typename="Subsystem" displayname="Parameterizing Models Using Python Scripting">
@@ -20,6 +31,7 @@
                         <icon path="subsystemDefault.svg" type="defaultmissing"/>
                     </icons>
                     <ports/>
+                    <animation flowspeed="100"/>
                 </modelobject>
             </hopsanobjectappearance>
             <favoritevariables/>
@@ -41,15 +53,65 @@
             </optimization>
         </hopsangui>
         <objects>
+            <component typename="HydraulicCylinderC" name="Piston0">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="0" type="double" name="P1::Pressure"/>
+                    <parameter value="0" type="double" name="P1::Temperature"/>
+                    <parameter value="0" type="double" name="P1::WaveVariable"/>
+                    <parameter value="0" type="double" name="P1::CharImp"/>
+                    <parameter value="0" type="double" name="P1::HeatFlow"/>
+                    <parameter value="0" type="double" name="P2::Flow"/>
+                    <parameter value="0" type="double" name="P2::Pressure"/>
+                    <parameter value="0" type="double" name="P2::Temperature"/>
+                    <parameter value="0" type="double" name="P2::WaveVariable"/>
+                    <parameter value="0" type="double" name="P2::CharImp"/>
+                    <parameter value="0" type="double" name="P2::HeatFlow"/>
+                    <parameter value="0" type="double" name="P3::Velocity"/>
+                    <parameter value="0" type="double" name="P3::Force"/>
+                    <parameter value="0" type="double" name="P3::Position"/>
+                    <parameter value="0" type="double" name="P3::WaveVariable"/>
+                    <parameter value="0" type="double" name="P3::CharImp"/>
+                    <parameter value="0" type="double" name="P3::EquivalentMass"/>
+                    <parameter value="0.001" type="double" name="A_1"/>
+                    <parameter value="0.001" type="double" name="A_2"/>
+                    <parameter value="1" type="double" name="s_l"/>
+                    <parameter value="0.0003" type="double" name="V_1"/>
+                    <parameter value="0.0003" type="double" name="V_2"/>
+                    <parameter value="1000" type="double" name="B_p"/>
+                    <parameter value="1e+009" type="double" name="Beta_e"/>
+                    <parameter value="1e-011" type="double" name="c_leak"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2380" y="2330" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="HydraulicCylinderC" displayname="Piston0">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
             <component typename="HydraulicCylinderC" name="Piston1">
                 <parameters>
                     <parameter value="0" type="double" name="P1::Flow"/>
                     <parameter value="0" type="double" name="P1::Pressure"/>
+                    <parameter value="0" type="double" name="P1::Temperature"/>
+                    <parameter value="0" type="double" name="P1::WaveVariable"/>
+                    <parameter value="0" type="double" name="P1::CharImp"/>
+                    <parameter value="0" type="double" name="P1::HeatFlow"/>
                     <parameter value="0" type="double" name="P2::Flow"/>
                     <parameter value="0" type="double" name="P2::Pressure"/>
+                    <parameter value="0" type="double" name="P2::Temperature"/>
+                    <parameter value="0" type="double" name="P2::WaveVariable"/>
+                    <parameter value="0" type="double" name="P2::CharImp"/>
+                    <parameter value="0" type="double" name="P2::HeatFlow"/>
                     <parameter value="0" type="double" name="P3::Velocity"/>
                     <parameter value="0" type="double" name="P3::Force"/>
                     <parameter value="0" type="double" name="P3::Position"/>
+                    <parameter value="0" type="double" name="P3::WaveVariable"/>
+                    <parameter value="0" type="double" name="P3::CharImp"/>
+                    <parameter value="0" type="double" name="P3::EquivalentMass"/>
                     <parameter value="0.001" type="double" name="A_1"/>
                     <parameter value="0.001" type="double" name="A_2"/>
                     <parameter value="1" type="double" name="s_l"/>
@@ -62,29 +124,11 @@
                 <hopsangui>
                     <pose x="2680" y="2330" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
-                </hopsangui>
-            </component>
-            <component typename="HydraulicVolumeMultiPort" name="Volume">
-                <parameters>
-                    <parameter value="0" type="double" name="P1::Flow"/>
-                    <parameter value="0" type="double" name="P1::Pressure"/>
-                    <parameter value="0.001" type="double" name="V"/>
-                    <parameter value="1e+009" type="double" name="Beta_e"/>
-                    <parameter value="0.1" type="double" name="alpha"/>
-                </parameters>
-                <hopsangui>
-                    <pose x="2570" y="2500" flipped="false" a="0"/>
-                    <nametext position="0" visible="0"/>
-                </hopsangui>
-            </component>
-            <component typename="HydraulicTankC" name="Tank 1">
-                <parameters>
-                    <parameter value="0" type="double" name="P1::Flow"/>
-                    <parameter value="100000" type="double" name="p"/>
-                </parameters>
-                <hopsangui>
-                    <pose x="2570" y="2700" flipped="false" a="0"/>
-                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="HydraulicCylinderC" displayname="Piston1">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="Hydraulic43Valve" name="Valve0">
@@ -108,6 +152,11 @@
                 <hopsangui>
                     <pose x="2350" y="2400" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="Hydraulic43Valve" displayname="Valve0">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="Hydraulic43Valve" name="Valve1">
@@ -131,78 +180,74 @@
                 <hopsangui>
                     <pose x="2650" y="2400" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
-                </hopsangui>
-            </component>
-            <component typename="MechanicTranslationalMass" name="Mass0">
-                <parameters>
-                    <parameter value="100" type="double" name="m"/>
-                    <parameter value="10" type="double" name="B"/>
-                    <parameter value="0" type="double" name="k"/>
-                    <parameter value="0" type="double" name="x_min"/>
-                    <parameter value="1" type="double" name="x_max"/>
-                </parameters>
-                <hopsangui>
-                    <pose x="2500" y="2330" flipped="false" a="0"/>
-                    <nametext position="0" visible="0"/>
-                </hopsangui>
-            </component>
-            <component typename="MechanicTranslationalMass" name="Mass1">
-                <parameters>
-                    <parameter value="100" type="double" name="m"/>
-                    <parameter value="10" type="double" name="B"/>
-                    <parameter value="0" type="double" name="k"/>
-                    <parameter value="0" type="double" name="x_min"/>
-                    <parameter value="1" type="double" name="x_max"/>
-                </parameters>
-                <hopsangui>
-                    <pose x="2800" y="2330" flipped="false" a="0"/>
-                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="Hydraulic43Valve" displayname="Valve1">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="HydraulicTankC" name="Tank0">
                 <parameters>
                     <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="0" type="double" name="P1::Temperature"/>
+                    <parameter value="0" type="double" name="P1::WaveVariable"/>
+                    <parameter value="0" type="double" name="P1::CharImp"/>
+                    <parameter value="0" type="double" name="P1::HeatFlow"/>
                     <parameter value="100000" type="double" name="p"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2380" y="2450" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="HydraulicTankC" displayname="Tank0">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="HydraulicTankC" name="Tank1">
                 <parameters>
                     <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="0" type="double" name="P1::Temperature"/>
+                    <parameter value="0" type="double" name="P1::WaveVariable"/>
+                    <parameter value="0" type="double" name="P1::CharImp"/>
+                    <parameter value="0" type="double" name="P1::HeatFlow"/>
                     <parameter value="100000" type="double" name="p"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2680" y="2450" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="HydraulicTankC" displayname="Tank1">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
-            <component typename="MechanicForceTransformer" name="Force0">
+            <component typename="HydraulicPressureSourceC" name="Pressure Source">
                 <parameters>
-                    <parameter value="0" type="double" name="P1::Velocity"/>
-                    <parameter value="0" type="double" name="P1::Position"/>
-                    <parameter value="0" type="double" name="F"/>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="0" type="double" name="P1::Temperature"/>
+                    <parameter value="0" type="double" name="P1::WaveVariable"/>
+                    <parameter value="0" type="double" name="P1::CharImp"/>
+                    <parameter value="0" type="double" name="P1::HeatFlow"/>
+                    <parameter value="100000" type="double" name="p"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2570" y="2330" flipped="false" a="180"/>
+                    <pose x="2490" y="2700" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
-                </hopsangui>
-            </component>
-            <component typename="MechanicForceTransformer" name="Force1">
-                <parameters>
-                    <parameter value="0" type="double" name="P1::Velocity"/>
-                    <parameter value="0" type="double" name="P1::Position"/>
-                    <parameter value="0" type="double" name="F"/>
-                </parameters>
-                <hopsangui>
-                    <pose x="2870" y="2330" flipped="false" a="180"/>
-                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="HydraulicPressureSourceC" displayname="Pressure Source">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="HydraulicPressureControlledPump" name="Pump">
                 <parameters>
+                    <parameter value="0" type="double" name="eps::Value"/>
+                    <parameter value="0" type="double" name="a::Value"/>
                     <parameter value="1e+006" type="double" name="p_dif"/>
                     <parameter value="125" type="double" name="omega_p"/>
                     <parameter value="0.00125" type="double" name="q_max"/>
@@ -218,52 +263,139 @@
                 <hopsangui>
                     <pose x="2555" y="2600" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="HydraulicPressureControlledPump" displayname="Pump">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
-            <component typename="HydraulicPressureSourceC" name="Pressure Source">
+            <component typename="MechanicForceTransformer" name="Force0">
                 <parameters>
-                    <parameter value="0" type="double" name="P1::Flow"/>
-                    <parameter value="100000" type="double" name="p"/>
+                    <parameter value="0" type="double" name="P1::Velocity"/>
+                    <parameter value="0" type="double" name="P1::Position"/>
+                    <parameter value="0" type="double" name="P1::WaveVariable"/>
+                    <parameter value="0" type="double" name="P1::CharImp"/>
+                    <parameter value="0" type="double" name="P1::EquivalentMass"/>
+                    <parameter value="0" type="double" name="F"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2490" y="2700" flipped="false" a="0"/>
+                    <pose x="2570" y="2330" flipped="false" a="180"/>
                     <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicForceTransformer" displayname="Force0">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
-            <component typename="HydraulicCylinderC" name="Piston0">
+            <component typename="MechanicForceTransformer" name="Force1">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Velocity"/>
+                    <parameter value="0" type="double" name="P1::Position"/>
+                    <parameter value="0" type="double" name="P1::WaveVariable"/>
+                    <parameter value="0" type="double" name="P1::CharImp"/>
+                    <parameter value="0" type="double" name="P1::EquivalentMass"/>
+                    <parameter value="0" type="double" name="F"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2870" y="2330" flipped="false" a="180"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicForceTransformer" displayname="Force1">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicVolumeMultiPort" name="Volume">
                 <parameters>
                     <parameter value="0" type="double" name="P1::Flow"/>
                     <parameter value="0" type="double" name="P1::Pressure"/>
-                    <parameter value="0" type="double" name="P2::Flow"/>
-                    <parameter value="0" type="double" name="P2::Pressure"/>
-                    <parameter value="0" type="double" name="P3::Velocity"/>
-                    <parameter value="0" type="double" name="P3::Force"/>
-                    <parameter value="0" type="double" name="P3::Position"/>
-                    <parameter value="0.001" type="double" name="A_1"/>
-                    <parameter value="0.001" type="double" name="A_2"/>
-                    <parameter value="1" type="double" name="s_l"/>
-                    <parameter value="0.0003" type="double" name="V_1"/>
-                    <parameter value="0.0003" type="double" name="V_2"/>
-                    <parameter value="1000" type="double" name="B_p"/>
+                    <parameter value="0" type="double" name="P1::Temperature"/>
+                    <parameter value="0" type="double" name="P1::WaveVariable"/>
+                    <parameter value="0" type="double" name="P1::CharImp"/>
+                    <parameter value="0" type="double" name="P1::HeatFlow"/>
+                    <parameter value="0.001" type="double" name="V"/>
                     <parameter value="1e+009" type="double" name="Beta_e"/>
-                    <parameter value="1e-011" type="double" name="c_leak"/>
+                    <parameter value="0.1" type="double" name="alpha"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2380" y="2330" flipped="false" a="0"/>
+                    <pose x="2570" y="2500" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="HydraulicVolumeMultiPort" displayname="Volume">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicTankC" name="Tank 1">
+                <parameters>
+                    <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="0" type="double" name="P1::Temperature"/>
+                    <parameter value="0" type="double" name="P1::WaveVariable"/>
+                    <parameter value="0" type="double" name="P1::CharImp"/>
+                    <parameter value="0" type="double" name="P1::HeatFlow"/>
+                    <parameter value="100000" type="double" name="p"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2570" y="2700" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="HydraulicTankC" displayname="Tank 1">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalMass" name="Mass0">
+                <parameters>
+                    <parameter value="100" type="double" name="m"/>
+                    <parameter value="10" type="double" name="B"/>
+                    <parameter value="0" type="double" name="k"/>
+                    <parameter value="0" type="double" name="x_min"/>
+                    <parameter value="1" type="double" name="x_max"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2500" y="2330" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicTranslationalMass" displayname="Mass0">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="MechanicTranslationalMass" name="Mass1">
+                <parameters>
+                    <parameter value="100" type="double" name="m"/>
+                    <parameter value="10" type="double" name="B"/>
+                    <parameter value="0" type="double" name="k"/>
+                    <parameter value="0" type="double" name="x_min"/>
+                    <parameter value="1" type="double" name="x_max"/>
+                </parameters>
+                <hopsangui>
+                    <pose x="2800" y="2330" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicTranslationalMass" displayname="Mass1">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2087.761600" y="2536.369700"/>
+                    <pose x="2088.000000" y="2536.000000"/>
                     <textobject fontcolor="#005500" text="Models can easily be parameterized by using Python&#xa;scripting code. This example model demonstrates&#xa;this. Running the embedded script file will enable a&#xa;function called &quot;generateConstantPressureServo(n)&quot;.&#xa;this function will create a constant pressure position&#xa;servo with n actuators.&#xa;&#xa;1. Go to Python console&#xa;2. Load &quot;parameterizingExample.py&quot;&#xa;3. Run generateConstantPressureServo(n)" font="Calibri,12,-1,5,50,0,0,0,0,0"/>
-                    <size width="356.000000" height="198.000000"/>
+                    <size width="356.000000" height="208.000000"/>
                     <line width="2.000000" visible="1" style="solidline"/>
                 </hopsangui>
             </textboxwidget>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2206.101600" y="2254.339700"/>
+                    <pose x="2206.000000" y="2254.000000"/>
                     <textobject fontcolor="#005500" text="Example: Parameterizing Models Using Python Scripting" font="Calibri,20,-1,5,50,0,0,0,0,0"/>
                     <size width="620.000000" height="41.000000"/>
                     <line width="2.000000" visible="0" style="solidline"/>
@@ -275,7 +407,7 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2570.00000000000000000000" y="2685.50000000000000000000"/>
-                        <coordinate x="2570.07191848999991634628" y="2661.50000000000000000000"/>
+                        <coordinate x="2570.57135239999979603454" y="2661.50000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
@@ -286,7 +418,7 @@
             <connect endport="P1" endcomponent="Volume" startport="P2" startcomponent="Pump">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2570.07191848999991634628" y="2538.50000000000000000000"/>
+                        <coordinate x="2570.57135239999979603454" y="2538.50000000000000000000"/>
                         <coordinate x="2570.00000000000000000000" y="2500.00000000000000000000"/>
                     </coordinates>
                     <geometries>
@@ -299,7 +431,7 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2490.00000000000000000000" y="2688.00000000000000000000"/>
-                        <coordinate x="2489.98849999999993087840" y="2661.50000000000000000000"/>
+                        <coordinate x="2490.23839654999983395101" y="2661.50000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>

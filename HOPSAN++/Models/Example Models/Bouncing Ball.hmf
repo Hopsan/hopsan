@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4665" hopsancoreversion="0.6.x_r4672">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4872" hopsancoreversion="0.6.x_r4833">
     <requirements>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
     </requirements>
+    <info>
+        <author>Fluid &amp; Mechatronic Systems (Flumes)</author>
+        <email>robert.braun@liu.se</email>
+        <affiliation>Linköping University</affiliation>
+        <description>This example model shows the a ball bouncing on the ground. The ball is modeled as a force acting on a mass and a spring, where the force represents the gravity, the mass the inertia and the spring the elasticity. Notice that the stiffness of the spring is irrelevant for the dynamic behvaiour of the system, as long as it is large enough to avoid numerical problems. Time step must be small in order for the short contact phase to be numerically correct.</description>
+    </info>
     <system logsamples="2048" typename="Subsystem" name="Bouncing Ball">
         <simulationtime stop="20" timestep="0.0001" start="0" inherit_timestep="true"/>
-        <aliases/>
         <parameters/>
+        <aliases/>
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2499.94" y="2499.09" zoom="1.18743"/>
+            <viewport x="2499.94" y="2498.25" zoom="1.18743"/>
             <ports hidden="1"/>
             <names hidden="1"/>
+            <graphics type="user"/>
             <scriptfile path=""/>
             <hopsanobjectappearance version="0.3">
                 <modelobject typename="Subsystem" displayname="Bouncing Ball">
@@ -20,6 +27,7 @@
                         <icon path="subsystemDefault.svg" type="defaultmissing"/>
                     </icons>
                     <ports/>
+                    <animation flowspeed="100"/>
                 </modelobject>
             </hopsanobjectappearance>
             <favoritevariables/>

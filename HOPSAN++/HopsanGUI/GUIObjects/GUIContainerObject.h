@@ -132,6 +132,10 @@ public:
     virtual size_t getNumberOfLogSamples();
     virtual void setNumberOfLogSamples(size_t nSamples);
 
+    //Model info
+    void setModelInfo(const QString &author, const QString &email, const QString &affiliation, const QString &description);
+    void getModelInfo(QString &author, QString &email, QString &affiliation, QString &description) const;
+
     //Model and script file methods
     void setModelFile(QString path);
     QFileInfo getModelFileInfo();
@@ -333,6 +337,12 @@ protected:
     bool mLossesVisible;
     QDialog *mpLossesDialog;
     QSlider *mpMinLossesSlider;
+
+    //Model information
+    QString mAuthor;
+    QString mEmail;
+    QString mAffiliation;
+    QString mDescription;
 };
 
 #endif // GUICONTAINEROBJECT_H

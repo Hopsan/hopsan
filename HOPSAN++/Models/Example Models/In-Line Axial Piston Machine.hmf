@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4807" hopsancoreversion="0.6.x_r4807">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4872" hopsancoreversion="0.6.x_r4833">
     <requirements>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
-        <componentlibrary>HopsanExampleComponentLibrary</componentlibrary>
-        <componentlibrary>HopsanExampleComponentLibrary</componentlibrary>
     </requirements>
+    <info>
+        <author>Fluid &amp; Mechatronic Systems (Flumes)</author>
+        <email>robert.braun@liu.se</email>
+        <affiliation>Linköping University</affiliation>
+        <description>This example model demonstrates a distributed model of an in-line axial piston machine. As the swash-plate rotates, the pistons will move back and forth. At the same time the swash plate alternate between opening to the low and high pressure sides. Efficiencies are calculated in sub-systems.
+This model also works well with the animation feature.</description>
+    </info>
     <system logsamples="10000" typename="Subsystem" name="In-Line Axial Piston Machine">
         <simulationtime stop="0.0395" timestep="1e-05" start="-2" inherit_timestep="true"/>
         <parameters>
@@ -31,9 +36,10 @@
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2497.77" y="2498.37" zoom="0.84215"/>
+            <viewport x="2496.59" y="2497.77" zoom="0.84215"/>
             <ports hidden="1"/>
             <names hidden="1"/>
+            <graphics type="user"/>
             <scriptfile path=""/>
             <hopsanobjectappearance version="0.3">
                 <modelobject typename="Subsystem" displayname="In-Line Axial Piston Machine">
@@ -495,7 +501,7 @@
                     <parameter value="piston_radius" type="double" name="r_p"/>
                     <parameter value="swivel_offset" type="double" name="theta_offset"/>
                     <parameter value="0" type="double" name="torque::Value"/>
-                    <parameter value="0" type="double" name="speed::Value"/>
+                    <parameter value="0" type="double" name="movement::Value"/>
                 </parameters>
                 <hopsangui>
                     <pose x="2331.152128" y="2623.019234" flipped="false" a="270"/>
@@ -519,9 +525,10 @@
                 <hopsangui>
                     <pose x="2349.217863" y="2297.386885" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
-                    <viewport x="2497.77" y="2498.37" zoom="0.84215"/>
+                    <viewport x="2496.59" y="2497.77" zoom="0.84215"/>
                     <ports hidden="1"/>
                     <names hidden="1"/>
+                    <graphics type="user"/>
                     <scriptfile path=""/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="Subsystem" displayname="Calculation of displacement">
@@ -840,9 +847,10 @@
                 <hopsangui>
                     <pose x="2576.656885" y="2257.814104" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
-                    <viewport x="2497.77" y="2498.37" zoom="0.84215"/>
+                    <viewport x="2496.59" y="2497.77" zoom="0.84215"/>
                     <ports hidden="1"/>
                     <names hidden="1"/>
+                    <graphics type="user"/>
                     <scriptfile path=""/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="Subsystem" displayname="Calculation of effective torque">
@@ -1160,9 +1168,10 @@
                 <hopsangui>
                     <pose x="2816.11903" y="2326.497516" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
-                    <viewport x="2497.77" y="2498.37" zoom="0.84215"/>
+                    <viewport x="2496.59" y="2497.77" zoom="0.84215"/>
                     <ports hidden="1"/>
                     <names hidden="1"/>
+                    <graphics type="user"/>
                     <scriptfile path=""/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="Subsystem" displayname="Calculation of efficiencies">
@@ -6629,9 +6638,10 @@
                 <hopsangui>
                     <pose x="2579.657028" y="2345.728933" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
-                    <viewport x="2497.77" y="2498.37" zoom="0.84215"/>
+                    <viewport x="2496.59" y="2497.77" zoom="0.84215"/>
                     <ports hidden="1"/>
                     <names hidden="1"/>
+                    <graphics type="user"/>
                     <scriptfile path=""/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="Subsystem" displayname="Calculation of ideal flow">
@@ -7787,7 +7797,7 @@
             </textboxwidget>
             <textboxwidget>
                 <hopsangui>
-                    <pose x="2354.749748" y="2136.000000"/>
+                    <pose x="2355.000000" y="2136.000000"/>
                     <textobject fontcolor="#005500" text="Example: In-Line Axial Piston Machine" font="Calibri,20,-1,5,50,0,0,0,0,0"/>
                     <size width="424.078125" height="41.000000"/>
                     <line width="2.000000" visible="0" style="solidline"/>
@@ -8615,20 +8625,6 @@
                         <coordinate x="2598.57683399999996254337" y="2669.48910599999999249121"/>
                         <coordinate x="2598.57683399999996254337" y="2775.04007600000022648601"/>
                         <coordinate x="2661.23255900000003748573" y="2775.04007600000022648601"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="out" endcomponent="Gain_4" startport="speed" startcomponent="ValvePlate">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2598.57683399999996254337" y="2569.48910599999999249121"/>
-                        <coordinate x="2598.57683399999996254337" y="2509.81476400000019566505"/>
-                        <coordinate x="2410.81602900000007139170" y="2509.81476400000019566505"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
