@@ -2507,7 +2507,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
     BarrierLock *pBarrierLock_Q = new BarrierLock(nThreads);
     BarrierLock *pBarrierLock_N = new BarrierLock(nThreads);
 
-    simTasks->run(taskSimMaster(mSplitSignalVector[0], mSplitCVector[0], mSplitQVector[0],             //Create master thread
+    simTasks->run(taskSimMaster(this, mSplitSignalVector[0], mSplitCVector[0], mSplitQVector[0],             //Create master thread
                                 mSplitNodeVector[0], mvTimePtrs, mTime, mTimestep, stopTsafe, nThreads, 0,
                                 pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
 

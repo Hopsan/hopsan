@@ -378,11 +378,11 @@ public:
     //! @param *pBarrier_C Pointer to barrier before C-type components
     //! @param *pBarrier_Q Pointer to barrier before Q-type components
     //! @param *pBarrier_N Pointer to barrier before node logging
-    taskSimMaster(vector<Component*> sVector, vector<Component*> cVector, vector<Component*> qVector, vector<Node*> nVector, vector<double *> pSimTimes,
+    taskSimMaster(ComponentSystem *pSystem, vector<Component*> sVector, vector<Component*> cVector, vector<Component*> qVector, vector<Node*> nVector, vector<double *> pSimTimes,
                   double startTime, double timeStep, double stopTime, size_t nThreads, size_t threadID,
                   BarrierLock *pBarrier_S, BarrierLock *pBarrier_C, BarrierLock *pBarrier_Q, BarrierLock *pBarrier_N)
     {
-        mpSystem = nVector[0]->getOwnerSystem();
+        mpSystem = pSystem;
         mVectorS = sVector;
         mVectorC = cVector;
         mVectorQ = qVector;
