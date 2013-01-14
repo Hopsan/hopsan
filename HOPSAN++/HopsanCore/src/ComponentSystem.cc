@@ -633,11 +633,14 @@ bool ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVec
     if(newComponentVector.size() == rComponentVector.size())   //All components moved to new vector = success!
     {
         rComponentVector = newComponentVector;
-//        stringstream ss;
-//        std::vector<Component*>::iterator it;
-//        for(it=newComponentVector.begin(); it!=newComponentVector.end(); ++it)
-//            ss << (*it)->getName() << "\n";                                                                                               //DEBUG
-//        addDebugMessage("Sorted signal components:\n" + ss.str());
+        if(newComponentVector.size() > 0 && newComponentVector[0]->getTypeCQS() == S)
+        {
+            stringstream ss;
+            std::vector<Component*>::iterator it;
+            for(it=newComponentVector.begin(); it!=newComponentVector.end(); ++it)
+                ss << (*it)->getName() << "\n";                                                                                               //DEBUG
+            addDebugMessage("Sorted components successfully!\nSignal components will be simulated in the following order:\n" + ss.str());
+        }
     }
     else    //Something went wrong, all components were not moved. This is likely due to an algebraic loop.
     {

@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject typename="SignalUnitDelay" displayname="Unit Delay">
         <icons>
-            <icon scale="1" path="delay.svg" iconrotation="OFF" type="user"/>
+            <icon scale="1" path="unitdelay.svg" iconrotation="OFF" type="user"/>
         </icons>
         <ports>
             <port x="0" y="0.5" a="180" name="in"/>
