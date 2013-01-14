@@ -41,6 +41,7 @@ DirExists=The folder:%n%n%1%n%nalready exists. All previous contents will be rem
 
 [CustomMessages]
 ProjectHomepage=Project &Homepage
+UserGuide=User &Guide
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
@@ -77,6 +78,7 @@ Source: "C:\temp_release\scripts\*";              DestDir: "{userdocs}\Hopsan\Sc
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\bin\{#MyAppExeName}"
+Name: "{group}\{cm:UserGuide,{#MyAppName}}"; Filename: "{app}\doc\user\html\index.html"
 Name: "{group}\{cm:ProjectHomepage,{#MyAppName}}"; Filename: "{#MyAppURL}"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\bin\{#MyAppExeName}"; Tasks: desktopicon
