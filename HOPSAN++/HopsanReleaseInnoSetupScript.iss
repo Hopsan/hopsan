@@ -86,6 +86,7 @@ Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Fil
 
 [Run]
 Filename: "{app}\bin\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: nowait postinstall
+Filename: "{app}\Hopsan-release-notes.txt"; Description: "View release notes"; Flags: nowait postinstall shellexec
 
 [Registry]
 Root: HKCR; Subkey: ".hmf"; ValueType: string; ValueName: ""; ValueData: "HopsanModelFile"; Flags: uninsdeletevalue; Tasks: associatehmf

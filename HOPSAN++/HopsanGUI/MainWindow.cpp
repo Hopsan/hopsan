@@ -624,6 +624,10 @@ void MainWindow::createActions()
     mpHelpAction->setText("User Guide");
     connect(mpHelpAction, SIGNAL(triggered()), mpHelpDialog, SLOT(open()));
 
+    mpReleaseNotesAction = new QAction(this);
+    mpReleaseNotesAction->setText("Release Notes");
+    connect(mpReleaseNotesAction, SIGNAL(triggered()), this, SLOT(showReleaseNotes()));
+
     mpNewVersionsAction = new QAction(this);
     mpNewVersionsAction->setText("Check For New Versions");
     connect(mpNewVersionsAction, SIGNAL(triggered()), this, SLOT(openArchiveURL()));
@@ -785,6 +789,7 @@ void MainWindow::createMenus()
     mpToolsMenu->addAction(mpOpenSystemParametersAction);
 
     mpHelpMenu->addAction(mpHelpAction);
+    mpHelpMenu->addAction(mpReleaseNotesAction);
     mpHelpMenu->addMenu(mpExamplesMenu);
     mpHelpMenu->addAction(mpIssueTrackerAction);
     mpHelpMenu->addAction(mpWebsiteAction);
@@ -1176,6 +1181,12 @@ void MainWindow::commenceAutoUpdate(QNetworkReply* reply)
     pProcess->start(QString(DATAPATH)+"/update.exe", QStringList() << "/silent" << "/dir=\""+dir+"\"");
     pProcess->waitForStarted();
     this->close();
+}
+
+
+void MainWindow::showReleaseNotes()
+{
+    QDesktopServices::openUrl(QUrl(gExecPath+"../Hopsan-release-notes.txt"));
 }
 
 

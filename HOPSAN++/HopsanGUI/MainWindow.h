@@ -144,6 +144,7 @@ public:
     QAction *mpIssueTrackerAction;
     QAction *mpAboutAction;
     QAction *mpHelpAction;
+    QAction *mpReleaseNotesAction;
     QAction *mpWebsiteAction;
     QAction *mpNewVersionsAction;
     QAction *mpSaveToWrappedCodeAction;
@@ -187,6 +188,7 @@ private slots:
     void openExampleModel();
     void updateDownloadProgressBar(qint64 bytesReceived, qint64 bytesTotal);
     void commenceAutoUpdate(QNetworkReply* reply);
+    void showReleaseNotes();
 
 private:
     void createActions();
