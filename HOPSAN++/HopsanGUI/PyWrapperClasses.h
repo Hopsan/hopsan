@@ -89,7 +89,7 @@ public slots:
     QString multVariablesWithScalar(LogDataHandler* o, const QString &VarName, const int &ScaName);
     QString divVariablesWithScalar(LogDataHandler* o, const QString &VarName, const int &ScaName);
     QVector<double> data(LogDataHandler* o, const QString fullName);
-    //LogVariableData* getcurrentVariable(LogDataHandler* o, QString name);
+    //SharedLogVariableDataPtrT getcurrentVariable(LogDataHandler* o, QString name);
     //LogVariableContainer getcurrentContainer(LogDataHandler* o, QString name);
 };
 

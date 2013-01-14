@@ -75,7 +75,7 @@
 //! @param dataName Name of the variable
 //! @param dataUnit Name of the unit of the variable
 //! @param parent Pointer to a tree widget item, not used
-PlotVariableTreeItem::PlotVariableTreeItem(LogVariableData *pData, QTreeWidgetItem *parent)
+PlotVariableTreeItem::PlotVariableTreeItem(SharedLogVariableDataPtrT pData, QTreeWidgetItem *parent)
         : QTreeWidgetItem(parent)
 {
     mpData = pData;
@@ -91,7 +91,7 @@ PlotVariableTreeItem::PlotVariableTreeItem(LogVariableData *pData, QTreeWidgetIt
     this->setText(0, aliasPrepend + portName + ", " + dataName + ", [" + dataUnit + "]");
 }
 
-LogVariableData *PlotVariableTreeItem::getDataPtr()
+SharedLogVariableDataPtrT PlotVariableTreeItem::getDataPtr()
 {
     return mpData;
 }
@@ -181,7 +181,7 @@ void PlotVariableTree::updateList()
 
     QMap<QString, QTreeWidgetItem*> componentLevelItemMap;
     QMap<QString, QTreeWidgetItem*>::iterator cilIt;
-    QVector<LogVariableData*> variables = mpCurrentContainer->getLogDataHandler()->getAllVariablesAtNewestGeneration();
+    QVector<SharedLogVariableDataPtrT> variables = mpCurrentContainer->getLogDataHandler()->getAllVariablesAtNewestGeneration();
     for(int i=0; i<variables.size(); ++i)
     {
         cilIt = componentLevelItemMap.find(variables[i]->getComponentName());

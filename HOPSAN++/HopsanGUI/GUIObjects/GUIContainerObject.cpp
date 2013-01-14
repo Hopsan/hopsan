@@ -699,7 +699,7 @@ void ContainerObject::renameModelObject(QString oldName, QString newName, undoSt
             //! @todo Maybe we should give the user a message?
         }
 
-        mpLogDataHandler->updateObjectName(oldName, newName);
+        //mpLogDataHandler->updateObjectName(oldName, newName);
 
         if (undoSettings == UNDO)
         {

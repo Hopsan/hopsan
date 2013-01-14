@@ -531,7 +531,7 @@ QString PlotWindow::getName() const
 //! @param portName Name of port where variable is located
 //! @param dataName Name of variable
 //! @param dataUnit Unit of variable
-void PlotWindow::addPlotCurve(LogVariableData *pData, int axisY, QString modelPath, QColor desiredColor)
+void PlotWindow::addPlotCurve(SharedLogVariableDataPtrT pData, int axisY, QString modelPath, QColor desiredColor)
 {
     //    if(dataUnit.isEmpty())
     //    {
@@ -613,10 +613,10 @@ void PlotWindow::saveToXml()
             QDomElement specialXElement = appendDomElement(tabElement,"specialx");
             //! @todo FIXA /Peter
             //specialXElement.setAttribute("generation",  mpPlotTabs->getTab(i)->mVectorXGeneration);
-            specialXElement.setAttribute("component",   mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription.mComponentName);
-            specialXElement.setAttribute("port",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription.mPortName);
-            specialXElement.setAttribute("data",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription.mDataName);
-            specialXElement.setAttribute("unit",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription.mDataUnit);
+            specialXElement.setAttribute("component",   mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mComponentName);
+            specialXElement.setAttribute("port",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mPortName);
+            specialXElement.setAttribute("data",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mDataName);
+            specialXElement.setAttribute("unit",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mDataUnit);
             specialXElement.setAttribute("model",       mpPlotTabWidget->getTab(i)->mSpecialXVectorModelPath);
         }
 

@@ -84,7 +84,7 @@ PlotWindow *PlotHandler::getPlotWindow(const QString name)
     return 0;
 }
 
-QString PlotHandler::plotDataToWindow(QString windowName, LogVariableData *pData, int axis, QColor curveColor)
+QString PlotHandler::plotDataToWindow(QString windowName, SharedLogVariableDataPtrT pData, int axis, QColor curveColor)
 {
     PlotWindow *pWindow = createNewPlotWindowOrGetCurrentOne(windowName);
     plotDataToWindow(pWindow, pData, axis, curveColor);
@@ -100,7 +100,7 @@ void PlotHandler::closeAllOpenWindows()
     }
 }
 
-PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, LogVariableData *pData, int axis, QColor curveColor)
+PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, SharedLogVariableDataPtrT pData, int axis, QColor curveColor)
 {
     if(!pPlotWindow)
     {

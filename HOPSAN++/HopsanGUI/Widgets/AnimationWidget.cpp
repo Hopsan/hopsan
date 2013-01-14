@@ -258,7 +258,7 @@ AnimationWidget::~AnimationWidget()
 QVector<double> *AnimationWidget::getTimeValues()
 {
     int latestGen = mpContainer->getLogDataHandler()->getLatestGeneration();
-    QVector<LogVariableData *> vData = mpContainer->getLogDataHandler()->getOnlyVariablesAtGeneration(latestGen);
+    QVector<SharedLogVariableDataPtrT> vData = mpContainer->getLogDataHandler()->getOnlyVariablesAtGeneration(latestGen);
 
     if (!vData.empty())
     {

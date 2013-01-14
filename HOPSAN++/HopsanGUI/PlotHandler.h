@@ -6,11 +6,13 @@
 #include <QString>
 #include <QMap>
 #include <QColor>
+#include <QSharedPointer>
 
 // Forward Declarations
 class ContainerObject;
-class LogVariableData;
 class PlotWindow;
+class LogVariableData;
+typedef QSharedPointer<LogVariableData> SharedLogVariableDataPtrT;
 
 class PlotHandler : public QObject
 {
@@ -20,11 +22,11 @@ public:
     ~PlotHandler();
 
     PlotWindow *createNewPlotWindowOrGetCurrentOne(QString name="");
-    PlotWindow *plotDataToWindow(PlotWindow *pPlotWindow, LogVariableData *pData, int axis, QColor curveColor=QColor());
+    PlotWindow *plotDataToWindow(PlotWindow *pPlotWindow, SharedLogVariableDataPtrT pData, int axis, QColor curveColor=QColor());
     PlotWindow *getPlotWindow(const QString name);
 
     void createPlotWindow(QString name="");
-    QString plotDataToWindow(QString windowName, LogVariableData *pData, int axis, QColor curveColor=QColor());
+    QString plotDataToWindow(QString windowName, SharedLogVariableDataPtrT pData, int axis, QColor curveColor=QColor());
 
     void closeAllOpenWindows();
 

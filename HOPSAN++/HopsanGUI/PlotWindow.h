@@ -31,12 +31,16 @@
 
 #include <qwt_plot.h>
 
+// Forward Declaration
 class MainWindow;
 class PlotTab;
 class PlotCurve;
 class LogVariableData;
 class VariableDescription;
 class PlotWindow;
+
+typedef QSharedPointer<LogVariableData> SharedLogVariableDataPtrT;
+typedef QSharedPointer<VariableDescription> SharedVariableDescriptionT;
 
 //! @brief Tab widget for plots in plot window
 class PlotTabWidget : public QTabWidget
@@ -61,7 +65,7 @@ class PlotWindow : public QMainWindow
 public:
     PlotWindow(const QString name, MainWindow *parent);
     ~PlotWindow();
-    void addPlotCurve(LogVariableData *pData, int axisY=QwtPlot::yLeft, QString modelPath = QString(), QColor desiredColor=QColor());
+    void addPlotCurve(SharedLogVariableDataPtrT pData, int axisY=QwtPlot::yLeft, QString modelPath = QString(), QColor desiredColor=QColor());
     void addBarChart(QStandardItemModel *pItemModel);
 
     PlotTabWidget *getPlotTabWidget();

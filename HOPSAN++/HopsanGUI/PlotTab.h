@@ -146,7 +146,7 @@ private:
     bool mHasSpecialXAxis;
     QVector<double> mSpecialXVector;
     QString mSpecialXVectorLabel;
-    VariableDescription mSpecialXVectorDescription;
+    SharedVariableDescriptionT mSpecialXVectorDescription;
     QString mSpecialXVectorModelPath; //!< @todo Maybe modelpath should be part of the description
 
     //Stuff used in export to xml dialog

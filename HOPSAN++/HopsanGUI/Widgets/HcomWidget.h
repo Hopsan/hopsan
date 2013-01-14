@@ -38,6 +38,8 @@ class HcomHandler;
 class HcomCommand;
 class CoreMessagesAccess;
 
+typedef QSharedPointer<LogVariableData> SharedLogVariableDataPtrT;
+
 class TerminalWidget : public QWidget
 {
     Q_OBJECT
@@ -194,7 +196,7 @@ public:
     void splitAtFirst(QString str, QString c, QString &left, QString &right);
     bool containsOutsideParentheses(QString str, QString c);
     QString runScriptCommands(QStringList lines);
-    LogVariableData *getVariablePtr(QString fullName);
+    SharedLogVariableDataPtrT getVariablePtr(QString fullName);
     double getNumber(QString str, bool *ok);
     void toShortDataNames(QString &variable);
     QString getDirectory(QString cmd);

@@ -42,8 +42,8 @@ class PlotVariableTree;
 class PlotVariableTreeItem : public QTreeWidgetItem
 {
 public:
-    PlotVariableTreeItem(LogVariableData *pData, QTreeWidgetItem *parent);
-    LogVariableData *getDataPtr();
+    PlotVariableTreeItem(SharedLogVariableDataPtrT pData, QTreeWidgetItem *parent);
+    SharedLogVariableDataPtrT getDataPtr();
     QString getFullName() const;
     QString getComponentName();
     QString getPortName();
@@ -52,7 +52,7 @@ public:
     QString getAliasName();
 
 private:
-    LogVariableData *mpData;
+    SharedLogVariableDataPtrT mpData;
 };
 
 

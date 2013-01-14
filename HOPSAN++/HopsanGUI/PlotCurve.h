@@ -9,7 +9,7 @@
 
 #include <QLabel>
 #include <QToolButton>
-#include <LogDataHandler.h>
+#include "LogDataHandler.h"
 #include <common.h>
 
 #include <QDoubleSpinBox>
@@ -109,14 +109,14 @@ class PlotCurve : public QObject
     friend class PlotWindow;
 public:
 
-    PlotCurve(LogVariableData *pData,
+    PlotCurve(SharedLogVariableDataPtrT pData,
               int axisY=QwtPlot::yLeft,
               QString modelPath="",
               PlotTab *parent=0,
               HopsanPlotID plotID=FIRSTPLOT,
               HopsanPlotCurveType curveType=PORTVARIABLE);
 
-    PlotCurve(const VariableDescription &rVarDesc,
+    PlotCurve(const SharedVariableDescriptionT &rVarDesc,
               const QVector<double> &rXVector,
               const QVector<double> &rYVector,
               int axisY=QwtPlot::yLeft,
@@ -133,14 +133,14 @@ public:
     HopQwtPlotCurve *getQwtPlotCurvePtr();
     //QDockWidget *getPlotInfoDockWidget();
 
-    LogVariableData *getPlotLogDataVariable(); //! @todo is this needed
+    SharedLogVariableDataPtrT getPlotLogDataVariable(); //! @todo is this needed
     int getGeneration() const;
     QString getComponentName();
     QString getPortName();
     QString getDataName();
     QString getDataUnit();
 
-    const LogVariableData* getConstLogDataVariablePtr() const;
+    const SharedLogVariableDataPtrT getConstLogDataVariablePtr() const;
     const QVector<double> &getDataVector() const;
     const QVector<double> &getTimeVector() const;
     ContainerObject *getContainerObjectPtr();
@@ -179,7 +179,7 @@ private slots:
     void updateCurveName();
 
 private:
-    LogVariableData *mpData;
+    SharedLogVariableDataPtrT mpData;
     PlotCurveInfoBox *mpPlotCurveInfoBox;
 
     HopsanPlotCurveType mCurveType;

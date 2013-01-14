@@ -1360,7 +1360,7 @@ void HcomHandler::executePeekCommand(QString cmd)
         return;
     }
 
-    LogVariableData *pData = getVariablePtr(variable);
+    SharedLogVariableDataPtrT pData = getVariablePtr(variable);
 
     if(pData)
     {
@@ -1401,7 +1401,7 @@ void HcomHandler::executePokeCommand(QString cmd)
         return;
     }
 
-    LogVariableData *pData = getVariablePtr(variable);
+    SharedLogVariableDataPtrT pData = getVariablePtr(variable);
 
     if(pData)
     {
@@ -1435,7 +1435,7 @@ void HcomHandler::executeDefineAliasCommand(QString cmd)
     toShortDataNames(variable);
     QString alias = cmd.split(" ")[1];
 
-    LogVariableData *pVariable = getVariablePtr(variable);
+    SharedLogVariableDataPtrT pVariable = getVariablePtr(variable);
 
     if(!pVariable || !gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->definePlotAlias(alias, pVariable->getFullVariableName()))
     {
@@ -1883,7 +1883,7 @@ void HcomHandler::addPlotCurve(QString cmd, int axis)
     SystemContainer *pCurrentSystem = gpMainWindow->mpProjectTabs->getCurrentTab()->getTopLevelSystem();
     if(!pCurrentSystem) { return; }
 
-    LogVariableData *pData = getVariablePtr(cmd);
+    SharedLogVariableDataPtrT pData = getVariablePtr(cmd);
     if(!pData)
     {
         mpConsole->print("Variable not found.");
@@ -2462,8 +2462,8 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
         }
         else if(evalOk && type==DataVector)
         {
-            LogVariableData *pLeftData = getVariablePtr(left);
-            LogVariableData *pValueData = getVariablePtr(value);
+            SharedLogVariableDataPtrT pLeftData = getVariablePtr(left);
+            SharedLogVariableDataPtrT pValueData = getVariablePtr(value);
             if(pLeftData != 0) { left = pLeftData->getFullVariableName(); }
             if(pValueData != 0) { value = pValueData->getFullVariableName(); }
 
@@ -2506,7 +2506,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
 //! @brief Returns a pointer to a data variable for given full data name
 //! @param fullName Full concatinated name of the variable
 //! @returns Pointer to the data variable
-LogVariableData *HcomHandler::getVariablePtr(QString fullName)
+SharedLogVariableDataPtrT HcomHandler::getVariablePtr(QString fullName)
 {
     fullName.replace(".","#");
     int generation = -1;
@@ -2573,7 +2573,7 @@ LogVariableData *HcomHandler::getVariablePtr(QString fullName)
         fullName.append("#Temperature");
     }
 
-    LogVariableData *pRetVal = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->getPlotDataByAlias(fullName,generation);
+    SharedLogVariableDataPtrT pRetVal = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->getPlotDataByAlias(fullName,generation);
     if(!pRetVal)
     {
         pRetVal = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->getPlotData(fullName,generation);

@@ -882,9 +882,9 @@ void PlotTab::changeXVector(QVector<double> xArray, const VariableDescription &r
     rescaleToCurves();
 
     mSpecialXVectorModelPath = gpMainWindow->mpProjectTabs->getCurrentContainer()->getModelFileInfo().filePath();
-    mSpecialXVectorDescription = rVarDesc;
+    mSpecialXVectorDescription = SharedVariableDescriptionT(new VariableDescription(rVarDesc));
 
-    mSpecialXVectorLabel = QString(rVarDesc.mDataName + " [" + rVarDesc.mDataUnit + "]");
+    mSpecialXVectorLabel = QString(mSpecialXVectorDescription->mDataName + " [" + mSpecialXVectorDescription->mDataUnit + "]");
     updateLabels();
     update();
     mpParentPlotWindow->mpResetXVectorButton->setEnabled(true);
@@ -1959,7 +1959,7 @@ void PlotTab::saveToDomElement(QDomElement &rDomElement, bool dateTime, bool des
 
             if(mHasSpecialXAxis)        //Special x-axis, replace time with x-data
             {
-                setQrealAttribute(dataTag, mSpecialXVectorDescription.mDataName, mSpecialXVector[j], 10, 'g');
+                setQrealAttribute(dataTag, mSpecialXVectorDescription->mDataName, mSpecialXVector[j], 10, 'g');
             }
             else                        //X-axis = time
             {
@@ -2512,9 +2512,10 @@ void PlotTab::dropEvent(QDropEvent *event)
             //! @todo should not be half heigh should be slightly lower (Peters opinion)
             if(this->mapFromGlobal(cursor.pos()).y() > getPlot()->canvas()->height()/2+getPlot()->canvas()->y()+10 && getNumberOfCurves(FIRSTPLOT) >= 1)
             {
-                VariableDescription desc = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotData(mimeText, -1)->getVariableDescription();
-                desc.mDataUnit = gConfig.getDefaultUnit(desc.mDataName);
-                changeXVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotDataValues(desc.getFullName(), -1), desc );
+                const SharedVariableDescriptionT desc = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotData(mimeText, -1)->getVariableDescription();
+                VariableDescription varDesc = *desc.data();
+                varDesc.mDataUnit = gConfig.getDefaultUnit(varDesc.mDataName);
+                changeXVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotDataValues(desc->getFullName(), -1), varDesc );
             }
             else if(this->mapFromGlobal(cursor.pos()).x() < getPlot()->canvas()->x()+9 + getPlot()->canvas()->width()/2)
             {

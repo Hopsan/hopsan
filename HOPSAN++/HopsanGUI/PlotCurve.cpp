@@ -337,7 +337,7 @@ void PlotCurveInfoBox::actiavateCurve(bool active)
 //! @param dataUnit Name of unit to show data in
 //! @param axisY Which Y-axis to use (QwtPlot::yLeft or QwtPlot::yRight)
 //! @param parent Pointer to plot tab which curve shall be created it
-PlotCurve::PlotCurve(LogVariableData *pData,
+PlotCurve::PlotCurve(SharedLogVariableDataPtrT pData,
                      int axisY,
                      QString modelPath,
                      PlotTab *parent,
@@ -350,7 +350,7 @@ PlotCurve::PlotCurve(LogVariableData *pData,
 }
 
 //! @brief Consturctor for custom data
-PlotCurve::PlotCurve(const VariableDescription &rVarDesc,
+PlotCurve::PlotCurve(const SharedVariableDescriptionT &rVarDesc,
                      const QVector<double> &rXVector,
                      const QVector<double> &rYVector,
                      int axisY,
@@ -395,7 +395,7 @@ void PlotCurve::commonConstructorCode(int axisY,
     }
     Q_ASSERT(!mpContainerObject == 0);        //Container not found, should never happen! Caller to the function has supplied a model name that does not exist.
 
-    mpContainerObject->getLogDataHandler()->incrementOpenPlotCurves(); //!< why is this necessary
+    //mpContainerObject->getLogDataHandler()->incrementOpenPlotCurves(); //!< why is this necessary
 
     QString dataUnit = mpData->getDataUnit();
     if(dataUnit.isEmpty())
@@ -460,9 +460,8 @@ void PlotCurve::commonConstructorCode(int axisY,
 //! Deletes the info box and its dock widgets before the curve is removed.
 PlotCurve::~PlotCurve()
 {
-    mpContainerObject->getLogDataHandler()->decrementOpenPlotCurves();
+    //mpContainerObject->getLogDataHandler()->decrementOpenPlotCurves();
     delete(mpPlotCurveInfoBox);
-    //delete(mpPlotInfoDockWidget);
 
     // Delete custom data if any
     deleteCustomData();
@@ -549,7 +548,7 @@ QString PlotCurve::getDataUnit()
     return mpData->getDataUnit();
 }
 
-const LogVariableData *PlotCurve::getConstLogDataVariablePtr() const
+const SharedLogVariableDataPtrT PlotCurve::getConstLogDataVariablePtr() const
 {
     return mpData;
 }
@@ -589,7 +588,7 @@ ContainerObject *PlotCurve::getContainerObjectPtr()
 //! @param genereation Genereation to use
 void PlotCurve::setGeneration(int generation)
 {
-    LogVariableData *pNewData = mpContainerObject->getLogDataHandler()->getPlotData(mpData->getFullVariableName(), generation);
+    SharedLogVariableDataPtrT pNewData = mpContainerObject->getLogDataHandler()->getPlotData(mpData->getFullVariableName(), generation);
     if (pNewData)
     {
         mpData = pNewData;
@@ -646,13 +645,14 @@ void PlotCurve::setScaling(double scaleX, double scaleY, double offsetX, double 
 void PlotCurve::setCustomData(const VariableDescription &rVarDesc, const QVector<double> &rvTime, const QVector<double> &rvData)
 {
     //First disconnect all signals from the old data
-    this->disconnect(mpData);
+    this->disconnect(mpData.data());
 
     //If we already have custom data, then delete it from memory as it is being replaced
     deleteCustomData();
 
     //Create new custom data
-    LogVariableContainer *pDataContainer = new LogVariableContainer(rVarDesc);
+    SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription(rVarDesc));
+    LogVariableContainer *pDataContainer = new LogVariableContainer(pVarDesc);
     pDataContainer->addDataGeneration(0, rvTime, rvData);
     mHaveCustomData = true;
     mpData = pDataContainer->getDataGeneration(0);
@@ -726,7 +726,7 @@ void PlotCurve::toFrequencySpectrum()
     updatePlotInfoBox();
 }
 
-LogVariableData *PlotCurve::getPlotLogDataVariable()
+SharedLogVariableDataPtrT PlotCurve::getPlotLogDataVariable()
 {
     return mpData;
 }
@@ -1140,15 +1140,15 @@ void PlotCurve::deleteCustomData()
 {
     if (mHaveCustomData)
     {
-        delete mpData;
+        mpData.clear();
         mHaveCustomData = false;
     }
 }
 
 void PlotCurve::connectDataSignals()
 {
-    connect(mpData,SIGNAL(dataChanged()), this, SLOT(updateCurve()));
-    connect(mpData,SIGNAL(nameChanged()), this, SLOT(updateCurveName()));
+    connect(mpData.data(), SIGNAL(dataChanged()), this, SLOT(updateCurve()));
+    connect(mpData.data(), SIGNAL(nameChanged()), this, SLOT(updateCurveName()));
 }
 
 
