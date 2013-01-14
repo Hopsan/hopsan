@@ -1421,7 +1421,7 @@ void PlotTab::exportToGraphics()
 
     mpGraphicsForm = new QComboBox(this);
     mpGraphicsForm->addItem("PNG");
-    mpGraphicsForm->addItem("PDF");
+    mpGraphicsForm->addItem("PDF/PS");
     mpGraphicsForm->addItem("SVG");
 
     QGroupBox *graphicsBox = new QGroupBox( "Graphics" );
@@ -1492,7 +1492,8 @@ void PlotTab::exportToGraphics()
 //! @brief Slot that exports plot tab as vector graphics to specified .pdf file
 void PlotTab::exportToPdf()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, "Export File Name", gConfig.getPlotGfxDir(), "Portable Document Format (*.pdf)");
+    QString selectedFilter;
+    QString fileName = QFileDialog::getSaveFileName(this, "Export File Name", gConfig.getPlotGfxDir(), "Portable Document Format (*.pdf);;PostScript Format (*.ps)", &selectedFilter);
     if ( !fileName.isEmpty() )
     {
         QFileInfo file(fileName);
@@ -1505,7 +1506,10 @@ void PlotTab::exportToPdf()
         printer->setPaperSize(mpQwtPlots[FIRSTPLOT]->size(), QPrinter::Point);
         printer->setOrientation(QPrinter::Landscape);
         printer->setFullPage(false);
-        printer->setOutputFormat(QPrinter::PdfFormat);
+        if(selectedFilter == "Portable Document Format (*.pdf)")
+            printer->setOutputFormat(QPrinter::PdfFormat);
+        else
+            printer->setOutputFormat(QPrinter::PostScriptFormat);
         printer->setOutputFileName(fileName);
         renderer.renderTo(mpQwtPlots[FIRSTPLOT],*printer);
     }
