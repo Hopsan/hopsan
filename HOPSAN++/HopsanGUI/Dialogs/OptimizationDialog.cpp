@@ -796,7 +796,10 @@ void OptimizationDialog::generateComplexScript()
     }
     scriptStream << "kf=1-(alpha/2)**(gamma/(2*"+nParString+"))\n";
     scriptStream << "\n";
+    scriptStream << "hopsan.openAbortDialog(\"Running optimization...\")\n";
     scriptStream << "for k in range(iterations):\n";
+    scriptStream << "  if hopsan.isAborted():\n";
+    scriptStream << "    break\n\n";
     if(multicore)
     {
         //! @todo Implement logarithmic scale support for multithreaded simulations!
@@ -1002,9 +1005,11 @@ void OptimizationDialog::generateParticleSwarmScript()
     scriptStream << "c2=" << c2String << "\n";
     scriptStream << "tolFunc=" << tolFuncString << "\n";
     scriptStream << "tolX=" << tolXString << "\n";
-    scriptStream << "np=" << particlesString;
+    scriptStream << "np=" << particlesString << "\n";
     if(multicore)
     {
+        int nThreads = mpThreadsSpinBox->value();
+        scriptStream << "nThreads=" << QString().setNum(nThreads) << "\n";
         scriptStream << "\n";
         scriptStream << "\n";
         scriptStream << "\n";
@@ -1156,7 +1161,7 @@ void OptimizationDialog::generateParticleSwarmScript()
     scriptStream << "# Find best point in swarm\n";
     if(multicore)
     {
-        scriptStream << "for i in range(np):\n";
+        scriptStream << "for t in range(np):\n";
         scriptStream << "  hopsan.gotoTab(t)\n";
         scriptStream << "  for j in range(len(parameterNames)):\n";
         scriptStream << "    hopsan.setParameter(componentNames[j], parameterNames[j], particles[i][j])\n";
@@ -1203,7 +1208,10 @@ void OptimizationDialog::generateParticleSwarmScript()
     scriptStream << "\n";
     scriptStream << "##### Run optimization #####\n";
     scriptStream << "\n";
+    scriptStream << "hopsan.openAbortDialog(\"Running optimization...\")\n";
     scriptStream << "for k in range(iterations):\n";
+    scriptStream << "  if hopsan.isAborted():\n";
+    scriptStream << "    break\n\n";
     scriptStream << "  \n";
     scriptStream << "  #  Move the particles\n";
     scriptStream << "  for i in range(np):\n";

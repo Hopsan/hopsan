@@ -392,6 +392,26 @@ LogDataHandler *PyMainWindowClassWrapper::getLogDataHandler(MainWindow *o)
     return o->mpProjectTabs->getCurrentContainer()->getLogDataHandler();
 }
 
+void PyMainWindowClassWrapper::openAbortDialog(MainWindow *o, const QString &text)
+{
+    mAbort=false;
+    QProgressDialog *pDialog = new QProgressDialog(text, "Abort",0,0, o);
+    o->connect(pDialog, SIGNAL(canceled()), this, SLOT(abort()));
+    pDialog->setModal(false);
+    pDialog->show();
+}
+
+bool PyMainWindowClassWrapper::isAborted(MainWindow *o)
+{
+    qApp->processEvents();
+    return mAbort;
+}
+
+void PyMainWindowClassWrapper::abort()
+{
+    mAbort=true;
+}
+
 QString PyLogDataHandlerClassWrapper::addVariables(LogDataHandler* o, const QString &a, const QString &b)
 {
     QString tempStr = o->addVariables(a,b);

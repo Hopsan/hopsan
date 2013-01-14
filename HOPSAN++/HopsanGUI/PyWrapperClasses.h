@@ -165,6 +165,14 @@ public slots:
     void turnOffProgressBar(MainWindow* o);
     QStringList componentNames(MainWindow* o);
     LogDataHandler* getLogDataHandler(MainWindow* o);
+    void openAbortDialog(MainWindow* o, const QString &text);
+    bool isAborted(MainWindow* o);
+
+private slots:
+    void abort();
+
+private:
+    bool mAbort;
 };
 
 #endif // PYWRAPPERCLASSES_H
