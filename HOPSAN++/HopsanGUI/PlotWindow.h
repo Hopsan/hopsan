@@ -65,7 +65,7 @@ class PlotWindow : public QMainWindow
 public:
     PlotWindow(const QString name, MainWindow *parent);
     ~PlotWindow();
-    void addPlotCurve(SharedLogVariableDataPtrT pData, int axisY=QwtPlot::yLeft, QString modelPath = QString(), QColor desiredColor=QColor());
+    void addPlotCurve(SharedLogVariableDataPtrT pData, int axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
     void addBarChart(QStandardItemModel *pItemModel);
 
     PlotTabWidget *getPlotTabWidget();
@@ -110,7 +110,11 @@ protected slots:
     void establishPlotTabConnections();
 
 private:
+    void refreshWindowTitle();
+
     QString mName;
+    QString mModelName;
+
     QGridLayout *mpLayout;
     QGridLayout *mpInfoBoxLayout;
     QPointF dragStartPosition;

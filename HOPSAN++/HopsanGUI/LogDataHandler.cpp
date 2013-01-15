@@ -385,7 +385,7 @@ void LogDataHandler::importFromPlo()
             else
             {
                 // Create a new toplevel map item and insert data into the generations map
-                LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc);
+                LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc, this);
                 pDataContainer->addDataGeneration(mGenerationNumber, hopOldVector.first().mDataValues, hopOldVector[i].mDataValues);
                 mLogDataMap.insert(catName, SharedLogVariableContainerPtrT(pDataContainer));
             }
@@ -496,6 +496,7 @@ void LogDataHandler::collectPlotDataFromModel()
 
                     foundData=true;
                     SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription);
+                    pVarDesc->mModelPath = pModelObject->getParentContainerObject()->getModelFileInfo().fileName();
                     pVarDesc->mComponentName = pModelObject->getName();
                     pVarDesc->mPortName = (*pit)->getPortName();
                     pVarDesc->mDataName = names[i];
@@ -515,7 +516,7 @@ void LogDataHandler::collectPlotDataFromModel()
                     else
                     {
                         // Create a new toplevel map item and insert data into the generations map
-                        SharedLogVariableContainerPtrT pDataContainer = SharedLogVariableContainerPtrT(new LogVariableContainer(pVarDesc));
+                        SharedLogVariableContainerPtrT pDataContainer = SharedLogVariableContainerPtrT(new LogVariableContainer(pVarDesc, this));
                         pDataContainer->addDataGeneration(mGenerationNumber, timeVecPtr, data.second);
                         mLogDataMap.insert(catName, pDataContainer);
                     }
@@ -806,6 +807,11 @@ void LogDataHandler::limitPlotGenerations()
     }
 }
 
+ContainerObject *LogDataHandler::getParentContainerObject()
+{
+    return mpParentContainerObject;
+}
+
 
 //! @brief Increments counter for number of open plot curves (in plot windows)
 //! @note Used to decide if warning message shall be shown when closing model
@@ -844,8 +850,8 @@ QString LogDataHandler::addVariableWithScalar(const QString &a, const double x)
 SharedLogVariableDataPtrT LogDataHandler::addVariableWithScalar(const SharedLogVariableDataPtrT a, const double x)
 {
     SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+"AddedWith"+QString::number(x));
-    pTempVar->assigntoData(a);
-    pTempVar->addtoData(x);
+    pTempVar->assignToData(a);
+    pTempVar->addToData(x);
     return pTempVar;
 }
 
@@ -867,8 +873,8 @@ QString LogDataHandler::subVariableWithScalar(const QString &a, const double x)
 SharedLogVariableDataPtrT LogDataHandler::subVariableWithScalar(const SharedLogVariableDataPtrT a, const double x)
 {
     SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+"SubtractedWith"+QString::number(x));
-    pTempVar->assigntoData(a);
-    pTempVar->subtoData(x);
+    pTempVar->assignToData(a);
+    pTempVar->subFromData(x);
     return pTempVar;
 }
 
@@ -890,8 +896,8 @@ QString LogDataHandler::mulVariableWithScalar(const QString &a, const double x)
 SharedLogVariableDataPtrT LogDataHandler::mulVariableWithScalar(const SharedLogVariableDataPtrT a, const double x)
 {
     SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+"MultiplicatedWith"+QString::number(x));
-    pTempVar->assigntoData(a);
-    pTempVar->multtoData(x);
+    pTempVar->assignToData(a);
+    pTempVar->multData(x);
     return pTempVar;
 }
 
@@ -913,8 +919,8 @@ QString LogDataHandler::divVariableWithScalar(const QString &a, const double x)
 SharedLogVariableDataPtrT LogDataHandler::divVariableWithScalar(const SharedLogVariableDataPtrT a, const double x)
 {
     SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+"dividedWith"+QString::number(x));
-    pTempVar->assigntoData(a);
-    pTempVar->divtoData(x);
+    pTempVar->assignToData(a);
+    pTempVar->divData(x);
     return pTempVar;
 }
 
@@ -938,8 +944,8 @@ QString LogDataHandler::addVariables(const QString &a, const QString &b)
 SharedLogVariableDataPtrT LogDataHandler::addVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b)
 {
     SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+b->getFullVariableName());
-    pTempVar->assigntoData(a);
-    pTempVar->addtoData(b);
+    pTempVar->assignToData(a);
+    pTempVar->addToData(b);
     return pTempVar;
 }
 
@@ -1004,7 +1010,7 @@ QString LogDataHandler::assignVariables(const QString &a, const QString &b)
     {
         SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription);
         pVarDesc->mDataName = a;
-        LogVariableContainer *pDataContainer = new LogVariableContainer(pVarDesc);
+        LogVariableContainer *pDataContainer = new LogVariableContainer(pVarDesc, this);
         pDataContainer->addDataGeneration(mGenerationNumber, QVector<double>(), QVector<double>());
         mLogDataMap.insert(a, SharedLogVariableContainerPtrT(pDataContainer));
         ++mGenerationNumber;
@@ -1071,7 +1077,7 @@ QString LogDataHandler::saveVariables(const QString &currName, const QString &ne
     if( (pNewData == NULL) && (pCurrData != NULL) )
     {
         SharedLogVariableDataPtrT pNewData = defineNewVariable(newName);
-        pNewData->assigntoData(pCurrData);
+        pNewData->assignToData(pCurrData);
         return pNewData->getFullVariableName();
     }
     else
@@ -1083,31 +1089,31 @@ QString LogDataHandler::saveVariables(const QString &currName, const QString &ne
 SharedLogVariableDataPtrT LogDataHandler::subVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b)
 {
     SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+b->getFullVariableName());
-    pTempVar->assigntoData(a);
-    pTempVar->subtoData(b);
+    pTempVar->assignToData(a);
+    pTempVar->subFromData(b);
     return pTempVar;
 }
 
 SharedLogVariableDataPtrT LogDataHandler::multVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b)
 {
     SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+b->getFullVariableName());
-    pTempVar->assigntoData(a);
-    pTempVar->multtoData(b);
+    pTempVar->assignToData(a);
+    pTempVar->multData(b);
     return pTempVar;
 }
 
 SharedLogVariableDataPtrT LogDataHandler::divVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b)
 {
     SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+b->getFullVariableName());
-    pTempVar->assigntoData(a);
-    pTempVar->divtoData(b);
+    pTempVar->assignToData(a);
+    pTempVar->divData(b);
     return pTempVar;
 }
 
 //! @todo Should this function really return a value?
 SharedLogVariableDataPtrT LogDataHandler::assignVariables(SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b)
 {
-    a->assigntoData(b);
+    a->assignToData(b);
     //SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+b->getFullVariableName());
     //pTempVar->assigntoData(a);
     //pTempVar->divtoData(b);
@@ -1117,7 +1123,7 @@ SharedLogVariableDataPtrT LogDataHandler::assignVariables(SharedLogVariableDataP
 
 bool LogDataHandler::pokeVariables(SharedLogVariableDataPtrT a, const int index, const double value)
 {
-    return a->poketoData(index,value);
+    return a->pokeData(index,value);
 }
 
 void LogDataHandler::delVariables(SharedLogVariableDataPtrT a)
@@ -1128,13 +1134,13 @@ void LogDataHandler::delVariables(SharedLogVariableDataPtrT a)
 SharedLogVariableDataPtrT LogDataHandler::saveVariables(SharedLogVariableDataPtrT a)
 {
     SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName());
-    pTempVar->assigntoData(a);
+    pTempVar->assignToData(a);
     return pTempVar;
 }
 
 double LogDataHandler::peekVariables(SharedLogVariableDataPtrT a, const int index)
 {
-    return a->peekFromData(index);
+    return a->peekData(index);
 }
 
 SharedLogVariableDataPtrT LogDataHandler::defineTempVariable(const QString desiredname)
@@ -1157,7 +1163,7 @@ SharedLogVariableDataPtrT LogDataHandler::defineTempVariable(const QString desir
     else
     {
 
-        pDataContainer = new LogVariableContainer(pVarDesc);
+        pDataContainer = new LogVariableContainer(pVarDesc, this);
         pDataContainer->addDataGeneration(mGenerationNumber, dummy, dummy);
        // pDataContainer->getTypeVarString(ST);
         mLogDataMap.insert(catName, SharedLogVariableContainerPtrT(pDataContainer));
@@ -1188,7 +1194,7 @@ SharedLogVariableDataPtrT LogDataHandler::defineNewVariable(const QString desire
     else
     {
 
-        pDataContainer = new LogVariableContainer(pVarDesc);
+        pDataContainer = new LogVariableContainer(pVarDesc, this);
         pDataContainer->addDataGeneration(mGenerationNumber, dummy, dummy);
        // pDataContainer->getTypeVarString(ST);
         mLogDataMap.insert(catName, SharedLogVariableContainerPtrT(pDataContainer));
@@ -1224,13 +1230,10 @@ bool LogDataHandler::hasOpenPlotCurves()
     return (mnPlotCurves > 0);
 }
 
-
-//! @brief Returns the plot alias map
-//! @note Used for saving aliases when saving model
-//AllDataGenerations::AliasMapT AllDataGenerations::getPlotAliasMap()
-//{
-//    //return mPlotAliasMap;
-//}
+void LogDataHandler::closePlotsWithCurvesBasedOnOwnedData()
+{
+    emit closePlotsWithOwnedData();
+}
 
 
 //! @brief Returns the list of favorite variables
@@ -1435,11 +1438,6 @@ LogVariableData::LogVariableData(const int generation, SharedTimeVectorPtrT time
     mDataVector = rData;
 }
 
-//LogVariableData::~LogVariableData()
-//{
-//    emit beginDeleted(getGeneration());
-//}
-
 const SharedVariableDescriptionT LogVariableData::getVariableDescription() const
 {
     return mpVariableDescription;
@@ -1458,6 +1456,11 @@ QString LogVariableData::getFullVariableName() const
 QString LogVariableData::getFullVariableNameWithSeparator(const QString sep) const
 {
     return mpVariableDescription->getFullNameWithSeparator(sep);
+}
+
+QString LogVariableData::getModelPath() const
+{
+    return mpVariableDescription->mModelPath;
 }
 
 QString LogVariableData::getComponentName() const
@@ -1503,28 +1506,29 @@ int LogVariableData::getNumGenerations() const
     return mpParentVariableContainer->getNumGenerations();
 }
 
-void LogVariableData::addtoData(const SharedLogVariableDataPtrT pOther)
+void LogVariableData::addToData(const SharedLogVariableDataPtrT pOther)
 {
     for (int i=0; i<mDataVector.size(); ++i)
     {
        mDataVector[i] += pOther->mDataVector[i];
     }
 }
-void LogVariableData::addtoData(const double other)
+void LogVariableData::addToData(const double other)
 {
     for (int i=0; i<mDataVector.size(); ++i)
     {
         mDataVector[i] += other;
     }
 }
-void LogVariableData::subtoData(const SharedLogVariableDataPtrT pOther)
+void LogVariableData::subFromData(const SharedLogVariableDataPtrT pOther)
 {
+    //! @todo DANGER will crash if other not as long (also in other places)
     for (int i=0; i<mDataVector.size(); ++i)
     {
         mDataVector[i] -= pOther->mDataVector[i];
     }
 }
-void LogVariableData::subtoData(const double other)
+void LogVariableData::subFromData(const double other)
 {
     for (int i=0; i<mDataVector.size(); ++i)
     {
@@ -1532,7 +1536,7 @@ void LogVariableData::subtoData(const double other)
     }
 }
 
-void LogVariableData::multtoData(const SharedLogVariableDataPtrT pOther)
+void LogVariableData::multData(const SharedLogVariableDataPtrT pOther)
 {
     for (int i=0; i<mDataVector.size(); ++i)
     {
@@ -1541,7 +1545,7 @@ void LogVariableData::multtoData(const SharedLogVariableDataPtrT pOther)
 
 }
 
-void LogVariableData::multtoData(const double other)
+void LogVariableData::multData(const double other)
 {
     for (int i=0; i<mDataVector.size(); ++i)
     {
@@ -1549,7 +1553,7 @@ void LogVariableData::multtoData(const double other)
     }
 }
 
-void LogVariableData::divtoData(const SharedLogVariableDataPtrT pOther)
+void LogVariableData::divData(const SharedLogVariableDataPtrT pOther)
 {
     for (int i=0; i<mDataVector.size(); ++i)
     {
@@ -1557,20 +1561,20 @@ void LogVariableData::divtoData(const SharedLogVariableDataPtrT pOther)
     }
 }
 
-void LogVariableData::divtoData(const double other)
+void LogVariableData::divData(const double other)
 {
     for (int i=0; i<mDataVector.size(); ++i)
     {
         mDataVector[i] /= other;
     }
 }
-void LogVariableData::assigntoData(const SharedLogVariableDataPtrT pOther)
+void LogVariableData::assignToData(const SharedLogVariableDataPtrT pOther)
 {
     mDataVector = pOther->mDataVector;
     mSharedTimeVectorPtr = pOther->mSharedTimeVectorPtr;
 }
 
-bool LogVariableData::poketoData(const int index, const double value)
+bool LogVariableData::pokeData(const int index, const double value)
 {
 
     if (index >= 0 && index < mDataVector.size())
@@ -1579,16 +1583,19 @@ bool LogVariableData::poketoData(const int index, const double value)
         emit dataChanged();
         return true;
     }
-    else
-    {
-        return false;
-    }
+    return false;
 }
 
-double LogVariableData::peekFromData(const int index)
+double LogVariableData::peekData(const int index)
 {
     //! @todo check index range, figure out whay kind of error to return
     return mDataVector[index];
+}
+
+LogDataHandler *LogVariableData::getLogDataHandler()
+{
+    //! @todo will crash if container removed before data
+    return mpParentVariableContainer->getLogDataHandler();
 }
 
 QString LogVariableContainer::getAliasName() const
@@ -1604,6 +1611,11 @@ QString LogVariableContainer::getFullVariableName() const
 QString LogVariableContainer::getFullVariableNameWithSeparator(const QString sep) const
 {
     return mVariableDescription->getFullNameWithSeparator(sep);
+}
+
+QString LogVariableContainer::getModelPath() const
+{
+    return mVariableDescription->mModelPath;
 }
 
 QString LogVariableContainer::getComponentName() const
@@ -1626,13 +1638,18 @@ QString LogVariableContainer::getDataUnit() const
     return mVariableDescription->mDataUnit;
 }
 
+LogDataHandler *LogVariableContainer::getLogDataHandler()
+{
+    return mpParentLogDataHandler;
+}
+
 void LogVariableContainer::setAliasName(const QString alias)
 {
     mVariableDescription->mAliasName = alias;
     emit nameChanged();
 }
 
-QString VariableDescription::getTypeVarString() const
+QString VariableDescription::getVarTypeString() const
 {
     switch (mVarType)
     {
@@ -1747,9 +1764,10 @@ void LogVariableContainer::removeGenerationsOlderThen(const int gen)
     }
 }
 
-LogVariableContainer::LogVariableContainer(const SharedVariableDescriptionT &rVarDesc) : QObject()
+LogVariableContainer::LogVariableContainer(const SharedVariableDescriptionT &rVarDesc, LogDataHandler *pParentLogDataHandler) : QObject()
 {
     mVariableDescription = rVarDesc;
+    mpParentLogDataHandler = pParentLogDataHandler;
 }
 
 LogVariableContainer::~LogVariableContainer()

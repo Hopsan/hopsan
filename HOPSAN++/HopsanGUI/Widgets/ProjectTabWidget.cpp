@@ -931,6 +931,7 @@ bool ProjectTabWidget::closeProjectTab(int index)
         {
         case QMessageBox::Ok:
             // Ok was clicked
+            getTab(index)->getTopLevelSystem()->getLogDataHandler()->closePlotsWithCurvesBasedOnOwnedData();
             break;
         case QMessageBox::Cancel:
             // Cancel was clicked

@@ -37,6 +37,7 @@ class PlotWindow;
 class ContainerObject;
 class LogVariableData;
 class LogVariableContainer;
+class LogDataHandler;
 
 typedef QSharedPointer<LogVariableData> SharedLogVariableDataPtrT;
 typedef QSharedPointer<LogVariableContainer> SharedLogVariableContainerPtrT;
@@ -60,6 +61,7 @@ class VariableDescription
 {
 public:
     enum VarTypeT {M, I, S, ST};
+    QString mModelPath;
     QString mComponentName;
     QString mPortName;
     QString mDataName;
@@ -71,7 +73,7 @@ public:
     QString getFullNameWithSeparator(const QString sep) const;
     void setFullName(const QString compName, const QString portName, const QString dataName);
 
-    QString getTypeVarString() const;
+    QString getVarTypeString() const;
 
     bool operator==(const VariableDescription &other) const;
 };
@@ -89,7 +91,7 @@ public:
     typedef QMap<int, SharedLogVariableDataPtrT> GenerationMapT;
 
     //! @todo also need qucik constructor for creating a container with one generation directly
-    LogVariableContainer(const SharedVariableDescriptionT &rVarDesc);
+    LogVariableContainer(const SharedVariableDescriptionT &rVarDesc, LogDataHandler *pParentLogDataHandler);
     ~LogVariableContainer();
     void addDataGeneration(const int generation, const QVector<double> &rTime, const QVector<double> &rData);
     void addDataGeneration(const int generation, const SharedTimeVectorPtrT time, const QVector<double> &rData);
@@ -106,11 +108,13 @@ public:
     QString getAliasName() const;
     QString getFullVariableName() const;
     QString getFullVariableNameWithSeparator(const QString sep) const;
+    QString getModelPath() const;
     QString getComponentName() const;
     QString getPortName() const;
     QString getDataName() const;
     QString getDataUnit() const;
 
+    LogDataHandler *getLogDataHandler();
 
     void setAliasName(const QString alias);
 
@@ -118,6 +122,7 @@ signals:
     void nameChanged();
 
 private:
+    LogDataHandler *mpParentLogDataHandler;
     SharedVariableDescriptionT mVariableDescription;
     GenerationMapT mDataGenerations;
 };
@@ -130,7 +135,6 @@ public:
     //! @todo maybe have protected constructor, to avoid creating these objects manually (need to be friend with container)
     LogVariableData(const int generation, const QVector<double> &rTime, const QVector<double> &rData, SharedVariableDescriptionT varDesc, LogVariableContainer *pParent);
     LogVariableData(const int generation, SharedTimeVectorPtrT time, const QVector<double> &rData, SharedVariableDescriptionT varDesc, LogVariableContainer *pParent);
-    //~LogVariableData();
 
     double mAppliedValueOffset;
     double mAppliedTimeOffset;
@@ -142,6 +146,7 @@ public:
     QString getAliasName() const;
     QString getFullVariableName() const;
     QString getFullVariableNameWithSeparator(const QString sep) const;
+    QString getModelPath() const;
     QString getComponentName() const;
     QString getPortName() const;
     QString getDataName() const;
@@ -150,20 +155,23 @@ public:
     int getLowestGeneration() const;
     int getHighestGeneration() const;
     int getNumGenerations() const;
+
     double getOffset() const;
-    void addtoData(const SharedLogVariableDataPtrT pOther);
-    void addtoData(const double other);
-    void subtoData(const SharedLogVariableDataPtrT pOther);
-    void subtoData(const double other);
-    void multtoData(const SharedLogVariableDataPtrT pOther);
-    void multtoData(const double other);
-    void divtoData(const SharedLogVariableDataPtrT pOther);
-    void divtoData(const double other);
-    void assigntoData(const SharedLogVariableDataPtrT pOther);
-    bool poketoData(const int index, const double value);
-    double peekFromData(const int index);
     //double getScale() const;
 
+    void addToData(const SharedLogVariableDataPtrT pOther);
+    void addToData(const double other);
+    void subFromData(const SharedLogVariableDataPtrT pOther);
+    void subFromData(const double other);
+    void multData(const SharedLogVariableDataPtrT pOther);
+    void multData(const double other);
+    void divData(const SharedLogVariableDataPtrT pOther);
+    void divData(const double other);
+    void assignToData(const SharedLogVariableDataPtrT pOther);
+    bool pokeData(const int index, const double value);
+    double peekData(const int index);
+
+    LogDataHandler *getLogDataHandler();
 
 public slots:
     void setValueOffset(double offset);
@@ -190,13 +198,9 @@ public:
     LogDataHandler(ContainerObject *pParent);
     ~LogDataHandler();
 
-
     typedef QMap<QString, SharedLogVariableContainerPtrT> LogDataMapT;
     typedef QMap<QString, LogVariableContainer*> AliasMapT;
-
-
     typedef QList<QVector<double> > TimeListT;
-
     typedef QList<VariableDescription> FavoriteListT;
 
     void collectPlotDataFromModel();
@@ -206,9 +210,9 @@ public:
     bool isEmpty();
 
     QVector<double> getTimeVector(int generation);
-    QVector<double> getPlotDataValues(int generation, QString componentName, QString portName, QString dataName);
+    QVector<double> getPlotDataValues(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
     QVector<double> getPlotDataValues(const QString fullName, int generation);
-    SharedLogVariableDataPtrT getPlotData(int generation, QString componentName, QString portName, QString dataName);
+    SharedLogVariableDataPtrT getPlotData(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
     SharedLogVariableDataPtrT getPlotData(const QString fullName, const int generation);
     SharedLogVariableDataPtrT getPlotDataByAlias(const QString alias, const int generation);
     QVector<SharedLogVariableDataPtrT> getAllVariablesAtNewestGeneration();
@@ -223,15 +227,14 @@ public:
     QString getFullNameFromAlias(QString alias);
     QString getAliasFromFullName(QString fullName);
 
-//    bool componentHasPlotGeneration(int generation, QString fullName);
     void limitPlotGenerations();
 
-//    void updateObjectName(QString oldName, QString newName);
-
+    ContainerObject *getParentContainerObject();
 
     void incrementOpenPlotCurves();
     void decrementOpenPlotCurves();
     bool hasOpenPlotCurves();
+    void closePlotsWithCurvesBasedOnOwnedData();
 
     FavoriteListT getFavoriteVariableList();
     void setFavoriteVariable(QString componentName, QString portName, QString dataName, QString dataUnit);
@@ -253,26 +256,33 @@ public:
     SharedLogVariableDataPtrT subVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b);
     SharedLogVariableDataPtrT multVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b);
     SharedLogVariableDataPtrT divVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b);
-    SharedLogVariableDataPtrT assignVariables(SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b);
-    bool pokeVariables(SharedLogVariableDataPtrT a, const int index, const double value);
-    SharedLogVariableDataPtrT saveVariables(SharedLogVariableDataPtrT a);
-    void delVariables(SharedLogVariableDataPtrT a);
     QString addVariables(const QString &a, const QString &b);
     QString subVariables(const QString &a, const QString &b);
     QString multVariables(const QString &a, const QString &b);
     QString divVariables(const QString &a, const QString &b);
+
+    SharedLogVariableDataPtrT assignVariables(SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b);
     QString assignVariables(const QString &a, const QString &b);
+
+    bool pokeVariables(SharedLogVariableDataPtrT a, const int index, const double value);
     bool pokeVariables(const QString &a, const int index, const double value);
-    double peekVariables(const QString &a, const int index);
+
     double peekVariables(SharedLogVariableDataPtrT a, const int b);
-    QString delVariables(const QString &a);
+    double peekVariables(const QString &a, const int index);
+
+    SharedLogVariableDataPtrT saveVariables(SharedLogVariableDataPtrT a);
     QString saveVariables(const QString &currName, const QString &newName);
-    SharedLogVariableDataPtrT defineTempVariable(const QString desiredname);
+
+    void delVariables(SharedLogVariableDataPtrT a);
+    QString delVariables(const QString &a);
+
     SharedLogVariableDataPtrT defineNewVariable(const QString desiredname);
+    SharedLogVariableDataPtrT defineTempVariable(const QString desiredname);
     void removeTempVariable(const QString fullName);
 
 signals:
     void newDataAvailable();
+    void closePlotsWithOwnedData();
 
 
 private:
@@ -287,7 +297,6 @@ private:
     int mnPlotCurves;
     int mGenerationNumber;
     unsigned long int mTempVarCtr;
-
 };
 
 #endif // LOGDATAHANDLER_H

@@ -106,7 +106,7 @@ PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, SharedLogVari
     {
         pPlotWindow = createNewPlotWindowOrGetCurrentOne();
     }
-    pPlotWindow->addPlotCurve(pData, axis, QString(), curveColor);
+    pPlotWindow->addPlotCurve(pData, axis, curveColor);
 
     return pPlotWindow;
 }

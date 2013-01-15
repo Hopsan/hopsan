@@ -121,6 +121,7 @@ void Component::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         if(this->getPort("in_bottom")->isConnected() && pPlotWindow)
         {
             VariableDescription varDesc;
+            varDesc.mModelPath = getParentContainerObject()->getModelFileInfo().fileName();
             varDesc.mComponentName = getPort("in_bottom")->getConnectedPorts().at(0)->mpParentGuiModelObject->getName();
             varDesc.mPortName = getPort("in_bottom")->getConnectedPorts().at(0)->getPortName();
             varDesc.mDataName = "Value";

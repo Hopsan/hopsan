@@ -128,19 +128,13 @@ PlotTabWidget::PlotTabWidget(PlotWindow *pParentPlotWindow)
 PlotWindow::PlotWindow(const QString name, MainWindow *parent)
     : QMainWindow(parent)
 {
+    // Set name of Window
     mName = name;
+    refreshWindowTitle();
 
     // Set Window attributes
     setAttribute(Qt::WA_DeleteOnClose, true);
     setAttribute(Qt::WA_MouseTracking, true);
-
-    // Set name of Window from the container object
-    QString modelPathway = gpMainWindow->mpProjectTabs->getCurrentContainer()->getModelFileInfo().filePath();
-    QFileInfo fi(modelPathway);
-    QString namer = fi.baseName();
-    //setWindowTitle(QString(namer) + " Plot");
-    setWindowTitle(mName);
-    //! @todo show model name somwhere else mybe in paranthesis
 
     //setAcceptDrops(false);
     //setAttribute(Qt::WA_TransparentForMouseEvents, false);
@@ -531,16 +525,21 @@ QString PlotWindow::getName() const
 //! @param portName Name of port where variable is located
 //! @param dataName Name of variable
 //! @param dataUnit Unit of variable
-void PlotWindow::addPlotCurve(SharedLogVariableDataPtrT pData, int axisY, QString modelPath, QColor desiredColor)
+void PlotWindow::addPlotCurve(SharedLogVariableDataPtrT pData, int axisY, QColor desiredColor)
 {
-    //    if(dataUnit.isEmpty())
-    //    {
-    //        dataUnit = gConfig.getDefaultUnit(dataName);
-    //    }
-    PlotCurve *pTempCurve = new PlotCurve(pData, axisY, modelPath, getCurrentPlotTab());
+    //! @todo check if model path same as earlier to prvent mixing data
+    // Remember which model it belongs to, and connect the closeWindow signal from the data handler
+    // this makes it possible to autoclose all plotwindows with data from a particaulr model(logdatahandler)
+    mModelName = pData->getModelPath();
+    if (pData->getLogDataHandler())
+    {
+        connect(pData->getLogDataHandler(), SIGNAL(closePlotsWithOwnedData()), this, SLOT(close()), Qt::UniqueConnection);
+    }
+
+    PlotCurve *pTempCurve = new PlotCurve(pData, axisY, getCurrentPlotTab());
     getCurrentPlotTab()->addCurve(pTempCurve, desiredColor);
     pTempCurve->updatePlotInfoVisibility();
-
+    refreshWindowTitle();
 }
 
 
@@ -633,7 +632,8 @@ void PlotWindow::saveToXml()
             curveElement.setAttribute("axis",       mpPlotTabWidget->getTab(i)->getCurves().at(j)->getAxisY());
             curveElement.setAttribute("width",      mpPlotTabWidget->getTab(i)->getCurves().at(j)->getQwtPlotCurvePtr()->pen().width());
             curveElement.setAttribute("color",      makeRgbString(mpPlotTabWidget->getTab(i)->getCurves().at(j)->getQwtPlotCurvePtr()->pen().color()));
-            curveElement.setAttribute("model",      mpPlotTabWidget->getTab(i)->getCurves().at(j)->getContainerObjectPtr()->getModelFileInfo().filePath());
+            //curveElement.setAttribute("model",      mpPlotTabWidget->getTab(i)->getCurves().at(j)->getContainerObjectPtr()->getModelFileInfo().filePath());
+            //! @todo FIXA /Peter
         }
     }
 
@@ -758,7 +758,6 @@ void PlotWindow::performFrequencyAnalysisFromDialog()
     getCurrentPlotTab()->updateLabels();
     PlotCurve *pNewCurve = new PlotCurve(mpFrequencyAnalysisCurve->getPlotLogDataVariable(),
                                          mpFrequencyAnalysisCurve->getAxisY(),
-                                         mpFrequencyAnalysisCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
                                          getCurrentPlotTab(), FIRSTPLOT, FREQUENCYANALYSIS);
     getCurrentPlotTab()->addCurve(pNewCurve);
     pNewCurve->toFrequencySpectrum();
@@ -979,7 +978,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
     //                                        pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
     //                                        getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
     PlotCurve *pNyquistCurve1 = new PlotCurve(pOutputCurve->getPlotLogDataVariable()->getVariableDescription(),
-                                              vRe, vIm, pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
+                                              vRe, vIm, pOutputCurve->getAxisY(),
                                               getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
     getCurrentPlotTab()->addCurve(pNyquistCurve1);
     pNyquistCurve1->updatePlotInfoVisibility();
@@ -987,7 +986,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
     //                                        pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
     //                                        getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
     PlotCurve *pNyquistCurve2 = new PlotCurve(pOutputCurve->getPlotLogDataVariable()->getVariableDescription(),
-                                              vRe, vImNeg, pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
+                                              vRe, vImNeg, pOutputCurve->getAxisY(),
                                               getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
     getCurrentPlotTab()->addCurve(pNyquistCurve2);
     pNyquistCurve2->updatePlotInfoVisibility();
@@ -1000,7 +999,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
     //                                          pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
     //                                          getCurrentPlotTab(), FIRSTPLOT, BODEGAIN);
     PlotCurve *pGainCurve = new PlotCurve(pOutputCurve->getPlotLogDataVariable()->getVariableDescription(),
-                                          F, vBodeGain, pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
+                                          F, vBodeGain, pOutputCurve->getAxisY(),
                                           getCurrentPlotTab(), FIRSTPLOT, BODEGAIN);
     getCurrentPlotTab()->addCurve(pGainCurve);
     pGainCurve->updatePlotInfoVisibility();
@@ -1009,7 +1008,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
     //                                          pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
     //                                          getCurrentPlotTab(), SECONDPLOT, BODEPHASE);
     PlotCurve *pPhaseCurve = new PlotCurve(pOutputCurve->getPlotLogDataVariable()->getVariableDescription(),
-                                           F, vBodePhase, pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
+                                           F, vBodePhase, pOutputCurve->getAxisY(),
                                            getCurrentPlotTab(), SECONDPLOT, BODEPHASE);
     getCurrentPlotTab()->addCurve(pPhaseCurve, QColor(), SECONDPLOT);
     pPhaseCurve->updatePlotInfoVisibility();
@@ -1277,6 +1276,18 @@ void PlotWindow::establishPlotTabConnections()
     else
     {
         mpPlotTabWidget->hide();
+    }
+}
+
+void PlotWindow::refreshWindowTitle()
+{
+    if (mModelName.isEmpty())
+    {
+        setWindowTitle(mName);
+    }
+    else
+    {
+        setWindowTitle(mName + " (" + mModelName + ")");
     }
 }
 

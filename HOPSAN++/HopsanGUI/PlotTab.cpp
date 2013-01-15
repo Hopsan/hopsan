@@ -1172,7 +1172,7 @@ void PlotTab::exportToHvc(QString fileName)
     doc.appendChild(hvcroot);
     hvcroot.setAttribute("hvcversion", "0.1");
 
-    QString modelPath = relativePath(mPlotCurvePtrs[FIRSTPLOT][0]->getContainerObjectPtr()->getModelFileInfo(), QDir(fileInfo.absolutePath()));
+    QString modelPath = relativePath(mPlotCurvePtrs[FIRSTPLOT][0]->getConstLogDataVariablePtr()->getLogDataHandler()->getParentContainerObject()->getModelFileInfo(), QDir(fileInfo.absolutePath()));
     QDomElement validation = appendDomElement(hvcroot, "validation");
     appendDomTextNode(validation, "modelfile", modelPath);
     appendDomTextNode(validation, "parameterset", "");
@@ -1534,7 +1534,7 @@ void PlotTab::exportToOldHop()
         variables.append(mPlotCurvePtrs[FIRSTPLOT][c]->getPlotLogDataVariable()->getFullVariableName());
     }
 
-    mPlotCurvePtrs[FIRSTPLOT].first()->getContainerObjectPtr()->getLogDataHandler()->exportToPlo(filePath, variables);
+    mPlotCurvePtrs[FIRSTPLOT].first()->getConstLogDataVariablePtr()->getLogDataHandler()->getParentContainerObject()->getLogDataHandler()->exportToPlo(filePath, variables);
 
     //    file.setFileName(fileInfo.filePath());   //Create a QFile object
     //    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))

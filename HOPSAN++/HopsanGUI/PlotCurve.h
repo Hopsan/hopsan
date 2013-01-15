@@ -111,7 +111,6 @@ public:
 
     PlotCurve(SharedLogVariableDataPtrT pData,
               int axisY=QwtPlot::yLeft,
-              QString modelPath="",
               PlotTab *parent=0,
               HopsanPlotID plotID=FIRSTPLOT,
               HopsanPlotCurveType curveType=PORTVARIABLE);
@@ -120,7 +119,6 @@ public:
               const QVector<double> &rXVector,
               const QVector<double> &rYVector,
               int axisY=QwtPlot::yLeft,
-              QString modelPath="",
               PlotTab *parent=0,
               HopsanPlotID plotID=FIRSTPLOT,
               HopsanPlotCurveType curveType=PORTVARIABLE);
@@ -133,17 +131,18 @@ public:
     HopQwtPlotCurve *getQwtPlotCurvePtr();
     //QDockWidget *getPlotInfoDockWidget();
 
-    SharedLogVariableDataPtrT getPlotLogDataVariable(); //! @todo is this needed
+
     int getGeneration() const;
     QString getComponentName();
     QString getPortName();
     QString getDataName();
     QString getDataUnit();
 
+    SharedLogVariableDataPtrT getPlotLogDataVariable(); //! @todo is this needed
     const SharedLogVariableDataPtrT getConstLogDataVariablePtr() const;
     const QVector<double> &getDataVector() const;
     const QVector<double> &getTimeVector() const;
-    ContainerObject *getContainerObjectPtr();
+    //ContainerObject *getContainerObjectPtr();
 
     void setGeneration(int generation);
     void setDataUnit(QString unit);
@@ -185,7 +184,7 @@ private:
     HopsanPlotCurveType mCurveType;
     HopQwtPlotCurve *mpQwtPlotCurve;
 
-    ContainerObject *mpContainerObject;
+    //ContainerObject *mpContainerObject;
 
     QColor mLineColor;
     QString mLineStyle;
@@ -210,7 +209,7 @@ private:
 
     void deleteCustomData();
     void connectDataSignals();
-    void commonConstructorCode(int axisY, QString modelPath, PlotTab *parent, HopsanPlotID plotID, HopsanPlotCurveType curveType);
+    void commonConstructorCode(int axisY, PlotTab *parent, HopsanPlotID plotID, HopsanPlotCurveType curveType);
 };
 
 

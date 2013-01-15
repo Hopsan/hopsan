@@ -222,113 +222,6 @@ void PlotCurveInfoBox::actiavateCurve(bool active)
     }
 }
 
-
-
-
-
-//class PlotInfoBox;
-
-
-////! @brief Constructor for plot curves.
-////! @param generation Generation of plot data to use
-////! @param componentName Name of component where plot data is located
-////! @param portName Name of port where plot data is located
-////! @param dataName Name of physical quantity to use (e.g. "Pressure", "Velocity"...)
-////! @param dataUnit Name of unit to show data in
-////! @param axisY Which Y-axis to use (QwtPlot::yLeft or QwtPlot::yRight)
-////! @param parent Pointer to plot tab which curve shall be created it
-//PlotCurve::PlotCurve(int generation, QString componentName, QString portName, QString dataName, QString dataUnit, int axisY, QString modelPath, PlotTab *parent, HopsanPlotID plotID, HopsanPlotCurveType curveType)
-//{
-//    mCurveType = curveType;
-
-//        //Set all member variables
-//    mpParentPlotTab = parent;
-//    if(modelPath.isEmpty())
-//    {
-//        mpContainerObject = gpMainWindow->mpProjectTabs->getCurrentContainer();
-//    }
-//    else
-//    {
-//        for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
-//        {
-//            if(gpMainWindow->mpProjectTabs->getTab(i)->getTopLevelSystem()->getModelFileInfo().filePath() == modelPath)
-//            {
-//                mpContainerObject = gpMainWindow->mpProjectTabs->getContainer(i);
-//                break;
-//            }
-//        }
-//    }
-//    assert(!mpContainerObject == 0);        //Container not found, should never happen! Caller to the function has supplied a model name that does not exist.
-
-//    mpContainerObject->getPlotDataPtr()->incrementOpenPlotCurves();
-//    mGeneration = generation;
-//    mComponentName = componentName;
-//    mPortName = portName;
-//    mDataName = dataName;
-//    if(dataUnit.isEmpty())
-//    {
-//        mDataUnit = gConfig.getDefaultUnit(dataName);   //Apply default unit if not specified
-//    }
-//    else
-//    {
-//        mDataUnit = dataUnit;
-//    }
-//    mAxisY = axisY;
-//    mAutoUpdate = true;
-//    mScaleX = 1.0;
-//    mScaleY = 1.0;
-//    mOffsetX = 0.0;
-//    mOffsetY = 0.0;
-
-//        //Get data from container object
-//    mDataVector = mpContainerObject->getPlotDataPtr()->getPlotData(generation, componentName, portName, dataName);
-//    mTimeVector = mpContainerObject->getPlotDataPtr()->getTimeVector(generation);
-
-//        //Create the actual curve
-//    mpQwtPlotCurve = new HopQwtPlotCurve(QString(mComponentName+", "+mPortName+", "+mDataName));
-//    updateCurve();
-//    mpQwtPlotCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
-//    mpQwtPlotCurve->setYAxis(axisY);
-//    mpQwtPlotCurve->attach(parent->getPlot(plotID));
-
-//        //Create the plot info box
-//    mpPlotInfoBox = new PlotInfoBox(this, mpParentPlotTab);
-//    mpPlotInfoBox->setPalette(gConfig.getPalette());
-//    updatePlotInfoBox();
-//    mpPlotInfoBox->mpSizeSpinBox->setValue(2);
-//    //mpPlotInfoBox->mpLineStyleCombo->setStyle("SolidLine");
-
-//    mpParentPlotTab->mpParentPlotWindow->mpPlotInfoLayout->addWidget(mpPlotInfoBox);
-
-//    if(curveType != PORTVARIABLE)
-//    {
-//        setAutoUpdate(false);
-//        mpPlotInfoBox->mpAutoUpdateCheckBox->setDisabled(true);
-//        mpPlotInfoBox->mpNextButton->setDisabled(true);
-//        mpPlotInfoBox->mpPreviousButton->setDisabled(true);
-//        mpPlotInfoBox->mpFrequencyAnalysisButton->setDisabled(true);
-//    }
-
-//    mpQwtPlotCurve->setItemAttribute(QwtPlotItem::Legend, mpParentPlotTab->mpParentPlotWindow->mLegendsVisible);
-
-//        //Create connections
-//    connect(mpPlotInfoBox->mpLineStyleCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(setLineStyle(QString)));
-//    connect(mpPlotInfoBox->mpLineSymbol, SIGNAL(currentIndexChanged(QString)),  this, SLOT(setLineSymbol(QString)));
-//    connect(mpPlotInfoBox->mpSizeSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setLineWidth(int)));
-//    connect(mpPlotInfoBox->mpColorButton, SIGNAL(clicked()), this, SLOT(setLineColor()));
-//    connect(mpPlotInfoBox->mpScaleButton, SIGNAL(clicked()), this, SLOT(openScaleDialog()));
-//    connect(mpParentPlotTab->mpParentPlotWindow->getPlotTabWidget(), SIGNAL(currentChanged(int)), this, SLOT(updatePlotInfoVisibility()));
-//    connect(mpParentPlotTab->mpParentPlotWindow->mpShowCurveInfoButton, SIGNAL(toggled(bool)), SLOT(updatePlotInfoVisibility()));
-//    connect(mpPlotInfoBox->mpCloseButton, SIGNAL(clicked()), this, SLOT(removeMe()));
-//    connect(gpMainWindow->mpProjectTabs->getCurrentTab(),SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
-//    connect(gpMainWindow->mpProjectTabs,SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
-//    connect(mpContainerObject, SIGNAL(objectDeleted()), this, SLOT(removeMe()));
-//    connect(mpContainerObject, SIGNAL(objectDeleted()), mpParentPlotTab->mpParentPlotWindow, SLOT(closeIfEmpty()), Qt::UniqueConnection);
-//    connect(mpContainerObject->getModelObject(mComponentName), SIGNAL(objectDeleted()), this, SLOT(removeMe()));
-//    connect(mpContainerObject->getModelObject(mComponentName), SIGNAL(nameChanged()), this, SLOT(removeMe()));
-//    connect(mpContainerObject, SIGNAL(connectorRemoved()), this, SLOT(removeIfNotConnected()));
-//}
-
 //! @brief Constructor for plot curves.
 //! @param generation Generation of plot data to use
 //! @param componentName Name of component where plot data is located
@@ -339,14 +232,13 @@ void PlotCurveInfoBox::actiavateCurve(bool active)
 //! @param parent Pointer to plot tab which curve shall be created it
 PlotCurve::PlotCurve(SharedLogVariableDataPtrT pData,
                      int axisY,
-                     QString modelPath,
                      PlotTab *parent,
                      HopsanPlotID plotID,
                      HopsanPlotCurveType curveType)
 {
     mHaveCustomData = false;
     mpData = pData;
-    commonConstructorCode(axisY, modelPath, parent, plotID, curveType);
+    commonConstructorCode(axisY, parent, plotID, curveType);
 }
 
 //! @brief Consturctor for custom data
@@ -354,20 +246,19 @@ PlotCurve::PlotCurve(const SharedVariableDescriptionT &rVarDesc,
                      const QVector<double> &rXVector,
                      const QVector<double> &rYVector,
                      int axisY,
-                     QString modelPath,
                      PlotTab *parent,
                      HopsanPlotID plotID,
                      HopsanPlotCurveType curveType)
 {
-    LogVariableContainer *pDataContainer = new LogVariableContainer(rVarDesc);
+    //! @todo see if it is possible to reuse the setCustomData member function
+    LogVariableContainer *pDataContainer = new LogVariableContainer(rVarDesc,0);
     pDataContainer->addDataGeneration(0, rXVector, rYVector);
     mHaveCustomData = true;
     mpData = pDataContainer->getDataGeneration(0);
-    commonConstructorCode(axisY, modelPath, parent, plotID, curveType);
+    commonConstructorCode(axisY, parent, plotID, curveType);
 }
 
 void PlotCurve::commonConstructorCode(int axisY,
-                                      QString modelPath,
                                       PlotTab* parent,
                                       HopsanPlotID plotID,
                                       HopsanPlotCurveType curveType)
@@ -375,27 +266,6 @@ void PlotCurve::commonConstructorCode(int axisY,
     mIsActive = false;
     mCurveType = curveType;
     mpParentPlotTab = parent;
-
-    //! @todo send in continer ptr directly instead of madness searching
-    //Set all member variables
-    if(modelPath.isEmpty())
-    {
-        mpContainerObject = gpMainWindow->mpProjectTabs->getCurrentContainer();
-    }
-    else
-    {
-        for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
-        {
-            if(gpMainWindow->mpProjectTabs->getTab(i)->getTopLevelSystem()->getModelFileInfo().filePath() == modelPath)
-            {
-                mpContainerObject = gpMainWindow->mpProjectTabs->getContainer(i);
-                break;
-            }
-        }
-    }
-    Q_ASSERT(!mpContainerObject == 0);        //Container not found, should never happen! Caller to the function has supplied a model name that does not exist.
-
-    //mpContainerObject->getLogDataHandler()->incrementOpenPlotCurves(); //!< why is this necessary
 
     QString dataUnit = mpData->getDataUnit();
     if(dataUnit.isEmpty())
@@ -454,14 +324,24 @@ void PlotCurve::commonConstructorCode(int axisY,
 
     connectDataSignals();
 
+    if (mpData->getLogDataHandler())
+    {
+        mpData->getLogDataHandler()->incrementOpenPlotCurves();
+    }
 }
 
 //! @brief Destructor for plot curves
-//! Deletes the info box and its dock widgets before the curve is removed.
 PlotCurve::~PlotCurve()
 {
-    //mpContainerObject->getLogDataHandler()->decrementOpenPlotCurves();
-    delete(mpPlotCurveInfoBox);
+    // If the curve data had a data handler then decrement its open curves counter
+    LogDataHandler* pDataHandler = mpData->getLogDataHandler();
+    if (pDataHandler)
+    {
+        pDataHandler->decrementOpenPlotCurves();
+    }
+
+    // Delete the plot info box for this curve
+    delete mpPlotCurveInfoBox;
 
     // Delete custom data if any
     deleteCustomData();
@@ -576,19 +456,12 @@ const QVector<double> &PlotCurve::getTimeVector() const
 }
 
 
-//! @brief Returns a pointer to the container object a curve origins from
-ContainerObject *PlotCurve::getContainerObjectPtr()
-{
-    return mpContainerObject;
-}
-
-
 //! @brief Sets the generation of a plot curve
 //! Updates the data to specified generation, and updates plot info box.
 //! @param genereation Genereation to use
 void PlotCurve::setGeneration(int generation)
 {
-    SharedLogVariableDataPtrT pNewData = mpContainerObject->getLogDataHandler()->getPlotData(mpData->getFullVariableName(), generation);
+    SharedLogVariableDataPtrT pNewData = mpData->getLogDataHandler()->getPlotData(mpData->getFullVariableName(), generation);
     if (pNewData)
     {
         mpData = pNewData;
@@ -652,7 +525,7 @@ void PlotCurve::setCustomData(const VariableDescription &rVarDesc, const QVector
 
     //Create new custom data
     SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription(rVarDesc));
-    LogVariableContainer *pDataContainer = new LogVariableContainer(pVarDesc);
+    LogVariableContainer *pDataContainer = new LogVariableContainer(pVarDesc, 0);
     pDataContainer->addDataGeneration(0, rvTime, rvData);
     mHaveCustomData = true;
     mpData = pDataContainer->getDataGeneration(0);
