@@ -1,16 +1,17 @@
 #include "PlotCurve.h"
 
-#include "PlotTab.h"
-#include "MainWindow.h"
-#include "PlotCurve.h"
-#include "Widgets/ProjectTabWidget.h"
-#include "GUIObjects/GUISystem.h"
-#include "Configuration.h"
 #include "PlotWindow.h"
+#include "PlotTab.h"
+
+#include "Configuration.h"
+#include "MainWindow.h"
+
+#include "Widgets/ProjectTabWidget.h"
 #include "Utilities/GUIUtilities.h"
 
-#include <limits>
+#include "LogDataHandler.h"
 
+#include <limits>
 const double DBLMAX = std::numeric_limits<double>::max();
 
 
@@ -177,10 +178,10 @@ void PlotCurveInfoBox::setLineColor(const QColor color)
 void PlotCurveInfoBox::updateInfo()
 {
     // Enable/diable generation buttons
-    const int lowGen = mpParentPlotCurve->getConstLogDataVariablePtr()->getLowestGeneration();
-    const int highGen = mpParentPlotCurve->getConstLogDataVariablePtr()->getHighestGeneration();
+    const int lowGen = mpParentPlotCurve->getLogDataVariablePtr()->getLowestGeneration();
+    const int highGen = mpParentPlotCurve->getLogDataVariablePtr()->getHighestGeneration();
     const int gen = mpParentPlotCurve->getGeneration();
-    const int nGen = mpParentPlotCurve->getConstLogDataVariablePtr()->getNumGenerations();
+    const int nGen = mpParentPlotCurve->getLogDataVariablePtr()->getNumGenerations();
     mpPreviousButton->setEnabled( (gen > lowGen) && (nGen > 1) );
     mpNextButton->setEnabled( (gen < highGen) && ( nGen > 1) );
 
@@ -200,7 +201,7 @@ void PlotCurveInfoBox::updateInfo()
 
 void PlotCurveInfoBox::refreshTitle()
 {
-    QString title = mpParentPlotCurve->getPlotLogDataVariable()->getFullVariableNameWithSeparator(", ");
+    QString title = mpParentPlotCurve->getLogDataVariablePtr()->getFullVariableNameWithSeparator(", ");
     title.append(" ["+mpParentPlotCurve->getDataUnit()+"]");
     mpTitle->setText(title);
 }
@@ -428,7 +429,7 @@ QString PlotCurve::getDataUnit()
     return mpData->getDataUnit();
 }
 
-const SharedLogVariableDataPtrT PlotCurve::getConstLogDataVariablePtr() const
+const SharedLogVariableDataPtrT PlotCurve::getLogDataVariablePtr() const
 {
     return mpData;
 }
@@ -599,7 +600,7 @@ void PlotCurve::toFrequencySpectrum()
     updatePlotInfoBox();
 }
 
-SharedLogVariableDataPtrT PlotCurve::getPlotLogDataVariable()
+SharedLogVariableDataPtrT PlotCurve::getLogDataVariablePtr()
 {
     return mpData;
 }

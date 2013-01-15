@@ -21,7 +21,7 @@
 #include "Dependencies/BarChartPlotter/axisbase.h"
 #include "common.h"
 
-#include "LogDataHandler.h"
+#include "LogVariable.h"
 
 //Forward Declarations
 class PlotWindow;
@@ -147,7 +147,6 @@ private:
     QVector<double> mSpecialXVector;
     QString mSpecialXVectorLabel;
     SharedVariableDescriptionT mSpecialXVectorDescription;
-    QString mSpecialXVectorModelPath; //!< @todo Maybe modelpath should be part of the description
 
     //Stuff used in export to xml dialog
     QDialog *mpExportXmlDialog;

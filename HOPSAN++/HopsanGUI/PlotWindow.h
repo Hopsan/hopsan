@@ -30,17 +30,14 @@
 #include <QString>
 
 #include <qwt_plot.h>
+#include "LogVariable.h"
 
 // Forward Declaration
 class MainWindow;
 class PlotTab;
 class PlotCurve;
-class LogVariableData;
-class VariableDescription;
 class PlotWindow;
 
-typedef QSharedPointer<LogVariableData> SharedLogVariableDataPtrT;
-typedef QSharedPointer<VariableDescription> SharedVariableDescriptionT;
 
 //! @brief Tab widget for plots in plot window
 class PlotTabWidget : public QTabWidget
@@ -155,8 +152,8 @@ private:
 
     PlotTabWidget *mpPlotTabWidget;
 
-    QMap<QRadioButton *, PlotCurve *> mBodeInputButtonToCurveMap;
-    QMap<QRadioButton *, PlotCurve *> mBodeOutputButtonToCurveMap;
+    QMap<QRadioButton*, PlotCurve*> mBodeInputButtonToCurveMap;
+    QMap<QRadioButton*, PlotCurve*> mBodeOutputButtonToCurveMap;
 
     //Help popup
     QWidget *mpHelpPopup;

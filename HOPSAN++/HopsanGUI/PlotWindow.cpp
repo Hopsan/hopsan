@@ -616,7 +616,7 @@ void PlotWindow::saveToXml()
             specialXElement.setAttribute("port",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mPortName);
             specialXElement.setAttribute("data",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mDataName);
             specialXElement.setAttribute("unit",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mDataUnit);
-            specialXElement.setAttribute("model",       mpPlotTabWidget->getTab(i)->mSpecialXVectorModelPath);
+            specialXElement.setAttribute("model",       mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mModelPath);
         }
 
         //Add curve elements
@@ -756,7 +756,7 @@ void PlotWindow::performFrequencyAnalysisFromDialog()
     addPlotTab();
     getCurrentPlotTab()->getPlot()->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
     getCurrentPlotTab()->updateLabels();
-    PlotCurve *pNewCurve = new PlotCurve(mpFrequencyAnalysisCurve->getPlotLogDataVariable(),
+    PlotCurve *pNewCurve = new PlotCurve(mpFrequencyAnalysisCurve->getLogDataVariablePtr(),
                                          mpFrequencyAnalysisCurve->getAxisY(),
                                          getCurrentPlotTab(), FIRSTPLOT, FREQUENCYANALYSIS);
     getCurrentPlotTab()->addCurve(pNewCurve);
@@ -977,7 +977,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
     //    PlotCurve *pNyquistCurve1 = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
     //                                        pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
     //                                        getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
-    PlotCurve *pNyquistCurve1 = new PlotCurve(pOutputCurve->getPlotLogDataVariable()->getVariableDescription(),
+    PlotCurve *pNyquistCurve1 = new PlotCurve(pOutputCurve->getLogDataVariablePtr()->getVariableDescription(),
                                               vRe, vIm, pOutputCurve->getAxisY(),
                                               getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
     getCurrentPlotTab()->addCurve(pNyquistCurve1);
@@ -985,7 +985,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
     //    PlotCurve *pNyquistCurve2 = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
     //                                        pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
     //                                        getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
-    PlotCurve *pNyquistCurve2 = new PlotCurve(pOutputCurve->getPlotLogDataVariable()->getVariableDescription(),
+    PlotCurve *pNyquistCurve2 = new PlotCurve(pOutputCurve->getLogDataVariablePtr()->getVariableDescription(),
                                               vRe, vImNeg, pOutputCurve->getAxisY(),
                                               getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
     getCurrentPlotTab()->addCurve(pNyquistCurve2);
@@ -998,7 +998,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
     //    PlotCurve *pGainCurve = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
     //                                          pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
     //                                          getCurrentPlotTab(), FIRSTPLOT, BODEGAIN);
-    PlotCurve *pGainCurve = new PlotCurve(pOutputCurve->getPlotLogDataVariable()->getVariableDescription(),
+    PlotCurve *pGainCurve = new PlotCurve(pOutputCurve->getLogDataVariablePtr()->getVariableDescription(),
                                           F, vBodeGain, pOutputCurve->getAxisY(),
                                           getCurrentPlotTab(), FIRSTPLOT, BODEGAIN);
     getCurrentPlotTab()->addCurve(pGainCurve);
@@ -1007,7 +1007,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
     //    PlotCurve *pPhaseCurve = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
     //                                          pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
     //                                          getCurrentPlotTab(), SECONDPLOT, BODEPHASE);
-    PlotCurve *pPhaseCurve = new PlotCurve(pOutputCurve->getPlotLogDataVariable()->getVariableDescription(),
+    PlotCurve *pPhaseCurve = new PlotCurve(pOutputCurve->getLogDataVariablePtr()->getVariableDescription(),
                                            F, vBodePhase, pOutputCurve->getAxisY(),
                                            getCurrentPlotTab(), SECONDPLOT, BODEPHASE);
     getCurrentPlotTab()->addCurve(pPhaseCurve, QColor(), SECONDPLOT);
@@ -1307,7 +1307,7 @@ void PlotWindow::createPlotWindowFromTab()
     for(int i=0; i<getCurrentPlotTab()->getCurves().size(); ++i)
     {
         //pPlotWindow->addPlotCurve(getCurrentPlotTab()->getCurves().at(i)->getGeneration(), getCurrentPlotTab()->getCurves().at(i)->getComponentName(), getCurrentPlotTab()->getCurves().at(i)->getPortName(), getCurrentPlotTab()->getCurves().at(i)->getDataName(), getCurrentPlotTab()->getCurves().at(i)->getDataUnit(), getCurrentPlotTab()->getCurves().at(i)->getAxisY());
-        pPW = gpPlotHandler->plotDataToWindow(pPW,getCurrentPlotTab()->getCurves().at(i)->getPlotLogDataVariable(), getCurrentPlotTab()->getCurves().at(i)->getAxisY());
+        pPW = gpPlotHandler->plotDataToWindow(pPW,getCurrentPlotTab()->getCurves().at(i)->getLogDataVariablePtr(), getCurrentPlotTab()->getCurves().at(i)->getAxisY());
     }
 }
 

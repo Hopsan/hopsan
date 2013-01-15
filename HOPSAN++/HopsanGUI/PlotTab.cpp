@@ -881,10 +881,9 @@ void PlotTab::changeXVector(QVector<double> xArray, const VariableDescription &r
 
     rescaleToCurves();
 
-    mSpecialXVectorModelPath = gpMainWindow->mpProjectTabs->getCurrentContainer()->getModelFileInfo().filePath();
     mSpecialXVectorDescription = SharedVariableDescriptionT(new VariableDescription(rVarDesc));
-
     mSpecialXVectorLabel = QString(mSpecialXVectorDescription->mDataName + " [" + mSpecialXVectorDescription->mDataUnit + "]");
+
     updateLabels();
     update();
     mpParentPlotWindow->mpResetXVectorButton->setEnabled(true);
@@ -1172,7 +1171,7 @@ void PlotTab::exportToHvc(QString fileName)
     doc.appendChild(hvcroot);
     hvcroot.setAttribute("hvcversion", "0.1");
 
-    QString modelPath = relativePath(mPlotCurvePtrs[FIRSTPLOT][0]->getConstLogDataVariablePtr()->getLogDataHandler()->getParentContainerObject()->getModelFileInfo(), QDir(fileInfo.absolutePath()));
+    QString modelPath = relativePath(mPlotCurvePtrs[FIRSTPLOT][0]->getLogDataVariablePtr()->getLogDataHandler()->getParentContainerObject()->getModelFileInfo(), QDir(fileInfo.absolutePath()));
     QDomElement validation = appendDomElement(hvcroot, "validation");
     appendDomTextNode(validation, "modelfile", modelPath);
     appendDomTextNode(validation, "parameterset", "");
@@ -1531,10 +1530,10 @@ void PlotTab::exportToOldHop()
     QStringList variables;
     for(int c=0; c<mPlotCurvePtrs[FIRSTPLOT].size(); ++c)
     {
-        variables.append(mPlotCurvePtrs[FIRSTPLOT][c]->getPlotLogDataVariable()->getFullVariableName());
+        variables.append(mPlotCurvePtrs[FIRSTPLOT][c]->getLogDataVariablePtr()->getFullVariableName());
     }
 
-    mPlotCurvePtrs[FIRSTPLOT].first()->getConstLogDataVariablePtr()->getLogDataHandler()->getParentContainerObject()->getLogDataHandler()->exportToPlo(filePath, variables);
+    mPlotCurvePtrs[FIRSTPLOT].first()->getLogDataVariablePtr()->getLogDataHandler()->getParentContainerObject()->getLogDataHandler()->exportToPlo(filePath, variables);
 
     //    file.setFileName(fileInfo.filePath());   //Create a QFile object
     //    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))

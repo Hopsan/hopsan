@@ -9,16 +9,17 @@
 
 #include <QLabel>
 #include <QToolButton>
-#include "LogDataHandler.h"
-#include <common.h>
-
 #include <QDoubleSpinBox>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QHBoxLayout>
 
+#include "LogVariable.h"
+#include "common.h"
+
 // Forward Declaration
 class PlotTab;
+class PlotCurve;
 
 enum {AxisIdRole=QwtLegendData::UserRole+1};
 //! @todo Merge this class with PlotLegend
@@ -66,11 +67,6 @@ public:
     QList<QwtLegendData> legendData() const;
 
 };
-
-
-
-
-class PlotCurve;
 
 
 class PlotCurveInfoBox : public QWidget
@@ -129,8 +125,6 @@ public:
     HopsanPlotCurveType getCurveType();
     int getAxisY();
     HopQwtPlotCurve *getQwtPlotCurvePtr();
-    //QDockWidget *getPlotInfoDockWidget();
-
 
     int getGeneration() const;
     QString getComponentName();
@@ -138,11 +132,10 @@ public:
     QString getDataName();
     QString getDataUnit();
 
-    SharedLogVariableDataPtrT getPlotLogDataVariable(); //! @todo is this needed
-    const SharedLogVariableDataPtrT getConstLogDataVariablePtr() const;
+    SharedLogVariableDataPtrT getLogDataVariablePtr(); //! @todo is this needed
+    const SharedLogVariableDataPtrT getLogDataVariablePtr() const;
     const QVector<double> &getDataVector() const;
     const QVector<double> &getTimeVector() const;
-    //ContainerObject *getContainerObjectPtr();
 
     void setGeneration(int generation);
     void setDataUnit(QString unit);
@@ -183,8 +176,6 @@ private:
 
     HopsanPlotCurveType mCurveType;
     HopQwtPlotCurve *mpQwtPlotCurve;
-
-    //ContainerObject *mpContainerObject;
 
     QColor mLineColor;
     QString mLineStyle;
