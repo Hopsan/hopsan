@@ -128,7 +128,7 @@ namespace hopsan {
             //Set parameters
 >>>10>>>            sv = vars[<<<valueref>>>];
             vr = getValueReference(sv);
-            value=par<<<parnum>>>;
+            value=<<<varname>>>;
             mFMU.setReal(c, &vr, 1, &value);
 <<<10<<<
             //write input values

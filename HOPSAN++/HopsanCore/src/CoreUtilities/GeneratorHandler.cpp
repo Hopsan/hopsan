@@ -33,7 +33,11 @@ GeneratorHandler::GeneratorHandler()
 
 #ifdef WIN32
     HINSTANCE lib_ptr;
+#ifdef QT_NO_DEBUG
     lib_ptr = LoadLibrary("HopsanGenerator.dll"); //Load the dll
+#else
+    lib_ptr = LoadLibrary("HopsanGenerator_d.dll"); //Load the dll
+#endif
 
     if (!lib_ptr)
     {
@@ -99,11 +103,11 @@ GeneratorHandler::GeneratorHandler()
 
 #else
     void *lib_ptr;
+#ifdef QT_NO_DEBUG
     lib_ptr = dlopen("libHopsanGenerator.so", RTLD_NOW);  //Load the dll
-    if (!lib_ptr)
-    {
-        lib_ptr = dlopen("libHopsanGenerator_d.so", RTLD_NOW);  //Try debug version  if normal failes
-    }
+#else
+    lib_ptr = dlopen("libHopsanGenerator_d.so", RTLD_NOW);  //Load the dll
+#endif
     if (!lib_ptr)
     {
         fprintf (stderr, "%s\n", dlerror());

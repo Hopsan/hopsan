@@ -565,16 +565,25 @@ void HopsanGenerator::generateFromFmu(QString path)
     QList<FMIPortSpecification> portSpecs;
     for(int i=0; i<inVarPortNames.size(); ++i)
     {
-        portSpecs << FMIPortSpecification("mpIn_"+inVarPortNames[i], inVarPortNames[i]+"In", "mpND_in"+inVarPortNames[i], inVarValueRefs[i], "ReadPort", "NodeSignal", "NodeSignal::VALUE", "input");
+        QString varName = toVarName("mpIn_"+inVarPortNames[i]);
+        QString portName = toVarName(inVarPortNames[i]+"In");
+        QString mpndName = toVarName("mpND_in"+inVarPortNames[i]);
+        portSpecs << FMIPortSpecification(varName, portName, mpndName, inVarValueRefs[i], "ReadPort", "NodeSignal", "NodeSignal::VALUE", "input");
     }
     for(int i=0; i<outVarPortNames.size(); ++i)
     {
-        portSpecs << FMIPortSpecification("mpOut"+outVarPortNames[i], outVarPortNames[i]+"Out", "mpND_out"+outVarPortNames[i], outVarValueRefs[i], "WritePort", "NodeSignal", "NodeSignal::VALUE", "output");
+        portSpecs << FMIPortSpecification(toVarName("mpOut"+outVarPortNames[i]), toVarName(outVarPortNames[i]+"Out"),
+                                          toVarName("mpND_out"+outVarPortNames[i]), outVarValueRefs[i],
+                                          "WritePort", "NodeSignal", "NodeSignal::VALUE", "output");
     }
     for(int i=0; i<inoutVarPortNames.size(); ++i)
     {
-        portSpecs << FMIPortSpecification("mpIn"+inoutVarPortNames[i], inoutVarPortNames[i]+"In", "mpND_in"+inoutVarPortNames[i], inoutVarValueRefs[i], "ReadPort", "NodeSignal", "NodeSignal::VALUE", "");
-        portSpecs << FMIPortSpecification("mpOut"+inoutVarPortNames[i], inoutVarPortNames[i]+"Out", "mpND_out"+inoutVarPortNames[i], inoutVarValueRefs[i], "WritePort", "NodeSignal", "NodeSignal::VALUE", "");
+        portSpecs << FMIPortSpecification(toVarName("mpIn"+inoutVarPortNames[i]), toVarName(inoutVarPortNames[i]+"In"),
+                                          toVarName("mpND_in"+inoutVarPortNames[i]), inoutVarValueRefs[i],
+                                          "ReadPort", "NodeSignal", "NodeSignal::VALUE", "");
+        portSpecs << FMIPortSpecification(toVarName("mpOut"+inoutVarPortNames[i]), toVarName(inoutVarPortNames[i]+"Out"),
+                                          toVarName("mpND_out"+inoutVarPortNames[i]), inoutVarValueRefs[i],
+                                          "WritePort", "NodeSignal", "NodeSignal::VALUE", "");
     }
     for(int i=0; i<tlmPortVarNames.size(); ++i)
     {
@@ -645,9 +654,9 @@ void HopsanGenerator::generateFromFmu(QString path)
     {
         if(varElement.attribute("variability") == "parameter")
         {
-            QString varName = "par"+QString::number(i);
+            QString varName = toVarName("par"+QString::number(i));
             QString initValue = varElement.firstChildElement("Real").attribute("start");
-            QString parName = varElement.attribute("name");
+            QString parName = toVarName(varElement.attribute("name"));
             QString description = varElement.attribute("description");
             QString valueRef = varElement.attribute("valueReference");
             parSpecs << FMIParameterSpecification(varName, parName, description, initValue, valueRef);
@@ -889,22 +898,22 @@ void HopsanGenerator::generateFromFmu(QString path)
     {
         inputPos += inputPosStep;
         numStr2.setNum(inputPos);
-        fmuXmlStream << "            <port name=\""+inoutVarPortNames[i]+"In\" x=\"0.0\" y=\""+numStr2+"\" a=\"180\"/>\n";
+        fmuXmlStream << "            <port name=\""+toVarName(inoutVarPortNames[i])+"In\" x=\"0.0\" y=\""+numStr2+"\" a=\"180\"/>\n";
         outputPos += outputPosStep;
         numStr2.setNum(outputPos);
-        fmuXmlStream << "            <port name=\""+inoutVarPortNames[i]+"Out\" x=\"1.0\" y=\""+numStr2+"\" a=\"0\"/>\n";
+        fmuXmlStream << "            <port name=\""+toVarName(inoutVarPortNames[i])+"Out\" x=\"1.0\" y=\""+numStr2+"\" a=\"0\"/>\n";
     }
     for(int i=0; i<inVarValueRefs.size(); ++i)
     {
         inputPos += inputPosStep;
         numStr2.setNum(inputPos);
-        fmuXmlStream << "            <port name=\""+inVarPortNames[i]+"In\" x=\"0.0\" y=\""+numStr2+"\" a=\"180\"/>\n";
+        fmuXmlStream << "            <port name=\""+toVarName(inVarPortNames[i])+"In\" x=\"0.0\" y=\""+numStr2+"\" a=\"180\"/>\n";
     }
     for(int i=0; i<outVarValueRefs.size(); ++i)
     {
         outputPos += outputPosStep;
         numStr2.setNum(outputPos);
-        fmuXmlStream << "            <port name=\""+outVarPortNames[i]+"Out\" x=\"1.0\" y=\""+numStr2+"\" a=\"0\"/>\n";
+        fmuXmlStream << "            <port name=\""+toVarName(outVarPortNames[i])+"Out\" x=\"1.0\" y=\""+numStr2+"\" a=\"0\"/>\n";
     }
 
 //    while (!varElement.isNull())
