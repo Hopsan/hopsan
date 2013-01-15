@@ -48,6 +48,33 @@ class ComponentSystem;
 }
 
 
+class FMIPortSpecification
+{
+public:
+    FMIPortSpecification(QString varName, QString portName, QString mpndName, QString valueRef, QString portType, QString nodeType, QString dataType, QString causality);
+    QString varName;
+    QString portName;
+    QString mpndName;
+    QString valueRef;
+    QString portType;
+    QString nodeType;
+    QString dataType;
+    QString causality;
+};
+
+
+class FMIParameterSpecification
+{
+public:
+    FMIParameterSpecification(QString varName, QString parName, QString description, QString initValue, QString valueRef);
+    QString varName;
+    QString parName;
+    QString description;
+    QString initValue;
+    QString valueRef;
+};
+
+
 class PortSpecification
 {
 public:

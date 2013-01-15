@@ -102,6 +102,10 @@ GeneratorHandler::GeneratorHandler()
     lib_ptr = dlopen("libHopsanGenerator.so", RTLD_NOW);  //Load the dll
     if (!lib_ptr)
     {
+        lib_ptr = dlopen("libHopsanGenerator_d.so", RTLD_NOW);  //Try debug version  if normal failes
+    }
+    if (!lib_ptr)
+    {
         fprintf (stderr, "%s\n", dlerror());
         //! @todo Error message
         return;

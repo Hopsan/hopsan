@@ -24,7 +24,8 @@
     void setStartValues(ModelInstance *comp) 
     {
 >>>6>>>        r(<<<varname>>>_) = 0;
-<<<6<<<
+<<<6<<<    }
+
     //Initialize
     void initialize(ModelInstance* comp, fmiEventInfo* eventInfo)
     {

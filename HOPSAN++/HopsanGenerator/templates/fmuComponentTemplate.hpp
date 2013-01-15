@@ -38,11 +38,16 @@ namespace hopsan {
         double *z;                // state event indicators
         double *prez;             // previous values of state event indicators
 
->>>2>>>        Port *mp<<<Portname>>>;
+        //Declare ports
+>>>2>>>        Port *<<<varname>>>;
 <<<2<<<
->>>3>>>        double *mpND_<<<portname>>>;
+
+        //Declare node data pointers
+>>>3>>>        double *<<<mpndname>>>;
 <<<3<<<
->>>4>>>        double par<<<parnum>>>;
+
+        //Declare parameters
+>>>4>>>        double <<<varname>>>;
 <<<4<<<
 
     public:
@@ -58,10 +63,13 @@ namespace hopsan {
             assert(loadLib("<<<fmudir>>>/<<<modelname>>>.<<<13>>>"));
             addInfoMessage(getString(mFMU.modelDescription, att_modelIdentifier));
 
->>>7>>>            mp<<<Portname>>> = add<<<porttype>>>("<<<portname>>>", "<<<nodetype>>>"<<<notrequired>>>);
+            //Add ports
+>>>7>>>            <<<varname>>> = add<<<porttype>>>("<<<portname>>>", "<<<nodetype>>>"<<<notrequired>>>);
 <<<7<<<
->>>8>>>            par<<<parnum>>> = <<<parvalue>>>;
-            registerParameter("<<<parname>>>", "<<<pardesc>>>", "-", par<<<parnum>>>);
+
+            //Initialize and register parameters
+>>>8>>>            <<<varname>>> = <<<initvalue>>>;
+            registerParameter("<<<parname>>>", "<<<description>>>", "-", <<<varname>>>);
 <<<8<<<        }
 
         void initialize()
@@ -72,7 +80,8 @@ namespace hopsan {
                 stopSimulation();
             }
 
->>>9>>>            mpND_<<<varname>>> = getSafeNodeDataPtr(mp<<<portname>>>, <<<datatype>>>);
+            //Declare node data pointers
+>>>9>>>            <<<mpndname>>> = getSafeNodeDataPtr(<<<varname>>>, <<<datatype>>>);
 <<<9<<<
            
             //Initialize FMU
@@ -123,19 +132,14 @@ namespace hopsan {
             mFMU.setReal(c, &vr, 1, &value);
 <<<10<<<
             //write input values
->>>11>>>            sv = vars[<<<valueref>>>];
-            vr = getValueReference(sv);
-            value = (*mpND_<<<varname>>>);
-            mFMU.setReal(c, &vr, 1, &value);
-<<<11<<<
->>>6>>>            if(mpIn<<<valueref>>>->isConnected())
+>>>11>>>            if(<<<varname>>>->isConnected())
             {
                 sv = vars[<<<valueref>>>];
                 vr = getValueReference(sv);
-                value = (*mpND_in<<<valueref>>>);
+                value = (*<<<mpndname>>>);
                 mFMU.setReal(c, &vr, 1, &value);
             }
-<<<6<<<
+<<<11<<<
             //run simulation
             simulateFMU();
 
@@ -143,7 +147,7 @@ namespace hopsan {
 >>>12>>>            sv = vars[<<<valueref>>>];
             vr = getValueReference(sv);
             mFMU.getReal(c, &vr, 1, &value);
-            (*mpND_<<<varname>>>) = value;
+            (*<<<varname>>>) = value;
 <<<12<<<
         }
         void finalize()

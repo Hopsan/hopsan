@@ -7,8 +7,8 @@
   numberOfContinuousStates="<<<2>>>"
   numberOfEventIndicators="0">
 <ModelVariables>
->>>3>>><ScalarVariable name="<<<varname>>>" valueReference="<<<varref>>>" description="input variable" causality="<<<causality>>>">\n");
-        xmlReplace3.append("     <Real start="0" fixed="false"/>\n");
-        xmlReplace3.append("  </ScalarVariable>
+>>>3>>><ScalarVariable name="<<<varname>>>" valueReference="<<<varref>>>" description="input variable" causality="<<<causality>>>">
+         <Real start="0" fixed="false"/>
+       </ScalarVariable>
 <<<3<<<</ModelVariables>
 </fmiModelDescription>
