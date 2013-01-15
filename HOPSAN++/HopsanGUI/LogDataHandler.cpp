@@ -427,16 +427,18 @@ void LogDataHandler::collectPlotDataFromModel()
 
         for(QList<Port*>::iterator pit=pModelObject->getPortListPtrs().begin(); pit!=pModelObject->getPortListPtrs().end(); ++pit)
         {
-            QVector<QString> names;
-            QVector<QString> units;
-            mpParentContainerObject->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(pModelObject->getName(), (*pit)->getPortName(), names, units);
+            //QVector<QString> names;
+            //QVector<QString> units;
+            QVector<CoreVariableData> varDescs;
+            //mpParentContainerObject->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(pModelObject->getName(), (*pit)->getPortName(), names, units);
+            mpParentContainerObject->getCoreSystemAccessPtr()->getVariableDescriptions(pModelObject->getName(), (*pit)->getPortName(), varDescs);
 
             //Iterate variables
-            for(int i=0; i<names.size(); ++i)
+            for(int i=0; i<varDescs.size(); ++i)
             {
                 //Fetch variables
                 QPair<QVector<double>, QVector<double> > data;
-                mpParentContainerObject->getCoreSystemAccessPtr()->getPlotData(pModelObject->getName(), (*pit)->getPortName(), names[i], data);
+                mpParentContainerObject->getCoreSystemAccessPtr()->getPlotData(pModelObject->getName(), (*pit)->getPortName(), varDescs[i].mName, data);
 
                 // Prevent adding data if time or data vector was empty
                 if (!data.first.isEmpty() && !data.second.isEmpty())
@@ -459,10 +461,10 @@ void LogDataHandler::collectPlotDataFromModel()
                     pVarDesc->mModelPath = pModelObject->getParentContainerObject()->getModelFileInfo().fileName();
                     pVarDesc->mComponentName = pModelObject->getName();
                     pVarDesc->mPortName = (*pit)->getPortName();
-                    pVarDesc->mDataName = names[i];
-                    pVarDesc->mDataUnit = units[i];
+                    pVarDesc->mDataName = varDescs[i].mName;
+                    pVarDesc->mDataUnit = varDescs[i].mUnit;
+                    pVarDesc->mAliasName  = varDescs[i].mAlias;
                     pVarDesc->mVarType = VariableDescription::M;
-                    //! @todo what about alias name, should ha such info in the port
 
                     // First check if a data variable with this name alread exist
                     QString catName = pVarDesc->getFullName();
@@ -472,6 +474,19 @@ void LogDataHandler::collectPlotDataFromModel()
                     {
                         // Insert it into the generations map
                         it.value()->addDataGeneration(mGenerationNumber, timeVecPtr, data.second);
+
+                        // Update alias if needed
+                        if ( pVarDesc->mAliasName != it.value()->getAliasName() )
+                        {
+                            // Remove old mention of alias
+                            mLogDataMap.remove(it.value()->getAliasName());
+
+                            // Update the local alias
+                            it.value()->setAliasName(pVarDesc->mAliasName);
+
+                            // Insert new alias kv pair
+                            mLogDataMap.insert(pVarDesc->mAliasName, it.value());
+                        }
                     }
                     else
                     {
@@ -479,6 +494,12 @@ void LogDataHandler::collectPlotDataFromModel()
                         SharedLogVariableContainerPtrT pDataContainer = SharedLogVariableContainerPtrT(new LogVariableContainer(pVarDesc, this));
                         pDataContainer->addDataGeneration(mGenerationNumber, timeVecPtr, data.second);
                         mLogDataMap.insert(catName, pDataContainer);
+
+                        // Also insert alias if it exist
+                        if ( !pVarDesc->mAliasName.isEmpty() )
+                        {
+                            mLogDataMap.insert(pVarDesc->mAliasName, pDataContainer);
+                        }
                     }
                 }
             }
@@ -486,40 +507,40 @@ void LogDataHandler::collectPlotDataFromModel()
     }
 
     // Iterate and create/add aliases
-    //! @todo maybe a function that retreives alias and fullnames in one
-    QStringList aliasNames = mpParentContainerObject->getAliasNames();
+//    //! @todo maybe a function that retreives alias and fullnames in one
+//    QStringList aliasNames = mpParentContainerObject->getAliasNames();
 
-    AliasMapT::iterator ait = mPlotAliasMap.begin();
-    while(ait!=mPlotAliasMap.end())
-    {
-        if (!aliasNames.contains(ait.key()))
-        {
-            ait.value()->setAliasName("");
-            mPlotAliasMap.erase(ait);
-            ait=mPlotAliasMap.begin(); //Restart since itarator breaks
-        }
-        else
-        {
-            ++ait;
-        }
-    }
-
-    for (int i=0; i<aliasNames.size(); ++i)
-    {
-        QString fullName = mpParentContainerObject->getFullNameFromAlias(aliasNames[i]);
-//        DataMapT::iterator it = mAllPlotData.find(fullName);
-//        if (it != mAllPlotData.end())
+//    AliasMapT::iterator ait = mPlotAliasMap.begin();
+//    while(ait!=mPlotAliasMap.end())
+//    {
+//        if (!aliasNames.contains(ait.key()))
 //        {
-//            it->second->setAliasName(aliasNames[i]);
+//            ait.value()->setAliasName("");
+//            mPlotAliasMap.erase(ait);
+//            ait=mPlotAliasMap.begin(); //Restart since itarator breaks
 //        }
+//        else
+//        {
+//            ++ait;
+//        }
+//    }
 
-        //! @todo This will not work when a alias have chenged as this function will reject it, but that coude should change anyhow
-        //! @todo Do not register parameter aliases as variable aliases
-        definePlotAlias(aliasNames[i], fullName);
-    }
+//    for (int i=0; i<aliasNames.size(); ++i)
+//    {
+//        QString fullName = mpParentContainerObject->getFullNameFromAlias(aliasNames[i]);
+////        DataMapT::iterator it = mAllPlotData.find(fullName);
+////        if (it != mAllPlotData.end())
+////        {
+////            it->second->setAliasName(aliasNames[i]);
+////        }
+
+//        //! @todo This will not work when a alias have chenged as this function will reject it, but that coude should change anyhow
+//        //! @todo Do not register parameter aliases as variable aliases
+//        definePlotAlias(aliasNames[i], fullName);
+//    }
 
 
-    //Limit number of plot generations if there are too many
+    // Limit number of plot generations if there are too many
     limitPlotGenerations();
 
     // Increment generation counter
@@ -613,17 +634,17 @@ SharedLogVariableDataPtrT LogDataHandler::getPlotData(const QString fullName, co
     return SharedLogVariableDataPtrT(0);
 }
 
-//! @todo maybe would be better if ONE getPlotData function could handle all cases
-SharedLogVariableDataPtrT LogDataHandler::getPlotDataByAlias(const QString alias, const int generation)
-{
-    // First find the data variable
-    AliasMapT::iterator dit = mPlotAliasMap.find(alias);
-    if (dit != mPlotAliasMap.end())
-    {
-        return dit.value()->getDataGeneration(generation);
-    }
-    return SharedLogVariableDataPtrT(0);
-}
+////! @todo maybe would be better if ONE getPlotData function could handle all cases
+//SharedLogVariableDataPtrT LogDataHandler::getPlotDataByAlias(const QString alias, const int generation)
+//{
+//    // First find the data variable
+//    AliasMapT::iterator dit = mPlotAliasMap.find(alias);
+//    if (dit != mPlotAliasMap.end())
+//    {
+//        return dit.value()->getDataGeneration(generation);
+//    }
+//    return SharedLogVariableDataPtrT(0);
+//}
 
 
 //! @brief Returns the time vector for specified generation
@@ -677,34 +698,46 @@ void LogDataHandler::definePlotAlias(QString fullName)
 //! @todo this code should no longer be in LogDataHandler it should be in system or similar
 bool LogDataHandler::definePlotAlias(const QString alias, const QString fullName)
 {
-    //! @todo Check that alias is not already used, and deal with it somehow if it is
-    if (mPlotAliasMap.contains(alias))
+    //    //! @todo Check that alias is not already used, and deal with it somehow if it is
+    //    if (mPlotAliasMap.contains(alias))
+    //    {
+    //        return false;
+    //    }
+    //    else
+    //    {
+    //        LogDataMapT::iterator dit = mLogDataMap.find(fullName);
+    //        if (dit!=mLogDataMap.end())
+    //        {
+    //            // First remove old alias
+    //            mPlotAliasMap.remove(dit.value()->getAliasName());
+
+    //            // Assign alias
+    //            dit.value()->setAliasName(alias);
+
+    //            // Insert into alias map
+    //            mPlotAliasMap.insert(alias, dit.value().data());
+
+    //
+
+    SharedLogVariableContainerPtrT pData = mLogDataMap.value(fullName);
+    if (pData)
     {
-        return false;
-    }
-    else
-    {
-        LogDataMapT::iterator dit = mLogDataMap.find(fullName);
-        if (dit!=mLogDataMap.end())
+        // Undefine old alias first
+        //! @todo this will remove alias from other if it alread exist mayb a question should be given to user
+        if (mLogDataMap.contains(pData->getAliasName()))
         {
-            //First remove old alias
-            mPlotAliasMap.remove(dit.value()->getAliasName());
-
-            // Assign alias
-            dit.value()->setAliasName(alias);
-
-            // Insert into alias map
-            mPlotAliasMap.insert(alias, dit.value().data());
-
-            //! @todo maybe should only be in core
-            QString comp,port,var;
-            splitConcatName(fullName, comp,port,var);
-            mpParentContainerObject->setVariableAlias(comp,port,var,alias);
-            //! @todo instead of bool return the uniqe changed alias should be returned
-
+            undefinePlotAlias(pData->getAliasName());
         }
-        return true;
+
+        QString comp,port,var;
+        splitConcatName(fullName, comp,port,var);
+        mpParentContainerObject->setVariableAlias(comp,port,var,alias);
+        //! @todo instead of bool return the uniqe changed alias should be returned
+        mLogDataMap.insert(alias, pData);
+        pData->setAliasName(alias);
     }
+
+    return true;
 }
 
 
@@ -712,17 +745,24 @@ bool LogDataHandler::definePlotAlias(const QString alias, const QString fullName
 //! @param[in] alias Alias to remove
 void LogDataHandler::undefinePlotAlias(QString alias)
 {
-    LogVariableContainer *pDataContainer = mPlotAliasMap.value(alias, 0);
-    if(pDataContainer)
-    {
-        QString fullName = pDataContainer->getFullVariableName();
-        QString comp,port,var;
-        splitConcatName(fullName, comp,port,var);
-        mpParentContainerObject->setVariableAlias(comp,port,var,""); //! @todo maybe a remove alias function would be nice
+    //    LogVariableContainer *pDataContainer = mPlotAliasMap.value(alias, 0);
+    //    if(pDataContainer)
+    //    {
+    //        QString fullName = pDataContainer->getFullVariableName();
 
-        pDataContainer->setAliasName("");
-        mPlotAliasMap.remove(alias);
+
+    SharedLogVariableContainerPtrT data = mLogDataMap.value(alias, SharedLogVariableContainerPtrT());
+    if (data)
+    {
+        QString comp,port,var;
+        splitConcatName(data->getFullVariableName(), comp,port,var);
+        mpParentContainerObject->setVariableAlias(comp,port,var,""); //! @todo maybe a remove alias function would be nice
+        data->setAliasName("");
+
+        mLogDataMap.remove(alias);
     }
+    //        mPlotAliasMap.remove(alias);
+    //    }
 }
 
 
@@ -730,10 +770,11 @@ void LogDataHandler::undefinePlotAlias(QString alias)
 //! @param[in] alias Alias of variable
 QString LogDataHandler::getFullNameFromAlias(QString alias)
 {
-    LogVariableContainer *pDataContainer = mPlotAliasMap.value(alias, 0);
-    if(pDataContainer)
+    //LogVariableContainer *pDataContainer = mPlotAliasMap.value(alias, 0);
+    SharedLogVariableContainerPtrT data = mLogDataMap.value(alias, SharedLogVariableContainerPtrT());
+    if (data)
     {
-        return pDataContainer->getFullVariableName();
+        return data->getFullVariableName();
     }
     return QString();
 }
@@ -889,10 +930,10 @@ QString LogDataHandler::addVariables(const QString &a, const QString &b)
 {
     SharedLogVariableDataPtrT pData1 = getPlotData(a, -1);
     SharedLogVariableDataPtrT pData2 = getPlotData(b, -1);
-    //! @todo check if ptrs not 0
-    if( (pData1 == NULL) || (pData2 == NULL) )
+
+    if( (pData1 == 0) || (pData2 == 0) )
     {
-        return NULL;
+        return QString();
     }
     else
     {
@@ -913,10 +954,10 @@ QString LogDataHandler::subVariables(const QString &a, const QString &b)
 {
     SharedLogVariableDataPtrT pData1 = getPlotData(a, -1);
     SharedLogVariableDataPtrT pData2 = getPlotData(b, -1);
-    //! @todo check if ptrs not 0
-    if( (pData1 == NULL) || (pData2 == NULL) )
+
+    if( (pData1 == 0) || (pData2 == 0) )
     {
-        return NULL;
+        return QString();
     }
     else
     {
@@ -929,10 +970,10 @@ QString LogDataHandler::multVariables(const QString &a, const QString &b)
 {
     SharedLogVariableDataPtrT pData1 = getPlotData(a, -1);
     SharedLogVariableDataPtrT pData2 = getPlotData(b, -1);
-    //! @todo check if ptrs not 0
-    if( (pData1 == NULL) || (pData2 == NULL) )
+
+    if( (pData1 == 0) || (pData2 == 0) )
     {
-        return NULL;
+        return QString();
     }
     else
     {
@@ -945,10 +986,10 @@ QString LogDataHandler::divVariables(const QString &a, const QString &b)
 {
     SharedLogVariableDataPtrT pData1 = getPlotData(a, -1);
     SharedLogVariableDataPtrT pData2 = getPlotData(b, -1);
-    //! @todo check if ptrs not 0
-    if( (pData1 == NULL) || (pData2 == NULL) )
+
+    if( (pData1 == 0) || (pData2 == 0) )
     {
-        return NULL;
+        return QString();
     }
     else
     {
@@ -961,12 +1002,12 @@ QString LogDataHandler::assignVariables(const QString &a, const QString &b)
 {
     SharedLogVariableDataPtrT pData1 = getPlotData(a, -1);
     SharedLogVariableDataPtrT pData2 = getPlotData(b, -1);
-    //! @todo check if ptrs not 0
-    if(pData2 == NULL)
+
+    if(pData2 == 0)
     {
-        return NULL;
+        return QString();
     }
-    else if(pData1 == NULL)
+    else if(pData1 == 0)
     {
         SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription);
         pVarDesc->mDataName = a;
@@ -988,23 +1029,22 @@ QString LogDataHandler::assignVariables(const QString &a, const QString &b)
 bool LogDataHandler::pokeVariables(const QString &a, const int index, const double value)
 {
     SharedLogVariableDataPtrT pData1 = getPlotData(a, -1);
-    //! @todo check if ptrs not 0
-    if(pData1 == NULL)
+
+    if(pData1 == 0)
     {
-        return NULL;
+        return false;
     }
     else
     {
         return pokeVariables(pData1, index, value);
-
     }
 }
 
 QString LogDataHandler::delVariables(const QString &a)
 {
     SharedLogVariableDataPtrT pData1 = getPlotData(a, -1);
-    //! @todo check if ptrs not 0
-    if( (pData1 == NULL) )
+
+    if( (pData1 == 0) )
     {
         return NULL;
     }
@@ -1315,7 +1355,3 @@ QStringList LogDataHandler::getPlotDataNames()
     }
     return retval;
 }
-
-
-
-

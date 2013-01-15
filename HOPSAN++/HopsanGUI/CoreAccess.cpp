@@ -1010,6 +1010,30 @@ void CoreSystemAccess::removeSystemParameter(const QString name)
     mpCoreComponentSystem->unRegisterParameter(name.toStdString());
 }
 
+//! @todo how to handle fetching from systemports, component names will not be found
+void CoreSystemAccess::getVariableDescriptions(const QString compname, const QString portname, QVector<CoreVariableData> &rVarDescriptions)
+{
+    rVarDescriptions.clear();
+
+    hopsan::Port* pPort = this->getCorePortPtr(compname, portname);
+    if (pPort && pPort->getPortType() < hopsan::MULTIPORT)
+    {
+        const std::vector<hopsan::NodeDataDescription>* pDescs = pPort->getNodeDataDescriptions();
+        if (pDescs != 0)
+        {
+            //Copy into QT datatype vector
+            for (size_t i=0; i<pDescs->size(); ++i)
+            {
+                CoreVariableData data;
+                data.mName = QString::fromStdString(pDescs->at(i).name);
+                data.mUnit = QString::fromStdString(pDescs->at(i).unit);
+                data.mAlias = QString::fromStdString(pPort->getVariableAlias(i));
+                rVarDescriptions.push_back(data);
+            }
+        }
+    }
+}
+
 void CoreSystemAccess::getSystemParameter(const QString name, CoreParameterData &rParameterData)
 {
     const hopsan::Parameter *pParam = mpCoreComponentSystem->getParameter(name.toStdString());

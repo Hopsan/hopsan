@@ -70,7 +70,7 @@ public:
     void definePlotAlias(QString fullName);
     bool definePlotAlias(const QString alias, const QString fullName);
     void undefinePlotAlias(QString alias);
-    AliasMapT getPlotAliasMap();
+
     QString getFullNameFromAlias(QString alias);
     QString getAliasFromFullName(QString fullName);
 
@@ -136,7 +136,7 @@ private:
     ContainerObject *mpParentContainerObject;
 
     LogDataMapT mLogDataMap;
-    AliasMapT mPlotAliasMap;
+    //AliasMapT mPlotAliasMap;
     QList<SharedTimeVectorPtrT> mTimeVectorPtrs;
 
     FavoriteListT mFavoriteVariables;

@@ -86,6 +86,22 @@ public:
     bool    mIsEnabled;
 };
 
+
+class CoreVariableData
+{
+public:
+    CoreVariableData() {}
+    CoreVariableData(const QString name, const QString value, const QString type, const QString unit="", const QString desc="")
+        : mName(name), mValue(value), mType(type), mUnit(unit), mDescription(desc){}
+
+    QString mName;
+    QString mAlias;
+    QString mValue;
+    QString mType;
+    QString mUnit;
+    QString mDescription;
+};
+
 //Forward declaration
 class CoreSimulationHandler;
 
@@ -183,7 +199,8 @@ public:
     void removeSystemParameter(const QString name);
 
     // Simulation results data retrieval
-    void getPlotDataNamesAndUnits(const QString compname, const QString portname, QVector<QString> &rNames, QVector<QString> &rUnits);
+    void getVariableDescriptions(const QString compname, const QString portname, QVector<CoreVariableData> &rVarDescriptions);
+    void getPlotDataNamesAndUnits(const QString compname, const QString portname, QVector<QString> &rNames, QVector<QString> &rUnits); //!< @deprecated
     std::vector<double> getTimeVector(QString componentName, QString portName);
     void getPlotData(const QString compname, const QString portname, const QString dataname, QPair<QVector<double>, QVector<double> > &rData);
     bool havePlotData(const QString compname, const QString portname, const QString dataname);

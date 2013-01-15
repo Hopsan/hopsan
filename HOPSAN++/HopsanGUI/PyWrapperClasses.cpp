@@ -332,9 +332,9 @@ void PyMainWindowClassWrapper::plotToWindow(MainWindow* o, const int& generation
     o->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->plotVariable(windowName, fullName, generation, 0);
 }
 
-void  PyMainWindowClassWrapper::offset(MainWindow* o, const QString aliasName, const double value, const int gen)
+void  PyMainWindowClassWrapper::offset(MainWindow* o, const QString varName, const double value, const int gen)
 {
-    SharedLogVariableDataPtrT pData = o->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotDataByAlias(aliasName, gen);
+    SharedLogVariableDataPtrT pData = o->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotData(varName, gen);
     if (pData)
     {
         pData->setValueOffset(value);

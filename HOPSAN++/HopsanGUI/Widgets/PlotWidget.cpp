@@ -47,28 +47,6 @@
 #include "PlotHandler.h"
 
 
-////! @brief Constructor for the variable items in the variable tree
-////! @param componentName Name of the component where the variable is located
-////! @param portName Name of the port where the variable is located
-////! @param dataName Name of the variable
-////! @param dataUnit Name of the unit of the variable
-////! @param parent Pointer to a tree widget item, not used
-//PlotVariableTreeItem::PlotVariableTreeItem(QString componentName, QString portName, QString dataName, QString dataUnit, QTreeWidgetItem *parent)
-//        : QTreeWidgetItem(parent)
-//{
-//    mComponentName = componentName;
-//    mPortName = portName;
-//    mDataName = dataName;
-//    mDataUnit = dataUnit;
-//    QString aliasPrepend = gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getPlotAlias(componentName, portName, dataName);
-//    if(!aliasPrepend.isEmpty())
-//    {
-//        aliasPrepend.prepend("<");
-//        aliasPrepend.append("> ");
-//    }
-//    this->setText(0, aliasPrepend + mPortName + ", " + mDataName + ", [" + mDataUnit + "]");
-//}
-
 //! @brief Constructor for the variable items in the variable tree
 //! @param componentName Name of the component where the variable is located
 //! @param portName Name of the port where the variable is located
@@ -79,16 +57,24 @@ PlotVariableTreeItem::PlotVariableTreeItem(SharedLogVariableDataPtrT pData, QTre
         : QTreeWidgetItem(parent)
 {
     mpData = pData;
-    QString portName = pData->getPortName();
-    QString dataName = pData->getDataName();
     QString dataUnit = pData->getDataUnit();
-    QString aliasPrepend = pData->getAliasName();
-    if(!aliasPrepend.isEmpty())
+    QString alias = pData->getAliasName();
+
+    if (parent->text(0) == "__Alias__") //!< @todo Ok This is a really ugly hack /Peter
     {
-        aliasPrepend.prepend("<");
-        aliasPrepend.append("> ");
+        this->setText(0, alias + ", [" + dataUnit + "]");
     }
-    this->setText(0, aliasPrepend + portName + ", " + dataName + ", [" + dataUnit + "]");
+    else
+    {
+        QString portName = pData->getPortName();
+        QString dataName = pData->getDataName();
+        if(!alias.isEmpty())
+        {
+            alias.prepend("<");
+            alias.append("> ");
+        }
+        this->setText(0, alias + portName + ", " + dataName + ", [" + dataUnit + "]");
+    }
 }
 
 SharedLogVariableDataPtrT PlotVariableTreeItem::getDataPtr()
@@ -177,37 +163,60 @@ void PlotVariableTree::updateList()
 
     mpCurrentContainer = gpMainWindow->mpProjectTabs->getCurrentContainer();
     QTreeWidgetItem *pComponentLevelItem;             //Tree item for components
+    QTreeWidgetItem *pAliasLevelItem=0;               //Tree item for aliases
     PlotVariableTreeItem *plotVariableLevelItem;      //Tree item for variables - reimplemented so they can store information about the variable
 
+    QStringList aliasLevelItemList;
     QMap<QString, QTreeWidgetItem*> componentLevelItemMap;
     QMap<QString, QTreeWidgetItem*>::iterator cilIt;
     QVector<SharedLogVariableDataPtrT> variables = mpCurrentContainer->getLogDataHandler()->getAllVariablesAtNewestGeneration();
     for(int i=0; i<variables.size(); ++i)
     {
         cilIt = componentLevelItemMap.find(variables[i]->getComponentName());
-        if (cilIt != componentLevelItemMap.end())
+
+        // Check if this is an alias variable, if alias is set and not already in the aliasLevelItemMap map
+        if ( !variables[i]->getAliasName().isEmpty() && (aliasLevelItemList.count(variables[i]->getAliasName()) < 1) )
         {
-            pComponentLevelItem = cilIt.value();
+            if (!pAliasLevelItem)
+            {
+                pAliasLevelItem = new QTreeWidgetItem();
+                pAliasLevelItem->setText(0, "__Alias__");
+                QFont tempFont = pAliasLevelItem->font(0);
+                tempFont.setBold(true);
+                pAliasLevelItem->setFont(0, tempFont);
+                addTopLevelItem(pAliasLevelItem);
+                pAliasLevelItem->setExpanded(true);
+            }
+            new PlotVariableTreeItem(variables[i], pAliasLevelItem);
+            aliasLevelItemList.append(variables[i]->getAliasName());
         }
         else
         {
-            pComponentLevelItem = new QTreeWidgetItem();
-            pComponentLevelItem->setText(0, variables[i]->getComponentName());
-            if(variables[i]->getComponentName().isEmpty())
+            if (cilIt != componentLevelItemMap.end())
             {
-                pComponentLevelItem->setText(0,"Imported");
+                pComponentLevelItem = cilIt.value();
             }
-            QFont tempFont = pComponentLevelItem->font(0);
-            tempFont.setBold(true);
-            pComponentLevelItem->setFont(0, tempFont);
-            this->addTopLevelItem(pComponentLevelItem);
+            else
+            {
+                pComponentLevelItem = new QTreeWidgetItem();
+                pComponentLevelItem->setText(0, variables[i]->getComponentName());
+                if(variables[i]->getComponentName().isEmpty())
+                {
+                    //! @todo what if we have a component named Imported
+                    pComponentLevelItem->setText(0,"Imported");
+                }
+                QFont tempFont = pComponentLevelItem->font(0);
+                tempFont.setBold(true);
+                pComponentLevelItem->setFont(0, tempFont);
+                this->addTopLevelItem(pComponentLevelItem);
 
-            //Also remember that we created it
-            componentLevelItemMap.insert(variables[i]->getComponentName(), pComponentLevelItem);
+                //Also remember that we created it
+                componentLevelItemMap.insert(variables[i]->getComponentName(), pComponentLevelItem);
+            }
+
+            plotVariableLevelItem = new PlotVariableTreeItem(variables[i], pComponentLevelItem);
+            pComponentLevelItem->addChild(plotVariableLevelItem);
         }
-
-        plotVariableLevelItem = new PlotVariableTreeItem(variables[i], pComponentLevelItem);
-        pComponentLevelItem->addChild(plotVariableLevelItem);
 
         // prepend icon if favourite variable
         //if(mpCurrentContainer->getPlotDataPtr()->getFavoriteVariableList().contains(variableDescription))
@@ -458,6 +467,7 @@ PlotTreeWidget::PlotTreeWidget(MainWindow *parent)
     mpLayout->setContentsMargins(4,4,4,4);
 
     connect(mpLoadButton, SIGNAL(clicked()),this,SLOT(loadFromXml()));
+    mpLoadButton->setDisabled(true); //!< @todo Fix /Peter
 }
 
 

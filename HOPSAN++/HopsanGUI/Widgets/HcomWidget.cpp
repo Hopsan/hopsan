@@ -2573,11 +2573,11 @@ SharedLogVariableDataPtrT HcomHandler::getVariablePtr(QString fullName)
         fullName.append("#Temperature");
     }
 
-    SharedLogVariableDataPtrT pRetVal = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->getPlotDataByAlias(fullName,generation);
-    if(!pRetVal)
-    {
-        pRetVal = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->getPlotData(fullName,generation);
-    }
+//    SharedLogVariableDataPtrT pRetVal = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->getPlotDataByAlias(fullName,generation);
+//    if(!pRetVal)
+//    {
+        SharedLogVariableDataPtrT pRetVal = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->getPlotData(fullName,generation);
+//    }
     return pRetVal;
 }
 

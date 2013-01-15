@@ -89,7 +89,8 @@ namespace hopsan {
             std::string name;
         } ParamOrVariableT;
 
-        std::map<std::string, ParamOrVariableT> mAliasMap;
+        typedef std::map<std::string, ParamOrVariableT> AliasMapT;
+        AliasMapT mAliasMap;
         ComponentSystem *mpSystem;
     };
 

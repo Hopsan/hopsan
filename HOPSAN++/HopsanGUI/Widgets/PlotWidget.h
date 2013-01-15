@@ -36,7 +36,6 @@ class MainWindow;
 class ContainerObject;
 class PlotWindow;
 class PlotTreeWidget;
-class PlotVariableTree;
 
 
 class PlotVariableTreeItem : public QTreeWidgetItem

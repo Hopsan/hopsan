@@ -155,7 +155,7 @@ public slots:
     void plot(MainWindow* o, const QString &portAlias);
     //! @todo maybe need a version for alias too,
     void plotToWindow(MainWindow* o, const int& generation, const QString& compName, const QString& portName, const QString& dataName, const QString& windowName);
-    void offset(MainWindow* o, const QString aliasName, const double value, const int gen=-1);
+    void offset(MainWindow* o, const QString varName, const double value, const int gen=-1);
     void savePlotData(MainWindow* o, const QString& fileName, const QString &windowName);
     int getSimulationTime(MainWindow* o);
     void useMultiCore(MainWindow* o);

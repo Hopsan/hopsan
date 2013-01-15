@@ -3448,7 +3448,7 @@ void AliasHandler::getVariableFromAlias(const string alias, string &rCompName, s
     rCompName.clear(); rPortName.clear(); rVarName.clear();
 
     // Search through map for specified alias
-    std::map<std::string, ParamOrVariableT>::iterator it = mAliasMap.find(alias);
+    AliasMapT::iterator it = mAliasMap.find(alias);
     if (it != mAliasMap.end())
     {
         if (it->second.type == Variable)
