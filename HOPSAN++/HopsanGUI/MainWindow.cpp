@@ -513,10 +513,6 @@ void MainWindow::createActions()
     connect(mpSimulateAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     connect(mpSimulateAction, SIGNAL(triggered()), this, SLOT(simulateKeyWasPressed()));
 
-    mpCoSimulationAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Simulate.png"), tr("&Start Co-Simulation"), this);
-    mpCoSimulationAction->setToolTip(tr("Start Co-Simulation"));
-    connect(mpCoSimulationAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
-
     mpOptimizeAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Optimize.png"), tr("&Optimize"), this);
     mpOptimizeAction->setToolTip(tr("Open Optimization Dialog (Ctrl+Shift+Z)"));
     mpOptimizeAction->setShortcut(QKeySequence("Ctrl+Shift+z"));
@@ -760,7 +756,6 @@ void MainWindow::createMenus()
     this->updateRecentList();
 
     mpSimulationMenu->addAction(mpSimulateAction);
-    mpSimulationMenu->addAction(mpCoSimulationAction);
     mpSimulationMenu->addAction(mpAnimateAction);
     mpSimulationMenu->addAction(mpMeasureSimulationTimeAction);
     mpSimulationMenu->addAction(mpOptimizeAction);
@@ -863,7 +858,6 @@ void MainWindow::createToolbars()
     mpSimToolBar->addWidget(mpTimeLabelDeliminator2);
     mpSimToolBar->addWidget(mpStopTimeLineEdit);
     mpSimToolBar->addAction(mpSimulateAction);
-    mpSimToolBar->addAction(mpCoSimulationAction);
     mpSimToolBar->addAction(mpOptimizeAction);
     mpSimToolBar->addAction(mpSensitivityAnalysisAction);
     mpSimToolBar->addAction(mpPlotAction);
@@ -1234,7 +1228,6 @@ void MainWindow::updateToolBarsToNewTab()
     mpTimeStepLineEdit->setEnabled(!noTabs);
     mpStopTimeLineEdit->setEnabled(!noTabs);
     mpSimulateAction->setEnabled(!noTabs);
-    mpCoSimulationAction->setEnabled(!noTabs);
     mpOptimizeAction->setEnabled(!noTabs);
     mpSensitivityAnalysisAction->setEnabled(!noTabs);
     mpMeasureSimulationTimeAction->setEnabled(!noTabs);
