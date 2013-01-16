@@ -89,12 +89,25 @@ ParameterSettingsLayout::ParameterSettingsLayout(const CoreParameterData &rParam
     }
 
     // Add lables, edits and buttons
-    addWidget(&mDescriptionLabel, 0, 1);
-    addWidget(&mNameLabel, 0, 2);
-    addWidget(&mValueLineEdit, 0, 3);
-    addWidget(&mUnitLabel, 0, 4);
-    addWidget(&mResetDefaultToolButton, 0, 5);
-    addWidget(&mSystemParameterToolButton, 0, 6);
+    int i=1;
+    if(!mDescriptionLabel.text().isEmpty())
+    {
+        addWidget(&mDescriptionLabel, 0, i);
+        ++i;
+    }
+    addWidget(&mNameLabel, 0, i);
+    ++i;
+    addWidget(&mValueLineEdit, 0, i);
+    ++i;
+    if(!mUnitLabel.text().isEmpty())
+    {
+        addWidget(&mUnitLabel, 0, i);
+        ++i;
+    }
+    addWidget(&mResetDefaultToolButton, 0, i);
+    ++i;
+    addWidget(&mSystemParameterToolButton, 0, i);
+    ++i;
 
     // Determine value text color
     pickValueTextColor();

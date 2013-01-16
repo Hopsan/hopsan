@@ -64,7 +64,7 @@ namespace hopsan {
             addInfoMessage(getString(mFMU.modelDescription, att_modelIdentifier));
 
             //Add ports
->>>7>>>            <<<varname>>> = add<<<porttype>>>("<<<portname>>>", "<<<nodetype>>>"<<<notrequired>>>);
+>>>7>>>            <<<varname>>> = add<<<porttype>>>("<<<portname>>>", "<<<nodetype>>>", <<<notrequired>>>);
 <<<7<<<
 
             //Initialize and register parameters

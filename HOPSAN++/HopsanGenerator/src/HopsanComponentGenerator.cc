@@ -255,25 +255,30 @@ void HopsanGenerator::generateFromFmu(QString path)
     QString fmuName = fmuFileInfo.fileName();
     fmuName.chop(4);
 
+    //! @todo We cannot use gExecPath for this because Windows may not allow it
+
+    //Create import directory if it does not exist
     if(!QDir(gExecPath + "../import").exists())
         QDir().mkdir(gExecPath + "../import");
 
+    //Create FMU directory if it does not exist
     if(!QDir(gExecPath + "../import/FMU").exists())
         QDir().mkdir(gExecPath + "../import/FMU");
 
-    //DEBUG DEBUG DEBUG
-    removeDir(gExecPath+"../import/FMU/"+fmuName);
-    //END DEBUG
-
-    if(!QDir(gExecPath + "../import/FMU/" + fmuName).exists())
+    //Remove output directory if it already exists
+    if(QDir(gExecPath+"../import/FMU/"+fmuName).exists() && !removeDir(gExecPath+"../import/FMU/"+fmuName))
     {
-        QDir().mkdir(gExecPath + "../import/FMU/" + fmuName);
-    }
-    else
-    {
-        printErrorMessage("Directory already exists. Another FMU with same cannot be imported.");
+        printErrorMessage("Unable to remove output directory: "+QDir().cleanPath(gExecPath+"../import/FMU/"+fmuName)+". Please remove it manually and try again.");
         return;
     }
+
+    //Create output directory
+    if(!QDir().mkdir(gExecPath + "../import/FMU/" + fmuName))
+    {
+        printErrorMessage("Unable to create output directory: "+QDir().cleanPath(gExecPath+"../import/FMU/"+fmuName)+". Please remove it manually and try again.");
+        return;
+    }
+
 
     QString fmuPath = gExecPath + "../import/FMU/" + fmuName;
     QDir fmuDir = QDir::cleanPath(fmuPath);
@@ -772,7 +777,7 @@ void HopsanGenerator::generateFromFmu(QString path)
         if(!addedPorts.contains(portSpecs[p].varName))
         {
             fmuComponentReplace7.append(replaceTags(addPortLine, QStringList() << "varname" << "portname" << "porttype" << "nodetype" << "notrequired",
-                                                    QStringList() << portSpecs[p].varName << portSpecs[p].portName << portSpecs[p].portType << portSpecs[p].nodeType << ""));
+                                                    QStringList() << portSpecs[p].varName << portSpecs[p].portName << portSpecs[p].portType << portSpecs[p].nodeType << "Port::NOTREQUIRED"));
             addedPorts << portSpecs[p].varName;
         }
     }
@@ -867,12 +872,17 @@ void HopsanGenerator::generateFromFmu(QString path)
         return;
     }
 
+    int nInputPorts = inVarValueRefs.size()+inoutVarValueRefs.size();
+    int nOutputPorts = outVarValueRefs.size()+inoutVarValueRefs.size();
+    double scale = max(max(nInputPorts, nOutputPorts)/2.0, 1.0);
+    QString scaleStr = QString::number(scale);
+
     QTextStream fmuXmlStream(&fmuXmlFile);
     fmuXmlStream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     fmuXmlStream << "<hopsanobjectappearance version=\"0.3\">\n";
     fmuXmlStream << "    <modelobject typename=\""+fmuName+"\" displayname=\""+fmuName+"\">\n";
     fmuXmlStream << "        <icons>\n";
-    fmuXmlStream << "            <icon type=\"user\" path=\"fmucomponent.svg\" iconrotation=\"ON\" scale=\"1.0\"/>\n";
+    fmuXmlStream << "            <icon type=\"user\" path=\"fmucomponent.svg\" iconrotation=\"ON\" scale=\""+scaleStr+"\"/>\n";
     fmuXmlStream << "        </icons>\n";
     fmuXmlStream << "        <ports>\n";
     varElement = variablesElement.firstChildElement("ScalarVariable");
@@ -881,8 +891,8 @@ void HopsanGenerator::generateFromFmu(QString path)
     double tlmPosStep=1.0/(tlmPortTypes.size()+1.0);      //These 2 variables are used for TLM port positioning
     double tlmPos=0;
 
-    double inputPosStep=1.0/(inVarValueRefs.size()+inoutVarValueRefs.size()+1.0);      //These 4 variables are used for input/output port positioning
-    double outputPosStep=1.0/(outVarValueRefs.size()+inoutVarValueRefs.size()+1.0);
+    double inputPosStep=1.0/(nInputPorts+1.0);      //These 4 variables are used for input/output port positioning
+    double outputPosStep=1.0/(nOutputPorts+1.0);
     double inputPos=0;
     double outputPos=0;
 
@@ -4954,7 +4964,7 @@ QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString
 
 
 
-void removeDir(QString path)
+bool removeDir(QString path)
 {
     QDir dir;
     dir.setPath(path);
@@ -4966,10 +4976,17 @@ void removeDir(QString path)
         }
         else
         {
-            QFile::remove(info.absoluteFilePath());
+            if(QFile::remove(info.absoluteFilePath()))
+            {
+                qDebug() << "Successfully removed " << info.absoluteFilePath();
+            }
+            else
+            {
+                qDebug() << "Failed to remove " << info.absoluteFilePath();
+            }
         }
     }
-    dir.rmdir(path);
+    return dir.rmdir(path);     //If removing files fails, this will fail, so we only need to check this
 }
 
 

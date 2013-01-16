@@ -55,7 +55,8 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
     //Info
     QString author, email, affiliation, description;
     mpContainerObject->getModelInfo(author, email, affiliation, description);
-    QGroupBox *pInfoGroupBox = new QGroupBox("Info", this);
+    //QGroupBox *pInfoGroupBox = new QGroupBox("Info", this);
+    QWidget *pInfoWidget = new QWidget(this);
     QGridLayout *pInfoLayout = new QGridLayout();
 
     mpAuthorLabel = new QLabel("Author: ", this);
@@ -86,7 +87,10 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
     pInfoLayout->addWidget(mpCQSTypeLabel,      4, 1);
     pInfoLayout->addWidget(pBasePathLabel,      5, 0);
     pInfoLayout->addWidget(pBasePathEdit,       5, 1);
-    pInfoGroupBox->setLayout(pInfoLayout);
+    pInfoLayout->addWidget(new QWidget(this),   6, 0, 1, 2);
+    //pInfoGroupBox->setLayout(pInfoLayout);
+    pInfoLayout->setRowStretch(6, 1);
+    pInfoWidget->setLayout(pInfoLayout);
 
     //Define items in the dialog box
         //Name edit
@@ -128,7 +132,8 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
 
 
         //Appearance Group Box
-    mpAppearanceGroupBox = new QGroupBox("Appearance", this);
+    //mpAppearanceGroupBox = new QGroupBox("Appearance", this);
+    QWidget *pAppearanceWidget = new QWidget(this);
     mpAppearanceLayout = new QGridLayout(this);
     mpAppearanceLayout->addWidget(mpNameLabel, 0, 0);
     mpAppearanceLayout->addWidget(mpNameEdit, 0, 1, 1, 2);
@@ -143,7 +148,10 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
     mpAppearanceLayout->addWidget(pIsoIconScaleLabel, 4, 0);
     mpAppearanceLayout->addWidget(mpIsoIconScaleEdit, 4, 1);
     mpAppearanceLayout->addWidget(mpIsoCheckBox, 5, 0, 1, -1);
-    mpAppearanceGroupBox->setLayout(mpAppearanceLayout);
+    mpAppearanceLayout->addWidget(new QWidget(this), 6, 0, 1, 2);
+    mpAppearanceLayout->setRowStretch(6, 1);
+    //mpAppearanceGroupBox->setLayout(mpAppearanceLayout);
+    pAppearanceWidget->setLayout(mpAppearanceLayout);
 
         //Load start values or not
     mpUseStartValues = new QCheckBox("Keep start values from previous simulation", this);
@@ -168,7 +176,8 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
     mpPyScriptBrowseButton = new QPushButton(tr("..."), this);
 
         //Settings Group Box
-    mpSettingsGroupBox = new QGroupBox("Settings", this);
+    //mpSettingsGroupBox = new QGroupBox("Settings", this);
+    QWidget *pSettingsWidget = new QWidget(this);
     mpSettingsLayout = new QGridLayout(this);
     mpSettingsLayout->addWidget(mpPyScriptLabel,        0, 0);
     mpSettingsLayout->addWidget(mpPyScriptPath,         0, 1);
@@ -176,7 +185,10 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
     mpSettingsLayout->addWidget(mpUseStartValues,       1, 0, 1, 2);
     mpSettingsLayout->addWidget(mpDisableUndoCheckBox,  2, 0, 1, 2);
     mpSettingsLayout->addWidget(mpSaveUndoCheckBox,     3, 0, 1, 2);
-    mpSettingsGroupBox->setLayout(mpSettingsLayout);
+    mpSettingsLayout->addWidget(new QWidget(this),      4, 0, 1, 2);
+    mpSettingsLayout->setRowStretch(4, 1);
+    //mpSettingsGroupBox->setLayout(mpSettingsLayout);
+    pSettingsWidget->setLayout(mpSettingsLayout);
 
         //Set GuiSystem specific stuff
     if (mpContainerObject->type() == SYSTEMCONTAINER)
@@ -237,30 +249,18 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
         }
         for(int i=0; i<mvParameterLayoutPtrs.size(); ++i)
         {
-            mvParameterLayoutPtrs.at(i)->mDescriptionLabel.setFixedWidth(descriptionSize+10);   //Offset of 10 as extra margin
+           // mvParameterLayoutPtrs.at(i)->mDescriptionLabel.setFixedWidth(descriptionSize+10);   //Offset of 10 as extra margin
+            mvParameterLayoutPtrs.at(i)->mDescriptionLabel.setFixedWidth(0);
             mvParameterLayoutPtrs.at(i)->mNameLabel.setFixedWidth(nameSize+10);
         }
     }
 
         //This is the main Vertical layout of the dialog
-    mpScrollLayout = new QVBoxLayout(this);
-    mpScrollLayout->addWidget(pInfoGroupBox);
-    mpScrollLayout->addWidget(mpAppearanceGroupBox);
-    mpScrollLayout->addWidget(mpSettingsGroupBox);
+    //mpSettingsScrollLayout = new QVBoxLayout(this);
+    //mpSettingsScrollLayout->addWidget(pInfoGroupBox);
+    //mpSettingsScrollLayout->addWidget(mpAppearanceGroupBox);
+    //mpSettingsScrollLayout->addWidget(mpSettingsGroupBox);
     // Check if we should add systemparameters
-    if( (mpContainerObject != gpMainWindow->mpProjectTabs->getCurrentContainer()) && (mvParameterLayoutPtrs.size()>0))
-    {
-        QGridLayout *pParameterLayout = new QGridLayout();
-        mpSystemParametersGroupBox = new QGroupBox("System Parameters", this);
-
-        for(int i=0; i<mvParameterLayoutPtrs.size(); ++i)
-        {
-            pParameterLayout->addLayout(mvParameterLayoutPtrs[i], i, 0);
-        }
-
-        mpSystemParametersGroupBox->setLayout(pParameterLayout);
-        mpScrollLayout->addWidget(mpSystemParametersGroupBox);
-    }
 
         //Done and Cancel Buttons
     mpButtonBox = new QDialogButtonBox(Qt::Horizontal);
@@ -271,35 +271,88 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
     mpButtonBox->addButton(mpEditPortPos, QDialogButtonBox::ActionRole);
     mpButtonBox->addButton(mpCancelButton, QDialogButtonBox::ActionRole);
     mpButtonBox->addButton(mpDoneButton, QDialogButtonBox::ActionRole);
-    mpScrollLayout->addWidget(mpButtonBox, 0, Qt::AlignHCenter);
+    //mpScrollLayout->addWidget(mpButtonBox, 0, Qt::AlignHCenter);
 
-    mpPrimaryWidget = new QWidget();
-    mpPrimaryWidget->setLayout(mpScrollLayout);
-    mpPrimaryWidget->setPalette(gConfig.getPalette());
+//    mpSettingsWidget = new QWidget();
+//    mpSettingsWidget->setLayout(mpSettingsScrollLayout);
+//    mpSettingsWidget->setPalette(gConfig.getPalette());
 
-    QScrollArea *pScrollArea = new QScrollArea(this);
-    pScrollArea->setWidget(mpPrimaryWidget);
-    pScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+//    QScrollArea *pSettingsScrollArea = new QScrollArea(this);
+//    pSettingsScrollArea->setWidget(mpSettingsWidget);
+//    pSettingsScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
+    //LOGGING
+
+    QListWidget *pDataLoggingList = new QListWidget(this);
+    pDataLoggingList->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+
+    QListWidgetItem *testItem = new QListWidgetItem("Test item!", pDataLoggingList);
+    testItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
+    testItem->setCheckState(Qt::Checked);
+    pDataLoggingList->addItem(testItem);
+
+    QVBoxLayout *pDataLoggingLayout = new QVBoxLayout(this);
+    pDataLoggingLayout->addWidget(pDataLoggingList);
+
+    QWidget *pDataLoggingWidget = new QWidget(this);
+    pDataLoggingWidget->setLayout(pDataLoggingLayout);
+
+    QScrollArea *pDataLoggingScrollArea = new QScrollArea(this);
+    pDataLoggingScrollArea->setWidget(pDataLoggingWidget);
+
+    //END LOGGING
+
+    //Arrange tabs and set primary layout
     QGridLayout *pPrimaryLayout = new QGridLayout(this);
-    pPrimaryLayout->addWidget(pScrollArea);
+    QTabWidget *pTabWidget = new QTabWidget(this);
+    //pTabWidget->addTab(pSettingsScrollArea, "General");
+    pTabWidget->addTab(pSettingsWidget, "Settings");
+    pTabWidget->addTab(pAppearanceWidget, "Appearance");
+    pTabWidget->addTab(pInfoWidget, "Model Info");
+    //pTabWidget->addTab(pDataLoggingScrollArea, "Data Logging");
+    pDataLoggingScrollArea->hide();
+    pPrimaryLayout->addWidget(pTabWidget);
+    pPrimaryLayout->addWidget(mpButtonBox);
     setLayout(pPrimaryLayout);
 
-    mpPrimaryWidget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    mpScrollLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
-    pPrimaryLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
-    int maxHeight = qApp->desktop()->screenGeometry().height()-100;
-    pScrollArea->setFixedHeight(std::min(mpPrimaryWidget->height()+3, maxHeight));
-    if(pScrollArea->minimumHeight() == maxHeight)
+    if( (mpContainerObject != gpMainWindow->mpProjectTabs->getCurrentContainer()) && (mvParameterLayoutPtrs.size()>0))
     {
-        pScrollArea->setMinimumWidth(mpPrimaryWidget->width()+19);
+        QGridLayout *pParameterLayout = new QGridLayout();
+        //mpSystemParametersGroupBox = new QGroupBox("System Parameters", this);
+        QWidget *pSystemParametersWidget = new QWidget(this);
+
+        for(int i=0; i<mvParameterLayoutPtrs.size(); ++i)
+        {
+            pParameterLayout->addLayout(mvParameterLayoutPtrs[i], i, 0);
+            pParameterLayout->addWidget(new QWidget(this), i, 1);
+        }
+
+        pParameterLayout->addWidget(new QWidget(this), pParameterLayout->rowCount(), 0);
+        pParameterLayout->setRowStretch(pParameterLayout->rowCount(), 1);
+        pParameterLayout->setColumnStretch(1, 1);
+
+        //mpSystemParametersGroupBox->setLayout(pParameterLayout);
+        pSystemParametersWidget->setLayout(pParameterLayout);
+
+        //mpSettingsScrollLayout->addWidget(mpSystemParametersGroupBox);
+        pTabWidget->addTab(pSystemParametersWidget, "System Parameters");
     }
-    else
-    {
-        pScrollArea->setMinimumWidth(mpPrimaryWidget->width()+3);
-    }
-    pScrollArea->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    pScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    //mpSettingsWidget->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    //mpSettingsScrollLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+//    pPrimaryLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+//    int maxHeight = qApp->desktop()->screenGeometry().height()-100;
+//    //pSettingsScrollArea->setFixedHeight(std::min(mpSettingsWidget->height()+3, maxHeight));
+//    if(pSettingsScrollArea->minimumHeight() == maxHeight)
+//    {
+//        pSettingsScrollArea->setMinimumWidth(mpSettingsWidget->width()+19);
+//    }
+//    else
+//    {
+//        pSettingsScrollArea->setMinimumWidth(mpSettingsWidget->width()+3);
+//    }
+//    pSettingsScrollArea->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+//    pSettingsScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     //Create connections
     connect(mpCancelButton,         SIGNAL(clicked()), this, SLOT(close()));
