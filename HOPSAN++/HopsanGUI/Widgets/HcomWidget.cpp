@@ -1960,6 +1960,31 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
 
     //Evaluate expression using SymHop
     SymHop::Expression symHopExpr = SymHop::Expression(expr);
+
+    //Multiplication between data vector and scalar
+    LogDataHandler *pLogData = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler();
+    *returnType = DataVector;
+    if(symHopExpr.getFactors().size() == 2)
+    {
+        SymHop::Expression f0 = symHopExpr.getFactors()[0];
+        SymHop::Expression f1 = symHopExpr.getFactors()[1];
+        if(!getVariablePtr(f0.toString()).isNull() && f1.isNumericalSymbol())
+            return pLogData->mulVariableWithScalar(getVariablePtr(f0.toString()), f1.toDouble()).data()->getFullVariableName();
+        else if(!getVariablePtr(f1.toString()).isNull() && f0.isNumericalSymbol())
+            return pLogData->mulVariableWithScalar(getVariablePtr(f1.toString()), f0.toDouble()).data()->getFullVariableName();
+        else if(!getVariablePtr(f0.toString()).isNull() && !getVariablePtr(f1.toString()).isNull())
+            return pLogData->multVariables(getVariablePtr(f0.toString()), getVariablePtr(f1.toString())).data()->getFullVariableName();
+    }
+    if(symHopExpr.isPower())
+    {
+        SymHop::Expression b = *symHopExpr.getBase();
+        SymHop::Expression p = *symHopExpr.getPower();
+        if(!getVariablePtr(b.toString()).isNull() && p.toDouble() == 2.0)
+            return pLogData->multVariables(getVariablePtr(b.toString()), getVariablePtr(b.toString())).data()->getFullVariableName();
+    }
+    //! @todo Implement support for add/subtract and division with data variables
+
+    *returnType = Scalar;
     return QString::number(symHopExpr.evaluate(mLocalVars));
 }
 
@@ -2414,6 +2439,8 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
 
 //    cmd.replace("!!!gtoe!!!", ">=");
 //    cmd.replace("!!!stoe!!!", "<=");
+    if(cmd.endsWith("*")) { return false; }
+
     SymHop::Expression expr = SymHop::Expression(cmd);
 
     //if(cmd.count("=") == 1)     //Assignment
@@ -2421,27 +2448,23 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
     {
         QString left = expr.getLeft()->toString();
 
+        bool leftIsOk = left[0].isLetter();
+        for(int i=1; i<left.size(); ++i)
+        {
+            if(!left.at(i).isLetterOrNumber())
+            {
+                leftIsOk = false;
+            }
+        }
 
-//        QString left = cmd.split("=").first();
-//        left.remove("=");
-//        left.remove(" ");
-
-//        bool leftIsOk = left[0].isLetter();
-//        for(int i=1; i<left.size(); ++i)
-//        {
-//            if(!left.at(i).isLetterOrNumber())
-//            {
-//                leftIsOk = false;
-//            }
-//        }
-
-        //QStringList plotDataNames = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getPlotDataPtr()->getPlotDataNames();
-        //if(!leftIsOk && !plotDataNames.contains(left))
-//        if(!leftIsOk && (gpMainWindow->mpProjectTabs->count() == 0 || !getVariablePtr(left)))
-//        {
-//            mpConsole->print("Illegal variable name.");
-//            return false;
-//        }
+        LogDataHandler *pLogData = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler();
+        QStringList plotDataNames = pLogData->getPlotDataNames();
+        if(!leftIsOk && !plotDataNames.contains(left))
+        if(!leftIsOk && (gpMainWindow->mpProjectTabs->count() == 0 || !getVariablePtr(left)))
+        {
+            mpConsole->print("Illegal variable name.");
+            return false;
+        }
 
         VariableType type;
         bool evalOk;
