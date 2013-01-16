@@ -163,8 +163,9 @@ public:
     void divData(const SharedLogVariableDataPtrT pOther);
     void divData(const double other);
     void assignToData(const SharedLogVariableDataPtrT pOther);
-    bool pokeData(const int index, const double value);
-    double peekData(const int index);
+    double pokeData(const int index, const double value, QString &rErr);
+    double peekData(const int index, QString &rErr) const;
+    bool indexInRange(const int idx) const;
 
     LogDataHandler *getLogDataHandler();
 

@@ -116,8 +116,8 @@ public:
     SharedLogVariableDataPtrT assignVariable(SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b);
     QString assignVariable(const QString &a, const QString &b);
 
-    bool pokeVariable(SharedLogVariableDataPtrT a, const int index, const double value);
-    bool pokeVariable(const QString &a, const int index, const double value);
+    double pokeVariable(SharedLogVariableDataPtrT a, const int index, const double value);
+    double pokeVariable(const QString &a, const int index, const double value);
 
     double peekVariable(SharedLogVariableDataPtrT a, const int b);
     double peekVariable(const QString &a, const int index);

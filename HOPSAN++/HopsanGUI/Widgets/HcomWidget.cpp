@@ -1361,21 +1361,22 @@ void HcomHandler::executePeekCommand(QString cmd)
     }
 
     SharedLogVariableDataPtrT pData = getVariablePtr(variable);
-
     if(pData)
     {
-        if(pData->mDataVector.size() >= id+1 && id >= 0)
+        QString err;
+        double r = pData->peekData(id, err);
+        if (err.isEmpty())
         {
-            mpConsole->print(QString::number(pData->mDataVector.at(id)));
+            mpConsole->print(QString::number(r));
         }
         else
         {
-            mpConsole->print("Index out of range.");
+            mpConsole->print(err);
         }
     }
     else
     {
-        mpConsole->print("Data variable not found.");
+        mpConsole->print("Data variable not found");
     }
 }
 
@@ -1402,17 +1403,17 @@ void HcomHandler::executePokeCommand(QString cmd)
     }
 
     SharedLogVariableDataPtrT pData = getVariablePtr(variable);
-
     if(pData)
     {
-        if(pData->mDataVector.size() >= id+1 && id >= 0)
+        QString err;
+        double r = pData->pokeData(id, value, err);
+        if (err.isEmpty())
         {
-            pData->mDataVector[id] = value;
-            mpConsole->print(QString::number(pData->mDataVector.at(id)));
+            mpConsole->print(QString::number(r));
         }
         else
         {
-            mpConsole->print("Index out of range.");
+            mpConsole->print(err);
         }
     }
     else

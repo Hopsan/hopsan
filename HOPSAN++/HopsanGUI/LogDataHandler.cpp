@@ -1026,18 +1026,15 @@ QString LogDataHandler::assignVariable(const QString &a, const QString &b)
     }
 }
 
-bool LogDataHandler::pokeVariable(const QString &a, const int index, const double value)
+double LogDataHandler::pokeVariable(const QString &a, const int index, const double value)
 {
     SharedLogVariableDataPtrT pData1 = getPlotData(a, -1);
-
-    if(pData1 == 0)
-    {
-        return false;
-    }
-    else
+    if(pData1 != 0)
     {
         return pokeVariable(pData1, index, value);
     }
+    gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("No such variable: " + a);
+    return 0;
 }
 
 bool LogDataHandler::deleteVariable(const QString &a)
@@ -1049,21 +1046,19 @@ bool LogDataHandler::deleteVariable(const QString &a)
         mLogDataMap.erase(it);
         return true;
     }
+    gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("No such variable: " + a);
     return false;
 }
 
 double LogDataHandler::peekVariable(const QString &a, const int index)
 {
     SharedLogVariableDataPtrT pData1 = getPlotData(a, -1);
-    //! @todo check if ptrs not 0
-    if( (pData1 == NULL) )
-    {
-        return NULL;
-    }
-    else
+    if(pData1)
     {
         return peekVariable(pData1,index);
     }
+    gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("No such variable: " + a);
+    return 0;
 }
 
 QString LogDataHandler::saveVariable(const QString &currName, const QString &newName)
@@ -1071,16 +1066,19 @@ QString LogDataHandler::saveVariable(const QString &currName, const QString &new
     SharedLogVariableDataPtrT pCurrData = getPlotData(currName, -1);
     SharedLogVariableDataPtrT pNewData = getPlotData(newName, -1);
     // If curr data exist and new data does not exist
-    if( (pNewData == NULL) && (pCurrData != NULL) )
+    if( (pNewData == 0) && (pCurrData != 0) )
     {
         SharedLogVariableDataPtrT pNewData = defineNewVariable(newName);
-        pNewData->assignToData(pCurrData);
-        return pNewData->getFullVariableName();
+        if (pNewData)
+        {
+            pNewData->assignToData(pCurrData);
+            return pNewData->getFullVariableName();
+        }
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not create variable: " + newName);
+        return QString();
     }
-    else
-    {
-        return NULL;
-    }
+    gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Variable: " + currName + " does not exist, or Variable: " + newName + " already exist");
+    return QString();
 }
 
 SharedLogVariableDataPtrT LogDataHandler::subVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b)
@@ -1111,16 +1109,18 @@ SharedLogVariableDataPtrT LogDataHandler::divVariables(const SharedLogVariableDa
 SharedLogVariableDataPtrT LogDataHandler::assignVariable(SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b)
 {
     a->assignToData(b);
-    //SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+b->getFullVariableName());
-    //pTempVar->assigntoData(a);
-    //pTempVar->divtoData(b);
-    //return pTempVar;
     return a;
 }
 
-bool LogDataHandler::pokeVariable(SharedLogVariableDataPtrT a, const int index, const double value)
+double LogDataHandler::pokeVariable(SharedLogVariableDataPtrT a, const int index, const double value)
 {
-    return a->pokeData(index,value);
+    QString err;
+    double r = a->pokeData(index,value,err);
+    if (!err.isEmpty())
+    {
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(err);
+    }
+    return r;
 }
 
 bool LogDataHandler::deleteVariable(SharedLogVariableDataPtrT a)
@@ -1144,7 +1144,13 @@ SharedLogVariableDataPtrT LogDataHandler::saveVariable(SharedLogVariableDataPtrT
 
 double LogDataHandler::peekVariable(SharedLogVariableDataPtrT a, const int index)
 {
-    return a->peekData(index);
+    QString err;
+    double r = a->peekData(index, err);
+    if (!err.isEmpty())
+    {
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(err);
+    }
+    return r;
 }
 
 SharedLogVariableDataPtrT LogDataHandler::defineTempVariable(QString desiredname)

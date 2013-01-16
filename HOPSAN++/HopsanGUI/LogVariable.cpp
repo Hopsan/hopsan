@@ -281,22 +281,32 @@ void LogVariableData::assignToData(const SharedLogVariableDataPtrT pOther)
     mSharedTimeVectorPtr = pOther->mSharedTimeVectorPtr;
 }
 
-bool LogVariableData::pokeData(const int index, const double value)
+double LogVariableData::pokeData(const int index, const double value, QString &rErr)
 {
-
-    if (index >= 0 && index < mDataVector.size())
+    if (indexInRange(index))
     {
         mDataVector[index] = value;
         emit dataChanged();
-        return true;
+        return mDataVector[index];
     }
-    return false;
+    rErr = "Index out of range";
+    return 0;
 }
 
-double LogVariableData::peekData(const int index)
+double LogVariableData::peekData(const int index, QString &rErr) const
 {
-    //! @todo check index range, figure out whay kind of error to return
-    return mDataVector[index];
+    if (indexInRange(index))
+    {
+        return mDataVector[index];
+    }
+    rErr = "Index out of range";
+    return 0;
+}
+
+bool LogVariableData::indexInRange(const int idx) const
+{
+    //! @todo Do we need to check timevector also ? (or should we assume thay are the same)
+    return (idx>=0 && idx<mDataVector.size());
 }
 
 LogDataHandler *LogVariableData::getLogDataHandler()
