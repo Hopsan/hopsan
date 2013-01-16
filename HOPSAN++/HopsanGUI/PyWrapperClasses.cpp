@@ -438,24 +438,23 @@ QString PyLogDataHandlerClassWrapper::divVariables(LogDataHandler *o, const QStr
 
 QString PyLogDataHandlerClassWrapper::assignVariables(LogDataHandler *o, const QString &a, const QString &b)
 {
-    QString tempStr = o->assignVariables(a,b);
+    QString tempStr = o->assignVariable(a,b);
     return tempStr;
 }
 
 bool PyLogDataHandlerClassWrapper::pokeVariables(LogDataHandler *o, const QString &a, const int index, const double value)
 {
-    return o->pokeVariables(a,index,value);
+    return o->pokeVariable(a,index,value);
 }
 
-QString PyLogDataHandlerClassWrapper::delVariables(LogDataHandler *o, const QString &a)
+bool PyLogDataHandlerClassWrapper::delVariables(LogDataHandler *o, const QString &a)
 {
-    QString tempStr = o->delVariables(a);
-    return tempStr;
+    return o->deleteVariable(a);
 }
 
 QString PyLogDataHandlerClassWrapper::saveVariables(LogDataHandler *o, const QString &currName, const QString &newName)
 {
-    QString tempStr = o->saveVariables(currName, newName);
+    QString tempStr = o->saveVariable(currName, newName);
     return tempStr;
 }
 
@@ -485,7 +484,7 @@ QString PyLogDataHandlerClassWrapper::divVariablesWithScalar(LogDataHandler *o, 
 
 double PyLogDataHandlerClassWrapper::peekVariables(LogDataHandler *o,const QString &varName, const int index)
 {
-    return o->peekVariables(varName,index);
+    return o->peekVariable(varName,index);
 }
 
 QVector<double> PyLogDataHandlerClassWrapper::data(LogDataHandler *o, const QString fullName)

@@ -471,6 +471,11 @@ void LogVariableContainer::removeGenerationsOlderThen(const int gen)
     }
 }
 
+void LogVariableContainer::removeAllGenerations()
+{
+    mDataGenerations.clear();
+}
+
 LogVariableContainer::LogVariableContainer(const SharedVariableDescriptionT &rVarDesc, LogDataHandler *pParentLogDataHandler) : QObject()
 {
     mVariableDescription = rVarDesc;

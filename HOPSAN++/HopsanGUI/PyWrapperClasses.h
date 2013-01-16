@@ -82,7 +82,7 @@ public slots:
     QString assignVariables(LogDataHandler* o, const QString &a, const QString &b);
     bool pokeVariables(LogDataHandler* o, const QString &a, const int index, const double value);
     double peekVariables(LogDataHandler* o, const QString &varName, const int index);
-    QString delVariables(LogDataHandler* o, const QString &a);
+    bool delVariables(LogDataHandler* o, const QString &a);
     QString saveVariables(LogDataHandler* o, const QString &currName, const QString &newName);
     QString addVariablesWithScalar(LogDataHandler* o, const QString &VarName, const int &ScaName);
     QString subVariablesWithScalar(LogDataHandler* o, const QString &VarName, const int &ScaName);

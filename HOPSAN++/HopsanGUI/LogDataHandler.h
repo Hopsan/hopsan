@@ -54,6 +54,11 @@ public:
     void exportToPlo(QString filePath, QStringList variables);
     void importFromPlo();
 
+    SharedLogVariableDataPtrT defineNewVariable(const QString desiredname);
+
+    bool deleteVariable(SharedLogVariableDataPtrT a);
+    bool deleteVariable(const QString &a);
+
     bool isEmpty();
 
     QVector<double> getTimeVector(int generation);
@@ -108,24 +113,19 @@ public:
     QString multVariables(const QString &a, const QString &b);
     QString divVariables(const QString &a, const QString &b);
 
-    SharedLogVariableDataPtrT assignVariables(SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b);
-    QString assignVariables(const QString &a, const QString &b);
+    SharedLogVariableDataPtrT assignVariable(SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b);
+    QString assignVariable(const QString &a, const QString &b);
 
-    bool pokeVariables(SharedLogVariableDataPtrT a, const int index, const double value);
-    bool pokeVariables(const QString &a, const int index, const double value);
+    bool pokeVariable(SharedLogVariableDataPtrT a, const int index, const double value);
+    bool pokeVariable(const QString &a, const int index, const double value);
 
-    double peekVariables(SharedLogVariableDataPtrT a, const int b);
-    double peekVariables(const QString &a, const int index);
+    double peekVariable(SharedLogVariableDataPtrT a, const int b);
+    double peekVariable(const QString &a, const int index);
 
-    SharedLogVariableDataPtrT saveVariables(SharedLogVariableDataPtrT a);
-    QString saveVariables(const QString &currName, const QString &newName);
+    SharedLogVariableDataPtrT saveVariable(SharedLogVariableDataPtrT a);
+    QString saveVariable(const QString &currName, const QString &newName);
 
-    void delVariables(SharedLogVariableDataPtrT a);
-    QString delVariables(const QString &a);
-
-    SharedLogVariableDataPtrT defineNewVariable(const QString desiredname);
-    SharedLogVariableDataPtrT defineTempVariable(const QString desiredname);
-    void removeTempVariable(const QString fullName);
+    SharedLogVariableDataPtrT defineTempVariable(QString desiredname);
 
 signals:
     void newDataAvailable();

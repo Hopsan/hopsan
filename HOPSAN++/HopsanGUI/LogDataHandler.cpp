@@ -998,7 +998,7 @@ QString LogDataHandler::divVariables(const QString &a, const QString &b)
     }
 }
 
-QString LogDataHandler::assignVariables(const QString &a, const QString &b)
+QString LogDataHandler::assignVariable(const QString &a, const QString &b)
 {
     SharedLogVariableDataPtrT pData1 = getPlotData(a, -1);
     SharedLogVariableDataPtrT pData2 = getPlotData(b, -1);
@@ -1016,17 +1016,17 @@ QString LogDataHandler::assignVariables(const QString &a, const QString &b)
         mLogDataMap.insert(a, SharedLogVariableContainerPtrT(pDataContainer));
         ++mGenerationNumber;
         pData1 = getPlotData(a,-1);
-        SharedLogVariableDataPtrT pTemp = assignVariables(pData1,pData2);
+        SharedLogVariableDataPtrT pTemp = assignVariable(pData1,pData2);
         return pTemp->getFullVariableName();
     }
     else
     {
-        SharedLogVariableDataPtrT pTemp = assignVariables(pData1,pData2);
+        SharedLogVariableDataPtrT pTemp = assignVariable(pData1,pData2);
         return pTemp->getFullVariableName();
     }
 }
 
-bool LogDataHandler::pokeVariables(const QString &a, const int index, const double value)
+bool LogDataHandler::pokeVariable(const QString &a, const int index, const double value)
 {
     SharedLogVariableDataPtrT pData1 = getPlotData(a, -1);
 
@@ -1036,26 +1036,23 @@ bool LogDataHandler::pokeVariables(const QString &a, const int index, const doub
     }
     else
     {
-        return pokeVariables(pData1, index, value);
+        return pokeVariable(pData1, index, value);
     }
 }
 
-QString LogDataHandler::delVariables(const QString &a)
+bool LogDataHandler::deleteVariable(const QString &a)
 {
-    SharedLogVariableDataPtrT pData1 = getPlotData(a, -1);
-
-    if( (pData1 == 0) )
+    LogDataMapT::iterator it = mLogDataMap.find(a);
+    if(it != mLogDataMap.end())
     {
-        return NULL;
+        it.value()->removeAllGenerations();
+        mLogDataMap.erase(it);
+        return true;
     }
-    else
-    {
-        delVariables(pData1);
-        return NULL;
-    }
+    return false;
 }
 
-double LogDataHandler::peekVariables(const QString &a, const int index)
+double LogDataHandler::peekVariable(const QString &a, const int index)
 {
     SharedLogVariableDataPtrT pData1 = getPlotData(a, -1);
     //! @todo check if ptrs not 0
@@ -1065,11 +1062,11 @@ double LogDataHandler::peekVariables(const QString &a, const int index)
     }
     else
     {
-        return peekVariables(pData1,index);
+        return peekVariable(pData1,index);
     }
 }
 
-QString LogDataHandler::saveVariables(const QString &currName, const QString &newName)
+QString LogDataHandler::saveVariable(const QString &currName, const QString &newName)
 {
     SharedLogVariableDataPtrT pCurrData = getPlotData(currName, -1);
     SharedLogVariableDataPtrT pNewData = getPlotData(newName, -1);
@@ -1111,7 +1108,7 @@ SharedLogVariableDataPtrT LogDataHandler::divVariables(const SharedLogVariableDa
 }
 
 //! @todo Should this function really return a value?
-SharedLogVariableDataPtrT LogDataHandler::assignVariables(SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b)
+SharedLogVariableDataPtrT LogDataHandler::assignVariable(SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b)
 {
     a->assignToData(b);
     //SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+b->getFullVariableName());
@@ -1121,104 +1118,63 @@ SharedLogVariableDataPtrT LogDataHandler::assignVariables(SharedLogVariableDataP
     return a;
 }
 
-bool LogDataHandler::pokeVariables(SharedLogVariableDataPtrT a, const int index, const double value)
+bool LogDataHandler::pokeVariable(SharedLogVariableDataPtrT a, const int index, const double value)
 {
     return a->pokeData(index,value);
 }
 
-void LogDataHandler::delVariables(SharedLogVariableDataPtrT a)
+bool LogDataHandler::deleteVariable(SharedLogVariableDataPtrT a)
 {
-    removeTempVariable(a->getFullVariableName());
+    LogDataMapT::iterator it = mLogDataMap.find(a->getFullVariableName());
+    if(it != mLogDataMap.end())
+    {
+        it.value()->removeAllGenerations();
+        mLogDataMap.erase(it);
+        return true;
+    }
+    return false;
 }
 
-SharedLogVariableDataPtrT LogDataHandler::saveVariables(SharedLogVariableDataPtrT a)
+SharedLogVariableDataPtrT LogDataHandler::saveVariable(SharedLogVariableDataPtrT a)
 {
     SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName());
     pTempVar->assignToData(a);
     return pTempVar;
 }
 
-double LogDataHandler::peekVariables(SharedLogVariableDataPtrT a, const int index)
+double LogDataHandler::peekVariable(SharedLogVariableDataPtrT a, const int index)
 {
     return a->peekData(index);
 }
 
-SharedLogVariableDataPtrT LogDataHandler::defineTempVariable(const QString desiredname)
+SharedLogVariableDataPtrT LogDataHandler::defineTempVariable(QString desiredname)
 {
     QString numStr;
-    SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription);
     numStr.setNum(mTempVarCtr);
-    pVarDesc->mDataName = desiredname+numStr;
-    pVarDesc->mVarType = VariableDescription::ST;
-    QString catName = pVarDesc->getFullName();
-    LogVariableContainer *pDataContainer;
-    //pDataContainer->getTypeVarString(LogVariableContainer::ST);
-    //mVarTypeT = LogVariableContainer::ST;
-    const QVector<double> dummy;
-    LogDataMapT::iterator dit = mLogDataMap.find(catName);
-    if(dit != mLogDataMap.end())
+    desiredname.append(numStr);
+    SharedLogVariableDataPtrT pData = defineNewVariable(desiredname);
+    if (pData)
     {
-        dit.value()->addDataGeneration(mGenerationNumber, dummy, dummy );
+       ++mTempVarCtr;
     }
-    else
-    {
-
-        pDataContainer = new LogVariableContainer(pVarDesc, this);
-        pDataContainer->addDataGeneration(mGenerationNumber, dummy, dummy);
-       // pDataContainer->getTypeVarString(ST);
-        mLogDataMap.insert(catName, SharedLogVariableContainerPtrT(pDataContainer));
-        ++mTempVarCtr;
-    }
-    //! @todo Check if exists so that it does not overwrite it
-    // Create a new toplevel map item and insert data into the generations map
-
-    //mAllPlotData.insert(catName, pDataContainer);
-    return pDataContainer->getDataGeneration(mGenerationNumber);
+    return pData;
 }
 
 SharedLogVariableDataPtrT LogDataHandler::defineNewVariable(const QString desiredname)
 {
-    SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription);
-    pVarDesc->mDataName = desiredname;
-    pVarDesc->mVarType = VariableDescription::S;
-    QString catName = pVarDesc->getFullName();
-    LogVariableContainer *pDataContainer;
-    //pDataContainer->getTypeVarString(LogVariableContainer::ST);
-    //mVarTypeT = LogVariableContainer::ST;
-    const QVector<double> dummy;
-    LogDataMapT::iterator dit = mLogDataMap.find(catName);
-    if(dit != mLogDataMap.end())
+    if(mLogDataMap.find(desiredname) == mLogDataMap.end())
     {
-        dit.value()->addDataGeneration(mGenerationNumber, dummy, dummy );
+        SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription);
+        pVarDesc->mDataName = desiredname;
+        pVarDesc->mVarType = VariableDescription::S;
+        LogVariableContainer *pDataContainer = new LogVariableContainer(pVarDesc, this);
+        pDataContainer->addDataGeneration(mGenerationNumber, QVector<double>(), QVector<double>());
+        mLogDataMap.insert(pVarDesc->getFullName(), SharedLogVariableContainerPtrT(pDataContainer));
+        return pDataContainer->getDataGeneration(mGenerationNumber);
     }
-    else
-    {
-
-        pDataContainer = new LogVariableContainer(pVarDesc, this);
-        pDataContainer->addDataGeneration(mGenerationNumber, dummy, dummy);
-       // pDataContainer->getTypeVarString(ST);
-        mLogDataMap.insert(catName, SharedLogVariableContainerPtrT(pDataContainer));
-    }
-    //! @todo Check if exists so that it does not overwrite it
-    // Create a new toplevel map item and insert data into the generations map
-
-    //mAllPlotData.insert(catName, pDataContainer);
-    return pDataContainer->getDataGeneration(mGenerationNumber);
+    return SharedLogVariableDataPtrT();
 }
 
-void LogDataHandler::removeTempVariable(const QString fullName)
-{
-       LogDataMapT::iterator it = mLogDataMap.find(fullName);
-       if(it != mLogDataMap.end())
-       {
-           it.value()->removeDataGeneration(it.value()->getHighestGeneration());
-           mLogDataMap.erase(it);
-       }
-       else
-       {
-           qDebug() << "Warning: you are trying to remove a variable that does not exist in this node  (does nothing)";
-       }
-}
 
 
 //! @brief Tells whether or not the model has open plot curves

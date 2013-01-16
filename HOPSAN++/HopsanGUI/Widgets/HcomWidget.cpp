@@ -2467,7 +2467,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
             if(pLeftData != 0) { left = pLeftData->getFullVariableName(); }
             if(pValueData != 0) { value = pValueData->getFullVariableName(); }
 
-            gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->assignVariables(left, value);
+            gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->assignVariable(left, value);
             return true;
         }
         else

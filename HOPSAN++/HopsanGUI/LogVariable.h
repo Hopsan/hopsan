@@ -89,6 +89,7 @@ public:
     void addDataGeneration(const int generation, const SharedTimeVectorPtrT time, const QVector<double> &rData);
     void removeDataGeneration(const int generation);
     void removeGenerationsOlderThen(const int gen);
+    void removeAllGenerations();
 
     SharedLogVariableDataPtrT getDataGeneration(const int gen=-1);
     bool hasDataGeneration(const int gen);
