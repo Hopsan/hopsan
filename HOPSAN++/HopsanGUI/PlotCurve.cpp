@@ -195,15 +195,11 @@ void PlotCurveInfoBox::updateInfo()
 
     // Update curve name
     refreshTitle();
-
-
 }
 
 void PlotCurveInfoBox::refreshTitle()
 {
-    QString title = mpParentPlotCurve->getLogDataVariablePtr()->getFullVariableNameWithSeparator(", ");
-    title.append(" ["+mpParentPlotCurve->getDataUnit()+"]");
-    mpTitle->setText(title);
+    mpTitle->setText(mpParentPlotCurve->getCurveName() + " ["+mpParentPlotCurve->getDataUnit()+"]");
 }
 
 void PlotCurveInfoBox::refreshActive(bool active)
