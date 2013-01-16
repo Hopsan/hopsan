@@ -260,6 +260,7 @@ void PlotCurve::commonConstructorCode(int axisY,
                                       HopsanPlotID plotID,
                                       HopsanPlotCurveType curveType)
 {
+    mpCurveSymbol = 0;
     mIsActive = false;
     mCurveType = curveType;
     mpParentPlotTab = parent;
@@ -596,6 +597,12 @@ void PlotCurve::toFrequencySpectrum()
     updatePlotInfoBox();
 }
 
+void PlotCurve::resetLegendSize()
+{
+    // For now hardcoded but maybe in the future be possible to select, (default 8x8 is to small to see difference between dashed and solid lines)
+    mpQwtPlotCurve->setLegendIconSize(QSize(40,12));
+}
+
 SharedLogVariableDataPtrT PlotCurve::getLogDataVariablePtr()
 {
     return mpData;
@@ -635,157 +642,139 @@ void PlotCurve::setLineWidth(int lineWidth)
 }
 
 
-void PlotCurve::setLineStyle(QString LStyle)
+void PlotCurve::setLineStyle(QString lineStyle)
 {
-    mLineStyle = LStyle;
+    mLineStyle = lineStyle;
+    mpQwtPlotCurve->setStyle(HopQwtPlotCurve::Lines); //Assume we want lines
     QPen tempPen = mpQwtPlotCurve->pen();
-    if(LStyle == "Solid Line")
+    if(lineStyle == "Solid Line")
     {
         tempPen.setStyle(Qt::SolidLine);
-        mpQwtPlotCurve->setStyle(HopQwtPlotCurve::Lines);
     }
-    else if(LStyle == "Dash Line")
+    else if(lineStyle == "Dash Line")
     {
         tempPen.setStyle(Qt::DashLine);
     }
-    else if(LStyle == "Dot Line")
+    else if(lineStyle == "Dot Line")
     {
         tempPen.setStyle(Qt::DotLine);
     }
-    else if(LStyle == "Dash Dot Line")
+    else if(lineStyle == "Dash Dot Line")
     {
         tempPen.setStyle(Qt::DashDotLine);
     }
-    else if(LStyle == "Dash Dot Dot Line")
+    else if(lineStyle == "Dash Dot Dot Line")
     {
         tempPen.setStyle(Qt::DashDotDotLine);
     }
     else
     {
-
+        // Deactivate line completely
         mpQwtPlotCurve->setStyle(HopQwtPlotCurve::NoCurve);
-
     }
     mpQwtPlotCurve->setPen(tempPen);
+    resetLegendSize();
 }
-// End setLineStyle
 
-void PlotCurve::setLineSymbol(QString LSymbol)
+void PlotCurve::setLineSymbol(QString lineSymbol)
 {
-    mLineSymbol = LSymbol;
-    //mpCurve->setStyle(HopQwtPlotCurve::NoSymbol);
-    QPen tempPen = mpQwtPlotCurve->pen();
+    mLineSymbol = lineSymbol;
     mpCurveSymbol = new QwtSymbol();
-    if(LSymbol == "Cross")
+    if(lineSymbol == "Cross")
     {
         mpCurveSymbol->setStyle(QwtSymbol::Cross);
-        mpCurveSymbol->setSize(5,5);
-        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
     }
-    else if(LSymbol == "XCross")
+    else if(lineSymbol == "XCross")
     {
         mpCurveSymbol->setStyle(QwtSymbol::XCross);
-        mpCurveSymbol->setSize(5,5);
-        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
     }
-    else if(LSymbol == "Ellipse")
+    else if(lineSymbol == "Ellipse")
     {
         mpCurveSymbol->setStyle(QwtSymbol::Ellipse);
-        mpCurveSymbol->setSize(5,5);
-        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
     }
-    else if(LSymbol == "Star 1")
+    else if(lineSymbol == "Star 1")
     {
         mpCurveSymbol->setStyle(QwtSymbol::Star1);
-        mpCurveSymbol->setSize(5,5);
-        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
     }
-    else if(LSymbol == "Star 2")
+    else if(lineSymbol == "Star 2")
     {
         mpCurveSymbol->setStyle(QwtSymbol::Star2);
-        mpCurveSymbol->setSize(5,5);
-        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
     }
-    else if(LSymbol == "Hexagon")
+    else if(lineSymbol == "Hexagon")
     {
         mpCurveSymbol->setStyle(QwtSymbol::Hexagon);
-        mpCurveSymbol->setSize(5,5);
-        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
     }
-    else if(LSymbol == "Rectangle")
+    else if(lineSymbol == "Rectangle")
     {
         mpCurveSymbol->setStyle(QwtSymbol::Rect);
-        mpCurveSymbol->setSize(5,5);
-        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
     }
-    else if(LSymbol == "Horizontal Line")
+    else if(lineSymbol == "Horizontal Line")
     {
         mpCurveSymbol->setStyle(QwtSymbol::HLine);
-        mpCurveSymbol->setSize(5,5);
-        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
     }
-    else if(LSymbol == "Vertical Line")
+    else if(lineSymbol == "Vertical Line")
     {
         mpCurveSymbol->setStyle(QwtSymbol::VLine);
-        mpCurveSymbol->setSize(5,5);
-        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
     }
-    else if(LSymbol == "Diamond")
+    else if(lineSymbol == "Diamond")
     {
         mpCurveSymbol->setStyle(QwtSymbol::Diamond);
-        mpCurveSymbol->setSize(5,5);
-        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
     }
-    else if(LSymbol == "Triangle")
+    else if(lineSymbol == "Triangle")
     {
         mpCurveSymbol->setStyle(QwtSymbol::Triangle);
-        mpCurveSymbol->setSize(5,5);
-        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
     }
-    else if(LSymbol == "Up Triangle")
+    else if(lineSymbol == "Up Triangle")
     {
         mpCurveSymbol->setStyle(QwtSymbol::UTriangle);
-        mpCurveSymbol->setSize(5,5);
-        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
     }
-    else if(LSymbol == "Down Triangle")
+    else if(lineSymbol == "Down Triangle")
     {
         mpCurveSymbol->setStyle(QwtSymbol::DTriangle);
-        mpCurveSymbol->setSize(5,5);
-        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
     }
-    else if(LSymbol == "Right Triangle")
+    else if(lineSymbol == "Right Triangle")
     {
         mpCurveSymbol->setStyle(QwtSymbol::RTriangle);
-        mpCurveSymbol->setSize(5,5);
-        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
     }
-    else if(LSymbol == "Left Triangle")
+    else if(lineSymbol == "Left Triangle")
     {
         mpCurveSymbol->setStyle(QwtSymbol::LTriangle);
-        mpCurveSymbol->setSize(5,5);
-        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
     }
     else
     {
-        //mpCurve->setStyle(HopQwtPlotCurve::Dots);
         mpCurveSymbol->setStyle(QwtSymbol::NoSymbol);
-        //mpCurveSymbol->setSize(10,10);
-        mpQwtPlotCurve->setSymbol(mpCurveSymbol);
-        //mpCurve->setStyle(HopQwtPlotCurve::Lines);
     }
+
+    QPen tempPen = mpQwtPlotCurve->pen();
+    tempPen.setStyle(Qt::SolidLine);
     mpCurveSymbol->setPen(tempPen);
-    //! @todo Add a color picker for the markers
+    mpCurveSymbol->setSize(8,8);
+    mpQwtPlotCurve->setSymbol(mpCurveSymbol);
+
+    //! @todo Add a color or size picker for the markers
+    resetLegendSize();
 }
 
 //! @brief Sets the color of a line
 //! @brief color Color to give the line.
 void PlotCurve::setLineColor(QColor color)
 {
+    QPen tempPen;
     mLineColor = color;
-    QPen tempPen = mpQwtPlotCurve->pen();
+
+    // Set line color
+    tempPen = mpQwtPlotCurve->pen();
     tempPen.setColor(color);
     mpQwtPlotCurve->setPen(tempPen);
+
+    // Set symbol color, (but only if we have one, else an empty symbold will be created)
+    if (mpCurveSymbol)
+    {
+        // Need to recreate the symbol so that legend will update
+        setLineSymbol(mLineSymbol);
+    }
+
+    // Set blob color
     mpPlotCurveInfoBox->setLineColor(color);
 }
 
@@ -1192,39 +1181,20 @@ HopQwtPlotCurve::HopQwtPlotCurve(QString label) :
 
 QList<QwtLegendData> HopQwtPlotCurve::legendData() const
 {
-    // This is more or less a copy of the code from qwt_plot_item.cpp
-    // with the adtionon of axis property
-    QwtLegendData data;
-
-    QwtText label = title();
-    label.setRenderFlags( label.renderFlags() & Qt::AlignLeft );
-
-    QVariant titleValue;
-    qVariantSetValue( titleValue, label );
-    data.setValue( QwtLegendData::TitleRole, titleValue );
-
-    const QwtGraphic graphic = legendIcon( 0, legendIconSize() );
-    if ( !graphic.isNull() )
+    QList<QwtLegendData> list = QwtPlotCurve::legendData();
+    for (int i=0; i<list.size(); ++i)
     {
-        QVariant iconValue;
-        qVariantSetValue( iconValue, graphic );
-        data.setValue( QwtLegendData::IconRole, iconValue );
+        list[i].setValue( AxisIdRole, this->yAxis() );
     }
-
-    data.setValue( AxisIdRole, this->yAxis());
-
-    QList<QwtLegendData> list;
-    list += data;
-
     return list;
 }
 
 PlotLegend::PlotLegend(QwtPlot::Axis axisId) :
-    HopQwtPlotLegendItem(axisId)
+    QwtPlotLegendItem()
 {
     setMaxColumns(1);
     setRenderHint( QwtPlotItem::RenderAntialiased );
-    setBackgroundMode(HopQwtPlotLegendItem::LegendBackground);
+    setBackgroundMode(LegendBackground);
     setBackgroundBrush(QColor(Qt::white));
     setBorderRadius(8);
     setMargin(4);
@@ -1233,5 +1203,22 @@ PlotLegend::PlotLegend(QwtPlot::Axis axisId) :
     QFont font = this->font();
     font.setPointSize(11);
     setFont(font);
+
+    mAxis = axisId;
+}
+
+void PlotLegend::updateLegend(const QwtPlotItem *plotItem, const QList<QwtLegendData> &data)
+{
+    // Use only those curve pointers that should belong to this particular legend
+    QList<QwtLegendData> myData;
+    for (int i=0; i<data.size(); ++i)
+    {
+        if (data[i].value(AxisIdRole) == mAxis)
+        {
+            myData.push_back(data[i]);
+        }
+    }
+
+    QwtPlotLegendItem::updateLegend( plotItem, myData );
 }
 

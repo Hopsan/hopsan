@@ -22,40 +22,16 @@ class PlotTab;
 class PlotCurve;
 
 enum {AxisIdRole=QwtLegendData::UserRole+1};
-//! @todo Merge this class with PlotLegend
-class HopQwtPlotLegendItem : public QwtPlotLegendItem
+
+class PlotLegend : public QwtPlotLegendItem
 {
 private:
     QwtPlot::Axis mAxis;
     int mnItems;
 
 public:
-    HopQwtPlotLegendItem(QwtPlot::Axis axisId) :
-        QwtPlotLegendItem()
-    {
-        mAxis = axisId;
-    }
-
-    void updateLegend( const QwtPlotItem *plotItem, const QList<QwtLegendData> &data )
-    {
-        // Use only those curve pointers that should belong to this particular legend
-        QList<QwtLegendData> myData;
-        for (int i=0; i<data.size(); ++i)
-        {
-            if (data[i].value(AxisIdRole) == mAxis)
-            {
-                myData.push_back(data[i]);
-            }
-        }
-
-        QwtPlotLegendItem::updateLegend( plotItem, myData );
-    }
-};
-
-class PlotLegend : public HopQwtPlotLegendItem
-{
-public:
     PlotLegend(QwtPlot::Axis axisId);
+    void updateLegend( const QwtPlotItem *plotItem, const QList<QwtLegendData> &data );
 };
 
 
@@ -63,9 +39,10 @@ public:
 class HopQwtPlotCurve : public QwtPlotCurve
 {
 public:
+    enum {LegendShowLineAndSymbol=QwtPlotCurve::LegendShowBrush+1};
+
     HopQwtPlotCurve(QString label);
     QList<QwtLegendData> legendData() const;
-
 };
 
 
@@ -145,11 +122,13 @@ public:
 
     void toFrequencySpectrum();
 
+    void resetLegendSize();
+
 public slots:
 
     void setLineWidth(int);
-    void setLineStyle(QString);
-    void setLineSymbol(QString);
+    void setLineStyle(QString lineStyle);
+    void setLineSymbol(QString lineSymbol);
     void setLineColor(QColor color);
     void setLineColor(QString colorName=QString());
     void openScaleDialog();

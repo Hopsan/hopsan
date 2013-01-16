@@ -30,7 +30,7 @@ class PlotCurve;
 class PlotMarker;
 
 class HopQwtPlotCurve;
-class HopQwtPlotLegendItem;
+class PlotLegend;
 
 //! @brief Plot window tab containing a plot area with plot curves
 class PlotTab : public QWidget
@@ -160,7 +160,7 @@ private:
 
     // Legend related member variables
     QwtLegend *mpExternalLegend;
-    HopQwtPlotLegendItem *mpLeftPlotLegend, *mpRightPlotLegend;
+    PlotLegend *mpLeftPlotLegend, *mpRightPlotLegend;
     QCheckBox *mpLegendsInternalEnabledCheckBox;
     QCheckBox *mpLegendsExternalEnabledCheckBox;
     QCheckBox *mpLegendsAutoOffsetCheckBox;
@@ -168,13 +168,14 @@ private:
     QDialog *mpLegendSettingsDialog;
     QComboBox *mpLegendLPosition;
     QComboBox *mpLegendRPosition;
-    QComboBox *mpLegendBg;
-    QComboBox *mpLegendSym;
-    QSpinBox *mpLegendCol;
+    QComboBox *mpLegendBgType;
+    QComboBox *mpLegendBgColor;
+    QComboBox *mpLegendSymbolType;
+    QSpinBox *mpLegendCols;
     QDoubleSpinBox *mpLegendLeftOffset;
     QDoubleSpinBox *mpLegendRightOffset;
-    QSpinBox *mpLegendSize;
-    QComboBox *mpLegendBlob;
+    QSpinBox *mpLegendFontSize;
+
 
     QDialog *mpGraphicsSettingsDialog;
     QSpinBox *mpGraphicsSize;

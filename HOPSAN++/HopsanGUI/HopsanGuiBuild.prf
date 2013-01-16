@@ -7,6 +7,7 @@ defineReplace(setQWTPathInfo){
     dstDir = $$2
 
     #Set QWT paths, Paths that are earlier in the list will be used if found
+    QWT_PATHS *= $${PWD}/Dependencies/qwt-6.1.0-rc2
     QWT_PATHS *= $${PWD}/Dependencies/qwt-trunk
     QWT_PATH = $$selectPath($$externalSrc, $$QWT_PATHS, "qwt")
 

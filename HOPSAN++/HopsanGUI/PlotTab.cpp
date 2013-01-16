@@ -195,15 +195,13 @@ void PlotTab::applyLegendSettings()
         mpRightPlotLegend->show();
         mpLeftPlotLegend->show();
 
-        mpRightPlotLegend->setMaxColumns(mpLegendCol->value());
-        mpLeftPlotLegend->setMaxColumns(mpLegendCol->value());
+        mpRightPlotLegend->setMaxColumns(mpLegendCols->value());
+        mpLeftPlotLegend->setMaxColumns(mpLegendCols->value());
 
-        QString symStyle = mpLegendSym->currentText();
+        setLegendSymbol(mpLegendSymbolType->currentText());
 
-        setLegendSymbol(symStyle);
-
-        mpRightPlotLegend->setBackgroundMode(HopQwtPlotLegendItem::BackgroundMode(mpLegendBg->currentIndex()));
-        mpLeftPlotLegend->setBackgroundMode(HopQwtPlotLegendItem::BackgroundMode(mpLegendBg->currentIndex()));
+        mpRightPlotLegend->setBackgroundMode(PlotLegend::BackgroundMode(mpLegendBgType->currentIndex()));
+        mpLeftPlotLegend->setBackgroundMode(PlotLegend::BackgroundMode(mpLegendBgType->currentIndex()));
 
         int alignL = mpLegendLPosition->currentIndex();
         int alignR = mpLegendRPosition->currentIndex();
@@ -234,16 +232,15 @@ void PlotTab::applyLegendSettings()
             mpRightPlotLegend->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
         }
 
-        QColor LegColBlob = QColor(mpLegendBlob->currentText());
-        mpRightPlotLegend->setBackgroundBrush(LegColBlob);
-        mpLeftPlotLegend->setBackgroundBrush(LegColBlob);
+        mpRightPlotLegend->setBackgroundBrush(QColor(mpLegendBgColor->currentText()));
+        mpLeftPlotLegend->setBackgroundBrush(QColor(mpLegendBgColor->currentText()));
 
         QFont fontl = mpLeftPlotLegend->font();
-        fontl.setPointSize(mpLegendSize->value());
+        fontl.setPointSize(mpLegendFontSize->value());
         mpLeftPlotLegend->setFont(fontl);
 
         QFont fontr = mpRightPlotLegend->font();
-        fontr.setPointSize(mpLegendSize->value());
+        fontr.setPointSize(mpLegendFontSize->value());
         mpRightPlotLegend->setFont(fontr);
     }
     else
@@ -265,10 +262,10 @@ void PlotTab::applyLegendSettings()
         }
 
         QFont font = mpExternalLegend->font();
-        font.setPointSize(mpLegendSize->value());
+        font.setPointSize(mpLegendFontSize->value());
         mpExternalLegend->setFont(font);
 
-        QString symStyle = mpLegendSym->currentText();
+        QString symStyle = mpLegendSymbolType->currentText();
         setLegendSymbol(symStyle);
     }
     else
@@ -434,7 +431,7 @@ void PlotTab::addCurve(PlotCurve *curve, QColor desiredColor, HopsanPlotID plotI
     mpQwtPlots[plotID]->updateGeometry();
     curve->setLineWidth(2);
 
-    setLegendSymbol(mpLegendSym->currentText());
+    setLegendSymbol(mpLegendSymbolType->currentText());
 
     mpParentPlotWindow->mpBodePlotButton->setEnabled(mPlotCurvePtrs[FIRSTPLOT].size() > 1);
 }
@@ -2157,15 +2154,15 @@ void PlotTab::constructLegendSettingsDialog()
     mpLegendSettingsDialog->setWindowTitle("Legend Controls");
     mpLegendSettingsDialog->setWindowModality(Qt::WindowModal);
 
-    mpLegendSize = new QSpinBox(this);
-    mpLegendSize->setRange(1,20);
-    mpLegendSize->setSingleStep(1);
-    mpLegendSize->setValue(11);
+    mpLegendFontSize = new QSpinBox(this);
+    mpLegendFontSize->setRange(1,100);
+    mpLegendFontSize->setSingleStep(1);
+    mpLegendFontSize->setValue(11);
 
-    mpLegendCol = new QSpinBox(this);
-    mpLegendCol->setRange(1,20);
-    mpLegendCol->setSingleStep(1);
-    mpLegendCol->setValue(1);
+    mpLegendCols = new QSpinBox(this);
+    mpLegendCols->setRange(1,100);
+    mpLegendCols->setSingleStep(1);
+    mpLegendCols->setValue(1);
 
     mpLegendLeftOffset = new QDoubleSpinBox(this);
     mpLegendLeftOffset->setRange(-DBLMAX, DBLMAX);
@@ -2203,45 +2200,45 @@ void PlotTab::constructLegendSettingsDialog()
     mpLegendRPosition->addItem("Bottom");
     mpLegendRPosition->addItem("Centre");
 
-    mpLegendBlob = new QComboBox(this);
-    mpLegendBlob->addItem("White");
-    mpLegendBlob->addItem("Red");
-    mpLegendBlob->addItem("Blue");
-    mpLegendBlob->addItem("Black");
-    mpLegendBlob->addItem("Maroon");
-    mpLegendBlob->addItem("Gray");
-    mpLegendBlob->addItem("LightSalmon");
-    mpLegendBlob->addItem("SteelBlue");
-    mpLegendBlob->addItem("Yellow");
-    mpLegendBlob->addItem("Gray");
-    mpLegendBlob->addItem("Fuchsia");
-    mpLegendBlob->addItem("PaleGreen");
-    mpLegendBlob->addItem("PaleTurquoise");
-    mpLegendBlob->addItem("Cornsilk");
-    mpLegendBlob->addItem("HotPink");
-    mpLegendBlob->addItem("Peru");
-    mpLegendBlob->addItem("Pink");
+    mpLegendBgColor = new QComboBox(this);
+    mpLegendBgColor->addItem("White");
+    mpLegendBgColor->addItem("Red");
+    mpLegendBgColor->addItem("Blue");
+    mpLegendBgColor->addItem("Black");
+    mpLegendBgColor->addItem("Maroon");
+    mpLegendBgColor->addItem("Gray");
+    mpLegendBgColor->addItem("LightSalmon");
+    mpLegendBgColor->addItem("SteelBlue");
+    mpLegendBgColor->addItem("Yellow");
+    mpLegendBgColor->addItem("Gray");
+    mpLegendBgColor->addItem("Fuchsia");
+    mpLegendBgColor->addItem("PaleGreen");
+    mpLegendBgColor->addItem("PaleTurquoise");
+    mpLegendBgColor->addItem("Cornsilk");
+    mpLegendBgColor->addItem("HotPink");
+    mpLegendBgColor->addItem("Peru");
+    mpLegendBgColor->addItem("Pink");
 
-    mpLegendBg = new QComboBox(this);
-    mpLegendBg->addItem("Legends", HopQwtPlotLegendItem::LegendBackground);
-    mpLegendBg->addItem("Items", HopQwtPlotLegendItem::ItemBackground);
+    mpLegendBgType = new QComboBox(this);
+    mpLegendBgType->addItem("Legends", PlotLegend::LegendBackground);
+    mpLegendBgType->addItem("Items", PlotLegend::ItemBackground);
 
-    mpLegendSym = new QComboBox(this);
-    mpLegendSym->addItem("Line", HopQwtPlotCurve::LegendShowLine ); //Line first (default)
-    mpLegendSym->addItem("Rectangle", HopQwtPlotCurve::LegendNoAttribute );
-    mpLegendSym->addItem("Default Symbol", HopQwtPlotCurve::LegendShowSymbol );
-    mpLegendSym->addItem("Brush", HopQwtPlotCurve::LegendShowBrush );
+    mpLegendSymbolType = new QComboBox(this);
+    mpLegendSymbolType->addItem("Line&Symbol", HopQwtPlotCurve::LegendShowLineAndSymbol);
+    mpLegendSymbolType->addItem("Line", HopQwtPlotCurve::LegendShowLine );
+    mpLegendSymbolType->addItem("Symbol", HopQwtPlotCurve::LegendShowSymbol );
+    mpLegendSymbolType->addItem("Rectangle", HopQwtPlotCurve::LegendNoAttribute );
 
     QGroupBox *legendBox = new QGroupBox( "Legend" );
     QGridLayout *legendBoxLayout = new QGridLayout( legendBox );
 
     int row = 0;
     legendBoxLayout->addWidget( new QLabel( "Size" ), row, 0 );
-    legendBoxLayout->addWidget( mpLegendSize, row, 1 );
+    legendBoxLayout->addWidget( mpLegendFontSize, row, 1 );
 
     row++;
     legendBoxLayout->addWidget( new QLabel( "Columns" ), row, 0 );
-    legendBoxLayout->addWidget( mpLegendCol, row, 1 );
+    legendBoxLayout->addWidget( mpLegendCols, row, 1 );
 
     row++;
     legendBoxLayout->addWidget( new QLabel( "Left Legend Position" ), row, 0 );
@@ -2253,7 +2250,7 @@ void PlotTab::constructLegendSettingsDialog()
 
     row++;
     legendBoxLayout->addWidget( new QLabel( "Background" ), row, 0 );
-    legendBoxLayout->addWidget( mpLegendBg, row, 1 );
+    legendBoxLayout->addWidget( mpLegendBgType, row, 1 );
 
     QPushButton *pFinishedLegButton = new QPushButton("Close", mpLegendSettingsDialog);
     QDialogButtonBox *pFinishedLegButtonBox = new QDialogButtonBox(Qt::Horizontal);
@@ -2269,11 +2266,11 @@ void PlotTab::constructLegendSettingsDialog()
 
     row++;
     legendBoxLayout->addWidget( new QLabel( "Legend BG Color" ), row, 0 );
-    legendBoxLayout->addWidget( mpLegendBlob, row, 1 );
+    legendBoxLayout->addWidget( mpLegendBgColor, row, 1 );
 
     row++;
     legendBoxLayout->addWidget( new QLabel( "Legend Symbol" ), row, 0 );
-    legendBoxLayout->addWidget( mpLegendSym, row, 1 );
+    legendBoxLayout->addWidget( mpLegendSymbolType, row, 1 );
 
     row++;
     legendBoxLayout->addWidget( new QLabel( "Auto Offset" ), row, 0 );
@@ -2292,15 +2289,15 @@ void PlotTab::constructLegendSettingsDialog()
 
     mpLegendSettingsDialog->setLayout(legendBoxLayout);
 
-    connect(mpLegendSize, SIGNAL(valueChanged(int)), this, SLOT(applyLegendSettings()));
-    connect(mpLegendCol, SIGNAL(valueChanged(int)), this, SLOT(applyLegendSettings()));
+    connect(mpLegendFontSize, SIGNAL(valueChanged(int)), this, SLOT(applyLegendSettings()));
+    connect(mpLegendCols, SIGNAL(valueChanged(int)), this, SLOT(applyLegendSettings()));
     connect(mpLegendsInternalEnabledCheckBox, SIGNAL(toggled(bool)), this, SLOT(applyLegendSettings()));
     connect(mpLegendsExternalEnabledCheckBox, SIGNAL(toggled(bool)), this, SLOT(applyLegendSettings()));
-    connect(mpLegendBg, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
-    connect(mpLegendSym, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
+    connect(mpLegendBgType, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
+    connect(mpLegendSymbolType, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
     connect(mpLegendLPosition, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
     connect(mpLegendRPosition, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
-    connect(mpLegendBlob, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
+    connect(mpLegendBgColor, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
     connect(mpLegendLeftOffset, SIGNAL(valueChanged(double)), this, SLOT(applyLegendSettings()));
     connect(mpLegendRightOffset, SIGNAL(valueChanged(double)), this, SLOT(applyLegendSettings()));
     connect(mpLegendsAutoOffsetCheckBox, SIGNAL(toggled(bool)), this, SLOT(applyLegendSettings()));
@@ -2420,14 +2417,22 @@ void PlotTab::setLegendSymbol(const QString symStyle)
         {
             mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowLine, true);
         }
-        else if( symStyle == "Default Symbol")
+        else if( symStyle == "Symbol")
         {
+            mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowSymbol, true);
+         }
+        else if ( symStyle == "Line&Symbol")
+        {
+            mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowLine, true);
             mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowSymbol, true);
         }
         else if( symStyle == "Brush")
         {
             mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowBrush, true);
         }
+
+        // Fix legend size after possible change in style
+        mPlotCurvePtrs[FIRSTPLOT].at(j)->resetLegendSize();
     }
 }
 
