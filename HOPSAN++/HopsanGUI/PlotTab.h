@@ -87,6 +87,7 @@ public slots:
     void applyAxisSettings();
     void applyLegendSettings();
     void enableZoom(bool value);
+    void resetZoom();
     void enableArrow(bool value);
     void enablePan(bool value);
     void enableGrid(bool value);

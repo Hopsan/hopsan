@@ -181,6 +181,11 @@ PlotWindow::PlotWindow(const QString name, MainWindow *parent)
     mpZoomButton->setShortcut(QKeySequence("z"));
     connect(mpZoomButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
+    mpOriginalZoomButton = new QAction(this);
+    mpOriginalZoomButton->setToolTip("Reset original Zoom");
+    mpOriginalZoomButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Zoom100.png"));
+
+
     mpPanButton = new QAction(this);
     mpPanButton->setToolTip("Pan (X)");
     mpPanButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Pan.png"));
@@ -304,8 +309,9 @@ PlotWindow::PlotWindow(const QString name, MainWindow *parent)
     mpToolBar->addWidget(mpExportGfxButton);
     mpToolBar->addSeparator();
     mpToolBar->addAction(mpArrowButton);
-    mpToolBar->addAction(mpZoomButton);
     mpToolBar->addAction(mpPanButton);
+    mpToolBar->addAction(mpZoomButton);
+    mpToolBar->addAction(mpOriginalZoomButton);
     mpToolBar->addAction(mpGridButton);
     mpToolBar->addAction(mpBackgroundColorButton);
     mpToolBar->addAction(mpResetXVectorButton);
@@ -1183,6 +1189,7 @@ void PlotWindow::establishPlotTabConnections()
 {
     // First disconnect all current connections (in case the tab is being changed)
     disconnect(mpZoomButton,                SIGNAL(toggled(bool)),  0,  0);
+    disconnect(mpOriginalZoomButton,        SIGNAL(triggered()),    0,  0);
     disconnect(mpArrowButton,               SIGNAL(toggled(bool)),  0,  0);
     disconnect(mpPanButton,                 SIGNAL(toggled(bool)),  0,  0);
     disconnect(mpBackgroundColorButton,     SIGNAL(triggered()),    0,  0);
@@ -1210,6 +1217,7 @@ void PlotWindow::establishPlotTabConnections()
         {
             mpArrowButton->setDisabled(true);
             mpZoomButton->setDisabled(true);
+            mpOriginalZoomButton->setDisabled(true);
             //mpParentPlotWindow->mpImportClassicData>setDisabled(true);
             mpPanButton->setDisabled(true);
             mpSaveButton->setDisabled(true);
@@ -1231,6 +1239,7 @@ void PlotWindow::establishPlotTabConnections()
         {
             mpArrowButton->setDisabled(false);
             mpZoomButton->setDisabled(false);
+            mpOriginalZoomButton->setDisabled(false);
             mpPanButton->setDisabled(false);
             mpImportClassicData->setDisabled(false);
             mpSaveButton->setDisabled(false);
@@ -1256,6 +1265,7 @@ void PlotWindow::establishPlotTabConnections()
         }
 
         connect(mpZoomButton,               SIGNAL(toggled(bool)),  pCurrentTab,    SLOT(enableZoom(bool)));
+        connect(mpOriginalZoomButton,       SIGNAL(triggered()),    pCurrentTab,    SLOT(resetZoom()));
         connect(mpArrowButton,              SIGNAL(toggled(bool)),  pCurrentTab,    SLOT(enableArrow(bool))); // Arrow
         connect(mpPanButton,                SIGNAL(toggled(bool)),  pCurrentTab,    SLOT(enablePan(bool)));
         connect(mpBackgroundColorButton,    SIGNAL(triggered()),    pCurrentTab,    SLOT(setBackgroundColor()));

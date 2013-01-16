@@ -1686,6 +1686,12 @@ void PlotTab::enableZoom(bool value)
     mpParentPlotWindow->mpResetXVectorButton->setEnabled(false);
 }
 
+void PlotTab::resetZoom()
+{
+    mpZoomerLeft[FIRSTPLOT]->zoom(0);
+    mpZoomerRight[FIRSTPLOT]->zoom(0);
+}
+
 void PlotTab::enableArrow(bool value)
 {
     if(mpParentPlotWindow->mpZoomButton->isChecked() && value)

@@ -122,6 +122,7 @@ private:
     QAction *mpArrowButton;
     QAction *mpLegendButton;
     QAction *mpZoomButton;
+    QAction *mpOriginalZoomButton;
     QAction *mpPanButton;
     QAction *mpSaveButton;
     QToolButton *mpExportButton;
