@@ -1248,7 +1248,7 @@ void PlotWindow::establishPlotTabConnections()
             mpBodePlotButton->setDisabled(false);
             mpExportPdfAction->setDisabled(false);
             mpExportToGraphicsAction->setDisabled(false);
-            mpZoomButton->setChecked(pCurrentTab->mpZoomer[FIRSTPLOT]->isEnabled());
+            mpZoomButton->setChecked(pCurrentTab->mpZoomerLeft[FIRSTPLOT]->isEnabled());
             mpPanButton->setChecked(pCurrentTab->mpPanner[FIRSTPLOT]->isEnabled());
             mpGridButton->setChecked(pCurrentTab->mpGrid[FIRSTPLOT]->isVisible());
             mpResetXVectorButton->setEnabled(pCurrentTab->mHasSpecialXAxis);

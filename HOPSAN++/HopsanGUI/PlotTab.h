@@ -126,7 +126,7 @@ private:
     QStringList mCurveColors;
     QStringList mUsedColors;
     QwtPlotGrid *mpGrid[2];
-    QwtPlotZoomer *mpZoomer[2];
+    QwtPlotZoomer *mpZoomerLeft[2];
     QwtPlotZoomer *mpZoomerRight[2];
     QwtPlotMagnifier *mpMagnifier[2];
     QwtPlotPanner *mpPanner[2];

@@ -87,23 +87,24 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget)
         mpPanner[plotID]->setEnabled(false);
 
         //Rubber Band Zoom
-        mpZoomer[plotID] = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, mpQwtPlots[plotID]->canvas());      //Zoomer for left y axis
-        mpZoomer[plotID]->setMaxStackDepth(10000);
-        mpZoomer[plotID]->setRubberBand(QwtPicker::NoRubberBand);
-        mpZoomer[plotID]->setRubberBandPen(QColor(Qt::green));
-        mpZoomer[plotID]->setTrackerMode(QwtPicker::ActiveOnly);
-        mpZoomer[plotID]->setTrackerPen(QColor(Qt::white));
-        mpZoomer[plotID]->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
-        mpZoomer[plotID]->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
-        mpZoomer[plotID]->setZoomBase(QRectF());
-        mpZoomer[plotID]->setEnabled(false);
+        QPen rubberBandPen(Qt::green);
+        rubberBandPen.setWidth(2);
+
+        mpZoomerLeft[plotID] = new QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, mpQwtPlots[plotID]->canvas());      //Zoomer for left y axis
+        mpZoomerLeft[plotID]->setMaxStackDepth(10000);
+        mpZoomerLeft[plotID]->setRubberBand(QwtPicker::NoRubberBand);
+        mpZoomerLeft[plotID]->setRubberBandPen(rubberBandPen);
+        mpZoomerLeft[plotID]->setTrackerMode(QwtPicker::AlwaysOff);
+        mpZoomerLeft[plotID]->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
+        mpZoomerLeft[plotID]->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
+        mpZoomerLeft[plotID]->setZoomBase(QRectF());
+        mpZoomerLeft[plotID]->setEnabled(false);
 
         mpZoomerRight[plotID] = new QwtPlotZoomer( QwtPlot::xTop, QwtPlot::yRight, mpQwtPlots[plotID]->canvas());   //Zoomer for right y axis
         mpZoomerRight[plotID]->setMaxStackDepth(10000);
         mpZoomerRight[plotID]->setRubberBand(QwtPicker::NoRubberBand);
-        mpZoomerRight[plotID]->setRubberBandPen(QColor(Qt::green));
-        mpZoomerRight[plotID]->setTrackerMode(QwtPicker::ActiveOnly);
-        mpZoomerRight[plotID]->setTrackerPen(QColor(Qt::white));
+        mpZoomerRight[plotID]->setRubberBandPen(rubberBandPen);
+        mpZoomerRight[plotID]->setTrackerMode(QwtPicker::AlwaysOff);
         mpZoomerRight[plotID]->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
         mpZoomerRight[plotID]->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
         mpZoomerRight[plotID]->setEnabled(false);
@@ -790,7 +791,7 @@ void PlotTab::rescaleToCurves()
         tempDoubleRect.setY(yMinLeft-0.05*heightLeft);
         tempDoubleRect.setWidth(xMax-xMin);
         tempDoubleRect.setHeight(yMaxLeft-yMinLeft+0.1*heightLeft);
-        mpZoomer[plotID]->setZoomBase(tempDoubleRect);
+        mpZoomerLeft[plotID]->setZoomBase(tempDoubleRect);
 
         QRectF tempDoubleRect2;
         tempDoubleRect2.setX(xMin);
@@ -1674,13 +1675,13 @@ void PlotTab::enableZoom(bool value)
     {
         mpParentPlotWindow->mpArrowButton->setChecked(false);
     }
-    mpZoomer[FIRSTPLOT]->setEnabled(value);
-    if(value)   { mpZoomer[FIRSTPLOT]->setRubberBand(QwtPicker::RectRubberBand); }
-    else        { mpZoomer[FIRSTPLOT]->setRubberBand(QwtPicker::NoRubberBand); }
+    mpZoomerLeft[FIRSTPLOT]->setEnabled(value);
+    if(value)   { mpZoomerLeft[FIRSTPLOT]->setRubberBand(QwtPicker::RectRubberBand); }
+    else        { mpZoomerLeft[FIRSTPLOT]->setRubberBand(QwtPicker::NoRubberBand); }
     mpZoomerRight[FIRSTPLOT]->setEnabled(value);
-    mpZoomer[SECONDPLOT]->setEnabled(value);
-    if(value)   { mpZoomer[SECONDPLOT]->setRubberBand(QwtPicker::RectRubberBand); }
-    else        { mpZoomer[SECONDPLOT]->setRubberBand(QwtPicker::NoRubberBand); }
+    mpZoomerLeft[SECONDPLOT]->setEnabled(value);
+    if(value)   { mpZoomerLeft[SECONDPLOT]->setRubberBand(QwtPicker::RectRubberBand); }
+    else        { mpZoomerLeft[SECONDPLOT]->setRubberBand(QwtPicker::NoRubberBand); }
     mpZoomerRight[SECONDPLOT]->setEnabled(value);
     mpParentPlotWindow->mpResetXVectorButton->setEnabled(false);
 }
@@ -1690,11 +1691,11 @@ void PlotTab::enableArrow(bool value)
     if(mpParentPlotWindow->mpZoomButton->isChecked() && value)
     {
         mpParentPlotWindow->mpZoomButton->setChecked(false);
-        mpZoomer[FIRSTPLOT]->setEnabled(false);
-        mpZoomer[FIRSTPLOT]->setRubberBand(QwtPicker::NoRubberBand);
+        mpZoomerLeft[FIRSTPLOT]->setEnabled(false);
+        mpZoomerLeft[FIRSTPLOT]->setRubberBand(QwtPicker::NoRubberBand);
         mpZoomerRight[FIRSTPLOT]->setEnabled(false);
-        mpZoomer[SECONDPLOT]->setEnabled(false);
-        mpZoomer[SECONDPLOT]->setRubberBand(QwtPicker::NoRubberBand);
+        mpZoomerLeft[SECONDPLOT]->setEnabled(false);
+        mpZoomerLeft[SECONDPLOT]->setRubberBand(QwtPicker::NoRubberBand);
         mpZoomerRight[SECONDPLOT]->setEnabled(false);
     }
     if(mpParentPlotWindow->mpPanButton->isChecked() && value)
@@ -1713,11 +1714,11 @@ void PlotTab::enablePan(bool value)
     {
         mpParentPlotWindow->mpZoomButton->setChecked(false);
         //mpParentPlotWindow->mpArrowButton->setChecked(false);
-        mpZoomer[FIRSTPLOT]->setEnabled(false);
-        mpZoomer[FIRSTPLOT]->setRubberBand(QwtPicker::NoRubberBand);
+        mpZoomerLeft[FIRSTPLOT]->setEnabled(false);
+        mpZoomerLeft[FIRSTPLOT]->setRubberBand(QwtPicker::NoRubberBand);
         mpZoomerRight[FIRSTPLOT]->setEnabled(false);
-        mpZoomer[SECONDPLOT]->setEnabled(false);
-        mpZoomer[SECONDPLOT]->setRubberBand(QwtPicker::NoRubberBand);
+        mpZoomerLeft[SECONDPLOT]->setEnabled(false);
+        mpZoomerLeft[SECONDPLOT]->setRubberBand(QwtPicker::NoRubberBand);
         mpZoomerRight[SECONDPLOT]->setEnabled(false);
     }
     if(mpParentPlotWindow->mpArrowButton->isChecked() && value)
@@ -2540,7 +2541,7 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
     QWidget::contextMenuEvent(event);
 
     //   return;
-    if(this->mpZoomer[FIRSTPLOT]->isEnabled())
+    if(this->mpZoomerLeft[FIRSTPLOT]->isEnabled())
     {
         return;
     }

@@ -1066,7 +1066,7 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
         midPoint.setX(this->plot()->transform(QwtPlot::xBottom, value().x()));
         midPoint.setY(this->plot()->transform(QwtPlot::yLeft, value().y()));
 
-        if(!mpPlotTab->mpZoomer[FIRSTPLOT]->isEnabled() && !mpPlotTab->mpPanner[FIRSTPLOT]->isEnabled())
+        if(!mpPlotTab->mpZoomerLeft[FIRSTPLOT]->isEnabled() && !mpPlotTab->mpPanner[FIRSTPLOT]->isEnabled())
         {
             if((this->plot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
             {
