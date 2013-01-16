@@ -585,7 +585,7 @@ void TerminalConsole::handleTabKeyPress()
             }
         }
 
-        QStringList variableCmds = QStringList() << "disp " << "chpv " << "chpvr " << "chpvl ";
+        QStringList variableCmds = QStringList() << "disp " << "chpv " << "chpvr " << "chpvl " << "peek " << "poke ";
         for(int c=0; c<variableCmds.size(); ++c)
         {
             if(mAutoCompleteFilter.startsWith(variableCmds[c]))
@@ -1982,7 +1982,37 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
         if(!getVariablePtr(b.toString()).isNull() && p.toDouble() == 2.0)
             return pLogData->multVariables(getVariablePtr(b.toString()), getVariablePtr(b.toString())).data()->getFullVariableName();
     }
-    //! @todo Implement support for add/subtract and division with data variables
+    if(symHopExpr.getFactors().size() == 1 && symHopExpr.getDivisors().size() == 1)
+    {
+        SymHop::Expression f = symHopExpr.getFactors()[0];
+        SymHop::Expression d = symHopExpr.getDivisors()[0];
+        if(!getVariablePtr(f.toString()).isNull() && d.isNumericalSymbol())
+            return pLogData->divVariableWithScalar(getVariablePtr(f.toString()), d.toDouble()).data()->getFullVariableName();
+        else if(!getVariablePtr(f.toString()).isNull() && !getVariablePtr(d.toString()).isNull())
+            return pLogData->divVariables(getVariablePtr(f.toString()), getVariablePtr(d.toString())).data()->getFullVariableName();
+    }
+    if(symHopExpr.getTerms().size() == 2)
+    {
+        SymHop::Expression t0 = symHopExpr.getTerms()[0];
+        SymHop::Expression t1 = symHopExpr.getTerms()[1];
+        if(!getVariablePtr(t0.toString()).isNull() && t1.isNumericalSymbol())
+            return pLogData->addVariableWithScalar(getVariablePtr(t0.toString()), t1.toDouble()).data()->getFullVariableName();
+        else if(!getVariablePtr(t1.toString()).isNull() && t0.isNumericalSymbol())
+            return pLogData->addVariableWithScalar(getVariablePtr(t1.toString()), t0.toDouble()).data()->getFullVariableName();
+        else if(!getVariablePtr(t0.toString()).isNull() && !getVariablePtr(t1.toString()).isNull())
+            return pLogData->addVariables(getVariablePtr(t0.toString()), getVariablePtr(t1.toString())).data()->getFullVariableName();
+
+        if(t1.isNegative())
+        {
+            t1.changeSign();
+            if(!getVariablePtr(t0.toString()).isNull() && t1.isNumericalSymbol())
+                return pLogData->subVariableWithScalar(getVariablePtr(t0.toString()), t1.toDouble()).data()->getFullVariableName();
+            else if(!getVariablePtr(t1.toString()).isNull() && t0.isNumericalSymbol())
+                return pLogData->subVariableWithScalar(getVariablePtr(t1.toString()), t0.toDouble()).data()->getFullVariableName();
+            else if(!getVariablePtr(t0.toString()).isNull() && !getVariablePtr(t1.toString()).isNull())
+                return pLogData->subVariables(getVariablePtr(t0.toString()), getVariablePtr(t1.toString())).data()->getFullVariableName();
+        }
+    }
 
     *returnType = Scalar;
     return QString::number(symHopExpr.evaluate(mLocalVars));
