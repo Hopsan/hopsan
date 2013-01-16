@@ -574,3 +574,11 @@ void ComponentPropertiesDialog::recompileCppFromDialog()
 
     this->close();
 }
+
+
+void ComponentPropertiesDialog::closeEvent(QCloseEvent *event)
+{
+    mpComponent->getParentContainerObject()->mpParentProjectTab->setDisabled(false);
+
+    ModelObjectPropertiesDialog::closeEvent(event);
+}

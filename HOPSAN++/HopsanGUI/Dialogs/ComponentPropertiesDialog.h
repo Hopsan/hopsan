@@ -46,6 +46,7 @@ protected slots:
 protected:
     void setParametersAndStartValues();
     void recompileCppFromDialog();
+    virtual void closeEvent(QCloseEvent *);
 
 private:
     Component *mpComponent;
