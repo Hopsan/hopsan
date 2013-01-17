@@ -599,22 +599,27 @@ bool ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVec
                 std::vector<Port*> portVector = (*it)->getPortPtrVector();
                 for(itp=portVector.begin(); itp!=portVector.end(); ++itp) //Ask each port for its node, then ask the node for its write port component
                 {
-                    if(((*itp)->getPortType() == READPORT || (*itp)->getPortType() == READMULTIPORT) && (*itp)->isConnected() &&
-                       (*itp)->getNodePtr()->getWritePortComponentPtr() != 0 &&
-                       (*itp)->getNodePtr()->getWritePortComponentPtr()->getTypeName() != "SignalUnitDelay")
+                    Component* requiredComponent=0;
+                    if(((*itp)->getPortType() == READPORT || (*itp)->getPortType() == READMULTIPORT) && (*itp)->isConnected())
                     {
-                        if((*itp)->getNodePtr()->getWritePortComponentPtr()->mpSystemParent == this)
+                        requiredComponent = (*itp)->getNodePtr()->getWritePortComponentPtr();
+                    }
+                    if(requiredComponent != 0 && requiredComponent->getTypeName() != "SignalUnitDelay")
+                    {
+                        if(requiredComponent->mpSystemParent == this)
                         {
-                            if(!componentVectorContains(newComponentVector, (*itp)->getNodePtr()->getWritePortComponentPtr()) &&
-                               (*itp)->getNodePtr()->getWritePortComponentPtr()->getTypeCQS() == (*itp)->getComponent()->getTypeCQS()/*Component::S*/)
+                            if(!componentVectorContains(newComponentVector, requiredComponent) &&
+                               componentVectorContains(rComponentVector, requiredComponent)
+                               /*requiredComponent->getTypeCQS() == (*itp)->getComponent()->getTypeCQS()*//*Component::S*/)
                             {
                                 readyToAdd = false;     //Depending on normal component which has not yet been added
                             }
                         }
                         else
                         {
-                            if(!componentVectorContains(newComponentVector, (*itp)->getNodePtr()->getWritePortComponentPtr()->mpSystemParent) &&
-                               (*itp)->getNodePtr()->getWritePortComponentPtr()->mpSystemParent->getTypeCQS() == (*itp)->getComponent()->getTypeCQS()/*Component::S*/)
+                            if(!componentVectorContains(newComponentVector, requiredComponent->mpSystemParent) &&
+                               requiredComponent->mpSystemParent->getTypeCQS() == (*itp)->getComponent()->getTypeCQS() &&
+                               componentVectorContains(rComponentVector,requiredComponent->mpSystemParent))
                             {
                                 readyToAdd = false;     //Depending on subsystem component which has not yer been added
                             }
@@ -2374,7 +2379,10 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         {
             //! @todo should we use our own nSamples or the subsystems own ?
             static_cast<ComponentSystem*>(mComponentSignalptrs[s])->setNumLogSamples(mRequestedNumLogSamples);
-            mComponentSignalptrs[s]->initialize(startT, stopT);
+            if(!mComponentSignalptrs[s]->initialize(startT, stopT))
+            {
+                return false;
+            }
         }
         else
         {
