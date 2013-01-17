@@ -70,8 +70,6 @@
         <file>graphics/uiicons/Hopsan-ResetDefault.png</file>
         <file>graphics/style-arrow-down.png</file>
         <file>graphics/style-arrow-up.png</file>
-        <file>graphics/uiicons/Hopsan-ShowPlotWindowCurves.png</file>
-        <file>graphics/uiicons/Hopsan-ShowPlotWindowLists.png</file>
         <file>graphics/uiicons/Hopsan-ExportGfx.png</file>
         <file>graphics/uiicons/Hopsan-ExportPlot.png</file>
         <file>graphics/uiicons/Hopsan-NewPlot.png</file>
@@ -142,5 +140,7 @@
         <file>graphics/uiicons/Hopsan-ExportSimulinkCoSim.png</file>
         <file>graphics/uiicons/Hopsan-ExportPng.png</file>
         <file>graphics/uiicons/Hopsan-Script.png</file>
+        <file>graphics/uiicons/Hopsan-ShowPlotWindowCurveSettings.png</file>
+        <file>graphics/uiicons/Hopsan-ShowPlotWindowVariableList.png</file>
     </qresource>
 </RCC>
