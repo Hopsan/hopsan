@@ -660,7 +660,7 @@ void HopsanGenerator::generateFromFmu(QString path)
         if(varElement.attribute("variability") == "parameter")
         {
             QString varName = toVarName("par"+QString::number(i));
-            QString initValue = varElement.firstChildElement("Real").attribute("start");
+            QString initValue = varElement.firstChildElement("Real").attribute("start", "0");
             QString parName = toVarName(varElement.attribute("name"));
             QString description = varElement.attribute("description");
             QString valueRef = varElement.attribute("valueReference");
