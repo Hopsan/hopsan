@@ -264,26 +264,10 @@ PlotWindow::PlotWindow(const QString name, MainWindow *parent)
     mpBackgroundColorButton->setShortcut(QKeySequence("c"));
     connect(mpBackgroundColorButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpShowCurveInfoButton = new QAction(this);
-    mpShowCurveInfoButton->setCheckable(true);
-    mpShowCurveInfoButton->setChecked(true);
-    mpShowCurveInfoButton->setToolTip("Toggle Curve Controls");
-    mpShowCurveInfoButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowCurveSettings.png"));
-    connect(mpShowCurveInfoButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
-
     mpLocktheAxis = new QAction(this);
-    //mpLocktheAxis->setCheckable(true);
-    //mpLocktheAxis->setChecked(true);
     mpLocktheAxis->setToolTip("Lock Axis");
     mpLocktheAxis->setIcon(QIcon(QString(ICONPATH) + "Hopsan-PlotCurveScale.png"));
     connect(mpLocktheAxis, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
-
-    mpShowPlotWidgetButton = new QAction(this);
-    mpShowPlotWidgetButton->setCheckable(true);
-    mpShowPlotWidgetButton->setChecked(true);
-    mpShowPlotWidgetButton->setToolTip("Toggle Variable List");
-    mpShowPlotWidgetButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowVariableList.png"));
-    connect(mpShowPlotWidgetButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpNewWindowFromTabButton = new QAction(this);
     mpNewWindowFromTabButton->setToolTip("Create Plot Window From Tab");
@@ -301,36 +285,7 @@ PlotWindow::PlotWindow(const QString name, MainWindow *parent)
     mpBodePlotButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-TransferFunctionAnalysis.png"));
     connect(mpBodePlotButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    mpToolBar->addAction(mpNewPlotButton);
-    mpToolBar->addAction(mpLoadFromXmlButton);
-    mpToolBar->addAction(mpSaveButton);
-    mpToolBar->addAction(mpImportClassicData);
-    mpToolBar->addWidget(mpExportButton);
-    mpToolBar->addWidget(mpExportGfxButton);
-    mpToolBar->addSeparator();
-    mpToolBar->addAction(mpArrowButton);
-    mpToolBar->addAction(mpPanButton);
-    mpToolBar->addAction(mpZoomButton);
-    mpToolBar->addAction(mpOriginalZoomButton);
-    mpToolBar->addSeparator();
-    mpToolBar->addAction(mpResetXVectorButton);
-    mpToolBar->addAction(mpBodePlotButton);
-    mpToolBar->addSeparator();
-    mpToolBar->addAction(mpGridButton);
-    mpToolBar->addAction(mpBackgroundColorButton);
-    mpToolBar->addAction(mpLegendButton);
-    mpToolBar->addAction(mpLocktheAxis);
-    mpToolBar->addAction(mpShowCurveInfoButton);
-    mpToolBar->addAction(mpShowPlotWidgetButton);
-    mpToolBar->addSeparator();
-    mpToolBar->addAction(mpNewWindowFromTabButton);
-    mpToolBar->setMouseTracking(true);
 
-    addToolBar(mpToolBar);
-
-    mpPlotTabWidget = new PlotTabWidget(this);
-    this->addPlotTab();
-    this->establishPlotTabConnections();
 
     //Initialize the help message popup
     mpHelpPopup = new QWidget(this);
@@ -358,15 +313,26 @@ PlotWindow::PlotWindow(const QString name, MainWindow *parent)
     mpHelpPopupTimer = new QTimer(this);
     connect(mpHelpPopupTimer, SIGNAL(timeout()), mpHelpPopup, SLOT(hide()));
 
+    // Setup PlotVariable List stuff
+    PlotTreeWidget *pLocalPlotWidget = new PlotTreeWidget(gpMainWindow);
+    QDockWidget *pLocalPlotWidgetDock = new QDockWidget(tr("Plot Variables"), this);
+    pLocalPlotWidgetDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+    addDockWidget(Qt::RightDockWidgetArea, pLocalPlotWidgetDock);
+    pLocalPlotWidgetDock->setWidget(pLocalPlotWidget);
+    pLocalPlotWidget->mpPlotVariableTree->updateList();
+
+    pLocalPlotWidgetDock->toggleViewAction()->setToolTip("Toggle Variable List");
+    pLocalPlotWidgetDock->toggleViewAction()->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowVariableList.png"));
+    connect(pLocalPlotWidgetDock->toggleViewAction(), SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+
+    // Setup PlotCurveInfoBox stuff
     mpPlotCurveInfoLayout = new QVBoxLayout();
     QWidget *pPlotCurveInfoWidget = new QWidget(this);
-
     pPlotCurveInfoWidget->setAutoFillBackground(true);
     pPlotCurveInfoWidget->setPalette(gConfig.getPalette());
     mpPlotCurveInfoLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
     mpPlotCurveInfoLayout->setSpacing(1);
     mpPlotCurveInfoLayout->setMargin(1);
-
     pPlotCurveInfoWidget->setLayout(mpPlotCurveInfoLayout);
 
     QScrollArea *pPlotCurveInfoScrollArea = new QScrollArea();
@@ -374,24 +340,56 @@ PlotWindow::PlotWindow(const QString name, MainWindow *parent)
     pPlotCurveInfoScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     pPlotCurveInfoScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     pPlotCurveInfoScrollArea->setPalette(gConfig.getPalette());
+    pPlotCurveInfoScrollArea->setMinimumHeight(110);
 
-    QDockWidget *pInfoBoxWidgetDock = new QDockWidget(tr("PlotCurve Settings"), this);
-    pInfoBoxWidgetDock->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
-    addDockWidget(Qt::BottomDockWidgetArea, pInfoBoxWidgetDock);
-    pInfoBoxWidgetDock->setWidget(pPlotCurveInfoScrollArea);
-    pInfoBoxWidgetDock->setFeatures(QDockWidget::AllDockWidgetFeatures);
-    pInfoBoxWidgetDock->setPalette(gConfig.getPalette());
-    pInfoBoxWidgetDock->setMinimumHeight(100);
+    mpPlotCurveInfoDock = new QDockWidget(tr("PlotCurve Settings"), this);
+    mpPlotCurveInfoDock->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
+    addDockWidget(Qt::BottomDockWidgetArea, mpPlotCurveInfoDock);
+    mpPlotCurveInfoDock->setWidget(pPlotCurveInfoScrollArea);
+    mpPlotCurveInfoDock->setFeatures(QDockWidget::AllDockWidgetFeatures);
+    mpPlotCurveInfoDock->setPalette(gConfig.getPalette());
+    mpPlotCurveInfoDock->show();
 
-    pInfoBoxWidgetDock->show();
+    mpPlotCurveInfoDock->toggleViewAction()->setToolTip("Toggle Curve Controls");
+    mpPlotCurveInfoDock->toggleViewAction()->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowCurveSettings.png"));
+    connect(mpPlotCurveInfoDock->toggleViewAction(), SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+
+    // Populate toolbar with actions
+    mpToolBar->addAction(mpNewPlotButton);
+    mpToolBar->addAction(mpLoadFromXmlButton);
+    mpToolBar->addAction(mpSaveButton);
+    mpToolBar->addAction(mpImportClassicData);
+    mpToolBar->addWidget(mpExportButton);
+    mpToolBar->addWidget(mpExportGfxButton);
+    mpToolBar->addSeparator();
+    mpToolBar->addAction(mpArrowButton);
+    mpToolBar->addAction(mpPanButton);
+    mpToolBar->addAction(mpZoomButton);
+    mpToolBar->addAction(mpOriginalZoomButton);
+    mpToolBar->addSeparator();
+    mpToolBar->addAction(mpResetXVectorButton);
+    mpToolBar->addAction(mpBodePlotButton);
+    mpToolBar->addSeparator();
+    mpToolBar->addAction(mpGridButton);
+    mpToolBar->addAction(mpBackgroundColorButton);
+    mpToolBar->addAction(mpLegendButton);
+    mpToolBar->addAction(mpLocktheAxis);
+    mpToolBar->addAction(mpPlotCurveInfoDock->toggleViewAction());
+    mpToolBar->addAction(pLocalPlotWidgetDock->toggleViewAction());
+    mpToolBar->addSeparator();
+    mpToolBar->addAction(mpNewWindowFromTabButton);
+    mpToolBar->setMouseTracking(true);
+    addToolBar(mpToolBar);
 
     this->setDockOptions(QMainWindow::AllowNestedDocks);
+
+    mpPlotTabWidget = new PlotTabWidget(this);
+    this->addPlotTab();
+    this->establishPlotTabConnections();
 
     mpLayout = new QGridLayout(this);
     mpLayout->addWidget(mpPlotTabWidget,0,0,2,4);
     mpLayout->addWidget(mpHelpPopup, 0,0,1,4);
-    //mpLayout->addWidget(ptableWidgetDock,0,0,8,1);
-    //mpLayout->addWidget(mpPlotInfoWidget, 2, 0, 1, 1);
 
     //Set the correct position of the help popup message in the central widget
     mpLayout->setColumnMinimumWidth(0,2);
@@ -406,14 +404,7 @@ PlotWindow::PlotWindow(const QString name, MainWindow *parent)
     pCentralWidget->setLayout(mpLayout);
     this->setCentralWidget(pCentralWidget);
 
-    PlotTreeWidget *pLocalPlotWidget = new PlotTreeWidget(gpMainWindow);
-    QDockWidget *pPlotWidgetDock = new QDockWidget(tr("Plot Variables"), this);
-    pPlotWidgetDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
-    addDockWidget(Qt::RightDockWidgetArea, pPlotWidgetDock);
-    pPlotWidgetDock->setWidget(pLocalPlotWidget);
-    pLocalPlotWidget->mpPlotVariableTree->updateList();
-
-    //Establish signal and slots connections
+    // Establish toolbar button signal and slots connections
     connect(mpNewPlotButton,                    SIGNAL(triggered()),            this,               SLOT(addPlotTab()));
     connect(mpLoadFromXmlButton,                SIGNAL(triggered()),            this,               SLOT(loadFromXml()));
     connect(mpImportClassicData,                SIGNAL(triggered()),            this,               SLOT(importPlo()));
@@ -421,17 +412,12 @@ PlotWindow::PlotWindow(const QString name, MainWindow *parent)
     connect(mpBodePlotButton,                   SIGNAL(triggered()),            this,               SLOT(createBodePlot()));
     connect(mpNewWindowFromTabButton,           SIGNAL(triggered()),            this,               SLOT(createPlotWindowFromTab()));
     connect(gpMainWindow->getOptionsDialog(),   SIGNAL(paletteChanged()),       this,               SLOT(updatePalette()));
-    connect(mpShowPlotWidgetButton,             SIGNAL(toggled(bool)),          pPlotWidgetDock,    SLOT(setVisible(bool)));
-    connect(mpShowCurveInfoButton,              SIGNAL(toggled(bool)),          pInfoBoxWidgetDock, SLOT(setVisible(bool)));
     connect(mpPlotTabWidget,                    SIGNAL(currentChanged(int)),    this,               SLOT(establishPlotTabConnections()));
 
-    connect(pPlotWidgetDock,        SIGNAL(visibilityChanged(bool)),    mpShowPlotWidgetButton, SLOT(setChecked(bool)));
-    connect(pInfoBoxWidgetDock,     SIGNAL(visibilityChanged(bool)),    mpShowCurveInfoButton,  SLOT(setChecked(bool)));
-
-    //Hide lists and curve areas by default if screen size is small
-    if(sh*sw <= 800*1280)
+    // Hide curve settings area by default if screen size is to small
+    if(sh*sw < 800*1280)
     {
-        mpShowCurveInfoButton->toggle();
+        mpPlotCurveInfoDock->toggleViewAction()->toggle();
     }
 
     this->setMouseTracking(true);
@@ -549,7 +535,7 @@ void PlotWindow::addPlotCurve(SharedLogVariableDataPtrT pData, int axisY, QColor
 
     PlotCurve *pTempCurve = new PlotCurve(pData, axisY, getCurrentPlotTab());
     getCurrentPlotTab()->addCurve(pTempCurve, desiredColor);
-    pTempCurve->updatePlotInfoVisibility();
+    pTempCurve->updatePlotCurveInfoVisibility();
     refreshWindowTitle();
 }
 
@@ -772,7 +758,7 @@ void PlotWindow::performFrequencyAnalysisFromDialog()
                                          getCurrentPlotTab(), FIRSTPLOT, FREQUENCYANALYSIS);
     getCurrentPlotTab()->addCurve(pNewCurve);
     pNewCurve->toFrequencySpectrum();
-    pNewCurve->updatePlotInfoVisibility();
+    pNewCurve->updatePlotCurveInfoVisibility();
     //! @todo Make logged axis an option for user
     if(mpLogScaleCheckBox->isChecked())
     {
@@ -992,7 +978,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
                                               vRe, vIm, pOutputCurve->getAxisY(),
                                               getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
     getCurrentPlotTab()->addCurve(pNyquistCurve1);
-    pNyquistCurve1->updatePlotInfoVisibility();
+    pNyquistCurve1->updatePlotCurveInfoVisibility();
     //    PlotCurve *pNyquistCurve2 = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
     //                                        pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
     //                                        getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
@@ -1000,7 +986,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
                                               vRe, vImNeg, pOutputCurve->getAxisY(),
                                               getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
     getCurrentPlotTab()->addCurve(pNyquistCurve2);
-    pNyquistCurve2->updatePlotInfoVisibility();
+    pNyquistCurve2->updatePlotCurveInfoVisibility();
     getCurrentPlotTab()->getPlot()->replot();
     getCurrentPlotTab()->rescaleToCurves();
     getCurrentPlotTab()->updateGeometry();
@@ -1013,7 +999,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
                                           F, vBodeGain, pOutputCurve->getAxisY(),
                                           getCurrentPlotTab(), FIRSTPLOT, BODEGAIN);
     getCurrentPlotTab()->addCurve(pGainCurve);
-    pGainCurve->updatePlotInfoVisibility();
+    pGainCurve->updatePlotCurveInfoVisibility();
 
     //    PlotCurve *pPhaseCurve = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
     //                                          pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
@@ -1022,7 +1008,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
                                            F, vBodePhase, pOutputCurve->getAxisY(),
                                            getCurrentPlotTab(), SECONDPLOT, BODEPHASE);
     getCurrentPlotTab()->addCurve(pPhaseCurve, QColor(), SECONDPLOT);
-    pPhaseCurve->updatePlotInfoVisibility();
+    pPhaseCurve->updatePlotCurveInfoVisibility();
 
     getCurrentPlotTab()->showPlot(SECONDPLOT, true);
     getCurrentPlotTab()->getPlot(FIRSTPLOT)->replot();
@@ -1110,14 +1096,14 @@ void PlotWindow::showToolBarHelpPopup()
     {
         showHelpPopupMessage("Reset X-vector to simulation time.");
     }
-    else if(pHoveredAction == mpShowCurveInfoButton)
-    {
-        showHelpPopupMessage("Show/hide plot curve control panel.");
-    }
-    else if(pHoveredAction == mpShowPlotWidgetButton)
-    {
-        showHelpPopupMessage("Show/hide variable lists.");
-    }
+//    else if(pHoveredAction == mpShowCurveInfoButton)
+//    {
+//        showHelpPopupMessage("Show/hide plot curve control panel.");
+//    }
+//    else if(pHoveredAction == mpShowPlotWidgetButton)
+//    {
+//        showHelpPopupMessage("Show/hide variable lists.");
+//    }
     else if(pHoveredAction == mpImportClassicData)
     {
         showHelpPopupMessage("Import Data from Old Hopsan.");
@@ -1159,9 +1145,9 @@ void PlotWindow::closeIfEmpty()
 }
 
 
-void PlotWindow::hideCurveInfo()
+void PlotWindow::hidePlotCurveInfo()
 {
-    mpShowCurveInfoButton->setChecked(false);
+    mpPlotCurveInfoDock->toggleViewAction()->setChecked(false);
 }
 
 
@@ -1185,7 +1171,6 @@ void PlotWindow::mouseMoveEvent(QMouseEvent *event)
 //! @brief Reimplementation of close function for plot window. Notifies plot widget that window no longer exists.
 void PlotWindow::closeEvent(QCloseEvent *event)
 {
-    //gpMainWindow->mpPlotWidget->mpPlotVariableTree->reportClosedPlotWindow(this); //!< @deprecated
     emit windowClosed(this);
     event->accept();
 }

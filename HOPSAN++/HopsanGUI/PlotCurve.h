@@ -132,12 +132,11 @@ public slots:
     void setLineColor(QColor color);
     void setLineColor(QString colorName=QString());
     void openScaleDialog();
-    void updatePlotInfoVisibility();
+    void updatePlotCurveInfoVisibility();
     void updateScaleFromDialog();
     void updateToNewGeneration();
     void updatePlotInfoBox();
     void removeMe();
-    void removeIfNotConnected();
     void setPreviousGeneration();
     void setNextGeneration();
     void setAutoUpdate(bool value);

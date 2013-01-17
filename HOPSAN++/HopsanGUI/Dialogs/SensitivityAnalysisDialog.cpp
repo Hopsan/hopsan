@@ -350,7 +350,7 @@ void SensitivityAnalysisDialog::run()
             QString fullName = makeConcatName(component,port,variable);
 
             PlotWindow *pPlotWindow = pTabs->getContainer(0)->getModelObject(component)->getPort(port)->plot(variable, QString(), QColor("Blue"));
-            pPlotWindow->hideCurveInfo();
+            pPlotWindow->hidePlotCurveInfo();
             pPlotWindow->setLegendsVisible(false);
 
             int nGenerations = pTabs->getContainer(0)->getLogDataHandler()->getLatestGeneration()+1;
@@ -380,7 +380,7 @@ void SensitivityAnalysisDialog::run()
             QString port = mOutputVariables.at(v).at(1);
             QString variable = mOutputVariables.at(v).at(2);
             PlotWindow *pPlotWindow = pTabs->getCurrentContainer()->getModelObject(component)->getPort(port)->plot(variable, QString(), QColor("Blue"));
-            pPlotWindow->hideCurveInfo();
+            pPlotWindow->hidePlotCurveInfo();
             pPlotWindow->setLegendsVisible(false);
 
             QString fullName = makeConcatName(component,port,variable);

@@ -96,7 +96,7 @@ public slots:
     void createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve, int Fmax);
     void showToolBarHelpPopup();
     void closeIfEmpty();
-    void hideCurveInfo();
+    void hidePlotCurveInfo();
     void setLegendsVisible(bool value);
 
 protected:
@@ -133,9 +133,6 @@ private:
     QAction *mpNewWindowFromTabButton;
     QAction *mpResetXVectorButton;
 
-    QAction *mpShowCurveInfoButton;
-    QAction *mpShowPlotWidgetButton;
-
     QAction *mpBodePlotButton;
     QMenu *mpExportMenu;
     QAction *mpExportToXmlAction;
@@ -150,6 +147,8 @@ private:
     QAction *mpExportPngAction;
     QAction *mpExportToGraphicsAction;
     QAction *mpLocktheAxis;
+
+    QDockWidget *mpPlotCurveInfoDock;
 
     PlotTabWidget *mpPlotTabWidget;
 

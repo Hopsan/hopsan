@@ -305,20 +305,10 @@ void PlotCurve::commonConstructorCode(int axisY,
     mpQwtPlotCurve->setItemAttribute(QwtPlotItem::Legend, true);
 
     //Create connections
-
-    connect(mpParentPlotTab->mpParentPlotWindow->getPlotTabWidget(), SIGNAL(currentChanged(int)), this, SLOT(updatePlotInfoVisibility()));
-    ////connect(mpParentPlotTab->mpParentPlotWindow->mpShowCurveInfoButton, SIGNAL(toggled(bool)), SLOT(updatePlotInfoVisibility()));
+    //! @todo we should not connect like this /Peter
+    connect(mpParentPlotTab->mpParentPlotWindow->getPlotTabWidget(), SIGNAL(currentChanged(int)), this, SLOT(updatePlotCurveInfoVisibility()));
     connect(gpMainWindow->mpProjectTabs->getCurrentTab(),SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
     connect(gpMainWindow->mpProjectTabs,SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
-
-
-    //! @todo FIXA /Peter
-    //connect(mpContainerObject, SIGNAL(objectDeleted()), this, SLOT(removeMe()));
-    //connect(mpContainerObject, SIGNAL(objectDeleted()), mpParentPlotTab->mpParentPlotWindow, SLOT(closeIfEmpty()), Qt::UniqueConnection);
-    //connect(mpContainerObject->getModelObject(mComponentName), SIGNAL(objectDeleted()), this, SLOT(removeMe()));
-    //connect(mpContainerObject->getModelObject(mComponentName), SIGNAL(nameChanged()), this, SLOT(removeMe()));
-    //connect(mpContainerObject, SIGNAL(connectorRemoved()), this, SLOT(removeIfNotConnected()));
-
 
     connectDataSignals();
 
@@ -867,32 +857,17 @@ void PlotCurve::updateScaleFromDialog()
 
 //! @brief Shows or hides plot info dock
 //! Changes visibility depending on whether or not the tab is currently open, and whether or not the hide plot info dock setting is activated.
-void PlotCurve::updatePlotInfoVisibility()
+void PlotCurve::updatePlotCurveInfoVisibility()
 {
-    if(mpParentPlotTab == mpParentPlotTab->mpParentPlotWindow->getCurrentPlotTab() && mpParentPlotTab->mpParentPlotWindow->mpShowCurveInfoButton->isChecked())
+    if(mpParentPlotTab == mpParentPlotTab->mpParentPlotWindow->getCurrentPlotTab())
     {
-        // mpParentPlotTab->mpParentPlotWindow->mpPlotInfoWidget->show();
         mpPlotCurveInfoBox->show();
-        //mpParentPlotTab->mpParentPlotWindow->addDockWidget(Qt::BottomDockWidgetArea, mpPlotInfoDockWidget, Qt::Vertical);
         mpParentPlotTab->mpParentPlotWindow->mpPlotCurveInfoLayout->addWidget(mpPlotCurveInfoBox);
-
     }
     else
     {
-        //mpParentPlotTab->mpParentPlotWindow->mpPlotInfoLayout->removeWidget(mpPlotInfoBox);
-        //mpParentPlotTab->mpParentPlotWindow->mpPlotInfoScrollArea->hide();
-        //mpParentPlotTab->mpParentPlotWindow->mpPlotInfoWidget->hide();
-        //! @todo FIXA /Peter
-        mpPlotCurveInfoBox->hide();
-        //                if(mpParentPlotTab->mpParentPlotWindow->mpPlotInfoLayout->isEmpty())
-        //                {
-        // mpParentPlotTab->mpParentPlotWindow->mpPlotInfoWidget->hide();
-        //                    //mpParentPlotTab->mpParentPlotWindow->mpPlotInfoScrollArea;
-        //                }
         mpParentPlotTab->mpParentPlotWindow->mpPlotCurveInfoLayout->removeWidget(mpPlotCurveInfoBox);
-
-        //mpParentPlotTab->mpParentPlotWindow->mpPlotInfoWidget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-
+        mpPlotCurveInfoBox->hide();
     }
 }
 
@@ -903,16 +878,6 @@ void PlotCurve::removeMe()
     mpParentPlotTab->removeCurve(this);
 }
 
-
-//! @brief Slot that checks that the plotted port is still connected, and removes the curve if not
-void PlotCurve::removeIfNotConnected()
-{
-    //! @todo FiXA Peter
-    //    if(!mpContainerObject->getModelObject(mComponentName)->getPort(mPortName)->isConnected())
-    //    {
-    //        removeMe();
-    //    }
-}
 
 //! @brief Updates a plot curve to the most recent available generation of its data
 void PlotCurve::updateToNewGeneration()
