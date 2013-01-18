@@ -9,7 +9,7 @@ tbbversion="tbb30_20110704oss"
 tempDir="C:\\temp_release"
 scriptFile="HopsanReleaseInnoSetupScript.iss"
 hopsanDir=os.getcwd()
-dependecyBinFiles=".\\hopsan_bincontents_Qt474_MinGW_Py273.7z"
+dependecyBinFiles=".\\hopsan_bincontents_Qt484_MinGW44_Py273.7z"
 
 inkscapeDirList = ["C:\\Program Files\\Inkscape", "C:\\Program Files (x86)\\Inkscape"]
 innoDirList = ["C:\\Program Files\\Inno Setup 5", "C:\\Program Files (x86)\\Inno Setup 5"]
