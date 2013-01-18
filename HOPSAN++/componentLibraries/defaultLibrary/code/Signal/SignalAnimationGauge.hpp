@@ -51,7 +51,7 @@ namespace hopsan {
             max=1;
 
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
-            registerParameter("max", "Upper limit", "[-]", max);
+            registerParameter("max", "Upper limit", "[-]", max, Constant);
         }
 
 

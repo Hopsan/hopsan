@@ -66,10 +66,10 @@ class SignalStaircase : public ComponentC
             mpOut = addWritePort("out", "NodeSignal");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("T_start", "Start Time", "[s]", startT);
-            registerParameter("n_steps", "Number of Steps", "[-]", nSteps);
-            registerParameter("H_step", "Step Height", "[-]", stepHeight);
-            registerParameter("W_step", "Step Width", "[-]", stepWidth);
+            registerParameter("T_start", "Start Time", "[s]", startT, Constant);
+            registerParameter("n_steps", "Number of Steps", "[-]", nSteps, Constant);
+            registerParameter("H_step", "Step Height", "[-]", stepHeight, Constant);
+            registerParameter("W_step", "Step Width", "[-]", stepWidth, Constant);
         }
 
 

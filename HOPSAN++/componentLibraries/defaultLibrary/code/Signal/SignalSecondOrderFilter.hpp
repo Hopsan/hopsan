@@ -65,13 +65,13 @@ namespace hopsan {
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
-            registerParameter("k", "Gain", "[-]", mK);
-            registerParameter("omega_1", "Numerator break frequency", "[rad/s]", mWnum);
-            registerParameter("delta_1", "Numerator damp coefficient", "[-]", mDnum);
-            registerParameter("omega_2", "Denominator break frequency", "[rad/s]", mWden);
-            registerParameter("delta_2", "Denominator damp coefficient", "[-]", mDden);
-            registerParameter("y_min", "Lower output limit", "[-]", mMin);
-            registerParameter("y_max", "Upper output limit", "[-]", mMax);
+            registerParameter("k", "Gain", "[-]", mK, Constant);
+            registerParameter("omega_1", "Numerator break frequency", "[rad/s]", mWnum, Constant);
+            registerParameter("delta_1", "Numerator damp coefficient", "[-]", mDnum, Constant);
+            registerParameter("omega_2", "Denominator break frequency", "[rad/s]", mWden, Constant);
+            registerParameter("delta_2", "Denominator damp coefficient", "[-]", mDden, Constant);
+            registerParameter("y_min", "Lower output limit", "[-]", mMin, Constant);
+            registerParameter("y_max", "Upper output limit", "[-]", mMax, Constant);
         }
 
 

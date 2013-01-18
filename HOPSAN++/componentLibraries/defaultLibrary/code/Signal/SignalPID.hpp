@@ -115,9 +115,9 @@ public:
         registerParameter("Kd", "Differential gain", "", mKd);
         registerParameter("umin", "Minium output signal", "", mumin);
         registerParameter("umax", "Maximum output signal", "", mumax);
-        registerParameter("yref", "Reference value", "", myref);
-        registerParameter("y", "Actual value", "", my);
-        registerParameter("dy", "Differential of actual value", "", mdy);
+        registerParameter("yref", "Reference value", "", myref, Constant);
+        registerParameter("y", "Actual value", "", my, Constant);
+        registerParameter("dy", "Differential of actual value", "", mdy, Constant);
         mpSolver = new EquationSystemSolver(this,1);
      }
 

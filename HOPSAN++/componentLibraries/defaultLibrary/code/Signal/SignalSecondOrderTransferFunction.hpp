@@ -63,13 +63,13 @@ namespace hopsan {
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
-            registerParameter("a_2", "S^2 numerator coefficient", "[-]", a2);
-            registerParameter("a_1", "S^1 numerator coefficient", "[-]", a1);
-            registerParameter("a_0", "S^0 numerator coefficient", "[-]", a0);
+            registerParameter("a_2", "S^2 numerator coefficient", "[-]", a2, Constant);
+            registerParameter("a_1", "S^1 numerator coefficient", "[-]", a1, Constant);
+            registerParameter("a_0", "S^0 numerator coefficient", "[-]", a0, Constant);
 
-            registerParameter("b_2", "S^2 denominator coefficient", "[-]", b2);
-            registerParameter("b_1", "S^1 denominator coefficient", "[-]", b1);
-            registerParameter("b_0", "S^0 denominator coefficient", "[-]", b0);
+            registerParameter("b_2", "S^2 denominator coefficient", "[-]", b2, Constant);
+            registerParameter("b_1", "S^1 denominator coefficient", "[-]", b1, Constant);
+            registerParameter("b_0", "S^0 denominator coefficient", "[-]", b0, Constant);
         }
 
 

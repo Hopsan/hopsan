@@ -107,13 +107,13 @@ public:
         mpPu=addWritePort("Pu","NodeSignal", Port::NOTREQUIRED);
 
         //Register changable parameters to the HOPSAN++ core
-        registerParameter("wa", "Break frequency", "rad/s", mwa);
-        registerParameter("da", "relative damping", "", mda);
-        registerParameter("umin", "Minium output signal", "", mumin);
-        registerParameter("umax", "Maximum output signal", "", mumax);
-        registerParameter("yref", "Reference value", "", myref);
-        registerParameter("y", "Actual value", "", my);
-        registerParameter("kx", "Break frequency", "rad/s", mkx);
+        registerParameter("wa", "Break frequency", "rad/s", mwa, Constant);
+        registerParameter("da", "relative damping", "", mda, Constant);
+        registerParameter("umin", "Minium output signal", "", mumin, Constant);
+        registerParameter("umax", "Maximum output signal", "", mumax, Constant);
+        registerParameter("yref", "Reference value", "", myref, Constant);
+        registerParameter("y", "Actual value", "", my, Constant);
+        registerParameter("kx", "Break frequency", "rad/s", mkx, Constant);
         mpSolver = new EquationSystemSolver(this,1);
      }
 
