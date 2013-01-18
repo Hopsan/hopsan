@@ -1396,54 +1396,64 @@ void PlotTab::exportToGnuplot()
 
 void PlotTab::exportToGraphics()
 {
+    QDialog *pGraphicsSettingsDialog = new QDialog(mpParentPlotWindow);
+    pGraphicsSettingsDialog->setWindowTitle("Graphic Export");
+    pGraphicsSettingsDialog->setWindowModality(Qt::WindowModal);
 
-    mpGraphicsSettingsDialog = new QDialog(this);
-    mpGraphicsSettingsDialog->setWindowTitle("Graphic Controls");
-    mpGraphicsSettingsDialog->setWindowModality(Qt::WindowModal);
+    mpImageDimUnit = new QComboBox();
+    mpImageDimUnit->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+    mpImageDimUnit->addItem("px");
+    mpImageDimUnit->addItem("mm");
+    mpImageDimUnit->addItem("cm");
+    mpImageDimUnit->addItem("in");
 
-    mpGraphicsSize = new QSpinBox(this);
-    mpGraphicsSize->setRange(1,10000);
-    mpGraphicsSize->setSingleStep(1);
-    mpGraphicsSize->setValue(500);
+    mpImageWidth = new QSpinBox(this);
+    mpImageWidth->setRange(1,10000);
+    mpImageWidth->setSingleStep(1);
+    mpImageWidth->setValue(mpQwtPlots[FIRSTPLOT]->width());
 
-    mpGraphicsSizeW = new QSpinBox(this);
-    mpGraphicsSizeW->setRange(1,10000);
-    mpGraphicsSizeW->setSingleStep(1);
-    mpGraphicsSizeW->setValue(500);
+    mpImageHeight = new QSpinBox(this);
+    mpImageHeight->setRange(1,10000);
+    mpImageHeight->setSingleStep(1);
+    mpImageHeight->setValue(mpQwtPlots[FIRSTPLOT]->height());
 
-    mpGraphicsQuality = new QSpinBox(this);
-    mpGraphicsQuality->setRange(1,10);
-    mpGraphicsQuality->setSingleStep(1);
-    mpGraphicsQuality->setValue(1);
+    mpImageDPI = new QSpinBox(this);
+    mpImageDPI->setRange(1,10000);
+    mpImageDPI->setSingleStep(1);
+    mpImageDPI->setValue(96);
 
-    mpGraphicsForm = new QComboBox(this);
-    mpGraphicsForm->addItem("PNG");
-    mpGraphicsForm->addItem("PDF/PS");
-    mpGraphicsForm->addItem("SVG");
+    // Vector
+    mpImageFormat = new QComboBox();
+    mpImageFormat->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+    mpImageFormat->addItem("PDF");
+    mpImageFormat->addItem("PS");
+    mpImageFormat->addItem("SVG");
+    mpImageFormat->addItem("png");
+    mpImageFormat->addItem("jpeg");
 
-    QGroupBox *graphicsBox = new QGroupBox( "Graphics" );
-    QGridLayout *graphicsBoxLayout = new QGridLayout( graphicsBox );
+    int r=0;
+    QGridLayout *pLayout = new QGridLayout();
+    pLayout->addWidget(new QLabel("Format:"),r,0, 1,1,Qt::AlignRight);
+    pLayout->addWidget(mpImageFormat,r,1);
+    ++r;
+    pLayout->addWidget(new QLabel("Dimension Unit:"),r,0, 1,1,Qt::AlignRight);
+    pLayout->addWidget(mpImageDimUnit,r,1);
+    pLayout->addWidget(new QLabel("Width:"),r,2, 1,1,Qt::AlignRight);
+    pLayout->addWidget(mpImageWidth,r,3);
+    pLayout->addWidget(new QLabel("Height:"),r,4, 1,1,Qt::AlignRight);
+    pLayout->addWidget(mpImageHeight,r,5);
+    pLayout->addWidget(new QLabel("DPI:"),r,6, 1,1,Qt::AlignRight);
+    pLayout->addWidget(mpImageDPI,r,7);
+    ++r;
+    QPushButton *pExportButton = new QPushButton("Export");
+    pLayout->addWidget(pExportButton,r,0);
+    connect(pExportButton, SIGNAL(clicked()), this, SLOT(exportImage()));
+    QPushButton *pCloseButton = new QPushButton("Close");
+    pLayout->addWidget(pCloseButton,r,7);
+    connect(pCloseButton, SIGNAL(clicked()), pGraphicsSettingsDialog, SLOT(close()));
 
-    int row = 0;
-    graphicsBoxLayout->addWidget( new QLabel( "Export Format" ), row, 0 );
-    graphicsBoxLayout->addWidget( mpGraphicsForm, row, 1 );
-    row++;
-    graphicsBoxLayout->addWidget( new QLabel( "Height" ), row, 0 );
-    graphicsBoxLayout->addWidget( mpGraphicsSize, row, 1 );
-    row++;
-    graphicsBoxLayout->addWidget( new QLabel( "Width" ), row, 0 );
-    graphicsBoxLayout->addWidget( mpGraphicsSizeW, row, 1 );
-    row++;
-    graphicsBoxLayout->addWidget( new QLabel( "Quality" ), row, 0 );
-    graphicsBoxLayout->addWidget( mpGraphicsQuality, row, 1 );
-
-    mpGraphicsSettingsDialog->setLayout(graphicsBoxLayout);
-
-    connect(mpGraphicsSize, SIGNAL(valueChanged(int)), this, SLOT(applyGraphicsSettings()));
-    connect(mpGraphicsSizeW, SIGNAL(valueChanged(int)), this, SLOT(applyGraphicsSettings()));
-    connect(mpGraphicsQuality, SIGNAL(valueChanged(int)), this, SLOT(applyGraphicsSettings()));
-    connect(mpGraphicsForm, SIGNAL(indexChanged(int)), this, SLOT(applyGraphicsSettings()));
-
+    pGraphicsSettingsDialog->setLayout(pLayout);
+    pGraphicsSettingsDialog->exec();
 }
 
 //void PlotTab::applyGraphicsSettings()
@@ -2141,6 +2151,37 @@ void PlotTab::saveToXml()
     mpExportXmlDialog->close();
 }
 
+void PlotTab::exportImage()
+{
+    QString fileName, fileFilter;
+    if (mpImageFormat->currentText() == "pdf")
+    {
+        fileFilter = "Portable Document Format (*.pdf)";
+    }
+    else if (mpImageFormat->currentText() == "ps")
+    {
+        fileFilter = "PostScript Format (*.ps)";
+    }
+    else if (mpImageFormat->currentText() == "svg")
+    {
+        fileFilter = "Scalable Vector Graphics (*.svg)";
+    }
+    else if (mpImageFormat->currentText() == "png")
+    {
+        fileFilter = "Portable Network Graphics (*.png)";
+    }
+    else if (mpImageFormat->currentText() == "jpeg")
+    {
+        fileFilter = "Joint Photographic Experts Group (*.jpg)";
+    }
+
+    fileName = QFileDialog::getSaveFileName(this, "Export File Name", gConfig.getPlotGfxDir(), fileFilter);
+
+    QwtPlotRenderer renderer;
+    renderer.renderDocument(mpQwtPlots[FIRSTPLOT],fileName,calcMMSize(),mpImageDPI->value());
+}
+
+
 
 int PlotTab::getPlotIDFromCurve(PlotCurve *pCurve)
 {
@@ -2440,6 +2481,31 @@ void PlotTab::setLegendSymbol(const QString symStyle)
 
         // Fix legend size after possible change in style
         mPlotCurvePtrs[FIRSTPLOT].at(j)->resetLegendSize();
+    }
+}
+
+QSizeF PlotTab::calcMMSize()
+{
+    const double inchToMM = 25.4;
+
+    if (mpImageDimUnit->currentText() == "px")
+    {
+        const double dpi = mpImageDPI->value();
+        const double pxToMM = 1/dpi*inchToMM ;
+        return QSizeF(mpImageWidth->value()*pxToMM,mpImageHeight->value()*pxToMM);
+    }
+    if (mpImageDimUnit->currentText() == "mm")
+    {
+        return QSizeF(mpImageWidth->value(),mpImageHeight->value());
+    }
+    else if (mpImageDimUnit->currentText() == "cm")
+    {
+        return QSizeF(mpImageWidth->value()*10, mpImageHeight->value()*10);
+    }
+    else if (mpImageDimUnit->currentText() == "in")
+    {
+
+        return QSizeF(mpImageWidth->value()*inchToMM, mpImageHeight->value()*inchToMM);
     }
 }
 

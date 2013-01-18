@@ -111,6 +111,8 @@ private slots:
     QString updateXmlOutputTextInDialog();
     void saveToXml();
 
+    void exportImage();
+
 private:
     int getPlotIDFromCurve(PlotCurve *pCurve);
     void constructLegendSettingsDialog();
@@ -159,6 +161,15 @@ private:
 
     bool mIsSpecialPlot;
 
+    // Export graphics settings
+    QComboBox *mpImageDimUnit;
+    QSpinBox *mpImageWidth;
+    QSpinBox *mpImageHeight;
+    QSpinBox *mpImageDPI;
+    QComboBox *mpImageFormat;
+    QSizeF calcMMSize();
+
+
     // Legend related member variables
     QwtLegend *mpExternalLegend;
     PlotLegend *mpLeftPlotLegend, *mpRightPlotLegend;
@@ -178,11 +189,11 @@ private:
     QSpinBox *mpLegendFontSize;
 
 
-    QDialog *mpGraphicsSettingsDialog;
-    QSpinBox *mpGraphicsSize;
-    QSpinBox *mpGraphicsSizeW;
-    QSpinBox *mpGraphicsQuality;
-    QComboBox *mpGraphicsForm;
+
+
+
+
+
 
     // Axis settings related member variables
     QDialog *mpSetAxisDialog;
