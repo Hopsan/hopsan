@@ -257,6 +257,16 @@ void Component::saveCoreDataToDomElement(QDomElement &rDomElement)
             xmlParam.setAttribute(HMF_SYSTEMPARAMETERTAG, this->getSystemParameterKey(*pit));
         }*/
     }
+
+    //Implementation of Feature #698 - Save nodetype in HMF
+    QDomElement xmlPorts = appendDomElement(rDomElement, HMF_PORTSTAG);
+    QList<Port*>::Iterator it;
+    for (it=mPortListPtrs.begin(); it!=mPortListPtrs.end(); ++it)
+    {
+        QDomElement xmlPort = appendDomElement(xmlPorts, "port");
+        xmlPort.setAttribute(HMF_NAMETAG, (*it)->getPortName());
+        xmlPort.setAttribute("nodetype", (*it)->getNodeType());
+    }
 }
 
 QDomElement Component::saveGuiDataToDomElement(QDomElement &rDomElement)
