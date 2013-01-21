@@ -31,6 +31,7 @@
 #include <cmath>
 
 const double DBLMAX = std::numeric_limits<double>::max();
+const double in2mm = 25.4;
 
 //! @brief Constructor for plot tabs.
 //! @param parent Pointer to the plot window the tab belongs to
@@ -1403,24 +1404,32 @@ void PlotTab::exportToGraphics()
     mpImageDimUnit = new QComboBox();
     mpImageDimUnit->setSizeAdjustPolicy(QComboBox::AdjustToContents);
     mpImageDimUnit->addItem("px");
+    mPreviousImageUnit = mpImageDimUnit->currentText();
     mpImageDimUnit->addItem("mm");
     mpImageDimUnit->addItem("cm");
     mpImageDimUnit->addItem("in");
+    connect(mpImageDimUnit, SIGNAL(currentIndexChanged(int)), this, SLOT(changedGraphicsExportSettings()));
 
-    mpImageWidth = new QSpinBox(this);
-    mpImageWidth->setRange(1,10000);
-    mpImageWidth->setSingleStep(1);
-    mpImageWidth->setValue(mpQwtPlots[FIRSTPLOT]->width());
+    mpImageSetWidth = new QDoubleSpinBox(this);
+    mpImageSetWidth->setRange(1,10000);
+    mpImageSetWidth->setSingleStep(1);
+    mpImageSetWidth->setValue(mpQwtPlots[FIRSTPLOT]->width());
+    connect(mpImageSetWidth, SIGNAL(valueChanged(double)), this, SLOT(changedGraphicsExportSettings()));
 
-    mpImageHeight = new QSpinBox(this);
-    mpImageHeight->setRange(1,10000);
-    mpImageHeight->setSingleStep(1);
-    mpImageHeight->setValue(mpQwtPlots[FIRSTPLOT]->height());
+    mpImageSetHeight = new QDoubleSpinBox(this);
+    mpImageSetHeight->setRange(1,10000);
+    mpImageSetHeight->setSingleStep(1);
+    mpImageSetHeight->setValue(mpQwtPlots[FIRSTPLOT]->height());
+    connect(mpImageSetHeight, SIGNAL(valueChanged(double)), this, SLOT(changedGraphicsExportSettings()));
 
-    mpImageDPI = new QSpinBox(this);
+    mpPixelSizeLabel = new QLabel(QString("Px: %1X%2").arg(mpQwtPlots[FIRSTPLOT]->width()).arg(mpQwtPlots[FIRSTPLOT]->height()));
+
+    mpImageDPI = new QDoubleSpinBox(this);
+    mpImageDPI->setDecimals(0);
     mpImageDPI->setRange(1,10000);
     mpImageDPI->setSingleStep(1);
     mpImageDPI->setValue(96);
+    connect(mpImageDPI, SIGNAL(valueChanged(double)), this, SLOT(changedGraphicsExportSettings()));
 
     // Vector
     mpImageFormat = new QComboBox();
@@ -1439,11 +1448,13 @@ void PlotTab::exportToGraphics()
     pLayout->addWidget(new QLabel("Dimension Unit:"),r,0, 1,1,Qt::AlignRight);
     pLayout->addWidget(mpImageDimUnit,r,1);
     pLayout->addWidget(new QLabel("Width:"),r,2, 1,1,Qt::AlignRight);
-    pLayout->addWidget(mpImageWidth,r,3);
+    pLayout->addWidget(mpImageSetWidth,r,3);
     pLayout->addWidget(new QLabel("Height:"),r,4, 1,1,Qt::AlignRight);
-    pLayout->addWidget(mpImageHeight,r,5);
+    pLayout->addWidget(mpImageSetHeight,r,5);
     pLayout->addWidget(new QLabel("DPI:"),r,6, 1,1,Qt::AlignRight);
     pLayout->addWidget(mpImageDPI,r,7);
+    ++r;
+    pLayout->addWidget(mpPixelSizeLabel,r,7);
     ++r;
     QPushButton *pExportButton = new QPushButton("Export");
     pLayout->addWidget(pExportButton,r,0);
@@ -2181,6 +2192,49 @@ void PlotTab::exportImage()
     renderer.renderDocument(mpQwtPlots[FIRSTPLOT],fileName,calcMMSize(),mpImageDPI->value());
 }
 
+void PlotTab::changedGraphicsExportSettings()
+{
+    // Recalculate values for setSize boxes if unit changes
+    if (mPreviousImageUnit != mpImageDimUnit->currentText())
+    {
+        QSizeF prevPxSize = calcPXSize(mPreviousImageUnit);
+        mPreviousImageUnit = mpImageDimUnit->currentText(); //This needs to be here so that we dont get stuck in a loop when values are changeed below
+        //!< @todo This is bad, try to find a way to update the values in teh setW setH without signaling this slot again, could temporarly disconnect signals but thats also bad, better would be two different slots, one special for changing unit and another for all otehr updates
+
+        if (mpImageDimUnit->currentText() == "px")
+        {
+            mActualSetSize = prevPxSize;
+        }
+        else if (mpImageDimUnit->currentText() == "mm")
+        {
+            const double px2mm = 1.0/mpImageDPI->value()*in2mm;
+            mActualSetSize = prevPxSize*px2mm;
+        }
+        else if (mpImageDimUnit->currentText() == "cm")
+        {
+            const double px2cm = 1.0/(10*mpImageDPI->value())*in2mm;
+            mActualSetSize = prevPxSize*px2cm;
+        }
+        else if (mpImageDimUnit->currentText() == "in")
+        {
+            const double px2in = 1.0/(mpImageDPI->value());
+            mActualSetSize = prevPxSize*px2in;
+        }
+
+        mpImageSetWidth->setValue(mActualSetSize.width());
+        mpImageSetHeight->setValue(mActualSetSize.height());
+    }
+    else
+    {
+        //! @todo this wont work, the low res data in the spinboxes will overwrite the detailed data here when anything but unit changes /Peter
+        mActualSetSize = QSizeF(mpImageSetWidth->width(), mpImageSetWidth->height());
+    }
+
+    // Calc new actual pixel resolution
+    QSizeF pxSize = calcPXSize();
+    mpPixelSizeLabel->setText(QString("Px: %1X%2").arg(round(pxSize.width())).arg(round(pxSize.height())));
+}
+
 
 
 int PlotTab::getPlotIDFromCurve(PlotCurve *pCurve)
@@ -2484,29 +2538,43 @@ void PlotTab::setLegendSymbol(const QString symStyle)
     }
 }
 
-QSizeF PlotTab::calcMMSize()
+QSizeF PlotTab::calcMMSize() const
 {
-    const double inchToMM = 25.4;
+    QSizeF pxSize = calcPXSize();
+    const double pxToMM = 1.0/mpImageDPI->value()*in2mm ;
+    return QSizeF(pxSize.width()*pxToMM,pxSize.height()*pxToMM);
+}
 
-    if (mpImageDimUnit->currentText() == "px")
+QSizeF PlotTab::calcPXSize(QString unit) const
+{
+    if (unit.isEmpty())
     {
-        const double dpi = mpImageDPI->value();
-        const double pxToMM = 1/dpi*inchToMM ;
-        return QSizeF(mpImageWidth->value()*pxToMM,mpImageHeight->value()*pxToMM);
+        unit = mpImageDimUnit->currentText();
     }
-    if (mpImageDimUnit->currentText() == "mm")
-    {
-        return QSizeF(mpImageWidth->value(),mpImageHeight->value());
-    }
-    else if (mpImageDimUnit->currentText() == "cm")
-    {
-        return QSizeF(mpImageWidth->value()*10, mpImageHeight->value()*10);
-    }
-    else if (mpImageDimUnit->currentText() == "in")
-    {
 
-        return QSizeF(mpImageWidth->value()*inchToMM, mpImageHeight->value()*inchToMM);
+    QSizeF pxSize;
+    if ( unit == "px")
+    {
+        pxSize = QSizeF(mActualSetSize.width(), mActualSetSize.height());
     }
+    else if (unit == "mm")
+    {
+        const double mmToPx = 1.0/in2mm * mpImageDPI->value();
+        pxSize = QSizeF(mpImageSetWidth->value()*mmToPx,mpImageSetHeight->value()*mmToPx);
+    }
+    else if (unit == "cm")
+    {
+        const double cmToPx = 10.0/in2mm * mpImageDPI->value();
+        pxSize = QSizeF(mpImageSetWidth->value()*cmToPx,mpImageSetHeight->value()*cmToPx);
+    }
+    else if (unit == "in")
+    {
+        pxSize = QSizeF(mpImageSetWidth->value()*mpImageDPI->value(), mpImageSetHeight->value()*mpImageDPI->value());
+    }
+
+    //! @todo round to int, ceil or floor, handle truncation
+
+    return pxSize;
 }
 
 

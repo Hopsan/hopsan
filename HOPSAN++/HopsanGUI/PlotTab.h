@@ -112,6 +112,7 @@ private slots:
     void saveToXml();
 
     void exportImage();
+    void changedGraphicsExportSettings();
 
 private:
     int getPlotIDFromCurve(PlotCurve *pCurve);
@@ -163,11 +164,15 @@ private:
 
     // Export graphics settings
     QComboBox *mpImageDimUnit;
-    QSpinBox *mpImageWidth;
-    QSpinBox *mpImageHeight;
-    QSpinBox *mpImageDPI;
+    QDoubleSpinBox *mpImageSetWidth;
+    QDoubleSpinBox *mpImageSetHeight;
+    QLabel *mpPixelSizeLabel;
+    QSizeF mActualSetSize;
+    QDoubleSpinBox *mpImageDPI;
     QComboBox *mpImageFormat;
-    QSizeF calcMMSize();
+    QString mPreviousImageUnit;
+    QSizeF calcMMSize() const;
+    QSizeF calcPXSize(QString unit=QString()) const;
 
 
     // Legend related member variables
