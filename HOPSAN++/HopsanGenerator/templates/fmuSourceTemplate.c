@@ -12,7 +12,7 @@ void initializeHopsanWrapper(char* filename)
 {
     double startT;      //Dummy variable
     double stopT;       //Dummy variable
-    gHopsanCore.loadExternalComponentLib("../componentLibraries/defaultLibrary/components/libdefaultComponentLibrary.so");
+    gHopsanCore.loadExternalComponentLib("defaultComponentLibrary.dll");    //Only used for debugging, since components are not included in HopsanCore.dll during development
     spCoreComponentSystem = gHopsanCore.loadHMFModel(filename, startT, stopT);
 
     assert(spCoreComponentSystem);

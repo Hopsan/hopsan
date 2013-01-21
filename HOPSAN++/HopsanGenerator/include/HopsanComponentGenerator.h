@@ -194,6 +194,7 @@ QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString
 bool removeDir(QString path);
 void copyDir(const QString fromPath, QString toPath);
 void copyIncludeFilesToDir(QString path);
+void copyBoostIncludeFilesToDir(QString path);
 
 
 

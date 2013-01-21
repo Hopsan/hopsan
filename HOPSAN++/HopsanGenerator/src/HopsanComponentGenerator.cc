@@ -426,22 +426,28 @@ void HopsanGenerator::generateFromFmu(QString path)
         {
             if(!varElement.hasAttribute("causality"))
             {
-                inoutVarValueRefs << varElement.attribute("valueReference");
+                //inoutVarValueRefs << varElement.attribute("valueReference");
+                inoutVarValueRefs << QString::number(i);
                 inoutVarPortNames << varElement.attribute("name");
             }
             else if(varElement.attribute("causality") == "input")
             {
-                inVarValueRefs << varElement.attribute("valueReference");
+                //inVarValueRefs << varElement.attribute("valueReference");
+                inVarValueRefs << QString::number(i);
                 inVarPortNames << varElement.attribute("name");
             }
             else if(varElement.attribute("causality") == "output")
             {
-                outVarValueRefs << varElement.attribute("valueReference");
+                //outVarValueRefs << varElement.attribute("valueReference");
+                outVarValueRefs << QString::number(i);
                 outVarPortNames << varElement.attribute("name");
             }
         }
         varElement = varElement.nextSiblingElement("ScalarVariable");
+        ++i;
     }
+
+    i=0;
 
     QStringList tlmPortTypes;
     QList<QStringList> tlmPortVarNames;
@@ -655,6 +661,7 @@ void HopsanGenerator::generateFromFmu(QString path)
     QList<FMIParameterSpecification> parSpecs;
     varElement = variablesElement.firstChildElement("ScalarVariable");
     i=0;
+    int j=0;
     while (!varElement.isNull())
     {
         if(varElement.attribute("variability") == "parameter")
@@ -663,12 +670,14 @@ void HopsanGenerator::generateFromFmu(QString path)
             QString initValue = varElement.firstChildElement("Real").attribute("start", "0");
             QString parName = toVarName(varElement.attribute("name"));
             QString description = varElement.attribute("description");
-            QString valueRef = varElement.attribute("valueReference");
+            //QString valueRef = varElement.attribute("valueReference");
+            QString valueRef = QString::number(j);
             parSpecs << FMIParameterSpecification(varName, parName, description, initValue, valueRef);
             ++i;
 
         }
         varElement = varElement.nextSiblingElement("ScalarVariable");
+        ++j;
     }
 
     //Print parameter info to user
@@ -1470,27 +1479,24 @@ void HopsanGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem *p
     //Copy binaries to export directory
 #ifdef WIN32
     QFile dllFile;
-    QFile libFile;
-    QFile expFile;
-//    if(gccCompiler)
-//    {
-        dllFile.setFileName(gExecPath + "HopsanCore.dll");
-        dllFile.copy(savePath + "/HopsanCore.dll");
-//    }
-//    else
-//    {
-//        //! @todo this seem a bit hardcoded
-//        dllFile.setFileName(QString(MSVC2008_X86_PATH) + "HopsanCore.dll");
-//        dllFile.copy(savePath + "/HopsanCore.dll");
-//        libFile.setFileName(QString(MSVC2008_X86_PATH) + "HopsanCore.lib");
-//        libFile.copy(savePath + "/HopsanCore.lib");
-//        expFile.setFileName(QString(MSVC2008_X86_PATH) + "HopsanCore.exp");
-//        expFile.copy(savePath + "/HopsanCore.exp");
-//    }
+    QFile componentLibFile;
+
+    dllFile.setFileName(gExecPath + "HopsanCore.dll");
+    dllFile.copy(savePath + "/HopsanCore.dll");
+
+    componentLibFile.setFileName(gExecPath + "../componentLibraries/defaultLibrary/components/defaultComponentLibrary.dll");
+    if(componentLibFile.exists())
+        componentLibFile.copy(savePath+"/defaultComponentLibrary.dll");
 #elif linux
     QFile soFile;
+    QFile componentLibFile;
+
     soFile.setFileName(gExecPath + "libHopsanCore.so");
     soFile.copy(savePath + "/libHopsanCore.so");
+
+    componentLibFile.setFileName(gExecPath + "../componentLibraries/defaultLibrary/components/libdefaultComponentLibrary.so");
+    if(componentLibFile.exists())
+        componentLibFile.copy(savePath+"/libdefaultComponentLibrary.so");
 #endif
 
 
@@ -1642,6 +1648,7 @@ void HopsanGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem *p
     QFile modelLibFile(savePath + "/" + modelName + ".lib");
     modelLibFile.copy(savePath + "/fmu/binaries/win32/" + modelName + ".lib");
     dllFile.copy(savePath + "/fmu/binaries/win32/HopsanCore.dll");
+    componentLibFile.copy(savePath +"/fmu/binaries/win32/defaultComponentLibrary.dll");
 //    if(!gccCompiler)
 //    {
 //        libFile.copy(savePath + "/fmu/binaries/win32/HopsanCore.lib");
@@ -2792,21 +2799,16 @@ void HopsanGenerator::generateToSimulinkCoSim(QString savePath, hopsan::Componen
 
     QTextStream compileStream(&compileFile);
 #ifdef WIN32
-    //compileStream << "%mex -DWIN32 -DSTATICCORE HopsanSimulink.cpp /include/Component.cc /include/ComponentSystem.cc /include/HopsanEssentials.cc /include/Node.cc /include/Port.cc /include/Components/Components.cc /include/CoreUtilities/HmfLoader.cc /include/CoreUtilities/HopsanCoreMessageHandler.cc /include/CoreUtilities/LoadExternal.cc /include/Nodes/Nodes.cc /include/ComponentUtilities/AuxiliarySimulationFunctions.cpp /include/ComponentUtilities/Delay.cc /include/ComponentUtilities/DoubleIntegratorWithDamping.cpp /include/ComponentUtilities/FirstOrderFilter.cc /include/ComponentUtilities/Integrator.cc /include/ComponentUtilities/IntegratorLimited.cc /include/ComponentUtilities/ludcmp.cc /include/ComponentUtilities/matrix.cc /include/ComponentUtilities/SecondOrderFilter.cc /include/ComponentUtilities/SecondOrderTransferFunction.cc /include/ComponentUtilities/TurbulentFlowFunction.cc /include/ComponentUtilities/ValveHysteresis.cc\n";
-    compileStream << "mex -DWIN32 -DSTATICCORE -L./ -Iinclude -Iinclude/boost -lHopsanCore HopsanSimulink.cpp\n";
-
+    compileStream << "mex -DWIN32 -DSTATICCORE -L./ -I./include -I./include/boost HopsanSimulink.cpp\n";
 #else
-    compileStream << "% You need to copy the .so files here or change the -L lib search path" << endl;
-    compileStream << "mex -L./ -Iinclude -lHopsanCore HopsanSimulink.cpp" << endl;
-
-    //! @todo copy all of the symolic links and the .so
-
+    compileStream << "mex -L./ -Iinclude -Iinclude/boost HopsanSimulink.cpp" << endl;
 #endif
     compileFile.close();
 
     printMessage("Copying include files");
 
     copyIncludeFilesToDir(savePath);
+    copyBoostIncludeFilesToDir(savePath);
 
     //! @todo should not overwrite this wile if it already exists
     QFile externalLibsFile;
@@ -5029,6 +5031,21 @@ void copyIncludeFilesToDir(QString path)
 
     copyDir( QString("../HopsanCore/include"), saveDir.path() );
 }
+
+
+//! @todo maybe this function should not be among general utils
+//! @todo should not copy .svn folders
+void copyBoostIncludeFilesToDir(QString path)
+{
+    QDir saveDir;
+    saveDir.setPath(path);
+    saveDir.mkpath("include/boost");
+    saveDir.cd("include");
+    saveDir.cd("boost");
+
+    copyDir( QString("../HopsanCore/Dependencies/boost"), saveDir.path() );
+}
+
 
 
 //! @brief Removes all illegal characters from the string, so that it can be used as a variable name.
