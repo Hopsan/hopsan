@@ -78,6 +78,7 @@ namespace hopsan {
             {
                 addErrorMessage("Missing FMU model description");
                 stopSimulation();
+                return;
             }
 
             //Declare node data pointers
@@ -115,7 +116,18 @@ namespace hopsan {
             // set the start time and initialize
             fmiFlag =  mFMU.setTime(c, t0);
             fmiFlag =  mFMU.initialize(c, toleranceControlled, t0, &eventInfo);
-
+              
+            ScalarVariable** vars = mFMU.modelDescription->modelVariables;
+            double value;
+            ScalarVariable* sv;
+            fmiValueReference vr;
+                        
+            //Set parameters
+>>>10>>>            sv = vars[<<<valueref>>>];
+            vr = getValueReference(sv);
+            value=<<<varname>>>;
+            mFMU.setReal(c, &vr, 1, &value);
+<<<10<<<
         }
 
         void simulateOneTimestep()

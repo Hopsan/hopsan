@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <assert.h>
 #include "HopsanCore.h"
 #include "HopsanFMU.h"
@@ -46,4 +47,11 @@ void setVariable(char* component, char* port, size_t idx, double value)
 {
     assert(spCoreComponentSystem->getSubComponentOrThisIfSysPort(component)->getPort(port) != 0);
     return spCoreComponentSystem->getSubComponentOrThisIfSysPort(component)->getPort(port)->writeNode(idx, value);
+}
+
+void setParameter(char* name, double value)
+{
+    std::stringstream ss;
+    ss << value;
+    spCoreComponentSystem->setSystemParameter(name, ss.str(), "double");
 }

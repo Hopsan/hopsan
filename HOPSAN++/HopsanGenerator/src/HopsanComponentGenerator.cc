@@ -808,6 +808,7 @@ void HopsanGenerator::generateFromFmu(QString path)
         fmuComponentReplace9.append(replaceTags(getNodePtrLine,QStringList() << "mpndname" << "varname" << "datatype", QStringList() << portSpecs[p].mpndName << portSpecs[p].varName << portSpecs[p].dataType));
     }
 
+
     //Set parameters
     QString fmuComponentReplace10;
     QString writeParLines = extractTaggedSection(fmuComponentCode, "10");
@@ -1166,7 +1167,7 @@ void HopsanGenerator::generateFromFmu(QString path)
     if(!fmuDir.exists(fmuName + ".dll"))
     {
         printErrorMessage("Import of FMU failed: Compilation error.");
-        removeDir(fmuDir.path());
+        //removeDir(fmuDir.path());
         return;
     }
 #elif linux
@@ -1264,6 +1265,22 @@ void HopsanGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem *p
         }
     }
 
+    //Collect information about system parameters
+    QStringList parameterNames;
+    QStringList parameterValues;
+    std::vector<std::string> parameterNamesStd;
+    pSystem->getParameterNames(parameterNamesStd);
+    for(int p=0; p<parameterNamesStd.size(); ++p)
+    {
+        parameterNames.append(QString(parameterNamesStd[p].c_str()));
+    }
+    for(int p=0; p<parameterNames.size(); ++p)
+    {
+        std::string value;
+        pSystem->getParameterValue(parameterNamesStd[p], value);
+        parameterValues.append(QString(value.c_str()));
+    }
+
 
     //Create file objects for all files that shall be created
     QFile modelSourceFile;
@@ -1337,10 +1354,19 @@ void HopsanGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem *p
         xmlReplace3.append(replaceTags(scalarVarLines, QStringList() << "varname" << "varref" << "causality", QStringList() << outputVariables.at(j) << refString << "output"));
     }
 
+    QString xmlReplace4;
+    QString paramLines = extractTaggedSection(xmlCode, "4");
+    for(int k=0; k<parameterNames.size(); ++k)
+    {
+        QString refString = QString::number(i+j+k);
+        xmlReplace4.append(replaceTags(paramLines, QStringList() << "varname" << "varref" << "variability" << "start", QStringList() << parameterNames[k] << refString << "parameter" << parameterValues[k]));
+    }
+
     xmlCode.replace("<<<0>>>", modelName);
     xmlCode.replace("<<<1>>>", ID);
-    xmlCode.replace("<<<2>>>", QString::number(inputVariables.size() + outputVariables.size()));
+    xmlCode.replace("<<<2>>>", QString::number(inputVariables.size() + outputVariables.size() + parameterNames.size()));
     replaceTaggedSection(xmlCode, "3", xmlReplace3);
+    replaceTaggedSection(xmlCode, "4", xmlReplace4);
 
     QTextStream modelDescriptionStream(&modelDescriptionFile);
     modelDescriptionStream << xmlCode;
@@ -1363,6 +1389,8 @@ void HopsanGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem *p
         sourceReplace4.append(replaceTags(varDefLine, QStringList() << "varname" << "varref", QStringList() << inputVariables.at(i) << QString::number(i)));
     for(j=0; j<outputVariables.size(); ++j)
         sourceReplace4.append(replaceTags(varDefLine, QStringList() << "varname" << "varref", QStringList() << outputVariables.at(j) << QString::number(i+j)));
+    for(int k=0; k<parameterNames.size(); ++k)
+        sourceReplace4.append(replaceTags(varDefLine, QStringList() << "varname" << "varref", QStringList() << parameterNames.at(k) << QString::number(i+j+k)));
 
     QString sourceReplace5;
     i=0;
@@ -1397,14 +1425,16 @@ void HopsanGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem *p
 
     QString sourceReplace9;
     for(i=0; i<inputVariables.size(); ++i)
-        sourceReplace9.append("           case "+inputVariables.at(i)+"_: setVariable(\""+inputComponents.at(i)+"\", \""+inputPorts.at(i)+"\", "+QString::number(inputDatatypes.at(i))+", value);\n");
+        sourceReplace9.append("           case "+inputVariables.at(i)+"_: setVariable(\""+inputComponents.at(i)+"\", \""+inputPorts.at(i)+"\", "+QString::number(inputDatatypes.at(i))+", value); break;\n");
     for(j=0; j<outputVariables.size(); ++j)
-        sourceReplace9.append("           case "+outputVariables.at(j)+"_: setVariable(\""+outputComponents.at(j)+"\", \""+outputPorts.at(j)+"\", "+QString::number(outputDatatypes.at(j))+", value);\n");
+        sourceReplace9.append("           case "+outputVariables.at(j)+"_: setVariable(\""+outputComponents.at(j)+"\", \""+outputPorts.at(j)+"\", "+QString::number(outputDatatypes.at(j))+", value); break;\n");
+    for(int k=0; k<parameterNames.size(); ++k)
+        sourceReplace9.append("           case "+parameterNames.at(k)+"_: setParameter(\""+parameterNames.at(k)+"\", value); break;\n");
 
     modelSourceCode.replace("<<<0>>>", modelName);
     modelSourceCode.replace("<<<1>>>", ID);
-    modelSourceCode.replace("<<<2>>>", QString::number(inputVariables.size() + outputVariables.size()));
-    modelSourceCode.replace("<<<3>>>", QString::number(inputVariables.size() + outputVariables.size()));  //!< @todo Does number of variables equal number of states?
+    modelSourceCode.replace("<<<2>>>", QString::number(inputVariables.size() + outputVariables.size() + parameterNames.size()));
+    modelSourceCode.replace("<<<3>>>", QString::number(inputVariables.size() + outputVariables.size() + parameterNames.size()));  //!< @todo Does number of variables equal number of states?
     replaceTaggedSection(modelSourceCode, "4", sourceReplace4);
     modelSourceCode.replace("<<<5>>>", sourceReplace5);
     replaceTaggedSection(modelSourceCode, "6", sourceReplace6);

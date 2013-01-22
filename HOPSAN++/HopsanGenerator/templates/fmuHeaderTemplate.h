@@ -12,6 +12,7 @@ DLLEXPORT void simulateOneStep();
 DLLEXPORT double getVariable(char* component, char* port, size_t idx);
 
 DLLEXPORT void setVariable(char* component, char* port, size_t idx, double value);
+DLLEXPORT void setParameter(char* name, double value);
 
 #ifdef WRAPPERCOMPILATION
 }
