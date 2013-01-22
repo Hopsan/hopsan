@@ -1411,32 +1411,36 @@ void PlotTab::exportToGraphics()
     connect(mpImageDimUnit, SIGNAL(currentIndexChanged(int)), this, SLOT(changedGraphicsExportSettings()));
 
     mpImageSetWidth = new QDoubleSpinBox(this);
+    mpImageSetWidth->setDecimals(0);
     mpImageSetWidth->setRange(1,10000);
     mpImageSetWidth->setSingleStep(1);
     mpImageSetWidth->setValue(mpQwtPlots[FIRSTPLOT]->width());
-    connect(mpImageSetWidth, SIGNAL(valueChanged(double)), this, SLOT(changedGraphicsExportSettings()));
+    connect(mpImageSetWidth, SIGNAL(editingFinished()), this, SLOT(changedGraphicsExportSettings()));
 
     mpImageSetHeight = new QDoubleSpinBox(this);
+    mpImageSetHeight->setDecimals(0);
     mpImageSetHeight->setRange(1,10000);
     mpImageSetHeight->setSingleStep(1);
     mpImageSetHeight->setValue(mpQwtPlots[FIRSTPLOT]->height());
-    connect(mpImageSetHeight, SIGNAL(valueChanged(double)), this, SLOT(changedGraphicsExportSettings()));
+    connect(mpImageSetHeight, SIGNAL(editingFinished()), this, SLOT(changedGraphicsExportSettings()));
 
-    mpPixelSizeLabel = new QLabel(QString("Px: %1X%2").arg(mpQwtPlots[FIRSTPLOT]->width()).arg(mpQwtPlots[FIRSTPLOT]->height()));
+    mpPixelSizeLabel = new QLabel(QString("%1X%2").arg(mpQwtPlots[FIRSTPLOT]->width()).arg(mpQwtPlots[FIRSTPLOT]->height()));
+    mImagePixelSize = QSize(mpQwtPlots[FIRSTPLOT]->width(), mpQwtPlots[FIRSTPLOT]->height());
+
 
     mpImageDPI = new QDoubleSpinBox(this);
     mpImageDPI->setDecimals(0);
     mpImageDPI->setRange(1,10000);
     mpImageDPI->setSingleStep(1);
     mpImageDPI->setValue(96);
-    connect(mpImageDPI, SIGNAL(valueChanged(double)), this, SLOT(changedGraphicsExportSettings()));
+    connect(mpImageDPI, SIGNAL(editingFinished()), this, SLOT(changedGraphicsExportSettings()));
 
     // Vector
     mpImageFormat = new QComboBox();
     mpImageFormat->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-    mpImageFormat->addItem("PDF");
-    mpImageFormat->addItem("PS");
-    mpImageFormat->addItem("SVG");
+    mpImageFormat->addItem("pdf");
+    mpImageFormat->addItem("ps");
+    mpImageFormat->addItem("svg");
     mpImageFormat->addItem("png");
     mpImageFormat->addItem("jpeg");
 
@@ -1444,68 +1448,33 @@ void PlotTab::exportToGraphics()
     QGridLayout *pLayout = new QGridLayout();
     pLayout->addWidget(new QLabel("Format:"),r,0, 1,1,Qt::AlignRight);
     pLayout->addWidget(mpImageFormat,r,1);
+    pLayout->addWidget(new QLabel("Px:"),r,2, 1,1,Qt::AlignRight);
+    pLayout->addWidget(mpPixelSizeLabel,r,3);
     ++r;
     pLayout->addWidget(new QLabel("Dimension Unit:"),r,0, 1,1,Qt::AlignRight);
     pLayout->addWidget(mpImageDimUnit,r,1);
     pLayout->addWidget(new QLabel("Width:"),r,2, 1,1,Qt::AlignRight);
     pLayout->addWidget(mpImageSetWidth,r,3);
-    pLayout->addWidget(new QLabel("Height:"),r,4, 1,1,Qt::AlignRight);
-    pLayout->addWidget(mpImageSetHeight,r,5);
-    pLayout->addWidget(new QLabel("DPI:"),r,6, 1,1,Qt::AlignRight);
-    pLayout->addWidget(mpImageDPI,r,7);
+    pLayout->addWidget(new QLabel("Height:"),r+1,2, 1,1,Qt::AlignRight);
+    pLayout->addWidget(mpImageSetHeight,r+1,3);
     ++r;
-    pLayout->addWidget(mpPixelSizeLabel,r,7);
+    pLayout->addWidget(new QLabel("DPI:"),r,0, 1,1,Qt::AlignRight);
+    pLayout->addWidget(mpImageDPI,r,1);
+    mpImageDPI->setDisabled(true);
     ++r;
+
     QPushButton *pExportButton = new QPushButton("Export");
+    pExportButton->setAutoDefault(false);
     pLayout->addWidget(pExportButton,r,0);
     connect(pExportButton, SIGNAL(clicked()), this, SLOT(exportImage()));
     QPushButton *pCloseButton = new QPushButton("Close");
-    pLayout->addWidget(pCloseButton,r,7);
+    pCloseButton->setAutoDefault(false);
+    pLayout->addWidget(pCloseButton,r,5);
     connect(pCloseButton, SIGNAL(clicked()), pGraphicsSettingsDialog, SLOT(close()));
 
     pGraphicsSettingsDialog->setLayout(pLayout);
     pGraphicsSettingsDialog->exec();
 }
-
-//void PlotTab::applyGraphicsSettings()
-//{
-//    //        QString fileName = QFileDialog::getSaveFileName(this, "Export File Name", gConfig.getPlotGfxDir(), "Portable Document Format (*.pdf)");
-//    //        if ( !fileName.isEmpty() )
-//    //        {
-//    //            QFileInfo file(fileName);
-//    //            gConfig.setPlotGfxDir(file.absolutePath());
-
-//    //            QwtPlotRenderer renderer;
-
-//    //            QPrinter *printer = new QPrinter(QPrinter::HighResolution);
-//    //            printer->setPaperSize(QPrinter::Custom);
-//    //            printer->setPaperSize(mpQwtPlots[FIRSTPLOT]->size(), QPrinter::Point);
-//    //            printer->setOrientation(QPrinter::Landscape);
-//    //            printer->setFullPage(false);
-//    //            printer->setOutputFormat(QPrinter::PdfFormat);
-//    //            printer->setOutputFileName(fileName);
-//    //            renderer.renderTo(mpQwtPlots[FIRSTPLOT],*printer);
-//    //        }
-
-//    //        QString fileName = QFileDialog::getSaveFileName(this, "Export File Name", gConfig.getPlotGfxDir(), "Portable Document Format (*.pdf)");
-//    //        if ( !fileName.isEmpty() )
-//    //        {
-//    //            QFileInfo file(fileName);
-//    //            gConfig.setPlotGfxDir(file.absolutePath());
-
-//    //            QwtPlotRenderer renderer;
-
-//    //            QPrinter *printer = new QPrinter(QPrinter::HighResolution);
-//    //            printer->setPaperSize(QPrinter::Custom);
-//    //            printer->setPaperSize(mpQwtPlots[FIRSTPLOT]->size(), QPrinter::Point);
-//    //            printer->setOrientation(QPrinter::Landscape);
-//    //            printer->setFullPage(false);
-//    //            printer->setOutputFormat(QPrinter::PdfFormat);
-//    //            printer->setOutputFileName(fileName);
-//    //            renderer.renderTo(mpQwtPlots[FIRSTPLOT],*printer);
-//        //        }
-//}
-
 
 //! @brief Slot that exports plot tab as vector graphics to specified .pdf file
 void PlotTab::exportToPdf()
@@ -2189,7 +2158,70 @@ void PlotTab::exportImage()
     fileName = QFileDialog::getSaveFileName(this, "Export File Name", gConfig.getPlotGfxDir(), fileFilter);
 
     QwtPlotRenderer renderer;
-    renderer.renderDocument(mpQwtPlots[FIRSTPLOT],fileName,calcMMSize(),mpImageDPI->value());
+    renderer.setDiscardFlag(QwtPlotRenderer::DiscardBackground,true);
+    renderer.setDiscardFlag(QwtPlotRenderer::DiscardCanvasFrame,true);
+
+    //! @todo For now QWT do not seemt to set the color mode, so grayscale is selected by default, until this is fixed PDF and PS code copied from QWT lib is used for these formats.
+    if (mpImageFormat->currentText() == "pdf")
+    {
+        QwtPlot *plot = mpQwtPlots[FIRSTPLOT];
+
+        QString title = plot->title().text();
+        if ( title.isEmpty() )
+            title = "Plot Document";
+
+        const double mmToInch = 1.0 / 25.4;
+        const QSizeF size = calcMMSize() * mmToInch * mpImageDPI->value();
+
+        const QRectF documentRect( 0.0, 0.0, size.width(), size.height() );
+
+#ifndef QT_NO_PRINTER
+        QPrinter printer;
+        printer.setFullPage( true );
+        printer.setPaperSize( calcMMSize(), QPrinter::Millimeter );
+        printer.setDocName( title );
+        printer.setOutputFileName( fileName );
+        printer.setOutputFormat( QPrinter::PdfFormat );
+        printer.setResolution( mpImageDPI->value() );
+        printer.setColorMode(QPrinter::Color);
+
+        QPainter painter( &printer );
+        renderer.render( plot, &painter, documentRect );
+#endif
+    }
+    else if (mpImageFormat->currentText() == "ps")
+    {
+        QwtPlot *plot = mpQwtPlots[FIRSTPLOT];
+
+        QString title = plot->title().text();
+        if ( title.isEmpty() )
+            title = "Plot Document";
+
+        const double mmToInch = 1.0 / 25.4;
+        const QSizeF size = calcMMSize() * mmToInch * mpImageDPI->value();
+
+        const QRectF documentRect( 0.0, 0.0, size.width(), size.height() );
+
+#if QT_VERSION < 0x050000
+#ifndef QT_NO_PRINTER
+        QPrinter printer;
+        printer.setFullPage( true );
+        printer.setPaperSize( calcMMSize(), QPrinter::Millimeter );
+        printer.setDocName( title );
+        printer.setOutputFileName( fileName );
+        printer.setOutputFormat( QPrinter::PostScriptFormat );
+        printer.setResolution( mpImageDPI->value() );
+        printer.setColorMode(QPrinter::Color);
+
+        QPainter painter( &printer );
+        renderer.render( plot, &painter, documentRect );
+#endif
+#endif
+    }
+    else
+    {
+        renderer.renderDocument(mpQwtPlots[FIRSTPLOT],fileName,calcMMSize(),mpImageDPI->value());
+    }
 }
 
 void PlotTab::changedGraphicsExportSettings()
@@ -2197,42 +2229,47 @@ void PlotTab::changedGraphicsExportSettings()
     // Recalculate values for setSize boxes if unit changes
     if (mPreviousImageUnit != mpImageDimUnit->currentText())
     {
-        QSizeF prevPxSize = calcPXSize(mPreviousImageUnit);
-        mPreviousImageUnit = mpImageDimUnit->currentText(); //This needs to be here so that we dont get stuck in a loop when values are changeed below
-        //!< @todo This is bad, try to find a way to update the values in teh setW setH without signaling this slot again, could temporarly disconnect signals but thats also bad, better would be two different slots, one special for changing unit and another for all otehr updates
-
+        QSizeF newSize;
+        mpImageDPI->setDisabled(false);
         if (mpImageDimUnit->currentText() == "px")
         {
-            mActualSetSize = prevPxSize;
+            newSize.setWidth(round(mImagePixelSize.width()));
+            newSize.setHeight(round(mImagePixelSize.height()));
+            mpImageSetWidth->setDecimals(0);
+            mpImageSetHeight->setDecimals(0);
+            mpImageDPI->setDisabled(true);
         }
         else if (mpImageDimUnit->currentText() == "mm")
         {
             const double px2mm = 1.0/mpImageDPI->value()*in2mm;
-            mActualSetSize = prevPxSize*px2mm;
+            newSize = mImagePixelSize*px2mm;
+            mpImageSetWidth->setDecimals(2);
+            mpImageSetHeight->setDecimals(2);
         }
         else if (mpImageDimUnit->currentText() == "cm")
         {
             const double px2cm = 1.0/(10*mpImageDPI->value())*in2mm;
-            mActualSetSize = prevPxSize*px2cm;
+            newSize = mImagePixelSize*px2cm;
+            mpImageSetWidth->setDecimals(3);
+            mpImageSetHeight->setDecimals(3);
         }
         else if (mpImageDimUnit->currentText() == "in")
         {
             const double px2in = 1.0/(mpImageDPI->value());
-            mActualSetSize = prevPxSize*px2in;
+            newSize = mImagePixelSize*px2in;
+            mpImageSetWidth->setDecimals(3);
+            mpImageSetHeight->setDecimals(3);
         }
 
-        mpImageSetWidth->setValue(mActualSetSize.width());
-        mpImageSetHeight->setValue(mActualSetSize.height());
-    }
-    else
-    {
-        //! @todo this wont work, the low res data in the spinboxes will overwrite the detailed data here when anything but unit changes /Peter
-        mActualSetSize = QSizeF(mpImageSetWidth->width(), mpImageSetWidth->height());
+        mpImageSetWidth->setValue(newSize.width());
+        mpImageSetHeight->setValue(newSize.height());
+
+        mPreviousImageUnit = mpImageDimUnit->currentText();
     }
 
     // Calc new actual pixel resolution
-    QSizeF pxSize = calcPXSize();
-    mpPixelSizeLabel->setText(QString("Px: %1X%2").arg(round(pxSize.width())).arg(round(pxSize.height())));
+    mImagePixelSize = calcPXSize();
+    mpPixelSizeLabel->setText(QString("%1X%2").arg(round(mImagePixelSize.width())).arg(round(mImagePixelSize.height())));
 }
 
 
@@ -2555,7 +2592,7 @@ QSizeF PlotTab::calcPXSize(QString unit) const
     QSizeF pxSize;
     if ( unit == "px")
     {
-        pxSize = QSizeF(mActualSetSize.width(), mActualSetSize.height());
+        pxSize = QSizeF(mpImageSetWidth->value(), mpImageSetHeight->value());
     }
     else if (unit == "mm")
     {

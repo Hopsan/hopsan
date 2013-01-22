@@ -167,7 +167,7 @@ private:
     QDoubleSpinBox *mpImageSetWidth;
     QDoubleSpinBox *mpImageSetHeight;
     QLabel *mpPixelSizeLabel;
-    QSizeF mActualSetSize;
+    QSizeF mImagePixelSize;
     QDoubleSpinBox *mpImageDPI;
     QComboBox *mpImageFormat;
     QString mPreviousImageUnit;
