@@ -380,7 +380,7 @@ void HopsanGenerator::generateFromFmu(QString path)
             QFile().remove(gExecPath+hmfList.at(i));
             if(QFile().exists(gExecPath+hmfList.at(i)))
             {
-                printErrorMessaage("Unable to copy "+hmfFile.fileName()+" to /bin directory: File already exists.");
+                printErrorMessage("Unable to copy "+hmfFile.fileName()+" to /bin directory: File already exists.");
                 return;
             }
             hmfFile.copy(gExecPath + hmfList.at(i));
