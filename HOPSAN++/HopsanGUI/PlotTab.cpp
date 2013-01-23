@@ -2160,68 +2160,7 @@ void PlotTab::exportImage()
     QwtPlotRenderer renderer;
     renderer.setDiscardFlag(QwtPlotRenderer::DiscardBackground,true);
     renderer.setDiscardFlag(QwtPlotRenderer::DiscardCanvasFrame,true);
-
-    //! @todo For now QWT do not seemt to set the color mode, so grayscale is selected by default, until this is fixed PDF and PS code copied from QWT lib is used for these formats.
-    if (mpImageFormat->currentText() == "pdf")
-    {
-        QwtPlot *plot = mpQwtPlots[FIRSTPLOT];
-
-        QString title = plot->title().text();
-        if ( title.isEmpty() )
-            title = "Plot Document";
-
-        const double mmToInch = 1.0 / 25.4;
-        const QSizeF size = calcMMSize() * mmToInch * mpImageDPI->value();
-
-        const QRectF documentRect( 0.0, 0.0, size.width(), size.height() );
-
-#ifndef QT_NO_PRINTER
-        QPrinter printer;
-        printer.setFullPage( true );
-        printer.setPaperSize( calcMMSize(), QPrinter::Millimeter );
-        printer.setDocName( title );
-        printer.setOutputFileName( fileName );
-        printer.setOutputFormat( QPrinter::PdfFormat );
-        printer.setResolution( mpImageDPI->value() );
-        printer.setColorMode(QPrinter::Color);
-
-        QPainter painter( &printer );
-        renderer.render( plot, &painter, documentRect );
-#endif
-    }
-    else if (mpImageFormat->currentText() == "ps")
-    {
-        QwtPlot *plot = mpQwtPlots[FIRSTPLOT];
-
-        QString title = plot->title().text();
-        if ( title.isEmpty() )
-            title = "Plot Document";
-
-        const double mmToInch = 1.0 / 25.4;
-        const QSizeF size = calcMMSize() * mmToInch * mpImageDPI->value();
-
-        const QRectF documentRect( 0.0, 0.0, size.width(), size.height() );
-
-#if QT_VERSION < 0x050000
-#ifndef QT_NO_PRINTER
-        QPrinter printer;
-        printer.setFullPage( true );
-        printer.setPaperSize( calcMMSize(), QPrinter::Millimeter );
-        printer.setDocName( title );
-        printer.setOutputFileName( fileName );
-        printer.setOutputFormat( QPrinter::PostScriptFormat );
-        printer.setResolution( mpImageDPI->value() );
-        printer.setColorMode(QPrinter::Color);
-
-        QPainter painter( &printer );
-        renderer.render( plot, &painter, documentRect );
-#endif
-#endif
-    }
-    else
-    {
-        renderer.renderDocument(mpQwtPlots[FIRSTPLOT],fileName,calcMMSize(),mpImageDPI->value());
-    }
+    renderer.renderDocument(mpQwtPlots[FIRSTPLOT],fileName,calcMMSize(),mpImageDPI->value());
 }
 
 void PlotTab::changedGraphicsExportSettings()
