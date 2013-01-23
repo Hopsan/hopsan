@@ -526,3 +526,250 @@ SharedTimeVectorPtrT UniqueSharedTimeVectorPtrHelper::makeSureUnique(QVector<dou
     }
     return SharedTimeVectorPtrT();
 }
+
+
+QVector<double> LogVariableData::getDataVector()
+{
+    return mDataVector;
+}
+
+int LogVariableData::getDataSize() const
+{
+    return mDataVector.size();
+}
+
+
+CachedDataVector::CachedDataVector(const QVector<double> &rDataVector, const QString fileName)
+{
+    mNumElements = 0;
+
+    if (fileName.isEmpty())
+    {
+        mDataVector = rDataVector;
+        mNumElements = mDataVector.size();
+    }
+    else
+    {
+        if (setCacheFile(fileName))
+        {
+            writeToCache(rDataVector);
+        }
+    }
+}
+
+bool CachedDataVector::setCacheFile(const QString fileName)
+{
+    // Prevent changing filename if file has already been created
+    if (!mCacheFile.exists())
+    {
+        mCacheFile.setFileName(fileName);
+        return true;
+    }
+    return false;
+}
+
+
+bool CachedDataVector::isCached() const
+{
+    return !mDataVector.isEmpty();
+}
+
+int CachedDataVector::size() const
+{
+    return mNumElements;
+}
+
+bool CachedDataVector::isEmpty() const
+{
+    return (mNumElements==0);
+}
+
+bool CachedDataVector::copyData(QVector<double> &rData)
+{
+    return readToMem(rData);
+}
+
+double CachedDataVector::peek(const int idx, bool &rOk)
+{
+    rOk = true;
+    if (isCached())
+    {
+        if (mCacheFile.open(QIODevice::ReadOnly))
+        {
+            bool rc = mCacheFile.seek(sizeof(double)*idx);
+            if (rc)
+            {
+                double data;
+                qint64 n = mCacheFile.read((char*)&data, sizeof(double));
+                mCacheFile.close();
+                return data;
+            }
+            else
+            {
+                mCacheFile.close();
+                mError = mCacheFile.errorString();
+            }
+        }
+        else
+        {
+            mError = mCacheFile.errorString();
+        }
+        rOk = false;
+        return -1;
+    }
+    else
+    {
+        return mDataVector[idx];
+    }
+}
+
+bool CachedDataVector::poke(const int idx, const double val)
+{
+    if (isCached())
+    {
+        if (mCacheFile.open(QIODevice::WriteOnly))
+        {
+            bool rc = mCacheFile.seek(sizeof(double)*idx);
+            if (rc)
+            {
+                qint64 n = mCacheFile.write((const char*)&val, sizeof(double));
+                //! @todo handle writing out of bounds
+                mCacheFile.close();
+                return true;
+            }
+            else
+            {
+                mCacheFile.close();
+                mError = mCacheFile.errorString();
+            }
+        }
+        else
+        {
+            mError = mCacheFile.errorString();
+        }
+        return false;
+    }
+    else
+    {
+        mDataVector[idx] = val;
+        return true;
+    }
+}
+
+QVector<double> *CachedDataVector::beginHeavyOperation()
+{
+    QVector<double> *pData;
+    if(isCached())
+    {
+        pData = new QVector<double>();
+        readToMem(*pData);
+    }
+    else
+    {
+        pData = &mDataVector;
+    }
+    return pData;
+}
+
+//! @todo for now it is dangerous (very bad) to make operations between begin end (that do not operate only on the pointer), should this be blocked or even allowed through a theird state
+bool CachedDataVector::endHeavyOperation(QVector<double> *&rpData)
+{
+    bool rc = true;
+    if(isCached())
+    {
+        rc = writeToCache(*rpData);
+        delete rpData;
+    }
+    rpData = 0;
+    return rc;
+}
+
+QString CachedDataVector::getError() const
+{
+    return mError;
+}
+
+bool CachedDataVector::moveToCache()
+{
+    bool rc = true;
+    if (!isCached())
+    {
+        rc = writeToCache(mDataVector);
+        mDataVector.clear();
+    }
+    return rc;
+}
+
+bool CachedDataVector::readToMem(QVector<double> &rDataVector)
+{
+    if (mCacheFile.open(QIODevice::ReadOnly))
+    {
+        rDataVector.resize(mNumElements);
+        qint64 n = mCacheFile.read((char*)rDataVector.data(), sizeof(double)*mNumElements);
+        if (n != sizeof(double)*mNumElements)
+        {
+            mError = mCacheFile.errorString();//"Failed to read all expected data from file";
+            mCacheFile.close();
+            return false;
+        }
+        mCacheFile.close();
+        return true;
+    }
+    else
+    {
+        mError = mCacheFile.errorString();
+    }
+    return false;
+}
+
+bool CachedDataVector::moveToMem()
+{
+    bool rc = true;
+    if (isCached())
+    {
+        rc = readToMem(mDataVector);
+        if (!rc)
+        {
+            mDataVector.clear();
+        }
+        //! @todo should we remove file ? on succfull move
+    }
+    return rc;
+}
+
+bool CachedDataVector::writeToCache(const QVector<double> &rDataVector)
+{
+    if (mCacheFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
+    {
+        qint64 n = mCacheFile.write((const char*)rDataVector.data(), sizeof(double)*rDataVector.size());
+        if (n != sizeof(double)*rDataVector.size())
+        {
+            mError = mCacheFile.errorString();//"Failed to write data to file";
+            mCacheFile.close();
+            return false;
+        }
+        mNumElements = rDataVector.size();
+        mCacheFile.close();
+        return true;
+    }
+    else
+    {
+        mError = mCacheFile.errorString();
+    }
+    return false;
+}
+
+
+bool CachedDataVector::setCached(const bool cached)
+{
+    bool rc;
+    if (cached)
+    {
+        rc = moveToCache();
+    }
+    else
+    {
+        rc = moveToMem();
+    }
+    return rc;
+}

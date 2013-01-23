@@ -31,6 +31,7 @@
 #include <QString>
 #include <QColor>
 #include <QObject>
+#include <QFile>
 
 // Forward declaration
 class LogVariableData;
@@ -49,9 +50,42 @@ private:
 QString makeConcatName(const QString componentName, const QString portName, const QString dataName);
 void splitConcatName(const QString fullName, QString &rCompName, QString &rPortName, QString &rVarName);
 
+//! @todo this could be a template
+class CachedDataVector
+{
+public:
+    CachedDataVector(const QVector<double> &rDataVector, const QString fileName=QString());
+
+    bool setCacheFile(const QString fileName);
+    bool setCached(const bool cached);
+    bool isCached() const;
+
+    int size() const;
+    bool isEmpty() const;
+
+    bool copyData(QVector<double> &rData);
+    double peek(const int idx, bool &rOk);
+    bool poke(const int idx, const double val);
+
+    QVector<double> *beginHeavyOperation();
+    bool endHeavyOperation(QVector<double> *&rpData);
+
+    QString getError() const;
+
+private:
+    bool writeToCache(const QVector<double> &rDataVector);
+    bool moveToCache();
+    bool readToMem(QVector<double> &rDataVector);
+    bool moveToMem();
+
+    QString mError;
+    QFile mCacheFile;
+    QVector<double> mDataVector;
+    int mNumElements;
+};
+
 //! @class VariableDescription
 //! @brief Container class for strings describing a plot variable
-
 class VariableDescription
 {
 public:
@@ -134,7 +168,7 @@ public:
     double mAppliedValueOffset;
     double mAppliedTimeOffset;
     int mGeneration;
-    QVector<double> mDataVector;
+
     SharedTimeVectorPtrT mSharedTimeVectorPtr;
 
     const SharedVariableDescriptionT getVariableDescription() const;
@@ -153,6 +187,8 @@ public:
 
     double getOffset() const;
     //double getScale() const;
+    QVector<double> getDataVector();
+    int getDataSize() const;
 
     void addToData(const SharedLogVariableDataPtrT pOther);
     void addToData(const double other);
@@ -180,6 +216,7 @@ signals:
     void nameChanged();
 
 private:
+    QVector<double> mDataVector;
     LogVariableContainer *mpParentVariableContainer;
     SharedVariableDescriptionT mpVariableDescription;
 };

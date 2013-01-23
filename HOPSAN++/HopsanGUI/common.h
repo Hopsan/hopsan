@@ -68,6 +68,9 @@
 #define MODELS_REL_PATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Models/"
 #define SCRIPTS_REL_PATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Scripts/"
 
+#define LOGDATACACHE QDesktopServices::storageLocation(QDesktopServices::TempLocation) + "/Hopsan/LogData"
+
+
 // Gui TypeName defines
 #define HOPSANGUIGROUPTYPENAME "HopsanGUIGroup"
 #define HOPSANGUISYSTEMTYPENAME "Subsystem"

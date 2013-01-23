@@ -111,7 +111,7 @@ public:
 
     SharedLogVariableDataPtrT getLogDataVariablePtr(); //! @todo is this needed
     const SharedLogVariableDataPtrT getLogDataVariablePtr() const;
-    const QVector<double> &getDataVector() const;
+    QVector<double> getDataVector() const;
     const QVector<double> &getTimeVector() const;
 
     void setGeneration(int generation);

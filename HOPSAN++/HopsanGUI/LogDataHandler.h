@@ -30,6 +30,7 @@
 #include <QString>
 #include <QColor>
 #include <QObject>
+#include <QDir>
 
 #include "LogVariable.h"
 
@@ -82,6 +83,7 @@ public:
     void limitPlotGenerations();
 
     ContainerObject *getParentContainerObject();
+    QDir getCacheDir() const;
 
     void incrementOpenPlotCurves();
     void decrementOpenPlotCurves();
@@ -144,6 +146,7 @@ private:
     int mnPlotCurves;
     int mGenerationNumber;
     unsigned long int mTempVarCtr;
+    QDir mCacheDir;
 };
 
 #endif // LOGDATAHANDLER_H

@@ -47,6 +47,17 @@ LogDataHandler::LogDataHandler(ContainerObject *pParent) : QObject(pParent)
     mnPlotCurves = 0;
     mGenerationNumber = 0;
     mTempVarCtr = 0;
+
+    // Create the temporary directory that will contain cache data
+    int ctr=0;
+    QDir tmp;
+    do
+    {
+        tmp = QDir(LOGDATACACHE + QString("handler%1").arg(ctr));
+        ++ctr;
+    }while(tmp.exists());
+    tmp.mkpath(tmp.absolutePath());
+    mCacheDir = tmp;
 }
 
 LogDataHandler::~LogDataHandler()
@@ -79,9 +90,9 @@ void LogDataHandler::exportToPlo(QString filePath, QStringList variables)
     QString dateTimeString = dateTime.toString();
     QFileInfo fii(filePath);
     QString namez = fii.baseName();
-    QStringList ScalingvaluesList;
-    QStringList StartvaluesList;
-    QVector<double> Scalings;
+    QStringList scalingValuesList;
+    QStringList startvaluesList;
+    QVector<double> scalings;
     //QString ScaleVal;
 
     QString modelPathwayy = gpMainWindow->mpProjectTabs->getCurrentContainer()->getModelFileInfo().filePath();
@@ -94,11 +105,11 @@ void LogDataHandler::exportToPlo(QString filePath, QStringList variables)
         dataPtrs.append(getPlotData(variables[v],-1));
     }
 
-        //Write initial comment
+    // Write initial comment
     fileStream << "    'VERSION' " << QString(HOPSANGUIVERSION) << " " << dateTimeString << "\n";
     fileStream << "    1 " << "\n";
     fileStream << "    '"<<namez<<".PLO"<<"'"<<"\n";
-    fileStream << "        " << dataPtrs.size() <<"    "<< dataPtrs[0]->mDataVector.size()<<"\n";
+    fileStream << "        " << dataPtrs.size() <<"    "<< dataPtrs[0]->getDataSize()<<"\n";
     fileStream << "    'Time      '";
     for(int i=0; i<dataPtrs.size(); ++i)
     {
@@ -106,39 +117,44 @@ void LogDataHandler::exportToPlo(QString filePath, QStringList variables)
     }
     fileStream <<",    '"<< "\n";
 
-        //Write time and data vectors
-    QString dummy;
-
-    for(int kk=0; kk<dataPtrs.size()+1; ++kk)
+    // Write time and data vectors
+    QString str;
+    for(int i=0; i<dataPtrs.size()+1; ++i)
     {
-
-        ScalingvaluesList.append(dummy.setNum(1.0,'E',6));
-        fileStream <<"  "<< dummy;
-        for(int j=0; j<12-dummy.size(); ++j) { fileStream << " "; }
-
-
+        scalingValuesList.append(str.setNum(1.0,'E',6));
+        fileStream <<"  "<< str;
+        for(int j=0; j<12-str.size(); ++j)
+        {
+            fileStream << " ";
+        }
     }
     fileStream << "\n";
 
 
-    for(int i=0; i<dataPtrs[0]->mDataVector.size(); ++i)
+    QString err;
+    for(int i=0; i<dataPtrs[0]->getDataSize(); ++i)
     {
-        dummy.setNum(dataPtrs[0]->mSharedTimeVectorPtr->at(i),'E',6);
-        fileStream <<"  "<<dummy;
-        for(int j=0; j<12-dummy.size(); ++j) { fileStream << " "; }
+        str.setNum(dataPtrs[0]->mSharedTimeVectorPtr->at(i),'E',6);
+        fileStream <<"  "<<str;
+        for(int j=0; j<12-str.size(); ++j)
+        {
+            fileStream << " ";
+        }
 
         for(int k=0; k<dataPtrs.size(); ++k)
         {
-            dummy.setNum(dataPtrs[k]->mDataVector[i],'E',6);
-            Scalings = dataPtrs[k]->mDataVector;
+            str.setNum(dataPtrs[k]->peekData(i,err),'E',6);
+            //scalings = dataPtrs[k]->mDataVector;
             if(i == 0)
             {
-                StartvaluesList.append(dummy.setNum(dataPtrs[k]->mDataVector[i],'E',6));
+                startvaluesList.append(str.setNum(dataPtrs[k]->peekData(i,err),'E',6));
             }
 
-            fileStream <<"  "<< dummy;
-            for(int j=0; j<12-dummy.size(); ++j) { fileStream << " "; }
-
+            fileStream <<"  "<< str;
+            for(int j=0; j<12-str.size(); ++j)
+            {
+                fileStream << " ";
+            }
         }
         fileStream << "\n";
     }
@@ -146,9 +162,9 @@ void LogDataHandler::exportToPlo(QString filePath, QStringList variables)
     fileStream << "  "+namemodel+".for" <<"\n";
     fileStream <<"   Variable     Startvalue     Scaling" <<"\n";
     fileStream <<"------------------------------------------------------" <<"\n";
-    for(int ii=0; ii<dataPtrs.size(); ++ii)
+    for(int i=0; i<dataPtrs.size(); ++i)
     {
-        fileStream << "  Y" << ii << "     " << StartvaluesList[ii]<<"      "<<ScalingvaluesList[ii]<<"\n";
+        fileStream << "  Y" << i << "     " << startvaluesList[i]<<"      "<<scalingValuesList[i]<<"\n";
     }
 
     file.close();
@@ -587,7 +603,7 @@ QVector<double> LogDataHandler::getPlotDataValues(int generation, QString compon
     SharedLogVariableDataPtrT pData = getPlotData(generation, componentName, portName, dataName);
     if (pData)
     {
-        return pData->mDataVector;
+        return pData->getDataVector();
     }
 
     return QVector<double>();
@@ -598,7 +614,7 @@ QVector<double> LogDataHandler::getPlotDataValues(const QString fullName, int ge
     SharedLogVariableDataPtrT pData = getPlotData(fullName, generation);
     if (pData)
     {
-        return pData->mDataVector;
+        return pData->getDataVector();
     }
 
     return QVector<double>();
@@ -811,6 +827,11 @@ void LogDataHandler::limitPlotGenerations()
 ContainerObject *LogDataHandler::getParentContainerObject()
 {
     return mpParentContainerObject;
+}
+
+QDir LogDataHandler::getCacheDir() const
+{
+    return mCacheDir;
 }
 
 

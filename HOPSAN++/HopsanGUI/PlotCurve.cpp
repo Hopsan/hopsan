@@ -430,9 +430,10 @@ int PlotCurve::getAxisY()
 
 
 //! @brief Returns the (unscaled) data vector of a plot curve
-const QVector<double> &PlotCurve::getDataVector() const
+QVector<double> PlotCurve::getDataVector() const
 {
-    return mpData->mDataVector;
+    //! @todo this is no longer a reference need to see where it was used to avoid REALY slow code feetching data all the time /Peter
+    return mpData->getDataVector();
 }
 
 
@@ -530,7 +531,7 @@ void PlotCurve::toFrequencySpectrum()
 {
     QVector<double> timeVec, dataVec;
     timeVec = *(mpData->mSharedTimeVectorPtr.data());
-    dataVec = mpData->mDataVector;
+    dataVec = mpData->getDataVector();
 
     //Vector size has to be an even potential of 2.
     //Calculate largets potential that is smaller than or equal to the vector size.
@@ -926,22 +927,23 @@ void PlotCurve::updateCurve()
         unitScale = gConfig.getCustomUnits(getDataName()).find(getDataUnit()).value();
     }
 
+    QString dummy;
     QVector<double> tempX;
     QVector<double> tempY;
     if(mpParentPlotTab->mHasSpecialXAxis)
     {
-        for(int i=0; i<mpParentPlotTab->mSpecialXVector.size() && i<mpData->mDataVector.size(); ++i)
+        for(int i=0; i<mpParentPlotTab->mSpecialXVector.size() && i<mpData->getDataSize(); ++i)
         {
             tempX.append(mpParentPlotTab->mSpecialXVector[i]*mScaleX + mOffsetX);
-            tempY.append(mpData->mDataVector[i]*unitScale*mScaleY + mOffsetY);
+            tempY.append(mpData->peekData(i,dummy)*unitScale*mScaleY + mOffsetY);
         }
     }
     else
     {
-        for(int i=0; i<mpData->mSharedTimeVectorPtr->size() && i<mpData->mDataVector.size(); ++i)
+        for(int i=0; i<mpData->mSharedTimeVectorPtr->size() && i<mpData->getDataSize(); ++i)
         {
             tempX.append(mpData->mSharedTimeVectorPtr->at(i)*mScaleX + mOffsetX);
-            tempY.append(mpData->mDataVector[i]*unitScale*mScaleY + mOffsetY);
+            tempY.append(mpData->peekData(i,dummy)*unitScale*mScaleY + mOffsetY);
         }
     }
     mpQwtPlotCurve->setSamples(tempX, tempY);
