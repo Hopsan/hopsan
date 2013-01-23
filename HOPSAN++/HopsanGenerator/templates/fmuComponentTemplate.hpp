@@ -137,12 +137,6 @@ namespace hopsan {
             ScalarVariable* sv;
             fmiValueReference vr;
 
-            //Set parameters
->>>10>>>            sv = vars[<<<valueref>>>];
-            vr = getValueReference(sv);
-            value=<<<varname>>>;
-            mFMU.setReal(c, &vr, 1, &value);
-<<<10<<<
             //write input values
 >>>11>>>            if(<<<varname>>>->isConnected())
             {
