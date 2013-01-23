@@ -37,14 +37,19 @@
 //! Constructor for the help dialog
 //! @param parent Pointer to the main window
 HelpDialog::HelpDialog(MainWindow *parent)
-    : QMainWindow(parent)
+    : QDialog()
 {
+    this->setWindowIcon(gpMainWindow->windowIcon());
     this->setObjectName("HelpDialog");
     this->setWindowTitle("Hopsan User Guide");
     this->setMinimumSize(640, 480);
+    this->setWindowModality(Qt::NonModal);
 
     mpHelp = new QWebView(this);
-    setCentralWidget(mpHelp);
+
+    QVBoxLayout *pLayout = new QVBoxLayout(this);
+    pLayout->addWidget(mpHelp);
+    this->setLayout(pLayout);
 
     //! @todo Set size depending one screen size
     this->resize(1024,768);
@@ -56,7 +61,7 @@ void HelpDialog::open()
     mpHelp->load(QUrl::fromLocalFile(QString(HELPPATH) + "index.html"));
 
     //Using show instead of open for modaless window
-    QMainWindow::show();
+    QDialog::show();
 }
 
 
@@ -65,7 +70,7 @@ void HelpDialog::open(QString file)
     mpHelp->load(QUrl::fromLocalFile(QString(HELPPATH) + file));
 
     //Using show instead of open for modaless window
-    QMainWindow::show();
+    QDialog::show();
 }
 
 

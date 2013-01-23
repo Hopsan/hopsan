@@ -26,11 +26,11 @@
 #define HELPDIALOG_H
 
 #include <QWebView>
-#include <QMainWindow>
+#include <QDialog>
 
 class MainWindow;
 
-class HelpDialog : public QMainWindow
+class HelpDialog : public QDialog
 {
     Q_OBJECT
 
