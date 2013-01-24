@@ -3332,6 +3332,11 @@ void HopsanGenerator::generateToLabViewSIT(QString savePath, hopsan::ComponentSy
     fileStream << wrapperCode;
     file.close();
 
+    printMessage("Copying hopsanrt-wrapper.h");
+
+    QFile wrapperTemplateHeaderFile(":templates/labviewWrapperTemplate.cpp");
+    wrapperTemplateHeaderFile.copy(fileInfo.absoluteDir().path()+"/hopsanrt-wrapper.h");
+
     //! @todo Check if success, otherwise tell user with error message
     printMessage("Finished!");
 }

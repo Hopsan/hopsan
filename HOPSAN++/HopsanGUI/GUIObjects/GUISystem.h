@@ -102,7 +102,7 @@ public:
     void loadFromDomElement(QDomElement &rDomElement);
     void setModelFileInfo(QFile &rFile);
 
-    void saveToWrappedCode();
+    void createLabviewSourceFiles();
     void createFMUSourceFiles();
     void createSimulinkSourceFiles();
     void createSimulinkCoSimSourceFiles();

@@ -842,8 +842,15 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
 }
 
 
-void SystemContainer::saveToWrappedCode()
+void SystemContainer::createLabviewSourceFiles()
 {
+    QMessageBox::StandardButton reply;
+    reply = QMessageBox::question(gpMainWindow, tr("Export to LabVIEW/SIT"),
+                                  "This will create source code for a LabVIEW/SIT DLL-file from current model. You will need the HopsanCore source code and Visual Studio 2003 to compile it.\nContinue?",
+                                  QMessageBox::Yes | QMessageBox::No);
+    if (reply == QMessageBox::No)
+        return;
+
     //Open file dialog and initialize the file stream
     QDir fileDialogSaveDir;
     QString filePath;

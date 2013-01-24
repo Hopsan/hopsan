@@ -143,5 +143,6 @@
         <file>graphics/uiicons/Hopsan-ShowPlotWindowCurveSettings.png</file>
         <file>graphics/uiicons/Hopsan-ShowPlotWindowVariableList.png</file>
         <file>graphics/uiicons/Hopsan-ExportParameters.png</file>
+        <file>graphics/uiicons/Hopsan-ExportSIT.png</file>
     </qresource>
 </RCC>

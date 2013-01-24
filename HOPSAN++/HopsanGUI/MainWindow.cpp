@@ -615,6 +615,7 @@ void MainWindow::createActions()
     mpExportToSimulinkAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportSimulink.png"), tr("Export to Simulink S-function Source Files"), this);
     mpExportToSimulinkCoSimAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportSimulinkCoSim.png"), tr("Export to Simulink Co-Simulation S-function Source Files"), this);
     mpExportToFMUAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportFmu.png"), tr("Export to Functional Mock-up Unit (FMU)"), this);
+    mpExportToLabviewAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportSIT.png"), tr("Export to LabVIEW/SIT"), this);
 
     mpAboutAction = new QAction(this);
     mpAboutAction->setText("About");
@@ -659,11 +660,6 @@ void MainWindow::createActions()
     mpToggleSignalsAction->setText("Show Signal Components");
     mpToggleSignalsAction->setCheckable(true);
     mpToggleSignalsAction->setChecked(true);      //! @todo Shall depend on gConfig setting
-
-    mpSaveToWrappedCodeAction = new QAction(this);
-    mpSaveToWrappedCodeAction->setShortcut(QKeySequence("Ctrl+Shift+Alt+W"));
-    this->addAction(mpSaveToWrappedCodeAction);
-    connect(mpSaveToWrappedCodeAction, SIGNAL(triggered()), mpProjectTabs, SLOT(saveCurrentModelToWrappedCode()));
 
     mpDebug1Action = new QAction(this);
     mpDebug1Action->setShortcut(QKeySequence("Ctrl+D+1"));
@@ -805,7 +801,8 @@ void MainWindow::createMenus()
     mpExportMenu->addSeparator();
     mpExportMenu->addAction(mpExportToFMUAction);
     mpExportMenu->addAction(mpExportToSimulinkAction);
-    mpExportMenu->addAction(mpExportToSimulinkCoSimAction);
+    mpExportMenu->addAction(mpExportToLabviewAction);
+    //mpExportMenu->addAction(mpExportToSimulinkCoSimAction);
     mpExportMenu->addSeparator();
     mpExportMenu->addAction(mpExportPDFAction);
     mpExportMenu->addAction(mpExportPNGAction);
@@ -847,7 +844,8 @@ void MainWindow::createToolbars()
     mpConnectivityToolBar->addAction(mpExportPNGAction);
     mpConnectivityToolBar->addSeparator();
     mpConnectivityToolBar->addAction(mpExportToSimulinkAction);
-    mpConnectivityToolBar->addAction(mpExportToSimulinkCoSimAction);
+    //mpConnectivityToolBar->addAction(mpExportToSimulinkCoSimAction);
+    mpConnectivityToolBar->addAction(mpExportToLabviewAction);
     mpConnectivityToolBar->addAction(mpExportToFMUAction);
     mpConnectivityToolBar->addAction(mpImportFMUAction);
 
@@ -950,10 +948,11 @@ void MainWindow::createToolbars()
         connect(pTempAction, SIGNAL(triggered()), this, SLOT(openExampleModel()));
     }
 
-    connect(mpImportFMUAction, SIGNAL(triggered()), mpLibrary, SLOT(importFmu()));
-    connect(mpExportToSimulinkAction, SIGNAL(triggered()), mpProjectTabs, SLOT(createSimulinkWrapperFromCurrentModel()));
-    connect(mpExportToSimulinkCoSimAction, SIGNAL(triggered()), mpProjectTabs, SLOT(createSimulinkCoSimWrapperFromCurrentModel()));
-    connect(mpExportToFMUAction, SIGNAL(triggered()), mpProjectTabs, SLOT(createFMUFromCurrentModel()));
+    connect(mpImportFMUAction,              SIGNAL(triggered()), mpLibrary,     SLOT(importFmu()));
+    connect(mpExportToSimulinkAction,       SIGNAL(triggered()), mpProjectTabs, SLOT(createSimulinkWrapperFromCurrentModel()));
+    connect(mpExportToSimulinkCoSimAction,  SIGNAL(triggered()), mpProjectTabs, SLOT(createSimulinkCoSimWrapperFromCurrentModel()));
+    connect(mpExportToFMUAction,            SIGNAL(triggered()), mpProjectTabs, SLOT(createFMUFromCurrentModel()));
+    connect(mpExportToLabviewAction,        SIGNAL(triggered()), mpProjectTabs, SLOT(createLabviewWrapperFromCurrentModel()));
 }
 
 
@@ -1264,6 +1263,7 @@ void MainWindow::updateToolBarsToNewTab()
     mpPropertiesAction->setEnabled(!noTabs);
     mpOpenSystemParametersAction->setEnabled(!noTabs);
     mpExportToFMUAction->setEnabled(!noTabs);
+    mpExportToLabviewAction->setEnabled(!noTabs);
     mpExportToSimulinkAction->setEnabled(!noTabs);
     mpExportToSimulinkCoSimAction->setEnabled(!noTabs);
 

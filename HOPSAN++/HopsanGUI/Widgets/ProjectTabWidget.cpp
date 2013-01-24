@@ -962,9 +962,9 @@ bool ProjectTabWidget::closeProjectTab(int index)
     disconnect(gpMainWindow->mpExportPNGAction,       SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(exportToPNG()));
     disconnect(gpMainWindow->mpCenterViewAction,      SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(centerView()));
 
-    disconnect(gpMainWindow,                 SIGNAL(simulateKeyPressed()),    getTab(index),                      SLOT(simulate()));
-    disconnect(gpMainWindow->mpSaveAction,            SIGNAL(triggered()),    getTab(index),                      SLOT(save()));
-    disconnect(gpMainWindow->mpExportModelParametersAction,     SIGNAL(triggered()),    getTab(index),                      SLOT(ExportModel()));
+    disconnect(gpMainWindow,                                SIGNAL(simulateKeyPressed()),   getTab(index),  SLOT(simulate()));
+    disconnect(gpMainWindow->mpSaveAction,                  SIGNAL(triggered()),            getTab(index),  SLOT(save()));
+    disconnect(gpMainWindow->mpExportModelParametersAction, SIGNAL(triggered()),            getTab(index),  SLOT(ExportModel()));
 
     getContainer(index)->disconnectMainWindowActions();
 
@@ -1151,9 +1151,9 @@ void ProjectTabWidget::tabChanged()
     }
 }
 
-void ProjectTabWidget::saveCurrentModelToWrappedCode()
+void ProjectTabWidget::createLabviewWrapperFromCurrentModel()
 {
-    qobject_cast<SystemContainer*>(getCurrentContainer())->saveToWrappedCode();
+    qobject_cast<SystemContainer*>(getCurrentContainer())->createLabviewSourceFiles();
 }
 
 

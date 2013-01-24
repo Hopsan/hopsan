@@ -107,6 +107,7 @@ public:
     QAction *mpExportToSimulinkAction;
     QAction *mpExportToSimulinkCoSimAction;
     QAction *mpExportToFMUAction;
+    QAction *mpExportToLabviewAction;
     QAction *mpCloseAction;
     QAction *mpUndoAction;
     QAction *mpRedoAction;
@@ -148,7 +149,6 @@ public:
     QAction *mpReleaseNotesAction;
     QAction *mpWebsiteAction;
     QAction *mpNewVersionsAction;
-    QAction *mpSaveToWrappedCodeAction;
     QAction *mpShowLossesAction;
     QAction *mpMeasureSimulationTimeAction;
 

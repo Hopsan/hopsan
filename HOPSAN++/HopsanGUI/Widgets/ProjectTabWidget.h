@@ -65,7 +65,7 @@ public slots:
     void loadModel(QAction *action);
     void loadModel(QString modelFileName, bool ignoreAlreadyOpen=false);
     void tabChanged();
-    void saveCurrentModelToWrappedCode();
+    void createLabviewWrapperFromCurrentModel();
     void createFMUFromCurrentModel();
     void createSimulinkWrapperFromCurrentModel();
     void createSimulinkCoSimWrapperFromCurrentModel();
