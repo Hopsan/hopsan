@@ -108,3 +108,25 @@ void MultipleSimulationThread::run()
 
     //exec(); //Is used if one want to run an event loop in this thread.
 }
+
+
+CoSimulationThread::CoSimulationThread(CoreSystemAccess *pGUIRootSystem, QObject *parent)
+    : QThread(parent)
+{
+     mpCoreSystemAccess = pGUIRootSystem;
+}
+
+
+//! @brief Implements the task for the thread.
+void CoSimulationThread::run()
+{
+    qDebug() << "Beginning co-simulation!";
+
+    CoreSimulationHandler simuHandler;
+
+    simuHandler.runCoSimulation(mpCoreSystemAccess);
+
+    simuHandler.finalize(mpCoreSystemAccess);
+
+    //exec(); //Is used if one want to run an event loop in this thread.
+}

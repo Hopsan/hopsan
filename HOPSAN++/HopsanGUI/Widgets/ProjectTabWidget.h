@@ -118,6 +118,7 @@ public slots:
     bool simulate_nonblocking();
     bool simulate_blocking();
     bool simulate_old();
+    void startCoSimulation();
     void save();
     void saveAs();
     void ExportModel();

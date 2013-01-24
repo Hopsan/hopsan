@@ -418,6 +418,16 @@ bool ProjectTab::simulate_old()
 }
 
 
+void ProjectTab::startCoSimulation()
+{
+    CoreSimulationHandler *pHandler = new CoreSimulationHandler();
+    pHandler->runCoSimulation(mpSystem->getCoreSystemAccessPtr());
+    delete(pHandler);
+
+    emit checkMessages();
+}
+
+
 //! Slot that saves current project to old file name if it exists.
 //! @see saveProjectTab(int index)
 void ProjectTab::save()
@@ -954,7 +964,7 @@ bool ProjectTabWidget::closeProjectTab(int index)
 
     disconnect(gpMainWindow,                 SIGNAL(simulateKeyPressed()),    getTab(index),                      SLOT(simulate()));
     disconnect(gpMainWindow->mpSaveAction,            SIGNAL(triggered()),    getTab(index),                      SLOT(save()));
-    disconnect(gpMainWindow->mpExportModelAction,     SIGNAL(triggered()),    getTab(index),                      SLOT(ExportModel()));
+    disconnect(gpMainWindow->mpExportModelParametersAction,     SIGNAL(triggered()),    getTab(index),                      SLOT(ExportModel()));
 
     getContainer(index)->disconnectMainWindowActions();
 
@@ -1102,18 +1112,20 @@ void ProjectTabWidget::tabChanged()
         getContainer(i)->disconnectMainWindowActions();
 
         //disconnect(gpMainWindow,                    SIGNAL(simulateKeyPressed()),   getTab(i),  SLOT(simulate()));
-        disconnect(gpMainWindow,                    SIGNAL(simulateKeyPressed()),   getTab(i),  SLOT(simulate_nonblocking()));
-        disconnect(gpMainWindow->mpSaveAction,      SIGNAL(triggered()),            getTab(i),  SLOT(save()));
-        disconnect(gpMainWindow->mpSaveAsAction,    SIGNAL(triggered()),            getTab(i),  SLOT(saveAs()));
-        disconnect(gpMainWindow->mpExportModelAction,SIGNAL(triggered()),           getTab(i),  SLOT(ExportModel()));
+        disconnect(gpMainWindow,                        SIGNAL(simulateKeyPressed()),   getTab(i),  SLOT(simulate_nonblocking()));
+        disconnect(gpMainWindow->mpCoSimulationAction,  SIGNAL(triggered()),            getTab(i),  SLOT(startCoSimulation()));
+        disconnect(gpMainWindow->mpSaveAction,          SIGNAL(triggered()),            getTab(i),  SLOT(save()));
+        disconnect(gpMainWindow->mpSaveAsAction,        SIGNAL(triggered()),            getTab(i),  SLOT(saveAs()));
+        disconnect(gpMainWindow->mpExportModelParametersAction,   SIGNAL(triggered()),            getTab(i),  SLOT(ExportModel()));
     }
     if(this->count() != 0)
     {
         //connect(gpMainWindow,                       SIGNAL(simulateKeyPressed()),   getCurrentTab(),        SLOT(simulate()), Qt::UniqueConnection);
         connect(gpMainWindow,                       SIGNAL(simulateKeyPressed()),   getCurrentTab(),        SLOT(simulate_nonblocking()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpCoSimulationAction, SIGNAL(triggered()),            getCurrentTab(),              SLOT(startCoSimulation()), Qt::UniqueConnection);
         connect(gpMainWindow->mpSaveAction,         SIGNAL(triggered()),            getCurrentTab(),        SLOT(save()), Qt::UniqueConnection);
         connect(gpMainWindow->mpSaveAsAction,       SIGNAL(triggered()),            getCurrentTab(),        SLOT(saveAs()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpExportModelAction,  SIGNAL(triggered()),            getCurrentTab(),        SLOT(ExportModel()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpExportModelParametersAction,  SIGNAL(triggered()),            getCurrentTab(),        SLOT(ExportModel()), Qt::UniqueConnection);
 
         connect(gpMainWindow->mpResetZoomAction,    SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(resetZoom()), Qt::UniqueConnection);
         connect(gpMainWindow->mpZoomInAction,       SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(zoomIn()), Qt::UniqueConnection);

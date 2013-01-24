@@ -47,6 +47,7 @@ protected:
     void setParametersAndStartValues();
     void recompileCppFromDialog();
     virtual void closeEvent(QCloseEvent *);
+    virtual void reject();
 
 private:
     Component *mpComponent;

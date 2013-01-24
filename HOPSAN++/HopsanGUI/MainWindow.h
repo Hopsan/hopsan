@@ -102,7 +102,7 @@ public:
     QAction *mpOpenAction;
     QAction *mpSaveAction;
     QAction *mpSaveAsAction;
-    QAction *mpExportModelAction;
+    QAction *mpExportModelParametersAction;
     QAction *mpImportFMUAction;
     QAction *mpExportToSimulinkAction;
     QAction *mpExportToSimulinkCoSimAction;
@@ -231,11 +231,11 @@ private:
     QMenu *mpEditMenu;
     QMenu *mpViewMenu;
     QMenu *mpToolsMenu;
+    QMenu *mpImportMenu;
+    QMenu *mpExportMenu;
     QMenu *mpPlotMenu;
     QMenu *mpRecentMenu;
     QMenu *mpHelpMenu;
-    QMenu *mpImportMenu;
-    QMenu *mpExportMenu;
     QMenu *mpExamplesMenu;
 
     //Buttons

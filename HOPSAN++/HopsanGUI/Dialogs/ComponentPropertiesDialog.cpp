@@ -582,3 +582,11 @@ void ComponentPropertiesDialog::closeEvent(QCloseEvent *event)
 
     ModelObjectPropertiesDialog::closeEvent(event);
 }
+
+
+void ComponentPropertiesDialog::reject()
+{
+    mpComponent->getParentContainerObject()->mpParentProjectTab->setDisabled(false);
+
+    ModelObjectPropertiesDialog::reject();
+}

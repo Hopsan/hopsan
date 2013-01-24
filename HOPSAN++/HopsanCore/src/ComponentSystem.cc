@@ -29,17 +29,12 @@
 #include <cstdlib>
 #include <iostream>
 
-//#define USEBOOST
-#ifdef USEBOOST
-#include "Dependencies/boost/boost/interprocess/shared_memory_object.hpp"
-#include "Dependencies/boost/boost/interprocess/mapped_region.hpp"
-#endif
-
 #include "ComponentSystem.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "CoreUtilities/FindUniqueName.h"
 #include "HopsanEssentials.h"
 #include "CoreUtilities/MultiThreadingUtilities.h"
+#include "CoreUtilities/CoSimulationUtilities.h"
 
 #ifdef USETBB
 #include "mutex.h"
@@ -165,16 +160,10 @@ void SimulationHandler::runCoSimulation(ComponentSystem *pSystem)
     //Initialize shared memory sockets
 
     //Simulate
-    boost::interprocess::shared_memory_object shdmem_sim(boost::interprocess::open_or_create, "hopsan_sim", boost::interprocess::read_write);
-    shdmem_sim.truncate(64);
-    boost::interprocess::mapped_region region_sim(shdmem_sim, boost::interprocess::read_write);
-    bool *sim_socket = static_cast<bool*>(region_sim.get_address());
+    double *sim_socket = getDoubleSharedMemoryPointer("hopsan_sim");
 
     //Stop
-    boost::interprocess::shared_memory_object shdmem_stop(boost::interprocess::open_or_create, "hopsan_stop", boost::interprocess::read_write);
-    shdmem_stop.truncate(64);
-    boost::interprocess::mapped_region region_stop(shdmem_stop, boost::interprocess::read_write);
-    bool *stop_socket = static_cast<bool*>(region_stop.get_address());
+    bool *stop_socket = getBoolSharedMemoryPointer("hopsan_stop");
 
 
     //Input
@@ -182,10 +171,7 @@ void SimulationHandler::runCoSimulation(ComponentSystem *pSystem)
     {
         std::stringstream ss;
         ss << "hopsan_in" << i;
-        boost::interprocess::shared_memory_object shdmem_in(boost::interprocess::open_or_create, ss.str().c_str(), boost::interprocess::read_write);
-        shdmem_in.truncate(64);
-        boost::interprocess::mapped_region region_in(shdmem_in, boost::interprocess::read_write);
-        inputSockets.push_back(static_cast<double*>(region_in.get_address()));
+        inputSockets.push_back(getDoubleSharedMemoryPointer(ss.str().c_str()));
     }
 
 
@@ -194,23 +180,26 @@ void SimulationHandler::runCoSimulation(ComponentSystem *pSystem)
     {
         std::stringstream ss;
         ss << "hopsan_out" << i;
-        boost::interprocess::shared_memory_object shdmem_out(boost::interprocess::open_or_create, ss.str().c_str(), boost::interprocess::read_write);
-        shdmem_out.truncate(64);
-        boost::interprocess::mapped_region region_out(shdmem_out, boost::interprocess::read_write);
-        outputSockets.push_back(static_cast<double*>(region_out.get_address()));
+        outputSockets.push_back(getDoubleSharedMemoryPointer(ss.str().c_str()));
     }
-
-
 
     //Initialize simulation
     //! @todo We must be able to log data without knowing the stop time
-    //pSystem->setNumLogSamples(0);
-    //pSystem->disableLog();
     pSystem->initialize(0, 100);
+
+    (*stop_socket) = false;
+    (*sim_socket) = 0;
+
+    (*inputSockets[0]) = 34.125;
+
+    std::stringstream ss;
+    ss << "Input pointer address = " << inputSockets[0];
+    std::string temp = ss.str();
+
 
     while(!(*stop_socket))
     {
-        while(!(*sim_socket))
+        if((*sim_socket)>5)
         {
             //Set input variables
             for(int i=0; i<inputSockets.size(); ++i)
@@ -230,7 +219,7 @@ void SimulationHandler::runCoSimulation(ComponentSystem *pSystem)
             }
 
             //Reset simulation flag
-            (*sim_socket) = false;
+            (*sim_socket) = 0;
         }
     }
 

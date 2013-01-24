@@ -142,5 +142,6 @@
         <file>graphics/uiicons/Hopsan-Script.png</file>
         <file>graphics/uiicons/Hopsan-ShowPlotWindowCurveSettings.png</file>
         <file>graphics/uiicons/Hopsan-ShowPlotWindowVariableList.png</file>
+        <file>graphics/uiicons/Hopsan-ExportParameters.png</file>
     </qresource>
 </RCC>

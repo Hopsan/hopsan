@@ -62,4 +62,17 @@ private:
     bool mModelsHaveNotChanged;
 
 };
+
+class CoSimulationThread : public QThread
+{
+public:
+    CoSimulationThread(CoreSystemAccess *pGUIRootSystem, QObject *parent);
+
+protected:
+    void run();
+
+private:
+    CoreSystemAccess *mpCoreSystemAccess;
+
+};
 #endif // SIMULATIONTHREAD_H

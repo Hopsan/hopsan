@@ -458,9 +458,9 @@ void MainWindow::createActions()
     mpSaveAsAction->setShortcut(QKeySequence("Ctrl+Alt+s"));
     mpSaveAsAction->setToolTip(tr("Save Model File As (Ctrl+Alt+S)"));
 
-    mpExportModelAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-SaveAs.png"), tr("&Export"), this);
-    mpExportModelAction->setShortcut(QKeySequence("Ctrl+Alt+E"));
-    mpExportModelAction->setToolTip(tr("Export Model Parameters (Ctrl+Alt+P)"));
+    mpExportModelParametersAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportParameters.png"), tr("&Export Model Parameters"), this);
+    mpExportModelParametersAction->setShortcut(QKeySequence("Ctrl+Alt+E"));
+    mpExportModelParametersAction->setToolTip(tr("Export Model Parameters (Ctrl+Alt+P)"));
 
     mpCloseAction = new QAction(this);
     mpCloseAction->setText("Close");
@@ -512,6 +512,10 @@ void MainWindow::createActions()
     mpSimulateAction->setShortcut(QKeySequence("Ctrl+Shift+s"));
     connect(mpSimulateAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
     connect(mpSimulateAction, SIGNAL(triggered()), this, SLOT(simulateKeyWasPressed()));
+
+    mpCoSimulationAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Simulate.png"), tr("&Start Co-Simulation"), this);
+    mpCoSimulationAction->setToolTip(tr("Start Co-Simulation"));
+    connect(mpCoSimulationAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     mpOptimizeAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Optimize.png"), tr("&Optimize"), this);
     mpOptimizeAction->setToolTip(tr("Open Optimization Dialog (Ctrl+Shift+Z)"));
@@ -707,28 +711,34 @@ void MainWindow::createMenus()
 
     //Create the menues
     mpFileMenu = new QMenu(mpMenuBar);
-    mpFileMenu->setTitle("&File");
+    mpFileMenu->setTitle(tr("&File"));
 
     mpRecentMenu = new QMenu(this);
-    mpRecentMenu->setTitle("&Recent Models");
+    mpRecentMenu->setTitle(tr("&Recent Models"));
 
     mpNewMenu = new QMenu(mpMenuBar);
-    mpNewMenu->setTitle("&New");
+    mpNewMenu->setTitle(tr("&New"));
 
     mpSimulationMenu = new QMenu(mpMenuBar);
-    mpSimulationMenu->setTitle("&Simulation");
+    mpSimulationMenu->setTitle(tr("&Simulation"));
 
     mpEditMenu = new QMenu(mpMenuBar);
-    mpEditMenu->setTitle("&Edit");
+    mpEditMenu->setTitle(tr("&Edit"));
 
     mpViewMenu = new QMenu(mpMenuBar);
-    mpViewMenu->setTitle("&View");
+    mpViewMenu->setTitle(tr("&View"));
 
     mpToolsMenu = new QMenu(mpMenuBar);
-    mpToolsMenu->setTitle("&Tools");
+    mpToolsMenu->setTitle(tr("&Tools"));
+
+    mpImportMenu = new QMenu(mpMenuBar);
+    mpImportMenu->setTitle(tr("&Import"));
+
+    mpExportMenu = new QMenu(mpMenuBar);
+    mpExportMenu->setTitle(tr("&Export"));
 
     mpHelpMenu = new QMenu(mpMenuBar);
-    mpHelpMenu->setTitle("&Help");
+    mpHelpMenu->setTitle(tr("&Help"));
 
     this->setMenuBar(mpMenuBar);
 
@@ -740,7 +750,6 @@ void MainWindow::createMenus()
     mpFileMenu->addAction(mpOpenAction);
     mpFileMenu->addAction(mpSaveAction);
     mpFileMenu->addAction(mpSaveAsAction);
-    mpFileMenu->addAction(mpExportModelAction);
     mpFileMenu->addMenu(mpRecentMenu);
     //mpFileMenu->addSeparator();
     //mpFileMenu->addMenu(mpImportMenu);
@@ -756,6 +765,7 @@ void MainWindow::createMenus()
     this->updateRecentList();
 
     mpSimulationMenu->addAction(mpSimulateAction);
+    mpSimulationMenu->addAction(mpCoSimulationAction);
     mpSimulationMenu->addAction(mpAnimateAction);
     mpSimulationMenu->addAction(mpMeasureSimulationTimeAction);
     mpSimulationMenu->addAction(mpOptimizeAction);
@@ -789,6 +799,17 @@ void MainWindow::createMenus()
     mpToolsMenu->addAction(mpOptionsAction);
     mpToolsMenu->addAction(mpOpenSystemParametersAction);
 
+    mpImportMenu->addAction(mpImportFMUAction);
+
+    mpExportMenu->addAction(mpExportModelParametersAction);
+    mpExportMenu->addSeparator();
+    mpExportMenu->addAction(mpExportToFMUAction);
+    mpExportMenu->addAction(mpExportToSimulinkAction);
+    mpExportMenu->addAction(mpExportToSimulinkCoSimAction);
+    mpExportMenu->addSeparator();
+    mpExportMenu->addAction(mpExportPDFAction);
+    mpExportMenu->addAction(mpExportPNGAction);
+
     mpHelpMenu->addAction(mpHelpAction);
     mpHelpMenu->addAction(mpReleaseNotesAction);
     mpHelpMenu->addMenu(mpExamplesMenu);
@@ -801,6 +822,8 @@ void MainWindow::createMenus()
     mpMenuBar->addAction(mpEditMenu->menuAction());
     mpMenuBar->addAction(mpToolsMenu->menuAction());
     mpMenuBar->addAction(mpSimulationMenu->menuAction());
+    mpMenuBar->addAction(mpImportMenu->menuAction());
+    mpMenuBar->addAction(mpExportMenu->menuAction());
     mpMenuBar->addAction(mpViewMenu->menuAction());
     mpMenuBar->addAction(mpHelpMenu->menuAction());
 }
@@ -814,13 +837,15 @@ void MainWindow::createToolbars()
     mpFileToolBar->addAction(mpNewAction);
     mpFileToolBar->addAction(mpOpenAction);
     mpFileToolBar->addAction(mpSaveAction);
-    mpFileToolBar->addAction(mpExportModelAction);
     mpFileToolBar->addAction(mpSaveAsAction);
 
     mpConnectivityToolBar = addToolBar(tr("Import/Export Toolbar)"));
     mpConnectivityToolBar->setAllowedAreas(Qt::TopToolBarArea | Qt::LeftToolBarArea | Qt::RightToolBarArea);
+    mpConnectivityToolBar->addAction(mpExportModelParametersAction);
+    mpConnectivityToolBar->addSeparator();
     mpConnectivityToolBar->addAction(mpExportPDFAction);
     mpConnectivityToolBar->addAction(mpExportPNGAction);
+    mpConnectivityToolBar->addSeparator();
     mpConnectivityToolBar->addAction(mpExportToSimulinkAction);
     mpConnectivityToolBar->addAction(mpExportToSimulinkCoSimAction);
     mpConnectivityToolBar->addAction(mpExportToFMUAction);
@@ -858,6 +883,7 @@ void MainWindow::createToolbars()
     mpSimToolBar->addWidget(mpTimeLabelDeliminator2);
     mpSimToolBar->addWidget(mpStopTimeLineEdit);
     mpSimToolBar->addAction(mpSimulateAction);
+    mpSimToolBar->addAction(mpCoSimulationAction);
     mpSimToolBar->addAction(mpOptimizeAction);
     mpSimToolBar->addAction(mpSensitivityAnalysisAction);
     mpSimToolBar->addAction(mpPlotAction);
@@ -1202,7 +1228,7 @@ void MainWindow::updateToolBarsToNewTab()
     bool noTabs = !(mpProjectTabs->count() > 0);
     mpSaveAction->setEnabled(!noTabs);
     mpSaveAsAction->setEnabled(!noTabs);
-    mpExportModelAction->setEnabled(!noTabs);
+    mpExportModelParametersAction->setEnabled(!noTabs);
     mpCutAction->setEnabled(!noTabs);
     mpCopyAction->setEnabled(!noTabs);
     mpPasteAction->setEnabled(!noTabs);
@@ -1228,6 +1254,7 @@ void MainWindow::updateToolBarsToNewTab()
     mpTimeStepLineEdit->setEnabled(!noTabs);
     mpStopTimeLineEdit->setEnabled(!noTabs);
     mpSimulateAction->setEnabled(!noTabs);
+    mpCoSimulationAction->setEnabled(!noTabs);
     mpOptimizeAction->setEnabled(!noTabs);
     mpSensitivityAnalysisAction->setEnabled(!noTabs);
     mpMeasureSimulationTimeAction->setEnabled(!noTabs);

@@ -2331,7 +2331,7 @@ void HopsanGenerator::generateToSimulink(QString savePath, hopsan::ComponentSyst
     }
     for(int i=0; i<nOutputs; ++i)
     {
-        jin = totIn+i*2;
+        jin = totIn+i;
         wrapperReplace16.append("    pInputNode"+QString::number(jin)+" = pComponentSystem->getSubComponent(\""+inputComponents.at(i)+"\")->getPort(\""+inputPorts.at(i)+"\")->getSafeNodeDataPtr(0, 0);\n");
     }
 
