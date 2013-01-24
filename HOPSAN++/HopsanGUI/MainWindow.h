@@ -108,6 +108,7 @@ public:
     QAction *mpExportToSimulinkCoSimAction;
     QAction *mpExportToFMUAction;
     QAction *mpExportToLabviewAction;
+    QAction *mpLoadModelParametersAction;
     QAction *mpCloseAction;
     QAction *mpUndoAction;
     QAction *mpRedoAction;

@@ -98,9 +98,10 @@ public:
     void setName(QString newName);
     QString getTypeCQS();
 
-    void saveToDomElement(QDomElement &rDomElement);
+    void saveToDomElement(QDomElement &rDomElement, saveContents contents = FULLMODEL);
     void loadFromDomElement(QDomElement &rDomElement);
     void setModelFileInfo(QFile &rFile);
+    void loadParameterFile();
 
     void createLabviewSourceFiles();
     void createFMUSourceFiles();
@@ -131,7 +132,7 @@ signals:
 
 protected:
     QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
-    void saveCoreDataToDomElement(QDomElement &rDomElement);
+    void saveCoreDataToDomElement(QDomElement &rDomElement, saveContents contents=FULLMODEL);
 
     void openPropertiesDialog();
 

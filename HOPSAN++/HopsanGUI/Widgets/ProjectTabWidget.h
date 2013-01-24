@@ -69,6 +69,7 @@ public slots:
     void createFMUFromCurrentModel();
     void createSimulinkWrapperFromCurrentModel();
     void createSimulinkCoSimWrapperFromCurrentModel();
+    void loadModelParameters();
     void showLosses(bool show);
     void measureSimulationTime();
     bool simulateAllOpenModels_nonblocking(bool modelsHaveNotChanged=false);
@@ -121,7 +122,7 @@ public slots:
     void startCoSimulation();
     void save();
     void saveAs();
-    void ExportModel();
+    void exportModelParameters();
     void setExternalSystem(bool value);
     void setEditingEnabled(bool value);
     void openAnimation();
@@ -137,7 +138,7 @@ signals:
     void simulationFinished();
 
 private:
-    void saveModel(saveTarget saveAsFlag);
+    void saveModel(saveTarget saveAsFlag, saveContents contents=FULLMODEL);
 
     QString mStartTime, mStopTime;
     SimulationThreadHandler *mpSimulationThreadHandler;

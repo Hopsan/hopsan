@@ -78,6 +78,8 @@ void verifyConfigurationCompatibility(QDomElement &rConfigElement);
 
 //Save Load Definitions
 //! @todo clean up this list and give some smarter names, remove TAG from end, also make sure we use thses defines where appropriate instead of hardcoded strings
+#define HPF_ROOTTAG "hopsanparameterfile"
+
 #define HMF_ROOTTAG "hopsanmodelfile"
 #define HMF_OBJECTS "objects"
 #define HMF_OBJECTTAG "object"              //Non core Gui Object

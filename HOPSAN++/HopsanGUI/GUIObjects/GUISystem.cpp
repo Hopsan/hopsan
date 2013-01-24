@@ -208,18 +208,18 @@ void SystemContainer::openPropertiesDialog()
 
 //! @brief Saves the System specific coredata to XML DOM Element
 //! @param[in] rDomElement The DOM Element to save to
-void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement)
+void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement, saveContents contents)
 {
     ModelObject::saveCoreDataToDomElement(rDomElement);
 
-    if (mLoadType == "EXTERNAL" )
+    if (mLoadType == "EXTERNAL" && contents == FULLMODEL)
     {
         //This information should ONLY be used to indicate that a system is external, it SHOULD NOT be included in the actual external system
         //If it would be, the load function will fail
         rDomElement.setAttribute( HMF_EXTERNALPATHTAG, relativePath(mModelFileInfo.absoluteFilePath(), mpParentContainerObject->getModelFileInfo().absolutePath()) );
     }
 
-    if (mLoadType != "EXTERNAL" )
+    if (mLoadType != "EXTERNAL" && contents == FULLMODEL)
     {
         appendSimulationTimeTag(rDomElement, mpParentProjectTab->getStartTime().toDouble(), this->getTimeStep(), mpParentProjectTab->getStopTime().toDouble(), this->doesInheritTimeStep());
 
@@ -497,9 +497,9 @@ QDomElement SystemContainer::saveGuiDataToDomElement(QDomElement &rDomElement)
 
 //! @brief Overloaded special XML DOM save function for System Objects
 //! @param[in] rDomElement The DOM Element to save to
-void SystemContainer::saveToDomElement(QDomElement &rDomElement)
+void SystemContainer::saveToDomElement(QDomElement &rDomElement, saveContents contents)
 {
-    if(this == mpParentProjectTab->getTopLevelSystem())
+    if(this == mpParentProjectTab->getTopLevelSystem() && contents==FULLMODEL)
     {
         //Append model info
         QString author, email, affiliation, description;
@@ -530,11 +530,17 @@ void SystemContainer::saveToDomElement(QDomElement &rDomElement)
     }
 
     // Save Core related stuff
-    this->saveCoreDataToDomElement(xmlSubsystem);
-    xmlSubsystem.setAttribute(HMF_LOGSAMPLES, mNumberOfLogSamples);
+    this->saveCoreDataToDomElement(xmlSubsystem, contents);
+    if(contents==FULLMODEL)
+    {
+        xmlSubsystem.setAttribute(HMF_LOGSAMPLES, mNumberOfLogSamples);
+    }
 
-    // Save gui object stuff
-    this->saveGuiDataToDomElement(xmlSubsystem);
+    if(contents==FULLMODEL)
+    {
+        // Save gui object stuff
+        this->saveGuiDataToDomElement(xmlSubsystem);
+    }
 
         //Save all of the sub objects
     if (mLoadType=="EMBEDED" || mLoadType=="ROOT")
@@ -544,21 +550,24 @@ void SystemContainer::saveToDomElement(QDomElement &rDomElement)
         ModelObjectMapT::iterator it;
         for(it = mModelObjectMap.begin(); it!=mModelObjectMap.end(); ++it)
         {
-            it.value()->saveToDomElement(xmlObjects);
+            it.value()->saveToDomElement(xmlObjects, contents);
         }
 
-            //Save all widgets
-        QMap<size_t, Widget *>::iterator itw;
-        for(itw = mWidgetMap.begin(); itw!=mWidgetMap.end(); ++itw)
+        if(contents==FULLMODEL)
         {
-            itw.value()->saveToDomElement(xmlObjects);
-        }
+                //Save all widgets
+            QMap<size_t, Widget *>::iterator itw;
+            for(itw = mWidgetMap.begin(); itw!=mWidgetMap.end(); ++itw)
+            {
+                itw.value()->saveToDomElement(xmlObjects);
+            }
 
-            //Save the connectors
-        QDomElement xmlConnections = appendDomElement(xmlSubsystem, HMF_CONNECTIONS);
-        for(int i=0; i<mSubConnectorList.size(); ++i)
-        {
-            mSubConnectorList[i]->saveToDomElement(xmlConnections);
+                //Save the connectors
+            QDomElement xmlConnections = appendDomElement(xmlSubsystem, HMF_CONNECTIONS);
+            for(int i=0; i<mSubConnectorList.size(); ++i)
+            {
+                mSubConnectorList[i]->saveToDomElement(xmlConnections);
+            }
         }
     }
 }
@@ -1608,6 +1617,22 @@ void SystemContainer::setModelFileInfo(QFile &rFile)
 {
     this->mModelFileInfo.setFile(rFile);
 }
+
+
+void SystemContainer::loadParameterFile()
+{
+    qDebug() << "loadParameterFile()";
+    QString parameterFileName = QFileDialog::getOpenFileName(gpMainWindow, tr("Load Parameter File"),
+                                                         gConfig.getLoadModelDir(),
+                                                         tr("Hopsan Parameter Files (*.hpf *.xml)"));
+    if(!parameterFileName.isEmpty())
+    {
+        mpCoreSystemAccess->loadParameterFile(parameterFileName);
+        QFileInfo fileInfo = QFileInfo(parameterFileName);
+        gConfig.setLoadModelDir(fileInfo.absolutePath());
+    }
+}
+
 
 
 //! Function to set the time step of the current system

@@ -843,19 +843,23 @@ void ModelObject::loadFromDomElement(QDomElement &/*rDomElement*/)
     assert(false);
 }
 
-void ModelObject::saveToDomElement(QDomElement &rDomElement)
+void ModelObject::saveToDomElement(QDomElement &rDomElement, saveContents contents)
 {
     QDomElement xmlObject = appendDomElement(rDomElement, mHmfTagName);
-    saveCoreDataToDomElement(xmlObject);
-    saveGuiDataToDomElement(xmlObject);
+    saveCoreDataToDomElement(xmlObject, contents);
+    if(contents==FULLMODEL)
+        saveGuiDataToDomElement(xmlObject);
 }
 
-void ModelObject::saveCoreDataToDomElement(QDomElement &rDomElement)
+void ModelObject::saveCoreDataToDomElement(QDomElement &rDomElement, saveContents contents)
 {
-    rDomElement.setAttribute(HMF_TYPENAME, getTypeName());
+    if(contents==FULLMODEL)
+    {
+        rDomElement.setAttribute(HMF_TYPENAME, getTypeName());
+    }
     rDomElement.setAttribute(HMF_NAMETAG, getName());
 
-    if(getTypeName().startsWith("CppComponent"))
+    if(getTypeName().startsWith("CppComponent") && contents==FULLMODEL)
     {
         rDomElement.setAttribute(HMF_TYPENAME, "CppComponent");
         appendDomTextNode(rDomElement, HMF_CPPCODETAG, mCppCode);

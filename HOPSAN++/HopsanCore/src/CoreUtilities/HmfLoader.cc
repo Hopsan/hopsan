@@ -336,3 +336,95 @@ ComponentSystem* hopsan::loadHopsanModelFile(std::vector<unsigned char> xmlVecto
     // We failed, return 0 ptr
     return 0;
 }
+
+
+
+
+//! @brief This function is used to load a HMF file.
+//! @param [in] filePath The name (path) of the HMF file
+//! @param [out] rStartTime A reference to the starttime variable
+//! @param [out] rStopTime A reference to the stoptime variable
+//! @returns A pointer to the rootsystem of the loaded model
+void hopsan::loadHopsanParameterFile(const std::string filePath, HopsanEssentials* pHopsanEssentials, ComponentSystem *pSystem)
+{
+    addLogMess("hopsan::loadHopsanParameterFile("+filePath+")");
+    try
+    {
+        rapidxml::file<> hmfFile(filePath.c_str());
+
+        rapidxml::xml_document<> doc;
+        doc.parse<0>(hmfFile.data());
+
+        rapidxml::xml_node<> *pRootNode = doc.first_node();
+
+        //Check for correct root node name
+        if (strcmp(pRootNode->name(), "hopsanparameterfile")==0)
+        {
+            rapidxml::xml_node<> *pSysNode = pRootNode->first_node("system");
+            if (pSysNode != 0)
+            {
+                std::map<std::string, std::pair<std::vector<std::string>, std::vector<std::string> > > parMap;
+
+                //Load contents
+                rapidxml::xml_node<> *pObjects = pSysNode->first_node("objects");
+                if (pObjects)
+                {
+                    rapidxml::xml_node<> *pComponent = pObjects->first_node("component");
+                    while (pComponent != 0)
+                    {
+                        std::string name = readStringAttribute(pComponent, "name", "");
+
+                        std::vector<std::string> parameterNames;
+                        std::vector<std::string> parameterValues;
+                        rapidxml::xml_node<> *pParameters = pComponent->first_node("parameters");
+                        if (pParameters != 0)
+                        {
+                            rapidxml::xml_node<> *pParameter = pParameters->first_node("parameter");
+                            while (pParameter != 0)
+                            {
+                                parameterNames.push_back(readStringAttribute(pParameter, "name", ""));
+                                parameterValues.push_back(readStringAttribute(pParameter, "value", ""));
+                                pParameter = pParameter->next_sibling();
+                            }
+                        }
+
+                        std::pair<std::vector<std::string>, std::vector<std::string> > parameters;
+                        parameters = std::pair<std::vector<std::string>, std::vector<std::string> >(parameterNames, parameterValues);
+
+                        parMap.insert(std::pair<std::string, std::pair<std::vector<std::string>, std::vector<std::string> > >(name, parameters));
+
+                        pComponent = pComponent->next_sibling();
+                    }
+                }
+
+
+                pSystem->loadParameters(parMap);
+                return;
+               // loadSystemContents(pSysNode, pSys, pHopsanEssentials, filePath);
+
+            }
+            else
+            {
+                addLogMess("hopsan::loadHopsanParameterFile(): No system found in file.");
+                pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(filePath+" Has no system to load");
+            }
+        }
+        else
+        {
+            addLogMess("hopsan::loadHopsanParameterFile(): Wrong root tag name.");
+            pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(filePath+" Has wrong root tag name: "+pRootNode->name());
+            cout << "Not correct hmf file root node name: " << pRootNode->name() << endl;
+        }
+    }
+    catch(std::exception &e)
+    {
+        addLogMess("hopsan::loadHopsanParameterFile(): Unable to open file.");
+        pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("Could not open file: "+filePath);
+        cout << "Could not open file, throws: " << e.what() << endl;
+    }
+
+    addLogMess("hopsan::loadHopsanParameterFile(): Failed.");
+
+    // We failed, return 0 ptr
+    return;
+}

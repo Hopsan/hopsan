@@ -86,7 +86,7 @@ public:
     virtual bool setStartValue(QString portName, QString variable, QString sysParName);
 
     // Load and save methods
-    virtual void saveToDomElement(QDomElement &rDomElement);
+    virtual void saveToDomElement(QDomElement &rDomElement, saveContents contents=FULLMODEL);
     virtual void loadFromDomElement(QDomElement &rDomElement);
     virtual void setModelFileInfo(QFile &rFile);
 
@@ -150,7 +150,7 @@ protected:
 
     // Save and load methods
     virtual QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
-    virtual void saveCoreDataToDomElement(QDomElement &rDomElement);
+    virtual void saveCoreDataToDomElement(QDomElement &rDomElement, saveContents contents=FULLMODEL);
 
     // Protected members
     ModelObjectAppearance mModelObjectAppearance;

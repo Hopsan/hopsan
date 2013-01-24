@@ -237,7 +237,7 @@ void Component::setVisible(bool visible)
 
 //! @brief Save component coredata to XML Dom Element
 //! @param[in] rDomElement The dom element to save to
-void Component::saveCoreDataToDomElement(QDomElement &rDomElement)
+void Component::saveCoreDataToDomElement(QDomElement &rDomElement, saveContents contents)
 {
     ModelObject::saveCoreDataToDomElement(rDomElement);
 
@@ -258,14 +258,17 @@ void Component::saveCoreDataToDomElement(QDomElement &rDomElement)
         }*/
     }
 
-    //Implementation of Feature #698 - Save nodetype in HMF
-    QDomElement xmlPorts = appendDomElement(rDomElement, HMF_PORTSTAG);
-    QList<Port*>::Iterator it;
-    for (it=mPortListPtrs.begin(); it!=mPortListPtrs.end(); ++it)
+    if(contents==FULLMODEL)
     {
-        QDomElement xmlPort = appendDomElement(xmlPorts, "port");
-        xmlPort.setAttribute(HMF_NAMETAG, (*it)->getPortName());
-        xmlPort.setAttribute("nodetype", (*it)->getNodeType());
+        //Implementation of Feature #698 - Save nodetype in HMF
+        QDomElement xmlPorts = appendDomElement(rDomElement, HMF_PORTSTAG);
+        QList<Port*>::Iterator it;
+        for (it=mPortListPtrs.begin(); it!=mPortListPtrs.end(); ++it)
+        {
+            QDomElement xmlPort = appendDomElement(xmlPorts, "port");
+            xmlPort.setAttribute(HMF_NAMETAG, (*it)->getPortName());
+            xmlPort.setAttribute("nodetype", (*it)->getNodeType());
+        }
     }
 }
 

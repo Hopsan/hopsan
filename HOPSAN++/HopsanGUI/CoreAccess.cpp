@@ -727,6 +727,13 @@ QStringList CoreSystemAccess::getParameterNames(QString componentName)
     return qParameterNames;
 }
 
+
+void CoreSystemAccess::loadParameterFile(QString fileName)
+{
+    mpCoreComponentSystem->loadParameters(fileName.toStdString());
+}
+
+
 QStringList CoreSystemAccess::getSystemParameterNames()
 {
     std::vector<std::string> parameterNames;

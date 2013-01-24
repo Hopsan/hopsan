@@ -39,6 +39,7 @@ class HopsanCoreMessageHandler;
 
 ComponentSystem* loadHopsanModelFile(const std::string filePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime);
 ComponentSystem* loadHopsanModelFile(const std::vector<unsigned char> xmlVector, HopsanEssentials* pHopsanEssentials);
+void loadHopsanParameterFile(const std::string filePath, HopsanEssentials* pHopsanEssentials, ComponentSystem *pSystem);
 
 }
 

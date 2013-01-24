@@ -443,90 +443,93 @@ void ProjectTab::saveAs()
     saveModel(NEWFILE);
 }
 
-void ProjectTab::ExportModel()
+void ProjectTab::exportModelParameters()
 {
-    //saveModel(NEWFILE);
-
-    QDir fileDialogSaveDir;
-    QString modelFilePath;
-    modelFilePath = QFileDialog::getSaveFileName(this, tr("Save Model File"),
-                                                 gConfig.getLoadModelDir(),
-                                                 tr("Hopsan Parameter File (*.hmf)"));
-
-    if(modelFilePath.isEmpty())     //Don't save anything if user presses cancel
-    {
-        return;
-    }
-
-    mpSystem->setModelFile(modelFilePath);
-    QFileInfo fileInfo = QFileInfo(modelFilePath);
-    gConfig.setLoadModelDir(fileInfo.absolutePath());
-
-    QFile file(mpSystem->getModelFileInfo().filePath());   //Create a QFile object
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-    {
-        return;
-    }
-
-    //Sets the model name (must set this name before saving or else systemports wont know the real name of their rootsystem parent)
-    mpSystem->setName(mpSystem->getModelFileInfo().baseName());
-
-    //Update the basepath for relative appearance data info
-    mpSystem->setAppearanceDataBasePath(mpSystem->getModelFileInfo().absolutePath());
-
-    //Save xml document
-    QDomDocument domDocument;
-    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, mpSystem->getCoreSystemAccessPtr()->getHopsanCoreVersion());
-
-    // Save the required external lib names
-    QVector<QString> extLibNames;
-    CoreParameterData coreParaAccess;
-    //coreParaAccess.getLoadedLibNames(extLibNames);
+    saveModel(NEWFILE, PARAMETERSONLY);
 
 
-//    //! @todo need HMF defines for hardcoded strings
-//    QDomElement reqDom = appendDomElement(hmfRoot, "requirements");
-//    for (int i=0; i<coreParaAccess.size(); ++i)
+//    //saveModel(NEWFILE);
+
+//    QDir fileDialogSaveDir;
+//    QString modelFilePath;
+//    modelFilePath = QFileDialog::getSaveFileName(this, tr("Save Model File"),
+//                                                 gConfig.getLoadModelDir(),
+//                                                 tr("Hopsan Parameter File (*.hmf)"));
+
+//    if(modelFilePath.isEmpty())     //Don't save anything if user presses cancel
 //    {
-//        appendDomTextNode(reqDom, "Parameters", extLibNames[i]);
+//        return;
 //    }
 
-//    QDomElement XMLparameters = appendDomElement(hmfRoot, "parameters");
-//    for(int i = 0; i < gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mOptSettings.mParamters.size(); ++i)
+//    mpSystem->setModelFile(modelFilePath);
+//    QFileInfo fileInfo = QFileInfo(modelFilePath);
+//    gConfig.setLoadModelDir(fileInfo.absolutePath());
+
+//    QFile file(mpSystem->getModelFileInfo().filePath());   //Create a QFile object
+//    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
 //    {
-//        QDomElement XMLparameter = appendDomElement(XMLparameters, "parameter");
-//        appendDomTextNode(XMLparameter, "componentname", gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mComponentName);
-//        appendDomTextNode(XMLparameter, "parametername", gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mParameterName);
-//        appendDomValueNode2(XMLparameter, "minmax", gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mMin, gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mMax);
+//        return;
 //    }
 
-//    //Save the model component hierarcy
-//    //! @todo maybe use a saveload object instead of calling save imediately (only load object exist for now), or maybe this is fine
-    mpSystem->saveToDomElement(hmfRoot);
+//    //Sets the model name (must set this name before saving or else systemports wont know the real name of their rootsystem parent)
+//    mpSystem->setName(mpSystem->getModelFileInfo().baseName());
 
-    //Save to file
-    const int IndentSize = 4;
-    QFile xmlhmf(mpSystem->getModelFileInfo().filePath());
-    if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-    {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not save to file: " + mpSystem->getModelFileInfo().filePath());
-        return;
-    }
-    QTextStream out(&xmlhmf);
-    appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
-    domDocument.save(out, IndentSize);
+//    //Update the basepath for relative appearance data info
+//    mpSystem->setAppearanceDataBasePath(mpSystem->getModelFileInfo().absolutePath());
 
-    //Close the file
-    xmlhmf.close();
+//    //Save xml document
+//    QDomDocument domDocument;
+//    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, mpSystem->getCoreSystemAccessPtr()->getHopsanCoreVersion());
 
-    //Set the tab name to the model name, efectively removing *, also mark the tab as saved
-    QString tabName = mpSystem->getModelFileInfo().baseName();
-    mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
-    gConfig.addRecentModel(mpSystem->getModelFileInfo().filePath());
-    gpMainWindow->updateRecentList();
-    this->setSaved(true);
+//    // Save the required external lib names
+//    QVector<QString> extLibNames;
+//    CoreParameterData coreParaAccess;
+//    //coreParaAccess.getLoadedLibNames(extLibNames);
 
-    gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Saved model: " + tabName);
+
+////    //! @todo need HMF defines for hardcoded strings
+////    QDomElement reqDom = appendDomElement(hmfRoot, "requirements");
+////    for (int i=0; i<coreParaAccess.size(); ++i)
+////    {
+////        appendDomTextNode(reqDom, "Parameters", extLibNames[i]);
+////    }
+
+////    QDomElement XMLparameters = appendDomElement(hmfRoot, "parameters");
+////    for(int i = 0; i < gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mOptSettings.mParamters.size(); ++i)
+////    {
+////        QDomElement XMLparameter = appendDomElement(XMLparameters, "parameter");
+////        appendDomTextNode(XMLparameter, "componentname", gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mComponentName);
+////        appendDomTextNode(XMLparameter, "parametername", gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mParameterName);
+////        appendDomValueNode2(XMLparameter, "minmax", gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mMin, gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mMax);
+////    }
+
+////    //Save the model component hierarcy
+////    //! @todo maybe use a saveload object instead of calling save imediately (only load object exist for now), or maybe this is fine
+//    mpSystem->saveToDomElement(hmfRoot);
+
+//    //Save to file
+//    const int IndentSize = 4;
+//    QFile xmlhmf(mpSystem->getModelFileInfo().filePath());
+//    if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+//    {
+//        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not save to file: " + mpSystem->getModelFileInfo().filePath());
+//        return;
+//    }
+//    QTextStream out(&xmlhmf);
+//    appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
+//    domDocument.save(out, IndentSize);
+
+//    //Close the file
+//    xmlhmf.close();
+
+//    //Set the tab name to the model name, efectively removing *, also mark the tab as saved
+//    QString tabName = mpSystem->getModelFileInfo().baseName();
+//    mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
+//    gConfig.addRecentModel(mpSystem->getModelFileInfo().filePath());
+//    gpMainWindow->updateRecentList();
+//    this->setSaved(true);
+
+//    gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Saved model: " + tabName);
 
 }
 
@@ -669,7 +672,7 @@ void ProjectTab::openCurrentContainerInNewTab()
 //! @param saveAsFlag tells whether or not an already existing file name shall be used
 //! @see saveProjectTab()
 //! @see loadModel()
-void ProjectTab::saveModel(saveTarget saveAsFlag)
+void ProjectTab::saveModel(saveTarget saveAsFlag, saveContents contents)
 {
     // Backup old save file before saving (if old file exists)
     if(saveAsFlag == EXISTINGFILE)
@@ -688,17 +691,30 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
     //Get file name in case this is a save as operation
     if((mpSystem->getModelFileInfo().filePath().isEmpty()) || (saveAsFlag == NEWFILE))
     {
+        QString filter;
+        if(contents==FULLMODEL)
+        {
+            filter = tr("Hopsan Model Files (*.hmf)");
+        }
+        else if(contents==PARAMETERSONLY)
+        {
+            filter = tr("Hopsan Parameter Files (*.hpf)");
+        }
+
         QDir fileDialogSaveDir;
         QString modelFilePath;
         modelFilePath = QFileDialog::getSaveFileName(this, tr("Save Model File"),
                                                      gConfig.getLoadModelDir(),
-                                                     tr("Hopsan Model Files (*.hmf)"));
+                                                     filter);
 
         if(modelFilePath.isEmpty())     //Don't save anything if user presses cancel
         {
             return;
         }
-        mpSystem->setModelFile(modelFilePath);
+        if(contents==FULLMODEL)
+        {
+            mpSystem->setModelFile(modelFilePath);
+        }
         QFileInfo fileInfo = QFileInfo(modelFilePath);
         gConfig.setLoadModelDir(fileInfo.absolutePath());
     }
@@ -709,31 +725,46 @@ void ProjectTab::saveModel(saveTarget saveAsFlag)
         return;
     }
 
-        //Sets the model name (must set this name before saving or else systemports wont know the real name of their rootsystem parent)
-    mpSystem->setName(mpSystem->getModelFileInfo().baseName());
+    if(contents==FULLMODEL)
+    {
+            //Sets the model name (must set this name before saving or else systemports wont know the real name of their rootsystem parent)
+        mpSystem->setName(mpSystem->getModelFileInfo().baseName());
 
-        //Update the basepath for relative appearance data info
-    mpSystem->setAppearanceDataBasePath(mpSystem->getModelFileInfo().absolutePath());
+            //Update the basepath for relative appearance data info
+        mpSystem->setAppearanceDataBasePath(mpSystem->getModelFileInfo().absolutePath());
+    }
 
         //Save xml document
     QDomDocument domDocument;
-    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, mpSystem->getCoreSystemAccessPtr()->getHopsanCoreVersion());
-
-        // Save the required external lib names
-    QVector<QString> extLibNames;
-    CoreLibraryAccess coreLibAccess;
-    coreLibAccess.getLoadedLibNames(extLibNames);
-
-    //! @todo need HMF defines for hardcoded strings
-    QDomElement reqDom = appendDomElement(hmfRoot, "requirements");
-    for (int i=0; i<extLibNames.size(); ++i)
+    QDomElement rootElement;
+    if(contents==FULLMODEL)
     {
-        appendDomTextNode(reqDom, "componentlibrary", extLibNames[i]);
+        rootElement = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, mpSystem->getCoreSystemAccessPtr()->getHopsanCoreVersion());
+    }
+    else
+    {
+        rootElement = domDocument.createElement(HPF_ROOTTAG);
+        domDocument.appendChild(rootElement);
     }
 
+    if(contents==FULLMODEL)
+    {
+            // Save the required external lib names
+        QVector<QString> extLibNames;
+        CoreLibraryAccess coreLibAccess;
+        coreLibAccess.getLoadedLibNames(extLibNames);
+
+
+        //! @todo need HMF defines for hardcoded strings
+        QDomElement reqDom = appendDomElement(rootElement, "requirements");
+        for (int i=0; i<extLibNames.size(); ++i)
+        {
+            appendDomTextNode(reqDom, "componentlibrary", extLibNames[i]);
+        }
+    }
         //Save the model component hierarcy
     //! @todo maybe use a saveload object instead of calling save imediately (only load object exist for now), or maybe this is fine
-    mpSystem->saveToDomElement(hmfRoot);
+    mpSystem->saveToDomElement(rootElement, contents);
 
         //Save to file
     const int IndentSize = 4;
@@ -964,7 +995,7 @@ bool ProjectTabWidget::closeProjectTab(int index)
 
     disconnect(gpMainWindow,                                SIGNAL(simulateKeyPressed()),   getTab(index),  SLOT(simulate()));
     disconnect(gpMainWindow->mpSaveAction,                  SIGNAL(triggered()),            getTab(index),  SLOT(save()));
-    disconnect(gpMainWindow->mpExportModelParametersAction, SIGNAL(triggered()),            getTab(index),  SLOT(ExportModel()));
+    disconnect(gpMainWindow->mpExportModelParametersAction, SIGNAL(triggered()),            getTab(index),  SLOT(exportModelParameters()));
 
     getContainer(index)->disconnectMainWindowActions();
 
@@ -1116,7 +1147,7 @@ void ProjectTabWidget::tabChanged()
         disconnect(gpMainWindow->mpCoSimulationAction,  SIGNAL(triggered()),            getTab(i),  SLOT(startCoSimulation()));
         disconnect(gpMainWindow->mpSaveAction,          SIGNAL(triggered()),            getTab(i),  SLOT(save()));
         disconnect(gpMainWindow->mpSaveAsAction,        SIGNAL(triggered()),            getTab(i),  SLOT(saveAs()));
-        disconnect(gpMainWindow->mpExportModelParametersAction,   SIGNAL(triggered()),            getTab(i),  SLOT(ExportModel()));
+        disconnect(gpMainWindow->mpExportModelParametersAction,   SIGNAL(triggered()),            getTab(i),  SLOT(exportModelParameters()));
     }
     if(this->count() != 0)
     {
@@ -1125,7 +1156,7 @@ void ProjectTabWidget::tabChanged()
         connect(gpMainWindow->mpCoSimulationAction, SIGNAL(triggered()),            getCurrentTab(),              SLOT(startCoSimulation()), Qt::UniqueConnection);
         connect(gpMainWindow->mpSaveAction,         SIGNAL(triggered()),            getCurrentTab(),        SLOT(save()), Qt::UniqueConnection);
         connect(gpMainWindow->mpSaveAsAction,       SIGNAL(triggered()),            getCurrentTab(),        SLOT(saveAs()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpExportModelParametersAction,  SIGNAL(triggered()),            getCurrentTab(),        SLOT(ExportModel()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpExportModelParametersAction,  SIGNAL(triggered()),            getCurrentTab(),        SLOT(exportModelParameters()), Qt::UniqueConnection);
 
         connect(gpMainWindow->mpResetZoomAction,    SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(resetZoom()), Qt::UniqueConnection);
         connect(gpMainWindow->mpZoomInAction,       SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(zoomIn()), Qt::UniqueConnection);
@@ -1172,6 +1203,13 @@ void ProjectTabWidget::createSimulinkWrapperFromCurrentModel()
 void ProjectTabWidget::createSimulinkCoSimWrapperFromCurrentModel()
 {
     qobject_cast<SystemContainer*>(getCurrentContainer())->createSimulinkCoSimSourceFiles();
+}
+
+
+void ProjectTabWidget::loadModelParameters()
+{
+    qDebug() << "loadModelParameters()";
+    qobject_cast<SystemContainer*>(getCurrentContainer())->loadParameterFile();
 }
 
 

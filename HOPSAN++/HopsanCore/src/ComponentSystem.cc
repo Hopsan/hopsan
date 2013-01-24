@@ -35,6 +35,7 @@
 #include "HopsanEssentials.h"
 #include "CoreUtilities/MultiThreadingUtilities.h"
 #include "CoreUtilities/CoSimulationUtilities.h"
+#include "CoreUtilities/HmfLoader.h"
 
 #ifdef USETBB
 #include "mutex.h"
@@ -2300,6 +2301,31 @@ void ComponentSystem::loadStartValuesFromSimulation()
     for(compIt = mComponentQptrs.begin(); compIt != mComponentQptrs.end(); ++compIt)
     {
         (*compIt)->loadStartValuesFromSimulation();
+    }
+}
+
+
+void ComponentSystem::loadParameters(std::string filePath)
+{
+    loadHopsanParameterFile(filePath, getHopsanEssentials(), this);
+}
+
+
+void ComponentSystem::loadParameters(std::map<std::string, std::pair<std::vector<std::string>, std::vector<std::string> > > parameterMap)
+{
+    std::map<std::string, std::pair<std::vector<std::string>, std::vector<std::string> > >::iterator it;
+    for(it=parameterMap.begin(); it!=parameterMap.end(); ++it)
+    {
+        std::string name = it->first;
+        if(this->haveSubComponent(name))
+        {
+            std::vector<std::string> parNames = it->second.first;
+            std::vector<std::string> parValues = it->second.second;
+            for(int i=0; i<parNames.size(); ++i)
+            {
+                this->getSubComponent(name)->setParameterValue(parNames[i], parValues[i]);
+            }
+        }
     }
 }
 

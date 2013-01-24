@@ -59,7 +59,7 @@ private slots:
     virtual void setVisible(bool visible);
 
 protected:
-    void saveCoreDataToDomElement(QDomElement &rDomElement);
+    void saveCoreDataToDomElement(QDomElement &rDomElement, saveContents contents=FULLMODEL);
     QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     void openPropertiesDialog();

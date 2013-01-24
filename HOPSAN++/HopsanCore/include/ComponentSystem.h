@@ -178,6 +178,10 @@ namespace hopsan {
         void loadStartValues();
         void loadStartValuesFromSimulation();
 
+        // Parameter loading
+        void loadParameters(std::string filePath);
+        void loadParameters(std::map<std::string, std::pair<std::vector<std::string>, std::vector<std::string> > > parameterMap);
+
         // Initialize and simulate
         bool checkModelBeforeSimulation();
         bool initialize(const double startT, const double stopT);

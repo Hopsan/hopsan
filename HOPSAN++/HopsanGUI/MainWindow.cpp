@@ -616,6 +616,7 @@ void MainWindow::createActions()
     mpExportToSimulinkCoSimAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportSimulinkCoSim.png"), tr("Export to Simulink Co-Simulation S-function Source Files"), this);
     mpExportToFMUAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportFmu.png"), tr("Export to Functional Mock-up Unit (FMU)"), this);
     mpExportToLabviewAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportSIT.png"), tr("Export to LabVIEW/SIT"), this);
+    mpLoadModelParametersAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-LoadModelParameters.png"), tr("Load Model Parameters"), this);
 
     mpAboutAction = new QAction(this);
     mpAboutAction->setText("About");
@@ -798,6 +799,7 @@ void MainWindow::createMenus()
     mpImportMenu->addAction(mpImportFMUAction);
 
     mpExportMenu->addAction(mpExportModelParametersAction);
+    mpExportMenu->addAction(mpLoadModelParametersAction);
     mpExportMenu->addSeparator();
     mpExportMenu->addAction(mpExportToFMUAction);
     mpExportMenu->addAction(mpExportToSimulinkAction);
@@ -839,6 +841,7 @@ void MainWindow::createToolbars()
     mpConnectivityToolBar = addToolBar(tr("Import/Export Toolbar)"));
     mpConnectivityToolBar->setAllowedAreas(Qt::TopToolBarArea | Qt::LeftToolBarArea | Qt::RightToolBarArea);
     mpConnectivityToolBar->addAction(mpExportModelParametersAction);
+    mpConnectivityToolBar->addAction(mpLoadModelParametersAction);
     mpConnectivityToolBar->addSeparator();
     mpConnectivityToolBar->addAction(mpExportPDFAction);
     mpConnectivityToolBar->addAction(mpExportPNGAction);
@@ -953,6 +956,7 @@ void MainWindow::createToolbars()
     connect(mpExportToSimulinkCoSimAction,  SIGNAL(triggered()), mpProjectTabs, SLOT(createSimulinkCoSimWrapperFromCurrentModel()));
     connect(mpExportToFMUAction,            SIGNAL(triggered()), mpProjectTabs, SLOT(createFMUFromCurrentModel()));
     connect(mpExportToLabviewAction,        SIGNAL(triggered()), mpProjectTabs, SLOT(createLabviewWrapperFromCurrentModel()));
+    connect(mpLoadModelParametersAction,    SIGNAL(triggered()), mpProjectTabs, SLOT(loadModelParameters()));
 }
 
 
@@ -1266,6 +1270,7 @@ void MainWindow::updateToolBarsToNewTab()
     mpExportToLabviewAction->setEnabled(!noTabs);
     mpExportToSimulinkAction->setEnabled(!noTabs);
     mpExportToSimulinkCoSimAction->setEnabled(!noTabs);
+    mpLoadModelParametersAction->setEnabled(!noTabs);
 
     if(mpWelcomeWidget)
     {

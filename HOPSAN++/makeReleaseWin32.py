@@ -140,9 +140,9 @@ def verifyPaths():
     if qtsdkDir == "":
         return False;    
 
-    jomDir=qtsdkDir+"\\QtCreator\\bin"
-    qmakeDir=qtsdkDir+"\\Desktop\\Qt\\4.7.4\\mingw\\bin"
-    mingwDir=qtsdkDir+"\\mingw\\bin"
+    jomDir=qtsdkDir+"\\qtcreator-2.6.0\\bin"
+    qmakeDir=qtsdkDir+"\\4.8.4\\bin"
+    mingwDir=qtsdkDir+"c:\\mingw\\bin"
 
     #Make sure the correct inno dir is used, 32 or 64 bit computers (Inno Setup is 32-bit)
     innoDir=selectPathFromList(innoDirList, "Inno Setup 5 is not installed in expected place.", "Found Inno Setup!")
