@@ -52,12 +52,14 @@ unix {
 SOURCES += \
     src/HopsanComponentGenerator.cc \
     src/SymHop.cc \
-    src/HopsanGeneratorLib.cc
+    src/HopsanGeneratorLib.cc \
+    src/GeneratorUtilities.cc
 
 HEADERS += \
     include/HopsanComponentGenerator.h \
     include/SymHop.h \
-    include/win32dll.h
+    include/win32dll.h \
+    include/GeneratorUtilities.h
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

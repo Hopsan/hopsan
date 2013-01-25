@@ -40,106 +40,13 @@
 #include "win32dll.h"
 
 #include "SymHop.h"
+#include "GeneratorUtilities.h"
 
 //class ModelObjectAppearance;
 
 namespace hopsan {
 class ComponentSystem;
 }
-
-
-class FMIPortSpecification
-{
-public:
-    FMIPortSpecification(QString varName, QString portName, QString mpndName, QString valueRef, QString portType, QString nodeType, QString dataType, QString causality);
-    QString varName;
-    QString portName;
-    QString mpndName;
-    QString valueRef;
-    QString portType;
-    QString nodeType;
-    QString dataType;
-    QString causality;
-};
-
-
-class FMIParameterSpecification
-{
-public:
-    FMIParameterSpecification(QString varName, QString parName, QString description, QString initValue, QString valueRef);
-    QString varName;
-    QString parName;
-    QString description;
-    QString initValue;
-    QString valueRef;
-};
-
-
-class PortSpecification
-{
-public:
-    PortSpecification(QString porttype = "ReadPort", QString nodetype = "NodeSignal", QString name = QString(), bool notrequired=false, QString defaultvalue=QString());
-    QString porttype;
-    QString nodetype;
-    QString name;
-    bool notrequired;
-    QString defaultvalue;
-};
-
-class ParameterSpecification
-{
-public:
-    ParameterSpecification(QString name = QString(), QString displayName = QString(), QString description = QString(), QString unit = QString(), QString init = QString());
-    QString name;
-    QString displayName;
-    QString description;
-    QString unit;
-    QString init;
-};
-
-class UtilitySpecification
-{
-public:
-    UtilitySpecification(QString utility="FirstOrderTransferFunction", QString name=QString());
-    QString utility;
-    QString name;
-};
-
-class StaticVariableSpecification
-{
-public:
-    StaticVariableSpecification(QString datatype="double", QString name=QString());
-    QString datatype;
-    QString name;
-};
-
-class ComponentSpecification
-{
-public:
-    ComponentSpecification(QString typeName="", QString displayName="", QString cqsType="");
-    QString typeName;
-    QString displayName;
-    QString cqsType;
-    QStringList utilities;
-    QStringList utilityNames;
-    QStringList parNames;
-    QStringList parInits;
-    QStringList parDisplayNames;
-    QStringList parDescriptions;
-    QStringList parUnits;
-    QStringList varNames;
-    QStringList varTypes;
-    QStringList portNames;
-    QStringList portTypes;
-    QStringList portNodeTypes;
-    QStringList portDefaults;
-    QList<bool> portNotReq;
-    QStringList initEquations;
-    QStringList simEquations;
-    QStringList finalEquations;
-
-    QString plainCode;
-};
 
 
 class DLLIMPORTEXPORT HopsanGenerator
@@ -186,30 +93,6 @@ private:
     QWidget *mpDialog;
 
     bool mShowDialog;
-};
-
-
-
-QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString rootTagName);
-bool removeDir(QString path);
-void copyDir(const QString fromPath, QString toPath);
-void copyIncludeFilesToDir(QString path);
-void copyBoostIncludeFilesToDir(QString path);
-
-
-
-//! @brief This utility class wraps a QTextStream and have stream operators to write whole lines. You do not need to add the newline char yourself.
-class QTextLineStream
-{
-public:
-    QTextLineStream(QTextStream &rTextStream)
-    {
-        mpQTextSream = &rTextStream;
-    }
-    friend QTextLineStream& operator <<(QTextLineStream &rLineStream, const char* input);
-
-private:
-    QTextStream* mpQTextSream;
 };
 
 
