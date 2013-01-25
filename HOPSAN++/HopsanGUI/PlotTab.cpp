@@ -407,6 +407,7 @@ void PlotTab::addCurve(PlotCurve *curve, QColor desiredColor, HopsanPlotID plotI
 
 
     mPlotCurvePtrs[plotID].append(curve);
+    connect(curve, SIGNAL(curveDataUpdated()), this, SLOT(rescaleToCurves()));
 
     if(desiredColor == QColor())
     {

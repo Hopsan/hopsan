@@ -346,17 +346,6 @@ void MainWindow::initializeWorkspace()
 }
 
 
-
-
-////! @brief Overloaded function for showing the mainwindow. This is to make sure the view is centered when the program starts.
-////! @todo This function is supposed to do something, but doesn't do anything?!
-//void MainWindow::show()
-//{
-//    QMainWindow::show();
-//    //! @todo this should not be done here should happen when a new tab is created, OK! MainWindow must be shown before center works, maybe we can go through projecttabwidget instead, leaveing it for now
-//}
-
-
 //! @brief Opens the plot widget.
 void MainWindow::openPlotWidget()
 {

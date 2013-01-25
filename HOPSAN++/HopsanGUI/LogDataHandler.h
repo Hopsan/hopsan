@@ -84,6 +84,7 @@ public:
 
     ContainerObject *getParentContainerObject();
     QDir getCacheDir() const;
+    QString getNewCacheFileName();
 
     void incrementOpenPlotCurves();
     void decrementOpenPlotCurves();
@@ -147,6 +148,7 @@ private:
     int mGenerationNumber;
     unsigned long int mTempVarCtr;
     QDir mCacheDir;
+    quint64 mCacheFileCtr;
 };
 
 #endif // LOGDATAHANDLER_H

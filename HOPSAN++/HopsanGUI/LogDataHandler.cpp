@@ -53,11 +53,12 @@ LogDataHandler::LogDataHandler(ContainerObject *pParent) : QObject(pParent)
     QDir tmp;
     do
     {
-        tmp = QDir(LOGDATACACHE + QString("handler%1").arg(ctr));
+        tmp = QDir(LOGDATACACHE + QString("/handler%1").arg(ctr));
         ++ctr;
     }while(tmp.exists());
     tmp.mkpath(tmp.absolutePath());
     mCacheDir = tmp;
+    mCacheFileCtr = 0;
 }
 
 LogDataHandler::~LogDataHandler()
@@ -70,6 +71,9 @@ LogDataHandler::~LogDataHandler()
     {
         data[i].clear();
     }
+
+    // Remove the cache directory if it is empty, if it is not then cleanup should happen on program exit
+    mCacheDir.rmdir(mCacheDir.path());
 }
 
 
@@ -832,6 +836,13 @@ ContainerObject *LogDataHandler::getParentContainerObject()
 QDir LogDataHandler::getCacheDir() const
 {
     return mCacheDir;
+}
+
+QString LogDataHandler::getNewCacheFileName()
+{
+    QString name = mCacheDir.absoluteFilePath("data"+QString("%1").arg(mCacheFileCtr));
+    mCacheFileCtr++;
+    return name;
 }
 
 

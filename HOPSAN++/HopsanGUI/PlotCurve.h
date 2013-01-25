@@ -124,6 +124,9 @@ public:
 
     void resetLegendSize();
 
+signals:
+    void curveDataUpdated();
+
 public slots:
 
     void setLineWidth(int);

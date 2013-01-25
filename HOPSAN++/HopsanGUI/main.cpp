@@ -32,6 +32,7 @@
 #include "Configuration.h"
 #include "CopyStack.h"
 #include "Dialogs/WelcomeDialog.h"
+#include "Utilities/GUIUtilities.h"
 
 //Global stuff
 MainWindow* gpMainWindow = 0;
@@ -63,6 +64,9 @@ int main(int argc, char *argv[])
     {
         backupDir.mkpath(BACKUPPATH);
     }
+
+    // Clear cache folders from left over junk (if Hopsan crashed last time, or was unable to cleanup)
+    removeDir(LOGDATACACHE);
 
     // Create global objects
     gExecPath = qApp->applicationDirPath().append('/');

@@ -23,6 +23,7 @@
 //$Id$
 
 #include "LogVariable.h"
+#include "LogDataHandler.h"
 #include "Utilities/GUIUtilities.h"
 
 //! @todo this should not be here should be togheter with plotsvariable stuf in some other file later
@@ -93,14 +94,11 @@ bool VariableDescription::operator==(const VariableDescription &other) const
     return (mComponentName == other.mComponentName && mPortName == other.mPortName && mDataName == other.mDataName && mDataUnit == other.mDataUnit);
 }
 
+//! @todo is this needed now that we have addToData
 void LogVariableData::setValueOffset(double offset)
 {
     mAppliedValueOffset += offset;
-    for (int i=0; i<mDataVector.size(); ++i)
-    {
-        mDataVector[i] += offset;
-    }
-
+    addToData(offset);
     emit dataChanged();
 }
 
@@ -131,7 +129,16 @@ LogVariableData::LogVariableData(const int generation, const QVector<double> &rT
     mAppliedTimeOffset = 0;
     mGeneration = generation;
     mSharedTimeVectorPtr = SharedTimeVectorPtrT(new QVector<double>(rTime));
-    mDataVector = rData;
+
+    mpCachedDataVector = 0;
+    if (pParent->getLogDataHandler())
+    {
+        mpCachedDataVector = new CachedDataVector(rData, pParent->getLogDataHandler()->getNewCacheFileName());
+    }
+    else
+    {
+        mpCachedDataVector = new CachedDataVector(rData);
+    }
 }
 
 LogVariableData::LogVariableData(const int generation, SharedTimeVectorPtrT time, const QVector<double> &rData, SharedVariableDescriptionT varDesc, LogVariableContainer *pParent)
@@ -142,7 +149,24 @@ LogVariableData::LogVariableData(const int generation, SharedTimeVectorPtrT time
     mAppliedTimeOffset = 0;
     mGeneration = generation;
     mSharedTimeVectorPtr = time;
-    mDataVector = rData;
+
+    mpCachedDataVector = 0;
+    if (pParent->getLogDataHandler())
+    {
+        mpCachedDataVector = new CachedDataVector(rData, pParent->getLogDataHandler()->getNewCacheFileName());
+    }
+    else
+    {
+        mpCachedDataVector = new CachedDataVector(rData);
+    }
+}
+
+LogVariableData::~LogVariableData()
+{
+    if (mpCachedDataVector != 0)
+    {
+        delete mpCachedDataVector;
+    }
 }
 
 const SharedVariableDescriptionT LogVariableData::getVariableDescription() const
@@ -215,98 +239,160 @@ int LogVariableData::getNumGenerations() const
 
 void LogVariableData::addToData(const SharedLogVariableDataPtrT pOther)
 {
-    for (int i=0; i<mDataVector.size(); ++i)
+    DataVectorT* pData =  mpCachedDataVector->beginHeavyOperation();
+    for (int i=0; i<pData->size(); ++i)
     {
-       mDataVector[i] += pOther->mDataVector[i];
+       (*pData)[i] += pOther->peekData(i);
     }
+    mpCachedDataVector->endHeavyOperation(pData);
 }
 void LogVariableData::addToData(const double other)
 {
-    for (int i=0; i<mDataVector.size(); ++i)
+    DataVectorT* pData =  mpCachedDataVector->beginHeavyOperation();
+    for (int i=0; i<pData->size(); ++i)
     {
-        mDataVector[i] += other;
+       (*pData)[i] += other;
     }
+    mpCachedDataVector->endHeavyOperation(pData);
+//    for (int i=0; i<mDataVector.size(); ++i)
+//    {
+//        mDataVector[i] += other;
+//    }
+    emit dataChanged();
 }
 void LogVariableData::subFromData(const SharedLogVariableDataPtrT pOther)
 {
-    //! @todo DANGER will crash if other not as long (also in other places)
-    for (int i=0; i<mDataVector.size(); ++i)
+    DataVectorT* pData =  mpCachedDataVector->beginHeavyOperation();
+    for (int i=0; i<pData->size(); ++i)
     {
-        mDataVector[i] -= pOther->mDataVector[i];
+       (*pData)[i] += -pOther->peekData(i);
     }
+    mpCachedDataVector->endHeavyOperation(pData);
+////! @todo DANGER will crash if other not as long (also in other places)
+//    for (int i=0; i<mDataVector.size(); ++i)
+//    {
+//        mDataVector[i] -= pOther->mDataVector[i];
+//    }
+    emit dataChanged();
 }
 void LogVariableData::subFromData(const double other)
 {
-    for (int i=0; i<mDataVector.size(); ++i)
+    DataVectorT* pData =  mpCachedDataVector->beginHeavyOperation();
+    for (int i=0; i<pData->size(); ++i)
     {
-        mDataVector[i] -= other;
+       (*pData)[i] += -other;
     }
+    mpCachedDataVector->endHeavyOperation(pData);
+//    for (int i=0; i<mDataVector.size(); ++i)
+//    {
+//        mDataVector[i] -= other;
+//    }
+    emit dataChanged();
 }
 
 void LogVariableData::multData(const SharedLogVariableDataPtrT pOther)
 {
-    for (int i=0; i<mDataVector.size(); ++i)
+    DataVectorT* pData =  mpCachedDataVector->beginHeavyOperation();
+    for (int i=0; i<pData->size(); ++i)
     {
-       mDataVector[i] *= pOther->mDataVector[i];
+       (*pData)[i] *= pOther->peekData(i);
     }
-
+    mpCachedDataVector->endHeavyOperation(pData);
+//    for (int i=0; i<mDataVector.size(); ++i)
+//    {
+//       mDataVector[i] *= pOther->mDataVector[i];
+//    }
+    emit dataChanged();
 }
 
 void LogVariableData::multData(const double other)
 {
-    for (int i=0; i<mDataVector.size(); ++i)
+    DataVectorT* pData =  mpCachedDataVector->beginHeavyOperation();
+    for (int i=0; i<pData->size(); ++i)
     {
-        mDataVector[i] *= other;
+       (*pData)[i] *= other;
     }
+    mpCachedDataVector->endHeavyOperation(pData);
+//    for (int i=0; i<mDataVector.size(); ++i)
+//    {
+//        mDataVector[i] *= other;
+//    }
+    emit dataChanged();
 }
 
 void LogVariableData::divData(const SharedLogVariableDataPtrT pOther)
 {
-    for (int i=0; i<mDataVector.size(); ++i)
+    DataVectorT* pData =  mpCachedDataVector->beginHeavyOperation();
+    for (int i=0; i<pData->size(); ++i)
     {
-       mDataVector[i] /= pOther->mDataVector[i];
+       (*pData)[i] /= pOther->peekData(i);
     }
+    mpCachedDataVector->endHeavyOperation(pData);
+//    for (int i=0; i<mDataVector.size(); ++i)
+//    {
+//       mDataVector[i] /= pOther->mDataVector[i];
+//    }
+    emit dataChanged();
 }
 
 void LogVariableData::divData(const double other)
 {
-    for (int i=0; i<mDataVector.size(); ++i)
+    DataVectorT* pData =  mpCachedDataVector->beginHeavyOperation();
+    for (int i=0; i<pData->size(); ++i)
     {
-        mDataVector[i] /= other;
+       (*pData)[i] /= other;
     }
+    mpCachedDataVector->endHeavyOperation(pData);
+//    for (int i=0; i<mDataVector.size(); ++i)
+//    {
+//        mDataVector[i] /= other;
+//    }
+    emit dataChanged();
 }
 void LogVariableData::assignToData(const SharedLogVariableDataPtrT pOther)
 {
-    mDataVector = pOther->mDataVector;
+    mpCachedDataVector->replaceData(pOther->getDataVector());
     mSharedTimeVectorPtr = pOther->mSharedTimeVectorPtr;
+    emit dataChanged();
 }
 
 double LogVariableData::pokeData(const int index, const double value, QString &rErr)
 {
     if (indexInRange(index))
     {
-        mDataVector[index] = value;
-        emit dataChanged();
-        return mDataVector[index];
+        if (mpCachedDataVector->poke(index, value))
+        {
+            emit dataChanged();
+            double val;
+            mpCachedDataVector->peek(index, val);
+            return val;
+        }
+        rErr = mpCachedDataVector->getError();
+        return -1;
     }
     rErr = "Index out of range";
-    return 0;
+    return -1;
 }
 
 double LogVariableData::peekData(const int index, QString &rErr) const
 {
+    double val = -1;
     if (indexInRange(index))
     {
-        return mDataVector[index];
+        if (!mpCachedDataVector->peek(index, val))
+        {
+            rErr = mpCachedDataVector->getError();
+        }
+        return val;
     }
     rErr = "Index out of range";
-    return 0;
+    return val;
 }
 
 bool LogVariableData::indexInRange(const int idx) const
 {
     //! @todo Do we need to check timevector also ? (or should we assume thay are the same)
-    return (idx>=0 && idx<mDataVector.size());
+    return (idx>=0 && idx<mpCachedDataVector->size());
 }
 
 LogDataHandler *LogVariableData::getLogDataHandler()
@@ -530,12 +616,14 @@ SharedTimeVectorPtrT UniqueSharedTimeVectorPtrHelper::makeSureUnique(QVector<dou
 
 QVector<double> LogVariableData::getDataVector()
 {
-    return mDataVector;
+    QVector<double> vec;
+    mpCachedDataVector->copyData(vec);
+    return vec;
 }
 
 int LogVariableData::getDataSize() const
 {
-    return mDataVector.size();
+    return mpCachedDataVector->size();
 }
 
 
@@ -557,6 +645,11 @@ CachedDataVector::CachedDataVector(const QVector<double> &rDataVector, const QSt
     }
 }
 
+CachedDataVector::~CachedDataVector()
+{
+    mCacheFile.remove();
+}
+
 bool CachedDataVector::setCacheFile(const QString fileName)
 {
     // Prevent changing filename if file has already been created
@@ -571,7 +664,7 @@ bool CachedDataVector::setCacheFile(const QString fileName)
 
 bool CachedDataVector::isCached() const
 {
-    return !mDataVector.isEmpty();
+    return mDataVector.isEmpty();
 }
 
 int CachedDataVector::size() const
@@ -586,12 +679,33 @@ bool CachedDataVector::isEmpty() const
 
 bool CachedDataVector::copyData(QVector<double> &rData)
 {
-    return readToMem(rData);
+    if (isCached())
+    {
+        return readToMem(rData);
+    }
+    else
+    {
+        rData = mDataVector;
+        return true;
+    }
 }
 
-double CachedDataVector::peek(const int idx, bool &rOk)
+bool CachedDataVector::replaceData(const QVector<double> &rNewData)
 {
-    rOk = true;
+    if (isCached())
+    {
+        return writeToCache(rNewData);
+    }
+    else
+    {
+        mDataVector = rNewData;
+        mNumElements = mDataVector.size();
+        return true;
+    }
+}
+
+bool CachedDataVector::peek(const int idx, double &rVal)
+{
     if (isCached())
     {
         if (mCacheFile.open(QIODevice::ReadOnly))
@@ -599,10 +713,9 @@ double CachedDataVector::peek(const int idx, bool &rOk)
             bool rc = mCacheFile.seek(sizeof(double)*idx);
             if (rc)
             {
-                double data;
-                qint64 n = mCacheFile.read((char*)&data, sizeof(double));
+                qint64 n = mCacheFile.peek((char*)&rVal, sizeof(double));
                 mCacheFile.close();
-                return data;
+                return true;
             }
             else
             {
@@ -614,12 +727,12 @@ double CachedDataVector::peek(const int idx, bool &rOk)
         {
             mError = mCacheFile.errorString();
         }
-        rOk = false;
-        return -1;
+        return false;
     }
     else
     {
-        return mDataVector[idx];
+        rVal = mDataVector[idx];
+        return true;
     }
 }
 
@@ -627,7 +740,7 @@ bool CachedDataVector::poke(const int idx, const double val)
 {
     if (isCached())
     {
-        if (mCacheFile.open(QIODevice::WriteOnly))
+        if (mCacheFile.open(QIODevice::ReadWrite))
         {
             bool rc = mCacheFile.seek(sizeof(double)*idx);
             if (rc)
@@ -772,4 +885,15 @@ bool CachedDataVector::setCached(const bool cached)
         rc = moveToMem();
     }
     return rc;
+}
+
+
+double LogVariableData::peekData(const int idx) const
+{
+    double val = -1;
+    if (indexInRange(idx))
+    {
+        mpCachedDataVector->peek(idx, val);
+    }
+    return val;
 }

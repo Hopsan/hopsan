@@ -22,10 +22,11 @@
 //!
 //$Id$
 
-#include <QString>
-
 #ifndef COMMON_H
 #define COMMON_H
+
+#include <QString>
+#include <QDesktopServices>
 
 //Numerical definitions
 #define GOLDENRATIO 1.61803399

@@ -919,6 +919,7 @@ void PlotCurve::markActive(bool value)
 //! @brief Updates the values of a curve
 //! Updates a curve with regard to special X-axis, units and scaling.
 //! @todo after updating from python, scale is not refreshed maybe this should be done in here
+//! @todo add optional index if we only want to update particular value
 void PlotCurve::updateCurve()
 {
     double unitScale = 1;
@@ -930,6 +931,7 @@ void PlotCurve::updateCurve()
     QString dummy;
     QVector<double> tempX;
     QVector<double> tempY;
+    //! @todo should not peek every value should begin heavy operation instead which MUST lock somehow (mutex maybe)
     if(mpParentPlotTab->mHasSpecialXAxis)
     {
         for(int i=0; i<mpParentPlotTab->mSpecialXVector.size() && i<mpData->getDataSize(); ++i)
@@ -947,6 +949,8 @@ void PlotCurve::updateCurve()
         }
     }
     mpQwtPlotCurve->setSamples(tempX, tempY);
+
+    emit curveDataUpdated();
 }
 
 void PlotCurve::updateCurveName()

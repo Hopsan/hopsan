@@ -55,6 +55,7 @@ class CachedDataVector
 {
 public:
     CachedDataVector(const QVector<double> &rDataVector, const QString fileName=QString());
+    ~CachedDataVector();
 
     bool setCacheFile(const QString fileName);
     bool setCached(const bool cached);
@@ -64,7 +65,8 @@ public:
     bool isEmpty() const;
 
     bool copyData(QVector<double> &rData);
-    double peek(const int idx, bool &rOk);
+    bool replaceData(const QVector<double> &rNewData);
+    bool peek(const int idx, double &rVal);
     bool poke(const int idx, const double val);
 
     QVector<double> *beginHeavyOperation();
@@ -164,6 +166,7 @@ public:
     //! @todo maybe have protected constructor, to avoid creating these objects manually (need to be friend with container)
     LogVariableData(const int generation, const QVector<double> &rTime, const QVector<double> &rData, SharedVariableDescriptionT varDesc, LogVariableContainer *pParent);
     LogVariableData(const int generation, SharedTimeVectorPtrT time, const QVector<double> &rData, SharedVariableDescriptionT varDesc, LogVariableContainer *pParent);
+    ~LogVariableData();
 
     double mAppliedValueOffset;
     double mAppliedTimeOffset;
@@ -215,8 +218,12 @@ signals:
     void dataChanged();
     void nameChanged();
 
+protected:
+    double peekData(const int idx) const;
+
 private:
-    QVector<double> mDataVector;
+    typedef QVector<double> DataVectorT;
+    CachedDataVector *mpCachedDataVector;
     LogVariableContainer *mpParentVariableContainer;
     SharedVariableDescriptionT mpVariableDescription;
 };

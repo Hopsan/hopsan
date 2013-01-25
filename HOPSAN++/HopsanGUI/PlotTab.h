@@ -50,7 +50,6 @@ public:
     void setTabName(QString name);
 
     void addCurve(PlotCurve *curve, QColor desiredColor=QColor(), HopsanPlotID plotID=FIRSTPLOT);
-    void rescaleToCurves();
     void removeCurve(PlotCurve *curve);
     void removeAllCurvesOnAxis(const int axis);
     QList<PlotCurve *> getCurves(HopsanPlotID plotID=FIRSTPLOT);
@@ -82,6 +81,8 @@ protected:
     virtual void contextMenuEvent(QContextMenuEvent *);
 
 public slots:
+    void rescaleToCurves();
+
     void openLegendSettingsDialog();
     void openAxisSettingsDialog();
     void applyAxisSettings();
