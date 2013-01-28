@@ -906,6 +906,8 @@ QStringList HcomHandler::getCommands()
 
 void HcomHandler::executeCommand(QString cmd)
 {
+    cmd = cmd.simplified();
+
     QString majorCmd = cmd.split(" ").first();
     QString subCmd;
     if(cmd.split(" ").size() == 1)
