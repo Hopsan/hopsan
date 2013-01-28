@@ -58,7 +58,7 @@ LogDataHandler::LogDataHandler(ContainerObject *pParent) : QObject(pParent)
     }while(tmp.exists());
     tmp.mkpath(tmp.absolutePath());
     mCacheDir = tmp;
-    mCacheFileCtr = 0;
+    mCacheSubDirCtr = 0;
 }
 
 LogDataHandler::~LogDataHandler()
@@ -838,11 +838,9 @@ QDir LogDataHandler::getCacheDir() const
     return mCacheDir;
 }
 
-QString LogDataHandler::getNewCacheFileName()
+QString LogDataHandler::getNewCacheSubDirName()
 {
-    QString name = mCacheDir.absoluteFilePath("data"+QString("%1").arg(mCacheFileCtr));
-    mCacheFileCtr++;
-    return name;
+    return mCacheDir.absoluteFilePath("v"+QString("%1").arg(mCacheSubDirCtr++));
 }
 
 

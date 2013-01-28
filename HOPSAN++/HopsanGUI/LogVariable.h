@@ -32,6 +32,7 @@
 #include <QColor>
 #include <QObject>
 #include <QFile>
+#include <QDir>
 
 // Forward declaration
 class LogVariableData;
@@ -151,6 +152,10 @@ signals:
     void nameChanged();
 
 private:
+    QString newCacheFileName();
+
+    QDir mCacheDir;
+    quint64 mCacheFileCtr;
     LogDataHandler *mpParentLogDataHandler;
     SharedVariableDescriptionT mVariableDescription;
     GenerationMapT mDataGenerations;
@@ -161,11 +166,9 @@ typedef QSharedPointer<LogVariableContainer> SharedLogVariableContainerPtrT;
 class LogVariableData : public QObject
 {
     Q_OBJECT
+    friend class LogVariableContainer;
 
 public:
-    //! @todo maybe have protected constructor, to avoid creating these objects manually (need to be friend with container)
-    LogVariableData(const int generation, const QVector<double> &rTime, const QVector<double> &rData, SharedVariableDescriptionT varDesc, LogVariableContainer *pParent);
-    LogVariableData(const int generation, SharedTimeVectorPtrT time, const QVector<double> &rData, SharedVariableDescriptionT varDesc, LogVariableContainer *pParent);
     ~LogVariableData();
 
     double mAppliedValueOffset;
@@ -219,6 +222,8 @@ signals:
     void nameChanged();
 
 protected:
+    LogVariableData(const int generation, const QVector<double> &rTime, const QVector<double> &rData, SharedVariableDescriptionT varDesc, const QString cacheFileName, LogVariableContainer *pParent);
+    LogVariableData(const int generation, SharedTimeVectorPtrT time, const QVector<double> &rData, SharedVariableDescriptionT varDesc, const QString cacheFileName, LogVariableContainer *pParent);
     double peekData(const int idx) const;
 
 private:

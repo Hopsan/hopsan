@@ -121,7 +121,7 @@ void LogVariableData::setTimeOffset(double offset)
     emit dataChanged();
 }
 
-LogVariableData::LogVariableData(const int generation, const QVector<double> &rTime, const QVector<double> &rData, SharedVariableDescriptionT varDesc, LogVariableContainer *pParent)
+LogVariableData::LogVariableData(const int generation, const QVector<double> &rTime, const QVector<double> &rData, SharedVariableDescriptionT varDesc, const QString cacheFileName, LogVariableContainer *pParent)
 {
     mpParentVariableContainer = pParent;
     mpVariableDescription = varDesc;
@@ -129,19 +129,10 @@ LogVariableData::LogVariableData(const int generation, const QVector<double> &rT
     mAppliedTimeOffset = 0;
     mGeneration = generation;
     mSharedTimeVectorPtr = SharedTimeVectorPtrT(new QVector<double>(rTime));
-
-    mpCachedDataVector = 0;
-    if (pParent->getLogDataHandler())
-    {
-        mpCachedDataVector = new CachedDataVector(rData, pParent->getLogDataHandler()->getNewCacheFileName());
-    }
-    else
-    {
-        mpCachedDataVector = new CachedDataVector(rData);
-    }
+    mpCachedDataVector = new CachedDataVector(rData, cacheFileName);
 }
 
-LogVariableData::LogVariableData(const int generation, SharedTimeVectorPtrT time, const QVector<double> &rData, SharedVariableDescriptionT varDesc, LogVariableContainer *pParent)
+LogVariableData::LogVariableData(const int generation, SharedTimeVectorPtrT time, const QVector<double> &rData, SharedVariableDescriptionT varDesc, const QString cacheFileName, LogVariableContainer *pParent)
 {
     mpParentVariableContainer = pParent;
     mpVariableDescription = varDesc;
@@ -149,16 +140,7 @@ LogVariableData::LogVariableData(const int generation, SharedTimeVectorPtrT time
     mAppliedTimeOffset = 0;
     mGeneration = generation;
     mSharedTimeVectorPtr = time;
-
-    mpCachedDataVector = 0;
-    if (pParent->getLogDataHandler())
-    {
-        mpCachedDataVector = new CachedDataVector(rData, pParent->getLogDataHandler()->getNewCacheFileName());
-    }
-    else
-    {
-        mpCachedDataVector = new CachedDataVector(rData);
-    }
+    mpCachedDataVector = new CachedDataVector(rData, cacheFileName);
 }
 
 LogVariableData::~LogVariableData()
@@ -530,7 +512,7 @@ bool LogVariableContainer::hasDataGeneration(const int gen)
 void LogVariableContainer::addDataGeneration(const int generation, const QVector<double> &rTime, const QVector<double> &rData)
 {
     //! @todo what if a generation already exist, then we must properly delete the old data before we add new one
-    SharedLogVariableDataPtrT pData = SharedLogVariableDataPtrT(new LogVariableData(generation, rTime, rData, mVariableDescription, this));
+    SharedLogVariableDataPtrT pData = SharedLogVariableDataPtrT(new LogVariableData(generation, rTime, rData, mVariableDescription, newCacheFileName(), this));
     connect(this, SIGNAL(nameChanged()), pData.data(), SIGNAL(nameChanged()));
     mDataGenerations.insert(generation, pData);
 }
@@ -538,7 +520,7 @@ void LogVariableContainer::addDataGeneration(const int generation, const QVector
 void LogVariableContainer::addDataGeneration(const int generation, const SharedTimeVectorPtrT time, const QVector<double> &rData)
 {
     //! @todo what if a generation already exist, then we must properly delete the old data before we add new one
-    SharedLogVariableDataPtrT pData = SharedLogVariableDataPtrT(new LogVariableData(generation, time, rData, mVariableDescription, this));
+    SharedLogVariableDataPtrT pData = SharedLogVariableDataPtrT(new LogVariableData(generation, time, rData, mVariableDescription, newCacheFileName(), this));
     connect(this, SIGNAL(nameChanged()), pData.data(), SIGNAL(nameChanged()));
     mDataGenerations.insert(generation, pData);
 }
@@ -576,6 +558,14 @@ LogVariableContainer::LogVariableContainer(const SharedVariableDescriptionT &rVa
 {
     mVariableDescription = rVarDesc;
     mpParentLogDataHandler = pParentLogDataHandler;
+    mCacheFileCtr=0;
+
+    // Create the temporary directory that will contain cache data file for each generation
+    if (pParentLogDataHandler != 0)
+    {
+        mCacheDir = QDir(pParentLogDataHandler->getNewCacheSubDirName());
+        mCacheDir.mkpath(mCacheDir.absolutePath());
+    }
 }
 
 LogVariableContainer::~LogVariableContainer()
@@ -896,4 +886,14 @@ double LogVariableData::peekData(const int idx) const
         mpCachedDataVector->peek(idx, val);
     }
     return val;
+}
+
+
+QString LogVariableContainer::newCacheFileName()
+{
+    if (mCacheDir.exists())
+    {
+        return mCacheDir.absoluteFilePath(QString("g%1").arg(mCacheFileCtr++));
+    }
+    return "";
 }
