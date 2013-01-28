@@ -453,14 +453,14 @@ void removeDir(QString path)
         }
         else
         {
-#ifdef WIN32
-            QStringList s;
-            s << "del "+info.absoluteFilePath();
-            QProcess browser;
-            browser.start("cmd", s);
-#else
+//#ifdef WIN32
+//            QStringList s;
+//            s << "del "+info.absoluteFilePath();
+//            QProcess browser;
+//            browser.start("cmd", s);
+//#else
             QFile::remove(info.absoluteFilePath());
-#endif
+//#endif
         }
     }
     dir.rmdir(path);

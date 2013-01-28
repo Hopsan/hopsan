@@ -66,6 +66,7 @@ int main(int argc, char *argv[])
     }
 
     // Clear cache folders from left over junk (if Hopsan crashed last time, or was unable to cleanup)
+    qDebug() << "LogdataCache: " << LOGDATACACHE;
     removeDir(LOGDATACACHE);
 
     // Create global objects
