@@ -1,0 +1,9 @@
+# Example HCOM script, takes one argument, runs a simulation arg number of times
+# $Id
+
+i = 0
+while (i < $1)
+  sim
+  i=i+1
+repeat
+end
