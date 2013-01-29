@@ -84,7 +84,7 @@ public:
 
     ContainerObject *getParentContainerObject();
     QDir getCacheDir() const;
-    QString getNewCacheSubDirName();
+    SharedMultiDataVectorCacheT getGenerationMultiCache(const int gen);
 
     void incrementOpenPlotCurves();
     void decrementOpenPlotCurves();
@@ -136,6 +136,7 @@ signals:
 
 
 private:
+    QString getNewCacheName();
     ContainerObject *mpParentContainerObject;
 
     LogDataMapT mLogDataMap;
@@ -143,6 +144,7 @@ private:
     QList<SharedTimeVectorPtrT> mTimeVectorPtrs;
 
     FavoriteListT mFavoriteVariables;
+    QMap<int, SharedMultiDataVectorCacheT> mGenerationCacheMap;
 
     int mnPlotCurves;
     int mGenerationNumber;

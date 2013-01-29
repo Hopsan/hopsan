@@ -72,6 +72,9 @@ LogDataHandler::~LogDataHandler()
         data[i].clear();
     }
 
+    // Clear generation Cache files (they will remain if until all instances dies)
+    mGenerationCacheMap.clear();
+
     // Remove the cache directory if it is empty, if it is not then cleanup should happen on program exit
     mCacheDir.rmdir(mCacheDir.path());
 }
@@ -825,7 +828,22 @@ void LogDataHandler::limitPlotGenerations()
         {
             dit.value()->removeGenerationsOlderThen(mGenerationNumber - gConfig.getGenerationLimit());
         }
+
+        // Clear from generations cache object map
+        QMap<int, SharedMultiDataVectorCacheT>::iterator it;
+        for (it = mGenerationCacheMap.begin(); it != mGenerationCacheMap.end(); ++it)
+        {
+            if (it.key() < (mGenerationNumber - gConfig.getGenerationLimit()) )
+            {
+                mGenerationCacheMap.erase(it);
+            }
+            else
+            {
+                break;
+            }
+        }
     }
+
 }
 
 ContainerObject *LogDataHandler::getParentContainerObject()
@@ -838,9 +856,15 @@ QDir LogDataHandler::getCacheDir() const
     return mCacheDir;
 }
 
-QString LogDataHandler::getNewCacheSubDirName()
+SharedMultiDataVectorCacheT LogDataHandler::getGenerationMultiCache(const int gen)
 {
-    return mCacheDir.absoluteFilePath("v"+QString("%1").arg(mCacheSubDirCtr++));
+    SharedMultiDataVectorCacheT pCache = mGenerationCacheMap.value(gen, SharedMultiDataVectorCacheT());
+    if (!pCache)
+    {
+        pCache = SharedMultiDataVectorCacheT(new MultiDataVectorCache(getNewCacheName()));
+        mGenerationCacheMap.insert(gen, pCache);
+    }
+    return pCache;
 }
 
 
@@ -1346,4 +1370,10 @@ QStringList LogDataHandler::getPlotDataNames()
         retval.append(dit.value()->getFullVariableNameWithSeparator("."));
     }
     return retval;
+}
+
+
+QString LogDataHandler::getNewCacheName()
+{
+    return mCacheDir.absoluteFilePath("g"+QString("%1").arg(mCacheSubDirCtr++));
 }

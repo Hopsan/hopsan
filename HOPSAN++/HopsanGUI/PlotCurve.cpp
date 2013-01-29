@@ -928,24 +928,25 @@ void PlotCurve::updateCurve()
         unitScale = gConfig.getCustomUnits(getDataName()).find(getDataUnit()).value();
     }
 
-    QString dummy;
     QVector<double> tempX;
-    QVector<double> tempY;
-    //! @todo should not peek every value should begin heavy operation instead which MUST lock somehow (mutex maybe)
+    QVector<double> tempY = mpData->getDataVector(); // We copy here, it should be faster then peek (at least when data is cached on disc)
+
     if(mpParentPlotTab->mHasSpecialXAxis)
     {
-        for(int i=0; i<mpParentPlotTab->mSpecialXVector.size() && i<mpData->getDataSize(); ++i)
+        tempX.resize(mpParentPlotTab->mSpecialXVector.size());
+        for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
         {
-            tempX.append(mpParentPlotTab->mSpecialXVector[i]*mScaleX + mOffsetX);
-            tempY.append(mpData->peekData(i,dummy)*unitScale*mScaleY + mOffsetY);
+            tempX[i] = mpParentPlotTab->mSpecialXVector[i]*mScaleX + mOffsetX;
+            tempY[i] = tempY[i]*unitScale*mScaleY + mOffsetY;
         }
     }
     else
     {
-        for(int i=0; i<mpData->mSharedTimeVectorPtr->size() && i<mpData->getDataSize(); ++i)
+        tempX.resize(mpData->mSharedTimeVectorPtr->size());
+        for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
         {
-            tempX.append(mpData->mSharedTimeVectorPtr->at(i)*mScaleX + mOffsetX);
-            tempY.append(mpData->peekData(i,dummy)*unitScale*mScaleY + mOffsetY);
+            tempX[i] = mpData->mSharedTimeVectorPtr->at(i)*mScaleX + mOffsetX;
+            tempY[i] = tempY[i]*unitScale*mScaleY + mOffsetY;
         }
     }
     mpQwtPlotCurve->setSamples(tempX, tempY);

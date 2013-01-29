@@ -121,7 +121,7 @@ void LogVariableData::setTimeOffset(double offset)
     emit dataChanged();
 }
 
-LogVariableData::LogVariableData(const int generation, const QVector<double> &rTime, const QVector<double> &rData, SharedVariableDescriptionT varDesc, const QString cacheFileName, LogVariableContainer *pParent)
+LogVariableData::LogVariableData(const int generation, const QVector<double> &rTime, const QVector<double> &rData, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent)
 {
     mpParentVariableContainer = pParent;
     mpVariableDescription = varDesc;
@@ -129,10 +129,11 @@ LogVariableData::LogVariableData(const int generation, const QVector<double> &rT
     mAppliedTimeOffset = 0;
     mGeneration = generation;
     mSharedTimeVectorPtr = SharedTimeVectorPtrT(new QVector<double>(rTime));
-    mpCachedDataVector = new CachedDataVector(rData, cacheFileName);
+    //mpCachedDataVector = new CachedSingleDataVector(rData, cacheFileName);
+    mpCachedDataVector = new CachableDataVector(rData, pGenerationMultiCache);
 }
 
-LogVariableData::LogVariableData(const int generation, SharedTimeVectorPtrT time, const QVector<double> &rData, SharedVariableDescriptionT varDesc, const QString cacheFileName, LogVariableContainer *pParent)
+LogVariableData::LogVariableData(const int generation, SharedTimeVectorPtrT time, const QVector<double> &rData, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent)
 {
     mpParentVariableContainer = pParent;
     mpVariableDescription = varDesc;
@@ -140,7 +141,8 @@ LogVariableData::LogVariableData(const int generation, SharedTimeVectorPtrT time
     mAppliedTimeOffset = 0;
     mGeneration = generation;
     mSharedTimeVectorPtr = time;
-    mpCachedDataVector = new CachedDataVector(rData, cacheFileName);
+    //mpCachedDataVector = new CachedSingleDataVector(rData, cacheFileName);
+    mpCachedDataVector = new CachableDataVector(rData, pGenerationMultiCache);
 }
 
 LogVariableData::~LogVariableData()
@@ -221,21 +223,21 @@ int LogVariableData::getNumGenerations() const
 
 void LogVariableData::addToData(const SharedLogVariableDataPtrT pOther)
 {
-    DataVectorT* pData =  mpCachedDataVector->beginHeavyOperation();
+    DataVectorT* pData =  mpCachedDataVector->beginFullVectorOperation();
     for (int i=0; i<pData->size(); ++i)
     {
        (*pData)[i] += pOther->peekData(i);
     }
-    mpCachedDataVector->endHeavyOperation(pData);
+    mpCachedDataVector->endFullVectorOperation(pData);
 }
 void LogVariableData::addToData(const double other)
 {
-    DataVectorT* pData =  mpCachedDataVector->beginHeavyOperation();
+    DataVectorT* pData =  mpCachedDataVector->beginFullVectorOperation();
     for (int i=0; i<pData->size(); ++i)
     {
        (*pData)[i] += other;
     }
-    mpCachedDataVector->endHeavyOperation(pData);
+    mpCachedDataVector->endFullVectorOperation(pData);
 //    for (int i=0; i<mDataVector.size(); ++i)
 //    {
 //        mDataVector[i] += other;
@@ -244,12 +246,12 @@ void LogVariableData::addToData(const double other)
 }
 void LogVariableData::subFromData(const SharedLogVariableDataPtrT pOther)
 {
-    DataVectorT* pData =  mpCachedDataVector->beginHeavyOperation();
+    DataVectorT* pData =  mpCachedDataVector->beginFullVectorOperation();
     for (int i=0; i<pData->size(); ++i)
     {
        (*pData)[i] += -pOther->peekData(i);
     }
-    mpCachedDataVector->endHeavyOperation(pData);
+    mpCachedDataVector->endFullVectorOperation(pData);
 ////! @todo DANGER will crash if other not as long (also in other places)
 //    for (int i=0; i<mDataVector.size(); ++i)
 //    {
@@ -259,12 +261,12 @@ void LogVariableData::subFromData(const SharedLogVariableDataPtrT pOther)
 }
 void LogVariableData::subFromData(const double other)
 {
-    DataVectorT* pData =  mpCachedDataVector->beginHeavyOperation();
+    DataVectorT* pData =  mpCachedDataVector->beginFullVectorOperation();
     for (int i=0; i<pData->size(); ++i)
     {
        (*pData)[i] += -other;
     }
-    mpCachedDataVector->endHeavyOperation(pData);
+    mpCachedDataVector->endFullVectorOperation(pData);
 //    for (int i=0; i<mDataVector.size(); ++i)
 //    {
 //        mDataVector[i] -= other;
@@ -274,12 +276,12 @@ void LogVariableData::subFromData(const double other)
 
 void LogVariableData::multData(const SharedLogVariableDataPtrT pOther)
 {
-    DataVectorT* pData =  mpCachedDataVector->beginHeavyOperation();
+    DataVectorT* pData =  mpCachedDataVector->beginFullVectorOperation();
     for (int i=0; i<pData->size(); ++i)
     {
        (*pData)[i] *= pOther->peekData(i);
     }
-    mpCachedDataVector->endHeavyOperation(pData);
+    mpCachedDataVector->endFullVectorOperation(pData);
 //    for (int i=0; i<mDataVector.size(); ++i)
 //    {
 //       mDataVector[i] *= pOther->mDataVector[i];
@@ -289,12 +291,12 @@ void LogVariableData::multData(const SharedLogVariableDataPtrT pOther)
 
 void LogVariableData::multData(const double other)
 {
-    DataVectorT* pData =  mpCachedDataVector->beginHeavyOperation();
+    DataVectorT* pData =  mpCachedDataVector->beginFullVectorOperation();
     for (int i=0; i<pData->size(); ++i)
     {
        (*pData)[i] *= other;
     }
-    mpCachedDataVector->endHeavyOperation(pData);
+    mpCachedDataVector->endFullVectorOperation(pData);
 //    for (int i=0; i<mDataVector.size(); ++i)
 //    {
 //        mDataVector[i] *= other;
@@ -304,12 +306,12 @@ void LogVariableData::multData(const double other)
 
 void LogVariableData::divData(const SharedLogVariableDataPtrT pOther)
 {
-    DataVectorT* pData =  mpCachedDataVector->beginHeavyOperation();
+    DataVectorT* pData =  mpCachedDataVector->beginFullVectorOperation();
     for (int i=0; i<pData->size(); ++i)
     {
        (*pData)[i] /= pOther->peekData(i);
     }
-    mpCachedDataVector->endHeavyOperation(pData);
+    mpCachedDataVector->endFullVectorOperation(pData);
 //    for (int i=0; i<mDataVector.size(); ++i)
 //    {
 //       mDataVector[i] /= pOther->mDataVector[i];
@@ -319,12 +321,12 @@ void LogVariableData::divData(const SharedLogVariableDataPtrT pOther)
 
 void LogVariableData::divData(const double other)
 {
-    DataVectorT* pData =  mpCachedDataVector->beginHeavyOperation();
+    DataVectorT* pData =  mpCachedDataVector->beginFullVectorOperation();
     for (int i=0; i<pData->size(); ++i)
     {
        (*pData)[i] /= other;
     }
-    mpCachedDataVector->endHeavyOperation(pData);
+    mpCachedDataVector->endFullVectorOperation(pData);
 //    for (int i=0; i<mDataVector.size(); ++i)
 //    {
 //        mDataVector[i] /= other;
@@ -512,7 +514,7 @@ bool LogVariableContainer::hasDataGeneration(const int gen)
 void LogVariableContainer::addDataGeneration(const int generation, const QVector<double> &rTime, const QVector<double> &rData)
 {
     //! @todo what if a generation already exist, then we must properly delete the old data before we add new one
-    SharedLogVariableDataPtrT pData = SharedLogVariableDataPtrT(new LogVariableData(generation, rTime, rData, mVariableDescription, newCacheFileName(), this));
+    SharedLogVariableDataPtrT pData = SharedLogVariableDataPtrT(new LogVariableData(generation, rTime, rData, mVariableDescription, mpParentLogDataHandler->getGenerationMultiCache(generation), this));
     connect(this, SIGNAL(nameChanged()), pData.data(), SIGNAL(nameChanged()));
     mDataGenerations.insert(generation, pData);
 }
@@ -520,7 +522,7 @@ void LogVariableContainer::addDataGeneration(const int generation, const QVector
 void LogVariableContainer::addDataGeneration(const int generation, const SharedTimeVectorPtrT time, const QVector<double> &rData)
 {
     //! @todo what if a generation already exist, then we must properly delete the old data before we add new one
-    SharedLogVariableDataPtrT pData = SharedLogVariableDataPtrT(new LogVariableData(generation, time, rData, mVariableDescription, newCacheFileName(), this));
+    SharedLogVariableDataPtrT pData = SharedLogVariableDataPtrT(new LogVariableData(generation, time, rData, mVariableDescription, mpParentLogDataHandler->getGenerationMultiCache(generation), this));
     connect(this, SIGNAL(nameChanged()), pData.data(), SIGNAL(nameChanged()));
     mDataGenerations.insert(generation, pData);
 }
@@ -528,6 +530,7 @@ void LogVariableContainer::addDataGeneration(const int generation, const SharedT
 //! @todo Need to remove this class if final generation is deleted
 void LogVariableContainer::removeDataGeneration(const int generation)
 {
+    //! @todo cache data will still be in the cachegenreationmap, need to clear whenevevr generation is removed (from anywere), mabe should restore inc dec Subscribers
     mDataGenerations.remove(generation);
 }
 
@@ -551,6 +554,7 @@ void LogVariableContainer::removeGenerationsOlderThen(const int gen)
 
 void LogVariableContainer::removeAllGenerations()
 {
+    //! @todo cache data will still be in the cachegenreationmap, need to clear whenevevr generation is removed (from anywere), mabe should restore inc dec Subscribers
     mDataGenerations.clear();
 }
 
@@ -558,14 +562,6 @@ LogVariableContainer::LogVariableContainer(const SharedVariableDescriptionT &rVa
 {
     mVariableDescription = rVarDesc;
     mpParentLogDataHandler = pParentLogDataHandler;
-    mCacheFileCtr=0;
-
-    // Create the temporary directory that will contain cache data file for each generation
-    if (pParentLogDataHandler != 0)
-    {
-        mCacheDir = QDir(pParentLogDataHandler->getNewCacheSubDirName());
-        mCacheDir.mkpath(mCacheDir.absolutePath());
-    }
 }
 
 LogVariableContainer::~LogVariableContainer()
@@ -617,7 +613,7 @@ int LogVariableData::getDataSize() const
 }
 
 
-CachedDataVector::CachedDataVector(const QVector<double> &rDataVector, const QString fileName)
+CachedSingleDataVector::CachedSingleDataVector(const QVector<double> &rDataVector, const QString fileName)
 {
     mNumElements = 0;
 
@@ -635,12 +631,12 @@ CachedDataVector::CachedDataVector(const QVector<double> &rDataVector, const QSt
     }
 }
 
-CachedDataVector::~CachedDataVector()
+CachedSingleDataVector::~CachedSingleDataVector()
 {
     mCacheFile.remove();
 }
 
-bool CachedDataVector::setCacheFile(const QString fileName)
+bool CachedSingleDataVector::setCacheFile(const QString fileName)
 {
     // Prevent changing filename if file has already been created
     if (!mCacheFile.exists())
@@ -652,22 +648,22 @@ bool CachedDataVector::setCacheFile(const QString fileName)
 }
 
 
-bool CachedDataVector::isCached() const
+bool CachedSingleDataVector::isCached() const
 {
     return mDataVector.isEmpty();
 }
 
-int CachedDataVector::size() const
+int CachedSingleDataVector::size() const
 {
     return mNumElements;
 }
 
-bool CachedDataVector::isEmpty() const
+bool CachedSingleDataVector::isEmpty() const
 {
     return (mNumElements==0);
 }
 
-bool CachedDataVector::copyData(QVector<double> &rData)
+bool CachedSingleDataVector::copyData(QVector<double> &rData)
 {
     if (isCached())
     {
@@ -680,7 +676,7 @@ bool CachedDataVector::copyData(QVector<double> &rData)
     }
 }
 
-bool CachedDataVector::replaceData(const QVector<double> &rNewData)
+bool CachedSingleDataVector::replaceData(const QVector<double> &rNewData)
 {
     if (isCached())
     {
@@ -694,7 +690,7 @@ bool CachedDataVector::replaceData(const QVector<double> &rNewData)
     }
 }
 
-bool CachedDataVector::peek(const int idx, double &rVal)
+bool CachedSingleDataVector::peek(const int idx, double &rVal)
 {
     if (isCached())
     {
@@ -726,7 +722,7 @@ bool CachedDataVector::peek(const int idx, double &rVal)
     }
 }
 
-bool CachedDataVector::poke(const int idx, const double val)
+bool CachedSingleDataVector::poke(const int idx, const double val)
 {
     if (isCached())
     {
@@ -759,7 +755,7 @@ bool CachedDataVector::poke(const int idx, const double val)
     }
 }
 
-QVector<double> *CachedDataVector::beginHeavyOperation()
+QVector<double> *CachedSingleDataVector::beginFullVectorOperation()
 {
     QVector<double> *pData;
     if(isCached())
@@ -775,7 +771,7 @@ QVector<double> *CachedDataVector::beginHeavyOperation()
 }
 
 //! @todo for now it is dangerous (very bad) to make operations between begin end (that do not operate only on the pointer), should this be blocked or even allowed through a theird state
-bool CachedDataVector::endHeavyOperation(QVector<double> *&rpData)
+bool CachedSingleDataVector::endFullVectorOperation(QVector<double> *&rpData)
 {
     bool rc = true;
     if(isCached())
@@ -787,12 +783,12 @@ bool CachedDataVector::endHeavyOperation(QVector<double> *&rpData)
     return rc;
 }
 
-QString CachedDataVector::getError() const
+QString CachedSingleDataVector::getError() const
 {
     return mError;
 }
 
-bool CachedDataVector::moveToCache()
+bool CachedSingleDataVector::moveToCache()
 {
     bool rc = true;
     if (!isCached())
@@ -803,7 +799,7 @@ bool CachedDataVector::moveToCache()
     return rc;
 }
 
-bool CachedDataVector::readToMem(QVector<double> &rDataVector)
+bool CachedSingleDataVector::readToMem(QVector<double> &rDataVector)
 {
     if (mCacheFile.open(QIODevice::ReadOnly))
     {
@@ -825,7 +821,7 @@ bool CachedDataVector::readToMem(QVector<double> &rDataVector)
     return false;
 }
 
-bool CachedDataVector::moveToMem()
+bool CachedSingleDataVector::moveToMem()
 {
     bool rc = true;
     if (isCached())
@@ -840,7 +836,7 @@ bool CachedDataVector::moveToMem()
     return rc;
 }
 
-bool CachedDataVector::writeToCache(const QVector<double> &rDataVector)
+bool CachedSingleDataVector::writeToCache(const QVector<double> &rDataVector)
 {
     if (mCacheFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
@@ -863,7 +859,7 @@ bool CachedDataVector::writeToCache(const QVector<double> &rDataVector)
 }
 
 
-bool CachedDataVector::setCached(const bool cached)
+bool CachedSingleDataVector::setCached(const bool cached)
 {
     bool rc;
     if (cached)
@@ -889,11 +885,387 @@ double LogVariableData::peekData(const int idx) const
 }
 
 
-QString LogVariableContainer::newCacheFileName()
+MultiDataVectorCache::MultiDataVectorCache(const QString fileName)
 {
-    if (mCacheDir.exists())
+    mNumSubscribers = 0;
+    mCacheFile.setFileName(fileName);
+}
+
+MultiDataVectorCache::~MultiDataVectorCache()
+{
+    removeCacheFile();
+}
+
+bool MultiDataVectorCache::addVector(const QVector<double> &rDataVector, quint64 &rStartByte)
+{
+    //! @todo maybe have register for how long added data at each start adress was, to prevent destorying data
+    return appendToCache(rDataVector, rStartByte);
+}
+
+bool MultiDataVectorCache::copyData(const quint64 startByte, const quint64 nBytes, QVector<double> &rData)
+{
+    return readToMem(startByte, nBytes, &rData);
+}
+
+bool MultiDataVectorCache::replaceData(const quint64 startByte, const QVector<double> &rNewData)
+{
+    //! @todo prevent destroying data if new data have new length
+    return writeInCache(startByte, rNewData);
+}
+
+
+bool MultiDataVectorCache::writeInCache(const quint64 startByte, const QVector<double> &rDataVector)
+{
+    if (mCacheFile.open(QIODevice::ReadWrite))
     {
-        return mCacheDir.absoluteFilePath(QString("g%1").arg(mCacheFileCtr++));
+        if (mCacheFile.seek(startByte))
+        {
+            qint64 n = mCacheFile.write((const char*)rDataVector.data(), sizeof(double)*rDataVector.size());
+            //! @todo handle writing out of bounds
+            mCacheFile.close();
+            return true;
+        }
+        else
+        {
+            mCacheFile.close();
+            mError = mCacheFile.errorString();
+        }
     }
-    return "";
+    else
+    {
+        mError = mCacheFile.errorString();
+    }
+    return false;
+}
+
+bool MultiDataVectorCache::appendToCache(const QVector<double> &rDataVector, quint64 &rStartByte)
+{
+    if (mCacheFile.open(QIODevice::WriteOnly | QIODevice::Append))
+    {
+        rStartByte = mCacheFile.pos();
+        qint64 n = mCacheFile.write((const char*)rDataVector.data(), sizeof(double)*rDataVector.size());
+        if ( n == sizeof(double)*rDataVector.size())
+        {
+            mCacheFile.close();
+            return true;
+        }
+        else
+        {
+            mCacheFile.close();
+            mError = mCacheFile.errorString();
+        }
+    }
+    else
+    {
+        mError = mCacheFile.errorString();
+    }
+    return false;
+}
+
+bool MultiDataVectorCache::readToMem(const quint64 startByte, const quint64 nBytes, QVector<double> *pDataVector)
+{
+    if (mCacheFile.open(QIODevice::ReadOnly))
+    {
+        if (mCacheFile.seek(startByte))
+        {
+            pDataVector->resize(nBytes/sizeof(double)); //!< @todo should check that division is becomes a resonable value
+            qint64 n = mCacheFile.read((char*)pDataVector->data(), nBytes);
+            if (n == nBytes)
+            {
+                mCacheFile.close();
+                return true;
+            }
+            mError = mCacheFile.errorString();
+        }
+        else
+        {
+            mError = mCacheFile.errorString();
+        }
+        mCacheFile.close();
+    }
+    else
+    {
+        mError = mCacheFile.errorString();
+    }
+    return false;
+}
+
+void MultiDataVectorCache::removeCacheFile()
+{
+    bool rc = mCacheFile.remove();
+    qDebug() << "Removing file: " << mCacheFile.fileName() << " : " << rc;
+}
+
+
+bool MultiDataVectorCache::peek(const quint64 startByte, double &rVal)
+{
+    if (mCacheFile.open(QIODevice::ReadOnly))
+    {
+        if (mCacheFile.seek(startByte))
+        {
+            qint64 n = mCacheFile.peek((char*)&rVal, sizeof(double));
+            mCacheFile.close();
+            return true;
+        }
+        else
+        {
+            mCacheFile.close();
+            mError = mCacheFile.errorString();
+        }
+    }
+    else
+    {
+        mError = mCacheFile.errorString();
+    }
+    return false;
+}
+
+bool MultiDataVectorCache::poke(const quint64 startByte, const double val)
+{
+    if (mCacheFile.open(QIODevice::ReadWrite))
+    {
+        if (mCacheFile.seek(startByte))
+        {
+            qint64 n = mCacheFile.write((const char*)&val, sizeof(double));
+            //! @todo handle writing out of bounds
+            mCacheFile.close();
+            return true;
+        }
+        else
+        {
+            mCacheFile.close();
+            mError = mCacheFile.errorString();
+        }
+    }
+    else
+    {
+        mError = mCacheFile.errorString();
+    }
+    return false;
+}
+
+bool MultiDataVectorCache::checkoutVector(const quint64 startByte, const quint64 nBytes, QVector<double> *&rpData)
+{
+    //! @todo how to prevent checkout of same data multiple times
+    QVector<double> *pData = new QVector<double>();
+    if (readToMem(startByte, nBytes, pData))
+    {
+        rpData = pData;
+        mCheckoutMap.insert(pData, CheckoutInfoT(startByte,nBytes));
+        return true;
+    }
+    delete pData;
+    return false;
+}
+
+bool MultiDataVectorCache::returnVector(QVector<double> *&rpData)
+{
+    bool rc = false;
+    if (mCheckoutMap.contains(rpData))
+    {
+        CheckoutInfoT info = mCheckoutMap.value(rpData, CheckoutInfoT(0,0));
+        if (info.nBytes == rpData->size()*sizeof(double))
+        {
+            rc = writeInCache(info.startByte, *rpData);
+            delete rpData;
+            rpData = 0;
+        }
+        else
+        {
+            mError = "Trying to write new data that is to long or to short";
+            //! @todo handle this instead, append maybe
+        }
+    }
+    else
+    {
+        mError = "Pointer to data that has not been checked out";
+    }
+    return rc;
+}
+
+
+QString MultiDataVectorCache::getError() const
+{
+    return mError;
+}
+
+
+CachableDataVector::CachableDataVector(const QVector<double> &rDataVector, SharedMultiDataVectorCacheT pMultiCache)
+{
+    //! @todo make it possible to add data with multicahce but default not cached, need some way of remembering whterer data has been cached, maybe change NumElements to ncachedBytes
+    mStartByte = 0;
+    mNumElements = 0;
+
+    if (pMultiCache == 0)
+    {
+        mDataVector = rDataVector;
+        mNumElements = mDataVector.size();
+    }
+    else
+    {
+        mpMultiCache = pMultiCache;
+        if (!mpMultiCache->addVector(rDataVector,mStartByte))
+        {
+            mError = mpMultiCache->getError();
+        }
+        else
+        {
+            mNumElements = rDataVector.size();
+        }
+    }
+}
+
+bool CachableDataVector::setCached(const bool cached)
+{
+    bool rc;
+    if (cached)
+    {
+        rc = moveToCache();
+    }
+    else
+    {
+        rc = copyToMem();
+    }
+    return rc;
+}
+
+bool CachableDataVector::isCached() const
+{
+    return mDataVector.isEmpty();
+}
+
+int CachableDataVector::size() const
+{
+    return mNumElements;
+}
+
+bool CachableDataVector::isEmpty() const
+{
+    return (mNumElements == 0);
+}
+
+bool CachableDataVector::copyData(QVector<double> &rData)
+{
+    if (isCached())
+    {
+        if (!mpMultiCache->copyData(mStartByte, mNumElements*sizeof(double), rData))
+        {
+            mError = mpMultiCache->getError();
+            return false;
+        }
+    }
+    else
+    {
+        rData = mDataVector;
+    }
+    return true;
+}
+
+bool CachableDataVector::replaceData(const QVector<double> &rNewData)
+{
+    //! @todo do this
+    qFatal("Not yet implemented");
+}
+
+bool CachableDataVector::peek(const int idx, double &rVal)
+{
+    if (isCached())
+    {
+        if (!mpMultiCache->peek(mStartByte+idx*sizeof(double), rVal))
+        {
+            mError = mpMultiCache->getError();
+            return false;
+        }
+    }
+    else
+    {
+        //! @todo bounds check
+        rVal = mDataVector[idx];
+    }
+    return true;
+}
+
+bool CachableDataVector::poke(const int idx, const double val)
+{
+    if (isCached())
+    {
+        if (!mpMultiCache->poke(mStartByte+idx*sizeof(double),val))
+        {
+            mError = mpMultiCache->getError();
+            return false;
+        }
+    }
+    else
+    {
+        //! @todo bounds check
+        mDataVector[idx] = val;
+    }
+    return true;
+}
+
+QVector<double> *CachableDataVector::beginFullVectorOperation()
+{
+    //! @todo what if trying to checkout vector that has not been created
+    QVector<double> *pData = 0;
+    if(isCached())
+    {
+        if (!mpMultiCache->checkoutVector(mStartByte, mNumElements*sizeof(double), pData))
+        {
+            mError = mpMultiCache->getError();
+        }
+    }
+    else
+    {
+        pData = &mDataVector;
+    }
+    return pData;
+}
+
+bool CachableDataVector::endFullVectorOperation(QVector<double> *&rpData)
+{
+    bool rc = true;
+    if(isCached())
+    {
+        rc = mpMultiCache->returnVector(rpData);
+        if (!rc)
+        {
+            mError = mpMultiCache->getError();
+        }
+    }
+    rpData = 0;
+    return rc;
+}
+
+QString CachableDataVector::getError() const
+{
+    return mError;
+}
+
+bool CachableDataVector::moveToCache()
+{
+    if (mpMultiCache)
+    {
+        if (mpMultiCache->replaceData(mStartByte, mDataVector))
+        {
+            mNumElements = mDataVector.size();
+            mDataVector.clear();
+            return true;
+        }
+        mError = mpMultiCache->getError();
+        return false;
+    }
+    return false;
+}
+
+bool CachableDataVector::copyToMem()
+{
+    if (mpMultiCache)
+    {
+        if (!mpMultiCache->copyData(mStartByte, mNumElements*sizeof(double), mDataVector))
+        {
+            mError = mpMultiCache->getError();
+            return false;
+        }
+    }
+    return true;
 }
