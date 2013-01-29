@@ -119,11 +119,13 @@ The examples bellow are based on the exampleComponentLibrary that should be incl
 
 The exampleComponentLibrary project file is specific for the Qt Creator C++ IDE but technically it is possible to use any IDE (code writing software). Knowledge about TLM is not required for writing arithmetic components. See \link userTransmissionLineElementMethod the Transmission Line Element Method \endlink for more information.
 
-If you install the Qt SDK you will get Qt Creator and the MinGW32 compiler. You do not need to install the entire Qt SDK. See this screenshot for an example on the things you need to be able to build hopsan external libs.
-\htmlonly
-  <br><a href="../../graphics/QtSDK_custom_install_options.png"><img src="../../graphics/QtSDK_custom_install_options.png" width=100 border=0></a><br>
-\endhtmlonly
-\image latex "../../graphics/QtSDK_custom_install_options.png" "QtSDK custom installation options" width=1.0\linewidth
+**On Windows**
+You can download Qt Creator and the Qt libraries from http://qt-project.org/downloads, for Hopsan 0.6.0 use 4.8.4 MinGW version.
+You will also need a special version of MinGW and the gdb debugger, we have put the files and a short guide here https://www.dropbox.com/sh/3ve9b7oqsdnwta2/7XdjHUBkrp
+
+**On Ubuntu**
+You can download Qt Creator from http://qt-project.org/downloads
+You will aslo need to install "apt-get install qt4-dev-tool" and maybe the libqt4-dev package.
 
 
 \section writingcomponents_libraryfiles Component Library Project Files

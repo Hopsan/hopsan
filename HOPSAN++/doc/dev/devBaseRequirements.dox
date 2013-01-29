@@ -1,16 +1,33 @@
 /*!
 \page devBaseRequirements Basic Requirements: Qt Creator, Qt libs and Compilers
-HopsanGUI uses the Qt-libs for the GUI components, and qmake to generate makefiles. We are also using Qt Creator and qmake for the HopsanCore even though it is not using any Qt libraris. You need to install the apropriate Qt-libs and the Qt-Creator IDE from <a href="http://qt.nokia.com" target="_blank">http://qt.nokia.com</a>
+HopsanGUI uses the Qt-libs for the GUI components and qmake to generate makefiles. We are also using Qt Creator and qmake for HopsanCore even though it is not using any Qt-libraries. You need to install the appropriate Qt-libs and the Qt Creator IDE from http://qt-project.org/downloads
 
 \section qt-linux gcc in Ubuntu
-On Linux based operationg systems you should use the gcc compiler. To install gcc (and some other tools) in Ubuntu run "apt-get install build-essential".
-You can use the Qt-libs in you distribution package repository and install Qt-Creator separately through the SDK. In this case make sure that you install Qt development packages, "apt-get install libqt4-dev".
-You can also choose to use the Qt-libs in the SDK if you want to specify which version of Qt-libs to use.
+On Linux based operating systems you should use the gcc compiler. To install gcc (and some other tools) in Ubuntu run "apt-get install build-essential".
+You should use the Qt-libs in you distribution package repository and install Qt Creator separately from http://qt-project.org/downloads. Make sure that you install the Qt development packages, "apt-get install libqt4-dev qt4-dev-tools".
+
 
 \section qt-mingw MinGW (gcc in Windows)
-If you want to use the MinGW open-source compiler you should download the Qt SDK as it comes prepackaged with a patched MinGW suitable for Qt-libs. The libs them selfes are also compiled with MinGW. Make sure that you do not mix minGW versions. You need to use the version that comes with Qt as it is patched to work with Qt.
+As of Hopsan version 0.6.0 you must use "Qt libraries for windows 4.8.4 (MinGW)".
+You will also need a special version, MinGW-gcc440_1, with Qt specific patches.
+Finally, with newer versions of Qt Creator you will also need a special version of gdb.
+You can find the necessary files here, https://www.dropbox.com/sh/3ve9b7oqsdnwta2/7XdjHUBkrp
 
-\section qt-mscompiler VC++ (The Microsoft Visual C++ Compiler)
+A short step by step description:
+-# Unzip MinGW_4.4 (MinGW-gcc440_1.zip)
+-# Download and install Qt libraries for windows 4.8.4 (MinGW) from http://qt-project.org/downloads
+-# Download and install QtCreator version of your choice. (from http://qt-project.org/downloads)
+-# In QtCreator, go to Tools->Options->Build&Run
+   -# Add your Qt version (if it not does not exist) by pointing to C:\Qt\4.8.4\bin\qmake.exe or similar
+   -# Make sure compilers are found under Compilers
+   -# Configure a kit (Combination of Qt version, compiler and Debugger), use GDB as debugger (you can find it in your MinGw folder). You should replace it with the (qtcreator-gdb-7.4-MINGW32_NT-6.1-i686.tar.gz) the old one does not work with newer Qt creator version.
+-# Open HopsanNG.pro and configure your project by selecting Kit and shadow build directories for Release and Debug. (If you have an old HopsanNG.pro.user file *DO NOT LOAD IT*)
+   -# Before you can build Hopsan you need to setup the required dependencies.
+
+
+\section qt-mscompiler VC++ (The Microsoft Visual C++ Compiler) 
+**This guide might be slightly outdated**
+
 Follow this guide only if you wish to use the Microsoft Visual C++ compiler with Qt Creator for Hopsan development.
 
 The Visual Studio compiled Qt-libraries that are currently available (2010-09-22), were compiled using VisualStudio2008.
