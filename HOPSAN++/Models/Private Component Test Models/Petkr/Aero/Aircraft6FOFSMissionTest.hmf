@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4632" hopsancoreversion="0.6.x_r4631">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4760" hopsancoreversion="0.6.x_r4760">
     <requirements>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
         <componentlibrary>PettersComponentLibrary</componentlibrary>
@@ -11,7 +11,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2338.65" y="2760.19" zoom="0.842152"/>
+            <viewport x="1973.29" y="2443.53" zoom="0.70922"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <scriptfile path=""/>
@@ -13035,7 +13035,7 @@
                 <hopsangui>
                     <pose x="1828.159528" y="2383.624135" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
-                    <viewport x="2338.65" y="2760.19" zoom="0.842152"/>
+                    <viewport x="1973.29" y="2443.53" zoom="0.70922"/>
                     <ports hidden="1"/>
                     <names hidden="1"/>
                     <scriptfile path=""/>
@@ -22031,6 +22031,12 @@
                         <post number="503" type="changedparameters">
                             <stuff newvalue="500" what="changedparameter" oldvalue="200" parametername="t_start" objectname="Pulse_3"/>
                         </post>
+                        <post number="504">
+                            <stuff what="movedobject" name="Scope">
+                                <oldpos>1626 2109</oldpos>
+                                <newpos>1626 2107.59</newpos>
+                            </stuff>
+                        </post>
                     </hopsanundo>
                 </hopsangui>
                 <objects>
@@ -22079,7 +22085,7 @@
                     <component typename="SignalSink" name="Scope">
                         <parameters/>
                         <hopsangui>
-                            <pose x="1646" y="2124" flipped="false" a="0"/>
+                            <pose x="1646" y="2122.59" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
                             <hopsanobjectappearance version="0.3">
                                 <modelobject typename="SignalSink" displayname="Scope">
@@ -22100,12 +22106,6 @@
                             <nametext position="0" visible="0"/>
                         </hopsangui>
                     </systemport>
-                    <systemport name="longitude">
-                        <hopsangui>
-                            <pose x="842.0483673" y="2228.203826" flipped="false" a="0"/>
-                            <nametext position="0" visible="0"/>
-                        </hopsangui>
-                    </systemport>
                     <component typename="SignalFFBor" name="FFB or (out)">
                         <parameters>
                             <parameter value="0" type="double" name="Pstate::Value"/>
@@ -22123,6 +22123,12 @@
                             </hopsanobjectappearance>
                         </hopsangui>
                     </component>
+                    <systemport name="longitude">
+                        <hopsangui>
+                            <pose x="842.0483673" y="2228.203826" flipped="false" a="0"/>
+                            <nametext position="0" visible="0"/>
+                        </hopsangui>
+                    </systemport>
                     <component typename="SignalFFB" name="FFB">
                         <parameters>
                             <parameter value="0" type="double" name="Pstate::Value"/>
@@ -22361,6 +22367,23 @@
                             </hopsanobjectappearance>
                         </hopsangui>
                     </component>
+                    <component typename="SignalFFBandIn" name="FFB and (In)">
+                        <parameters>
+                            <parameter value="0" type="double" name="Pstate::Value"/>
+                            <parameter value="0" type="double" name="Pout0::Value"/>
+                            <parameter value="0" type="double" name="Pout1::Value"/>
+                            <parameter value="0" type="double" name="in0"/>
+                        </parameters>
+                        <hopsangui>
+                            <pose x="1380.564411" y="2164.131425" flipped="false" a="0"/>
+                            <nametext position="0" visible="0"/>
+                            <hopsanobjectappearance version="0.3">
+                                <modelobject typename="SignalFFBandIn" displayname="FFB and (In)">
+                                    <ports/>
+                                </modelobject>
+                            </hopsanobjectappearance>
+                        </hopsangui>
+                    </component>
                     <component typename="SignalFFB" name="FFB_8">
                         <parameters>
                             <parameter value="0" type="double" name="Pstate::Value"/>
@@ -22385,23 +22408,6 @@
                             <nametext position="0" visible="0"/>
                         </hopsangui>
                     </systemport>
-                    <component typename="SignalFFBandIn" name="FFB and (In)">
-                        <parameters>
-                            <parameter value="0" type="double" name="Pstate::Value"/>
-                            <parameter value="0" type="double" name="Pout0::Value"/>
-                            <parameter value="0" type="double" name="Pout1::Value"/>
-                            <parameter value="0" type="double" name="in0"/>
-                        </parameters>
-                        <hopsangui>
-                            <pose x="1380.564411" y="2164.131425" flipped="false" a="0"/>
-                            <nametext position="0" visible="0"/>
-                            <hopsanobjectappearance version="0.3">
-                                <modelobject typename="SignalFFBandIn" displayname="FFB and (In)">
-                                    <ports/>
-                                </modelobject>
-                            </hopsanobjectappearance>
-                        </hopsangui>
-                    </component>
                     <component typename="SignalFFB" name="FFB_9">
                         <parameters>
                             <parameter value="0" type="double" name="Pstate::Value"/>
@@ -24079,7 +24085,7 @@
                                 <coordinate x="1731.68374300000004950562" y="2164.13142500000003565219"/>
                                 <coordinate x="1735.87908596072929867660" y="2164.13142500000003565219"/>
                                 <coordinate x="1735.87908596072929867660" y="2164.13142500000003565219"/>
-                                <coordinate x="1752.37908596072929867660" y="2164.13142500000003565219"/>
+                                <coordinate x="1752.37908599999991565710" y="2164.13142500000003565219"/>
                             </coordinates>
                             <geometries>
                                 <geometry>vertical</geometry>
@@ -24092,7 +24098,7 @@
                     <connect endport="Pset" endcomponent="FFB_5" startport="Pexiting" startcomponent="FFB or (out)">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1778.37908596072929867660" y="2164.13142500000003565219"/>
+                                <coordinate x="1778.37908599999991565710" y="2164.13142500000003565219"/>
                                 <coordinate x="1777.18374300000004950562" y="2164.13142500000003565219"/>
                                 <coordinate x="1777.18374300000004950562" y="2164.13142500000003565219"/>
                                 <coordinate x="1788.68374300000004950562" y="2164.13142500000003565219"/>
@@ -24108,11 +24114,11 @@
                     <connect endport="Pexiting" endcomponent="FFB_11" startport="Pin1" startcomponent="FFB or (out)">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1765.37908596072929867660" y="2177.13142500000003565219"/>
-                                <coordinate x="1765.37908596072929867660" y="2182.50387103515731723746"/>
+                                <coordinate x="1765.37908599999991565710" y="2177.13142500000003565219"/>
+                                <coordinate x="1765.37908599999991565710" y="2182.50387103515731723746"/>
                                 <coordinate x="1743.15325499434788980579" y="2182.50387103515731723746"/>
-                                <coordinate x="1743.15325499434788980579" y="2005.87750429851121225511"/>
-                                <coordinate x="1463.95245988847636908758" y="2005.87750429851121225511"/>
+                                <coordinate x="1743.15325499434788980579" y="2005.87750400000004447065"/>
+                                <coordinate x="1463.95245999999997366103" y="2005.87750400000004447065"/>
                             </coordinates>
                             <geometries>
                                 <geometry>horizontal</geometry>
@@ -24129,7 +24135,7 @@
                                 <coordinate x="1356.09374299999990398646" y="2164.13142500000003565219"/>
                                 <coordinate x="1355.56441117517988459440" y="2164.13142500000003565219"/>
                                 <coordinate x="1355.56441117517988459440" y="2164.13142500000003565219"/>
-                                <coordinate x="1367.56441117517988459440" y="2164.13142500000003565219"/>
+                                <coordinate x="1367.56441100000006372284" y="2164.13142500000003565219"/>
                             </coordinates>
                             <geometries>
                                 <geometry>vertical</geometry>
@@ -24142,7 +24148,7 @@
                     <connect endport="Pset" endcomponent="FFB_2" startport="Pout0" startcomponent="FFB and (In)">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1393.56441117517988459440" y="2164.13142500000003565219"/>
+                                <coordinate x="1393.56441100000006372284" y="2164.13142500000003565219"/>
                                 <coordinate x="1394.18374300000004950562" y="2164.13142500000003565219"/>
                                 <coordinate x="1394.18374300000004950562" y="2164.13142500000003565219"/>
                                 <coordinate x="1407.68374300000004950562" y="2164.13142500000003565219"/>
@@ -24158,9 +24164,9 @@
                     <connect endport="Pset" endcomponent="FFB_11" startport="Pout1" startcomponent="FFB and (In)">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1380.56441117517988459440" y="2151.13142500000003565219"/>
-                                <coordinate x="1380.56441117517988459440" y="2005.87750429851121225511"/>
-                                <coordinate x="1392.95245988847636908758" y="2005.87750429851121225511"/>
+                                <coordinate x="1380.56441100000006372284" y="2151.13142500000003565219"/>
+                                <coordinate x="1380.56441100000006372284" y="2005.87750400000004447065"/>
+                                <coordinate x="1392.95245999999997366103" y="2005.87750400000004447065"/>
                             </coordinates>
                             <geometries>
                                 <geometry>horizontal</geometry>
@@ -24172,8 +24178,8 @@
                     <connect endport="Pleave" endcomponent="FFB_4" startport="Pexiting" startcomponent="FFB_11">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1463.95245988847636908758" y="2005.87750429851121225511"/>
-                                <coordinate x="1696.18374300000004950562" y="2005.87750429851121225511"/>
+                                <coordinate x="1463.95245999999997366103" y="2005.87750400000004447065"/>
+                                <coordinate x="1696.18374300000004950562" y="2005.87750400000004447065"/>
                                 <coordinate x="1696.18374300000004950562" y="2143.63142500000003565219"/>
                             </coordinates>
                             <geometries>
@@ -24186,9 +24192,9 @@
                     <connect endport="Pexit" endcomponent="FFB_11" startport="out" startcomponent="Pulse_3">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="860.32794554902216077608" y="2040.01177934624615772918"/>
-                                <coordinate x="1440.28602988847637789149" y="2040.01177934624615772918"/>
-                                <coordinate x="1440.28602988847637789149" y="2026.37750429851121225511"/>
+                                <coordinate x="860.32794550000005529000" y="2040.01177899999993314850"/>
+                                <coordinate x="1440.28602999999998246494" y="2040.01177899999993314850"/>
+                                <coordinate x="1440.28602999999998246494" y="2026.37750400000004447065"/>
                             </coordinates>
                             <geometries>
                                 <geometry>vertical</geometry>
@@ -24200,9 +24206,9 @@
                     <connect endport="in" endcomponent="Scope" startport="Pstate" startcomponent="FFB_11">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1416.61910288847639094456" y="2026.37750429851121225511"/>
-                                <coordinate x="1416.61910288847639094456" y="2124.00000000000000000000"/>
-                                <coordinate x="1626.00000000000000000000" y="2124.00000000000000000000"/>
+                                <coordinate x="1416.61910299999999551801" y="2026.37750400000004447065"/>
+                                <coordinate x="1416.61910299999999551801" y="2122.59000013215700164437"/>
+                                <coordinate x="1626.00000000000022737368" y="2122.59000013215700164437"/>
                             </coordinates>
                             <geometries>
                                 <geometry>horizontal</geometry>
@@ -24214,8 +24220,8 @@
                     <connect endport="Pleave" endcomponent="FFB_3" startport="Pexiting" startcomponent="FFB_11">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1463.95245988847636908758" y="2005.87750429851121225511"/>
-                                <coordinate x="1573.19564300000001821900" y="2005.87750429851121225511"/>
+                                <coordinate x="1463.95245999999997366103" y="2005.87750400000004447065"/>
+                                <coordinate x="1573.19564300000001821900" y="2005.87750400000004447065"/>
                                 <coordinate x="1573.19564300000001821900" y="2144.04532199999994190875"/>
                             </coordinates>
                             <geometries>
@@ -24228,8 +24234,8 @@
                     <connect endport="Pleave" endcomponent="FFB_2" startport="Pexiting" startcomponent="FFB_11">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1463.95245988847636908758" y="2005.87750429851121225511"/>
-                                <coordinate x="1492.60466044134545882116" y="2005.87750429851121225511"/>
+                                <coordinate x="1463.95245999999997366103" y="2005.87750400000004447065"/>
+                                <coordinate x="1492.60466044134545882116" y="2005.87750400000004447065"/>
                                 <coordinate x="1492.60466044134545882116" y="2069.69763178143602999626"/>
                                 <coordinate x="1443.18374300000004950562" y="2069.69763178143602999626"/>
                                 <coordinate x="1443.18374300000004950562" y="2143.63142500000003565219"/>
@@ -24321,7 +24327,7 @@
                 <hopsangui>
                     <pose x="2533.502609" y="2834.673247" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
-                    <viewport x="2338.65" y="2760.19" zoom="0.842152"/>
+                    <viewport x="1973.29" y="2443.53" zoom="0.70922"/>
                     <ports hidden="1"/>
                     <names hidden="0"/>
                     <scriptfile path=""/>
@@ -24886,7 +24892,7 @@
                                 <coordinate x="2160.11956797608809210942" y="2695.91946081610967667075"/>
                                 <coordinate x="2043.16996136600755562540" y="2695.91946081610967667075"/>
                                 <coordinate x="2043.16996136600755562540" y="2612.90000300000019706204"/>
-                                <coordinate x="2043.42996500000003834430" y="2612.90000300000019706204"/>
+                                <coordinate x="2043.42996499999981097062" y="2612.90000300000019706204"/>
                             </coordinates>
                             <geometries>
                                 <geometry>horizontal</geometry>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4632" hopsancoreversion="0.6.x_r4631">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4760" hopsancoreversion="0.6.x_r4760">
     <requirements>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
         <componentlibrary>PettersComponentLibrary</componentlibrary>
@@ -11,9 +11,9 @@
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2271.51" y="2497.81" zoom="0.70922"/>
+            <viewport x="2272.21" y="2497.81" zoom="0.70922"/>
             <ports hidden="1"/>
-            <names hidden="0"/>
+            <names hidden="1"/>
             <scriptfile path=""/>
             <hopsanobjectappearance version="0.3">
                 <modelobject typename="Subsystem" displayname="AircraftTurningActuatorTest">
@@ -2165,6 +2165,24 @@
                         </connect>
                     </stuff>
                 </post>
+                <post number="148">
+                    <stuff what="movedobject" name="Angle &amp; Velocity Source_1">
+                        <oldpos>1998.9 2504.13</oldpos>
+                        <newpos>1960.83 2477.34</newpos>
+                    </stuff>
+                </post>
+                <post number="149">
+                    <stuff what="movedobject" name="Angle &amp; Velocity Source">
+                        <oldpos>1972.7 2459.58</oldpos>
+                        <newpos>2072.81 2441.25</newpos>
+                    </stuff>
+                </post>
+                <post number="150">
+                    <stuff what="movedobject" name="Angle &amp; Velocity Source_1">
+                        <oldpos>1960.83 2477.34</oldpos>
+                        <newpos>2070.81 2466.06</newpos>
+                    </stuff>
+                </post>
             </hopsanundo>
         </hopsangui>
         <objects>
@@ -2190,7 +2208,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2547" y="2320" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="AeroAtmosphere" displayname="AeroAtmosphere">
                             <ports/>
@@ -2229,7 +2247,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="1978.23" y="2542.2" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalAttitudeControl" displayname="SignalAttitudeControl">
                             <ports/>
@@ -2242,8 +2260,8 @@
                     <parameter value="0" type="double" name="omega"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="1996.200011" y="2466.080002" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <pose x="2096.309991" y="2447.750006" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="MechanicThetaSource" displayname="Angle &amp; Velocity Source">
                             <ports/>
@@ -2257,7 +2275,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2222.379998" y="2646.169995" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="MechanicAngleSensor" displayname="Angle Sensor">
                             <ports/>
@@ -2270,8 +2288,8 @@
                     <parameter value="0" type="double" name="omega"/>
                 </parameters>
                 <hopsangui>
-                    <pose x="2022.400008" y="2510.63487" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <pose x="2094.309994" y="2472.564878" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="MechanicThetaSource" displayname="Angle &amp; Velocity Source_1">
                             <ports/>
@@ -2444,7 +2462,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2528.289993" y="2510.63487" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="AeroAircraft6DOF" displayname="AeroAircraft6DOF">
                             <ports/>
@@ -2460,7 +2478,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2032.374139" y="2220.749792" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalSaturation" displayname="Saturation_1">
                             <ports/>
@@ -2488,7 +2506,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2304" y="2288.28" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="AeroJetEngine" displayname="AeroJetEngine">
                             <ports/>
@@ -2505,7 +2523,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="1623.929999" y="2346.42" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalPulse" displayname="Pulse">
                             <ports/>
@@ -2520,7 +2538,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="1947.612816" y="2220.749792" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalGain" displayname="Gain">
                             <ports/>
@@ -2534,7 +2552,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="1625.339989" y="2523" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalSource" displayname="Constant_1">
                             <ports/>
@@ -2548,7 +2566,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="1891.252496" y="2220.749792" flipped="true" a="180"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalSubtract" displayname="Subtract">
                             <ports/>
@@ -2569,7 +2587,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="1794.85" y="2474.47" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalPIlead" displayname="SignalPIlead">
                             <ports/>
@@ -2581,7 +2599,7 @@
                 <parameters/>
                 <hopsangui>
                     <pose x="2745.439989" y="2715.759997" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalSink" displayname="Sink_1">
                             <ports/>
@@ -2593,7 +2611,7 @@
                 <parameters/>
                 <hopsangui>
                     <pose x="2784.960006" y="2427.82" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalSink" displayname="Scope_1">
                             <ports/>
@@ -2605,7 +2623,7 @@
                 <parameters/>
                 <hopsangui>
                     <pose x="2684.729995" y="2763.360001" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalSink" displayname="Sink_2">
                             <ports/>
@@ -2621,7 +2639,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="1625.319992" y="2474.47" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalStep" displayname="Step">
                             <ports/>
@@ -2633,7 +2651,7 @@
                 <parameters/>
                 <hopsangui>
                     <pose x="2130.950001" y="2647.589999" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalSink" displayname="Sink_3">
                             <ports/>
@@ -2647,7 +2665,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="1623.950001" y="2220.749792" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalSource" displayname="Constant">
                             <ports/>
@@ -2664,7 +2682,7 @@
                 </parameters>
                 <hopsangui>
                     <pose x="2164" y="2367" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="AeroFuelTank" displayname="AeroFuelTank">
                             <ports/>
@@ -2678,8 +2696,8 @@
                 <parameters/>
                 <hopsangui>
                     <pose x="2122.590001" y="2543" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
-                    <viewport x="2271.51" y="2497.81" zoom="0.70922"/>
+                    <nametext position="0" visible="0"/>
+                    <viewport x="2272.21" y="2497.81" zoom="0.70922"/>
                     <ports hidden="1"/>
                     <names hidden="0"/>
                     <scriptfile path=""/>
@@ -3799,7 +3817,7 @@
                         <hopsangui>
                             <pose x="2289.354256" y="2571.65" flipped="false" a="0"/>
                             <nametext position="0" visible="1"/>
-                            <viewport x="2271.51" y="2497.81" zoom="0.70922"/>
+                            <viewport x="2272.21" y="2497.81" zoom="0.70922"/>
                             <ports hidden="1"/>
                             <names hidden="0"/>
                             <scriptfile path=""/>
@@ -4927,7 +4945,7 @@
                         <hopsangui>
                             <pose x="2291.764256" y="2491.65" flipped="false" a="0"/>
                             <nametext position="0" visible="1"/>
-                            <viewport x="2271.51" y="2497.81" zoom="0.70922"/>
+                            <viewport x="2272.21" y="2497.81" zoom="0.70922"/>
                             <ports hidden="1"/>
                             <names hidden="0"/>
                             <scriptfile path=""/>
@@ -5331,7 +5349,7 @@
                         <hopsangui>
                             <pose x="2288.354256" y="2410.65" flipped="false" a="0"/>
                             <nametext position="0" visible="1"/>
-                            <viewport x="2271.51" y="2497.81" zoom="0.70922"/>
+                            <viewport x="2272.21" y="2497.81" zoom="0.70922"/>
                             <ports hidden="1"/>
                             <names hidden="0"/>
                             <scriptfile path=""/>
@@ -5754,7 +5772,7 @@
                         <hopsangui>
                             <pose x="2288.354256" y="2330.65" flipped="false" a="0"/>
                             <nametext position="0" visible="1"/>
-                            <viewport x="2271.51" y="2497.81" zoom="0.70922"/>
+                            <viewport x="2272.21" y="2497.81" zoom="0.70922"/>
                             <ports hidden="1"/>
                             <names hidden="0"/>
                             <scriptfile path=""/>
@@ -6157,7 +6175,7 @@
                         <hopsangui>
                             <pose x="2289.354256" y="2250.65" flipped="false" a="0"/>
                             <nametext position="0" visible="1"/>
-                            <viewport x="2271.51" y="2497.81" zoom="0.70922"/>
+                            <viewport x="2272.21" y="2497.81" zoom="0.70922"/>
                             <ports hidden="1"/>
                             <names hidden="0"/>
                             <scriptfile path=""/>
@@ -7129,7 +7147,7 @@
                 <parameters/>
                 <hopsangui>
                     <pose x="2753.870012" y="2805.509999" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalSink" displayname="Scope">
                             <ports/>
@@ -7142,7 +7160,7 @@
             <connect endport="in" endcomponent="Sink_2" startport="out" startcomponent="Pulse">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="1636.42999943600011647504" y="2346.42000000000007275958"/>
+                        <coordinate x="1636.42999899999995250255" y="2346.42000000000007275958"/>
                         <coordinate x="1891.46890000000030340743" y="2346.42000000000007275958"/>
                         <coordinate x="1891.46890000000030340743" y="2771.41140000000041254680"/>
                         <coordinate x="2664.72999500000014450052" y="2771.41140000000041254680"/>
@@ -7162,7 +7180,7 @@
                     <coordinates>
                         <coordinate x="2373.11757299999999304418" y="2615.13486999999986437615"/>
                         <coordinate x="2373.11757299999999304418" y="2715.75999700000011216616"/>
-                        <coordinate x="2725.43998928200016962364" y="2715.75999700000011216616"/>
+                        <coordinate x="2725.43998899999996865517" y="2715.75999700000011216616"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -7324,7 +7342,7 @@
             <connect endport="Pfin" endcomponent="AeroAircraft6DOF" startport="ContainerPort_5" startcomponent="HydraulicActuationSystem">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2167.59000056399963796139" y="2563.00000000000000000000"/>
+                        <coordinate x="2167.59000100000002930756" y="2563.00000000000000000000"/>
                         <coordinate x="2234.85000000000036379788" y="2563.00000000000000000000"/>
                         <coordinate x="2234.85000000000036379788" y="2587.02146858917330973782"/>
                         <coordinate x="2348.28999299999986760668" y="2587.02146858917330973782"/>
@@ -7361,7 +7379,7 @@
                         <coordinate x="2010.73000000000001818989" y="2548.59999999999990905053"/>
                         <coordinate x="2060.40999999999985448085" y="2548.59999999999990905053"/>
                         <coordinate x="2060.40999999999985448085" y="2543.00000000000000000000"/>
-                        <coordinate x="2077.59000056399963796139" y="2543.00000000000000000000"/>
+                        <coordinate x="2077.59000100000002930756" y="2543.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -7377,7 +7395,7 @@
                         <coordinate x="2010.73000000000001818989" y="2548.59999999999990905053"/>
                         <coordinate x="2060.40999999999985448085" y="2548.59999999999990905053"/>
                         <coordinate x="2060.40999999999985448085" y="2553.00000000000000000000"/>
-                        <coordinate x="2077.59000056399963796139" y="2553.00000000000000000000"/>
+                        <coordinate x="2077.59000100000002930756" y="2553.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -7406,7 +7424,7 @@
             <connect endport="Ppsiref" endcomponent="SignalAttitudeControl" startport="out" startcomponent="Pulse">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="1636.42999943600011647504" y="2346.42000000000007275958"/>
+                        <coordinate x="1636.42999899999995250255" y="2346.42000000000007275958"/>
                         <coordinate x="1909.14000000000010004442" y="2346.42000000000007275958"/>
                         <coordinate x="1909.14000000000010004442" y="2548.59999999999990905053"/>
                         <coordinate x="1945.73000000000001818989" y="2548.59999999999990905053"/>
@@ -7522,7 +7540,7 @@
             <connect endport="Pal1" endcomponent="AeroAircraft6DOF" startport="ContainerPort_9" startcomponent="HydraulicActuationSystem">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2167.59000056399963796139" y="2523.00000000000000000000"/>
+                        <coordinate x="2167.59000100000002930756" y="2523.00000000000000000000"/>
                         <coordinate x="2233.43979066345082173939" y="2523.00000000000000000000"/>
                         <coordinate x="2233.43979066345082173939" y="2434.81986800000004222966"/>
                         <coordinate x="2348.28999299999986760668" y="2434.81986800000004222966"/>
@@ -7540,7 +7558,7 @@
             <connect endport="Par1" endcomponent="AeroAircraft6DOF" startport="ContainerPort_8" startcomponent="HydraulicActuationSystem">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2167.59000056399963796139" y="2533.00000000000000000000"/>
+                        <coordinate x="2167.59000100000002930756" y="2533.00000000000000000000"/>
                         <coordinate x="2247.53978934188171479036" y="2533.00000000000000000000"/>
                         <coordinate x="2247.53978934188171479036" y="2460.94486800000004222966"/>
                         <coordinate x="2348.28999299999986760668" y="2460.94486800000004222966"/>
@@ -7558,7 +7576,7 @@
             <connect endport="Par2" endcomponent="AeroAircraft6DOF" startport="ContainerPort_6" startcomponent="HydraulicActuationSystem">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2167.59000056399963796139" y="2553.00000000000000000000"/>
+                        <coordinate x="2167.59000100000002930756" y="2553.00000000000000000000"/>
                         <coordinate x="2244.71978960619526333176" y="2553.00000000000000000000"/>
                         <coordinate x="2244.71978960619526333176" y="2566.10487117176580795785"/>
                         <coordinate x="2348.28999299999986760668" y="2566.10487117176580795785"/>
@@ -7576,7 +7594,7 @@
             <connect endport="Pal2" endcomponent="AeroAircraft6DOF" startport="ContainerPort_7" startcomponent="HydraulicActuationSystem">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2167.59000056399963796139" y="2543.00000000000000000000"/>
+                        <coordinate x="2167.59000100000002930756" y="2543.00000000000000000000"/>
                         <coordinate x="2258.81978828462615638273" y="2543.00000000000000000000"/>
                         <coordinate x="2258.81978828462615638273" y="2536.20987077529525777209"/>
                         <coordinate x="2348.28999299999986760668" y="2536.20987077529525777209"/>
@@ -7594,8 +7612,8 @@
             <connect endport="Pal12" endcomponent="AeroAircraft6DOF" startport="Pmr1" startcomponent="Angle &amp; Velocity Source">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2019.70001099999990401557" y="2466.08000200000014956458"/>
-                        <coordinate x="2255.99978854894015967147" y="2466.08000200000014956458"/>
+                        <coordinate x="2119.80999097800395247759" y="2447.75000566599874218809"/>
+                        <coordinate x="2255.99978854894015967147" y="2447.75000566599874218809"/>
                         <coordinate x="2255.99978854894015967147" y="2497.06986800000004222966"/>
                         <coordinate x="2348.28999299999986760668" y="2497.06986800000004222966"/>
                         <coordinate x="2348.28999299999986760668" y="2484.50986999999986437615"/>
@@ -7612,8 +7630,8 @@
             <connect endport="Par12" endcomponent="AeroAircraft6DOF" startport="Pmr1" startcomponent="Angle &amp; Velocity Source_1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2045.90000800000007075141" y="2510.63486999999986437615"/>
-                        <coordinate x="2348.28999299999986760668" y="2510.63486999999986437615"/>
+                        <coordinate x="2117.80999361800286351354" y="2472.56487761399876035284"/>
+                        <coordinate x="2348.28999299999986760668" y="2472.56487761399876035284"/>
                         <coordinate x="2348.28999299999986760668" y="2510.63486999999986437615"/>
                     </coordinates>
                     <geometries>
@@ -7630,7 +7648,7 @@
                         <coordinate x="2621.39355299999988346826" y="2676.17974916618049974204"/>
                         <coordinate x="2798.84973766852908738656" y="2676.17974916618049974204"/>
                         <coordinate x="2798.84973766852908738656" y="2715.75999700000011216616"/>
-                        <coordinate x="2765.43998928200016962364" y="2715.75999700000011216616"/>
+                        <coordinate x="2765.43998899999996865517" y="2715.75999700000011216616"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -7718,7 +7736,7 @@
             <connect endport="in1" endcomponent="Subtract" startport="out" startcomponent="Constant">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="1636.45000140999968607503" y="2220.74979200000007040217"/>
+                        <coordinate x="1636.45000099999992926314" y="2220.74979200000007040217"/>
                         <coordinate x="1883.75982343836494692368" y="2220.74979200000007040217"/>
                         <coordinate x="1883.75982343836494692368" y="2220.74979200000007040217"/>
                         <coordinate x="1878.75249600000006466871" y="2220.74979200000007040217"/>
@@ -7770,7 +7788,7 @@
             <connect endport="P1" endcomponent="Angle Sensor" startport="ContainerPort_6" startcomponent="HydraulicActuationSystem">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2167.59000056399963796139" y="2553.00000000000000000000"/>
+                        <coordinate x="2167.59000100000002930756" y="2553.00000000000000000000"/>
                         <coordinate x="2185.49979515678569441661" y="2553.00000000000000000000"/>
                         <coordinate x="2185.49979515678569441661" y="2669.12974982696505321655"/>
                         <coordinate x="2222.37999799999988681520" y="2669.12974982696505321655"/>
@@ -7788,7 +7806,7 @@
             <connect endport="Pphiref" endcomponent="SignalAttitudeControl" startport="out" startcomponent="Constant_1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="1637.83998918000065714295" y="2523.00000000000000000000"/>
+                        <coordinate x="1637.83998900000005960464" y="2523.00000000000000000000"/>
                         <coordinate x="1925.72999973568607856578" y="2523.00000000000000000000"/>
                         <coordinate x="1925.72999973568607856578" y="2523.00000000000000000000"/>
                         <coordinate x="1945.73000000000001818989" y="2523.00000000000000000000"/>
@@ -7823,7 +7841,7 @@
                         <coordinate x="2010.73000000000001818989" y="2523.00000000000000000000"/>
                         <coordinate x="2060.40999999999985448085" y="2523.00000000000000000000"/>
                         <coordinate x="2060.40999999999985448085" y="2523.00000000000000000000"/>
-                        <coordinate x="2077.59000056399963796139" y="2523.00000000000000000000"/>
+                        <coordinate x="2077.59000100000002930756" y="2523.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -7839,7 +7857,7 @@
                         <coordinate x="2010.73000000000001818989" y="2535.79999999999972715159"/>
                         <coordinate x="2060.40999999999985448085" y="2535.79999999999972715159"/>
                         <coordinate x="2060.40999999999985448085" y="2533.00000000000000000000"/>
-                        <coordinate x="2077.59000056399963796139" y="2533.00000000000000000000"/>
+                        <coordinate x="2077.59000100000002930756" y="2533.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -7855,7 +7873,7 @@
                         <coordinate x="2010.73000000000001818989" y="2561.39999999999963620212"/>
                         <coordinate x="2060.40999999999985448085" y="2561.39999999999963620212"/>
                         <coordinate x="2060.40999999999985448085" y="2563.00000000000000000000"/>
-                        <coordinate x="2077.59000056399963796139" y="2563.00000000000000000000"/>
+                        <coordinate x="2077.59000100000002930756" y="2563.00000000000000000000"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -7888,7 +7906,7 @@
             <connect endport="in" endcomponent="Sink_2" startport="out" startcomponent="Pulse">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="1636.42999943600011647504" y="2346.42000000000007275958"/>
+                        <coordinate x="1636.42999899999995250255" y="2346.42000000000007275958"/>
                         <coordinate x="1904.90982145601128650014" y="2346.42000000000007275958"/>
                         <coordinate x="1904.90982145601128650014" y="2763.36000100000001111766"/>
                         <coordinate x="2664.72999500000014450052" y="2763.36000100000001111766"/>
@@ -7904,7 +7922,7 @@
             <connect endport="Pyref" endcomponent="SignalPIlead" startport="out" startcomponent="Step">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="1637.81999174400039009925" y="2474.46999999999979991117"/>
+                        <coordinate x="1637.81999199999995653343" y="2474.46999999999979991117"/>
                         <coordinate x="1736.34999999999990905053" y="2474.46999999999979991117"/>
                         <coordinate x="1736.34999999999990905053" y="2474.46999999999979991117"/>
                         <coordinate x="1756.34999999999990905053" y="2474.46999999999979991117"/>

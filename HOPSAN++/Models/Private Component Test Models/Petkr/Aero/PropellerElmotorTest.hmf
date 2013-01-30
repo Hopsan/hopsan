@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4734" hopsancoreversion="0.6.x_r4734">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4760" hopsancoreversion="0.6.x_r4760">
     <requirements>
+        <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
         <componentlibrary>PettersComponentLibrary</componentlibrary>
     </requirements>
     <system logsamples="2048" typename="Subsystem" name="PropellerElmotorTest">
@@ -10,7 +11,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="1952" y="2427.5" zoom="0.999999"/>
+            <viewport x="2157" y="2430" zoom="0.999999"/>
             <ports hidden="1"/>
             <names hidden="0"/>
             <scriptfile path=""/>
@@ -62,7 +63,7 @@
                     <parameter value="1" type="double" name="umin"/>
                     <parameter value="10000" type="double" name="imax"/>
                     <parameter value="0.01" type="double" name="imin"/>
-                    <parameter value="1000" type="double" name="umax"/>
+                    <parameter value="50" type="double" name="umax"/>
                 </parameters>
                 <hopsangui>
                     <pose x="1873.974799" y="2389.309324" flipped="false" a="0"/>
@@ -109,6 +110,9 @@
                     <parameter value="0.2" type="double" name="b2"/>
                     <parameter value="0.205" type="double" name="g1"/>
                     <parameter value="0.2" type="double" name="g2"/>
+                    <parameter value="0.12" type="double" name="ct0"/>
+                    <parameter value="0.08" type="double" name="cp0"/>
+                    <parameter value="4" type="double" name="k"/>
                     <parameter value="1.25" type="double" name="Up"/>
                     <parameter value="1.25" type="double" name="rho"/>
                 </parameters>
@@ -455,7 +459,7 @@
                     <coordinates>
                         <coordinate x="2384.99988100000018675928" y="2507.50000000000000000000"/>
                         <coordinate x="2384.99988100000018675928" y="2561.89083500000015192199"/>
-                        <coordinate x="2447.66537199999947915785" y="2561.89083500000015192199"/>
+                        <coordinate x="2447.66537199999993390520" y="2561.89083500000015192199"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -471,7 +475,7 @@
                         <coordinate x="2388.99986500000022715540" y="2530.12631338212486298289"/>
                         <coordinate x="2523.99987322558172309073" y="2530.12631338212486298289"/>
                         <coordinate x="2523.99987322558172309073" y="2561.89083500000015192199"/>
-                        <coordinate x="2487.66537199999947915785" y="2561.89083500000015192199"/>
+                        <coordinate x="2487.66537199999993390520" y="2561.89083500000015192199"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
