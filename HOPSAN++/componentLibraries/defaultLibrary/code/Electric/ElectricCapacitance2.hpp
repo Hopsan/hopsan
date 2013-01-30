@@ -123,6 +123,8 @@ public:
         //Read outputVariables from nodes
 
         //InitialExpressions
+        Zcel1 = 1/mCc*mTimestep/(1.0-malpha);
+        Zcel2 = Zcel1;
         cel1r = uel1 + 2*iel1*Zcel1;
         cel2r = uel2 + 2*iel2*Zcel2;
         cel1rf = uel1;
