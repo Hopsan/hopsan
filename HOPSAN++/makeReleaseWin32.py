@@ -13,7 +13,9 @@ dependecyBinFiles=".\\hopsan_bincontents_Qt484_MinGW44_Py273.7z"
 
 inkscapeDirList = ["C:\\Program Files\\Inkscape", "C:\\Program Files (x86)\\Inkscape"]
 innoDirList = ["C:\\Program Files\\Inno Setup 5", "C:\\Program Files (x86)\\Inno Setup 5"]
-qtsdkDirList = ["C:\Qt", "C:\QtSDK"]
+qtlibDirList = ["C:\Qt\4.8.4"]
+qtcreatorDirList = ["C:\Qt\qtcreator-2.6.0", "C:\Qt\qtcreator-2.6.1"]
+mingwDirList = ["C:\mingw\bin", "C:\MinGW-gcc440_1\mingw\bin"]
 msvc2008DirList = ["C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin", "C:\Program (x86)\Microsoft SDKs\Windows\v7.0\Bin"]
 msvc2010DirList = ["C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin", "C:\Program (x86)\Microsoft SDKs\Windows\v7.1\Bin"]
 
@@ -128,7 +130,7 @@ def verifyPaths():
 
     global inkscapeDir
     global innoDir
-    global qtsdkDir
+    global qtDir
     global msvc2008Dir
     global msvc2010Dir
     global jomDir
@@ -136,13 +138,21 @@ def verifyPaths():
     global mingwDir
    
     #Check if Qt path exists
-    qtsdkDir=selectPathFromList(qtsdkDirList, "Qt SDK could not be found in one of the expected locations.", "Found Qt SDK!")
-    if qtsdkDir == "":
+    qtDir=selectPathFromList(qtlibDirList, "Qt libs could not be found in one of the expected locations.", "Found Qt libs!")
+    if qtDir == "":
         return False;    
 
-    jomDir=qtsdkDir+"\\qtcreator-2.6.0\\bin"
-    qmakeDir=qtsdkDir+"\\4.8.4\\bin"
-    mingwDir=qtsdkDir+"c:\\mingw\\bin"
+    #Check if qtcreator path exist	
+    creatorDir=selectPathFromList(qtcreatorDirList, "Qt Creator could not be found in one of the expected locations.", "Found Qt Creator!")
+    if creatorDir == "":
+        return False;
+		
+    jomDir=creatorDir+"\\bin"
+    qmakeDir=qtDir+"\\bin"
+
+    mingwDir=selectPathFromList(mingwDirList, "MinGW could not be found in one of the expected locations.", "Found MinGW!")
+    if mingwDir == "":
+        return False
 
     #Make sure the correct inno dir is used, 32 or 64 bit computers (Inno Setup is 32-bit)
     innoDir=selectPathFromList(innoDirList, "Inno Setup 5 is not installed in expected place.", "Found Inno Setup!")
