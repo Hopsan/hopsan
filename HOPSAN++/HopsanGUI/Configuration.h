@@ -73,7 +73,8 @@ public:
     QString getLastScriptFile();
     QString getInitScript();
     bool getGroupMessagesByTag();
-    int getGenerationLimit();
+    int getGenerationLimit() const;
+    bool getCacheLogData() const;
     QString getLoadModelDir();
     QString getModelGfxDir();
     QString getPlotDataDir();
@@ -113,6 +114,7 @@ public:
     void setInitScript(QString script);
     void setGroupMessagesByTag(bool value);
     void setGenerationLimit(int value);
+    void setCacheLogData(const bool value);
     void setLoadModelDir(QString value);
     void setModelGfxDir(QString value);
     void setPlotDataDir(QString value);
@@ -156,6 +158,7 @@ private:
     QString mInitScript;
     bool mGroupMessagesByTag;
     int mGenerationLimit;
+    bool mCacheLogData;
     QString mLoadModelDir;
     QString mModelGfxDir;
     QString mPlotDataDir;

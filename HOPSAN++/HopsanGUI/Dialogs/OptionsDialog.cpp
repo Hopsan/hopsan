@@ -156,6 +156,9 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpGenerationLimitSpinBox->setMaximum(5000000);
     mpGenerationLimitSpinBox->setSingleStep(1);
 
+    QLabel *pCacheLogDataLabel = new QLabel(tr("Cache log data on hard drive"));
+    mpCacheLogDataCeckBox = new QCheckBox();
+
     mpValueUnitLabel = new QLabel(tr("Default Value Unit"));
     mpValueUnitComboBox = new QComboBox();
     mpPressureUnitLabel = new QLabel(tr("Default Pressure Unit"));
@@ -185,38 +188,52 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpAddAngleUnitButton = new QPushButton("Add Custom Angle Unit", this);
     mpAddAngularVelocityUnitButton = new QPushButton("Add Custom Angular Velocity Unit", this);
 
+    int r=0;
     mpPlottingWidget = new QWidget(this);
     mpPlottingLayout = new QGridLayout;
-    mpPlottingLayout->addWidget(mpGenerationLimitLabel,             0, 0, 1, 3);
-    mpPlottingLayout->addWidget(mpGenerationLimitSpinBox,           0, 2, 1, 1);
-    mpPlottingLayout->addWidget(mpValueUnitLabel,                   1, 0);
-    mpPlottingLayout->addWidget(mpValueUnitComboBox,                1, 1);
-    mpPlottingLayout->addWidget(mpAddValueUnitButton,               1, 2);
-    mpPlottingLayout->addWidget(mpPressureUnitLabel,                2, 0);
-    mpPlottingLayout->addWidget(mpPressureUnitComboBox,             2, 1);
-    mpPlottingLayout->addWidget(mpAddPressureUnitButton,            2, 2);
-    mpPlottingLayout->addWidget(mpFlowUnitLabel,                    3, 0);
-    mpPlottingLayout->addWidget(mpFlowUnitComboBox,                 3, 1);
-    mpPlottingLayout->addWidget(mpAddFlowUnitButton,                3, 2);
-    mpPlottingLayout->addWidget(mpForceUnitLabel,                   4, 0);
-    mpPlottingLayout->addWidget(mpForceUnitComboBox,                4, 1);
-    mpPlottingLayout->addWidget(mpAddForceUnitButton,               4, 2);
-    mpPlottingLayout->addWidget(mpPositionUnitLabel,                5, 0);
-    mpPlottingLayout->addWidget(mpPositionUnitComboBox,             5, 1);
-    mpPlottingLayout->addWidget(mpAddPositionUnitButton,            5, 2);
-    mpPlottingLayout->addWidget(mpVelocityUnitLabel,                6, 0);
-    mpPlottingLayout->addWidget(mpVelocityUnitComboBox,             6, 1);
-    mpPlottingLayout->addWidget(mpAddVelocityUnitButton,            6, 2);
-    mpPlottingLayout->addWidget(mpTorqueUnitLabel,                  7, 0);
-    mpPlottingLayout->addWidget(mpTorqueUnitComboBox,               7, 1);
-    mpPlottingLayout->addWidget(mpAddTorqueUnitButton,              7, 2);
-    mpPlottingLayout->addWidget(mpAngleUnitLabel,                   8, 0);
-    mpPlottingLayout->addWidget(mpAngleUnitComboBox,                8, 1);
-    mpPlottingLayout->addWidget(mpAddAngleUnitButton,               8, 2);
-    mpPlottingLayout->addWidget(mpAngularVelocityUnitLabel,         9, 0);
-    mpPlottingLayout->addWidget(mpAngularVelocityUnitComboBox,      9, 1);
-    mpPlottingLayout->addWidget(mpAddAngularVelocityUnitButton,     9, 2);
-    mpPlottingLayout->addWidget(new QWidget(),                      10, 0, 1, 3);
+    mpPlottingLayout->addWidget(pCacheLogDataLabel,                 r, 0);
+    mpPlottingLayout->addWidget(mpCacheLogDataCeckBox,              r, 1);
+    ++r;
+    mpPlottingLayout->addWidget(mpGenerationLimitLabel,             r, 0, 1, 3);
+    mpPlottingLayout->addWidget(mpGenerationLimitSpinBox,           r, 2, 1, 1);
+    ++r;
+    mpPlottingLayout->addWidget(mpValueUnitLabel,                   r, 0);
+    mpPlottingLayout->addWidget(mpValueUnitComboBox,                r, 1);
+    mpPlottingLayout->addWidget(mpAddValueUnitButton,               r, 2);
+    ++r;
+    mpPlottingLayout->addWidget(mpPressureUnitLabel,                r, 0);
+    mpPlottingLayout->addWidget(mpPressureUnitComboBox,             r, 1);
+    mpPlottingLayout->addWidget(mpAddPressureUnitButton,            r, 2);
+    ++r;
+    mpPlottingLayout->addWidget(mpFlowUnitLabel,                    r, 0);
+    mpPlottingLayout->addWidget(mpFlowUnitComboBox,                 r, 1);
+    mpPlottingLayout->addWidget(mpAddFlowUnitButton,                r, 2);
+    ++r;
+    mpPlottingLayout->addWidget(mpForceUnitLabel,                   r, 0);
+    mpPlottingLayout->addWidget(mpForceUnitComboBox,                r, 1);
+    mpPlottingLayout->addWidget(mpAddForceUnitButton,               r, 2);
+    ++r;
+    mpPlottingLayout->addWidget(mpPositionUnitLabel,                r, 0);
+    mpPlottingLayout->addWidget(mpPositionUnitComboBox,             r, 1);
+    mpPlottingLayout->addWidget(mpAddPositionUnitButton,            r, 2);
+    ++r;
+    mpPlottingLayout->addWidget(mpVelocityUnitLabel,                r, 0);
+    mpPlottingLayout->addWidget(mpVelocityUnitComboBox,             r, 1);
+    mpPlottingLayout->addWidget(mpAddVelocityUnitButton,            r, 2);
+    ++r;
+    mpPlottingLayout->addWidget(mpTorqueUnitLabel,                  r, 0);
+    mpPlottingLayout->addWidget(mpTorqueUnitComboBox,               r, 1);
+    mpPlottingLayout->addWidget(mpAddTorqueUnitButton,              r, 2);
+    ++r;
+    mpPlottingLayout->addWidget(mpAngleUnitLabel,                   r, 0);
+    mpPlottingLayout->addWidget(mpAngleUnitComboBox,                r, 1);
+    mpPlottingLayout->addWidget(mpAddAngleUnitButton,               r, 2);
+    ++r;
+    mpPlottingLayout->addWidget(mpAngularVelocityUnitLabel,         r, 0);
+    mpPlottingLayout->addWidget(mpAngularVelocityUnitComboBox,      r, 1);
+    mpPlottingLayout->addWidget(mpAddAngularVelocityUnitButton,     r, 2);
+    ++r;
+    mpPlottingLayout->addWidget(new QWidget(),                      r, 0, 1, 3);
     mpPlottingLayout->setRowStretch(10, 1);
     mpPlottingWidget->setLayout(mpPlottingLayout);
 
@@ -325,6 +342,7 @@ void OptionsDialog::updateValues()
     gConfig.setUseMultiCore(mpUseMulticoreCheckBox->isChecked());
     gConfig.setNumberOfThreads(mpThreadsSpinBox->value());
     gConfig.setGenerationLimit(mpGenerationLimitSpinBox->value());
+    gConfig.setCacheLogData(mpCacheLogDataCeckBox->isChecked());
     for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)       //Loop through all containers and reduce their plot data
     {
         gpMainWindow->mpProjectTabs->getContainer(i)->getLogDataHandler()->limitPlotGenerations();
@@ -410,6 +428,7 @@ void OptionsDialog::show()
     mpThreadsSpinBox->setValue(gConfig.getNumberOfThreads());
     mpThreadsLabel->setEnabled(gConfig.getUseMulticore());
     mpGenerationLimitSpinBox->setValue(gConfig.getGenerationLimit());
+    mpCacheLogDataCeckBox->setChecked(gConfig.getCacheLogData());
     updateCustomUnits();
 
     QDialog::show();

@@ -69,6 +69,7 @@ void Configuration::saveToXml()
     appendDomBooleanNode(settings, "toggleportsbuttonchecked", gpMainWindow->mpTogglePortsAction->isChecked());
     appendDomBooleanNode(settings, "groupmessagesbytag", mGroupMessagesByTag);
     appendDomIntegerNode(settings, "generationlimit", mGenerationLimit);
+    appendDomBooleanNode(settings, "cachelogdata", mCacheLogData);
     appendDomTextNode(settings, "loadmodeldir", mLoadModelDir);
     appendDomTextNode(settings, "modelgfxdir", mModelGfxDir);
     appendDomTextNode(settings, "plotdatadir", mPlotDataDir);
@@ -265,6 +266,8 @@ void Configuration::loadFromXml()
                 mGroupMessagesByTag = parseDomBooleanNode(settingsElement.firstChildElement("groupmessagesbytag"));
             if(!settingsElement.firstChildElement("generationlimit").isNull())
                 mGenerationLimit = parseDomIntegerNode(settingsElement.firstChildElement("generationlimit"));
+            if(!settingsElement.firstChildElement("cachelogdata").isNull())
+                mCacheLogData = parseDomBooleanNode(settingsElement.firstChildElement("cachelogdata"));
             if(!settingsElement.firstChildElement("loadmodeldir").isNull())
                 mLoadModelDir = settingsElement.firstChildElement("loadmodeldir").text();
             if(!settingsElement.firstChildElement("modelgfxdir").isNull())
@@ -479,6 +482,8 @@ void Configuration::loadDefaultsFromXml()
                 mGroupMessagesByTag = parseDomBooleanNode(settingsElement.firstChildElement("groupmessagesbytag"));
             if(!settingsElement.firstChildElement("generationlimit").isNull())
                 mGenerationLimit = parseDomIntegerNode(settingsElement.firstChildElement("generationlimit"));
+            if(!settingsElement.firstChildElement("cachelogdata").isNull())
+                mCacheLogData = parseDomBooleanNode(settingsElement.firstChildElement("cachelogdata"));
             if(!settingsElement.firstChildElement("loadmodeldir").isNull())
                 mLoadModelDir = settingsElement.firstChildElement("loadmodeldir").text();
             if(!settingsElement.firstChildElement("modelgfxdir").isNull())
@@ -859,9 +864,14 @@ bool Configuration::getGroupMessagesByTag()
 
 
 //! @brief Returns the limit setting for plot generations
-int Configuration::getGenerationLimit()
+int Configuration::getGenerationLimit() const
 {
     return mGenerationLimit;
+}
+
+bool Configuration::getCacheLogData() const
+{
+    return mCacheLogData;
 }
 
 
@@ -1237,6 +1247,12 @@ void Configuration::setGroupMessagesByTag(bool value)
 void Configuration::setGenerationLimit(int value)
 {
     mGenerationLimit = value;
+    saveToXml();
+}
+
+void Configuration::setCacheLogData(const bool value)
+{
+    mCacheLogData = value;
     saveToXml();
 }
 

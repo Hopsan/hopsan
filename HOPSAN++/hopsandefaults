@@ -17,6 +17,7 @@
         <toggleportsbuttonchecked>true</toggleportsbuttonchecked>
         <groupmessagesbytag>true</groupmessagesbytag>
         <generationlimit>100</generationlimit>
+	<cachelogdata>true</cachelogdata>
         <loadmodeldir/>
     </settings>
     <style>

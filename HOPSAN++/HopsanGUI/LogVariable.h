@@ -94,17 +94,20 @@ class MultiDataVectorCache
 public:
     MultiDataVectorCache(const QString fileName);
     ~MultiDataVectorCache();
-    bool addVector(const QVector<double> &rDataVector, quint64 &rStartByte);
+    bool addVector(const QVector<double> &rDataVector, quint64 &rStartByte, quint64 &rNumBytes);
 
     bool copyData(const quint64 startByte, const quint64 nBytes, QVector<double> &rData);
     bool replaceData(const quint64 startByte, const QVector<double> &rNewData);
-    bool peek(const quint64 startByte, double &rVal);
-    bool poke(const quint64 startByte, const double val);
+    bool peek(const quint64 byte, double &rVal);
+    bool poke(const quint64 byte, const double val);
 
     bool checkoutVector(const quint64 startByte, const quint64 nBytes, QVector<double> *&rpData);
     bool returnVector(QVector<double> *&rpData);
 
     QString getError() const;
+
+    void incrementSubscribers();
+    void decrementSubscribers();
 
 protected:
     typedef struct CheckoutInfo{
@@ -114,7 +117,7 @@ protected:
     }CheckoutInfoT;
 
     bool writeInCache(const quint64 startByte, const QVector<double> &rDataVector);
-    bool appendToCache(const QVector<double> &rDataVector, quint64 &rStartByte);
+    bool appendToCache(const QVector<double> &rDataVector, quint64 &rStartByte, quint64 &rNumBytes);
     bool readToMem(const quint64 startByte, const quint64 nBytes, QVector<double> *pDataVector);
     void removeCacheFile();
 
@@ -128,7 +131,8 @@ typedef QSharedPointer<MultiDataVectorCache> SharedMultiDataVectorCacheT;
 class CachableDataVector
 {
 public:
-    CachableDataVector(const QVector<double> &rDataVector, SharedMultiDataVectorCacheT pMultiCache);
+    CachableDataVector(const QVector<double> &rDataVector, SharedMultiDataVectorCacheT pMultiCache, const bool cached=true);
+    ~CachableDataVector();
 
     bool setCached(const bool cached);
     bool isCached() const;
@@ -153,8 +157,8 @@ private:
     QString mError;
     SharedMultiDataVectorCacheT mpMultiCache;
     QVector<double> mDataVector;
-    quint64 mStartByte;
-    quint64 mNumElements;
+    quint64 mCacheStartByte;
+    quint64 mCacheNumBytes;
 };
 
 //! @class VariableDescription

@@ -44,8 +44,6 @@ class OptionsDialog : public QDialog
 public:
     OptionsDialog(MainWindow *parent = 0);
 
-    //MainWindow *mpParentMainWindow;
-
 public slots:
     void reset();
     void updateValues();
@@ -95,6 +93,7 @@ private:
 
     QLabel *mpGenerationLimitLabel;
     QSpinBox *mpGenerationLimitSpinBox;
+    QCheckBox *mpCacheLogDataCeckBox;
     QLabel *mpValueUnitLabel;
     QComboBox *mpValueUnitComboBox;
     QPushButton *mpAddValueUnitButton;
