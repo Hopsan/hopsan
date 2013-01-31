@@ -373,6 +373,9 @@ def copyFiles():
     #Export "Example Models" SVN directory to temporary directory
     os.system(r'svn export "Models\Example Models" "'+raw(tempDir)+r'\models\Example Models"')
 
+    #Export "Test Models" SVN directory to temporary directory
+    os.system(r'svn export "Models\Component Test" "'+raw(tempDir)+r'\models\Component Test"')
+
     #Export "Benchmark Models" SVN directory to temporary directory
     os.system(r'svn export "Models\Benchmark Models" "'+raw(tempDir)+r'\models\Benchmark Models"')
 
@@ -393,6 +396,8 @@ def copyFiles():
 
     #Copy "hopsandefaults" file to temporary directory
     os.system(r'copy hopsandefaults "'+raw(tempDir)+r'"\hopsandefaults')
+    #Copy "release notes" file to temporary directory
+    os.system(r'copy Hopsan-release-notes.txt "'+raw(tempDir)+r'"\Hopsan-release-notes.txt')
     
     return True
     
