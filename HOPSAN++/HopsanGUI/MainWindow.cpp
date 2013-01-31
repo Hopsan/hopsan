@@ -124,7 +124,7 @@ MainWindow::MainWindow(QWidget *parent)
 #ifdef DEVELOPMENT
     this->setWindowTitle(tr("Hopsan (development version)"));
 #else
-    this->setWindowTitle(tr("Hopsan");
+    this->setWindowTitle(tr("Hopsan"));
 #endif
     this->setWindowIcon(QIcon(QString(QString(ICONPATH) + tr("hopsan.png"))));
 

@@ -2,16 +2,18 @@
 :: 2 = qmakeDir
 :: 3 = hopsanDir
 
-setlocal enabledelayedexpansion
 
-echo %PATH%
+REM setlocal enabledelayedexpansion
 
 echo off
+echo %PATH%
+SET PATH=%PATH%;%1;
+SETX PATH "%PATH%;%1;"
+echo.
+echo %PATH%
+echo.
+echo on
 
-call %2\qtenv2.bat
-echo on
-call %1\mingw32-make.exe clean
-echo on
-call %2\qmake.exe %3\HopsanNG.pro -r -spec win32-g++ "CONFIG+=release"
-echo on
-call %1\mingw32-make.exe
+%1\mingw32-make.exe clean
+%2\qmake.exe %3\HopsanNG.pro -r -spec win32-g++ "CONFIG+=release"
+%1\mingw32-make.exe

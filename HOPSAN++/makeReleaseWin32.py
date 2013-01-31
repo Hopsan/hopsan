@@ -19,8 +19,6 @@ mingwDirList = ["C:\mingw\bin", "C:\MinGW-gcc440_1\mingw\bin"]
 msvc2008DirList = ["C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin", "C:\Program (x86)\Microsoft SDKs\Windows\v7.0\Bin"]
 msvc2010DirList = ["C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin", "C:\Program (x86)\Microsoft SDKs\Windows\v7.1\Bin"]
 
-innoDir=""
-
 STD_OUTPUT_HANDLE= -11
 
 
@@ -261,14 +259,14 @@ def buildRelease():
     os.rename(hopsanDir+"\HopsanCore\Dependencies\\"+tbbversion, hopsanDir+"\HopsanCore\Dependencies\\"+tbbversion+"_nope")
 
     #BUILD HOPSANCORE WITH MSVC
-    if not msvcCompile("2008", "x86"):
-        return False
-    if not msvcCompile("2008", "x64"):
-        return False
-    if not msvcCompile("2010", "x86"):
-        return False
-    if not msvcCompile("2010", "x64"):
-        return False
+#    if not msvcCompile("2008", "x86"):
+#        return False
+#    if not msvcCompile("2008", "x64"):
+#        return False
+#    if not msvcCompile("2010", "x86"):
+#        return False
+#    if not msvcCompile("2010", "x64"):
+#        return False
 
     #Rename TBB back again (to activate it)
     os.rename(hopsanDir+"\\HopsanCore\\Dependencies\\"+tbbversion+"_nope", hopsanDir+"\\HopsanCore\\Dependencies\\"+tbbversion)
