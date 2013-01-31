@@ -804,6 +804,7 @@ void MainWindow::createMenus()
     mpHelpMenu->addAction(mpHelpAction);
     mpHelpMenu->addAction(mpReleaseNotesAction);
     mpHelpMenu->addMenu(mpExamplesMenu);
+    mpHelpMenu->addMenu(mpTestModelsMenu);
     mpHelpMenu->addAction(mpIssueTrackerAction);
     mpHelpMenu->addAction(mpWebsiteAction);
     mpHelpMenu->addAction(mpNewVersionsAction);
@@ -923,27 +924,15 @@ void MainWindow::createToolbars()
     mpToolsToolBar->addAction(mpFlipHorizontalAction);
     mpToolsToolBar->addAction(mpFlipVerticalAction);
 
+    //! @todo whay are these two in teh createToolbars function
     mpExamplesMenu = new QMenu("Example Models");
-    QAction *pTempAction;
-    QStringList exampleModels;
-
     QDir exampleModelsDir(QString(MODELS_DEV_PATH+"Example Models/"));
-    QStringList filters;
-    filters << "*.hmf";
-    exampleModelsDir.setNameFilters(filters);
-    exampleModels = exampleModelsDir.entryList();
-    for (int i = 0; i < exampleModels.size(); ++i)
-    {
-        exampleModels[i].chop(4);
-    }
+    buildModelActionsMenu(mpExamplesMenu, exampleModelsDir);
 
-    for(int i=0; i<exampleModels.size(); ++i)
-    {
-        pTempAction = new QAction(exampleModels.at(i), this);
-        pTempAction->setIcon(QIcon(QString(ICONPATH) + "hmf.ico"));
-        mpExamplesMenu->addAction(pTempAction);
-        connect(pTempAction, SIGNAL(triggered()), this, SLOT(openExampleModel()));
-    }
+    mpTestModelsMenu = new QMenu("Test Models");
+    QDir testModelsDir(QString(MODELS_DEV_PATH+"Component Test/"));
+    buildModelActionsMenu(mpTestModelsMenu, testModelsDir);
+
 
     connect(mpImportFMUAction,              SIGNAL(triggered()), mpLibrary,     SLOT(importFmu()));
     connect(mpExportToSimulinkAction,       SIGNAL(triggered()), mpProjectTabs, SLOT(createSimulinkWrapperFromCurrentModel()));
@@ -951,6 +940,30 @@ void MainWindow::createToolbars()
     connect(mpExportToFMUAction,            SIGNAL(triggered()), mpProjectTabs, SLOT(createFMUFromCurrentModel()));
     connect(mpExportToLabviewAction,        SIGNAL(triggered()), mpProjectTabs, SLOT(createLabviewWrapperFromCurrentModel()));
     connect(mpLoadModelParametersAction,    SIGNAL(triggered()), mpProjectTabs, SLOT(loadModelParameters()));
+}
+
+void MainWindow::buildModelActionsMenu(QMenu *pParentMenu, QDir dir)
+{
+    QFileInfoList entrys = dir.entryInfoList(QStringList("*.hmf"), QDir::Files | QDir::NoDotAndDotDot | QDir::Readable | QDir::AllDirs);
+    for (int i=0; i<entrys.size(); ++i)
+    {
+        qDebug() << entrys[i].absolutePath() << " " << entrys[i].baseName();
+        if (entrys[i].isDir())
+        {
+            QDir newDir(entrys[i].absoluteFilePath());
+            QMenu *pMenu = new QMenu(newDir.dirName());
+            pParentMenu->addMenu(pMenu);
+            buildModelActionsMenu(pMenu, newDir);
+        }
+        else
+        {
+            QAction *pTempAction = new QAction(entrys[i].fileName(), this);
+            pTempAction->setIcon(QIcon(QString(ICONPATH) + "hmf.ico"));
+            pTempAction->setData(entrys[i].absoluteFilePath());
+            pParentMenu->addAction(pTempAction);
+            connect(pTempAction, SIGNAL(triggered()), this, SLOT(openModelByAction()));
+        }
+    }
 }
 
 
@@ -1084,12 +1097,12 @@ void MainWindow::showToolBarHelpPopup()
 
 
 //! @brief Slot that loads an example model, based on the name of the calling action
-void MainWindow::openExampleModel()
+void MainWindow::openModelByAction()
 {
-    QAction *action = qobject_cast<QAction *>(sender());
-    if (action)
+    QAction *pAction = qobject_cast<QAction *>(sender());
+    if (pAction)
     {
-        QString modelPath = QString(MODELS_DEV_PATH+"Example Models/") +action->text() + ".hmf";
+        QString modelPath = pAction->data().toString();
         qDebug() << "Trying to open " << modelPath;
         mpProjectTabs->loadModel(modelPath);
     }

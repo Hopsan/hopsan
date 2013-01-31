@@ -187,7 +187,7 @@ private slots:
     void updatePlotActionButton(bool);
     void updateSystemParametersActionButton(bool);
     void showToolBarHelpPopup();
-    void openExampleModel();
+    void openModelByAction();
     void updateDownloadProgressBar(qint64 bytesReceived, qint64 bytesTotal);
     void commenceAutoUpdate(QNetworkReply* reply);
     void showReleaseNotes();
@@ -197,6 +197,7 @@ private:
     void createMenus();
     void createToolbars();
 
+    void buildModelActionsMenu(QMenu *pParentMenu, QDir dir);
 
 
     //Dialogs
@@ -238,6 +239,7 @@ private:
     QMenu *mpRecentMenu;
     QMenu *mpHelpMenu;
     QMenu *mpExamplesMenu;
+    QMenu *mpTestModelsMenu;
 
     //Buttons
     QToolButton *mpImportButton;
