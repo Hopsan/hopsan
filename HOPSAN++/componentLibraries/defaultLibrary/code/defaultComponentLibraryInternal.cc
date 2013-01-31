@@ -66,6 +66,28 @@ void hopsan::register_components(hopsan::ComponentFactory* pComponentFactory)
 //    //^^^
 
     // ========== Hydraulic components ==========
+    // ----- Special Components -----
+    pComponentFactory->registerCreatorFunction("AeroAircraft6DOF", AeroAircraft6DOF::Creator);
+    pComponentFactory->registerCreatorFunction("AeroAircraft6DOFS", AeroAircraft6DOFS::Creator);
+    pComponentFactory->registerCreatorFunction("AeroVehicleTVC", AeroVehicleTVC::Creator);
+    pComponentFactory->registerCreatorFunction("AeroAtmosphere", AeroAtmosphere::Creator);
+    pComponentFactory->registerCreatorFunction("AeroJetEngine", AeroJetEngine::Creator);
+    pComponentFactory->registerCreatorFunction("AeroFuelTank", AeroFuelTank::Creator);
+    pComponentFactory->registerCreatorFunction("AeroPropeller", AeroPropeller::Creator);
+    pComponentFactory->registerCreatorFunction("SignalFFB", SignalFFB::Creator);
+    pComponentFactory->registerCreatorFunction("SignalFFBand", SignalFFBand::Creator);
+    pComponentFactory->registerCreatorFunction("SignalFFBandIn", SignalFFBandIn::Creator);
+    pComponentFactory->registerCreatorFunction("SignalFFBor", SignalFFBor::Creator);
+    pComponentFactory->registerCreatorFunction("SignalFFBorIn", SignalFFBorIn::Creator);
+    pComponentFactory->registerCreatorFunction("SignalFFBloop", SignalFFBloop::Creator);
+    pComponentFactory->registerCreatorFunction("SignalFFBloopIn", SignalFFBloopIn::Creator);
+    pComponentFactory->registerCreatorFunction("SignalAttitudeControl", SignalAttitudeControl::Creator);
+    pComponentFactory->registerCreatorFunction("SignalAttitudeTVCcontrol", SignalAttitudeTVCcontrol::Creator);
+    pComponentFactory->registerCreatorFunction("SignalWaypoint", SignalWaypoint::Creator);
+    pComponentFactory->registerCreatorFunction("SignalStateMonitor", SignalStateMonitor::Creator);
+    pComponentFactory->registerCreatorFunction("SignalTimeAccelerator", SignalTimeAccelerator::Creator);
+    pComponentFactory->registerCreatorFunction("SignalEarthCoordinates", SignalEarthCoordinates::Creator);
+
     // ----- Hydraulic Valves -----
     pComponentFactory->registerCreatorFunction("HydraulicCheckValve", HydraulicCheckValve::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicCheckValveWithOrifice", HydraulicCheckValveWithOrifice::Creator);
@@ -202,6 +224,7 @@ void hopsan::register_components(hopsan::ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("SignalAnimationGauge", SignalAnimationGauge::Creator);
     pComponentFactory->registerCreatorFunction("SignalStaircase", SignalStaircase::Creator);
     pComponentFactory->registerCreatorFunction("SignalUnitDelay", SignalUnitDelay::Creator);
+    pComponentFactory->registerCreatorFunction("SignalSRlatch", SignalSRlatch::Creator);
 
     pComponentFactory->registerCreatorFunction("SignalUndefinedConnection", SignalUndefinedConnection::Creator);
 
@@ -248,6 +271,7 @@ void hopsan::register_components(hopsan::ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("ElectricCapacitance2", ElectricCapacitance2::Creator);
     pComponentFactory->registerCreatorFunction("ElectricCapacitanceMultiPort", ElectricCapacitanceMultiPort::Creator);
     pComponentFactory->registerCreatorFunction("ElectricGround", ElectricGround::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricPWMdceq", ElectricPWMdceq::Creator);
     pComponentFactory->registerCreatorFunction("ElectricIcontroller", ElectricIcontroller::Creator);
     pComponentFactory->registerCreatorFunction("ElectricInductance", ElectricInductance::Creator);
     pComponentFactory->registerCreatorFunction("ElectricIsource", ElectricIsource::Creator);
