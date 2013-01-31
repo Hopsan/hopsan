@@ -29,7 +29,8 @@ mkdir -p $dstDir/bin
 cp -a $srcDir/HopsanCore/include $dstDir/HopsanCore/include
 cp -a $srcDir/componentLibraries/defaultLibrary/components $dstDir/componentLibraries/defaultLibrary/components
 cp -a $srcDir/componentLibraries/exampleComponentLib $dstDir/componentLibraries/exampleComponentLib
-cp -a $srcDir/Models/Example\ Models $dstDir/Models/Example\ Models
+cp -a $srcDir/Models/Example\ Models $dstDir/Models/
+cp -a $srcDir/Models/Component\ Test $dstDir/Models/
 cp -a $srcDir/doc/graphics $dstDir/doc/graphics
 cp -a $srcDir/Scripts $dstDir/Scripts 
 cp -a $srcDir/doc/user/html $dstDir/doc/user/html
