@@ -14,6 +14,40 @@ Hopsan Release Notes
 
 
 -- Version History --
+0.5.6
+- Fixed: MechanicJlink component was broken since Delay changes in 0.5.4, it should now work again
+- Fixed: Instability problems in MechinicalGear components
+- Fixed: Truncations in CylinderC equations, component dynamics has changed slightly
+- Fixed: Truncation in MultiportVolume initvalue and one ElectricCapacitanceMultiport equation
+- Fixed: ProjectTab is now tagged as changed if you edit the simulation time. (Even if you do not actually change them)
+- Fixed: Made losses dialog ignore power read ports when calculating power losses
+- Fixed: Missing semicolon in exported Simulink C++ files
+- Fixed: Some Python functions only worked on top level system
+- Fixed: Made it possible to map parameters and system parameters from Python scripts
+
+0.5.5
+- Fixed: Lookup-table component is no longer EXTREAMLY slow, due to smarter lookup algorithm in the CSVParser utility.
+- Fixed: Improved error handling and reporting in CSVParser utility, lookup-table component behaves better when incorrect data is used.
+- Fixed: Help text and picture for lookuptable component is now better.
+- Fixed: Export of plot data (csv and other formats) is no longer EXTREAMLY slow.
+- Fixed: Only the last system parameter was shown in Subsystem properties, now all are shown.
+- Fixed: Save plotwindow now remebers save path
+- Fixed: Pressing enter in add systemparameter widget will not default to cancle button
+- Fixed: Crash when using losses calculation on models without power ports
+- Fixed: Zoom magnifier in plot window was activated after using context menu
+- Fixed: Changed default save path for most save functions to documents folder
+- Fixed: Weird axis scaling in plot window when using logarithmic scaling if data contains values equal to or smaller than zero
+- Fixed: Variable aliases are now displayed first in the favorite variable list in plot widget
+- Fixed: Crash when opening optimization dialog if previously chosen parameters no longer exists in model
+
+- Feature: When adding curves to existing plots, they now inherit unit from previous curves (if they are consistent)
+- Feature: It is now possible to select which column to use for output data in the lookup-table component. If the data file contains more then two columns.
+- Feature: The new lookup algorithm in the CSVParser requires the input data to be strictly increasing. If the data is not, it will be automatically sorted on initialization.
+        
+   (The data file contents will not be changed)
+- Feature: Current value of selected parameters are now shown in optimization dialog
+
+- Documentation: Updated help section for Python scripting commands
 
 0.5.4
 - Important: Some signal components and the Delay utility have changed, read below for details.
