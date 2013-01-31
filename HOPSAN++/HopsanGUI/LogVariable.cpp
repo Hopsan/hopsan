@@ -510,18 +510,37 @@ bool LogVariableContainer::hasDataGeneration(const int gen)
     return mDataGenerations.contains(gen);
 }
 
+//! @todo not two functions with almost same implementation
 void LogVariableContainer::addDataGeneration(const int generation, const QVector<double> &rTime, const QVector<double> &rData)
 {
+    SharedLogVariableDataPtrT pData;
+    if (mpParentLogDataHandler)
+    {
+        pData = SharedLogVariableDataPtrT(new LogVariableData(generation, rTime, rData, mVariableDescription, mpParentLogDataHandler->getGenerationMultiCache(generation), this));
+    }
+    else
+    {
+        pData = SharedLogVariableDataPtrT(new LogVariableData(generation, rTime, rData, mVariableDescription, SharedMultiDataVectorCacheT(), this));
+    }
     //! @todo what if a generation already exist, then we must properly delete the old data before we add new one
-    SharedLogVariableDataPtrT pData = SharedLogVariableDataPtrT(new LogVariableData(generation, rTime, rData, mVariableDescription, mpParentLogDataHandler->getGenerationMultiCache(generation), this));
+
     connect(this, SIGNAL(nameChanged()), pData.data(), SIGNAL(nameChanged()));
     mDataGenerations.insert(generation, pData);
 }
 
 void LogVariableContainer::addDataGeneration(const int generation, const SharedTimeVectorPtrT time, const QVector<double> &rData)
 {
+    SharedLogVariableDataPtrT pData;
+    if (mpParentLogDataHandler)
+    {
+        pData = SharedLogVariableDataPtrT(new LogVariableData(generation, time, rData, mVariableDescription, mpParentLogDataHandler->getGenerationMultiCache(generation), this));
+    }
+    else
+    {
+        pData = SharedLogVariableDataPtrT(new LogVariableData(generation, time, rData, mVariableDescription, SharedMultiDataVectorCacheT(), this));
+    }
     //! @todo what if a generation already exist, then we must properly delete the old data before we add new one
-    SharedLogVariableDataPtrT pData = SharedLogVariableDataPtrT(new LogVariableData(generation, time, rData, mVariableDescription, mpParentLogDataHandler->getGenerationMultiCache(generation), this));
+
     connect(this, SIGNAL(nameChanged()), pData.data(), SIGNAL(nameChanged()));
     mDataGenerations.insert(generation, pData);
 }
