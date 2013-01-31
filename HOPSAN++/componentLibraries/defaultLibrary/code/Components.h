@@ -24,7 +24,30 @@
 #ifndef COMPONENTS_H_INCLUDED
 #define COMPONENTS_H_INCLUDED
 
+/* Special Components */
+#include "Special/AeroComponents/AeroAircraft6DOF.hpp"
+#include "Special/AeroComponents/AeroAircraft6DOFS.hpp"
+#include "Special/AeroComponents/AeroVehicleTVC.hpp"
+#include "Special/AeroComponents/AeroAtmosphere.hpp"
+#include "Special/AeroComponents/AeroJetEngine.hpp"
+#include "Special/AeroComponents/AeroFuelTank.hpp"
+#include "Special/AeroComponents/AeroPropeller.hpp"
+#include "Special/AeroComponents/SignalAttitudeControl.hpp"
+#include "Special/AeroComponents/SignalAttitudeTVCcontrol.hpp"
+#include "Special/AeroComponents/SignalStateMonitor.hpp"
+#include "Special/AeroComponents/SignalWaypoint.hpp"
+#include "Special/AeroComponents/SignalTimeAccelerator.hpp"
+#include "Special/AeroComponents/SignalEarthCoordinates.hpp"
+#include "Special/SignalFFB/SignalFFB.hpp"
+#include "Special/SignalFFB/SignalFFBand.hpp"
+#include "Special/SignalFFB/SignalFFBandIn.hpp"
+#include "Special/SignalFFB/SignalFFBor.hpp"
+#include "Special/SignalFFB/SignalFFBorIn.hpp"
+#include "Special/SignalFFB/SignalFFBloop.hpp"
+#include "Special/SignalFFB/SignalFFBloopIn.hpp"
+
 /* Hydraulic Components */
+
 #include "Hydraulic/valves/HydraulicValves.h"
 
 #include "Hydraulic/HydraulicLaminarOrifice.hpp"
@@ -153,6 +176,7 @@
 #include "Signal/SignalAnimationGauge.hpp"
 #include "Signal/SignalDisplay.hpp"
 #include "Signal/SignalUnitDelay.hpp"
+#include "Signal/SignalSRlatch.hpp"
 
 /* Mechanical Components */
 #include "Mechanic/MechanicForceTransformer.hpp"
@@ -199,6 +223,7 @@
 #include "Electric/ElectricMotor.hpp"
 #include "Electric/ElectricMotorGear.hpp"
 #include "Electric/ElectricIcontroller.hpp"
+#include "Electric/ElectricPWMdceq.hpp"
 #include "Electric/ElectricInductance.hpp"
 #include "Electric/ElectricIsource.hpp"
 #include "Electric/ElectricIsensor.hpp"
