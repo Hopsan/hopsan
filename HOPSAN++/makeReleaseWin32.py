@@ -259,14 +259,14 @@ def buildRelease():
     os.rename(hopsanDir+"\HopsanCore\Dependencies\\"+tbbversion, hopsanDir+"\HopsanCore\Dependencies\\"+tbbversion+"_nope")
 
     #BUILD HOPSANCORE WITH MSVC
-#    if not msvcCompile("2008", "x86"):
-#        return False
-#    if not msvcCompile("2008", "x64"):
-#        return False
-#    if not msvcCompile("2010", "x86"):
-#        return False
-#    if not msvcCompile("2010", "x64"):
-#        return False
+    if not msvcCompile("2008", "x86"):
+        return False
+    if not msvcCompile("2008", "x64"):
+        return False
+    if not msvcCompile("2010", "x86"):
+        return False
+    if not msvcCompile("2010", "x64"):
+        return False
 
     #Rename TBB back again (to activate it)
     os.rename(hopsanDir+"\\HopsanCore\\Dependencies\\"+tbbversion+"_nope", hopsanDir+"\\HopsanCore\\Dependencies\\"+tbbversion)
