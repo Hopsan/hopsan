@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="SignalFFB" displayname="FFB">
+        <icons>
+            <icon scale="1" path="SignalFFB.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="SignalFFB.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <help>
+            <text>SignalFFB. Executable Flow Block Diagram</text>
+            <picture>SignalFFBhelp.svg</picture>
+        </help>
+        <ports>
+            <port x="0.333333" y="1" a="90" name="Pstate"/>
+            <port x="0.66667" y="1" a="90" name="Pexit"/>
+            <port x="0.5" y="0" a="270" name="Pleave"/>
+            <port x="1" y="0.5" a="0" name="Pexiting"/>
+            <port x="0" y="0.5" a="180" name="Pset"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

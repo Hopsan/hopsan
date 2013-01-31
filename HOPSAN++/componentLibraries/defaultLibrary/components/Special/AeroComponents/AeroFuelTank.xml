@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="AeroFuelTank" displayname="AeroFuelTank">
+        <icons>
+            <icon scale="1" path="AeroFuelTank.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="AeroFuelTank.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="0.5" y="0" a="90" name="Pmassflow"/>
+            <port x="0.333333" y="1" a="90" name="Pmassfuel"/>
+            <port x="0.666667" y="1" a="90" name="Pconsfuel"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

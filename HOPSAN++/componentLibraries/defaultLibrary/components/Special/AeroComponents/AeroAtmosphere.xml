@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="AeroAtmosphere" displayname="AeroAtmosphere">
+        <icons>
+            <icon scale="1" path="AeroAtmosphere.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="AeroAtmosphere.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="0.4" y="1" a="90" name="PT"/>
+            <port x="0.5" y="0" a="90" name="Pha"/>
+            <port x="0.2" y="1" a="90" name="Prho"/>
+            <port x="0.8" y="1" a="90" name="PVsound"/>
+            <port x="0.6" y="1" a="90" name="Pp0"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

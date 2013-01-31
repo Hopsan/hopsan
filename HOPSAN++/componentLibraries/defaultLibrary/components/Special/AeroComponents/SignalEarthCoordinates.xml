@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="SignalEarthCoordinates" displayname="SignalEarthCoordinates">
+         <icons>
+            <icon scale="1" path="SignalEarthCoordinates.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="SignalEarthCoordinates.svg" iconrotation="ON" type="iso"/>
+        </icons>        <ports>
+            <port x="0.5" y="0" a="270" name="Pvxcg"/>
+            <port x="0.75" y="0" a="270" name="Pvycg"/>
+            <port x="0.5" y="1" a="90" name="Plongitude"/>
+            <port x="0.25" y="1" a="90" name="PtimeE"/>
+            <port x="0.75" y="1" a="90" name="Plattitude"/>
+            <port x="0.25" y="0" a="270" name="Ptimecomp"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

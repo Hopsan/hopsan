@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="SignalAttitudeControl" displayname="SignalAttitudeControl">
+        <icons>
+            <icon scale="1" path="SignalAttitudeControl.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="SignalAttitudeControl.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="1" y="0.2" a="0" name="PuaerL"/>
+            <port x="0.5" y="1" a="90" name="Ppsi"/>
+            <port x="0" y="0.6" a="180" name="Ppsiref"/>
+            <port x="0" y="0.4" a="180" name="Pthetaref"/>
+            <port x="0.9" y="1" a="90" name="PUb"/>
+            <port x="1" y="0.4" a="0" name="PuaerR"/>
+            <port x="1" y="0.8" a="0" name="Purud"/>
+            <port x="1" y="0.6" a="0" name="Puelev"/>
+            <port x="0.8" y="1" a="90" name="PRb"/>
+            <port x="0" y="0.2" a="180" name="Pphiref"/>
+            <port x='0'  y='0.8'  a="180" name='Pphimax' />
+            <port x="0.7" y="1" a="90" name="Pbeta"/>
+            <port x="0.3" y="1" a="90" name="Ptheta"/>
+            <port x="0.1" y="1" a="90" name="Pphi"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>
