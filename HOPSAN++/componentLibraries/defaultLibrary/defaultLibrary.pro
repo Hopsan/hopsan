@@ -41,6 +41,27 @@ QMAKE_CXXFLAGS += -pedantic
 # -------------------------------------------------
 HEADERS += \
     code/Components.h \
+    code/Special/AeroComponents/AeroAtmosphere.hpp \
+    code/Special/AeroComponents/AeroJetEngine.hpp \
+    code/Special/AeroComponents/AeroFuelTank.hpp \
+    code/Special/AeroComponents/AeroPropeller.hpp \
+    code/Special/AeroComponents/AeroAircraft6DOF.hpp \
+    code/Special/AeroComponents/AeroAircraft6DOFS.hpp \
+    code/Special/SignalFFB/SignalFFB.hpp \
+    code/Special/SignalFFB/SignalFFBand.hpp \
+    code/Special/SignalFFB/SignalFFBandIn.hpp \
+    code/Special/SignalFFB/SignalFFBor.hpp \
+    code/Special/SignalFFB/SignalFFBorIn.hpp \
+    code/Special/SignalFFB/SignalFFBloop.hpp \
+    code/Special/SignalFFB/SignalFFBloopIn.hpp \
+    code/Special/AeroComponents/SignalAttitudeControl.hpp \
+    code/Special/AeroComponents/SignalAttitudeTVCcontrol.hpp \
+    code/Special/AeroComponents/SignalWaypointController.hpp \
+    code/Special/AeroComponents/SignalWaypoint.hpp \
+    code/Special/AeroComponents/SignalStateMonitor.hpp \
+    code/Special/AeroComponents/SignalTimeAccelerator.hpp \
+    code/Special/AeroComponents/SignalEarthCoordinats.hpp \
+    code/Signal/SignalSRlatch.hpp \
     code/Signal/SignalXor.hpp \
     code/Signal/SignalUndefinedConnection.hpp \
     code/Signal/SignalTripleRoute.hpp \
@@ -207,10 +228,12 @@ HEADERS += \
     code/Electric/ElectricIsensor.hpp \
     code/Electric/ElectricInductance.hpp \
     code/Electric/ElectricIcontroller.hpp \
+    code/Electric/ElectricPWMdceq.hpp \
     code/Electric/ElectricGround.hpp \
     code/Electric/ElectricCapacitance2.hpp \
     code/Electric/ElectricCapacitanceMultiPort.hpp \
     code/Electric/ElectricBattery.hpp \
+    code/Electric/ElectricPWMdceq.hpp \
     code/Compgen/HydraulicLaminarOrificeCG.hpp \
     code/defaultComponentLibraryInternal.h \
     code/Signal/SignalSign.hpp \
