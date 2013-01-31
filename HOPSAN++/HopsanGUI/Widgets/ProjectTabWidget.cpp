@@ -701,7 +701,6 @@ void ProjectTab::saveModel(saveTarget saveAsFlag, saveContents contents)
             filter = tr("Hopsan Parameter Files (*.hpf)");
         }
 
-        QDir fileDialogSaveDir;
         QString modelFilePath;
         modelFilePath = QFileDialog::getSaveFileName(this, tr("Save Model File"),
                                                      gConfig.getLoadModelDir(),
@@ -784,9 +783,12 @@ void ProjectTab::saveModel(saveTarget saveAsFlag, saveContents contents)
         //Set the tab name to the model name, efectively removing *, also mark the tab as saved
     QString tabName = mpSystem->getModelFileInfo().baseName();
     mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
-    gConfig.addRecentModel(mpSystem->getModelFileInfo().filePath());
-    gpMainWindow->updateRecentList();
-    this->setSaved(true);
+    if(contents == FULLMODEL)
+    {
+        gConfig.addRecentModel(mpSystem->getModelFileInfo().filePath());
+        gpMainWindow->updateRecentList();
+        this->setSaved(true);
+    }
 
     gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Saved model: " + tabName);
 }

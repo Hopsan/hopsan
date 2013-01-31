@@ -16,7 +16,7 @@
    version="1.1"
    inkscape:version="0.48.3.1 r9886"
    enable-background="new"
-   sodipodi:docname="Hopsan-ExportSimulink.svg"
+   sodipodi:docname="Hopsan-ExportParameters.svg"
    inkscape:export-filename="C:\Users\robbr48\Documents\Subversion\Hopsan++\HopsanGUI\graphics\uiicons\Hopsan-ExportSimulink.png"
    inkscape:export-xdpi="4.8699999"
    inkscape:export-ydpi="4.8699999">
@@ -852,7 +852,7 @@
      inkscape:cx="-1411.2059"
      inkscape:cy="-845.72875"
      inkscape:document-units="px"
-     inkscape:current-layer="g5637"
+     inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1600"
      inkscape:window-height="1132"
@@ -867,7 +867,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -878,48 +878,45 @@
      transform="translate(0,-572.36218)"
      style="opacity:1;display:inline">
     <g
-       id="g5637"
-       transform="matrix(0.94661922,0,0,1.0831792,8.7544475,-70.666436)"
-       style="stroke-width:14.81335546000000000;stroke-miterlimit:4;stroke-dasharray:none;fill-opacity:1;fill:url(#linearGradient4780)">
+       transform="matrix(0.00257491,-0.99999671,0.99999671,0.0025749,56.40434,1178.1374)"
+       id="g4098"
+       style="fill:url(#linearGradient4108);fill-opacity:1;stroke-width:14.81335545;stroke-miterlimit:4;stroke-dasharray:none;enable-background:new">
       <g
-         style="fill:url(#linearGradient4108);enable-background:new"
-         id="g4098"
-         transform="matrix(0.00272011,-0.92320524,1.0563875,0.00237717,50.336916,1152.906)">
+         inkscape:label="Layer 1"
+         id="layer1-4"
+         transform="translate(0,-572.36218)"
+         style="opacity:0.21527776;fill:url(#linearGradient4104);display:inline" />
+      <g
+         id="layer2-6"
+         inkscape:label="Layer"
+         style="fill:url(#linearGradient4106);display:inline">
         <g
-           style="opacity:0.21527776;fill:url(#linearGradient4104);display:inline"
-           transform="translate(0,-572.36218)"
-           id="layer1-4"
-           inkscape:label="Layer 1" />
-        <g
-           style="fill:url(#linearGradient4106);display:inline"
-           inkscape:label="Layer"
-           id="layer2-6">
-          <g
-             transform="matrix(-1,0,0,1,427.5,10)"
-             style="fill:url(#linearGradient4908);fill-opacity:1;stroke:url(#linearGradient4916-7);stroke-width:15;stroke-miterlimit:4;stroke-dasharray:none"
-             id="g4899">
-            <path
-               style="fill:url(#linearGradient4918);fill-opacity:1;stroke:url(#linearGradient4920-0);stroke-width:15;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-               d="m 281.5625,122.81253 -161.875,0 0,-100.000001 -155.000001,150.000001 155.000001,150 0,-100 c 0,0 124.375,1.5625 161.875,0 z"
-               id="path4893"
-               sodipodi:nodetypes="cccccccc"
-               inkscape:connector-curvature="0" />
-          </g>
+           id="g4899"
+           style="fill:url(#linearGradient4908);fill-opacity:1;stroke:url(#linearGradient4916-7);stroke-width:15;stroke-miterlimit:4;stroke-dasharray:none"
+           transform="matrix(-1,0,0,1,427.5,10)">
+          <path
+             inkscape:connector-curvature="0"
+             sodipodi:nodetypes="cccccccc"
+             id="path4893"
+             d="m 281.5625,122.81253 -161.875,0 0,-100.000001 -155.000001,150.000001 155.000001,150 0,-100 c 0,0 124.375,1.5625 161.875,0 z"
+             style="fill:url(#linearGradient4918);fill-opacity:1;stroke:url(#linearGradient4920-0);stroke-width:15;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
         </g>
       </g>
-      <g
-         transform="scale(1.0697012,0.93484049)"
-         style="font-size:39.50228119px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;stroke:none;font-family:Sans"
-         id="text3122">
-        <path
-           d="m 82.123962,814.50897 53.148698,-81.1552 -48.162692,-74.36575 36.705492,0 31.18906,49.96614 30.55254,-49.96614 36.38724,0 -48.37487,75.53269 53.14871,79.98826 -37.87243,0 -34.4777,-53.78521 -34.58379,53.78521 z"
-           style="font-size:217.26255798px;font-variant:normal;font-weight:bold;font-stretch:normal;letter-spacing:29.62671089px;font-family:Arial;-inkscape-font-specification:Arial Bold"
-           id="path3131" />
-        <path
-           d="m 265.89252,727.94342 0,-27.36999 108.73736,0 0,27.36999 z m 0,47.10185 0,-27.47608 108.73736,0 0,27.47608 z"
-           style="font-size:217.26255798px;font-variant:normal;font-weight:bold;font-stretch:normal;letter-spacing:29.62671089px;font-family:Arial;-inkscape-font-specification:Arial Bold"
-           id="path3133" />
-      </g>
+    </g>
+    <g
+       id="text3122"
+       style="font-size:39.50228119px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="matrix(1.0125997,0,0,1.0125998,8.7544475,-70.666436)">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3131"
+         style="font-size:217.26255798px;font-variant:normal;font-weight:bold;font-stretch:normal;letter-spacing:29.62671089px;font-family:Arial;-inkscape-font-specification:Arial Bold"
+         d="m 82.123962,814.50897 53.148698,-81.1552 -48.162692,-74.36575 36.705492,0 31.18906,49.96614 30.55254,-49.96614 36.38724,0 -48.37487,75.53269 53.14871,79.98826 -37.87243,0 -34.4777,-53.78521 -34.58379,53.78521 z" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path3133"
+         style="font-size:217.26255798px;font-variant:normal;font-weight:bold;font-stretch:normal;letter-spacing:29.62671089px;font-family:Arial;-inkscape-font-specification:Arial Bold"
+         d="m 265.89252,727.94342 0,-27.36999 108.73736,0 0,27.36999 z m 0,47.10185 0,-27.47608 108.73736,0 0,27.47608 z" />
     </g>
   </g>
   <g

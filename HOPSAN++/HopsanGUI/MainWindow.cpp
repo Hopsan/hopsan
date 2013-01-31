@@ -785,15 +785,18 @@ void MainWindow::createMenus()
     mpToolsMenu->addAction(mpOptionsAction);
     mpToolsMenu->addAction(mpOpenSystemParametersAction);
 
+    mpImportMenu->addAction(mpLoadModelParametersAction);
+    mpImportMenu->addSeparator();
     mpImportMenu->addAction(mpImportFMUAction);
 
     mpExportMenu->addAction(mpExportModelParametersAction);
-    mpExportMenu->addAction(mpLoadModelParametersAction);
     mpExportMenu->addSeparator();
     mpExportMenu->addAction(mpExportToFMUAction);
     mpExportMenu->addAction(mpExportToSimulinkAction);
     mpExportMenu->addAction(mpExportToLabviewAction);
-    //mpExportMenu->addAction(mpExportToSimulinkCoSimAction);
+#ifdef DEVELOPMENT
+    mpExportMenu->addAction(mpExportToSimulinkCoSimAction);
+#endif
     mpExportMenu->addSeparator();
     mpExportMenu->addAction(mpExportPDFAction);
     mpExportMenu->addAction(mpExportPNGAction);
@@ -836,7 +839,9 @@ void MainWindow::createToolbars()
     mpConnectivityToolBar->addAction(mpExportPNGAction);
     mpConnectivityToolBar->addSeparator();
     mpConnectivityToolBar->addAction(mpExportToSimulinkAction);
-    //mpConnectivityToolBar->addAction(mpExportToSimulinkCoSimAction);
+#ifdef DEVELOPMENT
+    mpConnectivityToolBar->addAction(mpExportToSimulinkCoSimAction);
+#endif
     mpConnectivityToolBar->addAction(mpExportToLabviewAction);
     mpConnectivityToolBar->addAction(mpExportToFMUAction);
     mpConnectivityToolBar->addAction(mpImportFMUAction);
