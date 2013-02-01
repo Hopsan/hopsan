@@ -95,6 +95,8 @@ public:
     MultiDataVectorCache(const QString fileName);
     ~MultiDataVectorCache();
     bool addVector(const QVector<double> &rDataVector, quint64 &rStartByte, quint64 &rNumBytes);
+    bool beginMultiAppend();
+    bool endMultiAppend();
 
     bool copyData(const quint64 startByte, const quint64 nBytes, QVector<double> &rData);
     bool replaceData(const quint64 startByte, const QVector<double> &rNewData);
@@ -125,6 +127,7 @@ protected:
     quint64 mNumSubscribers;
     QFile mCacheFile;
     QString mError;
+    bool mIsMultiAppending;
 };
 typedef QSharedPointer<MultiDataVectorCache> SharedMultiDataVectorCacheT;
 

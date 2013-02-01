@@ -905,6 +905,7 @@ double LogVariableData::peekData(const int idx) const
 
 MultiDataVectorCache::MultiDataVectorCache(const QString fileName)
 {
+    mIsMultiAppending = false;
     mNumSubscribers = 0;
     mCacheFile.setFileName(fileName);
 }
@@ -918,6 +919,18 @@ bool MultiDataVectorCache::addVector(const QVector<double> &rDataVector, quint64
 {
     //! @todo maybe have register for how long added data at each start adress was, to prevent destorying data
     return appendToCache(rDataVector, rStartByte, rNumBytes);
+}
+
+bool MultiDataVectorCache::beginMultiAppend()
+{
+    mIsMultiAppending = mCacheFile.open(QIODevice::WriteOnly | QIODevice::Append);
+    return mIsMultiAppending;
+}
+
+bool MultiDataVectorCache::endMultiAppend()
+{
+    mCacheFile.close();
+    mIsMultiAppending = false;
 }
 
 bool MultiDataVectorCache::copyData(const quint64 startByte, const quint64 nBytes, QVector<double> &rData)
@@ -966,18 +979,30 @@ bool MultiDataVectorCache::appendToCache(const QVector<double> &rDataVector, qui
         return false;
     }
 
-    if (mCacheFile.open(QIODevice::WriteOnly | QIODevice::Append))
+    //! @todo cleanup horrible multiappend stuff
+    bool rc = true;
+    if (!mIsMultiAppending)
+    {
+        rc = mCacheFile.open(QIODevice::WriteOnly | QIODevice::Append);
+    }
+    if (rc)
     {
         rStartByte = mCacheFile.pos();
         rNumBytes = mCacheFile.write((const char*)rDataVector.data(), sizeof(double)*rDataVector.size());
         if ( rNumBytes == sizeof(double)*rDataVector.size())
         {
-            mCacheFile.close();
+            if (!mIsMultiAppending)
+            {
+                mCacheFile.close();
+            }
             return true;
         }
         else
         {
-            mCacheFile.close();
+            if (!mIsMultiAppending)
+            {
+                mCacheFile.close();
+            }
             mError = mCacheFile.errorString();
         }
     }

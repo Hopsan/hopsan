@@ -442,6 +442,7 @@ void LogDataHandler::collectPlotDataFromModel()
     bool foundData = false;
     bool timeVectorObtained = false;
 
+    this->getGenerationMultiCache(mGenerationNumber)->beginMultiAppend();
     //Iterate components
     for(int m=0; m<mpParentContainerObject->getModelObjectNames().size(); ++m)
     {
@@ -528,6 +529,7 @@ void LogDataHandler::collectPlotDataFromModel()
             }
         }
     }
+    this->getGenerationMultiCache(mGenerationNumber)->endMultiAppend();
 
     // Iterate and create/add aliases
 //    //! @todo maybe a function that retreives alias and fullnames in one
