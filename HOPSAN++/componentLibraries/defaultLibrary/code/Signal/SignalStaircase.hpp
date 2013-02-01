@@ -40,7 +40,7 @@ class SignalStaircase : public ComponentC
 {
 
     private:
-        double startT, nSteps, stepHeight, stepWidth;
+        double startT, stepHeight, stepWidth;
 
         //Node data pointers
         double *mpND_out;
@@ -58,7 +58,6 @@ class SignalStaircase : public ComponentC
         {
             //Set member attributes
             startT=0;
-            nSteps=10;
             stepHeight=1;
             stepWidth=1;
 
@@ -66,10 +65,9 @@ class SignalStaircase : public ComponentC
             mpOut = addWritePort("out", "NodeSignal");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("T_start", "Start Time", "[s]", startT, Constant);
-            registerParameter("n_steps", "Number of Steps", "[-]", nSteps, Constant);
-            registerParameter("H_step", "Step Height", "[-]", stepHeight, Constant);
-            registerParameter("W_step", "Step Width", "[-]", stepWidth, Constant);
+            registerParameter("T_start", "Start Time", "[s]", startT);
+            registerParameter("H_step", "Step Height", "[-]", stepHeight);
+            registerParameter("W_step", "Step Width", "[-]", stepWidth);
         }
 
 
