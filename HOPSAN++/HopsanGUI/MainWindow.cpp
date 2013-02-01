@@ -751,7 +751,9 @@ void MainWindow::createMenus()
     this->updateRecentList();
 
     mpSimulationMenu->addAction(mpSimulateAction);
+#ifdef DEVELOPMENT
     mpSimulationMenu->addAction(mpCoSimulationAction);
+#endif
     mpSimulationMenu->addAction(mpAnimateAction);
     mpSimulationMenu->addAction(mpMeasureSimulationTimeAction);
     mpSimulationMenu->addAction(mpOptimizeAction);
@@ -879,7 +881,9 @@ void MainWindow::createToolbars()
     mpSimToolBar->addWidget(mpTimeLabelDeliminator2);
     mpSimToolBar->addWidget(mpStopTimeLineEdit);
     mpSimToolBar->addAction(mpSimulateAction);
+#ifdef DEVELOPMENT
     mpSimToolBar->addAction(mpCoSimulationAction);
+#endif
     mpSimToolBar->addAction(mpOptimizeAction);
     mpSimToolBar->addAction(mpSensitivityAnalysisAction);
     mpSimToolBar->addAction(mpPlotAction);

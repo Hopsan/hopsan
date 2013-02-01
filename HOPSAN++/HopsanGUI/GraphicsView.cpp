@@ -32,6 +32,7 @@
 
 #include "Widgets/ProjectTabWidget.h"
 #include "Widgets/PlotWidget.h"
+#include "Widgets/HcomWidget.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUISystem.h"
 
@@ -660,7 +661,7 @@ void GraphicsView::exportToPDF()
 //! Exports the graphics view to PNG
 void GraphicsView::exportToPNG()
 {
-    int res = QInputDialog::getDouble(gpMainWindow, tr("Export to PNG"), tr("Choose resolution:"), 1.0);
+    int res = QInputDialog::getDouble(gpMainWindow, tr("Export to PNG"), tr("Choose resolution scaling:"), 1.0, 0.1, 10.0, 1);
 
     QString fileName = QFileDialog::getSaveFileName(
         this, "Export File Name", gConfig.getModelGfxDir(),
@@ -674,13 +675,23 @@ void GraphicsView::exportToPNG()
         QGraphicsScene *pScene = this->getContainerPtr()->getContainedScenePtr();
         pScene->clearSelection();
         pScene->setSceneRect(pScene->itemsBoundingRect());
+        qDebug() << "itemsBoundingRect(): " << pScene->itemsBoundingRect().width() << "*" << pScene->itemsBoundingRect().height();
+        qDebug() << "Desired size: " << pScene->sceneRect().width()*res << "*" << pScene->sceneRect().height()*res;
         QImage image(pScene->sceneRect().width()*res, pScene->sceneRect().height()*res, QImage::Format_ARGB32);
+        qDebug() << "Image size: " << image.width() << "*" << image.height();
         image.fill(Qt::transparent);
         QPainter painter(&image);
         painter.setRenderHint(QPainter::HighQualityAntialiasing);
         painter.setWorldTransform(QTransform::fromScale(1,1));
         pScene->render(&painter);
-        image.save(fileName);
+        if(!image.save(fileName))
+        {
+            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to export PNG file: " +fileName);
+        }
+        else
+        {
+            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Successfully exported PNG to: " +fileName);
+        }
 
         //QPixmap pixmap = QPixmap::grabWidget(this);
         //pixmap.save(fileName);
