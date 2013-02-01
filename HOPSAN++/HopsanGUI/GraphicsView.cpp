@@ -661,12 +661,20 @@ void GraphicsView::exportToPDF()
 //! Exports the graphics view to PNG
 void GraphicsView::exportToPNG()
 {
-    int res = QInputDialog::getDouble(gpMainWindow, tr("Export to PNG"), tr("Choose resolution scaling:"), 1.0, 0.1, 10.0, 1);
+    //Ask user for resolution scaling
+    bool ok;
+    int res = QInputDialog::getDouble(gpMainWindow, tr("Export to PNG"), tr("Choose resolution scaling:"), 1.0, 0.1, 10.0, 1, &ok);
 
+    //Abort if user pressed cancel
+    if(!ok)
+        return;
+
+    //Open save dialog to get the file name
     QString fileName = QFileDialog::getSaveFileName(
         this, "Export File Name", gConfig.getModelGfxDir(),
         "Portable Network Graphics (*.png)");
 
+    //Attempt to save if user did select a filename
     if(!fileName.isEmpty())
     {
         QFileInfo file(fileName);
@@ -692,9 +700,6 @@ void GraphicsView::exportToPNG()
         {
             gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Successfully exported PNG to: " +fileName);
         }
-
-        //QPixmap pixmap = QPixmap::grabWidget(this);
-        //pixmap.save(fileName);
     }
 }
 
