@@ -1,0 +1,951 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4943" hopsancoreversion="0.6.x_r4932">
+    <requirements>
+        <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+        <componentlibrary>PettersComponentLibrary</componentlibrary>
+    </requirements>
+    <info/>
+    <system logsamples="2048" typename="Subsystem" name="VehicleTVCtest">
+        <simulationtime stop="670" timestep="0.003" start="0" inherit_timestep="true"/>
+        <parameters/>
+        <aliases/>
+        <hopsangui>
+            <pose x="0" y="0" flipped="false" a="0"/>
+            <nametext position="0" visible="1"/>
+            <viewport x="2188.32" y="2501.34" zoom="0.70922"/>
+            <ports hidden="1"/>
+            <names hidden="1"/>
+            <graphics type="user"/>
+            <scriptfile path=""/>
+            <hopsanobjectappearance version="0.3">
+                <modelobject typename="Subsystem" displayname="VehicleTVCtest">
+                    <icons>
+                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
+                    </icons>
+                    <ports/>
+                    <animation flowspeed="100"/>
+                </modelobject>
+            </hopsanobjectappearance>
+            <favoritevariables/>
+            <optimization>
+                <settings>
+                    <niter>100</niter>
+                    <nsearchp>8</nsearchp>
+                    <refcoeff>1.3</refcoeff>
+                    <randfac>0.3</randfac>
+                    <forgfac>0</forgfac>
+                    <functol>1e-05</functol>
+                    <partol>0.0001</partol>
+                    <plot>true</plot>
+                    <savecsv>false</savecsv>
+                    <logpar>false</logpar>
+                </settings>
+                <parameters/>
+                <objectives/>
+            </optimization>
+        </hopsangui>
+        <objects>
+            <component typename="SignalRamp" name="Ramp">
+                <parameters>
+                    <parameter value="1" type="double" name="y_0"/>
+                    <parameter value="0" type="double" name="y_A"/>
+                    <parameter value="11" type="double" name="t_start"/>
+                    <parameter value="12" type="double" name="t_end"/>
+                </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="out"/>
+                </ports>
+                <hopsangui>
+                    <pose x="1731.003802" y="2478.628142" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalRamp" displayname="Ramp">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Scope_1">
+                <parameters/>
+                <ports>
+                    <port nodetype="NodeSignal" name="in_right"/>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="in_bottom"/>
+                </ports>
+                <hopsangui>
+                    <pose x="2664.815724" y="2607.500527" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSink" displayname="Scope_1">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="AeroAtmosphere" name="AeroAtmosphere">
+                <parameters>
+                    <parameter value="0" type="double" name="Prho::Value"/>
+                    <parameter value="0" type="double" name="PT::Value"/>
+                    <parameter value="0" type="double" name="Pp0::Value"/>
+                    <parameter value="0" type="double" name="PVsound::Value"/>
+                    <parameter value="9.81" type="double" name="g0"/>
+                    <parameter value="1.225" type="double" name="rhos"/>
+                    <parameter value="-0.0065" type="double" name="a"/>
+                    <parameter value="287" type="double" name="R"/>
+                    <parameter value="1.4" type="double" name="gamma"/>
+                    <parameter value="288.16" type="double" name="Ts"/>
+                    <parameter value="101300" type="double" name="p0s"/>
+                    <parameter value="11000" type="double" name="htp"/>
+                    <parameter value="216.66" type="double" name="Ttp"/>
+                    <parameter value="22610" type="double" name="ptp"/>
+                    <parameter value="0.363649" type="double" name="rhotp"/>
+                    <parameter value="2.71828" type="double" name="e"/>
+                    <parameter value="0" type="double" name="ha"/>
+                </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="PT"/>
+                    <port nodetype="NodeSignal" name="Pha"/>
+                    <port nodetype="NodeSignal" name="Prho"/>
+                    <port nodetype="NodeSignal" name="PVsound"/>
+                    <port nodetype="NodeSignal" name="Pp0"/>
+                </ports>
+                <hopsangui>
+                    <pose x="2505.314096" y="2372.114073" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="AeroAtmosphere" displayname="AeroAtmosphere">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Scope_2">
+                <parameters/>
+                <ports>
+                    <port nodetype="NodeSignal" name="in_right"/>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="in_bottom"/>
+                </ports>
+                <hopsangui>
+                    <pose x="2321.814872" y="2335.889963" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSink" displayname="Scope_2">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="MechanicThetaSource" name="Angle &amp; Velocity Source">
+                <parameters>
+                    <parameter value="0" type="double" name="omega"/>
+                </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="thetain"/>
+                    <port nodetype="NodeSignal" name="win"/>
+                    <port nodetype="NodeMechanicRotational" name="Pmr1"/>
+                </ports>
+                <hopsangui>
+                    <pose x="2045.529206" y="2478.359666" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicThetaSource" displayname="Angle &amp; Velocity Source">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Scope_5">
+                <parameters/>
+                <ports>
+                    <port nodetype="NodeSignal" name="in_right"/>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="in_bottom"/>
+                </ports>
+                <hopsangui>
+                    <pose x="2432.83001" y="2708.660021" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSink" displayname="Scope_5">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Scope_7">
+                <parameters/>
+                <ports>
+                    <port nodetype="NodeSignal" name="in_right"/>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="in_bottom"/>
+                </ports>
+                <hopsangui>
+                    <pose x="2665.201004" y="2645.190993" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSink" displayname="Scope_7">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="MechanicThetaSource" name="Angle &amp; Velocity Source_1">
+                <parameters>
+                    <parameter value="0" type="double" name="omega"/>
+                </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="thetain"/>
+                    <port nodetype="NodeSignal" name="win"/>
+                    <port nodetype="NodeMechanicRotational" name="Pmr1"/>
+                </ports>
+                <hopsangui>
+                    <pose x="2046.049998" y="2498.159666" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicThetaSource" displayname="Angle &amp; Velocity Source_1">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalStep" name="Step">
+                <parameters>
+                    <parameter value="80000" type="double" name="y_0"/>
+                    <parameter value="-80000" type="double" name="y_A"/>
+                    <parameter value="180" type="double" name="t_step"/>
+                </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="out"/>
+                </ports>
+                <hopsangui>
+                    <pose x="1838.060009" y="2406.819972" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalStep" displayname="Step">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Scope_8">
+                <parameters/>
+                <ports>
+                    <port nodetype="NodeSignal" name="in_right"/>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="in_bottom"/>
+                </ports>
+                <hopsangui>
+                    <pose x="2666.629903" y="2683.070049" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSink" displayname="Scope_8">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalAttitudeTVCcontrol" name="SignalAttitudeTVCcontrol">
+                <parameters>
+                    <parameter value="0" type="double" name="Puelev::Value"/>
+                    <parameter value="0" type="double" name="Purud::Value"/>
+                    <parameter value="2" type="double" name="Kelev"/>
+                    <parameter value="2" type="double" name="Krud"/>
+                    <parameter value=".1" type="double" name="KQrud"/>
+                    <parameter value=".1" type="double" name="KRrud"/>
+                    <parameter value="-0.9" type="double" name="umin"/>
+                    <parameter value="0.9" type="double" name="umax"/>
+                    <parameter value="0" type="double" name="thetaref"/>
+                    <parameter value="0" type="double" name="psiref"/>
+                    <parameter value="0" type="double" name="phi"/>
+                    <parameter value="0" type="double" name="theta"/>
+                    <parameter value="0" type="double" name="psi"/>
+                    <parameter value="0" type="double" name="Qb"/>
+                    <parameter value="0" type="double" name="Rb"/>
+                </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="Ppsi"/>
+                    <port nodetype="NodeSignal" name="Ppsiref"/>
+                    <port nodetype="NodeSignal" name="Pthetaref"/>
+                    <port nodetype="NodeSignal" name="Purud"/>
+                    <port nodetype="NodeSignal" name="Puelev"/>
+                    <port nodetype="NodeSignal" name="PRb"/>
+                    <port nodetype="NodeSignal" name="PQb"/>
+                    <port nodetype="NodeSignal" name="Ptheta"/>
+                    <port nodetype="NodeSignal" name="Pphi"/>
+                </ports>
+                <hopsangui>
+                    <pose x="1844.891641" y="2484.864205" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalAttitudeTVCcontrol" displayname="SignalAttitudeTVCcontrol">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="MechanicThetaSource" name="Angle &amp; Velocity Source_2">
+                <parameters>
+                    <parameter value="0" type="double" name="omega"/>
+                </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="thetain"/>
+                    <port nodetype="NodeSignal" name="win"/>
+                    <port nodetype="NodeMechanicRotational" name="Pmr1"/>
+                </ports>
+                <hopsangui>
+                    <pose x="2044.869998" y="2517.959666" flipped="false" a="0"/>
+                    <nametext position="1" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicThetaSource" displayname="Angle &amp; Velocity Source_2">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="MechanicThetaSource" name="Angle &amp; Velocity Source_3">
+                <parameters>
+                    <parameter value="0" type="double" name="omega"/>
+                </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="thetain"/>
+                    <port nodetype="NodeSignal" name="win"/>
+                    <port nodetype="NodeMechanicRotational" name="Pmr1"/>
+                </ports>
+                <hopsangui>
+                    <pose x="2046.279998" y="2537.759666" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicThetaSource" displayname="Angle &amp; Velocity Source_3">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="AeroVehicleTVC" name="AeroVehicleTVC">
+                <parameters>
+                    <parameter value="0" type="double" name="Ptvcly::Angular Velocity"/>
+                    <parameter value="0" type="double" name="Ptvcly::Torque"/>
+                    <parameter value="0" type="double" name="Ptvcly::Angle"/>
+                    <parameter value="0" type="double" name="Ptvcly::WaveVariable"/>
+                    <parameter value="0" type="double" name="Ptvcly::CharImp"/>
+                    <parameter value="0" type="double" name="Ptvcly::Equivalent Inertia"/>
+                    <parameter value="0" type="double" name="Ptvclz::Angular Velocity"/>
+                    <parameter value="0" type="double" name="Ptvclz::Torque"/>
+                    <parameter value="0" type="double" name="Ptvclz::Angle"/>
+                    <parameter value="0" type="double" name="Ptvclz::WaveVariable"/>
+                    <parameter value="0" type="double" name="Ptvclz::CharImp"/>
+                    <parameter value="0" type="double" name="Ptvclz::Equivalent Inertia"/>
+                    <parameter value="0" type="double" name="Ptvcry::Angular Velocity"/>
+                    <parameter value="0" type="double" name="Ptvcry::Torque"/>
+                    <parameter value="0" type="double" name="Ptvcry::Angle"/>
+                    <parameter value="0" type="double" name="Ptvcry::WaveVariable"/>
+                    <parameter value="0" type="double" name="Ptvcry::CharImp"/>
+                    <parameter value="0" type="double" name="Ptvcry::Equivalent Inertia"/>
+                    <parameter value="0" type="double" name="Ptvcrz::Angular Velocity"/>
+                    <parameter value="0" type="double" name="Ptvcrz::Torque"/>
+                    <parameter value="0" type="double" name="Ptvcrz::Angle"/>
+                    <parameter value="0" type="double" name="Ptvcrz::WaveVariable"/>
+                    <parameter value="0" type="double" name="Ptvcrz::CharImp"/>
+                    <parameter value="0" type="double" name="Ptvcrz::Equivalent Inertia"/>
+                    <parameter value="0" type="double" name="Pxcg::Value"/>
+                    <parameter value="0" type="double" name="Pycg::Value"/>
+                    <parameter value="-1000" type="double" name="Pzcg::Value"/>
+                    <parameter value="0" type="double" name="Pvx::Value"/>
+                    <parameter value="0" type="double" name="Pvy::Value"/>
+                    <parameter value="0" type="double" name="Pvz::Value"/>
+                    <parameter value="0" type="double" name="PPsi::Value"/>
+                    <parameter value="1" type="double" name="PThetao::Value"/>
+                    <parameter value="0" type="double" name="PPhi::Value"/>
+                    <parameter value="100" type="double" name="PUb::Value"/>
+                    <parameter value="0" type="double" name="PVb::Value"/>
+                    <parameter value="0" type="double" name="PWb::Value"/>
+                    <parameter value="0" type="double" name="PPb::Value"/>
+                    <parameter value="0" type="double" name="PQb::Value"/>
+                    <parameter value="0" type="double" name="PRb::Value"/>
+                    <parameter value="0" type="double" name="Pq0::Value"/>
+                    <parameter value="0" type="double" name="Pq1::Value"/>
+                    <parameter value="0" type="double" name="Pq2::Value"/>
+                    <parameter value="0" type="double" name="Pq3::Value"/>
+                    <parameter value="0" type="double" name="PAlphaAttack::Value"/>
+                    <parameter value="0" type="double" name="PBetaSlip::Value"/>
+                    <parameter value="0" type="double" name="Paltitude::Value"/>
+                    <parameter value="0" type="double" name="Pgfx::Value"/>
+                    <parameter value="0" type="double" name="Pgfy::Value"/>
+                    <parameter value="0" type="double" name="Pgfz::Value"/>
+                    <parameter value="0" type="double" name="PCL1::Value"/>
+                    <parameter value="0" type="double" name="PCd1::Value"/>
+                    <parameter value="0" type="double" name="PFax::Value"/>
+                    <parameter value="0" type="double" name="PFaz::Value"/>
+                    <parameter value="0.02" type="double" name="Cd0b"/>
+                    <parameter value="0.1" type="double" name="Ctvc"/>
+                    <parameter value="2" type="double" name="CLalphabh"/>
+                    <parameter value="2" type="double" name="CLalphabv"/>
+                    <parameter value="0" type="double" name="hthrust0"/>
+                    <parameter value="1000" type="double" name="Ix"/>
+                    <parameter value="500" type="double" name="Ixz"/>
+                    <parameter value="3000" type="double" name="Iy"/>
+                    <parameter value="3000" type="double" name="Iz"/>
+                    <parameter value="5000" type="double" name="Me"/>
+                    <parameter value="2" type="double" name="Sbh"/>
+                    <parameter value="2" type="double" name="Sbv"/>
+                    <parameter value="8.5" type="double" name="xbach"/>
+                    <parameter value="8.5" type="double" name="xbacv"/>
+                    <parameter value="3" type="double" name="xbcge"/>
+                    <parameter value="5" type="double" name="xcargo"/>
+                    <parameter value="6" type="double" name="xfuel"/>
+                    <parameter value="17" type="double" name="xeng"/>
+                    <parameter value="0" type="double" name="yeng"/>
+                    <parameter value="10000" type="double" name="kground"/>
+                    <parameter value="0" type="double" name="cground"/>
+                    <parameter value="0" type="double" name="thrustl"/>
+                    <parameter value="0" type="double" name="thrustr"/>
+                    <parameter value="9.81" type="double" name="g0"/>
+                    <parameter value="0" type="double" name="Mfuel"/>
+                    <parameter value="0" type="double" name="Mcargo"/>
+                    <parameter value="1.25" type="double" name="rho"/>
+                    <parameter value="0" type="double" name="vturbx"/>
+                    <parameter value="0" type="double" name="vturby"/>
+                    <parameter value="0" type="double" name="vturbz"/>
+                    <parameter value="0" type="double" name="wturbx"/>
+                    <parameter value="0" type="double" name="wturby"/>
+                    <parameter value="0" type="double" name="wturbz"/>
+                </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="Pthrustl"/>
+                    <port nodetype="NodeSignal" name="PMfuel"/>
+                    <port nodetype="NodeSignal" name="PBetaSlip"/>
+                    <port nodetype="NodeMechanicRotational" name="Ptvcly"/>
+                    <port nodetype="NodeSignal" name="Pzcg"/>
+                    <port nodetype="NodeMechanicRotational" name="Ptvclz"/>
+                    <port nodetype="NodeSignal" name="PMcargo"/>
+                    <port nodetype="NodeSignal" name="Pthrustr"/>
+                    <port nodetype="NodeSignal" name="PThetao"/>
+                    <port nodetype="NodeSignal" name="Pvturbx"/>
+                    <port nodetype="NodeSignal" name="PFax"/>
+                    <port nodetype="NodeSignal" name="Pvturby"/>
+                    <port nodetype="NodeSignal" name="Pvturbz"/>
+                    <port nodetype="NodeSignal" name="PFaz"/>
+                    <port nodetype="NodeSignal" name="PPb"/>
+                    <port nodetype="NodeSignal" name="Pycg"/>
+                    <port nodetype="NodeSignal" name="PAlphaAttack"/>
+                    <port nodetype="NodeSignal" name="PCd1"/>
+                    <port nodetype="NodeSignal" name="Pq0"/>
+                    <port nodetype="NodeSignal" name="Pq1"/>
+                    <port nodetype="NodeSignal" name="Pq2"/>
+                    <port nodetype="NodeSignal" name="Paltitude"/>
+                    <port nodetype="NodeSignal" name="Pq3"/>
+                    <port nodetype="NodeSignal" name="Pxcg"/>
+                    <port nodetype="NodeSignal" name="PUb"/>
+                    <port nodetype="NodeSignal" name="Pgfx"/>
+                    <port nodetype="NodeSignal" name="PPsi"/>
+                    <port nodetype="NodeSignal" name="Pgfy"/>
+                    <port nodetype="NodeSignal" name="PQb"/>
+                    <port nodetype="NodeSignal" name="Pgfz"/>
+                    <port nodetype="NodeMechanicRotational" name="Ptvcry"/>
+                    <port nodetype="NodeMechanicRotational" name="Ptvcrz"/>
+                    <port nodetype="NodeSignal" name="Pwturbx"/>
+                    <port nodetype="NodeSignal" name="Pwturby"/>
+                    <port nodetype="NodeSignal" name="Pwturbz"/>
+                    <port nodetype="NodeSignal" name="PCL1"/>
+                    <port nodetype="NodeSignal" name="Pvx"/>
+                    <port nodetype="NodeSignal" name="Pvy"/>
+                    <port nodetype="NodeSignal" name="PVb"/>
+                    <port nodetype="NodeSignal" name="Pvz"/>
+                    <port nodetype="NodeSignal" name="PRb"/>
+                    <port nodetype="NodeSignal" name="PPhi"/>
+                    <port nodetype="NodeSignal" name="Prho"/>
+                    <port nodetype="NodeSignal" name="PWb"/>
+                    <port nodetype="NodeSignal" name="Pg0"/>
+                </ports>
+                <hopsangui>
+                    <pose x="2287.127768" y="2508.059666" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="AeroVehicleTVC" displayname="AeroVehicleTVC">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Scope">
+                <parameters/>
+                <ports>
+                    <port nodetype="NodeSignal" name="in_right"/>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="in_bottom"/>
+                </ports>
+                <hopsangui>
+                    <pose x="2668.84701" y="2753.143075" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSink" displayname="Scope">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+        </objects>
+        <connections>
+            <connect endport="in" endcomponent="Scope_2" startport="out" startcomponent="Ramp">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1743.50380199999995056714" y="2478.62814200000002529123"/>
+                        <coordinate x="1784.71344840361348360602" y="2478.62814200000002529123"/>
+                        <coordinate x="1784.71344840361348360602" y="2335.88996349000308327959"/>
+                        <coordinate x="2301.81487220399912985158" y="2335.88996349000308327959"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Ptvcly" endcomponent="AeroVehicleTVC" startport="Pmr1" startcomponent="Angle &amp; Velocity Source">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2069.02920600000015838305" y="2478.35966600000028847717"/>
+                        <coordinate x="2112.62776799999983268208" y="2478.35966600000028847717"/>
+                        <coordinate x="2112.62776799999983268208" y="2478.35966600000028847717"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Ptvclz" endcomponent="AeroVehicleTVC" startport="Pmr1" startcomponent="Angle &amp; Velocity Source_1">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2069.54999799999995957478" y="2498.15966600000001562876"/>
+                        <coordinate x="2112.62776799999983268208" y="2498.15966600000001562876"/>
+                        <coordinate x="2112.62776799999983268208" y="2498.15966600000001562876"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Scope_1" startport="PThetao" startcomponent="AeroVehicleTVC">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2205.69455100000004676986" y="2557.55966600000010657823"/>
+                        <coordinate x="2205.69455100000004676986" y="2607.50052700000014738180"/>
+                        <coordinate x="2644.81572400000004563481" y="2607.50052700000014738180"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Scope_1" startport="PPhi" startcomponent="AeroVehicleTVC">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2217.32776799999965078314" y="2557.55966600000010657823"/>
+                        <coordinate x="2217.32776799999965078314" y="2607.50052700000014738180"/>
+                        <coordinate x="2644.81572400000004563481" y="2607.50052700000014738180"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Scope_1" startport="PPsi" startcomponent="AeroVehicleTVC">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2194.06098499999961859430" y="2557.55966600000010657823"/>
+                        <coordinate x="2194.06098499999961859430" y="2607.50052700000014738180"/>
+                        <coordinate x="2644.81572400000004563481" y="2607.50052700000014738180"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Scope" startport="Paltitude" startcomponent="AeroVehicleTVC">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2368.56098500000007334165" y="2557.55966600000010657823"/>
+                        <coordinate x="2368.56098500000007334165" y="2753.14307499999995343387"/>
+                        <coordinate x="2648.84700971800020852243" y="2753.14307499999995343387"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_bottom" endcomponent="Scope" startport="Pxcg" startcomponent="AeroVehicleTVC">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2124.26108969999995679245" y="2557.55966600000010657823"/>
+                        <coordinate x="2124.26108969999995679245" y="2781.93051515442675736267"/>
+                        <coordinate x="2668.84700971800020852243" y="2781.93051515442675736267"/>
+                        <coordinate x="2668.84700971800020852243" y="2768.14307499999995343387"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_right" endcomponent="Scope" startport="PUb" startcomponent="AeroVehicleTVC">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2228.96098499999970954377" y="2557.55966600000010657823"/>
+                        <coordinate x="2228.96098499999970954377" y="2657.25369201485955272801"/>
+                        <coordinate x="2519.73515469891435714089" y="2657.25369201485955272801"/>
+                        <coordinate x="2519.73515469891435714089" y="2753.14307499999995343387"/>
+                        <coordinate x="2688.84700971800020852243" y="2753.14307499999995343387"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pthrustl" endcomponent="AeroVehicleTVC" startport="out" startcomponent="Step">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1850.56000900000003639434" y="2406.81997172000183127238"/>
+                        <coordinate x="2139.47392989999980272842" y="2406.81997172000183127238"/>
+                        <coordinate x="2139.47392989999980272842" y="2458.55966600000010657823"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pha" endcomponent="AeroAtmosphere" startport="Paltitude" startcomponent="AeroVehicleTVC">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2368.56098500000007334165" y="2557.55966600000010657823"/>
+                        <coordinate x="2368.56098500000007334165" y="2586.23146415373958006967"/>
+                        <coordinate x="2583.33936344878111412982" y="2586.23146415373958006967"/>
+                        <coordinate x="2583.33936344878111412982" y="2309.24407497800393684884"/>
+                        <coordinate x="2505.31409556400012661470" y="2309.24407497800393684884"/>
+                        <coordinate x="2505.31409556400012661470" y="2339.11407300400469466695"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Scope_2" startport="PThetao" startcomponent="AeroVehicleTVC">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2205.69455100000004676986" y="2557.55966600000010657823"/>
+                        <coordinate x="2205.69455100000004676986" y="2674.25079935079202186898"/>
+                        <coordinate x="2301.81487220399912985158" y="2674.25079935079202186898"/>
+                        <coordinate x="2301.81487220399912985158" y="2335.88996349000308327959"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Prho" endcomponent="AeroVehicleTVC" startport="Prho" startcomponent="AeroAtmosphere">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2475.61409556400030851364" y="2405.11407300400469466695"/>
+                        <coordinate x="2475.61409556400030851364" y="2426.29337679948002914898"/>
+                        <coordinate x="2273.70452999999997700797" y="2426.29337679948002914898"/>
+                        <coordinate x="2273.70452999999997700797" y="2458.55966600000010657823"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Scope_5" startport="Paltitude" startcomponent="AeroVehicleTVC">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2368.56098500000007334165" y="2557.55966600000010657823"/>
+                        <coordinate x="2368.56098500000007334165" y="2708.66002100000014252146"/>
+                        <coordinate x="2412.83001000000012936653" y="2708.66002100000014252146"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="thetain" endcomponent="Angle &amp; Velocity Source_1" startport="Puelev" startcomponent="SignalAttitudeTVCcontrol">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1877.39164099999993595702" y="2491.26420499999994717655"/>
+                        <coordinate x="1877.39164099999993595702" y="2491.65966600000001562876"/>
+                        <coordinate x="2022.54999799999995957478" y="2491.65966600000001562876"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pthetaref" endcomponent="SignalAttitudeTVCcontrol" startport="out" startcomponent="Ramp">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1743.50380199999995056714" y="2478.62814200000002529123"/>
+                        <coordinate x="1786.75164115527468311484" y="2478.62814200000002529123"/>
+                        <coordinate x="1786.75164115527468311484" y="2478.46420499999976527761"/>
+                        <coordinate x="1812.39164099999993595702" y="2478.46420499999976527761"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="PQb" endcomponent="SignalAttitudeTVCcontrol" startport="PQb" startcomponent="AeroVehicleTVC">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2275.49455099999977392145" y="2557.55966600000010657823"/>
+                        <coordinate x="2275.49455099999977392145" y="2626.60422346559744255501"/>
+                        <coordinate x="1870.89164099999993595702" y="2626.60422346559744255501"/>
+                        <coordinate x="1870.89164099999993595702" y="2516.86420499999985622708"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Ptheta" endcomponent="SignalAttitudeTVCcontrol" startport="PThetao" startcomponent="AeroVehicleTVC">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2205.69455100000004676986" y="2557.55966600000010657823"/>
+                        <coordinate x="2205.69455100000004676986" y="2643.45086644989669366623"/>
+                        <coordinate x="1831.89164099999993595702" y="2643.45086644989669366623"/>
+                        <coordinate x="1831.89164099999993595702" y="2516.86420499999985622708"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Ppsi" endcomponent="SignalAttitudeTVCcontrol" startport="PPsi" startcomponent="AeroVehicleTVC">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2194.06098499999961859430" y="2557.55966600000010657823"/>
+                        <coordinate x="2194.06098499999961859430" y="2636.77139310663551441394"/>
+                        <coordinate x="1844.89164099999993595702" y="2636.77139310663551441394"/>
+                        <coordinate x="1844.89164099999993595702" y="2516.86420499999985622708"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="PRb" endcomponent="SignalAttitudeTVCcontrol" startport="PRb" startcomponent="AeroVehicleTVC">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2287.12776799999983268208" y="2557.55966600000010657823"/>
+                        <coordinate x="2287.12776799999983268208" y="2632.24422233759787559393"/>
+                        <coordinate x="1857.89164099999993595702" y="2632.24422233759787559393"/>
+                        <coordinate x="1857.89164099999993595702" y="2516.86420499999985622708"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Scope_7" startport="PAlphaAttack" startcomponent="AeroVehicleTVC">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2345.29455099999995582039" y="2557.55966600000010657823"/>
+                        <coordinate x="2345.29455099999995582039" y="2645.19099300000016228296"/>
+                        <coordinate x="2645.20100400000001172884" y="2645.19099300000016228296"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Scope_7" startport="PThetao" startcomponent="AeroVehicleTVC">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2205.69455100000004676986" y="2557.55966600000010657823"/>
+                        <coordinate x="2205.69455100000004676986" y="2645.19099300000016228296"/>
+                        <coordinate x="2645.20100400000001172884" y="2645.19099300000016228296"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_bottom" endcomponent="Scope_5" startport="Prho" startcomponent="AeroAtmosphere">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2475.61409556400030851364" y="2405.11407300400469466695"/>
+                        <coordinate x="2475.61409556400030851364" y="2736.80945263811008771881"/>
+                        <coordinate x="2432.83001000000012936653" y="2736.80945263811008771881"/>
+                        <coordinate x="2432.83001000000012936653" y="2723.66002100000014252146"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Scope_8" startport="Pgfx" startcomponent="AeroVehicleTVC">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2380.19455099999959202250" y="2557.55966600000010657823"/>
+                        <coordinate x="2380.19455099999959202250" y="2683.07004899999992630910"/>
+                        <coordinate x="2646.62990300000001298031" y="2683.07004899999992630910"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Ptvcrz" endcomponent="AeroVehicleTVC" startport="Pmr1" startcomponent="Angle &amp; Velocity Source_3">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2069.77999799999997776467" y="2537.75966599999992467929"/>
+                        <coordinate x="2112.62776799999983268208" y="2537.75966599999992467929"/>
+                        <coordinate x="2112.62776799999983268208" y="2537.75966599999992467929"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Ptvcry" endcomponent="AeroVehicleTVC" startport="Pmr1" startcomponent="Angle &amp; Velocity Source_2">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2068.36999800000012328383" y="2517.95966600000019752770"/>
+                        <coordinate x="2112.62776799999983268208" y="2517.95966600000019752770"/>
+                        <coordinate x="2112.62776799999983268208" y="2517.95966600000019752770"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="Pthrustr" endcomponent="AeroVehicleTVC" startport="out" startcomponent="Step">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1850.56000900000003639434" y="2406.81997172000183127238"/>
+                        <coordinate x="2166.32002199999988079071" y="2406.81997172000183127238"/>
+                        <coordinate x="2166.32002199999988079071" y="2458.55966600000010657823"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="thetain" endcomponent="Angle &amp; Velocity Source_3" startport="Puelev" startcomponent="SignalAttitudeTVCcontrol">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1877.39164099999993595702" y="2491.26420499999994717655"/>
+                        <coordinate x="1923.23961535207718043239" y="2491.26420499999994717655"/>
+                        <coordinate x="1923.23961535207718043239" y="2531.25966599999992467929"/>
+                        <coordinate x="2022.77999799999997776467" y="2531.25966599999992467929"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="thetain" endcomponent="Angle &amp; Velocity Source_2" startport="Purud" startcomponent="SignalAttitudeTVCcontrol">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1877.39164099999993595702" y="2478.46420499999976527761"/>
+                        <coordinate x="1923.23961535207718043239" y="2478.46420499999976527761"/>
+                        <coordinate x="1923.23961535207718043239" y="2511.45966600000019752770"/>
+                        <coordinate x="2021.36999799999989591015" y="2511.45966600000019752770"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="thetain" endcomponent="Angle &amp; Velocity Source" startport="Purud" startcomponent="SignalAttitudeTVCcontrol">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="1877.39164099999993595702" y="2478.46420499999976527761"/>
+                        <coordinate x="1923.23961535207718043239" y="2478.46420499999976527761"/>
+                        <coordinate x="1923.23961535207718043239" y="2471.72950565409928458394"/>
+                        <coordinate x="2002.02920643600032235554" y="2471.72950565409928458394"/>
+                        <coordinate x="2002.02920643600032235554" y="2471.85966600000028847717"/>
+                        <coordinate x="2022.02920599999993100937" y="2471.85966600000028847717"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+        </connections>
+    </system>
+</hopsanmodelfile>
