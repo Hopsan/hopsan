@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4730" hopsancoreversion="0.6.x_r4718">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4943" hopsancoreversion="0.6.x_r4932">
     <requirements>
-        <componentlibrary>PettersComponentLibrary</componentlibrary>
-        <componentlibrary>PettersComponentLibrary</componentlibrary>
+        <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
     </requirements>
+    <info/>
     <system logsamples="2048" typename="Subsystem" name="Aircraft6DOFSTest">
-        <simulationtime stop="60" timestep="0.01" start="0" inherit_timestep="true"/>
-        <aliases/>
+        <simulationtime stop="80" timestep="0.01" start="0" inherit_timestep="true"/>
         <parameters/>
+        <aliases/>
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2123.73" y="2400.4" zoom="0.842152"/>
+            <viewport x="2088.7" y="2729.91" zoom="0.842152"/>
             <ports hidden="1"/>
-            <names hidden="0"/>
+            <names hidden="1"/>
+            <graphics type="user"/>
             <scriptfile path=""/>
             <hopsanobjectappearance version="0.3">
                 <modelobject typename="Subsystem" displayname="Aircraft6DOFSTest">
@@ -21,6 +22,7 @@
                         <icon path="subsystemDefault.svg" type="defaultmissing"/>
                     </icons>
                     <ports/>
+                    <animation flowspeed="100"/>
                 </modelobject>
             </hopsanobjectappearance>
             <favoritevariables/>
@@ -2422,6 +2424,36 @@
                         <newpos>1588.49 2220.89</newpos>
                     </stuff>
                 </post>
+                <post number="127" type="changedparameters">
+                    <stuff newvalue="60" what="changedparameter" oldvalue="20" parametername="t_start" objectname="Pulse"/>
+                    <stuff newvalue="80" what="changedparameter" oldvalue="40" parametername="t_end" objectname="Pulse"/>
+                </post>
+                <post number="128" type="changedparameters">
+                    <stuff newvalue="1" what="changedparameter" oldvalue="-2" parametername="Kphi" objectname="SignalAttitudeControl"/>
+                    <stuff newvalue="4" what="changedparameter" oldvalue="-4" parametername="Kelev" objectname="SignalAttitudeControl"/>
+                </post>
+                <post number="129" type="changedparameters">
+                    <stuff newvalue="5" what="changedparameter" oldvalue="-5" parametername="Krud" objectname="SignalAttitudeControl"/>
+                </post>
+                <post number="130" type="changedparameters">
+                    <stuff newvalue="3" what="changedparameter" oldvalue="4" parametername="Kelev" objectname="SignalAttitudeControl"/>
+                </post>
+                <post number="131" type="changedparameters">
+                    <stuff newvalue="150" what="changedparameter" oldvalue="130" parametername="y" objectname="Constant_1"/>
+                </post>
+                <post number="132" type="changedparameters">
+                    <stuff newvalue="20" what="changedparameter" oldvalue="60" parametername="t_start" objectname="Pulse"/>
+                    <stuff newvalue="40" what="changedparameter" oldvalue="80" parametername="t_end" objectname="Pulse"/>
+                </post>
+                <post number="133" type="changedparameters">
+                    <stuff newvalue="500" what="changedparameter" oldvalue="0" parametername="y_0" objectname="Pulse_1"/>
+                    <stuff newvalue="0" what="changedparameter" oldvalue="500" parametername="y_A" objectname="Pulse_1"/>
+                </post>
+                <post number="134" type="changedparameters">
+                    <stuff newvalue="0" what="changedparameter" oldvalue="500" parametername="y_0" objectname="Pulse_1"/>
+                    <stuff newvalue="10000" what="changedparameter" oldvalue="100" parametername="t_end" objectname="Pulse_1"/>
+                    <stuff newvalue="500" what="changedparameter" oldvalue="0" parametername="y_A" objectname="Pulse_1"/>
+                </post>
             </hopsanundo>
         </hopsangui>
         <objects>
@@ -2445,9 +2477,16 @@
                     <parameter value="2.71828" type="double" name="e"/>
                     <parameter value="0" type="double" name="ha"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="PT"/>
+                    <port nodetype="NodeSignal" name="Pha"/>
+                    <port nodetype="NodeSignal" name="Prho"/>
+                    <port nodetype="NodeSignal" name="PVsound"/>
+                    <port nodetype="NodeSignal" name="Pp0"/>
+                </ports>
                 <hopsangui>
                     <pose x="2549.82" y="2320" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="AeroAtmosphere" displayname="AeroAtmosphere">
                             <ports/>
@@ -2461,10 +2500,10 @@
                     <parameter value="0" type="double" name="PuaerR::Value"/>
                     <parameter value="0" type="double" name="Puelev::Value"/>
                     <parameter value="0" type="double" name="Purud::Value"/>
-                    <parameter value="-2" type="double" name="Kphi"/>
+                    <parameter value="1" type="double" name="Kphi"/>
                     <parameter value="5" type="double" name="Kphipsi"/>
-                    <parameter value="-4" type="double" name="Kelev"/>
-                    <parameter value="-5" type="double" name="Krud"/>
+                    <parameter value="3" type="double" name="Kelev"/>
+                    <parameter value="5" type="double" name="Krud"/>
                     <parameter value="1" type="double" name="KRrud"/>
                     <parameter value="-0.9" type="double" name="u1min"/>
                     <parameter value="0.9" type="double" name="u1max"/>
@@ -2484,9 +2523,25 @@
                     <parameter value="0" type="double" name="Rb"/>
                     <parameter value="0" type="double" name="Ub"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="PuaerL"/>
+                    <port nodetype="NodeSignal" name="Ppsi"/>
+                    <port nodetype="NodeSignal" name="Ppsiref"/>
+                    <port nodetype="NodeSignal" name="Pthetaref"/>
+                    <port nodetype="NodeSignal" name="PUb"/>
+                    <port nodetype="NodeSignal" name="Pphimax"/>
+                    <port nodetype="NodeSignal" name="PuaerR"/>
+                    <port nodetype="NodeSignal" name="Purud"/>
+                    <port nodetype="NodeSignal" name="Puelev"/>
+                    <port nodetype="NodeSignal" name="PRb"/>
+                    <port nodetype="NodeSignal" name="Pphiref"/>
+                    <port nodetype="NodeSignal" name="Pbeta"/>
+                    <port nodetype="NodeSignal" name="Ptheta"/>
+                    <port nodetype="NodeSignal" name="Pphi"/>
+                </ports>
                 <hopsangui>
                     <pose x="2006" y="2496" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalAttitudeControl" displayname="SignalAttitudeControl">
                             <ports/>
@@ -2498,9 +2553,14 @@
                 <parameters>
                     <parameter value="0" type="double" name="omega"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="thetain"/>
+                    <port nodetype="NodeSignal" name="win"/>
+                    <port nodetype="NodeMechanicRotational" name="Pmr1"/>
+                </ports>
                 <hopsangui>
                     <pose x="2176" y="2460.708271" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="MechanicThetaSource" displayname="Angle &amp; Velocity Source">
                             <ports/>
@@ -2512,9 +2572,14 @@
                 <parameters>
                     <parameter value="0" type="double" name="omega"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="thetain"/>
+                    <port nodetype="NodeSignal" name="win"/>
+                    <port nodetype="NodeMechanicRotational" name="Pmr1"/>
+                </ports>
                 <hopsangui>
                     <pose x="2175" y="2495.541465" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="MechanicThetaSource" displayname="Angle &amp; Velocity Source_1">
                             <ports/>
@@ -2526,9 +2591,14 @@
                 <parameters>
                     <parameter value="0" type="double" name="omega"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="thetain"/>
+                    <port nodetype="NodeSignal" name="win"/>
+                    <port nodetype="NodeMechanicRotational" name="Pmr1"/>
+                </ports>
                 <hopsangui>
                     <pose x="2175.187434" y="2550.312038" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="MechanicThetaSource" displayname="Angle &amp; Velocity Source_2">
                             <ports/>
@@ -2540,12 +2610,15 @@
                 <parameters>
                     <parameter value="0" type="double" name="y_0"/>
                     <parameter value="1" type="double" name="t_start"/>
-                    <parameter value="100" type="double" name="t_end"/>
+                    <parameter value="10000" type="double" name="t_end"/>
                     <parameter value="500" type="double" name="y_A"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="out"/>
+                </ports>
                 <hopsangui>
                     <pose x="1604.997891" y="2450.5" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalPulse" displayname="Pulse_1">
                             <ports/>
@@ -2557,9 +2630,14 @@
                 <parameters>
                     <parameter value="0" type="double" name="omega"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="thetain"/>
+                    <port nodetype="NodeSignal" name="win"/>
+                    <port nodetype="NodeMechanicRotational" name="Pmr1"/>
+                </ports>
                 <hopsangui>
                     <pose x="2175.187434" y="2576.437698" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="MechanicThetaSource" displayname="Angle &amp; Velocity Source_3">
                             <ports/>
@@ -2569,9 +2647,14 @@
             </component>
             <component typename="SignalSink" name="Sink">
                 <parameters/>
+                <ports>
+                    <port nodetype="NodeSignal" name="in_right"/>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="in_bottom"/>
+                </ports>
                 <hopsangui>
-                    <pose x="2638.669876" y="2850.096363" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <pose x="2605.421721" y="2866.72044" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalSink" displayname="Sink">
                             <ports/>
@@ -2583,9 +2666,14 @@
                 <parameters>
                     <parameter value="0" type="double" name="omega"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="thetain"/>
+                    <port nodetype="NodeSignal" name="win"/>
+                    <port nodetype="NodeMechanicRotational" name="Pmr1"/>
+                </ports>
                 <hopsangui>
                     <pose x="2176.187434" y="2603.563359" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="MechanicThetaSource" displayname="Angle &amp; Velocity Source_4">
                             <ports/>
@@ -2597,25 +2685,16 @@
                 <parameters>
                     <parameter value="0" type="double" name="omega"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="thetain"/>
+                    <port nodetype="NodeSignal" name="win"/>
+                    <port nodetype="NodeMechanicRotational" name="Pmr1"/>
+                </ports>
                 <hopsangui>
                     <pose x="2278.844746" y="2499.063359" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="MechanicThetaSource" displayname="Angle &amp; Velocity Source_5">
-                            <ports/>
-                        </modelobject>
-                    </hopsanobjectappearance>
-                </hopsangui>
-            </component>
-            <component typename="MechanicThetaSource" name="Angle &amp; Velocity Source_6">
-                <parameters>
-                    <parameter value="0" type="double" name="omega"/>
-                </parameters>
-                <hopsangui>
-                    <pose x="2279.422901" y="2525.188359" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
-                    <hopsanobjectappearance version="0.3">
-                        <modelobject typename="MechanicThetaSource" displayname="Angle &amp; Velocity Source_6">
                             <ports/>
                         </modelobject>
                     </hopsanobjectappearance>
@@ -2627,11 +2706,34 @@
                     <parameter value="1" type="double" name="y_upper"/>
                     <parameter value="0" type="double" name="y_lower"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="out"/>
+                </ports>
                 <hopsangui>
                     <pose x="2165.067246" y="2234.088977" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalSaturation" displayname="Saturation_1">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="MechanicThetaSource" name="Angle &amp; Velocity Source_6">
+                <parameters>
+                    <parameter value="0" type="double" name="omega"/>
+                </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="thetain"/>
+                    <port nodetype="NodeSignal" name="win"/>
+                    <port nodetype="NodeMechanicRotational" name="Pmr1"/>
+                </ports>
+                <hopsangui>
+                    <pose x="2279.422901" y="2525.188359" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicThetaSource" displayname="Angle &amp; Velocity Source_6">
                             <ports/>
                         </modelobject>
                     </hopsanobjectappearance>
@@ -2655,9 +2757,21 @@
                     <parameter value="340" type="double" name="Vsound"/>
                     <parameter value="100" type="double" name="speed"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="Pmfuel"/>
+                    <port nodetype="NodeSignal" name="Pthrust"/>
+                    <port nodetype="NodeSignal" name="PShspeed"/>
+                    <port nodetype="NodeSignal" name="PT"/>
+                    <port nodetype="NodeSignal" name="Pspeed"/>
+                    <port nodetype="NodeSignal" name="Prho"/>
+                    <port nodetype="NodeSignal" name="Puin"/>
+                    <port nodetype="NodeSignal" name="Pqmfuel"/>
+                    <port nodetype="NodeSignal" name="PVsound"/>
+                    <port nodetype="NodeSignal" name="Pp0"/>
+                </ports>
                 <hopsangui>
                     <pose x="2307.562302" y="2289.467434" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="AeroJetEngine" displayname="AeroJetEngine">
                             <ports/>
@@ -2672,9 +2786,12 @@
                     <parameter value="40" type="double" name="t_end"/>
                     <parameter value="1.57" type="double" name="y_A"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="out"/>
+                </ports>
                 <hopsangui>
                     <pose x="1605.877504" y="2346.373814" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalPulse" displayname="Pulse">
                             <ports/>
@@ -2687,9 +2804,13 @@
                     <parameter value="0" type="double" name="out::Value"/>
                     <parameter value=".02" type="double" name="k"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="out"/>
+                </ports>
                 <hopsangui>
                     <pose x="2099.304869" y="2233.38839" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalGain" displayname="Gain">
                             <ports/>
@@ -2699,11 +2820,14 @@
             </component>
             <component typename="SignalSource" name="Constant_1">
                 <parameters>
-                    <parameter value="130" type="double" name="y"/>
+                    <parameter value="150" type="double" name="y"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="out"/>
+                </ports>
                 <hopsangui>
                     <pose x="1600.994426" y="2233.38839" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalSource" displayname="Constant_1">
                             <ports/>
@@ -2722,9 +2846,15 @@
                     <parameter value="500" type="double" name="y"/>
                     <parameter value="1" type="double" name="kx"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="Pu"/>
+                    <port nodetype="NodeSignal" name="Pyref"/>
+                    <port nodetype="NodeSignal" name="Py"/>
+                    <port nodetype="NodeSignal" name="Pkx"/>
+                </ports>
                 <hopsangui>
                     <pose x="1816" y="2450.5" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalPIlead" displayname="SignalPIlead">
                             <ports/>
@@ -2736,9 +2866,14 @@
                 <parameters>
                     <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="out"/>
+                    <port nodetype="NodeSignal" name="in1"/>
+                    <port nodetype="NodeSignal" name="in2"/>
+                </ports>
                 <hopsangui>
                     <pose x="2058.381192" y="2233.38839" flipped="true" a="180"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalSubtract" displayname="Subtract">
                             <ports/>
@@ -2909,9 +3044,59 @@
                     <parameter value="0" type="double" name="wturby"/>
                     <parameter value="0" type="double" name="wturbz"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="Pthrustl"/>
+                    <port nodetype="NodeMechanicRotational" name="Par12"/>
+                    <port nodetype="NodeSignal" name="PMfuel"/>
+                    <port nodetype="NodeSignal" name="PBetaSlip"/>
+                    <port nodetype="NodeMechanicRotational" name="Pal12"/>
+                    <port nodetype="NodeSignal" name="Pzcg"/>
+                    <port nodetype="NodeSignal" name="PMcargo"/>
+                    <port nodetype="NodeSignal" name="Pthrustr"/>
+                    <port nodetype="NodeSignal" name="PThetao"/>
+                    <port nodetype="NodeSignal" name="Pvturbx"/>
+                    <port nodetype="NodeSignal" name="PFax"/>
+                    <port nodetype="NodeSignal" name="Pvturby"/>
+                    <port nodetype="NodeMechanicRotational" name="Pfin"/>
+                    <port nodetype="NodeSignal" name="Pvturbz"/>
+                    <port nodetype="NodeSignal" name="PFaz"/>
+                    <port nodetype="NodeSignal" name="PPb"/>
+                    <port nodetype="NodeSignal" name="Pycg"/>
+                    <port nodetype="NodeMechanicRotational" name="Par1"/>
+                    <port nodetype="NodeMechanicRotational" name="Par2"/>
+                    <port nodetype="NodeSignal" name="PAlphaAttack"/>
+                    <port nodetype="NodeSignal" name="PCd1"/>
+                    <port nodetype="NodeSignal" name="Pq0"/>
+                    <port nodetype="NodeSignal" name="Pq1"/>
+                    <port nodetype="NodeSignal" name="Pq2"/>
+                    <port nodetype="NodeSignal" name="Paltitude"/>
+                    <port nodetype="NodeSignal" name="Pq3"/>
+                    <port nodetype="NodeSignal" name="Pxcg"/>
+                    <port nodetype="NodeSignal" name="PUb"/>
+                    <port nodetype="NodeSignal" name="Pgfx"/>
+                    <port nodetype="NodeSignal" name="PPsi"/>
+                    <port nodetype="NodeSignal" name="Pgfy"/>
+                    <port nodetype="NodeSignal" name="PQb"/>
+                    <port nodetype="NodeSignal" name="Pgfz"/>
+                    <port nodetype="NodeSignal" name="Pwturbx"/>
+                    <port nodetype="NodeSignal" name="Pwturby"/>
+                    <port nodetype="NodeSignal" name="Pwturbz"/>
+                    <port nodetype="NodeSignal" name="PCL1"/>
+                    <port nodetype="NodeSignal" name="Pvx"/>
+                    <port nodetype="NodeSignal" name="Pvy"/>
+                    <port nodetype="NodeSignal" name="PVb"/>
+                    <port nodetype="NodeSignal" name="Pvz"/>
+                    <port nodetype="NodeSignal" name="PRb"/>
+                    <port nodetype="NodeSignal" name="PPhi"/>
+                    <port nodetype="NodeSignal" name="Pdezthrust"/>
+                    <port nodetype="NodeSignal" name="Prho"/>
+                    <port nodetype="NodeMechanicRotational" name="Pal1"/>
+                    <port nodetype="NodeMechanicRotational" name="Pal2"/>
+                    <port nodetype="NodeSignal" name="PWb"/>
+                </ports>
                 <hopsangui>
                     <pose x="2505.808338" y="2525.188359" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="AeroAircraft6DOFS" displayname="AeroAircraft6DOFS">
                             <ports/>
@@ -2921,9 +3106,14 @@
             </component>
             <component typename="SignalSink" name="Sink_1">
                 <parameters/>
+                <ports>
+                    <port nodetype="NodeSignal" name="in_right"/>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="in_bottom"/>
+                </ports>
                 <hopsangui>
                     <pose x="2782.1" y="2663.59" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalSink" displayname="Sink_1">
                             <ports/>
@@ -2933,9 +3123,14 @@
             </component>
             <component typename="SignalSink" name="Sink_2">
                 <parameters/>
+                <ports>
+                    <port nodetype="NodeSignal" name="in_right"/>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="in_bottom"/>
+                </ports>
                 <hopsangui>
                     <pose x="2631.782566" y="2770.41" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalSink" displayname="Sink_2">
                             <ports/>
@@ -2950,9 +3145,14 @@
                     <parameter value="1000" type="double" name="massfuel0"/>
                     <parameter value="0" type="double" name="massflow"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="Pmassflow"/>
+                    <port nodetype="NodeSignal" name="Pmassfuel"/>
+                    <port nodetype="NodeSignal" name="Pconsfuel"/>
+                </ports>
                 <hopsangui>
                     <pose x="2164" y="2367" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="AeroFuelTank" displayname="AeroFuelTank">
                             <ports/>
@@ -2962,9 +3162,14 @@
             </component>
             <component typename="SignalSink" name="Scope">
                 <parameters/>
+                <ports>
+                    <port nodetype="NodeSignal" name="in_right"/>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="in_bottom"/>
+                </ports>
                 <hopsangui>
                     <pose x="1915.254481" y="2869.562302" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
+                    <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalSink" displayname="Scope">
                             <ports/>
@@ -3292,8 +3497,8 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2349.80834999999979118002" y="2629.68835900000021865708"/>
-                        <coordinate x="2349.80834999999979118002" y="2850.09636251296205955441"/>
-                        <coordinate x="2618.66987648703798186034" y="2850.09636251296205955441"/>
+                        <coordinate x="2349.80834999999979118002" y="2866.72044036370652975165"/>
+                        <coordinate x="2585.42172127258754699142" y="2866.72044036370652975165"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -3307,8 +3512,8 @@
                     <coordinates>
                         <coordinate x="2337.80832599999985177419" y="2629.68835900000021865708"/>
                         <coordinate x="2337.80832599999985177419" y="2881.90255440823011667817"/>
-                        <coordinate x="2638.66987648703798186034" y="2881.90255440823011667817"/>
-                        <coordinate x="2638.66987648703798186034" y="2865.09636251296205955441"/>
+                        <coordinate x="2605.42172127258754699142" y="2881.90255440823011667817"/>
+                        <coordinate x="2605.42172127258754699142" y="2881.72044036370652975165"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -3502,8 +3707,8 @@
                         <coordinate x="2589.80821799999966970063" y="2629.68835900000021865708"/>
                         <coordinate x="2589.80821799999966970063" y="2734.66072632968871403136"/>
                         <coordinate x="2695.47540111523812811356" y="2734.66072632968871403136"/>
-                        <coordinate x="2695.47540111523812811356" y="2850.09636251296205955441"/>
-                        <coordinate x="2658.66987648703798186034" y="2850.09636251296205955441"/>
+                        <coordinate x="2695.47540111523812811356" y="2866.72044036370652975165"/>
+                        <coordinate x="2625.42172127258754699142" y="2866.72044036370652975165"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -3575,8 +3780,8 @@
             <connect endport="Ppsiref" endcomponent="SignalAttitudeControl" startport="out" startcomponent="Pulse">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="1618.37750429851143962878" y="2346.37381375333643518388"/>
-                        <coordinate x="1916.51863321585642552236" y="2346.37381375333643518388"/>
+                        <coordinate x="1618.37750400000004447065" y="2346.37381400000003850437"/>
+                        <coordinate x="1916.51863321585642552236" y="2346.37381400000003850437"/>
                         <coordinate x="1916.51863321585642552236" y="2502.40000000000009094947"/>
                         <coordinate x="1973.50000000000000000000" y="2502.40000000000009094947"/>
                     </coordinates>
@@ -3667,10 +3872,10 @@
             <connect endport="in1" endcomponent="Subtract" startport="out" startcomponent="Constant_1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="1613.49442612217080750270" y="2233.38839047368401224958"/>
-                        <coordinate x="1733.70118678874291617831" y="2233.38839047368401224958"/>
-                        <coordinate x="1733.70118678874291617831" y="2233.38839047368401224958"/>
-                        <coordinate x="2045.88119173882842005696" y="2233.38839047368401224958"/>
+                        <coordinate x="1613.49442599999997582927" y="2233.38839000000007217750"/>
+                        <coordinate x="1733.70118678874291617831" y="2233.38839000000007217750"/>
+                        <coordinate x="1733.70118678874291617831" y="2233.38839000000007217750"/>
+                        <coordinate x="2045.88119199999982811278" y="2233.38839000000007217750"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -3683,10 +3888,10 @@
             <connect endport="in" endcomponent="Saturation_1" startport="out" startcomponent="Gain">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2111.80486856993775290903" y="2233.38839047368401224958"/>
-                        <coordinate x="2134.56671796070895652520" y="2233.38839047368401224958"/>
-                        <coordinate x="2134.56671796070895652520" y="2234.08897747368382624700"/>
-                        <coordinate x="2145.06724556993776786840" y="2234.08897747368382624700"/>
+                        <coordinate x="2111.80486900000005334732" y="2233.38839000000007217750"/>
+                        <coordinate x="2134.56671796070895652520" y="2233.38839000000007217750"/>
+                        <coordinate x="2134.56671796070895652520" y="2234.08897699999988617492"/>
+                        <coordinate x="2145.06724600000006830669" y="2234.08897699999988617492"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -3699,10 +3904,10 @@
             <connect endport="in" endcomponent="Gain" startport="out" startcomponent="Subtract">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2070.88119173882842005696" y="2233.38839047368401224958"/>
-                        <coordinate x="2067.99230254085205160663" y="2233.38839047368401224958"/>
-                        <coordinate x="2067.99230254085205160663" y="2233.38839047368401224958"/>
-                        <coordinate x="2086.80486856993775290903" y="2233.38839047368401224958"/>
+                        <coordinate x="2070.88119199999982811278" y="2233.38839000000007217750"/>
+                        <coordinate x="2067.99230254085205160663" y="2233.38839000000007217750"/>
+                        <coordinate x="2067.99230254085205160663" y="2233.38839000000007217750"/>
+                        <coordinate x="2086.80486900000005334732" y="2233.38839000000007217750"/>
                     </coordinates>
                     <geometries>
                         <geometry>vertical</geometry>
@@ -3715,8 +3920,8 @@
             <connect endport="Puin" endcomponent="AeroJetEngine" startport="out" startcomponent="Saturation_1">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2185.06724556993776786840" y="2234.08897747368382624700"/>
-                        <coordinate x="2236.13370199999963006121" y="2234.08897747368382624700"/>
+                        <coordinate x="2185.06724600000006830669" y="2234.08897699999988617492"/>
+                        <coordinate x="2236.13370199999963006121" y="2234.08897699999988617492"/>
                         <coordinate x="2236.13370199999963006121" y="2262.96743400000013934914"/>
                     </coordinates>
                     <geometries>
@@ -3731,8 +3936,8 @@
                     <coordinates>
                         <coordinate x="2445.80821799999966970063" y="2629.68835900000021865708"/>
                         <coordinate x="2445.80821799999966970063" y="2634.91626214745110701188"/>
-                        <coordinate x="2058.38119173882842005696" y="2634.91626214745110701188"/>
-                        <coordinate x="2058.38119173882842005696" y="2245.88839047368401224958"/>
+                        <coordinate x="2058.38119199999982811278" y="2634.91626214745110701188"/>
+                        <coordinate x="2058.38119199999982811278" y="2245.88839000000007217750"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
