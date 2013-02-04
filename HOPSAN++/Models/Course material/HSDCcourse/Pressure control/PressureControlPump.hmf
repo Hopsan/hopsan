@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.5.x_r4162" hopsancoreversion="0.5.x_r4204">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4943" hopsancoreversion="0.6.x_r4932">
     <requirements>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
-        <componentlibrary>PettersComponentLibrary</componentlibrary>
     </requirements>
+    <info/>
     <system logsamples="2048" typename="Subsystem" name="PressureControlPump">
         <simulationtime stop="1" timestep="0.001" start="-1" inherit_timestep="true"/>
-        <aliases/>
         <parameters/>
+        <aliases/>
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2594" y="2460" zoom="1"/>
+            <viewport x="2594" y="2340" zoom="1"/>
             <ports hidden="1"/>
             <names hidden="0"/>
+            <graphics type="user"/>
             <scriptfile path=""/>
             <hopsanobjectappearance version="0.3">
                 <modelobject typename="Subsystem" displayname="PressureControlPump">
@@ -21,6 +22,7 @@
                         <icon path="subsystemDefault.svg" type="defaultmissing"/>
                     </icons>
                     <ports/>
+                    <animation flowspeed="100"/>
                 </modelobject>
             </hopsanobjectappearance>
             <favoritevariables/>
@@ -95,6 +97,157 @@
                         <newpos>2471.5 2609.87</newpos>
                     </stuff>
                 </post>
+                <post number="48">
+                    <stuff what="addedobject">
+                        <component typename="HydraulicPressureSensor" name="Pressure Transducer">
+                            <parameters>
+                                <parameter value="0" type="double" name="out::Value"/>
+                            </parameters>
+                            <ports>
+                                <port nodetype="NodeHydraulic" name="P1"/>
+                                <port nodetype="NodeSignal" name="out"/>
+                            </ports>
+                            <hopsangui>
+                                <pose x="2733" y="2318" flipped="false" a="0"/>
+                                <nametext position="0" visible="1"/>
+                                <hopsanobjectappearance version="0.3">
+                                    <modelobject typename="HydraulicPressureSensor" displayname="Pressure Transducer">
+                                        <ports/>
+                                    </modelobject>
+                                </hopsanobjectappearance>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="49">
+                    <stuff what="addedobject">
+                        <component typename="SignalSink" name="Scope">
+                            <parameters/>
+                            <ports>
+                                <port nodetype="NodeSignal" name="in_right"/>
+                                <port nodetype="NodeSignal" name="in"/>
+                                <port nodetype="NodeSignal" name="in_bottom"/>
+                            </ports>
+                            <hopsangui>
+                                <pose x="2845" y="2327" flipped="false" a="0"/>
+                                <nametext position="0" visible="1"/>
+                                <hopsanobjectappearance version="0.3">
+                                    <modelobject typename="SignalSink" displayname="Scope">
+                                        <ports/>
+                                    </modelobject>
+                                </hopsanobjectappearance>
+                            </hopsangui>
+                        </component>
+                    </stuff>
+                </post>
+                <post number="50">
+                    <stuff what="addedconnector">
+                        <connect endport="in" endcomponent="Scope" startport="out" startcomponent="Pressure Transducer">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2733.00000000000000000000" y="2300.00000000000000000000"/>
+                                    <coordinate x="2733.00000000000000000000" y="2327.00000000000000000000"/>
+                                    <coordinate x="2825.00000000000000000000" y="2327.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="51">
+                    <stuff what="movedobject" name="Scope">
+                        <oldpos>2825 2312</oldpos>
+                        <newpos>2824 2258</newpos>
+                    </stuff>
+                </post>
+                <post number="52">
+                    <stuff what="addedconnector">
+                        <connect endport="P1" endcomponent="Pressure Transducer" startport="P2" startcomponent="Turbulent Orifice">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2557.00000000000000000000" y="2373.00000000000000000000"/>
+                                    <coordinate x="2551.00000000000000000000" y="2373.00000000000000000000"/>
+                                    <coordinate x="2551.00000000000000000000" y="2347.00000000000000000000"/>
+                                    <coordinate x="2733.00000000000000000000" y="2347.00000000000000000000"/>
+                                    <coordinate x="2733.00000000000000000000" y="2336.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="53">
+                    <stuff what="movedobject" name="Step">
+                        <oldpos>2513.5 2301.5</oldpos>
+                        <newpos>2416.5 2294.5</newpos>
+                    </stuff>
+                </post>
+                <post number="54">
+                    <stuff what="movedobject" name="Pressure Transducer">
+                        <oldpos>2715 2300</oldpos>
+                        <newpos>2714 2291</newpos>
+                    </stuff>
+                </post>
+                <post number="55">
+                    <stuff what="modifiedconnector" linenumber="2">
+                        <oldpos>0 0</oldpos>
+                        <newpos>1 -13</newpos>
+                        <connect endport="P1" endcomponent="Pressure Transducer" startport="P2" startcomponent="Turbulent Orifice">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2557.00000000000000000000" y="2373.00000000000000000000"/>
+                                    <coordinate x="2551.00000000000000000000" y="2373.00000000000000000000"/>
+                                    <coordinate x="2551.00000000000000000000" y="2334.00000000000000000000"/>
+                                    <coordinate x="2732.00000000000000000000" y="2334.00000000000000000000"/>
+                                    <coordinate x="2732.00000000000000000000" y="2327.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="56">
+                    <stuff what="movedobject" name="Pressure Transducer">
+                        <oldpos>2714 2291</oldpos>
+                        <newpos>2714 2286</newpos>
+                    </stuff>
+                </post>
+                <post number="57">
+                    <stuff what="addedconnector">
+                        <connect endport="in_right" endcomponent="Scope" startport="eps" startcomponent="Q-Type Pump With Pressure Control">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="2540.92808199999990392826" y="2497.30000000000018189894"/>
+                                    <coordinate x="2906.00000000000000000000" y="2497.30000000000018189894"/>
+                                    <coordinate x="2906.00000000000000000000" y="2273.00000000000000000000"/>
+                                    <coordinate x="2864.00000000000000000000" y="2273.00000000000000000000"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
             </hopsanundo>
         </hopsangui>
         <objects>
@@ -104,42 +257,106 @@
                     <parameter value="3e-007" type="double" name="A"/>
                     <parameter value="890" type="double" name="rho"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                    <port nodetype="NodeHydraulic" name="P2"/>
+                    <port nodetype="NodeSignal" name="A"/>
+                </ports>
                 <hopsangui>
                     <pose x="2587" y="2373" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="HydraulicTurbulentOrifice" displayname="Turbulent Orifice">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="HydraulicPressureSensor" name="Pressure Transducer">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                    <port nodetype="NodeSignal" name="out"/>
+                </ports>
+                <hopsangui>
+                    <pose x="2732" y="2304" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="HydraulicPressureSensor" displayname="Pressure Transducer">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="HydraulicTankC" name="C-type Tank">
                 <parameters>
                     <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="0" type="double" name="P1::Temperature"/>
+                    <parameter value="0" type="double" name="P1::WaveVariable"/>
+                    <parameter value="0" type="double" name="P1::CharImp"/>
+                    <parameter value="0" type="double" name="P1::HeatFlow"/>
                     <parameter value="100000" type="double" name="p"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                </ports>
                 <hopsangui>
                     <pose x="2400" y="2625" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="HydraulicTankC" displayname="C-type Tank">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="HydraulicVolumeMultiPort" name="Hydraulic Volume Multi Port">
                 <parameters>
                     <parameter value="0" type="double" name="P1::Flow"/>
                     <parameter value="1e7" type="double" name="P1::Pressure"/>
+                    <parameter value="0" type="double" name="P1::Temperature"/>
+                    <parameter value="0" type="double" name="P1::WaveVariable"/>
+                    <parameter value="0" type="double" name="P1::CharImp"/>
+                    <parameter value="0" type="double" name="P1::HeatFlow"/>
                     <parameter value="0.001" type="double" name="V"/>
                     <parameter value="1e+009" type="double" name="Beta_e"/>
                     <parameter value="0.1" type="double" name="alpha"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                </ports>
                 <hopsangui>
                     <pose x="2481" y="2373" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="HydraulicVolumeMultiPort" displayname="Hydraulic Volume Multi Port">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="HydraulicTankC" name="Tank C_1">
                 <parameters>
                     <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="0" type="double" name="P1::Temperature"/>
+                    <parameter value="0" type="double" name="P1::WaveVariable"/>
+                    <parameter value="0" type="double" name="P1::CharImp"/>
+                    <parameter value="0" type="double" name="P1::HeatFlow"/>
                     <parameter value="100000" type="double" name="p"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                </ports>
                 <hopsangui>
                     <pose x="2660" y="2433" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="HydraulicTankC" displayname="Tank C_1">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="SignalStep" name="Step">
@@ -148,23 +365,45 @@
                     <parameter value="-1e-007" type="double" name="y_A"/>
                     <parameter value="0.5" type="double" name="t_step"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="out"/>
+                </ports>
                 <hopsangui>
-                    <pose x="2526" y="2314" flipped="false" a="0"/>
+                    <pose x="2429" y="2307" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalStep" displayname="Step">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="HydraulicTankC" name="Tank C">
                 <parameters>
                     <parameter value="0" type="double" name="P1::Flow"/>
+                    <parameter value="0" type="double" name="P1::Temperature"/>
+                    <parameter value="0" type="double" name="P1::WaveVariable"/>
+                    <parameter value="0" type="double" name="P1::CharImp"/>
+                    <parameter value="0" type="double" name="P1::HeatFlow"/>
                     <parameter value="100000" type="double" name="p"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                </ports>
                 <hopsangui>
                     <pose x="2481" y="2624.37" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="HydraulicTankC" displayname="Tank C">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <component typename="HydraulicPressureControlledPump" name="Q-Type Pump With Pressure Control">
                 <parameters>
+                    <parameter value="0" type="double" name="eps::Value"/>
+                    <parameter value="0" type="double" name="a::Value"/>
                     <parameter value="28e6" type="double" name="p_dif"/>
                     <parameter value="125" type="double" name="omega_p"/>
                     <parameter value="0.00125" type="double" name="q_max"/>
@@ -177,9 +416,38 @@
                     <parameter value="0.15" type="double" name="t_p"/>
                     <parameter value="0.12" type="double" name="t_m"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="eps"/>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                    <port nodetype="NodeHydraulic" name="PREF"/>
+                    <port nodetype="NodeHydraulic" name="P2"/>
+                    <port nodetype="NodeSignal" name="a"/>
+                </ports>
                 <hopsangui>
                     <pose x="2465.928082" y="2497.3" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="HydraulicPressureControlledPump" displayname="Q-Type Pump With Pressure Control">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Scope">
+                <parameters/>
+                <ports>
+                    <port nodetype="NodeSignal" name="in_right"/>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="in_bottom"/>
+                </ports>
+                <hopsangui>
+                    <pose x="2844" y="2273" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSink" displayname="Scope">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
                 </hopsangui>
             </component>
             <textboxwidget>
@@ -209,8 +477,8 @@
             <connect endport="A" endcomponent="Turbulent Orifice" startport="out" startcomponent="Step">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2538.50000000000000000000" y="2314.00000000000000000000"/>
-                        <coordinate x="2587.00000000000000000000" y="2314.00000000000000000000"/>
+                        <coordinate x="2441.50000000000000000000" y="2307.00000000000000000000"/>
+                        <coordinate x="2587.00000000000000000000" y="2307.00000000000000000000"/>
                         <coordinate x="2587.00000000000000000000" y="2358.00000000000000000000"/>
                     </coordinates>
                     <geometries>
@@ -235,8 +503,8 @@
             <connect endport="P1" endcomponent="Hydraulic Volume Multi Port" startport="P2" startcomponent="Q-Type Pump With Pressure Control">
                 <hopsangui>
                     <coordinates>
-                        <coordinate x="2481.00000048999982027453" y="2435.80000000000018189894"/>
-                        <coordinate x="2481.00000048999982027453" y="2373.00000000000000000000"/>
+                        <coordinate x="2481.49943439999969996279" y="2435.80000000000018189894"/>
+                        <coordinate x="2481.49943439999969996279" y="2373.00000000000000000000"/>
                         <coordinate x="2481.00000000000000000000" y="2373.00000000000000000000"/>
                     </coordinates>
                     <geometries>
@@ -251,8 +519,8 @@
                     <coordinates>
                         <coordinate x="2481.00000000000000000000" y="2609.86999999999989086064"/>
                         <coordinate x="2481.00000000000000000000" y="2580.21000000000003637979"/>
-                        <coordinate x="2481.00000048999982027453" y="2580.21000000000003637979"/>
-                        <coordinate x="2481.00000048999982027453" y="2558.80000000000018189894"/>
+                        <coordinate x="2481.49943439999969996279" y="2580.21000000000003637979"/>
+                        <coordinate x="2481.49943439999969996279" y="2558.80000000000018189894"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
@@ -267,13 +535,61 @@
                     <coordinates>
                         <coordinate x="2400.00000000000000000000" y="2610.50000000000000000000"/>
                         <coordinate x="2400.00000000000000000000" y="2578.79999999999927240424"/>
-                        <coordinate x="2400.91658199999983480666" y="2578.79999999999927240424"/>
-                        <coordinate x="2400.91658199999983480666" y="2558.80000000000018189894"/>
+                        <coordinate x="2401.16647854999973787926" y="2578.79999999999927240424"/>
+                        <coordinate x="2401.16647854999973787926" y="2558.80000000000018189894"/>
                     </coordinates>
                     <geometries>
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Scope" startport="out" startcomponent="Pressure Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2732.00000000000000000000" y="2286.00000000000000000000"/>
+                        <coordinate x="2732.00000000000000000000" y="2273.00000000000000000000"/>
+                        <coordinate x="2824.00000000000000000000" y="2273.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Pressure Transducer" startport="P2" startcomponent="Turbulent Orifice">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2557.00000000000000000000" y="2373.00000000000000000000"/>
+                        <coordinate x="2551.00000000000000000000" y="2373.00000000000000000000"/>
+                        <coordinate x="2551.00000000000000000000" y="2334.00000000000000000000"/>
+                        <coordinate x="2732.00000000000000000000" y="2334.00000000000000000000"/>
+                        <coordinate x="2732.00000000000000000000" y="2322.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_right" endcomponent="Scope" startport="eps" startcomponent="Q-Type Pump With Pressure Control">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2540.92808199999990392826" y="2497.30000000000018189894"/>
+                        <coordinate x="2906.00000000000000000000" y="2497.30000000000018189894"/>
+                        <coordinate x="2906.00000000000000000000" y="2273.00000000000000000000"/>
+                        <coordinate x="2864.00000000000000000000" y="2273.00000000000000000000"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
                     </geometries>
                     <style>solid</style>
                 </hopsangui>
