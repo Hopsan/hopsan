@@ -141,7 +141,7 @@ if [ "$doPbuild" = "true" ]; then
       resultPath="$pbuilderBaseTGZpath/result/$dist"
 
       # Update or create pbuild environments
-      extraPackages="debhelper unzip subversion lsb-release libtbb-dev libqt4-dev libqt4-webkit"
+      extraPackages="debhelper unzip subversion lsb-release libtbb-dev libqt4-dev libqtwebkit-dev libqt4-opengl-dev"
       debootstrapOk="true"
       if [ "$doCreateUpdatePbuilderBaseTGZ" = "true" ]; then
 	    if [ -f $basetgzFile ]; then
