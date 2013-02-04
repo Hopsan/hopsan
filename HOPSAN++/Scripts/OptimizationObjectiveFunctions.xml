@@ -12,6 +12,7 @@
         <parameter name="x"/>
         <parameter name="t"/>
     </objectivefunction>
+    <objectivefunction description="Average absolute value" call="averageAbsoluteValue" numberofvariables="1" needstimevector="false"/>
     <objectivefunction description="Average absolute difference" call="averageAbsoluteDifference" numberofvariables="2" needstimevector="false"/>
     <objectivefunction description="Average absolute difference (squared)" call="averageAbsoluteDifferenceSquared" numberofvariables="2" needstimevector="false"/>
 </hopsanobjectivefunctions>

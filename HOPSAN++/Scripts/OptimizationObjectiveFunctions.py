@@ -40,6 +40,13 @@ def diffFromValueAtTime(data,time,x,t):
   for i in range(len(data)):
     if time[i]>=t:
       return abs(data[i]-x)	
+
+#Returns the average absolute value
+def averageAbsoluteValue(data):
+  total=0
+  for i in range(len(data)):
+    total += abs(data[i])
+  return total/len(data)
       
 #Returns the average absolute difference between vectors data1 and data2
 def averageAbsoluteDifference(data1, data2):
@@ -50,7 +57,7 @@ def averageAbsoluteDifference(data1, data2):
     total = total+abs(d1-d2)
   return total/len(data1)
    
-   #Returns the average absolute difference between vectors data1 and data2
+#Returns the average absolute difference between vectors data1 and data2
 def averageAbsoluteDifferenceSquared(data1, data2):
   total=0
   for i in range(len(data1)):
