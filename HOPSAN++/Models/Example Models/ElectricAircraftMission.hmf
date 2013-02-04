@@ -11,7 +11,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2548.74" y="2736.62" zoom="0.502993"/>
+            <viewport x="2548.74" y="2498.05" zoom="0.502993"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <graphics type="user"/>
@@ -294,6 +294,123 @@
                             </hopsangui>
                         </component>
                     </stuff>
+                </post>
+                <post number="23" type="paste">
+                    <stuff what="addedtextboxwidget" index="1">
+                        <textboxwidget>
+                            <hopsangui>
+                                <pose x="1551.270407" y="2480.516326"/>
+                                <textobject fontcolor="#ff0000" text="Flight controller" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
+                                <size width="315.729957" height="138.069992"/>
+                                <line width="2.000000" visible="1" style="dashline"/>
+                            </hopsangui>
+                        </textboxwidget>
+                    </stuff>
+                </post>
+                <post number="24">
+                    <stuff what="movedwidget" index="1">
+                        <oldpos>1551.27 2480.52</oldpos>
+                        <newpos>1764 2432.8</newpos>
+                    </stuff>
+                </post>
+                <post number="25">
+                    <stuff h_new="151.986687" what="resizedtextboxwidget" w_old="315.729957" h_old="138.069992" index="1" w_new="315.729957">
+                        <oldpos>1764 2432.8</oldpos>
+                        <newpos>1764 2418.89</newpos>
+                    </stuff>
+                </post>
+                <post number="26">
+                    <stuff what="modifiedconnector" linenumber="2">
+                        <oldpos>0 0</oldpos>
+                        <newpos>1.9881 15.9048</newpos>
+                        <connect endport="Pkx" endcomponent="SignalPIlead" startport="out" startcomponent="Saturation">
+                            <hopsangui>
+                                <coordinates>
+                                    <coordinate x="1860.52265499999998610292" y="2556.54534000000012383680"/>
+                                    <coordinate x="1895.14461806232793605886" y="2556.54534000000012383680"/>
+                                    <coordinate x="1895.14461806232793605886" y="2451.33186886975408924627"/>
+                                    <coordinate x="1837.37381099999993239180" y="2451.33186886975408924627"/>
+                                    <coordinate x="1837.37381099999993239180" y="2471.18532099999993079109"/>
+                                </coordinates>
+                                <geometries>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                    <geometry>vertical</geometry>
+                                    <geometry>horizontal</geometry>
+                                </geometries>
+                                <style>solid</style>
+                            </hopsangui>
+                        </connect>
+                    </stuff>
+                </post>
+                <post number="27">
+                    <stuff h_new="136.081893" what="resizedtextboxwidget" w_old="315.729957" h_old="151.986687" index="1" w_new="315.729957">
+                        <oldpos>1764 2418.89</oldpos>
+                        <newpos>1764 2434.79</newpos>
+                    </stuff>
+                </post>
+                <post number="28">
+                    <stuff what="movedwidget" index="1">
+                        <oldpos>1764 2434.79</oldpos>
+                        <newpos>1758.03 2438.77</newpos>
+                    </stuff>
+                </post>
+                <post number="29" type="paste">
+                    <stuff what="addedtextboxwidget" index="2">
+                        <textboxwidget>
+                            <hopsangui>
+                                <pose x="2726.058064" y="2932.783559"/>
+                                <textobject fontcolor="#556b2f" text="The trajectory in lattitude longitude&#xa;can be seen here" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
+                                <size width="239.000000" height="46.000000"/>
+                                <line width="2.000000" visible="1" style="solidline"/>
+                            </hopsangui>
+                        </textboxwidget>
+                    </stuff>
+                </post>
+                <post number="30">
+                    <stuff what="movedwidget" index="2">
+                        <oldpos>2726.06 2932.78</oldpos>
+                        <newpos>2473.57 3014.3</newpos>
+                    </stuff>
+                </post>
+                <post number="31" type="paste">
+                    <stuff what="addedtextboxwidget" index="3">
+                        <textboxwidget>
+                            <hopsangui>
+                                <pose x="1900.332061" y="2284.872507"/>
+                                <textobject fontcolor="#556b2f" text="Mission controller&#xa;with waypoints" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
+                                <size width="126.000000" height="56.290009"/>
+                                <line width="2.000000" visible="1" style="solidline"/>
+                            </hopsangui>
+                        </textboxwidget>
+                    </stuff>
+                </post>
+                <post number="32">
+                    <stuff what="movedwidget" index="3">
+                        <oldpos>1900.33 2284.87</oldpos>
+                        <newpos>1671.7 2211.31</newpos>
+                    </stuff>
+                </post>
+                <post number="33" type="paste">
+                    <stuff what="addedtextboxwidget" index="4">
+                        <textboxwidget>
+                            <hopsangui>
+                                <pose x="2246.359212" y="1928.965746"/>
+                                <textobject fontcolor="#005500" text="Example: Aircraft flying a mission" font="Calibri,20,-1,5,50,0,0,0,0,0"/>
+                                <size width="424.078125" height="41.000000"/>
+                                <line width="2.000000" visible="0" style="solidline"/>
+                            </hopsangui>
+                        </textboxwidget>
+                    </stuff>
+                </post>
+                <post number="34">
+                    <stuff what="movedwidget" index="4">
+                        <oldpos>2246.36 1928.97</oldpos>
+                        <newpos>2037.61 2046.26</newpos>
+                    </stuff>
+                </post>
+                <post number="35">
+                    <stuff color_old="#005500" what="modifiedtextboxwidget" box_visible="0" linestyle="solidline" linestyle_old="solidline" index="4" text_old="Example: Aircraft flying a mission" font_old="Calibri,20,-1,5,50,0,0,0,0,0" color="#005500" box_visible_before="0" text="Example: Electric aircraft flying a mission" font="Calibri,20,-1,5,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
                 </post>
             </hopsanundo>
         </hopsangui>
@@ -630,7 +747,7 @@
                 <hopsangui>
                     <pose x="2419.029126" y="2324.925698" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
-                    <viewport x="2548.74" y="2736.62" zoom="0.502993"/>
+                    <viewport x="2548.74" y="2498.05" zoom="0.502993"/>
                     <ports hidden="1"/>
                     <names hidden="0"/>
                     <graphics type="user"/>
@@ -3604,23 +3721,6 @@
                     </hopsanobjectappearance>
                 </hopsangui>
             </component>
-            <component typename="SignalSink" name="Sink_2">
-                <parameters/>
-                <ports>
-                    <port nodetype="NodeSignal" name="in_right"/>
-                    <port nodetype="NodeSignal" name="in"/>
-                    <port nodetype="NodeSignal" name="in_bottom"/>
-                </ports>
-                <hopsangui>
-                    <pose x="2633.192566" y="2781.689997" flipped="false" a="0"/>
-                    <nametext position="0" visible="0"/>
-                    <hopsanobjectappearance version="0.3">
-                        <modelobject typename="SignalSink" displayname="Sink_2">
-                            <ports/>
-                        </modelobject>
-                    </hopsanobjectappearance>
-                </hopsangui>
-            </component>
             <component typename="SignalSink" name="Scope_1">
                 <parameters/>
                 <ports>
@@ -3633,6 +3733,23 @@
                     <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="SignalSink" displayname="Scope_1">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Sink_2">
+                <parameters/>
+                <ports>
+                    <port nodetype="NodeSignal" name="in_right"/>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="in_bottom"/>
+                </ports>
+                <hopsangui>
+                    <pose x="2633.192566" y="2781.689997" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSink" displayname="Sink_2">
                             <ports/>
                         </modelobject>
                     </hopsanobjectappearance>
@@ -3679,7 +3796,7 @@
                 <hopsangui>
                     <pose x="1759.820003" y="2317.132658" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
-                    <viewport x="2548.74" y="2736.62" zoom="0.502993"/>
+                    <viewport x="2548.74" y="2498.05" zoom="0.502993"/>
                     <ports hidden="1"/>
                     <names hidden="1"/>
                     <graphics type="user"/>
@@ -6794,23 +6911,6 @@
                             </hopsanobjectappearance>
                         </hopsangui>
                     </component>
-                    <component typename="SignalSink" name="Sink_3">
-                        <parameters/>
-                        <ports>
-                            <port nodetype="NodeSignal" name="in_right"/>
-                            <port nodetype="NodeSignal" name="in"/>
-                            <port nodetype="NodeSignal" name="in_bottom"/>
-                        </ports>
-                        <hopsangui>
-                            <pose x="2490.744013" y="2403.521125" flipped="false" a="0"/>
-                            <nametext position="0" visible="0"/>
-                            <hopsanobjectappearance version="0.3">
-                                <modelobject typename="SignalSink" displayname="Sink_3">
-                                    <ports/>
-                                </modelobject>
-                            </hopsanobjectappearance>
-                        </hopsangui>
-                    </component>
                     <component typename="SignalUnitDelay" name="Unit Delay_4">
                         <parameters>
                             <parameter value="0" type="double" name="out::Value"/>
@@ -6829,7 +6929,7 @@
                             </hopsanobjectappearance>
                         </hopsangui>
                     </component>
-                    <component typename="SignalSink" name="Sink_4">
+                    <component typename="SignalSink" name="Sink_3">
                         <parameters/>
                         <ports>
                             <port nodetype="NodeSignal" name="in_right"/>
@@ -6837,10 +6937,10 @@
                             <port nodetype="NodeSignal" name="in_bottom"/>
                         </ports>
                         <hopsangui>
-                            <pose x="2427.841946" y="2417.170814" flipped="false" a="0"/>
+                            <pose x="2490.744013" y="2403.521125" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
                             <hopsanobjectappearance version="0.3">
-                                <modelobject typename="SignalSink" displayname="Sink_4">
+                                <modelobject typename="SignalSink" displayname="Sink_3">
                                     <ports/>
                                 </modelobject>
                             </hopsanobjectappearance>
@@ -6859,6 +6959,23 @@
                             <nametext position="0" visible="0"/>
                             <hopsanobjectappearance version="0.3">
                                 <modelobject typename="SignalUnitDelay" displayname="Unit Delay_5">
+                                    <ports/>
+                                </modelobject>
+                            </hopsanobjectappearance>
+                        </hopsangui>
+                    </component>
+                    <component typename="SignalSink" name="Sink_4">
+                        <parameters/>
+                        <ports>
+                            <port nodetype="NodeSignal" name="in_right"/>
+                            <port nodetype="NodeSignal" name="in"/>
+                            <port nodetype="NodeSignal" name="in_bottom"/>
+                        </ports>
+                        <hopsangui>
+                            <pose x="2427.841946" y="2417.170814" flipped="false" a="0"/>
+                            <nametext position="0" visible="0"/>
+                            <hopsanobjectappearance version="0.3">
+                                <modelobject typename="SignalSink" displayname="Sink_4">
                                     <ports/>
                                 </modelobject>
                             </hopsanobjectappearance>
@@ -6884,7 +7001,7 @@
                     </component>
                     <textboxwidget>
                         <hopsangui>
-                            <pose x="1793.381190" y="2094.000000"/>
+                            <pose x="1793.000000" y="2094.000000"/>
                             <textobject fontcolor="#556b2f" text="Fly towards&#xa;waypoint 3 " font="Calibri,10,-1,0,50,0,0,0,0,0"/>
                             <size width="90.000000" height="38.000000"/>
                             <line width="2.000000" visible="1" style="solidline"/>
@@ -6892,7 +7009,7 @@
                     </textboxwidget>
                     <textboxwidget>
                         <hopsangui>
-                            <pose x="1304.381190" y="2097.000000"/>
+                            <pose x="1304.000000" y="2097.000000"/>
                             <textobject fontcolor="#556b2f" text="Preparation &#xa;for takeoff" font="Calibri,10,-1,0,50,0,0,0,0,0"/>
                             <size width="96.000000" height="38.875396"/>
                             <line width="2.000000" visible="1" style="solidline"/>
@@ -6900,7 +7017,7 @@
                     </textboxwidget>
                     <textboxwidget>
                         <hopsangui>
-                            <pose x="1417.381190" y="2082.000000"/>
+                            <pose x="1417.000000" y="2082.000000"/>
                             <textobject fontcolor="#556b2f" text="Start and move&#xa;towards&#xa;waypoint 0" font="Calibri,10,-1,0,50,0,0,0,0,0"/>
                             <size width="91.000000" height="53.000000"/>
                             <line width="2.000000" visible="1" style="solidline"/>
@@ -6908,7 +7025,7 @@
                     </textboxwidget>
                     <textboxwidget>
                         <hopsangui>
-                            <pose x="1546.381190" y="2083.000000"/>
+                            <pose x="1546.000000" y="2083.000000"/>
                             <textobject fontcolor="#556b2f" text="Take off and&#xa;fly towards &#xa;waypoint 1 " font="Calibri,10,-1,0,50,0,0,0,0,0"/>
                             <size width="90.000000" height="53.000000"/>
                             <line width="2.000000" visible="1" style="solidline"/>
@@ -6916,7 +7033,7 @@
                     </textboxwidget>
                     <textboxwidget>
                         <hopsangui>
-                            <pose x="1673.381190" y="2093.000000"/>
+                            <pose x="1673.000000" y="2093.000000"/>
                             <textobject fontcolor="#556b2f" text="Fly to &#xa;waypoint 2" font="Calibri,10,-1,0,50,0,0,0,0,0"/>
                             <size width="80.438755" height="38.875396"/>
                             <line width="2.000000" visible="1" style="solidline"/>
@@ -6951,10 +7068,10 @@
                     <connect endport="Pset" endcomponent="FFB_1" startport="Pexiting" startcomponent="FFB">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1389.30756131025532340573" y="2157.75337799999988419586"/>
+                                <coordinate x="1389.30756100000007791095" y="2157.75337799999988419586"/>
                                 <coordinate x="1407.11566094670752136153" y="2157.75337799999988419586"/>
                                 <coordinate x="1407.11566094670752136153" y="2157.75337799999988419586"/>
-                                <coordinate x="1427.11566131025529102772" y="2157.75337799999988419586"/>
+                                <coordinate x="1427.11566100000004553294" y="2157.75337799999988419586"/>
                             </coordinates>
                             <geometries>
                                 <geometry>vertical</geometry>
@@ -6967,10 +7084,10 @@
                     <connect endport="Pset" endcomponent="FFB_3" startport="Pexiting" startcomponent="FFB_2">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1627.40278831025534600485" y="2157.75337799999988419586"/>
+                                <coordinate x="1627.40278800000010051008" y="2157.75337799999988419586"/>
                                 <coordinate x="1661.70566122870741310180" y="2157.75337799999988419586"/>
                                 <coordinate x="1661.70566122870741310180" y="2154.81871099999989382923"/>
-                                <coordinate x="1679.71756131025540526025" y="2154.81871099999989382923"/>
+                                <coordinate x="1679.71756099999993239180" y="2154.81871099999989382923"/>
                             </coordinates>
                             <geometries>
                                 <geometry>vertical</geometry>
@@ -7015,10 +7132,10 @@
                     <connect endport="Pset" endcomponent="FFB" startport="out" startcomponent="Pulse_2">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1182.22349205320188048063" y="2157.75337799999988419586"/>
+                                <coordinate x="1182.22349200000007840572" y="2157.75337799999988419586"/>
                                 <coordinate x="1196.91447120045199881133" y="2157.75337799999988419586"/>
                                 <coordinate x="1196.91447120045199881133" y="2157.75337799999988419586"/>
-                                <coordinate x="1318.30756131025532340573" y="2157.75337799999988419586"/>
+                                <coordinate x="1318.30756100000007791095" y="2157.75337799999988419586"/>
                             </coordinates>
                             <geometries>
                                 <geometry>vertical</geometry>
@@ -7031,9 +7148,9 @@
                     <connect endport="Pexit" endcomponent="FFB" startport="out" startcomponent="Pulse_1">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1240.52646935320171905914" y="2192.71632300000010218355"/>
-                                <coordinate x="1365.64113131025533220964" y="2192.71632300000010218355"/>
-                                <coordinate x="1365.64113131025533220964" y="2178.25337799999988419586"/>
+                                <coordinate x="1240.52646899999990637298" y="2192.71632300000010218355"/>
+                                <coordinate x="1365.64113100000008671486" y="2192.71632300000010218355"/>
+                                <coordinate x="1365.64113100000008671486" y="2178.25337799999988419586"/>
                             </coordinates>
                             <geometries>
                                 <geometry>vertical</geometry>
@@ -7045,8 +7162,8 @@
                     <connect endport="in" endcomponent="Sink" startport="Pstate" startcomponent="FFB">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1341.97420431025534526270" y="2178.25337799999988419586"/>
-                                <coordinate x="1341.97420431025534526270" y="2217.51224300000012590317"/>
+                                <coordinate x="1341.97420400000009976793" y="2178.25337799999988419586"/>
+                                <coordinate x="1341.97420400000009976793" y="2217.51224300000012590317"/>
                                 <coordinate x="2357.57226499999978841515" y="2217.51224300000012590317"/>
                             </coordinates>
                             <geometries>
@@ -7059,8 +7176,8 @@
                     <connect endport="in" endcomponent="Sink" startport="Pstate" startcomponent="FFB_1">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1450.78230431025531288469" y="2178.25337799999988419586"/>
-                                <coordinate x="1450.78230431025531288469" y="2217.51224300000012590317"/>
+                                <coordinate x="1450.78230400000006738992" y="2178.25337799999988419586"/>
+                                <coordinate x="1450.78230400000006738992" y="2217.51224300000012590317"/>
                                 <coordinate x="2357.57226499999978841515" y="2217.51224300000012590317"/>
                             </coordinates>
                             <geometries>
@@ -7073,8 +7190,8 @@
                     <connect endport="in" endcomponent="Sink" startport="Pstate" startcomponent="FFB_2">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1580.06943131025536786183" y="2178.25337799999988419586"/>
-                                <coordinate x="1580.06943131025536786183" y="2217.51224300000012590317"/>
+                                <coordinate x="1580.06943100000012236706" y="2178.25337799999988419586"/>
+                                <coordinate x="1580.06943100000012236706" y="2217.51224300000012590317"/>
                                 <coordinate x="2357.57226499999978841515" y="2217.51224300000012590317"/>
                             </coordinates>
                             <geometries>
@@ -7087,8 +7204,8 @@
                     <connect endport="in" endcomponent="Sink" startport="Pstate" startcomponent="FFB_3">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1703.38420431025542711723" y="2175.31871099999989382923"/>
-                                <coordinate x="1703.38420431025542711723" y="2217.51224300000012590317"/>
+                                <coordinate x="1703.38420399999995424878" y="2175.31871099999989382923"/>
+                                <coordinate x="1703.38420399999995424878" y="2217.51224300000012590317"/>
                                 <coordinate x="2357.57226499999978841515" y="2217.51224300000012590317"/>
                             </coordinates>
                             <geometries>
@@ -7101,8 +7218,8 @@
                     <connect endport="in" endcomponent="Sink" startport="Pstate" startcomponent="FFB_4">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1826.37230431025523103017" y="2174.90481399999998757266"/>
-                                <coordinate x="1826.37230431025523103017" y="2217.51224300000012590317"/>
+                                <coordinate x="1826.37230399999998553540" y="2174.90481399999998757266"/>
+                                <coordinate x="1826.37230399999998553540" y="2217.51224300000012590317"/>
                                 <coordinate x="2357.57226499999978841515" y="2217.51224300000012590317"/>
                             </coordinates>
                             <geometries>
@@ -7157,10 +7274,10 @@
                     <connect endport="Ps1" endcomponent="SignalWaypoint" startport="Pstate" startcomponent="FFB_1">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1450.78230431025531288469" y="2178.25337799999988419586"/>
-                                <coordinate x="1450.78230431025531288469" y="2225.02436039785197863239"/>
-                                <coordinate x="1450.25221131025546128512" y="2225.02436039785197863239"/>
-                                <coordinate x="1450.25221131025546128512" y="2312.53337700000020049629"/>
+                                <coordinate x="1450.78230400000006738992" y="2178.25337799999988419586"/>
+                                <coordinate x="1450.78230400000006738992" y="2225.02436039785197863239"/>
+                                <coordinate x="1450.25221099999998841668" y="2225.02436039785197863239"/>
+                                <coordinate x="1450.25221099999998841668" y="2312.53337700000020049629"/>
                             </coordinates>
                             <geometries>
                                 <geometry>horizontal</geometry>
@@ -7173,10 +7290,10 @@
                     <connect endport="Ps1" endcomponent="SignalWaypoint_1" startport="Pstate" startcomponent="FFB_2">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1580.06943131025536786183" y="2178.25337799999988419586"/>
-                                <coordinate x="1580.06943131025536786183" y="2244.39606485267768221092"/>
-                                <coordinate x="1580.05947231025538712856" y="2244.39606485267768221092"/>
-                                <coordinate x="1580.05947231025538712856" y="2312.50374999999985448085"/>
+                                <coordinate x="1580.06943100000012236706" y="2178.25337799999988419586"/>
+                                <coordinate x="1580.06943100000012236706" y="2244.39606485267768221092"/>
+                                <coordinate x="1580.05947200000014163379" y="2244.39606485267768221092"/>
+                                <coordinate x="1580.05947200000014163379" y="2312.50374999999985448085"/>
                             </coordinates>
                             <geometries>
                                 <geometry>horizontal</geometry>
@@ -7189,8 +7306,8 @@
                     <connect endport="in" endcomponent="Sum" startport="PaltitudeRef" startcomponent="SignalWaypoint">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1459.71885431025543766737" y="2353.53337700000020049629"/>
-                                <coordinate x="1459.71885431025543766737" y="2370.91949599999998099520"/>
+                                <coordinate x="1459.71885399999996479892" y="2353.53337700000020049629"/>
+                                <coordinate x="1459.71885399999996479892" y="2370.91949599999998099520"/>
                                 <coordinate x="2251.15451200000006792834" y="2370.91949599999998099520"/>
                             </coordinates>
                             <geometries>
@@ -7203,8 +7320,8 @@
                     <connect endport="in" endcomponent="Sum" startport="PaltitudeRef" startcomponent="SignalWaypoint_1">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1589.52611531025536351081" y="2353.50374999999985448085"/>
-                                <coordinate x="1589.52611531025536351081" y="2370.91949599999998099520"/>
+                                <coordinate x="1589.52611500000011801603" y="2353.50374999999985448085"/>
+                                <coordinate x="1589.52611500000011801603" y="2370.91949599999998099520"/>
                                 <coordinate x="2251.15451200000006792834" y="2370.91949599999998099520"/>
                             </coordinates>
                             <geometries>
@@ -7217,8 +7334,8 @@
                     <connect endport="in" endcomponent="Sum_1" startport="PheadingRef" startcomponent="SignalWaypoint">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1471.55221131025541581039" y="2353.53337700000020049629"/>
-                                <coordinate x="1471.55221131025541581039" y="2417.17081400000006397022"/>
+                                <coordinate x="1471.55221099999994294194" y="2353.53337700000020049629"/>
+                                <coordinate x="1471.55221099999994294194" y="2417.17081400000006397022"/>
                                 <coordinate x="2252.21734100000003309106" y="2417.17081400000006397022"/>
                             </coordinates>
                             <geometries>
@@ -7231,8 +7348,8 @@
                     <connect endport="in" endcomponent="Sum_2" startport="PvelocityRef" startcomponent="SignalWaypoint">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1483.38556831025539395341" y="2353.53337700000020049629"/>
-                                <coordinate x="1483.38556831025539395341" y="2466.04620999999997366103"/>
+                                <coordinate x="1483.38556799999992108496" y="2353.53337700000020049629"/>
+                                <coordinate x="1483.38556799999992108496" y="2466.04620999999997366103"/>
                                 <coordinate x="2253.02990700000009383075" y="2466.04620999999997366103"/>
                             </coordinates>
                             <geometries>
@@ -7245,8 +7362,8 @@
                     <connect endport="in" endcomponent="Sum_1" startport="PheadingRef" startcomponent="SignalWaypoint_1">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1601.35947231025534165383" y="2353.50374999999985448085"/>
-                                <coordinate x="1601.35947231025534165383" y="2417.17081400000006397022"/>
+                                <coordinate x="1601.35947200000009615906" y="2353.50374999999985448085"/>
+                                <coordinate x="1601.35947200000009615906" y="2417.17081400000006397022"/>
                                 <coordinate x="2252.21734100000003309106" y="2417.17081400000006397022"/>
                             </coordinates>
                             <geometries>
@@ -7259,8 +7376,8 @@
                     <connect endport="in" endcomponent="Sum_2" startport="PvelocityRef" startcomponent="SignalWaypoint_1">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1613.19282931025531979685" y="2353.50374999999985448085"/>
-                                <coordinate x="1613.19282931025531979685" y="2466.04620999999997366103"/>
+                                <coordinate x="1613.19282900000007430208" y="2353.50374999999985448085"/>
+                                <coordinate x="1613.19282900000007430208" y="2466.04620999999997366103"/>
                                 <coordinate x="2253.02990700000009383075" y="2466.04620999999997366103"/>
                             </coordinates>
                             <geometries>
@@ -7321,8 +7438,8 @@
                     <connect endport="in" endcomponent="Sink_3" startport="PdistanceWp" startcomponent="SignalWaypoint">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1495.21885431025543766737" y="2353.53337700000020049629"/>
-                                <coordinate x="1495.21885431025543766737" y="2403.52112500000021100277"/>
+                                <coordinate x="1495.21885399999996479892" y="2353.53337700000020049629"/>
+                                <coordinate x="1495.21885399999996479892" y="2403.52112500000021100277"/>
                                 <coordinate x="2470.74401299999999537249" y="2403.52112500000021100277"/>
                             </coordinates>
                             <geometries>
@@ -7335,11 +7452,11 @@
                     <connect endport="Pxc" endcomponent="SignalWaypoint" startport="longitude" startcomponent="longitude">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1167.36223685320192089421" y="2218.47721499999988736818"/>
+                                <coordinate x="1167.36223700000005010224" y="2218.47721499999988736818"/>
                                 <coordinate x="1284.25909648320953237999" y="2218.47721499999988736818"/>
                                 <coordinate x="1284.25909648320953237999" y="2217.89975565830673076562"/>
-                                <coordinate x="1464.45221131025550675986" y="2217.89975565830673076562"/>
-                                <coordinate x="1464.45221131025550675986" y="2312.53337700000020049629"/>
+                                <coordinate x="1464.45221100000003389141" y="2217.89975565830673076562"/>
+                                <coordinate x="1464.45221100000003389141" y="2312.53337700000020049629"/>
                             </coordinates>
                             <geometries>
                                 <geometry>vertical</geometry>
@@ -7353,11 +7470,11 @@
                     <connect endport="Pyc" endcomponent="SignalWaypoint" startport="lattitude" startcomponent="lattitude">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1167.43199035320185430464" y="2253.81339200000002165325"/>
+                                <coordinate x="1167.43199000000004161848" y="2253.81339200000002165325"/>
                                 <coordinate x="1341.47296479028045723680" y="2253.81339200000002165325"/>
                                 <coordinate x="1341.47296479028045723680" y="2254.84585760273330379277"/>
-                                <coordinate x="1478.65221131025532486092" y="2254.84585760273330379277"/>
-                                <coordinate x="1478.65221131025532486092" y="2312.53337700000020049629"/>
+                                <coordinate x="1478.65221099999985199247" y="2254.84585760273330379277"/>
+                                <coordinate x="1478.65221099999985199247" y="2312.53337700000020049629"/>
                             </coordinates>
                             <geometries>
                                 <geometry>vertical</geometry>
@@ -7371,11 +7488,11 @@
                     <connect endport="Pxc" endcomponent="SignalWaypoint_1" startport="longitude" startcomponent="longitude">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1167.36223685320192089421" y="2218.47721499999988736818"/>
+                                <coordinate x="1167.36223700000005010224" y="2218.47721499999988736818"/>
                                 <coordinate x="1284.25909648320953237999" y="2218.47721499999988736818"/>
                                 <coordinate x="1284.25909648320953237999" y="2217.89975550320696129347"/>
-                                <coordinate x="1594.25947231025543260330" y="2217.89975550320696129347"/>
-                                <coordinate x="1594.25947231025543260330" y="2312.50374999999985448085"/>
+                                <coordinate x="1594.25947200000018710853" y="2217.89975550320696129347"/>
+                                <coordinate x="1594.25947200000018710853" y="2312.50374999999985448085"/>
                             </coordinates>
                             <geometries>
                                 <geometry>vertical</geometry>
@@ -7389,13 +7506,13 @@
                     <connect endport="Pyc" endcomponent="SignalWaypoint_1" startport="lattitude" startcomponent="lattitude">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1167.43199035320185430464" y="2253.81339200000002165325"/>
+                                <coordinate x="1167.43199000000004161848" y="2253.81339200000002165325"/>
                                 <coordinate x="1328.66231333026166794298" y="2253.81339200000002165325"/>
                                 <coordinate x="1328.66231333026166794298" y="2253.27165512416922865668"/>
                                 <coordinate x="1505.12183829082187003223" y="2253.27165512416922865668"/>
                                 <coordinate x="1505.12183829082187003223" y="2254.75046077237129793502"/>
-                                <coordinate x="1608.45947231025525070436" y="2254.75046077237129793502"/>
-                                <coordinate x="1608.45947231025525070436" y="2312.50374999999985448085"/>
+                                <coordinate x="1608.45947200000000520959" y="2254.75046077237129793502"/>
+                                <coordinate x="1608.45947200000000520959" y="2312.50374999999985448085"/>
                             </coordinates>
                             <geometries>
                                 <geometry>vertical</geometry>
@@ -7411,10 +7528,10 @@
                     <connect endport="Ps1" endcomponent="SignalWaypoint_2" startport="Pstate" startcomponent="FFB_3">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1703.38420431025542711723" y="2175.31871099999989382923"/>
-                                <coordinate x="1703.38420431025542711723" y="2240.04338947323094544117"/>
-                                <coordinate x="1704.03191831025537794631" y="2240.04338947323094544117"/>
-                                <coordinate x="1704.03191831025537794631" y="2311.71337700000003678724"/>
+                                <coordinate x="1703.38420399999995424878" y="2175.31871099999989382923"/>
+                                <coordinate x="1703.38420399999995424878" y="2240.04338947323094544117"/>
+                                <coordinate x="1704.03191800000013245153" y="2240.04338947323094544117"/>
+                                <coordinate x="1704.03191800000013245153" y="2311.71337700000003678724"/>
                             </coordinates>
                             <geometries>
                                 <geometry>horizontal</geometry>
@@ -7427,9 +7544,9 @@
                     <connect endport="Pxc" endcomponent="SignalWaypoint_2" startport="longitude" startcomponent="longitude">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1167.36223685320192089421" y="2218.47721499999988736818"/>
-                                <coordinate x="1718.23191831025542342104" y="2218.47721499999988736818"/>
-                                <coordinate x="1718.23191831025542342104" y="2311.71337700000003678724"/>
+                                <coordinate x="1167.36223700000005010224" y="2218.47721499999988736818"/>
+                                <coordinate x="1718.23191800000017792627" y="2218.47721499999988736818"/>
+                                <coordinate x="1718.23191800000017792627" y="2311.71337700000003678724"/>
                             </coordinates>
                             <geometries>
                                 <geometry>vertical</geometry>
@@ -7441,9 +7558,9 @@
                     <connect endport="Pyc" endcomponent="SignalWaypoint_2" startport="lattitude" startcomponent="lattitude">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1167.43199035320185430464" y="2253.81339200000002165325"/>
-                                <coordinate x="1732.43191831025524152210" y="2253.81339200000002165325"/>
-                                <coordinate x="1732.43191831025524152210" y="2311.71337700000003678724"/>
+                                <coordinate x="1167.43199000000004161848" y="2253.81339200000002165325"/>
+                                <coordinate x="1732.43191799999999602733" y="2253.81339200000002165325"/>
+                                <coordinate x="1732.43191799999999602733" y="2311.71337700000003678724"/>
                             </coordinates>
                             <geometries>
                                 <geometry>vertical</geometry>
@@ -7455,8 +7572,8 @@
                     <connect endport="in" endcomponent="Sum_1" startport="PheadingRef" startcomponent="SignalWaypoint_2">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1725.33191831025533247157" y="2352.71337700000003678724"/>
-                                <coordinate x="1725.33191831025533247157" y="2417.17081400000006397022"/>
+                                <coordinate x="1725.33191800000008697680" y="2352.71337700000003678724"/>
+                                <coordinate x="1725.33191800000008697680" y="2417.17081400000006397022"/>
                                 <coordinate x="2252.21734100000003309106" y="2417.17081400000006397022"/>
                             </coordinates>
                             <geometries>
@@ -7469,8 +7586,8 @@
                     <connect endport="in" endcomponent="Sum" startport="PaltitudeRef" startcomponent="SignalWaypoint_2">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1713.49856131025535432855" y="2352.71337700000003678724"/>
-                                <coordinate x="1713.49856131025535432855" y="2370.91949599999998099520"/>
+                                <coordinate x="1713.49856100000010883377" y="2352.71337700000003678724"/>
+                                <coordinate x="1713.49856100000010883377" y="2370.91949599999998099520"/>
                                 <coordinate x="2251.15451200000006792834" y="2370.91949599999998099520"/>
                             </coordinates>
                             <geometries>
@@ -7523,9 +7640,9 @@
                     <connect endport="Pxc" endcomponent="SignalWaypoint_3" startport="longitude" startcomponent="longitude">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1167.36223685320192089421" y="2218.47721499999988736818"/>
-                                <coordinate x="1841.91596231025550878257" y="2218.47721499999988736818"/>
-                                <coordinate x="1841.91596231025550878257" y="2310.36288299999978335109"/>
+                                <coordinate x="1167.36223700000005010224" y="2218.47721499999988736818"/>
+                                <coordinate x="1841.91596200000003591413" y="2218.47721499999988736818"/>
+                                <coordinate x="1841.91596200000003591413" y="2310.36288299999978335109"/>
                             </coordinates>
                             <geometries>
                                 <geometry>vertical</geometry>
@@ -7537,9 +7654,9 @@
                     <connect endport="Pyc" endcomponent="SignalWaypoint_3" startport="lattitude" startcomponent="lattitude">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1167.43199035320185430464" y="2253.81339200000002165325"/>
-                                <coordinate x="1856.11596231025532688363" y="2253.81339200000002165325"/>
-                                <coordinate x="1856.11596231025532688363" y="2310.36288299999978335109"/>
+                                <coordinate x="1167.43199000000004161848" y="2253.81339200000002165325"/>
+                                <coordinate x="1856.11596199999985401519" y="2253.81339200000002165325"/>
+                                <coordinate x="1856.11596199999985401519" y="2310.36288299999978335109"/>
                             </coordinates>
                             <geometries>
                                 <geometry>vertical</geometry>
@@ -7551,8 +7668,8 @@
                     <connect endport="in" endcomponent="Sum" startport="PaltitudeRef" startcomponent="SignalWaypoint_3">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1837.18260531025543969008" y="2351.36288299999978335109"/>
-                                <coordinate x="1837.18260531025543969008" y="2370.91949599999998099520"/>
+                                <coordinate x="1837.18260499999996682163" y="2351.36288299999978335109"/>
+                                <coordinate x="1837.18260499999996682163" y="2370.91949599999998099520"/>
                                 <coordinate x="2251.15451200000006792834" y="2370.91949599999998099520"/>
                             </coordinates>
                             <geometries>
@@ -7565,8 +7682,8 @@
                     <connect endport="in" endcomponent="Sum_1" startport="PheadingRef" startcomponent="SignalWaypoint_3">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1849.01596231025541783310" y="2351.36288299999978335109"/>
-                                <coordinate x="1849.01596231025541783310" y="2417.17081400000006397022"/>
+                                <coordinate x="1849.01596199999994496466" y="2351.36288299999978335109"/>
+                                <coordinate x="1849.01596199999994496466" y="2417.17081400000006397022"/>
                                 <coordinate x="2252.21734100000003309106" y="2417.17081400000006397022"/>
                             </coordinates>
                             <geometries>
@@ -7579,8 +7696,8 @@
                     <connect endport="in" endcomponent="Sum_2" startport="PvelocityRef" startcomponent="SignalWaypoint_3">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1860.84931931025539597613" y="2351.36288299999978335109"/>
-                                <coordinate x="1860.84931931025539597613" y="2466.04620999999997366103"/>
+                                <coordinate x="1860.84931899999992310768" y="2351.36288299999978335109"/>
+                                <coordinate x="1860.84931899999992310768" y="2466.04620999999997366103"/>
                                 <coordinate x="2253.02990700000009383075" y="2466.04620999999997366103"/>
                             </coordinates>
                             <geometries>
@@ -7593,8 +7710,8 @@
                     <connect endport="in" endcomponent="Sink_3" startport="PdistanceWp" startcomponent="SignalWaypoint_1">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1625.02611531025536351081" y="2353.50374999999985448085"/>
-                                <coordinate x="1625.02611531025536351081" y="2403.52112500000021100277"/>
+                                <coordinate x="1625.02611500000011801603" y="2353.50374999999985448085"/>
+                                <coordinate x="1625.02611500000011801603" y="2403.52112500000021100277"/>
                                 <coordinate x="2470.74401299999999537249" y="2403.52112500000021100277"/>
                             </coordinates>
                             <geometries>
@@ -7607,8 +7724,8 @@
                     <connect endport="in" endcomponent="Sum_2" startport="PvelocityRef" startcomponent="SignalWaypoint_2">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1737.16527531025531061459" y="2352.71337700000003678724"/>
-                                <coordinate x="1737.16527531025531061459" y="2466.04620999999997366103"/>
+                                <coordinate x="1737.16527500000006511982" y="2352.71337700000003678724"/>
+                                <coordinate x="1737.16527500000006511982" y="2466.04620999999997366103"/>
                                 <coordinate x="2253.02990700000009383075" y="2466.04620999999997366103"/>
                             </coordinates>
                             <geometries>
@@ -7621,8 +7738,8 @@
                     <connect endport="in" endcomponent="Sink_3" startport="PdistanceWp" startcomponent="SignalWaypoint_2">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1748.99856131025535432855" y="2352.71337700000003678724"/>
-                                <coordinate x="1748.99856131025535432855" y="2403.52112500000021100277"/>
+                                <coordinate x="1748.99856100000010883377" y="2352.71337700000003678724"/>
+                                <coordinate x="1748.99856100000010883377" y="2403.52112500000021100277"/>
                                 <coordinate x="2470.74401299999999537249" y="2403.52112500000021100277"/>
                             </coordinates>
                             <geometries>
@@ -7635,8 +7752,8 @@
                     <connect endport="in" endcomponent="Sink_3" startport="PdistanceWp" startcomponent="SignalWaypoint_3">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1872.68260531025543969008" y="2351.36288299999978335109"/>
-                                <coordinate x="1872.68260531025543969008" y="2403.52112500000021100277"/>
+                                <coordinate x="1872.68260499999996682163" y="2351.36288299999978335109"/>
+                                <coordinate x="1872.68260499999996682163" y="2403.52112500000021100277"/>
                                 <coordinate x="2470.74401299999999537249" y="2403.52112500000021100277"/>
                             </coordinates>
                             <geometries>
@@ -7665,7 +7782,7 @@
                     <connect endport="Pxc" endcomponent="SignalWaypoint_4" startport="longitude" startcomponent="longitude">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1167.36223685320192089421" y="2218.47721499999988736818"/>
+                                <coordinate x="1167.36223700000005010224" y="2218.47721499999988736818"/>
                                 <coordinate x="1956.36195100000009006180" y="2218.47721499999988736818"/>
                                 <coordinate x="1956.36195100000009006180" y="2307.38338299999986702460"/>
                             </coordinates>
@@ -7679,7 +7796,7 @@
                     <connect endport="Pyc" endcomponent="SignalWaypoint_4" startport="lattitude" startcomponent="lattitude">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1167.43199035320185430464" y="2253.81339200000002165325"/>
+                                <coordinate x="1167.43199000000004161848" y="2253.81339200000002165325"/>
                                 <coordinate x="1970.56195099999990816286" y="2253.81339200000002165325"/>
                                 <coordinate x="1970.56195099999990816286" y="2307.38338299999986702460"/>
                             </coordinates>
@@ -7749,7 +7866,7 @@
                     <connect endport="Pxc" endcomponent="SignalWaypoint_5" startport="longitude" startcomponent="longitude">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1167.36223685320192089421" y="2218.47721499999988736818"/>
+                                <coordinate x="1167.36223700000005010224" y="2218.47721499999988736818"/>
                                 <coordinate x="2198.88153599999986909097" y="2218.47721499999988736818"/>
                                 <coordinate x="2198.88153599999986909097" y="2304.73292200000014418038"/>
                             </coordinates>
@@ -7763,7 +7880,7 @@
                     <connect endport="Pyc" endcomponent="SignalWaypoint_5" startport="lattitude" startcomponent="lattitude">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1167.43199035320185430464" y="2253.81339200000002165325"/>
+                                <coordinate x="1167.43199000000004161848" y="2253.81339200000002165325"/>
                                 <coordinate x="2213.08153599999968719203" y="2253.81339200000002165325"/>
                                 <coordinate x="2213.08153599999968719203" y="2304.73292200000014418038"/>
                             </coordinates>
@@ -7881,7 +7998,7 @@
                     <connect endport="Pxc" endcomponent="SignalWaypoint_6" startport="longitude" startcomponent="longitude">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1167.36223685320192089421" y="2218.47721499999988736818"/>
+                                <coordinate x="1167.36223700000005010224" y="2218.47721499999988736818"/>
                                 <coordinate x="2073.39156000000002677552" y="2218.47721499999988736818"/>
                                 <coordinate x="2073.39156000000002677552" y="2304.95548800000005940092"/>
                             </coordinates>
@@ -7895,7 +8012,7 @@
                     <connect endport="Pyc" endcomponent="SignalWaypoint_6" startport="lattitude" startcomponent="lattitude">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1167.43199035320185430464" y="2253.81339200000002165325"/>
+                                <coordinate x="1167.43199000000004161848" y="2253.81339200000002165325"/>
                                 <coordinate x="2087.59155999999984487658" y="2253.81339200000002165325"/>
                                 <coordinate x="2087.59155999999984487658" y="2304.95548800000005940092"/>
                             </coordinates>
@@ -7951,10 +8068,10 @@
                     <connect endport="Pset" endcomponent="FFB_2" startport="Pexiting" startcomponent="FFB_1">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1498.11566131025529102772" y="2157.75337799999988419586"/>
+                                <coordinate x="1498.11566100000004553294" y="2157.75337799999988419586"/>
                                 <coordinate x="1529.70566161289889350883" y="2157.75337799999988419586"/>
                                 <coordinate x="1529.70566161289889350883" y="2157.75337799999988419586"/>
-                                <coordinate x="1556.40278831025534600485" y="2157.75337799999988419586"/>
+                                <coordinate x="1556.40278800000010051008" y="2157.75337799999988419586"/>
                             </coordinates>
                             <geometries>
                                 <geometry>vertical</geometry>
@@ -7967,10 +8084,10 @@
                     <connect endport="in" endcomponent="Unit Delay" startport="Pset1" startcomponent="SignalWaypoint">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1492.85221131025537033565" y="2312.53337700000020049629"/>
-                                <coordinate x="1492.85221131025537033565" y="2306.93875055277203500737"/>
-                                <coordinate x="1493.56119031025536969537" y="2306.93875055277203500737"/>
-                                <coordinate x="1493.56119031025536969537" y="2285.88000000000010913936"/>
+                                <coordinate x="1492.85221099999989746721" y="2312.53337700000020049629"/>
+                                <coordinate x="1492.85221099999989746721" y="2306.93875055277203500737"/>
+                                <coordinate x="1493.56118999999989682692" y="2306.93875055277203500737"/>
+                                <coordinate x="1493.56118999999989682692" y="2285.88000000000010913936"/>
                             </coordinates>
                             <geometries>
                                 <geometry>horizontal</geometry>
@@ -7983,10 +8100,10 @@
                     <connect endport="Pexit" endcomponent="FFB_1" startport="out" startcomponent="Unit Delay">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1493.56119031025536969537" y="2250.88000000000010913936"/>
-                                <coordinate x="1493.56119031025536969537" y="2198.25337799999988419586"/>
-                                <coordinate x="1474.44923131025529983162" y="2198.25337799999988419586"/>
-                                <coordinate x="1474.44923131025529983162" y="2178.25337799999988419586"/>
+                                <coordinate x="1493.56118999999989682692" y="2250.88000000000010913936"/>
+                                <coordinate x="1493.56118999999989682692" y="2198.25337799999988419586"/>
+                                <coordinate x="1474.44923100000005433685" y="2198.25337799999988419586"/>
+                                <coordinate x="1474.44923100000005433685" y="2178.25337799999988419586"/>
                             </coordinates>
                             <geometries>
                                 <geometry>horizontal</geometry>
@@ -7999,10 +8116,10 @@
                     <connect endport="in" endcomponent="Unit Delay_1" startport="Pset1" startcomponent="SignalWaypoint_1">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1622.65947231025529617909" y="2312.50374999999985448085"/>
-                                <coordinate x="1622.65947231025529617909" y="2306.73395709665965114255"/>
-                                <coordinate x="1622.10940131025540722476" y="2306.73395709665965114255"/>
-                                <coordinate x="1622.10940131025540722476" y="2286.68656000000009953510"/>
+                                <coordinate x="1622.65947200000005068432" y="2312.50374999999985448085"/>
+                                <coordinate x="1622.65947200000005068432" y="2306.73395709665965114255"/>
+                                <coordinate x="1622.10940099999993435631" y="2306.73395709665965114255"/>
+                                <coordinate x="1622.10940099999993435631" y="2286.68656000000009953510"/>
                             </coordinates>
                             <geometries>
                                 <geometry>horizontal</geometry>
@@ -8015,10 +8132,10 @@
                     <connect endport="Pexit" endcomponent="FFB_2" startport="out" startcomponent="Unit Delay_1">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1622.10940131025540722476" y="2251.68656000000009953510"/>
-                                <coordinate x="1622.10940131025540722476" y="2198.25337799999988419586"/>
-                                <coordinate x="1603.73635831025535480876" y="2198.25337799999988419586"/>
-                                <coordinate x="1603.73635831025535480876" y="2178.25337799999988419586"/>
+                                <coordinate x="1622.10940099999993435631" y="2251.68656000000009953510"/>
+                                <coordinate x="1622.10940099999993435631" y="2198.25337799999988419586"/>
+                                <coordinate x="1603.73635800000010931399" y="2198.25337799999988419586"/>
+                                <coordinate x="1603.73635800000010931399" y="2178.25337799999988419586"/>
                             </coordinates>
                             <geometries>
                                 <geometry>horizontal</geometry>
@@ -8031,10 +8148,10 @@
                     <connect endport="in" endcomponent="Unit Delay_2" startport="Pset1" startcomponent="SignalWaypoint_2">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1746.63191831025528699683" y="2311.71337700000003678724"/>
-                                <coordinate x="1746.63191831025528699683" y="2306.33877052370371529832"/>
-                                <coordinate x="1746.63191831025528699683" y="2306.33877052370371529832"/>
-                                <coordinate x="1746.63191831025528699683" y="2286.68656000000009953510"/>
+                                <coordinate x="1746.63191800000004150206" y="2311.71337700000003678724"/>
+                                <coordinate x="1746.63191800000004150206" y="2306.33877052370371529832"/>
+                                <coordinate x="1746.63191800000004150206" y="2306.33877052370371529832"/>
+                                <coordinate x="1746.63191800000004150206" y="2286.68656000000009953510"/>
                             </coordinates>
                             <geometries>
                                 <geometry>horizontal</geometry>
@@ -8047,10 +8164,10 @@
                     <connect endport="Pexit" endcomponent="FFB_3" startport="out" startcomponent="Unit Delay_2">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1746.63191831025528699683" y="2251.68656000000009953510"/>
-                                <coordinate x="1746.63191831025528699683" y="2195.31871099999989382923"/>
-                                <coordinate x="1727.05113131025541406416" y="2195.31871099999989382923"/>
-                                <coordinate x="1727.05113131025541406416" y="2175.31871099999989382923"/>
+                                <coordinate x="1746.63191800000004150206" y="2251.68656000000009953510"/>
+                                <coordinate x="1746.63191800000004150206" y="2195.31871099999989382923"/>
+                                <coordinate x="1727.05113099999994119571" y="2195.31871099999989382923"/>
+                                <coordinate x="1727.05113099999994119571" y="2175.31871099999989382923"/>
                             </coordinates>
                             <geometries>
                                 <geometry>horizontal</geometry>
@@ -8063,10 +8180,10 @@
                     <connect endport="in" endcomponent="Unit Delay_3" startport="Pset1" startcomponent="SignalWaypoint_3">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1870.31596231025537235837" y="2310.36288299999978335109"/>
-                                <coordinate x="1870.31596231025537235837" y="2304.47608949925188426278"/>
-                                <coordinate x="1870.31596231025537235837" y="2304.47608949925188426278"/>
-                                <coordinate x="1870.31596231025537235837" y="2287.87399400000003879541"/>
+                                <coordinate x="1870.31596199999989948992" y="2310.36288299999978335109"/>
+                                <coordinate x="1870.31596199999989948992" y="2304.47608949925188426278"/>
+                                <coordinate x="1870.31596199999989948992" y="2304.47608949925188426278"/>
+                                <coordinate x="1870.31596199999989948992" y="2287.87399400000003879541"/>
                             </coordinates>
                             <geometries>
                                 <geometry>horizontal</geometry>
@@ -8079,10 +8196,10 @@
                     <connect endport="Pexit" endcomponent="FFB_4" startport="out" startcomponent="Unit Delay_3">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1870.31596231025537235837" y="2252.87399400000003879541"/>
-                                <coordinate x="1870.31596231025537235837" y="2194.90481399999998757266"/>
-                                <coordinate x="1850.03923131025521797710" y="2194.90481399999998757266"/>
-                                <coordinate x="1850.03923131025521797710" y="2174.90481399999998757266"/>
+                                <coordinate x="1870.31596199999989948992" y="2252.87399400000003879541"/>
+                                <coordinate x="1870.31596199999989948992" y="2194.90481399999998757266"/>
+                                <coordinate x="1850.03923099999997248233" y="2194.90481399999998757266"/>
+                                <coordinate x="1850.03923099999997248233" y="2174.90481399999998757266"/>
                             </coordinates>
                             <geometries>
                                 <geometry>horizontal</geometry>
@@ -8191,10 +8308,10 @@
                     <connect endport="Pset" endcomponent="FFB_4" startport="Pexiting" startcomponent="FFB_3">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1750.71756131025540526025" y="2154.81871099999989382923"/>
+                                <coordinate x="1750.71756099999993239180" y="2154.81871099999989382923"/>
                                 <coordinate x="1782.70566131025520917319" y="2154.81871099999989382923"/>
                                 <coordinate x="1782.70566131025520917319" y="2154.40481399999998757266"/>
-                                <coordinate x="1802.70566131025520917319" y="2154.40481399999998757266"/>
+                                <coordinate x="1802.70566099999996367842" y="2154.40481399999998757266"/>
                             </coordinates>
                             <geometries>
                                 <geometry>vertical</geometry>
@@ -8207,10 +8324,10 @@
                     <connect endport="Ps1" endcomponent="SignalWaypoint_3" startport="Pstate" startcomponent="FFB_4">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1826.37230431025523103017" y="2174.90481399999998757266"/>
-                                <coordinate x="1826.37230431025523103017" y="2290.36288299999978335109"/>
-                                <coordinate x="1827.71596231025546330784" y="2290.36288299999978335109"/>
-                                <coordinate x="1827.71596231025546330784" y="2310.36288299999978335109"/>
+                                <coordinate x="1826.37230399999998553540" y="2174.90481399999998757266"/>
+                                <coordinate x="1826.37230399999998553540" y="2290.36288299999978335109"/>
+                                <coordinate x="1827.71596199999999043939" y="2290.36288299999978335109"/>
+                                <coordinate x="1827.71596199999999043939" y="2310.36288299999978335109"/>
                             </coordinates>
                             <geometries>
                                 <geometry>horizontal</geometry>
@@ -8223,7 +8340,7 @@
                     <connect endport="Pset" endcomponent="FFB_5" startport="Pexiting" startcomponent="FFB_4">
                         <hopsangui>
                             <coordinates>
-                                <coordinate x="1873.70566131025520917319" y="2154.40481399999998757266"/>
+                                <coordinate x="1873.70566099999996367842" y="2154.40481399999998757266"/>
                                 <coordinate x="1897.73569399999996676343" y="2154.40481399999998757266"/>
                                 <coordinate x="1897.73569399999996676343" y="2154.40481399999998757266"/>
                                 <coordinate x="1917.73569399999996676343" y="2154.40481399999998757266"/>
@@ -8309,6 +8426,38 @@
                     <textobject fontcolor="#556b2f" text="Distance travelled" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
                     <size width="127.000000" height="42.190013"/>
                     <line width="2.000000" visible="1" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="1758.032727" y="2438.766242"/>
+                    <textobject fontcolor="#ff0000" text="Flight controller" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
+                    <size width="315.729957" height="136.081893"/>
+                    <line width="2.000000" visible="1" style="dashline"/>
+                </hopsangui>
+            </textboxwidget>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2473.569460" y="3014.295628"/>
+                    <textobject fontcolor="#556b2f" text="The trajectory in lattitude longitude&#xa;can be seen here" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
+                    <size width="239.000000" height="46.000000"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="1671.700649" y="2211.312835"/>
+                    <textobject fontcolor="#556b2f" text="Mission controller&#xa;with waypoints" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
+                    <size width="126.000000" height="56.290009"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
+                </hopsangui>
+            </textboxwidget>
+            <textboxwidget>
+                <hopsangui>
+                    <pose x="2037.608792" y="2046.263601"/>
+                    <textobject fontcolor="#005500" text="Example: Electric aircraft flying a mission" font="Calibri,20,-1,5,50,0,0,0,0,0"/>
+                    <size width="451.000000" height="41.000000"/>
+                    <line width="2.000000" visible="0" style="solidline"/>
                 </hopsangui>
             </textboxwidget>
         </objects>
@@ -9058,8 +9207,8 @@
                     <coordinates>
                         <coordinate x="1860.52265499999998610292" y="2556.54534000000012383680"/>
                         <coordinate x="1895.14461806232793605886" y="2556.54534000000012383680"/>
-                        <coordinate x="1895.14461806232793605886" y="2435.42707496606180939125"/>
-                        <coordinate x="1837.37381099999993239180" y="2435.42707496606180939125"/>
+                        <coordinate x="1895.14461806232793605886" y="2451.33186886975408924627"/>
+                        <coordinate x="1837.37381099999993239180" y="2451.33186886975408924627"/>
                         <coordinate x="1837.37381099999993239180" y="2471.18532099999993079109"/>
                     </coordinates>
                     <geometries>
