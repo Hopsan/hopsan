@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4872" hopsancoreversion="0.6.x_r4833">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4943" hopsancoreversion="0.6.x_r4932">
     <requirements>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
     </requirements>
@@ -7,7 +7,7 @@
         <author>Fluid &amp; Mechatronic Systems (Flumes)</author>
         <email>robert.braun@liu.se</email>
         <affiliation>Linköping University</affiliation>
-        <description>This example model demonstrates a distributed model of an in-line axial piston machine. As the swash-plate rotates, the pistons will move back and forth. At the same time the swash plate alternate between opening to the low and high pressure sides. Efficiencies are calculated in sub-systems.
+        <description>This example model demonstrates a distributed model of an in-line axial piston machine. As the swash-plate rotates, the pistons will move back and forth. At the same time the swash plate alternate between opening to the low and high pressure sides. Efficiencies are calculated in sub-systems.&#xd;
 This model also works well with the animation feature.</description>
     </info>
     <system logsamples="10000" typename="Subsystem" name="In-Line Axial Piston Machine">
@@ -36,7 +36,7 @@ This model also works well with the animation feature.</description>
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2496.59" y="2497.77" zoom="0.84215"/>
+            <viewport x="2494.8" y="2637.3" zoom="0.84215"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <graphics type="user"/>
@@ -71,6 +71,11 @@ This model also works well with the animation feature.</description>
         <objects>
             <component typename="SignalSink" name="Output Pressure_1">
                 <parameters/>
+                <ports>
+                    <port nodetype="NodeSignal" name="in_right"/>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="in_bottom"/>
+                </ports>
                 <hopsangui>
                     <pose x="2681.232559" y="2775.040076" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
@@ -85,6 +90,10 @@ This model also works well with the animation feature.</description>
                 <parameters>
                     <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeMechanicRotational" name="P1"/>
+                    <port nodetype="NodeSignal" name="out"/>
+                </ports>
                 <hopsangui>
                     <pose x="2249.726803" y="2570.263736" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -110,6 +119,15 @@ This model also works well with the animation feature.</description>
                     <parameter value="0" type="double" name="DEBUG2::Value"/>
                     <parameter value="0" type="double" name="DEBUG3::Value"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="movement"/>
+                    <port nodetype="NodeSignal" name="DEBUG3"/>
+                    <port nodetype="NodeHydraulic" name="PA"/>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                    <port nodetype="NodeHydraulic" name="PB"/>
+                    <port nodetype="NodeSignal" name="DEBUG1"/>
+                    <port nodetype="NodeSignal" name="DEBUG2"/>
+                </ports>
                 <hopsangui>
                     <pose x="2598.576834" y="2619.489106" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -124,6 +142,11 @@ This model also works well with the animation feature.</description>
                 <parameters>
                     <parameter value="2.5e-6" type="double" name="K_c"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                    <port nodetype="NodeHydraulic" name="P2"/>
+                    <port nodetype="NodeSignal" name="Kc"/>
+                </ports>
                 <hopsangui>
                     <pose x="2788.581165" y="2639.489106" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -138,6 +161,11 @@ This model also works well with the animation feature.</description>
                 <parameters>
                     <parameter value="1e-8" type="double" name="K_c"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                    <port nodetype="NodeHydraulic" name="P2"/>
+                    <port nodetype="NodeSignal" name="Kc"/>
+                </ports>
                 <hopsangui>
                     <pose x="2788.581165" y="2599.489106" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -166,6 +194,10 @@ This model also works well with the animation feature.</description>
                     <parameter value="1e+09" type="double" name="Beta_e"/>
                     <parameter value="0.1" type="double" name="alpha"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                    <port nodetype="NodeHydraulic" name="P2"/>
+                </ports>
                 <hopsangui>
                     <pose x="2686.679069" y="2599.489106" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -180,6 +212,9 @@ This model also works well with the animation feature.</description>
                 <parameters>
                     <parameter value="1" type="double" name="max"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="in"/>
+                </ports>
                 <hopsangui>
                     <pose x="2276.745552" y="2826.754619" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
@@ -200,6 +235,12 @@ This model also works well with the animation feature.</description>
                     <parameter value="0.1" type="double" name="q_nom"/>
                     <parameter value="500000" type="double" name="p_h"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                    <port nodetype="NodeHydraulic" name="P2"/>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="xv"/>
+                </ports>
                 <hopsangui>
                     <pose x="2939.39536" y="2651.018291" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -212,6 +253,11 @@ This model also works well with the animation feature.</description>
             </component>
             <component typename="SignalSink" name="Efficiencies">
                 <parameters/>
+                <ports>
+                    <port nodetype="NodeSignal" name="in_right"/>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="in_bottom"/>
+                </ports>
                 <hopsangui>
                     <pose x="2936.861088" y="2392.549325" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
@@ -244,6 +290,10 @@ This model also works well with the animation feature.</description>
                     <parameter value="leakage" type="double" name="c_leak"/>
                     <parameter value="piston_spring" type="double" name="F_0"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                    <port nodetype="NodeMechanic" name="P3"/>
+                </ports>
                 <hopsangui>
                     <pose x="2437.92903" y="2559.617516" flipped="false" a="270"/>
                     <nametext position="0" visible="0"/>
@@ -258,6 +308,10 @@ This model also works well with the animation feature.</description>
                 <parameters>
                     <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeMechanicRotational" name="P1"/>
+                    <port nodetype="NodeSignal" name="out"/>
+                </ports>
                 <hopsangui>
                     <pose x="2291.30903" y="2570.516738" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -286,6 +340,10 @@ This model also works well with the animation feature.</description>
                     <parameter value="1e+09" type="double" name="Beta_e"/>
                     <parameter value="0.3" type="double" name="alpha"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                    <port nodetype="NodeHydraulic" name="P2"/>
+                </ports>
                 <hopsangui>
                     <pose x="2688.679075" y="2639.489106" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -318,6 +376,10 @@ This model also works well with the animation feature.</description>
                     <parameter value="leakage" type="double" name="c_leak"/>
                     <parameter value="piston_spring" type="double" name="F_0"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                    <port nodetype="NodeMechanic" name="P3"/>
+                </ports>
                 <hopsangui>
                     <pose x="2437.774775" y="2579.535029" flipped="false" a="270"/>
                     <nametext position="0" visible="0"/>
@@ -346,6 +408,10 @@ This model also works well with the animation feature.</description>
                     <parameter value="1e+09" type="double" name="Beta_e"/>
                     <parameter value="0.3" type="double" name="alpha"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                    <port nodetype="NodeHydraulic" name="P2"/>
+                </ports>
                 <hopsangui>
                     <pose x="2891.978627" y="2599.489106" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -378,6 +444,10 @@ This model also works well with the animation feature.</description>
                     <parameter value="leakage" type="double" name="c_leak"/>
                     <parameter value="piston_spring" type="double" name="F_0"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                    <port nodetype="NodeMechanic" name="P3"/>
+                </ports>
                 <hopsangui>
                     <pose x="2437.774775" y="2599.145804" flipped="false" a="270"/>
                     <nametext position="0" visible="0"/>
@@ -410,6 +480,10 @@ This model also works well with the animation feature.</description>
                     <parameter value="leakage" type="double" name="c_leak"/>
                     <parameter value="piston_spring" type="double" name="F_0"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                    <port nodetype="NodeMechanic" name="P3"/>
+                </ports>
                 <hopsangui>
                     <pose x="2437.774775" y="2619.489106" flipped="false" a="270"/>
                     <nametext position="0" visible="0"/>
@@ -424,6 +498,10 @@ This model also works well with the animation feature.</description>
                 <parameters>
                     <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                    <port nodetype="NodeSignal" name="out"/>
+                </ports>
                 <hopsangui>
                     <pose x="2713.679075" y="2696.877516" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -436,6 +514,11 @@ This model also works well with the animation feature.</description>
             </component>
             <component typename="SignalSink" name="Output flow">
                 <parameters/>
+                <ports>
+                    <port nodetype="NodeSignal" name="in_right"/>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="in_bottom"/>
+                </ports>
                 <hopsangui>
                     <pose x="2937.718933" y="2453.244671" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
@@ -450,6 +533,9 @@ This model also works well with the animation feature.</description>
                 <parameters>
                     <parameter value="1" type="double" name="max"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="in"/>
+                </ports>
                 <hopsangui>
                     <pose x="2350.065847" y="2826.754619" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -482,6 +568,10 @@ This model also works well with the animation feature.</description>
                     <parameter value="leakage" type="double" name="c_leak"/>
                     <parameter value="piston_spring" type="double" name="F_0"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                    <port nodetype="NodeMechanic" name="P3"/>
+                </ports>
                 <hopsangui>
                     <pose x="2437.774775" y="2637.67715" flipped="false" a="270"/>
                     <nametext position="0" visible="0"/>
@@ -503,6 +593,13 @@ This model also works well with the animation feature.</description>
                     <parameter value="0" type="double" name="torque::Value"/>
                     <parameter value="0" type="double" name="movement::Value"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="movement"/>
+                    <port nodetype="NodeMechanic" name="P1"/>
+                    <port nodetype="NodeMechanicRotational" name="P2"/>
+                    <port nodetype="NodeSignal" name="torque"/>
+                    <port nodetype="NodeSignal" name="angle"/>
+                </ports>
                 <hopsangui>
                     <pose x="2331.152128" y="2623.019234" flipped="false" a="270"/>
                     <nametext position="0" visible="0"/>
@@ -525,7 +622,7 @@ This model also works well with the animation feature.</description>
                 <hopsangui>
                     <pose x="2349.217863" y="2297.386885" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
-                    <viewport x="2496.59" y="2497.77" zoom="0.84215"/>
+                    <viewport x="2494.8" y="2637.3" zoom="0.84215"/>
                     <ports hidden="1"/>
                     <names hidden="1"/>
                     <graphics type="user"/>
@@ -567,6 +664,11 @@ This model also works well with the animation feature.</description>
                         <parameters>
                             <parameter value="0" type="double" name="out::Value"/>
                         </parameters>
+                        <ports>
+                            <port nodetype="NodeSignal" name="out"/>
+                            <port nodetype="NodeSignal" name="in1"/>
+                            <port nodetype="NodeSignal" name="in2"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2525.35614" y="2538.630104" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
@@ -582,6 +684,10 @@ This model also works well with the animation feature.</description>
                             <parameter value="0" type="double" name="out::Value"/>
                             <parameter value="n_pistons" type="double" name="k"/>
                         </parameters>
+                        <ports>
+                            <port nodetype="NodeSignal" name="in"/>
+                            <port nodetype="NodeSignal" name="out"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2676.605232" y="2526.130104" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
@@ -592,7 +698,7 @@ This model also works well with the animation feature.</description>
                             </hopsanobjectappearance>
                         </hopsangui>
                     </component>
-                    <systemport name="displacement">
+                    <systemport typename="HopsanGUIContainerPort" name="displacement">
                         <hopsangui>
                             <pose x="2790.874821" y="2573.606469" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
@@ -602,6 +708,9 @@ This model also works well with the animation feature.</description>
                         <parameters>
                             <parameter value="p_area" type="double" name="y"/>
                         </parameters>
+                        <ports>
+                            <port nodetype="NodeSignal" name="out"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2486.776132" y="2428.181147" flipped="false" a="0"/>
                             <nametext position="0" visible="1"/>
@@ -616,6 +725,10 @@ This model also works well with the animation feature.</description>
                         <parameters>
                             <parameter value="0" type="double" name="out::Value"/>
                         </parameters>
+                        <ports>
+                            <port nodetype="NodeSignal" name="in"/>
+                            <port nodetype="NodeSignal" name="out"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2477.000183" y="2538.630104" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
@@ -630,6 +743,9 @@ This model also works well with the animation feature.</description>
                         <parameters>
                             <parameter value="sw_radius" type="double" name="y"/>
                         </parameters>
+                        <ports>
+                            <port nodetype="NodeSignal" name="out"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2474.826846" y="2491.999667" flipped="false" a="0"/>
                             <nametext position="0" visible="1"/>
@@ -644,6 +760,11 @@ This model also works well with the animation feature.</description>
                         <parameters>
                             <parameter value="0" type="double" name="out::Value"/>
                         </parameters>
+                        <ports>
+                            <port nodetype="NodeSignal" name="out"/>
+                            <port nodetype="NodeSignal" name="in1"/>
+                            <port nodetype="NodeSignal" name="in2"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2585.597918" y="2526.130104" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
@@ -659,6 +780,10 @@ This model also works well with the animation feature.</description>
                             <parameter value="0" type="double" name="out::Value"/>
                             <parameter value="2" type="double" name="k"/>
                         </parameters>
+                        <ports>
+                            <port nodetype="NodeSignal" name="in"/>
+                            <port nodetype="NodeSignal" name="out"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2629.282734" y="2526.130104" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
@@ -673,6 +798,9 @@ This model also works well with the animation feature.</description>
                         <parameters>
                             <parameter value="sw_angle" type="double" name="y"/>
                         </parameters>
+                        <ports>
+                            <port nodetype="NodeSignal" name="out"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2282.254529" y="2538.630104" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
@@ -813,6 +941,10 @@ This model also works well with the animation feature.</description>
                     <parameter value="leakage" type="double" name="c_leak"/>
                     <parameter value="piston_spring" type="double" name="F_0"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                    <port nodetype="NodeMechanic" name="P3"/>
+                </ports>
                 <hopsangui>
                     <pose x="2437.774775" y="2657.07715" flipped="false" a="270"/>
                     <nametext position="0" visible="0"/>
@@ -827,6 +959,9 @@ This model also works well with the animation feature.</description>
                 <parameters>
                     <parameter value="swivel_angle" type="double" name="y"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="out"/>
+                </ports>
                 <hopsangui>
                     <pose x="2331.152128" y="2535.834059" flipped="false" a="90"/>
                     <nametext position="0" visible="0"/>
@@ -847,7 +982,7 @@ This model also works well with the animation feature.</description>
                 <hopsangui>
                     <pose x="2576.656885" y="2257.814104" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
-                    <viewport x="2496.59" y="2497.77" zoom="0.84215"/>
+                    <viewport x="2494.8" y="2637.3" zoom="0.84215"/>
                     <ports hidden="1"/>
                     <names hidden="1"/>
                     <graphics type="user"/>
@@ -950,7 +1085,7 @@ This model also works well with the animation feature.</description>
                     </hopsanundo>
                 </hopsangui>
                 <objects>
-                    <systemport name="T_effective">
+                    <systemport typename="HopsanGUIContainerPort" name="T_effective">
                         <hopsangui>
                             <pose x="2790.874821" y="2573.606469" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
@@ -960,6 +1095,11 @@ This model also works well with the animation feature.</description>
                         <parameters>
                             <parameter value="0" type="double" name="out::Value"/>
                         </parameters>
+                        <ports>
+                            <port nodetype="NodeSignal" name="out"/>
+                            <port nodetype="NodeSignal" name="in1"/>
+                            <port nodetype="NodeSignal" name="in2"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2672.18288" y="2573.606469" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
@@ -970,7 +1110,7 @@ This model also works well with the animation feature.</description>
                             </hopsanobjectappearance>
                         </hopsangui>
                     </component>
-                    <systemport name="delta_p">
+                    <systemport typename="HopsanGUIContainerPort" name="delta_p">
                         <hopsangui>
                             <pose x="2311.213192" y="2583.606469" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
@@ -980,6 +1120,9 @@ This model also works well with the animation feature.</description>
                         <parameters>
                             <parameter value="6.2832" type="double" name="y"/>
                         </parameters>
+                        <ports>
+                            <port nodetype="NodeSignal" name="out"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2426.244672" y="2622.798547" flipped="false" a="0"/>
                             <nametext position="0" visible="1"/>
@@ -994,6 +1137,11 @@ This model also works well with the animation feature.</description>
                         <parameters>
                             <parameter value="0" type="double" name="out::Value"/>
                         </parameters>
+                        <ports>
+                            <port nodetype="NodeSignal" name="out"/>
+                            <port nodetype="NodeSignal" name="in1"/>
+                            <port nodetype="NodeSignal" name="in2"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2465.874445" y="2586.106469" flipped="true" a="180"/>
                             <nametext position="0" visible="0"/>
@@ -1004,7 +1152,7 @@ This model also works well with the animation feature.</description>
                             </hopsanobjectappearance>
                         </hopsangui>
                     </component>
-                    <systemport name="displacement">
+                    <systemport typename="HopsanGUIContainerPort" name="displacement">
                         <hopsangui>
                             <pose x="2305.614701" y="2536.130104" flipped="false" a="0"/>
                             <nametext position="0" visible="1"/>
@@ -1104,6 +1252,10 @@ This model also works well with the animation feature.</description>
                     <parameter value="leakage" type="double" name="c_leak"/>
                     <parameter value="piston_spring" type="double" name="F_0"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                    <port nodetype="NodeMechanic" name="P3"/>
+                </ports>
                 <hopsangui>
                     <pose x="2437.774775" y="2676.845769" flipped="false" a="270"/>
                     <nametext position="0" visible="0"/>
@@ -1116,6 +1268,9 @@ This model also works well with the animation feature.</description>
             </component>
             <component typename="SignalDisplay" name="Display">
                 <parameters/>
+                <ports>
+                    <port nodetype="NodeSignal" name="in"/>
+                </ports>
                 <hopsangui>
                     <pose x="3097.30903" y="2394.807516" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -1148,6 +1303,10 @@ This model also works well with the animation feature.</description>
                     <parameter value="leakage" type="double" name="c_leak"/>
                     <parameter value="piston_spring" type="double" name="F_0"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                    <port nodetype="NodeMechanic" name="P3"/>
+                </ports>
                 <hopsangui>
                     <pose x="2437.647516" y="2696.780129" flipped="false" a="270"/>
                     <nametext position="0" visible="0"/>
@@ -1168,7 +1327,7 @@ This model also works well with the animation feature.</description>
                 <hopsangui>
                     <pose x="2816.11903" y="2326.497516" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
-                    <viewport x="2496.59" y="2497.77" zoom="0.84215"/>
+                    <viewport x="2494.8" y="2637.3" zoom="0.84215"/>
                     <ports hidden="1"/>
                     <names hidden="1"/>
                     <graphics type="user"/>
@@ -5853,6 +6012,11 @@ This model also works well with the animation feature.</description>
                         <parameters>
                             <parameter value="0" type="double" name="out::Value"/>
                         </parameters>
+                        <ports>
+                            <port nodetype="NodeSignal" name="out"/>
+                            <port nodetype="NodeSignal" name="in1"/>
+                            <port nodetype="NodeSignal" name="in2"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2514.587986" y="2130.839693" flipped="true" a="180"/>
                             <nametext position="0" visible="0"/>
@@ -5870,6 +6034,10 @@ This model also works well with the animation feature.</description>
                             <parameter value="-1.5e+300" type="double" name="y_min"/>
                             <parameter value="1.5e+300" type="double" name="y_max"/>
                         </parameters>
+                        <ports>
+                            <port nodetype="NodeSignal" name="in"/>
+                            <port nodetype="NodeSignal" name="out"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2765.540581" y="2063.423101" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
@@ -5880,7 +6048,7 @@ This model also works well with the animation feature.</description>
                             </hopsanobjectappearance>
                         </hopsangui>
                     </component>
-                    <systemport name="eta_vol">
+                    <systemport typename="HopsanGUIContainerPort" name="eta_vol">
                         <hopsangui>
                             <pose x="2889.03745" y="2265.893105" flipped="false" a="0"/>
                             <nametext position="0" visible="1"/>
@@ -5892,6 +6060,10 @@ This model also works well with the animation feature.</description>
                             <parameter value="1000" type="double" name="y_upper"/>
                             <parameter value="0.1" type="double" name="y_lower"/>
                         </parameters>
+                        <ports>
+                            <port nodetype="NodeSignal" name="in"/>
+                            <port nodetype="NodeSignal" name="out"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2587.775785" y="2265.893105" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
@@ -5908,6 +6080,10 @@ This model also works well with the animation feature.</description>
                             <parameter value="100000000" type="double" name="y_upper"/>
                             <parameter value="0.000001" type="double" name="y_lower"/>
                         </parameters>
+                        <ports>
+                            <port nodetype="NodeSignal" name="in"/>
+                            <port nodetype="NodeSignal" name="out"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2407.007221" y="2214.006675" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
@@ -5918,7 +6094,7 @@ This model also works well with the animation feature.</description>
                             </hopsanobjectappearance>
                         </hopsangui>
                     </component>
-                    <systemport name="q_ideal">
+                    <systemport typename="HopsanGUIContainerPort" name="q_ideal">
                         <hopsangui>
                             <pose x="2324.373914" y="2386.933833" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
@@ -5931,6 +6107,10 @@ This model also works well with the animation feature.</description>
                             <parameter value="-1.5e+300" type="double" name="y_min"/>
                             <parameter value="1.5e+300" type="double" name="y_max"/>
                         </parameters>
+                        <ports>
+                            <port nodetype="NodeSignal" name="in"/>
+                            <port nodetype="NodeSignal" name="out"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2407.007221" y="2303.020892" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
@@ -5947,6 +6127,10 @@ This model also works well with the animation feature.</description>
                             <parameter value="-0.00001" type="double" name="y_upper"/>
                             <parameter value="-100000" type="double" name="y_lower"/>
                         </parameters>
+                        <ports>
+                            <port nodetype="NodeSignal" name="in"/>
+                            <port nodetype="NodeSignal" name="out"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2408.194658" y="2359.437155" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
@@ -5964,6 +6148,10 @@ This model also works well with the animation feature.</description>
                             <parameter value="-1.5e+300" type="double" name="y_min"/>
                             <parameter value="1.5e+300" type="double" name="y_max"/>
                         </parameters>
+                        <ports>
+                            <port nodetype="NodeSignal" name="in"/>
+                            <port nodetype="NodeSignal" name="out"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2765.540581" y="2130.839693" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
@@ -5981,6 +6169,10 @@ This model also works well with the animation feature.</description>
                             <parameter value="-1.5e+300" type="double" name="y_min"/>
                             <parameter value="1.5e+300" type="double" name="y_max"/>
                         </parameters>
+                        <ports>
+                            <port nodetype="NodeSignal" name="in"/>
+                            <port nodetype="NodeSignal" name="out"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2765.540581" y="2265.893105" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
@@ -5993,6 +6185,11 @@ This model also works well with the animation feature.</description>
                     </component>
                     <component typename="SignalSink" name="Ideal/effective torque">
                         <parameters/>
+                        <ports>
+                            <port nodetype="NodeSignal" name="in_right"/>
+                            <port nodetype="NodeSignal" name="in"/>
+                            <port nodetype="NodeSignal" name="in_bottom"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2885.475135" y="2213.843105" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
@@ -6007,6 +6204,11 @@ This model also works well with the animation feature.</description>
                         <parameters>
                             <parameter value="0.1" type="double" name="out::Value"/>
                         </parameters>
+                        <ports>
+                            <port nodetype="NodeSignal" name="out"/>
+                            <port nodetype="NodeSignal" name="in1"/>
+                            <port nodetype="NodeSignal" name="in2"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2673.069332" y="2063.423101" flipped="true" a="180"/>
                             <nametext position="0" visible="0"/>
@@ -6021,6 +6223,11 @@ This model also works well with the animation feature.</description>
                         <parameters>
                             <parameter value="0" type="double" name="out::Value"/>
                         </parameters>
+                        <ports>
+                            <port nodetype="NodeSignal" name="out"/>
+                            <port nodetype="NodeSignal" name="in1"/>
+                            <port nodetype="NodeSignal" name="in2"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2514.587986" y="2265.893105" flipped="true" a="180"/>
                             <nametext position="0" visible="0"/>
@@ -6031,7 +6238,7 @@ This model also works well with the animation feature.</description>
                             </hopsanobjectappearance>
                         </hopsangui>
                     </component>
-                    <systemport name="eta_tot">
+                    <systemport typename="HopsanGUIContainerPort" name="eta_tot">
                         <hopsangui>
                             <pose x="2885.475135" y="2063.423101" flipped="false" a="0"/>
                             <nametext position="0" visible="1"/>
@@ -6039,6 +6246,11 @@ This model also works well with the animation feature.</description>
                     </systemport>
                     <component typename="SignalSink" name="Ideal/effective flow">
                         <parameters/>
+                        <ports>
+                            <port nodetype="NodeSignal" name="in_right"/>
+                            <port nodetype="NodeSignal" name="in"/>
+                            <port nodetype="NodeSignal" name="in_bottom"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2885.475135" y="2386.933833" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
@@ -6049,7 +6261,7 @@ This model also works well with the animation feature.</description>
                             </hopsanobjectappearance>
                         </hopsangui>
                     </component>
-                    <systemport name="eta_hm">
+                    <systemport typename="HopsanGUIContainerPort" name="eta_hm">
                         <hopsangui>
                             <pose x="2885.475135" y="2130.839693" flipped="false" a="0"/>
                             <nametext position="0" visible="1"/>
@@ -6061,6 +6273,10 @@ This model also works well with the animation feature.</description>
                             <parameter value="1000" type="double" name="y_upper"/>
                             <parameter value="0.1" type="double" name="y_lower"/>
                         </parameters>
+                        <ports>
+                            <port nodetype="NodeSignal" name="in"/>
+                            <port nodetype="NodeSignal" name="out"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2587.775785" y="2130.839693" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
@@ -6071,19 +6287,19 @@ This model also works well with the animation feature.</description>
                             </hopsanobjectappearance>
                         </hopsangui>
                     </component>
-                    <systemport name="T_ideal">
+                    <systemport typename="HopsanGUIContainerPort" name="T_ideal">
                         <hopsangui>
                             <pose x="2324.373914" y="2213.843105" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
                         </hopsangui>
                     </systemport>
-                    <systemport name="T_effective">
+                    <systemport typename="HopsanGUIContainerPort" name="T_effective">
                         <hopsangui>
                             <pose x="2324.373914" y="2130.839693" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
                         </hopsangui>
                     </systemport>
-                    <systemport name="q_effective">
+                    <systemport typename="HopsanGUIContainerPort" name="q_effective">
                         <hopsangui>
                             <pose x="2324.373914" y="2303.020892" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
@@ -6367,6 +6583,10 @@ This model also works well with the animation feature.</description>
                     <parameter value="leakage" type="double" name="c_leak"/>
                     <parameter value="piston_spring" type="double" name="F_0"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                    <port nodetype="NodeMechanic" name="P3"/>
+                </ports>
                 <hopsangui>
                     <pose x="2437.92903" y="2540.007516" flipped="false" a="270"/>
                     <nametext position="0" visible="0"/>
@@ -6379,6 +6599,11 @@ This model also works well with the animation feature.</description>
             </component>
             <component typename="SignalSink" name="Output Pressure">
                 <parameters/>
+                <ports>
+                    <port nodetype="NodeSignal" name="in_right"/>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="in_bottom"/>
+                </ports>
                 <hopsangui>
                     <pose x="2937.718933" y="2513.803954" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
@@ -6393,6 +6618,9 @@ This model also works well with the animation feature.</description>
                 <parameters>
                     <parameter value="1" type="double" name="max"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="in"/>
+                </ports>
                 <hopsangui>
                     <pose x="2423.386143" y="2826.754619" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
@@ -6412,6 +6640,9 @@ This model also works well with the animation feature.</description>
                     <parameter value="0" type="double" name="MP::HeatFlow"/>
                     <parameter value="0" type="double" name="p"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="MP"/>
+                </ports>
                 <hopsangui>
                     <pose x="2937.39616" y="2703.098259" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -6431,6 +6662,9 @@ This model also works well with the animation feature.</description>
                     <parameter value="0" type="double" name="MP::HeatFlow"/>
                     <parameter value="2e6" type="double" name="p"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="MP"/>
+                </ports>
                 <hopsangui>
                     <pose x="2888.318825" y="2703.098259" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -6445,6 +6679,11 @@ This model also works well with the animation feature.</description>
                 <parameters>
                     <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="out"/>
+                    <port nodetype="NodeSignal" name="in1"/>
+                    <port nodetype="NodeSignal" name="in2"/>
+                </ports>
                 <hopsangui>
                     <pose x="2711.609808" y="2412.52775" flipped="true" a="270"/>
                     <nametext position="0" visible="0"/>
@@ -6459,6 +6698,9 @@ This model also works well with the animation feature.</description>
                 <parameters>
                     <parameter value="160" type="double" name="max"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="in"/>
+                </ports>
                 <hopsangui>
                     <pose x="2063.22903" y="2477.237516" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
@@ -6473,6 +6715,10 @@ This model also works well with the animation feature.</description>
                 <parameters>
                     <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                    <port nodetype="NodeSignal" name="out"/>
+                </ports>
                 <hopsangui>
                     <pose x="2753.581165" y="2543.516738" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -6499,6 +6745,10 @@ This model also works well with the animation feature.</description>
                     <parameter value="0" type="double" name="P1::CharImp"/>
                     <parameter value="0" type="double" name="P1::Equivalent Inertia"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeMechanicRotational" name="P1"/>
+                    <port nodetype="NodeSignal" name="omega_ref"/>
+                </ports>
                 <hopsangui>
                     <pose x="2175.62472" y="2622.177079" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -6515,6 +6765,9 @@ This model also works well with the animation feature.</description>
                 <parameters>
                     <parameter value="1" type="double" name="out::Value"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="out"/>
+                </ports>
                 <hopsangui>
                     <pose x="2063.233663" y="2614.685827" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
@@ -6530,6 +6783,10 @@ This model also works well with the animation feature.</description>
                     <parameter value="0" type="double" name="out::Value"/>
                     <parameter value="-0.10471975511965977462" type="double" name="k"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="out"/>
+                </ports>
                 <hopsangui>
                     <pose x="2119.115958" y="2652.377079" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -6545,6 +6802,10 @@ This model also works well with the animation feature.</description>
                     <parameter value="0" type="double" name="out::Value"/>
                     <parameter value="-1" type="double" name="k"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="out"/>
+                </ports>
                 <hopsangui>
                     <pose x="2145.31637" y="2527.816007" flipped="false" a="180"/>
                     <nametext position="0" visible="0"/>
@@ -6560,6 +6821,10 @@ This model also works well with the animation feature.</description>
                     <parameter value="0" type="double" name="out::Value"/>
                     <parameter value="motor_speed" type="double" name="k"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="out"/>
+                </ports>
                 <hopsangui>
                     <pose x="2111.521055" y="2614.685827" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -6575,6 +6840,10 @@ This model also works well with the animation feature.</description>
                     <parameter value="0" type="double" name="out::Value"/>
                     <parameter value="-1" type="double" name="k"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="out"/>
+                </ports>
                 <hopsangui>
                     <pose x="2398.316029" y="2509.814764" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -6589,6 +6858,10 @@ This model also works well with the animation feature.</description>
                 <parameters>
                     <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                    <port nodetype="NodeSignal" name="out"/>
+                </ports>
                 <hopsangui>
                     <pose x="2753.581165" y="2696.877516" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -6604,6 +6877,10 @@ This model also works well with the animation feature.</description>
                     <parameter value="0" type="double" name="out::Value"/>
                     <parameter value="-1" type="double" name="k"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="out"/>
+                </ports>
                 <hopsangui>
                     <pose x="2881.909398" y="2453.244671" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -6618,6 +6895,10 @@ This model also works well with the animation feature.</description>
                 <parameters>
                     <parameter value="0" type="double" name="out::Value"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                    <port nodetype="NodeSignal" name="out"/>
+                </ports>
                 <hopsangui>
                     <pose x="2711.679069" y="2543.516738" flipped="false" a="0"/>
                     <nametext position="0" visible="0"/>
@@ -6638,7 +6919,7 @@ This model also works well with the animation feature.</description>
                 <hopsangui>
                     <pose x="2579.657028" y="2345.728933" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
-                    <viewport x="2496.59" y="2497.77" zoom="0.84215"/>
+                    <viewport x="2494.8" y="2637.3" zoom="0.84215"/>
                     <ports hidden="1"/>
                     <names hidden="1"/>
                     <graphics type="user"/>
@@ -7617,7 +7898,7 @@ This model also works well with the animation feature.</description>
                     </hopsanundo>
                 </hopsangui>
                 <objects>
-                    <systemport name="speed">
+                    <systemport typename="HopsanGUIContainerPort" name="speed">
                         <hopsangui>
                             <pose x="2311.213192" y="2573.606469" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
@@ -7627,6 +7908,11 @@ This model also works well with the animation feature.</description>
                         <parameters>
                             <parameter value="0" type="double" name="out::Value"/>
                         </parameters>
+                        <ports>
+                            <port nodetype="NodeSignal" name="out"/>
+                            <port nodetype="NodeSignal" name="in1"/>
+                            <port nodetype="NodeSignal" name="in2"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2659.68288" y="2573.606469" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
@@ -7641,6 +7927,9 @@ This model also works well with the animation feature.</description>
                         <parameters>
                             <parameter value="6.2832" type="double" name="y"/>
                         </parameters>
+                        <ports>
+                            <port nodetype="NodeSignal" name="out"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2426.824017" y="2615.512653" flipped="false" a="0"/>
                             <nametext position="0" visible="1"/>
@@ -7655,6 +7944,11 @@ This model also works well with the animation feature.</description>
                         <parameters>
                             <parameter value="0" type="double" name="out::Value"/>
                         </parameters>
+                        <ports>
+                            <port nodetype="NodeSignal" name="out"/>
+                            <port nodetype="NodeSignal" name="in1"/>
+                            <port nodetype="NodeSignal" name="in2"/>
+                        </ports>
                         <hopsangui>
                             <pose x="2467.558755" y="2573.606469" flipped="true" a="180"/>
                             <nametext position="0" visible="0"/>
@@ -7665,13 +7959,13 @@ This model also works well with the animation feature.</description>
                             </hopsanobjectappearance>
                         </hopsangui>
                     </component>
-                    <systemport name="displacement">
+                    <systemport typename="HopsanGUIContainerPort" name="displacement">
                         <hopsangui>
                             <pose x="2305.614701" y="2526.130104" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
                         </hopsangui>
                     </systemport>
-                    <systemport name="q_ideal_1">
+                    <systemport typename="HopsanGUIContainerPort" name="q_ideal_1">
                         <hopsangui>
                             <pose x="2770.874821" y="2573.606469" flipped="false" a="0"/>
                             <nametext position="0" visible="0"/>
@@ -7753,6 +8047,9 @@ This model also works well with the animation feature.</description>
                 <parameters>
                     <parameter value="1" type="double" name="max"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeSignal" name="in"/>
+                </ports>
                 <hopsangui>
                     <pose x="2350.065847" y="2826.754619" flipped="false" a="0"/>
                     <nametext position="0" visible="1"/>
@@ -8641,6 +8938,38 @@ This model also works well with the animation feature.</description>
                     </coordinates>
                     <geometries>
                         <geometry>diagonal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in_right" endcomponent="Output Pressure_1" startport="DEBUG3" startcomponent="ValvePlate">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2618.57683399999996254337" y="2669.48910599999999249121"/>
+                        <coordinate x="2618.57683399999996254337" y="2752.47877456510150295799"/>
+                        <coordinate x="2748.91646381286000178079" y="2752.47877456510150295799"/>
+                        <coordinate x="2748.91646381286000178079" y="2775.04007600000022648601"/>
+                        <coordinate x="2701.23255900000003748573" y="2775.04007600000022648601"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="movement" endcomponent="ValvePlate" startport="out" startcomponent="Gain_4">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2410.81602900000007139170" y="2509.81476400000019566505"/>
+                        <coordinate x="2598.57683399999996254337" y="2509.81476400000019566505"/>
+                        <coordinate x="2598.57683399999996254337" y="2569.48910599999999249121"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
                     </geometries>
                     <style>solid</style>
                 </hopsangui>

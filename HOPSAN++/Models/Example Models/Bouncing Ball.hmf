@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4872" hopsancoreversion="0.6.x_r4833">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4943" hopsancoreversion="0.6.x_r4932">
     <requirements>
         <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
     </requirements>
@@ -16,7 +16,7 @@
         <hopsangui>
             <pose x="0" y="0" flipped="false" a="0"/>
             <nametext position="0" visible="1"/>
-            <viewport x="2499.94" y="2498.25" zoom="1.18743"/>
+            <viewport x="2500.36" y="2497.83" zoom="1.18743"/>
             <ports hidden="1"/>
             <names hidden="1"/>
             <graphics type="user"/>
@@ -57,6 +57,10 @@
                     <parameter value="-100" type="double" name="x_min"/>
                     <parameter value="100" type="double" name="x_max"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeMechanic" name="P1"/>
+                    <port nodetype="NodeMechanic" name="P2"/>
+                </ports>
                 <hopsangui>
                     <pose x="2656.632279" y="2499.341265" flipped="false" a="90"/>
                     <nametext position="0" visible="0"/>
@@ -72,6 +76,9 @@
                     <parameter value="0" type="double" name="B"/>
                     <parameter value="1" type="double" name="m_e"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeMechanic" name="Pm1"/>
+                </ports>
                 <hopsangui>
                     <pose x="2656.632279" y="2584.341265" flipped="false" a="90"/>
                     <nametext position="0" visible="0"/>
@@ -98,6 +105,10 @@
                     <parameter value="0" type="double" name="P2::EquivalentMass"/>
                     <parameter value="1000000" type="double" name="k"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeMechanic" name="P1"/>
+                    <port nodetype="NodeMechanic" name="P2"/>
+                </ports>
                 <hopsangui>
                     <pose x="2656.632279" y="2547.841265" flipped="true" a="270"/>
                     <nametext position="0" visible="0"/>
@@ -117,11 +128,50 @@
                     <parameter value="0" type="double" name="P1::EquivalentMass"/>
                     <parameter value="9.81" type="double" name="F"/>
                 </parameters>
+                <ports>
+                    <port nodetype="NodeMechanic" name="P1"/>
+                    <port nodetype="NodeSignal" name="in"/>
+                </ports>
                 <hopsangui>
                     <pose x="2656.632279" y="2447.841265" flipped="false" a="90"/>
                     <nametext position="0" visible="0"/>
                     <hopsanobjectappearance version="0.3">
                         <modelobject typename="MechanicForceTransformer" displayname="Force Source">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="MechanicPositionSensor" name="Position Transducer">
+                <parameters>
+                    <parameter value="0" type="double" name="out::Value"/>
+                </parameters>
+                <ports>
+                    <port nodetype="NodeMechanic" name="P1"/>
+                    <port nodetype="NodeSignal" name="out"/>
+                </ports>
+                <hopsangui>
+                    <pose x="2726.262761" y="2430.813857" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="MechanicPositionSensor" displayname="Position Transducer">
+                            <ports/>
+                        </modelobject>
+                    </hopsanobjectappearance>
+                </hopsangui>
+            </component>
+            <component typename="SignalSink" name="Scope">
+                <parameters/>
+                <ports>
+                    <port nodetype="NodeSignal" name="in_right"/>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="in_bottom"/>
+                </ports>
+                <hopsangui>
+                    <pose x="2770.68148" y="2397.655069" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                        <modelobject typename="SignalSink" displayname="Scope">
                             <ports/>
                         </modelobject>
                     </hopsanobjectappearance>
@@ -189,6 +239,36 @@
                         <geometry>horizontal</geometry>
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="P1" endcomponent="Position Transducer" startport="P1" startcomponent="Force Source">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2656.63227899999992587254" y="2467.34126500000002124580"/>
+                        <coordinate x="2656.63227899999992587254" y="2464.21571747500001947628"/>
+                        <coordinate x="2726.26276075221267092275" y="2464.21571747500001947628"/>
+                        <coordinate x="2726.26276075221267092275" y="2448.81385706858509365702"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
+                        <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                </hopsangui>
+            </connect>
+            <connect endport="in" endcomponent="Scope" startport="out" startcomponent="Position Transducer">
+                <hopsangui>
+                    <coordinates>
+                        <coordinate x="2726.26276075221267092275" y="2412.81385706858509365702"/>
+                        <coordinate x="2726.26276075221267092275" y="2397.65506876106383060687"/>
+                        <coordinate x="2750.68148017146268102806" y="2397.65506876106383060687"/>
+                    </coordinates>
+                    <geometries>
+                        <geometry>horizontal</geometry>
+                        <geometry>vertical</geometry>
                     </geometries>
                     <style>solid</style>
                 </hopsangui>
