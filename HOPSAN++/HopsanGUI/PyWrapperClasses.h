@@ -167,12 +167,11 @@ public slots:
     LogDataHandler* getLogDataHandler(MainWindow* o);
     void openAbortDialog(MainWindow* o, const QString &text);
     bool isAborted(MainWindow* o);
-
-private slots:
-    void abort();
+    void abort(MainWindow* o);
 
 private:
     bool mAbort;
+    QProgressDialog *mpDialog;
 };
 
 #endif // PYWRAPPERCLASSES_H

@@ -395,10 +395,10 @@ LogDataHandler *PyMainWindowClassWrapper::getLogDataHandler(MainWindow *o)
 void PyMainWindowClassWrapper::openAbortDialog(MainWindow *o, const QString &text)
 {
     mAbort=false;
-    QProgressDialog *pDialog = new QProgressDialog(text, "Abort",0,0, o);
-    o->connect(pDialog, SIGNAL(canceled()), this, SLOT(abort()));
-    pDialog->setModal(false);
-    pDialog->show();
+    mpDialog = new QProgressDialog(text, "Abort",0,0, o);
+    o->connect(mpDialog, SIGNAL(canceled()), this, SLOT(abort()));
+    mpDialog->setModal(false);
+    mpDialog->show();
 }
 
 bool PyMainWindowClassWrapper::isAborted(MainWindow *o)
@@ -407,9 +407,13 @@ bool PyMainWindowClassWrapper::isAborted(MainWindow *o)
     return mAbort;
 }
 
-void PyMainWindowClassWrapper::abort()
+void PyMainWindowClassWrapper::abort(MainWindow* o)
 {
     mAbort=true;
+    if(mpDialog)
+    {
+        mpDialog->close();
+    }
 }
 
 QString PyLogDataHandlerClassWrapper::addVariables(LogDataHandler* o, const QString &a, const QString &b)

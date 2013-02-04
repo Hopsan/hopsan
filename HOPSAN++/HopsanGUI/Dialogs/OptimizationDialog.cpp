@@ -910,6 +910,7 @@ void OptimizationDialog::generateComplexScript()
     scriptStream << "    elapsedTime = (time.time() - startTime)\n";
     scriptStream << "    print 'Converged in parameter values after {} iterations in {} seconds. Worst objective function value = {!r}.'.format(k, elapsedTime, max(obj))\n";
     scriptStream << "    break\n";
+    scriptStream << "hopsan.abort()\n";
     scriptStream << "\n";
     if(!mpPlottingCheckBox->isChecked())
     {
@@ -1262,10 +1263,12 @@ void OptimizationDialog::generateParticleSwarmScript()
     scriptStream << "      if abs(max(obj)-min(obj)) <= tolFunc:\n";
     scriptStream << "        elapsedTime = (time.time() - startTime)\n";
     scriptStream << "        print 'Converged in function values after {} iterations in {} seconds. Worst objective function value = {!r}.'.format(k, elapsedTime, max(obj))\n";
+    scriptStream << "        hopsan.abort()\n";
     scriptStream << "        break\n";
     scriptStream << "    elif abs(max(obj)-min(obj))/abs(min(obj)) <= tolFunc:\n";
     scriptStream << "      elapsedTime = (time.time() - startTime)\n";
     scriptStream << "      print 'Converged in function values after {} iterations in {} seconds. Worst objective function value = {!r}.'.format(k, elapsedTime, max(obj))\n";
+    scriptStream << "      hopsan.abort()\n";
     scriptStream << "      break\n";
     scriptStream << "    xConverged=True\n";
     scriptStream << "    for i in range(len(parameterNames)):\n";
@@ -1274,7 +1277,9 @@ void OptimizationDialog::generateParticleSwarmScript()
     scriptStream << "    if xConverged:\n";
     scriptStream << "      elapsedTime = (time.time() - startTime)\n";
     scriptStream << "      print 'Converged in parameter values after {} iterations in {} seconds. Worst objective function value = {!r}.'.format(k, elapsedTime, max(obj))\n";
+    scriptStream << "      hopsan.abort()\n";
     scriptStream << "      break\n";
+    scriptStream << "hopsan.abort()\n";
     scriptStream << "\n";
     if(!mpPlottingCheckBox->isChecked())
     {
