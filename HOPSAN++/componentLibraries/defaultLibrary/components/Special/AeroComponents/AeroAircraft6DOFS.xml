@@ -7,7 +7,7 @@
         </icons>
         <help>
             <text>AeroAircraft6DOFS. Flight dynamics model</text>
-            <picture>AeroAircraft6DOFS.svg</picture>
+            <picture>AeroAircraft6DOFShelp.svg</picture>
         </help>
         <ports>
             <port x="0.0769231" y="0" enabled="true" a="90" name="Pthrustl" autoplaced="true"/>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="HydraulicFuelTankG" displayname="HydraulicFuelTankG">
+        <icons>
+            <icon scale="1" path="HydraulicFuelTankG.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="HydraulicFuelTankG.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="0.5" y="1" enabled="true" a="90" name="PT" autoplaced="true"/>
+            <port x="1" y="0.3" enabled="true" a="0" name="Pmassfuel" autoplaced="true"/>
+            <port x="1" y="0.7" enabled="true" a="0" name="Pconsfuel" autoplaced="true"/>
+            <port x="0.5" y="0" enabled="true" a="270" name="Pgx" autoplaced="true"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>
