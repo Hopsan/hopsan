@@ -157,6 +157,10 @@ void hopsan::register_components(hopsan::ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("HydraulicValvePlate", HydraulicValvePlate::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicPumpPiston", HydraulicPumpPiston::Creator);
 
+    pComponentFactory->registerCreatorFunction("HydraulicCentrifugalPump", HydraulicCentrifugalPump::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicCentrifugalPumpJ", HydraulicCentrifugalPumpJ::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicFuelTankG", HydraulicFuelTankG::Creator);
+
     //Signal components
     pComponentFactory->registerCreatorFunction("SignalAnimationSlider", SignalAnimationSlider::Creator);
     pComponentFactory->registerCreatorFunction("SignalAbsoluteValue", SignalAbsoluteValue::Creator);

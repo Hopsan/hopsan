@@ -102,6 +102,11 @@
 #include "Hydraulic/HydraulicValvePlate.hpp"
 #include "Hydraulic/HydraulicPumpPiston.hpp"
 
+#include "Hydraulic/HydraulicCentrifugalPump.hpp"
+#include "Hydraulic/HydraulicCentrifugalPumpJ.hpp"
+#include "Hydraulic/HydraulicFuelTankG.hpp"
+
+
 //#include "Hydraulic/HydraulicPressureReliefValveTolerance.hpp"
 //#include "Hydraulic/HydraulicCylinderCTolerance.hpp"
 //#include "Hydraulic/HydraulicHoseTolerance.hpp"

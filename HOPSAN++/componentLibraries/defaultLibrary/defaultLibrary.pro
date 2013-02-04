@@ -196,6 +196,9 @@ HEADERS += \
     code/Hydraulic/HydraulicCylinderC.hpp \
     code/Hydraulic/HydraulicAlternativePRV.hpp \
     code/Hydraulic/HydraulicAckumulator.hpp \
+    code/Hydraulic/HydraulicCentrifugalPump.hpp \
+    code/Hydraulic/HydraulicCentrifugalPumpJ.hpp \
+    code/Hydraulic/HydraulicFuelTankG.hpp \
     code/Hydraulic/valves/HydraulicValves.h \
     code/Hydraulic/valves/HydraulicValve416.hpp \
     code/Hydraulic/valves/HydraulicShuttleValve.hpp \
