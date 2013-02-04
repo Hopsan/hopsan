@@ -5,55 +5,55 @@
             <icon scale="1" path="AeroAircraft6DOF.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="AeroAircraft6DOF.svg" iconrotation="ON" type="iso"/>
         </icons>
-        <ports>
-            <port x="0.0769231" y="0" a="90" name="Pthrustl"/>
-            <port x="0" y="0.5" a="90" name="Par12"/>
-            <port x="0.307692" y="0" a="90" name="PMfuel"/>
-            <port x="0.724138" y="1" a="90" name="PBetaSlip"/>
-            <port x="0" y="0.375" a="90" name="Pal12"/>
-            <port x="0.103448" y="1" a="90" name="Pzcg"/>
-            <port x="0.384615" y="0" a="90" name="PMcargo"/>
-            <port x="0.153846" y="0" a="90" name="Pthrustr"/>
-            <port x="0.275862" y="1" a="90" name="PThetao"/>
-            <port x="0.538462" y="0" a="90" name="Pvturbx"/>
-            <port x="0.615385" y="0" a="90" name="Pvturby"/>
-            <port x="0" y="0.875" a="90" name="Pfin"/>
-            <port x="0.692308" y="0" a="90" name="Pvturbz"/>
-            <port x="0.94" y="1" a="90" name="PFax"/>
-            <port x="0.965517" y="1" a="90" name="PFaz"/>
-            <port x="0.448276" y="1" a="90" name="PPb"/>
-            <port x="0.0689655" y="1" a="90" name="Pycg"/>
-            <port x="0" y="0.25" a="90" name="Par1"/>
-            <port x="0" y="0.75" a="90" name="Par2"/>
-            <port x="0.689655" y="1" a="90" name="PAlphaAttack"/>
-            <port x="0.931034" y="1" a="90" name="PCd1"/>
-            <port x="0.551724" y="1" a="90" name="Pq0"/>
-            <port x="0.586207" y="1" a="90" name="Pq1"/>
-            <port x="0.62069" y="1" a="90" name="Pq2"/>
-            <port x="0.655172" y="1" a="90" name="Pq3"/>
-            <port x="0.758621" y="1" a="90" name="Paltitude"/>
-            <port x="0.0344828" y="1" a="90" name="Pxcg"/>
-            <port x="0.344828" y="1" a="90" name="PUb"/>
-            <port x="0.241379" y="1" a="90" name="PPsi"/>
-            <port x="0.793103" y="1" a="90" name="Pgfx"/>
-            <port x="0.827586" y="1" a="90" name="Pgfy"/>
-            <port x="0.482759" y="1" a="90" name="PQb"/>
-            <port x="0.862069" y="1" a="90" name="Pgfz"/>
-            <port x="0.769231" y="0" a="90" name="Pwturbx"/>
-            <port x="0.846154" y="0" a="90" name="Pwturby"/>
-            <port x="0.923077" y="0" a="90" name="Pwturbz"/>
-            <port x="0.896552" y="1" a="90" name="PCL1"/>
-            <port x="0.137931" y="1" a="90" name="Pvx"/>
-            <port x="0.172414" y="1" a="90" name="Pvy"/>
-            <port x="0.37931" y="1" a="90" name="PVb"/>
-            <port x="0.206897" y="1" a="90" name="Pvz"/>
-            <port x="0.517241" y="1" a="90" name="PRb"/>
-            <port x="0.310345" y="1" a="90" name="PPhi"/>
-            <port x="0.230769" y="0" a="90" name="Pdezthrust"/>
-            <port x="0.461538" y="0" a="90" name="Prho"/>
-            <port x="0" y="0.125" a="90" name="Pal1"/>
-            <port x="0" y="0.625" a="90" name="Pal2"/>
-            <port x="0.413793" y="1" a="90" name="PWb"/>
+    <ports>
+            <port x="0.0769231" y="0" enabled="true" a="270" name="Pthrustl" autoplaced="true"/>
+            <port x="0" y="0.5" enabled="true" a="180" name="Par12" autoplaced="true"/>
+            <port x="0.307692" y="0" enabled="true" a="270" name="PMfuel" autoplaced="true"/>
+            <port x="0.7" y="1" enabled="true" a="90" name="PBetaSlip" autoplaced="true"/>
+            <port x="0" y="0.375" enabled="true" a="180" name="Pal12" autoplaced="true"/>
+            <port x="0.1" y="1" enabled="true" a="90" name="Pzcg" autoplaced="true"/>
+            <port x="0.384615" y="0" enabled="true" a="270" name="PMcargo" autoplaced="true"/>
+            <port x="0.153846" y="0" enabled="true" a="270" name="Pthrustr" autoplaced="true"/>
+            <port x="0.266667" y="1" enabled="true" a="90" name="PThetao" autoplaced="true"/>
+            <port x="0.538462" y="0" enabled="true" a="270" name="Pvturbx" autoplaced="true"/>
+            <port x="0.933333" y="1" enabled="true" a="90" name="PFax" autoplaced="true"/>
+            <port x="0.615385" y="0" enabled="true" a="270" name="Pvturby" autoplaced="true"/>
+            <port x="0" y="0.875" enabled="true" a="180" name="Pfin" autoplaced="true"/>
+            <port x="0.692308" y="0" enabled="true" a="270" name="Pvturbz" autoplaced="true"/>
+            <port x="0.966667" y="1" enabled="true" a="90" name="PFaz" autoplaced="true"/>
+            <port x="0.433333" y="1" enabled="true" a="90" name="PPb" autoplaced="true"/>
+            <port x="0.0666667" y="1" enabled="true" a="90" name="Pycg" autoplaced="true"/>
+            <port x="0" y="0.25" enabled="true" a="180" name="Par1" autoplaced="true"/>
+            <port x="0" y="0.75" enabled="true" a="180" name="Par2" autoplaced="true"/>
+            <port x="0.666667" y="1" enabled="true" a="90" name="PAlphaAttack" autoplaced="true"/>
+            <port x="0.9" y="1" enabled="true" a="90" name="PCd1" autoplaced="true"/>
+            <port x="0.533333" y="1" enabled="true" a="90" name="Pq0" autoplaced="true"/>
+            <port x="0.566667" y="1" enabled="true" a="90" name="Pq1" autoplaced="true"/>
+            <port x="0.6" y="1" enabled="true" a="90" name="Pq2" autoplaced="true"/>
+            <port x="0.633333" y="1" enabled="true" a="90" name="Pq3" autoplaced="true"/>
+            <port x="0.733333" y="1" enabled="true" a="90" name="Paltitude" autoplaced="true"/>
+            <port x="0.0333333" y="1" enabled="true" a="90" name="Pxcg" autoplaced="true"/>
+            <port x="0.333333" y="1" enabled="true" a="90" name="PUb" autoplaced="true"/>
+            <port x="0.233333" y="1" enabled="true" a="90" name="PPsi" autoplaced="true"/>
+            <port x="0.766667" y="1" enabled="true" a="90" name="Pgfx" autoplaced="true"/>
+            <port x="0.8" y="1" enabled="true" a="90" name="Pgfy" autoplaced="true"/>
+            <port x="0.466667" y="1" enabled="true" a="90" name="PQb" autoplaced="true"/>
+            <port x="0.833333" y="1" enabled="true" a="90" name="Pgfz" autoplaced="true"/>
+            <port x="0.769231" y="0" enabled="true" a="270" name="Pwturbx" autoplaced="true"/>
+            <port x="0.846154" y="0" enabled="true" a="270" name="Pwturby" autoplaced="true"/>
+            <port x="0.923077" y="0" enabled="true" a="270" name="Pwturbz" autoplaced="true"/>
+            <port x="0.866667" y="1" enabled="true" a="90" name="PCL1" autoplaced="true"/>
+            <port x="0.133333" y="1" enabled="true" a="90" name="Pvx" autoplaced="true"/>
+            <port x="0.166667" y="1" enabled="true" a="90" name="Pvy" autoplaced="true"/>
+            <port x="0.366667" y="1" enabled="true" a="90" name="PVb" autoplaced="true"/>
+            <port x="0.2" y="1" enabled="true" a="90" name="Pvz" autoplaced="true"/>
+            <port x="0.5" y="1" enabled="true" a="90" name="PRb" autoplaced="true"/>
+            <port x="0.3" y="1" enabled="true" a="90" name="PPhi" autoplaced="true"/>
+            <port x="0.230769" y="0" enabled="true" a="270" name="Pdezthrust" autoplaced="true"/>
+            <port x="0.461538" y="0" enabled="true" a="270" name="Prho" autoplaced="true"/>
+            <port x="0" y="0.125" enabled="true" a="180" name="Pal1" autoplaced="true"/>
+            <port x="0" y="0.625" enabled="true" a="180" name="Pal2" autoplaced="true"/>
+            <port x="0.4" y="1" enabled="true" a="90" name="PWb" autoplaced="true"/>
         </ports>
     </modelobject>
 </hopsanobjectappearance>
