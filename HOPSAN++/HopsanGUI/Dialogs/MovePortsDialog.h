@@ -46,16 +46,20 @@ public:
 public slots:
     bool okButtonPressed();
     bool cancelButtonPressed();
-    void updatePortInfo(DragPort *pDragPort);
+    void updatePortInfo(DragPort *pDragPort=0);
+    void setSelectPort();
+    void disabledPort();
     void updateZoom();
 
 signals:
     void finished();
 
 protected:
+    void clearPortInfo();
+
     QGraphicsSvgItem *mpSVGComponent;
     ModelObjectAppearance *mpCompAppearance;
-    PortAppearanceMapT *mpPortAppearanceMap;
+    PortAppearanceMapT *mpActualPortAppearanceMap;
     QMap<QString,DragPort*> mDragPortMap;
 
     QGraphicsView *mpView;
@@ -73,8 +77,6 @@ protected:
 
     QPushButton *mpOkButton;
     QPushButton *mpCancelButton;
-
-    QVector<QCheckBox*> mvPortEnable;
 };
 
 
@@ -83,29 +85,34 @@ class DragPort : public QGraphicsWidget
     Q_OBJECT
 
 public:
-    DragPort(PortAppearance *pAppearance, QString name, QGraphicsItem *parentComponent);
+    DragPort(const PortAppearance &rAppearance, QString name, QGraphicsItem *parentComponent);
 
     void setPosOnComponent(double x, double y, double rot);
     QPointF getPosOnComponent();
     double getPortRotation();
     QString getName();
-    PortAppearance *getPortAppearance();
+    const PortAppearance &getPortAppearance() const;
 
 public slots:
     void setEnable(int state);
-    void updatePortXPos(QString x);
-    void updatePortYPos(QString y);
-    void updatePortRotation(QString a);
-    void updatePortAutoPlaced(bool ap);
+    void setPortXPos(QString x);
+    void setPortYPos(QString y);
+    void setPortRotation(QString a);
+    void setPortAutoPlaced(bool ap);
 
 signals:
-    void portInfoChanged(DragPort *pDragPort);
+    void portSelected();
+    void portMoved();
+    void portDisabled();
 
 protected:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
     void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
-    PortAppearance *mpPortAppearance;
+private:
+    void refreshLocalAppearanceData();
+
+    PortAppearance mPortAppearance;
     QGraphicsItem *mpParentComponent;
     QGraphicsSvgItem *mpSvg;
     QGraphicsTextItem *mpName;
