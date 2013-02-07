@@ -159,10 +159,10 @@ if [ "$doPbuild" = "true" ]; then
       
       if [ "$debootstrapOk" = "true" ]; then
           # Now build source package
-	  sudo pbuilder --build --basetgz $basetgzFile --buildresult $resultPath $dscFile
+	  sudo pbuilder --build --removepackages "ccache" --basetgz $basetgzFile --buildresult $resultPath $dscFile
 	  outputDebName=`ls $resultPath/$outputbasename*_$arch.deb`
 	  
-          # Now copy adn rename output deb file to dist output dir
+          # Now copy and rename output deb file to dist output dir
 	  mkdir -p $outputDir/$dist
 	  cp $outputDebName $outputDir/$dist/$outputbasename\_$dist\_$arch.deb
 	  
