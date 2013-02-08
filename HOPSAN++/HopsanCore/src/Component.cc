@@ -85,7 +85,6 @@ bool Component::initialize(const double startT, const double stopT)
     //return false;
 }
 
-
 void Component::getParameterNames(std::vector<std::string> &rParameterNames)
 {
     mpParameters->getParameterNames(rParameterNames);
@@ -170,6 +169,7 @@ void Component::initialize()
 }
 
 
+//! @brief Simulates one time step
 void Component::simulateOneTimestep()
 {
     assert("You MUST! implement your own simulateOneTimestep() method"==0);
