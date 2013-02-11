@@ -627,8 +627,8 @@ void PlotWindow::saveToXml()
             curveElement.setAttribute("data",       mpPlotTabWidget->getTab(i)->getCurves().at(j)->getDataName());
             curveElement.setAttribute("unit",       mpPlotTabWidget->getTab(i)->getCurves().at(j)->getDataUnit());
             curveElement.setAttribute("axis",       mpPlotTabWidget->getTab(i)->getCurves().at(j)->getAxisY());
-            curveElement.setAttribute("width",      mpPlotTabWidget->getTab(i)->getCurves().at(j)->getQwtPlotCurvePtr()->pen().width());
-            curveElement.setAttribute("color",      makeRgbString(mpPlotTabWidget->getTab(i)->getCurves().at(j)->getQwtPlotCurvePtr()->pen().color()));
+            curveElement.setAttribute("width",      mpPlotTabWidget->getTab(i)->getCurves().at(j)->pen().width());
+            curveElement.setAttribute("color",      makeRgbString(mpPlotTabWidget->getTab(i)->getCurves().at(j)->pen().color()));
             //curveElement.setAttribute("model",      mpPlotTabWidget->getTab(i)->getCurves().at(j)->getContainerObjectPtr()->getModelFileInfo().filePath());
             //! @todo FIXA /Peter
         }

@@ -28,8 +28,6 @@ class PlotWindow;
 class PlotTabWidget;
 class PlotCurve;
 class PlotMarker;
-
-class HopQwtPlotCurve;
 class PlotLegend;
 
 //! @brief Plot window tab containing a plot area with plot curves
@@ -60,7 +58,7 @@ public:
     void showPlot(HopsanPlotID plotID, bool visible);
     int getNumberOfCurves(HopsanPlotID plotID);
     void update();
-    void insertMarker(HopQwtPlotCurve *curve);
+    void insertMarker(PlotCurve *curve);
     void changeXVector(QVector<double> xarray, const VariableDescription &rVarDesc, HopsanPlotID plotID=FIRSTPLOT);
     void updateLabels();
     bool isGridVisible();

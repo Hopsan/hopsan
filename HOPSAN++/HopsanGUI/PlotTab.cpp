@@ -379,7 +379,7 @@ void PlotTab::addCurve(PlotCurve *curve, QColor desiredColor, HopsanPlotID plotI
 {
     if(mHasSpecialXAxis)
     {
-        curve->getQwtPlotCurvePtr()->setSamples(mSpecialXVector, curve->getDataVector());
+        curve->setSamples(mSpecialXVector, curve->getDataVector());
     }
 
 
@@ -462,8 +462,8 @@ void PlotTab::rescaleToCurves()
             bool foundFirstRight = false;       //Tells that first right axis curve was found
 
             //Initialize values for X axis by using the first curve
-            xMin=mPlotCurvePtrs[plotID].first()->getQwtPlotCurvePtr()->minXValue();
-            xMax=mPlotCurvePtrs[plotID].first()->getQwtPlotCurvePtr()->maxXValue();
+            xMin=mPlotCurvePtrs[plotID].first()->minXValue();
+            xMax=mPlotCurvePtrs[plotID].first()->maxXValue();
 
             for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
             {
@@ -478,9 +478,9 @@ void PlotTab::rescaleToCurves()
                         }
                         else
                         {
-                            yMinLeft=mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->minYValue();
+                            yMinLeft=mPlotCurvePtrs[plotID].at(i)->minYValue();
                         }
-                        yMaxLeft=mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->maxYValue();
+                        yMaxLeft=mPlotCurvePtrs[plotID].at(i)->maxYValue();
                         foundFirstLeft = true;
                     }
                     else    //Compare min/max Y value with previous and change if the new one is smaller/larger
@@ -494,14 +494,14 @@ void PlotTab::rescaleToCurves()
                         }
                         else
                         {
-                            if(mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->minYValue() < yMinLeft)
+                            if(mPlotCurvePtrs[plotID].at(i)->minYValue() < yMinLeft)
                             {
-                                yMinLeft=mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->minYValue();
+                                yMinLeft=mPlotCurvePtrs[plotID].at(i)->minYValue();
                             }
                         }
-                        if(mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->maxYValue() > yMaxLeft)
+                        if(mPlotCurvePtrs[plotID].at(i)->maxYValue() > yMaxLeft)
                         {
-                            yMaxLeft=mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->maxYValue();
+                            yMaxLeft=mPlotCurvePtrs[plotID].at(i)->maxYValue();
                         }
                     }
                 }
@@ -516,9 +516,9 @@ void PlotTab::rescaleToCurves()
                         }
                         else
                         {
-                            yMinRight=mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->minYValue();
+                            yMinRight=mPlotCurvePtrs[plotID].at(i)->minYValue();
                         }
-                        yMaxRight=mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->maxYValue();
+                        yMaxRight=mPlotCurvePtrs[plotID].at(i)->maxYValue();
                         foundFirstRight = true;
                     }
                     else    //Compare min/max Y value with previous and change if the new one is smaller/larger
@@ -532,23 +532,23 @@ void PlotTab::rescaleToCurves()
                         }
                         else
                         {
-                            if(mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->minYValue() < yMinRight)
+                            if(mPlotCurvePtrs[plotID].at(i)->minYValue() < yMinRight)
                             {
-                                yMinRight=mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->minYValue();
+                                yMinRight=mPlotCurvePtrs[plotID].at(i)->minYValue();
                             }
                         }
-                        if(mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->maxYValue() > yMaxRight)
+                        if(mPlotCurvePtrs[plotID].at(i)->maxYValue() > yMaxRight)
                         {
-                            yMaxRight=mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->maxYValue();
+                            yMaxRight=mPlotCurvePtrs[plotID].at(i)->maxYValue();
                         }
                     }
                 }
 
                 //Compare min/max X value with previous and change if the new one is smaller/larger
-                if(mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->minXValue() < xMin)
-                    xMin=mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->minXValue();
-                if(mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->maxXValue() > xMax)
-                    xMax=mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->maxXValue();
+                if(mPlotCurvePtrs[plotID].at(i)->minXValue() < xMin)
+                    xMin=mPlotCurvePtrs[plotID].at(i)->minXValue();
+                if(mPlotCurvePtrs[plotID].at(i)->maxXValue() > xMax)
+                    xMax=mPlotCurvePtrs[plotID].at(i)->maxXValue();
             }
         }
         else    //No curves
@@ -830,14 +830,14 @@ void PlotTab::removeCurve(PlotCurve *curve)
 
     for(int i=0; i<mUsedColors.size(); ++i)
     {
-        if(curve->getQwtPlotCurvePtr()->pen().color() == mUsedColors.at(i))
+        if(curve->pen().color() == mUsedColors.at(i))
         {
             mUsedColors.removeAt(i);
             break;
         }
     }
 
-    curve->getQwtPlotCurvePtr()->detach();
+    curve->detach();
     for(int plotID=0; plotID<2; ++plotID)
     {
         mPlotCurvePtrs[plotID].removeAll(curve);
@@ -875,7 +875,7 @@ void PlotTab::changeXVector(QVector<double> xArray, const VariableDescription &r
 
     for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
     {
-        mPlotCurvePtrs[plotID].at(i)->getQwtPlotCurvePtr()->setSamples(mSpecialXVector, mPlotCurvePtrs[plotID].at(i)->getDataVector());
+        mPlotCurvePtrs[plotID].at(i)->setSamples(mSpecialXVector, mPlotCurvePtrs[plotID].at(i)->getDataVector());
         mPlotCurvePtrs[plotID].at(i)->setDataUnit(mPlotCurvePtrs[plotID].at(i)->getDataUnit());
     }
 
@@ -970,7 +970,7 @@ void PlotTab::resetXVector()
 
     for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
     {
-        mPlotCurvePtrs[FIRSTPLOT].at(i)->getQwtPlotCurvePtr()->setSamples(mPlotCurvePtrs[FIRSTPLOT].at(i)->getTimeVector(), mPlotCurvePtrs[FIRSTPLOT].at(i)->getDataVector());
+        mPlotCurvePtrs[FIRSTPLOT].at(i)->setSamples(mPlotCurvePtrs[FIRSTPLOT].at(i)->getTimeVector(), mPlotCurvePtrs[FIRSTPLOT].at(i)->getDataVector());
         mPlotCurvePtrs[FIRSTPLOT].at(i)->setDataUnit(mPlotCurvePtrs[FIRSTPLOT].at(i)->getDataUnit());
     }
 
@@ -1313,7 +1313,7 @@ void PlotTab::exportToMatlab()
             else
                 fileStream << "plot";
         }
-        fileStream << "(x" << i << ",y" << i << ",'-" << matlabColors[i%6] << "','linewidth'," << mPlotCurvePtrs[FIRSTPLOT][i]->getQwtPlotCurvePtr()->pen().width() << ")\n";
+        fileStream << "(x" << i << ",y" << i << ",'-" << matlabColors[i%6] << "','linewidth'," << mPlotCurvePtrs[FIRSTPLOT][i]->pen().width() << ")\n";
     }
     if(mPlotCurvePtrs[SECONDPLOT].size() > 0)
     {
@@ -1334,7 +1334,7 @@ void PlotTab::exportToMatlab()
                 else
                     fileStream << "plot";
             }
-            fileStream << "(x" << i+mPlotCurvePtrs[FIRSTPLOT].size() << ",y" << i+mPlotCurvePtrs[FIRSTPLOT].size() << ",'-" << matlabColors[i%6] << "','linewidth'," << mPlotCurvePtrs[SECONDPLOT][i]->getQwtPlotCurvePtr()->pen().width() << ")\n";
+            fileStream << "(x" << i+mPlotCurvePtrs[FIRSTPLOT].size() << ",y" << i+mPlotCurvePtrs[FIRSTPLOT].size() << ",'-" << matlabColors[i%6] << "','linewidth'," << mPlotCurvePtrs[SECONDPLOT][i]->pen().width() << ")\n";
         }
     }
 
@@ -1814,7 +1814,7 @@ void PlotTab::update()
         for(cit=mPlotCurvePtrs[plotID].begin(); cit!=mPlotCurvePtrs[plotID].end(); ++cit)
         {
             if(!mpQwtPlots[plotID]->axisEnabled((*cit)->getAxisY())) { mpQwtPlots[plotID]->enableAxis((*cit)->getAxisY()); }
-            (*cit)->getQwtPlotCurvePtr()->attach(mpQwtPlots[plotID]);
+            (*cit)->attach(mpQwtPlots[plotID]);
         }
 
         for(int i=0; i<mMarkerPtrs[plotID].size(); ++i)
@@ -1823,7 +1823,7 @@ void PlotTab::update()
             double x = mpQwtPlots[plotID]->transform(QwtPlot::xBottom, posF.x());
             double y = mpQwtPlots[plotID]->transform(QwtPlot::yLeft, posF.y());
             QPoint pos = QPoint(x,y);
-            HopQwtPlotCurve *pCurve = mMarkerPtrs[plotID].at(i)->getCurve()->getQwtPlotCurvePtr();
+            PlotCurve *pCurve = mMarkerPtrs[plotID].at(i)->getCurve();
             mMarkerPtrs[plotID].at(i)->setXValue(pCurve->sample(pCurve->closestPoint(pos)).x());
             mMarkerPtrs[plotID].at(i)->setYValue(mpQwtPlots[plotID]->invTransform(QwtPlot::yLeft, mpQwtPlots[plotID]->transform(pCurve->yAxis(), pCurve->sample(pCurve->closestPoint(pos)).y())));
         }
@@ -1839,7 +1839,7 @@ void PlotTab::insertMarker(PlotCurve *pCurve, double x, double y, QString altLab
 
     int plotID = getPlotIDFromCurve(pCurve);
 
-    mpMarkerSymbol->setPen(QPen(pCurve->getQwtPlotCurvePtr()->pen().brush().color(), 3));
+    mpMarkerSymbol->setPen(QPen(pCurve->pen().brush().color(), 3));
     PlotMarker *tempMarker = new PlotMarker(pCurve, this, mpMarkerSymbol);
     mMarkerPtrs[plotID].append(tempMarker);
 
@@ -1861,7 +1861,7 @@ void PlotTab::insertMarker(PlotCurve *pCurve, double x, double y, QString altLab
     {
         tempLabel.setText("("+xString+", "+yString+")");
     }
-    tempLabel.setColor(pCurve->getQwtPlotCurvePtr()->pen().brush().color());
+    tempLabel.setColor(pCurve->pen().brush().color());
     tempLabel.setBackgroundBrush(QColor(255,255,255,220));
     tempLabel.setFont(QFont("Calibri", 12, QFont::Normal));
     tempMarker->setLabel(tempLabel);
@@ -1880,24 +1880,24 @@ void PlotTab::insertMarker(PlotCurve *pCurve, QPoint pos, bool movable)
 {
     int plotID = getPlotIDFromCurve(pCurve);
 
-    mpMarkerSymbol->setPen(QPen(pCurve->getQwtPlotCurvePtr()->pen().brush().color(), 3));
+    mpMarkerSymbol->setPen(QPen(pCurve->pen().brush().color(), 3));
     PlotMarker *tempMarker = new PlotMarker(pCurve, this, mpMarkerSymbol);
     mMarkerPtrs[plotID].append(tempMarker);
 
     tempMarker->attach(mpQwtPlots[plotID]);
     QCursor cursor;
-    tempMarker->setXValue(pCurve->getQwtPlotCurvePtr()->sample(pCurve->getQwtPlotCurvePtr()->closestPoint(pos)).x());
-    tempMarker->setYValue(mpQwtPlots[plotID]->invTransform(QwtPlot::yLeft, mpQwtPlots[plotID]->transform(pCurve->getQwtPlotCurvePtr()->yAxis(), pCurve->getQwtPlotCurvePtr()->sample(pCurve->getQwtPlotCurvePtr()->closestPoint(pos)).y())));
+    tempMarker->setXValue(pCurve->sample(pCurve->closestPoint(pos)).x());
+    tempMarker->setYValue(mpQwtPlots[plotID]->invTransform(QwtPlot::yLeft, mpQwtPlots[plotID]->transform(pCurve->yAxis(), pCurve->sample(pCurve->closestPoint(pos)).y())));
 
     QString xString;
     QString yString;
-    double x = pCurve->getQwtPlotCurvePtr()->sample(pCurve->getQwtPlotCurvePtr()->closestPoint(pos)).x();
-    double y = pCurve->getQwtPlotCurvePtr()->sample(pCurve->getQwtPlotCurvePtr()->closestPoint(mpQwtPlots[plotID]->canvas()->mapFromGlobal(cursor.pos()))).y();
+    double x = pCurve->sample(pCurve->closestPoint(pos)).x();
+    double y = pCurve->sample(pCurve->closestPoint(mpQwtPlots[plotID]->canvas()->mapFromGlobal(cursor.pos()))).y();
     xString.setNum(x);
     yString.setNum(y);
     QwtText tempLabel;
     tempLabel.setText("("+xString+", "+yString+")");
-    tempLabel.setColor(pCurve->getQwtPlotCurvePtr()->pen().brush().color());
+    tempLabel.setColor(pCurve->pen().brush().color());
     tempLabel.setBackgroundBrush(QColor(255,255,255,220));
     tempLabel.setFont(QFont("Calibri", 12, QFont::Normal));
     tempMarker->setLabel(tempLabel);
@@ -2303,10 +2303,10 @@ void PlotTab::constructLegendSettingsDialog()
     mpLegendBgType->addItem("Items", PlotLegend::ItemBackground);
 
     mpLegendSymbolType = new QComboBox(this);
-    mpLegendSymbolType->addItem("Line&Symbol", HopQwtPlotCurve::LegendShowLineAndSymbol);
-    mpLegendSymbolType->addItem("Line", HopQwtPlotCurve::LegendShowLine );
-    mpLegendSymbolType->addItem("Symbol", HopQwtPlotCurve::LegendShowSymbol );
-    mpLegendSymbolType->addItem("Rectangle", HopQwtPlotCurve::LegendNoAttribute );
+    mpLegendSymbolType->addItem("Line&Symbol", PlotCurve::LegendShowLineAndSymbol);
+    mpLegendSymbolType->addItem("Line", PlotCurve::LegendShowLine );
+    mpLegendSymbolType->addItem("Symbol", PlotCurve::LegendShowSymbol );
+    mpLegendSymbolType->addItem("Rectangle", PlotCurve::LegendNoAttribute );
 
     QGroupBox *legendBox = new QGroupBox( "Legend" );
     QGridLayout *legendBoxLayout = new QGridLayout( legendBox );
@@ -2483,31 +2483,31 @@ void PlotTab::setLegendSymbol(const QString symStyle)
 {
     for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT].size(); ++j)
     {
-        mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendNoAttribute, false);
-        mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowLine, false);
-        mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowSymbol, false);
-        mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowBrush, false);
+        mPlotCurvePtrs[FIRSTPLOT].at(j)->setLegendAttribute( PlotCurve::LegendNoAttribute, false);
+        mPlotCurvePtrs[FIRSTPLOT].at(j)->setLegendAttribute( PlotCurve::LegendShowLine, false);
+        mPlotCurvePtrs[FIRSTPLOT].at(j)->setLegendAttribute( PlotCurve::LegendShowSymbol, false);
+        mPlotCurvePtrs[FIRSTPLOT].at(j)->setLegendAttribute( PlotCurve::LegendShowBrush, false);
 
         if( symStyle == "Rectangle")
         {
-            mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendNoAttribute, true);
+            mPlotCurvePtrs[FIRSTPLOT].at(j)->setLegendAttribute( PlotCurve::LegendNoAttribute, true);
         }
         else if( symStyle == "Line")
         {
-            mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowLine, true);
+            mPlotCurvePtrs[FIRSTPLOT].at(j)->setLegendAttribute( PlotCurve::LegendShowLine, true);
         }
         else if( symStyle == "Symbol")
         {
-            mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowSymbol, true);
+            mPlotCurvePtrs[FIRSTPLOT].at(j)->setLegendAttribute( PlotCurve::LegendShowSymbol, true);
          }
         else if ( symStyle == "Line&Symbol")
         {
-            mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowLine, true);
-            mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowSymbol, true);
+            mPlotCurvePtrs[FIRSTPLOT].at(j)->setLegendAttribute( PlotCurve::LegendShowLine, true);
+            mPlotCurvePtrs[FIRSTPLOT].at(j)->setLegendAttribute( PlotCurve::LegendShowSymbol, true);
         }
         else if( symStyle == "Brush")
         {
-            mPlotCurvePtrs[FIRSTPLOT].at(j)->getQwtPlotCurvePtr()->setLegendAttribute( HopQwtPlotCurve::LegendShowBrush, true);
+            mPlotCurvePtrs[FIRSTPLOT].at(j)->setLegendAttribute( PlotCurve::LegendShowBrush, true);
         }
 
         // Fix legend size after possible change in style

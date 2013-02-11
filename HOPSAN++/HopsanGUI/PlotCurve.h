@@ -35,17 +35,6 @@ public:
 };
 
 
-//! @todo we should merge this with plotcurve, and plotcurve should inherit QwtPlotCurve (containing this info)
-class HopQwtPlotCurve : public QwtPlotCurve
-{
-public:
-    enum {LegendShowLineAndSymbol=QwtPlotCurve::LegendShowBrush+1};
-
-    HopQwtPlotCurve(QString label);
-    QList<QwtLegendData> legendData() const;
-};
-
-
 class PlotCurveInfoBox : public QWidget
 {
     Q_OBJECT
@@ -71,16 +60,14 @@ private slots:
 };
 
 
-
-
-
 //! @brief Class describing a plot curve in plot window
-class PlotCurve : public QObject
+class PlotCurve : public QObject, public QwtPlotCurve
 {
     Q_OBJECT
     friend class PlotCurveInfoBox;
     friend class PlotWindow;
 public:
+    enum {LegendShowLineAndSymbol=QwtPlotCurve::LegendShowBrush+1};
 
     PlotCurve(SharedLogVariableDataPtrT pData,
               int axisY=QwtPlot::yLeft,
@@ -101,7 +88,6 @@ public:
     QString getCurveName() const;
     HopsanPlotCurveType getCurveType();
     int getAxisY();
-    HopQwtPlotCurve *getQwtPlotCurvePtr();
 
     int getGeneration() const;
     QString getComponentName();
@@ -123,6 +109,8 @@ public:
     void toFrequencySpectrum();
 
     void resetLegendSize();
+
+    QList<QwtLegendData> legendData() const;
 
 signals:
     void curveDataUpdated();
@@ -156,7 +144,6 @@ private:
     PlotCurveInfoBox *mpPlotCurveInfoBox;
 
     HopsanPlotCurveType mCurveType;
-    HopQwtPlotCurve *mpQwtPlotCurve;
 
     QColor mLineColor;
     QString mLineStyle;

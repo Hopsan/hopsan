@@ -279,13 +279,13 @@ void PlotCurve::commonConstructorCode(int axisY,
     //! @todo FIX /Peter (should not be here)
     mOffsetX = mpData->mAppliedTimeOffset;
     mOffsetY = mpData->mAppliedValueOffset;
-
-    //Create the actual curve
-    mpQwtPlotCurve = new HopQwtPlotCurve(this->getCurveName());
+    // Set QwtPlotCurve stuff
+    this->setTitle(getCurveName());
     updateCurve();
-    mpQwtPlotCurve->setRenderHint(QwtPlotItem::RenderAntialiased);
-    mpQwtPlotCurve->setYAxis(axisY);
-    mpQwtPlotCurve->attach(parent->getPlot(plotID));
+    this->setRenderHint(QwtPlotItem::RenderAntialiased);
+    this->setYAxis(axisY);
+    this->attach(parent->getPlot(plotID));
+    this->setItemAttribute(QwtPlotItem::Legend, true);
 
 
     //Create the plot info box
@@ -300,9 +300,6 @@ void PlotCurve::commonConstructorCode(int axisY,
     {
         setAutoUpdate(false);
     }
-
-    //! @todo for now allways create a legend (wheter it is visible or not is an
-    mpQwtPlotCurve->setItemAttribute(QwtPlotItem::Legend, true);
 
     //Create connections
     //! @todo we should not connect like this /Peter
@@ -373,20 +370,6 @@ HopsanPlotCurveType PlotCurve::getCurveType()
 {
     return mCurveType;
 }
-
-
-//! @brief Returns a pointer to the actual Qwt curve in a plot curve object
-HopQwtPlotCurve *PlotCurve::getQwtPlotCurvePtr()
-{
-    return mpQwtPlotCurve;
-}
-
-
-////! @brief Returns a pointer to the plot info dock of a plot curve
-//QDockWidget *PlotCurve::getPlotInfoDockWidget()
-//{
-//    return mpPlotInfoDockWidget;
-//}
 
 
 //! @brief Returns the name of the component a plot curve is created from
@@ -591,7 +574,7 @@ void PlotCurve::toFrequencySpectrum()
 void PlotCurve::resetLegendSize()
 {
     // For now hardcoded but maybe in the future be possible to select, (default 8x8 is to small to see difference between dashed and solid lines)
-    mpQwtPlotCurve->setLegendIconSize(QSize(40,12));
+    setLegendIconSize(QSize(40,12));
 }
 
 SharedLogVariableDataPtrT PlotCurve::getLogDataVariablePtr()
@@ -619,7 +602,7 @@ void PlotCurve::setNextGeneration()
 void PlotCurve::setLineWidth(int lineWidth)
 {
     mLineWidth = lineWidth;
-    QPen tempPen = mpQwtPlotCurve->pen();
+    QPen tempPen = pen();
     // Add one pt extra width for active curves
     if (mIsActive)
     {
@@ -629,15 +612,15 @@ void PlotCurve::setLineWidth(int lineWidth)
     {
         tempPen.setWidth(lineWidth);
     }
-    mpQwtPlotCurve->setPen(tempPen);
+    setPen(tempPen);
 }
 
 
 void PlotCurve::setLineStyle(QString lineStyle)
 {
     mLineStyle = lineStyle;
-    mpQwtPlotCurve->setStyle(HopQwtPlotCurve::Lines); //Assume we want lines
-    QPen tempPen = mpQwtPlotCurve->pen();
+    setStyle(PlotCurve::Lines); //Assume we want lines
+    QPen tempPen = pen();
     if(lineStyle == "Solid Line")
     {
         tempPen.setStyle(Qt::SolidLine);
@@ -661,9 +644,9 @@ void PlotCurve::setLineStyle(QString lineStyle)
     else
     {
         // Deactivate line completely
-        mpQwtPlotCurve->setStyle(HopQwtPlotCurve::NoCurve);
+        setStyle(PlotCurve::NoCurve);
     }
-    mpQwtPlotCurve->setPen(tempPen);
+    setPen(tempPen);
     resetLegendSize();
 }
 
@@ -736,11 +719,11 @@ void PlotCurve::setLineSymbol(QString lineSymbol)
         mpCurveSymbol->setStyle(QwtSymbol::NoSymbol);
     }
 
-    QPen tempPen = mpQwtPlotCurve->pen();
+    QPen tempPen = pen();
     tempPen.setStyle(Qt::SolidLine);
     mpCurveSymbol->setPen(tempPen);
     mpCurveSymbol->setSize(8,8);
-    mpQwtPlotCurve->setSymbol(mpCurveSymbol);
+    setSymbol(mpCurveSymbol);
 
     //! @todo Add a color or size picker for the markers
     resetLegendSize();
@@ -754,9 +737,9 @@ void PlotCurve::setLineColor(QColor color)
     mLineColor = color;
 
     // Set line color
-    tempPen = mpQwtPlotCurve->pen();
+    tempPen = pen();
     tempPen.setColor(color);
-    mpQwtPlotCurve->setPen(tempPen);
+    setPen(tempPen);
 
     // Set symbol color, (but only if we have one, else an empty symbold will be created)
     if (mpCurveSymbol)
@@ -778,7 +761,7 @@ void PlotCurve::setLineColor(QString colorName)
     QColor color;
     if(colorName.isEmpty())
     {
-        color = QColorDialog::getColor(mpQwtPlotCurve->pen().color(), gpMainWindow);
+        color = QColorDialog::getColor(pen().color(), gpMainWindow);
         if (!color.isValid()) { return; }
     }
     else
@@ -949,7 +932,7 @@ void PlotCurve::updateCurve()
             tempY[i] = tempY[i]*unitScale*mScaleY + mOffsetY;
         }
     }
-    mpQwtPlotCurve->setSamples(tempX, tempY);
+    setSamples(tempX, tempY);
 
     emit curveDataUpdated();
 }
@@ -958,11 +941,11 @@ void PlotCurve::updateCurveName()
 {
     if (mpData->getAliasName().isEmpty())
     {
-        mpQwtPlotCurve->setTitle(mpData->getFullVariableNameWithSeparator(", "));
+        setTitle(mpData->getFullVariableNameWithSeparator(", "));
     }
     else
     {
-        mpQwtPlotCurve->setTitle(mpData->getAliasName());
+        setTitle(mpData->getAliasName());
     }
     updatePlotInfoBox();
 }
@@ -1058,7 +1041,7 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
         midPoint.setY(this->plot()->transform(QwtPlot::yLeft, value().y()));
         if((this->plot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
         {
-            mpMarkerSymbol->setPen(QPen(mpCurve->getQwtPlotCurvePtr()->pen().brush().color().lighter(165), 3));
+            mpMarkerSymbol->setPen(QPen(mpCurve->pen().brush().color().lighter(165), 3));
             this->setSymbol(mpMarkerSymbol);
             this->plot()->replot();
             this->plot()->updateGeometry();
@@ -1068,7 +1051,7 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
         {
             if(!mIsBeingMoved)
             {
-                mpMarkerSymbol->setPen(QPen(mpCurve->getQwtPlotCurvePtr()->pen().brush().color(), 3));
+                mpMarkerSymbol->setPen(QPen(mpCurve->pen().brush().color(), 3));
                 this->setSymbol(mpMarkerSymbol);
                 this->plot()->replot();
                 this->plot()->updateGeometry();
@@ -1077,10 +1060,10 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
 
         if(mIsBeingMoved)
         {
-            double x = mpCurve->getQwtPlotCurvePtr()->sample(mpCurve->getQwtPlotCurvePtr()->closestPoint(this->plot()->canvas()->mapFromGlobal(cursor.pos()))).x();
-            double y = mpCurve->getQwtPlotCurvePtr()->sample(mpCurve->getQwtPlotCurvePtr()->closestPoint(this->plot()->canvas()->mapFromGlobal(cursor.pos()))).y();
+            double x = mpCurve->sample(mpCurve->closestPoint(this->plot()->canvas()->mapFromGlobal(cursor.pos()))).x();
+            double y = mpCurve->sample(mpCurve->closestPoint(this->plot()->canvas()->mapFromGlobal(cursor.pos()))).y();
             setXValue(x);
-            setYValue(this->plot()->invTransform(QwtPlot::yLeft, this->plot()->transform(mpCurve->getQwtPlotCurvePtr()->yAxis(), y)));
+            setYValue(this->plot()->invTransform(QwtPlot::yLeft, this->plot()->transform(mpCurve->yAxis(), y)));
 
             QString xString;
             QString yString;
@@ -1088,7 +1071,7 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
             yString.setNum(y);
             QwtText tempLabel;
             tempLabel.setText("("+xString+", "+yString+")");
-            tempLabel.setColor(mpCurve->getQwtPlotCurvePtr()->pen().brush().color());
+            tempLabel.setColor(mpCurve->pen().brush().color());
             tempLabel.setBackgroundBrush(QColor(255,255,255,220));
             tempLabel.setFont(QFont("Calibri", 12, QFont::Normal));
             setLabel(tempLabel);
@@ -1112,7 +1095,7 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
             QCursor cursor;
             QPointF midPoint;
             midPoint.setX(this->plot()->transform(QwtPlot::xBottom, value().x()));
-            midPoint.setY(this->plot()->transform(mpCurve->getQwtPlotCurvePtr()->yAxis(), value().y()));
+            midPoint.setY(this->plot()->transform(mpCurve->yAxis(), value().y()));
             if((this->plot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
             {
                 plot()->canvas()->removeEventFilter(this);
@@ -1144,14 +1127,7 @@ PlotCurve *PlotMarker::getCurve()
 }
 
 
-
-HopQwtPlotCurve::HopQwtPlotCurve(QString label) :
-    QwtPlotCurve(label)
-{
-    //nothing for now
-}
-
-QList<QwtLegendData> HopQwtPlotCurve::legendData() const
+QList<QwtLegendData> PlotCurve::legendData() const
 {
     QList<QwtLegendData> list = QwtPlotCurve::legendData();
     for (int i=0; i<list.size(); ++i)
