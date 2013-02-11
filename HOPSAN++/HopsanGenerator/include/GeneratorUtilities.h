@@ -39,7 +39,7 @@
 #include <QDomElement>
 #include "win32dll.h"
 
-#include "SymHop.h"
+#include "symhop/SymHop.h"
 
 //class ModelObjectAppearance;
 
@@ -151,7 +151,15 @@ void copyDir(const QString fromPath, QString toPath);
 void copyIncludeFilesToDir(QString path);
 void copyBoostIncludeFilesToDir(QString path);
 bool compileComponentLibrary(QString path, QString name, HopsanGenerator *pGenerator, QString extraLinks="");
-
+inline QString toVarName(const QString org);
+QString extractTaggedSection(QString str, QString tag);
+void replaceTaggedSection(QString &str, QString tag, QString replacement);
+QString replaceTag(QString str, QString tag, QString replacement);
+QString replaceTags(QString str, QStringList tags, QStringList replacements);
+QStringList getQVariables(QString nodeType);
+QStringList getCVariables(QString nodeType);
+QStringList getVariableLabels(QString nodeType);
+bool verifyEquationSystem(QList<SymHop::Expression> equations, QList<SymHop::Expression> stateVars, HopsanGenerator *pGenerator);
 
 
 //! @brief This utility class wraps a QTextStream and have stream operators to write whole lines. You do not need to add the newline char yourself.

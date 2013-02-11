@@ -22,7 +22,11 @@
 //!
 //$Id$
 
-#include "HopsanComponentGenerator.h"
+#include "generators/HopsanGenerator.h"
+#include "generators/HopsanModelicaGenerator.h"
+#include "generators/HopsanSimulinkGenerator.h"
+#include "generators/HopsanLabViewGenerator.h"
+#include "generators/HopsanFMIGenerator.h"
 #include "win32dll.h"
 
 #include <QMessageBox>
@@ -39,7 +43,7 @@ extern "C" DLLIMPORTEXPORT void callModelicaGenerator(string modelicaCode, strin
 {
     qDebug() << "Called Modelica generator (in dll)!";
 
-    HopsanGenerator *pGenerator = new HopsanGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
+    HopsanModelicaGenerator *pGenerator = new HopsanModelicaGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
     pGenerator->generateFromModelica(QString(modelicaCode.c_str()));
     delete(pGenerator);
 }
@@ -133,7 +137,7 @@ extern "C" DLLIMPORTEXPORT void callCppGenerator(string cppCode, string coreIncl
 //! @param showDialog True if generator output shall be displayed in a dialog window
 extern "C" DLLIMPORTEXPORT void callFmuImportGenerator(string path, string coreIncludePath, string binPath, bool showDialog=false)
 {
-    HopsanGenerator *pGenerator = new HopsanGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
+    HopsanFMIGenerator *pGenerator = new HopsanFMIGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
     pGenerator->generateFromFmu(QString(path.c_str()));
     delete(pGenerator);
 }
@@ -147,7 +151,7 @@ extern "C" DLLIMPORTEXPORT void callFmuImportGenerator(string path, string coreI
 //! @param showDialog True if generator output shall be displayed in a dialog window
 extern "C" DLLIMPORTEXPORT void callFmuExportGenerator(string path, hopsan::ComponentSystem *pSystem, string coreIncludePath, string binPath, bool showDialog=false)
 {
-    HopsanGenerator *pGenerator = new HopsanGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
+    HopsanFMIGenerator *pGenerator = new HopsanFMIGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
     pGenerator->generateToFmu(QString(path.c_str()), pSystem);
     delete(pGenerator);
 }
@@ -163,7 +167,7 @@ extern "C" DLLIMPORTEXPORT void callFmuExportGenerator(string path, hopsan::Comp
 //! @param showDialog True if generator output shall be displayed in a dialog window
 extern "C" DLLIMPORTEXPORT void callSimulinkExportGenerator(string path, hopsan::ComponentSystem *pSystem, bool disablePortLabels, int compiler, string coreIncludePath, string binPath, bool showDialog=false)
 {
-    HopsanGenerator *pGenerator = new HopsanGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
+    HopsanSimulinkGenerator *pGenerator = new HopsanSimulinkGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
     pGenerator->generateToSimulink(QString(path.c_str()), pSystem, disablePortLabels, compiler);
     delete(pGenerator);
 }
@@ -179,7 +183,7 @@ extern "C" DLLIMPORTEXPORT void callSimulinkExportGenerator(string path, hopsan:
 //! @param showDialog True if generator output shall be displayed in a dialog window
 extern "C" DLLIMPORTEXPORT void callSimulinkCoSimExportGenerator(string path, hopsan::ComponentSystem *pSystem, bool disablePortLabels, int compiler, string coreIncludePath, string binPath, bool showDialog=false)
 {
-    HopsanGenerator *pGenerator = new HopsanGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
+    HopsanSimulinkGenerator *pGenerator = new HopsanSimulinkGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
     pGenerator->generateToSimulinkCoSim(QString(path.c_str()), pSystem, disablePortLabels, compiler);
     delete(pGenerator);
 }
@@ -193,7 +197,7 @@ extern "C" DLLIMPORTEXPORT void callSimulinkCoSimExportGenerator(string path, ho
 //! @param showDialog True if generator output shall be displayed in a dialog window
 extern "C" DLLIMPORTEXPORT void callLabViewSITGenerator(string path, hopsan::ComponentSystem *pSystem, string coreIncludePath, string binPath, bool showDialog=false)
 {
-    HopsanGenerator *pGenerator = new HopsanGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
+    HopsanLabViewGenerator *pGenerator = new HopsanLabViewGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
     pGenerator->generateToLabViewSIT(QString(path.c_str()), pSystem);
     delete(pGenerator);
 }

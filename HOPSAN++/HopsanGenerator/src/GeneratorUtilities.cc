@@ -44,8 +44,8 @@
 #endif
 
 #include "GeneratorUtilities.h"
-#include "HopsanComponentGenerator.h"
-#include "SymHop.h"
+#include "generators/HopsanGenerator.h"
+#include "symhop/SymHop.h"
 
 #include "ComponentSystem.h"
 #include "Port.h"
@@ -354,4 +354,192 @@ bool compileComponentLibrary(QString path, QString name, HopsanGenerator *pGener
 
     pGenerator->printMessage("Compilation successful.");
     return true;
+}
+
+
+
+//! @brief Removes all illegal characters from the string, so that it can be used as a variable name.
+//! @param org Original string
+//! @returns String without illegal characters
+inline QString toVarName(const QString org)
+{
+    QString ret = org;
+    while(!ret.isEmpty() && !ret[0].isLetter())
+    {
+        ret = ret.right(ret.size()-1);
+    }
+    for(int i=1; i<ret.size(); ++i)
+    {
+        if(!ret[i].isLetterOrNumber())
+        {
+            ret.remove(i,1);
+            i--;
+        }
+    }
+    return ret;
+}
+
+
+QString extractTaggedSection(QString str, QString tag)
+{
+    QString startStr = ">>>"+tag+">>>";
+    QString endStr = "<<<"+tag+"<<<";
+    if(!str.contains(startStr) || !str.contains(endStr))
+    {
+        return QString();
+    }
+    else
+    {
+        int i = str.indexOf(startStr)+startStr.size();
+        int n = str.indexOf(endStr)-i;
+        return str.mid(i, n);
+    }
+}
+
+
+void replaceTaggedSection(QString &str, QString tag, QString replacement)
+{
+    QString taggedSection = ">>>"+tag+">>>"+extractTaggedSection(str, tag)+"<<<"+tag+"<<<";
+    str.replace(taggedSection, replacement);
+}
+
+
+QString replaceTag(QString str, QString tag, QString replacement)
+{
+    QString retval = str;
+    retval.replace("<<<"+tag+">>>", replacement);
+    return retval;
+}
+
+
+QString replaceTags(QString str, QStringList tags, QStringList replacements)
+{
+    QString retval = str;
+    for(int i=0; i<tags.size(); ++i)
+    {
+        retval.replace("<<<"+tags[i]+">>>", replacements[i]);
+    }
+    return retval;
+}
+
+
+//! @note First and last q-type variable must represent intensity and flow
+QStringList getQVariables(QString nodeType)
+{
+    QStringList retval;
+    if(nodeType == "NodeMechanic")
+    {
+        retval << "F" << "x" <<  "me" << "v";
+    }
+    if(nodeType == "NodeMechanicRotational")
+    {
+        retval << "T" << "th" << "w";
+    }
+    if(nodeType == "NodeHydraulic")
+    {
+        retval << "p" << "q";
+    }
+    if(nodeType == "NodePneumatic")
+    {
+        retval << "p" << "qm" << "qe";
+    }
+    if(nodeType == "NodeElectric")
+    {
+        retval << "U" << "i";
+    }
+    return retval;
+}
+
+
+//! @note c must come first and Zc last
+QStringList getCVariables(QString nodeType)
+{
+    QStringList retval;
+    if(nodeType == "NodeMechanic")
+    {
+        retval << "c" << "Zc";
+    }
+    if(nodeType == "NodeMechanicRotational")
+    {
+        retval << "c" << "Zc";
+    }
+    if(nodeType == "NodeHydraulic")
+    {
+        retval << "c" << "Zc";
+    }
+    if(nodeType == "NodePneumatic")
+    {
+        retval << "c" << "Zc";
+    }
+    if(nodeType == "NodeElectric")
+    {
+        retval << "c" << "Zc";
+    }
+    return retval;
+}
+
+
+//! @brief Returns list of variable enum names for specified node type
+//! @param nodeType Node type to use
+//! @note c must come first and Zc last
+QStringList getVariableLabels(QString nodeType)
+{
+    QStringList retval;
+    if(nodeType == "NodeMechanic")
+    {
+        retval << "FORCE" << "POSITION" << "EQMASS"  << "VELOCITY"<< "WAVEVARIABLE" << "CHARIMP";
+    }
+    if(nodeType == "NodeMechanicRotational")
+    {
+        retval << "TORQUE" << "ANGLE" << "ANGULARVELOCITY" << "WAVEVARIABLE" << "CHARIMP";
+    }
+    if(nodeType == "NodeHydraulic")
+    {
+        retval << "PRESSURE" << "FLOW" << "WAVEVARIABLE" << "CHARIMP";
+    }
+    if(nodeType == "NodePneumatic")
+    {
+        retval << "PRESSURE" << "MASSFLOW" << "ENERGYFLOW" << "WAVEVARIABLE" << "CHARIMP";
+    }
+    if(nodeType == "NodeElectric")
+    {
+        retval << "VOLTAGE" << "CURRENT" << "WAVEVARIABLE" << "CHARIMP";
+    }
+    if(nodeType == "NodeSignal")
+    {
+        retval << "VALUE";
+    }
+    return retval;
+}
+
+
+
+
+
+//! @brief Verifies that a system of equations is solveable (number of equations = number of unknowns etc)
+bool verifyEquationSystem(QList<Expression> equations, QList<Expression> stateVars, HopsanGenerator *pGenerator)
+{
+    bool retval = true;
+
+    if(equations.size() != stateVars.size())
+    {
+        QStringList equationList;
+        for(int s=0; s<equations.size(); ++s)
+        {
+            equationList.append(equations[s].toString());
+        }
+        qDebug() << "Equations: " << equationList;
+
+        QStringList stateVarList;
+        for(int s=0; s<stateVars.size(); ++s)
+        {
+            stateVarList.append(stateVars[s].toString());
+        }
+        qDebug() << "State vars: " << stateVarList;
+
+        pGenerator->printErrorMessage("Number of equations = " + QString::number(equations.size()) + ", number of state variables = " + QString::number(stateVars.size()));
+        retval = false;
+    }
+
+    return retval;
 }

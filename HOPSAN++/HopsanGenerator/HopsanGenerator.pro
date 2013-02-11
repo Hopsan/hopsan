@@ -50,16 +50,24 @@ unix {
 # Project files
 # -------------------------------------------------
 SOURCES += \
-    src/HopsanComponentGenerator.cc \
-    src/SymHop.cc \
     src/HopsanGeneratorLib.cc \
-    src/GeneratorUtilities.cc
+    src/GeneratorUtilities.cc \
+    src/symhop/SymHop.cc \
+    src/generators/HopsanGenerator.cc \
+    src/generators/HopsanSimulinkGenerator.cc \
+    src/generators/HopsanModelicaGenerator.cc \
+    src/generators/HopsanFMIGenerator.cc \
+    src/generators/HopsanLabViewGenerator.cc
 
 HEADERS += \
-    include/HopsanComponentGenerator.h \
-    include/SymHop.h \
     include/win32dll.h \
-    include/GeneratorUtilities.h
+    include/GeneratorUtilities.h \
+    include/symhop/SymHop.h \
+    include/generators/HopsanGenerator.h \
+    include/generators/HopsanModelicaGenerator.h \
+    include/generators/HopsanSimulinkGenerator.h \
+    include/generators/HopsanFMIGenerator.h \
+    include/generators/HopsanLabViewGenerator.h
 
 OTHER_FILES += \
     HopsanCoreBuild.prf
