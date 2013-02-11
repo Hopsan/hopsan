@@ -151,7 +151,7 @@ void copyDir(const QString fromPath, QString toPath);
 void copyIncludeFilesToDir(QString path);
 void copyBoostIncludeFilesToDir(QString path);
 bool compileComponentLibrary(QString path, QString name, HopsanGenerator *pGenerator, QString extraLinks="");
-inline QString toVarName(const QString org);
+QString toVarName(const QString org);
 QString extractTaggedSection(QString str, QString tag);
 void replaceTaggedSection(QString &str, QString tag, QString replacement);
 QString replaceTag(QString str, QString tag, QString replacement);

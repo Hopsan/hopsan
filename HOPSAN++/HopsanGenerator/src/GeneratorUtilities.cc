@@ -361,7 +361,7 @@ bool compileComponentLibrary(QString path, QString name, HopsanGenerator *pGener
 //! @brief Removes all illegal characters from the string, so that it can be used as a variable name.
 //! @param org Original string
 //! @returns String without illegal characters
-inline QString toVarName(const QString org)
+QString toVarName(const QString org)
 {
     QString ret = org;
     while(!ret.isEmpty() && !ret[0].isLetter())
