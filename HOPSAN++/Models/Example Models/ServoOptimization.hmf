@@ -3321,14 +3321,6 @@
                     <line width="2.000000" visible="1" style="dashline"/>
                 </hopsangui>
             </textboxwidget>
-            <textboxwidget>
-                <hopsangui>
-                    <pose x="2072.000000" y="2623.000000"/>
-                    <textobject fontcolor="#556b2f" text="Text" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
-                    <size width="100.000000" height="100.000000"/>
-                    <line width="2.000000" visible="1" style="solidline"/>
-                </hopsangui>
-            </textboxwidget>
         </objects>
         <connections>
             <connect endport="P1" endcomponent="Translational Mass" startport="P3" startcomponent="C-type Piston">
@@ -3754,8 +3746,8 @@
                 <hopsangui>
                     <coordinates>
                         <coordinate x="2124.05651600000010148506" y="2713.89152999999987514457"/>
-                        <coordinate x="2124.05651600000010148506" y="2543.00000000000000000000"/>
-                        <coordinate x="2105.00000000000000000000" y="2543.00000000000000000000"/>
+                        <coordinate x="2124.05651600000010148506" y="2554.71998556901462507085"/>
+                        <coordinate x="2105.00000000000000000000" y="2554.71998556901462507085"/>
                         <coordinate x="2105.00000000000000000000" y="2523.00000000000000000000"/>
                     </coordinates>
                     <geometries>
@@ -3763,7 +3755,7 @@
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                     </geometries>
-                    <style>solid</style>
+                    <style>dashed</style>
                 </hopsangui>
             </connect>
             <connect endport="P1" endcomponent="Pressure Transducer_2" startport="PB" startcomponent="4/3 Directional Valve">
@@ -3779,7 +3771,7 @@
                         <geometry>vertical</geometry>
                         <geometry>horizontal</geometry>
                     </geometries>
-                    <style>solid</style>
+                    <style>dashed</style>
                 </hopsangui>
             </connect>
             <connect endport="in_right" endcomponent="Scope" startport="out" startcomponent="Pressure Transducer_1">
