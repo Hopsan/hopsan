@@ -39,7 +39,7 @@
 #include "PlotTab.h"
 #include "PlotCurve.h"
 #include "PlotHandler.h"
-#include "SymHop.h"
+#include "symhop/SymHop.h"
 
 
 TerminalWidget::TerminalWidget(MainWindow *pParent)
@@ -597,6 +597,21 @@ void TerminalConsole::handleTabKeyPress()
                     variables[v].prepend(variableCmds[c]);
                 }
                 mAutoCompleteResults.append(variables);
+            }
+        }
+
+        QStringList parameterCmds = QStringList() << "chpa ";
+        for(int c=0; c<parameterCmds.size(); ++c)
+        {
+            if(mAutoCompleteFilter.startsWith(parameterCmds[c]))
+            {
+                QStringList parameters;
+                getHandler()->getParameters(mAutoCompleteFilter.right(mAutoCompleteFilter.size()-parameterCmds[c].size()),parameters);
+                for(int v=0; v<parameters.size(); ++v)
+                {
+                    parameters[v].prepend(parameterCmds[c]);
+                }
+                mAutoCompleteResults.append(parameters);
             }
         }
 
