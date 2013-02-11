@@ -63,6 +63,9 @@ public:
     void generateToLabViewSIT(QString savePath, hopsan::ComponentSystem *pSystem);
     void compileFromComponentObject(QString outputFile, ComponentSpecification comp, bool overwriteStartValues=false);
 
+    QString getCoreIncludePath();
+    QString getBinPath();
+
 private:
     void parseModelicaModel(QString code, QString &typeName, QString &displayName, QString &cqsType, QStringList &initAlgorithms, QStringList &equations, QStringList &finalAlgorithms, QList<PortSpecification> &portList, QList<ParameterSpecification> &parametersList);
     void generateComponentObject(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QStringList &initAlgorithms, QStringList &equations, QStringList &finalAlgorithms, QList<PortSpecification> &portList, QList<ParameterSpecification> &parametersList);

@@ -44,6 +44,7 @@
 #endif
 
 #include "GeneratorUtilities.h"
+#include "HopsanComponentGenerator.h"
 #include "SymHop.h"
 
 #include "ComponentSystem.h"
@@ -246,4 +247,111 @@ QTextLineStream& operator <<(QTextLineStream &rLineStream, const char* input)
 {
     (*rLineStream.mpQTextSream) << input << endl;
     return rLineStream;
+}
+
+
+
+bool compileComponentLibrary(QString path, QString name, HopsanGenerator *pGenerator, QString extraLinks)
+{
+    pGenerator->printMessage("Writing compilation script");
+
+    QStringList ccFiles;
+    QDir targetDir = QDir(path);
+    ccFiles = targetDir.entryList(QStringList() << "*.cc" << "*.cpp");
+    QString msg = "Found source files: ";
+    Q_FOREACH(const QString &file, ccFiles)
+        msg.append(file+", ");
+    msg.chop(2);
+    pGenerator->printMessage(msg);
+
+    QString includeDir = pGenerator->getCoreIncludePath();
+    QString binDir = pGenerator->getBinPath();
+
+    //Create compilation script file
+#ifdef WIN32
+    QFile clBatchFile;
+    clBatchFile.setFileName(path + "/compile.bat");
+    if(!clBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        pGenerator->printErrorMessage("Could not open compile.bat for writing.");
+        removeDir(fmuDir.path());
+        return false;
+    }
+    QTextStream clBatchStream(&clBatchFile);
+    clBatchStream << "g++.exe -shared";
+    Q_FOREACH(const QString &file, ccFiles)
+        clBatchStream << file+" ";
+    clBatchStream << "-o "+name+".dll -I"+includeDir+" -L"+binDir+" -lHopsanCore "+extraLinks+"\n";
+    clBatchFile.close();
+#endif
+
+#ifdef WIN32
+    pGenerator->printMessage("Compiling " + name + ".dll in folder " + path);
+#elif linux
+    pGenerator->printMessage("Compiling " + name + ".so in folder " + path);
+#endif
+
+
+
+
+    //Call compilation script file
+#ifdef WIN32
+    QProcess gccProcess;
+    gccProcess.start("cmd.exe", QStringList() << "/c" << "cd " + path + " & compile.bat");
+    gccProcess.waitForFinished();
+    QByteArray gccResult = gccProcess.readAll();
+    QList<QByteArray> gccResultList = gccResult.split('\n');
+    for(int i=0; i<gccResultList.size(); ++i)
+    {
+        QString msg = gccResultList.at(i);
+        msg = msg.remove(msg.size()-1, 1);
+        if(!msg.isEmpty())
+        {
+            pGenerator->printMessage(msg);
+        }
+    }
+#elif linux
+    QString gccCommand = "cd "+path+" && g++ -fPIC -w -Wl,--rpath -Wl,"+path+" -shared ";
+    Q_FOREACH(const QString &file, ccFiles)
+        gccCommand.append(file+" ");
+    gccCommand.append("-fpermissive -o "+name+".so -I./ -I"+includeDir+" -L"+binDir+" -lHopsanCore "+extraLinks);
+    qDebug() << "Command = " << gccCommand;
+    gccCommand +=" 2>&1";
+    FILE *fp;
+    char line[130];
+    fp = popen(  (const char *) gccCommand.toStdString().c_str(), "r");
+    if ( !fp )
+    {
+        pGenerator->printErrorMessage("Could not execute '" + gccCommand + "'! err=%d");
+        return false;
+    }
+    else
+    {
+        while ( fgets( line, sizeof line, fp))
+        {
+            pGenerator->printMessage((const QString &)line);
+        }
+    }
+#endif
+
+#ifdef WIN32
+    if(!targetDir.exists(name + ".dll"))
+    {
+        pGenerator->printErrorMessage("Compilation failed.");
+        //removeDir(targetDir.path());
+        return false;
+    }
+#elif linux
+    if(!targetDir.exists(name + ".so"))
+    {
+        qDebug() << targetDir.absolutePath();
+        qDebug() << name + ".so";
+        pGenerator->printErrorMessage("Compilation failed.");
+        //removeDir(targetDir.path());
+        return false;
+    }
+#endif
+
+    pGenerator->printMessage("Compilation successful.");
+    return true;
 }

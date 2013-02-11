@@ -1043,80 +1043,86 @@ void HopsanGenerator::generateFromFmu(QString path)
         printMessage("Copying " + fmiModelTypesFile.fileName() + " to " + fmuDir.path() + "/fmiModelTypes.h");
     }
 
-    printMessage("Writing compilation script");
+//    printMessage("Writing compilation script");
 
-    //Create compilation script file
-#ifdef WIN32
-    QFile clBatchFile;
-    clBatchFile.setFileName(fmuDir.path() + "/compile.bat");
-    if(!clBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        printErrorMessage("Import of FMU failed: Could not open compile.bat for writing.");
-        removeDir(fmuDir.path());
-        return;
-    }
-    QTextStream clBatchStream(&clBatchFile);
-    clBatchStream << "g++.exe -shared fmuLib.cc stack.cc xml_parser.cc -o fmuLib.dll -L../../../bin/ -lHopsanCore -L./ -llibexpat\n";
-    clBatchFile.close();
-#endif
+//    //Create compilation script file
+//#ifdef WIN32
+//    QFile clBatchFile;
+//    clBatchFile.setFileName(fmuDir.path() + "/compile.bat");
+//    if(!clBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
+//    {
+//        printErrorMessage("Import of FMU failed: Could not open compile.bat for writing.");
+//        removeDir(fmuDir.path());
+//        return;
+//    }
+//    QTextStream clBatchStream(&clBatchFile);
+//    clBatchStream << "g++.exe -shared fmuLib.cc stack.cc xml_parser.cc -o fmuLib.dll -L../../../bin/ -lHopsanCore -L./ -llibexpat\n";
+//    clBatchFile.close();
+//#endif
+
+//#ifdef WIN32
+//    printMessage("Compiling " + fmuName + ".dll");
+//#elif linux
+//    printMessage("Compiling " + fmuName + ".so");
+//#endif
+
+//    //Call compilation script file
+//#ifdef WIN32
+//    QProcess gccProcess;
+//    gccProcess.start("cmd.exe", QStringList() << "/c" << "cd " + fmuDir.path() + " & compile.bat");
+//    gccProcess.waitForFinished();
+//    QByteArray gccResult = gccProcess.readAll();
+//    QList<QByteArray> gccResultList = gccResult.split('\n');
+//    for(int i=0; i<gccResultList.size(); ++i)
+//    {
+//        QString msg = gccResultList.at(i);
+//        msg = msg.remove(msg.size()-1, 1);
+//        if(!msg.isEmpty())
+//        {
+//            printMessage(msg);
+//        }
+//    }
+//#elif linux
+//    QString gccCommand = "cd "+fmuDir.path()+" && g++ -fPIC -w -Wl,--rpath -Wl,"+fmuDir.path()+" -shared fmuLib.cc stack.cc xml_parser.cc -fpermissive -o fmuLib.so -I./ -L../../../bin/ -lHopsanCore";
+//    qDebug() << "Command = " << gccCommand;
+//    gccCommand +=" 2>&1";
+//    fp = popen(  (const char *) gccCommand.toStdString().c_str(), "r");
+//    if ( !fp )
+//    {
+//        printErrorMessage("Could not execute '" + gccCommand + "'! err=%d");
+//        return;
+//    }
+//    else
+//    {
+//        while ( fgets( line, sizeof line, fp))
+//        {
+//            printMessage((const QString &)line);
+//        }
+//    }
+//#endif
+
+//#ifdef WIN32
+//    if(!fmuDir.exists(fmuName + ".dll"))
+//    {
+//        printErrorMessage("Import of FMU failed: Compilation error.");
+//        //removeDir(fmuDir.path());
+//        return;
+//    }
+//#elif linux
+//    if(!fmuDir.exists(fmuName + ".so"))
+//    {
+//        qDebug() << fmuDir.absolutePath();
+//        qDebug() << fmuName + ".so";
+//        printErrorMessage("Import of FMU failed: Compilation error.");
+//        //removeDir(fmuDir.path());
+//        return;
+//    }
+//#endif
 
 #ifdef WIN32
-    printMessage("Compiling " + fmuName + ".dll");
-#elif linux
-    printMessage("Compiling " + fmuName + ".so");
-#endif
-
-    //Call compilation script file
-#ifdef WIN32
-    QProcess gccProcess;
-    gccProcess.start("cmd.exe", QStringList() << "/c" << "cd " + fmuDir.path() + " & compile.bat");
-    gccProcess.waitForFinished();
-    QByteArray gccResult = gccProcess.readAll();
-    QList<QByteArray> gccResultList = gccResult.split('\n');
-    for(int i=0; i<gccResultList.size(); ++i)
-    {
-        QString msg = gccResultList.at(i);
-        msg = msg.remove(msg.size()-1, 1);
-        if(!msg.isEmpty())
-        {
-            printMessage(msg);
-        }
-    }
-#elif linux
-    QString gccCommand = "cd "+fmuDir.path()+" && g++ -fPIC -w -Wl,--rpath -Wl,"+fmuDir.path()+" -shared fmuLib.cc stack.cc xml_parser.cc -fpermissive -o fmuLib.so -I./ -L../../../bin/ -lHopsanCore";
-    qDebug() << "Command = " << gccCommand;
-    gccCommand +=" 2>&1";
-    fp = popen(  (const char *) gccCommand.toStdString().c_str(), "r");
-    if ( !fp )
-    {
-        printErrorMessage("Could not execute '" + gccCommand + "'! err=%d");
-        return;
-    }
-    else
-    {
-        while ( fgets( line, sizeof line, fp))
-        {
-            printMessage((const QString &)line);
-        }
-    }
-#endif
-
-#ifdef WIN32
-    if(!fmuDir.exists(fmuName + ".dll"))
-    {
-        printErrorMessage("Import of FMU failed: Compilation error.");
-        //removeDir(fmuDir.path());
-        return;
-    }
-#elif linux
-    if(!fmuDir.exists(fmuName + ".so"))
-    {
-        qDebug() << fmuDir.absolutePath();
-        qDebug() << fmuName + ".so";
-        printErrorMessage("Import of FMU failed: Compilation error.");
-        //removeDir(fmuDir.path());
-        return;
-    }
+    compileComponentLibrary(fmuDir.path(), "fmuLib", this, "-L./ -llibexpat");
+#else
+    compileComponentLibrary(fmuDir.path(), "fmuLib", this);
 #endif
 
 
@@ -4242,11 +4248,6 @@ void HopsanGenerator::generateComponentObject(ComponentSpecification &comp, QStr
         comp.simEquations << finalAlgorithms[i].toString()+";";
     }
 
-    if(!jacobian.isEmpty())
-    {
-        comp.finalEquations << "delete(mpSolver);";
-    }
-
     for(int i=0; i<localVars.size(); ++i)
     {
         comp.varNames << localVars[i].toString();
@@ -4667,18 +4668,18 @@ void HopsanGenerator::compileFromComponentObject(QString outputFile, ComponentSp
     ccLibStream << "}\n";
     ccLibFile.close();
 
-    QFile clBatchFile;
-    clBatchFile.setFileName(QString(mTempPath)+"compile.bat");
-    if(!clBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        printErrorMessage("Failed to open compile.bat for writing.");
-        return;
-    }
-    QTextStream clBatchStream(&clBatchFile);
-    QString choppedIncludePath = mCoreIncludePath;
-    choppedIncludePath.chop(1);
-    clBatchStream << "g++.exe -shared tempLib.cc -o " << comp.typeName << ".dll -I\"" << choppedIncludePath<< "\"  -I\"" << mCoreIncludePath + "\" -L\"" + mBinPath << "\" -lHopsanCore\n";
-    clBatchFile.close();
+//    QFile clBatchFile;
+//    clBatchFile.setFileName(QString(mTempPath)+"compile.bat");
+//    if(!clBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
+//    {
+//        printErrorMessage("Failed to open compile.bat for writing.");
+//        return;
+//    }
+//    QTextStream clBatchStream(&clBatchFile);
+//    QString choppedIncludePath = mCoreIncludePath;
+//    choppedIncludePath.chop(1);
+//    clBatchStream << "g++.exe -shared tempLib.cc -o " << comp.typeName << ".dll -I\"" << choppedIncludePath<< "\"  -I\"" << mCoreIncludePath + "\" -L\"" + mBinPath << "\" -lHopsanCore\n";
+//    clBatchFile.close();
 
     printMessage("Writing " + comp.typeName + ".xml...");
 
@@ -4716,34 +4717,36 @@ void HopsanGenerator::compileFromComponentObject(QString outputFile, ComponentSp
     libFileName.append(".so");
 #endif
 
-    printMessage("Compiling "+libFileName+"...");
+//    printMessage("Compiling "+libFileName+"...");
 
-    //Execute HopsanFMU compile script
-#ifdef WIN32
-    QProcess p;
-    p.start("cmd.exe", QStringList() << "/c" << "cd " + mTempPath + " & compile.bat");
-    p.waitForFinished();
-#else
-    //! @todo Add link path to bin dir! (../?)
-    QString command = "cd "+QString(mTempPath)+" && g++ -shared -fPIC tempLib.cc -o " + comp.typeName + ".so -I" + mCoreIncludePath + " -L" + mBinPath + " -lHopsanCore\n";
-    qDebug() << "Command = " << command;
-    FILE *fp;
-    char line[130];
-    command +=" 2>&1";
-    fp = popen(  (const char *) command.toStdString().c_str(), "r");
-    if ( !fp )
-    {
-        printErrorMessage("Could not execute '" + command + "'! err=%d");
-        return;
-    }
-    else
-    {
-        while ( fgets( line, sizeof line, fp))
-        {
-            printMessage((const QString &)line);
-        }
-    }
-#endif
+//    //Execute HopsanFMU compile script
+//#ifdef WIN32
+//    QProcess p;
+//    p.start("cmd.exe", QStringList() << "/c" << "cd " + mTempPath + " & compile.bat");
+//    p.waitForFinished();
+//#else
+//    //! @todo Add link path to bin dir! (../?)
+//    QString command = "cd "+QString(mTempPath)+" && g++ -shared -fPIC tempLib.cc -o " + comp.typeName + ".so -I" + mCoreIncludePath + " -L" + mBinPath + " -lHopsanCore\n";
+//    qDebug() << "Command = " << command;
+//    FILE *fp;
+//    char line[130];
+//    command +=" 2>&1";
+//    fp = popen(  (const char *) command.toStdString().c_str(), "r");
+//    if ( !fp )
+//    {
+//        printErrorMessage("Could not execute '" + command + "'! err=%d");
+//        return;
+//    }
+//    else
+//    {
+//        while ( fgets( line, sizeof line, fp))
+//        {
+//            printMessage((const QString &)line);
+//        }
+//    }
+//#endif
+
+    compileComponentLibrary(mTempPath, comp.typeName, this);
 
     printMessage("Moving files to output directory...");
 
@@ -4753,6 +4756,16 @@ void HopsanGenerator::compileFromComponentObject(QString outputFile, ComponentSp
 }
 
 
+QString HopsanGenerator::getCoreIncludePath()
+{
+    return mCoreIncludePath;
+}
+
+
+QString HopsanGenerator::getBinPath()
+{
+    return mBinPath;
+}
 
 
 

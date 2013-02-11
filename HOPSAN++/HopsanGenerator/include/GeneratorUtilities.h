@@ -47,6 +47,8 @@ namespace hopsan {
 class ComponentSystem;
 }
 
+class HopsanGenerator;
+
 
 class FMIPortSpecification
 {
@@ -148,6 +150,7 @@ bool removeDir(QString path);
 void copyDir(const QString fromPath, QString toPath);
 void copyIncludeFilesToDir(QString path);
 void copyBoostIncludeFilesToDir(QString path);
+bool compileComponentLibrary(QString path, QString name, HopsanGenerator *pGenerator, QString extraLinks="");
 
 
 
