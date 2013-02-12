@@ -62,6 +62,7 @@ void copyIncludeFilesToDir(QString path);
 double normalDistribution(double average, double sigma);
 bool verifyParameterValue(QString &rValue, const QString type, const QStringList &rSysParNames, QString &rErrorString);
 double findSmallestValueGreaterThanZero(QVector<double> data);
+QStringList splitWithRespectToQuotations(const QString str, const QChar c);
 
 //Optimization
 void reflectWorst(QVector< QVector<double> > &vector, int worst, double alpha=1.3);

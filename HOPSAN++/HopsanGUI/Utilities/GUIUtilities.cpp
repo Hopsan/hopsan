@@ -692,3 +692,32 @@ double findSmallestValueGreaterThanZero(QVector<double> data)
 
     return retval;
 }
+
+
+
+//! @brief Splits a string at specified character, but does not split inside parentheses
+//! @param str String to split
+//! @param c Character to split at
+QStringList splitWithRespectToQuotations(const QString str, const QChar c)
+{
+    QStringList ret;
+    bool withinQuotations=false;
+    int start=0;
+    int len=0;
+    for(int i=0; i<str.size(); ++i)
+    {
+        if(str[i] == '"')
+        {
+            withinQuotations=!withinQuotations;
+        }
+        else if(str[i] == c && !withinQuotations)
+        {
+            ret.append(str.mid(start,len));
+            start=start+len+1;
+            len=-1;
+        }
+        ++len;
+    }
+    ret.append(str.mid(start,len));
+    return ret;
+}

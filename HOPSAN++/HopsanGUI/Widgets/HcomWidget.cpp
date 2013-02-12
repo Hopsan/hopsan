@@ -40,6 +40,7 @@
 #include "PlotCurve.h"
 #include "PlotHandler.h"
 #include "symhop/SymHop.h"
+#include "Utilities/GUIUtilities.h"
 
 
 TerminalWidget::TerminalWidget(MainWindow *pParent)
@@ -585,7 +586,7 @@ void TerminalConsole::handleTabKeyPress()
             }
         }
 
-        QStringList variableCmds = QStringList() << "disp " << "chpv " << "chpvr " << "chpvl " << "peek " << "poke ";
+        QStringList variableCmds = QStringList() << "disp " << "chpv " << "chpvr " << "chpvl " << "peek " << "poke " << "alias ";
         for(int c=0; c<variableCmds.size(); ++c)
         {
             if(mAutoCompleteFilter.startsWith(variableCmds[c]))
@@ -600,7 +601,7 @@ void TerminalConsole::handleTabKeyPress()
             }
         }
 
-        QStringList parameterCmds = QStringList() << "chpa ";
+        QStringList parameterCmds = QStringList() << "chpa " << "dipa ";
         for(int c=0; c<parameterCmds.size(); ++c)
         {
             if(mAutoCompleteFilter.startsWith(parameterCmds[c]))
@@ -654,6 +655,7 @@ void TerminalConsole::handleTabKeyPress()
     this->textCursor().removeSelectedText();
 
     QString autoString = mAutoCompleteResults.at(mCurrentAutoCompleteIndex);
+    this->setOutputColor("default");
     this->insertPlainText(">> "+autoString);
 
     this->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
@@ -1066,10 +1068,10 @@ void HcomHandler::executeChangeParameterCommand(QString cmd)
         }
     }
     splitCmd.append(cmd.right(cmd.size()-start));
-    for(int i=0; i<splitCmd.size(); ++i)
-    {
-        splitCmd[i].remove("\"");
-    }
+//    for(int i=0; i<splitCmd.size(); ++i)
+//    {
+//        splitCmd[i].remove("\"");
+//    }
 
     if(splitCmd.size() == 2)
     {
@@ -1443,15 +1445,16 @@ void HcomHandler::executePokeCommand(QString cmd)
 
 void HcomHandler::executeDefineAliasCommand(QString cmd)
 {
-    if(cmd.split(" ").size() < 2)
+    if(splitWithRespectToQuotations(cmd, ' ').size() != 2)
     {
         mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
         return;
     }
 
-    QString variable = cmd.split(" ")[0];
+    QString variable = splitWithRespectToQuotations(cmd, ' ')[0];
     toShortDataNames(variable);
-    QString alias = cmd.split(" ")[1];
+    variable.remove("\"");
+    QString alias = splitWithRespectToQuotations(cmd, ' ')[1];
 
     SharedLogVariableDataPtrT pVariable = getVariablePtr(variable);
 
