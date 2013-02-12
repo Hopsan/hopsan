@@ -258,15 +258,40 @@ bool compileComponentLibrary(QString path, QString name, HopsanGenerator *pGener
     QStringList ccFiles;
     QDir targetDir = QDir(path);
     ccFiles = targetDir.entryList(QStringList() << "*.cc" << "*.cpp");
-    QString msg = "Found source files: ";
+    QString c;
     Q_FOREACH(const QString &file, ccFiles)
-        msg.append(file+", ");
-    msg.chop(2);
-    pGenerator->printMessage(msg);
+        c.append(file+" ");
+    c.chop(1);
 
-    QString includeDir = pGenerator->getCoreIncludePath();
+    QString i = pGenerator->getCoreIncludePath();
+    i.prepend("-I");
+
     QString binDir = pGenerator->getBinPath();
+    QString l = "-L"+binDir+" -lHopsanCore "+extraLinks;
 
+    pGenerator->printMessage("\nCalling compiler utility:");
+    pGenerator->printMessage("Path: "+path);
+    pGenerator->printMessage("Objective: "+name);
+    pGenerator->printMessage("Source files: "+c);
+    pGenerator->printMessage("Includes: "+i);
+    pGenerator->printMessage("Links: "+l+"\n");
+
+    QString output;
+    bool success = compile(path, name, c, i, l, output);
+    pGenerator->printMessage(output);
+    return success;
+}
+
+
+//! @brief Calls GCC or MinGW compiler with specified parameters
+//! @param path Absolute path where compiler shall be run
+//! @param o Objective file name (without file extension)
+//! @param c List with source files, example: "file1.cpp file2.cc"
+//! @param i Include command, example: "-Ipath1 -Ipath2"
+//! @param l Link command, example: "-Lpath1 -lfile1 -lfile2"
+//! @param output Reference to string where output messages are stored
+bool compile(QString path, QString o, QString c, QString i, QString l, QString &output)
+{
     //Create compilation script file
 #ifdef WIN32
     QFile clBatchFile;
@@ -279,20 +304,9 @@ bool compileComponentLibrary(QString path, QString name, HopsanGenerator *pGener
     }
     QTextStream clBatchStream(&clBatchFile);
     clBatchStream << "g++.exe -shared";
-    Q_FOREACH(const QString &file, ccFiles)
-        clBatchStream << file+" ";
-    clBatchStream << "-o "+name+".dll -I"+includeDir+" -L"+binDir+" -lHopsanCore "+extraLinks+"\n";
+    clBatchStream << c+" -o "+o+".dll "+i+" "+l+"\n";
     clBatchFile.close();
 #endif
-
-#ifdef WIN32
-    pGenerator->printMessage("Compiling " + name + ".dll in folder " + path);
-#elif linux
-    pGenerator->printMessage("Compiling " + name + ".so in folder " + path);
-#endif
-
-
-
 
     //Call compilation script file
 #ifdef WIN32
@@ -303,18 +317,12 @@ bool compileComponentLibrary(QString path, QString name, HopsanGenerator *pGener
     QList<QByteArray> gccResultList = gccResult.split('\n');
     for(int i=0; i<gccResultList.size(); ++i)
     {
-        QString msg = gccResultList.at(i);
-        msg = msg.remove(msg.size()-1, 1);
-        if(!msg.isEmpty())
-        {
-            pGenerator->printMessage(msg);
-        }
+        output = gccResultList.at(i);
+        output = output.remove(output.size()-1, 1);
     }
 #elif linux
     QString gccCommand = "cd "+path+" && g++ -fPIC -w -Wl,--rpath -Wl,"+path+" -shared ";
-    Q_FOREACH(const QString &file, ccFiles)
-        gccCommand.append(file+" ");
-    gccCommand.append("-fpermissive -o "+name+".so -I./ -I"+includeDir+" -L"+binDir+" -lHopsanCore "+extraLinks);
+    gccCommand.append(c+" -fpermissive -o "+o+".so "+i+" "+l);
     qDebug() << "Command = " << gccCommand;
     gccCommand +=" 2>&1";
     FILE *fp;
@@ -322,37 +330,36 @@ bool compileComponentLibrary(QString path, QString name, HopsanGenerator *pGener
     fp = popen(  (const char *) gccCommand.toStdString().c_str(), "r");
     if ( !fp )
     {
-        pGenerator->printErrorMessage("Could not execute '" + gccCommand + "'! err=%d");
+        output="Could not execute '" + gccCommand + "'! err=%d";
         return false;
     }
     else
     {
         while ( fgets( line, sizeof line, fp))
         {
-            pGenerator->printMessage((const QString &)line);
+            output = line;
         }
     }
 #endif
 
+    QDir targetDir(path);
 #ifdef WIN32
-    if(!targetDir.exists(name + ".dll"))
+    if(!targetDir.exists(o + ".dll"))
     {
-        pGenerator->printErrorMessage("Compilation failed.");
-        //removeDir(targetDir.path());
+        output.append("Compilation failed.");
         return false;
     }
 #elif linux
-    if(!targetDir.exists(name + ".so"))
+    if(!targetDir.exists(o + ".so"))
     {
         qDebug() << targetDir.absolutePath();
-        qDebug() << name + ".so";
-        pGenerator->printErrorMessage("Compilation failed.");
-        //removeDir(targetDir.path());
+        qDebug() << o + ".so";
+        output.append("Compilation failed.");
         return false;
     }
 #endif
 
-    pGenerator->printMessage("Compilation successful.");
+    output.append("Compilation successful.");
     return true;
 }
 
