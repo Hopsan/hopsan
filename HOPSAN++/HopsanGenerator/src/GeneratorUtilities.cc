@@ -277,7 +277,7 @@ bool compileComponentLibrary(QString path, QString name, HopsanGenerator *pGener
     pGenerator->printMessage("Links: "+l+"\n");
 
     QString output;
-    bool success = compile(path, name, c, i, l, output);
+    bool success = compile(path, name, c, i, l, "-fPIC -w -Wl,--rpath -Wl,"+path+" -shared", output);
     pGenerator->printMessage(output);
     return success;
 }
@@ -289,8 +289,9 @@ bool compileComponentLibrary(QString path, QString name, HopsanGenerator *pGener
 //! @param c List with source files, example: "file1.cpp file2.cc"
 //! @param i Include command, example: "-Ipath1 -Ipath2"
 //! @param l Link command, example: "-Lpath1 -lfile1 -lfile2"
+//! @param flags Compiler flags
 //! @param output Reference to string where output messages are stored
-bool compile(QString path, QString o, QString c, QString i, QString l, QString &output)
+bool compile(QString path, QString o, QString c, QString i, QString l, QString flags, QString &output)
 {
     //Create compilation script file
 #ifdef WIN32
@@ -303,7 +304,7 @@ bool compile(QString path, QString o, QString c, QString i, QString l, QString &
         return false;
     }
     QTextStream clBatchStream(&clBatchFile);
-    clBatchStream << "g++.exe -shared";
+    clBatchStream << "gcc.exe "+flags;
     clBatchStream << c+" -o "+o+".dll "+i+" "+l+"\n";
     clBatchFile.close();
 #endif
@@ -321,7 +322,7 @@ bool compile(QString path, QString o, QString c, QString i, QString l, QString &
         output = output.remove(output.size()-1, 1);
     }
 #elif linux
-    QString gccCommand = "cd "+path+" && g++ -fPIC -w -Wl,--rpath -Wl,"+path+" -shared ";
+    QString gccCommand = "cd "+path+" && gcc "+flags+" ";
     gccCommand.append(c+" -fpermissive -o "+o+".so "+i+" "+l);
     qDebug() << "Command = " << gccCommand;
     gccCommand +=" 2>&1";
@@ -549,4 +550,83 @@ bool verifyEquationSystem(QList<Expression> equations, QList<Expression> stateVa
     }
 
     return retval;
+}
+
+
+
+void copyHopsanCoreSourceFiles(QString targetPath)
+{
+    QStringList coreFiles;
+    coreFiles << ":hopsancore/include/Component.h";
+    coreFiles << ":hopsancore/include/ComponentEssentials.h";
+    coreFiles << ":hopsancore/include/ComponentSystem.h";
+    coreFiles << ":hopsancore/include/ComponentUtilities.h";
+    coreFiles << ":hopsancore/include/HopsanCore.h";
+    coreFiles << ":hopsancore/include/HopsanEssentials.h";
+    coreFiles << ":hopsancore/include/Node.h";
+    coreFiles << ":hopsancore/include/Nodes.h";
+    coreFiles << ":hopsancore/include/Parameters.h";
+    coreFiles << ":hopsancore/include/Port.h";
+    coreFiles << ":hopsancore/include/svnrevnum.h";
+    coreFiles << ":hopsancore/include/version.h";
+    coreFiles << ":hopsancore/include/win32dll.h";
+    coreFiles << ":hopsancore/include/Components/DummyComponent.hpp";
+    coreFiles << ":hopsancore/include/ComponentUtilities/AuxiliaryMathematicaWrapperFunctions.h";
+    coreFiles << ":hopsancore/include/ComponentUtilities/AuxiliarySimulationFunctions.h";
+    coreFiles << ":hopsancore/include/ComponentUtilities/CSVParser.h";
+    coreFiles << ":hopsancore/include/ComponentUtilities/Delay.hpp";
+    coreFiles << ":hopsancore/include/ComponentUtilities/DoubleIntegratorWithDamping.h";
+    coreFiles << ":hopsancore/include/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h";
+    coreFiles << ":hopsancore/include/ComponentUtilities/EquationSystemSolver.h";
+    coreFiles << ":hopsancore/include/ComponentUtilities/FirstOrderTransferFunction.h";
+    coreFiles << ":hopsancore/include/ComponentUtilities/Integrator.h";
+    coreFiles << ":hopsancore/include/ComponentUtilities/IntegratorLimited.h";
+    coreFiles << ":hopsancore/include/ComponentUtilities/ludcmp.h";
+    coreFiles << ":hopsancore/include/ComponentUtilities/matrix.h";
+    coreFiles << ":hopsancore/include/ComponentUtilities/num2string.hpp";
+    coreFiles << ":hopsancore/include/ComponentUtilities/SecondOrderTransferFunction.h";
+    coreFiles << ":hopsancore/include/ComponentUtilities/TurbulentFlowFunction.h";
+    coreFiles << ":hopsancore/include/ComponentUtilities/ValveHysteresis.h";
+    coreFiles << ":hopsancore/include/ComponentUtilities/WhiteGaussianNoise.h";
+    coreFiles << ":hopsancore/include/CoreUtilities/ClassFactory.hpp";
+    coreFiles << ":hopsancore/include/CoreUtilities/ClassFactoryStatusCheck.hpp";
+    coreFiles << ":hopsancore/include/CoreUtilities/CoSimulationUtilities.h";
+    coreFiles << ":hopsancore/include/CoreUtilities/FindUniqueName.h";
+    coreFiles << ":hopsancore/include/CoreUtilities/GeneratorHandler.h";
+    coreFiles << ":hopsancore/include/CoreUtilities/HmfLoader.h";
+    coreFiles << ":hopsancore/include/CoreUtilities/HopsanCoreMessageHandler.h";
+    coreFiles << ":hopsancore/include/CoreUtilities/LoadExternal.h";
+    coreFiles << ":hopsancore/include/CoreUtilities/MultiThreadingUtilities.h";
+    coreFiles << ":hopsancore/src/Component.cc";
+    coreFiles << ":hopsancore/src/ComponentSystem.cc";
+    coreFiles << ":hopsancore/src/HopsanEssentials.cc";
+    coreFiles << ":hopsancore/src/Node.cc";
+    coreFiles << ":hopsancore/src/Nodes.cc";
+    coreFiles << ":hopsancore/src/Parameters.cc";
+    coreFiles << ":hopsancore/src/Port.cc";
+    coreFiles << ":hopsancore/src/ComponentUtilities/AuxiliarySimulationFunctions.cc";
+    coreFiles << ":hopsancore/src/ComponentUtilities/CSVParser.cc";
+    coreFiles << ":hopsancore/src/ComponentUtilities/DoubleIntegratorWithDamping.cc";
+    coreFiles << ":hopsancore/src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc";
+    coreFiles << ":hopsancore/src/ComponentUtilities/EquationSystemSolver.cpp";
+    coreFiles << ":hopsancore/src/ComponentUtilities/FirstOrderTransferFunction.cc";
+    coreFiles << ":hopsancore/src/ComponentUtilities/Integrator.cc";
+    coreFiles << ":hopsancore/src/ComponentUtilities/IntegratorLimited.cc";
+    coreFiles << ":hopsancore/src/ComponentUtilities/ludcmp.cc";
+    coreFiles << ":hopsancore/src/ComponentUtilities/matrix.cc";
+    coreFiles << ":hopsancore/src/ComponentUtilities/SecondOrderTransferFunction.cc";
+    coreFiles << ":hopsancore/src/ComponentUtilities/TurbulentFlowFunction.cc";
+    coreFiles << ":hopsancore/src/ComponentUtilities/ValveHysteresis.cc";
+    coreFiles << ":hopsancore/src/ComponentUtilities/WhiteGaussianNoise.cc";
+    coreFiles << ":hopsancore/src/CoreUtilities/CoSimulationUtilities.cpp";
+    coreFiles << ":hopsancore/src/CoreUtilities/GeneratorHandler.cpp";
+    coreFiles << ":hopsancore/src/CoreUtilities/HmfLoader.cc";
+    coreFiles << ":hopsancore/src/CoreUtilities/HopsanCoreMessageHandler.cc";
+    coreFiles << ":hopsancore/src/CoreUtilities/LoadExternal.cc";
+    coreFiles << ":hopsancore/src/CoreUtilities/MultiThreadingUtilities.cpp";
+
+    Q_FOREACH(const QString file, coreFiles)
+    {
+        QFile::copy(file, targetPath+file.right(file.size()-file.lastIndexOf("/")));
+    }
 }

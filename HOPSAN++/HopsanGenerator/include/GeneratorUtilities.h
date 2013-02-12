@@ -151,7 +151,7 @@ void copyDir(const QString fromPath, QString toPath);
 void copyIncludeFilesToDir(QString path);
 void copyBoostIncludeFilesToDir(QString path);
 bool compileComponentLibrary(QString path, QString name, HopsanGenerator *pGenerator, QString extraLinks="");
-bool compile(QString path, QString o, QString c, QString i, QString l, QString &output);
+bool compile(QString path, QString o, QString c, QString i, QString l, QString flags, QString &output);
 QString toVarName(const QString org);
 QString extractTaggedSection(QString str, QString tag);
 void replaceTaggedSection(QString &str, QString tag, QString replacement);
@@ -161,6 +161,7 @@ QStringList getQVariables(QString nodeType);
 QStringList getCVariables(QString nodeType);
 QStringList getVariableLabels(QString nodeType);
 bool verifyEquationSystem(QList<SymHop::Expression> equations, QList<SymHop::Expression> stateVars, HopsanGenerator *pGenerator);
+void copyHopsanCoreSourceFiles(QString targetPath);
 
 
 //! @brief This utility class wraps a QTextStream and have stream operators to write whole lines. You do not need to add the newline char yourself.

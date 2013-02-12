@@ -864,9 +864,9 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
     }
 
 #ifdef WIN32
-    if(compileComponentLibrary(fmuDir.path(), "fmuLib", this, "-L./ -llibexpat"))
+    if(!compileComponentLibrary(fmuDir.path(), "fmuLib", this, "-L./ -llibexpat"))
 #else
-    if(compileComponentLibrary(fmuDir.path(), "fmuLib", this))
+    if(!compileComponentLibrary(fmuDir.path(), "fmuLib", this))
 #endif
     {
         printMessage("Failed to import fmu.");
@@ -1348,47 +1348,65 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     printMessage("Compiling "+modelName+".so");
 #endif
 
-#ifdef WIN32
-    //Execute FMU compile script
-    p.start("cmd.exe", QStringList() << "/c" << "cd " + savePath + " & build_fmu.bat me " + modelName);
-    p.waitForFinished();
-#elif linux
-    gccCommand1 = "cd "+savePath+" && gcc -c -fPIC -Wl,--rpath,'$ORIGIN/.' "+modelName+".c";
-    gccCommand2 = "cd "+savePath+" && gcc -shared -Wl,--rpath,'$ORIGIN/.' -o "+modelName+".so "+modelName+".o -L./ -lHopsanFMU";
 
-    qDebug() << "Command 1 = " << gccCommand1;
-    qDebug() << "Command 2 = " << gccCommand2;
+    QString c = modelName+".c";
+    QString inc = "";
+    QString l = "-L./ -lHopsanFMU";
+    QString flags = "-shared -fPIC -Wl,--rpath,'$ORIGIN/.'";
 
-    gccCommand1 +=" 2>&1";
-    fp = popen(  (const char *) gccCommand1.toStdString().c_str(), "r");
-    if ( !fp )
-    {
-        printErrorMessage("Could not execute '" + gccCommand1 + "'! err=%d");
-        return;
-    }
-    else
-    {
-        while ( fgets( line, sizeof line, fp))
-        {
-            printMessage((const QString &)line);
-        }
-    }
+    printMessage("\nCalling compiler utility:");
+    printMessage("Path: "+savePath);
+    printMessage("Objective: "+modelName);
+    printMessage("Source files: "+c);
+    printMessage("Includes: "+inc);
+    printMessage("Links: "+l+"\n");
+    printMessage("Flags: "+flags);
 
-    gccCommand2 +=" 2>&1";
-    fp = popen(  (const char *) gccCommand2.toStdString().c_str(), "r");
-    if ( !fp )
-    {
-        printErrorMessage("Could not execute '" + gccCommand2 + "'! err=%d");
-        return;
-    }
-    else
-    {
-        while ( fgets( line, sizeof line, fp))
-        {
-            printMessage((const QString &)line);
-        }
-    }
-#endif
+    QString output;
+    compile(savePath, modelName, c, inc, l, flags, output);
+    printMessage(output);
+
+//#ifdef WIN32
+//    //Execute FMU compile script
+//    p.start("cmd.exe", QStringList() << "/c" << "cd " + savePath + " & build_fmu.bat me " + modelName);
+//    p.waitForFinished();
+//#elif linux
+//    gccCommand1 = "cd "+savePath+" && gcc -c -fPIC -Wl,--rpath,'$ORIGIN/.' "+modelName+".c";
+//    gccCommand2 = "cd "+savePath+" && gcc -shared -Wl,--rpath,'$ORIGIN/.' -o "+modelName+".so "+modelName+".o -L./ -lHopsanFMU";
+
+//    qDebug() << "Command 1 = " << gccCommand1;
+//    qDebug() << "Command 2 = " << gccCommand2;
+
+//    gccCommand1 +=" 2>&1";
+//    fp = popen(  (const char *) gccCommand1.toStdString().c_str(), "r");
+//    if ( !fp )
+//    {
+//        printErrorMessage("Could not execute '" + gccCommand1 + "'! err=%d");
+//        return;
+//    }
+//    else
+//    {
+//        while ( fgets( line, sizeof line, fp))
+//        {
+//            printMessage((const QString &)line);
+//        }
+//    }
+
+//    gccCommand2 +=" 2>&1";
+//    fp = popen(  (const char *) gccCommand2.toStdString().c_str(), "r");
+//    if ( !fp )
+//    {
+//        printErrorMessage("Could not execute '" + gccCommand2 + "'! err=%d");
+//        return;
+//    }
+//    else
+//    {
+//        while ( fgets( line, sizeof line, fp))
+//        {
+//            printMessage((const QString &)line);
+//        }
+//    }
+//#endif
 
     printMessage("Sorting files");
 
