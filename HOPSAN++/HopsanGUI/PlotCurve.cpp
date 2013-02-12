@@ -239,7 +239,7 @@ PlotCurve::PlotCurve(SharedLogVariableDataPtrT pData,
 }
 
 //! @brief Consturctor for custom data
-PlotCurve::PlotCurve(const SharedVariableDescriptionT &rVarDesc,
+PlotCurve::PlotCurve(const VariableDescription &rVarDesc,
                      const QVector<double> &rXVector,
                      const QVector<double> &rYVector,
                      int axisY,
@@ -293,7 +293,7 @@ void PlotCurve::commonConstructorCode(int axisY,
     mpPlotCurveInfoBox->setPalette(gConfig.getPalette());
     updatePlotInfoBox();
 
-    // Maybe tab should add this instad of the curve istelf, and info box speak with curve
+    //! @todo Maybe tab should add this instad of the curve istelf, and info box speak with curve
     mpParentPlotTab->mpParentPlotWindow->mpPlotCurveInfoLayout->addWidget(mpPlotCurveInfoBox);
 
     if(curveType != PORTVARIABLE)
@@ -427,6 +427,16 @@ const QVector<double> &PlotCurve::getTimeVector() const
     return *(mpData->mSharedTimeVectorPtr.data());
 }
 
+bool PlotCurve::hasSpecialXData() const
+{
+    return !mpSpecialXdata.isNull();
+}
+
+const SharedLogVariableDataPtrT PlotCurve::getSpecialXData() const
+{
+    return mpSpecialXdata;
+}
+
 
 //! @brief Sets the generation of a plot curve
 //! Updates the data to specified generation, and updates plot info box.
@@ -436,7 +446,9 @@ void PlotCurve::setGeneration(int generation)
     SharedLogVariableDataPtrT pNewData = mpData->getLogDataHandler()->getPlotData(mpData->getFullVariableName(), generation);
     if (pNewData)
     {
+        this->disconnect(mpData.data());
         mpData = pNewData;
+        connectDataSignals();
     }
 
     //! @todo should not all updates happen automatically from one command
@@ -445,17 +457,20 @@ void PlotCurve::setGeneration(int generation)
     updateCurve();
     updatePlotInfoBox();
 
-    //! @todo FIXA What about special X-axis /Peter
-    //    mGeneration = generation;
-    //    mDataVector = mpContainerObject->getPlotDataPtr()->getPlotDataValues(mGeneration, mComponentName, mPortName, mDataName);
-    //    if(mpParentPlotTab->mVectorX.size() == 0)
-    //        mTimeVector = mpContainerObject->getPlotDataPtr()->getTimeVector(mGeneration);
-    //    else
-    //    {
-    //        mpParentPlotTab->mVectorX = mpContainerObject->getPlotDataPtr()->getPlotDataValues(mGeneration, mpParentPlotTab->mVectorXComponent,
-    //                                                                   mpParentPlotTab->mVectorXPortName, mpParentPlotTab->mVectorXDataName);
-    //        mTimeVector = mpParentPlotTab->mVectorX;
-    //    }
+    if (hasSpecialXData())
+    {
+        //! @todo why not be able to ask parent data container for other generations
+        LogDataHandler *pDataHandler = mpSpecialXdata->getLogDataHandler();
+        if (pDataHandler)
+        {
+            SharedLogVariableDataPtrT pNewXData = pDataHandler->getPlotData(mpSpecialXdata->getFullVariableName(), generation);
+            if (pNewXData)
+            {
+                setCustomXData(pNewXData);
+            }
+        }
+
+    }
 }
 
 
@@ -496,8 +511,7 @@ void PlotCurve::setCustomData(const VariableDescription &rVarDesc, const QVector
     deleteCustomData();
 
     //Create new custom data
-    SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription(rVarDesc));
-    LogVariableContainer *pDataContainer = new LogVariableContainer(pVarDesc, 0);
+    LogVariableContainer *pDataContainer = new LogVariableContainer(rVarDesc, 0);
     pDataContainer->addDataGeneration(0, rvTime, rvData);
     mHaveCustomData = true;
     mpData = pDataContainer->getDataGeneration(0);
@@ -505,6 +519,29 @@ void PlotCurve::setCustomData(const VariableDescription &rVarDesc, const QVector
     //Connect signals
     connectDataSignals();
 
+    updateCurve();
+}
+
+void PlotCurve::setCustomXData(const VariableDescription &rVarDesc, const QVector<double> &rvXdata)
+{
+    //! @todo need a nicer way to easily create a new shared logdatavariables
+    LogVariableContainer *pData = new LogVariableContainer(rVarDesc,0);
+    pData->addDataGeneration(0, SharedTimeVectorPtrT(), rvXdata);
+    setCustomXData(pData->getDataGeneration(0));
+}
+
+void PlotCurve::setCustomXData(SharedLogVariableDataPtrT pData)
+{
+    // Disconnect any signals first, in case we are changing x-data
+    if (mpSpecialXdata)
+    {
+        disconnect(mpSpecialXdata.data(),0,this,0);
+    }
+    // Set new data and connect signals
+    mpSpecialXdata = pData;
+    connectDataSignals();
+
+    // Redraw curve
     updateCurve();
 }
 
@@ -562,13 +599,14 @@ void PlotCurve::toFrequencySpectrum()
     varDesc.mDataName = "Value";
     varDesc.mDataUnit = "-";
     this->setCustomData(varDesc, timeVec, dataVec);
-    updateCurve();
 
     varDesc.mDataName = "Frequency";
     varDesc.mDataUnit = "Hz";
-    mpParentPlotTab->changeXVector(timeVec, varDesc);
-    mpParentPlotTab->update();
+    this->setCustomXData(varDesc,timeVec);
+
+    updateCurve();
     updatePlotInfoBox();
+    mpParentPlotTab->update();
 }
 
 void PlotCurve::resetLegendSize()
@@ -899,7 +937,7 @@ void PlotCurve::markActive(bool value)
 }
 
 
-//! @brief Updates the values of a curve
+//! @brief Redraws the curve
 //! Updates a curve with regard to special X-axis, units and scaling.
 //! @todo after updating from python, scale is not refreshed maybe this should be done in here
 //! @todo add optional index if we only want to update particular value
@@ -912,23 +950,27 @@ void PlotCurve::updateCurve()
     }
 
     QVector<double> tempX;
-    QVector<double> tempY = mpData->getDataVector(); // We copy here, it should be faster then peek (at least when data is cached on disc)
+    // We copy here, it should be faster then peek (at least when data is cached on disc)
+    QVector<double> tempY = mpData->getDataVector();
 
-    if(mpParentPlotTab->mHasSpecialXAxis)
+    if(mpSpecialXdata.isNull())
     {
-        tempX.resize(mpParentPlotTab->mSpecialXVector.size());
+        // No special X-data use time vector
+        tempX.resize(mpData->mSharedTimeVectorPtr->size());
         for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
         {
-            tempX[i] = mpParentPlotTab->mSpecialXVector[i]*mScaleX + mOffsetX;
+            tempX[i] = mpData->mSharedTimeVectorPtr->at(i)*mScaleX + mOffsetX;
             tempY[i] = tempY[i]*unitScale*mScaleY + mOffsetY;
         }
     }
     else
     {
-        tempX.resize(mpData->mSharedTimeVectorPtr->size());
+        // Use special X-data
+        // We copy here, it should be faster then peek (at least when data is cached on disc)
+        tempX = mpSpecialXdata->getDataVector();
         for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
         {
-            tempX[i] = mpData->mSharedTimeVectorPtr->at(i)*mScaleX + mOffsetX;
+            tempX[i] = tempX[i]*mScaleX + mOffsetX;
             tempY[i] = tempY[i]*unitScale*mScaleY + mOffsetY;
         }
     }
@@ -961,8 +1003,12 @@ void PlotCurve::deleteCustomData()
 
 void PlotCurve::connectDataSignals()
 {
-    connect(mpData.data(), SIGNAL(dataChanged()), this, SLOT(updateCurve()));
-    connect(mpData.data(), SIGNAL(nameChanged()), this, SLOT(updateCurveName()));
+    connect(mpData.data(), SIGNAL(dataChanged()), this, SLOT(updateCurve()), Qt::UniqueConnection);
+    connect(mpData.data(), SIGNAL(nameChanged()), this, SLOT(updateCurveName()), Qt::UniqueConnection);
+    if (mpSpecialXdata)
+    {
+        connect(mpSpecialXdata.data(), SIGNAL(dataChanged()), this, SLOT(updateCurve()), Qt::UniqueConnection);
+    }
 }
 
 

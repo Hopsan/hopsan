@@ -178,7 +178,8 @@ SOURCES += main.cpp \
     PlotTab.cpp \
     PlotCurve.cpp \
     PlotHandler.cpp \
-    LogVariable.cpp
+    LogVariable.cpp \
+    CachableDataVector.cpp
 
 
 
@@ -249,7 +250,8 @@ HEADERS += MainWindow.h \
     PlotTab.h \
     PlotCurve.h \
     PlotHandler.h \
-    LogVariable.h
+    LogVariable.h \
+    CachableDataVector.h
 
 OTHER_FILES += \
     ../hopsandefaults \

@@ -120,14 +120,18 @@ void Component::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         PlotWindow *pPlotWindow = gpPlotHandler->getPlotWindow(plotName);
         if(this->getPort("in_bottom")->isConnected() && pPlotWindow)
         {
-            VariableDescription varDesc;
-            varDesc.mModelPath = getParentContainerObject()->getModelFileInfo().fileName();
-            varDesc.mComponentName = getPort("in_bottom")->getConnectedPorts().at(0)->mpParentGuiModelObject->getName();
-            varDesc.mPortName = getPort("in_bottom")->getConnectedPorts().at(0)->getPortName();
-            varDesc.mDataName = "Value";
-            varDesc.mDataUnit = gConfig.getDefaultUnit(varDesc.mDataName);
+//            VariableDescription varDesc;
+//            varDesc.mModelPath = getParentContainerObject()->getModelFileInfo().fileName();
+//            varDesc.mComponentName = getPort("in_bottom")->getConnectedPorts().at(0)->mpParentGuiModelObject->getName();
+//            varDesc.mPortName = getPort("in_bottom")->getConnectedPorts().at(0)->getPortName();
+//            varDesc.mDataName = "Value";
+//            varDesc.mDataUnit = gConfig.getDefaultUnit(pVarDesc->mDataName);
+//            //! @todo should not do a copy here, should use original
+//            pPlotWindow->setCustomXVector(mpParentContainerObject->getLogDataHandler()->getPlotDataValues(pVarDesc->getFullName(), -1), varDesc);
 
-            pPlotWindow->changeXVector(mpParentContainerObject->getLogDataHandler()->getPlotDataValues(varDesc.getFullName(), -1), varDesc);
+            QString fullName = makeConcatName(getPort("in_bottom")->getConnectedPorts().at(0)->getGuiModelObjectName(),
+                                              getPort("in_bottom")->getConnectedPorts().at(0)->getPortName(),"Value");
+            pPlotWindow->setCustomXVector(getParentContainerObject()->getLogDataHandler()->getPlotData(fullName, -1));
         }
 
         // No plot window was opened, so it is a non-connected sink - open properties instead

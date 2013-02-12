@@ -48,25 +48,30 @@ public:
     void setTabName(QString name);
 
     void addCurve(PlotCurve *curve, QColor desiredColor=QColor(), HopsanPlotID plotID=FIRSTPLOT);
+    void setCustomXVector(QVector<double> xarray, const VariableDescription &rVarDesc, HopsanPlotID plotID=FIRSTPLOT);
+    void setCustomXVector(SharedLogVariableDataPtrT pData, HopsanPlotID plotID=FIRSTPLOT);
+    void insertMarker(PlotCurve *curve);
     void removeCurve(PlotCurve *curve);
     void removeAllCurvesOnAxis(const int axis);
+
     QList<PlotCurve *> getCurves(HopsanPlotID plotID=FIRSTPLOT);
     void setActivePlotCurve(PlotCurve *pCurve);
     PlotCurve *getActivePlotCurve();
     QwtPlot *getPlot(HopsanPlotID plotID=FIRSTPLOT);
 
-    void showPlot(HopsanPlotID plotID, bool visible);
     int getNumberOfCurves(HopsanPlotID plotID);
-    void update();
-    void insertMarker(PlotCurve *curve);
-    void changeXVector(QVector<double> xarray, const VariableDescription &rVarDesc, HopsanPlotID plotID=FIRSTPLOT);
-    void updateLabels();
     bool isGridVisible();
-    void saveToDomElement(QDomElement &rDomElement, bool dateTime, bool descriptions);
     bool isSpecialPlot();
-    void setBottomAxisLogarithmic(bool value);
     bool hasLogarithmicBottomAxis();
+
+    void showPlot(HopsanPlotID plotID, bool visible);
+    void setBottomAxisLogarithmic(bool value);
     void setLegendsVisible(bool value);
+
+    void update();
+    void updateLabels();
+
+    void saveToDomElement(QDomElement &rDomElement, bool dateTime, bool descriptions);
     void exportToCsv(QString fileName);
 
 protected:
@@ -91,7 +96,7 @@ public slots:
     void enablePan(bool value);
     void enableGrid(bool value);
     void setBackgroundColor();
-    void resetXVector();
+    void resetXTimeVector();
     void exportToXml();
     void exportToCsv();
     void exportToHvc(QString fileName="");
@@ -99,7 +104,6 @@ public slots:
     void exportToGnuplot();
     void exportToPdf();
     void exportToGraphics();
-    //void applyGraphicsSettings();
     void exportToOldHop();
     void exportToPng();
 
@@ -119,16 +123,12 @@ private:
     void constructAxisSettingsDialog();
     void setLegendSymbol(const QString symStyle);
 
-    QwtPlot *mpQwtPlots[2];
+    QGridLayout *mpTabLayout;
     QSint::BarChartPlotter *mpBarPlot;
 
-    QGridLayout *mpLayouta;
-
+    QwtPlot *mpQwtPlots[2];
     QList<PlotCurve *> mPlotCurvePtrs[2];
-    PlotCurve *mpActivePlotCurve;
-    QStringList mCurveColors;
-    QStringList mUsedColors;
-    QwtPlotGrid *mpGrid[2];
+        QwtPlotGrid *mpGrid[2];
     QwtPlotZoomer *mpZoomerLeft[2];
     QwtPlotZoomer *mpZoomerRight[2];
     QwtPlotMagnifier *mpMagnifier[2];
@@ -137,29 +137,24 @@ private:
     QMap<QString, QString> mCurrentUnitsLeft;
     QMap<QString, QString> mCurrentUnitsRight;
     QwtSymbol *mpMarkerSymbol;
-
-
-    bool mRightAxisLogarithmic;
-    bool mLeftAxisLogarithmic;
-    bool mBottomAxisLogarithmic;
-
-
     QRubberBand *mpHoverRect;
+    PlotCurve *mpActivePlotCurve;
+    QStringList mCurveColors;
+    QStringList mUsedColors;
 
-    bool mHasSpecialXAxis;
-    QVector<double> mSpecialXVector;
-    QString mSpecialXVectorLabel;
-    SharedVariableDescriptionT mSpecialXVectorDescription;
+    bool mIsSpecialPlot;
+
+    // Custom X data axis variables
+    bool mHasCustomXData;
+    QString mCustomXDataLabel;
+    SharedLogVariableDataPtrT mpCustomXData;
 
     //Stuff used in export to xml dialog
     QDialog *mpExportXmlDialog;
-
     QSpinBox *mpXmlIndentationSpinBox;
     QCheckBox *mpIncludeTimeCheckBox;
     QCheckBox *mpIncludeDescriptionsCheckBox;
     QTextEdit *mpXmlOutputTextBox;
-
-    bool mIsSpecialPlot;
 
     // Export graphics settings
     QComboBox *mpImageDimUnit;
@@ -192,12 +187,10 @@ private:
     QDoubleSpinBox *mpLegendRightOffset;
     QSpinBox *mpLegendFontSize;
 
-
-
-
-
-
-
+    // Axis properties
+    bool mRightAxisLogarithmic;
+    bool mLeftAxisLogarithmic;
+    bool mBottomAxisLogarithmic;
 
     // Axis settings related member variables
     QDialog *mpSetAxisDialog;

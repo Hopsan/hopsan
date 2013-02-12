@@ -75,7 +75,7 @@ public:
               HopsanPlotID plotID=FIRSTPLOT,
               HopsanPlotCurveType curveType=PORTVARIABLE);
 
-    PlotCurve(const SharedVariableDescriptionT &rVarDesc,
+    PlotCurve(const VariableDescription &rVarDesc,
               const QVector<double> &rXVector,
               const QVector<double> &rYVector,
               int axisY=QwtPlot::yLeft,
@@ -83,11 +83,18 @@ public:
               HopsanPlotID plotID=FIRSTPLOT,
               HopsanPlotCurveType curveType=PORTVARIABLE);
     ~PlotCurve();
-    PlotTab *mpParentPlotTab;
+
 
     QString getCurveName() const;
     HopsanPlotCurveType getCurveType();
     int getAxisY();
+
+    SharedLogVariableDataPtrT getLogDataVariablePtr(); //! @todo is this needed
+    const SharedLogVariableDataPtrT getLogDataVariablePtr() const;
+    QVector<double> getDataVector() const;
+    const QVector<double> &getTimeVector() const;
+    bool hasSpecialXData() const;
+    const SharedLogVariableDataPtrT getSpecialXData() const;
 
     int getGeneration() const;
     QString getComponentName();
@@ -95,21 +102,18 @@ public:
     QString getDataName();
     QString getDataUnit();
 
-    SharedLogVariableDataPtrT getLogDataVariablePtr(); //! @todo is this needed
-    const SharedLogVariableDataPtrT getLogDataVariablePtr() const;
-    QVector<double> getDataVector() const;
-    const QVector<double> &getTimeVector() const;
-
     void setGeneration(int generation);
     void setDataUnit(QString unit);
     void setScaling(double scaleX, double scaleY, double offsetX, double offsetY);
 
     void setCustomData(const VariableDescription &rVarDesc, const QVector<double> &rvTime, const QVector<double> &rvData);
+    void setCustomXData(const VariableDescription &rVarDesc, const QVector<double> &rvXdata);
+    void setCustomXData(SharedLogVariableDataPtrT pData);
 
     void toFrequencySpectrum();
-
     void resetLegendSize();
 
+    // Qwt overloaded function
     QList<QwtLegendData> legendData() const;
 
 signals:
@@ -132,7 +136,6 @@ public slots:
     void setNextGeneration();
     void setAutoUpdate(bool value);
     void performFrequencyAnalysis();
-    //void performSetAxis();
     void markActive(bool value);
 
 private slots:
@@ -140,35 +143,38 @@ private slots:
     void updateCurveName();
 
 private:
-    SharedLogVariableDataPtrT mpData;
-    PlotCurveInfoBox *mpPlotCurveInfoBox;
+    // Private member functions
+    void deleteCustomData();
+    void connectDataSignals();
+    void commonConstructorCode(int axisY, PlotTab *parent, HopsanPlotID plotID, HopsanPlotCurveType curveType);
 
+    // Curve data
     HopsanPlotCurveType mCurveType;
-
-    QColor mLineColor;
-    QString mLineStyle;
-    QString mLineSymbol;
-    int mLineWidth;
-    int mAxisY;
-
-    bool mAutoUpdate;
+    SharedLogVariableDataPtrT mpData;
+    SharedLogVariableDataPtrT mpSpecialXdata;
     bool mHaveCustomData;
-    bool mIsActive;
     double mScaleX;
     double mScaleY;
     double mOffsetX;
     double mOffsetY;
 
-    QwtSymbol *mpCurveSymbol;
-
+    // Curve properties settings
+    PlotCurveInfoBox *mpPlotCurveInfoBox;
+    bool mAutoUpdate;
+    bool mIsActive;
+    int mAxisY;
     QDoubleSpinBox *mpXScaleSpinBox;
     QDoubleSpinBox *mpXOffsetSpinBox;
     QDoubleSpinBox *mpYScaleSpinBox;
     QDoubleSpinBox *mpYOffsetSpinBox;
+    PlotTab *mpParentPlotTab;
 
-    void deleteCustomData();
-    void connectDataSignals();
-    void commonConstructorCode(int axisY, PlotTab *parent, HopsanPlotID plotID, HopsanPlotCurveType curveType);
+    // Line properties
+    QColor mLineColor;
+    QString mLineStyle;
+    QString mLineSymbol;
+    QwtSymbol *mpCurveSymbol;
+    int mLineWidth;
 };
 
 

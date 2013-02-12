@@ -39,11 +39,9 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget)
     : QWidget(pParentPlotTabWidget)
 {
     mpParentPlotTabWidget = pParentPlotTabWidget;
-    //mpParentPlotWindow = parent;
     setAcceptDrops(true);
     setMouseTracking(true);
-    mHasSpecialXAxis=false;
-    mSpecialXVectorLabel = QString("Time [s]");
+    mHasCustomXData=false;
     mLeftAxisLogarithmic = false;
     mRightAxisLogarithmic = false;
     mBottomAxisLogarithmic = false;
@@ -152,7 +150,7 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget)
     constructAxisSettingsDialog();
 
 
-    mpLayouta = new QGridLayout(this);
+    mpTabLayout = new QGridLayout(this);
 
 
 
@@ -160,7 +158,7 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget)
     {
         mpQwtPlots[plotID]->setAutoFillBackground(true);
         mpQwtPlots[plotID]->setPalette(gConfig.getPalette());
-        mpLayouta->addWidget(mpQwtPlots[plotID]);
+        mpTabLayout->addWidget(mpQwtPlots[plotID]);
 
     }
 
@@ -368,7 +366,7 @@ void PlotTab::addBarChart(QStandardItemModel *pItemModel)
 
     mpBarPlot->setModel(pItemModel);
 
-    mpLayouta->addWidget(mpBarPlot);
+    mpTabLayout->addWidget(mpBarPlot);
 }
 
 
@@ -377,9 +375,17 @@ void PlotTab::addBarChart(QStandardItemModel *pItemModel)
 //! @param desiredColor Desired color for curve (will override default colors)
 void PlotTab::addCurve(PlotCurve *curve, QColor desiredColor, HopsanPlotID plotID)
 {
-    if(mHasSpecialXAxis)
+    if(mHasCustomXData)
     {
-        curve->setSamples(mSpecialXVector, curve->getDataVector());
+        if (curve->hasSpecialXData())
+        {
+            //! @todo check that same unit
+            qWarning("todo Check that same unit");
+        }
+        else
+        {
+            curve->setCustomXData(mpCustomXData);
+        }
     }
 
 
@@ -843,6 +849,13 @@ void PlotTab::removeCurve(PlotCurve *curve)
         mPlotCurvePtrs[plotID].removeAll(curve);
     }
     delete(curve);
+
+    // Reset timevector incase we had special x-axis set previously
+    if (mPlotCurvePtrs[plotID].isEmpty() && mHasCustomXData)
+    {
+        resetXTimeVector();
+    }
+
     rescaleToCurves();
     updateLabels();
     update();
@@ -867,22 +880,31 @@ void PlotTab::removeAllCurvesOnAxis(const int axis)
 //! @param portName Name of port form which new data origins
 //! @param dataName Data name (physical quantity) of new data
 //! @param dataUnit Unit of new data
-void PlotTab::changeXVector(QVector<double> xArray, const VariableDescription &rVarDesc, HopsanPlotID plotID)
+void PlotTab::setCustomXVector(QVector<double> xArray, const VariableDescription &rVarDesc, HopsanPlotID plotID)
 {
-    //! @todo maybe create a LogVariableData object and use that instead of maunal hack
-    mHasSpecialXAxis = true;
-    mSpecialXVector = xArray;
+    LogVariableContainer *cont = new LogVariableContainer(rVarDesc,0);
+    cont->addDataGeneration(0, SharedTimeVectorPtrT(), xArray);
+    setCustomXVector(cont->getDataGeneration(-1),plotID);
+}
+
+void PlotTab::setCustomXVector(SharedLogVariableDataPtrT pData, HopsanPlotID plotID)
+{
+    mHasCustomXData = true;
+    mpCustomXData = pData;
 
     for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
     {
-        mPlotCurvePtrs[plotID].at(i)->setSamples(mSpecialXVector, mPlotCurvePtrs[plotID].at(i)->getDataVector());
-        mPlotCurvePtrs[plotID].at(i)->setDataUnit(mPlotCurvePtrs[plotID].at(i)->getDataUnit());
+        if (!mPlotCurvePtrs[plotID].at(i)->hasSpecialXData())
+        {
+            mPlotCurvePtrs[plotID].at(i)->setCustomXData(mpCustomXData);
+        }
+        //mPlotCurvePtrs[plotID].at(i)->setSamples(mSpecialXVector, mPlotCurvePtrs[plotID].at(i)->getDataVector());
+        //mPlotCurvePtrs[plotID].at(i)->setDataUnit(mPlotCurvePtrs[plotID].at(i)->getDataUnit());
     }
-
     rescaleToCurves();
 
-    mSpecialXVectorDescription = SharedVariableDescriptionT(new VariableDescription(rVarDesc));
-    mSpecialXVectorLabel = QString(mSpecialXVectorDescription->mDataName + " [" + mSpecialXVectorDescription->mDataUnit + "]");
+    //mSpecialXVectorDescription = SharedVariableDescriptionT(new VariableDescription(rVarDesc));
+    mCustomXDataLabel = QString(mpCustomXData->getDataName() + " [" + mpCustomXData->getDataUnit() + "]");
 
     updateLabels();
     update();
@@ -895,6 +917,7 @@ void PlotTab::updateLabels()
 {
     for(int plotID=0; plotID<2; ++plotID)
     {
+        mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, QwtText());
         mpQwtPlots[plotID]->setAxisTitle(QwtPlot::yLeft, QwtText());
         mpQwtPlots[plotID]->setAxisTitle(QwtPlot::yRight, QwtText());
 
@@ -921,7 +944,14 @@ void PlotTab::updateLabels()
                     }
                 }
             }
-            mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, QwtText(mSpecialXVectorLabel));
+            if (mHasCustomXData)
+            {
+                mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, QwtText(mCustomXDataLabel));
+            }
+            else
+            {
+                mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, QwtText("Time [s]"));
+            }
         }
         else if(mPlotCurvePtrs[plotID].size()>0 && mPlotCurvePtrs[plotID][0]->getCurveType() == FREQUENCYANALYSIS)
         {
@@ -964,17 +994,19 @@ bool PlotTab::isGridVisible()
 }
 
 
-void PlotTab::resetXVector()
+void PlotTab::resetXTimeVector()
 {
-    mHasSpecialXAxis = false;
+    mHasCustomXData = false;
+    mCustomXDataLabel = "";
 
+    //! @todo what about second plot
     for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
     {
-        mPlotCurvePtrs[FIRSTPLOT].at(i)->setSamples(mPlotCurvePtrs[FIRSTPLOT].at(i)->getTimeVector(), mPlotCurvePtrs[FIRSTPLOT].at(i)->getDataVector());
-        mPlotCurvePtrs[FIRSTPLOT].at(i)->setDataUnit(mPlotCurvePtrs[FIRSTPLOT].at(i)->getDataUnit());
+        mPlotCurvePtrs[FIRSTPLOT].at(i)->setCustomXData(SharedLogVariableDataPtrT()); //Remove any custom x-data
+        //mPlotCurvePtrs[FIRSTPLOT].at(i)->setSamples(mPlotCurvePtrs[FIRSTPLOT].at(i)->getTimeVector(), mPlotCurvePtrs[FIRSTPLOT].at(i)->getDataVector());
+        //mPlotCurvePtrs[FIRSTPLOT].at(i)->setDataUnit(mPlotCurvePtrs[FIRSTPLOT].at(i)->getDataUnit());
     }
 
-    mSpecialXVectorLabel = QString("Time [s]");
     updateLabels();
     update();
 
@@ -1074,11 +1106,15 @@ void PlotTab::exportToCsv(QString fileName)
 
 
     //Cycle plot curves
-    if(mHasSpecialXAxis)
+    if(mHasCustomXData)
     {
-        for(int i=0; i<mSpecialXVector.size(); ++i)
+        //! @todo how to handle this with multiple xvectors per curve
+        //! @todo take into account wheter cached or not, Should have some smart auto function for this in the data object
+
+        QVector<double> xvec = mpCustomXData->getDataVector(); //! @todo shoudl direct access if not in cache
+        for(int i=0; i<xvec.size(); ++i)
         {
-            fileStream << mSpecialXVector[i];
+            fileStream << xvec[i];
             for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT].size(); ++j)
             {
                 fileStream << ", " << mPlotCurvePtrs[FIRSTPLOT][j]->getDataVector()[i];
@@ -1234,12 +1270,14 @@ void PlotTab::exportToMatlab()
     for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
     {
         fileStream << "x" << i << "=[";                                         //Write time/X vector
-        if(mHasSpecialXAxis)
+        if(mHasCustomXData)
         {
-            for(int j=0; j<mSpecialXVector.size(); ++j)
+            //! @todo need smart function to autoselect copy or direct access depending on cached or not (also in other places)
+            QVector<double> xvec = mpCustomXData->getDataVector();
+            for(int j=0; j<xvec.size(); ++j)
             {
                 if(j>0) fileStream << ",";
-                fileStream << mSpecialXVector[j];
+                fileStream << xvec[j];
             }
         }
         else
@@ -1265,12 +1303,14 @@ void PlotTab::exportToMatlab()
     for(int i=0; i<mPlotCurvePtrs[SECONDPLOT].size(); ++i)
     {
         fileStream << "x" << i+mPlotCurvePtrs[FIRSTPLOT].size() << "=[";                                         //Write time/X vector
-        if(mHasSpecialXAxis)
+        if(mHasCustomXData)
         {
-            for(int j=0; j<mSpecialXVector.size(); ++j)
+            //! @todo need smart function to autoselect copy or direct access depending on cached or not (also in other places)
+            QVector<double> xvec = mpCustomXData->getDataVector();
+            for(int j=0; j<xvec.size(); ++j)
             {
                 if(j>0) fileStream << ",";
-                fileStream << mSpecialXVector[j];
+                fileStream << xvec[j];
             }
         }
         else
@@ -1947,13 +1987,14 @@ void PlotTab::saveToDomElement(QDomElement &rDomElement, bool dateTime, bool des
     {
 
         //Cycle plot curves and write data tags
+        QString dummy;
         for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT][0]->getTimeVector().size(); ++j)
         {
             QDomElement dataTag = appendDomElement(rDomElement, "data");
 
-            if(mHasSpecialXAxis)        //Special x-axis, replace time with x-data
+            if(mHasCustomXData)        //Special x-axis, replace time with x-data
             {
-                setQrealAttribute(dataTag, mSpecialXVectorDescription->mDataName, mSpecialXVector[j], 10, 'g');
+                setQrealAttribute(dataTag, mpCustomXData->getDataName(), mpCustomXData->peekData(j,dummy), 10, 'g');
             }
             else                        //X-axis = time
             {
@@ -2631,13 +2672,15 @@ void PlotTab::dropEvent(QDropEvent *event)
             mimeText.remove("HOPSANPLOTDATA:");
 
             QCursor cursor;
-            //! @todo should not be half heigh should be slightly lower (Peters opinion)
-            if(this->mapFromGlobal(cursor.pos()).y() > getPlot()->canvas()->height()/2+getPlot()->canvas()->y()+10 && getNumberOfCurves(FIRSTPLOT) >= 1)
+            if(this->mapFromGlobal(cursor.pos()).y() > getPlot()->canvas()->height()/3+getPlot()->canvas()->y()+10 && getNumberOfCurves(FIRSTPLOT) >= 1)
             {
-                const SharedVariableDescriptionT desc = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotData(mimeText, -1)->getVariableDescription();
-                VariableDescription varDesc = *desc.data();
-                varDesc.mDataUnit = gConfig.getDefaultUnit(varDesc.mDataName);
-                changeXVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotDataValues(desc->getFullName(), -1), varDesc );
+//                const SharedVariableDescriptionT desc = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotData(mimeText, -1)->getVariableDescription();
+//                VariableDescription newDesc = *desc.data(); //Copy data
+//                //! @todo should we realy make a copy here, think we should send the actual shared data ptr (but at the same time we do not want to curve to change original data)
+//                pNewDesc->mDataUnit = gConfig.getDefaultUnit(pNewDesc->mDataName);
+//                setCustomXVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotDataValues(desc->getFullName(), -1), pNewDesc );
+                setCustomXVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotData(mimeText, -1));
+                //! @todo do we need to reset to default unit too ?
             }
             else if(this->mapFromGlobal(cursor.pos()).x() < getPlot()->canvas()->x()+9 + getPlot()->canvas()->width()/2)
             {

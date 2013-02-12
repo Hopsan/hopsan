@@ -66,13 +66,13 @@ LogDataHandler::~LogDataHandler()
     qDebug() << "in LogDataHandler destructor" << endl;
 
     // Clear all data
-    QList<SharedLogVariableContainerPtrT> data = mLogDataMap.values();
+    QList<LogVariableContainer*> data = mLogDataMap.values();
     for (int i=0; i<data.size(); ++i)
     {
-        data[i].clear();
+        delete data[i];
     }
-
-    // Clear generation Cache files (they will remain if until all instances dies)
+    mLogDataMap.clear();
+    // Clear generation Cache files (Individual files will remain if until all instances dies)
     mGenerationCacheMap.clear();
 
     // Remove the cache directory if it is empty, if it is not then cleanup should happen on program exit
@@ -351,13 +351,13 @@ void LogDataHandler::importFromPlo()
         for (int i=1; i<hopOldVector.size(); ++i)
         {
             foundData=true;
-            SharedVariableDescriptionT varDesc = SharedVariableDescriptionT(new VariableDescription());
-            varDesc->mDataName = hopOldVector[i].mDataName;
-            varDesc->mVarType = VariableDescription::I;
+            VariableDescription varDesc;
+            varDesc.mDataName = hopOldVector[i].mDataName;
+            varDesc.mVarType = VariableDescription::I;
             //! @todo what about reading the unit
 
             // First check if a data variable with this name alread exist
-            QString catName = varDesc->getFullName();
+            QString catName = varDesc.getFullName();
             LogDataMapT::iterator dit = mLogDataMap.find(catName);
             // If it exist insert into it
             if (dit != mLogDataMap.end())
@@ -370,7 +370,7 @@ void LogDataHandler::importFromPlo()
                 // Create a new toplevel map item and insert data into the generations map
                 LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc, this);
                 pDataContainer->addDataGeneration(mGenerationNumber, hopOldVector.first().mDataValues, hopOldVector[i].mDataValues);
-                mLogDataMap.insert(catName, SharedLogVariableContainerPtrT(pDataContainer));
+                mLogDataMap.insert(catName, pDataContainer);
             }
         }
 
@@ -481,17 +481,17 @@ void LogDataHandler::collectPlotDataFromModel()
 
 
                     foundData=true;
-                    SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription);
-                    pVarDesc->mModelPath = pModelObject->getParentContainerObject()->getModelFileInfo().fileName();
-                    pVarDesc->mComponentName = pModelObject->getName();
-                    pVarDesc->mPortName = (*pit)->getPortName();
-                    pVarDesc->mDataName = varDescs[i].mName;
-                    pVarDesc->mDataUnit = varDescs[i].mUnit;
-                    pVarDesc->mAliasName  = varDescs[i].mAlias;
-                    pVarDesc->mVarType = VariableDescription::M;
+                    VariableDescription varDesc;
+                    varDesc.mModelPath = pModelObject->getParentContainerObject()->getModelFileInfo().fileName();
+                    varDesc.mComponentName = pModelObject->getName();
+                    varDesc.mPortName = (*pit)->getPortName();
+                    varDesc.mDataName = varDescs[i].mName;
+                    varDesc.mDataUnit = varDescs[i].mUnit;
+                    varDesc.mAliasName  = varDescs[i].mAlias;
+                    varDesc.mVarType = VariableDescription::M;
 
                     // First check if a data variable with this name alread exist
-                    QString catName = pVarDesc->getFullName();
+                    QString catName = varDesc.getFullName();
                     LogDataMapT::iterator it = mLogDataMap.find(catName);
                     // If it exist insert into it
                     if (it != mLogDataMap.end())
@@ -500,29 +500,29 @@ void LogDataHandler::collectPlotDataFromModel()
                         it.value()->addDataGeneration(mGenerationNumber, timeVecPtr, data.second);
 
                         // Update alias if needed
-                        if ( pVarDesc->mAliasName != it.value()->getAliasName() )
+                        if ( varDesc.mAliasName != it.value()->getAliasName() )
                         {
                             // Remove old mention of alias
                             mLogDataMap.remove(it.value()->getAliasName());
 
                             // Update the local alias
-                            it.value()->setAliasName(pVarDesc->mAliasName);
+                            it.value()->setAliasName(varDesc.mAliasName);
 
                             // Insert new alias kv pair
-                            mLogDataMap.insert(pVarDesc->mAliasName, it.value());
+                            mLogDataMap.insert(varDesc.mAliasName, it.value());
                         }
                     }
                     else
                     {
                         // Create a new toplevel map item and insert data into the generations map
-                        SharedLogVariableContainerPtrT pDataContainer = SharedLogVariableContainerPtrT(new LogVariableContainer(pVarDesc, this));
+                        LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc, this);
                         pDataContainer->addDataGeneration(mGenerationNumber, timeVecPtr, data.second);
                         mLogDataMap.insert(catName, pDataContainer);
 
                         // Also insert alias if it exist
-                        if ( !pVarDesc->mAliasName.isEmpty() )
+                        if ( !varDesc.mAliasName.isEmpty() )
                         {
-                            mLogDataMap.insert(pVarDesc->mAliasName, pDataContainer);
+                            mLogDataMap.insert(varDesc.mAliasName, pDataContainer);
                         }
                     }
                 }
@@ -744,7 +744,7 @@ bool LogDataHandler::definePlotAlias(const QString alias, const QString fullName
 
     //
 
-    SharedLogVariableContainerPtrT pData = mLogDataMap.value(fullName);
+    LogVariableContainer *pData = mLogDataMap.value(fullName);
     if (pData)
     {
         // Undefine old alias first
@@ -776,7 +776,7 @@ void LogDataHandler::undefinePlotAlias(QString alias)
     //        QString fullName = pDataContainer->getFullVariableName();
 
 
-    SharedLogVariableContainerPtrT data = mLogDataMap.value(alias, SharedLogVariableContainerPtrT());
+    LogVariableContainer *data = mLogDataMap.value(alias, 0);
     if (data)
     {
         QString comp,port,var;
@@ -796,7 +796,7 @@ void LogDataHandler::undefinePlotAlias(QString alias)
 QString LogDataHandler::getFullNameFromAlias(QString alias)
 {
     //LogVariableContainer *pDataContainer = mPlotAliasMap.value(alias, 0);
-    SharedLogVariableContainerPtrT data = mLogDataMap.value(alias, SharedLogVariableContainerPtrT());
+    LogVariableContainer *data = mLogDataMap.value(alias, 0);
     if (data)
     {
         return data->getFullVariableName();
@@ -811,7 +811,7 @@ QString LogDataHandler::getFullNameFromAlias(QString alias)
 //! @param[in] dataName Name of data variable
 QString LogDataHandler::getAliasFromFullName(QString fullName)
 {
-    SharedLogVariableContainerPtrT pDataContainer = mLogDataMap.value(fullName, SharedLogVariableContainerPtrT());
+    LogVariableContainer *pDataContainer = mLogDataMap.value(fullName, 0);
     if (pDataContainer)
     {
         return pDataContainer->getAliasName();
@@ -1065,11 +1065,11 @@ QString LogDataHandler::assignVariable(const QString &a, const QString &b)
     }
     else if(pData1 == 0)
     {
-        SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription);
-        pVarDesc->mDataName = a;
-        LogVariableContainer *pDataContainer = new LogVariableContainer(pVarDesc, this);
+        VariableDescription varDesc;
+        varDesc.mDataName = a;
+        LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc, this);
         pDataContainer->addDataGeneration(mGenerationNumber, QVector<double>(), QVector<double>());
-        mLogDataMap.insert(a, SharedLogVariableContainerPtrT(pDataContainer));
+        mLogDataMap.insert(a, pDataContainer);
         ++mGenerationNumber;
         pData1 = getPlotData(a,-1);
         SharedLogVariableDataPtrT pTemp = assignVariable(pData1,pData2);
@@ -1226,12 +1226,12 @@ SharedLogVariableDataPtrT LogDataHandler::defineNewVariable(const QString desire
 {
     if(mLogDataMap.find(desiredname) == mLogDataMap.end())
     {
-        SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription);
-        pVarDesc->mDataName = desiredname;
-        pVarDesc->mVarType = VariableDescription::S;
-        LogVariableContainer *pDataContainer = new LogVariableContainer(pVarDesc, this);
+        VariableDescription varDesc;
+        varDesc.mDataName = desiredname;
+        varDesc.mVarType = VariableDescription::S;
+        LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc, this);
         pDataContainer->addDataGeneration(mGenerationNumber, QVector<double>(), QVector<double>());
-        mLogDataMap.insert(pVarDesc->getFullName(), SharedLogVariableContainerPtrT(pDataContainer));
+        mLogDataMap.insert(varDesc.getFullName(), pDataContainer);
         return pDataContainer->getDataGeneration(mGenerationNumber);
     }
     return SharedLogVariableDataPtrT();

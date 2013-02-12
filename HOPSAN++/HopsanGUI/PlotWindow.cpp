@@ -430,9 +430,14 @@ PlotWindow::~PlotWindow()
 }
 
 
-void PlotWindow::changeXVector(QVector<double> xarray, VariableDescription &rVarDesc)
+void PlotWindow::setCustomXVector(QVector<double> xarray, const VariableDescription &rVarDesc)
 {
-    getCurrentPlotTab()->changeXVector(xarray, rVarDesc, FIRSTPLOT);
+    getCurrentPlotTab()->setCustomXVector(xarray, rVarDesc, FIRSTPLOT);
+}
+
+void PlotWindow::setCustomXVector(SharedLogVariableDataPtrT pData)
+{
+    getCurrentPlotTab()->setCustomXVector(pData);
 }
 
 
@@ -604,16 +609,16 @@ void PlotWindow::saveToXml()
         }
         tabElement.setAttribute("color", makeRgbString(mpPlotTabWidget->getTab(i)->getPlot()->canvasBackground().color()));
 
-        if(mpPlotTabWidget->getTab(i)->mHasSpecialXAxis)
+        if(mpPlotTabWidget->getTab(i)->mHasCustomXData)
         {
             QDomElement specialXElement = appendDomElement(tabElement,"specialx");
             //! @todo FIXA /Peter
             //specialXElement.setAttribute("generation",  mpPlotTabs->getTab(i)->mVectorXGeneration);
-            specialXElement.setAttribute("component",   mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mComponentName);
-            specialXElement.setAttribute("port",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mPortName);
-            specialXElement.setAttribute("data",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mDataName);
-            specialXElement.setAttribute("unit",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mDataUnit);
-            specialXElement.setAttribute("model",       mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mModelPath);
+//            specialXElement.setAttribute("component",   mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mComponentName);
+//            specialXElement.setAttribute("port",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mPortName);
+//            specialXElement.setAttribute("data",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mDataName);
+//            specialXElement.setAttribute("unit",        mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mDataUnit);
+//            specialXElement.setAttribute("model",       mpPlotTabWidget->getTab(i)->mSpecialXVectorDescription->mModelPath);
         }
 
         //Add curve elements
@@ -974,7 +979,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
     //    PlotCurve *pNyquistCurve1 = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
     //                                        pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
     //                                        getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
-    PlotCurve *pNyquistCurve1 = new PlotCurve(pOutputCurve->getLogDataVariablePtr()->getVariableDescription(),
+    PlotCurve *pNyquistCurve1 = new PlotCurve(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data(),
                                               vRe, vIm, pOutputCurve->getAxisY(),
                                               getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
     getCurrentPlotTab()->addCurve(pNyquistCurve1);
@@ -982,7 +987,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
     //    PlotCurve *pNyquistCurve2 = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
     //                                        pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
     //                                        getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
-    PlotCurve *pNyquistCurve2 = new PlotCurve(pOutputCurve->getLogDataVariablePtr()->getVariableDescription(),
+    PlotCurve *pNyquistCurve2 = new PlotCurve(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data(),
                                               vRe, vImNeg, pOutputCurve->getAxisY(),
                                               getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
     getCurrentPlotTab()->addCurve(pNyquistCurve2);
@@ -995,7 +1000,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
     //    PlotCurve *pGainCurve = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
     //                                          pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
     //                                          getCurrentPlotTab(), FIRSTPLOT, BODEGAIN);
-    PlotCurve *pGainCurve = new PlotCurve(pOutputCurve->getLogDataVariablePtr()->getVariableDescription(),
+    PlotCurve *pGainCurve = new PlotCurve(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data(),
                                           F, vBodeGain, pOutputCurve->getAxisY(),
                                           getCurrentPlotTab(), FIRSTPLOT, BODEGAIN);
     getCurrentPlotTab()->addCurve(pGainCurve);
@@ -1004,7 +1009,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
     //    PlotCurve *pPhaseCurve = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
     //                                          pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
     //                                          getCurrentPlotTab(), SECONDPLOT, BODEPHASE);
-    PlotCurve *pPhaseCurve = new PlotCurve(pOutputCurve->getLogDataVariablePtr()->getVariableDescription(),
+    PlotCurve *pPhaseCurve = new PlotCurve(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data(),
                                            F, vBodePhase, pOutputCurve->getAxisY(),
                                            getCurrentPlotTab(), SECONDPLOT, BODEPHASE);
     getCurrentPlotTab()->addCurve(pPhaseCurve, QColor(), SECONDPLOT);
@@ -1250,7 +1255,7 @@ void PlotWindow::establishPlotTabConnections()
             mpZoomButton->setChecked(pCurrentTab->mpZoomerLeft[FIRSTPLOT]->isEnabled());
             mpPanButton->setChecked(pCurrentTab->mpPanner[FIRSTPLOT]->isEnabled());
             mpGridButton->setChecked(pCurrentTab->mpGrid[FIRSTPLOT]->isVisible());
-            mpResetXVectorButton->setEnabled(pCurrentTab->mHasSpecialXAxis);
+            mpResetXVectorButton->setEnabled(pCurrentTab->mHasCustomXData);
             mpBodePlotButton->setEnabled(pCurrentTab->getCurves(FIRSTPLOT).size() > 1);
         }
 
@@ -1260,7 +1265,7 @@ void PlotWindow::establishPlotTabConnections()
         connect(mpPanButton,                SIGNAL(toggled(bool)),  pCurrentTab,    SLOT(enablePan(bool)));
         connect(mpBackgroundColorButton,    SIGNAL(triggered()),    pCurrentTab,    SLOT(setBackgroundColor()));
         connect(mpGridButton,               SIGNAL(toggled(bool)),  pCurrentTab,    SLOT(enableGrid(bool)));
-        connect(mpResetXVectorButton,       SIGNAL(triggered()),    pCurrentTab,    SLOT(resetXVector()));
+        connect(mpResetXVectorButton,       SIGNAL(triggered()),    pCurrentTab,    SLOT(resetXTimeVector()));
         connect(mpExportToXmlAction,        SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToXml()));
         connect(mpExportToCsvAction,        SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToCsv()));
         connect(mpExportToHvcAction,        SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToHvc()));

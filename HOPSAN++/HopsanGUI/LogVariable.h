@@ -27,12 +27,12 @@
 
 #include <QSharedPointer>
 #include <QVector>
-#include <QMap>
 #include <QString>
 #include <QColor>
 #include <QObject>
-#include <QFile>
-#include <QDir>
+#include <QPointer>
+
+#include "CachableDataVector.h"
 
 // Forward declaration
 class LogVariableData;
@@ -51,118 +51,7 @@ private:
 QString makeConcatName(const QString componentName, const QString portName, const QString dataName);
 void splitConcatName(const QString fullName, QString &rCompName, QString &rPortName, QString &rVarName);
 
-//! @todo this could be a template
-class CachedSingleDataVector
-{
-public:
-    CachedSingleDataVector(const QVector<double> &rDataVector, const QString fileName=QString());
-    ~CachedSingleDataVector();
 
-    bool setCacheFile(const QString fileName);
-    bool setCached(const bool cached);
-    bool isCached() const;
-
-    int size() const;
-    bool isEmpty() const;
-
-    bool copyData(QVector<double> &rData);
-    bool replaceData(const QVector<double> &rNewData);
-    bool peek(const int idx, double &rVal);
-    bool poke(const int idx, const double val);
-
-    QVector<double> *beginFullVectorOperation();
-    bool endFullVectorOperation(QVector<double> *&rpData);
-
-    QString getError() const;
-
-private:
-    bool writeToCache(const QVector<double> &rDataVector);
-    bool moveToCache();
-    bool readToMem(QVector<double> &rDataVector);
-    bool moveToMem();
-
-    QString mError;
-    QFile mCacheFile;
-    QVector<double> mDataVector;
-    int mNumElements;
-};
-
-
-
-class MultiDataVectorCache
-{
-public:
-    MultiDataVectorCache(const QString fileName);
-    ~MultiDataVectorCache();
-    bool addVector(const QVector<double> &rDataVector, quint64 &rStartByte, quint64 &rNumBytes);
-    bool beginMultiAppend();
-    bool endMultiAppend();
-
-    bool copyData(const quint64 startByte, const quint64 nBytes, QVector<double> &rData);
-    bool replaceData(const quint64 startByte, const QVector<double> &rNewData);
-    bool peek(const quint64 byte, double &rVal);
-    bool poke(const quint64 byte, const double val);
-
-    bool checkoutVector(const quint64 startByte, const quint64 nBytes, QVector<double> *&rpData);
-    bool returnVector(QVector<double> *&rpData);
-
-    QString getError() const;
-
-    void incrementSubscribers();
-    void decrementSubscribers();
-
-protected:
-    typedef struct CheckoutInfo{
-        CheckoutInfo(quint64 sb, quint64 nb) {startByte = sb; nBytes=nb;}
-        quint64 startByte;
-        quint64 nBytes;
-    }CheckoutInfoT;
-
-    bool writeInCache(const quint64 startByte, const QVector<double> &rDataVector);
-    bool appendToCache(const QVector<double> &rDataVector, quint64 &rStartByte, quint64 &rNumBytes);
-    bool readToMem(const quint64 startByte, const quint64 nBytes, QVector<double> *pDataVector);
-    void removeCacheFile();
-
-    QMap<QVector<double> *, CheckoutInfoT> mCheckoutMap;
-    quint64 mNumSubscribers;
-    QFile mCacheFile;
-    QString mError;
-    bool mIsMultiAppending;
-};
-typedef QSharedPointer<MultiDataVectorCache> SharedMultiDataVectorCacheT;
-
-class CachableDataVector
-{
-public:
-    CachableDataVector(const QVector<double> &rDataVector, SharedMultiDataVectorCacheT pMultiCache, const bool cached=true);
-    ~CachableDataVector();
-
-    bool setCached(const bool cached);
-    bool isCached() const;
-
-    int size() const;
-    bool isEmpty() const;
-
-    bool copyData(QVector<double> &rData);
-    bool replaceData(const QVector<double> &rNewData);
-    bool peek(const int idx, double &rVal);
-    bool poke(const int idx, const double val);
-
-    QVector<double> *beginFullVectorOperation();
-    bool endFullVectorOperation(QVector<double> *&rpData);
-
-    QString getError() const;
-
-private:
-    bool moveToCache();
-    bool copyToMem();
-
-    QString mError;
-    SharedMultiDataVectorCacheT mpMultiCache;
-    QVector<double> mDataVector;
-    quint64 mCacheStartByte;
-    quint64 mCacheNumBytes;
-};
 
 //! @class VariableDescription
 //! @brief Container class for strings describing a plot variable
@@ -186,9 +75,11 @@ public:
 
     bool operator==(const VariableDescription &other) const;
 };
-typedef QSharedPointer<VariableDescription> SharedVariableDescriptionT;
 
+typedef QSharedPointer<VariableDescription> SharedVariableDescriptionT;
 typedef QSharedPointer<LogVariableData> SharedLogVariableDataPtrT;
+
+
 
 class LogVariableContainer : public QObject
 {
@@ -197,7 +88,7 @@ public:
     typedef QMap<int, SharedLogVariableDataPtrT> GenerationMapT;
 
     //! @todo also need qucik constructor for creating a container with one generation directly
-    LogVariableContainer(const SharedVariableDescriptionT &rVarDesc, LogDataHandler *pParentLogDataHandler);
+    LogVariableContainer(const VariableDescription &rVarDesc, LogDataHandler *pParentLogDataHandler);
     ~LogVariableContainer();
     void addDataGeneration(const int generation, const QVector<double> &rTime, const QVector<double> &rData);
     void addDataGeneration(const int generation, const SharedTimeVectorPtrT time, const QVector<double> &rData);
@@ -233,7 +124,6 @@ private:
     SharedVariableDescriptionT mVariableDescription;
     GenerationMapT mDataGenerations;
 };
-typedef QSharedPointer<LogVariableContainer> SharedLogVariableContainerPtrT;
 
 
 class LogVariableData : public QObject
@@ -302,9 +192,8 @@ protected:
 private:
     typedef QVector<double> DataVectorT;
     CachableDataVector *mpCachedDataVector;
-    LogVariableContainer *mpParentVariableContainer;
+    QPointer<LogVariableContainer> mpParentVariableContainer;
     SharedVariableDescriptionT mpVariableDescription;
 };
-
 
 #endif // LOGVARIABLE_H
