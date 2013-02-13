@@ -13,6 +13,7 @@
 #include <QCheckBox>
 #include <QComboBox>
 #include <QHBoxLayout>
+#include <QLineEdit>
 
 #include "LogVariable.h"
 #include "common.h"
@@ -35,12 +36,26 @@ public:
 };
 
 
-class PlotCurveInfoBox : public QWidget
+class CustomXDataDropEdit : public QLineEdit
+{
+    Q_OBJECT
+public:
+    CustomXDataDropEdit(QWidget *pParent=0);
+
+signals:
+    void newXData(QString fullName);
+
+protected:
+    void dropEvent(QDropEvent *e);
+
+};
+
+class CurveInfoBox : public QWidget
 {
     Q_OBJECT
     friend class PlotCurve;
 public:
-    PlotCurveInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent);
+    CurveInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent);
     void setLineColor(const QColor color);
     void updateInfo();
 
@@ -50,13 +65,17 @@ private:
     PlotCurve *mpParentPlotCurve;
     QLabel *mpTitle;
     QToolButton *mpColorBlob;
-    QToolButton *mpPreviousButton;
-    QToolButton *mpNextButton;
+//    QToolButton *mpPreviousButton;
+//    QToolButton *mpNextButton;
+    QSpinBox *mpGenerationSpinBox;
     QLabel *mpGenerationLabel;
+    CustomXDataDropEdit *mpCustomXDataDrop;
+    QToolButton *mpResetTimeButton;
 
 private slots:
     void actiavateCurve(bool active);
-
+    void setXData(QString fullName);
+    void resetTimeVector();
 };
 
 
@@ -64,7 +83,7 @@ private slots:
 class PlotCurve : public QObject, public QwtPlotCurve
 {
     Q_OBJECT
-    friend class PlotCurveInfoBox;
+    friend class CurveInfoBox;
     friend class PlotWindow;
 public:
     enum {LegendShowLineAndSymbol=QwtPlotCurve::LegendShowBrush+1};
@@ -92,8 +111,8 @@ public:
     const SharedLogVariableDataPtrT getLogDataVariablePtr() const;
     QVector<double> getDataVector() const;
     const QVector<double> &getTimeVector() const;
-    bool hasSpecialXData() const;
-    const SharedLogVariableDataPtrT getSpecialXData() const;
+    bool hasCustomXData() const;
+    const SharedLogVariableDataPtrT getCustomXData() const;
 
     int getGeneration() const;
     QString getComponentName();
@@ -101,13 +120,13 @@ public:
     QString getDataName();
     QString getDataUnit();
 
-    void setGeneration(int generation);
     void setDataUnit(QString unit);
     void setScaling(double scaleX, double scaleY, double offsetX, double offsetY);
 
     void setCustomData(const VariableDescription &rVarDesc, const QVector<double> &rvTime, const QVector<double> &rvData);
     void setCustomXData(const VariableDescription &rVarDesc, const QVector<double> &rvXdata);
     void setCustomXData(SharedLogVariableDataPtrT pData);
+    void setCustomXData(const QString fullName);
 
     void toFrequencySpectrum(const bool doPowerSpectrum=false);
     void resetLegendSize();
@@ -119,6 +138,9 @@ signals:
     void curveDataUpdated();
 
 public slots:
+    void setGeneration(int generation);
+    void setPreviousGeneration();
+    void setNextGeneration();
 
     void setLineWidth(int);
     void setLineStyle(QString lineStyle);
@@ -130,8 +152,7 @@ public slots:
     void updateToNewGeneration();
     void updatePlotInfoBox();
     void removeMe();
-    void setPreviousGeneration();
-    void setNextGeneration();
+
     void setAutoUpdate(bool value);
     void performFrequencyAnalysis();
     void markActive(bool value);
@@ -149,7 +170,7 @@ private:
     // Curve data
     HopsanPlotCurveType mCurveType;
     SharedLogVariableDataPtrT mpData;
-    SharedLogVariableDataPtrT mpSpecialXdata;
+    SharedLogVariableDataPtrT mpCustomXdata;
     bool mHaveCustomData;
     double mScaleX;
     double mScaleY;
@@ -157,7 +178,7 @@ private:
     double mOffsetY;
 
     // Curve properties settings
-    PlotCurveInfoBox *mpPlotCurveInfoBox;
+    CurveInfoBox *mpPlotCurveInfoBox;
     bool mAutoUpdate;
     bool mIsActive;
     int mAxisY;

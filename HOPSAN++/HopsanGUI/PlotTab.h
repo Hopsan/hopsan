@@ -48,8 +48,8 @@ public:
     void setTabName(QString name);
 
     void addCurve(PlotCurve *curve, QColor desiredColor=QColor(), HopsanPlotID plotID=FIRSTPLOT);
-    void setCustomXVector(QVector<double> xarray, const VariableDescription &rVarDesc, HopsanPlotID plotID=FIRSTPLOT);
-    void setCustomXVector(SharedLogVariableDataPtrT pData, HopsanPlotID plotID=FIRSTPLOT);
+    void setCustomXVectorForAll(QVector<double> xarray, const VariableDescription &rVarDesc, HopsanPlotID plotID=FIRSTPLOT);
+    void setCustomXVectorForAll(SharedLogVariableDataPtrT pData, HopsanPlotID plotID=FIRSTPLOT);
     void insertMarker(PlotCurve *curve);
     void removeCurve(PlotCurve *curve);
     void removeAllCurvesOnAxis(const int axis);
@@ -122,6 +122,7 @@ private:
     void constructLegendSettingsDialog();
     void constructAxisSettingsDialog();
     void setLegendSymbol(const QString symStyle);
+    void setTabOnlyCustomXVector(SharedLogVariableDataPtrT pData, HopsanPlotID plotID=FIRSTPLOT);
 
     QGridLayout *mpTabLayout;
     QSint::BarChartPlotter *mpBarPlot;

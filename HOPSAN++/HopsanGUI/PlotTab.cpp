@@ -392,7 +392,7 @@ void PlotTab::addCurve(PlotCurve *curve, QColor desiredColor, HopsanPlotID plotI
 {
     if(mHasCustomXData)
     {
-        if (curve->hasSpecialXData())
+        if (curve->hasCustomXData())
         {
             //! @todo check that same unit
             qWarning("todo Check that same unit");
@@ -486,8 +486,17 @@ void PlotTab::rescaleToCurves()
             xMin=mPlotCurvePtrs[plotID].first()->minXValue();
             xMax=mPlotCurvePtrs[plotID].first()->maxXValue();
 
+            bool someoneHasCustomXdata = false;
             for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
             {
+                // First check if some curve hav a custom x-axis and plot does not
+                someoneHasCustomXdata = someoneHasCustomXdata || mPlotCurvePtrs[plotID].at(i)->hasCustomXData();
+                if (!mHasCustomXData && someoneHasCustomXdata)
+                {
+                    //! @todo maybe should do this with signal slot instead, to avoid unesisarry checks all the time
+                    setTabOnlyCustomXVector(mPlotCurvePtrs[plotID].at(i)->getCustomXData());
+                }
+
                 //! @todo we could speed this up by not checking min max values in case an axis is set to be locked
                 if(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yLeft)
                 {
@@ -570,6 +579,11 @@ void PlotTab::rescaleToCurves()
                     xMin=mPlotCurvePtrs[plotID].at(i)->minXValue();
                 if(mPlotCurvePtrs[plotID].at(i)->maxXValue() > xMax)
                     xMax=mPlotCurvePtrs[plotID].at(i)->maxXValue();
+            }
+
+            if (mHasCustomXData && !someoneHasCustomXdata)
+            {
+                this->resetXTimeVector();
             }
         }
         else    //No curves
@@ -895,35 +909,27 @@ void PlotTab::removeAllCurvesOnAxis(const int axis)
 //! @param portName Name of port form which new data origins
 //! @param dataName Data name (physical quantity) of new data
 //! @param dataUnit Unit of new data
-void PlotTab::setCustomXVector(QVector<double> xArray, const VariableDescription &rVarDesc, HopsanPlotID plotID)
+void PlotTab::setCustomXVectorForAll(QVector<double> xArray, const VariableDescription &rVarDesc, HopsanPlotID plotID)
 {
     LogVariableContainer *cont = new LogVariableContainer(rVarDesc,0);
     cont->addDataGeneration(0, SharedTimeVectorPtrT(), xArray);
-    setCustomXVector(cont->getDataGeneration(-1),plotID);
+    setCustomXVectorForAll(cont->getDataGeneration(-1),plotID);
 }
 
-void PlotTab::setCustomXVector(SharedLogVariableDataPtrT pData, HopsanPlotID plotID)
+void PlotTab::setCustomXVectorForAll(SharedLogVariableDataPtrT pData, HopsanPlotID plotID)
 {
-    mHasCustomXData = true;
-    mpCustomXData = pData;
-
     for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
     {
-        if (!mPlotCurvePtrs[plotID].at(i)->hasSpecialXData())
+        if (!mPlotCurvePtrs[plotID].at(i)->hasCustomXData())
         {
-            mPlotCurvePtrs[plotID].at(i)->setCustomXData(mpCustomXData);
+            mPlotCurvePtrs[plotID].at(i)->setCustomXData(pData);
         }
         //mPlotCurvePtrs[plotID].at(i)->setSamples(mSpecialXVector, mPlotCurvePtrs[plotID].at(i)->getDataVector());
         //mPlotCurvePtrs[plotID].at(i)->setDataUnit(mPlotCurvePtrs[plotID].at(i)->getDataUnit());
     }
     rescaleToCurves();
 
-    //mSpecialXVectorDescription = SharedVariableDescriptionT(new VariableDescription(rVarDesc));
-    mCustomXDataLabel = QString(mpCustomXData->getDataName() + " [" + mpCustomXData->getDataUnit() + "]");
-
-    updateLabels();
-    update();
-    mpParentPlotWindow->mpResetXVectorButton->setEnabled(true);
+    setTabOnlyCustomXVector(pData,plotID);
 }
 
 
@@ -2571,6 +2577,17 @@ void PlotTab::setLegendSymbol(const QString symStyle)
     }
 }
 
+void PlotTab::setTabOnlyCustomXVector(SharedLogVariableDataPtrT pData, HopsanPlotID plotID)
+{
+    mHasCustomXData = true;
+    mpCustomXData = pData;
+    mCustomXDataLabel = QString(mpCustomXData->getDataName() + " [" + mpCustomXData->getDataUnit() + "]");
+
+    updateLabels();
+    update();
+    mpParentPlotWindow->mpResetXVectorButton->setEnabled(true);
+}
+
 QSizeF PlotTab::calcMMSize() const
 {
     QSizeF pxSize = calcPXSize();
@@ -2694,7 +2711,7 @@ void PlotTab::dropEvent(QDropEvent *event)
 //                //! @todo should we realy make a copy here, think we should send the actual shared data ptr (but at the same time we do not want to curve to change original data)
 //                pNewDesc->mDataUnit = gConfig.getDefaultUnit(pNewDesc->mDataName);
 //                setCustomXVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotDataValues(desc->getFullName(), -1), pNewDesc );
-                setCustomXVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotData(mimeText, -1));
+                setCustomXVectorForAll(gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotData(mimeText, -1));
                 //! @todo do we need to reset to default unit too ?
             }
             else if(this->mapFromGlobal(cursor.pos()).x() < getPlot()->canvas()->x()+9 + getPlot()->canvas()->width()/2)

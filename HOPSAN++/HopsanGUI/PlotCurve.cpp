@@ -14,11 +14,28 @@
 #include <limits>
 const double DBLMAX = std::numeric_limits<double>::max();
 
+CustomXDataDropEdit::CustomXDataDropEdit(QWidget *pParent)
+    : QLineEdit(pParent)
+{
+    //Nothing
+}
+
+void CustomXDataDropEdit::dropEvent(QDropEvent *e)
+{
+    QLineEdit::dropEvent(e);
+    QString mimeText = e->mimeData()->text();
+    if(mimeText.startsWith("HOPSANPLOTDATA:"))
+    {
+        mimeText.remove("HOPSANPLOTDATA:");
+    }
+    emit newXData(mimeText);
+}
+
 
 //! @brief Constructor for plot info box
 //! @param pParentPlotCurve pointer to parent plot curve
 //! @param parent Pointer to parent widget
-PlotCurveInfoBox::PlotCurveInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
+CurveInfoBox::CurveInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     : QWidget(parent)
 {
     mpParentPlotCurve = pParentPlotCurve;
@@ -34,15 +51,26 @@ PlotCurveInfoBox::PlotCurveInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     mpTitle->setAlignment(Qt::AlignHCenter);
     refreshTitle();
 
-    mpPreviousButton = new QToolButton(this);
-    mpPreviousButton->setToolTip("Previous Generation");
-    mpPreviousButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-StepLeft.png"));
+    mpCustomXDataDrop = new CustomXDataDropEdit(this);
+    mpCustomXDataDrop->setToolTip("Drag and Drop here to set Custom XData vVctor");
+    mpResetTimeButton = new QToolButton(this);
+    mpResetTimeButton->setToolTip("Reset Time Vector");
+    mpResetTimeButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetTimeVector.png"));
+    mpResetTimeButton->setEnabled(false);
 
-    mpNextButton = new QToolButton(this);
-    mpNextButton->setToolTip("Next Generation");
-    mpNextButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-StepRight.png"));
+//    mpPreviousButton = new QToolButton(this);
+//    mpPreviousButton->setToolTip("Previous Generation");
+//    mpPreviousButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-StepLeft.png"));
+
+//    mpNextButton = new QToolButton(this);
+//    mpNextButton->setToolTip("Next Generation");
+//    mpNextButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-StepRight.png"));
+
+    mpGenerationSpinBox = new QSpinBox(this);
+    mpGenerationSpinBox->setToolTip("Change generation");
 
     mpGenerationLabel = new QLabel(this);
+    mpGenerationLabel->setToolTip("Available generations");
     QFont tempFont = mpGenerationLabel->font();
     tempFont.setBold(true);
     mpGenerationLabel->setFont(tempFont);
@@ -109,9 +137,12 @@ PlotCurveInfoBox::PlotCurveInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     QHBoxLayout *pInfoBoxLayout = new QHBoxLayout(this);
     pInfoBoxLayout->addWidget(mpColorBlob);
     pInfoBoxLayout->addWidget(mpTitle);
+    pInfoBoxLayout->addWidget(mpCustomXDataDrop);
+    pInfoBoxLayout->addWidget(mpResetTimeButton);
+    pInfoBoxLayout->addWidget(mpGenerationSpinBox);
     pInfoBoxLayout->addWidget(mpGenerationLabel);
-    pInfoBoxLayout->addWidget(mpPreviousButton);
-    pInfoBoxLayout->addWidget(mpNextButton);
+    //pInfoBoxLayout->addWidget(mpPreviousButton);
+    //pInfoBoxLayout->addWidget(mpNextButton);
     pInfoBoxLayout->addWidget(pAutoUpdateCheckBox);
     pInfoBoxLayout->addWidget(pFrequencyAnalysisButton);
     pInfoBoxLayout->addWidget(pScaleButton);
@@ -124,30 +155,34 @@ PlotCurveInfoBox::PlotCurveInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
 
     setLayout(pInfoBoxLayout);
 
-    connect(mpColorBlob,               SIGNAL(clicked(bool)),  this,               SLOT(actiavateCurve(bool)));
-    connect(mpPreviousButton,          SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(setPreviousGeneration()));
-    connect(mpNextButton,              SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(setNextGeneration()));
-    connect(pAutoUpdateCheckBox,       SIGNAL(toggled(bool)),  mpParentPlotCurve,  SLOT(setAutoUpdate(bool)));
-    connect(pFrequencyAnalysisButton,  SIGNAL(clicked(bool)),  mpParentPlotCurve,  SLOT(performFrequencyAnalysis()));
-    connect(pColorButton,              SIGNAL(clicked()),      mpParentPlotCurve,  SLOT(setLineColor()));
-    connect(pScaleButton,              SIGNAL(clicked()),      mpParentPlotCurve,  SLOT(openScaleDialog()));
-    connect(pCloseButton,              SIGNAL(clicked()),      mpParentPlotCurve,  SLOT(removeMe()));
-    connect(pSizeSpinBox,    SIGNAL(valueChanged(int)),            mpParentPlotCurve, SLOT(setLineWidth(int)));
-    connect(pLineStyleCombo, SIGNAL(currentIndexChanged(QString)), mpParentPlotCurve, SLOT(setLineStyle(QString)));
-    connect(pLineSymbol,     SIGNAL(currentIndexChanged(QString)), mpParentPlotCurve, SLOT(setLineSymbol(QString)));
+    connect(mpColorBlob,               SIGNAL(clicked(bool)),       this,               SLOT(actiavateCurve(bool)));
+    connect(mpCustomXDataDrop,         SIGNAL(newXData(QString)),   this,               SLOT(setXData(QString)));
+    connect(mpResetTimeButton,         SIGNAL(clicked()),           this,               SLOT(resetTimeVector()));
+//    connect(mpPreviousButton,          SIGNAL(clicked(bool)),       mpParentPlotCurve,  SLOT(setPreviousGeneration()));
+//    connect(mpNextButton,              SIGNAL(clicked(bool)),       mpParentPlotCurve,  SLOT(setNextGeneration()));
+    connect(mpGenerationSpinBox,       SIGNAL(valueChanged(int)),   this,               SLOT(setGeneration(int)));
+    connect(pAutoUpdateCheckBox,       SIGNAL(toggled(bool)),       mpParentPlotCurve,  SLOT(setAutoUpdate(bool)));
+    connect(pFrequencyAnalysisButton,  SIGNAL(clicked(bool)),       mpParentPlotCurve,  SLOT(performFrequencyAnalysis()));
+    connect(pColorButton,              SIGNAL(clicked()),           mpParentPlotCurve,  SLOT(setLineColor()));
+    connect(pScaleButton,              SIGNAL(clicked()),           mpParentPlotCurve,  SLOT(openScaleDialog()));
+    connect(pCloseButton,              SIGNAL(clicked()),           mpParentPlotCurve,  SLOT(removeMe()));
+    connect(pSizeSpinBox,    SIGNAL(valueChanged(int)),             mpParentPlotCurve,  SLOT(setLineWidth(int)));
+    connect(pLineStyleCombo, SIGNAL(currentIndexChanged(QString)),  mpParentPlotCurve,  SLOT(setLineStyle(QString)));
+    connect(pLineSymbol,     SIGNAL(currentIndexChanged(QString)),  mpParentPlotCurve,  SLOT(setLineSymbol(QString)));
 
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     if(mpParentPlotCurve->getCurveType() != PORTVARIABLE)
     {
         pAutoUpdateCheckBox->setDisabled(true);
-        mpNextButton->setDisabled(true);
-        mpPreviousButton->setDisabled(true);
+        mpGenerationSpinBox->setDisabled(true);
+//        mpNextButton->setDisabled(true);
+//        mpPreviousButton->setDisabled(true);
         pFrequencyAnalysisButton->setDisabled(true);
     }
 }
 
-void PlotCurveInfoBox::setLineColor(const QColor color)
+void CurveInfoBox::setLineColor(const QColor color)
 {
     QString buttonStyle;
 //    buttonStyle.append(QString("QToolButton                 { border: 1px solid gray;               border-style: outset;	border-radius: 0px;    	padding: 2px;   background-color: rgb(%1,%2,%3) } ").arg(color.red()).arg(color.green()).arg(color.blue()));
@@ -175,39 +210,51 @@ void PlotCurveInfoBox::setLineColor(const QColor color)
 }
 
 //! @brief Updates buttons and text in plot info box to correct values
-void PlotCurveInfoBox::updateInfo()
+void CurveInfoBox::updateInfo()
 {
     // Enable/diable generation buttons
     const int lowGen = mpParentPlotCurve->getLogDataVariablePtr()->getLowestGeneration();
     const int highGen = mpParentPlotCurve->getLogDataVariablePtr()->getHighestGeneration();
     const int gen = mpParentPlotCurve->getGeneration();
     const int nGen = mpParentPlotCurve->getLogDataVariablePtr()->getNumGenerations();
-    mpPreviousButton->setEnabled( (gen > lowGen) && (nGen > 1) );
-    mpNextButton->setEnabled( (gen < highGen) && ( nGen > 1) );
+//    mpPreviousButton->setEnabled( (gen > lowGen) && (nGen > 1) );
+//    mpNextButton->setEnabled( (gen < highGen) && ( nGen > 1) );
+    mpGenerationSpinBox->setMinimum(lowGen+1);
+    mpGenerationSpinBox->setMaximum(highGen+1);
+    mpGenerationSpinBox->setValue(gen+1);
+    mpGenerationSpinBox->setEnabled(nGen > 1);
 
     // Set generation number strings
-    QString numString1, numString2, numString3;
-    numString1.setNum(gen+1);
     //! @todo this will show strange when we have deleted old generations, maybe we should reassign all generations when we delete old data (costly)
-    numString2.setNum(lowGen+1);
-    numString3.setNum(highGen+1);
-    mpGenerationLabel->setText(numString1 + " (" + numString2 + "," + numString3 + ")");
+    mpGenerationLabel->setText(QString("[%1,%2]").arg(lowGen+1).arg(highGen+1));
 
     // Update curve name
     refreshTitle();
+
+    // Update Xdata
+    if (mpParentPlotCurve->hasCustomXData())
+    {
+        mpCustomXDataDrop->setText(mpParentPlotCurve->getCustomXData()->getFullVariableName());
+        mpResetTimeButton->setEnabled(true);
+    }
+    else
+    {
+        mpCustomXDataDrop->setText("");
+        mpResetTimeButton->setEnabled(false);
+    }
 }
 
-void PlotCurveInfoBox::refreshTitle()
+void CurveInfoBox::refreshTitle()
 {
     mpTitle->setText(mpParentPlotCurve->getCurveName() + " ["+mpParentPlotCurve->getDataUnit()+"]");
 }
 
-void PlotCurveInfoBox::refreshActive(bool active)
+void CurveInfoBox::refreshActive(bool active)
 {
     mpColorBlob->setChecked(active);
 }
 
-void PlotCurveInfoBox::actiavateCurve(bool active)
+void CurveInfoBox::actiavateCurve(bool active)
 {
     if(active)
     {
@@ -217,6 +264,16 @@ void PlotCurveInfoBox::actiavateCurve(bool active)
     {
         mpParentPlotCurve->mpParentPlotTab->setActivePlotCurve(0);
     }
+}
+
+void CurveInfoBox::setXData(QString fullName)
+{
+    mpParentPlotCurve->setCustomXData(fullName);
+}
+
+void CurveInfoBox::resetTimeVector()
+{
+    mpParentPlotCurve->setCustomXData("");
 }
 
 //! @brief Constructor for plot curves.
@@ -289,7 +346,7 @@ void PlotCurve::commonConstructorCode(int axisY,
 
 
     //Create the plot info box
-    mpPlotCurveInfoBox = new PlotCurveInfoBox(this, mpParentPlotTab);
+    mpPlotCurveInfoBox = new CurveInfoBox(this, mpParentPlotTab);
     mpPlotCurveInfoBox->setPalette(gConfig.getPalette());
     updatePlotInfoBox();
     mpParentPlotTab->mpCurveInfoScrollArea->widget()->layout()->addWidget(mpPlotCurveInfoBox);
@@ -425,14 +482,14 @@ const QVector<double> &PlotCurve::getTimeVector() const
     return *(mpData->mSharedTimeVectorPtr.data());
 }
 
-bool PlotCurve::hasSpecialXData() const
+bool PlotCurve::hasCustomXData() const
 {
-    return !mpSpecialXdata.isNull();
+    return !mpCustomXdata.isNull();
 }
 
-const SharedLogVariableDataPtrT PlotCurve::getSpecialXData() const
+const SharedLogVariableDataPtrT PlotCurve::getCustomXData() const
 {
-    return mpSpecialXdata;
+    return mpCustomXdata;
 }
 
 
@@ -455,13 +512,13 @@ void PlotCurve::setGeneration(int generation)
     updateCurve();
     updatePlotInfoBox();
 
-    if (hasSpecialXData())
+    if (hasCustomXData())
     {
         //! @todo why not be able to ask parent data container for other generations
-        LogDataHandler *pDataHandler = mpSpecialXdata->getLogDataHandler();
+        LogDataHandler *pDataHandler = mpCustomXdata->getLogDataHandler();
         if (pDataHandler)
         {
-            SharedLogVariableDataPtrT pNewXData = pDataHandler->getPlotData(mpSpecialXdata->getFullVariableName(), generation);
+            SharedLogVariableDataPtrT pNewXData = pDataHandler->getPlotData(mpCustomXdata->getFullVariableName(), generation);
             if (pNewXData)
             {
                 setCustomXData(pNewXData);
@@ -531,16 +588,38 @@ void PlotCurve::setCustomXData(const VariableDescription &rVarDesc, const QVecto
 void PlotCurve::setCustomXData(SharedLogVariableDataPtrT pData)
 {
     // Disconnect any signals first, in case we are changing x-data
-    if (mpSpecialXdata)
+    if (mpCustomXdata)
     {
-        disconnect(mpSpecialXdata.data(),0,this,0);
+        disconnect(mpCustomXdata.data(),0,this,0);
     }
     // Set new data and connect signals
-    mpSpecialXdata = pData;
+    mpCustomXdata = pData;
     connectDataSignals();
 
     // Redraw curve
     updateCurve();
+    mpPlotCurveInfoBox->updateInfo();
+}
+
+void PlotCurve::setCustomXData(const QString fullName)
+{
+    // If empty then reset time vector
+    if (fullName.isEmpty())
+    {
+        setCustomXData(SharedLogVariableDataPtrT());
+    }
+    else
+    {
+        LogDataHandler *pHandler = mpData->getLogDataHandler();
+        if (pHandler)
+        {
+            SharedLogVariableDataPtrT pData = pHandler->getPlotData(fullName, mpData->getGeneration());
+            if (pData)
+            {
+                setCustomXData(pData);
+            }
+        }
+    }
 }
 
 
@@ -934,7 +1013,7 @@ void PlotCurve::updateCurve()
     // We copy here, it should be faster then peek (at least when data is cached on disc)
     QVector<double> tempY = mpData->getDataVector();
 
-    if(mpSpecialXdata.isNull())
+    if(mpCustomXdata.isNull())
     {
         // No special X-data use time vector
         tempX.resize(mpData->mSharedTimeVectorPtr->size());
@@ -948,7 +1027,7 @@ void PlotCurve::updateCurve()
     {
         // Use special X-data
         // We copy here, it should be faster then peek (at least when data is cached on disc)
-        tempX = mpSpecialXdata->getDataVector();
+        tempX = mpCustomXdata->getDataVector();
         for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
         {
             tempX[i] = tempX[i]*mScaleX + mOffsetX;
@@ -986,9 +1065,9 @@ void PlotCurve::connectDataSignals()
 {
     connect(mpData.data(), SIGNAL(dataChanged()), this, SLOT(updateCurve()), Qt::UniqueConnection);
     connect(mpData.data(), SIGNAL(nameChanged()), this, SLOT(updateCurveName()), Qt::UniqueConnection);
-    if (mpSpecialXdata)
+    if (mpCustomXdata)
     {
-        connect(mpSpecialXdata.data(), SIGNAL(dataChanged()), this, SLOT(updateCurve()), Qt::UniqueConnection);
+        connect(mpCustomXdata.data(), SIGNAL(dataChanged()), this, SLOT(updateCurve()), Qt::UniqueConnection);
     }
 }
 

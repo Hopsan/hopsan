@@ -325,24 +325,7 @@ PlotWindow::PlotWindow(const QString name, MainWindow *parent)
     pLocalPlotWidgetDock->toggleViewAction()->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowVariableList.png"));
     connect(pLocalPlotWidgetDock->toggleViewAction(), SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
-    // Setup PlotCurveInfoBox stuff
-//    mpPlotCurveInfoLayout = new QVBoxLayout();
-    //QWidget *pPlotCurveInfoWidget = new QWidget(this);
-//    mpPlotCurveInfoWidget = new QWidget(this);
-//    mpPlotCurveInfoWidget->setAutoFillBackground(true);
-//    mpPlotCurveInfoWidget->setPalette(gConfig.getPalette());
-//    mpPlotCurveInfoLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
-//    mpPlotCurveInfoLayout->setSpacing(1);
-//    mpPlotCurveInfoLayout->setMargin(1);
-//    pPlotCurveInfoWidget->setLayout(mpPlotCurveInfoLayout);
-
-//    mpPlotCurveInfoScrollArea = new QScrollArea();
-//    //pPlotCurveInfoScrollArea->setWidget(mpPlotCurveInfoWidget);
-//    mpPlotCurveInfoScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-//    mpPlotCurveInfoScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-//    mpPlotCurveInfoScrollArea->setPalette(gConfig.getPalette());
-//    mpPlotCurveInfoScrollArea->setMinimumHeight(110);
-
+    // Setup CurveInfoBox stuff
     mpCurveInfoStack = new QStackedWidget(this);
 
     mpCurveInfoDock = new QDockWidget(tr("PlotCurve Settings"), this);
@@ -435,12 +418,12 @@ PlotWindow::~PlotWindow()
 
 void PlotWindow::setCustomXVector(QVector<double> xarray, const VariableDescription &rVarDesc)
 {
-    getCurrentPlotTab()->setCustomXVector(xarray, rVarDesc, FIRSTPLOT);
+    getCurrentPlotTab()->setCustomXVectorForAll(xarray, rVarDesc, FIRSTPLOT);
 }
 
 void PlotWindow::setCustomXVector(SharedLogVariableDataPtrT pData)
 {
-    getCurrentPlotTab()->setCustomXVector(pData);
+    getCurrentPlotTab()->setCustomXVectorForAll(pData);
 }
 
 

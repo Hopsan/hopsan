@@ -65,6 +65,8 @@ public:
 
 public slots:
     void updateList();
+
+protected slots:
     PlotWindow *createPlotWindow(QTreeWidgetItem *item);
 
 protected:
