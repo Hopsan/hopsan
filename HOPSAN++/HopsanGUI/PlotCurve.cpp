@@ -292,9 +292,8 @@ void PlotCurve::commonConstructorCode(int axisY,
     mpPlotCurveInfoBox = new PlotCurveInfoBox(this, mpParentPlotTab);
     mpPlotCurveInfoBox->setPalette(gConfig.getPalette());
     updatePlotInfoBox();
-
-    //! @todo Maybe tab should add this instad of the curve istelf, and info box speak with curve
-    mpParentPlotTab->mpParentPlotWindow->mpPlotCurveInfoLayout->addWidget(mpPlotCurveInfoBox);
+    mpParentPlotTab->mpCurveInfoScrollArea->widget()->layout()->addWidget(mpPlotCurveInfoBox);
+    mpPlotCurveInfoBox->show();
 
     if(curveType != PORTVARIABLE)
     {
@@ -303,7 +302,6 @@ void PlotCurve::commonConstructorCode(int axisY,
 
     //Create connections
     //! @todo we should not connect like this /Peter
-    connect(mpParentPlotTab->mpParentPlotWindow->getPlotTabWidget(), SIGNAL(currentChanged(int)), this, SLOT(updatePlotCurveInfoVisibility()));
     connect(gpMainWindow->mpProjectTabs->getCurrentTab(),SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
     connect(gpMainWindow->mpProjectTabs,SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
 
@@ -547,7 +545,7 @@ void PlotCurve::setCustomXData(SharedLogVariableDataPtrT pData)
 
 
 //! @brief Converts the plot curve to its frequency spectrum by using FFT
-void PlotCurve::toFrequencySpectrum()
+void PlotCurve::toFrequencySpectrum(const bool doPowerSpectrum)
 {
     QVector<double> timeVec, dataVec;
     timeVec = *(mpData->mSharedTimeVectorPtr.data());
@@ -577,7 +575,7 @@ void PlotCurve::toFrequencySpectrum()
     dataVec.clear();
     for(int i=1; i<n/2; ++i)        //FFT is symmetric, so only use first half
     {
-        if(mpParentPlotTab->mpParentPlotWindow->mpPowerSpectrumCheckBox->isChecked())
+        if(doPowerSpectrum)
         {
             dataVec.append(real(vComplex[i]*conj(vComplex[i]))/n);
         }
@@ -874,23 +872,6 @@ void PlotCurve::updateScaleFromDialog()
 {
     setScaling(mpXScaleSpinBox->value(), mpYScaleSpinBox->value(), mpXOffsetSpinBox->value(), mpYOffsetSpinBox->value());
     mpParentPlotTab->rescaleToCurves();
-}
-
-
-//! @brief Shows or hides plot info dock
-//! Changes visibility depending on whether or not the tab is currently open, and whether or not the hide plot info dock setting is activated.
-void PlotCurve::updatePlotCurveInfoVisibility()
-{
-    if(mpParentPlotTab == mpParentPlotTab->mpParentPlotWindow->getCurrentPlotTab())
-    {
-        mpPlotCurveInfoBox->show();
-        mpParentPlotTab->mpParentPlotWindow->mpPlotCurveInfoLayout->addWidget(mpPlotCurveInfoBox);
-    }
-    else
-    {
-        mpParentPlotTab->mpParentPlotWindow->mpPlotCurveInfoLayout->removeWidget(mpPlotCurveInfoBox);
-        mpPlotCurveInfoBox->hide();
-    }
 }
 
 

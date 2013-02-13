@@ -40,10 +40,10 @@ class PlotTab : public QWidget
     friend class PlotMarker;
 
 public:
-    PlotTab(PlotTabWidget *pParentPlotTabWidget);
+    PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWindow);
     ~PlotTab();
-    PlotTabWidget *mpParentPlotTabWidget;
-    PlotWindow *mpParentPlotWindow;
+    PlotTabWidget *mpParentPlotTabWidget;   //!< @todo should not be public
+    PlotWindow *mpParentPlotWindow;         //!< @todo should not be public
 
     void setTabName(QString name);
 
@@ -126,9 +126,11 @@ private:
     QGridLayout *mpTabLayout;
     QSint::BarChartPlotter *mpBarPlot;
 
+    QScrollArea *mpCurveInfoScrollArea;
+
     QwtPlot *mpQwtPlots[2];
     QList<PlotCurve *> mPlotCurvePtrs[2];
-        QwtPlotGrid *mpGrid[2];
+    QwtPlotGrid *mpGrid[2];
     QwtPlotZoomer *mpZoomerLeft[2];
     QwtPlotZoomer *mpZoomerRight[2];
     QwtPlotMagnifier *mpMagnifier[2];

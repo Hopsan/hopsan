@@ -56,9 +56,8 @@ public slots:
 class PlotWindow : public QMainWindow
 {
     Q_OBJECT
-    //! @todo should plot window really be friend with everything?
     friend class PlotTab;
-    friend class PlotCurve;
+
 public:
     PlotWindow(const QString name, MainWindow *parent);
     ~PlotWindow();
@@ -105,7 +104,7 @@ protected:
     void closeEvent(QCloseEvent *event);
 
 protected slots:
-    void establishPlotTabConnections();
+    void changedTab();
 
 private:
     void refreshWindowTitle();
@@ -149,7 +148,8 @@ private:
     QAction *mpExportToGraphicsAction;
     QAction *mpLocktheAxis;
 
-    QDockWidget *mpPlotCurveInfoDock;
+    QDockWidget *mpCurveInfoDock;
+    QStackedWidget *mpCurveInfoStack;
 
     PlotTabWidget *mpPlotTabWidget;
 
@@ -175,7 +175,6 @@ private:
     QCheckBox *mpPowerSpectrumCheckBox;
     PlotCurve *mpFrequencyAnalysisCurve;
 
-    QVBoxLayout *mpPlotCurveInfoLayout;
     QAbstractItemModel *model;
 };
 

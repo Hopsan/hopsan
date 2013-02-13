@@ -84,7 +84,6 @@ public:
               HopsanPlotCurveType curveType=PORTVARIABLE);
     ~PlotCurve();
 
-
     QString getCurveName() const;
     HopsanPlotCurveType getCurveType();
     int getAxisY();
@@ -110,7 +109,7 @@ public:
     void setCustomXData(const VariableDescription &rVarDesc, const QVector<double> &rvXdata);
     void setCustomXData(SharedLogVariableDataPtrT pData);
 
-    void toFrequencySpectrum();
+    void toFrequencySpectrum(const bool doPowerSpectrum=false);
     void resetLegendSize();
 
     // Qwt overloaded function
@@ -127,7 +126,6 @@ public slots:
     void setLineColor(QColor color);
     void setLineColor(QString colorName=QString());
     void openScaleDialog();
-    void updatePlotCurveInfoVisibility();
     void updateScaleFromDialog();
     void updateToNewGeneration();
     void updatePlotInfoBox();

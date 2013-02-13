@@ -35,10 +35,11 @@ const double in2mm = 25.4;
 
 //! @brief Constructor for plot tabs.
 //! @param parent Pointer to the plot window the tab belongs to
-PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget)
+PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWindow)
     : QWidget(pParentPlotTabWidget)
 {
     mpParentPlotTabWidget = pParentPlotTabWidget;
+    mpParentPlotWindow = pParentPlotWindow;
     setAcceptDrops(true);
     setMouseTracking(true);
     mHasCustomXData=false;
@@ -149,9 +150,24 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget)
     // Create the lock axis dialog
     constructAxisSettingsDialog();
 
-
     mpTabLayout = new QGridLayout(this);
 
+    // Create the scroll area and widget/layout for curve info boxes
+    QVBoxLayout *pCurveInfoLayout = new QVBoxLayout();
+    pCurveInfoLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+    pCurveInfoLayout->setSpacing(1);
+    pCurveInfoLayout->setMargin(1);
+    QWidget *pCurveInfoWidget = new QWidget(this);
+    pCurveInfoWidget->setAutoFillBackground(true);
+    pCurveInfoWidget->setPalette(gConfig.getPalette());
+    pCurveInfoWidget->setLayout(pCurveInfoLayout);
+    mpCurveInfoScrollArea = new QScrollArea(this);
+    mpCurveInfoScrollArea->setWidget(pCurveInfoWidget);
+    mpCurveInfoScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    mpCurveInfoScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    mpCurveInfoScrollArea->setPalette(gConfig.getPalette());
+    mpCurveInfoScrollArea->setMinimumHeight(110);
+    mpParentPlotWindow->mpCurveInfoStack->addWidget(mpCurveInfoScrollArea);
 
 
     for(int plotID=0; plotID<2; ++plotID)
@@ -159,7 +175,6 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget)
         mpQwtPlots[plotID]->setAutoFillBackground(true);
         mpQwtPlots[plotID]->setPalette(gConfig.getPalette());
         mpTabLayout->addWidget(mpQwtPlots[plotID]);
-
     }
 
     connect(mpQwtPlots[FIRSTPLOT], SIGNAL(legendClicked(QwtPlotItem*)), this, SLOT(updateLegend(QwtPlotItem *)));//QwtPlotItem *, bool)));

@@ -326,33 +326,36 @@ PlotWindow::PlotWindow(const QString name, MainWindow *parent)
     connect(pLocalPlotWidgetDock->toggleViewAction(), SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     // Setup PlotCurveInfoBox stuff
-    mpPlotCurveInfoLayout = new QVBoxLayout();
-    QWidget *pPlotCurveInfoWidget = new QWidget(this);
-    pPlotCurveInfoWidget->setAutoFillBackground(true);
-    pPlotCurveInfoWidget->setPalette(gConfig.getPalette());
-    mpPlotCurveInfoLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
-    mpPlotCurveInfoLayout->setSpacing(1);
-    mpPlotCurveInfoLayout->setMargin(1);
-    pPlotCurveInfoWidget->setLayout(mpPlotCurveInfoLayout);
+//    mpPlotCurveInfoLayout = new QVBoxLayout();
+    //QWidget *pPlotCurveInfoWidget = new QWidget(this);
+//    mpPlotCurveInfoWidget = new QWidget(this);
+//    mpPlotCurveInfoWidget->setAutoFillBackground(true);
+//    mpPlotCurveInfoWidget->setPalette(gConfig.getPalette());
+//    mpPlotCurveInfoLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+//    mpPlotCurveInfoLayout->setSpacing(1);
+//    mpPlotCurveInfoLayout->setMargin(1);
+//    pPlotCurveInfoWidget->setLayout(mpPlotCurveInfoLayout);
 
-    QScrollArea *pPlotCurveInfoScrollArea = new QScrollArea();
-    pPlotCurveInfoScrollArea->setWidget(pPlotCurveInfoWidget);
-    pPlotCurveInfoScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    pPlotCurveInfoScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    pPlotCurveInfoScrollArea->setPalette(gConfig.getPalette());
-    pPlotCurveInfoScrollArea->setMinimumHeight(110);
+//    mpPlotCurveInfoScrollArea = new QScrollArea();
+//    //pPlotCurveInfoScrollArea->setWidget(mpPlotCurveInfoWidget);
+//    mpPlotCurveInfoScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+//    mpPlotCurveInfoScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+//    mpPlotCurveInfoScrollArea->setPalette(gConfig.getPalette());
+//    mpPlotCurveInfoScrollArea->setMinimumHeight(110);
 
-    mpPlotCurveInfoDock = new QDockWidget(tr("PlotCurve Settings"), this);
-    mpPlotCurveInfoDock->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
-    addDockWidget(Qt::BottomDockWidgetArea, mpPlotCurveInfoDock);
-    mpPlotCurveInfoDock->setWidget(pPlotCurveInfoScrollArea);
-    mpPlotCurveInfoDock->setFeatures(QDockWidget::AllDockWidgetFeatures);
-    mpPlotCurveInfoDock->setPalette(gConfig.getPalette());
-    mpPlotCurveInfoDock->show();
+    mpCurveInfoStack = new QStackedWidget(this);
 
-    mpPlotCurveInfoDock->toggleViewAction()->setToolTip("Toggle Curve Controls");
-    mpPlotCurveInfoDock->toggleViewAction()->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowCurveSettings.png"));
-    connect(mpPlotCurveInfoDock->toggleViewAction(), SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    mpCurveInfoDock = new QDockWidget(tr("PlotCurve Settings"), this);
+    mpCurveInfoDock->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
+    addDockWidget(Qt::BottomDockWidgetArea, mpCurveInfoDock);
+    mpCurveInfoDock->setWidget(mpCurveInfoStack);
+    mpCurveInfoDock->setFeatures(QDockWidget::AllDockWidgetFeatures);
+    mpCurveInfoDock->setPalette(gConfig.getPalette());
+    mpCurveInfoDock->show();
+
+    mpCurveInfoDock->toggleViewAction()->setToolTip("Toggle Curve Controls");
+    mpCurveInfoDock->toggleViewAction()->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowCurveSettings.png"));
+    connect(mpCurveInfoDock->toggleViewAction(), SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
     // Populate toolbar with actions
     mpToolBar->addAction(mpNewPlotButton);
@@ -374,7 +377,7 @@ PlotWindow::PlotWindow(const QString name, MainWindow *parent)
     mpToolBar->addAction(mpBackgroundColorButton);
     mpToolBar->addAction(mpLegendButton);
     mpToolBar->addAction(mpLocktheAxis);
-    mpToolBar->addAction(mpPlotCurveInfoDock->toggleViewAction());
+    mpToolBar->addAction(mpCurveInfoDock->toggleViewAction());
     mpToolBar->addAction(pLocalPlotWidgetDock->toggleViewAction());
     mpToolBar->addSeparator();
     mpToolBar->addAction(mpNewWindowFromTabButton);
@@ -385,7 +388,7 @@ PlotWindow::PlotWindow(const QString name, MainWindow *parent)
 
     mpPlotTabWidget = new PlotTabWidget(this);
     this->addPlotTab();
-    this->establishPlotTabConnections();
+    this->changedTab();
 
     mpLayout = new QGridLayout(this);
     mpLayout->addWidget(mpPlotTabWidget,0,0,2,4);
@@ -412,12 +415,12 @@ PlotWindow::PlotWindow(const QString name, MainWindow *parent)
     connect(mpBodePlotButton,                   SIGNAL(triggered()),            this,               SLOT(createBodePlot()));
     connect(mpNewWindowFromTabButton,           SIGNAL(triggered()),            this,               SLOT(createPlotWindowFromTab()));
     connect(gpMainWindow->getOptionsDialog(),   SIGNAL(paletteChanged()),       this,               SLOT(updatePalette()));
-    connect(mpPlotTabWidget,                    SIGNAL(currentChanged(int)),    this,               SLOT(establishPlotTabConnections()));
+    connect(mpPlotTabWidget,                    SIGNAL(currentChanged(int)),    this,               SLOT(changedTab()));
 
     // Hide curve settings area by default if screen size is to small
     if(sh*sw < 800*1280)
     {
-        mpPlotCurveInfoDock->toggleViewAction()->toggle();
+        mpCurveInfoDock->toggleViewAction()->toggle();
     }
 
     this->setMouseTracking(true);
@@ -443,8 +446,7 @@ void PlotWindow::setCustomXVector(SharedLogVariableDataPtrT pData)
 
 void PlotWindow::addPlotTab(QString requestedName)
 {
-    PlotTab *mpNewTab = new PlotTab(mpPlotTabWidget);
-    mpNewTab->mpParentPlotWindow = this; //!< @todo figure out some better solution to this
+    PlotTab *mpNewTab = new PlotTab(mpPlotTabWidget, this);
 
     QString tabName;
     QString numString;
@@ -540,7 +542,6 @@ void PlotWindow::addPlotCurve(SharedLogVariableDataPtrT pData, int axisY, QColor
 
     PlotCurve *pTempCurve = new PlotCurve(pData, axisY, getCurrentPlotTab());
     getCurrentPlotTab()->addCurve(pTempCurve, desiredColor);
-    pTempCurve->updatePlotCurveInfoVisibility();
     refreshWindowTitle();
 }
 
@@ -548,7 +549,7 @@ void PlotWindow::addPlotCurve(SharedLogVariableDataPtrT pData, int axisY, QColor
 void PlotWindow::addBarChart(QStandardItemModel *pItemModel)
 {
     getCurrentPlotTab()->addBarChart(pItemModel);
-    establishPlotTabConnections(); //Refresh buttons on/off
+    changedTab(); //Refresh buttons on/off
 }
 
 //! @brief Imports .Plo files from Old Hopsan
@@ -762,8 +763,7 @@ void PlotWindow::performFrequencyAnalysisFromDialog()
                                          mpFrequencyAnalysisCurve->getAxisY(),
                                          getCurrentPlotTab(), FIRSTPLOT, FREQUENCYANALYSIS);
     getCurrentPlotTab()->addCurve(pNewCurve);
-    pNewCurve->toFrequencySpectrum();
-    pNewCurve->updatePlotCurveInfoVisibility();
+    pNewCurve->toFrequencySpectrum(mpPowerSpectrumCheckBox->isChecked());
     //! @todo Make logged axis an option for user
     if(mpLogScaleCheckBox->isChecked())
     {
@@ -976,51 +976,35 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
 
 
     addPlotTab("Nyquist Plot");
-    //    PlotCurve *pNyquistCurve1 = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
-    //                                        pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
-    //                                        getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
     PlotCurve *pNyquistCurve1 = new PlotCurve(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data(),
                                               vRe, vIm, pOutputCurve->getAxisY(),
                                               getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
     getCurrentPlotTab()->addCurve(pNyquistCurve1);
-    pNyquistCurve1->updatePlotCurveInfoVisibility();
-    //    PlotCurve *pNyquistCurve2 = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
-    //                                        pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
-    //                                        getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
+
     PlotCurve *pNyquistCurve2 = new PlotCurve(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data(),
                                               vRe, vImNeg, pOutputCurve->getAxisY(),
                                               getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
     getCurrentPlotTab()->addCurve(pNyquistCurve2);
-    pNyquistCurve2->updatePlotCurveInfoVisibility();
     getCurrentPlotTab()->getPlot()->replot();
     getCurrentPlotTab()->rescaleToCurves();
     getCurrentPlotTab()->updateGeometry();
 
     addPlotTab("Bode Diagram");
-    //    PlotCurve *pGainCurve = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
-    //                                          pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
-    //                                          getCurrentPlotTab(), FIRSTPLOT, BODEGAIN);
     PlotCurve *pGainCurve = new PlotCurve(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data(),
                                           F, vBodeGain, pOutputCurve->getAxisY(),
                                           getCurrentPlotTab(), FIRSTPLOT, BODEGAIN);
     getCurrentPlotTab()->addCurve(pGainCurve);
-    pGainCurve->updatePlotCurveInfoVisibility();
 
-    //    PlotCurve *pPhaseCurve = new PlotCurve(pOutputCurve->getGeneration(), pOutputCurve->getComponentName(), pOutputCurve->getPortName(), pOutputCurve->getDataName(),
-    //                                          pOutputCurve->getDataUnit(), pOutputCurve->getAxisY(), pOutputCurve->getContainerObjectPtr()->getModelFileInfo().filePath(),
-    //                                          getCurrentPlotTab(), SECONDPLOT, BODEPHASE);
     PlotCurve *pPhaseCurve = new PlotCurve(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data(),
                                            F, vBodePhase, pOutputCurve->getAxisY(),
                                            getCurrentPlotTab(), SECONDPLOT, BODEPHASE);
     getCurrentPlotTab()->addCurve(pPhaseCurve, QColor(), SECONDPLOT);
-    pPhaseCurve->updatePlotCurveInfoVisibility();
 
     getCurrentPlotTab()->showPlot(SECONDPLOT, true);
     getCurrentPlotTab()->getPlot(FIRSTPLOT)->replot();
     getCurrentPlotTab()->getPlot(SECONDPLOT)->replot();
     getCurrentPlotTab()->updateGeometry();
 
-    //getCurrentPlotTab()->getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::yLeft, new QwtLog10ScaleEngine);
     getCurrentPlotTab()->setBottomAxisLogarithmic(true);
 
     getCurrentPlotTab()->rescaleToCurves();
@@ -1152,7 +1136,7 @@ void PlotWindow::closeIfEmpty()
 
 void PlotWindow::hidePlotCurveInfo()
 {
-    mpPlotCurveInfoDock->toggleViewAction()->setChecked(false);
+    mpCurveInfoDock->toggleViewAction()->setChecked(false);
 }
 
 
@@ -1180,7 +1164,7 @@ void PlotWindow::closeEvent(QCloseEvent *event)
     event->accept();
 }
 
-void PlotWindow::establishPlotTabConnections()
+void PlotWindow::changedTab()
 {
     // First disconnect all current connections (in case the tab is being changed)
     disconnect(mpZoomButton,                SIGNAL(toggled(bool)),  0,  0);
@@ -1277,6 +1261,9 @@ void PlotWindow::establishPlotTabConnections()
         connect(mpExportToGraphicsAction,   SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToGraphics()));
         connect(mpLegendButton,             SIGNAL(triggered()),    pCurrentTab,    SLOT(openLegendSettingsDialog()));
         connect(mpLocktheAxis,              SIGNAL(triggered()),    pCurrentTab,    SLOT(openAxisSettingsDialog()));
+
+        // Set the plottab specific info layout
+        mpCurveInfoStack->setCurrentWidget(pCurrentTab->mpCurveInfoScrollArea);
     }
     else
     {
