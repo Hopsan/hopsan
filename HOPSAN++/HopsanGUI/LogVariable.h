@@ -134,10 +134,6 @@ class LogVariableData : public QObject
 public:
     ~LogVariableData();
 
-    double mAppliedValueOffset;
-    double mAppliedTimeOffset;
-    int mGeneration;
-
     SharedTimeVectorPtrT mSharedTimeVectorPtr;
 
     const SharedVariableDescriptionT getVariableDescription() const;
@@ -194,6 +190,10 @@ private:
     CachableDataVector *mpCachedDataVector;
     QPointer<LogVariableContainer> mpParentVariableContainer;
     SharedVariableDescriptionT mpVariableDescription;
+
+    double mAppliedValueOffset;
+    double mAppliedTimeOffset;
+    int mGeneration;
 };
 
 #endif // LOGVARIABLE_H

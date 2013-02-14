@@ -58,14 +58,6 @@ CurveInfoBox::CurveInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     mpResetTimeButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetTimeVector.png"));
     mpResetTimeButton->setEnabled(false);
 
-//    mpPreviousButton = new QToolButton(this);
-//    mpPreviousButton->setToolTip("Previous Generation");
-//    mpPreviousButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-StepLeft.png"));
-
-//    mpNextButton = new QToolButton(this);
-//    mpNextButton->setToolTip("Next Generation");
-//    mpNextButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-StepRight.png"));
-
     mpGenerationSpinBox = new QSpinBox(this);
     mpGenerationSpinBox->setToolTip("Change generation");
 
@@ -141,8 +133,6 @@ CurveInfoBox::CurveInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     pInfoBoxLayout->addWidget(mpResetTimeButton);
     pInfoBoxLayout->addWidget(mpGenerationSpinBox);
     pInfoBoxLayout->addWidget(mpGenerationLabel);
-    //pInfoBoxLayout->addWidget(mpPreviousButton);
-    //pInfoBoxLayout->addWidget(mpNextButton);
     pInfoBoxLayout->addWidget(pAutoUpdateCheckBox);
     pInfoBoxLayout->addWidget(pFrequencyAnalysisButton);
     pInfoBoxLayout->addWidget(pScaleButton);
@@ -158,8 +148,6 @@ CurveInfoBox::CurveInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     connect(mpColorBlob,               SIGNAL(clicked(bool)),       this,               SLOT(actiavateCurve(bool)));
     connect(mpCustomXDataDrop,         SIGNAL(newXData(QString)),   this,               SLOT(setXData(QString)));
     connect(mpResetTimeButton,         SIGNAL(clicked()),           this,               SLOT(resetTimeVector()));
-//    connect(mpPreviousButton,          SIGNAL(clicked(bool)),       mpParentPlotCurve,  SLOT(setPreviousGeneration()));
-//    connect(mpNextButton,              SIGNAL(clicked(bool)),       mpParentPlotCurve,  SLOT(setNextGeneration()));
     connect(mpGenerationSpinBox,       SIGNAL(valueChanged(int)),   this,               SLOT(setGeneration(int)));
     connect(pAutoUpdateCheckBox,       SIGNAL(toggled(bool)),       mpParentPlotCurve,  SLOT(setAutoUpdate(bool)));
     connect(pFrequencyAnalysisButton,  SIGNAL(clicked(bool)),       mpParentPlotCurve,  SLOT(performFrequencyAnalysis()));
@@ -176,8 +164,6 @@ CurveInfoBox::CurveInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     {
         pAutoUpdateCheckBox->setDisabled(true);
         mpGenerationSpinBox->setDisabled(true);
-//        mpNextButton->setDisabled(true);
-//        mpPreviousButton->setDisabled(true);
         pFrequencyAnalysisButton->setDisabled(true);
     }
 }
@@ -217,8 +203,6 @@ void CurveInfoBox::updateInfo()
     const int highGen = mpParentPlotCurve->getLogDataVariablePtr()->getHighestGeneration();
     const int gen = mpParentPlotCurve->getGeneration();
     const int nGen = mpParentPlotCurve->getLogDataVariablePtr()->getNumGenerations();
-//    mpPreviousButton->setEnabled( (gen > lowGen) && (nGen > 1) );
-//    mpNextButton->setEnabled( (gen < highGen) && ( nGen > 1) );
     mpGenerationSpinBox->setMinimum(lowGen+1);
     mpGenerationSpinBox->setMaximum(highGen+1);
     mpGenerationSpinBox->setValue(gen+1);
@@ -323,20 +307,13 @@ void PlotCurve::commonConstructorCode(int axisY,
     mCurveType = curveType;
     mpParentPlotTab = parent;
 
-    QString dataUnit = mpData->getDataUnit();
-    if(dataUnit.isEmpty())
-    {
-        dataUnit = gConfig.getDefaultUnit(mpData->getDataName());   //Apply default unit if not specified
-    }
-
     mAxisY = axisY;
     mAutoUpdate = true;
-    mScaleX = 1.0;
-    mScaleY = 1.0;
+    mPlotScaleX = 1.0;
+    mPlotScaleY = 1.0;
+    mPlotOffsetX = 0;
+    mPlotOffsetY = 0;
 
-    //! @todo FIX /Peter (should not be here)
-    mOffsetX = mpData->mAppliedTimeOffset;
-    mOffsetY = mpData->mAppliedValueOffset;
     // Set QwtPlotCurve stuff
     this->setTitle(getCurveName());
     updateCurve();
@@ -560,22 +537,21 @@ void PlotCurve::setCustomDataUnit(const QString unit, double scale)
 
     //! @todo shouldnt these be triggered by signal in update curve?
     mpParentPlotTab->updateLabels();
-    mpParentPlotTab->rescaleToCurves();
     mpParentPlotTab->update();
 }
 
 
-//! @brief Sets the scaling of a plot curve
+//! @brief Sets the (plot only) scaling of a plot curve
 //! @param scaleX Scale factor for X-axis
 //! @param scaleY Scale factor for Y-axis
 //! @param offsetX Offset value for X-axis
 //! @param offsetY Offset value for Y-axis
 void PlotCurve::setScaling(double scaleX, double scaleY, double offsetX, double offsetY)
 {
-    mScaleX=scaleX;
-    mScaleY=scaleY;
-    mOffsetX=offsetX;
-    mOffsetY=offsetY;
+    mPlotScaleX=scaleX;
+    mPlotScaleY=scaleY;
+    mPlotOffsetX=offsetX;
+    mPlotOffsetY=offsetY;
     updateCurve();
 }
 
@@ -921,28 +897,28 @@ void PlotCurve::openScaleDialog()
     mpXScaleSpinBox->setRange(-DBLMAX, DBLMAX);
     mpXScaleSpinBox->setDecimals(10);
     mpXScaleSpinBox->setSingleStep(0.1);
-    mpXScaleSpinBox->setValue(mScaleX);
+    mpXScaleSpinBox->setValue(mPlotScaleX);
 
     QLabel *pXOffsetLabel = new QLabel("Time Axis Offset: ", pScaleDialog);
     mpXOffsetSpinBox = new QDoubleSpinBox(pScaleDialog);
     mpXOffsetSpinBox->setDecimals(10);
     mpXOffsetSpinBox->setRange(-DBLMAX, DBLMAX);
     mpXOffsetSpinBox->setSingleStep(0.1);
-    mpXOffsetSpinBox->setValue(mOffsetX);
+    mpXOffsetSpinBox->setValue(mPlotOffsetX);
 
     QLabel *pYScaleLabel = new QLabel("Y-Axis Scale: ", pScaleDialog);
     mpYScaleSpinBox = new QDoubleSpinBox(pScaleDialog);
     mpYScaleSpinBox->setSingleStep(0.1);
     mpYScaleSpinBox->setDecimals(10);
     mpYScaleSpinBox->setRange(-DBLMAX, DBLMAX);
-    mpYScaleSpinBox->setValue(mScaleY);
+    mpYScaleSpinBox->setValue(mPlotScaleY);
 
     QLabel *pYOffsetLabel = new QLabel("Y-Axis Offset: ", pScaleDialog);
     mpYOffsetSpinBox = new QDoubleSpinBox(pScaleDialog);
     mpYOffsetSpinBox->setDecimals(10);
     mpYOffsetSpinBox->setRange(-DBLMAX, DBLMAX);
     mpYOffsetSpinBox->setSingleStep(0.1);
-    mpYOffsetSpinBox->setValue(mOffsetY);
+    mpYOffsetSpinBox->setValue(mPlotOffsetY);
 
     QPushButton *pDoneButton = new QPushButton("Done", pScaleDialog);
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
@@ -1036,8 +1012,8 @@ void PlotCurve::updateCurve()
         tempX.resize(mpData->mSharedTimeVectorPtr->size());
         for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
         {
-            tempX[i] = mpData->mSharedTimeVectorPtr->at(i)*mScaleX + mOffsetX;
-            tempY[i] = tempY[i]*mCustomDataUnitScale*mScaleY + mOffsetY;
+            tempX[i] = mpData->mSharedTimeVectorPtr->at(i)*mPlotScaleX + mPlotOffsetX;
+            tempY[i] = tempY[i]*mCustomDataUnitScale*mPlotScaleY + mPlotOffsetY;
         }
     }
     else
@@ -1047,8 +1023,8 @@ void PlotCurve::updateCurve()
         tempX = mpCustomXdata->getDataVector();
         for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
         {
-            tempX[i] = tempX[i]*mScaleX + mOffsetX;
-            tempY[i] = tempY[i]*mCustomDataUnitScale*mScaleY + mOffsetY;
+            tempX[i] = tempX[i]*mPlotScaleX + mPlotOffsetX;
+            tempY[i] = tempY[i]*mCustomDataUnitScale*mPlotScaleY + mPlotOffsetY;
         }
     }
     setSamples(tempX, tempY);

@@ -65,8 +65,6 @@ private:
     PlotCurve *mpParentPlotCurve;
     QLabel *mpTitle;
     QToolButton *mpColorBlob;
-//    QToolButton *mpPreviousButton;
-//    QToolButton *mpNextButton;
     QSpinBox *mpGenerationSpinBox;
     QLabel *mpGenerationLabel;
     CustomXDataDropEdit *mpCustomXDataDrop;
@@ -173,10 +171,10 @@ private:
     SharedLogVariableDataPtrT mpData;
     SharedLogVariableDataPtrT mpCustomXdata;
     bool mHaveCustomData;
-    double mScaleX;
-    double mScaleY;
-    double mOffsetX;
-    double mOffsetY;
+    double mPlotScaleX;
+    double mPlotScaleY;
+    double mPlotOffsetX;
+    double mPlotOffsetY;
     QString mCustomDataUnit;
     double mCustomDataUnitScale;
 
