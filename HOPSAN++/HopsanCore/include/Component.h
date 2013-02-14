@@ -63,6 +63,7 @@ public:
     //==========Public functions==========
     // Virtual functions
     virtual void configure();
+    virtual void deconfigure();
     virtual void loadStartValues();
     virtual void loadStartValuesFromSimulation();
     virtual void initialize(); //!< @todo We should really be able to return sucess true or false from components

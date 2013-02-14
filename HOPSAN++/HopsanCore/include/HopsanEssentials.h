@@ -58,6 +58,7 @@ public:
     // Component creation
     Component* createComponent(const std::string &rTypeName);
     ComponentSystem* createComponentSystem();
+    void removeComponent(Component *pComponent);
     bool hasComponent(const std::string type);
     bool reserveComponentTypeName(const std::string typeName);
 

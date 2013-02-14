@@ -284,6 +284,11 @@ ComponentSystem::~ComponentSystem()
 #endif
 }
 
+void ComponentSystem::configure()
+{
+    //Does nothing
+}
+
 double ComponentSystem::getDesiredTimeStep() const
 {
     return mDesiredTimestep;
@@ -295,9 +300,14 @@ void ComponentSystem::setNumLogSamples(const size_t nLogSamples)
     mRequestedNumLogSamples = nLogSamples;
 }
 
-size_t ComponentSystem::getNumLogSamples()
+size_t ComponentSystem::getNumLogSamples() const
 {
     return mRequestedNumLogSamples;
+}
+
+double ComponentSystem::getLastLogTime() const
+{
+    return mLastLogTime;
 }
 
 
@@ -447,7 +457,7 @@ void ComponentSystem::removeSubComponent(Component* pComponent, bool doDelete)
     //Shall we also delete the component completely
     if (doDelete)
     {
-        delete pComponent; //! @todo can I really delete here or do I need to use the factory for external components
+        mpHopsanEssentials->removeComponent(pComponent);
     }
 
     addDebugMessage("Removed component: \"" + compName + "\" from system: \"" + this->getName() + "\"", "removedcomponent");

@@ -912,6 +912,12 @@ Component::~Component()
 
 void Component::configure()
 {
+    // This function ust be overloaded in every component
+    addErrorMessage("You must overload the configure() function in Component: " + mTypeName);
+}
+
+void Component::deconfigure()
+{
     // This function should be overloaded in every component
     // Does nothing by default
 }

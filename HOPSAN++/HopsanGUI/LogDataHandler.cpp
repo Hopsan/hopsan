@@ -437,13 +437,12 @@ void LogDataHandler::collectPlotDataFromModel()
         return;         //Don't collect plot data if logging is disabled (to avoid empty generations)
     }
 
-    //bool timeVectorObtained = false;
     UniqueSharedTimeVectorPtrHelper timeVecHelper;
     bool foundData = false;
     bool timeVectorObtained = false;
 
     this->getGenerationMultiCache(mGenerationNumber)->beginMultiAppend();
-    //Iterate components
+    // Iterate components
     for(int m=0; m<mpParentContainerObject->getModelObjectNames().size(); ++m)
     {
         //! @todo getting names every time is very ineffecient it creates and copies a new vector every freaking time
@@ -451,27 +450,27 @@ void LogDataHandler::collectPlotDataFromModel()
 
         for(QList<Port*>::iterator pit=pModelObject->getPortListPtrs().begin(); pit!=pModelObject->getPortListPtrs().end(); ++pit)
         {
-            //QVector<QString> names;
-            //QVector<QString> units;
             QVector<CoreVariableData> varDescs;
-            //mpParentContainerObject->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(pModelObject->getName(), (*pit)->getPortName(), names, units);
             mpParentContainerObject->getCoreSystemAccessPtr()->getVariableDescriptions(pModelObject->getName(), (*pit)->getPortName(), varDescs);
 
-            //Iterate variables
+            // Iterate variables
             for(int i=0; i<varDescs.size(); ++i)
             {
-                //Fetch variables
-                QPair<QVector<double>, QVector<double> > data;
-                mpParentContainerObject->getCoreSystemAccessPtr()->getPlotData(pModelObject->getName(), (*pit)->getPortName(), varDescs[i].mName, data);
+                // Fetch variable data
+                QVector<double> dataVec;
+                std::vector<double> *pTimeVector;
+                mpParentContainerObject->getCoreSystemAccessPtr()->getPlotData(pModelObject->getName(), (*pit)->getPortName(), varDescs[i].mName,
+                                                                               pTimeVector, dataVec);
 
                 // Prevent adding data if time or data vector was empty
-                if (!data.first.isEmpty() && !data.second.isEmpty())
+                if (!pTimeVector->empty() && !dataVec.isEmpty())
                 {
                     // Make sure we use the same time vector
-                    SharedTimeVectorPtrT timeVecPtr = timeVecHelper.makeSureUnique(data.first);
+                    QVector<double> timeVec = QVector<double>::fromStdVector(*pTimeVector);//!< @todo not copy here, should maybe rewrite makeSureUniqe to handled std::vector also
+                    SharedTimeVectorPtrT timeVecPtr = timeVecHelper.makeSureUnique(timeVec);
 
                     //! @todo Should be possible to have multiple timevectors per generation
-                    //Store time data (only once)
+                    // Store time data (only once)
                     if(!timeVectorObtained)
                     {
                         //! @todo this vector is never cleared when generations are removed
@@ -497,7 +496,7 @@ void LogDataHandler::collectPlotDataFromModel()
                     if (it != mLogDataMap.end())
                     {
                         // Insert it into the generations map
-                        it.value()->addDataGeneration(mGenerationNumber, timeVecPtr, data.second);
+                        it.value()->addDataGeneration(mGenerationNumber, timeVecPtr, dataVec);
 
                         // Update alias if needed
                         if ( varDesc.mAliasName != it.value()->getAliasName() )
@@ -516,7 +515,7 @@ void LogDataHandler::collectPlotDataFromModel()
                     {
                         // Create a new toplevel map item and insert data into the generations map
                         LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc, this);
-                        pDataContainer->addDataGeneration(mGenerationNumber, timeVecPtr, data.second);
+                        pDataContainer->addDataGeneration(mGenerationNumber, timeVecPtr, dataVec);
                         mLogDataMap.insert(catName, pDataContainer);
 
                         // Also insert alias if it exist

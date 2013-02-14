@@ -145,6 +145,12 @@ ComponentSystem* HopsanEssentials::createComponentSystem()
     return static_cast<ComponentSystem*>(createComponent("Subsystem"));
 }
 
+void HopsanEssentials::removeComponent(Component *pComponent)
+{
+    pComponent->deconfigure();
+    delete pComponent; //! @todo can I really delete here or do I need to use the factory for external components
+}
+
 //! @brief Creates a Node of given node type
 //! @param [in] rNodeType The type of node to create
 //! @returns A pointer to the created node

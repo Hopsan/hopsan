@@ -130,6 +130,7 @@ namespace hopsan {
         //==========Public functions==========
         virtual ~ComponentSystem();
         static Component* Creator(){ return new ComponentSystem(); }
+        virtual void configure();
 
         // Set the subsystem CQS type
         void setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet=false);
@@ -209,7 +210,8 @@ namespace hopsan {
         void disableLog();
         std::vector<double>* getLogTimeVector();
         void setNumLogSamples(const size_t nLogSamples);
-        size_t getNumLogSamples();
+        size_t getNumLogSamples() const;
+        double getLastLogTime() const;
 
         // Stop a running init or simulation
         void stopSimulation();

@@ -808,6 +808,7 @@ void CoreSystemAccess::getPlotDataNamesAndUnits(const QString compname, const QS
     }
 }
 
+//! @deprecated
 void CoreSystemAccess::getPlotData(const QString compname, const QString portname, const QString dataname, QPair<QVector<double>, QVector<double> > &rData)
 {
     int dataId = -1;
@@ -829,6 +830,51 @@ void CoreSystemAccess::getPlotData(const QString compname, const QString portnam
                 {
                     rData.first[i] = pTime->at(i);
                     rData.second[i] = pData->at(i).at(dataId);
+                }
+            }
+        }
+    }
+}
+
+void CoreSystemAccess::getPlotData(const QString compname, const QString portname, const QString dataname, std::vector<double> *&rpTimeVector, QVector<double> &rData)
+{
+    int dataId = -1;
+    hopsan::Port* pPort = this->getCorePortPtr(compname, portname);
+    if (pPort)
+    {
+        if(pPort->isConnected())
+        {
+            dataId = pPort->getNodeDataIdFromName(dataname.toStdString());
+            if (dataId > -1)
+            {
+                vector< vector<double> > *pData = pPort->getLogDataVectorPtr();
+                rpTimeVector = pPort->getLogTimeVectorPtr();
+
+                size_t nElements,i;
+                if (pPort->getComponent()->getSystemParent()->wasSimulationAborted())
+                {
+                    double t = pPort->getComponent()->getSystemParent()->getLastLogTime();
+                    nElements = rpTimeVector->size();
+                    for (i=1; i<rpTimeVector->size(); ++i)
+                    {
+                        if ((rpTimeVector->at(i) >= t) || (rpTimeVector->at(i) < rpTimeVector->at(i-1)))
+                        {
+                            --i;
+                            nElements = i;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    nElements = pData->size();
+                }
+
+                //Ok lets copy all of the data to a Qt vector
+                rData.resize(nElements); //Allocate memory for data
+                for (size_t i=0; i<nElements; ++i)
+                {
+                     rData[i] = pData->at(i).at(dataId);
                 }
             }
         }

@@ -204,6 +204,7 @@ public:
     void getPlotDataNamesAndUnits(const QString compname, const QString portname, QVector<QString> &rNames, QVector<QString> &rUnits); //!< @deprecated
     std::vector<double> getTimeVector(QString componentName, QString portName);
     void getPlotData(const QString compname, const QString portname, const QString dataname, QPair<QVector<double>, QVector<double> > &rData);
+    void getPlotData(const QString compname, const QString portname, const QString dataname, std::vector<double> *&rpTimeVector, QVector<double> &rData);
     bool havePlotData(const QString compname, const QString portname, const QString dataname);
     bool getLastNodeData(const QString compname, const QString portname, const QString dataname, double& rData);
     double *getNodeDataPtr(const QString compname, const QString portname, const QString dataname);
