@@ -299,8 +299,7 @@ bool compile(QString path, QString o, QString c, QString i, QString l, QString f
     clBatchFile.setFileName(path + "/compile.bat");
     if(!clBatchFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        pGenerator->printErrorMessage("Could not open compile.bat for writing.");
-        removeDir(fmuDir.path());
+        output = "Could not open compile.bat for writing.";
         return false;
     }
     QTextStream clBatchStream(&clBatchFile);
@@ -312,7 +311,8 @@ bool compile(QString path, QString o, QString c, QString i, QString l, QString f
     //Call compilation script file
 #ifdef WIN32
     QProcess gccProcess;
-    gccProcess.start("cmd.exe", QStringList() << "/c" << "cd " + path + " & compile.bat");
+    gccProcess.setWorkingDirectory(path);
+    gccProcess.start("cmd.exe", QStringList() << "/c" << "compile.bat");
     gccProcess.waitForFinished();
     QByteArray gccResult = gccProcess.readAll();
     QList<QByteArray> gccResultList = gccResult.split('\n');

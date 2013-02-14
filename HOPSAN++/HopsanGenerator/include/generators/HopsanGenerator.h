@@ -61,6 +61,8 @@ public:
     QString getCoreIncludePath();
     QString getBinPath();
 
+    bool assertFilesExist(QString path, QStringList files);
+
 protected:
     QString mOutputPath;
     QString mTempPath;

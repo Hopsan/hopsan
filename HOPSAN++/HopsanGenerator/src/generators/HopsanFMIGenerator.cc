@@ -3,6 +3,13 @@
 #include "ComponentSystem.h"
 #include <QApplication>
 #include <cassert>
+#include <QProcess>
+
+#ifdef WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#endif
 
 using namespace hopsan;
 
@@ -1275,8 +1282,14 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
 #ifdef WIN32
     //Execute HopsanFMU compile script
     QProcess p;
-    p.start("cmd.exe", QStringList() << "/c" << "cd " + savePath + " & compile.bat");
-    p.waitForFinished();
+    p.setWorkingDirectory(savePath);
+    p.start("cmd.exe", QStringList() << "/c" << "compile.bat");
+    bool succeeded = p.waitForFinished();
+    qDebug() << "Success: " << succeeded << ", savePath = " << savePath;
+
+    if(!assertFilesExist(savePath, QStringList() << "HopsanFMU.dll"))
+        return;
+
 #elif linux
     QString gccCommand1 = "cd "+savePath+" && g++ -DWRAPPERCOMPILATION -fPIC -Wl,--rpath,'$ORIGIN/.' -c HopsanFMU.cpp -I./include\n";
     QString gccCommand2 = "cd "+savePath+" && g++ -shared -Wl,--rpath,'$ORIGIN/.' -o libHopsanFMU.so HopsanFMU.o -L./ -lHopsanCore";
@@ -1365,6 +1378,14 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     QString output;
     compile(savePath, modelName, c, inc, l, flags, output);
     printMessage(output);
+
+#ifdef WIN32
+    if(!assertFilesExist(savePath, QStringList() << modelName+".dll"))
+        return;
+#elif LINUX
+    if(!assertFilesExist(savePath, QStringList() << modelName+".so"))
+        return;
+#endif
 
 //#ifdef WIN32
 //    //Execute FMU compile script

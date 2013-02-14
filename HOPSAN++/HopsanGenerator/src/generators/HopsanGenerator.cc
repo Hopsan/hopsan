@@ -620,6 +620,21 @@ QString HopsanGenerator::getBinPath()
 }
 
 
+bool HopsanGenerator::assertFilesExist(QString path, QStringList files)
+{
+    Q_FOREACH(const QString file, files)
+    {
+        if(!QFile::exists(path+"/"+file))
+        {
+            printErrorMessage("File not found: "+file);
+            return false;
+        }
+    }
+    printMessage("All required files found.");
+    return true;
+}
+
+
 
 
 
