@@ -782,6 +782,51 @@ QMap<QString, double> Configuration::getCustomUnits(QString key)
     }
 }
 
+double Configuration::hasUnitScale(const QString key, const QString unit)
+{
+    if (mCustomUnits.contains(key))
+    {
+        if (mCustomUnits.value(key).contains(unit))
+        {
+            return true;
+        }
+    }
+
+    if (mDefaultUnits.contains(key))
+    {
+        if (mDefaultUnits.value(key) == unit)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+//! @brief Returns unit scale for a particular physical quantity and unit
+//! @note Returns 0 if nothing is found
+//! @todo we really should not keep custom and defaul in two different maps, should us one, maybe force default to be first or tag it somhow, or just keep default in a specific map and both in the other
+double Configuration::getUnitScale(const QString key, const QString unit)
+{
+    if (mCustomUnits.contains(key))
+    {
+        if (mCustomUnits.value(key).contains(unit))
+        {
+            return mCustomUnits.value(key).value(unit);
+        }
+    }
+
+    if (mDefaultUnits.contains(key))
+    {
+        if (mDefaultUnits.value(key) == unit)
+        {
+            return 1.0;
+        }
+    }
+
+    return 0;
+}
+
 
 //! @brief Returns connector pen for specified connector type
 //! @param style Style of connector (POWERCONNECTOR, SIGNALCONNECTOR or UNDEFINEDCONNECTOR)

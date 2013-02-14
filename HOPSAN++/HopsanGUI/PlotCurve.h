@@ -120,7 +120,8 @@ public:
     QString getDataName();
     QString getDataUnit();
 
-    void setDataUnit(QString unit);
+    void setCustomDataUnit(const QString unit);
+    void setCustomDataUnit(const QString unit, double scale);
     void setScaling(double scaleX, double scaleY, double offsetX, double offsetY);
 
     void setCustomData(const VariableDescription &rVarDesc, const QVector<double> &rvTime, const QVector<double> &rvData);
@@ -176,6 +177,8 @@ private:
     double mScaleY;
     double mOffsetX;
     double mOffsetY;
+    QString mCustomDataUnit;
+    double mCustomDataUnitScale;
 
     // Curve properties settings
     CurveInfoBox *mpPlotCurveInfoBox;

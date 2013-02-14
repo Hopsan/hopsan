@@ -66,6 +66,8 @@ public:
     QStringList getLastSessionModels();
     QString getDefaultUnit(QString key);
     QMap<QString, double> getCustomUnits(QString key);
+    double hasUnitScale(const QString key, const QString unit);
+    double getUnitScale(const QString key, const QString unit);
     QPen getPen(connectorStyle style, graphicsType gfxType, QString situation);
     QPalette getPalette();
     QFont getFont();

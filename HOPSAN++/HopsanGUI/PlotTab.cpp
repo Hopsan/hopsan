@@ -423,7 +423,7 @@ void PlotTab::addCurve(PlotCurve *curve, QColor desiredColor, HopsanPlotID plotI
     }
     if(customUnit != QString())
     {
-        curve->setDataUnit(customUnit);
+        curve->setCustomDataUnit(customUnit);
     }
 
 
@@ -2631,12 +2631,12 @@ QSizeF PlotTab::calcPXSize(QString unit) const
 //! @brief Defines what happens when used drags something into the plot window
 void PlotTab::dragEnterEvent(QDragEnterEvent *event)
 {
-    //Don't accept drag events to FFT and Bode plots
+    // Don't accept drag events to FFT and Bode plots
     if(mPlotCurvePtrs[0].size() > 0 && mPlotCurvePtrs[0][0]->getCurveType() != PORTVARIABLE) return;
 
     if (event->mimeData()->hasText())
     {
-        //Create the hover rectangle (size will be changed by dragMoveEvent)
+        // Create the hover rectangle (size will be changed by dragMoveEvent)
         mpHoverRect = new QRubberBand(QRubberBand::Rectangle,this);
         mpHoverRect->setGeometry(0, 0, this->width(), this->height());
         mpHoverRect->setStyleSheet("selection-background-color: blue");
@@ -2655,9 +2655,9 @@ void PlotTab::dragMoveEvent(QDragMoveEvent *event)
     if(mPlotCurvePtrs[0].size() > 0 && mPlotCurvePtrs[0][0]->getCurveType() != PORTVARIABLE) return;
 
     QCursor cursor;
-    if(this->mapFromGlobal(cursor.pos()).y() > getPlot()->canvas()->height()/2+getPlot()->canvas()->y()+10 && getNumberOfCurves(FIRSTPLOT) >= 1)
+    if(this->mapFromGlobal(cursor.pos()).y() > getPlot()->canvas()->height()*2.0/3.0+getPlot()->canvas()->y()+10 && getNumberOfCurves(FIRSTPLOT) >= 1)
     {
-        mpHoverRect->setGeometry(getPlot()->canvas()->x()+9, getPlot()->canvas()->height()/2+getPlot()->canvas()->y()+10, getPlot()->canvas()->width(), getPlot()->canvas()->height()/2);
+        mpHoverRect->setGeometry(getPlot()->canvas()->x()+9, getPlot()->canvas()->height()*2.0/3.0+getPlot()->canvas()->y()+10, getPlot()->canvas()->width(), getPlot()->canvas()->height()*1.0/3.0);
         mpParentPlotWindow->showHelpPopupMessage("Replace X-axis with selected variable.");
     }
     else if(this->mapFromGlobal(cursor.pos()).x() < getPlot()->canvas()->x()+9 + getPlot()->canvas()->width()/2)
@@ -2704,11 +2704,8 @@ void PlotTab::dropEvent(QDropEvent *event)
             mimeText.remove("HOPSANPLOTDATA:");
 
             QCursor cursor;
-            if(this->mapFromGlobal(cursor.pos()).y() > getPlot()->canvas()->height()/3+getPlot()->canvas()->y()+10 && getNumberOfCurves(FIRSTPLOT) >= 1)
+            if(this->mapFromGlobal(cursor.pos()).y() > getPlot()->canvas()->height()*2.0/3.0+getPlot()->canvas()->y()+10 && getNumberOfCurves(FIRSTPLOT) >= 1)
             {
-//                const SharedVariableDescriptionT desc = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotData(mimeText, -1)->getVariableDescription();
-//                VariableDescription newDesc = *desc.data(); //Copy data
-//                //! @todo should we realy make a copy here, think we should send the actual shared data ptr (but at the same time we do not want to curve to change original data)
 //                pNewDesc->mDataUnit = gConfig.getDefaultUnit(pNewDesc->mDataName);
 //                setCustomXVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotDataValues(desc->getFullName(), -1), pNewDesc );
                 setCustomXVectorForAll(gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotData(mimeText, -1));
@@ -2820,7 +2817,7 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
     // Change unit on selected curve
     if(selectedAction->parentWidget()->parentWidget() == changeUnitsMenu)
     {
-        actionToCurveMap.find(selectedAction).value()->setDataUnit(selectedAction->text());
+        actionToCurveMap.find(selectedAction).value()->setCustomDataUnit(selectedAction->text());
     }
 
 

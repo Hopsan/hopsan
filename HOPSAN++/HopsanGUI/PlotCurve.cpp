@@ -52,7 +52,7 @@ CurveInfoBox::CurveInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
     refreshTitle();
 
     mpCustomXDataDrop = new CustomXDataDropEdit(this);
-    mpCustomXDataDrop->setToolTip("Drag and Drop here to set Custom XData vVctor");
+    mpCustomXDataDrop->setToolTip("Drag and Drop here to set Custom XData Vector");
     mpResetTimeButton = new QToolButton(this);
     mpResetTimeButton->setToolTip("Reset Time Vector");
     mpResetTimeButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetTimeVector.png"));
@@ -317,6 +317,7 @@ void PlotCurve::commonConstructorCode(int axisY,
                                       HopsanPlotID plotID,
                                       HopsanPlotCurveType curveType)
 {
+    mCustomDataUnitScale = 1.0;
     mpCurveSymbol = 0;
     mIsActive = false;
     mCurveType = curveType;
@@ -451,7 +452,14 @@ QString PlotCurve::getDataName()
 //! @brief Returns the current data unit of a plot curve
 QString PlotCurve::getDataUnit()
 {
-    return mpData->getDataUnit();
+    if (mCustomDataUnit.isEmpty())
+    {
+        return mpData->getDataUnit();
+    }
+    else
+    {
+        return mCustomDataUnit;
+    }
 }
 
 const SharedLogVariableDataPtrT PlotCurve::getLogDataVariablePtr() const
@@ -531,11 +539,26 @@ void PlotCurve::setGeneration(int generation)
 
 //! @brief Sets the unit of a plot curve
 //! @param unit Name of new unit
-void PlotCurve::setDataUnit(QString unit)
+//! @note If unit is not registered for data then nothing will happen
+void PlotCurve::setCustomDataUnit(QString unit)
 {
-    //! @todo FIXA /Peter
-    //mDataUnit = unit;
+    if (gConfig.hasUnitScale(getDataName(),unit))
+    {
+        setCustomDataUnit(unit, gConfig.getUnitScale(getDataName(),unit));
+    }
+}
+
+//! @brief Sets a custom unit and scale of a plot curve
+//! @param unit Name of new unit
+//! @param scale What scaling towards default (usually SI) unit to use
+void PlotCurve::setCustomDataUnit(const QString unit, double scale)
+{
+    mCustomDataUnit = unit;
+    mCustomDataUnitScale = scale;
+
     updateCurve();
+
+    //! @todo shouldnt these be triggered by signal in update curve?
     mpParentPlotTab->updateLabels();
     mpParentPlotTab->rescaleToCurves();
     mpParentPlotTab->update();
@@ -1003,12 +1026,6 @@ void PlotCurve::markActive(bool value)
 //! @todo add optional index if we only want to update particular value
 void PlotCurve::updateCurve()
 {
-    double unitScale = 1;
-    if (gConfig.getCustomUnits(getDataName()).contains(getDataUnit()))
-    {
-        unitScale = gConfig.getCustomUnits(getDataName()).find(getDataUnit()).value();
-    }
-
     QVector<double> tempX;
     // We copy here, it should be faster then peek (at least when data is cached on disc)
     QVector<double> tempY = mpData->getDataVector();
@@ -1020,7 +1037,7 @@ void PlotCurve::updateCurve()
         for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
         {
             tempX[i] = mpData->mSharedTimeVectorPtr->at(i)*mScaleX + mOffsetX;
-            tempY[i] = tempY[i]*unitScale*mScaleY + mOffsetY;
+            tempY[i] = tempY[i]*mCustomDataUnitScale*mScaleY + mOffsetY;
         }
     }
     else
@@ -1031,7 +1048,7 @@ void PlotCurve::updateCurve()
         for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
         {
             tempX[i] = tempX[i]*mScaleX + mOffsetX;
-            tempY[i] = tempY[i]*unitScale*mScaleY + mOffsetY;
+            tempY[i] = tempY[i]*mCustomDataUnitScale*mScaleY + mOffsetY;
         }
     }
     setSamples(tempX, tempY);
