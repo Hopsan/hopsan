@@ -203,9 +203,10 @@ void CurveInfoBox::updateInfo()
     const int highGen = mpParentPlotCurve->getLogDataVariablePtr()->getHighestGeneration();
     const int gen = mpParentPlotCurve->getGeneration();
     const int nGen = mpParentPlotCurve->getLogDataVariablePtr()->getNumGenerations();
-    mpGenerationSpinBox->setMinimum(lowGen+1);
-    mpGenerationSpinBox->setMaximum(highGen+1);
+    disconnect(mpGenerationSpinBox,       SIGNAL(valueChanged(int)),   this,  SLOT(setGeneration(int))); //Need to temporarily disconnect to avoid loop
+    mpGenerationSpinBox->setRange(lowGen+1, highGen+1);
     mpGenerationSpinBox->setValue(gen+1);
+    connect(mpGenerationSpinBox,       SIGNAL(valueChanged(int)),   this,  SLOT(setGeneration(int)));
     mpGenerationSpinBox->setEnabled(nGen > 1);
 
     // Set generation number strings
@@ -258,6 +259,11 @@ void CurveInfoBox::setXData(QString fullName)
 void CurveInfoBox::resetTimeVector()
 {
     mpParentPlotCurve->setCustomXData("");
+}
+
+void CurveInfoBox::setGeneration(int gen)
+{
+    mpParentPlotCurve->setGeneration(--gen);
 }
 
 //! @brief Constructor for plot curves.

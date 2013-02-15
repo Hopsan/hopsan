@@ -57,10 +57,11 @@ double PyPortClassWrapper::lastData(Port* o, const QString& dataName)
 }
 QVector<double> PyPortClassWrapper::data(Port* o, const QString& dataName)
 {
-    QPair<QVector<double>, QVector<double> > yData;
-    o->getParentContainerObjectPtr()->getCoreSystemAccessPtr()->getPlotData(o->getGuiModelObject()->getName(),o->getPortName(),dataName,yData);
+    QVector<double> yData;
+    std::vector<double> *pTime;
+    o->getParentContainerObjectPtr()->getCoreSystemAccessPtr()->getPlotData(o->getGuiModelObject()->getName(),o->getPortName(),dataName,pTime,yData);
 
-    return yData.second;
+    return yData;
 }
 QVector<double> PyPortClassWrapper::time(Port* o)
 {

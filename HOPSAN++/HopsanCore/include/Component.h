@@ -81,14 +81,14 @@ public:
     const std::string getTypeName() const;
     const std::string getSubTypeName() const;
     void setSubTypeName(const std::string subTypeName);
-    CQSEnumT getTypeCQS() const;
-    std::string getTypeCQSString() const;
 
     // Component type identification
-    bool isComponentC();
-    bool isComponentQ();
-    bool isComponentSystem();
-    bool isComponentSignal();
+    virtual CQSEnumT getTypeCQS() const;
+    std::string getTypeCQSString() const;
+    virtual bool isComponentC() const;
+    virtual bool isComponentQ() const;
+    virtual bool isComponentSystem() const;
+    virtual bool isComponentSignal() const;
 
     // Parameters
     //void registerDynamicParameter(const std::string name, const std::string description, const std::string unit, double &rValue);
@@ -175,11 +175,9 @@ protected:
     virtual std::string determineUniquePortName(std::string portname);
 
     //==========Protected member variables==========
-    CQSEnumT mTypeCQS;
     bool mInheritTimestep;
     double mTimestep, mDesiredTimestep;
     double mTime;
-    bool mIsComponentSystem;
 
     size_t mModelHierarchyDepth; //!< This variable containes the depth of the system in the model hierarchy, (used by connect to figure out where to store nodes)
     std::vector< std::pair<double*, double*> > mDynamicParameterDataPtrs;
@@ -209,22 +207,23 @@ private:
 
 class DLLIMPORTEXPORT ComponentSignal : public Component
 {
-protected:
-    ComponentSignal();
+public:
+    CQSEnumT getTypeCQS() const {return S;}
+    bool isComponentSignal() const {return true;}
 };
 
 
 class DLLIMPORTEXPORT ComponentC : public Component
 {
-protected:
-    ComponentC();
+    CQSEnumT getTypeCQS() const {return C;}
+    bool isComponentC() const {return true;}
 };
 
 
 class DLLIMPORTEXPORT ComponentQ : public Component
 {
-protected:
-    ComponentQ();
+    CQSEnumT getTypeCQS() const {return Q;}
+    bool isComponentQ() const {return true;}
 };
 
 typedef ClassFactory<std::string, Component> ComponentFactory;

@@ -260,7 +260,6 @@ ComponentSystem::ComponentSystem() : Component(), mAliasHandler(this)
 {
     mTypeName = "ComponentSystem";
     mName = mTypeName; //Make sure intial name is same as typename
-    mIsComponentSystem = true;
     mDesiredTimestep = 0.001;
     mInheritTimestep = true;
     mKeepStartValues = false;
@@ -289,6 +288,11 @@ void ComponentSystem::configure()
     //Does nothing
 }
 
+Component::CQSEnumT ComponentSystem::getTypeCQS() const
+{
+    return mTypeCQS;
+}
+
 double ComponentSystem::getDesiredTimeStep() const
 {
     return mDesiredTimestep;
@@ -305,9 +309,9 @@ size_t ComponentSystem::getNumLogSamples() const
     return mRequestedNumLogSamples;
 }
 
-double ComponentSystem::getLastLogTime() const
+size_t ComponentSystem::getLastLogSample() const
 {
-    return mLastLogTime;
+    return mLogCtr;
 }
 
 

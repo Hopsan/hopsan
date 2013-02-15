@@ -132,7 +132,9 @@ namespace hopsan {
         static Component* Creator(){ return new ComponentSystem(); }
         virtual void configure();
 
-        // Set the subsystem CQS type
+        // Subsystem CQS type methods
+        bool isComponentSystem() const {return true;}
+        CQSEnumT getTypeCQS() const;
         void setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet=false);
         bool changeSubComponentSystemTypeCQS(const std::string name, const CQSEnumT newType);
         void determineCQSType();
@@ -211,7 +213,7 @@ namespace hopsan {
         std::vector<double>* getLogTimeVector();
         void setNumLogSamples(const size_t nLogSamples);
         size_t getNumLogSamples() const;
-        double getLastLogTime() const;
+        size_t getLastLogSample() const;
 
         // Stop a running init or simulation
         void stopSimulation();
@@ -256,6 +258,8 @@ namespace hopsan {
         std::string determineUniqueComponentName(std::string name);
 
         //==========Private member variables==========
+        CQSEnumT mTypeCQS;
+
         typedef std::map<std::string, Component*> SubComponentMapT;
         typedef std::map<std::string, int> ReservedNamesT;
         SubComponentMapT mSubComponentMap;
@@ -264,7 +268,6 @@ namespace hopsan {
         std::vector<Component*> mComponentQptrs;
         std::vector<Component*> mComponentCptrs;
         std::vector<Component*> mComponentUndefinedptrs;
-
         std::vector<Node*> mSubNodePtrs;
 
         bool volatile mStopSimulation;

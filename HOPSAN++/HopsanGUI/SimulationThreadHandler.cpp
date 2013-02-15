@@ -255,15 +255,15 @@ void SimulationThreadHandler::finalizeDone(bool success, int ms)
     }
     else if (!mInitSuccess)
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(tr("Initialize was aborted due to some error"));
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(tr("Initialize was stopped or aborted for some reason"));
     }
     else if (!mSimuSucess)
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(tr("Simulation was aborted due to some error"));
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(tr("Simulation was stopped or aborted for some reason"));
     }
     else if (!mFiniSucess)
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(tr("Finalize was aborted due to some error"));
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(tr("Finalize was stopped or aborted for some reason"));
     }
     else
     {

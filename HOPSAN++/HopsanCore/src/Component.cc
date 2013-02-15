@@ -60,9 +60,6 @@ Component::Component()
 
     mTimestep = 0.001;
 
-    mIsComponentSystem = false;
-    mTypeCQS = Component::UndefinedCQSType;
-
     mpSystemParent = 0;
     mModelHierarchyDepth = 0;
 
@@ -238,14 +235,14 @@ const string Component::getName() const
 //! @brief Get the C, Q or S type of the component as enum
 Component::CQSEnumT Component::getTypeCQS() const
 {
-    return mTypeCQS;
+    return UndefinedCQSType;
 }
 
 
 //! @brief Get the CQStype as string
 string Component::getTypeCQSString() const
 {
-    switch (mTypeCQS)
+    switch (getTypeCQS())
     {
     case C :
         return "C";
@@ -492,30 +489,30 @@ bool Component::checkModelBeforeSimulation()
 //! @brief Check if a component is a C-Component
 //! @returns true or false
 //! @see getTypeCQS() getTypeCQSString()
-bool Component::isComponentC()
+bool Component::isComponentC() const
 {
-    return mTypeCQS == C;
+    return false;
 }
 
 //! @brief Check if a component is a Q-Component
 //! @returns true or false
-bool Component::isComponentQ()
+bool Component::isComponentQ() const
 {
-    return mTypeCQS == Q;
+    return false;
 }
 
 //! @brief Check if a component is a System-Component
 //! @returns true or false
-bool Component::isComponentSystem()
+bool Component::isComponentSystem() const
 {
-    return mIsComponentSystem;
+    return false;
 }
 
 //! @brief Check if a component is a Signal-Component
 //! @returns true or false
-bool Component::isComponentSignal()
+bool Component::isComponentSignal() const
 {
-    return mTypeCQS == S;
+    return false;
 }
 
 
@@ -946,22 +943,22 @@ void Component::loadStartValuesFromSimulation()
 }
 
 
-//constructor ComponentC
-ComponentC::ComponentC() : Component()
-{
-    mTypeCQS = Component::C;
-}
+////constructor ComponentC
+//ComponentC::ComponentC() : Component()
+//{
+//    mTypeCQS = Component::C;
+//}
 
 
-//Constructor ComponentQ
-ComponentQ::ComponentQ() : Component()
-{
-    mTypeCQS = Component::Q;
-}
+////Constructor ComponentQ
+//ComponentQ::ComponentQ() : Component()
+//{
+//    mTypeCQS = Component::Q;
+//}
 
 
-//constructor ComponentSignal
-ComponentSignal::ComponentSignal() : Component()
-{
-    mTypeCQS = Component::S;
-}
+////constructor ComponentSignal
+//ComponentSignal::ComponentSignal() : Component()
+//{
+//    mTypeCQS = Component::S;
+//}

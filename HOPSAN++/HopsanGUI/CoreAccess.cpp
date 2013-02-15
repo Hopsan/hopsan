@@ -808,34 +808,6 @@ void CoreSystemAccess::getPlotDataNamesAndUnits(const QString compname, const QS
     }
 }
 
-//! @deprecated
-void CoreSystemAccess::getPlotData(const QString compname, const QString portname, const QString dataname, QPair<QVector<double>, QVector<double> > &rData)
-{
-    int dataId = -1;
-    hopsan::Port* pPort = this->getCorePortPtr(compname, portname);
-    if (pPort)
-    {
-        if(pPort->isConnected())
-        {
-            dataId = pPort->getNodeDataIdFromName(dataname.toStdString());
-            if (dataId > -1)
-            {
-                vector< vector<double> > *pData = pPort->getLogDataVectorPtr();
-                vector<double> *pTime = pPort->getLogTimeVectorPtr();
-
-                //Ok lets copy all of the data to a Qt vector
-                rData.first.resize(pTime->size());    //Allocate memory for time
-                rData.second.resize(pData->size()); //Allocate memory for data
-                for (size_t i=0; i<pData->size() && i<pTime->size(); ++i)
-                {
-                    rData.first[i] = pTime->at(i);
-                    rData.second[i] = pData->at(i).at(dataId);
-                }
-            }
-        }
-    }
-}
-
 void CoreSystemAccess::getPlotData(const QString compname, const QString portname, const QString dataname, std::vector<double> *&rpTimeVector, QVector<double> &rData)
 {
     int dataId = -1;
@@ -850,20 +822,10 @@ void CoreSystemAccess::getPlotData(const QString compname, const QString portnam
                 vector< vector<double> > *pData = pPort->getLogDataVectorPtr();
                 rpTimeVector = pPort->getLogTimeVectorPtr();
 
-                size_t nElements,i;
+                size_t nElements;
                 if (pPort->getComponent()->getSystemParent()->wasSimulationAborted())
                 {
-                    double t = pPort->getComponent()->getSystemParent()->getLastLogTime();
-                    nElements = rpTimeVector->size();
-                    for (i=1; i<rpTimeVector->size(); ++i)
-                    {
-                        if ((rpTimeVector->at(i) >= t) || (rpTimeVector->at(i) < rpTimeVector->at(i-1)))
-                        {
-                            --i;
-                            nElements = i;
-                            break;
-                        }
-                    }
+                    nElements = pPort->getComponent()->getSystemParent()->getLastLogSample();
                 }
                 else
                 {

@@ -74,6 +74,7 @@ private slots:
     void actiavateCurve(bool active);
     void setXData(QString fullName);
     void resetTimeVector();
+    void setGeneration(int gen);
 };
 
 
