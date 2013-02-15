@@ -626,7 +626,7 @@ bool HopsanGenerator::assertFilesExist(QString path, QStringList files)
     {
         if(!QFile::exists(path+"/"+file))
         {
-            printErrorMessage("File not found: "+file);
+            printErrorMessage("File not found: "+file+".");
             return false;
         }
     }
@@ -635,6 +635,16 @@ bool HopsanGenerator::assertFilesExist(QString path, QStringList files)
 }
 
 
-
+void HopsanGenerator::callProcess(QString name, QStringList args, QString workingDirectory)
+{
+    QProcess p;
+    if(!workingDirectory.isEmpty())
+    {
+        p.setWorkingDirectory(workingDirectory);
+    }
+    p.start(name, args);
+    p.waitForFinished(60000);
+    printMessage(p.readAll());
+}
 
 

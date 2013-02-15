@@ -223,6 +223,47 @@ void copyIncludeFilesToDir(QString path)
     saveDir.cd("include");
 
     copyDir( QString("../HopsanCore/include"), saveDir.path() );
+
+    saveDir.cdUp();
+    saveDir.mkpath("Dependencies/rapidxml-1.13");
+    saveDir.cd("Dependencies");
+    saveDir.cd("rapidxml-1.13");
+
+    copyDir(QString("../HopsanCore/Dependencies/rapidxml-1.13"), saveDir.path());
+
+    saveDir.cdUp();
+    saveDir.mkpath("libcsv_parser++-1.0.0");
+    saveDir.cd("libcsv_parser++-1.0.0");
+
+    copyDir(QString("../HopsanCore/Dependencies/libcsv_parser++-1.0.0"), saveDir.path());
+}
+
+
+//! @todo maybe this function should not be among general utils
+//! @todo should not copy .svn folders
+void copySourceFilesToDir(QString path)
+{
+    QDir saveDir;
+    saveDir.setPath(path);
+    saveDir.mkpath("src");
+    saveDir.cd("src");
+
+    copyDir( QString("../HopsanCore/src"), saveDir.path() );
+}
+
+
+//! @todo maybe this function should not be among general utils
+//! @todo should not copy .svn folders
+void copyDefaultComponentCodeToDir(QString path)
+{
+    QDir saveDir;
+    saveDir.setPath(path);
+    saveDir.mkpath("componentLibraries/defaultLibrary/code");
+    saveDir.cd("componentLibraries");
+    saveDir.cd("defaultLibrary");
+    saveDir.cd("code");
+
+    copyDir( QString("../componentLibraries/defaultLibrary/code"), saveDir.path() );
 }
 
 
@@ -237,6 +278,17 @@ void copyBoostIncludeFilesToDir(QString path)
     saveDir.cd("boost");
 
     copyDir( QString("../HopsanCore/Dependencies/boost"), saveDir.path() );
+
+    saveDir.cd("bin");
+    QStringList binFiles = saveDir.entryList(QDir::Files | QDir::NoDotAndDotDot);
+
+    Q_FOREACH(const QString &fileName, binFiles)
+    {
+        QFile file(path+"/include/boost/bin/"+fileName);
+        qDebug() << "File: " << path+"/include/boost/bin/"+fileName;
+        file.copy(path+"/"+fileName);
+        qDebug() << "Target: " << path << "/" << fileName;
+    }
 }
 
 

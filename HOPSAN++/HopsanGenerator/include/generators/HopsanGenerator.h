@@ -63,6 +63,8 @@ public:
 
     bool assertFilesExist(QString path, QStringList files);
 
+    void callProcess(QString name, QStringList args, QString workingDirectory=QString());
+
 protected:
     QString mOutputPath;
     QString mTempPath;

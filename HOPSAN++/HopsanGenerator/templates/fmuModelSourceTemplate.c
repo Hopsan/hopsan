@@ -29,9 +29,9 @@
     //Initialize
     void initialize(ModelInstance* comp, fmiEventInfo* eventInfo)
     {
-        initializeHopsanWrapper("<<<7>>>.hmf");
+        initializeHopsanWrapperFromBuiltInModel();
         eventInfo->upcomingTimeEvent   = fmiTrue;
-        eventInfo->nextEventTime       = 0.0005 + comp->time;
+        eventInfo->nextEventTime       = getTimeStep() + comp->time;
     }
 
     //Return variable of real type
@@ -56,7 +56,7 @@
     {
         simulateOneStep();
         eventInfo->upcomingTimeEvent   = fmiTrue;
-        eventInfo->nextEventTime       = 0.0005 + comp->time;
+        eventInfo->nextEventTime       = getTimeStep() + comp->time;
     }
 
     // Include code that implements the FMI based on the above definitions

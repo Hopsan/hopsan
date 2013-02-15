@@ -3,6 +3,7 @@
 #include <assert.h>
 #include "HopsanCore.h"
 #include "HopsanFMU.h"
+#include "model.hpp"
 
 static double fmu_time=0;
 static hopsan::ComponentSystem *spCoreComponentSystem;
@@ -23,6 +24,17 @@ void initializeHopsanWrapper(char* filename)
     fmu_time = 0;
 }
 
+void initializeHopsanWrapperFromBuiltInModel()
+{
+    spCoreComponentSystem = gHopsanCore.loadHMFModel(getModelString());
+
+    assert(spCoreComponentSystem);
+    spCoreComponentSystem->setDesiredTimestep(0.001);
+    spCoreComponentSystem->initialize(0,10);
+
+    fmu_time = 0;
+}
+
 void simulateOneStep()
 {
     if(spCoreComponentSystem->checkModelBeforeSimulation())
@@ -30,12 +42,16 @@ void simulateOneStep()
         double timestep = spCoreComponentSystem->getDesiredTimeStep();
         spCoreComponentSystem->simulate(fmu_time, fmu_time+timestep);
         fmu_time = fmu_time+timestep;
-
     }
     else
     {
         std::cout << "Simulation failed!";
     }
+}
+
+double getTimeStep()
+{
+    return spCoreComponentSystem->getDesiredTimeStep();
 }
 
 double getVariable(char* component, char* port, size_t idx)

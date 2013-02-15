@@ -28,9 +28,19 @@ permission from the copyright holders.
 using namespace hopsan;
 
 
-bool *sim_socket;
+double *sim_socket;
 bool *stop_socket;
 <<<0>>>
+
+boost::interprocess::shared_memory_object shdmem_sim;
+boost::interprocess::shared_memory_object shdmem_stop;
+>>>19>>>boost::interprocess::shared_memory_object shdmem_<<<name>>>;
+<<<19<<<
+
+boost::interprocess::mapped_region region_sim;
+boost::interprocess::mapped_region region_stop;
+>>>20>>>boost::interprocess::mapped_region region_<<<name>>>;
+<<<20<<<
 
 static void mdlInitializeSizes(SimStruct *S)
 {
@@ -71,7 +81,7 @@ static void mdlInitializeSampleTimes(SimStruct *S)
 //Simulate
 <<<10>>>
     (*stop_socket) = false;
-    (*sim_socket) = false;
+    (*sim_socket) = 0.0;
 }
 
 
@@ -94,10 +104,10 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     //Write input values
 <<<15>>>
     //Tell Hopsan to simulate
-    (*sim_socket) = true;
+    (*sim_socket) = 10.0;
 
     //Make sure step is completed by Hopsan
-    while((*sim_socket)) {}  
+    while((*sim_socket) > 5.0) { mexEvalString("drawnow;"); }  
 
     //Read output values
 <<<16>>>

@@ -1,20 +1,20 @@
 #ifndef HOPSANFMU_H
 #define HOPSANFMU_H
 
-#ifdef WRAPPERCOMPILATION
+#ifdef __cplusplus
     extern "C" {
-#else
-    #define DLLEXPORT
 #endif
 
-DLLEXPORT void initializeHopsanWrapper(char* filename);
-DLLEXPORT void simulateOneStep();
-DLLEXPORT double getVariable(char* component, char* port, size_t idx);
+void initializeHopsanWrapper(char* filename);
+void initializeHopsanWrapperFromBuiltInModel();
+void simulateOneStep();
+double getVariable(char* component, char* port, size_t idx);
+double getTimeStep();
+void setVariable(char* component, char* port, size_t idx, double value);
+void setParameter(char* name, double value);
 
-DLLEXPORT void setVariable(char* component, char* port, size_t idx, double value);
-DLLEXPORT void setParameter(char* name, double value);
-
-#ifdef WRAPPERCOMPILATION
+#ifdef __cplusplus
 }
 #endif
+
 #endif // HOPSANFMU_H
