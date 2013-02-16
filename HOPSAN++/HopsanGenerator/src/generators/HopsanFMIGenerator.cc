@@ -912,11 +912,56 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
 {
     printMessage("Initializing FMU export...");
 
+
     QDir saveDir;
     saveDir.setPath(savePath);
 
     //! @todo Make global
     QString gExecPath = qApp->applicationDirPath().append('/');
+
+    printMessage("Verifying that required files exist...");
+
+    //Make sure HopsanCore source files are available
+    QStringList srcFiles;
+    srcFiles << "Component.cc" <<
+                "ComponentSystem.cc" <<
+                "HopsanEssentials.cc" <<
+                "Node.cc" <<
+                "Nodes.cc" <<
+                "Parameters.cc" <<
+                "Port.cc";
+    if(assertFilesExist(gExecPath+"../HopsanCore/src", srcFiles))
+        return;
+    srcFiles.clear();
+    srcFiles << "AuxiliarySimulationFunctions.cc" <<
+                "CSVParser.cc" <<
+                "DoubleIntegratorWithDamping.cc" <<
+                "DoubleIntegratorWithDampingAndCoulumbFriction.cc" <<
+                "EquationSystemSolver.cpp" <<
+                "FirstOrderTransferFunction.cc" <<
+                "Integrator.cc" <<
+                "IntegratorLimited.cc" <<
+                "ludcmp.cc" <<
+                "matrix.cc" <<
+                "SecondOrderTransferFunction.cc" <<
+                "TurbulentFlowFunction.cc" <<
+                "ValveHysteresis.cc" <<
+                "WhiteGaussianNoise.cc";
+    if(!assertFilesExist(gExecPath+"../HopsanCore/src/ComponentUtilities/", srcFiles))
+        return;
+    srcFiles.clear();
+    srcFiles << "CoSimulationUtilities.cpp" <<
+                "GeneratorHandler.cpp" <<
+                "HmfLoader.cc" <<
+                "HopsanCoreMessageHandler.cc" <<
+                "LoadExternal.cc" <<
+                "MultiThreadingUtilities.cpp";
+    if(!assertFilesExist(gExecPath+"../HopsanCore/src/CoreUtilities/", srcFiles))
+        return;
+    if(!assertFilesExist(gExecPath+"../componentLibraries/defaultLibrary/code/", QStringList() << "defaultComponentLibraryInternal.cc"))
+        return;
+    if(!assertFilesExist(gExecPath+"../HopsanCore/Dependencies/libcsv_parser++-1.0.0/", QStringList() << "csv_parser.cpp"))
+        return;
 
 
     //Tells if user selected the gcc compiler or not (= visual studio)
@@ -1237,6 +1282,9 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     QFile fmiTemplateHFile(gExecPath + "/../ThirdParty/fmi/fmuTemplate.h");
     fmiTemplateHFile.copy(savePath + "/fmuTemplate.h");
 
+    if(!assertFilesExist(savePath, QStringList() << "fmiModelFunctions.h" << "fmiModelTypes.h" << "fmuTemplate.c" << "fmuTemplate.h"))
+        return;
+
     printMessage("Generating model file...");
 
     QStringList modelLines;
@@ -1365,7 +1413,8 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     QString command = "cd "+savePath+"/fmu && zip -r ../"+modelName+".fmu *";
     qDebug() << "Command = " << command;
     command +=" 2>&1";
-    fp = popen(  (const char *) command.toStdString().c_str(), "r");
+    char line[130];
+    FILE *fp = popen(  (const char *) command.toStdString().c_str(), "r");
     if ( !fp )
     {
         printErrorMessage("Could not execute '" + command + "'! err=%d.");
