@@ -215,7 +215,7 @@ void copyDir(const QString fromPath, QString toPath)
 
 //! @todo maybe this function should not be among general utils
 //! @todo should not copy .svn folders
-void copyIncludeFilesToDir(QString path)
+void copyIncludeFilesToDir2(QString path)
 {
     QDir saveDir;
     saveDir.setPath(path);
@@ -225,7 +225,9 @@ void copyIncludeFilesToDir(QString path)
     copyDir( QString("../HopsanCore/include"), saveDir.path() );
 
     saveDir.cdUp();
-    saveDir.mkpath("Dependencies/rapidxml-1.13");
+    bool success = saveDir.mkpath("Dependencies/rapidxml-1.13");
+    qDebug() << "The success is: " << success;
+
     saveDir.cd("Dependencies");
     saveDir.cd("rapidxml-1.13");
 
@@ -682,3 +684,7 @@ void copyHopsanCoreSourceFiles(QString targetPath)
         QFile::copy(file, targetPath+file.right(file.size()-file.lastIndexOf("/")));
     }
 }
+
+
+
+

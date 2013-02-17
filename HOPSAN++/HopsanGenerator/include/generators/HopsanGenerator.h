@@ -64,6 +64,7 @@ public:
     bool assertFilesExist(QString path, QStringList files);
 
     void callProcess(QString name, QStringList args, QString workingDirectory=QString());
+    bool runUnixCommand(QString cmd);
 
 protected:
     QString mOutputPath;

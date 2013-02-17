@@ -148,7 +148,7 @@ public:
 QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString rootTagName);
 bool removeDir(QString path);
 void copyDir(const QString fromPath, QString toPath);
-void copyIncludeFilesToDir(QString path);
+void copyIncludeFilesToDir2(QString path);
 void copySourceFilesToDir(QString path);
 void copyDefaultComponentCodeToDir(QString path);
 void copyBoostIncludeFilesToDir(QString path);

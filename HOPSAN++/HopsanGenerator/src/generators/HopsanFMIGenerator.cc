@@ -930,7 +930,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
                 "Nodes.cc" <<
                 "Parameters.cc" <<
                 "Port.cc";
-    if(assertFilesExist(gExecPath+"../HopsanCore/src", srcFiles))
+    if(!assertFilesExist(gExecPath+"../HopsanCore/src", srcFiles))
         return;
     srcFiles.clear();
     srcFiles << "AuxiliarySimulationFunctions.cc" <<
@@ -1266,7 +1266,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
 
 
     //Copy include files to export directory
-    copyIncludeFilesToDir(savePath);
+    copyIncludeFilesToDir2(savePath);
     copySourceFilesToDir(savePath);
     copyDefaultComponentCodeToDir(savePath);
 
@@ -1334,44 +1334,27 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
 #elif linux
     printMessage("Compiling "+modelName+".so");
     //! @todo Fix compilation for linux
-    printErrorMessage("Compilation not implemented for linux.");
-    return;
-//    QString gccCommand1 = "cd "+savePath+" && g++ -DWRAPPERCOMPILATION -fPIC -Wl,--rpath,'$ORIGIN/.' -c HopsanFMU.cpp -I./include\n";
-//    QString gccCommand2 = "cd "+savePath+" && g++ -shared -Wl,--rpath,'$ORIGIN/.' -o libHopsanFMU.so HopsanFMU.o -L./ -lHopsanCore";
 
-//    qDebug() << "Command 1 = " << gccCommand1;
-//    qDebug() << "Command 2 = " << gccCommand2;
+        QString gccCommand1 = "cd "+savePath+" && gcc -c -w -shared -fPIC -Wl,--rpath,'$ORIGIN/.' "+modelName+".c\n";
+        QString gccCommand2 = "cd "+savePath+" && g++ -w -shared -fPIC -DDOCOREDLLEXPORT -DBUILTINDEFAULTCOMPONENTLIB -o "+modelName+".so "+modelName+".o HopsanFMU.cpp src/Component.cc src/ComponentSystem.cc src/HopsanEssentials.cc src/Node.cc src/Nodes.cc src/Parameters.cc src/Port.cc src/ComponentUtilities/AuxiliarySimulationFunctions.cc src/ComponentUtilities/CSVParser.cc src/ComponentUtilities/DoubleIntegratorWithDamping.cc src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc src/ComponentUtilities/EquationSystemSolver.cpp src/ComponentUtilities/FirstOrderTransferFunction.cc src/ComponentUtilities/Integrator.cc src/ComponentUtilities/IntegratorLimited.cc src/ComponentUtilities/ludcmp.cc src/ComponentUtilities/matrix.cc src/ComponentUtilities/SecondOrderTransferFunction.cc src/ComponentUtilities/TurbulentFlowFunction.cc src/ComponentUtilities/ValveHysteresis.cc src/ComponentUtilities/WhiteGaussianNoise.cc src/CoreUtilities/CoSimulationUtilities.cpp src/CoreUtilities/GeneratorHandler.cpp src/CoreUtilities/HmfLoader.cc src/CoreUtilities/HopsanCoreMessageHandler.cc src/CoreUtilities/LoadExternal.cc src/CoreUtilities/MultiThreadingUtilities.cpp componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.cc Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp -Iinclude -IcomponentLibraries/defaultLibrary/code -IDependencies/rapidxml-1.13 -IDependencies/libcsv_parser++-1.0.0/include/csv_parser\n";
 
-//    char line[130];
-//    gccCommand1 +=" 2>&1";
-//    FILE *fp = popen(  (const char *) gccCommand1.toStdString().c_str(), "r");
-//    if ( !fp )
-//    {
-//        printErrorMessage("Could not execute '" + gccCommand1 + "'! err=%d");
-//        return;
-//    }
-//    else
-//    {
-//        while ( fgets( line, sizeof line, fp))
-//        {
-//           printMessage((const QString &)line);
-//        }
-//    }
+        qDebug() << "Command 1 = " << gccCommand1;
+        qDebug() << "Command 2 = " << gccCommand2;
 
-//    gccCommand2 +=" 2>&1";
-//    fp = popen(  (const char *) gccCommand2.toStdString().c_str(), "r");
-//    if ( !fp )
-//    {
-//        printErrorMessage("Could not execute '" + gccCommand2 + "'! err=%d");
-//        return;
-//    }
-//    else
-//    {
-//        while ( fgets( line, sizeof line, fp))
-//        {
-//            printMessage((const QString &)line);
-//        }
-//    }
+        callProcess("gcc", QStringList() << "-c" << "-w" << "-shared" << "-fPIC" << "-Wl,--rpath,'$ORIGIN/.'" << modelName+".c", savePath);
+
+        callProcess("g++", QStringList() << "-w" << "-shared" << "-fPIC" << "-DDOCOREDLLEXPORT" << "-DBUILTINDEFAULTCOMPONENTLIB" << "-o"+modelName+".so" << modelName+".o" << "HopsanFMU.cpp" << "src/Component.cc" << "src/ComponentSystem.cc" << "src/HopsanEssentials.cc" << "src/Node.cc" << "src/Nodes.cc" << "src/Parameters.cc" << "src/Port.cc" << "src/ComponentUtilities/AuxiliarySimulationFunctions.cc" << "src/ComponentUtilities/CSVParser.cc" << "src/ComponentUtilities/DoubleIntegratorWithDamping.cc" << "src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc" << "src/ComponentUtilities/EquationSystemSolver.cpp" << "src/ComponentUtilities/FirstOrderTransferFunction.cc" << "src/ComponentUtilities/Integrator.cc" << "src/ComponentUtilities/IntegratorLimited.cc" << "src/ComponentUtilities/ludcmp.cc" << "src/ComponentUtilities/matrix.cc" << "src/ComponentUtilities/SecondOrderTransferFunction.cc" << "src/ComponentUtilities/TurbulentFlowFunction.cc" << "src/ComponentUtilities/ValveHysteresis.cc" << "src/ComponentUtilities/WhiteGaussianNoise.cc" << "src/CoreUtilities/CoSimulationUtilities.cpp" << "src/CoreUtilities/GeneratorHandler.cpp" << "src/CoreUtilities/HmfLoader.cc" << "src/CoreUtilities/HopsanCoreMessageHandler.cc" << "src/CoreUtilities/LoadExternal.cc" << "src/CoreUtilities/MultiThreadingUtilities.cpp" << "componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.cc" << "Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp" << "-Iinclude" << "-IcomponentLibraries/defaultLibrary/code" << "-IDependencies/rapidxml-1.13" << "-IDependencies/libcsv_parser++-1.0.0/include/csv_parser", savePath);
+//        QString output;
+//        if(!runUnixCommand(gccCommand1))
+//            return;
+
+//        output.clear();
+//        if(!runUnixCommand(gccCommand1))
+//            return;
+
+//        sleep(30);
+        if(!assertFilesExist(savePath, QStringList() << modelName+".so"))
+            return;
 #endif
 
     printMessage("Sorting files...");
@@ -1816,7 +1799,7 @@ void HopsanFMIGenerator::generateToFmuOld(QString savePath, hopsan::ComponentSys
 
 
     //Copy include files to export directory
-    copyIncludeFilesToDir(savePath);
+    copyIncludeFilesToDir2(savePath);
 
 
     printMessage("Writing "+realModelName+".hmf");

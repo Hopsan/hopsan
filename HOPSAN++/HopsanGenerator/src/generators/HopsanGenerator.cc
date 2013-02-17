@@ -648,3 +648,22 @@ void HopsanGenerator::callProcess(QString name, QStringList args, QString workin
 }
 
 
+bool HopsanGenerator::runUnixCommand(QString cmd)
+{
+    char line[130];
+    cmd +=" 2>&1";
+    FILE *fp = popen(  (const char *) cmd.toStdString().c_str(), "r");
+    if ( !fp )
+    {
+        printErrorMessage("Could not execute '" + cmd + "'! err=%d");
+        return false;
+    }
+    else
+    {
+        while ( fgets( line, sizeof line, fp))
+        {
+           printMessage((const QString &)line);
+        }
+    }
+    return true;
+}
