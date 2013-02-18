@@ -359,7 +359,7 @@ def copyFiles():
     os.system("del \""+tempDir+"\"\\bin\qwtd.dll")
 
     #Build user documentation
-    #os.system("buildUserDocumentation")
+    os.system("buildUserDocumentation")
     if not fileExists(hopsanDir+"\\doc\\user\\html\\index.html"):
         printError("Failed to build user documentation")
 
