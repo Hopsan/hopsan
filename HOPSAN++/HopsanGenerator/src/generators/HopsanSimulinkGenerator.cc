@@ -24,10 +24,6 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, hopsan::Compo
     QDir saveDir;
     saveDir.setPath(savePath);
 
-    //! @todo Make global
-    QString gExecPath = qApp->applicationDirPath().append('/');
-
-
     std::vector<std::string> parameterNames;
     pSystem->getParameterNames(parameterNames);
     QStringList tunableParameters;
@@ -611,7 +607,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, hopsan::Compo
 
     printMessage("Copying include files");
 
-    copyIncludeFilesToDir(savePath);
+    copyIncludeFilesToDir2(savePath);
 
     //! @todo should not overwrite this wile if it already exists
     QFile externalLibsFile;
@@ -1091,7 +1087,7 @@ void HopsanSimulinkGenerator::generateToSimulinkCoSim(QString savePath, hopsan::
 
     printMessage("Copying include files");
 
-    copyIncludeFilesToDir(savePath);
+    copyIncludeFilesToDir2(savePath);
     copyBoostIncludeFilesToDir(savePath);
 
     //! @todo should not overwrite this wile if it already exists

@@ -68,6 +68,8 @@ HopsanGenerator::HopsanGenerator(QString coreIncludePath, QString binPath, bool 
     mCoreIncludePath = coreIncludePath;
     mBinPath = binPath;
 
+    mExecPath = qApp->applicationDirPath().append('/');
+
     mShowDialog = showDialog;
 
     if(mShowDialog)

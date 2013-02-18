@@ -30,87 +30,56 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
     QFileInfo fmuFileInfo = QFileInfo(path);
     fmuFileInfo.setFile(path);
 
-    //! @todo Make global
-    QString gExecPath = qApp->applicationDirPath().append('/');
-
     QDir zipDir;
-    zipDir = QDir::cleanPath(gExecPath + "../ThirdParty/7z");
+    zipDir = QDir::cleanPath(mExecPath + "../ThirdParty/7z");
 
     QDir gccDir;
-    gccDir = QDir::cleanPath(gExecPath + "../ThirdParty/mingw32/bin");
+    gccDir = QDir::cleanPath(mExecPath + "../ThirdParty/mingw32/bin");
 
     QString fmuName = fmuFileInfo.fileName();
     fmuName.chop(4);
 
-    //! @todo We cannot use gExecPath for this because Windows may not allow it
-
     //Create import directory if it does not exist
-    if(!QDir(gExecPath + "../import").exists())
-        QDir().mkdir(gExecPath + "../import");
+    if(!QDir(mExecPath + "../import").exists())
+        QDir().mkdir(mExecPath + "../import");
 
     //Create FMU directory if it does not exist
-    if(!QDir(gExecPath + "../import/FMU").exists())
-        QDir().mkdir(gExecPath + "../import/FMU");
+    if(!QDir(mExecPath + "../import/FMU").exists())
+        QDir().mkdir(mExecPath + "../import/FMU");
 
     //Remove output directory if it already exists
-    if(QDir(gExecPath+"../import/FMU/"+fmuName).exists() && !removeDir(gExecPath+"../import/FMU/"+fmuName))
+    if(QDir(mExecPath+"../import/FMU/"+fmuName).exists() && !removeDir(mExecPath+"../import/FMU/"+fmuName))
     {
-        printErrorMessage("Unable to remove output directory: "+QDir().cleanPath(gExecPath+"../import/FMU/"+fmuName)+". Please remove it manually and try again.");
+        printErrorMessage("Unable to remove output directory: "+QDir().cleanPath(mExecPath+"../import/FMU/"+fmuName)+". Please remove it manually and try again.");
         return;
     }
 
     //Create output directory
-    if(!QDir().mkdir(gExecPath + "../import/FMU/" + fmuName))
+    if(!QDir().mkdir(mExecPath + "../import/FMU/" + fmuName))
     {
-        printErrorMessage("Unable to create output directory: "+QDir().cleanPath(gExecPath+"../import/FMU/"+fmuName)+". Please remove it manually and try again.");
+        printErrorMessage("Unable to create output directory: "+QDir().cleanPath(mExecPath+"../import/FMU/"+fmuName)+". Please remove it manually and try again.");
         return;
     }
 
 
-    QString fmuPath = gExecPath + "../import/FMU/" + fmuName;
+    QString fmuPath = mExecPath + "../import/FMU/" + fmuName;
     QDir fmuDir = QDir::cleanPath(fmuPath);
 
     printMessage("Unpacking files");
 
 
     //Unzip .fmu file
+
+
+
+
 #ifdef WIN32
-    QProcess zipProcess;
-    zipProcess.setWorkingDirectory(zipDir.path());
     QStringList arguments;
     arguments << "x" << fmuFileInfo.filePath() << "-o" + fmuDir.path() << "-aoa";
-    zipProcess.start(zipDir.path() + "/7z.exe", arguments);
-    zipProcess.waitForFinished();
-    QByteArray zipResult = zipProcess.readAll();
-    QList<QByteArray> zipResultList = zipResult.split('\n');
-    for(int i=0; i<zipResultList.size(); ++i)
-    {
-        QString msg = zipResultList.at(i);
-        msg = msg.remove(msg.size()-1, 1);
-        if(!msg.isEmpty())
-        {
-            printMessage(msg);
-        }
-    }
+    callProcess(zipDir.path()+"/7z.exe", arguments, zipDir.path());
 #else
-    QString command = "unzip "+fmuFileInfo.filePath()+" -d "+fmuDir.path();
-    qDebug() << "Command = " << command;
-    FILE *fp;
-    char line[130];
-    command +=" 2>&1";
-    fp = popen(  (const char *) command.toStdString().c_str(), "r");
-    if ( !fp )
-    {
-        printErrorMessage("Could not execute '" + command + "'! err=%d");
-        return;
-    }
-    else
-    {
-        while ( fgets( line, sizeof line, fp))
-        {
-            printMessage((const QString &)line);
-        }
-    }
+    QStringList arguments = QStringList() << fmuFileInfo.filePath() << "-d" << fmuDir.path();
+    callProcess("unzip", arguments, fmuDir.path());
 #endif
 
     //Move all binary files to FMU directory
@@ -164,16 +133,16 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
         hmfFile.setFileName(fmuDir.path() + "/" + hmfList.at(i));
         if(hmfFile.exists())
         {
-            QFile().remove(gExecPath+hmfList.at(i));
-            if(QFile().exists(gExecPath+hmfList.at(i)))
+            QFile().remove(mExecPath+hmfList.at(i));
+            if(QFile().exists(mExecPath+hmfList.at(i)))
             {
                 printErrorMessage("Unable to copy "+hmfFile.fileName()+" to /bin directory: File already exists.");
                 return;
             }
-            hmfFile.copy(gExecPath + hmfList.at(i));
+            hmfFile.copy(mExecPath + hmfList.at(i));
             hmfFile.remove();
-            hmfFile.setFileName(gExecPath + hmfList.at(i));
-            printMessage("Copying " + hmfFile.fileName() + " to " + gExecPath + hmfList.at(i));
+            hmfFile.setFileName(mExecPath + hmfList.at(i));
+            printMessage("Copying " + hmfFile.fileName() + " to " + mExecPath + hmfList.at(i));
         }
     }
     fmuDir.setFilter(QDir::NoFilter);
@@ -739,7 +708,7 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
 #ifdef WIN32
     QString fmiSrcPath = gExecPath + "../ThirdParty/fmi/";
 #elif linux
-    QString fmiSrcPath = gExecPath + "../ThirdParty/fmi/linux/";
+    QString fmiSrcPath = mExecPath + "../ThirdParty/fmi/linux/";
 #endif
     simSupportSourceFile.setFileName(fmiSrcPath+"sim_support.c");
     if(simSupportSourceFile.copy(fmuDir.path() + "/sim_support.c"))
@@ -916,9 +885,6 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     QDir saveDir;
     saveDir.setPath(savePath);
 
-    //! @todo Make global
-    QString gExecPath = qApp->applicationDirPath().append('/');
-
     printMessage("Verifying that required files exist...");
 
     //Make sure HopsanCore source files are available
@@ -930,7 +896,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
                 "Nodes.cc" <<
                 "Parameters.cc" <<
                 "Port.cc";
-    if(!assertFilesExist(gExecPath+"../HopsanCore/src", srcFiles))
+    if(!assertFilesExist(mExecPath+"../HopsanCore/src", srcFiles))
         return;
     srcFiles.clear();
     srcFiles << "AuxiliarySimulationFunctions.cc" <<
@@ -947,7 +913,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
                 "TurbulentFlowFunction.cc" <<
                 "ValveHysteresis.cc" <<
                 "WhiteGaussianNoise.cc";
-    if(!assertFilesExist(gExecPath+"../HopsanCore/src/ComponentUtilities/", srcFiles))
+    if(!assertFilesExist(mExecPath+"../HopsanCore/src/ComponentUtilities/", srcFiles))
         return;
     srcFiles.clear();
     srcFiles << "CoSimulationUtilities.cpp" <<
@@ -956,11 +922,11 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
                 "HopsanCoreMessageHandler.cc" <<
                 "LoadExternal.cc" <<
                 "MultiThreadingUtilities.cpp";
-    if(!assertFilesExist(gExecPath+"../HopsanCore/src/CoreUtilities/", srcFiles))
+    if(!assertFilesExist(mExecPath+"../HopsanCore/src/CoreUtilities/", srcFiles))
         return;
-    if(!assertFilesExist(gExecPath+"../componentLibraries/defaultLibrary/code/", QStringList() << "defaultComponentLibraryInternal.cc"))
+    if(!assertFilesExist(mExecPath+"../componentLibraries/defaultLibrary/code/", QStringList() << "defaultComponentLibraryInternal.cc"))
         return;
-    if(!assertFilesExist(gExecPath+"../HopsanCore/Dependencies/libcsv_parser++-1.0.0/", QStringList() << "csv_parser.cpp"))
+    if(!assertFilesExist(mExecPath+"../HopsanCore/Dependencies/libcsv_parser++-1.0.0/", QStringList() << "csv_parser.cpp"))
         return;
 
 
@@ -1273,13 +1239,13 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
 
     printMessage("Copying FMI files...");
 
-    QFile fmuModelFunctionsHFile(gExecPath + "/../ThirdParty/fmi/fmiModelFunctions.h");
+    QFile fmuModelFunctionsHFile(mExecPath + "/../ThirdParty/fmi/fmiModelFunctions.h");
     fmuModelFunctionsHFile.copy(savePath + "/fmiModelFunctions.h");
-    QFile fmiModelTypesHFile(gExecPath + "/../ThirdParty/fmi/fmiModelTypes.h");
+    QFile fmiModelTypesHFile(mExecPath + "/../ThirdParty/fmi/fmiModelTypes.h");
     fmiModelTypesHFile.copy(savePath + "/fmiModelTypes.h");
-    QFile fmiTemplateCFile(gExecPath + "/../ThirdParty/fmi/fmuTemplate.c");
+    QFile fmiTemplateCFile(mExecPath + "/../ThirdParty/fmi/fmuTemplate.c");
     fmiTemplateCFile.copy(savePath + "/fmuTemplate.c");
-    QFile fmiTemplateHFile(gExecPath + "/../ThirdParty/fmi/fmuTemplate.h");
+    QFile fmiTemplateHFile(mExecPath + "/../ThirdParty/fmi/fmuTemplate.h");
     fmiTemplateHFile.copy(savePath + "/fmuTemplate.h");
 
     if(!assertFilesExist(savePath, QStringList() << "fmiModelFunctions.h" << "fmiModelTypes.h" << "fmuTemplate.c" << "fmuTemplate.h"))
@@ -1333,28 +1299,15 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
 
 #elif linux
     printMessage("Compiling "+modelName+".so");
-    //! @todo Fix compilation for linux
 
-        QString gccCommand1 = "cd "+savePath+" && gcc -c -w -shared -fPIC -Wl,--rpath,'$ORIGIN/.' "+modelName+".c\n";
-        QString gccCommand2 = "cd "+savePath+" && g++ -w -shared -fPIC -DDOCOREDLLEXPORT -DBUILTINDEFAULTCOMPONENTLIB -o "+modelName+".so "+modelName+".o HopsanFMU.cpp src/Component.cc src/ComponentSystem.cc src/HopsanEssentials.cc src/Node.cc src/Nodes.cc src/Parameters.cc src/Port.cc src/ComponentUtilities/AuxiliarySimulationFunctions.cc src/ComponentUtilities/CSVParser.cc src/ComponentUtilities/DoubleIntegratorWithDamping.cc src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc src/ComponentUtilities/EquationSystemSolver.cpp src/ComponentUtilities/FirstOrderTransferFunction.cc src/ComponentUtilities/Integrator.cc src/ComponentUtilities/IntegratorLimited.cc src/ComponentUtilities/ludcmp.cc src/ComponentUtilities/matrix.cc src/ComponentUtilities/SecondOrderTransferFunction.cc src/ComponentUtilities/TurbulentFlowFunction.cc src/ComponentUtilities/ValveHysteresis.cc src/ComponentUtilities/WhiteGaussianNoise.cc src/CoreUtilities/CoSimulationUtilities.cpp src/CoreUtilities/GeneratorHandler.cpp src/CoreUtilities/HmfLoader.cc src/CoreUtilities/HopsanCoreMessageHandler.cc src/CoreUtilities/LoadExternal.cc src/CoreUtilities/MultiThreadingUtilities.cpp componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.cc Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp -Iinclude -IcomponentLibraries/defaultLibrary/code -IDependencies/rapidxml-1.13 -IDependencies/libcsv_parser++-1.0.0/include/csv_parser\n";
+    QString gccCommand1 = "cd "+savePath+" && gcc -c -w -shared -fPIC -Wl,--rpath,'$ORIGIN/.' "+modelName+".c\n";
+    QString gccCommand2 = "cd "+savePath+" && g++ -w -shared -fPIC -DDOCOREDLLEXPORT -DBUILTINDEFAULTCOMPONENTLIB -o "+modelName+".so "+modelName+".o HopsanFMU.cpp src/Component.cc src/ComponentSystem.cc src/HopsanEssentials.cc src/Node.cc src/Nodes.cc src/Parameters.cc src/Port.cc src/ComponentUtilities/AuxiliarySimulationFunctions.cc src/ComponentUtilities/CSVParser.cc src/ComponentUtilities/DoubleIntegratorWithDamping.cc src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc src/ComponentUtilities/EquationSystemSolver.cpp src/ComponentUtilities/FirstOrderTransferFunction.cc src/ComponentUtilities/Integrator.cc src/ComponentUtilities/IntegratorLimited.cc src/ComponentUtilities/ludcmp.cc src/ComponentUtilities/matrix.cc src/ComponentUtilities/SecondOrderTransferFunction.cc src/ComponentUtilities/TurbulentFlowFunction.cc src/ComponentUtilities/ValveHysteresis.cc src/ComponentUtilities/WhiteGaussianNoise.cc src/CoreUtilities/CoSimulationUtilities.cpp src/CoreUtilities/GeneratorHandler.cpp src/CoreUtilities/HmfLoader.cc src/CoreUtilities/HopsanCoreMessageHandler.cc src/CoreUtilities/LoadExternal.cc src/CoreUtilities/MultiThreadingUtilities.cpp componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.cc Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp -Iinclude -IcomponentLibraries/defaultLibrary/code -IDependencies/rapidxml-1.13 -IDependencies/libcsv_parser++-1.0.0/include/csv_parser\n";
 
-        qDebug() << "Command 1 = " << gccCommand1;
-        qDebug() << "Command 2 = " << gccCommand2;
+    callProcess("gcc", QStringList() << "-c" << "-w" << "-shared" << "-fPIC" << "-Wl,--rpath,'$ORIGIN/.'" << modelName+".c", savePath);
+    callProcess("g++", QStringList() << "-w" << "-shared" << "-fPIC" << "-DDOCOREDLLEXPORT" << "-DBUILTINDEFAULTCOMPONENTLIB" << "-o"+modelName+".so" << modelName+".o" << "HopsanFMU.cpp" << "src/Component.cc" << "src/ComponentSystem.cc" << "src/HopsanEssentials.cc" << "src/Node.cc" << "src/Nodes.cc" << "src/Parameters.cc" << "src/Port.cc" << "src/ComponentUtilities/AuxiliarySimulationFunctions.cc" << "src/ComponentUtilities/CSVParser.cc" << "src/ComponentUtilities/DoubleIntegratorWithDamping.cc" << "src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc" << "src/ComponentUtilities/EquationSystemSolver.cpp" << "src/ComponentUtilities/FirstOrderTransferFunction.cc" << "src/ComponentUtilities/Integrator.cc" << "src/ComponentUtilities/IntegratorLimited.cc" << "src/ComponentUtilities/ludcmp.cc" << "src/ComponentUtilities/matrix.cc" << "src/ComponentUtilities/SecondOrderTransferFunction.cc" << "src/ComponentUtilities/TurbulentFlowFunction.cc" << "src/ComponentUtilities/ValveHysteresis.cc" << "src/ComponentUtilities/WhiteGaussianNoise.cc" << "src/CoreUtilities/CoSimulationUtilities.cpp" << "src/CoreUtilities/GeneratorHandler.cpp" << "src/CoreUtilities/HmfLoader.cc" << "src/CoreUtilities/HopsanCoreMessageHandler.cc" << "src/CoreUtilities/LoadExternal.cc" << "src/CoreUtilities/MultiThreadingUtilities.cpp" << "componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.cc" << "Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp" << "-Iinclude" << "-IcomponentLibraries/defaultLibrary/code" << "-IDependencies/rapidxml-1.13" << "-IDependencies/libcsv_parser++-1.0.0/include/csv_parser", savePath);
 
-        callProcess("gcc", QStringList() << "-c" << "-w" << "-shared" << "-fPIC" << "-Wl,--rpath,'$ORIGIN/.'" << modelName+".c", savePath);
-
-        callProcess("g++", QStringList() << "-w" << "-shared" << "-fPIC" << "-DDOCOREDLLEXPORT" << "-DBUILTINDEFAULTCOMPONENTLIB" << "-o"+modelName+".so" << modelName+".o" << "HopsanFMU.cpp" << "src/Component.cc" << "src/ComponentSystem.cc" << "src/HopsanEssentials.cc" << "src/Node.cc" << "src/Nodes.cc" << "src/Parameters.cc" << "src/Port.cc" << "src/ComponentUtilities/AuxiliarySimulationFunctions.cc" << "src/ComponentUtilities/CSVParser.cc" << "src/ComponentUtilities/DoubleIntegratorWithDamping.cc" << "src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc" << "src/ComponentUtilities/EquationSystemSolver.cpp" << "src/ComponentUtilities/FirstOrderTransferFunction.cc" << "src/ComponentUtilities/Integrator.cc" << "src/ComponentUtilities/IntegratorLimited.cc" << "src/ComponentUtilities/ludcmp.cc" << "src/ComponentUtilities/matrix.cc" << "src/ComponentUtilities/SecondOrderTransferFunction.cc" << "src/ComponentUtilities/TurbulentFlowFunction.cc" << "src/ComponentUtilities/ValveHysteresis.cc" << "src/ComponentUtilities/WhiteGaussianNoise.cc" << "src/CoreUtilities/CoSimulationUtilities.cpp" << "src/CoreUtilities/GeneratorHandler.cpp" << "src/CoreUtilities/HmfLoader.cc" << "src/CoreUtilities/HopsanCoreMessageHandler.cc" << "src/CoreUtilities/LoadExternal.cc" << "src/CoreUtilities/MultiThreadingUtilities.cpp" << "componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.cc" << "Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp" << "-Iinclude" << "-IcomponentLibraries/defaultLibrary/code" << "-IDependencies/rapidxml-1.13" << "-IDependencies/libcsv_parser++-1.0.0/include/csv_parser", savePath);
-//        QString output;
-//        if(!runUnixCommand(gccCommand1))
-//            return;
-
-//        output.clear();
-//        if(!runUnixCommand(gccCommand1))
-//            return;
-
-//        sleep(30);
-        if(!assertFilesExist(savePath, QStringList() << modelName+".so"))
-            return;
+    if(!assertFilesExist(savePath, QStringList() << modelName+".so"))
+        return;
 #endif
 
     printMessage("Sorting files...");
@@ -1381,35 +1334,18 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     modelFile.copy(savePath + "/fmu/resources/" + realModelName + ".hmf");
     modelDescriptionFile.copy(savePath + "/fmu/modelDescription.xml");
 
-    QString fmuFileName = savePath + "/fmu/" + modelName + ".fmu";
-
     printMessage("Compressing files...");
 
 #ifdef WIN32
     QString program = gExecPath + "../ThirdParty/7z/7z";
-    QStringList arguments = QStringList() << "a" << "-tzip" << fmuFileName << savePath+"/fmu/modelDescription.xml" << "-r" << savePath + "/fmu/binaries";
+    QStringList arguments = QStringList() << "a" << "-tzip" << "../"+modelName+".fmu" << savePath+"/fmu/modelDescription.xml" << "-r" << savePath + "/fmu/binaries";
     callProcess(program, arguments, savePath+"/fmu");
-    QFile::copy(fmuFileName, savePath+"/"+modelName+".fmu");
-    QFile::remove(fmuFileName);
-
-#elif linux
-    QString command = "cd "+savePath+"/fmu && zip -r ../"+modelName+".fmu *";
-    qDebug() << "Command = " << command;
-    command +=" 2>&1";
-    char line[130];
-    FILE *fp = popen(  (const char *) command.toStdString().c_str(), "r");
-    if ( !fp )
-    {
-        printErrorMessage("Could not execute '" + command + "'! err=%d.");
-        return;
-    }
-    else
-    {
-        while ( fgets( line, sizeof line, fp))
-        {
-            printMessage((const QString &)line);
-        }
-    }
+#elif linux && __i386__
+    QStringList arguments = QStringList() << "-r" << "../"+modelName+".fmu" << "modelDescription.xml" << "binaries/linux32/"+modelName+".so";
+    callProcess("zip", arguments, savePath+"/fmu");
+#elif linux && __x86_64__
+    QStringList arguments = QStringList() << "-r" << "../"+modelName+".fmu" << "modelDescription.xml" << "binaries/linux64/"+modelName+".so";
+    callProcess("zip", arguments, savePath+"/fmu");
 #endif
 
     if(!assertFilesExist(savePath, QStringList() << modelName+".fmu"))
@@ -1503,11 +1439,11 @@ void HopsanFMIGenerator::generateToFmuOld(QString savePath, hopsan::ComponentSys
     QStringList parameterValues;
     std::vector<std::string> parameterNamesStd;
     pSystem->getParameterNames(parameterNamesStd);
-    for(int p=0; p<parameterNamesStd.size(); ++p)
+    for(size_t p=0; p<parameterNamesStd.size(); ++p)
     {
         parameterNames.append(QString(parameterNamesStd[p].c_str()));
     }
-    for(int p=0; p<parameterNames.size(); ++p)
+    for(size_t p=0; p<parameterNames.size(); ++p)
     {
         std::string value;
         pSystem->getParameterValue(parameterNamesStd[p], value);

@@ -215,6 +215,7 @@ void copyDir(const QString fromPath, QString toPath)
 
 //! @todo maybe this function should not be among general utils
 //! @todo should not copy .svn folders
+//! @todo Weird name because of name conflict with HopsanGUI
 void copyIncludeFilesToDir2(QString path)
 {
     QDir saveDir;

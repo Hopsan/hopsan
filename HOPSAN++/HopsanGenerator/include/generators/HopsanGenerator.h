@@ -71,6 +71,7 @@ protected:
     QString mTempPath;
     QString mCoreIncludePath;
     QString mBinPath;
+    QString mExecPath;
 
     QTextEdit *mpTextEdit;
     QVBoxLayout *mpLayout;
