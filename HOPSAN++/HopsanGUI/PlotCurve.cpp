@@ -1086,25 +1086,25 @@ void PlotCurve::performFrequencyAnalysis()
     mpParentPlotTab->mpParentPlotWindow->performFrequencyAnalysis(this);
 }
 
-//void PlotCurve::performSetAxis()
-//{
-//    mpParentPlotTab->mpParentPlotWindow->performSetAxis(this);
-//}
 
 
 //! @brief Constructor for plot markers
 //! @param pCurve Pointer to curve the marker belongs to
 //! @param pPlotTab Plot tab the marker is located in
 //! @param markerSymbol The symbol the marker shall use
-PlotMarker::PlotMarker(PlotCurve *pCurve, PlotTab *pPlotTab, QwtSymbol *markerSymbol)
+PlotMarker::PlotMarker(PlotCurve *pCurve, PlotTab *pPlotTab)
     : QwtPlotMarker()
 {
     mpCurve = pCurve;
     mpPlotTab = pPlotTab;
     mIsBeingMoved = false;
-    mpMarkerSymbol = markerSymbol;
-    setSymbol(mpMarkerSymbol);
     mIsMovable = true;
+
+    mpMarkerSymbol = new QwtSymbol();
+    mpMarkerSymbol->setStyle(QwtSymbol::XCross);
+    mpMarkerSymbol->setSize(10,10);
+    mpMarkerSymbol->setPen(pCurve->pen().color(),3);
+    setSymbol(mpMarkerSymbol); //!< @todo is this symbol auto removed with PlotMarker ?
 }
 
 
@@ -1116,7 +1116,7 @@ PlotMarker::PlotMarker(PlotCurve *pCurve, PlotTab *pPlotTab, QwtSymbol *markerSy
 bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
 {
     if(!mIsMovable)
-        return false;
+        return false; //!< @todo this will also block delete, is that OK?
 
     // Mouse press events, used to initiate moving of a marker if mouse cursor is close enough
     if (event->type() == QEvent::MouseButtonPress)
@@ -1146,8 +1146,8 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
         midPoint.setY(this->plot()->transform(QwtPlot::yLeft, value().y()));
         if((this->plot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
         {
-            mpMarkerSymbol->setPen(QPen(mpCurve->pen().brush().color().lighter(165), 3));
-            this->setSymbol(mpMarkerSymbol);
+            mpMarkerSymbol->setPen(mpCurve->pen().color().lighter(165), 3);
+            //this->setSymbol(mpMarkerSymbol);
             this->plot()->replot();
             this->plot()->updateGeometry();
             retval=true;
@@ -1156,8 +1156,8 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
         {
             if(!mIsBeingMoved)
             {
-                mpMarkerSymbol->setPen(QPen(mpCurve->pen().brush().color(), 3));
-                this->setSymbol(mpMarkerSymbol);
+                mpMarkerSymbol->setPen(mpCurve->pen().color(), 3);
+                //this->setSymbol(mpMarkerSymbol);
                 this->plot()->replot();
                 this->plot()->updateGeometry();
             }
@@ -1170,28 +1170,19 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
             setXValue(x);
             setYValue(this->plot()->invTransform(QwtPlot::yLeft, this->plot()->transform(mpCurve->yAxis(), y)));
 
-            QString xString;
-            QString yString;
-            xString.setNum(x);
-            yString.setNum(y);
-            QwtText tempLabel;
-            tempLabel.setText("("+xString+", "+yString+")");
-            tempLabel.setColor(mpCurve->pen().brush().color());
-            tempLabel.setBackgroundBrush(QColor(255,255,255,220));
-            tempLabel.setFont(QFont("Calibri", 12, QFont::Normal));
-            setLabel(tempLabel);
+            refreshLabel(x, y);
         }
         return retval;
     }
 
-    //Mouse release event, will stop moving marker
+    // Mouse release event, will stop moving marker
     else if (event->type() == QEvent::MouseButtonRelease && mIsBeingMoved == true)
     {
         mIsBeingMoved = false;
         return false;
     }
 
-    //!Keypress event, will delete marker if delete key is pressed
+    // Keypress event, will delete marker if delete key is pressed
     else if (event->type() == QEvent::KeyPress)
     {
         QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
@@ -1210,6 +1201,7 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
                 }
                 this->hide();           // This will only hide and inactivate the marker. Deleting it seem to make program crash.
                 this->detach();
+                this->deleteLater();
                 return true;
             }
         }
@@ -1222,6 +1214,21 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
 void PlotMarker::setMovable(bool movable)
 {
     mIsMovable = movable;
+}
+
+void PlotMarker::refreshLabel(const double x, const double y)
+{
+    refreshLabel(QString("(%1, %2)").arg(x).arg(y));
+}
+
+void PlotMarker::refreshLabel(const QString label)
+{
+    QwtText qwtlabel(label);
+    qwtlabel.setColor(Qt::black);
+    qwtlabel.setBackgroundBrush(QColor(255,255,255,220));
+    qwtlabel.setFont(QFont("Calibri", 12, QFont::Normal));
+    this->setLabel(qwtlabel);
+    this->setLabelAlignment(Qt::AlignTop);
 }
 
 

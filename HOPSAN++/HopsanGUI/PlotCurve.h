@@ -204,17 +204,21 @@ class PlotMarker : public QObject, public QwtPlotMarker
 {
     Q_OBJECT
 public:
-    PlotMarker(PlotCurve *pCurve, PlotTab *pPlotTab, QwtSymbol *markerSymbol);
+    PlotMarker(PlotCurve *pCurve, PlotTab *pPlotTab);
     PlotCurve *getCurve();
     virtual bool eventFilter (QObject *, QEvent *);
     void setMovable(bool movable);
 
+public slots:
+    void refreshLabel(const double x, const double y);
+    void refreshLabel(const QString label);
+
 private:
     PlotCurve *mpCurve;
     PlotTab *mpPlotTab;
+    QwtSymbol *mpMarkerSymbol;
     bool mIsBeingMoved;
     bool mIsMovable;
-    QwtSymbol *mpMarkerSymbol;
 };
 
 #endif // PLOTCURVE_H

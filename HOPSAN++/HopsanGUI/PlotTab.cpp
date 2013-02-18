@@ -128,11 +128,6 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
 
     mpBarPlot = new QSint::BarChartPlotter(this);
 
-    //Curve Marker Symbol
-    mpMarkerSymbol = new QwtSymbol();
-    mpMarkerSymbol->setStyle(QwtSymbol::XCross);
-    mpMarkerSymbol->setSize(10,10);
-
     // Legend Stuff
     constructLegendSettingsDialog();
 
@@ -837,12 +832,6 @@ void PlotTab::rescaleToCurves()
         tempDoubleRect2.setWidth(xMax-xMin);
         mpZoomerRight[plotID]->setZoomBase(tempDoubleRect2);
     }
-
-    //Curve Marker
-    //! @todo hmmm memmmory leek? create new markr every time
-    mpMarkerSymbol = new QwtSymbol();
-    mpMarkerSymbol->setStyle(QwtSymbol::XCross);
-    mpMarkerSymbol->setSize(10,10);
 }
 
 
@@ -1878,6 +1867,7 @@ void PlotTab::update()
             (*cit)->attach(mpQwtPlots[plotID]);
         }
 
+        // Update plotmarkers
         for(int i=0; i<mMarkerPtrs[plotID].size(); ++i)
         {
             QPointF posF = mMarkerPtrs[plotID].at(i)->value();
@@ -1887,6 +1877,8 @@ void PlotTab::update()
             PlotCurve *pCurve = mMarkerPtrs[plotID].at(i)->getCurve();
             mMarkerPtrs[plotID].at(i)->setXValue(pCurve->sample(pCurve->closestPoint(pos)).x());
             mMarkerPtrs[plotID].at(i)->setYValue(mpQwtPlots[plotID]->invTransform(QwtPlot::yLeft, mpQwtPlots[plotID]->transform(pCurve->yAxis(), pCurve->sample(pCurve->closestPoint(pos)).y())));
+            //!< @todo label text will be wrong if curve data has changed
+            //!< @todo label text will be wrong if plot sclae or offset change
         }
         mpQwtPlots[plotID]->replot();
         mpQwtPlots[plotID]->updateGeometry();
@@ -1896,42 +1888,27 @@ void PlotTab::update()
 
 void PlotTab::insertMarker(PlotCurve *pCurve, double x, double y, QString altLabel, bool movable)
 {
-    qDebug() << "x and y = " << x << ", " << y;
-
     int plotID = getPlotIDFromCurve(pCurve);
 
-    mpMarkerSymbol->setPen(QPen(pCurve->pen().brush().color(), 3));
-    PlotMarker *tempMarker = new PlotMarker(pCurve, this, mpMarkerSymbol);
-    mMarkerPtrs[plotID].append(tempMarker);
+    PlotMarker *pMarker = new PlotMarker(pCurve, this);
+    mMarkerPtrs[plotID].append(pMarker);
 
-    tempMarker->attach(mpQwtPlots[plotID]);
-    QCursor cursor;
-    tempMarker->setXValue(x);
-    tempMarker->setYValue(y);
+    pMarker->attach(mpQwtPlots[plotID]);
+    pMarker->setXValue(x);
+    pMarker->setYValue(y);
 
-    QString xString;
-    QString yString;
-    xString.setNum(x);
-    yString.setNum(y);
-    QwtText tempLabel;
-    if(altLabel != QString())
+    if (altLabel.isEmpty())
     {
-        tempLabel.setText(altLabel);
+        pMarker->refreshLabel(x, y);
     }
     else
     {
-        tempLabel.setText("("+xString+", "+yString+")");
+        pMarker->refreshLabel(altLabel);
     }
-    tempLabel.setColor(pCurve->pen().brush().color());
-    tempLabel.setBackgroundBrush(QColor(255,255,255,220));
-    tempLabel.setFont(QFont("Calibri", 12, QFont::Normal));
-    tempMarker->setLabel(tempLabel);
-    tempMarker->setLabelAlignment(Qt::AlignTop);
 
-    mpQwtPlots[plotID]->canvas()->installEventFilter(tempMarker);
+    mpQwtPlots[plotID]->canvas()->installEventFilter(pMarker);
     mpQwtPlots[plotID]->canvas()->setMouseTracking(true);
-
-    tempMarker->setMovable(movable);
+    pMarker->setMovable(movable);
 }
 
 
@@ -1941,33 +1918,20 @@ void PlotTab::insertMarker(PlotCurve *pCurve, QPoint pos, bool movable)
 {
     int plotID = getPlotIDFromCurve(pCurve);
 
-    mpMarkerSymbol->setPen(QPen(pCurve->pen().brush().color(), 3));
-    PlotMarker *tempMarker = new PlotMarker(pCurve, this, mpMarkerSymbol);
-    mMarkerPtrs[plotID].append(tempMarker);
+    PlotMarker *pMarker = new PlotMarker(pCurve, this);
+    mMarkerPtrs[plotID].append(pMarker);
 
-    tempMarker->attach(mpQwtPlots[plotID]);
+    pMarker->attach(mpQwtPlots[plotID]);
     QCursor cursor;
-    tempMarker->setXValue(pCurve->sample(pCurve->closestPoint(pos)).x());
-    tempMarker->setYValue(mpQwtPlots[plotID]->invTransform(QwtPlot::yLeft, mpQwtPlots[plotID]->transform(pCurve->yAxis(), pCurve->sample(pCurve->closestPoint(pos)).y())));
+    pMarker->setXValue(pCurve->sample(pCurve->closestPoint(pos)).x());
+    pMarker->setYValue(mpQwtPlots[plotID]->invTransform(QwtPlot::yLeft, mpQwtPlots[plotID]->transform(pCurve->yAxis(), pCurve->sample(pCurve->closestPoint(pos)).y())));
 
-    QString xString;
-    QString yString;
-    double x = pCurve->sample(pCurve->closestPoint(pos)).x();
-    double y = pCurve->sample(pCurve->closestPoint(mpQwtPlots[plotID]->canvas()->mapFromGlobal(cursor.pos()))).y();
-    xString.setNum(x);
-    yString.setNum(y);
-    QwtText tempLabel;
-    tempLabel.setText("("+xString+", "+yString+")");
-    tempLabel.setColor(pCurve->pen().brush().color());
-    tempLabel.setBackgroundBrush(QColor(255,255,255,220));
-    tempLabel.setFont(QFont("Calibri", 12, QFont::Normal));
-    tempMarker->setLabel(tempLabel);
-    tempMarker->setLabelAlignment(Qt::AlignTop);
+    pMarker->refreshLabel(pCurve->sample(pCurve->closestPoint(pos)).x(),
+                          pCurve->sample(pCurve->closestPoint(mpQwtPlots[plotID]->canvas()->mapFromGlobal(cursor.pos()))).y());
 
-    mpQwtPlots[plotID]->canvas()->installEventFilter(tempMarker);
+    mpQwtPlots[plotID]->canvas()->installEventFilter(pMarker);
     mpQwtPlots[plotID]->canvas()->setMouseTracking(true);
-
-    tempMarker->setMovable(movable);
+    pMarker->setMovable(movable);
 }
 
 
@@ -2587,6 +2551,7 @@ void PlotTab::setTabOnlyCustomXVector(SharedLogVariableDataPtrT pData, HopsanPlo
     update();
     mpParentPlotWindow->mpResetXVectorButton->setEnabled(true);
 }
+
 
 QSizeF PlotTab::calcMMSize() const
 {

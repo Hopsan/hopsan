@@ -50,7 +50,6 @@ public:
     void addCurve(PlotCurve *curve, QColor desiredColor=QColor(), HopsanPlotID plotID=FIRSTPLOT);
     void setCustomXVectorForAll(QVector<double> xarray, const VariableDescription &rVarDesc, HopsanPlotID plotID=FIRSTPLOT);
     void setCustomXVectorForAll(SharedLogVariableDataPtrT pData, HopsanPlotID plotID=FIRSTPLOT);
-    void insertMarker(PlotCurve *curve);
     void removeCurve(PlotCurve *curve);
     void removeAllCurvesOnAxis(const int axis);
 
@@ -139,7 +138,6 @@ private:
     QList<PlotMarker *> mMarkerPtrs[2];
     QMap<QString, QString> mCurrentUnitsLeft;
     QMap<QString, QString> mCurrentUnitsRight;
-    QwtSymbol *mpMarkerSymbol;
     QRubberBand *mpHoverRect;
     PlotCurve *mpActivePlotCurve;
     QStringList mCurveColors;
