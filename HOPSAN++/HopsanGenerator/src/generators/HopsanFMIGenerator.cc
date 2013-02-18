@@ -706,7 +706,7 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
     //Move FMI source files to compile directory
     QFile simSupportSourceFile;
 #ifdef WIN32
-    QString fmiSrcPath = gExecPath + "../ThirdParty/fmi/";
+    QString fmiSrcPath = mExecPath + "../ThirdParty/fmi/";
 #elif linux
     QString fmiSrcPath = mExecPath + "../ThirdParty/fmi/linux/";
 #endif
@@ -1337,7 +1337,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     printMessage("Compressing files...");
 
 #ifdef WIN32
-    QString program = gExecPath + "../ThirdParty/7z/7z";
+    QString program = mExecPath + "../ThirdParty/7z/7z";
     QStringList arguments = QStringList() << "a" << "-tzip" << "../"+modelName+".fmu" << savePath+"/fmu/modelDescription.xml" << "-r" << savePath + "/fmu/binaries";
     callProcess(program, arguments, savePath+"/fmu");
 #elif linux && __i386__
@@ -1385,9 +1385,6 @@ void HopsanFMIGenerator::generateToFmuOld(QString savePath, hopsan::ComponentSys
 
     QDir saveDir;
     saveDir.setPath(savePath);
-
-    //! @todo Make global
-    QString gExecPath = qApp->applicationDirPath().append('/');
 
 
     //Tells if user selected the gcc compiler or not (= visual studio)
@@ -1712,20 +1709,20 @@ void HopsanFMIGenerator::generateToFmuOld(QString savePath, hopsan::ComponentSys
     QFile dllFile;
     QFile componentLibFile;
 
-    dllFile.setFileName(gExecPath + "HopsanCore.dll");
+    dllFile.setFileName(mExecPath + "HopsanCore.dll");
     dllFile.copy(savePath + "/HopsanCore.dll");
 
-    componentLibFile.setFileName(gExecPath + "../componentLibraries/defaultLibrary/components/defaultComponentLibrary.dll");
+    componentLibFile.setFileName(mExecPath + "../componentLibraries/defaultLibrary/components/defaultComponentLibrary.dll");
     if(componentLibFile.exists())
         componentLibFile.copy(savePath+"/defaultComponentLibrary.dll");
 #elif linux
     QFile soFile;
     QFile componentLibFile;
 
-    soFile.setFileName(gExecPath + "libHopsanCore.so");
+    soFile.setFileName(mExecPath + "libHopsanCore.so");
     soFile.copy(savePath + "/libHopsanCore.so");
 
-    componentLibFile.setFileName(gExecPath + "../componentLibraries/defaultLibrary/components/libdefaultComponentLibrary.so");
+    componentLibFile.setFileName(mExecPath + "../componentLibraries/defaultLibrary/components/libdefaultComponentLibrary.so");
     if(componentLibFile.exists())
         componentLibFile.copy(savePath+"/libdefaultComponentLibrary.so");
 #endif
@@ -1809,21 +1806,21 @@ void HopsanFMIGenerator::generateToFmuOld(QString savePath, hopsan::ComponentSys
     QFile buildFmuFile;
 //    if(gccCompiler)
 //    {
-        buildFmuFile.setFileName(gExecPath + "/../ThirdParty/fmi/build_fmu_gcc.bat");
+        buildFmuFile.setFileName(mExecPath + "/../ThirdParty/fmi/build_fmu_gcc.bat");
 //    }
 //    else
 //    {
-//        buildFmuFile.setFileName(gExecPath + "/../ThirdParty/fmi/build_fmu_vc.bat");
+//        buildFmuFile.setFileName(mExecPath + "/../ThirdParty/fmi/build_fmu_vc.bat");
 //    }
     buildFmuFile.copy(savePath + "/build_fmu.bat");
 #endif
-    QFile fmuModelFunctionsHFile(gExecPath + "/../ThirdParty/fmi/fmiModelFunctions.h");
+    QFile fmuModelFunctionsHFile(mExecPath + "/../ThirdParty/fmi/fmiModelFunctions.h");
     fmuModelFunctionsHFile.copy(savePath + "/fmiModelFunctions.h");
-    QFile fmiModelTypesHFile(gExecPath + "/../ThirdParty/fmi/fmiModelTypes.h");
+    QFile fmiModelTypesHFile(mExecPath + "/../ThirdParty/fmi/fmiModelTypes.h");
     fmiModelTypesHFile.copy(savePath + "/fmiModelTypes.h");
-    QFile fmiTemplateCFile(gExecPath + "/../ThirdParty/fmi/fmuTemplate.c");
+    QFile fmiTemplateCFile(mExecPath + "/../ThirdParty/fmi/fmuTemplate.c");
     fmiTemplateCFile.copy(savePath + "/fmuTemplate.c");
-    QFile fmiTemplateHFile(gExecPath + "/../ThirdParty/fmi/fmuTemplate.h");
+    QFile fmiTemplateHFile(mExecPath + "/../ThirdParty/fmi/fmuTemplate.h");
     fmiTemplateHFile.copy(savePath + "/fmuTemplate.h");
 
 #ifdef WIN32
@@ -1951,9 +1948,9 @@ void HopsanFMIGenerator::generateToFmuOld(QString savePath, hopsan::ComponentSys
 
 
 #ifdef WIN32
-    p.start("cmd.exe", QStringList() << "/c" << gExecPath + "../ThirdParty/7z/7z.exe a -tzip " + fmuFileName + " " + savePath + "/fmu/modelDescription.xml " + savePath + "/fmu/binaries/ " + savePath + "/fmu/resources");
+    p.start("cmd.exe", QStringList() << "/c" << mExecPath + "../ThirdParty/7z/7z.exe a -tzip " + fmuFileName + " " + savePath + "/fmu/modelDescription.xml " + savePath + "/fmu/binaries/ " + savePath + "/fmu/resources");
     p.waitForFinished();
-    qDebug() << "Called: " << gExecPath + "../ThirdParty/7z/7z.exe a -tzip " + fmuFileName + " " + savePath + "/fmu/modelDescription.xml " + savePath + "/fmu/binaries/ " + savePath + "/fmu/resources";
+    qDebug() << "Called: " << mExecPath + "../ThirdParty/7z/7z.exe a -tzip " + fmuFileName + " " + savePath + "/fmu/modelDescription.xml " + savePath + "/fmu/binaries/ " + savePath + "/fmu/resources";
 #elif linux
     QString command = "cd "+savePath+"/fmu && zip -r ../"+modelName+".fmu *";
     qDebug() << "Command = " << command;
