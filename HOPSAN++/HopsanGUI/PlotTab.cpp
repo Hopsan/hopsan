@@ -48,28 +48,6 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
     mBottomAxisLogarithmic = false;
     mIsSpecialPlot = false;
 
-    //Initiate default values for left y-axis
-    mCurrentUnitsLeft.insert("Value", gConfig.getDefaultUnit("Value"));
-    mCurrentUnitsLeft.insert("Pressure", gConfig.getDefaultUnit("Pressure"));
-    mCurrentUnitsLeft.insert("Flow", gConfig.getDefaultUnit("Flow"));
-    mCurrentUnitsLeft.insert("Position", gConfig.getDefaultUnit("Position"));
-    mCurrentUnitsLeft.insert("Velocity", gConfig.getDefaultUnit("Velocity"));
-    mCurrentUnitsLeft.insert("Force", gConfig.getDefaultUnit("Force"));
-    mCurrentUnitsLeft.insert("Torque", gConfig.getDefaultUnit("Torque"));
-    mCurrentUnitsLeft.insert("Angle", gConfig.getDefaultUnit("Angle"));
-    mCurrentUnitsLeft.insert("Angular Velocity", gConfig.getDefaultUnit("Angular Velocity"));
-
-    //Initiate default values for right y-axis
-    mCurrentUnitsRight.insert("Value", gConfig.getDefaultUnit("Value"));
-    mCurrentUnitsRight.insert("Pressure", gConfig.getDefaultUnit("Pressure"));
-    mCurrentUnitsRight.insert("Flow", gConfig.getDefaultUnit("Flow"));
-    mCurrentUnitsRight.insert("Position", gConfig.getDefaultUnit("Position"));
-    mCurrentUnitsRight.insert("Velocity", gConfig.getDefaultUnit("Velocity"));
-    mCurrentUnitsRight.insert("Force", gConfig.getDefaultUnit("Force"));
-    mCurrentUnitsRight.insert("Torque", gConfig.getDefaultUnit("Torque"));
-    mCurrentUnitsRight.insert("Angle", gConfig.getDefaultUnit("Angle"));
-    mCurrentUnitsRight.insert("Angular Velocity", gConfig.getDefaultUnit("Angular Velocity"));
-
     mCurveColors << "Blue" << "Red" << "Green" << "Orange" << "Pink" << "Brown" << "Purple" << "Gray";
 
     for(int plotID=0; plotID<2; ++plotID)
@@ -398,14 +376,20 @@ void PlotTab::addCurve(PlotCurve *curve, QColor desiredColor, HopsanPlotID plotI
         }
     }
 
+    // Use the default unit for this curve
+    QString defaultUnit = gConfig.getDefaultUnit(curve->getDataName());
+    if (defaultUnit != curve->getDataUnit())
+    {
+        curve->setCustomDataUnit(defaultUnit);
+    }
 
-    //If all curves on the same axis has the same custom unit, assign this unit to the new curve as well
+    // If all curves on the same axis has the same custom unit, assign this unit to the new curve as well
     QString customUnit;
     for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
     {
         if(mPlotCurvePtrs[plotID].at(i)->getAxisY() == curve->getAxisY())
         {
-            if(customUnit == QString())
+            if(customUnit.isEmpty())
             {
                 customUnit = mPlotCurvePtrs[plotID].at(i)->getDataUnit();
             }
@@ -416,7 +400,7 @@ void PlotTab::addCurve(PlotCurve *curve, QColor desiredColor, HopsanPlotID plotI
             }
         }
     }
-    if(customUnit != QString())
+    if(!customUnit.isEmpty())
     {
         curve->setCustomDataUnit(customUnit);
     }
@@ -2750,7 +2734,7 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
     }
 
 
-    //Create menu for insereting curve markers
+    //Create menu for inserting curve markers
     insertMarkerMenu = menu.addMenu(QString("Insert Curve Marker"));
     for(int plotID=0; plotID<2; ++plotID)
     {

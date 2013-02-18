@@ -45,38 +45,47 @@ public:
     void loadFromXml();
     void loadDefaultsFromXml();
 
-    int getLibraryStyle();
-    bool getAlwaysLoadLastSession();
     bool getShowPopupHelp();
-    bool getUseNativeStyleSheet();
     bool getInvertWheel();
-    bool getUseMulticore();
-    size_t getNumberOfThreads();
     bool getToggleNamesButtonCheckedLastSession();
     bool getTogglePortsButtonCheckedLastSession();
     int getProgressBarStep();
     bool getEnableProgressBar();
-    QColor getBackgroundColor();
-    bool getAntiAliasing();
-    QStringList getUserLibs();
-    QStringList getUserLibFolders();
     bool getSnapping();
-    QStringList getRecentModels();
-    QStringList getRecentGeneratorModels();
-    QStringList getLastSessionModels();
-    QString getDefaultUnit(QString key);
-    QMap<QString, double> getCustomUnits(QString key);
-    double hasUnitScale(const QString key, const QString unit);
-    double getUnitScale(const QString key, const QString unit);
-    QPen getPen(connectorStyle style, graphicsType gfxType, QString situation);
+
+    bool getUseMulticore();
+    size_t getNumberOfThreads();
+
+    int getLibraryStyle();
+    bool getUseNativeStyleSheet();
+    QColor getBackgroundColor();
     QPalette getPalette();
     QFont getFont();
     QString getStyleSheet();
+    QPen getPen(connectorStyle style, graphicsType gfxType, QString situation);
+    bool getAntiAliasing();
+
+    QStringList getUserLibs();
+    QStringList getUserLibFolders();
+
+    QStringList getRecentModels();
+    QStringList getRecentGeneratorModels();
+    QStringList getLastSessionModels();
+    bool getAlwaysLoadLastSession();
+
     QString getLastScriptFile();
     QString getInitScript();
+
+    QString getDefaultUnit(QString key) const;
+    QMap<QString, double> getCustomUnits(QString key);
+    bool hasUnitScale(const QString key, const QString unit) const;
+    double getUnitScale(const QString key, const QString unit) const;
+
     bool getGroupMessagesByTag();
+    QStringList getTerminalHistory();
     int getGenerationLimit() const;
     bool getCacheLogData() const;
+
     QString getLoadModelDir();
     QString getModelGfxDir();
     QString getPlotDataDir();
@@ -87,7 +96,6 @@ public:
     QString getExternalLibDir();
     QString getScriptDir();
     QString getPlotWindowDir();
-    QStringList getTerminalHistory();
     QString getFmuImportDir();
     QString getFmuExportDir();
 

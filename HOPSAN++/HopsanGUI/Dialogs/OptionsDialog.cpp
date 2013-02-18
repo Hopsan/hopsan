@@ -159,6 +159,7 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     QLabel *pCacheLogDataLabel = new QLabel(tr("Cache log data on hard drive"));
     mpCacheLogDataCeckBox = new QCheckBox();
 
+    //! @todo these should not be harcoded, should have sub tags in XML
     mpValueUnitLabel = new QLabel(tr("Default Value Unit"));
     mpValueUnitComboBox = new QComboBox();
     mpPressureUnitLabel = new QLabel(tr("Default Pressure Unit"));

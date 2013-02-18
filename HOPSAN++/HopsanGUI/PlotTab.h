@@ -136,8 +136,6 @@ private:
     QwtPlotMagnifier *mpMagnifier[2];
     QwtPlotPanner *mpPanner[2];
     QList<PlotMarker *> mMarkerPtrs[2];
-    QMap<QString, QString> mCurrentUnitsLeft;
-    QMap<QString, QString> mCurrentUnitsRight;
     QRubberBand *mpHoverRect;
     PlotCurve *mpActivePlotCurve;
     QStringList mCurveColors;
