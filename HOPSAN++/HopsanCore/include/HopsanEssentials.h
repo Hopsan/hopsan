@@ -32,7 +32,6 @@
 #include <fstream>
 
 namespace hopsan {
-extern "C" {
 
 //Forward Declaration
 class LoadExternal;
@@ -79,13 +78,14 @@ public:
     // Loading HMF models
     ComponentSystem* loadHMFModel(const std::string filePath, double &rStartTime, double &rStopTime);
     ComponentSystem* loadHMFModel(const std::vector<unsigned char> xmlVector);
+    ComponentSystem* loadHMFModel(const std::string xmlString);
 
     // Running simulation
     SimulationHandler *getSimulationHandler();
 };
-}
 
+void openLogFile();
+void closeLogFile();
 void addLogMess(const std::string log);
-static std::ofstream hopsanLogFile;
 }
 #endif // HopsanEssentials_H

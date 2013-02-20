@@ -34,6 +34,7 @@
 #include <QLineEdit>
 #include <QDialogButtonBox>
 #include <QLabel>
+#include <QDirIterator>
 
 #include <cassert>
 
@@ -220,7 +221,8 @@ void copyIncludeFilesToDir2(QString path)
 {
     QDir saveDir;
     saveDir.setPath(path);
-    saveDir.mkpath("include");
+    saveDir.mkpath("HopsanCore/include");
+    saveDir.cd("HopsanCore");
     saveDir.cd("include");
 
     copyDir( QString("../HopsanCore/include"), saveDir.path() );
@@ -248,7 +250,8 @@ void copySourceFilesToDir(QString path)
 {
     QDir saveDir;
     saveDir.setPath(path);
-    saveDir.mkpath("src");
+    saveDir.mkpath("HopsanCore/src");
+    saveDir.cd("HopsanCore");
     saveDir.cd("src");
 
     copyDir( QString("../HopsanCore/src"), saveDir.path() );
@@ -332,7 +335,7 @@ bool compileComponentLibrary(QString path, QString name, HopsanGenerator *pGener
     pGenerator->printMessage("Links: "+l+"\n");
 
     QString output;
-    bool success = compile(path, name, c, i, l, "-fPIC -w -Wl,--rpath -Wl,"+path+" -shared", output);
+    bool success = compile(path, name, c, i, l, "-Dhopsan=hopsan -fPIC -w -Wl,--rpath -Wl,"+path+" -shared", output);
     pGenerator->printMessage(output);
     return success;
 }
@@ -687,5 +690,22 @@ void copyHopsanCoreSourceFiles(QString targetPath)
 }
 
 
+
+
+void findAllFilesInFolderAndSubFolders(QString path, QString ext, QStringList &files)
+{
+    QDir dir(path);
+    QDirIterator iterator(dir.absolutePath(), QDirIterator::Subdirectories);
+    while (iterator.hasNext())
+    {
+        iterator.next();
+        if (!iterator.fileInfo().isDir())
+        {
+            QString fileName = iterator.filePath();
+            if (fileName.endsWith("."+ext))
+                files.append(fileName);
+        }
+    }
+}
 
 

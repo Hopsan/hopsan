@@ -669,3 +669,46 @@ bool HopsanGenerator::runUnixCommand(QString cmd)
     }
     return true;
 }
+
+
+//! @warning May delete contents in file if it fails to open in write mode
+bool HopsanGenerator::replaceInFile(const QString &fileName, const QStringList &before, const QStringList &after)
+{
+    QFile file(fileName);
+    printMessage("Replacing string in file: "+file.fileName());
+
+    Q_ASSERT(before.size() == after.size());
+
+    if(!file.open(QFile::ReadOnly | QFile::Text))
+    {
+        printErrorMessage("Unable to open file: "+fileName+" for reading.");
+        return false;
+    }
+    QString contents = file.readAll();
+    file.close();
+
+    bool didSomething = false;
+    for(int i=0; i<before.size(); ++i)
+    {
+        if(contents.contains(before[i]))
+        {
+            didSomething = true;
+            contents.replace(before[i], after[i]);
+        }
+
+    }
+
+    if(!didSomething)
+    {
+        return true;
+    }
+
+    if(!file.open(QFile::ReadWrite | QFile::Truncate | QFile::Text))
+    {
+        printErrorMessage("Unable to open file "+fileName+" for writing.");
+    }
+    file.write(contents.toAscii());
+    file.close();
+
+    return true;
+}

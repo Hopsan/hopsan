@@ -29,7 +29,7 @@
 #include <vector>
 
 // Forward Declaration
-namespace hopsan{
+namespace hopsan {
 class ComponentSystem;
 }
 

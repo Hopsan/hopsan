@@ -14,7 +14,7 @@ void initializeHopsanWrapper(char* filename)
 {
     double startT;      //Dummy variable
     double stopT;       //Dummy variable
-    gHopsanCore.loadExternalComponentLib("defaultComponentLibrary.dll");    //Only used for debugging, since components are not included in HopsanCore.dll during development
+    gHopsanCore.loadHMFModel("defaultComponentLibrary.dll");    //Only used for debugging, since components are not included in HopsanCore.dll during development
     spCoreComponentSystem = gHopsanCore.loadHMFModel(filename, startT, stopT);
 
     assert(spCoreComponentSystem);
@@ -39,7 +39,7 @@ void simulateOneStep()
 {
     if(spCoreComponentSystem->checkModelBeforeSimulation())
     {
-        double timestep = spCoreComponentSystem->getDesiredTimeStep();
+        double timestep = getTimeStep();
         spCoreComponentSystem->simulate(fmu_time, fmu_time+timestep);
         fmu_time = fmu_time+timestep;
     }
@@ -52,6 +52,11 @@ void simulateOneStep()
 double getTimeStep()
 {
     return spCoreComponentSystem->getDesiredTimeStep();
+}
+
+double getFmuTime()
+{
+    return fmu_time;
 }
 
 double getVariable(char* component, char* port, size_t idx)

@@ -10,6 +10,7 @@ void initializeHopsanWrapperFromBuiltInModel();
 void simulateOneStep();
 double getVariable(char* component, char* port, size_t idx);
 double getTimeStep();
+double getFmuTime();
 void setVariable(char* component, char* port, size_t idx, double value);
 void setParameter(char* name, double value);
 

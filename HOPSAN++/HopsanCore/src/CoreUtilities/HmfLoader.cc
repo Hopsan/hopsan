@@ -290,17 +290,37 @@ ComponentSystem* hopsan::loadHopsanModelFile(const std::string filePath, HopsanE
     return 0;
 }
 
+
 //! @brief This function is used to load a HMF file from model string.
 //! @param [in] xmlModel The xml representation of the model
 //! @returns A pointer to the rootsystem of the loaded model
 ComponentSystem* hopsan::loadHopsanModelFile(std::vector<unsigned char> xmlVector, HopsanEssentials* pHopsanEssentials)
+{
+    return loadHopsanModelFile((char*) &xmlVector[0], pHopsanEssentials);
+}
+
+
+//! @brief This function is used to load a HMF file from model string.
+//! @param [in] xmlModel The xml representation of the model
+//! @returns A pointer to the rootsystem of the loaded model
+ComponentSystem* hopsan::loadHopsanModelFileFromStdString(std::string xmlStr, HopsanEssentials* pHopsanEssentials)
+{
+    char *cstr = new char[xmlStr.length() + 1];
+    strcpy(cstr, xmlStr.c_str());
+    ComponentSystem *pSystem = loadHopsanModelFile(cstr, pHopsanEssentials);
+    delete [] cstr;
+    return pSystem;
+}
+
+
+ComponentSystem* hopsan::loadHopsanModelFile(char* xmlStr, HopsanEssentials* pHopsanEssentials)
 {
     std::string filePath("");
 
     try
     {
         rapidxml::xml_document<> doc;
-        doc.parse<0>( (char*) &xmlVector[0]);
+        doc.parse<0>( xmlStr);
 
         rapidxml::xml_node<> *pRootNode = doc.first_node();
 

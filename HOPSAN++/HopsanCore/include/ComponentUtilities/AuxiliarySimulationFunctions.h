@@ -33,27 +33,26 @@ namespace hopsan {
 //! @ingroup AuxiliarySimulationFunctions
 const double pi = 3.14159265358979323846;
 
-extern "C" {
-    void DLLIMPORTEXPORT limitValue(double &rValue, double min, double max);
+void DLLIMPORTEXPORT limitValue(double &rValue, double min, double max);
 
-    // ----------Functions converted from auxhop in old Hopsan----------
-    double DLLIMPORTEXPORT signedSquareL(const double x, const double x0);
-    double DLLIMPORTEXPORT dxSignedSquareL(const double x, const double x0);
-    double DLLIMPORTEXPORT squareAbsL(const double x, const double x0);
-    double DLLIMPORTEXPORT dxSquareAbsL(const double x, const double x0);
-    double DLLIMPORTEXPORT Atan2L(const double y, const double x);
-    double DLLIMPORTEXPORT ArcSinL(const double x);
-    double DLLIMPORTEXPORT dxArcSinL(const double x);
-    double DLLIMPORTEXPORT diffAngle(const double fi1, const double fi2);
-    double DLLIMPORTEXPORT CLift(const double alpha, const double CLalpha, const double ap, const double an, const double expclp, const double expcln);
-    double DLLIMPORTEXPORT CDragInd(const double alpha, const double AR, const double e, const double CLalpha, const double ap, const double an, const double expclp, const double expcln);
-    double DLLIMPORTEXPORT CMoment(double alpha, const double Cm0, const double Cmfs, const double ap, const double an, const double expclp, const double expcln);
-    double DLLIMPORTEXPORT equalSigns(const double x, const double y);
-    double DLLIMPORTEXPORT limit(const double x, const double xmin, const double xmax);
-    double DLLIMPORTEXPORT dxLimit(const double x, const double xmin, const double xmax);
-    double DLLIMPORTEXPORT dxLimit2(const double x, const double sx, const double xmin, const double xmax);
-    double DLLIMPORTEXPORT div(const double x, const double y);
-}
+// ----------Functions converted from auxhop in old Hopsan----------
+double DLLIMPORTEXPORT signedSquareL(const double x, const double x0);
+double DLLIMPORTEXPORT dxSignedSquareL(const double x, const double x0);
+double DLLIMPORTEXPORT squareAbsL(const double x, const double x0);
+double DLLIMPORTEXPORT dxSquareAbsL(const double x, const double x0);
+double DLLIMPORTEXPORT Atan2L(const double y, const double x);
+double DLLIMPORTEXPORT ArcSinL(const double x);
+double DLLIMPORTEXPORT dxArcSinL(const double x);
+double DLLIMPORTEXPORT diffAngle(const double fi1, const double fi2);
+double DLLIMPORTEXPORT CLift(const double alpha, const double CLalpha, const double ap, const double an, const double expclp, const double expcln);
+double DLLIMPORTEXPORT CDragInd(const double alpha, const double AR, const double e, const double CLalpha, const double ap, const double an, const double expclp, const double expcln);
+double DLLIMPORTEXPORT CMoment(double alpha, const double Cm0, const double Cmfs, const double ap, const double an, const double expclp, const double expcln);
+double DLLIMPORTEXPORT equalSigns(const double x, const double y);
+double DLLIMPORTEXPORT limit(const double x, const double xmin, const double xmax);
+double DLLIMPORTEXPORT dxLimit(const double x, const double xmin, const double xmax);
+double DLLIMPORTEXPORT dxLimit2(const double x, const double sx, const double xmin, const double xmax);
+double DLLIMPORTEXPORT div(const double x, const double y);
+
 
 // ----------Inline Functions converted from auxhop in old Hopsan----------
 

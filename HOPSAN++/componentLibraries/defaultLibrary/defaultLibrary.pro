@@ -60,7 +60,7 @@ HEADERS += \
     code/Special/AeroComponents/SignalWaypoint.hpp \
     code/Special/AeroComponents/SignalStateMonitor.hpp \
     code/Special/AeroComponents/SignalTimeAccelerator.hpp \
-    code/Special/AeroComponents/SignalEarthCoordinats.hpp \
+    code/Special/AeroComponents/SignalEarthCoordinates.hpp \
     code/Signal/SignalSRlatch.hpp \
     code/Signal/SignalXor.hpp \
     code/Signal/SignalUndefinedConnection.hpp \
@@ -252,7 +252,8 @@ HEADERS += \
     code/Signal/SignalStaircase.hpp \
     code/Signal/SignalDisplay.hpp \
     code/Signal/SignalAnimationGauge.hpp \
-    code/Signal/SignalUnitDelay.hpp
+    code/Signal/SignalUnitDelay.hpp \
+    code/Special/AeroComponents/AeroVehicleTVC.hpp
 
 SOURCES += \
     code/defaultComponentLibrary.cc \

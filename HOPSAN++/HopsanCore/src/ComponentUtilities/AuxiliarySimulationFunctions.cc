@@ -25,6 +25,8 @@
 #include "ComponentUtilities/AuxiliarySimulationFunctions.h"
 #include <cmath>
 
+using namespace hopsan;
+
 //! @defgroup ComponentUtilities ComponentUtilities
 //! @defgroup AuxiliarySimulationFunctions AuxiliarySimulationFunctions
 //! @ingroup ComponentUtilities
@@ -60,7 +62,7 @@ void hopsan::limitValue(double &rValue, double min, double max)
 //! @ingroup AuxiliarySimulationFunctions
 double hopsan::signedSquareL(const double x, const double x0)
 {
-    return (-sqrt(x0) + sqrt(x0 + fabs(x))) * hopsan::sign(x);
+    return (-sqrt(x0) + sqrt(x0 + fabs(x))) * sign(x);
 }
 
 
@@ -80,7 +82,7 @@ double hopsan::squareAbsL(const double x, const double x0)
 //! @ingroup AuxiliarySimulationFunctions
 double hopsan::dxSquareAbsL(const double x, const double x0)
 {
-    return 1.0 / (sqrt(x0 + fabs(x)) * 2.0) * hopsan::sign(x);
+    return 1.0 / (sqrt(x0 + fabs(x)) * 2.0) * sign(x);
 }
 
 //! @brief Safe variant of atan2
@@ -117,7 +119,7 @@ double hopsan::equalSigns(const double x, const double y)
 //! @ingroup AuxiliarySimulationFunctions
 double hopsan::ArcSinL(const double x)
 {
-    return asin(hopsan::limit(x,-0.999,0.999));
+    return asin(limit(x,-0.999,0.999));
 }
 
 //! @brief derivative of AsinL
@@ -165,7 +167,7 @@ double hopsan::CDragInd(const double alpha, const double AR, const double e, con
 double hopsan::CMoment(const double alpha, const double Cm0, const double Cmfs, const double ap, const double an, const double awp, const double awn)
 {
     return (1 - 1/(1 + pow(2.71828,-20.*(-0.5 - alpha))) - 1/(1 + pow(2.71828,-20.*(-0.5 + alpha))))*Cm0 +
-            (1/(1 + pow(2.71828,-20.*(-0.5 - alpha))) + 1/(1 + pow(2.71828,-20.*(-0.5 + alpha))))*Cmfs*hopsan::sign(alpha);
+            (1/(1 + pow(2.71828,-20.*(-0.5 - alpha))) + 1/(1 + pow(2.71828,-20.*(-0.5 + alpha))))*Cmfs*sign(alpha);
 }
 
 //! @brief Overloads void hopsan::limitValue() with a return value.
@@ -177,7 +179,7 @@ double hopsan::CMoment(const double alpha, const double Cm0, const double Cmfs, 
 double hopsan::limit(const double x, const double xmin, const double xmax)
 {
     double output = x;
-    hopsan::limitValue(output, xmin, xmax);
+    limitValue(output, xmin, xmax);
     return output;
 }
 

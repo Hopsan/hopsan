@@ -28,8 +28,7 @@
 #include <string>
 #include <sstream>
 
-namespace hopsan
-{
+namespace hopsan {
 
 //! @brief Helper function to create a unique name among names from one Map
 //! @todo try to merge these to help functions into one (the next one bellow which is very similar)

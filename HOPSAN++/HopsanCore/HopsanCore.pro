@@ -41,6 +41,7 @@ CONFIG(debug, debug|release) {
 CONFIG(release, debug|release) {
   DEFINES *= RELEASECOMPILING
 }
+DEFINES *= MAINCORE
 
 # -------------------------------------------------
 # Platform specific additional project options

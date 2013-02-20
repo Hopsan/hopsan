@@ -42,7 +42,7 @@
 
 
 
-//using namespace hopsan;
+using namespace hopsan;
 
 ////Uncomment this and the Repoint SEGFAULT thing below to catch segfaults
 ////vvv The function to be run at SEGFAULT, see below. (http://www.cplusplus.com/reference/clibrary/csignal/signal/)
@@ -58,7 +58,7 @@
 //! @brief Registers the creator function of all built in components
 //! @param [in,out] pComponentFactory A pointer the the component factory in wich to register the components
 //!
-void hopsan::register_components(hopsan::ComponentFactory* pComponentFactory)
+void hopsan::register_components(ComponentFactory* pComponentFactory)
 {
 //    //vvv Repoint SEGFAULT to the terminate function, could be used to tell component makers info about their fault. (http://www.cplusplus.com/reference/clibrary/csignal/signal/)
 //    void (*prev_fn)(int);

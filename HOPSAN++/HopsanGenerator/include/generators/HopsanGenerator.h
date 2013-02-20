@@ -66,6 +66,8 @@ public:
     void callProcess(QString name, QStringList args, QString workingDirectory=QString());
     bool runUnixCommand(QString cmd);
 
+    bool replaceInFile(const QString &fileName, const QStringList &before, const QStringList &after);
+
 protected:
     QString mOutputPath;
     QString mTempPath;

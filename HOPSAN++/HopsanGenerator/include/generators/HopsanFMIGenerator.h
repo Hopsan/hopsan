@@ -9,7 +9,6 @@ public:
     HopsanFMIGenerator(QString coreIncludePath, QString binPath, bool showDialog=false);
     void generateFromFmu(QString code);
     void generateToFmu(QString savePath, hopsan::ComponentSystem *pSystem);
-    void generateToFmuOld(QString savePath, hopsan::ComponentSystem *pSystem);
 };
 
 #endif // HOPSANFMIGENERAETOR_H

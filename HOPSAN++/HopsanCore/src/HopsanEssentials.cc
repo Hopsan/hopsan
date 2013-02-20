@@ -72,9 +72,9 @@ HopsanEssentials::HopsanEssentials()
 
     // Do some other stuff
     mpMessageHandler->addInfoMessage("HopsanCore, Version: " + string(HOPSANCOREVERSION));
-    hopsanLogFile.open("hopsan_logfile.txt");
-    hopsanLogFile << "This file logs the actions done by HopsanCore,\nto trace a program crash one can see what was the last logged action.\nLook at the last rows in this file.\n\n\n";
 
+    openLogFile();
+    addLogMess("This file logs the actions done by HopsanCore,\nto trace a program crash one can see what was the last logged action.\nLook at the last rows in this file.\n\n\n");
 }
 
 //! @brief HopsanEssentials Destructor
@@ -84,7 +84,7 @@ HopsanEssentials::~HopsanEssentials()
     //! @todo need to make sure that every one has destoyed all components/nodes before we unregister them, it probably cant be done from inside here
     mpNodeFactory->clearFactory();
     mpComponentFactory->clearFactory();
-    hopsanLogFile.close();
+    closeLogFile();
 
     delete mpNodeFactory;
     delete mpComponentFactory;
@@ -190,6 +190,11 @@ ComponentSystem* HopsanEssentials::loadHMFModel(const std::vector<unsigned char>
     return loadHopsanModelFile(xmlVector, this);
 }
 
+ComponentSystem* HopsanEssentials::loadHMFModel(const std::string xmlString)
+{
+    return loadHopsanModelFileFromStdString(xmlString, this);
+}
+
 SimulationHandler *HopsanEssentials::getSimulationHandler()
 {
     return &mSimulationHandler;
@@ -263,8 +268,31 @@ void HopsanEssentials::getExternalLibraryContents(const std::string libpath, std
 }
 
 
+static std::ofstream hopsanLogFile;
+
+
+void hopsan::openLogFile()
+{
+#ifdef MAINCORE
+    hopsanLogFile.open("hopsan_logfile.txt");
+#endif
+}
+
+
+void hopsan::closeLogFile()
+{
+#ifdef MAINCORE
+    hopsanLogFile.close();
+#endif
+}
+
 //! @brief Adds a message to the HopsanCore runtime log
 void hopsan::addLogMess(const std::string log)
 {
-    hopsanLogFile << log << "\n";
+#ifdef MAINCORE
+    if(hopsanLogFile.good())
+    {
+        hopsanLogFile << log << "\n";
+    }
+#endif
 }

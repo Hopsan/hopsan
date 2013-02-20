@@ -29,8 +29,7 @@
 #include "HopsanCoreMessageHandler.h"
 #include <string>
 
-namespace hopsan
-{
+namespace hopsan {
 
 //! @brief Template help function that checks status messages from the registration status in a class factory
 //! @details This functionality is not included in the actual class factory as we want to keep the class factory clean
