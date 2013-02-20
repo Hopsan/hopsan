@@ -38,7 +38,7 @@ namespace hopsan {
     class MultiPort;
 
     //! @brief This enum type specifies all porttypes
-    //It is VERY important the MultiPort enums commes LAST, MULTIPORT is never instasiated but enum MUST be present
+    //It is VERY important the MultiPort enums commes LAST, MULTIPORT is never instantiated but enum MUST be present
     enum PortTypesEnumT {UNDEFINEDPORT, POWERPORT, READPORT, WRITEPORT, SYSTEMPORT, MULTIPORT, POWERMULTIPORT, READMULTIPORT};
 
     class DLLIMPORTEXPORT Port
@@ -175,7 +175,7 @@ namespace hopsan {
         double *getSafeNodeDataPtr(const size_t idx, const double defaultValue, const size_t portIdx);
         std::vector<double> *getDataVectorPtr(const size_t portIdx=0);
 
-        const std::vector<NodeDataDescription>* getNodeDataDescriptions(const size_t portIdx);
+        const std::vector<NodeDataDescription>* getNodeDataDescriptions(const size_t portIdx=0);
         const NodeDataDescription* getNodeDataDescription(const size_t dataid, const size_t portIdx=0);
         int getNodeDataIdFromName(const std::string name, const size_t portIdx=0);
 

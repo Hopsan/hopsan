@@ -61,11 +61,9 @@ public:
     enum CQSEnumT {C, Q, S, UndefinedCQSType};
 
     //==========Public functions==========
-    // Virtual functions
+    // Configureation and simulation functions
     virtual void configure();
     virtual void deconfigure();
-    virtual void loadStartValues();
-    virtual void loadStartValuesFromSimulation();
     virtual void initialize(); //!< @todo We should really be able to return sucess true or false from components
     virtual bool initialize(const double startT, const double stopT);
     virtual void simulate(const double startT, const double Ts);
@@ -115,6 +113,8 @@ public:
     double getStartValue(Port* pPort, const size_t idx, const size_t portIdx=0);
     void setStartValue(Port* pPort, const size_t idx, const double value);
     void disableStartValue(Port* pPort, const size_t idx);
+    virtual void loadStartValues();
+    virtual void loadStartValuesFromSimulation();
 
     // Ports
     std::vector<Port*> getPortPtrVector();

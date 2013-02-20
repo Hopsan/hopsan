@@ -64,6 +64,9 @@ int main(int argc, char *argv[])
         TCLAP::ValueArg<std::string> hmfPathOption("f","hmf","The Hopsan model file to simulate",false,"","FilePath string", cmd);
         TCLAP::ValueArg<std::string> extLibPathsOption("e","ext","A file containing the external libs to load",false,"","FilePath string", cmd);
         TCLAP::ValueArg<std::string> saveNodesPathsOption("n", "savenodes", "A file containing lines with the ComponentName;PortName to save node data from", false, "", "FilePath string", cmd);
+        TCLAP::ValueArg<std::string> resultTypeOption("", "resultType", "How the results should be exported, choose: [final_csv, full_csv]", false, "final_csv", "string", cmd);
+        TCLAP::ValueArg<std::string> resultCSVSort("", "resultCSVSort", "Store in columns or in rows: [rows, cols]", false, "rows", "string", cmd);
+        TCLAP::ValueArg<std::string> resultFileOption("", "resultFile", "where the results should be exported", false, "", "string", cmd);
         TCLAP::ValueArg<std::string> modelTestOption("t","test","Model test to perform",false,"","Model name", cmd);
 
         // Parse the argv array.
@@ -142,6 +145,36 @@ int main(int argc, char *argv[])
                 {
                     string outfile = comps[i]+"_"+ports[i]+".txt";
                     saveNodeDataToFile(pRootSystem, comps[i], ports[i], outfile);
+                }
+            }
+
+            if (resultFileOption.isSet())
+            {
+                cout << "Saving results to file" << resultFileOption.getValue() << ", Using format: " << resultTypeOption.getValue() << endl;
+                if (resultTypeOption.getValue() == "final_csv")
+                {
+                    saveFinalResults(pRootSystem, resultFileOption.getValue(), Final);
+                }
+                else if (resultTypeOption.getValue() == "full_csv")
+                {
+                    saveFinalResults(pRootSystem, resultFileOption.getValue(), Full);
+                }
+                else
+                {
+                    setColor(Red);
+                    cout << "Unknown result type format: " << resultTypeOption.getValue() << endl;
+                }
+
+                // Should we transpose the result
+                if (resultCSVSort.getValue() == "cols")
+                {
+                    cout << "Transposing CSV file" << endl;
+                    transposeCSVresults(resultFileOption.getValue());
+                }
+                else if (resultCSVSort.getValue() != "rows")
+                {
+                    setColor(Red);
+                    cout << "Unknown CSV sorting format: " << resultCSVSort.getValue() << endl;
                 }
             }
         }

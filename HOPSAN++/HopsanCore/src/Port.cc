@@ -738,6 +738,7 @@ MultiPort::~MultiPort()
 
 double MultiPort::readNode(const size_t idx, const size_t portIdx)
 {
+    //! @todo handle portIdx ot of range
     return mSubPortsVector[portIdx]->readNode(idx);
 }
 
@@ -771,37 +772,65 @@ void MultiPort::saveLogData(std::string filename, const size_t portIdx)
 
 const std::vector<NodeDataDescription>* MultiPort::getNodeDataDescriptions(const size_t portIdx)
 {
-    return mSubPortsVector[portIdx]->getNodeDataDescriptions();
+    if (isConnected())
+    {
+        return mSubPortsVector[portIdx]->getNodeDataDescriptions();
+    }
+    return 0;
 }
 
 const NodeDataDescription* MultiPort::getNodeDataDescription(const size_t dataid, const size_t portIdx)
 {
-    return mSubPortsVector[portIdx]->getNodeDataDescription(dataid);
+    if (isConnected())
+    {
+        return mSubPortsVector[portIdx]->getNodeDataDescription(dataid);
+    }
+    return 0;
 }
 
 int MultiPort::getNodeDataIdFromName(const std::string name, const size_t portIdx)
 {
-    return mSubPortsVector[portIdx]->getNodeDataIdFromName(name);
+    if (isConnected())
+    {
+        return mSubPortsVector[portIdx]->getNodeDataIdFromName(name);
+    }
+    return -1;
 }
 
 bool MultiPort::haveLogData(const size_t portIdx)
 {
-    return mSubPortsVector[portIdx]->haveLogData();
+    if (isConnected())
+    {
+        return mSubPortsVector[portIdx]->haveLogData();
+    }
+    return false;
 }
 
 std::vector<double> *MultiPort::getLogTimeVectorPtr(const size_t portIdx)
 {
-    return mSubPortsVector[portIdx]->getLogTimeVectorPtr();
+    if (isConnected())
+    {
+        return mSubPortsVector[portIdx]->getLogTimeVectorPtr();
+    }
+    return 0;
 }
 
 std::vector<std::vector<double> > *MultiPort::getLogDataVectorPtr(const size_t portIdx)
 {
-    return mSubPortsVector[portIdx]->getLogDataVectorPtr();
+    if (isConnected())
+    {
+        return mSubPortsVector[portIdx]->getLogDataVectorPtr();
+    }
+    return 0;
 }
 
 std::vector<double> *MultiPort::getDataVectorPtr(const size_t portIdx)
 {
-    return mSubPortsVector[portIdx]->getDataVectorPtr();
+    if (isConnected())
+    {
+        return mSubPortsVector[portIdx]->getDataVectorPtr();
+    }
+    return 0;
 }
 
 //! @brief Get the an actual start value of the port
@@ -832,7 +861,7 @@ void MultiPort::loadStartValuesFromSimulation()
 //! Check if the port is curently connected
 bool MultiPort::isConnected()
 {
-    //! @todo actaully we should check all subports if they are connected
+    //! @todo actaully we should check all subports if they are connected (but a subport should not exist if not connected)
     return (mSubPortsVector.size() > 0);
 }
 

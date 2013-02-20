@@ -145,7 +145,7 @@ void printComponentHierarchy(ComponentSystem *pSystem, std::string prefix,
 {
     if (pSystem)
     {
-        cout << prefix << pSystem->getName() << " ";
+        cout << prefix << pSystem->getName() << ", ";
         if (doPrintTsInfo)
         {
             printTsInfo(pSystem);
@@ -246,6 +246,150 @@ void saveNodeDataToFile(ComponentSystem* pSys, const string compName, const stri
             return; //Abort function
         }
         cout << "Error: Could not find compName: " << compName << endl;
+    }
+}
+
+void saveFinalResults(ComponentSystem *pSys, const string &rFileName, const SaveResults howMany, string prefix, ofstream *pFile)
+{
+    bool doCloseFile=false;
+    if (!pFile)
+    {
+        pFile = new ofstream;
+        pFile->open(rFileName.c_str());
+        if (!pFile->good())
+            return;
+        doCloseFile = true;
+    }
+
+    if (pSys)
+    {
+        cout << "sys" << endl;
+        prefix = prefix + pSys->getName() + "$";
+        vector<string> names = pSys->getSubComponentNames();
+        for (size_t c=0; c<names.size(); ++c)
+        {
+            Component *pComp = pSys->getSubComponent(names[c]);
+            if (pComp)
+            {
+                cout << "comp: " << c << " of: " << names.size() << endl;
+                if (pComp->isComponentSystem())
+                {
+                    cout << "syscomp" << endl;
+                    saveFinalResults(static_cast<ComponentSystem*>(pComp), rFileName, howMany, prefix, pFile);
+                }
+                else
+                {
+                    vector<Port*> ports = pComp->getPortPtrVector();
+                    for (size_t p=0; p<ports.size(); ++p)
+                    {
+                        cout << "port: " << p << " of: " << ports.size() << endl;
+                        Port *pPort = ports[p];
+                        if (pPort->isMultiPort())
+                        {
+                            continue;
+                        }
+                        const vector<NodeDataDescription> *pVars = pPort->getNodeDataDescriptions();
+                        if (pVars)
+                        {
+                            for (size_t v=0; v<pVars->size(); ++v)
+                            {
+                                cout << "var: " << v << " of: " <<  pVars->size() << endl;
+                                string fullname = prefix + pComp->getName() + "#" + pPort->getPortName() + "#" + pVars->at(v).name;
+
+                                cout << fullname << "," << pPort->getVariableAlias(v) << "," << pVars->at(v).unit;
+                                *pFile << fullname << "," << pPort->getVariableAlias(v) << "," << pVars->at(v).unit;
+                                if (howMany == Final)
+                                {
+                                    cout <<  "," << pPort->readNode(v) << endl; //!< @todo what about precission
+                                    *pFile << "," << pPort->readNode(v) << endl; //!< @todo what about precission
+                                    //! @todo final or full
+                                }
+                                else if (howMany == Full)
+                                {
+                                    //! @todo what about time vector
+                                    vector< vector<double> > *pLogData = pPort->getLogDataVectorPtr();
+                                    for (size_t t=0; t<pLogData->size(); ++t)
+                                    {
+                                        cout << "," << (*pLogData)[t][v];//!< @todo what about precission
+                                        *pFile << "," << (*pLogData)[t][v];//!< @todo what about precission
+                                    }
+                                    cout << endl;
+                                    *pFile << endl;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (doCloseFile)
+    {
+        pFile->close();
+        delete pFile;
+    }
+}
+
+void transposeCSVresults(const std::string &rFileName)
+{
+    ifstream infile(rFileName.c_str());
+    if ( infile.good() )
+    {
+        vector< vector<string> > linesVec;
+        vector<string> lineVec;
+        // Read all lines into string vectors
+        while(!infile.eof())
+        {
+            string line;
+            getline(infile, line);
+
+            // Split on delimiter
+            string item;
+            stringstream ss(line);
+            while(getline(ss, item, ','))
+            {
+                lineVec.push_back(item);
+            }
+
+            // Store line vector
+            if (lineVec.size() > 0)
+            {
+                linesVec.push_back(lineVec);
+                lineVec.clear();
+
+                // Clear data but reserve memory for next run
+                size_t n = lineVec.size();
+                lineVec.clear();
+                lineVec.reserve(n);
+            }
+        }
+        infile.close();
+
+        // Write back transposed
+        ofstream ofile(rFileName.c_str());
+        if ( ofile.good() )
+        {
+            size_t rows = linesVec.size();
+            if (rows > 0)
+            {
+                // Assumes same nr cols on each row
+                size_t cols = linesVec[0].size();
+                for (size_t c=0; c<cols; ++c)
+                {
+                    ofile << linesVec[0][c];
+                    //cout << linesVec[0][c];
+                    for (size_t r=1; r<rows; ++r)
+                    {
+                        ofile << "," <<  linesVec[r][c];
+                        //cout << ", " <<  linesVec[r][c];
+                    }
+                    ofile << endl;
+                    //cout << endl;
+                }
+            }
+        }
+        ofile.close();
     }
 }
 

@@ -48,7 +48,10 @@ enum ColorsT {Red, Green, Blue, White, Reset};
 void setColor(const ColorsT color);
 
 // ===== Save Functions =====
+enum SaveResults {Final, Full};
 void saveNodeDataToFile(hopsan::ComponentSystem* pSys, const std::string compName, const std::string portName, const std::string fileName);
+void saveFinalResults(hopsan::ComponentSystem *pSys, const std::string &rFileName, const SaveResults howMany, std::string prefix="", std::ofstream *pFile=0);
+void transposeCSVresults(const std::string &rFileName);
 
 // ===== Load Functions =====
 void readExternalLibsFromTxtFile(const std::string filePath, std::vector<std::string> &rExtLibFileNames);
