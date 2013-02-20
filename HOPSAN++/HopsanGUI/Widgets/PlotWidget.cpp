@@ -130,9 +130,9 @@ PlotVariableTree::PlotVariableTree(MainWindow *parent)
     {
         mpCurrentContainer = gpMainWindow->mpProjectTabs->getCurrentContainer();
         //gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().clear();
-        connect(gpMainWindow->mpProjectTabs->getCurrentContainer(), SIGNAL(componentChanged()), this, SLOT(updateList()));
-        connect(gpMainWindow->mpProjectTabs->getCurrentTab(), SIGNAL(simulationFinished()), this, SLOT(updateList()));
-        connect(gpMainWindow->mpProjectTabs, SIGNAL(simulationFinished()), this, SLOT(updateList())); //!< @todo remove this when newDataAvailable signal is working
+        //connect(gpMainWindow->mpProjectTabs->getCurrentContainer(), SIGNAL(componentChanged()), this, SLOT(updateList()));
+        //connect(gpMainWindow->mpProjectTabs->getCurrentTab(), SIGNAL(simulationFinished()), this, SLOT(updateList()));
+        //connect(gpMainWindow->mpProjectTabs, SIGNAL(simulationFinished()), this, SLOT(updateList())); //!< @todo remove this when newDataAvailable signal is working
         connect(mpCurrentContainer->getLogDataHandler(), SIGNAL(newDataAvailable()), this, SLOT(updateList()));
     }
 

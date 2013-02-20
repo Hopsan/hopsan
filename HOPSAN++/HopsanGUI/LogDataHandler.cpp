@@ -570,6 +570,7 @@ void LogDataHandler::collectPlotDataFromModel()
     // Increment generation counter
     if (foundData)
     {
+        emit newDataAvailable();
         ++mGenerationNumber;
     }
 }
@@ -824,6 +825,7 @@ void LogDataHandler::limitPlotGenerations()
 {
     if ( (mGenerationNumber - gConfig.getGenerationLimit()) > 0 )
     {
+        // Remove old generation in each data varaible container
         LogDataMapT::iterator dit = mLogDataMap.begin();
         for ( ; dit!=mLogDataMap.end(); ++dit)
         {
@@ -831,12 +833,12 @@ void LogDataHandler::limitPlotGenerations()
         }
 
         // Clear from generations cache object map
-        QMap<int, SharedMultiDataVectorCacheT>::iterator it;
-        for (it = mGenerationCacheMap.begin(); it != mGenerationCacheMap.end(); ++it)
+        QList<int> gens = mGenerationCacheMap.keys();
+        for (int i=0; i<gens.size(); ++i)
         {
-            if (it.key() < (mGenerationNumber - gConfig.getGenerationLimit()) )
+            if (gens[i] < (mGenerationNumber - gConfig.getGenerationLimit()) )
             {
-                mGenerationCacheMap.erase(it);
+                mGenerationCacheMap.remove(gens[i]);
             }
             else
             {
@@ -844,7 +846,6 @@ void LogDataHandler::limitPlotGenerations()
             }
         }
     }
-
 }
 
 ContainerObject *LogDataHandler::getParentContainerObject()
