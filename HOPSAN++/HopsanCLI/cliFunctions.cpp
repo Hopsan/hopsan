@@ -263,7 +263,6 @@ void saveFinalResults(ComponentSystem *pSys, const string &rFileName, const Save
 
     if (pSys)
     {
-        cout << "sys" << endl;
         prefix = prefix + pSys->getName() + "$";
         vector<string> names = pSys->getSubComponentNames();
         for (size_t c=0; c<names.size(); ++c)
@@ -271,10 +270,10 @@ void saveFinalResults(ComponentSystem *pSys, const string &rFileName, const Save
             Component *pComp = pSys->getSubComponent(names[c]);
             if (pComp)
             {
-                cout << "comp: " << c << " of: " << names.size() << endl;
+                //cout << "comp: " << c << " of: " << names.size() << endl;
                 if (pComp->isComponentSystem())
                 {
-                    cout << "syscomp" << endl;
+                    //cout << "syscomp" << endl;
                     saveFinalResults(static_cast<ComponentSystem*>(pComp), rFileName, howMany, prefix, pFile);
                 }
                 else
@@ -282,7 +281,7 @@ void saveFinalResults(ComponentSystem *pSys, const string &rFileName, const Save
                     vector<Port*> ports = pComp->getPortPtrVector();
                     for (size_t p=0; p<ports.size(); ++p)
                     {
-                        cout << "port: " << p << " of: " << ports.size() << endl;
+                        //cout << "port: " << p << " of: " << ports.size() << endl;
                         Port *pPort = ports[p];
                         if (pPort->isMultiPort())
                         {
@@ -293,16 +292,15 @@ void saveFinalResults(ComponentSystem *pSys, const string &rFileName, const Save
                         {
                             for (size_t v=0; v<pVars->size(); ++v)
                             {
-                                cout << "var: " << v << " of: " <<  pVars->size() << endl;
+                                //cout << "var: " << v << " of: " <<  pVars->size() << endl;
                                 string fullname = prefix + pComp->getName() + "#" + pPort->getPortName() + "#" + pVars->at(v).name;
 
-                                cout << fullname << "," << pPort->getVariableAlias(v) << "," << pVars->at(v).unit;
+                                //cout << fullname << "," << pPort->getVariableAlias(v) << "," << pVars->at(v).unit;
                                 *pFile << fullname << "," << pPort->getVariableAlias(v) << "," << pVars->at(v).unit;
                                 if (howMany == Final)
                                 {
-                                    cout <<  "," << pPort->readNode(v) << endl; //!< @todo what about precission
+                                    //cout <<  "," << pPort->readNode(v) << endl; //!< @todo what about precission
                                     *pFile << "," << pPort->readNode(v) << endl; //!< @todo what about precission
-                                    //! @todo final or full
                                 }
                                 else if (howMany == Full)
                                 {
@@ -310,10 +308,10 @@ void saveFinalResults(ComponentSystem *pSys, const string &rFileName, const Save
                                     vector< vector<double> > *pLogData = pPort->getLogDataVectorPtr();
                                     for (size_t t=0; t<pLogData->size(); ++t)
                                     {
-                                        cout << "," << (*pLogData)[t][v];//!< @todo what about precission
+                                        //cout << "," << (*pLogData)[t][v];//!< @todo what about precission
                                         *pFile << "," << (*pLogData)[t][v];//!< @todo what about precission
                                     }
-                                    cout << endl;
+                                    //cout << endl;
                                     *pFile << endl;
                                 }
                             }

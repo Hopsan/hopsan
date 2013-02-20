@@ -259,6 +259,7 @@ vector< vector<ComponentSystem *> > SimulationHandler::distributeSystems(const s
 ComponentSystem::ComponentSystem() : Component(), mAliasHandler(this)
 {
     mTypeName = "ComponentSystem";
+    mTypeCQS = Component::UndefinedCQSType;
     mName = mTypeName; //Make sure intial name is same as typename
     mDesiredTimestep = 0.001;
     mInheritTimestep = true;
