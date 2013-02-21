@@ -297,7 +297,6 @@ void saveFinalResults(ComponentSystem *pSys, const string &rFileName, const Save
 
                                 //cout << fullname << "," << pPort->getVariableAlias(v) << "," << pVars->at(v).unit;
                                 *pFile << fullname << "," << pPort->getVariableAlias(v) << "," << pVars->at(v).unit;
-                                cout << "Alias: " << pPort->getVariableAlias(v) << endl;
                                 if (howMany == Final)
                                 {
                                     //cout <<  "," << pPort->readNode(v) << endl; //!< @todo what about precission
