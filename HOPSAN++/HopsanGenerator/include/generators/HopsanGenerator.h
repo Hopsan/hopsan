@@ -52,21 +52,28 @@ class ComponentSystem;
 class DLLIMPORTEXPORT HopsanGenerator
 {
 public:
-    HopsanGenerator(QString coreIncludePath, QString binPath, bool showDialog=false);
-    void printMessage(QString msg);
-    void printErrorMessage(QString msg);
-    QString generateSourceCodefromComponentObject(ComponentSpecification comp, bool overwriteStartValues=false);
-    void compileFromComponentObject(QString outputFile, ComponentSpecification comp, bool overwriteStartValues=false);
+    HopsanGenerator(const QString coreIncludePath, const QString binPath, const bool showDialog=false);
+    void printMessage(const QString &msg) const;
+    void printErrorMessage(const QString &msg) const;
+    QString generateSourceCodefromComponentObject(ComponentSpecification comp, bool overwriteStartValues=false) const;
+    void compileFromComponentObject(const QString &outputFile, const ComponentSpecification &comp, const bool overwriteStartValues=false);
 
-    QString getCoreIncludePath();
-    QString getBinPath();
+    QString getCoreIncludePath() const;
+    QString getBinPath() const;
 
-    bool assertFilesExist(QString path, QStringList files);
+    bool assertFilesExist(const QString &path, const QStringList &files) const;
 
-    void callProcess(QString name, QStringList args, QString workingDirectory=QString());
-    bool runUnixCommand(QString cmd);
+    void callProcess(const QString &name, const QStringList &args, const QString workingDirectory=QString()) const;
+    bool runUnixCommand(QString cmd) const;
 
-    bool replaceInFile(const QString &fileName, const QStringList &before, const QStringList &after);
+    bool replaceInFile(const QString &fileName, const QStringList &before, const QStringList &after) const;
+
+    bool copyIncludeFilesToDir(QString path) const;
+    bool copySourceFilesToDir(QString path) const;
+    bool copyDefaultComponentCodeToDir(const QString &path) const;
+    bool copyBoostIncludeFilesToDir(const QString &path) const;
+    bool copyFile(const QString &source, const QString &target) const;
+    void cleanUp(const QString &path, const QStringList &files, const QStringList &subDirs) const;
 
 protected:
     QString mOutputPath;

@@ -56,7 +56,7 @@ using namespace SymHop;
 using namespace hopsan;
 
 
-HopsanGenerator::HopsanGenerator(QString coreIncludePath, QString binPath, bool showDialog)
+HopsanGenerator::HopsanGenerator(const QString coreIncludePath, const QString binPath, const bool showDialog)
 {
 #ifdef WIN32
     mOutputPath = "C:/HopsanGeneratorTempFiles/output/";
@@ -104,7 +104,7 @@ HopsanGenerator::HopsanGenerator(QString coreIncludePath, QString binPath, bool 
 }
 
 
-void HopsanGenerator::printMessage(QString msg)
+void HopsanGenerator::printMessage(const QString &msg) const
 {
     if(mShowDialog)
     {
@@ -120,7 +120,7 @@ void HopsanGenerator::printMessage(QString msg)
 }
 
 
-void HopsanGenerator::printErrorMessage(QString msg)
+void HopsanGenerator::printErrorMessage(const QString &msg) const
 {
     if(mShowDialog)
     {
@@ -149,7 +149,7 @@ void HopsanGenerator::printErrorMessage(QString msg)
 
 
 
-QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecification comp, bool overwriteStartValues)
+QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecification comp, bool overwriteStartValues) const
 {
     if(comp.cqsType == "S") { comp.cqsType = "Signal"; }
 
@@ -496,7 +496,7 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
 //! @param outputFile Name of output file
 //! @param comp Component specification object
 //! @param overwriteStartValues Tells whether or not this components overrides the built-in start values or not
-void HopsanGenerator::compileFromComponentObject(QString outputFile, ComponentSpecification comp, /*ModelObjectAppearance appearance,*/ bool overwriteStartValues)
+void HopsanGenerator::compileFromComponentObject(const QString &outputFile, const ComponentSpecification &comp, const bool overwriteStartValues)
 {
     QString code;
 
@@ -610,19 +610,19 @@ void HopsanGenerator::compileFromComponentObject(QString outputFile, ComponentSp
 }
 
 
-QString HopsanGenerator::getCoreIncludePath()
+QString HopsanGenerator::getCoreIncludePath() const
 {
     return mCoreIncludePath;
 }
 
 
-QString HopsanGenerator::getBinPath()
+QString HopsanGenerator::getBinPath() const
 {
     return mBinPath;
 }
 
 
-bool HopsanGenerator::assertFilesExist(QString path, QStringList files)
+bool HopsanGenerator::assertFilesExist(const QString &path, const QStringList &files) const
 {
     Q_FOREACH(const QString file, files)
     {
@@ -637,7 +637,7 @@ bool HopsanGenerator::assertFilesExist(QString path, QStringList files)
 }
 
 
-void HopsanGenerator::callProcess(QString name, QStringList args, QString workingDirectory)
+void HopsanGenerator::callProcess(const QString &name, const QStringList &args, const QString workingDirectory) const
 {
     QProcess p;
     if(!workingDirectory.isEmpty())
@@ -650,7 +650,7 @@ void HopsanGenerator::callProcess(QString name, QStringList args, QString workin
 }
 
 
-bool HopsanGenerator::runUnixCommand(QString cmd)
+bool HopsanGenerator::runUnixCommand(QString cmd) const
 {
     char line[130];
     cmd +=" 2>&1";
@@ -672,13 +672,11 @@ bool HopsanGenerator::runUnixCommand(QString cmd)
 
 
 //! @warning May delete contents in file if it fails to open in write mode
-bool HopsanGenerator::replaceInFile(const QString &fileName, const QStringList &before, const QStringList &after)
+bool HopsanGenerator::replaceInFile(const QString &fileName, const QStringList &before, const QStringList &after) const
 {
-    QFile file(fileName);
-    printMessage("Replacing string in file: "+file.fileName());
-
     Q_ASSERT(before.size() == after.size());
 
+    QFile file(fileName);
     if(!file.open(QFile::ReadOnly | QFile::Text))
     {
         printErrorMessage("Unable to open file: "+fileName+" for reading.");
@@ -695,7 +693,6 @@ bool HopsanGenerator::replaceInFile(const QString &fileName, const QStringList &
             didSomething = true;
             contents.replace(before[i], after[i]);
         }
-
     }
 
     if(!didSomething)
@@ -711,4 +708,167 @@ bool HopsanGenerator::replaceInFile(const QString &fileName, const QStringList &
     file.close();
 
     return true;
+}
+
+
+
+//! @todo maybe this function should not be among general utils
+//! @todo should not copy .svn folders
+//! @todo Weird name because of name conflict with HopsanGUI
+bool HopsanGenerator::copyIncludeFilesToDir(QString path) const
+{
+    printMessage("Copying HopsanCore include files...");
+
+    if(!path.endsWith("/") && !path.endsWith("\\"))
+        path.append("/");
+
+    //Make sure HopsanCore include files are available
+    QStringList includeFiles = getHopsanCoreIncludeFiles();
+
+    if(!assertFilesExist(mExecPath, includeFiles))
+        return false;
+
+    QDir saveDir;
+    saveDir.setPath(path);
+    saveDir.mkpath("HopsanCore/include");
+    saveDir.mkpath("HopsanCore/include/Components");
+    saveDir.mkpath("HopsanCore/include/ComponentUtilities");
+    saveDir.mkpath("HopsanCore/include/CoreUtilities");
+    saveDir.mkpath("componentLibraries/defaultLibrary/code");
+    saveDir.mkpath("HopsanCore/Dependencies/libcsv_parser++-1.0.0/include/csv_parser");
+    saveDir.mkpath("HopsanCore/Dependencies/rapidxml-1.13");
+
+    Q_FOREACH(const QString &file, includeFiles)
+    {
+        if(!QFile::copy(mExecPath+file, path+file.right(file.size()-3)))
+        {
+            printErrorMessage("Unable to copy file: "+mExecPath+file+" to "+path+file.right(file.size()-3));
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
+//! @todo maybe this function should not be among general utils
+//! @todo should not copy .svn folders
+bool HopsanGenerator::copySourceFilesToDir(QString path) const
+{
+    printMessage("Copying HopsanCore source files...");
+
+    if(!path.endsWith("/") && !path.endsWith("\\"))
+        path.append("/");
+
+    //Make sure HopsanCore source files are available
+    QStringList srcFiles = getHopsanCoreSourceFiles();
+    if(!assertFilesExist(mExecPath, srcFiles))
+        return false;
+
+    QDir saveDir;
+    saveDir.setPath(path);
+    saveDir.mkpath("HopsanCore/src/ComponentUtilities");
+    saveDir.mkpath("HopsanCore/src/CoreUtilities");
+    saveDir.mkpath("componentLibraries/defaultLibrary/code");
+    saveDir.mkpath("HopsanCore/Dependencies/libcsv_parser++-1.0.0");
+
+    Q_FOREACH(const QString &file, srcFiles)
+    {
+        if(!QFile::copy(mExecPath+file, path+file.right(file.size()-3)))
+        {
+            printErrorMessage("Unable to copy file: "+mExecPath+file+" to "+path+file.right(file.size()-3));
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
+
+//! @todo maybe this function should not be among general utils
+//! @todo should not copy .svn folders
+//! @todo Error checking
+bool HopsanGenerator::copyDefaultComponentCodeToDir(const QString &path) const
+{
+    printMessage("Copying default component library...");
+
+    QDir saveDir;
+    saveDir.setPath(path);
+    saveDir.mkpath("componentLibraries/defaultLibrary/code");
+    saveDir.cd("componentLibraries");
+    saveDir.cd("defaultLibrary");
+    saveDir.cd("code");
+
+    copyDir( QString("../componentLibraries/defaultLibrary/code"), saveDir.path() );
+
+    return true;
+}
+
+
+//! @todo maybe this function should not be among general utils
+//! @todo should not copy .svn folders
+//! @todo Error checking
+bool HopsanGenerator::copyBoostIncludeFilesToDir(const QString &path) const
+{
+    printMessage("Copying Boost include files...");
+
+    QDir saveDir;
+    saveDir.setPath(path);
+    saveDir.mkpath("include/boost");
+    saveDir.cd("include");
+    saveDir.cd("boost");
+
+    copyDir( QString("../HopsanCore/Dependencies/boost"), saveDir.path() );
+
+    saveDir.cd("bin");
+    QStringList binFiles = saveDir.entryList(QDir::Files | QDir::NoDotAndDotDot);
+
+    Q_FOREACH(const QString &fileName, binFiles)
+    {
+        QFile file(path+"/include/boost/bin/"+fileName);
+        qDebug() << "File: " << path+"/include/boost/bin/"+fileName;
+        file.copy(path+"/"+fileName);
+        qDebug() << "Target: " << path << "/" << fileName;
+    }
+
+    return true;
+}
+
+
+//! @brief Copies a file to a target and informs user of the outcome
+//! @param source Source file
+//! @param target Target where to copy file
+//! @returns True if copy successful, otherwise false
+bool HopsanGenerator::copyFile(const QString &source, const QString &target) const
+{
+    QFile sourceFile;
+    sourceFile.setFileName(source);
+    if(!sourceFile.copy(target))
+    {
+        printErrorMessage("Unable to copy file: " +sourceFile.fileName() + " to " + target+".");
+        return false;
+    }
+    printMessage("Copying " + sourceFile.fileName() + " to " + target+"...");
+    return true;
+}
+
+
+//! @brief Cleans up after import/export operation by removing all specified files and sub directories
+//! @param path Path to directory to clean up
+//! @param files List of files to remove
+//! @param subDirs List of sub directories to remove
+void HopsanGenerator::cleanUp(const QString &path, const QStringList &files, const QStringList &subDirs) const
+{
+    printMessage("Cleaning up directory: " + path);
+
+    QDir cleanDir(path);
+    Q_FOREACH(const QString &file, files)
+    {
+        cleanDir.remove(file);
+    }
+    Q_FOREACH(const QString &subDir, subDirs)
+    {
+        removeDir(path+"/"+subDir);
+    }
 }

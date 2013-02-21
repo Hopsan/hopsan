@@ -4,6 +4,7 @@
 #include <QApplication>
 #include <cassert>
 #include <QProcess>
+#include <QUuid>
 
 #ifdef WIN32
 #include <windows.h>
@@ -61,17 +62,10 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
         return;
     }
 
-
     QString fmuPath = mExecPath + "../import/FMU/" + fmuName;
     QDir fmuDir = QDir::cleanPath(fmuPath);
 
     printMessage("Unpacking files");
-
-
-    //Unzip .fmu file
-
-
-
 
 #ifdef WIN32
     QStringList arguments;
@@ -121,7 +115,6 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
         tempFile.remove();
     }
 
-
     //Move hmf files to execution path (ugly hack for importing hopsan fmu to hopsan)
     QStringList filters;
     filters << "*.hmf";
@@ -142,12 +135,12 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
             hmfFile.copy(mExecPath + hmfList.at(i));
             hmfFile.remove();
             hmfFile.setFileName(mExecPath + hmfList.at(i));
-            printMessage("Copying " + hmfFile.fileName() + " to " + mExecPath + hmfList.at(i));
+            printMessage("Copying " + hmfFile.fileName() + " to " + mExecPath + hmfList.at(i)+"...");
         }
     }
     fmuDir.setFilter(QDir::NoFilter);
 
-    printMessage("Parsing modelDescription.xml");
+    printMessage("Parsing modelDescription.xml...");
 
     //Load XML data from modelDescription.xml
     //Copy xml-file to this directory
@@ -170,8 +163,7 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
         return;
     }
 
-
-    printMessage("Defining variables");
+    printMessage("Defining variables...");
 
 
     //Define lists with input and output variables
@@ -215,7 +207,8 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
     QStringList tlmPortTypes;
     QList<QStringList> tlmPortVarNames;
     QList<QStringList> tlmPortValueRefs;
-
+    readTLMSpecsFromFile(fmuFileInfo.path()+"/"+fmuName+"_TLM.xml", tlmPortTypes, tlmPortVarNames, tlmPortValueRefs,
+                         inVarValueRefs, inVarPortNames, outVarValueRefs, outVarPortNames);
 
     //Read from [modelName]_TLM.xml if it exists, to define TLM powerports
     QFile tlmSpecFile;
@@ -230,7 +223,7 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
 
     if(tlmRoot != QDomElement())
     {
-        printMessage("Parsing "+fmuName+"_TLM.xml");
+        printMessage("Parsing "+fmuName+"_TLM.xml...");
 
         QStringList input;
 
@@ -263,7 +256,7 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
             {
                 if(outVarPortNames.contains(input[1]) && outVarPortNames.contains(input[2]) && inVarPortNames.contains(input[3]) && inVarPortNames.contains(input[4]))
                 {
-                    printMessage("Adding hydraulic port");
+                    printMessage("Adding hydraulic port.");
 
                     tlmPortTypes.append(input[0]);
                     input.removeFirst();
@@ -292,7 +285,7 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
             {
                 if(outVarPortNames.contains(input[1]) && outVarPortNames.contains(input[2]) && outVarPortNames.contains(input[3]) && outVarPortNames.contains(input[4]) && inVarPortNames.contains(input[5]) && inVarPortNames.contains(input[6]))
                 {
-                    printMessage("Adding mechanical port");
+                    printMessage("Adding mechanical port.");
 
                     tlmPortTypes.append(input[0]);
                     input.removeFirst();
@@ -458,7 +451,7 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
     ///////////////////////////////////
 
 
-    printMessage("Creating fmuLib.cc");
+    printMessage("Creating fmuLib.cc...");
 
     //Create fmuLib.cc
     QFile fmuLibFile;
@@ -470,7 +463,7 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
         return;
     }
 
-    printMessage("Writing fmuLib.cc");
+    printMessage("Writing fmuLib.cc...");
 
     QFile fmuLibTemplateFile(":templates/fmuLibTemplate.cc");
     assert(fmuLibTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text));
@@ -488,7 +481,7 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
     fmuLibFile.close();
 
 
-    printMessage("Creating " + fmuName + ".hpp");
+    printMessage("Creating " + fmuName + ".hpp...");
 
     //Create <fmuname>.hpp
     QDir().mkdir(fmuDir.path() + "/component_code");
@@ -501,7 +494,7 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
         return;
     }
 
-    printMessage("Writing " + fmuName + ".hpp");
+    printMessage("Writing " + fmuName + ".hpp...");
 
     QFile fmuComponentTemplateFile(":templates/fmuComponentTemplate.hpp");
     assert(fmuComponentTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text));
@@ -509,7 +502,11 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
     QTextStream t2(&fmuComponentTemplateFile);
     fmuComponentCode = t2.readAll();
     fmuComponentTemplateFile.close();
-    assert(!fmuComponentCode.isEmpty());
+    if(fmuComponentCode.isEmpty())
+    {
+        printErrorMessage("Unable to generate code for "+fmuName+".hpp.");
+        return;
+    }
 
     //Declare ports
     QString fmuComponentReplace2;
@@ -632,7 +629,7 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
     }
 
 
-    printMessage("Writing "+fmuName+".xml");
+    printMessage("Writing "+fmuName+".xml...");
 
     //Create <fmuname>.xml
     //! @todo Use dom elements for generating xml (this is just stupid)
@@ -704,140 +701,34 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
     fmuXmlFile.close();
 
     //Move FMI source files to compile directory
-    QFile simSupportSourceFile;
+
 #ifdef WIN32
     QString fmiSrcPath = mExecPath + "../ThirdParty/fmi/";
 #elif linux
     QString fmiSrcPath = mExecPath + "../ThirdParty/fmi/linux/";
 #endif
-    simSupportSourceFile.setFileName(fmiSrcPath+"sim_support.c");
-    if(simSupportSourceFile.copy(fmuDir.path() + "/sim_support.c"))
-    {
-        printMessage("Copying sim_support.c");
-        printMessage("Copying " + simSupportSourceFile.fileName() + " to " + fmuDir.path() + "/sim_support.c");
-    }
 
-    QFile stackSourceFile;
-    stackSourceFile.setFileName(fmiSrcPath+"stack.cc");
-    if(stackSourceFile.copy(fmuDir.path() + "/stack.cc"))
-    {
-        printMessage("Copying stack.cc");
-        printMessage("Copying " + stackSourceFile.fileName() + " to " + fmuDir.path() + "/stack.cc");
-    }
-
-    QFile xmlParserSourceFile;
-    xmlParserSourceFile.setFileName(fmiSrcPath+"xml_parser.h");
-    if(xmlParserSourceFile.copy(fmuDir.path() + "/xml_parser.h"))
-    {
-        printMessage("Copying xml_parser.h");
-        printMessage("Copying " + xmlParserSourceFile.fileName() + " to " + fmuDir.path() + "/xml_parser.h");
-    }
-
-    QFile simSupportHeaderFile;
-    simSupportHeaderFile.setFileName(fmiSrcPath+"sim_support.h");
-    if(simSupportHeaderFile.copy(fmuDir.path() + "/sim_support.h"))
-    {
-        printMessage("Copying sim_support.h");
-        printMessage("Copying " + simSupportHeaderFile.fileName() + " to " + fmuDir.path() + "/sim_support.h");
-    }
-
-    QFile stackHeaderFile;
-    stackHeaderFile.setFileName(fmiSrcPath+"stack.h");
-    if(stackHeaderFile.copy(fmuDir.path() + "/stack.h"))
-    {
-        printMessage("Copying stack.h");
-        printMessage("Copying " + stackHeaderFile.fileName() + " to " + fmuDir.path() + "/stack.h");
-    }
-
-    QFile xmlParserHeaderFile;
-    xmlParserHeaderFile.setFileName(fmiSrcPath+"xml_parser.cc");
-    if(xmlParserHeaderFile.copy(fmuDir.path() + "/xml_parser.cc"))
-    {
-        printMessage("Copying xml_parser.cc");
-        printMessage("Copying " + xmlParserHeaderFile.fileName() + " to " + fmuDir.path() + "/xml_parser.cc");
-    }
-
-    QFile expatFile;
-    expatFile.setFileName(fmiSrcPath+"expat.h");
-    if(expatFile.copy(fmuDir.path() + "/expat.h"))
-    {
-        printMessage("Copying expat.h");
-        printMessage("Copying " + expatFile.fileName() + " to " + fmuDir.path() + "/expat.h");
-    }
-
-    QFile expatExternalFile;
-    expatExternalFile.setFileName(fmiSrcPath+"expat_external.h");
-    if(expatExternalFile.copy(fmuDir.path() + "/expat_external.h"))
-    {
-        printMessage("Copying expat_external.h");
-        printMessage("Copying " + expatExternalFile.fileName() + " to " + fmuDir.path() + "/expat_external.h");
-    }
+    if(!copyFile(fmiSrcPath+"sim_support.c", fmuDir.path()+"/sim_support.c")) return;
+    if(!copyFile(fmiSrcPath+"stack.cc", fmuDir.path()+"/stack.cc")) return;
+    if(!copyFile(fmiSrcPath+"xml_parser.h", fmuDir.path()+"/xml_parser.h")) return;
+    if(!copyFile(fmiSrcPath+"sim_support.h", fmuDir.path()+"/sim_support.h")) return;
+    if(!copyFile(fmiSrcPath+"stack.h", fmuDir.path()+"/stack.h")) return;
+    if(!copyFile(fmiSrcPath+"xml_parser.cc", fmuDir.path()+"/xml_parser.cc")) return;
+    if(!copyFile(fmiSrcPath+"expat.h", fmuDir.path()+"/expat.h")) return;
+    if(!copyFile(fmiSrcPath+"expat_external.h", fmuDir.path()+"/expat_external.h")) return;
+    if(!copyFile(fmiSrcPath+"fmi_me.h", fmuDir.path()+"/fmi_me.h")) return;
+    if(!copyFile(fmiSrcPath+"fmiModelFunctions.h", fmuDir.path()+"/fmiModelFunctions.h")) return;
+    if(!copyFile(fmiSrcPath+"fmiModelTypes.h", fmuDir.path()+"/fmiModelTypes.h")) return;
 
 #ifdef WIN32
-    QFile libExpatAFile;
-    libExpatAFile.setFileName(fmiSrcPath+"libexpat.a");
-    if(libExpatAFile.copy(fmuDir.path() + "/libexpat.a"))
-    {
-        printMessage("Copying libexpat.a");
-        printMessage("Copying " + libExpatAFile.fileName() + " to " + fmuDir.path() + "/libexpat.a");
-    }
-
-    QFile libExpatDllFile;
-    libExpatDllFile.setFileName(fmiSrcPath+"libexpat.dll");
-    if(libExpatDllFile.copy(fmuDir.path() + "/libexpat.dll"))
-    {
-        printMessage("Copying libexpat.dll");
-        printMessage("Copying " + libExpatDllFile.fileName() + " to " + fmuDir.path() + "/libexpat.dll");
-    }
+    if(!copyFile(fmiSrcPath+"libexpat.a", fmuDir.path()+"/libexpat.a")) return;
+    if(!copyFile(fmiSrcPath+"libexpat.dll", fmuDir.path()+"/libexpat.dll")) return;
+    if(!copyFile(fmiSrcPath+"libexpatw.a", fmuDir.path()+"/libexpatw.a")) return;
+    if(!copyFile(fmiSrcPath+"libexpatw.dll", fmuDir.path()+"/libexpatw.dll")) return;
 #elif linux
-    QFile libExpatMTLibFile;
-    libExpatMTLibFile.setFileName(fmiSrcPath+"libexpatMT.lib");
-    if(libExpatMTLibFile.copy(fmuDir.path() + "/libexpatMT.lib"))
-    {
-        printMessage("Copying libexpatMT.lib");
-        printMessage("Copying " + libExpatMTLibFile.fileName() + " to " + fmuDir.path() + "/libexpatMT.lib");
-    }
+    if(!copyFile(fmiSrcPath+"libexpatMT.lib", fmuDir.path()+"/libexpatMT.lib")) return;
 #endif
 
-    QFile libExpatwAFile;
-    libExpatwAFile.setFileName(fmiSrcPath+"libexpatw.a");
-    if(libExpatwAFile.copy(fmuDir.path() + "/libexpatw.a"))
-    {
-        printMessage("Copying libexpatw.a");
-        printMessage("Copying " + libExpatwAFile.fileName() + " to " + fmuDir.path() + "/libexpatw.a");
-    }
-
-    QFile libExpatwDllFile;
-    libExpatwDllFile.setFileName(fmiSrcPath+"libexpatw.dll");
-    if(libExpatwDllFile.copy(fmuDir.path() + "/libexpatw.dll"))
-    {
-        printMessage("Copying libexpatw.dll");
-        printMessage("Copying " + libExpatwDllFile.fileName() + " to " + fmuDir.path() + "/libexpatw.dll");
-    }
-
-    QFile fmiMeFile;
-    fmiMeFile.setFileName(fmiSrcPath+"fmi_me.h");
-    if(fmiMeFile.copy(fmuDir.path() + "/fmi_me.h"))
-    {
-        printMessage("Copying fmi_me.h");
-        printMessage("Copying " + fmiMeFile.fileName() + " to " + fmuDir.path() + "/fmi_me.h");
-    }
-
-    QFile fmiModelFunctionsFile;
-    fmiModelFunctionsFile.setFileName(fmiSrcPath+"fmiModelFunctions.h");
-    if(fmiModelFunctionsFile.copy(fmuDir.path() + "/fmiModelFunctions.h"))
-    {
-        printMessage("Copying fmiModelFunctions.h");
-        printMessage("Copying " + fmiModelFunctionsFile.fileName() + " to " + fmuDir.path() + "/fmiModelFunctions.h");
-    }
-
-    QFile fmiModelTypesFile;
-    fmiModelTypesFile.setFileName(fmiSrcPath+"fmiModelTypes.h");
-    if(fmiModelTypesFile.copy(fmuDir.path() + "/fmiModelTypes.h"))
-    {
-        printMessage("Copying fmiModelTypes.h");
-        printMessage("Copying " + fmiModelTypesFile.fileName() + " to " + fmuDir.path() + "/fmiModelTypes.h");
-    }
 
 #ifdef WIN32
     if(!compileComponentLibrary(fmuDir.path(), "fmuLib", this, "-L./ -llibexpat"))
@@ -845,142 +736,42 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
     if(!compileComponentLibrary(fmuDir.path(), "fmuLib", this))
 #endif
     {
-        printMessage("Failed to import fmu.");
+        printErrorMessage("Failed to import fmu.");
         return;
     }
     else
     {
-        printMessage("Removing temporary files");
+        cleanUp(fmuPath, QStringList() << "sim_support.h" << "sim_support.c" << "stack.h" << "xml_parser.h" << "xml_parser.cc" << "expat.h" <<
+                "expat_external.h" << "fmi_me.h" << "fmiModelFunctions.h" << "fmiModelTypes.h" << "compile.bat" << "fmuLib.cc",
+                QStringList() << "component_code" << "binaries");
 
-        //Cleanup temporary files
-        fmuDir.remove("sim_support.h");
-        fmuDir.remove("sim_support.c");
-        fmuDir.remove("stack.h");
-        fmuDir.remove("stack.cc");
-        fmuDir.remove("xml_parser.h");
-        fmuDir.remove("xml_parser.cc");
-        fmuDir.remove("expat.h");
-        fmuDir.remove("expat_external.h");
-        fmuDir.remove("fmi_me.h");
-        fmuDir.remove("fmiModelFunctions.h");
-        fmuDir.remove("fmiModelTypes.h");
-        fmuDir.remove("compile.bat");
-        fmuComponentHppFile.remove();
-        fmuLibFile.remove();
-        fmuDir.rmdir("component_code");
-        QDir binDir;
-        binDir.setPath(fmuDir.path() + "/binaries");
-        binDir.rmdir("win32");
-        fmuDir.rmdir("binaries");
-        printMessage("Finished!");
+        printMessage("Finished.");
     }
 }
 
 
+//! @brief Generates an FMU for specified component system
+//! @param savePath Path where to export FMU
+//! @param pSystme Pointer to system to export
 void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem *pSystem)
 {
     printMessage("Initializing FMU export...");
 
-
     QDir saveDir;
     saveDir.setPath(savePath);
 
-    printMessage("Verifying that required files exist...");
-
-    //Make sure HopsanCore source files are available
-    QStringList srcFiles;
-    srcFiles << "../HopsanCore/src/Component.cc" <<
-                "../HopsanCore/src/ComponentSystem.cc" <<
-                "../HopsanCore/src/HopsanEssentials.cc" <<
-                "../HopsanCore/src/Node.cc" <<
-                "../HopsanCore/src/Nodes.cc" <<
-                "../HopsanCore/src/Parameters.cc" <<
-                "../HopsanCore/src/Port.cc" <<
-                "../HopsanCore/src/ComponentUtilities/AuxiliarySimulationFunctions.cc" <<
-                "../HopsanCore/src/ComponentUtilities/CSVParser.cc" <<
-                "../HopsanCore/src/ComponentUtilities/DoubleIntegratorWithDamping.cc" <<
-                "../HopsanCore/src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc" <<
-                "../HopsanCore/src/ComponentUtilities/EquationSystemSolver.cpp" <<
-                "../HopsanCore/src/ComponentUtilities/FirstOrderTransferFunction.cc" <<
-                "../HopsanCore/src/ComponentUtilities/Integrator.cc" <<
-                "../HopsanCore/src/ComponentUtilities/IntegratorLimited.cc" <<
-                "../HopsanCore/src/ComponentUtilities/ludcmp.cc" <<
-                "../HopsanCore/src/ComponentUtilities/matrix.cc" <<
-                "../HopsanCore/src/ComponentUtilities/SecondOrderTransferFunction.cc" <<
-                "../HopsanCore/src/ComponentUtilities/TurbulentFlowFunction.cc" <<
-                "../HopsanCore/src/ComponentUtilities/ValveHysteresis.cc" <<
-                "../HopsanCore/src/ComponentUtilities/WhiteGaussianNoise.cc" <<
-                "../HopsanCore/src/CoreUtilities/CoSimulationUtilities.cpp" <<
-                "../HopsanCore/src/CoreUtilities/GeneratorHandler.cpp" <<
-                "../HopsanCore/src/CoreUtilities/HmfLoader.cc" <<
-                "../HopsanCore/src/CoreUtilities/HopsanCoreMessageHandler.cc" <<
-                "../HopsanCore/src/CoreUtilities/LoadExternal.cc" <<
-                "../HopsanCore/src/CoreUtilities/MultiThreadingUtilities.cpp" <<
-                "../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.cc" <<
-                "../HopsanCore/Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp";
-    if(!assertFilesExist(mExecPath, srcFiles))
+    //Copy HopsanCore files to export directory
+    if(!this->copyIncludeFilesToDir(savePath))
         return;
-
-    //Make sure HopsanCore include files are available
-    QStringList includeFiles;
-    includeFiles << "../HopsanCore/include/Component.h" <<
-                "../HopsanCore/include/ComponentEssentials.h" <<
-                "../HopsanCore/include/ComponentSystem.h" <<
-                "../HopsanCore/include/HopsanCore.h" <<
-                "../HopsanCore/include/HopsanEssentials.h" <<
-                "../HopsanCore/include/Node.h" <<
-                "../HopsanCore/include/Nodes.h" <<
-                "../HopsanCore/include/Parameters.h" <<
-                "../HopsanCore/include/Port.h" <<
-                "../HopsanCore/include/svnrevnum.h" <<
-                "../HopsanCore/include/version.h" <<
-                "../HopsanCore/include/win32dll.h" <<
-                "../HopsanCore/include/Components/DummyComponent.hpp" <<
-                "../HopsanCore/include/ComponentUtilities/AuxiliaryMathematicaWrapperFunctions.h" <<
-                "../HopsanCore/include/ComponentUtilities/AuxiliarySimulationFunctions.h" <<
-                "../HopsanCore/include/ComponentUtilities/CSVParser.h" <<
-                "../HopsanCore/include/ComponentUtilities/Delay.hpp" <<
-                "../HopsanCore/include/ComponentUtilities/DoubleIntegratorWithDamping.h" <<
-                "../HopsanCore/include/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h" <<
-                "../HopsanCore/include/ComponentUtilities/EquationSystemSolver.h" <<
-                "../HopsanCore/include/ComponentUtilities/FirstOrderTransferFunction.h" <<
-                "../HopsanCore/include/ComponentUtilities/Integrator.h" <<
-                "../HopsanCore/include/ComponentUtilities/IntegratorLimited.h" <<
-                "../HopsanCore/include/ComponentUtilities/ludcmp.h" <<
-                "../HopsanCore/include/ComponentUtilities/matrix.h" <<
-                "../HopsanCore/include/ComponentUtilities/num2string.hpp" <<
-                "../HopsanCore/include/ComponentUtilities/SecondOrderTransferFunction.h" <<
-                "../HopsanCore/include/ComponentUtilities/TurbulentFlowFunction.h" <<
-                "../HopsanCore/include/ComponentUtilities/ValveHysteresis.h" <<
-                "../HopsanCore/include/ComponentUtilities/WhiteGaussianNoise.h" <<
-                "../HopsanCore/include/CoreUtilities/ClassFactory.hpp" <<
-                "../HopsanCore/include/CoreUtilities/ClassFactoryStatusCheck.hpp" <<
-                "../HopsanCore/include/CoreUtilities/CoSimulationUtilities.h" <<
-                "../HopsanCore/include/CoreUtilities/FindUniqueName.h" <<
-                "../HopsanCore/include/CoreUtilities/GeneratorHandler.h" <<
-                "../HopsanCore/include/CoreUtilities/HmfLoader.h" <<
-                "../HopsanCore/include/CoreUtilities/HopsanCoreMessageHandler.h" <<
-                "../HopsanCore/include/CoreUtilities/LoadExternal.h" <<
-                "../HopsanCore/include/CoreUtilities/MultiThreadingUtilities.h" <<
-                "../componentLibraries/defaultLibrary/code/Components.h" <<
-                "../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.h" <<
-                "../HopsanCore/Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp" <<
-                "../HopsanCore/Dependencies/rapidxml-1.13/hopsan_rapidxml.hpp" <<
-                "../HopsanCore/Dependencies/rapidxml-1.13/rapidxml.hpp" <<
-                "../HopsanCore/Dependencies/rapidxml-1.13/rapidxml_iterators.hpp" <<
-                "../HopsanCore/Dependencies/rapidxml-1.13/rapidxml_print.hpp" <<
-                "../HopsanCore/Dependencies/rapidxml-1.13/rapidxml_utils.hpp";
-    if(!assertFilesExist(mExecPath, includeFiles))
+    if(!this->copySourceFilesToDir(savePath))
         return;
-
-
-    //Tells if user selected the gcc compiler or not (= visual studio)
-    //bool gccCompiler = mpExportFmuGccRadioButton->isChecked();
+    if(!this->copyDefaultComponentCodeToDir(savePath))
+        return;
 
     //Write the FMU ID
-    int random = rand() % 1000;
+    int random = rand() % 1000000000;
     QString randomString = QString::number(random);
-    QString ID = "{8c4e810f-3df3-4a00-8276-176fa3c9f"+randomString+"}";  //!< @todo How is this ID defined?
+    QString ID = QUuid::createUuid().toString();
 
     //Collect information about input ports
     QStringList inputVariables;
@@ -1023,7 +814,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     QStringList parameterValues;
     std::vector<std::string> parameterNamesStd;
     pSystem->getParameterNames(parameterNamesStd);
-    for(int p=0; p<parameterNamesStd.size(); ++p)
+    for(size_t p=0; p<parameterNamesStd.size(); ++p)
     {
         parameterNames.append(QString(parameterNamesStd[p].c_str()));
     }
@@ -1249,7 +1040,6 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
 
 
     printMessage("Writing HopsanFMU.cpp...");
-    //! @todo Time step should not be hard coded
 
     QFile fmuSourceTemplateFile(":templates/fmuSourceTemplate.c");
     if(!fmuSourceTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -1273,13 +1063,6 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     fmuSourceFile.close();
 
     printMessage("Copying HopsanCore files...");
-
-
-    //Copy include files to export directory
-    copyIncludeFilesToDir2(savePath);
-    copySourceFilesToDir(savePath);
-    copyDefaultComponentCodeToDir(savePath);
-
 
     printMessage("Copying FMI files...");
 
@@ -1331,12 +1114,12 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     QString nameSpace = "HopsanFMU"+randomString;
     QStringList before = QStringList() << "using namespace hopsan;" << "namespace hopsan " << "\nhopsan::" << "::hopsan::" << " hopsan::" << "*hopsan::";
     QStringList after = QStringList() << "using namespace "+nameSpace+";" << "namespace "+nameSpace+" " << "\n"+nameSpace+"::" << "::"+nameSpace+"::" << " "+nameSpace+"::" << "*"+nameSpace+"::";
-    Q_FOREACH(const QString &file, srcFiles)
+    Q_FOREACH(const QString &file, getHopsanCoreSourceFiles())
     {
         if(!replaceInFile(savePath+"/HopsanCore/"+file, before, after))
             return;
     }
-    Q_FOREACH(const QString &file, includeFiles)
+    Q_FOREACH(const QString &file, getHopsanCoreIncludeFiles())
     {
         if(!replaceInFile(savePath+"/HopsanCore/"+file, before, after))
             return;
@@ -1425,23 +1208,141 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
 
     //! @todo Shall we activate cleanup function or not?
 
-    //printMessage("Cleaning up...");
-
     //Clean up temporary files
-//    saveDir.setPath(savePath);
-//    saveDir.remove("compile.bat");
-//    saveDir.remove("fmiModelFunctions.h");
-//    saveDir.remove("fmiModelTypes.h");
-//    saveDir.remove("fmuTemplate.c");
-//    saveDir.remove("fmuTemplate.h");
-//    saveDir.remove(modelName + ".c");
-//    saveDir.remove(modelName + ".exp");
-//    //saveDir.remove(modelName + ".lib");
-//    saveDir.remove(modelName + ".obj");
-//    saveDir.remove("HopsanFMU.exp");
-//    saveDir.remove("HopsanFMU.h");
-//    removeDir(savePath + "/include");
-//    removeDir(savePath + "/fmu");
+    cleanUp(savePath, QStringList() << "compile.bat" << modelName+".c" << modelName+".dll" << modelName+".so" << modelName+".o" <<
+            "fmiModelFunctions.h" << "fmiModelTypes.h" << "fmuTemplate.c" << "fmuTemplate.h" << "HopsanFMU.cpp" << "HopsanFMU.h" << "model.hpp" <<
+            "modelDescription.xml", QStringList() << "componentLibraries" << "fmu" << "HopsanCore");
 
     printMessage("Finished.");
+}
+
+
+
+
+bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringList &tlmPortTypes, QList<QStringList> &tlmPortVarNames,
+                                              QList<QStringList> &tlmPortValueRefs, QStringList &inVarValueRefs, QStringList &inVarPortNames,
+                                              QStringList &outVarValueRefs, QStringList &outVarPortNames)
+{
+    QFile tlmSpecFile;
+    tlmSpecFile.setFileName(fileName);
+    QDomDocument tlmDomDocument;
+    QDomElement tlmRoot;
+    if(tlmSpecFile.exists())
+    {
+        printMessage("Reading TLM specifications from "+tlmSpecFile.fileName()+"...");
+        tlmRoot = loadXMLDomDocument(tlmSpecFile, tlmDomDocument, "hopsanfmu");
+        tlmSpecFile.close();
+    }
+    else
+    {
+        printMessage("No TLM specification file found.");
+        return true;
+    }
+
+    if(tlmRoot == QDomElement())
+    {
+        printErrorMessage("Unable to parse TLM specification file.");
+        return true;        // Don't abort import, it could still work without the TLM stuff
+    }
+    else
+    {
+        QStringList input;
+
+        QDomElement portElement = tlmRoot.firstChildElement("tlmport");
+        while(!portElement.isNull())
+        {
+            input.clear();
+
+            QString type = portElement.attribute("type");
+            input.append(type);
+
+            QDomElement outputElement = portElement.firstChildElement("output");
+            while(!outputElement.isNull())
+            {
+                QString name = outputElement.text();
+                outputElement = outputElement.nextSiblingElement("output");
+                input.append(name);
+            }
+
+            QDomElement inputElement = portElement.firstChildElement("input");
+            while(!inputElement.isNull())
+            {
+                QString name = inputElement.text();
+                inputElement = inputElement.nextSiblingElement("input");
+                input.append(name);
+            }
+
+
+            if(input.first() == "hydraulic" && input.size() == 5)
+            {
+                if(outVarPortNames.contains(input[1]) && outVarPortNames.contains(input[2]) && inVarPortNames.contains(input[3]) && inVarPortNames.contains(input[4]))
+                {
+                    printMessage("Adding hydraulic port");
+
+                    tlmPortTypes.append(input[0]);
+                    input.removeFirst();
+                    tlmPortVarNames.append(input);
+
+                    tlmPortValueRefs.append(QStringList());
+                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[0])]);
+                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[1])]);
+                    tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(input[2])]);
+                    tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(input[3])]);
+
+                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[0]));
+                    outVarPortNames.removeAll(input[0]);
+
+                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[1]));
+                    outVarPortNames.removeAll(input[1]);
+
+                    inVarValueRefs.removeAt(inVarPortNames.indexOf(input[2]));
+                    inVarPortNames.removeAll(input[2]);
+
+                    inVarValueRefs.removeAt(inVarPortNames.indexOf(input[3]));
+                    inVarPortNames.removeAll(input[3]);
+                }
+            }
+            else if(input.first() == "mechanic" && input.size() == 7)
+            {
+                if(outVarPortNames.contains(input[1]) && outVarPortNames.contains(input[2]) && outVarPortNames.contains(input[3]) && outVarPortNames.contains(input[4]) && inVarPortNames.contains(input[5]) && inVarPortNames.contains(input[6]))
+                {
+                    printMessage("Adding mechanical port");
+
+                    tlmPortTypes.append(input[0]);
+                    input.removeFirst();
+                    tlmPortVarNames.append(input);
+
+                    tlmPortValueRefs.append(QStringList());
+                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[0])]);
+                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[1])]);
+                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[2])]);
+                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[3])]);
+                    tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(input[4])]);
+                    tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(input[5])]);
+
+                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[0]));
+                    outVarPortNames.removeAll(input[0]);
+
+                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[1]));
+                    outVarPortNames.removeAll(input[1]);
+
+                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[2]));
+                    outVarPortNames.removeAll(input[2]);
+
+                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[3]));
+                    outVarPortNames.removeAll(input[3]);
+
+                    inVarValueRefs.removeAt(inVarPortNames.indexOf(input[4]));
+                    inVarPortNames.removeAll(input[4]);
+
+                    inVarValueRefs.removeAt(inVarPortNames.indexOf(input[5]));
+                    inVarPortNames.removeAll(input[5]);
+                }
+            }
+
+            portElement = portElement.nextSiblingElement("tlmport");
+        }
+    }
+
+    return true;
 }

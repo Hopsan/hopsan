@@ -148,10 +148,6 @@ public:
 QDomElement loadXMLDomDocument(QFile &rFile, QDomDocument &rDomDocument, QString rootTagName);
 bool removeDir(QString path);
 void copyDir(const QString fromPath, QString toPath);
-void copyIncludeFilesToDir2(QString path);
-void copySourceFilesToDir(QString path);
-void copyDefaultComponentCodeToDir(QString path);
-void copyBoostIncludeFilesToDir(QString path);
 bool compileComponentLibrary(QString path, QString name, HopsanGenerator *pGenerator, QString extraLinks="");
 bool compile(QString path, QString o, QString c, QString i, QString l, QString flags, QString &output);
 QString toVarName(const QString org);
@@ -163,8 +159,9 @@ QStringList getQVariables(QString nodeType);
 QStringList getCVariables(QString nodeType);
 QStringList getVariableLabels(QString nodeType);
 bool verifyEquationSystem(QList<SymHop::Expression> equations, QList<SymHop::Expression> stateVars, HopsanGenerator *pGenerator);
-void copyHopsanCoreSourceFiles(QString targetPath);
 void findAllFilesInFolderAndSubFolders(QString path, QString ext, QStringList &files);
+QStringList getHopsanCoreSourceFiles();
+QStringList getHopsanCoreIncludeFiles();
 
 
 //! @brief This utility class wraps a QTextStream and have stream operators to write whole lines. You do not need to add the newline char yourself.

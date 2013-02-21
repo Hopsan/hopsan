@@ -607,7 +607,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, hopsan::Compo
 
     printMessage("Copying include files");
 
-    copyIncludeFilesToDir2(savePath);
+    this->copyIncludeFilesToDir(savePath);
 
     //! @todo should not overwrite this wile if it already exists
     QFile externalLibsFile;
@@ -1087,8 +1087,8 @@ void HopsanSimulinkGenerator::generateToSimulinkCoSim(QString savePath, hopsan::
 
     printMessage("Copying include files");
 
-    copyIncludeFilesToDir2(savePath);
-    copyBoostIncludeFilesToDir(savePath);
+    this->copyIncludeFilesToDir(savePath);
+    this->copyBoostIncludeFilesToDir(savePath);
 
     //! @todo should not overwrite this wile if it already exists
     QFile externalLibsFile;
