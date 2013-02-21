@@ -33,7 +33,6 @@
 #include "LogVariable.h"
 
 // Forward Declaration
-class MainWindow;
 class PlotTab;
 class PlotCurve;
 class PlotWindow;
@@ -59,7 +58,7 @@ class PlotWindow : public QMainWindow
     friend class PlotTab;
 
 public:
-    PlotWindow(const QString name, MainWindow *parent);
+    PlotWindow(const QString name, QWidget *parent);
     ~PlotWindow();
     void addPlotCurve(SharedLogVariableDataPtrT pData, int axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
     void addBarChart(QStandardItemModel *pItemModel);

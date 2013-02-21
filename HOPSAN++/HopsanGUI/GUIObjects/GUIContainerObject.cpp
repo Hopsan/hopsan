@@ -113,7 +113,7 @@ void ContainerObject::hasChanged()
 
 //! @brief Connects all SignalAndSlot connections to the mainwindow buttons from this container
 //! This is useful when we are swithching what continer we want to the buttons to trigger actions in
-void ContainerObject::connectMainWindowActions()
+void ContainerObject::makeMainWindowConnectionsAndRefresh()
 {
     connect(gpMainWindow->mpUndoAction, SIGNAL(triggered()), this, SLOT(undo()), Qt::UniqueConnection);
     connect(gpMainWindow->mpRedoAction, SIGNAL(triggered()), this, SLOT(redo()), Qt::UniqueConnection);
@@ -141,16 +141,21 @@ void ContainerObject::connectMainWindowActions()
     gpMainWindow->mpToggleNamesAction->setChecked(!mSubComponentNamesHidden);
     gpMainWindow->mpToggleSignalsAction->setChecked(!mSignalsHidden);
 
-    // Update Systemparameter widget to new contents
-    gpMainWindow->mpSystemParametersWidget->update(this); //!< @todo this is not really a main window action, need to rename function or make an other function, this has to be run every time we enter a new container (even if we switch tab, enterContainer is not run then)
+    // Update main window widgets with data from this container
+    gpMainWindow->mpPlotWidget->mpPlotVariableTree->setLogDataHandler(this->getLogDataHandler());
+    gpMainWindow->mpSystemParametersWidget->update(this);
+    gpMainWindow->mpUndoWidget->refreshList();
+    gpMainWindow->mpUndoAction->setDisabled(this->mUndoDisabled);
+    gpMainWindow->mpRedoAction->setDisabled(this->mUndoDisabled);
 }
 
 //! @brief Disconnects all SignalAndSlot connections to the mainwindow buttons from this container
 //! This is useful when we are swithching what continer we want to the buttons to trigger actions in
-void ContainerObject::disconnectMainWindowActions()
+void ContainerObject::unmakeMainWindowConnectionsAndRefresh()
 {
     // Update Systemparameter widget tohave no contents
-    gpMainWindow->mpSystemParametersWidget->update(0); //!< @todo this is not really a main window action, need to rename function or make an other function, this has to be run every time we enter a new container (even if we switch tab, exitContainer is not run then)
+    gpMainWindow->mpSystemParametersWidget->update(0);
+    gpMainWindow->mpPlotWidget->mpPlotVariableTree->setLogDataHandler(0);
 
     disconnect(gpMainWindow->mpUndoAction, SIGNAL(triggered()), this, SLOT(undo()));
     disconnect(gpMainWindow->mpRedoAction, SIGNAL(triggered()), this, SLOT(redo()));
@@ -2528,19 +2533,12 @@ void ContainerObject::enterContainer()
     mpParentProjectTab->getQuickNavigationWidget()->addOpenContainer(this);
 
     // Disconnect parent system and connect new system with actions
-    mpParentContainerObject->disconnectMainWindowActions();
-    this->connectMainWindowActions();
+    mpParentContainerObject->unmakeMainWindowConnectionsAndRefresh();
+    this->makeMainWindowConnectionsAndRefresh();
 
-    //Update plot widget and undo widget to new container
-    gpMainWindow->mpPlotWidget->mpPlotVariableTree->updateList();
-    gpMainWindow->mpSystemParametersWidget->update();
-    gpMainWindow->mpUndoWidget->refreshList();
-    gpMainWindow->mpUndoAction->setDisabled(this->mUndoDisabled);
-    gpMainWindow->mpRedoAction->setDisabled(this->mUndoDisabled);
+
 
     refreshInternalContainerPortGraphics();
-
-    mpLogDataHandler->collectPlotDataFromModel();
 
     mpParentProjectTab->setExternalSystem((this->isExternal() &&
                                            this != mpParentProjectTab->getTopLevelSystem()) ||
@@ -2561,21 +2559,12 @@ void ContainerObject::exitContainer()
                                            mpParentContainerObject->isAncestorOfExternalSubsystem());
 
     // Disconnect this system and connect parent system with undo and redo actions
-    this->disconnectMainWindowActions();
-    mpParentContainerObject->connectMainWindowActions();
-
-    // Update plot widget and undo widget to new container
-    gpMainWindow->mpPlotWidget->mpPlotVariableTree->updateList();
-    gpMainWindow->mpSystemParametersWidget->update();
-    gpMainWindow->mpUndoWidget->refreshList();
-    gpMainWindow->mpUndoAction->setDisabled(!mpParentContainerObject->isUndoEnabled());
-    gpMainWindow->mpRedoAction->setDisabled(!mpParentContainerObject->isUndoEnabled());
+    this->unmakeMainWindowConnectionsAndRefresh();
+    mpParentContainerObject->makeMainWindowConnectionsAndRefresh();
 
     // Refresh external port appearance
     //! @todo We only need to do this if ports have change, right now we always refresh, dont know if this is a big deal
     this->refreshExternalPortsAppearanceAndPosition();
-
-    mpParentContainerObject->collectPlotData();
 }
 
 
@@ -2627,6 +2616,16 @@ void ContainerObject::flipSubObjectsVertical()
 void ContainerObject::collectPlotData()
 {
     mpLogDataHandler->collectPlotDataFromModel();
+
+    // Now collect plotdata from all subsystems
+    ModelObjectMapT::iterator it;
+    for (it=mModelObjectMap.begin(); it!=mModelObjectMap.end(); ++it)
+    {
+        if (it.value()->type() == SYSTEMCONTAINER)
+        {
+            static_cast<ContainerObject*>(it.value())->collectPlotData();
+        }
+    }
 }
 
 

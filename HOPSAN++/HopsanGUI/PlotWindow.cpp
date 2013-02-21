@@ -125,7 +125,7 @@ PlotTabWidget::PlotTabWidget(PlotWindow *pParentPlotWindow)
 //! @brief Constructor for the plot window, where plots are displayed.
 //! @param plotVariableTree is a pointer to the variable tree from where the plot window was created
 //! @param parent is a pointer to the main window
-PlotWindow::PlotWindow(const QString name, MainWindow *parent)
+PlotWindow::PlotWindow(const QString name, QWidget *parent)
     : QMainWindow(parent)
 {
     // Set name of Window
@@ -314,12 +314,12 @@ PlotWindow::PlotWindow(const QString name, MainWindow *parent)
     connect(mpHelpPopupTimer, SIGNAL(timeout()), mpHelpPopup, SLOT(hide()));
 
     // Setup PlotVariable List stuff
-    PlotTreeWidget *pLocalPlotWidget = new PlotTreeWidget(gpMainWindow);
+    PlotTreeWidget *pLocalPlotWidget = new PlotTreeWidget(this);
     QDockWidget *pLocalPlotWidgetDock = new QDockWidget(tr("Plot Variables"), this);
     pLocalPlotWidgetDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     addDockWidget(Qt::RightDockWidgetArea, pLocalPlotWidgetDock);
     pLocalPlotWidgetDock->setWidget(pLocalPlotWidget);
-    pLocalPlotWidget->mpPlotVariableTree->updateList();
+    pLocalPlotWidget->mpPlotVariableTree->setLogDataHandler(gpMainWindow->mpPlotWidget->mpPlotVariableTree->getLogDataHandler()); //!< @todo not necessarily same as the plot data will come from if plot by script
 
     pLocalPlotWidgetDock->toggleViewAction()->setToolTip("Toggle Variable List");
     pLocalPlotWidgetDock->toggleViewAction()->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowPlotWindowVariableList.png"));

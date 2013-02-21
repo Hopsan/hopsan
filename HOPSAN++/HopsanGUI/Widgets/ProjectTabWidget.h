@@ -54,8 +54,6 @@ public:
     ContainerObject *getCurrentContainer();
     SystemContainer *getSystem(int index);
 
-    //Public member variables
-
 public slots:
     void addProjectTab(ProjectTab *projectTab, QString tabName="Untitled");
     void addNewProjectTab(QString tabName="Untitled");
@@ -74,14 +72,14 @@ public slots:
     void measureSimulationTime();
     bool simulateAllOpenModels_nonblocking(bool modelsHaveNotChanged=false);
     bool simulateAllOpenModels_blocking(bool modelsHaveNotChanged=false);
-    bool simulateAllOpenModels_old(bool modelsHaveNotChanged=false);
+    //bool simulateAllOpenModels_old(bool modelsHaveNotChanged=false); //!< @deprecated
     void setCurrentTopLevelSimulationTimeParameters(const QString startTime, const QString timeStep, const QString stopTime);
     void openAnimation();
 
 signals:
     void checkMessages();
     void newTabAdded();
-    void simulationFinished();
+    //void simulationFinished(); //!< @deprecated
 
 private:
     void setToolBarSimulationTimeParametersFromSystem(SystemContainer *pSystem);
@@ -144,7 +142,7 @@ private:
     SimulationThreadHandler *mpSimulationThreadHandler;
 
     bool mIsSaved;
-    SystemContainer *mpSystem;
+    SystemContainer *mpToplevelSystem;
     QuickNavigationWidget *mpQuickNavigationWidget;
     QWidget *mpExternalSystemWidget;
     int mLastSimulationTime;

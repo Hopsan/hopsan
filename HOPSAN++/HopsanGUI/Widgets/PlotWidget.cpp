@@ -123,30 +123,36 @@ QString PlotVariableTreeItem::getAliasName()
 
 //! @brief Constructor for the variable tree widget
 //! @param parent Pointer to the main window
-PlotVariableTree::PlotVariableTree(MainWindow *parent)
-        : QTreeWidget(parent)
+PlotVariableTree::PlotVariableTree(QWidget *pParent)
+        : QTreeWidget(pParent)
 {
-    if(gpMainWindow->mpProjectTabs->count() > 0)
-    {
-        mpCurrentContainer = gpMainWindow->mpProjectTabs->getCurrentContainer();
-        //gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().clear();
-        //connect(gpMainWindow->mpProjectTabs->getCurrentContainer(), SIGNAL(componentChanged()), this, SLOT(updateList()));
-        //connect(gpMainWindow->mpProjectTabs->getCurrentTab(), SIGNAL(simulationFinished()), this, SLOT(updateList()));
-        //connect(gpMainWindow->mpProjectTabs, SIGNAL(simulationFinished()), this, SLOT(updateList())); //!< @todo remove this when newDataAvailable signal is working
-        connect(mpCurrentContainer->getLogDataHandler(), SIGNAL(newDataAvailable()), this, SLOT(updateList()));
-    }
+    mpLogDataHandler = 0;
 
     this->setDragEnabled(true);
     this->setAcceptDrops(false);
-    this->updateList();
     this->setHeaderHidden(true);
     this->setColumnCount(1);
     this->setMouseTracking(true);
 
-    connect(gpMainWindow->mpProjectTabs, SIGNAL(currentChanged(int)), this, SLOT(updateList()));
-    connect(gpMainWindow->mpProjectTabs, SIGNAL(tabCloseRequested(int)), this, SLOT(updateList()));
-    connect(gpMainWindow->mpProjectTabs, SIGNAL(newTabAdded()), this, SLOT(updateList()));
-    connect(this,SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),this,SLOT(createPlotWindow(QTreeWidgetItem*)));
+    connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(createPlotWindow(QTreeWidgetItem*)));
+    this->updateList();
+}
+
+void PlotVariableTree::setLogDataHandler(QPointer<LogDataHandler> pLogDataHandler)
+{
+    if (mpLogDataHandler)
+    {
+        disconnect(mpLogDataHandler, 0, this, 0);
+    }
+
+    mpLogDataHandler = pLogDataHandler;
+    connect(mpLogDataHandler, SIGNAL(newDataAvailable()), this, SLOT(updateList()));
+    updateList();
+}
+
+LogDataHandler *PlotVariableTree::getLogDataHandler()
+{
+    return mpLogDataHandler;
 }
 
 
@@ -156,12 +162,12 @@ void PlotVariableTree::updateList()
     mAvailableVariables.clear();
     this->clear();
 
-    if(gpMainWindow->mpProjectTabs->count() == 0)     //Check so that at least one project tab exists
+    if(mpLogDataHandler == 0)     //Check so that we have something to represent
     {
         return;
     }
 
-    mpCurrentContainer = gpMainWindow->mpProjectTabs->getCurrentContainer();
+    //mpCurrentContainer = gpMainWindow->mpProjectTabs->getCurrentContainer();
     QTreeWidgetItem *pComponentLevelItem;             //Tree item for components
     QTreeWidgetItem *pAliasLevelItem=0;               //Tree item for aliases
     PlotVariableTreeItem *plotVariableLevelItem;      //Tree item for variables - reimplemented so they can store information about the variable
@@ -169,7 +175,7 @@ void PlotVariableTree::updateList()
     QStringList aliasLevelItemList;
     QMap<QString, QTreeWidgetItem*> componentLevelItemMap;
     QMap<QString, QTreeWidgetItem*>::iterator cilIt;
-    QVector<SharedLogVariableDataPtrT> variables = mpCurrentContainer->getLogDataHandler()->getAllVariablesAtNewestGeneration();
+    QVector<SharedLogVariableDataPtrT> variables = mpLogDataHandler->getAllVariablesAtNewestGeneration();
     for(int i=0; i<variables.size(); ++i)
     {
         cilIt = componentLevelItemMap.find(variables[i]->getComponentName());
@@ -279,7 +285,7 @@ void PlotVariableTree::updateList()
 //    }
 
         //Append favorite plot variables to tree if they still exist
-    for(int i=0; i<mpCurrentContainer->getLogDataHandler()->getFavoriteVariableList().size(); ++i)
+    for(int i=0; i<mpLogDataHandler->getFavoriteVariableList().size(); ++i)
     {
 //        QString componentName = mpCurrentContainer->getPlotDataPtr()->getFavoriteVariableList().at(i).componentName;
 //        QString portName = mpCurrentContainer->getPlotDataPtr()->getFavoriteVariableList().at(i).portName;
@@ -298,9 +304,9 @@ void PlotVariableTree::updateList()
     }
 
     // Remove no longer existing favorite variables
-    for(int i=0; i<mpCurrentContainer->getLogDataHandler()->getFavoriteVariableList().size(); ++i)
+    for(int i=0; i<mpLogDataHandler->getFavoriteVariableList().size(); ++i)
     {
-        if(!mAvailableVariables.contains(mpCurrentContainer->getLogDataHandler()->getFavoriteVariableList().at(i)))
+        if(!mAvailableVariables.contains(mpLogDataHandler->getFavoriteVariableList().at(i)))
         {
            // gpMainWindow->mpProjectTabs->getCurrentContainer()->getPlotDataPtr()->getFavoriteVariableList().removeAll(gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getPlotDataPtr()->getFavoriteVariableList().at(i));
         }
@@ -311,10 +317,10 @@ void PlotVariableTree::updateList()
 
     // This connection makes sure that the plot list is connected to the new tab, so that it will update if the new tab is simulated.
     // It must first be disconnected in case it was already connected, to avoid duplication of connection.
-    disconnect(gpMainWindow->mpProjectTabs->getCurrentTab(),    SIGNAL(simulationFinished()), this, SLOT(updateList()));
-    disconnect(gpMainWindow->mpProjectTabs,                     SIGNAL(simulationFinished()), this, SLOT(updateList()));
-    connect(gpMainWindow->mpProjectTabs->getCurrentTab(),       SIGNAL(simulationFinished()), this, SLOT(updateList()));
-    connect(gpMainWindow->mpProjectTabs,                        SIGNAL(simulationFinished()), this, SLOT(updateList()));
+//    disconnect(gpMainWindow->mpProjectTabs->getCurrentTab(),    SIGNAL(simulationFinished()), this, SLOT(updateList()));
+//    disconnect(gpMainWindow->mpProjectTabs,                     SIGNAL(simulationFinished()), this, SLOT(updateList()));
+//    connect(gpMainWindow->mpProjectTabs->getCurrentTab(),       SIGNAL(simulationFinished()), this, SLOT(updateList()));
+//    connect(gpMainWindow->mpProjectTabs,                        SIGNAL(simulationFinished()), this, SLOT(updateList()));
 }
 
 
@@ -419,13 +425,13 @@ void PlotVariableTree::contextMenuEvent(QContextMenuEvent */*event*/)
 
         if(selectedAction == pRemoveAliasAction)
         {
-           mpCurrentContainer->getLogDataHandler()->undefinePlotAlias(pItem->getAliasName());
+           mpLogDataHandler->undefinePlotAlias(pItem->getAliasName());
            this->updateList();
         }
 
         if(selectedAction == pDefineAliasAction)
         {
-            mpCurrentContainer->getLogDataHandler()->definePlotAlias(pItem->getFullName());
+            mpLogDataHandler->definePlotAlias(pItem->getFullName());
             this->updateList();
         }
 
@@ -447,10 +453,10 @@ void PlotVariableTree::contextMenuEvent(QContextMenuEvent */*event*/)
 
 //! @brief Constructor the main plot widget, which contains the tree with variables
 //! @param parent Pointer to the main window
-PlotTreeWidget::PlotTreeWidget(MainWindow *parent)
-        : QWidget(parent)
+PlotTreeWidget::PlotTreeWidget(QWidget *pParent)
+        : QWidget(pParent)
 {
-    mpPlotVariableTree = new PlotVariableTree(gpMainWindow);
+    mpPlotVariableTree = new PlotVariableTree(this);
 
     this->setMouseTracking(true);
 

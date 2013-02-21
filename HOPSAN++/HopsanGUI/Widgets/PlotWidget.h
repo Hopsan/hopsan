@@ -32,11 +32,8 @@
 
 #include "LogDataHandler.h"
 
-class MainWindow;
-class ContainerObject;
 class PlotWindow;
 class PlotTreeWidget;
-
 
 class PlotVariableTreeItem : public QTreeWidgetItem
 {
@@ -60,8 +57,9 @@ class PlotVariableTree : public QTreeWidget
     Q_OBJECT
     friend class PlotTreeWidget;
 public:
-    PlotVariableTree(MainWindow *parent = 0);
-    ContainerObject *mpCurrentContainer;
+    PlotVariableTree(QWidget *pParent=0);
+    void setLogDataHandler(QPointer<LogDataHandler> pLogDataHandler);
+    LogDataHandler *getLogDataHandler();
 
 public slots:
     void updateList();
@@ -78,6 +76,7 @@ protected:
 
 private:
     QList<VariableDescription> mAvailableVariables;
+    QPointer<LogDataHandler> mpLogDataHandler;
 };
 
 
@@ -85,7 +84,7 @@ class PlotTreeWidget : public QWidget
 {
     Q_OBJECT
 public:
-    PlotTreeWidget(MainWindow *parent = 0);
+    PlotTreeWidget(QWidget *pParent=0);
     PlotVariableTree *mpPlotVariableTree;
 
 public slots:
