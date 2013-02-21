@@ -332,8 +332,11 @@ void SystemParametersWidget::update(ContainerObject *pNewContainer)
 {
     if (mpContainerObject != pNewContainer)
     {
-        // Disconnect all signals from old caontiner
-        disconnect(mpContainerObject, 0, this, 0);
+        // Disconnect all signals from old container
+        if (mpContainerObject)
+        {
+            disconnect(mpContainerObject, 0, this, 0);
+        }
 
         // Assign new and Connect new signals
         mpContainerObject = pNewContainer;

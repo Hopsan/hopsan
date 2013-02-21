@@ -166,7 +166,7 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
         //Save undo checkbox
     mpSaveUndoCheckBox = new QCheckBox(tr("Save Undo Function In Model File"), this);
     mpSaveUndoCheckBox->setCheckable(true);
-    mpSaveUndoCheckBox->setChecked(!mpContainerObject->getSaveUndo());
+    mpSaveUndoCheckBox->setChecked(mpContainerObject->getSaveUndo());
 
         //Startup python script file
     mpPyScriptLabel = new QLabel("Script File:", this);

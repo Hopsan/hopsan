@@ -1,7 +1,6 @@
 #ifndef MECHANICTHETASOURCE_HPP_INCLUDED
 #define MECHANICTHETASOURCE_HPP_INCLUDED
 
-#include <iostream>
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
 #include <math.h>
@@ -58,16 +57,13 @@ private:
 public:
      static Component *Creator()
      {
-        std::cout << "running MechanicThetaSource creator" << std::endl;
         return new MechanicThetaSource();
      }
 
-     MechanicThetaSource(const double win = 0.
-                             )
-        : ComponentQ()
+     void configure()
      {
         mNstep=9;
-        mwin = win;
+        mwin = 0;
 
         //Add ports to the component
         mpPmr1=addPowerPort("Pmr1","NodeMechanicRotational");

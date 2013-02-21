@@ -2306,7 +2306,7 @@ bool ContainerObject::isUndoEnabled()
 //! @brief Tells whether or not the save undo option is active
 bool ContainerObject::getSaveUndo()
 {
-    return !mSaveUndoStack;
+    return mSaveUndoStack;
 }
 
 
