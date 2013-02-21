@@ -19,6 +19,7 @@ void initializeHopsanWrapper(char* filename)
 
     assert(spCoreComponentSystem);
     spCoreComponentSystem->setDesiredTimestep(0.001);
+    spCoreComponentSystem->disableLog();
     spCoreComponentSystem->initialize(0,10);
 
     fmu_time = 0;
@@ -30,6 +31,7 @@ void initializeHopsanWrapperFromBuiltInModel()
 
     assert(spCoreComponentSystem);
     spCoreComponentSystem->setDesiredTimestep(0.001);
+    spCoreComponentSystem->disableLog();
     spCoreComponentSystem->initialize(0,10);
 
     fmu_time = 0;
@@ -37,16 +39,9 @@ void initializeHopsanWrapperFromBuiltInModel()
 
 void simulateOneStep()
 {
-    if(spCoreComponentSystem->checkModelBeforeSimulation())
-    {
-        double timestep = getTimeStep();
-        spCoreComponentSystem->simulate(fmu_time, fmu_time+timestep);
-        fmu_time = fmu_time+timestep;
-    }
-    else
-    {
-        std::cout << "Simulation failed!";
-    }
+    double timestep = getTimeStep();
+    spCoreComponentSystem->simulate(fmu_time, fmu_time+timestep);
+    fmu_time = fmu_time+timestep;
 }
 
 double getTimeStep()
@@ -61,13 +56,12 @@ double getFmuTime()
 
 double getVariable(char* component, char* port, size_t idx)
 {
-    return spCoreComponentSystem->getSubComponentOrThisIfSysPort(component)->getPort(port)->readNode(idx);
+    return spCoreComponentSystem->getSubComponent(component)->getPort(port)->readNode(idx);
 }
 
 void setVariable(char* component, char* port, size_t idx, double value)
 {
-    assert(spCoreComponentSystem->getSubComponentOrThisIfSysPort(component)->getPort(port) != 0);
-    return spCoreComponentSystem->getSubComponentOrThisIfSysPort(component)->getPort(port)->writeNode(idx, value);
+    return spCoreComponentSystem->getSubComponent(component)->getPort(port)->writeNode(idx, value);
 }
 
 void setParameter(char* name, double value)
@@ -75,4 +69,5 @@ void setParameter(char* name, double value)
     std::stringstream ss;
     ss << value;
     spCoreComponentSystem->setSystemParameter(name, ss.str(), "double");
+    spCoreComponentSystem->initialize(0,10);
 }

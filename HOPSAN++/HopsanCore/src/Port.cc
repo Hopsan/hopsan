@@ -132,7 +132,7 @@ void Port::loadStartValuesFromSimulation()
 //! @brief Reads a value from the connected node
 //! @param [in] idx The data id of the data to read
 //! @return The data value
-double Port::readNode(const size_t idx, const size_t /*portIdx*/)
+double Port::readNodeSafe(const size_t idx, const size_t /*portIdx*/)
 {
     //! @note This if-statement will slow simulation down, but if optimization is desired readNode and writeNode shall not be used anyway.
     if(!isConnected())
@@ -153,7 +153,7 @@ double Port::readNode(const size_t idx, const size_t /*portIdx*/)
 //! @brief Writes a value to the connected node
 //! @param [in] idx The data id of the data to write
 //! @param [in] value The value of the data to read
-void Port::writeNode(const size_t &idx, const double &value, const size_t /*portIdx*/)
+void Port::writeNodeSafe(const size_t &idx, const double &value, const size_t /*portIdx*/)
 {
     //! @note This if-statement will slow simulation down, but if optimization is desired readNode and writeNode shall not be used anyway.
     if(isConnected())
@@ -162,7 +162,26 @@ void Port::writeNode(const size_t &idx, const double &value, const size_t /*port
     }
 }
 
-double *Port::getNodeDataPtr(const size_t idx, const size_t /*portIdx*/)
+
+//! @brief Reads a value from the connected node
+//! @param [in] idx The data id of the data to read
+//! @return The data value
+double Port::readNode(const size_t idx, const size_t /*portIdx*/) const
+{
+    return mpNode->mDataValues[idx];
+}
+
+
+//! @brief Writes a value to the connected node
+//! @param [in] idx The data id of the data to write
+//! @param [in] value The value of the data to read
+void Port::writeNode(const size_t &idx, const double &value, const size_t /*portIdx*/) const
+{
+    mpNode->mDataValues[idx] = value;
+}
+
+
+double *Port::getNodeDataPtr(const size_t idx, const size_t /*portIdx*/) const
 {
     return mpNode->getDataPtr(idx);
 }
@@ -701,7 +720,13 @@ ReadPort::ReadPort(std::string node_type, std::string portname, Component *portO
 }
 
 
-void ReadPort::writeNode(const size_t /*idx*/, const double /*value*/)
+void ReadPort::writeNodeSafe(const size_t /*idx*/, const double /*value*/)
+{
+    assert("Could not write to port, this is a ReadPort" == 0);
+}
+
+
+void ReadPort::writeNode(const size_t /*idx*/, const double /*value*/) const
 {
     assert("Could not write to port, this is a ReadPort" == 0);
 }
@@ -714,7 +739,13 @@ WritePort::WritePort(std::string node_type, std::string portname, Component *por
 }
 
 
-double WritePort::readNode(const size_t /*idx*/)
+double WritePort::readNodeSafe(const size_t /*idx*/)
+{
+    assert("Could not read from port, this is a WritePort" == 0);
+    return 0;
+}
+
+double WritePort::readNode(const size_t /*idx*/) const
 {
     assert("Could not read from port, this is a WritePort" == 0);
     return 0;
@@ -736,13 +767,26 @@ MultiPort::~MultiPort()
     //assert(mSubPortsVector.size() == 0); //should be removed by other code, use this assert to check if that is working
 }
 
-double MultiPort::readNode(const size_t idx, const size_t portIdx)
+
+double MultiPort::readNodeSafe(const size_t idx, const size_t portIdx)
+{
+    //! @todo handle portIdx ot of range
+    return mSubPortsVector[portIdx]->readNodeSafe(idx);
+}
+
+void MultiPort::writeNodeSafe(const size_t &idx, const double &value, const size_t portIdx)
+{
+    return mSubPortsVector[portIdx]->writeNode(idx,value);
+}
+
+
+double MultiPort::readNode(const size_t idx, const size_t portIdx) const
 {
     //! @todo handle portIdx ot of range
     return mSubPortsVector[portIdx]->readNode(idx);
 }
 
-void MultiPort::writeNode(const size_t &idx, const double &value, const size_t portIdx)
+void MultiPort::writeNode(const size_t &idx, const double &value, const size_t portIdx) const
 {
     return mSubPortsVector[portIdx]->writeNode(idx,value);
 }

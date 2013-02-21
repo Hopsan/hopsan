@@ -57,10 +57,13 @@ namespace hopsan {
         Port(const std::string nodeType, const std::string portName, Component *pPortOwner, Port *pParentPort=0);
         virtual ~Port();
 
-        virtual double readNode(const size_t idx, const size_t portIdx=0);
-        virtual void writeNode(const size_t &idx, const double &value, const size_t portIdx=0);
+        virtual inline double readNode(const size_t idx, const size_t portIdx=0) const;
+        virtual inline void writeNode(const size_t &idx, const double &value, const size_t portIdx=0) const;
 
-        virtual double *getNodeDataPtr(const size_t idx, const size_t portIdx=0);
+        virtual double readNodeSafe(const size_t idx, const size_t portIdx=0);
+        virtual void writeNodeSafe(const size_t &idx, const double &value, const size_t portIdx=0);
+
+        virtual double *getNodeDataPtr(const size_t idx, const size_t portIdx=0) const;
         virtual double *getSafeNodeDataPtr(const size_t idx, const double defaultValue, const size_t portIdx=0);
         virtual std::vector<double> *getDataVectorPtr(const size_t portIdx=0);
 
@@ -168,8 +171,10 @@ namespace hopsan {
         ~MultiPort();
 
         //Overloaded virtual functions
-        double readNode(const size_t idx, const size_t portIdx);
-        void writeNode(const size_t &idx, const double &value, const size_t portIdx);
+        double readNodeSafe(const size_t idx, const size_t portIdx);
+        void writeNodeSafe(const size_t &idx, const double &value, const size_t portIdx);
+        inline double readNode(const size_t idx, const size_t portIdx) const;
+        inline void writeNode(const size_t &idx, const double &value, const size_t portIdx) const;
 
         double *getNodeDataPtr(const size_t idx, const size_t portIdx);
         double *getSafeNodeDataPtr(const size_t idx, const double defaultValue, const size_t portIdx);
@@ -232,7 +237,8 @@ namespace hopsan {
     public:
         //Constructor
         ReadPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort=0);
-        void writeNode(const size_t idx, const double value);
+        void writeNodeSafe(const size_t idx, const double value);
+        inline void writeNode(const size_t idx, const double value) const;
     };
 
     class PowerMultiPort :public MultiPort
@@ -276,7 +282,8 @@ namespace hopsan {
         //Constructor
         WritePort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort=0);
 
-        double readNode(const size_t idx);
+        double readNodeSafe(const size_t idx);
+        inline double readNode(const size_t idx) const;
     };
 
     Port* createPort(const PortTypesEnumT portType, const NodeTypeT nodeType, const std::string name, Component *pPortOwner, Port *pParentPort=0);

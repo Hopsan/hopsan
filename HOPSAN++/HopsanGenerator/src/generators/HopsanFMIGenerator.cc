@@ -741,9 +741,9 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
     }
     else
     {
-        cleanUp(fmuPath, QStringList() << "sim_support.h" << "sim_support.c" << "stack.h" << "xml_parser.h" << "xml_parser.cc" << "expat.h" <<
-                "expat_external.h" << "fmi_me.h" << "fmiModelFunctions.h" << "fmiModelTypes.h" << "compile.bat" << "fmuLib.cc",
-                QStringList() << "component_code" << "binaries");
+        //cleanUp(fmuPath, QStringList() << "sim_support.h" << "sim_support.c" << "stack.h" << "xml_parser.h" << "xml_parser.cc" << "expat.h" <<
+        //        "expat_external.h" << "fmi_me.h" << "fmiModelFunctions.h" << "fmiModelTypes.h" << "compile.bat" << "fmuLib.cc",
+        //        QStringList() << "component_code" << "binaries");
 
         printMessage("Finished.");
     }
@@ -1206,12 +1206,10 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     if(!assertFilesExist(savePath, QStringList() << modelName+".fmu"))
         return;
 
-    //! @todo Shall we activate cleanup function or not?
-
     //Clean up temporary files
-    cleanUp(savePath, QStringList() << "compile.bat" << modelName+".c" << modelName+".dll" << modelName+".so" << modelName+".o" <<
-            "fmiModelFunctions.h" << "fmiModelTypes.h" << "fmuTemplate.c" << "fmuTemplate.h" << "HopsanFMU.cpp" << "HopsanFMU.h" << "model.hpp" <<
-            "modelDescription.xml", QStringList() << "componentLibraries" << "fmu" << "HopsanCore");
+    //cleanUp(savePath, QStringList() << "compile.bat" << modelName+".c" << modelName+".dll" << modelName+".so" << modelName+".o" << modelName+".hmf" <<
+    //        "fmiModelFunctions.h" << "fmiModelTypes.h" << "fmuTemplate.c" << "fmuTemplate.h" << "HopsanFMU.cpp" << "HopsanFMU.h" << "model.hpp" <<
+    //        "modelDescription.xml", QStringList() << "componentLibraries" << "fmu" << "HopsanCore");
 
     printMessage("Finished.");
 }
