@@ -49,6 +49,45 @@ std::string stripFilenameFromPath(std::string filePath)
     return filePath;
 }
 
+//! @brief Splits a full name into comp port and variable names
+//! @todo this should be in a more "global" place since it may be usefull elsewhere
+void splitFullName(const std::string &rFullName, std::string &rCompName, std::string &rPortName, std::string &rVarName)
+{
+    vector<string> parts;
+    parts.reserve(3);
+
+    size_t start=0, end=0;
+    while (end != string::npos)
+    {
+        end = rFullName.find_first_of('#', start);
+        parts.push_back(rFullName.substr(start, end-start));
+        start = end+1;
+        if (end == string::npos)
+        {
+            break;
+        }
+    }
+
+    if (parts.size() == 1)
+    {
+        rCompName.clear();
+        rPortName.clear();
+        rVarName = parts[0];
+    }
+    else if (parts.size() == 3)
+    {
+        rCompName = parts[0];
+        rPortName = parts[1];
+        rVarName = parts[2];
+    }
+    else
+    {
+        rCompName.clear();
+        rPortName.clear();
+        rVarName = "ERROR_in_splitFullName()";
+    }
+}
+
 
 //! @brief This help function loads a component
 void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSystem, HopsanEssentials *pHopsanEssentials)
@@ -133,6 +172,30 @@ void loadSystemParameters(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSyst
 
             pParameter = pParameter->next_sibling("parameter");
         }
+    }
+}
+
+void loadAliases(rapidxml::xml_node<> *pAliasesNode, ComponentSystem* pSystem)
+{
+    rapidxml::xml_node<> *pAlias = pAliasesNode->first_node("alias");
+    while(pAlias)
+    {
+        string type = readStringAttribute(pAlias, "type", "ERROR_NO_ALIAS_TYPE_GIVEN");
+        string alias = readStringAttribute(pAlias, "name", "ERROR_NO_ALIAS_NAME_GIVEN");
+        string fullName = readStringNodeValue(pAlias->first_node("fullname"), "ERROR_NO_FULLNAME_GIVEN");
+
+        string comp, port, var;
+        splitFullName(fullName, comp, port, var);
+        //cout << "splitOut: " << fullName << " ! " << comp << " ! " << port << " ! " << var << endl;
+
+        if (type == "variable" || type == "Variable")
+        {
+            //! @todo check bool and display warning if false
+            pSystem->getAliasHandler().setVariableAlias(alias, comp, port, var);
+        }
+
+
+        pAlias = pAlias->next_sibling("alias");
     }
 }
 
@@ -226,8 +289,14 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
     //Load system parameters
     loadSystemParameters(pSysNode, pSystem);
 
-    //! @todo load ALIASES
+    // Load aliases
+    rapidxml::xml_node<> *pAliases = pSysNode->first_node("aliases");
+    if (pAliases)
+    {
+        loadAliases(pAliases, pSystem);
+    }
 }
+
 
 // vvvvvvvvvv The public function vvvvvvvvvv
 

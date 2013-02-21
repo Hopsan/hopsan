@@ -65,6 +65,7 @@ namespace hopsan {
     {
     public:
         AliasHandler(ComponentSystem *pSystem);
+        bool setVariableAlias(const std::string alias, const std::string compName, const std::string portName, const std::string varName);
         bool setVariableAlias(const std::string alias, const std::string compName, const std::string portName, const int varId);
         bool setParameterAlias(const std::string alias, const std::string compName, const std::string parameterName);
         void componentRenamed(const std::string oldCompName, const std::string newCompName);

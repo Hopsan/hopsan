@@ -408,6 +408,7 @@ void loadPlotAlias(QDomElement &rDomElement, ContainerObject* pContainer)
     splitConcatName(fullName, comp,port,var);
     pContainer->setVariableAlias(comp,port,var,aliasname);
     //! @todo instead of bool return the uniqe changed alias should be returned
+    //! @todo what about parameter alias or other types
 }
 
 

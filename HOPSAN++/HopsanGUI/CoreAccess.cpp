@@ -532,13 +532,8 @@ bool CoreSystemAccess::setParameterValue(QString componentName, QString paramete
 
 void CoreSystemAccess::setVariableAlias(QString compName, QString portName, QString varName, QString alias)
 {
-    hopsan::Port* pPort = getCorePortPtr(compName,portName);
-    if (pPort)
-    {
-        int id = pPort->getNodeDataIdFromName(varName.toStdString());
-        mpCoreComponentSystem->getAliasHandler().setVariableAlias(alias.toStdString(), compName.toStdString(),
-                                                                  portName.toStdString(), id);
-    }
+    mpCoreComponentSystem->getAliasHandler().setVariableAlias(alias.toStdString(), compName.toStdString(),
+                                                              portName.toStdString(), varName.toStdString());
 }
 
 void CoreSystemAccess::setParameterAlias(QString compName, QString paramName, QString alias)

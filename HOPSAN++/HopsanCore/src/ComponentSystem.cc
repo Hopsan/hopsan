@@ -3317,12 +3317,27 @@ AliasHandler::AliasHandler(ComponentSystem *pSystem)
     mpSystem = pSystem;
 }
 
+//! @todo maybe this should be the default version, right now search comp/port twice
+bool AliasHandler::setVariableAlias(const std::string alias, const std::string compName, const std::string portName, const std::string varName)
+{
+    Component *pComp = mpSystem->getSubComponent(compName);
+    if (pComp)
+    {
+        Port *pPort = pComp->getPort(portName);
+        if (pPort)
+        {
+            int id = pPort->getNodeDataIdFromName(varName);
+            return setVariableAlias(alias, compName, portName, id);
+        }
+    }
+    return false;
+}
+
 bool AliasHandler::setVariableAlias(const string alias, const string compName, const string portName, const int varId)
 {
     //! @todo must check if existing alias is set for the same component that already have it to avoid warning
     if (!hasAlias(alias))
     {
-        //string concatName = concatFullName(compName, portName);
         Component *pComp = mpSystem->getSubComponent(compName);
         if (pComp)
         {

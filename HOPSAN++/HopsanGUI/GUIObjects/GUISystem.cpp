@@ -257,7 +257,7 @@ void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement, saveCon
     for (int i=0; i<aliases.size(); ++i)
     {
         QDomElement alias = appendDomElement(xmlAliases, HMF_ALIAS);
-        alias.setAttribute(HMF_TYPE, "Variable"); //!< @todo not maunal type
+        alias.setAttribute(HMF_TYPE, "variable"); //!< @todo not maunal type
         alias.setAttribute(HMF_NAMETAG, aliases[i]);
         QString fullName = getFullNameFromAlias(aliases[i]);
         appendDomTextNode(alias, "fullname",fullName );
