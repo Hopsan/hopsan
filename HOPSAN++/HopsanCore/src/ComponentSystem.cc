@@ -2199,7 +2199,7 @@ bool ComponentSystem::checkModelBeforeSimulation()
 
         for (size_t i=0; i<mComponentUndefinedptrs.size(); ++i)
         {
-            addErrorMessage(string("The component {") + mComponentUndefinedptrs[i]->getName() + string("} does not have a valid CQS type."));
+            addErrorMessage(string("The component {") + mComponentUndefinedptrs[i]->getName() + string("} has an invalid CQS-type: ") + mComponentUndefinedptrs[i]->getTypeCQSString());
         }
         return false;
     }

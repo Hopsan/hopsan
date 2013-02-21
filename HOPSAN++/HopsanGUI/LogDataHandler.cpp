@@ -66,10 +66,14 @@ LogDataHandler::~LogDataHandler()
     qDebug() << "in LogDataHandler destructor" << endl;
 
     // Clear all data
-    QList<LogVariableContainer*> data = mLogDataMap.values();
+    QList< QPointer<LogVariableContainer> > data = mLogDataMap.values();
     for (int i=0; i<data.size(); ++i)
     {
-        delete data[i];
+        // Check if data container ptr != NULL, to prevent double deleting aliases (its a QPointer)
+        if (data[i])
+        {
+            delete data[i];
+        }
     }
     mLogDataMap.clear();
     // Clear generation Cache files (Individual files will remain if until all instances dies)

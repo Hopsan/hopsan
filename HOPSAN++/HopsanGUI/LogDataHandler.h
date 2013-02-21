@@ -46,7 +46,7 @@ public:
     LogDataHandler(ContainerObject *pParent);
     ~LogDataHandler();
 
-    typedef QMap<QString, LogVariableContainer*> LogDataMapT;
+    typedef QMap< QString, QPointer<LogVariableContainer> > LogDataMapT;
     typedef QList<QVector<double> > TimeListT;
     typedef QList<VariableDescription> FavoriteListT;
 
