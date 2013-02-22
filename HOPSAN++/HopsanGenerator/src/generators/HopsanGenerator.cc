@@ -844,6 +844,10 @@ bool HopsanGenerator::copyFile(const QString &source, const QString &target) con
 {
     QFile sourceFile;
     sourceFile.setFileName(source);
+    if(QFile::exists(target))
+    {
+        QFile::remove(target);
+    }
     if(!sourceFile.copy(target))
     {
         printErrorMessage("Unable to copy file: " +sourceFile.fileName() + " to " + target+".");
