@@ -185,14 +185,12 @@ public:
     Delay_()
     {
         mpArray = 0;
+        mSize = 0;
     }
 
     ~Delay_()
     {
-        if (mpArray != 0)
-        {
-            delete mpArray;
-        }
+        clear();
     }
 
     //! @brief Initialize Delay buffer size based on timeDelay and timestep, Td/Ts must be multiple of 1 and >= 1
@@ -210,10 +208,8 @@ public:
     //! @param [in] initValue The initial value of all buffer elements
     void initialize(const int delaySteps, const T initValue)
     {
-        if (mpArray != 0)
-        {
-            delete  mpArray;
-        }
+        // First clear old data
+        clear();
 
         // Make sure we will not crash if someone entered < 1 delaysteps
         if (delaySteps < 1)
@@ -231,8 +227,8 @@ public:
             mpArray[i] = initValue;
         }
 
-        oldest = 0;
-        newest = mSize-1;
+        mOldest = 0;
+        mNewest = mSize-1;
     }
 
     //! @brief Updates delay with a new value, "pop old", "push new". You should likely run this at the end of each time step
@@ -241,68 +237,68 @@ public:
     T update(const T newValue)
     {
         // First get the oldes value
-        T oldestValue = mpArray[oldest];
+        T oldestValue = mpArray[mOldest];
 
         // Increment the pointers, newest will after incrementaion overwrite previous oldest
-        ++oldest;
-        ++newest;
+        ++mOldest;
+        ++mNewest;
 
-        if (oldest >= mSize)
+        if (mOldest >= mSize)
         {
-            oldest = 0;
+            mOldest = 0;
         }
-        if (newest >= mSize)
+        if (mNewest >= mSize)
         {
-            newest = 0;
+            mNewest = 0;
         }
 
         // Overwrite previous oldest with the new_value
-        mpArray[newest] = newValue;
+        mpArray[mNewest] = newValue;
 
         return oldestValue;
     }
 
     //! @brief Get the oldest value inte the buffer
     //! @return The oldest value in the buffer
-    T getOldest()
+    T getOldest() const
     {
-        return mpArray[oldest];
+        return mpArray[mOldest];
     }
 
     //! @brief Get the newest value inte the buffer
     //! @return The newest value in the buffer
-    T getNewest()
+    T getNewest() const
     {
-        return mpArray[newest];
+        return mpArray[mNewest];
     }
 
     //! @brief Returns a specific value, 0=newest, 1=nextnewest, 2=nextnextnewest and so on, no range check is performed
     //! @param [in] i Index of value to return
     //! @return Value of specified index
-    T getIdx(const size_t i)
+    T getIdx(const size_t i) const
     {
-        if ( (int(newest)-int(i)) < 0 )
+        if ( (int(mNewest)-int(i)) < 0 )
         {
-            return mpArray[mSize+newest-i];
+            return mpArray[mSize+mNewest-i];
         }
         else
         {
-            return mpArray[newest-i];
+            return mpArray[mNewest-i];
         }
     }
 
     //! @brief Returns a specific value, 0=oldest, 1=nextoldest, 2=nextnextoldest and so on, no range check is performed
     //! @param [in] i Index of value to return
     //! @return Value of specified index
-    T getOldIdx(const size_t i)
+    T getOldIdx(const size_t i) const
     {
-        if (oldest+i >= mSize)
+        if (mOldest+i >= mSize)
         {
-            return mpArray[oldest+i-mSize];
+            return mpArray[mOldest+i-mSize];
         }
         else
         {
-            return mpArray[oldest+i];
+            return mpArray[mOldest+i];
         }
     }
 
@@ -313,8 +309,20 @@ public:
         return mSize;
     }
 
+    //! @brief Clear the delay buffer, deleting all data
+    void clear()
+    {
+        if (mpArray != 0)
+        {
+            delete mpArray;
+            mpArray=0;
+            mSize=0;
+        }
+    }
+
+
 private:
-    size_t mSize, newest, oldest;
+    size_t mSize, mNewest, mOldest;
     T *mpArray;
 };
 

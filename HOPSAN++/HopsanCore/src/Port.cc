@@ -163,22 +163,22 @@ void Port::writeNodeSafe(const size_t &idx, const double &value, const size_t /*
 }
 
 
-//! @brief Reads a value from the connected node
-//! @param [in] idx The data id of the data to read
-//! @return The data value
-double Port::readNode(const size_t idx, const size_t /*portIdx*/) const
-{
-    return mpNode->mDataValues[idx];
-}
+////! @brief Reads a value from the connected node
+////! @param [in] idx The data id of the data to read
+////! @return The data value
+//double Port::readNode(const size_t idx, const size_t /*portIdx*/) const
+//{
+//    return mpNode->mDataValues[idx];
+//}
 
 
-//! @brief Writes a value to the connected node
-//! @param [in] idx The data id of the data to write
-//! @param [in] value The value of the data to read
-void Port::writeNode(const size_t &idx, const double &value, const size_t /*portIdx*/) const
-{
-    mpNode->mDataValues[idx] = value;
-}
+////! @brief Writes a value to the connected node
+////! @param [in] idx The data id of the data to write
+////! @param [in] value The value of the data to read
+//void Port::writeNode(const size_t &idx, const double &value, const size_t /*portIdx*/) const
+//{
+//    mpNode->mDataValues[idx] = value;
+//}
 
 
 double *Port::getNodeDataPtr(const size_t idx, const size_t /*portIdx*/) const
@@ -395,7 +395,7 @@ bool Port::haveLogData(const size_t /*portIdx*/)
 //! @brief Get all data names and units from the connected node
 //! @param [in,out] rNames This vector will contain the names
 //! @param [in,out] rUnits This vector will contain the units
-const std::vector<NodeDataDescription>* Port::getNodeDataDescriptions(const size_t portIdx /*portIdx*/)
+const std::vector<NodeDataDescription>* Port::getNodeDataDescriptions(const size_t /*portIdx*/)
 {
     if(this->isConnected())
     {
@@ -408,7 +408,7 @@ const std::vector<NodeDataDescription>* Port::getNodeDataDescriptions(const size
 //! @brief Get node data name and unit for specific node data
 //! @param [in] dataid The node data id
 //! @returns A pointer to teh node data description, or 0 if no node exist
-const NodeDataDescription* Port::getNodeDataDescription(const size_t dataid, const size_t portIdx /*portIdx*/)
+const NodeDataDescription* Port::getNodeDataDescription(const size_t dataid, const size_t /*portIdx*/)
 {
     if (mpNode != 0)
     {
@@ -791,7 +791,7 @@ void MultiPort::writeNode(const size_t &idx, const double &value, const size_t p
     return mSubPortsVector[portIdx]->writeNode(idx,value);
 }
 
-double *MultiPort::getNodeDataPtr(const size_t idx, const size_t portIdx)
+double *MultiPort::getNodeDataPtr(const size_t idx, const size_t portIdx) const
 {
     return mSubPortsVector[portIdx]->getNodeDataPtr(idx);
 }

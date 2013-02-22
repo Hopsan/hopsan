@@ -57,8 +57,20 @@ namespace hopsan {
         Port(const std::string nodeType, const std::string portName, Component *pPortOwner, Port *pParentPort=0);
         virtual ~Port();
 
-        virtual inline double readNode(const size_t idx, const size_t portIdx=0) const;
-        virtual inline void writeNode(const size_t &idx, const double &value, const size_t portIdx=0) const;
+        //! @brief Reads a value from the connected node
+        //! @param [in] idx The data id of the data to read
+        //! @return The data value
+        virtual inline double readNode(const size_t idx, const size_t /*portIdx*/=0) const
+        {
+            return mpNode->mDataValues[idx];
+        }
+        //! @brief Writes a value to the connected node
+        //! @param [in] idx The data id of the data to write
+        //! @param [in] value The value of the data to read
+        virtual inline void writeNode(const size_t &idx, const double &value, const size_t /*portIdx*/=0) const
+        {
+            mpNode->mDataValues[idx] = value;
+        }
 
         virtual double readNodeSafe(const size_t idx, const size_t portIdx=0);
         virtual void writeNodeSafe(const size_t &idx, const double &value, const size_t portIdx=0);
@@ -176,7 +188,7 @@ namespace hopsan {
         inline double readNode(const size_t idx, const size_t portIdx) const;
         inline void writeNode(const size_t &idx, const double &value, const size_t portIdx) const;
 
-        double *getNodeDataPtr(const size_t idx, const size_t portIdx);
+        double *getNodeDataPtr(const size_t idx, const size_t portIdx) const;
         double *getSafeNodeDataPtr(const size_t idx, const double defaultValue, const size_t portIdx);
         std::vector<double> *getDataVectorPtr(const size_t portIdx=0);
 

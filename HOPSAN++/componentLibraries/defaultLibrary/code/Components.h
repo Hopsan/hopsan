@@ -182,6 +182,7 @@
 #include "Signal/SignalDisplay.hpp"
 #include "Signal/SignalUnitDelay.hpp"
 #include "Signal/SignalSRlatch.hpp"
+#include "Signal/SignalComponents.h"
 
 /* Mechanical Components */
 #include "Mechanic/MechanicForceTransformer.hpp"

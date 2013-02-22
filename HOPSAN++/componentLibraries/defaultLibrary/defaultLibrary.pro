@@ -253,7 +253,9 @@ HEADERS += \
     code/Signal/SignalDisplay.hpp \
     code/Signal/SignalAnimationGauge.hpp \
     code/Signal/SignalUnitDelay.hpp \
-    code/Special/AeroComponents/AeroVehicleTVC.hpp
+    code/Special/AeroComponents/AeroVehicleTVC.hpp \
+    code/Signal/SignalComponents.h \
+    code/Signal/SignalVariableTimeDelay.hpp
 
 SOURCES += \
     code/defaultComponentLibrary.cc \

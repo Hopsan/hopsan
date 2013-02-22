@@ -232,6 +232,8 @@ void hopsan::register_components(ComponentFactory* pComponentFactory)
 
     pComponentFactory->registerCreatorFunction("SignalUndefinedConnection", SignalUndefinedConnection::Creator);
 
+    pComponentFactory->registerCreatorFunction("SignalVariableTimeDelay", SignalVariableTimeDelay::Creator);
+
 
     //Mechanical components
     pComponentFactory->registerCreatorFunction("MechanicForceTransformer", MechanicForceTransformer::Creator);
