@@ -19,7 +19,7 @@ HopsanSimulinkGenerator::HopsanSimulinkGenerator(QString coreIncludePath, QStrin
 
 void HopsanSimulinkGenerator::generateToSimulink(QString savePath, hopsan::ComponentSystem *pSystem, bool disablePortLabels, int compiler)
 {
-    printMessage("Initializing Simulink S-function export");
+    printMessage("Initializing Simulink S-function export...");
 
     QDir saveDir;
     saveDir.setPath(savePath);
@@ -562,8 +562,8 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, hopsan::Compo
 
     QTextStream compileStream(&compileFile);
 #ifdef WIN32
-    //compileStream << "%mex -DWIN32 -DSTATICCORE HopsanSimulink.cpp /include/Component.cc /include/ComponentSystem.cc /include/HopsanEssentials.cc /include/Node.cc /include/Port.cc /include/Components/Components.cc /include/CoreUtilities/HmfLoader.cc /include/CoreUtilities/HopsanCoreMessageHandler.cc /include/CoreUtilities/LoadExternal.cc /include/Nodes/Nodes.cc /include/ComponentUtilities/AuxiliarySimulationFunctions.cpp /include/ComponentUtilities/Delay.cc /include/ComponentUtilities/DoubleIntegratorWithDamping.cpp /include/ComponentUtilities/FirstOrderFilter.cc /include/ComponentUtilities/Integrator.cc /include/ComponentUtilities/IntegratorLimited.cc /include/ComponentUtilities/ludcmp.cc /include/ComponentUtilities/matrix.cc /include/ComponentUtilities/SecondOrderFilter.cc /include/ComponentUtilities/SecondOrderTransferFunction.cc /include/ComponentUtilities/TurbulentFlowFunction.cc /include/ComponentUtilities/ValveHysteresis.cc\n";
-    compileStream << "mex -DWIN32 -DSTATICCORE -L./ -Iinclude -lHopsanCore HopsanSimulink.cpp\n";
+    //compileStream << "%mex -DWIN32 -DSTATICCORE HopsanSimulink.cpp /HopsanCore/include/Component.cc /HopsanCore/include/ComponentSystem.cc /HopsanCore/include/HopsanEssentials.cc /HopsanCore/include/Node.cc /HopsanCore/include/Port.cc /HopsanCore/include/Components/Components.cc /HopsanCore/include/CoreUtilities/HmfLoader.cc /HopsanCore/include/CoreUtilities/HopsanCoreMessageHandler.cc /HopsanCore/include/CoreUtilities/LoadExternal.cc /HopsanCore/include/Nodes/Nodes.cc /HopsanCore/include/ComponentUtilities/AuxiliarySimulationFunctions.cpp /HopsanCore/include/ComponentUtilities/Delay.cc /HopsanCore/include/ComponentUtilities/DoubleIntegratorWithDamping.cpp /HopsanCore/include/ComponentUtilities/FirstOrderFilter.cc /HopsanCore/include/ComponentUtilities/Integrator.cc /HopsanCore/include/ComponentUtilities/IntegratorLimited.cc /HopsanCore/include/ComponentUtilities/ludcmp.cc /HopsanCore/include/ComponentUtilities/matrix.cc /HopsanCore/include/ComponentUtilities/SecondOrderFilter.cc /HopsanCore/include/ComponentUtilities/SecondOrderTransferFunction.cc /HopsanCore/include/ComponentUtilities/TurbulentFlowFunction.cc /HopsanCore/include/ComponentUtilities/ValveHysteresis.cc\n";
+    compileStream << "mex -DWIN32 -DSTATICCORE -L./ -IHopsanCore/include -lHopsanCore HopsanSimulink.cpp\n";
 
     printMessage("Copying Visual Studio binaries");
 

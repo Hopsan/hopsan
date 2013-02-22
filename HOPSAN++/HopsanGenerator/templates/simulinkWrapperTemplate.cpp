@@ -22,7 +22,7 @@ permission from the copyright holders.
 #include <vector>
 #include <fstream>
 #include "simstruc.h"
-#include "include/HopsanCore.h"
+#include "HopsanCore/include/HopsanCore.h"
 using namespace hopsan;
 
 
