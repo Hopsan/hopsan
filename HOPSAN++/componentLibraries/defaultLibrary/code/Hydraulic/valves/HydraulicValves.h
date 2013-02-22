@@ -21,8 +21,8 @@
 //!
 //$Id$
 
-#ifndef HYDRAULICVALVES_H_INCLUDED
-#define HYDRAULICVALVES_H_INCLUDED
+#ifndef HOPSANHYDRAULICVALVECOMPONENTS_H_INCLUDED
+#define HOPSANHYDRAULICVALVECOMPONENTS_H_INCLUDED
 
 #include "HydraulicCheckValve.hpp"
 #include "HydraulicCheckValveWithOrifice.hpp"
