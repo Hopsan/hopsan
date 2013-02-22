@@ -210,118 +210,6 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
     readTLMSpecsFromFile(fmuFileInfo.path()+"/"+fmuName+"_TLM.xml", tlmPortTypes, tlmPortVarNames, tlmPortValueRefs,
                          inVarValueRefs, inVarPortNames, outVarValueRefs, outVarPortNames);
 
-    //Read from [modelName]_TLM.xml if it exists, to define TLM powerports
-    QFile tlmSpecFile;
-    tlmSpecFile.setFileName(fmuFileInfo.path() + "/" + fmuName + "_TLM.xml");
-    QDomDocument tlmDomDocument;
-    QDomElement tlmRoot;
-    if(tlmSpecFile.exists())
-    {
-        tlmRoot = loadXMLDomDocument(tlmSpecFile, tlmDomDocument, "hopsanfmu");
-        tlmSpecFile.close();
-    }
-
-    if(tlmRoot != QDomElement())
-    {
-        printMessage("Parsing "+fmuName+"_TLM.xml...");
-
-        QStringList input;
-
-        QDomElement portElement = tlmRoot.firstChildElement("tlmport");
-        while(!portElement.isNull())
-        {
-            input.clear();
-
-            QString type = portElement.attribute("type");
-            input.append(type);
-
-            QDomElement outputElement = portElement.firstChildElement("output");
-            while(!outputElement.isNull())
-            {
-                QString name = outputElement.text();
-                outputElement = outputElement.nextSiblingElement("output");
-                input.append(name);
-            }
-
-            QDomElement inputElement = portElement.firstChildElement("input");
-            while(!inputElement.isNull())
-            {
-                QString name = inputElement.text();
-                inputElement = inputElement.nextSiblingElement("input");
-                input.append(name);
-            }
-
-
-            if(input.first() == "hydraulic" && input.size() == 5)
-            {
-                if(outVarPortNames.contains(input[1]) && outVarPortNames.contains(input[2]) && inVarPortNames.contains(input[3]) && inVarPortNames.contains(input[4]))
-                {
-                    printMessage("Adding hydraulic port.");
-
-                    tlmPortTypes.append(input[0]);
-                    input.removeFirst();
-                    tlmPortVarNames.append(input);
-
-                    tlmPortValueRefs.append(QStringList());
-                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[0])]);
-                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[1])]);
-                    tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(input[2])]);
-                    tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(input[3])]);
-
-                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[0]));
-                    outVarPortNames.removeAll(input[0]);
-
-                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[1]));
-                    outVarPortNames.removeAll(input[1]);
-
-                    inVarValueRefs.removeAt(inVarPortNames.indexOf(input[2]));
-                    inVarPortNames.removeAll(input[2]);
-
-                    inVarValueRefs.removeAt(inVarPortNames.indexOf(input[3]));
-                    inVarPortNames.removeAll(input[3]);
-                }
-            }
-            else if(input.first() == "mechanic" && input.size() == 7)
-            {
-                if(outVarPortNames.contains(input[1]) && outVarPortNames.contains(input[2]) && outVarPortNames.contains(input[3]) && outVarPortNames.contains(input[4]) && inVarPortNames.contains(input[5]) && inVarPortNames.contains(input[6]))
-                {
-                    printMessage("Adding mechanical port.");
-
-                    tlmPortTypes.append(input[0]);
-                    input.removeFirst();
-                    tlmPortVarNames.append(input);
-
-                    tlmPortValueRefs.append(QStringList());
-                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[0])]);
-                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[1])]);
-                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[2])]);
-                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[3])]);
-                    tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(input[4])]);
-                    tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(input[5])]);
-
-                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[0]));
-                    outVarPortNames.removeAll(input[0]);
-
-                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[1]));
-                    outVarPortNames.removeAll(input[1]);
-
-                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[2]));
-                    outVarPortNames.removeAll(input[2]);
-
-                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[3]));
-                    outVarPortNames.removeAll(input[3]);
-
-                    inVarValueRefs.removeAt(inVarPortNames.indexOf(input[4]));
-                    inVarPortNames.removeAll(input[4]);
-
-                    inVarValueRefs.removeAt(inVarPortNames.indexOf(input[5]));
-                    inVarPortNames.removeAll(input[5]);
-                }
-            }
-
-            portElement = portElement.nextSiblingElement("tlmport");
-        }
-    }
 
 
     ////////////////////////////////
@@ -987,15 +875,15 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
 
     QString sourceReplace8;
     for(i=0; i<inputVariables.size(); ++i)
-        sourceReplace8.append("           case "+inputVariables.at(i)+"_: return getVariable(\""+inputComponents.at(i)+"\", \""+inputPorts.at(i)+"\", "+QString::number(inputDatatypes.at(i))+");\n");
+        sourceReplace8.append("           case "+inputVariables.at(i)+"_: return getVariable(vr, "+QString::number(inputDatatypes.at(i))+");\n");
     for(j=0; j<outputVariables.size(); ++j)
-        sourceReplace8.append("           case "+outputVariables.at(j)+"_: return getVariable(\""+outputComponents.at(j)+"\", \""+outputPorts.at(j)+"\", "+QString::number(outputDatatypes.at(j))+");\n");
+        sourceReplace8.append("           case "+outputVariables.at(j)+"_: return getVariable(vr, "+QString::number(outputDatatypes.at(j))+");\n");
 
     QString sourceReplace9;
     for(i=0; i<inputVariables.size(); ++i)
-        sourceReplace9.append("           case "+inputVariables.at(i)+"_: setVariable(\""+inputComponents.at(i)+"\", \""+inputPorts.at(i)+"\", "+QString::number(inputDatatypes.at(i))+", value); break;\n");
+        sourceReplace9.append("           case "+inputVariables.at(i)+"_: setVariable(vr, "+QString::number(inputDatatypes.at(i))+", value); break;\n");
     for(j=0; j<outputVariables.size(); ++j)
-        sourceReplace9.append("           case "+outputVariables.at(j)+"_: setVariable(\""+outputComponents.at(j)+"\", \""+outputPorts.at(j)+"\", "+QString::number(outputDatatypes.at(j))+", value); break;\n");
+        sourceReplace9.append("           case "+outputVariables.at(j)+"_: setVariable(vr, "+QString::number(outputDatatypes.at(j))+", value); break;\n");
     for(int k=0; k<parameterNames.size(); ++k)
         sourceReplace9.append("           case "+parameterNames.at(k)+"_: setParameter(\""+parameterNames.at(k)+"\", value); break;\n");
 
@@ -1058,6 +946,24 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
         return;
     }
 
+    fmuSourceCode = replaceTag(fmuSourceCode, "nports", QString::number(inputVariables.size() + outputVariables.size()));
+
+    QString fmuSourceReplace1;
+    QString portPointerSection = extractTaggedSection(fmuSourceCode, "assignportpointers");
+    for(i=0; i<inputVariables.size(); ++i)
+    {
+        QStringList tags = QStringList() << "idx" << "comp" << "port";
+        QStringList replacements = QStringList() << QString::number(i) << inputComponents.at(i) << inputPorts.at(i);
+        fmuSourceReplace1.append(replaceTags(portPointerSection, tags, replacements));
+    }
+    for(j=0; j<outputVariables.size(); ++j)
+    {
+        QStringList tags = QStringList() << "idx" << "comp" << "port";
+        QStringList replacements = QStringList() << QString::number(i+j) << outputComponents.at(j) << outputPorts.at(j);
+        fmuSourceReplace1.append(replaceTags(portPointerSection, tags, replacements));
+    }
+
+    replaceTaggedSection(fmuSourceCode, "assignportpointers", fmuSourceReplace1);
     QTextStream fmuSourceStream(&fmuSourceFile);
     fmuSourceStream << fmuSourceCode;
     fmuSourceFile.close();
@@ -1228,7 +1134,7 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
     if(tlmSpecFile.exists())
     {
         printMessage("Reading TLM specifications from "+tlmSpecFile.fileName()+"...");
-        tlmRoot = loadXMLDomDocument(tlmSpecFile, tlmDomDocument, "hopsanfmu");
+        tlmRoot = loadXMLDomDocument(tlmSpecFile, tlmDomDocument, "fmutlm");
         tlmSpecFile.close();
     }
     else
@@ -1254,22 +1160,42 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
             QString type = portElement.attribute("type");
             input.append(type);
 
-            QDomElement outputElement = portElement.firstChildElement("output");
-            while(!outputElement.isNull())
+            if(type=="hydraulic")
             {
-                QString name = outputElement.text();
-                outputElement = outputElement.nextSiblingElement("output");
-                input.append(name);
+                QDomElement pElement = portElement.firstChildElement("p");
+                QDomElement qElement = portElement.firstChildElement("q");
+                QDomElement cElement = portElement.firstChildElement("c");
+                QDomElement zElement = portElement.firstChildElement("Z");
+                if(pElement.isNull() || qElement.isNull() || cElement.isNull() || zElement.isNull())
+                {
+                    printErrorMessage("Node type does not match variable names.");
+                    return false;
+                }
+                input.append(pElement.text());
+                input.append(qElement.text());
+                input.append(cElement.text());
+                input.append(zElement.text());
             }
-
-            QDomElement inputElement = portElement.firstChildElement("input");
-            while(!inputElement.isNull())
+            else if(type=="mechanic")
             {
-                QString name = inputElement.text();
-                inputElement = inputElement.nextSiblingElement("input");
-                input.append(name);
+                QDomElement fElement = portElement.firstChildElement("F");
+                QDomElement xElement = portElement.firstChildElement("x");
+                QDomElement vElement = portElement.firstChildElement("v");
+                QDomElement meElement = portElement.firstChildElement("me");
+                QDomElement cElement = portElement.firstChildElement("c");
+                QDomElement zElement = portElement.firstChildElement("Z");
+                if(fElement.isNull() || xElement.isNull() || vElement.isNull() || meElement.isNull() || cElement.isNull() || zElement.isNull())
+                {
+                    printErrorMessage("Node type does not match variable names.");
+                    return false;
+                }
+                input.append(fElement.text());
+                input.append(xElement.text());
+                input.append(vElement.text());
+                input.append(meElement.text());
+                input.append(cElement.text());
+                input.append(zElement.text());
             }
-
 
             if(input.first() == "hydraulic" && input.size() == 5)
             {

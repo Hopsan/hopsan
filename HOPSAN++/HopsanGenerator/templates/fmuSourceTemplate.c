@@ -2,6 +2,7 @@
 #include <sstream>
 #include <assert.h>
 #include "HopsanCore.h"
+#include "Port.h"
 #include "HopsanFMU.h"
 #include "model.hpp"
 
@@ -9,6 +10,8 @@ static double fmu_time=0;
 static hopsan::ComponentSystem *spCoreComponentSystem;
 static std::vector<std::string> sComponentNames;
 hopsan::HopsanEssentials gHopsanCore;
+
+hopsan::Port *ports[<<<nports>>>];
 
 void initializeHopsanWrapper(char* filename)
 {
@@ -35,6 +38,9 @@ void initializeHopsanWrapperFromBuiltInModel()
     spCoreComponentSystem->initialize(0,10);
 
     fmu_time = 0;
+
+    >>>assignportpointers>>>ports[<<<idx>>>] = spCoreComponentSystem->getSubComponent("<<<comp>>>")->getPort("<<<port>>>");
+    <<<assignportpointers<<<
 }
 
 void simulateOneStep()
@@ -54,14 +60,14 @@ double getFmuTime()
     return fmu_time;
 }
 
-double getVariable(char* component, char* port, size_t idx)
+double getVariable(size_t ref, size_t idx)
 {
-    return spCoreComponentSystem->getSubComponent(component)->getPort(port)->readNode(idx);
+    return ports[ref]->readNode(idx);
 }
 
-void setVariable(char* component, char* port, size_t idx, double value)
+void setVariable(size_t ref, size_t idx, double value)
 {
-    return spCoreComponentSystem->getSubComponent(component)->getPort(port)->writeNode(idx, value);
+    return ports[ref]->writeNode(idx, value);
 }
 
 void setParameter(char* name, double value)
