@@ -2457,7 +2457,6 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         setAppearanceDataBasePath(getModelFileInfo().absolutePath());
 
             //Save to file
-        const int IndentSize = 4;
         QFile xmlhmf(getModelFileInfo().filePath());
         if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
         {
@@ -2466,7 +2465,7 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         }
         QTextStream out(&xmlhmf);
         appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
-        domDocument.save(out, IndentSize);
+        domDocument.save(out, XMLINDENTATION);
 
         //Close the file
         xmlhmf.close();

@@ -925,7 +925,6 @@ void SystemContainer::exportToFMU(QString savePath)
     QDomDocument domDocument;
     QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, "0");
     saveToDomElement(hmfRoot);
-    const int IndentSize = 4;
     QFile xmlhmf(savePath + "/" + mModelFileInfo.fileName());
     if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
@@ -934,7 +933,7 @@ void SystemContainer::exportToFMU(QString savePath)
     }
     QTextStream out(&xmlhmf);
     appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
-    domDocument.save(out, IndentSize);
+    domDocument.save(out, XMLINDENTATION);
 
     CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
     pCoreAccess->generateToFmu(savePath, this);
@@ -1463,7 +1462,6 @@ void SystemContainer::exportToSimulink()
     QDomDocument domDocument;
     QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getCoreSystemAccessPtr()->getHopsanCoreVersion());
     saveToDomElement(hmfRoot);
-    const int IndentSize = 4;
     QFile xmlhmf(savePath + "/" + fileName);
     if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
@@ -1471,7 +1469,7 @@ void SystemContainer::exportToSimulink()
     }
     QTextStream out(&xmlhmf);
     appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
-    domDocument.save(out, IndentSize);
+    domDocument.save(out, XMLINDENTATION);
     xmlhmf.close();
 
 

@@ -813,7 +813,6 @@ void ModelObjectAppearance::saveToXMLFile(QString filename)
     doc.appendChild(cafroot);
     cafroot.setAttribute(CAF_VERSION, CAF_VERSIONNUM);
     this->saveToDomElement(cafroot);
-    const int IndentSize = 4;
     QFile xml(filename);
     if (!xml.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
@@ -822,7 +821,7 @@ void ModelObjectAppearance::saveToXMLFile(QString filename)
     }
     QTextStream out(&xml);
     appendRootXMLProcessingInstruction(doc); //The xml "comment" on the first line
-    doc.save(out, IndentSize);
+    doc.save(out, XMLINDENTATION);
     xml.close();
 }
 

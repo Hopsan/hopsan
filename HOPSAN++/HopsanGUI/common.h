@@ -31,6 +31,7 @@
 //Numerical definitions
 #define GOLDENRATIO 1.61803399
 #define SNAPDISTANCE 10
+#define XMLINDENTATION 2
 
 //Web link definitions
 #define HOPSANLINK "http://tiny.cc/hopsan"

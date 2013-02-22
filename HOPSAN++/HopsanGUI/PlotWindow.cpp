@@ -626,7 +626,6 @@ void PlotWindow::saveToXml()
     appendRootXMLProcessingInstruction(domDocument);
 
     //Save to file
-    const int IndentSize = 4;
     QFile xmlsettings(filePath);
     if (!xmlsettings.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
@@ -634,7 +633,7 @@ void PlotWindow::saveToXml()
         return;
     }
     QTextStream out(&xmlsettings);
-    domDocument.save(out, IndentSize);
+    domDocument.save(out, XMLINDENTATION);
 }
 
 

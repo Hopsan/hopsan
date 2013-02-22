@@ -178,7 +178,6 @@ void Configuration::saveToXml()
     appendRootXMLProcessingInstruction(domDocument);
 
     //Save to file
-    const int IndentSize = 4;
     if(!QDir(DATAPATH).exists())
     {
         QDir().mkpath(DATAPATH);
@@ -190,7 +189,7 @@ void Configuration::saveToXml()
         return;
     }
     QTextStream out(&xmlsettings);
-    domDocument.save(out, IndentSize);
+    domDocument.save(out, XMLINDENTATION);
 }
 
 
