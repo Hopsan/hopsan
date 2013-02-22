@@ -208,6 +208,10 @@ void copyDir(const QString fromPath, QString toPath)
         }
         else
         {
+            if(QFile::exists(toPath+"/"+info.fileName()))
+            {
+                QFile::remove(toPath+"/"+info.fileName());
+            }
             QFile::copy(info.absoluteFilePath(), toPath+"/"+info.fileName());
         }
     }

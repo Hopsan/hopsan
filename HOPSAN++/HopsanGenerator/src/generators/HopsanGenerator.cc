@@ -740,11 +740,7 @@ bool HopsanGenerator::copyIncludeFilesToDir(QString path) const
 
     Q_FOREACH(const QString &file, includeFiles)
     {
-        if(!QFile::copy(mExecPath+file, path+file.right(file.size()-3)))
-        {
-            printErrorMessage("Unable to copy file: "+mExecPath+file+" to "+path+file.right(file.size()-3));
-            return false;
-        }
+        if(!copyFile(mExecPath+file, path+file.right(file.size()-3))) return false;
     }
 
     return true;
@@ -774,11 +770,7 @@ bool HopsanGenerator::copySourceFilesToDir(QString path) const
 
     Q_FOREACH(const QString &file, srcFiles)
     {
-        if(!QFile::copy(mExecPath+file, path+file.right(file.size()-3)))
-        {
-            printErrorMessage("Unable to copy file: "+mExecPath+file+" to "+path+file.right(file.size()-3));
-            return false;
-        }
+        if(!copyFile(mExecPath+file, path+file.right(file.size()-3))) return false;
     }
 
     return true;
