@@ -255,9 +255,12 @@ def buildRelease():
     runCmd("ThirdParty\\sed-4.2.1\\sed \"s|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.cc \\\\|\" -i HopsanCore\\HopsanCore.pro")
     runCmd("ThirdParty\\sed-4.2.1\\sed \"s|componentLibraries||\" -i HopsanNG.pro")
 
+    #Make sure we undefine MAINCORE, so that MSVC dlls do not try to access the log file
+    runCmd("ThirdParty\\sed-4.2.1\\sed \"s|.*DEFINES \\*= MAINCORE|#DEFINES *= MAINCORE|\" -i HopsanCore\\HopsanCore.pro")
+
     #Rename TBB so it is not found when compiling with Visual Studio
     os.rename(hopsanDir+"\HopsanCore\Dependencies\\"+tbbversion, hopsanDir+"\HopsanCore\Dependencies\\"+tbbversion+"_nope")
-
+    
     #BUILD HOPSANCORE WITH MSVC
     if not msvcCompile("2008", "x86"):
         return False
@@ -267,7 +270,10 @@ def buildRelease():
         return False
     if not msvcCompile("2010", "x64"):
         return False
-
+    
+    #Make sure the MinGW compilation uses the MAINCORE define, so that log file is enabled
+    runCmd("ThirdParty\\sed-4.2.1\\sed \"s|.*DEFINES \\*= MAINCORE|DEFINES *= MAINCORE|\" -i HopsanCore\\HopsanCore.pro")
+     
     #Rename TBB back again (to activate it)
     os.rename(hopsanDir+"\\HopsanCore\\Dependencies\\"+tbbversion+"_nope", hopsanDir+"\\HopsanCore\\Dependencies\\"+tbbversion)
 
