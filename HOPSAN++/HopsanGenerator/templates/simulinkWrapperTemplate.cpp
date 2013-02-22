@@ -139,24 +139,12 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 <<<9>>>
     output<<<10>>> = 0;		//Error code 0: Nothing is wrong
 
-    if(pComponentSystem == 0)
-    {
-        output<<<10>>> = -1;		//Error code -1: Component system failed to load
-    }
-
-    //! @todo should remove this check from here
-    else if(!pComponentSystem->checkModelBeforeSimulation())
-    {
-        output<<<10>>> = -2;		//Error code -2: Simulation not possible due to errors in model
-    }
-    else
-    {
 <<<11>>>
-        double timestep = pComponentSystem->getDesiredTimeStep();
-        double time = ssGetT(S);
-        pComponentSystem->simulate(time, time+timestep);
+    double timestep = pComponentSystem->getDesiredTimeStep();
+    double time = ssGetT(S);
+    pComponentSystem->simulate(time, time+timestep);
 
-<<<12>>>    }
+<<<12>>>
     
     //Output parameters
 <<<13>>>}

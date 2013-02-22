@@ -1495,7 +1495,7 @@ void SystemContainer::exportToSimulink()
 
 
     CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
-    pCoreAccess->generateToSimulink(savePath, this, pDisablePortLabels->isChecked());
+    pCoreAccess->generateToSimulink(savePath, this, pDisablePortLabels->isChecked(), compiler);
     delete(pCoreAccess);
 
 

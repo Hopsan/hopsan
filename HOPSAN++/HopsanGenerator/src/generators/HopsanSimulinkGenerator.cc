@@ -115,7 +115,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, hopsan::Compo
     nTotalOutputsString.setNum(nTotalOutputs);
 
 
-    printMessage("Generating files");
+    printMessage("Generating files...");
 
 
     QFile wrapperFile;
@@ -144,7 +144,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, hopsan::Compo
     }
 
 
-    printMessage("Writing HopsanSimulinkPortLabels.m");
+    printMessage("Writing HopsanSimulinkPortLabels.m...");
 
 
     QTextStream portLabelsStream(&portLabelsFile);
@@ -242,7 +242,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, hopsan::Compo
 
 
 
-    printMessage("Writing HopsanSimulink.cpp");
+    printMessage("Writing HopsanSimulink.cpp...");
 
 
     //How to access dialog parameters:
@@ -557,7 +557,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, hopsan::Compo
     wrapperFile.close();
 
 
-    printMessage("Writing HopsanSimulinkCompile.m");
+    printMessage("Writing HopsanSimulinkCompile.m...");
 
 
     QTextStream compileStream(&compileFile);
@@ -565,36 +565,25 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, hopsan::Compo
     //compileStream << "%mex -DWIN32 -DSTATICCORE HopsanSimulink.cpp /HopsanCore/include/Component.cc /HopsanCore/include/ComponentSystem.cc /HopsanCore/include/HopsanEssentials.cc /HopsanCore/include/Node.cc /HopsanCore/include/Port.cc /HopsanCore/include/Components/Components.cc /HopsanCore/include/CoreUtilities/HmfLoader.cc /HopsanCore/include/CoreUtilities/HopsanCoreMessageHandler.cc /HopsanCore/include/CoreUtilities/LoadExternal.cc /HopsanCore/include/Nodes/Nodes.cc /HopsanCore/include/ComponentUtilities/AuxiliarySimulationFunctions.cpp /HopsanCore/include/ComponentUtilities/Delay.cc /HopsanCore/include/ComponentUtilities/DoubleIntegratorWithDamping.cpp /HopsanCore/include/ComponentUtilities/FirstOrderFilter.cc /HopsanCore/include/ComponentUtilities/Integrator.cc /HopsanCore/include/ComponentUtilities/IntegratorLimited.cc /HopsanCore/include/ComponentUtilities/ludcmp.cc /HopsanCore/include/ComponentUtilities/matrix.cc /HopsanCore/include/ComponentUtilities/SecondOrderFilter.cc /HopsanCore/include/ComponentUtilities/SecondOrderTransferFunction.cc /HopsanCore/include/ComponentUtilities/TurbulentFlowFunction.cc /HopsanCore/include/ComponentUtilities/ValveHysteresis.cc\n";
     compileStream << "mex -DWIN32 -DSTATICCORE -L./ -IHopsanCore/include -lHopsanCore HopsanSimulink.cpp\n";
 
-    printMessage("Copying Visual Studio binaries");
+    printMessage("Copying Visual Studio binaries...");
 
 
     //Select path to MSVC library depending on user selection
     QString msvcPath;
-    if(compiler == 0)   //MSVC2008 32-bit
-    {
+    if(compiler == 0)                           //MSVC2008 32-bit
         msvcPath = mExecPath+"MSVC2008_x86/";
-    }
-    else if(compiler == 1)  //MSVC2008 64-bit
-    {
+    else if(compiler == 1)                      //MSVC2008 64-bit
         msvcPath = mExecPath+"MSVC2008_x64/";
-    }
-    else if(compiler == 2)  //MSVC2010 32-bit
-    {
+    else if(compiler == 2)                      //MSVC2010 32-bit
         msvcPath = mExecPath+"MSVC2010_x86/";
-    }
-    else if(compiler == 3)  //MSVC2010 64-bit
-    {
+    else if(compiler == 3)                      //MSVC2010 64-bit
         msvcPath = mExecPath+"MSVC2010_x64/";
-    }
 
 
     //Copy MSVC binaries to export folder
-    QFile dllFile(msvcPath + "HopsanCore.dll");
-    dllFile.copy(savePath + "/HopsanCore.dll");
-    QFile libFile(msvcPath + "HopsanCore.lib");
-    libFile.copy(savePath + "/HopsanCore.lib");
-    QFile expFile(msvcPath + "HopsanCore.exp");
-    expFile.copy(savePath + "/HopsanCore.exp");
+    if(!copyFile(msvcPath+"HopsanCore.dll", savePath+"/HopsanCore.dll")) return ;
+    if(!copyFile(msvcPath+"HopsanCore.lib", savePath+"/HopsanCore.lib")) return ;
+    if(!copyFile(msvcPath+"HopsanCore.exp", savePath+"/HopsanCore.exp")) return ;
 
 #else
     compileStream << "% You need to copy the .so files here or change the -L lib search path" << endl;
@@ -605,7 +594,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, hopsan::Compo
 #endif
     compileFile.close();
 
-    printMessage("Copying include files");
+    printMessage("Copying include files...");
 
     this->copyIncludeFilesToDir(savePath);
 
@@ -622,7 +611,14 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, hopsan::Compo
     externalLibsFileStream << "#Enter one per line, the filename is enough if you put the lib file (.dll or.so) in this directory.";
     externalLibsFile.close();
 
-    printMessage("Finished!");
+    if(!assertFilesExist(savePath, QStringList() << QString(pSystem->getName().c_str())+".hmf" << "externalLibs.txt" <<
+                     "HopsanCore.dll" << "HopsanCore.lib" << "HopsanCore.exp" << "HopsanSimulink.cpp" <<
+                     "HopsanSimulinkCompile.m" << "HopsanSimulinkPortLabels.m"))
+    {
+        return;
+    }
+
+    printMessage("Finished.");
 }
 
 
