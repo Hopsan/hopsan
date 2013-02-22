@@ -180,6 +180,7 @@ public:
     void executeAddComponentCommand(QString cmd);
     void executeConnectCommand(QString cmd);
     void executeCreateModelCommand(QString cmd);
+    void executeExportToFMUCommand(QString cmd);
 
     //Help functions
     void changePlotVariables(QString cmd, int axis);
@@ -200,6 +201,9 @@ public:
     double getNumber(QString str, bool *ok);
     void toShortDataNames(QString &variable);
     QString getDirectory(QString cmd);
+    QStringList getArguments(QString cmd);
+    int getNumberOfArguments(QString cmd);
+    QString getArgument(QString cmd, int idx);
 
 private:
     TerminalConsole *mpConsole;

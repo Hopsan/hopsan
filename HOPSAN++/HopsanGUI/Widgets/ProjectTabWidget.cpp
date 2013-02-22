@@ -1189,21 +1189,21 @@ void ProjectTabWidget::createLabviewWrapperFromCurrentModel()
 }
 
 
-void ProjectTabWidget::createFMUFromCurrentModel()
+void ProjectTabWidget::exportCurrentModelToFMU()
 {
-    qobject_cast<SystemContainer*>(getCurrentContainer())->createFMUSourceFiles();
+    qobject_cast<SystemContainer*>(getCurrentContainer())->exportToFMU();
 }
 
 
-void ProjectTabWidget::createSimulinkWrapperFromCurrentModel()
+void ProjectTabWidget::exportCurrentModelToSimulink()
 {
-    qobject_cast<SystemContainer*>(getCurrentContainer())->createSimulinkSourceFiles();
+    qobject_cast<SystemContainer*>(getCurrentContainer())->exportToSimulink();
 }
 
 
-void ProjectTabWidget::createSimulinkCoSimWrapperFromCurrentModel()
+void ProjectTabWidget::exportCurrentModelToSimulinkCoSim()
 {
-    qobject_cast<SystemContainer*>(getCurrentContainer())->createSimulinkCoSimSourceFiles();
+    qobject_cast<SystemContainer*>(getCurrentContainer())->exportToSimulinkCoSim();
 }
 
 

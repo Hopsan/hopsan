@@ -64,9 +64,9 @@ public slots:
     void loadModel(QString modelFileName, bool ignoreAlreadyOpen=false);
     void tabChanged();
     void createLabviewWrapperFromCurrentModel();
-    void createFMUFromCurrentModel();
-    void createSimulinkWrapperFromCurrentModel();
-    void createSimulinkCoSimWrapperFromCurrentModel();
+    void exportCurrentModelToFMU();
+    void exportCurrentModelToSimulink();
+    void exportCurrentModelToSimulinkCoSim();
     void loadModelParameters();
     void showLosses(bool show);
     void measureSimulationTime();

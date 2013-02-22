@@ -939,9 +939,9 @@ void MainWindow::createToolbars()
 
 
     connect(mpImportFMUAction,              SIGNAL(triggered()), mpLibrary,     SLOT(importFmu()));
-    connect(mpExportToSimulinkAction,       SIGNAL(triggered()), mpProjectTabs, SLOT(createSimulinkWrapperFromCurrentModel()));
-    connect(mpExportToSimulinkCoSimAction,  SIGNAL(triggered()), mpProjectTabs, SLOT(createSimulinkCoSimWrapperFromCurrentModel()));
-    connect(mpExportToFMUAction,            SIGNAL(triggered()), mpProjectTabs, SLOT(createFMUFromCurrentModel()));
+    connect(mpExportToSimulinkAction,       SIGNAL(triggered()), mpProjectTabs, SLOT(exportCurrentModelToSimulink()));
+    connect(mpExportToSimulinkCoSimAction,  SIGNAL(triggered()), mpProjectTabs, SLOT(exportCurrentModelToSimulinkCoSim()));
+    connect(mpExportToFMUAction,            SIGNAL(triggered()), mpProjectTabs, SLOT(exportCurrentModelToFMU()));
     connect(mpExportToLabviewAction,        SIGNAL(triggered()), mpProjectTabs, SLOT(createLabviewWrapperFromCurrentModel()));
     connect(mpLoadModelParametersAction,    SIGNAL(triggered()), mpProjectTabs, SLOT(loadModelParameters()));
 }

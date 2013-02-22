@@ -875,7 +875,7 @@ void SystemContainer::createLabviewSourceFiles()
     delete(pCoreAccess);
 }
 
-void SystemContainer::createFMUSourceFiles()
+void SystemContainer::exportToFMU()
 {
     //Open file dialog and initialize the file stream
     QDir fileDialogSaveDir;
@@ -906,9 +906,19 @@ void SystemContainer::createFMUSourceFiles()
             return;
         }
     }
+
+    exportToFMU(savePath);
+}
+
+
+void SystemContainer::exportToFMU(QString savePath)
+{
+    QDir saveDir(savePath);
+    if(!saveDir.exists())
+    {
+        QDir().mkpath(savePath);
+    }
     saveDir.setFilter(QDir::NoFilter);
-
-
 
     //Save model to hmf in export directory
     //! @todo This code is duplicated from ProjectTab::saveModel(), make it a common function somehow
@@ -932,7 +942,7 @@ void SystemContainer::createFMUSourceFiles()
 
 }
 
-//void SystemContainer::createFMUSourceFiles()
+//void SystemContainer::exportToFMU()
 //{
 //    //Open file dialog and initialize the file stream
 //    QDir fileDialogSaveDir;
@@ -1363,7 +1373,7 @@ void SystemContainer::createFMUSourceFiles()
 //}
 
 
-void SystemContainer::createSimulinkSourceFiles()
+void SystemContainer::exportToSimulink()
 {
     QDialog *pExportDialog = new QDialog(gpMainWindow);
     pExportDialog->setWindowTitle("Create Simulink Source Files");
@@ -1498,7 +1508,7 @@ void SystemContainer::createSimulinkSourceFiles()
 }
 
 
-void SystemContainer::createSimulinkCoSimSourceFiles()
+void SystemContainer::exportToSimulinkCoSim()
 {
     QDialog *pExportDialog = new QDialog(gpMainWindow);
     pExportDialog->setWindowTitle("Create Simulink Source Files");

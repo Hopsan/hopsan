@@ -899,13 +899,19 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole)
     cocoCmd.fnc = &HcomHandler::executeConnectCommand;
     mCmdList << cocoCmd;
 
-
     HcomCommand crmoCmd;
     crmoCmd.cmd = "crmo";
     crmoCmd.description.append("Creates a new model.");
     crmoCmd.help.append("Usage: crmo [no arguments]");
     crmoCmd.fnc = &HcomHandler::executeCreateModelCommand;
     mCmdList << crmoCmd;
+
+    HcomCommand fmuCmd;
+    fmuCmd.cmd = "fmu";
+    fmuCmd.description.append("Exports current model to Functional Mockup Unit (FMU)");
+    fmuCmd.help.append("Usage: fmu [path]");
+    fmuCmd.fnc = &HcomHandler::executeExportToFMUCommand;
+    mCmdList << fmuCmd;
 }
 
 
@@ -1833,6 +1839,17 @@ void HcomHandler::executeCreateModelCommand(QString cmd)
 }
 
 
+void HcomHandler::executeExportToFMUCommand(QString cmd)
+{
+    if(getNumberOfArguments(cmd) != 1)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.");
+    }
+
+    gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->exportToFMU(getArgument(cmd, 0));
+}
+
+
 //! @brief Changes plot variables on specified axes
 //! @param cmd Command containing the plot variables
 //! @param axis Axis specification (0=left, 1=right, -1=both, separeted by "-r")
@@ -2749,4 +2766,38 @@ QString HcomHandler::getDirectory(QString cmd)
     {
         return "";
     }
+}
+
+QStringList HcomHandler::getArguments(QString cmd)
+{
+    QStringList splitCmd;
+    bool withinQuotations = false;
+    int start=0;
+    for(int i=0; i<cmd.size(); ++i)
+    {
+        if(cmd[i] == '\"')
+        {
+            withinQuotations = !withinQuotations;
+        }
+        if(cmd[i] == ' ' && !withinQuotations)
+        {
+            splitCmd.append(cmd.mid(start, i-start));
+            start = i+1;
+        }
+    }
+    splitCmd.append(cmd.right(cmd.size()-start));
+    splitCmd.removeFirst();
+
+    return splitCmd;
+}
+
+
+int HcomHandler::getNumberOfArguments(QString cmd)
+{
+    return getArguments(cmd).size();
+}
+
+QString HcomHandler::getArgument(QString cmd, int idx)
+{
+    return getArguments(cmd).at(idx);
 }

@@ -104,9 +104,10 @@ public:
     void loadParameterFile();
 
     void createLabviewSourceFiles();
-    void createFMUSourceFiles();
-    void createSimulinkSourceFiles();
-    void createSimulinkCoSimSourceFiles();
+    void exportToFMU();
+    void exportToFMU(QString savePath);
+    void exportToSimulink();
+    void exportToSimulinkCoSim();
 
     // Parameter methods
     QStringList getParameterNames();
