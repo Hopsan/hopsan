@@ -836,6 +836,7 @@ bool HopsanGenerator::copyFile(const QString &source, const QString &target) con
 {
     QFile sourceFile;
     sourceFile.setFileName(source);
+    QFileInfo sourceFileInfo(sourceFile);
     if(QFile::exists(target))
     {
         QFile::remove(target);
@@ -845,7 +846,7 @@ bool HopsanGenerator::copyFile(const QString &source, const QString &target) con
         printErrorMessage("Unable to copy file: " +sourceFile.fileName() + " to " + target+".");
         return false;
     }
-    printMessage("Copying " + sourceFile.fileName() + " to " + target+"...");
+    printMessage("Copying " + sourceFileInfo.fileName()+"...");
     return true;
 }
 

@@ -40,6 +40,8 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
     QString fmuName = fmuFileInfo.fileName();
     fmuName.chop(4);
 
+    QString cqsType="Signal";
+
     //Create import directory if it does not exist
     if(!QDir(mExecPath + "../import").exists())
         QDir().mkdir(mExecPath + "../import");
@@ -207,10 +209,13 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
     QStringList tlmPortTypes;
     QList<QStringList> tlmPortVarNames;
     QList<QStringList> tlmPortValueRefs;
-    readTLMSpecsFromFile(fmuFileInfo.path()+"/"+fmuName+"_TLM.xml", tlmPortTypes, tlmPortVarNames, tlmPortValueRefs,
-                         inVarValueRefs, inVarPortNames, outVarValueRefs, outVarPortNames);
-
-
+    readTLMSpecsFromFile(fmuPath+"/"+fmuName+"_TLM.xml", tlmPortTypes, tlmPortVarNames, tlmPortValueRefs,
+                         inVarValueRefs, inVarPortNames, outVarValueRefs, outVarPortNames, cqsType);
+    if(cqsType=="")
+    {
+        printErrorMessage("CQS-type undefined. Mixing C and Q ports in the same component is not allowed.");
+        return;
+    }
 
     ////////////////////////////////
     // DEFINE PORT SPECIFICATIONS //
@@ -248,7 +253,7 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
         QString portType = "PowerPort";
         QString nodeType;
         QStringList mpndNames, dataTypes, causalities;
-        if(tlmPortTypes[i] == "hydraulic")
+        if(tlmPortTypes[i] == "hydraulicq")
         {
             nodeType = "NodeHydraulic";
             mpndNames << "p"+numStr;
@@ -261,7 +266,20 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
             dataTypes << "NodeHydraulic::CHARIMP";
             causalities << "output" << "output" << "input" << "input";
         }
-        else if(tlmPortTypes[i] == "mechanic")
+        else if(tlmPortTypes[i] == "hydraulicc")
+        {
+            nodeType = "NodeHydraulic";
+            mpndNames << "p"+numStr;
+            mpndNames << "q"+numStr;
+            mpndNames << "c"+numStr;
+            mpndNames << "Zc"+numStr;
+            dataTypes << "NodeHydraulic::PRESSURE";
+            dataTypes << "NodeHydraulic::FLOW";
+            dataTypes << "NodeHydraulic::WAVEVARIABLE";
+            dataTypes << "NodeHydraulic::CHARIMP";
+            causalities << "input" << "input" << "output" << "output";
+        }
+        else if(tlmPortTypes[i] == "mechanicq")
         {
             nodeType = "NodeMechanic";
             mpndNames << "f"+numStr;
@@ -277,6 +295,23 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
             dataTypes << "NodeMechanic::WAVEVARIABLE";
             dataTypes << "NodeMechanic::CHARIMP";
             causalities << "output" << "output" << "output" << "output" << "input" << "input";
+        }
+        else if(tlmPortTypes[i] == "mechanicc")
+        {
+            nodeType = "NodeMechanic";
+            mpndNames << "f"+numStr;
+            mpndNames << "x"+numStr;
+            mpndNames << "v"+numStr;
+            mpndNames << "me"+numStr;
+            mpndNames << "c"+numStr;
+            mpndNames << "Zc"+numStr;
+            dataTypes << "NodeMechanic::FORCE";
+            dataTypes << "NodeMechanic::POSITION";
+            dataTypes << "NodeMechanic::VELOCITY";
+            dataTypes << "NodeMechanic::EQMASS";
+            dataTypes << "NodeMechanic::WAVEVARIABLE";
+            dataTypes << "NodeMechanic::CHARIMP";
+            causalities << "input" << "input" << "input" << "input" << "output" << "output";
         }
         for(int j=0; j<mpndNames.size(); ++j)
         {
@@ -490,6 +525,7 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
     fmuComponentReplace13 = "so";
 #endif
 
+    fmuComponentCode.replace("<<<cqstype>>>", cqsType);
     fmuComponentCode.replace("<<<modelname>>>", fmuName);
     fmuComponentCode.replace("<<<includepath>>>", mCoreIncludePath);
     replaceTaggedSection(fmuComponentCode, "2", fmuComponentReplace2);
@@ -661,39 +697,133 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     QString randomString = QString::number(random);
     QString ID = QUuid::createUuid().toString();
 
-    //Collect information about input ports
+    //Collect information about ports
     QStringList inputVariables;
     QStringList inputComponents;
     QStringList inputPorts;
     QList<int> inputDatatypes;
+    QStringList outputVariables;
+    QStringList outputComponents;
+    QStringList outputPorts;
+    QList<int> outputDatatypes;
+    QList<QStringList> tlmPorts;
 
     std::vector<std::string> names = pSystem->getSubComponentNames();
     for(size_t i=0; i<names.size(); ++i)
     {
         if(pSystem->getSubComponent(names[i])->getTypeName() == "SignalInputInterface")
         {
-            inputVariables.append(QString(names[i].c_str()).remove(' '));
+            inputVariables.append(QString(names[i].c_str()).remove(' ').remove("-"));
             inputComponents.append(QString(names[i].c_str()));
             inputPorts.append("out");
             inputDatatypes.append(0);
         }
-    }
-
-    //Collect information about output ports
-    QStringList outputVariables;
-    QStringList outputComponents;
-    QStringList outputPorts;
-    QList<int> outputDatatypes;
-
-    names = pSystem->getSubComponentNames();
-    for(size_t i=0; i<names.size(); ++i)
-    {
-        if(pSystem->getSubComponent(names[i])->getTypeName() == "SignalOutputInterface")
+        else if(pSystem->getSubComponent(names[i])->getTypeName() == "SignalOutputInterface")
         {
-            outputVariables.append(QString(names[i].c_str()).remove(' '));
+            outputVariables.append(QString(names[i].c_str()).remove(' ').remove("-"));
             outputComponents.append(QString(names[i].c_str()));
             outputPorts.append("in");
             outputDatatypes.append(0);
+        }
+        else if(pSystem->getSubComponent(names[i])->getTypeName() == "HydraulicInterfaceC")
+        {
+            QString name=QString(names[i].c_str()).remove(' ').remove("-");
+            outputVariables.append(name+"_p__");
+            outputVariables.append(name+"_q__");
+            inputVariables.append(name+"_c__");
+            inputVariables.append(name+"_Zc__");
+            outputComponents.append(QString(names[i].c_str()));
+            outputComponents.append(QString(names[i].c_str()));
+            inputComponents.append(QString(names[i].c_str()));
+            inputComponents.append(QString(names[i].c_str()));
+            outputPorts.append("P1");
+            outputPorts.append("P1");
+            inputPorts.append("P1");
+            inputPorts.append("P1");
+            outputDatatypes.append(1);
+            outputDatatypes.append(0);
+            inputDatatypes.append(3);
+            inputDatatypes.append(4);
+            tlmPorts.append(QStringList() << "hydraulicq" << "p" << name+"_p__" << "q" << name+"_q__" << "c" << name+"_c__" << "Z" << name+"_Zc__");
+        }
+        else if(pSystem->getSubComponent(names[i])->getTypeName() == "HydraulicInterfaceQ")
+        {
+            QString name=QString(names[i].c_str()).remove(' ').remove("-");
+            inputVariables.append(name+"_p__");
+            inputVariables.append(name+"_q__");
+            outputVariables.append(name+"_c__");
+            outputVariables.append(name+"_Zc__");
+            inputComponents.append(QString(names[i].c_str()));
+            inputComponents.append(QString(names[i].c_str()));
+            outputComponents.append(QString(names[i].c_str()));
+            outputComponents.append(QString(names[i].c_str()));
+            inputPorts.append("P1");
+            inputPorts.append("P1");
+            outputPorts.append("P1");
+            outputPorts.append("P1");
+            inputDatatypes.append(1);
+            inputDatatypes.append(0);
+            outputDatatypes.append(3);
+            outputDatatypes.append(4);
+            tlmPorts.append(QStringList() << "hydraulicc" << "p" << name+"_p__" << "q" << name+"_q__" << "c" << name+"_c__" << "Z" << name+"_Zc__");
+        }
+        else if(pSystem->getSubComponent(names[i])->getTypeName() == "MechanicInterfaceC")
+        {
+            QString name=QString(names[i].c_str()).remove(' ').remove("-");
+            outputVariables.append(name+"_F__");
+            outputVariables.append(name+"_x__");
+            outputVariables.append(name+"_v__");
+            outputVariables.append(name+"_me__");
+            inputVariables.append(name+"_c__");
+            inputVariables.append(name+"_Zc__");
+            outputComponents.append(QString(names[i].c_str()));
+            outputComponents.append(QString(names[i].c_str()));
+            outputComponents.append(QString(names[i].c_str()));
+            outputComponents.append(QString(names[i].c_str()));
+            inputComponents.append(QString(names[i].c_str()));
+            inputComponents.append(QString(names[i].c_str()));
+            outputPorts.append("P1");
+            outputPorts.append("P1");
+            outputPorts.append("P1");
+            outputPorts.append("P1");
+            inputPorts.append("P1");
+            inputPorts.append("P1");
+            outputDatatypes.append(1);
+            outputDatatypes.append(2);
+            outputDatatypes.append(0);
+            outputDatatypes.append(5);
+            inputDatatypes.append(3);
+            inputDatatypes.append(4);
+            tlmPorts.append(QStringList() << "mechanicq" << "F" << name+"_F__" << "x" << name+"_x__" << "v" << name+"_v__" << "me" << name+"_me__" << "c" << name+"_c__" << "Z" << name+"_Zc__");
+        }
+        else if(pSystem->getSubComponent(names[i])->getTypeName() == "MechanicInterfaceQ")
+        {
+            QString name=QString(names[i].c_str()).remove(' ').remove("-");
+            inputVariables.append(name+"_F__");
+            inputVariables.append(name+"_x__");
+            inputVariables.append(name+"_v__");
+            inputVariables.append(name+"_me__");
+            outputVariables.append(name+"_c__");
+            outputVariables.append(name+"_Zc__");
+            inputComponents.append(QString(names[i].c_str()));
+            inputComponents.append(QString(names[i].c_str()));
+            inputComponents.append(QString(names[i].c_str()));
+            inputComponents.append(QString(names[i].c_str()));
+            outputComponents.append(QString(names[i].c_str()));
+            outputComponents.append(QString(names[i].c_str()));
+            inputPorts.append("P1");
+            inputPorts.append("P1");
+            inputPorts.append("P1");
+            inputPorts.append("P1");
+            outputPorts.append("P1");
+            outputPorts.append("P1");
+            inputDatatypes.append(1);
+            inputDatatypes.append(2);
+            inputDatatypes.append(0);
+            inputDatatypes.append(5);
+            outputDatatypes.append(3);
+            outputDatatypes.append(4);
+            tlmPorts.append(QStringList() << "mechanicc" << "F" << name+"_F__" << "x" << name+"_x__" << "v" << name+"_v__" << "me" << name+"_me__" << "c" << name+"_c__" << "Z" << name+"_Zc__");
         }
     }
 
@@ -732,6 +862,14 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     if(!modelDescriptionFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         printErrorMessage("Failed to open modelDescription.xml for writing.");
+        return;
+    }
+
+    QFile tlmDescriptionFile;
+    tlmDescriptionFile.setFileName(savePath + "/"+modelName+"_TLM.xml");
+    if(!tlmDescriptionFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        printErrorMessage("Failed to open "+modelName+"_TLM.xml for writing.");
         return;
     }
 
@@ -819,6 +957,30 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     QTextStream modelDescriptionStream(&modelDescriptionFile);
     modelDescriptionStream << xmlCode;
     modelDescriptionFile.close();
+
+
+    if(!tlmPorts.isEmpty())
+    {
+        printMessage("Writing "+modelName+"_TLM.xml...");
+
+        QString tlmCode;
+        tlmCode.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+        tlmCode.append("<fmutlm>\n");
+        for(int i=0; i<tlmPorts.size(); ++i)
+        {
+            tlmCode.append("  <tlmport type=\""+tlmPorts[i].first()+"\">\n");
+            for(int j=1; j<tlmPorts[i].size(); j+=2)
+            {
+                tlmCode.append("    <"+tlmPorts[i][j]+">"+tlmPorts[i][j+1]+"</"+tlmPorts[i][j]+">\n");
+            }
+            tlmCode.append("  </tlmport>\n");
+        }
+        tlmCode.append("</fmutlm>\n");
+
+        QTextStream tlmDescriptionStream(&tlmDescriptionFile);
+        tlmDescriptionStream << tlmCode;
+        tlmDescriptionFile.close();
+    }
 
 
     printMessage("Writing " + modelName + ".c...");
@@ -1094,18 +1256,19 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
    // QFile modelFile(savePath + "/" + realModelName + ".hmf");
     modelFile.copy(savePath + "/fmu/resources/" + realModelName + ".hmf");
     modelDescriptionFile.copy(savePath + "/fmu/modelDescription.xml");
+    tlmDescriptionFile.copy(savePath+"/fmu/"+modelName+"_TLM.xml");
 
     printMessage("Compressing files...");
 
 #ifdef WIN32
     QString program = mExecPath + "../ThirdParty/7z/7z";
-    QStringList arguments = QStringList() << "a" << "-tzip" << "../"+modelName+".fmu" << savePath+"/fmu/modelDescription.xml" << "-r" << savePath + "/fmu/binaries";
+    QStringList arguments = QStringList() << "a" << "-tzip" << "../"+modelName+".fmu" << savePath+"/fmu/modelDescription.xml" << savePath+"/fmu/"+modelName+"_TLM.xml" << "-r" << savePath + "/fmu/binaries";
     callProcess(program, arguments, savePath+"/fmu");
 #elif linux && __i386__
-    QStringList arguments = QStringList() << "-r" << "../"+modelName+".fmu" << "modelDescription.xml" << "binaries/linux32/"+modelName+".so";
+    QStringList arguments = QStringList() << "-r" << "../"+modelName+".fmu" << "modelDescription.xml" << modelName+"_TLM.xml" << binaries/linux32/"+modelName+".so";
     callProcess("zip", arguments, savePath+"/fmu");
 #elif linux && __x86_64__
-    QStringList arguments = QStringList() << "-r" << "../"+modelName+".fmu" << "modelDescription.xml" << "binaries/linux64/"+modelName+".so";
+    QStringList arguments = QStringList() << "-r" << "../"+modelName+".fmu" << "modelDescription.xml" << modelName+"_TLM.xml" << "binaries/linux64/"+modelName+".so";
     callProcess("zip", arguments, savePath+"/fmu");
 #endif
 
@@ -1125,7 +1288,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
 
 bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringList &tlmPortTypes, QList<QStringList> &tlmPortVarNames,
                                               QList<QStringList> &tlmPortValueRefs, QStringList &inVarValueRefs, QStringList &inVarPortNames,
-                                              QStringList &outVarValueRefs, QStringList &outVarPortNames)
+                                              QStringList &outVarValueRefs, QStringList &outVarPortNames, QString &cqsType)
 {
     QFile tlmSpecFile;
     tlmSpecFile.setFileName(fileName);
@@ -1160,7 +1323,7 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
             QString type = portElement.attribute("type");
             input.append(type);
 
-            if(type=="hydraulic")
+            if(type=="hydraulicq" || type=="hydraulicc")
             {
                 QDomElement pElement = portElement.firstChildElement("p");
                 QDomElement qElement = portElement.firstChildElement("q");
@@ -1176,7 +1339,7 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
                 input.append(cElement.text());
                 input.append(zElement.text());
             }
-            else if(type=="mechanic")
+            else if(type=="mechanicq" | type=="mechanicc")
             {
                 QDomElement fElement = portElement.firstChildElement("F");
                 QDomElement xElement = portElement.firstChildElement("x");
@@ -1197,11 +1360,17 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
                 input.append(zElement.text());
             }
 
-            if(input.first() == "hydraulic" && input.size() == 5)
+
+            if(input.first() == "hydraulicq" && input.size() == 5)
             {
                 if(outVarPortNames.contains(input[1]) && outVarPortNames.contains(input[2]) && inVarPortNames.contains(input[3]) && inVarPortNames.contains(input[4]))
                 {
-                    printMessage("Adding hydraulic port");
+                    printMessage("Adding hydraulic port of Q-type");
+
+                    if(cqsType == "Signal" || cqsType == "Q")
+                        cqsType = "Q";
+                    else
+                        cqsType = "";
 
                     tlmPortTypes.append(input[0]);
                     input.removeFirst();
@@ -1226,11 +1395,50 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
                     inVarPortNames.removeAll(input[3]);
                 }
             }
-            else if(input.first() == "mechanic" && input.size() == 7)
+            else if(input.first() == "hydraulicc" && input.size() == 5)
+            {
+                if(inVarPortNames.contains(input[1]) && inVarPortNames.contains(input[2]) && outVarPortNames.contains(input[3]) && outVarPortNames.contains(input[4]))
+                {
+                    printMessage("Adding hydraulic port of C-type");
+
+                    if(cqsType == "Signal" || cqsType == "C")
+                        cqsType = "C";
+                    else
+                        cqsType = "";
+
+                    tlmPortTypes.append(input[0]);
+                    input.removeFirst();
+                    tlmPortVarNames.append(input);
+
+                    tlmPortValueRefs.append(QStringList());
+                    tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(input[0])]);
+                    tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(input[1])]);
+                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[2])]);
+                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[3])]);
+
+                    inVarValueRefs.removeAt(inVarPortNames.indexOf(input[0]));
+                    inVarPortNames.removeAll(input[0]);
+
+                    inVarValueRefs.removeAt(inVarPortNames.indexOf(input[1]));
+                    inVarPortNames.removeAll(input[1]);
+
+                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[2]));
+                    outVarPortNames.removeAll(input[2]);
+
+                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[3]));
+                    outVarPortNames.removeAll(input[3]);
+                }
+            }
+            else if(input.first() == "mechanicq" && input.size() == 7)
             {
                 if(outVarPortNames.contains(input[1]) && outVarPortNames.contains(input[2]) && outVarPortNames.contains(input[3]) && outVarPortNames.contains(input[4]) && inVarPortNames.contains(input[5]) && inVarPortNames.contains(input[6]))
                 {
-                    printMessage("Adding mechanical port");
+                    printMessage("Adding mechanical port of Q-type");
+
+                    if(cqsType == "Signal" || cqsType == "Q")
+                        cqsType = "Q";
+                    else
+                        cqsType = "";
 
                     tlmPortTypes.append(input[0]);
                     input.removeFirst();
@@ -1261,6 +1469,48 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
 
                     inVarValueRefs.removeAt(inVarPortNames.indexOf(input[5]));
                     inVarPortNames.removeAll(input[5]);
+                }
+            }
+            else if(input.first() == "mechanicc" && input.size() == 7)
+            {
+                if(inVarPortNames.contains(input[1]) && inVarPortNames.contains(input[2]) && inVarPortNames.contains(input[3]) && inVarPortNames.contains(input[4]) && outVarPortNames.contains(input[5]) && outVarPortNames.contains(input[6]))
+                {
+                    printMessage("Adding mechanical port of C-type");
+
+                    if(cqsType == "Signal" || cqsType == "C")
+                        cqsType = "C";
+                    else
+                        cqsType = "";
+
+                    tlmPortTypes.append(input[0]);
+                    input.removeFirst();
+                    tlmPortVarNames.append(input);
+
+                    tlmPortValueRefs.append(QStringList());
+                    tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(input[0])]);
+                    tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(input[1])]);
+                    tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(input[2])]);
+                    tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(input[3])]);
+                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[4])]);
+                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[5])]);
+
+                    inVarValueRefs.removeAt(inVarPortNames.indexOf(input[0]));
+                    inVarPortNames.removeAll(input[0]);
+
+                    inVarValueRefs.removeAt(inVarPortNames.indexOf(input[1]));
+                    inVarPortNames.removeAll(input[1]);
+
+                    inVarValueRefs.removeAt(inVarPortNames.indexOf(input[2]));
+                    inVarPortNames.removeAll(input[2]);
+
+                    inVarValueRefs.removeAt(inVarPortNames.indexOf(input[3]));
+                    inVarPortNames.removeAll(input[3]);
+
+                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[4]));
+                    outVarPortNames.removeAll(input[4]);
+
+                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[5]));
+                    outVarPortNames.removeAll(input[5]);
                 }
             }
 

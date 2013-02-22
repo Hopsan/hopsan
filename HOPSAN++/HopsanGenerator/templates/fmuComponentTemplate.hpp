@@ -24,7 +24,7 @@ void fmuLogger(fmiComponent c, fmiString instanceName, fmiStatus status,
 
 namespace hopsan {
 
-    class <<<modelname>>> : public ComponentQ
+    class <<<modelname>>> : public Component<<<cqstype>>>
     {
     private:
         FMU mFMU;
