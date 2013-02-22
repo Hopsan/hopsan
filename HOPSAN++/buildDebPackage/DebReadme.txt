@@ -3,12 +3,12 @@
 ----------------------------------------
 This DEB package is meant for installation on *Ubuntu systems.
 
-Hopsan will be installed to /opt/hopsan, this is not the standard Debian way.
-To avoid that /opt is removed when Hopsan is uninstalled a hopsan_dummy file will be create in the /opt directory.
-This dummy file will be automatically removed after Hopsan has been uninstalled.
-
+Hopsan will be installed to /opt/hopsan
 A "shortcut" to HopsanGUI should end up under the Development category in your menu.
 HopsanCLI and libHopsanCore.so can be found in /opt/hopsan/bin
+
+For questions about this .deb package, contact:
+peter.nordin_at_liu.se
 
 ----------------------------------------
  What version to choose:
@@ -59,3 +59,9 @@ Use a terminal to uninstall, "apt-get remove hopsan" followed by "apt-get autore
 Dependencies will only be removed if install method 1 or 2 was used, and if no other package is using them.
 
 
+----------------------------------------
+ Additional Information:
+----------------------------------------
+Hopsan will be installed to /opt/hopsan, this is not the standard Debian way.
+To avoid that /opt is removed when Hopsan is uninstalled a hopsan_dummy file will be create in the /opt directory.
+This dummy file will be automatically removed after Hopsan has been removed.

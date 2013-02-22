@@ -255,7 +255,13 @@ HEADERS += \
     code/Signal/SignalUnitDelay.hpp \
     code/Special/AeroComponents/AeroVehicleTVC.hpp \
     code/Signal/SignalComponents.h \
-    code/Signal/SignalVariableTimeDelay.hpp
+    code/Signal/SignalVariableTimeDelay.hpp \
+    code/Hydraulic/HopsanHydraulicComponents.h \
+    code/Electric/HopsanElectricComponents.h \
+    code/Mechanic/HopsanMechanicComponents.h \
+    code/Special/HopsanSpecialComponents.h \
+    code/Special/AeroComponents/HopsanSpecialAeroComponents.h \
+    code/Special/SignalFFB/HopsanFBBComponents.h
 
 SOURCES += \
     code/defaultComponentLibrary.cc \
