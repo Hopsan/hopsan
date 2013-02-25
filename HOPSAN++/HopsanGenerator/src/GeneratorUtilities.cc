@@ -586,7 +586,7 @@ QStringList getHopsanCoreSourceFiles()
 }
 
 
-QStringList getHopsanCoreIncludeFiles()
+QStringList getHopsanCoreIncludeFiles(bool skipDependencies)
 {
     QStringList includeFiles;
     includeFiles << "../HopsanCore/include/Component.h" <<
@@ -629,8 +629,8 @@ QStringList getHopsanCoreIncludeFiles()
                 "../HopsanCore/include/CoreUtilities/HopsanCoreMessageHandler.h" <<
                 "../HopsanCore/include/CoreUtilities/LoadExternal.h" <<
                 "../HopsanCore/include/CoreUtilities/MultiThreadingUtilities.h" <<
-                "../componentLibraries/defaultLibrary/code/Components.h" <<
-                "../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.h" <<
+                //"../componentLibraries/defaultLibrary/code/Components.h" <<
+                //"../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.h" <<
                 "../HopsanCore/Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp" <<
                 "../HopsanCore/Dependencies/rapidxml-1.13/hopsan_rapidxml.hpp" <<
                 "../HopsanCore/Dependencies/rapidxml-1.13/rapidxml.hpp" <<

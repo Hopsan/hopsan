@@ -68,7 +68,7 @@ public:
 
     bool replaceInFile(const QString &fileName, const QStringList &before, const QStringList &after) const;
 
-    bool copyIncludeFilesToDir(QString path) const;
+    bool copyIncludeFilesToDir(QString path, bool skipDependencies=false) const;
     bool copySourceFilesToDir(QString path) const;
     bool copyDefaultComponentCodeToDir(const QString &path) const;
     bool copyBoostIncludeFilesToDir(const QString &path) const;

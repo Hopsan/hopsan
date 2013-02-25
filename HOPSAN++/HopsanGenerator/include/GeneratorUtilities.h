@@ -161,7 +161,7 @@ QStringList getVariableLabels(QString nodeType);
 bool verifyEquationSystem(QList<SymHop::Expression> equations, QList<SymHop::Expression> stateVars, HopsanGenerator *pGenerator);
 void findAllFilesInFolderAndSubFolders(QString path, QString ext, QStringList &files);
 QStringList getHopsanCoreSourceFiles();
-QStringList getHopsanCoreIncludeFiles();
+QStringList getHopsanCoreIncludeFiles(bool skipDependencies=false);
 
 
 //! @brief This utility class wraps a QTextStream and have stream operators to write whole lines. You do not need to add the newline char yourself.

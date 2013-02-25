@@ -1194,6 +1194,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     }
     QStringList componentFiles;
     findAllFilesInFolderAndSubFolders(savePath+"/componentLibraries/defaultLibrary/code", "hpp", componentFiles);
+    findAllFilesInFolderAndSubFolders(savePath+"/componentLibraries/defaultLibrary", "h", componentFiles);
     Q_FOREACH(const QString &file, componentFiles)
     {
         if(!replaceInFile(file, before, after))
@@ -1282,8 +1283,6 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
 
     printMessage("Finished.");
 }
-
-
 
 
 bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringList &tlmPortTypes, QList<QStringList> &tlmPortVarNames,

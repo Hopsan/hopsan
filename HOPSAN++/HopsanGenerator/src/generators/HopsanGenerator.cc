@@ -715,7 +715,7 @@ bool HopsanGenerator::replaceInFile(const QString &fileName, const QStringList &
 //! @todo maybe this function should not be among general utils
 //! @todo should not copy .svn folders
 //! @todo Weird name because of name conflict with HopsanGUI
-bool HopsanGenerator::copyIncludeFilesToDir(QString path) const
+bool HopsanGenerator::copyIncludeFilesToDir(QString path, bool skipDependencies) const
 {
     printMessage("Copying HopsanCore include files...");
 
@@ -723,7 +723,7 @@ bool HopsanGenerator::copyIncludeFilesToDir(QString path) const
         path.append("/");
 
     //Make sure HopsanCore include files are available
-    QStringList includeFiles = getHopsanCoreIncludeFiles();
+    QStringList includeFiles = getHopsanCoreIncludeFiles(skipDependencies);
 
     if(!assertFilesExist(mExecPath, includeFiles))
         return false;
@@ -787,12 +787,11 @@ bool HopsanGenerator::copyDefaultComponentCodeToDir(const QString &path) const
 
     QDir saveDir;
     saveDir.setPath(path);
-    saveDir.mkpath("componentLibraries/defaultLibrary/code");
+    saveDir.mkpath("componentLibraries/defaultLibrary");
     saveDir.cd("componentLibraries");
     saveDir.cd("defaultLibrary");
-    saveDir.cd("code");
 
-    copyDir( QString("../componentLibraries/defaultLibrary/code"), saveDir.path() );
+    copyDir( QString("../componentLibraries/defaultLibrary"), saveDir.path() );
 
     return true;
 }
