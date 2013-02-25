@@ -155,6 +155,7 @@ QString extractTaggedSection(QString str, QString tag);
 void replaceTaggedSection(QString &str, QString tag, QString replacement);
 QString replaceTag(QString str, QString tag, QString replacement);
 QString replaceTags(QString str, QStringList tags, QStringList replacements);
+
 QStringList getQVariables(QString nodeType);
 QStringList getCVariables(QString nodeType);
 QStringList getVariableLabels(QString nodeType);
@@ -162,6 +163,21 @@ bool verifyEquationSystem(QList<SymHop::Expression> equations, QList<SymHop::Exp
 void findAllFilesInFolderAndSubFolders(QString path, QString ext, QStringList &files);
 QStringList getHopsanCoreSourceFiles();
 QStringList getHopsanCoreIncludeFiles(bool skipDependencies=false);
+
+
+class NodeInfo
+{
+    public:
+        NodeInfo(QString nodeType);
+        static void getNodeTypes(QStringList &nodeTypes);
+
+        QString niceName;
+        QStringList qVariables;
+        QStringList cVariables;
+        QStringList variableLabels;
+        QStringList shortNames;
+        QList<size_t> varIdx;
+};
 
 
 //! @brief This utility class wraps a QTextStream and have stream operators to write whole lines. You do not need to add the newline char yourself.

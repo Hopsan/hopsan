@@ -728,102 +728,98 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
         else if(pSystem->getSubComponent(names[i])->getTypeName() == "HydraulicInterfaceC")
         {
             QString name=QString(names[i].c_str()).remove(' ').remove("-");
-            outputVariables.append(name+"_p__");
-            outputVariables.append(name+"_q__");
-            inputVariables.append(name+"_c__");
-            inputVariables.append(name+"_Zc__");
-            outputComponents.append(QString(names[i].c_str()));
-            outputComponents.append(QString(names[i].c_str()));
-            inputComponents.append(QString(names[i].c_str()));
-            inputComponents.append(QString(names[i].c_str()));
-            outputPorts.append("P1");
-            outputPorts.append("P1");
-            inputPorts.append("P1");
-            inputPorts.append("P1");
-            outputDatatypes.append(1);
-            outputDatatypes.append(0);
-            inputDatatypes.append(3);
-            inputDatatypes.append(4);
-            tlmPorts.append(QStringList() << "hydraulicq" << "p" << name+"_p__" << "q" << name+"_q__" << "c" << name+"_c__" << "Z" << name+"_Zc__");
+
+            NodeInfo info = NodeInfo("NodeHydraulic");
+
+            tlmPorts.append(QStringList() << info.niceName+"q");
+            Q_FOREACH(const QString &var, info.qVariables)
+            {
+                outputVariables.append(name+"_"+var+"__");
+                outputComponents.append(QString(names[i].c_str()));
+                outputPorts.append("P1");
+                outputDatatypes.append(info.varIdx[info.qVariables.indexOf(var)]);
+                tlmPorts.last() << var << name+"_"+var+"__";
+            }
+            Q_FOREACH(const QString &var, info.cVariables)
+            {
+                inputVariables.append(name+"_"+var+"__");
+                inputComponents.append(QString(names[i].c_str()));
+                inputPorts.append("P1");
+                inputDatatypes.append(info.varIdx[info.qVariables.size()+info.cVariables.indexOf(var)]);
+                tlmPorts.last() << var << name+"_"+var+"__";
+            }
         }
         else if(pSystem->getSubComponent(names[i])->getTypeName() == "HydraulicInterfaceQ")
         {
             QString name=QString(names[i].c_str()).remove(' ').remove("-");
-            inputVariables.append(name+"_p__");
-            inputVariables.append(name+"_q__");
-            outputVariables.append(name+"_c__");
-            outputVariables.append(name+"_Zc__");
-            inputComponents.append(QString(names[i].c_str()));
-            inputComponents.append(QString(names[i].c_str()));
-            outputComponents.append(QString(names[i].c_str()));
-            outputComponents.append(QString(names[i].c_str()));
-            inputPorts.append("P1");
-            inputPorts.append("P1");
-            outputPorts.append("P1");
-            outputPorts.append("P1");
-            inputDatatypes.append(1);
-            inputDatatypes.append(0);
-            outputDatatypes.append(3);
-            outputDatatypes.append(4);
-            tlmPorts.append(QStringList() << "hydraulicc" << "p" << name+"_p__" << "q" << name+"_q__" << "c" << name+"_c__" << "Z" << name+"_Zc__");
+
+            NodeInfo info = NodeInfo("NodeHydraulic");
+
+            tlmPorts.append(QStringList() << info.niceName+"c");
+            Q_FOREACH(const QString &var, info.qVariables)
+            {
+                inputVariables.append(name+"_"+var+"__");
+                inputComponents.append(QString(names[i].c_str()));
+                inputPorts.append("P1");
+                inputDatatypes.append(info.varIdx[info.qVariables.indexOf(var)]);
+                tlmPorts.last() << var << name+"_"+var+"__";
+            }
+            Q_FOREACH(const QString &var, info.cVariables)
+            {
+                outputVariables.append(name+"_"+var+"__");
+                outputComponents.append(QString(names[i].c_str()));
+                outputPorts.append("P1");
+                outputDatatypes.append(info.varIdx[info.qVariables.size()+info.cVariables.indexOf(var)]);
+                tlmPorts.last() << var << name+"_"+var+"__";
+            }
         }
         else if(pSystem->getSubComponent(names[i])->getTypeName() == "MechanicInterfaceC")
         {
             QString name=QString(names[i].c_str()).remove(' ').remove("-");
-            outputVariables.append(name+"_F__");
-            outputVariables.append(name+"_x__");
-            outputVariables.append(name+"_v__");
-            outputVariables.append(name+"_me__");
-            inputVariables.append(name+"_c__");
-            inputVariables.append(name+"_Zc__");
-            outputComponents.append(QString(names[i].c_str()));
-            outputComponents.append(QString(names[i].c_str()));
-            outputComponents.append(QString(names[i].c_str()));
-            outputComponents.append(QString(names[i].c_str()));
-            inputComponents.append(QString(names[i].c_str()));
-            inputComponents.append(QString(names[i].c_str()));
-            outputPorts.append("P1");
-            outputPorts.append("P1");
-            outputPorts.append("P1");
-            outputPorts.append("P1");
-            inputPorts.append("P1");
-            inputPorts.append("P1");
-            outputDatatypes.append(1);
-            outputDatatypes.append(2);
-            outputDatatypes.append(0);
-            outputDatatypes.append(5);
-            inputDatatypes.append(3);
-            inputDatatypes.append(4);
-            tlmPorts.append(QStringList() << "mechanicq" << "F" << name+"_F__" << "x" << name+"_x__" << "v" << name+"_v__" << "me" << name+"_me__" << "c" << name+"_c__" << "Z" << name+"_Zc__");
+
+            NodeInfo info = NodeInfo("NodeMechanic");
+
+            tlmPorts.append(QStringList() << info.niceName+"q");
+            Q_FOREACH(const QString &var, info.qVariables)
+            {
+                outputVariables.append(name+"_"+var+"__");
+                outputComponents.append(QString(names[i].c_str()));
+                outputPorts.append("P1");
+                outputDatatypes.append(info.varIdx[info.qVariables.indexOf(var)]);
+                tlmPorts.last() << var << name+"_"+var+"__";
+            }
+            Q_FOREACH(const QString &var, info.cVariables)
+            {
+                inputVariables.append(name+"_"+var+"__");
+                inputComponents.append(QString(names[i].c_str()));
+                inputPorts.append("P1");
+                inputDatatypes.append(info.varIdx[info.qVariables.size()+info.cVariables.indexOf(var)]);
+                tlmPorts.last() << var << name+"_"+var+"__";
+            }
         }
         else if(pSystem->getSubComponent(names[i])->getTypeName() == "MechanicInterfaceQ")
         {
             QString name=QString(names[i].c_str()).remove(' ').remove("-");
-            inputVariables.append(name+"_F__");
-            inputVariables.append(name+"_x__");
-            inputVariables.append(name+"_v__");
-            inputVariables.append(name+"_me__");
-            outputVariables.append(name+"_c__");
-            outputVariables.append(name+"_Zc__");
-            inputComponents.append(QString(names[i].c_str()));
-            inputComponents.append(QString(names[i].c_str()));
-            inputComponents.append(QString(names[i].c_str()));
-            inputComponents.append(QString(names[i].c_str()));
-            outputComponents.append(QString(names[i].c_str()));
-            outputComponents.append(QString(names[i].c_str()));
-            inputPorts.append("P1");
-            inputPorts.append("P1");
-            inputPorts.append("P1");
-            inputPorts.append("P1");
-            outputPorts.append("P1");
-            outputPorts.append("P1");
-            inputDatatypes.append(1);
-            inputDatatypes.append(2);
-            inputDatatypes.append(0);
-            inputDatatypes.append(5);
-            outputDatatypes.append(3);
-            outputDatatypes.append(4);
-            tlmPorts.append(QStringList() << "mechanicc" << "F" << name+"_F__" << "x" << name+"_x__" << "v" << name+"_v__" << "me" << name+"_me__" << "c" << name+"_c__" << "Z" << name+"_Zc__");
+
+            NodeInfo info = NodeInfo("NodeMechanic");
+
+            tlmPorts.append(QStringList() << info.niceName+"c");
+            Q_FOREACH(const QString &var, info.qVariables)
+            {
+                inputVariables.append(name+"_"+var+"__");
+                inputComponents.append(QString(names[i].c_str()));
+                inputPorts.append("P1");
+                inputDatatypes.append(info.varIdx[info.qVariables.indexOf(var)]);
+                tlmPorts.last() << var << name+"_"+var+"__";
+            }
+            Q_FOREACH(const QString &var, info.cVariables)
+            {
+                outputVariables.append(name+"_"+var+"__");
+                outputComponents.append(QString(names[i].c_str()));
+                outputPorts.append("P1");
+                outputDatatypes.append(info.varIdx[info.qVariables.size()+info.cVariables.indexOf(var)]);
+                tlmPorts.last() << var << name+"_"+var+"__";
+            }
         }
     }
 
@@ -1312,207 +1308,127 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
     }
     else
     {
-        QStringList input;
+        QString type;
+        QStringList qVars;
+        QStringList cVars;
 
         QDomElement portElement = tlmRoot.firstChildElement("tlmport");
         while(!portElement.isNull())
         {
-            input.clear();
+            type = portElement.attribute("type");
 
-            QString type = portElement.attribute("type");
-            input.append(type);
-
-            if(type=="hydraulicq" || type=="hydraulicc")
+            QStringList nodeTypes;
+            NodeInfo::getNodeTypes(nodeTypes);
+            Q_FOREACH(const QString &nodeType, nodeTypes)
             {
-                QDomElement pElement = portElement.firstChildElement("p");
-                QDomElement qElement = portElement.firstChildElement("q");
-                QDomElement cElement = portElement.firstChildElement("c");
-                QDomElement zElement = portElement.firstChildElement("Z");
-                if(pElement.isNull() || qElement.isNull() || cElement.isNull() || zElement.isNull())
+                NodeInfo info = NodeInfo(nodeType);
+                if(type == info.niceName+"q" || type == info.niceName+"c")
                 {
-                    printErrorMessage("Node type does not match variable names.");
-                    return false;
+                    Q_FOREACH(const QString &var, info.qVariables)
+                    {
+                        QDomElement element = portElement.firstChildElement(var);
+                        if(element.isNull())
+                        {
+                            printErrorMessage("Node type does not match variable names.");
+                            return false;
+                        }
+                        qVars.append(element.text());
+                    }
+                    Q_FOREACH(const QString &var, info.cVariables)
+                    {
+                        QDomElement element = portElement.firstChildElement(var);
+                        if(element.isNull())
+                        {
+                            printErrorMessage("Node type does not match variable names.");
+                            return false;
+                        }
+                        cVars.append(element.text());
+                    }
                 }
-                input.append(pElement.text());
-                input.append(qElement.text());
-                input.append(cElement.text());
-                input.append(zElement.text());
-            }
-            else if(type=="mechanicq" | type=="mechanicc")
-            {
-                QDomElement fElement = portElement.firstChildElement("F");
-                QDomElement xElement = portElement.firstChildElement("x");
-                QDomElement vElement = portElement.firstChildElement("v");
-                QDomElement meElement = portElement.firstChildElement("me");
-                QDomElement cElement = portElement.firstChildElement("c");
-                QDomElement zElement = portElement.firstChildElement("Z");
-                if(fElement.isNull() || xElement.isNull() || vElement.isNull() || meElement.isNull() || cElement.isNull() || zElement.isNull())
-                {
-                    printErrorMessage("Node type does not match variable names.");
-                    return false;
-                }
-                input.append(fElement.text());
-                input.append(xElement.text());
-                input.append(vElement.text());
-                input.append(meElement.text());
-                input.append(cElement.text());
-                input.append(zElement.text());
             }
 
-
-            if(input.first() == "hydraulicq" && input.size() == 5)
+            Q_FOREACH(const QString &nodeType, nodeTypes)
             {
-                if(outVarPortNames.contains(input[1]) && outVarPortNames.contains(input[2]) && inVarPortNames.contains(input[3]) && inVarPortNames.contains(input[4]))
+                NodeInfo info = NodeInfo(nodeType);
+                if(type == info.niceName+"q")
                 {
-                    printMessage("Adding hydraulic port of Q-type");
+                    QStringList varNames;
+                    tlmPortValueRefs.append(QStringList());
+                    Q_FOREACH(const QString &var, info.qVariables)
+                    {
+                        if(!outVarPortNames.contains(var))
+                        {
+                            printErrorMessage("Error in TLM specifications: Specified variable does not exist.");
+                            return false;
+                        }
+                        varNames << var;
+                        tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(var)]);
+                        outVarValueRefs.removeAt(outVarPortNames.indexOf(var));
+                        outVarPortNames.removeAll(var);
+                    }
+                    Q_FOREACH(const QString &var, info.cVariables)
+                    {
+                        if(!inVarPortNames.contains(var))
+                        {
+                            printErrorMessage("Error in TLM specifications: Specified variable does not exist.");
+                            return false;
+                        }
+                        varNames << var;
+                        tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(var)]);
+                        inVarValueRefs.removeAt(inVarPortNames.indexOf(var));
+                        inVarPortNames.removeAll(var);
+                    }
+
+                    printMessage("Adding "+info.niceName+" port of Q-type");
 
                     if(cqsType == "Signal" || cqsType == "Q")
                         cqsType = "Q";
                     else
                         cqsType = "";
 
-                    tlmPortTypes.append(input[0]);
-                    input.removeFirst();
-                    tlmPortVarNames.append(input);
-
-                    tlmPortValueRefs.append(QStringList());
-                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[0])]);
-                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[1])]);
-                    tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(input[2])]);
-                    tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(input[3])]);
-
-                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[0]));
-                    outVarPortNames.removeAll(input[0]);
-
-                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[1]));
-                    outVarPortNames.removeAll(input[1]);
-
-                    inVarValueRefs.removeAt(inVarPortNames.indexOf(input[2]));
-                    inVarPortNames.removeAll(input[2]);
-
-                    inVarValueRefs.removeAt(inVarPortNames.indexOf(input[3]));
-                    inVarPortNames.removeAll(input[3]);
+                    tlmPortTypes.append(type);
+                    tlmPortVarNames.append(varNames);
                 }
-            }
-            else if(input.first() == "hydraulicc" && input.size() == 5)
-            {
-                if(inVarPortNames.contains(input[1]) && inVarPortNames.contains(input[2]) && outVarPortNames.contains(input[3]) && outVarPortNames.contains(input[4]))
+                else if(type == info.niceName+"c")
                 {
-                    printMessage("Adding hydraulic port of C-type");
+                    QStringList varNames;
+                    tlmPortValueRefs.append(QStringList());
+                    Q_FOREACH(const QString &var, info.qVariables)
+                    {
+                        if(!inVarPortNames.contains(var))
+                        {
+                            printErrorMessage("Error in TLM specifications: Specified variable does not exist.");
+                            return false;
+                        }
+                        varNames << var;
+                        tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(var)]);
+                        inVarValueRefs.removeAt(inVarPortNames.indexOf(var));
+                        inVarPortNames.removeAll(var);
+                    }
+                    Q_FOREACH(const QString &var, info.cVariables)
+                    {
+                        if(!outVarPortNames.contains(var))
+                        {
+                            printErrorMessage("Error in TLM specifications: Specified variable does not exist.");
+                            return false;
+                        }
+                        varNames << var;
+                        tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(var)]);
+                        outVarValueRefs.removeAt(outVarPortNames.indexOf(var));
+                        outVarPortNames.removeAll(var);
+                    }
+
+                    printMessage("Adding "+info.niceName+" port of C-type");
 
                     if(cqsType == "Signal" || cqsType == "C")
                         cqsType = "C";
                     else
                         cqsType = "";
 
-                    tlmPortTypes.append(input[0]);
-                    input.removeFirst();
-                    tlmPortVarNames.append(input);
-
-                    tlmPortValueRefs.append(QStringList());
-                    tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(input[0])]);
-                    tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(input[1])]);
-                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[2])]);
-                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[3])]);
-
-                    inVarValueRefs.removeAt(inVarPortNames.indexOf(input[0]));
-                    inVarPortNames.removeAll(input[0]);
-
-                    inVarValueRefs.removeAt(inVarPortNames.indexOf(input[1]));
-                    inVarPortNames.removeAll(input[1]);
-
-                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[2]));
-                    outVarPortNames.removeAll(input[2]);
-
-                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[3]));
-                    outVarPortNames.removeAll(input[3]);
+                    tlmPortTypes.append(type);
+                    tlmPortVarNames.append(varNames);
                 }
             }
-            else if(input.first() == "mechanicq" && input.size() == 7)
-            {
-                if(outVarPortNames.contains(input[1]) && outVarPortNames.contains(input[2]) && outVarPortNames.contains(input[3]) && outVarPortNames.contains(input[4]) && inVarPortNames.contains(input[5]) && inVarPortNames.contains(input[6]))
-                {
-                    printMessage("Adding mechanical port of Q-type");
-
-                    if(cqsType == "Signal" || cqsType == "Q")
-                        cqsType = "Q";
-                    else
-                        cqsType = "";
-
-                    tlmPortTypes.append(input[0]);
-                    input.removeFirst();
-                    tlmPortVarNames.append(input);
-
-                    tlmPortValueRefs.append(QStringList());
-                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[0])]);
-                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[1])]);
-                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[2])]);
-                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[3])]);
-                    tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(input[4])]);
-                    tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(input[5])]);
-
-                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[0]));
-                    outVarPortNames.removeAll(input[0]);
-
-                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[1]));
-                    outVarPortNames.removeAll(input[1]);
-
-                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[2]));
-                    outVarPortNames.removeAll(input[2]);
-
-                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[3]));
-                    outVarPortNames.removeAll(input[3]);
-
-                    inVarValueRefs.removeAt(inVarPortNames.indexOf(input[4]));
-                    inVarPortNames.removeAll(input[4]);
-
-                    inVarValueRefs.removeAt(inVarPortNames.indexOf(input[5]));
-                    inVarPortNames.removeAll(input[5]);
-                }
-            }
-            else if(input.first() == "mechanicc" && input.size() == 7)
-            {
-                if(inVarPortNames.contains(input[1]) && inVarPortNames.contains(input[2]) && inVarPortNames.contains(input[3]) && inVarPortNames.contains(input[4]) && outVarPortNames.contains(input[5]) && outVarPortNames.contains(input[6]))
-                {
-                    printMessage("Adding mechanical port of C-type");
-
-                    if(cqsType == "Signal" || cqsType == "C")
-                        cqsType = "C";
-                    else
-                        cqsType = "";
-
-                    tlmPortTypes.append(input[0]);
-                    input.removeFirst();
-                    tlmPortVarNames.append(input);
-
-                    tlmPortValueRefs.append(QStringList());
-                    tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(input[0])]);
-                    tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(input[1])]);
-                    tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(input[2])]);
-                    tlmPortValueRefs.last().append(inVarValueRefs[inVarPortNames.indexOf(input[3])]);
-                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[4])]);
-                    tlmPortValueRefs.last().append(outVarValueRefs[outVarPortNames.indexOf(input[5])]);
-
-                    inVarValueRefs.removeAt(inVarPortNames.indexOf(input[0]));
-                    inVarPortNames.removeAll(input[0]);
-
-                    inVarValueRefs.removeAt(inVarPortNames.indexOf(input[1]));
-                    inVarPortNames.removeAll(input[1]);
-
-                    inVarValueRefs.removeAt(inVarPortNames.indexOf(input[2]));
-                    inVarPortNames.removeAll(input[2]);
-
-                    inVarValueRefs.removeAt(inVarPortNames.indexOf(input[3]));
-                    inVarPortNames.removeAll(input[3]);
-
-                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[4]));
-                    outVarPortNames.removeAll(input[4]);
-
-                    outVarValueRefs.removeAt(outVarPortNames.indexOf(input[5]));
-                    outVarPortNames.removeAll(input[5]);
-                }
-            }
-
             portElement = portElement.nextSiblingElement("tlmport");
         }
     }

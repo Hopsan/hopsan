@@ -408,99 +408,6 @@ QString replaceTags(QString str, QStringList tags, QStringList replacements)
 }
 
 
-//! @note First and last q-type variable must represent intensity and flow
-QStringList getQVariables(QString nodeType)
-{
-    QStringList retval;
-    if(nodeType == "NodeMechanic")
-    {
-        retval << "F" << "x" <<  "me" << "v";
-    }
-    if(nodeType == "NodeMechanicRotational")
-    {
-        retval << "T" << "th" << "w";
-    }
-    if(nodeType == "NodeHydraulic")
-    {
-        retval << "p" << "q";
-    }
-    if(nodeType == "NodePneumatic")
-    {
-        retval << "p" << "qm" << "qe";
-    }
-    if(nodeType == "NodeElectric")
-    {
-        retval << "U" << "i";
-    }
-    return retval;
-}
-
-
-//! @note c must come first and Zc last
-QStringList getCVariables(QString nodeType)
-{
-    QStringList retval;
-    if(nodeType == "NodeMechanic")
-    {
-        retval << "c" << "Zc";
-    }
-    if(nodeType == "NodeMechanicRotational")
-    {
-        retval << "c" << "Zc";
-    }
-    if(nodeType == "NodeHydraulic")
-    {
-        retval << "c" << "Zc";
-    }
-    if(nodeType == "NodePneumatic")
-    {
-        retval << "c" << "Zc";
-    }
-    if(nodeType == "NodeElectric")
-    {
-        retval << "c" << "Zc";
-    }
-    return retval;
-}
-
-
-//! @brief Returns list of variable enum names for specified node type
-//! @param nodeType Node type to use
-//! @note c must come first and Zc last
-QStringList getVariableLabels(QString nodeType)
-{
-    QStringList retval;
-    if(nodeType == "NodeMechanic")
-    {
-        retval << "FORCE" << "POSITION" << "EQMASS"  << "VELOCITY"<< "WAVEVARIABLE" << "CHARIMP";
-    }
-    if(nodeType == "NodeMechanicRotational")
-    {
-        retval << "TORQUE" << "ANGLE" << "ANGULARVELOCITY" << "WAVEVARIABLE" << "CHARIMP";
-    }
-    if(nodeType == "NodeHydraulic")
-    {
-        retval << "PRESSURE" << "FLOW" << "WAVEVARIABLE" << "CHARIMP";
-    }
-    if(nodeType == "NodePneumatic")
-    {
-        retval << "PRESSURE" << "MASSFLOW" << "ENERGYFLOW" << "WAVEVARIABLE" << "CHARIMP";
-    }
-    if(nodeType == "NodeElectric")
-    {
-        retval << "VOLTAGE" << "CURRENT" << "WAVEVARIABLE" << "CHARIMP";
-    }
-    if(nodeType == "NodeSignal")
-    {
-        retval << "VALUE";
-    }
-    return retval;
-}
-
-
-
-
-
 //! @brief Verifies that a system of equations is solveable (number of equations = number of unknowns etc)
 bool verifyEquationSystem(QList<Expression> equations, QList<Expression> stateVars, HopsanGenerator *pGenerator)
 {
@@ -639,5 +546,59 @@ QStringList getHopsanCoreIncludeFiles(bool skipDependencies)
                 "../HopsanCore/Dependencies/rapidxml-1.13/rapidxml_utils.hpp";
     return includeFiles;
 }
+
+
+
+
+NodeInfo::NodeInfo(QString nodeType)
+{
+    if(nodeType == "NodeMechanic")
+    {
+        niceName = "mechanic";
+        qVariables << "F" << "x" <<  "me" << "v";
+        cVariables << "c" << "Zc";
+        variableLabels << "FORCE" << "POSITION" << "EQMASS"  << "VELOCITY"<< "WAVEVARIABLE" << "CHARIMP";
+        varIdx << 1 << 2 << 0 << 5 << 3 << 4;
+    }
+    if(nodeType == "NodeMechanicRotational")
+    {
+        qVariables << "T" << "th" << "w";
+        cVariables << "c" << "Zc";
+        variableLabels << "TORQUE" << "ANGLE" << "ANGULARVELOCITY" << "WAVEVARIABLE" << "CHARIMP";
+        varIdx << 1 << 2 << 0 << 4 << 5;
+    }
+    if(nodeType == "NodeHydraulic")
+    {
+        qVariables << "p" << "q";
+        cVariables << "c" << "Zc";
+        variableLabels << "PRESSURE" << "FLOW" << "WAVEVARIABLE" << "CHARIMP";
+        varIdx << 1 << 0 << 3 << 4;
+    }
+    if(nodeType == "NodePneumatic")
+    {
+        qVariables << "p" << "qm" << "qe";
+        cVariables << "c" << "Zc";
+        variableLabels << "PRESSURE" << "MASSFLOW" << "ENERGYFLOW" << "WAVEVARIABLE" << "CHARIMP";
+        varIdx << 2 << 0 << 1 << 4 << 5;
+    }
+    if(nodeType == "NodeElectric")
+    {
+        qVariables << "U" << "i";
+        cVariables << "c" << "Zc";
+        variableLabels << "VOLTAGE" << "CURRENT" << "WAVEVARIABLE" << "CHARIMP";
+        varIdx << 0 << 1 << 2 << 3;
+    }
+    if(nodeType == "NodeSignal")
+    {
+        variableLabels << "VALUE";
+        varIdx << 0;
+    }
+}
+
+void NodeInfo::getNodeTypes(QStringList &nodeTypes)
+{
+    nodeTypes << "NodeMechanic" << "NodeMechanicRotational" << "NodeHydraulic" << "NodePneumatic" << "NodeElectric";
+}
+
 
 
