@@ -52,7 +52,7 @@
 // common paths
 #define MAINPATH gExecPath+"../"
 #define HELPPATH gExecPath+"../doc/user/html/"
-#define COMPONENTSPATH gExecPath+"../componentLibraries/defaultLibrary/components/"
+#define COMPONENTSPATH gExecPath+"../componentLibraries/defaultLibrary/"
 #define COREINCLUDEPATH gExecPath+"../HopsanCore/include/"
 #define MSVC2008_X86_PATH gExecPath+"MSVC2008_x86/"
 #define MSVC2010_X86_PATH gExecPath+"MSVC2010_x86/"
