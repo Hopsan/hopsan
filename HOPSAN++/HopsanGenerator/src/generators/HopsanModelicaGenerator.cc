@@ -502,7 +502,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         else if(ports[i].porttype == "PowerPort" && cqsType == "C")
         {
             QStringList qVars;
-            qVars << getQVariables(ports[i].nodetype);
+            qVars << NodeInfo(ports[i].nodetype).qVariables;
             for(int v=0; v<qVars.size(); ++v)
             {
                 nonStateVars.append(Expression(qVars[v]+num));
@@ -511,7 +511,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         else if(ports[i].porttype == "PowerPort" && cqsType == "Q")
         {
             QStringList cVars;
-            cVars << getCVariables(ports[i].nodetype);
+            cVars << NodeInfo(ports[i].nodetype).cVariables;
             for(int v=0; v<cVars.size(); ++v)
             {
                 nonStateVars.append(Expression(cVars[v]+num));
@@ -560,8 +560,8 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         {
             QStringList qVars;
             QStringList cVars;
-            qVars << getQVariables(ports[i].nodetype);
-            cVars << getCVariables(ports[i].nodetype);
+            qVars << NodeInfo(ports[i].nodetype).qVariables;
+            cVars << NodeInfo(ports[i].nodetype).cVariables;
             for(int v=0; v<qVars.size(); ++v)
             {
                 nonLocals.append(Expression(qVars[v]+num));      //Remove all Q-type variables

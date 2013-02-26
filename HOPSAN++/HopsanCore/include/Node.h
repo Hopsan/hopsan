@@ -44,6 +44,7 @@ class NodeDataDescription
 {
 public:
     std::string name;
+    std::string shortname;
     std::string unit;
     NodeDataVariableTypeT varType;
     unsigned int id;
@@ -62,7 +63,9 @@ class DLLIMPORTEXPORT Node
 
 public:
     Node(const size_t datalength);
-    void setDataCharacteristics(const size_t id, const std::string name, const std::string unit, const NodeDataVariableTypeT vartype=Default);
+    void setNiceName(const std::string nicename);
+    std::string getNiceName() const;
+    void setDataCharacteristics(const size_t id, const std::string name, const std::string shortname, const std::string unit, const NodeDataVariableTypeT vartype=Default);
 
     const NodeTypeT getNodeType() const;
     size_t getNumDataVariables() const;
@@ -96,6 +99,7 @@ protected:
     int getNumberOfPortsByType(int type);
 
     //Protected member variables
+    std::string mNiceName;
     std::vector<NodeDataDescription> mDataDescriptions;
     std::vector<double> mDataValues;
 

@@ -252,67 +252,59 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
         QString portName = "P"+numStr;
         QString portType = "PowerPort";
         QString nodeType;
+        QString cqType;
         QStringList mpndNames, dataTypes, causalities;
-        if(tlmPortTypes[i] == "hydraulicq")
+
+        QStringList nodeTypes;
+        NodeInfo::getNodeTypes(nodeTypes);
+        Q_FOREACH(const QString &type, nodeTypes)
         {
-            nodeType = "NodeHydraulic";
-            mpndNames << "p"+numStr;
-            mpndNames << "q"+numStr;
-            mpndNames << "c"+numStr;
-            mpndNames << "Zc"+numStr;
-            dataTypes << "NodeHydraulic::PRESSURE";
-            dataTypes << "NodeHydraulic::FLOW";
-            dataTypes << "NodeHydraulic::WAVEVARIABLE";
-            dataTypes << "NodeHydraulic::CHARIMP";
-            causalities << "output" << "output" << "input" << "input";
+            if(tlmPortTypes[i] == NodeInfo(type).niceName+"q")
+            {
+                nodeType = type;
+                cqType = "q";
+            }
+            else if(tlmPortTypes[i] == NodeInfo(type).niceName+"c")
+            {
+                nodeType = type;
+                cqType = "c";
+            }
         }
-        else if(tlmPortTypes[i] == "hydraulicc")
+
+        NodeInfo info = NodeInfo(nodeType);
+        if(cqType == "q")
         {
-            nodeType = "NodeHydraulic";
-            mpndNames << "p"+numStr;
-            mpndNames << "q"+numStr;
-            mpndNames << "c"+numStr;
-            mpndNames << "Zc"+numStr;
-            dataTypes << "NodeHydraulic::PRESSURE";
-            dataTypes << "NodeHydraulic::FLOW";
-            dataTypes << "NodeHydraulic::WAVEVARIABLE";
-            dataTypes << "NodeHydraulic::CHARIMP";
-            causalities << "input" << "input" << "output" << "output";
+            int i=0;
+            for(; i<info.qVariables.size(); ++i)
+            {
+                mpndNames << info.qVariables[i];
+                dataTypes << nodeType+"::"+info.variableLabels[i];
+                causalities << "output";
+            }
+            for(int j=0; j<info.cVariables.size(); ++j)
+            {
+                mpndNames << info.cVariables[j];
+                dataTypes << nodeType+"::"+info.variableLabels[i+j];
+                causalities << "input";
+            }
         }
-        else if(tlmPortTypes[i] == "mechanicq")
+        else if(cqType == "c")
         {
-            nodeType = "NodeMechanic";
-            mpndNames << "f"+numStr;
-            mpndNames << "x"+numStr;
-            mpndNames << "v"+numStr;
-            mpndNames << "me"+numStr;
-            mpndNames << "c"+numStr;
-            mpndNames << "Zc"+numStr;
-            dataTypes << "NodeMechanic::FORCE";
-            dataTypes << "NodeMechanic::POSITION";
-            dataTypes << "NodeMechanic::VELOCITY";
-            dataTypes << "NodeMechanic::EQMASS";
-            dataTypes << "NodeMechanic::WAVEVARIABLE";
-            dataTypes << "NodeMechanic::CHARIMP";
-            causalities << "output" << "output" << "output" << "output" << "input" << "input";
+            int i=0;
+            for(; i<info.qVariables.size(); ++i)
+            {
+                mpndNames << info.qVariables[i];
+                dataTypes << nodeType+"::"+info.variableLabels[i];
+                causalities << "input";
+            }
+            for(int j=0; j<info.cVariables.size(); ++j)
+            {
+                mpndNames << info.cVariables[j];
+                dataTypes << nodeType+"::"+info.variableLabels[i+j];
+                causalities << "output";
+            }
         }
-        else if(tlmPortTypes[i] == "mechanicc")
-        {
-            nodeType = "NodeMechanic";
-            mpndNames << "f"+numStr;
-            mpndNames << "x"+numStr;
-            mpndNames << "v"+numStr;
-            mpndNames << "me"+numStr;
-            mpndNames << "c"+numStr;
-            mpndNames << "Zc"+numStr;
-            dataTypes << "NodeMechanic::FORCE";
-            dataTypes << "NodeMechanic::POSITION";
-            dataTypes << "NodeMechanic::VELOCITY";
-            dataTypes << "NodeMechanic::EQMASS";
-            dataTypes << "NodeMechanic::WAVEVARIABLE";
-            dataTypes << "NodeMechanic::CHARIMP";
-            causalities << "input" << "input" << "input" << "input" << "output" << "output";
-        }
+
         for(int j=0; j<mpndNames.size(); ++j)
         {
             portSpecs << FMIPortSpecification(varName, portName, mpndNames[j], tlmPortValueRefs[i][j], portType, nodeType, dataTypes[j], causalities[j]);
@@ -821,7 +813,11 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
                 tlmPorts.last() << var << name+"_"+var+"__";
             }
         }
+        getInterfaceInfo(pSystem->getSubComponent(names[i])->getTypeName().c_str(), names[i].c_str(),
+                         inputVariables, inputComponents, inputPorts, inputDatatypes,
+                         outputVariables, outputComponents, outputPorts, outputDatatypes, tlmPorts);
     }
+
 
     //Collect information about system parameters
     QStringList parameterNames;
@@ -1434,4 +1430,185 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
     }
 
     return true;
+}
+
+
+void HopsanFMIGenerator::getInterfaceInfo(QString typeName, QString compName,
+                                          QStringList &inVars, QStringList &inComps, QStringList &inPorts, QList<int> &inDatatypes,
+                                          QStringList &outVars, QStringList &outComps, QStringList outPorts, QList<int> &outDatatypes,
+                                          QList<QStringList> &tlmPorts)
+{
+
+    if(typeName == "SignalInputInterface")
+    {
+        inVars.append(compName.remove(' ').remove("-"));
+        inComps.append(compName);
+        inPorts.append("out");
+        inDatatypes.append(0);
+    }
+    else if(typeName == "SignalOutputInterface")
+    {
+        outVars.append(compName.remove(' ').remove("-"));
+        outComps.append(compName);
+        outPorts.append("in");
+        outDatatypes.append(0);
+    }
+    else if(typeName == "HydraulicInterfaceC")
+    {
+        QString name=compName.remove(' ').remove("-");
+        outVars.append(name+"_p__");
+        outVars.append(name+"_q__");
+        inVars.append(name+"_c__");
+        inVars.append(name+"_Zc__");
+        outComps.append(compName);
+        outComps.append(compName);
+        inComps.append(compName);
+        inComps.append(compName);
+        outPorts.append("P1");
+        outPorts.append("P1");
+        inPorts.append("P1");
+        inPorts.append("P1");
+        outDatatypes.append(1);
+        outDatatypes.append(0);
+        inDatatypes.append(3);
+        inDatatypes.append(4);
+        tlmPorts.append(QStringList() << "hydraulicq" << "p" << name+"_p__" << "q" << name+"_q__" << "c" << name+"_c__" << "Z" << name+"_Zc__");
+    }
+    else if(typeName == "HydraulicInterfaceQ")
+    {
+        QString name=compName.remove(' ').remove("-");
+        inVars.append(name+"_p__");
+        inVars.append(name+"_q__");
+        outVars.append(name+"_c__");
+        outVars.append(name+"_Zc__");
+        inComps.append(compName);
+        inComps.append(compName);
+        outComps.append(compName);
+        outComps.append(compName);
+        inPorts.append("P1");
+        inPorts.append("P1");
+        outPorts.append("P1");
+        outPorts.append("P1");
+        inDatatypes.append(1);
+        inDatatypes.append(0);
+        outDatatypes.append(3);
+        outDatatypes.append(4);
+        tlmPorts.append(QStringList() << "hydraulicc" << "p" << name+"_p__" << "q" << name+"_q__" << "c" << name+"_c__" << "Z" << name+"_Zc__");
+    }
+    else if(typeName == "MechanicInterfaceC")
+    {
+        QString name=compName.remove(' ').remove("-");
+        outVars.append(name+"_F__");
+        outVars.append(name+"_x__");
+        outVars.append(name+"_v__");
+        outVars.append(name+"_me__");
+        inVars.append(name+"_c__");
+        inVars.append(name+"_Zc__");
+        outComps.append(compName);
+        outComps.append(compName);
+        outComps.append(compName);
+        outComps.append(compName);
+        inComps.append(compName);
+        inComps.append(compName);
+        outPorts.append("P1");
+        outPorts.append("P1");
+        outPorts.append("P1");
+        outPorts.append("P1");
+        inPorts.append("P1");
+        inPorts.append("P1");
+        outDatatypes.append(1);
+        outDatatypes.append(2);
+        outDatatypes.append(0);
+        outDatatypes.append(5);
+        inDatatypes.append(3);
+        inDatatypes.append(4);
+        tlmPorts.append(QStringList() << "mechanicq" << "F" << name+"_F__" << "x" << name+"_x__" << "v" << name+"_v__" << "me" << name+"_me__" << "c" << name+"_c__" << "Z" << name+"_Zc__");
+    }
+    else if(typeName == "MechanicInterfaceQ")
+    {
+        QString name=compName.remove(' ').remove("-");
+        inVars.append(name+"_F__");
+        inVars.append(name+"_x__");
+        inVars.append(name+"_v__");
+        inVars.append(name+"_me__");
+        outVars.append(name+"_c__");
+        outVars.append(name+"_Zc__");
+        inComps.append(compName);
+        inComps.append(compName);
+        inComps.append(compName);
+        inComps.append(compName);
+        outComps.append(compName);
+        outComps.append(compName);
+        inPorts.append("P1");
+        inPorts.append("P1");
+        inPorts.append("P1");
+        inPorts.append("P1");
+        outPorts.append("P1");
+        outPorts.append("P1");
+        inDatatypes.append(1);
+        inDatatypes.append(2);
+        inDatatypes.append(0);
+        inDatatypes.append(5);
+        outDatatypes.append(3);
+        outDatatypes.append(4);
+        tlmPorts.append(QStringList() << "mechanicc" << "F" << name+"_F__" << "x" << name+"_x__" << "v" << name+"_v__" << "me" << name+"_me__" << "c" << name+"_c__" << "Z" << name+"_Zc__");
+    }
+    else if(typeName == "MechanicRotationalInterfaceC")
+    {
+        QString name=compName.remove(' ').remove("-");
+        outVars.append(name+"_T__");
+        outVars.append(name+"_a__");
+        outVars.append(name+"_w__");
+        outVars.append(name+"_Je__");
+        inVars.append(name+"_c__");
+        inVars.append(name+"_Zc__");
+        outComps.append(compName);
+        outComps.append(compName);
+        outComps.append(compName);
+        outComps.append(compName);
+        inComps.append(compName);
+        inComps.append(compName);
+        outPorts.append("P1");
+        outPorts.append("P1");
+        outPorts.append("P1");
+        outPorts.append("P1");
+        inPorts.append("P1");
+        inPorts.append("P1");
+        outDatatypes.append(1);
+        outDatatypes.append(2);
+        outDatatypes.append(0);
+        outDatatypes.append(5);
+        inDatatypes.append(3);
+        inDatatypes.append(4);
+        tlmPorts.append(QStringList() << "mechanicrotationalq" << "T" << name+"_T__" << "a" << name+"_a__" << "w" << name+"_w__" << "Je" << name+"_Je__" << "c" << name+"_c__" << "Z" << name+"_Zc__");
+    }
+    else if(typeName == "MechanicRotationalInterfaceQ")
+    {
+        QString name=compName.remove(' ').remove("-");
+        inVars.append(name+"_T__");
+        inVars.append(name+"_a__");
+        inVars.append(name+"_w__");
+        inVars.append(name+"_Je__");
+        outVars.append(name+"_c__");
+        outVars.append(name+"_Zc__");
+        inComps.append(compName);
+        inComps.append(compName);
+        inComps.append(compName);
+        inComps.append(compName);
+        outComps.append(compName);
+        outComps.append(compName);
+        inPorts.append("P1");
+        inPorts.append("P1");
+        inPorts.append("P1");
+        inPorts.append("P1");
+        outPorts.append("P1");
+        outPorts.append("P1");
+        inDatatypes.append(1);
+        inDatatypes.append(2);
+        inDatatypes.append(0);
+        inDatatypes.append(5);
+        outDatatypes.append(3);
+        outDatatypes.append(4);
+        tlmPorts.append(QStringList() << "mechanicrotationalc" << "T" << name+"_T__" << "a" << name+"_a__" << "w" << name+"_w__" << "Je" << name+"_Je__" << "c" << name+"_c__" << "Z" << name+"_Zc__");
+    }
 }

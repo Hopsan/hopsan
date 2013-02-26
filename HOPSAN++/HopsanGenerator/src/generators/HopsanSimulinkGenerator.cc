@@ -526,7 +526,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, hopsan::Compo
         jout = totOut+i;
         wrapperReplace16.append("    pOutputNode"+QString::number(jout)+" = pComponentSystem->getSubComponent(\""+outputComponents.at(i)+"\")->getPort(\""+outputPorts.at(i)+"\")->getSafeNodeDataPtr(0, 0);\n");
     }
-    for(int i=0; i<nOutputs; ++i)
+    for(int i=0; i<nInputs; ++i)
     {
         jin = totIn+i;
         wrapperReplace16.append("    pInputNode"+QString::number(jin)+" = pComponentSystem->getSubComponent(\""+inputComponents.at(i)+"\")->getPort(\""+inputPorts.at(i)+"\")->getSafeNodeDataPtr(0, 0);\n");

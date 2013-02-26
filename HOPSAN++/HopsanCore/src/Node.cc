@@ -109,14 +109,27 @@ double *Node::getDataPtr(const size_t data_type)
 }
 
 
+void Node::setNiceName(const string nicename)
+{
+    mNiceName = nicename;
+}
+
+
+string Node::getNiceName() const
+{
+    return mNiceName;
+}
+
+
 //! @brief Set data name and unit for a specified data variable
 //! @param [in] id This is the ENUM data id
 //! @param [in] name The variable name
 //! @param [in] unit The variable unit
-void Node::setDataCharacteristics(const size_t id, const string name, const string unit, const NodeDataVariableTypeT vartype)
+void Node::setDataCharacteristics(const size_t id, const string name, const string shortname, const string unit, const NodeDataVariableTypeT vartype)
 {
     mDataDescriptions[id].id = id;
     mDataDescriptions[id].name = name;
+    mDataDescriptions[id].shortname = shortname;
     mDataDescriptions[id].unit = unit;
     mDataDescriptions[id].varType = vartype;
 }
@@ -398,7 +411,7 @@ DLLIMPORTEXPORT Node* hopsan::createNodeTemp(HopsanEssentials *pHopEss, NodeType
     Node *pDummy = new Node(20);
     for (int i=0; i<20; ++i)
     {
-        pDummy->setDataCharacteristics(i, "name", "unit", Default);
+        pDummy->setDataCharacteristics(i, "name", "shortname", "unit", Default);
     }
     return pDummy;
 }

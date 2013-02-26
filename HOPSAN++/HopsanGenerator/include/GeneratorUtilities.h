@@ -156,9 +156,6 @@ void replaceTaggedSection(QString &str, QString tag, QString replacement);
 QString replaceTag(QString str, QString tag, QString replacement);
 QString replaceTags(QString str, QStringList tags, QStringList replacements);
 
-QStringList getQVariables(QString nodeType);
-QStringList getCVariables(QString nodeType);
-QStringList getVariableLabels(QString nodeType);
 bool verifyEquationSystem(QList<SymHop::Expression> equations, QList<SymHop::Expression> stateVars, HopsanGenerator *pGenerator);
 void findAllFilesInFolderAndSubFolders(QString path, QString ext, QStringList &files);
 QStringList getHopsanCoreSourceFiles();

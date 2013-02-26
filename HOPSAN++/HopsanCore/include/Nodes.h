@@ -60,7 +60,8 @@ public:
 private:
     NodeSignal() : Node(DATALENGTH)
     {
-        setDataCharacteristics(VALUE, "Value", "-");
+        setNiceName("signal");
+        setDataCharacteristics(VALUE, "Value", "y", "-");
     }
 };
 
@@ -78,12 +79,13 @@ public:
 private:
     NodeHydraulic() : Node(DATALENGTH)
     {
-        setDataCharacteristics(FLOW, "Flow", "m^3/s");
-        setDataCharacteristics(PRESSURE, "Pressure", "Pa");
-        setDataCharacteristics(TEMPERATURE, "Temperature", "K", Hidden);
-        setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "Pa", TLM);
-        setDataCharacteristics(CHARIMP, "CharImp", "?", TLM);
-        setDataCharacteristics(HEATFLOW, "HeatFlow", "?", Hidden);
+        setNiceName("hydraulic");
+        setDataCharacteristics(FLOW, "Flow", "q", "m^3/s");
+        setDataCharacteristics(PRESSURE, "Pressure", "p", "Pa");
+        setDataCharacteristics(TEMPERATURE, "Temperature", "T", "K", Hidden);
+        setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "c", "Pa", TLM);
+        setDataCharacteristics(CHARIMP, "CharImp", "Zc", "?", TLM);
+        setDataCharacteristics(HEATFLOW, "HeatFlow", "Qdot", "?", Hidden);
     }
 
     virtual void setSpecialStartValues(Node *pNode)
@@ -108,12 +110,13 @@ public:
 private:
     NodePneumatic() : Node(DATALENGTH)
     {
-        setDataCharacteristics(MASSFLOW, "MassFlow", "kg/s");
-        setDataCharacteristics(PRESSURE, "Pressure", "Pa");
-        setDataCharacteristics(TEMPERATURE, "Temperature", "K", Hidden);
-        setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "Pa", TLM);
-        setDataCharacteristics(CHARIMP, "CharImp", "?", TLM);
-        setDataCharacteristics(ENERGYFLOW, "EnergyFlow", "J/s", Hidden);
+        setNiceName("pneumatic");
+        setDataCharacteristics(MASSFLOW, "MassFlow", "mdot", "kg/s");
+        setDataCharacteristics(PRESSURE, "Pressure", "p", "Pa");
+        setDataCharacteristics(TEMPERATURE, "Temperature", "T", "K", Hidden);
+        setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "c", "Pa", TLM);
+        setDataCharacteristics(CHARIMP, "CharImp", "Zc", "?", TLM);
+        setDataCharacteristics(ENERGYFLOW, "EnergyFlow", "Qdot", "J/s", Hidden);
     }
 
     virtual void setSpecialStartValues(Node *pNode)
@@ -137,12 +140,13 @@ public:
 private:
     NodeMechanic() : Node(DATALENGTH)
     {
-        setDataCharacteristics(VELOCITY, "Velocity", "m/s");
-        setDataCharacteristics(FORCE, "Force", "N");
-        setDataCharacteristics(POSITION, "Position", "m");
-        setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "N", TLM);
-        setDataCharacteristics(CHARIMP, "CharImp", "N s/m", TLM);
-        setDataCharacteristics(EQMASS, "EquivalentMass", "kg", Hidden);
+        setNiceName("mechanic");
+        setDataCharacteristics(VELOCITY, "v", "Velocity", "m/s");
+        setDataCharacteristics(FORCE, "F", "Force", "N");
+        setDataCharacteristics(POSITION, "x", "Position", "m");
+        setDataCharacteristics(WAVEVARIABLE, "c", "WaveVariable", "N", TLM);
+        setDataCharacteristics(CHARIMP, "Zc", "CharImp", "N s/m", TLM);
+        setDataCharacteristics(EQMASS, "me", "EquivalentMass", "kg", Hidden);
     }
 
     virtual void setSpecialStartValues(Node *pNode)
@@ -165,12 +169,13 @@ public:
 private:
     NodeMechanicRotational() : Node(DATALENGTH)
     {
-        setDataCharacteristics(ANGULARVELOCITY, "Angular Velocity", "rad/s");
-        setDataCharacteristics(TORQUE, "Torque", "Nm");
-        setDataCharacteristics(ANGLE, "Angle", "rad");
-        setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "Nm", TLM);
-        setDataCharacteristics(CHARIMP, "CharImp", "?", TLM);
-        setDataCharacteristics(EQINERTIA, "Equivalent Inertia", "kgm^2", Hidden);
+        setNiceName("mechanicrotational");
+        setDataCharacteristics(ANGULARVELOCITY, "w", "Angular Velocity", "rad/s");
+        setDataCharacteristics(TORQUE, "T", "Torque", "Nm");
+        setDataCharacteristics(ANGLE, "a", "Angle", "rad");
+        setDataCharacteristics(WAVEVARIABLE, "c", "WaveVariable", "Nm", TLM);
+        setDataCharacteristics(CHARIMP, "Zc", "CharImp", "?", TLM);
+        setDataCharacteristics(EQINERTIA, "Je", "Equivalent Inertia", "kgm^2", Hidden);
     }
 
     virtual void setSpecialStartValues(Node *pNode)
@@ -195,10 +200,11 @@ public:
 private:
     NodeElectric() : Node(DATALENGTH)
     {
-        setDataCharacteristics(VOLTAGE, "Voltage", "V");
-        setDataCharacteristics(CURRENT, "Current", "A");
-        setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "V", TLM);
-        setDataCharacteristics(CHARIMP, "CharImp", "V/A", TLM);
+        setNiceName("electric");
+        setDataCharacteristics(VOLTAGE, "U", "Voltage", "V");
+        setDataCharacteristics(CURRENT, "I", "Current", "A");
+        setDataCharacteristics(WAVEVARIABLE, "c", "WaveVariable", "V", TLM);
+        setDataCharacteristics(CHARIMP, "Zc", "CharImp", "V/A", TLM);
     }
 
     virtual void setSpecialStartValues(Node *pNode)

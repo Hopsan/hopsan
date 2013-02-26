@@ -180,7 +180,7 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
         }
         else
         {
-            varNames << getQVariables(comp.portNodeTypes[i]) << getCVariables(comp.portNodeTypes[i]);
+            varNames << NodeInfo(comp.portNodeTypes[i]).qVariables << NodeInfo(comp.portNodeTypes[i]).cVariables;
         }
 
         for(int v=0; v<varNames.size()-1; ++v)
@@ -231,7 +231,7 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
         else
         {
             QStringList vars;
-            vars << getQVariables(comp.portNodeTypes[i]) << getCVariables(comp.portNodeTypes[i]);
+            vars << NodeInfo(comp.portNodeTypes[i]).qVariables << NodeInfo(comp.portNodeTypes[i]).cVariables;
 
             for(int v=0; v<vars.size(); ++v)
             {
@@ -311,8 +311,8 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
         }
         else
         {
-            varNames << getQVariables(comp.portNodeTypes[i]) << getCVariables(comp.portNodeTypes[i]);
-            varLabels << getVariableLabels(comp.portNodeTypes[i]);
+            varNames << NodeInfo(comp.portNodeTypes[i]).qVariables << NodeInfo(comp.portNodeTypes[i]).cVariables;
+            varLabels << NodeInfo(comp.portNodeTypes[i]).variableLabels;
         }
 
         for(int v=0; v<varNames.size(); ++v)
@@ -345,7 +345,7 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
             }
             else
             {
-                varNames << getQVariables(comp.portNodeTypes[i]) << getCVariables(comp.portNodeTypes[i]);
+                varNames << NodeInfo(comp.portNodeTypes[i]).qVariables << NodeInfo(comp.portNodeTypes[i]).cVariables;
             }
 
             for(int v=0; v<varNames.size(); ++v)
@@ -377,11 +377,11 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
                 }
                 if(comp.portNodeTypes[i] != "NodeSignal" && (comp.cqsType == "Q" || comp.cqsType == "S"))
                 {
-                    varNames << getQVariables(comp.portNodeTypes[i]);
+                    varNames << NodeInfo(comp.portNodeTypes[i]).qVariables;
                 }
                 if(comp.portNodeTypes[i] != "NodeSignal" && (comp.cqsType == "C" || comp.cqsType == "S"))
                 {
-                    varNames << getCVariables(comp.portNodeTypes[i]);
+                    varNames << NodeInfo(comp.portNodeTypes[i]).cVariables;
                 }
                 for(int v=0; v<varNames.size(); ++v)
                 {
@@ -411,16 +411,16 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
         }
 //        if(comp.portNodeTypes[i] != "NodeSignal" && (comp.cqsType == "C" || comp.cqsType == "S"))
 //        {
-//            varNames << getQVariables(comp.portNodeTypes[i]);
+//            varNames << NodeInfo(comp.portNodeTypes[i]).qVariables;
 //        }
 //        if(comp.portNodeTypes[i] != "NodeSignal" && (comp.cqsType == "Q" || comp.cqsType == "S"))
 //        {
-//            varNames << getCVariables(comp.portNodeTypes[i]);
+//            varNames << NodeInfo(comp.portNodeTypes[i]).cVariables;
 //        }
         else
         {
-            varNames << getQVariables(comp.portNodeTypes[i]);       //Always create both C- and Q-type variables, regaradless of component type (they may be needed)
-            varNames << getCVariables(comp.portNodeTypes[i]);
+            varNames << NodeInfo(comp.portNodeTypes[i]).qVariables;       //Always create both C- and Q-type variables, regaradless of component type (they may be needed)
+            varNames << NodeInfo(comp.portNodeTypes[i]).cVariables;
         }
 
         for(int v=0; v<varNames.size(); ++v)
@@ -451,11 +451,11 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
         }
         if(comp.portNodeTypes[i] != "NodeSignal" && (comp.cqsType == "Q" || comp.cqsType == "S"))
         {
-            varNames << getQVariables(comp.portNodeTypes[i]);
+            varNames << NodeInfo(comp.portNodeTypes[i]).qVariables;
         }
         if(comp.portNodeTypes[i] != "NodeSignal" && (comp.cqsType == "C" || comp.cqsType == "S"))
         {
-            varNames << getCVariables(comp.portNodeTypes[i]);
+            varNames << NodeInfo(comp.portNodeTypes[i]).cVariables;
         }
 
         for(int v=0; v<varNames.size(); ++v)

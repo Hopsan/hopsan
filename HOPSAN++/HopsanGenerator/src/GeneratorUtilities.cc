@@ -48,6 +48,7 @@
 #include "generators/HopsanGenerator.h"
 #include "symhop/SymHop.h"
 
+#include "HopsanEssentials.h"
 #include "ComponentSystem.h"
 #include "Port.h"
 #include "version.h"
@@ -552,46 +553,27 @@ QStringList getHopsanCoreIncludeFiles(bool skipDependencies)
 
 NodeInfo::NodeInfo(QString nodeType)
 {
-    if(nodeType == "NodeMechanic")
+    hopsan::HopsanEssentials hopsanCore;
+    Node *pNode = hopsanCore.createNode(nodeType.toStdString());
+
+    niceName = pNode->getNiceName().c_str();
+    for(int i=0; i<pNode->getDataDescriptions()->size(); ++i)
     {
-        niceName = "mechanic";
-        qVariables << "F" << "x" <<  "me" << "v";
-        cVariables << "c" << "Zc";
-        variableLabels << "FORCE" << "POSITION" << "EQMASS"  << "VELOCITY"<< "WAVEVARIABLE" << "CHARIMP";
-        varIdx << 1 << 2 << 0 << 5 << 3 << 4;
+        if(pNode->getDataDescription(i)->varType == Default)        //Q variable
+        {
+            qVariables << pNode->getDataDescription(i)->shortname.c_str();
+            variableLabels << QString(pNode->getDataDescription(i)->name.c_str()).toUpper();
+            varIdx << pNode->getDataDescription(i)->id;
+        }
     }
-    if(nodeType == "NodeMechanicRotational")
+    for(int i=0; i<pNode->getDataDescriptions()->size(); ++i)
     {
-        qVariables << "T" << "th" << "w";
-        cVariables << "c" << "Zc";
-        variableLabels << "TORQUE" << "ANGLE" << "ANGULARVELOCITY" << "WAVEVARIABLE" << "CHARIMP";
-        varIdx << 1 << 2 << 0 << 4 << 5;
-    }
-    if(nodeType == "NodeHydraulic")
-    {
-        qVariables << "p" << "q";
-        cVariables << "c" << "Zc";
-        variableLabels << "PRESSURE" << "FLOW" << "WAVEVARIABLE" << "CHARIMP";
-        varIdx << 1 << 0 << 3 << 4;
-    }
-    if(nodeType == "NodePneumatic")
-    {
-        qVariables << "p" << "qm" << "qe";
-        cVariables << "c" << "Zc";
-        variableLabels << "PRESSURE" << "MASSFLOW" << "ENERGYFLOW" << "WAVEVARIABLE" << "CHARIMP";
-        varIdx << 2 << 0 << 1 << 4 << 5;
-    }
-    if(nodeType == "NodeElectric")
-    {
-        qVariables << "U" << "i";
-        cVariables << "c" << "Zc";
-        variableLabels << "VOLTAGE" << "CURRENT" << "WAVEVARIABLE" << "CHARIMP";
-        varIdx << 0 << 1 << 2 << 3;
-    }
-    if(nodeType == "NodeSignal")
-    {
-        variableLabels << "VALUE";
-        varIdx << 0;
+        if(pNode->getDataDescription(i)->varType == TLM)        //C variable
+        {
+            cVariables << pNode->getDataDescription(i)->shortname.c_str();
+            variableLabels << QString(pNode->getDataDescription(i)->name.c_str()).toUpper();
+            varIdx << pNode->getDataDescription(i)->id;
+        }
     }
 }
 
