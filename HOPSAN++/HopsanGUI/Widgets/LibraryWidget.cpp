@@ -729,7 +729,8 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
         return;
     }
 
-    QString libName = QString(libDirObject.dirName().left(1).toUpper() + libDirObject.dirName().right(libDirObject.dirName().size()-1));
+    //QString libName = QString(libDirObject.dirName().left(1).toUpper() + libDirObject.dirName().right(libDirObject.dirName().size()-1));
+    QString libName = libDirObject.dirName();
 
     //qDebug() << "Adding tree entry: " << libName;
     LibraryContentsTree *pTree = pParentTree->addChild(libName);        //Create the node
