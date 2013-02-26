@@ -1,75 +1,30 @@
 #ifndef HOPSANDEFAULTSIGNALCOMPONENTS_H
 #define HOPSANDEFAULTSIGNALCOMPONENTS_H
 
-#include "SignalVariableTimeDelay.hpp"
-#include "SignalAnimationSlider.hpp"
-#include "SignalAbsoluteValue.hpp"
-#include "SignalSource.hpp"
-#include "SignalGain.hpp"
-#include "SignalSink.hpp"
-#include "SignalStep.hpp"
-#include "SignalSineWave.hpp"
-#include "SignalSquareWave.hpp"
-#include "SignalRamp.hpp"
-#include "SignalAdd.hpp"
-#include "SignalSubtract.hpp"
-#include "SignalMultiply.hpp"
-#include "SignalDivide.hpp"
-#include "SignalSaturation.hpp"
-#include "SignalDeadZone.hpp"
-#include "SignalLP1Filter.hpp"
-#include "SignalLP2Filter.hpp"
-#include "SignalHP1Filter.hpp"
-#include "SignalHP2Filter.hpp"
-#include "SignalPIlead.hpp"
-#include "SignalPID.hpp"
-#include "SignalMin.hpp"
-#include "SignalMax.hpp"
-#include "SignalPulse.hpp"
-#include "SignalPulseWave.hpp"
-#include "SignalSoftStep.hpp"
-#include "SignalIntegrator.hpp"
-#include "SignalIntegrator2.hpp"
-#include "SignalIntegratorLimited.hpp"
-#include "SignalIntegratorLimited2.hpp"
-#include "SignalTimeDelay.hpp"
-#include "SignalFirstOrderFilter.hpp"
-#include "SignalFirstOrderTransferFunction.hpp"
-#include "SignalSecondOrderFilter.hpp"
-#include "SignalSecondOrderTransferFunction.hpp"
-#include "SignalPIlead.hpp"
-#include "SignalHysteresis.hpp"
-#include "SignalSquare.hpp"
-#include "SignalTime.hpp"
-#include "SignalStopSimulation.hpp"
-#include "SignalGreaterThan.hpp"
-#include "SignalSmallerThan.hpp"
-#include "SignalAnd.hpp"
-#include "SignalOr.hpp"
-#include "SignalXor.hpp"
-#include "SignalSum.hpp"
-#include "SignalDummy.hpp"
-#include "SignalPower.hpp"
-#include "SignalInputInterface.hpp"
-#include "SignalOutputInterface.hpp"
+
+
+
+
+
+
+
+
+
+
+
+
 #include "SignalUndefinedConnection.hpp"
-#include "SignalNoiseGenerator.hpp"
-#include "SignalAdditiveNoise.hpp"
-#include "SignalStepExponentialDelay.hpp"
-#include "SignalDualRoute.hpp"
-#include "SignalTripleRoute.hpp"
-#include "SignalQuadRoute.hpp"
+
+
+
+
 #include "SignalBETest.hpp"
-#include "SignalSin.hpp"
-#include "SignalCos.hpp"
-#include "SignalTan.hpp"
-#include "SignalLookUpTable2D.hpp"
-#include "SignalSign.hpp"
-#include "SignalSub.hpp"
-#include "SignalStaircase.hpp"
-#include "SignalAnimationGauge.hpp"
-#include "SignalDisplay.hpp"
-#include "SignalUnitDelay.hpp"
-#include "SignalSRlatch.hpp"
+
+
+
+
+
+
+
 
 #endif // HOPSANDEFAULTSIGNALCOMPONENTS_H

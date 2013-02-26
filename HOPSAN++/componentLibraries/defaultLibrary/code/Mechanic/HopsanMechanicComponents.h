@@ -1,40 +1,9 @@
 #ifndef HOPSANMECHANICCOMPONENTS_H
 #define HOPSANMECHANICCOMPONENTS_H
 
-#include "MechanicForceTransformer.hpp"
-#include "MechanicVelocityTransformer.hpp"
-#include "MechanicAngularVelocityTransformer.hpp"
-#include "MechanicTorqueTransformer.hpp"
-#include "MechanicTranslationalMass.hpp"
-#include "MechanicTranslationalMassWithLever.hpp"
-#include "MechanicTranslationalMassWithCoulombFriction.hpp"
-#include "MechanicTranslationalSpring.hpp"
-#include "MechanicRotationalInertia.hpp"
-#include "MechanicRotationalInertiaWithGearRatio.hpp"
-#include "MechanicRotationalInertiaWithSingleGear.hpp"
-#include "MechanicTorsionalSpring.hpp"
-#include "MechanicSpeedSensor.hpp"
-#include "MechanicForceSensor.hpp"
-#include "MechanicPositionSensor.hpp"
-#include "MechanicAngleSensor.hpp"
-#include "MechanicTranslationalLosslessConnector.hpp"
-#include "MechanicAngularVelocitySensor.hpp"
-#include "MechanicTorqueSensor.hpp"
-#include "MechanicMultiPortTranslationalMass.hpp"
-#include "MechanicInterfaceC.hpp"
-#include "MechanicInterfaceQ.hpp"
-#include "MechanicRotationalInterfaceC.hpp"
-#include "MechanicRotationalInterfaceQ.hpp"
-#include "MechanicRackAndPinion.hpp"
-#include "MechanicJLink.hpp"
-#include "MechanicThetaSource.hpp"
-#include "MechanicVehicle1D.hpp"
-#include "MechanicRotationalInertiaWithCoulumbFriction.hpp"
-#include "MechanicFixedPosition.hpp"
-#include "MechanicFreeLengthWall.hpp"
-#include "MechanicRotShaft.hpp"
-#include "MechanicSwashPlate.hpp"
-#include "MechanicMotor.hpp"
-#include "MechanicCylinderBlockWithSwashPlate.hpp"
+
+
+
+
 
 #endif // HOPSANMECHANICCOMPONENTS_H
