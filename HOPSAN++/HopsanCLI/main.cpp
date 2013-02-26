@@ -117,6 +117,7 @@ int main(int argc, char *argv[])
                 initTimer.TocPrint();
                 if (initSuccess)
                 {
+                    cout << "Simulating... Please Wait!" << endl;
                     TicToc simuTimer("SimulationTime");
                     pRootSystem->simulate(startTime, stopTime);
                     simuTimer.TocPrint();
