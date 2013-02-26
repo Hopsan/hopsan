@@ -8,7 +8,7 @@ TEMPLATE = lib
 TARGET = defaultComponentLibrary
 
 # Destination for the compiled dll. $${PWD}/ means the same directory as this .pro file, even if you use shadow build
-DESTDIR = $${PWD}
+DESTDIR = $${PWD}/
 
 # The location to search for the Hopsan include files, by specifying the path here, you dont need to do this everywhere in all of your component .hpp files
 # You can also add additional paths for eg. your own Utility functions, just add additional INCLUDEPATH *= ... lines.
@@ -98,9 +98,6 @@ HEADERS += \
     Signal/Non-Linearities/SignalHysteresis.hpp \
     Signal/Non-Linearities/SignalDeadZone.hpp \
     Signal/Non-Linearities/SignalAdditiveNoise.hpp \
-    Signal/Signal Routing/SignalTripleRoute.hpp \
-    Signal/Signal Routing/SignalQuadRoute.hpp \
-    Signal/Signal Routing/SignalDualRoute.hpp \
     Hydraulic/HopsanDefaultHydraulicComponents.h \
     Hydraulic/Valves/Hydraulic22DirectionalValve.hpp \
     Hydraulic/Valves/HydraulicValve416.hpp \
@@ -123,9 +120,6 @@ HEADERS += \
     Hydraulic/Valves/Hydraulic32DirectionalValve.hpp \
     Hydraulic/Valves/Hydraulic22Valve.hpp \
     Hydraulic/Valves/Hydraulic22PoppetValve.hpp \
-    Hydraulic/restrictors/HydraulicTurbulentOrifice.hpp \
-    Hydraulic/restrictors/HydraulicLossLessConnector.hpp \
-    Hydraulic/restrictors/HydraulicLaminarOrifice.hpp \
     Hydraulic/Restrictors/HydraulicTurbulentOrifice.hpp \
     Hydraulic/Restrictors/HydraulicLossLessConnector.hpp \
     Hydraulic/Restrictors/HydraulicLaminarOrifice.hpp \
@@ -133,9 +127,6 @@ HEADERS += \
     Hydraulic/Sensors/HydraulicPressureSensor.hpp \
     Hydraulic/Sensors/HydraulicFlowSensor.hpp \
     Hydraulic/Sensors/HopsanDefaultHydraulicSensors.h \
-    Hydraulic/Linear Actuators/HydraulicCylinderC.hpp \
-    Hydraulic/Linear Actuators/HydraulicCylinderQ.hpp \
-    Hydraulic/Machine Parts/HydraulicValvePlate.hpp \
     Hydraulic/Pumps&Motors/HydraulicVariableDisplacementPump.hpp \
     Hydraulic/Pumps&Motors/HydraulicVariableDisplacementMotorQ.hpp \
     Hydraulic/Pumps&Motors/HydraulicPressureControlledPump.hpp \
@@ -180,8 +171,6 @@ HEADERS += \
     Mechanic/Linear/MechanicForceTransformer.hpp \
     Mechanic/Linear/MechanicForceSensor.hpp \
     Mechanic/Linear/MechanicFixedPosition.hpp \
-    Mechanic/Rotational/MechanicRotationalInterfaceQ.hpp \
-    Mechanic/Rotational/MechanicRotationalInterfaceC.hpp \
     Mechanic/Rotational/MechanicRotationalInertiaWithSingleGear.hpp \
     Mechanic/Rotational/MechanicRotationalInertiaWithGearRatio.hpp \
     Mechanic/Rotational/MechanicRotationalInertiaWithCoulumbFriction.hpp \
@@ -230,29 +219,12 @@ HEADERS += \
     Special/SignalFFB/SignalFFBandIn.hpp \
     Special/SignalFFB/SignalFFBand.hpp \
     Special/SignalFFB/SignalFFB.hpp \
-    Special/AeroSignalWaypoint.hpp \
-    Special/AeroSignalTimeAccelerator.hpp \
-    Special/AeroSignalStateMonitor.hpp \
-    Special/AeroSignalEarthCoordinates.hpp \
-    Special/AeroSignalAttitudeTVCcontrol.hpp \
-    Special/AeroSignalAttitudeControl.hpp \
-    Special/AeroAeroVehicleTVC.hpp \
-    Special/AeroAeroPropeller.hpp \
-    Special/AeroAeroJetEngine.hpp \
-    Special/AeroAeroFuelTank.hpp \
-    Special/AeroAeroAtmosphere.hpp \
-    Special/AeroAeroAircraft6DOFS.hpp \
-    Special/AeroAeroAircraft6DOF.hpp \
-    Special/AeroHopsanDefaultAerocomponents.h \
     Special/Benchmarking/HopsanDefaultBenchmarkingComponents.h \
     Special/SignalFFB/HopsanDefaultFBBComponents.h \
     Special/HopsanDefaultSpecialComponents.h \
     Special/MechanicVehicle1D.hpp \
     Hydraulic/MachineParts/MechanicSwashPlate.hpp \
     Hydraulic/MachineParts/MechanicCylinderBlockWithSwashPlate.hpp \
-    Special/AeroFuelHydraulicFuelTankG.hpp \
-    Special/AeroFuelHydraulicCentrifugalPumpJ.hpp \
-    Special/AeroFuelHydraulicCentrifugalPump.hpp \
     Hydraulic/Valves/HydraulicOverCenterValve.hpp \
     Hydraulic/Valves/HydraulicOpenCenterValve.hpp \
     Hydraulic/Restrictors/HydraulicLossLessTConnector.hpp \
@@ -260,7 +232,9 @@ HEADERS += \
     defaultComponentLibraryInternal.h \
     Signal/HopsanDefaultSignalComponents.h \
     Mechanic/HopsanDefaultMechanicComponents.h \
-    Electric/HopsanDefaultElectricComponents.h
+    Electric/HopsanDefaultElectricComponents.h \
+    Connectivity/MechanicRotationalInterfaceQ.hpp \
+    Connectivity/MechanicRotationalInterfaceC.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \
