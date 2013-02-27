@@ -1,0 +1,18 @@
+// This is a "cc include file" do not attempt to compile this file, it should be included insede an other cc file.
+
+    pComponentFactory->registerCreatorFunction("ElectricBattery", ElectricBattery::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricCapacitance2", ElectricCapacitance2::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricCapacitanceMultiPort", ElectricCapacitanceMultiPort::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricGround", ElectricGround::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricPWMdceq", ElectricPWMdceq::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricIcontroller", ElectricIcontroller::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricInductance", ElectricInductance::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricIsource", ElectricIsource::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricIsensor", ElectricIsensor::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricMotor", ElectricMotor::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricMotorGear", ElectricMotorGear::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricResistor", ElectricResistor::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricVarResistor", ElectricVarResistor::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricSwitch", ElectricSwitch::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricUsource", ElectricUsource::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricUsensor", ElectricUsensor::Creator);

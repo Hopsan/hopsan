@@ -239,3 +239,7 @@ HEADERS += \
 SOURCES += \
     defaultComponentLibraryInternal.cc \
     defaultComponentLibrary.cc
+
+OTHER_FILES += \
+    Special/SignalFFB/HopsanDefaultFBBComponents.cci \
+    Electric/HopsanDefaultElectricComponents.cci

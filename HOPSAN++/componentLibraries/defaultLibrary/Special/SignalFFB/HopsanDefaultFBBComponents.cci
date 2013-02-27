@@ -1,0 +1,9 @@
+// This is a "cc include file" do not attempt to compile this file, it should be included insede an other cc file.
+
+pComponentFactory->registerCreatorFunction("SignalFFB", SignalFFB::Creator);
+pComponentFactory->registerCreatorFunction("SignalFFBand", SignalFFBand::Creator);
+pComponentFactory->registerCreatorFunction("SignalFFBandIn", SignalFFBandIn::Creator);
+pComponentFactory->registerCreatorFunction("SignalFFBor", SignalFFBor::Creator);
+pComponentFactory->registerCreatorFunction("SignalFFBorIn", SignalFFBorIn::Creator);
+pComponentFactory->registerCreatorFunction("SignalFFBloop", SignalFFBloop::Creator);
+pComponentFactory->registerCreatorFunction("SignalFFBloopIn", SignalFFBloopIn::Creator);
