@@ -37,9 +37,9 @@ SOURCES += \
     exampleComponentLib.cc
 
 HEADERS += \
-    component_code/MyExampleVolume.hpp \
-    component_code/MyExampleOrifice.hpp \
-    component_code/SignalSum.hpp
+    HydraulicComponents/MyExampleVolume.hpp \
+    HydraulicComponents/MyExampleOrifice.hpp \
+    SignalComponents/SignalSum.hpp
 
 OTHER_FILES += \
     hopsanDebugReleaseCompile.prf

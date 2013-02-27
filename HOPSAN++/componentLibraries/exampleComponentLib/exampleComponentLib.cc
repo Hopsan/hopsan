@@ -16,9 +16,9 @@
 // Include your component code code files here
 // If you have lots of them you can include them in separate .h files and then include those files here instead.
 
-#include "component_code/MyExampleOrifice.hpp"
-#include "component_code/MyExampleVolume.hpp"
-#include "component_code/SignalSum.hpp"
+#include "HydraulicComponents/MyExampleOrifice.hpp"
+#include "HydraulicComponents/MyExampleVolume.hpp"
+#include "SignalComponents/SignalSum.hpp"
 
 // You need to include ComponentEssentials.h in order to gain access to the register function and the Factory types
 // Also use the hopsan namespace
