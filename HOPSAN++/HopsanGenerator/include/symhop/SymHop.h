@@ -164,4 +164,6 @@ bool isWhole(const double value);
 void validateFunctions();
 }
 
+bool fuzzyEqual(const double &x, const double &y);
+
 #endif // SYMHOP_H

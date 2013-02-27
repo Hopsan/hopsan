@@ -3250,17 +3250,24 @@ void SymHop::validateFunctions()
     expr = Expression("limit(x,0,4)");
     assert(expr.evaluate(variables) == 4);
     expr = Expression("x*y/z");
-    assert(expr.evaluate(variables) == x*y/z);
+    assert(fuzzyEqual(expr.evaluate(variables), x*y/z));
     expr = Expression("x^y");
-    assert(expr.evaluate(variables) == pow(x,y));
+    assert(fuzzyEqual(expr.evaluate(variables), pow(x,y)));
     expr = Expression("x*y+z");
-    assert(expr.evaluate(variables) == x*y+z);
+    assert(fuzzyEqual(expr.evaluate(variables), x*y+z));
     expr = Expression("x=y");
-    assert(expr.evaluate(variables) == 0);
+    assert(fuzzyEqual(expr.evaluate(variables), 0));
     expr = Expression("der(x)+y");
-    assert(expr.evaluate(variables) == y);
+    assert(fuzzyEqual(expr.evaluate(variables), y));
     expr = Expression("undefinedfunction(x)+y");
-    assert(expr.evaluate(variables) == y);
+    assert(fuzzyEqual(expr.evaluate(variables), y));
     expr = Expression("x+A");
-    assert(expr.evaluate(variables) == x);
+    assert(fuzzyEqual(expr.evaluate(variables), x));
+}
+
+
+
+bool fuzzyEqual(const double &x, const double &y)
+{
+    return (x<=y*1.0000001 && x*1.0000001>=y);
 }

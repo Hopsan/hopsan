@@ -134,56 +134,6 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                     portNames << name;
                 }
             }
-            else if(words.at(0) == "NodeMechanic")              //Mechanic connector
-            {
-                for(int i=0; i<lines.at(l).count(",")+1; ++i)
-                {
-                    QString name = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
-                    PortSpecification port("PowerPort", "NodeMechanic", name);
-                    portList.append(port);
-                    portNames << name;
-                }
-            }
-            else if(words.at(0) == "NodeMechanicRotational")    //Mechanic rotational connector
-            {
-                for(int i=0; i<lines.at(l).count(",")+1; ++i)
-                {
-                    QString name = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
-                    PortSpecification port("PowerPort", "NodeMechanicRotational", name);
-                    portList.append(port);
-                    portNames << name;
-                }
-            }
-            else if(words.at(0) == "NodeHydraulic")             //Hydraulic connector
-            {
-                for(int i=0; i<lines.at(l).count(",")+1; ++i)
-                {
-                    QString name = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
-                    PortSpecification port("PowerPort", "NodeHydraulic", name);
-                    portList.append(port);
-                    portNames << name;
-                }
-            }
-            else if(words.at(0) == "NodePneumatic")             //Pneumatic connector
-            {
-                for(int i=0; i<lines.at(l).count(",")+1; ++i)
-                {
-                    QString name = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
-                    PortSpecification port("PowerPort", "NodePneumatic", name);
-                    portList.append(port);
-                    portNames << name;
-                }
-            }
-            else if(words.at(0) == "NodeElectric")              //Electric connector
-            {
-                for(int i=0; i<lines.at(l).count(",")+1; ++i)
-                {
-                    QString name = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
-                    PortSpecification port("PowerPort", "NodeElectric", name);
-                    portList.append(port);
-                    portNames << name;
-                }
-            }
             else if(words.at(0) == "algorithm" && !equationPart)    //Initial algorithm part begins!
             {
                 initialAlgorithmPart = true;
@@ -201,6 +151,24 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
             else if(words.at(0) == "end" && (initialAlgorithmPart || equationPart || finalAlgorithmPart))       //We are finished
             {
                 break;
+            }
+            else                                                //Power connector
+            {
+                QStringList nodeTypes;
+                NodeInfo::getNodeTypes(nodeTypes);
+                Q_FOREACH(const QString &type, nodeTypes)
+                {
+                    if(words.at(0) == type)
+                    {
+                        for(int i=0; i<lines.at(l).count(",")+1; ++i)
+                        {
+                            QString name = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
+                            PortSpecification port("PowerPort", type, name);
+                            portList.append(port);
+                            portNames << name;
+                        }
+                    }
+                }
             }
         }
         else if(initialAlgorithmPart)

@@ -1347,57 +1347,7 @@ void HopsanFMIGenerator::getInterfaceInfo(QString typeName, QString compName,
 
     QString nodeType, cqType;
     QString portName = "P1";
-    if(typeName == "HydraulicInterfaceC")
-    {
-        nodeType = "NodeHydraulic";
-        cqType = "c";
-    }
-    else if(typeName == "HydraulicInterfaceQ")
-    {
-        nodeType = "NodeHydraulic";
-        cqType = "q";
-    }
-    if(typeName == "MechanicInterfaceC")
-    {
-        nodeType = "NodeMechanic";
-        cqType = "c";
-    }
-    else if(typeName == "MechanicInterfaceQ")
-    {
-        nodeType = "NodeMechanic";
-        cqType = "q";
-    }
-    if(typeName == "MechanicRotationalInterfaceC")
-    {
-        nodeType = "NodeMechanicRotational";
-        cqType = "c";
-    }
-    else if(typeName == "MechanicRotationalInterfaceQ")
-    {
-        nodeType = "NodeMechanicRotational";
-        cqType = "q";
-    }
-    if(typeName == "PneumaticInterfaceC")
-    {
-        nodeType = "NodePneumatic";
-        cqType = "c";
-    }
-    else if(typeName == "PneumaticInterfaceQ")
-    {
-        nodeType = "NodePneumatic";
-        cqType = "q";
-    }
-    if(typeName == "ElectricInterfaceC")
-    {
-        nodeType = "NodeElectric";
-        cqType = "c";
-    }
-    else if(typeName == "ElectricInterfaceQ")
-    {
-        nodeType = "NodeElectric";
-        cqType = "q";
-    }
-
+    getNodeAndCqTypeFromInterfaceComponent(typeName, nodeType, cqType);
 
     if(cqType == "c")
     {
@@ -1411,7 +1361,7 @@ void HopsanFMIGenerator::getInterfaceInfo(QString typeName, QString compName,
         {
             outVars.append(name+"_"+var+"__");
             outComps.append(compName);
-            outPorts.append("P1");
+            outPorts.append(portName);
             outDatatypes.append(info.varIdx[info.qVariables.indexOf(var)]);
             tlmPorts.last() << var << name+"_"+var+"__";
         }

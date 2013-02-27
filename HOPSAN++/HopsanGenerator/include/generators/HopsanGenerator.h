@@ -74,6 +74,7 @@ public:
     bool copyBoostIncludeFilesToDir(const QString &path) const;
     bool copyFile(const QString &source, const QString &target) const;
     void cleanUp(const QString &path, const QStringList &files, const QStringList &subDirs) const;
+    void getNodeAndCqTypeFromInterfaceComponent(const QString &compType, QString &nodeType, QString &cqType);
 
 protected:
     QString mOutputPath;

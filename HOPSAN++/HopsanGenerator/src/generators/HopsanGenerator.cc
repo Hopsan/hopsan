@@ -868,3 +868,59 @@ void HopsanGenerator::cleanUp(const QString &path, const QStringList &files, con
         removeDir(path+"/"+subDir);
     }
 }
+
+
+
+void HopsanGenerator::getNodeAndCqTypeFromInterfaceComponent(const QString &compType, QString &nodeType, QString &cqType)
+{
+    if(compType == "HydraulicInterfaceC")
+    {
+        nodeType = "NodeHydraulic";
+        cqType = "c";
+    }
+    else if(compType == "HydraulicInterfaceQ")
+    {
+        nodeType = "NodeHydraulic";
+        cqType = "q";
+    }
+    if(compType == "MechanicInterfaceC")
+    {
+        nodeType = "NodeMechanic";
+        cqType = "c";
+    }
+    else if(compType == "MechanicInterfaceQ")
+    {
+        nodeType = "NodeMechanic";
+        cqType = "q";
+    }
+    if(compType == "MechanicRotationalInterfaceC")
+    {
+        nodeType = "NodeMechanicRotational";
+        cqType = "c";
+    }
+    else if(compType == "MechanicRotationalInterfaceQ")
+    {
+        nodeType = "NodeMechanicRotational";
+        cqType = "q";
+    }
+    if(compType == "PneumaticInterfaceC")
+    {
+        nodeType = "NodePneumatic";
+        cqType = "c";
+    }
+    else if(compType == "PneumaticInterfaceQ")
+    {
+        nodeType = "NodePneumatic";
+        cqType = "q";
+    }
+    if(compType == "ElectricInterfaceC")
+    {
+        nodeType = "NodeElectric";
+        cqType = "c";
+    }
+    else if(compType == "ElectricInterfaceQ")
+    {
+        nodeType = "NodeElectric";
+        cqType = "q";
+    }
+}
