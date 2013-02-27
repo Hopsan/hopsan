@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject typename="MyExampleOrifice" displayname="MyExampleOrifice">
         <icons>
-            <icon scale="1" path="svg/orifice_user.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="orifice_user.svg" iconrotation="ON" type="user"/>
         </icons>
         <ports>
             <port x="1" y="0.5" a="0" name="P1"/>

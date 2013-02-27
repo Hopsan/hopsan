@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject typename="MyExampleVolume" displayname="MyExampleVolume">
         <icons>
-            <icon scale="1" path="svg/volume_user.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="volume_user.svg" iconrotation="ON" type="user"/>
         </icons>
         <ports>
             <port x="0" y="0.5" a="0" name="P1"/>
