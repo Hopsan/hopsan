@@ -15,7 +15,7 @@ public:
                               QStringList &outVarValueRefs, QStringList &outVarPortNames, QString &cqsType);
     void getInterfaceInfo(QString typeName, QString compName,
                           QStringList &inVars, QStringList &inComps, QStringList &inPorts, QList<int> &inDatatypes,
-                          QStringList &outVars, QStringList &outComps, QStringList outPorts, QList<int> &outDatatypes,
+                          QStringList &outVars, QStringList &outComps, QStringList &outPorts, QList<int> &outDatatypes,
                           QList<QStringList> &tlmPorts);
 };
 

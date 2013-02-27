@@ -274,33 +274,33 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
         NodeInfo info = NodeInfo(nodeType);
         if(cqType == "q")
         {
-            int i=0;
-            for(; i<info.qVariables.size(); ++i)
+            int j=0;
+            for(; j<info.qVariables.size(); ++j)
             {
-                mpndNames << info.qVariables[i];
-                dataTypes << nodeType+"::"+info.variableLabels[i];
+                mpndNames << "mpND_"+info.qVariables[j]+QString::number(i);
+                dataTypes << nodeType+"::"+info.variableLabels[j];
                 causalities << "output";
             }
-            for(int j=0; j<info.cVariables.size(); ++j)
+            for(int k=0; k<info.cVariables.size(); ++k)
             {
-                mpndNames << info.cVariables[j];
-                dataTypes << nodeType+"::"+info.variableLabels[i+j];
+                mpndNames << "mpND_"+info.cVariables[k]+QString::number(i);
+                dataTypes << nodeType+"::"+info.variableLabels[j+k];
                 causalities << "input";
             }
         }
         else if(cqType == "c")
         {
-            int i=0;
-            for(; i<info.qVariables.size(); ++i)
+            int j=0;
+            for(; j<info.qVariables.size(); ++j)
             {
-                mpndNames << info.qVariables[i];
-                dataTypes << nodeType+"::"+info.variableLabels[i];
+                mpndNames << "mpND_"+info.qVariables[j]+QString::number(i);
+                dataTypes << nodeType+"::"+info.variableLabels[j];
                 causalities << "input";
             }
-            for(int j=0; j<info.cVariables.size(); ++j)
+            for(int k=0; k<info.cVariables.size(); ++k)
             {
-                mpndNames << info.cVariables[j];
-                dataTypes << nodeType+"::"+info.variableLabels[i+j];
+                mpndNames << "mpND_"+info.cVariables[k]+QString::number(i);
+                dataTypes << nodeType+"::"+info.variableLabels[j+k];
                 causalities << "output";
             }
         }
@@ -701,118 +701,8 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     QList<QStringList> tlmPorts;
 
     std::vector<std::string> names = pSystem->getSubComponentNames();
-    for(size_t i=0; i<names.size(); ++i)
+        for(size_t i=0; i<names.size(); ++i)
     {
-        if(pSystem->getSubComponent(names[i])->getTypeName() == "SignalInputInterface")
-        {
-            inputVariables.append(QString(names[i].c_str()).remove(' ').remove("-"));
-            inputComponents.append(QString(names[i].c_str()));
-            inputPorts.append("out");
-            inputDatatypes.append(0);
-        }
-        else if(pSystem->getSubComponent(names[i])->getTypeName() == "SignalOutputInterface")
-        {
-            outputVariables.append(QString(names[i].c_str()).remove(' ').remove("-"));
-            outputComponents.append(QString(names[i].c_str()));
-            outputPorts.append("in");
-            outputDatatypes.append(0);
-        }
-        else if(pSystem->getSubComponent(names[i])->getTypeName() == "HydraulicInterfaceC")
-        {
-            QString name=QString(names[i].c_str()).remove(' ').remove("-");
-
-            NodeInfo info = NodeInfo("NodeHydraulic");
-
-            tlmPorts.append(QStringList() << info.niceName+"q");
-            Q_FOREACH(const QString &var, info.qVariables)
-            {
-                outputVariables.append(name+"_"+var+"__");
-                outputComponents.append(QString(names[i].c_str()));
-                outputPorts.append("P1");
-                outputDatatypes.append(info.varIdx[info.qVariables.indexOf(var)]);
-                tlmPorts.last() << var << name+"_"+var+"__";
-            }
-            Q_FOREACH(const QString &var, info.cVariables)
-            {
-                inputVariables.append(name+"_"+var+"__");
-                inputComponents.append(QString(names[i].c_str()));
-                inputPorts.append("P1");
-                inputDatatypes.append(info.varIdx[info.qVariables.size()+info.cVariables.indexOf(var)]);
-                tlmPorts.last() << var << name+"_"+var+"__";
-            }
-        }
-        else if(pSystem->getSubComponent(names[i])->getTypeName() == "HydraulicInterfaceQ")
-        {
-            QString name=QString(names[i].c_str()).remove(' ').remove("-");
-
-            NodeInfo info = NodeInfo("NodeHydraulic");
-
-            tlmPorts.append(QStringList() << info.niceName+"c");
-            Q_FOREACH(const QString &var, info.qVariables)
-            {
-                inputVariables.append(name+"_"+var+"__");
-                inputComponents.append(QString(names[i].c_str()));
-                inputPorts.append("P1");
-                inputDatatypes.append(info.varIdx[info.qVariables.indexOf(var)]);
-                tlmPorts.last() << var << name+"_"+var+"__";
-            }
-            Q_FOREACH(const QString &var, info.cVariables)
-            {
-                outputVariables.append(name+"_"+var+"__");
-                outputComponents.append(QString(names[i].c_str()));
-                outputPorts.append("P1");
-                outputDatatypes.append(info.varIdx[info.qVariables.size()+info.cVariables.indexOf(var)]);
-                tlmPorts.last() << var << name+"_"+var+"__";
-            }
-        }
-        else if(pSystem->getSubComponent(names[i])->getTypeName() == "MechanicInterfaceC")
-        {
-            QString name=QString(names[i].c_str()).remove(' ').remove("-");
-
-            NodeInfo info = NodeInfo("NodeMechanic");
-
-            tlmPorts.append(QStringList() << info.niceName+"q");
-            Q_FOREACH(const QString &var, info.qVariables)
-            {
-                outputVariables.append(name+"_"+var+"__");
-                outputComponents.append(QString(names[i].c_str()));
-                outputPorts.append("P1");
-                outputDatatypes.append(info.varIdx[info.qVariables.indexOf(var)]);
-                tlmPorts.last() << var << name+"_"+var+"__";
-            }
-            Q_FOREACH(const QString &var, info.cVariables)
-            {
-                inputVariables.append(name+"_"+var+"__");
-                inputComponents.append(QString(names[i].c_str()));
-                inputPorts.append("P1");
-                inputDatatypes.append(info.varIdx[info.qVariables.size()+info.cVariables.indexOf(var)]);
-                tlmPorts.last() << var << name+"_"+var+"__";
-            }
-        }
-        else if(pSystem->getSubComponent(names[i])->getTypeName() == "MechanicInterfaceQ")
-        {
-            QString name=QString(names[i].c_str()).remove(' ').remove("-");
-
-            NodeInfo info = NodeInfo("NodeMechanic");
-
-            tlmPorts.append(QStringList() << info.niceName+"c");
-            Q_FOREACH(const QString &var, info.qVariables)
-            {
-                inputVariables.append(name+"_"+var+"__");
-                inputComponents.append(QString(names[i].c_str()));
-                inputPorts.append("P1");
-                inputDatatypes.append(info.varIdx[info.qVariables.indexOf(var)]);
-                tlmPorts.last() << var << name+"_"+var+"__";
-            }
-            Q_FOREACH(const QString &var, info.cVariables)
-            {
-                outputVariables.append(name+"_"+var+"__");
-                outputComponents.append(QString(names[i].c_str()));
-                outputPorts.append("P1");
-                outputDatatypes.append(info.varIdx[info.qVariables.size()+info.cVariables.indexOf(var)]);
-                tlmPorts.last() << var << name+"_"+var+"__";
-            }
-        }
         getInterfaceInfo(pSystem->getSubComponent(names[i])->getTypeName().c_str(), names[i].c_str(),
                          inputVariables, inputComponents, inputPorts, inputDatatypes,
                          outputVariables, outputComponents, outputPorts, outputDatatypes, tlmPorts);
@@ -1350,7 +1240,7 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
                 {
                     QStringList varNames;
                     tlmPortValueRefs.append(QStringList());
-                    Q_FOREACH(const QString &var, info.qVariables)
+                    Q_FOREACH(const QString &var, qVars)
                     {
                         if(!outVarPortNames.contains(var))
                         {
@@ -1362,7 +1252,7 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
                         outVarValueRefs.removeAt(outVarPortNames.indexOf(var));
                         outVarPortNames.removeAll(var);
                     }
-                    Q_FOREACH(const QString &var, info.cVariables)
+                    Q_FOREACH(const QString &var, cVars)
                     {
                         if(!inVarPortNames.contains(var))
                         {
@@ -1389,7 +1279,7 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
                 {
                     QStringList varNames;
                     tlmPortValueRefs.append(QStringList());
-                    Q_FOREACH(const QString &var, info.qVariables)
+                    Q_FOREACH(const QString &var, qVars)
                     {
                         if(!inVarPortNames.contains(var))
                         {
@@ -1401,7 +1291,7 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
                         inVarValueRefs.removeAt(inVarPortNames.indexOf(var));
                         inVarPortNames.removeAll(var);
                     }
-                    Q_FOREACH(const QString &var, info.cVariables)
+                    Q_FOREACH(const QString &var, cVars)
                     {
                         if(!outVarPortNames.contains(var))
                         {
@@ -1425,6 +1315,8 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
                     tlmPortVarNames.append(varNames);
                 }
             }
+            cVars.clear();
+            qVars.clear();
             portElement = portElement.nextSiblingElement("tlmport");
         }
     }
@@ -1435,10 +1327,9 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
 
 void HopsanFMIGenerator::getInterfaceInfo(QString typeName, QString compName,
                                           QStringList &inVars, QStringList &inComps, QStringList &inPorts, QList<int> &inDatatypes,
-                                          QStringList &outVars, QStringList &outComps, QStringList outPorts, QList<int> &outDatatypes,
+                                          QStringList &outVars, QStringList &outComps, QStringList &outPorts, QList<int> &outDatatypes,
                                           QList<QStringList> &tlmPorts)
 {
-
     if(typeName == "SignalInputInterface")
     {
         inVars.append(compName.remove(' ').remove("-"));
@@ -1453,162 +1344,109 @@ void HopsanFMIGenerator::getInterfaceInfo(QString typeName, QString compName,
         outPorts.append("in");
         outDatatypes.append(0);
     }
-    else if(typeName == "HydraulicInterfaceC")
+
+    QString nodeType, cqType;
+    QString portName = "P1";
+    if(typeName == "HydraulicInterfaceC")
     {
-        QString name=compName.remove(' ').remove("-");
-        outVars.append(name+"_p__");
-        outVars.append(name+"_q__");
-        inVars.append(name+"_c__");
-        inVars.append(name+"_Zc__");
-        outComps.append(compName);
-        outComps.append(compName);
-        inComps.append(compName);
-        inComps.append(compName);
-        outPorts.append("P1");
-        outPorts.append("P1");
-        inPorts.append("P1");
-        inPorts.append("P1");
-        outDatatypes.append(1);
-        outDatatypes.append(0);
-        inDatatypes.append(3);
-        inDatatypes.append(4);
-        tlmPorts.append(QStringList() << "hydraulicq" << "p" << name+"_p__" << "q" << name+"_q__" << "c" << name+"_c__" << "Z" << name+"_Zc__");
+        nodeType = "NodeHydraulic";
+        cqType = "c";
     }
     else if(typeName == "HydraulicInterfaceQ")
     {
-        QString name=compName.remove(' ').remove("-");
-        inVars.append(name+"_p__");
-        inVars.append(name+"_q__");
-        outVars.append(name+"_c__");
-        outVars.append(name+"_Zc__");
-        inComps.append(compName);
-        inComps.append(compName);
-        outComps.append(compName);
-        outComps.append(compName);
-        inPorts.append("P1");
-        inPorts.append("P1");
-        outPorts.append("P1");
-        outPorts.append("P1");
-        inDatatypes.append(1);
-        inDatatypes.append(0);
-        outDatatypes.append(3);
-        outDatatypes.append(4);
-        tlmPorts.append(QStringList() << "hydraulicc" << "p" << name+"_p__" << "q" << name+"_q__" << "c" << name+"_c__" << "Z" << name+"_Zc__");
+        nodeType = "NodeHydraulic";
+        cqType = "q";
     }
-    else if(typeName == "MechanicInterfaceC")
+    if(typeName == "MechanicInterfaceC")
     {
-        QString name=compName.remove(' ').remove("-");
-        outVars.append(name+"_F__");
-        outVars.append(name+"_x__");
-        outVars.append(name+"_v__");
-        outVars.append(name+"_me__");
-        inVars.append(name+"_c__");
-        inVars.append(name+"_Zc__");
-        outComps.append(compName);
-        outComps.append(compName);
-        outComps.append(compName);
-        outComps.append(compName);
-        inComps.append(compName);
-        inComps.append(compName);
-        outPorts.append("P1");
-        outPorts.append("P1");
-        outPorts.append("P1");
-        outPorts.append("P1");
-        inPorts.append("P1");
-        inPorts.append("P1");
-        outDatatypes.append(1);
-        outDatatypes.append(2);
-        outDatatypes.append(0);
-        outDatatypes.append(5);
-        inDatatypes.append(3);
-        inDatatypes.append(4);
-        tlmPorts.append(QStringList() << "mechanicq" << "F" << name+"_F__" << "x" << name+"_x__" << "v" << name+"_v__" << "me" << name+"_me__" << "c" << name+"_c__" << "Z" << name+"_Zc__");
+        nodeType = "NodeMechanic";
+        cqType = "c";
     }
     else if(typeName == "MechanicInterfaceQ")
     {
-        QString name=compName.remove(' ').remove("-");
-        inVars.append(name+"_F__");
-        inVars.append(name+"_x__");
-        inVars.append(name+"_v__");
-        inVars.append(name+"_me__");
-        outVars.append(name+"_c__");
-        outVars.append(name+"_Zc__");
-        inComps.append(compName);
-        inComps.append(compName);
-        inComps.append(compName);
-        inComps.append(compName);
-        outComps.append(compName);
-        outComps.append(compName);
-        inPorts.append("P1");
-        inPorts.append("P1");
-        inPorts.append("P1");
-        inPorts.append("P1");
-        outPorts.append("P1");
-        outPorts.append("P1");
-        inDatatypes.append(1);
-        inDatatypes.append(2);
-        inDatatypes.append(0);
-        inDatatypes.append(5);
-        outDatatypes.append(3);
-        outDatatypes.append(4);
-        tlmPorts.append(QStringList() << "mechanicc" << "F" << name+"_F__" << "x" << name+"_x__" << "v" << name+"_v__" << "me" << name+"_me__" << "c" << name+"_c__" << "Z" << name+"_Zc__");
+        nodeType = "NodeMechanic";
+        cqType = "q";
     }
-    else if(typeName == "MechanicRotationalInterfaceC")
+    if(typeName == "MechanicRotationalInterfaceC")
     {
-        QString name=compName.remove(' ').remove("-");
-        outVars.append(name+"_T__");
-        outVars.append(name+"_a__");
-        outVars.append(name+"_w__");
-        outVars.append(name+"_Je__");
-        inVars.append(name+"_c__");
-        inVars.append(name+"_Zc__");
-        outComps.append(compName);
-        outComps.append(compName);
-        outComps.append(compName);
-        outComps.append(compName);
-        inComps.append(compName);
-        inComps.append(compName);
-        outPorts.append("P1");
-        outPorts.append("P1");
-        outPorts.append("P1");
-        outPorts.append("P1");
-        inPorts.append("P1");
-        inPorts.append("P1");
-        outDatatypes.append(1);
-        outDatatypes.append(2);
-        outDatatypes.append(0);
-        outDatatypes.append(5);
-        inDatatypes.append(3);
-        inDatatypes.append(4);
-        tlmPorts.append(QStringList() << "mechanicrotationalq" << "T" << name+"_T__" << "a" << name+"_a__" << "w" << name+"_w__" << "Je" << name+"_Je__" << "c" << name+"_c__" << "Z" << name+"_Zc__");
+        nodeType = "NodeMechanicRotational";
+        cqType = "c";
     }
     else if(typeName == "MechanicRotationalInterfaceQ")
     {
+        nodeType = "NodeMechanicRotational";
+        cqType = "q";
+    }
+    if(typeName == "PneumaticInterfaceC")
+    {
+        nodeType = "NodePneumatic";
+        cqType = "c";
+    }
+    else if(typeName == "PneumaticInterfaceQ")
+    {
+        nodeType = "NodePneumatic";
+        cqType = "q";
+    }
+    if(typeName == "ElectricInterfaceC")
+    {
+        nodeType = "NodeElectric";
+        cqType = "c";
+    }
+    else if(typeName == "ElectricInterfaceQ")
+    {
+        nodeType = "NodeElectric";
+        cqType = "q";
+    }
+
+
+    if(cqType == "c")
+    {
+        QString name=compName;
+        name.remove(' ').remove("-");
+
+        NodeInfo info = NodeInfo(nodeType);
+
+        tlmPorts.append(QStringList() << info.niceName+"q");
+        Q_FOREACH(const QString &var, info.qVariables)
+        {
+            outVars.append(name+"_"+var+"__");
+            outComps.append(compName);
+            outPorts.append("P1");
+            outDatatypes.append(info.varIdx[info.qVariables.indexOf(var)]);
+            tlmPorts.last() << var << name+"_"+var+"__";
+        }
+        Q_FOREACH(const QString &var, info.cVariables)
+        {
+            inVars.append(name+"_"+var+"__");
+            inComps.append(compName);
+            inPorts.append("P1");
+            inDatatypes.append(info.varIdx[info.qVariables.size()+info.cVariables.indexOf(var)]);
+            tlmPorts.last() << var << name+"_"+var+"__";
+        }
+    }
+    else if(cqType == "q")
+    {
         QString name=compName.remove(' ').remove("-");
-        inVars.append(name+"_T__");
-        inVars.append(name+"_a__");
-        inVars.append(name+"_w__");
-        inVars.append(name+"_Je__");
-        outVars.append(name+"_c__");
-        outVars.append(name+"_Zc__");
-        inComps.append(compName);
-        inComps.append(compName);
-        inComps.append(compName);
-        inComps.append(compName);
-        outComps.append(compName);
-        outComps.append(compName);
-        inPorts.append("P1");
-        inPorts.append("P1");
-        inPorts.append("P1");
-        inPorts.append("P1");
-        outPorts.append("P1");
-        outPorts.append("P1");
-        inDatatypes.append(1);
-        inDatatypes.append(2);
-        inDatatypes.append(0);
-        inDatatypes.append(5);
-        outDatatypes.append(3);
-        outDatatypes.append(4);
-        tlmPorts.append(QStringList() << "mechanicrotationalc" << "T" << name+"_T__" << "a" << name+"_a__" << "w" << name+"_w__" << "Je" << name+"_Je__" << "c" << name+"_c__" << "Z" << name+"_Zc__");
+
+        NodeInfo info = NodeInfo(nodeType);
+
+        tlmPorts.append(QStringList() << info.niceName+"c");
+        Q_FOREACH(const QString &var, info.qVariables)
+        {
+            inVars.append(name+"_"+var+"__");
+            inComps.append(compName);
+            inPorts.append("P1");
+            inDatatypes.append(info.varIdx[info.qVariables.indexOf(var)]);
+            tlmPorts.last() << var << name+"_"+var+"__";
+        }
+        Q_FOREACH(const QString &var, info.cVariables)
+        {
+            outVars.append(name+"_"+var+"__");
+            outComps.append(compName);
+            outPorts.append("P1");
+            outDatatypes.append(info.varIdx[info.qVariables.size()+info.cVariables.indexOf(var)]);
+            tlmPorts.last() << var << name+"_"+var+"__";
+        }
     }
 }
+
