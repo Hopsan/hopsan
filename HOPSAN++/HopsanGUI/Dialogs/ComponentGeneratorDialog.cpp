@@ -837,7 +837,15 @@ void ComponentGeneratorWizard::updatePage(int i)
             mPortIdPtrs.append(new QLabel(QString::number(portId), this));
             mPortNameLineEditPtrs.append(new QLineEdit("P"+QString::number(portId), this));
             mPortTypeComboBoxPtrs.append(new QComboBox(this));
-            mPortTypeComboBoxPtrs.last()->addItems(QStringList() << "Signal Input" << "Signal Output" << "Linear Mechanical" << "Rotational Mechanical" << "Electric" << "Hydraulic" << "Pneumatic");
+            mPortTypeComboBoxPtrs.last()->addItems(QStringList() << "Signal Input" << "Signal Output");
+            QStringList nodeTypes;
+            NodeInfo::getNodeTypes(nodeTypes);
+            Q_FOREACH(const QString &type, nodeTypes)
+            {
+                QString name = NodeInfo(type).niceName;
+                name.replace(0, 1, name[0].toUpper());
+                mPortTypeComboBoxPtrs.last()->addItem(name);
+            }
             mPortDefaultSpinBoxPtrs.append(new QDoubleSpinBox(this));
             mPortDefaultSpinBoxPtrs.last()->setValue(0);
 
@@ -906,11 +914,13 @@ void ComponentGeneratorWizard::generate()
         QString portType = mPortTypeComboBoxPtrs[p]->currentText();
         if(portType      == "Signal Input")             { portType = "NodeSignalIn"; }
         else if(portType == "Signal Output")            { portType = "NodeSignalOut"; }
-        else if(portType == "Linear Mechanical")        { portType = "NodeMechanic"; }
-        else if(portType == "Rotational Mechanical")    { portType = "NodeMechanicRotational"; }
-        else if(portType == "Electric")                 { portType = "NodeElectric"; }
-        else if(portType == "Hydraulic")                { portType = "NodeHydraulic"; }
-        else if(portType == "Pneumatic")                { portType = "NodePneumatic"; }
+        QStringList nodeTypes;
+        NodeInfo::getNodeTypes(nodeTypes);
+        Q_FOREACH(const QString &type, nodeTypes)
+        {
+            if(portType.toLower() == NodeInfo(type).niceName)
+                portType = type;
+        }
 
         if(nodeToPortMap.contains(portType))
         {
@@ -1085,13 +1095,15 @@ void ComponentGeneratorWizard::generate()
 
             if(type      == "Signal Input")             { nodeTypes << "NodeSignal"; }
             else if(type == "Signal Output")            { nodeTypes << "NodeSignal"; }
-            else if(type == "Linear Mechanical")        { nodeTypes << "NodeMechanic"; }
-            else if(type == "Rotational Mechanical")    { nodeTypes << "NodeMechanicRotational"; }
-            else if(type == "Electric")                 { nodeTypes << "NodeElectric"; }
-            else if(type == "Hydraulic")                { nodeTypes << "NodeHydraulic"; }
-            else if(type == "Pneumatic")                { nodeTypes << "NodePneumatic"; }
+            QStringList allNodeTypes;
+            NodeInfo::getNodeTypes(allNodeTypes);
+            Q_FOREACH(const QString &t, allNodeTypes)
+            {
+                if(type.toLower() == NodeInfo(t).niceName)
+                    nodeTypes << t;
+            }
 
-            output.append("        mp"+portNames[p]+" = add"+portTypes[p]+"(\""+portNames[p]+"\", "+nodeTypes[p]+"\")\n");
+            output.append("        mp"+portNames[p]+" = add"+portTypes[p]+"(\""+portNames[p]+"\", \""+nodeTypes[p]+"\")\n");
         }
         output.append("    }\n\n");
 

@@ -39,6 +39,7 @@ class Port;
 class SimulationHandler;
 }
 
+
 class CoreGeneratorAccess
 {
 public:
@@ -238,5 +239,21 @@ private:
 
 
 };
+
+
+class NodeInfo
+{
+    public:
+        NodeInfo(QString nodeType);
+        static void getNodeTypes(QStringList &nodeTypes);
+
+        QString niceName;
+        QStringList qVariables;
+        QStringList cVariables;
+        QStringList variableLabels;
+        QStringList shortNames;
+        QList<size_t> varIdx;
+};
+
 
 #endif // GUIROOTSYSTEM_H

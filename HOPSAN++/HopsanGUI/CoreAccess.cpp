@@ -1061,3 +1061,40 @@ void CoreSystemAccess::getSystemParameters(QVector<CoreParameterData> &rParamete
         rParameterDataVec[i] = data;
     }
 }
+
+
+
+
+NodeInfo::NodeInfo(QString nodeType)
+{
+    hopsan::Node *pNode = gHopsanCore.createNode(nodeType.toStdString());
+
+    niceName = pNode->getNiceName().c_str();
+    for(int i=0; i<pNode->getDataDescriptions()->size(); ++i)
+    {
+        if(pNode->getDataDescription(i)->varType == hopsan::Default)        //Q variable
+        {
+            qVariables << pNode->getDataDescription(i)->shortname.c_str();
+            variableLabels << QString(pNode->getDataDescription(i)->name.c_str()).toUpper();
+            varIdx << pNode->getDataDescription(i)->id;
+        }
+    }
+    for(int i=0; i<pNode->getDataDescriptions()->size(); ++i)
+    {
+        if(pNode->getDataDescription(i)->varType == hopsan::TLM)        //C variable
+        {
+            cVariables << pNode->getDataDescription(i)->shortname.c_str();
+            variableLabels << QString(pNode->getDataDescription(i)->name.c_str()).toUpper();
+            varIdx << pNode->getDataDescription(i)->id;
+        }
+    }
+}
+
+void NodeInfo::getNodeTypes(QStringList &nodeTypes)
+{
+    nodeTypes << "NodeMechanic" << "NodeMechanicRotational" << "NodeHydraulic" << "NodePneumatic" << "NodeElectric";
+}
+
+
+
+
