@@ -559,7 +559,8 @@ NodeInfo::NodeInfo(QString nodeType)
     niceName = pNode->getNiceName().c_str();
     for(int i=0; i<pNode->getDataDescriptions()->size(); ++i)
     {
-        if(pNode->getDataDescription(i)->varType == Default)        //Q variable
+        NodeDataVariableTypeT varType = pNode->getDataDescription(i)->varType;
+        if(varType == Default || varType == Flow || varType == Intensity)        //Q variable
         {
             qVariables << pNode->getDataDescription(i)->shortname.c_str();
             variableLabels << QString(pNode->getDataDescription(i)->name.c_str()).toUpper();

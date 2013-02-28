@@ -1072,11 +1072,21 @@ NodeInfo::NodeInfo(QString nodeType)
     niceName = pNode->getNiceName().c_str();
     for(int i=0; i<pNode->getDataDescriptions()->size(); ++i)
     {
-        if(pNode->getDataDescription(i)->varType == hopsan::Default)        //Q variable
+        if(pNode->getDataDescription(i)->varType == hopsan::Default ||
+           pNode->getDataDescription(i)->varType == hopsan::Intensity ||
+           pNode->getDataDescription(i)->varType == hopsan::Flow)        //Q variable
         {
             qVariables << pNode->getDataDescription(i)->shortname.c_str();
             variableLabels << QString(pNode->getDataDescription(i)->name.c_str()).toUpper();
             varIdx << pNode->getDataDescription(i)->id;
+        }
+        if(pNode->getDataDescription(i)->varType == hopsan::Intensity)
+        {
+            intensity = QString(pNode->getDataDescription(i)->name.c_str());
+        }
+        if(pNode->getDataDescription(i)->varType == hopsan::Flow)
+        {
+            flow = QString(pNode->getDataDescription(i)->name.c_str());
         }
     }
     for(int i=0; i<pNode->getDataDescriptions()->size(); ++i)

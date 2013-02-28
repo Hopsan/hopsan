@@ -146,11 +146,10 @@ int ModelObject::type() const
 }
 
 
-void ModelObject::getLosses(double &total, double &hydraulic, double &mechanic)
+void ModelObject::getLosses(double &total, QMap<QString, double> domainSpecificLosses)
 {
     total = mTotalLosses;
-    hydraulic = mHydraulicLosses;
-    mechanic = mMechanicLosses;
+    domainSpecificLosses = mDomainSpecificLosses;
 }
 
 
@@ -396,8 +395,6 @@ void ModelObject::showLosses()
     QTime time;
 
     mTotalLosses = 0.0;
-    mHydraulicLosses = 0.0;
-    mMechanicLosses = 0.0;
 
     if(getTypeCQS() == "S")
         return;
@@ -413,86 +410,49 @@ void ModelObject::showLosses()
         {
             portType = mPortListPtrs[p]->getPortType(CoreSystemAccess::INTERNALPORTTYPE);
         }
-        if(mPortListPtrs[p]->getNodeType() == "NodeHydraulic" && portType != "READPORT")
+        QStringList nodeTypes;
+        NodeInfo::getNodeTypes(nodeTypes);
+        Q_FOREACH(const QString &type, nodeTypes)
         {
-            //Power port, so we must cycle all connected ports and ask for their data
-            if(mPortListPtrs[p]->getPortType() == "POWERMULTIPORT" || mPortListPtrs[p]->getPortType() == "SIGNALMULTIPORT")
+            if(mPortListPtrs[p]->getNodeType() == type && portType != "READPORT")
             {
-                QVector<Port *> vConnectedPorts = mPortListPtrs[p]->getConnectedPorts();
-                for(int i=0; i<vConnectedPorts.size(); ++i)
+                //Power port, so we must cycle all connected ports and ask for their data
+                if(mPortListPtrs[p]->getPortType() == "POWERMULTIPORT" || mPortListPtrs[p]->getPortType() == "SIGNALMULTIPORT")
                 {
-                    if(vConnectedPorts.at(i)->getPortType() == "READPORT")
+                    QVector<Port *> vConnectedPorts = mPortListPtrs[p]->getConnectedPorts();
+                    for(int i=0; i<vConnectedPorts.size(); ++i)
                     {
-                        continue;
-                    }
-                    QString componentName = vConnectedPorts.at(i)->mpParentGuiModelObject->getName();
-                    QString portName = vConnectedPorts.at(i)->getPortName();
-                    QVector<double> vPressure = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, componentName, portName, "Pressure");
-                    QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, componentName, portName, "Flow");
-                    for(int s=0; s<vPressure.size()-1; ++s) //Minus one because of integration method
-                    {
-                        mTotalLosses += vPressure.at(s) * vFlow.at(s) * (mpParentContainerObject->getLogDataHandler()->getTimeVector(generation).at(s+1)-mpParentContainerObject->getLogDataHandler()->getTimeVector(generation).at(s));
-                        mHydraulicLosses += vPressure.at(s) * vFlow.at(s) * (mpParentContainerObject->getLogDataHandler()->getTimeVector(generation).at(s+1)-mpParentContainerObject->getLogDataHandler()->getTimeVector(generation).at(s));
+                        if(vConnectedPorts.at(i)->getPortType() == "READPORT")
+                        {
+                            continue;
+                        }
+                        QString componentName = vConnectedPorts.at(i)->mpParentGuiModelObject->getName();
+                        QString portName = vConnectedPorts.at(i)->getPortName();
+                        QVector<double> vIntensity = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, componentName, portName, NodeInfo(type).intensity);
+                        QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, componentName, portName, NodeInfo(type).flow);
+                        for(int s=0; s<vIntensity.size()-1; ++s) //Minus one because of integration method
+                        {
+                            mTotalLosses += vIntensity.at(s) * vFlow.at(s) * (mpParentContainerObject->getLogDataHandler()->getTimeVector(generation).at(s+1)-mpParentContainerObject->getLogDataHandler()->getTimeVector(generation).at(s));
+                            mDomainSpecificLosses.insert(NodeInfo(type).niceName, vIntensity.at(s) * vFlow.at(s) * (mpParentContainerObject->getLogDataHandler()->getTimeVector(generation).at(s+1)-mpParentContainerObject->getLogDataHandler()->getTimeVector(generation).at(s)));
+                        }
                     }
                 }
-            }
-            else    //Normal port!
-            {
-                QVector<double> vPressure = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, getName(), mPortListPtrs[p]->getPortName(), "Pressure");
-                QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, getName(), mPortListPtrs[p]->getPortName(), "Flow");
+                else    //Normal port!
+                {
+                    QVector<double> vIntensity = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, getName(), mPortListPtrs[p]->getPortName(), NodeInfo(type).intensity);
+                    QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, getName(), mPortListPtrs[p]->getPortName(), NodeInfo(type).flow);
 
-                for(int s=0; s<vPressure.size()-1; ++s) //Minus one because of integration method
-                {
-                    mTotalLosses += vPressure.at(s) * vFlow.at(s) *
-                                    (mpParentContainerObject->getLogDataHandler()->getTimeVector(generation).at(s+1) -
-                                     mpParentContainerObject->getLogDataHandler()->getTimeVector(generation).at(s));
-                    mHydraulicLosses += vPressure.at(s) * vFlow.at(s) *
-                                        (mpParentContainerObject->getLogDataHandler()->getTimeVector(generation).at(s+1) -
-                                         mpParentContainerObject->getLogDataHandler()->getTimeVector(generation).at(s));
-                }
-            }
-        }
-        else if(mPortListPtrs[p]->getNodeType() == "NodeMechanic")
-        {
-            //Power port, so we must cycle all connected ports and ask for their data
-            if(mPortListPtrs[p]->getPortType() == "POWERMULTIPORT" || mPortListPtrs[p]->getPortType() == "SIGNALMULTIPORT")
-            {
-                QVector<Port *> vConnectedPorts = mPortListPtrs[p]->getConnectedPorts();
-                for(int i=0; i<vConnectedPorts.size(); ++i)
-                {
-                    QString componentName = vConnectedPorts.at(i)->mpParentGuiModelObject->getName();
-                    QString portName = vConnectedPorts.at(i)->getPortName();
-                    QVector<double> vForce = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, componentName, portName, "Force");
-                    QVector<double> vVelocity = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, componentName, portName, "Velocity");
-                    for(int s=0; s<vForce.size()-1; ++s) //Minus one because of integration method
+                    for(int s=0; s<vIntensity.size()-1; ++s) //Minus one because of integration method
                     {
-                        mTotalLosses += vForce.at(s) * vVelocity.at(s) *
+                        mTotalLosses += vIntensity.at(s) * vFlow.at(s) *
                                         (mpParentContainerObject->getLogDataHandler()->getTimeVector(generation).at(s+1) -
                                          mpParentContainerObject->getLogDataHandler()->getTimeVector(generation).at(s));
-                        mMechanicLosses += vForce.at(s) * vVelocity.at(s) *
-                                           (mpParentContainerObject->getLogDataHandler()->getTimeVector(generation).at(s+1) -
-                                            mpParentContainerObject->getLogDataHandler()->getTimeVector(generation).at(s));
+                        mDomainSpecificLosses.insert(NodeInfo(type).niceName, vIntensity.at(s) * vFlow.at(s) *
+                                            (mpParentContainerObject->getLogDataHandler()->getTimeVector(generation).at(s+1) -
+                                             mpParentContainerObject->getLogDataHandler()->getTimeVector(generation).at(s)));
                     }
                 }
             }
-            else    //Normal port!
-            {
-                QVector<double> vForce = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, getName(), mPortListPtrs[p]->getPortName(), "Force");
-                QVector<double> vVelocity = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, getName(), mPortListPtrs[p]->getPortName(), "Velocity");
-                for(int s=0; s<vForce.size()-1; ++s)
-                {
-                    mTotalLosses += vForce.at(s) * vVelocity.at(s) *
-                                    (mpParentContainerObject->getLogDataHandler()->getTimeVector(generation).at(s+1) -
-                                     mpParentContainerObject->getLogDataHandler()->getTimeVector(generation).at(s));
-                    mMechanicLosses += vForce.at(s) * vVelocity.at(s) *
-                                       (mpParentContainerObject->getLogDataHandler()->getTimeVector(generation).at(s+1) -
-                                        mpParentContainerObject->getLogDataHandler()->getTimeVector(generation).at(s));
-                }
-            }
-        }
-        else
-        {
-            //Do something else?!
         }
     }
 
@@ -501,21 +461,16 @@ void ModelObject::showLosses()
         if(getTypeCQS() == "Q")     //Invert losses for Q components (because positive direction is defined as outwards for Q and inwards for C)
         {
             mTotalLosses *= -1;
-            mHydraulicLosses *= -1;
-            mMechanicLosses *= -1;
+            QMap<QString, double>::iterator it;
+            for(it=mDomainSpecificLosses.begin(); it!=mDomainSpecificLosses.end(); ++it)
+            {
+                it.value() *= -1;
+            }
         }
         QString totalString;
         totalString.setNum(mTotalLosses);
         QString totalAddedString;
         totalAddedString.setNum(-mTotalLosses);
-        QString hydraulicString;
-        hydraulicString.setNum(mHydraulicLosses);
-        QString hydraulicAddedString;
-        hydraulicAddedString.setNum(-mHydraulicLosses);
-        QString mechanicString;
-        mechanicString.setNum(mMechanicLosses);
-        QString mechanicAddedString;
-        mechanicAddedString.setNum(-mMechanicLosses);
 
         QString label;
         if(mTotalLosses > 0)
@@ -526,22 +481,20 @@ void ModelObject::showLosses()
         {
             label = "<p><span style=\"background-color:lightyellow; color:green\">&#160;&#160;Added energy: <b>" + totalAddedString + " J</b>&#160;&#160;";
         }
-        if(mHydraulicLosses > 0 && mHydraulicLosses != mTotalLosses)
+
+        QMap<QString, double>::iterator it;
+        for(it=mDomainSpecificLosses.begin(); it!=mDomainSpecificLosses.end(); ++it)
         {
-            label.append("<br>&#160;&#160;Hydraulic losses: <b>" + hydraulicString + " J</b>&#160;&#160;");
+            if(it.value() > 0 && it.value() != mTotalLosses)
+            {
+                label.append("<br>&#160;&#160;"+it.key()+" losses: <b>" + QString::number(it.value()) + " J</b>&#160;&#160;");
+            }
+            else if(it.value() < 0 && it.value() != mTotalLosses)
+            {
+                label.append("<br><font color=\"green\">&#160;&#160;Added " + QString::number(it.value()) + " energy: <b>" + QString::number(it.value()) + " J</b>&#160;&#160;</font>");
+            }
         }
-        else if(mHydraulicLosses < 0 && mHydraulicLosses != mTotalLosses)
-        {
-            label.append("<br><font color=\"green\">&#160;&#160;Added hydraulic energy: <b>" + hydraulicAddedString + " J</b>&#160;&#160;</font>");
-        }
-        if(mMechanicLosses > 0 && mMechanicLosses != mTotalLosses)
-        {
-            label.append("<br>&#160;&#160;Mechanic losses: <b>" + mechanicString + " J</b>&#160;&#160;");
-        }
-        else if(mMechanicLosses < 0 && mMechanicLosses != mTotalLosses)
-        {
-            label.append("<br><font color=\"green\">&#160;&#160;Added mechanic energy: <b>" + mechanicAddedString + " J</b>&#160;&#160;</font>");
-        }
+
         label.append("</span></p>");
         mpLossesDisplay->setHtml(label);
 

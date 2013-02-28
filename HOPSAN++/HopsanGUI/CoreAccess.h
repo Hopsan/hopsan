@@ -253,6 +253,8 @@ class NodeInfo
         QStringList variableLabels;
         QStringList shortNames;
         QList<size_t> varIdx;
+        QString intensity;
+        QString flow;
 };
 
 

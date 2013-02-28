@@ -80,8 +80,8 @@ private:
     NodeHydraulic() : Node(DATALENGTH)
     {
         setNiceName("hydraulic");
-        setDataCharacteristics(FLOW, "Flow", "q", "m^3/s");
-        setDataCharacteristics(PRESSURE, "Pressure", "p", "Pa");
+        setDataCharacteristics(FLOW, "Flow", "q", "m^3/s", Flow);
+        setDataCharacteristics(PRESSURE, "Pressure", "p", "Pa", Intensity);
         setDataCharacteristics(TEMPERATURE, "Temperature", "T", "K", Hidden);
         setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "c", "Pa", TLM);
         setDataCharacteristics(CHARIMP, "CharImp", "Zc", "?", TLM);
@@ -111,8 +111,8 @@ private:
     NodePneumatic() : Node(DATALENGTH)
     {
         setNiceName("pneumatic");
-        setDataCharacteristics(MASSFLOW, "MassFlow", "mdot", "kg/s");
-        setDataCharacteristics(PRESSURE, "Pressure", "p", "Pa");
+        setDataCharacteristics(MASSFLOW, "MassFlow", "mdot", "kg/s", Flow);
+        setDataCharacteristics(PRESSURE, "Pressure", "p", "Pa", Intensity);
         setDataCharacteristics(TEMPERATURE, "Temperature", "T", "K", Hidden);
         setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "c", "Pa", TLM);
         setDataCharacteristics(CHARIMP, "CharImp", "Zc", "?", TLM);
@@ -141,8 +141,8 @@ private:
     NodeMechanic() : Node(DATALENGTH)
     {
         setNiceName("mechanic");
-        setDataCharacteristics(VELOCITY, "Velocity", "v", "m/s");
-        setDataCharacteristics(FORCE, "Force", "F", "N");
+        setDataCharacteristics(VELOCITY, "Velocity", "v", "m/s", Flow);
+        setDataCharacteristics(FORCE, "Force", "F", "N", Intensity);
         setDataCharacteristics(POSITION, "Position", "x", "m");
         setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "c", "N", TLM);
         setDataCharacteristics(CHARIMP, "CharImp", "Zc", "N s/m", TLM);
@@ -170,8 +170,8 @@ private:
     NodeMechanicRotational() : Node(DATALENGTH)
     {
         setNiceName("mechanicrotational");
-        setDataCharacteristics(ANGULARVELOCITY, "Angular Velocity", "w", "rad/s");
-        setDataCharacteristics(TORQUE, "Torque", "T", "Nm");
+        setDataCharacteristics(ANGULARVELOCITY, "Angular Velocity", "w", "rad/s", Flow);
+        setDataCharacteristics(TORQUE, "Torque", "T", "Nm", Intensity);
         setDataCharacteristics(ANGLE, "Angle", "a", "rad");
         setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "c", "Nm", TLM);
         setDataCharacteristics(CHARIMP, "CharImp", "Zc", "?", TLM);
@@ -201,8 +201,8 @@ private:
     NodeElectric() : Node(DATALENGTH)
     {
         setNiceName("electric");
-        setDataCharacteristics(VOLTAGE, "Voltage", "U", "V");
-        setDataCharacteristics(CURRENT, "Current", "I", "A");
+        setDataCharacteristics(VOLTAGE, "Voltage", "U", "V", Intensity);
+        setDataCharacteristics(CURRENT, "Current", "I", "A", Flow);
         setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "c", "V", TLM);
         setDataCharacteristics(CHARIMP, "CharImp", "Zc", "V/A", TLM);
     }

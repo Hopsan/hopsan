@@ -2723,8 +2723,9 @@ void ContainerObject::showLossesFromDialog()
     for(moit = mModelObjectMap.begin(); moit != mModelObjectMap.end(); ++moit)
     {
         moit.value()->showLosses();
-        double componentTotal, componentHydraulic, componentMechanic;
-        moit.value()->getLosses(componentTotal, componentHydraulic, componentMechanic);
+        double componentTotal;
+        QMap<QString,double> componentDomainSpecific;
+        moit.value()->getLosses(componentTotal, componentDomainSpecific);
         if(componentTotal > 0)
             totalLosses += componentTotal;
     }
@@ -2735,8 +2736,9 @@ void ContainerObject::showLossesFromDialog()
     QList<double> componentLosses;
     for(moit = mModelObjectMap.begin(); moit != mModelObjectMap.end(); ++moit)
     {
-        double componentTotal, componentHydraulic, componentMechanic;
-        moit.value()->getLosses(componentTotal, componentHydraulic, componentMechanic);
+        double componentTotal;
+        QMap<QString,double> componentDomainSpecific;
+        moit.value()->getLosses(componentTotal, componentDomainSpecific);
         if(abs(componentTotal) > abs(limit*totalLosses))     //Condition for plotting
         {
             ++nComponents;

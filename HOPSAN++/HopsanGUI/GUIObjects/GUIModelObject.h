@@ -106,7 +106,7 @@ public:
     enum { Type = MODELOBJECT };
     int type() const;
 
-    void getLosses(double &total, double &hydraulic, double &mechanic);
+    void getLosses(double &total, QMap<QString, double> domainSpecificLosses);
     bool isLossesDisplayVisible();
 
 public slots:
@@ -175,8 +175,7 @@ protected:
     QGraphicsTextItem *mpLossesDisplay;
 
     double mTotalLosses;
-    double mHydraulicLosses;
-    double mMechanicLosses;
+    QMap<QString, double> mDomainSpecificLosses;
 
     // Used by C++ components
     QString mCppCode;

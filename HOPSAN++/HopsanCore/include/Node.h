@@ -38,7 +38,7 @@ class ConnectionAssistant;
 class HopsanEssentials;
 
 typedef std::string NodeTypeT;
-enum NodeDataVariableTypeT {Default, TLM, Hidden};
+enum NodeDataVariableTypeT {Default, Intensity, Flow, TLM, Hidden};
 
 class NodeDataDescription
 {
