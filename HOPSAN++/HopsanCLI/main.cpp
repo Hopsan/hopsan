@@ -65,6 +65,7 @@ int main(int argc, char *argv[])
         TCLAP::ValueArg<std::string> resultCSVSort("", "resultCSVSort", "Store in columns or in rows: [rows, cols]", false, "rows", "string", cmd);
         TCLAP::ValueArg<std::string> resultTypeOption("", "resultType", "How the results should be exported, choose: [final_csv, full_csv]", false, "final_csv", "string", cmd);
         TCLAP::ValueArg<std::string> resultFileOption("", "resultFile", "where the results should be exported", false, "", "string", cmd);
+        TCLAP::ValueArg<std::string> paramExportFile("", "paramExportFile", "CSV file with exported parameter values", false, "", "string", cmd);
         TCLAP::ValueArg<std::string> paramImportFile("", "paramImportFile", "CSV file with parameter values to import", false, "", "string", cmd);
         TCLAP::ValueArg<std::string> modelTestOption("t","validate","Model validation to perform",false,"",".hvc filePath", cmd);
         TCLAP::ValueArg<std::string> extLibPathsOption("e","ext","A file containing the external libs to load",false,"","FilePath string", cmd);
@@ -99,8 +100,15 @@ int main(int argc, char *argv[])
 
             if (paramImportFile.isSet())
             {
-                cout << "Setting parameter values from file: " << paramImportFile.getValue() << endl;
+                cout << "Importing parameter values from file: " << paramImportFile.getValue() << endl;
                 importParameterValuesFromCSV(paramImportFile.getValue(), pRootSystem);
+            }
+
+            if (paramExportFile.isSet())
+            {
+                cout << "Exporting parameter values to file: " << paramExportFile.getValue() << endl;
+                exportParameterValuesToCSV(paramExportFile.getValue(), pRootSystem);
+
             }
 
             cout << endl << "Component Hieararcy:" << endl << endl;
@@ -155,11 +163,11 @@ int main(int argc, char *argv[])
                 cout << "Saving results to file" << resultFileOption.getValue() << ", Using format: " << resultTypeOption.getValue() << endl;
                 if (resultTypeOption.getValue() == "final_csv")
                 {
-                    saveFinalResults(pRootSystem, resultFileOption.getValue(), Final);
+                    saveResults(pRootSystem, resultFileOption.getValue(), Final);
                 }
                 else if (resultTypeOption.getValue() == "full_csv")
                 {
-                    saveFinalResults(pRootSystem, resultFileOption.getValue(), Full);
+                    saveResults(pRootSystem, resultFileOption.getValue(), Full);
                 }
                 else
                 {

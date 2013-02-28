@@ -2146,6 +2146,56 @@ void ComponentSystem::adjustTimestep(vector<Component*> componentPtrs)
     }
 }
 
+void ComponentSystem::setupSimulationAndLogTimesteps(const double startT, const double stopT, const double Ts, const size_t nLogSamples)
+{
+    // Round to nearest, we may not get exactly the stop time that we want
+    mNumSimulationSteps = size_t((stopT-startT)/Ts+0.5);
+
+    // Calc logDt and
+    mLogTimeDt = (stopT-startT)/double(nLogSamples-1);
+
+    // Figure out at which samples logging should happen
+    double logT=startT;
+    double simT=startT;
+
+    mTimeStepsToLog.clear();
+    mTimeStepsToLog.reserve(nLogSamples);
+
+    mTimeStepsToLog.push_back(0);
+    while (mTimeStepsToLog.size() < nLogSamples)
+    {
+        logT += mLogTimeDt;
+        size_t n = size_t((logT-simT)/Ts);
+        ////size_t n = size_t(mLogTimeDt/Ts); //Allow truncation we want lower step
+        //cout << "n: " << n << endl;
+        simT += double(n)*Ts; // simT below logT
+
+
+        //cout << "SimT: " << simT << " logT: " << logT << " logT-simT: " << logT-simT << endl;
+
+        //! @todo ud part might not be necessary, stuf above seems to handle it
+        // Calc at which sample to log
+        size_t ud = size_t((logT-simT+0.5)); //Round to nearest int by truncation (this should become 0 or 1)
+        size_t logAtSample = mTimeStepsToLog.back() + n + ud;
+        simT += double(ud)*Ts; //Set simT that we will log for (add 0 or 1 Ts)
+
+        //cout << "ud: " << ud << endl;
+
+        mTimeStepsToLog.push_back(logAtSample);
+    }
+
+    //! @todo sanity check on log slots
+    //cout << "n: " << n << endl;
+    cout << "mNumSimulationSteps: " << mNumSimulationSteps << endl;
+    cout << "mLastStepToLog: " << mTimeStepsToLog.back() << endl;
+    cout << "mLogTimeDt: " << mLogTimeDt << " mTimeStepsToLog.size(): " << mTimeStepsToLog.size() << endl;
+//    for (int i=0; i<mTimeStepsToLog.size(); ++i)
+//    {
+//        cout << mTimeStepsToLog[i] << " ";
+//    }
+    cout << endl;
+}
+
 //! @brief Determines if all subnodes and subsystems subnodes should log data, Turn ALL ON or OFF
 //! @todo name of this function is bad, this is a toggle function
 void ComponentSystem::setAllNodesDoLogData(const bool logornot)
@@ -2371,6 +2421,8 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         addErrorMessage("The timestep is to low");
         return false;
     }
+
+    this->setupSimulationAndLogTimesteps(startT, stopT, mTimestep, mRequestedNumLogSamples);
 
     //preAllocate local logspace
     this->preAllocateLogSpace(startT, stopT, mRequestedNumLogSamples);

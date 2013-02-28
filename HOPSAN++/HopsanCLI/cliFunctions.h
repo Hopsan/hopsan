@@ -51,8 +51,9 @@ void setColor(const ColorsT color);
 // ===== Save Functions =====
 enum SaveResults {Final, Full};
 void saveNodeDataToFile(hopsan::ComponentSystem* pSys, const std::string compName, const std::string portName, const std::string fileName);
-void saveFinalResults(hopsan::ComponentSystem *pSys, const std::string &rFileName, const SaveResults howMany, std::string prefix="", std::ofstream *pFile=0);
+void saveResults(hopsan::ComponentSystem *pSys, const std::string &rFileName, const SaveResults howMany, std::string prefix="", std::ofstream *pFile=0);
 void transposeCSVresults(const std::string &rFileName);
+void exportParameterValuesToCSV(const std::string &rFileName, hopsan::ComponentSystem* pSystem, std::string prefix="", std::ofstream *pFile=0);
 
 // ===== Load Functions =====
 void importParameterValuesFromCSV(const std::string filePath, hopsan::ComponentSystem* pSystem);

@@ -233,6 +233,7 @@ namespace hopsan {
         // Time specific functions
         void setTimestep(const double timestep);
         void adjustTimestep(std::vector<Component*> componentPtrs);
+        void setupSimulationAndLogTimesteps(const double startT, const double stopT, const double Ts, const size_t nLogSamples);
 
         // log specific functions
         void setLogSettingsSampleTime(double log_dt, double start, double stop, double sampletime);
@@ -292,6 +293,10 @@ namespace hopsan {
         double mLogTimeDt, mLastLogTime;
         bool mEnableLogData;
         std::vector<double> mTimeStorage;
+
+        // Log and timestep
+        std::vector<size_t> mTimeStepsToLog;
+        size_t mNumSimulationSteps;
 
         //Finns i Component        Parameters *mSystemParameters;
     };

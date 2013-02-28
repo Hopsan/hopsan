@@ -260,7 +260,7 @@ void saveNodeDataToFile(ComponentSystem* pSys, const string compName, const stri
     }
 }
 
-void saveFinalResults(ComponentSystem *pSys, const string &rFileName, const SaveResults howMany, string prefix, ofstream *pFile)
+void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResults howMany, string prefix, ofstream *pFile)
 {
     bool doCloseFile=false;
     if (!pFile)
@@ -285,7 +285,7 @@ void saveFinalResults(ComponentSystem *pSys, const string &rFileName, const Save
                 if (pComp->isComponentSystem())
                 {
                     //cout << "syscomp" << endl;
-                    saveFinalResults(static_cast<ComponentSystem*>(pComp), rFileName, howMany, prefix, pFile);
+                    saveResults(static_cast<ComponentSystem*>(pComp), rFileName, howMany, prefix, pFile);
                 }
                 else
                 {
@@ -395,6 +395,63 @@ void transposeCSVresults(const std::string &rFileName)
         }
         ofile.close();
     }
+}
+
+void exportParameterValuesToCSV(const std::string &rFileName, hopsan::ComponentSystem* pSystem, string prefix, ofstream *pFile)
+{
+    bool doCloseFile=false;
+    if (!pFile)
+    {
+        pFile = new ofstream;
+        pFile->open(rFileName.c_str());
+        if (!pFile->good())
+            return;
+        doCloseFile = true;
+    }
+
+    if (pSystem)
+    {
+        // Handle own system parameters
+        const std::vector<Parameter*> *pSysParameters =  pSystem->getParametersVectorPtr();
+        for (size_t p=0; p<pSysParameters->size(); ++p)
+        {
+            //! @todo what about alias name
+            string fullname = prefix + pSystem->getName() + "#" + pSysParameters->at(p)->getName();
+            *pFile << fullname << "," << pSysParameters->at(p)->getValue() << endl;
+        }
+
+        // Now handle subcomponent parameters
+        prefix = prefix + pSystem->getName() + "$";
+        vector<string> names = pSystem->getSubComponentNames();
+        for (size_t c=0; c<names.size(); ++c)
+        {
+            Component *pComp = pSystem->getSubComponent(names[c]);
+            if (pComp)
+            {
+                if (pComp->isComponentSystem())
+                {
+                    exportParameterValuesToCSV(rFileName, static_cast<ComponentSystem*>(pComp), prefix, pFile);
+                }
+                else
+                {
+                    const std::vector<Parameter*> *pParameters =  pComp->getParametersVectorPtr();
+                    for (size_t p=0; p<pParameters->size(); ++p)
+                    {
+                        //! @todo what about alias name
+                        string fullname = prefix + pComp->getName() + "#" + pParameters->at(p)->getName();
+                        *pFile << fullname << "," << pParameters->at(p)->getValue() << endl;
+                    }
+                }
+            }
+        }
+    }
+
+    if (doCloseFile)
+    {
+        pFile->close();
+        delete pFile;
+    }
+
 }
 
 // ===== Load Functions =====
