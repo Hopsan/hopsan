@@ -320,7 +320,6 @@ def copyFiles():
     os.system("mkdir \""+raw(tempDir)+"\"\\bin")    
     os.system("mkdir \""+raw(tempDir)+"\"\\HopsanCore")
     os.system("mkdir \""+raw(tempDir)+"\"\\componentLibraries")    
-    os.system("mkdir \""+raw(tempDir)+"\"\\componentLibraries\\defaultLibrary")
     os.system("mkdir \""+raw(tempDir)+"\"\\doc")
     os.system("mkdir \""+raw(tempDir)+"\"\\doc\\user")
     os.system("mkdir \""+raw(tempDir)+"\"\\doc\\user\\html")
