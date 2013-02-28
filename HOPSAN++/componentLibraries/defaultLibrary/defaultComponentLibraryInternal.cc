@@ -267,6 +267,7 @@ void hopsan::register_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("MechanicCylinderBlockWithSwashPlate", MechanicCylinderBlockWithSwashPlate::Creator);
     pComponentFactory->registerCreatorFunction("MechanicSwashPlate", MechanicSwashPlate::Creator);
     pComponentFactory->registerCreatorFunction("MechanicMotor", MechanicMotor::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicPulley", MechanicPulley::Creator);
 
     //Electric components
     #include "Electric/HopsanDefaultElectricComponents.cci"

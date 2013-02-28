@@ -14,5 +14,6 @@
 #include "MechanicMultiPortTranslationalMass.hpp"
 #include "MechanicFixedPosition.hpp"
 #include "MechanicFreeLengthWall.hpp"
+#include "MechanicPulley.hpp"
 
 #endif // HOPSANDEFAULTMECHANICLINEARCOMPONENTS_H
