@@ -386,7 +386,7 @@ def copyFiles():
     os.system(r'svn export "Models\Benchmark Models" "'+raw(tempDir)+r'\models\Benchmark Models"')
 
     #Export and copy "componentData" SVN directory to temporary directory
-    os.system(r'svn export "componentLibraries\defaultLibrary\components" "'+raw(tempDir)+r'\componentLibraries\defaultLibrary\components"')
+    os.system(r'svn export "componentLibraries\defaultLibrary" "'+raw(tempDir)+r'\componentLibraries\defaultLibrary"')
 
     #Export "exampleComponentLib" SVN directory to temporary directory
     os.system(r'svn export "componentLibraries\exampleComponentLib" "'+raw(tempDir)+r'\componentLibraries\exampleComponentLib"')
