@@ -21,7 +21,7 @@ INCLUDEPATH *= $${PWD}/include/
 
 #--------------------------------------------------
 # Add the include path to default components (while they are compiled in)
-INCLUDEPATH *= $${PWD}/../componentLibraries/defaultLibrary/code
+INCLUDEPATH *= $${PWD}/../componentLibraries/defaultLibrary
 #--------------------------------------------------
 
 #--------------------------------------------------------

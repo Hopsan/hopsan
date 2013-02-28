@@ -252,7 +252,7 @@ def buildRelease():
 
     #Make sure we compile defaultLibrary into core
     runCmd("ThirdParty\\sed-4.2.1\\sed \"s|.*DEFINES \\*= BUILTINDEFAULTCOMPONENTLIB|DEFINES *= BUILTINDEFAULTCOMPONENTLIB|g\" -i Common.prf")
-    runCmd("ThirdParty\\sed-4.2.1\\sed \"s|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.cc \\\\|\" -i HopsanCore\\HopsanCore.pro")
+    runCmd("ThirdParty\\sed-4.2.1\\sed \"s|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc \\\\|\" -i HopsanCore\\HopsanCore.pro")
     runCmd("ThirdParty\\sed-4.2.1\\sed \"s|componentLibraries||\" -i HopsanNG.pro")
 
     #Make sure we undefine MAINCORE, so that MSVC dlls do not try to access the log file
