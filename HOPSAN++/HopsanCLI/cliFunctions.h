@@ -36,6 +36,7 @@ class ComponentSystem;
 // ===== Help Functions =====
 void splitFilePath(const std::string fullPath, std::string &rBasePath, std::string &rFileName);
 void splitFileName(const std::string fileName, std::string &rBaseName, std::string &rExt);
+void splitStringOnDelimiter(const std::string &rString, const char delim, std::vector<std::string> &rSplitVector);
 
 // ===== Print functions =====
 void printWaitingMessages(const bool printDebug=true);
@@ -54,6 +55,7 @@ void saveFinalResults(hopsan::ComponentSystem *pSys, const std::string &rFileNam
 void transposeCSVresults(const std::string &rFileName);
 
 // ===== Load Functions =====
+void importParameterValuesFromCSV(const std::string filePath, hopsan::ComponentSystem* pSystem);
 void readExternalLibsFromTxtFile(const std::string filePath, std::vector<std::string> &rExtLibFileNames);
 void readNodesToSaveFromTxtFile(const std::string filePath, std::vector<std::string> &rComps, std::vector<std::string> &rPorts);
 

@@ -299,19 +299,23 @@ double ComponentSystem::getDesiredTimeStep() const
     return mDesiredTimestep;
 }
 
-
+//! @brief Set the desired number of log samples
 void ComponentSystem::setNumLogSamples(const size_t nLogSamples)
 {
     mRequestedNumLogSamples = nLogSamples;
 }
 
+//! @brief Returns the desired number of log samples
 size_t ComponentSystem::getNumLogSamples() const
 {
     return mRequestedNumLogSamples;
 }
 
-size_t ComponentSystem::getLastLogSample() const
+//! @brief Returns the number of actually logged data samples
+//! @return Number of availible logged data samples in storage
+size_t ComponentSystem::getNumActuallyLoggedSamples() const
 {
+    // This assumes that the logCtr has been incremented after each saved log step
     return mLogCtr;
 }
 

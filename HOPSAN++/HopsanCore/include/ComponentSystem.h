@@ -214,7 +214,7 @@ namespace hopsan {
         std::vector<double>* getLogTimeVector();
         void setNumLogSamples(const size_t nLogSamples);
         size_t getNumLogSamples() const;
-        size_t getLastLogSample() const;
+        size_t getNumActuallyLoggedSamples() const;
 
         // Stop a running init or simulation
         void stopSimulation();

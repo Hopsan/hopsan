@@ -84,6 +84,17 @@ void splitFileName(const std::string fileName, std::string &rBaseName, std::stri
     }
 }
 
+void splitStringOnDelimiter(const std::string &rString, const char delim, std::vector<std::string> &rSplitVector)
+{
+    rSplitVector.clear();
+    string item;
+    stringstream ss(rString);
+    while(getline(ss, item, delim))
+    {
+        rSplitVector.push_back(item);
+    }
+}
+
 // ===== Print functions =====
 //! @brief Prints all waiting messages
 //! @param [in] printDebug Should debug messages also be printed
@@ -343,12 +354,7 @@ void transposeCSVresults(const std::string &rFileName)
             getline(infile, line);
 
             // Split on delimiter
-            string item;
-            stringstream ss(line);
-            while(getline(ss, item, ','))
-            {
-                lineVec.push_back(item);
-            }
+            splitStringOnDelimiter(line, ',', lineVec);
 
             // Store line vector
             if (lineVec.size() > 0)
@@ -392,6 +398,109 @@ void transposeCSVresults(const std::string &rFileName)
 }
 
 // ===== Load Functions =====
+
+//! @todo should we use CSV parser instead
+void importParameterValuesFromCSV(const std::string filePath, hopsan::ComponentSystem* pSystem)
+{
+    if (pSystem)
+    {
+        std::ifstream file;
+        file.open(filePath.c_str());
+        if ( file.is_open() )
+        {
+            std::vector<std::string> lineVec;
+            std::string line;
+            while ( file.good() )
+            {
+                getline(file, line);
+                if (*line.begin() != '#')
+                {
+                    // Split on delimiter
+                    splitStringOnDelimiter(line, ',', lineVec);
+
+                    // Parse line vector
+                    if (lineVec.size() == 2)
+                    {
+                        std::vector<std::string> vec2, nameVec, syshierarcy;
+                        string componentName, parameterName;
+                        splitStringOnDelimiter(lineVec[0], '$', vec2);
+
+                        // Last of vec2 will contain the rest of the name filed (comp and param name)
+                        int i;
+                        for (i=0; i<int(vec2.size())-1; ++i)
+                        {
+                            syshierarcy.push_back(vec2[i]);
+                        }
+
+                        // Split last name part into comp and param name
+                        splitStringOnDelimiter(vec2[i], '#', nameVec);
+                        if (nameVec.size() == 2)
+                        {
+                            componentName = nameVec[0];
+                            parameterName = nameVec[1];
+
+                            // Dig down subsystem hiearchy
+                            ComponentSystem *pParentSys = pSystem;
+                            for (size_t s=1; s<syshierarcy.size(); ++s)
+                            {
+                                //! @todo what about first level (0), should we check that name is ok
+                                ComponentSystem *pSubSys = pParentSys->getSubComponentSystem(syshierarcy[s]);
+                                if (!pSubSys)
+                                {
+                                    cout << "Error: Subsystem: " << syshierarcy[s] << " could not be found in parent system: " << pParentSys->getName();
+                                    pParentSys = 0;
+                                    break;
+                                }
+                                else
+                                {
+                                    pParentSys = pSubSys;
+                                }
+                            }
+
+                            // Set the parameter value if component is found
+                            if (pParentSys)
+                            {
+                                Component *pComp = pParentSys->getSubComponent(componentName);
+                                if (pComp)
+                                {
+                                    // lineVec[1] should be parameter value
+                                    //! @todo what about parameter alias
+                                    bool ok = pComp->setParameterValue(parameterName, lineVec[1]);
+                                    if (!ok)
+                                    {
+                                        cout << "Error: setting parameter: " << parameterName << " in component: " << componentName << endl;
+                                    }
+                                }
+                                else
+                                {
+                                    cout << "Error: no component: " << componentName << " in system: " << pParentSys->getName() << endl;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            cout << "Error: " << vec2[i] << " should be componentName#parameterName on line: " << line << endl;
+                        }
+                    }
+                    else
+                    {
+                        // Print error for non-empty lines
+                        if (lineVec.size() > 0)
+                        {
+                            cout << "Error: Wrong line format: " << line << endl;
+                        }
+                    }
+                }
+            }
+            file.close();
+        }
+        else
+        {
+            cout << "Error: could not open file: " << filePath << endl;
+        }
+    }
+}
+
 //! @brief Read the paths of external liubs from a text file
 //! @param [in] filePath The file to read from
 //! @param [out] rExtLibFileNames A vector with paths to the external libs to load

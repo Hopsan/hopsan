@@ -61,22 +61,17 @@ int main(int argc, char *argv[])
         TCLAP::CmdLine cmd("HopsanCLI", ' ', HOPSANCLIVERSION);
 
         // Define a value argument and add it to the command line.
-        TCLAP::ValueArg<std::string> hmfPathOption("f","hmf","The Hopsan model file to simulate",false,"","FilePath string", cmd);
-        TCLAP::ValueArg<std::string> extLibPathsOption("e","ext","A file containing the external libs to load",false,"","FilePath string", cmd);
-        TCLAP::ValueArg<std::string> saveNodesPathsOption("n", "savenodes", "A file containing lines with the ComponentName;PortName to save node data from", false, "", "FilePath string", cmd);
-        TCLAP::ValueArg<std::string> resultTypeOption("", "resultType", "How the results should be exported, choose: [final_csv, full_csv]", false, "final_csv", "string", cmd);
+        //TCLAP::ValueArg<std::string> saveNodesPathsOption("n", "savenodes", "A file containing lines with the ComponentName;PortName to save node data from", false, "", "FilePath string", cmd);
         TCLAP::ValueArg<std::string> resultCSVSort("", "resultCSVSort", "Store in columns or in rows: [rows, cols]", false, "rows", "string", cmd);
+        TCLAP::ValueArg<std::string> resultTypeOption("", "resultType", "How the results should be exported, choose: [final_csv, full_csv]", false, "final_csv", "string", cmd);
         TCLAP::ValueArg<std::string> resultFileOption("", "resultFile", "where the results should be exported", false, "", "string", cmd);
-        TCLAP::ValueArg<std::string> modelTestOption("t","test","Model test to perform",false,"","Model name", cmd);
+        TCLAP::ValueArg<std::string> paramImportFile("", "paramImportFile", "CSV file with parameter values to import", false, "", "string", cmd);
+        TCLAP::ValueArg<std::string> modelTestOption("t","validate","Model validation to perform",false,"",".hvc filePath", cmd);
+        TCLAP::ValueArg<std::string> extLibPathsOption("e","ext","A file containing the external libs to load",false,"","FilePath string", cmd);
+        TCLAP::ValueArg<std::string> hmfPathOption("m","hmf","The Hopsan model file to simulate",false,"","FilePath string", cmd);
 
         // Parse the argv array.
         cmd.parse( argc, argv );
-
-        // Get the value parsed by each arg.
-        string hmfFilePath = hmfPathOption.getValue();
-        string extFilePaths = extLibPathsOption.getValue();
-        string testFilePath = modelTestOption.getValue();
-        string saveNodeFilePath = saveNodesPathsOption.getValue();
 
 #ifndef BUILTINDEFAULTCOMPONENTLIB
         // Load default hopasn component lib
@@ -85,28 +80,34 @@ int main(int argc, char *argv[])
 
         // Load external libs
         vector<string> extLibs;
-        if (!extFilePaths.empty())
+        if (extLibPathsOption.isSet())
         {
-            readExternalLibsFromTxtFile(extFilePaths,extLibs);
+            readExternalLibsFromTxtFile(extLibPathsOption.getValue(), extLibs);
             for (size_t i=0; i<extLibs.size(); ++i)
             {
                 gHopsanCore.loadExternalComponentLib(extLibs[i]);
             }
         }
 
-        if(!hmfFilePath.empty())
+        if(hmfPathOption.isSet())
         {
             printWaitingMessages();
 
             double startTime=0, stopTime=2;
-            ComponentSystem* pRootSystem = gHopsanCore.loadHMFModel(hmfFilePath, startTime, stopTime);
+            ComponentSystem* pRootSystem = gHopsanCore.loadHMFModel(hmfPathOption.getValue(), startTime, stopTime);
             printWaitingMessages();
+
+            if (paramImportFile.isSet())
+            {
+                cout << "Setting parameter values from file: " << paramImportFile.getValue() << endl;
+                importParameterValuesFromCSV(paramImportFile.getValue(), pRootSystem);
+            }
 
             cout << endl << "Component Hieararcy:" << endl << endl;
             printComponentHierarchy(pRootSystem, "", true, true);
             cout << endl;
 
-            if (pRootSystem!=0)
+            if (pRootSystem)
             {
                 //! @todo maybe use simulation handler object instead
                 TicToc isoktimer("IsOkTime");
@@ -135,19 +136,19 @@ int main(int argc, char *argv[])
             //cout << endl << "Component Hieararcy:" << endl << endl;
             //printComponentHierarchy(pRootSystem, "", true);
 
-            if (!saveNodeFilePath.empty())
-            {
-                cout << "Saving NodeData to file" << endl;
-                vector<string> comps, ports;
-                readNodesToSaveFromTxtFile(saveNodeFilePath, comps, ports);
-                //saveNodeDataToFile(pRootSystem,"GainE","out","GainEout.txt");
-                //saveNodeDataToFile(pRootSystem,"GainI","out","GainIout.txt");
-                for (size_t i=0; i<comps.size(); ++i)
-                {
-                    string outfile = comps[i]+"_"+ports[i]+".txt";
-                    saveNodeDataToFile(pRootSystem, comps[i], ports[i], outfile);
-                }
-            }
+//            if (!saveNodeFilePath.empty())
+//            {
+//                cout << "Saving NodeData to file" << endl;
+//                vector<string> comps, ports;
+//                readNodesToSaveFromTxtFile(saveNodeFilePath, comps, ports);
+//                //saveNodeDataToFile(pRootSystem,"GainE","out","GainEout.txt");
+//                //saveNodeDataToFile(pRootSystem,"GainI","out","GainIout.txt");
+//                for (size_t i=0; i<comps.size(); ++i)
+//                {
+//                    string outfile = comps[i]+"_"+ports[i]+".txt";
+//                    saveNodeDataToFile(pRootSystem, comps[i], ports[i], outfile);
+//                }
+//            }
 
             if (resultFileOption.isSet())
             {
@@ -180,10 +181,10 @@ int main(int argc, char *argv[])
             }
         }
 
-        //Perform a unit test
-        if(!testFilePath.empty())
+        // Perform a unit test
+        if(modelTestOption.isSet())
         {
-            returnSuccess = performModelTest(testFilePath);
+            returnSuccess = performModelTest(modelTestOption.getValue());
         }
         else
         {

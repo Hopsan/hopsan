@@ -817,15 +817,10 @@ void CoreSystemAccess::getPlotData(const QString compname, const QString portnam
                 vector< vector<double> > *pData = pPort->getLogDataVectorPtr();
                 rpTimeVector = pPort->getLogTimeVectorPtr();
 
-                size_t nElements;
-                if (pPort->getComponent()->getSystemParent()->wasSimulationAborted())
-                {
-                    nElements = pPort->getComponent()->getSystemParent()->getLastLogSample();
-                }
-                else
-                {
-                    nElements = pData->size();
-                }
+                // Instead of pData.size() lets ask for latest logsample, this way we can avoid coping log slots that have not bee written and contains junk
+                // This is usefull when a simulation has been aborted
+                size_t nElements = pPort->getComponent()->getSystemParent()->getNumActuallyLoggedSamples();
+                qDebug() << "pData.size(): " << pData->size() << " nElements: " << nElements;
 
                 //Ok lets copy all of the data to a Qt vector
                 rData.resize(nElements); //Allocate memory for data
