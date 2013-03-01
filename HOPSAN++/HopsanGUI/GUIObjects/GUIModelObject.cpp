@@ -428,6 +428,7 @@ void ModelObject::showLosses()
                         }
                         QString componentName = vConnectedPorts.at(i)->mpParentGuiModelObject->getName();
                         QString portName = vConnectedPorts.at(i)->getPortName();
+                        //! @todo Multiplying intensity with flow will give correct value for all nodes except pneumatics (that use massflow), figure out how to solve this
                         QVector<double> vIntensity = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, componentName, portName, NodeInfo(type).intensity);
                         QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, componentName, portName, NodeInfo(type).flow);
                         for(int s=0; s<vIntensity.size()-1; ++s) //Minus one because of integration method
@@ -439,6 +440,7 @@ void ModelObject::showLosses()
                 }
                 else    //Normal port!
                 {
+                    //! @todo Multiplying intensity with flow will give correct value for all nodes except pneumatics (that use massflow), figure out how to solve this
                     QVector<double> vIntensity = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, getName(), mPortListPtrs[p]->getPortName(), NodeInfo(type).intensity);
                     QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, getName(), mPortListPtrs[p]->getPortName(), NodeInfo(type).flow);
 

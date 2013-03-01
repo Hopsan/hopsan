@@ -25,6 +25,7 @@
 #include "MainWindow.h"
 #include "GUIPortAppearance.h"
 #include "common.h"
+#include "CoreAccess.h"
 
 PortAppearance::PortAppearance()
 {
@@ -55,30 +56,15 @@ void PortAppearance::selectPortIcon(QString CQSType, QString porttype, QString n
     }
     else
     {
-        if (nodetype == "NodeMechanic")
+        QString niceName = NodeInfo(nodetype).niceName;
+        if(niceName.isEmpty())
         {
-            mMainIconPath.append("MechanicPort");
-        }
-        else if (nodetype == "NodeMechanicRotational")
-        {
-            mMainIconPath.append("RotationalMechanicPort");
-        }
-        else if (nodetype == "NodeHydraulic")
-        {
-            mMainIconPath.append("HydraulicPort");
-        }
-        else if (nodetype == "NodePneumatic")
-        {
-                mMainIconPath.append("PneumaticPort");
-        }
-        else if (nodetype == "NodeElectric")
-        {
-            mMainIconPath.append("ElectricPort");
+            mMainIconPath.append("SystemPort");
         }
         else
         {
-            //SystemPort is a blank port (that is why we use it here)
-            mMainIconPath.append("SystemPort");
+            niceName[0] = niceName[0].toUpper();
+            mMainIconPath.append(niceName+"Port");
         }
 
         //Select cqs overlay icon path depending on cqs type

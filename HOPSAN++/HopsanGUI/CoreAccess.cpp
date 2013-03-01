@@ -1068,6 +1068,7 @@ void CoreSystemAccess::getSystemParameters(QVector<CoreParameterData> &rParamete
 NodeInfo::NodeInfo(QString nodeType)
 {
     hopsan::Node *pNode = gHopsanCore.createNode(nodeType.toStdString());
+    if(!pNode) return;
 
     niceName = pNode->getNiceName().c_str();
     for(int i=0; i<pNode->getDataDescriptions()->size(); ++i)

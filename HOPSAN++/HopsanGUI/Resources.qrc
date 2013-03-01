@@ -7,7 +7,7 @@
         <file>graphics/porticons/MechanicPort.svg</file>
         <file>graphics/porticons/PortOverlayC.svg</file>
         <file>graphics/porticons/PortOverlayQ.svg</file>
-        <file>graphics/porticons/RotationalMechanicPort.svg</file>
+        <file>graphics/porticons/MechanicRotationalPort.svg</file>
         <file>graphics/porticons/SignalPort_read.svg</file>
         <file>graphics/porticons/SignalPort_write.svg</file>
         <file>graphics/porticons/SystemPort.svg</file>
