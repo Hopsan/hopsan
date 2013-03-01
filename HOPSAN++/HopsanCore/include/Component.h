@@ -64,7 +64,6 @@ public:
     // Configureation and simulation functions
     virtual void configure();
     virtual void deconfigure();
-    virtual void initialize(); //!< @todo We should really be able to return sucess true or false from components
     virtual bool initialize(const double startT, const double stopT);
     virtual void simulate(const double startT, const double Ts);
     virtual void finalize(const double startT, const double Ts);
@@ -151,9 +150,15 @@ protected:
     virtual ~Component();
 
     // Virtual functions
+    virtual void initialize(); //!< @todo We should really be able to return sucess true or false from components
     virtual void simulateOneTimestep();
     virtual void finalize();
     virtual void setTimestep(const double timestep);
+    inline virtual size_t calcNumSimSteps(const double startT, const double stopT)
+    {
+        // Round to nearest, we may not get exactly the stop time that we want
+        return size_t((stopT-startT)/mTimestep+0.5);
+    }
 
     // Port functions
     Port* addPort(const std::string portName, const PortTypesEnumT portType, const NodeTypeT nodeType, const Port::ReqConnEnumT reqConnection);

@@ -164,10 +164,10 @@ class taskSimPool
 {
 public:
     taskSimPool(TaskPool<Component> *sPool, TaskPool<Component> *qPool, TaskPool<Component> *cPool, TaskPool<Node> *nPool,
-                double startTime, double timeStep, double stopTime, int threadId, ComponentSystem* pSystem)
+                double startTime, double timeStep, size_t numSimSteps, int threadId, ComponentSystem* pSystem)
     {
         mTime = startTime;
-        mStopTime = stopTime;
+        mNumSimSteps = numSimSteps;
         mTimeStep = timeStep;
         msPool = sPool;
         mqPool = qPool;
@@ -179,7 +179,7 @@ public:
 
     void operator() ()
     {
-        while(mTime < mStopTime)
+        for(size_t i=0; i<mNumSimSteps; ++i)
         {
             int idx;
             double nextTime = mTime+mTimeStep;
@@ -208,12 +208,6 @@ public:
             while(!mcPool->isFinished()) {}
             if(mThreadId == 0) { mqPool->reset(); }
 
-            //! Log Nodes !//
-
-            if(mThreadId == 0)      //Hack because of Peters log data changes, must be fixed
-            {
-                mpSystem->logTimeAndNodes(mTime);
-            }
             idx = mnPool->getAndDecrementIndex();
             while(idx>=0)
             {
@@ -231,6 +225,14 @@ public:
                 pComponent->simulate(mTime, nextTime);
                 idx = mqPool->getAndDecrementIndex();
             }
+
+            //! Log Nodes !//
+
+            if(mThreadId == 0)      //Hack because of Peters log data changes, must be fixed
+            {
+                mpSystem->logTimeAndNodes(i);
+            }
+
             while(!mqPool->isFinished()) {}
             if(mThreadId == 0) { mcPool->reset(); }
 
@@ -238,7 +240,7 @@ public:
         }
     }
 private:
-    double mStopTime;
+    size_t mNumSimSteps;
     double mTimeStep;
     double mTime;
     TaskPool<Component> *msPool;
@@ -271,7 +273,7 @@ public:
     //! @param *pBarrier_Q Pointer to barrier before Q-type components
     //! @param *pBarrier_N Pointer to barrier before node logging
     taskSimSlave(vector<Component*> sVector, vector<Component*> cVector, vector<Component*> qVector, vector<Node*> nVector,
-                 double startTime, double timeStep, double stopTime, size_t nThreads, size_t threadID,
+                 double startTime, double timeStep, size_t numSimSteps, size_t nThreads, size_t threadID,
                  BarrierLock *pBarrier_S, BarrierLock *pBarrier_C, BarrierLock *pBarrier_Q, BarrierLock *pBarrier_N)
     {
         mVectorS = sVector;
@@ -279,7 +281,7 @@ public:
         mVectorQ = qVector;
         mVectorN = nVector;
         mTime = startTime;
-        mStopTime = stopTime;
+        mNumSimSteps = numSimSteps;
         mTimeStep = timeStep;
         mnThreads = nThreads;
         mThreadID = threadID;
@@ -292,7 +294,7 @@ public:
     //! @brief Executable code for slave simulation thread
     void operator() ()
     {
-        while(mTime < mStopTime)
+        for(size_t i=0; i<mNumSimSteps; ++i)
         {
 
             //! Signal Components !//
@@ -345,7 +347,7 @@ private:
     vector<Component*> mVectorC;
     vector<Component*> mVectorQ;
     vector<Node*> mVectorN;
-    double mStopTime;
+    size_t mNumSimSteps;
     double mTimeStep;
     double mTime;
     double *mpSimTime;
@@ -379,7 +381,7 @@ public:
     //! @param *pBarrier_Q Pointer to barrier before Q-type components
     //! @param *pBarrier_N Pointer to barrier before node logging
     taskSimMaster(ComponentSystem *pSystem, vector<Component*> sVector, vector<Component*> cVector, vector<Component*> qVector, vector<Node*> nVector, vector<double *> pSimTimes,
-                  double startTime, double timeStep, double stopTime, size_t nThreads, size_t threadID,
+                  double startTime, double timeStep, size_t numSimSteps, size_t nThreads, size_t threadID,
                   BarrierLock *pBarrier_S, BarrierLock *pBarrier_C, BarrierLock *pBarrier_Q, BarrierLock *pBarrier_N)
     {
         mpSystem = pSystem;
@@ -389,7 +391,7 @@ public:
         mVectorN = nVector;
         mpSimTimes = pSimTimes;
         mTime = startTime;
-        mStopTime = stopTime;
+        mNumSimSteps = numSimSteps;
         mTimeStep = timeStep;
         mnThreads = nThreads;
         mThreadID = threadID;
@@ -402,7 +404,7 @@ public:
     //! @brief Executable code for master simulation thread
     void operator() ()
     {
-        while(mTime < mStopTime)
+        for(size_t i=0; i<mNumSimSteps; ++i)
         {
 
             //! Signal Components !//
@@ -434,13 +436,6 @@ public:
             mpBarrier_Q->lock();
             mpBarrier_N->unlock();
 
-            //! @todo Temporary hack by Peter, after rewriting how node data and time is logged this no longer works, now master thread loags all nodes, need to come up with somthing smart
-//            for(size_t i=0; i<mVectorN.size(); ++i)
-//            {
-//                mVectorN[i]->logData(mTime);
-//            }
-            mpSystem->logTimeAndNodes(mTime);
-
             //! Q Components !//
 
             while(!mpBarrier_Q->allArrived()) {}    //Q barrier
@@ -455,6 +450,13 @@ public:
             for(size_t i=0; i<mpSimTimes.size(); ++i)
                 *mpSimTimes[i] = mTime;     //Update time in component system, so that progress bar can use it
 
+            //! @todo Temporary hack by Peter, after rewriting how node data and time is logged this no longer works, now master thread loags all nodes, need to come up with somthing smart
+//            for(size_t i=0; i<mVectorN.size(); ++i)
+//            {
+//                mVectorN[i]->logData(mTime);
+//            }
+            mpSystem->logTimeAndNodes(i);
+
             mTime += mTimeStep;
         }
     }
@@ -464,7 +466,7 @@ private:
     vector<Component*> mVectorC;
     vector<Component*> mVectorQ;
     vector<Node*> mVectorN;
-    double mStopTime;
+    size_t mNumSimSteps;
     double mTimeStep;
     double mTime;
     vector<double *> mpSimTimes;

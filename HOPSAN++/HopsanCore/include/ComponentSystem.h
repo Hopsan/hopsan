@@ -193,7 +193,7 @@ namespace hopsan {
         void simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads = 0, bool noChanges=false);
         void finalize();
 
-        bool simulateAndMeasureTime(const size_t steps = 1);
+        bool simulateAndMeasureTime(const size_t nSteps);
         double getTotalMeasuredTime();
         void sortComponentVectorsByMeasuredTime();
         void distributeCcomponents(std::vector< std::vector<Component*> > &rSplitCVector, size_t nThreads);
@@ -208,7 +208,8 @@ namespace hopsan {
         double getDesiredTimeStep() const;
 
         // Log functions
-        void logTimeAndNodes(const double time);
+        //void logTimeAndNodes(const double time);
+        void logTimeAndNodes(const size_t simStep);
         void enableLog();
         void disableLog();
         std::vector<double>* getLogTimeVector();
@@ -233,7 +234,7 @@ namespace hopsan {
         // Time specific functions
         void setTimestep(const double timestep);
         void adjustTimestep(std::vector<Component*> componentPtrs);
-        void setupSimulationAndLogTimesteps(const double startT, const double stopT, const double Ts, const size_t nLogSamples);
+        void setupLogTimesteps(const double startT, const double stopT, const double Ts, const size_t nLogSamples);
 
         // log specific functions
         void setLogSettingsSampleTime(double log_dt, double start, double stop, double sampletime);
@@ -290,13 +291,13 @@ namespace hopsan {
 
         // Log related variables
         size_t mRequestedNumLogSamples, mnLogSlots, mLogCtr;
-        double mLogTimeDt, mLastLogTime;
+        double mLogTimeDt;//, mLastLogTime;
         bool mEnableLogData;
         std::vector<double> mTimeStorage;
 
         // Log and timestep
-        std::vector<size_t> mTimeStepsToLog;
-        size_t mNumSimulationSteps;
+        std::vector<size_t> mLogTheseTimeSteps;
+        size_t mTotalTakenSimulationSteps;
 
         //Finns i Component        Parameters *mSystemParameters;
     };

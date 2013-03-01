@@ -64,22 +64,16 @@ Component::Component()
     mModelHierarchyDepth = 0;
 
     mpParameters = new Parameters(this);
-
-    //registerParameter("Ts", "Sample time", "[s]",   mTimestep);
 }
 
 
-//! Virtual Function, base version which gives you an error if you try to use it.
-bool Component::initialize(const double startT, const double stopT)
+//! @brief Virtual Function, base version which gives you an error if you try to use it.
+bool Component::initialize(const double startT, const double /*stopT*/)
 {
     mTime = startT;
     initialize();
 
-    return true;        //Always return true, because we cannot know if it was successful or not
-
-    //cout << "Error! This function should only be used by system components, it should be overloded. For a component use initialize() instead" << endl;
-    //assert(false);
-    //return false;
+    return true;        //Always return true, because we cannot know if it was successful or not (yet)
 }
 
 void Component::getParameterNames(std::vector<std::string> &rParameterNames)
@@ -137,8 +131,8 @@ bool Component::checkParameters(std::string &errParName)
 //! @brief Virtual Function, base version which gives you an error if you try to use it.
 void Component::finalize(const double /*startT*/, const double /*stopT*/)
 {
-    cout << "Error! This function should only be used by system components, it should be overloded. For a component use finalize() instead" << endl;
-    assert(false);
+    addErrorMessage("This function should only be used by ComponentSystem, it should be overloded. For a component, use finalize() instead");
+    stopSimulation();
 }
 
 
@@ -146,30 +140,43 @@ void Component::finalize(const double /*startT*/, const double /*stopT*/)
 //! @param [in] startT Start time
 //! @param [in] stopT Stop time
 //! @todo adjust self.timestep or simulation depending on Ts from system above (self.timestep should be multipla of Ts)
-void Component::simulate(const double startT, const double stopT)
+//void Component::simulate(const double /*startT*/, const double stopT)
+//{
+//    updateDynamicParameterValues();
+//    double stopTsafe = stopT - mTimestep/2.0;
+//    mTime = startT;
+//    while (mTime < stopTsafe)
+//    {
+//        simulateOneTimestep();
+//        mTime += mTimestep;
+//    }
+//    //cout << "simulate in: " << this->getName() << endl;
+//}
+
+void Component::simulate(const double /*startT*/, const double stopT)
 {
     updateDynamicParameterValues();
-    double stopTsafe = stopT - mTimestep/2.0;
-    mTime = startT;
-    while (mTime < stopTsafe)
+    const size_t nSteps = calcNumSimSteps(mTime, stopT);
+    for (size_t i=0; i<nSteps; ++i)
     {
         simulateOneTimestep();
         mTime += mTimestep;
     }
-    //cout << "simulate in: " << this->getName() << endl;
 }
 
 
 void Component::initialize()
 {
-    assert("You MUST! implement your own initialize method"==0);
+    addErrorMessage("You MUST! implement your own initialize method");
+    stopSimulation();
 }
 
 
 //! @brief Simulates one time step
 void Component::simulateOneTimestep()
 {
-    assert("You MUST! implement your own simulateOneTimestep() method"==0);
+    addErrorMessage("You MUST! implement your own simulateOneTimestep() method");
+    stopSimulation();
 }
 
 

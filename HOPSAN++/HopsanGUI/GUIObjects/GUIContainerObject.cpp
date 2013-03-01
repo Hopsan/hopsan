@@ -2872,12 +2872,12 @@ void ContainerObject::measureSimulationTime()
         {
             int i=typeNames.indexOf(typeName);
             typeCounter[i] = typeCounter[i]+1;
-            typeTimes[i] = (typeTimes[i] + times[n]/(typeCounter[i]-1))*(typeCounter[i]-1)/(typeCounter[i]);
+            typeTimes[i] = (typeTimes[i] + times[n]/(double(nSteps)*(typeCounter[i]-1)))*(typeCounter[i]-1)/(typeCounter[i]);
         }
         else
         {
             typeNames.append(typeName);
-            typeTimes.append(times[n]);
+            typeTimes.append(times[n]/double(nSteps));
             typeCounter.append(1);
         }
     }
@@ -2889,6 +2889,7 @@ void ContainerObject::measureSimulationTime()
     QList<QStandardItem *> timeList;
     for(int i=0; i<names.size(); ++i)
     {
+        //! @todo are these ever deleted, and others below
         QStandardItem *pNameItem = new QStandardItem(names.at(i));
         QStandardItem *pTimeItem = new QStandardItem(QString::number(times.at(i)*1000, 'f')+" ms");
         nameList.append(pNameItem);
