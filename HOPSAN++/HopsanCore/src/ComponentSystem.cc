@@ -659,6 +659,7 @@ bool ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVec
     else    //Something went wrong, all components were not moved. This is likely due to an algebraic loop.
     {
         addErrorMessage("Initialize: Algebraic loops was found, signal components could not be sorted.");
+        addInfoMessage("Last component that was successfully sorted: " + newComponentVector.back()->getName());
         addInfoMessage("Initialize: Hint: Use unit delay components to resolve loops.");
         return false;
     }
