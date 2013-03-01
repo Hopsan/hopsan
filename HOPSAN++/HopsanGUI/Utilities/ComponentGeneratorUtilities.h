@@ -37,9 +37,6 @@
 
 class ModelObjectAppearance;
 
-QStringList getQVariables(QString nodeType);
-QStringList getCVariables(QString nodeType);
-QStringList getVariableLabels(QString nodeType);
 QStringList getSupportedFunctionsList();
 QStringList getCustomFunctionList();
 

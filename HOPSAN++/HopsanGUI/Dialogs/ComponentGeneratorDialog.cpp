@@ -995,28 +995,34 @@ void ComponentGeneratorWizard::generate()
         for(pit=nodeToPortMap.begin(); pit!=nodeToPortMap.end(); ++pit)
         {
             QStringList varNames;
-            varNames << getQVariables(pit.key()) << getCVariables(pit.key());
+            varNames << NodeInfo(pit.key()).qVariables << NodeInfo(pit.key()).cVariables;
             if(pit.key() == "NodeSignal")
             {
                 varNames << mPortNameLineEditPtrs[np-1]->text();
             }
-            for(int v=0; v<varNames.size(); ++v)
+            for(int i=0; i<pit.value().size(); ++i)
             {
-                output.append(varNames[v]+QString::number(np)+", ");
+                for(int v=0; v<varNames.size(); ++v)
+                {
+                    output.append(varNames[v]+QString::number(np)+", ");
+                }
+                ++np;
             }
-            ++np;
         }
         output.chop(2);
         output.append(";\n");
 
         //Parameter variables
-        output.append("    double ");
-        for(int p=0; p<mParameterNameLineEditPtrs.size(); ++p)
+        if(!mParameterNameLineEditPtrs.isEmpty())
         {
-            output.append(mParameterNameLineEditPtrs[p]->text()+", ");
+            output.append("    double ");
+            for(int p=0; p<mParameterNameLineEditPtrs.size(); ++p)
+            {
+                output.append(mParameterNameLineEditPtrs[p]->text()+", ");
+            }
+            output.chop(2);
+            output.append(";\n");
         }
-        output.chop(2);
-        output.append(";\n");
 
         //Node data pointers
         output.append("    double ");
@@ -1024,27 +1030,30 @@ void ComponentGeneratorWizard::generate()
         for(pit=nodeToPortMap.begin(); pit!=nodeToPortMap.end(); ++pit)
         {
             QStringList varNames;
-            varNames << getQVariables(pit.key()) << getCVariables(pit.key());
+            varNames << NodeInfo(pit.key()).qVariables << NodeInfo(pit.key()).cVariables;
             QString numStr;
             if(pit.key() == "NodeSignalIn" || pit.key() == "NodeSignalOut")
             {
                 varNames << mPortNameLineEditPtrs[np-1]->text();
             }
-            else
+            for(int i=0; i<pit.value().size(); ++i)
             {
-                numStr = QString::number(np);
+                if(pit.key() != "NodeSignalIn" && pit.key() != "NodeSignalOut")
+                {
+                    numStr = QString::number(np);
+                }
+                for(int v=0; v<varNames.size(); ++v)
+                {
+                    output.append("*mpND_"+varNames[v]+numStr+", ");
+                }
+                ++np;
             }
-            for(int v=0; v<varNames.size(); ++v)
-            {
-                output.append("*mpND_"+varNames[v]+numStr+", ");
-            }
-            ++np;
         }
         output.chop(2);
         output.append(";\n");
 
-        //Node data pointers
-        output.append("    double ");
+        //Port pointers
+        output.append("    Port ");
         for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
         {
             output.append("*mp"+mPortNameLineEditPtrs[p]->text()+", ");
@@ -1103,7 +1112,7 @@ void ComponentGeneratorWizard::generate()
                     nodeTypes << t;
             }
 
-            output.append("        mp"+portNames[p]+" = add"+portTypes[p]+"(\""+portNames[p]+"\", \""+nodeTypes[p]+"\")\n");
+            output.append("        mp"+portNames[p]+" = add"+portTypes[p]+"(\""+portNames[p]+"\", \""+nodeTypes[p]+"\");\n");
         }
         output.append("    }\n\n");
 
@@ -1115,11 +1124,11 @@ void ComponentGeneratorWizard::generate()
         for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
         {
             QStringList varNames;
-            varNames << getQVariables(nodeTypes[p]) << getCVariables(nodeTypes[p]);
+            varNames << NodeInfo(nodeTypes[p]).qVariables << NodeInfo(nodeTypes[p]).cVariables;
             if(portTypes[p] == "ReadPort") { varNames << portNames[p]; }
             if(portTypes[p] == "WritePort") { varNames << portNames[p]; }
 
-            QStringList varLabels = getVariableLabels(nodeTypes[p]);
+            QStringList varLabels = NodeInfo(nodeTypes[p]).variableLabels;
             QString numStr, defaultValue;
             if(portTypes[p] != "ReadPort" && portTypes[p] != "WritePort")
             {
@@ -1141,7 +1150,7 @@ void ComponentGeneratorWizard::generate()
         for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
         {
             QStringList varNames;
-            varNames << getQVariables(nodeTypes[p]) << getCVariables(nodeTypes[p]);
+            varNames << NodeInfo(nodeTypes[p]).qVariables << NodeInfo(nodeTypes[p]).cVariables;
             if(portTypes[p] == "ReadPort") { varNames << portNames[p]; }
             QString numStr;
             if(portTypes[p] != "ReadPort") { numStr = QString::number(p+1); }
@@ -1167,11 +1176,11 @@ void ComponentGeneratorWizard::generate()
             QStringList varNames;
             if(cqsType == "Q")
             {
-                varNames << getCVariables(nodeTypes[p]);
+                varNames << NodeInfo(nodeTypes[p]).cVariables;
             }
             else if(cqsType == "C")
             {
-                varNames << getQVariables(nodeTypes[p]);
+                varNames << NodeInfo(nodeTypes[p]).qVariables;
             }
             if(portTypes[p] == "ReadPort") { varNames << portNames[p]; }
             QString numStr;
@@ -1192,11 +1201,11 @@ void ComponentGeneratorWizard::generate()
             QStringList varNames;
             if(cqsType == "C")
             {
-                varNames << getCVariables(nodeTypes[p]);
+                varNames << NodeInfo(nodeTypes[p]).cVariables;
             }
             else if(cqsType == "Q")
             {
-                varNames << getQVariables(nodeTypes[p]);
+                varNames << NodeInfo(nodeTypes[p]).qVariables;
             }
             if(portTypes[p] == "WritePort") { varNames << portNames[p]; }
             QString numStr;
