@@ -104,7 +104,7 @@ class NodePneumatic :public Node
 public:
     //! @brief The data variable indexes, DATALENGTH is used internally
     //! @ingroup NodePneumatic
-    enum DataIndexEnumT {MASSFLOW, ENERGYFLOW, PRESSURE, TEMPERATURE, WAVEVARIABLE, CHARIMP, HEATFLOW, DATALENGTH};
+    enum DataIndexEnumT {MASSFLOW, ENERGYFLOW, PRESSURE, TEMPERATURE, WAVEVARIABLE, CHARIMP, DATALENGTH};
     static Node* CreatorFunction() {return new NodePneumatic;}
 
 private:

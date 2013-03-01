@@ -145,8 +145,6 @@ void hopsan::register_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("HydraulicPilotControlledCheckValve", HydraulicPilotControlledCheckValve::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicPilotClosableCheckValve", HydraulicPilotClosableCheckValve::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicMultiTankC", HydraulicMultiTankC::Creator);
-    pComponentFactory->registerCreatorFunction("HydraulicInterfaceC", HydraulicInterfaceC::Creator);
-    pComponentFactory->registerCreatorFunction("HydraulicInterfaceQ", HydraulicInterfaceQ::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicUndefinedConnectionC", HydraulicUndefinedConnectionC::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicUndefinedConnectionQ", HydraulicUndefinedConnectionQ::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicOverCenterValve", HydraulicOverCenterValve::Creator);
@@ -205,8 +203,6 @@ void hopsan::register_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("SignalFirstOrderTransferFunction", SignalFirstOrderTransferFunction::Creator);
     pComponentFactory->registerCreatorFunction("SignalPower", SignalPower::Creator);
     pComponentFactory->registerCreatorFunction("SignalDummy", SignalDummy::Creator);
-    pComponentFactory->registerCreatorFunction("SignalInputInterface", SignalInputInterface::Creator);
-    pComponentFactory->registerCreatorFunction("SignalOutputInterface", SignalOutputInterface::Creator);
     pComponentFactory->registerCreatorFunction("SignalNoiseGenerator", SignalNoiseGenerator::Creator);
     pComponentFactory->registerCreatorFunction("SignalAdditiveNoise", SignalAdditiveNoise::Creator);
     pComponentFactory->registerCreatorFunction("SignalStepExponentialDelay", SignalStepExponentialDelay::Creator);
@@ -253,10 +249,6 @@ void hopsan::register_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("MechanicAngularVelocitySensor", MechanicAngularVelocitySensor::Creator);
     pComponentFactory->registerCreatorFunction("MechanicTorqueSensor", MechanicTorqueSensor::Creator);
     pComponentFactory->registerCreatorFunction("MechanicMultiPortTranslationalMass", MechanicMultiPortTranslationalMass::Creator);
-    pComponentFactory->registerCreatorFunction("MechanicInterfaceC", MechanicInterfaceC::Creator);
-    pComponentFactory->registerCreatorFunction("MechanicInterfaceQ", MechanicInterfaceQ::Creator);
-    pComponentFactory->registerCreatorFunction("MechanicRotationalInterfaceC", MechanicRotationalInterfaceC::Creator);
-    pComponentFactory->registerCreatorFunction("MechanicRotationalInterfaceQ", MechanicRotationalInterfaceQ::Creator);
     pComponentFactory->registerCreatorFunction("MechanicRackAndPinion", MechanicRackAndPinion::Creator);
     pComponentFactory->registerCreatorFunction("MechanicJLink", MechanicJLink::Creator);
     pComponentFactory->registerCreatorFunction("MechanicThetaSource", MechanicThetaSource::Creator);
@@ -271,6 +263,9 @@ void hopsan::register_components(ComponentFactory* pComponentFactory)
 
     //Electric components
     #include "Electric/HopsanDefaultElectricComponents.cci"
+
+    //Connectivity components
+    #include "Connectivity/HopsanDefaultConnectivityComponents.cci"
 
     // Special component
 

@@ -2,8 +2,8 @@
 <hopsanobjectappearance version="0.3">
     <modelobject typename="MechanicRotationalInterfaceQ" displayname="Mechanic Rotational Interface of Q-type">
         <icons>
-            <icon scale="1" path="mecrotinterfaceq.svg" iconrotation="ON" type="user"/>
-            <icon scale="1" path="mecrotinterfaceq.svg" iconrotation="ON" type="iso"/>
+            <icon scale="1" path="MechanicRotationalInterfaceQ.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="MechanicRotationalInterfaceQ.svg" iconrotation="ON" type="iso"/>
         </icons>
         <ports>
             <port x="0" y="0.5" a="0" name="P1"/>

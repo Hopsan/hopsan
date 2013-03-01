@@ -235,7 +235,11 @@ HEADERS += \
     Electric/HopsanDefaultElectricComponents.h \
     Connectivity/MechanicRotationalInterfaceQ.hpp \
     Connectivity/MechanicRotationalInterfaceC.hpp \
-    Mechanic/Linear/MechanicPulley.hpp
+    Mechanic/Linear/MechanicPulley.hpp \
+    Connectivity/PneumaticInterfaceQ.hpp \
+    Connectivity/PneumaticInterfaceC.hpp \
+    Connectivity/ElectricInterfaceQ.hpp \
+    Connectivity/ElectricInterfaceC.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \

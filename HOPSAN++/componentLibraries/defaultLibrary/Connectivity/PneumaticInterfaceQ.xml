@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="PneumaticInterfaceQ" displayname="Pneumatic Interface of Q-type">
+        <icons>
+            <icon scale="1" path="PneumaticInterfaceQ.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="PneumaticInterfaceQ.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="0" y="0.5" a="0" name="P1"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

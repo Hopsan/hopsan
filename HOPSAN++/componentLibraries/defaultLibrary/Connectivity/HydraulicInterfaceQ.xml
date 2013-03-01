@@ -2,8 +2,8 @@
 <hopsanobjectappearance version="0.3">
     <modelobject typename="HydraulicInterfaceQ" displayname="Hydraulic Interface of Q-type">
         <icons>
-            <icon scale="1" path="hydinterfaceq.svg" iconrotation="ON" type="user"/>
-            <icon scale="1" path="hydinterfaceq.svg" iconrotation="ON" type="iso"/>
+            <icon scale="1" path="HydraulicInterfaceQ.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="HydraulicInterfaceQ.svg" iconrotation="ON" type="iso"/>
         </icons>
         <ports>
             <port x="0" y="0.5" a="0" name="P1"/>

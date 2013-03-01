@@ -1,0 +1,14 @@
+// This is a "cc include file" do not attempt to compile this file, it should be included insede an other cc file.
+
+    pComponentFactory->registerCreatorFunction("ElectricInterfaceC", ElectricInterfaceC::Creator);
+    pComponentFactory->registerCreatorFunction("ElectricInterfaceQ", ElectricInterfaceQ::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicInterfaceC", HydraulicInterfaceC::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicInterfaceQ", HydraulicInterfaceQ::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicInterfaceC", MechanicInterfaceC::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicInterfaceQ", MechanicInterfaceQ::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicRotationalInterfaceC", MechanicRotationalInterfaceC::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicRotationalInterfaceQ", MechanicRotationalInterfaceQ::Creator);
+    pComponentFactory->registerCreatorFunction("PneumaticInterfaceC", PneumaticInterfaceC::Creator);
+    pComponentFactory->registerCreatorFunction("PneumaticInterfaceQ", PneumaticInterfaceQ::Creator);
+    pComponentFactory->registerCreatorFunction("SignalInputInterface", SignalInputInterface::Creator);
+    pComponentFactory->registerCreatorFunction("SignalOutputInterface", SignalOutputInterface::Creator);

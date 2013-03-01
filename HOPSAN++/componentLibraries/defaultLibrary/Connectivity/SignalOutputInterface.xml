@@ -2,8 +2,8 @@
 <hopsanobjectappearance version="0.3">
     <modelobject typename="SignalOutputInterface" displayname="Output Interface Component">
         <icons>
-            <icon scale="1" path="outputinterface.svg" iconrotation="ON" type="user"/>
-            <icon scale="1" path="outputinterface.svg" iconrotation="ON" type="iso"/>
+            <icon scale="1" path="SignalOutputInterface.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="SignalOutputInterface.svg" iconrotation="ON" type="iso"/>
         </icons>
         <ports>
             <port x="0" y="0.5" a="180" name="in"/>
