@@ -498,56 +498,60 @@ QStringList getHopsanCoreIncludeFiles(bool skipDependencies)
 {
     QStringList includeFiles;
     includeFiles << "../HopsanCore/include/Component.h" <<
-                "../HopsanCore/include/ComponentEssentials.h" <<
-                "../HopsanCore/include/ComponentSystem.h" <<
-                "../HopsanCore/include/ComponentUtilities.h" <<
-                "../HopsanCore/include/HopsanCore.h" <<
-                "../HopsanCore/include/HopsanEssentials.h" <<
-                "../HopsanCore/include/Node.h" <<
-                "../HopsanCore/include/Nodes.h" <<
-                "../HopsanCore/include/Parameters.h" <<
-                "../HopsanCore/include/Port.h" <<
-                "../HopsanCore/include/svnrevnum.h" <<
-                "../HopsanCore/include/version.h" <<
-                "../HopsanCore/include/win32dll.h" <<
-                "../HopsanCore/include/Components/DummyComponent.hpp" <<
-                "../HopsanCore/include/ComponentUtilities/AuxiliaryMathematicaWrapperFunctions.h" <<
-                "../HopsanCore/include/ComponentUtilities/AuxiliarySimulationFunctions.h" <<
-                "../HopsanCore/include/ComponentUtilities/CSVParser.h" <<
-                "../HopsanCore/include/ComponentUtilities/Delay.hpp" <<
-                "../HopsanCore/include/ComponentUtilities/DoubleIntegratorWithDamping.h" <<
-                "../HopsanCore/include/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h" <<
-                "../HopsanCore/include/ComponentUtilities/EquationSystemSolver.h" <<
-                "../HopsanCore/include/ComponentUtilities/FirstOrderTransferFunction.h" <<
-                "../HopsanCore/include/ComponentUtilities/Integrator.h" <<
-                "../HopsanCore/include/ComponentUtilities/IntegratorLimited.h" <<
-                "../HopsanCore/include/ComponentUtilities/ludcmp.h" <<
-                "../HopsanCore/include/ComponentUtilities/matrix.h" <<
-                "../HopsanCore/include/ComponentUtilities/num2string.hpp" <<
-                "../HopsanCore/include/ComponentUtilities/SecondOrderTransferFunction.h" <<
-                "../HopsanCore/include/ComponentUtilities/TurbulentFlowFunction.h" <<
-                "../HopsanCore/include/ComponentUtilities/ValveHysteresis.h" <<
-                "../HopsanCore/include/ComponentUtilities/WhiteGaussianNoise.h" <<
-                "../HopsanCore/include/CoreUtilities/ClassFactory.hpp" <<
-                "../HopsanCore/include/CoreUtilities/ClassFactoryStatusCheck.hpp" <<
-                "../HopsanCore/include/CoreUtilities/CoSimulationUtilities.h" <<
-                "../HopsanCore/include/CoreUtilities/FindUniqueName.h" <<
-                "../HopsanCore/include/CoreUtilities/GeneratorHandler.h" <<
-                "../HopsanCore/include/CoreUtilities/HmfLoader.h" <<
-                "../HopsanCore/include/CoreUtilities/HopsanCoreMessageHandler.h" <<
-                "../HopsanCore/include/CoreUtilities/LoadExternal.h" <<
-                "../HopsanCore/include/CoreUtilities/MultiThreadingUtilities.h" <<
-                //"../componentLibraries/defaultLibrary/code/Components.h" <<
-                //"../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.h" <<
-                "../HopsanCore/Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp" <<
-                "../HopsanCore/Dependencies/rapidxml-1.13/hopsan_rapidxml.hpp" <<
-                "../HopsanCore/Dependencies/rapidxml-1.13/rapidxml.hpp" <<
-                "../HopsanCore/Dependencies/rapidxml-1.13/rapidxml_iterators.hpp" <<
-                "../HopsanCore/Dependencies/rapidxml-1.13/rapidxml_print.hpp" <<
-                "../HopsanCore/Dependencies/rapidxml-1.13/rapidxml_utils.hpp";
+                    "../HopsanCore/include/ComponentEssentials.h" <<
+                    "../HopsanCore/include/ComponentSystem.h" <<
+                    "../HopsanCore/include/ComponentUtilities.h" <<
+                    "../HopsanCore/include/HopsanCore.h" <<
+                    "../HopsanCore/include/HopsanEssentials.h" <<
+                    "../HopsanCore/include/Node.h" <<
+                    "../HopsanCore/include/Nodes.h" <<
+                    "../HopsanCore/include/Parameters.h" <<
+                    "../HopsanCore/include/Port.h" <<
+                    "../HopsanCore/include/svnrevnum.h" <<
+                    "../HopsanCore/include/version.h" <<
+                    "../HopsanCore/include/win32dll.h" <<
+                    //"../componentLibraries/defaultLibrary/code/Components.h" <<
+                    //"../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.h" <<
+                    "../HopsanCore/include/Components/DummyComponent.hpp" <<
+                    "../HopsanCore/include/ComponentUtilities/AuxiliaryMathematicaWrapperFunctions.h" <<
+                    "../HopsanCore/include/ComponentUtilities/AuxiliarySimulationFunctions.h" <<
+                    "../HopsanCore/include/ComponentUtilities/CSVParser.h" <<
+                    "../HopsanCore/include/ComponentUtilities/Delay.hpp" <<
+                    "../HopsanCore/include/ComponentUtilities/DoubleIntegratorWithDamping.h" <<
+                    "../HopsanCore/include/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h" <<
+                    "../HopsanCore/include/ComponentUtilities/EquationSystemSolver.h" <<
+                    "../HopsanCore/include/ComponentUtilities/FirstOrderTransferFunction.h" <<
+                    "../HopsanCore/include/ComponentUtilities/Integrator.h" <<
+                    "../HopsanCore/include/ComponentUtilities/IntegratorLimited.h" <<
+                    "../HopsanCore/include/ComponentUtilities/ludcmp.h" <<
+                    "../HopsanCore/include/ComponentUtilities/matrix.h" <<
+                    "../HopsanCore/include/ComponentUtilities/num2string.hpp" <<
+                    "../HopsanCore/include/ComponentUtilities/SecondOrderTransferFunction.h" <<
+                    "../HopsanCore/include/ComponentUtilities/TurbulentFlowFunction.h" <<
+                    "../HopsanCore/include/ComponentUtilities/ValveHysteresis.h" <<
+                    "../HopsanCore/include/ComponentUtilities/WhiteGaussianNoise.h" <<
+                    "../HopsanCore/include/CoreUtilities/ClassFactory.hpp" <<
+                    "../HopsanCore/include/CoreUtilities/ClassFactoryStatusCheck.hpp" <<
+                    "../HopsanCore/include/CoreUtilities/CoSimulationUtilities.h" <<
+                    "../HopsanCore/include/CoreUtilities/FindUniqueName.h" <<
+                    "../HopsanCore/include/CoreUtilities/GeneratorHandler.h" <<
+                    "../HopsanCore/include/CoreUtilities/HmfLoader.h" <<
+                    "../HopsanCore/include/CoreUtilities/HopsanCoreMessageHandler.h" <<
+                    "../HopsanCore/include/CoreUtilities/LoadExternal.h" <<
+                    "../HopsanCore/include/CoreUtilities/MultiThreadingUtilities.h";
+
+    if (!skipDependencies)
+    {
+        includeFiles << "../HopsanCore/Dependencies/libcsv_parser++-1.0.0/include/csv_parser/csv_parser.hpp" <<
+                        "../HopsanCore/Dependencies/rapidxml-1.13/hopsan_rapidxml.hpp" <<
+                        "../HopsanCore/Dependencies/rapidxml-1.13/rapidxml.hpp" <<
+                        "../HopsanCore/Dependencies/rapidxml-1.13/rapidxml_iterators.hpp" <<
+                        "../HopsanCore/Dependencies/rapidxml-1.13/rapidxml_print.hpp" <<
+                        "../HopsanCore/Dependencies/rapidxml-1.13/rapidxml_utils.hpp";
+    }
+
     return includeFiles;
 }
-
 
 
 
