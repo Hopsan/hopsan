@@ -70,6 +70,7 @@ int main(int argc, char *argv[])
         TCLAP::ValueArg<std::string> paramExportFile("", "paramExportFile", "CSV file with exported parameter values", false, "", "string", cmd);
         TCLAP::ValueArg<std::string> paramImportFile("", "paramImportFile", "CSV file with parameter values to import", false, "", "string", cmd);
         TCLAP::ValueArg<std::string> modelTestOption("t","validate","Model validation to perform",false,"",".hvc filePath", cmd);
+        TCLAP::ValueArg<std::string> nLogSamplesOption("l","numLogSamples","Set the number of log samples to store for the top-level system, (default: Use number in .hmf)",false,"","integer", cmd);
         TCLAP::ValueArg<std::string> simulateOption("s","simulate","Specify simulation time as: [hmf] or [start,ts,stop] or [ts,stop] or [stop]",false,"","Comma separated string", cmd);
         TCLAP::ValueArg<std::string> extLibPathsOption("e","ext","A file containing the external libs to load",false,"","FilePath string", cmd);
         TCLAP::ValueArg<std::string> hmfPathOption("m","hmf","The Hopsan model file to simulate",false,"","FilePath string", cmd);
@@ -148,8 +149,15 @@ int main(int argc, char *argv[])
                         stopTime = atof(simTime[0].c_str());
                     }
                 }
-
                 pRootSystem->setDesiredTimestep(stepTime);
+
+                if (nLogSamplesOption.isSet())
+                {
+                    size_t nSamp = atoi(nLogSamplesOption.getValue().c_str());
+                    cout << "Setting nLogSamples to: " << nSamp << endl;
+                    pRootSystem->setNumLogSamples(nSamp);
+                }
+
                 //! @todo maybe use simulation handler object instead
                 TicToc isoktimer("IsOkTime");
                 bool initSuccess = pRootSystem->checkModelBeforeSimulation();
