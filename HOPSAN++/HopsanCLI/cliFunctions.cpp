@@ -219,14 +219,13 @@ void setTerminalColor(const ColorsT color)
     WORD c;
     switch (color)
     {
-    case Yellow:
     case Red:
         c = FOREGROUND_INTENSITY | FOREGROUND_RED;
         break;
     case Green:
         c = FOREGROUND_INTENSITY | FOREGROUND_GREEN;
         break;
-    case Yeloow:
+    case Yellow:
         c = FOREGROUND_INTENSITY | FOREGROUND_GREEN | FOREGROUND_RED;
         break;
     case Blue:
