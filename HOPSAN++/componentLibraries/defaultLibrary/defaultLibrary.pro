@@ -34,7 +34,7 @@ CONFIG(release, debug|release) {
 CONFIG += silent warn_on
 
 # The compiler should be pedantic to catch all errors (optional)
-QMAKE_CXXFLAGS += -pedantic
+QMAKE_CXXFLAGS += -pedantic -Wno-long-long
 
 # -------------------------------------------------
 # Project files

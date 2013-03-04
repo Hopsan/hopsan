@@ -2177,46 +2177,52 @@ void ComponentSystem::setupLogTimesteps(const double startT, const double stopT,
     double simT=startT;
 
     mLogTheseTimeSteps.clear();
-    mLogTheseTimeSteps.reserve(nLogSamples);
 
-    mLogTheseTimeSteps.push_back(0);
-    while (mLogTheseTimeSteps.size() < nLogSamples)
+    if (nLogSamples > 0)
     {
-        logT += mLogTimeDt;
-        size_t n = size_t((logT-simT)/Ts);
-        ////size_t n = size_t(mLogTimeDt/Ts); //Allow truncation we want lower step
+        mLogTheseTimeSteps.reserve(nLogSamples);
+        mLogTheseTimeSteps.push_back(0);
+        while (mLogTheseTimeSteps.size() < nLogSamples)
+        {
+            logT += mLogTimeDt;
+            size_t n = size_t((logT-simT)/Ts);
+            ////size_t n = size_t(mLogTimeDt/Ts); //Allow truncation we want lower step
+            //cout << "n: " << n << endl;
+            simT += double(n)*Ts; // simT below logT
+
+
+            //cout << "SimT: " << simT << " logT: " << logT << " logT-simT: " << logT-simT << endl;
+
+            //! @todo ud part might not be necessary, stuff above seems to handle it
+            // Calc at which sample to log
+            size_t ud = size_t((logT-simT+0.5)); //Round to nearest int by truncation (this should become 0 or 1)
+            size_t logAtSample = mLogTheseTimeSteps.back() + n + ud;
+            simT += double(ud)*Ts; //Set simT that we will log for (add 0 or 1 Ts)
+            //cout << "ud: " << ud << endl;
+
+            mLogTheseTimeSteps.push_back(logAtSample);
+        }
+
+        //! @todo sanity check on log slots
+        if (mnLogSlots != mLogTheseTimeSteps.size())
+        {
+            cout << "Error: mnLogSlots: " << mnLogSlots << " mLogTheseTimeSteps.size(): " << mLogTheseTimeSteps.size() << endl;
+        }
+
         //cout << "n: " << n << endl;
-        simT += double(n)*Ts; // simT below logT
-
-
-        //cout << "SimT: " << simT << " logT: " << logT << " logT-simT: " << logT-simT << endl;
-
-        //! @todo ud part might not be necessary, stuff above seems to handle it
-        // Calc at which sample to log
-        size_t ud = size_t((logT-simT+0.5)); //Round to nearest int by truncation (this should become 0 or 1)
-        size_t logAtSample = mLogTheseTimeSteps.back() + n + ud;
-        simT += double(ud)*Ts; //Set simT that we will log for (add 0 or 1 Ts)
-        //cout << "ud: " << ud << endl;
-
-        mLogTheseTimeSteps.push_back(logAtSample);
+        cout << "mNumSimulationSteps: " << size_t((stopT-startT)/Ts+0.5) << endl;
+        cout << "mLastStepToLog: " << mLogTheseTimeSteps.back() << endl;
+        cout << "mLogTimeDt: " << mLogTimeDt << " mTimeStepsToLog.size(): " << mLogTheseTimeSteps.size() << endl;
     }
-
-    //! @todo sanity check on log slots
-    if (mnLogSlots != mLogTheseTimeSteps.size())
+    else
     {
-        cout << "Error: mnLogSlots: " << mnLogSlots << " mLogTheseTimeSteps.size(): " << mLogTheseTimeSteps.size() << endl;
+        mEnableLogData = false;
     }
-    //cout << "n: " << n << endl;
-    cout << "mNumSimulationSteps: " << size_t((stopT-startT)/Ts+0.5) << endl;
-    cout << "mLastStepToLog: " << mLogTheseTimeSteps.back() << endl;
-    cout << "mLogTimeDt: " << mLogTimeDt << " mTimeStepsToLog.size(): " << mLogTheseTimeSteps.size() << endl;
 //    for (int i=0; i<mTimeStepsToLog.size(); ++i)
 //    {
 //        cout << mTimeStepsToLog[i] << " ";
 //    }
 //    cout << endl;
-
-
 }
 
 //! @brief Determines if all subnodes and subsystems subnodes should log data, Turn ALL ON or OFF
@@ -3421,7 +3427,7 @@ void ComponentSystem::setLogSettingsNSamples(int nSamples, double start, double 
         {
             mnLogSlots = size_t((stop - start) / sampletime);
             std::stringstream ss;
-            ss << "You requested nSamples: " << nSamples << ". This is more than total simulation samples, limiting to: " << mnLogSlots;
+            ss << "Requested nLogSamples: " << nSamples << " but this is more than the total simulation samples, limiting to: " << mnLogSlots;
             addWarningMessage(ss.str(), "toofewsamples");
         }
         else

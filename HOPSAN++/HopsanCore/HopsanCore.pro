@@ -36,7 +36,7 @@ INCLUDEPATH *= $${PWD}/Dependencies/boost
 # -------------------------------------------------
 CONFIG(debug, debug|release) {
   DEFINES *= DEBUGCOMPILING
-  QMAKE_CXXFLAGS += -pedantic
+  QMAKE_CXXFLAGS += -pedantic -Wno-long-long
 }
 CONFIG(release, debug|release) {
   DEFINES *= RELEASECOMPILING

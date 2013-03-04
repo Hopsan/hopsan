@@ -39,7 +39,7 @@
 #define HOPSANCLISVNREVISION "UNKNOWN"
 #endif
 
-#define HOPSANCLIVERSION "0.5.x_r" HOPSANCLISVNREVISION
+#define HOPSANCLIVERSION "0.6.x_r" HOPSANCLISVNREVISION
 
 #ifndef BUILTINDEFAULTCOMPONENTLIB
 #ifdef WIN32
@@ -56,18 +56,21 @@ HopsanEssentials gHopsanCore;
 
 int main(int argc, char *argv[])
 {
-    bool returnSuccess=false;
+    bool returnSuccess=true;
     try {
         TCLAP::CmdLine cmd("HopsanCLI", ' ', HOPSANCLIVERSION);
 
         // Define a value argument and add it to the command line.
         //TCLAP::ValueArg<std::string> saveNodesPathsOption("n", "savenodes", "A file containing lines with the ComponentName;PortName to save node data from", false, "", "FilePath string", cmd);
+        TCLAP::SwitchArg endPauseOption("", "endPause", "Pauses the CLI at end to let you see its output", cmd);
+        TCLAP::SwitchArg printDebug("d", "printDebug", "Show debug messages in the output", cmd);
         TCLAP::ValueArg<std::string> resultCSVSort("", "resultCSVSort", "Store in columns or in rows: [rows, cols]", false, "rows", "string", cmd);
         TCLAP::ValueArg<std::string> resultTypeOption("", "resultType", "How the results should be exported, choose: [final_csv, full_csv]", false, "final_csv", "string", cmd);
         TCLAP::ValueArg<std::string> resultFileOption("", "resultFile", "where the results should be exported", false, "", "string", cmd);
         TCLAP::ValueArg<std::string> paramExportFile("", "paramExportFile", "CSV file with exported parameter values", false, "", "string", cmd);
         TCLAP::ValueArg<std::string> paramImportFile("", "paramImportFile", "CSV file with parameter values to import", false, "", "string", cmd);
         TCLAP::ValueArg<std::string> modelTestOption("t","validate","Model validation to perform",false,"",".hvc filePath", cmd);
+        TCLAP::ValueArg<std::string> simulateOption("s","simulate","Specify simulation time as: [hmf] or [start,ts,stop] or [ts,stop] or [stop]",false,"","Comma separated string", cmd);
         TCLAP::ValueArg<std::string> extLibPathsOption("e","ext","A file containing the external libs to load",false,"","FilePath string", cmd);
         TCLAP::ValueArg<std::string> hmfPathOption("m","hmf","The Hopsan model file to simulate",false,"","FilePath string", cmd);
 
@@ -92,11 +95,17 @@ int main(int argc, char *argv[])
 
         if(hmfPathOption.isSet())
         {
-            printWaitingMessages();
+            printWaitingMessages(printDebug.getValue());
+
+            if (modelTestOption.isSet())
+            {
+                setTerminalColor(Yellow);
+                cout << "Warning: Do not specify a hmf file in combination with the -t (--validate) option. Model should be loaded from the .hvc file" << endl;
+            }
 
             double startTime=0, stopTime=2;
             ComponentSystem* pRootSystem = gHopsanCore.loadHMFModel(hmfPathOption.getValue(), startTime, stopTime);
-            printWaitingMessages();
+            printWaitingMessages(printDebug.getValue());
 
             if (paramImportFile.isSet())
             {
@@ -111,12 +120,36 @@ int main(int argc, char *argv[])
 
             }
 
-            cout << endl << "Component Hieararcy:" << endl << endl;
+            cout << endl << "Model Hieararcy:" << endl << endl;
             printComponentHierarchy(pRootSystem, "", true, true);
             cout << endl;
 
-            if (pRootSystem)
+            if (pRootSystem && simulateOption.isSet())
             {
+                double stepTime = pRootSystem->getTimestep();
+                // Parse simulation options, anr replace hmf values if needed
+                vector<string> simTime;
+                if (simulateOption.getValue() != "hmf")
+                {
+                    splitStringOnDelimiter(simulateOption.getValue(),',',simTime);
+                    if (simTime.size() == 3)
+                    {
+                        startTime = atof(simTime[0].c_str());
+                        stepTime = atof(simTime[1].c_str());
+                        stopTime = atof(simTime[2].c_str());
+                    }
+                    else if (simTime.size() == 2)
+                    {
+                        stepTime = atof(simTime[0].c_str());
+                        stopTime = atof(simTime[1].c_str());
+                    }
+                    else if (simTime.size() == 1)
+                    {
+                        stopTime = atof(simTime[0].c_str());
+                    }
+                }
+
+                pRootSystem->setDesiredTimestep(stepTime);
                 //! @todo maybe use simulation handler object instead
                 TicToc isoktimer("IsOkTime");
                 bool initSuccess = pRootSystem->checkModelBeforeSimulation();
@@ -126,15 +159,15 @@ int main(int argc, char *argv[])
                 initTimer.TocPrint();
                 if (initSuccess)
                 {
-                    cout << "Simulating... Please Wait!" << endl;
+                    cout << "Simulating: " << startTime << " to " << stopTime << " with Ts: " << stepTime << "     Please Wait!" << endl;
                     TicToc simuTimer("SimulationTime");
                     pRootSystem->simulate(startTime, stopTime);
                     simuTimer.TocPrint();
                 }
                 else
                 {
-                    printWaitingMessages(false);
-                    setColor(Red);
+                    printWaitingMessages(printDebug.getValue());
+                    setTerminalColor(Red);
                     cout << "Initialize failed, Simulation aborted!" << endl;
                 }
 
@@ -171,7 +204,7 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
-                    setColor(Red);
+                    setTerminalColor(Red);
                     cout << "Unknown result type format: " << resultTypeOption.getValue() << endl;
                 }
 
@@ -183,7 +216,7 @@ int main(int argc, char *argv[])
                 }
                 else if (resultCSVSort.getValue() != "rows")
                 {
-                    setColor(Red);
+                    setTerminalColor(Red);
                     cout << "Unknown CSV sorting format: " << resultCSVSort.getValue() << endl;
                 }
             }
@@ -196,18 +229,24 @@ int main(int argc, char *argv[])
         }
         else
         {
-            printWaitingMessages();
-            returnSuccess=true;
+            printWaitingMessages(printDebug.getValue());
             cout << endl << "HopsanCLI Done!" << endl;
+        }
+
+        setTerminalColor(Reset); //Reset terminal color
+        if (endPauseOption.getValue())
+        {
+            cout << "Press ENTER to continue ...";
+            cin.get();
         }
 
     } catch (TCLAP::ArgException &e)  // catch any exceptions
     {
         std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;
         std::cout << "error: " << e.error() << " for arg " << e.argId() << std::endl;
+        returnSuccess = false;
     }
 
-    setColor(Reset); //Reset terminal color
     if (returnSuccess)
     {
         return 0;

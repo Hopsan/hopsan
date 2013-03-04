@@ -895,6 +895,12 @@ size_t Component::getModelHierarchyDepth()
     return mModelHierarchyDepth;
 }
 
+//! @brief Returns the component simulation time step
+double Component::getTimestep() const
+{
+    return mTimestep;
+}
+
 
 Component::~Component()
 {

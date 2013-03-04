@@ -126,7 +126,7 @@ public:
 
     //! @todo Should it be possible to set timestep of a component? Should only be possible for a Systemcomponent
     //void setTimestep(const double timestep);
-    //double getTimestep();
+    double getTimestep() const;
     double *getTimePtr();
 
     void setMeasuredTime(const double time);

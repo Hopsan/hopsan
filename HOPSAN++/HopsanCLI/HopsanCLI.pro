@@ -37,7 +37,7 @@ LIBS *= -L$${PWD}/../bin -lHopsanCore$${DEBUG_EXT}
 #--------------------------------------------------------
 
 CONFIG(debug, debug|release) {
-  QMAKE_CXXFLAGS += -pedantic
+  QMAKE_CXXFLAGS += -pedantic -Wno-long-long
 }
 
 # -------------------------------------------------
