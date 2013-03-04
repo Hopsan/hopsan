@@ -44,13 +44,15 @@ private:
 
 public:
     // The creator function that is registered when a component lib is loaded into Hopsan
+    // This static function is mandatory
     static Component *Creator()
     {
         return new SignalSum();
     }
 
-    // The Configure function that is run when a new object of the class is created
-    // Use this function to set initial member variable values, and to register Ports, Parameters and Startvalues
+    // The Configure function that is run ONCE when a new object of the class is created
+    // Use this function to set initial member variable values and to register Ports, Parameters and Startvalues
+    // This function is mandatory
     void configure()
     {
         // Add ports to the component
@@ -58,8 +60,10 @@ public:
         mpOutPort = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
     }
 
-    // The initialize function is called ONCE before simulation begins
+    // The initialize function is called before simulation begins.
+    // It may be called multiple times
     // In this function you can read or write from/to nodes
+    // This function is optional but most likely needed
     void initialize()
     {
         // We assume that noone will be disconnecting during simulation
@@ -68,6 +72,7 @@ public:
 
     // The simulateOneTimestep() function is called ONCE every time step
     // This function contains the actual component simulation equations
+    // This function is mandatory
     void simulateOneTimestep()
     {
         // Initialize sum variable
@@ -83,6 +88,23 @@ public:
         //Write value to output node
         mpOutPort->writeNode(NodeSignal::VALUE, sum);
     }
+
+    // The finalize function is called after simulation ends
+    // It may be called multiple times
+    // Use this function to clean up of any custom allocations made in Initialize (if needed)
+    // This function is optional
+    //void finalize()
+    //{
+
+    //}
+
+    // The deconfigure function is called just before a component is deleated
+    // Use it to clean up after any custom allocation in the configure function
+    // This function is optional
+    //void deconfigure()
+    //{
+        // Nothing to deconfigure
+    //}
 };
 
 }

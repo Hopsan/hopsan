@@ -35,13 +35,15 @@ private:
 
 public:
     // The creator function that is registered when a component lib is loaded into Hopsan
+    // This static function is mandatory
     static Component *Creator()
     {
         return new MyExampleOrifice();
     }
 
-    // The Configure function that is run when a new object of the class is created
-    // Use this function to set initial member variable values, and to register Ports, Parameters and Startvalues
+    // The Configure function that is run ONCE when a new object of the class is created
+    // Use this function to set initial member variable values and to register Ports, Parameters and Startvalues
+    // This function is mandatory
     void configure()
     {
         // Set initial member variable values
@@ -55,15 +57,18 @@ public:
         registerParameter("Kc", "Pressure-Flow Coefficient", "[m^5/Ns]", mKc);
     }
 
-    // The initialize function is called ONCE before simulation begins
+    // The initialize function is called before simulation begins.
+    // It may be called multiple times
     // In this function you can read or write from/to nodes
+    // This function is optional but most likely needed
     void initialize()
     {
-        //Nothing to initialize
+        // Nothing to initialize
     }
 
     // The simulateOneTimestep() function is called ONCE every time step
     // This function contains the actual component simulation equations
+    // This function is mandatory
     void simulateOneTimestep()
     {
         //Get variable values from nodes
@@ -85,11 +90,21 @@ public:
         mpP2->writeNode(NodeHydraulic::FLOW, q2);
     }
 
-    // The finalize function is called ONCE after simulation ends
-    // Use this function to clean up after yourself (if needed)
+    // The finalize function is called after simulation ends
+    // It may be called multiple times
+    // Use this function to clean up of any custom allocations made in Initialize (if needed)
+    // This function is optional
     void finalize()
     {
-        //Nothing to finalize
+        // Nothing to finalize
+    }
+
+    // The deconfigure function is called just before a component is deleated
+    // Use it to clean up after any custom allocation in the configure function
+    // This function is optional
+    void deconfigure()
+    {
+        // Nothing to deconfigure
     }
 };
 
