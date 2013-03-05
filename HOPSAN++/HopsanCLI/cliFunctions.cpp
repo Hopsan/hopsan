@@ -314,6 +314,7 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
 
     if (pSys)
     {
+        prefix = prefix + pSys->getName() + "$";
         vector<string> names = pSys->getSubComponentNames();
         for (size_t c=0; c<names.size(); ++c)
         {
@@ -323,8 +324,6 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
                 //cout << "comp: " << c << " of: " << names.size() << endl;
                 if (pComp->isComponentSystem())
                 {
-                    // Component is a system, append system name to prefix (we do this here, as we do not want it to happen for the root system, its prefix should be blank)
-                    prefix = prefix + pComp->getName() + "$";
                     // Save results for subsystem
                     saveResults(static_cast<ComponentSystem*>(pComp), rFileName, howMany, prefix, pFile);
                 }
@@ -462,6 +461,7 @@ void exportParameterValuesToCSV(const std::string &rFileName, hopsan::ComponentS
         }
 
         // Now handle subcomponent parameters
+        prefix = prefix + pSystem->getName() + "$";
         vector<string> names = pSystem->getSubComponentNames();
         for (size_t c=0; c<names.size(); ++c)
         {
@@ -470,8 +470,6 @@ void exportParameterValuesToCSV(const std::string &rFileName, hopsan::ComponentS
             {
                 if (pComp->isComponentSystem())
                 {
-                    // First add subsystem name as prefix, then save it (we do not want prefix for top level system though, that is why we do this here)
-                    prefix = prefix + pComp->getName() + "$";
                     exportParameterValuesToCSV(rFileName, static_cast<ComponentSystem*>(pComp), prefix, pFile);
                 }
                 else
