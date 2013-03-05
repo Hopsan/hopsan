@@ -150,6 +150,15 @@ void printWarningMessage(const std::string &rWarning)
     setTerminalColor(Reset);
 }
 
+//! @brief Prints a message with green color (resets color to defaul after)
+//! @param [in] rMessage The message
+void printGreenMessage(const std::string &rMessage)
+{
+    setTerminalColor(Green);
+    cout << rMessage << endl;
+    setTerminalColor(Reset);
+}
+
 //! @brief Helpfunction to print timestep info for a system
 //! @param [in] pSystem The system to print info for
 void printTsInfo(const ComponentSystem* pSystem)
@@ -601,7 +610,6 @@ void readExternalLibsFromTxtFile(const std::string filePath, std::vector<std::st
         while ( file.good() )
         {
             getline(file, line);
-            cout << "line: " << line << endl;
             if (*line.begin() != '#')
             {
                 rExtLibFileNames.push_back(line);
@@ -611,7 +619,7 @@ void readExternalLibsFromTxtFile(const std::string filePath, std::vector<std::st
     }
     else
     {
-        cout << "error, could not open file: " << filePath << endl;
+        printErrorMessage(string("Could not open externalLibsToLoadFile: ") + filePath );
     }
 }
 

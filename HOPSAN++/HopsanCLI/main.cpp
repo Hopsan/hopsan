@@ -56,7 +56,7 @@ HopsanEssentials gHopsanCore;
 
 int main(int argc, char *argv[])
 {
-    bool returnSuccess=true;
+    bool returnSuccess=false;
     try {
         TCLAP::CmdLine cmd("HopsanCLI", ' ', HOPSANCLIVERSION);
 
@@ -72,7 +72,8 @@ int main(int argc, char *argv[])
         TCLAP::ValueArg<std::string> modelTestOption("t","validate","Model validation to perform",false,"",".hvc filePath", cmd);
         TCLAP::ValueArg<std::string> nLogSamplesOption("l","numLogSamples","Set the number of log samples to store for the top-level system, (default: Use number in .hmf)",false,"","integer", cmd);
         TCLAP::ValueArg<std::string> simulateOption("s","simulate","Specify simulation time as: [hmf] or [start,ts,stop] or [ts,stop] or [stop]",false,"","Comma separated string", cmd);
-        TCLAP::ValueArg<std::string> extLibPathsOption("e","ext","A file containing the external libs to load",false,"","FilePath string", cmd);
+        TCLAP::ValueArg<std::string> extLibsFileOption("","externalLibsFile","A file containing the external libs to load",false,"","FilePath string", cmd);
+        TCLAP::MultiArg<std::string> extLibPathsOption("e","externalLib","Path to .dll/.so externalComponentLib. Can be given multiple times",false,"FilePath string", cmd);
         TCLAP::ValueArg<std::string> hmfPathOption("m","hmf","The Hopsan model file to simulate",false,"","FilePath string", cmd);
 
         // Parse the argv array.
@@ -82,17 +83,38 @@ int main(int argc, char *argv[])
         // Load default hopasn component lib
         gHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
 #endif
+        // Print initial core messages
+        printWaitingMessages(printDebug.getValue());
 
         // Load external libs
-        vector<string> extLibs;
-        if (extLibPathsOption.isSet())
+        vector<string> externalComponentLibraries;
+        // Check extLibs file options
+        if (extLibsFileOption.isSet())
         {
-            readExternalLibsFromTxtFile(extLibPathsOption.getValue(), extLibs);
-            for (size_t i=0; i<extLibs.size(); ++i)
+            readExternalLibsFromTxtFile(extLibsFileOption.getValue(), externalComponentLibraries);
+        }
+
+        // Check the multiarg option
+        for (size_t i=0; i<extLibPathsOption.getValue().size(); ++i)
+        {
+            externalComponentLibraries.push_back(extLibPathsOption.getValue()[i]);
+        }
+
+        // Load the actual external lib .dll/.so files
+        for (size_t i=0; i<externalComponentLibraries.size(); ++i)
+        {
+            bool rc = gHopsanCore.loadExternalComponentLib(externalComponentLibraries[i]);
+            printWaitingMessages(printDebug.getValue()); // Print after loading
+            if (rc)
             {
-                gHopsanCore.loadExternalComponentLib(extLibs[i]);
+                printGreenMessage(string("Success loading External library: ") + externalComponentLibraries[i]);
+            }
+            else
+            {
+                printErrorMessage(string("Failed to load External library: ") + externalComponentLibraries[i]);
             }
         }
+
 
         if(hmfPathOption.isSet())
         {
@@ -127,6 +149,15 @@ int main(int argc, char *argv[])
 
             if (pRootSystem && simulateOption.isSet())
             {
+                bool doSimulate=true;
+
+                // Abort if root model is empty (probably load hmf failed somehow)
+                if (pRootSystem->isEmpty())
+                {
+                    printErrorMessage("The root system seems to be empty, aborting!");
+                    doSimulate = false;
+                }
+
                 double stepTime = pRootSystem->getTimestep();
                 // Parse simulation options, anr replace hmf values if needed
                 vector<string> simTime;
@@ -160,27 +191,40 @@ int main(int argc, char *argv[])
 
                 //! @todo maybe use simulation handler object instead
                 TicToc isoktimer("IsOkTime");
-                bool initSuccess = pRootSystem->checkModelBeforeSimulation();
+                doSimulate = doSimulate && pRootSystem->checkModelBeforeSimulation();
                 isoktimer.TocPrint();
-                TicToc initTimer("InitializeTime");
-                initSuccess = initSuccess && pRootSystem->initialize(startTime, stopTime);
-                initTimer.TocPrint();
-                if (initSuccess)
+                if (doSimulate)
+                {
+                    TicToc initTimer("InitializeTime");
+                    doSimulate = doSimulate && pRootSystem->initialize(startTime, stopTime);
+                    initTimer.TocPrint();
+                }
+                else
+                {
+                    printWaitingMessages(printDebug.getValue());
+                    printErrorMessage("Initialize failed, Simulation aborted!");
+                }
+
+                if (doSimulate)
                 {
                     cout << "Simulating: " << startTime << " to " << stopTime << " with Ts: " << stepTime << "     Please Wait!" << endl;
                     TicToc simuTimer("SimulationTime");
                     pRootSystem->simulate(startTime, stopTime);
                     simuTimer.TocPrint();
                 }
+                if (pRootSystem->wasSimulationAborted())
+                {
+                    printErrorMessage("Simulation was aborted!");
+                }
                 else
                 {
-                    printWaitingMessages(printDebug.getValue());
-                    setTerminalColor(Red);
-                    cout << "Initialize failed, Simulation aborted!" << endl;
+                    returnSuccess = true;
                 }
 
                 pRootSystem->finalize();
             }
+
+            printWaitingMessages(printDebug.getValue());
 
             //cout << endl << "Component Hieararcy:" << endl << endl;
             //printComponentHierarchy(pRootSystem, "", true);
@@ -252,7 +296,6 @@ int main(int argc, char *argv[])
     {
         std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;
         std::cout << "error: " << e.error() << " for arg " << e.argId() << std::endl;
-        returnSuccess = false;
     }
 
     if (returnSuccess)

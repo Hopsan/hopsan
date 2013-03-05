@@ -91,7 +91,7 @@ bool LoadExternal::load(const string libpath)
     if (!lib_ptr)
     {
         stringstream ss;
-        ss << "Opening external library: " << libpath << " Error: " << GetLastError();
+        ss << "Opening external library: " << libpath << " GetLastError(): " << GetLastError();
         mpMessageHandler->addErrorMessage(ss.str());
         return false;
     }
@@ -137,7 +137,7 @@ bool LoadExternal::load(const string libpath)
     if (!lib_ptr)
     {
         stringstream ss;
-        ss << "Opening external lib: " << libpath << " Error: " << dlerror();
+        ss << "Opening external lib: " << libpath << " dlerror(): " << dlerror();
         mpMessageHandler->addErrorMessage(ss.str());
         return false;
     }

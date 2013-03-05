@@ -163,6 +163,7 @@ namespace hopsan {
         ComponentSystem* getSubComponentSystem(std::string name);
         std::vector<std::string> getSubComponentNames();
         bool haveSubComponent(const std::string name) const;
+        bool isEmpty() const;
 
         // Alias handler
         AliasHandler &getAliasHandler();

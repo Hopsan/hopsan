@@ -42,6 +42,7 @@ void splitStringOnDelimiter(const std::string &rString, const char delim, std::v
 void printWaitingMessages(const bool printDebug=true);
 void printErrorMessage(const std::string &rError);
 void printWarningMessage(const std::string &rWarning);
+void printGreenMessage(const std::string &rMessage);
 void printTsInfo(const hopsan::ComponentSystem* pSystem);
 void printSystemParams(hopsan::ComponentSystem* pSystem);
 void printComponentHierarchy(hopsan::ComponentSystem *pSystem, std::string prefix="",

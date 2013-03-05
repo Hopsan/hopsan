@@ -770,6 +770,12 @@ bool ComponentSystem::haveSubComponent(const string name) const
     return (mSubComponentMap.count(name) > 0);
 }
 
+//! @brief Checks if a system is empty (if there are no components or systemports)
+bool ComponentSystem::isEmpty() const
+{
+    return ((mSubComponentMap.size() + mPortPtrMap.size()) == 0);
+}
+
 AliasHandler &ComponentSystem::getAliasHandler()
 {
     return mAliasHandler;
