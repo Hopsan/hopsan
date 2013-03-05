@@ -1965,6 +1965,7 @@ bool ContainerObject::isSubObjectSelected()
 
 void ContainerObject::setVariableAlias(QString compName, QString portName, QString varName, QString alias)
 {
+    mpParentProjectTab->hasChanged();
     getCoreSystemAccessPtr()->setVariableAlias(compName, portName, varName, alias);
 }
 

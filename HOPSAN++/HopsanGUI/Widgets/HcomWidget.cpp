@@ -1468,6 +1468,9 @@ void HcomHandler::executeDefineAliasCommand(QString cmd)
     {
         mpConsole->print("Failed to assign variable alias.");
     }
+
+    gpMainWindow->mpPlotWidget->mpPlotVariableTree->updateList();
+
     return;
 }
 

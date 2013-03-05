@@ -995,16 +995,22 @@ void ComponentGeneratorWizard::generate()
         for(pit=nodeToPortMap.begin(); pit!=nodeToPortMap.end(); ++pit)
         {
             QStringList varNames;
+            QString numStr;
             varNames << NodeInfo(pit.key()).qVariables << NodeInfo(pit.key()).cVariables;
-            if(pit.key() == "NodeSignal")
+            if(pit.key() == "NodeSignalIn" || pit.key() == "NodeSignalOut")
             {
                 varNames << mPortNameLineEditPtrs[np-1]->text();
             }
             for(int i=0; i<pit.value().size(); ++i)
             {
+                numStr = QString::number(np);
+                if(pit.key() == "NodeSignalIn" || pit.key() == "NodeSignalOut")
+                {
+                    numStr = "";
+                }
                 for(int v=0; v<varNames.size(); ++v)
                 {
-                    output.append(varNames[v]+QString::number(np)+", ");
+                    output.append(varNames[v]+numStr+", ");
                 }
                 ++np;
             }
@@ -1032,12 +1038,14 @@ void ComponentGeneratorWizard::generate()
             QStringList varNames;
             varNames << NodeInfo(pit.key()).qVariables << NodeInfo(pit.key()).cVariables;
             QString numStr;
-            if(pit.key() == "NodeSignalIn" || pit.key() == "NodeSignalOut")
-            {
-                varNames << mPortNameLineEditPtrs[np-1]->text();
-            }
+
             for(int i=0; i<pit.value().size(); ++i)
             {
+                if(pit.key() == "NodeSignalIn" || pit.key() == "NodeSignalOut")
+                {
+                    varNames.clear();
+                    varNames << mPortNameLineEditPtrs[np-1]->text();
+                }
                 if(pit.key() != "NodeSignalIn" && pit.key() != "NodeSignalOut")
                 {
                     numStr = QString::number(np);
@@ -1124,9 +1132,15 @@ void ComponentGeneratorWizard::generate()
         for(int p=0; p<mPortNameLineEditPtrs.size(); ++p)
         {
             QStringList varNames;
-            varNames << NodeInfo(nodeTypes[p]).qVariables << NodeInfo(nodeTypes[p]).cVariables;
-            if(portTypes[p] == "ReadPort") { varNames << portNames[p]; }
-            if(portTypes[p] == "WritePort") { varNames << portNames[p]; }
+            if(nodeTypes[p] != "NodeSignal")
+            {
+                varNames << NodeInfo(nodeTypes[p]).qVariables << NodeInfo(nodeTypes[p]).cVariables;
+            }
+            else
+            {
+                if(portTypes[p] == "ReadPort") { varNames << portNames[p]; }
+                if(portTypes[p] == "WritePort") { varNames << portNames[p]; }
+            }
 
             QStringList varLabels = NodeInfo(nodeTypes[p]).variableLabels;
             QString numStr, defaultValue;

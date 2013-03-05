@@ -31,8 +31,8 @@ namespace hopsan {
         SecondOrderTransferFunction mFilterTheta;
         FirstOrderTransferFunction mFilterOmega;
         //        DoubleIntegratorWithDamping mIntegrator;
-        double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1,
-               *mpND_f2, *mpND_x2, *mpND_v2, *mpND_c2, *mpND_Zx2;
+        double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_me1, *mpND_c1, *mpND_Zx1,
+               *mpND_f2, *mpND_x2, *mpND_v2, *mpND_me2, *mpND_c2, *mpND_Zx2;
         double f1, x1, v1, c1, Zx1,
                f2, x2, v2, c2, Zx2;
         Port *mpP1, *mpP2;
@@ -64,12 +64,14 @@ namespace hopsan {
             mpND_f1 = getSafeNodeDataPtr(mpP1, NodeMechanic::FORCE);
             mpND_x1 = getSafeNodeDataPtr(mpP1, NodeMechanic::POSITION);
             mpND_v1 = getSafeNodeDataPtr(mpP1, NodeMechanic::VELOCITY);
+            mpND_me1 = getSafeNodeDataPtr(mpP1, NodeMechanic::EQMASS);
             mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE);
             mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CHARIMP);
 
             mpND_f2 = getSafeNodeDataPtr(mpP2, NodeMechanic::FORCE);
             mpND_x2 = getSafeNodeDataPtr(mpP2, NodeMechanic::POSITION);
             mpND_v2 = getSafeNodeDataPtr(mpP2, NodeMechanic::VELOCITY);
+            mpND_me2 = getSafeNodeDataPtr(mpP2, NodeMechanic::EQMASS);
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanic::WAVEVARIABLE);
             mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanic::CHARIMP);
 
@@ -93,6 +95,9 @@ namespace hopsan {
 
             mFilterTheta.initialize(mTimestep, mNumTheta, mDenTheta, f1-f2, -x1);
             mFilterOmega.initialize(mTimestep, mNumOmega, mDenOmega, f1-f2, -v1);
+
+            (*mpND_me1) = m;
+            (*mpND_me2) = m;
         }
 
 
