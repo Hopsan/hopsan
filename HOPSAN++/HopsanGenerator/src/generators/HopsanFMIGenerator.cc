@@ -1148,7 +1148,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     QStringList arguments = QStringList() << "a" << "-tzip" << "../"+modelName+".fmu" << savePath+"/fmu/modelDescription.xml" << savePath+"/fmu/"+modelName+"_TLM.xml" << "-r" << savePath + "/fmu/binaries";
     callProcess(program, arguments, savePath+"/fmu");
 #elif linux && __i386__
-    QStringList arguments = QStringList() << "-r" << "../"+modelName+".fmu" << "modelDescription.xml" << modelName+"_TLM.xml" << binaries/linux32/"+modelName+".so";
+    QStringList arguments = QStringList() << "-r" << "../"+modelName+".fmu" << "modelDescription.xml" << modelName+"_TLM.xml" << "binaries/linux32/"+modelName+".so";
     callProcess("zip", arguments, savePath+"/fmu");
 #elif linux && __x86_64__
     QStringList arguments = QStringList() << "-r" << "../"+modelName+".fmu" << "modelDescription.xml" << modelName+"_TLM.xml" << "binaries/linux64/"+modelName+".so";
