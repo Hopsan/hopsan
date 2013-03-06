@@ -64,6 +64,8 @@ Component::Component()
     mModelHierarchyDepth = 0;
 
     mpParameters = new Parameters(this);
+
+    mSearchPaths.clear();
 }
 
 
@@ -953,6 +955,37 @@ void Component::loadStartValuesFromSimulation()
     {
         (*portIt)->loadStartValuesFromSimulation();
     }
+}
+
+
+//! @brief Find and return the full file path name of fileName within the system search path, parent systems included (path to HMF file is always in here)
+//! @param fileName the name of the searched file
+//! @return full file name path, empty string if it does not exsits
+std::string Component::findFilePath(const std::string fileName)
+{
+    bool found = false;
+    std:string fullPath;
+    fullPath.clear();
+
+    if(!(mSearchPaths.empty()))
+    {
+        for(size_t i = 0; i<mSearchPaths.size(); ++i)
+        {
+            fullPath = mSearchPaths[i];
+            fullPath.append("/").append(fileName);
+
+            FILE *fp = fopen(fullPath.c_str(),"r");
+            if( fp ) {
+                fclose(fp);
+                found = true;
+                break;
+            }
+        }
+    }
+    if(!found && getSystemParent())
+        fullPath = getSystemParent()->findFilePath(fileName);
+
+    return fullPath;
 }
 
 

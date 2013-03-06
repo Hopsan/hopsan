@@ -1065,6 +1065,14 @@ void CoreSystemAccess::getSystemParameters(QVector<CoreParameterData> &rParamete
 
 
 
+//! @brief Adds a search path to the Component system in Core that can be used by its components to look for external files, e.g. area curves
+//! @param searchPath the search path to be added
+void CoreSystemAccess::addSearchPath(QString searchPath)
+{
+    mpCoreComponentSystem->addSearchPath(searchPath.toStdString());
+}
+
+
 
 NodeInfo::NodeInfo(QString nodeType)
 {
@@ -1106,7 +1114,5 @@ void NodeInfo::getNodeTypes(QStringList &nodeTypes)
 {
     nodeTypes << "NodeMechanic" << "NodeMechanicRotational" << "NodeHydraulic" << "NodePneumatic" << "NodeElectric";
 }
-
-
 
 

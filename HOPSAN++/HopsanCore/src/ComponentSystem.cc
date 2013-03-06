@@ -345,6 +345,22 @@ bool ComponentSystem::wasSimulationAborted()
     return mStopSimulation;
 }
 
+
+//! @brief Adds a search path that can be used by its components to look for external files, e.g. area curves
+//! @param searchPath the search path to be added
+void ComponentSystem::addSearchPath(const std::string searchPath)
+{
+    bool contain = false;
+    for(size_t i=0; i<mSearchPaths.size();++i)
+    {
+        if(mSearchPaths[i] == searchPath)
+            contain = true;
+    }
+    if(!contain)
+        mSearchPaths.push_back(searchPath);
+}
+
+
 //! @todo this one (if it should even exist) should be in component as parameter map is there, best is if we can code around having one
 Parameters &ComponentSystem::getSystemParameters()
 {

@@ -225,6 +225,7 @@ namespace hopsan {
         // System parameters
         bool setSystemParameter(const std::string name, const std::string value, const std::string type, const std::string description="", const std::string unit="", const bool force=false);
         Parameters &getSystemParameters();
+        void addSearchPath(const std::string searchPath);
 
     protected:
         // Constructor - Destructor- Creator
@@ -273,6 +274,7 @@ namespace hopsan {
         std::vector<Component*> mComponentCptrs;
         std::vector<Component*> mComponentUndefinedptrs;
         std::vector<Node*> mSubNodePtrs;
+
 
         bool volatile mStopSimulation;
 

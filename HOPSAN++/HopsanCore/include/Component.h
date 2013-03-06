@@ -143,6 +143,9 @@ public:
     // HopsanEssentials
     HopsanEssentials *getHopsanEssentials();
 
+    //Searchpath
+    std::string findFilePath(const std::string fileName);
+
 protected:
     //==========Protected member functions==========
     // Constructor - Destructor
@@ -188,6 +191,8 @@ protected:
     std::vector< std::pair<double*, double*> > mDynamicParameterDataPtrs;
 
     ComponentSystem* mpSystemParent;
+
+    std::vector<std::string> mSearchPaths;
 
 private:
     typedef std::map<std::string, Port*> PortPtrMapT;

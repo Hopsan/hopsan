@@ -1088,6 +1088,7 @@ void ProjectTabWidget::loadModel(QString modelFileName, bool ignoreAlreadyOpen)
 
     this->addProjectTab(new ProjectTab(this), fileInfo.baseName());
     ProjectTab *pCurrentTab = this->getCurrentTab();
+    pCurrentTab->getTopLevelSystem()->getCoreSystemAccessPtr()->addSearchPath(fileInfo.absoluteDir().absolutePath());
     pCurrentTab->getTopLevelSystem()->setUndoEnabled(false, true);
 
     //Check if this is an expected hmf xml file

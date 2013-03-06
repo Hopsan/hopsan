@@ -212,6 +212,9 @@ public:
     //Time measurements
     void measureSimulationTime(QStringList &rComponentNames, QList<double> &rTimes, int nSteps=5);
 
+    //Search path
+    void addSearchPath(QString searchPath);
+
 private:
     hopsan::ComponentSystem *getCoreSystemPtr();
     hopsan::ComponentSystem *getCoreSubSystemPtr(QString name);
