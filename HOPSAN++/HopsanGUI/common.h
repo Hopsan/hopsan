@@ -77,6 +77,7 @@
 #define HOPSANGUIGROUPTYPENAME "HopsanGUIGroup"
 #define HOPSANGUISYSTEMTYPENAME "Subsystem"
 #define HOPSANGUICONTAINERPORTTYPENAME "HopsanGUIContainerPort"
+#define HOPSANGUISCOPECOMPONENTTYPENAME "SignalSink"
 
 //! @todo all of these dont have to be common
 //! @todo enums should NOT have all captitals, risc of colission with defines

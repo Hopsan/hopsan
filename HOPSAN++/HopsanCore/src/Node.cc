@@ -41,28 +41,23 @@ using namespace hopsan;
 //! @param [in] datalength The length of the data vector
 Node::Node(const size_t datalength)
 {
-    //Make sure clear (should not really be needed)
+    // Make sure clear (should not really be needed)
     mDataValues.clear();
     mDataStorage.clear();
-    //mTimeStorage.clear();
     mConnectedPorts.clear();
 
-    //Init pointer
+    // Init pointer
     mpOwnerSystem = 0;
 
-    //Set initial node type
+    // Set initial node type
     mNodeType = "UndefinedNodeType";
 
-    //Resize
+    // Resize
     mDataDescriptions.resize(datalength);
     mDataValues.resize(datalength,0.0);
 
-    //Set log specific variables
-    disableLog();       //Default log node dissabled
-    //mLogTimeDt = -1.0;
-    //mLastLogTime = 0.0; //Initial valus should not matter, will be overwritten when selecting log amount
-    //mLogSlots = 0;
-    //mLogCtr = 0;
+    // Default dissabled logging
+    disableLog();
 }
 
 
@@ -147,6 +142,12 @@ const NodeDataDescription* Node::getDataDescription(const size_t id) const
     return 0;
 }
 
+//! @brief This function can be used to set unit string and displayName for signal nodes ONLY
+void Node::setSignalDataUnitAndDescription(const string &/*rUnit*/, const string &/*rName*/)
+{
+    // Do nothing by default
+}
+
 
 //! @brief This function gives you the data Id for a names data variable
 //! @param [in] name The data name
@@ -223,36 +224,6 @@ void Node::preAllocateLogSpace(const size_t nLogSlots)
 }
 
 
-////! Copy current data vector into log storage, also adds current time
-//void Node::logData(const double time)
-//{
-//    if (mDoLog)
-//    {
-//        //! @todo Danger comparing doubles
-//        //! @todo is this correct, Subtract a tenth of logDt to avoid numerical problem with double >= double
-//        //! @todo since all nodes in a system will all do this calculation maybe we could speed things up by do ing this check once, in the system and only call this function in all nodes when needed
-//        if (time >= mLastLogTime+mLogTimeDt-mLogTimeDt/10.0)
-//        {
-//            //cout << "mLogCtr: " << mLogCtr << endl;
-//            //! @todo this if check should not be needed if everything else is working
-//            if (mLogCtr < mTimeStorage.size())
-//            {
-//                //! @todo maybe time vector should be in the system instead, since all nodes in the same system will have the same time vector
-//                mTimeStorage[mLogCtr] = time;   //We log the "real"  simulation time for the sample
-//                mDataStorage[mLogCtr] = mDataValues;
-//            }else
-//            {
-//                stringstream ss;
-//                ss << "mLogCtr >= mTimeStorage.size() " << mLogCtr;
-//                //gCoreMessageHandler.addWarningMessage(ss.str());
-//            }
-//            ++mLogCtr;
-
-//            mLastLogTime = mLastLogTime+mLogTimeDt; //Can not use "real" time directly as this may mean that not all log slots will be filled
-//        }
-//    }
-//}
-
 //! @brief Copy current data vector into log storage at given logslot
 //! @warning No bounds check is done
 void Node::logData(const size_t logSlot)
@@ -277,18 +248,6 @@ Component *Node::getWritePortComponentPtr()
     }
 
     return 0;   //Return null pointer if no write port was found
-}
-
-//! @brief This function can be used to set unit string for signal nodes ONLY
-void Node::setSignalDataUnit(const string unit)
-{
-    //Do nothing by default
-}
-
-//! @brief This function can be used to set name string for signal nodes ONLY
-void Node::setSignalDataName(const string name)
-{
-    //Do nothing by default
 }
 
 
@@ -357,25 +316,22 @@ bool Node::isConnectedToPort(Port *pPort)
 }
 
 
-//! Enable node data logging
+//! @brief Enable node data logging
 void Node::enableLog()
 {
     mDoLog = true;
-    //cout << "enableLog" << endl;
 }
 
 
-//! Disable node data logging
+//! @brief Disable node data logging
 void Node::disableLog()
 {
     mDoLog = false;
-    //cout << "disableLog" << endl;
-    // If log dissabled then free memory if something has been previously allocated
-    //mTimeStorage.clear();
     mDataStorage.clear();
 }
 
 
+//! @brief Returns the number of attached ports of a specific type
 int Node::getNumberOfPortsByType(int type)
 {
     int nPorts = 0;

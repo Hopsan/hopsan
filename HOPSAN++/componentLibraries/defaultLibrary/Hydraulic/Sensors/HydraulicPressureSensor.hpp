@@ -58,6 +58,7 @@ namespace hopsan {
         {
             mpND_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
             mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
+            mpOut->setSignalNodeUnitAndDescription("Pa","Pressure");
         }
 
 

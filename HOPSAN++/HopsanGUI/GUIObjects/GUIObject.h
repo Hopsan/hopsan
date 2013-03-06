@@ -35,7 +35,7 @@ class QDomElement;
 class WorkspaceObjectSelectionBox;
 class ContainerObject;
 
-enum GUIObjectEnumT {WORKSPACEOBJECT=QGraphicsItem::UserType+1, MODELOBJECT, CONTAINEROBJECT, SYSTEMCONTAINER, COMPONENT, CONTAINERPORT, GROUPCONTAINER, ANIMATEDOBJECT};
+enum GUIObjectEnumT {WorkspaceObjectType=QGraphicsItem::UserType+1, ModelObjectType, ContainerObjectType, SystemContainerType, ComponentType, ScopeComponentType, ContainerPortType, GroupContainerType, AnimatedObjectType};
 
 class WorkspaceObject : public QGraphicsWidget
 {
@@ -58,7 +58,7 @@ public:
     //Other methods
     bool isFlipped();
 
-    enum { Type = WORKSPACEOBJECT };
+    enum { Type = WorkspaceObjectType };
     int type() const;
 
 public slots:

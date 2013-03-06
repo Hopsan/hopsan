@@ -376,9 +376,13 @@ void PlotTab::addCurve(PlotCurve *curve, QColor desiredColor, HopsanPlotID plotI
         }
     }
 
-    // Use the default unit for this curve
+    // Use the default unit for this curve, unless it is a "Value" with an actual unit set
     QString defaultUnit = gConfig.getDefaultUnit(curve->getDataName());
-    if (defaultUnit != curve->getDataUnit())
+    if ( curve->getDataName() != "Value" && (defaultUnit != curve->getDataUnit()) )
+    {
+        curve->setCustomDataUnit(defaultUnit);
+    }
+    else if (curve->getDataUnit() == "-")
     {
         curve->setCustomDataUnit(defaultUnit);
     }

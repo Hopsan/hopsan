@@ -455,7 +455,7 @@ void LogDataHandler::collectPlotDataFromModel()
         for(QList<Port*>::iterator pit=pModelObject->getPortListPtrs().begin(); pit!=pModelObject->getPortListPtrs().end(); ++pit)
         {
             QVector<CoreVariableData> varDescs;
-            mpParentContainerObject->getCoreSystemAccessPtr()->getVariableDescriptions(pModelObject->getName(), (*pit)->getPortName(), varDescs);
+            mpParentContainerObject->getCoreSystemAccessPtr()->getVariableDescriptions(pModelObject->getName(), (*pit)->getName(), varDescs);
 
             // Iterate variables
             for(int i=0; i<varDescs.size(); ++i)
@@ -463,7 +463,7 @@ void LogDataHandler::collectPlotDataFromModel()
                 // Fetch variable data
                 QVector<double> dataVec;
                 std::vector<double> *pTimeVector;
-                mpParentContainerObject->getCoreSystemAccessPtr()->getPlotData(pModelObject->getName(), (*pit)->getPortName(), varDescs[i].mName,
+                mpParentContainerObject->getCoreSystemAccessPtr()->getPlotData(pModelObject->getName(), (*pit)->getName(), varDescs[i].mName,
                                                                                pTimeVector, dataVec);
 
                 // Prevent adding data if time or data vector was empty
@@ -487,9 +487,10 @@ void LogDataHandler::collectPlotDataFromModel()
                     VariableDescription varDesc;
                     varDesc.mModelPath = pModelObject->getParentContainerObject()->getModelFileInfo().fileName();
                     varDesc.mComponentName = pModelObject->getName();
-                    varDesc.mPortName = (*pit)->getPortName();
+                    varDesc.mPortName = (*pit)->getName();
                     varDesc.mDataName = varDescs[i].mName;
                     varDesc.mDataUnit = varDescs[i].mUnit;
+                    varDesc.mDataDescription = varDescs[i].mDescription;
                     varDesc.mAliasName  = varDescs[i].mAlias;
                     varDesc.mVarType = VariableDescription::M;
 
@@ -643,8 +644,8 @@ SharedLogVariableDataPtrT LogDataHandler::getPlotData(int generation, QString co
     if(mpParentContainerObject->getModelObject(componentName)->getPort(portName)->getPortType() == "POWERMULTIPORT" ||
        mpParentContainerObject->getModelObject(componentName)->getPort(portName)->getPortType() == "READMULTIPORT")
     {
-        QString newPortName = mpParentContainerObject->getModelObject(componentName)->getPort(portName)->getConnectedPorts().first()->getPortName();
-        QString newComponentName = mpParentContainerObject->getModelObject(componentName)->getPort(portName)->getConnectedPorts().first()->getGuiModelObject()->getName();
+        QString newPortName = mpParentContainerObject->getModelObject(componentName)->getPort(portName)->getConnectedPorts().first()->getName();
+        QString newComponentName = mpParentContainerObject->getModelObject(componentName)->getPort(portName)->getConnectedPorts().first()->getParentModelObjectName();
 
         concName= newComponentName+"#"+newPortName+"#"+dataName;
     }

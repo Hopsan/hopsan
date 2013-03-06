@@ -58,8 +58,8 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *pAn
         if(pConnector->getStartPort()->getPortType() == "POWERMULTIPORT")
         {
             int g = pConnector->getParentContainer()->getLogDataHandler()->getLatestGeneration();
-            QString componentName = pConnector->getEndPort()->getGuiModelObject()->getName();
-            QString portName = pConnector->getEndPort()->getPortName();
+            QString componentName = pConnector->getEndPort()->getParentModelObject()->getName();
+            QString portName = pConnector->getEndPort()->getName();
 
             if(!pConnector->getParentContainer()->getLogDataHandler()->isEmpty())
             {
@@ -70,8 +70,8 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *pAn
         else
         {
             int g = pConnector->getParentContainer()->getLogDataHandler()->getLatestGeneration();
-            QString componentName = pConnector->getStartPort()->getGuiModelObject()->getName();
-            QString portName = pConnector->getStartPort()->getPortName();
+            QString componentName = pConnector->getStartPort()->getParentModelObject()->getName();
+            QString portName = pConnector->getStartPort()->getName();
 
             if(!pConnector->getParentContainer()->getLogDataHandler()->isEmpty())
             {
@@ -82,13 +82,13 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *pAn
 
         if(mpConnector->getStartPort()->getPortType() == "POWERMULTIPORT")
         {
-            mComponentName = mpConnector->getEndPort()->getGuiModelObject()->getName();
-            mPortName = mpConnector->getEndPort()->getPortName();
+            mComponentName = mpConnector->getEndPort()->getParentModelObject()->getName();
+            mPortName = mpConnector->getEndPort()->getName();
         }
         else
         {
-            mComponentName = mpConnector->getStartPort()->getGuiModelObject()->getName();
-            mPortName = mpConnector->getStartPort()->getPortName();
+            mComponentName = mpConnector->getStartPort()->getParentModelObject()->getName();
+            mPortName = mpConnector->getStartPort()->getName();
         }
 
     }
@@ -118,7 +118,7 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *pAn
         pLine->setPen(tempPen);
     }
 
-    if(pConnector->getStartPort()->getGuiModelObject()->getTypeCQS() == "C")
+    if(pConnector->getStartPort()->getParentModelObject()->getTypeCQS() == "C")
     {
         mDirectionCorrection = 1;
     }

@@ -105,15 +105,15 @@ namespace hopsan {
             if((*mpND_a1) != -(*mpND_a2))
             {
                 std::stringstream ss;
-                ss << "Start angles does not match, {" << getName() << "::" << mpP1->getPortName() <<
-                        "} and {" << getName() << "::" << mpP2->getPortName() << "}.";
+                ss << "Start angles does not match, {" << getName() << "::" << mpP1->getName() <<
+                        "} and {" << getName() << "::" << mpP2->getName() << "}.";
                 this->addWarningMessage(ss.str());
             }
             if((*mpND_w1) != -(*mpND_w2))
             {
                 std::stringstream ss;
-                ss << "Start velocities does not match, {" << getName() << "::" << mpP1->getPortName() <<
-                        "} and {" << getName() << "::" << mpP2->getPortName() << "}.";
+                ss << "Start velocities does not match, {" << getName() << "::" << mpP1->getName() <<
+                        "} and {" << getName() << "::" << mpP2->getName() << "}.";
                 this->addWarningMessage(ss.str());
             }
         }

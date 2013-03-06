@@ -469,13 +469,13 @@ QString CoreSystemAccess::getPortType(const QString componentName, const QString
     {
         switch (portTypeIndicator)
         {
-        case INTERNALPORTTYPE:
+        case InternalPortType:
             return QString::fromStdString( portTypeToString(pPort->getInternalPortType()) );
             break;
-        case ACTUALPORTTYPE:
+        case ActualPortType:
             return QString::fromStdString( portTypeToString(pPort->getPortType()) );
             break;
-        case EXTERNALPORTTYPE:
+        case ExternalPortType:
             return QString::fromStdString( portTypeToString(pPort->getExternalPortType()) );
             break;
         default:
@@ -762,7 +762,7 @@ void CoreSystemAccess::deleteSystemPort(QString portname)
 QString CoreSystemAccess::addSystemPort(QString portname)
 {
     //qDebug() << "add system port: " << portname;
-    return QString::fromStdString(mpCoreComponentSystem->addSystemPort(portname.toStdString())->getPortName());
+    return QString::fromStdString(mpCoreComponentSystem->addSystemPort(portname.toStdString())->getName());
 }
 
 QString CoreSystemAccess::renameSystemPort(QString oldname, QString newname)
@@ -820,7 +820,7 @@ void CoreSystemAccess::getPlotData(const QString compname, const QString portnam
                 // Instead of pData.size() lets ask for latest logsample, this way we can avoid coping log slots that have not bee written and contains junk
                 // This is usefull when a simulation has been aborted
                 size_t nElements = pPort->getComponent()->getSystemParent()->getNumActuallyLoggedSamples();
-                qDebug() << "pData.size(): " << pData->size() << " nElements: " << nElements;
+                //qDebug() << "pData.size(): " << pData->size() << " nElements: " << nElements;
 
                 //Ok lets copy all of the data to a Qt vector
                 rData.resize(nElements); //Allocate memory for data
@@ -1033,6 +1033,7 @@ void CoreSystemAccess::getVariableDescriptions(const QString compname, const QSt
                 data.mName = QString::fromStdString(pDescs->at(i).name);
                 data.mUnit = QString::fromStdString(pDescs->at(i).unit);
                 data.mAlias = QString::fromStdString(pPort->getVariableAlias(i));
+                data.mDescription = QString::fromStdString(pDescs->at(i).description);
                 rVarDescriptions.push_back(data);
             }
         }

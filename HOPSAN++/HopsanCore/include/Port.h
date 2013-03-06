@@ -82,6 +82,7 @@ namespace hopsan {
         virtual const std::vector<NodeDataDescription>* getNodeDataDescriptions(const size_t portIdx=0);
         virtual const NodeDataDescription* getNodeDataDescription(const size_t dataid, const size_t portIdx=0);
         virtual int getNodeDataIdFromName(const std::string name, const size_t portIdx=0);
+        virtual void setSignalNodeUnitAndDescription(const std::string &rUnit, const std::string &rName);
 
         virtual void saveLogData(std::string filename, const size_t portIdx=0);
         virtual bool haveLogData(const size_t portIdx=0);
@@ -109,7 +110,7 @@ namespace hopsan {
         virtual PortTypesEnumT getExternalPortType();
         virtual PortTypesEnumT getInternalPortType();
 
-        const std::string getPortName() const;
+        const std::string getName() const;
         const std::string getComponentName() const;
 
         virtual void loadStartValues();
@@ -133,8 +134,8 @@ namespace hopsan {
 
         std::vector<Port*> mConnectedPorts;
 
-        void setNode(Node* pNode, const size_t portIdx=0);
         virtual Node *getNodePtr(const size_t portIdx=0);
+        void setNode(Node* pNode, const size_t portIdx=0);
 
         virtual Port* addSubPort();
         virtual void removeSubPort(Port* ptr);
@@ -151,9 +152,7 @@ namespace hopsan {
         Node* mpNode;
         Node* mpNCDummyNode; //NotConnected dummy node
         std::map<std::string, int> mVariableAliasMap;
-
         bool mConnectionRequired;
-
     };
 
 
@@ -178,11 +177,11 @@ namespace hopsan {
         friend class ConnectionAssistant;
 
     public:
-        //Constructors
+        // Constructor, Destructor
         MultiPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort=0);
         ~MultiPort();
 
-        //Overloaded virtual functions
+        // Overloaded virtual functions
         double readNodeSafe(const size_t idx, const size_t portIdx);
         void writeNodeSafe(const size_t &idx, const double &value, const size_t portIdx);
         inline double readNode(const size_t idx, const size_t portIdx) const;
@@ -219,11 +218,10 @@ namespace hopsan {
         std::vector<Port*> &getConnectedPorts(const int portIdx=-1);
 
     protected:
-        std::vector<Port*> mSubPortsVector;
-
-        void removeSubPort(Port* ptr);
         Node *getNodePtr(const size_t portIdx=0);
+        void removeSubPort(Port* ptr);
 
+        std::vector<Port*> mSubPortsVector;
         std::vector<Port*> mAllConnectedPorts;
     };
 

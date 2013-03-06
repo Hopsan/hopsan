@@ -89,7 +89,7 @@ Component* Port::getComponent() const
 }
 
 
-//! @brief Returns a pointer to the connected node
+//! @brief Returns a pointer to the connected node or 0 if no node exist
 Node* Port::getNodePtr(const size_t /*portIdx*/)
 {
     return mpNode;
@@ -138,7 +138,7 @@ double Port::readNodeSafe(const size_t idx, const size_t /*portIdx*/)
     if(!isConnected())
     {
         std::stringstream ss;
-        ss << "Attempted to call readNode() for non-connected port \"" << this->getPortName() << "\".";
+        ss << "Attempted to call readNode() for non-connected port \"" << this->getName() << "\".";
         mpComponent->addErrorMessage(ss.str());
         mpComponent->getSystemParent()->stopSimulation();     //Read attempt from non-connected port; abort simulation and give error message
         return 0;
@@ -273,8 +273,8 @@ void Port::createStartNode(NodeTypeT nodeType)
         {
             const NodeDataDescription* pDesc = mpStartNode->getDataDescription(i);
             stringstream ssName, ssDesc;
-            ssDesc << "startvalue:" << "Port " << getPortName();
-            ssName << getPortName() << "::" << pDesc->name;
+            ssDesc << "startvalue:" << "Port " << getName();
+            ssName << getName() << "::" << pDesc->name;
             getComponent()->registerParameter(ssName.str(), ssDesc.str(), pDesc->unit, *(mpStartNode->getDataPtr(pDesc->id)), Constant);
         }
     }
@@ -339,7 +339,7 @@ void Port::saveLogData(string filename, const size_t /*portIdx*/)
 {
     if (mpNode != 0)
     {
-        string header = getComponentName() + "::" + getPortName();
+        string header = getComponentName() + "::" + getName();
 
         ofstream out_file;
         out_file.open(filename.c_str());
@@ -428,6 +428,15 @@ int Port::getNodeDataIdFromName(const string name, const size_t /*portIdx*/)
     else
     {
         return -1;
+    }
+}
+
+void Port::setSignalNodeUnitAndDescription(const string &rUnit, const string &rName)
+{
+    //! @todo multiport version needed
+    if (mpNode != 0)
+    {
+        mpNode->setSignalDataUnitAndDescription(rUnit, rName);
     }
 }
 
@@ -556,13 +565,13 @@ void Port::setStartValue(const size_t idx, const double value, const size_t /*po
 //        vector<string> dataNames, units;
 //        mpStartNode->getDataNamesAndUnits(dataNames, units);
 //        stringstream ssName, ssDesc;
-//        ssDesc << "startvalue:" << "Port " << getPortName();
-//        ssName << getPortName() << "::" << dataNames[idx];
+//        ssDesc << "startvalue:" << "Port " << getName();
+//        ssName << getName() << "::" << dataNames[idx];
 //        getComponent()->registerParameter(ssName.str(), ssDesc.str(), units[idx], *mpStartNode->getDataPtr(idx));
     }
     else
     {
-        getComponent()->addWarningMessage("Tried to add StartValue for port: " + getPortName() + " This was ignored because this port does not have any StartValue to set.");
+        getComponent()->addWarningMessage("Tried to add StartValue for port: " + getName() + " This was ignored because this port does not have any StartValue to set.");
     }
 }
 
@@ -573,7 +582,7 @@ void Port::disableStartValue(const size_t idx)
 {
     std::stringstream name, ss;
     //The start value has already been registered as a parameter in the component, so we must unregister it. This is probably not the most beautiful solution.
-    name << getPortName() << "::" << mpStartNode->getDataDescription(idx)->name;
+    name << getName() << "::" << mpStartNode->getDataDescription(idx)->name;
     ss << "Disabling_StartValue: " << name.str();
     mpComponent->addDebugMessage(ss.str());
     mpComponent->unRegisterParameter(name.str());
@@ -647,7 +656,7 @@ PortTypesEnumT Port::getInternalPortType()
 
 
 //! @brief Get the port name
-const string Port::getPortName() const
+const string Port::getName() const
 {
     return mPortName;
 }

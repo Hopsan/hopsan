@@ -42,7 +42,7 @@ class ContainerObject;
 class Connector;
 class PlotWindow;
 
-enum PortDirectionT {TOPBOTTOM, LEFTRIGHT};
+enum PortDirectionT {TopBottomDirectionType, LeftRightDirectionType};
 
 class Port :public QGraphicsWidget
 {
@@ -51,11 +51,11 @@ public:
     Port(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, ModelObject *pParent = 0);
     ~Port();
 
-    ContainerObject *getParentContainerObjectPtr();
-    ModelObject *getGuiModelObject();
-    QString getGuiModelObjectName();
+    ContainerObject *getParentContainerObject();
+    ModelObject *getParentModelObject();
+    QString getParentModelObjectName();
 
-    QString getPortName() const;
+    QString getName() const;
     void setDisplayName(const QString name);
 
     QPointF getCenterPos();
@@ -71,24 +71,21 @@ public:
 
     void setEnable(bool enable);
 
-    virtual QString getPortType(const CoreSystemAccess::PortTypeIndicatorT ind=CoreSystemAccess::ACTUALPORTTYPE);
+    virtual QString getPortType(const CoreSystemAccess::PortTypeIndicatorT ind=CoreSystemAccess::ActualPortType);
     virtual QString getNodeType();
 
     //void getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<QString> &rValuesTxt, QVector<QString> &rUnits);
-
     bool getLastNodeData(QString dataName, double& rData);
+
     void disconnectAndRemoveAllConnectedConnectors();
     virtual void rememberConnection(Connector *pConnector);
     virtual void forgetConnection(Connector *pConnector);
     QVector<Connector*> getAttachedConnectorPtrs() const; //!< @todo should this be virtual also
     virtual QVector<Port *> getConnectedPorts();
-    bool isConnected();
-
-    bool isAutoPlaced();
-
     virtual Port* getRealPort();
 
-    ModelObject *mpParentGuiModelObject; //!< @todo make private
+    bool isConnected();
+    bool isAutoPlaced();
 
 public slots:
     void showIfNotConnected(bool doShow=true);
@@ -121,6 +118,8 @@ private:
 //    QGraphicsLineItem *lineH;
 //    QGraphicsLineItem *lineV;
 
+    ModelObject *mpParentModelObject;
+
     PortAppearance *mpPortAppearance;
     PortAppearance mPortAppearanceAfterLastRefresh;
     QString mPortDisplayName;
@@ -150,7 +149,7 @@ class GroupPort : public Port
 {
 public:
     GroupPort(QString name, qreal xpos, qreal ypos, PortAppearance* pPortAppearance, ModelObject *pParentObject);
-    QString getPortType(const CoreSystemAccess::PortTypeIndicatorT ind=CoreSystemAccess::ACTUALPORTTYPE);
+    QString getPortType(const CoreSystemAccess::PortTypeIndicatorT ind=CoreSystemAccess::ActualPortType);
     QString getNodeType();
 
     void rememberConnection(Connector *pConnector);

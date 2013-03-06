@@ -121,7 +121,7 @@ public:
     OptimizationSettings getOptimizationSettings();
     void setOptimizationSettings(OptimizationSettings optSettings);
 
-    enum { Type = SYSTEMCONTAINER };
+    enum { Type = SystemContainerType };
     int type() const;
 
 

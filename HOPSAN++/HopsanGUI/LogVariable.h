@@ -64,6 +64,7 @@ public:
     QString mPortName;
     QString mDataName;
     QString mDataUnit;
+    QString mDataDescription;
     QString mAliasName;
     VarTypeT mVarType;
 

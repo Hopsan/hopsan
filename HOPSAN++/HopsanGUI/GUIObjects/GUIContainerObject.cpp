@@ -247,7 +247,7 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
     QMap<qreal, Port*> leftEdge, rightEdge, topEdge, bottomEdge;
     for(moit = mModelObjectMap.begin(); moit != mModelObjectMap.end(); ++moit)
     {
-        if(moit.value()->type() == CONTAINERPORT)
+        if(moit.value()->type() == ContainerPortType)
         {
             //            QLineF line = QLineF(center, moit.value()->getCenterPos());
             //            this->getContainedScenePtr()->addLine(line); //debug-grej
@@ -280,7 +280,7 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
             else
             {
                 //! @todo it would be nice if a port pos could be set directly from appearance data with help function
-                PortAppearanceMapT::iterator pamit = mModelObjectAppearance.getPortAppearanceMap().find(pPort->getPortName());
+                PortAppearanceMapT::iterator pamit = mModelObjectAppearance.getPortAppearanceMap().find(pPort->getName());
                 pPort->setCenterPosByFraction(pamit.value().x, pamit.value().y);
                 pPort->setRotation(pamit.value().rot);
                 this->createRefreshExternalPort(moit.value()->getName()); //Refresh for ports that are not autoplaced
@@ -300,7 +300,7 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
     {
         it.value()->setCenterPosByFraction(1.0, sdisp);
         it.value()->setRotation(0);
-        this->createRefreshExternalPort(it.value()->getPortName());    //refresh the external port graphics
+        this->createRefreshExternalPort(it.value()->getName());    //refresh the external port graphics
         sdisp += disp;
     }
 
@@ -310,7 +310,7 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
     {
         it.value()->setCenterPosByFraction(sdisp, 1.0);
         it.value()->setRotation(90);
-        this->createRefreshExternalPort(it.value()->getPortName());    //refresh the external port graphics
+        this->createRefreshExternalPort(it.value()->getName());    //refresh the external port graphics
         sdisp += disp;
     }
 
@@ -320,7 +320,7 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
     {
         it.value()->setCenterPosByFraction(0.0, sdisp);
         it.value()->setRotation(180);
-        this->createRefreshExternalPort(it.value()->getPortName());    //refresh the external port graphics
+        this->createRefreshExternalPort(it.value()->getName());    //refresh the external port graphics
         sdisp += disp;
     }
 
@@ -330,7 +330,7 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
     {
         it.value()->setCenterPosByFraction(sdisp, 0.0);
         it.value()->setRotation(270);
-        this->createRefreshExternalPort(it.value()->getPortName());    //refresh the external port graphics
+        this->createRefreshExternalPort(it.value()->getName());    //refresh the external port graphics
         sdisp += disp;
     }
 }
@@ -426,7 +426,7 @@ Port *ContainerObject::createRefreshExternalPort(QString portName)
         qreal y = it.value().y;
         qDebug() << "x,y: " << x << " " << y;
 
-        if (this->type() == GROUPCONTAINER)
+        if (this->type() == GroupContainerType)
         {
             pPort = new GroupPort(it.key(), x*boundingRect().width(), y*boundingRect().height(), &(it.value()), this);
         }
@@ -473,7 +473,7 @@ void ContainerObject::renameExternalPort(const QString oldName, const QString ne
     QList<Port*>::iterator plit;
     for (plit=mPortListPtrs.begin(); plit!=mPortListPtrs.end(); ++plit)
     {
-        if ((*plit)->getPortName() == oldName )
+        if ((*plit)->getName() == oldName )
         {
             //Rename the port appearance data by remove and re-add
             PortAppearance tmp = mModelObjectAppearance.getPortAppearanceMap().value(oldName);
@@ -526,6 +526,10 @@ ModelObject* ContainerObject::addModelObject(ModelObjectAppearance *pAppearanceD
     else if (componentTypeName == HOPSANGUIGROUPTYPENAME)
     {
         mpTempGUIModelObject = new GroupContainer(position, rotation, pAppearanceData, this);
+    }
+    else if (componentTypeName == HOPSANGUISCOPECOMPONENTTYPENAME)
+    {
+        mpTempGUIModelObject = new ScopeComponent(position, rotation, pAppearanceData, this, startSelected, mGfxType);
     }
     else //Assume some standard component type
     {
@@ -636,7 +640,7 @@ void ContainerObject::deleteModelObject(QString objectName, undoStatus undoSetti
     if (it != mModelObjectMap.end())
     {
         //! @todo maybe this should be handled somwhere else (not sure maybe this is the best place)
-        if ((*it)->type() == CONTAINERPORT )
+        if ((*it)->type() == ContainerPortType )
         {
             this->removeExternalPort((*it)->getName());
         }
@@ -676,13 +680,13 @@ void ContainerObject::renameModelObject(QString oldName, QString newName, undoSt
             //qDebug() << "Renaming: " << oldName << " " << newName << " type: " << obj_ptr->type();
             switch (obj_ptr->type())
             {
-            case COMPONENT:
+            case ComponentType:
                 //qDebug() << "GUICOMPONENT";
-            case SYSTEMCONTAINER :
+            case SystemContainerType :
                 //qDebug() << "GUISYSTEM";
                 modNewName = this->getCoreSystemAccessPtr()->renameSubComponent(oldName, newName);
                 break;
-            case CONTAINERPORT : //!< @todo What will happen when we try to rename a groupport
+            case ContainerPortType : //!< @todo What will happen when we try to rename a groupport
                 //qDebug() << "GUISYSTEMPORT";
                 modNewName = this->getCoreSystemAccessPtr()->renameSystemPort(oldName, newName);
                 renameExternalPort(oldName, modNewName);
@@ -731,7 +735,7 @@ void ContainerObject::takeOwnershipOf(QList<ModelObject*> &rModelObjectList, QLi
     for (int i=0; i<rModelObjectList.size(); ++i)
     {
         //! @todo if a containerport is received we must update the external port list also, we cant handle such objects right now
-        if (rModelObjectList[i]->type() != CONTAINERPORT)
+        if (rModelObjectList[i]->type() != ContainerPortType)
         {
             this->getContainedScenePtr()->addItem(rModelObjectList[i]);
             rModelObjectList[i]->setParentContainerObject(this);
@@ -766,8 +770,8 @@ void ContainerObject::takeOwnershipOf(QList<ModelObject*> &rModelObjectList, QLi
         QList<Connector*> connectorPtrs = pObj->getConnectorPtrs();
         for(int i=0; i<connectorPtrs.size(); ++i)
         {
-            if((rModelObjectList.contains(connectorPtrs[i]->getStartPort()->getGuiModelObject())) &&
-               (rModelObjectList.contains(connectorPtrs[i]->getEndPort()->getGuiModelObject())))
+            if((rModelObjectList.contains(connectorPtrs[i]->getStartPort()->getParentModelObject())) &&
+               (rModelObjectList.contains(connectorPtrs[i]->getEndPort()->getParentModelObject())))
             {
                 //This seems to be an internal connector, add to internal connector list, (if it has not already been added)
                 if (!internalConnectors.contains(connectorPtrs[i]))
@@ -813,18 +817,18 @@ void ContainerObject::takeOwnershipOf(QList<ModelObject*> &rModelObjectList, QLi
         qDebug() << "___Adding transitConnection";
         QPointF portpos;
         bool endPortIsTransitPort = false;
-        if (rModelObjectList.contains(transitConnectors[i]->getStartPort()->getGuiModelObject()))
+        if (rModelObjectList.contains(transitConnectors[i]->getStartPort()->getParentModelObject()))
         {
-            portpos = transitConnectors[i]->getEndPort()->getGuiModelObject()->getCenterPos();
+            portpos = transitConnectors[i]->getEndPort()->getParentModelObject()->getCenterPos();
             //Make end object forget about this connector as we are actually splitting it into two new connectors
-            transitConnectors[i]->getEndPort()->getGuiModelObject()->forgetConnector(transitConnectors[i]);
+            transitConnectors[i]->getEndPort()->getParentModelObject()->forgetConnector(transitConnectors[i]);
             endPortIsTransitPort = true;
         }
         else
         {
-            portpos = transitConnectors[i]->getStartPort()->getGuiModelObject()->getCenterPos();
+            portpos = transitConnectors[i]->getStartPort()->getParentModelObject()->getCenterPos();
             //Make start object forget about this connector as we are actually splitting it into two new connectors
-            transitConnectors[i]->getStartPort()->getGuiModelObject()->forgetConnector(transitConnectors[i]);
+            transitConnectors[i]->getStartPort()->getParentModelObject()->forgetConnector(transitConnectors[i]);
         }
 
         //Create the "transit port"
@@ -843,13 +847,13 @@ void ContainerObject::takeOwnershipOf(QList<ModelObject*> &rModelObjectList, QLi
         {
             //Make new port and connector know about eachother
             transitConnectors[i]->setEndPort(pTransPort->getPortListPtrs().at(0));
-            transitConnectors[i]->getEndPort()->getGuiModelObject()->rememberConnector(transitConnectors[i]);
+            transitConnectors[i]->getEndPort()->getParentModelObject()->rememberConnector(transitConnectors[i]);
         }
         else
         {
             //Make new port and connector know about eachother
             transitConnectors[i]->setStartPort(pTransPort->getPortListPtrs().at(0));
-            transitConnectors[i]->getStartPort()->getGuiModelObject()->rememberConnector(transitConnectors[i]);
+            transitConnectors[i]->getStartPort()->getParentModelObject()->rememberConnector(transitConnectors[i]);
         }
 
         this->refreshExternalPortsAppearanceAndPosition();
@@ -1049,10 +1053,10 @@ void ContainerObject::disconnectGroupPortFromItsRealPort(Port *pGroupPort, Port 
     // Disconnect all secondary connections
     for (int i=1; i<connPortsVect.size(); ++i)
     {
-        this->getCoreSystemAccessPtr()->disconnect(connPortsVect[i]->getGuiModelObjectName(),
-                                                   connPortsVect[i]->getPortName(),
-                                                   pRealPort->getGuiModelObjectName(),
-                                                   pRealPort->getPortName());
+        this->getCoreSystemAccessPtr()->disconnect(connPortsVect[i]->getParentModelObjectName(),
+                                                   connPortsVect[i]->getName(),
+                                                   pRealPort->getParentModelObjectName(),
+                                                   pRealPort->getName());
 
     }
 
@@ -1066,10 +1070,10 @@ void ContainerObject::disconnectGroupPortFromItsRealPort(Port *pGroupPort, Port 
 
         for (int i=1; i<connPortsVect.size(); ++i)
         {
-            this->getCoreSystemAccessPtr()->connect(pNewGroupRealPort->getGuiModelObjectName(),
-                                                    pNewGroupRealPort->getPortName(),
-                                                    connPortsVect[i]->getGuiModelObjectName(),
-                                                    connPortsVect[i]->getPortName());
+            this->getCoreSystemAccessPtr()->connect(pNewGroupRealPort->getParentModelObjectName(),
+                                                    pNewGroupRealPort->getName(),
+                                                    connPortsVect[i]->getParentModelObjectName(),
+                                                    connPortsVect[i]->getName());
         }
     }
 }
@@ -1109,10 +1113,10 @@ void ContainerObject::removeSubConnector(Connector* pConnector, undoStatus undoS
                  // If no group ports, do normal disconnect
                  if ( !startPortIsGroupPort && !endPortIsGroupPort )
                  {
-                    success = this->getCoreSystemAccessPtr()->disconnect(pStartP->getGuiModelObjectName(),
-                                                                         pStartP->getPortName(),
-                                                                         pEndP->getGuiModelObjectName(),
-                                                                         pEndP->getPortName());
+                    success = this->getCoreSystemAccessPtr()->disconnect(pStartP->getParentModelObjectName(),
+                                                                         pStartP->getName(),
+                                                                         pEndP->getParentModelObjectName(),
+                                                                         pEndP->getName());
                  }
                  // If one or both of the ports were a group port
                  else
@@ -1180,10 +1184,10 @@ void ContainerObject::removeSubConnector(Connector* pConnector, undoStatus undoS
                      else
                      {
                          // Disconnect appropriate core ports (when non is a real ports but one is groupport)
-                         success = this->getCoreSystemAccessPtr()->disconnect(pStartRealPort->getGuiModelObjectName(),
-                                                                              pStartRealPort->getPortName(),
-                                                                              pEndRealPort->getGuiModelObjectName(),
-                                                                              pEndRealPort->getPortName());
+                         success = this->getCoreSystemAccessPtr()->disconnect(pStartRealPort->getParentModelObjectName(),
+                                                                              pStartRealPort->getName(),
+                                                                              pEndRealPort->getParentModelObjectName(),
+                                                                              pEndRealPort->getName());
                      }
                  }
                  emit checkMessages();
@@ -1288,7 +1292,7 @@ void ContainerObject::startConnector(Port *startPort)
 
     // Make connector know its startport and make modelobject know about this connector
     mpTempConnector->setStartPort(startPort);
-    startPort->getGuiModelObject()->rememberConnector(mpTempConnector);
+    startPort->getParentModelObject()->rememberConnector(mpTempConnector);
 
     // Get and Set initial start position for the connector
     QPointF startPos = mapToScene(mapFromItem(startPort, startPort->boundingRect().center()));
@@ -1351,10 +1355,10 @@ bool ContainerObject::finilizeConnector(Port *endPort)
         // If both group ports are defined
         if ( (pStartRealPort != 0) && (pEndRealPort != 0) )
         {
-            success = this->getCoreSystemAccessPtr()->connect(pStartRealPort->getGuiModelObjectName(),
-                                                              pStartRealPort->getPortName(),
-                                                              pEndRealPort->getGuiModelObjectName(),
-                                                              pEndRealPort->getPortName());
+            success = this->getCoreSystemAccessPtr()->connect(pStartRealPort->getParentModelObjectName(),
+                                                              pStartRealPort->getName(),
+                                                              pEndRealPort->getParentModelObjectName(),
+                                                              pEndRealPort->getName());
         }
         // If start known but not end
         else if ( (pStartRealPort != 0) && (pEndRealPort == 0) )
@@ -1376,16 +1380,16 @@ bool ContainerObject::finilizeConnector(Port *endPort)
     // Else treat as normal ports
     else
     {
-        success = this->getCoreSystemAccessPtr()->connect(pStartRealPort->getGuiModelObjectName(),
-                                                          pStartRealPort->getPortName(),
-                                                          pEndRealPort->getGuiModelObjectName(),
-                                                          pEndRealPort->getPortName());
+        success = this->getCoreSystemAccessPtr()->connect(pStartRealPort->getParentModelObjectName(),
+                                                          pStartRealPort->getName(),
+                                                          pEndRealPort->getParentModelObjectName(),
+                                                          pEndRealPort->getName());
     }
 
     if (success)
     {
         gpMainWindow->hideHelpPopupMessage();
-        endPort->getGuiModelObject()->rememberConnector(mpTempConnector);
+        endPort->getParentModelObject()->rememberConnector(mpTempConnector);
         mpTempConnector->setEndPort(endPort);
         mpTempConnector->finishCreation();
 
@@ -1466,7 +1470,7 @@ void ContainerObject::copySelected(CopyStack *xmlStack)
         //Copy connectors
     for(int i = 0; i != mSubConnectorList.size(); ++i)
     {
-        if(mSubConnectorList[i]->getStartPort()->getGuiModelObject()->isSelected() && mSubConnectorList[i]->getEndPort()->getGuiModelObject()->isSelected() && mSubConnectorList[i]->isActive())
+        if(mSubConnectorList[i]->getStartPort()->getParentModelObject()->isSelected() && mSubConnectorList[i]->getEndPort()->getParentModelObject()->isSelected() && mSubConnectorList[i]->isActive())
         {
             mSubConnectorList[i]->saveToDomElement(*copyRoot);
         }
@@ -1718,7 +1722,7 @@ void ContainerObject::groupSelected(QPointF pt)
     for (int i=0; i<modelObjects.size(); ++i)
     {
         //! @todo if a containerport is selcted we need to remove it in core, not only from the storage vector, we must also make sure that the external ports are updated accordingly, for now we just ignore them (maybe we should allways ignore them when grouping)
-        if (modelObjects[i]->type() != CONTAINERPORT)
+        if (modelObjects[i]->type() != ContainerPortType)
         {
             // Maybe take ownership should handle this
             mModelObjectMap.remove(modelObjects[i]->getName());
@@ -2130,7 +2134,7 @@ void ContainerObject::refreshInternalContainerPortGraphics()
     ModelObjectMapT::iterator moit;
     for(moit = mModelObjectMap.begin(); moit != mModelObjectMap.end(); ++moit)
     {
-        if(moit.value()->type() == CONTAINERPORT)
+        if(moit.value()->type() == ContainerPortType)
         {
             //We assume that a container port only have ONE gui port
             moit.value()->getPortListPtrs().first()->refreshPortGraphics();
@@ -2154,7 +2158,7 @@ void ContainerObject::cancelCreatingConnector()
         {
             mpTempConnector->getStartPort()->show();
         }
-        mpTempConnector->getStartPort()->getGuiModelObject()->forgetConnector(mpTempConnector);
+        mpTempConnector->getStartPort()->getParentModelObject()->forgetConnector(mpTempConnector);
         mIsCreatingConnector = false;
         delete(mpTempConnector);
         gpMainWindow->hideHelpPopupMessage();
@@ -2203,7 +2207,7 @@ void ContainerObject::removeOneConnectorLine(QPointF pos)
         {
             mpTempConnector->getStartPort()->show();
         }
-        mpTempConnector->getStartPort()->getGuiModelObject()->forgetConnector(mpTempConnector);
+        mpTempConnector->getStartPort()->getParentModelObject()->forgetConnector(mpTempConnector);
         mIsCreatingConnector = false;
         mpParentProjectTab->getGraphicsView()->setIgnoreNextContextMenuEvent();
         delete(mpTempConnector);
@@ -2621,7 +2625,7 @@ void ContainerObject::collectPlotData()
     ModelObjectMapT::iterator it;
     for (it=mModelObjectMap.begin(); it!=mModelObjectMap.end(); ++it)
     {
-        if (it.value()->type() == SYSTEMCONTAINER)
+        if (it.value()->type() == SystemContainerType)
         {
             static_cast<ContainerObject*>(it.value())->collectPlotData();
         }

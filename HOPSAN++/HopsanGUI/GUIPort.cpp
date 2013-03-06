@@ -46,19 +46,19 @@ QPointF getOffsetPointfromPort(Port *pStartPort, Port *pEndPort)
 {
     QPointF point;
 
-    if((pEndPort->getPortDirection() == LEFTRIGHT) && (pEndPort->getGuiModelObject()->mapToScene(pEndPort->getGuiModelObject()->boundingRect().center()).x() > pEndPort->scenePos().x()))
+    if((pEndPort->getPortDirection() == LeftRightDirectionType) && (pEndPort->getParentModelObject()->mapToScene(pEndPort->getParentModelObject()->boundingRect().center()).x() > pEndPort->scenePos().x()))
     {
         point.setX(-1 * std::min(20.0, abs(pStartPort->scenePos().x()-pEndPort->scenePos().x())/2.0));
     }
-    else if((pEndPort->getPortDirection() == LEFTRIGHT) && (pEndPort->getGuiModelObject()->mapToScene(pEndPort->getGuiModelObject()->boundingRect().center()).x() < pEndPort->scenePos().x()))
+    else if((pEndPort->getPortDirection() == LeftRightDirectionType) && (pEndPort->getParentModelObject()->mapToScene(pEndPort->getParentModelObject()->boundingRect().center()).x() < pEndPort->scenePos().x()))
     {
         point.setX(std::min(20.0, abs(pStartPort->scenePos().x()-pEndPort->scenePos().x())/2.0));
     }
-    else if((pEndPort->getPortDirection() == TOPBOTTOM) && (pEndPort->getGuiModelObject()->mapToScene(pEndPort->getGuiModelObject()->boundingRect().center()).y() > pEndPort->scenePos().y()))
+    else if((pEndPort->getPortDirection() == TopBottomDirectionType) && (pEndPort->getParentModelObject()->mapToScene(pEndPort->getParentModelObject()->boundingRect().center()).y() > pEndPort->scenePos().y()))
     {
         point.setY(-1 * std::min(20.0, abs(pStartPort->scenePos().y()-pEndPort->scenePos().y())/2.0));
     }
-    else if((pEndPort->getPortDirection() == TOPBOTTOM) && (pEndPort->getGuiModelObject()->mapToScene(pEndPort->getGuiModelObject()->boundingRect().center()).y() < pEndPort->scenePos().y()))
+    else if((pEndPort->getPortDirection() == TopBottomDirectionType) && (pEndPort->getParentModelObject()->mapToScene(pEndPort->getParentModelObject()->boundingRect().center()).y() < pEndPort->scenePos().y()))
     {
         point.setY(std::min(20.0, abs(pStartPort->scenePos().y()-pEndPort->scenePos().y())/2.0));
     }
@@ -77,7 +77,7 @@ Port::Port(QString portName, qreal xpos, qreal ypos, PortAppearance* pPortAppear
 {
 //    qDebug() << "parentType: " << pParentGUIModelObject->type() << " GUISYSTEM=" << GUISYSTEM << " GUICONTAINER=" << GUICONTAINEROBJECT;
 //    qDebug() << "======================= parentName: " << pParentGUIModelObject->getName();
-    mpParentGuiModelObject = pParentGUIModelObject;
+    mpParentModelObject = pParentGUIModelObject;
     mpPortAppearance = pPortAppearance;
     mPortDisplayName = portName;
 
@@ -108,22 +108,22 @@ Port::Port(QString portName, qreal xpos, qreal ypos, PortAppearance* pPortAppear
 
     //Setup overlay (if it exists)
     this->refreshPortOverlayGraphics();
-    this->refreshPortOverlayScale(mpParentGuiModelObject->getParentContainerObject()->mpParentProjectTab->getGraphicsView()->getZoomFactor());
+    this->refreshPortOverlayScale(mpParentModelObject->getParentContainerObject()->mpParentProjectTab->getGraphicsView()->getZoomFactor());
 
     mPortAppearanceAfterLastRefresh = *mpPortAppearance; //Remember current appearance
 
     this->setAcceptHoverEvents(true);
 
     // Determine if the port should be shown or not
-    if( this->getParentContainerObjectPtr() != 0 )
+    if( this->getParentContainerObject() != 0 )
     {
-        this->showIfNotConnected( !this->getParentContainerObjectPtr()->areSubComponentPortsHidden() );
+        this->showIfNotConnected( !this->getParentContainerObject()->areSubComponentPortsHidden() );
     }
 
     // Create signal connection to the zoom change signal for port overlay scaling and port hide/show function
-    GraphicsView *pView = getParentContainerObjectPtr()->mpParentProjectTab->getGraphicsView(); //!< @todo need to be able to access this in some nicer way then ptr madness, also in aother places
-    connect(getParentContainerObjectPtr(),  SIGNAL(showOrHideAllSubComponentPorts(bool)),   this,   SLOT(showIfNotConnected(bool)),         Qt::UniqueConnection);
-    connect(mpParentGuiModelObject,         SIGNAL(visibleChanged()),                       this,   SLOT(showIfNotConnected()),             Qt::UniqueConnection);
+    GraphicsView *pView = getParentContainerObject()->mpParentProjectTab->getGraphicsView(); //!< @todo need to be able to access this in some nicer way then ptr madness, also in aother places
+    connect(getParentContainerObject(),  SIGNAL(showOrHideAllSubComponentPorts(bool)),   this,   SLOT(showIfNotConnected(bool)),         Qt::UniqueConnection);
+    connect(mpParentModelObject,         SIGNAL(visibleChanged()),                       this,   SLOT(showIfNotConnected()),             Qt::UniqueConnection);
     connect(pView,                          SIGNAL(zoomChange(qreal)),                      this,   SLOT(refreshPortOverlayScale(qreal)),   Qt::UniqueConnection);
 }
 
@@ -225,7 +225,7 @@ void Port::setCenterPos(const qreal x, const qreal y)
 void Port::setCenterPosByFraction(qreal x, qreal y)
 {
     //! @todo for now root systems may not have an icon, if icon is empty ports will end up in zero, which is OK, maybe we should always force a default icon
-    this->setCenterPos(x*mpParentGuiModelObject->boundingRect().width(), y*mpParentGuiModelObject->boundingRect().height());
+    this->setCenterPos(x*mpParentModelObject->boundingRect().width(), y*mpParentModelObject->boundingRect().height());
 }
 
 //! Returns the center position in parent coordinates
@@ -248,13 +248,13 @@ void Port::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (mpPortAppearance->mEnabled)
     {
-        if(!mpParentGuiModelObject->getParentContainerObject()->mpParentProjectTab->isEditingEnabled())
+        if(!mpParentModelObject->getParentContainerObject()->mpParentProjectTab->isEditingEnabled())
             return;
 
         //QGraphicsSvgItem::mousePressEvent(event); //Don't work if this is called
         if (event->button() == Qt::LeftButton)
         {
-            getParentContainerObjectPtr()->createConnector(this);
+            getParentContainerObject()->createConnector(this);
         }
         else if (event->button() == Qt::RightButton)
         {
@@ -279,7 +279,7 @@ void Port::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         //std::cout << "GUIPort.cpp: " << "contextMenuEvent" << std::endl;
 
         //! @todo Check with the log data handler if port is plottable, and disable menu if not (outcommented condition does not work anymore...)
-        if ((!this->isConnected()) /*|| (mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getTimeVector(getGuiModelObjectName(), this->getPortName()).empty())*/)
+        if ((!this->isConnected()) /*|| (mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getTimeVector(getGuiModelObjectName(), this->getName()).empty())*/)
         {
             event->ignore();
         }
@@ -304,28 +304,34 @@ void Port::openRightClickMenu(QPoint screenPos)
 {
     QMenu menu;
 
-    QVector<QString> parameterNames;
-    QVector<QString> parameterUnits;
-    mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(mpParentGuiModelObject->getName(), this->getPortName(), parameterNames, parameterUnits);
+    QVector<QString> variableNames;
+    QVector<QString> variableUnits;
+    mpParentModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(mpParentModelObject->getName(), this->getName(), variableNames, variableUnits);
 
-    //QAction *plotPressureAction = menu.addAction("Plot pressure");
-    //QAction *plotFlowAction = menu.addAction("Plot flow");
     QVector<QAction *> parameterActions;
     QAction *tempAction;
-    for(int i=0; i<parameterNames.size(); ++i)
+    for(int i=0; i<variableNames.size(); ++i)
     {
-        tempAction = menu.addAction(QString("Plot "+parameterNames[i]+" ["+gConfig.getDefaultUnit(parameterNames[i])+"]"));
+        //! @todo This is a ugly special hack for Siganl Vale but I cant thing of anything better, (maye make it impossible to have custom plotscales for Values)
+        if (variableNames[i] == "Value" && variableUnits[i] != "-")
+        {
+            tempAction = menu.addAction(QString("Plot "+variableNames[i]+" ["+variableUnits[i]+"]"));
+        }
+        else
+        {
+            tempAction = menu.addAction(QString("Plot "+variableNames[i]+" ["+gConfig.getDefaultUnit(variableNames[i])+"]"));
+        }
         parameterActions.append(tempAction);
     }
 
     QAction *selectedAction = menu.exec(screenPos);
 
-    for(int i=0; i<parameterNames.size(); ++i)
+    for(int i=0; i<variableNames.size(); ++i)
     {
         if (selectedAction == parameterActions[i])
         {
             //plot(parameterNames[i], parameterUnits[i]);
-            plot(parameterNames[i], "");
+            plot(variableNames[i], "");
         }
     }
 }
@@ -333,8 +339,8 @@ void Port::openRightClickMenu(QPoint screenPos)
 
 void Port::moveEvent(QGraphicsSceneMoveEvent */*event*/)
 {
-    double px = mpParentGuiModelObject->boundingRect().width();
-    double py = mpParentGuiModelObject->boundingRect().height();
+    double px = mpParentModelObject->boundingRect().width();
+    double py = mpParentModelObject->boundingRect().height();
 
     mpPortAppearance->x = this->pos().x()/px;
     mpPortAppearance->y = this->pos().y()/py;
@@ -417,7 +423,7 @@ void Port::refreshPortOverlayGraphics()
     this->refreshPortOverlayScale(mOverlaySetScale);
 
     //Port label must exist and be set up before we run setDisplayName
-    this->setDisplayName(this->getPortName());
+    this->setDisplayName(this->getName());
 }
 
 
@@ -486,16 +492,16 @@ void Port::refreshPortGraphics()
     if (mpPortAppearance != 0)
     {
         //Systemports may change appearance depending on what is connected
-        CoreSystemAccess::PortTypeIndicatorT int_ext_act = CoreSystemAccess::ACTUALPORTTYPE;
+        CoreSystemAccess::PortTypeIndicatorT int_ext_act = CoreSystemAccess::ActualPortType;
         QString cqsType;
         if (getPortType() == "SYSTEMPORT")
         {
-            if (getGuiModelObject()->getTypeName() == HOPSANGUICONTAINERPORTTYPENAME)
+            if (getParentModelObject()->getTypeName() == HOPSANGUICONTAINERPORTTYPENAME)
             {
-                int_ext_act = CoreSystemAccess::EXTERNALPORTTYPE;
+                int_ext_act = CoreSystemAccess::ExternalPortType;
 
                 //If we are port in containerport model object then ask our parent system model object about cqs-type
-                cqsType = getParentContainerObjectPtr()->getTypeCQS();
+                cqsType = getParentContainerObject()->getTypeCQS();
 
                 //Dont show cqs typ internally, it will become confusing, only show question marks if undefined
                 if (cqsType != "UNDEFINEDCQSTYPE")
@@ -505,10 +511,10 @@ void Port::refreshPortGraphics()
             }
             else
             {
-                int_ext_act = CoreSystemAccess::INTERNALPORTTYPE;
+                int_ext_act = CoreSystemAccess::InternalPortType;
 
                 //If we are external systemport then ask our model object about the cqs-type
-                cqsType = getGuiModelObject()->getTypeCQS();
+                cqsType = getParentModelObject()->getTypeCQS();
                 qDebug() << "cqsType: " << cqsType;
             }
         }
@@ -576,16 +582,16 @@ void Port::refreshPortLabelText()
 }
 
 //! Returns a pointer to the GraphicsView that the port belongs to.
-ContainerObject *Port::getParentContainerObjectPtr()
+ContainerObject *Port::getParentContainerObject()
 {
-    return mpParentGuiModelObject->getParentContainerObject();
+    return mpParentModelObject->getParentContainerObject();
 }
 
 
 //! Returns a pointer to the GUIComponent the port belongs to.
-ModelObject *Port::getGuiModelObject()
+ModelObject *Port::getParentModelObject()
 {
-    return mpParentGuiModelObject;
+    return mpParentModelObject;
 }
 
 
@@ -596,10 +602,10 @@ PlotWindow *Port::plot(QString dataName, QString dataUnit, QColor desiredCurveCo
 {
     if(this->isConnected())
     {
-        QString fullName = makeConcatName(mpParentGuiModelObject->getName(),this->getPortName(),dataName);
+        QString fullName = makeConcatName(mpParentModelObject->getName(),this->getName(),dataName);
         //! @todo  why do we have unit here
-        return getParentContainerObjectPtr()->getLogDataHandler()->plotVariable(0, fullName, -1, 0, desiredCurveColor);
-        //return gpMainWindow->mpPlotWidget->mpPlotVariableTree->createPlotWindow(mpParentGuiModelObject->getName(), this->getPortName(), dataName, dataUnit, desiredCurveColor);
+        return getParentContainerObject()->getLogDataHandler()->plotVariable(0, fullName, -1, 0, desiredCurveColor);
+        //return gpMainWindow->mpPlotWidget->mpPlotVariableTree->createPlotWindow(mpParentGuiModelObject->getName(), this->getName(), dataName, dataUnit, desiredCurveColor);
     }
     return 0;       //Fail!
 }
@@ -607,37 +613,37 @@ PlotWindow *Port::plot(QString dataName, QString dataUnit, QColor desiredCurveCo
 //! Wrapper for the Core getPortTypeString() function
 QString Port::getPortType(const CoreSystemAccess::PortTypeIndicatorT ind)
 {
-    return mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getPortType(getGuiModelObjectName(), this->getPortName(), ind);
+    return mpParentModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getPortType(getParentModelObjectName(), this->getName(), ind);
 }
 
 
 //! Wrapper for the Core getNodeType() function
 QString Port::getNodeType()
 {
-    return mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getNodeType(getGuiModelObjectName(), this->getPortName());
+    return mpParentModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getNodeType(getParentModelObjectName(), this->getName());
 }
 
 
 //void Port::getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<QString> &rValuesTxt, QVector<QString> &rUnits)
 //{
-//    mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getStartValueDataNamesValuesAndUnits(getGuiModelObjectName(), this->getPortName(), rNames, rValuesTxt, rUnits);
+//    mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getStartValueDataNamesValuesAndUnits(getGuiModelObjectName(), this->getName(), rNames, rValuesTxt, rUnits);
 //}
 
 
 PortDirectionT Port::getPortDirection()
 {
     //! @todo will this work if parentguimodelobject is flipped
-    qreal scene_angle = normDeg360( this->mpParentGuiModelObject->rotation() + this->rotation() );
+    qreal scene_angle = normDeg360( this->mpParentModelObject->rotation() + this->rotation() );
 
     if ( fuzzyEqual(scene_angle, 0, 1.0) || fuzzyEqual(scene_angle, 180, 1.0) )
     {
         //qDebug() << "Returning LEFTRIGHT";
-        return LEFTRIGHT;
+        return LeftRightDirectionType;
     }
     else
     {
         //qDebug() << "Returning TOPBOTTOM";
-        return TOPBOTTOM;
+        return TopBottomDirectionType;
     }
 }
 
@@ -668,7 +674,7 @@ void Port::forgetConnection(Connector *pConnector)
 
     if(!isConnected())
     {
-        setVisible(!getParentContainerObjectPtr()->areSubComponentPortsHidden());
+        setVisible(!getParentContainerObject()->areSubComponentPortsHidden());
     }
 
     //qDebug() << "Removing connection, connections = " << mnConnections;
@@ -750,7 +756,7 @@ void Port::setEnable(bool enable)
     else
     {
         // Only show if not connected and not suposed to be hidden if unconnected
-        if (!isConnected() && !getParentContainerObjectPtr()->areSubComponentPortsHidden())
+        if (!isConnected() && !getParentContainerObject()->areSubComponentPortsHidden())
         {
             show();
         }
@@ -775,14 +781,14 @@ void Port::show()
 }
 
 
-QString Port::getPortName() const
+QString Port::getName() const
 {
     return mPortDisplayName;
 }
 
-QString Port::getGuiModelObjectName()
+QString Port::getParentModelObjectName()
 {
-    return mpParentGuiModelObject->getName();
+    return mpParentModelObject->getName();
 }
 
 
@@ -795,7 +801,7 @@ void Port::setDisplayName(const QString name)
 
 bool Port::getLastNodeData(QString dataName, double& rData)
 {
-    return mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getLastNodeData(getGuiModelObjectName(), this->getPortName(), dataName, rData);
+    return mpParentModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getLastNodeData(getParentModelObjectName(), this->getName(), dataName, rData);
 }
 
 
@@ -803,7 +809,7 @@ bool Port::getLastNodeData(QString dataName, double& rData)
 //! @param doShow shall we show unconnected ports
 void Port::showIfNotConnected(bool doShow)
 {
-    if(!isConnected() && doShow && mpParentGuiModelObject->isVisible())
+    if(!isConnected() && doShow && mpParentModelObject->isVisible())
     {
         this->show();
     }

@@ -255,10 +255,10 @@ void PlotVariableTree::updateList()
 //            {
 //                QVector<QString> variableNames;
 //                QVector<QString> variableUnits;
-//                gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits((*itp)->getGuiModelObjectName(), (*itp)->getPortName(), variableNames, variableUnits);
+//                gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits((*itp)->getGuiModelObjectName(), (*itp)->getName(), variableNames, variableUnits);
 //                if(!timeVectorRetained)
 //                {
-//                    time = QVector<double>::fromStdVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getTimeVector((*itp)->getGuiModelObjectName(), (*itp)->getPortName()));
+//                    time = QVector<double>::fromStdVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->getTimeVector((*itp)->getGuiModelObjectName(), (*itp)->getName()));
 //                    timeVectorRetained = true;
 //                }
 //                if(time.size() > 0)     //If time vector is greater than zero we have something to plot!
@@ -266,11 +266,11 @@ void PlotVariableTree::updateList()
 //                    for(int i = 0; i!=variableNames.size(); ++i)
 //                    {
 //                        variableUnits[i] = gConfig.getDefaultUnit(variableNames[i]);
-//                        tempPlotVariableTreeItem = new PlotVariableTreeItem(pComponent->getName(), (*itp)->getPortName(), variableNames[i], variableUnits[i], tempComponentItem);
+//                        tempPlotVariableTreeItem = new PlotVariableTreeItem(pComponent->getName(), (*itp)->getName(), variableNames[i], variableUnits[i], tempComponentItem);
 //                        tempComponentItem->addChild(tempPlotVariableTreeItem);
 //                        VariableDescription variableDescription;
 //                        variableDescription.componentName = (*itp)->getGuiModelObjectName();
-//                        variableDescription.portName = (*itp)->getPortName();
+//                        variableDescription.portName = (*itp)->getName();
 //                        variableDescription.dataName = variableNames[i];
 //                        variableDescription.dataUnit = variableUnits[i];
 //                        mAvailableVariables.append(variableDescription);

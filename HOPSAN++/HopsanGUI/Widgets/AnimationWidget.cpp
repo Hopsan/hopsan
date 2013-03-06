@@ -193,8 +193,8 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
         {
             Connector* tempConnector = mModelObjectsList.at(d)->getConnectorPtrs().at(e);
             if(!mConnectorList.contains(tempConnector) &&
-               !hiddenComponents.contains(tempConnector->getStartPort()->getGuiModelObject()->getTypeName()) &&
-               !hiddenComponents.contains(tempConnector->getEndPort()->getGuiModelObject()->getTypeName()))
+               !hiddenComponents.contains(tempConnector->getStartPort()->getParentModelObject()->getTypeName()) &&
+               !hiddenComponents.contains(tempConnector->getEndPort()->getParentModelObject()->getTypeName()))
             {
                 mConnectorList.append(tempConnector);
             }

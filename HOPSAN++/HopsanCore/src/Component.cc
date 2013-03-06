@@ -680,7 +680,7 @@ double *Component::getSafeNodeDataPtr(Port* pPort, const int dataId, const doubl
     //If this is one of the multiports then give an error message to the user so that they KNOW that they have made a misstake
     if (pPort->getPortType() >= MULTIPORT)
     {
-        addErrorMessage(string("Port: ")+pPort->getPortName()+string(" is a multiport. Use getSafeMultiPortNodeDataPtr() instead of getSafeNodeDataPtr()"));
+        addErrorMessage(string("Port: ")+pPort->getName()+string(" is a multiport. Use getSafeMultiPortNodeDataPtr() instead of getSafeNodeDataPtr()"));
     }
     return pPort->getSafeNodeDataPtr(dataId, defaultValue);
 }
@@ -700,7 +700,7 @@ double *Component::getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx
     //If this is not a multiport then give an error message to the user so that they KNOW that they have made a misstake
     if (pPort->getPortType() < MULTIPORT)
     {
-        addErrorMessage(string("Port: ")+pPort->getPortName()+string(" is NOT a multiport. Use getSafeNodeDataPtr() instead of getSafeMultiPortNodeDataPtr()"));
+        addErrorMessage(string("Port: ")+pPort->getName()+string(" is NOT a multiport. Use getSafeNodeDataPtr() instead of getSafeMultiPortNodeDataPtr()"));
     }
     return pPort->getSafeNodeDataPtr(dataId, defaultValue, portIdx);
 }

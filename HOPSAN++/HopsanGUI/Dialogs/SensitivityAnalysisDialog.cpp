@@ -157,9 +157,9 @@ void SensitivityAnalysisDialog::open()
         QList<Port*> ports = pSystem->getModelObject(componentNames.at(c))->getPortListPtrs();
         for(int p=0; p<ports.size(); ++p)
         {
-            QTreeWidgetItem *pPortItem = new QTreeWidgetItem(QStringList() << ports.at(p)->getPortName());
+            QTreeWidgetItem *pPortItem = new QTreeWidgetItem(QStringList() << ports.at(p)->getName());
             QVector<QString> portNames, portUnits;
-            pSystem->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(componentNames.at(c), ports.at(p)->getPortName(), portNames, portUnits);
+            pSystem->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(componentNames.at(c), ports.at(p)->getName(), portNames, portUnits);
             for(int v=0; v<portNames.size(); ++v)
             {
                 QTreeWidgetItem *pVariableItem = new QTreeWidgetItem(QStringList() << portNames.at(v));

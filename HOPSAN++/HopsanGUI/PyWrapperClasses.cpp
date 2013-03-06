@@ -39,9 +39,9 @@ QString PyPortClassWrapper::plot(Port* o, const QString& dataName)
         res = "Plotted '"; //Kanske inte ska skriva massa skit till Pythonkonsollen
         res.append(dataName);
         res.append("' at component '");
-        res.append(o->getGuiModelObjectName());
+        res.append(o->getParentModelObjectName());
         res.append("' and port '");
-        res.append(o->getPortName());
+        res.append(o->getName());
         res.append("'.");
     }
     return res;
@@ -59,24 +59,24 @@ QVector<double> PyPortClassWrapper::data(Port* o, const QString& dataName)
 {
     QVector<double> yData;
     std::vector<double> *pTime;
-    o->getParentContainerObjectPtr()->getCoreSystemAccessPtr()->getPlotData(o->getGuiModelObject()->getName(),o->getPortName(),dataName,pTime,yData);
+    o->getParentContainerObject()->getCoreSystemAccessPtr()->getPlotData(o->getParentModelObject()->getName(),o->getName(),dataName,pTime,yData);
 
     return yData;
 }
 QVector<double> PyPortClassWrapper::time(Port* o)
 {
-    QVector<double> tVector = QVector<double>::fromStdVector(o->getParentContainerObjectPtr()->getCoreSystemAccessPtr()->getTimeVector(o->getGuiModelObject()->getName(),o->getPortName()));
+    QVector<double> tVector = QVector<double>::fromStdVector(o->getParentContainerObject()->getCoreSystemAccessPtr()->getTimeVector(o->getParentModelObject()->getName(),o->getName()));
 
     return tVector;
 }
 QStringList PyPortClassWrapper::variableNames(Port* o)
 {
     QStringList retval;
-    QString portName = o->getPortName();
-    QString componentName = o->getGuiModelObject()->getName();
+    QString portName = o->getName();
+    QString componentName = o->getParentModelObject()->getName();
     QVector<QString> dataNames;
     QVector<QString> dataUnits;
-    o->getGuiModelObject()->getParentContainerObject()->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(componentName, portName, dataNames, dataUnits);
+    o->getParentModelObject()->getParentContainerObject()->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(componentName, portName, dataNames, dataUnits);
     for(int i=0; i<dataNames.size(); ++i)
     {
         retval.append(dataNames.at(i));
@@ -106,7 +106,7 @@ QStringList PyModelObjectClassWrapper::portNames(ModelObject* o)
     QStringList retval;
     for(int i=0; i<o->getPortListPtrs().size(); ++i)
     {
-        retval.append(o->getPortListPtrs().at(i)->getPortName());
+        retval.append(o->getPortListPtrs().at(i)->getName());
     }
     return retval;
 }

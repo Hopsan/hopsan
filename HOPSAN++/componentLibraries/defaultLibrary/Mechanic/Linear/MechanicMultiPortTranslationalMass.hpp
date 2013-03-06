@@ -151,7 +151,7 @@ namespace hopsan {
                 if(v1 != (*mvpN_v1[i]))
                 {
                     std::stringstream ss;
-                    ss << "Velocities in multiport does not match, {" << getName() << "::" << mpP1->getPortName();
+                    ss << "Velocities in multiport does not match, {" << getName() << "::" << mpP1->getName();
                     this->addErrorMessage(ss.str());
                     this->stopSimulation();
                 }
@@ -163,7 +163,7 @@ namespace hopsan {
                 if(v2 != (*mvpN_v2[i]))
                 {
                     std::stringstream ss;
-                    ss << "Velocities in multiport does not match, {" << getName() << "::" << mpP2->getPortName();
+                    ss << "Velocities in multiport does not match, {" << getName() << "::" << mpP2->getName();
                     this->addWarningMessage(ss.str());
                 }
             }
@@ -174,8 +174,8 @@ namespace hopsan {
             if(v1 != -v2)
             {
                 std::stringstream ss;
-                ss << "Start velocities does not match, {" << getName() << "::" << mpP1->getPortName() <<
-                        "} and {" << getName() << "::" << mpP2->getPortName() << "}.";
+                ss << "Start velocities does not match, {" << getName() << "::" << mpP1->getName() <<
+                        "} and {" << getName() << "::" << mpP2->getName() << "}.";
                 this->addWarningMessage(ss.str());
             }
 

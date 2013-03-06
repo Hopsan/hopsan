@@ -36,7 +36,7 @@ public:
     QString getTypeName();
     void refreshDisplayName(QString overrideName="");
 
-    enum { Type = CONTAINERPORT };
+    enum { Type = ContainerPortType };
     int type() const;
 
 protected:

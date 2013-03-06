@@ -91,7 +91,7 @@ public:
 
     AnimatedComponent *mpAnimatedComponent;
 
-    enum { Type = ANIMATEDOBJECT };
+    enum { Type = AnimatedObjectType };
     int type() const;
     int mIdx;
 

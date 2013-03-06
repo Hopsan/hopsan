@@ -41,14 +41,10 @@ public:
     enum DataIndexEnumT {VALUE, DATALENGTH};
     static Node* CreatorFunction() {return new NodeSignal;}
 
-    void setSignalDataUnit(const std::string unit)
+    void setSignalDataUnitAndDescription(const std::string &rUnit, const std::string &rName)
     {
-        mDataDescriptions[VALUE].unit = unit;
-    }
-
-    void setSignalDataName(const std::string name)
-    {
-        mDataDescriptions[VALUE].name = name;
+        mDataDescriptions[VALUE].unit = rUnit;
+        mDataDescriptions[VALUE].description = rName;
     }
 
     //! @brief For signals allways return VALUE slot even if name has been changed

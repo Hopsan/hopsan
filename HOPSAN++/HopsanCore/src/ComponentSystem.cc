@@ -1159,7 +1159,7 @@ bool ConnectionAssistant::ensureSameNodeType(Port *pPort1, Port *pPort2)
     {
         stringstream ss;
         ss << "You can not connect a {" << pPort1->getNodeType() << "} port to a {" << pPort2->getNodeType()  << "} port." <<
-              " When connecting: {" << pPort1->getComponent()->getName() << "::" << pPort1->getPortName() << "} to {" << pPort2->getComponent()->getName() << "::" << pPort2->getPortName() << "}";
+              " When connecting: {" << pPort1->getComponent()->getName() << "::" << pPort1->getName() << "} to {" << pPort2->getComponent()->getName() << "::" << pPort2->getName() << "}";
         mpComponentSystem->addErrorMessage(ss.str());
         return false;
     }
@@ -1609,7 +1609,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     //Update the node placement
     connAssist.determineWhereToStoreNodeAndStoreIt(pResultingNode);
 
-    ss << "Connected: {" << pComp1->getName() << "::" << pPort1->getPortName() << "} and {" << pComp2->getName() << "::" << pPort2->getPortName() << "}";
+    ss << "Connected: {" << pComp1->getName() << "::" << pPort1->getName() << "} and {" << pComp2->getName() << "::" << pPort2->getName() << "}";
     addDebugMessage(ss.str(), "succesfulconnect");
     return true;
 }
@@ -1953,7 +1953,7 @@ bool ComponentSystem::disconnect(const string compname1, const string portname1,
 //! @param pPort2 Pointer to second port
 bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
 {
-    cout << "disconnecting " << pPort1->getComponentName() << " " << pPort1->getPortName() << "  and  " << pPort2->getComponentName() << " " << pPort2->getPortName() << endl;
+    cout << "disconnecting " << pPort1->getComponentName() << " " << pPort1->getName() << "  and  " << pPort2->getComponentName() << " " << pPort2->getName() << endl;
 
     ConnectionAssistant disconnAssistant(this);
     stringstream ss;
@@ -2039,7 +2039,7 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
         this->mpSystemParent->determineCQSType();
     }
 
-    ss << "Disconnected: {"<< pPort1->getComponent()->getName() << "::" << pPort1->getPortName() << "} and {" << pPort2->getComponent()->getName() << "::" << pPort2->getPortName() << "}";
+    ss << "Disconnected: {"<< pPort1->getComponent()->getName() << "::" << pPort1->getName() << "} and {" << pPort2->getComponent()->getName() << "::" << pPort2->getName() << "}";
     cout << ss.str() << endl;
     addDebugMessage(ss.str(), "succesfuldisconnect");
 
@@ -2204,7 +2204,11 @@ void ComponentSystem::setupLogTimesteps(const double startT, const double stopT,
             size_t ud = size_t((logT-simT+0.5)); //Round to nearest int by truncation (this should become 0 or 1)
             size_t logAtSample = mLogTheseTimeSteps.back() + n + ud;
             simT += double(ud)*Ts; //Set simT that we will log for (add 0 or 1 Ts)
-            //cout << "ud: " << ud << endl;
+
+            if (ud > 0)
+            {
+                cout << "ud: " << ud << endl;
+            }
 
             mLogTheseTimeSteps.push_back(logAtSample);
         }
@@ -2299,14 +2303,14 @@ bool ComponentSystem::checkModelBeforeSimulation()
     {
         if ( ports[i]->isConnectionRequired() && !ports[i]->isConnected() )
         {
-            addErrorMessage("Port " + ports[i]->getPortName() + " in " + getName() + " is not connected!");
+            addErrorMessage("Port " + ports[i]->getName() + " in " + getName() + " is not connected!");
             return false;
         }
         else if( ports[i]->isConnected() )
         {
             if(ports[i]->getNodePtr()->getNumberOfPortsByType(POWERPORT) == 1)
             {
-                addErrorMessage("Port " + ports[i]->getPortName() + " in " + getName() + " is connected to a node with only one attached power port!");
+                addErrorMessage("Port " + ports[i]->getName() + " in " + getName() + " is connected to a node with only one attached power port!");
                 return false;
             }
         }
@@ -2325,14 +2329,14 @@ bool ComponentSystem::checkModelBeforeSimulation()
         {
             if ( ports[i]->isConnectionRequired() && !ports[i]->isConnected() )
             {
-                addErrorMessage("Port " + ports[i]->getPortName() + " on " + pComp->getName() + " is not connected!");
+                addErrorMessage("Port " + ports[i]->getName() + " on " + pComp->getName() + " is not connected!");
                 return false;
             }
             else if( ports[i]->isConnected() )
             {
                 if(ports[i]->getNodePtr()->getNumberOfPortsByType(POWERPORT) == 1)
                 {
-                    addErrorMessage("Port " + ports[i]->getPortName() + " in " + getName() + " is connected to a node with only one power port!");
+                    addErrorMessage("Port " + ports[i]->getName() + " in " + getName() + " is connected to a node with only one power port!");
                     return false;
                 }
             }
@@ -3692,7 +3696,7 @@ bool AliasHandler::removeAlias(const string alias)
     std::map<std::string, ParamOrVariableT>::iterator it = mAliasMap.find(alias);
     if (it != mAliasMap.end())
     {
-        if (it->second.type = Variable)
+        if (it->second.type == Variable)
         {
             Component *pComp = mpSystem->getSubComponent(it->second.componentName);
             if (pComp)

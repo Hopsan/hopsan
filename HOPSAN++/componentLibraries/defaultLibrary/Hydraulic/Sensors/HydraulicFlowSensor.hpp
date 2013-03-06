@@ -52,6 +52,7 @@ namespace hopsan {
 
             mpP1 = addReadPort("P1", "NodeHydraulic");
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
+
         }
 
 
@@ -59,6 +60,7 @@ namespace hopsan {
         {
             mpND_q = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
             mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
+            mpOut->setSignalNodeUnitAndDescription("m^3/s", "Flow");
         }
 
 

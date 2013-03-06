@@ -88,71 +88,24 @@ bool Component::hasPowerPorts()
 }
 
 
-//! Event when double clicking on component icon.
-//! @todo Fix the sink component so it works with this
+//! @brief Event when double clicking on component icon.
 void Component::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     if(!mpParentContainerObject->mpParentProjectTab->isEditingEnabled())
         return;
 
     QGraphicsWidget::mouseDoubleClickEvent(event);
-
-    // If this is a sink component that has plot data, plot it instead of showing the dialog
-    if( (this->getTypeName() == "SignalSink") &&
-        !mpParentContainerObject->getLogDataHandler()->isEmpty() &&
-        !mpParentContainerObject->isCreatingConnector() )   //Not very nice code, but a nice feature...
-    {
-        QString plotName = "";
-        for(int i=0; i<getPort("in")->getConnectedPorts().size(); ++i)
-        {
-            QString fullName = makeConcatName(getPort("in")->getConnectedPorts().at(i)->getGuiModelObjectName(),
-                                              getPort("in")->getConnectedPorts().at(i)->getPortName(),"Value");
-            plotName = getParentContainerObject()->getLogDataHandler()->plotVariable(plotName, fullName, -1, 0);
-        }
-        for(int i=0; i<getPort("in_right")->getConnectedPorts().size(); ++i)
-        {
-            QString fullName = makeConcatName(getPort("in_right")->getConnectedPorts().at(i)->getGuiModelObjectName(),
-                                              getPort("in_right")->getConnectedPorts().at(i)->getPortName(),"Value");
-            plotName = getParentContainerObject()->getLogDataHandler()->plotVariable(plotName, fullName, -1, 1);
-        }
-
-        //! @todo try to solve this without needding the actual plotwindow pointer
-        PlotWindow *pPlotWindow = gpPlotHandler->getPlotWindow(plotName);
-        if(this->getPort("in_bottom")->isConnected() && pPlotWindow)
-        {
-//            VariableDescription varDesc;
-//            varDesc.mModelPath = getParentContainerObject()->getModelFileInfo().fileName();
-//            varDesc.mComponentName = getPort("in_bottom")->getConnectedPorts().at(0)->mpParentGuiModelObject->getName();
-//            varDesc.mPortName = getPort("in_bottom")->getConnectedPorts().at(0)->getPortName();
-//            varDesc.mDataName = "Value";
-//            varDesc.mDataUnit = gConfig.getDefaultUnit(pVarDesc->mDataName);
-//            //! @todo should not do a copy here, should use original
-//            pPlotWindow->setCustomXVector(mpParentContainerObject->getLogDataHandler()->getPlotDataValues(pVarDesc->getFullName(), -1), varDesc);
-
-            QString fullName = makeConcatName(getPort("in_bottom")->getConnectedPorts().at(0)->getGuiModelObjectName(),
-                                              getPort("in_bottom")->getConnectedPorts().at(0)->getPortName(),"Value");
-            pPlotWindow->setCustomXVector(getParentContainerObject()->getLogDataHandler()->getPlotData(fullName, -1));
-        }
-
-        // No plot window was opened, so it is a non-connected sink - open properties instead
-        if(!pPlotWindow)
-        {
-            openPropertiesDialog();
-        }
-    }
-    else
-    {
-        openPropertiesDialog();
-    }
+    openPropertiesDialog();
 }
 
 
-//! Returns a string with the component type.
+//! @brief Returns a string with the component type.
 QString Component::getTypeName()
 {
     return mModelObjectAppearance.getTypeName();
 }
 
+//! @brief Returns the component CQS type
 QString Component::getTypeCQS()
 {
     return mpParentContainerObject->getCoreSystemAccessPtr()->getSubComponentTypeCQS(this->getName());
@@ -270,7 +223,7 @@ void Component::saveCoreDataToDomElement(QDomElement &rDomElement, saveContents 
         for (it=mPortListPtrs.begin(); it!=mPortListPtrs.end(); ++it)
         {
             QDomElement xmlPort = appendDomElement(xmlPorts, "port");
-            xmlPort.setAttribute(HMF_NAMETAG, (*it)->getPortName());
+            xmlPort.setAttribute(HMF_NAMETAG, (*it)->getName());
             xmlPort.setAttribute("nodetype", (*it)->getNodeType());
         }
     }
@@ -284,4 +237,77 @@ QDomElement Component::saveGuiDataToDomElement(QDomElement &rDomElement)
     mModelObjectAppearance.saveSpecificPortsToDomElement(xmlApp, mActiveDynamicParameterPortNames);
 
     return rDomElement;
+}
+
+
+void ScopeComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(!mpParentContainerObject->mpParentProjectTab->isEditingEnabled())
+        return;
+
+    QGraphicsWidget::mouseDoubleClickEvent(event);
+
+    PlotWindow *pPlotWindow=0;
+
+    // If this is a sink component that has plot data, plot it instead of showing the dialog
+    // Not very nice code, but a nice feature...
+    if( !mpParentContainerObject->getLogDataHandler()->isEmpty() && !mpParentContainerObject->isCreatingConnector() )
+    {
+        QString plotName = "";
+        for(int i=0; i<getPort("in")->getConnectedPorts().size(); ++i)
+        {
+            QString fullName = makeConcatName(getPort("in")->getConnectedPorts().at(i)->getParentModelObjectName(),
+                                              getPort("in")->getConnectedPorts().at(i)->getName(),"Value");
+            plotName = getParentContainerObject()->getLogDataHandler()->plotVariable(plotName, fullName, -1, 0);
+        }
+        for(int i=0; i<getPort("in_right")->getConnectedPorts().size(); ++i)
+        {
+            QString fullName = makeConcatName(getPort("in_right")->getConnectedPorts().at(i)->getParentModelObjectName(),
+                                              getPort("in_right")->getConnectedPorts().at(i)->getName(),"Value");
+            plotName = getParentContainerObject()->getLogDataHandler()->plotVariable(plotName, fullName, -1, 1);
+        }
+
+        //! @todo try to solve this without needding the actual plotwindow pointer
+        pPlotWindow = gpPlotHandler->getPlotWindow(plotName);
+        if(this->getPort("in_bottom")->isConnected() && pPlotWindow)
+        {
+            QString fullName = makeConcatName(getPort("in_bottom")->getConnectedPorts().at(0)->getParentModelObjectName(),
+                                              getPort("in_bottom")->getConnectedPorts().at(0)->getName(),"Value");
+            pPlotWindow->setCustomXVector(getParentContainerObject()->getLogDataHandler()->getPlotData(fullName, -1));
+        }
+    }
+
+    // No plot window was opened, so it is a non-connected sink - open properties instead
+    if(!pPlotWindow)
+    {
+        openPropertiesDialog();
+    }
+}
+
+void ScopeComponent::rotate(qreal /*angle*/, undoStatus /*undoSettings*/)
+{
+    // Overloaded to do nothing
+}
+
+void ScopeComponent::flipVertical(undoStatus /*undoSettings*/)
+{
+    // Overloaded to do nothing
+}
+
+void ScopeComponent::flipHorizontal(undoStatus /*undoSettings*/)
+{
+    // Overloaded to do nothing
+}
+
+
+
+ScopeComponent::ScopeComponent(QPointF position, qreal rotation, ModelObjectAppearance *pAppearanceData, ContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
+    : Component(position, rotation, pAppearanceData, pParentContainer, startSelected, gfxType)
+{
+    // Nothing special
+}
+
+int ScopeComponent::type() const
+{
+    return Type;
 }

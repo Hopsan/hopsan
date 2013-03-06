@@ -1280,7 +1280,7 @@ void PlotWindow::createPlotWindowFromTab()
     PlotWindow *pPW = 0;
     for(int i=0; i<getCurrentPlotTab()->getCurves().size(); ++i)
     {
-        //pPlotWindow->addPlotCurve(getCurrentPlotTab()->getCurves().at(i)->getGeneration(), getCurrentPlotTab()->getCurves().at(i)->getComponentName(), getCurrentPlotTab()->getCurves().at(i)->getPortName(), getCurrentPlotTab()->getCurves().at(i)->getDataName(), getCurrentPlotTab()->getCurves().at(i)->getDataUnit(), getCurrentPlotTab()->getCurves().at(i)->getAxisY());
+        //pPlotWindow->addPlotCurve(getCurrentPlotTab()->getCurves().at(i)->getGeneration(), getCurrentPlotTab()->getCurves().at(i)->getComponentName(), getCurrentPlotTab()->getCurves().at(i)->getName(), getCurrentPlotTab()->getCurves().at(i)->getDataName(), getCurrentPlotTab()->getCurves().at(i)->getDataUnit(), getCurrentPlotTab()->getCurves().at(i)->getAxisY());
         pPW = gpPlotHandler->plotDataToWindow(pPW,getCurrentPlotTab()->getCurves().at(i)->getLogDataVariablePtr(), getCurrentPlotTab()->getCurves().at(i)->getAxisY());
     }
 }

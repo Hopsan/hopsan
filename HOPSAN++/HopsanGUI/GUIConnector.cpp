@@ -72,10 +72,10 @@ Connector::~Connector()
 
     delete mpConnectorAppearance;
 
-    mpStartPort->getGuiModelObject()->forgetConnector(this);
+    mpStartPort->getParentModelObject()->forgetConnector(this);
     if(mIsConnected)
     {
-        mpEndPort->getGuiModelObject()->forgetConnector(this);
+        mpEndPort->getParentModelObject()->forgetConnector(this);
     }
 }
 
@@ -113,8 +113,8 @@ void Connector::disconnectPortSigSlots(Port* pPort)
     bool sucess2 = true;
     if (pPort != 0)
     {
-        sucess1 = disconnect(pPort->getGuiModelObject(), SIGNAL(objectDeleted()), this, SLOT(deleteMeWithNoUndo()));
-        sucess2 = disconnect(pPort->getGuiModelObject(), SIGNAL(objectSelected()), this, SLOT(selectIfBothComponentsSelected()));
+        sucess1 = disconnect(pPort->getParentModelObject(), SIGNAL(objectDeleted()), this, SLOT(deleteMeWithNoUndo()));
+        sucess2 = disconnect(pPort->getParentModelObject(), SIGNAL(objectSelected()), this, SLOT(selectIfBothComponentsSelected()));
     }
 
     if (!sucess1 || !sucess2)
@@ -132,8 +132,8 @@ void Connector::connectPortSigSlots(Port* pPort)
 
     if (pPort != 0)
     {
-        sucess1 = connect(pPort->getGuiModelObject(),   SIGNAL(objectDeleted()),    this,   SLOT(deleteMeWithNoUndo()), Qt::UniqueConnection);
-        sucess2 = connect(pPort->getGuiModelObject(),   SIGNAL(objectSelected()),   this,   SLOT(selectIfBothComponentsSelected()), Qt::UniqueConnection);
+        sucess1 = connect(pPort->getParentModelObject(),   SIGNAL(objectDeleted()),    this,   SLOT(deleteMeWithNoUndo()), Qt::UniqueConnection);
+        sucess2 = connect(pPort->getParentModelObject(),   SIGNAL(objectSelected()),   this,   SLOT(selectIfBothComponentsSelected()), Qt::UniqueConnection);
     }
 
     if (!sucess1 || !sucess2)
@@ -175,11 +175,11 @@ void Connector::addPoint(QPointF point)
 
     //qDebug() << "the enum: " << getStartPort()->getPortDirection();
 
-    if(getNumberOfLines() == 0 && getStartPort()->getPortDirection() == TOPBOTTOM)
+    if(getNumberOfLines() == 0 && getStartPort()->getPortDirection() == TopBottomDirectionType)
     {
         mGeometries.push_back(HORIZONTAL);
     }
-    else if(getNumberOfLines() == 0 && getStartPort()->getPortDirection() == LEFTRIGHT)
+    else if(getNumberOfLines() == 0 && getStartPort()->getPortDirection() == LeftRightDirectionType)
     {
         mGeometries.push_back(VERTICAL);
     }
@@ -230,7 +230,7 @@ void Connector::removePoint(bool deleteIfEmpty)
     }
     else if( (getNumberOfLines() == 3) && !mMakingDiagonal)
     {
-        if(getStartPort()->getPortDirection() == LEFTRIGHT)
+        if(getStartPort()->getPortDirection() == LeftRightDirectionType)
         {
             mGeometries[1] = HORIZONTAL;
             mGeometries[0] = VERTICAL;
@@ -291,8 +291,8 @@ void Connector::finishCreation()
     mIsConnected = true;
 
         //Figure out whether or not the last line had the right direction, and make necessary corrections
-    if( ( ((mpEndPort->getPortDirection() == LEFTRIGHT) && (mGeometries.back() == HORIZONTAL)) ||
-          ((mpEndPort->getPortDirection() == TOPBOTTOM) && (mGeometries.back() == VERTICAL)) ) ||
+    if( ( ((mpEndPort->getPortDirection() == LeftRightDirectionType) && (mGeometries.back() == HORIZONTAL)) ||
+          ((mpEndPort->getPortDirection() == TopBottomDirectionType) && (mGeometries.back() == VERTICAL)) ) ||
           (mGeometries[mGeometries.size()-2] == DIAGONAL) ||
           mpEndPort->getPortType() == "READMULTIPORT" || mpEndPort->getPortType() == "POWERMULTIPORT")
     {
@@ -347,25 +347,25 @@ void Connector::finishCreation()
         if( ((getNumberOfLines() == 1) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE)) ||
             ((getNumberOfLines() < 3) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE)) )
         {
-            if(mpStartPort->mpParentGuiModelObject->getConnectorPtrs().size() == 1)
+            if(mpStartPort->getParentModelObject()->getConnectorPtrs().size() == 1)
             {
-                mpStartPort->mpParentGuiModelObject->moveBy(mPoints.last().x() - mPoints.first().x(), 0);
+                mpStartPort->getParentModelObject()->moveBy(mPoints.last().x() - mPoints.first().x(), 0);
             }
-            else if (mpEndPort->mpParentGuiModelObject->getConnectorPtrs().size() == 1)
+            else if (mpEndPort->getParentModelObject()->getConnectorPtrs().size() == 1)
             {
-                mpEndPort->mpParentGuiModelObject->moveBy(mPoints.first().x() - mPoints.last().x(), 0);
+                mpEndPort->getParentModelObject()->moveBy(mPoints.first().x() - mPoints.last().x(), 0);
             }
         }
         else if( ((getNumberOfLines() == 1) && (abs(mPoints.first().y() - mPoints.last().y()) < SNAPDISTANCE)) ||
                  ((getNumberOfLines() < 4) && (abs(mPoints.first().y() - mPoints.last().y()) < SNAPDISTANCE)) )
         {
-            if(mpStartPort->mpParentGuiModelObject->getConnectorPtrs().size() == 1)
+            if(mpStartPort->getParentModelObject()->getConnectorPtrs().size() == 1)
             {
-                mpStartPort->mpParentGuiModelObject->moveBy(0, mPoints.last().y() - mPoints.first().y());
+                mpStartPort->getParentModelObject()->moveBy(0, mPoints.last().y() - mPoints.first().y());
             }
-            else if (mpEndPort->mpParentGuiModelObject->getConnectorPtrs().size() == 1)
+            else if (mpEndPort->getParentModelObject()->getConnectorPtrs().size() == 1)
             {
-                mpEndPort->mpParentGuiModelObject->moveBy(0, mPoints.first().y() - mPoints.last().y());
+                mpEndPort->getParentModelObject()->moveBy(0, mPoints.first().y() - mPoints.last().y());
             }
         }
     }
@@ -447,7 +447,7 @@ QPointF Connector::getEndPoint()
 //! @see getEndPortName()
 QString Connector::getStartPortName()
 {
-    return mpStartPort->getPortName();
+    return mpStartPort->getName();
 }
 
 
@@ -455,7 +455,7 @@ QString Connector::getStartPortName()
 //! @see getStartPortName()
 QString Connector::getEndPortName()
 {
-    return mpEndPort->getPortName();
+    return mpEndPort->getName();
 }
 
 
@@ -463,7 +463,7 @@ QString Connector::getEndPortName()
 //! @see getEndComponentName()
 QString Connector::getStartComponentName()
 {
-    return mpStartPort->getGuiModelObjectName();
+    return mpStartPort->getParentModelObjectName();
 }
 
 
@@ -471,7 +471,7 @@ QString Connector::getStartComponentName()
 //! @see getStartComponentName()
 QString Connector::getEndComponentName()
 {
-    return mpEndPort->getGuiModelObjectName();
+    return mpEndPort->getParentModelObjectName();
 }
 
 
@@ -587,7 +587,7 @@ void Connector::drawConnector(bool alignOperation)
         }
         else        //End port is connected, so the connector is modified or has moved
         {
-            if(mpStartPort->getGuiModelObject()->isSelected() && mpEndPort->getGuiModelObject()->isSelected() && this->isActive() && !alignOperation)
+            if(mpStartPort->getParentModelObject()->isSelected() && mpEndPort->getParentModelObject()->isSelected() && this->isActive() && !alignOperation)
             {
                 //Both components and connector are selected, so move whole connector along with components
                 moveAllPoints(getStartPort()->mapToScene(getStartPort()->boundingRect().center()).x()-mPoints[0].x(),
@@ -736,7 +736,7 @@ void Connector::makeDiagonal(bool enable)
         else    //Only one (diagonal) line exist, so special solution is required
         {
             addPoint(mpParentContainerObject->mapToScene(mpParentContainerObject->mpParentProjectTab->getGraphicsView()->mapFromGlobal(cursor.pos())));
-            if(getStartPort()->getPortDirection() == LEFTRIGHT)
+            if(getStartPort()->getPortDirection() == LeftRightDirectionType)
             {
                 mGeometries[0] = VERTICAL;
                 mGeometries[1] = HORIZONTAL;
@@ -811,7 +811,7 @@ void Connector::doSelect(bool lineSelected, int lineNumber)
 //! @see doSelect(bool lineSelected, int lineNumber)
 void Connector::selectIfBothComponentsSelected()
 {
-    if(mIsConnected && mpStartPort->getGuiModelObject()->isSelected() && mpEndPort->getGuiModelObject()->isSelected())
+    if(mIsConnected && mpStartPort->getParentModelObject()->isSelected() && mpEndPort->getParentModelObject()->isSelected())
     {
         mpLines[0]->setSelected(true);
         doSelect(true,0);
@@ -947,11 +947,11 @@ void Connector::determineAppearance()
     //Now replace tpes if systemports to select correct connector graphics
     if (startPortType == "SYSTEMPORT")
     {
-        startPortType = mpStartPort->getPortType(CoreSystemAccess::INTERNALPORTTYPE);
+        startPortType = mpStartPort->getPortType(CoreSystemAccess::InternalPortType);
     }
     if (endPortType == "SYSTEMPORT")
     {
-        endPortType = mpEndPort->getPortType(CoreSystemAccess::INTERNALPORTTYPE);
+        endPortType = mpEndPort->getPortType(CoreSystemAccess::InternalPortType);
     }
 
     if( (startPortType == "POWERPORT") || (endPortType == "POWERPORT") || (startPortType == "POWERMULTIPORT") || (endPortType == "POWERMULTIPORT") )

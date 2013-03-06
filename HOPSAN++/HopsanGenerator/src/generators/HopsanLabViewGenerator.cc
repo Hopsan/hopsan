@@ -245,9 +245,9 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
                     pPort2 = pPort2->getParentPort();
                 }
                 QString comp1 = compNames[n].c_str();
-                QString port1 = pPort->getPortName().c_str();
+                QString port1 = pPort->getName().c_str();
                 QString comp2 = pPort2->getComponentName().c_str();
-                QString port2 = pPort2->getPortName().c_str();
+                QString port2 = pPort2->getName().c_str();
 
                 QPair<QString, QString> pair1 = QPair<QString, QString>(comp1, port1);
                 QPair<QString, QString> pair2 = QPair<QString, QString>(comp2, port2);

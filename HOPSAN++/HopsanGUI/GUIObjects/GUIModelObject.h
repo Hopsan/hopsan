@@ -103,7 +103,7 @@ public:
     Port* createRefreshExternalDynamicParameterPort(QString portName);
     virtual void removeExternalPort(QString portName);
 
-    enum { Type = MODELOBJECT };
+    enum { Type = ModelObjectType };
     int type() const;
 
     void getLosses(double &total, QMap<QString, double> domainSpecificLosses);
@@ -113,9 +113,9 @@ public slots:
     virtual void refreshAppearance();
     virtual void refreshExternalPortsAppearanceAndPosition();
     void deleteMe();
-    void rotate(qreal angle, undoStatus undoSettings = UNDO);
-    void flipVertical(undoStatus undoSettings = UNDO);
-    void flipHorizontal(undoStatus undoSettings = UNDO);
+    virtual void rotate(qreal angle, undoStatus undoSettings = UNDO);
+    virtual void flipVertical(undoStatus undoSettings = UNDO);
+    virtual void flipHorizontal(undoStatus undoSettings = UNDO);
     void hideName(undoStatus undoSettings = NOUNDO);
     void showName(undoStatus undoSettings = NOUNDO);
     void setIcon(graphicsType);

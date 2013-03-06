@@ -111,7 +111,7 @@ class CoreSystemAccess
     friend class CoreSimulationHandler;
     friend class CoreGeneratorAccess;
 public:
-    enum PortTypeIndicatorT {INTERNALPORTTYPE, ACTUALPORTTYPE, EXTERNALPORTTYPE};
+    enum PortTypeIndicatorT {InternalPortType, ActualPortType, ExternalPortType};
 
     CoreSystemAccess(QString name=QString(), CoreSystemAccess* pParentCoreSystemAccess=0);
     ~CoreSystemAccess();
@@ -149,7 +149,7 @@ public:
 
 
     // Port Functions
-    QString getPortType(const QString componentName, const QString portName, const PortTypeIndicatorT portTypeIndicator=ACTUALPORTTYPE);
+    QString getPortType(const QString componentName, const QString portName, const PortTypeIndicatorT portTypeIndicator=ActualPortType);
     QString getNodeType(QString componentName, QString portName);
     bool isPortConnected(QString componentName, QString portName);
 

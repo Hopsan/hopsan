@@ -50,7 +50,7 @@ public:
 
     void setName(QString newName);
 
-    enum { Type = GROUPCONTAINER };
+    enum { Type = GroupContainerType };
     int type() const;
 
     QString getTypeName();

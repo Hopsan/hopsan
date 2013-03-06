@@ -191,7 +191,7 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
     pSettingsWidget->setLayout(mpSettingsLayout);
 
         //Set GuiSystem specific stuff
-    if (mpContainerObject->type() == SYSTEMCONTAINER)
+    if (mpContainerObject->type() == SystemContainerType)
     {
             //Time step
         mpTimeStepCheckBox = new QCheckBox("Inherit time step from parent system", this);
@@ -438,7 +438,7 @@ void ContainerPropertiesDialog::setValues()
     }
 
     //Set GuiSystem specific stuff
-    if (mpContainerObject->type() == SYSTEMCONTAINER)
+    if (mpContainerObject->type() == SystemContainerType)
     {
         mpContainerObject->getCoreSystemAccessPtr()->setInheritTimeStep(mpTimeStepCheckBox->isChecked());
         mpContainerObject->getCoreSystemAccessPtr()->setDesiredTimeStep(mpTimeStepEdit->text().toDouble());

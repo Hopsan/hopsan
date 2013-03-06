@@ -408,7 +408,7 @@ void ModelObject::showLosses()
         QString portType = mPortListPtrs[p]->getPortType();
         if(portType == "SYSTEMPORT")
         {
-            portType = mPortListPtrs[p]->getPortType(CoreSystemAccess::INTERNALPORTTYPE);
+            portType = mPortListPtrs[p]->getPortType(CoreSystemAccess::InternalPortType);
         }
         QStringList nodeTypes;
         NodeInfo::getNodeTypes(nodeTypes);
@@ -426,8 +426,8 @@ void ModelObject::showLosses()
                         {
                             continue;
                         }
-                        QString componentName = vConnectedPorts.at(i)->mpParentGuiModelObject->getName();
-                        QString portName = vConnectedPorts.at(i)->getPortName();
+                        QString componentName = vConnectedPorts.at(i)->getParentModelObjectName();
+                        QString portName = vConnectedPorts.at(i)->getName();
                         //! @todo Multiplying intensity with flow will give correct value for all nodes except pneumatics (that use massflow), figure out how to solve this
                         QVector<double> vIntensity = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, componentName, portName, NodeInfo(type).intensity);
                         QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, componentName, portName, NodeInfo(type).flow);
@@ -441,8 +441,8 @@ void ModelObject::showLosses()
                 else    //Normal port!
                 {
                     //! @todo Multiplying intensity with flow will give correct value for all nodes except pneumatics (that use massflow), figure out how to solve this
-                    QVector<double> vIntensity = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, getName(), mPortListPtrs[p]->getPortName(), NodeInfo(type).intensity);
-                    QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, getName(), mPortListPtrs[p]->getPortName(), NodeInfo(type).flow);
+                    QVector<double> vIntensity = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, getName(), mPortListPtrs[p]->getName(), NodeInfo(type).intensity);
+                    QVector<double> vFlow = mpParentContainerObject->getLogDataHandler()->getPlotDataValues(generation, getName(), mPortListPtrs[p]->getName(), NodeInfo(type).flow);
 
                     for(int s=0; s<vIntensity.size()-1; ++s) //Minus one because of integration method
                     {
@@ -587,7 +587,7 @@ Port *ModelObject::getPort(QString name)
     //! @todo use a guiport map instead   (Is this really a good idea? The number of ports is probably too small to make it beneficial, and it would slow down everything else...)
     for (int i=0; i<mPortListPtrs.size(); ++i)
     {
-        if (mPortListPtrs[i]->getPortName() == name)
+        if (mPortListPtrs[i]->getName() == name)
         {
             return mPortListPtrs[i];
         }
@@ -633,7 +633,7 @@ Port *ModelObject::createRefreshExternalPort(QString portName)
         qreal y = it.value().y*boundingRect().height();
         qDebug() << "x,y: " << x << " " << y;
 
-        if (this->type() == GROUPCONTAINER)
+        if (this->type() == GroupContainerType)
         {
             pPort = new GroupPort(it.key(), x, y, &(it.value()), this);
         }
@@ -675,7 +675,7 @@ void ModelObject::removeExternalPort(QString portName)
     QList<Port*>::iterator plit;
     for (plit=mPortListPtrs.begin(); plit!=mPortListPtrs.end(); ++plit)
     {
-        if ((*plit)->getPortName() == portName )
+        if ((*plit)->getName() == portName )
         {
             //Delete the GUIPort its post in the portlist and its appearance data
             mActiveDynamicParameterPortNames.removeAll(portName);
@@ -1036,12 +1036,18 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     else
         groupAction = new QAction(this);
 
-    QAction *showNameAction = rMenu.addAction(tr("Show name"));
-    QAction *ExportComponentParam = rMenu.addAction(tr("Export Component Parameters"));
-    QAction *rotateRightAction = rMenu.addAction(tr("Rotate Clockwise (Ctrl+R)"));
-    QAction *rotateLeftAction = rMenu.addAction(tr("Rotate Counter-Clockwise (Ctrl+E)"));
-    QAction *flipVerticalAction = rMenu.addAction(tr("Flip Vertically (Ctrl+D)"));
-    QAction *flipHorizontalAction = rMenu.addAction(tr("Flip Horizontally (Ctrl+F)"));
+    QAction *pShowNameAction=0, *pExportComponentParam=0;
+    QAction *pRotateRightAction=0, *pRotateLeftAction=0, *pFlipVerticalAction=0, *pFlipHorizontalAction=0;
+    pShowNameAction = rMenu.addAction(tr("Show name"));
+    pExportComponentParam = rMenu.addAction(tr("Export Component Parameters"));
+    if (type() != ScopeComponentType)
+    {
+        pRotateRightAction = rMenu.addAction(tr("Rotate Clockwise (Ctrl+R)"));
+        pRotateLeftAction = rMenu.addAction(tr("Rotate Counter-Clockwise (Ctrl+E)"));
+        pFlipVerticalAction = rMenu.addAction(tr("Flip Vertically (Ctrl+D)"));
+        pFlipHorizontalAction = rMenu.addAction(tr("Flip Horizontally (Ctrl+F)"));
+    }
+
     //QStringList replacements = this->getAppearanceData()->getReplacementObjects();
     QStringList replacements = gpMainWindow->mpLibrary->getReplacements(this->getTypeName());
     qDebug() << "Replacements = " << replacements;
@@ -1055,8 +1061,8 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
             replaceActionList.append(replaceAction);
         }
     }
-    showNameAction->setCheckable(true);
-    showNameAction->setChecked(mpNameText->isVisible());
+    pShowNameAction->setCheckable(true);
+    pShowNameAction->setChecked(mpNameText->isVisible());
     rMenu.addSeparator();
     QAction *parameterAction = rMenu.addAction(tr("Properties"));
     QAction *selectedAction = rMenu.exec(pEvent->screenPos());
@@ -1066,12 +1072,12 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     {
         openPropertiesDialog();
     }
-    else if (selectedAction == rotateRightAction)
+    else if (selectedAction == pRotateRightAction)
     {
         mpParentContainerObject->getUndoStackPtr()->newPost();
         this->rotate90cw();
     }
-    else if (selectedAction == ExportComponentParam)
+    else if (selectedAction == pExportComponentParam)
     {
 //        QVector<CoreParameterData> paramDataVector;
 //        this->getParameters(paramDataVector);
@@ -1089,22 +1095,22 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
 //            File.close();
 //        }
     }
-    else if (selectedAction == rotateLeftAction)
+    else if (selectedAction == pRotateLeftAction)
     {
         mpParentContainerObject->getUndoStackPtr()->newPost();
         this->rotate90ccw();
     }
-    else if (selectedAction == flipVerticalAction)
+    else if (selectedAction == pFlipVerticalAction)
     {
         mpParentContainerObject->getUndoStackPtr()->newPost();
         this->flipVertical();
     }
-    else if (selectedAction == flipHorizontalAction)
+    else if (selectedAction == pFlipHorizontalAction)
     {
         mpParentContainerObject->getUndoStackPtr()->newPost();
         this->flipHorizontal();
     }
-    else if (selectedAction == showNameAction)
+    else if (selectedAction == pShowNameAction)
     {
         mpParentContainerObject->getUndoStackPtr()->newPost();
         if(mpNameText->isVisible())
@@ -1177,7 +1183,7 @@ QVariant ModelObject::itemChange(GraphicsItemChange change, const QVariant &valu
                 (abs(mConnectorPtrs.first()->getStartPoint().x() - mConnectorPtrs.first()->getEndPoint().x()) < SNAPDISTANCE) &&
                 (abs(mConnectorPtrs.first()->getStartPoint().x() - mConnectorPtrs.first()->getEndPoint().x()) > 0.0) )
             {
-                if(this->mConnectorPtrs.first()->getStartPort()->mpParentGuiModelObject == this)
+                if(this->mConnectorPtrs.first()->getStartPort()->getParentModelObject() == this)
                 {
                     this->moveBy(mConnectorPtrs.first()->getEndPoint().x() - mConnectorPtrs.first()->getStartPoint().x(), 0);
                 }
@@ -1195,7 +1201,7 @@ QVariant ModelObject::itemChange(GraphicsItemChange change, const QVariant &valu
                 (abs(mConnectorPtrs.first()->getStartPoint().y() - mConnectorPtrs.first()->getEndPoint().y()) < SNAPDISTANCE) &&
                 (abs(mConnectorPtrs.first()->getStartPoint().y() - mConnectorPtrs.first()->getEndPoint().y()) > 0.0) )
             {
-                if(this->mConnectorPtrs.first()->getStartPort()->mpParentGuiModelObject == this)
+                if(this->mConnectorPtrs.first()->getStartPort()->getParentModelObject() == this)
                 {
                     this->moveBy(0, mConnectorPtrs.first()->getEndPoint().y() - mConnectorPtrs.first()->getStartPoint().y());
                 }

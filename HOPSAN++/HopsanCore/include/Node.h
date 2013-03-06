@@ -46,6 +46,7 @@ public:
     std::string name;
     std::string shortname;
     std::string unit;
+    std::string description;
     NodeDataVariableTypeT varType;
     unsigned int id;
 };
@@ -78,10 +79,8 @@ public:
     const std::vector<NodeDataDescription>* getDataDescriptions() const;
     const NodeDataDescription* getDataDescription(const size_t id) const;
 
-    virtual void setSignalDataUnit(const std::string unit);
-    virtual void setSignalDataName(const std::string name);
+    virtual void setSignalDataUnitAndDescription(const std::string &rUnit, const std::string &rName);
 
-    //void logData(const double time);
     void logData(const size_t logSlot);
 
     ComponentSystem *getOwnerSystem();

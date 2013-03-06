@@ -344,7 +344,7 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
                             for (size_t v=0; v<pVars->size(); ++v)
                             {
                                 //cout << "var: " << v << " of: " <<  pVars->size() << endl;
-                                string fullname = prefix + pComp->getName() + "#" + pPort->getPortName() + "#" + pVars->at(v).name;
+                                string fullname = prefix + pComp->getName() + "#" + pPort->getName() + "#" + pVars->at(v).name;
 
                                 //cout << fullname << "," << pPort->getVariableAlias(v) << "," << pVars->at(v).unit;
                                 *pFile << fullname << "," << pPort->getVariableAlias(v) << "," << pVars->at(v).unit;

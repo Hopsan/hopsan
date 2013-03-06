@@ -56,7 +56,7 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
     for(int i=0; i<unanimatedComponent->getPortListPtrs().size(); ++i)
     {
         Port *pPort = unanimatedComponent->getPortListPtrs().at(i);
-        mPortPositions.insert(pPort->getPortName(), pPort->getCenterPos());
+        mPortPositions.insert(pPort->getName(), pPort->getCenterPos());
     }
 
     //Set the animation data object

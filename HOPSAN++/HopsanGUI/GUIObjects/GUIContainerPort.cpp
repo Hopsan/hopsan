@@ -31,7 +31,7 @@
 ContainerPort::ContainerPort(QPointF position, qreal rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
         : ModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
 {
-    mIsSystemPort = (pParentContainer->type() == SYSTEMCONTAINER); //determine if I am a system port
+    mIsSystemPort = (pParentContainer->type() == SystemContainerType); //determine if I am a system port
     this->mHmfTagName = HMF_SYSTEMPORTTAG;
     //Sets the ports
     createPorts();
