@@ -77,7 +77,7 @@ namespace hopsan {
                 myDataCurve=0;
             }
 
-            myDataCurve = new CSVParser(success, mDataCurveFileName);
+            myDataCurve = new CSVParser(success, findFilePath(mDataCurveFileName));
             if(!success)
             {
                 std::stringstream ss;

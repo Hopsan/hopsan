@@ -332,6 +332,7 @@ ComponentSystem* hopsan::loadHopsanModelFile(const std::string filePath, HopsanE
                 loadSystemContents(pSysNode, pSys, pHopsanEssentials, filePath);
 
                 pSys->addSearchPath(stripFilenameFromPath(filePath));
+                cout << pSys->findFilePath("Positi3on Servo.hmf") << endl;
 
                 return pSys;
             }
