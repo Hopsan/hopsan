@@ -331,6 +331,8 @@ ComponentSystem* hopsan::loadHopsanModelFile(const std::string filePath, HopsanE
                 ComponentSystem * pSys = pHopsanEssentials->createComponentSystem(); //Create root system
                 loadSystemContents(pSysNode, pSys, pHopsanEssentials, filePath);
 
+                pSys->addSearchPath(stripFilenameFromPath(filePath)); cout << pSys->findFilePath("a.hmf") << endl;
+
                 return pSys;
             }
             else

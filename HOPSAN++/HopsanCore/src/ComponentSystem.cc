@@ -350,14 +350,24 @@ bool ComponentSystem::wasSimulationAborted()
 //! @param searchPath the search path to be added
 void ComponentSystem::addSearchPath(const std::string searchPath)
 {
+    std::string fixedSearchString;
+    fixedSearchString = searchPath;
+    if (!fixedSearchString.empty())
+    {
+        while((!fixedSearchString.empty()) && ((*fixedSearchString.rbegin() == '/') || (*fixedSearchString.rbegin() == '\\')))
+        {
+            fixedSearchString = fixedSearchString.substr (0,fixedSearchString.length()-1);
+        }
+    }
+
     bool contain = false;
     for(size_t i=0; i<mSearchPaths.size();++i)
     {
-        if(mSearchPaths[i] == searchPath)
+        if(mSearchPaths[i] == fixedSearchString)
             contain = true;
     }
     if(!contain)
-        mSearchPaths.push_back(searchPath);
+        mSearchPaths.push_back(fixedSearchString);
 }
 
 

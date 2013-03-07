@@ -965,14 +965,20 @@ std::string Component::findFilePath(const std::string fileName)
 {
     bool found = false;
     std:string fullPath;
-    fullPath.clear();
+    std::string replacer = "/";
 
     if(!(mSearchPaths.empty()))
     {
         for(size_t i = 0; i<mSearchPaths.size(); ++i)
         {
+            size_t pSlash = mSearchPaths[i].find_first_of('/');
+            size_t pBackSlash = mSearchPaths[i].find_first_of('\\');
+            if(pBackSlash < pSlash)
+                replacer = "\\";
+
+            fullPath.clear();
             fullPath = mSearchPaths[i];
-            fullPath.append("/").append(fileName);
+            fullPath.append(replacer).append(fileName);
 
             FILE *fp = fopen(fullPath.c_str(),"r");
             if( fp ) {
