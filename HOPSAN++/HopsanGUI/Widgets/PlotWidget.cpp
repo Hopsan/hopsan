@@ -341,6 +341,8 @@ PlotWindow *PlotVariableTree::createPlotWindow(QTreeWidgetItem *item)
 //! @brief Defines what happens when clicking in the variable list. Used to initiate drag operations.
 void PlotVariableTree::mousePressEvent(QMouseEvent *event)
 {
+    qDebug() << "mousePressEvent";
+
     gpMainWindow->showHelpPopupMessage("Double click on a variable to open a new plot window, or drag it to an existing one.");
     QTreeWidget::mousePressEvent(event);
 
@@ -352,6 +354,8 @@ void PlotVariableTree::mousePressEvent(QMouseEvent *event)
 //! @brief Defines what happens when mouse is moving in variable list. Used to handle drag operations.
 void PlotVariableTree::mouseMoveEvent(QMouseEvent *event)
 {
+    qDebug() << "mouseMoveEvent";
+
     this->setFrameShape(QFrame::Box);
 
     gpMainWindow->showHelpPopupMessage("Double click on a variable to open a new plot window, or drag it to an existing one.");
@@ -365,7 +369,7 @@ void PlotVariableTree::mouseMoveEvent(QMouseEvent *event)
     }
 
     PlotVariableTreeItem *item;
-    item = dynamic_cast<PlotVariableTreeItem *>(currentItem());
+    item = dynamic_cast<PlotVariableTreeItem *>(itemAt(dragStartPosition.toPoint()));
 
     if(item != 0)
     {

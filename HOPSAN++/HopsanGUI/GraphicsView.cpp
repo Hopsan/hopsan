@@ -698,7 +698,7 @@ void GraphicsView::exportToPNG()
         }
         else
         {
-            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Successfully exported PNG to: " +fileName);
+            gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Successfully exported PNG to: " +fileName);
         }
     }
 }

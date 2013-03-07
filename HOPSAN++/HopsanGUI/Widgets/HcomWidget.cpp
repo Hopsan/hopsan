@@ -2528,8 +2528,12 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
             }
         }
 
-        LogDataHandler *pLogData = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler();
-        QStringList plotDataNames = pLogData->getPlotDataNames();
+        QStringList plotDataNames;
+        if(gpMainWindow->mpProjectTabs->count() > 0)
+        {
+            LogDataHandler *pLogData = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler();
+            plotDataNames = pLogData->getPlotDataNames();
+        }
         if(!leftIsOk && !plotDataNames.contains(left))
         if(!leftIsOk && (gpMainWindow->mpProjectTabs->count() == 0 || !getVariablePtr(left)))
         {
