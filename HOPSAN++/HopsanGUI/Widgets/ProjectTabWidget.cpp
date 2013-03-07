@@ -789,6 +789,8 @@ void ProjectTab::saveModel(saveTarget saveAsFlag, saveContents contents)
     }
 
     gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Saved model: " + tabName);
+
+    mpToplevelSystem->getCoreSystemAccessPtr()->addSearchPath(mpToplevelSystem->getModelFileInfo().absolutePath());
 }
 
 
