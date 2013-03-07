@@ -986,6 +986,8 @@ std::string Component::findFilePath(const std::string fileName)
                 found = true;
                 break;
             }
+            else
+                fullPath.clear();
         }
     }
     if(!found && getSystemParent())
