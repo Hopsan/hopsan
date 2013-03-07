@@ -60,7 +60,7 @@ namespace hopsan {
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
             mOutDataId=1;
-            mDataCurveFileName = "AbsFilePath";
+            mDataCurveFileName = "FilePath";
             registerParameter("filename", "Abs. path to data file", "", mDataCurveFileName);
             registerParameter("outid", "csv file value column index", "", mOutDataId);
 
