@@ -539,7 +539,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, hopsan::Compo
     wrapperCode.replace("<<<2>>>", nTotalOutputsString);
     wrapperCode.replace("<<<3>>>", wrapperReplace3);
     wrapperCode.replace("<<<14>>>", QString::number(nTotalOutputs-1));
-    wrapperCode.replace("<<<4>>>", savePath+"\\\\"+pSystem->getName().c_str()+".hmf");
+    wrapperCode.replace("<<<4>>>", QString(pSystem->getName().c_str())+".hmf");
     wrapperCode.replace("<<<5>>>", wrapperReplace5);
     wrapperCode.replace("<<<6>>>", wrapperReplace6);
     wrapperCode.replace("<<<7>>>", wrapperReplace7);
