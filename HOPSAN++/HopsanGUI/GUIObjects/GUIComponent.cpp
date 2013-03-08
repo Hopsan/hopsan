@@ -208,6 +208,7 @@ void Component::saveCoreDataToDomElement(QDomElement &rDomElement, saveContents 
         xmlParam.setAttribute(HMF_NAMETAG, paramDataVec[i].mName);
         xmlParam.setAttribute(HMF_VALUETAG, paramDataVec[i].mValue);
         xmlParam.setAttribute(HMF_TYPE, paramDataVec[i].mType);
+        xmlParam.setAttribute(HMF_UNIT, paramDataVec[i].mUnit);
 
         /*if(this->isParameterMappedToSystemParameter(*pit))
         {
