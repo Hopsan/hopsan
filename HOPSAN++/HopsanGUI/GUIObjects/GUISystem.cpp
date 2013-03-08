@@ -248,6 +248,7 @@ void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement, saveCon
         xmlParameter.setAttribute(HMF_NAMETAG, paramDataVector[i].mName);
         xmlParameter.setAttribute(HMF_VALUETAG, paramDataVector[i].mValue);
         xmlParameter.setAttribute(HMF_TYPE, paramDataVector[i].mType);
+        xmlParameter.setAttribute(HMF_UNIT, paramDataVector[i].mUnit);
     }
 
     // Save the alias names in this system
