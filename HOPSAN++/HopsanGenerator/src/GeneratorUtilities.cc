@@ -580,6 +580,8 @@ NodeInfo::NodeInfo(QString nodeType)
             varIdx << pNode->getDataDescription(i)->id;
         }
     }
+
+    delete(pNode);
 }
 
 void NodeInfo::getNodeTypes(QStringList &nodeTypes)
