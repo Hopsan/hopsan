@@ -668,47 +668,35 @@ void ContainerObject::renameModelObject(QString oldName, QString newName, undoSt
     if (oldName != newName)
     {
         QString modNewName;
-            //First find record with old name
+        // First find record with old name
         ModelObjectMapT::iterator it = mModelObjectMap.find(oldName);
         if (it != mModelObjectMap.end())
         {
-                //Make a backup copy
+            // Make a backup copy and erase old record
             ModelObject* obj_ptr = it.value();
-                //Erase old record
             mModelObjectMap.erase(it);
-                //Set new name, first in core then in gui object
-            //qDebug() << "Renaming: " << oldName << " " << newName << " type: " << obj_ptr->type();
+
+            // Set new name, first in core then in gui object
             switch (obj_ptr->type())
             {
-            case ComponentType:
-                //qDebug() << "GUICOMPONENT";
-            case SystemContainerType :
-                //qDebug() << "GUISYSTEM";
-                modNewName = this->getCoreSystemAccessPtr()->renameSubComponent(oldName, newName);
-                break;
             case ContainerPortType : //!< @todo What will happen when we try to rename a groupport
-                //qDebug() << "GUISYSTEMPORT";
                 modNewName = this->getCoreSystemAccessPtr()->renameSystemPort(oldName, newName);
                 renameExternalPort(oldName, modNewName);
                 break;
-            //default :
-                //qDebug() << "default";
-                    //No Core rename action
+            default :
+                modNewName = this->getCoreSystemAccessPtr()->renameSubComponent(oldName, newName);
             }
 
-            // Override the GUI model object name with the new name from the core
+            // Override the GUI ModelObject name with the new name from the core
             obj_ptr->refreshDisplayName(modNewName);
 
-            //Re insert
+            //Re-insert
             mModelObjectMap.insert(obj_ptr->getName(), obj_ptr);
         }
         else
         {
-            //qDebug() << "Old name: " << oldName << " not found";
-            //! @todo Maybe we should give the user a message?
+            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(QString("No GUI Object with name: ") + oldName + " found when atempting rename!");
         }
-
-        //mpLogDataHandler->updateObjectName(oldName, newName);
 
         if (undoSettings == UNDO)
         {

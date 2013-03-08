@@ -63,9 +63,9 @@ ContainerPortPropertiesDialog::ContainerPortPropertiesDialog(ContainerPort *pCon
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
     QPushButton *pCancelButton = new QPushButton(tr("&Cancel"), this);
     QPushButton *pDoneButton = new QPushButton(tr("&Done"), this);
+    pDoneButton->setDefault(true);
     pButtonBox->addButton(pCancelButton, QDialogButtonBox::ActionRole);
     pButtonBox->addButton(pDoneButton, QDialogButtonBox::ActionRole);
-    pDoneButton->setDefault(true);
     pMainLayout->addWidget(pButtonBox, 0, Qt::AlignHCenter);
 
     //Create connections
