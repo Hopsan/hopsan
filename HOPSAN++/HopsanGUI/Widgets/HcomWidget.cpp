@@ -49,10 +49,14 @@ TerminalWidget::TerminalWidget(MainWindow *pParent)
     this->setMouseTracking(true);
 
     mpClearMessageWidgetButton = new QPushButton("Clear Messages");
+    mpAbortHCOMWidgetButton = new QPushButton("Stop HCOM exec");
+    mpAbortHCOMWidgetButton->setDisabled(true);
     QFont tempFont = mpClearMessageWidgetButton->font();
     tempFont.setBold(true);
     mpClearMessageWidgetButton->setFont(tempFont);
     mpClearMessageWidgetButton->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
+    mpAbortHCOMWidgetButton->setFont(tempFont);
+    mpAbortHCOMWidgetButton->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
 
     mpShowErrorMessagesButton = new QToolButton();
     mpShowErrorMessagesButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ShowErrorMessages.png"));
@@ -86,12 +90,14 @@ TerminalWidget::TerminalWidget(MainWindow *pParent)
 
     QGridLayout *pLayout = new QGridLayout(this);
     pLayout->addWidget(mpConsole,0,0,1,7);
-    pLayout->addWidget(mpClearMessageWidgetButton,1,0,1,1);
-    pLayout->addWidget(mpShowErrorMessagesButton,1,1,1,1);
-    pLayout->addWidget(mpShowWarningMessagesButton,1,2,1,1);
-    pLayout->addWidget(mpShowInfoMessagesButton,1,3,1,1);
-    pLayout->addWidget(mpShowDebugMessagesButton,1,4,1,1);
-    pLayout->addWidget(mpGroupByTagCheckBox, 1,5,1,1);
+    size_t x = 0;
+    pLayout->addWidget(mpClearMessageWidgetButton,1,x++,1,1);
+    pLayout->addWidget(mpAbortHCOMWidgetButton,1,x++,1,1);
+    pLayout->addWidget(mpShowErrorMessagesButton,1,x++,1,1);
+    pLayout->addWidget(mpShowWarningMessagesButton,1,x++,1,1);
+    pLayout->addWidget(mpShowInfoMessagesButton,1,x++,1,1);
+    pLayout->addWidget(mpShowDebugMessagesButton,1,x++,1,1);
+    pLayout->addWidget(mpGroupByTagCheckBox, 1,x++,1,1);
     pLayout->setContentsMargins(4,4,4,4);
     this->setLayout(pLayout);
 
@@ -100,6 +106,7 @@ TerminalWidget::TerminalWidget(MainWindow *pParent)
     this->setMinimumHeight(155);
 
     connect(mpClearMessageWidgetButton, SIGNAL(clicked()),mpConsole, SLOT(clear()));
+    connect(mpAbortHCOMWidgetButton, SIGNAL(clicked()),mpConsole, SLOT(abortHCOM()));
     connect(mpShowErrorMessagesButton, SIGNAL(toggled(bool)), mpConsole, SLOT(showErrorMessages(bool)));
     connect(mpShowWarningMessagesButton, SIGNAL(toggled(bool)), mpConsole, SLOT(showWarningMessages(bool)));
     connect(mpShowInfoMessagesButton, SIGNAL(toggled(bool)), mpConsole, SLOT(showInfoMessages(bool)));
@@ -172,6 +179,12 @@ bool TerminalWidget::eventFilter(QObject *obj, QEvent *event)
 void TerminalWidget::checkMessages()
 {
     mpConsole->printCoreMessages();
+}
+
+
+void TerminalWidget::setEnabledAbortButton(bool enable)
+{
+    mpAbortHCOMWidgetButton->setEnabled(enable);
 }
 
 
@@ -347,6 +360,13 @@ void TerminalConsole::clear()
 }
 
 
+//! @brief Aborts CHOM operation
+void TerminalConsole::abortHCOM()
+{
+    getHandler()->abortHCOM();
+}
+
+
 //! @brief Tells the message widget wether or not messages shall be grouped by tags
 //! @param value True means that messages shall be grouped
 void TerminalConsole::setGroupByTag(bool value)
@@ -501,11 +521,13 @@ void TerminalConsole::handleEnterKeyPress()
 
     if(!cmd.isEmpty())
     {
+        mpParent->setEnabledAbortButton(true);
         //Execute command
         getHandler()->executeCommand(cmd);
 
         //Add command to history
         mHistory.prepend(cmd);
+        mpParent->setEnabledAbortButton(false);
     }
 
     //Insert new command line
@@ -685,6 +707,8 @@ void TerminalConsole::cancelRecentHistory()
 
 HcomHandler::HcomHandler(TerminalConsole *pConsole)
 {
+    mAborted = false;
+
     mpConsole = pConsole;
 
     mCurrentPlotWindowName = "PlotWindow0";
@@ -2099,6 +2123,8 @@ bool HcomHandler::containsOutsideParentheses(QString str, QString c)
 
 QString HcomHandler::runScriptCommands(QStringList lines)
 {
+    mAborted = false; //Reset if pushed when script didn't run
+
     qDebug() << "Number of commands to run: " << lines.size();
 
     for(int l=0; l<lines.size(); ++l)
@@ -2142,6 +2168,12 @@ QString HcomHandler::runScriptCommands(QStringList lines)
                 if(!evalOk)
                 {
                     mpConsole->print("Evaluation of loop argument failed.");
+                    break;
+                }
+                else if(mAborted)
+                {
+                    mpConsole->print("Script aborted.");
+                    mAborted = false;
                     break;
                 }
                 QString gotoLabel = runScriptCommands(loop);
@@ -2807,4 +2839,9 @@ int HcomHandler::getNumberOfArguments(QString cmd)
 QString HcomHandler::getArgument(QString cmd, int idx)
 {
     return getArguments(cmd).at(idx);
+}
+
+void HcomHandler::abortHCOM()
+{
+    mAborted = true;
 }

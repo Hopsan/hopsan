@@ -50,6 +50,7 @@ public:
     void saveConfig();
     TerminalConsole *mpConsole;
     HcomHandler *mpHandler;
+    void setEnabledAbortButton(bool enable);
 
 public slots:
     void checkMessages();
@@ -60,6 +61,7 @@ protected:
 
 private:
     QPushButton *mpClearMessageWidgetButton;
+    QPushButton *mpAbortHCOMWidgetButton;
     QToolButton *mpShowErrorMessagesButton;
     QToolButton *mpShowWarningMessagesButton;
     QToolButton *mpShowInfoMessagesButton;
@@ -92,6 +94,7 @@ public:
 public slots:
     void checkMessages();
     void clear();
+    void abortHCOM();
     void setGroupByTag(bool value);
     void showErrorMessages(bool value);
     void showWarningMessages(bool value);
@@ -204,9 +207,13 @@ public:
     QStringList getArguments(QString cmd);
     int getNumberOfArguments(QString cmd);
     QString getArgument(QString cmd, int idx);
+    void abortHCOM();
 
 private:
     TerminalConsole *mpConsole;
+
+    //Used to abort HCOM evaluation
+    bool mAborted;
 
     //Working directory
     QString mPwd;
