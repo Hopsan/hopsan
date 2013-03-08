@@ -903,6 +903,7 @@ bool ContainerObject::setParameterValue(QString name, QString value, bool force)
 bool ContainerObject::setOrAddParameter(const CoreParameterData &rParameter, bool force)
 {
     const bool rc = this->getCoreSystemAccessPtr()->setSystemParameter(rParameter, force);
+    emit checkMessages();
     if (rc)
     {
         hasChanged();

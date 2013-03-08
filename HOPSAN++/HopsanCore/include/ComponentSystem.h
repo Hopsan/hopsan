@@ -126,8 +126,11 @@ namespace hopsan {
     class DLLIMPORTEXPORT ComponentSystem :public Component
     {
         friend class ConnectionAssistant;
+        friend class AliasHandler;
 
     public:
+        enum UniqeNameEnumT {UniqueComponentNameType, UniqueSysportNameTyp, UniqueSysparamNameType, UniqueAliasNameType, UniqueReservedNameType};
+
         //==========Public functions==========
         virtual ~ComponentSystem();
         static Component* Creator(){ return new ComponentSystem(); }
@@ -146,7 +149,7 @@ namespace hopsan {
         void renameSubComponent(std::string old_name, std::string new_name);
         void removeSubComponent(std::string name, bool doDelete=false);
         void removeSubComponent(Component *pComponent, bool doDelete=false);
-        std::string reserveUniqueName(const std::string desiredName);
+        std::string reserveUniqueName(const std::string desiredName, const UniqeNameEnumT type=UniqueReservedNameType);
         void unReserveUniqueName(const std::string name);
 
         // System Parameter functions
@@ -224,6 +227,7 @@ namespace hopsan {
 
         // System parameters
         bool setSystemParameter(const std::string name, const std::string value, const std::string type, const std::string description="", const std::string unit="", const bool force=false);
+        void unRegisterParameter(const std::string name);
         Parameters &getSystemParameters();
         void addSearchPath(const std::string searchPath);
 
@@ -261,19 +265,21 @@ namespace hopsan {
         // UniqueName specific functions
         std::string determineUniquePortName(std::string portname);
         std::string determineUniqueComponentName(std::string name);
+        bool hasReservedUniqueName(const std::string &rName) const;
 
         //==========Private member variables==========
         CQSEnumT mTypeCQS;
 
         typedef std::map<std::string, Component*> SubComponentMapT;
-        typedef std::map<std::string, int> ReservedNamesT;
         SubComponentMapT mSubComponentMap;
-        ReservedNamesT mReservedNames;
         std::vector<Component*> mComponentSignalptrs;
         std::vector<Component*> mComponentQptrs;
         std::vector<Component*> mComponentCptrs;
         std::vector<Component*> mComponentUndefinedptrs;
         std::vector<Node*> mSubNodePtrs;
+
+        typedef std::map<std::string, UniqeNameEnumT> TakenNamesMapT;
+        TakenNamesMapT mTakenNames;
 
 
         bool volatile mStopSimulation;

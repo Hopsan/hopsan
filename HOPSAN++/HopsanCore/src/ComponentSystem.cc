@@ -387,10 +387,28 @@ bool ComponentSystem::setSystemParameter(const std::string name, const std::stri
     }
     else
     {
-        success = mpParameters->addParameter(name, value, description, unit, type, false, 0, force);
+        if (this->hasReservedUniqueName(name))
+        {
+            addErrorMessage(string("The desired system parameter name: ") + name + string(" is already used"));
+            success=false;
+        }
+        else
+        {
+            success = mpParameters->addParameter(name, value, description, unit, type, false, 0, force);
+            if (success)
+            {
+                reserveUniqueName(name,UniqueSysparamNameType);
+            }
+        }
     }
 
     return success;
+}
+
+void ComponentSystem::unRegisterParameter(const string name)
+{
+    Component::unRegisterParameter(name);
+    unReserveUniqueName(name);
 }
 
 //! @brief Add multiple components to the system
@@ -409,8 +427,8 @@ void ComponentSystem::addComponent(Component *pComponent)
     // prevent adding null ptr
     if (pComponent)
     {
-        //First check if the name already exists, in that case change the suffix
-        string modname = this->determineUniqueComponentName(pComponent->getName());
+        // First check if the name already exists, in that case change the suffix
+        string modname = this->reserveUniqueName(pComponent->getName(), UniqueComponentNameType);
         pComponent->setName(modname);
 
         //Add to the cqs component vectors
@@ -440,7 +458,8 @@ void ComponentSystem::renameSubComponent(string oldname, string newname)
         mSubComponentMap.erase(it);
 
         //insert new (with new name)
-        string mod_new_name = this->determineUniqueComponentName(newname);
+        string mod_new_name = this->reserveUniqueName(newname, UniqueComponentNameType);
+        this->unReserveUniqueName(oldname);
 
         //cout << "new name is: " << mod_name << endl;
         mSubComponentMap.insert(pair<string, Component*>(mod_new_name, temp_comp_ptr));
@@ -495,16 +514,19 @@ void ComponentSystem::removeSubComponent(Component* pComponent, bool doDelete)
         mpHopsanEssentials->removeComponent(pComponent);
     }
 
+    // Unreserve the name
+    unReserveUniqueName(compName);
+
     addDebugMessage("Removed component: \"" + compName + "\" from system: \"" + this->getName() + "\"", "removedcomponent");
 }
 
 //! @brief Reserves a unique name in the system
 //! @param [in] desiredName The desired name to reserve
 //! @returns The actual name reserved
-string ComponentSystem::reserveUniqueName(const string desiredName)
+string ComponentSystem::reserveUniqueName(const string desiredName, const UniqeNameEnumT type)
 {
     string newname = this->determineUniqueComponentName(desiredName);
-    mReservedNames.insert(std::pair<std::string, int>(newname,0)); //The inte 0 is a dummy value that is never used
+    mTakenNames.insert(std::pair<std::string, UniqeNameEnumT>(newname, type));
     return newname;
 }
 
@@ -512,10 +534,7 @@ string ComponentSystem::reserveUniqueName(const string desiredName)
 //! @param [in] name The name to unreserve
 void ComponentSystem::unReserveUniqueName(const string name)
 {
-    cout << "unReserveUniqueName: " << name;
-    cout << " count before: " << mReservedNames.count(name);
-    mReservedNames.erase(name);
-    cout << " count after: " << mReservedNames.count(name) << std::endl;
+    mTakenNames.erase(name);
 }
 
 void ComponentSystem::addSubComponentPtrToStorage(Component* pComponent)
@@ -714,7 +733,9 @@ bool ComponentSystem::componentVectorContains(std::vector<Component*> vector, Co
 //! It is VERY important that systemports dont have the same name as a subcomponent
 std::string ComponentSystem::determineUniquePortName(std::string portname)
 {
-    return findUniqueName<PortPtrMapT, SubComponentMapT, ReservedNamesT>(mPortPtrMap,  mSubComponentMap, mReservedNames, portname);
+    //return findUniqueName<PortPtrMapT, SubComponentMapT, ReservedNamesT>(mPortPtrMap,  mSubComponentMap, mReservedNames, portname);
+    //return findUniqueName<TakenNamesMapT>(mTakenNames, portname);
+    return this->reserveUniqueName(portname, UniqueSysportNameTyp);
 }
 
 //! @brief Overloaded function that behaves slightly different when determining unique component names
@@ -723,7 +744,18 @@ std::string ComponentSystem::determineUniquePortName(std::string portname)
 //! @todo the determineUniquePortNAme and ComponentName looks VERY similar maybe we could use the same function for both
 std::string ComponentSystem::determineUniqueComponentName(std::string name)
 {
-    return findUniqueName<SubComponentMapT, PortPtrMapT, ReservedNamesT>(mSubComponentMap, mPortPtrMap, mReservedNames, name);
+//    name = findUniqueName<ReservedNamesT>(mReservedNames, name);
+//    name = findUniqueName<SubComponentMapT>(mSubComponentMap, name);
+//    name = findUniqueName<PortPtrMapT>(mPortPtrMap, name);
+//    //! @todo check syspar alias
+    return findUniqueName<TakenNamesMapT>(mTakenNames, name);
+
+    //return findUniqueName<SubComponentMapT, PortPtrMapT, ReservedNamesT>(mSubComponentMap, mPortPtrMap, mReservedNames, name);
+}
+
+bool ComponentSystem::hasReservedUniqueName(const string &rName) const
+{
+    return (mTakenNames.find(rName) != mTakenNames.end());
 }
 
 
@@ -954,15 +986,25 @@ void ComponentSystem::logTimeAndNodes(const size_t simStep)
 //! @brief Rename a system parameter
 bool ComponentSystem::renameParameter(const std::string oldName, const std::string newName)
 {
-    return mpParameters->renameParameter(oldName, newName);
+    if (hasReservedUniqueName(newName))
+    {
+        addErrorMessage(string("The desired system parameter name: ") + newName + string(" is already used"));
+    }
+    else if (mpParameters->renameParameter(oldName, newName))
+    {
+        unReserveUniqueName(oldName);
+        reserveUniqueName(newName);
+        return true;
+    }
+    return false;
 }
 
 //! @brief Adds a transparent SubSystemPort
 Port* ComponentSystem::addSystemPort(string portName)
 {
+    // Force default portname p, if nothing else specified
     if (portName.empty())
     {
-        //Force default portname p, if nothing else specified
         portName = "p";
     }
 
@@ -974,7 +1016,12 @@ Port* ComponentSystem::addSystemPort(string portName)
 //! @brief Rename system port
 string ComponentSystem::renameSystemPort(const string oldname, const string newname)
 {
-    return renamePort(oldname,newname);
+    string newmodename = renamePort(oldname,newname);
+    if (newmodename != oldname)
+    {
+        unReserveUniqueName(oldname);
+    }
+    return newmodename;
 }
 
 
@@ -983,6 +1030,7 @@ string ComponentSystem::renameSystemPort(const string oldname, const string newn
 void ComponentSystem::deleteSystemPort(const string name)
 {
     deletePort(name);
+    unReserveUniqueName(name);
 }
 
 
@@ -3623,6 +3671,12 @@ bool AliasHandler::setVariableAlias(const std::string alias, const std::string c
 
 bool AliasHandler::setVariableAlias(const string alias, const string compName, const string portName, const int varId)
 {
+    if (mpSystem->hasReservedUniqueName(alias))
+    {
+        mpSystem->addErrorMessage(string("The alias: ") + alias + string("is already used as some other name"));
+        return false;
+    }
+
     //! @todo must check if existing alias is set for the same component that already have it to avoid warning
     if (!hasAlias(alias))
     {
@@ -3647,6 +3701,7 @@ bool AliasHandler::setVariableAlias(const string alias, const string compName, c
 
                     ParamOrVariableT data = {Variable, compName, portName};
                     mAliasMap.insert(std::pair<string, ParamOrVariableT>(alias, data));
+                    mpSystem->reserveUniqueName(alias);
                 }
                 return true;
             }
@@ -3736,6 +3791,7 @@ bool AliasHandler::removeAlias(const string alias)
             }
         }
         mAliasMap.erase(it);
+        mpSystem->unReserveUniqueName(alias);
         return true;
     }
     return false;

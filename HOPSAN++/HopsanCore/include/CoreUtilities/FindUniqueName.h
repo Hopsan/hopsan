@@ -30,10 +30,9 @@
 
 namespace hopsan {
 
-//! @brief Helper function to create a unique name among names from one Map
-//! @todo try to merge these to help functions into one (the next one bellow which is very similar)
-template<typename MapType>
-std::string findUniqueName(MapType &rMap, std::string name)
+//! @brief Help function for create a unique name among names from one STL Container
+template<typename ContainerT>
+std::string findUniqueName(const ContainerT &rContainer, std::string name)
 {
     //New name must not be empty, empty name is "reserved" to be used in the API to indicate that we want to manipulate the current root system
     if (name.empty())
@@ -42,7 +41,7 @@ std::string findUniqueName(MapType &rMap, std::string name)
     }
 
     size_t ctr = 1; //The suffix number
-    while(rMap.count(name) != 0)
+    while(rContainer.find(name) != rContainer.end())
     {
         //strip suffix
         size_t foundpos = name.rfind("_");
@@ -118,48 +117,48 @@ std::string findUniqueName(MapType &rMap, std::string name)
 //    return name;
 //}
 
-//! @brief Helper function to create a unique name among names from TWO Map
-template<typename MapType1, typename MapType2, typename ReservedNamesType>
-std::string findUniqueName(MapType1 &rMap1, MapType2 &rMap2, ReservedNamesType &rReservedMap, std::string name)
-{
-    //New name must not be empty, empty name is "reserved" to be used in the API to indicate that we want to manipulate the current root system
-    if (name.empty())
-    {
-        name = "noName";
-    }
+////! @brief Helper function to create a unique name among names from TWO Map
+//template<typename MapType1, typename MapType2, typename ReservedNamesType>
+//std::string findUniqueName(MapType1 &rMap1, MapType2 &rMap2, ReservedNamesType &rReservedMap, std::string name)
+//{
+//    //New name must not be empty, empty name is "reserved" to be used in the API to indicate that we want to manipulate the current root system
+//    if (name.empty())
+//    {
+//        name = "noName";
+//    }
 
-    size_t ctr = 1; //The suffix number
-    while( (rMap1.count(name)+rMap2.count(name)+rReservedMap.count(name)) != 0)
-    {
-        //strip suffix
-        size_t foundpos = name.rfind("_");
-        if (foundpos != std::string::npos)
-        {
-            if (foundpos+1 < name.size())
-            {
-                unsigned char nr = name.at(foundpos+1);
-                //cout << "nr after _: " << nr << endl;
-                //Check the ascii code for the charachter
-                if ((nr >= 48) && (nr <= 57))
-                {
-                    //Is number lets assume that the _ found is the beginning of a suffix
-                    name.erase(foundpos, std::string::npos);
-                }
-            }
-        }
-        //cout << "ctr: " << ctr << " stripped tempname: " << name << endl;
+//    size_t ctr = 1; //The suffix number
+//    while( (rMap1.count(name)+rMap2.count(name)+rReservedMap.count(name)) != 0)
+//    {
+//        //strip suffix
+//        size_t foundpos = name.rfind("_");
+//        if (foundpos != std::string::npos)
+//        {
+//            if (foundpos+1 < name.size())
+//            {
+//                unsigned char nr = name.at(foundpos+1);
+//                //cout << "nr after _: " << nr << endl;
+//                //Check the ascii code for the charachter
+//                if ((nr >= 48) && (nr <= 57))
+//                {
+//                    //Is number lets assume that the _ found is the beginning of a suffix
+//                    name.erase(foundpos, std::string::npos);
+//                }
+//            }
+//        }
+//        //cout << "ctr: " << ctr << " stripped tempname: " << name << endl;
 
-        //add new suffix
-        std::stringstream suffix;
-        suffix << ctr;
-        name.append("_");
-        name.append(suffix.str());
-        ++ctr;
-        //cout << "ctr: " << ctr << " appended tempname: " << name << endl;
-    }
-    //cout << name << endl;
-    return name;
-}
+//        //add new suffix
+//        std::stringstream suffix;
+//        suffix << ctr;
+//        name.append("_");
+//        name.append(suffix.str());
+//        ++ctr;
+//        //cout << "ctr: " << ctr << " appended tempname: " << name << endl;
+//    }
+//    //cout << name << endl;
+//    return name;
+//}
 
 }
 #endif // FINDUNIQUENAME_H

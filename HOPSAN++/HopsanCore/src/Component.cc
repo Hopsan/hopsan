@@ -820,7 +820,10 @@ double Component::getMeasuredTime() const
 //! @param [in] message The message string
 void Component::addDebugMessage(const string message, const string tag)
 {
-    mpMessageHandler->addDebugMessage(getName()+ "::" + message, tag);
+    if (mpMessageHandler)
+    {
+        mpMessageHandler->addDebugMessage(getName()+ "::" + message, tag);
+    }
 }
 
 
@@ -829,7 +832,10 @@ void Component::addDebugMessage(const string message, const string tag)
 //! @param [in] message The message string
 void Component::addWarningMessage(const string message, const string tag)
 {
-    mpMessageHandler->addWarningMessage(getName()+ "::" + message, tag);
+    if (mpMessageHandler)
+    {
+        mpMessageHandler->addWarningMessage(getName()+ "::" + message, tag);
+    }
 }
 
 
@@ -838,7 +844,10 @@ void Component::addWarningMessage(const string message, const string tag)
 //! @param [in] message The message string
 void Component::addErrorMessage(const string message, const string tag)
 {
-    mpMessageHandler->addErrorMessage(getName()+ "::" + message, tag);
+    if (mpMessageHandler)
+    {
+        mpMessageHandler->addErrorMessage(getName()+ "::" + message, tag);
+    }
 }
 
 
@@ -847,7 +856,10 @@ void Component::addErrorMessage(const string message, const string tag)
 //! @param [in] message The message string
 void Component::addInfoMessage(const string message, const string tag)
 {
-    mpMessageHandler->addInfoMessage(getName()+ "::" + message, tag);
+    if (mpMessageHandler)
+    {
+        mpMessageHandler->addInfoMessage(getName()+ "::" + message, tag);
+    }
 }
 
 

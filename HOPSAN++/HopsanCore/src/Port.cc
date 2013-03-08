@@ -163,24 +163,6 @@ void Port::writeNodeSafe(const size_t &idx, const double &value, const size_t /*
 }
 
 
-////! @brief Reads a value from the connected node
-////! @param [in] idx The data id of the data to read
-////! @return The data value
-//double Port::readNode(const size_t idx, const size_t /*portIdx*/) const
-//{
-//    return mpNode->mDataValues[idx];
-//}
-
-
-////! @brief Writes a value to the connected node
-////! @param [in] idx The data id of the data to write
-////! @param [in] value The value of the data to read
-//void Port::writeNode(const size_t &idx, const double &value, const size_t /*portIdx*/) const
-//{
-//    mpNode->mDataValues[idx] = value;
-//}
-
-
 double *Port::getNodeDataPtr(const size_t idx, const size_t /*portIdx*/) const
 {
     return mpNode->getDataPtr(idx);
