@@ -272,10 +272,11 @@ public:
     //! @param *pBarrier_C Pointer to barrier before C-type components
     //! @param *pBarrier_Q Pointer to barrier before Q-type components
     //! @param *pBarrier_N Pointer to barrier before node logging
-    taskSimSlave(vector<Component*> sVector, vector<Component*> cVector, vector<Component*> qVector, vector<Node*> nVector,
+    taskSimSlave(ComponentSystem *pSystem, vector<Component*> sVector, vector<Component*> cVector, vector<Component*> qVector, vector<Node*> nVector,
                  double startTime, double timeStep, size_t numSimSteps, size_t nThreads, size_t threadID,
                  BarrierLock *pBarrier_S, BarrierLock *pBarrier_C, BarrierLock *pBarrier_Q, BarrierLock *pBarrier_N)
     {
+        mpSystem = pSystem;
         mVectorS = sVector;
         mVectorC = cVector;
         mVectorQ = qVector;
@@ -296,6 +297,8 @@ public:
     {
         for(size_t i=0; i<mNumSimSteps; ++i)
         {
+            if(mpSystem->wasSimulationAborted()) break;
+
 
             //! Signal Components !//
 
@@ -343,6 +346,7 @@ public:
         }
     }
 private:
+    ComponentSystem *mpSystem;
     vector<Component*> mVectorS;
     vector<Component*> mVectorC;
     vector<Component*> mVectorQ;
@@ -406,6 +410,8 @@ public:
     {
         for(size_t i=0; i<mNumSimSteps; ++i)
         {
+            if(mpSystem->wasSimulationAborted()) break;
+
 
             //! Signal Components !//
 

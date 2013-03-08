@@ -2847,7 +2847,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 
     for(size_t t=1; t < nThreads; ++t)
     {
-        simTasks->run(taskSimSlave(mSplitSignalVector[t], mSplitCVector[t], mSplitQVector[t],          //Create slave threads
+        simTasks->run(taskSimSlave(this, mSplitSignalVector[t], mSplitCVector[t], mSplitQVector[t],          //Create slave threads
                                    mSplitNodeVector[t], mTime, mTimestep, nSteps, nThreads, t,
                                    pBarrierLock_S, pBarrierLock_C, pBarrierLock_Q, pBarrierLock_N));
     }
