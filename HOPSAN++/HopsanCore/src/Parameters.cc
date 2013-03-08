@@ -54,15 +54,8 @@ Parameter::Parameter(std::string parameterName, std::string parameterValue, std:
     mParameterValue = parameterValue;
     mDescription = description;
     mUnit = unit;
-    if((type=="double") || (type=="integer") || (type=="bool") || (type=="string"))
-    {
-        mType = type;
-    }
-    else
-    {
-        //! @todo we should not assert false here, need to handle in some nicer way
-        assert(false);
-    }
+    mType = type;
+
     mIsDynamic = isDynamic;
     mpData = pDataPtr;
     mpParentParameters = pParentParameters;
@@ -180,6 +173,11 @@ bool Parameter::evaluate()
 //! @see evaluate()
 bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
 {
+    if(!((mType=="double") || (mType=="integer") || (mType=="bool") || (mType=="string")))
+    {
+        mpParentParameters->getParentComponent()->addErrorMessage("Parameter could not be evaluated, unknown type: " + mType);
+    }
+
     bool success = true;
     std::string evaluatedParameterValue, prefix, valueName;
 
@@ -363,7 +361,7 @@ bool Parameters::addParameter(std::string parameterName, std::string parameterVa
         {
             //! @todo should make sure that parameter names do not have + - * / . or similar as first charater
             Parameter* newParameter = new Parameter(parameterName, parameterValue, description, unit, type, isDynamic, dataPtr, this);
-            success = newParameter->evaluate();
+            success = newParameter && newParameter->evaluate();
             if(success || force)
             {
                 mParameters.push_back(newParameter);
@@ -627,3 +625,10 @@ bool Parameters::checkParameters(std::string &errParName)
     }
     return success;
 }
+
+
+Component *Parameters::getParentComponent() const
+{
+    return this->mParentComponent;
+}
+

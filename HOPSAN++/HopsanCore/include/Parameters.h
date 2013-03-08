@@ -104,6 +104,8 @@ public:
     bool exist(const std::string parameterName);
     bool checkParameters(std::string &errParName);
 
+    Component *getParentComponent() const;
+
 protected:
     std::vector<Parameter*> mParameters;
     Component* mParentComponent;

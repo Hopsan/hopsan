@@ -266,7 +266,8 @@ string Component::getTypeCQSString() const
         return "UNDEFINEDCQSTYPE";
         break;
     default :
-        assert("Invalid CQS Type" == 0);
+        addErrorMessage("Component::getTypeCQSString(): Invalid CQS Type.");
+        //assert("Invalid CQS Type" == 0);
     }
     return "";           //Needed for VC compilations
 }
@@ -396,7 +397,7 @@ void Component::registerParameter(const string name, const string description, c
     }
     else
     {
-        assert(false);
+        addErrorMessage("Failed to register parameter: Could not assign parameter value to string stream.");
     }
 }
 
@@ -419,7 +420,7 @@ void Component::registerParameter(const string name, const string description, c
     }
     else
     {
-        assert(false);
+        addErrorMessage("Failed to register parameter: Could not assign parameter value to string stream.");
     }
 }
 
@@ -469,30 +470,34 @@ void Component::unRegisterParameter(const string name)
 void Component::setDesiredTimestep(const double /*timestep*/)
 {
     cout << "Warning this function setDesiredTimestep is only available on subsystem components" << endl;
-    assert(false);
+    addWarningMessage("Function setDesiredTimestep() is only available on subsystem components.");
+    //assert(false);
 }
 
 
 void Component::setInheritTimestep(const bool /*inherit*/)
 {
     cout << "Warning this function setInheritTimestep is only available on subsystem components" << endl;
-    assert(false);
+    addWarningMessage("Function setInheritTimestep() is only available on subsystem components.");
+    //assert(false);
 }
 
 
 bool Component::doesInheritTimestep() const
 {
     cout << "Warning this function doesInheritTimestep is only available on subsystem components" << endl;
-    assert(false);
-    return false;       //Needed for VC compilations
+    addWarningMessage("Function doesInheritTimestep() is only available on subsystem components.");
+    //assert(false);
+    return true;       //Components always inherit timestep, so let's return true
 }
 
 
 bool Component::checkModelBeforeSimulation()
 {
-    cout << "Warning this function isSimulationOk() is only available on subsystem components" << endl;
-    assert(false);
-	return false;
+    cout << "Warning this function checkModelBeforeSimulation() is only available on subsystem components" << endl;
+    addWarningMessage("Function checkModelBeforeSimulation() is only available on subsystem components.");
+    //assert(false);
+    return true;        //Assume component is ok
 }
 
 //! @brief Check if a component is a C-Component
@@ -818,7 +823,7 @@ double Component::getMeasuredTime() const
 //! @brief Write an Debug message, i.e. for debugging purposes.
 //! @ingroup ConvenientMessageFunctions
 //! @param [in] message The message string
-void Component::addDebugMessage(const string message, const string tag)
+void Component::addDebugMessage(const string message, const string tag) const
 {
     if (mpMessageHandler)
     {
@@ -830,7 +835,7 @@ void Component::addDebugMessage(const string message, const string tag)
 //! @brief Write an Warning message.
 //! @ingroup ConvenientMessageFunctions
 //! @param [in] message The message string
-void Component::addWarningMessage(const string message, const string tag)
+void Component::addWarningMessage(const string message, const string tag) const
 {
     if (mpMessageHandler)
     {
@@ -842,7 +847,7 @@ void Component::addWarningMessage(const string message, const string tag)
 //! @brief Write an Error message.
 //! @ingroup ConvenientMessageFunctions
 //! @param [in] message The message string
-void Component::addErrorMessage(const string message, const string tag)
+void Component::addErrorMessage(const string message, const string tag) const
 {
     if (mpMessageHandler)
     {
@@ -854,7 +859,7 @@ void Component::addErrorMessage(const string message, const string tag)
 //! @brief Write an Info message.
 //! @ingroup ConvenientMessageFunctions
 //! @param [in] message The message string
-void Component::addInfoMessage(const string message, const string tag)
+void Component::addInfoMessage(const string message, const string tag) const
 {
     if (mpMessageHandler)
     {

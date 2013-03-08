@@ -529,7 +529,8 @@ double Port::getStartValue(const size_t idx, const size_t /*portIdx*/)
     {
         return mpNode->getDataValue(idx);
     }
-    assert(false);
+    mpComponent->addErrorMessage("Port::getStartValue(): Port does not have a start value.");
+    //assert(false);
     return 0.0;
 }
 
@@ -879,7 +880,8 @@ double MultiPort::getStartValue(const size_t idx, const size_t portIdx)
     {
         return mSubPortsVector[portIdx]->mpNode->getDataValue(idx);
     }
-    assert(false);
+    mpComponent->addErrorMessage("MultiPort::getStartValue(): Port does not have a start value.");
+    //assert(false);
     return 0.0;
 }
 
@@ -1009,7 +1011,6 @@ Port* hopsan::createPort(const PortTypesEnumT portType, const NodeTypeT nodeType
         return new ReadMultiPort(nodeType, name, pPortOwner, pParentPort);
         break;
     default :
-       assert(false); //Should not be able to create any other port type
        return 0;
     }
 }

@@ -611,7 +611,8 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* pComponent)
             break;
         default :
             cout << "This should not happen neither C Q or S type" << endl;
-            assert(false);
+            addErrorMessage("In removeSubComponentPtrFromStorage(): Component is not of C, Q, S or undefined type.");
+            //assert(false);
         }
 
         mSubComponentMap.erase(it);
@@ -1288,9 +1289,8 @@ bool ConnectionAssistant::mergeOrJoinNodeConnection(Port *pPort1, Port *pPort2, 
 {
     //std::cout << "-----------------------------mergeOrJoinNodeConnection" << std::endl;
     Port *pMergeFrom, *pMergeTo;
-    assert(pPort1->isConnected() || pPort2->isConnected());
 
-    if (!ensureSameNodeType(pPort1, pPort2))
+    if (!ensureSameNodeType(pPort1, pPort2) && (pPort1->isConnected() || pPort2->isConnected()))
     {
         return false;
     }
@@ -1361,7 +1361,12 @@ bool ConnectionAssistant::mergeOrJoinNodeConnection(Port *pPort1, Port *pPort2, 
 void ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(Node* pNode)
 {
     //node ptr should not be zero
-    assert(pNode != 0);
+    //assert(pNode != 0);
+    if(pNode == 0)
+    {
+        mpComponentSystem->addErrorMessage("ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(): Node pointer is zero.");
+        return;
+    }
 
     vector<Port*>::iterator pit;
     Component *pMinLevelComp=0;
@@ -1392,7 +1397,11 @@ void ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(Node* pNode)
 bool ConnectionAssistant::deleteNodeConnection(Port *pPort1, Port *pPort2)
 {
     stringstream ss;
-    assert(pPort1->getNodePtr() == pPort2->getNodePtr());
+    if(pPort1->getNodePtr() != pPort2->getNodePtr())
+    {
+        mpComponentSystem->addErrorMessage("ConnectionAssistant::deleteNodeConnection(): Ports do not share the same node.");
+    }
+    //assert(pPort1->getNodePtr() == pPort2->getNodePtr());
     Node* node_ptr = pPort1->getNodePtr();
     cout << "nPorts in node: " << node_ptr->mConnectedPorts.size() << endl;
 
@@ -1434,7 +1443,14 @@ void ConnectionAssistant::recursivelySetNode(Port *pPort, Port *pParentPort, Nod
 
 Port* ConnectionAssistant::findMultiportSubportFromOtherPort(const Port *pMultiPort, Port *pOtherPort)
 {
-    assert(pOtherPort->getPortType() < MULTIPORT); //Make sure other is not a multiport
+    //assert(pOtherPort->getPortType() < MULTIPORT); //Make sure other is not a multiport
+    //! @todo Fatal error
+    if(pOtherPort->getPortType() >= MULTIPORT)
+    {
+        mpComponentSystem->addErrorMessage("ConnectionAssistant::findMultiportSubportFromOtherPort(): Other port shall not be a multiport.");
+        return 0;
+    }
+
     std::vector<Port*> otherConnPorts = pOtherPort->getConnectedPorts();
     for (size_t i=0; i<otherConnPorts.size(); ++i)
     {
@@ -1617,11 +1633,6 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         {
             pBlankSysPort = pPort2;
             pOtherPort = pPort1;
-        }
-        else
-        {
-            //this should not happen, assert is making sure we dont code wrong
-            assert(false);
         }
 
         pBlankSysPort->mNodeType = pOtherPort->getNodeType(); //set the nodetype in the sysport
