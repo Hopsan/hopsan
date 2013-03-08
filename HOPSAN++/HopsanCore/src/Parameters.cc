@@ -128,7 +128,7 @@ bool Parameter::setParameter(std::string parameterValue, std::string description
 bool Parameter::setParameterValue(const std::string value, Parameter **pNeedEvaluation)
 {
     bool success=false;
-    if(!(mParameterName==value))
+ //   if(!(mParameterName==value))
     {
         std::string oldValue = mParameterValue;
         mParameterValue = value;
@@ -198,7 +198,8 @@ bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
     }
 
     // First check if this parameter value is in fact the name of one of the other parameters or system parameter
-    if( mpParentParameters->evaluateParameter(valueName, evaluatedParameterValue, mType, ignoreMe) )
+    if( mpParentParameters->evaluateParameter(valueName, evaluatedParameterValue, mType, this) )
+//        if( mpParentParameters->evaluateParameter(valueName, evaluatedParameterValue, mType, ignoreMe) ) //To allow a parameter to use a systemsparameter with same name the component parameter itself has to be excluded in this check by ignore it here, issue #783
     {
         evaluatedParameterValue = prefix + evaluatedParameterValue;
     }
@@ -501,7 +502,7 @@ bool Parameters::setParameter(const std::string name, const std::string value, c
     for(size_t i=0; i<mParameters.size(); ++i)
     {
         // If Found (It cannot find itself)
-        if( (name == mParameters[i]->getName()) && (value != mParameters[i]->getName()) )
+        if( (name == mParameters[i]->getName()) )//&& (value != mParameters[i]->getName()) ) //By commenting this a parameter can be set to a systems parameter with same name as component parameter e.g. mass m = m (system parameter) related to issue #783
         {
             Parameter *needEvaluation=0;
             success = mParameters[i]->setParameter(value, description, unit, type, &needEvaluation, force); //Sets the new value, if the parameter is of the type to need evaluation e.g. if it is a system parameter needEvaluation points to the parameter
