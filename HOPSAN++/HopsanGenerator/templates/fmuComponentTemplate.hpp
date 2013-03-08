@@ -1,6 +1,14 @@
 #ifndef <<<modelname>>>_H
 #define <<<modelname>>>_H
 
+//*******************************************//
+//             *** WARNING ***               //
+//                                           //
+//         AUTO GENERATED COMPONENT!         //
+// ANY CHANGES WILL BE LOST IF RE-GENERATED! //
+//*******************************************//
+
+
 #define BUFSIZE 4096
 
 #define _WIN32_WINNT 0x0502
@@ -23,6 +31,13 @@ void fmuLogger(fmiComponent c, fmiString instanceName, fmiStatus status,
                fmiString category, fmiString message, ...){}
 
 namespace hopsan {
+
+//*******************************************//
+//             *** WARNING ***               //
+//                                           //
+//         AUTO GENERATED COMPONENT!         //
+// ANY CHANGES WILL BE LOST IF RE-GENERATED! //
+//*******************************************//
 
     class <<<modelname>>> : public Component<<<cqstype>>>
     {
@@ -58,6 +73,13 @@ namespace hopsan {
 
         void configure()
         {
+            //*******************************************//
+            //             *** WARNING ***               //
+            //                                           //
+            //         AUTO GENERATED COMPONENT!         //
+            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //
+            //*******************************************//
+
             mFMU.modelDescription = parse("<<<fmudir>>>/modelDescription.xml");
             assert(mFMU.modelDescription);
             assert(loadLib("<<<fmudir>>>/<<<modelname>>>.<<<13>>>"));
@@ -74,6 +96,13 @@ namespace hopsan {
 
         void initialize()
         {
+            //*******************************************//
+            //             *** WARNING ***               //
+            //                                           //
+            //         AUTO GENERATED COMPONENT!         //
+            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //
+            //*******************************************//
+
             if (!mFMU.modelDescription)
             {
                 addErrorMessage("Missing FMU model description");
@@ -132,6 +161,13 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
+            //*******************************************//
+            //             *** WARNING ***               //
+            //                                           //
+            //         AUTO GENERATED COMPONENT!         //
+            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //
+            //*******************************************//
+
             ScalarVariable** vars = mFMU.modelDescription->modelVariables;
             double value;
             ScalarVariable* sv;
@@ -158,6 +194,13 @@ namespace hopsan {
         }
         void finalize()
         {
+            //*******************************************//
+            //             *** WARNING ***               //
+            //                                           //
+            //         AUTO GENERATED COMPONENT!         //
+            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //
+            //*******************************************//
+
             //cleanup
             mFMU.terminate(c);
             mFMU.freeModelInstance(c);
@@ -169,6 +212,13 @@ namespace hopsan {
 
         bool loadLib(std::string path)
         {
+            //*******************************************//
+            //             *** WARNING ***               //
+            //                                           //
+            //         AUTO GENERATED COMPONENT!         //
+            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //
+            //*******************************************//
+
             bool success = true;
             void *h;
             std::string libdir = path;
@@ -220,6 +270,13 @@ namespace hopsan {
 
         void* getAdr(bool* s, const char* functionName)
         {
+            //*******************************************//
+            //             *** WARNING ***               //
+            //                                           //
+            //         AUTO GENERATED COMPONENT!         //
+            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //
+            //*******************************************//
+
             char name[BUFSIZE];
             void* fp;
             sprintf(name, "%s_%s", getModelIdentifier(mFMU.modelDescription), functionName);
@@ -237,6 +294,13 @@ namespace hopsan {
 
         void simulateFMU()
         {
+            //*******************************************//
+            //             *** WARNING ***               //
+            //                                           //
+            //         AUTO GENERATED COMPONENT!         //
+            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //
+            //*******************************************//
+
             int i;                          // For loop index
             fmiBoolean timeEvent, stateEvent, stepEvent;
             fmiStatus fmiFlag;               // return code of the fmu functions

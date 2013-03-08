@@ -159,6 +159,12 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
 
     codeStream << "#ifndef " << comp.typeName.toUpper() << "_HPP_INCLUDED\n";
     codeStream << "#define " << comp.typeName.toUpper() << "_HPP_INCLUDED\n\n";
+    codeStream << "//*******************************************//\n";
+    codeStream << "//             *** WARNING ***               //\n";
+    codeStream << "//                                           //\n";
+    codeStream << "//         AUTO GENERATED COMPONENT!         //\n";
+    codeStream << "// ANY CHANGES WILL BE LOST IF RE-GENERATED! //\n";
+    codeStream << "//*******************************************//\n\n";
     codeStream << "#include <math.h>\n";
     codeStream << "#include \"ComponentEssentials.h\"\n";
     codeStream << "#include \"ComponentUtilities.h\"\n";
@@ -299,6 +305,12 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
     codeStream << "        }\n\n";
     codeStream << "        void initialize()\n";
     codeStream << "        {\n";
+    codeStream << "            //*******************************************//\n";
+    codeStream << "            //             *** WARNING ***               //\n";
+    codeStream << "            //                                           //\n";
+    codeStream << "            //         AUTO GENERATED COMPONENT!         //\n";
+    codeStream << "            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //\n";
+    codeStream << "            //*******************************************//\n\n";
     portId=1;
     for(int i=0; i<comp.portNames.size(); ++i)
     {
@@ -401,6 +413,12 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
     //Simulate one time step
     codeStream << "        void simulateOneTimestep()\n";
     codeStream << "        {\n";
+    codeStream << "            //*******************************************//\n";
+    codeStream << "            //             *** WARNING ***               //\n";
+    codeStream << "            //                                           //\n";
+    codeStream << "            //         AUTO GENERATED COMPONENT!         //\n";
+    codeStream << "            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //\n";
+    codeStream << "            //*******************************************//\n\n";
     portId=1;
     for(int i=0; i<comp.portNames.size(); ++i)
     {
@@ -473,6 +491,12 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
     codeStream << "        }\n\n";
     codeStream << "        void finalize()\n";
     codeStream << "        {\n";
+    codeStream << "            //*******************************************//\n";
+    codeStream << "            //             *** WARNING ***               //\n";
+    codeStream << "            //                                           //\n";
+    codeStream << "            //         AUTO GENERATED COMPONENT!         //\n";
+    codeStream << "            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //\n";
+    codeStream << "            //*******************************************//\n\n";
     for(int i=0; i<comp.finalEquations.size(); ++i)
     {
         codeStream << "            " << comp.finalEquations[i] << "\n";
