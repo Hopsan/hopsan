@@ -112,10 +112,6 @@ namespace hopsan {
                 z    =  (double *) calloc(nz, sizeof(double));
                 prez =  (double *) calloc(nz, sizeof(double));
             }
-
-            // set the start time and initialize
-            fmiFlag =  mFMU.setTime(c, t0);
-            fmiFlag =  mFMU.initialize(c, toleranceControlled, t0, &eventInfo);
               
             ScalarVariable** vars = mFMU.modelDescription->modelVariables;
             double value;
@@ -128,6 +124,10 @@ namespace hopsan {
             value=<<<varname>>>;
             mFMU.setReal(c, &vr, 1, &value);
 <<<10<<<
+
+            // set the start time and initialize
+            fmiFlag =  mFMU.setTime(c, t0);
+            fmiFlag =  mFMU.initialize(c, toleranceControlled, t0, &eventInfo);
         }
 
         void simulateOneTimestep()
@@ -160,7 +160,7 @@ namespace hopsan {
         {
             //cleanup
             mFMU.terminate(c);
-            //mFMU.freeModelInstance(c);
+            mFMU.freeModelInstance(c);
             if (x!=NULL) free(x);
             if (xdot!= NULL) free(xdot);
             if (z!= NULL) free(z);

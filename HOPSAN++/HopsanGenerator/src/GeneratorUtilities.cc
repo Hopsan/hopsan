@@ -488,7 +488,7 @@ QStringList getHopsanCoreSourceFiles()
                 "../HopsanCore/src/CoreUtilities/HopsanCoreMessageHandler.cc" <<
                 "../HopsanCore/src/CoreUtilities/LoadExternal.cc" <<
                 "../HopsanCore/src/CoreUtilities/MultiThreadingUtilities.cpp" <<
-                "../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.cc" <<
+                "../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc" <<
                 "../HopsanCore/Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp";
     return srcFiles;
 }

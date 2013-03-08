@@ -9,6 +9,7 @@
 static double fmu_time=0;
 static hopsan::ComponentSystem *spCoreComponentSystem;
 static std::vector<std::string> sComponentNames;
+std::map<std::string, double> parametersMap;
 hopsan::HopsanEssentials gHopsanCore;
 
 hopsan::Port *ports[<<<nports>>>];
@@ -32,7 +33,19 @@ void initializeHopsanWrapperFromBuiltInModel()
 {
     spCoreComponentSystem = gHopsanCore.loadHMFModel(getModelString());
 
+    //Assert that model was successfully loaded
     assert(spCoreComponentSystem);
+
+    //Set parameters
+    std::map<std::string,double>::iterator it;
+    for(it=parametersMap.begin(); it!=parametersMap.end(); ++it)
+    {
+        std::stringstream ss;
+        ss << it->second;
+        spCoreComponentSystem->setSystemParameter(it->first, ss.str(), "double");
+    }
+
+    //Initialize systsem
     spCoreComponentSystem->setDesiredTimestep(0.001);
     spCoreComponentSystem->disableLog();
     spCoreComponentSystem->initialize(0,10);
@@ -72,8 +85,6 @@ void setVariable(size_t ref, size_t idx, double value)
 
 void setParameter(char* name, double value)
 {
-    std::stringstream ss;
-    ss << value;
-    spCoreComponentSystem->setSystemParameter(name, ss.str(), "double");
-    spCoreComponentSystem->initialize(0,10);
+    parametersMap.erase(name);
+    parametersMap.insert (std::pair<std::string,double>(name,value));
 }
