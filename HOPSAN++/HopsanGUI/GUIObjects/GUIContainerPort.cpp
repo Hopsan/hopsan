@@ -72,7 +72,7 @@ void ContainerPort::createPorts()
     qreal y = i.value().y;
 
     //! @todo should make this function select a systemport icon not undefined
-    i.value().selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
+    i.value().selectPortIcon("", "", "NodeEmpty");
 
 
     if (mIsSystemPort)

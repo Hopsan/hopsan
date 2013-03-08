@@ -1009,8 +1009,7 @@ Port* ComponentSystem::addSystemPort(string portName)
         portName = "p";
     }
 
-    //! @todo not hardcode, "undefined_nodetype" maybe define or something, it is used elsevere also
-    return addPort(portName, SYSTEMPORT, "undefined_nodetype", Port::REQUIRED);
+    return addPort(portName, SYSTEMPORT, "NodeEmpty", Port::REQUIRED);
 }
 
 
@@ -1251,8 +1250,8 @@ bool ConnectionAssistant::createNewNodeConnection(Port *pPort1, Port *pPort2, No
     }
 
     //Create an instance of the node specified in nodespecifications
-    //Node* pNode = mpComponentSystem->getHopsanEssentials()->createNode(pPort1->getNodeType());
-    Node* pNode = createNodeTemp(mpComponentSystem->getHopsanEssentials(), pPort1->getNodeType());
+    Node* pNode = mpComponentSystem->getHopsanEssentials()->createNode(pPort1->getNodeType());
+    //Node* pNode = createNodeTemp(mpComponentSystem->getHopsanEssentials(), pPort1->getNodeType());
 
     // Check so the ports can be connected
     if (ensureConnectionOK(pNode, pPort1, pPort2))
@@ -1506,8 +1505,8 @@ bool ConnectionAssistant::splitNodeConnection(Port *pPort1, Port *pPort2)
         //! @todo maybe make sure that the ports are really systemports to avoid code misstakes
         //Lets keep the node from port1 and create a copy for port two
         Node* pNode1 = pPort1->getNodePtr();
-        //Node* pNode2 = mpComponentSystem->getHopsanEssentials()->createNode(pNode1->getNodeType());
-        Node* pNode2 = createNodeTemp(mpComponentSystem->getHopsanEssentials(), pNode1->getNodeType());
+        Node* pNode2 = mpComponentSystem->getHopsanEssentials()->createNode(pNode1->getNodeType());
+        //Node* pNode2 = createNodeTemp(mpComponentSystem->getHopsanEssentials(), pNode1->getNodeType());
 
         pNode1->mConnectedPorts.clear(); //Clear all port knowledge from the port, we will reset it bellow
 

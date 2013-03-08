@@ -181,8 +181,8 @@ double *Port::getSafeNodeDataPtr(const size_t idx, const double defaultValue, co
     {
         if (mpNCDummyNode == 0)
         {
-            //mpNCDummyNode = getComponent()->getHopsanEssentials()->createNode(mNodeType);
-            mpNCDummyNode = createNodeTemp(getComponent()->getHopsanEssentials(), mNodeType);
+            mpNCDummyNode = getComponent()->getHopsanEssentials()->createNode(mNodeType);
+            //mpNCDummyNode = createNodeTemp(getComponent()->getHopsanEssentials(), mNodeType);
         }
         mpNCDummyNode->setDataValue(idx, defaultValue);
         return mpNCDummyNode->getDataPtr(idx);
@@ -245,7 +245,8 @@ vector<Port*> &Port::getConnectedPorts(const int /*portIdx*/)
 
 void Port::createStartNode(NodeTypeT nodeType)
 {
-    mpStartNode = createNodeTemp(getComponent()->getHopsanEssentials(), nodeType);
+    //mpStartNode = createNodeTemp(getComponent()->getHopsanEssentials(), nodeType);
+    mpStartNode = getComponent()->getHopsanEssentials()->createNode(nodeType);
     //!< @todo Maye I dont even need to create startnodes for subports in multiports, in that case, move this line into if bellow
 
     // Prevent registering startvalues for subports in multiports, It will be very difficult to ensure that those would actually work as expected

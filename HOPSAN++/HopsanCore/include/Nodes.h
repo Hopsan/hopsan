@@ -48,7 +48,7 @@ public:
     }
 
     //! @brief For signals allways return VALUE slot even if name has been changed
-    int getDataIdFromName(const std::string /*name*/)
+    int getDataIdFromName(const std::string /*name*/) const
     {
         return VALUE;
     }
@@ -207,6 +207,21 @@ private:
     {
         pNode->setDataValue(WAVEVARIABLE, mDataValues[VOLTAGE]);
         //! todo Maybe also write CHARIMP?
+    }
+};
+
+class NodeEmpty : public Node
+{
+public:
+    //! @brief The data variable indexes, DATALENGTH is used internally
+    //! @ingroup NodeEmpty
+    enum DataIndexEnumT {DATALENGTH};
+    static Node* CreatorFunction() {return new NodeEmpty;}
+
+private:
+    NodeEmpty() : Node(DATALENGTH)
+    {
+        setNiceName("empty");
     }
 };
 

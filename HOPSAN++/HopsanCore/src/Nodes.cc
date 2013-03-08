@@ -42,6 +42,9 @@
 //! @defgroup NodeElectric NodeElectric
 //! @ingroup Nodes
 
+//! @defgroup NodeEmpty NodeEmpty
+//! @ingroup Nodes
+
 using namespace hopsan;
 
 //!
@@ -56,4 +59,5 @@ DLLIMPORTEXPORT void hopsan::register_nodes(NodeFactory* pNodeFactory)
     pNodeFactory->registerCreatorFunction("NodeMechanic", NodeMechanic::CreatorFunction);
     pNodeFactory->registerCreatorFunction("NodeMechanicRotational", NodeMechanicRotational::CreatorFunction);
     pNodeFactory->registerCreatorFunction("NodeElectric", NodeElectric::CreatorFunction);
+    pNodeFactory->registerCreatorFunction("NodeEmpty", NodeEmpty::CreatorFunction);
 }

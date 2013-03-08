@@ -64,17 +64,15 @@ class DLLIMPORTEXPORT Node
 
 public:
     Node(const size_t datalength);
-    void setNiceName(const std::string nicename);
     std::string getNiceName() const;
-    void setDataCharacteristics(const size_t id, const std::string name, const std::string shortname, const std::string unit, const NodeDataVariableTypeT vartype=Default);
 
     const NodeTypeT getNodeType() const;
     size_t getNumDataVariables() const;
 
-    virtual int getDataIdFromName(const std::string name);
+    virtual int getDataIdFromName(const std::string name) const;
     double getDataValue(const size_t data_type) const;
     void setDataValue(const size_t data_type, const double data);
-    Component *getWritePortComponentPtr();
+    Component *getWritePortComponentPtr() const;
 
     const std::vector<NodeDataDescription>* getDataDescriptions() const;
     const NodeDataDescription* getDataDescription(const size_t id) const;
@@ -83,10 +81,14 @@ public:
 
     void logData(const size_t logSlot);
 
-    ComponentSystem *getOwnerSystem();
+    ComponentSystem *getOwnerSystem() const;
 
 protected:
     // Protected member functions
+    void setNiceName(const std::string nicename);
+    void setDataCharacteristics(const size_t id, const std::string name, const std::string shortname,
+                                const std::string unit, const NodeDataVariableTypeT vartype=Default);
+
     void copyNodeDataValuesTo(Node *pNode);
     virtual void setSpecialStartValues(Node *pNode);
 
@@ -120,8 +122,8 @@ private:
     bool mDoLog;
 };
 
-//! @brief Temporary help function for node creation, should bot be needed later /Peter
-DLLIMPORTEXPORT Node* createNodeTemp(HopsanEssentials *pHopEss, NodeTypeT node_type);
+////! @brief Temporary help function for node creation, should bot be needed later /Peter
+//DLLIMPORTEXPORT Node* createNodeTemp(HopsanEssentials *pHopEss, NodeTypeT node_type);
 
 typedef ClassFactory<NodeTypeT, Node> NodeFactory;
 }

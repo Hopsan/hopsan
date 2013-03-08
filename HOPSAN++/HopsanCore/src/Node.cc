@@ -152,7 +152,7 @@ void Node::setSignalDataUnitAndDescription(const string &/*rUnit*/, const string
 //! @brief This function gives you the data Id for a names data variable
 //! @param [in] name The data name
 //! @return The Id, -1 if requested data name is not found
-int Node::getDataIdFromName(const string name)
+int Node::getDataIdFromName(const string name) const
 {
     for (size_t i=0; i<mDataDescriptions.size(); ++i)
     {
@@ -237,7 +237,7 @@ void Node::logData(const size_t logSlot)
 
 //! @brief Returns a pointer to the component with the write port in the node.
 //! If connection is ok, any node can only have one write port. If no write port exists, a null pointer is returned.
-Component *Node::getWritePortComponentPtr()
+Component *Node::getWritePortComponentPtr() const
 {
     for(size_t i=0; i<mConnectedPorts.size(); ++i)
     {
@@ -347,27 +347,28 @@ int Node::getNumberOfPortsByType(int type)
 }
 
 //! @brief Returns a pointer to the ComponentSystem that own this Node
-ComponentSystem *Node::getOwnerSystem()
+ComponentSystem *Node::getOwnerSystem() const
 {
     return mpOwnerSystem;
 }
 
 
-#include "HopsanEssentials.h"
-DLLIMPORTEXPORT Node* hopsan::createNodeTemp(HopsanEssentials *pHopEss, NodeTypeT node_type)
-{
-    if (pHopEss != 0)
-    {
-        return pHopEss->createNode(node_type);
-    }
+//#include "HopsanEssentials.h"
+////! @deprecated
+//DLLIMPORTEXPORT Node* hopsan::createNodeTemp(HopsanEssentials *pHopEss, NodeTypeT node_type)
+//{
+//    if (pHopEss != 0)
+//    {
+//        return pHopEss->createNode(node_type);
+//    }
 
-    // Create dummy node
-    //! @warning will leak memory
-    cout << "Error: HopsanEssentials ptr = 0, when creating node. This is VERY BAD !" << endl;
-    Node *pDummy = new Node(20);
-    for (int i=0; i<20; ++i)
-    {
-        pDummy->setDataCharacteristics(i, "name", "shortname", "unit", Default);
-    }
-    return pDummy;
-}
+//    // Create dummy node
+//    //! @warning will leak memory
+//    cout << "Error: HopsanEssentials ptr = 0, when creating node. This is VERY BAD !" << endl;
+//    Node *pDummy = new Node(20);
+//    for (int i=0; i<20; ++i)
+//    {
+//        //pDummy->setDataCharacteristics(i, "name", "shortname", "unit", Default);
+//    }
+//    return pDummy;
+//}
