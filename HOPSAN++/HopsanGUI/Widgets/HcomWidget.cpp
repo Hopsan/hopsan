@@ -2027,9 +2027,13 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
     SymHop::Expression symHopExpr = SymHop::Expression(expr);
 
     //Multiplication between data vector and scalar
-    LogDataHandler *pLogData = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler();
+    LogDataHandler *pLogData=0;
+    if(gpMainWindow->mpProjectTabs->count() > 0)
+    {
+        pLogData = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler();
+    }
     *returnType = DataVector;
-    if(symHopExpr.getFactors().size() == 2)
+    if(symHopExpr.getFactors().size() == 2 && pLogData)
     {
         SymHop::Expression f0 = symHopExpr.getFactors()[0];
         SymHop::Expression f1 = symHopExpr.getFactors()[1];
@@ -2040,14 +2044,14 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
         else if(!getVariablePtr(f0.toString()).isNull() && !getVariablePtr(f1.toString()).isNull())
             return pLogData->multVariables(getVariablePtr(f0.toString()), getVariablePtr(f1.toString())).data()->getFullVariableName();
     }
-    if(symHopExpr.isPower())
+    if(symHopExpr.isPower() && pLogData)
     {
         SymHop::Expression b = *symHopExpr.getBase();
         SymHop::Expression p = *symHopExpr.getPower();
         if(!getVariablePtr(b.toString()).isNull() && p.toDouble() == 2.0)
             return pLogData->multVariables(getVariablePtr(b.toString()), getVariablePtr(b.toString())).data()->getFullVariableName();
     }
-    if(symHopExpr.getFactors().size() == 1 && symHopExpr.getDivisors().size() == 1)
+    if(symHopExpr.getFactors().size() == 1 && symHopExpr.getDivisors().size() == 1 && pLogData)
     {
         SymHop::Expression f = symHopExpr.getFactors()[0];
         SymHop::Expression d = symHopExpr.getDivisors()[0];
@@ -2056,7 +2060,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
         else if(!getVariablePtr(f.toString()).isNull() && !getVariablePtr(d.toString()).isNull())
             return pLogData->divVariables(getVariablePtr(f.toString()), getVariablePtr(d.toString())).data()->getFullVariableName();
     }
-    if(symHopExpr.getTerms().size() == 2)
+    if(symHopExpr.getTerms().size() == 2 && pLogData)
     {
         SymHop::Expression t0 = symHopExpr.getTerms()[0];
         SymHop::Expression t1 = symHopExpr.getTerms()[1];

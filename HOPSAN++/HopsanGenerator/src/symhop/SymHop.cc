@@ -2330,8 +2330,15 @@ bool Expression::splitAtSeparator(const QString sep, const QStringList subSymbol
             {
                 return false;
             }
-            mpLeft = new Expression(left);
-            mpRight = new Expression(right);
+            if(left.isEmpty() || right.isEmpty())
+            {
+                return false;
+            }
+            else
+            {
+                mpLeft = new Expression(left);
+                mpRight = new Expression(right);
+            }
         }
         else if(sep == "+")
         {
@@ -2368,6 +2375,10 @@ bool Expression::splitAtSeparator(const QString sep, const QStringList subSymbol
             {
                 if(subSymbols[i] == "*")
                 {
+                    if(factorOrDiv.isEmpty())
+                    {
+                        return false;
+                    }
                     if(div)
                     {
                         mDivisors.append(Expression(factorOrDiv, simplifications));
@@ -2381,6 +2392,10 @@ bool Expression::splitAtSeparator(const QString sep, const QStringList subSymbol
                 }
                 else if(subSymbols[i] == "/")
                 {
+                    if(factorOrDiv.isEmpty())
+                    {
+                        return false;
+                    }
                     if(div)
                     {
                         mDivisors.append(Expression(factorOrDiv, simplifications));
@@ -2426,6 +2441,10 @@ bool Expression::splitAtSeparator(const QString sep, const QStringList subSymbol
                     power.append(subSymbols[i]);
                 }
             }
+            if(base.isEmpty() || power.isEmpty())
+            {
+                return false;
+            }
             mpBase = new Expression(base);
             mpPower = new Expression(power);
         }
@@ -2469,6 +2488,10 @@ bool Expression::splitAtSeparator(const QString sep, const QStringList subSymbol
                     right.append(subSymbols[i]);
                 }
             }
+            if(left.isEmpty() || right.isEmpty())
+            {
+                return false;
+            }
             mFunction = "equal";
             mArguments.append(Expression(left));
             mArguments.append(Expression(right));
@@ -2491,6 +2514,10 @@ bool Expression::splitAtSeparator(const QString sep, const QStringList subSymbol
                 {
                     right.append(subSymbols[i]);
                 }
+            }
+            if(left.isEmpty() || right.isEmpty())
+            {
+                return false;
             }
             mFunction = "greaterThan";
             mArguments.append(Expression(left));
@@ -2515,6 +2542,10 @@ bool Expression::splitAtSeparator(const QString sep, const QStringList subSymbol
                     right.append(subSymbols[i]);
                 }
             }
+            if(left.isEmpty() || right.isEmpty())
+            {
+                return false;
+            }
             mFunction = "greaterThanOrEqual";
             mArguments.append(Expression(left));
             mArguments.append(Expression(right));
@@ -2538,6 +2569,10 @@ bool Expression::splitAtSeparator(const QString sep, const QStringList subSymbol
                     right.append(subSymbols[i]);
                 }
             }
+            if(left.isEmpty() || right.isEmpty())
+            {
+                return false;
+            }
             mFunction = "smallerThan";
             mArguments.append(Expression(left));
             mArguments.append(Expression(right));
@@ -2560,6 +2595,10 @@ bool Expression::splitAtSeparator(const QString sep, const QStringList subSymbol
                 {
                     right.append(subSymbols[i]);
                 }
+            }
+            if(left.isEmpty() || right.isEmpty())
+            {
+                return false;
             }
             mFunction = "smallerThanOrEqual";
             mArguments.append(Expression(left));
