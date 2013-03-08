@@ -329,7 +329,7 @@ void Configuration::loadFromXml()
             QDomElement userLibElement = libsElement.firstChildElement("userlib");
             while (!userLibElement.isNull())
             {
-                mUserLibs.prepend(userLibElement.text());
+                mUserLibs.append(userLibElement.text());
                 if(userLibElement.hasAttribute("lib"))
                 {
                     mUserLibFolders.append(userLibElement.attribute("lib"));
