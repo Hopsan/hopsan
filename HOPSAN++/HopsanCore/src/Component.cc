@@ -40,13 +40,15 @@
 using namespace std;
 using namespace hopsan;
 
-//! @defgroup ConvenientFunctions ConvenientFunctions
+//! @defgroup ConvenientComponentFunctions ConvenientComponentFunctions
 //! @defgroup ConvenientPortFunctions ConvenientPortFunctions
-//! @ingroup ConvenientFunctions
+//! @ingroup ConvenientComponentFunctions
 //! @defgroup ConvenientParameterFunctions ConvenientParameterFunctions
-//! @ingroup ConvenientFunctions
+//! @ingroup ConvenientComponentFunctions
 //! @defgroup ConvenientMessageFunctions ConvenientMessageFunctions
-//! @ingroup ConvenientFunctions
+//! @ingroup ConvenientComponentFunctions
+//! @defgroup ConvenientSimulationFunctions ConvenientSimulationFunctions
+//! @ingroup ConvenientComponentFunctions
 
 //! @brief Component base class Constructor
 Component::Component()
@@ -292,8 +294,9 @@ void Component::setSubTypeName(const string subTypeName)
 }
 
 
-//! @brief Terminate/stop a running simulation
+//! @brief Terminate/stop a running initialization or simulation
 //! @details Typically used inside components simulateOneTimestep method
+//! @ingroup ConvenientSimulationFunctions
 void Component::stopSimulation()
 {
     mpSystemParent->stopSimulation();

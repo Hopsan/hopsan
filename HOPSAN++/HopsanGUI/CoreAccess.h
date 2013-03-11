@@ -169,7 +169,7 @@ public:
     bool initialize(double mStartTime, double mFinishTime, int nSamples=2048);
     void simulate(double mStartTime, double mFinishTime, int nThreads=-1, bool modelHasNotChanged=false);
     void finalize();
-    double getCurrentTime();
+    double getCurrentTime() const;
     void stop();
     bool writeNodeData(const QString compname, const QString portname, const QString dataname, double data);
 

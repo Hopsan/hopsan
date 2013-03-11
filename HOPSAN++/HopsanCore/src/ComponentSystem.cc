@@ -209,7 +209,7 @@ void SimulationHandler::runCoSimulation(ComponentSystem *pSystem)
             }
 
             //Simulate one step
-            double time = (*pSystem->getTimePtr());
+            double time = pSystem->getTime();
             double timestep = pSystem->getDesiredTimeStep();
             pSystem->simulate(time, time+timestep);
 
@@ -3633,12 +3633,13 @@ bool SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT
 #ifdef USETBB
     size_t nThreads = determineActualNumberOfThreads(nDesiredThreads);              //Calculate how many threads to actually use
 
-    for(size_t i=0; i<rSystemVector.size(); ++i)                         //Loop through the systems, set start time, log nodes and measure simulation time
-    {
-        double *pTime = rSystemVector.at(i)->getTimePtr();
-        *pTime = startT;
-        rSystemVector.at(i)->logTimeAndNodes(*pTime);                        //Log the first time step
-    }
+//    for(size_t i=0; i<rSystemVector.size(); ++i)                         //Loop through the systems, set start time, log nodes and measure simulation time
+//    {
+//        double *pTime = rSystemVector.at(i)->getTimePtr();
+//        *pTime = startT;
+////        rSystemVector.at(i)->logTimeAndNodes(*pTime);                        //Log the first time step
+//        rSystemVector.at(i)->logTimeAndNodes(0);                        //Log the first time step
+//    }
 
     if(!noChanges)
     {

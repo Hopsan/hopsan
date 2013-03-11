@@ -449,9 +449,9 @@ QString CoreSystemAccess::getSystemName()
     return QString::fromStdString(mpCoreComponentSystem->getName());
 }
 
-double CoreSystemAccess::getCurrentTime()
+double CoreSystemAccess::getCurrentTime() const
 {
-    return *(mpCoreComponentSystem->getTimePtr());
+    return mpCoreComponentSystem->getTime();
 }
 
 void CoreSystemAccess::stop()

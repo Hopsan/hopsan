@@ -128,6 +128,9 @@ public:
     //void setTimestep(const double timestep);
     double getTimestep() const;
     double *getTimePtr();
+    //! @brief Get the current simulation time
+    //! @ingroup ConvenientSimulationFunctions
+    inline double getTime() const {return mTime;}
 
     void setMeasuredTime(const double time);
     double getMeasuredTime() const;

@@ -408,7 +408,7 @@ public:
     //! @brief Executable code for master simulation thread
     void operator() ()
     {
-        for(size_t i=0; i<mNumSimSteps; ++i)
+        for(size_t s=0; s<mNumSimSteps; ++s)
         {
             if(mpSystem->wasSimulationAborted()) break;
 
@@ -461,7 +461,7 @@ public:
 //            {
 //                mVectorN[i]->logData(mTime);
 //            }
-            mpSystem->logTimeAndNodes(i);
+            mpSystem->logTimeAndNodes(s);
 
             mTime += mTimeStep;
         }
