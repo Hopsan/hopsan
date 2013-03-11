@@ -160,8 +160,6 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpCacheLogDataCeckBox = new QCheckBox();
 
     //! @todo these should not be harcoded, should have sub tags in XML
-    mpValueUnitLabel = new QLabel(tr("Default Value Unit"));
-    mpValueUnitComboBox = new QComboBox();
     mpPressureUnitLabel = new QLabel(tr("Default Pressure Unit"));
     mpPressureUnitComboBox = new QComboBox();
     mpFlowUnitLabel = new QLabel(tr("Default Flow Unit"));
@@ -179,7 +177,6 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     mpAngularVelocityUnitLabel = new QLabel(tr("Default Angular Velocity Unit"));
     mpAngularVelocityUnitComboBox = new QComboBox();
 
-    mpAddValueUnitButton = new QPushButton("Add Custom Value Unit", this);
     mpAddPressureUnitButton = new QPushButton("Add Custom Pressure Unit", this);
     mpAddFlowUnitButton = new QPushButton("Add Custom Flow Unit", this);
     mpAddForceUnitButton = new QPushButton("Add Custom Force Unit", this);
@@ -197,10 +194,6 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     ++r;
     mpPlottingLayout->addWidget(mpGenerationLimitLabel,             r, 0, 1, 3);
     mpPlottingLayout->addWidget(mpGenerationLimitSpinBox,           r, 2, 1, 1);
-    ++r;
-    mpPlottingLayout->addWidget(mpValueUnitLabel,                   r, 0);
-    mpPlottingLayout->addWidget(mpValueUnitComboBox,                r, 1);
-    mpPlottingLayout->addWidget(mpAddValueUnitButton,               r, 2);
     ++r;
     mpPlottingLayout->addWidget(mpPressureUnitLabel,                r, 0);
     mpPlottingLayout->addWidget(mpPressureUnitComboBox,             r, 1);
@@ -258,7 +251,6 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
     connect(mpCancelButton,                 SIGNAL(clicked()),      this,                   SLOT(reject()));
     connect(mpOkButton,                     SIGNAL(clicked()),      this,                   SLOT(updateValues()));
 
-    connect(mpAddValueUnitButton,           SIGNAL(clicked()),      this,                   SLOT(addValueUnit()));
     connect(mpAddPressureUnitButton,        SIGNAL(clicked()),      this,                   SLOT(addPressureUnit()));
     connect(mpAddFlowUnitButton,            SIGNAL(clicked()),      this,                   SLOT(addFlowUnit()));
     connect(mpAddForceUnitButton,           SIGNAL(clicked()),      this,                   SLOT(addForceUnit()));
@@ -348,7 +340,6 @@ void OptionsDialog::updateValues()
     {
         gpMainWindow->mpProjectTabs->getContainer(i)->getLogDataHandler()->limitPlotGenerations();
     }
-    gConfig.setDefaultUnit("Value", mpValueUnitComboBox->currentText());
     gConfig.setDefaultUnit("Pressure", mpPressureUnitComboBox->currentText());
     gConfig.setDefaultUnit("Flow", mpFlowUnitComboBox->currentText());
     gConfig.setDefaultUnit("Force", mpForceUnitComboBox->currentText());
@@ -436,11 +427,6 @@ void OptionsDialog::show()
 }
 
 
-void OptionsDialog::addValueUnit()
-{
-    addCustomUnitDialog("Value");
-}
-
 void OptionsDialog::addPressureUnit()
 {
     addCustomUnitDialog("Pressure");
@@ -527,21 +513,7 @@ void OptionsDialog::addCustomUnit()
 
 void OptionsDialog::updateCustomUnits()
 {
-    mpValueUnitComboBox->clear();
-    QMap<QString, double> customValueUnits = gConfig.getCustomUnits("Value");
     QMap<QString, double>::iterator it;
-    for(it = customValueUnits.begin(); it != customValueUnits.end(); ++it)
-    {
-        mpValueUnitComboBox->addItem(it.key());
-    }
-    for(int i = 0; i<mpValueUnitComboBox->count(); ++i)
-    {
-        if(mpValueUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Value"))
-        {
-            mpValueUnitComboBox->setCurrentIndex(i);
-        }
-    }
-
     mpPressureUnitComboBox->clear();
     QMap<QString, double> customPressureUnits = gConfig.getCustomUnits("Pressure");
     for(it = customPressureUnits.begin(); it != customPressureUnits.end(); ++it)

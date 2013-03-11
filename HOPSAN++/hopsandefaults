@@ -119,7 +119,6 @@
         <defaultunit unit="m" name="Position"/>
         <defaultunit unit="Pa" name="Pressure"/>
         <defaultunit unit="Nm" name="Torque"/>
-        <defaultunit unit="-" name="Value"/>
         <defaultunit unit="m/s" name="Velocity"/>
         <customunit unit="V" scale="1" name="Voltage"/>
         <customunit unit="A" scale="1" name="Current"/>
@@ -143,7 +142,6 @@
         <customunit unit="Pa" scale="1" name="Pressure"/>
         <customunit unit="psi" scale="0.0001450326" name="Pressure"/>
         <customunit unit="Nm" scale="1" name="Torque"/>
-        <customunit unit="-" scale="1" name="Value"/>
         <customunit unit="m/s" scale="1" name="Velocity"/>
     </units>
     <python/>
