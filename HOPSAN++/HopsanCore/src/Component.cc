@@ -198,38 +198,21 @@ void Component::finalize()
 //! If you set doOnlyLocalRename to true, the smart rename will not be atempted, avoid doing this as the component storage map will not be updated on anme change
 //! This is a somewhat ugly fix for some special situations where we want to make sure that a smart rename is not atempted
 //!
-void Component::setName(string name, bool doOnlyLocalRename)
+void Component::setName(string name)
 {
-    //! @todo fix the trailing _ removal
-    //First strip any lonely trailing _ from the name (and give a warning)
-//    string::iterator lastchar = --(name.end());
-//    while (*lastchar == "_")
-//    {
-//        cout << "Warning underscore is not alowed in the end of a name (to avoid ugly collsion with name suffix)" << endl;
-//        name.erase(lastchar);
-//        lastchar = --(name.end());
-//    }
-
     //If name same as before do nothing
     if (name != mName)
     {
         //Do we have a system parent
         if (mpSystemParent != 0)
         {
-            //Need this to prevent risk of loop between rename and this function (rename cals this one again)
-            if (doOnlyLocalRename)
-            {
-                mName = name;
-            }
-            else
-            {
-                //Do smart rename (to prevent same names)
-                mpSystemParent->renameSubComponent(mName, name);
-            }
+            // Let parent handle namees so that we do not get duplicate names
+            mpSystemParent->renameSubComponent(mName, name);
         }
         else
         {
-            //Ok no systemparent is set yet so lets set our own name
+            // No systemparent is set yet so lets set our own desired name, also make sure that it is a clean name
+            santizeName(name);
             mName = name;
         }
     }
@@ -379,28 +362,28 @@ void Component::updateDynamicParameterValues()
 //! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
 void Component::registerParameter(const string name, const string description, const string unit, double &rValue, const ParamDynConstT dynconst)
 {
+    // We allow the : exception for registring start value parameters
+    if (!isNameValid(name, ":"))
+    {
+        addErrorMessage("Will not register Invalid parameter name: "+name);
+        return;
+    }
+
     if(mpParameters->exist(name))
         mpParameters->deleteParameter(name);     //Remove parameter if it is already registered
 
     //! @todo what if dynamic parameter should we not remove the port as well
-
     stringstream ss;
-    if(ss << rValue)
+    ss << rValue;
+    if (dynconst == Dynamic)
     {
-        if (dynconst == Dynamic)
-        {
-            // Make a port with same name so that paramter can be switch to dynamic parameter that can be changed during simulation
-            this->addReadPort(name, "NodeSignal", Port::NOTREQUIRED);
-            mpParameters->addParameter(name, ss.str(), description, unit, "double", true, &rValue);
-        }
-        else
-        {
-            mpParameters->addParameter(name, ss.str(), description, unit, "double", false, &rValue);
-        }
+        // Make a port with same name so that paramter can be switch to dynamic parameter that can be changed during simulation
+        this->addReadPort(name, "NodeSignal", Port::NOTREQUIRED);
+        mpParameters->addParameter(name, ss.str(), description, unit, "double", true, &rValue);
     }
     else
     {
-        addErrorMessage("Failed to register parameter: Could not assign parameter value to string stream.");
+        mpParameters->addParameter(name, ss.str(), description, unit, "double", false, &rValue);
     }
 }
 
@@ -413,18 +396,18 @@ void Component::registerParameter(const string name, const string description, c
 //! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
 void Component::registerParameter(const string name, const string description, const string unit, int &rValue)
 {
+    if (!isNameValid(name))
+    {
+        addErrorMessage("Will not register Invalid parameter name: "+name);
+        return;
+    }
+
     if(mpParameters->exist(name))
         mpParameters->deleteParameter(name);     //Remove parameter if it is already registered
 
     stringstream ss;
-    if(ss << rValue)
-    {
-        mpParameters->addParameter(name, ss.str(), description, unit, "integer", false, &rValue);
-    }
-    else
-    {
-        addErrorMessage("Failed to register parameter: Could not assign parameter value to string stream.");
-    }
+    ss << rValue;
+    mpParameters->addParameter(name, ss.str(), description, unit, "integer", false, &rValue);
 }
 
 
@@ -437,6 +420,12 @@ void Component::registerParameter(const string name, const string description, c
 //! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
 void Component::registerParameter(const string name, const string description, const string unit, string &rValue)
 {
+    if (!isNameValid(name))
+    {
+        addErrorMessage("Will not register Invalid parameter name: "+name);
+        return;
+    }
+
     if(mpParameters->exist(name))
         mpParameters->deleteParameter(name);     //Remove parameter if it is already registered
 
@@ -453,6 +442,12 @@ void Component::registerParameter(const string name, const string description, c
 //! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
 void Component::registerParameter(const string name, const string description, const string unit, bool &rValue)
 {
+    if (!isNameValid(name))
+    {
+        addErrorMessage("Will not register Invalid parameter name: "+name);
+        return;
+    }
+
     if(mpParameters->exist(name))
         mpParameters->deleteParameter(name);     //Remove parameter if it is already registered
 
@@ -472,34 +467,26 @@ void Component::unRegisterParameter(const string name)
 
 void Component::setDesiredTimestep(const double /*timestep*/)
 {
-    cout << "Warning this function setDesiredTimestep is only available on subsystem components" << endl;
     addWarningMessage("Function setDesiredTimestep() is only available on subsystem components.");
-    //assert(false);
 }
 
 
 void Component::setInheritTimestep(const bool /*inherit*/)
 {
-    cout << "Warning this function setInheritTimestep is only available on subsystem components" << endl;
     addWarningMessage("Function setInheritTimestep() is only available on subsystem components.");
-    //assert(false);
 }
 
 
 bool Component::doesInheritTimestep() const
 {
-    cout << "Warning this function doesInheritTimestep is only available on subsystem components" << endl;
     addWarningMessage("Function doesInheritTimestep() is only available on subsystem components.");
-    //assert(false);
     return true;       //Components always inherit timestep, so let's return true
 }
 
 
 bool Component::checkModelBeforeSimulation()
 {
-    cout << "Warning this function checkModelBeforeSimulation() is only available on subsystem components" << endl;
     addWarningMessage("Function checkModelBeforeSimulation() is only available on subsystem components.");
-    //assert(false);
     return true;        //Assume component is ok
 }
 
@@ -547,9 +534,7 @@ double *Component::getTimePtr()
 //! @return A pointer to the created port
 Port* Component::addPort(const string portName, const PortTypesEnumT portType, const NodeTypeT nodeType, const Port::ReqConnEnumT reqConnection)
 {
-    std::stringstream ss;
-    ss << getName() << "::addPort";
-    addLogMess(ss.str());
+    addLogMess(getName()+"::addPort");
 
     //Make sure name is unique before insert
     string newname = this->determineUniquePortName(portName);
@@ -996,7 +981,7 @@ void Component::loadStartValuesFromSimulation()
 std::string Component::findFilePath(const std::string fileName)
 {
     bool found = false;
-    std:string fullPath;
+    std::string fullPath;
     std::string replacer = "/";
 
     if(!(mSearchPaths.empty()))
@@ -1032,24 +1017,3 @@ std::string Component::findFilePath(const std::string fileName)
 
     return fullPath;
 }
-
-
-////constructor ComponentC
-//ComponentC::ComponentC() : Component()
-//{
-//    mTypeCQS = Component::C;
-//}
-
-
-////Constructor ComponentQ
-//ComponentQ::ComponentQ() : Component()
-//{
-//    mTypeCQS = Component::Q;
-//}
-
-
-////constructor ComponentSignal
-//ComponentSignal::ComponentSignal() : Component()
-//{
-//    mTypeCQS = Component::S;
-//}

@@ -387,9 +387,9 @@ bool ComponentSystem::setSystemParameter(const std::string name, const std::stri
     }
     else
     {
-        if (this->hasReservedUniqueName(name))
+        if (this->hasReservedUniqueName(name) || !isNameValid(name))
         {
-            addErrorMessage(string("The desired system parameter name: ") + name + string(" is already used"));
+            addErrorMessage(string("The desired system parameter name: ") + name + string(" is invalid or already used by somthing else"));
             success=false;
         }
         else
@@ -464,12 +464,13 @@ void ComponentSystem::renameSubComponent(string oldname, string newname)
         //cout << "new name is: " << mod_name << endl;
         mSubComponentMap.insert(pair<string, Component*>(mod_new_name, temp_comp_ptr));
 
-        //Now change the actual component name, without trying to do rename (we are in rename now, would cause infinite loop)
-        temp_comp_ptr->setName(mod_new_name, true);
+        // Now change the actual component name, without trying to do rename (we are in rename now, would cause infinite loop)
+        //temp_comp_ptr->setName(mod_new_name, true);
+        temp_comp_ptr->mName = mod_new_name;
     }
     else
     {
-        addErrorMessage("Error no component with old_name: " + oldname + " found when renaming!");
+        addErrorMessage("No component with old_name: "+oldname+" found when renaming!");
     }
 }
 
@@ -3696,6 +3697,12 @@ bool AliasHandler::setVariableAlias(const std::string alias, const std::string c
 
 bool AliasHandler::setVariableAlias(const string alias, const string compName, const string portName, const int varId)
 {
+    if (!isNameValid(alias))
+    {
+        mpSystem->addErrorMessage("Invalid characters in requested alias name: "+alias);
+        return false;
+    }
+
     if (mpSystem->hasReservedUniqueName(alias))
     {
         mpSystem->addErrorMessage("The alias: " + alias + " is already used as some other name");
@@ -3734,7 +3741,7 @@ bool AliasHandler::setVariableAlias(const string alias, const string compName, c
         mpSystem->addErrorMessage("Component or Port not found");
         return false;
     }
-    mpSystem->addErrorMessage(string("Alias: ")+alias+string(" already exist"));
+    mpSystem->addErrorMessage("Alias: "+alias+" already exist");
     return false;
 }
 

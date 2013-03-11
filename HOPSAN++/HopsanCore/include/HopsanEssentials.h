@@ -60,9 +60,11 @@ public:
     void removeComponent(Component *pComponent);
     bool hasComponent(const std::string type);
     bool reserveComponentTypeName(const std::string typeName);
+    std::vector<std::string> getRegisteredComponentTypes() const;
 
     // Node creation
     Node* createNode(const NodeTypeT &rNodeType);
+    std::vector<std::string> getRegisteredNodeTypes() const;
 
     // Messages
     HopsanCoreMessageHandler* getCoreMessageHandler();

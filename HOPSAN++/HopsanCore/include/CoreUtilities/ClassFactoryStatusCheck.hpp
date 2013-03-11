@@ -37,20 +37,20 @@ namespace hopsan {
 template<typename FactoryT>
 void checkClassFactoryStatus(FactoryT  *pFactory, HopsanCoreMessageHandler *pMessenger)
 {
-    typename FactoryT::RegStatusVectorT statusMap = pFactory->getRegisterStatusMap();
+    typename FactoryT::RegStatusVectorT statusMap = pFactory->getRegisterStatus();
     typename FactoryT::RegStatusVectorT::iterator it;
 
     for ( it=statusMap.begin(); it!=statusMap.end(); ++it)
     {
-        if ( it->second == FactoryT::REGISTEREDOK )
+        if ( it->second == FactoryT::RegisteredOk )
         {
             pMessenger->addDebugMessage(std::string("Registered: ") + std::string(it->first) + std::string(" in core"), "successfulregister");
         }
-        else if ( it->second == FactoryT::ALLREADYREGISTERED )
+        else if ( it->second == FactoryT::AllreadyRegistered )
         {
             pMessenger->addWarningMessage(std::string("Keyvalue: ") + std::string(it->first) + std::string(" was already registerd in core. Your new Component or Node will NOT be availiable!"), "alreadyregistered");
         }
-        else if ( it->second == FactoryT::NOTREGISTERED )
+        else if ( it->second == FactoryT::NotRegistered )
         {
             pMessenger->addWarningMessage(std::string("Keyvalue: ") + std::string(it->first) + std::string(" has not been registered in core"), "notregistered");
         }

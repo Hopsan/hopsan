@@ -34,21 +34,22 @@ namespace hopsan {
     //!
     //! This code is based on:
     //! http://www.codeproject.com/KB/architecture/SimpleDynCreate.aspx
+    //!
     template <typename _Key, typename _Base, typename _Predicator = std::less<_Key> >
     class ClassFactory
     {
     public:
         typedef std::vector< std::pair<_Key, int> > RegStatusVectorT;
-        enum {REGISTEREDOK, ALLREADYREGISTERED, NOTREGISTERED};
+        enum RegisterStatusEnumT {RegisteredOk, AllreadyRegistered, NotRegistered};
 
     protected:
         typedef _Base* (*CreatorFunctionT) (void);
         typedef std::map<_Key, CreatorFunctionT, _Predicator> FactoryMapT;
         typedef std::pair<_Key, CreatorFunctionT> FactoryPairT;
 
-        //Map where the construction info is stored
+        //! Map where the construction info is stored
         FactoryMapT mFactoryMap;
-        //Error status map
+        //! Error status map
         RegStatusVectorT mRegStatusVector;
 
 
@@ -63,11 +64,11 @@ namespace hopsan {
             if (!rc.second)
             {
                 //std::cout << "Warning! You are trying to register a Key value that already exist. This registration will be ignored, Key: " << idKey << std::endl;
-                mRegStatusVector.push_back(std::pair<_Key, int>(idKey, ALLREADYREGISTERED));
+                mRegStatusVector.push_back(std::pair<_Key, int>(idKey, AllreadyRegistered));
             }
             else
             {
-                mRegStatusVector.push_back(std::pair<_Key, int>(idKey, REGISTEREDOK));
+                mRegStatusVector.push_back(std::pair<_Key, int>(idKey, RegisteredOk));
             }
             //std::cout << "AfterInsert: Size: " << mFactoryMap.size() << std::endl;
             return idKey;
@@ -93,15 +94,15 @@ namespace hopsan {
                     return it->second();
                 }
             }
-            mRegStatusVector.push_back(std::pair<_Key, int>(idKey, NOTREGISTERED));
+            mRegStatusVector.push_back(std::pair<_Key, int>(idKey, NotRegistered));
             //std::cout << "Warning key: " << idKey << " not found!" << std::endl;
             return NULL;
         }
 
         //! @brief Check if the factory has key registerd
-        bool hasKey(_Key idKey)
+        bool hasKey(_Key idKey) const
         {
-            if (mFactoryMap.count(idKey) > 0)
+            if (mFactoryMap.find(idKey) != mFactoryMap.end())
             {
                 return true;
             }
@@ -109,6 +110,19 @@ namespace hopsan {
             {
                 return false;
             }
+        }
+
+        //! @brief Return a vector with all registered keys
+        std::vector<_Key> getRegisteredKeys() const
+        {
+            std::vector<_Key> keys;
+            keys.reserve(mFactoryMap.size());
+            typename FactoryMapT::const_iterator cit;
+            for (cit=mFactoryMap.begin(); cit!=mFactoryMap.end(); ++cit)
+            {
+                keys.push_back(cit->first);
+            }
+            return keys;
         }
 
         //! @brief Unregister creator functions for given key
@@ -123,19 +137,19 @@ namespace hopsan {
             }
             else
             {
-                mRegStatusVector.push_back(std::pair<_Key, int>(idKey, NOTREGISTERED));
+                mRegStatusVector.push_back(std::pair<_Key, int>(idKey, NotRegistered));
                 //std::cout << "Failed to unregister: " << idKey << std::endl;
             }
         }
 
-        //! @brief Get a copy of the internal error map, it maps key values agains error codes, error codes come from registration or unregistration
-        RegStatusVectorT getRegisterStatusMap()
+        //! @brief Get a copy of the internal error vector, it maps key values agains error codes, error codes come from registration or unregistration
+        RegStatusVectorT getRegisterStatus()
         {
             return mRegStatusVector;
         }
 
-        //! @brief Clears the internal error status map
-        void clearRegisterStatusMap()
+        //! @brief Clears the internal error status vector
+        void clearRegisterStatus()
         {
             mRegStatusVector.clear();
         }

@@ -28,6 +28,7 @@
 #include "CoreUtilities/HmfLoader.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "HopsanEssentials.h"
+#include "CoreUtilities/NameSanitiser.h"
 
 #include "hopsan_rapidxml.hpp"
 
@@ -136,6 +137,11 @@ void loadConnection(rapidxml::xml_node<> *pConnectNode, ComponentSystem* pSystem
     string startport = readStringAttribute(pConnectNode, "startport", "ERROR_NOSTARTPORTNAME_GIVEN");
     string endcomponent = readStringAttribute(pConnectNode, "endcomponent", "ERROR_NOENDCOMPNAME_GIVEN");
     string endport = readStringAttribute(pConnectNode, "endport", "ERROR_NOENDPORTNAME_GIVEN");
+
+    santizeName(startcomponent);
+    santizeName(startport);
+    santizeName(endcomponent);
+    santizeName(endport);
 
     pSystem->connect(startcomponent, startport, endcomponent, endport);
 }

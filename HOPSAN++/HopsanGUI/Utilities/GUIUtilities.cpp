@@ -41,8 +41,15 @@
 #include "Configuration.h"
 #include "Widgets/LibraryWidget.h"
 
-using namespace std;
+#define UNDERSCORE 95
+#define UPPERCASE_LOW 65
+#define UPPERCASE_HIGH 90
+#define LOWERCASE_LOW 97
+#define LOWERCASE_HIGH 122
+#define NUMBERS_LOW 48
+#define NUMBERS_HIGH 57
 
+using namespace std;
 const double DBLMAX = std::numeric_limits<double>::max();
 
 //! @brief This function extracts the name from a text stream
@@ -721,3 +728,21 @@ QStringList splitWithRespectToQuotations(const QString str, const QChar c)
     ret.append(str.mid(start,len));
     return ret;
 }
+
+//! @brief Reimplementation of the core function santize name
+//! @todo this one may not be needed in the future when all loading of core data, and name checking, is moved to core
+void santizeName(QString &rString)
+{
+    QString::iterator it;
+    for (it=rString.begin(); it!=rString.end(); ++it)
+    {
+        if ( !( ((*it >= LOWERCASE_LOW) && (*it <= LOWERCASE_HIGH)) ||
+                ((*it >= UPPERCASE_LOW) && (*it <= UPPERCASE_HIGH)) ||
+                ((*it >= NUMBERS_LOW)   && (*it <= NUMBERS_HIGH))     ) )
+        {
+            // Replace invalid char with underscore
+            *it = UNDERSCORE;
+        }
+    }
+}
+

@@ -28,17 +28,22 @@
 #include <string>
 #include <sstream>
 
+#include "NameSanitiser.h"
+
 namespace hopsan {
 
 //! @brief Help function for create a unique name among names from one STL Container
 template<typename ContainerT>
 std::string findUniqueName(const ContainerT &rContainer, std::string name)
 {
-    //New name must not be empty, empty name is "reserved" to be used in the API to indicate that we want to manipulate the current root system
+    // New name must not be empty, empty name is "reserved" to be used in the API to indicate that we want to manipulate the current root system
     if (name.empty())
     {
         name = "noName";
     }
+
+    // Make sure name is sane
+    santizeName(name);
 
     size_t ctr = 1; //The suffix number
     while(rContainer.find(name) != rContainer.end())
@@ -73,92 +78,6 @@ std::string findUniqueName(const ContainerT &rContainer, std::string name)
 
     return name;
 }
-
-////! @brief Helper function to create a unique name among names from TWO Map
-//template<typename MapType1, typename MapType2>
-//string findUniqueName(MapType1 &rMap1, MapType2 &rMap2 , string name)
-//{
-//    //New name must not be empty, empty name is "reserved" to be used in the API to indicate that we want to manipulate the current root system
-//    if (name.empty())
-//    {
-//        name = "Untitled";
-//    }
-
-//    size_t ctr = 1; //The suffix number
-//    while( (rMap1.count(name)+rMap2.count(name)) != 0)
-//    {
-//        //strip suffix
-//        size_t foundpos = name.rfind("_");
-//        if (foundpos != string::npos)
-//        {
-//            if (foundpos+1 < name.size())
-//            {
-//                unsigned char nr = name.at(foundpos+1);
-//                //cout << "nr after _: " << nr << endl;
-//                //Check the ascii code for the charachter
-//                if ((nr >= 48) && (nr <= 57))
-//                {
-//                    //Is number lets assume that the _ found is the beginning of a suffix
-//                    name.erase(foundpos, string::npos);
-//                }
-//            }
-//        }
-//        //cout << "ctr: " << ctr << " stripped tempname: " << name << endl;
-
-//        //add new suffix
-//        stringstream suffix;
-//        suffix << ctr;
-//        name.append("_");
-//        name.append(suffix.str());
-//        ++ctr;
-//        //cout << "ctr: " << ctr << " appended tempname: " << name << endl;
-//    }
-//    //cout << name << endl;
-//    return name;
-//}
-
-////! @brief Helper function to create a unique name among names from TWO Map
-//template<typename MapType1, typename MapType2, typename ReservedNamesType>
-//std::string findUniqueName(MapType1 &rMap1, MapType2 &rMap2, ReservedNamesType &rReservedMap, std::string name)
-//{
-//    //New name must not be empty, empty name is "reserved" to be used in the API to indicate that we want to manipulate the current root system
-//    if (name.empty())
-//    {
-//        name = "noName";
-//    }
-
-//    size_t ctr = 1; //The suffix number
-//    while( (rMap1.count(name)+rMap2.count(name)+rReservedMap.count(name)) != 0)
-//    {
-//        //strip suffix
-//        size_t foundpos = name.rfind("_");
-//        if (foundpos != std::string::npos)
-//        {
-//            if (foundpos+1 < name.size())
-//            {
-//                unsigned char nr = name.at(foundpos+1);
-//                //cout << "nr after _: " << nr << endl;
-//                //Check the ascii code for the charachter
-//                if ((nr >= 48) && (nr <= 57))
-//                {
-//                    //Is number lets assume that the _ found is the beginning of a suffix
-//                    name.erase(foundpos, std::string::npos);
-//                }
-//            }
-//        }
-//        //cout << "ctr: " << ctr << " stripped tempname: " << name << endl;
-
-//        //add new suffix
-//        std::stringstream suffix;
-//        suffix << ctr;
-//        name.append("_");
-//        name.append(suffix.str());
-//        ++ctr;
-//        //cout << "ctr: " << ctr << " appended tempname: " << name << endl;
-//    }
-//    //cout << name << endl;
-//    return name;
-//}
 
 }
 #endif // FINDUNIQUENAME_H

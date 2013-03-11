@@ -73,7 +73,7 @@ public:
     virtual bool checkModelBeforeSimulation();
 
     // Name and type
-    void setName(std::string name, bool doOnlyLocalRename=false);
+    void setName(std::string name);
     const std::string getName() const;
     const std::string getTypeName() const;
     const std::string getSubTypeName() const;

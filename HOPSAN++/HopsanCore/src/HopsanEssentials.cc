@@ -66,8 +66,8 @@ HopsanEssentials::HopsanEssentials()
     checkClassFactoryStatus(mpNodeFactory, mpMessageHandler);
 
     // Clear factory status
-    mpComponentFactory->clearRegisterStatusMap();
-    mpNodeFactory->clearRegisterStatusMap();
+    mpComponentFactory->clearRegisterStatus();
+    mpNodeFactory->clearRegisterStatus();
 
 
     // Do some other stuff
@@ -116,7 +116,7 @@ Component* HopsanEssentials::createComponent(const string &rTypeName)
     else
     {
         checkClassFactoryStatus(mpComponentFactory, mpMessageHandler);
-        mpComponentFactory->clearRegisterStatusMap();
+        mpComponentFactory->clearRegisterStatus();
     }
     return pComp;
 }
@@ -134,6 +134,12 @@ bool HopsanEssentials::hasComponent(const string type)
 bool HopsanEssentials::reserveComponentTypeName(const std::string typeName)
 {
     return mpComponentFactory->reserveKey(typeName);
+}
+
+//! @brief Returns a vector containing all registered component types
+std::vector<string> HopsanEssentials::getRegisteredComponentTypes() const
+{
+    return mpComponentFactory->getRegisteredKeys();
 }
 
 
@@ -163,9 +169,15 @@ Node* HopsanEssentials::createNode(const NodeTypeT &rNodeType)
     else
     {
         checkClassFactoryStatus(mpNodeFactory, mpMessageHandler);
-        mpNodeFactory->clearRegisterStatusMap();
+        mpNodeFactory->clearRegisterStatus();
     }
     return pNode;
+}
+
+//! @brief Returns a vector containing all registered node types
+std::vector<string> HopsanEssentials::getRegisteredNodeTypes() const
+{
+    return mpNodeFactory->getRegisteredKeys();
 }
 
 //! @brief Returns a pointer to the core message handler, do NOT use this function to get messages

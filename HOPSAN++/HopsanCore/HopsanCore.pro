@@ -119,7 +119,8 @@ SOURCES += \
     src/ComponentUtilities/EquationSystemSolver.cpp \
     src/CoreUtilities/GeneratorHandler.cpp \
     src/CoreUtilities/MultiThreadingUtilities.cpp \
-    src/CoreUtilities/CoSimulationUtilities.cpp
+    src/CoreUtilities/CoSimulationUtilities.cpp \
+    include/CoreUtilities/NameSanitiser.cc
 HEADERS += \
     include/win32dll.h \
     include/version.h \
@@ -161,7 +162,8 @@ HEADERS += \
     Dependencies/rapidxml-1.13/hopsan_rapidxml.hpp \
     include/CoreUtilities/GeneratorHandler.h \
     include/CoreUtilities/MultiThreadingUtilities.h \
-    include/CoreUtilities/CoSimulationUtilities.h
+    include/CoreUtilities/CoSimulationUtilities.h \
+    include/CoreUtilities/NameSanitiser.h
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

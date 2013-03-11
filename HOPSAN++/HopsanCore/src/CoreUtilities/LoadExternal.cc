@@ -241,20 +241,20 @@ bool LoadExternal::load(const string libpath)
     lelInfo.mLibName = externalLibInfo.libName;
 
     // Remeber which components belong to the lib
-    ComponentFactory::RegStatusVectorT regCompVec = mpComponentFactory->getRegisterStatusMap();
+    ComponentFactory::RegStatusVectorT regCompVec = mpComponentFactory->getRegisterStatus();
     for (size_t i=0; i<regCompVec.size(); ++i)
     {
-        if ( regCompVec[i].second == ComponentFactory::REGISTEREDOK )
+        if ( regCompVec[i].second == ComponentFactory::RegisteredOk )
         {
             lelInfo.mRegistredComponents.push_back(regCompVec[i].first);
         }
     }
 
     // Remeber which nodes belong to the lib
-    ComponentFactory::RegStatusVectorT regNodeVec = mpNodeFactory->getRegisterStatusMap();
+    ComponentFactory::RegStatusVectorT regNodeVec = mpNodeFactory->getRegisterStatus();
     for (size_t i=0; i<regNodeVec.size(); ++i)
     {
-        if ( regNodeVec[i].second == ComponentFactory::REGISTEREDOK )
+        if ( regNodeVec[i].second == ComponentFactory::RegisteredOk )
         {
             lelInfo.mRegistredNodes.push_back(regNodeVec[i].first);
         }
@@ -264,8 +264,8 @@ bool LoadExternal::load(const string libpath)
     mLoadedExtLibsMap.insert( std::pair<string, LoadedLibInfo>( libpath, lelInfo ) );
 
     //Clear factory status
-    mpComponentFactory->clearRegisterStatusMap();
-    mpNodeFactory->clearRegisterStatusMap();
+    mpComponentFactory->clearRegisterStatus();
+    mpNodeFactory->clearRegisterStatus();
 
     return true;
 }

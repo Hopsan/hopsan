@@ -57,6 +57,12 @@ bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, undoSt
     endPortName         = rDomElement.attribute(HMF_CONNECTORENDPORTTAG);
     //qDebug() << "loadConnector: " << startComponentName << " " << startPortName << " " << endComponentName << " " << endPortName;
 
+    //! @todo To upconvert old models these are needed, may not be necessary later
+    santizeName(startComponentName);
+    santizeName(startPortName);
+    santizeName(endComponentName);
+    santizeName(endPortName);
+
     // Read gui specific stuff
     qreal x,y;
     QDomElement guiData         = rDomElement.firstChildElement(HMF_HOPSANGUITAG);

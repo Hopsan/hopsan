@@ -62,14 +62,15 @@ int main(int argc, char *argv[])
 
         // Define a value argument and add it to the command line.
         //TCLAP::ValueArg<std::string> saveNodesPathsOption("n", "savenodes", "A file containing lines with the ComponentName;PortName to save node data from", false, "", "FilePath string", cmd);
+        TCLAP::SwitchArg testInstanciateComponentsOption("", "testInstanciateComponents", "Create an instace of each registered component to look for errors.", cmd);
         TCLAP::SwitchArg endPauseOption("", "endPause", "Pauses the CLI at end to let you see its output", cmd);
-        TCLAP::SwitchArg printDebug("d", "printDebug", "Show debug messages in the output", cmd);
+        TCLAP::SwitchArg printDebugOption("d", "printDebug", "Show debug messages in the output", cmd);
         TCLAP::ValueArg<std::string> resultsCSVSortOption("", "resultsCSVSort", "Export results in columns or in rows: [rows, cols]", false, "rows", "string", cmd);
         TCLAP::ValueArg<std::string> resultsFinalCSVOption("", "resultsFinalCSV", "Export the results (only final values)", false, "", "Path to file", cmd);
         TCLAP::ValueArg<std::string> resultsFullCSVOption("", "resultsFullCSV", "Export the results (all logged data)", false, "", "Path to file", cmd);
         TCLAP::ValueArg<std::string> parameterExportOption("", "parameterExport", "CSV file with exported parameter values", false, "", "Path to file", cmd);
         TCLAP::ValueArg<std::string> parameterImportOption("", "parameterImport", "CSV file with parameter values to import", false, "", "Path to file", cmd);
-        TCLAP::ValueArg<std::string> modelTestOption("t","validate","Perform model validation based on HopsanValidationConfiguration",false,"","Path to .hvc file", cmd);
+        TCLAP::ValueArg<std::string> hvcTestOption("t","validate","Perform model validation based on HopsanValidationConfiguration",false,"","Path to .hvc file", cmd);
         TCLAP::ValueArg<std::string> nLogSamplesOption("l","numLogSamples","Set the number of log samples to store for the top-level system, (default: Use number in .hmf)",false,"","integer", cmd);
         TCLAP::ValueArg<std::string> simulateOption("s","simulate","Specify simulation time as: [hmf] or [start,ts,stop] or [ts,stop] or [stop]",false,"","Comma separated string", cmd);
         TCLAP::ValueArg<std::string> extLibsFileOption("","externalLibsFile","A text file containing the external libs to load",false,"","Path to file", cmd);
@@ -84,7 +85,7 @@ int main(int argc, char *argv[])
         gHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
 #endif
         // Print initial core messages
-        printWaitingMessages(printDebug.getValue());
+        printWaitingMessages(printDebugOption.getValue());
 
         // Load external libs
         vector<string> externalComponentLibraries;
@@ -104,7 +105,7 @@ int main(int argc, char *argv[])
         for (size_t i=0; i<externalComponentLibraries.size(); ++i)
         {
             bool rc = gHopsanCore.loadExternalComponentLib(externalComponentLibraries[i]);
-            printWaitingMessages(printDebug.getValue()); // Print after loading
+            printWaitingMessages(printDebugOption.getValue()); // Print after loading
             if (rc)
             {
                 printColorMessage(Green, "Success loading External library: " + externalComponentLibraries[i]);
@@ -115,12 +116,25 @@ int main(int argc, char *argv[])
             }
         }
 
+        if (testInstanciateComponentsOption.isSet())
+        {
+            //! @todo write as function
+            vector<string> types =  gHopsanCore.getRegisteredComponentTypes();
+            for (size_t i=0; i<types.size(); ++i)
+            {
+                Component *pComp = gHopsanCore.createComponent(types[i]);
+                printWaitingMessages(printDebugOption.getValue());
+                gHopsanCore.removeComponent(pComp);
+
+            }
+        }
+
 
         if(hmfPathOption.isSet())
         {
-            printWaitingMessages(printDebug.getValue());
+            printWaitingMessages(printDebugOption.getValue());
 
-            if (modelTestOption.isSet())
+            if (hvcTestOption.isSet())
             {
                 setTerminalColor(Yellow);
                 cout << "Warning: Do not specify a hmf file in combination with the -t (--validate) option. Model should be loaded from the .hvc file" << endl;
@@ -128,7 +142,7 @@ int main(int argc, char *argv[])
 
             double startTime=0, stopTime=2;
             ComponentSystem* pRootSystem = gHopsanCore.loadHMFModel(hmfPathOption.getValue(), startTime, stopTime);
-            printWaitingMessages(printDebug.getValue());
+            printWaitingMessages(printDebugOption.getValue());
 
             if (parameterImportOption.isSet())
             {
@@ -201,7 +215,7 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
-                    printWaitingMessages(printDebug.getValue());
+                    printWaitingMessages(printDebugOption.getValue());
                     printErrorMessage("Initialize failed, Simulation aborted!");
                 }
 
@@ -224,7 +238,7 @@ int main(int argc, char *argv[])
                 pRootSystem->finalize();
             }
 
-            printWaitingMessages(printDebug.getValue());
+            printWaitingMessages(printDebugOption.getValue());
 
             //cout << endl << "Component Hieararcy:" << endl << endl;
             //printComponentHierarchy(pRootSystem, "", true);
@@ -279,13 +293,13 @@ int main(int argc, char *argv[])
         }
 
         // Perform a unit test
-        if(modelTestOption.isSet())
+        if(hvcTestOption.isSet())
         {
-            returnSuccess = performModelTest(modelTestOption.getValue());
+            returnSuccess = performModelTest(hvcTestOption.getValue());
         }
         else
         {
-            printWaitingMessages(printDebug.getValue());
+            printWaitingMessages(printDebugOption.getValue());
             cout << endl << "HopsanCLI Done!" << endl;
         }
 
