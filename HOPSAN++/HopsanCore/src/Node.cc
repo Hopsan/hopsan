@@ -33,6 +33,7 @@
 #include "Node.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "Port.h"
+#include "ComponentSystem.h"
 
 using namespace std;
 using namespace hopsan;
@@ -188,7 +189,11 @@ const std::vector<NodeDataDescription>* Node::getDataDescriptions() const
 void Node::copyNodeDataValuesTo(Node *pNode)
 {
     // this ska kopiera sina varabler till pNode
-    assert(pNode->getNodeType()==this->getNodeType());
+    //assert(pNode->getNodeType()==this->getNodeType());
+    if(pNode->getNodeType() != this->getNodeType())
+    {
+        mpOwnerSystem->addFatalMessage("Node::copyNodeDataValuesTo(): Nodes do not have the same type.");
+    }
     if(pNode->getNodeType()==this->getNodeType())
     {
         for(size_t i=0; i<pNode->getNumDataVariables(); ++i)

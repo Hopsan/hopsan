@@ -41,6 +41,7 @@
 #include "PlotHandler.h"
 #include "symhop/SymHop.h"
 #include "Utilities/GUIUtilities.h"
+#include <QMessageBox>
 
 
 TerminalWidget::TerminalWidget(MainWindow *pParent)
@@ -246,6 +247,11 @@ void TerminalConsole::printCoreMessages()
         mpCoreAccess->getMessage(message, type, tag);
         if(type == "error")
             playErrorSound = true;
+        if(type == "fatal")
+        {
+            QMessageBox::critical(this, "Fatal Error", message+"\n\nProgram will now exit.", "Ok");
+            gpMainWindow->close();
+        }
         mNewMessageList.append(GUIMessage(message, type, tag));
         updateNewMessages();
     }
@@ -416,7 +422,7 @@ void TerminalConsole::showDebugMessages(bool value)
 
 void TerminalConsole::setOutputColor(QString type)
 {
-    if (type == "error")
+    if (type == "error" || type == "fatal")
     {
         this->setTextColor(QColor("Red"));
     }

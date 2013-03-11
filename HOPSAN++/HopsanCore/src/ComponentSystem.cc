@@ -611,7 +611,7 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* pComponent)
             break;
         default :
             cout << "This should not happen neither C Q or S type" << endl;
-            addErrorMessage("In removeSubComponentPtrFromStorage(): Component is not of C, Q, S or undefined type.");
+            addFatalMessage("In removeSubComponentPtrFromStorage(): Component is not of C, Q, S or undefined type.");
             //assert(false);
         }
 
@@ -705,7 +705,8 @@ bool ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVec
     else    //Something went wrong, all components were not moved. This is likely due to an algebraic loop.
     {
         addErrorMessage("Initialize: Algebraic loops was found, signal components could not be sorted.");
-        addInfoMessage("Last component that was successfully sorted: " + newComponentVector.back()->getName());
+        if(!newComponentVector.empty())
+            addInfoMessage("Last component that was successfully sorted: " + newComponentVector.back()->getName());
         addInfoMessage("Initialize: Hint: Use unit delay components to resolve loops.");
         return false;
     }
@@ -1363,7 +1364,7 @@ void ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(Node* pNode)
     //assert(pNode != 0);
     if(pNode == 0)
     {
-        mpComponentSystem->addErrorMessage("ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(): Node pointer is zero.");
+        mpComponentSystem->addFatalMessage("ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(): Node pointer is zero.");
         return;
     }
 
@@ -1398,7 +1399,7 @@ bool ConnectionAssistant::deleteNodeConnection(Port *pPort1, Port *pPort2)
     stringstream ss;
     if(pPort1->getNodePtr() != pPort2->getNodePtr())
     {
-        mpComponentSystem->addErrorMessage("ConnectionAssistant::deleteNodeConnection(): Ports do not share the same node.");
+        mpComponentSystem->addFatalMessage("ConnectionAssistant::deleteNodeConnection(): Ports do not share the same node.");
     }
     //assert(pPort1->getNodePtr() == pPort2->getNodePtr());
     Node* node_ptr = pPort1->getNodePtr();
@@ -1446,7 +1447,7 @@ Port* ConnectionAssistant::findMultiportSubportFromOtherPort(const Port *pMultiP
     //! @todo Fatal error
     if(pOtherPort->getPortType() >= MULTIPORT)
     {
-        mpComponentSystem->addErrorMessage("ConnectionAssistant::findMultiportSubportFromOtherPort(): Other port shall not be a multiport.");
+        mpComponentSystem->addFatalMessage("ConnectionAssistant::findMultiportSubportFromOtherPort(): Other port shall not be a multiport.");
         return 0;
     }
 
@@ -1980,7 +1981,11 @@ void ConnectionAssistant::ifMultiportPrepareForDisconnect(Port *&rpPort1, Port *
 //        assert(rpPort2->getConnectedPorts().size() == 1); //Make sure that we dont atempt tu run this code on ports that are not to become empty
 //        rpPort1 = rpPort2->getConnectedPorts()[0];
         rpPort1 = findMultiportSubportFromOtherPort(rpMultiPort1, rpPort2);
-        assert(rpPort1 != 0);
+        if(rpPort1 == 0)
+        {
+            mpComponentSystem->addFatalMessage("ifMultiportPrepareForDisconnect(): rpPort1 == 0");
+        }
+        //assert(rpPort1 != 0);
 
     }
     // Port 2 is a multiport, but not port1
@@ -1990,12 +1995,17 @@ void ConnectionAssistant::ifMultiportPrepareForDisconnect(Port *&rpPort1, Port *
 //        assert(rpPort1->getConnectedPorts().size() == 1); //Make sure that we dont atempt tu run this code on ports that are not to become empty
 //        rpPort2 = rpPort1->getConnectedPorts()[0];
         rpPort2 = findMultiportSubportFromOtherPort(rpMultiPort2, rpPort1);
-        assert(rpPort2 != 0);
+        if(rpPort2 == 0)
+        {
+            mpComponentSystem->addFatalMessage("ifMultiportPrepareForDisconnect(): rpPort2 == 0");
+        }
+        //assert(rpPort2 != 0);
     }
     // both ports are multiports
     else if (rpPort1->getPortType() >= MULTIPORT && rpPort2->getPortType() >= MULTIPORT )
     {
-        assert("Multiport <-> Multiport disconnection has not been implemented yet Aborting!" == 0);
+        //assert("Multiport <-> Multiport disconnection has not been implemented yet Aborting!" == 0);
+        mpComponentSystem->addFatalMessage("ifMultiportPrepareForDisconnect(): Multiport <-> Multiport disconnection has not been implemented yet.");
         //! @todo need to search around to find correct subports
     }
 }
@@ -2060,21 +2070,25 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
                   ( ( (pPort1->getConnectedPorts().size() > 1) && !pPort1->isMultiPort() ) ||
                     ( (pPort2->getConnectedPorts().size() > 1) && !pPort2->isMultiPort() ) ) )
         {
-            assert( pPort1->isMultiPort() || pPort2->isMultiPort() );
+            //assert( pPort1->isMultiPort() || pPort2->isMultiPort() );
+            // This assert will never become true because of if statement above
+
+            if(pPort1->isMultiPort() && pPort2->isMultiPort())
+            {
+                addFatalMessage("ComponentSystem::disconnect(): Trying to disconnect two multiports.");
+            }
 
             //=========
             //! @todo these lineas are degugging checks, can mayb be removed later
             if (pPort1->isMultiPort())
             {
-                assert(!pPort2->isMultiPort());
-                assert(pPort2->getConnectedPorts().size() > 1);
-
+                //assert(pPort2->getConnectedPorts().size() > 1);
+                //Will never become true
             }
             if (pPort2->isMultiPort())
             {
-                assert(!pPort1->isMultiPort());
-                assert(pPort1->getConnectedPorts().size() > 1);
-
+                //assert(pPort1->getConnectedPorts().size() > 1);
+                //Will never become true
             }
             //==========
 

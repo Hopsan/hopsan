@@ -136,6 +136,7 @@ public:
     void addWarningMessage(const std::string message, const std::string tag="") const;
     void addErrorMessage(const std::string message, const std::string tag="") const;
     void addInfoMessage(const std::string message, const std::string tag="") const;
+    void addFatalMessage(const std::string message, const std::string tag="") const;
 
     // Stop a running simulation
     void stopSimulation();

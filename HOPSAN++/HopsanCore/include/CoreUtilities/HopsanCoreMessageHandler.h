@@ -41,7 +41,7 @@ namespace hopsan {
 class HopsanCoreMessage
 {
 public:
-    enum MessageEnumT {Info, Warning, Error, Debug};
+    enum MessageEnumT {Info, Warning, Error, Debug, Fatal};
     HopsanCoreMessage()
     {
         mType = 0;
@@ -84,6 +84,7 @@ public:
     void addWarningMessage(const std::string message, const std::string tag="", const int dbglevel=0);
     void addErrorMessage(const std::string message, const std::string tag="", const int dbglevel=0);
     void addDebugMessage(const std::string message, const std::string tag="", const int dbglevel=0);
+    void addFatalMessage(const std::string message, const std::string tag="", const int dbglevel=0);
 
     HopsanCoreMessage getMessage();
     size_t getNumWaitingMessages() const;

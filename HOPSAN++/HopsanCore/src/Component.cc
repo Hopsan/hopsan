@@ -266,7 +266,7 @@ string Component::getTypeCQSString() const
         return "UNDEFINEDCQSTYPE";
         break;
     default :
-        addErrorMessage("Component::getTypeCQSString(): Invalid CQS Type.");
+        addFatalMessage("Component::getTypeCQSString(): Invalid CQS Type.");
         //assert("Invalid CQS Type" == 0);
     }
     return "";           //Needed for VC compilations
@@ -864,6 +864,18 @@ void Component::addInfoMessage(const string message, const string tag) const
     if (mpMessageHandler)
     {
         mpMessageHandler->addInfoMessage(getName()+ "::" + message, tag);
+    }
+}
+
+//! @brief Writes a Fatal message and tells the receiver of the message to close program in a controlled way. Also prints message to log file.
+//! @ingroup ConvenientMessageFunctions
+//! @param [in] message The message string
+void Component::addFatalMessage(const string message, const string tag) const
+{
+    addLogMess(message);
+    if (mpMessageHandler)
+    {
+        mpMessageHandler->addFatalMessage(getName()+ "::" + message, tag);
     }
 }
 

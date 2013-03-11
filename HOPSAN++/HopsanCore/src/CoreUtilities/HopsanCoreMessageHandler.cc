@@ -130,6 +130,14 @@ void HopsanCoreMessageHandler::addDebugMessage(const string message, const strin
     addMessage(HopsanCoreMessage::Debug, "Debug: ", message, tag, dbglevel);
 }
 
+
+//! @brief Convenience function to add fatal message. Also tells the receiver of the message to close program in a controlled way.
+void HopsanCoreMessageHandler::addFatalMessage(const string message, const string tag, const int dbglevel)
+{
+    addMessage(HopsanCoreMessage::Fatal, "Fatal error: ", message, tag, dbglevel);
+}
+
+
 //! @brief Returns the next, (pops) message on the message queue
 HopsanCoreMessage HopsanCoreMessageHandler::getMessage()
 {

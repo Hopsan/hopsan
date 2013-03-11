@@ -212,6 +212,9 @@ void HopsanEssentials::getMessage(std::string &rMessage, std::string &rType, std
 
     switch (msg.mType)
     {
+    case HopsanCoreMessage::Fatal:
+        rType = "fatal";
+        break;
     case HopsanCoreMessage::Error:
         rType = "error";
         break;

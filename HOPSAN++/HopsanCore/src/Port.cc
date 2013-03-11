@@ -98,14 +98,16 @@ Node* Port::getNodePtr(const size_t /*portIdx*/)
 //! @brief Adds a subport to a multiport
 Port* Port::addSubPort()
 {
-    assert("This should only be implemented and called from multiports" == 0);
+    mpComponent->addWarningMessage("Port::addSubPort(): This should only be implemented and called from multiports.");
+    //assert("This should only be implemented and called from multiports" == 0);
     return 0;
 }
 
 //! @brief Removes a subport from multiport
 void Port::removeSubPort(Port* /*ptr*/)
 {
-    assert("This should only be implemented and called from multiports" == 0);
+    mpComponent->addWarningMessage("Port::removeSubPort(): This should only be implemented and called from multiports.");
+    //assert("This should only be implemented and called from multiports" == 0);
 }
 
 
@@ -329,7 +331,11 @@ void Port::saveLogData(string filename, const size_t /*portIdx*/)
         if (out_file.good())
         {
             vector<double>* pTimeStorage = mpNode->getOwnerSystem()->getLogTimeVector();
-            assert(pTimeStorage->size() == mpNode->mDataStorage.size());
+            if(pTimeStorage->size() != mpNode->mDataStorage.size())
+            {
+                mpComponent->addFatalMessage("Port::saveLogData(): pTimeStorage->size() != mpNode->mDataStorage.size()");
+            }
+            //assert(pTimeStorage->size() == mpNode->mDataStorage.size());
 
             //First write HEADER info containing node info
             out_file << header << " " << mpNode->getNodeType() << endl;
@@ -530,7 +536,7 @@ double Port::getStartValue(const size_t idx, const size_t /*portIdx*/)
     {
         return mpNode->getDataValue(idx);
     }
-    mpComponent->addErrorMessage("Port::getStartValue(): Port does not have a start value.");
+    mpComponent->addFatalMessage("Port::getStartValue(): Port does not have a start value.");
     //assert(false);
     return 0.0;
 }
@@ -715,13 +721,15 @@ ReadPort::ReadPort(std::string node_type, std::string portname, Component *portO
 
 void ReadPort::writeNodeSafe(const size_t /*idx*/, const double /*value*/)
 {
-    assert("Could not write to port, this is a ReadPort" == 0);
+    mpComponent->addWarningMessage("ReadPort::writeNodeSafe(): Could not write to port, this is a ReadPort.");
+    //assert("Could not write to port, this is a ReadPort" == 0);
 }
 
 
 void ReadPort::writeNode(const size_t /*idx*/, const double /*value*/) const
 {
-    assert("Could not write to port, this is a ReadPort" == 0);
+    mpComponent->addWarningMessage("ReadPort::writeNode(): Could not write to port, this is a ReadPort.");
+    //assert("Could not write to port, this is a ReadPort" == 0);
 }
 
 
@@ -734,13 +742,15 @@ WritePort::WritePort(std::string node_type, std::string portname, Component *por
 
 double WritePort::readNodeSafe(const size_t /*idx*/)
 {
-    assert("Could not read from port, this is a WritePort" == 0);
+    mpComponent->addWarningMessage("WritePort::readNodeSafe(): Could not read to port, this is a WritePort");
+    //assert("Could not read from port, this is a WritePort" == 0);
     return 0;
 }
 
 double WritePort::readNode(const size_t /*idx*/) const
 {
-    assert("Could not read from port, this is a WritePort" == 0);
+    mpComponent->addWarningMessage("WritePort::readNode(): Could not read to port, this is a WritePort");
+    //assert("Could not read from port, this is a WritePort" == 0);
     return 0;
 }
 
@@ -755,7 +765,7 @@ MultiPort::~MultiPort()
     //! @todo removed assert, BUT problem needs to be fixed /Peter
     if (mSubPortsVector.size() != 0)
     {
-        getComponent()->addErrorMessage("mSubPortsVector.size() != 0 in multiport destructor (will fix later)");
+        getComponent()->addFatalMessage("~MultiPort(): mSubPortsVector.size() != 0 in multiport destructor (will fix later)");
     }
     //assert(mSubPortsVector.size() == 0); //should be removed by other code, use this assert to check if that is working
 }
@@ -881,7 +891,7 @@ double MultiPort::getStartValue(const size_t idx, const size_t portIdx)
     {
         return mSubPortsVector[portIdx]->mpNode->getDataValue(idx);
     }
-    mpComponent->addErrorMessage("MultiPort::getStartValue(): Port does not have a start value.");
+    mpComponent->addFatalMessage("MultiPort::getStartValue(): Port does not have a start value.");
     //assert(false);
     return 0.0;
 }
@@ -926,7 +936,12 @@ void MultiPort::removeSubPort(Port* ptr)
 //! Retreives Node Ptr from given subnode
 Node *MultiPort::getNodePtr(const size_t portIdx)
 {
-    assert(mSubPortsVector.size() > portIdx);
+    //assert(mSubPortsVector.size() > portIdx);
+    if(mSubPortsVector.size() <= portIdx)
+    {
+        mpComponent->addWarningMessage("MultiPort::getNodePtr(): mSubPortsSVector.size() <= portIdx");
+        return 0;
+    }
     return mSubPortsVector[portIdx]->getNodePtr();
 }
 
