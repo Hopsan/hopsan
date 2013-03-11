@@ -105,7 +105,7 @@ void printWaitingMessages(const bool printDebug)
     while (gHopsanCore.checkMessage() > 0)
     {
         gHopsanCore.getMessage(msg,type,tag);
-        if (type == "error")
+        if (type == "error" || type == "fatal")
         {
             setTerminalColor(Red);
             cout << msg << endl;
