@@ -44,8 +44,6 @@ using namespace hopsan;
 
 extern HopsanEssentials gHopsanCore;
 
-//! @todo replace all cout << "Error: ... " with the preintErrorMEssage function, (same for warnings)
-
 // ===== Help functions =====
 
 //! @brief Helpfunction that splits a full path into basepath and filename
@@ -154,9 +152,9 @@ void printWarningMessage(const std::string &rWarning)
 
 //! @brief Prints a message with green color (resets color to defaul after)
 //! @param [in] rMessage The message
-void printGreenMessage(const std::string &rMessage)
+void printColorMessage(const ColorsEnumT color, const std::string &rMessage)
 {
-    setTerminalColor(Green);
+    setTerminalColor(color);
     cout << rMessage << endl;
     setTerminalColor(Reset);
 }
@@ -224,7 +222,7 @@ void printComponentHierarchy(ComponentSystem *pSystem, std::string prefix,
 //! @brief Changes color on console output
 //! @param color Color number (0-15)
 //! @todo Need yellow color also
-void setTerminalColor(const ColorsT color)
+void setTerminalColor(const ColorsEnumT color)
 {
 #ifdef WIN32
     WORD c;
@@ -293,10 +291,10 @@ void saveNodeDataToFile(ComponentSystem* pSys, const string compName, const stri
                 pPort->saveLogData(fileName);
                 return; //Abort function
             }
-            printErrorMessage(string("Error: Could not find portName: ") + portName);
+            printErrorMessage("Could not find portName: " + portName);
             return; //Abort function
         }
-        cout << "Error: Could not find compName: " << compName << endl;
+        printErrorMessage("Could not find compName: " + compName);
     }
 }
 
@@ -308,7 +306,11 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
         pFile = new ofstream;
         pFile->open(rFileName.c_str());
         if (!pFile->good())
+        {
+            printErrorMessage("Could not open: " + rFileName + " for writing!");
+            delete pFile;
             return;
+        }
         doCloseFile = true;
     }
 
@@ -445,7 +447,11 @@ void exportParameterValuesToCSV(const std::string &rFileName, hopsan::ComponentS
         pFile = new ofstream;
         pFile->open(rFileName.c_str());
         if (!pFile->good())
+        {
+            printErrorMessage("Could not open: " + rFileName + " for writing!");
             return;
+            delete pFile;
+        }
         doCloseFile = true;
     }
 
@@ -496,7 +502,7 @@ void exportParameterValuesToCSV(const std::string &rFileName, hopsan::ComponentS
 
 // ===== Load Functions =====
 
-//! @todo should we use CSV parser instead
+//! @todo should we use CSV parser instead?
 void importParameterValuesFromCSV(const std::string filePath, hopsan::ComponentSystem* pSystem)
 {
     if (pSystem)
@@ -565,18 +571,18 @@ void importParameterValuesFromCSV(const std::string filePath, hopsan::ComponentS
                                     bool ok = pComp->setParameterValue(parameterName, lineVec[1]);
                                     if (!ok)
                                     {
-                                        cout << "Error: setting parameter: " << parameterName << " in component: " << componentName << endl;
+                                        printErrorMessage("Setting parameter: " + parameterName + " in component: " + componentName);
                                     }
                                 }
                                 else
                                 {
-                                    cout << "Error: no component: " << componentName << " in system: " << pParentSys->getName() << endl;
+                                    printErrorMessage("No component: " + componentName + " in system: " + pParentSys->getName() );
                                 }
                             }
                         }
                         else
                         {
-                            cout << "Error: " << vec2[i] << " should be componentName#parameterName on line: " << line << endl;
+                            printErrorMessage(vec2[i] + " should be componentName#parameterName on line: " + line);
                         }
                     }
                     else
@@ -659,7 +665,7 @@ void readNodesToSaveFromTxtFile(const std::string filePath, std::vector<std::str
     }
     else
     {
-        cout << "error, could not open file: " << filePath << endl;
+        printErrorMessage("Could not open file: " + filePath);
     }
 }
 
@@ -672,7 +678,7 @@ bool compareVectors(const std::vector<double> &rVec, const std::vector<double> &
 {
     if(rVec.size() != rRef.size())
     {
-        cout << "Error: compareVectors() Size mismatch!" << endl;
+        printErrorMessage("compareVectors() Size mismatch!");
         return false;
     }
 
@@ -709,16 +715,14 @@ bool performModelTest(const std::string hvcFilePath)
         //! @todo should check version also
         if (strcmp(pRootNode->name(), "hopsanvalidationconfiguration")!=0)
         {
-            setTerminalColor(Red);
-            cout << hvcFilePath  << " Has wrong root tag name: " << string(pRootNode->name()) << endl;
+            printErrorMessage(hvcFilePath  + " Has wrong root tag name: " + string(pRootNode->name()));
             return false;
         }
 
         rapidxml::xml_node<> *pValidationNode = pRootNode->first_node("validation");
         if (!pValidationNode)
         {
-            setTerminalColor(Red);
-            cout << "Error: No validation node found in xml" << endl;
+            printErrorMessage("No validation node found in xml");
             return false;
         }
         while (pValidationNode != 0)
@@ -742,8 +746,7 @@ bool performModelTest(const std::string hvcFilePath)
             pComponentNode = pValidationNode->first_node("component");
             if (!pComponentNode)
             {
-                setTerminalColor(Red);
-                cout << "Error: No component node found in xml" << endl;
+                printErrorMessage("No component node found in xml");
                 return false;
             }
             while (pComponentNode != 0)
@@ -752,8 +755,7 @@ bool performModelTest(const std::string hvcFilePath)
                 pPortNode = pComponentNode->first_node("port");
                 if (!pPortNode)
                 {
-                    setTerminalColor(Red);
-                    cout << "Error: No port node found in xml" << endl;
+                    printErrorMessage("No port node found in xml");
                     return false;
                 }
                 while (pPortNode != 0)
@@ -763,8 +765,7 @@ bool performModelTest(const std::string hvcFilePath)
                     pVariableNode = pPortNode->first_node("variable");
                     if (!pVariableNode)
                     {
-                        setTerminalColor(Red);
-                        cout << "Error: No variable node found in xml" << endl;
+                        printErrorMessage("No variable node found in xml");
                         return false;
                     }
                     while (pVariableNode != 0)
@@ -794,8 +795,7 @@ bool performModelTest(const std::string hvcFilePath)
                         CSVParser refData(success, csvfile, '\n', '"');
                         if(!success)
                         {
-                            setTerminalColor(Red);
-                            cout << "Unable to initialize CSV file: " << csvfile << " : " << refData.getErrorString() << endl;
+                            printErrorMessage("Unable to initialize CSV file: " + csvfile + " : " + refData.getErrorString());
                             return false;
                         }
 
@@ -809,8 +809,7 @@ bool performModelTest(const std::string hvcFilePath)
                             if (!pRootSystem->checkModelBeforeSimulation())
                             {
                                 printWaitingMessages(false);
-                                setTerminalColor(Red);
-                                cout << "Initialize failed, Simulation aborted!" << endl;
+                                printErrorMessage("checkModelBeforeSimulation() failed, Simulation aborted!");
                                 return false;
                             }
 
@@ -821,8 +820,7 @@ bool performModelTest(const std::string hvcFilePath)
                             else
                             {
                                 printWaitingMessages(false);
-                                setTerminalColor(Red);
-                                cout << "Initialize failed, Simulation aborted!" << endl;
+                                printErrorMessage("Initialize failed, Simulation aborted!");
                                 return false;
                             }
                             pRootSystem->finalize();
@@ -831,15 +829,13 @@ bool performModelTest(const std::string hvcFilePath)
                             Component* pComp = pRootSystem->getSubComponent(compName);
                             if (!pComp)
                             {
-                                setTerminalColor(Red);
-                                cout << "Error: No such component name: " << compName << endl;
+                                printErrorMessage("No such component name: " + compName);
                                 return false;
                             }
                             Port *pPort = pComp->getPort(portName);
                             if (!pPort)
                             {
-                                setTerminalColor(Red);
-                                cout << "Error: No such port name: " << portName << " in component: " << compName << endl;
+                                printErrorMessage("No such port name: " + portName + " in component: " + compName);
                                 return false;
                             }
 
@@ -848,8 +844,7 @@ bool performModelTest(const std::string hvcFilePath)
                             int dataId = pPort->getNodeDataIdFromName(varname);
                             if (dataId < 0)
                             {
-                                setTerminalColor(Red);
-                                cout << "Error: No such varaiable name: " << varname << " in: " << pPort->getNodeType() << endl;
+                                printErrorMessage("No such varaiable name: " + varname + " in: " + pPort->getNodeType());
                                 return false;
                             }
 
@@ -866,8 +861,7 @@ bool performModelTest(const std::string hvcFilePath)
                             else
                             {
                                 printWaitingMessages(false);
-                                setTerminalColor(Red);
-                                cout << "Initialize failed, Simulation aborted!" << endl;
+                                printErrorMessage("Initialize failed, Simulation aborted!");
                                 return false;
                             }
                             pRootSystem->finalize();
@@ -879,8 +873,7 @@ bool performModelTest(const std::string hvcFilePath)
                         }
                         else
                         {
-                            setTerminalColor(Red);
-                            cout << "Error: Could not load modelfile: " << modelfile << endl;
+                            printErrorMessage("Could not load modelfile: " + modelfile);
                             return false;
                         }
 
@@ -894,20 +887,17 @@ bool performModelTest(const std::string hvcFilePath)
 
                         if(!compareVectors(vSim1, vRef, tolerance))
                         {
-                            setTerminalColor(Red);
-                            cout << "Validation data test failed: " << pRootSystem->getName() << ":" << compName << ":" << portName << ":" << varname << endl;
+                            printColorMessage(Red, "Validation data test failed: " + pRootSystem->getName() + ":" + compName + ":" + portName + ":" + varname);
                             return false;
                         }
 
                         if(!compareVectors(vSim1, vSim2, tolerance))
                         {
-                            setTerminalColor(Red);
-                            cout << "Consistency test failed (two consecutive simulations gave different results): " << pRootSystem->getName() << ":" << compName << ":" << portName << ":" << varname << endl;
+                            printColorMessage(Red, "Consistency test failed (two consecutive simulations gave different results): " + pRootSystem->getName() + ":" + compName + ":" + portName + ":" + varname);
                             return false;
                         }
 
-                        setTerminalColor(Green);
-                        cout << "Test successful: " << pRootSystem->getName() << ":" << compName << ":" << portName << ":" << varname << endl;
+                        printColorMessage(Green, "Test successful: " + pRootSystem->getName() + ":" + compName + ":" + portName + ":" + varname);
 
                         pVariableNode = pVariableNode->next_sibling("variable");
                     }

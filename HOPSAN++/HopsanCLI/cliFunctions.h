@@ -39,17 +39,17 @@ void splitFileName(const std::string fileName, std::string &rBaseName, std::stri
 void splitStringOnDelimiter(const std::string &rString, const char delim, std::vector<std::string> &rSplitVector);
 
 // ===== Print functions =====
+enum ColorsEnumT {Red, Green, Blue, Yellow, White, Reset};
 void printWaitingMessages(const bool printDebug=true);
 void printErrorMessage(const std::string &rError);
 void printWarningMessage(const std::string &rWarning);
-void printGreenMessage(const std::string &rMessage);
+void printColorMessage(const ColorsEnumT color, const std::string &rMessage);
 void printTsInfo(const hopsan::ComponentSystem* pSystem);
 void printSystemParams(hopsan::ComponentSystem* pSystem);
 void printComponentHierarchy(hopsan::ComponentSystem *pSystem, std::string prefix="",
                              const bool doPrintTsInfo=false,
                              const bool doPrintSystemParams=false);
-enum ColorsT {Red, Green, Blue, Yellow, White, Reset};
-void setTerminalColor(const ColorsT color);
+void setTerminalColor(const ColorsEnumT color);
 
 // ===== Save Functions =====
 enum SaveResults {Final, Full};

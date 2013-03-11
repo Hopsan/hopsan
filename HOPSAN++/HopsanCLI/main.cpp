@@ -64,17 +64,17 @@ int main(int argc, char *argv[])
         //TCLAP::ValueArg<std::string> saveNodesPathsOption("n", "savenodes", "A file containing lines with the ComponentName;PortName to save node data from", false, "", "FilePath string", cmd);
         TCLAP::SwitchArg endPauseOption("", "endPause", "Pauses the CLI at end to let you see its output", cmd);
         TCLAP::SwitchArg printDebug("d", "printDebug", "Show debug messages in the output", cmd);
-        TCLAP::ValueArg<std::string> resultCSVSort("", "resultCSVSort", "Store in columns or in rows: [rows, cols]", false, "rows", "string", cmd);
-        TCLAP::ValueArg<std::string> resultTypeOption("", "resultType", "How the results should be exported, choose: [final_csv, full_csv]", false, "final_csv", "string", cmd);
-        TCLAP::ValueArg<std::string> resultFileOption("", "resultFile", "where the results should be exported", false, "", "string", cmd);
-        TCLAP::ValueArg<std::string> paramExportFile("", "paramExportFile", "CSV file with exported parameter values", false, "", "string", cmd);
-        TCLAP::ValueArg<std::string> paramImportFile("", "paramImportFile", "CSV file with parameter values to import", false, "", "string", cmd);
-        TCLAP::ValueArg<std::string> modelTestOption("t","validate","Model validation to perform",false,"",".hvc filePath", cmd);
+        TCLAP::ValueArg<std::string> resultsCSVSortOption("", "resultsCSVSort", "Export results in columns or in rows: [rows, cols]", false, "rows", "string", cmd);
+        TCLAP::ValueArg<std::string> resultsFinalCSVOption("", "resultsFinalCSV", "Export the results (only final values)", false, "", "Path to file", cmd);
+        TCLAP::ValueArg<std::string> resultsFullCSVOption("", "resultsFullCSV", "Export the results (all logged data)", false, "", "Path to file", cmd);
+        TCLAP::ValueArg<std::string> parameterExportOption("", "parameterExport", "CSV file with exported parameter values", false, "", "Path to file", cmd);
+        TCLAP::ValueArg<std::string> parameterImportOption("", "parameterImport", "CSV file with parameter values to import", false, "", "Path to file", cmd);
+        TCLAP::ValueArg<std::string> modelTestOption("t","validate","Perform model validation based on HopsanValidationConfiguration",false,"","Path to .hvc file", cmd);
         TCLAP::ValueArg<std::string> nLogSamplesOption("l","numLogSamples","Set the number of log samples to store for the top-level system, (default: Use number in .hmf)",false,"","integer", cmd);
         TCLAP::ValueArg<std::string> simulateOption("s","simulate","Specify simulation time as: [hmf] or [start,ts,stop] or [ts,stop] or [stop]",false,"","Comma separated string", cmd);
-        TCLAP::ValueArg<std::string> extLibsFileOption("","externalLibsFile","A file containing the external libs to load",false,"","FilePath string", cmd);
-        TCLAP::MultiArg<std::string> extLibPathsOption("e","externalLib","Path to .dll/.so externalComponentLib. Can be given multiple times",false,"FilePath string", cmd);
-        TCLAP::ValueArg<std::string> hmfPathOption("m","hmf","The Hopsan model file to simulate",false,"","FilePath string", cmd);
+        TCLAP::ValueArg<std::string> extLibsFileOption("","externalLibsFile","A text file containing the external libs to load",false,"","Path to file", cmd);
+        TCLAP::MultiArg<std::string> extLibPathsOption("e","externalLib","Path to a .dll/.so externalComponentLib. Can be given multiple times",false,"Path to file", cmd);
+        TCLAP::ValueArg<std::string> hmfPathOption("m","hmf","The Hopsan model file to load",false,"","Path to file", cmd);
 
         // Parse the argv array.
         cmd.parse( argc, argv );
@@ -107,11 +107,11 @@ int main(int argc, char *argv[])
             printWaitingMessages(printDebug.getValue()); // Print after loading
             if (rc)
             {
-                printGreenMessage(string("Success loading External library: ") + externalComponentLibraries[i]);
+                printColorMessage(Green, "Success loading External library: " + externalComponentLibraries[i]);
             }
             else
             {
-                printErrorMessage(string("Failed to load External library: ") + externalComponentLibraries[i]);
+                printErrorMessage("Failed to load External library: " + externalComponentLibraries[i]);
             }
         }
 
@@ -130,16 +130,16 @@ int main(int argc, char *argv[])
             ComponentSystem* pRootSystem = gHopsanCore.loadHMFModel(hmfPathOption.getValue(), startTime, stopTime);
             printWaitingMessages(printDebug.getValue());
 
-            if (paramImportFile.isSet())
+            if (parameterImportOption.isSet())
             {
-                cout << "Importing parameter values from file: " << paramImportFile.getValue() << endl;
-                importParameterValuesFromCSV(paramImportFile.getValue(), pRootSystem);
+                cout << "Importing parameter values from file: " << parameterImportOption.getValue() << endl;
+                importParameterValuesFromCSV(parameterImportOption.getValue(), pRootSystem);
             }
 
-            if (paramExportFile.isSet())
+            if (parameterExportOption.isSet())
             {
-                cout << "Exporting parameter values to file: " << paramExportFile.getValue() << endl;
-                exportParameterValuesToCSV(paramExportFile.getValue(), pRootSystem);
+                cout << "Exporting parameter values to file: " << parameterExportOption.getValue() << endl;
+                exportParameterValuesToCSV(parameterExportOption.getValue(), pRootSystem);
 
             }
 
@@ -243,33 +243,37 @@ int main(int argc, char *argv[])
 //                }
 //            }
 
-            if (resultFileOption.isSet())
-            {
-                cout << "Saving results to file" << resultFileOption.getValue() << ", Using format: " << resultTypeOption.getValue() << endl;
-                if (resultTypeOption.getValue() == "final_csv")
-                {
-                    saveResults(pRootSystem, resultFileOption.getValue(), Final);
-                }
-                else if (resultTypeOption.getValue() == "full_csv")
-                {
-                    saveResults(pRootSystem, resultFileOption.getValue(), Full);
-                }
-                else
-                {
-                    setTerminalColor(Red);
-                    cout << "Unknown result type format: " << resultTypeOption.getValue() << endl;
-                }
 
+            // Check in what formats to export
+            if (resultsFinalCSVOption.isSet())
+            {
+                cout << "Saving Final results to file: " << resultsFinalCSVOption.getValue() << endl;
+                saveResults(pRootSystem, resultsFinalCSVOption.getValue(), Final);
                 // Should we transpose the result
-                if (resultCSVSort.getValue() == "cols")
+                if (resultsCSVSortOption.getValue() == "cols")
                 {
                     cout << "Transposing CSV file" << endl;
-                    transposeCSVresults(resultFileOption.getValue());
+                    transposeCSVresults(resultsFinalCSVOption.getValue());
                 }
-                else if (resultCSVSort.getValue() != "rows")
+                else if (resultsCSVSortOption.getValue() != "rows")
                 {
-                    setTerminalColor(Red);
-                    cout << "Unknown CSV sorting format: " << resultCSVSort.getValue() << endl;
+                    printErrorMessage("Unknown CSV sorting format: " + resultsCSVSortOption.getValue());
+                }
+            }
+
+            if (resultsFullCSVOption.isSet())
+            {
+                cout << "Saving Full results to file: " << resultsFullCSVOption.getValue() << endl;
+                saveResults(pRootSystem, resultsFullCSVOption.getValue(), Full);
+                // Should we transpose the result
+                if (resultsCSVSortOption.getValue() == "cols")
+                {
+                    cout << "Transposing CSV file" << endl;
+                    transposeCSVresults(resultsFullCSVOption.getValue());
+                }
+                else if (resultsCSVSortOption.getValue() != "rows")
+                {
+                    printErrorMessage("Unknown CSV sorting format: " + resultsCSVSortOption.getValue());
                 }
             }
         }
