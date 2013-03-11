@@ -3697,7 +3697,7 @@ bool AliasHandler::setVariableAlias(const string alias, const string compName, c
 {
     if (mpSystem->hasReservedUniqueName(alias))
     {
-        mpSystem->addErrorMessage(string("The alias: ") + alias + string("is already used as some other name"));
+        mpSystem->addErrorMessage("The alias: " + alias + " is already used as some other name");
         return false;
     }
 

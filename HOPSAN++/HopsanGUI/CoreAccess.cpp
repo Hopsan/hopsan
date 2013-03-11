@@ -356,9 +356,9 @@ bool CoreSystemAccess::disconnect(QString compname1, QString portname1, QString 
     //**************************
 }
 
-QString CoreSystemAccess::getHopsanCoreVersion()
+QString CoreSystemAccess::getHopsanCoreVersion() const
 {
-    return QString::fromStdString(gHopsanCore.getCoreVersion());
+    return getHopsanCoreVersion();
 }
 
 void CoreSystemAccess::setDesiredTimeStep(double timestep)
@@ -1117,4 +1117,7 @@ void NodeInfo::getNodeTypes(QStringList &nodeTypes)
     nodeTypes << "NodeMechanic" << "NodeMechanicRotational" << "NodeHydraulic" << "NodePneumatic" << "NodeElectric";
 }
 
-
+QString getHopsanCoreVersion()
+{
+    return QString::fromStdString(gHopsanCore.getCoreVersion());
+}

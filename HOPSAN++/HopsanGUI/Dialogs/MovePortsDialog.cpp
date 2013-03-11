@@ -201,7 +201,7 @@ bool MovePortsDialog::okButtonPressed()
     for (int i=0; i<ports.size(); ++i)
     {
         PortAppearanceMapT::iterator it = mpActualPortAppearanceMap->find(ports[i]->getName());
-        if (it != mpActualPortAppearanceMap->end());
+        if (it != mpActualPortAppearanceMap->end())
         {
             it.value().x = ports[i]->getPortAppearance().x;
             it.value().y = ports[i]->getPortAppearance().y;

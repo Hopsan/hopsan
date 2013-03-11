@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
     qDebug() << "LogdataCache: " << LOGDATACACHE;
     removeDir(LOGDATACACHE);
 
-    // Create global objects
+    // Create/set global objects
     gExecPath = qApp->applicationDirPath().append('/');
     gConfig = Configuration();
     gCopyStack = CopyStack();
@@ -104,7 +104,6 @@ int main(int argc, char *argv[])
     {
         gScriptsPath = SCRIPTS_DEV_PATH;
     }
-
 
     //Load settings
     loadApplicationFonts();

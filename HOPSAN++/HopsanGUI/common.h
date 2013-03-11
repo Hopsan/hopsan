@@ -115,5 +115,6 @@ extern PlotHandler *gpPlotHandler;
 extern QString gExecPath;
 extern QString gModelsPath;
 extern QString gScriptsPath;
+extern QString gHopsanCoreVersion;
 
 #endif // COMMON_H

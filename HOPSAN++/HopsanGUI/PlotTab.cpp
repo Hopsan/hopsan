@@ -1207,6 +1207,10 @@ void PlotTab::exportToHvc(QString fileName)
 
     QString modelPath = relativePath(mPlotCurvePtrs[FIRSTPLOT][0]->getLogDataVariablePtr()->getLogDataHandler()->getParentContainerObject()->getModelFileInfo(), QDir(fileInfo.absolutePath()));
     QDomElement validation = appendDomElement(hvcroot, "validation");
+    validation.setAttribute("date", QDateTime::currentDateTime().toString("yyyyMMdd"));
+    validation.setAttribute("time", QDateTime::currentDateTime().toString("hhmmss"));
+    validation.setAttribute("hopsanguiversion", HOPSANGUIVERSION);
+    validation.setAttribute("hopsancoreversion", gHopsanCoreVersion);
     appendDomTextNode(validation, "modelfile", modelPath);
     appendDomTextNode(validation, "parameterset", "");
 

@@ -117,7 +117,7 @@ public:
     ~CoreSystemAccess();
     void deleteRootSystemPtr(); //!< @todo This is very strange, needed becouse core systems are deleted from parent if they are subsystems (not if root systems), this is the only way to safely delete the core object
 
-    QString getHopsanCoreVersion();
+    QString getHopsanCoreVersion() const;
 
     // Name and type functions
     //! @todo maybe we should use name="" (empty) to indicate root system instead, to cut down on the number of functions
@@ -222,6 +222,8 @@ private:
 
     hopsan::ComponentSystem *mpCoreComponentSystem;
 };
+
+QString getHopsanCoreVersion();
 
 class CoreSimulationHandler
 {

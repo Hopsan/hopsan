@@ -41,6 +41,9 @@
 using namespace std;
 using namespace hopsan;
 
+//! @todo Ok dont know where I should put this, putting it here for now /Peter
+QString gHopsanCoreVersion = getHopsanCoreVersion();
+
 //! @todo Make "External Libraries" a reserved word
 
 //! @brief Helpfunction to split full typename into type and subtype
