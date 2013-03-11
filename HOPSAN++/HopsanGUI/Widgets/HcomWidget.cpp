@@ -194,6 +194,7 @@ TerminalConsole::TerminalConsole(TerminalWidget *pParent)
     : QTextEdit(pParent)
 {
     mpParent = pParent;
+    mpCoreAccess = new CoreMessagesAccess;
 
     this->setReadOnly(false);
     this->setMouseTracking(true);
