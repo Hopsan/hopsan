@@ -40,7 +40,7 @@ namespace hopsan {
             mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
 
-            registerParameter("sigma^2", "Amplitude Variance", "[-]", y);
+            registerParameter("std_dev", "Amplitude Variance", "[-]", y);
 
             disableStartValue(mpOut, NodeSignal::VALUE);
         }

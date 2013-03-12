@@ -67,7 +67,7 @@ namespace hopsan {
 
             registerParameter("D_m", "Displacement", "[m^3/rev]", dp);
             registerParameter("B_m", "Viscous Friction", "[Nm/rad]", Bm);
-            registerParameter("C_l,m", "Leakage Coefficient", "[]", cim);
+            registerParameter("C_lm", "Leakage Coefficient", "[]", cim);
             registerParameter("J_m", "Inerteia Load", "[kg*m^2]", J);
         }
 

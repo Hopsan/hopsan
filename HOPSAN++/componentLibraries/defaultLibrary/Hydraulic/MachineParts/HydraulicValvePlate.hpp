@@ -78,7 +78,7 @@ namespace hopsan {
             registerParameter("phi_P", "Length of grooves", "[deg]", phiP);
             registerParameter("phi_1", "Length of first pre-compression chamber", "[deg]", phi1);
             registerParameter("phi_2", "Length of second pre-compression chamber", "[deg]", phi2);
-            registerParameter("Delta alpha", "-", "[deg]", dAlpha);
+            registerParameter("Delta_alpha", "-", "[deg]", dAlpha);
             registerParameter("alpha_f", "-", "[deg]", alphaF);
             registerParameter("R_f", "Radius to groove center line", "[m]", Rf);
             registerParameter("theta_1", "Angle 1", "[deg]", th1);

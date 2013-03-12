@@ -746,3 +746,20 @@ void santizeName(QString &rString)
     }
 }
 
+bool isNameValid(const QString &rString)
+{
+    QString::const_iterator it;
+    for (it=rString.begin(); it!=rString.end(); ++it)
+    {
+        if ( !( ((*it >= LOWERCASE_LOW) && (*it <= LOWERCASE_HIGH)) ||
+                ((*it >= UPPERCASE_LOW) && (*it <= UPPERCASE_HIGH)) ||
+                ((*it >= NUMBERS_LOW)   && (*it <= NUMBERS_HIGH))   ||
+                (*it == UNDERSCORE)                                   ) )
+        {
+            // Return if we find invalid character
+            return false;
+        }
+    }
+    return true;
+}
+

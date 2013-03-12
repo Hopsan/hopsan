@@ -64,6 +64,8 @@ bool verifyParameterValue(QString &rValue, const QString type, const QStringList
 double findSmallestValueGreaterThanZero(QVector<double> data);
 QStringList splitWithRespectToQuotations(const QString str, const QChar c);
 void santizeName(QString &rString);
+bool isNameValid(const QString &rString);
+
 
 //Optimization
 void reflectWorst(QVector< QVector<double> > &vector, int worst, double alpha=1.3);

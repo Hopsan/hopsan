@@ -65,7 +65,7 @@ namespace hopsan {
 
             registerParameter("n_p", "Angular Velocity", "[rad/s]", n);
             registerParameter("D_p", "Displacement", "[m^3/rev]", dp);
-            registerParameter("C_l,p", "Leakage Coefficient", "[(m^3/s)/Pa]", Kcp);
+            registerParameter("C_lp", "Leakage Coefficient", "[(m^3/s)/Pa]", Kcp);
         }
 
 

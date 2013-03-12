@@ -118,6 +118,7 @@ int main(int argc, char *argv[])
 
         if (testInstanciateComponentsOption.isSet())
         {
+            cout <<  "Testing to instanciate each registered component. Error and Warning messages will be shown below:" << endl;
             //! @todo write as function
             vector<string> types =  gHopsanCore.getRegisteredComponentTypes();
             for (size_t i=0; i<types.size(); ++i)

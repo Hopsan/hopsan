@@ -24,6 +24,7 @@
 
 #include "version_gui.h"
 #include "XMLUtilities.h"
+#include "GUIUtilities.h"
 #include <QMessageBox>
 #include <QLocale>
 
@@ -467,10 +468,10 @@ void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion,
 
     if (coreVersion < "0.6.0" || (coreVersion > "0.6.x" && coreVersion < "0.6.x_r5135"))
     {
-        // Fix renamed node data vaariables
         QDomElement xmlParameter = element.firstChildElement(HMF_PARAMETERS).firstChildElement(HMF_PARAMETERTAG);
         while (!xmlParameter.isNull())
         {
+            // Fix renamed node data vaariables
             if (xmlParameter.attribute("name").contains("::"))
             {
                 QStringList parts = xmlParameter.attribute("name").split("::");
@@ -486,9 +487,24 @@ void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion,
                 {
                     parts[1] = "CharImpedance";
                 }
-
                 xmlParameter.setAttribute("name", parts[0]+"::"+parts[1]);
             }
+            // Fix parameter names with illegal chars
+            else if (!isNameValid(xmlParameter.attribute("name")))
+            {
+                QString name = xmlParameter.attribute("name");
+                if (name == "sigma^2")
+                {
+                    name = "std_dev";
+                }
+                name.replace(',',"");
+                name.replace('.',"");
+                name.replace(' ',"_");
+
+                xmlParameter.setAttribute("name", name);
+            }
+
+
             xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
         }
     }

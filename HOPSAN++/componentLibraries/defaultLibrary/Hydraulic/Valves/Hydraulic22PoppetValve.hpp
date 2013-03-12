@@ -89,7 +89,7 @@ namespace hopsan {
             registerParameter("k", "Spring constant", "[N/m]", k);
             registerParameter("F_0", "Spring pre-load", "[N]", F0);
             registerParameter("f", "Fraction of poppet diameter that is opening", "[-]", frac_d);
-            registerParameter("x_v,max", "Maximum Spool Displacement", "[m]", xvmax);
+            registerParameter("x_vmax", "Maximum Spool Displacement", "[m]", xvmax);
             registerParameter("d_d", "Damp orifice diam.", "[m]", dd);
         }
 

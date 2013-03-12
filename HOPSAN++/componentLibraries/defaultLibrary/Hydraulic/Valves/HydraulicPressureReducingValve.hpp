@@ -72,8 +72,8 @@ namespace hopsan {
 
             registerParameter("p_ref", "Reference Opening Pressure", "[Pa]", pref);
             registerParameter("tao", "Time Constant of Spool", "[s]", tao);
-            registerParameter("k_c.s", "Steady State Characteristic due to Spring", "[(m^3/s)/Pa]", Kcs);
-            registerParameter("k_c,f", "Steady State Characteristic due to Flow Forces", "[(m^3/s)/Pa]", Kcf);
+            registerParameter("k_cs", "Steady State Characteristic due to Spring", "[(m^3/s)/Pa]", Kcs);
+            registerParameter("k_cf", "Steady State Characteristic due to Flow Forces", "[(m^3/s)/Pa]", Kcf);
             registerParameter("q_nom", "Flow with Fully Open Valve and pressure drop Pnom", "[m^3/s]", qnom);
             registerParameter("p_h", "Hysteresis Width", "[Pa]", ph);
         }

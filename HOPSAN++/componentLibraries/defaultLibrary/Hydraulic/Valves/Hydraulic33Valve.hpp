@@ -86,7 +86,7 @@ namespace hopsan {
             registerParameter("d", "Spool Diameter", "[m]", d);
             registerParameter("f_pa", "Fraction of spool circumference that is opening P-A", "[-]", f_pa);
             registerParameter("f_at", "Fraction of spool circumference that is opening A-T", "[-]", f_at);
-            registerParameter("x_v,max", "Maximum Spool Displacement", "[m]", xvmax);
+            registerParameter("x_vmax", "Maximum Spool Displacement", "[m]", xvmax);
             registerParameter("x_pa", "Spool Overlap From Port P To A", "[m]", overlap_pa);
             registerParameter("x_at", "Spool Overlap From Port A To T", "[m]", overlap_at);
             registerParameter("omega_h", "Resonance Frequency", "[rad/s]", omegah);

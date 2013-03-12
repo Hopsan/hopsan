@@ -83,8 +83,8 @@ namespace hopsan {
             registerParameter("q_min", "Nominal minimal flow", "[m^3/s]", qmin);
             registerParameter("l_p", "Regulator inductance at nominal pressure", "[]", lp);
             registerParameter("r_p", "Static characteristic at nominal pressure", "[]", rp);
-            registerParameter("omega_p,1", "Lead frequency of regulator", "[rad/s]", wp1);
-            registerParameter("C_l,p", "Leakage coefficient of pump", "[]", Kcp);
+            registerParameter("omega_p1", "Lead frequency of regulator", "[rad/s]", wp1);
+            registerParameter("C_lp", "Leakage coefficient of pump", "[]", Kcp);
             registerParameter("tao_v", "Time constant of control valve", "[s]", taov);
             registerParameter("t_p", "Time from min to full displacement", "[s]", tp);
             registerParameter("t_m", "Time from full to min displacement", "[s]", tm);
