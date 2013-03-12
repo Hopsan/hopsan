@@ -89,6 +89,62 @@ void splitFullName(const std::string &rFullName, std::string &rCompName, std::st
     }
 }
 
+void updateOldModelFileParameter(rapidxml::xml_node<> *pParameterNode, const std::string &rHmfCoreVersion)
+{
+    if (rHmfCoreVersion < "0.6.0" || (rHmfCoreVersion > "0.6.x" && rHmfCoreVersion < "0.6.x_r5135"))
+    {
+        if (pParameterNode)
+        {
+            // Fix renamed node data vaariables
+            string name = readStringAttribute(pParameterNode,"name","");
+            if (contains(name, "::"))
+            {
+                // split string
+                string part1 = name.substr(0, name.rfind(":")+1);
+                string part2 = name.substr(name.rfind(":")+1);
+
+                if (part2 == "Angular Velocity")
+                {
+                    part2 = "AngularVelocity";
+                }
+                else if (part2 == "Equivalent Inertia")
+                {
+                    part2 = "EquivalentInertia";
+                }
+                else if (part2 == "CharImp")
+                {
+                    part2 = "CharImpedance";
+                }
+                writeStringAttribute(pParameterNode, "name", part1+part2);
+            }
+            // Fix parameter names with illegal chars
+            else if (!isNameValid(name))
+            {
+                if (name == "sigma^2")
+                {
+                    name = "std_dev";
+                }
+
+                replace(name,",","");
+                replace(name,".","");
+                replace(name," ","_");
+
+                writeStringAttribute(pParameterNode, "name", name);
+            }
+        }
+    }
+}
+
+void updateOldModelFileComponent(rapidxml::xml_node<> *pComponentNode, const std::string &rHmfCoreVersion)
+{
+    // Typos (no specific version)
+    if(readStringAttribute(pComponentNode, "typename", "") == "MechanicTranslationalMassWithCoulumbFriction")
+    {
+        writeStringAttribute(pComponentNode, "typename", "MechanicTranslationalMassWithCoulombFriction");
+    }
+}
+
+
 
 //! @brief This help function loads a component
 void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSystem, HopsanEssentials *pHopsanEssentials)
@@ -102,28 +158,30 @@ void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSyste
     {
         pComp->setName(displayName);
         pComp->setSubTypeName(subTypeName);
-        //cout << "------------------------before add comp: "  << typeName << " " << displayName << " " << pComp->getName() << endl;
         pSystem->addComponent(pComp);
-        //cout << "------------------------after add comp: "  << typeName << " " << displayName << " " << pComp->getName() << endl;
 
         //Load parameters
         //! @todo should be able to load parameters and system parmaeters with same help function
         rapidxml::xml_node<> *pParams = pComponentNode->first_node("parameters");
         if (pParams)
         {
-            rapidxml::xml_node<> *pParam = pParams->first_node();
+            rapidxml::xml_node<> *pParam = pParams->first_node("parameter");
             while (pParam != 0)
             {
-                if (strcmp(pParam->name(), "parameter")==0)
-                {
-                    string paramName = readStringAttribute(pParam, "name", "ERROR_NO_PARAM_NAME_GIVEN");
-                    string val = readStringAttribute(pParam, "value", "ERROR_NO_PARAM_VALUE_GIVEN");
+                updateOldModelFileParameter(pParam, readStringAttribute(pComponentNode->document()->first_node(), "hopsancoreversion"));
 
-                    // We need force=true here to make sure that parameters with system variable names are set even if they can not yet be evaluated
-                    //! @todo why cant they be evaluated, if everything loaded in correct order that should work
-                    pComp->setParameterValue(paramName, val, true);
+                string paramName = readStringAttribute(pParam, "name", "ERROR_NO_PARAM_NAME_GIVEN");
+                string val = readStringAttribute(pParam, "value", "ERROR_NO_PARAM_VALUE_GIVEN");
+
+                // We need force=true here to make sure that parameters with system variable names are set even if they can not yet be evaluated
+                //! @todo why cant they be evaluated, if everything loaded in correct order that should work
+                bool ok = pComp->setParameterValue(paramName, val, true);
+                if(!ok)
+                {
+                    pComp->addErrorMessage("Failed to load parameter: "+paramName+"="+val);
                 }
-                pParam = pParam->next_sibling();
+
+                pParam = pParam->next_sibling("parameter");
             }
         }
     }
@@ -163,6 +221,8 @@ void loadSystemParameters(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSyst
         rapidxml::xml_node<> *pParameter = pParameters->first_node("parameter");
         while (pParameter != 0)
         {
+            updateOldModelFileParameter(pParameter, readStringAttribute(pSysNode->document()->first_node(), "hopsancoreversion"));
+
             string paramName = readStringAttribute(pParameter, "name", "ERROR_NO_PARAM_NAME_GIVEN");
             string val = readStringAttribute(pParameter, "value", "ERROR_NO_PARAM_VALUE_GIVEN");
             string type = readStringAttribute(pParameter, "type", "ERROR_NO_PARAM_TYPE_GIVEN");
@@ -170,10 +230,10 @@ void loadSystemParameters(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSyst
 
             // Here we use force=true to make sure system parameters laoded even if they do not evaluate
             //! @todo if system parameters are loaded in the correct order (top to bottom) they should evaluete, why dont they?
-            bool success = pSystem->setSystemParameter(paramName, val, type, "", "", true);
-            if(!success)
+            bool ok = pSystem->setSystemParameter(paramName, val, type, "", "", true);
+            if(!ok)
             {
-                pSystem->addErrorMessage("Could not set parameter: " + paramName);
+                pSystem->addErrorMessage("Failed to load parameter: "+paramName+"="+val);
             }
 
             pParameter = pParameter->next_sibling("parameter");
@@ -235,6 +295,7 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
         {
             if (strcmp(pObject->name(), "component")==0)
             {
+                updateOldModelFileComponent(pObject, readStringAttribute(pObject->document()->first_node(), "hopsancoreversion", ""));
                 loadComponent(pObject, pSystem, pHopsanEssentials);
             }
             else if (strcmp(pObject->name(), "system")==0)
@@ -338,8 +399,6 @@ ComponentSystem* hopsan::loadHopsanModelFile(const std::string filePath, HopsanE
                 loadSystemContents(pSysNode, pSys, pHopsanEssentials, filePath);
 
                 pSys->addSearchPath(stripFilenameFromPath(filePath));
-                cout << pSys->findFilePath("Positi3on Servo.hmf") << endl;
-
                 return pSys;
             }
             else

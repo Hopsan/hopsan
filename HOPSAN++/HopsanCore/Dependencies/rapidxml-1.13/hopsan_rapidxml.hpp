@@ -61,7 +61,7 @@ int readIntAttribute(const rapidxml::xml_node<> *pNode, const std::string attrNa
 }
 
 //! @brief Reads a string value from node attribute or return default value if attribute does not exist
-std::string readStringAttribute(const rapidxml::xml_node<> *pNode, const std::string attrName, const std::string defaultValue)
+std::string readStringAttribute(const rapidxml::xml_node<> *pNode, const std::string attrName, const std::string defaultValue="")
 {
     if (pNode)
     {
@@ -74,6 +74,27 @@ std::string readStringAttribute(const rapidxml::xml_node<> *pNode, const std::st
     }
 
     return defaultValue;
+}
+
+void writeStringAttribute(rapidxml::xml_node<> *pNode, const std::string attrName, const std::string value)
+{
+    // First allocate memory for and copy this string so that it becomes persistent
+    char* pRapidAllocatedAttributeValue = pNode->document()->allocate_string(value.c_str());
+
+    // Assign if already exist, else create new
+    rapidxml::xml_attribute<>* pAttribute = pNode->first_attribute(attrName.c_str());
+    if (pAttribute)
+    {
+        pAttribute->value(pRapidAllocatedAttributeValue);
+    }
+    else
+    {
+        // Allocate memory and copy to remeber the attribute name
+        char* pRapidAllocatedAttributeName = pNode->document()->allocate_string(attrName.c_str());
+        // Create attribute and then append it
+        pAttribute = pNode->document()->allocate_attribute(pRapidAllocatedAttributeName, pRapidAllocatedAttributeValue);
+        pNode->append_attribute(pAttribute);
+    }
 }
 
 //! @brief Reads a bool value from node attribute or return default value if attribute does not exist

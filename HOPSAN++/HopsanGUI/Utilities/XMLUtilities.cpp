@@ -448,6 +448,7 @@ void parseRgbString(QString rgb, double &red, double &green, double &blue)
 
 //! @brief Handles compatibility issues for elements loaded from hmf files
 //! @todo Add check for separate orifice areas in the rest of the valves
+//! @todo coreVersion check will not work later when core can save some data by itself, need to use guiversion also
 void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion, QString coreVersion)
 {
     //Typos (no specific version)

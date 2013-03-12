@@ -63,3 +63,14 @@ std::string santizeName(const std::string &rString)
     santizeName(newString);
     return newString;
 }
+
+std::string &replace(std::string &rString, const std::string &rOld, const std::string &rNew)
+{
+    size_t pos = rString.find(rOld);
+    while (pos!=std::string::npos)
+    {
+        rString.replace(pos, rOld.size(), rNew);
+        pos = rString.find(rOld);
+    }
+    return rString;
+}

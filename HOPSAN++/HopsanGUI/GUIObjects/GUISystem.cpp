@@ -577,16 +577,9 @@ void SystemContainer::saveToDomElement(QDomElement &rDomElement, saveContents co
 //! @param[in] rDomElement The element to load from
 void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
 {
-    //! @todo this maybe should not eb done here
     // Loop back up to root level to get version numbers
-    QDomElement theRoot = rDomElement;
-    while (theRoot.tagName() != HMF_ROOTTAG)
-    {
-        theRoot = theRoot.parentNode().toElement();
-    }
-    double hmfVersion = theRoot.attribute(HMF_VERSIONTAG).toDouble();
-    QString coreHmfVersion = theRoot.attribute(HMF_HOPSANCOREVERSIONTAG);
-
+    double hmfVersion = rDomElement.ownerDocument().firstChildElement(HMF_ROOTTAG).attribute(HMF_VERSIONTAG).toDouble();
+    QString coreHmfVersion = rDomElement.ownerDocument().firstChildElement(HMF_ROOTTAG).attribute(HMF_HOPSANCOREVERSIONTAG);
 
     if(hmfVersion <= 0.2 && hmfVersion != 0.0)
     {

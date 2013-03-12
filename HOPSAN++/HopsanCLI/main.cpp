@@ -137,10 +137,10 @@ int main(int argc, char *argv[])
 
             if (hvcTestOption.isSet())
             {
-                setTerminalColor(Yellow);
-                cout << "Warning: Do not specify a hmf file in combination with the -t (--validate) option. Model should be loaded from the .hvc file" << endl;
+                printWarningMessage("Do not specify a hmf file in combination with the -t (--validate) option. Model should be loaded from the .hvc file");
             }
 
+            cout << "Loading Hopsan Model File: " << hmfPathOption.getValue() << endl;
             double startTime=0, stopTime=2;
             ComponentSystem* pRootSystem = gHopsanCore.loadHMFModel(hmfPathOption.getValue(), startTime, stopTime);
             printWaitingMessages(printDebugOption.getValue());
@@ -155,10 +155,9 @@ int main(int argc, char *argv[])
             {
                 cout << "Exporting parameter values to file: " << parameterExportOption.getValue() << endl;
                 exportParameterValuesToCSV(parameterExportOption.getValue(), pRootSystem);
-
             }
 
-            cout << endl << "Model Hieararcy:" << endl << endl;
+            cout << endl << "Model Hieararcy:" << endl;
             printComponentHierarchy(pRootSystem, "", true, true);
             cout << endl;
 
