@@ -73,7 +73,7 @@ qreal parseAttributeQreal(const QDomElement domElement, const QString attributeN
 QString makeRgbString(QColor color);
 void parseRgbString(QString rgb, double &red, double &green, double &blue);
 
-void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion);
+void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion, QString coreVersion);
 void verifyConfigurationCompatibility(QDomElement &rConfigElement);
 
 //Save Load Definitions

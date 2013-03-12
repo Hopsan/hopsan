@@ -577,7 +577,16 @@ void SystemContainer::saveToDomElement(QDomElement &rDomElement, saveContents co
 //! @param[in] rDomElement The element to load from
 void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
 {
-    double hmfVersion = rDomElement.parentNode().toElement().attribute("hmfversion").toDouble();
+    //! @todo this maybe should not eb done here
+    // Loop back up to root level to get version numbers
+    QDomElement theRoot = rDomElement;
+    while (theRoot.tagName() != HMF_ROOTTAG)
+    {
+        theRoot = theRoot.parentNode().toElement();
+    }
+    double hmfVersion = theRoot.attribute(HMF_VERSIONTAG).toDouble();
+    QString coreHmfVersion = theRoot.attribute(HMF_HOPSANCOREVERSIONTAG);
+
 
     if(hmfVersion <= 0.2 && hmfVersion != 0.0)
     {
@@ -692,7 +701,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_COMPONENTTAG);
         while (!xmlSubObject.isNull())
         {
-            verifyHmfSubComponentCompatibility(xmlSubObject, hmfVersion);
+            verifyHmfSubComponentCompatibility(xmlSubObject, hmfVersion, coreHmfVersion);
             ModelObject* pObj = loadModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
             if(pObj == NULL)
             {

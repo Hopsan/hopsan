@@ -447,7 +447,7 @@ void parseRgbString(QString rgb, double &red, double &green, double &blue)
 
 //! @brief Handles compatibility issues for elements loaded from hmf files
 //! @todo Add check for separate orifice areas in the rest of the valves
-void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion)
+void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion, QString coreVersion)
 {
     //Typos (no specific version)
     if(element.attribute("typename") == "MechanicTranslationalMassWithCoulumbFriction")
@@ -462,6 +462,34 @@ void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion)
                 QDomElement objectElement = cafElement.firstChildElement(CAF_MODELOBJECT);
                 objectElement.setAttribute("typename", "MechanicTranslationalMassWithCoulombFriction");
             }
+        }
+    }
+
+    if (coreVersion < "0.6.0" || (coreVersion > "0.6.x" && coreVersion < "0.6.x_r5135"))
+    {
+        // Fix renamed node data vaariables
+        QDomElement xmlParameter = element.firstChildElement(HMF_PARAMETERS).firstChildElement(HMF_PARAMETERTAG);
+        while (!xmlParameter.isNull())
+        {
+            if (xmlParameter.attribute("name").contains("::"))
+            {
+                QStringList parts = xmlParameter.attribute("name").split("::");
+                if (parts[1] == "Angular Velocity")
+                {
+                    parts[1] = "AngularVelocity";
+                }
+                else if (parts[1] == "Equivalent Inertia")
+                {
+                    parts[1] = "EquivalentInertia";
+                }
+                else if (parts[1] == "CharImp")
+                {
+                    parts[1] = "CharImpedance";
+                }
+
+                xmlParameter.setAttribute("name", parts[0]+"::"+parts[1]);
+            }
+            xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
         }
     }
 
