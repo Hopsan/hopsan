@@ -39,6 +39,7 @@ namespace hopsan {
 
     private:
         double mTimeDelay;
+        double mMaxMemSize;
         Delay *mpDelay;
         double *mpND_in, *mpND_out;
         Port *mpIn, *mpOut;
@@ -51,10 +52,12 @@ namespace hopsan {
 
         void configure()
         {
+            mMaxMemSize = 50;
             mTimeDelay = 1.0;
             mpDelay = 0;
 
-            registerParameter("dT", "Time delay", "[s]", mTimeDelay);
+            registerParameter("dT", "Time delay", "s", mTimeDelay, Dynamic);
+            registerParameter("maxMem", "Maximum allowed memory consumption", "MB", mMaxMemSize, Constant);
 
             mpIn = addReadPort("in", "NodeSignal");
             mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
@@ -68,9 +71,9 @@ namespace hopsan {
 
             if (mTimeDelay < 0)
             {
-                addErrorMessage("Can not have timedelay < 0 s");
-                stopSimulation();
-                return;
+                addWarningMessage("Can not have timedelay < 0 s");
+//                stopSimulation();
+//                return;
             }
 
             mpDelay = new Delay;
@@ -81,18 +84,33 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            // Check if delay have changed, useing int truncation and + 0.5  to round to nearest int
-            const size_t nSamps = int(mTimeDelay/mTimestep+0.5);
+            // Check if delay have changed, using int truncation and + 0.5  to round to nearest int
+            // First make sure timedelay not negative
+            const size_t nSamps = int(std::max(mTimeDelay,0.0)/mTimestep+0.5);
 
             if ( nSamps != mpDelay->getSize())
             {
+                if (nSamps > size_t((mMaxMemSize*1e6)/double(sizeof(double))) )
+                {
+                    addErrorMessage("Trying to allocate to much memory with current timestep and requested time delay: "+to_string(mTimeDelay)+" s!");
+                    stopSimulation();
+                }
+
                 // Create a new empty delay
                 Delay *pNewDelay = new Delay();
 
                 // Check if it should be populated
                 if (nSamps != 0)
                 {
-                    pNewDelay->initialize(nSamps,0);
+                    try
+                    {
+                        pNewDelay->initialize(nSamps,0);
+                    }
+                    catch (int e)
+                    {
+                        addErrorMessage("Exception nr: "+to_string(e)+" occured");
+                        stopSimulation();
+                    }
 
                     // Copy old data, depending on longer or shorter delay
                     if (nSamps < mpDelay->getSize())
@@ -128,6 +146,7 @@ namespace hopsan {
                 mpDelay = pNewDelay;
             }
 
+
             // If delay is populated, use it , else not
             if (mpDelay->getSize() == 0)
             {
@@ -144,6 +163,7 @@ namespace hopsan {
             if (mpDelay)
             {
                 delete mpDelay;
+                mpDelay = 0;
             }
         }
     };

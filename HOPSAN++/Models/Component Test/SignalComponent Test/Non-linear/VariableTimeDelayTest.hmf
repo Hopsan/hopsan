@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5130" hopsancoreversion="0.6.x_r5130">
+  <requirements>
+    <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+  </requirements>
+  <info/>
+  <system logsamples="2048" typename="Subsystem" name="VariableTimeDelaytest">
+    <simulationtime stop="10" timestep="0.001" start="0" inherit_timestep="true"/>
+    <parameters/>
+    <aliases/>
+    <hopsangui>
+      <pose x="0" y="0" flipped="false" a="0"/>
+      <nametext position="0" visible="1"/>
+      <viewport x="1827.5" y="2398.5" zoom="1"/>
+      <ports hidden="1"/>
+      <names hidden="0"/>
+      <graphics type="user"/>
+      <scriptfile path=""/>
+      <hopsanobjectappearance version="0.3">
+        <modelobject typename="Subsystem" displayname="VariableTimeDelaytest">
+          <icons>
+            <icon path="subsystemDefault.svg" type="defaultmissing"/>
+          </icons>
+          <ports/>
+          <animation flowspeed="100"/>
+        </modelobject>
+      </hopsanobjectappearance>
+      <favoritevariables/>
+      <optimization>
+        <settings>
+          <niter>100</niter>
+          <nsearchp>8</nsearchp>
+          <refcoeff>1.3</refcoeff>
+          <randfac>0.3</randfac>
+          <forgfac>0</forgfac>
+          <functol>1e-05</functol>
+          <partol>0.0001</partol>
+          <plot>true</plot>
+          <savecsv>false</savecsv>
+          <logpar>false</logpar>
+        </settings>
+        <parameters/>
+        <objectives/>
+      </optimization>
+    </hopsangui>
+    <objects>
+      <component typename="SignalSink" name="Scope_1">
+        <parameters/>
+        <ports>
+          <port nodetype="NodeSignal" name="in_right"/>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="in_bottom"/>
+        </ports>
+        <hopsangui>
+          <pose x="1787" y="2435" flipped="false" a="0"/>
+          <nametext position="0" visible="1"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalRamp" name="TimeDelay">
+        <parameters>
+          <parameter unit="[-]" value="-1" type="double" name="y_0"/>
+          <parameter unit="[-]" value="5" type="double" name="y_A"/>
+          <parameter unit="[s]" value="0" type="double" name="t_start"/>
+          <parameter unit="[s]" value="5" type="double" name="t_end"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="1586" y="2435" flipped="false" a="0"/>
+          <nametext position="0" visible="1"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalRamp" displayname="TimeDelay">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSineWave" name="Sine_Wave">
+        <parameters>
+          <parameter unit="[s]" value="0" type="double" name="t_start"/>
+          <parameter unit="[Hz]" value="1" type="double" name="f"/>
+          <parameter unit="[-]" value="1" type="double" name="y_A"/>
+          <parameter unit="[s]" value="0" type="double" name="y_offset"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+          <port nodetype="NodeSignal" name="y_A"/>
+        </ports>
+        <hopsangui>
+          <pose x="1586" y="2365" flipped="false" a="0"/>
+          <nametext position="0" visible="1"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSineWave" displayname="Sine_Wave">
+              <ports>
+                <port x="6.953355807e-310" y="1.62517163e-316" enabled="true" a="180" name="y_A" autoplaced="true"/>
+              </ports>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalVariableTimeDelay" name="Delayed_Sine_Wave">
+        <parameters>
+          <parameter unit="[s]" value="1" type="double" name="dT"/>
+          <parameter unit="-" value="0" type="double" name="out::Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="dT"/>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="1690" y="2365" flipped="false" a="0"/>
+          <nametext position="0" visible="1"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalVariableTimeDelay" displayname="Delayed_Sine_Wave">
+              <ports>
+                <port x="0.5" y="1" enabled="true" a="90" name="dT" autoplaced="true"/>
+              </ports>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSink" name="Scope">
+        <parameters/>
+        <ports>
+          <port nodetype="NodeSignal" name="in_right"/>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="in_bottom"/>
+        </ports>
+        <hopsangui>
+          <pose x="1787" y="2365" flipped="false" a="0"/>
+          <nametext position="0" visible="1"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalRamp" name="Amplitude">
+        <parameters>
+          <parameter unit="[-]" value="1" type="double" name="y_0"/>
+          <parameter unit="[-]" value="-0.99" type="double" name="y_A"/>
+          <parameter unit="[s]" value="0" type="double" name="t_start"/>
+          <parameter unit="[s]" value="5" type="double" name="t_end"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="1501" y="2352.5" flipped="false" a="0"/>
+          <nametext position="0" visible="1"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalRamp" displayname="Amplitude">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <textboxwidget>
+        <hopsangui>
+          <pose x="1487.000000" y="2203.000000"/>
+          <textobject fontcolor="#556b2f" text="The sine wave has a decreasing amplitude.&#xa;The delayed sine wave has  increaing delay until t=5s when it becomes constant.&#xa;When the requested time delay is negataive, no delay is introduced." font="Ubuntu,12,-1,5,50,0,0,0,0,0"/>
+          <size width="463.062500" height="61.000000"/>
+          <line width="2.000000" visible="1" style="solidline"/>
+        </hopsangui>
+      </textboxwidget>
+    </objects>
+    <connections>
+      <connect endport="in" endcomponent="Scope" startport="out" startcomponent="Delayed_Sine_Wave">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="1710.00000000000000000000" y="2365.00000000000000000000"/>
+            <coordinate x="1767.00000000000000000000" y="2365.00000000000000000000"/>
+            <coordinate x="1767.00000000000000000000" y="2365.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="dT" endcomponent="Delayed_Sine_Wave" startport="out" startcomponent="TimeDelay">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="1598.50000000000000000000" y="2435.00000000000000000000"/>
+            <coordinate x="1690.00000000000000000000" y="2435.00000000000000000000"/>
+            <coordinate x="1690.00000000000000000000" y="2377.50000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Delayed_Sine_Wave" startport="out" startcomponent="Sine_Wave">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="1598.50000000000000000000" y="2365.00000000000000000000"/>
+            <coordinate x="1650.00000000000000000000" y="2365.00000000000000000000"/>
+            <coordinate x="1650.00000000000000000000" y="2365.00000000000000000000"/>
+            <coordinate x="1670.00000000000000000000" y="2365.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="y_A" endcomponent="Sine_Wave" startport="out" startcomponent="Amplitude">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="1513.50000000000000000000" y="2352.50000000000000000000"/>
+            <coordinate x="1553.50000000000000000000" y="2352.50000000000000000000"/>
+            <coordinate x="1553.50000000000000000000" y="2352.50000000000000000000"/>
+            <coordinate x="1573.50000000000000000000" y="2352.50000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope" startport="out" startcomponent="Sine_Wave">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="1598.50000000000000000000" y="2365.00000000000000000000"/>
+            <coordinate x="1629.00000000000000000000" y="2365.00000000000000000000"/>
+            <coordinate x="1629.00000000000000000000" y="2307.00000000000000000000"/>
+            <coordinate x="1738.00000000000000000000" y="2307.00000000000000000000"/>
+            <coordinate x="1738.00000000000000000000" y="2365.00000000000000000000"/>
+            <coordinate x="1767.00000000000000000000" y="2365.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope_1" startport="out" startcomponent="TimeDelay">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="1598.50000000000000000000" y="2435.00000000000000000000"/>
+            <coordinate x="1767.00000000000000000000" y="2435.00000000000000000000"/>
+            <coordinate x="1767.00000000000000000000" y="2435.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+    </connections>
+  </system>
+</hopsanmodelfile>
