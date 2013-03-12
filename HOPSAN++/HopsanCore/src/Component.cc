@@ -31,7 +31,7 @@
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "Port.h"
 #include "HopsanEssentials.h"
-#include "CoreUtilities/FindUniqueName.h"
+#include "CoreUtilities/NameStringUtils.h"
 
 #ifdef USETBB
 #include "mutex.h"

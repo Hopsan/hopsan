@@ -120,7 +120,7 @@ SOURCES += \
     src/CoreUtilities/GeneratorHandler.cpp \
     src/CoreUtilities/MultiThreadingUtilities.cpp \
     src/CoreUtilities/CoSimulationUtilities.cpp \
-    include/CoreUtilities/NameSanitiser.cc
+    src/CoreUtilities/NameStringUtils.cc
 HEADERS += \
     include/win32dll.h \
     include/version.h \
@@ -136,7 +136,6 @@ HEADERS += \
     include/CoreUtilities/LoadExternal.h \
     include/CoreUtilities/HopsanCoreMessageHandler.h \
     include/CoreUtilities/HmfLoader.h \
-    include/CoreUtilities/FindUniqueName.h \
     include/CoreUtilities/ClassFactoryStatusCheck.hpp \
     include/CoreUtilities/ClassFactory.hpp \
     include/ComponentUtilities/WhiteGaussianNoise.h \
@@ -163,7 +162,7 @@ HEADERS += \
     include/CoreUtilities/GeneratorHandler.h \
     include/CoreUtilities/MultiThreadingUtilities.h \
     include/CoreUtilities/CoSimulationUtilities.h \
-    include/CoreUtilities/NameSanitiser.h
+    include/CoreUtilities/NameStringUtils.h
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

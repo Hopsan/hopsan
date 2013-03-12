@@ -1,4 +1,28 @@
-#include "NameSanitiser.h"
+/*-----------------------------------------------------------------------------
+ This source file is part of Hopsan NG
+
+ Copyright (c) 2011
+    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
+    Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
+
+ This file is provided "as is", with no guarantee or warranty for the
+ functionality or reliability of the contents. All contents in this file is
+ the original work of the copyright holders at the Division of Fluid and
+ Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
+ redistributing any part of this file is prohibited without explicit
+ permission from the copyright holders.
+-----------------------------------------------------------------------------*/
+
+//!
+//! @file   NameStringUtils.cc
+//! @author <peter.nordin@liu.se>
+//! @date   2013-03-12
+//!
+//! @brief Contains functions for working with strings, in particualr Name strings.
+//!
+//$Id: FindUniqueName.h 5130 2013-03-11 15:58:32Z petno25 $
+
+#include "CoreUtilities/NameStringUtils.h"
 
 #define UNDERSCORE 95
 #define UPPERCASE_LOW 65
@@ -8,7 +32,7 @@
 #define NUMBERS_LOW 48
 #define NUMBERS_HIGH 57
 
-void santizeName(std::string &rString)
+void hopsan::santizeName(std::string &rString)
 {
     std::string::iterator it;
     for (it=rString.begin(); it!=rString.end(); ++it)
@@ -23,7 +47,7 @@ void santizeName(std::string &rString)
     }
 }
 
-bool isNameValid(const std::string &rString)
+bool hopsan::isNameValid(const std::string &rString)
 {
     std::string::const_iterator it;
     for (it=rString.begin(); it!=rString.end(); ++it)
@@ -40,7 +64,7 @@ bool isNameValid(const std::string &rString)
     return true;
 }
 
-bool isNameValid(const std::string &rString, const std::string &rExceptions)
+bool hopsan::isNameValid(const std::string &rString, const std::string &rExceptions)
 {
     std::string::const_iterator it;
     for (it=rString.begin(); it!=rString.end(); ++it)
@@ -57,14 +81,14 @@ bool isNameValid(const std::string &rString, const std::string &rExceptions)
     return true;
 }
 
-std::string santizeName(const std::string &rString)
+std::string hopsan::santizeName(const std::string &rString)
 {
     std::string newString = rString;
     santizeName(newString);
     return newString;
 }
 
-std::string &replace(std::string &rString, const std::string &rOld, const std::string &rNew)
+std::string &hopsan::replace(std::string &rString, const std::string &rOld, const std::string &rNew)
 {
     size_t pos = rString.find(rOld);
     while (pos!=std::string::npos)

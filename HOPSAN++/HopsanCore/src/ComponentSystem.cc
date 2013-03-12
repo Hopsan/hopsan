@@ -31,7 +31,7 @@
 
 #include "ComponentSystem.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
-#include "CoreUtilities/FindUniqueName.h"
+#include "CoreUtilities/NameStringUtils.h"
 #include "HopsanEssentials.h"
 #include "CoreUtilities/MultiThreadingUtilities.h"
 #include "CoreUtilities/CoSimulationUtilities.h"
@@ -2528,7 +2528,7 @@ void ComponentSystem::loadParameters(std::map<std::string, std::pair<std::vector
         {
             std::vector<std::string> parNames = it->second.first;
             std::vector<std::string> parValues = it->second.second;
-            for(int i=0; i<parNames.size(); ++i)
+            for(size_t i=0; i<parNames.size(); ++i)
             {
                 this->getSubComponent(name)->setParameterValue(parNames[i], parValues[i]);
             }

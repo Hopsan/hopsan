@@ -1,7 +1,7 @@
 /*-----------------------------------------------------------------------------
  This source file is part of Hopsan NG
 
- Copyright (c) 2011 
+ Copyright (c) 2011
     Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
     Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
@@ -14,23 +14,27 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   FindUniqueName.h
+//! @file   NameStringUtils.h
 //! @author <peter.nordin@liu.se>
-//! @date   2010-01-10
+//! @date   2013-03-12
 //!
-//! @brief Contains template functions for generating a unique name based on map keys
+//! @brief Contains functions for working with strings, in particualr Name strings.
 //!
-//$Id$
+//$Id: FindUniqueName.h 5130 2013-03-11 15:58:32Z petno25 $
 
-#ifndef FINDUNIQUENAME_H
-#define FINDUNIQUENAME_H
+#ifndef NAMESTRINGUTILS_H
+#define NAMESTRINGUTILS_H
 
 #include <string>
 #include <sstream>
 
-#include "NameSanitiser.h"
-
 namespace hopsan {
+
+void santizeName(std::string &rString);
+std::string santizeName(const std::string &rString);
+
+bool isNameValid(const std::string &rString);
+bool isNameValid(const std::string &rString, const std::string &rExceptions);
 
 //! @brief Help function for create a unique name among names from one STL Container
 template<typename ContainerT>
@@ -79,5 +83,13 @@ std::string findUniqueName(const ContainerT &rContainer, std::string name)
     return name;
 }
 
+inline bool contains(const std::string &rString, const std::string &rPattern)
+{
+    return rString.find(rPattern) != std::string::npos;
 }
-#endif // FINDUNIQUENAME_H
+
+std::string &replace(std::string &rString, const std::string &rOld, const std::string &rNew);
+
+}
+
+#endif // NAMESTRINGUTILS_H
