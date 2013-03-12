@@ -356,11 +356,6 @@ bool CoreSystemAccess::disconnect(QString compname1, QString portname1, QString 
     //**************************
 }
 
-QString CoreSystemAccess::getHopsanCoreVersion() const
-{
-    return getHopsanCoreVersion();
-}
-
 void CoreSystemAccess::setDesiredTimeStep(double timestep)
 {
     mpCoreComponentSystem->setDesiredTimestep(timestep);

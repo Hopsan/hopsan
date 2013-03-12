@@ -2430,7 +2430,7 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 
             //Save xml document
         QDomDocument domDocument;
-        QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getCoreSystemAccessPtr()->getHopsanCoreVersion());
+        QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
 
             // Save the required external lib names
         QVector<QString> extLibNames;

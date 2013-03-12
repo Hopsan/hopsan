@@ -737,7 +737,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag, saveContents contents)
     QDomElement rootElement;
     if(contents==FULLMODEL)
     {
-        rootElement = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, mpToplevelSystem->getCoreSystemAccessPtr()->getHopsanCoreVersion());
+        rootElement = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
     }
     else
     {

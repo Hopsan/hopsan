@@ -1461,7 +1461,7 @@ void SystemContainer::exportToSimulink()
     //! @todo This code is duplicated from ProjectTab::saveModel(), make it a common function somehow
         //Save xml document
     QDomDocument domDocument;
-    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getCoreSystemAccessPtr()->getHopsanCoreVersion());
+    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
     saveToDomElement(hmfRoot);
     QFile xmlhmf(savePath + "/" + fileName);
     if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
