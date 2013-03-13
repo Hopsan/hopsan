@@ -14,15 +14,19 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   NameStringUtils.cc
+//! @file   StringUtilities.cc
 //! @author <peter.nordin@liu.se>
 //! @date   2013-03-12
 //!
 //! @brief Contains functions for working with strings, in particualr Name strings.
 //!
-//$Id: FindUniqueName.h 5130 2013-03-11 15:58:32Z petno25 $
+//$Id$
 
-#include "CoreUtilities/NameStringUtils.h"
+#include "CoreUtilities/StringUtilities.h"
+#include <string.h>
+#include <stdio.h>
+#include <iostream>
+#include <stdlib.h>
 
 #define UNDERSCORE 95
 #define UPPERCASE_LOW 65
@@ -98,3 +102,16 @@ std::string &hopsan::replace(std::string &rString, const std::string &rOld, cons
     }
     return rString;
 }
+
+
+//! @brief Copies a std::string to a char* (with memory allocation)
+//! @param [out] c Target string
+//! @param [in] s Source string
+void hopsan::copyString(char** c, std::string s)
+{
+    *c = (char *)malloc((strlen(s.c_str())+1)*sizeof(char));
+    strcpy(*c, s.c_str());
+}
+
+
+

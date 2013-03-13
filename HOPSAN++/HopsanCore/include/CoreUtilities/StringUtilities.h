@@ -14,16 +14,16 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   NameStringUtils.h
+//! @file   StringUtilities.h
 //! @author <peter.nordin@liu.se>
 //! @date   2013-03-12
 //!
 //! @brief Contains functions for working with strings, in particualr Name strings.
 //!
-//$Id: FindUniqueName.h 5130 2013-03-11 15:58:32Z petno25 $
+//$Id$
 
-#ifndef NAMESTRINGUTILS_H
-#define NAMESTRINGUTILS_H
+#ifndef STRINGUTILITIES_H
+#define STRINGUTILITIES_H
 
 #include <string>
 #include <sstream>
@@ -90,6 +90,8 @@ inline bool contains(const std::string &rString, const std::string &rPattern)
 
 std::string &replace(std::string &rString, const std::string &rOld, const std::string &rNew);
 
+void copyString(char** c, std::string s);
+
 }
 
-#endif // NAMESTRINGUTILS_H
+#endif // STRINGUTILITIES_H
