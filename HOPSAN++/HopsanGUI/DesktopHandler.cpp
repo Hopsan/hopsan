@@ -36,6 +36,8 @@
 
 DesktopHandler::DesktopHandler()
 {
+    mUseCustomDataPath=false;
+    mUseCustomDocumentsPath=false;
     mDefaultDataPath = QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/Hopsan/";
     mDefaultDocumentsPath = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/";
 }
@@ -49,23 +51,23 @@ void DesktopHandler::setupPaths()
     {
         dataDir.mkpath(mDefaultDataPath);
     }
-    QFile dummyFile1(gDesktopHandler.getDataPath()+"/HOPSANDUMMYTESTFILETHATWILLBEREMOVED");
+    QFile dummyFile1(mDefaultDataPath+"/HOPSANDUMMYTESTFILETHATWILLBEREMOVED");
     if(dummyFile1.exists())
     {
         dummyFile1.remove();
     }
     if (dummyFile1.open(QFile::ReadWrite))
     {
-        qDebug() << "Documents path is writable!";
+        qDebug() << "Data path is writable!";
     }
     else
     {
         dummyFile1.close();
-        qDebug() << "Documents path is NOT writable!";
-        QMessageBox::information(0, "Choose documents path", "Default data directory is not writable:\n\n"+mDefaultDataPath+"\n\nPlease choose a different path.", "Okay");
+        qDebug() << "Data path is NOT writable!";
+        QMessageBox::information(0, "Choose data path", "Default data directory is not writable:\n\n"+mDefaultDataPath+"\n\nPlease choose a different path.", "Okay");
         QWidget *pWidget = new QWidget();
         QFileDialog *pDialog = new QFileDialog(pWidget);
-        mCustomDocumentsPath = pDialog->getExistingDirectory(pWidget, "Choose Documents Directory",
+        mCustomDocumentsPath = pDialog->getExistingDirectory(pWidget, "Choose Data Directory",
                                 gExecPath,
                                 QFileDialog::ShowDirsOnly
                                 | QFileDialog::DontResolveSymlinks);
