@@ -38,7 +38,7 @@ namespace hopsan {
     class MultiPort;
 
     //! @brief This enum type specifies all porttypes
-    // It is VERY important the MultiPort enums commes LAST, MULTIPORT is never instantiated but enum MUST be present
+    // It is VERY important that the MultiPort enums commes LAST, MULTIPORT is never instantiated but enum MUST be present
     enum PortTypesEnumT {UndefinedPortType, PowerPortType, ReadPortType, WritePortType, SystemPortType, MultiportType, PowerMultiportType, ReadMultiportType};
 
     class DLLIMPORTEXPORT Port
@@ -51,7 +51,8 @@ namespace hopsan {
 
     public:
         //! @brief This enum specifies the RequiredConnection enums
-        enum RequireConnectionEnumT {Required, NotRequired};
+        //! @todo remove the uppercase enums later when stable 0.6.0 release exist (to force update)
+        enum RequireConnectionEnumT {Required, NotRequired, REQUIRED=Required, NOTREQUIRED=NotRequired};
 
         //Constructors - Destructors
         Port(const std::string nodeType, const std::string portName, Component *pPortOwner, Port *pParentPort=0);

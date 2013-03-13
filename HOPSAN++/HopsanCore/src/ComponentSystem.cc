@@ -2609,6 +2609,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         else
         {
             mComponentSignalptrs[s]->initializeDynamicParameters();
+            mComponentSignalptrs[s]->updateDynamicParameterValues();
         }
 
         if(!mComponentSignalptrs[s]->initialize(startT, stopT))
@@ -2635,6 +2636,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         else
         {
             mComponentCptrs[c]->initializeDynamicParameters();
+            mComponentCptrs[c]->updateDynamicParameterValues();
         }
 
         if(!mComponentCptrs[c]->initialize(startT, stopT))
@@ -2661,6 +2663,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         else
         {
             mComponentQptrs[q]->initializeDynamicParameters();
+            mComponentQptrs[q]->updateDynamicParameterValues();
         }
 
         if(!mComponentQptrs[q]->initialize(startT, stopT))

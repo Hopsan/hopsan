@@ -537,14 +537,15 @@ vector<double> *Port::getDataVectorPtr(const size_t /*portIdx*/)
 double Port::getStartValue(const size_t idx, const size_t /*portIdx*/)
 {
     if(mpStartNode && !mpComponent->getSystemParent()->doesKeepStartValues())
+    {
         return mpStartNode->getDataValue(idx);
+    }
     else if(mpStartNode)
     {
         return mpNode->getDataValue(idx);
     }
     mpComponent->addFatalMessage("Port::getStartValue(): Port does not have a start value.");
-    //assert(false);
-    return 0.0;
+    return -1;
 }
 
 
@@ -576,15 +577,16 @@ void Port::setStartValue(const size_t idx, const double value, const size_t /*po
 //! @param idx Data index of start value to be disabled
 void Port::disableStartValue(const size_t idx)
 {
-    std::stringstream name, ss;
-    //The start value has already been registered as a parameter in the component, so we must unregister it. This is probably not the most beautiful solution.
-    name << getName() << "::" << mpStartNode->getDataDescription(idx)->name;
-    ss << "Disabling_StartValue: " << name.str();
-    mpComponent->addDebugMessage(ss.str());
-    mpComponent->unRegisterParameter(name.str());
+    // The start value has already been registered as a parameter in the component, so we must unregister it.
+    // This is probably not the most beautiful solution.
+    std::string name = getName()+"::"+mpStartNode->getDataDescription(idx)->name;
+    mpComponent->addDebugMessage("Disabling_StartValue: "+name);
+    mpComponent->unRegisterParameter(name);
 
     //! @todo this is an ugly hack
     mpStartNode->mDataDescriptions.at(idx).name = "";
+
+    //! @todo if all startvalues in a node are dissabled then maybe we should remove the entire start node
 }
 
 
@@ -728,14 +730,12 @@ ReadPort::ReadPort(std::string node_type, std::string portname, Component *portO
 void ReadPort::writeNodeSafe(const size_t /*idx*/, const double /*value*/)
 {
     mpComponent->addWarningMessage("ReadPort::writeNodeSafe(): Could not write to port, this is a ReadPort.");
-    //assert("Could not write to port, this is a ReadPort" == 0);
 }
 
 
 void ReadPort::writeNode(const size_t /*idx*/, const double /*value*/) const
 {
     mpComponent->addWarningMessage("ReadPort::writeNode(): Could not write to port, this is a ReadPort.");
-    //assert("Could not write to port, this is a ReadPort" == 0);
 }
 
 
@@ -749,15 +749,13 @@ WritePort::WritePort(std::string node_type, std::string portname, Component *por
 double WritePort::readNodeSafe(const size_t /*idx*/)
 {
     mpComponent->addWarningMessage("WritePort::readNodeSafe(): Could not read to port, this is a WritePort");
-    //assert("Could not read from port, this is a WritePort" == 0);
-    return 0;
+    return -1;
 }
 
 double WritePort::readNode(const size_t /*idx*/) const
 {
     mpComponent->addWarningMessage("WritePort::readNode(): Could not read to port, this is a WritePort");
-    //assert("Could not read from port, this is a WritePort" == 0);
-    return 0;
+    return -1;
 }
 
 MultiPort::MultiPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner, pParentPort)

@@ -377,7 +377,7 @@ void Component::registerParameter(const string name, const string description, c
     ss << rValue;
     if (dynconst == Dynamic)
     {
-        // Make a port with same name so that paramter can be switch to dynamic parameter that can be changed during simulation
+        // Make a port with same name so that parameter can be switch to dynamic parameter that can be changed during simulation
         this->addReadPort(name, "NodeSignal", Port::NotRequired);
         mpParameters->addParameter(name, ss.str(), description, unit, "double", true, &rValue);
     }
@@ -725,10 +725,8 @@ void Component::setTypeName(const string typeName)
 vector<Port*> Component::getPortPtrVector()
 {
     vector<Port*> vec;
-    vec.clear();
-    PortPtrMapT::iterator ports_it;
-
     //Copy every port pointer
+    PortPtrMapT::iterator ports_it;
     for (ports_it = mPortPtrMap.begin(); ports_it != mPortPtrMap.end(); ++ports_it)
     {
         vec.push_back(ports_it->second);
@@ -741,15 +739,13 @@ vector<Port*> Component::getPortPtrVector()
 //! @returns A pointer to the port, or 0 if port not found
 Port *Component::getPort(const string portname)
 {
-    PortPtrMapT::iterator it;
-    it = mPortPtrMap.find(portname);
+    PortPtrMapT::iterator it = mPortPtrMap.find(portname);
     if (it != mPortPtrMap.end())
     {
         return it->second;
     }
     else
     {
-        //cout << "failed to find port: " << portname << " in component: " << this->mName << endl;
         addDebugMessage("Trying to get port '" + portname + "' in component '" + this->getName() + "', but not found, pointer invalid");
         return 0;
     }
@@ -884,9 +880,7 @@ double Component::getStartValue(Port* pPort, const size_t idx, const size_t port
 //! @param[in] value is the start value that should be written
 void Component::setStartValue(Port* pPort, const size_t idx, const double value)
 {
-    std::stringstream ss;
-    ss << getName() << "::setStartValue";
-    addLogMess(ss.str());
+    addLogMess(getName()+"::setStartValue");
     pPort->setStartValue(idx, value);
 }
 
@@ -955,22 +949,20 @@ void Component::deconfigure()
 //! @brief Loads the start values to the connected Node from the "start value node" at each Port of the component
 void Component::loadStartValues()
 {
-    std::vector<Port*> pPortPtrs = getPortPtrVector();
-    std::vector<Port*>::iterator portIt;
-    for(portIt = pPortPtrs.begin(); portIt != pPortPtrs.end(); ++portIt)
+    PortPtrMapT::iterator pit;
+    for(pit=mPortPtrMap.begin(); pit!=mPortPtrMap.end(); ++pit)
     {
-        (*portIt)->loadStartValues();
+        pit->second->loadStartValues();
     }
 }
 
 
 void Component::loadStartValuesFromSimulation()
 {
-    std::vector<Port*> pPortPtrs = getPortPtrVector();
-    std::vector<Port*>::iterator portIt;
-    for(portIt = pPortPtrs.begin(); portIt != pPortPtrs.end(); ++portIt)
+    PortPtrMapT::iterator pit;
+    for(pit=mPortPtrMap.begin(); pit!=mPortPtrMap.end(); ++pit)
     {
-        (*portIt)->loadStartValuesFromSimulation();
+        pit->second->loadStartValuesFromSimulation();
     }
 }
 
