@@ -63,9 +63,9 @@ Expression::Expression(const QString indata, const ExpressionSimplificationT sim
 //! @param simplifications Specifies the degree of simplification
 //! @param parentSeparator Used when recursively creating the tree, this shall never be used when defining a new expression
 //FIXED
-Expression::Expression(QStringList symbols, const ExpressionSimplificationT simplifications, const QString parentSeparator)
+Expression::Expression(QStringList symbols, const ExpressionSimplificationT simplifications)
 {
-    commonConstructorCode(symbols, simplifications, parentSeparator);
+    commonConstructorCode(symbols, simplifications);
 }
 
 
@@ -144,7 +144,7 @@ Expression::Expression(const double value)
 //! @param simplifications Specifies the degree of simplification
 //! @param parentSeparator Used when recursively creating the tree
 //FIXED
-void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimplificationT simplifications, const QString parentSeparator)
+void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimplificationT simplifications)
 {
     mpLeft = 0;
     mpRight = 0;

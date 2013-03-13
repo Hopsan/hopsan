@@ -32,9 +32,15 @@
 #include <QDebug>
 #include <QFontDatabase>
 #include <QtNetwork/QNetworkReply>
-#include "MainWindow.h"
-#include "version_gui.h"
+
 #include "common.h"
+#include "Configuration.h"
+#include "CopyStack.h"
+#include "DesktopHandler.h"
+#include "MainWindow.h"
+#include "PlotHandler.h"
+#include "UndoStack.h"
+#include "version_gui.h"
 
 #include "Widgets/PlotWidget.h"
 #include "Widgets/MessageWidget.h"
@@ -54,12 +60,9 @@
 #include "Dialogs/SensitivityAnalysisDialog.h"
 #include "Dialogs/ComponentGeneratorDialog.h"
 
-#include "UndoStack.h"
-#include "Configuration.h"
-#include "CopyStack.h"
 #include "Utilities/GUIUtilities.h"
 
-#include "PlotHandler.h"
+
 
 //! @todo maybe we can make sure that we dont need to include these here
 #include "GraphicsView.h"
@@ -76,6 +79,10 @@ MainWindow::MainWindow(QWidget *parent)
     gpMainWindow = this;        //!< @todo It would be nice to not declare this pointer here, but in main.cpp instead if possible
                                 //! @note This is however not possible, because the gpMainWindow pointer is needed by the MainWindow constructor code.
                                 //! @todo needs some code rewrite to fix this, it is madness
+
+
+    gDesktopHandler.setupPaths();
+
 
     // Create plothandler as child to mainwindo but assign to global ptr
     gpPlotHandler = new PlotHandler(this);
@@ -1204,7 +1211,7 @@ void MainWindow::commenceAutoUpdate(QNetworkReply* reply)
     }
     else
     {
-        QFile file(QString(DATAPATH)+"/update.exe");
+        QFile file(gDesktopHandler.getDataPath()+"/update.exe");
         if (!file.open(QIODevice::WriteOnly)) {
             mpTerminalWidget->mpConsole->printErrorMessage("Could not open update.exe for writing.");
             qDebug() << "Feil Prewblem";
@@ -1219,7 +1226,7 @@ void MainWindow::commenceAutoUpdate(QNetworkReply* reply)
     QProcess *pProcess = new QProcess();
     QString dir = gExecPath;
     dir.chop(4);    //Remove "bin"
-    pProcess->start(QString(DATAPATH)+"/update.exe", QStringList() << "/silent" << "/dir=\""+dir+"\"");
+    pProcess->start(gDesktopHandler.getDataPath()+"/update.exe", QStringList() << "/silent" << "/dir=\""+dir+"\"");
     pProcess->waitForStarted();
     this->close();
 }

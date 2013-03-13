@@ -59,16 +59,7 @@
 #define MSVC2008_X64_PATH gExecPath+"MSVC2008_x64/"
 #define MSVC2010_X64_PATH gExecPath+"MSVC2010_x64/"
 
-#define DATAPATH QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/Hopsan/"
-#define DOCUMENTSPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/"
-#define BACKUPPATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Backup/"
-
 #define FMUPATH gExecPath+"../import/FMU/"
-// Paths that needs two alternatives, DEV = development, REL = release
-#define MODELS_DEV_PATH gExecPath+"../Models/"
-#define SCRIPTS_DEV_PATH gExecPath+"../Scripts/"
-#define MODELS_REL_PATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Models/"
-#define SCRIPTS_REL_PATH QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/Scripts/"
 
 #define LOGDATACACHE QDesktopServices::storageLocation(QDesktopServices::TempLocation) + "/Hopsan/LogData"
 
@@ -106,6 +97,9 @@ extern MainWindow* gpMainWindow;
 class Configuration;
 extern Configuration gConfig;
 
+class DesktopHandler;
+extern DesktopHandler gDesktopHandler;
+
 class CopyStack;
 extern CopyStack gCopyStack;
 
@@ -113,8 +107,6 @@ class PlotHandler;
 extern PlotHandler *gpPlotHandler;
 
 extern QString gExecPath;
-extern QString gModelsPath;
-extern QString gScriptsPath;
 extern QString gHopsanCoreVersion;
 
 #endif // COMMON_H

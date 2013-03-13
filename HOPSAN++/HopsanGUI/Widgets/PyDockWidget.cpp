@@ -28,6 +28,7 @@
 #include "PythonQt_QtAll.h"
 #include "gui/PythonQtScriptingConsole.h"
 #include "PythonQtConversion.h"
+#include "DesktopHandler.h"
 
 #include "PyWrapperClasses.h"
 
@@ -99,7 +100,7 @@ PyDockWidget::PyDockWidget(MainWindow *pMainWindow, QWidget * parent)
     setWidget(pPyWidget);//->setWidget(mpPythonConsole);
 
     //Add script path to Python path
-    QString scriptPath = QString(gScriptsPath);
+    QString scriptPath = QString(gDesktopHandler.getScriptsPath());
     scriptPath.replace("\\", "/");
     scriptPath.replace("//", "/");
     runCommand("import sys");

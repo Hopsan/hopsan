@@ -31,7 +31,7 @@
 
 #include "ComponentSystem.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
-#include "CoreUtilities/NameStringUtils.h"
+#include "CoreUtilities/StringUtilities.h"
 #include "HopsanEssentials.h"
 #include "CoreUtilities/MultiThreadingUtilities.h"
 #include "CoreUtilities/CoSimulationUtilities.h"
@@ -3719,7 +3719,8 @@ bool AliasHandler::setVariableAlias(const string alias, const string compName, c
             if (pPort)
             {
                 //! @todo do nothing if prev and new alias same
-                string prevAlias = pPort->getVariableAlias(varId);
+                char* cstr = pPort->getVariableAlias(varId);
+                string prevAlias = cstr;
                 if (!prevAlias.empty())
                 {
                     //! @todo the remove will search for port agin all the way, maybe have a special remove to use when we know the port and id already

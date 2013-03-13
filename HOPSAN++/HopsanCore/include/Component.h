@@ -102,7 +102,7 @@ public:
     const std::vector<Parameter*> *getParametersVectorPtr() const;
     void getParameterNames(std::vector<std::string> &rParameterNames);
     const Parameter *getParameter(const std::string name);
-    void getParameterValue(const std::string name, std::string &rValue);
+    void getParameterValue(const std::string name, char **pValue);
     void* getParameterDataPtr(const std::string name);
     bool setParameterValue(const std::string name, const std::string value, bool force=false);
     void updateParameters();

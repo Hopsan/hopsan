@@ -26,6 +26,7 @@
 #include <QtGui>
 
 #include "Configuration.h"
+#include "DesktopHandler.h"
 #include "LibraryWidget.h"
 #include "MainWindow.h"
 #include "Widgets/HcomWidget.h"
@@ -479,7 +480,7 @@ void LibraryWidget::loadLibrary(QString libDir, const InternalExternalEnumT int_
     QDir libDirObject(libDir);
 
     // Determine where to store any backups of updated appearance xml files
-    mUpdateXmlBackupDir.setPath(QString(BACKUPPATH) + "/updateXML_" + QDate::currentDate().toString("yyMMdd")  + "_" + QTime::currentTime().toString("HHmm"));
+    mUpdateXmlBackupDir.setPath(gDesktopHandler.getBackupPath() + "/updateXML_" + QDate::currentDate().toString("yyMMdd")  + "_" + QTime::currentTime().toString("HHmm"));
 
     if(int_ext == External)
     {

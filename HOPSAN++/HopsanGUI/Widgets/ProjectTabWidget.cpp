@@ -42,6 +42,7 @@
 #include "version_gui.h"
 #include "GUIConnector.h"
 #include "Widgets/HcomWidget.h"
+#include "DesktopHandler.h"
 
 #include "SimulationThreadHandler.h"
 
@@ -679,7 +680,7 @@ void ProjectTab::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT content
         QFile backupFile(mpToplevelSystem->getModelFileInfo().filePath());
         QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
         fileNameWithoutHmf.chop(4);
-        QString backupFilePath = QString(BACKUPPATH) + fileNameWithoutHmf + "_backup.hmf";
+        QString backupFilePath = gDesktopHandler.getBackupPath() + fileNameWithoutHmf + "_backup.hmf";
         if(QFile::exists(backupFilePath))
         {
             QFile::remove(backupFilePath);

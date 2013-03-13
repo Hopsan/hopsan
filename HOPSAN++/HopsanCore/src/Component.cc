@@ -31,7 +31,7 @@
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "Port.h"
 #include "HopsanEssentials.h"
-#include "CoreUtilities/NameStringUtils.h"
+#include "CoreUtilities/StringUtilities.h"
 
 #ifdef USETBB
 #include "mutex.h"
@@ -101,9 +101,9 @@ bool Component::hasParameter(const std::string name) const
     return mpParameters->exist(name);
 }
 
-void Component::getParameterValue(const std::string name, std::string &rValue)
+void Component::getParameterValue(const std::string name, char** pValue)
 {
-    mpParameters->getParameterValue(name, rValue);
+    mpParameters->getParameterValue(name, pValue);
 }
 
 //! @brief Returns a pointer directly to the parameter data variable

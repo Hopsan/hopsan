@@ -25,6 +25,7 @@
 #include "HcomWidget.h"
 #include "MainWindow.h"
 #include "Configuration.h"
+#include "DesktopHandler.h"
 #include "Widgets/ProjectTabWidget.h"
 #include "Widgets/PlotWidget.h"
 #include "GUIObjects/GUIContainerObject.h"
@@ -720,7 +721,7 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole)
 
     mCurrentPlotWindowName = "PlotWindow0";
 
-    mPwd = QString(DOCUMENTSPATH);
+    mPwd = gDesktopHandler.getDocumentsPath();
     mPwd.chop(1);
 
     HcomCommand helpCmd;

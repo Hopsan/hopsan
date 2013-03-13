@@ -720,9 +720,9 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     }
     for(int p=0; p<parameterNames.size(); ++p)
     {
-        std::string value;
-        pSystem->getParameterValue(parameterNamesStd[p], value);
-        parameterValues.append(QString(value.c_str()));
+        char* value;
+        pSystem->getParameterValue(parameterNamesStd[p], &value);
+        parameterValues.append(QString(value));
     }
 
 

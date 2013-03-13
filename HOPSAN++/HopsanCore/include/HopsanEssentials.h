@@ -58,6 +58,7 @@ public:
     Component* createComponent(const std::string &rTypeName);
     ComponentSystem* createComponentSystem();
     void removeComponent(Component *pComponent);
+    void removeNode(Node *pNode);
     bool hasComponent(const std::string type);
     bool reserveComponentTypeName(const std::string typeName);
     std::vector<std::string> getRegisteredComponentTypes() const;
@@ -68,7 +69,7 @@ public:
 
     // Messages
     HopsanCoreMessageHandler* getCoreMessageHandler();
-    void getMessage(std::string &rMessage, std::string &rType, std::string &rTag);
+    void getMessage(char **message, char **type, char **tag);
     size_t checkMessage();
 
     // External libraries

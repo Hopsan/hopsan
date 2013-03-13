@@ -33,6 +33,7 @@
 #include "loadFunctions.h"
 #include "CoreAccess.h"
 #include "CopyStack.h"
+#include "DesktopHandler.h"
 #include "Widgets/ProjectTabWidget.h"
 #include "Widgets/MessageWidget.h"
 #include "Widgets/HcomWidget.h"
@@ -3172,7 +3173,7 @@ void ContainerObject::recompileCppComponents(ModelObject *pComponent)
         pCoreAccess->generateFromCpp(code, false);
         delete(pCoreAccess);
         QDir libDir = QDir();
-        QString libDirStr = QString(DATAPATH)+"/componentLibraries/cppLibrary";
+        QString libDirStr = gDesktopHandler.getDataPath()+"/componentLibraries/cppLibrary";
         libDir.mkpath(libDirStr);
 
         QFile libFile;

@@ -100,11 +100,13 @@ void splitStringOnDelimiter(const std::string &rString, const char delim, std::v
 //! @param [in] printDebug Should debug messages also be printed
 void printWaitingMessages(const bool printDebug)
 {
-    std::string msg,type,tag;
+    char* msg;
+    char* type;
+    char* tag;
     //cout << "Check messages: " << gHopsanCore.checkMessage() << endl;
     while (gHopsanCore.checkMessage() > 0)
     {
-        gHopsanCore.getMessage(msg,type,tag);
+        gHopsanCore.getMessage(&msg,&type,&tag);
         if (type == "error" || type == "fatal")
         {
             setTerminalColor(Red);

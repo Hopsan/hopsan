@@ -93,7 +93,7 @@ public:
     bool setParameter(const std::string name, const std::string value, const std::string description="",
                       const std::string unit="", const std::string type="", const bool force=false);
 
-    void getParameterValue(const std::string name, std::string &rValue);
+    void getParameterValue(const std::string name, char **pValue);
     bool setParameterValue(const std::string name, const std::string value, bool force=false);
 
     void* getParameterDataPtr(const std::string name);

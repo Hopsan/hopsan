@@ -118,7 +118,7 @@ namespace hopsan {
 
         Component* getComponent() const;
 
-        std::string getVariableAlias(const int id) const;
+        char *getVariableAlias(const int id) const;
         int getVariableIdByAlias(const std::string alias) const;
         virtual std::vector<Port*> &getConnectedPorts(const int portIdx=-1);
 

@@ -24,6 +24,7 @@
 #include "Parameters.h"
 #include "Component.h"
 #include "ComponentSystem.h"
+#include "CoreUtilities/StringUtilities.h"
 #include <cassert>
 #include <sstream>
 #include <algorithm>
@@ -457,17 +458,19 @@ void Parameters::getParameterNames(std::vector<std::string> &rParameterNames)
 //! @brief Get the value of specified parameter
 //! @param [in] name The parameter name to get value of
 //! @param [out] rValue Reference to the string variable that will contain the parameter value. The variable will be "" if parameter not found
-void Parameters::getParameterValue(const std::string name, std::string &rValue)
+void Parameters::getParameterValue(const std::string name, char** pValue)
 {
     for(size_t i=0; i<mParameters.size(); ++i)
     {
         if (mParameters[i]->getName() == name)
         {
-            rValue = mParameters[i]->getValue();
+            copyString(pValue, mParameters[i]->getValue());
+            //pValue = mParameters[i]->getValue();
             return; //Abort function as value has been set
         }
     }
-    rValue = "";
+    copyString(pValue, "");
+    //pValue = "";
 }
 
 //! @brief Returns a pointer directly to the parameter data variable

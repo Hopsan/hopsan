@@ -561,7 +561,7 @@ NodeInfo::NodeInfo(QString nodeType)
     Node *pNode = hopsanCore.createNode(nodeType.toStdString());
 
     niceName = pNode->getNiceName().c_str();
-    for(int i=0; i<pNode->getDataDescriptions()->size(); ++i)
+    for(size_t i=0; i<pNode->getDataDescriptions()->size(); ++i)
     {
         NodeDataVariableTypeEnumT varType = pNode->getDataDescription(i)->varType;
         if(varType == Default || varType == Flow || varType == Intensity)        //Q variable
@@ -571,7 +571,7 @@ NodeInfo::NodeInfo(QString nodeType)
             varIdx << pNode->getDataDescription(i)->id;
         }
     }
-    for(int i=0; i<pNode->getDataDescriptions()->size(); ++i)
+    for(size_t i=0; i<pNode->getDataDescriptions()->size(); ++i)
     {
         if(pNode->getDataDescription(i)->varType == TLM)        //C variable
         {

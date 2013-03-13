@@ -26,6 +26,7 @@
 #include <limits>
 
 #include "Configuration.h"
+#include "DesktopHandler.h"
 #include "GUIPort.h"
 #include "Dialogs/OptimizationDialog.h"
 #include "GUIObjects/GUISystem.h"
@@ -1672,7 +1673,7 @@ void OptimizationDialog::run()
     dateString.replace(":", "_");
     dateString.replace(".", "_");
     dateString.replace(" ", "_");
-    QString pyPath = QString(gScriptsPath)+generateFileName();
+    QString pyPath = QString(gDesktopHandler.getScriptsPath())+generateFileName();
     pyPath.replace("\\", "/");
     pyPath.replace("//", "/");
 
@@ -1690,7 +1691,7 @@ void OptimizationDialog::run()
     QTime simTimer;
     simTimer.start();
 
-    QString scriptPath = QString(gScriptsPath);
+    QString scriptPath = QString(gDesktopHandler.getScriptsPath());
     scriptPath.replace("\\", "/");
     scriptPath.replace("//", "/");
 
@@ -1737,19 +1738,19 @@ bool OptimizationDialog::loadObjectiveFunctions()
     //! @todo this is a quickhack that copies the optimization files to the Documents/Scripts folder every time if they do not exist, in the future we should handle this in a smarter way (ex: if we have updated scripts in new release, then we should copy)
     //! @todo The Qfile copy will not overwrite if already exist, but we dont want to overwrite if user has made changes
     // If OptimizationObjectiveFunctions.xml missing
-    QString dstPath = QString(gScriptsPath) + "OptimizationObjectiveFunctions.xml";
+    QString dstPath = QString(gDesktopHandler.getScriptsPath()) + "OptimizationObjectiveFunctions.xml";
     QString srcPath = QString(SCRIPTS_DEV_PATH) + "OptimizationObjectiveFunctions.xml";
     QFile::copy(srcPath,dstPath);
     // If OptimizationObjectiveFunctions.py missing
-    dstPath = QString(gScriptsPath) + "OptimizationObjectiveFunctions.py";
+    dstPath = QString(gDesktopHandler.getScriptsPath()) + "OptimizationObjectiveFunctions.py";
     srcPath = QString(SCRIPTS_DEV_PATH) + "OptimizationObjectiveFunctions.py";
     QFile::copy(srcPath,dstPath);
     // If HopsanOptimization.py missing
-    dstPath = QString(gScriptsPath) + "HopsanOptimization.py";
+    dstPath = QString(gDesktopHandler.getScriptsPath()) + "HopsanOptimization.py";
     srcPath = QString(SCRIPTS_DEV_PATH) + "HopsanOptimization.py";
     QFile::copy(srcPath,dstPath);
 
-    QFile file(QString(gScriptsPath) + "OptimizationObjectiveFunctions.xml");
+    QFile file(QString(gDesktopHandler.getScriptsPath()) + "OptimizationObjectiveFunctions.xml");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),

@@ -31,6 +31,7 @@
 #include "Component.h"
 #include "ComponentSystem.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
+#include "CoreUtilities/StringUtilities.h"
 
 using namespace std;
 using namespace hopsan;
@@ -292,17 +293,22 @@ void Port::setVariableAlias(const string alias, const int id)
     }
 }
 
-string Port::getVariableAlias(const int id) const
+char* Port::getVariableAlias(const int id) const
 {
+    char* retval;
     std::map<std::string, int>::const_iterator it;
     for(it=mVariableAliasMap.begin();it!=mVariableAliasMap.end();++it)
     {
         if (it->second == id)
         {
-            return it->first;
+            copyString(&retval, it->first);
+            return retval;
+            //return it->first;
         }
     }
-    return string();
+    copyString(&retval, "");
+    return retval;
+    //return string();
 }
 
 int Port::getVariableIdByAlias(const string alias) const

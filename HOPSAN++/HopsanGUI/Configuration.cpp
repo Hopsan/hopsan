@@ -25,6 +25,7 @@
 #include "common.h"
 #include "version_gui.h"
 #include "Configuration.h"
+#include "DesktopHandler.h"
 #include "Utilities/XMLUtilities.h"
 #include "Utilities/GUIUtilities.h"
 #include "MainWindow.h"
@@ -178,14 +179,14 @@ void Configuration::saveToXml()
     appendRootXMLProcessingInstruction(domDocument);
 
     //Save to file
-    if(!QDir(DATAPATH).exists())
+    if(!QDir(gDesktopHandler.getDataPath()).exists())
     {
-        QDir().mkpath(DATAPATH);
+        QDir().mkpath(gDesktopHandler.getDataPath());
     }
-    QFile xmlsettings(QString(DATAPATH) + QString("hopsanconfig.xml"));
+    QFile xmlsettings(gDesktopHandler.getDataPath() + QString("hopsanconfig.xml"));
     if (!xmlsettings.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
-        qDebug() << "Failed to open file for writing: " << QString(DATAPATH) + QString("hopsanconfig.xml");
+        qDebug() << "Failed to open file for writing: " << gDesktopHandler.getDataPath() + QString("hopsanconfig.xml");
         return;
     }
     QTextStream out(&xmlsettings);
@@ -200,7 +201,7 @@ void Configuration::loadFromXml()
     loadDefaultsFromXml();
 
     //Read from hopsanconfig.xml
-    QFile file(QString(DATAPATH) + QString("hopsanconfig.xml"));
+    QFile file(gDesktopHandler.getDataPath() + QString("hopsanconfig.xml"));
     qDebug() << "Reading config from " << file.fileName();
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
@@ -907,7 +908,7 @@ QString Configuration::getLoadModelDir()
 {
     if(mLoadModelDir.isEmpty())
     {
-        return gModelsPath;
+        return gDesktopHandler.getModelsPath();
     }
     return mLoadModelDir;
 }
@@ -918,7 +919,7 @@ QString Configuration::getModelGfxDir()
 {
     if(mModelGfxDir.isEmpty())
     {
-        return QString(DOCUMENTSPATH);
+        return gDesktopHandler.getDocumentsPath();
     }
     return mModelGfxDir;
 }
@@ -929,7 +930,7 @@ QString Configuration::getPlotDataDir()
 {
     if(mPlotDataDir.isEmpty())
     {
-        return QString(DOCUMENTSPATH);
+        return gDesktopHandler.getDocumentsPath();
     }
     return mPlotDataDir;
 }
@@ -940,7 +941,7 @@ QString Configuration::getPlotGfxDir()
 {
     if(mPlotGfxDir.isEmpty())
     {
-        return QString(DOCUMENTSPATH);
+        return gDesktopHandler.getDocumentsPath();
     }
     return mPlotGfxDir;
 }
@@ -951,7 +952,7 @@ QString Configuration::getSimulinkExportDir()
 {
     if(mSimulinkExportDir.isEmpty())
     {
-        return QString(DOCUMENTSPATH);
+        return gDesktopHandler.getDocumentsPath();
     }
     return mSimulinkExportDir;
 }
@@ -962,7 +963,7 @@ QString Configuration::getSubsystemDir()
 {
     if(mSubsystemDir.isEmpty())
     {
-        return gModelsPath;
+        return gDesktopHandler.getModelsPath();
     }
     return mSubsystemDir;
 }
@@ -973,7 +974,7 @@ QString Configuration::getModelicaModelsDir()
 {
     if(mModelicaModelsDir.isEmpty())
     {
-        return gModelsPath;
+        return gDesktopHandler.getModelsPath();
     }
     return mModelicaModelsDir;
 }
@@ -984,7 +985,7 @@ QString Configuration::getExternalLibDir()
 {
     if(mExternalLibDir.isEmpty())
     {
-        return QString(DOCUMENTSPATH);
+        return gDesktopHandler.getDocumentsPath();
     }
     return mExternalLibDir;
 }
@@ -995,7 +996,7 @@ QString Configuration::getScriptDir()
 {
     if(mScriptDir.isEmpty())
     {
-        return gScriptsPath;
+        return gDesktopHandler.getScriptsPath();
     }
     return mScriptDir;
 }
@@ -1006,7 +1007,7 @@ QString Configuration::getPlotWindowDir()
 {
     if(mPlotWindowDir.isEmpty())
     {
-        return QString(DOCUMENTSPATH);
+        return gDesktopHandler.getDocumentsPath();
     }
     return mPlotWindowDir;
 }
@@ -1017,7 +1018,7 @@ QString Configuration::getFmuImportDir()
 {
     if(mFmuImportDir.isEmpty())
     {
-        return QString(DOCUMENTSPATH);
+        return gDesktopHandler.getDocumentsPath();
     }
     return mFmuImportDir;
 }
@@ -1032,7 +1033,7 @@ QString Configuration::getFmuExportDir()
 {
     if(mFmuExportDir.isEmpty())
     {
-        return QString(DOCUMENTSPATH);
+        return gDesktopHandler.getDocumentsPath();
     }
     return mFmuExportDir;
 }

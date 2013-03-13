@@ -33,14 +33,14 @@
 #include "CopyStack.h"
 #include "Dialogs/WelcomeDialog.h"
 #include "Utilities/GUIUtilities.h"
+#include "DesktopHandler.h"
 
 //Global stuff
 MainWindow* gpMainWindow = 0;
 Configuration gConfig;
+DesktopHandler gDesktopHandler;
 CopyStack gCopyStack;
 QString gExecPath;
-QString gModelsPath;
-QString gScriptsPath;
 
 void loadApplicationFonts();
 
@@ -58,12 +58,6 @@ int main(int argc, char *argv[])
     QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
     qDebug() << "Changing to: " << QLocale().languageToString(QLocale().language()) << " " << QLocale().countryToString(QLocale().country()) << " Decimal point: " << QLocale().decimalPoint();
 
-    // Make sure backup folder exists, create it if not
-    QDir backupDir(BACKUPPATH);
-    if (!backupDir.exists())
-    {
-        backupDir.mkpath(BACKUPPATH);
-    }
 
     // Clear cache folders from left over junk (if Hopsan crashed last time, or was unable to cleanup)
     qDebug() << "LogdataCache: " << LOGDATACACHE;
@@ -72,38 +66,8 @@ int main(int argc, char *argv[])
     // Create/set global objects
     gExecPath = qApp->applicationDirPath().append('/');
     gConfig = Configuration();
+    gDesktopHandler = DesktopHandler();
     gCopyStack = CopyStack();
-
-    // Make sure model folder exists, create it if not, if create not sucessfull use dev dir
-    QDir modelsDir(MODELS_REL_PATH);
-    if (!modelsDir.exists())
-    {
-        modelsDir.mkpath(MODELS_REL_PATH);
-    }
-    if(modelsDir.exists())
-    {
-        gModelsPath = MODELS_REL_PATH;
-    }
-    else
-    {
-        gModelsPath = MODELS_DEV_PATH;
-    }
-
-    // Select which scripts path to use, create it if not, if create not sucessfull use dev dir
-    //! @todo problem in linux if scripts must be changed, as they  are not installed to user home
-    QDir scriptsDir(SCRIPTS_REL_PATH);
-    if (!scriptsDir.exists())
-    {
-        scriptsDir.mkpath(SCRIPTS_REL_PATH);
-    }
-    if(scriptsDir.exists())
-    {
-        gScriptsPath = SCRIPTS_REL_PATH;
-    }
-    else
-    {
-        gScriptsPath = SCRIPTS_DEV_PATH;
-    }
 
     //Load settings
     loadApplicationFonts();

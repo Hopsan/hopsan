@@ -23,6 +23,7 @@
 //$Id$
 
 #include "HopsanEssentials.h"
+#include "CoreUtilities/StringUtilities.h"
 #include "Nodes.h"
 #include "version.h"
 #include "CoreUtilities/ClassFactoryStatusCheck.hpp"
@@ -30,8 +31,10 @@
 #include "CoreUtilities/HmfLoader.h"
 #include "CoreUtilities/LoadExternal.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
-#include <string>
+#include <string.h>
+#include <stdio.h>
 #include <iostream>
+#include <stdlib.h>
 
 
 #ifdef BUILTINDEFAULTCOMPONENTLIB
@@ -156,6 +159,11 @@ void HopsanEssentials::removeComponent(Component *pComponent)
     delete pComponent; //! @todo can I really delete here or do I need to use the factory for external components
 }
 
+void HopsanEssentials::removeNode(Node *pNode)
+{
+    delete pNode;
+}
+
 //! @brief Creates a Node of given node type
 //! @param [in] rNodeType The type of node to create
 //! @returns A pointer to the created node
@@ -216,28 +224,34 @@ SimulationHandler *HopsanEssentials::getSimulationHandler()
 //! @param [out] rMessage A reference to the message string
 //! @param [out] rType A reference to the message type string
 //! @param [out] rTag A reference to the message type Tag
-void HopsanEssentials::getMessage(std::string &rMessage, std::string &rType, std::string &rTag)
+void HopsanEssentials::getMessage(char **message, char **type, char **tag)
 {
+    //! @todo Utility function
     HopsanCoreMessage msg = mpMessageHandler->getMessage();
-    rMessage = msg.mMessage;
-    rTag = msg.mTag;
+//    *message = (char *)malloc((strlen(msg.mMessage.c_str())+1)*sizeof(char));
+//    strcpy(*message, msg.mMessage.c_str());
+//    *tag = (char *)malloc((strlen(msg.mTag.c_str())+1)*sizeof(char));
+//    strcpy(*tag, msg.mTag.c_str());
+    copyString(message, msg.mMessage);
+    copyString(tag, msg.mTag);
 
     switch (msg.mType)
     {
     case HopsanCoreMessage::Fatal:
-        rType = "fatal";
+        copyString(type, "fatal");
+        //*type = "fatal";
         break;
     case HopsanCoreMessage::Error:
-        rType = "error";
+        *type = "error";
         break;
     case HopsanCoreMessage::Warning:
-        rType = "warning";
+        *type = "warning";
         break;
     case HopsanCoreMessage::Info:
-        rType = "info";
+        *type = "info";
         break;
     case HopsanCoreMessage::Debug:
-        rType = "debug";
+        *type = "debug";
         break;
     }
 }

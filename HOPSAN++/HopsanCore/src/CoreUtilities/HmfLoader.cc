@@ -28,7 +28,7 @@
 #include "CoreUtilities/HmfLoader.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "HopsanEssentials.h"
-#include "CoreUtilities/NameStringUtils.h"
+#include "CoreUtilities/StringUtilities.h"
 
 #include "hopsan_rapidxml.hpp"
 

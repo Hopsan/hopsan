@@ -28,7 +28,9 @@
 #include <QGridLayout>
 
 #include "MainWindow.h"
+#include "common.h"
 #include "Configuration.h"
+#include "DesktopHandler.h"
 
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUISystem.h"
@@ -462,7 +464,7 @@ void ContainerPropertiesDialog::setValues()
 void ContainerPropertiesDialog::browseUser()
 {
     QString iconFileName = QFileDialog::getOpenFileName(this, tr("Choose user icon"),
-                                                        gModelsPath);
+                                                        gDesktopHandler.getModelsPath());
     if (!iconFileName.isEmpty())
     {
         mpUserIconPath->setText(iconFileName);
@@ -475,7 +477,7 @@ void ContainerPropertiesDialog::browseIso()
 {
     QDir fileDialogOpenDir;
     QString iconFileName = QFileDialog::getOpenFileName(this, tr("Choose ISO icon"),
-                                                        gModelsPath);
+                                                        gDesktopHandler.getModelsPath());
     if (!iconFileName.isEmpty())
     {
         mpIsoIconPath->setText(iconFileName);
@@ -488,7 +490,7 @@ void ContainerPropertiesDialog::browseScript()
 {
     //QDir fileDialogOpenDir;
     QString scriptFileName = QFileDialog::getOpenFileName(this, tr("Choose script"),
-                                                         gModelsPath);
+                                                         gDesktopHandler.getModelsPath());
     if (!scriptFileName.isEmpty())
     {
         mpPyScriptPath->setText(scriptFileName);

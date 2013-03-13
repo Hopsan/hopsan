@@ -241,11 +241,13 @@ unsigned int CoreMessagesAccess::getNumberOfMessages()
 
 void CoreMessagesAccess::getMessage(QString &rMessage, QString &rType, QString &rTag)
 {
-    std::string msg, tag, type;
-    gHopsanCore.getMessage(msg, type, tag);
-    rMessage = QString::fromStdString(msg);
-    rTag = QString::fromStdString(tag);
-    rType = QString::fromStdString(type);
+    char *msg;
+    char *tag;
+    char *type;
+    gHopsanCore.getMessage(&msg, &type, &tag);
+    rMessage = msg;
+    rTag = tag;
+    rType = type;
 }
 
 bool CoreSimulationHandler::initialize(const double startTime, const double stopTime, const int nLogSamples, CoreSystemAccess* pCoreSystemAccess)
@@ -743,7 +745,9 @@ QString CoreSystemAccess::getParameterValue(QString componentName, QString param
     hopsan::Component* pComp = mpCoreComponentSystem->getSubComponent(componentName.toStdString());
     if (pComp != 0)
     {
-        pComp->getParameterValue(parameterName.toStdString(), parameterValue);
+        char *value;
+        pComp->getParameterValue(parameterName.toStdString(), &value);
+        parameterValue = value;
     }
 
     return QString::fromStdString(parameterValue);
@@ -985,9 +989,9 @@ bool CoreSystemAccess::setSystemParameterValue(QString name, QString value, bool
 //! @returns The aprameter value as a QString or "" if parameter not found
 QString CoreSystemAccess::getSystemParameterValue(const QString name)
 {
-    std::string value;
-    mpCoreComponentSystem->getParameterValue(name.toStdString(), value);
-    return QString::fromStdString(value);
+    char* value;
+    mpCoreComponentSystem->getParameterValue(name.toStdString(), &value);
+    return QString(value);
 }
 
 
@@ -1027,7 +1031,7 @@ void CoreSystemAccess::getVariableDescriptions(const QString compname, const QSt
                 CoreVariableData data;
                 data.mName = QString::fromStdString(pDescs->at(i).name);
                 data.mUnit = QString::fromStdString(pDescs->at(i).unit);
-                data.mAlias = QString::fromStdString(pPort->getVariableAlias(i));
+                data.mAlias = QString(pPort->getVariableAlias(i));
                 data.mDescription = QString::fromStdString(pDescs->at(i).description);
                 rVarDescriptions.push_back(data);
             }
@@ -1075,7 +1079,7 @@ NodeInfo::NodeInfo(QString nodeType)
     if(!pNode) return;
 
     niceName = pNode->getNiceName().c_str();
-    for(int i=0; i<pNode->getDataDescriptions()->size(); ++i)
+    for(size_t i=0; i<pNode->getDataDescriptions()->size(); ++i)
     {
         if(pNode->getDataDescription(i)->varType == hopsan::Default ||
            pNode->getDataDescription(i)->varType == hopsan::Intensity ||
@@ -1094,7 +1098,7 @@ NodeInfo::NodeInfo(QString nodeType)
             flow = QString(pNode->getDataDescription(i)->name.c_str());
         }
     }
-    for(int i=0; i<pNode->getDataDescriptions()->size(); ++i)
+    for(size_t i=0; i<pNode->getDataDescriptions()->size(); ++i)
     {
         if(pNode->getDataDescription(i)->varType == hopsan::TLM)        //C variable
         {
@@ -1104,7 +1108,8 @@ NodeInfo::NodeInfo(QString nodeType)
         }
     }
 
-    delete(pNode);
+    gHopsanCore.removeNode(pNode);
+    //delete(pNode);
 }
 
 void NodeInfo::getNodeTypes(QStringList &nodeTypes)
