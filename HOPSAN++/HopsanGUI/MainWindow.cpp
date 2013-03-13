@@ -937,11 +937,11 @@ void MainWindow::createToolbars()
 
     //! @todo whay are these two in teh createToolbars function
     mpExamplesMenu = new QMenu("Example Models");
-    QDir exampleModelsDir(QString(MODELS_DEV_PATH+"Example Models/"));
+    QDir exampleModelsDir(gDesktopHandler.getModelsPath()+"Example Models/");
     buildModelActionsMenu(mpExamplesMenu, exampleModelsDir);
 
     mpTestModelsMenu = new QMenu("Test Models");
-    QDir testModelsDir(QString(MODELS_DEV_PATH+"Component Test/"));
+    QDir testModelsDir(gDesktopHandler.getModelsPath()+"Component Test/");
     buildModelActionsMenu(mpTestModelsMenu, testModelsDir);
 
 

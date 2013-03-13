@@ -9,6 +9,7 @@
 #include "MainWindow.h"
 #include "common.h"
 #include "version_gui.h"
+#include "DesktopHandler.h"
 #include "Dialogs/OptionsDialog.h"
 #include "Widgets/LibraryWidget.h"
 #include "Widgets/PlotWidget.h" //!< @todo why is this needed in here
@@ -146,7 +147,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpExampleFrame->setMouseTracking(true);
     mpExampleFrame->setFixedSize(frameW*2+spacing,frameH);
     mpExampleFrame->setLayout(mpExampleLayout);
-    QDir exampleModelsDir(QString(MODELS_DEV_PATH+"Example Models/"));
+    QDir exampleModelsDir(gDesktopHandler.getModelsPath()+"Example Models/");
     QStringList filters;
     filters << "*.hmf";
     exampleModelsDir.setNameFilters(filters);
@@ -411,7 +412,7 @@ void WelcomeWidget::openRecentModel()
 //! @brief Slot that loads an example model, based on the name of the calling action
 void WelcomeWidget::openExampleModel()
 {
-    gpMainWindow->mpProjectTabs->loadModel(QString(MODELS_DEV_PATH)+"Example Models/"+mExampleModelList.at(mpExampleList->currentIndex().row()));
+    gpMainWindow->mpProjectTabs->loadModel(gDesktopHandler.getModelsPath()+"Example Models/"+mExampleModelList.at(mpExampleList->currentIndex().row()));
 }
 
 
