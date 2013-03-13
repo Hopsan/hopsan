@@ -62,7 +62,7 @@ void DesktopHandler::setupPaths()
     {
         dummyFile1.close();
         qDebug() << "Documents path is NOT writable!";
-        QMessageBox::information(0, "Choose documents path", "Default data directory is not writable. Please choose a different path.", "Okay");
+        QMessageBox::information(0, "Choose documents path", "Default data directory is not writable:\n\n"+mDefaultDataPath+"\n\nPlease choose a different path.", "Okay");
         QWidget *pWidget = new QWidget();
         QFileDialog *pDialog = new QFileDialog(pWidget);
         mCustomDocumentsPath = pDialog->getExistingDirectory(pWidget, "Choose Documents Directory",
@@ -77,10 +77,10 @@ void DesktopHandler::setupPaths()
 
 
     //Make sure documents path exists, ask user for custom path if default cannot be created
-    QDir documentsDir(mDefaultDataPath);
+    QDir documentsDir(mDefaultDocumentsPath);
     if (!documentsDir.exists())
     {
-        documentsDir.mkpath(mDefaultDataPath);
+        documentsDir.mkpath(mDefaultDocumentsPath);
     }
     QFile dummyFile2(mDefaultDocumentsPath+"/HOPSANDUMMYTESTFILETHATWILLBEREMOVED");
     if(dummyFile2.exists())
@@ -95,7 +95,7 @@ void DesktopHandler::setupPaths()
     {
         dummyFile2.close();
         qDebug() << "Documents path is NOT writable!";
-        QMessageBox::information(0, "Choose documents path", "Default documents directory is not writable. Please choose a different path.", "Okay");
+        QMessageBox::information(0, "Choose documents path", "Default documents directory is not writable:\n\n"+mDefaultDocumentsPath+"\n\nPlease choose a different path.", "Okay");
         QWidget *pWidget = new QWidget();
         QFileDialog *pDialog = new QFileDialog(pWidget);
         mCustomDocumentsPath = pDialog->getExistingDirectory(pWidget, "Choose Documents Directory",
