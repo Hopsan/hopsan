@@ -118,9 +118,9 @@ Disables the simulation progress bar. Example: hopsan.turnOffProgressBar()
 
 \section componentcommands Component Commands
 
-\subsection getparameter getParameter(parName)
+\subsection getparameter parameter(parName)
 Returns the value in parameter "parName".
-Example: Kc = hopsan.component("Orifice").getParameter("Kc")
+Example: Kc = hopsan.component("Orifice").parameter("Kc")
 
 \subsection setparameter setParameter(parName, value)
 Sets the parameter "parName" to "value".
@@ -130,6 +130,10 @@ Example: hopsan.component("Orifice").setParameter("Kc", 1e-10)
 Returns a handle to the port "portName"
 Example: hopsan.component("Orifice").port("P2")
 
+\subsection portnames portNames()
+Returns an array of port names in the component
+Example hopsan.component("Orifice").portNames()
+
 
 \section portcommands Port Commands
 
@@ -137,16 +141,16 @@ Example: hopsan.component("Orifice").port("P2")
 Opens a new plot window with the variable "dataName".
 Example: hopsan.component("Orifice").port("P2").plot("Pressure")
 
-\subsection getlastvalue getLastValue(dataName)
+\subsection getlastvalue lastData(dataName)
 Returns the last value of variabel "dataName".
-Example: lastP1 = hopsan.component("Orifice").port("P2").getLastValue("Pressure")
+Example: lastP1 = hopsan.component("Orifice").port("P2").lastData("Pressure")
 
-\subsection getdatavector getDataVector(dataName)
+\subsection getdatavector data(dataName)
 Returns the data vector from last simulation for variable "dataName".
-Example: pressuredata = hopsan.component("Orifice").port("P2").getDataVector("Pressure")
+Example: pressuredata = hopsan.component("Orifice").port("P2").data("Pressure")
 
-\subsection gettimevector getTimeVector()
+\subsection gettimevector time()
 Returns the time vector from last simulation.
-Example: time = hopsan.component("Orifice").port("P2").getTimeVector()
+Example: time = hopsan.component("Orifice").port("P2").time()
 */
 
