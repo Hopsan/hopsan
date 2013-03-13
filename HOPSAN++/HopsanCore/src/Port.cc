@@ -38,7 +38,7 @@ using namespace hopsan;
 //! @brief Port base class constructor
 Port::Port(const string nodeType, const string portName, Component *pPortOwner, Port *pParentPort)
 {
-    mPortType = UNDEFINEDPORT;
+    mPortType = UndefinedPortType;
     mPortName = portName;
     mNodeType = nodeType;
     mpComponent = pPortOwner;
@@ -245,7 +245,7 @@ vector<Port*> &Port::getConnectedPorts(const int /*portIdx*/)
 }
 
 
-void Port::createStartNode(NodeTypeT nodeType)
+void Port::createStartNode(std::string nodeType)
 {
     //mpStartNode = createNodeTemp(getComponent()->getHopsanEssentials(), nodeType);
     mpStartNode = getComponent()->getHopsanEssentials()->createNode(nodeType);
@@ -618,7 +618,7 @@ size_t Port::getNumPorts()
 //! @brief Convenience functin to check if port is multiport
 bool Port::isMultiPort() const
 {
-    return (mPortType > MULTIPORT);
+    return (mPortType > MultiportType);
 }
 
 Port *Port::getParentPort() const
@@ -662,7 +662,7 @@ const string Port::getComponentName() const
 //! @brief SystemPort constructor
 SystemPort::SystemPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner, pParentPort)
 {
-    mPortType = SYSTEMPORT;
+    mPortType = SystemPortType;
 }
 
 //! @brief Get the External port type (virtual, should be overloaded in systemports only)
@@ -705,7 +705,7 @@ PortTypesEnumT SystemPort::getInternalPortType()
 //! @brief PowerPort constructor
 PowerPort::PowerPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner, pParentPort)
 {
-    mPortType = POWERPORT;
+    mPortType = PowerPortType;
     if(getComponent()->isComponentC())
     {
         createStartNode(mNodeType);
@@ -715,7 +715,7 @@ PowerPort::PowerPort(std::string node_type, std::string portname, Component *por
 
 ReadPort::ReadPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner, pParentPort)
 {
-    mPortType = READPORT;
+    mPortType = ReadPortType;
 }
 
 
@@ -735,7 +735,7 @@ void ReadPort::writeNode(const size_t /*idx*/, const double /*value*/) const
 
 WritePort::WritePort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner, pParentPort)
 {
-    mPortType = WRITEPORT;
+    mPortType = WritePortType;
     createStartNode(mNodeType);
 }
 
@@ -756,7 +756,7 @@ double WritePort::readNode(const size_t /*idx*/) const
 
 MultiPort::MultiPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner, pParentPort)
 {
-    mPortType = MULTIPORT;
+    mPortType = MultiportType;
 }
 
 MultiPort::~MultiPort()
@@ -971,7 +971,7 @@ std::vector<Port*> &MultiPort::getConnectedPorts(const int portIdx)
 
 PowerMultiPort::PowerMultiPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : MultiPort(node_type, portname, portOwner, pParentPort)
 {
-    mPortType = POWERMULTIPORT;
+    mPortType = PowerMultiportType;
     if(getComponent()->isComponentC())
     {
         createStartNode(mNodeType);
@@ -981,19 +981,19 @@ PowerMultiPort::PowerMultiPort(std::string node_type, std::string portname, Comp
 //! Adds a subport to a powermultiport
 Port* PowerMultiPort::addSubPort()
 {
-    mSubPortsVector.push_back( createPort(POWERPORT, mNodeType, "noname_subport", 0, this) );
+    mSubPortsVector.push_back( createPort(PowerPortType, mNodeType, "noname_subport", 0, this) );
     return mSubPortsVector.back();
 }
 
 ReadMultiPort::ReadMultiPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : MultiPort(node_type, portname, portOwner, pParentPort)
 {
-    mPortType = READMULTIPORT;
+    mPortType = ReadMultiportType;
 }
 
 //! Adds a subport to a readmultiport
 Port* ReadMultiPort::addSubPort()
 {
-    mSubPortsVector.push_back( createPort(READPORT, mNodeType, "noname_subport", 0, this) );
+    mSubPortsVector.push_back( createPort(ReadPortType, mNodeType, "noname_subport", 0, this) );
     return mSubPortsVector.back();
 }
 
@@ -1004,26 +1004,26 @@ Port* ReadMultiPort::addSubPort()
 //! @param [in] pPortOwner A pointer to the owner component
 //! @param [in] pParentPort A pointer to the parent port in case of creation of a subport to a multiport
 //! @return A pointer to the created port
-Port* hopsan::createPort(const PortTypesEnumT portType, const NodeTypeT nodeType, const string name, Component *pPortOwner, Port *pParentPort)
+Port* hopsan::createPort(const PortTypesEnumT portType, const std::string nodeType, const string name, Component *pPortOwner, Port *pParentPort)
 {
     switch (portType)
     {
-    case POWERPORT :
+    case PowerPortType :
         return new PowerPort(nodeType, name, pPortOwner, pParentPort);
         break;
-    case WRITEPORT :
+    case WritePortType :
         return new WritePort(nodeType, name, pPortOwner, pParentPort);
         break;
-    case READPORT :
+    case ReadPortType :
         return new ReadPort(nodeType, name, pPortOwner, pParentPort);
         break;
-    case SYSTEMPORT :
+    case SystemPortType :
         return new SystemPort(nodeType, name, pPortOwner, pParentPort);
         break;
-    case POWERMULTIPORT :
+    case PowerMultiportType :
         return new PowerMultiPort(nodeType, name, pPortOwner, pParentPort);
         break;
-    case READMULTIPORT :
+    case ReadMultiportType :
         return new ReadMultiPort(nodeType, name, pPortOwner, pParentPort);
         break;
     default :
@@ -1038,25 +1038,25 @@ std::string hopsan::portTypeToString(const PortTypesEnumT type)
 {
     switch (type)
     {
-    case POWERPORT :
+    case PowerPortType :
         return "POWERPORT";
         break;
-    case READPORT :
+    case ReadPortType :
         return "READPORT";
         break;
-    case WRITEPORT :
+    case WritePortType :
         return "WRITEPORT";
         break;
-    case SYSTEMPORT :
+    case SystemPortType :
         return "SYSTEMPORT";
         break;
-    case MULTIPORT:
+    case MultiportType:
         return "MULTIPORT";
         break;
-    case POWERMULTIPORT:
+    case PowerMultiportType:
         return "POWERMULTIPORT";
         break;
-    case READMULTIPORT:
+    case ReadMultiportType:
         return "READMULTIPORT";
         break;
     default :

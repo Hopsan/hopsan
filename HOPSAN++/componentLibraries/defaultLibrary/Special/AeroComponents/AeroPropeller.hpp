@@ -135,15 +135,15 @@ public:
         mpPmr1=addPowerPort("Pmr1","NodeMechanicRotational");
 
         //Add inputVariables ports to the component
-        mpPUp=addReadPort("PUp","NodeSignal", Port::NOTREQUIRED);
-        mpPrho=addReadPort("Prho","NodeSignal", Port::NOTREQUIRED);
+        mpPUp=addReadPort("PUp","NodeSignal", Port::NotRequired);
+        mpPrho=addReadPort("Prho","NodeSignal", Port::NotRequired);
 
         //Add outputVariables ports to the component
-        mpPthrust=addWritePort("Pthrust","NodeSignal", Port::NOTREQUIRED);
-        mpPtorque=addWritePort("Ptorque","NodeSignal", Port::NOTREQUIRED);
-        mpPPin=addWritePort("PPin","NodeSignal", Port::NOTREQUIRED);
-        mpPPout=addWritePort("PPout","NodeSignal", Port::NOTREQUIRED);
-        mpPJp=addWritePort("PJp","NodeSignal", Port::NOTREQUIRED);
+        mpPthrust=addWritePort("Pthrust","NodeSignal", Port::NotRequired);
+        mpPtorque=addWritePort("Ptorque","NodeSignal", Port::NotRequired);
+        mpPPin=addWritePort("PPin","NodeSignal", Port::NotRequired);
+        mpPPout=addWritePort("PPout","NodeSignal", Port::NotRequired);
+        mpPJp=addWritePort("PJp","NodeSignal", Port::NotRequired);
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("dp", "Propeller diameter", "m", mdp);

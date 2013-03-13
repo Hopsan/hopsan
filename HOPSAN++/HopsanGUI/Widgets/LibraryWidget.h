@@ -59,7 +59,7 @@ public:
     void update();
     void loadTreeView(LibraryContentsTree *tree, QTreeWidgetItem *parentItem = 0);
     void loadDualView(LibraryContentsTree *tree, QTreeWidgetItem *parentItem = 0);
-    void loadLibrary(QString libDir, const InternalExternalEnumT int_ext = INTERNAL, QString libName="");
+    void loadLibrary(QString libDir, const InternalExternalEnumT int_ext = Internal, QString libName="");
     void loadAndRememberExternalLibrary(const QString libDir, const QString libName="");
     void unloadExternalLibrary(const QString libName, const QString parentLibName);
     void loadHiddenSecretDir(QString dir);
@@ -71,7 +71,7 @@ public:
     ModelObjectAppearance *getAppearanceData(const QString compType, const QString compSubType);
     QSize sizeHint() const;
 
-    graphicsType mGfxType;
+    GraphicsTypeEnumT mGfxType;
     QLabel *mpComponentNameField;
     QStringList mLoadedComponents;
 
@@ -79,7 +79,7 @@ public slots:
     void generateComponent();
     void addExternalLibrary(QString libDir = QString());
     void importFmu();
-    void setGfxType(graphicsType gfxType);
+    void setGfxType(GraphicsTypeEnumT gfxType);
     void setListView();
     void setDualView();
     void clearHoverEffects();

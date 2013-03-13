@@ -139,10 +139,10 @@ public:
         //Add inputVariables ports to the component
 
         //Add outputVariables ports to the component
-        mpPvc=addWritePort("Pvc","NodeSignal", Port::NOTREQUIRED);
-        mpPxc=addWritePort("Pxc","NodeSignal", Port::NOTREQUIRED);
-        mpPfd=addWritePort("Pfd","NodeSignal", Port::NOTREQUIRED);
-        mpPfr=addWritePort("Pfr","NodeSignal", Port::NOTREQUIRED);
+        mpPvc=addWritePort("Pvc","NodeSignal", Port::NotRequired);
+        mpPxc=addWritePort("Pxc","NodeSignal", Port::NotRequired);
+        mpPfd=addWritePort("Pfd","NodeSignal", Port::NotRequired);
+        mpPfr=addWritePort("Pfr","NodeSignal", Port::NotRequired);
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("Mc", "Vehicle inertia at", "kg", mMc);

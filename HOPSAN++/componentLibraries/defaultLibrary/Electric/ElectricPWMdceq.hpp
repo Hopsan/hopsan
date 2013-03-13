@@ -115,10 +115,10 @@ public:
         mpPel2=addPowerPort("Pel2","NodeElectric");
 
         //Add inputVariables ports to the component
-        mpPtfac=addReadPort("Ptfac","NodeSignal", Port::NOTREQUIRED);
+        mpPtfac=addReadPort("Ptfac","NodeSignal", Port::NotRequired);
 
         //Add outputVariables ports to the component
-        mpPuel10=addWritePort("Puel10","NodeSignal", Port::NOTREQUIRED);
+        mpPuel10=addWritePort("Puel10","NodeSignal", Port::NotRequired);
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("resist0", "loss resistans (at 2)", "ohm", \

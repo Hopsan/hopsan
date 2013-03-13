@@ -37,7 +37,7 @@
 using namespace std;
 
 
-Widget::Widget(QPointF pos, qreal rot, selectionStatus startSelected, ContainerObject *pSystem, QGraphicsItem *pParent)
+Widget::Widget(QPointF pos, qreal rot, SelectionStatusEnumT startSelected, ContainerObject *pSystem, QGraphicsItem *pParent)
     : WorkspaceObject(pos, rot, startSelected, pSystem, pParent)
 {
     setFlag(QGraphicsItem::ItemIsMovable, true);
@@ -86,7 +86,7 @@ QVariant Widget::itemChange(GraphicsItemChange change, const QVariant &value)
 }
 
 
-void Widget::deleteMe(undoStatus /*undoSettings*/)
+void Widget::deleteMe(UndoStatusEnumT /*undoSettings*/)
 {
     assert(1 == 2);
 }
@@ -127,7 +127,7 @@ void Widget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 }
 
 
-TextBoxWidget::TextBoxWidget(QString text, QPointF pos, qreal rot, selectionStatus startSelected, ContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent)
+TextBoxWidget::TextBoxWidget(QString text, QPointF pos, qreal rot, SelectionStatusEnumT startSelected, ContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent)
     : Widget(pos, rot, startSelected, pSystem, pParent)
 {
     mType="TextBoxWidget";
@@ -172,7 +172,7 @@ TextBoxWidget::TextBoxWidget(QString text, QPointF pos, qreal rot, selectionStat
 
 
 TextBoxWidget::TextBoxWidget(const TextBoxWidget &other, ContainerObject *pSystem)
-    : Widget(other.pos(), other.rotation(), DESELECTED, pSystem, 0)
+    : Widget(other.pos(), other.rotation(), Deselected, pSystem, 0)
 {
     mType = other.mType;
     mpRectItem = new QGraphicsRectItem(other.mpRectItem->rect(), this, pSystem->getContainedScenePtr());
@@ -379,7 +379,7 @@ void TextBoxWidget::mouseDoubleClickEvent(QGraphicsSceneMouseEvent */*event*/)
     mpEditDialog->setLayout(pDialogLayout);
     mpEditDialog->show();
 
-    this->setZValue(WIDGET_Z);
+    this->setZValue(WidgetZValue);
     this->setFlags(QGraphicsItem::ItemStacksBehindParent);
 
     mSelectedColor = mpRectItem->pen().color();
@@ -536,7 +536,7 @@ void TextBoxWidget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     }
 }
 
-void TextBoxWidget::deleteMe(undoStatus undoSettings)
+void TextBoxWidget::deleteMe(UndoStatusEnumT undoSettings)
 {
     mpParentContainerObject->deleteWidget(this, undoSettings);
 }

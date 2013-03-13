@@ -52,8 +52,8 @@ namespace hopsan {
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
-            mpP3 = addPowerPort("P3", "NodeHydraulic", Port::NOTREQUIRED);
-            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
+            mpP3 = addPowerPort("P3", "NodeHydraulic", Port::NotRequired);
+            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
         }
 
         void initialize()

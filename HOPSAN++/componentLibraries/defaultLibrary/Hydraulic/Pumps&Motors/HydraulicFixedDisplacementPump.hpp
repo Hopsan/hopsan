@@ -61,7 +61,7 @@ namespace hopsan {
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
-            mpOut = addWritePort("a", "NodeSignal", Port::NOTREQUIRED);
+            mpOut = addWritePort("a", "NodeSignal", Port::NotRequired);
 
             registerParameter("n_p", "Angular Velocity", "[rad/s]", n);
             registerParameter("D_p", "Displacement", "[m^3/rev]", dp);

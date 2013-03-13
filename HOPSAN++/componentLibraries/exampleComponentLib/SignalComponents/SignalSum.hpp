@@ -56,8 +56,8 @@ public:
     void configure()
     {
         // Add ports to the component
-        mpMultiInPort = addReadMultiPort("in", "NodeSignal", Port::NOTREQUIRED);
-        mpOutPort = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
+        mpMultiInPort = addReadMultiPort("in", "NodeSignal", Port::NotRequired);
+        mpOutPort = addWritePort("out", "NodeSignal", Port::NotRequired);
     }
 
     // The initialize function is called before simulation begins.

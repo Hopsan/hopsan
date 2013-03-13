@@ -783,7 +783,7 @@ void CoreSystemAccess::getPlotDataNamesAndUnits(const QString compname, const QS
     rUnits.clear();
 
     hopsan::Port* pPort = this->getCorePortPtr(compname, portname);
-    if (pPort && pPort->getPortType() < hopsan::MULTIPORT)
+    if (pPort && pPort->getPortType() < hopsan::MultiportType)
     {
         const std::vector<hopsan::NodeDataDescription>* pDescs = pPort->getNodeDataDescriptions();
         if (pDescs != 0)
@@ -1016,7 +1016,7 @@ void CoreSystemAccess::getVariableDescriptions(const QString compname, const QSt
     rVarDescriptions.clear();
 
     hopsan::Port* pPort = this->getCorePortPtr(compname, portname);
-    if (pPort && pPort->getPortType() < hopsan::MULTIPORT)
+    if (pPort && pPort->getPortType() < hopsan::MultiportType)
     {
         const std::vector<hopsan::NodeDataDescription>* pDescs = pPort->getNodeDataDescriptions();
         if (pDescs != 0)

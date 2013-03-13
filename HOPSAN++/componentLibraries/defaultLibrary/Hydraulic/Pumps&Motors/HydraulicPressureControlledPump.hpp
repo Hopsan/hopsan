@@ -74,8 +74,8 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpPREF = addPowerPort("PREF", "NodeHydraulic");
-            mpOut = addWritePort("eps", "NodeSignal", Port::NOTREQUIRED);
-            mpOut2 = addWritePort("a", "NodeSignal", Port::NOTREQUIRED);
+            mpOut = addWritePort("eps", "NodeSignal", Port::NotRequired);
+            mpOut2 = addWritePort("a", "NodeSignal", Port::NotRequired);
 
             registerParameter("p_dif", "Reference pressure difference", "[Pa]", pdif);
             registerParameter("omega_p", "Pump movement", "[rad/s]", movement);

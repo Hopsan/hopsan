@@ -50,7 +50,7 @@ namespace hopsan {
         void configure()
         {
 
-            mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
+            mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
         }
 
 

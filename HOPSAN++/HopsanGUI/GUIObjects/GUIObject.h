@@ -42,7 +42,7 @@ class WorkspaceObject : public QGraphicsWidget
     Q_OBJECT
 
 public:
-    WorkspaceObject(QPointF pos, qreal rot, selectionStatus=DESELECTED, ContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
+    WorkspaceObject(QPointF pos, qreal rot, SelectionStatusEnumT=Deselected, ContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
 
     virtual void setParentContainerObject(ContainerObject *pParentContainer);
     virtual ContainerObject *getParentContainerObject();
@@ -62,11 +62,11 @@ public:
     int type() const;
 
 public slots:
-    virtual void flipVertical(undoStatus /*undoSettings = UNDO*/){} //!< @todo nothing for now
-    virtual void flipHorizontal(undoStatus /*undoSettings = UNDO*/){}  //!< @todo nothing for now
-    virtual void rotate(qreal angle, undoStatus undoSettings=UNDO);
-    void rotate90cw(undoStatus undoSettings=UNDO);
-    void rotate90ccw(undoStatus undoSettings=UNDO);
+    virtual void flipVertical(UndoStatusEnumT /*undoSettings = UNDO*/){} //!< @todo nothing for now
+    virtual void flipHorizontal(UndoStatusEnumT /*undoSettings = UNDO*/){}  //!< @todo nothing for now
+    virtual void rotate(qreal angle, UndoStatusEnumT undoSettings=Undo);
+    void rotate90cw(UndoStatusEnumT undoSettings=Undo);
+    void rotate90ccw(UndoStatusEnumT undoSettings=Undo);
 
     void moveUp();
     void moveDown();

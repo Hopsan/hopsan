@@ -121,16 +121,16 @@ public:
         //Add ports to the component
 
         //Add inputVariables ports to the component
-        mpPy1=addReadPort("Py1","NodeSignal", Port::NOTREQUIRED);
-        mpPy2=addReadPort("Py2","NodeSignal", Port::NOTREQUIRED);
-        mpPy3=addReadPort("Py3","NodeSignal", Port::NOTREQUIRED);
-        mpPsOn=addReadPort("PsOn","NodeSignal", Port::NOTREQUIRED);
+        mpPy1=addReadPort("Py1","NodeSignal", Port::NotRequired);
+        mpPy2=addReadPort("Py2","NodeSignal", Port::NotRequired);
+        mpPy3=addReadPort("Py3","NodeSignal", Port::NotRequired);
+        mpPsOn=addReadPort("PsOn","NodeSignal", Port::NotRequired);
 
         //Add outputVariables ports to the component
-        mpPs1=addWritePort("Ps1","NodeSignal", Port::NOTREQUIRED);
-        mpPy1f=addWritePort("Py1f","NodeSignal", Port::NOTREQUIRED);
-        mpPy2f=addWritePort("Py2f","NodeSignal", Port::NOTREQUIRED);
-        mpPy3f=addWritePort("Py3f","NodeSignal", Port::NOTREQUIRED);
+        mpPs1=addWritePort("Ps1","NodeSignal", Port::NotRequired);
+        mpPy1f=addWritePort("Py1f","NodeSignal", Port::NotRequired);
+        mpPy2f=addWritePort("Py2f","NodeSignal", Port::NotRequired);
+        mpPy3f=addWritePort("Py3f","NodeSignal", Port::NotRequired);
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("y10", "treashold variable 1", "", my10);

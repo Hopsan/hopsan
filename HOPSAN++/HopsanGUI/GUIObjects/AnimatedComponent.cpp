@@ -324,16 +324,16 @@ void AnimatedComponent::setupAnimationBase(QString basePath)
     ModelObjectAppearance *baseAppearance = new ModelObjectAppearance();
     if(mpAnimationData->baseIconPath.isEmpty())
     {
-        mpAnimationData->baseIconPath = mpModelObject->getAppearanceData()->getIconPath(USERGRAPHICS, ABSOLUTE);
+        mpAnimationData->baseIconPath = mpModelObject->getAppearanceData()->getIconPath(UserGraphics, Absolute);
         if(mpAnimationData->baseIconPath.isEmpty())
         {
-            mpAnimationData->baseIconPath = mpModelObject->getAppearanceData()->getIconPath(ISOGRAPHICS, ABSOLUTE);
+            mpAnimationData->baseIconPath = mpModelObject->getAppearanceData()->getIconPath(ISOGraphics, Absolute);
         }
-        baseAppearance->setIconPath(mpAnimationData->baseIconPath, USERGRAPHICS, ABSOLUTE);
+        baseAppearance->setIconPath(mpAnimationData->baseIconPath, UserGraphics, Absolute);
     }
     else
     {
-        baseAppearance->setIconPath(basePath, USERGRAPHICS, RELATIVE);
+        baseAppearance->setIconPath(basePath, UserGraphics, Relative);
     }
     mpBase = new AnimatedIcon(mpModelObject->pos(),0,baseAppearance,this,0,0);
     mpAnimationWidget->getGraphicsScene()->addItem(mpBase);
@@ -365,7 +365,7 @@ void AnimatedComponent::setupAnimationBase(QString basePath)
 void AnimatedComponent::setupAnimationMovable(int m)
 {
     ModelObjectAppearance* pAppearance = new ModelObjectAppearance();
-    pAppearance->setIconPath(mpAnimationData->movableIconPaths[m],USERGRAPHICS, RELATIVE);
+    pAppearance->setIconPath(mpAnimationData->movableIconPaths[m],UserGraphics, Relative);
     int idx = mpAnimationData->movableIdx[m];
     QGraphicsItem *pBase = mpBase;
     if(mpAnimationData->movableRelatives[m] > -1)
@@ -429,7 +429,7 @@ void AnimatedComponent::limitMovables()
 //! @param [in] pParentContainer Pointer to container object animation is showing
 //! @param [in] pParent Parent object (QGraphicsItem), used for the coordinate system
 AnimatedIcon::AnimatedIcon(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, AnimatedComponent *pAnimatedComponent, ContainerObject *pParentContainer, int idx, QGraphicsItem *pParent)
-        : WorkspaceObject(position, rotation, DESELECTED, pParentContainer, pParent)
+        : WorkspaceObject(position, rotation, Deselected, pParentContainer, pParent)
 {
 
     //Store original position
@@ -444,7 +444,7 @@ AnimatedIcon::AnimatedIcon(QPointF position, qreal rotation, const ModelObjectAp
     //Setup appearance
     QString iconPath = mModelObjectAppearance.getFullAvailableIconPath(mIconType);
     double iconScale = mModelObjectAppearance.getIconScale(mIconType);
-    mIconType = USERGRAPHICS;
+    mIconType = UserGraphics;
     mpIcon = new QGraphicsSvgItem(iconPath, this);
     mpIcon->setFlags(QGraphicsItem::ItemStacksBehindParent);
     mpIcon->setScale(iconScale);
@@ -454,7 +454,7 @@ AnimatedIcon::AnimatedIcon(QPointF position, qreal rotation, const ModelObjectAp
     mpSelectionBox->setSize(0.0, 0.0, mpIcon->boundingRect().width()*iconScale, mpIcon->boundingRect().height()*iconScale); //Resize selection box
     this->setCenterPos(position);
 
-    this->setZValue(MODELOBJECT_Z);
+    this->setZValue(ModelobjectZValue);
 
     if(mpAnimatedComponent->mpModelObject->getSubTypeName() == "XmasSky")
     {

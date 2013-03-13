@@ -76,7 +76,7 @@ class LibraryComponent
 {
 public:
     LibraryComponent(ModelObjectAppearance *pAppearanceData);
-    QIcon getIcon(graphicsType gfxType);
+    QIcon getIcon(GraphicsTypeEnumT gfxType);
     QString getName();
     QString getFullTypeName();
     ModelObjectAppearance *getAppearanceData();
@@ -92,7 +92,7 @@ private:
 LibraryWidget::LibraryWidget(QWidget *parent)
         :   QWidget(parent)
 {
-    mUpConvertAllCAF = UNDECIDED_TO_ALL;
+    mUpConvertAllCAF = UndecidedToAll;
     mpCoreAccess = new CoreLibraryAccess();
 
     //! @todo Dont know if this is the right place to do this, but we need to do it early
@@ -169,7 +169,7 @@ LibraryWidget::LibraryWidget(QWidget *parent)
     this->setMouseTracking(true);
 
     mViewMode = gConfig.getLibraryStyle();
-    this->setGfxType(USERGRAPHICS);     //Also updates the widget
+    this->setGfxType(UserGraphics);     //Also updates the widget
 }
 
 
@@ -481,7 +481,7 @@ void LibraryWidget::loadLibrary(QString libDir, const InternalExternalEnumT int_
     // Determine where to store any backups of updated appearance xml files
     mUpdateXmlBackupDir.setPath(QString(BACKUPPATH) + "/updateXML_" + QDate::currentDate().toString("yyMMdd")  + "_" + QTime::currentTime().toString("HHmm"));
 
-    if(int_ext == EXTERNAL)
+    if(int_ext == External)
     {
         LibraryContentsTree *pExternalTree;
         if(libName.isEmpty())
@@ -581,7 +581,7 @@ void LibraryWidget::importFmu()
 void LibraryWidget::loadAndRememberExternalLibrary(const QString libDir, const QString libName)
 {
     gConfig.addUserLib(libDir, libName);     //Register new library in configuration
-    loadLibrary(libDir, EXTERNAL, libName);
+    loadLibrary(libDir, External, libName);
 }
 
 //! @brief Load contents (xml files) of dir into SecretHidden library map that is not vissible in the libary
@@ -819,7 +819,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
                 if (caf_version < CAF_VERSIONNUM)
                 {
                     bool doSave=false;
-                    if (mUpConvertAllCAF==UNDECIDED_TO_ALL)
+                    if (mUpConvertAllCAF==UndecidedToAll)
                     {
                         QMessageBox questionBox(this);
                         QString text;
@@ -847,14 +847,14 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
 
                         if (pClickedButton == pYesToAll)
                         {
-                            mUpConvertAllCAF = YES_TO_ALL;
+                            mUpConvertAllCAF = YesToAll;
                         }
                         else if (pClickedButton == pNoToAll)
                         {
-                            mUpConvertAllCAF = NO_TO_ALL;
+                            mUpConvertAllCAF = NoToAll;
                         }
                     }
-                    else if (mUpConvertAllCAF==YES_TO_ALL)
+                    else if (mUpConvertAllCAF==YesToAll)
                     {
                         doSave = true;
                     }
@@ -1420,7 +1420,7 @@ ModelObjectAppearance *LibraryWidget::getAppearanceData(const QString fullCompTy
 
 
 //! @brief Selects graphics type to be used in library (iso or user).
-void LibraryWidget::setGfxType(graphicsType gfxType)
+void LibraryWidget::setGfxType(GraphicsTypeEnumT gfxType)
 {
     mGfxType = gfxType;
     update();       //Redraw the library
@@ -1551,7 +1551,7 @@ LibraryComponent::LibraryComponent(ModelObjectAppearance *pAppearanceData)
     mpAppearanceData = pAppearanceData;
 
     //Load and store component icon
-    QString iconPath = mpAppearanceData->getFullAvailableIconPath(USERGRAPHICS);
+    QString iconPath = mpAppearanceData->getFullAvailableIconPath(UserGraphics);
     QFile iconFile(iconPath);
     if (!iconFile.exists())     //Check if specified file exist, else use unknown icon
     {
@@ -1559,7 +1559,7 @@ LibraryComponent::LibraryComponent(ModelObjectAppearance *pAppearanceData)
     }
     mUserIcon.addFile(iconPath,QSize(55,55));
     iconFile.close();
-    iconPath = mpAppearanceData->getFullAvailableIconPath(ISOGRAPHICS);
+    iconPath = mpAppearanceData->getFullAvailableIconPath(ISOGraphics);
     iconFile.setFileName(iconPath);
     if (!iconFile.exists())     //Check if specified file exist, else use unknown icon
     {
@@ -1572,9 +1572,9 @@ LibraryComponent::LibraryComponent(ModelObjectAppearance *pAppearanceData)
 
 //! @brief Returns the component's icon.
 //! @param graphicsType Graphics type to use (iso or user)
-QIcon LibraryComponent::getIcon(graphicsType gfxType)
+QIcon LibraryComponent::getIcon(GraphicsTypeEnumT gfxType)
 {
-    if(gfxType == USERGRAPHICS)
+    if(gfxType == UserGraphics)
         return mUserIcon;
     else
         return mIsoIcon;

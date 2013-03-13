@@ -37,7 +37,7 @@
 #define CAF_ROOT "hopsanobjectappearance"
 #define CAF_MODELOBJECT "modelobject"
 
-enum AbsoluteRelativeT {ABSOLUTE, RELATIVE};
+enum AbsoluteRelativeEnumT {Absolute, Relative};
 
 QDomElement appendOrGetCAFRootTag(QDomElement parentElement);
 
@@ -116,8 +116,8 @@ public:
     void setDisplayName(const QString name);
     void setHelpText(const QString text);
     void setBasePath(const QString path);
-    void setIconPath(const QString path, const graphicsType gfxType, const AbsoluteRelativeT absrel);
-    void setIconScale(const qreal scale, const graphicsType gfxType);
+    void setIconPath(const QString path, const GraphicsTypeEnumT gfxType, const AbsoluteRelativeEnumT absrel);
+    void setIconScale(const qreal scale, const GraphicsTypeEnumT gfxType);
 
     QString getTypeName() const;
     QString getSubTypeName() const;
@@ -126,10 +126,10 @@ public:
     QString getHelpPicture() const;
     QString getHelpText() const;
     QString getBasePath() const;
-    QString getFullAvailableIconPath(graphicsType gfxType=USERGRAPHICS);
-    QString getIconPath(const graphicsType gfxType, const AbsoluteRelativeT absrel);
-    qreal   getIconScale(const graphicsType gfxType=USERGRAPHICS);
-    QString getIconRotationBehaviour(const graphicsType gfxType=USERGRAPHICS);
+    QString getFullAvailableIconPath(GraphicsTypeEnumT gfxType=UserGraphics);
+    QString getIconPath(const GraphicsTypeEnumT gfxType, const AbsoluteRelativeEnumT absrel);
+    qreal   getIconScale(const GraphicsTypeEnumT gfxType=UserGraphics);
+    QString getIconRotationBehaviour(const GraphicsTypeEnumT gfxType=UserGraphics);
     QPointF getNameTextPos();
     QString getSourceCodeFile();
 
@@ -140,7 +140,7 @@ public:
     void erasePortAppearance(const QString portName);
     void addPortAppearance(const QString portName, PortAppearance *pPortAppearance=0);
 
-    bool hasIcon(const graphicsType gfxType);
+    bool hasIcon(const GraphicsTypeEnumT gfxType);
 
     void readFromDomElement(QDomElement domElement);
     void saveToDomElement(QDomElement &rDomElement);
@@ -170,7 +170,7 @@ private:
     void setRelativePathFromAbsolute();
     void setAbsoultePathFromRelative();
     void refreshIconValid();
-    graphicsType selectAvailableGraphicsType(const graphicsType type);
+    GraphicsTypeEnumT selectAvailableGraphicsType(const GraphicsTypeEnumT type);
 
     ModelObjectAnimationData mAnimationData;
 };

@@ -45,7 +45,7 @@ class Widget : public WorkspaceObject
     Q_OBJECT
 
 public:
-    Widget(QPointF pos, qreal rot, selectionStatus startSelected, ContainerObject *pSystem, QGraphicsItem *pParent=0);
+    Widget(QPointF pos, qreal rot, SelectionStatusEnumT startSelected, ContainerObject *pSystem, QGraphicsItem *pParent=0);
     QString mType;
     void setOldPos();
     void setWidgetIndex(int idx);
@@ -55,10 +55,10 @@ protected:
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 public slots:
-    virtual void deleteMe(undoStatus undoSettings=UNDO);
+    virtual void deleteMe(UndoStatusEnumT undoSettings=Undo);
     virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-    virtual void flipVertical(undoStatus /*undoSettings = UNDO*/){}
-    virtual void flipHorizontal(undoStatus /*undoSettings = UNDO*/){}
+    virtual void flipVertical(UndoStatusEnumT /*undoSettings = UNDO*/){}
+    virtual void flipHorizontal(UndoStatusEnumT /*undoSettings = UNDO*/){}
 
 protected:
     int mWidgetIndex;
@@ -71,7 +71,7 @@ class TextBoxWidget : public Widget
     Q_OBJECT
 
 public:
-    TextBoxWidget(QString text, QPointF pos, qreal rot, selectionStatus startSelected, ContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent=0);
+    TextBoxWidget(QString text, QPointF pos, qreal rot, SelectionStatusEnumT startSelected, ContainerObject *pSystem, size_t widgetIndex, QGraphicsItem *pParent=0);
     TextBoxWidget(const TextBoxWidget &other, ContainerObject *pSystem);
     void saveToDomElement(QDomElement &rDomElement);
 
@@ -91,9 +91,9 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 
 public slots:
-    void deleteMe(undoStatus undoSettings=UNDO);
-    virtual void flipVertical(undoStatus /*undoSettings = UNDO*/){}
-    virtual void flipHorizontal(undoStatus /*undoSettings = UNDO*/){}
+    void deleteMe(UndoStatusEnumT undoSettings=Undo);
+    virtual void flipVertical(UndoStatusEnumT /*undoSettings = UNDO*/){}
+    virtual void flipHorizontal(UndoStatusEnumT /*undoSettings = UNDO*/){}
 
 private slots:
     void updateWidgetFromDialog();

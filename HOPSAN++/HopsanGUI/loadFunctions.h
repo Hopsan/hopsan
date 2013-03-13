@@ -36,15 +36,15 @@ class ContainerObject;
 class TextBoxWidget;
 
 
-ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, ContainerObject* pContainer, undoStatus undoSettings=UNDO);
+ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, ContainerObject* pContainer, UndoStatusEnumT undoSettings=Undo);
 
-ModelObject* loadContainerPortObject(QDomElement &rDomElement, LibraryWidget* pLibrary, ContainerObject* pContainer, undoStatus undoSettings=UNDO);
+ModelObject* loadContainerPortObject(QDomElement &rDomElement, LibraryWidget* pLibrary, ContainerObject* pContainer, UndoStatusEnumT undoSettings=Undo);
 
-bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, undoStatus undoSettings=UNDO);
+bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, UndoStatusEnumT undoSettings=Undo);
 
-void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, undoStatus undoSettings=UNDO);
+void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStatusEnumT undoSettings=Undo);
 
-void loadStartValue(QDomElement &rDomElement, ModelObject* pObject, undoStatus undoSettings=UNDO);
+void loadStartValue(QDomElement &rDomElement, ModelObject* pObject, UndoStatusEnumT undoSettings=Undo);
 
 void loadSystemParameter(QDomElement &rDomElement, double hmfVersion, ContainerObject* pContainer);
 
@@ -52,6 +52,6 @@ void loadFavoriteVariable(QDomElement &rDomElement, ContainerObject* pContainer)
 
 void loadPlotAlias(QDomElement &rDomElement, ContainerObject* pContainer);
 
-TextBoxWidget* loadTextBoxWidget(QDomElement &rDomElement, ContainerObject *pContainer, undoStatus undoSettings=UNDO);
+TextBoxWidget* loadTextBoxWidget(QDomElement &rDomElement, ContainerObject *pContainer, UndoStatusEnumT undoSettings=Undo);
 
 #endif // LOADFUNCTIONS_H

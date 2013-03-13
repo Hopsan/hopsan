@@ -431,7 +431,7 @@ void ProjectTab::startCoSimulation()
 //! @see saveProjectTab(int index)
 void ProjectTab::save()
 {
-    saveModel(EXISTINGFILE);
+    saveModel(ExistingFile);
 }
 
 
@@ -439,12 +439,12 @@ void ProjectTab::save()
 //! @see saveProjectTab(int index)
 void ProjectTab::saveAs()
 {
-    saveModel(NEWFILE);
+    saveModel(NewFile);
 }
 
 void ProjectTab::exportModelParameters()
 {
-    saveModel(NEWFILE, PARAMETERSONLY);
+    saveModel(NewFile, ParametersOnly);
 
 
 //    //saveModel(NEWFILE);
@@ -671,10 +671,10 @@ void ProjectTab::openCurrentContainerInNewTab()
 //! @param saveAsFlag tells whether or not an already existing file name shall be used
 //! @see saveProjectTab()
 //! @see loadModel()
-void ProjectTab::saveModel(saveTarget saveAsFlag, saveContents contents)
+void ProjectTab::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT contents)
 {
     // Backup old save file before saving (if old file exists)
-    if(saveAsFlag == EXISTINGFILE)
+    if(saveAsFlag == ExistingFile)
     {
         QFile backupFile(mpToplevelSystem->getModelFileInfo().filePath());
         QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
@@ -688,14 +688,14 @@ void ProjectTab::saveModel(saveTarget saveAsFlag, saveContents contents)
     }
 
     //Get file name in case this is a save as operation
-    if((mpToplevelSystem->getModelFileInfo().filePath().isEmpty()) || (saveAsFlag == NEWFILE))
+    if((mpToplevelSystem->getModelFileInfo().filePath().isEmpty()) || (saveAsFlag == NewFile))
     {
         QString filter;
-        if(contents==FULLMODEL)
+        if(contents==FullModel)
         {
             filter = tr("Hopsan Model Files (*.hmf)");
         }
-        else if(contents==PARAMETERSONLY)
+        else if(contents==ParametersOnly)
         {
             filter = tr("Hopsan Parameter Files (*.hpf)");
         }
@@ -709,7 +709,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag, saveContents contents)
         {
             return;
         }
-        if(contents==FULLMODEL)
+        if(contents==FullModel)
         {
             mpToplevelSystem->setModelFile(modelFilePath);
         }
@@ -723,7 +723,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag, saveContents contents)
         return;
     }
 
-    if(contents==FULLMODEL)
+    if(contents==FullModel)
     {
             //Sets the model name (must set this name before saving or else systemports wont know the real name of their rootsystem parent)
         mpToplevelSystem->setName(mpToplevelSystem->getModelFileInfo().baseName());
@@ -735,7 +735,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag, saveContents contents)
         //Save xml document
     QDomDocument domDocument;
     QDomElement rootElement;
-    if(contents==FULLMODEL)
+    if(contents==FullModel)
     {
         rootElement = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
     }
@@ -745,7 +745,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag, saveContents contents)
         domDocument.appendChild(rootElement);
     }
 
-    if(contents==FULLMODEL)
+    if(contents==FullModel)
     {
             // Save the required external lib names
         QVector<QString> extLibNames;
@@ -781,7 +781,7 @@ void ProjectTab::saveModel(saveTarget saveAsFlag, saveContents contents)
         //Set the tab name to the model name, efectively removing *, also mark the tab as saved
     QString tabName = mpToplevelSystem->getModelFileInfo().baseName();
     mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
-    if(contents == FULLMODEL)
+    if(contents == FullModel)
     {
         gConfig.addRecentModel(mpToplevelSystem->getModelFileInfo().filePath());
         gpMainWindow->updateRecentList();

@@ -228,7 +228,6 @@ HEADERS += \
     Hydraulic/Valves/HydraulicOverCenterValve.hpp \
     Hydraulic/Valves/HydraulicOpenCenterValve.hpp \
     Hydraulic/Restrictors/HydraulicLossLessTConnector.hpp \
-    Components.h \
     defaultComponentLibraryInternal.h \
     Signal/HopsanDefaultSignalComponents.h \
     Mechanic/HopsanDefaultMechanicComponents.h \
@@ -239,7 +238,8 @@ HEADERS += \
     Connectivity/PneumaticInterfaceQ.hpp \
     Connectivity/PneumaticInterfaceC.hpp \
     Connectivity/ElectricInterfaceQ.hpp \
-    Connectivity/ElectricInterfaceC.hpp
+    Connectivity/ElectricInterfaceC.hpp \
+    defaultComponents.h
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \

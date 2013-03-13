@@ -64,12 +64,12 @@ public:
         //Add ports to the component
 
         //Add inputVariables ports to the component
-        mpPin0=addReadPort("Pin0","NodeSignal", Port::NOTREQUIRED);
+        mpPin0=addReadPort("Pin0","NodeSignal", Port::NotRequired);
 
         //Add outputVariables ports to the component
-        mpPstate=addWritePort("Pstate","NodeSignal", Port::NOTREQUIRED);
-        mpPout0=addWritePort("Pout0","NodeSignal", Port::NOTREQUIRED);
-        mpPout1=addWritePort("Pout1","NodeSignal", Port::NOTREQUIRED);
+        mpPstate=addWritePort("Pstate","NodeSignal", Port::NotRequired);
+        mpPout0=addWritePort("Pout0","NodeSignal", Port::NotRequired);
+        mpPout1=addWritePort("Pout1","NodeSignal", Port::NotRequired);
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("in0", "Input 0", "", min0);

@@ -69,8 +69,8 @@ public:
         mpPmr1=addPowerPort("Pmr1","NodeMechanicRotational");
 
         //Add inputVariables ports to the component
-        mpPthetain=addReadPort("thetain","NodeSignal", Port::NOTREQUIRED);
-        mpPwin=addReadPort("win","NodeSignal", Port::NOTREQUIRED);
+        mpPthetain=addReadPort("thetain","NodeSignal", Port::NotRequired);
+        mpPwin=addReadPort("win","NodeSignal", Port::NotRequired);
 
         //Add outputVariables ports to the component
 

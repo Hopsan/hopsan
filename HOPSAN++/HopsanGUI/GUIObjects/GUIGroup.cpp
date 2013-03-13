@@ -78,7 +78,7 @@ CoreSystemAccess* GroupContainer::getCoreSystemAccessPtr()
 //! @param scene is the scene which should contain the group.
 //! @param parent is the parent QGraphicsItem for the group, default = 0.
 GroupContainer::GroupContainer(QPointF position, qreal rotation, const ModelObjectAppearance *pAppearanceData, ContainerObject *pParentContainer)
-    :   ContainerObject(position, rotation, pAppearanceData, DESELECTED, USERGRAPHICS, pParentContainer, pParentContainer)
+    :   ContainerObject(position, rotation, pAppearanceData, Deselected, UserGraphics, pParentContainer, pParentContainer)
 {
     qDebug() << "GUIGroup: ,,,,,,,,,,,,,,setting parent to: " << pParentContainer;
     //Set the hmf save tag name

@@ -65,7 +65,7 @@ Node::Node(const size_t datalength)
 //!
 //! @brief returns the node type
 //!
-const NodeTypeT Node::getNodeType() const
+const std::string Node::getNodeType() const
 {
     return mNodeType;
 }
@@ -121,7 +121,7 @@ string Node::getNiceName() const
 //! @param [in] id This is the ENUM data id
 //! @param [in] name The variable name
 //! @param [in] unit The variable unit
-void Node::setDataCharacteristics(const size_t id, const string name, const string shortname, const string unit, const NodeDataVariableTypeT vartype)
+void Node::setDataCharacteristics(const size_t id, const string name, const string shortname, const string unit, const NodeDataVariableTypeEnumT vartype)
 {
     mDataDescriptions[id].id = id;
     mDataDescriptions[id].name = name;
@@ -246,7 +246,7 @@ Component *Node::getWritePortComponentPtr() const
 {
     for(size_t i=0; i<mConnectedPorts.size(); ++i)
     {
-        if(mConnectedPorts.at(i)->getPortType() == WRITEPORT)
+        if(mConnectedPorts.at(i)->getPortType() == WritePortType)
         {
             return mConnectedPorts.at(i)->getComponent();
         }
@@ -356,24 +356,3 @@ ComponentSystem *Node::getOwnerSystem() const
 {
     return mpOwnerSystem;
 }
-
-
-//#include "HopsanEssentials.h"
-////! @deprecated
-//DLLIMPORTEXPORT Node* hopsan::createNodeTemp(HopsanEssentials *pHopEss, NodeTypeT node_type)
-//{
-//    if (pHopEss != 0)
-//    {
-//        return pHopEss->createNode(node_type);
-//    }
-
-//    // Create dummy node
-//    //! @warning will leak memory
-//    cout << "Error: HopsanEssentials ptr = 0, when creating node. This is VERY BAD !" << endl;
-//    Node *pDummy = new Node(20);
-//    for (int i=0; i<20; ++i)
-//    {
-//        //pDummy->setDataCharacteristics(i, "name", "shortname", "unit", Default);
-//    }
-//    return pDummy;
-//}

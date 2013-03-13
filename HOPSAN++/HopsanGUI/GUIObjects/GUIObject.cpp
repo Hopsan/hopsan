@@ -34,7 +34,7 @@
 #include <cassert>
 
 
-WorkspaceObject::WorkspaceObject(QPointF pos, qreal rot, selectionStatus, ContainerObject *pParentContainer, QGraphicsItem *pParent)
+WorkspaceObject::WorkspaceObject(QPointF pos, qreal rot, SelectionStatusEnumT, ContainerObject *pParentContainer, QGraphicsItem *pParent)
     : QGraphicsWidget(pParent)
 {
     //Initi variables
@@ -54,7 +54,7 @@ WorkspaceObject::WorkspaceObject(QPointF pos, qreal rot, selectionStatus, Contai
     //Set position orientation and other appearance stuff
     //Initially we dont know the selection box size
     mpSelectionBox = new WorkspaceObjectSelectionBox(0.0, 0.0, 0.0, 0.0, QPen(QColor("red"),2), QPen(QColor("darkRed"),2), this);
-    mpSelectionBox->setZValue(SELECTIONBOX_Z);
+    mpSelectionBox->setZValue(SelectionboxZValue);
     mpSelectionBox->setPassive();
     this->setGeometry(0,0,0,0);
     this->setTransformOriginPoint(boundingRect().center());
@@ -291,7 +291,7 @@ QVariant WorkspaceObject::itemChange(GraphicsItemChange change, const QVariant &
 //! @param angle Angle to rotate to
 //! @param undoSettings Tells whether or not this shall be registered in undo stack
 //! @note Undo registration will not work for obejcts or widgets as they have no name
-void WorkspaceObject::rotate(qreal angle, undoStatus /*undoSettings*/)
+void WorkspaceObject::rotate(qreal angle, UndoStatusEnumT /*undoSettings*/)
 {
     this->setTransformOriginPoint(this->boundingRect().center());
     if(mIsFlipped)
@@ -305,7 +305,7 @@ void WorkspaceObject::rotate(qreal angle, undoStatus /*undoSettings*/)
 //! @brief Rotates a component 90 degrees clockwise
 //! @param undoSettings Tells whether or not this shall be registered in undo stack
 //! @see rotate(qreal angle, undoStatus undoSettings)
-void WorkspaceObject::rotate90cw(undoStatus undoSettings)
+void WorkspaceObject::rotate90cw(UndoStatusEnumT undoSettings)
 {
     this->rotate(90, undoSettings);
 }
@@ -313,7 +313,7 @@ void WorkspaceObject::rotate90cw(undoStatus undoSettings)
 //! @brief Rotates a component 90 degrees counter-clockwise
 //! @param undoSettings Tells whether or not this shall be registered in undo stack
 //! @see rotate(qreal angle, undoStatus undoSettings)
-void WorkspaceObject::rotate90ccw(undoStatus undoSettings)
+void WorkspaceObject::rotate90ccw(UndoStatusEnumT undoSettings)
 {
     this->rotate(-90, undoSettings);
 }

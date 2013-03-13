@@ -55,7 +55,7 @@ namespace hopsan {
             mHysteresisWidth = 1.0;
 
             mpIn = addReadPort("in", "NodeSignal");
-            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
+            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
 
             registerParameter("y_h", "Width of the Hysteresis", "[-]", mHysteresisWidth);
         }

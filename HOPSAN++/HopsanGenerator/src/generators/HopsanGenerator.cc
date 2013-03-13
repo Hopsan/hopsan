@@ -294,7 +294,7 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
                    << "(\"" << comp.portNames[i] << "\", \"" << comp.portNodeTypes[i] << "\"";
         if(comp.portNotReq[i])
         {
-            codeStream << ", Port::NOTREQUIRED);\n";
+            codeStream << ", Port::NotRequired);\n";
         }
         else
         {

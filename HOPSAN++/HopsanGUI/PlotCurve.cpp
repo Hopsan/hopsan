@@ -160,7 +160,7 @@ CurveInfoBox::CurveInfoBox(PlotCurve *pParentPlotCurve, QWidget *parent)
 
     this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-    if(mpParentPlotCurve->getCurveType() != PORTVARIABLE)
+    if(mpParentPlotCurve->getCurveType() != PortVariableType)
     {
         pAutoUpdateCheckBox->setDisabled(true);
         mpGenerationSpinBox->setDisabled(true);
@@ -277,8 +277,8 @@ void CurveInfoBox::setGeneration(int gen)
 PlotCurve::PlotCurve(SharedLogVariableDataPtrT pData,
                      int axisY,
                      PlotTab *parent,
-                     HopsanPlotID plotID,
-                     HopsanPlotCurveType curveType)
+                     HopsanPlotIDEnumT plotID,
+                     HopsanPlotCurveTypeEnumT curveType)
 {
     mHaveCustomData = false;
     mpData = pData;
@@ -291,8 +291,8 @@ PlotCurve::PlotCurve(const VariableDescription &rVarDesc,
                      const QVector<double> &rYVector,
                      int axisY,
                      PlotTab *parent,
-                     HopsanPlotID plotID,
-                     HopsanPlotCurveType curveType)
+                     HopsanPlotIDEnumT plotID,
+                     HopsanPlotCurveTypeEnumT curveType)
 {
     //! @todo see if it is possible to reuse the setCustomData member function
     LogVariableContainer *pDataContainer = new LogVariableContainer(rVarDesc,0);
@@ -304,8 +304,8 @@ PlotCurve::PlotCurve(const VariableDescription &rVarDesc,
 
 void PlotCurve::commonConstructorCode(int axisY,
                                       PlotTab* parent,
-                                      HopsanPlotID plotID,
-                                      HopsanPlotCurveType curveType)
+                                      HopsanPlotIDEnumT plotID,
+                                      HopsanPlotCurveTypeEnumT curveType)
 {
     mCustomDataUnitScale = 1.0;
     mpCurveSymbol = 0;
@@ -336,7 +336,7 @@ void PlotCurve::commonConstructorCode(int axisY,
     mpParentPlotTab->mpCurveInfoScrollArea->widget()->layout()->addWidget(mpPlotCurveInfoBox);
     mpPlotCurveInfoBox->show();
 
-    if(curveType != PORTVARIABLE)
+    if(curveType != PortVariableType)
     {
         setAutoUpdate(false);
     }
@@ -380,7 +380,7 @@ int PlotCurve::getGeneration() const
 
 QString PlotCurve::getCurveName() const
 {
-    if(mCurveType == PORTVARIABLE)
+    if(mCurveType == PortVariableType)
     {
         if (mpData->getAliasName().isEmpty())
         {
@@ -391,13 +391,13 @@ QString PlotCurve::getCurveName() const
             return mpData->getAliasName();
         }
     }
-    else if(mCurveType == FREQUENCYANALYSIS)
+    else if(mCurveType == FrequencyAnalysisType)
         return "Frequency Spectrum";
-    else if(mCurveType == NYQUIST)
+    else if(mCurveType == NyquistType)
         return "Nyquist Plot";
-    else if(mCurveType == BODEGAIN)
+    else if(mCurveType == BodeGainType)
         return "Magnitude Plot";
-    else if(mCurveType == BODEPHASE)
+    else if(mCurveType == BodePhaseType)
         return "Phase Plot";
     else
         return "Unnamed Curve";
@@ -405,7 +405,7 @@ QString PlotCurve::getCurveName() const
 
 
 //! @brief Returns the type of the curve
-HopsanPlotCurveType PlotCurve::getCurveType()
+HopsanPlotCurveTypeEnumT PlotCurve::getCurveType()
 {
     return mCurveType;
 }
@@ -1126,7 +1126,7 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
         midPoint.setX(this->plot()->transform(QwtPlot::xBottom, value().x()));
         midPoint.setY(this->plot()->transform(QwtPlot::yLeft, value().y()));
 
-        if(!mpPlotTab->mpZoomerLeft[FIRSTPLOT]->isEnabled() && !mpPlotTab->mpPanner[FIRSTPLOT]->isEnabled())
+        if(!mpPlotTab->mpZoomerLeft[FirstPlot]->isEnabled() && !mpPlotTab->mpPanner[FirstPlot]->isEnabled())
         {
             if((this->plot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
             {

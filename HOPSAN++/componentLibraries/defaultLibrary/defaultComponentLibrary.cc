@@ -17,7 +17,7 @@
 //! @file   defaultComponentLibrary.cc
 //! @author FluMeS
 //! @date   2010-01-08
-//! @brief Contains the register_components function that registers all built in components
+//! @brief Contains the register_contents function that registers all built in components
 //!
 //$Id$
 
@@ -33,7 +33,7 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory,
     // If a typename is already in use, your component will not be added.
     // Suggestion, let the KeyValue (TypeName) be the same as your Class name
 
-    hopsan::register_components(pComponentFactory);
+    hopsan::register_default_components(pComponentFactory);
 
     // ========== Register Custom Nodes (if any) ==========
     // These are built into Hopsan Core

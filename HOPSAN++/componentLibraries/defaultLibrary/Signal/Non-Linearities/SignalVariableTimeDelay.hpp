@@ -60,7 +60,7 @@ namespace hopsan {
             registerParameter("maxMem", "Maximum allowed memory consumption", "MB", mMaxMemSize, Constant);
 
             mpIn = addReadPort("in", "NodeSignal");
-            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
+            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
         }
 
 

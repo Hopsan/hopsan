@@ -109,17 +109,17 @@ public:
         //Add ports to the component
 
         //Add inputVariables ports to the component
-        mpPtimecomp=addReadPort("Ptimecomp","NodeSignal", Port::NOTREQUIRED);
-        mpPmassflow=addReadPort("Pmassflow","NodeSignal", Port::NOTREQUIRED);
-        mpPvxcg=addReadPort("Pvxcg","NodeSignal", Port::NOTREQUIRED);
-        mpPvycg=addReadPort("Pvycg","NodeSignal", Port::NOTREQUIRED);
+        mpPtimecomp=addReadPort("Ptimecomp","NodeSignal", Port::NotRequired);
+        mpPmassflow=addReadPort("Pmassflow","NodeSignal", Port::NotRequired);
+        mpPvxcg=addReadPort("Pvxcg","NodeSignal", Port::NotRequired);
+        mpPvycg=addReadPort("Pvycg","NodeSignal", Port::NotRequired);
 
         //Add outputVariables ports to the component
-        mpPtimeE=addWritePort("PtimeE","NodeSignal", Port::NOTREQUIRED);
+        mpPtimeE=addWritePort("PtimeE","NodeSignal", Port::NotRequired);
         mpPmassflowE=addWritePort("PmassflowE","NodeSignal", \
-Port::NOTREQUIRED);
-        mpPxcgE=addWritePort("PxcgE","NodeSignal", Port::NOTREQUIRED);
-        mpPycgE=addWritePort("PycgE","NodeSignal", Port::NOTREQUIRED);
+Port::NotRequired);
+        mpPxcgE=addWritePort("PxcgE","NodeSignal", Port::NotRequired);
+        mpPycgE=addWritePort("PycgE","NodeSignal", Port::NotRequired);
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("timecomp", "time compression rate", "", \

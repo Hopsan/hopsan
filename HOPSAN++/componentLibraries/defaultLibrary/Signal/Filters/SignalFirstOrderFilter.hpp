@@ -58,8 +58,8 @@ namespace hopsan {
             wnum = 1E+10;
             wden = 1000.0;
 
-            mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
-            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
+            mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
+            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
 
             registerParameter("k", "Gain", "[-]", k, Constant);
             registerParameter("omega_num", "Numerator break frequency", "[rad/s]", wnum, Constant);

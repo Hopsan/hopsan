@@ -67,7 +67,7 @@
 //! @param gfxType Tells whether the initial graphics shall be user or ISO
 //! @param pParentContainer Pointer to the parent container object (leave empty if not a sub container)
 //! @param pParent Pointer to parent object
-ContainerObject::ContainerObject(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, ContainerObject *pParentContainer, QGraphicsItem *pParent)
+ContainerObject::ContainerObject(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType, ContainerObject *pParentContainer, QGraphicsItem *pParent)
         : ModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParent)
 {
         //Initialize
@@ -76,7 +76,7 @@ ContainerObject::ContainerObject(QPointF position, qreal rotation, const ModelOb
     mSubComponentNamesHidden = !gpMainWindow->mpToggleNamesAction->isChecked();
     mLossesVisible = false;
     mUndoDisabled = false;
-    mGfxType = USERGRAPHICS;
+    mGfxType = UserGraphics;
 
     mHighestWidgetIndex = 0;
 
@@ -183,7 +183,7 @@ void ContainerObject::unmakeMainWindowConnectionsAndRefresh()
 //! @param[in] center The center point of all objects to be compared with
 //! @param[in] pt The position of this object, used to determine the center relative posistion
 //! @returns An enum that indicates on which side the port should be placed
-ContainerObject::ContainerEdgeT ContainerObject::findPortEdge(QPointF center, QPointF pt)
+ContainerObject::ContainerEdgeEnumT ContainerObject::findPortEdge(QPointF center, QPointF pt)
 {
     //By swapping place of pt1 and pt2 we get the angle in the same coordinate system as the view
     QPointF diff = pt-center;
@@ -193,7 +193,7 @@ ContainerObject::ContainerEdgeT ContainerObject::findPortEdge(QPointF center, QP
     //! @todo Do this smarter later and take into account port orientation, or position relative all other components, need to extend this function a bit for that though
     if (diff.manhattanLength() < 1.0)
     {
-        return LEFTEDGE;
+        return LeftEdge;
     }
 
     //Determine on what edge the port should be placed based on the angle from the center point
@@ -201,19 +201,19 @@ ContainerObject::ContainerEdgeT ContainerObject::findPortEdge(QPointF center, QP
     //qDebug() << "angle: " << rad2deg(angle);
     if (fabs(angle) <= M_PI_4)
     {
-        return RIGHTEDGE;
+        return RightEdge;
     }
     else if (fabs(angle) >= 3.0*M_PI_4)
     {
-        return LEFTEDGE;
+        return LeftEdge;
     }
     else if (angle > M_PI_4)
     {
-        return BOTTOMEDGE;
+        return BottomEdge;
     }
     else
     {
-        return TOPEDGE;
+        return TopEdge;
     }
 }
 
@@ -252,7 +252,7 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
             //            QLineF line = QLineF(center, moit.value()->getCenterPos());
             //            this->getContainedScenePtr()->addLine(line); //debug-grej
 
-            ContainerEdgeT edge = findPortEdge(center, moit.value()->getCenterPos());
+            ContainerEdgeEnumT edge = findPortEdge(center, moit.value()->getCenterPos());
             //qDebug() << " sysp: " << moit.value()->getName() << " edge: " << edge;
 
             //Make sure we dont screw up in the code and forget to rename or create external ports on internal rename or create
@@ -263,16 +263,16 @@ void ContainerObject::refreshExternalPortsAppearanceAndPosition()
             if(pPort->isAutoPlaced()) //Do not place if autoplaced is not set. Maybe a bit ugly to put an if statement here?
             {
                 switch (edge) {
-                case RIGHTEDGE:
+                case RightEdge:
                     rightEdge.insertMulti(moit.value()->getCenterPos().y(), pPort);
                     break;
-                case BOTTOMEDGE:
+                case BottomEdge:
                     bottomEdge.insertMulti(moit.value()->getCenterPos().x(), pPort);
                     break;
-                case LEFTEDGE:
+                case LeftEdge:
                     leftEdge.insertMulti(moit.value()->getCenterPos().y(), pPort);
                     break;
-                case TOPEDGE:
+                case TopEdge:
                     topEdge.insertMulti(moit.value()->getCenterPos().x(), pPort);
                     break;
                 }
@@ -489,7 +489,7 @@ void ContainerObject::renameExternalPort(const QString oldName, const QString ne
 
 
 //! @brief Helper function that allows calling addGUIModelObject with typeName instead of appearance data
-ModelObject* ContainerObject::addModelObject(QString fullTypeName, QPointF position, qreal rotation, selectionStatus startSelected, nameVisibility nameStatus, undoStatus undoSettings)
+ModelObject* ContainerObject::addModelObject(QString fullTypeName, QPointF position, qreal rotation, SelectionStatusEnumT startSelected, NameVisibilityEnumT nameStatus, UndoStatusEnumT undoSettings)
 {
     ModelObjectAppearance *pAppearanceData = gpMainWindow->mpLibrary->getAppearanceData(fullTypeName);
     if(!pAppearanceData)    //Not an existing component
@@ -505,7 +505,7 @@ ModelObject* ContainerObject::addModelObject(QString fullTypeName, QPointF posit
 //! @param name will be the name of the component.
 //! @returns a pointer to the created and added object
 //! @todo only modelobjects for now
-ModelObject* ContainerObject::addModelObject(ModelObjectAppearance *pAppearanceData, QPointF position, qreal rotation, selectionStatus startSelected, nameVisibility nameStatus, undoStatus undoSettings)
+ModelObject* ContainerObject::addModelObject(ModelObjectAppearance *pAppearanceData, QPointF position, qreal rotation, SelectionStatusEnumT startSelected, NameVisibilityEnumT nameStatus, UndoStatusEnumT undoSettings)
 {
         //Deselect all other components and connectors
     emit deselectAllGUIObjects();
@@ -548,7 +548,7 @@ ModelObject* ContainerObject::addModelObject(ModelObjectAppearance *pAppearanceD
         mModelObjectMap.insert(mpTempGUIModelObject->getName(), mpTempGUIModelObject);
     }
 
-    if(undoSettings == UNDO)
+    if(undoSettings == Undo)
     {
         mpUndoStack->registerAddedObject(mpTempGUIModelObject);
     }
@@ -556,13 +556,13 @@ ModelObject* ContainerObject::addModelObject(ModelObjectAppearance *pAppearanceD
     mpTempGUIModelObject->setSelected(false);
     mpTempGUIModelObject->setSelected(true);
 
-    if(nameStatus == NAMEVISIBLE)
+    if(nameStatus == NameVisible)
     {
-        mpTempGUIModelObject->showName(NOUNDO);
+        mpTempGUIModelObject->showName(NoUndo);
     }
-    else if(nameStatus == NAMENOTVISIBLE)
+    else if(nameStatus == NameNotVisible)
     {
-        mpTempGUIModelObject->hideName(NOUNDO);
+        mpTempGUIModelObject->hideName(NoUndo);
     }
 
     return mpTempGUIModelObject;
@@ -575,15 +575,15 @@ bool ContainerObject::areLossesVisible()
 }
 
 
-TextBoxWidget *ContainerObject::addTextBoxWidget(QPointF position, undoStatus undoSettings)
+TextBoxWidget *ContainerObject::addTextBoxWidget(QPointF position, UndoStatusEnumT undoSettings)
 {
     TextBoxWidget *pTempTextBoxWidget;
-    pTempTextBoxWidget = new TextBoxWidget("Text", position, 0, DESELECTED, this, mHighestWidgetIndex);
+    pTempTextBoxWidget = new TextBoxWidget("Text", position, 0, Deselected, this, mHighestWidgetIndex);
     qDebug() << "Creating widget, index = " << pTempTextBoxWidget->getWidgetIndex();
     mWidgetMap.insert(mHighestWidgetIndex, pTempTextBoxWidget);
     qDebug() << "Inserting widget in map, index = " << mHighestWidgetIndex;
     ++mHighestWidgetIndex;
-    if(undoSettings == UNDO)
+    if(undoSettings == Undo)
     {
         mpUndoStack->registerAddedWidget(pTempTextBoxWidget);
     }
@@ -597,9 +597,9 @@ TextBoxWidget *ContainerObject::addTextBoxWidget(QPointF position, undoStatus un
 //! Works for both text and box widgets
 //! @param pWidget Pointer to widget to remove
 //! @param undoSettings Tells whether or not this shall be registered in undo stack
-void ContainerObject::deleteWidget(Widget *pWidget, undoStatus undoSettings)
+void ContainerObject::deleteWidget(Widget *pWidget, UndoStatusEnumT undoSettings)
 {
-    if(undoSettings == UNDO)
+    if(undoSettings == Undo)
     {
         mpUndoStack->newPost();
         mpUndoStack->registerDeletedWidget(pWidget);
@@ -613,7 +613,7 @@ void ContainerObject::deleteWidget(Widget *pWidget, undoStatus undoSettings)
 
 //! @brief Delete GUIObject with specified name
 //! @param objectName is the name of the componenet to delete
-void ContainerObject::deleteModelObject(QString objectName, undoStatus undoSettings)
+void ContainerObject::deleteModelObject(QString objectName, UndoStatusEnumT undoSettings)
 {
     //qDebug() << "deleteGUIModelObject(): " << objectName << " in: " << this->getName() << " coresysname: " << this->getCoreSystemAccessPtr()->getRootSystemName() ;
     mpLogDataHandler->removeFavoriteVariableByComponentName(objectName);   //Does nothing unless this is a system
@@ -628,7 +628,7 @@ void ContainerObject::deleteModelObject(QString objectName, undoStatus undoSetti
         this->removeSubConnector(pConnectorList[i], undoSettings);
     }
 
-    if (undoSettings == UNDO && !mUndoDisabled)
+    if (undoSettings == Undo && !mUndoDisabled)
     {
         //Register removal of model object in undo stack
         this->mpUndoStack->registerDeletedObject(it.value());
@@ -662,7 +662,7 @@ void ContainerObject::deleteModelObject(QString objectName, undoStatus undoSetti
 
 
 //! @brief This function is used to rename a SubGUIObject
-void ContainerObject::renameModelObject(QString oldName, QString newName, undoStatus undoSettings)
+void ContainerObject::renameModelObject(QString oldName, QString newName, UndoStatusEnumT undoSettings)
 {
     //Avoid work if no change is requested
     if (oldName != newName)
@@ -698,7 +698,7 @@ void ContainerObject::renameModelObject(QString oldName, QString newName, undoSt
             gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(QString("No GUI Object with name: ") + oldName + " found when atempting rename!");
         }
 
-        if (undoSettings == UNDO)
+        if (undoSettings == Undo)
         {
             mpUndoStack->newPost();
             mpUndoStack->registerRenameObject(oldName, modNewName);
@@ -1070,7 +1070,7 @@ void ContainerObject::disconnectGroupPortFromItsRealPort(Port *pGroupPort, Port 
 //! @brief Removes a specified connector from the model.
 //! @param pConnector is a pointer to the connector to remove.
 //! @param undoSettings is true if the removal of the connector shall not be registered in the undo stack, for example if this function is called by a redo-function.
-void ContainerObject::removeSubConnector(Connector* pConnector, undoStatus undoSettings)
+void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT undoSettings)
 {
     bool success=false;
 
@@ -1188,7 +1188,7 @@ void ContainerObject::removeSubConnector(Connector* pConnector, undoStatus undoS
     //Delete the connector and remove it from scene and lists
     if(success)
     {
-        if(undoSettings == UNDO)
+        if(undoSettings == Undo)
         {
             mpUndoStack->registerDeletedConnector(pConnector);
         }
@@ -1219,7 +1219,7 @@ void ContainerObject::removeSubConnector(Connector* pConnector, undoStatus undoS
 //! @param pPort is a pointer to the clicked port, either start or end depending on the mIsCreatingConnector flag.
 //! @param undoSettings is true if the added connector shall not be registered in the undo stack, for example if this function is called by a redo function.
 //! @return A pointer to the created connector, 0 if failed, or connector unfinnished
-Connector* ContainerObject::createConnector(Port *pPort, undoStatus undoSettings)
+Connector* ContainerObject::createConnector(Port *pPort, UndoStatusEnumT undoSettings)
 {
         //When clicking start port (begin creation of connector)
     if (!mIsCreatingConnector)
@@ -1237,7 +1237,7 @@ Connector* ContainerObject::createConnector(Port *pPort, undoStatus undoSettings
 
         if (success)
         {
-            if(undoSettings == UNDO)
+            if(undoSettings == Undo)
             {
                 mpUndoStack->newPost();
                 mpUndoStack->registerAddedConnector(mpTempConnector);
@@ -1253,7 +1253,7 @@ Connector* ContainerObject::createConnector(Port *pPort, undoStatus undoSettings
 }
 
 //! @brief Create a connector when both ports are known (when loading primarily)
-Connector* ContainerObject::createConnector(Port *pPort1, Port *pPort2, undoStatus undoSettings)
+Connector* ContainerObject::createConnector(Port *pPort1, Port *pPort2, UndoStatusEnumT undoSettings)
 {
     if (!mIsCreatingConnector)
     {
@@ -1539,7 +1539,7 @@ void ContainerObject::paste(CopyStack *xmlStack)
     QDomElement systemElement = copyRoot->firstChildElement(HMF_SYSTEMTAG);
     while (!systemElement.isNull())
     {
-        ModelObject* pObj = loadModelObject(systemElement, gpMainWindow->mpLibrary, this, UNDO);
+        ModelObject* pObj = loadModelObject(systemElement, gpMainWindow->mpLibrary, this, Undo);
         renameMap.insert(systemElement.attribute(HMF_NAMETAG), pObj->getName());
         systemElement = systemElement.nextSiblingElement(HMF_SYSTEMTAG);
 
@@ -1553,7 +1553,7 @@ void ContainerObject::paste(CopyStack *xmlStack)
     QDomElement systemPortElement = copyRoot->firstChildElement(HMF_SYSTEMPORTTAG);
     while (!systemPortElement.isNull())
     {
-        ModelObject* pObj = loadContainerPortObject(systemPortElement, gpMainWindow->mpLibrary, this, UNDO);
+        ModelObject* pObj = loadContainerPortObject(systemPortElement, gpMainWindow->mpLibrary, this, Undo);
         renameMap.insert(systemPortElement.attribute(HMF_NAMETAG), pObj->getName());
         systemPortElement = systemPortElement.nextSiblingElement(HMF_SYSTEMPORTTAG);
 
@@ -1571,7 +1571,7 @@ void ContainerObject::paste(CopyStack *xmlStack)
         tempConnectorElement.setAttribute("startcomponent", renameMap.find(connectorElement.attribute("startcomponent")).value());
         tempConnectorElement.setAttribute("endcomponent", renameMap.find(connectorElement.attribute("endcomponent")).value());
 
-        bool sucess = loadConnector(tempConnectorElement, this, UNDO);
+        bool sucess = loadConnector(tempConnectorElement, this, Undo);
         if (sucess)
         {
             //qDebug() << ",,,,,,,,,: " << tempConnectorElement.attribute("startcomponent") << " " << tempConnectorElement.attribute("startport") << " " << tempConnectorElement.attribute("endcomponent") << " " << tempConnectorElement.attribute("endport");
@@ -1595,7 +1595,7 @@ void ContainerObject::paste(CopyStack *xmlStack)
     QDomElement textBoxElement = copyRoot->firstChildElement(HMF_TEXTBOXWIDGETTAG);
     while(!textBoxElement.isNull())
     {
-        TextBoxWidget *pWidget = loadTextBoxWidget(textBoxElement, this, NOUNDO);
+        TextBoxWidget *pWidget = loadTextBoxWidget(textBoxElement, this, NoUndo);
 
         pWidget->setSelected(true);
         pWidget->moveBy(xOffset, yOffset);
@@ -1792,7 +1792,7 @@ void ContainerObject::replaceComponent(QString name, QString newType)
     while(!connectorElement.isNull())
     {
 
-        bool sucess = loadConnector(connectorElement, this, UNDO);
+        bool sucess = loadConnector(connectorElement, this, Undo);
         if (sucess)
         {
             Connector *tempConnector = this->findConnector(connectorElement.attribute("startcomponent"), connectorElement.attribute("startport"),
@@ -2081,14 +2081,14 @@ QList<Widget *> ContainerObject::getWidgets()
 
 //! @brief Returns the path to the icon with iso graphics.
 //! @todo should we return full path or relative
-QString ContainerObject::getIconPath(const graphicsType gfxType, const AbsoluteRelativeT absrelType)
+QString ContainerObject::getIconPath(const GraphicsTypeEnumT gfxType, const AbsoluteRelativeEnumT absrelType)
 {
     return mModelObjectAppearance.getIconPath(gfxType, absrelType);
 }
 
 
 //! @brief Sets the path to the icon of the specified type
-void ContainerObject::setIconPath(const QString path, const graphicsType gfxType, const AbsoluteRelativeT absrelType)
+void ContainerObject::setIconPath(const QString path, const GraphicsTypeEnumT gfxType, const AbsoluteRelativeEnumT absrelType)
 {
     mModelObjectAppearance.setIconPath(path, gfxType, absrelType);
 }
@@ -2317,7 +2317,7 @@ void ContainerObject::updateMainWindowButtons()
 
 
 //! @brief Sets the iso graphics option for the model
-void ContainerObject::setGfxType(graphicsType gfxType)
+void ContainerObject::setGfxType(GraphicsTypeEnumT gfxType)
 {
     this->mGfxType = gfxType;
     this->mpParentProjectTab->getGraphicsView()->updateViewPort();
@@ -2326,7 +2326,7 @@ void ContainerObject::setGfxType(graphicsType gfxType)
 
 
 //! @brief Returns current graphics type used by container object
-graphicsType ContainerObject::getGfxType()
+GraphicsTypeEnumT ContainerObject::getGfxType()
 {
     return mGfxType;
 }
@@ -3130,11 +3130,11 @@ void ContainerObject::recompileCppComponents(ModelObject *pComponent)
         codeStream << "        {\n\n";
         for(int i=0; i<nInputs; ++i)
         {
-            codeStream << "            mpIn"+QString::number(i)+" = addReadPort(\"in"+QString::number(i)+"\", \"NodeSignal\", Port::NOTREQUIRED);\n";
+            codeStream << "            mpIn"+QString::number(i)+" = addReadPort(\"in"+QString::number(i)+"\", \"NodeSignal\", Port::NotRequired);\n";
         }
         for(int o=0; o<nOutputs; ++o)
         {
-            codeStream << "            mpOut"+QString::number(o)+" = addWritePort(\"out"+QString::number(o)+"\", \"NodeSignal\", Port::NOTREQUIRED);\n";
+            codeStream << "            mpOut"+QString::number(o)+" = addWritePort(\"out"+QString::number(o)+"\", \"NodeSignal\", Port::NotRequired);\n";
         }
         codeStream << "        }\n\n";
         codeStream << "        void initialize()\n";

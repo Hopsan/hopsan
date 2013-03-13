@@ -80,7 +80,7 @@ namespace hopsan {
             mpAN = addPowerPort("PN", "NodeHydraulic");
             mpAS = addPowerPort("PS", "NodeHydraulic");
             mpAC = addPowerPort("PC", "NodeHydraulic");
-            mpOut = addWritePort("xv_out", "NodeSignal", Port::NOTREQUIRED);
+            mpOut = addWritePort("xv_out", "NodeSignal", Port::NotRequired);
 
             registerParameter("C_q", "Flow Coefficient", "[-]", Cq);
             registerParameter("rho", "Oil Density", "[kg/m^3]", rho);

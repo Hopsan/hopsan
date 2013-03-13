@@ -73,8 +73,8 @@ namespace hopsan {
             //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeMechanic");
             mpP2 = addPowerPort("P2", "NodeMechanic");
-            mpPfs = addReadPort("Pfs", "NodeSignal", Port::NOTREQUIRED);
-            mpPfk = addReadPort("Pfk", "NodeSignal", Port::NOTREQUIRED);
+            mpPfs = addReadPort("Pfs", "NodeSignal", Port::NotRequired);
+            mpPfk = addReadPort("Pfk", "NodeSignal", Port::NotRequired);
 
             //Register changable parameters to the HOPSAN++ core
             registerParameter("m", "Mass", "[kg]", m);

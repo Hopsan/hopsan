@@ -17,12 +17,12 @@
 //! @file   defaultComponentLibraryInternal.cc
 //! @author FluMeS
 //! @date   2012-01-13
-//! @brief Contains the register_components function that registers all built in components
+//! @brief Contains the register_default_components function that registers all built in components
 //!
 //$Id$
 
 #include "defaultComponentLibraryInternal.h"
-#include "Components.h"
+#include "defaultComponents.h"
 //#include "signal.h"
 #include <stdlib.h>
 
@@ -58,7 +58,7 @@ using namespace hopsan;
 //! @brief Registers the creator function of all built in components
 //! @param [in,out] pComponentFactory A pointer the the component factory in wich to register the components
 //!
-void hopsan::register_components(ComponentFactory* pComponentFactory)
+void hopsan::register_default_components(ComponentFactory* pComponentFactory)
 {
 //    //vvv Repoint SEGFAULT to the terminate function, could be used to tell component makers info about their fault. (http://www.cplusplus.com/reference/clibrary/csignal/signal/)
 //    void (*prev_fn)(int);

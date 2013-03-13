@@ -33,19 +33,19 @@ class ConnectorAppearance
 {
 public:
     //GUIConnectorAppearance();
-    ConnectorAppearance(QString porttype, graphicsType gfxType);
-    void setStyle(connectorStyle style);
-    connectorStyle getStyle();
-    void setIsoStyle(graphicsType gfxType);
-    void setTypeAndIsoStyle(QString porttype, graphicsType gfxType);
-    QPen getPen(connectorStyle style, graphicsType gfxType, QString situation);
+    ConnectorAppearance(QString porttype, GraphicsTypeEnumT gfxType);
+    void setStyle(ConnectorStyleEnumT style);
+    ConnectorStyleEnumT getStyle();
+    void setIsoStyle(GraphicsTypeEnumT gfxType);
+    void setTypeAndIsoStyle(QString porttype, GraphicsTypeEnumT gfxType);
+    QPen getPen(ConnectorStyleEnumT style, GraphicsTypeEnumT gfxType, QString situation);
     QPen getPen(QString situation);
     void setCustomColor(QColor color);
     QColor getCustomColor();
 
 private:
-    connectorStyle mConnectorStyle;
-    graphicsType mGfxType;
+    ConnectorStyleEnumT mConnectorStyle;
+    GraphicsTypeEnumT mGfxType;
     QColor mCustomColor;
 
 };

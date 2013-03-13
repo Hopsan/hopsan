@@ -81,7 +81,7 @@ public:
     int getNumberOfLines();
     bool isFirstOrLastDiagonal();
     bool isFirstAndLastDiagonal();
-    connectorGeometry getGeometry(const int lineNumber);
+    ConnectorGeometryEnumT getGeometry(const int lineNumber);
 
     void setPens(QPen activePen, QPen primaryPen, QPen hoverPen);
 
@@ -94,7 +94,7 @@ public:
     void saveToDomElement(QDomElement &rDomElement);
 
 public slots:
-    void setIsoStyle(graphicsType gfxType);
+    void setIsoStyle(GraphicsTypeEnumT gfxType);
     void drawConnector(bool alignOperation=false);
     void updateStartPoint(QPointF point);
     void updateEndPoint(QPointF point);
@@ -108,7 +108,7 @@ public slots:
     void setPassive();
     void setHovered();
     void setUnHovered();
-    void deleteMe(undoStatus undo=UNDO);
+    void deleteMe(UndoStatusEnumT undo=Undo);
     void deleteMeWithNoUndo();
     void deselect();
     void select();
@@ -140,7 +140,7 @@ private:
     Port *mpEndPort;
 
     QVector<ConnectorLine*> mpLines;
-    QVector<connectorGeometry> mGeometries;
+    QVector<ConnectorGeometryEnumT> mGeometries;
     QVector<QPointF> mPoints;
 };
 
@@ -160,7 +160,7 @@ public:
     void setActive();
     void setPassive();
     void setHovered();
-    void setGeometry(connectorGeometry geometry);
+    void setGeometry(ConnectorGeometryEnumT geometry);
     void setLine(QPointF pos1, QPointF pos2);
     int getLineNumber();
     void setPen(const QPen &pen);
@@ -196,7 +196,7 @@ private:
     bool mHasEndArrow;
     int mLineNumber;
 
-    connectorGeometry mGeometry;
+    ConnectorGeometryEnumT mGeometry;
     QGraphicsLineItem *mArrowLine1;
     QGraphicsLineItem *mArrowLine2;
     qreal mArrowSize;

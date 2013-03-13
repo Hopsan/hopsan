@@ -58,8 +58,8 @@ namespace hopsan {
         {
             mGain = 1.0;
 
-            mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
-            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
+            mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
+            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
 
             registerParameter("k", "Gain value", "[-]", mGain);
    //         registerParameter("", "Data Curve", "", mDataCurveFileName);

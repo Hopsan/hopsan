@@ -82,13 +82,13 @@ public:
         //Add ports to the component
 
         //Add inputVariables ports to the component
-        mpPmassflow=addReadPort("Pmassflow","NodeSignal", Port::NOTREQUIRED);
+        mpPmassflow=addReadPort("Pmassflow","NodeSignal", Port::NotRequired);
 
         //Add outputVariables ports to the component
         mpPmassfuel=addWritePort("Pmassfuel","NodeSignal", \
-Port::NOTREQUIRED);
+Port::NotRequired);
         mpPconsfuel=addWritePort("Pconsfuel","NodeSignal", \
-Port::NOTREQUIRED);
+Port::NotRequired);
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("massfuel0", "The intitial fuel mass", "kg/s", \

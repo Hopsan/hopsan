@@ -65,14 +65,14 @@ public:
         //Add ports to the component
 
         //Add inputVariables ports to the component
-        mpPsetCond=addReadPort("PsetCond","NodeSignal", Port::NOTREQUIRED);
+        mpPsetCond=addReadPort("PsetCond","NodeSignal", Port::NotRequired);
         mpPresetCond=addReadPort("PresetCond","NodeSignal", \
-Port::NOTREQUIRED);
+Port::NotRequired);
 
         //Add outputVariables ports to the component
-        mpPQstate=addWritePort("PQstate","NodeSignal", Port::NOTREQUIRED);
+        mpPQstate=addWritePort("PQstate","NodeSignal", Port::NotRequired);
         mpPnotQstate=addWritePort("PnotQstate","NodeSignal", \
-Port::NOTREQUIRED);
+Port::NotRequired);
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("setCond", "On condition", "", msetCond);

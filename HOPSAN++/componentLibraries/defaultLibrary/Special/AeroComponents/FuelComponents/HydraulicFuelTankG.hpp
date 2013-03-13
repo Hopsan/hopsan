@@ -114,13 +114,13 @@ public:
         mpPT=addPowerPort("PT","NodeHydraulic");
 
         //Add inputVariables ports to the component
-        mpPgx=addReadPort("Pgx","NodeSignal", Port::NOTREQUIRED);
+        mpPgx=addReadPort("Pgx","NodeSignal", Port::NotRequired);
 
         //Add outputVariables ports to the component
         mpPmassfuel=addWritePort("Pmassfuel","NodeSignal", \
-Port::NOTREQUIRED);
+Port::NotRequired);
         mpPconsfuel=addWritePort("Pconsfuel","NodeSignal", \
-Port::NOTREQUIRED);
+Port::NotRequired);
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("rhofuel", "Fuel density", "kg/m3", mrhofuel);

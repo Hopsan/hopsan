@@ -31,15 +31,15 @@
 
 namespace hopsan {
 
-    //Forward declarations
+    // Forward declarations
     class Component;
     class ComponentSystem;
     class ConnectionAssistant;
     class MultiPort;
 
     //! @brief This enum type specifies all porttypes
-    //It is VERY important the MultiPort enums commes LAST, MULTIPORT is never instantiated but enum MUST be present
-    enum PortTypesEnumT {UNDEFINEDPORT, POWERPORT, READPORT, WRITEPORT, SYSTEMPORT, MULTIPORT, POWERMULTIPORT, READMULTIPORT};
+    // It is VERY important the MultiPort enums commes LAST, MULTIPORT is never instantiated but enum MUST be present
+    enum PortTypesEnumT {UndefinedPortType, PowerPortType, ReadPortType, WritePortType, SystemPortType, MultiportType, PowerMultiportType, ReadMultiportType};
 
     class DLLIMPORTEXPORT Port
     {
@@ -51,7 +51,7 @@ namespace hopsan {
 
     public:
         //! @brief This enum specifies the RequiredConnection enums
-        enum ReqConnEnumT {REQUIRED, NOTREQUIRED};
+        enum RequireConnectionEnumT {Required, NotRequired};
 
         //Constructors - Destructors
         Port(const std::string nodeType, const std::string portName, Component *pPortOwner, Port *pParentPort=0);
@@ -125,7 +125,7 @@ namespace hopsan {
 
     protected:
         PortTypesEnumT mPortType;
-        NodeTypeT mNodeType;
+        std::string mNodeType;
 
         Node* mpStartNode;
         Component* mpComponent;
@@ -143,7 +143,7 @@ namespace hopsan {
         void addConnectedPort(Port* pPort, const size_t portIdx=0);
         void eraseConnectedPort(Port* pPort, const size_t portIdx=0);
 
-        void createStartNode(NodeTypeT nodeType);
+        void createStartNode(std::string nodeType);
 
         void setVariableAlias(const std::string alias, const int id);
 
@@ -296,7 +296,7 @@ namespace hopsan {
         inline double readNode(const size_t idx) const;
     };
 
-    Port* createPort(const PortTypesEnumT portType, const NodeTypeT nodeType, const std::string name, Component *pPortOwner, Port *pParentPort=0);
+    Port* createPort(const PortTypesEnumT portType, const std::string nodeType, const std::string name, Component *pPortOwner, Port *pParentPort=0);
     std::string DLLIMPORTEXPORT portTypeToString(const PortTypesEnumT type);
 }
 

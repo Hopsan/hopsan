@@ -94,9 +94,9 @@ Connector *Connector::createDummyCopy()
     QStringList geometries;
     for(int i=0; i<mGeometries.size(); ++i)
     {
-        if(mGeometries.at(i) == DIAGONAL)
+        if(mGeometries.at(i) == Diagonal)
             geometries.append("diagonal");
-        else if(mGeometries.at(i) == VERTICAL)
+        else if(mGeometries.at(i) == Vertical)
             geometries.append("vertical");
         else
             geometries.append("horizontal");
@@ -148,14 +148,14 @@ void Connector::setParentContainer(ContainerObject *pParentContainer)
     {
         //Disconnect all old sigslot connections
         disconnect(mpParentContainerObject, SIGNAL(selectAllConnectors()),          this, SLOT(select()));
-        disconnect(mpParentContainerObject, SIGNAL(setAllGfxType(graphicsType)),    this, SLOT(setIsoStyle(graphicsType)));
+        disconnect(mpParentContainerObject, SIGNAL(setAllGfxType(GraphicsTypeEnumT)),    this, SLOT(setIsoStyle(GraphicsTypeEnumT)));
     }
 
     mpParentContainerObject = pParentContainer;
 
     //Establish new connections
     connect(mpParentContainerObject, SIGNAL(selectAllConnectors()),      this, SLOT(select()),                   Qt::UniqueConnection);
-    connect(mpParentContainerObject, SIGNAL(setAllGfxType(graphicsType)),   this, SLOT(setIsoStyle(graphicsType)),  Qt::UniqueConnection);
+    connect(mpParentContainerObject, SIGNAL(setAllGfxType(GraphicsTypeEnumT)),   this, SLOT(setIsoStyle(GraphicsTypeEnumT)),  Qt::UniqueConnection);
 }
 
 ContainerObject *Connector::getParentContainer()
@@ -177,23 +177,23 @@ void Connector::addPoint(QPointF point)
 
     if(getNumberOfLines() == 0 && getStartPort()->getPortDirection() == TopBottomDirectionType)
     {
-        mGeometries.push_back(HORIZONTAL);
+        mGeometries.push_back(Horizontal);
     }
     else if(getNumberOfLines() == 0 && getStartPort()->getPortDirection() == LeftRightDirectionType)
     {
-        mGeometries.push_back(VERTICAL);
+        mGeometries.push_back(Vertical);
     }
-    else if(getNumberOfLines() != 0 && mGeometries.back() == HORIZONTAL)
+    else if(getNumberOfLines() != 0 && mGeometries.back() == Horizontal)
     {
-        mGeometries.push_back(VERTICAL);
+        mGeometries.push_back(Vertical);
     }
-    else if(getNumberOfLines() != 0 && mGeometries.back() == VERTICAL)
+    else if(getNumberOfLines() != 0 && mGeometries.back() == Vertical)
     {
-        mGeometries.push_back(HORIZONTAL);
+        mGeometries.push_back(Horizontal);
     }
-    else if(getNumberOfLines() != 0 && mGeometries.back() == DIAGONAL)
+    else if(getNumberOfLines() != 0 && mGeometries.back() == Diagonal)
     {
-        mGeometries.push_back(DIAGONAL);
+        mGeometries.push_back(Diagonal);
         //Give new line correct angle!
     }
     if(mPoints.size() > 1)
@@ -211,19 +211,19 @@ void Connector::removePoint(bool deleteIfEmpty)
     //qDebug() << "removePoint, getNumberOfLines = " << getNumberOfLines();
     if( (getNumberOfLines() > 3) && !mMakingDiagonal )
     {
-        if((mGeometries[mGeometries.size()-1] == DIAGONAL) || ((mGeometries[mGeometries.size()-2] == DIAGONAL)))
+        if((mGeometries[mGeometries.size()-1] == Diagonal) || ((mGeometries[mGeometries.size()-2] == Diagonal)))
         {
             //if(mGeometries[mGeometries.size()-3] == HORIZONTAL)
             if(abs(mPoints[mPoints.size()-3].x() - mPoints[mPoints.size()-4].x()) > abs(mPoints[mPoints.size()-3].y() - mPoints[mPoints.size()-4].y()))
             {
-                mGeometries[mGeometries.size()-2] = HORIZONTAL;
-                mGeometries[mGeometries.size()-1] = VERTICAL;
+                mGeometries[mGeometries.size()-2] = Horizontal;
+                mGeometries[mGeometries.size()-1] = Vertical;
                 mPoints[mPoints.size()-2] = QPointF(mPoints[mPoints.size()-3].x(), mPoints[mPoints.size()-1].y());
             }
             else
             {
-                mGeometries[mGeometries.size()-2] = VERTICAL;
-                mGeometries[mGeometries.size()-1] = HORIZONTAL;
+                mGeometries[mGeometries.size()-2] = Vertical;
+                mGeometries[mGeometries.size()-1] = Horizontal;
                 mPoints[mPoints.size()-2] = QPointF(mPoints[mPoints.size()-1].x(), mPoints[mPoints.size()-3].y());
             }
         }
@@ -232,14 +232,14 @@ void Connector::removePoint(bool deleteIfEmpty)
     {
         if(getStartPort()->getPortDirection() == LeftRightDirectionType)
         {
-            mGeometries[1] = HORIZONTAL;
-            mGeometries[0] = VERTICAL;
+            mGeometries[1] = Horizontal;
+            mGeometries[0] = Vertical;
             mPoints[1] = QPointF(mPoints[2].x(), mPoints[0].y());
         }
         else
         {
-            mGeometries[1] = VERTICAL;
-            mGeometries[0] = HORIZONTAL;
+            mGeometries[1] = Vertical;
+            mGeometries[0] = Horizontal;
             mPoints[1] = QPointF(mPoints[0].x(), mPoints[2].y());
         }
     }
@@ -291,9 +291,9 @@ void Connector::finishCreation()
     mIsConnected = true;
 
         //Figure out whether or not the last line had the right direction, and make necessary corrections
-    if( ( ((mpEndPort->getPortDirection() == LeftRightDirectionType) && (mGeometries.back() == HORIZONTAL)) ||
-          ((mpEndPort->getPortDirection() == TopBottomDirectionType) && (mGeometries.back() == VERTICAL)) ) ||
-          (mGeometries[mGeometries.size()-2] == DIAGONAL) ||
+    if( ( ((mpEndPort->getPortDirection() == LeftRightDirectionType) && (mGeometries.back() == Horizontal)) ||
+          ((mpEndPort->getPortDirection() == TopBottomDirectionType) && (mGeometries.back() == Vertical)) ) ||
+          (mGeometries[mGeometries.size()-2] == Diagonal) ||
           mpEndPort->getPortType() == "READMULTIPORT" || mpEndPort->getPortType() == "POWERMULTIPORT")
     {
             //Wrong direction of last line, so remove last point. This is because an extra line was added with the last click, that shall not be there. It is also possible that we end up here because the end port is a multi port, which mean that we shall not add any offset to it.
@@ -375,7 +375,7 @@ void Connector::finishCreation()
     mpStartPort->hide();
     mpEndPort->hide();
 
-    if(mpConnectorAppearance->getStyle() == SIGNALCONNECTOR)
+    if(mpConnectorAppearance->getStyle() == SignalConnectorStyle)
     {
         connect(mpParentContainerObject, SIGNAL(showOrHideSignals(bool)), this, SLOT(setVisible(bool)), Qt::UniqueConnection);
     }
@@ -384,7 +384,7 @@ void Connector::finishCreation()
 
 //! @brief Slot that tells the connector lines whether or not to use ISO style
 //! @param gfxType Tells whether or not iso graphics is to be used
-void Connector::setIsoStyle(graphicsType gfxType)
+void Connector::setIsoStyle(GraphicsTypeEnumT gfxType)
 {
     mpConnectorAppearance->setIsoStyle(gfxType);
     for (int i=0; i!=mpLines.size(); ++i )
@@ -404,7 +404,7 @@ int Connector::getNumberOfLines()
 
 //! @brief Returns the geometry type of the specified line
 //! @param lineNumber Number of the desired line in the mpLines vector
-connectorGeometry Connector::getGeometry(const int lineNumber)
+ConnectorGeometryEnumT Connector::getGeometry(const int lineNumber)
 {
     return mGeometries[lineNumber];
 }
@@ -543,11 +543,11 @@ void Connector::saveToDomElement(QDomElement &rDomElement)
     QDomElement xmlGeometries = appendDomElement(xmlConnectGUI, HMF_GEOMETRIES);
     for(int j=0; j<mGeometries.size(); ++j)
     {
-        if(mGeometries.at(j) == VERTICAL)
+        if(mGeometries.at(j) == Vertical)
             appendDomTextNode(xmlGeometries, HMF_GEOMETRYTAG, "vertical");
-        if(mGeometries.at(j) == HORIZONTAL)
+        if(mGeometries.at(j) == Horizontal)
             appendDomTextNode(xmlGeometries, HMF_GEOMETRYTAG, "horizontal");
-        if(mGeometries.at(j) == DIAGONAL)
+        if(mGeometries.at(j) == Diagonal)
             appendDomTextNode(xmlGeometries, HMF_GEOMETRYTAG, "diagonal");
     }
     if(mIsDashed)
@@ -625,9 +625,9 @@ void Connector::updateStartPoint(QPointF point)
 
     if(mPoints.size() != 1)
     {
-        if(mGeometries[0] == HORIZONTAL)
+        if(mGeometries[0] == Horizontal)
             mPoints[1] = QPointF(mPoints[0].x(),mPoints[1].y());
-        else if(mGeometries[0] == VERTICAL)
+        else if(mGeometries[0] == Vertical)
             mPoints[1] = QPointF(mPoints[1].x(),mPoints[0].y());
     }
 }
@@ -642,11 +642,11 @@ void Connector::updateEndPoint(QPointF point)
     if (mPoints.size() > 1)
     {
         mPoints.back() = point;
-        if(mGeometries.back() == HORIZONTAL)
+        if(mGeometries.back() == Horizontal)
         {
             mPoints[mPoints.size()-2] = QPointF(point.x(),mPoints[mPoints.size()-2].y());
         }
-        else if(mGeometries.back() == VERTICAL)
+        else if(mGeometries.back() == Vertical)
         {
             mPoints[mPoints.size()-2] = QPointF(mPoints[mPoints.size()-2].x(),point.y());
         }
@@ -661,12 +661,12 @@ void Connector::updateLine(int lineNumber)
     //! @todo what da heck is (lineNumber != int(mpLines.size()) supposed to mean, maybe it should be < instead of !=
    if ((mIsConnected) && (lineNumber != 0) && (lineNumber != int(mpLines.size())))
     {
-        if(mGeometries[lineNumber] == HORIZONTAL)
+        if(mGeometries[lineNumber] == Horizontal)
         {
             mPoints[lineNumber] = QPointF(getLine(lineNumber)->mapToScene(getLine(lineNumber)->line().p1()).x(), mPoints[lineNumber].y());
             mPoints[lineNumber+1] = QPointF(getLine(lineNumber)->mapToScene(getLine(lineNumber)->line().p2()).x(), mPoints[lineNumber+1].y());
         }
-        else if (mGeometries[lineNumber] == VERTICAL)
+        else if (mGeometries[lineNumber] == Vertical)
         {
             mPoints[lineNumber] = QPointF(mPoints[lineNumber].x(), getLine(lineNumber)->mapToScene(getLine(lineNumber)->line().p1()).y());
             mPoints[lineNumber+1] = QPointF(mPoints[lineNumber+1].x(), getLine(lineNumber)->mapToScene(getLine(lineNumber)->line().p2()).y());
@@ -699,7 +699,7 @@ void Connector::makeDiagonal(bool enable)
     {
         mMakingDiagonal = true;
         removePoint();
-        mGeometries.back() = DIAGONAL;
+        mGeometries.back() = Diagonal;
         mPoints.back() = mpParentContainerObject->mpParentProjectTab->getGraphicsView()->mapToScene(mpParentContainerObject->mpParentProjectTab->getGraphicsView()->mapFromGlobal(cursor.pos()));
         drawConnector();
     }
@@ -707,26 +707,26 @@ void Connector::makeDiagonal(bool enable)
     {
         if(this->getNumberOfLines() > 1)
         {
-            if(mGeometries[mGeometries.size()-2] == HORIZONTAL)
+            if(mGeometries[mGeometries.size()-2] == Horizontal)
             {
-                mGeometries.back() = VERTICAL;
+                mGeometries.back() = Vertical;
                 mPoints.back() = QPointF(mPoints.back().x(), mPoints[mPoints.size()-2].y());
             }
-            else if(mGeometries[mGeometries.size()-2] == VERTICAL)
+            else if(mGeometries[mGeometries.size()-2] == Vertical)
             {
-                mGeometries.back() = HORIZONTAL;
+                mGeometries.back() = Horizontal;
                 mPoints.back() = QPointF(mPoints[mPoints.size()-2].x(), mPoints.back().y());
             }
-            else if(mGeometries[mGeometries.size()-2] == DIAGONAL)
+            else if(mGeometries[mGeometries.size()-2] == Diagonal)
             {
                 if(abs(mPoints[mPoints.size()-2].x() - mPoints[mPoints.size()-3].x()) > abs(mPoints[mPoints.size()-2].y() - mPoints[mPoints.size()-3].y()))
                 {
-                    mGeometries.back() = HORIZONTAL;
+                    mGeometries.back() = Horizontal;
                     mPoints.back() = QPointF(mPoints[mPoints.size()-2].x(), mPoints.back().y());
                 }
                 else
                 {
-                    mGeometries.back() = VERTICAL;
+                    mGeometries.back() = Vertical;
                     mPoints.back() = QPointF(mPoints.back().x(), mPoints[mPoints.size()-2].y());
                 }
 
@@ -738,14 +738,14 @@ void Connector::makeDiagonal(bool enable)
             addPoint(mpParentContainerObject->mapToScene(mpParentContainerObject->mpParentProjectTab->getGraphicsView()->mapFromGlobal(cursor.pos())));
             if(getStartPort()->getPortDirection() == LeftRightDirectionType)
             {
-                mGeometries[0] = VERTICAL;
-                mGeometries[1] = HORIZONTAL;
+                mGeometries[0] = Vertical;
+                mGeometries[1] = Horizontal;
                 mPoints[1] = QPointF(mPoints[2].x(), mPoints[0].y());
             }
             else
             {
-                mGeometries[0] = HORIZONTAL;
-                mGeometries[1] = VERTICAL;
+                mGeometries[0] = Horizontal;
+                mGeometries[1] = Vertical;
                 mPoints[1] = QPointF(mPoints[0].x(), mPoints[2].y());
             }
         }
@@ -858,7 +858,7 @@ void Connector::setPassive()
         }
     }
 
-    this->setZValue(CONNECTOR_Z);
+    this->setZValue(ConnectorZValue);
 }
 
 
@@ -892,7 +892,7 @@ void Connector::setUnHovered()
 
 
 //! @brief Asks the parent system to delete the connector
-void Connector::deleteMe(undoStatus undo)
+void Connector::deleteMe(UndoStatusEnumT undo)
 {
     mpParentContainerObject->removeSubConnector(this, undo);
 }
@@ -902,21 +902,21 @@ void Connector::deleteMe(undoStatus undo)
 //! This is necessary because slots cannot take UNDO or NOUNDO as arguments in a simple way
 void Connector::deleteMeWithNoUndo()
 {
-    deleteMe(NOUNDO);
+    deleteMe(NoUndo);
 }
 
 
 //! @brief Function that returns true if first or last line is diagonal. Used to determine snapping stuff.
 bool Connector::isFirstOrLastDiagonal()
 {
-    return ( (mGeometries.first() == DIAGONAL) || (mGeometries.last() == DIAGONAL) );
+    return ( (mGeometries.first() == Diagonal) || (mGeometries.last() == Diagonal) );
 }
 
 
 //! @brief Function that returns true if both first and last line is diagonal. Used to determine snapping stuff.
 bool Connector::isFirstAndLastDiagonal()
 {
-    return ( (mGeometries.first() == DIAGONAL) && (mGeometries.last() == DIAGONAL) );
+    return ( (mGeometries.first() == Diagonal) && (mGeometries.last() == Diagonal) );
 }
 
 
@@ -956,19 +956,19 @@ void Connector::determineAppearance()
 
     if( (startPortType == "POWERPORT") || (endPortType == "POWERPORT") || (startPortType == "POWERMULTIPORT") || (endPortType == "POWERMULTIPORT") )
     {
-        mpConnectorAppearance->setStyle(POWERCONNECTOR);
+        mpConnectorAppearance->setStyle(PowerConnectorStyle);
     }
     else if( (startPortType == "READPORT") || (endPortType == "READPORT") || (startPortType == "READMULTIPORT") || (endPortType == "READMULTIPORT") )
     {
-        mpConnectorAppearance->setStyle(SIGNALCONNECTOR);
+        mpConnectorAppearance->setStyle(SignalConnectorStyle);
     }
     else if( (startPortType == "WRITEPORT") || (endPortType == "WRITEPORT") )
     {
-        mpConnectorAppearance->setStyle(SIGNALCONNECTOR);
+        mpConnectorAppearance->setStyle(SignalConnectorStyle);
     }
     else
     {
-        mpConnectorAppearance->setStyle(UNDEFINEDCONNECTOR);
+        mpConnectorAppearance->setStyle(UndefinedConnectorStyle);
     }
 
     //Run this to actually change the pen
@@ -1003,7 +1003,7 @@ void Connector::select()
 //! @param value Boolean that is true if connector shall be dashed
 void Connector::setDashed(bool value)
 {
-    if(mpConnectorAppearance->getStyle() == SIGNALCONNECTOR)
+    if(mpConnectorAppearance->getStyle() == SignalConnectorStyle)
         return;
 
     mpParentContainerObject->mpParentProjectTab->hasChanged();
@@ -1071,20 +1071,20 @@ void Connector::setPointsAndGeometries(const QVector<QPointF> &rPoints, const QS
         if(rGeometries.empty())
         {
             if(mPoints[i].x() == mPoints[i+1].x())
-                mGeometries.push_back(HORIZONTAL);
+                mGeometries.push_back(Horizontal);
             else if(mPoints[i].y() == mPoints[i+1].y())
-                mGeometries.push_back(VERTICAL);
+                mGeometries.push_back(Vertical);
             else
-                mGeometries.push_back(DIAGONAL);
+                mGeometries.push_back(Diagonal);
         }
         else
         {
             if(rGeometries.at(i) == "horizontal")
-                mGeometries.push_back(HORIZONTAL);
+                mGeometries.push_back(Horizontal);
             else if(rGeometries.at(i) == "vertical")
-                mGeometries.push_back(VERTICAL);
+                mGeometries.push_back(Vertical);
             else
-                mGeometries.push_back(DIAGONAL);
+                mGeometries.push_back(Diagonal);
         }
     }
 
@@ -1165,14 +1165,14 @@ void ConnectorLine::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidge
 void ConnectorLine::setActive()
 {
         this->setPen(mpConnectorAppearance->getPen("Active"));
-        if(mpParentConnector->mIsDashed && mpConnectorAppearance->getStyle() != SIGNALCONNECTOR)
+        if(mpParentConnector->mIsDashed && mpConnectorAppearance->getStyle() != SignalConnectorStyle)
         {
             QPen tempPen = this->pen();
             tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
             tempPen.setStyle(Qt::CustomDashLine);
             this->setPen(tempPen);
         }
-        this->mpParentConnector->setZValue(CONNECTOR_Z);
+        this->mpParentConnector->setZValue(ConnectorZValue);
 }
 
 
@@ -1189,7 +1189,7 @@ void ConnectorLine::setPassive()
     {
         this->setPen(mpConnectorAppearance->getPen("Primary"));
     }
-    if(mpParentConnector->mIsDashed && mpConnectorAppearance->getStyle() != SIGNALCONNECTOR)
+    if(mpParentConnector->mIsDashed && mpConnectorAppearance->getStyle() != SignalConnectorStyle)
     {
         QPen tempPen = this->pen();
         tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
@@ -1205,7 +1205,7 @@ void ConnectorLine::setPassive()
 void ConnectorLine::setHovered()
 {
     this->setPen(mpConnectorAppearance->getPen("Hover"));
-    if(mpParentConnector->mIsDashed && mpConnectorAppearance->getStyle() != SIGNALCONNECTOR)
+    if(mpParentConnector->mIsDashed && mpConnectorAppearance->getStyle() != SignalConnectorStyle)
     {
         QPen tempPen = this->pen();
         tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
@@ -1245,18 +1245,18 @@ void ConnectorLine::hoverEnterEvent(QGraphicsSceneHoverEvent */*event*/)
 {
     if(this->flags().testFlag((QGraphicsItem::ItemIsMovable)))
     {
-        if(mParentConnectorEndPortConnected && mpParentConnector->getGeometry(getLineNumber()) == VERTICAL)
+        if(mParentConnectorEndPortConnected && mpParentConnector->getGeometry(getLineNumber()) == Vertical)
         {
             this->setCursor(Qt::SizeVerCursor);
         }
-        else if(mParentConnectorEndPortConnected && mpParentConnector->getGeometry(getLineNumber()) == HORIZONTAL)
+        else if(mParentConnectorEndPortConnected && mpParentConnector->getGeometry(getLineNumber()) == Horizontal)
         {
             this->setCursor(Qt::SizeHorCursor);
         }
     }
     if(mpParentConnector->isConnected())
     {
-        mpParentConnector->setZValue(HOVEREDCONNECTOR_Z);
+        mpParentConnector->setZValue(HoveredConnectorZValue);
     }
     emit lineHoverEnter();
 }
@@ -1268,9 +1268,9 @@ void ConnectorLine::hoverLeaveEvent(QGraphicsSceneHoverEvent */*event*/)
 {
     if(!mpParentConnector->mIsActive)
     {
-        mpParentConnector->setZValue(CONNECTOR_Z);
+        mpParentConnector->setZValue(ConnectorZValue);
     }
-    this->mpParentConnector->setZValue(CONNECTOR_Z);
+    this->mpParentConnector->setZValue(ConnectorZValue);
     emit lineHoverLeave();
 }
 

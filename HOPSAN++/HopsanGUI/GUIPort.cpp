@@ -101,7 +101,7 @@ Port::Port(QString portName, qreal xpos, qreal ypos, PortAppearance* pPortAppear
     mpPortLabel = new QGraphicsTextItem(this);
     mpPortLabel->setTextInteractionFlags(Qt::NoTextInteraction);
     mpPortLabel->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
-    mpPortLabel->setZValue(PORTLABEL_Z); //High value should be on top of everything
+    mpPortLabel->setZValue(PortLabelZValue); //High value should be on top of everything
     mpPortLabel->hide();
     //Port label must exist and be set up before we run setDisplayName
     this->setDisplayName(mPortDisplayName);
@@ -190,7 +190,7 @@ void Port::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
         this->setCursor(Qt::CrossCursor);
 
         magnify(true);
-        this->setZValue(HOVEREDPORT_Z);
+        this->setZValue(HoveredPortZValue);
         mpPortLabel->show();
     }
 }
@@ -205,7 +205,7 @@ void Port::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
         magnify(false);
 
         mpPortLabel->hide();
-        this->setZValue(PORT_Z);
+        this->setZValue(PortZValue);
 
         QGraphicsWidget::hoverLeaveEvent(event);
     }
@@ -393,7 +393,7 @@ void Port::refreshPortOverlayGraphics()
         {
             //! @todo check if file exist
             mpCQSIconOverlay = new QGraphicsSvgItem(mpPortAppearance->mCQSOverlayPath, this);
-            mpCQSIconOverlay->setZValue(CQSVERLAY_Z);
+            mpCQSIconOverlay->setZValue(CQSOverlayZValue);
             mpCQSIconOverlay->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
         }
     }
@@ -415,7 +415,7 @@ void Port::refreshPortOverlayGraphics()
             //! @todo check if file exist
             mpMultiPortIconOverlay = new QGraphicsSvgItem(mpPortAppearance->mMultiPortOverlayPath, this);
             mpMultiPortIconOverlay->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
-            mpMultiPortIconOverlay->setZValue(MULTIPORTOVERLAY_Z);
+            mpMultiPortIconOverlay->setZValue(MultiportOverlayZValue);
         }
     }
 

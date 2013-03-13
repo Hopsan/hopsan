@@ -51,7 +51,7 @@ using namespace hopsan;
 //! @brief Registers the creator function of all built in nodes
 //! @param [in] pNodeFactory A pointer the the node factory in which to register the nodes
 //!
-DLLIMPORTEXPORT void hopsan::register_nodes(NodeFactory* pNodeFactory)
+DLLIMPORTEXPORT void hopsan::register_default_nodes(NodeFactory* pNodeFactory)
 {
     pNodeFactory->registerCreatorFunction("NodeSignal", NodeSignal::CreatorFunction);
     pNodeFactory->registerCreatorFunction("NodeHydraulic", NodeHydraulic::CreatorFunction);

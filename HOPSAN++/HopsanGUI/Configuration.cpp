@@ -86,7 +86,7 @@ void Configuration::saveToXml()
 
     QDomElement style = appendDomElement(configRoot, HMF_STYLETAG);
 
-    QMap<connectorStyle, QMap<QString, QMap<QString, QPen> > >::iterator it1;
+    QMap<ConnectorStyleEnumT, QMap<QString, QMap<QString, QPen> > >::iterator it1;
     QMap<QString, QMap<QString, QPen> >::iterator it2;
     QMap<QString, QPen>::iterator it3;
 
@@ -97,9 +97,9 @@ void Configuration::saveToXml()
             for(it3 = it2.value().begin(); it3 != it2.value().end(); ++it3)
             {
                 QString type;
-                if(it1.key() == POWERCONNECTOR) type = "Power";
-                if(it1.key() == SIGNALCONNECTOR) type = "Signal";
-                if(it1.key() == UNDEFINEDCONNECTOR) type = "Undefined";
+                if(it1.key() == PowerConnectorStyle) type = "Power";
+                if(it1.key() == SignalConnectorStyle) type = "Signal";
+                if(it1.key() == UndefinedConnectorStyle) type = "Undefined";
 
                 QDomElement tempElement = appendDomElement(style, "penstyle");
                 tempElement.setAttribute("type", type);
@@ -305,10 +305,10 @@ void Configuration::loadFromXml()
                 Qt::PenCapStyle capStyle = Qt::PenCapStyle(penElement.attribute("capstyle").toInt());
                 QPen pen = QPen(QColor(color), width, penstyle, capStyle, Qt::RoundJoin);
 
-                connectorStyle style;
-                if(type=="Power") style = POWERCONNECTOR;
-                if(type=="Signal") style = SIGNALCONNECTOR;
-                if(type=="Undefined") style = UNDEFINEDCONNECTOR;
+                ConnectorStyleEnumT style;
+                if(type=="Power") style = PowerConnectorStyle;
+                if(type=="Signal") style = SignalConnectorStyle;
+                if(type=="Undefined") style = UndefinedConnectorStyle;
 
                 if(!mPenStyles.contains(style))
                 {
@@ -524,18 +524,18 @@ void Configuration::loadDefaultsFromXml()
                 Qt::PenCapStyle capStyle = Qt::PenCapStyle(penElement.attribute("capstyle").toInt());
                 QPen pen = QPen(QColor(color), width, penstyle, capStyle);
 
-                connectorStyle style;
+                ConnectorStyleEnumT style;
                 if(type=="Power")
                 {
-                    style = POWERCONNECTOR;
+                    style = PowerConnectorStyle;
                 }
                 else if(type=="Signal")
                 {
-                    style = SIGNALCONNECTOR;
+                    style = SignalConnectorStyle;
                 }
                 else
                 {
-                    style = UNDEFINEDCONNECTOR;
+                    style = UndefinedConnectorStyle;
                 }
 
                 if(!mPenStyles.contains(style))
@@ -814,10 +814,10 @@ double Configuration::getUnitScale(const QString key, const QString unit) const
 //! @param style Style of connector (POWERCONNECTOR, SIGNALCONNECTOR or UNDEFINEDCONNECTOR)
 //! @param gfxType Graphics type (User or Iso)
 //! @param situation Defines when connector is used (Primary, Hovered, Active)
-QPen Configuration::getPen(connectorStyle style, graphicsType gfxType, QString situation)
+QPen Configuration::getPen(ConnectorStyleEnumT style, GraphicsTypeEnumT gfxType, QString situation)
 {
     QString gfxString;
-    if(gfxType == ISOGRAPHICS) { gfxString = "Iso"; }
+    if(gfxType == ISOGraphics) { gfxString = "Iso"; }
     else { gfxString = "User"; }
 
     if(mPenStyles.contains(style))

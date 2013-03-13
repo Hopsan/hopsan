@@ -48,8 +48,8 @@ class ContainerObject : public ModelObject
     friend class UndoStack;     //! @todo Not sure about this, but the alternative would be to have lots and lots of access functions only used by undo stack...
     Q_OBJECT
 public:
-    enum ContainerEdgeT {RIGHTEDGE, BOTTOMEDGE, LEFTEDGE, TOPEDGE};
-    ContainerObject(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS, ContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
+    enum ContainerEdgeEnumT {RightEdge, BottomEdge, LeftEdge, TopEdge};
+    ContainerObject(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics, ContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
     virtual ~ContainerObject();
 
     void hasChanged();
@@ -67,12 +67,12 @@ public:
     void takeOwnershipOf(QList<ModelObject*> &rModeObjectlist, QList<Widget*> &rWidgetList);
 
     //GUIModelObject methods
-    ModelObject *addModelObject(QString fullTypeName, QPointF position, qreal rotation=0, selectionStatus startSelected = DESELECTED, nameVisibility nameStatus = USEDEFAULT, undoStatus undoSettings = UNDO);
-    ModelObject *addModelObject(ModelObjectAppearance* pAppearanceData, QPointF position, qreal rotation=0, selectionStatus startSelected = DESELECTED, nameVisibility nameStatus = USEDEFAULT, undoStatus undoSettings = UNDO);
+    ModelObject *addModelObject(QString fullTypeName, QPointF position, qreal rotation=0, SelectionStatusEnumT startSelected = Deselected, NameVisibilityEnumT nameStatus = UseDefault, UndoStatusEnumT undoSettings = Undo);
+    ModelObject *addModelObject(ModelObjectAppearance* pAppearanceData, QPointF position, qreal rotation=0, SelectionStatusEnumT startSelected = Deselected, NameVisibilityEnumT nameStatus = UseDefault, UndoStatusEnumT undoSettings = Undo);
     ModelObject *getModelObject(const QString modelObjectName);
     Port *getModelObjectPort(const QString modelObjectName, const QString portName);
-    void deleteModelObject(QString componentName, undoStatus undoSettings=UNDO);
-    void renameModelObject(QString oldName, QString newName, undoStatus undoSettings=UNDO);
+    void deleteModelObject(QString componentName, UndoStatusEnumT undoSettings=Undo);
+    void renameModelObject(QString oldName, QString newName, UndoStatusEnumT undoSettings=Undo);
     bool hasModelObject(QString name);
     void rememberSelectedModelObject(ModelObject *object);
     void forgetSelectedModelObject(ModelObject *object);
@@ -85,8 +85,8 @@ public:
     QStringList getAliasNames();
 
     //GUIWidgets methods
-    TextBoxWidget *addTextBoxWidget(QPointF position, undoStatus undoSettings=UNDO);
-    void deleteWidget(Widget *pWidget, undoStatus undoSettings=UNDO);
+    TextBoxWidget *addTextBoxWidget(QPointF position, UndoStatusEnumT undoSettings=Undo);
+    void deleteWidget(Widget *pWidget, UndoStatusEnumT undoSettings=Undo);
     void rememberSelectedWidget(Widget *widget);
     void forgetSelectedWidget(Widget *widget);
     QList<Widget *> getSelectedGUIWidgetPtrs();
@@ -100,7 +100,7 @@ public:
     bool hasConnector(QString startComp, QString startPort, QString endComp, QString endPort);
     Connector *findConnector(QString startComp, QString startPort, QString endComp, QString endPort);
     void rememberSubConnector(Connector *pConnector);
-    void removeSubConnector(Connector* pConnector, undoStatus undoSettings=UNDO);
+    void removeSubConnector(Connector* pConnector, UndoStatusEnumT undoSettings=Undo);
     bool isConnectorSelected();
     void rememberSelectedSubConnector(Connector *pConnector);
     void forgetSelectedSubConnector(Connector *pConnector);
@@ -112,9 +112,9 @@ public:
     void updateTempConnector(QPointF pos);
 
     //Handle container appearance
-    QString getIconPath(const graphicsType gfxType, const AbsoluteRelativeT absrelType);
-    void setIconPath(const QString path, const graphicsType gfxType, const AbsoluteRelativeT absrelType);
-    ContainerEdgeT findPortEdge(QPointF center, QPointF pt); //!< @todo maybe not public
+    QString getIconPath(const GraphicsTypeEnumT gfxType, const AbsoluteRelativeEnumT absrelType);
+    void setIconPath(const QString path, const GraphicsTypeEnumT gfxType, const AbsoluteRelativeEnumT absrelType);
+    ContainerEdgeEnumT findPortEdge(QPointF center, QPointF pt); //!< @todo maybe not public
     virtual void refreshAppearance();
     void refreshExternalPortsAppearanceAndPosition();
     void calcSubsystemPortPosition(const double w, const double h, const double angle, double &x, double &y); //!< @todo maybe not public
@@ -170,8 +170,8 @@ public slots:
     void showSubcomponentPorts(bool doShowThem);
 
     //Connector slots
-    Connector* createConnector(Port *pPort, undoStatus undoSettings=UNDO);
-    Connector* createConnector(Port *pPort1, Port *pPort2, undoStatus undoSettings=UNDO);
+    Connector* createConnector(Port *pPort, UndoStatusEnumT undoSettings=Undo);
+    Connector* createConnector(Port *pPort1, Port *pPort2, UndoStatusEnumT undoSettings=Undo);
 
     //Section slots
     void groupSelected(QPointF pt);
@@ -197,8 +197,8 @@ public slots:
     void updateMainWindowButtons();
 
     //Appearance slots
-    void setGfxType(graphicsType gfxType);
-    graphicsType getGfxType();
+    void setGfxType(GraphicsTypeEnumT gfxType);
+    GraphicsTypeEnumT getGfxType();
     bool areSubComponentPortsHidden();
     bool areSubComponentNamesHidden();
     bool areSignalsHidden();
@@ -256,7 +256,7 @@ signals:
     //Other signals
     void checkMessages();
     void deleteSelected();
-    void setAllGfxType(graphicsType);
+    void setAllGfxType(GraphicsTypeEnumT);
     void componentChanged();
     void connectorRemoved();
     void rotateSelectedObjectsRight();
@@ -316,7 +316,7 @@ protected:
     bool mSubComponentPortsHidden;
     bool mSubComponentNamesHidden;
     bool mSignalsHidden;
-    graphicsType mGfxType;
+    GraphicsTypeEnumT mGfxType;
 
     //Plot members
     LogDataHandler *mpLogDataHandler;

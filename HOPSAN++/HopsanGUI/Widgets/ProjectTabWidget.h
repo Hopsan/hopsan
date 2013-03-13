@@ -136,7 +136,7 @@ signals:
     void simulationFinished();
 
 private:
-    void saveModel(saveTarget saveAsFlag, saveContents contents=FULLMODEL);
+    void saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT contents=FullModel);
 
     QString mStartTime, mStopTime;
     SimulationThreadHandler *mpSimulationThreadHandler;

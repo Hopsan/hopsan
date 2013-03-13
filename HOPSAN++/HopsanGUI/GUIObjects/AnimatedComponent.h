@@ -111,7 +111,7 @@ protected:
     //Protected members
     ModelObjectAppearance mModelObjectAppearance;
 
-    graphicsType mIconType;
+    GraphicsTypeEnumT mIconType;
     bool mIconRotation;
     QGraphicsSvgItem *mpIcon;
     QString mLastIconPath;

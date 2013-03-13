@@ -49,12 +49,12 @@ namespace hopsan {
 
         void configure()
         {
-            mpRoute = addReadPort("route", "NodeSignal", Port::REQUIRED);
-            mpIn1 = addReadPort("in1", "NodeSignal", Port::NOTREQUIRED);
-            mpIn2 = addReadPort("in2", "NodeSignal", Port::NOTREQUIRED);
-            mpIn3 = addReadPort("in3", "NodeSignal", Port::NOTREQUIRED);
-            mpIn4 = addReadPort("in4", "NodeSignal", Port::NOTREQUIRED);
-            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
+            mpRoute = addReadPort("route", "NodeSignal", Port::Required);
+            mpIn1 = addReadPort("in1", "NodeSignal", Port::NotRequired);
+            mpIn2 = addReadPort("in2", "NodeSignal", Port::NotRequired);
+            mpIn3 = addReadPort("in3", "NodeSignal", Port::NotRequired);
+            mpIn4 = addReadPort("in4", "NodeSignal", Port::NotRequired);
+            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
         }
 
 

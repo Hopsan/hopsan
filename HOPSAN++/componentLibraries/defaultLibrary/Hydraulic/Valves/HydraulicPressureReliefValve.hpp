@@ -69,8 +69,8 @@ namespace hopsan {
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
-            mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
-            mpOut = addWritePort("xv", "NodeSignal", Port::NOTREQUIRED);
+            mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
+            mpOut = addWritePort("xv", "NodeSignal", Port::NotRequired);
 
             registerParameter("p_max", "Maximum opening pressure", "[Pa]", pmax);
             registerParameter("tao", "Time Constant of Spool", "[s]", tao);

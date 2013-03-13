@@ -90,20 +90,20 @@ public:
     PlotCurve(SharedLogVariableDataPtrT pData,
               int axisY=QwtPlot::yLeft,
               PlotTab *parent=0,
-              HopsanPlotID plotID=FIRSTPLOT,
-              HopsanPlotCurveType curveType=PORTVARIABLE);
+              HopsanPlotIDEnumT plotID=FirstPlot,
+              HopsanPlotCurveTypeEnumT curveType=PortVariableType);
 
     PlotCurve(const VariableDescription &rVarDesc,
               const QVector<double> &rXVector,
               const QVector<double> &rYVector,
               int axisY=QwtPlot::yLeft,
               PlotTab *parent=0,
-              HopsanPlotID plotID=FIRSTPLOT,
-              HopsanPlotCurveType curveType=PORTVARIABLE);
+              HopsanPlotIDEnumT plotID=FirstPlot,
+              HopsanPlotCurveTypeEnumT curveType=PortVariableType);
     ~PlotCurve();
 
     QString getCurveName() const;
-    HopsanPlotCurveType getCurveType();
+    HopsanPlotCurveTypeEnumT getCurveType();
     int getAxisY();
 
     SharedLogVariableDataPtrT getLogDataVariablePtr(); //! @todo is this needed
@@ -165,10 +165,10 @@ private:
     // Private member functions
     void deleteCustomData();
     void connectDataSignals();
-    void commonConstructorCode(int axisY, PlotTab *parent, HopsanPlotID plotID, HopsanPlotCurveType curveType);
+    void commonConstructorCode(int axisY, PlotTab *parent, HopsanPlotIDEnumT plotID, HopsanPlotCurveTypeEnumT curveType);
 
     // Curve data
-    HopsanPlotCurveType mCurveType;
+    HopsanPlotCurveTypeEnumT mCurveType;
     SharedLogVariableDataPtrT mpData;
     SharedLogVariableDataPtrT mpCustomXdata;
     bool mHaveCustomData;

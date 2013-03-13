@@ -100,13 +100,13 @@ public:
         //Add ports to the component
 
         //Add inputVariables ports to the component
-        mpPha=addReadPort("Pha","NodeSignal", Port::NOTREQUIRED);
+        mpPha=addReadPort("Pha","NodeSignal", Port::NotRequired);
 
         //Add outputVariables ports to the component
-        mpPrho=addWritePort("Prho","NodeSignal", Port::NOTREQUIRED);
-        mpPT=addWritePort("PT","NodeSignal", Port::NOTREQUIRED);
-        mpPp0=addWritePort("Pp0","NodeSignal", Port::NOTREQUIRED);
-        mpPVsound=addWritePort("PVsound","NodeSignal", Port::NOTREQUIRED);
+        mpPrho=addWritePort("Prho","NodeSignal", Port::NotRequired);
+        mpPT=addWritePort("PT","NodeSignal", Port::NotRequired);
+        mpPp0=addWritePort("Pp0","NodeSignal", Port::NotRequired);
+        mpPVsound=addWritePort("PVsound","NodeSignal", Port::NotRequired);
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("g0", "Gravitation acceleration", "m/s^2", mg0);

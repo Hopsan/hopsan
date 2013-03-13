@@ -150,15 +150,15 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
         mpTabLayout->addWidget(mpQwtPlots[plotID]);
     }
 
-    connect(mpQwtPlots[FIRSTPLOT], SIGNAL(legendClicked(QwtPlotItem*)), this, SLOT(updateLegend(QwtPlotItem *)));//QwtPlotItem *, bool)));
+    connect(mpQwtPlots[FirstPlot], SIGNAL(legendClicked(QwtPlotItem*)), this, SLOT(updateLegend(QwtPlotItem *)));//QwtPlotItem *, bool)));
 
     for(int plotID=1; plotID<2; ++plotID)       //Hide all plots except first one by default
     {
-        showPlot(HopsanPlotID(plotID), false);
+        showPlot(HopsanPlotIDEnumT(plotID), false);
     }
     mpBarPlot->setVisible(false);
 
-    mpQwtPlots[FIRSTPLOT]->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    mpQwtPlots[FirstPlot]->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 }
 
@@ -246,7 +246,7 @@ void PlotTab::applyLegendSettings()
             mpExternalLegend->setAutoFillBackground(false);
             mpExternalLegend->setFrameStyle(QFrame::NoFrame | QFrame::Sunken);
             mpExternalLegend->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-            mpQwtPlots[FIRSTPLOT]->insertLegend(mpExternalLegend, QwtPlot::TopLegend);
+            mpQwtPlots[FirstPlot]->insertLegend(mpExternalLegend, QwtPlot::TopLegend);
         }
 
         QFont font = mpExternalLegend->font();
@@ -258,7 +258,7 @@ void PlotTab::applyLegendSettings()
     }
     else
     {
-        mpQwtPlots[FIRSTPLOT]->insertLegend(NULL, QwtPlot::TopLegend);
+        mpQwtPlots[FirstPlot]->insertLegend(NULL, QwtPlot::TopLegend);
         // Since it is deleted set ptr to NULL
         mpExternalLegend = 0;
     }
@@ -361,7 +361,7 @@ void PlotTab::addBarChart(QStandardItemModel *pItemModel)
 //! @brief Adds a plot curve to a plot tab
 //! @param curve Pointer to the plot curve
 //! @param desiredColor Desired color for curve (will override default colors)
-void PlotTab::addCurve(PlotCurve *curve, QColor desiredColor, HopsanPlotID plotID)
+void PlotTab::addCurve(PlotCurve *curve, QColor desiredColor, HopsanPlotIDEnumT plotID)
 {
     if(mHasCustomXData)
     {
@@ -440,7 +440,7 @@ void PlotTab::addCurve(PlotCurve *curve, QColor desiredColor, HopsanPlotID plotI
 
     setLegendSymbol(mpLegendSymbolType->currentText());
 
-    mpParentPlotWindow->mpBodePlotButton->setEnabled(mPlotCurvePtrs[FIRSTPLOT].size() > 1);
+    mpParentPlotWindow->mpBodePlotButton->setEnabled(mPlotCurvePtrs[FirstPlot].size() > 1);
 }
 
 
@@ -886,14 +886,14 @@ void PlotTab::removeAllCurvesOnAxis(const int axis)
 //! @param portName Name of port form which new data origins
 //! @param dataName Data name (physical quantity) of new data
 //! @param dataUnit Unit of new data
-void PlotTab::setCustomXVectorForAll(QVector<double> xArray, const VariableDescription &rVarDesc, HopsanPlotID plotID)
+void PlotTab::setCustomXVectorForAll(QVector<double> xArray, const VariableDescription &rVarDesc, HopsanPlotIDEnumT plotID)
 {
     LogVariableContainer *cont = new LogVariableContainer(rVarDesc,0);
     cont->addDataGeneration(0, SharedTimeVectorPtrT(), xArray);
     setCustomXVectorForAll(cont->getDataGeneration(-1),plotID);
 }
 
-void PlotTab::setCustomXVectorForAll(SharedLogVariableDataPtrT pData, HopsanPlotID plotID)
+void PlotTab::setCustomXVectorForAll(SharedLogVariableDataPtrT pData, HopsanPlotIDEnumT plotID)
 {
     for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
     {
@@ -919,7 +919,7 @@ void PlotTab::updateLabels()
         mpQwtPlots[plotID]->setAxisTitle(QwtPlot::yLeft, QwtText());
         mpQwtPlots[plotID]->setAxisTitle(QwtPlot::yRight, QwtText());
 
-        if(mPlotCurvePtrs[plotID].size()>0 && mPlotCurvePtrs[plotID][0]->getCurveType() == PORTVARIABLE)
+        if(mPlotCurvePtrs[plotID].size()>0 && mPlotCurvePtrs[plotID][0]->getCurveType() == PortVariableType)
         {
             QStringList leftUnits, rightUnits;
             for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
@@ -951,7 +951,7 @@ void PlotTab::updateLabels()
                 mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, QwtText("Time [s]"));
             }
         }
-        else if(mPlotCurvePtrs[plotID].size()>0 && mPlotCurvePtrs[plotID][0]->getCurveType() == FREQUENCYANALYSIS)
+        else if(mPlotCurvePtrs[plotID].size()>0 && mPlotCurvePtrs[plotID][0]->getCurveType() == FrequencyAnalysisType)
         {
             for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
             {
@@ -959,7 +959,7 @@ void PlotTab::updateLabels()
                 mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
             }
         }
-        else if(mPlotCurvePtrs[plotID].size()>0 && mPlotCurvePtrs[plotID][0]->getCurveType() == NYQUIST)
+        else if(mPlotCurvePtrs[plotID].size()>0 && mPlotCurvePtrs[plotID][0]->getCurveType() == NyquistType)
         {
             for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
             {
@@ -967,7 +967,7 @@ void PlotTab::updateLabels()
                 mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, "Re");
             }
         }
-        else if(mPlotCurvePtrs[plotID].size()>0 && mPlotCurvePtrs[plotID][0]->getCurveType() == BODEGAIN)
+        else if(mPlotCurvePtrs[plotID].size()>0 && mPlotCurvePtrs[plotID][0]->getCurveType() == BodeGainType)
         {
             for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
             {
@@ -975,7 +975,7 @@ void PlotTab::updateLabels()
                 mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, QwtText());      //No label, because there will be a phase plot bellow with same label
             }
         }
-        else if(mPlotCurvePtrs[plotID].size()>0 && mPlotCurvePtrs[plotID][0]->getCurveType() == BODEPHASE)
+        else if(mPlotCurvePtrs[plotID].size()>0 && mPlotCurvePtrs[plotID][0]->getCurveType() == BodePhaseType)
         {
             for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
             {
@@ -988,7 +988,7 @@ void PlotTab::updateLabels()
 
 bool PlotTab::isGridVisible()
 {
-    return mpGrid[FIRSTPLOT]->isVisible();
+    return mpGrid[FirstPlot]->isVisible();
 }
 
 
@@ -998,9 +998,9 @@ void PlotTab::resetXTimeVector()
     mCustomXDataLabel = "";
 
     //! @todo what about second plot
-    for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
+    for(int i=0; i<mPlotCurvePtrs[FirstPlot].size(); ++i)
     {
-        mPlotCurvePtrs[FIRSTPLOT].at(i)->setCustomXData(SharedLogVariableDataPtrT()); //Remove any custom x-data
+        mPlotCurvePtrs[FirstPlot].at(i)->setCustomXData(SharedLogVariableDataPtrT()); //Remove any custom x-data
         //mPlotCurvePtrs[FIRSTPLOT].at(i)->setSamples(mPlotCurvePtrs[FIRSTPLOT].at(i)->getTimeVector(), mPlotCurvePtrs[FIRSTPLOT].at(i)->getDataVector());
         //mPlotCurvePtrs[FIRSTPLOT].at(i)->setDataUnit(mPlotCurvePtrs[FIRSTPLOT].at(i)->getDataUnit());
     }
@@ -1009,8 +1009,8 @@ void PlotTab::resetXTimeVector()
     update();
 
     rescaleToCurves();
-    mpQwtPlots[FIRSTPLOT]->replot();
-    mpQwtPlots[FIRSTPLOT]->updateGeometry();
+    mpQwtPlots[FirstPlot]->replot();
+    mpQwtPlots[FirstPlot]->updateGeometry();
 
     mpParentPlotWindow->mpResetXVectorButton->setEnabled(false);
 }
@@ -1113,21 +1113,21 @@ void PlotTab::exportToCsv(QString fileName)
         for(int i=0; i<xvec.size(); ++i)
         {
             fileStream << xvec[i];
-            for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT].size(); ++j)
+            for(int j=0; j<mPlotCurvePtrs[FirstPlot].size(); ++j)
             {
-                fileStream << ", " << mPlotCurvePtrs[FIRSTPLOT][j]->getDataVector()[i];
+                fileStream << ", " << mPlotCurvePtrs[FirstPlot][j]->getDataVector()[i];
             }
             fileStream << "\n";
         }
     }
     else
     {
-        for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT][0]->getTimeVector().size(); ++i)
+        for(int i=0; i<mPlotCurvePtrs[FirstPlot][0]->getTimeVector().size(); ++i)
         {
-            fileStream << mPlotCurvePtrs[FIRSTPLOT][0]->getTimeVector()[i];
-            for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT].size(); ++j)
+            fileStream << mPlotCurvePtrs[FirstPlot][0]->getTimeVector()[i];
+            for(int j=0; j<mPlotCurvePtrs[FirstPlot].size(); ++j)
             {
-                fileStream << ", " << mPlotCurvePtrs[FIRSTPLOT][j]->getDataVector()[i];
+                fileStream << ", " << mPlotCurvePtrs[FirstPlot][j]->getDataVector()[i];
             }
             fileStream << "\n";
         }
@@ -1167,7 +1167,7 @@ void PlotTab::exportToCsv(QString fileName)
 
 void PlotTab::exportToHvc(QString fileName)
 {
-    if (mPlotCurvePtrs[FIRSTPLOT].size() < 1)
+    if (mPlotCurvePtrs[FirstPlot].size() < 1)
     {
         return;
     }
@@ -1205,7 +1205,7 @@ void PlotTab::exportToHvc(QString fileName)
     doc.appendChild(hvcroot);
     hvcroot.setAttribute("hvcversion", "0.1");
 
-    QString modelPath = relativePath(mPlotCurvePtrs[FIRSTPLOT][0]->getLogDataVariablePtr()->getLogDataHandler()->getParentContainerObject()->getModelFileInfo(), QDir(fileInfo.absolutePath()));
+    QString modelPath = relativePath(mPlotCurvePtrs[FirstPlot][0]->getLogDataVariablePtr()->getLogDataHandler()->getParentContainerObject()->getModelFileInfo(), QDir(fileInfo.absolutePath()));
     QDomElement validation = appendDomElement(hvcroot, "validation");
     validation.setAttribute("date", QDateTime::currentDateTime().toString("yyyyMMdd"));
     validation.setAttribute("time", QDateTime::currentDateTime().toString("hhmmss"));
@@ -1215,9 +1215,9 @@ void PlotTab::exportToHvc(QString fileName)
     appendDomTextNode(validation, "parameterset", "");
 
     //Cycle plot curves
-    for (int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
+    for (int i=0; i<mPlotCurvePtrs[FirstPlot].size(); ++i)
     {
-        PlotCurve *pPlotCurve = mPlotCurvePtrs[FIRSTPLOT][i];
+        PlotCurve *pPlotCurve = mPlotCurvePtrs[FirstPlot][i];
 
         QDomElement component = appendDomElement(validation, "component");
         component.setAttribute("name", pPlotCurve->getComponentName());
@@ -1269,7 +1269,7 @@ void PlotTab::exportToMatlab()
     fileStream << "% MATLAB File Exported From Hopsan " << QString(HOPSANGUIVERSION) << " " << dateTimeString << "\n";
 
     //Cycle plot curves
-    for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
+    for(int i=0; i<mPlotCurvePtrs[FirstPlot].size(); ++i)
     {
         fileStream << "x" << i << "=[";                                         //Write time/X vector
         if(mHasCustomXData)
@@ -1284,27 +1284,27 @@ void PlotTab::exportToMatlab()
         }
         else
         {
-            for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT][i]->getTimeVector().size(); ++j)
+            for(int j=0; j<mPlotCurvePtrs[FirstPlot][i]->getTimeVector().size(); ++j)
             {
                 if(j>0) fileStream << ",";
-                fileStream << mPlotCurvePtrs[FIRSTPLOT][i]->getTimeVector()[j];
+                fileStream << mPlotCurvePtrs[FirstPlot][i]->getTimeVector()[j];
             }
         }
         fileStream << "];\n";
 
         fileStream << "y" << i << "=[";                                             //Write data vector
-        for(int k=0; k<mPlotCurvePtrs[FIRSTPLOT][i]->getDataVector().size(); ++k)
+        for(int k=0; k<mPlotCurvePtrs[FirstPlot][i]->getDataVector().size(); ++k)
         {
             if(k>0) fileStream << ",";
-            fileStream << mPlotCurvePtrs[FIRSTPLOT][i]->getDataVector()[k];
+            fileStream << mPlotCurvePtrs[FirstPlot][i]->getDataVector()[k];
         }
         fileStream << "];\n";
     }
 
     //Cycle plot curves
-    for(int i=0; i<mPlotCurvePtrs[SECONDPLOT].size(); ++i)
+    for(int i=0; i<mPlotCurvePtrs[SecondPlot].size(); ++i)
     {
-        fileStream << "x" << i+mPlotCurvePtrs[FIRSTPLOT].size() << "=[";                                         //Write time/X vector
+        fileStream << "x" << i+mPlotCurvePtrs[FirstPlot].size() << "=[";                                         //Write time/X vector
         if(mHasCustomXData)
         {
             //! @todo need smart function to autoselect copy or direct access depending on cached or not (also in other places)
@@ -1317,19 +1317,19 @@ void PlotTab::exportToMatlab()
         }
         else
         {
-            for(int j=0; j<mPlotCurvePtrs[SECONDPLOT][i]->getTimeVector().size(); ++j)
+            for(int j=0; j<mPlotCurvePtrs[SecondPlot][i]->getTimeVector().size(); ++j)
             {
                 if(j>0) fileStream << ",";
-                fileStream << mPlotCurvePtrs[SECONDPLOT][i]->getTimeVector()[j];
+                fileStream << mPlotCurvePtrs[SecondPlot][i]->getTimeVector()[j];
             }
         }
         fileStream << "];\n";
 
-        fileStream << "y" << i+mPlotCurvePtrs[FIRSTPLOT].size() << "=[";                                             //Write data vector
-        for(int k=0; k<mPlotCurvePtrs[SECONDPLOT][i]->getDataVector().size(); ++k)
+        fileStream << "y" << i+mPlotCurvePtrs[FirstPlot].size() << "=[";                                             //Write data vector
+        for(int k=0; k<mPlotCurvePtrs[SecondPlot][i]->getDataVector().size(); ++k)
         {
             if(k>0) fileStream << ",";
-            fileStream << mPlotCurvePtrs[SECONDPLOT][i]->getDataVector()[k];
+            fileStream << mPlotCurvePtrs[SecondPlot][i]->getDataVector()[k];
         }
         fileStream << "];\n";
     }
@@ -1339,9 +1339,9 @@ void PlotTab::exportToMatlab()
     matlabColors << "r" << "g" << "b" << "c" << "m" << "y";
     fileStream << "hold on\n";
     fileStream << "subplot(2,1,1)\n";
-    for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
+    for(int i=0; i<mPlotCurvePtrs[FirstPlot].size(); ++i)
     {
-        if((mPlotCurvePtrs[FIRSTPLOT][i]->getAxisY() == QwtPlot::yLeft && mLeftAxisLogarithmic) || (mPlotCurvePtrs[FIRSTPLOT][i]->getAxisY() == QwtPlot::yRight && mRightAxisLogarithmic))
+        if((mPlotCurvePtrs[FirstPlot][i]->getAxisY() == QwtPlot::yLeft && mLeftAxisLogarithmic) || (mPlotCurvePtrs[FirstPlot][i]->getAxisY() == QwtPlot::yRight && mRightAxisLogarithmic))
         {
             if(mBottomAxisLogarithmic)
                 fileStream << "loglog";
@@ -1355,14 +1355,14 @@ void PlotTab::exportToMatlab()
             else
                 fileStream << "plot";
         }
-        fileStream << "(x" << i << ",y" << i << ",'-" << matlabColors[i%6] << "','linewidth'," << mPlotCurvePtrs[FIRSTPLOT][i]->pen().width() << ")\n";
+        fileStream << "(x" << i << ",y" << i << ",'-" << matlabColors[i%6] << "','linewidth'," << mPlotCurvePtrs[FirstPlot][i]->pen().width() << ")\n";
     }
-    if(mPlotCurvePtrs[SECONDPLOT].size() > 0)
+    if(mPlotCurvePtrs[SecondPlot].size() > 0)
     {
         fileStream << "subplot(2,1,2)\n";
-        for(int i=0; i<mPlotCurvePtrs[SECONDPLOT].size(); ++i)
+        for(int i=0; i<mPlotCurvePtrs[SecondPlot].size(); ++i)
         {
-            if((mPlotCurvePtrs[SECONDPLOT][i]->getAxisY() == QwtPlot::yLeft && mLeftAxisLogarithmic) || (mPlotCurvePtrs[SECONDPLOT][i]->getAxisY() == QwtPlot::yRight && mRightAxisLogarithmic))
+            if((mPlotCurvePtrs[SecondPlot][i]->getAxisY() == QwtPlot::yLeft && mLeftAxisLogarithmic) || (mPlotCurvePtrs[SecondPlot][i]->getAxisY() == QwtPlot::yRight && mRightAxisLogarithmic))
             {
                 if(mBottomAxisLogarithmic)
                     fileStream << "loglog";
@@ -1376,7 +1376,7 @@ void PlotTab::exportToMatlab()
                 else
                     fileStream << "plot";
             }
-            fileStream << "(x" << i+mPlotCurvePtrs[FIRSTPLOT].size() << ",y" << i+mPlotCurvePtrs[FIRSTPLOT].size() << ",'-" << matlabColors[i%6] << "','linewidth'," << mPlotCurvePtrs[SECONDPLOT][i]->pen().width() << ")\n";
+            fileStream << "(x" << i+mPlotCurvePtrs[FirstPlot].size() << ",y" << i+mPlotCurvePtrs[FirstPlot].size() << ",'-" << matlabColors[i%6] << "','linewidth'," << mPlotCurvePtrs[SecondPlot][i]->pen().width() << ")\n";
         }
     }
 
@@ -1412,7 +1412,7 @@ void PlotTab::exportToGnuplot()
     //Write initial comment
     fileStream << "# gnuplot File Exported From Hopsan " << QString(HOPSANGUIVERSION) << " " << dateTimeString << "\n";
     fileStream << "# T";
-    for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
+    for(int i=0; i<mPlotCurvePtrs[FirstPlot].size(); ++i)
     {
         fileStream << "                  Y" << i;
     }
@@ -1420,15 +1420,15 @@ void PlotTab::exportToGnuplot()
 
     //Write time and data vectors
     QString dummy;
-    for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].first()->getTimeVector().size(); ++i)
+    for(int i=0; i<mPlotCurvePtrs[FirstPlot].first()->getTimeVector().size(); ++i)
     {
-        dummy.setNum(mPlotCurvePtrs[FIRSTPLOT].first()->getTimeVector()[i]);
+        dummy.setNum(mPlotCurvePtrs[FirstPlot].first()->getTimeVector()[i]);
         fileStream << dummy;
         for(int j=0; j<20-dummy.size(); ++j) { fileStream << " "; }
 
-        for(int k=0; k<mPlotCurvePtrs[FIRSTPLOT].size(); ++k)
+        for(int k=0; k<mPlotCurvePtrs[FirstPlot].size(); ++k)
         {
-            dummy.setNum(mPlotCurvePtrs[FIRSTPLOT][k]->getDataVector()[i]);
+            dummy.setNum(mPlotCurvePtrs[FirstPlot][k]->getDataVector()[i]);
             fileStream << dummy;
             for(int j=0; j<20-dummy.size(); ++j) { fileStream << " "; }
         }
@@ -1457,18 +1457,18 @@ void PlotTab::exportToGraphics()
     mpImageSetWidth->setDecimals(0);
     mpImageSetWidth->setRange(1,10000);
     mpImageSetWidth->setSingleStep(1);
-    mpImageSetWidth->setValue(mpQwtPlots[FIRSTPLOT]->width());
+    mpImageSetWidth->setValue(mpQwtPlots[FirstPlot]->width());
     connect(mpImageSetWidth, SIGNAL(editingFinished()), this, SLOT(changedGraphicsExportSettings()));
 
     mpImageSetHeight = new QDoubleSpinBox(this);
     mpImageSetHeight->setDecimals(0);
     mpImageSetHeight->setRange(1,10000);
     mpImageSetHeight->setSingleStep(1);
-    mpImageSetHeight->setValue(mpQwtPlots[FIRSTPLOT]->height());
+    mpImageSetHeight->setValue(mpQwtPlots[FirstPlot]->height());
     connect(mpImageSetHeight, SIGNAL(editingFinished()), this, SLOT(changedGraphicsExportSettings()));
 
-    mpPixelSizeLabel = new QLabel(QString("%1X%2").arg(mpQwtPlots[FIRSTPLOT]->width()).arg(mpQwtPlots[FIRSTPLOT]->height()));
-    mImagePixelSize = QSize(mpQwtPlots[FIRSTPLOT]->width(), mpQwtPlots[FIRSTPLOT]->height());
+    mpPixelSizeLabel = new QLabel(QString("%1X%2").arg(mpQwtPlots[FirstPlot]->width()).arg(mpQwtPlots[FirstPlot]->height()));
+    mImagePixelSize = QSize(mpQwtPlots[FirstPlot]->width(), mpQwtPlots[FirstPlot]->height());
 
 
     mpImageDPI = new QDoubleSpinBox(this);
@@ -1533,7 +1533,7 @@ void PlotTab::exportToPdf()
 
         QPrinter *printer = new QPrinter(QPrinter::HighResolution);
         printer->setPaperSize(QPrinter::Custom);
-        printer->setPaperSize(mpQwtPlots[FIRSTPLOT]->size(), QPrinter::Point);
+        printer->setPaperSize(mpQwtPlots[FirstPlot]->size(), QPrinter::Point);
         printer->setOrientation(QPrinter::Landscape);
         printer->setFullPage(false);
         if(selectedFilter == "Portable Document Format (*.pdf)")
@@ -1541,7 +1541,7 @@ void PlotTab::exportToPdf()
         else
             printer->setOutputFormat(QPrinter::PostScriptFormat);
         printer->setOutputFileName(fileName);
-        renderer.renderTo(mpQwtPlots[FIRSTPLOT],*printer);
+        renderer.renderTo(mpQwtPlots[FirstPlot],*printer);
     }
 }
 
@@ -1559,12 +1559,12 @@ void PlotTab::exportToOldHop()
     gConfig.setPlotDataDir(fileInfo.absolutePath());
 
     QStringList variables;
-    for(int c=0; c<mPlotCurvePtrs[FIRSTPLOT].size(); ++c)
+    for(int c=0; c<mPlotCurvePtrs[FirstPlot].size(); ++c)
     {
-        variables.append(mPlotCurvePtrs[FIRSTPLOT][c]->getLogDataVariablePtr()->getFullVariableName());
+        variables.append(mPlotCurvePtrs[FirstPlot][c]->getLogDataVariablePtr()->getFullVariableName());
     }
 
-    mPlotCurvePtrs[FIRSTPLOT].first()->getLogDataVariablePtr()->getLogDataHandler()->getParentContainerObject()->getLogDataHandler()->exportToPlo(filePath, variables);
+    mPlotCurvePtrs[FirstPlot].first()->getLogDataVariablePtr()->getLogDataHandler()->getParentContainerObject()->getLogDataHandler()->exportToPlo(filePath, variables);
 
     //    file.setFileName(fileInfo.filePath());   //Create a QFile object
     //    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -1686,10 +1686,10 @@ void PlotTab::exportToPng()
         }
         else
         {
-            QPixmap pixmap(mpQwtPlots[FIRSTPLOT]->width(), mpQwtPlots[FIRSTPLOT]->height());
+            QPixmap pixmap(mpQwtPlots[FirstPlot]->width(), mpQwtPlots[FirstPlot]->height());
             pixmap.fill();
             QwtPlotRenderer renderer;
-            renderer.renderTo(mpQwtPlots[FIRSTPLOT], pixmap);
+            renderer.renderTo(mpQwtPlots[FirstPlot], pixmap);
             pixmap.save(fileName);
         }
     }
@@ -1701,28 +1701,28 @@ void PlotTab::enableZoom(bool value)
     if(mpParentPlotWindow->mpPanButton->isChecked() && value)
     {
         mpParentPlotWindow->mpPanButton->setChecked(false);
-        mpPanner[FIRSTPLOT]->setEnabled(false);
-        mpPanner[SECONDPLOT]->setEnabled(false);
+        mpPanner[FirstPlot]->setEnabled(false);
+        mpPanner[SecondPlot]->setEnabled(false);
     }
     if(mpParentPlotWindow->mpArrowButton->isChecked() && value)
     {
         mpParentPlotWindow->mpArrowButton->setChecked(false);
     }
-    mpZoomerLeft[FIRSTPLOT]->setEnabled(value);
-    if(value)   { mpZoomerLeft[FIRSTPLOT]->setRubberBand(QwtPicker::RectRubberBand); }
-    else        { mpZoomerLeft[FIRSTPLOT]->setRubberBand(QwtPicker::NoRubberBand); }
-    mpZoomerRight[FIRSTPLOT]->setEnabled(value);
-    mpZoomerLeft[SECONDPLOT]->setEnabled(value);
-    if(value)   { mpZoomerLeft[SECONDPLOT]->setRubberBand(QwtPicker::RectRubberBand); }
-    else        { mpZoomerLeft[SECONDPLOT]->setRubberBand(QwtPicker::NoRubberBand); }
-    mpZoomerRight[SECONDPLOT]->setEnabled(value);
+    mpZoomerLeft[FirstPlot]->setEnabled(value);
+    if(value)   { mpZoomerLeft[FirstPlot]->setRubberBand(QwtPicker::RectRubberBand); }
+    else        { mpZoomerLeft[FirstPlot]->setRubberBand(QwtPicker::NoRubberBand); }
+    mpZoomerRight[FirstPlot]->setEnabled(value);
+    mpZoomerLeft[SecondPlot]->setEnabled(value);
+    if(value)   { mpZoomerLeft[SecondPlot]->setRubberBand(QwtPicker::RectRubberBand); }
+    else        { mpZoomerLeft[SecondPlot]->setRubberBand(QwtPicker::NoRubberBand); }
+    mpZoomerRight[SecondPlot]->setEnabled(value);
     mpParentPlotWindow->mpResetXVectorButton->setEnabled(false);
 }
 
 void PlotTab::resetZoom()
 {
-    mpZoomerLeft[FIRSTPLOT]->zoom(0);
-    mpZoomerRight[FIRSTPLOT]->zoom(0);
+    mpZoomerLeft[FirstPlot]->zoom(0);
+    mpZoomerRight[FirstPlot]->zoom(0);
 }
 
 void PlotTab::enableArrow(bool value)
@@ -1730,18 +1730,18 @@ void PlotTab::enableArrow(bool value)
     if(mpParentPlotWindow->mpZoomButton->isChecked() && value)
     {
         mpParentPlotWindow->mpZoomButton->setChecked(false);
-        mpZoomerLeft[FIRSTPLOT]->setEnabled(false);
-        mpZoomerLeft[FIRSTPLOT]->setRubberBand(QwtPicker::NoRubberBand);
-        mpZoomerRight[FIRSTPLOT]->setEnabled(false);
-        mpZoomerLeft[SECONDPLOT]->setEnabled(false);
-        mpZoomerLeft[SECONDPLOT]->setRubberBand(QwtPicker::NoRubberBand);
-        mpZoomerRight[SECONDPLOT]->setEnabled(false);
+        mpZoomerLeft[FirstPlot]->setEnabled(false);
+        mpZoomerLeft[FirstPlot]->setRubberBand(QwtPicker::NoRubberBand);
+        mpZoomerRight[FirstPlot]->setEnabled(false);
+        mpZoomerLeft[SecondPlot]->setEnabled(false);
+        mpZoomerLeft[SecondPlot]->setRubberBand(QwtPicker::NoRubberBand);
+        mpZoomerRight[SecondPlot]->setEnabled(false);
     }
     if(mpParentPlotWindow->mpPanButton->isChecked() && value)
     {
         mpParentPlotWindow->mpPanButton->setChecked(false);
-        mpPanner[FIRSTPLOT]->setEnabled(false);
-        mpPanner[SECONDPLOT]->setEnabled(false);
+        mpPanner[FirstPlot]->setEnabled(false);
+        mpPanner[SecondPlot]->setEnabled(false);
     }
 
 }
@@ -1753,19 +1753,19 @@ void PlotTab::enablePan(bool value)
     {
         mpParentPlotWindow->mpZoomButton->setChecked(false);
         //mpParentPlotWindow->mpArrowButton->setChecked(false);
-        mpZoomerLeft[FIRSTPLOT]->setEnabled(false);
-        mpZoomerLeft[FIRSTPLOT]->setRubberBand(QwtPicker::NoRubberBand);
-        mpZoomerRight[FIRSTPLOT]->setEnabled(false);
-        mpZoomerLeft[SECONDPLOT]->setEnabled(false);
-        mpZoomerLeft[SECONDPLOT]->setRubberBand(QwtPicker::NoRubberBand);
-        mpZoomerRight[SECONDPLOT]->setEnabled(false);
+        mpZoomerLeft[FirstPlot]->setEnabled(false);
+        mpZoomerLeft[FirstPlot]->setRubberBand(QwtPicker::NoRubberBand);
+        mpZoomerRight[FirstPlot]->setEnabled(false);
+        mpZoomerLeft[SecondPlot]->setEnabled(false);
+        mpZoomerLeft[SecondPlot]->setRubberBand(QwtPicker::NoRubberBand);
+        mpZoomerRight[SecondPlot]->setEnabled(false);
     }
     if(mpParentPlotWindow->mpArrowButton->isChecked() && value)
     {
         mpParentPlotWindow->mpArrowButton->setChecked(false);
     }
-    mpPanner[FIRSTPLOT]->setEnabled(value);
-    mpPanner[SECONDPLOT]->setEnabled(value);
+    mpPanner[FirstPlot]->setEnabled(value);
+    mpPanner[SecondPlot]->setEnabled(value);
 }
 
 
@@ -1780,20 +1780,20 @@ void PlotTab::enableGrid(bool value)
 
 void PlotTab::setBackgroundColor()
 {
-    QColor color = QColorDialog::getColor(mpQwtPlots[FIRSTPLOT]->canvasBackground().color(), this);
+    QColor color = QColorDialog::getColor(mpQwtPlots[FirstPlot]->canvasBackground().color(), this);
     if (color.isValid())
     {
-        mpQwtPlots[FIRSTPLOT]->setCanvasBackground(color);
-        mpQwtPlots[FIRSTPLOT]->replot();
-        mpQwtPlots[FIRSTPLOT]->updateGeometry();
-        mpQwtPlots[SECONDPLOT]->setCanvasBackground(color);
-        mpQwtPlots[SECONDPLOT]->replot();
-        mpQwtPlots[SECONDPLOT]->updateGeometry();
+        mpQwtPlots[FirstPlot]->setCanvasBackground(color);
+        mpQwtPlots[FirstPlot]->replot();
+        mpQwtPlots[FirstPlot]->updateGeometry();
+        mpQwtPlots[SecondPlot]->setCanvasBackground(color);
+        mpQwtPlots[SecondPlot]->replot();
+        mpQwtPlots[SecondPlot]->updateGeometry();
     }
 }
 
 
-QList<PlotCurve *> PlotTab::getCurves(HopsanPlotID plotID)
+QList<PlotCurve *> PlotTab::getCurves(HopsanPlotIDEnumT plotID)
 {
     return mPlotCurvePtrs[plotID];
 }
@@ -1803,11 +1803,11 @@ void PlotTab::setActivePlotCurve(PlotCurve *pCurve)
 {
     // Mark deactive all others
     //! @todo if only one can be active it should be enough to deactivate that one
-    for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
+    for(int i=0; i<mPlotCurvePtrs[FirstPlot].size(); ++i)
     {
-        if(mPlotCurvePtrs[FIRSTPLOT].at(i) != pCurve)
+        if(mPlotCurvePtrs[FirstPlot].at(i) != pCurve)
         {
-            mPlotCurvePtrs[FIRSTPLOT].at(i)->markActive(false);
+            mPlotCurvePtrs[FirstPlot].at(i)->markActive(false);
         }
     }
     // Mark active the one
@@ -1827,19 +1827,19 @@ PlotCurve *PlotTab::getActivePlotCurve()
 }
 
 
-QwtPlot *PlotTab::getPlot(HopsanPlotID plotID)
+QwtPlot *PlotTab::getPlot(HopsanPlotIDEnumT plotID)
 {
     return mpQwtPlots[plotID];
 }
 
 
-void PlotTab::showPlot(HopsanPlotID plotID, bool visible)
+void PlotTab::showPlot(HopsanPlotIDEnumT plotID, bool visible)
 {
     mpQwtPlots[plotID]->setVisible(visible);
 }
 
 
-int PlotTab::getNumberOfCurves(HopsanPlotID plotID)
+int PlotTab::getNumberOfCurves(HopsanPlotIDEnumT plotID)
 {
     return mPlotCurvePtrs[plotID].size();
 }
@@ -1965,7 +1965,7 @@ void PlotTab::saveToDomElement(QDomElement &rDomElement, bool dateTime, bool des
 
         //Cycle plot curves and write data tags
         QString dummy;
-        for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT][0]->getTimeVector().size(); ++j)
+        for(int j=0; j<mPlotCurvePtrs[FirstPlot][0]->getTimeVector().size(); ++j)
         {
             QDomElement dataTag = appendDomElement(rDomElement, "data");
 
@@ -1975,26 +1975,26 @@ void PlotTab::saveToDomElement(QDomElement &rDomElement, bool dateTime, bool des
             }
             else                        //X-axis = time
             {
-                setQrealAttribute(dataTag, "time", mPlotCurvePtrs[FIRSTPLOT][0]->getTimeVector()[j], 10, 'g');
+                setQrealAttribute(dataTag, "time", mPlotCurvePtrs[FirstPlot][0]->getTimeVector()[j], 10, 'g');
             }
 
             //Write variable tags for each variable
-            for(int i=0; i<mPlotCurvePtrs[FIRSTPLOT].size(); ++i)
+            for(int i=0; i<mPlotCurvePtrs[FirstPlot].size(); ++i)
             {
                 QString numTemp;
                 numTemp.setNum(i);
-                QDomElement varTag = appendDomElement(dataTag, mPlotCurvePtrs[FIRSTPLOT][i]->getDataName()+numTemp);
+                QDomElement varTag = appendDomElement(dataTag, mPlotCurvePtrs[FirstPlot][i]->getDataName()+numTemp);
                 QString valueString;
-                valueString.setNum(mPlotCurvePtrs[FIRSTPLOT][i]->getDataVector()[j]);
+                valueString.setNum(mPlotCurvePtrs[FirstPlot][i]->getDataVector()[j]);
                 QDomText value = varTag.ownerDocument().createTextNode(valueString);
                 varTag.appendChild(value);
 
                 if(descriptions)
                 {
-                    varTag.setAttribute("component", mPlotCurvePtrs[FIRSTPLOT][i]->getComponentName());
-                    varTag.setAttribute("port", mPlotCurvePtrs[FIRSTPLOT][i]->getPortName());
-                    varTag.setAttribute("type", mPlotCurvePtrs[FIRSTPLOT][i]->getDataName());
-                    varTag.setAttribute("unit", mPlotCurvePtrs[FIRSTPLOT][i]->getDataUnit());
+                    varTag.setAttribute("component", mPlotCurvePtrs[FirstPlot][i]->getComponentName());
+                    varTag.setAttribute("port", mPlotCurvePtrs[FirstPlot][i]->getPortName());
+                    varTag.setAttribute("type", mPlotCurvePtrs[FirstPlot][i]->getDataName());
+                    varTag.setAttribute("unit", mPlotCurvePtrs[FirstPlot][i]->getDataUnit());
                 }
             }
         }
@@ -2013,13 +2013,13 @@ void PlotTab::setBottomAxisLogarithmic(bool value)
     mBottomAxisLogarithmic = value;
     if(value)
     {
-        getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLogScaleEngine(10));
-        getPlot(SECONDPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLogScaleEngine(10));
+        getPlot(FirstPlot)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLogScaleEngine(10));
+        getPlot(SecondPlot)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLogScaleEngine(10));
     }
     else
     {
-        getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLinearScaleEngine);
-        getPlot(SECONDPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLinearScaleEngine);
+        getPlot(FirstPlot)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLinearScaleEngine);
+        getPlot(SecondPlot)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLinearScaleEngine);
     }
 
 }
@@ -2179,7 +2179,7 @@ void PlotTab::exportImage()
     QwtPlotRenderer renderer;
     renderer.setDiscardFlag(QwtPlotRenderer::DiscardBackground,true);
     renderer.setDiscardFlag(QwtPlotRenderer::DiscardCanvasFrame,true);
-    renderer.renderDocument(mpQwtPlots[FIRSTPLOT],fileName,calcMMSize(),mpImageDPI->value());
+    renderer.renderDocument(mpQwtPlots[FirstPlot],fileName,calcMMSize(),mpImageDPI->value());
 }
 
 void PlotTab::changedGraphicsExportSettings()
@@ -2499,41 +2499,41 @@ void PlotTab::constructAxisSettingsDialog()
 //! @todo allways sets for all curves, maybe should only set for one
 void PlotTab::setLegendSymbol(const QString symStyle)
 {
-    for(int j=0; j<mPlotCurvePtrs[FIRSTPLOT].size(); ++j)
+    for(int j=0; j<mPlotCurvePtrs[FirstPlot].size(); ++j)
     {
-        mPlotCurvePtrs[FIRSTPLOT].at(j)->setLegendAttribute( PlotCurve::LegendNoAttribute, false);
-        mPlotCurvePtrs[FIRSTPLOT].at(j)->setLegendAttribute( PlotCurve::LegendShowLine, false);
-        mPlotCurvePtrs[FIRSTPLOT].at(j)->setLegendAttribute( PlotCurve::LegendShowSymbol, false);
-        mPlotCurvePtrs[FIRSTPLOT].at(j)->setLegendAttribute( PlotCurve::LegendShowBrush, false);
+        mPlotCurvePtrs[FirstPlot].at(j)->setLegendAttribute( PlotCurve::LegendNoAttribute, false);
+        mPlotCurvePtrs[FirstPlot].at(j)->setLegendAttribute( PlotCurve::LegendShowLine, false);
+        mPlotCurvePtrs[FirstPlot].at(j)->setLegendAttribute( PlotCurve::LegendShowSymbol, false);
+        mPlotCurvePtrs[FirstPlot].at(j)->setLegendAttribute( PlotCurve::LegendShowBrush, false);
 
         if( symStyle == "Rectangle")
         {
-            mPlotCurvePtrs[FIRSTPLOT].at(j)->setLegendAttribute( PlotCurve::LegendNoAttribute, true);
+            mPlotCurvePtrs[FirstPlot].at(j)->setLegendAttribute( PlotCurve::LegendNoAttribute, true);
         }
         else if( symStyle == "Line")
         {
-            mPlotCurvePtrs[FIRSTPLOT].at(j)->setLegendAttribute( PlotCurve::LegendShowLine, true);
+            mPlotCurvePtrs[FirstPlot].at(j)->setLegendAttribute( PlotCurve::LegendShowLine, true);
         }
         else if( symStyle == "Symbol")
         {
-            mPlotCurvePtrs[FIRSTPLOT].at(j)->setLegendAttribute( PlotCurve::LegendShowSymbol, true);
+            mPlotCurvePtrs[FirstPlot].at(j)->setLegendAttribute( PlotCurve::LegendShowSymbol, true);
          }
         else if ( symStyle == "Line&Symbol")
         {
-            mPlotCurvePtrs[FIRSTPLOT].at(j)->setLegendAttribute( PlotCurve::LegendShowLine, true);
-            mPlotCurvePtrs[FIRSTPLOT].at(j)->setLegendAttribute( PlotCurve::LegendShowSymbol, true);
+            mPlotCurvePtrs[FirstPlot].at(j)->setLegendAttribute( PlotCurve::LegendShowLine, true);
+            mPlotCurvePtrs[FirstPlot].at(j)->setLegendAttribute( PlotCurve::LegendShowSymbol, true);
         }
         else if( symStyle == "Brush")
         {
-            mPlotCurvePtrs[FIRSTPLOT].at(j)->setLegendAttribute( PlotCurve::LegendShowBrush, true);
+            mPlotCurvePtrs[FirstPlot].at(j)->setLegendAttribute( PlotCurve::LegendShowBrush, true);
         }
 
         // Fix legend size after possible change in style
-        mPlotCurvePtrs[FIRSTPLOT].at(j)->resetLegendSize();
+        mPlotCurvePtrs[FirstPlot].at(j)->resetLegendSize();
     }
 }
 
-void PlotTab::setTabOnlyCustomXVector(SharedLogVariableDataPtrT pData, HopsanPlotID plotID)
+void PlotTab::setTabOnlyCustomXVector(SharedLogVariableDataPtrT pData, HopsanPlotIDEnumT plotID)
 {
     mHasCustomXData = true;
     mpCustomXData = pData;
@@ -2589,7 +2589,7 @@ QSizeF PlotTab::calcPXSize(QString unit) const
 void PlotTab::dragEnterEvent(QDragEnterEvent *event)
 {
     // Don't accept drag events to FFT and Bode plots
-    if(mPlotCurvePtrs[0].size() > 0 && mPlotCurvePtrs[0][0]->getCurveType() != PORTVARIABLE) return;
+    if(mPlotCurvePtrs[0].size() > 0 && mPlotCurvePtrs[0][0]->getCurveType() != PortVariableType) return;
 
     if (event->mimeData()->hasText())
     {
@@ -2609,10 +2609,10 @@ void PlotTab::dragEnterEvent(QDragEnterEvent *event)
 void PlotTab::dragMoveEvent(QDragMoveEvent *event)
 {
     //Don't accept drag events to FFT and Bode plots
-    if(mPlotCurvePtrs[0].size() > 0 && mPlotCurvePtrs[0][0]->getCurveType() != PORTVARIABLE) return;
+    if(mPlotCurvePtrs[0].size() > 0 && mPlotCurvePtrs[0][0]->getCurveType() != PortVariableType) return;
 
     QCursor cursor;
-    if(this->mapFromGlobal(cursor.pos()).y() > getPlot()->canvas()->height()*2.0/3.0+getPlot()->canvas()->y()+10 && getNumberOfCurves(FIRSTPLOT) >= 1)
+    if(this->mapFromGlobal(cursor.pos()).y() > getPlot()->canvas()->height()*2.0/3.0+getPlot()->canvas()->y()+10 && getNumberOfCurves(FirstPlot) >= 1)
     {
         mpHoverRect->setGeometry(getPlot()->canvas()->x()+9, getPlot()->canvas()->height()*2.0/3.0+getPlot()->canvas()->y()+10, getPlot()->canvas()->width(), getPlot()->canvas()->height()*1.0/3.0);
         mpParentPlotWindow->showHelpPopupMessage("Replace X-axis with selected variable.");
@@ -2635,7 +2635,7 @@ void PlotTab::dragMoveEvent(QDragMoveEvent *event)
 void PlotTab::dragLeaveEvent(QDragLeaveEvent *event)
 {
     //Don't accept drag events to FFT and Bode plots
-    if(mPlotCurvePtrs[0].size() > 0 && mPlotCurvePtrs[0][0]->getCurveType() != PORTVARIABLE) return;
+    if(mPlotCurvePtrs[0].size() > 0 && mPlotCurvePtrs[0][0]->getCurveType() != PortVariableType) return;
 
     delete(mpHoverRect);
     QWidget::dragLeaveEvent(event);
@@ -2648,7 +2648,7 @@ void PlotTab::dropEvent(QDropEvent *event)
     QWidget::dropEvent(event);
 
     //Don't accept drag events to FFT and Bode plots
-    if(mPlotCurvePtrs[0].size() > 0 && mPlotCurvePtrs[0][0]->getCurveType() != PORTVARIABLE) return;
+    if(mPlotCurvePtrs[0].size() > 0 && mPlotCurvePtrs[0][0]->getCurveType() != PortVariableType) return;
 
     if (event->mimeData()->hasText())
     {
@@ -2661,7 +2661,7 @@ void PlotTab::dropEvent(QDropEvent *event)
             mimeText.remove("HOPSANPLOTDATA:");
 
             QCursor cursor;
-            if(this->mapFromGlobal(cursor.pos()).y() > getPlot()->canvas()->height()*2.0/3.0+getPlot()->canvas()->y()+10 && getNumberOfCurves(FIRSTPLOT) >= 1)
+            if(this->mapFromGlobal(cursor.pos()).y() > getPlot()->canvas()->height()*2.0/3.0+getPlot()->canvas()->y()+10 && getNumberOfCurves(FirstPlot) >= 1)
             {
 //                pNewDesc->mDataUnit = gConfig.getDefaultUnit(pNewDesc->mDataName);
 //                setCustomXVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotDataValues(desc->getFullName(), -1), pNewDesc );
@@ -2687,7 +2687,7 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
     QWidget::contextMenuEvent(event);
 
     //   return;
-    if(this->mpZoomerLeft[FIRSTPLOT]->isEnabled())
+    if(this->mpZoomerLeft[FirstPlot]->isEnabled())
     {
         return;
     }
@@ -2706,8 +2706,8 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
     yAxisLeftMenu = menu.addMenu(QString("Left Y Axis"));
     yAxisRightMenu = menu.addMenu(QString("Right Y Axis"));
 
-    yAxisLeftMenu->setEnabled(mpQwtPlots[FIRSTPLOT]->axisEnabled(QwtPlot::yLeft));
-    yAxisRightMenu->setEnabled(mpQwtPlots[FIRSTPLOT]->axisEnabled(QwtPlot::yRight));
+    yAxisLeftMenu->setEnabled(mpQwtPlots[FirstPlot]->axisEnabled(QwtPlot::yLeft));
+    yAxisRightMenu->setEnabled(mpQwtPlots[FirstPlot]->axisEnabled(QwtPlot::yRight));
 
     //Create menu and actions for changing units
     changeUnitsMenu = menu.addMenu(QString("Change Units"));
@@ -2715,7 +2715,7 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
     QMap<QString, double> unitMap;
     QList<PlotCurve *>::iterator itc;
     QMap<QString, double>::iterator itu;
-    for(itc=mPlotCurvePtrs[FIRSTPLOT].begin(); itc!=mPlotCurvePtrs[FIRSTPLOT].end(); ++itc)
+    for(itc=mPlotCurvePtrs[FirstPlot].begin(); itc!=mPlotCurvePtrs[FirstPlot].end(); ++itc)
     {
         QMenu *pTempMenu = changeUnitsMenu->addMenu(QString((*itc)->getComponentName() + ", " + (*itc)->getPortName() + ", " + (*itc)->getDataName()));
         unitMap = gConfig.getCustomUnits((*itc)->getDataName());
@@ -2728,13 +2728,13 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
 
 
     //Create actions for making axis logarithmic
-    if(mpQwtPlots[FIRSTPLOT]->axisEnabled(QwtPlot::yLeft))
+    if(mpQwtPlots[FirstPlot]->axisEnabled(QwtPlot::yLeft))
     {
         setLeftAxisLogarithmic = yAxisLeftMenu->addAction("Logarithmic Scale");
         setLeftAxisLogarithmic->setCheckable(true);
         setLeftAxisLogarithmic->setChecked(mLeftAxisLogarithmic);
     }
-    if(mpQwtPlots[FIRSTPLOT]->axisEnabled(QwtPlot::yRight))
+    if(mpQwtPlots[FirstPlot]->axisEnabled(QwtPlot::yRight))
     {
         setRightAxisLogarithmic = yAxisRightMenu->addAction("Logarithmic Scale");
         setRightAxisLogarithmic->setCheckable(true);
@@ -2784,17 +2784,17 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
         mRightAxisLogarithmic = !mRightAxisLogarithmic;
         if(mRightAxisLogarithmic)
         {
-            mpQwtPlots[FIRSTPLOT]->setAxisScaleEngine(QwtPlot::yRight, new QwtLogScaleEngine(10));
+            mpQwtPlots[FirstPlot]->setAxisScaleEngine(QwtPlot::yRight, new QwtLogScaleEngine(10));
             rescaleToCurves();
-            mpQwtPlots[FIRSTPLOT]->replot();
-            mpQwtPlots[FIRSTPLOT]->updateGeometry();
+            mpQwtPlots[FirstPlot]->replot();
+            mpQwtPlots[FirstPlot]->updateGeometry();
         }
         else
         {
-            mpQwtPlots[FIRSTPLOT]->setAxisScaleEngine(QwtPlot::yRight, new QwtLinearScaleEngine);
+            mpQwtPlots[FirstPlot]->setAxisScaleEngine(QwtPlot::yRight, new QwtLinearScaleEngine);
             rescaleToCurves();
-            mpQwtPlots[FIRSTPLOT]->replot();
-            mpQwtPlots[FIRSTPLOT]->updateGeometry();
+            mpQwtPlots[FirstPlot]->replot();
+            mpQwtPlots[FirstPlot]->updateGeometry();
         }
     }
     else if (selectedAction == setLeftAxisLogarithmic)
@@ -2803,18 +2803,18 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
         if(mLeftAxisLogarithmic)
         {
             qDebug() << "Logarithmic!";
-            mpQwtPlots[FIRSTPLOT]->setAxisScaleEngine(QwtPlot::yLeft, new QwtLogScaleEngine(10));
+            mpQwtPlots[FirstPlot]->setAxisScaleEngine(QwtPlot::yLeft, new QwtLogScaleEngine(10));
             rescaleToCurves();
-            mpQwtPlots[FIRSTPLOT]->replot();
-            mpQwtPlots[FIRSTPLOT]->updateGeometry();
+            mpQwtPlots[FirstPlot]->replot();
+            mpQwtPlots[FirstPlot]->updateGeometry();
         }
         else
         {
             qDebug() << "Linear!";
-            mpQwtPlots[FIRSTPLOT]->setAxisScaleEngine(QwtPlot::yLeft, new QwtLinearScaleEngine);
+            mpQwtPlots[FirstPlot]->setAxisScaleEngine(QwtPlot::yLeft, new QwtLinearScaleEngine);
             rescaleToCurves();
-            mpQwtPlots[FIRSTPLOT]->replot();
-            mpQwtPlots[FIRSTPLOT]->updateGeometry();
+            mpQwtPlots[FirstPlot]->replot();
+            mpQwtPlots[FirstPlot]->updateGeometry();
         }
     }
 

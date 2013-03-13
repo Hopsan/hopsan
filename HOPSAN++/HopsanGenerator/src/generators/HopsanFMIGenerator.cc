@@ -461,7 +461,7 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
         if(!addedPorts.contains(portSpecs[p].varName))
         {
             fmuComponentReplace7.append(replaceTags(addPortLine, QStringList() << "varname" << "portname" << "porttype" << "nodetype" << "notrequired",
-                                                    QStringList() << portSpecs[p].varName << portSpecs[p].portName << portSpecs[p].portType << portSpecs[p].nodeType << "Port::NOTREQUIRED"));
+                                                    QStringList() << portSpecs[p].varName << portSpecs[p].portName << portSpecs[p].portType << portSpecs[p].nodeType << "Port::NotRequired"));
             addedPorts << portSpecs[p].varName;
         }
     }

@@ -162,22 +162,22 @@ public:
         //Add ports to the component
 
         //Add inputVariables ports to the component
-        mpPphiref=addReadPort("Pphiref","NodeSignal", Port::NOTREQUIRED);
-        mpPthetaref=addReadPort("Pthetaref","NodeSignal", Port::NOTREQUIRED);
-        mpPpsiref=addReadPort("Ppsiref","NodeSignal", Port::NOTREQUIRED);
-        mpPphi=addReadPort("Pphi","NodeSignal", Port::NOTREQUIRED);
-        mpPtheta=addReadPort("Ptheta","NodeSignal", Port::NOTREQUIRED);
-        mpPpsi=addReadPort("Ppsi","NodeSignal", Port::NOTREQUIRED);
-        mpPbeta=addReadPort("Pbeta","NodeSignal", Port::NOTREQUIRED);
-        mpPphimax=addReadPort("Pphimax","NodeSignal", Port::NOTREQUIRED);
-        mpPRb=addReadPort("PRb","NodeSignal", Port::NOTREQUIRED);
-        mpPUb=addReadPort("PUb","NodeSignal", Port::NOTREQUIRED);
+        mpPphiref=addReadPort("Pphiref","NodeSignal", Port::NotRequired);
+        mpPthetaref=addReadPort("Pthetaref","NodeSignal", Port::NotRequired);
+        mpPpsiref=addReadPort("Ppsiref","NodeSignal", Port::NotRequired);
+        mpPphi=addReadPort("Pphi","NodeSignal", Port::NotRequired);
+        mpPtheta=addReadPort("Ptheta","NodeSignal", Port::NotRequired);
+        mpPpsi=addReadPort("Ppsi","NodeSignal", Port::NotRequired);
+        mpPbeta=addReadPort("Pbeta","NodeSignal", Port::NotRequired);
+        mpPphimax=addReadPort("Pphimax","NodeSignal", Port::NotRequired);
+        mpPRb=addReadPort("PRb","NodeSignal", Port::NotRequired);
+        mpPUb=addReadPort("PUb","NodeSignal", Port::NotRequired);
 
         //Add outputVariables ports to the component
-        mpPuaerL=addWritePort("PuaerL","NodeSignal", Port::NOTREQUIRED);
-        mpPuaerR=addWritePort("PuaerR","NodeSignal", Port::NOTREQUIRED);
-        mpPuelev=addWritePort("Puelev","NodeSignal", Port::NOTREQUIRED);
-        mpPurud=addWritePort("Purud","NodeSignal", Port::NOTREQUIRED);
+        mpPuaerL=addWritePort("PuaerL","NodeSignal", Port::NotRequired);
+        mpPuaerR=addWritePort("PuaerR","NodeSignal", Port::NotRequired);
+        mpPuelev=addWritePort("Puelev","NodeSignal", Port::NotRequired);
+        mpPurud=addWritePort("Purud","NodeSignal", Port::NotRequired);
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("Kphi", "Gain roll", "rad", mKphi);

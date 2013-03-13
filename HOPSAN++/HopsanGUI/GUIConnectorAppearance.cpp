@@ -27,41 +27,41 @@
 #include "Configuration.h"
 #include "common.h"
 
-ConnectorAppearance::ConnectorAppearance(QString type, graphicsType gfxType)
+ConnectorAppearance::ConnectorAppearance(QString type, GraphicsTypeEnumT gfxType)
 {
     //Set the connector type and style
     setTypeAndIsoStyle(type, gfxType);     //Need to use set type instead of setting directly as setType narrows types down to power or signal
 }
 
 //! @brief Set the Connector type
-void ConnectorAppearance::setStyle(const connectorStyle style)
+void ConnectorAppearance::setStyle(const ConnectorStyleEnumT style)
 {
     mConnectorStyle = style;
 }
 
-connectorStyle ConnectorAppearance::getStyle()
+ConnectorStyleEnumT ConnectorAppearance::getStyle()
 {
     return mConnectorStyle;
 }
 
-void ConnectorAppearance::setIsoStyle(graphicsType gfxType)
+void ConnectorAppearance::setIsoStyle(GraphicsTypeEnumT gfxType)
 {
     mGfxType = gfxType;
 }
 
-void ConnectorAppearance::setTypeAndIsoStyle(QString porttype, graphicsType gfxType)
+void ConnectorAppearance::setTypeAndIsoStyle(QString porttype, GraphicsTypeEnumT gfxType)
 {
     if(porttype=="POWERPORT")
     {
-        setStyle(POWERCONNECTOR);
+        setStyle(PowerConnectorStyle);
     }
     else if(porttype=="READPORT" || "WRITEPORT")
     {
-        setStyle(SIGNALCONNECTOR);
+        setStyle(SignalConnectorStyle);
     }
     else
     {
-        setStyle(UNDEFINEDCONNECTOR);
+        setStyle(UndefinedConnectorStyle);
     }
     setIsoStyle(gfxType);
 }
@@ -83,7 +83,7 @@ QColor ConnectorAppearance::getCustomColor()
 
 
 //! Get function for primary pen style
-QPen ConnectorAppearance::getPen(connectorStyle style, graphicsType gfxType, QString situation)
+QPen ConnectorAppearance::getPen(ConnectorStyleEnumT style, GraphicsTypeEnumT gfxType, QString situation)
 {
     if(situation == "Primary" && mCustomColor != QColor())
     {

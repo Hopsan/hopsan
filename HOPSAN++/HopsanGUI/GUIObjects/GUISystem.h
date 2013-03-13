@@ -84,7 +84,7 @@ class SystemContainer : public ContainerObject
 {
     Q_OBJECT
 public:
-    SystemContainer(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS);
+    SystemContainer(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics);
     SystemContainer(ProjectTab *parentProjectTab, QGraphicsItem *pParent);
     void deleteInHopsanCore();
 
@@ -98,7 +98,7 @@ public:
     void setName(QString newName);
     QString getTypeCQS();
 
-    void saveToDomElement(QDomElement &rDomElement, saveContents contents = FULLMODEL);
+    void saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents = FullModel);
     void loadFromDomElement(QDomElement &rDomElement);
     void setModelFileInfo(QFile &rFile);
     void loadParameterFile();
@@ -133,7 +133,7 @@ signals:
 
 protected:
     QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
-    void saveCoreDataToDomElement(QDomElement &rDomElement, saveContents contents=FULLMODEL);
+    void saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents=FullModel);
 
     void openPropertiesDialog();
 

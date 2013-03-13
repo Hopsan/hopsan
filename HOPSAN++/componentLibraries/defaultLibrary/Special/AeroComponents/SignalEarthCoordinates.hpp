@@ -102,16 +102,16 @@ public:
         //Add ports to the component
 
         //Add inputVariables ports to the component
-        mpPtimecomp=addReadPort("Ptimecomp","NodeSignal", Port::NOTREQUIRED);
-        mpPvxcg=addReadPort("Pvxcg","NodeSignal", Port::NOTREQUIRED);
-        mpPvycg=addReadPort("Pvycg","NodeSignal", Port::NOTREQUIRED);
+        mpPtimecomp=addReadPort("Ptimecomp","NodeSignal", Port::NotRequired);
+        mpPvxcg=addReadPort("Pvxcg","NodeSignal", Port::NotRequired);
+        mpPvycg=addReadPort("Pvycg","NodeSignal", Port::NotRequired);
 
         //Add outputVariables ports to the component
-        mpPtimeE=addWritePort("PtimeE","NodeSignal", Port::NOTREQUIRED);
+        mpPtimeE=addWritePort("PtimeE","NodeSignal", Port::NotRequired);
         mpPlongitude=addWritePort("Plongitude","NodeSignal", \
-Port::NOTREQUIRED);
+Port::NotRequired);
         mpPlattitude=addWritePort("Plattitude","NodeSignal", \
-Port::NOTREQUIRED);
+Port::NotRequired);
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("R", "Earth radius", "m", mR);

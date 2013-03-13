@@ -29,7 +29,7 @@
 
 namespace hopsan {
 
-DLLIMPORTEXPORT void register_nodes(NodeFactory* pNodeFactory);
+DLLIMPORTEXPORT void register_default_nodes(NodeFactory* pNodeFactory);
 
 //! @brief A signal node
 //! @ingroup NodeSignal

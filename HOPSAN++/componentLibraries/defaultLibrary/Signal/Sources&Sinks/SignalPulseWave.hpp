@@ -60,7 +60,7 @@ namespace hopsan {
             mAmplitude = 1.0;
             mDutyCycle = 0.5;
 
-            mpOutPort = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
+            mpOutPort = addWritePort("out", "NodeSignal", Port::NotRequired);
 
             registerParameter("y_0", "Base Value", "[-]", mBaseValue);
             registerParameter("t_start", "Start Time", "[s]", mStartTime);

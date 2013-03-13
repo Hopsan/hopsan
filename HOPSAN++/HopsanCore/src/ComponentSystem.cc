@@ -542,13 +542,13 @@ void ComponentSystem::addSubComponentPtrToStorage(Component* pComponent)
 {
     switch (pComponent->getTypeCQS())
     {
-    case Component::C :
+    case Component::CType :
         mComponentCptrs.push_back(pComponent);
         break;
-    case Component::Q :
+    case Component::QType :
         mComponentQptrs.push_back(pComponent);
         break;
-    case Component::S :
+    case Component::SType :
         mComponentSignalptrs.push_back(pComponent);
         break;
     case Component::UndefinedCQSType :
@@ -570,7 +570,7 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* pComponent)
         vector<Component*>::iterator cit; //Component iterator
         switch (it->second->getTypeCQS())
         {
-        case Component::C :
+        case Component::CType :
             for (cit = mComponentCptrs.begin(); cit != mComponentCptrs.end(); ++cit)
             {
                 if ( *cit == pComponent )
@@ -580,7 +580,7 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* pComponent)
                 }
             }
             break;
-        case Component::Q :
+        case Component::QType :
             for (cit = mComponentQptrs.begin(); cit != mComponentQptrs.end(); ++cit)
             {
                 if ( *cit == pComponent )
@@ -590,7 +590,7 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* pComponent)
                 }
             }
             break;
-        case Component::S :
+        case Component::SType :
             for (cit = mComponentSignalptrs.begin(); cit != mComponentSignalptrs.end(); ++cit)
             {
                 if ( *cit == pComponent )
@@ -656,7 +656,7 @@ bool ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVec
                 for(itp=portVector.begin(); itp!=portVector.end(); ++itp) //Ask each port for its node, then ask the node for its write port component
                 {
                     Component* requiredComponent=0;
-                    if(((*itp)->getPortType() == READPORT || (*itp)->getPortType() == READMULTIPORT) && (*itp)->isConnected())
+                    if(((*itp)->getPortType() == ReadPortType || (*itp)->getPortType() == ReadMultiportType) && (*itp)->isConnected())
                     {
                         requiredComponent = (*itp)->getNodePtr()->getWritePortComponentPtr();
                     }
@@ -694,7 +694,7 @@ bool ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVec
     if(newComponentVector.size() == rComponentVector.size())   //All components moved to new vector = success!
     {
         rComponentVector = newComponentVector;
-        if(newComponentVector.size() > 0 && newComponentVector[0]->getTypeCQS() == S)
+        if(newComponentVector.size() > 0 && newComponentVector[0]->getTypeCQS() == SType)
         {
             stringstream ss;
             std::vector<Component*>::iterator it;
@@ -775,7 +775,7 @@ Component* ComponentSystem::getSubComponentOrThisIfSysPort(string name)
         Port* pPort = this->getPort(name);
         if (pPort != 0)
         {
-            if (pPort->getPortType() == SYSTEMPORT)
+            if (pPort->getPortType() == SystemPortType)
             {
                 //Return the systemports owner (the system component)
                 tmp = pPort->getComponent();
@@ -1011,7 +1011,7 @@ Port* ComponentSystem::addSystemPort(string portName)
         portName = "p";
     }
 
-    return addPort(portName, SYSTEMPORT, "NodeEmpty", Port::REQUIRED);
+    return addPort(portName, SystemPortType, "NodeEmpty", Port::Required);
 }
 
 
@@ -1055,16 +1055,16 @@ void ComponentSystem::setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet)
         {
             switch (cqs_type)
             {
-            case Component::C :
-                mTypeCQS = Component::C;
+            case Component::CType :
+                mTypeCQS = Component::CType;
                 break;
 
-            case Component::Q :
-                mTypeCQS = Component::Q;
+            case Component::QType :
+                mTypeCQS = Component::QType;
                 break;
 
-            case Component::S :
-                mTypeCQS = Component::S;
+            case Component::SType :
+                mTypeCQS = Component::SType;
                 break;
 
             case Component::UndefinedCQSType :
@@ -1115,7 +1115,7 @@ void ComponentSystem::determineCQSType()
     for (ppmit=mPortPtrMap.begin(); ppmit!=mPortPtrMap.end(); ++ppmit)
     {
         //all ports should be system ports in a subsystem, dont check for other port types
-        if( ppmit->second->getPortType() == SYSTEMPORT )
+        if( ppmit->second->getPortType() == SystemPortType )
         {
             //! @todo I dont think that I really need to ask for ALL connected subports here, as it is actually only the component that is directly connected to the system port that is interesting
             //! @todo this means that I will be able to UNDO the Port getConnectedPorts madness, maybe, if we dont want it in some other place
@@ -1125,7 +1125,7 @@ void ComponentSystem::determineCQSType()
             {
                 if ( (*cpit)->getComponent()->getSystemParent() == this )
                 {
-                    if( (*cpit)->getPortType() == READPORT || (*cpit)->getPortType() == WRITEPORT)
+                    if( (*cpit)->getPortType() == ReadPortType || (*cpit)->getPortType() == WritePortType)
                     {
                         ++s_ctr;
                         continue;
@@ -1133,13 +1133,13 @@ void ComponentSystem::determineCQSType()
 
                     switch ((*cpit)->getComponent()->getTypeCQS())
                     {
-                    case C :
+                    case CType :
                         ++c_ctr;
                         break;
-                    case Q :
+                    case QType :
                         ++q_ctr;
                         break;
-                    case S :
+                    case SType :
                         ++s_ctr;
                         break;
                     default :
@@ -1154,15 +1154,15 @@ void ComponentSystem::determineCQSType()
     //Ok now lets determine if we have a valid CQS type or not
     if ( (c_ctr > 0) && (q_ctr == 0) )
     {
-        this->setTypeCQS(C);
+        this->setTypeCQS(CType);
     }
     else if ( (q_ctr > 0) && (c_ctr == 0) )
     {
-        this->setTypeCQS(Q);
+        this->setTypeCQS(QType);
     }
     else if ( (s_ctr > 0) && (c_ctr==0) && (q_ctr==0) )
     {
-        this->setTypeCQS(S);
+        this->setTypeCQS(SType);
     }
     else
     {
@@ -1446,7 +1446,7 @@ Port* ConnectionAssistant::findMultiportSubportFromOtherPort(const Port *pMultiP
 {
     //assert(pOtherPort->getPortType() < MULTIPORT); //Make sure other is not a multiport
     //! @todo Fatal error
-    if(pOtherPort->getPortType() >= MULTIPORT)
+    if(pOtherPort->getPortType() >= MultiportType)
     {
         mpComponentSystem->addFatalMessage("ConnectionAssistant::findMultiportSubportFromOtherPort(): Other port shall not be a multiport.");
         return 0;
@@ -1538,7 +1538,7 @@ ConnectionAssistant::ConnectionAssistant(ComponentSystem *pComponentSystem)
 //! Helpfunction that clears the nodetype in empty systemports, It will not clear the type if the port is not empty or if the port is not a systemport
 void ConnectionAssistant::clearSysPortNodeTypeIfEmpty(Port *pPort)
 {
-    if ( (pPort->getPortType() == SYSTEMPORT) && (!pPort->isConnected()) )
+    if ( (pPort->getPortType() == SystemPortType) && (!pPort->isConnected()) )
     {
         pPort->mNodeType = "";
     }
@@ -1596,7 +1596,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     }
 
     //Prevent connection of two blank systemports
-    if ( (pPort1->getPortType() == SYSTEMPORT) && (pPort2->getPortType() == SYSTEMPORT) )
+    if ( (pPort1->getPortType() == SystemPortType) && (pPort2->getPortType() == SystemPortType) )
     {
         if ( (!pPort1->isConnected()) && (!pPort2->isConnected()) )
         {
@@ -1608,7 +1608,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     //Prevent connection of readport to multiport, (what do you really want to read problem)
     if (pPort1->isMultiPort() || pPort2->isMultiPort())
     {
-        if ( (pPort1->getPortType() == READPORT) || (pPort1->getPortType() == READPORT) )
+        if ( (pPort1->getPortType() == ReadPortType) || (pPort1->getPortType() == ReadPortType) )
         {
             addErrorMessage("You are not allowed to connect a readport to a multiport, (undefined what you will actually read). Connect to the other end of the connector instead");
             return false;
@@ -1618,19 +1618,19 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     Node *pResultingNode = 0;
     //Now lets find out if one of the ports is a blank systemport
     //! @todo better way to find out if systemports are blank might give more clear code
-    if ( ( (pPort1->getPortType() == SYSTEMPORT) && (!pPort1->isConnected()) ) || ( (pPort2->getPortType() == SYSTEMPORT) && (!pPort2->isConnected()) ) )
+    if ( ( (pPort1->getPortType() == SystemPortType) && (!pPort1->isConnected()) ) || ( (pPort2->getPortType() == SystemPortType) && (!pPort2->isConnected()) ) )
     {
         //Now lets find out wich of the ports that is a blank systemport
         Port *pBlankSysPort;
         Port *pOtherPort;
 
         //! @todo write help function
-        if ( (pPort1->getPortType() == SYSTEMPORT) && (!pPort1->isConnected()) )
+        if ( (pPort1->getPortType() == SystemPortType) && (!pPort1->isConnected()) )
         {
             pBlankSysPort = pPort1;
             pOtherPort = pPort2;
         }
-        else if ( (pPort2->getPortType() == SYSTEMPORT) && (!pPort2->isConnected()) )
+        else if ( (pPort2->getPortType() == SystemPortType) && (!pPort2->isConnected()) )
         {
             pBlankSysPort = pPort2;
             pOtherPort = pPort1;
@@ -1720,19 +1720,19 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
     vector<Port*>::iterator it;
     for (it=(*pNode).mConnectedPorts.begin(); it!=(*pNode).mConnectedPorts.end(); ++it)
     {
-        if ((*it)->getPortType() == READPORT)
+        if ((*it)->getPortType() == ReadPortType)
         {
             n_ReadPorts += 1;
         }
-        else if ((*it)->getPortType() == WRITEPORT)
+        else if ((*it)->getPortType() == WritePortType)
         {
             n_WritePorts += 1;
         }
-        else if ((*it)->getPortType() == POWERPORT)
+        else if ((*it)->getPortType() == PowerPortType)
         {
             n_PowerPorts += 1;
         }
-        else if ((*it)->getPortType() == SYSTEMPORT)
+        else if ((*it)->getPortType() == SystemPortType)
         {
             n_SystemPorts += 1;
             if ((*it)->getComponent() == mpComponentSystem)
@@ -1766,19 +1766,19 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
     //Dont count port if it is already conected to node as it was counted in the code above (avoids double counting)
     if ( !pNode->isConnectedToPort(pPort1) )
     {
-        if ( pPort1->getPortType() == READPORT )
+        if ( pPort1->getPortType() == ReadPortType )
         {
             n_ReadPorts += 1;
         }
-        if ( pPort1->getPortType() == WRITEPORT )
+        if ( pPort1->getPortType() == WritePortType )
         {
             n_WritePorts += 1;
         }
-        if ( pPort1->getPortType() == POWERPORT )
+        if ( pPort1->getPortType() == PowerPortType )
         {
             n_PowerPorts += 1;
         }
-        if ( pPort1->getPortType() == SYSTEMPORT )
+        if ( pPort1->getPortType() == SystemPortType )
         {
             n_SystemPorts += 1;
         }
@@ -1807,19 +1807,19 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
     //Dont count port if it is already conected to node as it was counted in the code above (avoids double counting)
     if ( !pNode->isConnectedToPort(pPort2) )
     {
-        if ( pPort2->getPortType() == READPORT )
+        if ( pPort2->getPortType() == ReadPortType )
         {
             n_ReadPorts += 1;
         }
-        if ( pPort2->getPortType() == WRITEPORT )
+        if ( pPort2->getPortType() == WritePortType )
         {
             n_WritePorts += 1;
         }
-        if ( pPort2->getPortType() == POWERPORT )
+        if ( pPort2->getPortType() == PowerPortType )
         {
             n_PowerPorts += 1;
         }
-        if ( pPort2->getPortType() == SYSTEMPORT )
+        if ( pPort2->getPortType() == SystemPortType )
         {
             n_SystemPorts += 1;
         }
@@ -1928,7 +1928,7 @@ bool ConnectionAssistant::ensureNotCrossConnecting(Port *pPort1, Port *pPort2)
 void ConnectionAssistant::ifMultiportAddSubportAndSwapPtr(Port *&rpPort, Port *&rpOriginalPort)
 {
     rpOriginalPort = 0; //Make sure null if not multiport
-    if (rpPort->getPortType() >= MULTIPORT)
+    if (rpPort->getPortType() >= MultiportType)
     {
         rpOriginalPort = rpPort;
         rpPort = rpPort->addSubPort();
@@ -1976,7 +1976,7 @@ void ConnectionAssistant::ifMultiportPrepareForDisconnect(Port *&rpPort1, Port *
     rpMultiPort2=0;
 
     // Port 1 is a multiport, but not port2
-    if (rpPort1->getPortType() >= MULTIPORT && rpPort2->getPortType() < MULTIPORT )
+    if (rpPort1->getPortType() >= MultiportType && rpPort2->getPortType() < MultiportType )
     {
         rpMultiPort1 = rpPort1;
 //        assert(rpPort2->getConnectedPorts().size() == 1); //Make sure that we dont atempt tu run this code on ports that are not to become empty
@@ -1990,7 +1990,7 @@ void ConnectionAssistant::ifMultiportPrepareForDisconnect(Port *&rpPort1, Port *
 
     }
     // Port 2 is a multiport, but not port1
-    else if (rpPort1->getPortType() < MULTIPORT && rpPort2->getPortType() >= MULTIPORT )
+    else if (rpPort1->getPortType() < MultiportType && rpPort2->getPortType() >= MultiportType )
     {
         rpMultiPort2 = rpPort2;
 //        assert(rpPort1->getConnectedPorts().size() == 1); //Make sure that we dont atempt tu run this code on ports that are not to become empty
@@ -2003,7 +2003,7 @@ void ConnectionAssistant::ifMultiportPrepareForDisconnect(Port *&rpPort1, Port *
         //assert(rpPort2 != 0);
     }
     // both ports are multiports
-    else if (rpPort1->getPortType() >= MULTIPORT && rpPort2->getPortType() >= MULTIPORT )
+    else if (rpPort1->getPortType() >= MultiportType && rpPort2->getPortType() >= MultiportType )
     {
         //assert("Multiport <-> Multiport disconnection has not been implemented yet Aborting!" == 0);
         mpComponentSystem->addFatalMessage("ifMultiportPrepareForDisconnect(): Multiport <-> Multiport disconnection has not been implemented yet.");
@@ -2407,7 +2407,7 @@ bool ComponentSystem::checkModelBeforeSimulation()
         }
         else if( ports[i]->isConnected() )
         {
-            if(ports[i]->getNodePtr()->getNumberOfPortsByType(POWERPORT) == 1)
+            if(ports[i]->getNodePtr()->getNumberOfPortsByType(PowerPortType) == 1)
             {
                 addErrorMessage("Port " + ports[i]->getName() + " in " + getName() + " is connected to a node with only one attached power port!");
                 return false;
@@ -2433,7 +2433,7 @@ bool ComponentSystem::checkModelBeforeSimulation()
             }
             else if( ports[i]->isConnected() )
             {
-                if(ports[i]->getNodePtr()->getNumberOfPortsByType(POWERPORT) == 1)
+                if(ports[i]->getNodePtr()->getNumberOfPortsByType(PowerPortType) == 1)
                 {
                     addErrorMessage("Port " + ports[i]->getName() + " in " + getName() + " is connected to a node with only one power port!");
                     return false;

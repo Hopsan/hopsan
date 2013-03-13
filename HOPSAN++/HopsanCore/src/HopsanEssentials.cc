@@ -51,14 +51,14 @@ HopsanEssentials::HopsanEssentials()
     mpExternalLoader = new LoadExternal(mpComponentFactory, mpNodeFactory, mpMessageHandler);
 
     // Make sure that internal Nodes and Components register
-    register_nodes(mpNodeFactory);
+    register_default_nodes(mpNodeFactory);
     mpComponentFactory->registerCreatorFunction("DummyComponent", DummyComponent::Creator);
     mpComponentFactory->registerCreatorFunction("MissingComponent", DummyComponent::Creator);
     mpComponentFactory->registerCreatorFunction("Subsystem", ComponentSystem::Creator);
     mpComponentFactory->registerCreatorFunction("CppComponent", DummyComponent::Creator);
     mpComponentFactory->registerCreatorFunction("ModelicaComponent", DummyComponent::Creator);
 #ifdef BUILTINDEFAULTCOMPONENTLIB
-    register_components(mpComponentFactory);
+    register_default_components(mpComponentFactory);
 #endif
 
     // Check for register errors and status
@@ -159,7 +159,7 @@ void HopsanEssentials::removeComponent(Component *pComponent)
 //! @brief Creates a Node of given node type
 //! @param [in] rNodeType The type of node to create
 //! @returns A pointer to the created node
-Node* HopsanEssentials::createNode(const NodeTypeT &rNodeType)
+Node* HopsanEssentials::createNode(const std::string &rNodeType)
 {
     Node *pNode = mpNodeFactory->createInstance(rNodeType.c_str());
     if (pNode)

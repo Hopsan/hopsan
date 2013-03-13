@@ -144,13 +144,13 @@ public:
         mpP2=addPowerPort("P2","NodeHydraulic");
 
         //Add inputVariables ports to the component
-        mpPomegap=addReadPort("Pomegap","NodeSignal", Port::NOTREQUIRED);
+        mpPomegap=addReadPort("Pomegap","NodeSignal", Port::NotRequired);
 
         //Add outputVariables ports to the component
-        mpPq2e=addWritePort("Pq2e","NodeSignal", Port::NOTREQUIRED);
-        mpPtorp=addWritePort("Ptorp","NodeSignal", Port::NOTREQUIRED);
-        mpPPin=addWritePort("PPin","NodeSignal", Port::NOTREQUIRED);
-        mpPPout=addWritePort("PPout","NodeSignal", Port::NOTREQUIRED);
+        mpPq2e=addWritePort("Pq2e","NodeSignal", Port::NotRequired);
+        mpPtorp=addWritePort("Ptorp","NodeSignal", Port::NotRequired);
+        mpPPin=addWritePort("PPin","NodeSignal", Port::NotRequired);
+        mpPPout=addWritePort("PPout","NodeSignal", Port::NotRequired);
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("kl", "Flow loss koeff.", "", mkl);

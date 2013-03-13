@@ -64,7 +64,7 @@ public:
         mpPel1=addPowerPort("Pel1","NodeElectric");
 
         //Add inputVariables ports to the component
-        mpPiin=addReadPort("Piin","NodeSignal", Port::NOTREQUIRED);
+        mpPiin=addReadPort("Piin","NodeSignal", Port::NotRequired);
 
         //Add outputVariables ports to the component
 

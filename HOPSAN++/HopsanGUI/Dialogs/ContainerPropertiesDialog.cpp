@@ -101,8 +101,8 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
        //Icon paths
     mpUserIconLabel = new QLabel("User Icon Path:", this);
     mpIsoIconLabel = new QLabel( "ISO Icon Path:", this);
-    mpUserIconPath = new QLineEdit(mpContainerObject->getIconPath(USERGRAPHICS, ABSOLUTE), this);
-    mpIsoIconPath = new QLineEdit(mpContainerObject->getIconPath(ISOGRAPHICS, ABSOLUTE), this);
+    mpUserIconPath = new QLineEdit(mpContainerObject->getIconPath(UserGraphics, Absolute), this);
+    mpIsoIconPath = new QLineEdit(mpContainerObject->getIconPath(ISOGraphics, Absolute), this);
     mpUserIconLabel->setMinimumWidth(80);
     mpUserIconPath->setMinimumWidth(200);
     mpIsoIconBrowseButton = new QPushButton(tr("..."), this);
@@ -121,11 +121,11 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
     QString text;
     QLabel *pUserIconScaleLabel = new QLabel("User Icon Scale:", this);
     QLabel *pIsoIconScaleLabel = new QLabel("ISO Icon Scale:", this);
-    text.setNum(mpContainerObject->getAppearanceData()->getIconScale(USERGRAPHICS));
+    text.setNum(mpContainerObject->getAppearanceData()->getIconScale(UserGraphics));
     mpUserIconScaleEdit = new QLineEdit(this);
     mpUserIconScaleEdit->setValidator(new QDoubleValidator(0.1, 10.0, 2, this));
     mpUserIconScaleEdit->setText(text);
-    text.setNum(mpContainerObject->getAppearanceData()->getIconScale(ISOGRAPHICS));
+    text.setNum(mpContainerObject->getAppearanceData()->getIconScale(ISOGraphics));
     mpIsoIconScaleEdit = new QLineEdit(this);
     mpIsoIconScaleEdit->setValidator(new QDoubleValidator(0.1, 10.0, 2, this));
     mpIsoIconScaleEdit->setText(text);
@@ -392,15 +392,15 @@ void ContainerPropertiesDialog::setValues()
 {
     this->mpContainerObject->setName(this->mpNameEdit->text());
 
-    if(mpIsoCheckBox->isChecked() && mpContainerObject->getGfxType() != ISOGRAPHICS)
+    if(mpIsoCheckBox->isChecked() && mpContainerObject->getGfxType() != ISOGraphics)
     {
-        this->mpContainerObject->setGfxType(ISOGRAPHICS);
-        gpMainWindow->mpLibrary->setGfxType(ISOGRAPHICS);
+        this->mpContainerObject->setGfxType(ISOGraphics);
+        gpMainWindow->mpLibrary->setGfxType(ISOGraphics);
     }
-    else if(!mpIsoCheckBox->isChecked() && mpContainerObject->getGfxType() != USERGRAPHICS)
+    else if(!mpIsoCheckBox->isChecked() && mpContainerObject->getGfxType() != UserGraphics)
     {
-        this->mpContainerObject->setGfxType(USERGRAPHICS);
-        gpMainWindow->mpLibrary->setGfxType(USERGRAPHICS);
+        this->mpContainerObject->setGfxType(UserGraphics);
+        gpMainWindow->mpLibrary->setGfxType(UserGraphics);
     }
 
     mpContainerObject->getCoreSystemAccessPtr()->setLoadStartValues(mpUseStartValues->isChecked());
@@ -413,27 +413,27 @@ void ContainerPropertiesDialog::setValues()
     mpContainerObject->setSaveUndo(mpSaveUndoCheckBox->isChecked());
 
     //Set the icon paths, only update and refresh appearance if a change has occured
-    if ( mpContainerObject->getIconPath(ISOGRAPHICS, ABSOLUTE) != mpIsoIconPath->text() )
+    if ( mpContainerObject->getIconPath(ISOGraphics, Absolute) != mpIsoIconPath->text() )
     {
-        mpContainerObject->setIconPath(mpIsoIconPath->text(), ISOGRAPHICS, ABSOLUTE);
+        mpContainerObject->setIconPath(mpIsoIconPath->text(), ISOGraphics, Absolute);
         mpContainerObject->refreshAppearance();
     }
-    if ( mpContainerObject->getIconPath(USERGRAPHICS, ABSOLUTE) != mpUserIconPath->text() )
+    if ( mpContainerObject->getIconPath(UserGraphics, Absolute) != mpUserIconPath->text() )
     {
-        mpContainerObject->setIconPath(mpUserIconPath->text(), USERGRAPHICS, ABSOLUTE);
+        mpContainerObject->setIconPath(mpUserIconPath->text(), UserGraphics, Absolute);
         mpContainerObject->refreshAppearance();
     }
 
     //Set scale if they have changed
     //! @todo maybe use fuzze compare utility function instead (but then we need to include utilites here)
-    if ( fabs(mpContainerObject->getAppearanceData()->getIconScale(ISOGRAPHICS) - mpIsoIconScaleEdit->text().toDouble()) > 0.001 )
+    if ( fabs(mpContainerObject->getAppearanceData()->getIconScale(ISOGraphics) - mpIsoIconScaleEdit->text().toDouble()) > 0.001 )
     {
-        mpContainerObject->getAppearanceData()->setIconScale(mpIsoIconScaleEdit->text().toDouble(), ISOGRAPHICS);
+        mpContainerObject->getAppearanceData()->setIconScale(mpIsoIconScaleEdit->text().toDouble(), ISOGraphics);
         mpContainerObject->refreshAppearance();
     }
-    if ( fabs(mpContainerObject->getAppearanceData()->getIconScale(USERGRAPHICS) - mpUserIconScaleEdit->text().toDouble()) > 0.001 )
+    if ( fabs(mpContainerObject->getAppearanceData()->getIconScale(UserGraphics) - mpUserIconScaleEdit->text().toDouble()) > 0.001 )
     {
-        mpContainerObject->getAppearanceData()->setIconScale(mpUserIconScaleEdit->text().toDouble(), USERGRAPHICS);
+        mpContainerObject->getAppearanceData()->setIconScale(mpUserIconScaleEdit->text().toDouble(), UserGraphics);
         mpContainerObject->refreshAppearance();
     }
 

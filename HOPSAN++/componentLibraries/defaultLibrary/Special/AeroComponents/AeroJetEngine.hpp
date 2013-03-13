@@ -133,18 +133,18 @@ public:
         //Add ports to the component
 
         //Add inputVariables ports to the component
-        mpPuin=addReadPort("Puin","NodeSignal", Port::NOTREQUIRED);
-        mpPrho=addReadPort("Prho","NodeSignal", Port::NOTREQUIRED);
-        mpPT=addReadPort("PT","NodeSignal", Port::NOTREQUIRED);
-        mpPp0=addReadPort("Pp0","NodeSignal", Port::NOTREQUIRED);
-        mpPVsound=addReadPort("PVsound","NodeSignal", Port::NOTREQUIRED);
-        mpPspeed=addReadPort("Pspeed","NodeSignal", Port::NOTREQUIRED);
+        mpPuin=addReadPort("Puin","NodeSignal", Port::NotRequired);
+        mpPrho=addReadPort("Prho","NodeSignal", Port::NotRequired);
+        mpPT=addReadPort("PT","NodeSignal", Port::NotRequired);
+        mpPp0=addReadPort("Pp0","NodeSignal", Port::NotRequired);
+        mpPVsound=addReadPort("PVsound","NodeSignal", Port::NotRequired);
+        mpPspeed=addReadPort("Pspeed","NodeSignal", Port::NotRequired);
 
         //Add outputVariables ports to the component
-        mpPthrust=addWritePort("Pthrust","NodeSignal", Port::NOTREQUIRED);
-        mpPmfuel=addWritePort("Pmfuel","NodeSignal", Port::NOTREQUIRED);
-        mpPShspeed=addWritePort("PShspeed","NodeSignal", Port::NOTREQUIRED);
-        mpPqmfuel=addWritePort("Pqmfuel","NodeSignal", Port::NOTREQUIRED);
+        mpPthrust=addWritePort("Pthrust","NodeSignal", Port::NotRequired);
+        mpPmfuel=addWritePort("Pmfuel","NodeSignal", Port::NotRequired);
+        mpPShspeed=addWritePort("PShspeed","NodeSignal", Port::NotRequired);
+        mpPqmfuel=addWritePort("Pqmfuel","NodeSignal", Port::NotRequired);
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("thrustmax", "Max thrust", "N", mthrustmax);

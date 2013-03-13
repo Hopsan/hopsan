@@ -102,12 +102,12 @@ public:
         //Add ports to the component
 
         //Add inputVariables ports to the component
-        mpPyref=addReadPort("Pyref","NodeSignal", Port::NOTREQUIRED);
-        mpPy=addReadPort("Py","NodeSignal", Port::NOTREQUIRED);
-        mpPdy=addReadPort("Pdy","NodeSignal", Port::NOTREQUIRED);
+        mpPyref=addReadPort("Pyref","NodeSignal", Port::NotRequired);
+        mpPy=addReadPort("Py","NodeSignal", Port::NotRequired);
+        mpPdy=addReadPort("Pdy","NodeSignal", Port::NotRequired);
 
         //Add outputVariables ports to the component
-        mpPu=addWritePort("Pu","NodeSignal", Port::NOTREQUIRED);
+        mpPu=addWritePort("Pu","NodeSignal", Port::NotRequired);
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("Kp", "Proportional gain", "", mKp);

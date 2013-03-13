@@ -14,15 +14,15 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   Components.h
+//! @file   defaultComponents.h
 //! @author FluMeS
 //! @date   2010-01-08
 //! @brief Includes all built in components
 //!
 //$Id$
 
-#ifndef COMPONENTS_H_INCLUDED
-#define COMPONENTS_H_INCLUDED
+#ifndef DEFAULTCOMPONENTS_H_INCLUDED
+#define DEFAULTCOMPONENTS_H_INCLUDED
 
 /* Special Components */
 #include "Special/HopsanDefaultSpecialComponents.h"
@@ -42,4 +42,4 @@
 /* Electric Components */
 #include "Electric/HopsanDefaultElectricComponents.h"
 
-#endif // COMPONENTS_H_INCLUDED
+#endif // DEFAULTCOMPONENTS_H_INCLUDED

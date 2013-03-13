@@ -48,7 +48,7 @@ namespace hopsan {
             mEndDead = 1.0;
 
             mpIn = addReadPort("in", "NodeSignal");
-            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
+            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
 
             registerParameter("u_dstart", "Start of Dead Zone", "[-]", mStartDead);
             registerParameter("u_dend", "End of Dead Zone", "[-]", mEndDead);

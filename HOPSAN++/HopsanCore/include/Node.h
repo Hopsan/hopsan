@@ -37,9 +37,7 @@ class ComponentSystem;
 class ConnectionAssistant;
 class HopsanEssentials;
 
-typedef std::string NodeTypeT;
-enum NodeDataVariableTypeT {Default, Intensity, Flow, TLM, Hidden};
-
+enum NodeDataVariableTypeEnumT {Default, Intensity, Flow, TLM, Hidden};
 class NodeDataDescription
 {
 public:
@@ -47,7 +45,7 @@ public:
     std::string shortname;
     std::string unit;
     std::string description;
-    NodeDataVariableTypeT varType;
+    NodeDataVariableTypeEnumT varType;
     unsigned int id;
 };
 
@@ -65,29 +63,27 @@ class DLLIMPORTEXPORT Node
 public:
     Node(const size_t datalength);
     std::string getNiceName() const;
+    const std::string getNodeType() const;
 
-    const NodeTypeT getNodeType() const;
     size_t getNumDataVariables() const;
-
     virtual int getDataIdFromName(const std::string name) const;
     double getDataValue(const size_t data_type) const;
     void setDataValue(const size_t data_type, const double data);
-    Component *getWritePortComponentPtr() const;
 
     const std::vector<NodeDataDescription>* getDataDescriptions() const;
     const NodeDataDescription* getDataDescription(const size_t id) const;
-
     virtual void setSignalDataUnitAndDescription(const std::string &rUnit, const std::string &rName);
 
     void logData(const size_t logSlot);
 
+    Component *getWritePortComponentPtr() const;
     ComponentSystem *getOwnerSystem() const;
 
 protected:
     // Protected member functions
     void setNiceName(const std::string nicename);
     void setDataCharacteristics(const size_t id, const std::string name, const std::string shortname,
-                                const std::string unit, const NodeDataVariableTypeT vartype=Default);
+                                const std::string unit, const NodeDataVariableTypeEnumT vartype=Default);
 
     void copyNodeDataValuesTo(Node *pNode);
     virtual void setSpecialStartValues(Node *pNode);
@@ -113,7 +109,7 @@ private:
     void disableLog();
 
     //Private member variables
-    NodeTypeT mNodeType;
+    std::string mNodeType;
     std::vector<Port*> mConnectedPorts;
     ComponentSystem *mpOwnerSystem;
 
@@ -122,10 +118,7 @@ private:
     bool mDoLog;
 };
 
-////! @brief Temporary help function for node creation, should bot be needed later /Peter
-//DLLIMPORTEXPORT Node* createNodeTemp(HopsanEssentials *pHopEss, NodeTypeT node_type);
-
-typedef ClassFactory<NodeTypeT, Node> NodeFactory;
+typedef ClassFactory<std::string, Node> NodeFactory;
 }
 
 #endif // NODE_H_INCLUDED

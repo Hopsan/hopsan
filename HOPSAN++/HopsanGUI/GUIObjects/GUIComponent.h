@@ -40,7 +40,7 @@ class Component : public ModelObject
     Q_OBJECT
 
 public:
-    Component(QPointF position, qreal rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS);
+    Component(QPointF position, qreal rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics);
     void deleteInHopsanCore();
 
     bool hasPowerPorts();
@@ -59,7 +59,7 @@ private slots:
     virtual void setVisible(bool visible);
 
 protected:
-    void saveCoreDataToDomElement(QDomElement &rDomElement, saveContents contents=FULLMODEL);
+    void saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents=FullModel);
     QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
     void openPropertiesDialog();
@@ -70,16 +70,16 @@ class ScopeComponent : public Component
 {
     Q_OBJECT
 public:
-    ScopeComponent(QPointF position, qreal rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, selectionStatus startSelected = DESELECTED, graphicsType gfxType = USERGRAPHICS);
+    ScopeComponent(QPointF position, qreal rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics);
 
     enum { Type = ScopeComponentType };
     int type() const;
 
 protected:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-    void rotate(qreal angle, undoStatus undoSettings = UNDO);
-    void flipVertical(undoStatus undoSettings = UNDO);
-    void flipHorizontal(undoStatus undoSettings = UNDO);
+    void rotate(qreal angle, UndoStatusEnumT undoSettings = Undo);
+    void flipVertical(UndoStatusEnumT undoSettings = Undo);
+    void flipHorizontal(UndoStatusEnumT undoSettings = Undo);
 
 };
 

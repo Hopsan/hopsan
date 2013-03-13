@@ -11,7 +11,7 @@
 //! @param[in] pComponentAppearance Pointer to the component appearance data of the compoennt which has the ports
 //! @param[in] gfxType USER or ISO graphics for the port
 //! @param[in] parent Pointer to the parent widget
-MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, graphicsType gfxType, QWidget *parent)
+MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, GraphicsTypeEnumT gfxType, QWidget *parent)
     : QDialog(parent)
 {
     mpView = new QGraphicsView(this);

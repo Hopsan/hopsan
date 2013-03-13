@@ -102,8 +102,8 @@ public:
         //Add inputVariables ports to the component
 
         //Add outputVariables ports to the component
-        mpPVa=addWritePort("PVa","NodeSignal", Port::NOTREQUIRED);
-        mpPpa=addWritePort("Ppa","NodeSignal", Port::NOTREQUIRED);
+        mpPVa=addWritePort("PVa","NodeSignal", Port::NotRequired);
+        mpPpa=addWritePort("Ppa","NodeSignal", Port::NotRequired);
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("p0", "Preload pressure", "N/m^2", mp0);

@@ -60,8 +60,8 @@ namespace hopsan {
             b1 = 1;
             b2 = 1;
 
-            mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
-            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
+            mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
+            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
 
             registerParameter("a_2", "S^2 numerator coefficient", "[-]", a2, Constant);
             registerParameter("a_1", "S^1 numerator coefficient", "[-]", a1, Constant);

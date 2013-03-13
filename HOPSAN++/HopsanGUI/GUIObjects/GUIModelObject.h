@@ -40,7 +40,7 @@ class ModelObject : public WorkspaceObject
     Q_OBJECT
 
 public:
-    ModelObject(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, selectionStatus startSelected = DESELECTED, graphicsType graphics = USERGRAPHICS, ContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
+    ModelObject(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT graphics = UserGraphics, ContainerObject *pParentContainer=0, QGraphicsItem *pParent=0);
     virtual ~ModelObject();
     virtual void deleteInHopsanCore();
 
@@ -86,7 +86,7 @@ public:
     virtual bool setStartValue(QString portName, QString variable, QString sysParName);
 
     // Load and save methods
-    virtual void saveToDomElement(QDomElement &rDomElement, saveContents contents=FULLMODEL);
+    virtual void saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents=FullModel);
     virtual void loadFromDomElement(QDomElement &rDomElement);
     virtual void setModelFileInfo(QFile &rFile);
 
@@ -113,12 +113,12 @@ public slots:
     virtual void refreshAppearance();
     virtual void refreshExternalPortsAppearanceAndPosition();
     void deleteMe();
-    virtual void rotate(qreal angle, undoStatus undoSettings = UNDO);
-    virtual void flipVertical(undoStatus undoSettings = UNDO);
-    virtual void flipHorizontal(undoStatus undoSettings = UNDO);
-    void hideName(undoStatus undoSettings = NOUNDO);
-    void showName(undoStatus undoSettings = NOUNDO);
-    void setIcon(graphicsType);
+    virtual void rotate(qreal angle, UndoStatusEnumT undoSettings = Undo);
+    virtual void flipVertical(UndoStatusEnumT undoSettings = Undo);
+    virtual void flipHorizontal(UndoStatusEnumT undoSettings = Undo);
+    void hideName(UndoStatusEnumT undoSettings = NoUndo);
+    void showName(UndoStatusEnumT undoSettings = NoUndo);
+    void setIcon(GraphicsTypeEnumT);
     void showLosses();
     void hideLosses();
     void setCppCode(QString code);
@@ -150,7 +150,7 @@ protected:
 
     // Save and load methods
     virtual QDomElement saveGuiDataToDomElement(QDomElement &rDomElement);
-    virtual void saveCoreDataToDomElement(QDomElement &rDomElement, saveContents contents=FULLMODEL);
+    virtual void saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents=FullModel);
 
     // Protected members
     ModelObjectAppearance mModelObjectAppearance;
@@ -160,7 +160,7 @@ protected:
     double mTextOffset;
     int mNameTextPos;
 
-    graphicsType mIconType;
+    GraphicsTypeEnumT mIconType;
     bool mIconRotation;
     QGraphicsSvgItem *mpIcon;
     QString mLastIconPath;

@@ -41,7 +41,7 @@ class MovePortsDialog : public QDialog
     Q_OBJECT
 
 public:
-    MovePortsDialog(ModelObjectAppearance *pComponentAppearance, graphicsType gfxType = USERGRAPHICS, QWidget *parent = 0);
+    MovePortsDialog(ModelObjectAppearance *pComponentAppearance, GraphicsTypeEnumT gfxType = UserGraphics, QWidget *parent = 0);
 
 public slots:
     bool okButtonPressed();

@@ -76,7 +76,7 @@ namespace hopsan {
             mAmplitude = 1.0;
             mFrequency = pi/(mStopTime-mStartTime);       //omega = 2pi/T, T = (stoptime-starttime)*4
 
-            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
+            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
 
             registerParameter("t_start", "Start Time", "[s]", mStartTime);
             registerParameter("t_end", "Stop Time", "[s]", mStopTime);

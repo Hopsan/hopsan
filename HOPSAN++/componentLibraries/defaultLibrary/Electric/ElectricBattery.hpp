@@ -104,8 +104,8 @@ public:
 
         //Add ports to the component
         mpPel1=addPowerPort("Pel1","NodeElectric");
-        mpPsoc=addWritePort("Psoc","NodeSignal", Port::NOTREQUIRED);
-        mpPubatt=addWritePort("Pubatt","NodeSignal", Port::NOTREQUIRED);
+        mpPsoc=addWritePort("Psoc","NodeSignal", Port::NotRequired);
+        mpPubatt=addWritePort("Pubatt","NodeSignal", Port::NotRequired);
 
         //Add inputVariables ports to the component
 

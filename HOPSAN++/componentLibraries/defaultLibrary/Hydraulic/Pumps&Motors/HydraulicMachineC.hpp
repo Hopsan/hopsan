@@ -75,7 +75,7 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpP3 = addPowerPort("P3", "NodeMechanicRotational");
-            mpIn = addReadPort("eps", "NodeSignal", Port::NOTREQUIRED);
+            mpIn = addReadPort("eps", "NodeSignal", Port::NotRequired);
 
             //Register changable parameters to the HOPSAN++ core
             registerParameter("Beta_e", "Bulk modulus of oil", "[Pa]", betae);

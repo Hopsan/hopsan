@@ -82,22 +82,22 @@
 //! @todo all of these dont have to be common
 //! @todo enums should NOT have all captitals, risc of colission with defines
 //Enums
-enum selectionStatus {DESELECTED, SELECTED};
-enum nameVisibility {NAMEVISIBLE, NAMENOTVISIBLE, USEDEFAULT};
-enum graphicsType {USERGRAPHICS, ISOGRAPHICS, NOGRAPHICS};
-enum connectorGeometry {VERTICAL, HORIZONTAL, DIAGONAL};
-enum renameRestrictions {UNRESTRICTED, CORERENAMEONLY};
-enum undoStatus {NOUNDO, UNDO};
-enum saveTarget {EXISTINGFILE, NEWFILE};
-enum saveContents {FULLMODEL, PARAMETERSONLY};
-enum connectorStyle {POWERCONNECTOR, SIGNALCONNECTOR, UNDEFINEDCONNECTOR};
-enum HopsanPlotID {FIRSTPLOT, SECONDPLOT};
-enum HopsanPlotCurveType {PORTVARIABLE, FREQUENCYANALYSIS, NYQUIST, BODEGAIN, BODEPHASE, GENERAL};
-enum ContainerChildrenZValues {WIDGET_Z, CONNECTOR_Z, MODELOBJECT_Z, HOVEREDCONNECTOR_Z, HOVEREDMODELOBJECT_Z};
-enum ModelObjectZValues {PORT_Z, SELECTIONBOX_Z, HOVEREDPORT_Z, LOSSESDISPLAY_Z};
-enum PortZValues {MULTIPORTOVERLAY_Z, CQSVERLAY_Z, PORTLABEL_Z};
-enum YesNoToAllEnumT {UNDECIDED_TO_ALL, NO_TO_ALL, YES_TO_ALL};
-enum InternalExternalEnumT {INTERNAL, EXTERNAL};
+enum SelectionStatusEnumT {Deselected, Selected};
+enum NameVisibilityEnumT {NameVisible, NameNotVisible, UseDefault};
+enum GraphicsTypeEnumT {UserGraphics, ISOGraphics, NoGraphics};
+enum ConnectorGeometryEnumT {Vertical, Horizontal, Diagonal};
+enum RenameRestrictionEnumT {Unrestricted, CoreRenameOnly};
+enum UndoStatusEnumT {NoUndo, Undo};
+enum SaveTargetEnumT {ExistingFile, NewFile};
+enum SaveContentsEnumT {FullModel, ParametersOnly};
+enum ConnectorStyleEnumT {PowerConnectorStyle, SignalConnectorStyle, UndefinedConnectorStyle};
+enum HopsanPlotIDEnumT {FirstPlot, SecondPlot};
+enum HopsanPlotCurveTypeEnumT {PortVariableType, FrequencyAnalysisType, NyquistType, BodeGainType, BodePhaseType, GeneralType};
+enum ContainerChildrenZValuesEnumT {WidgetZValue, ConnectorZValue, ModelobjectZValue, HoveredConnectorZValue, HoveredModelobjectZValue};
+enum ModelObjectZValuesEnumT {PortZValue, SelectionboxZValue, HoveredPortZValue, LossesDisplayZValue};
+enum PortZValuesEnumT {MultiportOverlayZValue, CQSOverlayZValue, PortLabelZValue};
+enum YesNoToAllEnumT {UndecidedToAll, NoToAll, YesToAll};
+enum InternalExternalEnumT {Internal, External};
 
 //Global pointer to the main window
 class MainWindow;

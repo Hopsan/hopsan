@@ -51,7 +51,7 @@ namespace hopsan {
         {
 
             mpP1 = addReadPort("P1", "NodeHydraulic");
-            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
+            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
 
         }
 

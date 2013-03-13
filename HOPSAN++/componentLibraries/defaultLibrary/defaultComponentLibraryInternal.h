@@ -17,7 +17,7 @@
 //! @file   defaultComponentLibraryInternal.h
 //! @author FluMeS
 //! @date   2012-01-13
-//! @brief Contains the register_components function that registers all built in components
+//! @brief Contains the register_default_components function that registers all built in components
 //!
 //$Id$
 
@@ -28,7 +28,7 @@
 
 namespace hopsan {
 
-    void register_components(ComponentFactory* pComponentFactory);
+    void register_default_components(ComponentFactory* pComponentFactory);
 }
 
 #endif

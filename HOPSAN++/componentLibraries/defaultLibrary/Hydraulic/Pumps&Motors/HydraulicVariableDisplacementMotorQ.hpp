@@ -63,7 +63,7 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpP3 = addPowerPort("P3", "NodeMechanicRotational");
-            mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
+            mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
 
             registerParameter("D_m", "Displacement", "[m^3/rev]", dp);
             registerParameter("B_m", "Viscous Friction", "[Nms/rad]", Bm);

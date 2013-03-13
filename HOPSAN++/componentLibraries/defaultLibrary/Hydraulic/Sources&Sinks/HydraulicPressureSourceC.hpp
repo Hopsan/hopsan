@@ -54,7 +54,7 @@ namespace hopsan {
             p         = 1.0e5;
             Zc        = 0.0;
 
-            mpIn = addReadPort("In", "NodeSignal", Port::NOTREQUIRED);
+            mpIn = addReadPort("In", "NodeSignal", Port::NotRequired);
             mpP1 = addPowerPort("P1", "NodeHydraulic");
 
             registerParameter("p", "Default pressure", "[Pa]", p);

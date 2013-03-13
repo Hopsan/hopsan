@@ -62,7 +62,7 @@ public:
     QPalette getPalette();
     QFont getFont();
     QString getStyleSheet();
-    QPen getPen(connectorStyle style, graphicsType gfxType, QString situation);
+    QPen getPen(ConnectorStyleEnumT style, GraphicsTypeEnumT gfxType, QString situation);
     bool getAntiAliasing();
 
     QStringList getUserLibs();
@@ -183,7 +183,7 @@ private:
     QString mFmuImportDir;
     QString mFmuExportDir;
 
-    QMap < connectorStyle, QMap< QString, QMap<QString, QPen> > > mPenStyles;
+    QMap < ConnectorStyleEnumT, QMap< QString, QMap<QString, QPen> > > mPenStyles;
 };
 
 #endif // CONFIGURATION_H

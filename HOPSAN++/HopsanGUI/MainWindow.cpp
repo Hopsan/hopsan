@@ -304,10 +304,10 @@ void MainWindow::initializeWorkspace()
     QString componentPath = QString(COMPONENTSPATH);
 
     // Load built in default Library
-    mpLibrary->loadLibrary(componentPath, INTERNAL);
+    mpLibrary->loadLibrary(componentPath, Internal);
 
     // Load builtIn library (Container special components)
-    mpLibrary->loadLibrary(QString(BUILTINCAFPATH) + "visible/", INTERNAL);
+    mpLibrary->loadLibrary(QString(BUILTINCAFPATH) + "visible/", Internal);
 
     for(int i=0; i<gConfig.getUserLibs().size(); ++i)
     {

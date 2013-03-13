@@ -38,7 +38,7 @@
 #include "PlotHandler.h"
 
 
-Component::Component(QPointF position, qreal rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
+Component::Component(QPointF position, qreal rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
     : ModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
 {
     //Set the hmf save tag name
@@ -194,7 +194,7 @@ void Component::setVisible(bool visible)
 
 //! @brief Save component coredata to XML Dom Element
 //! @param[in] rDomElement The dom element to save to
-void Component::saveCoreDataToDomElement(QDomElement &rDomElement, saveContents contents)
+void Component::saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents)
 {
     ModelObject::saveCoreDataToDomElement(rDomElement);
 
@@ -216,7 +216,7 @@ void Component::saveCoreDataToDomElement(QDomElement &rDomElement, saveContents 
         }*/
     }
 
-    if(contents==FULLMODEL)
+    if(contents==FullModel)
     {
         //Implementation of Feature #698 - Save nodetype in HMF
         QDomElement xmlPorts = appendDomElement(rDomElement, HMF_PORTSTAG);
@@ -285,24 +285,24 @@ void ScopeComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     }
 }
 
-void ScopeComponent::rotate(qreal /*angle*/, undoStatus /*undoSettings*/)
+void ScopeComponent::rotate(qreal /*angle*/, UndoStatusEnumT /*undoSettings*/)
 {
     // Overloaded to do nothing
 }
 
-void ScopeComponent::flipVertical(undoStatus /*undoSettings*/)
+void ScopeComponent::flipVertical(UndoStatusEnumT /*undoSettings*/)
 {
     // Overloaded to do nothing
 }
 
-void ScopeComponent::flipHorizontal(undoStatus /*undoSettings*/)
+void ScopeComponent::flipHorizontal(UndoStatusEnumT /*undoSettings*/)
 {
     // Overloaded to do nothing
 }
 
 
 
-ScopeComponent::ScopeComponent(QPointF position, qreal rotation, ModelObjectAppearance *pAppearanceData, ContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
+ScopeComponent::ScopeComponent(QPointF position, qreal rotation, ModelObjectAppearance *pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
     : Component(position, rotation, pAppearanceData, pParentContainer, startSelected, gfxType)
 {
     // Nothing special

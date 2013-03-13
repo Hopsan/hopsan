@@ -64,7 +64,7 @@ public:
         //Add inputVariables ports to the component
 
         //Add outputVariables ports to the component
-        mpPiout=addWritePort("Piout","NodeSignal", Port::NOTREQUIRED);
+        mpPiout=addWritePort("Piout","NodeSignal", Port::NotRequired);
 
         //Register changable parameters to the HOPSAN++ core
      }

@@ -55,8 +55,8 @@ namespace hopsan {
             mMin = -1.5E+300;
             mMax = 1.5E+300;
 
-            mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
-            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
+            mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
+            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
 
             registerParameter("y_min", "Lower output limit", "[-]", mMin);
             registerParameter("y_max", "Upper output limit", "[-]", mMax);

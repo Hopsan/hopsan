@@ -40,7 +40,7 @@
 #include "Configuration.h"
 #include "GUIContainerObject.h"
 
-SystemContainer::SystemContainer(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
+SystemContainer::SystemContainer(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
     : ContainerObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
 {
     this->mpParentProjectTab = pParentContainer->mpParentProjectTab;
@@ -49,7 +49,7 @@ SystemContainer::SystemContainer(QPointF position, qreal rotation, const ModelOb
 
 //Root system specific constructor
 SystemContainer::SystemContainer(ProjectTab *parentProjectTab, QGraphicsItem *pParent)
-    : ContainerObject(QPointF(0,0), 0, 0, DESELECTED, USERGRAPHICS, 0, pParent)
+    : ContainerObject(QPointF(0,0), 0, 0, Deselected, UserGraphics, 0, pParent)
 {
     this->mModelObjectAppearance = *(gpMainWindow->mpLibrary->getAppearanceData(HOPSANGUISYSTEMTYPENAME)); //This will crash if Subsystem not already loaded
     this->mpParentProjectTab = parentProjectTab;
@@ -208,18 +208,18 @@ void SystemContainer::openPropertiesDialog()
 
 //! @brief Saves the System specific coredata to XML DOM Element
 //! @param[in] rDomElement The DOM Element to save to
-void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement, saveContents contents)
+void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents)
 {
     ModelObject::saveCoreDataToDomElement(rDomElement);
 
-    if (mLoadType == "EXTERNAL" && contents == FULLMODEL)
+    if (mLoadType == "EXTERNAL" && contents == FullModel)
     {
         //This information should ONLY be used to indicate that a system is external, it SHOULD NOT be included in the actual external system
         //If it would be, the load function will fail
         rDomElement.setAttribute( HMF_EXTERNALPATHTAG, relativePath(mModelFileInfo.absoluteFilePath(), mpParentContainerObject->getModelFileInfo().absolutePath()) );
     }
 
-    if (mLoadType != "EXTERNAL" && contents == FULLMODEL)
+    if (mLoadType != "EXTERNAL" && contents == FullModel)
     {
         appendSimulationTimeTag(rDomElement, mpParentProjectTab->getStartTime().toDouble(), this->getTimeStep(), mpParentProjectTab->getStopTime().toDouble(), this->doesInheritTimeStep());
 
@@ -453,7 +453,7 @@ QDomElement SystemContainer::saveGuiDataToDomElement(QDomElement &rDomElement)
         namesHiddenElement.setAttribute("hidden", mSubComponentNamesHidden);
 
         QString gfxType = "iso";
-        if(mGfxType == USERGRAPHICS)
+        if(mGfxType == UserGraphics)
             gfxType = "user";
         QDomElement gfxTypeElement = appendDomElement(guiStuff, HMF_GFXTAG);
         gfxTypeElement.setAttribute("type", gfxType);
@@ -498,9 +498,9 @@ QDomElement SystemContainer::saveGuiDataToDomElement(QDomElement &rDomElement)
 
 //! @brief Overloaded special XML DOM save function for System Objects
 //! @param[in] rDomElement The DOM Element to save to
-void SystemContainer::saveToDomElement(QDomElement &rDomElement, saveContents contents)
+void SystemContainer::saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents)
 {
-    if(this == mpParentProjectTab->getTopLevelSystem() && contents==FULLMODEL)
+    if(this == mpParentProjectTab->getTopLevelSystem() && contents==FullModel)
     {
         //Append model info
         QString author, email, affiliation, description;
@@ -532,12 +532,12 @@ void SystemContainer::saveToDomElement(QDomElement &rDomElement, saveContents co
 
     // Save Core related stuff
     this->saveCoreDataToDomElement(xmlSubsystem, contents);
-    if(contents==FULLMODEL)
+    if(contents==FullModel)
     {
         xmlSubsystem.setAttribute(HMF_LOGSAMPLES, mNumberOfLogSamples);
     }
 
-    if(contents==FULLMODEL)
+    if(contents==FullModel)
     {
         // Save gui object stuff
         this->saveGuiDataToDomElement(xmlSubsystem);
@@ -554,7 +554,7 @@ void SystemContainer::saveToDomElement(QDomElement &rDomElement, saveContents co
             it.value()->saveToDomElement(xmlObjects, contents);
         }
 
-        if(contents==FULLMODEL)
+        if(contents==FullModel)
         {
                 //Save all widgets
             QMap<size_t, Widget *>::iterator itw;
@@ -636,8 +636,8 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         this->mSubComponentNamesHidden = guiStuff.firstChildElement(HMF_NAMESTAG).attribute("hidden").toInt();
         this->mSubComponentPortsHidden = guiStuff.firstChildElement(HMF_PORTSTAG).attribute("hidden").toInt();
         QString gfxType = guiStuff.firstChildElement(HMF_GFXTAG).attribute("type");
-        if(gfxType == "user") { mGfxType = USERGRAPHICS; }
-        else if(gfxType == "iso") { mGfxType = ISOGRAPHICS; }
+        if(gfxType == "user") { mGfxType = UserGraphics; }
+        else if(gfxType == "iso") { mGfxType = ISOGraphics; }
         gpMainWindow->mpToggleNamesAction->setChecked(!mSubComponentNamesHidden);
         gpMainWindow->mpTogglePortsAction->setChecked(!mSubComponentPortsHidden);
         double x = guiStuff.firstChildElement(HMF_VIEWPORTTAG).attribute("x").toDouble();
@@ -695,7 +695,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         while (!xmlSubObject.isNull())
         {
             verifyHmfSubComponentCompatibility(xmlSubObject, hmfVersion, coreHmfVersion);
-            ModelObject* pObj = loadModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
+            ModelObject* pObj = loadModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NoUndo);
             if(pObj == NULL)
             {
                 gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(QString("Model contains component from a library that has not been loaded. TypeName: ") +
@@ -703,7 +703,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
 
                 // Insert missing component dummy instead
                 xmlSubObject.setAttribute(HMF_TYPENAME, "MissingComponent");
-                pObj = loadModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
+                pObj = loadModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NoUndo);
             }
             else
             {
@@ -716,7 +716,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
                 QDomElement xmlStartValue = xmlStartValues.firstChildElement(HMF_STARTVALUE);
                 while (!xmlStartValue.isNull())
                 {
-                    loadStartValue(xmlStartValue, pObj, NOUNDO);
+                    loadStartValue(xmlStartValue, pObj, NoUndo);
                     xmlStartValue = xmlStartValue.nextSiblingElement(HMF_STARTVALUE);
                 }
             }
@@ -733,7 +733,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_TEXTBOXWIDGETTAG);
         while (!xmlSubObject.isNull())
         {
-            loadTextBoxWidget(xmlSubObject, this, NOUNDO);
+            loadTextBoxWidget(xmlSubObject, this, NoUndo);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_TEXTBOXWIDGETTAG);
         }
 
@@ -741,7 +741,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_SYSTEMTAG);
         while (!xmlSubObject.isNull())
         {
-            loadModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
+            loadModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NoUndo);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_SYSTEMTAG);
         }
 
@@ -749,7 +749,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_SYSTEMPORTTAG);
         while (!xmlSubObject.isNull())
         {
-            loadContainerPortObject(xmlSubObject, gpMainWindow->mpLibrary, this, NOUNDO);
+            loadContainerPortObject(xmlSubObject, gpMainWindow->mpLibrary, this, NoUndo);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_SYSTEMPORTTAG);
         }
 
@@ -759,7 +759,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         QList<QDomElement> failedConnections;
         while (!xmlSubObject.isNull())
         {
-            if(!loadConnector(xmlSubObject, this, NOUNDO))
+            if(!loadConnector(xmlSubObject, this, NoUndo))
             {
                 failedConnections.append(xmlSubObject);
             }
@@ -771,7 +771,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         int i=0;
         while(!failedConnections.isEmpty())
         {
-            if(!loadConnector(failedConnections.first(), this, NOUNDO))
+            if(!loadConnector(failedConnections.first(), this, NoUndo))
             {
                 failedConnections.append(failedConnections.first());
             }

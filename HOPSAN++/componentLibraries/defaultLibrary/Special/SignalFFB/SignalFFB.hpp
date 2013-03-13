@@ -75,13 +75,13 @@ public:
         //Add ports to the component
 
         //Add inputVariables ports to the component
-        mpPset=addReadPort("Pset","NodeSignal", Port::NOTREQUIRED);
-        mpPexit=addReadPort("Pexit","NodeSignal", Port::NOTREQUIRED);
-        mpPleave=addReadPort("Pleave","NodeSignal", Port::NOTREQUIRED);
+        mpPset=addReadPort("Pset","NodeSignal", Port::NotRequired);
+        mpPexit=addReadPort("Pexit","NodeSignal", Port::NotRequired);
+        mpPleave=addReadPort("Pleave","NodeSignal", Port::NotRequired);
 
         //Add outputVariables ports to the component
-        mpPstate=addWritePort("Pstate","NodeSignal", Port::NOTREQUIRED);
-        mpPexiting=addWritePort("Pexiting","NodeSignal", Port::NOTREQUIRED);
+        mpPstate=addWritePort("Pstate","NodeSignal", Port::NotRequired);
+        mpPexiting=addWritePort("Pexiting","NodeSignal", Port::NotRequired);
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("set", "On trigger", "", mset);

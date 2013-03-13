@@ -418,7 +418,7 @@ PlotWindow::~PlotWindow()
 
 void PlotWindow::setCustomXVector(QVector<double> xarray, const VariableDescription &rVarDesc)
 {
-    getCurrentPlotTab()->setCustomXVectorForAll(xarray, rVarDesc, FIRSTPLOT);
+    getCurrentPlotTab()->setCustomXVectorForAll(xarray, rVarDesc, FirstPlot);
 }
 
 void PlotWindow::setCustomXVector(SharedLogVariableDataPtrT pData)
@@ -646,14 +646,14 @@ void PlotWindow::loadFromXml()
 //! @todo currently only supports settings axis for top plot
 void PlotTab::openAxisSettingsDialog()
 {
-    mpXminSpinBox->setValue(mAxisLimits[FIRSTPLOT].xbMin);
-    mpXmaxSpinBox->setValue(mAxisLimits[FIRSTPLOT].xbMax);
+    mpXminSpinBox->setValue(mAxisLimits[FirstPlot].xbMin);
+    mpXmaxSpinBox->setValue(mAxisLimits[FirstPlot].xbMax);
 
-    mpYLminSpinBox->setValue(mAxisLimits[FIRSTPLOT].yLMin);
-    mpYLmaxSpinBox->setValue(mAxisLimits[FIRSTPLOT].yLMax);
+    mpYLminSpinBox->setValue(mAxisLimits[FirstPlot].yLMin);
+    mpYLmaxSpinBox->setValue(mAxisLimits[FirstPlot].yLMax);
 
-    mpYRminSpinBox->setValue(mAxisLimits[FIRSTPLOT].yRMin);
-    mpYRmaxSpinBox->setValue(mAxisLimits[FIRSTPLOT].yRMax);
+    mpYRminSpinBox->setValue(mAxisLimits[FirstPlot].yRMin);
+    mpYRmaxSpinBox->setValue(mAxisLimits[FirstPlot].yRMax);
 
     mpSetAxisDialog->exec();
 }
@@ -665,23 +665,23 @@ void PlotTab::applyAxisSettings()
 
     if(mpXbSetLockCheckBox->isChecked())
     {
-        this->getPlot(FIRSTPLOT)->setAxisScale(QwtPlot::xBottom, mpXminSpinBox->value(),mpXmaxSpinBox->value());
-        mAxisLimits[FIRSTPLOT].xbMin = mpXminSpinBox->value();
-        mAxisLimits[FIRSTPLOT].xbMax = mpXmaxSpinBox->value();
+        this->getPlot(FirstPlot)->setAxisScale(QwtPlot::xBottom, mpXminSpinBox->value(),mpXmaxSpinBox->value());
+        mAxisLimits[FirstPlot].xbMin = mpXminSpinBox->value();
+        mAxisLimits[FirstPlot].xbMax = mpXmaxSpinBox->value();
     }
 
     if(mpYLSetLockCheckBox->isChecked())
     {
-        this->getPlot(FIRSTPLOT)->setAxisScale(QwtPlot::yLeft, mpYLminSpinBox->value(),mpYLmaxSpinBox->value());
-        mAxisLimits[FIRSTPLOT].yLMin = mpYLminSpinBox->value();
-        mAxisLimits[FIRSTPLOT].yLMax = mpYLmaxSpinBox->value();
+        this->getPlot(FirstPlot)->setAxisScale(QwtPlot::yLeft, mpYLminSpinBox->value(),mpYLmaxSpinBox->value());
+        mAxisLimits[FirstPlot].yLMin = mpYLminSpinBox->value();
+        mAxisLimits[FirstPlot].yLMax = mpYLmaxSpinBox->value();
     }
 
     if(mpYRSetLockCheckBox->isChecked())
     {
-        this->getPlot(FIRSTPLOT)->setAxisScale(QwtPlot::yRight, mpYRminSpinBox->value(),mpYRmaxSpinBox->value());
-        mAxisLimits[FIRSTPLOT].yRMin = mpYRminSpinBox->value();
-        mAxisLimits[FIRSTPLOT].yRMax = mpYRmaxSpinBox->value();
+        this->getPlot(FirstPlot)->setAxisScale(QwtPlot::yRight, mpYRminSpinBox->value(),mpYRmaxSpinBox->value());
+        mAxisLimits[FirstPlot].yRMin = mpYRminSpinBox->value();
+        mAxisLimits[FirstPlot].yRMax = mpYRmaxSpinBox->value();
     }
 
     // If anyone of the boxes are not checked we call rescale in case we just unchecked it as it needs to auto refresh
@@ -743,14 +743,14 @@ void PlotWindow::performFrequencyAnalysisFromDialog()
     getCurrentPlotTab()->updateLabels();
     PlotCurve *pNewCurve = new PlotCurve(mpFrequencyAnalysisCurve->getLogDataVariablePtr(),
                                          mpFrequencyAnalysisCurve->getAxisY(),
-                                         getCurrentPlotTab(), FIRSTPLOT, FREQUENCYANALYSIS);
+                                         getCurrentPlotTab(), FirstPlot, FrequencyAnalysisType);
     getCurrentPlotTab()->addCurve(pNewCurve);
     pNewCurve->toFrequencySpectrum(mpPowerSpectrumCheckBox->isChecked());
     //! @todo Make logged axis an option for user
     if(mpLogScaleCheckBox->isChecked())
     {
-        getCurrentPlotTab()->getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::yLeft, new QwtLogScaleEngine(10));
-        getCurrentPlotTab()->getPlot(FIRSTPLOT)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLogScaleEngine(10));
+        getCurrentPlotTab()->getPlot(FirstPlot)->setAxisScaleEngine(QwtPlot::yLeft, new QwtLogScaleEngine(10));
+        getCurrentPlotTab()->getPlot(FirstPlot)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLogScaleEngine(10));
     }
     getCurrentPlotTab()->rescaleToCurves();
 }
@@ -770,7 +770,7 @@ void PlotWindow::createBodePlot()
     QGroupBox *pInputGroupBox = new QGroupBox(tr("Input Variable"));
     QVBoxLayout *pInputGroupBoxLayout = new QVBoxLayout;
     pInputGroupBoxLayout->addStretch(1);
-    for(int i=0; i<getCurrentPlotTab()->getNumberOfCurves(FIRSTPLOT); ++i)
+    for(int i=0; i<getCurrentPlotTab()->getNumberOfCurves(FirstPlot); ++i)
     {
         QRadioButton *radio = new QRadioButton(getCurrentPlotTab()->getCurves().at(i)->getComponentName() + ", " +
                                                getCurrentPlotTab()->getCurves().at(i)->getPortName() + ", " +
@@ -783,7 +783,7 @@ void PlotWindow::createBodePlot()
     QGroupBox *pOutputGroupBox = new QGroupBox(tr("Output Variable"));
     QVBoxLayout *pOutputGroupBoxLayout = new QVBoxLayout;
     pOutputGroupBoxLayout->addStretch(1);
-    for(int i=0; i<getCurrentPlotTab()->getNumberOfCurves(FIRSTPLOT); ++i)
+    for(int i=0; i<getCurrentPlotTab()->getNumberOfCurves(FirstPlot); ++i)
     {
         QRadioButton *radio = new QRadioButton(getCurrentPlotTab()->getCurves().at(i)->getComponentName() + ", " +
                                                getCurrentPlotTab()->getCurves().at(i)->getPortName() + ", " +
@@ -793,7 +793,7 @@ void PlotWindow::createBodePlot()
     }
     pOutputGroupBox->setLayout(pOutputGroupBoxLayout);
 
-    double maxFreq = (getCurrentPlotTab()->getCurves(FIRSTPLOT).first()->getTimeVector().size()+1)/getCurrentPlotTab()->getCurves(FIRSTPLOT).first()->getTimeVector().last()/2;
+    double maxFreq = (getCurrentPlotTab()->getCurves(FirstPlot).first()->getTimeVector().size()+1)/getCurrentPlotTab()->getCurves(FirstPlot).first()->getTimeVector().last()/2;
     QLabel *pMaxFrequencyLabel = new QLabel("Maximum frequency in bode plot:");
     QLabel *pMaxFrequencyValue = new QLabel();
     QLabel *pMaxFrequencyUnit = new QLabel("Hz");
@@ -960,12 +960,12 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
     addPlotTab("Nyquist Plot");
     PlotCurve *pNyquistCurve1 = new PlotCurve(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data(),
                                               vRe, vIm, pOutputCurve->getAxisY(),
-                                              getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
+                                              getCurrentPlotTab(), FirstPlot, NyquistType);
     getCurrentPlotTab()->addCurve(pNyquistCurve1);
 
     PlotCurve *pNyquistCurve2 = new PlotCurve(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data(),
                                               vRe, vImNeg, pOutputCurve->getAxisY(),
-                                              getCurrentPlotTab(), FIRSTPLOT, NYQUIST);
+                                              getCurrentPlotTab(), FirstPlot, NyquistType);
     getCurrentPlotTab()->addCurve(pNyquistCurve2);
     getCurrentPlotTab()->getPlot()->replot();
     getCurrentPlotTab()->rescaleToCurves();
@@ -974,17 +974,17 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
     addPlotTab("Bode Diagram");
     PlotCurve *pGainCurve = new PlotCurve(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data(),
                                           F, vBodeGain, pOutputCurve->getAxisY(),
-                                          getCurrentPlotTab(), FIRSTPLOT, BODEGAIN);
+                                          getCurrentPlotTab(), FirstPlot, BodeGainType);
     getCurrentPlotTab()->addCurve(pGainCurve);
 
     PlotCurve *pPhaseCurve = new PlotCurve(*pOutputCurve->getLogDataVariablePtr()->getVariableDescription().data(),
                                            F, vBodePhase, pOutputCurve->getAxisY(),
-                                           getCurrentPlotTab(), SECONDPLOT, BODEPHASE);
-    getCurrentPlotTab()->addCurve(pPhaseCurve, QColor(), SECONDPLOT);
+                                           getCurrentPlotTab(), SecondPlot, BodePhaseType);
+    getCurrentPlotTab()->addCurve(pPhaseCurve, QColor(), SecondPlot);
 
-    getCurrentPlotTab()->showPlot(SECONDPLOT, true);
-    getCurrentPlotTab()->getPlot(FIRSTPLOT)->replot();
-    getCurrentPlotTab()->getPlot(SECONDPLOT)->replot();
+    getCurrentPlotTab()->showPlot(SecondPlot, true);
+    getCurrentPlotTab()->getPlot(FirstPlot)->replot();
+    getCurrentPlotTab()->getPlot(SecondPlot)->replot();
     getCurrentPlotTab()->updateGeometry();
 
     getCurrentPlotTab()->setBottomAxisLogarithmic(true);
@@ -1099,7 +1099,7 @@ void PlotWindow::closeIfEmpty()
         int nCurvesInTab = 0;
         for(int plotId=0; plotId<2; ++plotId)
         {
-            nCurvesInTab += mpPlotTabWidget->getTab(i)->getNumberOfCurves(HopsanPlotID(plotId));
+            nCurvesInTab += mpPlotTabWidget->getTab(i)->getNumberOfCurves(HopsanPlotIDEnumT(plotId));
         }
 
         if(nCurvesInTab == 0)
@@ -1218,11 +1218,11 @@ void PlotWindow::changedTab()
             mpBodePlotButton->setDisabled(false);
             mpExportPdfAction->setDisabled(false);
             mpExportToGraphicsAction->setDisabled(false);
-            mpZoomButton->setChecked(pCurrentTab->mpZoomerLeft[FIRSTPLOT]->isEnabled());
-            mpPanButton->setChecked(pCurrentTab->mpPanner[FIRSTPLOT]->isEnabled());
-            mpGridButton->setChecked(pCurrentTab->mpGrid[FIRSTPLOT]->isVisible());
+            mpZoomButton->setChecked(pCurrentTab->mpZoomerLeft[FirstPlot]->isEnabled());
+            mpPanButton->setChecked(pCurrentTab->mpPanner[FirstPlot]->isEnabled());
+            mpGridButton->setChecked(pCurrentTab->mpGrid[FirstPlot]->isVisible());
             mpResetXVectorButton->setEnabled(pCurrentTab->mHasCustomXData);
-            mpBodePlotButton->setEnabled(pCurrentTab->getCurves(FIRSTPLOT).size() > 1);
+            mpBodePlotButton->setEnabled(pCurrentTab->getCurves(FirstPlot).size() > 1);
         }
 
         connect(mpZoomButton,               SIGNAL(toggled(bool)),  pCurrentTab,    SLOT(enableZoom(bool)));

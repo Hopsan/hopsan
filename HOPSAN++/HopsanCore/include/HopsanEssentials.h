@@ -63,7 +63,7 @@ public:
     std::vector<std::string> getRegisteredComponentTypes() const;
 
     // Node creation
-    Node* createNode(const NodeTypeT &rNodeType);
+    Node* createNode(const std::string &rNodeType);
     std::vector<std::string> getRegisteredNodeTypes() const;
 
     // Messages

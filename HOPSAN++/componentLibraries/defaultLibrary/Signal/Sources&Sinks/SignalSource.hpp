@@ -51,7 +51,7 @@ namespace hopsan {
         {
             mValue = 1.0;
 
-            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
+            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
 
             registerParameter("y", "Source Value", "[-]", mValue, Constant);
 

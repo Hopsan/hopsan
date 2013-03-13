@@ -90,9 +90,9 @@ namespace hopsan {
             mpP1 = addPowerMultiPort("P1", "NodeHydraulic");
             mpPA = addPowerPort("PA", "NodeHydraulic");
             mpPB = addPowerPort("PB", "NodeHydraulic");
-            mpDebug1 = addWritePort("DEBUG1", "NodeSignal", Port::NOTREQUIRED);
-            mpDebug2 = addWritePort("DEBUG2", "NodeSignal", Port::NOTREQUIRED);
-            mpDebug3 = addWritePort("DEBUG3", "NodeSignal", Port::NOTREQUIRED);
+            mpDebug1 = addWritePort("DEBUG1", "NodeSignal", Port::NotRequired);
+            mpDebug2 = addWritePort("DEBUG2", "NodeSignal", Port::NotRequired);
+            mpDebug3 = addWritePort("DEBUG3", "NodeSignal", Port::NotRequired);
         }
 
 

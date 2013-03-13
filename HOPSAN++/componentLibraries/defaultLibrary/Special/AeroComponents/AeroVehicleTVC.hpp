@@ -409,52 +409,52 @@ public:
         mpPtvcrz=addPowerPort("Ptvcrz","NodeMechanicRotational");
 
         //Add inputVariables ports to the component
-        mpPthrustl=addReadPort("Pthrustl","NodeSignal", Port::NOTREQUIRED);
-        mpPthrustr=addReadPort("Pthrustr","NodeSignal", Port::NOTREQUIRED);
-        mpPg0=addReadPort("Pg0","NodeSignal", Port::NOTREQUIRED);
-        mpPMfuel=addReadPort("PMfuel","NodeSignal", Port::NOTREQUIRED);
-        mpPMcargo=addReadPort("PMcargo","NodeSignal", Port::NOTREQUIRED);
-        mpPrho=addReadPort("Prho","NodeSignal", Port::NOTREQUIRED);
-        mpPvturbx=addReadPort("Pvturbx","NodeSignal", Port::NOTREQUIRED);
-        mpPvturby=addReadPort("Pvturby","NodeSignal", Port::NOTREQUIRED);
-        mpPvturbz=addReadPort("Pvturbz","NodeSignal", Port::NOTREQUIRED);
-        mpPwturbx=addReadPort("Pwturbx","NodeSignal", Port::NOTREQUIRED);
-        mpPwturby=addReadPort("Pwturby","NodeSignal", Port::NOTREQUIRED);
-        mpPwturbz=addReadPort("Pwturbz","NodeSignal", Port::NOTREQUIRED);
+        mpPthrustl=addReadPort("Pthrustl","NodeSignal", Port::NotRequired);
+        mpPthrustr=addReadPort("Pthrustr","NodeSignal", Port::NotRequired);
+        mpPg0=addReadPort("Pg0","NodeSignal", Port::NotRequired);
+        mpPMfuel=addReadPort("PMfuel","NodeSignal", Port::NotRequired);
+        mpPMcargo=addReadPort("PMcargo","NodeSignal", Port::NotRequired);
+        mpPrho=addReadPort("Prho","NodeSignal", Port::NotRequired);
+        mpPvturbx=addReadPort("Pvturbx","NodeSignal", Port::NotRequired);
+        mpPvturby=addReadPort("Pvturby","NodeSignal", Port::NotRequired);
+        mpPvturbz=addReadPort("Pvturbz","NodeSignal", Port::NotRequired);
+        mpPwturbx=addReadPort("Pwturbx","NodeSignal", Port::NotRequired);
+        mpPwturby=addReadPort("Pwturby","NodeSignal", Port::NotRequired);
+        mpPwturbz=addReadPort("Pwturbz","NodeSignal", Port::NotRequired);
 
         //Add outputVariables ports to the component
-        mpPxcg=addWritePort("Pxcg","NodeSignal", Port::NOTREQUIRED);
-        mpPycg=addWritePort("Pycg","NodeSignal", Port::NOTREQUIRED);
-        mpPzcg=addWritePort("Pzcg","NodeSignal", Port::NOTREQUIRED);
-        mpPvx=addWritePort("Pvx","NodeSignal", Port::NOTREQUIRED);
-        mpPvy=addWritePort("Pvy","NodeSignal", Port::NOTREQUIRED);
-        mpPvz=addWritePort("Pvz","NodeSignal", Port::NOTREQUIRED);
-        mpPPsi=addWritePort("PPsi","NodeSignal", Port::NOTREQUIRED);
-        mpPThetao=addWritePort("PThetao","NodeSignal", Port::NOTREQUIRED);
-        mpPPhi=addWritePort("PPhi","NodeSignal", Port::NOTREQUIRED);
-        mpPUb=addWritePort("PUb","NodeSignal", Port::NOTREQUIRED);
-        mpPVb=addWritePort("PVb","NodeSignal", Port::NOTREQUIRED);
-        mpPWb=addWritePort("PWb","NodeSignal", Port::NOTREQUIRED);
-        mpPPb=addWritePort("PPb","NodeSignal", Port::NOTREQUIRED);
-        mpPQb=addWritePort("PQb","NodeSignal", Port::NOTREQUIRED);
-        mpPRb=addWritePort("PRb","NodeSignal", Port::NOTREQUIRED);
-        mpPq0=addWritePort("Pq0","NodeSignal", Port::NOTREQUIRED);
-        mpPq1=addWritePort("Pq1","NodeSignal", Port::NOTREQUIRED);
-        mpPq2=addWritePort("Pq2","NodeSignal", Port::NOTREQUIRED);
-        mpPq3=addWritePort("Pq3","NodeSignal", Port::NOTREQUIRED);
+        mpPxcg=addWritePort("Pxcg","NodeSignal", Port::NotRequired);
+        mpPycg=addWritePort("Pycg","NodeSignal", Port::NotRequired);
+        mpPzcg=addWritePort("Pzcg","NodeSignal", Port::NotRequired);
+        mpPvx=addWritePort("Pvx","NodeSignal", Port::NotRequired);
+        mpPvy=addWritePort("Pvy","NodeSignal", Port::NotRequired);
+        mpPvz=addWritePort("Pvz","NodeSignal", Port::NotRequired);
+        mpPPsi=addWritePort("PPsi","NodeSignal", Port::NotRequired);
+        mpPThetao=addWritePort("PThetao","NodeSignal", Port::NotRequired);
+        mpPPhi=addWritePort("PPhi","NodeSignal", Port::NotRequired);
+        mpPUb=addWritePort("PUb","NodeSignal", Port::NotRequired);
+        mpPVb=addWritePort("PVb","NodeSignal", Port::NotRequired);
+        mpPWb=addWritePort("PWb","NodeSignal", Port::NotRequired);
+        mpPPb=addWritePort("PPb","NodeSignal", Port::NotRequired);
+        mpPQb=addWritePort("PQb","NodeSignal", Port::NotRequired);
+        mpPRb=addWritePort("PRb","NodeSignal", Port::NotRequired);
+        mpPq0=addWritePort("Pq0","NodeSignal", Port::NotRequired);
+        mpPq1=addWritePort("Pq1","NodeSignal", Port::NotRequired);
+        mpPq2=addWritePort("Pq2","NodeSignal", Port::NotRequired);
+        mpPq3=addWritePort("Pq3","NodeSignal", Port::NotRequired);
         mpPAlphaAttack=addWritePort("PAlphaAttack","NodeSignal", \
-Port::NOTREQUIRED);
+Port::NotRequired);
         mpPBetaSlip=addWritePort("PBetaSlip","NodeSignal", \
-Port::NOTREQUIRED);
+Port::NotRequired);
         mpPaltitude=addWritePort("Paltitude","NodeSignal", \
-Port::NOTREQUIRED);
-        mpPgfx=addWritePort("Pgfx","NodeSignal", Port::NOTREQUIRED);
-        mpPgfy=addWritePort("Pgfy","NodeSignal", Port::NOTREQUIRED);
-        mpPgfz=addWritePort("Pgfz","NodeSignal", Port::NOTREQUIRED);
-        mpPCL1=addWritePort("PCL1","NodeSignal", Port::NOTREQUIRED);
-        mpPCd1=addWritePort("PCd1","NodeSignal", Port::NOTREQUIRED);
-        mpPFax=addWritePort("PFax","NodeSignal", Port::NOTREQUIRED);
-        mpPFaz=addWritePort("PFaz","NodeSignal", Port::NOTREQUIRED);
+Port::NotRequired);
+        mpPgfx=addWritePort("Pgfx","NodeSignal", Port::NotRequired);
+        mpPgfy=addWritePort("Pgfy","NodeSignal", Port::NotRequired);
+        mpPgfz=addWritePort("Pgfz","NodeSignal", Port::NotRequired);
+        mpPCL1=addWritePort("PCL1","NodeSignal", Port::NotRequired);
+        mpPCd1=addWritePort("PCd1","NodeSignal", Port::NotRequired);
+        mpPFax=addWritePort("PFax","NodeSignal", Port::NotRequired);
+        mpPFaz=addWritePort("PFaz","NodeSignal", Port::NotRequired);
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("Cd0b", "Drag coef. body", "", mCd0b);

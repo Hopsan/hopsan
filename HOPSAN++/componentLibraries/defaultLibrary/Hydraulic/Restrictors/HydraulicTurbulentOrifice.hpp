@@ -66,7 +66,7 @@ namespace hopsan {
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
-            mpIn = addReadPort("A", "NodeSignal", Port::NOTREQUIRED);
+            mpIn = addReadPort("A", "NodeSignal", Port::NotRequired);
 
             registerParameter("C_q", "Flow coefficient", "[-]", Cq);
             registerParameter("A", "Area", "[m^2]", A);

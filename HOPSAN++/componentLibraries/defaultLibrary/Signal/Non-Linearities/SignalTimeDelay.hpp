@@ -56,7 +56,7 @@ namespace hopsan {
             registerParameter("deltat", "Time delay", "[s]", mTimeDelay, Constant);
 
             mpIn = addReadPort("in", "NodeSignal");
-            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
+            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
         }
 
 

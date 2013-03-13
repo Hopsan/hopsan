@@ -47,23 +47,23 @@ public:
 
     void setTabName(QString name);
 
-    void addCurve(PlotCurve *curve, QColor desiredColor=QColor(), HopsanPlotID plotID=FIRSTPLOT);
-    void setCustomXVectorForAll(QVector<double> xarray, const VariableDescription &rVarDesc, HopsanPlotID plotID=FIRSTPLOT);
-    void setCustomXVectorForAll(SharedLogVariableDataPtrT pData, HopsanPlotID plotID=FIRSTPLOT);
+    void addCurve(PlotCurve *curve, QColor desiredColor=QColor(), HopsanPlotIDEnumT plotID=FirstPlot);
+    void setCustomXVectorForAll(QVector<double> xarray, const VariableDescription &rVarDesc, HopsanPlotIDEnumT plotID=FirstPlot);
+    void setCustomXVectorForAll(SharedLogVariableDataPtrT pData, HopsanPlotIDEnumT plotID=FirstPlot);
     void removeCurve(PlotCurve *curve);
     void removeAllCurvesOnAxis(const int axis);
 
-    QList<PlotCurve *> getCurves(HopsanPlotID plotID=FIRSTPLOT);
+    QList<PlotCurve *> getCurves(HopsanPlotIDEnumT plotID=FirstPlot);
     void setActivePlotCurve(PlotCurve *pCurve);
     PlotCurve *getActivePlotCurve();
-    QwtPlot *getPlot(HopsanPlotID plotID=FIRSTPLOT);
+    QwtPlot *getPlot(HopsanPlotIDEnumT plotID=FirstPlot);
 
-    int getNumberOfCurves(HopsanPlotID plotID);
+    int getNumberOfCurves(HopsanPlotIDEnumT plotID);
     bool isGridVisible();
     bool isSpecialPlot();
     bool hasLogarithmicBottomAxis();
 
-    void showPlot(HopsanPlotID plotID, bool visible);
+    void showPlot(HopsanPlotIDEnumT plotID, bool visible);
     void setBottomAxisLogarithmic(bool value);
     void setLegendsVisible(bool value);
 
@@ -121,7 +121,7 @@ private:
     void constructLegendSettingsDialog();
     void constructAxisSettingsDialog();
     void setLegendSymbol(const QString symStyle);
-    void setTabOnlyCustomXVector(SharedLogVariableDataPtrT pData, HopsanPlotID plotID=FIRSTPLOT);
+    void setTabOnlyCustomXVector(SharedLogVariableDataPtrT pData, HopsanPlotIDEnumT plotID=FirstPlot);
 
     QGridLayout *mpTabLayout;
     QSint::BarChartPlotter *mpBarPlot;

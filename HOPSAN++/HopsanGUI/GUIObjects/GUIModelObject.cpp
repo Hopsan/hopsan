@@ -46,7 +46,7 @@
 //! @param gfxType Initial graphics type (user or iso)
 //! @param system Pointer to the parent system
 //! @param parent Pointer to parent object (not mandatory)
-ModelObject::ModelObject(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, selectionStatus startSelected, graphicsType gfxType, ContainerObject *pParentContainer, QGraphicsItem *pParent)
+ModelObject::ModelObject(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType, ContainerObject *pParentContainer, QGraphicsItem *pParent)
         : WorkspaceObject(position, rotation, startSelected, pParentContainer, pParent)
 {
         //Initialize variables
@@ -70,7 +70,7 @@ ModelObject::ModelObject(QPointF position, qreal rotation, const ModelObjectAppe
     this->setIcon(gfxType);
     this->refreshAppearance();
     this->setCenterPos(position);
-    this->setZValue(MODELOBJECT_Z);
+    this->setZValue(ModelobjectZValue);
     this->setSelected(startSelected);
 
         //Create the textbox containing the name
@@ -83,11 +83,11 @@ ModelObject::ModelObject(QPointF position, qreal rotation, const ModelObjectAppe
     this->setNameTextPos(0); //Set initial name text position
     if(pParentContainer != 0 && pParentContainer->areSubComponentNamesHidden())
     {
-        this->hideName(NOUNDO);
+        this->hideName(NoUndo);
     }
     else
     {
-        this->showName(NOUNDO);
+        this->showName(NoUndo);
     }
 
         //Create connections
@@ -98,7 +98,7 @@ ModelObject::ModelObject(QPointF position, qreal rotation, const ModelObjectAppe
 //        connect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
         connect(mpParentContainerObject, SIGNAL(hideAllNameText()), this, SLOT(hideName()));
         connect(mpParentContainerObject, SIGNAL(showAllNameText()), this, SLOT(showName()));
-        connect(mpParentContainerObject, SIGNAL(setAllGfxType(graphicsType)), this, SLOT(setIcon(graphicsType)));
+        connect(mpParentContainerObject, SIGNAL(setAllGfxType(GraphicsTypeEnumT)), this, SLOT(setIcon(GraphicsTypeEnumT)));
     }
     else
     {
@@ -312,21 +312,21 @@ QList<Port*> &ModelObject::getPortListPtrs()
 
 //! @brief Updates the icon of the object to user or iso style
 //! @param gfxType Graphics type that shall be used
-void ModelObject::setIcon(graphicsType gfxType)
+void ModelObject::setIcon(GraphicsTypeEnumT gfxType)
 {
     QString iconPath;
     qreal iconScale;
-    if ( (gfxType == ISOGRAPHICS) && mModelObjectAppearance.hasIcon(ISOGRAPHICS) )
+    if ( (gfxType == ISOGraphics) && mModelObjectAppearance.hasIcon(ISOGraphics) )
     {
-        iconPath = mModelObjectAppearance.getFullAvailableIconPath(ISOGRAPHICS);
-        iconScale = mModelObjectAppearance.getIconScale(ISOGRAPHICS);
-        mIconType = ISOGRAPHICS;
+        iconPath = mModelObjectAppearance.getFullAvailableIconPath(ISOGraphics);
+        iconScale = mModelObjectAppearance.getIconScale(ISOGraphics);
+        mIconType = ISOGraphics;
     }
     else
     {
-        iconPath = mModelObjectAppearance.getFullAvailableIconPath(USERGRAPHICS);
-        iconScale = mModelObjectAppearance.getIconScale(USERGRAPHICS);
-        mIconType = USERGRAPHICS;
+        iconPath = mModelObjectAppearance.getFullAvailableIconPath(UserGraphics);
+        iconScale = mModelObjectAppearance.getIconScale(UserGraphics);
+        mIconType = UserGraphics;
     }
 
     //Avoid swappping icon if same as before, we swap also if scale changes
@@ -511,7 +511,7 @@ void ModelObject::showLosses()
         pt = transf*pt;
         mpLossesDisplay->setPos(localCenter + pt);
         mpLossesDisplay->setVisible(true);
-        mpLossesDisplay->setZValue(LOSSESDISPLAY_Z);
+        mpLossesDisplay->setZValue(LossesDisplayZValue);
     }
 }
 
@@ -798,23 +798,23 @@ void ModelObject::loadFromDomElement(QDomElement &/*rDomElement*/)
     assert(false);
 }
 
-void ModelObject::saveToDomElement(QDomElement &rDomElement, saveContents contents)
+void ModelObject::saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents)
 {
     QDomElement xmlObject = appendDomElement(rDomElement, mHmfTagName);
     saveCoreDataToDomElement(xmlObject, contents);
-    if(contents==FULLMODEL)
+    if(contents==FullModel)
         saveGuiDataToDomElement(xmlObject);
 }
 
-void ModelObject::saveCoreDataToDomElement(QDomElement &rDomElement, saveContents contents)
+void ModelObject::saveCoreDataToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents)
 {
-    if(contents==FULLMODEL)
+    if(contents==FullModel)
     {
         rDomElement.setAttribute(HMF_TYPENAME, getTypeName());
     }
     rDomElement.setAttribute(HMF_NAMETAG, getName());
 
-    if(getTypeName().startsWith("CppComponent") && contents==FULLMODEL)
+    if(getTypeName().startsWith("CppComponent") && contents==FullModel)
     {
         rDomElement.setAttribute(HMF_TYPENAME, "CppComponent");
         appendDomTextNode(rDomElement, HMF_CPPCODETAG, mCppCode);
@@ -868,7 +868,7 @@ void ModelObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 void ModelObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
     WorkspaceObject::hoverEnterEvent(event);
-    this->setZValue(HOVEREDMODELOBJECT_Z);
+    this->setZValue(HoveredModelobjectZValue);
     this->showPorts(true);
 }
 
@@ -877,7 +877,7 @@ void ModelObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 void ModelObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     WorkspaceObject::hoverLeaveEvent(event);
-    this->setZValue(MODELOBJECT_Z);
+    this->setZValue(ModelobjectZValue);
     this->showPorts(false);
 }
 
@@ -951,7 +951,7 @@ void ModelObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
         QDrag *drag = new QDrag(mpParentContainerObject->mpParentProjectTab->getGraphicsView());
         drag->setMimeData(mimeData);
-        drag->setPixmap(QIcon(QPixmap(this->mModelObjectAppearance.getIconPath(mIconType, ABSOLUTE))).pixmap(40,40));
+        drag->setPixmap(QIcon(QPixmap(this->mModelObjectAppearance.getIconPath(mIconType, Absolute))).pixmap(40,40));
         drag->setHotSpot(QPoint(20, 20));
         drag->exec(Qt::CopyAction | Qt::MoveAction);
 
@@ -1241,7 +1241,7 @@ void ModelObject::showPorts(bool visible)
 
 
 //! @todo try to reuse the code in rotate guiobject,
-void ModelObject::rotate(qreal angle, undoStatus undoSettings)
+void ModelObject::rotate(qreal angle, UndoStatusEnumT undoSettings)
 {
     mpParentContainerObject->mpParentProjectTab->hasChanged();
 
@@ -1262,7 +1262,7 @@ void ModelObject::rotate(qreal angle, undoStatus undoSettings)
         mPortListPtrs[i]->refreshPortOverlayPosition();
     }
 
-    if(undoSettings == UNDO)
+    if(undoSettings == Undo)
     {
         mpParentContainerObject->getUndoStackPtr()->registerRotatedObject(this->getName(), angle);
     }
@@ -1278,11 +1278,11 @@ void ModelObject::rotate(qreal angle, undoStatus undoSettings)
 //! @param undoSettings Tells whether or not this shall be registered in undo stack
 //! @see flipHorizontal()
 //! @todo Fix name text position when flipping components
-void ModelObject::flipVertical(undoStatus undoSettings)
+void ModelObject::flipVertical(UndoStatusEnumT undoSettings)
 {
-    this->flipHorizontal(NOUNDO);
-    this->rotate(180,NOUNDO);
-    if(undoSettings == UNDO)
+    this->flipHorizontal(NoUndo);
+    this->rotate(180,NoUndo);
+    if(undoSettings == Undo)
     {
         mpParentContainerObject->getUndoStackPtr()->registerVerticalFlip(this->getName());
     }
@@ -1292,7 +1292,7 @@ void ModelObject::flipVertical(undoStatus undoSettings)
 //! @brief Slot that flips the object horizontally
 //! @param undoSettings Tells whether or not this shall be registered in undo stack
 //! @see flipVertical()
-void ModelObject::flipHorizontal(undoStatus undoSettings)
+void ModelObject::flipHorizontal(UndoStatusEnumT undoSettings)
 {
     if(mpParentContainerObject)
     {
@@ -1328,7 +1328,7 @@ void ModelObject::flipHorizontal(undoStatus undoSettings)
     }
     this->snapNameTextPosition(mpNameText->pos());
 
-    if(undoSettings == UNDO)
+    if(undoSettings == Undo)
     {
         mpParentContainerObject->getUndoStackPtr()->registerHorizontalFlip(this->getName());
     }
@@ -1358,11 +1358,11 @@ void ModelObject::setNameTextPos(int textPos)
 
 
 //! @brief Slots that hides the name text of the object
-void ModelObject::hideName(undoStatus undoSettings)
+void ModelObject::hideName(UndoStatusEnumT undoSettings)
 {
     bool previousStatus = mpNameText->isVisible();
     mpNameText->setVisible(false);
-    if(undoSettings == UNDO && previousStatus == true)
+    if(undoSettings == Undo && previousStatus == true)
     {
         mpParentContainerObject->getUndoStackPtr()->registerNameVisibilityChange(this->getName(), false);
     }
@@ -1370,11 +1370,11 @@ void ModelObject::hideName(undoStatus undoSettings)
 
 
 //! @brief Slots that makes the name text of the object visible
-void ModelObject::showName(undoStatus undoSettings)
+void ModelObject::showName(UndoStatusEnumT undoSettings)
 {
     bool previousStatus = mpNameText->isVisible();
     mpNameText->setVisible(true);
-    if(undoSettings == UNDO && previousStatus == false)
+    if(undoSettings == Undo && previousStatus == false)
     {
         mpParentContainerObject->getUndoStackPtr()->registerNameVisibilityChange(this->getName(), true);
     }

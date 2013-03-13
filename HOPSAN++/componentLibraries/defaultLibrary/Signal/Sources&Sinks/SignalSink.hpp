@@ -49,9 +49,9 @@ namespace hopsan {
 
         void configure()
         {
-            mpIn = addReadMultiPort("in", "NodeSignal", Port::NOTREQUIRED);
-            mpInRight = addReadMultiPort("in_right", "NodeSignal", Port::NOTREQUIRED);
-            mpInBottom = addReadPort("in_bottom", "NodeSignal", Port::NOTREQUIRED);
+            mpIn = addReadMultiPort("in", "NodeSignal", Port::NotRequired);
+            mpInRight = addReadMultiPort("in_right", "NodeSignal", Port::NotRequired);
+            mpInBottom = addReadPort("in_bottom", "NodeSignal", Port::NotRequired);
         }
 
 

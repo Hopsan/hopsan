@@ -49,7 +49,7 @@ class HopsanEssentials;
 class HopsanCoreMessageHandler;
 
 //! @brief Enum type for parameters, describing if they are to be dynamic or constant
-enum ParamDynConstT {Dynamic, Constant};
+enum ParamDynConstEnumT {Dynamic, Constant};
 
 class DLLIMPORTEXPORT Component
 {
@@ -58,7 +58,7 @@ class DLLIMPORTEXPORT Component
 
 public:
     //! @brief Enum type for all CQS types
-    enum CQSEnumT {C, Q, S, UndefinedCQSType};
+    enum CQSEnumT {CType, QType, SType, UndefinedCQSType};
 
     //==========Public functions==========
     // Configureation and simulation functions
@@ -92,7 +92,7 @@ public:
     void initializeDynamicParameters();
     void updateDynamicParameterValues();
 
-    void registerParameter(const std::string name, const std::string description, const std::string unit, double &rValue, const ParamDynConstT dynconst=Dynamic);
+    void registerParameter(const std::string name, const std::string description, const std::string unit, double &rValue, const ParamDynConstEnumT dynconst=Dynamic);
     void registerParameter(const std::string name, const std::string description, const std::string unit, int &rValue);
     void registerParameter(const std::string name, const std::string description, const std::string unit, std::string &rValue);
     void registerParameter(const std::string name, const std::string description, const std::string unit, bool &rValue);
@@ -168,12 +168,12 @@ protected:
     }
 
     // Port functions
-    Port* addPort(const std::string portName, const PortTypesEnumT portType, const NodeTypeT nodeType, const Port::ReqConnEnumT reqConnection);
-    Port* addPowerPort(const std::string portName, const std::string nodeType, const Port::ReqConnEnumT reqConnect=Port::REQUIRED);
-    Port* addReadPort(const std::string portName, const std::string nodeType, const Port::ReqConnEnumT reqConnect=Port::REQUIRED);
-    Port* addWritePort(const std::string portName, const std::string nodeType, const Port::ReqConnEnumT reqConnect=Port::REQUIRED);
-    Port* addPowerMultiPort(const std::string portName, const std::string nodeType, const Port::ReqConnEnumT reqConnect=Port::REQUIRED);
-    Port* addReadMultiPort(const std::string portname, const std::string nodetype, const Port::ReqConnEnumT reqConnect=Port::REQUIRED);
+    Port* addPort(const std::string portName, const PortTypesEnumT portType, const std::string nodeType, const Port::RequireConnectionEnumT reqConnection);
+    Port* addPowerPort(const std::string portName, const std::string nodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addReadPort(const std::string portName, const std::string nodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addWritePort(const std::string portName, const std::string nodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addPowerMultiPort(const std::string portName, const std::string nodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addReadMultiPort(const std::string portname, const std::string nodetype, const Port::RequireConnectionEnumT reqConnect=Port::Required);
 
     bool getPort(const std::string portname, Port* &rpPort);
     std::string renamePort(const std::string oldname, const std::string newname);
@@ -222,21 +222,21 @@ private:
 class DLLIMPORTEXPORT ComponentSignal : public Component
 {
 public:
-    CQSEnumT getTypeCQS() const {return S;}
+    CQSEnumT getTypeCQS() const {return SType;}
     bool isComponentSignal() const {return true;}
 };
 
 
 class DLLIMPORTEXPORT ComponentC : public Component
 {
-    CQSEnumT getTypeCQS() const {return C;}
+    CQSEnumT getTypeCQS() const {return CType;}
     bool isComponentC() const {return true;}
 };
 
 
 class DLLIMPORTEXPORT ComponentQ : public Component
 {
-    CQSEnumT getTypeCQS() const {return Q;}
+    CQSEnumT getTypeCQS() const {return QType;}
     bool isComponentQ() const {return true;}
 };
 

@@ -42,7 +42,7 @@
 //! @param[in] rDomElement The DOM element to load from
 //! @param[in] pContainer The Container Object to load into
 //! @param[in] undoSettings Wheter or not to register undo for the operation
-bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, undoStatus undoSettings)
+bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, UndoStatusEnumT undoSettings)
 {
     // -----First read from DOM element-----
     QString startComponentName, endComponentName, startPortName, endPortName;
@@ -106,7 +106,7 @@ bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, undoSt
     Port *endPort = pContainer->getModelObjectPort(endComponentName, endPortName);
     if ((startPort != 0) && (endPort != 0))
     {
-        Connector* pConn = pContainer->createConnector(startPort, endPort, NOUNDO);
+        Connector* pConn = pContainer->createConnector(startPort, endPort, NoUndo);
         if (pConn != 0)
         {
             pConn->setPointsAndGeometries(pointVector, geometryList);
@@ -114,7 +114,7 @@ bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, undoSt
             pConn->refreshConnectorAppearance();
             pConn->setColor(color);
 
-            if(undoSettings == UNDO)
+            if(undoSettings == Undo)
             {
                 pContainer->getUndoStackPtr()->registerAddedConnector(pConn);
             }
@@ -140,7 +140,7 @@ bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, undoSt
 //! @brief xml version
 //! @todo Make undo settings work or remove it
 //! @todo Make loadParameterValue and loadSystemParameter same function
-void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, undoStatus /*undoSettings*/)
+void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStatusEnumT /*undoSettings*/)
 {
     QString parameterName;
     QString parameterValue;
@@ -163,7 +163,7 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, undoStat
 
 
 //! @deprecated This StartValue load code is only kept for upconverting old files, we should keep it here until we have some other way of upconverting old formats
-void loadStartValue(QDomElement &rDomElement, ModelObject* pObject, undoStatus /*undoSettings*/)
+void loadStartValue(QDomElement &rDomElement, ModelObject* pObject, UndoStatusEnumT /*undoSettings*/)
 {
     QString portName = rDomElement.attribute("portname");
     QString variable = rDomElement.attribute("variable");
@@ -189,7 +189,7 @@ void loadStartValue(QDomElement &rDomElement, ModelObject* pObject, undoStatus /
 //! @param[in] pLibrary a pointer to the library widget which holds appearance data
 //! @param[in] pContainer The Container Object to load into
 //! @param[in] undoSettings Wheter or not to register undo for the operation
-ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, ContainerObject* pContainer, undoStatus undoSettings)
+ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, ContainerObject* pContainer, UndoStatusEnumT undoSettings)
 {
     //Read core specific data
     QString type = rDomElement.attribute(HMF_TYPENAME);
@@ -213,17 +213,17 @@ ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, 
         ModelObjectAppearance appearanceData = *pAppearanceData; //Make a copy
         appearanceData.setDisplayName(name);
 
-        nameVisibility nameStatus;
+        NameVisibilityEnumT nameStatus;
         if(nameTextVisible)
         {
-            nameStatus = NAMEVISIBLE;
+            nameStatus = NameVisible;
         }
         else
         {
-            nameStatus = NAMENOTVISIBLE;
+            nameStatus = NameNotVisible;
         }
 
-        ModelObject* pObj = pContainer->addModelObject(&appearanceData, QPointF(posX, posY), 0, DESELECTED, nameStatus, undoSettings);
+        ModelObject* pObj = pContainer->addModelObject(&appearanceData, QPointF(posX, posY), 0, Deselected, nameStatus, undoSettings);
         pObj->setNameTextPos(nameTextPos);
         pObj->setSubTypeName(subtype); //!< @todo is this really needed
 
@@ -303,7 +303,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, 
             QDomElement xmlParameter = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
             while (!xmlParameter.isNull())
             {
-                loadParameterValue(xmlParameter, pObj, NOUNDO);
+                loadParameterValue(xmlParameter, pObj, NoUndo);
                 xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
             }
 
@@ -345,7 +345,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, 
 
 
 //! @brief Loads a containerport object from a xml dom element
-ModelObject* loadContainerPortObject(QDomElement &rDomElement, LibraryWidget* pLibrary, ContainerObject* pContainer, undoStatus undoSettings)
+ModelObject* loadContainerPortObject(QDomElement &rDomElement, LibraryWidget* pLibrary, ContainerObject* pContainer, UndoStatusEnumT undoSettings)
 {
     //! @todo this does not feel right should try to avoid it maybe
     rDomElement.setAttribute(HMF_TYPENAME, HOPSANGUICONTAINERPORTTYPENAME); //Set the typename for the gui, or overwrite if anything was actaully given in the HMF file (should not be)
@@ -418,7 +418,7 @@ void loadPlotAlias(QDomElement &rDomElement, ContainerObject* pContainer)
 }
 
 
-TextBoxWidget *loadTextBoxWidget(QDomElement &rDomElement, ContainerObject *pContainer, undoStatus undoSettings)
+TextBoxWidget *loadTextBoxWidget(QDomElement &rDomElement, ContainerObject *pContainer, UndoStatusEnumT undoSettings)
 {
     QString text;
     QFont font;
@@ -451,7 +451,7 @@ TextBoxWidget *loadTextBoxWidget(QDomElement &rDomElement, ContainerObject *pCon
     linewidth = lineTag.attribute("width").toDouble();
     linestyle = lineTag.attribute(HMF_STYLETAG);
 
-    TextBoxWidget *pWidget = pContainer->addTextBoxWidget(point, NOUNDO);
+    TextBoxWidget *pWidget = pContainer->addTextBoxWidget(point, NoUndo);
     pWidget->setText(text);
     pWidget->setFont(font);
     pWidget->setColor(color);
@@ -468,7 +468,7 @@ TextBoxWidget *loadTextBoxWidget(QDomElement &rDomElement, ContainerObject *pCon
         pWidget->setLineStyle(Qt::DashDotLine);
     pWidget->setSelected(true);     //!< @todo Stupid!
     pWidget->setSelected(false);    //For some reason this is needed...
-    if(undoSettings == UNDO)
+    if(undoSettings == Undo)
     {
         pContainer->getUndoStackPtr()->registerAddedWidget(pWidget);
     }

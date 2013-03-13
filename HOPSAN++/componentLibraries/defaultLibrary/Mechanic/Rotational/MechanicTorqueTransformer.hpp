@@ -53,7 +53,7 @@ namespace hopsan {
             t = 0.0;
 
             //Add ports to the component
-            mpIn = addReadPort("in", "NodeSignal", Port::NOTREQUIRED);
+            mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
             mpP1 = addPowerPort("P1", "NodeMechanicRotational");
 
             //Register changable parameters to the HOPSAN++ core

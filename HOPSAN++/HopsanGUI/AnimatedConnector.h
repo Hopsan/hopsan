@@ -66,7 +66,7 @@ private:
     ConnectorAppearance *mpConnectorAppearance;
 
     QVector<AnimatedConnectorLine*> mpLines;
-    QVector<connectorGeometry> mGeometries;
+    QVector<ConnectorGeometryEnumT> mGeometries;
     QVector<QPointF> mPoints;
 
     QString mComponentName;

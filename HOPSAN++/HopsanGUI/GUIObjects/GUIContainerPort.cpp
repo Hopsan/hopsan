@@ -28,7 +28,7 @@
 #include "Dialogs/ContainerPortPropertiesDialog.h"
 #include "MainWindow.h"
 
-ContainerPort::ContainerPort(QPointF position, qreal rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, selectionStatus startSelected, graphicsType gfxType)
+ContainerPort::ContainerPort(QPointF position, qreal rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
         : ModelObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
 {
     mIsSystemPort = (pParentContainer->type() == SystemContainerType); //determine if I am a system port

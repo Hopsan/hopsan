@@ -164,13 +164,13 @@ public:
 
         //Add inputVariables ports to the component
         mpPgearRatio=addReadPort("PgearRatio","NodeSignal", \
-Port::NOTREQUIRED);
+Port::NotRequired);
 
         //Add outputVariables ports to the component
-        mpPwm=addWritePort("Pwm","NodeSignal", Port::NOTREQUIRED);
-        mpPtormg=addWritePort("Ptormg","NodeSignal", Port::NOTREQUIRED);
-        mpPPin=addWritePort("PPin","NodeSignal", Port::NOTREQUIRED);
-        mpPPout=addWritePort("PPout","NodeSignal", Port::NOTREQUIRED);
+        mpPwm=addWritePort("Pwm","NodeSignal", Port::NotRequired);
+        mpPtormg=addWritePort("Ptormg","NodeSignal", Port::NotRequired);
+        mpPPin=addWritePort("PPin","NodeSignal", Port::NotRequired);
+        mpPPout=addWritePort("PPout","NodeSignal", Port::NotRequired);
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("Ke", "emf constant", "V/rpm", mKe);

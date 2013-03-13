@@ -563,7 +563,7 @@ NodeInfo::NodeInfo(QString nodeType)
     niceName = pNode->getNiceName().c_str();
     for(int i=0; i<pNode->getDataDescriptions()->size(); ++i)
     {
-        NodeDataVariableTypeT varType = pNode->getDataDescription(i)->varType;
+        NodeDataVariableTypeEnumT varType = pNode->getDataDescription(i)->varType;
         if(varType == Default || varType == Flow || varType == Intensity)        //Q variable
         {
             qVariables << pNode->getDataDescription(i)->shortname.c_str();

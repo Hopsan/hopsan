@@ -188,10 +188,10 @@ public:
         mpPb=addPowerPort("Pb","NodeHydraulic");
 
         //Add inputVariables ports to the component
-        mpPxvpa=addReadPort("Pxvpa","NodeSignal", Port::NOTREQUIRED);
-        mpPxvta=addReadPort("Pxvta","NodeSignal", Port::NOTREQUIRED);
-        mpPxvpb=addReadPort("Pxvpb","NodeSignal", Port::NOTREQUIRED);
-        mpPxvtb=addReadPort("Pxvtb","NodeSignal", Port::NOTREQUIRED);
+        mpPxvpa=addReadPort("Pxvpa","NodeSignal", Port::NotRequired);
+        mpPxvta=addReadPort("Pxvta","NodeSignal", Port::NotRequired);
+        mpPxvpb=addReadPort("Pxvpb","NodeSignal", Port::NotRequired);
+        mpPxvtb=addReadPort("Pxvtb","NodeSignal", Port::NotRequired);
 
         //Add outputVariables ports to the component
 

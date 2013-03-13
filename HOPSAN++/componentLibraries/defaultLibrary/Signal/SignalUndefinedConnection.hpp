@@ -49,7 +49,7 @@ namespace hopsan {
 
         void configure()
         {
-            mpOut = addWritePort("out", "NodeSignal", Port::NOTREQUIRED);
+            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
 
             registerParameter("X",  "Value", "[-]",  X);
         }

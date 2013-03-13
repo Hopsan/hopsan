@@ -161,9 +161,9 @@ public:
         //Add inputVariables ports to the component
 
         //Add outputVariables ports to the component
-        mpPq2e=addWritePort("Pq2e","NodeSignal", Port::NOTREQUIRED);
-        mpPPin=addWritePort("PPin","NodeSignal", Port::NOTREQUIRED);
-        mpPPout=addWritePort("PPout","NodeSignal", Port::NOTREQUIRED);
+        mpPq2e=addWritePort("Pq2e","NodeSignal", Port::NotRequired);
+        mpPPin=addWritePort("PPin","NodeSignal", Port::NotRequired);
+        mpPPout=addWritePort("PPout","NodeSignal", Port::NotRequired);
 
         //Register changable parameters to the HOPSAN++ core
         registerParameter("kl", "Flow loss koeff.", "", mkl);
