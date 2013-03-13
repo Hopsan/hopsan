@@ -510,7 +510,7 @@ QStringList getHopsanCoreIncludeFiles(bool skipDependencies)
                     "../HopsanCore/include/svnrevnum.h" <<
                     "../HopsanCore/include/version.h" <<
                     "../HopsanCore/include/win32dll.h" <<
-                    //"../componentLibraries/defaultLibrary/code/Components.h" <<
+                    //"../componentLibraries/defaultLibrary/code/defaultComponents.h" <<
                     //"../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.h" <<
                     "../HopsanCore/include/Components/DummyComponent.hpp" <<
                     "../HopsanCore/include/ComponentUtilities/AuxiliaryMathematicaWrapperFunctions.h" <<

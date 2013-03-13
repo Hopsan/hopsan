@@ -121,7 +121,6 @@ SOURCES += main.cpp \
     GUIPort.cpp \
     Widgets/PlotWidget.cpp \
     Widgets/MessageWidget.cpp \
-    SimulationThread.cpp \
     InitializationThread.cpp \
     Dialogs/OptionsDialog.cpp \
     UndoStack.cpp \
@@ -191,7 +190,6 @@ HEADERS += MainWindow.h \
     GUIPort.h \
     Widgets/PlotWidget.h \
     Widgets/MessageWidget.h \
-    SimulationThread.h \
     InitializationThread.h \
     version_gui.h \
     Dialogs/OptionsDialog.h \

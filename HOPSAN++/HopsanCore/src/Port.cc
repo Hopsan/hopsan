@@ -99,16 +99,14 @@ Node* Port::getNodePtr(const size_t /*portIdx*/)
 //! @brief Adds a subport to a multiport
 Port* Port::addSubPort()
 {
-    mpComponent->addWarningMessage("Port::addSubPort(): This should only be implemented and called from multiports.");
-    //assert("This should only be implemented and called from multiports" == 0);
+    mpComponent->addFatalMessage("Port::addSubPort(): This should only be implemented and called from multiports.");
     return 0;
 }
 
 //! @brief Removes a subport from multiport
 void Port::removeSubPort(Port* /*ptr*/)
 {
-    mpComponent->addWarningMessage("Port::removeSubPort(): This should only be implemented and called from multiports.");
-    //assert("This should only be implemented and called from multiports" == 0);
+    mpComponent->addFatalMessage("Port::removeSubPort(): This should only be implemented and called from multiports.");
 }
 
 
@@ -140,9 +138,7 @@ double Port::readNodeSafe(const size_t idx, const size_t /*portIdx*/)
     //! @note This if-statement will slow simulation down, but if optimization is desired readNode and writeNode shall not be used anyway.
     if(!isConnected())
     {
-        std::stringstream ss;
-        ss << "Attempted to call readNode() for non-connected port \"" << this->getName() << "\".";
-        mpComponent->addErrorMessage(ss.str());
+        mpComponent->addErrorMessage("Attempted to call readNode() for non-connected port \""+this->getName()+"\".");
         mpComponent->getSystemParent()->stopSimulation();     //Read attempt from non-connected port; abort simulation and give error message
         return 0;
     }
@@ -185,7 +181,6 @@ double *Port::getSafeNodeDataPtr(const size_t idx, const double defaultValue, co
         if (mpNCDummyNode == 0)
         {
             mpNCDummyNode = getComponent()->getHopsanEssentials()->createNode(mNodeType);
-            //mpNCDummyNode = createNodeTemp(getComponent()->getHopsanEssentials(), mNodeType);
         }
         mpNCDummyNode->setDataValue(idx, defaultValue);
         return mpNCDummyNode->getDataPtr(idx);
@@ -248,7 +243,6 @@ vector<Port*> &Port::getConnectedPorts(const int /*portIdx*/)
 
 void Port::createStartNode(std::string nodeType)
 {
-    //mpStartNode = createNodeTemp(getComponent()->getHopsanEssentials(), nodeType);
     mpStartNode = getComponent()->getHopsanEssentials()->createNode(nodeType);
     //!< @todo Maye I dont even need to create startnodes for subports in multiports, in that case, move this line into if bellow
 
@@ -258,10 +252,9 @@ void Port::createStartNode(std::string nodeType)
         for(size_t i = 0; i < mpStartNode->getNumDataVariables(); ++i)
         {
             const NodeDataDescription* pDesc = mpStartNode->getDataDescription(i);
-            stringstream ssName, ssDesc;
-            ssDesc << "startvalue:" << "Port " << getName();
-            ssName << getName() << "::" << pDesc->name;
-            getComponent()->registerParameter(ssName.str(), ssDesc.str(), pDesc->unit, *(mpStartNode->getDataPtr(pDesc->id)), Constant);
+            const string desc = string("startvalue:")+"Port "+getName();
+            const string name = getName()+"::"+pDesc->name;
+            getComponent()->registerParameter(name, desc, pDesc->unit, *(mpStartNode->getDataPtr(pDesc->id)), Constant);
         }
     }
 }
@@ -341,9 +334,8 @@ void Port::saveLogData(string filename, const size_t /*portIdx*/)
             {
                 mpComponent->addFatalMessage("Port::saveLogData(): pTimeStorage->size() != mpNode->mDataStorage.size()");
             }
-            //assert(pTimeStorage->size() == mpNode->mDataStorage.size());
 
-            //First write HEADER info containing node info
+            // First write HEADER info containing node info
             out_file << header << " " << mpNode->getNodeType() << endl;
             out_file << "time";
             for (size_t i=0; i<mpNode->getNumDataVariables(); ++i)
@@ -476,61 +468,6 @@ vector<double> *Port::getDataVectorPtr(const size_t /*portIdx*/)
 }
 
 
-////! @brief Read the start values to a start value node in the port
-////! @param[out] rNames is the Vector of names of the star values
-////! @param[out] rValues is the Vector of values of the star values, if it is mapped to a System parameter the value of this will be here
-////! @param[out] rUnits is the Vector of units of the star values
-//void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vector<double> &rValues, vector<string> &rUnits, const size_t /*portIdx*/)
-//{
-//    if(mpStartNode)
-//    {
-//        mpStartNode->getDataNamesValuesAndUnits(rNames, rValues, rUnits);
-//    }
-//}
-
-
-////! @brief Read the start values to a start value node in the port
-////! @param[out] rNames is the Vector of names of the star values
-////! @param[out] rValuesTxt is the Vector of values of the star values, if it is mapped to a System parameter the name of this will be here
-////! @param[out] rUnits is the Vector of units of the star values
-//void Port::getStartValueDataNamesValuesAndUnits(vector<string> &rNames, std::vector<std::string> &rValuesTxt, std::vector<std::string> &rUnits, const size_t /*portIdx*/)
-//{
-//    if(mpStartNode)
-//    {
-//        std::vector<double> values;
-//        getStartValueDataNamesValuesAndUnits(rNames, values, rUnits);
-//        rValuesTxt.resize(values.size());
-//        for(size_t i = 0; i < rNames.size(); ++i)
-//        {
-//            //Get a pointer to the actual node data
-//            //! @note This pointer is commented to avoid a warning, recomment it before using it...
-//            //double *nodeDataPtr = mpStartNode->getDataPtr(mpStartNode->getDataIdFromName(rNames[i]));
-
-
-//            assert(false); //If you crash here, please report it to Bjorn who don't think it will happen :-)
-
-
-//            //Check if the nodeDataPtr is in the System parameters
-//            //! @todo Should be done by Bjorn!
-
-//            std::string valueTxt;//FIXA = getComponent()->getSystemParent()->getSystemParameters().findOccurrence(nodeDataPtr);
-//            if(!(valueTxt.empty()))
-//            {
-//                //The nodeDataPrt is connected to a System parameter, read out this name
-//                rValuesTxt[i] = valueTxt;
-//            }
-//            else
-//            {
-//                //The nodeDataPrt is not connected to a System parameter, read out the node data value to the string
-//                std::ostringstream oss;
-//                oss << values[i];
-//                rValuesTxt[i] = oss.str();
-//            }
-//        }
-//    }
-//}
-
-
 //! @brief Get the actual start value of the port
 //! @param[in] idx is the index of the start value e.g. NodeHydraulic::PRESSURE
 //! @returns the start value
@@ -557,14 +494,6 @@ void Port::setStartValue(const size_t idx, const double value, const size_t /*po
     if(mpStartNode)
     {
         mpStartNode->setDataValue(idx, value);
-
-        //! @todo I commented the code bellow to avoid previously dissabled startvalues from reapearing after simulation wher setStartValue was called, I hope this does not screw something up
-//        vector<string> dataNames, units;
-//        mpStartNode->getDataNamesAndUnits(dataNames, units);
-//        stringstream ssName, ssDesc;
-//        ssDesc << "startvalue:" << "Port " << getName();
-//        ssName << getName() << "::" << dataNames[idx];
-//        getComponent()->registerParameter(ssName.str(), ssDesc.str(), units[idx], *mpStartNode->getDataPtr(idx));
     }
     else
     {
@@ -896,7 +825,6 @@ double MultiPort::getStartValue(const size_t idx, const size_t portIdx)
         return mSubPortsVector[portIdx]->mpNode->getDataValue(idx);
     }
     mpComponent->addFatalMessage("MultiPort::getStartValue(): Port does not have a start value.");
-    //assert(false);
     return 0.0;
 }
 
@@ -910,7 +838,7 @@ void MultiPort::loadStartValuesFromSimulation()
     //! @todo what about this one then how should we handle this
 }
 
-//! Check if the port is curently connected
+//! @brief Check if the port is curently connected
 bool MultiPort::isConnected()
 {
     //! @todo actaully we should check all subports if they are connected (but a subport should not exist if not connected)
@@ -922,7 +850,7 @@ size_t MultiPort::getNumPorts()
     return mSubPortsVector.size();
 }
 
-//! Removes a specific subport
+//! @brief Removes a specific subport
 void MultiPort::removeSubPort(Port* ptr)
 {
     std::vector<Port*>::iterator spit;
@@ -937,7 +865,7 @@ void MultiPort::removeSubPort(Port* ptr)
     }
 }
 
-//! Retreives Node Ptr from given subnode
+//! @brief Retreives Node Ptr from given subnode
 Node *MultiPort::getNodePtr(const size_t portIdx)
 {
     //assert(mSubPortsVector.size() > portIdx);
@@ -949,7 +877,7 @@ Node *MultiPort::getNodePtr(const size_t portIdx)
     return mSubPortsVector[portIdx]->getNodePtr();
 }
 
-//! we use -1 as portindex to indicate that we want all subports
+//! @note we use -1 as portindex to indicate that we want all subports
 std::vector<Port*> &MultiPort::getConnectedPorts(const int portIdx)
 {
     if (portIdx<0)
@@ -982,7 +910,7 @@ PowerMultiPort::PowerMultiPort(std::string node_type, std::string portname, Comp
     }
 }
 
-//! Adds a subport to a powermultiport
+//! @brief Adds a subport to a powermultiport
 Port* PowerMultiPort::addSubPort()
 {
     mSubPortsVector.push_back( createPort(PowerPortType, mNodeType, "noname_subport", 0, this) );
@@ -994,7 +922,7 @@ ReadMultiPort::ReadMultiPort(std::string node_type, std::string portname, Compon
     mPortType = ReadMultiportType;
 }
 
-//! Adds a subport to a readmultiport
+//! @brief Adds a subport to a readmultiport
 Port* ReadMultiPort::addSubPort()
 {
     mSubPortsVector.push_back( createPort(ReadPortType, mNodeType, "noname_subport", 0, this) );

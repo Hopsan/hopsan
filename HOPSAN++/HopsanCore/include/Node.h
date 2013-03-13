@@ -92,7 +92,6 @@ protected:
 
     double *getDataPtr(const size_t data_type);
 
-    //bool setDataValuesByNames(std::vector<std::string> names, std::vector<double> values);
     int getNumberOfPortsByType(int type);
 
     //Protected member variables

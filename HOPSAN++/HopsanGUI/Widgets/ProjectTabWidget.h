@@ -72,14 +72,12 @@ public slots:
     void measureSimulationTime();
     bool simulateAllOpenModels_nonblocking(bool modelsHaveNotChanged=false);
     bool simulateAllOpenModels_blocking(bool modelsHaveNotChanged=false);
-    //bool simulateAllOpenModels_old(bool modelsHaveNotChanged=false); //!< @deprecated
     void setCurrentTopLevelSimulationTimeParameters(const QString startTime, const QString timeStep, const QString stopTime);
     void openAnimation();
 
 signals:
     void checkMessages();
     void newTabAdded();
-    //void simulationFinished(); //!< @deprecated
 
 private:
     void setToolBarSimulationTimeParametersFromSystem(SystemContainer *pSystem);
@@ -116,7 +114,6 @@ public:
 public slots:
     bool simulate_nonblocking();
     bool simulate_blocking();
-    bool simulate_old();
     void startCoSimulation();
     void save();
     void saveAs();

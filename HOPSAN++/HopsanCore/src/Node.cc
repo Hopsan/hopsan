@@ -166,18 +166,6 @@ int Node::getDataIdFromName(const string name) const
 }
 
 
-//bool Node::setDataValuesByNames(vector<string> names, std::vector<double> values)
-//{
-//    bool success = true;
-//    for(size_t i=0; i<names.size(); ++i)
-//    {
-//        this->setData(this->getDataIdFromName(names[i]),values[i]);
-//        //! @todo introduce setDataSafe and similar at many places in code
-//    }
-//    return success;
-//}
-
-
 //! @brief Get the vector of data descriptions for the node
 //! @returns A pointer to the descriptions vector
 const std::vector<NodeDataDescription>* Node::getDataDescriptions() const
@@ -186,28 +174,26 @@ const std::vector<NodeDataDescription>* Node::getDataDescriptions() const
 }
 
 
+//! @brief Copy variable valus from this to pNode
+//! @param [in] pNode The node to copy into
 void Node::copyNodeDataValuesTo(Node *pNode)
 {
-    // this ska kopiera sina varabler till pNode
-    //assert(pNode->getNodeType()==this->getNodeType());
-    if(pNode->getNodeType() != this->getNodeType())
-    {
-        mpOwnerSystem->addFatalMessage("Node::copyNodeDataValuesTo(): Nodes do not have the same type.");
-    }
+    // Copy variable valus from this to pNode
     if(pNode->getNodeType()==this->getNodeType())
     {
         for(size_t i=0; i<pNode->getNumDataVariables(); ++i)
         {
-            //cout << "Name: " << mDataNames[i] << "  Value: " << mDataVector[i] << "  , " << pNode->mDataVector[i] << "  Unit: " << mDataUnits[i] << endl;
             //! @todo look over if all vector positions should be set or not.
-            //if(mPlotBehaviour[i] == Node::PLOT)
-            {
-                //pNode->mDataNames[i] = mDataNames[i];
-                pNode->mDataValues[i] = mDataValues[i];
-                //pNode->mDataUnits[i] = mDataUnits[i];
-            }
+            pNode->mDataValues[i] = mDataValues[i];
         }
         setSpecialStartValues(pNode); //Handles Wave, imp variables and similar
+    }
+    else
+    {
+        if (mpOwnerSystem)
+        {
+            mpOwnerSystem->addFatalMessage("Node::copyNodeDataValuesTo(): Nodes do not have the same type.");
+        }
     }
 }
 

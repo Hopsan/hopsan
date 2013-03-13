@@ -90,10 +90,6 @@ namespace hopsan {
         virtual std::vector<double> *getLogTimeVectorPtr(const size_t portIdx=0);
         virtual std::vector<std::vector<double> > *getLogDataVectorPtr(const size_t portIdx=0);
 
-
-        //virtual void getStartValueDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<double> &rValues, std::vector<std::string> &rUnits, const size_t portIdx=0);
-        //virtual void getStartValueDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rValuesTxt, std::vector<std::string> &rUnits, const size_t portIdx=0);
-
         virtual double getStartValue(const size_t idx, const size_t portIdx=0);
         virtual void setStartValue(const size_t idx, const double value, const size_t portIdx=0);
         virtual void disableStartValue(const size_t idx);
@@ -201,14 +197,7 @@ namespace hopsan {
         std::vector<double> *getLogTimeVectorPtr(const size_t portIdx=0);
         std::vector<std::vector<double> > *getLogDataVectorPtr(const size_t portIdx=0);
 
-
-//        void getStartValueDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<double> &rValues, std::vector<std::string> &rUnits, const size_t portIdx=0);
-//        void getStartValueDataNamesValuesAndUnits(std::vector<std::string> &rNames, std::vector<std::string> &rValuesTxt, std::vector<std::string> &rUnits, const size_t portIdx=0);
-//        bool setStartValueDataByNames(std::vector<std::string> names, std::vector<double> values, const size_t portIdx=0);
-//        bool setStartValueDataByNames(std::vector<std::string> names, std::vector<std::string> sysParNames, const size_t portIdx=0);
-
         double getStartValue(const size_t idx, const size_t portIdx=0);
-//        void setStartValue(const size_t &idx, const double &value, const size_t portIdx=0);
 
         void loadStartValues();
         void loadStartValuesFromSimulation();
