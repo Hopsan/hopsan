@@ -1,0 +1,11 @@
+// This is a "cc include file" do not attempt to compile this file, it should be included insede an other cc file.
+
+    pComponentFactory->registerCreatorFunction("PneumaticVolume2", PneumaticVolume2::Creator);
+    pComponentFactory->registerCreatorFunction("PneumaticOrifice", PneumaticOrifice::Creator);
+    pComponentFactory->registerCreatorFunction("PneumaticQsrc", PneumaticQsrc::Creator);
+    pComponentFactory->registerCreatorFunction("PneumaticPTsrc", PneumaticPTsrc::Creator);
+    pComponentFactory->registerCreatorFunction("PneumaticPsensor", PneumaticPsensor::Creator);
+    pComponentFactory->registerCreatorFunction("PneumaticTsensor", PneumaticTsensor::Creator);
+    pComponentFactory->registerCreatorFunction("PneumaticQmsensor", PneumaticQmsensor::Creator);
+    pComponentFactory->registerCreatorFunction("PneumaticdEsensor", PneumaticdEsensor::Creator);
+

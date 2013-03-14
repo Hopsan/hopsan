@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="PneumaticVolume2" displayname="PneumaticVolume2">
+        <icons>
+            <icon scale="1" path="PneumaticVolume2.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="PneumaticVolume2.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="0" y="0.5" enabled="true" a="180" name="Pp1" autoplaced="true"/>
+            <port x="0.5" y="1" enabled="true" a="90" name="Pmass" autoplaced="true"/>
+            <port x="1" y="0.5" enabled="true" a="0" name="Pp2" autoplaced="true"/>
+        </ports>
+        <animation flowspeed="100"/>
+    </modelobject>
+</hopsanobjectappearance>
