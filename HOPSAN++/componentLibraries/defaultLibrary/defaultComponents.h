@@ -33,6 +33,9 @@
 /* Hydraulic Components */
 #include "Hydraulic/HopsanDefaultHydraulicComponents.h"
 
+/* Electric Components */
+#include "Pneumatic/HopsanDefaultPneumaticComponents.h"
+
 /* Signal Components */
 #include "Signal/HopsanDefaultSignalComponents.h"
 

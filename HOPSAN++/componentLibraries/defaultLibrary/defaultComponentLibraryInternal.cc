@@ -264,6 +264,9 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     //Electric components
     #include "Electric/HopsanDefaultElectricComponents.cci"
 
+    //Electric components
+    #include "Pneumatic/HopsanDefaultPneumaticComponents.cci"
+
     //Connectivity components
     #include "Connectivity/HopsanDefaultConnectivityComponents.cci"
 

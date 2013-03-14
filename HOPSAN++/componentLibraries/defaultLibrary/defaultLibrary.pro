@@ -228,6 +228,15 @@ HEADERS += \
     Hydraulic/Valves/HydraulicOverCenterValve.hpp \
     Hydraulic/Valves/HydraulicOpenCenterValve.hpp \
     Hydraulic/Restrictors/HydraulicLossLessTConnector.hpp \
+    Pneumatic/HopsanDefaultPneumaticComponents.h \
+    Pneumatic/PneumaticVolume2.hpp \
+    Pneumatic/PneumaticOrifice.hpp \
+    Pneumatic/PneumaticQsrc.hpp \
+    Pneumatic/PneumaticPTsrc.hpp \
+    Pneumatic/PneumaticPsensor.hpp \
+    Pneumatic/PneumaticTsensor.hpp \
+    Pneumatic/PneumaticQmsensor.hpp \
+    Pneumatic/PneumaticdEsensor.hpp \
     defaultComponentLibraryInternal.h \
     Signal/HopsanDefaultSignalComponents.h \
     Mechanic/HopsanDefaultMechanicComponents.h \
