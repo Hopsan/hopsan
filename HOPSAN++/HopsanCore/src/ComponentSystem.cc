@@ -1608,9 +1608,9 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     //Prevent connection of readport to multiport, (what do you really want to read problem)
     if (pPort1->isMultiPort() || pPort2->isMultiPort())
     {
-        if ( (pPort1->getPortType() == ReadPortType) || (pPort1->getPortType() == ReadPortType) )
+        if ( (pPort1->getPortType() == ReadPortType) || (pPort2->getPortType() == ReadPortType) )
         {
-            addErrorMessage("You are not allowed to connect a readport to a multiport, (undefined what you will actually read). Connect to the other end of the connector instead");
+            addErrorMessage("You are not allowed to connect a readport to a multiport, (undefined what you will actually read). Connect to an ordinary port instead.");
             return false;
         }
     }
