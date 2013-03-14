@@ -1738,7 +1738,7 @@ bool OptimizationDialog::loadObjectiveFunctions()
     //! @todo this is a quickhack that copies the optimization files to the Documents/Scripts folder every time if they do not exist, in the future we should handle this in a smarter way (ex: if we have updated scripts in new release, then we should copy)
     //! @todo The Qfile copy will not overwrite if already exist, but we dont want to overwrite if user has made changes
     // If OptimizationObjectiveFunctions.xml missing
-    QString dstPath = QString(MAINPATH) + "Scripts/OptimizationObjectiveFunctions.xml";
+    QString dstPath = gDesktopHandler.getMainPath() + "Scripts/OptimizationObjectiveFunctions.xml";
     QString srcPath = gDesktopHandler.getScriptsPath() + "OptimizationObjectiveFunctions.xml";
     QFile::copy(srcPath,dstPath);
     // If OptimizationObjectiveFunctions.py missing

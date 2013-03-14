@@ -27,6 +27,7 @@
 #include "MainWindow.h"
 #include "HelpDialog.h"
 #include "common.h"
+#include "DesktopHandler.h"
 
 //! @class HelpDialog
 //! @brief A class for displaying the "Help" dialog
@@ -58,7 +59,7 @@ HelpDialog::HelpDialog(MainWindow *parent)
 
 void HelpDialog::open()
 {
-    mpHelp->load(QUrl::fromLocalFile(QString(HELPPATH) + "index.html"));
+    mpHelp->load(QUrl::fromLocalFile(gDesktopHandler.getHelpPath() + "index.html"));
 
     //Using show instead of open for modaless window
     QDialog::show();
@@ -67,7 +68,7 @@ void HelpDialog::open()
 
 void HelpDialog::open(QString file)
 {
-    mpHelp->load(QUrl::fromLocalFile(QString(HELPPATH) + file));
+    mpHelp->load(QUrl::fromLocalFile(gDesktopHandler.getHelpPath() + file));
 
     //Using show instead of open for modaless window
     QDialog::show();

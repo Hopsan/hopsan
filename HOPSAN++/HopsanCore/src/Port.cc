@@ -27,6 +27,8 @@
 #include <sstream>
 #include <cassert>
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "HopsanEssentials.h"
 #include "Component.h"
 #include "ComponentSystem.h"
@@ -49,6 +51,8 @@ Port::Port(const string nodeType, const string portName, Component *pPortOwner, 
     mpNode = 0;
     mpStartNode = 0;
     mpNCDummyNode = 0;
+
+    mTempAlias = (char*)malloc(sizeof(char));
 }
 
 
@@ -69,6 +73,8 @@ Port::~Port()
     {
         delete mpNCDummyNode;
     }
+
+    free(mTempAlias);
 }
 
 
@@ -286,21 +292,21 @@ void Port::setVariableAlias(const string alias, const int id)
     }
 }
 
-char* Port::getVariableAlias(const int id) const
+char* Port::getVariableAlias(const int id)
 {
-    char* retval;
+    //char* retval;
     std::map<std::string, int>::const_iterator it;
     for(it=mVariableAliasMap.begin();it!=mVariableAliasMap.end();++it)
     {
         if (it->second == id)
         {
-            copyString(&retval, it->first);
-            return retval;
+            copyString(&mTempAlias, it->first);
+            return mTempAlias;
             //return it->first;
         }
     }
-    copyString(&retval, "");
-    return retval;
+    copyString(&mTempAlias, "");
+    return mTempAlias;
     //return string();
 }
 

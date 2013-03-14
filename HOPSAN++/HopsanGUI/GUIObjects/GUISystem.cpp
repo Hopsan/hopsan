@@ -1326,11 +1326,11 @@ void SystemContainer::exportToFMU(QString savePath)
 ////    else
 ////    {
 ////        //! @todo this seem a bit hardcoded
-////        dllFile.setFileName(QString(MSVC2008_X86_PATH) + "HopsanCore.dll");
+////        dllFile.setFileName(gDesktopHandler.getMSVC2008X86Path() + "HopsanCore.dll");
 ////        dllFile.copy(savePath + "/HopsanCore.dll");
-////        libFile.setFileName(QString(MSVC2008_X86_PATH) + "HopsanCore.lib");
+////        libFile.setFileName(gDesktopHandler.getMSVC2008X86Path() + "HopsanCore.lib");
 ////        libFile.copy(savePath + "/HopsanCore.lib");
-////        expFile.setFileName(QString(MSVC2008_X86_PATH) + "HopsanCore.exp");
+////        expFile.setFileName(gDesktopHandler.getMSVC2008X86Path() + "HopsanCore.exp");
 ////        expFile.copy(savePath + "/HopsanCore.exp");
 ////    }
 //#elif linux

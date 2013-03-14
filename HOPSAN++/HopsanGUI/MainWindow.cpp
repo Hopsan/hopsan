@@ -308,7 +308,7 @@ void MainWindow::initializeWorkspace()
     mpLibrary->loadHiddenSecretDir(QString(BUILTINCAFPATH) + "hidden/");
 
     // Load default and user specified libraries
-    QString componentPath = QString(COMPONENTSPATH);
+    QString componentPath = gDesktopHandler.getComponentsPath();
 
     // Load built in default Library
     mpLibrary->loadLibrary(componentPath, Internal);
@@ -937,11 +937,11 @@ void MainWindow::createToolbars()
 
     //! @todo whay are these two in teh createToolbars function
     mpExamplesMenu = new QMenu("Example Models");
-    QDir exampleModelsDir(QString(MAINPATH)+"Models/Example Models/");
+    QDir exampleModelsDir(gDesktopHandler.getMainPath()+"Models/Example Models/");
     buildModelActionsMenu(mpExamplesMenu, exampleModelsDir);
 
     mpTestModelsMenu = new QMenu("Test Models");
-    QDir testModelsDir(QString(MAINPATH)+"Models/Component Test/");
+    QDir testModelsDir(gDesktopHandler.getMainPath()+"Models/Component Test/");
     buildModelActionsMenu(mpTestModelsMenu, testModelsDir);
 
 

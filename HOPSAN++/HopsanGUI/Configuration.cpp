@@ -418,11 +418,11 @@ void Configuration::loadFromXml()
 void Configuration::loadDefaultsFromXml()
 {
     //Read from hopsandefaults.xml
-    QFile file(QString(MAINPATH) + "hopsandefaults");
+    QFile file(gDesktopHandler.getMainPath() + "hopsandefaults");
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
-                                 "Unable to read default configuration file. Please reinstall program.\n" + QString(MAINPATH));
+                                 "Unable to read default configuration file. Please reinstall program.\n" + gDesktopHandler.getMainPath());
 
         qApp->quit();
     }

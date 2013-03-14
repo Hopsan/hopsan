@@ -109,7 +109,7 @@ std::string &hopsan::replace(std::string &rString, const std::string &rOld, cons
 //! @param [in] s Source string
 void hopsan::copyString(char** c, std::string s)
 {
-    *c = (char *)malloc((strlen(s.c_str())+1)*sizeof(char));
+    *c = (char *)realloc(*c, (strlen(s.c_str())+1)*sizeof(char));
     strcpy(*c, s.c_str());
 }
 

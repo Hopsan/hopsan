@@ -115,7 +115,7 @@ namespace hopsan {
 
         Component* getComponent() const;
 
-        char *getVariableAlias(const int id) const;
+        char *getVariableAlias(const int id);
         int getVariableIdByAlias(const std::string alias) const;
         virtual std::vector<Port*> &getConnectedPorts(const int portIdx=-1);
 
@@ -150,6 +150,8 @@ namespace hopsan {
         Node* mpNCDummyNode; //NotConnected dummy node
         std::map<std::string, int> mVariableAliasMap;
         bool mConnectionRequired;
+
+        char* mTempAlias;
     };
 
 

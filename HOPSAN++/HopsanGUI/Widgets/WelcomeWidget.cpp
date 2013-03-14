@@ -147,7 +147,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpExampleFrame->setMouseTracking(true);
     mpExampleFrame->setFixedSize(frameW*2+spacing,frameH);
     mpExampleFrame->setLayout(mpExampleLayout);
-    QDir exampleModelsDir(QString(MAINPATH)+"Models/Example Models/");
+    QDir exampleModelsDir(gDesktopHandler.getMainPath()+"Models/Example Models/");
     QStringList filters;
     filters << "*.hmf";
     exampleModelsDir.setNameFilters(filters);
@@ -412,7 +412,7 @@ void WelcomeWidget::openRecentModel()
 //! @brief Slot that loads an example model, based on the name of the calling action
 void WelcomeWidget::openExampleModel()
 {
-    gpMainWindow->mpProjectTabs->loadModel(QString(MAINPATH)+"Models/Example Models/"+mExampleModelList.at(mpExampleList->currentIndex().row()));
+    gpMainWindow->mpProjectTabs->loadModel(gDesktopHandler.getMainPath()+"Models/Example Models/"+mExampleModelList.at(mpExampleList->currentIndex().row()));
 }
 
 

@@ -227,33 +227,7 @@ SimulationHandler *HopsanEssentials::getSimulationHandler()
 void HopsanEssentials::getMessage(char **message, char **type, char **tag)
 {
     //! @todo Utility function
-    HopsanCoreMessage msg = mpMessageHandler->getMessage();
-//    *message = (char *)malloc((strlen(msg.mMessage.c_str())+1)*sizeof(char));
-//    strcpy(*message, msg.mMessage.c_str());
-//    *tag = (char *)malloc((strlen(msg.mTag.c_str())+1)*sizeof(char));
-//    strcpy(*tag, msg.mTag.c_str());
-    copyString(message, msg.mMessage);
-    copyString(tag, msg.mTag);
-
-    switch (msg.mType)
-    {
-    case HopsanCoreMessage::Fatal:
-        copyString(type, "fatal");
-        //*type = "fatal";
-        break;
-    case HopsanCoreMessage::Error:
-        *type = "error";
-        break;
-    case HopsanCoreMessage::Warning:
-        *type = "warning";
-        break;
-    case HopsanCoreMessage::Info:
-        *type = "info";
-        break;
-    case HopsanCoreMessage::Debug:
-        *type = "debug";
-        break;
-    }
+    mpMessageHandler->getMessage(message, type, tag);
 }
 
 //! @brief Check if there are any messages waiting in the queue

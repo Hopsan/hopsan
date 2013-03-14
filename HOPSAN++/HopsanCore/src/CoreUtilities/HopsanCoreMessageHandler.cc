@@ -22,6 +22,7 @@
 //!
 //$Id$
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
+#include "CoreUtilities/StringUtilities.h"
 
 #include <cmath>
 
@@ -34,6 +35,9 @@ using namespace hopsan;
 
 HopsanCoreMessageHandler::HopsanCoreMessageHandler()
 {
+    mTempMessage = (char*)malloc(sizeof(char));
+    mTempTag = (char*)malloc(sizeof(char));
+    mTempType = (char*)malloc(sizeof(char));
     mMaxQueueSize = 10000;
 #ifdef USETBB
     mpMutex = new tbb::mutex;
@@ -42,6 +46,9 @@ HopsanCoreMessageHandler::HopsanCoreMessageHandler()
 
 HopsanCoreMessageHandler::~HopsanCoreMessageHandler()
 {
+    free(mTempMessage);
+    free(mTempType);
+    free(mTempTag);
     clear();
 #ifdef USETBB
     delete mpMutex;
@@ -139,28 +146,54 @@ void HopsanCoreMessageHandler::addFatalMessage(const string message, const strin
 
 
 //! @brief Returns the next, (pops) message on the message queue
-HopsanCoreMessage HopsanCoreMessageHandler::getMessage()
+void HopsanCoreMessageHandler::getMessage(char** message, char** type, char** tag)
 {
 #ifdef USETBB
     mpMutex->lock();
 #endif
-    HopsanCoreMessage msg;
+
+    //HopsanCoreMessage msg;
     if (mMessageQueue.size() > 0)
     {
-        msg = *mMessageQueue.front();
+        copyString(&mTempMessage, mMessageQueue.front()->mMessage);
+        copyString(&mTempTag, mMessageQueue.front()->mTag);
+
+        switch (mMessageQueue.front()->mType)
+        {
+        case HopsanCoreMessage::Fatal:
+            copyString(&mTempType, "fatal");
+            break;
+        case HopsanCoreMessage::Error:
+            copyString(&mTempType, "error");
+            break;
+        case HopsanCoreMessage::Warning:
+            copyString(&mTempType, "warning");
+            break;
+        case HopsanCoreMessage::Info:
+            copyString(&mTempType, "info");
+            break;
+        case HopsanCoreMessage::Debug:
+            copyString(&mTempType, "debug");
+            break;
+        }
+
         delete mMessageQueue.front();
         mMessageQueue.pop();
     }
     else
     {
-        msg.mType = HopsanCoreMessage::Error;
-        msg.mDebugLevel = 0;
-        msg.mMessage = "Error: You requested a message even though the message queue is empty";
+        copyString(&mTempMessage, "Error: You requested a message even though the message queue is empty");
+        copyString(&mTempTag, "");
+        copyString(&mTempType, "error");
     }
+
+    *message = mTempMessage;
+    *tag = mTempTag;
+    *type = mTempType;
+
 #ifdef USETBB
     mpMutex->unlock();
 #endif
-    return msg;
 }
 
 //! @brief Returns the number of waiting messages on the message queue

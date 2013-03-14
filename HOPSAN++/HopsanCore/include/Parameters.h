@@ -110,6 +110,8 @@ protected:
     std::vector<Parameter*> mParameters;
     Component* mParentComponent;
     std::vector<Parameter*> mParametersNeedEvaluation; //! @todo Use this vector to ensure parameters are valid at simulation time e.g. if a used system parameter is deleted before simulation
+
+    char *mTempValue;
 };
 
 }

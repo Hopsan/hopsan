@@ -40,6 +40,17 @@ DesktopHandler::DesktopHandler()
     mUseCustomDocumentsPath=false;
     mDefaultDataPath = QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/Hopsan/";
     mDefaultDocumentsPath = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/";
+    mBackupPath = mDefaultDocumentsPath+"/Backup/";
+    mModelsPath = mDefaultDocumentsPath+"/Models/";
+    mScriptsPath = mDefaultDocumentsPath+"Scripts";
+    mMainPath = gExecPath+"../";
+    mHelpPath = gExecPath+"../doc/user/html/";
+    mComponentsPath = gExecPath+"../componentLibraries/defaultLibrary/";
+    mCoreIncludePath = gExecPath+"../HopsanCore/include/";
+    mMSVC2008X86Path = gExecPath+"MSVC2008_x86/";
+    mMSVC2010X86Path = gExecPath+"MSVC2010_x86/";
+    mMSVC2008X64Path = gExecPath+"MSVC2008_x64/";
+    mMSVC2010X64Path = gExecPath+"MSVC2010_x64/";
 }
 
 
@@ -111,6 +122,12 @@ void DesktopHandler::setupPaths()
     dummyFile2.remove();
 
 
+    //Update paths depending on data and default paths
+    mBackupPath = getDocumentsPath()+"/Backup/";
+    mModelsPath = getDocumentsPath()+"/Models/";
+    mScriptsPath = getDocumentsPath()+"Scripts";
+
+
      // Make sure backup folder exists, create it if not
     if (!QDir().exists(getBackupPath()))
     {
@@ -132,7 +149,7 @@ void DesktopHandler::setupPaths()
 }
 
 
-QString DesktopHandler::getDataPath() const
+const QString &DesktopHandler::getDataPath() const
 {
     if(mUseCustomDataPath)
         return mCustomDataPath;
@@ -141,7 +158,7 @@ QString DesktopHandler::getDataPath() const
 }
 
 
-QString DesktopHandler::getDocumentsPath() const
+const QString &DesktopHandler::getDocumentsPath() const
 {
     if(mUseCustomDocumentsPath)
         return mCustomDocumentsPath;
@@ -150,17 +167,56 @@ QString DesktopHandler::getDocumentsPath() const
 }
 
 
-QString DesktopHandler::getBackupPath() const
+const QString &DesktopHandler::getBackupPath() const
 {
-    return getDocumentsPath()+"/Backup/";
+    return mBackupPath;
 }
 
-QString DesktopHandler::getModelsPath() const
+const QString &DesktopHandler::getModelsPath() const
 {
-    return getDocumentsPath()+"/Models/";
+    return mModelsPath;
 }
 
-QString DesktopHandler::getScriptsPath() const
+const QString &DesktopHandler::getScriptsPath() const
 {
-    return getDocumentsPath()+"/Scripts/";
+    return mScriptsPath;
+}
+
+const QString &DesktopHandler::getMainPath() const
+{
+    return mMainPath;
+}
+
+const QString &DesktopHandler::getHelpPath() const
+{
+    return mHelpPath;
+}
+
+const QString &DesktopHandler::getComponentsPath() const
+{
+    return mComponentsPath;
+}
+
+const QString &DesktopHandler::getCoreIncludePath() const
+{
+    return mCoreIncludePath;
+}
+
+const QString &DesktopHandler::getMSVC2008X86Path() const
+{
+    return mMSVC2008X86Path;
+}
+
+const QString &DesktopHandler::getMSVC2010X86Path() const
+{
+    return mMSVC2010X86Path;
+}
+const QString &DesktopHandler::getMSVC2008X64Path() const
+{
+    return mMSVC2008X64Path;
+}
+
+const QString &DesktopHandler::getMSVC2010X64Path() const
+{
+    return mMSVC2010X64Path;
 }

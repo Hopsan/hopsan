@@ -39,6 +39,7 @@
 #include "Widgets/MessageWidget.h"
 #include "common.h"
 #include "Configuration.h"
+#include "DesktopHandler.h"
 #include "Widgets/LibraryWidget.h"
 
 #define UNDERSCORE 95
@@ -509,7 +510,7 @@ void copyIncludeFilesToDir(QString path)
     saveDir.mkpath("include");
     saveDir.cd("include");
 
-    copyDir( QString(COREINCLUDEPATH), saveDir.path() );
+    copyDir( gDesktopHandler.getCoreIncludePath(), saveDir.path() );
 }
 
 

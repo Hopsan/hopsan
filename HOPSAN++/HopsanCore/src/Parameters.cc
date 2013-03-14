@@ -332,6 +332,8 @@ bool Parameter::isDynamic() const
 Parameters::Parameters(Component* pParentComponent)
 {
     mParentComponent = pParentComponent;
+
+    mTempValue = (char*)malloc(sizeof(char));
 }
 
 //! @brief Destructor
@@ -342,6 +344,8 @@ Parameters::~Parameters()
     {
         delete mParameters[i];
     }
+
+    free(mTempValue);
 }
 
 
@@ -464,13 +468,13 @@ void Parameters::getParameterValue(const std::string name, char** pValue)
     {
         if (mParameters[i]->getName() == name)
         {
-            copyString(pValue, mParameters[i]->getValue());
-            //pValue = mParameters[i]->getValue();
+            copyString(&mTempValue, mParameters[i]->getValue());
             return; //Abort function as value has been set
         }
     }
-    copyString(pValue, "");
-    //pValue = "";
+    copyString(&mTempValue, "");
+
+    *pValue = mTempValue;
 }
 
 //! @brief Returns a pointer directly to the parameter data variable

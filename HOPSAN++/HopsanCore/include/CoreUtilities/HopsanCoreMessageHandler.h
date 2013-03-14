@@ -72,6 +72,10 @@ private:
     void addMessage(const int type, const std::string preFix, const std::string message, const std::string tag, const int debuglevel=0);
     void clear();
     size_t mMaxQueueSize;
+
+    char* mTempMessage;
+    char* mTempType;
+    char* mTempTag;
 #ifdef USETBB
     tbb::mutex *mpMutex;
 #endif
@@ -86,7 +90,7 @@ public:
     void addDebugMessage(const std::string message, const std::string tag="", const int dbglevel=0);
     void addFatalMessage(const std::string message, const std::string tag="", const int dbglevel=0);
 
-    HopsanCoreMessage getMessage();
+    void getMessage(char **message, char **type, char **tag);
     size_t getNumWaitingMessages() const;
 };
 
