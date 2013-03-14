@@ -6,7 +6,7 @@
             <icon scale="1" path="pcomp_iso.svg" iconrotation="ON" type="iso"/>
         </icons>
         <replacables>
-            <replacable typename="HydraulicPressureControlValve"/>
+            <replacable typename="HydraulicPressureControlledValve"/>
         </replacables>
         <ports>
             <port x="0.3125" y="0" a="90" name="P1"/>

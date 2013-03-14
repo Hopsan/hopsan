@@ -1057,8 +1057,11 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
         QMenu *replaceMenu = rMenu.addMenu(tr("Replace component"));
         for(int i=0; i<replacements.size(); ++i)
         {
-            QAction *replaceAction = replaceMenu->addAction(gpMainWindow->mpLibrary->getAppearanceData(replacements.at(i))->getDisplayName());
-            replaceActionList.append(replaceAction);
+            if(gpMainWindow->mpLibrary->getAppearanceData(replacements.at(i)))
+            {
+                QAction *replaceAction = replaceMenu->addAction(gpMainWindow->mpLibrary->getAppearanceData(replacements.at(i))->getDisplayName());
+                replaceActionList.append(replaceAction);
+            }
         }
     }
     pShowNameAction->setCheckable(true);
