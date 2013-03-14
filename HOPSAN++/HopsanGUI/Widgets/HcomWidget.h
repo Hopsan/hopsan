@@ -83,6 +83,7 @@ public:
     HcomHandler *getHandler();
 
     void printCoreMessages();
+    void printFatalMessage(QString message);
     void printErrorMessage(QString message, QString tag="", bool timeStamp=true);
     void printWarningMessage(QString message, QString tag="", bool timeStamp=true);
     void printInfoMessage(QString message, QString tag="", bool timeStamp=true);

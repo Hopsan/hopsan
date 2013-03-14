@@ -38,9 +38,9 @@
 //Global stuff
 MainWindow* gpMainWindow = 0;
 Configuration gConfig;
+QString gExecPath;
 DesktopHandler gDesktopHandler;
 CopyStack gCopyStack;
-QString gExecPath;
 
 void loadApplicationFonts();
 

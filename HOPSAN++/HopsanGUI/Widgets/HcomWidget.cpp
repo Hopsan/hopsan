@@ -251,7 +251,7 @@ void TerminalConsole::printCoreMessages()
             playErrorSound = true;
         if(type == "fatal")
         {
-            QMessageBox::critical(this, "Fatal Error", message+"\n\nProgram will now exit.", "Ok");
+            QMessageBox::critical(this, "Fatal Error", message+"\n\nProgram will now attempt to exit.", "Ok");
             gpMainWindow->close();
         }
         mNewMessageList.append(GUIMessage(message, type, tag));
@@ -261,6 +261,13 @@ void TerminalConsole::printCoreMessages()
     {
         QSound::play(QString(SOUNDSPATH) + "error.wav");
     }
+}
+
+
+void TerminalConsole::printFatalMessage(QString message)
+{
+    QMessageBox::critical(this, "Fatal Error", message+"\n\nProgram will now attempt to exit.", "Ok");
+    gpMainWindow->close();
 }
 
 
