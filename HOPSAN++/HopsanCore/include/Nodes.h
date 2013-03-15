@@ -80,14 +80,18 @@ private:
         setDataCharacteristics(PRESSURE, "Pressure", "p", "Pa", Intensity);
         setDataCharacteristics(TEMPERATURE, "Temperature", "T", "K", Hidden);
         setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "c", "Pa", TLM);
-        setDataCharacteristics(CHARIMP, "CharImpedance", "Zc", "?", TLM);
+        setDataCharacteristics(CHARIMP, "CharImp", "Zc", "?", TLM);
         setDataCharacteristics(HEATFLOW, "HeatFlow", "Qdot", "?", Hidden);
+
+        mDataValues[PRESSURE] = 100000;
+        mDataValues[WAVEVARIABLE] = 100000;
+        mDataValues[TEMPERATURE] = 293;
     }
 
     virtual void setSpecialStartValues(Node *pNode)
     {
         pNode->setDataValue(WAVEVARIABLE, mDataValues[PRESSURE]);
-        //std::cout << "SpecialStartValue: Name: " << mDataNames[WAVEVARIABLE] << "  Value: " << mDataVector[WAVEVARIABLE] << "  Unit: " << mDataUnits[WAVEVARIABLE] << std::endl;
+        //std::cout << "SpecialStartValue: Name: " << mDataNames[i] << "  Value: " << mDataVector[i] << "  Unit: " << mDataUnits[i] << std::endl;
         //! todo Maybe also write CHARIMP?
     }
 };
@@ -111,8 +115,12 @@ private:
         setDataCharacteristics(PRESSURE, "Pressure", "p", "Pa", Intensity);
         setDataCharacteristics(TEMPERATURE, "Temperature", "T", "K", Hidden);
         setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "c", "Pa", TLM);
-        setDataCharacteristics(CHARIMP, "CharImpedance", "Zc", "?", TLM);
+        setDataCharacteristics(CHARIMP, "CharImp", "Zc", "?", TLM);
         setDataCharacteristics(ENERGYFLOW, "EnergyFlow", "Qdot", "J/s", Hidden);
+
+        mDataValues[PRESSURE] = 100000;
+        mDataValues[WAVEVARIABLE] = 100000;
+        mDataValues[TEMPERATURE] = 293;
     }
 
     virtual void setSpecialStartValues(Node *pNode)
@@ -141,7 +149,7 @@ private:
         setDataCharacteristics(FORCE, "Force", "F", "N", Intensity);
         setDataCharacteristics(POSITION, "Position", "x", "m");
         setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "c", "N", TLM);
-        setDataCharacteristics(CHARIMP, "CharImpedance", "Zc", "N s/m", TLM);
+        setDataCharacteristics(CHARIMP, "CharImp", "Zc", "N s/m", TLM);
         setDataCharacteristics(EQMASS, "EquivalentMass", "me", "kg", Hidden);
     }
 
@@ -170,7 +178,7 @@ private:
         setDataCharacteristics(TORQUE, "Torque", "T", "Nm", Intensity);
         setDataCharacteristics(ANGLE, "Angle", "a", "rad");
         setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "c", "Nm", TLM);
-        setDataCharacteristics(CHARIMP, "CharImpedance", "Zc", "?", TLM);
+        setDataCharacteristics(CHARIMP, "CharImp", "Zc", "?", TLM);
         setDataCharacteristics(EQINERTIA, "EquivalentInertia", "Je", "kgm^2", Hidden);
     }
 
@@ -200,7 +208,7 @@ private:
         setDataCharacteristics(VOLTAGE, "Voltage", "U", "V", Intensity);
         setDataCharacteristics(CURRENT, "Current", "I", "A", Flow);
         setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "c", "V", TLM);
-        setDataCharacteristics(CHARIMP, "CharImpedance", "Zc", "V/A", TLM);
+        setDataCharacteristics(CHARIMP, "CharImp", "Zc", "V/A", TLM);
     }
 
     virtual void setSpecialStartValues(Node *pNode)
