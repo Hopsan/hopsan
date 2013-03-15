@@ -320,7 +320,7 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
                      "\"\n  Value reference = \""+portSpecs[p].valueRef+
                      "\"\n  Port type       = \""+portSpecs[p].valueRef+
                      "\"\n  Node type       = \""+portSpecs[p].nodeType+
-                     "\"\n  Data type       = \""+portSpecs[p].nodeType+
+                     "\"\n  Data type       = \""+portSpecs[p].dataType+
                      "\"\n  Causality       = \""+portSpecs[p].causality+"\"\n");
 
 

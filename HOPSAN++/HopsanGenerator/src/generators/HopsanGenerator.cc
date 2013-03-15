@@ -273,7 +273,7 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
     codeStream << "        {\n";
     codeStream << "            return new " << comp.typeName << "();\n";
     codeStream << "        }\n\n";
-    codeStream << "        " << comp.typeName << "() : Component" << comp.cqsType << "()\n";
+    codeStream << "        void configure()\n";
     codeStream << "        {\n";
     for(int i=0; i<comp.parNames.size(); ++i)
     {
@@ -435,7 +435,7 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
 //        {
 //            varNames << NodeInfo(comp.portNodeTypes[i]).cVariables;
 //        }
-        else
+        else if(comp.portTypes[i] != "WritePort")
         {
             varNames << NodeInfo(comp.portNodeTypes[i]).qVariables;       //Always create both C- and Q-type variables, regaradless of component type (they may be needed)
             varNames << NodeInfo(comp.portNodeTypes[i]).cVariables;

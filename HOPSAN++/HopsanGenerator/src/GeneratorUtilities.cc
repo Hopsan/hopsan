@@ -581,7 +581,7 @@ NodeInfo::NodeInfo(QString nodeType)
         }
     }
 
-    delete(pNode);
+    hopsanCore.removeNode(pNode);
 }
 
 void NodeInfo::getNodeTypes(QStringList &nodeTypes)
