@@ -38,7 +38,6 @@
 //Global stuff
 MainWindow* gpMainWindow = 0;
 Configuration gConfig;
-QString gExecPath;
 DesktopHandler gDesktopHandler;
 CopyStack gCopyStack;
 
@@ -58,13 +57,7 @@ int main(int argc, char *argv[])
     QLocale::setDefault(QLocale(QLocale::English, QLocale::UnitedStates));
     qDebug() << "Changing to: " << QLocale().languageToString(QLocale().language()) << " " << QLocale().countryToString(QLocale().country()) << " Decimal point: " << QLocale().decimalPoint();
 
-
-    // Clear cache folders from left over junk (if Hopsan crashed last time, or was unable to cleanup)
-    qDebug() << "LogdataCache: " << LOGDATACACHE;
-    removeDir(LOGDATACACHE);
-
     // Create/set global objects
-    gExecPath = qApp->applicationDirPath().append('/');
     gConfig = Configuration();
     gDesktopHandler = DesktopHandler();
     gCopyStack = CopyStack();

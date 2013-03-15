@@ -3182,7 +3182,7 @@ void ContainerObject::recompileCppComponents(ModelObject *pComponent)
         libFile.setFileName("c:/HopsanComponentGeneratorTempFiles/output/"+typeName+".dll");
         libFile.copy(libDirStr+"/"+typeName+".dll");
     #else
-        libFile.setFileName(gExecPath+"output/"+typeName+".so");
+        libFile.setFileName(gDesktopHandler.getExecPath()+"output/"+typeName+".so");
         libFile.copy(libDirStr+"/"+typeName+".so");
     #endif
 
@@ -3196,7 +3196,7 @@ void ContainerObject::recompileCppComponents(ModelObject *pComponent)
 #ifdef WIN32
         xmlFile.setFileName("c:/HopsanComponentGeneratorTempFiles/output/"+typeName+".xml");
 #else
-        xmlFile.setFileName(gExecPath+"output/"+typeName+".xml");
+        xmlFile.setFileName(gDesktopHandler.getExecPath()+"output/"+typeName+".xml");
 #endif
         xmlFile.open(QIODevice::ReadOnly | QIODevice::Text);
         QString xmlCode = xmlFile.readAll();

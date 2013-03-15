@@ -1224,7 +1224,7 @@ void MainWindow::commenceAutoUpdate(QNetworkReply* reply)
     reply->deleteLater();
 
     QProcess *pProcess = new QProcess();
-    QString dir = gExecPath;
+    QString dir = gDesktopHandler.getExecPath();
     dir.chop(4);    //Remove "bin"
     pProcess->start(gDesktopHandler.getDataPath()+"/update.exe", QStringList() << "/silent" << "/dir=\""+dir+"\"");
     pProcess->waitForStarted();
@@ -1234,7 +1234,7 @@ void MainWindow::commenceAutoUpdate(QNetworkReply* reply)
 
 void MainWindow::showReleaseNotes()
 {
-    QDesktopServices::openUrl(QUrl(gExecPath+"../Hopsan-release-notes.txt"));
+    QDesktopServices::openUrl(QUrl(gDesktopHandler.getExecPath()+"../Hopsan-release-notes.txt"));
 }
 
 

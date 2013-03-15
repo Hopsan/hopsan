@@ -25,6 +25,7 @@
 #include "LogDataHandler.h"
 
 #include "PlotWindow.h"
+#include "DesktopHandler.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "MainWindow.h"
 #include "Widgets/HcomWidget.h"
@@ -53,7 +54,7 @@ LogDataHandler::LogDataHandler(ContainerObject *pParent) : QObject(pParent)
     QDir tmp;
     do
     {
-        tmp = QDir(LOGDATACACHE + QString("/handler%1").arg(ctr));
+        tmp = QDir(gDesktopHandler.getLogDataPath() + QString("/handler%1").arg(ctr));
         ++ctr;
     }while(tmp.exists());
     tmp.mkpath(tmp.absolutePath());

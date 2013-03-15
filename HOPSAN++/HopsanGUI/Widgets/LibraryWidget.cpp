@@ -1178,7 +1178,7 @@ void LibraryWidget::unloadExternalLibrary(const QString libName, const QString p
         pLibContTree = mpContentsTree->findChildByName(parentLibName)->findChildByName(libName);
         if (!pLibContTree)
         {
-            pLibContTree = mpContentsTree->findChildByName(parentLibName)->findChildByPath(QDir::cleanPath(gExecPath+libName));
+            pLibContTree = mpContentsTree->findChildByName(parentLibName)->findChildByPath(QDir::cleanPath(gDesktopHandler.getExecPath()+libName));
         }
         if (!pLibContTree)
         {

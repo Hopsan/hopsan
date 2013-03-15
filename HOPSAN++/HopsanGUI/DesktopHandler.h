@@ -12,7 +12,9 @@ public:
 
     void setupPaths();
 
+    const QString &getExecPath() const;
     const QString &getDataPath() const;
+    const QString &getTempPath() const;
     const QString &getDocumentsPath() const;
     const QString &getBackupPath() const;
     const QString &getModelsPath() const;
@@ -25,14 +27,20 @@ public:
     const QString &getMSVC2010X86Path() const;
     const QString &getMSVC2008X64Path() const;
     const QString &getMSVC2010X64Path() const;
-
+    const QString &getFMUPath() const;
+    const QString &getLogDataPath() const;
 private:
-    bool mUseCustomDocumentsPath;
-    bool mUseCustomDataPath;
+    QString mExecPath;
 
+    bool mUseCustomDataPath;
     QString mDefaultDataPath;
     QString mCustomDataPath;
 
+    bool mUseCustomTempPath;
+    QString mDefaultTempPath;
+    QString mCustomTempPath;
+
+    bool mUseCustomDocumentsPath;
     QString mDefaultDocumentsPath;
     QString mCustomDocumentsPath;
 
@@ -47,6 +55,8 @@ private:
     QString mMSVC2010X86Path;
     QString mMSVC2008X64Path;
     QString mMSVC2010X64Path;
+    QString mFMUPath;
+    QString mLogDataPath;
 };
 
 #endif // DESKTOPHANDLER_H

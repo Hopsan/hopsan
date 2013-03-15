@@ -61,7 +61,7 @@ bool CoreGeneratorAccess::generateFromModelica(QString code)
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callModelicaGenerator(code.toStdString(), gDesktopHandler.getCoreIncludePath().toStdString(), gExecPath.toStdString(), true);
+        pHandler->callModelicaGenerator(code.toStdString(), gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), true);
         return true;
     }
     return false;
@@ -74,7 +74,7 @@ bool CoreGeneratorAccess::generateFromCpp(QString code, bool showOutputDialog)
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callCppGenerator(code.toStdString(), gDesktopHandler.getCoreIncludePath().toStdString(), gExecPath.toStdString(), showOutputDialog);
+        pHandler->callCppGenerator(code.toStdString(), gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), showOutputDialog);
         return true;
     }
     return false;
@@ -90,7 +90,7 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
         fmuFileInfo.setFile(path);
         QString fmuName = fmuFileInfo.fileName();
         fmuName.chop(4);
-        if(QDir().exists(QString(FMUPATH) + fmuName))
+        if(QDir().exists(gDesktopHandler.getFMUPath() + fmuName))
         {
             QMessageBox existWarningBox(QMessageBox::Warning, "Warning","Another FMU with same name exist. Do you want unload this library and then overwrite it?", 0, 0);
             existWarningBox.addButton("Yes", QMessageBox::AcceptRole);
@@ -101,7 +101,7 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
             if(doIt)
             {
                 gpMainWindow->mpLibrary->unloadExternalLibrary(fmuName, "FMU");
-                removeDir(QDir::cleanPath(QString(FMUPATH)+fmuName));
+                removeDir(QDir::cleanPath(gDesktopHandler.getFMUPath()+fmuName));
             }
             else
             {
@@ -109,21 +109,21 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
             }
         }
 
-        pHandler->callFmuImportGenerator(path.toStdString(), gDesktopHandler.getCoreIncludePath().toStdString(), gExecPath.toStdString(), true);
+        pHandler->callFmuImportGenerator(path.toStdString(), gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), true);
 
-        if(QDir().exists(QString(FMUPATH) + fmuName))
+        if(QDir().exists(gDesktopHandler.getFMUPath() + fmuName))
         {
             //Copy component icon
             QFile fmuIcon;
             fmuIcon.setFileName(QString(GRAPHICSPATH)+"/objecticons/fmucomponent.svg");
-            fmuIcon.copy(QString(FMUPATH)+fmuName+"/fmucomponent.svg");
+            fmuIcon.copy(gDesktopHandler.getFMUPath()+fmuName+"/fmucomponent.svg");
             fmuIcon.close();
-            fmuIcon.setFileName(QString(FMUPATH)+fmuName+"/fmucomponent.svg");
+            fmuIcon.setFileName(gDesktopHandler.getFMUPath()+fmuName+"/fmucomponent.svg");
             fmuIcon.setPermissions(QFile::WriteUser | QFile::ReadUser);
             fmuIcon.close();
 
             //Load library
-            gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(QString(FMUPATH) + fmuName, "FMU");
+            gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(gDesktopHandler.getFMUPath() + fmuName, "FMU");
             return true;
         }
     }
@@ -136,7 +136,7 @@ bool CoreGeneratorAccess::generateToFmu(QString path, SystemContainer *pSystem)
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callFmuExportGenerator(path.toStdString(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), gDesktopHandler.getCoreIncludePath().toStdString(), gExecPath.toStdString(), true);
+        pHandler->callFmuExportGenerator(path.toStdString(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), true);
         return true;
     }
     return false;
@@ -148,7 +148,7 @@ bool CoreGeneratorAccess::generateToSimulink(QString path, SystemContainer *pSys
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callSimulinkExportGenerator(path.toStdString(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), disablePortLabels, compiler, gDesktopHandler.getCoreIncludePath().toStdString(), gExecPath.toStdString(), true);
+        pHandler->callSimulinkExportGenerator(path.toStdString(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), disablePortLabels, compiler, gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), true);
         return true;
     }
     return false;
@@ -160,7 +160,7 @@ bool CoreGeneratorAccess::generateToSimulinkCoSim(QString path, SystemContainer 
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callSimulinkCoSimExportGenerator(path.toStdString(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), disablePortLabels, compiler, gDesktopHandler.getCoreIncludePath().toStdString(), gExecPath.toStdString(), true);
+        pHandler->callSimulinkCoSimExportGenerator(path.toStdString(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), disablePortLabels, compiler, gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), true);
         return true;
     }
     return false;
@@ -172,7 +172,7 @@ bool CoreGeneratorAccess::generateToLabViewSIT(QString path, SystemContainer *pS
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callLabViewSITGenerator(path.toStdString(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), gDesktopHandler.getCoreIncludePath().toStdString(), gExecPath.toStdString(), true);
+        pHandler->callLabViewSITGenerator(path.toStdString(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), true);
         return true;
     }
     return false;

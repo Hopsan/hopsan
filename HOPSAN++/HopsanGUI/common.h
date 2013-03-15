@@ -49,21 +49,6 @@
 #define GRAPHICSPATH ":graphics/"
 #define SOUNDSPATH ":sounds/"
 
-// common paths
-//#define MAINPATH gExecPath+"../"
-//#define HELPPATH gExecPath+"../doc/user/html/"
-//#define COMPONENTSPATH gExecPath+"../componentLibraries/defaultLibrary/"
-//#define COREINCLUDEPATH gExecPath+"../HopsanCore/include/"
-//#define MSVC2008_X86_PATH gExecPath+"MSVC2008_x86/"
-//#define MSVC2010_X86_PATH gExecPath+"MSVC2010_x86/"
-//#define MSVC2008_X64_PATH gExecPath+"MSVC2008_x64/"
-//#define MSVC2010_X64_PATH gExecPath+"MSVC2010_x64/"
-
-#define FMUPATH gExecPath+"../import/FMU/"
-
-#define LOGDATACACHE QDesktopServices::storageLocation(QDesktopServices::TempLocation) + "/Hopsan/LogData"
-
-
 // Gui TypeName defines
 #define HOPSANGUIGROUPTYPENAME "HopsanGUIGroup"
 #define HOPSANGUISYSTEMTYPENAME "Subsystem"
@@ -106,7 +91,6 @@ extern CopyStack gCopyStack;
 class PlotHandler;
 extern PlotHandler *gpPlotHandler;
 
-extern QString gExecPath;
 extern QString gHopsanCoreVersion;
 
 #endif // COMMON_H

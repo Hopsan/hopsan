@@ -31,26 +31,33 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QDebug>
+#include <QApplication>
+#include "Utilities/GUIUtilities.h"
 
 
 
 DesktopHandler::DesktopHandler()
 {
-    mUseCustomDataPath=false;
-    mUseCustomDocumentsPath=false;
+    mExecPath = qApp->applicationDirPath().append('/');
+    mUseCustomDataPath = false;
+    mUseCustomTempPath = false;
+    mUseCustomDocumentsPath = false;
     mDefaultDataPath = QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/Hopsan/";
+    mDefaultTempPath = QDesktopServices::storageLocation(QDesktopServices::TempLocation) + "/Hopsan/";
     mDefaultDocumentsPath = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/";
     mBackupPath = mDefaultDocumentsPath+"/Backup/";
     mModelsPath = mDefaultDocumentsPath+"/Models/";
     mScriptsPath = mDefaultDocumentsPath+"Scripts";
-    mMainPath = gExecPath+"../";
-    mHelpPath = gExecPath+"../doc/user/html/";
-    mComponentsPath = gExecPath+"../componentLibraries/defaultLibrary/";
-    mCoreIncludePath = gExecPath+"../HopsanCore/include/";
-    mMSVC2008X86Path = gExecPath+"MSVC2008_x86/";
-    mMSVC2010X86Path = gExecPath+"MSVC2010_x86/";
-    mMSVC2008X64Path = gExecPath+"MSVC2008_x64/";
-    mMSVC2010X64Path = gExecPath+"MSVC2010_x64/";
+    mMainPath = mExecPath+"../";
+    mHelpPath = mExecPath+"../doc/user/html/";
+    mComponentsPath = mExecPath+"../componentLibraries/defaultLibrary/";
+    mCoreIncludePath = mExecPath+"../HopsanCore/include/";
+    mMSVC2008X86Path = mExecPath+"MSVC2008_x86/";
+    mMSVC2010X86Path = mExecPath+"MSVC2010_x86/";
+    mMSVC2008X64Path = mExecPath+"MSVC2008_x64/";
+    mMSVC2010X64Path = mExecPath+"MSVC2010_x64/";
+    mFMUPath = mExecPath+"../import/FMU/";
+    mLogDataPath = mDefaultTempPath + "/LogData";
 }
 
 
@@ -79,7 +86,7 @@ void DesktopHandler::setupPaths()
         QWidget *pWidget = new QWidget();
         QFileDialog *pDialog = new QFileDialog(pWidget);
         mCustomDocumentsPath = pDialog->getExistingDirectory(pWidget, "Choose Data Directory",
-                                gExecPath,
+                                mExecPath,
                                 QFileDialog::ShowDirsOnly
                                 | QFileDialog::DontResolveSymlinks);
         delete(pDialog);
@@ -112,7 +119,7 @@ void DesktopHandler::setupPaths()
         QWidget *pWidget = new QWidget();
         QFileDialog *pDialog = new QFileDialog(pWidget);
         mCustomDocumentsPath = pDialog->getExistingDirectory(pWidget, "Choose Documents Directory",
-                                gExecPath,
+                                mExecPath,
                                 QFileDialog::ShowDirsOnly
                                 | QFileDialog::DontResolveSymlinks);
         delete(pDialog);
@@ -122,10 +129,11 @@ void DesktopHandler::setupPaths()
     dummyFile2.remove();
 
 
-    //Update paths depending on data and default paths
+    //Update paths depending on data, temp and documents paths
     mBackupPath = getDocumentsPath()+"/Backup/";
     mModelsPath = getDocumentsPath()+"/Models/";
-    mScriptsPath = getDocumentsPath()+"Scripts";
+    mScriptsPath = getDocumentsPath()+"/Scripts/";
+    mLogDataPath = getTempPath() + "/LogData/";
 
 
      // Make sure backup folder exists, create it if not
@@ -146,6 +154,16 @@ void DesktopHandler::setupPaths()
     {
         QDir().mkpath(getScriptsPath());
     }
+
+    // Clear cache folders from left over junk (if Hopsan crashed last time, or was unable to cleanup)
+    qDebug() << "LogdataCache: " << getLogDataPath();
+    removeDir(getLogDataPath());
+}
+
+
+const QString &DesktopHandler::getExecPath() const
+{
+    return mExecPath;
 }
 
 
@@ -155,6 +173,15 @@ const QString &DesktopHandler::getDataPath() const
         return mCustomDataPath;
     else
         return mDefaultDataPath;
+}
+
+
+const QString &DesktopHandler::getTempPath() const
+{
+    if(mUseCustomTempPath)
+        return mCustomTempPath;
+    else
+        return mDefaultTempPath;
 }
 
 
@@ -219,4 +246,14 @@ const QString &DesktopHandler::getMSVC2008X64Path() const
 const QString &DesktopHandler::getMSVC2010X64Path() const
 {
     return mMSVC2010X64Path;
+}
+
+const QString &DesktopHandler::getFMUPath() const
+{
+    return mFMUPath;
+}
+
+const QString &DesktopHandler::getLogDataPath() const
+{
+    return mLogDataPath;
 }

@@ -1320,7 +1320,7 @@ void SystemContainer::exportToFMU(QString savePath)
 //    QFile expFile;
 ////    if(gccCompiler)
 ////    {
-//        dllFile.setFileName(gExecPath + "HopsanCore.dll");
+//        dllFile.setFileName(gDesktopHandler.getExecPath() + "HopsanCore.dll");
 //        dllFile.copy(savePath + "/HopsanCore.dll");
 ////    }
 ////    else
@@ -1335,7 +1335,7 @@ void SystemContainer::exportToFMU(QString savePath)
 ////    }
 //#elif linux
 //    QFile soFile;
-//    soFile.setFileName(gExecPath + "libHopsanCore.so");
+//    soFile.setFileName(gDesktopHandler.getExecPath() + "libHopsanCore.so");
 //    soFile.copy(savePath + "/libHopsanCore.so");
 //#endif
 
