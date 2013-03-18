@@ -38,6 +38,7 @@
 #include <QToolButton>
 #include <QDir>
 #include <QToolBar>
+#include <QTextEdit>
 
 // Forward Declaration
 class ModelObjectAppearance;
@@ -92,6 +93,8 @@ private slots:
     void showLib(QTreeWidgetItem * item, int column);
     void initializeDrag(QListWidgetItem* item);
     void initializeDrag(QTreeWidgetItem* item, int dummy);
+    void editComponent(QTreeWidgetItem *item, int /*dummy*/);
+    void recompileComponent();
 
 private:
     void initializeDragCommon();
@@ -124,6 +127,9 @@ private:
     QDir mUpdateXmlBackupDir;
 
     QMap<QString, QStringList> mReplacementsMap;
+
+    QString mEditComponentTypeName;
+    QTextEdit *mpEditComponentTextEdit;
 };
 
 

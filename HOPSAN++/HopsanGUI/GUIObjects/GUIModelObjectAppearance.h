@@ -130,8 +130,10 @@ public:
     QString getIconPath(const GraphicsTypeEnumT gfxType, const AbsoluteRelativeEnumT absrel);
     qreal   getIconScale(const GraphicsTypeEnumT gfxType=UserGraphics);
     QString getIconRotationBehaviour(const GraphicsTypeEnumT gfxType=UserGraphics);
-    QPointF getNameTextPos();
-    QString getSourceCodeFile();
+    QPointF getNameTextPos() const;
+    QString getSourceCodeFile() const;
+    QString getLibPath() const;
+    bool isRecompilable() const;
 
     ModelObjectAnimationData *getAnimationDataPtr();
 
@@ -152,6 +154,8 @@ private:
     QString mSubTypeName;
     QString mDisplayName;
     QString mSourceCode;
+    QString mLibPath;
+    bool mIsRecompilable;
     QString mHelpPicture;
     QString mHelpText;
     ModelObjectIconAppearance mIsoIconAppearance;

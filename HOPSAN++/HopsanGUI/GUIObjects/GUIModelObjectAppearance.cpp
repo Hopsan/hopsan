@@ -38,6 +38,8 @@
 #define CAF_TYPE "type"
 #define CAF_DISPLAYNAME "displayname"
 #define CAF_SOURCECODE "sourcecode"
+#define CAF_LIBPATH "libpath"
+#define CAF_RECOMPILABLE "recompilable"
 #define CAF_NAME "name"
 
 #define CAF_ICON "icon"
@@ -481,15 +483,27 @@ QString ModelObjectAppearance::getIconRotationBehaviour(const GraphicsTypeEnumT 
     }
 }
 
-QPointF ModelObjectAppearance::getNameTextPos()
+QPointF ModelObjectAppearance::getNameTextPos() const
 {
     return mNameTextPos;
 }
 
 
-QString ModelObjectAppearance::getSourceCodeFile()
+QString ModelObjectAppearance::getSourceCodeFile() const
 {
     return mSourceCode;
+}
+
+
+QString ModelObjectAppearance::getLibPath() const
+{
+    return mLibPath;
+}
+
+
+bool ModelObjectAppearance::isRecompilable() const
+{
+    return mIsRecompilable;
 }
 
 
@@ -551,6 +565,8 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
     mSubTypeName    = domElement.attribute(CAF_SUBTYPENAME, "");
     mDisplayName    = domElement.attribute(CAF_DISPLAYNAME, mDisplayName);
     mSourceCode     = domElement.attribute(CAF_SOURCECODE, "");
+    mLibPath        = domElement.attribute(CAF_LIBPATH, "");
+    mIsRecompilable   = parseAttributeBool(domElement, CAF_RECOMPILABLE, false);
 
     //Use typename if displayname not set
     if (mDisplayName.isEmpty())

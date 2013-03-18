@@ -64,6 +64,7 @@ bool CoreGeneratorAccess::generateFromModelica(QString code)
         pHandler->callModelicaGenerator(code.toStdString(), gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), true);
         return true;
     }
+    delete(pHandler);
     return false;
 }
 
@@ -77,6 +78,7 @@ bool CoreGeneratorAccess::generateFromCpp(QString code, bool showOutputDialog)
         pHandler->callCppGenerator(code.toStdString(), gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), showOutputDialog);
         return true;
     }
+    delete(pHandler);
     return false;
 }
 
@@ -127,6 +129,7 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
             return true;
         }
     }
+    delete(pHandler);
     return false;
 }
 
@@ -139,6 +142,7 @@ bool CoreGeneratorAccess::generateToFmu(QString path, SystemContainer *pSystem)
         pHandler->callFmuExportGenerator(path.toStdString(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), true);
         return true;
     }
+    delete(pHandler);
     return false;
 }
 
@@ -151,6 +155,7 @@ bool CoreGeneratorAccess::generateToSimulink(QString path, SystemContainer *pSys
         pHandler->callSimulinkExportGenerator(path.toStdString(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), disablePortLabels, compiler, gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), true);
         return true;
     }
+    delete(pHandler);
     return false;
 }
 
@@ -163,6 +168,7 @@ bool CoreGeneratorAccess::generateToSimulinkCoSim(QString path, SystemContainer 
         pHandler->callSimulinkCoSimExportGenerator(path.toStdString(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), disablePortLabels, compiler, gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), true);
         return true;
     }
+    delete(pHandler);
     return false;
 }
 
@@ -175,6 +181,20 @@ bool CoreGeneratorAccess::generateToLabViewSIT(QString path, SystemContainer *pS
         pHandler->callLabViewSITGenerator(path.toStdString(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), true);
         return true;
     }
+    delete(pHandler);
+    return false;
+}
+
+
+bool CoreGeneratorAccess::compileComponentLibrary(QString path, QString name, QString extraLibs)
+{
+    hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
+    if(pHandler->isLoadedSuccessfully())
+    {
+        pHandler->callComponentLibraryCompiler(path.toStdString(), name.toStdString(), extraLibs.toStdString(), gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), true);
+        return true;
+    }
+    delete(pHandler);
     return false;
 }
 

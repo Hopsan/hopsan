@@ -146,5 +146,6 @@
         <file>graphics/uiicons/Hopsan-ExportSIT.png</file>
         <file>graphics/uiicons/Hopsan-LoadModelParameters.png</file>
         <file>graphics/porticons/EmptyPort.svg</file>
+        <file>graphics/uiicons/Hopsan-Folder.png</file>
     </qresource>
 </RCC>

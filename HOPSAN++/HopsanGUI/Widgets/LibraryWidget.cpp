@@ -23,6 +23,8 @@
 //!
 //$Id$
 
+#define printVar(x) qDebug() << #x << " = " << x
+
 #include <QtGui>
 
 #include "Configuration.h"
@@ -30,6 +32,7 @@
 #include "LibraryWidget.h"
 #include "MainWindow.h"
 #include "Widgets/HcomWidget.h"
+#include "Utilities/ComponentGeneratorUtilities.h"
 #include "Dialogs/ComponentGeneratorDialog.h"
 #include "GUIObjects/GUIModelObjectAppearance.h"
 #include "GUIObjects/GUIContainerObject.h"
@@ -282,6 +285,7 @@ void LibraryWidget::loadTreeView(LibraryContentsTree *tree, QTreeWidgetItem *par
         }
     }
 
+    connect(mpTree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(editComponent(QTreeWidgetItem*, int)), Qt::UniqueConnection);
     connect(mpTree, SIGNAL(itemPressed(QTreeWidgetItem*,int)), this, SLOT(initializeDrag(QTreeWidgetItem*, int)), Qt::UniqueConnection);
 }
 
@@ -397,6 +401,7 @@ void LibraryWidget::showLib(QTreeWidgetItem *item, int /*column*/)
     }
     qDebug() << "3";
 
+    connect(mpTree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(editComponent(QTreeWidgetItem*, int)), Qt::UniqueConnection);
     connect(mpList, SIGNAL(itemPressed(QListWidgetItem*)), this, SLOT(initializeDrag(QListWidgetItem*)), Qt::UniqueConnection);
 }
 
@@ -424,6 +429,166 @@ void LibraryWidget::initializeDrag(QListWidgetItem *item)
 
     mpComponentNameField->setText(QString());
     gpMainWindow->hideHelpPopupMessage();
+}
+
+
+void LibraryWidget::editComponent(QTreeWidgetItem *item, int /*dummy*/)
+{
+    return;     //Disabled because work-in-progress
+
+    if(!mTreeItemToContentsMap.contains(item)) return;
+
+
+
+    qDebug() << "Edit component!";
+    mEditComponentTypeName = mTreeItemToContentsMap.find(item).value()->getFullTypeName();
+    QString basePath = getAppearanceData(mEditComponentTypeName)->getBasePath();
+    QString fileName = getAppearanceData(mEditComponentTypeName)->getSourceCodeFile();
+    QString libPath = getAppearanceData(mEditComponentTypeName)->getLibPath();
+    bool isRecompilable = getAppearanceData(mEditComponentTypeName)->isRecompilable();
+
+    printVar(mEditComponentTypeName);
+    printVar(basePath);
+    printVar(fileName);
+
+    if(fileName.isEmpty() || libPath.isEmpty() || !isRecompilable) return;
+
+    //Read source code from file
+    QFile sourceFile(basePath+fileName);
+    if(!sourceFile.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+    QString sourceCode;
+    while(!sourceFile.atEnd())
+    {
+        sourceCode.append(sourceFile.readLine());
+    }
+    sourceFile.close();
+
+    //Create the dialog
+    QDialog *pDialog = new QDialog(this);
+
+    QVBoxLayout *pLayout = new QVBoxLayout(this);
+    pDialog->setLayout(pLayout);
+
+    mpEditComponentTextEdit = new QTextEdit(this);
+    mpEditComponentTextEdit->setPlainText(sourceCode);
+    pLayout->addWidget(mpEditComponentTextEdit);
+    CppHighlighter *pCppHighlighter = new CppHighlighter(mpEditComponentTextEdit->document());
+
+    QDialogButtonBox *pButtonBox = new QDialogButtonBox(this);
+    pLayout->addWidget(pButtonBox);
+
+    QPushButton *pCancelButton = new QPushButton("Cancel", this);
+    pButtonBox->addButton(pCancelButton, QDialogButtonBox::RejectRole);
+
+    QPushButton *pDoneButton = new QPushButton("Recompile", this);
+    pButtonBox->addButton(pDoneButton, QDialogButtonBox::AcceptRole);
+
+    connect(pDoneButton, SIGNAL(clicked()), pDialog, SLOT(accept()));
+    connect(pCancelButton, SIGNAL(clicked()), pDialog, SLOT(reject()));
+    connect(pDialog, SIGNAL(destroyed()), pCppHighlighter, SLOT(deleteLater()));
+    connect(pDialog, SIGNAL(accepted()), this, SLOT(recompileComponent()));
+
+    pDialog->exec();
+}
+
+
+void LibraryWidget::recompileComponent()
+{
+    qDebug() << "Recompiling!";
+    printVar(mEditComponentTypeName);
+
+    QDateTime time = QDateTime();
+    uint t = time.currentDateTime().toTime_t();     //Number of milliseconds since 1970
+    double rd = rand() / (double)RAND_MAX;
+    int r = int(rd*1000000.0);                      //Random number between 0 and 1000000
+    QString randomName = mEditComponentTypeName+QString::number(t)+QString::number(r);
+    QString libPath = getAppearanceData(mEditComponentTypeName)->getLibPath();
+    QString basePath = getAppearanceData(mEditComponentTypeName)->getBasePath();
+    QString fileName = getAppearanceData(mEditComponentTypeName)->getSourceCodeFile();
+    QString sourceCode = mpEditComponentTextEdit->toPlainText();
+
+    printVar(randomName);
+    printVar(libPath);
+
+    //Read source code from file
+    QFile oldSourceFile(basePath+fileName);
+    if(!oldSourceFile.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+    QString oldSourceCode;
+    while(!oldSourceFile.atEnd())
+    {
+        oldSourceCode.append(oldSourceFile.readLine());
+    }
+    oldSourceFile.close();
+
+    QFile sourceFile(basePath+fileName);
+    if(!sourceFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))
+        return;
+    sourceFile.write(sourceCode.toStdString().c_str());
+    sourceFile.close();
+
+    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
+
+    pCoreAccess->compileComponentLibrary(basePath+libPath, randomName);
+
+    QString libFileName = basePath+libPath+randomName+".dll";
+
+    if(!QFile::exists(libFileName))
+    {
+        qDebug() << "Failure!";
+        QFile sourceFile(basePath+fileName);
+        if(!sourceFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))
+            return;
+        sourceFile.write(oldSourceCode.toStdString().c_str());
+        sourceFile.close();
+    }
+
+    qDebug() << "Success!";
+
+    gpMainWindow->mpProjectTabs->saveState();
+
+    if(!mpCoreAccess->loadComponentLib(libFileName))
+    {
+        qDebug() << "Failed to load library!";
+        QFile sourceFile(basePath+fileName);
+        if(!sourceFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))
+            return;
+        sourceFile.write(oldSourceCode.toStdString().c_str());
+        sourceFile.close();
+    }
+
+    qDebug() << "Loaded successfully!";
+
+    //Unload all dll:s in folder
+    QDir libDir(basePath+libPath);
+    QStringList libList = libDir.entryList(QStringList() << "*.dll");
+    for(int j=0; j<libList.size(); ++j)
+    {
+        mpCoreAccess->unLoadComponentLib(libList[j]);
+        if(basePath+libPath+libList[j] != libFileName)
+        {
+            QFile::rename(basePath+libPath+libList[j], basePath+libPath+libList[j]+"butnotanymore");
+        }
+    }
+
+    if(!mpCoreAccess->loadComponentLib(libFileName))
+    {
+        qDebug() << "Failed to load library!";
+        QFile sourceFile(basePath+fileName);
+        if(!sourceFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))
+            return;
+        sourceFile.write(oldSourceCode.toStdString().c_str());
+        sourceFile.close();
+    }
+
+    qDebug() << "Loaded successfully!";
+
+
+
+
+    gpMainWindow->mpProjectTabs->restoreState();
+
 }
 
 

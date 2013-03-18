@@ -1194,3 +1194,62 @@ void ProjectTabWidget::openAnimation()
         getCurrentTab()->openAnimation();
     }
 }
+
+
+void ProjectTabWidget::saveState()
+{
+
+    while(count() > 0)
+    {
+        ProjectTab *pTab = getTab(0);
+        mStateInfoHmfList << pTab->getTopLevelSystem()->getModelFileInfo().filePath();
+        mStateInfoHasChanged << !pTab->isSaved();
+        if(!pTab->isSaved())
+        {
+            //! @todo This code is duplicated from ProjectTab::saveModel(), make it a common function somehow
+                //Save xml document
+            QDomDocument domDocument;
+            QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
+            pTab->getTopLevelSystem()->saveToDomElement(hmfRoot);
+            QString fileNameWithoutHmf = getCurrentTopLevelSystem()->getModelFileInfo().fileName();
+            fileNameWithoutHmf.chop(4);
+            mStateInfoBackupList << gDesktopHandler.getBackupPath()+fileNameWithoutHmf+"_savedstate.hmf";
+            QFile xmlhmf(gDesktopHandler.getBackupPath()+fileNameWithoutHmf+"_savedstate.hmf");
+            if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+            {
+                return;
+            }
+            QTextStream out(&xmlhmf);
+            appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
+            domDocument.save(out, XMLINDENTATION);
+            xmlhmf.close();
+            pTab->setSaved(true);
+            closeProjectTab(0);
+            //pTab->close();
+        }
+        else
+        {
+            mStateInfoBackupList << "";
+            closeProjectTab(0);
+            //pTab->close();
+        }
+    }
+}
+
+
+void ProjectTabWidget::restoreState()
+{
+    for(int i=0; i<mStateInfoHmfList.size(); ++i)
+    {
+        if(mStateInfoHasChanged[i])
+        {
+            loadModel(mStateInfoBackupList[i]);
+            getCurrentTab()->hasChanged();
+            getCurrentTopLevelSystem()->setModelFile(mStateInfoHmfList[i]);
+        }
+        else
+        {
+            loadModel(mStateInfoHmfList[i]);
+        }
+    }
+}

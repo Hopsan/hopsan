@@ -30,6 +30,7 @@
 #include "QuickNavigationWidget.h"
 #include "AnimationWidget.h"
 #include "common.h"
+#include <QDomDocument>
 
 //Forward declaration
 class QGraphicsScene;
@@ -74,6 +75,8 @@ public slots:
     bool simulateAllOpenModels_blocking(bool modelsHaveNotChanged=false);
     void setCurrentTopLevelSimulationTimeParameters(const QString startTime, const QString timeStep, const QString stopTime);
     void openAnimation();
+    void saveState();
+    void restoreState();
 
 signals:
     void checkMessages();
@@ -83,6 +86,10 @@ private:
     void setToolBarSimulationTimeParametersFromSystem(SystemContainer *pSystem);
     size_t mNumberOfUntitledTabs;
     SimulationThreadHandler *mpSimulationThreadHandler;
+    QStringList mStateInfoHmfList;
+    QStringList mStateInfoBackupList;
+    QList<bool> mStateInfoHasChanged;
+    QList<QDomDocument> mStateInfoModels;
 };
 
 class ProjectTab : public QWidget

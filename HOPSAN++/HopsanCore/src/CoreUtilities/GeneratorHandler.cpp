@@ -101,6 +101,14 @@ GeneratorHandler::GeneratorHandler()
         return;
     }
 
+    //Load compile component library function
+    callComponentLibraryCompiler = (call_complib_compiler_t)GetProcAddress(lib_ptr, "callComponentLibraryCompiler");
+    if(!callComponentLibraryCompiler)
+    {
+        //! @todo Error message
+        return;
+    }
+
 #else
     void *lib_ptr;
 #ifdef QT_NO_DEBUG

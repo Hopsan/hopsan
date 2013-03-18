@@ -201,3 +201,19 @@ extern "C" DLLIMPORTEXPORT void callLabViewSITGenerator(string path, hopsan::Com
     pGenerator->generateToLabViewSIT(QString(path.c_str()), pSystem);
     delete(pGenerator);
 }
+
+
+//! @brief Calls the component library compile utility
+//! @param path Path to library
+//! @param name Name of output dll
+//! @param extraLinks Additional linker commands
+//! @param coreIncludePath Path to HopsanCore include files
+//! @param binpath Path to HopsanCore binary files
+//! @param showDialog True if generator output shall be displayed in a dialog window
+extern "C" DLLIMPORTEXPORT void callComponentLibraryCompiler(string path, string name, string extraLinks, string coreIncludePath, string binPath, bool showDialog=false)
+{
+    HopsanGenerator *pGenerator = new HopsanGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
+    compileComponentLibrary(QString(path.c_str()), QString(name.c_str()), pGenerator, QString(extraLinks.c_str()));
+    delete(pGenerator);
+}
+

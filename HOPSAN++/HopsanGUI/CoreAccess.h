@@ -50,6 +50,7 @@ public:
     bool generateToSimulink(QString path, SystemContainer *pSystem, bool disablePortLabels=false, int compiler=0);
     bool generateToSimulinkCoSim(QString path, SystemContainer *pSystem, bool disablePortLabels=false, int compiler=0);
     bool generateToLabViewSIT(QString path, SystemContainer *pSystem);
+    bool compileComponentLibrary(QString path, QString name, QString extraLibs="");
 };
 
 class CoreLibraryAccess
