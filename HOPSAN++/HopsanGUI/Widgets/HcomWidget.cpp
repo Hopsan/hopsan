@@ -251,8 +251,8 @@ void TerminalConsole::printCoreMessages()
             playErrorSound = true;
         if(type == "fatal")
         {
-            QMessageBox::critical(this, "Fatal Error", message+"\n\nProgram will now attempt to exit.", "Ok");
-            gpMainWindow->close();
+            QMessageBox::critical(this, "Fatal Error", message+"\n\nProgram is unstable and MUST BE RESTARTED!", "Ok");
+
         }
         mNewMessageList.append(GUIMessage(message, type, tag));
         updateNewMessages();
