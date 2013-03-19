@@ -3,7 +3,7 @@
   <validation>
     <modelfile></modelfile>
     <parameterset></parameterset>
-    <component name="Hydraulic Volume">
+    <component name="Hydraulic_Volume">
       <port name="P1">
         <csvfile></csvfile>
         <variable name="Pressure">

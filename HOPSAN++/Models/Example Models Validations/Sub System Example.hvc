@@ -4,7 +4,7 @@
     <!--Optional path to model file, default is to use the same name (excluding ext) and path as this file-->
     <modelfile>../Example Models/Sub System Example.hmf</modelfile>
     <parameterset></parameterset>
-    <component name="Position Transducer">
+    <component name="Position_Transducer">
       <port name="out">
         <!--Optional path to csv file, default is to use the same name (excluding ext) and path as this file-->
         <csvfile></csvfile>

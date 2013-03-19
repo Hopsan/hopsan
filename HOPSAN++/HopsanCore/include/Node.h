@@ -102,18 +102,18 @@ protected:
     std::vector<double> mDataValues;
 
 private:
-    //Private member fuctions
+    // Private member fuctions
     void addConnectedPort(Port *pPort);
-    void removeConnectedPort(Port *pPort);
+    void removeConnectedPort(const Port *pPort);
     void enableLog();
     void disableLog();
 
-    //Private member variables
+    // Private member variables
     std::string mNodeType;
     std::vector<Port*> mConnectedPorts;
     ComponentSystem *mpOwnerSystem;
 
-    //Log specific variables
+    // Log specific variables
     std::vector<std::vector<double> > mDataStorage;
     bool mDoLog;
 };

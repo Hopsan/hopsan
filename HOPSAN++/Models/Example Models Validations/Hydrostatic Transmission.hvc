@@ -4,7 +4,7 @@
     <!--Optional path to model file, default is to use the same name (excluding ext) and path as this file-->
     <modelfile>../Example Models/Hydrostatic Transmission.hmf</modelfile>
     <parameterset></parameterset>
-    <component name="Angular Velocity Sensor">
+    <component name="Angular_Velocity_Sensor">
       <port name="out">
         <!--Optional path to csv file, default is to use the same name (excluding ext) and path as this file-->
         <csvfile></csvfile>

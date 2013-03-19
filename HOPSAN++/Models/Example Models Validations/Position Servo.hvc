@@ -4,7 +4,7 @@
     <!--Optional path to model file, default is to use the same name (excluding ext) and path as this file-->
     <modelfile>../Example Models/Position Servo.hmf</modelfile>
     <parameterset></parameterset>
-    <component name="Translational Mass">
+    <component name="Mass">
       <port name="P2">
         <!--Optional path to csv file, default is to use the same name (excluding ext) and path as this file-->
         <csvfile></csvfile>

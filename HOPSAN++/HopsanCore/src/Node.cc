@@ -267,25 +267,18 @@ void Node::addConnectedPort(Port *pPort)
 }
 
 
-//! @brief Removes a port poniter from this node, NOT delete only remove
+//! @brief Removes a port pointer from this node, NOT delete, only remove
 //! @param [in] pPort The port pointer to be removed
-void Node::removeConnectedPort(Port *pPort)
+void Node::removeConnectedPort(const Port *pPort)
 {
-    bool found = false;
     vector<Port*>::iterator it;
     for (it=mConnectedPorts.begin(); it!=mConnectedPorts.end(); ++it)
     {
         if (*it == pPort)
         {
             mConnectedPorts.erase(it);
-            found = true;
             break;
         }
-    }
-
-    if (!found)
-    {
-        cout << "Warning: you are trying to remove a Port that does not exist in this node  (does nothing)" << endl;
     }
 }
 

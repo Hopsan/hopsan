@@ -2,7 +2,7 @@
 <hopsanvalidationconfiguration hvcversion="0.1">
   <validation>
     <modelfile>../Example Models/Load Sensing System.hmf</modelfile>
-    <component name="Position Sensor_1">
+    <component name="Position_Sensor_1">
       <port name="out">
         <variable name="Value">
           <csvfile>Load Sensing System.csv</csvfile>
@@ -11,7 +11,7 @@
         </variable>
       </port>
     </component>
-    <component name="Position Sensor">
+    <component name="Position_Sensor">
       <port name="out">
         <variable name="Value">
           <csvfile>Load Sensing System.csv</csvfile>
@@ -20,7 +20,7 @@
         </variable>
       </port>
     </component>
-    <component name="Position Sensor_2">
+    <component name="Position_Sensor_2">
       <port name="out">
         <variable name="Value">
           <csvfile>Load Sensing System.csv</csvfile>
@@ -29,7 +29,7 @@
         </variable>
       </port>
     </component>
-    <component name="Position Sensor_3">
+    <component name="Position_Sensor_3">
       <port name="out">
         <variable name="Value">
           <csvfile>Load Sensing System.csv</csvfile>

@@ -4,7 +4,7 @@
     <!--Optional path to model file, default is to use the same name (excluding ext) and path as this file-->
     <modelfile>../Example Models/Electric Capacitances & Resistors.hmf</modelfile>
     <parameterset></parameterset>
-    <component name="Voltage sensor_1">
+    <component name="Voltage_sensor_1">
       <port name="Puout">
         <!--Optional path to csv file, default is to use the same name (excluding ext) and path as this file-->
         <csvfile></csvfile>
