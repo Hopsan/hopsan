@@ -1106,9 +1106,9 @@ void ComponentGeneratorWizard::generate()
             portNames << mPortNameLineEditPtrs[p]->text();
             QString type = mPortTypeComboBoxPtrs[p]->currentText();
 
-            if(type      == "Signal Input")             { portTypes << "ReadPort"; }
-            else if(type == "Signal Output")            { portTypes << "WritePort"; }
-            else                                        { portTypes << "PowerPort"; }
+            if(type      == "Signal Input")             { portTypes << "ReadPortType"; }
+            else if(type == "Signal Output")            { portTypes << "WritePortType"; }
+            else                                        { portTypes << "PowerPortType"; }
 
             if(type      == "Signal Input")             { nodeTypes << "NodeSignal"; }
             else if(type == "Signal Output")            { nodeTypes << "NodeSignal"; }
@@ -1138,13 +1138,13 @@ void ComponentGeneratorWizard::generate()
             }
             else
             {
-                if(portTypes[p] == "ReadPort") { varNames << portNames[p]; }
-                if(portTypes[p] == "WritePort") { varNames << portNames[p]; }
+                if(portTypes[p] == "ReadPortType") { varNames << portNames[p]; }
+                if(portTypes[p] == "WritePortType") { varNames << portNames[p]; }
             }
 
             QStringList varLabels = NodeInfo(nodeTypes[p]).variableLabels;
             QString numStr, defaultValue;
-            if(portTypes[p] != "ReadPort" && portTypes[p] != "WritePort")
+            if(portTypes[p] != "ReadPortType" && portTypes[p] != "WritePortType")
             {
                 numStr = QString::number(p+1);
             }
@@ -1165,9 +1165,9 @@ void ComponentGeneratorWizard::generate()
         {
             QStringList varNames;
             varNames << NodeInfo(nodeTypes[p]).qVariables << NodeInfo(nodeTypes[p]).cVariables;
-            if(portTypes[p] == "ReadPort") { varNames << portNames[p]; }
+            if(portTypes[p] == "ReadPortType") { varNames << portNames[p]; }
             QString numStr;
-            if(portTypes[p] != "ReadPort") { numStr = QString::number(p+1); }
+            if(portTypes[p] != "ReadPortType") { numStr = QString::number(p+1); }
 
             for(int v=0; v<varNames.size(); ++v)
             {
@@ -1196,9 +1196,9 @@ void ComponentGeneratorWizard::generate()
             {
                 varNames << NodeInfo(nodeTypes[p]).qVariables;
             }
-            if(portTypes[p] == "ReadPort") { varNames << portNames[p]; }
+            if(portTypes[p] == "ReadPortType") { varNames << portNames[p]; }
             QString numStr;
-            if(portTypes[p] != "ReadPort") { numStr = QString::number(p+1); }
+            if(portTypes[p] != "ReadPortType") { numStr = QString::number(p+1); }
 
             for(int v=0; v<varNames.size(); ++v)
             {
@@ -1221,9 +1221,9 @@ void ComponentGeneratorWizard::generate()
             {
                 varNames << NodeInfo(nodeTypes[p]).qVariables;
             }
-            if(portTypes[p] == "WritePort") { varNames << portNames[p]; }
+            if(portTypes[p] == "WritePortType") { varNames << portNames[p]; }
             QString numStr;
-            if(portTypes[p] != "WritePort") { numStr = QString::number(p+1); }
+            if(portTypes[p] != "WritePortType") { numStr = QString::number(p+1); }
 
             for(int v=0; v<varNames.size(); ++v)
             {

@@ -119,7 +119,7 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                 for(int i=0; i<lines.at(l).count(",")+1; ++i)
                 {
                     QString name = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
-                    PortSpecification port("WritePort", "NodeSignal", name);
+                    PortSpecification port("WritePortType", "NodeSignal", name);
                     portList.append(port);
                     portNames << name;
                 }
@@ -129,7 +129,7 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                 for(int i=0; i<lines.at(l).count(",")+1; ++i)
                 {
                     QString name = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
-                    PortSpecification port("ReadPort", "NodeSignal", name);
+                    PortSpecification port("ReadPortType", "NodeSignal", name);
                     portList.append(port);
                     portNames << name;
                 }
@@ -163,7 +163,7 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                         for(int i=0; i<lines.at(l).count(",")+1; ++i)
                         {
                             QString name = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
-                            PortSpecification port("PowerPort", type, name);
+                            PortSpecification port("PowerPortType", type, name);
                             portList.append(port);
                             portNames << name;
                         }
@@ -196,11 +196,11 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                     if(portList.at(i).nodetype == "NodeSignal")     //Signal nodes are special, they use the port name as the variable name
                     {
                         int idx = initAlgorithms.last().indexOf(temp)+temp.size()-1;
-                        if(portList.at(i).porttype == "WritePort")
+                        if(portList.at(i).porttype == "WritePortType")
                         {
                             initAlgorithms.last().remove(idx, 4);
                         }
-                        else if(portList.at(i).porttype == "ReadPort")
+                        else if(portList.at(i).porttype == "ReadPortType")
                         {
                             initAlgorithms.last().remove(idx, 3);
                         }
@@ -242,11 +242,11 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                     if(portList.at(i).nodetype == "NodeSignal")     //Signal nodes are special, they use the port name as the variable name
                     {
                         int idx = equations.last().indexOf(temp)+temp.size()-1;
-                        if(portList.at(i).porttype == "WritePort")
+                        if(portList.at(i).porttype == "WritePortType")
                         {
                             equations.last().remove(idx, 4);
                         }
-                        else if(portList.at(i).porttype == "ReadPort")
+                        else if(portList.at(i).porttype == "ReadPortType")
                         {
                             equations.last().remove(idx, 3);
                         }
@@ -283,11 +283,11 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                     if(portList.at(i).nodetype == "NodeSignal")     //Signal nodes are special, they use the port name as the variable name
                     {
                         int idx = finalAlgorithms.last().indexOf(temp)+temp.size()-1;
-                        if(portList.at(i).porttype == "WritePort")
+                        if(portList.at(i).porttype == "WritePortType")
                         {
                             finalAlgorithms.last().remove(idx, 4);
                         }
-                        else if(portList.at(i).porttype == "ReadPort")
+                        else if(portList.at(i).porttype == "ReadPortType")
                         {
                             finalAlgorithms.last().remove(idx, 3);
                         }
@@ -463,11 +463,11 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     for(int i=0; i<ports.size(); ++i)
     {
         QString num = QString::number(i+1);
-        if(ports[i].porttype == "ReadPort")
+        if(ports[i].porttype == "ReadPortType")
         {
             nonStateVars.append(Expression(ports[i].name));
         }
-        else if(ports[i].porttype == "PowerPort" && cqsType == "C")
+        else if(ports[i].porttype == "PowerPortType" && cqsType == "C")
         {
             QStringList qVars;
             qVars << NodeInfo(ports[i].nodetype).qVariables;
@@ -476,7 +476,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
                 nonStateVars.append(Expression(qVars[v]+num));
             }
         }
-        else if(ports[i].porttype == "PowerPort" && cqsType == "Q")
+        else if(ports[i].porttype == "PowerPortType" && cqsType == "Q")
         {
             QStringList cVars;
             cVars << NodeInfo(ports[i].nodetype).cVariables;
@@ -520,11 +520,11 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     for(int i=0; i<ports.size(); ++i)
     {
         QString num = QString::number(i+1);
-        if(ports[i].porttype == "ReadPort" || ports[i].porttype == "WritePort")
+        if(ports[i].porttype == "ReadPortType" || ports[i].porttype == "WritePortType")
         {
             nonLocals.append(Expression(ports[i].name));     //Remove all readport/writeport varibles
         }
-        else if(ports[i].porttype == "PowerPort")
+        else if(ports[i].porttype == "PowerPortType")
         {
             QStringList qVars;
             QStringList cVars;

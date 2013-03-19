@@ -80,7 +80,7 @@ public:
 class PortSpecification
 {
 public:
-    PortSpecification(QString porttype = "ReadPort", QString nodetype = "NodeSignal", QString name = QString(), bool notrequired=false, QString defaultvalue=QString());
+    PortSpecification(QString porttype = "ReadPortType", QString nodetype = "NodeSignal", QString name = QString(), bool notrequired=false, QString defaultvalue=QString());
     QString porttype;
     QString nodetype;
     QString name;

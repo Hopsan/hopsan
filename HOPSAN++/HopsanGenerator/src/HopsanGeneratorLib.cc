@@ -78,7 +78,7 @@ extern "C" DLLIMPORTEXPORT void callCppGenerator(string cppCode, string coreIncl
     {
         if(lines.at(l).contains("addPowerPort"))
         {
-            QString portType = "PowerPort";
+            QString portType = "PowerPortType";
             QString portName = lines.at(l).section("\"",1,1);
             QString nodeType = lines.at(l).section("\"",3,3);
             ports.append(PortSpecification(portType, nodeType, portName, false, 0));
@@ -86,7 +86,7 @@ extern "C" DLLIMPORTEXPORT void callCppGenerator(string cppCode, string coreIncl
         }
         else if(lines.at(l).contains("addReadPort"))
         {
-            QString portType = "ReadPort";
+            QString portType = "ReadPortType";
             QString portName = lines.at(l).section("\"",1,1);
             QString nodeType = lines.at(l).section("\"",3,3);
             ports.append(PortSpecification(portType, nodeType, portName, false, 0));
@@ -94,7 +94,7 @@ extern "C" DLLIMPORTEXPORT void callCppGenerator(string cppCode, string coreIncl
         }
         else if(lines.at(l).contains("addWritePort"))
         {
-            QString portType = "WritePort";
+            QString portType = "WritePortType";
             QString portName = lines.at(l).section("\"",1,1);
             QString nodeType = lines.at(l).section("\"",3,3);
             ports.append(PortSpecification(portType, nodeType, portName, false, 0));
@@ -102,7 +102,7 @@ extern "C" DLLIMPORTEXPORT void callCppGenerator(string cppCode, string coreIncl
         }
         else if(lines.at(l).contains("addPowerMultiPort"))
         {
-            QString portType = "PowerMultiPort";
+            QString portType = "PowerMultiportType";
             QString portName = lines.at(l).section("\"",1,1);
             QString nodeType = lines.at(l).section("\"",3,3);
             ports.append(PortSpecification(portType, nodeType, portName, false, 0));
@@ -110,7 +110,7 @@ extern "C" DLLIMPORTEXPORT void callCppGenerator(string cppCode, string coreIncl
         }
         else if(lines.at(l).contains("addReadMultiPort"))
         {
-            QString portType = "ReadMultiPort";
+            QString portType = "ReadMultiportType";
             QString portName = lines.at(l).section("\"",1,1);
             QString nodeType = lines.at(l).section("\"",3,3);
             ports.append(PortSpecification(portType, nodeType, portName, false, 0));

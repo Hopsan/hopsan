@@ -383,7 +383,7 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
             for(int i=0; i<comp.portNames.size(); ++i)
             {
                 QStringList varNames;
-                if(comp.portNodeTypes[i] == "NodeSignal" && comp.portTypes[i] == "WritePort")
+                if(comp.portNodeTypes[i] == "NodeSignal" && comp.portTypes[i] == "WritePortType")
                 {
                     varNames << comp.portNames[i];
                 }
@@ -423,7 +423,7 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
     for(int i=0; i<comp.portNames.size(); ++i)
     {
         QStringList varNames;
-        if(comp.portNodeTypes[i] == "NodeSignal" && comp.portTypes[i] == "ReadPort")
+        if(comp.portNodeTypes[i] == "NodeSignal" && comp.portTypes[i] == "ReadPortType")
         {
             varNames << comp.portNames[i];
         }
@@ -435,7 +435,7 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
 //        {
 //            varNames << NodeInfo(comp.portNodeTypes[i]).cVariables;
 //        }
-        else if(comp.portTypes[i] != "WritePort")
+        else if(comp.portTypes[i] != "WritePortType")
         {
             varNames << NodeInfo(comp.portNodeTypes[i]).qVariables;       //Always create both C- and Q-type variables, regaradless of component type (they may be needed)
             varNames << NodeInfo(comp.portNodeTypes[i]).cVariables;
@@ -463,7 +463,7 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
     for(int i=0; i<comp.portNames.size(); ++i)
     {
         QStringList varNames;
-        if(comp.portNodeTypes[i] == "NodeSignal" && comp.portTypes[i] == "WritePort")
+        if(comp.portNodeTypes[i] == "NodeSignal" && comp.portTypes[i] == "WritePortType")
         {
             varNames << comp.portNames[i];
         }
