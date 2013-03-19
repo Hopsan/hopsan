@@ -642,8 +642,8 @@ SharedLogVariableDataPtrT LogDataHandler::getPlotData(int generation, QString co
     QString concName = componentName+"#"+portName+"#"+dataName;
 
     //! @todo this should probalby be handled in collectData
-    if(mpParentContainerObject->getModelObject(componentName)->getPort(portName)->getPortType() == "POWERMULTIPORT" ||
-       mpParentContainerObject->getModelObject(componentName)->getPort(portName)->getPortType() == "READMULTIPORT")
+    if(mpParentContainerObject->getModelObject(componentName)->getPort(portName)->getPortType() == "PowerMultiportType" ||
+       mpParentContainerObject->getModelObject(componentName)->getPort(portName)->getPortType() == "ReadMultiportType")
     {
         QString newPortName = mpParentContainerObject->getModelObject(componentName)->getPort(portName)->getConnectedPorts().first()->getName();
         QString newComponentName = mpParentContainerObject->getModelObject(componentName)->getPort(portName)->getConnectedPorts().first()->getParentModelObjectName();

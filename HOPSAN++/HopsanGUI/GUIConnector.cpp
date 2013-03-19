@@ -294,7 +294,7 @@ void Connector::finishCreation()
     if( ( ((mpEndPort->getPortDirection() == LeftRightDirectionType) && (mGeometries.back() == Horizontal)) ||
           ((mpEndPort->getPortDirection() == TopBottomDirectionType) && (mGeometries.back() == Vertical)) ) ||
           (mGeometries[mGeometries.size()-2] == Diagonal) ||
-          mpEndPort->getPortType() == "READMULTIPORT" || mpEndPort->getPortType() == "POWERMULTIPORT")
+          mpEndPort->getPortType() == "ReadMultiportType" || mpEndPort->getPortType() == "PowerMultiportType")
     {
             //Wrong direction of last line, so remove last point. This is because an extra line was added with the last click, that shall not be there. It is also possible that we end up here because the end port is a multi port, which mean that we shall not add any offset to it.
         this->removePoint();
@@ -930,13 +930,13 @@ void Connector::determineAppearance()
     //Add arrow to the connector if it is of signal type
     if (mpEndPort->getNodeType() == "NodeSignal")
     {
-        if( !( (endPortType == "READPORT" || endPortType == "READMULTIPORT") && (startPortType == "READPORT" || startPortType == "READMULTIPORT") ) )    //No arrow if connecting two read ports
+        if( !( (endPortType == "ReadPortType" || endPortType == "ReadMultiportType") && (startPortType == "ReadPortType" || startPortType == "ReadMultiportType") ) )    //No arrow if connecting two read ports
         {
-            if ( (endPortType == "READPORT") || (endPortType == "READMULTIPORT") || (startPortType == "WRITEPORT" && endPortType == "SYSTEMPORT"))
+            if ( (endPortType == "ReadPortType") || (endPortType == "ReadMultiportType") || (startPortType == "WritePortType" && endPortType == "SystemPortType"))
             {
                 this->getLastLine()->addEndArrow();
             }
-            else if ( (startPortType == "READPORT") || (startPortType == "READMULTIPORT") || (startPortType == "SYSTEMPORT" && endPortType == "WRITEPORT"))
+            else if ( (startPortType == "ReadPortType") || (startPortType == "ReadMultiportType") || (startPortType == "SystemPortType" && endPortType == "WritePortType"))
             {
                 //Assumes that the startport was a read port or multiread port
                 mpLines[0]->addStartArrow();
@@ -945,24 +945,24 @@ void Connector::determineAppearance()
     }
 
     //Now replace tpes if systemports to select correct connector graphics
-    if (startPortType == "SYSTEMPORT")
+    if (startPortType == "SystemPortType")
     {
         startPortType = mpStartPort->getPortType(CoreSystemAccess::InternalPortType);
     }
-    if (endPortType == "SYSTEMPORT")
+    if (endPortType == "SystemPortType")
     {
         endPortType = mpEndPort->getPortType(CoreSystemAccess::InternalPortType);
     }
 
-    if( (startPortType == "POWERPORT") || (endPortType == "POWERPORT") || (startPortType == "POWERMULTIPORT") || (endPortType == "POWERMULTIPORT") )
+    if( (startPortType == "PowerPortType") || (endPortType == "PowerPortType") || (startPortType == "PowerMultiportType") || (endPortType == "PowerMultiportType") )
     {
         mpConnectorAppearance->setStyle(PowerConnectorStyle);
     }
-    else if( (startPortType == "READPORT") || (endPortType == "READPORT") || (startPortType == "READMULTIPORT") || (endPortType == "READMULTIPORT") )
+    else if( (startPortType == "ReadPortType") || (endPortType == "ReadPortType") || (startPortType == "ReadMultiportType") || (endPortType == "ReadMultiportType") )
     {
         mpConnectorAppearance->setStyle(SignalConnectorStyle);
     }
-    else if( (startPortType == "WRITEPORT") || (endPortType == "WRITEPORT") )
+    else if( (startPortType == "WritePortType") || (endPortType == "WritePortType") )
     {
         mpConnectorAppearance->setStyle(SignalConnectorStyle);
     }

@@ -44,7 +44,7 @@ void PortAppearance::selectPortIcon(QString CQSType, QString porttype, QString n
     if (nodetype == "NodeSignal")
     {
         mMainIconPath.append("SignalPort");
-        if ( porttype == "READPORT" || porttype == "READMULTIPORT")
+        if ( porttype == "ReadPortType" || porttype == "ReadMultiportType")
         {
             mMainIconPath.append("_read");
         }
@@ -88,7 +88,7 @@ void PortAppearance::selectPortIcon(QString CQSType, QString porttype, QString n
     mMainIconPath.append(".svg");
 
     //Check if we need to add multiport overlay
-    if (porttype.contains("MULTIPORT"))
+    if (porttype.contains("MultiPortType"))
     {
         mMultiPortOverlayPath = (QString(PORTICONPATH) + "MultiPortOverlay.svg");
     }

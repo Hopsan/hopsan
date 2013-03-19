@@ -1002,27 +1002,27 @@ std::string hopsan::portTypeToString(const PortTypesEnumT type)
     switch (type)
     {
     case PowerPortType :
-        return "POWERPORT";
+        return "PowerPortType";
         break;
     case ReadPortType :
-        return "READPORT";
+        return "ReadPortType";
         break;
     case WritePortType :
-        return "WRITEPORT";
+        return "WritePortType";
         break;
     case SystemPortType :
-        return "SYSTEMPORT";
+        return "SystemPortType";
         break;
     case MultiportType:
-        return "MULTIPORT";
+        return "MultiPortType";
         break;
     case PowerMultiportType:
-        return "POWERMULTIPORT";
+        return "PowerMultiportType";
         break;
     case ReadMultiportType:
-        return "READMULTIPORT";
+        return "ReadMultiportType";
         break;
     default :
-        return "UNDEFINEDPORT";
+        return "UndefinedPortType";
     }
 }

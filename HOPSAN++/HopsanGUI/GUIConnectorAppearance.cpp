@@ -51,11 +51,11 @@ void ConnectorAppearance::setIsoStyle(GraphicsTypeEnumT gfxType)
 
 void ConnectorAppearance::setTypeAndIsoStyle(QString porttype, GraphicsTypeEnumT gfxType)
 {
-    if(porttype=="POWERPORT")
+    if(porttype=="PowerPortType")
     {
         setStyle(PowerConnectorStyle);
     }
-    else if(porttype=="READPORT" || "WRITEPORT")
+    else if(porttype=="ReadPortType" || "WritePortType")
     {
         setStyle(SignalConnectorStyle);
     }

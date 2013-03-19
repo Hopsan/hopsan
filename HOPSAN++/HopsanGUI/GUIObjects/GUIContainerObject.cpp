@@ -1384,7 +1384,7 @@ bool ContainerObject::finilizeConnector(Port *endPort)
         mpTempConnector->finishCreation();
 
         //Refresh startport now that end port has been connected (for system ports)
-        if (mpTempConnector->getStartPort()->getPortType() == "SYSTEMPORT")
+        if (mpTempConnector->getStartPort()->getPortType() == "SystemPortType")
         {
             mpTempConnector->getStartPort()->refreshPortGraphics();
         }

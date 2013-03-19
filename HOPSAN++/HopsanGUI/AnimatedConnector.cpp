@@ -53,9 +53,9 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *pAn
     mStartPortName = pConnector->getStartPortName();
     mEndPortName = pConnector->getEndPortName();
 
-    if(pConnector->getStartPort()->getNodeType() == "NodeHydraulic" && pConnector->getStartPort()->getPortType() != "READPORT" && pConnector->getEndPort()->getPortType() != "READPORT")
+    if(pConnector->getStartPort()->getNodeType() == "NodeHydraulic" && pConnector->getStartPort()->getPortType() != "ReadPortType" && pConnector->getEndPort()->getPortType() != "ReadPortType")
     {
-        if(pConnector->getStartPort()->getPortType() == "POWERMULTIPORT")
+        if(pConnector->getStartPort()->getPortType() == "PowerMultiportType")
         {
             int g = pConnector->getParentContainer()->getLogDataHandler()->getLatestGeneration();
             QString componentName = pConnector->getEndPort()->getParentModelObject()->getName();
@@ -80,7 +80,7 @@ AnimatedConnector::AnimatedConnector(Connector *pConnector, AnimationWidget *pAn
             }
         }
 
-        if(mpConnector->getStartPort()->getPortType() == "POWERMULTIPORT")
+        if(mpConnector->getStartPort()->getPortType() == "PowerMultiportType")
         {
             mComponentName = mpConnector->getEndPort()->getParentModelObject()->getName();
             mPortName = mpConnector->getEndPort()->getName();

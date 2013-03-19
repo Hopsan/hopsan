@@ -276,15 +276,8 @@ void Port::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     if (mpPortAppearance->mEnabled)
     {
-        //std::cout << "GUIPort.cpp: " << "contextMenuEvent" << std::endl;
-
-        //! @todo Check with the log data handler if port is plottable, and disable menu if not (outcommented condition does not work anymore...)
-        if ((!this->isConnected()) /*|| (mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getTimeVector(getGuiModelObjectName(), this->getName()).empty())*/)
-        {
-            event->ignore();
-        }
-        //Disables the user from plotting MULTIPORTS.
-        else if(getPortType() == QString("POWERMULTIPORT"))
+        // Prevent the user from plotting MULTIPORTS.
+        if(getPortType() == QString("PowerMultiportType"))
         {
             QMenu menu;
             QAction *action;
@@ -304,6 +297,7 @@ void Port::openRightClickMenu(QPoint screenPos)
 {
     QMenu menu;
 
+    //! @todo maybe we should not show list if no data is availible for plotting (check with logdatahandler maybe)
     QVector<QString> variableNames;
     QVector<QString> variableUnits;
     mpParentModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(mpParentModelObject->getName(), this->getName(), variableNames, variableUnits);
@@ -494,7 +488,7 @@ void Port::refreshPortGraphics()
         //Systemports may change appearance depending on what is connected
         CoreSystemAccess::PortTypeIndicatorT int_ext_act = CoreSystemAccess::ActualPortType;
         QString cqsType;
-        if (getPortType() == "SYSTEMPORT")
+        if (getPortType() == "SystemPortType")
         {
             if (getParentModelObject()->getTypeName() == HOPSANGUICONTAINERPORTTYPENAME)
             {
@@ -600,14 +594,9 @@ ModelObject *Port::getParentModelObject()
 //! @param dataUnit sets the unit to show in the plot (has no connection to data, just text).
 PlotWindow *Port::plot(QString dataName, QString dataUnit, QColor desiredCurveColor)
 {
-    if(this->isConnected())
-    {
-        QString fullName = makeConcatName(mpParentModelObject->getName(),this->getName(),dataName);
-        //! @todo  why do we have unit here
-        return getParentContainerObject()->getLogDataHandler()->plotVariable(0, fullName, -1, 0, desiredCurveColor);
-        //return gpMainWindow->mpPlotWidget->mpPlotVariableTree->createPlotWindow(mpParentGuiModelObject->getName(), this->getName(), dataName, dataUnit, desiredCurveColor);
-    }
-    return 0;       //Fail!
+    QString fullName = makeConcatName(mpParentModelObject->getName(),this->getName(),dataName);
+    //! @todo  why do we have unit here
+    return getParentContainerObject()->getLogDataHandler()->plotVariable(0, fullName, -1, 0, desiredCurveColor);
 }
 
 //! Wrapper for the Core getPortTypeString() function
@@ -654,7 +643,7 @@ void Port::rememberConnection(Connector *pConnector)
     //qDebug() << "Adding connection, connections = " << mnConnections;
 
     // Refresh port graphics if it is a system port
-    if (getPortType() == "SYSTEMPORT")
+    if (getPortType() == "SystemPortType")
     {
         refreshPortGraphics();
     }
@@ -667,7 +656,7 @@ void Port::forgetConnection(Connector *pConnector)
     mConnectedConnectors.remove(idx);
 
     // Refresh port graphics if it is a system port
-    if (getPortType() == "SYSTEMPORT")
+    if (getPortType() == "SystemPortType")
     {
         refreshPortGraphics();
     }

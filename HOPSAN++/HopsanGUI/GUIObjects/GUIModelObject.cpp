@@ -406,7 +406,7 @@ void ModelObject::showLosses()
     for(int p=0; p<mPortListPtrs.size(); ++p)
     {
         QString portType = mPortListPtrs[p]->getPortType();
-        if(portType == "SYSTEMPORT")
+        if(portType == "SystemPortType")
         {
             portType = mPortListPtrs[p]->getPortType(CoreSystemAccess::InternalPortType);
         }
@@ -414,15 +414,15 @@ void ModelObject::showLosses()
         NodeInfo::getNodeTypes(nodeTypes);
         Q_FOREACH(const QString &type, nodeTypes)
         {
-            if(mPortListPtrs[p]->getNodeType() == type && portType != "READPORT")
+            if(mPortListPtrs[p]->getNodeType() == type && portType != "ReadPortType")
             {
                 //Power port, so we must cycle all connected ports and ask for their data
-                if(mPortListPtrs[p]->getPortType() == "POWERMULTIPORT" || mPortListPtrs[p]->getPortType() == "SIGNALMULTIPORT")
+                if(mPortListPtrs[p]->getPortType() == "PowerMultiportType" || mPortListPtrs[p]->getPortType() == "SIGNALMULTIPORT")
                 {
                     QVector<Port *> vConnectedPorts = mPortListPtrs[p]->getConnectedPorts();
                     for(int i=0; i<vConnectedPorts.size(); ++i)
                     {
-                        if(vConnectedPorts.at(i)->getPortType() == "READPORT")
+                        if(vConnectedPorts.at(i)->getPortType() == "ReadPortType")
                         {
                             continue;
                         }
