@@ -55,7 +55,7 @@ namespace hopsan {
         enum RequireConnectionEnumT {Required, NotRequired, REQUIRED=Required, NOTREQUIRED=NotRequired};
 
         //Constructors - Destructors
-        Port(const std::string nodeType, const std::string portName, Component *pPortOwner, Port *pParentPort=0);
+        Port(const std::string nodeType, const std::string portName, Component *pParentComponent, Port *pParentPort=0);
         virtual ~Port();
 
         //! @brief Reads a value from the connected node
@@ -97,6 +97,8 @@ namespace hopsan {
         virtual bool isConnected();
         virtual bool isConnectedTo(Port *pOtherPort);
         bool isConnectionRequired();
+        virtual std::vector<Port*> &getConnectedPorts(const int portIdx=-1);
+        size_t getNumConnectedPorts(const int portIdx=-1);
 
         virtual size_t getNumPorts();
 
@@ -117,7 +119,7 @@ namespace hopsan {
 
         char *getVariableAlias(const int id);
         int getVariableIdByAlias(const std::string alias) const;
-        virtual std::vector<Port*> &getConnectedPorts(const int portIdx=-1);
+
 
 
     protected:
@@ -132,7 +134,7 @@ namespace hopsan {
         std::vector<Port*> mConnectedPorts;
 
         virtual Node *getNodePtr(const size_t portIdx=0);
-        void setNode(Node* pNode, const size_t portIdx=0);
+        virtual void setNode(Node* pNode);
 
         virtual Port* addSubPort();
         virtual void removeSubPort(Port* ptr);
@@ -146,12 +148,11 @@ namespace hopsan {
 
     private:
         std::string mPortName;
-        Node* mpNode;
-        Node* mpNCDummyNode; //NotConnected dummy node
+        Node *mpNode;
         std::map<std::string, int> mVariableAliasMap;
         bool mConnectionRequired;
 
-        char* mTempAlias;
+        char* mpTempAlias;
     };
 
 
@@ -210,6 +211,7 @@ namespace hopsan {
         std::vector<Port*> &getConnectedPorts(const int portIdx=-1);
 
     protected:
+        void setNode(Node* pNode);
         Node *getNodePtr(const size_t portIdx=0);
         void removeSubPort(Port* ptr);
 
@@ -288,7 +290,7 @@ namespace hopsan {
         inline double readNode(const size_t idx) const;
     };
 
-    Port* createPort(const PortTypesEnumT portType, const std::string nodeType, const std::string name, Component *pPortOwner, Port *pParentPort=0);
+    Port* createPort(const PortTypesEnumT portType, const std::string nodeType, const std::string name, Component *pParentComponent, Port *pParentPort=0);
     std::string DLLIMPORTEXPORT portTypeToString(const PortTypesEnumT type);
 }
 

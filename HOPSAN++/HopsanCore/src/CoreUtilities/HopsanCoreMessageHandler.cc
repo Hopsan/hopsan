@@ -25,6 +25,7 @@
 #include "CoreUtilities/StringUtilities.h"
 
 #include <cmath>
+#include <cstdlib>
 
 #ifdef USETBB
 #include "mutex.h"
@@ -35,9 +36,9 @@ using namespace hopsan;
 
 HopsanCoreMessageHandler::HopsanCoreMessageHandler()
 {
-    mTempMessage = (char*)malloc(sizeof(char));
-    mTempTag = (char*)malloc(sizeof(char));
-    mTempType = (char*)malloc(sizeof(char));
+    mTempMessage = 0;
+    mTempTag = 0;
+    mTempType = 0;
     mMaxQueueSize = 10000;
 #ifdef USETBB
     mpMutex = new tbb::mutex;

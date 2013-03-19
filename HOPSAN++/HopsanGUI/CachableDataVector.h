@@ -76,7 +76,7 @@ public:
     ~MultiDataVectorCache();
     bool addVector(const QVector<double> &rDataVector, quint64 &rStartByte, quint64 &rNumBytes);
     bool beginMultiAppend();
-    bool endMultiAppend();
+    void endMultiAppend();
 
     bool copyData(const quint64 startByte, const quint64 nBytes, QVector<double> &rData);
     bool replaceData(const quint64 startByte, const QVector<double> &rNewData);

@@ -39,20 +39,25 @@ using namespace std;
 using namespace hopsan;
 
 //! @brief Port base class constructor
-Port::Port(const string nodeType, const string portName, Component *pPortOwner, Port *pParentPort)
+Port::Port(const string nodeType, const string portName, Component *pParentComponent, Port *pParentPort)
 {
     mPortType = UndefinedPortType;
     mPortName = portName;
     mNodeType = nodeType;
-    mpComponent = pPortOwner;
+    mpComponent = pParentComponent;
     mpParentPort = pParentPort; //Only used by subports in multiports
     mConnectionRequired = true;
     mConnectedPorts.clear();
     mpNode = 0;
     mpStartNode = 0;
-    mpNCDummyNode = 0;
+    mpTempAlias=0;
 
-    mTempAlias = (char*)malloc(sizeof(char));
+    // Create the initial node
+    mpNode = getComponent()->getHopsanEssentials()->createNode(mNodeType);
+    if (getComponent()->getSystemParent())
+    {
+        getComponent()->getSystemParent()->addSubNode(mpNode);
+    }
 }
 
 
@@ -68,13 +73,22 @@ Port::~Port()
 //        }
     }
 
-    //Remove dummy node if it exists
-    if (mpNCDummyNode != 0)
+    if (mpStartNode)
     {
-        delete mpNCDummyNode;
+        getComponent()->getHopsanEssentials()->removeNode(mpStartNode);
     }
 
-    free(mTempAlias);
+    // Remove node if it was not handled by disconnect (like in non-connected ports)
+    if (mpNode)
+    {
+        if (mpNode->getOwnerSystem())
+        {
+            mpNode->getOwnerSystem()->removeSubNode(mpNode);
+        }
+        getComponent()->getHopsanEssentials()->removeNode(mpNode);
+    }
+
+    free(mpTempAlias);
 }
 
 
@@ -178,28 +192,87 @@ double *Port::getNodeDataPtr(const size_t idx, const size_t /*portIdx*/) const
 //! @param [in] defaultValue Default value if port not connected
 double *Port::getSafeNodeDataPtr(const size_t idx, const double defaultValue, const size_t /*portIdx*/)
 {
-    if (mpNode != 0)
+//    if (mpNode != 0)
+//    {
+//        return mpNode->getDataPtr(idx);
+//    }
+//    else
+//    {
+//        if (mpNCDummyNode == 0)
+//        {
+//            mpNCDummyNode = getComponent()->getHopsanEssentials()->createNode(mNodeType);
+//        }
+//        mpNCDummyNode->setDataValue(idx, defaultValue);
+//        return mpNCDummyNode->getDataPtr(idx);
+//    }
+    if (mpNode->getNumConnectedPorts() == 1)
     {
-        return mpNode->getDataPtr(idx);
+        mpNode->setDataValue(idx, defaultValue);
     }
-    else
-    {
-        if (mpNCDummyNode == 0)
-        {
-            mpNCDummyNode = getComponent()->getHopsanEssentials()->createNode(mNodeType);
-        }
-        mpNCDummyNode->setDataValue(idx, defaultValue);
-        return mpNCDummyNode->getDataPtr(idx);
-    }
+    return mpNode->getDataPtr(idx);
 }
 
 
 
+////! @brief Set the node that the port is connected to
+////! @param [in] pNode A pointer to the Node, or 0 for NC dummy node
+//void Port::setNode(Node* pNode)
+//{
+//    //! @todo what to do with log data (clear maybe) if dummy node
+//    if (mpNode)
+//    {
+//        // Ok lets make the old node forget that it is connected to this port
+//        // Unless it is the dummyNode, otherwise someone else might decide to delete teh node as it seems noone is using it
+//        if (!mIsNodeOwner)
+//        {
+//            mpNode->removeConnectedPort(this);
+//        }
+
+//        // Check if we should remove current dummy node
+//        if (mIsNodeOwner && (pNode != mpNode))
+//        {
+//            if (mpNode->getOwnerSystem())
+//            {
+//                mpNode->getOwnerSystem()->removeSubNode(mpNode);
+//            }
+//            mIsNodeOwner = false;
+//        }
+//    }
+
+//    // If node was supplied, use it, else create a dummy node
+//    if (pNode)
+//    {
+//        mpNode = pNode;
+//    }
+//    else if (pNode != mpNode)
+//    {
+//        // Use initial dummy node
+//        mpNode = getComponent()->getHopsanEssentials()->createNode(mNodeType);
+//        mIsNodeOwner = true;
+//        if (getComponent()->getSystemParent())
+//        {
+//            getComponent()->getSystemParent()->addSubNode(mpNode);
+//        }
+//    }
+//    // Make the node remember this port
+//    mpNode->addConnectedPort(this);
+//}
+
 //! @brief Set the node that the port is connected to
-//! @param [in] pNode A pointer to the Node
-void Port::setNode(Node* pNode, const size_t /*portIdx*/)
+//! @param [in] pNode A pointer to the Node, or 0 for NC dummy node
+void Port::setNode(Node* pNode)
 {
-    mpNode = pNode;
+    if (!pNode)
+    {
+        getComponent()->addFatalMessage("In Port::setNode(), You cant set a NULL node ptr");
+    }
+    else
+    {
+        //! @todo what to do with log data (clear maybe) if dummy node
+        mpNode->removeConnectedPort(this);
+        mpNode = pNode;
+        mpNode->addConnectedPort(this);
+    }
 }
 
 
@@ -216,25 +289,15 @@ void Port::addConnectedPort(Port* pPort, const size_t /*portIdx*/)
 void Port::eraseConnectedPort(Port* pPort, const size_t /*portIdx*/)
 {
     vector<Port*>::iterator it;
-    bool found = false;
     for (it=mConnectedPorts.begin(); it!=mConnectedPorts.end(); ++it)
     {
         if (*it == pPort)
         {
             mConnectedPorts.erase(it);
-            found = true;
-            //If this was the last port removed the clear rhe node ptr
-            if (mConnectedPorts.size() == 0)
-            {
-                mpNode = 0;
-            }
-            break;
+            return;
         }
     }
-    if (!found)
-    {
-        cout << "Error: You tried to erase port ptr that did not exist in the connected ports list" << endl;
-    }
+    cout << "Error: You tried to erase port ptr that did not exist in the connected ports list" << endl;
 }
 
 
@@ -244,6 +307,11 @@ void Port::eraseConnectedPort(Port* pPort, const size_t /*portIdx*/)
 vector<Port*> &Port::getConnectedPorts(const int /*portIdx*/)
 {
     return mConnectedPorts;
+}
+
+size_t Port::getNumConnectedPorts(const int portIdx)
+{
+    return getConnectedPorts(portIdx).size();
 }
 
 
@@ -292,6 +360,7 @@ void Port::setVariableAlias(const string alias, const int id)
     }
 }
 
+
 char* Port::getVariableAlias(const int id)
 {
     //char* retval;
@@ -300,13 +369,13 @@ char* Port::getVariableAlias(const int id)
     {
         if (it->second == id)
         {
-            copyString(&mTempAlias, it->first);
-            return mTempAlias;
+            copyString(&mpTempAlias, it->first);
+            return mpTempAlias;
             //return it->first;
         }
     }
-    copyString(&mTempAlias, "");
-    return mTempAlias;
+    copyString(&mpTempAlias, "");
+    return mpTempAlias;
     //return string();
 }
 
@@ -874,7 +943,6 @@ void MultiPort::removeSubPort(Port* ptr)
 //! @brief Retreives Node Ptr from given subnode
 Node *MultiPort::getNodePtr(const size_t portIdx)
 {
-    //assert(mSubPortsVector.size() > portIdx);
     if(mSubPortsVector.size() <= portIdx)
     {
         mpComponent->addWarningMessage("MultiPort::getNodePtr(): mSubPortsSVector.size() <= portIdx");
@@ -905,6 +973,11 @@ std::vector<Port*> &MultiPort::getConnectedPorts(const int portIdx)
     {
         return mSubPortsVector[portIdx]->getConnectedPorts();
     }
+}
+
+void MultiPort::setNode(Node */*pNode*/)
+{
+    // Do nothing for multiports, only subports are interfaced with
 }
 
 PowerMultiPort::PowerMultiPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : MultiPort(node_type, portname, portOwner, pParentPort)
@@ -942,27 +1015,27 @@ Port* ReadMultiPort::addSubPort()
 //! @param [in] pPortOwner A pointer to the owner component
 //! @param [in] pParentPort A pointer to the parent port in case of creation of a subport to a multiport
 //! @return A pointer to the created port
-Port* hopsan::createPort(const PortTypesEnumT portType, const std::string nodeType, const string name, Component *pPortOwner, Port *pParentPort)
+Port* hopsan::createPort(const PortTypesEnumT portType, const std::string nodeType, const string name, Component *pParentComponent, Port *pParentPort)
 {
     switch (portType)
     {
     case PowerPortType :
-        return new PowerPort(nodeType, name, pPortOwner, pParentPort);
+        return new PowerPort(nodeType, name, pParentComponent, pParentPort);
         break;
     case WritePortType :
-        return new WritePort(nodeType, name, pPortOwner, pParentPort);
+        return new WritePort(nodeType, name, pParentComponent, pParentPort);
         break;
     case ReadPortType :
-        return new ReadPort(nodeType, name, pPortOwner, pParentPort);
+        return new ReadPort(nodeType, name, pParentComponent, pParentPort);
         break;
     case SystemPortType :
-        return new SystemPort(nodeType, name, pPortOwner, pParentPort);
+        return new SystemPort(nodeType, name, pParentComponent, pParentPort);
         break;
     case PowerMultiportType :
-        return new PowerMultiPort(nodeType, name, pPortOwner, pParentPort);
+        return new PowerMultiPort(nodeType, name, pParentComponent, pParentPort);
         break;
     case ReadMultiportType :
-        return new ReadMultiPort(nodeType, name, pPortOwner, pParentPort);
+        return new ReadMultiPort(nodeType, name, pParentComponent, pParentPort);
         break;
     default :
        return 0;

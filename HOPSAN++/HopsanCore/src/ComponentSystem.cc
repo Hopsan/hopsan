@@ -424,18 +424,34 @@ void ComponentSystem::addComponents(std::vector<Component*> &rComponents)
 //! @brief Add a component to the system
 void ComponentSystem::addComponent(Component *pComponent)
 {
-    // prevent adding null ptr
+    // Prevent adding null ptr
     if (pComponent)
     {
         // First check if the name already exists, in that case change the suffix
         string modname = this->reserveUniqueName(pComponent->getName(), UniqueComponentNameType);
         pComponent->setName(modname);
 
-        //Add to the cqs component vectors
+        // Add to the cqs component vectors
         addSubComponentPtrToStorage(pComponent);
 
+        // Set system parent and model system depth hierarcy
         pComponent->setSystemParent(this);
         pComponent->mModelHierarchyDepth = this->mModelHierarchyDepth+1; //Set the ModelHierarchyDepth counter
+
+        // Go thorugh the components ports and take ownership of any dummy nodes
+        //! @todo what happens if I take ownership of an other systems components (shouldnt we take ownership of all ports nodes by default) Not sure!! especially difficult with system border nodes
+        //! @todo maybe node ownership should be decided early in initialize instead to make this less complicated
+        std::vector<Port*> ports = pComponent->getPortPtrVector();
+        for (size_t i=0; i<ports.size(); ++i)
+        {
+            if (ports[i]->getPortType() < MultiportType)
+            {
+                if (ports[i]->getNodePtr()->getNumConnectedPorts() == 1)
+                {
+                    this->addSubNode(ports[i]->getNodePtr());
+                }
+            }
+        }
     }
     else
     {
@@ -447,25 +463,22 @@ void ComponentSystem::addComponent(Component *pComponent)
 //! @brief Rename a sub component and automatically fix unique names
 void ComponentSystem::renameSubComponent(string oldname, string newname)
 {
-    //cout << "Trying to rename: " << old_name << " to " << new_name << endl;
-    //First find the post in the map where the old name resides, copy the data stored there
+    // First find the post in the map where the old name resides, copy the data stored there
     SubComponentMapT::iterator it = mSubComponentMap.find(oldname);
     Component* temp_comp_ptr;
     if (it != mSubComponentMap.end())
     {
-        //If found erase old record
+        // If found, erase old record
         temp_comp_ptr = it->second;
         mSubComponentMap.erase(it);
 
-        //insert new (with new name)
+        // Insert new (with new name)
         string mod_new_name = this->reserveUniqueName(newname, UniqueComponentNameType);
         this->unReserveUniqueName(oldname);
 
-        //cout << "new name is: " << mod_name << endl;
         mSubComponentMap.insert(pair<string, Component*>(mod_new_name, temp_comp_ptr));
 
         // Now change the actual component name, without trying to do rename (we are in rename now, would cause infinite loop)
-        //temp_comp_ptr->setName(mod_new_name, true);
         temp_comp_ptr->mName = mod_new_name;
     }
     else
@@ -492,7 +505,7 @@ void ComponentSystem::removeSubComponent(Component* pComponent, bool doDelete)
 {
     std::string compName = pComponent->getName();
 
-    //Disconnect all ports before erase from system
+    // Disconnect all ports before erase from system
     PortPtrMapT::iterator ports_it;
     vector<Port*>::iterator conn_ports_it;
     for (ports_it = pComponent->mPortPtrMap.begin(); ports_it != pComponent->mPortPtrMap.end(); ++ports_it)
@@ -506,10 +519,25 @@ void ComponentSystem::removeSubComponent(Component* pComponent, bool doDelete)
         }
     }
 
-    //Remove from storage
+    // Remove from storage
     removeSubComponentPtrFromStorage(pComponent);
 
-    //Shall we also delete the component completely
+    // Remove any dummy node ptrs
+    //! @todo (shouldnt we remove ownership of all port nodes by default) Not sure!! especially difficult with system border nodes
+    std::vector<Port*> ports = pComponent->getPortPtrVector();
+    for (size_t i=0; i<ports.size(); ++i)
+    {
+        if (ports[i]->getPortType() < MultiportType)
+        {
+            if (ports[i]->getNodePtr()->getNumConnectedPorts() == 1)
+            {
+                this->removeSubNode(ports[i]->getNodePtr());
+            }
+        }
+    }
+
+
+    // Shall we also delete the component completely
     if (doDelete)
     {
         mpHopsanEssentials->removeComponent(pComponent);
@@ -555,7 +583,7 @@ void ComponentSystem::addSubComponentPtrToStorage(Component* pComponent)
         mComponentUndefinedptrs.push_back(pComponent);
         break;
     default :
-        addErrorMessage("Trying to add module with unspecified CQS type: " + pComponent->getTypeCQSString()  + ", (Not added)");
+        addErrorMessage("Trying to add module with unspecified CQS type: "+pComponent->getTypeCQSString()+", (Not added)");
         return;
     }
 
@@ -611,16 +639,13 @@ void ComponentSystem::removeSubComponentPtrFromStorage(Component* pComponent)
             }
             break;
         default :
-            cout << "This should not happen neither C Q or S type" << endl;
-            addFatalMessage("In removeSubComponentPtrFromStorage(): Component is not of C, Q, S or undefined type.");
-            //assert(false);
+            addFatalMessage("In removeSubComponentPtrFromStorage(): Component is not of CType, QType, SType or UndefinedCQSType.");
         }
-
         mSubComponentMap.erase(it);
     }
     else
     {
-        addErrorMessage("The component you are trying to remove: " + pComponent->getName() + " does not exist (Does Nothing)");
+        addErrorMessage("The component you are trying to remove: "+pComponent->getName()+" does not exist (Does Nothing)");
     }
 }
 
@@ -736,8 +761,6 @@ bool ComponentSystem::componentVectorContains(std::vector<Component*> vector, Co
 //! It is VERY important that systemports dont have the same name as a subcomponent
 std::string ComponentSystem::determineUniquePortName(std::string portname)
 {
-    //return findUniqueName<PortPtrMapT, SubComponentMapT, ReservedNamesT>(mPortPtrMap,  mSubComponentMap, mReservedNames, portname);
-    //return findUniqueName<TakenNamesMapT>(mTakenNames, portname);
     return this->reserveUniqueName(portname, UniqueSysportNameTyp);
 }
 
@@ -747,13 +770,7 @@ std::string ComponentSystem::determineUniquePortName(std::string portname)
 //! @todo the determineUniquePortNAme and ComponentName looks VERY similar maybe we could use the same function for both
 std::string ComponentSystem::determineUniqueComponentName(std::string name)
 {
-//    name = findUniqueName<ReservedNamesT>(mReservedNames, name);
-//    name = findUniqueName<SubComponentMapT>(mSubComponentMap, name);
-//    name = findUniqueName<PortPtrMapT>(mPortPtrMap, name);
-//    //! @todo check syspar alias
     return findUniqueName<TakenNamesMapT>(mTakenNames, name);
-
-    //return findUniqueName<SubComponentMapT, PortPtrMapT, ReservedNamesT>(mSubComponentMap, mPortPtrMap, mReservedNames, name);
 }
 
 bool ComponentSystem::hasReservedUniqueName(const string &rName) const
@@ -766,20 +783,18 @@ bool ComponentSystem::hasReservedUniqueName(const string &rName) const
 //! @details For this to work we need to make sure that the sub components and systemports have unique names
 Component* ComponentSystem::getSubComponentOrThisIfSysPort(string name)
 {
-//    cout << "getComponent: " << name << " in: " << mName << endl;
-    //First try to find among subcomponents
+    // First try to find among subcomponents
     Component *tmp = getSubComponent(name);
     if (tmp == 0)
     {
-        //Now try to find among systemports
+        // Now try to find among systemports
         Port* pPort = this->getPort(name);
         if (pPort != 0)
         {
             if (pPort->getPortType() == SystemPortType)
             {
-                //Return the systemports owner (the system component)
+                // Return the systemports owner (the system component)
                 tmp = pPort->getComponent();
-                //cout << "Found systemport with name: " << name << " returning parent: " << tmp->getName() << endl;
             }
         }
     }
@@ -789,7 +804,6 @@ Component* ComponentSystem::getSubComponentOrThisIfSysPort(string name)
 
 Component* ComponentSystem::getSubComponent(string name)
 {
-//    cout << "getSubComponent: " << name << " in " <<  this->mName << endl;
     SubComponentMapT::iterator it = mSubComponentMap.find(name);
     if (it != mSubComponentMap.end())
     {
@@ -798,7 +812,6 @@ Component* ComponentSystem::getSubComponent(string name)
     else
     {
         addLogMess("ComponentSystem::getSubComponent(): The requested component does not exist.");
-        //cout << "getSubComponent: The component you requested: " << name << " does not exist in: " << this->mName << endl;
         return 0;
     }
 }
@@ -844,31 +857,30 @@ AliasHandler &ComponentSystem::getAliasHandler()
 
 
 //! @brief Add a node as subnode in the system, if the node is already owned by someone else, trasfere owneship to this system
-void ComponentSystem::addSubNode(Node* node_ptr)
+void ComponentSystem::addSubNode(Node* pNode)
 {
-    if (node_ptr->getOwnerSystem() != 0)
+    if (pNode->getOwnerSystem() != 0)
     {
-        node_ptr->getOwnerSystem()->removeSubNode(node_ptr);
+        pNode->getOwnerSystem()->removeSubNode(pNode);
     }
-    mSubNodePtrs.push_back(node_ptr);
-    node_ptr->mpOwnerSystem = this;
+    mSubNodePtrs.push_back(pNode);
+    pNode->mpOwnerSystem = this;
 }
 
 
 //! @brief Removes a previously added node
-void ComponentSystem::removeSubNode(Node* node_ptr)
+void ComponentSystem::removeSubNode(Node* pNode)
 {
     vector<Node*>::iterator it;
     for (it=mSubNodePtrs.begin(); it!=mSubNodePtrs.end(); ++it)
     {
-        if (*it == node_ptr)
+        if (*it == pNode)
         {
-            node_ptr->mpOwnerSystem = 0;
+            pNode->mpOwnerSystem = 0;
             mSubNodePtrs.erase(it);
             break;
         }
     }
-    //! @todo some notification if you try to remove something that does not exist (can not check it==mSubNodePtrs.end() ) this check can be OK after an successfull erase
 }
 
 
@@ -929,43 +941,6 @@ void ComponentSystem::preAllocateLogSpace(const double startT, const double stop
     }
 }
 
-
-////! @brief Logs time and tells all subnodes contained within a system to store current data in log
-//void ComponentSystem::logTimeAndNodes(const double time)
-//{
-//    if (mEnableLogData)
-//    {
-//        // NO!!! +mLogTimeDt*0.99 is used to make sure we do not get double comparision issues
-//        // We add 0.1*Ts to time to avoid double == double comparision issues
-//        //! @todo is this correct, Subtract a percent of logDt to avoid numerical problem with double >= double
-//        //! @todo we should instead make usre that we reun simulation to stopT+mLogTimeDt*0.99 or somthing to make sure that we get last sample logged
-//        if (time+mTimestep*0.1 >= mLastLogTime+mLogTimeDt)
-//        {
-//            //cout << "mLogCtr: " << mLogCtr << endl;
-//            //            //! @todo this if check should not be needed if everything else is working
-//            //            if (mLogCtr < mTimeStorage.size())
-//            //            {
-//            //                //! @todo maybe time vector should be in the system instead, since all nodes in the same system will have the same time vector
-//            mTimeStorage[mLogCtr] = time;   //We log the "real"  simulation time for the sample
-
-//            //! @todo we should have an other vector with those nodes that should be logged, if we make individual nodes possible to disable logging
-//            vector<Node*>::iterator it;
-//            for (it=mSubNodePtrs.begin(); it!=mSubNodePtrs.end(); ++it)
-//            {
-//                (*it)->logData(mLogCtr);
-//            }
-//            //            }else
-//            //            {
-//            //                stringstream ss;
-//            //                ss << "mLogCtr >= mTimeStorage.size() " << mLogCtr;
-//            //                //addWarningMessage(ss.str());
-//            //            }
-//            ++mLogCtr;
-
-//            mLastLogTime = mLastLogTime+mLogTimeDt; //Can not use "real" time directly as this may mean that not all log slots will be filled
-//        }
-//    }
-//}
 
 void ComponentSystem::logTimeAndNodes(const size_t simStep)
 {
@@ -1048,7 +1023,7 @@ void ComponentSystem::setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet)
         //Do we have a system parent
         if ( (mpSystemParent != 0) && (!doOnlyLocalSet) )
         {
-            //Request change by our parent (som parent cahnges are neeeded)
+            //Request change by our parent (som parent changes are neeeded)
             mpSystemParent->changeSubComponentSystemTypeCQS(mName, cqs_type);
         }
         else
@@ -1072,8 +1047,7 @@ void ComponentSystem::setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet)
                 break;
 
             default :
-                cout << "Error: Specified type _" << getTypeCQSString() << "_ does not exist!" << endl;
-                addWarningMessage("Specified type: " + getTypeCQSString() + " does not exist!, System CQStype unchanged");
+                addWarningMessage("Specified type: "+getTypeCQSString()+" does not exist!, System CQStype unchanged");
             }
         }
     }
@@ -1184,53 +1158,44 @@ void ComponentSystem::determineCQSType()
 //! @returns True if success else False
 bool ComponentSystem::connect(const string compname1, const string portname1, const string compname2, const string portname2)
 {
-    Port *pPort1, *pPort2;
-
-    //First some error checking
-    stringstream ss; //Error string stream
-
-    //Check if the components exist (and can be found)
+    // Check if the components exist (and can be found)
     Component* pComp1 = getSubComponentOrThisIfSysPort(compname1);
     Component* pComp2 = getSubComponentOrThisIfSysPort(compname2);
 
     if (pComp1 == 0)
     {
-        ss << "Component1: '"<< compname1 << "' can not be found when atempting connect";
-        addErrorMessage(ss.str(), "connectwithoutcomponent");
+        addErrorMessage("Component1: '"+compname1+"' can not be found when atempting connect", "connectwithoutcomponent");
         return false;
     }
 
     if (pComp2 == 0)
     {
-        ss << "Component2: '"<< compname2 << "' can not be found when atempting connect";
-        addErrorMessage(ss.str(), "connectwithoutcomponent");
+        addErrorMessage("Component2: '"+compname2+"' can not be found when atempting connect", "connectwithoutcomponent");
         return false;
     }
 
-    //Check if commponents have specified ports
+    // Check if commponents have specified ports
+    Port *pPort1, *pPort2;
     if (!pComp1->getPort(portname1, pPort1))
     {
-        ss << "Component: '"<< pComp1->getName() << "' does not have a port named '" << portname1 << "'";
-        addErrorMessage(ss.str(), "portdoesnotexist");
+        addErrorMessage("Component: '"+pComp1->getName()+"' does not have a port named '"+portname1+"'", "portdoesnotexist");
         return false;
     }
 
     if (!pComp2->getPort(portname2, pPort2)) //Not else if because pPort2 has to be set in getPort
     {
-        //raise Exception('type of port does not exist')
-        ss << "Component: '"<< pComp2->getName() << "' does not have a port named '" << portname2 << "'";
-        addErrorMessage(ss.str(), "portdoesnotexist");
+        addErrorMessage("Component: '"+pComp2->getName()+"' does not have a port named '"+portname2+"'", "portdoesnotexist");
         return false;
     }
 
-    //Ok components and ports exist, lets atempt the connect
+    // Ok components and ports exist, lets atempt the connect
     return connect( pPort1, pPort2 );
 }
 
 
 bool ConnectionAssistant::ensureSameNodeType(Port *pPort1, Port *pPort2)
 {
-    //Check if both ports have the same node type specified
+    // Check if both ports have the same node type specified
     if (pPort1->getNodeType() != pPort2->getNodeType())
     {
         stringstream ss;
@@ -1242,119 +1207,47 @@ bool ConnectionAssistant::ensureSameNodeType(Port *pPort1, Port *pPort2)
     return true;
 }
 
-//! @brief Assumes that nodetype is set in both nodes
-bool ConnectionAssistant::createNewNodeConnection(Port *pPort1, Port *pPort2, Node *&rpCreatedNode)
+//! @note requires that input ports are not multiports (they can be subports in multiports)
+bool ConnectionAssistant::mergeNodeConnection(Port *pPort1, Port *pPort2)
 {
-    //std::cout << "-----------------------------createNewNodeConnection" << std::endl;
     if (!ensureSameNodeType(pPort1, pPort2))
     {
         return false;
     }
 
-    //Create an instance of the node specified in nodespecifications
-    Node* pNode = mpComponentSystem->getHopsanEssentials()->createNode(pPort1->getNodeType());
-    //Node* pNode = createNodeTemp(mpComponentSystem->getHopsanEssentials(), pPort1->getNodeType());
+    Node *pOldNode1 = pPort1->getNodePtr();
+    Node *pOldNode2 = pPort2->getNodePtr();
 
-    // Check so the ports can be connected
-    if (ensureConnectionOK(pNode, pPort1, pPort2))
+    // Check for very rare occurance, (Looping a subsystem, and connecting an out port to an in port that are actually directly connected to each other)
+    if (pOldNode1 == pOldNode2)
     {
-        //Set node in both components ports and add it to the parent system component
-        pPort1->setNode(pNode);
-        pPort2->setNode(pNode);
-
-        //Add port pointers to node
-        pNode->addConnectedPort(pPort1);
-        pNode->addConnectedPort(pPort2);
-
-        //let the ports know about each other
-        pPort1->addConnectedPort(pPort2);
-        pPort2->addConnectedPort(pPort1);
-
-        //Return the created node
-        rpCreatedNode = pNode;
-        return true;
-    }
-    else
-    {
-        stringstream ss;
-        ss << "Problem occured at connection" << pPort1->getComponentName() << " and " << pPort2->getComponentName();
-        mpComponentSystem->addErrorMessage(ss.str());
-        delete pNode;
-        rpCreatedNode = 0;
-        return false;
-    }
-}
-
-
-bool ConnectionAssistant::mergeOrJoinNodeConnection(Port *pPort1, Port *pPort2, Node *&rpCreatedNode)
-{
-    //std::cout << "-----------------------------mergeOrJoinNodeConnection" << std::endl;
-    Port *pMergeFrom, *pMergeTo;
-
-    if (!ensureSameNodeType(pPort1, pPort2) && (pPort1->isConnected() || pPort2->isConnected()))
-    {
-        return false;
-    }
-
-    //Ok, should we merge or join node connection
-    //lets allways merge, but if node is missing in one port than the "merge" is actually a join
-    if (!pPort1->isConnected())
-    {
-        pMergeFrom = pPort1;
-        pMergeTo = pPort2;
-    }
-    else if (!pPort2->isConnected())
-    {
-        pMergeFrom = pPort2;
-        pMergeTo = pPort1;
-    }
-    else
-    {
-        //! @todo maybe we should selcet in some smart way, for now lets merge from port1
-        pMergeFrom = pPort1;
-        pMergeTo = pPort2;
-    }
-
-    //lets keep the node in merge to port
-    Node *pKeepNode = pMergeTo->getNodePtr();
-    Node *pDiscardNode = pMergeFrom->getNodePtr();
-
-    //Check for very rare occurance, (Looping a subsystem, and connecting an out port to an in port that are actually directly connected to each other)
-    //assert(pKeepNode != pDiscardNode);
-    if (pKeepNode == pDiscardNode)
-    {
-        //! @todo dont know if this error message is clear, but this should rarely happen
         mpComponentSystem->addErrorMessage("This connection would mean that a node is joined with it self, this does not make any sense and is not allowed");
         return false;
     }
 
+    // Create a new node and recursively set in all ports
+    Node *pNewNode = mpComponentSystem->getHopsanEssentials()->createNode(pPort1->getNodeType());
+    recursivelySetNode(pPort1, 0, pNewNode);
+    recursivelySetNode(pPort2, 0, pNewNode);
 
-    //set the new node recursively in the other port
-    recursivelySetNode(pMergeFrom,0, pKeepNode);
+    // Let the ports know about each other
+    pPort1->addConnectedPort(pPort2);
+    pPort2->addConnectedPort(pPort1);
 
-    //let the ports know about each other
-    pMergeFrom->addConnectedPort(pMergeTo);
-    pMergeTo->addConnectedPort(pMergeFrom);
+    // Now delete the old nodes
+    removeNode(pOldNode1);
+    removeNode(pOldNode2);
 
-    if (pDiscardNode != 0)
+    // Update the node placement
+    determineWhereToStoreNodeAndStoreIt(pNewNode);
+
+    if (ensureConnectionOK(pNewNode, pPort1, pPort2))
     {
-//        std::cout << "node2 ports size: " <<  pDiscardNode->mPortPtrs.size() << std::endl;
-//        assert(pDiscardNode->mPortPtrs.size() == 0);
-        //! @todo Right now we dont empty the node to be discarded, we just delete it, this should be OK, but if we implement a recursivelyUnSetNode function we could do this is empty check agian, the advantage of this check is to make sure that we are not doing any mistakes in the code
-        pDiscardNode->getOwnerSystem()->removeSubNode(pDiscardNode);
-        delete pDiscardNode;
-    }
-
-
-    if (ensureConnectionOK(pKeepNode, pMergeFrom, pMergeTo))
-    {
-        rpCreatedNode = pKeepNode;
         return true;
     }
     else
     {
-        splitNodeConnection(pMergeFrom, pMergeTo); //Undo connection
-        rpCreatedNode = 0;
+        splitNodeConnection(pPort1, pPort2); //Undo connection
         return false;
     }
 }
@@ -1362,7 +1255,6 @@ bool ConnectionAssistant::mergeOrJoinNodeConnection(Port *pPort1, Port *pPort2, 
 void ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(Node* pNode)
 {
     //node ptr should not be zero
-    //assert(pNode != 0);
     if(pNode == 0)
     {
         mpComponentSystem->addFatalMessage("ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(): Node pointer is zero.");
@@ -1384,7 +1276,11 @@ void ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(Node* pNode)
 
     //Now add the node at the minimum level, if minimum is a system (we are connecting to our system parant) then dyncast the pointer
     //! @todo what if we are connecting only subsystems within the same lavel AND they have different timesteps
-    if (pMinLevelComp->isComponentSystem())
+    if (pMinLevelComp==0)
+    {
+        mpComponentSystem->addSubNode(pNode);
+    }
+    else if (pMinLevelComp->isComponentSystem())
     {
         ComponentSystem *pRootSys = dynamic_cast<ComponentSystem*>(pMinLevelComp);
         pRootSys->addSubNode(pNode);
@@ -1395,41 +1291,9 @@ void ConnectionAssistant::determineWhereToStoreNodeAndStoreIt(Node* pNode)
     }
 }
 
-bool ConnectionAssistant::deleteNodeConnection(Port *pPort1, Port *pPort2)
-{
-    stringstream ss;
-    if(pPort1->getNodePtr() != pPort2->getNodePtr())
-    {
-        mpComponentSystem->addFatalMessage("ConnectionAssistant::deleteNodeConnection(): Ports do not share the same node.");
-    }
-    //assert(pPort1->getNodePtr() == pPort2->getNodePtr());
-    Node* node_ptr = pPort1->getNodePtr();
-    cout << "nPorts in node: " << node_ptr->mConnectedPorts.size() << endl;
-
-    //Make the ports forget about each other
-    pPort1->eraseConnectedPort(pPort2);
-    pPort2->eraseConnectedPort(pPort1);
-
-    //Make the node forget about the ports
-    node_ptr->removeConnectedPort(pPort1);
-    node_ptr->removeConnectedPort(pPort2);
-
-    //If no more connections exist, remove the entier node and free the memory
-    if (node_ptr->mConnectedPorts.size() == 0)
-    {
-        cout << "No more connections to the node exists, deleteing the node" << endl;
-        node_ptr->getOwnerSystem()->removeSubNode(node_ptr);
-        delete node_ptr;
-        //! @todo maybe need to let the factory remove it insted of manually, in case of user supplied external nodes
-    }
-
-    return true;
-}
-
 void ConnectionAssistant::recursivelySetNode(Port *pPort, Port *pParentPort, Node *pNode)
 {
     pPort->setNode(pNode);
-    pNode->addConnectedPort(pPort);
     vector<Port*>::iterator pit;
     for (pit=pPort->getConnectedPorts().begin(); pit!=pPort->getConnectedPorts().end(); ++pit)
     {
@@ -1444,8 +1308,6 @@ void ConnectionAssistant::recursivelySetNode(Port *pPort, Port *pParentPort, Nod
 
 Port* ConnectionAssistant::findMultiportSubportFromOtherPort(const Port *pMultiPort, Port *pOtherPort)
 {
-    //assert(pOtherPort->getPortType() < MULTIPORT); //Make sure other is not a multiport
-    //! @todo Fatal error
     if(pOtherPort->getPortType() >= MultiportType)
     {
         mpComponentSystem->addFatalMessage("ConnectionAssistant::findMultiportSubportFromOtherPort(): Other port shall not be a multiport.");
@@ -1455,7 +1317,7 @@ Port* ConnectionAssistant::findMultiportSubportFromOtherPort(const Port *pMultiP
     std::vector<Port*> otherConnPorts = pOtherPort->getConnectedPorts();
     for (size_t i=0; i<otherConnPorts.size(); ++i)
     {
-        //We assuyme that a port can not be connected multiple times to the same multiport
+        // We assume that a port can not be connected multiple times to the same multiport
         if (otherConnPorts[i]->mpParentPort == pMultiPort)
         {
             return otherConnPorts[i];
@@ -1464,67 +1326,34 @@ Port* ConnectionAssistant::findMultiportSubportFromOtherPort(const Port *pMultiP
     return 0;
 }
 
+
+//! @note Requires that the input ports are not multiports
 bool ConnectionAssistant::splitNodeConnection(Port *pPort1, Port *pPort2)
 {
-    Port *pPortToBecomeEmpty=0, *pPortToKeep=0;
-
-    //make sure not both ports will become empty this is handled by other code
-    assert( !((pPort1->getConnectedPorts().size() < 2) && (pPort2->getConnectedPorts().size() < 2))  );
-
-    if (pPort1->getConnectedPorts().size() < 2)
+    if ((pPort1==0) || (pPort2==0))
     {
-        pPortToBecomeEmpty = pPort1;
-        pPortToKeep = pPort2;
-    }
-    else if (pPort2->getConnectedPorts().size() < 2)
-    {
-        pPortToBecomeEmpty = pPort2;
-        pPortToKeep = pPort1;
-    }
-    else
-    {
-        //unmerge
-        //Handled by if below
+        mpComponentSystem->addFatalMessage("splitNodeConnection(): One of the ports is NULL");
+        return false;
     }
 
-    //Check if we are unjoining
-    if (pPortToBecomeEmpty !=0)
-    {
-        Node* pKeepNode = pPortToKeep->getNodePtr();
+    Node *pOldNode = pPort1->getNodePtr();
+    Node *pNewNode1 = mpComponentSystem->getHopsanEssentials()->createNode(pOldNode->getNodeType());
+    Node *pNewNode2 = mpComponentSystem->getHopsanEssentials()->createNode(pOldNode->getNodeType());
 
-        //Make node forget the port to be disconnected
-        pKeepNode->removeConnectedPort(pPortToBecomeEmpty);
+    // Make the ports forget about each other, If the ports becomes empty the nodes will be reset
+    pPort1->eraseConnectedPort(pPort2);
+    pPort2->eraseConnectedPort(pPort1);
 
-        //Make the ports forget each other (the disconnected port will also forget node)
-        pPortToBecomeEmpty->eraseConnectedPort(pPortToKeep);
-        pPortToKeep->eraseConnectedPort(pPortToBecomeEmpty);
+    // Recursievly set new nodes
+    recursivelySetNode(pPort1, 0, pNewNode1);
+    recursivelySetNode(pPort2, 0, pNewNode2);
 
-        determineWhereToStoreNodeAndStoreIt(pKeepNode); //Relocate the node if necessary
-    }
-    //Else we seems to be unmerging, create a new node for the "other side" of the broken connection
-    else
-    {
-        //! @todo maybe make sure that the ports are really systemports to avoid code misstakes
-        //Lets keep the node from port1 and create a copy for port two
-        Node* pNode1 = pPort1->getNodePtr();
-        Node* pNode2 = mpComponentSystem->getHopsanEssentials()->createNode(pNode1->getNodeType());
-        //Node* pNode2 = createNodeTemp(mpComponentSystem->getHopsanEssentials(), pNode1->getNodeType());
+    // Remove the old node
+    removeNode(pOldNode);
 
-        pNode1->mConnectedPorts.clear(); //Clear all port knowledge from the port, we will reset it bellow
-
-        //Make the ports forget about each other
-        pPort1->eraseConnectedPort(pPort2);
-        pPort2->eraseConnectedPort(pPort1);
-
-        //Recursively set the node in the port, directly connected ports and infinitely recursive connected ports
-        recursivelySetNode(pPort1,0,pNode1);
-        recursivelySetNode(pPort2,0,pNode2);
-
-        //Now determine what system should own the node
-        determineWhereToStoreNodeAndStoreIt(pNode1);
-        determineWhereToStoreNodeAndStoreIt(pNode2);
-
-    }
+    // Now determine what system should own the node
+    determineWhereToStoreNodeAndStoreIt(pNewNode1);
+    determineWhereToStoreNodeAndStoreIt(pNewNode2);
 
     return true;
 }
@@ -1540,7 +1369,9 @@ void ConnectionAssistant::clearSysPortNodeTypeIfEmpty(Port *pPort)
 {
     if ( (pPort->getPortType() == SystemPortType) && (!pPort->isConnected()) )
     {
-        pPort->mNodeType = "";
+        removeNode(pPort->getNodePtr());
+        pPort->setNode(mpComponentSystem->getHopsanEssentials()->createNode("NodeEmpty"));
+        pPort->mNodeType = "NodeEmpty";
     }
 }
 
@@ -1556,7 +1387,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         return false;
     }
 
-    //Prevent connection with self
+    // Prevent connection with self
     if (pPort1 == pPort2)
     {
         addErrorMessage("You can not connect a port to it self", "selfconnection");
@@ -1568,10 +1399,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     Component* pComp2 = pPort2->getComponent();
     bool sucess=false;
 
-    //First some error checking
-    stringstream ss; //Message string stream
-
-    //Prevent connection between two multiports
+    // Prevent connection between two multiports
     //! @todo we might want to allow this in the future, right now disconnecting two multiports is also not implemented
     if ( pPort1->isMultiPort() && pPort2->isMultiPort() )
     {
@@ -1580,7 +1408,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     }
 
 
-    //Prevent connection if ports are already connected to each other
+    // Prevent connection if ports are already connected to each other
     //! @todo What will happend with multiports
     if (pPort1->isConnectedTo(pPort2))
     {
@@ -1588,14 +1416,14 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         return false;
     }
 
-    //Preven crossconnection between systems
+    // Preven crossconnection between systems
     if (!connAssist.ensureNotCrossConnecting(pPort1, pPort2))
     {
         addErrorMessage("You can not cross-connect between systems", "crossconnection");
         return false;
     }
 
-    //Prevent connection of two blank systemports
+    // Prevent connection of two blank systemports
     if ( (pPort1->getPortType() == SystemPortType) && (pPort2->getPortType() == SystemPortType) )
     {
         if ( (!pPort1->isConnected()) && (!pPort2->isConnected()) )
@@ -1605,7 +1433,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         }
     }
 
-    //Prevent connection of readport to multiport, (what do you really want to read problem)
+    // Prevent connection of readport to multiport, (what do you really want to read problem)
     if (pPort1->isMultiPort() || pPort2->isMultiPort())
     {
         if ( (pPort1->getPortType() == ReadPortType) || (pPort2->getPortType() == ReadPortType) )
@@ -1615,12 +1443,11 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
         }
     }
 
-    Node *pResultingNode = 0;
-    //Now lets find out if one of the ports is a blank systemport
+    // Now lets find out if one of the ports is a blank systemport
     //! @todo better way to find out if systemports are blank might give more clear code
     if ( ( (pPort1->getPortType() == SystemPortType) && (!pPort1->isConnected()) ) || ( (pPort2->getPortType() == SystemPortType) && (!pPort2->isConnected()) ) )
     {
-        //Now lets find out wich of the ports that is a blank systemport
+        // Now lets find out wich of the ports that is a blank systemport
         Port *pBlankSysPort;
         Port *pOtherPort;
 
@@ -1638,65 +1465,45 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
 
         pBlankSysPort->mNodeType = pOtherPort->getNodeType(); //set the nodetype in the sysport
 
-        //Check if we are connecting multiports, in that case add new subport, remember original portPointer though so that we can clean up if failure
-        Port *pOtherMultiPort=0;
-        connAssist.ifMultiportAddSubportAndSwapPtr(pOtherPort, pOtherMultiPort);
+        // Check if we are connecting multiports, in that case add new subport, remember original portPointer though so that we can clean up if failure
+        Port *pActualPort = connAssist.ifMultiportAddSubport(pOtherPort);
 
-        if (!pOtherPort->isConnected())
-        {
-            sucess = connAssist.createNewNodeConnection(pBlankSysPort, pOtherPort, pResultingNode);
-        }
-        else
-        {
-            sucess = connAssist.mergeOrJoinNodeConnection(pBlankSysPort, pOtherPort, pResultingNode);
-        }
+        sucess = connAssist.mergeNodeConnection(pBlankSysPort, pActualPort);
 
-        //Handle multiport connection sucess or failure
-        connAssist.ifMultiportCleanupAfterConnect(pOtherPort, pOtherMultiPort, sucess);
+        // Handle multiport connection sucess or failure
+        connAssist.ifMultiportCleanupAfterConnect(pOtherPort, pActualPort, sucess);
     }
-    //Non of the ports  are blank systemports
+    // Non of the ports  are blank systemports
     else
     {
-        //Check if we are connecting multiports, in that case add new subport, remember original portPointer though so that we can clean up if failure
-        Port *pMultiPort1=0, *pMultiPort2=0;
-        connAssist.ifMultiportAddSubportAndSwapPtr(pPort1, pMultiPort1);
-        connAssist.ifMultiportAddSubportAndSwapPtr(pPort2, pMultiPort2);
+        // Check if we are connecting multiports, in that case add new subport, remember original portPointer though so that we can clean up if failure
+        Port *pActualPort1 = connAssist.ifMultiportAddSubport(pPort1);
+        Port *pActualPort2 = connAssist.ifMultiportAddSubport(pPort2);
 
-        if (!pPort1->isConnected() && !pPort2->isConnected())
-        {
-            sucess = connAssist.createNewNodeConnection(pPort1, pPort2, pResultingNode);
-        }
-        else
-        {
-            sucess = connAssist.mergeOrJoinNodeConnection(pPort1, pPort2, pResultingNode);
-        }
+        sucess = connAssist.mergeNodeConnection(pActualPort1, pActualPort2);
 
-        //Handle multiport connection sucess or failure
-        connAssist.ifMultiportCleanupAfterConnect(pPort1, pMultiPort1, sucess);
-        connAssist.ifMultiportCleanupAfterConnect(pPort2, pMultiPort2, sucess);
+        // Handle multiport connection sucess or failure
+        connAssist.ifMultiportCleanupAfterConnect(pPort1, pActualPort1, sucess);
+        connAssist.ifMultiportCleanupAfterConnect(pPort2, pActualPort2, sucess);
     }
 
-    //Abbort connection if there was a connect failure
+    // Abort connection if there was a connect failure
     if (!sucess)
     {
         return false;
     }
 
-    //Update the CQS type
+    // Update the CQS type
     this->determineCQSType();
 
-    //Update parent cqs-type
+    // Update parent cqs-type
     //! @todo we should only do this if we are actually connected directly to our parent, but I dont know what will take the most time, to ckeach if we are connected to parent or to just allways refresh parent
     if (mpSystemParent != 0)
     {
         this->mpSystemParent->determineCQSType();
     }
 
-    //Update the node placement
-    connAssist.determineWhereToStoreNodeAndStoreIt(pResultingNode);
-
-    ss << "Connected: {" << pComp1->getName() << "::" << pPort1->getName() << "} and {" << pComp2->getName() << "::" << pPort2->getName() << "}";
-    addDebugMessage(ss.str(), "succesfulconnect");
+    addDebugMessage("Connected: {"+pComp1->getName()+"::"+pPort1->getName()+"} and {"+pComp2->getName()+"::"+pPort2->getName()+"}", "succesfulconnect");
     return true;
 }
 
@@ -1877,8 +1684,8 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
 
     //cout << "nQ: " << n_Qcomponents << " nC: " << n_Ccomponents << endl;
 
-    //Normaly we want at most one c and one q component but if there happen to be a subsystem in the picture allow one extra
-    //This is only true if at least one powerport is connected - signal connecetions can be between any types of components
+    // Normaly we want at most one c and one q component but if there happen to be a subsystem in the picture allow one extra
+    // This is only true if at least one powerport is connected - signal connecetions can be between any types of components
     //! @todo not 100% sure that this will work allways. Only work if we assume that the subsystem has the correct cqs type when connecting
     if ((n_Ccomponents > 1+n_SYScomponentCs) && (n_PowerPorts > 0))
     {
@@ -1902,42 +1709,76 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
 //        return false;
 //    }
 
-    //It seems to be OK!
+    // It seems to be OK!
     return true;
 }
 
 bool ConnectionAssistant::ensureNotCrossConnecting(Port *pPort1, Port *pPort2)
 {
-    //Check so that both components to connect have been added to the same system (or we are connecting to parent system)
+    // Check so that both components to connect have been added to the same system (or we are connecting to parent system)
     if ( (pPort1->getComponent()->getSystemParent() != pPort2->getComponent()->getSystemParent()) )
     {
         if ( (pPort1->getComponent()->getSystemParent() != pPort2->getComponent()) && (pPort2->getComponent()->getSystemParent() != pPort1->getComponent()) )
         {
-            stringstream ss;
-            ss << "The components, {"<< pPort1->getComponentName() << "} and {" << pPort2->getComponentName() << "}, "<< "must belong to the same subsystem";
-            mpComponentSystem->addErrorMessage(ss.str());
+            mpComponentSystem->addErrorMessage("The components, {"+pPort1->getComponentName()+"} and {"+pPort2->getComponentName()+"}, "+"must belong to the same subsystem");
             return false;
         }
     }
     return true;
 }
 
-//! @brief Detects if a port is a multiport, adds a subport and swaps the pointer, storing original port in argument two ptr
-//! @param [in,out] rpPort A refrence to a pointer to the port, will be swapped to new subport if multiport
-//! @param [in,out] rpOriginalPort A refrence to a pointer to the original multiport, will be 0 if not a multiport, will point to the multiport otherwise
-void ConnectionAssistant::ifMultiportAddSubportAndSwapPtr(Port *&rpPort, Port *&rpOriginalPort)
+//! @brief Detects if a port is a multiport and then adds adn returns a subport
+//! @param [in] pMaybeMultiport A pointer to the port that may be a multiport
+//! @returns A pointer to a new subport in teh multiport, or the pMaybeMultiport itself if it was not a multiport
+Port *ConnectionAssistant::ifMultiportAddSubport(Port *pMaybeMultiport)
 {
-    rpOriginalPort = 0; //Make sure null if not multiport
-    if (rpPort->getPortType() >= MultiportType)
+    // If the port is a multiport then create a new subport and then return it (as the actual port)
+    if (pMaybeMultiport->getPortType() >= MultiportType)
     {
-        rpOriginalPort = rpPort;
-        rpPort = rpPort->addSubPort();
+        return pMaybeMultiport->addSubPort();
+    }
+
+    // As the port was not a multiport lets return it
+    return pMaybeMultiport;
+}
+
+void ConnectionAssistant::ifMultiportPrepareDissconnect(Port *pMaybeMultiport1, Port *pMaybeMultiport2, Port *&rpActualPort1, Port *&rpActualPort2)
+{
+    if ((pMaybeMultiport1->getPortType() >= MultiportType) && (pMaybeMultiport2->getPortType() >= MultiportType))
+    {
+        mpComponentSystem->addFatalMessage("ifMultiportFindActualPort():Both ports can not be multiports");
+        rpActualPort1 = 0;
+        rpActualPort2 = 0;
+        return;
+    }
+
+    // if pMaybeMultiport1 is a multiport, but not other port
+    if (pMaybeMultiport1->getPortType() >= MultiportType)
+    {
+        rpActualPort1 = findMultiportSubportFromOtherPort(pMaybeMultiport1, pMaybeMultiport2);
+        rpActualPort2 = pMaybeMultiport2;
+        if(rpActualPort1 == 0)
+        {
+            mpComponentSystem->addFatalMessage("ifMultiportFindActualPort(): pActualPort1 == 0");
+        }
+    }
+
+
+    // if pMaybeMultiport2 is a multiport, but not other port
+    if (pMaybeMultiport2->getPortType() >= MultiportType)
+    {
+        rpActualPort1 = pMaybeMultiport1;
+        rpActualPort2 = findMultiportSubportFromOtherPort(pMaybeMultiport2, pMaybeMultiport1);
+        if(rpActualPort2 == 0)
+        {
+            mpComponentSystem->addFatalMessage("ifMultiportFindActualPort(): pActualPort2 == 0");
+        }
     }
 }
 
-void ConnectionAssistant::ifMultiportCleanupAfterConnect(Port *pSubPort, Port *pMultiPort, const bool wasSucess)
+void ConnectionAssistant::ifMultiportCleanupAfterConnect(Port *pMaybeMultiport, Port *pActualPort, const bool wasSucess)
 {
-    if (pMultiPort != 0)
+    if (pMaybeMultiport == pActualPort->getParentPort())
     {
         if (wasSucess)
         {
@@ -1946,20 +1787,20 @@ void ConnectionAssistant::ifMultiportCleanupAfterConnect(Port *pSubPort, Port *p
         else
         {
             //We need to remove the last created subport
-            pMultiPort->removeSubPort(pSubPort);
+            pMaybeMultiport->removeSubPort(pActualPort);
         }
     }
 }
 
-void ConnectionAssistant::ifMultiportCleanupAfterDisconnect(Port *&rpSubPort, Port *pMultiPort, const bool wasSucess)
+void ConnectionAssistant::ifMultiportCleanupAfterDissconnect(Port *pMaybeMultiport, Port *pActualPort, const bool wasSucess)
 {
-    if (pMultiPort != 0)
+    if (pMaybeMultiport == pActualPort->getParentPort())
     {
         if (wasSucess)
         {
             //If sucessful we should remove the empty port
-            pMultiPort->removeSubPort(rpSubPort); //! @todo maybe should set the pointer to 0 inside when deleted, need ref to ptr or ptr ptr
-            rpSubPort = pMultiPort; //We copy the multiport pointer back to the support pointer to make sure that it is still working
+            pMaybeMultiport->removeSubPort(pActualPort);
+            pActualPort = 0;
         }
         else
         {
@@ -1968,48 +1809,47 @@ void ConnectionAssistant::ifMultiportCleanupAfterDisconnect(Port *&rpSubPort, Po
     }
 }
 
-//! @brief Prepares port pointers for multiport disconnections,
-void ConnectionAssistant::ifMultiportPrepareForDisconnect(Port *&rpPort1, Port *&rpPort2, Port *&rpMultiPort1, Port *&rpMultiPort2)
+void ConnectionAssistant::removeNode(Node *pNode)
 {
-    //First make usre that multiport pointers are zero if no multiports are beeing connected
-    rpMultiPort1=0;
-    rpMultiPort2=0;
-
-    // Port 1 is a multiport, but not port2
-    if (rpPort1->getPortType() >= MultiportType && rpPort2->getPortType() < MultiportType )
+    if (pNode->getOwnerSystem())
     {
-        rpMultiPort1 = rpPort1;
-//        assert(rpPort2->getConnectedPorts().size() == 1); //Make sure that we dont atempt tu run this code on ports that are not to become empty
-//        rpPort1 = rpPort2->getConnectedPorts()[0];
-        rpPort1 = findMultiportSubportFromOtherPort(rpMultiPort1, rpPort2);
-        if(rpPort1 == 0)
-        {
-            mpComponentSystem->addFatalMessage("ifMultiportPrepareForDisconnect(): rpPort1 == 0");
-        }
-        //assert(rpPort1 != 0);
-
+        pNode->getOwnerSystem()->removeSubNode(pNode);
     }
-    // Port 2 is a multiport, but not port1
-    else if (rpPort1->getPortType() < MultiportType && rpPort2->getPortType() >= MultiportType )
-    {
-        rpMultiPort2 = rpPort2;
-//        assert(rpPort1->getConnectedPorts().size() == 1); //Make sure that we dont atempt tu run this code on ports that are not to become empty
-//        rpPort2 = rpPort1->getConnectedPorts()[0];
-        rpPort2 = findMultiportSubportFromOtherPort(rpMultiPort2, rpPort1);
-        if(rpPort2 == 0)
-        {
-            mpComponentSystem->addFatalMessage("ifMultiportPrepareForDisconnect(): rpPort2 == 0");
-        }
-        //assert(rpPort2 != 0);
-    }
-    // both ports are multiports
-    else if (rpPort1->getPortType() >= MultiportType && rpPort2->getPortType() >= MultiportType )
-    {
-        //assert("Multiport <-> Multiport disconnection has not been implemented yet Aborting!" == 0);
-        mpComponentSystem->addFatalMessage("ifMultiportPrepareForDisconnect(): Multiport <-> Multiport disconnection has not been implemented yet.");
-        //! @todo need to search around to find correct subports
-    }
+    mpComponentSystem->getHopsanEssentials()->removeNode(pNode);
 }
+
+////! @brief Prepares port pointers for multiport disconnections,
+//void ConnectionAssistant::ifMultiportPrepareForDisconnect(Port *&rpPort1, Port *&rpPort2, Port *&rpMultiSubPort1, Port *&rpMultiSubPort2)
+//{
+//    // First make sure that multiport pointers are zero if no multiports are beeing connected
+//    rpMultiSubPort1=0;
+//    rpMultiSubPort2=0;
+
+//    // Port 1 is a multiport, but not port2
+//    if (rpPort1->getPortType() >= MultiportType && rpPort2->getPortType() < MultiportType )
+//    {
+//        rpMultiSubPort1 = findMultiportSubportFromOtherPort(rpPort1, rpPort2);
+//        if(rpMultiSubPort1 == 0)
+//        {
+//            mpComponentSystem->addFatalMessage("ifMultiportPrepareForDisconnect(): rpMultiSubPort1 == 0");
+//        }
+//    }
+//    // Port 2 is a multiport, but not port1
+//    else if (rpPort1->getPortType() < MultiportType && rpPort2->getPortType() >= MultiportType )
+//    {
+//        rpMultiSubPort2 = findMultiportSubportFromOtherPort(rpPort2, rpPort1);
+//        if(rpMultiSubPort2 == 0)
+//        {
+//            mpComponentSystem->addFatalMessage("ifMultiportPrepareForDisconnect(): rpMultiSubPort2 == 0");
+//        }
+//    }
+//    // both ports are multiports
+//    else if (rpPort1->getPortType() >= MultiportType && rpPort2->getPortType() >= MultiportType )
+//    {
+//        mpComponentSystem->addFatalMessage("ifMultiportPrepareForDisconnect(): Multiport <-> Multiport disconnection has not been implemented yet.");
+//        //! @todo need to search around to find correct subports
+//    }
+//}
 
 
 //! @brief Disconnect two ports, string version
@@ -2057,71 +1897,35 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
 
     if (pPort1->isConnected() && pPort2->isConnected())
     {
-
-        // If BOTH ports will NOT become empty, and if non of them are multiports
-        if ( ((pPort1->getConnectedPorts().size() > 1) || (pPort2->getConnectedPorts().size() > 1)) &&
-             !pPort1->isMultiPort() && !pPort2->isMultiPort() )
+        // If non of the ports are multiports
+        if ( !(pPort1->isMultiPort() || pPort2->isMultiPort()) )
         {
-            //! @todo what happens if we disconnect a multiport from a port with multiple connections (can that even happen)
             success = disconnAssistant.splitNodeConnection(pPort1, pPort2);
         }
-        // If BOTH ports will NOT become empty, and if the one becoming empty is a multiport
-        //! @todo this check is incomplete becouse it collides with the creapy multiport getConnectedPorts madness
-        else if ( ( pPort1->isMultiPort() || pPort2->isMultiPort() ) &&
-                  ( ( (pPort1->getConnectedPorts().size() > 1) && !pPort1->isMultiPort() ) ||
-                    ( (pPort2->getConnectedPorts().size() > 1) && !pPort2->isMultiPort() ) ) )
+        // If one of the ports is a multiport
+        else if ( pPort1->isMultiPort() || pPort2->isMultiPort() )
         {
-            //assert( pPort1->isMultiPort() || pPort2->isMultiPort() );
-            // This assert will never become true because of if statement above
-
+            //! @todo what happens if we disconnect a multiport from a port with multiple connections (can that even happen)
             if(pPort1->isMultiPort() && pPort2->isMultiPort())
             {
                 addFatalMessage("ComponentSystem::disconnect(): Trying to disconnect two multiports.");
+                return false;
             }
 
-            //=========
-            //! @todo these lineas are degugging checks, can mayb be removed later
-            if (pPort1->isMultiPort())
-            {
-                //assert(pPort2->getConnectedPorts().size() > 1);
-                //Will never become true
-            }
-            if (pPort2->isMultiPort())
-            {
-                //assert(pPort1->getConnectedPorts().size() > 1);
-                //Will never become true
-            }
-            //==========
+            // Handle multiports
+            Port *pActualPort1, *pActualPort2;
+            disconnAssistant.ifMultiportPrepareDissconnect(pPort1, pPort2, pActualPort1, pActualPort2);
 
-            //Handle multiports
-            Port* pOriginalPort1=0, *pOriginalPort2=0;
-            disconnAssistant.ifMultiportPrepareForDisconnect(pPort1, pPort2, pOriginalPort1, pOriginalPort2);
+            success = disconnAssistant.splitNodeConnection(pActualPort1, pActualPort2);
 
-            success = disconnAssistant.splitNodeConnection(pPort1, pPort2);
-
-            //Handle multiport connection sucess or failure
-            disconnAssistant.ifMultiportCleanupAfterDisconnect(pPort1, pOriginalPort1, success);
-            disconnAssistant.ifMultiportCleanupAfterDisconnect(pPort2, pOriginalPort2, success);
-
-        }
-        // If both ports will become empty, and if one or both is a multiport
-        else
-        {
-            //Handle multiports
-            Port* pOriginalPort1=0, *pOriginalPort2=0;
-            disconnAssistant.ifMultiportPrepareForDisconnect(pPort1, pPort2, pOriginalPort1, pOriginalPort2);
-
-            success = disconnAssistant.deleteNodeConnection(pPort1, pPort2);
-
-            //Handle multiport connection sucess or failure
-            disconnAssistant.ifMultiportCleanupAfterDisconnect(pPort1, pOriginalPort1, success);
-            disconnAssistant.ifMultiportCleanupAfterDisconnect(pPort2, pOriginalPort2, success);
+            // Handle multiport connection sucess or failure
+            disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort1, pActualPort1, success);
+            disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort2, pActualPort2, success);
         }
 
         disconnAssistant.clearSysPortNodeTypeIfEmpty(pPort1);
         disconnAssistant.clearSysPortNodeTypeIfEmpty(pPort2);
         //! @todo maybe incorporate the clear checks into delete node and unmerge
-
     }
     else
     {

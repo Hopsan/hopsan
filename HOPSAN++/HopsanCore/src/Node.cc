@@ -293,9 +293,9 @@ void Node::removeConnectedPort(Port *pPort)
 //! Check if a specified port is connected to this node
 //! @param [in] pPort The port pointer to find
 //! @return Is specified port connected (true or false)
-bool Node::isConnectedToPort(Port *pPort)
+bool Node::isConnectedToPort(const Port *pPort) const
 {
-    vector<Port*>::iterator it;
+    vector<Port*>::const_iterator it;
     for (it=mConnectedPorts.begin(); it!=mConnectedPorts.end(); ++it)
     {
         if (*it == pPort)
@@ -323,10 +323,10 @@ void Node::disableLog()
 
 
 //! @brief Returns the number of attached ports of a specific type
-int Node::getNumberOfPortsByType(int type)
+int Node::getNumberOfPortsByType(const int type) const
 {
     int nPorts = 0;
-    std::vector<Port*>::iterator it;
+    std::vector<Port*>::const_iterator it;
     for (it=mConnectedPorts.begin(); it!=mConnectedPorts.end(); ++it)
     {
         if ((*it)->getPortType() == type)
@@ -335,6 +335,11 @@ int Node::getNumberOfPortsByType(int type)
         }
     }
     return nPorts;
+}
+
+size_t Node::getNumConnectedPorts() const
+{
+    return mConnectedPorts.size();
 }
 
 //! @brief Returns a pointer to the ComponentSystem that own this Node

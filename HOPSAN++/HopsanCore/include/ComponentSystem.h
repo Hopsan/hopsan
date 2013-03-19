@@ -38,9 +38,7 @@ namespace hopsan {
     public:
         ConnectionAssistant(ComponentSystem *pComponentSystem);
 
-        bool createNewNodeConnection(Port *pPort1, Port *pPort2, Node *&rpCreatedNode);
-        bool mergeOrJoinNodeConnection(Port *pPort1, Port *pPort2, Node *&rpCreatedNode);
-        bool deleteNodeConnection(Port *pPort1, Port *pPort2);
+        bool mergeNodeConnection(Port *pPort1, Port *pPort2);
         bool splitNodeConnection(Port *pPort1, Port *pPort2);
 
         void determineWhereToStoreNodeAndStoreIt(Node* pNode);
@@ -50,12 +48,14 @@ namespace hopsan {
         bool ensureSameNodeType(Port *pPort1, Port *pPort2);
         bool ensureConnectionOK(Node *pNode, Port *pPort1, Port *pPort2);
 
-        void ifMultiportAddSubportAndSwapPtr(Port *&rpPort, Port *&rpOrignialPort);
-        void ifMultiportCleanupAfterConnect(Port *pSubPort, Port *pMultiPort, const bool wasSucess);
-        void ifMultiportPrepareForDisconnect(Port *&rpPort1, Port *&rpPort2, Port *&rpMultiPort1, Port *&rpMultiPort2);
-        void ifMultiportCleanupAfterDisconnect(Port *&rpSubPort, Port *pMultiPort, const bool wasSucess);
+        Port* ifMultiportAddSubport(Port *pMaybeMultiport);
+        void ifMultiportPrepareDissconnect(Port *pMaybeMultiport1, Port *pMaybeMultiport2, Port *&rpActualPort1, Port *&rpActualPort2);
+
+        void ifMultiportCleanupAfterConnect(Port *pMaybeMultiport, Port *pActualPort, const bool wasSucess);
+        void ifMultiportCleanupAfterDissconnect(Port *pMaybeMultiport, Port *pActualPort, const bool wasSucess);
 
     private:
+        void removeNode(Node *pNode);
         void recursivelySetNode(Port *pPort, Port *pParentPort, Node *pNode);
         Port* findMultiportSubportFromOtherPort(const Port *pMultiPort, Port *pOtherPort);
         ComponentSystem *mpComponentSystem; //The system to assist
@@ -231,6 +231,10 @@ namespace hopsan {
         Parameters &getSystemParameters();
         void addSearchPath(const std::string searchPath);
 
+        // Add and Remove sub-nodes
+        void addSubNode(Node* pNode);
+        void removeSubNode(Node* pNode);
+
     protected:
         // Constructor - Destructor- Creator
         ComponentSystem();
@@ -247,10 +251,6 @@ namespace hopsan {
         void setLogSettingsSkipFactor(double factor, double start, double stop, double sampletime);
         void setLogSettingsNSamples(int nSamples, double start, double stop, double sampletime);
         void preAllocateLogSpace(const double startT, const double stopT, const size_t nSamples = 2048);
-
-        // Add and Remove sub nodes
-        void addSubNode(Node* node_ptr);
-        void removeSubNode(Node* node_ptr);
 
         // Add and Remove subcomponent ptrs from storage vectors
         void addSubComponentPtrToStorage(Component* pComponent);

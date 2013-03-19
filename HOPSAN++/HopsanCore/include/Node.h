@@ -76,6 +76,10 @@ public:
 
     void logData(const size_t logSlot);
 
+    int getNumberOfPortsByType(const int type) const;
+    size_t getNumConnectedPorts() const;
+    bool isConnectedToPort(const Port *pPort) const;
+
     Component *getWritePortComponentPtr() const;
     ComponentSystem *getOwnerSystem() const;
 
@@ -92,8 +96,6 @@ protected:
 
     double *getDataPtr(const size_t data_type);
 
-    int getNumberOfPortsByType(int type);
-
     //Protected member variables
     std::string mNiceName;
     std::vector<NodeDataDescription> mDataDescriptions;
@@ -103,7 +105,6 @@ private:
     //Private member fuctions
     void addConnectedPort(Port *pPort);
     void removeConnectedPort(Port *pPort);
-    bool isConnectedToPort(Port *pPort);
     void enableLog();
     void disableLog();
 

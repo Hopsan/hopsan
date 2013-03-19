@@ -50,7 +50,7 @@ bool MultiDataVectorCache::beginMultiAppend()
     return mIsMultiAppending;
 }
 
-bool MultiDataVectorCache::endMultiAppend()
+void MultiDataVectorCache::endMultiAppend()
 {
     mCacheFile.close();
     mIsMultiAppending = false;
