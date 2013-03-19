@@ -80,14 +80,14 @@ public:
         mZc = mBulkmodulus/mVolume*mTimestep/(1-mAlpha); //Need to be updated at simulation start since it is volume and bulk that are set.
 
         // Write to nodes
-        mpP1->writeNode(NodeHydraulic::FLOW,         mStartFlow);
-        mpP1->writeNode(NodeHydraulic::PRESSURE,     mStartPressure);
-        mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, mStartPressure+mZc*mStartFlow);
-        mpP1->writeNode(NodeHydraulic::CHARIMP,      mZc);
-        mpP2->writeNode(NodeHydraulic::FLOW,         mStartFlow);
-        mpP2->writeNode(NodeHydraulic::PRESSURE,     mStartPressure);
-        mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, mStartPressure+mZc*mStartFlow);
-        mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc);
+        mpP1->writeNode(NodeHydraulic::Flow,         mStartFlow);
+        mpP1->writeNode(NodeHydraulic::Pressure,     mStartPressure);
+        mpP1->writeNode(NodeHydraulic::WaveVariable, mStartPressure+mZc*mStartFlow);
+        mpP1->writeNode(NodeHydraulic::CharImpedance,      mZc);
+        mpP2->writeNode(NodeHydraulic::Flow,         mStartFlow);
+        mpP2->writeNode(NodeHydraulic::Pressure,     mStartPressure);
+        mpP2->writeNode(NodeHydraulic::WaveVariable, mStartPressure+mZc*mStartFlow);
+        mpP2->writeNode(NodeHydraulic::CharImpedance,      mZc);
     }
 
     // The simulateOneTimestep() function is called ONCE every time step
@@ -96,10 +96,10 @@ public:
     void simulateOneTimestep()
     {
         // First read the necessary data from nodes
-        double q1  = mpP1->readNode(NodeHydraulic::FLOW);
-        double c1  = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
-        double q2  = mpP2->readNode(NodeHydraulic::FLOW);
-        double c2  = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
+        double q1  = mpP1->readNode(NodeHydraulic::Flow);
+        double c1  = mpP1->readNode(NodeHydraulic::WaveVariable);
+        double q2  = mpP2->readNode(NodeHydraulic::Flow);
+        double c2  = mpP2->readNode(NodeHydraulic::WaveVariable);
 
         // Volume equations
         double c10 = c2 + 2.0*mZc * q2;
@@ -109,10 +109,10 @@ public:
         c2 = mAlpha*c2 + (1.0-mAlpha)*c20;
 
         // Write new values back to the nodes
-        mpP1->writeNode(NodeHydraulic::WAVEVARIABLE, c1);
-        mpP2->writeNode(NodeHydraulic::WAVEVARIABLE, c2);
-        mpP1->writeNode(NodeHydraulic::CHARIMP,      mZc);
-        mpP2->writeNode(NodeHydraulic::CHARIMP,      mZc);
+        mpP1->writeNode(NodeHydraulic::WaveVariable, c1);
+        mpP2->writeNode(NodeHydraulic::WaveVariable, c2);
+        mpP1->writeNode(NodeHydraulic::CharImpedance,      mZc);
+        mpP2->writeNode(NodeHydraulic::CharImpedance,      mZc);
     }
 
     // The finalize function is called after simulation ends

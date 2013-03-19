@@ -88,19 +88,19 @@ namespace hopsan {
             x1.resize(mNumPorts1);
             v1.resize(mNumPorts1);
 
-            mpND_in1 = getSafeNodeDataPtr(mpIn1, NodeSignal::VALUE);
-            mpND_in2 = getSafeNodeDataPtr(mpIn2, NodeSignal::VALUE);
-            mpND_out1 = getSafeNodeDataPtr(mpOut1, NodeSignal::VALUE);
+            mpND_in1 = getSafeNodeDataPtr(mpIn1, NodeSignal::Value);
+            mpND_in2 = getSafeNodeDataPtr(mpIn2, NodeSignal::Value);
+            mpND_out1 = getSafeNodeDataPtr(mpOut1, NodeSignal::Value);
 
             //Assign node data pointers
             for (size_t i=0; i<mNumPorts1; ++i)
             {
-                mvpND_f1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::FORCE, 0.0);
-                mvpND_x1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::POSITION, 0.0);
-                mvpND_v1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::VELOCITY, 0.0);
-                mvpND_c1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::WAVEVARIABLE, 0.0);
-                mvpND_Zc1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::CHARIMP, 0.0);
-                mvpND_me1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::EQMASS, 0.0);
+                mvpND_f1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::Force, 0.0);
+                mvpND_x1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::Position, 0.0);
+                mvpND_v1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::Velocity, 0.0);
+                mvpND_c1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::WaveVariable, 0.0);
+                mvpND_Zc1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::CharImpedance, 0.0);
+                mvpND_me1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeMechanic::EquivalentMass, 0.0);
             }
 
             mIntegrator.initialize(mTimestep, 0.0, 0.0);

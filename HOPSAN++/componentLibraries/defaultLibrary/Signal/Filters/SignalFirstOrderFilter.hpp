@@ -71,8 +71,8 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, 0);
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
+            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value, 0);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
 
             double num[2];
             double den[2];

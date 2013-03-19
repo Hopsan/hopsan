@@ -75,23 +75,23 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_eps = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, eps);
+            mpND_eps = getSafeNodeDataPtr(mpIn, NodeSignal::Value, eps);
 
-            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
-            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
+            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
+            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
+            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
 
-            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::PRESSURE);
-            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::FLOW);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP);
+            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Pressure);
+            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
+            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
+            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
 
-            mpND_t3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::TORQUE);
-            mpND_a3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::ANGLE);
-            mpND_w3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::ANGULARVELOCITY);
-            mpND_c3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::WAVEVARIABLE);
-            mpND_Zx3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::CHARIMP);
+            mpND_t3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::Torque);
+            mpND_a3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::Angle);
+            mpND_w3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::AngularVelocity);
+            mpND_c3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::WaveVariable);
+            mpND_Zx3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::CharImpedance);
 
             mIntegrator.initialize(mTimestep, 0, 0, 0, 0);
         }

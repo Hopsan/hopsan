@@ -164,17 +164,17 @@ public:
         //Read port variable pointers from nodes
         //Port Pmr1
         mpND_tormr1=getSafeNodeDataPtr(mpPmr1, \
-NodeMechanicRotational::TORQUE);
+NodeMechanicRotational::Torque);
         mpND_thetamr1=getSafeNodeDataPtr(mpPmr1, \
-NodeMechanicRotational::ANGLE);
+NodeMechanicRotational::Angle);
         mpND_wmr1=getSafeNodeDataPtr(mpPmr1, \
-NodeMechanicRotational::ANGULARVELOCITY);
+NodeMechanicRotational::AngularVelocity);
         mpND_cmr1=getSafeNodeDataPtr(mpPmr1, \
-NodeMechanicRotational::WAVEVARIABLE);
+NodeMechanicRotational::WaveVariable);
         mpND_Zcmr1=getSafeNodeDataPtr(mpPmr1, \
-NodeMechanicRotational::CHARIMP);
+NodeMechanicRotational::CharImpedance);
         mpND_eqInertiamr1=getSafeNodeDataPtr(mpPmr1, \
-NodeMechanicRotational::EQINERTIA);
+NodeMechanicRotational::EquivalentInertia);
         //Read inputVariables pointers from nodes
         mpND_Up=getSafeNodeDataPtr(mpPUp, NodeSignal::VALUE,mUp);
         mpND_rho=getSafeNodeDataPtr(mpPrho, NodeSignal::VALUE,mrho);

@@ -115,32 +115,32 @@ class HydraulicCylinderC : public ComponentC
             for (size_t i=0; i<mNumPorts1; ++i)
             {
 
-                mvpND_p1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::PRESSURE, 0.0);
-                mvpND_q1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::FLOW, 0.0);
-                mvpND_c1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::WAVEVARIABLE, 0.0);
-                mvpND_Zc1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::CHARIMP, 0.0);
+                mvpND_p1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::Pressure, 0.0);
+                mvpND_q1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::Flow, 0.0);
+                mvpND_c1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::WaveVariable, 0.0);
+                mvpND_Zc1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::CharImpedance, 0.0);
 
-                *mvpND_p1[i] = getStartValue(mpP1, NodeHydraulic::PRESSURE);
-                *mvpND_q1[i] = getStartValue(mpP1, NodeHydraulic::FLOW)/double(mNumPorts1);
-                *mvpND_c1[i] = getStartValue(mpP1, NodeHydraulic::PRESSURE);
+                *mvpND_p1[i] = getStartValue(mpP1, NodeHydraulic::Pressure);
+                *mvpND_q1[i] = getStartValue(mpP1, NodeHydraulic::Flow)/double(mNumPorts1);
+                *mvpND_c1[i] = getStartValue(mpP1, NodeHydraulic::Pressure);
             }
             for (size_t i=0; i<mNumPorts2; ++i)
             {
-                mvpND_p2[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeHydraulic::PRESSURE, 0.0);
-                mvpND_q2[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeHydraulic::FLOW, 0.0);
-                mvpND_c2[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeHydraulic::WAVEVARIABLE, 0.0);
-                mvpND_Zc2[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeHydraulic::CHARIMP, 0.0);
+                mvpND_p2[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeHydraulic::Pressure, 0.0);
+                mvpND_q2[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeHydraulic::Flow, 0.0);
+                mvpND_c2[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeHydraulic::WaveVariable, 0.0);
+                mvpND_Zc2[i] = getSafeMultiPortNodeDataPtr(mpP2, i, NodeHydraulic::CharImpedance, 0.0);
 
-                *mvpND_p2[i] = getStartValue(mpP2, NodeHydraulic::PRESSURE);
-                *mvpND_q2[i] = getStartValue(mpP2, NodeHydraulic::FLOW)/double(mNumPorts2);
-                *mvpND_c2[i] = getStartValue(mpP2, NodeHydraulic::PRESSURE);
+                *mvpND_p2[i] = getStartValue(mpP2, NodeHydraulic::Pressure);
+                *mvpND_q2[i] = getStartValue(mpP2, NodeHydraulic::Flow)/double(mNumPorts2);
+                *mvpND_c2[i] = getStartValue(mpP2, NodeHydraulic::Pressure);
             }
-            mpND_f3 = getSafeNodeDataPtr(mpP3, NodeMechanic::FORCE);
-            mpND_x3 = getSafeNodeDataPtr(mpP3, NodeMechanic::POSITION);
-            mpND_v3 = getSafeNodeDataPtr(mpP3, NodeMechanic::VELOCITY);
-            mpND_c3 = getSafeNodeDataPtr(mpP3, NodeMechanic::WAVEVARIABLE);
-            mpND_Zx3 = getSafeNodeDataPtr(mpP3, NodeMechanic::CHARIMP);
-            mpND_me = getSafeNodeDataPtr(mpP3, NodeMechanic::EQMASS);
+            mpND_f3 = getSafeNodeDataPtr(mpP3, NodeMechanic::Force);
+            mpND_x3 = getSafeNodeDataPtr(mpP3, NodeMechanic::Position);
+            mpND_v3 = getSafeNodeDataPtr(mpP3, NodeMechanic::Velocity);
+            mpND_c3 = getSafeNodeDataPtr(mpP3, NodeMechanic::WaveVariable);
+            mpND_Zx3 = getSafeNodeDataPtr(mpP3, NodeMechanic::CharImpedance);
+            mpND_me = getSafeNodeDataPtr(mpP3, NodeMechanic::EquivalentMass);
 
             //Declare local variables;
             double p1, p2, x3, v3;
@@ -463,21 +463,21 @@ class HydraulicCylinderC : public ComponentC
 //            registerParameter("Beta_e", "Bulk Modulus", "[Pa]", BETAE);
 //            registerParameter("c_leak", "Leakage Coefficient", "[]", CIP);
 
-//            setStartValue(mpP1, NodeHydraulic::PRESSURE, 1.0e5);
-//            setStartValue(mpP2, NodeHydraulic::PRESSURE, 1.0e5);
+//            setStartValue(mpP1, NodeHydraulic::Pressure, 1.0e5);
+//            setStartValue(mpP2, NodeHydraulic::Pressure, 1.0e5);
 //        }
 
 
 //        void initialize()
 //        {
 //            //Assign node data pointers
-//            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
-//            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
-//            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
+//            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
+//            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
+//            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
 //            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
-//            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::PRESSURE);
-//            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::FLOW);
-//            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE);
+//            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Pressure);
+//            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
+//            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
 //            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP);
 //            mpND_f3 = getSafeNodeDataPtr(mpP3, NodeMechanic::FORCE);
 //            mpND_x3 = getSafeNodeDataPtr(mpP3, NodeMechanic::POSITION);
@@ -847,21 +847,21 @@ class HydraulicCylinderC : public ComponentC
 //            registerParameter("Beta_e", "Bulk Modulus", "[Pa]", betae);
 //            registerParameter("c_leak", "Leakage Coefficient", "[]", cLeak);
 
-//            setStartValue(mpP1, NodeHydraulic::PRESSURE, 1.0e5);
-//            setStartValue(mpP2, NodeHydraulic::PRESSURE, 1.0e5);
+//            setStartValue(mpP1, NodeHydraulic::Pressure, 1.0e5);
+//            setStartValue(mpP2, NodeHydraulic::Pressure, 1.0e5);
 //        }
 
 
 //        void initialize()
 //        {
 //            //Assign node data pointers
-//            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
-//            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
-//            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
+//            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
+//            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
+//            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
 //            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
-//            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::PRESSURE);
-//            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::FLOW);
-//            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE);
+//            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Pressure);
+//            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
+//            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
 //            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP);
 //            mpND_f3 = getSafeNodeDataPtr(mpP3, NodeMechanic::FORCE);
 //            mpND_x3 = getSafeNodeDataPtr(mpP3, NodeMechanic::POSITION);

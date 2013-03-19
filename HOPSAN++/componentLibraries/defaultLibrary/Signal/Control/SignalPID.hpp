@@ -125,11 +125,11 @@ public:
      {
         //Read port variable pointers from nodes
         //Read inputVariables pointers from nodes
-        mpND_yref=getSafeNodeDataPtr(mpPyref, NodeSignal::VALUE,myref);
-        mpND_y=getSafeNodeDataPtr(mpPy, NodeSignal::VALUE,my);
-        mpND_dy=getSafeNodeDataPtr(mpPdy, NodeSignal::VALUE,mdy);
+        mpND_yref=getSafeNodeDataPtr(mpPyref, NodeSignal::Value,myref);
+        mpND_y=getSafeNodeDataPtr(mpPy, NodeSignal::Value,my);
+        mpND_dy=getSafeNodeDataPtr(mpPdy, NodeSignal::Value,mdy);
         //Read outputVariable pointers from nodes
-        mpND_u=getSafeNodeDataPtr(mpPu, NodeSignal::VALUE);
+        mpND_u=getSafeNodeDataPtr(mpPu, NodeSignal::Value);
 
         //Read variables from nodes
 
@@ -139,7 +139,7 @@ public:
         dy = (*mpND_dy);
 
         //Read outputVariables from nodes
-        u = mpPu->getStartValue(NodeSignal::VALUE);
+        u = mpPu->getStartValue(NodeSignal::Value);
 
 
 

@@ -139,12 +139,12 @@ mmassfuelmax);
      {
         //Read port variable pointers from nodes
         //Port PT
-        mpND_pT=getSafeNodeDataPtr(mpPT, NodeHydraulic::PRESSURE);
-        mpND_qT=getSafeNodeDataPtr(mpPT, NodeHydraulic::FLOW);
-        mpND_TT=getSafeNodeDataPtr(mpPT, NodeHydraulic::TEMPERATURE);
-        mpND_dET=getSafeNodeDataPtr(mpPT, NodeHydraulic::HEATFLOW);
-        mpND_cT=getSafeNodeDataPtr(mpPT, NodeHydraulic::WAVEVARIABLE);
-        mpND_ZcT=getSafeNodeDataPtr(mpPT, NodeHydraulic::CHARIMP);
+        mpND_pT=getSafeNodeDataPtr(mpPT, NodeHydraulic::Pressure);
+        mpND_qT=getSafeNodeDataPtr(mpPT, NodeHydraulic::Flow);
+        mpND_TT=getSafeNodeDataPtr(mpPT, NodeHydraulic::Temperature);
+        mpND_dET=getSafeNodeDataPtr(mpPT, NodeHydraulic::HeatFlow);
+        mpND_cT=getSafeNodeDataPtr(mpPT, NodeHydraulic::WaveVariable);
+        mpND_ZcT=getSafeNodeDataPtr(mpPT, NodeHydraulic::CharImpedance);
         //Read inputVariables pointers from nodes
         mpND_gx=getSafeNodeDataPtr(mpPgx, NodeSignal::VALUE,mgx);
         //Read outputVariable pointers from nodes

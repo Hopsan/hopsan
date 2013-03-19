@@ -78,7 +78,7 @@ class SignalStaircase : public ComponentC
 
         void simulateOneTimestep()
         {
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE, 0.0);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value, 0.0);
 
             double out=0;
 

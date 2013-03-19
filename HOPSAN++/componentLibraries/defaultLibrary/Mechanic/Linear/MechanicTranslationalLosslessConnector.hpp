@@ -50,17 +50,17 @@ namespace hopsan {
         void initialize()
         {
             //Assign node data pointers
-            mpND_f1 = getSafeNodeDataPtr(mpP1, NodeMechanic::FORCE);
-            mpND_x1 = getSafeNodeDataPtr(mpP1, NodeMechanic::POSITION);
-            mpND_v1 = getSafeNodeDataPtr(mpP1, NodeMechanic::VELOCITY);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE);
-            mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CHARIMP);
+            mpND_f1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Force);
+            mpND_x1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Position);
+            mpND_v1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Velocity);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanic::WaveVariable);
+            mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CharImpedance);
 
-            mpND_f2 = getSafeNodeDataPtr(mpP2, NodeMechanic::FORCE);
-            mpND_x2 = getSafeNodeDataPtr(mpP2, NodeMechanic::POSITION);
-            mpND_v2 = getSafeNodeDataPtr(mpP2, NodeMechanic::VELOCITY);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanic::WAVEVARIABLE);
-            mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanic::CHARIMP);
+            mpND_f2 = getSafeNodeDataPtr(mpP2, NodeMechanic::Force);
+            mpND_x2 = getSafeNodeDataPtr(mpP2, NodeMechanic::Position);
+            mpND_v2 = getSafeNodeDataPtr(mpP2, NodeMechanic::Velocity);
+            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanic::WaveVariable);
+            mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanic::CharImpedance);
 
             //Initialization
             double x1 = (*mpND_x1);
@@ -72,7 +72,7 @@ namespace hopsan {
             mInt.initialize(mTimestep, -v1, -x1+mLength);
 
             //Print debug message if velocities do not match
-            if(mpP1->readNode(NodeMechanic::VELOCITY) != -mpP2->readNode(NodeMechanic::VELOCITY))
+            if(mpP1->readNode(NodeMechanic::Velocity) != -mpP2->readNode(NodeMechanic::Velocity))
             {
                 std::stringstream ss;
                 ss << "Start velocities does not match, {" << getName() << "::" << mpP1->getName() <<

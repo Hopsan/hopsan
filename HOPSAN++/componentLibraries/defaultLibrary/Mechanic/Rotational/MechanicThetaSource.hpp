@@ -82,12 +82,12 @@ public:
      {
         //Read port variable pointers from nodes
         //Port Pmr1
-        mpND_tormr1=getSafeNodeDataPtr(mpPmr1, NodeMechanicRotational::TORQUE);
-        mpND_thetamr1=getSafeNodeDataPtr(mpPmr1, NodeMechanicRotational::ANGLE);
-        mpND_wmr1=getSafeNodeDataPtr(mpPmr1, NodeMechanicRotational::ANGULARVELOCITY);
-        mpND_cmr1=getSafeNodeDataPtr(mpPmr1, NodeMechanicRotational::WAVEVARIABLE);
-        mpND_Zcmr1=getSafeNodeDataPtr(mpPmr1, NodeMechanicRotational::CHARIMP);
-        mpND_eqInertiamr1=getSafeNodeDataPtr(mpPmr1, NodeMechanicRotational::EQINERTIA);
+        mpND_tormr1=getSafeNodeDataPtr(mpPmr1, NodeMechanicRotational::Torque);
+        mpND_thetamr1=getSafeNodeDataPtr(mpPmr1, NodeMechanicRotational::Angle);
+        mpND_wmr1=getSafeNodeDataPtr(mpPmr1, NodeMechanicRotational::AngularVelocity);
+        mpND_cmr1=getSafeNodeDataPtr(mpPmr1, NodeMechanicRotational::WaveVariable);
+        mpND_Zcmr1=getSafeNodeDataPtr(mpPmr1, NodeMechanicRotational::CharImpedance);
+        mpND_eqInertiamr1=getSafeNodeDataPtr(mpPmr1, NodeMechanicRotational::EquivalentInertia);
         //Read inputVariables pointers from nodes
         mpND_thetain=getSafeNodeDataPtr(mpPthetain, NodeSignal::VALUE,mthetain);
         mpND_win=getSafeNodeDataPtr(mpPwin, NodeSignal::VALUE,mwin);

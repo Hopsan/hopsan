@@ -501,56 +501,56 @@ mxeng);
         //Read port variable pointers from nodes
         //Port Ptvcly
         mpND_tortvcly=getSafeNodeDataPtr(mpPtvcly, \
-NodeMechanicRotational::TORQUE);
+NodeMechanicRotational::Torque);
         mpND_thetatvcly=getSafeNodeDataPtr(mpPtvcly, \
-NodeMechanicRotational::ANGLE);
+NodeMechanicRotational::Angle);
         mpND_wtvcly=getSafeNodeDataPtr(mpPtvcly, \
-NodeMechanicRotational::ANGULARVELOCITY);
+NodeMechanicRotational::AngularVelocity);
         mpND_ctvcly=getSafeNodeDataPtr(mpPtvcly, \
-NodeMechanicRotational::WAVEVARIABLE);
+NodeMechanicRotational::WaveVariable);
         mpND_Zctvcly=getSafeNodeDataPtr(mpPtvcly, \
-NodeMechanicRotational::CHARIMP);
+NodeMechanicRotational::CharImpedance);
         mpND_eqInertiatvcly=getSafeNodeDataPtr(mpPtvcly, \
-NodeMechanicRotational::EQINERTIA);
+NodeMechanicRotational::EquivalentInertia);
         //Port Ptvclz
         mpND_tortvclz=getSafeNodeDataPtr(mpPtvclz, \
-NodeMechanicRotational::TORQUE);
+NodeMechanicRotational::Torque);
         mpND_thetatvclz=getSafeNodeDataPtr(mpPtvclz, \
-NodeMechanicRotational::ANGLE);
+NodeMechanicRotational::Angle);
         mpND_wtvclz=getSafeNodeDataPtr(mpPtvclz, \
-NodeMechanicRotational::ANGULARVELOCITY);
+NodeMechanicRotational::AngularVelocity);
         mpND_ctvclz=getSafeNodeDataPtr(mpPtvclz, \
-NodeMechanicRotational::WAVEVARIABLE);
+NodeMechanicRotational::WaveVariable);
         mpND_Zctvclz=getSafeNodeDataPtr(mpPtvclz, \
-NodeMechanicRotational::CHARIMP);
+NodeMechanicRotational::CharImpedance);
         mpND_eqInertiatvclz=getSafeNodeDataPtr(mpPtvclz, \
-NodeMechanicRotational::EQINERTIA);
+NodeMechanicRotational::EquivalentInertia);
         //Port Ptvcry
         mpND_tortvcry=getSafeNodeDataPtr(mpPtvcry, \
-NodeMechanicRotational::TORQUE);
+NodeMechanicRotational::Torque);
         mpND_thetatvcry=getSafeNodeDataPtr(mpPtvcry, \
-NodeMechanicRotational::ANGLE);
+NodeMechanicRotational::Angle);
         mpND_wtvcry=getSafeNodeDataPtr(mpPtvcry, \
-NodeMechanicRotational::ANGULARVELOCITY);
+NodeMechanicRotational::AngularVelocity);
         mpND_ctvcry=getSafeNodeDataPtr(mpPtvcry, \
-NodeMechanicRotational::WAVEVARIABLE);
+NodeMechanicRotational::WaveVariable);
         mpND_Zctvcry=getSafeNodeDataPtr(mpPtvcry, \
-NodeMechanicRotational::CHARIMP);
+NodeMechanicRotational::CharImpedance);
         mpND_eqInertiatvcry=getSafeNodeDataPtr(mpPtvcry, \
-NodeMechanicRotational::EQINERTIA);
+NodeMechanicRotational::EquivalentInertia);
         //Port Ptvcrz
         mpND_tortvcrz=getSafeNodeDataPtr(mpPtvcrz, \
-NodeMechanicRotational::TORQUE);
+NodeMechanicRotational::Torque);
         mpND_thetatvcrz=getSafeNodeDataPtr(mpPtvcrz, \
-NodeMechanicRotational::ANGLE);
+NodeMechanicRotational::Angle);
         mpND_wtvcrz=getSafeNodeDataPtr(mpPtvcrz, \
-NodeMechanicRotational::ANGULARVELOCITY);
+NodeMechanicRotational::AngularVelocity);
         mpND_ctvcrz=getSafeNodeDataPtr(mpPtvcrz, \
-NodeMechanicRotational::WAVEVARIABLE);
+NodeMechanicRotational::WaveVariable);
         mpND_Zctvcrz=getSafeNodeDataPtr(mpPtvcrz, \
-NodeMechanicRotational::CHARIMP);
+NodeMechanicRotational::CharImpedance);
         mpND_eqInertiatvcrz=getSafeNodeDataPtr(mpPtvcrz, \
-NodeMechanicRotational::EQINERTIA);
+NodeMechanicRotational::EquivalentInertia);
         //Read inputVariables pointers from nodes
         mpND_thrustl=getSafeNodeDataPtr(mpPthrustl, \
 NodeSignal::VALUE,mthrustl);

@@ -82,11 +82,11 @@ public:
         // This index i, represents each subport in the multiport
         for (size_t i=0; i<mnInputs; ++i)
         {
-            sum += mpMultiInPort->readNode(NodeSignal::VALUE, i);
+            sum += mpMultiInPort->readNode(NodeSignal::Value, i);
         }
 
         //Write value to output node
-        mpOutPort->writeNode(NodeSignal::VALUE, sum);
+        mpOutPort->writeNode(NodeSignal::Value, sum);
     }
 
     // The finalize function is called after simulation ends

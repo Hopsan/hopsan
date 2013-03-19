@@ -100,22 +100,22 @@ namespace hopsan {
             AC = pi*d2*d2/4.0;
             AS = AC - AN;
 
-            mpND_pAN = getSafeNodeDataPtr(mpAN, NodeHydraulic::PRESSURE);
-            mpND_qAN = getSafeNodeDataPtr(mpAN, NodeHydraulic::FLOW);
-            mpND_cAN = getSafeNodeDataPtr(mpAN, NodeHydraulic::WAVEVARIABLE);
-            mpND_ZcAN = getSafeNodeDataPtr(mpAN, NodeHydraulic::CHARIMP);
+            mpND_pAN = getSafeNodeDataPtr(mpAN, NodeHydraulic::Pressure);
+            mpND_qAN = getSafeNodeDataPtr(mpAN, NodeHydraulic::Flow);
+            mpND_cAN = getSafeNodeDataPtr(mpAN, NodeHydraulic::WaveVariable);
+            mpND_ZcAN = getSafeNodeDataPtr(mpAN, NodeHydraulic::CharImpedance);
 
-            mpND_pAS = getSafeNodeDataPtr(mpAS, NodeHydraulic::PRESSURE);
-            mpND_qAS = getSafeNodeDataPtr(mpAS, NodeHydraulic::FLOW);
-            mpND_cAS = getSafeNodeDataPtr(mpAS, NodeHydraulic::WAVEVARIABLE);
-            mpND_ZcAS = getSafeNodeDataPtr(mpAS, NodeHydraulic::CHARIMP);
+            mpND_pAS = getSafeNodeDataPtr(mpAS, NodeHydraulic::Pressure);
+            mpND_qAS = getSafeNodeDataPtr(mpAS, NodeHydraulic::Flow);
+            mpND_cAS = getSafeNodeDataPtr(mpAS, NodeHydraulic::WaveVariable);
+            mpND_ZcAS = getSafeNodeDataPtr(mpAS, NodeHydraulic::CharImpedance);
 
-            mpND_pAC = getSafeNodeDataPtr(mpAC, NodeHydraulic::PRESSURE);
-            mpND_qAC = getSafeNodeDataPtr(mpAC, NodeHydraulic::FLOW);
-            mpND_cAC = getSafeNodeDataPtr(mpAC, NodeHydraulic::WAVEVARIABLE);
-            mpND_ZcAC = getSafeNodeDataPtr(mpAC, NodeHydraulic::CHARIMP);
+            mpND_pAC = getSafeNodeDataPtr(mpAC, NodeHydraulic::Pressure);
+            mpND_qAC = getSafeNodeDataPtr(mpAC, NodeHydraulic::Flow);
+            mpND_cAC = getSafeNodeDataPtr(mpAC, NodeHydraulic::WaveVariable);
+            mpND_ZcAC = getSafeNodeDataPtr(mpAC, NodeHydraulic::CharImpedance);
 
-            mpND_xvout = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
+            mpND_xvout = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
 
             xIntegrator.initialize(mTimestep, 0.0, 0.0, 0.0, xvmax);
 

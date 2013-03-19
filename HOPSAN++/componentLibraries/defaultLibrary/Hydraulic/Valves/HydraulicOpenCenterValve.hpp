@@ -118,38 +118,38 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_pp = getSafeNodeDataPtr(mpPP, NodeHydraulic::PRESSURE);
-            mpND_qp = getSafeNodeDataPtr(mpPP, NodeHydraulic::FLOW);
-            mpND_cp = getSafeNodeDataPtr(mpPP, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zcp = getSafeNodeDataPtr(mpPP, NodeHydraulic::CHARIMP);
+            mpND_pp = getSafeNodeDataPtr(mpPP, NodeHydraulic::Pressure);
+            mpND_qp = getSafeNodeDataPtr(mpPP, NodeHydraulic::Flow);
+            mpND_cp = getSafeNodeDataPtr(mpPP, NodeHydraulic::WaveVariable);
+            mpND_Zcp = getSafeNodeDataPtr(mpPP, NodeHydraulic::CharImpedance);
 
-            mpND_pt = getSafeNodeDataPtr(mpPT, NodeHydraulic::PRESSURE);
-            mpND_qt = getSafeNodeDataPtr(mpPT, NodeHydraulic::FLOW);
-            mpND_ct = getSafeNodeDataPtr(mpPT, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zct = getSafeNodeDataPtr(mpPT, NodeHydraulic::CHARIMP);
+            mpND_pt = getSafeNodeDataPtr(mpPT, NodeHydraulic::Pressure);
+            mpND_qt = getSafeNodeDataPtr(mpPT, NodeHydraulic::Flow);
+            mpND_ct = getSafeNodeDataPtr(mpPT, NodeHydraulic::WaveVariable);
+            mpND_Zct = getSafeNodeDataPtr(mpPT, NodeHydraulic::CharImpedance);
 
-            mpND_pa = getSafeNodeDataPtr(mpPA, NodeHydraulic::PRESSURE);
-            mpND_qa = getSafeNodeDataPtr(mpPA, NodeHydraulic::FLOW);
-            mpND_ca = getSafeNodeDataPtr(mpPA, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zca = getSafeNodeDataPtr(mpPA, NodeHydraulic::CHARIMP);
+            mpND_pa = getSafeNodeDataPtr(mpPA, NodeHydraulic::Pressure);
+            mpND_qa = getSafeNodeDataPtr(mpPA, NodeHydraulic::Flow);
+            mpND_ca = getSafeNodeDataPtr(mpPA, NodeHydraulic::WaveVariable);
+            mpND_Zca = getSafeNodeDataPtr(mpPA, NodeHydraulic::CharImpedance);
 
-            mpND_pb = getSafeNodeDataPtr(mpPB, NodeHydraulic::PRESSURE);
-            mpND_qb = getSafeNodeDataPtr(mpPB, NodeHydraulic::FLOW);
-            mpND_cb = getSafeNodeDataPtr(mpPB, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zcb = getSafeNodeDataPtr(mpPB, NodeHydraulic::CHARIMP);
+            mpND_pb = getSafeNodeDataPtr(mpPB, NodeHydraulic::Pressure);
+            mpND_qb = getSafeNodeDataPtr(mpPB, NodeHydraulic::Flow);
+            mpND_cb = getSafeNodeDataPtr(mpPB, NodeHydraulic::WaveVariable);
+            mpND_Zcb = getSafeNodeDataPtr(mpPB, NodeHydraulic::CharImpedance);
 
-            mpND_pc1 = getSafeNodeDataPtr(mpPC1, NodeHydraulic::PRESSURE);
-            mpND_qc1 = getSafeNodeDataPtr(mpPC1, NodeHydraulic::FLOW);
-            mpND_cc1 = getSafeNodeDataPtr(mpPC1, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zcc1 = getSafeNodeDataPtr(mpPC1, NodeHydraulic::CHARIMP);
+            mpND_pc1 = getSafeNodeDataPtr(mpPC1, NodeHydraulic::Pressure);
+            mpND_qc1 = getSafeNodeDataPtr(mpPC1, NodeHydraulic::Flow);
+            mpND_cc1 = getSafeNodeDataPtr(mpPC1, NodeHydraulic::WaveVariable);
+            mpND_Zcc1 = getSafeNodeDataPtr(mpPC1, NodeHydraulic::CharImpedance);
 
-            mpND_pc2 = getSafeNodeDataPtr(mpPC2, NodeHydraulic::PRESSURE);
-            mpND_qc2 = getSafeNodeDataPtr(mpPC2, NodeHydraulic::FLOW);
-            mpND_cc2 = getSafeNodeDataPtr(mpPC2, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zcc2 = getSafeNodeDataPtr(mpPC2, NodeHydraulic::CHARIMP);
+            mpND_pc2 = getSafeNodeDataPtr(mpPC2, NodeHydraulic::Pressure);
+            mpND_qc2 = getSafeNodeDataPtr(mpPC2, NodeHydraulic::Flow);
+            mpND_cc2 = getSafeNodeDataPtr(mpPC2, NodeHydraulic::WaveVariable);
+            mpND_Zcc2 = getSafeNodeDataPtr(mpPC2, NodeHydraulic::CharImpedance);
 
-            mpND_xvin = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
-            mpND_xvout = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
+            mpND_xvin = getSafeNodeDataPtr(mpIn, NodeSignal::Value);
+            mpND_xvout = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
 
             double xvin  = (*mpND_xvin);
             double num[3] = {1.0, 0.0, 0.0};

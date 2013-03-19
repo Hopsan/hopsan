@@ -67,12 +67,12 @@ namespace hopsan {
         void initialize()
         {
             //Assign node data pointers
-            mpND_f1 = getSafeNodeDataPtr(mpP1, NodeMechanic::FORCE);
-            mpND_x1 = getSafeNodeDataPtr(mpP1, NodeMechanic::POSITION);
-            mpND_v1 = getSafeNodeDataPtr(mpP1, NodeMechanic::VELOCITY);
-            mpND_me1 = getSafeNodeDataPtr(mpP1, NodeMechanic::EQMASS);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE);
-            mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CHARIMP);
+            mpND_f1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Force);
+            mpND_x1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Position);
+            mpND_v1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Velocity);
+            mpND_me1 = getSafeNodeDataPtr(mpP1, NodeMechanic::EquivalentMass);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanic::WaveVariable);
+            mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CharImpedance);
 
             //Initialization
             f1 = (*mpND_f1);

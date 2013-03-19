@@ -37,7 +37,7 @@ class ComponentSystem;
 class ConnectionAssistant;
 class HopsanEssentials;
 
-enum NodeDataVariableTypeEnumT {Default, Intensity, Flow, TLM, Hidden};
+enum NodeDataVariableTypeEnumT {DefaultType, IntensityType, FlowType, TLMType, HiddenType};
 class NodeDataDescription
 {
 public:
@@ -87,7 +87,7 @@ protected:
     // Protected member functions
     void setNiceName(const std::string nicename);
     void setDataCharacteristics(const size_t id, const std::string name, const std::string shortname,
-                                const std::string unit, const NodeDataVariableTypeEnumT vartype=Default);
+                                const std::string unit, const NodeDataVariableTypeEnumT vartype=DefaultType);
 
     void copyNodeDataValuesTo(Node *pNode);
     virtual void setSpecialStartValues(Node *pNode);

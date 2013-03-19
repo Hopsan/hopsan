@@ -149,21 +149,21 @@ public:
      {
         //Read port variable pointers from nodes
         //Port Pp1
-        mpND_pp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::PRESSURE);
-        mpND_qmp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::MASSFLOW);
-        mpND_Tp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::TEMPERATURE);
-        mpND_dEp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::ENERGYFLOW);
-        mpND_cp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::WAVEVARIABLE);
-        mpND_Zcp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::CHARIMP);
+        mpND_pp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::Pressure);
+        mpND_qmp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::MassFlow);
+        mpND_Tp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::Temperature);
+        mpND_dEp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::EnergyFlow);
+        mpND_cp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::WaveVariable);
+        mpND_Zcp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::CharImpedance);
         //Port Pp2
-        mpND_pp2=getSafeNodeDataPtr(mpPp2, NodePneumatic::PRESSURE);
-        mpND_qmp2=getSafeNodeDataPtr(mpPp2, NodePneumatic::MASSFLOW);
-        mpND_Tp2=getSafeNodeDataPtr(mpPp2, NodePneumatic::TEMPERATURE);
-        mpND_dEp2=getSafeNodeDataPtr(mpPp2, NodePneumatic::ENERGYFLOW);
-        mpND_cp2=getSafeNodeDataPtr(mpPp2, NodePneumatic::WAVEVARIABLE);
-        mpND_Zcp2=getSafeNodeDataPtr(mpPp2, NodePneumatic::CHARIMP);
+        mpND_pp2=getSafeNodeDataPtr(mpPp2, NodePneumatic::Pressure);
+        mpND_qmp2=getSafeNodeDataPtr(mpPp2, NodePneumatic::MassFlow);
+        mpND_Tp2=getSafeNodeDataPtr(mpPp2, NodePneumatic::Temperature);
+        mpND_dEp2=getSafeNodeDataPtr(mpPp2, NodePneumatic::EnergyFlow);
+        mpND_cp2=getSafeNodeDataPtr(mpPp2, NodePneumatic::WaveVariable);
+        mpND_Zcp2=getSafeNodeDataPtr(mpPp2, NodePneumatic::CharImpedance);
         //Read inputVariables pointers from nodes
-        mpND_A0=getSafeNodeDataPtr(mpPA0, NodeSignal::VALUE,mA0);
+        mpND_A0=getSafeNodeDataPtr(mpPA0, NodeSignal::Value,mA0);
         //Read outputVariable pointers from nodes
 
         //Read variables from nodes

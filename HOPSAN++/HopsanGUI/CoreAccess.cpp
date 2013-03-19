@@ -1099,26 +1099,26 @@ NodeInfo::NodeInfo(QString nodeType)
     niceName = pNode->getNiceName().c_str();
     for(size_t i=0; i<pNode->getDataDescriptions()->size(); ++i)
     {
-        if(pNode->getDataDescription(i)->varType == hopsan::Default ||
-           pNode->getDataDescription(i)->varType == hopsan::Intensity ||
-           pNode->getDataDescription(i)->varType == hopsan::Flow)        //Q variable
+        if(pNode->getDataDescription(i)->varType == hopsan::DefaultType ||
+           pNode->getDataDescription(i)->varType == hopsan::IntensityType ||
+           pNode->getDataDescription(i)->varType == hopsan::FlowType)        //Q variable
         {
             qVariables << pNode->getDataDescription(i)->shortname.c_str();
             variableLabels << QString(pNode->getDataDescription(i)->name.c_str()).toUpper();
             varIdx << pNode->getDataDescription(i)->id;
         }
-        if(pNode->getDataDescription(i)->varType == hopsan::Intensity)
+        if(pNode->getDataDescription(i)->varType == hopsan::IntensityType)
         {
             intensity = QString(pNode->getDataDescription(i)->name.c_str());
         }
-        if(pNode->getDataDescription(i)->varType == hopsan::Flow)
+        if(pNode->getDataDescription(i)->varType == hopsan::FlowType)
         {
             flow = QString(pNode->getDataDescription(i)->name.c_str());
         }
     }
     for(size_t i=0; i<pNode->getDataDescriptions()->size(); ++i)
     {
-        if(pNode->getDataDescription(i)->varType == hopsan::TLM)        //C variable
+        if(pNode->getDataDescription(i)->varType == hopsan::TLMType)        //C variable
         {
             cVariables << pNode->getDataDescription(i)->shortname.c_str();
             variableLabels << QString(pNode->getDataDescription(i)->name.c_str()).toUpper();

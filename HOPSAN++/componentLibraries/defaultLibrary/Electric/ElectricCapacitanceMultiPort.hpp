@@ -67,8 +67,8 @@ namespace hopsan {
             registerParameter("Capacitance", "Capacitance", "[Fa]", mCapacitance);
             registerParameter("alpha", "Low pass coeficient to dampen standing delayline waves", "[-]",  mAlpha);
 
-            setStartValue(mpPel1, NodeElectric::CURRENT, 0.0);
-            setStartValue(mpPel1, NodeElectric::VOLTAGE, 12);
+            setStartValue(mpPel1, NodeElectric::Current, 0.0);
+            setStartValue(mpPel1, NodeElectric::Voltage, 12);
         }
 
 
@@ -86,14 +86,14 @@ namespace hopsan {
 
             for (size_t i=0; i<mNumPorts; ++i)
             {
-                mvpN_uel[i]  = getSafeMultiPortNodeDataPtr(mpPel1, i, NodeElectric::VOLTAGE, 0.0);
-                mvpN_iel[i]  = getSafeMultiPortNodeDataPtr(mpPel1, i, NodeElectric::CURRENT, 0.0);
-                mvpN_cel[i]  = getSafeMultiPortNodeDataPtr(mpPel1, i, NodeElectric::WAVEVARIABLE, 0.0);
-                mvpN_Zcel[i] = getSafeMultiPortNodeDataPtr(mpPel1, i, NodeElectric::CHARIMP, 0.0);
+                mvpN_uel[i]  = getSafeMultiPortNodeDataPtr(mpPel1, i, NodeElectric::Voltage, 0.0);
+                mvpN_iel[i]  = getSafeMultiPortNodeDataPtr(mpPel1, i, NodeElectric::Current, 0.0);
+                mvpN_cel[i]  = getSafeMultiPortNodeDataPtr(mpPel1, i, NodeElectric::WaveVariable, 0.0);
+                mvpN_Zcel[i] = getSafeMultiPortNodeDataPtr(mpPel1, i, NodeElectric::CharImpedance, 0.0);
 
-                *mvpN_uel[i] = getStartValue(mpPel1, NodeElectric::VOLTAGE);
-                *mvpN_iel[i] = getStartValue(mpPel1, NodeElectric::CURRENT)/mNumPorts;
-                *mvpN_cel[i] = getStartValue(mpPel1, NodeElectric::VOLTAGE);
+                *mvpN_uel[i] = getStartValue(mpPel1, NodeElectric::Voltage);
+                *mvpN_iel[i] = getStartValue(mpPel1, NodeElectric::Current)/mNumPorts;
+                *mvpN_cel[i] = getStartValue(mpPel1, NodeElectric::Voltage);
                 *mvpN_Zcel[i] = mZc;
             }
         }

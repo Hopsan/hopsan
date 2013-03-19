@@ -564,7 +564,7 @@ NodeInfo::NodeInfo(QString nodeType)
     for(size_t i=0; i<pNode->getDataDescriptions()->size(); ++i)
     {
         NodeDataVariableTypeEnumT varType = pNode->getDataDescription(i)->varType;
-        if(varType == Default || varType == Flow || varType == Intensity)        //Q variable
+        if(varType == DefaultType || varType == FlowType || varType == IntensityType)        //Q variable
         {
             qVariables << pNode->getDataDescription(i)->shortname.c_str();
             variableLabels << QString(pNode->getDataDescription(i)->name.c_str()).toUpper();
@@ -573,7 +573,7 @@ NodeInfo::NodeInfo(QString nodeType)
     }
     for(size_t i=0; i<pNode->getDataDescriptions()->size(); ++i)
     {
-        if(pNode->getDataDescription(i)->varType == TLM)        //C variable
+        if(pNode->getDataDescription(i)->varType == TLMType)        //C variable
         {
             cVariables << pNode->getDataDescription(i)->shortname.c_str();
             variableLabels << QString(pNode->getDataDescription(i)->name.c_str()).toUpper();

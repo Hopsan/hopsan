@@ -77,29 +77,29 @@ namespace hopsan {
             registerParameter("R_1", "Resistance 1", "[Ns/m^5]",  mR1);
             registerParameter("R_2", "Resistance 2", "[Ns/m^5]",  mR2);
 
-            setStartValue(mpP1, NodeHydraulic::FLOW, 0.0);
-            setStartValue(mpP1, NodeHydraulic::PRESSURE, 1.0e5);
-            setStartValue(mpP2, NodeHydraulic::FLOW, 0.0);
-            setStartValue(mpP2, NodeHydraulic::PRESSURE, 1.0e5);
+            setStartValue(mpP1, NodeHydraulic::Flow, 0.0);
+            setStartValue(mpP1, NodeHydraulic::Pressure, 1.0e5);
+            setStartValue(mpP2, NodeHydraulic::Flow, 0.0);
+            setStartValue(mpP2, NodeHydraulic::Pressure, 1.0e5);
         }
 
 
         void initialize()
         {
-            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
-            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
+            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
+            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
+            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
 
-            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::PRESSURE);
-            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::FLOW);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP);
+            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Pressure);
+            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
+            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
+            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
 
             //Write to nodes
-            (*mpND_c1) = getStartValue(mpP1,NodeHydraulic::PRESSURE)+(mZc+mR1)*getStartValue(mpP1,NodeHydraulic::FLOW);
+            (*mpND_c1) = getStartValue(mpP1,NodeHydraulic::Pressure)+(mZc+mR1)*getStartValue(mpP1,NodeHydraulic::Flow);
             (*mpND_Zc1) = mZc+mR1;
-            (*mpND_c2) = getStartValue(mpP2,NodeHydraulic::PRESSURE)+(mZc+mR2)*getStartValue(mpP2,NodeHydraulic::FLOW);
+            (*mpND_c2) = getStartValue(mpP2,NodeHydraulic::Pressure)+(mZc+mR2)*getStartValue(mpP2,NodeHydraulic::Flow);
             (*mpND_Zc2) = mZc+mR2;
 
             if (mTimeDelay-mTimestep < 0)

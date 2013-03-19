@@ -61,19 +61,19 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_f1 = getSafeNodeDataPtr(mpP1, NodeMechanic::FORCE);
-            mpND_x1 = getSafeNodeDataPtr(mpP1, NodeMechanic::POSITION);
-            mpND_v1 = getSafeNodeDataPtr(mpP1, NodeMechanic::VELOCITY);
-            mpND_me1 = getSafeNodeDataPtr(mpP1, NodeMechanic::EQMASS);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE);
-            mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CHARIMP);
+            mpND_f1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Force);
+            mpND_x1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Position);
+            mpND_v1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Velocity);
+            mpND_me1 = getSafeNodeDataPtr(mpP1, NodeMechanic::EquivalentMass);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanic::WaveVariable);
+            mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CharImpedance);
 
-            mpND_f2 = getSafeNodeDataPtr(mpP2, NodeMechanic::FORCE);
-            mpND_x2 = getSafeNodeDataPtr(mpP2, NodeMechanic::POSITION);
-            mpND_v2 = getSafeNodeDataPtr(mpP2, NodeMechanic::VELOCITY);
-            mpND_me2 = getSafeNodeDataPtr(mpP2, NodeMechanic::EQMASS);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanic::WAVEVARIABLE);
-            mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanic::CHARIMP);
+            mpND_f2 = getSafeNodeDataPtr(mpP2, NodeMechanic::Force);
+            mpND_x2 = getSafeNodeDataPtr(mpP2, NodeMechanic::Position);
+            mpND_v2 = getSafeNodeDataPtr(mpP2, NodeMechanic::Velocity);
+            mpND_me2 = getSafeNodeDataPtr(mpP2, NodeMechanic::EquivalentMass);
+            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanic::WaveVariable);
+            mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanic::CharImpedance);
 
             f1 = (*mpND_f1)*2;
             x1 = (*mpND_x1)/2;

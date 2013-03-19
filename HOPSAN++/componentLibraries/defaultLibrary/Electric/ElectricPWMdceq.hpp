@@ -135,19 +135,19 @@ mresist1);
      {
         //Read port variable pointers from nodes
         //Port Pel1
-        mpND_uel1=getSafeNodeDataPtr(mpPel1, NodeElectric::VOLTAGE);
-        mpND_iel1=getSafeNodeDataPtr(mpPel1, NodeElectric::CURRENT);
-        mpND_cel1=getSafeNodeDataPtr(mpPel1, NodeElectric::WAVEVARIABLE);
-        mpND_Zcel1=getSafeNodeDataPtr(mpPel1, NodeElectric::CHARIMP);
+        mpND_uel1=getSafeNodeDataPtr(mpPel1, NodeElectric::Voltage);
+        mpND_iel1=getSafeNodeDataPtr(mpPel1, NodeElectric::Current);
+        mpND_cel1=getSafeNodeDataPtr(mpPel1, NodeElectric::WaveVariable);
+        mpND_Zcel1=getSafeNodeDataPtr(mpPel1, NodeElectric::CharImpedance);
         //Port Pel2
-        mpND_uel2=getSafeNodeDataPtr(mpPel2, NodeElectric::VOLTAGE);
-        mpND_iel2=getSafeNodeDataPtr(mpPel2, NodeElectric::CURRENT);
-        mpND_cel2=getSafeNodeDataPtr(mpPel2, NodeElectric::WAVEVARIABLE);
-        mpND_Zcel2=getSafeNodeDataPtr(mpPel2, NodeElectric::CHARIMP);
+        mpND_uel2=getSafeNodeDataPtr(mpPel2, NodeElectric::Voltage);
+        mpND_iel2=getSafeNodeDataPtr(mpPel2, NodeElectric::Current);
+        mpND_cel2=getSafeNodeDataPtr(mpPel2, NodeElectric::WaveVariable);
+        mpND_Zcel2=getSafeNodeDataPtr(mpPel2, NodeElectric::CharImpedance);
         //Read inputVariables pointers from nodes
-        mpND_tfac=getSafeNodeDataPtr(mpPtfac, NodeSignal::VALUE,mtfac);
+        mpND_tfac=getSafeNodeDataPtr(mpPtfac, NodeSignal::Value,mtfac);
         //Read outputVariable pointers from nodes
-        mpND_uel10=getSafeNodeDataPtr(mpPuel10, NodeSignal::VALUE);
+        mpND_uel10=getSafeNodeDataPtr(mpPuel10, NodeSignal::Value);
 
         //Read variables from nodes
         //Port Pel1
@@ -165,7 +165,7 @@ mresist1);
         tfac = (*mpND_tfac);
 
         //Read outputVariables from nodes
-        uel10 = mpPuel10->getStartValue(NodeSignal::VALUE);
+        uel10 = mpPuel10->getStartValue(NodeSignal::Value);
 
 
 

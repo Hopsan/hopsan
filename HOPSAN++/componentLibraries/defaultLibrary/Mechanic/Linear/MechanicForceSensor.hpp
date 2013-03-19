@@ -56,8 +56,8 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_f = getSafeNodeDataPtr(mpP1, NodeMechanic::FORCE);
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
+            mpND_f = getSafeNodeDataPtr(mpP1, NodeMechanic::Force);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
             mpOut->setSignalNodeUnitAndDescription("N","Force");
         }
 

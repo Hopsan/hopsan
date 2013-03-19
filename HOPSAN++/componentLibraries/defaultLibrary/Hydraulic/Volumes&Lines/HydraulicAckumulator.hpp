@@ -117,14 +117,14 @@ public:
      {
         //Read port variable pointers from nodes
         //Port P1
-        mpND_p1=getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
-        mpND_q1=getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
-        mpND_c1=getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
-        mpND_Zc1=getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
+        mpND_p1=getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
+        mpND_q1=getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
+        mpND_c1=getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
+        mpND_Zc1=getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
         //Read inputVariables pointers from nodes
         //Read outputVariable pointers from nodes
-        mpND_Va=getSafeNodeDataPtr(mpPVa, NodeSignal::VALUE);
-        mpND_pa=getSafeNodeDataPtr(mpPpa, NodeSignal::VALUE);
+        mpND_Va=getSafeNodeDataPtr(mpPVa, NodeSignal::Value);
+        mpND_pa=getSafeNodeDataPtr(mpPpa, NodeSignal::Value);
 
         //Read variables from nodes
         //Port P1
@@ -136,8 +136,8 @@ public:
         //Read inputVariables from nodes
 
         //Read outputVariables from nodes
-        Va = mpPVa->getStartValue(NodeSignal::VALUE);
-        pa = mpPpa->getStartValue(NodeSignal::VALUE);
+        Va = mpPVa->getStartValue(NodeSignal::Value);
+        pa = mpPpa->getStartValue(NodeSignal::Value);
 
 
 

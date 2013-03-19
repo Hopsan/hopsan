@@ -55,13 +55,13 @@ namespace hopsan {
 
             registerParameter("y", "Source Value", "[-]", mValue, Constant);
 
-            disableStartValue(mpOut, NodeSignal::VALUE);
+            disableStartValue(mpOut, NodeSignal::Value);
         }
 
 
         void initialize()
         {
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE, mValue);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value, mValue);
 
             //Initialize value to the node
            (*mpND_out) = mValue;

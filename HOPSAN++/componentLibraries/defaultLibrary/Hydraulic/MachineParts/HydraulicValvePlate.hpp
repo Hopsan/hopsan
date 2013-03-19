@@ -110,29 +110,29 @@ namespace hopsan {
             xva.resize(mNumPorts1);
             xvb.resize(mNumPorts1);
 
-            mpND_in1 = getSafeNodeDataPtr(mpIn1, NodeSignal::VALUE);
+            mpND_in1 = getSafeNodeDataPtr(mpIn1, NodeSignal::Value);
 
             for(size_t i=0; i<mNumPorts1; ++i)
             {
-                mvpND_p1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::PRESSURE);
-                mvpND_q1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::FLOW);
-                mvpND_c1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::WAVEVARIABLE);
-                mvpND_Zc1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::CHARIMP);
+                mvpND_p1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::Pressure);
+                mvpND_q1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::Flow);
+                mvpND_c1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::WaveVariable);
+                mvpND_Zc1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::CharImpedance);
             }
 
-            mpND_pa = getSafeNodeDataPtr(mpPA, NodeHydraulic::PRESSURE);
-            mpND_qa = getSafeNodeDataPtr(mpPA, NodeHydraulic::FLOW);
-            mpND_ca = getSafeNodeDataPtr(mpPA, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zca = getSafeNodeDataPtr(mpPA, NodeHydraulic::CHARIMP);
+            mpND_pa = getSafeNodeDataPtr(mpPA, NodeHydraulic::Pressure);
+            mpND_qa = getSafeNodeDataPtr(mpPA, NodeHydraulic::Flow);
+            mpND_ca = getSafeNodeDataPtr(mpPA, NodeHydraulic::WaveVariable);
+            mpND_Zca = getSafeNodeDataPtr(mpPA, NodeHydraulic::CharImpedance);
 
-            mpND_pb = getSafeNodeDataPtr(mpPB, NodeHydraulic::PRESSURE);
-            mpND_qb = getSafeNodeDataPtr(mpPB, NodeHydraulic::FLOW);
-            mpND_cb = getSafeNodeDataPtr(mpPB, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zcb = getSafeNodeDataPtr(mpPB, NodeHydraulic::CHARIMP);
+            mpND_pb = getSafeNodeDataPtr(mpPB, NodeHydraulic::Pressure);
+            mpND_qb = getSafeNodeDataPtr(mpPB, NodeHydraulic::Flow);
+            mpND_cb = getSafeNodeDataPtr(mpPB, NodeHydraulic::WaveVariable);
+            mpND_Zcb = getSafeNodeDataPtr(mpPB, NodeHydraulic::CharImpedance);
 
-            mpND_Debug1 = getSafeNodeDataPtr(mpDebug1, NodeSignal::VALUE);
-            mpND_Debug2 = getSafeNodeDataPtr(mpDebug2, NodeSignal::VALUE);
-            mpND_Debug3 = getSafeNodeDataPtr(mpDebug3, NodeSignal::VALUE);
+            mpND_Debug1 = getSafeNodeDataPtr(mpDebug1, NodeSignal::Value);
+            mpND_Debug2 = getSafeNodeDataPtr(mpDebug2, NodeSignal::Value);
+            mpND_Debug3 = getSafeNodeDataPtr(mpDebug3, NodeSignal::Value);
 
             mIntegrator.initialize(mTimestep, 0, 0);
         }

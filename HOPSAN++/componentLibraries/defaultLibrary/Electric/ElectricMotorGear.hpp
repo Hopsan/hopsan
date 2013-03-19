@@ -193,36 +193,36 @@ mwc);
      {
         //Read port variable pointers from nodes
         //Port Pel1
-        mpND_uel1=getSafeNodeDataPtr(mpPel1, NodeElectric::VOLTAGE);
-        mpND_iel1=getSafeNodeDataPtr(mpPel1, NodeElectric::CURRENT);
-        mpND_cel1=getSafeNodeDataPtr(mpPel1, NodeElectric::WAVEVARIABLE);
-        mpND_Zcel1=getSafeNodeDataPtr(mpPel1, NodeElectric::CHARIMP);
+        mpND_uel1=getSafeNodeDataPtr(mpPel1, NodeElectric::Voltage);
+        mpND_iel1=getSafeNodeDataPtr(mpPel1, NodeElectric::Current);
+        mpND_cel1=getSafeNodeDataPtr(mpPel1, NodeElectric::WaveVariable);
+        mpND_Zcel1=getSafeNodeDataPtr(mpPel1, NodeElectric::CharImpedance);
         //Port Pel2
-        mpND_uel2=getSafeNodeDataPtr(mpPel2, NodeElectric::VOLTAGE);
-        mpND_iel2=getSafeNodeDataPtr(mpPel2, NodeElectric::CURRENT);
-        mpND_cel2=getSafeNodeDataPtr(mpPel2, NodeElectric::WAVEVARIABLE);
-        mpND_Zcel2=getSafeNodeDataPtr(mpPel2, NodeElectric::CHARIMP);
+        mpND_uel2=getSafeNodeDataPtr(mpPel2, NodeElectric::Voltage);
+        mpND_iel2=getSafeNodeDataPtr(mpPel2, NodeElectric::Current);
+        mpND_cel2=getSafeNodeDataPtr(mpPel2, NodeElectric::WaveVariable);
+        mpND_Zcel2=getSafeNodeDataPtr(mpPel2, NodeElectric::CharImpedance);
         //Port Pmr1
         mpND_tormr1=getSafeNodeDataPtr(mpPmr1, \
-NodeMechanicRotational::TORQUE);
+NodeMechanicRotational::Torque);
         mpND_thetamr1=getSafeNodeDataPtr(mpPmr1, \
-NodeMechanicRotational::ANGLE);
+NodeMechanicRotational::Angle);
         mpND_wmr1=getSafeNodeDataPtr(mpPmr1, \
-NodeMechanicRotational::ANGULARVELOCITY);
+NodeMechanicRotational::AngularVelocity);
         mpND_cmr1=getSafeNodeDataPtr(mpPmr1, \
-NodeMechanicRotational::WAVEVARIABLE);
+NodeMechanicRotational::WaveVariable);
         mpND_Zcmr1=getSafeNodeDataPtr(mpPmr1, \
-NodeMechanicRotational::CHARIMP);
+NodeMechanicRotational::CharImpedance);
         mpND_eqInertiamr1=getSafeNodeDataPtr(mpPmr1, \
-NodeMechanicRotational::EQINERTIA);
+NodeMechanicRotational::EquivalentInertia);
         //Read inputVariables pointers from nodes
         mpND_gearRatio=getSafeNodeDataPtr(mpPgearRatio, \
-NodeSignal::VALUE,mgearRatio);
+NodeSignal::Value,mgearRatio);
         //Read outputVariable pointers from nodes
-        mpND_wm=getSafeNodeDataPtr(mpPwm, NodeSignal::VALUE);
-        mpND_tormg=getSafeNodeDataPtr(mpPtormg, NodeSignal::VALUE);
-        mpND_Pin=getSafeNodeDataPtr(mpPPin, NodeSignal::VALUE);
-        mpND_Pout=getSafeNodeDataPtr(mpPPout, NodeSignal::VALUE);
+        mpND_wm=getSafeNodeDataPtr(mpPwm, NodeSignal::Value);
+        mpND_tormg=getSafeNodeDataPtr(mpPtormg, NodeSignal::Value);
+        mpND_Pin=getSafeNodeDataPtr(mpPPin, NodeSignal::Value);
+        mpND_Pout=getSafeNodeDataPtr(mpPPout, NodeSignal::Value);
 
         //Read variables from nodes
         //Port Pel1
@@ -247,10 +247,10 @@ NodeSignal::VALUE,mgearRatio);
         gearRatio = (*mpND_gearRatio);
 
         //Read outputVariables from nodes
-        wm = mpPwm->getStartValue(NodeSignal::VALUE);
-        tormg = mpPtormg->getStartValue(NodeSignal::VALUE);
-        Pin = mpPPin->getStartValue(NodeSignal::VALUE);
-        Pout = mpPPout->getStartValue(NodeSignal::VALUE);
+        wm = mpPwm->getStartValue(NodeSignal::Value);
+        tormg = mpPtormg->getStartValue(NodeSignal::Value);
+        Pin = mpPPin->getStartValue(NodeSignal::Value);
+        Pout = mpPPout->getStartValue(NodeSignal::Value);
 
 
 

@@ -70,10 +70,10 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, 0);
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
+            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value, 0);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
 
-            mTF.initialize(mTimestep, mNum, mDen, getStartValue(mpOut, NodeSignal::VALUE), getStartValue(mpOut, NodeSignal::VALUE));
+            mTF.initialize(mTimestep, mNum, mDen, getStartValue(mpOut, NodeSignal::Value), getStartValue(mpOut, NodeSignal::Value));
 
             //Writes out the value for time "zero"
             (*mpND_out) = (*mpND_in);

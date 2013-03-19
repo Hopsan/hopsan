@@ -866,7 +866,7 @@ void Component::addFatalMessage(const string message, const string tag) const
 
 //! @brief Get the an actual start value of a port
 //! @param[in] pPort is the port which should be read from
-//! @param[in] idx is the index of the start value e.g. NodeHydraulic::PRESSURE
+//! @param[in] idx is the index of the start value e.g. NodeHydraulic::Pressure
 //! @returns the start value
 double Component::getStartValue(Port* pPort, const size_t idx, const size_t portIdx)
 {
@@ -876,7 +876,7 @@ double Component::getStartValue(Port* pPort, const size_t idx, const size_t port
 
 //! @brief Set the an actual start value of a port
 //! @param[in] pPort is the port which should be written to
-//! @param[in] idx is the index of the start value e.g. NodeHydraulic::PRESSURE
+//! @param[in] idx is the index of the start value e.g. NodeHydraulic::Pressure
 //! @param[in] value is the start value that should be written
 void Component::setStartValue(Port* pPort, const size_t idx, const double value)
 {

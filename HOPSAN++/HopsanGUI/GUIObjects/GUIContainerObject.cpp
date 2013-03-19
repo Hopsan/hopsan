@@ -3142,11 +3142,11 @@ void ContainerObject::recompileCppComponents(ModelObject *pComponent)
         codeStream << "        {\n";
         for(int i=0; i<nInputs; ++i)
         {
-            codeStream << "            mpND_in"+QString::number(i)+" = getSafeNodeDataPtr(mpIn"+QString::number(i)+", NodeSignal::VALUE, 0);\n";
+            codeStream << "            mpND_in"+QString::number(i)+" = getSafeNodeDataPtr(mpIn"+QString::number(i)+", NodeSignal::Value, 0);\n";
         }
         for(int o=0; o<nOutputs; ++o)
         {
-            codeStream << "            mpND_out"+QString::number(o)+" = getSafeNodeDataPtr(mpOut"+QString::number(o)+", NodeSignal::VALUE);\n";
+            codeStream << "            mpND_out"+QString::number(o)+" = getSafeNodeDataPtr(mpOut"+QString::number(o)+", NodeSignal::Value);\n";
         }
         codeStream << "        }\n\n";
         codeStream << "        void simulateOneTimestep()\n";

@@ -59,16 +59,16 @@ namespace hopsan {
             //Register changable parameters to the HOPSAN++ core
             registerParameter("T", "Generated Torque", "[Nm]", t);
 
-            disableStartValue(mpP1, NodeMechanicRotational::TORQUE);
+            disableStartValue(mpP1, NodeMechanicRotational::Torque);
         }
 
 
         void initialize()
         {
             mpND_signal = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, t);
-            mpND_t = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::TORQUE);
-            mpND_c = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE);
-            mpND_Zx = getSafeNodeDataPtr(mpP1, NodeMechanic::CHARIMP);
+            mpND_t = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::Torque);
+            mpND_c = getSafeNodeDataPtr(mpP1, NodeMechanic::WaveVariable);
+            mpND_Zx = getSafeNodeDataPtr(mpP1, NodeMechanic::CharImpedance);
 
             (*mpND_t) = t;
             (*mpND_Zx) = 0.0;

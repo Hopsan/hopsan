@@ -158,36 +158,36 @@ public:
         //Read port variable pointers from nodes
         //Port Pmr1
         mpND_tormr1=getSafeNodeDataPtr(mpPmr1, \
-NodeMechanicRotational::TORQUE);
+NodeMechanicRotational::Torque);
         mpND_thetamr1=getSafeNodeDataPtr(mpPmr1, \
-NodeMechanicRotational::ANGLE);
+NodeMechanicRotational::Angle);
         mpND_wmr1=getSafeNodeDataPtr(mpPmr1, \
-NodeMechanicRotational::ANGULARVELOCITY);
+NodeMechanicRotational::AngularVelocity);
         mpND_cmr1=getSafeNodeDataPtr(mpPmr1, \
-NodeMechanicRotational::WAVEVARIABLE);
+NodeMechanicRotational::WaveVariable);
         mpND_Zcmr1=getSafeNodeDataPtr(mpPmr1, \
-NodeMechanicRotational::CHARIMP);
+NodeMechanicRotational::CharImpedance);
         mpND_eqInertiamr1=getSafeNodeDataPtr(mpPmr1, \
-NodeMechanicRotational::EQINERTIA);
+NodeMechanicRotational::EquivalentInertia);
         //Port Pmr2
         mpND_tormr2=getSafeNodeDataPtr(mpPmr2, \
-NodeMechanicRotational::TORQUE);
+NodeMechanicRotational::Torque);
         mpND_thetamr2=getSafeNodeDataPtr(mpPmr2, \
-NodeMechanicRotational::ANGLE);
+NodeMechanicRotational::Angle);
         mpND_wmr2=getSafeNodeDataPtr(mpPmr2, \
-NodeMechanicRotational::ANGULARVELOCITY);
+NodeMechanicRotational::AngularVelocity);
         mpND_cmr2=getSafeNodeDataPtr(mpPmr2, \
-NodeMechanicRotational::WAVEVARIABLE);
+NodeMechanicRotational::WaveVariable);
         mpND_Zcmr2=getSafeNodeDataPtr(mpPmr2, \
-NodeMechanicRotational::CHARIMP);
+NodeMechanicRotational::CharImpedance);
         mpND_eqInertiamr2=getSafeNodeDataPtr(mpPmr2, \
-NodeMechanicRotational::EQINERTIA);
+NodeMechanicRotational::EquivalentInertia);
         //Read inputVariables pointers from nodes
         //Read outputVariable pointers from nodes
-        mpND_vc=getSafeNodeDataPtr(mpPvc, NodeSignal::VALUE);
-        mpND_xc=getSafeNodeDataPtr(mpPxc, NodeSignal::VALUE);
-        mpND_fd=getSafeNodeDataPtr(mpPfd, NodeSignal::VALUE);
-        mpND_fr=getSafeNodeDataPtr(mpPfr, NodeSignal::VALUE);
+        mpND_vc=getSafeNodeDataPtr(mpPvc, NodeSignal::Value);
+        mpND_xc=getSafeNodeDataPtr(mpPxc, NodeSignal::Value);
+        mpND_fd=getSafeNodeDataPtr(mpPfd, NodeSignal::Value);
+        mpND_fr=getSafeNodeDataPtr(mpPfr, NodeSignal::Value);
 
         //Read variables from nodes
         //Port Pmr1
@@ -208,10 +208,10 @@ NodeMechanicRotational::EQINERTIA);
         //Read inputVariables from nodes
 
         //Read outputVariables from nodes
-        vc = mpPvc->getStartValue(NodeSignal::VALUE);
-        xc = mpPxc->getStartValue(NodeSignal::VALUE);
-        fd = mpPfd->getStartValue(NodeSignal::VALUE);
-        fr = mpPfr->getStartValue(NodeSignal::VALUE);
+        vc = mpPvc->getStartValue(NodeSignal::Value);
+        xc = mpPxc->getStartValue(NodeSignal::Value);
+        fd = mpPfd->getStartValue(NodeSignal::Value);
+        fr = mpPfr->getStartValue(NodeSignal::Value);
 
 
         //LocalExpressions

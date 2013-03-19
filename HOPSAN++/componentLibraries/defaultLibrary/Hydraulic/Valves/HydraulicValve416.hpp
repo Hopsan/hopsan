@@ -221,30 +221,30 @@ public:
      {
         //Read port variable pointers from nodes
         //Port Pp
-        mpND_pp=getSafeNodeDataPtr(mpPp, NodeHydraulic::PRESSURE);
-        mpND_qp=getSafeNodeDataPtr(mpPp, NodeHydraulic::FLOW);
-        mpND_cp=getSafeNodeDataPtr(mpPp, NodeHydraulic::WAVEVARIABLE);
-        mpND_Zcp=getSafeNodeDataPtr(mpPp, NodeHydraulic::CHARIMP);
+        mpND_pp=getSafeNodeDataPtr(mpPp, NodeHydraulic::Pressure);
+        mpND_qp=getSafeNodeDataPtr(mpPp, NodeHydraulic::Flow);
+        mpND_cp=getSafeNodeDataPtr(mpPp, NodeHydraulic::WaveVariable);
+        mpND_Zcp=getSafeNodeDataPtr(mpPp, NodeHydraulic::CharImpedance);
         //Port Pt
-        mpND_pt=getSafeNodeDataPtr(mpPt, NodeHydraulic::PRESSURE);
-        mpND_qt=getSafeNodeDataPtr(mpPt, NodeHydraulic::FLOW);
-        mpND_ct=getSafeNodeDataPtr(mpPt, NodeHydraulic::WAVEVARIABLE);
-        mpND_Zct=getSafeNodeDataPtr(mpPt, NodeHydraulic::CHARIMP);
+        mpND_pt=getSafeNodeDataPtr(mpPt, NodeHydraulic::Pressure);
+        mpND_qt=getSafeNodeDataPtr(mpPt, NodeHydraulic::Flow);
+        mpND_ct=getSafeNodeDataPtr(mpPt, NodeHydraulic::WaveVariable);
+        mpND_Zct=getSafeNodeDataPtr(mpPt, NodeHydraulic::CharImpedance);
         //Port Pa
-        mpND_pa=getSafeNodeDataPtr(mpPa, NodeHydraulic::PRESSURE);
-        mpND_qa=getSafeNodeDataPtr(mpPa, NodeHydraulic::FLOW);
-        mpND_ca=getSafeNodeDataPtr(mpPa, NodeHydraulic::WAVEVARIABLE);
-        mpND_Zca=getSafeNodeDataPtr(mpPa, NodeHydraulic::CHARIMP);
+        mpND_pa=getSafeNodeDataPtr(mpPa, NodeHydraulic::Pressure);
+        mpND_qa=getSafeNodeDataPtr(mpPa, NodeHydraulic::Flow);
+        mpND_ca=getSafeNodeDataPtr(mpPa, NodeHydraulic::WaveVariable);
+        mpND_Zca=getSafeNodeDataPtr(mpPa, NodeHydraulic::CharImpedance);
         //Port Pb
-        mpND_pb=getSafeNodeDataPtr(mpPb, NodeHydraulic::PRESSURE);
-        mpND_qb=getSafeNodeDataPtr(mpPb, NodeHydraulic::FLOW);
-        mpND_cb=getSafeNodeDataPtr(mpPb, NodeHydraulic::WAVEVARIABLE);
-        mpND_Zcb=getSafeNodeDataPtr(mpPb, NodeHydraulic::CHARIMP);
+        mpND_pb=getSafeNodeDataPtr(mpPb, NodeHydraulic::Pressure);
+        mpND_qb=getSafeNodeDataPtr(mpPb, NodeHydraulic::Flow);
+        mpND_cb=getSafeNodeDataPtr(mpPb, NodeHydraulic::WaveVariable);
+        mpND_Zcb=getSafeNodeDataPtr(mpPb, NodeHydraulic::CharImpedance);
         //Read inputVariables pointers from nodes
-        mpND_xvpa=getSafeNodeDataPtr(mpPxvpa, NodeSignal::VALUE,mxvpa);
-        mpND_xvta=getSafeNodeDataPtr(mpPxvta, NodeSignal::VALUE,mxvta);
-        mpND_xvpb=getSafeNodeDataPtr(mpPxvpb, NodeSignal::VALUE,mxvpb);
-        mpND_xvtb=getSafeNodeDataPtr(mpPxvtb, NodeSignal::VALUE,mxvtb);
+        mpND_xvpa=getSafeNodeDataPtr(mpPxvpa, NodeSignal::Value,mxvpa);
+        mpND_xvta=getSafeNodeDataPtr(mpPxvta, NodeSignal::Value,mxvta);
+        mpND_xvpb=getSafeNodeDataPtr(mpPxvpb, NodeSignal::Value,mxvpb);
+        mpND_xvtb=getSafeNodeDataPtr(mpPxvtb, NodeSignal::Value,mxvtb);
         //Read outputVariable pointers from nodes
 
         //Read variables from nodes

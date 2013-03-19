@@ -54,11 +54,11 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_f = getSafeNodeDataPtr(mpPm1, NodeMechanic::FORCE);
-            mpND_x = getSafeNodeDataPtr(mpPm1, NodeMechanic::POSITION);
-            mpND_v = getSafeNodeDataPtr(mpPm1, NodeMechanic::VELOCITY);
-            mpND_c = getSafeNodeDataPtr(mpPm1, NodeMechanic::WAVEVARIABLE);
-            mpND_me = getSafeNodeDataPtr(mpPm1, NodeMechanic::EQMASS);
+            mpND_f = getSafeNodeDataPtr(mpPm1, NodeMechanic::Force);
+            mpND_x = getSafeNodeDataPtr(mpPm1, NodeMechanic::Position);
+            mpND_v = getSafeNodeDataPtr(mpPm1, NodeMechanic::Velocity);
+            mpND_c = getSafeNodeDataPtr(mpPm1, NodeMechanic::WaveVariable);
+            mpND_me = getSafeNodeDataPtr(mpPm1, NodeMechanic::EquivalentMass);
 
             (*mpND_x) = 0;
             (*mpND_v) = 0;

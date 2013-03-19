@@ -124,14 +124,14 @@ public:
      {
         //Read port variable pointers from nodes
         //Port Pel1
-        mpND_uel1=getSafeNodeDataPtr(mpPel1, NodeElectric::VOLTAGE);
-        mpND_iel1=getSafeNodeDataPtr(mpPel1, NodeElectric::CURRENT);
-        mpND_cel1=getSafeNodeDataPtr(mpPel1, NodeElectric::WAVEVARIABLE);
-        mpND_Zcel1=getSafeNodeDataPtr(mpPel1, NodeElectric::CHARIMP);
+        mpND_uel1=getSafeNodeDataPtr(mpPel1, NodeElectric::Voltage);
+        mpND_iel1=getSafeNodeDataPtr(mpPel1, NodeElectric::Current);
+        mpND_cel1=getSafeNodeDataPtr(mpPel1, NodeElectric::WaveVariable);
+        mpND_Zcel1=getSafeNodeDataPtr(mpPel1, NodeElectric::CharImpedance);
         //Port Psoc
-        mpND_soc=getSafeNodeDataPtr(mpPsoc, NodeSignal::VALUE);
+        mpND_soc=getSafeNodeDataPtr(mpPsoc, NodeSignal::Value);
         //Port Pubatt
-        mpND_ubatt=getSafeNodeDataPtr(mpPubatt, NodeSignal::VALUE);
+        mpND_ubatt=getSafeNodeDataPtr(mpPubatt, NodeSignal::Value);
         //Read inputVariables pointers from nodes
         //Read outputVariable pointers from nodes
 
@@ -142,9 +142,9 @@ public:
         cel1 = (*mpND_cel1);
         Zcel1 = (*mpND_Zcel1);
         //Port Psoc
-        soc = mpPsoc->getStartValue(NodeSignal::VALUE);
+        soc = mpPsoc->getStartValue(NodeSignal::Value);
         //Port Pubatt
-        ubatt = mpPubatt->getStartValue(NodeSignal::VALUE);
+        ubatt = mpPubatt->getStartValue(NodeSignal::Value);
 
         //Read inputVariables from nodes
 

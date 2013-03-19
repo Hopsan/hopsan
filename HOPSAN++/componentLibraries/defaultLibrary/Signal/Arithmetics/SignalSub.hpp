@@ -75,14 +75,14 @@ namespace hopsan {
             mNDp_in_sum_vec.resize(nSumInputs);
             for (size_t i=0; i<nSumInputs; ++i)
             {
-                mNDp_in_sum_vec[i] = getSafeMultiPortNodeDataPtr(mpMultiInSumPort, i, NodeSignal::VALUE, 0);
+                mNDp_in_sum_vec[i] = getSafeMultiPortNodeDataPtr(mpMultiInSumPort, i, NodeSignal::Value, 0);
             }
             mNDp_in_sub_vec.resize(nSubInputs);
             for (size_t i=0; i<nSubInputs; ++i)
             {
-                mNDp_in_sub_vec[i] = getSafeMultiPortNodeDataPtr(mpMultiInSubPort, i, NodeSignal::VALUE, 0);
+                mNDp_in_sub_vec[i] = getSafeMultiPortNodeDataPtr(mpMultiInSubPort, i, NodeSignal::Value, 0);
             }
-            mpND_out = getSafeNodeDataPtr(mpOutPort, NodeSignal::VALUE, 0);
+            mpND_out = getSafeNodeDataPtr(mpOutPort, NodeSignal::Value, 0);
 //            std::stringstream ss;
 //            ss << "nInputs: " << nSumInputs;
 //            addDebugMessage(ss.str());

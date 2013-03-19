@@ -41,13 +41,13 @@ namespace hopsan {
 
             registerParameter("std_dev", "Amplitude Variance", "[-]", y);
 
-            disableStartValue(mpOut, NodeSignal::VALUE);
+            disableStartValue(mpOut, NodeSignal::Value);
         }
 
 
         void initialize()
         {
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE, 0);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value, 0);
             simulateOneTimestep();
         }
 

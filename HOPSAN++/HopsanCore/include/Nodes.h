@@ -25,7 +25,6 @@
 #define NODES_H_INCLUDED
 
 #include "Node.h"
-//#include <iostream>
 
 namespace hopsan {
 
@@ -36,28 +35,29 @@ DLLIMPORTEXPORT void register_default_nodes(NodeFactory* pNodeFactory);
 class NodeSignal :public Node
 {
 public:
-    //! @brief The data variable indexes, DATALENGTH is used internally
+    //! @brief The data variable indexes, DataLength is used internally
     //! @ingroup NodeSignal
-    enum DataIndexEnumT {VALUE, DATALENGTH};
+    enum DataIndexEnumT {Value, DataLength};
+    enum DataIndexEnumOldT {VALUE};
     static Node* CreatorFunction() {return new NodeSignal;}
 
     void setSignalDataUnitAndDescription(const std::string &rUnit, const std::string &rName)
     {
-        mDataDescriptions[VALUE].unit = rUnit;
-        mDataDescriptions[VALUE].description = rName;
+        mDataDescriptions[Value].unit = rUnit;
+        mDataDescriptions[Value].description = rName;
     }
 
-    //! @brief For signals allways return VALUE slot even if name has been changed
+    //! @brief For signals allways return Value slot even if name has been changed
     int getDataIdFromName(const std::string /*name*/) const
     {
-        return VALUE;
+        return Value;
     }
 
 private:
-    NodeSignal() : Node(DATALENGTH)
+    NodeSignal() : Node(DataLength)
     {
         setNiceName("signal");
-        setDataCharacteristics(VALUE, "Value", "y", "-");
+        setDataCharacteristics(Value, "Value", "y", "-");
     }
 };
 
@@ -67,31 +67,31 @@ private:
 class NodeHydraulic :public Node
 {
 public:
-    //! @brief The data variable indexes, DATALENGTH is used internally
+    //! @brief The data variable indexes, DataLength is used internally
     //! @ingroup NodeHydraulic
-    enum DataIndexEnumT {FLOW, PRESSURE, TEMPERATURE, WAVEVARIABLE, CHARIMP, HEATFLOW, DATALENGTH};
+    enum DataIndexEnumT {Flow, Pressure, Temperature, WaveVariable, CharImpedance, HeatFlow, DataLength};
+    enum DataIndexEnumOldT {FLOW, PRESSURE, TEMPERATURE, WAVEVARIABLE, CHARIMP, HEATFLOW};
     static Node* CreatorFunction() {return new NodeHydraulic;}
 
 private:
-    NodeHydraulic() : Node(DATALENGTH)
+    NodeHydraulic() : Node(DataLength)
     {
         setNiceName("hydraulic");
-        setDataCharacteristics(FLOW, "Flow", "q", "m^3/s", Flow);
-        setDataCharacteristics(PRESSURE, "Pressure", "p", "Pa", Intensity);
-        setDataCharacteristics(TEMPERATURE, "Temperature", "T", "K", Hidden);
-        setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "c", "Pa", TLM);
-        setDataCharacteristics(CHARIMP, "CharImp", "Zc", "?", TLM);
-        setDataCharacteristics(HEATFLOW, "HeatFlow", "Qdot", "?", Hidden);
+        setDataCharacteristics(Flow, "Flow", "q", "m^3/s", FlowType);
+        setDataCharacteristics(Pressure, "Pressure", "p", "Pa", IntensityType);
+        setDataCharacteristics(Temperature, "Temperature", "T", "K", HiddenType);
+        setDataCharacteristics(WaveVariable, "WaveVariable", "c", "Pa", TLMType);
+        setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "?", TLMType);
+        setDataCharacteristics(HeatFlow, "HeatFlow", "Qdot", "?", HiddenType);
 
-        mDataValues[PRESSURE] = 100000;
-        mDataValues[WAVEVARIABLE] = 100000;
-        mDataValues[TEMPERATURE] = 293;
+        mDataValues[Pressure] = 100000;
+        mDataValues[WaveVariable] = 100000;
+        mDataValues[Temperature] = 293;
     }
 
     virtual void setSpecialStartValues(Node *pNode)
     {
-        pNode->setDataValue(WAVEVARIABLE, mDataValues[PRESSURE]);
-        //std::cout << "SpecialStartValue: Name: " << mDataNames[i] << "  Value: " << mDataVector[i] << "  Unit: " << mDataUnits[i] << std::endl;
+        pNode->setDataValue(WaveVariable, mDataValues[Pressure]);
         //! todo Maybe also write CHARIMP?
     }
 };
@@ -102,32 +102,32 @@ private:
 class NodePneumatic :public Node
 {
 public:
-    //! @brief The data variable indexes, DATALENGTH is used internally
+    //! @brief The data variable indexes, DataLength is used internally
     //! @ingroup NodePneumatic
-    enum DataIndexEnumT {MASSFLOW, ENERGYFLOW, PRESSURE, TEMPERATURE, WAVEVARIABLE, CHARIMP, DATALENGTH};
+    enum DataIndexEnumT {MassFlow, EnergyFlow, Pressure, Temperature, WaveVariable, CharImpedance, DataLength};
+    enum DataIndexEnumOldT {MASSFLOW, ENERGYFLOW, PRESSURE, TEMPERATURE, WAVEVARIABLE, CHARIMP};
     static Node* CreatorFunction() {return new NodePneumatic;}
 
 private:
-    NodePneumatic() : Node(DATALENGTH)
+    NodePneumatic() : Node(DataLength)
     {
         setNiceName("pneumatic");
-        setDataCharacteristics(MASSFLOW, "MassFlow", "mdot", "kg/s", Flow);
-        setDataCharacteristics(PRESSURE, "Pressure", "p", "Pa", Intensity);
-        setDataCharacteristics(TEMPERATURE, "Temperature", "T", "K", Hidden);
-        setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "c", "Pa", TLM);
-        setDataCharacteristics(CHARIMP, "CharImp", "Zc", "?", TLM);
-        setDataCharacteristics(ENERGYFLOW, "EnergyFlow", "Qdot", "J/s", Hidden);
+        setDataCharacteristics(MassFlow, "MassFlow", "mdot", "kg/s", FlowType);
+        setDataCharacteristics(Pressure, "Pressure", "p", "Pa", IntensityType);
+        setDataCharacteristics(Temperature, "Temperature", "T", "K", HiddenType);
+        setDataCharacteristics(WaveVariable, "WaveVariable", "c", "Pa", TLMType);
+        setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "?", TLMType);
+        setDataCharacteristics(EnergyFlow, "EnergyFlow", "Qdot", "J/s", HiddenType);
 
-        mDataValues[PRESSURE] = 100000;
-        mDataValues[WAVEVARIABLE] = 100000;
-        mDataValues[TEMPERATURE] = 293;
+        mDataValues[Pressure] = 100000;
+        mDataValues[WaveVariable] = 100000;
+        mDataValues[Temperature] = 293;
     }
 
     virtual void setSpecialStartValues(Node *pNode)
     {
-        pNode->setDataValue(WAVEVARIABLE, mDataValues[PRESSURE]);
-        //std::cout << "SpecialStartValue: Name: " << mDataNames[i] << "  Value: " << mDataVector[i] << "  Unit: " << mDataUnits[i] << std::endl;
-        //! todo Maybe also write CHARIMP?
+        pNode->setDataValue(WaveVariable, mDataValues[Pressure]);
+        //! todo Maybe also write CharImpedance?
     }
 };
 
@@ -136,27 +136,28 @@ private:
 class NodeMechanic :public Node
 {
 public:
-    //! @brief The data variable indexes, DATALENGTH is used internally
+    //! @brief The data variable indexes, DataLength is used internally
     //! @ingroup NodeMechanic
-    enum DataIndexEnumT {VELOCITY, FORCE, POSITION, WAVEVARIABLE, CHARIMP, EQMASS, DATALENGTH};
+    enum DataIndexEnumT {Velocity, Force, Position, WaveVariable, CharImpedance, EquivalentMass, DataLength};
+    enum DataIndexEnumOldT {VELOCITY, FORCE, POSITION, WAVEVARIABLE, CHARIMP, EQMASS};
     static Node* CreatorFunction() {return new NodeMechanic;}
 
 private:
-    NodeMechanic() : Node(DATALENGTH)
+    NodeMechanic() : Node(DataLength)
     {
         setNiceName("mechanic");
-        setDataCharacteristics(VELOCITY, "Velocity", "v", "m/s", Flow);
-        setDataCharacteristics(FORCE, "Force", "F", "N", Intensity);
-        setDataCharacteristics(POSITION, "Position", "x", "m");
-        setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "c", "N", TLM);
-        setDataCharacteristics(CHARIMP, "CharImp", "Zc", "N s/m", TLM);
-        setDataCharacteristics(EQMASS, "EquivalentMass", "me", "kg", Hidden);
+        setDataCharacteristics(Velocity, "Velocity", "v", "m/s", FlowType);
+        setDataCharacteristics(Force, "Force", "F", "N", IntensityType);
+        setDataCharacteristics(Position, "Position", "x", "m");
+        setDataCharacteristics(WaveVariable, "WaveVariable", "c", "N", TLMType);
+        setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "N s/m", TLMType);
+        setDataCharacteristics(EquivalentMass, "EquivalentMass", "me", "kg", HiddenType);
     }
 
     virtual void setSpecialStartValues(Node *pNode)
     {
-        pNode->setDataValue(WAVEVARIABLE, mDataValues[FORCE]);
-        //! todo Maybe also write CHARIMP?
+        pNode->setDataValue(WaveVariable, mDataValues[Force]);
+        //! todo Maybe also write CharImpedance?
     }
 };
 
@@ -165,27 +166,28 @@ private:
 class NodeMechanicRotational :public Node
 {
 public:
-    //! @brief The data variable indexes, DATALENGTH is used internally
+    //! @brief The data variable indexes, DataLength is used internally
     //! @ingroup NodeMechanicRotational
-    enum DataIndexEnumT {ANGULARVELOCITY, TORQUE, ANGLE, WAVEVARIABLE, CHARIMP, EQINERTIA, DATALENGTH};
+    enum DataIndexEnumT {AngularVelocity, Torque, Angle, WaveVariable, CharImpedance, EquivalentInertia, DataLength};
+    enum DataIndexEnumOldT {ANGULARVELOCITY, TORQUE, ANGLE, WAVEVARIABLE, CHARIMP, EQINERTIA};
     static Node* CreatorFunction() {return new NodeMechanicRotational;}
 
 private:
-    NodeMechanicRotational() : Node(DATALENGTH)
+    NodeMechanicRotational() : Node(DataLength)
     {
         setNiceName("mechanicrotational");
-        setDataCharacteristics(ANGULARVELOCITY, "AngularVelocity", "w", "rad/s", Flow);
-        setDataCharacteristics(TORQUE, "Torque", "T", "Nm", Intensity);
-        setDataCharacteristics(ANGLE, "Angle", "a", "rad");
-        setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "c", "Nm", TLM);
-        setDataCharacteristics(CHARIMP, "CharImp", "Zc", "?", TLM);
-        setDataCharacteristics(EQINERTIA, "EquivalentInertia", "Je", "kgm^2", Hidden);
+        setDataCharacteristics(AngularVelocity, "AngularVelocity", "w", "rad/s", FlowType);
+        setDataCharacteristics(Torque, "Torque", "T", "Nm", IntensityType);
+        setDataCharacteristics(Angle, "Angle", "a", "rad");
+        setDataCharacteristics(WaveVariable, "WaveVariable", "c", "Nm", TLMType);
+        setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "?", TLMType);
+        setDataCharacteristics(EquivalentInertia, "EquivalentInertia", "Je", "kgm^2", HiddenType);
     }
 
     virtual void setSpecialStartValues(Node *pNode)
     {
-        pNode->setDataValue(WAVEVARIABLE, mDataValues[TORQUE]);
-        //! todo Maybe also write CHARIMP?
+        pNode->setDataValue(WaveVariable, mDataValues[Torque]);
+        //! todo Maybe also write CharImpedance?
     }
 };
 
@@ -196,38 +198,39 @@ private:
 class NodeElectric :public Node
 {
 public:
-    //! @brief The data variable indexes, DATALENGTH is used internally
+    //! @brief The data variable indexes, DataLength is used internally
     //! @ingroup NodeElectric
-    enum DataIndexEnumT {VOLTAGE, CURRENT, WAVEVARIABLE, CHARIMP, DATALENGTH};
+    enum DataIndexEnumT {Voltage, Current, WaveVariable, CharImpedance, DataLength};
+    enum DataIndexEnumOldT {VOLTAGE, CURRENT, WAVEVARIABLE, CHARIMP};
     static Node* CreatorFunction() {return new NodeElectric;}
 
 private:
-    NodeElectric() : Node(DATALENGTH)
+    NodeElectric() : Node(DataLength)
     {
         setNiceName("electric");
-        setDataCharacteristics(VOLTAGE, "Voltage", "U", "V", Intensity);
-        setDataCharacteristics(CURRENT, "Current", "I", "A", Flow);
-        setDataCharacteristics(WAVEVARIABLE, "WaveVariable", "c", "V", TLM);
-        setDataCharacteristics(CHARIMP, "CharImp", "Zc", "V/A", TLM);
+        setDataCharacteristics(Voltage, "Voltage", "U", "V", IntensityType);
+        setDataCharacteristics(Current, "Current", "I", "A", FlowType);
+        setDataCharacteristics(WaveVariable, "WaveVariable", "c", "V", TLMType);
+        setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "V/A", TLMType);
     }
 
     virtual void setSpecialStartValues(Node *pNode)
     {
-        pNode->setDataValue(WAVEVARIABLE, mDataValues[VOLTAGE]);
-        //! todo Maybe also write CHARIMP?
+        pNode->setDataValue(WaveVariable, mDataValues[Voltage]);
+        //! todo Maybe also write CharImpedance?
     }
 };
 
 class NodeEmpty : public Node
 {
 public:
-    //! @brief The data variable indexes, DATALENGTH is used internally
+    //! @brief The data variable indexes, DataLength is used internally
     //! @ingroup NodeEmpty
-    enum DataIndexEnumT {DATALENGTH};
+    enum DataIndexEnumT {DataLength};
     static Node* CreatorFunction() {return new NodeEmpty;}
 
 private:
-    NodeEmpty() : Node(DATALENGTH)
+    NodeEmpty() : Node(DataLength)
     {
         setNiceName("empty");
     }

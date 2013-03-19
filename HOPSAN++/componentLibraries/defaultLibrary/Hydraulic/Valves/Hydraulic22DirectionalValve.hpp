@@ -87,18 +87,18 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
-            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
+            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
+            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
+            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
 
-            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::PRESSURE);
-            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::FLOW);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP);
+            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Pressure);
+            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
+            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
+            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
 
-            mpND_xvin = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
-            mpND_xvout = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
+            mpND_xvin = getSafeNodeDataPtr(mpIn, NodeSignal::Value);
+            mpND_xvout = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
 
             double num[3] = {1.0, 0.0, 0.0};
             double den[3] = {1.0, 2.0*deltah/omegah, 1.0/(omegah*omegah)};

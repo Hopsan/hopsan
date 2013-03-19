@@ -73,13 +73,13 @@ namespace hopsan {
             registerParameter("t_end", "Stop Time", "[s]", mStopTime);
             registerParameter("y_A", "Amplitude", "[-]", mAmplitude);
 
-            disableStartValue(mpOut, NodeSignal::VALUE);
+            disableStartValue(mpOut, NodeSignal::Value);
         }
 
 
         void initialize()
         {
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
 
             (*mpND_out) = mBaseValue;
         }

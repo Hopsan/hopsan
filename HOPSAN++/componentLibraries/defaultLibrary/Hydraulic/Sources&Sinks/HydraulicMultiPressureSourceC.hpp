@@ -65,14 +65,14 @@ namespace hopsan {
             registerParameter("p", "Default pressure", "[Pa]", p);
 
             //! @todo should we set startvalues in one or all ports
-            disableStartValue(mpMP, NodeHydraulic::PRESSURE);
-            setStartValue(mpMP, NodeHydraulic::FLOW, 0.0);
+            disableStartValue(mpMP, NodeHydraulic::Pressure);
+            setStartValue(mpMP, NodeHydraulic::Flow, 0.0);
         }
 
 
         void initialize()
         {
-            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, p);
+            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value, p);
 
             mNumPorts = mpMP->getNumPorts();
 
@@ -83,22 +83,22 @@ namespace hopsan {
             mND_Zc_vec.resize(mNumPorts);
             for (size_t i=0; i<mNumPorts; ++i)
             {
-                mND_p_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::PRESSURE);
-                mND_q_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::FLOW);
-                mND_c_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::WAVEVARIABLE);
-                mND_Zc_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::CHARIMP);
+                mND_p_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::Pressure);
+                mND_q_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::Flow);
+                mND_c_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::WaveVariable);
+                mND_Zc_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::CharImpedance);
 
                 *(mND_p_vec[i]) = p; //Override the startvalue for the pressure
-                *(mND_q_vec[i]) = getStartValue(mpMP, NodeHydraulic::FLOW);
+                *(mND_q_vec[i]) = getStartValue(mpMP, NodeHydraulic::Flow);
             }
-            mpMP->setStartValue(NodeHydraulic::PRESSURE, p); //This is here to show the user that the start value is hard coded!
+            mpMP->setStartValue(NodeHydraulic::Pressure, p); //This is here to show the user that the start value is hard coded!
 
-//            mpND_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
-//            mpND_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
+//            mpND_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
+//            mpND_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
 //            mpND_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
 
 //            (*mpND_p) = p; //Override the startvalue for the pressure
-//            setStartValue(mpP1, NodeHydraulic::PRESSURE, p); //This is here to show the user that the start value is hard coded!
+//            setStartValue(mpP1, NodeHydraulic::Pressure, p); //This is here to show the user that the start value is hard coded!
 
             simulateOneTimestep();
         }

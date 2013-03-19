@@ -78,11 +78,11 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_t1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::TORQUE);
-            mpND_a1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::ANGLE);
-            mpND_w1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::ANGULARVELOCITY);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::WAVEVARIABLE);
-            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::CHARIMP);
+            mpND_t1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::Torque);
+            mpND_a1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::Angle);
+            mpND_w1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::AngularVelocity);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::WaveVariable);
+            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::CharImpedance);
 
             mIntegrator.initialize(mTimestep, 0.0, 0.0);
 

@@ -57,7 +57,7 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_w = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::ANGULARVELOCITY);
+            mpND_w = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::AngularVelocity);
             mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
         }
 

@@ -90,17 +90,17 @@ class HydraulicPumpPiston : public ComponentC
         void initialize()
         {
 
-            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE, 0.0);
-            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW, 0.0);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE, 0.0);
-            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP, 0.0);
+            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure, 0.0);
+            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow, 0.0);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable, 0.0);
+            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance, 0.0);
 
-            mpND_f3 = getSafeNodeDataPtr(mpP3, NodeMechanic::FORCE);
-            mpND_x3 = getSafeNodeDataPtr(mpP3, NodeMechanic::POSITION);
-            mpND_v3 = getSafeNodeDataPtr(mpP3, NodeMechanic::VELOCITY);
-            mpND_c3 = getSafeNodeDataPtr(mpP3, NodeMechanic::WAVEVARIABLE);
-            mpND_Zx3 = getSafeNodeDataPtr(mpP3, NodeMechanic::CHARIMP);
-            mpND_me = getSafeNodeDataPtr(mpP3, NodeMechanic::EQMASS);
+            mpND_f3 = getSafeNodeDataPtr(mpP3, NodeMechanic::Force);
+            mpND_x3 = getSafeNodeDataPtr(mpP3, NodeMechanic::Position);
+            mpND_v3 = getSafeNodeDataPtr(mpP3, NodeMechanic::Velocity);
+            mpND_c3 = getSafeNodeDataPtr(mpP3, NodeMechanic::WaveVariable);
+            mpND_Zx3 = getSafeNodeDataPtr(mpP3, NodeMechanic::CharImpedance);
+            mpND_me = getSafeNodeDataPtr(mpP3, NodeMechanic::EquivalentMass);
 
             //Declare local variables;
             double p1, x3, v3;

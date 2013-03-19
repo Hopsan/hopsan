@@ -56,7 +56,7 @@ namespace hopsan {
         void initialize()
         {
 //            simulateOneTimestep();
-            mpOut->writeNode(NodeSignal::VALUE, 0.0);
+            mpOut->writeNode(NodeSignal::Value, 0.0);
         }
 
 
@@ -68,7 +68,7 @@ namespace hopsan {
 
             if (mpIn->isConnected())       //In-port connected
             {
-                in = mpIn->readNode(NodeSignal::VALUE);
+                in = mpIn->readNode(NodeSignal::Value);
 
             }
             else
@@ -77,7 +77,7 @@ namespace hopsan {
             }
 
             //Write new values to nodes
-            mpOut->writeNode(NodeSignal::VALUE, in*in);
+            mpOut->writeNode(NodeSignal::Value, in*in);
         }
     };
 }

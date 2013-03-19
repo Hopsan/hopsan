@@ -83,21 +83,21 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
-            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
+            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
+            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
+            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
 
-            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::PRESSURE);
-            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::FLOW);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP);
+            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Pressure);
+            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
+            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
+            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
 
-            mpND_p_open = getSafeNodeDataPtr(mpP_OPEN, NodeHydraulic::PRESSURE);
-            mpND_c_open = getSafeNodeDataPtr(mpP_OPEN, NodeHydraulic::WAVEVARIABLE);
+            mpND_p_open = getSafeNodeDataPtr(mpP_OPEN, NodeHydraulic::Pressure);
+            mpND_c_open = getSafeNodeDataPtr(mpP_OPEN, NodeHydraulic::WaveVariable);
 
-            mpND_p_close = getSafeNodeDataPtr(mpP_CLOSE, NodeHydraulic::PRESSURE);
-            mpND_c_close = getSafeNodeDataPtr(mpP_CLOSE, NodeHydraulic::WAVEVARIABLE);
+            mpND_p_close = getSafeNodeDataPtr(mpP_CLOSE, NodeHydraulic::Pressure);
+            mpND_c_close = getSafeNodeDataPtr(mpP_CLOSE, NodeHydraulic::WaveVariable);
 
             x0 = 0.00001;           //Why not 0.0? (probably doesnt matter though)
             mPrevX0 = 0.0;

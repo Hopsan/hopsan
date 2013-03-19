@@ -72,10 +72,10 @@ public:
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double c1 = mpP1->readNode(NodeHydraulic::WAVEVARIABLE);
-        double Zc1 = mpP1->readNode(NodeHydraulic::CHARIMP);
-        double c2 = mpP2->readNode(NodeHydraulic::WAVEVARIABLE);
-        double Zc2 = mpP2->readNode(NodeHydraulic::CHARIMP);
+        double c1 = mpP1->readNode(NodeHydraulic::WaveVariable);
+        double Zc1 = mpP1->readNode(NodeHydraulic::CharImpedance);
+        double c2 = mpP2->readNode(NodeHydraulic::WaveVariable);
+        double Zc2 = mpP2->readNode(NodeHydraulic::CharImpedance);
 
         //Orifice equations
         double q2 = mKc*(c1-c2)/(1.0+mKc*(Zc1+Zc2));
@@ -84,10 +84,10 @@ public:
         double p2 = c2 + q2*Zc2;
 
         //Write new values to nodes
-        mpP1->writeNode(NodeHydraulic::PRESSURE, p1);
-        mpP1->writeNode(NodeHydraulic::FLOW, q1);
-        mpP2->writeNode(NodeHydraulic::PRESSURE, p2);
-        mpP2->writeNode(NodeHydraulic::FLOW, q2);
+        mpP1->writeNode(NodeHydraulic::Pressure, p1);
+        mpP1->writeNode(NodeHydraulic::Flow, q1);
+        mpP2->writeNode(NodeHydraulic::Pressure, p2);
+        mpP2->writeNode(NodeHydraulic::Flow, q2);
     }
 
     // The finalize function is called after simulation ends

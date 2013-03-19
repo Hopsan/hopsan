@@ -120,8 +120,8 @@ namespace hopsan {
                 //                ss << mGain << "  " << myDataCurve->interpolate(mGain);
                 //                addInfoMessage(ss.str());
 
-                mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, 0);
-                mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
+                mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value, 0);
+                mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
             }
         }
 

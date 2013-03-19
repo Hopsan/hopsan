@@ -54,10 +54,10 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_t = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::TORQUE);
-            mpND_w = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::ANGULARVELOCITY);
-            mpND_c = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::WAVEVARIABLE);
-            mpND_Zx = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::CHARIMP);
+            mpND_t = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::Torque);
+            mpND_w = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::AngularVelocity);
+            mpND_c = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::WaveVariable);
+            mpND_Zx = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::CharImpedance);
         }
 
         void simulateOneTimestep()

@@ -496,7 +496,7 @@ vector<double> *Port::getDataVectorPtr(const size_t /*portIdx*/)
 
 
 //! @brief Get the actual start value of the port
-//! @param[in] idx is the index of the start value e.g. NodeHydraulic::PRESSURE
+//! @param[in] idx is the index of the start value e.g. NodeHydraulic::Pressure
 //! @returns the start value
 double Port::getStartValue(const size_t idx, const size_t /*portIdx*/)
 {
@@ -514,7 +514,7 @@ double Port::getStartValue(const size_t idx, const size_t /*portIdx*/)
 
 
 //! @brief Set the an actual start value of the port
-//! @param[in] idx is the index of the start value e.g. NodeHydraulic::PRESSURE
+//! @param[in] idx is the index of the start value e.g. NodeHydraulic::Pressure
 //! @param[in] value is the start value that should be written
 void Port::setStartValue(const size_t idx, const double value, const size_t /*portIdx*/)
 {
@@ -841,7 +841,7 @@ std::vector<double> *MultiPort::getDataVectorPtr(const size_t portIdx)
 }
 
 //! @brief Get the an actual start value of the port
-//! @param[in] idx is the index of the start value e.g. NodeHydraulic::PRESSURE
+//! @param[in] idx is the index of the start value e.g. NodeHydraulic::Pressure
 //! @returns the start value
 double MultiPort::getStartValue(const size_t idx, const size_t portIdx)
 {

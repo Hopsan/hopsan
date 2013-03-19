@@ -73,13 +73,13 @@ public:
      {
         //Read port variable pointers from nodes
         //Port Pel1
-        mpND_uel1=getSafeNodeDataPtr(mpPel1, NodeElectric::VOLTAGE);
-        mpND_iel1=getSafeNodeDataPtr(mpPel1, NodeElectric::CURRENT);
-        mpND_cel1=getSafeNodeDataPtr(mpPel1, NodeElectric::WAVEVARIABLE);
-        mpND_Zcel1=getSafeNodeDataPtr(mpPel1, NodeElectric::CHARIMP);
+        mpND_uel1=getSafeNodeDataPtr(mpPel1, NodeElectric::Voltage);
+        mpND_iel1=getSafeNodeDataPtr(mpPel1, NodeElectric::Current);
+        mpND_cel1=getSafeNodeDataPtr(mpPel1, NodeElectric::WaveVariable);
+        mpND_Zcel1=getSafeNodeDataPtr(mpPel1, NodeElectric::CharImpedance);
         //Read inputVariables pointers from nodes
         //Read outputVariable pointers from nodes
-        mpND_iout=getSafeNodeDataPtr(mpPiout, NodeSignal::VALUE);
+        mpND_iout=getSafeNodeDataPtr(mpPiout, NodeSignal::Value);
 
         //Read variables from nodes
         //Port Pel1
@@ -91,7 +91,7 @@ public:
         //Read inputVariables from nodes
 
         //Read outputVariables from nodes
-        iout = mpPiout->getStartValue(NodeSignal::VALUE);
+        iout = mpPiout->getStartValue(NodeSignal::Value);
 
 
 

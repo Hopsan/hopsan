@@ -228,22 +228,22 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
         QString varName = toVarName("mpIn_"+inVarPortNames[i]);
         QString portName = toVarName(inVarPortNames[i]+"In");
         QString mpndName = toVarName("mpND_in"+inVarPortNames[i]);
-        portSpecs << FMIPortSpecification(varName, portName, mpndName, inVarValueRefs[i], "ReadPortType", "NodeSignal", "NodeSignal::VALUE", "input");
+        portSpecs << FMIPortSpecification(varName, portName, mpndName, inVarValueRefs[i], "ReadPortType", "NodeSignal", "NodeSignal::Value", "input");
     }
     for(int i=0; i<outVarPortNames.size(); ++i)
     {
         portSpecs << FMIPortSpecification(toVarName("mpOut"+outVarPortNames[i]), toVarName(outVarPortNames[i]+"Out"),
                                           toVarName("mpND_out"+outVarPortNames[i]), outVarValueRefs[i],
-                                          "WritePortType", "NodeSignal", "NodeSignal::VALUE", "output");
+                                          "WritePortType", "NodeSignal", "NodeSignal::Value", "output");
     }
     for(int i=0; i<inoutVarPortNames.size(); ++i)
     {
         portSpecs << FMIPortSpecification(toVarName("mpIn"+inoutVarPortNames[i]), toVarName(inoutVarPortNames[i]+"In"),
                                           toVarName("mpND_in"+inoutVarPortNames[i]), inoutVarValueRefs[i],
-                                          "ReadPortType", "NodeSignal", "NodeSignal::VALUE", "");
+                                          "ReadPortType", "NodeSignal", "NodeSignal::Value", "");
         portSpecs << FMIPortSpecification(toVarName("mpOut"+inoutVarPortNames[i]), toVarName(inoutVarPortNames[i]+"Out"),
                                           toVarName("mpND_out"+inoutVarPortNames[i]), inoutVarValueRefs[i],
-                                          "WritePortType", "NodeSignal", "NodeSignal::VALUE", "");
+                                          "WritePortType", "NodeSignal", "NodeSignal::Value", "");
     }
     for(int i=0; i<tlmPortVarNames.size(); ++i)
     {

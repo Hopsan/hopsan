@@ -79,13 +79,13 @@ namespace hopsan {
             registerParameter("y_A", "Amplitude", "[-]", mAmplitude);
             registerParameter("y_offset", "(Phase) Offset", "[s]", mPhaseTOffset);
 
-            disableStartValue(mpOut, NodeSignal::VALUE);
+            disableStartValue(mpOut, NodeSignal::Value);
         }
 
 
         void initialize()
         {
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
 
             simulateOneTimestep();
         }

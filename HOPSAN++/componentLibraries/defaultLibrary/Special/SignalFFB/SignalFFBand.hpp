@@ -87,11 +87,11 @@ public:
      {
         //Read port variable pointers from nodes
         //Read inputVariables pointers from nodes
-        mpND_in0=getSafeNodeDataPtr(mpPin0, NodeSignal::VALUE,min0);
-        mpND_in1=getSafeNodeDataPtr(mpPin1, NodeSignal::VALUE,min1);
+        mpND_in0=getSafeNodeDataPtr(mpPin0, NodeSignal::Value,min0);
+        mpND_in1=getSafeNodeDataPtr(mpPin1, NodeSignal::Value,min1);
         //Read outputVariable pointers from nodes
-        mpND_state=getSafeNodeDataPtr(mpPstate, NodeSignal::VALUE);
-        mpND_exiting=getSafeNodeDataPtr(mpPexiting, NodeSignal::VALUE);
+        mpND_state=getSafeNodeDataPtr(mpPstate, NodeSignal::Value);
+        mpND_exiting=getSafeNodeDataPtr(mpPexiting, NodeSignal::Value);
 
         //Read variables from nodes
 
@@ -100,8 +100,8 @@ public:
         in1 = (*mpND_in1);
 
         //Read outputVariables from nodes
-        state = mpPstate->getStartValue(NodeSignal::VALUE);
-        exiting = mpPexiting->getStartValue(NodeSignal::VALUE);
+        state = mpPstate->getStartValue(NodeSignal::Value);
+        exiting = mpPexiting->getStartValue(NodeSignal::Value);
 
         //InitialExpressions
         oldIn0 = in0;

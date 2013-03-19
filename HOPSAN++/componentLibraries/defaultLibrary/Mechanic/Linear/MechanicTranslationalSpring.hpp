@@ -57,14 +57,14 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_f1 =  getSafeNodeDataPtr(mpP1, NodeMechanic::FORCE);
-            mpND_f2 =  getSafeNodeDataPtr(mpP2, NodeMechanic::FORCE);
-            mpND_v1 = getSafeNodeDataPtr(mpP1, NodeMechanic::VELOCITY);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE);
-            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CHARIMP);
-            mpND_v2 = getSafeNodeDataPtr(mpP2, NodeMechanic::VELOCITY);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanic::WAVEVARIABLE);
-            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeMechanic::CHARIMP);
+            mpND_f1 =  getSafeNodeDataPtr(mpP1, NodeMechanic::Force);
+            mpND_f2 =  getSafeNodeDataPtr(mpP2, NodeMechanic::Force);
+            mpND_v1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Velocity);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanic::WaveVariable);
+            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CharImpedance);
+            mpND_v2 = getSafeNodeDataPtr(mpP2, NodeMechanic::Velocity);
+            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanic::WaveVariable);
+            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeMechanic::CharImpedance);
 
             Zc = k*mTimestep;
 

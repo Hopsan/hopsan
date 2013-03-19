@@ -68,19 +68,19 @@ namespace hopsan {
         void initialize()
         {
             //Assign node data pointers
-            mpND_f1  = getSafeNodeDataPtr(mpP1, NodeMechanic::FORCE);
-            mpND_x1  = getSafeNodeDataPtr(mpP1, NodeMechanic::POSITION);
-            mpND_v1  = getSafeNodeDataPtr(mpP1, NodeMechanic::VELOCITY);
-            mpND_me1 = getSafeNodeDataPtr(mpP1, NodeMechanic::EQMASS);
-            mpND_c1  = getSafeNodeDataPtr(mpP1, NodeMechanic::WAVEVARIABLE);
-            mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CHARIMP);
+            mpND_f1  = getSafeNodeDataPtr(mpP1, NodeMechanic::Force);
+            mpND_x1  = getSafeNodeDataPtr(mpP1, NodeMechanic::Position);
+            mpND_v1  = getSafeNodeDataPtr(mpP1, NodeMechanic::Velocity);
+            mpND_me1 = getSafeNodeDataPtr(mpP1, NodeMechanic::EquivalentMass);
+            mpND_c1  = getSafeNodeDataPtr(mpP1, NodeMechanic::WaveVariable);
+            mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanic::CharImpedance);
 
-            mpND_f2  = getSafeNodeDataPtr(mpP2, NodeMechanic::FORCE);
-            mpND_x2  = getSafeNodeDataPtr(mpP2, NodeMechanic::POSITION);
-            mpND_v2  = getSafeNodeDataPtr(mpP2, NodeMechanic::VELOCITY);
-            mpND_me2 = getSafeNodeDataPtr(mpP2, NodeMechanic::EQMASS);
-            mpND_c2  = getSafeNodeDataPtr(mpP2, NodeMechanic::WAVEVARIABLE);
-            mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanic::CHARIMP);
+            mpND_f2  = getSafeNodeDataPtr(mpP2, NodeMechanic::Force);
+            mpND_x2  = getSafeNodeDataPtr(mpP2, NodeMechanic::Position);
+            mpND_v2  = getSafeNodeDataPtr(mpP2, NodeMechanic::Velocity);
+            mpND_me2 = getSafeNodeDataPtr(mpP2, NodeMechanic::EquivalentMass);
+            mpND_c2  = getSafeNodeDataPtr(mpP2, NodeMechanic::WaveVariable);
+            mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanic::CharImpedance);
 
             //Initialization
             f1 = (*mpND_f1);
@@ -95,7 +95,7 @@ namespace hopsan {
             (*mpND_v2) = -v1*w;
 
             //Print debug message if velocities do not match
-            if(mpP1->readNode(NodeMechanic::VELOCITY)*w != -mpP2->readNode(NodeMechanic::VELOCITY))
+            if(mpP1->readNode(NodeMechanic::Velocity)*w != -mpP2->readNode(NodeMechanic::Velocity))
             {
                 std::stringstream ss;
                 ss << "Start velocities does not match, {" << getName() << "::" << mpP1->getName() <<

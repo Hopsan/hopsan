@@ -104,19 +104,19 @@ namespace hopsan {
         void initialize()
         {
             //Assign node data pointers
-            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
-            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
-            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::PRESSURE);
-            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::FLOW);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP);
-            mpND_f3 = getSafeNodeDataPtr(mpP3, NodeMechanic::FORCE);
-            mpND_x3 = getSafeNodeDataPtr(mpP3, NodeMechanic::POSITION);
-            mpND_v3 = getSafeNodeDataPtr(mpP3, NodeMechanic::VELOCITY);
-            mpND_cx3 = getSafeNodeDataPtr(mpP3, NodeMechanic::WAVEVARIABLE);
-            mpND_Zx3 = getSafeNodeDataPtr(mpP3, NodeMechanic::CHARIMP);
+            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
+            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
+            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
+            mpND_p2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Pressure);
+            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
+            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
+            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
+            mpND_f3 = getSafeNodeDataPtr(mpP3, NodeMechanic::Force);
+            mpND_x3 = getSafeNodeDataPtr(mpP3, NodeMechanic::Position);
+            mpND_v3 = getSafeNodeDataPtr(mpP3, NodeMechanic::Velocity);
+            mpND_cx3 = getSafeNodeDataPtr(mpP3, NodeMechanic::WaveVariable);
+            mpND_Zx3 = getSafeNodeDataPtr(mpP3, NodeMechanic::CharImpedance);
 
             //Read data from nodes
             x3 = (*mpND_x3);

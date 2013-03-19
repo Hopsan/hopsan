@@ -51,13 +51,13 @@ namespace hopsan {
 
             mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
 
-            disableStartValue(mpOut, NodeSignal::VALUE);
+            disableStartValue(mpOut, NodeSignal::Value);
         }
 
 
         void initialize()
         {
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
 
             simulateOneTimestep();
         }

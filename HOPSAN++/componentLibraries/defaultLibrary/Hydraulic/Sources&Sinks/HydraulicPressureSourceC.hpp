@@ -59,18 +59,18 @@ namespace hopsan {
 
             registerParameter("p", "Default pressure", "[Pa]", p);
 
-            disableStartValue(mpP1, NodeHydraulic::PRESSURE);
-            setStartValue(mpP1, NodeHydraulic::FLOW, 0.0);
+            disableStartValue(mpP1, NodeHydraulic::Pressure);
+            setStartValue(mpP1, NodeHydraulic::Flow, 0.0);
         }
 
 
         void initialize()
         {
 
-            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, p);
-            mpND_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
-            mpND_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
+            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value, p);
+            mpND_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
+            mpND_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
+            mpND_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
 
             (*mpND_p) = p; //Override the startvalue for the pressure
 

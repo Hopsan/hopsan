@@ -72,50 +72,50 @@ namespace hopsan {
             registerParameter("Beta_e", "Bulkmodulus", "[Pa]", mBulkmodulus);
             registerParameter("alpha", "Low pass coeficient to dampen standing delayline waves", "[-]",  mAlpha);
 
-            setStartValue(mpP1, NodeHydraulic::FLOW, 0.0);
-            setStartValue(mpP1, NodeHydraulic::PRESSURE, 1.0e5);
-            setStartValue(mpP2, NodeHydraulic::FLOW, 0.0);
-            setStartValue(mpP2, NodeHydraulic::PRESSURE, 1.0e5);
-            setStartValue(mpP3, NodeHydraulic::FLOW, 0.0);
-            setStartValue(mpP3, NodeHydraulic::PRESSURE, 1.0e5);
-            setStartValue(mpP4, NodeHydraulic::FLOW, 0.0);
-            setStartValue(mpP4, NodeHydraulic::PRESSURE, 1.0e5);
+            setStartValue(mpP1, NodeHydraulic::Flow, 0.0);
+            setStartValue(mpP1, NodeHydraulic::Pressure, 1.0e5);
+            setStartValue(mpP2, NodeHydraulic::Flow, 0.0);
+            setStartValue(mpP2, NodeHydraulic::Pressure, 1.0e5);
+            setStartValue(mpP3, NodeHydraulic::Flow, 0.0);
+            setStartValue(mpP3, NodeHydraulic::Pressure, 1.0e5);
+            setStartValue(mpP4, NodeHydraulic::Flow, 0.0);
+            setStartValue(mpP4, NodeHydraulic::Pressure, 1.0e5);
         }
 
 
         void initialize()
         {
-            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
-            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::FLOW);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
-            mpND_p2 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
-            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::FLOW);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CHARIMP);
-            mpND_p3 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
-            mpND_q3 = getSafeNodeDataPtr(mpP3, NodeHydraulic::FLOW);
-            mpND_c3 = getSafeNodeDataPtr(mpP3, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc3 = getSafeNodeDataPtr(mpP3, NodeHydraulic::CHARIMP);
-            mpND_p4 = getSafeNodeDataPtr(mpP1, NodeHydraulic::PRESSURE);
-            mpND_q4 = getSafeNodeDataPtr(mpP4, NodeHydraulic::FLOW);
-            mpND_c4 = getSafeNodeDataPtr(mpP4, NodeHydraulic::WAVEVARIABLE);
-            mpND_Zc4 = getSafeNodeDataPtr(mpP4, NodeHydraulic::CHARIMP);
+            mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
+            mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
+            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
+            mpND_Zc1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
+            mpND_p2 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
+            mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
+            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
+            mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
+            mpND_p3 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
+            mpND_q3 = getSafeNodeDataPtr(mpP3, NodeHydraulic::Flow);
+            mpND_c3 = getSafeNodeDataPtr(mpP3, NodeHydraulic::WaveVariable);
+            mpND_Zc3 = getSafeNodeDataPtr(mpP3, NodeHydraulic::CharImpedance);
+            mpND_p4 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
+            mpND_q4 = getSafeNodeDataPtr(mpP4, NodeHydraulic::Flow);
+            mpND_c4 = getSafeNodeDataPtr(mpP4, NodeHydraulic::WaveVariable);
+            mpND_Zc4 = getSafeNodeDataPtr(mpP4, NodeHydraulic::CharImpedance);
 
             mZc = 3 / 2 * mBulkmodulus/mVolume*mTimestep/(1-mAlpha); //Need to be updated at simulation start since it is volume and bulk that are set.
 
             //Write to nodes
-            (*mpND_q1) = getStartValue(mpP1,NodeHydraulic::FLOW);
-            (*mpND_p1) = getStartValue(mpP1,NodeHydraulic::PRESSURE);
+            (*mpND_q1) = getStartValue(mpP1,NodeHydraulic::Flow);
+            (*mpND_p1) = getStartValue(mpP1,NodeHydraulic::Pressure);
             (*mpND_Zc1) = mZc;
-            (*mpND_q2) = getStartValue(mpP2,NodeHydraulic::FLOW);
-            (*mpND_p2) = getStartValue(mpP2,NodeHydraulic::PRESSURE);
+            (*mpND_q2) = getStartValue(mpP2,NodeHydraulic::Flow);
+            (*mpND_p2) = getStartValue(mpP2,NodeHydraulic::Pressure);
             (*mpND_Zc2) = mZc;
-            (*mpND_q3) = getStartValue(mpP3,NodeHydraulic::FLOW);
-            (*mpND_p3) = getStartValue(mpP3,NodeHydraulic::PRESSURE);
+            (*mpND_q3) = getStartValue(mpP3,NodeHydraulic::Flow);
+            (*mpND_p3) = getStartValue(mpP3,NodeHydraulic::Pressure);
             (*mpND_Zc3) = mZc;
-            (*mpND_q4) = getStartValue(mpP4,NodeHydraulic::FLOW);
-            (*mpND_p4) = getStartValue(mpP4,NodeHydraulic::PRESSURE);
+            (*mpND_q4) = getStartValue(mpP4,NodeHydraulic::Flow);
+            (*mpND_p4) = getStartValue(mpP4,NodeHydraulic::Pressure);
             (*mpND_Zc4) = mZc;
 
             double pMean = (((*mpND_p1) + mZc * (*mpND_q1)) + ((*mpND_p2) + mZc * (*mpND_q2)) + ((*mpND_p3) + mZc * (*mpND_q3)) + ((*mpND_p4) + mZc * (*mpND_q4))) / 4.0;

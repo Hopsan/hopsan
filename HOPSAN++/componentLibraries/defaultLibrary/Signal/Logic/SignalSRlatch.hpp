@@ -84,12 +84,12 @@ Port::NotRequired);
         //Read port variable pointers from nodes
         //Read inputVariables pointers from nodes
         mpND_setCond=getSafeNodeDataPtr(mpPsetCond, \
-NodeSignal::VALUE,msetCond);
+NodeSignal::Value,msetCond);
         mpND_resetCond=getSafeNodeDataPtr(mpPresetCond, \
-NodeSignal::VALUE,mresetCond);
+NodeSignal::Value,mresetCond);
         //Read outputVariable pointers from nodes
-        mpND_Qstate=getSafeNodeDataPtr(mpPQstate, NodeSignal::VALUE);
-        mpND_notQstate=getSafeNodeDataPtr(mpPnotQstate, NodeSignal::VALUE);
+        mpND_Qstate=getSafeNodeDataPtr(mpPQstate, NodeSignal::Value);
+        mpND_notQstate=getSafeNodeDataPtr(mpPnotQstate, NodeSignal::Value);
 
         //Read variables from nodes
 
@@ -98,8 +98,8 @@ NodeSignal::VALUE,mresetCond);
         resetCond = (*mpND_resetCond);
 
         //Read outputVariables from nodes
-        Qstate = mpPQstate->getStartValue(NodeSignal::VALUE);
-        notQstate = mpPnotQstate->getStartValue(NodeSignal::VALUE);
+        Qstate = mpPQstate->getStartValue(NodeSignal::Value);
+        notQstate = mpPnotQstate->getStartValue(NodeSignal::Value);
 
         //InitialExpressions
         oldQstate = Qstate;

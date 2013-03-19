@@ -92,15 +92,15 @@ public:
      {
         //Read port variable pointers from nodes
         //Port Pp1
-        mpND_pp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::PRESSURE);
-        mpND_qmp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::MASSFLOW);
-        mpND_Tp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::TEMPERATURE);
-        mpND_dEp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::ENERGYFLOW);
-        mpND_cp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::WAVEVARIABLE);
-        mpND_Zcp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::CHARIMP);
+        mpND_pp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::Pressure);
+        mpND_qmp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::MassFlow);
+        mpND_Tp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::Temperature);
+        mpND_dEp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::EnergyFlow);
+        mpND_cp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::WaveVariable);
+        mpND_Zcp1=getSafeNodeDataPtr(mpPp1, NodePneumatic::CharImpedance);
         //Read inputVariables pointers from nodes
-        mpND_pinput=getSafeNodeDataPtr(mpPpinput, NodeSignal::VALUE,mpinput);
-        mpND_Tinput=getSafeNodeDataPtr(mpPTinput, NodeSignal::VALUE,mTinput);
+        mpND_pinput=getSafeNodeDataPtr(mpPpinput, NodeSignal::Value,mpinput);
+        mpND_Tinput=getSafeNodeDataPtr(mpPTinput, NodeSignal::Value,mTinput);
         //Read outputVariable pointers from nodes
 
         //Read variables from nodes
