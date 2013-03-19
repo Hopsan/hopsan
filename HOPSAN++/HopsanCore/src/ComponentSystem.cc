@@ -913,8 +913,17 @@ void ComponentSystem::preAllocateLogSpace(const double startT, const double stop
                 // Now try to allocate log memmory for each node
                 try
                 {
-                    (*it)->enableLog();
-                    (*it)->preAllocateLogSpace(mnLogSlots);
+                    // If the node is in a read port and if that port is not connected (node only have one connected port)
+                    // Then we should disable logging for that node as loging the startvalue does not make sense
+                    if ( ((*it)->getNumConnectedPorts() < 2) && ((*it)->getNumberOfPortsByType(ReadPortType) == 1) )
+                    {
+                        (*it)->disableLog();
+                    }
+                    else
+                    {
+                        (*it)->enableLog();
+                        (*it)->preAllocateLogSpace(mnLogSlots);
+                    }
                     success = true;
                 }
                 catch (exception &e)

@@ -54,10 +54,12 @@ Port::Port(const string nodeType, const string portName, Component *pParentCompo
 
     // Create the initial node
     mpNode = getComponent()->getHopsanEssentials()->createNode(mNodeType);
+    this->setNode(mpNode);
     if (getComponent()->getSystemParent())
     {
         getComponent()->getSystemParent()->addSubNode(mpNode);
     }
+
 }
 
 
@@ -214,50 +216,6 @@ double *Port::getSafeNodeDataPtr(const size_t idx, const double defaultValue, co
 
 
 
-////! @brief Set the node that the port is connected to
-////! @param [in] pNode A pointer to the Node, or 0 for NC dummy node
-//void Port::setNode(Node* pNode)
-//{
-//    //! @todo what to do with log data (clear maybe) if dummy node
-//    if (mpNode)
-//    {
-//        // Ok lets make the old node forget that it is connected to this port
-//        // Unless it is the dummyNode, otherwise someone else might decide to delete teh node as it seems noone is using it
-//        if (!mIsNodeOwner)
-//        {
-//            mpNode->removeConnectedPort(this);
-//        }
-
-//        // Check if we should remove current dummy node
-//        if (mIsNodeOwner && (pNode != mpNode))
-//        {
-//            if (mpNode->getOwnerSystem())
-//            {
-//                mpNode->getOwnerSystem()->removeSubNode(mpNode);
-//            }
-//            mIsNodeOwner = false;
-//        }
-//    }
-
-//    // If node was supplied, use it, else create a dummy node
-//    if (pNode)
-//    {
-//        mpNode = pNode;
-//    }
-//    else if (pNode != mpNode)
-//    {
-//        // Use initial dummy node
-//        mpNode = getComponent()->getHopsanEssentials()->createNode(mNodeType);
-//        mIsNodeOwner = true;
-//        if (getComponent()->getSystemParent())
-//        {
-//            getComponent()->getSystemParent()->addSubNode(mpNode);
-//        }
-//    }
-//    // Make the node remember this port
-//    mpNode->addConnectedPort(this);
-//}
-
 //! @brief Set the node that the port is connected to
 //! @param [in] pNode A pointer to the Node, or 0 for NC dummy node
 void Port::setNode(Node* pNode)
@@ -363,7 +321,6 @@ void Port::setVariableAlias(const string alias, const int id)
 
 char* Port::getVariableAlias(const int id)
 {
-    //char* retval;
     std::map<std::string, int>::const_iterator it;
     for(it=mVariableAliasMap.begin();it!=mVariableAliasMap.end();++it)
     {
@@ -371,12 +328,10 @@ char* Port::getVariableAlias(const int id)
         {
             copyString(&mpTempAlias, it->first);
             return mpTempAlias;
-            //return it->first;
         }
     }
     copyString(&mpTempAlias, "");
     return mpTempAlias;
-    //return string();
 }
 
 int Port::getVariableIdByAlias(const string alias) const
@@ -459,11 +414,7 @@ bool Port::haveLogData(const size_t /*portIdx*/)
 //! @param [in,out] rUnits This vector will contain the units
 const std::vector<NodeDataDescription>* Port::getNodeDataDescriptions(const size_t /*portIdx*/)
 {
-    if(this->isConnected())
-    {
-        return mpNode->getDataDescriptions();
-    }
-    return 0;
+    return mpNode->getDataDescriptions();
 }
 
 
@@ -472,6 +423,7 @@ const std::vector<NodeDataDescription>* Port::getNodeDataDescriptions(const size
 //! @returns A pointer to teh node data description, or 0 if no node exist
 const NodeDataDescription* Port::getNodeDataDescription(const size_t dataid, const size_t /*portIdx*/)
 {
+    //! @todo since mpNode should always be set maybe we could remove (almost) all the checks (but not for multiports their mpNOde will be 0)
     if (mpNode != 0)
     {
         return mpNode->getDataDescription(dataid);
@@ -769,7 +721,7 @@ MultiPort::MultiPort(std::string node_type, std::string portname, Component *por
 
 MultiPort::~MultiPort()
 {
-    //Deleate all subports thay may remain, if everything is working this shoudl be zero
+    //Delete all subports thay may remain, if everything is working this shoudl be zero
     //! @todo removed assert, BUT problem needs to be fixed /Peter
     if (mSubPortsVector.size() != 0)
     {
@@ -827,7 +779,7 @@ void MultiPort::saveLogData(std::string filename, const size_t portIdx)
 
 const std::vector<NodeDataDescription>* MultiPort::getNodeDataDescriptions(const size_t portIdx)
 {
-    if (isConnected())
+    if (portIdx < mSubPortsVector.size())
     {
         return mSubPortsVector[portIdx]->getNodeDataDescriptions();
     }

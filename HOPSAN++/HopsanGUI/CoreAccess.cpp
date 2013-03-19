@@ -829,25 +829,22 @@ void CoreSystemAccess::getPlotData(const QString compname, const QString portnam
     hopsan::Port* pPort = this->getCorePortPtr(compname, portname);
     if (pPort)
     {
-        if(pPort->isConnected())
+        dataId = pPort->getNodeDataIdFromName(dataname.toStdString());
+        if (dataId > -1)
         {
-            dataId = pPort->getNodeDataIdFromName(dataname.toStdString());
-            if (dataId > -1)
+            vector< vector<double> > *pData = pPort->getLogDataVectorPtr();
+            rpTimeVector = pPort->getLogTimeVectorPtr();
+
+            // Instead of pData.size() lets ask for latest logsample, this way we can avoid coping log slots that have not bee written and contains junk
+            // This is usefull when a simulation has been aborted
+            size_t nElements = min(pPort->getComponent()->getSystemParent()->getNumActuallyLoggedSamples(), pData->size());
+            //qDebug() << "pData.size(): " << pData->size() << " nElements: " << nElements;
+
+            //Ok lets copy all of the data to a Qt vector
+            rData.resize(nElements); //Allocate memory for data
+            for (size_t i=0; i<nElements; ++i)
             {
-                vector< vector<double> > *pData = pPort->getLogDataVectorPtr();
-                rpTimeVector = pPort->getLogTimeVectorPtr();
-
-                // Instead of pData.size() lets ask for latest logsample, this way we can avoid coping log slots that have not bee written and contains junk
-                // This is usefull when a simulation has been aborted
-                size_t nElements = pPort->getComponent()->getSystemParent()->getNumActuallyLoggedSamples();
-                //qDebug() << "pData.size(): " << pData->size() << " nElements: " << nElements;
-
-                //Ok lets copy all of the data to a Qt vector
-                rData.resize(nElements); //Allocate memory for data
-                for (size_t i=0; i<nElements; ++i)
-                {
-                     rData[i] = pData->at(i).at(dataId);
-                }
+                rData[i] = pData->at(i).at(dataId);
             }
         }
     }
