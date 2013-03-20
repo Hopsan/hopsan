@@ -85,7 +85,7 @@ namespace hopsan {
             const double time = (mTime-mStartTime);
             bool high = (time - std::floor(time/mPeriodT)*mPeriodT) < mDutyCycle*mPeriodT;
 
-            if ( (mTime > mStartTime) && high)
+            if ( (mTime >= mStartTime) && high)
             {
                 (*mpND_out) = mBaseValue + mAmplitude;     //During pulse
             }

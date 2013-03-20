@@ -80,7 +80,7 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //StepExponentialDelay Equations
-            if (mTime <= mStepTime)
+            if (mTime < mStepTime)
             {
                 (*mpND_out) = mBaseValue;     //Before Step
             }

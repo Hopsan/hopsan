@@ -88,7 +88,7 @@ namespace hopsan {
         void simulateOneTimestep()
         {
                 //Step Equations
-            if (mTime > mStartTime && mTime < mStopTime)
+            if (mTime >= mStartTime && mTime < mStopTime)
             {
                 (*mpND_out) = mBaseValue + mAmplitude;     //During pulse
             }
