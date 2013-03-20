@@ -285,7 +285,7 @@ void LibraryWidget::loadTreeView(LibraryContentsTree *tree, QTreeWidgetItem *par
         }
     }
 
-    connect(mpTree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(editComponent(QTreeWidgetItem*, int)), Qt::UniqueConnection);
+    //connect(mpTree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(editComponent(QTreeWidgetItem*, int)), Qt::UniqueConnection);
     //connect(mpTree, SIGNAL(itemPressed(QTreeWidgetItem*,int)), this, SLOT(initializeDrag(QTreeWidgetItem*, int)), Qt::UniqueConnection);
 }
 
@@ -343,7 +343,7 @@ void LibraryWidget::loadDualView(LibraryContentsTree *tree, QTreeWidgetItem *par
     mpList->show();
 
     connect(mpTree, SIGNAL(itemClicked(QTreeWidgetItem*, int)), SLOT(showLib(QTreeWidgetItem*, int)), Qt::UniqueConnection);
-    connect(mpList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(editComponent(QListWidgetItem*)), Qt::UniqueConnection);
+    //connect(mpList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(editComponent(QListWidgetItem*)), Qt::UniqueConnection);
 
 }
 
@@ -1530,6 +1530,8 @@ void LibraryTreeWidget::mousePressEvent(QMouseEvent *event)
 {
     QTreeWidget::mousePressEvent(event);
 
+    if(event->button() == Qt::RightButton) return;
+
     QTreeWidgetItem *item = currentItem();
 
     if(!gpMainWindow->mpLibrary->mTreeItemToContentsMap.contains(item)) return;      //Do nothing if item does not exist in map (= not a component)
@@ -1566,6 +1568,31 @@ void LibraryTreeWidget::mouseMoveEvent(QMouseEvent *event)
 }
 
 
+void LibraryTreeWidget::contextMenuEvent(QContextMenuEvent *event)
+{
+    QMenu menu;
+
+    QAction *pEditComponentAction=0;
+    if(gpMainWindow->mpLibrary->mTreeItemToContentsMap.contains(this->currentItem()))
+    {
+        pEditComponentAction = menu.addAction("Edit source code");
+        ModelObjectAppearance *pAppearanceData = gpMainWindow->mpLibrary->mTreeItemToContentsMap.find(this->currentItem()).value()->getAppearanceData();
+        pEditComponentAction->setEnabled(pAppearanceData->isRecompilable());
+    }
+
+    //-- User interaction --//
+    QAction *pSelectedAction = menu.exec(mapToGlobal(event->pos()));
+    //----------------------//
+
+    if(pSelectedAction == pEditComponentAction)
+    {
+        gpMainWindow->mpLibrary->editComponent(this->currentItem(),0);
+    }
+
+    delete(pEditComponentAction);
+}
+
+
 //! @brief Constructor for library list widget
 //! This is the box with icons which is used in dual view mode
 //! @param parent Pointer to parent (library widget)
@@ -1581,6 +1608,8 @@ LibraryListWidget::LibraryListWidget(LibraryWidget *parent)
 void LibraryListWidget::mousePressEvent(QMouseEvent *event)
 {
     QListWidget::mousePressEvent(event);
+
+    if(event->button() == Qt::RightButton) return;
 
     QListWidgetItem *item = currentItem();
 
@@ -1630,6 +1659,27 @@ void LibraryListWidget::mouseMoveEvent(QMouseEvent *event)
     mpLibraryWidget->mpList->setFrameShape(QFrame::Box);
 
     QListWidget::mouseMoveEvent(event);
+}
+
+
+void LibraryListWidget::contextMenuEvent(QContextMenuEvent *event)
+{
+    QMenu menu;
+
+    QAction *pEditComponentAction = menu.addAction("Edit source code");
+    ModelObjectAppearance *pAppearanceData = mpLibraryWidget->mListItemToContentsMap.find(this->currentItem()).value()->getAppearanceData();
+    pEditComponentAction->setEnabled(pAppearanceData->isRecompilable());
+
+    //-- User interaction --//
+    QAction *pSelectedAction = menu.exec(mapToGlobal(event->pos()));
+    //----------------------//
+
+    if(pSelectedAction == pEditComponentAction)
+    {
+        mpLibraryWidget->editComponent(this->currentItem());
+    }
+
+    delete(pEditComponentAction);
 }
 
 

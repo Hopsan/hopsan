@@ -145,6 +145,7 @@ public:
 protected:
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseMoveEvent(QMouseEvent *event);
+    virtual void contextMenuEvent(QContextMenuEvent *);
 };
 
 
@@ -156,6 +157,7 @@ public:
 protected:
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseMoveEvent(QMouseEvent *event);
+    virtual void contextMenuEvent(QContextMenuEvent *event);
 private:
     LibraryWidget *mpLibraryWidget;
 };
