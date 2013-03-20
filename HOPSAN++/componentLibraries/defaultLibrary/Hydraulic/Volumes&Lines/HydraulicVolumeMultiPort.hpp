@@ -116,57 +116,21 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            size_t runs=1;
+            double cTot = 0.0;
+            double pAvg;
+            mZc = mNumPorts*mBulkmodulus/(2.0*mVolume)*mTimestep/(1.0-mAlpha);
 
-            bool dontStop = true;
-            while(dontStop)
+            //Equations
+            for (size_t i=0; i<mNumPorts; ++i)
             {
-                dontStop = false;
-                for(size_t r=0; r<runs; ++r)
-                {
-                    double cTot = 0.0;
-                    double pAvg;
-                    mZc = mNumPorts*mBulkmodulus/(2.0*mVolume)*mTimestep/double(runs)/(1.0-mAlpha);
+                cTot += (*mvpN_c[i]) + 2.0*mZc*(*mvpN_q[i]);
+            }
+            pAvg = cTot/double(mNumPorts);
 
-                    //Equations
-                    for (size_t i=0; i<mNumPorts; ++i)
-                    {
-                        cTot += (*mvpN_c[i]) + 2.0*mZc*(*mvpN_q[i]);
-                    }
-                    pAvg = cTot/double(mNumPorts);
-
-                    for (size_t i=0; i<mNumPorts; ++i)
-                    {
-                        mvp_C0[i] = pAvg*2.0-(*mvpN_c[i]) - 2.0*mZc*(*mvpN_q[i]);
-                        mv_c_new[i] = mAlpha*(*mvpN_c[i]) + (1.0-mAlpha)*mvp_C0[i];
-                    }
-                }
-
-                if(mTime < 0.01)
-                {
-                    break;
-                }
-
-                //Check numerical accuracy, increase runs if necessary
-//                double limit = 0.001;
-//                bool doBreak = false;
-//                for(size_t i=0; i<mNumPorts; ++i)
-//                {
-//                    for(size_t j=0; j<mNumPorts; ++j)
-//                    {
-//                        if(fabs(1-mv_c_new[i]/mv_c_new[j]) > limit)
-//                        {
-//                            runs++;
-//                            dontStop = true;
-//                            doBreak = true;
-//                            break;
-//                        }
-//                    }
-//                    if(doBreak)
-//                    {
-//                        break;
-//                    }
-//                }
+            for (size_t i=0; i<mNumPorts; ++i)
+            {
+                mvp_C0[i] = pAvg*2.0-(*mvpN_c[i]) - 2.0*mZc*(*mvpN_q[i]);
+                mv_c_new[i] = mAlpha*(*mvpN_c[i]) + (1.0-mAlpha)*mvp_C0[i];
             }
 
             //Write new values
