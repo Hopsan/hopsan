@@ -223,7 +223,7 @@ int main(int argc, char *argv[])
                 {
                     cout << "Simulating: " << startTime << " to " << stopTime << " with Ts: " << stepTime << "     Please Wait!" << endl;
                     TicToc simuTimer("SimulationTime");
-                    pRootSystem->simulate(startTime, stopTime);
+                    pRootSystem->simulate(stopTime);
                     simuTimer.TocPrint();
                 }
                 if (pRootSystem->wasSimulationAborted())

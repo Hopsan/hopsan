@@ -814,7 +814,7 @@ bool performModelTest(const std::string hvcFilePath)
 
                             if (pRootSystem->initialize(startTime, stopTime))
                             {
-                                pRootSystem->simulate(startTime, stopTime);
+                                pRootSystem->simulate(stopTime);
                             }
                             else
                             {
@@ -855,7 +855,7 @@ bool performModelTest(const std::string hvcFilePath)
                             //Second simulation
                             if (pRootSystem->initialize(startTime, stopTime))
                             {
-                                pRootSystem->simulate(startTime, stopTime);
+                                pRootSystem->simulate(stopTime);
                             }
                             else
                             {
