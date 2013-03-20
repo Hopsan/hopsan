@@ -154,7 +154,14 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStat
     //Use the setParameter method that mapps to System parameter
     if(!parameterName.startsWith("noname_subport:") && !pObject->getParameterNames().contains(parameterName))
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Parameter name " + parameterName + " in component " + pObject->getName() + " mismatch. Parameter ignored.", "parametermismatch");
+        if (parameterName.contains("::"))
+        {
+            gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Startvalue name "+parameterName+" in component "+pObject->getName()+" mismatch. Startvalue ignored.", "startvaluemismatch");
+        }
+        else
+        {
+            gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Parameter name "+parameterName+" in component "+pObject->getName()+" mismatch. Parameter ignored.", "parametermismatch");
+        }
         return;
     }
     pObject->setParameterValue(parameterName, parameterValue, true);

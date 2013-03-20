@@ -52,7 +52,7 @@ namespace hopsan {
 
             mpP1 = addReadPort("P1", "NodeHydraulic");
             mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
-
+            disableStartValue(mpOut, NodeSignal::Value);
         }
 
 
@@ -61,6 +61,7 @@ namespace hopsan {
             mpND_q = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
             mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
             mpOut->setSignalNodeUnitAndDescription("m^3/s", "Flow");
+            simulateOneTimestep(); //Set initial ouput node value
         }
 
 

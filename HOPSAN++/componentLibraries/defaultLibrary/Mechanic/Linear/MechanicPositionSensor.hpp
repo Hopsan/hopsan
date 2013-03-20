@@ -52,6 +52,7 @@ namespace hopsan {
 
             mpP1 = addReadPort("P1", "NodeMechanic", Port::NotRequired);
             mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
+            disableStartValue(mpOut, NodeSignal::Value);
         }
 
 
@@ -60,6 +61,7 @@ namespace hopsan {
             mpND_x = getSafeNodeDataPtr(mpP1, NodeMechanic::Position, 0);
             mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
             mpOut->setSignalNodeUnitAndDescription("m","Position");
+            simulateOneTimestep(); //Set initial ouput node value
         }
 
 

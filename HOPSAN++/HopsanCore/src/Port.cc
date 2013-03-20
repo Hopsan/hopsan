@@ -135,9 +135,9 @@ void Port::removeSubPort(Port* /*ptr*/)
 //! @brief Load start values by copying the start values from the port to the node
 void Port::loadStartValues()
 {
-    if((isConnected()) && mpStartNode)
+    if(mpStartNode)
     {
-        this->mpStartNode->copyNodeDataValuesTo(mpNode);
+        mpStartNode->copyNodeDataValuesTo(mpNode);
     }
 }
 
@@ -500,15 +500,15 @@ vector<double> *Port::getDataVectorPtr(const size_t /*portIdx*/)
 //! @returns the start value
 double Port::getStartValue(const size_t idx, const size_t /*portIdx*/)
 {
-    if(mpStartNode && !mpComponent->getSystemParent()->doesKeepStartValues())
-    {
-        return mpStartNode->getDataValue(idx);
-    }
-    else if(mpStartNode)
+    if(mpStartNode && getComponent()->getSystemParent()->doesKeepStartValues())
     {
         return mpNode->getDataValue(idx);
     }
-    mpComponent->addFatalMessage("Port::getStartValue(): Port does not have a start value.");
+    else if(mpStartNode)
+    {
+        return mpStartNode->getDataValue(idx);
+    }
+    getComponent()->addErrorMessage("Port::getStartValue(): Port does not have a start value.");
     return -1;
 }
 
@@ -524,7 +524,7 @@ void Port::setStartValue(const size_t idx, const double value, const size_t /*po
     }
     else
     {
-        getComponent()->addWarningMessage("Tried to add StartValue for port: " + getName() + " This was ignored because this port does not have any StartValue to set.");
+        getComponent()->addWarningMessage("Tried to set StartValue for port: "+getName()+" This was ignored because this port does not have a StartNode.");
     }
 }
 
@@ -533,16 +533,18 @@ void Port::setStartValue(const size_t idx, const double value, const size_t /*po
 //! @param idx Data index of start value to be disabled
 void Port::disableStartValue(const size_t idx)
 {
-    // The start value has already been registered as a parameter in the component, so we must unregister it.
-    // This is probably not the most beautiful solution.
-    std::string name = getName()+"::"+mpStartNode->getDataDescription(idx)->name;
-    mpComponent->addDebugMessage("Disabling_StartValue: "+name);
-    mpComponent->unRegisterParameter(name);
+    if (mpStartNode)
+    {
+        // The start value has already been registered as a parameter in the component, so we must unregister it.
+        // This is probably not the most beautiful solution.
+        std::string name = getName()+"::"+mpStartNode->getDataDescription(idx)->name;
+        mpComponent->addDebugMessage("Disabling_StartValue: "+name);
+        mpComponent->unRegisterParameter(name);
 
-    //! @todo this is an ugly hack
-    mpStartNode->mDataDescriptions.at(idx).name = "";
-
-    //! @todo if all startvalues in a node are dissabled then maybe we should remove the entire start node
+        // Note, the startNode and its value will remain, it will also be copied every time.
+        // Components should automatically write the correct initial value to nodes in initialize
+        // If a startvalue has been disabled you can not change it, (it actually means that it is hiddden)
+    }
 }
 
 

@@ -44,10 +44,6 @@ namespace hopsan {
 
         double *mpND_in, *mpND_out;
 
-        std::string mDataCurveFileName;
-
-        //CSVParser *myDataCurve;
-
     public:
         static Component *Creator()
         {
@@ -62,21 +58,18 @@ namespace hopsan {
             mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
 
             registerParameter("k", "Gain value", "[-]", mGain);
-   //         registerParameter("", "Data Curve", "", mDataCurveFileName);
 
-            //myDataCurve = new CSVParser();
+            disableStartValue(mpOut,NodeSignal::Value);
         }
 
 
         void initialize()
         {
-//            stringstream ss;
-////            ss << myDataCurve->mData[0][3] << "  " << myDataCurve->mData[1][3];
-//            ss << mGain << "  " << myDataCurve->interpolate(mGain);
-//            addInfoMessage(ss.str());
-
             mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value, 0);
             mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
+
+            // Now make sure the output initial value is based on the input
+            simulateOneTimestep();
         }
 
 
