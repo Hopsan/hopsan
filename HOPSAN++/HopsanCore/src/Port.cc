@@ -847,14 +847,16 @@ std::vector<double> *MultiPort::getDataVectorPtr(const size_t portIdx)
 //! @returns the start value
 double MultiPort::getStartValue(const size_t idx, const size_t portIdx)
 {
-    if(mpStartNode && !mpComponent->getSystemParent()->doesKeepStartValues())
-        return mpStartNode->getDataValue(idx);
-    else if(mpStartNode)
+    if(mpStartNode && mpComponent->getSystemParent()->doesKeepStartValues())
     {
         return mSubPortsVector[portIdx]->mpNode->getDataValue(idx);
     }
-    mpComponent->addFatalMessage("MultiPort::getStartValue(): Port does not have a start value.");
-    return 0.0;
+    else if(mpStartNode)
+    {
+        return mpStartNode->getDataValue(idx);
+    }
+    mpComponent->addErrorMessage("MultiPort::getStartValue(): Port does not have a start value.");
+    return -1.0;
 }
 
 void MultiPort::loadStartValues()

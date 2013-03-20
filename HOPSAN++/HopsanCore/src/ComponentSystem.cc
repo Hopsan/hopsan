@@ -2111,16 +2111,17 @@ void ComponentSystem::setupLogTimesteps(const double startT, const double stopT,
 
             //cout << "SimT: " << simT << " logT: " << logT << " logT-simT: " << logT-simT << endl;
 
-            //! @todo ud part might not be necessary, stuff above seems to handle it
-            // Calc at which sample to log
-            size_t ud = size_t((logT-simT+0.5)); //Round to nearest int by truncation (this should become 0 or 1)
-            size_t logAtSample = mLogTheseTimeSteps.back() + n + ud;
-            simT += double(ud)*Ts; //Set simT that we will log for (add 0 or 1 Ts)
+//            //! @todo ud part might not be necessary, stuff above seems to handle it
+//            // Calc at which sample to log
+//            size_t ud = size_t((logT-simT+0.5)); //Round to nearest int by truncation (this should become 0 or 1)
+//            size_t logAtSample = mLogTheseTimeSteps.back() + n + ud;
+//            simT += double(ud)*Ts; //Set simT that we will log for (add 0 or 1 Ts)
 
-            if (ud > 0)
-            {
-                cout << "ud: " << ud << endl;
-            }
+//            if (ud > 0)
+//            {
+//                cout << "ud: " << ud << endl;
+//            }
+            size_t logAtSample = mLogTheseTimeSteps.back() + n;
 
             mLogTheseTimeSteps.push_back(logAtSample);
         }
