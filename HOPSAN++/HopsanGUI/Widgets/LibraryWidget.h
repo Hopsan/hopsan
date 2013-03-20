@@ -53,6 +53,8 @@ class LibraryWidget : public QWidget
     Q_OBJECT
 
     friend class LibraryListWidget;
+    friend class LibraryTreeWidget;
+    friend class QTreeWidgetItem;
 
 public:
     // Public Member functions
@@ -93,7 +95,9 @@ private slots:
     void showLib(QTreeWidgetItem * item, int column);
     void initializeDrag(QListWidgetItem* item);
     void initializeDrag(QTreeWidgetItem* item, int dummy);
+    void editComponent(QListWidgetItem *item);
     void editComponent(QTreeWidgetItem *item, int /*dummy*/);
+    void editComponent();
     void recompileComponent();
 
 private:
@@ -139,6 +143,7 @@ class LibraryTreeWidget : public QTreeWidget
 public:
     LibraryTreeWidget(LibraryWidget *parent);
 protected:
+    virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseMoveEvent(QMouseEvent *event);
 };
 
@@ -149,6 +154,7 @@ class LibraryListWidget : public QListWidget
 public:
     LibraryListWidget(LibraryWidget *parent);
 protected:
+    virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseMoveEvent(QMouseEvent *event);
 private:
     LibraryWidget *mpLibraryWidget;

@@ -1199,11 +1199,18 @@ void ProjectTabWidget::openAnimation()
 void ProjectTabWidget::saveState()
 {
 
+    mStateInfoBackupList.clear();
+    mStateInfoHasChanged.clear();
+    mStateInfoHmfList.clear();
+    mStateInfoModels.clear();
+    mStateInfoTabNames.clear();
+
     while(count() > 0)
     {
         ProjectTab *pTab = getTab(0);
         mStateInfoHmfList << pTab->getTopLevelSystem()->getModelFileInfo().filePath();
         mStateInfoHasChanged << !pTab->isSaved();
+        mStateInfoTabNames << tabText(indexOf(pTab));
         if(!pTab->isSaved())
         {
             //! @todo This code is duplicated from ProjectTab::saveModel(), make it a common function somehow
@@ -1251,5 +1258,6 @@ void ProjectTabWidget::restoreState()
         {
             loadModel(mStateInfoHmfList[i]);
         }
+        setTabText(i, mStateInfoTabNames[i]);
     }
 }

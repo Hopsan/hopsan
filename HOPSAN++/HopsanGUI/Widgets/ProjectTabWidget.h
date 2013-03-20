@@ -89,6 +89,7 @@ private:
     QStringList mStateInfoHmfList;
     QStringList mStateInfoBackupList;
     QList<bool> mStateInfoHasChanged;
+    QStringList mStateInfoTabNames;
     QList<QDomDocument> mStateInfoModels;
 };
 

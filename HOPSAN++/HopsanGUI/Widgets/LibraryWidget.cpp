@@ -286,7 +286,7 @@ void LibraryWidget::loadTreeView(LibraryContentsTree *tree, QTreeWidgetItem *par
     }
 
     connect(mpTree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(editComponent(QTreeWidgetItem*, int)), Qt::UniqueConnection);
-    connect(mpTree, SIGNAL(itemPressed(QTreeWidgetItem*,int)), this, SLOT(initializeDrag(QTreeWidgetItem*, int)), Qt::UniqueConnection);
+    //connect(mpTree, SIGNAL(itemPressed(QTreeWidgetItem*,int)), this, SLOT(initializeDrag(QTreeWidgetItem*, int)), Qt::UniqueConnection);
 }
 
 
@@ -341,7 +341,10 @@ void LibraryWidget::loadDualView(LibraryContentsTree *tree, QTreeWidgetItem *par
 
     mpComponentNameField->show();
     mpList->show();
+
     connect(mpTree, SIGNAL(itemClicked(QTreeWidgetItem*, int)), SLOT(showLib(QTreeWidgetItem*, int)), Qt::UniqueConnection);
+    connect(mpList, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(editComponent(QListWidgetItem*)), Qt::UniqueConnection);
+
 }
 
 
@@ -402,7 +405,7 @@ void LibraryWidget::showLib(QTreeWidgetItem *item, int /*column*/)
     qDebug() << "3";
 
     connect(mpTree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(editComponent(QTreeWidgetItem*, int)), Qt::UniqueConnection);
-    connect(mpList, SIGNAL(itemPressed(QListWidgetItem*)), this, SLOT(initializeDrag(QListWidgetItem*)), Qt::UniqueConnection);
+    //connect(mpList, SIGNAL(itemPressed(QListWidgetItem*)), this, SLOT(initializeDrag(QListWidgetItem*)), Qt::UniqueConnection);
 }
 
 
@@ -432,16 +435,27 @@ void LibraryWidget::initializeDrag(QListWidgetItem *item)
 }
 
 
+void LibraryWidget::editComponent(QListWidgetItem *item)
+{
+    if(!mListItemToContentsMap.contains(item)) return;
+    mEditComponentTypeName = mListItemToContentsMap.find(item).value()->getFullTypeName();
+    editComponent();
+}
+
+
 void LibraryWidget::editComponent(QTreeWidgetItem *item, int /*dummy*/)
 {
-    return;     //Disabled because work-in-progress
-
     if(!mTreeItemToContentsMap.contains(item)) return;
+    mEditComponentTypeName = mTreeItemToContentsMap.find(item).value()->getFullTypeName();
+    editComponent();
+}
 
 
+void LibraryWidget::editComponent()
+{
+    //return;     //Disabled because work-in-progress
 
     qDebug() << "Edit component!";
-    mEditComponentTypeName = mTreeItemToContentsMap.find(item).value()->getFullTypeName();
     QString basePath = getAppearanceData(mEditComponentTypeName)->getBasePath();
     QString fileName = getAppearanceData(mEditComponentTypeName)->getSourceCodeFile();
     QString libPath = getAppearanceData(mEditComponentTypeName)->getLibPath();
@@ -463,6 +477,7 @@ void LibraryWidget::editComponent(QTreeWidgetItem *item, int /*dummy*/)
         sourceCode.append(sourceFile.readLine());
     }
     sourceFile.close();
+    sourceCode = QString(sourceCode.toUtf8());
 
     //Create the dialog
     QDialog *pDialog = new QDialog(this);
@@ -472,6 +487,7 @@ void LibraryWidget::editComponent(QTreeWidgetItem *item, int /*dummy*/)
 
     mpEditComponentTextEdit = new QTextEdit(this);
     mpEditComponentTextEdit->setPlainText(sourceCode);
+    //mpEditComponentTextEdit->resize(640,480);
     pLayout->addWidget(mpEditComponentTextEdit);
     CppHighlighter *pCppHighlighter = new CppHighlighter(mpEditComponentTextEdit->document());
 
@@ -489,6 +505,7 @@ void LibraryWidget::editComponent(QTreeWidgetItem *item, int /*dummy*/)
     connect(pDialog, SIGNAL(destroyed()), pCppHighlighter, SLOT(deleteLater()));
     connect(pDialog, SIGNAL(accepted()), this, SLOT(recompileComponent()));
 
+    pDialog->resize(640,480);
     pDialog->exec();
 }
 
@@ -532,9 +549,9 @@ void LibraryWidget::recompileComponent()
 
     pCoreAccess->compileComponentLibrary(basePath+libPath, randomName);
 
-    QString libFileName = basePath+libPath+randomName+".dll";
+    QString newLibFileName = QDir::cleanPath(basePath+libPath)+"/"+randomName+".dll";
 
-    if(!QFile::exists(libFileName))
+    if(!QFile::exists(newLibFileName))
     {
         qDebug() << "Failure!";
         QFile sourceFile(basePath+fileName);
@@ -542,13 +559,14 @@ void LibraryWidget::recompileComponent()
             return;
         sourceFile.write(oldSourceCode.toStdString().c_str());
         sourceFile.close();
+        return;
     }
 
     qDebug() << "Success!";
 
     gpMainWindow->mpProjectTabs->saveState();
 
-    if(!mpCoreAccess->loadComponentLib(libFileName))
+    if(!mpCoreAccess->loadComponentLib(newLibFileName))
     {
         qDebug() << "Failed to load library!";
         QFile sourceFile(basePath+fileName);
@@ -565,14 +583,15 @@ void LibraryWidget::recompileComponent()
     QStringList libList = libDir.entryList(QStringList() << "*.dll");
     for(int j=0; j<libList.size(); ++j)
     {
-        mpCoreAccess->unLoadComponentLib(libList[j]);
-        if(basePath+libPath+libList[j] != libFileName)
+        QString fileName = QDir::cleanPath(basePath+libPath)+"/"+libList[j];
+        mpCoreAccess->unLoadComponentLib(fileName);
+        if(fileName != newLibFileName)
         {
-            QFile::rename(basePath+libPath+libList[j], basePath+libPath+libList[j]+"butnotanymore");
+            QFile::rename(fileName, fileName+"butnotanymore");
         }
     }
 
-    if(!mpCoreAccess->loadComponentLib(libFileName))
+    if(!mpCoreAccess->loadComponentLib(newLibFileName))
     {
         qDebug() << "Failed to load library!";
         QFile sourceFile(basePath+fileName);
@@ -1507,6 +1526,35 @@ LibraryTreeWidget::LibraryTreeWidget(LibraryWidget *parent)
 }
 
 
+void LibraryTreeWidget::mousePressEvent(QMouseEvent *event)
+{
+    QTreeWidget::mousePressEvent(event);
+
+    QTreeWidgetItem *item = currentItem();
+
+    if(!gpMainWindow->mpLibrary->mTreeItemToContentsMap.contains(item)) return;      //Do nothing if item does not exist in map (= not a component)
+
+    //Fetch type name and icon from component in the contents tree
+    QString fullTypeName = gpMainWindow->mpLibrary->mTreeItemToContentsMap.find(item).value()->getFullTypeName();
+    QIcon icon = gpMainWindow->mpLibrary->mTreeItemToContentsMap.find(item).value()->getIcon(gpMainWindow->mpLibrary->mGfxType);
+
+    //Create the mimedata (text with type name)
+    QMimeData *mimeData = new QMimeData;
+    mimeData->setText(fullTypeName);
+
+    //Initiate the drag operation
+    QDrag *drag = new QDrag(this);
+    drag->setMimeData(mimeData);
+    drag->setPixmap(icon.pixmap(40,40));
+    drag->setHotSpot(QPoint(20, 20));
+    drag->exec(Qt::CopyAction | Qt::MoveAction);
+
+    //mpComponentNameField->setText(QString());
+    gpMainWindow->hideHelpPopupMessage();
+}
+
+
+
 //! @brief Reimplementation of mouse move event
 //! Used to update the component name display field while hovering the icons.
 //! @param event Contains information about the event
@@ -1528,6 +1576,35 @@ LibraryListWidget::LibraryListWidget(LibraryWidget *parent)
     setMouseTracking(true);
     setSelectionRectVisible(false);
 }
+
+
+void LibraryListWidget::mousePressEvent(QMouseEvent *event)
+{
+    QListWidget::mousePressEvent(event);
+
+    QListWidgetItem *item = currentItem();
+
+    if(!gpMainWindow->mpLibrary->mListItemToContentsMap.contains(item)) return;      //Do nothing if item does not exist in map (= not a component)
+
+    //Fetch type name and icon from component in the contents tree
+    QString fullTypeName = gpMainWindow->mpLibrary->mListItemToContentsMap.find(item).value()->getFullTypeName();
+    QIcon icon = gpMainWindow->mpLibrary->mListItemToContentsMap.find(item).value()->getIcon(gpMainWindow->mpLibrary->mGfxType);
+
+    //Create the mimedata (text with type name)
+    QMimeData *mimeData = new QMimeData;
+    mimeData->setText(fullTypeName);
+
+    //Initiate the drag operation
+    QDrag *drag = new QDrag(this);
+    drag->setMimeData(mimeData);
+    drag->setPixmap(icon.pixmap(40,40));
+    drag->setHotSpot(QPoint(20, 20));
+    drag->exec(Qt::CopyAction | Qt::MoveAction);
+
+    //mpComponentNameField->setText(QString());
+    gpMainWindow->hideHelpPopupMessage();
+}
+
 
 
 //! @brief Reimplementation of mouse move event
