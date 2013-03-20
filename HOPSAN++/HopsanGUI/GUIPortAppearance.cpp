@@ -88,7 +88,7 @@ void PortAppearance::selectPortIcon(QString CQSType, QString porttype, QString n
     mMainIconPath.append(".svg");
 
     //Check if we need to add multiport overlay
-    if (porttype.contains("MultiPortType"))
+    if (porttype.contains("MultiportType"))
     {
         mMultiPortOverlayPath = (QString(PORTICONPATH) + "MultiPortOverlay.svg");
     }

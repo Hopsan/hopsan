@@ -1018,7 +1018,7 @@ std::string hopsan::portTypeToString(const PortTypesEnumT type)
         return "SystemPortType";
         break;
     case MultiportType:
-        return "MultiPortType";
+        return "MultiportType";
         break;
     case PowerMultiportType:
         return "PowerMultiportType";
