@@ -157,14 +157,15 @@ void Component::finalize(const double /*startT*/, const double /*stopT*/)
 //    //cout << "simulate in: " << this->getName() << endl;
 //}
 
-void Component::simulate(const double /*startT*/, const double stopT)
+void Component::simulate(const double stopT)
 {
     updateDynamicParameterValues();
-    const size_t nSteps = calcNumSimSteps(mTime, stopT);
+    const size_t nSteps = calcNumSimSteps(mTime, stopT); //Here mTime is the last time step since it is not updated yet
     for (size_t i=0; i<nSteps; ++i)
     {
+        mTime += mTimestep; //mTime is updated here before the simulation,
+                            //mTime is the current time during the simulateOneTimestep
         simulateOneTimestep();
-        mTime += mTimestep;
     }
 }
 

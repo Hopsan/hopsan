@@ -115,7 +115,7 @@ namespace hopsan {
 
     private:
         bool simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, std::vector<ComponentSystem*> &rSystemVector, bool noChanges=false);
-        bool simulateMultipleSystems(const double startT, const double stopT, std::vector<ComponentSystem*> &rSystemVector);
+        bool simulateMultipleSystems(const double stopT, std::vector<ComponentSystem*> &rSystemVector);
 
         std::vector< std::vector<ComponentSystem*> > distributeSystems(const std::vector<ComponentSystem*> &rSystemVector, size_t nThreads);
         void sortSystemsByTotalMeasuredTime(std::vector<ComponentSystem*> &rSystemVector);
@@ -193,7 +193,7 @@ namespace hopsan {
         // Initialize and simulate
         bool checkModelBeforeSimulation();
         bool initialize(const double startT, const double stopT);
-        void simulate(const double startT, const double stopT);
+        void simulate(const double stopT);
         void simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads = 0, bool noChanges=false);
         void finalize();
 

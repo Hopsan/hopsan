@@ -649,7 +649,7 @@ void CoreSystemAccess::simulate(double mStartTime, double mFinishTime, int nThre
     else
     {
         //qDebug() << "Starting singlecore simulation";
-        mpCoreComponentSystem->simulate(mStartTime, mFinishTime);
+        mpCoreComponentSystem->simulate(mFinishTime);
     }
 }
 

@@ -65,7 +65,7 @@ public:
     virtual void configure();
     virtual void deconfigure();
     virtual bool initialize(const double startT, const double stopT);
-    virtual void simulate(const double startT, const double Ts);
+    virtual void simulate(const double stopT);
     virtual void finalize(const double startT, const double Ts);
     virtual void setDesiredTimestep(const double timestep);
     virtual void setInheritTimestep(const bool inherit=true);

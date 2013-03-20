@@ -139,21 +139,19 @@ private:
 class taskSimOneComponent
 {
 public:
-    taskSimOneComponent(Component* pComponent, double time, double nextTime)
+    taskSimOneComponent(Component* pComponent, double time)
     {
         mpComponent = pComponent;
         mTime = time;
-        mNextTime = nextTime;
     }
 
     void operator() ()
     {
-        mpComponent->simulate(mTime, mNextTime);
+        mpComponent->simulate(mTime);
     }
 private:
     Component *mpComponent;
     double mTime;
-    double mNextTime;
 };
 
 
@@ -182,7 +180,8 @@ public:
         for(size_t i=0; i<mNumSimSteps; ++i)
         {
             int idx;
-            double nextTime = mTime+mTimeStep;
+
+            mTime += mTimeStep;
 
             //! Signal Components !//
 
@@ -190,7 +189,7 @@ public:
             while(idx>=0)
             {
                 Component *pComponent = msPool->getDataPtr(idx);
-                pComponent->simulate(mTime, nextTime);
+                pComponent->simulate(mTime);
                 idx = msPool->getAndDecrementIndex();
             }
             while(!msPool->isFinished()) {}
@@ -202,7 +201,7 @@ public:
             while(idx>=0)
             {
                 Component *pComponent = mcPool->getDataPtr(idx);
-                pComponent->simulate(mTime, nextTime);
+                pComponent->simulate(mTime);
                 idx = mcPool->getAndDecrementIndex();
             }
             while(!mcPool->isFinished()) {}
@@ -222,7 +221,7 @@ public:
             while(idx>=0)
             {
                 Component *pComponent = mqPool->getDataPtr(idx);
-                pComponent->simulate(mTime, nextTime);
+                pComponent->simulate(mTime);
                 idx = mqPool->getAndDecrementIndex();
             }
 
@@ -236,7 +235,6 @@ public:
             while(!mqPool->isFinished()) {}
             if(mThreadId == 0) { mcPool->reset(); }
 
-            mTime += mTimeStep;
         }
     }
 private:
@@ -299,6 +297,7 @@ public:
         {
             if(mpSystem->wasSimulationAborted()) break;
 
+            mTime += mTimeStep;
 
             //! Signal Components !//
 
@@ -307,7 +306,7 @@ public:
 
             for(size_t i=0; i<mVectorS.size(); ++i)
             {
-                mVectorS[i]->simulate(mTime, mTime+mTimeStep);
+                mVectorS[i]->simulate(mTime);
             }
 
 
@@ -318,7 +317,7 @@ public:
 
             for(size_t i=0; i<mVectorC.size(); ++i)
             {
-                mVectorC[i]->simulate(mTime, mTime+mTimeStep);
+                mVectorC[i]->simulate(mTime);
             }
 
             //! Log Nodes !//
@@ -339,10 +338,9 @@ public:
 
             for(size_t i=0; i<mVectorQ.size(); ++i)
             {
-                mVectorQ[i]->simulate(mTime, mTime+mTimeStep);
+                mVectorQ[i]->simulate(mTime);
             }
 
-            mTime += mTimeStep;
         }
     }
 private:
@@ -412,6 +410,7 @@ public:
         {
             if(mpSystem->wasSimulationAborted()) break;
 
+            mTime += mTimeStep;
 
             //! Signal Components !//
 
@@ -419,51 +418,49 @@ public:
             mpBarrier_C->lock();                    //Lock next barrier (must be done before unlocking this one, to prevnet deadlocks)
             mpBarrier_S->unlock();                  //Unlock signal barrier
 
-
             for(size_t i=0; i<mVectorS.size(); ++i)
             {
-                mVectorS[i]->simulate(mTime, mTime+mTimeStep);
+                mVectorS[i]->simulate(mTime);
             }
 
             //! C Components !//
 
             while(!mpBarrier_C->allArrived()) {}    //C barrier
-            mpBarrier_N->lock();
+            mpBarrier_Q->lock();
             mpBarrier_C->unlock();
 
             for(size_t i=0; i<mVectorC.size(); ++i)
             {
-                mVectorC[i]->simulate(mTime, mTime+mTimeStep);
+                mVectorC[i]->simulate(mTime);
             }
-
-            //! Log Nodes !//
-
-            while(!mpBarrier_N->allArrived()) {}    //N barrier
-            mpBarrier_Q->lock();
-            mpBarrier_N->unlock();
 
             //! Q Components !//
 
             while(!mpBarrier_Q->allArrived()) {}    //Q barrier
-            mpBarrier_S->lock();
+            mpBarrier_N->lock();
             mpBarrier_Q->unlock();
 
             for(size_t i=0; i<mVectorQ.size(); ++i)
             {
-                mVectorQ[i]->simulate(mTime, mTime+mTimeStep);
+                mVectorQ[i]->simulate(mTime);
             }
 
             for(size_t i=0; i<mpSimTimes.size(); ++i)
                 *mpSimTimes[i] = mTime;     //Update time in component system, so that progress bar can use it
+
+            //! Log Nodes !//
+
+            while(!mpBarrier_N->allArrived()) {}    //N barrier
+            mpBarrier_S->lock();
+            mpBarrier_N->unlock();
 
             //! @todo Temporary hack by Peter, after rewriting how node data and time is logged this no longer works, now master thread loags all nodes, need to come up with somthing smart
 //            for(size_t i=0; i<mVectorN.size(); ++i)
 //            {
 //                mVectorN[i]->logData(mTime);
 //            }
-            mpSystem->logTimeAndNodes(s);
+            mpSystem->logTimeAndNodes(s+1); //s+1 since at s=0 one simulation has been performed /Björn
 
-            mTime += mTimeStep;
         }
     }
 private:
@@ -494,10 +491,9 @@ public:
 
     //! @brief Constructor for master simulation thead class.
     //! @param pSystem Pointer to the system to simulate
-    taskSimWholeSystems(vector<ComponentSystem *> systemPtrs, double startTime, double stopTime)
+    taskSimWholeSystems(vector<ComponentSystem *> systemPtrs, double stopTime)
     {
         mSystemPtrs = systemPtrs;
-        mStartTime = startTime;
         mStopTime = stopTime;
     }
 
@@ -506,12 +502,11 @@ public:
     {
         for(size_t i=0; i<mSystemPtrs.size(); ++i)
         {
-            mSystemPtrs[i]->simulate(mStartTime, mStopTime);
+            mSystemPtrs[i]->simulate(mStopTime);
         }
     }
 private:
     vector<ComponentSystem *> mSystemPtrs;
-    double mStartTime;
     double mStopTime;
 };
 

@@ -141,7 +141,7 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Don't do anything, just call the ComponentSystem::simulate() function
-            simulate(mTime, mTime+mTimestep);
+            simulate(mTime);
         }
     };
 }

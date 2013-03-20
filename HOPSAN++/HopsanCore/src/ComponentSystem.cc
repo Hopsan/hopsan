@@ -76,7 +76,7 @@ bool SimulationHandler::simulateSystem(const double startT, const double stopT, 
 {
     if (nDesiredThreads < 0)
     {
-        pSystem->simulate(startT, stopT);
+        pSystem->simulate(stopT);
     }
     else
     {
@@ -96,7 +96,7 @@ bool SimulationHandler::simulateSystem(const double startT, const double stopT, 
         }
         else
         {
-            return simulateMultipleSystems(startT, stopT, rSystemVector);
+            return simulateMultipleSystems(stopT, rSystemVector);
         }
     }
     else if (rSystemVector.size() == 1)
@@ -2765,8 +2765,8 @@ bool ComponentSystem::simulateAndMeasureTime(const size_t nSteps)
         tbb::tick_count comp_start = tbb::tick_count::now();
         for(size_t t=0; t<nSteps; ++t)
         {
-            mComponentSignalptrs[s]->simulate(time, time+mTimestep);
             time += mTimestep;
+            mComponentSignalptrs[s]->simulate(time);
         }
         tbb::tick_count comp_end = tbb::tick_count::now();
         mComponentSignalptrs[s]->setMeasuredTime((comp_end-comp_start).seconds());
@@ -2778,8 +2778,8 @@ bool ComponentSystem::simulateAndMeasureTime(const size_t nSteps)
         tbb::tick_count comp_start = tbb::tick_count::now();
         for(size_t t=0; t<nSteps; ++t)
         {
-            mComponentCptrs[c]->simulate(time, time+mTimestep);
             time += mTimestep;
+            mComponentCptrs[c]->simulate(time);
         }
         tbb::tick_count comp_end = tbb::tick_count::now();
         mComponentCptrs[c]->setMeasuredTime((comp_end-comp_start).seconds());
@@ -2791,8 +2791,8 @@ bool ComponentSystem::simulateAndMeasureTime(const size_t nSteps)
         tbb::tick_count comp_start = tbb::tick_count::now();
         for(size_t t=0; t<nSteps; ++t)
         {
-            mComponentQptrs[q]->simulate(time, time+mTimestep);
             time += mTimestep;
+            mComponentQptrs[q]->simulate(time);
         }
         tbb::tick_count comp_end = tbb::tick_count::now();
         mComponentQptrs[q]->setMeasuredTime((comp_end-comp_start).seconds());
@@ -3256,10 +3256,10 @@ void ComponentSystem::distributeNodePointers(vector< vector<Node*> > &rSplitNode
 //    }
 //}
 
-void ComponentSystem::simulate(const double startT, const double stopT)
+void ComponentSystem::simulate(const double stopT)
 {
     // Round to nearest, we may not get exactly the stop time that we want
-    size_t numSimulationSteps = calcNumSimSteps(mTime, stopT);
+    size_t numSimulationSteps = calcNumSimSteps(mTime, stopT); //Here mTime is the last time step since it is not updated yet
 
     //Simulate
     for (size_t i=0; i<numSimulationSteps; ++i)
@@ -3269,29 +3269,31 @@ void ComponentSystem::simulate(const double startT, const double stopT)
             break;
         }
 
+        mTime += mTimestep; //mTime is updated here before the simulation,
+                            //mTime is the current time during the simulateOneTimestep
+
         //! @todo maybe use iterators instead
         //Signal components
         for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
         {
-            mComponentSignalptrs[s]->simulate(mTime, mTime+mTimestep);
+            mComponentSignalptrs[s]->simulate(mTime);
         }
 
         //C components
         for (size_t c=0; c < mComponentCptrs.size(); ++c)
         {
-            mComponentCptrs[c]->simulate(mTime, mTime+mTimestep);
+            mComponentCptrs[c]->simulate(mTime);
         }
 
         //Q components
         for (size_t q=0; q < mComponentQptrs.size(); ++q)
         {
-            mComponentQptrs[q]->simulate(mTime, mTime+mTimestep);
+            mComponentQptrs[q]->simulate(mTime);
         }
 
-        logTimeAndNodes(mTotalTakenSimulationSteps);
-
-        mTime += mTimestep;
         ++mTotalTakenSimulationSteps;
+
+        logTimeAndNodes(mTotalTakenSimulationSteps);
     }
 }
 
@@ -3300,12 +3302,12 @@ void ComponentSystem::simulate(const double startT, const double stopT)
 //! @param startT Start time for all systems
 //! @param stopT Stop time for all systems
 //! @param systemVector Vector of pointers to component systems
-bool SimulationHandler::simulateMultipleSystems(const double startT, const double stopT, vector<ComponentSystem*> &rSystemVector)
+bool SimulationHandler::simulateMultipleSystems(const double stopT, vector<ComponentSystem*> &rSystemVector)
 {
     bool aborted = false;
     for(size_t i=0; i<rSystemVector.size(); ++i)
     {
-        rSystemVector[i]->simulate(startT, stopT);
+        rSystemVector[i]->simulate(stopT);
         aborted = aborted && rSystemVector[i]->wasSimulationAborted(); //!< @todo this will give abort=true if one the systems fail, maybe we should abort entierly when one do
     }
     return !aborted;
@@ -3349,9 +3351,9 @@ void ComponentSystem::setLogSettingsNSamples(int nSamples, double start, double 
 
         // Make sure we dont try to log more samples than we will simulate
         //! @todo may need som rounding tricks here
-        if ( ((stop - start) / sampletime) < nSamples )
+        if ( ((stop - start) / sampletime + 1) < nSamples )
         {
-            mnLogSlots = size_t((stop - start) / sampletime);
+            mnLogSlots = size_t((stop - start) / sampletime + 1);
             std::stringstream ss;
             ss << "Requested nLogSamples: " << nSamples << " but this is more than the total simulation samples, limiting to: " << mnLogSlots;
             addWarningMessage(ss.str(), "toofewsamples");
@@ -3474,7 +3476,7 @@ bool SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT
     simTasks = new tbb::task_group;
     for(size_t t=0; t < nThreads; ++t)                                  //Execute simulation
     {
-        simTasks->run(taskSimWholeSystems(mSplitSystemVector[t], (*mSplitSystemVector[t][0]->getTimePtr()), stopT));
+        simTasks->run(taskSimWholeSystems(mSplitSystemVector[t], stopT));
     }
     simTasks->wait();                                                   //Wait for all tasks to finish
     delete(simTasks);
