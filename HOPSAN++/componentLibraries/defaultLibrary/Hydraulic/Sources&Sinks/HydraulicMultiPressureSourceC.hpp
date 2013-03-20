@@ -64,9 +64,7 @@ namespace hopsan {
 
             registerParameter("p", "Default pressure", "[Pa]", p);
 
-            //! @todo should we set startvalues in one or all ports
             disableStartValue(mpMP, NodeHydraulic::Pressure);
-            setStartValue(mpMP, NodeHydraulic::Flow, 0.0);
         }
 
 
@@ -88,19 +86,11 @@ namespace hopsan {
                 mND_c_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::WaveVariable);
                 mND_Zc_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::CharImpedance);
 
-                *(mND_p_vec[i]) = p; //Override the startvalue for the pressure
+                *(mND_p_vec[i]) = (*mpND_in);    //Override the startvalue for the pressure
                 *(mND_q_vec[i]) = getStartValue(mpMP, NodeHydraulic::Flow);
+                *(mND_c_vec[i]) = (*mpND_in);
+                *(mND_Zc_vec[i]) = Zc;
             }
-            mpMP->setStartValue(NodeHydraulic::Pressure, p); //This is here to show the user that the start value is hard coded!
-
-//            mpND_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
-//            mpND_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
-//            mpND_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CHARIMP);
-
-//            (*mpND_p) = p; //Override the startvalue for the pressure
-//            setStartValue(mpP1, NodeHydraulic::Pressure, p); //This is here to show the user that the start value is hard coded!
-
-            simulateOneTimestep();
         }
 
 

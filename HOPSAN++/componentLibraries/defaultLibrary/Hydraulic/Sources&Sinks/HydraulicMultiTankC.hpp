@@ -43,6 +43,7 @@ namespace hopsan {
 
         size_t mNumPorts;
         std::vector<double*> mND_p_vec; //!< @todo Do we really need this, also in non multiport example
+        std::vector<double*> mND_q_vec;
         std::vector<double*> mND_c_vec;
         std::vector<double*> mND_Zc_vec;
 
@@ -61,9 +62,7 @@ namespace hopsan {
 
             registerParameter("p", "Default pressure", "[Pa]", p);
 
-            //! @todo should we set startvalues in one or all ports
             disableStartValue(mpMP, NodeHydraulic::Pressure);
-            setStartValue(mpMP, NodeHydraulic::Flow, 0.0);
         }
 
 
@@ -73,20 +72,21 @@ namespace hopsan {
 
             //! @todo write help function to set the size and contents of a these vectors automatically
             mND_p_vec.resize(mNumPorts);
+            mND_q_vec.resize(mNumPorts);
             mND_c_vec.resize(mNumPorts);
             mND_Zc_vec.resize(mNumPorts);
             for (size_t i=0; i<mNumPorts; ++i)
             {
                 mND_p_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::Pressure);
+                mND_q_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::Flow);
                 mND_c_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::WaveVariable);
                 mND_Zc_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::CharImpedance);
 
-                //! @todo how should we divide startvalues among connected ports
                 *(mND_p_vec[i]) = p;    //Override the startvalue for the pressure
+                *(mND_q_vec[i]) = getStartValue(mpMP, NodeHydraulic::Flow);
                 *(mND_c_vec[i]) = p;
                 *(mND_Zc_vec[i]) = Zc;
             }
-            mpMP->setStartValue(NodeHydraulic::Pressure, p); //This is here to show the user that the start value is hard coded!
         }
 
 
