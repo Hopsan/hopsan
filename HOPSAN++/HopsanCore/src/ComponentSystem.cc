@@ -2103,27 +2103,11 @@ void ComponentSystem::setupLogTimesteps(const double startT, const double stopT,
         while (mLogTheseTimeSteps.size() < nLogSamples)
         {
             logT += mLogTimeDt;
-            size_t n = size_t((logT-simT)/Ts);
-            ////size_t n = size_t(mLogTimeDt/Ts); //Allow truncation we want lower step
-            //cout << "n: " << n << endl;
-            simT += double(n)*Ts; // simT below logT
-
+            size_t n = size_t((logT-simT)/Ts+0.5);
+            simT += double(n)*Ts;
 
             //cout << "SimT: " << simT << " logT: " << logT << " logT-simT: " << logT-simT << endl;
-
-//            //! @todo ud part might not be necessary, stuff above seems to handle it
-//            // Calc at which sample to log
-//            size_t ud = size_t((logT-simT+0.5)); //Round to nearest int by truncation (this should become 0 or 1)
-//            size_t logAtSample = mLogTheseTimeSteps.back() + n + ud;
-//            simT += double(ud)*Ts; //Set simT that we will log for (add 0 or 1 Ts)
-
-//            if (ud > 0)
-//            {
-//                cout << "ud: " << ud << endl;
-//            }
-            size_t logAtSample = mLogTheseTimeSteps.back() + n;
-
-            mLogTheseTimeSteps.push_back(logAtSample);
+            mLogTheseTimeSteps.push_back(mLogTheseTimeSteps.back() + n);
         }
 
         //! @todo sanity check on log slots
