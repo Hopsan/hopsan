@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+    <modelobject typename="MechanicFixedPositionMultiPort" displayname="Fixed Position Attachment With Multi Port">
+        <icons>
+            <icon scale="1" path="fixpos_user.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="fixpos_iso.svg" iconrotation="ON" type="iso"/>
+        </icons>
+        <ports>
+            <port x="0" y="0.5" a="0" name="Pm1"/>
+        </ports>
+    </modelobject>
+</hopsanobjectappearance>

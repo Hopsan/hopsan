@@ -13,6 +13,7 @@
 #include "MechanicTranslationalLosslessConnector.hpp"
 #include "MechanicMultiPortTranslationalMass.hpp"
 #include "MechanicFixedPosition.hpp"
+#include "MechanicFixedPositionMultiPort.hpp"
 #include "MechanicFreeLengthWall.hpp"
 #include "MechanicPulley.hpp"
 

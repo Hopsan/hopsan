@@ -248,7 +248,8 @@ HEADERS += \
     Connectivity/PneumaticInterfaceC.hpp \
     Connectivity/ElectricInterfaceQ.hpp \
     Connectivity/ElectricInterfaceC.hpp \
-    defaultComponents.h
+    defaultComponents.h \
+    Mechanic/Linear/MechanicFixedPositionMultiPort.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \
