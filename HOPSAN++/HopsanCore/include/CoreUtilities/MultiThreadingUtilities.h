@@ -320,16 +320,6 @@ public:
                 mVectorC[i]->simulate(mTime);
             }
 
-            //! Log Nodes !//
-
-            mpBarrier_N->increment();
-            while(mpBarrier_N->isLocked()){}                         //Wait at N barrier
-
-            //! @todo Temporary hack by Peter, after rewriting how node data and time is logged this no longer works, now master thread loags all nodes, need to come up with somthing smart
-//            for(size_t i=0; i<mVectorN.size(); ++i)
-//            {
-//                mVectorN[i]->logData(mTime);
-//            }
 
             //! Q Components !//
 
@@ -340,6 +330,17 @@ public:
             {
                 mVectorQ[i]->simulate(mTime);
             }
+
+            //! Log Nodes !//
+
+            mpBarrier_N->increment();
+            while(mpBarrier_N->isLocked()){}                         //Wait at N barrier
+
+            //! @todo Temporary hack by Peter, after rewriting how node data and time is logged this no longer works, now master thread loags all nodes, need to come up with somthing smart
+//            for(size_t i=0; i<mVectorN.size(); ++i)
+//            {
+//                mVectorN[i]->logData(mTime);
+//            }
 
         }
     }

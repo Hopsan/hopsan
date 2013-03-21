@@ -931,7 +931,7 @@ std::vector<Port*> &MultiPort::getConnectedPorts(const int portIdx)
     }
 }
 
-void MultiPort::setNode(Node */*pNode*/)
+void MultiPort::setNode(Node* /*pNode*/)
 {
     // Do nothing for multiports, only subports are interfaced with
 }
