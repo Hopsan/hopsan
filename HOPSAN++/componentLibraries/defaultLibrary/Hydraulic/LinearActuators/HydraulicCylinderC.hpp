@@ -227,7 +227,8 @@ class HydraulicCylinderC : public ComponentC
                 ss << "Me = " << me;
                 addDebugMessage(ss.str());
 
-                if(mTime > mTimestep*0.5)
+                //! @todo what the heck is this all about?
+                if(mTime > mTimestep*1.5)
                 {
                     addErrorMessage("The equivalent mass 'me' has to be greater than 0.");
                     stopSimulation();
