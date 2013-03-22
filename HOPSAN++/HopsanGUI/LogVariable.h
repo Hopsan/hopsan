@@ -168,6 +168,9 @@ public:
     double pokeData(const int index, const double value, QString &rErr);
     double peekData(const int index, QString &rErr) const;
     bool indexInRange(const int idx) const;
+    double averageOfData() const;
+    double minOfData() const;
+    double maxOfData() const;
 
     LogDataHandler *getLogDataHandler();
 

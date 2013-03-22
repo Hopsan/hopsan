@@ -717,12 +717,14 @@ void PlotWindow::performFrequencyAnalysis(PlotCurve *curve)
     pToolBar->addAction(pHelpAction);
 
     QGridLayout *pFrequencyAnalysisDialogLayout = new QGridLayout(mpFrequencyAnalysisDialog);
-    pFrequencyAnalysisDialogLayout->addWidget(pInfoLabel,               0, 0, 1, 3);
-    pFrequencyAnalysisDialogLayout->addWidget(mpLogScaleCheckBox,       1, 0, 1, 3);
-    pFrequencyAnalysisDialogLayout->addWidget(mpPowerSpectrumCheckBox,  2, 0, 1, 3);
+    pFrequencyAnalysisDialogLayout->addWidget(pInfoLabel,               0, 0, 1, 4);
+    pFrequencyAnalysisDialogLayout->addWidget(mpLogScaleCheckBox,       1, 0, 1, 4);
+    pFrequencyAnalysisDialogLayout->addWidget(mpPowerSpectrumCheckBox,  2, 0, 1, 4);
     pFrequencyAnalysisDialogLayout->addWidget(pToolBar,                 3, 0, 1, 1);
-    pFrequencyAnalysisDialogLayout->addWidget(pCancelButton,            3, 1, 1, 1);
-    pFrequencyAnalysisDialogLayout->addWidget(pNextButton,              3, 2, 1, 1);
+    pFrequencyAnalysisDialogLayout->addWidget(new QWidget(this),        3, 1, 1, 1);
+    pFrequencyAnalysisDialogLayout->addWidget(pCancelButton,            3, 2, 1, 1);
+    pFrequencyAnalysisDialogLayout->addWidget(pNextButton,              3, 3, 1, 1);
+    pFrequencyAnalysisDialogLayout->setColumnStretch(1, 1);
 
     mpFrequencyAnalysisDialog->setLayout(pFrequencyAnalysisDialogLayout);
     mpFrequencyAnalysisDialog->setPalette(gConfig.getPalette());

@@ -185,6 +185,9 @@ public:
     void executeConnectCommand(QString cmd);
     void executeCreateModelCommand(QString cmd);
     void executeExportToFMUCommand(QString cmd);
+    void executeAverageCommand(QString cmd);
+    void executeMinCommand(QString cmd);
+    void executeMaxCommand(QString cmd);
 
     //Help functions
     void changePlotVariables(QString cmd, int axis);
@@ -194,20 +197,21 @@ public:
     void getComponents(QString str, QList<ModelObject*> &components);
     void getParameters(QString str, ModelObject* pComponent, QStringList &parameters);
     void getParameters(QString str, QStringList &parameters);
-    QString getParameterValue(QString parameter);
-    void getVariables(QString str, QStringList &variables);
-    QString getWorkingDirectory();
+    QString getParameterValue(QString parameter) const;
+    void getVariables(const QString str, QStringList &variables) const;
+    void getVariablesThatStartsWithString(const QString str, QStringList &variables) const;
+    QString getWorkingDirectory() const;
     bool evaluateArithmeticExpression(QString cmd);
     void splitAtFirst(QString str, QString c, QString &left, QString &right);
     bool containsOutsideParentheses(QString str, QString c);
     QString runScriptCommands(QStringList lines);
-    SharedLogVariableDataPtrT getVariablePtr(QString fullName);
-    double getNumber(QString str, bool *ok);
-    void toShortDataNames(QString &variable);
-    QString getDirectory(QString cmd);
-    QStringList getArguments(QString cmd);
-    int getNumberOfArguments(QString cmd);
-    QString getArgument(QString cmd, int idx);
+    SharedLogVariableDataPtrT getVariablePtr(QString fullName) const;
+    double getNumber(const QString str, bool *ok) const;
+    void toShortDataNames(QString &variable) const;
+    QString getDirectory(const QString cmd) const;
+    QStringList getArguments(const QString cmd) const;
+    int getNumberOfArguments(const QString cmd) const;
+    QString getArgument(const QString cmd, const int idx) const;
     void abortHCOM();
 
 private:

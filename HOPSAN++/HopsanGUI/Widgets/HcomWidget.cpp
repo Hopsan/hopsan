@@ -22,28 +22,29 @@
 //! @brief Contains the HCOM terminal widget
 //!
 
-#include "HcomWidget.h"
-#include "MainWindow.h"
 #include "Configuration.h"
 #include "DesktopHandler.h"
-#include "Widgets/ProjectTabWidget.h"
-#include "Widgets/PlotWidget.h"
+#include "GUIObjects/GUIComponent.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUISystem.h"
-#include "GUIObjects/GUIComponent.h"
 #include "GUIPort.h"
 #include "GUIConnector.h"
-#include "PlotWindow.h"
-#include "Widgets/MessageWidget.h"
-#include <QDateTime>
-#include <cmath>
-#include "PlotTab.h"
+#include "HcomWidget.h"
+#include "MainWindow.h"
 #include "PlotCurve.h"
 #include "PlotHandler.h"
+#include "PlotTab.h"
+#include "PlotWindow.h"
 #include "symhop/SymHop.h"
 #include "Utilities/GUIUtilities.h"
+#include "Widgets/MessageWidget.h"
+#include "Widgets/PlotWidget.h"
+#include "Widgets/ProjectTabWidget.h"
+
+#include <QDateTime>
 #include <QMessageBox>
 
+#include <cmath>
 
 TerminalWidget::TerminalWidget(MainWindow *pParent)
     : QWidget(pParent)
@@ -623,13 +624,13 @@ void TerminalConsole::handleTabKeyPress()
             }
         }
 
-        QStringList variableCmds = QStringList() << "disp " << "chpv " << "chpvr " << "chpvl " << "peek " << "poke " << "alias ";
+        QStringList variableCmds = QStringList() << "disp " << "chpv " << "chpvr " << "chpvl " << "peek " << "poke " << "alias " << "aver " << "min " << "max ";
         for(int c=0; c<variableCmds.size(); ++c)
         {
             if(mAutoCompleteFilter.startsWith(variableCmds[c]))
             {
                 QStringList variables;
-                getHandler()->getVariables(mAutoCompleteFilter.right(mAutoCompleteFilter.size()-variableCmds[c].size()),variables);
+                getHandler()->getVariablesThatStartsWithString(mAutoCompleteFilter.right(mAutoCompleteFilter.size()-variableCmds[c].size()),variables);
                 for(int v=0; v<variables.size(); ++v)
                 {
                     variables[v].prepend(variableCmds[c]);
@@ -951,6 +952,27 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole)
     fmuCmd.help.append("Usage: fmu [path]");
     fmuCmd.fnc = &HcomHandler::executeExportToFMUCommand;
     mCmdList << fmuCmd;
+
+    HcomCommand averCmd;
+    averCmd.cmd = "aver";
+    averCmd.description.append("Calculates average value of a variable");
+    averCmd.help.append("Usage: aver [variable]");
+    averCmd.fnc = &HcomHandler::executeAverageCommand;
+    mCmdList << averCmd;
+
+    HcomCommand minCmd;
+    minCmd.cmd = "min";
+    minCmd.description.append("Calculates minimum value of a variable");
+    minCmd.help.append("Usage: min [variable]");
+    minCmd.fnc = &HcomHandler::executeMinCommand;
+    mCmdList << minCmd;
+
+    HcomCommand maxCmd;
+    maxCmd.cmd = "max";
+    maxCmd.description.append("Calculates maximum value of a variable");
+    maxCmd.help.append("Usage: max [variable]");
+    maxCmd.fnc = &HcomHandler::executeMaxCommand;
+    mCmdList << maxCmd;
 }
 
 
@@ -1628,7 +1650,7 @@ void HcomHandler::executeSaveToPloCommand(QString cmd)
             else if(variables[v].endsWith("#Zc"))
             {
                 variables[v].chop(3);
-                variables[v].append("#CharImp");
+                variables[v].append("#CharImpedance");
             }
             else if(variables[v].endsWith("#c"))
             {
@@ -1889,6 +1911,72 @@ void HcomHandler::executeExportToFMUCommand(QString cmd)
     }
 
     gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->exportToFMU(getArgument(cmd, 0));
+}
+
+
+void HcomHandler::executeAverageCommand(QString cmd)
+{
+    QStringList split = splitWithRespectToQuotations(cmd, ' ');
+    if(split.size() != 1)
+    {
+        mpConsole->print("Wrong number of arguments.");
+        return;
+    }
+    QString variable = splitWithRespectToQuotations(cmd, ' ')[0];
+
+    SharedLogVariableDataPtrT pData = getVariablePtr(variable);
+    if(pData)
+    {
+        mpConsole->print(QString::number(pData->averageOfData()));
+    }
+    else
+    {
+        mpConsole->print("Data variable not found");
+    }
+}
+
+
+void HcomHandler::executeMinCommand(QString cmd)
+{
+    QStringList split = splitWithRespectToQuotations(cmd, ' ');
+    if(split.size() != 1)
+    {
+        mpConsole->print("Wrong number of arguments.");
+        return;
+    }
+    QString variable = splitWithRespectToQuotations(cmd, ' ')[0];
+
+    SharedLogVariableDataPtrT pData = getVariablePtr(variable);
+    if(pData)
+    {
+        mpConsole->print(QString::number(pData->minOfData()));
+    }
+    else
+    {
+        mpConsole->print("Data variable not found");
+    }
+}
+
+
+void HcomHandler::executeMaxCommand(QString cmd)
+{
+    QStringList split = splitWithRespectToQuotations(cmd, ' ');
+    if(split.size() != 1)
+    {
+        mpConsole->print("Wrong number of arguments.");
+        return;
+    }
+    QString variable = splitWithRespectToQuotations(cmd, ' ')[0];
+
+    SharedLogVariableDataPtrT pData = getVariablePtr(variable);
+    if(pData)
+    {
+        mpConsole->print(QString::number(pData->maxOfData()));
+    }
+    else
+    {
+        mpConsole->print("Data variable not found");
+    }
 }
 
 
@@ -2442,7 +2530,7 @@ void HcomHandler::getParameters(QString str, QStringList &parameters)
 
 
 
-QString HcomHandler::getParameterValue(QString parameter)
+QString HcomHandler::getParameterValue(QString parameter) const
 {
     parameter.remove("\"");
     QString compName = parameter.split(".").first();
@@ -2469,7 +2557,7 @@ QString HcomHandler::getParameterValue(QString parameter)
 //! @brief Help function that returns a list of variables according to input (with support for asterisks)
 //! @param str String to look for
 //! @param variables Reference to list of found variables
-void HcomHandler::getVariables(QString str, QStringList &variables)
+void HcomHandler::getVariables(const QString str, QStringList &variables) const
 {
     if(gpMainWindow->mpProjectTabs->count() == 0) { return; }
 
@@ -2498,33 +2586,40 @@ void HcomHandler::getVariables(QString str, QStringList &variables)
     {
         bool ok=true;
         QString name = names[n];
-        for(int s=0; s<splitStr.size(); ++s)
+        if(splitStr.size() == 1)   //Special case, no asterixes
         {
-            if(s==0)
+            ok = (name == splitStr[0]);
+        }
+        else        //Other cases, loop substrings and check them
+        {
+            for(int s=0; s<splitStr.size(); ++s)
             {
-                if(!name.startsWith(splitStr[s]))
+                if(s==0)
                 {
-                    ok=false;
-                    break;
+                    if(!name.startsWith(splitStr[s]))
+                    {
+                        ok=false;
+                        break;
+                    }
+                    name.remove(0, splitStr[s].size());
                 }
-                name.remove(0, splitStr[s].size());
-            }
-            else if(s==splitStr.size()-1)
-            {
-                if(!name.endsWith(splitStr[s]))
+                else if(s==splitStr.size()-1)
                 {
-                    ok=false;
-                    break;
+                    if(!name.endsWith(splitStr[s]))
+                    {
+                        ok=false;
+                        break;
+                    }
                 }
-            }
-            else
-            {
-                if(!name.contains(splitStr[s]))
+                else
                 {
-                    ok=false;
-                    break;
+                    if(!name.contains(splitStr[s]))
+                    {
+                        ok=false;
+                        break;
+                    }
+                    name.remove(0, name.indexOf(splitStr[s])+splitStr[s].size());
                 }
-                name.remove(0, name.indexOf(splitStr[s])+splitStr[s].size());
             }
         }
         if(ok)
@@ -2534,8 +2629,45 @@ void HcomHandler::getVariables(QString str, QStringList &variables)
     }
 }
 
+//! @brief Help function that returns a list of variables according to input (with support for asterisks)
+//! @param str String to look for
+//! @param variables Reference to list of found variables
+void HcomHandler::getVariablesThatStartsWithString(const QString str, QStringList &variables) const
+{
+    if(gpMainWindow->mpProjectTabs->count() == 0) { return; }
 
-QString HcomHandler::getWorkingDirectory()
+    SystemContainer *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
+    QStringList names = pSystem->getLogDataHandler()->getPlotDataNames();
+    names.append(pSystem->getAliasNames());
+
+    //Add quotation marks around component name if it contains spaces
+    for(int n=0; n<names.size(); ++n)
+    {
+        if(names[n].split(".").first().contains(" "))
+        {
+            names[n].prepend("\"");
+            names[n].insert(names[n].indexOf("."),"\"");
+        }
+    }
+
+    //Translate long data names to short equivalents
+    for(int n=0; n<names.size(); ++n)
+    {
+        toShortDataNames(names[n]);
+    }
+
+    for(int n=0; n<names.size(); ++n)
+    {
+        QString name = names[n];
+        if(name.startsWith(str))
+        {
+            variables.append(names[n]);
+        }
+    }
+}
+
+
+QString HcomHandler::getWorkingDirectory() const
 {
     return mPwd;
 }
@@ -2655,7 +2787,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
 //! @brief Returns a pointer to a data variable for given full data name
 //! @param fullName Full concatinated name of the variable
 //! @returns Pointer to the data variable
-SharedLogVariableDataPtrT HcomHandler::getVariablePtr(QString fullName)
+SharedLogVariableDataPtrT HcomHandler::getVariablePtr(QString fullName) const
 {
     fullName.replace(".","#");
     int generation = -1;
@@ -2699,7 +2831,7 @@ SharedLogVariableDataPtrT HcomHandler::getVariablePtr(QString fullName)
     else if(fullName.endsWith("#Zc"))
     {
         fullName.chop(3);
-        fullName.append("#CharImp");
+        fullName.append("#CharImpedance");
     }
     else if(fullName.endsWith("#c"))
     {
@@ -2734,7 +2866,7 @@ SharedLogVariableDataPtrT HcomHandler::getVariablePtr(QString fullName)
 //! @brief Parses a string into a number
 //! @param str String to parse, should be a number of a variable name
 //! @param ok Pointer to boolean that tells if parsing was successful
-double HcomHandler::getNumber(QString str, bool *ok)
+double HcomHandler::getNumber(const QString str, bool *ok) const
 {
     *ok = true;
     if(str.toDouble())
@@ -2750,7 +2882,7 @@ double HcomHandler::getNumber(QString str, bool *ok)
 }
 
 
-void HcomHandler::toShortDataNames(QString &variable)
+void HcomHandler::toShortDataNames(QString &variable) const
 {
     if(variable.endsWith(".Position"))
     {
@@ -2782,7 +2914,7 @@ void HcomHandler::toShortDataNames(QString &variable)
         variable.chop(6);
         variable.append(".val");
     }
-    else if(variable.endsWith(".CharImp"))
+    else if(variable.endsWith(".CharImpedance"))
     {
         variable.chop(8);
         variable.append(".Zc");
@@ -2810,7 +2942,7 @@ void HcomHandler::toShortDataNames(QString &variable)
 }
 
 
-QString HcomHandler::getDirectory(QString cmd)
+QString HcomHandler::getDirectory(const QString cmd) const
 {
     if(QDir().exists(QDir().cleanPath(mPwd+"/"+cmd)))
     {
@@ -2826,7 +2958,7 @@ QString HcomHandler::getDirectory(QString cmd)
     }
 }
 
-QStringList HcomHandler::getArguments(QString cmd)
+QStringList HcomHandler::getArguments(const QString cmd) const
 {
     QStringList splitCmd;
     bool withinQuotations = false;
@@ -2850,12 +2982,12 @@ QStringList HcomHandler::getArguments(QString cmd)
 }
 
 
-int HcomHandler::getNumberOfArguments(QString cmd)
+int HcomHandler::getNumberOfArguments(const QString cmd) const
 {
     return getArguments(cmd).size();
 }
 
-QString HcomHandler::getArgument(QString cmd, int idx)
+QString HcomHandler::getArgument(const QString cmd, const int idx) const
 {
     return getArguments(cmd).at(idx);
 }

@@ -16,7 +16,7 @@
 //!
 //! @file   MechanicFixedPositionMultiPort.hpp
 //! @author Robert Braun <robert.braun@liu.se>
-//! @date   2011-11-09
+//! @date   2013-03-21
 //!
 //! @brief Contains a Mechanic Fixed Position Component
 //!

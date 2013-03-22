@@ -27,6 +27,8 @@
 #include "Utilities/GUIUtilities.h"
 #include "Configuration.h"
 
+#include <limits>
+
 //! @todo this should not be here should be togheter with plotsvariable stuf in some other file later
 QString makeConcatName(const QString componentName, const QString portName, const QString dataName)
 {
@@ -382,6 +384,50 @@ double LogVariableData::peekData(const int index, QString &rErr) const
     }
     rErr = "Index out of range";
     return val;
+}
+
+double LogVariableData::averageOfData() const
+{
+    double ret = 0;
+    int i=0;
+    QVector<double> *pVector = mpCachedDataVector->beginFullVectorOperation();
+    for(; i<pVector->size(); ++i)
+    {
+        ret += pVector->at(i);
+    }
+    ret /= i;
+    mpCachedDataVector->endFullVectorOperation(pVector);
+    return ret;
+}
+
+double LogVariableData::minOfData() const
+{
+    double ret = std::numeric_limits<double>::max();
+    QVector<double> *pVector = mpCachedDataVector->beginFullVectorOperation();
+    for(int i=0; i<pVector->size(); ++i)
+    {
+        if(pVector->at(i) < ret)
+        {
+            ret = pVector->at(i);
+        }
+    }
+    mpCachedDataVector->endFullVectorOperation(pVector);
+    return ret;
+}
+
+double LogVariableData::maxOfData() const
+{
+    double ret = std::numeric_limits<double>::min();
+    QVector<double> *pVector = mpCachedDataVector->beginFullVectorOperation();
+    for(int i=0; i<pVector->size(); ++i)
+    {
+        if(pVector->at(i) > ret)
+        {
+            ret = pVector->at(i);
+        }
+    }
+    mpCachedDataVector->endFullVectorOperation(pVector);
+    return ret;
 }
 
 bool LogVariableData::indexInRange(const int idx) const
