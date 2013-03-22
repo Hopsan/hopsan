@@ -100,7 +100,7 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            double w1 = (*mpND_w1);
+            double w1 = -(*mpND_w1);
 
             //PI-Controller
             double werror = wref-w1;

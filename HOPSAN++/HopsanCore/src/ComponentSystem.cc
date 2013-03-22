@@ -2207,7 +2207,7 @@ bool ComponentSystem::checkModelBeforeSimulation()
         {
             if(ports[i]->getNodePtr()->getNumberOfPortsByType(PowerPortType) == 1)
             {
-                addErrorMessage("Port " + ports[i]->getName() + " in " + getName() + " is connected to a node with only one attached power port!");
+                addErrorMessage("Port " + ports[i]->getName() + " in " + ports[i]->getComponentName() + " is connected to a node with only one attached power port!");
                 return false;
             }
         }
@@ -2233,7 +2233,7 @@ bool ComponentSystem::checkModelBeforeSimulation()
             {
                 if(ports[i]->getNodePtr()->getNumberOfPortsByType(PowerPortType) == 1)
                 {
-                    addErrorMessage("Port " + ports[i]->getName() + " in " + getName() + " is connected to a node with only one power port!");
+                    addErrorMessage("Port " + ports[i]->getName() + " in " + ports[i]->getComponentName() + " is connected to a node with only one power port!");
                     return false;
                 }
             }

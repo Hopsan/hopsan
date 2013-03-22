@@ -249,7 +249,18 @@ HEADERS += \
     Connectivity/ElectricInterfaceQ.hpp \
     Connectivity/ElectricInterfaceC.hpp \
     defaultComponents.h \
-    Mechanic/Linear/MechanicFixedPositionMultiPort.hpp
+    Mechanic/Linear/MechanicFixedPositionMultiPort.hpp \
+    Mechanic/Rotational/MechanicAngularVelocityTransformer.hpp \
+    Mechanic/Rotational/MechanicAngularVelocitySensor.hpp \
+    Mechanic/Rotational/MechanicAngleSensor.hpp \
+    Mechanic/Rotational/MechanicTorsionalSpring.hpp \
+    Mechanic/Rotational/MechanicTorqueTransformer.hpp \
+    Mechanic/Rotational/MechanicTorqueSensor.hpp \
+    Mechanic/Rotational/MechanicThetaSource.hpp \
+    Mechanic/Rotational/MechanicRotShaft.hpp \
+    Mechanic/Rotational/MechanicJLink.hpp \
+    Mechanic/Rotational/MechanicMotor.hpp \
+    Mechanic/Rotational/MechanicRackAndPinion.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \
