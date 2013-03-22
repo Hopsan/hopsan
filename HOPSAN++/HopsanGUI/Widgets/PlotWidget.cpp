@@ -159,6 +159,26 @@ LogDataHandler *PlotVariableTree::getLogDataHandler()
 //! @brief Updates the variable tree to the available components and variables in the current tab.
 void PlotVariableTree::updateList()
 {
+    QStringList expandedItems;
+
+    QTreeWidgetItemIterator it(this);
+    while(*it)
+    {
+        if ((*it)->isExpanded())
+        {
+            expandedItems << (*it)->text(0);
+        }
+        ++it;
+    }
+
+//    for(int i=0; i<this->item; ++i)
+//    {
+//        if(items[i]->isExpanded())
+//        {
+//            expandedItems << items[i]->text(0);
+//        }
+//    }
+
     mAvailableVariables.clear();
     this->clear();
 
@@ -215,6 +235,7 @@ void PlotVariableTree::updateList()
                 tempFont.setBold(true);
                 pComponentLevelItem->setFont(0, tempFont);
                 this->addTopLevelItem(pComponentLevelItem);
+                pComponentLevelItem->setExpanded(expandedItems.contains(pComponentLevelItem->text(0)));
 
                 //Also remember that we created it
                 componentLevelItemMap.insert(variables[i]->getComponentName(), pComponentLevelItem);
