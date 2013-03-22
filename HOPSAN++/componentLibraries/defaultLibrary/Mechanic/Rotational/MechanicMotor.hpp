@@ -67,9 +67,9 @@ namespace hopsan {
             registerParameter("K_p", "Proportional Controller Gain", "[-]", kp);
             registerParameter("K_i", "Integrating Controller Gain", "[-]", ki);
             registerParameter("K_d", "Derivating Controller Gain", "[-]", kd);
-            registerParameter("W_max", "Maximum Power", "[W]", Wmax);
-            registerParameter("T_max", "Maximum Torque", "[Nm]", Tmax);
-            registerParameter("omega_max", "Maximum Angular Velocity", "[rad/s]", wmax);
+//            registerParameter("W_max", "Maximum Power", "[W]", Wmax);
+//            registerParameter("T_max", "Maximum Torque", "[Nm]", Tmax);
+//            registerParameter("omega_max", "Maximum Angular Velocity", "[rad/s]", wmax);
 
             mpP1 = addPowerPort("P1", "NodeMechanicRotational");
 
