@@ -72,10 +72,10 @@ namespace hopsan {
 
             mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
 
-            registerParameter("t_start", "Start Time", "[s]", mStartTime);
-            registerParameter("f", "Frequencty", "[Hz]", mFrequency);
-            registerParameter("y_A", "Amplitude", "[-]", mAmplitude);
-            registerParameter("y_0", "Base Value", "[-]", mBaseValue);
+            registerParameter("t_start", "Start Time", "s", mStartTime);
+            registerParameter("f", "Frequencty", "Hz", mFrequency);
+            registerParameter("y_A", "Amplitude", "-", mAmplitude);
+            registerParameter("y_0", "Base Value", "-", mBaseValue);
 
             disableStartValue(mpOut, NodeSignal::Value);
         }
@@ -85,24 +85,21 @@ namespace hopsan {
         {
             mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
 
-            //Write basevalue value to node
+            // Write basevalue value to node
             (*mpND_out) = mBaseValue;
         }
 
 
         void simulateOneTimestep()
         {
-            //Step Equations
+            // Step Equations
             if (mTime < mStartTime)
             {
                 (*mpND_out) = mBaseValue;
             }
             else
             {
-                //relTimeInt = int(ceil((mTime-mStartTime)*mFrequency)+0.1);
-                //(*mpND_out) = mBaseValue + (2*mAmplitude * (relTimeInt % 2)) - mAmplitude;
-                //! @todo maybe figure out the correct version of the above code wich may be faster to calculate taht if stuff bellow
-                if ( sin( (mTime-mStartTime)*2.0*M_PI*mFrequency ) > 0.0 )
+                if ( sin( (mTime-mStartTime)*2.0*M_PI*mFrequency ) >= 0.0 )
                 {
                     (*mpND_out) = mBaseValue + mAmplitude;
                 }

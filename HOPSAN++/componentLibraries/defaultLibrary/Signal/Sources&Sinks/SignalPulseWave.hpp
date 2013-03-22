@@ -62,11 +62,11 @@ namespace hopsan {
 
             mpOutPort = addWritePort("out", "NodeSignal", Port::NotRequired);
 
-            registerParameter("y_0", "Base Value", "[-]", mBaseValue);
-            registerParameter("t_start", "Start Time", "[s]", mStartTime);
-            registerParameter("dT", "Time Period", "[s]", mPeriodT);
-            registerParameter("D", "Duty Cycle, (ratio 0<=x<=1)", "[-]", mDutyCycle);
-            registerParameter("y_A", "Amplitude", "[-]", mAmplitude);
+            registerParameter("y_0", "Base Value", "-", mBaseValue);
+            registerParameter("t_start", "Start Time", "s", mStartTime);
+            registerParameter("dT", "Time Period", "s", mPeriodT);
+            registerParameter("D", "Duty Cycle, (ratio 0<=x<=1)", "-", mDutyCycle);
+            registerParameter("y_A", "Amplitude", "-", mAmplitude);
 
             disableStartValue(mpOutPort, NodeSignal::Value);
         }
@@ -75,17 +75,17 @@ namespace hopsan {
         void initialize()
         {
             mpND_out = getSafeNodeDataPtr(mpOutPort, NodeSignal::Value);
-
             (*mpND_out) = mBaseValue;
         }
 
 
         void simulateOneTimestep()
         {
-            const double time = (mTime-mStartTime);
-            bool high = (time - std::floor(time/mPeriodT)*mPeriodT) < mDutyCycle*mPeriodT;
+            // +0.5*mTimestep to avoid ronding issues
+            const double time = (mTime-mStartTime+0.5*mTimestep);
+            const bool high = (time - std::floor(time/mPeriodT)*mPeriodT) < mDutyCycle*mPeriodT;
 
-            if ( (mTime >= mStartTime) && high)
+            if ( (time > 0) && high)
             {
                 (*mpND_out) = mBaseValue + mAmplitude;     //During pulse
             }

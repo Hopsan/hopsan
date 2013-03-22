@@ -25,8 +25,6 @@
 #ifndef SIGNALSTAIRCASE_HPP_INCLUDED
 #define SIGNALSTAIRCASE_HPP_INCLUDED
 
-#include <sstream>
-
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
 
@@ -34,9 +32,9 @@ namespace hopsan {
 
 //!
 //! @brief
-//! @ingroup HydraulicComponents
+//! @ingroup SignalComponents
 //!
-class SignalStaircase : public ComponentC
+class SignalStaircase : public ComponentSignal
 {
 
     private:
@@ -65,31 +63,21 @@ class SignalStaircase : public ComponentC
             mpOut = addWritePort("out", "NodeSignal");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("T_start", "Start Time", "[s]", startT);
-            registerParameter("H_step", "Step Height", "[-]", stepHeight);
-            registerParameter("W_step", "Step Width", "[-]", stepWidth);
+            registerParameter("T_start", "Start Time", "s", startT);
+            registerParameter("H_step", "Step Height", "-", stepHeight);
+            registerParameter("W_step", "Step Width", "s", stepWidth);
         }
 
 
         void initialize()
         {
-
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value, 0.0);
         }
 
         void simulateOneTimestep()
         {
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value, 0.0);
-
-            double out=0;
-
-            if(mTime > startT+stepWidth)
-            {
-                out += stepHeight;
-            }
-
-            out += std::max(0.0, stepHeight*floor((mTime-startT-stepWidth)/stepWidth));
-
-            (*mpND_out) = out;
+            // +0.5*min(mtimestep,stepWidth) to avoid double!=int nummeric accuracy issue
+            (*mpND_out) = stepHeight*floor(std::max(0.0, mTime-startT+0.5*std::min(mTimestep,stepWidth))/stepWidth);
         }
     };
 }
