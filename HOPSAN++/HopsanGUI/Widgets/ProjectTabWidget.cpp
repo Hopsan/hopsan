@@ -873,12 +873,13 @@ bool ProjectTabWidget::closeProjectTab(int index)
     //Disconnect signals
     //std::cout << "ProjectTabWidget: " << "Closing project: " << qPrintable(tabText(index)) << std::endl;
     //statusBar->showMessage(QString("Closing project: ").append(tabText(index)));
-    disconnect(gpMainWindow->mpResetZoomAction,       SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(resetZoom()));
-    disconnect(gpMainWindow->mpZoomInAction,          SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(zoomIn()));
-    disconnect(gpMainWindow->mpZoomOutAction,         SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(zoomOut()));
-    disconnect(gpMainWindow->mpExportPDFAction,       SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(exportToPDF()));
-    disconnect(gpMainWindow->mpExportPNGAction,       SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(exportToPNG()));
-    disconnect(gpMainWindow->mpCenterViewAction,      SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(centerView()));
+    disconnect(gpMainWindow->mpResetZoomAction,     SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(resetZoom()));
+    disconnect(gpMainWindow->mpZoomInAction,        SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(zoomIn()));
+    disconnect(gpMainWindow->mpZoomOutAction,       SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(zoomOut()));
+    disconnect(gpMainWindow->mpPrintAction,         SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(print()));
+    disconnect(gpMainWindow->mpExportPDFAction,     SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(exportToPDF()));
+    disconnect(gpMainWindow->mpExportPNGAction,     SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(exportToPNG()));
+    disconnect(gpMainWindow->mpCenterViewAction,    SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(centerView()));
 
     disconnect(gpMainWindow,                                SIGNAL(simulateKeyPressed()),   getTab(index),  SLOT(simulate()));
     disconnect(gpMainWindow->mpSaveAction,                  SIGNAL(triggered()),            getTab(index),  SLOT(save()));
@@ -1024,6 +1025,7 @@ void ProjectTabWidget::tabChanged()
         disconnect(gpMainWindow->mpResetZoomAction,       SIGNAL(triggered()),        getTab(i)->getGraphicsView(),  SLOT(resetZoom()));
         disconnect(gpMainWindow->mpZoomInAction,          SIGNAL(triggered()),        getTab(i)->getGraphicsView(),  SLOT(zoomIn()));
         disconnect(gpMainWindow->mpZoomOutAction,         SIGNAL(triggered()),        getTab(i)->getGraphicsView(),  SLOT(zoomOut()));
+        disconnect(gpMainWindow->mpPrintAction,           SIGNAL(triggered()),        getTab(i)->getGraphicsView(),  SLOT(print()));
         disconnect(gpMainWindow->mpExportPDFAction,       SIGNAL(triggered()),        getTab(i)->getGraphicsView(),  SLOT(exportToPDF()));
         disconnect(gpMainWindow->mpExportPNGAction,       SIGNAL(triggered()),        getTab(i)->getGraphicsView(),  SLOT(exportToPNG()));
         disconnect(gpMainWindow->mpCenterViewAction,      SIGNAL(triggered()),        getTab(i)->getGraphicsView(),  SLOT(centerView()));
@@ -1040,18 +1042,19 @@ void ProjectTabWidget::tabChanged()
     if(this->count() != 0)
     {
         //connect(gpMainWindow,                       SIGNAL(simulateKeyPressed()),   getCurrentTab(),        SLOT(simulate()), Qt::UniqueConnection);
-        connect(gpMainWindow,                       SIGNAL(simulateKeyPressed()),   getCurrentTab(),        SLOT(simulate_nonblocking()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpCoSimulationAction, SIGNAL(triggered()),            getCurrentTab(),              SLOT(startCoSimulation()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpSaveAction,         SIGNAL(triggered()),            getCurrentTab(),        SLOT(save()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpSaveAsAction,       SIGNAL(triggered()),            getCurrentTab(),        SLOT(saveAs()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpExportModelParametersAction,  SIGNAL(triggered()),            getCurrentTab(),        SLOT(exportModelParameters()), Qt::UniqueConnection);
+        connect(gpMainWindow,                                   SIGNAL(simulateKeyPressed()),   getCurrentTab(),    SLOT(simulate_nonblocking()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpCoSimulationAction,             SIGNAL(triggered()),            getCurrentTab(),    SLOT(startCoSimulation()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpSaveAction,                     SIGNAL(triggered()),            getCurrentTab(),    SLOT(save()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpSaveAsAction,                   SIGNAL(triggered()),            getCurrentTab(),    SLOT(saveAs()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpExportModelParametersAction,    SIGNAL(triggered()),            getCurrentTab(),    SLOT(exportModelParameters()), Qt::UniqueConnection);
 
-        connect(gpMainWindow->mpResetZoomAction,    SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(resetZoom()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpZoomInAction,       SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(zoomIn()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpZoomOutAction,      SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(zoomOut()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpExportPDFAction,    SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(exportToPDF()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpExportPNGAction,    SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(exportToPNG()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpCenterViewAction,   SIGNAL(triggered()),        getCurrentTab()->getGraphicsView(),    SLOT(centerView()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpResetZoomAction,    SIGNAL(triggered()),    getCurrentTab()->getGraphicsView(),    SLOT(resetZoom()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpZoomInAction,       SIGNAL(triggered()),    getCurrentTab()->getGraphicsView(),    SLOT(zoomIn()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpZoomOutAction,      SIGNAL(triggered()),    getCurrentTab()->getGraphicsView(),    SLOT(zoomOut()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpPrintAction,        SIGNAL(triggered()),    getCurrentTab()->getGraphicsView(),    SLOT(print()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpExportPDFAction,    SIGNAL(triggered()),    getCurrentTab()->getGraphicsView(),    SLOT(exportToPDF()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpExportPNGAction,    SIGNAL(triggered()),    getCurrentTab()->getGraphicsView(),    SLOT(exportToPNG()), Qt::UniqueConnection);
+        connect(gpMainWindow->mpCenterViewAction,   SIGNAL(triggered()),    getCurrentTab()->getGraphicsView(),    SLOT(centerView()), Qt::UniqueConnection);
 
         getCurrentContainer()->makeMainWindowConnectionsAndRefresh();
 

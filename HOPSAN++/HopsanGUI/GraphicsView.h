@@ -71,6 +71,7 @@ public slots:
     void zoomIn();
     void zoomOut();
     void centerView();
+    void print();
     void exportToPDF();
     void exportToPNG();
 

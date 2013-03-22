@@ -601,6 +601,9 @@ void MainWindow::createActions()
     mpToggleNamesAction->setChecked(gConfig.getToggleNamesButtonCheckedLastSession());
     mpToggleNamesAction->setShortcut(QKeySequence("Ctrl+n"));
 
+    mpPrintAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Print.png"), tr("&Print Model"), this);
+    mpPrintAction->setText("Print Model");
+
     mpExportPDFAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-ExportPdf.png"), tr("&Export To PDF"), this);
     mpExportPDFAction->setText("Export Model to PDF");
 
@@ -748,6 +751,8 @@ void MainWindow::createMenus()
     //mpFileMenu->addMenu(mpImportMenu);
     //mpFileMenu->addMenu(mpExportMenu);
     mpFileMenu->addSeparator();
+    mpFileMenu->addAction(mpPrintAction);
+    mpFileMenu->addSeparator();
     mpFileMenu->addAction(mpLoadLibsAction);
     mpFileMenu->addSeparator();
     mpFileMenu->addAction(mpPropertiesAction);
@@ -839,6 +844,7 @@ void MainWindow::createToolbars()
     mpFileToolBar->addAction(mpOpenAction);
     mpFileToolBar->addAction(mpSaveAction);
     mpFileToolBar->addAction(mpSaveAsAction);
+    mpFileToolBar->addAction(mpPrintAction);
 
     mpConnectivityToolBar = addToolBar(tr("Import/Export Toolbar)"));
     mpConnectivityToolBar->setAllowedAreas(Qt::TopToolBarArea | Qt::LeftToolBarArea | Qt::RightToolBarArea);
@@ -1263,6 +1269,7 @@ void MainWindow::updateToolBarsToNewTab()
     mpToggleSignalsAction->setEnabled(!noTabs);
     mpTogglePortsAction->setEnabled(!noTabs);
     mpTogglePortsAction->setEnabled(!noTabs);
+    mpPrintAction->setEnabled(!noTabs);
     mpExportPDFAction->setEnabled(!noTabs);
     mpExportPNGAction->setEnabled(!noTabs);
     mpAlignXAction->setEnabled(!noTabs);

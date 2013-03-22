@@ -616,6 +616,23 @@ void GraphicsView::centerView()
 
 //! Exports the graphics view to PDF
 //! @todo Check if it is possible to export to SVG instead. It appears as it is not possible with the current QT version, but I am not sure.
+void GraphicsView::print()
+{
+    QPrinter printer;
+    if (QPrintDialog(&printer).exec() == QDialog::Accepted)
+    {
+        printer.setPaperSize(QPrinter::A4);
+        printer.setOrientation(QPrinter::Landscape);
+        printer.setFullPage(false);
+        QPainter painter(&printer);
+        painter.setRenderHint(QPainter::Antialiasing);
+        this->render(&painter);
+    }
+}
+
+
+//! Exports the graphics view to PDF
+//! @todo Check if it is possible to export to SVG instead. It appears as it is not possible with the current QT version, but I am not sure.
 void GraphicsView::exportToPDF()
 {
     QString fileName = QFileDialog::getSaveFileName(

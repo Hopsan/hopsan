@@ -136,6 +136,7 @@ public:
     QAction *mpToggleSignalsAction;
     QAction *mpShowPortsAction;
     QAction *mpExportGfxAction;
+    QAction *mpPrintAction;
     QAction *mpExportPDFAction;
     QAction *mpExportPNGAction;
     QAction *mpAlignXAction;
