@@ -148,5 +148,6 @@
         <file>graphics/porticons/EmptyPort.svg</file>
         <file>graphics/uiicons/Hopsan-Folder.png</file>
         <file>graphics/uiicons/Hopsan-Print.png</file>
+        <file>graphics/uiicons/Hopsan-Success.png</file>
     </qresource>
 </RCC>

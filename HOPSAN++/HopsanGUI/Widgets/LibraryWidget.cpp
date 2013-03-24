@@ -187,6 +187,24 @@ QSize LibraryWidget::sizeHint() const
 }
 
 
+const QStringList &LibraryWidget::getFailedRecompilableComponentsList() const
+{
+    return mFailedRecompilableComponents;
+}
+
+
+const QList<bool> &LibraryWidget::getFailedComponentsHaveCode() const
+{
+    return mFailedComponentsHaveCode;
+}
+
+
+const QList<bool> &LibraryWidget::getFailedComponentsAreRecompilable() const
+{
+    return mFailedComponentsAreRecompilable;
+}
+
+
 //! @brief Refreshes the contents in the library widget
 void LibraryWidget::update()
 {
@@ -952,8 +970,8 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
         gpMainWindow->mpTerminalWidget->checkMessages();
         pParentTree->removeChild(libName);
         gConfig.removeUserLib(libDirObject.path());
-        delete pTree;
-        return;     //No point in continuing since no library was found
+        //delete pTree;
+        //return;     //No point in continuing since no library was found
     }
     gpMainWindow->mpTerminalWidget->checkMessages();
 
@@ -1092,6 +1110,13 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
             if (!success)
             {
                 gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("When loading graphics, ComponentType: " + pAppearanceData->getTypeName() + " is not registered in core, (Will not be availiable)", "componentnotregistered");
+                if(pAppearanceData->isRecompilable() && !pAppearanceData->getSourceCodeFile().isEmpty())
+                {
+                    gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("ComponentType: "+pAppearanceData->getTypeName()+" is recompilable.");
+                    mFailedRecompilableComponents << pAppearanceData->getTypeName();
+                    mFailedComponentsHaveCode << !pAppearanceData->getSourceCodeFile().isEmpty();
+                    mFailedComponentsAreRecompilable << pAppearanceData->isRecompilable();
+                }
             }
         }
 
