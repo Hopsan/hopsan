@@ -3150,7 +3150,7 @@ void ComponentSystem::distributeNodePointers(vector< vector<Node*> > &rSplitNode
 void ComponentSystem::simulateMultiThreaded(const double startT, const double stopT, const size_t /*nThreads*/, const bool /*noChanges*/)
 {
     this->addErrorMessage("Multi-threaded simulation not available, TBB library is not present.");
-    this->simulate(startT, stopT);
+    this->simulate(stopT);
 }
 
 
@@ -3473,7 +3473,7 @@ bool SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT
     return !aborted;
 #else
     // Use single core simulation if no TBB support
-    return simulateMultipleSystems(startT, stopT, rSystemVector);
+    return simulateMultipleSystems(stopT, rSystemVector);
 #endif
 }
 
