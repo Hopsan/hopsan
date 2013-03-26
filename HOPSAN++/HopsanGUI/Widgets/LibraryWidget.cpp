@@ -187,21 +187,122 @@ QSize LibraryWidget::sizeHint() const
 }
 
 
-const QStringList &LibraryWidget::getFailedRecompilableComponentsList() const
+
+void LibraryWidget::checkForFailedComponents()
 {
-    return mFailedRecompilableComponents;
-}
+    if(!mFailedRecompilableComponents.isEmpty())
+    {
+        QMap<QCheckBox*, QString> boxToTypeMap;
+        QMap<QString, QString> dirToNameMap;
+        QMap<QString, int> dirToNumCompMap;
+        QMap<QString, bool> dirToRecompMap;
+        Q_FOREACH(const QString &type, mFailedRecompilableComponents)
+        {
+            int i=mFailedRecompilableComponents.indexOf(type);
+            QString libDir = QDir::cleanPath(mFailedComponentsLibPaths.at(i));
+            QString libName = QDir(libDir).dirName();
+            bool isRecompilable = mFailedComponentsAreRecompilable.at(i);
+            dirToNameMap.insert(libDir, libName);
+            if(dirToNumCompMap.contains(libDir))
+            {
+                dirToNumCompMap.insert(libDir, dirToNumCompMap.find(libDir).value()+1);
+            }
+            else
+            {
+                dirToNumCompMap.insert(libDir, 1);
+            }
+            if(dirToRecompMap.contains(libDir))
+            {
+                dirToRecompMap.insert(libDir, isRecompilable && dirToRecompMap.find(libDir).value());
+            }
+            else
+            {
+                dirToRecompMap.insert(libDir, isRecompilable);
+            }
+        }
 
+        QDialog *pRecompDialog = new QDialog(this);
+        pRecompDialog->setWindowTitle("Failed Loading Libraries");
+        QGridLayout *pRecompLayout = new QGridLayout();
+        pRecompDialog->setLayout(pRecompLayout);
+        QLabel *pDescriptionLabel = new QLabel("The following libraries could not be loaded:");
+        QLabel *pLibLabelHeading = new QLabel("Library:");
+        QLabel *pRecompHeading = new QLabel("Recompilable:");
+        QLabel *pDoRecompHeading = new QLabel("Recompile?");
+        QFont boldFont = pLibLabelHeading->font();
+        boldFont.setBold(true);
+        pLibLabelHeading->setFont(boldFont);
+        pRecompHeading->setFont(boldFont);
+        pDoRecompHeading->setFont(boldFont);
+        pRecompLayout->addWidget(pDescriptionLabel,0,0,1,3);
+        pRecompLayout->addWidget(pLibLabelHeading, 1, 0);
+        pRecompLayout->addWidget(pRecompHeading, 1, 2);
+        pRecompLayout->addWidget(pDoRecompHeading, 1, 3);
+        int n = 2;
+        QMapIterator<QString, QString> itn(dirToNameMap);
+        while (itn.hasNext())
+        {
+            itn.next();
+            QLabel *pLibLabel = new QLabel(itn.value(), this);
+            pRecompLayout->addWidget(pLibLabel, n, 0);
+            ++n;
+        }
+        n = 2;
+        QMapIterator<QString, bool> itr(dirToRecompMap);
+        while(itr.hasNext())
+        {
+            itr.next();
+            QLabel *pIsRecompLabel = new QLabel(this);
+            if(itr.value())
+            {
+                pIsRecompLabel->setPixmap(QPixmap(QString(ICONPATH) + "Hopsan-Success.png"));
+            }
+            else
+            {
+                pIsRecompLabel->setPixmap(QPixmap(QString(ICONPATH) + "Hopsan-Discard.png"));
+            }
+            pRecompLayout->addWidget(pIsRecompLabel, n, 2);
+            pRecompLayout->setAlignment(pIsRecompLabel, Qt::AlignCenter);
+            QCheckBox *pDoRecompBox = new QCheckBox(this);
+            boxToTypeMap.insert(pDoRecompBox, mFailedComponentsLibPaths.at(mFailedComponentsAreRecompilable.indexOf(itr.value())));
+            pDoRecompBox->setCheckable(true);
+            pDoRecompBox->setChecked(itr.value());
+            pDoRecompBox->setEnabled(itr.value());
+            pRecompLayout->addWidget(pDoRecompBox, n, 3);
+            pRecompLayout->setAlignment(pDoRecompBox, Qt::AlignCenter);
+            ++n;
+        }
+        QDialogButtonBox *pButtonBox = new QDialogButtonBox(this);
+        QPushButton *pDoneButton = new QPushButton("Continue", this);
+        pButtonBox->addButton(pDoneButton, QDialogButtonBox::AcceptRole);
+        pRecompLayout->addWidget(pButtonBox, pRecompLayout->rowCount(), 0, 1, 3);
+        connect(pDoneButton, SIGNAL(clicked()), pRecompDialog, SLOT(close()));
 
-const QList<bool> &LibraryWidget::getFailedComponentsHaveCode() const
-{
-    return mFailedComponentsHaveCode;
-}
+        pRecompDialog->show();
+        pRecompDialog->exec();
 
+        QStringList libsToRecompile;
+        QMapIterator<QCheckBox*, QString> it(boxToTypeMap);
+        while (it.hasNext())
+        {
+            it.next();
+            QString lib = QDir::cleanPath(it.value());
+            if(it.key()->isChecked() && !libsToRecompile.contains(lib))
+            {
+                libsToRecompile << lib;
+            }
+        }
 
-const QList<bool> &LibraryWidget::getFailedComponentsAreRecompilable() const
-{
-    return mFailedComponentsAreRecompilable;
+        Q_FOREACH(const QString &lib, libsToRecompile)
+        {
+            qDebug() << "Recompiling library: " << lib;
+            recompileComponent(lib);
+        }
+        mFailedRecompilableComponents.clear();
+        mFailedComponentsHaveCode.clear();
+        mFailedComponentsAreRecompilable.clear();
+        mFailedComponentsLibPaths.clear();
+    }
 }
 
 
@@ -528,22 +629,17 @@ void LibraryWidget::editComponent()
 }
 
 
+
 void LibraryWidget::recompileComponent()
 {
     qDebug() << "Recompiling!";
     printVar(mEditComponentTypeName);
 
-    QDateTime time = QDateTime();
-    uint t = time.currentDateTime().toTime_t();     //Number of milliseconds since 1970
-    double rd = rand() / (double)RAND_MAX;
-    int r = int(rd*1000000.0);                      //Random number between 0 and 1000000
-    QString randomName = mEditComponentTypeName+QString::number(t)+QString::number(r);
     QString libPath = getAppearanceData(mEditComponentTypeName)->getLibPath();
     QString basePath = getAppearanceData(mEditComponentTypeName)->getBasePath();
     QString fileName = getAppearanceData(mEditComponentTypeName)->getSourceCodeFile();
     QString sourceCode = mpEditComponentTextEdit->toPlainText();
 
-    printVar(randomName);
     printVar(libPath);
 
     //Read source code from file
@@ -563,13 +659,7 @@ void LibraryWidget::recompileComponent()
     sourceFile.write(sourceCode.toStdString().c_str());
     sourceFile.close();
 
-    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
-
-    pCoreAccess->compileComponentLibrary(basePath+libPath, randomName);
-
-    QString newLibFileName = QDir::cleanPath(basePath+libPath)+"/"+randomName+".dll";
-
-    if(!QFile::exists(newLibFileName))
+    if(!recompileComponent(basePath+libPath))
     {
         qDebug() << "Failure!";
         QFile sourceFile(basePath+fileName);
@@ -577,7 +667,31 @@ void LibraryWidget::recompileComponent()
             return;
         sourceFile.write(oldSourceCode.toStdString().c_str());
         sourceFile.close();
-        return;
+    }
+}
+
+
+bool LibraryWidget::recompileComponent(QString libPath)
+{
+    bool success=true;
+
+    QDateTime time = QDateTime();
+    uint t = time.currentDateTime().toTime_t();     //Number of milliseconds since 1970
+    double rd = rand() / (double)RAND_MAX;
+    int r = int(rd*1000000.0);                      //Random number between 0 and 1000000
+    QString randomName = "recompiledHopsanLibrary"+QString::number(t)+QString::number(r);
+
+    printVar(randomName);
+
+    CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
+
+    pCoreAccess->compileComponentLibrary(libPath, randomName);
+
+    QString newLibFileName = QDir::cleanPath(libPath)+"/"+randomName+".dll";
+
+    if(!QFile::exists(newLibFileName))
+    {
+        return false;
     }
 
     qDebug() << "Success!";
@@ -587,21 +701,17 @@ void LibraryWidget::recompileComponent()
     if(!mpCoreAccess->loadComponentLib(newLibFileName))
     {
         qDebug() << "Failed to load library!";
-        QFile sourceFile(basePath+fileName);
-        if(!sourceFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))
-            return;
-        sourceFile.write(oldSourceCode.toStdString().c_str());
-        sourceFile.close();
+        success=false;
     }
 
     qDebug() << "Loaded successfully!";
 
     //Unload all dll:s in folder
-    QDir libDir(basePath+libPath);
+    QDir libDir(libPath);
     QStringList libList = libDir.entryList(QStringList() << "*.dll");
     for(int j=0; j<libList.size(); ++j)
     {
-        QString fileName = QDir::cleanPath(basePath+libPath)+"/"+libList[j];
+        QString fileName = QDir::cleanPath(libPath)+"/"+libList[j];
         mpCoreAccess->unLoadComponentLib(fileName);
         if(fileName != newLibFileName)
         {
@@ -609,23 +719,15 @@ void LibraryWidget::recompileComponent()
         }
     }
 
-    if(!mpCoreAccess->loadComponentLib(newLibFileName))
-    {
-        qDebug() << "Failed to load library!";
-        QFile sourceFile(basePath+fileName);
-        if(!sourceFile.open(QIODevice::ReadWrite | QIODevice::Truncate | QIODevice::Text))
-            return;
-        sourceFile.write(oldSourceCode.toStdString().c_str());
-        sourceFile.close();
-    }
+    loadAndRememberExternalLibrary(libPath, "");
 
     qDebug() << "Loaded successfully!";
 
-
-
-
     gpMainWindow->mpProjectTabs->restoreState();
 
+    update();
+
+    return success;
 }
 
 
@@ -757,6 +859,8 @@ void LibraryWidget::addExternalLibrary(QString libDir)
     {
         gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Error: Library " + libDir + " is already loaded!");
     }
+
+    checkForFailedComponents();
 }
 
 
@@ -1110,13 +1214,10 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
             if (!success)
             {
                 gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("When loading graphics, ComponentType: " + pAppearanceData->getTypeName() + " is not registered in core, (Will not be availiable)", "componentnotregistered");
-                if(pAppearanceData->isRecompilable() && !pAppearanceData->getSourceCodeFile().isEmpty())
-                {
-                    gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("ComponentType: "+pAppearanceData->getTypeName()+" is recompilable.");
-                    mFailedRecompilableComponents << pAppearanceData->getTypeName();
-                    mFailedComponentsHaveCode << !pAppearanceData->getSourceCodeFile().isEmpty();
-                    mFailedComponentsAreRecompilable << pAppearanceData->isRecompilable();
-                }
+                mFailedRecompilableComponents << pAppearanceData->getTypeName();
+                mFailedComponentsHaveCode << !pAppearanceData->getSourceCodeFile().isEmpty();
+                mFailedComponentsAreRecompilable << pAppearanceData->isRecompilable();
+                mFailedComponentsLibPaths << pAppearanceData->getBasePath() + pAppearanceData->getLibPath();
             }
         }
 

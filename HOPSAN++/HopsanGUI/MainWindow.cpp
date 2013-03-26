@@ -322,81 +322,8 @@ void MainWindow::initializeWorkspace()
         mpLibrary->loadAndRememberExternalLibrary(gConfig.getUserLibs().at(i), gConfig.getUserLibFolders().at(i));
     }
 
+    mpLibrary->checkForFailedComponents();
 
-    QDialog *pRecompDialog = new QDialog(this);
-    pRecompDialog->setWindowTitle("Failed Loading Libraries");
-    QGridLayout *pRecompLayout = new QGridLayout();
-    pRecompDialog->setLayout(pRecompLayout);
-    QLabel *pDescriptionLabel = new QLabel("The following libraries could not be loaded:");
-    QLabel *pLibLabelHeading = new QLabel("Component type:");
-    QLabel *pCodeLabelHeading = new QLabel("Code available:");
-    QLabel *pRecompHeading = new QLabel("Recompilable:");
-    QLabel *pDoRecompHeading = new QLabel("Recompile?");
-    QFont boldFont = pLibLabelHeading->font();
-    boldFont.setBold(true);
-    pLibLabelHeading->setFont(boldFont);
-    pCodeLabelHeading->setFont(boldFont);
-    pRecompHeading->setFont(boldFont);
-    pDoRecompHeading->setFont(boldFont);
-    pRecompLayout->addWidget(pDescriptionLabel,0,0,1,4);
-    pRecompLayout->addWidget(pLibLabelHeading, 1, 0);
-    pRecompLayout->addWidget(pCodeLabelHeading, 1, 1);
-    pRecompLayout->addWidget(pRecompHeading, 1, 2);
-    pRecompLayout->addWidget(pDoRecompHeading, 1, 3);
-    int n = 2;
-    Q_FOREACH(const QString &type, mpLibrary->getFailedRecompilableComponentsList())
-    {
-        QLabel *pLibLabel = new QLabel(type, this);
-        pRecompLayout->addWidget(pLibLabel, n, 0);
-        ++n;
-    }
-    n = 2;
-    Q_FOREACH(const bool &hasCode, mpLibrary->getFailedComponentsHaveCode())
-    {
-        QLabel *pCodeLabel = new QLabel(this);
-        if(hasCode)
-        {
-            pCodeLabel->setPixmap(QPixmap(QString(ICONPATH) + "Hopsan-Success.png"));
-        }
-        else
-        {
-            pCodeLabel->setPixmap(QPixmap(QString(ICONPATH) + "Hopsan-Discard.png"));
-        }
-        pRecompLayout->addWidget(pCodeLabel, n, 1);
-        pRecompLayout->setAlignment(pCodeLabel, Qt::AlignCenter);
-        ++n;
-    }
-    n = 2;
-    Q_FOREACH(const bool &isRecompilable, mpLibrary->getFailedComponentsAreRecompilable())
-    {
-        QLabel *pIsRecompLabel = new QLabel(this);
-        if(isRecompilable)
-        {
-            pIsRecompLabel->setPixmap(QPixmap(QString(ICONPATH) + "Hopsan-Success.png"));
-        }
-        else
-        {
-            pIsRecompLabel->setPixmap(QPixmap(QString(ICONPATH) + "Hopsan-Discard.png"));
-        }
-        pRecompLayout->addWidget(pIsRecompLabel, n, 2);
-        pRecompLayout->setAlignment(pIsRecompLabel, Qt::AlignCenter);
-        QCheckBox *pDoRecompBox = new QCheckBox(this);
-        pDoRecompBox->setCheckable(true);
-        pDoRecompBox->setChecked(isRecompilable);
-        pDoRecompBox->setEnabled(isRecompilable);
-        pRecompLayout->addWidget(pDoRecompBox, n, 3);
-        pRecompLayout->setAlignment(pDoRecompBox, Qt::AlignCenter);
-        ++n;
-    }
-    QDialogButtonBox *pButtonBox = new QDialogButtonBox(this);
-    QPushButton *pDoneButton = new QPushButton("Continue", this);
-    pButtonBox->addButton(pDoneButton, QDialogButtonBox::AcceptRole);
-    pRecompLayout->addWidget(pButtonBox, pRecompLayout->rowCount(), 0, 1, 4);
-    connect(pDoneButton, SIGNAL(clicked()), pRecompDialog, SLOT(close()));
-
-
-    pRecompDialog->show();
-    pRecompDialog->exec();
 
 
     // Create the plot widget, only once! :)

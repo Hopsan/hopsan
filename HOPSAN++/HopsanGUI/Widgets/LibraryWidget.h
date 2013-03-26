@@ -78,10 +78,9 @@ public:
     QLabel *mpComponentNameField;
     QStringList mLoadedComponents;
 
-    const QStringList &getFailedRecompilableComponentsList() const;
-    const QList<bool> &getFailedComponentsHaveCode() const;
-    const QList<bool> &getFailedComponentsAreRecompilable() const;
+    void checkForFailedComponents();
 
+    bool recompileComponent(QString libPath);
 public slots:
     void generateComponent();
     void addExternalLibrary(QString libDir = QString());
@@ -142,6 +141,7 @@ private:
     QStringList mFailedRecompilableComponents;
     QList<bool> mFailedComponentsHaveCode;
     QList<bool> mFailedComponentsAreRecompilable;
+    QStringList mFailedComponentsLibPaths;
 };
 
 
