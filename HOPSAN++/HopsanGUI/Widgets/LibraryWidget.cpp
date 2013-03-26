@@ -243,7 +243,7 @@ void LibraryWidget::checkForFailedComponents()
         while (itn.hasNext())
         {
             itn.next();
-            QLabel *pLibLabel = new QLabel(itn.value(), this);
+            QLabel *pLibLabel = new QLabel(itn.value()+" ("+QString::number(dirToNumCompMap.find(itn.key()).value())+" components)", this);
             pRecompLayout->addWidget(pLibLabel, n, 0);
             ++n;
         }
