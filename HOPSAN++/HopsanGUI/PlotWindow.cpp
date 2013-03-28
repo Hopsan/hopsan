@@ -512,7 +512,7 @@ QString PlotWindow::getName() const
 //! @param portName Name of port where variable is located
 //! @param dataName Name of variable
 //! @param dataUnit Unit of variable
-void PlotWindow::addPlotCurve(SharedLogVariableDataPtrT pData, int axisY, QColor desiredColor)
+PlotCurve* PlotWindow::addPlotCurve(SharedLogVariableDataPtrT pData, int axisY, QColor desiredColor)
 {
     //! @todo check if model path same as earlier to prvent mixing data
     // Remember which model it belongs to, and connect the closeWindow signal from the data handler
@@ -526,6 +526,7 @@ void PlotWindow::addPlotCurve(SharedLogVariableDataPtrT pData, int axisY, QColor
     PlotCurve *pTempCurve = new PlotCurve(pData, axisY, getCurrentPlotTab());
     getCurrentPlotTab()->addCurve(pTempCurve, desiredColor);
     refreshWindowTitle();
+    return pTempCurve;
 }
 
 

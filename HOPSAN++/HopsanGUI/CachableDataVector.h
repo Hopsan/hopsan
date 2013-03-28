@@ -123,7 +123,7 @@ public:
     int size() const;
     bool isEmpty() const;
 
-    bool copyData(QVector<double> &rData);
+    bool copyDataTo(QVector<double> &rData);
     bool replaceData(const QVector<double> &rNewData);
     bool peek(const int idx, double &rVal);
     bool poke(const int idx, const double val);

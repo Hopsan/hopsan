@@ -312,7 +312,8 @@ void PyMainWindowClassWrapper::clear(MainWindow* o)
 
 void PyMainWindowClassWrapper::plot(MainWindow* o, const QString& compName, const QString& portName, const QString& dataName)
 {
-    o->mpProjectTabs->getCurrentContainer()->getModelObject(compName)->getPort(portName)->plot(dataName, "");
+    //o->mpProjectTabs->getCurrentContainer()->getModelObject(compName)->getPort(portName)->plot(dataName, "");
+    o->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->plotVariable("", makeConcatName(compName, portName, dataName), -1, 0);
     qApp->processEvents();
 }
 
@@ -441,10 +442,15 @@ QString PyLogDataHandlerClassWrapper::divVariables(LogDataHandler *o, const QStr
     return tempStr;
 }
 
-QString PyLogDataHandlerClassWrapper::assignVariables(LogDataHandler *o, const QString &a, const QString &b)
+QString PyLogDataHandlerClassWrapper::assignVariable(LogDataHandler *o, const QString &dst, const QString &src)
 {
-    QString tempStr = o->assignVariable(a,b);
+    QString tempStr = o->assignVariable(dst,src);
     return tempStr;
+}
+
+QString PyLogDataHandlerClassWrapper::assignVariable(LogDataHandler *o, const QString &dst, const QVector<double> &src)
+{
+    return o->assignVariable(dst,src);
 }
 
 bool PyLogDataHandlerClassWrapper::pokeVariables(LogDataHandler *o, const QString &a, const int index, const double value)
@@ -495,4 +501,14 @@ double PyLogDataHandlerClassWrapper::peekVariables(LogDataHandler *o,const QStri
 QVector<double> PyLogDataHandlerClassWrapper::data(LogDataHandler *o, const QString fullName)
 {
     return o->getPlotDataValues(fullName, -1);
+}
+
+void PyLogDataHandlerClassWrapper::plot(LogDataHandler* o, const QString &rVarX, const QString &rVarY, int gen, int axis)
+{
+    o->plotVariable("",rVarX,rVarY,gen,axis);
+}
+
+void PyLogDataHandlerClassWrapper::plot(LogDataHandler *o, const QString &rVarName, int gen, int axis)
+{
+    o->plotVariable("",rVarName,gen,axis);
 }

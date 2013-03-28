@@ -913,7 +913,7 @@ QString LogDataHandler::addVariableWithScalar(const QString &a, const double x)
 SharedLogVariableDataPtrT LogDataHandler::addVariableWithScalar(const SharedLogVariableDataPtrT a, const double x)
 {
     SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+"AddedWith"+QString::number(x));
-    pTempVar->assignToData(a);
+    pTempVar->assignFrom(a);
     pTempVar->addToData(x);
     return pTempVar;
 }
@@ -936,7 +936,7 @@ QString LogDataHandler::subVariableWithScalar(const QString &a, const double x)
 SharedLogVariableDataPtrT LogDataHandler::subVariableWithScalar(const SharedLogVariableDataPtrT a, const double x)
 {
     SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+"SubtractedWith"+QString::number(x));
-    pTempVar->assignToData(a);
+    pTempVar->assignFrom(a);
     pTempVar->subFromData(x);
     return pTempVar;
 }
@@ -959,7 +959,7 @@ QString LogDataHandler::mulVariableWithScalar(const QString &a, const double x)
 SharedLogVariableDataPtrT LogDataHandler::mulVariableWithScalar(const SharedLogVariableDataPtrT a, const double x)
 {
     SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+"MultiplicatedWith"+QString::number(x));
-    pTempVar->assignToData(a);
+    pTempVar->assignFrom(a);
     pTempVar->multData(x);
     return pTempVar;
 }
@@ -982,7 +982,7 @@ QString LogDataHandler::divVariableWithScalar(const QString &a, const double x)
 SharedLogVariableDataPtrT LogDataHandler::divVariableWithScalar(const SharedLogVariableDataPtrT a, const double x)
 {
     SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+"dividedWith"+QString::number(x));
-    pTempVar->assignToData(a);
+    pTempVar->assignFrom(a);
     pTempVar->divData(x);
     return pTempVar;
 }
@@ -1007,7 +1007,7 @@ QString LogDataHandler::addVariables(const QString &a, const QString &b)
 SharedLogVariableDataPtrT LogDataHandler::addVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b)
 {
     SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+b->getFullVariableName());
-    pTempVar->assignToData(a);
+    pTempVar->assignFrom(a);
     pTempVar->addToData(b);
     return pTempVar;
 }
@@ -1060,32 +1060,36 @@ QString LogDataHandler::divVariables(const QString &a, const QString &b)
     }
 }
 
-QString LogDataHandler::assignVariable(const QString &a, const QString &b)
+QString LogDataHandler::assignVariable(const QString &dst, const QString &src)
 {
-    SharedLogVariableDataPtrT pData1 = getPlotData(a, -1);
-    SharedLogVariableDataPtrT pData2 = getPlotData(b, -1);
+    SharedLogVariableDataPtrT pDstData = getPlotData(dst, -1);
+    SharedLogVariableDataPtrT pSrcData = getPlotData(src, -1);
 
-    if(pData2 == 0)
+    if(pSrcData == 0)
     {
         return QString();
     }
-    else if(pData1 == 0)
+    else if(pDstData == 0)
     {
-        VariableDescription varDesc;
-        varDesc.mDataName = a;
-        LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc, this);
-        pDataContainer->addDataGeneration(mGenerationNumber, QVector<double>(), QVector<double>());
-        mLogDataMap.insert(a, pDataContainer);
-        ++mGenerationNumber;
-        pData1 = getPlotData(a,-1);
-        SharedLogVariableDataPtrT pTemp = assignVariable(pData1,pData2);
-        return pTemp->getFullVariableName();
+        pDstData = defineNewVariable(dst);
     }
-    else
+    return assignVariable(pDstData,pSrcData)->getFullVariableName();
+}
+
+QString LogDataHandler::assignVariable(const QString &dst, const QVector<double> &src)
+{
+    SharedLogVariableDataPtrT pDstData = getPlotData(dst, -1);
+    if (!pDstData)
     {
-        SharedLogVariableDataPtrT pTemp = assignVariable(pData1,pData2);
-        return pTemp->getFullVariableName();
+        pDstData = defineNewVariable(dst);
     }
+
+    // Check again if new def was succesfull
+    if (pDstData)
+    {
+        pDstData->assignFrom(src);
+    }
+    return pDstData->getFullVariableName();
 }
 
 double LogDataHandler::pokeVariable(const QString &a, const int index, const double value)
@@ -1133,7 +1137,7 @@ QString LogDataHandler::saveVariable(const QString &currName, const QString &new
         SharedLogVariableDataPtrT pNewData = defineNewVariable(newName);
         if (pNewData)
         {
-            pNewData->assignToData(pCurrData);
+            pNewData->assignFrom(pCurrData);
             return pNewData->getFullVariableName();
         }
         gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not create variable: " + newName);
@@ -1146,7 +1150,7 @@ QString LogDataHandler::saveVariable(const QString &currName, const QString &new
 SharedLogVariableDataPtrT LogDataHandler::subVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b)
 {
     SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+b->getFullVariableName());
-    pTempVar->assignToData(a);
+    pTempVar->assignFrom(a);
     pTempVar->subFromData(b);
     return pTempVar;
 }
@@ -1154,7 +1158,7 @@ SharedLogVariableDataPtrT LogDataHandler::subVariables(const SharedLogVariableDa
 SharedLogVariableDataPtrT LogDataHandler::multVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b)
 {
     SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+b->getFullVariableName());
-    pTempVar->assignToData(a);
+    pTempVar->assignFrom(a);
     pTempVar->multData(b);
     return pTempVar;
 }
@@ -1162,16 +1166,16 @@ SharedLogVariableDataPtrT LogDataHandler::multVariables(const SharedLogVariableD
 SharedLogVariableDataPtrT LogDataHandler::divVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b)
 {
     SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+b->getFullVariableName());
-    pTempVar->assignToData(a);
+    pTempVar->assignFrom(a);
     pTempVar->divData(b);
     return pTempVar;
 }
 
 //! @todo Should this function really return a value?
-SharedLogVariableDataPtrT LogDataHandler::assignVariable(SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b)
+SharedLogVariableDataPtrT LogDataHandler::assignVariable(SharedLogVariableDataPtrT dst, const SharedLogVariableDataPtrT src)
 {
-    a->assignToData(b);
-    return a;
+    dst->assignFrom(src);
+    return dst;
 }
 
 double LogDataHandler::pokeVariable(SharedLogVariableDataPtrT a, const int index, const double value)
@@ -1200,7 +1204,7 @@ bool LogDataHandler::deleteVariable(SharedLogVariableDataPtrT a)
 SharedLogVariableDataPtrT LogDataHandler::saveVariable(SharedLogVariableDataPtrT a)
 {
     SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName());
-    pTempVar->assignToData(a);
+    pTempVar->assignFrom(a);
     return pTempVar;
 }
 
@@ -1313,6 +1317,16 @@ QString LogDataHandler::plotVariable(const QString plotName, const QString fullV
         return gpPlotHandler->plotDataToWindow(plotName, pData, axis, color);
     }
     return "";
+}
+
+QString LogDataHandler::plotVariable(const QString plotName, const QString &rFullNameX, const QString &rFullNameY, const int gen, const int axis, QColor color)
+{
+    SharedLogVariableDataPtrT pDataX = getPlotData(rFullNameX, gen);
+    SharedLogVariableDataPtrT pDataY = getPlotData(rFullNameY, gen);
+    if (pDataX && pDataY)
+    {
+        return gpPlotHandler->plotDataToWindow(plotName, pDataX, pDataY, axis, color);
+    }
 }
 
 PlotWindow *LogDataHandler::plotVariable(PlotWindow *pPlotWindow, const QString fullVarName, const int gen, const int axis, QColor color)

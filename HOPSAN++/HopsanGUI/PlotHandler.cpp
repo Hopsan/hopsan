@@ -4,6 +4,7 @@
 #include "PlotWindow.h"
 #include "LogDataHandler.h"
 #include "MainWindow.h"
+#include "PlotCurve.h"
 
 PlotHandler::PlotHandler(QObject *pParent) : QObject(pParent){}
 
@@ -91,6 +92,17 @@ QString PlotHandler::plotDataToWindow(QString windowName, SharedLogVariableDataP
     return pWindow->getName();
 }
 
+QString PlotHandler::plotDataToWindow(QString windowName, SharedLogVariableDataPtrT pDataX, SharedLogVariableDataPtrT pDataY, int axis, QColor curveColor)
+{
+    if (pDataX && pDataY)
+    {
+        PlotWindow *pWindow = createNewPlotWindowOrGetCurrentOne(windowName);
+        plotDataToWindow(pWindow, pDataX, pDataY, axis, curveColor);
+        return pWindow->getName();
+    }
+    return "";
+}
+
 void PlotHandler::closeAllOpenWindows()
 {
     while (!mOpenPlotWindows.empty())
@@ -108,5 +120,16 @@ PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, SharedLogVari
     }
     pPlotWindow->addPlotCurve(pData, axis, curveColor);
 
+    return pPlotWindow;
+}
+
+PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, SharedLogVariableDataPtrT pDataX, SharedLogVariableDataPtrT pDataY, int axis, QColor curveColor)
+{
+    if(!pPlotWindow)
+    {
+        pPlotWindow = createNewPlotWindowOrGetCurrentOne();
+    }
+    PlotCurve* pCurve = pPlotWindow->addPlotCurve(pDataY, axis, curveColor);
+    pCurve->setCustomXData(pDataX);
     return pPlotWindow;
 }

@@ -79,7 +79,8 @@ public slots:
     QString subVariables(LogDataHandler* o, const QString &a, const QString &b);
     QString multVariables(LogDataHandler* o, const QString &a, const QString &b);
     QString divVariables(LogDataHandler* o, const QString &a, const QString &b);
-    QString assignVariables(LogDataHandler* o, const QString &a, const QString &b);
+    QString assignVariable(LogDataHandler* o, const QString &dst, const QString &src);
+    QString assignVariable(LogDataHandler* o, const QString &dst, const QVector<double> &src);
     bool pokeVariables(LogDataHandler* o, const QString &a, const int index, const double value);
     double peekVariables(LogDataHandler* o, const QString &varName, const int index);
     bool delVariables(LogDataHandler* o, const QString &a);
@@ -91,6 +92,9 @@ public slots:
     QVector<double> data(LogDataHandler* o, const QString fullName);
     //SharedLogVariableDataPtrT getcurrentVariable(LogDataHandler* o, QString name);
     //LogVariableContainer getcurrentContainer(LogDataHandler* o, QString name);
+    void plot(LogDataHandler* o, const QString &rVarX, const QString &rVarY, int gen=-1, int axis=0);
+    void plot(LogDataHandler* o, const QString &rVarName, int gen=-1, int axis=0);
+    //! @todo a defineNewVariable function were it is possible to set unit and such data
 };
 
 

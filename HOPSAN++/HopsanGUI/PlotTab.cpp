@@ -447,6 +447,7 @@ void PlotTab::addCurve(PlotCurve *curve, QColor desiredColor, HopsanPlotIDEnumT 
 //! @brief Rescales the axes and the zommers so that all plot curves will fit
 void PlotTab::rescaleToCurves()
 {
+    //! @todo get freeze in here if x or y data vectors are empty (that has to be fixed)
     //Cycle plots and rescale each of them
     for(int plotID=0; plotID<2; ++plotID)
     {

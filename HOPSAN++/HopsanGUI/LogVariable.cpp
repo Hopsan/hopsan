@@ -346,10 +346,17 @@ void LogVariableData::divData(const double other)
 //    }
     emit dataChanged();
 }
-void LogVariableData::assignToData(const SharedLogVariableDataPtrT pOther)
+void LogVariableData::assignFrom(const SharedLogVariableDataPtrT pOther)
 {
     mpCachedDataVector->replaceData(pOther->getDataVector());
     mSharedTimeVectorPtr = pOther->mSharedTimeVectorPtr;
+    emit dataChanged();
+}
+
+void LogVariableData::assignFrom(const QVector<double> &rSrc)
+{
+    mpCachedDataVector->replaceData(rSrc);
+    mSharedTimeVectorPtr = SharedTimeVectorPtrT(); //No time vector assigned
     emit dataChanged();
 }
 
@@ -683,7 +690,7 @@ SharedTimeVectorPtrT UniqueSharedTimeVectorPtrHelper::makeSureUnique(QVector<dou
 QVector<double> LogVariableData::getDataVector()
 {
     QVector<double> vec;
-    mpCachedDataVector->copyData(vec);
+    mpCachedDataVector->copyDataTo(vec);
     return vec;
 }
 

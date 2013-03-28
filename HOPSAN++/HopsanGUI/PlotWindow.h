@@ -60,7 +60,7 @@ class PlotWindow : public QMainWindow
 public:
     PlotWindow(const QString name, QWidget *parent);
     ~PlotWindow();
-    void addPlotCurve(SharedLogVariableDataPtrT pData, int axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
+    PlotCurve* addPlotCurve(SharedLogVariableDataPtrT pData, int axisY=QwtPlot::yLeft, QColor desiredColor=QColor());
     void addBarChart(QStandardItemModel *pItemModel);
 
     PlotTabWidget *getPlotTabWidget();

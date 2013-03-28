@@ -1014,12 +1014,20 @@ void PlotCurve::updateCurve()
 
     if(mpCustomXdata.isNull())
     {
-        // No special X-data use time vector
-        tempX.resize(mpData->mSharedTimeVectorPtr->size());
-        for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
+        // No special X-data use time vector if it exist else we cant draw curve (yet, x-date might be set later)
+        if (mpData->mSharedTimeVectorPtr)
         {
-            tempX[i] = mpData->mSharedTimeVectorPtr->at(i)*mPlotScaleX + mPlotOffsetX;
-            tempY[i] = tempY[i]*mCustomDataUnitScale*mPlotScaleY + mPlotOffsetY;
+            tempX.resize(mpData->mSharedTimeVectorPtr->size());
+            for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
+            {
+                tempX[i] = mpData->mSharedTimeVectorPtr->at(i)*mPlotScaleX + mPlotOffsetX;
+                tempY[i] = tempY[i]*mCustomDataUnitScale*mPlotScaleY + mPlotOffsetY;
+            }
+        }
+        else
+        {
+            //! @todo this is a HACK really need a curve constructor for two variables x,y /Peter
+            tempX = tempY;
         }
     }
     else
@@ -1033,8 +1041,8 @@ void PlotCurve::updateCurve()
             tempY[i] = tempY[i]*mCustomDataUnitScale*mPlotScaleY + mPlotOffsetY;
         }
     }
-    setSamples(tempX, tempY);
 
+    setSamples(tempX, tempY);
     emit curveDataUpdated();
 }
 

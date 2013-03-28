@@ -22,11 +22,13 @@ public:
     ~PlotHandler();
 
     PlotWindow *createNewPlotWindowOrGetCurrentOne(QString name="");
-    PlotWindow *plotDataToWindow(PlotWindow *pPlotWindow, SharedLogVariableDataPtrT pData, int axis, QColor curveColor=QColor());
     PlotWindow *getPlotWindow(const QString name);
 
     void createPlotWindow(QString name="");
+    PlotWindow *plotDataToWindow(PlotWindow *pPlotWindow, SharedLogVariableDataPtrT pData, int axis, QColor curveColor=QColor());
+    PlotWindow *plotDataToWindow(PlotWindow *pPlotWindow, SharedLogVariableDataPtrT pDataX, SharedLogVariableDataPtrT pDataY, int axis, QColor curveColor=QColor());
     QString plotDataToWindow(QString windowName, SharedLogVariableDataPtrT pData, int axis, QColor curveColor=QColor());
+    QString plotDataToWindow(QString windowName, SharedLogVariableDataPtrT pDataX, SharedLogVariableDataPtrT pDataY, int axis, QColor curveColor=QColor());
 
     void closeAllOpenWindows();
 

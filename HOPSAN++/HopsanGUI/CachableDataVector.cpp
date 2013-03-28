@@ -347,7 +347,7 @@ bool CachableDataVector::isEmpty() const
     return (mCacheNumBytes == 0) && mDataVector.isEmpty();
 }
 
-bool CachableDataVector::copyData(QVector<double> &rData)
+bool CachableDataVector::copyDataTo(QVector<double> &rData)
 {
     if (isCached())
     {
@@ -366,8 +366,21 @@ bool CachableDataVector::copyData(QVector<double> &rData)
 
 bool CachableDataVector::replaceData(const QVector<double> &rNewData)
 {
-    //! @todo do this
-    qFatal("Not yet implemented");
+    if (isCached())
+    {
+        this->setCached(false);
+        mDataVector = rNewData;
+        return true;
+
+        //! @todo do this better
+        qFatal("Not yet implemented");
+        //return false;
+    }
+    else
+    {
+        mDataVector = rNewData;
+        return true;
+    }
 }
 
 bool CachableDataVector::peek(const int idx, double &rVal)

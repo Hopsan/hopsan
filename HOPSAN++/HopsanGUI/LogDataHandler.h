@@ -95,6 +95,7 @@ public:
     void removeFavoriteVariableByComponentName(QString componentName);
 
     QString plotVariable(const QString plotName, const QString fullVarName, const int gen, const int axis, QColor color=QColor());
+    QString plotVariable(const QString plotName, const QString &rFullNameX, const QString &rFullNameY, const int gen, const int axis, QColor color=QColor());
     PlotWindow *plotVariable(PlotWindow *pPlotWindow, const QString fullVarName, const int gen, const int axis, QColor color=QColor());
 
     SharedLogVariableDataPtrT addVariableWithScalar(const SharedLogVariableDataPtrT a, const double x);
@@ -115,8 +116,9 @@ public:
     QString multVariables(const QString &a, const QString &b);
     QString divVariables(const QString &a, const QString &b);
 
-    SharedLogVariableDataPtrT assignVariable(SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b);
-    QString assignVariable(const QString &a, const QString &b);
+    SharedLogVariableDataPtrT assignVariable(SharedLogVariableDataPtrT dst, const SharedLogVariableDataPtrT src);
+    QString assignVariable(const QString &dst, const QString &src);
+    QString assignVariable(const QString &dst, const QVector<double> &src);
 
     double pokeVariable(SharedLogVariableDataPtrT a, const int index, const double value);
     double pokeVariable(const QString &a, const int index, const double value);
