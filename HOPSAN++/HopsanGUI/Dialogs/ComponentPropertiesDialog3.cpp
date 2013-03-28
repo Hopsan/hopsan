@@ -46,6 +46,8 @@
 #include "Dialogs/ParameterSettingsLayout.h"
 
 
+
+
 //! @class ComponentPropertiesDialog3
 //! @brief The ComponentPropertiesDialog3 class is a Widget used to interact with component parameters.
 //!
@@ -217,7 +219,7 @@ VariableTableWidget::VariableTableWidget(Component *pComponent, QWidget *pParent
 {
     mpComponent = pComponent;
 
-    this->setColumnCount(8);
+    this->setColumnCount(NumCols);
     QVector<CoreParameterData> parameters;
     mpComponent->getParameters(parameters);
 
@@ -241,6 +243,7 @@ VariableTableWidget::VariableTableWidget(Component *pComponent, QWidget *pParent
     columnHeaders.append("Name");
     columnHeaders.append("Alias");
     columnHeaders.append("Unit");
+    columnHeaders.append("Description");
     columnHeaders.append("Type");
     columnHeaders.append("Value");
     columnHeaders.append("PlotScale");
@@ -269,10 +272,69 @@ VariableTableWidget::VariableTableWidget(Component *pComponent, QWidget *pParent
         ++r;
     }
 
-    resizeColumnToContents(0);
-    resizeColumnToContents(2);
-    resizeColumnToContents(3);
+    resizeColumnToContents(Name);
+    resizeColumnToContents(Unit);
+    resizeColumnToContents(Type);
 
+
+}
+
+void VariableTableWidget::resetDefaultValueAtRow(int row)
+{
+    QString name = item(row,Name)->text();
+    if(mpComponent)
+    {
+        QString defaultText = mpComponent->getDefaultParameterValue(name);
+        if(defaultText != QString())
+            item(row,Value)->setText(defaultText);
+        //pickValueTextColor();
+        //! @todo color
+    }
+}
+
+void VariableTableWidget::selectSystemParameterAtRow(int row)
+{
+    QMenu menu;
+    QMap<QAction*, QString> actionParamMap;
+
+    QVector<CoreParameterData> paramDataVector;
+    mpComponent->getParentContainerObject()->getParameters(paramDataVector);
+
+    for (int i=0; i<paramDataVector.size(); ++i)
+    {
+        QAction *tempAction = menu.addAction(paramDataVector[i].mName+" = "+paramDataVector[i].mValue);
+        tempAction->setIconVisibleInMenu(false);
+        actionParamMap.insert(tempAction, paramDataVector[i].mName);
+    }
+
+    QCursor cursor;
+    QAction *selectedAction = menu.exec(cursor.pos());
+    QString parNameString = actionParamMap.value(selectedAction);
+    if(!parNameString.isEmpty())
+    {
+        item(row,Value)->setText(parNameString);
+    }
+}
+
+void VariableTableWidget::makePortAtRow(int row, bool isPort)
+{
+
+//! @todo Do this,
+//! @todo hmm it does not make sense to have startvalues as ports (or maybe it does, but startvalues are run before init and simulate), but then you could have startvalue to startvalue to startvalue ...
+
+//    if (isPort)
+//    {
+//        Port * pPort = mpModelObject->createRefreshExternalDynamicParameterPort(mName);
+//        if (pPort)
+//        {
+//            // Make sure that our new port has the "correct" angle
+//            pPort->setRotation(180);
+//        }
+//    }
+//    else
+//    {
+//        mpModelObject->removeExternalPort(mName);
+//    }
 
 }
 
@@ -284,33 +346,52 @@ void VariableTableWidget::createTableRow(const int row, const CoreParameterData 
     pItem = new QTableWidgetItem(rData.mName);
     pItem->setTextAlignment(Qt::AlignCenter);
     pItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
-    setItem(row,0,pItem);
+    setItem(row,Name,pItem);
 
     pItem = new QTableWidgetItem(rData.mAlias);
     pItem->setTextAlignment(Qt::AlignCenter);
     pItem->setFlags(Qt::NoItemFlags);
     pItem->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
-    setItem(row,1,pItem);
+    setItem(row,Alias,pItem);
 
-    pItem = new QTableWidgetItem(rData.mUnit);
+    pItem = new QTableWidgetItem(parseVariableUnit(rData.mUnit));
     pItem->setTextAlignment(Qt::AlignCenter);
     pItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
-    setItem(row,2,pItem);
+    setItem(row,Unit,pItem);
+
+    pItem = new QTableWidgetItem(rData.mDescription);
+    pItem->setTextAlignment(Qt::AlignCenter);
+    pItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
+    setItem(row,Description,pItem);
 
     pItem = new QTableWidgetItem(rData.mType);
     pItem->setTextAlignment(Qt::AlignCenter);
     pItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
-    setItem(row,3,pItem);
+    setItem(row,Type,pItem);
 
     pItem = new QTableWidgetItem(rData.mValue);
     pItem->setTextAlignment(Qt::AlignCenter);
     pItem->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
-    setItem(row,4,pItem);
+    setItem(row,Value,pItem);
 
-    pItem = new QTableWidgetItem(-1);
+    pItem = new QTableWidgetItem("-1");
     pItem->setTextAlignment(Qt::AlignCenter);
     pItem->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
-    setItem(row,5,pItem);
+    setItem(row,Scale,pItem);
+
+    // Set tool buttons
+    QToolButton *pResetDefaultToolButton = new RowAwareToolButton(row);
+    pResetDefaultToolButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetDefault.png"));
+    pResetDefaultToolButton->setToolTip("Reset Default Value");
+    this->setIndexWidget(model()->index(row,ResetButton), pResetDefaultToolButton);
+    connect(pResetDefaultToolButton, SIGNAL(triggeredAtRow(int)), this, SLOT(resetDefaultValueAtRow(int)));
+
+    QToolButton *pSystemParameterToolButton = new RowAwareToolButton(row);
+    pSystemParameterToolButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-SystemParameter.png"));
+    pSystemParameterToolButton->setToolTip("Map To System Parameter");
+    this->setIndexWidget(model()->index(row,SysparButton), pSystemParameterToolButton);
+    connect(pSystemParameterToolButton, SIGNAL(triggeredAtRow(int)), this, SLOT(selectSystemParameterAtRow(int)));
+
     //! @todo buttons
 }
 
@@ -322,7 +403,7 @@ void VariableTableWidget::createSeparatorRow(const int row, const QString name)
     pItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
     pItem->setBackgroundColor(Qt::lightGray);
     insertRow(row);
-    setItem(row,0,pItem);
+    setItem(row,Name,pItem);
     int c=1;
     if (name.isEmpty()) {c=0;}
     for (;c<columnCount(); ++c)

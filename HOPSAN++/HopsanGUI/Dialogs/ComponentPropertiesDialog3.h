@@ -9,11 +9,46 @@ class Component;
 class ParameterSettingsLayout;
 class MainWindow;
 
+class RowAwareToolButton :public QToolButton
+{
+    Q_OBJECT
+
+public:
+    RowAwareToolButton(const int row) : QToolButton()
+    {
+        mRow = row;
+        connect(this, SIGNAL(clicked()), this, SLOT(clickedSlot()));
+    }
+
+    void setRow(const int row)
+    {
+        mRow = row;
+    }
+
+signals:
+    void triggeredAtRow(int);
+
+private:
+    int mRow;
+
+private slots:
+    void clickedSlot()
+    {
+        emit triggeredAtRow(mRow);
+    }
+};
+
 class VariableTableWidget :public QTableWidget
 {
     Q_OBJECT
 public:
+    enum ColumnEnumT {Name, Alias, Unit, Description, Type, Value, Scale, ResetButton, SysparButton, ShowHidePortButton, NumCols};
     VariableTableWidget(Component *pComponent, QWidget *pParent);
+
+private slots:
+    void resetDefaultValueAtRow(int row);
+    void selectSystemParameterAtRow(int row);
+    void makePortAtRow(int row, bool isPort);
 
 private:
     void createTableRow(const int row, const CoreParameterData &rData);
