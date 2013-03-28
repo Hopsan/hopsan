@@ -38,6 +38,69 @@
 class ProjectTabWidget;
 
 
+PythonHighlighter::PythonHighlighter(QTextDocument *parent)
+    : QSyntaxHighlighter(parent)
+{
+    HighlightingRule rule;
+
+    keywordFormat.setForeground(Qt::darkYellow);
+    keywordFormat.setFontWeight(QFont::Normal);
+    QStringList keywordPatterns;
+    keywordPatterns << "\\band\\b" << "\\bas\\b" << "\\bassert\\b" << "\\bbreak\\b" << "\\bclass\\b"
+        << "\\bcontinue\\b" << "\\bdef\\b" << "\\bdel\\b" << "\\belif\\b" << "\\belse\\b"
+        << "\\bexcept\\b" << "\\bexec\\b" << "\\bfinally\\b" << "\\bfor\\b" << "\\bfrom\\b"
+        << "\\bglobal\\b" << "\\bif\\b" << "\\bimport\\b" << "\\bin\\b" << "\\bis\\b"
+        << "\\blambda\\b" << "\\bnot\\b" << "\\bor\\b" << "\\bpass\\b" << "\\bprint\\b" << "\\braise\\b"
+        << "\\breturn\\b" << "\\btry\\b" << "\\bwhile\\b" << "\\bwith\\b" << "\\byield\\b" << "\\bTrue\\b"
+        << "\\bFalse\\b" << "\\bNone\\b";
+    foreach (const QString &pattern, keywordPatterns) {
+        rule.pattern = QRegExp(pattern);
+        rule.format = keywordFormat;
+        highlightingRules.append(rule);
+    }
+
+
+
+    singleLineCommentFormat.setForeground(Qt::red);
+    rule.pattern = QRegExp("#[^\n]*");
+    rule.format = singleLineCommentFormat;
+    highlightingRules.append(rule);
+
+    multiLineCommentFormat.setForeground(Qt::red);
+
+    quotationFormat.setForeground(Qt::darkGreen);
+    rule.pattern = QRegExp("<.*>");
+    rule.format = quotationFormat;
+    highlightingRules.append(rule);
+
+    tagFormat.setForeground(Qt::darkGreen);
+    rule.pattern = QRegExp("\".*\"");
+    rule.format = quotationFormat;
+    highlightingRules.append(rule);
+
+    functionFormat.setFontItalic(true);
+    functionFormat.setForeground(Qt::blue);
+    rule.pattern = QRegExp("\\b[A-Za-z0-9_]+(?=\\()");
+    rule.format = functionFormat;
+    highlightingRules.append(rule);
+}
+
+
+void PythonHighlighter::highlightBlock(const QString &text)
+{
+    foreach (const HighlightingRule &rule, highlightingRules) {
+        QRegExp expression(rule.pattern);
+        int index = expression.indexIn(text);
+        while (index >= 0) {
+            int length = expression.matchedLength();
+            setFormat(index, length, rule.format);
+            index = expression.indexIn(text, index + length);
+        }
+    }
+    setCurrentBlockState(0);
+}
+
+
 //! @brief Constructor
 OptimizationDialog::OptimizationDialog(MainWindow *parent)
     : QDialog(parent)
@@ -246,6 +309,7 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
 
     //Output box tab
     mpOutputBox = new QTextEdit(this);
+    PythonHighlighter *pHighligter = new PythonHighlighter(mpOutputBox->document());
     QFont monoFont = mpOutputBox->font();
     monoFont.setFamily("Courier");
     mpOutputBox->setFont(monoFont);
