@@ -43,7 +43,7 @@ class SimulationHandler;
 class CoreGeneratorAccess
 {
 public:
-    bool generateFromModelica(QString code);
+    bool generateFromModelica(QString code, QString outputPath="", QString target="");
     bool generateFromCpp(QString code, bool showOutputDialog=true);
     bool generateFromFmu(QString path);
     bool generateToFmu(QString path, SystemContainer *pSystem);

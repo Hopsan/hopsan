@@ -142,7 +142,7 @@ static void mdlOutputs(SimStruct *S, int_T tid)
 <<<11>>>
     double timestep = pComponentSystem->getDesiredTimeStep();
     double time = ssGetT(S);
-    pComponentSystem->simulate(time, time+timestep);
+    pComponentSystem->simulate(time+timestep);
 
 <<<12>>>
     

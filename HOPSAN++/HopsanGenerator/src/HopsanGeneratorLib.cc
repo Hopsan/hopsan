@@ -39,11 +39,13 @@ using namespace std;
 //! @param coreIncludePath Path to HopsanCore include files
 //! @param binPath Path to HopsanCore binary files
 //! @param showDialog True if generator output shall be displayed in a dialog window
-extern "C" DLLIMPORTEXPORT void callModelicaGenerator(string modelicaCode, string coreIncludePath, string binPath, bool showDialog=false)
+extern "C" DLLIMPORTEXPORT void callModelicaGenerator(string modelicaCode, string coreIncludePath, string binPath, bool showDialog=false, string outputPath="", string target="")
 {
     qDebug() << "Called Modelica generator (in dll)!";
 
     HopsanModelicaGenerator *pGenerator = new HopsanModelicaGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
+    pGenerator->setOutputPath(QString(outputPath.c_str()));
+    pGenerator->setTarget(QString(target.c_str()));
     pGenerator->generateFromModelica(QString(modelicaCode.c_str()));
     delete(pGenerator);
 }
@@ -165,10 +167,10 @@ extern "C" DLLIMPORTEXPORT void callFmuExportGenerator(string path, hopsan::Comp
 //! @param coreIncludePath Path to HopsanCore include files
 //! @param binPath Path to HopsanCore binary files
 //! @param showDialog True if generator output shall be displayed in a dialog window
-extern "C" DLLIMPORTEXPORT void callSimulinkExportGenerator(string path, hopsan::ComponentSystem *pSystem, bool disablePortLabels, int compiler, string coreIncludePath, string binPath, bool showDialog=false)
+extern "C" DLLIMPORTEXPORT void callSimulinkExportGenerator(const string path, const string modelFile, hopsan::ComponentSystem *pSystem, bool disablePortLabels, int compiler, string coreIncludePath, string binPath, bool showDialog=false)
 {
     HopsanSimulinkGenerator *pGenerator = new HopsanSimulinkGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
-    pGenerator->generateToSimulink(QString(path.c_str()), pSystem, disablePortLabels, compiler);
+    pGenerator->generateToSimulink(QString(path.c_str()), QString(modelFile.c_str()), pSystem, disablePortLabels, compiler);
     delete(pGenerator);
 }
 

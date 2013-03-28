@@ -56,12 +56,13 @@ void copyParameterData(const hopsan::Parameter *pCoreParam, CoreParameterData &r
 }
 
 
-bool CoreGeneratorAccess::generateFromModelica(QString code)
+bool CoreGeneratorAccess::generateFromModelica(QString code, QString outputPath, QString target)
 {
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
+
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callModelicaGenerator(code.toStdString(), gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), true);
+        pHandler->callModelicaGenerator(code.toStdString(), gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), true, outputPath.toStdString(), target.toStdString());
         return true;
     }
     delete(pHandler);
@@ -152,7 +153,7 @@ bool CoreGeneratorAccess::generateToSimulink(QString path, SystemContainer *pSys
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callSimulinkExportGenerator(path.toStdString(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), disablePortLabels, compiler, gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), true);
+        pHandler->callSimulinkExportGenerator(path.toStdString(), pSystem->getModelFileInfo().fileName().toStdString(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), disablePortLabels, compiler, gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), true);
         return true;
     }
     delete(pHandler);

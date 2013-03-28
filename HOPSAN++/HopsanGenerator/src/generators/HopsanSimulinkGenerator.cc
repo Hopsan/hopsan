@@ -17,7 +17,7 @@ HopsanSimulinkGenerator::HopsanSimulinkGenerator(QString coreIncludePath, QStrin
 }
 
 
-void HopsanSimulinkGenerator::generateToSimulink(QString savePath, hopsan::ComponentSystem *pSystem, bool disablePortLabels, int compiler)
+void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString modelFile, hopsan::ComponentSystem *pSystem, bool disablePortLabels, int compiler)
 {
     printMessage("Initializing Simulink S-function export...");
 
@@ -539,7 +539,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, hopsan::Compo
     wrapperCode.replace("<<<2>>>", nTotalOutputsString);
     wrapperCode.replace("<<<3>>>", wrapperReplace3);
     wrapperCode.replace("<<<14>>>", QString::number(nTotalOutputs-1));
-    wrapperCode.replace("<<<4>>>", QString(pSystem->getName().c_str())+".hmf");
+    wrapperCode.replace("<<<4>>>", modelFile);
     wrapperCode.replace("<<<5>>>", wrapperReplace5);
     wrapperCode.replace("<<<6>>>", wrapperReplace6);
     wrapperCode.replace("<<<7>>>", wrapperReplace7);
@@ -611,7 +611,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, hopsan::Compo
     externalLibsFileStream << "#Enter one per line, the filename is enough if you put the lib file (.dll or.so) in this directory.";
     externalLibsFile.close();
 
-    if(!assertFilesExist(savePath, QStringList() << QString(pSystem->getName().c_str())+".hmf" << "externalLibs.txt" <<
+    if(!assertFilesExist(savePath, QStringList() << modelFile << "externalLibs.txt" <<
                      "HopsanCore.dll" << "HopsanCore.lib" << "HopsanCore.exp" << "HopsanSimulink.cpp" <<
                      "HopsanSimulinkCompile.m" << "HopsanSimulinkPortLabels.m"))
     {

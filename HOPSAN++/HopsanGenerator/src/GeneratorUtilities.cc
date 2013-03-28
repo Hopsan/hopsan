@@ -533,7 +533,6 @@ QStringList getHopsanCoreIncludeFiles(bool skipDependencies)
                     "../HopsanCore/include/CoreUtilities/ClassFactory.hpp" <<
                     "../HopsanCore/include/CoreUtilities/ClassFactoryStatusCheck.hpp" <<
                     "../HopsanCore/include/CoreUtilities/CoSimulationUtilities.h" <<
-                    "../HopsanCore/include/CoreUtilities/FindUniqueName.h" <<
                     "../HopsanCore/include/CoreUtilities/GeneratorHandler.h" <<
                     "../HopsanCore/include/CoreUtilities/HmfLoader.h" <<
                     "../HopsanCore/include/CoreUtilities/HopsanCoreMessageHandler.h" <<
@@ -567,7 +566,7 @@ NodeInfo::NodeInfo(QString nodeType)
         if(varType == DefaultType || varType == FlowType || varType == IntensityType)        //Q variable
         {
             qVariables << pNode->getDataDescription(i)->shortname.c_str();
-            variableLabels << QString(pNode->getDataDescription(i)->name.c_str()).toUpper();
+            variableLabels << QString(pNode->getDataDescription(i)->name.c_str());
             varIdx << pNode->getDataDescription(i)->id;
         }
     }
@@ -576,7 +575,7 @@ NodeInfo::NodeInfo(QString nodeType)
         if(pNode->getDataDescription(i)->varType == TLMType)        //C variable
         {
             cVariables << pNode->getDataDescription(i)->shortname.c_str();
-            variableLabels << QString(pNode->getDataDescription(i)->name.c_str()).toUpper();
+            variableLabels << QString(pNode->getDataDescription(i)->name.c_str());
             varIdx << pNode->getDataDescription(i)->id;
         }
     }

@@ -65,6 +65,7 @@ HopsanGenerator::HopsanGenerator(const QString coreIncludePath, const QString bi
     mOutputPath = QDir::currentPath()+"/output/";
     mTempPath = QDir::currentPath()+"/temp/";
 #endif
+    mTarget = "";
     mCoreIncludePath = coreIncludePath;
     mBinPath = binPath;
 
@@ -520,7 +521,7 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
 //! @param outputFile Name of output file
 //! @param comp Component specification object
 //! @param overwriteStartValues Tells whether or not this components overrides the built-in start values or not
-void HopsanGenerator::compileFromComponentObject(const QString &outputFile, const ComponentSpecification &comp, const bool overwriteStartValues)
+void HopsanGenerator::compileFromComponentObject(const QString &outputFile, const ComponentSpecification &comp, const bool overwriteStartValues, const QString customSourceFile)
 {
     QString code;
 
@@ -601,7 +602,9 @@ void HopsanGenerator::compileFromComponentObject(const QString &outputFile, cons
     QTextStream xmlStream(&xmlFile);
     xmlStream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     xmlStream << "<hopsanobjectappearance version=\"0.3\">\n";
-    xmlStream << "  <modelobject typename=\"" << comp.typeName << "\" displayname=\"" << comp.displayName << "\">\n";
+    QString sourceFile = customSourceFile;
+    if(sourceFile.isEmpty()) sourceFile = outputFile;
+    xmlStream << "  <modelobject typename=\"" << comp.typeName << "\" displayname=\"" << comp.displayName << "\" sourcecode=\""+sourceFile+"\" libpath="" recompilable=\"true\">\n";
     xmlStream << "    <icons/>\n";
     xmlStream << "    <ports>\n";
     double xDelay = 1.0/(comp.portNames.size()+1.0);
@@ -631,6 +634,18 @@ void HopsanGenerator::compileFromComponentObject(const QString &outputFile, cons
     QFile soFile(mTempPath+libFileName);
     QFile::remove(mOutputPath + libFileName);
     soFile.copy(mOutputPath + libFileName);
+}
+
+
+void HopsanGenerator::setOutputPath(const QString path)
+{
+    mOutputPath = path;
+}
+
+
+void HopsanGenerator::setTarget(const QString fileName)
+{
+    mTarget = fileName;
 }
 
 

@@ -37,8 +37,19 @@ void HopsanModelicaGenerator::generateFromModelica(QString code)
     qDebug() << "Compiling!";
     printMessage("Generating component...");
 
+    QString target;
+    if(mTarget.isEmpty())
+        target = typeName+".hpp";
+    else
+        target = mTarget+".hpp";
+
     //Compile component
-    compileFromComponentObject(typeName+".hpp", comp, false);
+    compileFromComponentObject(target, comp, false, typeName+".mo");
+
+    QFile moFile(mOutputPath+typeName+".mo");
+    moFile.open(QFile::WriteOnly | QFile::Text);
+    moFile.write(code.toUtf8());
+    moFile.close();
 
     qDebug() << "Finished!";
     printMessage("HopsanGenerator finished!");
@@ -163,7 +174,7 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
                         for(int i=0; i<lines.at(l).count(",")+1; ++i)
                         {
                             QString name = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
-                            PortSpecification port("PowerPortType", type, name);
+                            PortSpecification port("PowerPort", type, name);
                             portList.append(port);
                             portNames << name;
                         }
@@ -467,7 +478,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         {
             nonStateVars.append(Expression(ports[i].name));
         }
-        else if(ports[i].porttype == "PowerPortType" && cqsType == "C")
+        else if(ports[i].porttype == "PowerPort" && cqsType == "C")
         {
             QStringList qVars;
             qVars << NodeInfo(ports[i].nodetype).qVariables;
@@ -476,7 +487,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
                 nonStateVars.append(Expression(qVars[v]+num));
             }
         }
-        else if(ports[i].porttype == "PowerPortType" && cqsType == "Q")
+        else if(ports[i].porttype == "PowerPort" && cqsType == "Q")
         {
             QStringList cVars;
             cVars << NodeInfo(ports[i].nodetype).cVariables;
@@ -524,7 +535,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         {
             nonLocals.append(Expression(ports[i].name));     //Remove all readport/writeport varibles
         }
-        else if(ports[i].porttype == "PowerPortType")
+        else if(ports[i].porttype == "PowerPort")
         {
             QStringList qVars;
             QStringList cVars;

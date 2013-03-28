@@ -132,7 +132,7 @@ void DesktopHandler::setupPaths()
     //Update paths depending on data, temp and documents paths
     mBackupPath = getDocumentsPath()+"/Backup/";
     mModelsPath = getDocumentsPath()+"/Models/";
-    mScriptsPath = getDocumentsPath()+"/Scripts/";
+    mScriptsPath = getDocumentsPath()+"Scripts/";
     mLogDataPath = getTempPath() + "/LogData/";
 
 

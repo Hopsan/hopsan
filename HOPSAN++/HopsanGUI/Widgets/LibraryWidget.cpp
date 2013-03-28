@@ -584,7 +584,9 @@ void LibraryWidget::editComponent()
     printVar(basePath);
     printVar(fileName);
 
-    if(fileName.isEmpty() || libPath.isEmpty() || !isRecompilable) return;
+    if(fileName.isEmpty() || !isRecompilable) return;
+
+    bool modelica=fileName.endsWith(".mo");
 
     //Read source code from file
     QFile sourceFile(basePath+fileName);
@@ -608,7 +610,16 @@ void LibraryWidget::editComponent()
     mpEditComponentTextEdit->setPlainText(sourceCode);
     //mpEditComponentTextEdit->resize(640,480);
     pLayout->addWidget(mpEditComponentTextEdit);
-    CppHighlighter *pCppHighlighter = new CppHighlighter(mpEditComponentTextEdit->document());
+    if(modelica)
+    {
+        ModelicaHighlighter *pModelicaHighlighter = new ModelicaHighlighter(mpEditComponentTextEdit->document());
+        connect(pDialog, SIGNAL(destroyed()), pModelicaHighlighter, SLOT(deleteLater()));
+    }
+    else
+    {
+        CppHighlighter *pCppHighlighter = new CppHighlighter(mpEditComponentTextEdit->document());
+        connect(pDialog, SIGNAL(destroyed()), pCppHighlighter, SLOT(deleteLater()));
+    }
 
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(this);
     pLayout->addWidget(pButtonBox);
@@ -621,7 +632,6 @@ void LibraryWidget::editComponent()
 
     connect(pDoneButton, SIGNAL(clicked()), pDialog, SLOT(accept()));
     connect(pCancelButton, SIGNAL(clicked()), pDialog, SLOT(reject()));
-    connect(pDialog, SIGNAL(destroyed()), pCppHighlighter, SLOT(deleteLater()));
     connect(pDialog, SIGNAL(accepted()), this, SLOT(recompileComponent()));
 
     pDialog->resize(640,480);
@@ -639,6 +649,8 @@ void LibraryWidget::recompileComponent()
     QString basePath = getAppearanceData(mEditComponentTypeName)->getBasePath();
     QString fileName = getAppearanceData(mEditComponentTypeName)->getSourceCodeFile();
     QString sourceCode = mpEditComponentTextEdit->toPlainText();
+
+    bool modelica = fileName.endsWith(".mo");
 
     printVar(libPath);
 
@@ -658,6 +670,15 @@ void LibraryWidget::recompileComponent()
         return;
     sourceFile.write(sourceCode.toStdString().c_str());
     sourceFile.close();
+
+    if(modelica)
+    {
+        CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
+        fileName.chop(3);
+        pCoreAccess->generateFromModelica(sourceCode, basePath+libPath, fileName);
+    }
+
+
 
     if(!recompileComponent(basePath+libPath))
     {
