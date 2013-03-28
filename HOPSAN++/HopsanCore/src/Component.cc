@@ -861,7 +861,11 @@ void Component::setStartValue(Port* pPort, const size_t idx, const double value)
 {
     addLogMess(getName()+"::setStartValue");
     pPort->setStartValue(idx, value);
-    mpParameters->refreshParameterValueText(pPort->getName()+"::"+pPort->getNodeDataDescription(idx)->name);
+    // If a description exist, then refresh the value text
+    if (pPort->getNodeDataDescription(idx))
+    {
+        mpParameters->refreshParameterValueText(pPort->getName()+"::"+pPort->getNodeDataDescription(idx)->name);
+    }
 }
 
 
