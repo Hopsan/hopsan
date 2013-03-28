@@ -1629,9 +1629,11 @@ void OptimizationDialog::removeFunction()
     mDataLineEditPtrs.removeAt(i);
     mDataWidgetPtrs.removeAt(i);
     mSelectedFunctions.removeAt(i);
+    mSelectedFunctionsMinMax.removeAt(i);
     mFunctionComponents.removeAt(i);
     mFunctionPorts.removeAt(i);
     mFunctionVariables.removeAt(i);
+
 }
 
 
@@ -1755,6 +1757,7 @@ bool OptimizationDialog::loadObjectiveFunctions()
     {
         QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
                                  "Unable to read objective functions file. Please make sure that it is located in the Scripts directory.\n");
+        qDebug() << "Looking for objective function script file in: " << gDesktopHandler.getScriptsPath();
         return false;
     }
     QDomDocument domDocument;
