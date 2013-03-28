@@ -469,11 +469,11 @@ void Parameters::getParameterValue(const std::string name, char** pValue)
         if (mParameters[i]->getName() == name)
         {
             copyString(&mTempValue, mParameters[i]->getValue());
+            *pValue = mTempValue;
             return; //Abort function as value has been set
         }
     }
     copyString(&mTempValue, "");
-
     *pValue = mTempValue;
 }
 
