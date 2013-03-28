@@ -167,6 +167,9 @@ protected:
         return size_t((stopT-startT)/mTimestep+0.5);
     }
 
+    // Interface variable functions
+    Port *addVariableParameter(const std::string name, const std::string description, const std::string unit, const std::string type, const double defaultValue);
+
     // Port functions
     Port* addPort(const std::string portName, const PortTypesEnumT portType, const std::string nodeType, const Port::RequireConnectionEnumT reqConnection);
     Port* addPowerPort(const std::string portName, const std::string nodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);

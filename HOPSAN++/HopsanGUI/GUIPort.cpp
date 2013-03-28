@@ -498,7 +498,7 @@ void Port::refreshPortGraphics()
                 cqsType = getParentContainerObject()->getTypeCQS();
 
                 //Dont show cqs typ internally, it will become confusing, only show question marks if undefined
-                if (cqsType != "UNDEFINEDCQSTYPE")
+                if (cqsType != "UndefinedCQSType")
                 {
                     cqsType = "NULL";
                 }

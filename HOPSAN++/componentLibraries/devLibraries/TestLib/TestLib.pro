@@ -29,7 +29,8 @@ SOURCES += \
     TestLib.cc
 
 HEADERS += \
-    Hydraulic/HydraulicComponentsInComponentTest.hpp
+    Hydraulic/HydraulicComponentsInComponentTest.hpp \
+    Hydraulic/HydraulicLaminarOrifice.hpp
 
 OTHER_FILES += \
     hopsanDebugReleaseCompile.prf

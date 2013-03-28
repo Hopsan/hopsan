@@ -140,23 +140,8 @@ void Component::finalize(const double /*startT*/, const double /*stopT*/)
 }
 
 
-//! @brief Simulates the component from startT to stopT using previously set timestep
-//! @param [in] startT Start time
+//! @brief Simulates the component from current simulation position to stopT using previously set timestep
 //! @param [in] stopT Stop time
-//! @todo adjust self.timestep or simulation depending on Ts from system above (self.timestep should be multipla of Ts)
-//void Component::simulate(const double /*startT*/, const double stopT)
-//{
-//    updateDynamicParameterValues();
-//    double stopTsafe = stopT - mTimestep/2.0;
-//    mTime = startT;
-//    while (mTime < stopTsafe)
-//    {
-//        simulateOneTimestep();
-//        mTime += mTimestep;
-//    }
-//    //cout << "simulate in: " << this->getName() << endl;
-//}
-
 void Component::simulate(const double stopT)
 {
     updateDynamicParameterValues();
@@ -249,13 +234,12 @@ string Component::getTypeCQSString() const
         return "S";
         break;
     case UndefinedCQSType :
-        return "UNDEFINEDCQSTYPE";
+        return "UndefinedCQSType";
         break;
     default :
         addFatalMessage("Component::getTypeCQSString(): Invalid CQS Type.");
-        //assert("Invalid CQS Type" == 0);
+        return "Invalid CQS Type";
     }
-    return "";           //Needed for VC compilations
 }
 
 
@@ -291,24 +275,6 @@ HopsanEssentials *Component::getHopsanEssentials()
     return mpHopsanEssentials;
 }
 
-
-//void Component::registerDynamicParameter(const std::string name, const std::string description, const std::string unit, double &rValue)
-//{
-//    if(mpParameters->exist(name))
-//        mpParameters->deleteParameter(name);     //Remove parameter if it is already registered
-
-//    this->addReadPort(name, "NodeSignal", Port::NotRequired);
-
-//    stringstream ss;
-//    if(ss << rValue)
-//    {
-//        mpParameters->addParameter(name, ss.str(), description, unit, "double", true, &rValue);
-//    }
-//    else
-//    {
-//        assert(false);
-//    }
-//}
 
 void Component::initializeDynamicParameters()
 {
@@ -789,6 +755,18 @@ void Component::setTimestep(const double timestep)
     mTimestep = timestep;
 }
 
+Port *Component::addVariableParameter(const string name, const string description, const string unit, const string type, const double defaultValue)
+{
+    //! @todo type
+    Port *pPort = addReadPort(name,"NodeSignal",Port::NotRequired);
+    pPort->getStartNodePtr()->setSignalDataUnitAndDescription(unit,description);
+    setStartValue(pPort, 0, defaultValue);
+    //std::string dummy;
+    //mpParameters->evaluateParameter(getName()+"::Value", dummy, "double");
+
+    return pPort;
+}
+
 
 //! Sets the measured time variable for the component. This is used to measure time requirements when sorting components for multicore purposes.
 //! @see getMeasuredTime()
@@ -883,6 +861,7 @@ void Component::setStartValue(Port* pPort, const size_t idx, const double value)
 {
     addLogMess(getName()+"::setStartValue");
     pPort->setStartValue(idx, value);
+    mpParameters->refreshParameterValueText(pPort->getName()+"::"+pPort->getNodeDataDescription(idx)->name);
 }
 
 

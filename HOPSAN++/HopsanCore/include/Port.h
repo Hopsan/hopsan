@@ -91,8 +91,6 @@ namespace hopsan {
         virtual std::vector<std::vector<double> > *getLogDataVectorPtr(const size_t portIdx=0);
 
         virtual double getStartValue(const size_t idx, const size_t portIdx=0);
-        virtual void setStartValue(const size_t idx, const double value, const size_t portIdx=0);
-        virtual void disableStartValue(const size_t idx);
 
         virtual bool isConnected();
         virtual bool isConnectedTo(Port *pOtherPort);
@@ -126,13 +124,17 @@ namespace hopsan {
         PortTypesEnumT mPortType;
         std::string mNodeType;
 
-        Node* mpStartNode;
+
         Component* mpComponent;
 
         Port* mpParentPort;
 
         std::vector<Port*> mConnectedPorts;
 
+        virtual void setStartValue(const size_t idx, const double value, const size_t portIdx=0);
+        virtual void disableStartValue(const size_t idx);
+
+        virtual Node *getStartNodePtr();
         virtual Node *getNodePtr(const size_t portIdx=0);
         virtual void setNode(Node* pNode);
 
@@ -149,6 +151,7 @@ namespace hopsan {
     private:
         std::string mPortName;
         Node *mpNode;
+        Node *mpStartNode;
         std::map<std::string, int> mVariableAliasMap;
         bool mConnectionRequired;
 

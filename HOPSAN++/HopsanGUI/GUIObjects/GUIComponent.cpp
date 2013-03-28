@@ -30,6 +30,7 @@
 #include "PlotWindow.h"
 #include "Dialogs/ComponentPropertiesDialog.h"
 #include "Dialogs/ComponentPropertiesDialog2.h"
+#include "Dialogs/ComponentPropertiesDialog3.h"
 #include "GUIObjects/GUIComponent.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "Widgets/ProjectTabWidget.h"
@@ -145,8 +146,8 @@ bool Component::setStartValue(QString portName, QString /*variable*/, QString sy
 void Component::openPropertiesDialog()
 {
     ComponentPropertiesDialog dialog(this, gpMainWindow);
+    //ComponentPropertiesDialog3 dialog(this, 0);
     dialog.setModal(false);
-    //ComponentPropertiesDialog2 dialog(this, gpMainWindow);
     dialog.show();
     dialog.exec();
 }

@@ -76,7 +76,7 @@ void PortAppearance::selectPortIcon(QString CQSType, QString porttype, QString n
         {
             mCQSOverlayPath = (QString(PORTICONPATH) + "PortOverlayQ.svg");
         }
-        else if (CQSType == "UNDEFINEDCQSTYPE")
+        else if (CQSType == "UndefinedCQSType")
         {
             mCQSOverlayPath = (QString(PORTICONPATH) + "PortOverlayUnknown.svg");
         }

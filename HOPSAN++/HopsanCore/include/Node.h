@@ -89,8 +89,9 @@ protected:
     void setDataCharacteristics(const size_t id, const std::string name, const std::string shortname,
                                 const std::string unit, const NodeDataVariableTypeEnumT vartype=DefaultType);
 
-    void copyNodeDataValuesTo(Node *pNode);
-    virtual void setSpecialStartValues(Node *pNode);
+    void copyNodeDataValuesTo(Node *pOtherNode) const;
+    virtual void copySignalDataUnitAndDescriptionTo(Node *pOtherNode) const;
+    virtual void setTLMNodeDataValuesTo(Node *pOtherNode) const;
 
     void preAllocateLogSpace(const size_t nLogSlots);
 

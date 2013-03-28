@@ -179,7 +179,8 @@ SOURCES += main.cpp \
     PlotHandler.cpp \
     LogVariable.cpp \
     CachableDataVector.cpp \
-    DesktopHandler.cpp
+    DesktopHandler.cpp \
+    Dialogs/ComponentPropertiesDialog3.cpp
 
 
 
@@ -251,7 +252,8 @@ HEADERS += MainWindow.h \
     PlotHandler.h \
     LogVariable.h \
     CachableDataVector.h \
-    DesktopHandler.h
+    DesktopHandler.h \
+    Dialogs/ComponentPropertiesDialog3.h
 
 OTHER_FILES += \
     ../hopsandefaults \

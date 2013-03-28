@@ -165,6 +165,44 @@ bool Parameter::evaluate()
     return evaluate(dummy);
 }
 
+bool Parameter::refreshParameterValueText()
+{
+    if (mpData)
+    {
+        stringstream ss;
+        if(mType=="double")
+        {
+            ss << *static_cast<double*>(mpData);
+        }
+        else if(mType=="integer")
+        {
+            ss << *static_cast<int*>(mpData);
+        }
+        else if(mType=="bool")
+        {
+            if (*static_cast<bool*>(mpData))
+            {
+                ss << "true";
+            }
+            else
+            {
+                ss << "false";
+            }
+        }
+        else if(mType=="string")
+        {
+            ss << *static_cast<string*>(mpData);
+        }
+        else
+        {
+            return false;
+        }
+        mParameterValue = ss.str();
+        return true;
+    }
+    return false;
+}
+
 
 //! @brief Evaluate the parameter
 //! @param [out] rResult The result of the evaluation
@@ -592,6 +630,18 @@ bool Parameters::evaluateParameters()
         success = (success && mParameters[i]->evaluate());
     }
     return success;
+}
+
+bool Parameters::refreshParameterValueText(const string &rParameterName)
+{
+    for(size_t i=0; i<mParameters.size(); ++i)
+    {
+        if(mParameters[i]->getName() == rParameterName)
+        {
+            return mParameters[i]->refreshParameterValueText();
+        }
+    }
+    return false;
 }
 
 //! @brief Check if a parameter with given name exist among the parameters

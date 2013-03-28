@@ -47,6 +47,18 @@ public:
         mDataDescriptions[Value].description = rName;
     }
 
+    void copySignalDataUnitAndDescriptionTo(Node *pOtherNode) const
+    {
+        // Copy variable valus from this to pNode
+        if(pOtherNode->getNodeType()==this->getNodeType())
+        {
+            for(size_t i=0; i<mDataDescriptions.size(); ++i)
+            {
+                pOtherNode->setSignalDataUnitAndDescription(mDataDescriptions[i].unit, mDataDescriptions[i].description);
+            }
+        }
+    }
+
     //! @brief For signals allways return Value slot even if name has been changed
     int getDataIdFromName(const std::string /*name*/) const
     {
@@ -84,14 +96,15 @@ private:
         setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "?", TLMType);
         setDataCharacteristics(HeatFlow, "HeatFlow", "Qdot", "?", HiddenType);
 
+        // Set default intial startvales to resonable (non-zero) values
         mDataValues[Pressure] = 100000;
         mDataValues[WaveVariable] = 100000;
         mDataValues[Temperature] = 293;
     }
 
-    virtual void setSpecialStartValues(Node *pNode)
+    virtual void setTLMNodeDataValuesTo(Node *pOtherNode)
     {
-        pNode->setDataValue(WaveVariable, mDataValues[Pressure]);
+        pOtherNode->setDataValue(WaveVariable, mDataValues[Pressure]);
         //! todo Maybe also write CHARIMP?
     }
 };
@@ -119,14 +132,15 @@ private:
         setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "?", TLMType);
         setDataCharacteristics(EnergyFlow, "EnergyFlow", "Qdot", "J/s", HiddenType);
 
+        // Set default intial startvales to resonable (non-zero) values
         mDataValues[Pressure] = 100000;
         mDataValues[WaveVariable] = 100000;
         mDataValues[Temperature] = 293;
     }
 
-    virtual void setSpecialStartValues(Node *pNode)
+    virtual void setTLMNodeDataValuesTo(Node *pOtherNode)
     {
-        pNode->setDataValue(WaveVariable, mDataValues[Pressure]);
+        pOtherNode->setDataValue(WaveVariable, mDataValues[Pressure]);
         //! todo Maybe also write CharImpedance?
     }
 };
@@ -154,9 +168,9 @@ private:
         setDataCharacteristics(EquivalentMass, "EquivalentMass", "me", "kg", HiddenType);
     }
 
-    virtual void setSpecialStartValues(Node *pNode)
+    virtual void setTLMNodeDataValuesTo(Node *pOtherNode)
     {
-        pNode->setDataValue(WaveVariable, mDataValues[Force]);
+        pOtherNode->setDataValue(WaveVariable, mDataValues[Force]);
         //! todo Maybe also write CharImpedance?
     }
 };
@@ -184,9 +198,9 @@ private:
         setDataCharacteristics(EquivalentInertia, "EquivalentInertia", "Je", "kgm^2", HiddenType);
     }
 
-    virtual void setSpecialStartValues(Node *pNode)
+    virtual void setTLMNodeDataValuesTo(Node *pOtherNode)
     {
-        pNode->setDataValue(WaveVariable, mDataValues[Torque]);
+        pOtherNode->setDataValue(WaveVariable, mDataValues[Torque]);
         //! todo Maybe also write CharImpedance?
     }
 };
@@ -214,9 +228,9 @@ private:
         setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "V/A", TLMType);
     }
 
-    virtual void setSpecialStartValues(Node *pNode)
+    virtual void setTLMNodeDataValuesTo(Node *pOtherNode)
     {
-        pNode->setDataValue(WaveVariable, mDataValues[Voltage]);
+        pOtherNode->setDataValue(WaveVariable, mDataValues[Voltage]);
         //! todo Maybe also write CharImpedance?
     }
 };

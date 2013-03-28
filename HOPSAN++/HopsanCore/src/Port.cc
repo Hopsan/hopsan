@@ -59,7 +59,6 @@ Port::Port(const string nodeType, const string portName, Component *pParentCompo
     {
         getComponent()->getSystemParent()->addSubNode(mpNode);
     }
-
 }
 
 
@@ -138,6 +137,7 @@ void Port::loadStartValues()
     if(mpStartNode)
     {
         mpStartNode->copyNodeDataValuesTo(mpNode);
+        mpStartNode->copySignalDataUnitAndDescriptionTo(mpNode);
     }
 }
 
@@ -145,9 +145,9 @@ void Port::loadStartValues()
 //! @brief Load start values to the start value container from the node (last values from simulation)
 void Port::loadStartValuesFromSimulation()
 {
-    if((isConnected()) && mpStartNode)
+    if(isConnected() && mpStartNode)
     {
-        this->mpNode->copyNodeDataValuesTo(mpStartNode);
+        mpNode->copyNodeDataValuesTo(mpStartNode);
     }
 }
 
@@ -344,6 +344,11 @@ int Port::getVariableIdByAlias(const string alias) const
         }
     }
     return -1;
+}
+
+Node *Port::getStartNodePtr()
+{
+    return mpStartNode;
 }
 
 
@@ -682,6 +687,7 @@ PowerPort::PowerPort(std::string node_type, std::string portname, Component *por
 ReadPort::ReadPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner, pParentPort)
 {
     mPortType = ReadPortType;
+    createStartNode(node_type);
 }
 
 

@@ -358,6 +358,7 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
                                 {
                                     //! @todo what about time vector
                                     vector< vector<double> > *pLogData = pPort->getLogDataVectorPtr();
+                                    //! @todo what about non-connected ports and ports that were not logged
                                     for (size_t t=0; t<pLogData->size(); ++t)
                                     {
                                         //cout << "," << (*pLogData)[t][v];//!< @todo what about precission

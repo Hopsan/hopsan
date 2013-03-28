@@ -49,6 +49,7 @@ public:
 
     bool evaluate(std::string &rResult, Parameter *ignoreMe=0);
     bool evaluate();
+    bool refreshParameterValueText();
 
     void* getDataPtr();
 
@@ -100,6 +101,7 @@ public:
 
     bool evaluateParameter(const std::string parameterName, std::string &rEvaluatedParameterValue, const std::string type, Parameter *ignoreMe=0);
     bool evaluateParameters();
+    bool refreshParameterValueText(const std::string &rParameterName);
 
     bool exist(const std::string parameterName);
     bool checkParameters(std::string &errParName);

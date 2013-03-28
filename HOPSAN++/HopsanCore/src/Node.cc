@@ -176,17 +176,17 @@ const std::vector<NodeDataDescription>* Node::getDataDescriptions() const
 
 //! @brief Copy variable valus from this to pNode
 //! @param [in] pNode The node to copy into
-void Node::copyNodeDataValuesTo(Node *pNode)
+void Node::copyNodeDataValuesTo(Node *pOtherNode) const
 {
     // Copy variable valus from this to pNode
-    if(pNode->getNodeType()==this->getNodeType())
+    if(pOtherNode->getNodeType()==this->getNodeType())
     {
-        for(size_t i=0; i<pNode->getNumDataVariables(); ++i)
+        for(size_t i=0; i<pOtherNode->getNumDataVariables(); ++i)
         {
             //! @todo look over if all vector positions should be set or not.
-            pNode->mDataValues[i] = mDataValues[i];
+            pOtherNode->mDataValues[i] = mDataValues[i];
         }
-        setSpecialStartValues(pNode); //Handles Wave, imp variables and similar
+        setTLMNodeDataValuesTo(pOtherNode); //Handles Wave, imp variables and similar
     }
     else
     {
@@ -197,10 +197,14 @@ void Node::copyNodeDataValuesTo(Node *pNode)
     }
 }
 
-void Node::setSpecialStartValues(Node* /*pNode*/)
+void Node::copySignalDataUnitAndDescriptionTo(Node* /*pOtherNode*/) const
 {
-    //This method schould be implemented in child Nodes
-    //cout << "This nodetype seem not to have any hidden variables for the user." << endl;
+    // This is only possible in signal nodes
+}
+
+void Node::setTLMNodeDataValuesTo(Node* /*pOtherNode*/) const
+{
+    // This method schould be implemented in child Nodes
 }
 
 
