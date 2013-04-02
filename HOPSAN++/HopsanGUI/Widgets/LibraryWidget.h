@@ -142,6 +142,8 @@ private:
     QList<bool> mFailedComponentsHaveCode;
     QList<bool> mFailedComponentsAreRecompilable;
     QStringList mFailedComponentsLibPaths;
+
+    QStringList mExpandedTreeItems;
 };
 
 
@@ -153,7 +155,7 @@ public:
 protected:
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseMoveEvent(QMouseEvent *event);
-    virtual void contextMenuEvent(QContextMenuEvent *);
+ //   virtual void contextMenuEvent(QContextMenuEvent *);
 };
 
 

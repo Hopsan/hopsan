@@ -309,6 +309,26 @@ void LibraryWidget::checkForFailedComponents()
 //! @brief Refreshes the contents in the library widget
 void LibraryWidget::update()
 {
+    //Remember which library tree items that are expanded
+    mExpandedTreeItems.clear();
+    QTreeWidgetItemIterator it(mpTree);
+    while (*it)
+    {
+        if((*it)->isExpanded())
+        {
+            QString temp = (*it)->text(0);
+            QTreeWidgetItem *pParent = (*it)->parent();
+            while(pParent != 0)
+            {
+                temp.prepend(pParent->text(0)+"::");
+                pParent = pParent->parent();
+            }
+            qDebug() << temp << " is expanded!";
+            mExpandedTreeItems << temp;
+        }
+        ++it;
+    }
+
     mpTree->clear();
     mpList->clear();
     mListItemToContentsMap.clear();
@@ -402,6 +422,23 @@ void LibraryWidget::loadTreeView(LibraryContentsTree *tree, QTreeWidgetItem *par
             tempItem->setIcon(0, tree->mComponentPtrs.at(i)->getIcon(mGfxType));
             parentItem->addChild(tempItem);
         }
+    }
+
+
+
+    //Expand tree items that used to be expanded before update
+    QTreeWidgetItemIterator it(mpTree);
+    while (*it)
+    {
+        QString temp = (*it)->text(0);
+        QTreeWidgetItem *pParent = (*it)->parent();
+        while(pParent != 0)
+        {
+            temp.prepend(pParent->text(0)+"::");
+            pParent = pParent->parent();
+        }
+        (*it)->setExpanded(mExpandedTreeItems.contains(temp));
+        ++it;
     }
 
     //connect(mpTree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(editComponent(QTreeWidgetItem*, int)), Qt::UniqueConnection);
@@ -1614,8 +1651,15 @@ void LibraryWidget::contextMenuEvent(QContextMenuEvent *event)
     //Lookup and error checks
     QTreeWidgetItem *pItem = mpTree->itemAt(mpTree->mapFromParent(event->pos()));
     if(pItem == 0) return;
-    if(!mTreeItemToContentsTreeMap.contains(pItem)) return;
-    LibraryContentsTree *pTree = mTreeItemToContentsTreeMap.find(pItem).value();
+    LibraryContentsTree *pTree;
+    if(!mTreeItemToContentsTreeMap.contains(pItem))
+    {
+        pTree = mTreeItemToContentsTreeMap.find(pItem->parent()).value();
+    }
+    else
+    {
+        pTree = mTreeItemToContentsTreeMap.find(pItem).value();
+    }
     if(pTree == 0) return;
 
     QMenu menu;
@@ -1627,11 +1671,19 @@ void LibraryWidget::contextMenuEvent(QContextMenuEvent *event)
     }
 
     QAction *pUnloadLibraryFolder = new QAction(this);
-    QString path = pTree->mLibDir;
+    QString path = QDir::cleanPath(pTree->mLibDir);
     QStringList userLibs = gConfig.getUserLibs();
     if(userLibs.contains(path) /*pItem->parent()->text(0) == "External Libraries"*/)
     {
         pUnloadLibraryFolder = menu.addAction("Unload External Library");
+    }
+
+    QAction *pEditComponentAction = new QAction(this);
+    if(gpMainWindow->mpLibrary->mTreeItemToContentsMap.contains(pItem))
+    {
+        pEditComponentAction = menu.addAction("Edit source code");
+        ModelObjectAppearance *pAppearanceData = mTreeItemToContentsMap.find(pItem).value()->getAppearanceData();
+        pEditComponentAction->setEnabled(pAppearanceData->isRecompilable());
     }
 
 
@@ -1648,6 +1700,11 @@ void LibraryWidget::contextMenuEvent(QContextMenuEvent *event)
     if(pSelectedAction == pUnloadLibraryFolder)
     {
         unloadExternalLibrary(pTree->mName, pTree->mpParent->mName);
+    }
+
+    if(pSelectedAction == pEditComponentAction)
+    {
+        gpMainWindow->mpLibrary->editComponent(pItem,0);
     }
 
     QWidget::contextMenuEvent(event);
@@ -1717,29 +1774,31 @@ void LibraryTreeWidget::mouseMoveEvent(QMouseEvent *event)
 }
 
 
-void LibraryTreeWidget::contextMenuEvent(QContextMenuEvent *event)
-{
-    QMenu menu;
+//void LibraryTreeWidget::contextMenuEvent(QContextMenuEvent *event)
+//{
+//    QMenu menu;
 
-    QAction *pEditComponentAction=0;
-    if(gpMainWindow->mpLibrary->mTreeItemToContentsMap.contains(this->currentItem()))
-    {
-        pEditComponentAction = menu.addAction("Edit source code");
-        ModelObjectAppearance *pAppearanceData = gpMainWindow->mpLibrary->mTreeItemToContentsMap.find(this->currentItem()).value()->getAppearanceData();
-        pEditComponentAction->setEnabled(pAppearanceData->isRecompilable());
-    }
+//    QAction *pEditComponentAction=0;
+//    if(gpMainWindow->mpLibrary->mTreeItemToContentsMap.contains(this->currentItem()))
+//    {
+//        pEditComponentAction = menu.addAction("Edit source code");
+//        ModelObjectAppearance *pAppearanceData = gpMainWindow->mpLibrary->mTreeItemToContentsMap.find(this->currentItem()).value()->getAppearanceData();
+//        pEditComponentAction->setEnabled(pAppearanceData->isRecompilable());
+//    }
 
-    //-- User interaction --//
-    QAction *pSelectedAction = menu.exec(mapToGlobal(event->pos()));
-    //----------------------//
+//    //-- User interaction --//
+//    QAction *pSelectedAction = menu.exec(mapToGlobal(event->pos()));
+//    //----------------------//
 
-    if(pSelectedAction == pEditComponentAction)
-    {
-        gpMainWindow->mpLibrary->editComponent(this->currentItem(),0);
-    }
+//    if(pSelectedAction == pEditComponentAction)
+//    {
+//        gpMainWindow->mpLibrary->editComponent(this->currentItem(),0);
+//    }
 
-    delete(pEditComponentAction);
-}
+//    delete(pEditComponentAction);
+
+//    QTreeWidget::contextMenuEvent(event);
+//}
 
 
 //! @brief Constructor for library list widget
