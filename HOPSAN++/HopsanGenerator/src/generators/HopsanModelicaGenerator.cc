@@ -39,9 +39,9 @@ void HopsanModelicaGenerator::generateFromModelica(QString code)
 
     QString target;
     if(mTarget.isEmpty())
-        target = typeName+".hpp";
+        target = typeName;
     else
-        target = mTarget+".hpp";
+        target = mTarget;
 
     //Compile component
     compileFromComponentObject(target, comp, false, typeName+".mo");

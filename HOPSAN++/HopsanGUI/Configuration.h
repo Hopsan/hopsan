@@ -112,7 +112,7 @@ public:
     void setAntiAliasing(bool value);
     void addUserLib(QString value, QString libName="");
     void removeUserLib(QString value);
-    bool hasUserLib(QString value);
+    bool hasUserLib(QString value) const;
     void setSnapping(bool value);
     void addRecentModel(QString value);
     void addRecentGeneratorModel(QString value);

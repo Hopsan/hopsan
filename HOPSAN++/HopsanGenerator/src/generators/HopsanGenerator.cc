@@ -546,16 +546,16 @@ void HopsanGenerator::compileFromComponentObject(const QString &outputFile, cons
         QDir().mkpath(mOutputPath);
     }
 
-    printMessage("Writing "+outputFile+"...");
+    printMessage("Writing "+outputFile+".hpp...");
 
     //Initialize the file stream
     QFileInfo fileInfo;
     QFile file;
-    fileInfo.setFile(QString(mTempPath)+outputFile);
+    fileInfo.setFile(QString(mTempPath)+outputFile+".hpp");
     file.setFileName(fileInfo.filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        printErrorMessage("Failed to open file for writing: " + outputFile);
+        printErrorMessage("Failed to open file for writing: " + outputFile+".hpp");
         return;
     }
     QTextStream fileStream(&file);  //Create a QTextStream object to stream the content of file
@@ -574,7 +574,7 @@ void HopsanGenerator::compileFromComponentObject(const QString &outputFile, cons
         return;
     }
     QTextStream ccLibStream(&ccLibFile);
-    ccLibStream << "#include \"" << outputFile << "\"\n";
+    ccLibStream << "#include \"" << outputFile << ".hpp\"\n";
     ccLibStream << "#include \"ComponentEssentials.h\"\n\n";
     ccLibStream << "using namespace hopsan;\n\n";
     ccLibStream << "extern \"C\" DLLEXPORT void register_contents(ComponentFactory* cfact_ptr, NodeFactory* /*nfact_ptr*/)\n";
@@ -603,8 +603,8 @@ void HopsanGenerator::compileFromComponentObject(const QString &outputFile, cons
     xmlStream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     xmlStream << "<hopsanobjectappearance version=\"0.3\">\n";
     QString sourceFile = customSourceFile;
-    if(sourceFile.isEmpty()) sourceFile = outputFile;
-    xmlStream << "  <modelobject typename=\"" << comp.typeName << "\" displayname=\"" << comp.displayName << "\" sourcecode=\""+sourceFile+"\" libpath="" recompilable=\"true\">\n";
+    if(sourceFile.isEmpty()) sourceFile = outputFile+".hpp";
+    xmlStream << "  <modelobject typename=\"" << comp.typeName << "\" displayname=\"" << comp.displayName << "\" sourcecode=\""+sourceFile+"\" libpath=\"\" recompilable=\"true\">\n";
     xmlStream << "    <icons/>\n";
     xmlStream << "    <ports>\n";
     double xDelay = 1.0/(comp.portNames.size()+1.0);
@@ -620,14 +620,14 @@ void HopsanGenerator::compileFromComponentObject(const QString &outputFile, cons
     xmlStream << "</hopsanobjectappearance>\n";
     xmlFile.close();
 
-    QString libFileName = comp.typeName;
+    QString libFileName = outputFile;
 #ifdef WIN32
     libFileName.append(".dll");
 #else
     libFileName.append(".so");
 #endif
 
-    compileComponentLibrary(mTempPath, comp.typeName, this);
+    compileComponentLibrary(mTempPath, outputFile, this);
 
     printMessage("Moving files to output directory...");
 
@@ -640,12 +640,14 @@ void HopsanGenerator::compileFromComponentObject(const QString &outputFile, cons
 void HopsanGenerator::setOutputPath(const QString path)
 {
     mOutputPath = path;
+    printMessage("Setting output path: " + path);
 }
 
 
 void HopsanGenerator::setTarget(const QString fileName)
 {
     mTarget = fileName;
+    printMessage("Setting target: " + fileName);
 }
 
 

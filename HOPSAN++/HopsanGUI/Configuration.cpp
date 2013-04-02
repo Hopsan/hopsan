@@ -1137,7 +1137,7 @@ void Configuration::setAntiAliasing(bool value)
 //! @param value Path to the new library
 void Configuration::addUserLib(QString value, QString libName)
 {
-    value.replace("\\","/");
+    value = QDir::cleanPath(value);
     if(!mUserLibs.contains(value))
     {
         this->mUserLibs.append(value);
@@ -1167,9 +1167,9 @@ void Configuration::removeUserLib(QString value)
 
 //! @brief Tells whether or not a specified user library exist in the library list
 //! @param value Path to the library
-bool Configuration::hasUserLib(QString value)
+bool Configuration::hasUserLib(QString value) const
 {
-    value.replace("\\","/");
+    value = QDir::cleanPath(value);
     return mUserLibs.contains(value);
 }
 

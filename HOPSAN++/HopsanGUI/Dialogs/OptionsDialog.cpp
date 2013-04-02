@@ -25,13 +25,14 @@
 #include <QtGui>
 #include <QDebug>
 
-#include "OptionsDialog.h"
-#include "Widgets/ProjectTabWidget.h"
-#include "MainWindow.h"
-#include "GraphicsView.h"
-#include "Widgets/PlotWidget.h"
 #include "Configuration.h"
+#include "DesktopHandler.h"
+#include "GraphicsView.h"
 #include "GUIObjects/GUIContainerObject.h"
+#include "MainWindow.h"
+#include "OptionsDialog.h"
+#include "Widgets/PlotWidget.h"
+#include "Widgets/ProjectTabWidget.h"
 
 class ProjectTabWidget;
 
@@ -234,6 +235,8 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
 
     mpResetButton = new QPushButton(tr("&Reset Defaults"), this);
     mpResetButton->setAutoDefault(false);
+    mpOpenXmlButton = new QPushButton(tr("&Open Settings File"), this);
+    mpOpenXmlButton->setAutoDefault(false);
     mpCancelButton = new QPushButton(tr("&Cancel"), this);
     mpCancelButton->setAutoDefault(false);
     mpOkButton = new QPushButton(tr("&Done"), this);
@@ -241,13 +244,15 @@ OptionsDialog::OptionsDialog(MainWindow *parent)
 
     mpButtonBox = new QDialogButtonBox(Qt::Horizontal);
     mpButtonBox->addButton(mpResetButton, QDialogButtonBox::ResetRole);
-    mpButtonBox->addButton(mpCancelButton, QDialogButtonBox::ActionRole);
-    mpButtonBox->addButton(mpOkButton, QDialogButtonBox::ActionRole);
+    mpButtonBox->addButton(mpOpenXmlButton, QDialogButtonBox::ResetRole);
+    mpButtonBox->addButton(mpCancelButton, QDialogButtonBox::RejectRole);
+    mpButtonBox->addButton(mpOkButton, QDialogButtonBox::AcceptRole);
 
     connect(mpEnableProgressBarCheckBox,    SIGNAL(toggled(bool)),  mpProgressBarLabel,     SLOT(setEnabled(bool)));
     connect(mpEnableProgressBarCheckBox,    SIGNAL(toggled(bool)),  mpProgressBarSpinBox,   SLOT(setEnabled(bool)));
     connect(mpBackgroundColorButton,        SIGNAL(clicked()),      this,                   SLOT(colorDialog()));
     connect(mpResetButton,                  SIGNAL(clicked()),      this,                   SLOT(reset()));
+    connect(mpOpenXmlButton,                SIGNAL(clicked()),      this,                   SLOT(openXml()));
     connect(mpCancelButton,                 SIGNAL(clicked()),      this,                   SLOT(reject()));
     connect(mpOkButton,                     SIGNAL(clicked()),      this,                   SLOT(updateValues()));
 
@@ -294,6 +299,14 @@ void OptionsDialog::reset()
         gConfig.saveToXml();
         show();
     }
+}
+
+
+//! @brief Opens settings XML file outside Hopsan with default application
+void OptionsDialog::openXml()
+{
+    qDebug() << "Opening: " << gDesktopHandler.getDataPath() + QString("hopsanconfig.xml");
+    QDesktopServices::openUrl(QUrl("file:///"+gDesktopHandler.getDataPath() + QString("hopsanconfig.xml")));
 }
 
 

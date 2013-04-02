@@ -46,6 +46,7 @@ public:
 
 public slots:
     void reset();
+    void openXml();
     void updateValues();
     void colorDialog();
     void show();
@@ -121,6 +122,7 @@ private:
     QGridLayout *mpPlottingLayout;
 
     QPushButton *mpResetButton;
+    QPushButton *mpOpenXmlButton;
     QPushButton *mpCancelButton;
     QPushButton *mpApplyButton;
     QPushButton *mpOkButton;

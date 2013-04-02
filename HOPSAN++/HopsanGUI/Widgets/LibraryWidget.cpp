@@ -671,16 +671,7 @@ void LibraryWidget::recompileComponent()
     sourceFile.write(sourceCode.toStdString().c_str());
     sourceFile.close();
 
-    if(modelica)
-    {
-        CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
-        fileName.chop(3);
-        pCoreAccess->generateFromModelica(sourceCode, basePath+libPath, fileName);
-    }
-
-
-
-    if(!recompileComponent(basePath+libPath))
+    if(!recompileComponent(basePath+libPath, modelica, sourceCode))
     {
         qDebug() << "Failure!";
         QFile sourceFile(basePath+fileName);
@@ -692,7 +683,7 @@ void LibraryWidget::recompileComponent()
 }
 
 
-bool LibraryWidget::recompileComponent(QString libPath)
+bool LibraryWidget::recompileComponent(QString libPath, const bool modelica, const QString modelicaCode)
 {
     bool success=true;
 
@@ -706,7 +697,14 @@ bool LibraryWidget::recompileComponent(QString libPath)
 
     CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
 
-    pCoreAccess->compileComponentLibrary(libPath, randomName);
+    if(modelica)
+    {
+        pCoreAccess->generateFromModelica(modelicaCode, libPath, randomName);
+    }
+    else
+    {
+        pCoreAccess->compileComponentLibrary(libPath, randomName);
+    }
 
     QString newLibFileName = QDir::cleanPath(libPath)+"/"+randomName+".dll";
 
@@ -733,13 +731,17 @@ bool LibraryWidget::recompileComponent(QString libPath)
     for(int j=0; j<libList.size(); ++j)
     {
         QString fileName = QDir::cleanPath(libPath)+"/"+libList[j];
-        mpCoreAccess->unLoadComponentLib(fileName);
+        if(!mpCoreAccess->unLoadComponentLib(fileName))
+        {
+            qDebug() << "Failed to unload library: " << fileName;
+        }
         if(fileName != newLibFileName)
         {
             QFile::rename(fileName, fileName+"butnotanymore");
         }
     }
 
+    unloadExternalLibrary(QDir(libPath).dirName(), "External Libraries");
     loadAndRememberExternalLibrary(libPath, "");
 
     qDebug() << "Loaded successfully!";
