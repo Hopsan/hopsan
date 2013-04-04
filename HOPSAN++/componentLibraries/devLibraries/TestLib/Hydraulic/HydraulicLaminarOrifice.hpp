@@ -44,7 +44,7 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
 
-            mpIn = addVariableParameter("Kc","Pressure-Flow Coefficient","m^5/Ns","sometype", 1.0e-11);
+            mpIn = addReadVariable("Kc","Pressure-Flow Coefficient","m^5/Ns","sometype", 1.0e-11);
         }
 
 
