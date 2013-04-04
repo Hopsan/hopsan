@@ -51,6 +51,20 @@ class HopsanCoreMessageHandler;
 //! @brief Enum type for parameters, describing if they are to be dynamic or constant
 enum ParamDynConstEnumT {Dynamic, Constant};
 
+class VariameterDescription
+{
+public:
+    std::string mName;
+    std::string mShortName;
+    std::string mPortName;
+    std::string mAlias;
+    std::string mDataType;
+    std::string mUnit;
+    std::string mDescription;
+    NodeDataVariableTypeEnumT mVarType;
+    unsigned int mVariableId;
+};
+
 class DLLIMPORTEXPORT Component
 {
     friend class ComponentSystem;
@@ -107,6 +121,9 @@ public:
     bool setParameterValue(const std::string name, const std::string value, bool force=false);
     void updateParameters();
     bool checkParameters(std::string &errParName);
+
+    // Variabels and Parameters
+    const std::vector<VariameterDescription>* getVariameters();
 
     // Start values
     double getStartValue(Port* pPort, const size_t idx, const size_t portIdx=0);
@@ -218,6 +235,7 @@ private:
     double mMeasuredTime;
     HopsanEssentials *mpHopsanEssentials;
     HopsanCoreMessageHandler *mpMessageHandler;
+    std::vector<VariameterDescription> mVariameters;
 };
 
 

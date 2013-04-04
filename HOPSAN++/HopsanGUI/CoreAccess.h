@@ -104,6 +104,23 @@ public:
     QString mDescription;
 };
 
+class CoreVariameterDescription
+{
+public:
+    CoreVariameterDescription() {}
+//    CoreVariameterData(const QString name, const QString type, const QString unit="", const QString desc="")
+//        : mName(name), mDataType(type), mUnit(unit), mDescription(desc){}
+    QString mName;
+    QString mShortName;
+    QString mPortName;
+    QString mAlias;
+    QString mDataType;
+    QString mUnit;
+    QString mDescription;
+    QString mVariabelType;
+    int mVariabelId;
+};
+
 //Forward declaration
 class CoreSimulationHandler;
 
@@ -138,6 +155,8 @@ public:
     QString getParameterValue(QString componentName, QString parameterName);
     //void getStartValueDataNamesValuesAndUnits(QString componentName, QString portName, QVector<QString> &rNames, QVector<QString> &rStartDataValuesTxt, QVector<QString> &rUnits);
     bool setParameterValue(QString componentName, QString parameterName, QString value, bool force=0);
+
+    void getVariameters(QString componentName, QVector<CoreVariameterDescription>& rVariameterDescriptions);
 
     // Alias functions
     void setVariableAlias(QString compName, QString portName, QString varName, QString alias);

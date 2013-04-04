@@ -3506,46 +3506,62 @@ bool AliasHandler::setVariableAlias(const string alias, const string compName, c
         return false;
     }
 
+    //! @todo must check if existing alias is set for the same component that already have it to avoid warning
+    // Check if alias already exist
+    if (hasAlias(alias))
+    {
+        string comp,port;
+        int var;
+        getVariableFromAlias(alias,comp,port,var);
+        if ( (comp==compName) && (port==portName) && (var==varId) )
+        {
+            // We are setting the same alias again, skip without warning
+            return true;
+        }
+        else
+        {
+            // The alias already exist somwhere else
+            mpSystem->addErrorMessage("Alias: "+alias+" already exist");
+            return false;
+        }
+    }
+
     if (mpSystem->hasReservedUniqueName(alias))
     {
         mpSystem->addErrorMessage("The alias: " + alias + " is already used as some other name");
         return false;
     }
 
-    //! @todo must check if existing alias is set for the same component that already have it to avoid warning
-    if (!hasAlias(alias))
+    // Set the alias for the given component port and var
+    Component *pComp = mpSystem->getSubComponent(compName);
+    if (pComp)
     {
-        Component *pComp = mpSystem->getSubComponent(compName);
-        if (pComp)
+        Port *pPort = pComp->getPort(portName);
+        if (pPort)
         {
-            Port *pPort = pComp->getPort(portName);
-            if (pPort)
+            // First unregister the old alias (if it exists)
+            char* cstr = pPort->getVariableAlias(varId);
+            string prevAlias = cstr;
+            if (!prevAlias.empty())
             {
-                //! @todo do nothing if prev and new alias same
-                char* cstr = pPort->getVariableAlias(varId);
-                string prevAlias = cstr;
-                if (!prevAlias.empty())
-                {
-                    //! @todo the remove will search for port agin all the way, maybe have a special remove to use when we know the port and id already
-                    removeAlias(prevAlias);
-                }
-
-                if (!alias.empty())
-                {
-                    //! @todo do we need to check if this is OK ??
-                    pPort->setVariableAlias(alias, varId);
-
-                    ParamOrVariableT data = {Variable, compName, portName};
-                    mAliasMap.insert(std::pair<string, ParamOrVariableT>(alias, data));
-                    mpSystem->reserveUniqueName(alias);
-                }
-                return true;
+                //! @todo the remove will search for port agin all the way, maybe have a special remove to use when we know the port and id already
+                removeAlias(prevAlias);
             }
+
+            // If alias is non empty, set it
+            if (!alias.empty())
+            {
+                //! @todo do we need to check if this is OK ??
+                pPort->setVariableAlias(alias, varId);
+
+                ParamOrVariableT data = {Variable, compName, portName};
+                mAliasMap.insert(std::pair<string, ParamOrVariableT>(alias, data));
+                mpSystem->reserveUniqueName(alias);
+            }
+            return true;
         }
-        mpSystem->addErrorMessage("Component or Port not found");
-        return false;
     }
-    mpSystem->addErrorMessage("Alias: "+alias+" already exist");
+    mpSystem->addErrorMessage("Component or Port not found when setting alias");
     return false;
 }
 

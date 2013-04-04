@@ -145,8 +145,8 @@ bool Component::setStartValue(QString portName, QString /*variable*/, QString sy
 //! @brief Slot that opens the parameter dialog for the component
 void Component::openPropertiesDialog()
 {
-    ComponentPropertiesDialog dialog(this, gpMainWindow);
-    //ComponentPropertiesDialog3 dialog(this, 0);
+    //ComponentPropertiesDialog dialog(this, gpMainWindow);
+    ComponentPropertiesDialog3 dialog(this, 0);
     dialog.setModal(false);
     dialog.show();
     dialog.exec();

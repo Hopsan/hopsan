@@ -723,6 +723,27 @@ QVector<QPair<QString, QString> > ModelObject::getVariableAliasList()
     return output;
 }
 
+void ModelObject::getVariableDataDescriptions(QVector<CoreVariableData> &rVarDataDescriptions)
+{
+    rVarDataDescriptions.clear();
+    QList<Port*>::iterator pit;
+    for (pit=mPortListPtrs.begin(); pit!=mPortListPtrs.end(); ++pit)
+    {
+        QVector<CoreVariableData> varDescs;
+        mpParentContainerObject->getCoreSystemAccessPtr()->getVariableDescriptions(this->getName(), (*pit)->getName(), varDescs);
+        for (int i=0; i<varDescs.size(); ++i)
+        {
+            rVarDataDescriptions.push_back(varDescs[i]);
+        }
+    }
+}
+
+void ModelObject::getVariameterDescriptions(QVector<CoreVariameterDescription> &rVariameterDescriptions)
+{
+    rVariameterDescriptions.clear();
+    mpParentContainerObject->getCoreSystemAccessPtr()->getVariameters(this->getName(), rVariameterDescriptions);
+}
+
 
 //! @brief Function that returns the specified parameter value
 //! @param name Name of the parameter to return value from

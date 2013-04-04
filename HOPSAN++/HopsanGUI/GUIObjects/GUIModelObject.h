@@ -80,6 +80,8 @@ public:
     // VariableAlias method
     //! @todo parameters and portvaraibles should be more similar in the future, so that we do not need handle them separately
     virtual QVector< QPair<QString,QString> > getVariableAliasList();
+    virtual void getVariableDataDescriptions(QVector<CoreVariableData> &rVarDataDescriptions);
+    virtual void getVariameterDescriptions(QVector<CoreVariameterDescription> &rVariameterDescriptions);
 
     virtual bool setParameterValue(QString name, QString valueTxt, bool force=false);
     virtual QString getStartValueTxt(QString portName, QString variable);

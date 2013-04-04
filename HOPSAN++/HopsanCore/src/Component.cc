@@ -131,6 +131,35 @@ bool Component::checkParameters(std::string &errParName)
     return mpParameters->checkParameters(errParName);
 }
 
+const std::vector<VariameterDescription>* Component::getVariameters()
+{
+    //! @todo dont rebuild this every time, question is should this be in the nodes and or ports maybe, or should it only be in the components
+    mVariameters.clear();
+
+    PortPtrMapT::iterator pit;
+    for (pit=mPortPtrMap.begin(); pit!=mPortPtrMap.end(); ++pit)
+    {
+        const vector<NodeDataDescription>* pDescs = pit->second->getNodeDataDescriptions();
+        for (size_t i=0; i<pDescs->size(); ++i)
+        {
+            VariameterDescription data;
+            data.mName = pDescs->at(i).name;
+            data.mShortName = pDescs->at(i).shortname;
+            data.mPortName = pit->second->getName();
+            data.mUnit = pDescs->at(i).unit;
+            data.mDescription = pDescs->at(i).description;
+            data.mVariableId = pDescs->at(i).id;
+            data.mVarType = pDescs->at(i).varType;
+            data.mAlias = pit->second->getVariableAlias(data.mVariableId);
+            data.mDataType = "double"; //!< @todo not hardcoded
+            mVariameters.push_back(data);
+            //! @todo some of these will never change after a component has been configured, (but som may, like alias description unit)
+        }
+    }
+
+    return &mVariameters;
+}
+
 
 //! @brief Virtual Function, base version which gives you an error if you try to use it.
 void Component::finalize(const double /*startT*/, const double /*stopT*/)

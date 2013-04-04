@@ -584,6 +584,7 @@ QTextLineStream& operator <<(QTextLineStream &rLineStream, const char* input)
     return rLineStream;
 }
 
+//! @todo this should be handeled by CORE
 bool verifyParameterValue(QString &rValue, const QString type, const QStringList &rSysParNames, QString &rErrorString)
 {
     //Strip trailing and leading spaces

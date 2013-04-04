@@ -45,6 +45,8 @@
 #include "Dialogs/MovePortsDialog.h"
 #include "Dialogs/ParameterSettingsLayout.h"
 
+#include "Dialogs/ComponentGeneratorDialog.h"
+#include "Widgets/ProjectTabWidget.h"
 
 
 
@@ -58,74 +60,187 @@
 //! @brief Constructor for the parameter dialog for components
 //! @param pGUIComponent Pointer to the component
 //! @param parent Pointer to the parent widget
-ComponentPropertiesDialog3::ComponentPropertiesDialog3(Component *pComponent, QWidget *pParent)
-    : ModelObjectPropertiesDialog(pComponent, pParent)
+ComponentPropertiesDialog3::ComponentPropertiesDialog3(Component *pModelObject, QWidget *pParent)
+    : QDialog(pParent)
 {
-    mpComponent = pComponent;
+    mpModelObject = pModelObject;
     this->setPalette(gConfig.getPalette());
-
     setWindowTitle(tr("Component Properties"));
-    mpMainLayout = new QGridLayout(this);
+//    if(mpModelObject->getTypeName().startsWith("CppComponent"))
+//    {
+//        createCppEditStuff();
+//    }
+//    else if(mpModelObject->getTypeName().startsWith("ModelicaComponent"))
+//    {
+//        createModelicaEditStuff();
+//    }
+//    else
+//    {
+        createEditStuff();
+//    }
 
-    // Parents to new objects bellow should be set automatically when adding layout or widget to other layout or widget
+    // Lock model for changes
+    mpModelObject->getParentContainerObject()->mpParentProjectTab->setDisabled(true);
+}
 
-    // Add help picture and text
-    //------------------------------------------------------------------------------------------------------------------------------
-    if(!mpComponent->getHelpText().isNull() || !mpComponent->getHelpPicture().isNull())
+
+//! @brief Verifies that a parameter value does not begin with a number but still contains illegal characters.
+//! @note This is a temporary solution. It shall be removed when parsing equations as parameters works.
+bool VariableTableWidget::cleanAndVerifyParameterValue(QString &rValue, const QString type)
+{
+    //! @todo I think CORE should handle all of this stuff
+    QString tempVal = rValue;
+    QStringList sysParamNames = mpModelObject->getParentContainerObject()->getParameterNames();
+    QString error;
+
+    if(verifyParameterValue(tempVal, type, sysParamNames, error))
     {
-        QGroupBox *pHelpGroupBox = new QGroupBox();
-        QVBoxLayout *pHelpLayout = new QVBoxLayout();
-
-        QLabel *pHelpHeading = new QLabel(gpMainWindow->mpLibrary->getAppearanceData(mpComponent->getTypeName())->getDisplayName());
-        pHelpHeading->setAlignment(Qt::AlignCenter);
-        QFont tempFont = pHelpHeading->font();
-        tempFont.setPixelSize(16);
-        tempFont.setBold(true);
-        pHelpHeading->setFont(tempFont);
-        pHelpLayout->addWidget(pHelpHeading);
-
-        if(!mpComponent->getHelpPicture().isNull())
-        {
-            QLabel *pHelpPicture = new QLabel();
-            QPixmap helpPixMap(mpComponent->getAppearanceData()->getBasePath() + mpComponent->getHelpPicture());
-            pHelpPicture->setPixmap(helpPixMap);
-            pHelpPicture->setAlignment(Qt::AlignCenter);
-            pHelpLayout->addWidget(pHelpPicture);
-        }
-
-        if(!mpComponent->getHelpText().isNull())
-        {
-            QLabel *pHelpText = new QLabel(mpComponent->getHelpText(), this);
-            pHelpText->setWordWrap(true);
-            pHelpLayout->addWidget(pHelpText);
-        }
-
-        pHelpGroupBox->setStyleSheet(QString::fromUtf8("QGroupBox {background-color: white; border: 2px solid gray; border-radius: 5px; margin-top: 1ex;}"));
-        pHelpGroupBox->setLayout(pHelpLayout);
-
-        mpMainLayout->addWidget(pHelpGroupBox, 0, 0, 1, 2);
+        // Set corrected text
+        rValue = tempVal;
+        return true;
     }
-    //------------------------------------------------------------------------------------------------------------------------------
+    else
+    {
+        QMessageBox::critical(this->parentWidget(), "Error", error.append(" Resetting parameter value!"));
+        return false;
+    }
+}
 
-    // Add name edit and type information
-    //------------------------------------------------------------------------------------------------------------------------------
+bool VariableTableWidget::setAliasName(const int row)
+{
+    // Skip separator rows
+    if (columnSpan(row,0)>1)
+    {
+        return true;
+    }
+
+    QString alias = item(row,VariableTableWidget::Alias)->text();
+    //! @todo since alias=empty means unregister we can not skip it, but there should be some check if a variable has changed, so that we do not need to go thourgh set for all variables every freeking time
+    QString name = item(row,VariableTableWidget::Name)->text();
+    QStringList parts = name.split("::");
+    if (parts.size() == 2)
+    {
+        mpModelObject->getParentContainerObject()->setVariableAlias(mpModelObject->getName(), parts[0], parts[1], alias);
+    }
+    //! @todo check if OK
+    return true;
+}
+
+
+//! @brief Reads the values from the dialog and writes them into the core component
+void ComponentPropertiesDialog3::okPressed()
+{
+    setName();
+
+    if(mpModelObject->getTypeName().startsWith("CppComponent"))
+    {
+        recompileCppFromDialog();
+    }
+    else
+    {
+        setAliasNames();
+
+        if (setVariableValues())
+        {
+            close();
+        }
+    }
+
+}
+
+
+void ComponentPropertiesDialog3::editPortPos()
+{
+    //! @todo who owns the dialog, is it ever removed?
+    MovePortsDialog *dialog = new MovePortsDialog(mpModelObject->getAppearanceData(), mpModelObject->getParentContainerObject()->getGfxType());
+    connect(dialog, SIGNAL(finished()), mpModelObject, SLOT(refreshExternalPortsAppearanceAndPosition()), Qt::UniqueConnection);
+}
+
+bool ComponentPropertiesDialog3::setAliasNames()
+{
+    return mpVariableTableWidget->setAliasNames();
+//    for (int r=0; r<mpVariableTableWidget->rowCount(); ++r)
+//    {
+//        if (mpVariableTableWidget->columnSpan(r,0)>1)
+//        {
+//            // Skip separator rows
+//            continue;
+//        }
+
+//        QString alias = mpVariableTableWidget->item(r,VariableTableWidget::Alias)->text();
+////        if (!alias.isEmpty())
+////        {
+//        //! @todo since alias=empty means unregister we can not skip it, but there should be some check if a variable has changed, so that we do not need to go thourgh set for all variables every freeking time
+//            QString name = mpVariableTableWidget->item(r,VariableTableWidget::Name)->text();
+//            QStringList parts = name.split("::");
+//            if (parts.size() == 2)
+//            {
+//                mpModelObject->getParentContainerObject()->setVariableAlias(mpModelObject->getName(), parts[0], parts[1], alias);
+//            }
+////            else
+////            {
+////                return false;
+////            }
+//            //! @todo check if OK
+////        }
+//    }
+//    return true;
+}
+
+
+//! @brief Sets the parameters and start values in the core component. Read the values from the dialog and write them into the core component.
+bool ComponentPropertiesDialog3::setVariableValues()
+{
+    return mpVariableTableWidget->setStartValues();
+}
+
+void ComponentPropertiesDialog3::setName()
+{
+    mpModelObject->getParentContainerObject()->renameModelObject(mpModelObject->getName(), mpNameEdit->text());
+}
+
+void ComponentPropertiesDialog3::recompileCppFromDialog()
+{
+    mpModelObject->setCppCode(mpTextEdit->toPlainText());
+    mpModelObject->setCppInputs(mpInputPortsSpinBox->value());
+    mpModelObject->setCppOutputs(mpOutputPortsSpinBox->value());
+
+    mpModelObject->getParentContainerObject()->recompileCppComponents(mpModelObject);
+
+    this->close();
+}
+
+void ComponentPropertiesDialog3::closeEvent(QCloseEvent* event)
+{
+    mpModelObject->getParentContainerObject()->mpParentProjectTab->setDisabled(false);
+    QWidget::closeEvent(event);
+}
+
+void ComponentPropertiesDialog3::reject()
+{
+    mpModelObject->getParentContainerObject()->mpParentProjectTab->setDisabled(false);
+    QDialog::reject();
+}
+
+QGridLayout* ComponentPropertiesDialog3::createNameAndTypeEdit()
+{
     QGridLayout *pNameTypeLayout = new QGridLayout();
     QLabel *pNameLabel = new QLabel("Name: ", this);
-    mpNameEdit = new QLineEdit(mpComponent->getName(), this);
-    QLabel *pTypeNameLabel = new QLabel("Type Name: \"" + mpComponent->getTypeName() + "\"", this);
+    mpNameEdit = new QLineEdit(mpModelObject->getName(), this);
+    QLabel *pTypeNameLabel = new QLabel("Type Name: \"" + mpModelObject->getTypeName() + "\"", this);
     pNameTypeLayout->addWidget(pNameLabel,0,0);
     pNameTypeLayout->addWidget(mpNameEdit,0,1);
     pNameTypeLayout->addWidget(pTypeNameLabel,1,0,1,2);
-    if (!mpComponent->getSubTypeName().isEmpty())
+    if (!mpModelObject->getSubTypeName().isEmpty())
     {
-        QLabel *pSubTypeNameLabel = new QLabel("SubType Name: \"" + mpComponent->getSubTypeName() + "\"", this);
+        QLabel *pSubTypeNameLabel = new QLabel("SubType Name: \"" + mpModelObject->getSubTypeName() + "\"", this);
         pNameTypeLayout->addWidget(pSubTypeNameLabel,2,0,1,2);
     }
-    mpMainLayout->addLayout(pNameTypeLayout, mpMainLayout->rowCount(), 0);
-    //------------------------------------------------------------------------------------------------------------------------------
+    return pNameTypeLayout;
+}
 
-    // Add button box with buttons
-    //------------------------------------------------------------------------------------------------------------------------------
+QDialogButtonBox* ComponentPropertiesDialog3::createButtonBox()
+{
     QPushButton *pEditPortPos = new QPushButton(tr("&Move ports"), this);
     QPushButton *pCancelButton = new QPushButton(tr("&Cancel"), this);
     QPushButton *pOkButton = new QPushButton(tr("&Ok"), this);
@@ -137,108 +252,155 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(Component *pComponent, QW
     connect(pOkButton, SIGNAL(clicked()), this, SLOT(okPressed()));
     connect(pCancelButton, SIGNAL(clicked()), this, SLOT(close()));
     connect(pEditPortPos, SIGNAL(clicked()), this, SLOT(editPortPos()));
-    mpMainLayout->addWidget(pButtonBox, mpMainLayout->rowCount()-1, 1);
+    return pButtonBox;
+}
+
+QWidget *ComponentPropertiesDialog3::createHelpWidget()
+{
+    if(!mpModelObject->getHelpText().isNull() || !mpModelObject->getHelpPicture().isNull())
+    {
+        QScrollArea *pHelpScrollArea = new QScrollArea();
+        QGroupBox *pHelpWidget = new QGroupBox();
+        QVBoxLayout *pHelpLayout = new QVBoxLayout(pHelpWidget);
+
+        QLabel *pHelpHeading = new QLabel(gpMainWindow->mpLibrary->getAppearanceData(mpModelObject->getTypeName())->getDisplayName());
+        pHelpHeading->setAlignment(Qt::AlignCenter);
+        QFont tempFont = pHelpHeading->font();
+        tempFont.setPixelSize(16);
+        tempFont.setBold(true);
+        pHelpHeading->setFont(tempFont);
+        pHelpLayout->addWidget(pHelpHeading);
+
+        if(!mpModelObject->getHelpPicture().isNull())
+        {
+            QLabel *pHelpPicture = new QLabel();
+            QPixmap helpPixMap(mpModelObject->getAppearanceData()->getBasePath() + mpModelObject->getHelpPicture());
+            pHelpPicture->setPixmap(helpPixMap);
+            pHelpLayout->addWidget(pHelpPicture);
+            pHelpPicture->setAlignment(Qt::AlignHCenter);
+        }
+
+        if(!mpModelObject->getHelpText().isNull())
+        {
+            QLabel *pHelpText = new QLabel(mpModelObject->getHelpText(), this);
+            pHelpText->setWordWrap(true);
+            pHelpLayout->addWidget(pHelpText);
+            pHelpText->setAlignment(Qt::AlignHCenter);
+        }
+
+        pHelpWidget->setStyleSheet(QString::fromUtf8("QGroupBox {background-color: white; border: 2px solid gray; border-radius: 5px;}"));
+
+        pHelpWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+        //pHelpLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
+        pHelpScrollArea->setWidget(pHelpWidget);
+        pHelpScrollArea->setWidgetResizable(true);
+        pHelpScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        return pHelpScrollArea;
+    }
+    return 0;
+}
+
+QWidget *ComponentPropertiesDialog3::createSourcodeBrowser(QString &rFilePath)
+{
+    rFilePath.prepend(mpModelObject->getAppearanceData()->getBasePath());
+    QFile file(rFilePath);
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    QString code;
+    QTextStream t(&file);
+    code = t.readAll();
+    file.close();
+
+    QTextEdit *pSourceCodeTextEdit = new QTextEdit();
+    pSourceCodeTextEdit->setReadOnly(true);
+    pSourceCodeTextEdit->setText(code);
+    if(rFilePath.endsWith(".hpp"))
+    {
+        //! @todo who own and who deleats
+        CppHighlighter *pHighLighter = new CppHighlighter(pSourceCodeTextEdit->document());
+    }
+    else if(rFilePath.endsWith(".mo"))
+    {
+        ModelicaHighlighter *pHighLighter = new ModelicaHighlighter(pSourceCodeTextEdit->document());
+    }
+
+    return pSourceCodeTextEdit;
+}
+
+void ComponentPropertiesDialog3::createEditStuff()
+{
+    QGridLayout* pMainLayout = new QGridLayout(this);
+    int row=0;
+
+    // Parents to new objects bellow should be set automatically when adding layout or widget to other layout or widget
+
+    // Add help picture and text
     //------------------------------------------------------------------------------------------------------------------------------
+    QWidget* pHelpWidget = createHelpWidget();
+    if (pHelpWidget)
+    {
+        pMainLayout->addWidget(pHelpWidget, row, 0, 1, 2);
+        ++row;
+    }
+    //------------------------------------------------------------------------------------------------------------------------------
+
+    // Add name edit and type information
+    //------------------------------------------------------------------------------------------------------------------------------
+    QGridLayout *pNameTypeLayout = createNameAndTypeEdit();
+    pMainLayout->addLayout(pNameTypeLayout, row, 0, Qt::AlignLeft);
+    pMainLayout->setRowStretch(row,0);
+    //------------------------------------------------------------------------------------------------------------------------------
+
+    // Add button box with buttons
+    //------------------------------------------------------------------------------------------------------------------------------
+    QDialogButtonBox *pButtonBox = createButtonBox();
+    pMainLayout->addWidget(pButtonBox, row, 1);
+    //------------------------------------------------------------------------------------------------------------------------------
+    ++row;
 
     // Add Parameter settings table
     //------------------------------------------------------------------------------------------------------------------------------
-    mpVariableTableWidget = new VariableTableWidget(mpComponent,this);
-    mpMainLayout->addWidget(mpVariableTableWidget);
-
+    mpVariableTableWidget = new VariableTableWidget(mpModelObject,this);
+    mpVariableTableWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    pMainLayout->addWidget(mpVariableTableWidget, row, 0,1,2);
+    pMainLayout->setRowStretch(row,1);
+    qDebug() << "Table: " << mpVariableTableWidget->sizeHint() << "  " << mpVariableTableWidget->minimumWidth() << "  " << mpVariableTableWidget->minimumHeight();
     //------------------------------------------------------------------------------------------------------------------------------
 
-    this->setLayout(mpMainLayout);
-}
-
-
-//! @brief Check if the parameter is a start value
-//! @param [in,out] parameterDescription The description of the parameter/startvalue
-//! @returns true if it is a startvalue, otherwise false
-//!
-//! This method is used to determine whether or not a parameter should be interpretted
-//! as a start value by the GUI. In HOPSANcore there is no difference between parameters
-//! and start values. The start values are registred and stored in the same container.
-//! But, a start value is taged by "startvalue:" in the description.
-bool ComponentPropertiesDialog3::interpretedAsStartValue(QString &parameterDescription)
-{
-    QString startValueString = "startvalue:";
-    bool res=false;
-    if(parameterDescription.contains(startValueString, Qt::CaseInsensitive))
+    // Add Code edit stuff, A new tab in a new widget will be created
+    //------------------------------------------------------------------------------------------------------------------------------
+    QString filePath = mpModelObject->getAppearanceData()->getSourceCodeFile();
+    if(!filePath.isEmpty())
     {
-        parameterDescription.remove(startValueString, Qt::CaseInsensitive);
-        res = true;
+        QGridLayout* pPropertiesLayout = pMainLayout;
+        pMainLayout = new QGridLayout(this);
+
+        QWidget *pPropertiesWidget = new QWidget(this);
+        pPropertiesWidget->setLayout(pPropertiesLayout);
+        pPropertiesWidget->setPalette(gConfig.getPalette());
+
+        QWidget* pSourceBrowser = createSourcodeBrowser(filePath);
+
+        QTabWidget *pTabWidget = new QTabWidget(this);
+        pTabWidget->addTab(pPropertiesWidget, "Properties");
+        pTabWidget->addTab(pSourceBrowser, "Source Code");
+        pMainLayout->addWidget(pTabWidget);
     }
-    return res;
+        //------------------------------------------------------------------------------------------------------------------------------
+
+    setLayout(pMainLayout);
+
+    // Avoid a dialog that is higher than the availible space
+    //! @todo this prevents fullscreen mode ,maybe limit should be fullscrean height
+    int maxHeight = qApp->desktop()->screenGeometry().height()-100;
+    this->setMaximumHeight(maxHeight);
 }
 
-
-//! @brief Creates the contents in the parameter dialog
-void ComponentPropertiesDialog3::createEditStuff()
+VariableTableWidget::VariableTableWidget(Component *pModelObject, QWidget *pParent) :
+    TableWidgetTotalSize(pParent)
 {
-    QFont fontH1;
-    fontH1.setBold(true);
-}
-
-
-//! @brief Reads the values from the dialog and writes them into the core component
-void ComponentPropertiesDialog3::okPressed()
-{
-    setName();
-    setParametersAndStartValues();
-    close();
-}
-
-
-void ComponentPropertiesDialog3::editPortPos()
-{
-    //! @todo who owns the dialog, is it ever removed?
-    MovePortsDialog *dialog = new MovePortsDialog(mpComponent->getAppearanceData(), mpComponent->getParentContainerObject()->getGfxType());
-    connect(dialog, SIGNAL(finished()), mpComponent, SLOT(refreshExternalPortsAppearanceAndPosition()), Qt::UniqueConnection);
-}
-
-
-//! @brief Sets the parameters and start values in the core component. Read the values from the dialog and write them into the core component.
-//! @see setParametersAndStartValues(QVector<ParameterLayout *> vParLayout)
-void ComponentPropertiesDialog3::setParametersAndStartValues()
-{
-//    if(setParameterValues(mvParameterLayout) && setParameterValues(mvStartValueLayout))
-//    {
-//        qDebug() << "Parameters and start values updated.";
-//        this->close();
-//    }
-}
-
-void ComponentPropertiesDialog3::setName()
-{
-    mpComponent->getParentContainerObject()->renameModelObject(mpComponent->getName(), mpNameEdit->text());
-}
-
-
-VariableTableWidget::VariableTableWidget(Component *pComponent, QWidget *pParent) :
-    QTableWidget(pParent)
-{
-    mpComponent = pComponent;
+    mpModelObject = pModelObject;
 
     this->setColumnCount(NumCols);
-    QVector<CoreParameterData> parameters;
-    mpComponent->getParameters(parameters);
-
-    // Decide which parameters should be shown as Constants and what should be shown as variables
-    QVector<int> constantsIds, variablesIds;
-    constantsIds.reserve(parameters.size());
-    variablesIds.reserve(parameters.size());
-    for (int i=0; i<parameters.size(); ++i)
-    {
-        if (parameters[i].mName.contains("::"))
-        {
-            variablesIds.push_back(i);
-        }
-        else
-        {
-            constantsIds.push_back(i);
-        }
-    }
-
     QStringList columnHeaders;
     columnHeaders.append("Name");
     columnHeaders.append("Alias");
@@ -247,48 +409,167 @@ VariableTableWidget::VariableTableWidget(Component *pComponent, QWidget *pParent
     columnHeaders.append("Type");
     columnHeaders.append("Value");
     columnHeaders.append("PlotScale");
-    columnHeaders.append("Buttons");
+    columnHeaders.append("");
     this->setHorizontalHeaderLabels(columnHeaders);
 
+    // Decide which parameters should be shown as Constants
+    QVector<CoreParameterData> parameters;
+    mpModelObject->getParameters(parameters);
+    QVector<int> constantsIds;
+    for (int i=0; i<parameters.size(); ++i)
+    {
+        if (!parameters[i].mName.contains("::"))
+        {
+            constantsIds.push_back(i);
+        }
+    }
+
+    // Write the constants first
     int r=0;
+    if (!constantsIds.isEmpty())
+    {
+        createSeparatorRow(r,"Constants");
+        ++r;
+    }
     for (int i=0; i<constantsIds.size(); ++i)
     {
-        createTableRow(r, parameters[constantsIds[i]]);
+        CoreVariameterDescription variameter;
+        variameter.mName = parameters[constantsIds[i]].mName;
+        variameter.mDescription = parameters[constantsIds[i]].mDescription;
+        variameter.mUnit = parameters[constantsIds[i]].mUnit;
+        variameter.mDataType = parameters[constantsIds[i]].mType;
+        createTableRow(r, variameter);
+        //! @todo need to disable som fields for constants, like alias
         ++r;
     }
 
+    // Now fetch and write the variables
+    QVector<CoreVariameterDescription> variameters;
+    mpModelObject->getVariameterDescriptions(variameters);
+
     QString currPortName;
-    for (int i=0; i<variablesIds.size(); ++i)
+    for (int i=0; i<variameters.size(); ++i)
     {
         // Extract current port name to see if we should make a separator
-        QString portName = parameters[variablesIds[i]].mName.split("::").at(0);
+        QString portName = variameters[i].mPortName;
         if (portName != currPortName)
         {
             createSeparatorRow(r,"Port: "+portName);
             currPortName = portName;
             ++r;
         }
-        createTableRow(r, parameters[variablesIds[i]]);
+
+        createTableRow(r, variameters[i]);
         ++r;
     }
 
     resizeColumnToContents(Name);
     resizeColumnToContents(Unit);
     resizeColumnToContents(Type);
+    resizeColumnToContents(Buttons);
+
+    horizontalHeader()->setStretchLastSection(true);
+    verticalHeader()->hide();
+
+    connect(this, SIGNAL(cellChanged(int,int)), this, SLOT(cellChangedSlot(int,int)));
+}
+
+bool VariableTableWidget::setStartValues()
+{
+    bool addedUndoPost = false;
+    bool allok=true;
+    for (int row=0; row<rowCount(); ++row)
+    {
+//        if (!setStartValue(r))
+//        {
+//            ok=falase;
+//            break;
+//        }
+
+        // First check if row is separator, then skip it
+        if (columnSpan(row,0)>1)
+        {
+            continue;
+        }
+
+        QString value = item(row,VariableTableWidget::Value)->text();
+        // If startvalue is empty (disabled, then we should not atempt to change it)
+        if (value.isEmpty())
+        {
+            continue;
+        }
+
+        // Extract name and value from row
+        QString name = item(row,VariableTableWidget::Name)->text();
 
 
+        // Get the old value to see if a changed has occured
+        QString oldValue = mpModelObject->getParameterValue(name);
+        if (oldValue != value)
+        {
+            // Parameter has changed, add to undo stack and set the parameter
+            bool isOk = cleanAndVerifyParameterValue(value, item(row,VariableTableWidget::Type)->text());
+            if(isOk)
+            {
+                // If we fail to set the parameter, then warning box and reset value
+                if(!mpModelObject->setParameterValue(name, value))
+                {
+                    QMessageBox::critical(0, "Hopsan GUI", QString("'%1' is an invalid value for parameter '%2'.").arg(value).arg(name));
+                    // Reset old value
+                    item(row,VariableTableWidget::Value)->setText(oldValue);
+                    isOk = false;
+                }
+
+                // Add an undo post (but only one for all values changed this time
+                if(!addedUndoPost)
+                {
+                    mpModelObject->getParentContainerObject()->getUndoStackPtr()->newPost("changedparameters");
+                    addedUndoPost = true;
+                }
+                // Register the change in undo stack
+                mpModelObject->getParentContainerObject()->getUndoStackPtr()->registerChangedParameter(mpModelObject->getName(),
+                                                                                                       name,
+                                                                                                       oldValue,
+                                                                                                       value);
+                // Mark project tab as changed
+                mpModelObject->getParentContainerObject()->hasChanged();
+            }
+            else
+            {
+                // Reset old value
+                item(row,VariableTableWidget::Value)->setText(oldValue);
+                allok = false;
+                break;
+            }
+        }
+        //! @todo if we set som ok but som later fail pressing cancel will not restore the first that were set ok /Peter
+    }
+    return allok;
+}
+
+bool VariableTableWidget::setAliasNames()
+{
+    for (int r=0; r<rowCount(); ++r)
+    {
+        if (!setAliasName(r))
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 void VariableTableWidget::resetDefaultValueAtRow(int row)
 {
     QString name = item(row,Name)->text();
-    if(mpComponent)
+    if(mpModelObject)
     {
-        QString defaultText = mpComponent->getDefaultParameterValue(name);
+        QString defaultText = mpModelObject->getDefaultParameterValue(name);
         if(defaultText != QString())
+        {
             item(row,Value)->setText(defaultText);
-        //pickValueTextColor();
-        //! @todo color
+            item(row,Value)->setTextColor(Qt::gray);
+        }
     }
 }
 
@@ -298,7 +579,7 @@ void VariableTableWidget::selectSystemParameterAtRow(int row)
     QMap<QAction*, QString> actionParamMap;
 
     QVector<CoreParameterData> paramDataVector;
-    mpComponent->getParentContainerObject()->getParameters(paramDataVector);
+    mpModelObject->getParentContainerObject()->getParameters(paramDataVector);
 
     for (int i=0; i<paramDataVector.size(); ++i)
     {
@@ -313,37 +594,57 @@ void VariableTableWidget::selectSystemParameterAtRow(int row)
     if(!parNameString.isEmpty())
     {
         item(row,Value)->setText(parNameString);
+        selectValueTextColor(row);
     }
 }
 
 void VariableTableWidget::makePortAtRow(int row, bool isPort)
 {
-
-//! @todo Do this,
 //! @todo hmm it does not make sense to have startvalues as ports (or maybe it does, but startvalues are run before init and simulate), but then you could have startvalue to startvalue to startvalue ...
-
-//    if (isPort)
-//    {
-//        Port * pPort = mpModelObject->createRefreshExternalDynamicParameterPort(mName);
-//        if (pPort)
-//        {
-//            // Make sure that our new port has the "correct" angle
-//            pPort->setRotation(180);
-//        }
-//    }
-//    else
-//    {
-//        mpModelObject->removeExternalPort(mName);
-//    }
+    const QString name = item(row,Name)->text();
+    if (isPort)
+    {
+        Port * pPort = mpModelObject->createRefreshExternalDynamicParameterPort(name);
+        if (pPort)
+        {
+            // Make sure that our new port has the "correct" angle
+            pPort->setRotation(180);
+        }
+    }
+    else
+    {
+        mpModelObject->removeExternalPort(name);
+    }
 
 }
 
-void VariableTableWidget::createTableRow(const int row, const CoreParameterData &rData)
+void VariableTableWidget::cellChangedSlot(const int row, const int col)
 {
+    if (col == Value)
+    {
+        selectValueTextColor(row);
+    }
+}
+
+void VariableTableWidget::createTableRow(const int row, const CoreVariameterDescription &rData)
+{
+    bool isConstant=false;
+    QString fullName;
     QTableWidgetItem *pItem;
     insertRow(row);
 
-    pItem = new QTableWidgetItem(rData.mName);
+    //! @todo maybe store the variamter data objects localy, and check for hiden info there, would also make it possible to check for changes without asking core all of the time /Peter
+    if (rData.mPortName.isEmpty())
+    {
+        isConstant = true;
+        fullName = rData.mName;
+    }
+    else
+    {
+        fullName = rData.mPortName+"::"+rData.mName;
+    }
+
+    pItem = new QTableWidgetItem(fullName);
     pItem->setTextAlignment(Qt::AlignCenter);
     pItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
     setItem(row,Name,pItem);
@@ -354,7 +655,8 @@ void VariableTableWidget::createTableRow(const int row, const CoreParameterData 
     pItem->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
     setItem(row,Alias,pItem);
 
-    pItem = new QTableWidgetItem(parseVariableUnit(rData.mUnit));
+    //pItem = new QTableWidgetItem(parseVariableUnit(rData.mUnit));
+    pItem = new QTableWidgetItem(rData.mUnit);
     pItem->setTextAlignment(Qt::AlignCenter);
     pItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
     setItem(row,Unit,pItem);
@@ -364,35 +666,60 @@ void VariableTableWidget::createTableRow(const int row, const CoreParameterData 
     pItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
     setItem(row,Description,pItem);
 
-    pItem = new QTableWidgetItem(rData.mType);
+    pItem = new QTableWidgetItem(rData.mDataType);
     pItem->setTextAlignment(Qt::AlignCenter);
     pItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
     setItem(row,Type,pItem);
 
-    pItem = new QTableWidgetItem(rData.mValue);
+    QString value = mpModelObject->getParameterValue(fullName);
+    pItem = new QTableWidgetItem(value);
+    if (value.isEmpty())
+    {
+        pItem->setFlags(Qt::NoItemFlags);
+    }
+    else
+    {
+        pItem->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
+    }
     pItem->setTextAlignment(Qt::AlignCenter);
-    pItem->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
     setItem(row,Value,pItem);
+    selectValueTextColor(row);
 
-    pItem = new QTableWidgetItem("-1");
+    pItem = new QTableWidgetItem("--");
     pItem->setTextAlignment(Qt::AlignCenter);
     pItem->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
     setItem(row,Scale,pItem);
 
     // Set tool buttons
-    QToolButton *pResetDefaultToolButton = new RowAwareToolButton(row);
+    QWidget* pTooButtons = new QWidget();
+    QHBoxLayout* pToolButtonsLayout = new QHBoxLayout(pTooButtons);
+
+    RowAwareToolButton *pResetDefaultToolButton = new RowAwareToolButton(row);
     pResetDefaultToolButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetDefault.png"));
     pResetDefaultToolButton->setToolTip("Reset Default Value");
-    this->setIndexWidget(model()->index(row,ResetButton), pResetDefaultToolButton);
+    //this->setIndexWidget(model()->index(row,ResetButton), pResetDefaultToolButton);
     connect(pResetDefaultToolButton, SIGNAL(triggeredAtRow(int)), this, SLOT(resetDefaultValueAtRow(int)));
+    pToolButtonsLayout->addWidget(pResetDefaultToolButton);
 
-    QToolButton *pSystemParameterToolButton = new RowAwareToolButton(row);
+    RowAwareToolButton *pSystemParameterToolButton = new RowAwareToolButton(row);
     pSystemParameterToolButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-SystemParameter.png"));
     pSystemParameterToolButton->setToolTip("Map To System Parameter");
-    this->setIndexWidget(model()->index(row,SysparButton), pSystemParameterToolButton);
+    //this->setIndexWidget(model()->index(row,SysparButton), pSystemParameterToolButton);
     connect(pSystemParameterToolButton, SIGNAL(triggeredAtRow(int)), this, SLOT(selectSystemParameterAtRow(int)));
+    pToolButtonsLayout->addWidget(pSystemParameterToolButton);
 
-    //! @todo buttons
+    if (!isConstant)
+    {
+        RowAwareCheckBox *pEnablePortCheckBox = new RowAwareCheckBox(row);
+        //pEnablePortCheckBox->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetDefault.png"));
+        pEnablePortCheckBox->setToolTip("Show/hide port");
+        pEnablePortCheckBox->setChecked(false); //!< @todo decide based on shown ports
+        //this->setIndexWidget(model()->index(row,ShowHidePortButton), pEnablePortCheckBox);
+        connect(pEnablePortCheckBox, SIGNAL(checkedAtRow(int, bool)), this, SLOT(makePortAtRow(int,bool)));
+        pToolButtonsLayout->addWidget(pEnablePortCheckBox);
+    }
+
+    this->setIndexWidget(model()->index(row,Buttons), pTooButtons);
 }
 
 void VariableTableWidget::createSeparatorRow(const int row, const QString name)
@@ -403,15 +730,99 @@ void VariableTableWidget::createSeparatorRow(const int row, const QString name)
     pItem->setFlags(Qt::NoItemFlags | Qt::ItemIsEnabled);
     pItem->setBackgroundColor(Qt::lightGray);
     insertRow(row);
+    setSpan(row,Name,1,NumCols);
     setItem(row,Name,pItem);
-    int c=1;
-    if (name.isEmpty()) {c=0;}
-    for (;c<columnCount(); ++c)
-    {
-        pItem = new QTableWidgetItem();
-        pItem->setFlags(Qt::NoItemFlags);
-        pItem->setBackgroundColor(Qt::lightGray);
-        setItem(row,c,pItem);
-    }
     resizeRowToContents(row);
+}
+
+void VariableTableWidget::selectValueTextColor(const int row)
+{
+    if(mpModelObject)
+    {
+        const QString name = item(row,Name)->text();
+        const QString value = item(row,Value)->text();
+        if( value == mpModelObject->getDefaultParameterValue(name))
+        {
+            item(row,Value)->setTextColor(Qt::gray);
+        }
+        else
+        {
+            item(row,Value)->setTextColor(Qt::black);
+        }
+    }
+}
+
+//void VariableTableWidget::setStartValue(const int row)
+//{
+
+//}
+
+
+TableWidgetTotalSize::TableWidgetTotalSize(QWidget *pParent) : QTableWidget(pParent)
+{
+    mMaxVisibleRows=20;
+}
+
+QSize TableWidgetTotalSize::sizeHint() const
+{
+    int w=0;
+    if (verticalHeader()->isVisible())
+    {
+        w += verticalHeader()->sizeHint().width();
+    }
+    w +=  + frameWidth()*2 + verticalScrollBar()->sizeHint().width();
+    qDebug() << "w: " << w << " lw: " << lineWidth() << "  mLw: " << midLineWidth() << "  frameWidth: " << frameWidth();
+    qDebug() << verticalScrollBar()->sizeHint().width();
+
+    for (int c=0; c<columnCount(); ++c)
+    {
+        w += columnWidth(c);
+    }
+
+    int h = horizontalHeader()->sizeHint().height() + frameWidth()*2;
+    for (int r=0; r<min(mMaxVisibleRows,rowCount()); ++r)
+    {
+        h += rowHeight(r);
+    }
+    return QSize(w, h);
+}
+
+void TableWidgetTotalSize::setMaxVisibleRows(const int maxRows)
+{
+    mMaxVisibleRows = maxRows;
+}
+
+
+RowAwareToolButton::RowAwareToolButton(const int row) : QToolButton()
+{
+    setRow(row);
+    connect(this, SIGNAL(clicked(bool)), this, SLOT(clickedSlot()));
+}
+
+void RowAwareToolButton::setRow(const int row)
+{
+    mRow = row;
+}
+
+
+void RowAwareToolButton::clickedSlot()
+{
+    emit triggeredAtRow(mRow);
+}
+
+RowAwareCheckBox::RowAwareCheckBox(const int row) : QCheckBox()
+{
+    setRow(row);
+    connect(this, SIGNAL(clicked(bool)), this, SLOT(checkedSlot(bool)));
+}
+
+void RowAwareCheckBox::setRow(const int row)
+{
+    mRow = row;
+}
+
+
+void RowAwareCheckBox::checkedSlot(const bool state)
+{
+    emit checkedAtRow(mRow, state);
 }

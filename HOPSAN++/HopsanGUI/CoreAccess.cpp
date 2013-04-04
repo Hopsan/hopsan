@@ -549,6 +549,31 @@ bool CoreSystemAccess::setParameterValue(QString componentName, QString paramete
     return mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), value.toStdString(), force);
 }
 
+void CoreSystemAccess::getVariameters(QString componentName, QVector<CoreVariameterDescription> &rVariameterDescriptions)
+{
+    rVariameterDescriptions.clear();
+    hopsan::Component* pComp = mpCoreComponentSystem->getSubComponent(componentName.toStdString());
+    if (pComp)
+    {
+        const std::vector<hopsan::VariameterDescription>* pDescs = pComp->getVariameters();
+        for (int i=0; i<pDescs->size(); ++i)
+        {
+            CoreVariameterDescription data;
+            data.mName = QString::fromStdString(pDescs->at(i).mName);
+            data.mShortName = QString::fromStdString(pDescs->at(i).mShortName);
+            data.mPortName = QString::fromStdString(pDescs->at(i).mPortName);
+            data.mUnit = QString::fromStdString(pDescs->at(i).mUnit);
+            data.mDescription = QString::fromStdString(pDescs->at(i).mDescription);
+            data.mDataType = QString::fromStdString(pDescs->at(i).mDataType);
+            data.mAlias = QString::fromStdString(pDescs->at(i).mAlias);
+            data.mVariabelId = pDescs->at(i).mVariableId;
+            //data.mVariabelType =
+            //! @todo type
+            rVariameterDescriptions.push_back(data);
+        }
+    }
+}
+
 void CoreSystemAccess::setVariableAlias(QString compName, QString portName, QString varName, QString alias)
 {
     mpCoreComponentSystem->getAliasHandler().setVariableAlias(alias.toStdString(), compName.toStdString(),
