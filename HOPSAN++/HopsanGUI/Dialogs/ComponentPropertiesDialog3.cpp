@@ -601,7 +601,7 @@ void VariableTableWidget::selectSystemParameterAtRow(int row)
 void VariableTableWidget::makePortAtRow(int row, bool isPort)
 {
 //! @todo hmm it does not make sense to have startvalues as ports (or maybe it does, but startvalues are run before init and simulate), but then you could have startvalue to startvalue to startvalue ...
-    const QString name = item(row,Name)->text();
+    const QString name = item(row,Name)->text().split("::").at(0);
     if (isPort)
     {
         Port * pPort = mpModelObject->createRefreshExternalDynamicParameterPort(name);
@@ -708,7 +708,8 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
     connect(pSystemParameterToolButton, SIGNAL(triggeredAtRow(int)), this, SLOT(selectSystemParameterAtRow(int)));
     pToolButtonsLayout->addWidget(pSystemParameterToolButton);
 
-    if (!isConstant)
+    bool isReadVariable = (rData.mName == "Value");
+    if (!isConstant && isReadVariable)
     {
         RowAwareCheckBox *pEnablePortCheckBox = new RowAwareCheckBox(row);
         //pEnablePortCheckBox->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetDefault.png"));
