@@ -52,13 +52,15 @@ namespace hopsan {
         {
             mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
             mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
+            disableStartValue(mpOut,NodeSignal::Value);
         }
 
 
         void initialize()
         {
-            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value, 0);
+            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value);
             mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
+            simulateOneTimestep();
         }
 
 

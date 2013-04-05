@@ -48,10 +48,12 @@ namespace hopsan {
 
         void configure()
         {
-
             mpIn1 = addReadPort("in1", "NodeSignal");
             mpIn2 = addReadPort("in2", "NodeSignal");
             mpOut = addWritePort("out", "NodeSignal");
+            disableStartValue(mpOut, NodeSignal::Value);
+            setStartValue(mpIn1, NodeSignal::Value, 1);
+            setStartValue(mpIn2, NodeSignal::Value, 1);
         }
 
 
@@ -59,23 +61,21 @@ namespace hopsan {
         {
             //If only one input port is conncted, the other shall be 1 (= multiply by 1).
             //If no input ports are connected, mpND_output shall be 0, so one of the inputs are set to 0.
-            mpND_in1 = getSafeNodeDataPtr(mpIn1, NodeSignal::Value, 1);
-            mpND_in2 = getSafeNodeDataPtr(mpIn2, NodeSignal::Value, 1);
-
+            mpND_in1 = getNodeDataPtr(mpIn1, NodeSignal::Value);
+            mpND_in2 = getNodeDataPtr(mpIn2, NodeSignal::Value);
             if(!mpIn1->isConnected() && !mpIn2->isConnected())
             {
                 (*mpND_in1 = 0);
             }
 
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
-
+            mpND_out = getNodeDataPtr(mpOut, NodeSignal::Value);
             simulateOneTimestep();
         }
 
 
         void simulateOneTimestep()
         {
-                //Multiplication equation
+            //Multiplication equation
             (*mpND_out) = (*mpND_in1) * (*mpND_in2);
         }
     };

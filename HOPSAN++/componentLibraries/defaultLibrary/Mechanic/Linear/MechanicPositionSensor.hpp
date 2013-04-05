@@ -25,7 +25,6 @@
 #ifndef MECHANICPOSITIONSENSOR_HPP_INCLUDED
 #define MECHANICPOSITIONSENSOR_HPP_INCLUDED
 
-#include <iostream>
 #include "ComponentEssentials.h"
 
 namespace hopsan {
@@ -49,18 +48,15 @@ namespace hopsan {
 
         void configure()
         {
-
             mpP1 = addReadPort("P1", "NodeMechanic", Port::NotRequired);
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
-            disableStartValue(mpOut, NodeSignal::Value);
+            mpOut = addWriteVariable("out", "Position", "m");
         }
 
 
         void initialize()
         {
-            mpND_x = getSafeNodeDataPtr(mpP1, NodeMechanic::Position, 0);
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
-            mpOut->setSignalNodeUnitAndDescription("m","Position");
+            mpND_x = getNodeDataPtr(mpP1, NodeMechanic::Position);
+            mpND_out = getNodeDataPtr(mpOut, NodeSignal::Value);
             simulateOneTimestep(); //Set initial ouput node value
         }
 

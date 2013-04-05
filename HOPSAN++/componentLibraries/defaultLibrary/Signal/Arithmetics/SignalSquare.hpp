@@ -50,33 +50,19 @@ namespace hopsan {
 
             mpIn = addReadPort("in", "NodeSignal");
             mpOut = addWritePort("out", "NodeSignal");
+            disableStartValue(mpOut, NodeSignal::Value);
         }
 
 
         void initialize()
         {
-//            simulateOneTimestep();
-            mpOut->writeNode(NodeSignal::Value, 0.0);
+            simulateOneTimestep();
         }
 
 
         void simulateOneTimestep()
         {
-
-            //Get variable values from nodes
-            double in;
-
-            if (mpIn->isConnected())       //In-port connected
-            {
-                in = mpIn->readNode(NodeSignal::Value);
-
-            }
-            else
-            {
-                in = 0;                                           //Nothing connected
-            }
-
-            //Write new values to nodes
+            const double in = mpIn->readNode(NodeSignal::Value);
             mpOut->writeNode(NodeSignal::Value, in*in);
         }
     };

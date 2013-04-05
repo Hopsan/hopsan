@@ -51,8 +51,7 @@ namespace hopsan {
         {
 
             mpP1 = addReadPort("P1", "NodeMechanicRotational");
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
-            disableStartValue(mpOut,NodeSignal::Value);
+            mpOut = addWriteVariable("out", "Angle", "rad");
         }
 
 
@@ -60,7 +59,6 @@ namespace hopsan {
         {
             mpND_phi = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::Angle);
             mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
-            mpOut->setSignalNodeUnitAndDescription("rad", "Angle");
             simulateOneTimestep();
         }
 

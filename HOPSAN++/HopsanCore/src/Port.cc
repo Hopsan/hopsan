@@ -183,34 +183,16 @@ void Port::writeNodeSafe(const size_t &idx, const double &value, const size_t /*
     }
 }
 
-
+//! @brief Get a ptr to the data variable in the node, if node is not created (port not connected) return ptr to dummy node data
+//! @param [in] idx The id of the data variable to return ptr to
 double *Port::getNodeDataPtr(const size_t idx, const size_t /*portIdx*/) const
 {
     return mpNode->getDataPtr(idx);
 }
 
-//! @brief Get a ptr to the data variable in the node, if node is not created (port not connected) return ptr to dummy node data
-//! @param [in] idx The id of the data variable to return ptr to
-//! @param [in] defaultValue Default value if port not connected
-double *Port::getSafeNodeDataPtr(const size_t idx, const double defaultValue, const size_t /*portIdx*/)
+
+double *Port::getSafeNodeDataPtr(const size_t idx, const size_t /*portIdx*/)
 {
-//    if (mpNode != 0)
-//    {
-//        return mpNode->getDataPtr(idx);
-//    }
-//    else
-//    {
-//        if (mpNCDummyNode == 0)
-//        {
-//            mpNCDummyNode = getComponent()->getHopsanEssentials()->createNode(mNodeType);
-//        }
-//        mpNCDummyNode->setDataValue(idx, defaultValue);
-//        return mpNCDummyNode->getDataPtr(idx);
-//    }
-//    if (mpNode->getNumConnectedPorts() == 1)
-//    {
-//        //mpNode->setDataValue(idx, defaultValue);
-//    }
     return getNodeDataPtr(idx);
 }
 
@@ -450,12 +432,13 @@ int Port::getNodeDataIdFromName(const string name, const size_t /*portIdx*/)
     }
 }
 
-void Port::setSignalNodeUnitAndDescription(const string &rUnit, const string &rName)
+void Port::setSignalNodeUnitAndDescription(const string &rUnit, const string &rDescription)
 {
     //! @todo multiport version needed
-    if (mpNode != 0)
+    mpNode->setSignalDataUnitAndDescription(rUnit, rDescription);
+    if (mpStartNode)
     {
-        mpNode->setSignalDataUnitAndDescription(rUnit, rName);
+        mpStartNode->setSignalDataUnitAndDescription(rUnit, rDescription);
     }
 }
 
@@ -767,16 +750,16 @@ double *MultiPort::getNodeDataPtr(const size_t idx, const size_t portIdx) const
     return mSubPortsVector[portIdx]->getNodeDataPtr(idx);
 }
 
-double *MultiPort::getSafeNodeDataPtr(const size_t idx, const double defaultValue, const size_t portIdx)
+double *MultiPort::getSafeNodeDataPtr(const size_t idx, const size_t portIdx)
 {
     //If we try to access node data for subport that does not exist then return multiport shared dummy safe ptr
     if (portIdx >= mSubPortsVector.size())
     {
-        return Port::getSafeNodeDataPtr(idx, defaultValue, portIdx);
+        return Port::getNodeDataPtr(idx, portIdx);
     }
     else
     {
-        return mSubPortsVector[portIdx]->getSafeNodeDataPtr(idx, defaultValue);
+        return mSubPortsVector[portIdx]->getNodeDataPtr(idx);
     }
 }
 

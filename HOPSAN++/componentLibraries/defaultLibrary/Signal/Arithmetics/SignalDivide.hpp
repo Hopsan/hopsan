@@ -48,20 +48,20 @@ namespace hopsan {
 
         void configure()
         {
-
             mpIn1 = addReadPort("in1", "NodeSignal", Port::NotRequired);
             mpIn2 = addReadPort("in2", "NodeSignal", Port::NotRequired);
             mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
+            disableStartValue(mpOut, NodeSignal::Value);
         }
 
 
         void initialize()
         {
-            mpND_in1 = getSafeNodeDataPtr(mpIn1, NodeSignal::Value, 0);
-            mpND_in2 = getSafeNodeDataPtr(mpIn2, NodeSignal::Value, 1);
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value, 0);
+            mpND_in1 = getNodeDataPtr(mpIn1, NodeSignal::Value);
+            mpND_in2 = getNodeDataPtr(mpIn2, NodeSignal::Value);
+            mpND_out = getNodeDataPtr(mpOut, NodeSignal::Value);
+            simulateOneTimestep();
         }
-
 
         void simulateOneTimestep()
         {

@@ -27,7 +27,6 @@
 
 #include "ComponentEssentials.h"
 #include <vector>
-#include <sstream>
 
 namespace hopsan {
 
@@ -55,37 +54,28 @@ namespace hopsan {
             mpMultiInSumPort = addReadMultiPort("insum", "NodeSignal", Port::NotRequired);
             mpMultiInSubPort = addReadMultiPort("insub", "NodeSignal", Port::NotRequired);
             mpOutPort = addWritePort("out", "NodeSignal", Port::NotRequired);
+            disableStartValue(mpOutPort, NodeSignal::Value);
         }
 
 
         void initialize()
         {
-            nSumInputs = mpMultiInSumPort->getNumPorts();
-            nSubInputs = mpMultiInSubPort->getNumPorts();
             //We need at least one dummy port even if no port is connected
-            if (nSumInputs < 1)
-            {
-                nSumInputs = 1;
-            }
-            if (nSubInputs < 1)
-            {
-                nSubInputs = 1;
-            }
+            nSumInputs = std::max(mpMultiInSumPort->getNumPorts(), size_t(1));
+            nSubInputs = std::max(mpMultiInSubPort->getNumPorts(), size_t(1));
 
             mNDp_in_sum_vec.resize(nSumInputs);
             for (size_t i=0; i<nSumInputs; ++i)
             {
-                mNDp_in_sum_vec[i] = getSafeMultiPortNodeDataPtr(mpMultiInSumPort, i, NodeSignal::Value, 0);
+                mNDp_in_sum_vec[i] = getSafeMultiPortNodeDataPtr(mpMultiInSumPort, i, NodeSignal::Value);
             }
             mNDp_in_sub_vec.resize(nSubInputs);
             for (size_t i=0; i<nSubInputs; ++i)
             {
-                mNDp_in_sub_vec[i] = getSafeMultiPortNodeDataPtr(mpMultiInSubPort, i, NodeSignal::Value, 0);
+                mNDp_in_sub_vec[i] = getSafeMultiPortNodeDataPtr(mpMultiInSubPort, i, NodeSignal::Value);
             }
-            mpND_out = getSafeNodeDataPtr(mpOutPort, NodeSignal::Value, 0);
-//            std::stringstream ss;
-//            ss << "nInputs: " << nSumInputs;
-//            addDebugMessage(ss.str());
+            mpND_out = getSafeNodeDataPtr(mpOutPort, NodeSignal::Value);
+            simulateOneTimestep();
         }
 
 

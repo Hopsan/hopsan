@@ -72,7 +72,7 @@ public:
 
     const std::vector<NodeDataDescription>* getDataDescriptions() const;
     const NodeDataDescription* getDataDescription(const size_t id) const;
-    virtual void setSignalDataUnitAndDescription(const std::string &rUnit, const std::string &rName);
+    virtual void setSignalDataUnitAndDescription(const std::string &rUnit, const std::string &rDescription);
 
     void logData(const size_t logSlot);
 

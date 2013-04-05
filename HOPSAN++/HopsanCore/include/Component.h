@@ -186,6 +186,7 @@ protected:
 
     // Interface variable functions
     Port *addReadVariable(const std::string name, const std::string description, const std::string unit, const double defaultValue);
+    Port *addWriteVariable(const std::string name, const std::string description, const std::string unit);
 
     // Port functions
     Port* addPort(const std::string portName, const PortTypesEnumT portType, const std::string nodeType, const Port::RequireConnectionEnumT reqConnection);
@@ -201,6 +202,7 @@ protected:
 
     // NodeData ptr function
     double *getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue=0);
+    double *getNodeDataPtr(Port* pPort, const int dataId);
     double *getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx, const int dataId, const double defaultValue=0);
 
     // Unique name functions

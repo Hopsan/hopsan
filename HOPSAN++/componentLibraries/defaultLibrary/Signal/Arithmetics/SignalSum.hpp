@@ -54,43 +54,33 @@ namespace hopsan {
         {
             mpMultiInPort = addReadMultiPort("in", "NodeSignal", Port::NotRequired);
             mpOutPort = addWritePort("out", "NodeSignal", Port::NotRequired);
+            disableStartValue(mpOutPort, NodeSignal::Value);
         }
 
 
         void initialize()
         {
-            nInputs = mpMultiInPort->getNumPorts();
-            //We need at least one dummy port even if no port is connected
-            if (nInputs < 1)
-            {
-                nInputs = 1;
-            }
+            // We need at least one dummy port even if no port is connected
+            nInputs = std::max(mpMultiInPort->getNumPorts(),size_t(1));
 
             mNDp_in_vec.resize(nInputs);
             for (size_t i=0; i<nInputs; ++i)
             {
-                mNDp_in_vec[i] = getSafeMultiPortNodeDataPtr(mpMultiInPort, i, NodeSignal::Value, 0);
+                mNDp_in_vec[i] = getSafeMultiPortNodeDataPtr(mpMultiInPort, i, NodeSignal::Value);
             }
-            mpND_out = getSafeNodeDataPtr(mpOutPort, NodeSignal::Value, 0);
-//            std::stringstream ss;
-//            ss << "nInputs: " << nInputs;
-//            addDebugMessage(ss.str());
+            mpND_out = getSafeNodeDataPtr(mpOutPort, NodeSignal::Value);
+            simulateOneTimestep();
         }
 
 
         void simulateOneTimestep()
         {
-//            std::stringstream ss;
-//            ss << "Values:";
             double sum = 0;
             for (size_t i=0; i<nInputs; ++i)
             {
-//                ss << " " << *mNDp_in_vec[i];
                 sum += *mNDp_in_vec[i];
             }
             (*mpND_out) = sum; //Write value to output node
-//            ss << " Sum: " << sum;
-//            addInfoMessage(ss.str());
         }
     };
 }

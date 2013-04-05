@@ -144,7 +144,7 @@ const NodeDataDescription* Node::getDataDescription(const size_t id) const
 }
 
 //! @brief This function can be used to set unit string and displayName for signal nodes ONLY
-void Node::setSignalDataUnitAndDescription(const string &/*rUnit*/, const string &/*rName*/)
+void Node::setSignalDataUnitAndDescription(const string &/*rUnit*/, const string &/*rDescription*/)
 {
     // Do nothing by default
 }

@@ -41,10 +41,10 @@ public:
     enum DataIndexEnumOldT {VALUE};
     static Node* CreatorFunction() {return new NodeSignal;}
 
-    void setSignalDataUnitAndDescription(const std::string &rUnit, const std::string &rName)
+    void setSignalDataUnitAndDescription(const std::string &rUnit, const std::string &rDescription)
     {
         mDataDescriptions[Value].unit = rUnit;
-        mDataDescriptions[Value].description = rName;
+        mDataDescriptions[Value].description = rDescription;
     }
 
     void copySignalDataUnitAndDescriptionTo(Node *pOtherNode) const
