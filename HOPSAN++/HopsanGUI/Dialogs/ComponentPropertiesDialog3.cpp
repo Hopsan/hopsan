@@ -225,17 +225,24 @@ void ComponentPropertiesDialog3::reject()
 QGridLayout* ComponentPropertiesDialog3::createNameAndTypeEdit()
 {
     QGridLayout *pNameTypeLayout = new QGridLayout();
-    QLabel *pNameLabel = new QLabel("Name: ", this);
-    mpNameEdit = new QLineEdit(mpModelObject->getName(), this);
-    QLabel *pTypeNameLabel = new QLabel("Type Name: \"" + mpModelObject->getTypeName() + "\"", this);
+    QLabel *pNameLabel = new QLabel("Name: ");
+    mpNameEdit = new QLineEdit(mpModelObject->getName());
+    QLabel *pCQSTypeLabel = new QLabel("CQS Type: \""+mpModelObject->getTypeCQS()+"\"");
+    QLabel *pTypeNameLabel = new QLabel("Typename: \""+mpModelObject->getTypeName()+"\"");
     pNameTypeLayout->addWidget(pNameLabel,0,0);
     pNameTypeLayout->addWidget(mpNameEdit,0,1);
     pNameTypeLayout->addWidget(pTypeNameLabel,1,0,1,2);
     if (!mpModelObject->getSubTypeName().isEmpty())
     {
-        QLabel *pSubTypeNameLabel = new QLabel("SubType Name: \"" + mpModelObject->getSubTypeName() + "\"", this);
+        QLabel *pSubTypeNameLabel = new QLabel("SubTypename: \""+mpModelObject->getSubTypeName()+"\"");
         pNameTypeLayout->addWidget(pSubTypeNameLabel,2,0,1,2);
+        pNameTypeLayout->addWidget(pCQSTypeLabel,3,0,1,2);
     }
+    else
+    {
+        pNameTypeLayout->addWidget(pCQSTypeLabel,2,0,1,2);
+    }
+
     return pNameTypeLayout;
 }
 
