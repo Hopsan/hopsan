@@ -140,23 +140,25 @@ const std::vector<VariameterDescription>* Component::getVariameters()
     for (pit=mPortPtrMap.begin(); pit!=mPortPtrMap.end(); ++pit)
     {
         const vector<NodeDataDescription>* pDescs = pit->second->getNodeDataDescriptions();
-        for (size_t i=0; i<pDescs->size(); ++i)
+        if (pDescs)
         {
-            VariameterDescription data;
-            data.mName = pDescs->at(i).name;
-            data.mShortName = pDescs->at(i).shortname;
-            data.mPortName = pit->second->getName();
-            data.mUnit = pDescs->at(i).unit;
-            data.mDescription = pDescs->at(i).description;
-            data.mVariableId = pDescs->at(i).id;
-            data.mVarType = pDescs->at(i).varType;
-            data.mAlias = pit->second->getVariableAlias(data.mVariableId);
-            data.mDataType = "double"; //!< @todo not hardcoded
-            mVariameters.push_back(data);
-            //! @todo some of these will never change after a component has been configured, (but som may, like alias description unit)
+            for (size_t i=0; i<pDescs->size(); ++i)
+            {
+                VariameterDescription data;
+                data.mName = pDescs->at(i).name;
+                data.mShortName = pDescs->at(i).shortname;
+                data.mPortName = pit->second->getName();
+                data.mUnit = pDescs->at(i).unit;
+                data.mDescription = pDescs->at(i).description;
+                data.mVariableId = pDescs->at(i).id;
+                data.mVarType = pDescs->at(i).varType;
+                data.mAlias = pit->second->getVariableAlias(data.mVariableId);
+                data.mDataType = "double"; //!< @todo not hardcoded
+                mVariameters.push_back(data);
+                //! @todo some of these will never change after a component has been configured, (but som may, like alias description unit)
+            }
         }
     }
-
     return &mVariameters;
 }
 
