@@ -288,7 +288,7 @@
           <parameter value="1" type="double" name="f_pb"/>
           <parameter value="1" type="double" name="f_at"/>
           <parameter value="1" type="double" name="f_bt"/>
-          <parameter value="0.01" type="double" name="x_v,max"/>
+          <parameter value="0.01" type="double" name="x_vmax"/>
           <parameter value="-1e-005" type="double" name="x_pa"/>
           <parameter value="-1e-005" type="double" name="x_pb"/>
           <parameter value="-1e-005" type="double" name="x_at"/>
@@ -303,7 +303,7 @@
           <port nodetype="NodeHydraulic" name="PT"/>
           <port nodetype="NodeSignal" name="in"/>
           <port nodetype="NodeSignal" name="xv"/>
-          <port nodetype="NodeSignal" name="x_v,max"/>
+          <port nodetype="NodeSignal" name="x_vmax"/>
           <port nodetype="NodeSignal" name="x_bt"/>
           <port nodetype="NodeSignal" name="x_pa"/>
           <port nodetype="NodeSignal" name="x_at"/>
@@ -316,7 +316,7 @@
           <hopsanobjectappearance version="0.3">
             <modelobject typename="Hydraulic43Valve" displayname="4/3 Directional Valve">
               <ports>
-                <port x="0.001257861635" y="0.256" enabled="true" a="180" name="x_v,max" autoplaced="false"/>
+                <port x="0.001257861635" y="0.256" enabled="true" a="180" name="x_vmax" autoplaced="false"/>
                 <port x="0.3446540881" y="0" enabled="true" a="270" name="x_bt" autoplaced="false"/>
                 <port x="0.2477987421" y="0" enabled="true" a="270" name="x_pa" autoplaced="false"/>
                 <port x="0.158490566" y="0" enabled="true" a="270" name="x_at" autoplaced="false"/>
@@ -1941,7 +1941,7 @@
           <style>solid</style>
         </hopsangui>
       </connect>
-      <connect endport="x_v,max" endcomponent="4/3 Directional Valve" startport="out" startcomponent="dv">
+      <connect endport="x_vmax" endcomponent="4/3 Directional Valve" startport="out" startcomponent="dv">
         <hopsangui>
           <coordinates>
             <coordinate x="1663.17026600000008329516" y="2555.55850599999985206523"/>

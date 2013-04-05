@@ -217,6 +217,9 @@ void Component::finalize()
 //!
 void Component::setName(string name)
 {
+    // Make sure name is clean
+    santizeName(name);
+
     //If name same as before do nothing
     if (name != mName)
     {
@@ -229,7 +232,6 @@ void Component::setName(string name)
         else
         {
             // No systemparent is set yet so lets set our own desired name, also make sure that it is a clean name
-            santizeName(name);
             mName = name;
         }
     }
