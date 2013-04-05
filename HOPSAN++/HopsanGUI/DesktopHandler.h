@@ -16,6 +16,7 @@ public:
     const QString &getDataPath() const;
     const QString &getTempPath() const;
     const QString &getDocumentsPath() const;
+    const QString getGeneratedComponentsPath() const;
     const QString &getBackupPath() const;
     const QString &getModelsPath() const;
     const QString &getScriptsPath() const;

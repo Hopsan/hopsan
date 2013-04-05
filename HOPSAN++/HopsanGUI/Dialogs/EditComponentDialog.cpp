@@ -57,6 +57,7 @@ EditComponentDialog::EditComponentDialog(QString code, SourceCodeEnumT language)
     mpVerticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
     mpCodeTextEdit = new QTextEdit(this);
     mpCodeTextEdit->setObjectName(QString::fromUtf8("mpCodeTextEdit"));
+    mpCodeTextEdit->setTabStopWidth(4);
 
     mpVerticalLayout->addWidget(mpCodeTextEdit);
 
@@ -79,7 +80,7 @@ EditComponentDialog::EditComponentDialog(QString code, SourceCodeEnumT language)
 
     if(code.isEmpty())
     {
-        openCreateComponentWizard();
+        openCreateComponentWizard(language);
     }
 }
 
@@ -108,15 +109,17 @@ void EditComponentDialog::setHighlighter(SourceCodeEnumT language)
 
 
 
-void EditComponentDialog::openCreateComponentWizard()
+void EditComponentDialog::openCreateComponentWizard(SourceCodeEnumT language)
 {
-    CreateComponentWizard *pWizard = new CreateComponentWizard(this);
+    CreateComponentWizard *pWizard = new CreateComponentWizard(language, this);
     pWizard->show();
 }
 
-CreateComponentWizard::CreateComponentWizard(EditComponentDialog *parent)
+CreateComponentWizard::CreateComponentWizard(EditComponentDialog::SourceCodeEnumT language, EditComponentDialog *parent)
     : QWizard(parent)
 {
+    mLanguage = language;
+
     mpParent = parent;
 
     mpFirstPage = new QWizardPage(this);
@@ -308,8 +311,7 @@ void CreateComponentWizard::generate()
     }
 
 
-    bool modelica = false;
-    if(modelica)
+    if(mLanguage==EditComponentDialog::Modelica)
     {        //Initial declaration
 
         output.append("model "+typeName+" \""+displayName+"\"\n");

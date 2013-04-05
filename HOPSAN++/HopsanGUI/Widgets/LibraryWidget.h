@@ -120,6 +120,7 @@ private:
     LibraryListWidget *mpList;
     QToolButton *mpTreeViewButton;
     QToolButton *mpDualViewButton;
+    QToolButton *mpHelpButton;
     QToolButton *mpGenerateComponentButton;
     QToolButton *mpLoadExternalButton;
     QAction *mpHelpAction;
@@ -133,6 +134,7 @@ private:
 
     QTreeWidgetItem *mpAddModelicaComponentItem;
     QTreeWidgetItem *mpAddCppComponentItem;
+    QTreeWidgetItem *mpLoadLibraryItem;
 
     QDir mUpdateXmlBackupDir;
 

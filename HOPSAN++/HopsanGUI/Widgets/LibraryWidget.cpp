@@ -136,25 +136,26 @@ LibraryWidget::LibraryWidget(QWidget *parent)
     mpDualViewButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LibraryDualView.png"));
     mpDualViewButton->setIconSize(iconSize);
     mpDualViewButton->setToolTip(tr("Dual List View"));
-    mpGenerateComponentButton = new QToolButton();
-    mpGenerateComponentButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-NewComponent.png"));
-    mpGenerateComponentButton->setIconSize(iconSize);
-    mpGenerateComponentButton->setToolTip(tr("Generate New Component (experimental)"));
-    mpLoadExternalButton = new QToolButton();
-    mpLoadExternalButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LoadLibrary.png"));
-    mpLoadExternalButton->setIconSize(iconSize);
-    mpLoadExternalButton->setToolTip(tr("Load External Library"));
-    mpHelpAction = new QAction("Open Context Help", this);
-    mpHelpAction->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Help.png"));
-    mpHelpAction->setToolTip("Open Context Help");
-    mpHelpToolBar = new QToolBar(this);
-    mpHelpToolBar->addAction(mpHelpAction);
+//    mpGenerateComponentButton = new QToolButton();
+//    mpGenerateComponentButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-NewComponent.png"));
+//    mpGenerateComponentButton->setIconSize(iconSize);
+//    mpGenerateComponentButton->setToolTip(tr("Generate New Component (experimental)"));
+//    mpLoadExternalButton = new QToolButton();
+//    mpLoadExternalButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-LoadLibrary.png"));
+//    mpLoadExternalButton->setIconSize(iconSize);
+//    mpLoadExternalButton->setToolTip(tr("Load External Library"));
+    mpHelpButton = new QToolButton();
+    mpHelpButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-Help.png"));
+    mpHelpButton->setToolTip(tr("Open Context Help"));
+    mpHelpButton->setIconSize(iconSize);
 
     connect(mpTreeViewButton, SIGNAL(clicked()), this, SLOT(setListView()));
     connect(mpDualViewButton, SIGNAL(clicked()), this, SLOT(setDualView()));
-    connect(mpGenerateComponentButton, SIGNAL(clicked()), this, SLOT(generateComponent()));
-    connect(mpLoadExternalButton, SIGNAL(clicked()), this, SLOT(addExternalLibrary()));
-    connect(mpHelpAction, SIGNAL(triggered()), gpMainWindow, SLOT(openContextHelp()));
+    //(mpGenerateComponentButton, SIGNAL(clicked()), this, SLOT(generateComponent()));
+    //connect(mpLoadExternalButton, SIGNAL(clicked()), this, SLOT(addExternalLibrary()));
+    connect(mpHelpButton, SIGNAL(clicked()), gpMainWindow, SLOT(openContextHelp()));
+
+    QWidget *pDummyWidget = new QWidget(this);
 
     mpGrid = new QGridLayout(this);
     mpGrid->addWidget(mpTree,                       0,0,1,7);
@@ -162,13 +163,15 @@ LibraryWidget::LibraryWidget(QWidget *parent)
     mpGrid->addWidget(mpList,                       2,0,1,7);
     mpGrid->addWidget(mpTreeViewButton,             3,0,1,1);
     mpGrid->addWidget(mpDualViewButton,             3,1,1,1);
-    mpGrid->addWidget(mpGenerateComponentButton,    3,2,1,1);
-    mpGrid->addWidget(mpLoadExternalButton,         3,3,1,1);
-#ifdef DEVELOPMENT
-    mpGrid->addWidget(mpHelpToolBar,                3,5,1,1);
-#endif
+    mpGrid->addWidget(pDummyWidget,                 3,2,1,1);
+    mpGrid->addWidget(mpHelpButton,                 3,3,1,1);
+    mpGrid->setColumnStretch(2,1);
+    //mpGrid->addWidget(mpGenerateComponentButton,    3,2,1,1);
+    //mpGrid->addWidget(mpLoadExternalButton,         3,3,1,1);
+
     mpGrid->setContentsMargins(4,4,4,4);
     mpGrid->setHorizontalSpacing(0);
+    mpGrid->setColumnMinimumWidth(2, 100);
 
     setLayout(mpGrid);
     this->setMouseTracking(true);
@@ -440,6 +443,12 @@ void LibraryWidget::loadTreeView(LibraryContentsTree *tree, QTreeWidgetItem *par
         mpAddCppComponentItem->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
         mpAddCppComponentItem->setToolTip(0, "Add C++ component");
         mpTree->addTopLevelItem(mpAddCppComponentItem);
+
+        mpLoadLibraryItem = new QTreeWidgetItem();
+        mpLoadLibraryItem->setText(0, "Load external library");
+        mpLoadLibraryItem->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
+        mpLoadLibraryItem->setToolTip(0, "Load external library");
+        mpTree->addTopLevelItem(mpLoadLibraryItem);
     }
 
 
@@ -1738,7 +1747,20 @@ void LibraryTreeWidget::mousePressEvent(QMouseEvent *event)
 
     if(item == gpMainWindow->mpLibrary->mpAddModelicaComponentItem)
     {
-        qDebug() << "Adding Modelica component!";
+        EditComponentDialog *pEditDialog = new EditComponentDialog("", EditComponentDialog::Modelica);
+        pEditDialog->exec();
+
+        if(pEditDialog->result() == QDialog::Accepted)
+        {
+            CoreGeneratorAccess coreAccess;
+            QString typeName = pEditDialog->getCode().section("model ", 1, 1).section(" ",0,0);
+            QString dummy = gDesktopHandler.getGeneratedComponentsPath();
+            QString libPath = dummy+typeName+"/";
+            coreAccess.generateFromModelica(pEditDialog->getCode(), libPath, typeName);
+            gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(libPath, "");
+        }
+        delete(pEditDialog);
+        this->setCurrentItem(this->topLevelItem(0));
         return;
     }
     if(item == gpMainWindow->mpLibrary->mpAddCppComponentItem)
@@ -1750,11 +1772,17 @@ void LibraryTreeWidget::mousePressEvent(QMouseEvent *event)
         {
             CoreGeneratorAccess coreAccess;
             QString typeName = pEditDialog->getCode().section("class ", 1, 1).section(" ",0,0);
-            QString libPath = gDesktopHandler.getDocumentsPath()+"Generated Components/"+typeName+"/";
+            QString libPath = gDesktopHandler.getGeneratedComponentsPath()+typeName+"/";
             coreAccess.generateFromCpp(pEditDialog->getCode(), true, libPath);
             gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(libPath, "");
         }
         delete(pEditDialog);
+        this->setCurrentItem(this->topLevelItem(0));
+        return;
+    }
+    if(item == gpMainWindow->mpLibrary->mpLoadLibraryItem)
+    {
+        gpMainWindow->mpLibrary->addExternalLibrary();
         return;
     }
 

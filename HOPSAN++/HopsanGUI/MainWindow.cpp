@@ -158,6 +158,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpLibDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     mpLibrary = new LibraryWidget(this);
     mpLibDock->setWidget(mpLibrary);
+
     addDockWidget(Qt::LeftDockWidgetArea, mpLibDock);
 
     qDebug() << "Time for creating library: " << time.elapsed();
@@ -355,6 +356,8 @@ void MainWindow::initializeWorkspace()
             updateToolBarsToNewTab();       //This will disable the buttons if last session did not contain any models
         }
     }
+
+    mpLibrary->adjustSize();
 }
 
 
@@ -1161,30 +1164,44 @@ void MainWindow::launchAutoUpdate()
 void MainWindow::openContextHelp()
 {
     QAction *action = qobject_cast<QAction *>(sender());
-
-    if(action->parent() == mpOptimizationDialog)
+    if(action != 0)
     {
-        mpHelpDialog->open("userOptimization.html");
+        if(action->parent() == mpOptimizationDialog)
+        {
+            mpHelpDialog->open("userOptimization.html");
+        }
+        else if(action->parent() == mpSensitivityAnalysisDialog)
+        {
+            mpHelpDialog->open("userSensitivityAnalysis.html");
+        }
+        else if(action->parent() == mpComponentGeneratorDialog)
+        {
+            mpHelpDialog->open("component-generator.html");
+        }
+        else if(action->parent() == mpProjectTabs->getCurrentContainer())
+        {
+            mpHelpDialog->open("userEnergyLosses.html");
+        }
+        else if(action->parent() == mpLibrary)
+        {
+            mpHelpDialog->open("userCustomComponents.html");
+        }
+        else
+        {
+            mpHelpDialog->open();
+        }
     }
-    else if(action->parent() == mpSensitivityAnalysisDialog)
+    QToolButton *button = qobject_cast<QToolButton *>(sender());
+    if(button != 0)
     {
-        mpHelpDialog->open("userSensitivityAnalysis.html");
-    }
-    else if(action->parent() == mpComponentGeneratorDialog)
-    {
-        mpHelpDialog->open("component-generator.html");
-    }
-    else if(action->parent() == mpProjectTabs->getCurrentContainer())
-    {
-        mpHelpDialog->open("userEnergyLosses.html");
-    }
-    else if(action->parent() == mpLibrary)
-    {
-        mpHelpDialog->open("userCustomComponents.html");
-    }
-    else
-    {
-        mpHelpDialog->open();
+        if(button->parent() == mpLibrary)
+        {
+            mpHelpDialog->open("userCustomComponents.html");
+        }
+        else
+        {
+            mpHelpDialog->open();
+        }
     }
     mpHelpDialog->centerOnScreen();
 }

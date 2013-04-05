@@ -484,7 +484,7 @@ void ComponentGeneratorDialog::generateComponent()
         {
             //It is (probably) a Modelica model, try and compile it
             CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
-            QString libPath = gDesktopHandler.getDocumentsPath()+"/Generated Components/"+name+"/";
+            QString libPath = gDesktopHandler.getGeneratedComponentsPath()+name+"/";
             pCoreAccess->generateFromModelica(code, libPath);
             delete(pCoreAccess);
 

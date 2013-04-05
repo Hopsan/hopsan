@@ -194,6 +194,12 @@ const QString &DesktopHandler::getDocumentsPath() const
 }
 
 
+const QString DesktopHandler::getGeneratedComponentsPath() const
+{
+    return getDocumentsPath()+"/Generated Components/";
+}
+
+
 const QString &DesktopHandler::getBackupPath() const
 {
     return mBackupPath;

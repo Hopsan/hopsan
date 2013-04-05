@@ -78,6 +78,7 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
     bool finalAlgorithmPart = false;    //Are we in the final "algorithms" part?
     for(int l=0; l<lines.size(); ++l)
     {
+        if(lines[l].startsWith("//")) continue;
         if(!initialAlgorithmPart && !equationPart && !finalAlgorithmPart)
         {
             //qDebug() << l << " - not in algorithms or equations";

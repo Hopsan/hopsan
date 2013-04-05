@@ -50,7 +50,7 @@ public:
 
     QString getCode();
 
-    void openCreateComponentWizard();
+    void openCreateComponentWizard(SourceCodeEnumT language);
 private slots:
     //void openCreateComponentWizard(SourceCodeEnumT language);
     void setHighlighter(SourceCodeEnumT language);
@@ -70,13 +70,15 @@ class CreateComponentWizard : public QWizard
     Q_OBJECT
 
 public:
-    CreateComponentWizard(EditComponentDialog *parent = 0);
+    CreateComponentWizard(EditComponentDialog::SourceCodeEnumT language, EditComponentDialog *parent = 0);
 
 private slots:
     void updatePage(int i);
     void generate();
 
 private:
+    EditComponentDialog::SourceCodeEnumT mLanguage;
+
     EditComponentDialog *mpParent;
 
     QWizardPage *mpFirstPage;
