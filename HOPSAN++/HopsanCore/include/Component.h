@@ -201,7 +201,8 @@ protected:
     void deletePort(const std::string name);
 
     // NodeData ptr function
-    double *getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue=0);
+    double *getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue);
+    double *getSafeNodeDataPtr(Port* pPort, const int dataId);
     double *getNodeDataPtr(Port* pPort, const int dataId);
     double *getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx, const int dataId, const double defaultValue=0);
 

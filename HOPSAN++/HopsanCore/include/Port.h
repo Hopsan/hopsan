@@ -77,7 +77,6 @@ namespace hopsan {
         virtual void writeNodeSafe(const size_t &idx, const double &value, const size_t portIdx=0);
 
         virtual double *getNodeDataPtr(const size_t idx, const size_t portIdx=0) const;
-        virtual double *getSafeNodeDataPtr(const size_t idx, const size_t portIdx=0);
         virtual std::vector<double> *getDataVectorPtr(const size_t portIdx=0);
 
         virtual const std::vector<NodeDataDescription>* getNodeDataDescriptions(const size_t portIdx=0);
@@ -191,7 +190,6 @@ namespace hopsan {
         inline void writeNode(const size_t &idx, const double &value, const size_t portIdx) const;
 
         double *getNodeDataPtr(const size_t idx, const size_t portIdx) const;
-        double *getSafeNodeDataPtr(const size_t idx, const size_t portIdx);
         std::vector<double> *getDataVectorPtr(const size_t portIdx=0);
 
         const std::vector<NodeDataDescription>* getNodeDataDescriptions(const size_t portIdx=0);

@@ -659,23 +659,19 @@ void Component::deletePort(const string name)
     }
 }
 
-//! @brief This is a help function that returns a pointer to desired NodeData, only for Advanced Use instead of read/write Node
-//! @ingroup ConvenientPortFunctions
-//! @param[in] pPort A pointer to the port from which to fetch NodeData pointer
-//! @param[in] dataId The enum id for the node value to fetch pointer to
-//! @param[in] defaultValue Optional default value if port should not be connected (optional), if ommitet it will be 0
-//! @returns A pointer to the specified NodeData or a pointer to dummy NodeData
-//! @details It is only ment to be used inside individual component code and automatically handles creation of dummy veriables in case optional ports are not connected
-//! @todo Dont know if name really good, should indicate that you should only run this once in initialize (otherwise a lot of new doubls may be created)
+//! @todo this is a temporary function for backwards compatibility where default values are set thourh getSafeNodeDataPtr
+//! @deprecated
 double *Component::getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue)
 {
-    addLogMess(getName()+"::getSafeNodeDataPtr");
-    //If this is one of the multiports then give an error message to the user so that they KNOW that they have made a misstake
-    if (pPort->getPortType() >= MultiportType)
-    {
-        addErrorMessage("Port: "+pPort->getName()+" is a multiport. Use getSafeMultiPortNodeDataPtr() instead of getSafeNodeDataPtr()");
-    }
-    return pPort->getSafeNodeDataPtr(dataId, defaultValue);
+    *pPort->getNodeDataPtr(dataId) = defaultValue;
+    return pPort->getNodeDataPtr(dataId);
+}
+
+//! @deprecated
+//! @note Use getNodeDataPtr(Port *pPort, const int dataId) instead
+double *Component::getSafeNodeDataPtr(Port *pPort, const int dataId)
+{
+    return getNodeDataPtr(pPort, dataId);
 }
 
 //! @brief This is a help function that returns a pointer to desired NodeData, only for Advanced Use instead of read/write Node
@@ -714,7 +710,8 @@ double *Component::getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx
     {
         addErrorMessage(string("Port: ")+pPort->getName()+string(" is NOT a multiport. Use getSafeNodeDataPtr() instead of getSafeMultiPortNodeDataPtr()"));
     }
-    return pPort->getSafeNodeDataPtr(dataId, portIdx);
+    *pPort->getNodeDataPtr(dataId, portIdx) = defaultValue;
+    return pPort->getNodeDataPtr(dataId, portIdx);
 }
 
 

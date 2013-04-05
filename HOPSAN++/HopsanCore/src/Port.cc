@@ -191,13 +191,6 @@ double *Port::getNodeDataPtr(const size_t idx, const size_t /*portIdx*/) const
 }
 
 
-double *Port::getSafeNodeDataPtr(const size_t idx, const size_t /*portIdx*/)
-{
-    return getNodeDataPtr(idx);
-}
-
-
-
 //! @brief Set the node that the port is connected to
 //! @param [in] pNode A pointer to the Node, or 0 for NC dummy node
 void Port::setNode(Node* pNode)
@@ -745,12 +738,8 @@ void MultiPort::writeNode(const size_t &idx, const double &value, const size_t p
     return mSubPortsVector[portIdx]->writeNode(idx,value);
 }
 
+//! @todo why do we even want a unsafe getNodeDataPtr it should be the safe version
 double *MultiPort::getNodeDataPtr(const size_t idx, const size_t portIdx) const
-{
-    return mSubPortsVector[portIdx]->getNodeDataPtr(idx);
-}
-
-double *MultiPort::getSafeNodeDataPtr(const size_t idx, const size_t portIdx)
 {
     //If we try to access node data for subport that does not exist then return multiport shared dummy safe ptr
     if (portIdx >= mSubPortsVector.size())
