@@ -1173,13 +1173,13 @@ bool ComponentSystem::connect(const string compname1, const string portname1, co
 
     if (pComp1 == 0)
     {
-        addErrorMessage("Component1: '"+compname1+"' can not be found when atempting connect", "connectwithoutcomponent");
+        addErrorMessage("Component1: '"+compname1+"' can not be found when attempting connect", "connectwithoutcomponent");
         return false;
     }
 
     if (pComp2 == 0)
     {
-        addErrorMessage("Component2: '"+compname2+"' can not be found when atempting connect", "connectwithoutcomponent");
+        addErrorMessage("Component2: '"+compname2+"' can not be found when attempting connect", "connectwithoutcomponent");
         return false;
     }
 

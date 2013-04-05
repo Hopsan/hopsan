@@ -187,7 +187,7 @@ void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSyste
                 bool ok = pComp->setParameterValue(paramName, val, true);
                 if(!ok)
                 {
-                    pComp->addErrorMessage("Failed to load parameter: "+paramName+"="+val);
+                    pComp->addWarningMessage("Failed to set parameter: "+paramName+"="+val);
                 }
 
                 pParam = pParam->next_sibling("parameter");

@@ -844,7 +844,7 @@ void Component::addDebugMessage(const string message, const string tag) const
 {
     if (mpMessageHandler)
     {
-        mpMessageHandler->addDebugMessage(getName()+ "::" + message, tag);
+        mpMessageHandler->addDebugMessage("In "+getName()+ ";  " + message, tag);
     }
 }
 
@@ -856,7 +856,7 @@ void Component::addWarningMessage(const string message, const string tag) const
 {
     if (mpMessageHandler)
     {
-        mpMessageHandler->addWarningMessage(getName()+ "::" + message, tag);
+        mpMessageHandler->addWarningMessage("In "+getName()+ ";  " + message, tag);
     }
 }
 
@@ -868,7 +868,7 @@ void Component::addErrorMessage(const string message, const string tag) const
 {
     if (mpMessageHandler)
     {
-        mpMessageHandler->addErrorMessage(getName()+ "::" + message, tag);
+        mpMessageHandler->addErrorMessage("In "+getName()+ ";  " + message, tag);
     }
 }
 
@@ -880,7 +880,7 @@ void Component::addInfoMessage(const string message, const string tag) const
 {
     if (mpMessageHandler)
     {
-        mpMessageHandler->addInfoMessage(getName()+ "::" + message, tag);
+        mpMessageHandler->addInfoMessage("In "+getName()+ ";  " + message, tag);
     }
 }
 

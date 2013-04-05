@@ -696,7 +696,7 @@ void ContainerObject::renameModelObject(QString oldName, QString newName, UndoSt
         }
         else
         {
-            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(QString("No GUI Object with name: ") + oldName + " found when atempting rename!");
+            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(QString("No GUI Object with name: ") + oldName + " found when attempting rename!");
         }
 
         if (undoSettings == Undo)
