@@ -41,6 +41,7 @@
 #include "CoreAccess.h"
 #include "common.h"
 #include "version_gui.h"
+#include "Dialogs/EditComponentDialog.h"
 
 using namespace std;
 using namespace hopsan;
@@ -222,6 +223,7 @@ void LibraryWidget::checkForFailedComponents()
         }
 
         QDialog *pRecompDialog = new QDialog(this);
+        pRecompDialog->setWindowFlags(pRecompDialog->windowFlags() | Qt::Tool);
         pRecompDialog->setWindowTitle("Failed Loading Libraries");
         QGridLayout *pRecompLayout = new QGridLayout();
         pRecompDialog->setLayout(pRecompLayout);
@@ -296,6 +298,7 @@ void LibraryWidget::checkForFailedComponents()
         Q_FOREACH(const QString &lib, libsToRecompile)
         {
             qDebug() << "Recompiling library: " << lib;
+            //! @todo This assumes that it is a C++ library, check if it is Modelica and adapt to it if so
             recompileComponent(lib);
         }
         mFailedRecompilableComponents.clear();
@@ -424,6 +427,20 @@ void LibraryWidget::loadTreeView(LibraryContentsTree *tree, QTreeWidgetItem *par
         }
     }
 
+    if(parentItem == 0)
+    {
+        mpAddModelicaComponentItem = new QTreeWidgetItem();
+        mpAddModelicaComponentItem->setText(0, "Add Modelica component");
+        mpAddModelicaComponentItem->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
+        mpAddModelicaComponentItem->setToolTip(0, "Add Modelica component");
+        mpTree->addTopLevelItem(mpAddModelicaComponentItem);
+
+        mpAddCppComponentItem = new QTreeWidgetItem();
+        mpAddCppComponentItem->setText(0, "Add C++ component");
+        mpAddCppComponentItem->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
+        mpAddCppComponentItem->setToolTip(0, "Add C++ component");
+        mpTree->addTopLevelItem(mpAddCppComponentItem);
+    }
 
 
     //Expand tree items that used to be expanded before update
@@ -637,42 +654,21 @@ void LibraryWidget::editComponent()
     sourceFile.close();
     sourceCode = QString(sourceCode.toUtf8());
 
-    //Create the dialog
-    QDialog *pDialog = new QDialog(this);
 
-    QVBoxLayout *pLayout = new QVBoxLayout(this);
-    pDialog->setLayout(pLayout);
-
-    mpEditComponentTextEdit = new QTextEdit(this);
-    mpEditComponentTextEdit->setPlainText(sourceCode);
-    //mpEditComponentTextEdit->resize(640,480);
-    pLayout->addWidget(mpEditComponentTextEdit);
+    EditComponentDialog::SourceCodeEnumT language;
     if(modelica)
-    {
-        ModelicaHighlighter *pModelicaHighlighter = new ModelicaHighlighter(mpEditComponentTextEdit->document());
-        connect(pDialog, SIGNAL(destroyed()), pModelicaHighlighter, SLOT(deleteLater()));
-    }
+        language=EditComponentDialog::Modelica;
     else
+        language=EditComponentDialog::Cpp;
+    EditComponentDialog *pEditDialog = new EditComponentDialog(sourceCode, language);
+    pEditDialog->exec();
+
+    if(pEditDialog->result() == QDialog::Accepted)
     {
-        CppHighlighter *pCppHighlighter = new CppHighlighter(mpEditComponentTextEdit->document());
-        connect(pDialog, SIGNAL(destroyed()), pCppHighlighter, SLOT(deleteLater()));
+        mEditComponentSourceCode = pEditDialog->getCode();
+        delete(pEditDialog);
+        recompileComponent();
     }
-
-    QDialogButtonBox *pButtonBox = new QDialogButtonBox(this);
-    pLayout->addWidget(pButtonBox);
-
-    QPushButton *pCancelButton = new QPushButton("Cancel", this);
-    pButtonBox->addButton(pCancelButton, QDialogButtonBox::RejectRole);
-
-    QPushButton *pDoneButton = new QPushButton("Recompile", this);
-    pButtonBox->addButton(pDoneButton, QDialogButtonBox::AcceptRole);
-
-    connect(pDoneButton, SIGNAL(clicked()), pDialog, SLOT(accept()));
-    connect(pCancelButton, SIGNAL(clicked()), pDialog, SLOT(reject()));
-    connect(pDialog, SIGNAL(accepted()), this, SLOT(recompileComponent()));
-
-    pDialog->resize(640,480);
-    pDialog->exec();
 }
 
 
@@ -685,7 +681,7 @@ void LibraryWidget::recompileComponent()
     QString libPath = getAppearanceData(mEditComponentTypeName)->getLibPath();
     QString basePath = getAppearanceData(mEditComponentTypeName)->getBasePath();
     QString fileName = getAppearanceData(mEditComponentTypeName)->getSourceCodeFile();
-    QString sourceCode = mpEditComponentTextEdit->toPlainText();
+    QString sourceCode = mEditComponentSourceCode;
 
     bool modelica = fileName.endsWith(".mo");
 
@@ -1739,6 +1735,28 @@ void LibraryTreeWidget::mousePressEvent(QMouseEvent *event)
     if(event->button() == Qt::RightButton) return;
 
     QTreeWidgetItem *item = currentItem();
+
+    if(item == gpMainWindow->mpLibrary->mpAddModelicaComponentItem)
+    {
+        qDebug() << "Adding Modelica component!";
+        return;
+    }
+    if(item == gpMainWindow->mpLibrary->mpAddCppComponentItem)
+    {
+        EditComponentDialog *pEditDialog = new EditComponentDialog("", EditComponentDialog::Cpp);
+        pEditDialog->exec();
+
+        if(pEditDialog->result() == QDialog::Accepted)
+        {
+            CoreGeneratorAccess coreAccess;
+            QString typeName = pEditDialog->getCode().section("class ", 1, 1).section(" ",0,0);
+            QString libPath = gDesktopHandler.getDocumentsPath()+"Generated Components/"+typeName+"/";
+            coreAccess.generateFromCpp(pEditDialog->getCode(), true, libPath);
+            gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(libPath, "");
+        }
+        delete(pEditDialog);
+        return;
+    }
 
     if(!gpMainWindow->mpLibrary->mTreeItemToContentsMap.contains(item)) return;      //Do nothing if item does not exist in map (= not a component)
 

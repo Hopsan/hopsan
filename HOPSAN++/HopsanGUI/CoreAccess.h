@@ -44,7 +44,7 @@ class CoreGeneratorAccess
 {
 public:
     bool generateFromModelica(QString code, QString outputPath="", QString target="");
-    bool generateFromCpp(QString code, bool showOutputDialog=true);
+    bool generateFromCpp(QString code, bool showOutputDialog=true, QString outputPath="");
     bool generateFromFmu(QString path);
     bool generateToFmu(QString path, SystemContainer *pSystem);
     bool generateToSimulink(QString path, SystemContainer *pSystem, bool disablePortLabels=false, int compiler=0);

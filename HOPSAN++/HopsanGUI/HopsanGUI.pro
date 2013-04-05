@@ -180,7 +180,8 @@ SOURCES += main.cpp \
     LogVariable.cpp \
     CachableDataVector.cpp \
     DesktopHandler.cpp \
-    Dialogs/ComponentPropertiesDialog3.cpp
+    Dialogs/ComponentPropertiesDialog3.cpp \
+    Dialogs/EditComponentDialog.cpp
 
 
 
@@ -253,7 +254,8 @@ HEADERS += MainWindow.h \
     LogVariable.h \
     CachableDataVector.h \
     DesktopHandler.h \
-    Dialogs/ComponentPropertiesDialog3.h
+    Dialogs/ComponentPropertiesDialog3.h \
+    Dialogs/EditComponentDialog.h
 
 OTHER_FILES += \
     ../hopsandefaults \

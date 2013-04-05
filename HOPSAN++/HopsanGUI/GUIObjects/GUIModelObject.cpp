@@ -863,6 +863,10 @@ QDomElement ModelObject::saveGuiDataToDomElement(QDomElement &rDomElement)
     nametext.setAttribute("position", getNameTextPos());
     nametext.setAttribute("visible", mpNameText->isVisible());
 
+
+    QDomElement animationElement = appendDomElement(xmlGuiStuff, "animation");
+    mModelObjectAppearance.getAnimationDataPtr()->saveToDomElement(animationElement);
+
     return xmlGuiStuff;
 }
 

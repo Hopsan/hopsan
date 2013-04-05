@@ -37,6 +37,7 @@
 #include "Utilities/XMLUtilities.h"
 #include "GUIObjects/GUISystem.h"
 #include "GUIObjects/GUIWidgets.h"
+#include "GUIObjects/GUIModelObject.h"
 #include "Widgets/LibraryWidget.h"
 #include "version_gui.h"
 #include "GUIConnector.h"
@@ -1256,6 +1257,12 @@ void ProjectTabWidget::restoreState()
             loadModel(mStateInfoBackupList[i]);
             getCurrentTab()->hasChanged();
             getCurrentTopLevelSystem()->setModelFile(mStateInfoHmfList[i]);
+            QString basePath = QFileInfo(mStateInfoHmfList[i]).absolutePath();
+            QStringListIterator objIt(getCurrentTopLevelSystem()->getModelObjectNames());
+            while (objIt.hasNext())
+            {
+                getCurrentTopLevelSystem()->getModelObject(objIt.next())->getAppearanceData()->setBasePath(basePath);
+            }
         }
         else
         {

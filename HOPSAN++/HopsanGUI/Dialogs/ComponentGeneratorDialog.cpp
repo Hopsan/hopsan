@@ -37,6 +37,8 @@
 #include "Widgets/PyDockWidget.h"
 #include "common.h"
 #include "CoreAccess.h"
+#include "Widgets/LibraryWidget.h"
+#include "DesktopHandler.h"
 
 
 
@@ -482,9 +484,11 @@ void ComponentGeneratorDialog::generateComponent()
         {
             //It is (probably) a Modelica model, try and compile it
             CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
-            pCoreAccess->generateFromModelica(code);
+            QString libPath = gDesktopHandler.getDocumentsPath()+"/Generated Components/"+name+"/";
+            pCoreAccess->generateFromModelica(code, libPath);
             delete(pCoreAccess);
 
+            gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(libPath, "");
 
 //            QString typeName, displayName, cqsType;
 //            QStringList initAlgorithms, equations, finalAlgorithms;

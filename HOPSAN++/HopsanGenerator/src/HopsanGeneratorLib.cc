@@ -56,7 +56,7 @@ extern "C" DLLIMPORTEXPORT void callModelicaGenerator(string modelicaCode, strin
 //! @param coreIncludePath Path to HopsanCore include files
 //! @param binPath Path to HopsanCore binary files
 //! @param showDialog True if generator output shall be displayed in a dialog window
-extern "C" DLLIMPORTEXPORT void callCppGenerator(string cppCode, string coreIncludePath, string binPath, bool showDialog=false)
+extern "C" DLLIMPORTEXPORT void callCppGenerator(string cppCode, string coreIncludePath, string binPath, bool showDialog=false, string outputPath="")
 {
     qDebug() << "Called C++ generator (in dll)!";
 
@@ -127,7 +127,8 @@ extern "C" DLLIMPORTEXPORT void callCppGenerator(string cppCode, string coreIncl
     comp.plainCode = code;
 
     HopsanGenerator *pGenerator = new HopsanGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
-    pGenerator->compileFromComponentObject(typeName+".hpp", comp, false);
+    pGenerator->setOutputPath(QString(outputPath.c_str()));
+    pGenerator->compileFromComponentObject(typeName, comp, false);
     delete(pGenerator);
 }
 

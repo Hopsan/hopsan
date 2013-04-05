@@ -55,7 +55,7 @@ public:
 class ModelObjectAnimationData
 {
 public:
-    void readFromDomElement(QDomElement &rDomElement, QString basePath);
+    void readFromDomElement(QDomElement &rDomElement, QString basePath, bool settingsOnly=false);
     void saveToDomElement(QDomElement &rDomElement);
 
     QString baseIconPath;

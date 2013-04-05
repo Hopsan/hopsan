@@ -231,7 +231,7 @@ QTextLineStream& operator <<(QTextLineStream &rLineStream, const char* input)
 
 bool compileComponentLibrary(QString path, QString name, HopsanGenerator *pGenerator, QString extraLinks)
 {
-    pGenerator->printMessage("Writing compilation script");
+    pGenerator->printMessage("Writing compilation script...");
 
     QStringList ccFiles;
     QDir targetDir = QDir(path);
@@ -255,7 +255,7 @@ bool compileComponentLibrary(QString path, QString name, HopsanGenerator *pGener
     pGenerator->printMessage("Links: "+l+"\n");
 
     QString output;
-    bool success = compile(path, name, c, i, l, "-Dhopsan=hopsan -fPIC -w -Wl,--rpath -Wl,"+path+" -shared ", output);
+    bool success = compile(path, name, c, i, l, "-Dhopsan=hopsan -fPIC -w -Wl,--rpath -Wl,\""+path+"\" -shared ", output);
     pGenerator->printMessage(output);
     return success;
 }
@@ -281,7 +281,7 @@ bool compile(QString path, QString o, QString c, QString i, QString l, QString f
         return false;
     }
     QTextStream clBatchStream(&clBatchFile);
-    clBatchStream << "g++.exe "+flags;
+    clBatchStream << "call g++.exe "+flags;
     clBatchStream << c+" -o "+o+".dll "+i+" "+l+"\n";
     clBatchFile.close();
 #endif
@@ -292,7 +292,7 @@ bool compile(QString path, QString o, QString c, QString i, QString l, QString f
     gccProcess.setWorkingDirectory(path);
     gccProcess.start("cmd.exe", QStringList() << "/c" << "compile.bat");
     gccProcess.waitForFinished();
-    QByteArray gccResult = gccProcess.readAll();
+    QByteArray gccResult = gccProcess.readAllStandardOutput();
     QList<QByteArray> gccResultList = gccResult.split('\n');
     for(int i=0; i<gccResultList.size(); ++i)
     {

@@ -165,5 +165,6 @@ void validateFunctions();
 }
 
 bool fuzzyEqual(const double &x, const double &y);
+void hAssert(const bool cond);
 
 #endif // SYMHOP_H

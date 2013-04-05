@@ -228,29 +228,29 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
         QString varName = toVarName("mpIn_"+inVarPortNames[i]);
         QString portName = toVarName(inVarPortNames[i]+"In");
         QString mpndName = toVarName("mpND_in"+inVarPortNames[i]);
-        portSpecs << FMIPortSpecification(varName, portName, mpndName, inVarValueRefs[i], "ReadPortType", "NodeSignal", "NodeSignal::Value", "input");
+        portSpecs << FMIPortSpecification(varName, portName, mpndName, inVarValueRefs[i], "ReadPort", "NodeSignal", "NodeSignal::Value", "input");
     }
     for(int i=0; i<outVarPortNames.size(); ++i)
     {
         portSpecs << FMIPortSpecification(toVarName("mpOut"+outVarPortNames[i]), toVarName(outVarPortNames[i]+"Out"),
                                           toVarName("mpND_out"+outVarPortNames[i]), outVarValueRefs[i],
-                                          "WritePortType", "NodeSignal", "NodeSignal::Value", "output");
+                                          "WritePort", "NodeSignal", "NodeSignal::Value", "output");
     }
     for(int i=0; i<inoutVarPortNames.size(); ++i)
     {
         portSpecs << FMIPortSpecification(toVarName("mpIn"+inoutVarPortNames[i]), toVarName(inoutVarPortNames[i]+"In"),
                                           toVarName("mpND_in"+inoutVarPortNames[i]), inoutVarValueRefs[i],
-                                          "ReadPortType", "NodeSignal", "NodeSignal::Value", "");
+                                          "ReadPort", "NodeSignal", "NodeSignal::Value", "");
         portSpecs << FMIPortSpecification(toVarName("mpOut"+inoutVarPortNames[i]), toVarName(inoutVarPortNames[i]+"Out"),
                                           toVarName("mpND_out"+inoutVarPortNames[i]), inoutVarValueRefs[i],
-                                          "WritePortType", "NodeSignal", "NodeSignal::Value", "");
+                                          "WritePort", "NodeSignal", "NodeSignal::Value", "");
     }
     for(int i=0; i<tlmPortVarNames.size(); ++i)
     {
         QString numStr = QString::number(i);
         QString varName = "mpP"+numStr;
         QString portName = "P"+numStr;
-        QString portType = "PowerPortType";
+        QString portType = "PowerPort";
         QString nodeType;
         QString cqType;
         QStringList mpndNames, dataTypes, causalities;

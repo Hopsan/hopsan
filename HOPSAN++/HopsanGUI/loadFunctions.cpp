@@ -226,6 +226,12 @@ ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, 
     int nameTextVisible = guiData.firstChildElement(HMF_NAMETEXTTAG).attribute("visible").toInt(); //should be bool, +0.5 to roound to int on truncation
 
     ModelObjectAppearance *pAppearanceData = pLibrary->getAppearanceData(type, subtype);
+
+    QDomElement animationElement = guiData.firstChildElement("animation");
+    if(!animationElement.isNull())
+    {
+        pAppearanceData->getAnimationDataPtr()->readFromDomElement(animationElement, pAppearanceData->getBasePath(), true);
+    }
     if (pAppearanceData != 0)
     {
         ModelObjectAppearance appearanceData = *pAppearanceData; //Make a copy

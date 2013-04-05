@@ -165,7 +165,9 @@ private:
         setDataCharacteristics(Position, "Position", "x", "m");
         setDataCharacteristics(WaveVariable, "WaveVariable", "c", "N", TLMType);
         setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "N s/m", TLMType);
-        setDataCharacteristics(EquivalentMass, "EquivalentMass", "me", "kg", HiddenType);
+        setDataCharacteristics(EquivalentMass, "EquivalentMass", "me", "kg", DefaultType);
+
+        mDataValues[EquivalentMass]=1;
     }
 
     virtual void setTLMNodeDataValuesTo(Node *pOtherNode)

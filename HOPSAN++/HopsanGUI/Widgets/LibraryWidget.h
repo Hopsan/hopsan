@@ -131,11 +131,15 @@ private:
     QMap<QTreeWidgetItem *, LibraryComponent *> mTreeItemToContentsMap;
     QMap<QTreeWidgetItem *, LibraryContentsTree *> mTreeItemToContentsTreeMap;
 
+    QTreeWidgetItem *mpAddModelicaComponentItem;
+    QTreeWidgetItem *mpAddCppComponentItem;
+
     QDir mUpdateXmlBackupDir;
 
     QMap<QString, QStringList> mReplacementsMap;
 
     QString mEditComponentTypeName;
+    QString mEditComponentSourceCode;
     QTextEdit *mpEditComponentTextEdit;
 
     QStringList mFailedRecompilableComponents;
