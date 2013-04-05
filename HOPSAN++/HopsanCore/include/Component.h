@@ -185,7 +185,7 @@ protected:
     }
 
     // Interface variable functions
-    Port *addReadVariable(const std::string name, const std::string description, const std::string unit, const std::string type, const double defaultValue);
+    Port *addReadVariable(const std::string name, const std::string description, const std::string unit, const double defaultValue);
 
     // Port functions
     Port* addPort(const std::string portName, const PortTypesEnumT portType, const std::string nodeType, const Port::RequireConnectionEnumT reqConnection);

@@ -38,11 +38,10 @@ namespace hopsan {
     {
     private:
         double Zc;
-        double p;
         Port *mpIn, *mpMP;
 
         size_t mNumPorts;
-        double *mpND_in;//, *mpND_p, *mpND_c, *mpND_Zc;
+        double *mpND_in;
         std::vector<double*> mND_p_vec;
         std::vector<double*> mND_q_vec;
         std::vector<double*> mND_c_vec;
@@ -56,13 +55,10 @@ namespace hopsan {
 
         void configure()
         {
-            p         = 1.0e5;
-            Zc        = 0.0;
+            Zc = 0.0;
 
-            mpIn = addReadPort("In", "NodeSignal", Port::NotRequired);
-            mpMP = addPowerMultiPort("MP", "NodeHydraulic"); //addPowerPort("MP", "NodeHydraulic");
-
-            registerParameter("p", "Default pressure", "[Pa]", p);
+            mpMP = addPowerMultiPort("MP", "NodeHydraulic");
+            mpIn = addReadVariable("p", "Default pressure", "Pa", 1.0e5);
 
             disableStartValue(mpMP, NodeHydraulic::Pressure);
         }
@@ -70,7 +66,7 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value, p);
+            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value);
 
             mNumPorts = mpMP->getNumPorts();
 
@@ -101,8 +97,6 @@ namespace hopsan {
                 *(mND_c_vec[i]) = (*mpND_in);
                 *(mND_Zc_vec[i]) = Zc;
             }
-//            (*mpND_c) = (*mpND_in);
-//            (*mpND_Zc) = Zc;
         }
     };
 }

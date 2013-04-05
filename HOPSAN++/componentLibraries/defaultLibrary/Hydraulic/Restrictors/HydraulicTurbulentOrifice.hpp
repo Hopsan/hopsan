@@ -49,7 +49,7 @@ namespace hopsan {
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_A;
         double p1,q1, p2, q2, c1, Zc1, c2, Zc2;
 
-        Port *mpP1, *mpP2, *mpIn;
+        Port *mpP1, *mpP2, *mpArea, *mpCq, *mpRho;
 
     public:
         static Component *Creator()
@@ -61,16 +61,15 @@ namespace hopsan {
         {
             Cq = 0.67;
             A = 0.00001;
-            Kc = Cq*A*sqrt(2.0/rho);
             rho = 890;
+            Kc = Cq*A*sqrt(2.0/rho);
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
-            mpIn = addReadPort("A", "NodeSignal", Port::NotRequired);
 
-            registerParameter("C_q", "Flow coefficient", "[-]", Cq);
-            registerParameter("A", "Area", "[m^2]", A);
-            registerParameter("rho", "Oil Density", "[kg/m^3]", rho);
+            mpArea = addReadVariable("A", "Area", "m^2", A);
+            mpCq = addReadVariable("C_q", "Flow coefficient", "-", Cq);
+            mpRho = addReadVariable("rho", "Oil Density", "kg/m^3", rho);
         }
 
 
@@ -86,7 +85,7 @@ namespace hopsan {
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
             mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
 
-            mpND_A = getSafeNodeDataPtr(mpIn, NodeSignal::Value, A);
+            mpND_A = getSafeNodeDataPtr(mpArea, NodeSignal::Value);
         }
 
 
@@ -98,6 +97,8 @@ namespace hopsan {
             c2 = (*mpND_c2);
             Zc2 = (*mpND_Zc2);
             A = (*mpND_A);
+            Cq = mpCq->readNode(NodeSignal::Value);
+            rho = mpRho->readNode(NodeSignal::Value);
 
             //Orifice equations
             Kc = Cq*A*sqrt(2.0/rho);

@@ -510,6 +510,49 @@ void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion,
         }
     }
 
+    // Fix changed parameter names, after introduction of readVariables
+    if (coreVersion < "0.6.0" || (coreVersion > "0.6.x" && coreVersion < "0.6.x_r5210"))
+    {
+        if(element.attribute("typename") == "HydraulicLaminarOrifice")
+        {
+            QDomElement parameter = element.firstChildElement(HMF_PARAMETERS).firstChildElement(HMF_PARAMETERTAG);
+            while (!parameter.isNull())
+            {
+                if (parameter.attribute(HMF_NAMETAG) == "K_c")
+                {
+                    parameter.setAttribute(HMF_NAMETAG, "Kc::Value");
+                }
+                parameter = parameter.nextSiblingElement(HMF_PARAMETERTAG);
+            }
+        }
+
+//        if(element.attribute("typename") == "HydraulicPressureSourceC")
+//        {
+//            QDomElement parameter = element.firstChildElement(HMF_PARAMETERS).firstChildElement(HMF_PARAMETERTAG);
+//            while (!parameter.isNull())
+//            {
+//                if (parameter.attribute(HMF_NAMETAG) == "p")
+//                {
+//                    parameter.setAttribute(HMF_NAMETAG, "p::Value");
+//                }
+//                parameter = parameter.nextSiblingElement(HMF_PARAMETERTAG);
+//            }
+//        }
+
+//        if(element.attribute("typename") == "HydraulicPressureSourceQ")
+//        {
+//            QDomElement parameter = element.firstChildElement(HMF_PARAMETERS).firstChildElement(HMF_PARAMETERTAG);
+//            while (!parameter.isNull())
+//            {
+//                if (parameter.attribute(HMF_NAMETAG) == "p")
+//                {
+//                    parameter.setAttribute(HMF_NAMETAG, "p::Value");
+//                }
+//                parameter = parameter.nextSiblingElement(HMF_PARAMETERTAG);
+//            }
+//        }
+    }
+
     if(hmfVersion <= 0.2)
     {
         if(element.attribute("typename") == "HydraulicPressureSource")

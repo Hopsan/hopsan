@@ -207,11 +207,11 @@ double *Port::getSafeNodeDataPtr(const size_t idx, const double defaultValue, co
 //        mpNCDummyNode->setDataValue(idx, defaultValue);
 //        return mpNCDummyNode->getDataPtr(idx);
 //    }
-    if (mpNode->getNumConnectedPorts() == 1)
-    {
-        //mpNode->setDataValue(idx, defaultValue);
-    }
-    return mpNode->getDataPtr(idx);
+//    if (mpNode->getNumConnectedPorts() == 1)
+//    {
+//        //mpNode->setDataValue(idx, defaultValue);
+//    }
+    return getNodeDataPtr(idx);
 }
 
 

@@ -151,8 +151,19 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStat
     parameterType = rDomElement.attribute(HMF_TYPE);
     parameterType = rDomElement.attribute(HMF_TYPENAME, parameterType); //!< @deprecated load old typename
 
+    //! @todo Remove this check in teh future when models should have been updated
+    QStringList existinNames = pObject->getParameterNames();
+    // This code makes sure we can load old parameters from before they became ports
+    if(!existinNames.contains(parameterName))
+    {
+        if (!parameterName.contains("::"))
+        {
+            parameterName = parameterName+"::Value";
+        }
+    }
+
     //Use the setParameter method that mapps to System parameter
-    if(!parameterName.startsWith("noname_subport:") && !pObject->getParameterNames().contains(parameterName))
+    if(!parameterName.startsWith("noname_subport:") && !existinNames.contains(parameterName))
     {
         if (parameterName.contains("::"))
         {

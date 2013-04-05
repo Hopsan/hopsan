@@ -39,7 +39,7 @@ namespace hopsan {
     private:
         double p;
 
-        double *mpND_in, *mpND_p, *mpND_q, *mpND_c, *mpND_Zc;
+        double *mpND_p, *mpND_q, *mpND_c, *mpND_Zc;
 
         Port *mpP1;
 
@@ -55,7 +55,7 @@ namespace hopsan {
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
 
-            registerParameter("p", "Default Pressure", "[Pa]", p);
+            registerParameter("p", "Default Pressure", "Pa", p);
         }
 
 
