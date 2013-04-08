@@ -2087,11 +2087,14 @@ void ComponentSystem::adjustTimestep(vector<Component*> componentPtrs)
 
 void ComponentSystem::setupLogTimesteps(const double startT, const double stopT, const double Ts, const size_t nLogSamples)
 {
+    // We do not want to log negative time
+    const double logStartT = max(startT,0.0);
+
     // Calc logDt and
-    mLogTimeDt = (stopT-startT)/double(nLogSamples-1);
+    mLogTimeDt = (stopT-logStartT)/double(nLogSamples-1);
 
     // Figure out at which samples logging should happen
-    double logT=startT;
+    double logT=logStartT;
     double simT=startT;
 
     mLogTheseTimeSteps.clear();
@@ -2099,11 +2102,18 @@ void ComponentSystem::setupLogTimesteps(const double startT, const double stopT,
     if (nLogSamples > 0)
     {
         mLogTheseTimeSteps.reserve(nLogSamples);
-        mLogTheseTimeSteps.push_back(0);
+
+        // Figure out the first simulation step to log (the one where simT >= logT)
+        size_t n = (logT-simT)/double(Ts)+0.5;
+        mLogTheseTimeSteps.push_back(n);
+        // Fastforward simT
+        simT += double(n)*Ts;
+
+        // Now Calculate which additional simulation steps should be logged
         while (mLogTheseTimeSteps.size() < nLogSamples)
         {
             logT += mLogTimeDt;
-            size_t n = size_t((logT-simT)/Ts+0.5);
+            n = size_t((logT-simT)/Ts+0.5);
             simT += double(n)*Ts;
 
             //cout << "SimT: " << simT << " logT: " << logT << " logT-simT: " << logT-simT << endl;
@@ -2117,7 +2127,7 @@ void ComponentSystem::setupLogTimesteps(const double startT, const double stopT,
         }
 
         //cout << "n: " << n << endl;
-        cout << "mNumSimulationSteps: " << size_t((stopT-startT)/Ts+0.5) << endl;
+        cout << "mNumSimulationSteps: " << size_t((stopT-logStartT)/Ts+0.5) << endl;
         cout << "mLastStepToLog: " << mLogTheseTimeSteps.back() << endl;
         cout << "mLogTimeDt: " << mLogTimeDt << " mTimeStepsToLog.size(): " << mLogTheseTimeSteps.size() << endl;
     }
