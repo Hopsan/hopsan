@@ -99,7 +99,7 @@ public:
 
     // Port methods
     void showPorts(bool visible);
-    Port *getPort(QString name);
+    Port *getPort(const QString &rName);
     QList<Port*> &getPortListPtrs();
     virtual Port* createRefreshExternalPort(QString portName);
     Port* createRefreshExternalDynamicParameterPort(QString portName);

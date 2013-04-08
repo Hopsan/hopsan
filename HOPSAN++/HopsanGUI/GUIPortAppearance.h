@@ -34,7 +34,7 @@ public:
     PortAppearance();
     void selectPortIcon(QString cqstype, QString porttype, QString nodetype);
 
-    qreal x,y,rot;
+    double x,y,rot;
     QString mMainIconPath;
     QString mCQSOverlayPath;
     QString mMultiPortOverlayPath;

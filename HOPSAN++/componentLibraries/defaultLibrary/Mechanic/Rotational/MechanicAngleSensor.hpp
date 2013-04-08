@@ -51,7 +51,7 @@ namespace hopsan {
         {
 
             mpP1 = addReadPort("P1", "NodeMechanicRotational");
-            mpOut = addWriteVariable("out", "Angle", "rad");
+            mpOut = addOutputVariable("out", "Angle", "rad");
         }
 
 

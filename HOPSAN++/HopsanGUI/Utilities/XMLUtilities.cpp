@@ -525,32 +525,6 @@ void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion,
                 parameter = parameter.nextSiblingElement(HMF_PARAMETERTAG);
             }
         }
-
-//        if(element.attribute("typename") == "HydraulicPressureSourceC")
-//        {
-//            QDomElement parameter = element.firstChildElement(HMF_PARAMETERS).firstChildElement(HMF_PARAMETERTAG);
-//            while (!parameter.isNull())
-//            {
-//                if (parameter.attribute(HMF_NAMETAG) == "p")
-//                {
-//                    parameter.setAttribute(HMF_NAMETAG, "p::Value");
-//                }
-//                parameter = parameter.nextSiblingElement(HMF_PARAMETERTAG);
-//            }
-//        }
-
-//        if(element.attribute("typename") == "HydraulicPressureSourceQ")
-//        {
-//            QDomElement parameter = element.firstChildElement(HMF_PARAMETERS).firstChildElement(HMF_PARAMETERTAG);
-//            while (!parameter.isNull())
-//            {
-//                if (parameter.attribute(HMF_NAMETAG) == "p")
-//                {
-//                    parameter.setAttribute(HMF_NAMETAG, "p::Value");
-//                }
-//                parameter = parameter.nextSiblingElement(HMF_PARAMETERTAG);
-//            }
-//        }
     }
 
     if(hmfVersion <= 0.2)

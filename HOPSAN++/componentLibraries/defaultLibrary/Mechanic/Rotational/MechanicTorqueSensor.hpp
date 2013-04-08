@@ -50,7 +50,7 @@ namespace hopsan {
         void configure()
         {
             mpP1 = addReadPort("P1", "NodeMechanicRotational");
-            mpOut = addWriteVariable("out","Torque","Nm");
+            mpOut = addOutputVariable("out","Torque","Nm");
         }
 
 

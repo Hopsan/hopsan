@@ -49,6 +49,7 @@ class HopsanEssentials;
 class HopsanCoreMessageHandler;
 
 //! @brief Enum type for parameters, describing if they are to be dynamic or constant
+//! @deprecated
 enum ParamDynConstEnumT {Dynamic, Constant};
 
 class VariameterDescription
@@ -185,8 +186,8 @@ protected:
     }
 
     // Interface variable functions
-    Port *addReadVariable(const std::string name, const std::string description, const std::string unit, const double defaultValue);
-    Port *addWriteVariable(const std::string name, const std::string description, const std::string unit);
+    Port *addInputVariable(const std::string name, const std::string description, const std::string unit, const double defaultValue);
+    Port *addOutputVariable(const std::string name, const std::string description, const std::string unit);
 
     // Port functions
     Port* addPort(const std::string portName, const PortTypesEnumT portType, const std::string nodeType, const Port::RequireConnectionEnumT reqConnection);

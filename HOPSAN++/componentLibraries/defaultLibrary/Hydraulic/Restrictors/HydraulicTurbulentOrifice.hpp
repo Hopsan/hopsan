@@ -67,9 +67,9 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
 
-            mpArea = addReadVariable("A", "Area", "m^2", A);
-            mpCq = addReadVariable("C_q", "Flow coefficient", "-", Cq);
-            mpRho = addReadVariable("rho", "Oil Density", "kg/m^3", rho);
+            mpArea = addInputVariable("A", "Area", "m^2", A);
+            mpCq = addInputVariable("C_q", "Flow coefficient", "-", Cq);
+            mpRho = addInputVariable("rho", "Oil Density", "kg/m^3", rho);
         }
 
 

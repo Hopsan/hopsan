@@ -49,7 +49,7 @@ namespace hopsan {
         void configure()
         {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
-            mpIn = addReadVariable("p","Set pressure", "Pa", 1e5);
+            mpIn = addInputVariable("p","Set pressure", "Pa", 1e5);
         }
 
 

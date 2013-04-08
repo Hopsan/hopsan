@@ -51,7 +51,7 @@ namespace hopsan {
         {
 
             mpP1 = addReadPort("P1", "NodeHydraulic");
-            mpOut = addWriteVariable("out", "Flow", "m^3/s");
+            mpOut = addOutputVariable("out", "Flow", "m^3/s");
         }
 
 

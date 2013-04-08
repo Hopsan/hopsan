@@ -48,7 +48,7 @@ namespace hopsan {
 
         void configure()
         {
-            mpIn = addReadVariable("p", "Set pressure", "Pa", 1.0e5);
+            mpIn = addInputVariable("p", "Set pressure", "Pa", 1.0e5);
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             disableStartValue(mpP1, NodeHydraulic::Pressure);

@@ -580,21 +580,18 @@ bool ModelObject::isLossesDisplayVisible()
 }
 
 
-//! @brief Returns a pointer to the port with the specified name
-Port *ModelObject::getPort(QString name)
+//! @brief Get a pointer to the port with the specified name
+//! @param [in] rName The port name
+//! @returns A ptr to the port or 0 if no port was found
+Port *ModelObject::getPort(const QString &rName)
 {
-    //qDebug() << "Trying to find GUIPort with name: " << name;
-    //! @todo use a guiport map instead   (Is this really a good idea? The number of ports is probably too small to make it beneficial, and it would slow down everything else...)
     for (int i=0; i<mPortListPtrs.size(); ++i)
     {
-        if (mPortListPtrs[i]->getName() == name)
+        if (mPortListPtrs[i]->getName() == rName)
         {
             return mPortListPtrs[i];
         }
-        //qDebug() << mPortListPtrs[i]->getName() << " != " << name;
     }
-    qDebug() << "Did NOT find GUIPort with name: " << name << " in: " << this->getName() << " returning NULL ptr";
-
     return 0;
 }
 
@@ -668,16 +665,14 @@ Port *ModelObject::createRefreshExternalPort(QString portName)
 
 //! @brief Removes an external Port from a container object
 //! @param[in] portName The name of the port to be removed
-//! @todo maybe we should use a map instead to make delete more efficient, (may not amtter usually not htat many external ports)
 void ModelObject::removeExternalPort(QString portName)
 {
-    //qDebug() << "mPortListPtrs.size(): " << mPortListPtrs.size();
     QList<Port*>::iterator plit;
     for (plit=mPortListPtrs.begin(); plit!=mPortListPtrs.end(); ++plit)
     {
         if ((*plit)->getName() == portName )
         {
-            //Delete the GUIPort its post in the portlist and its appearance data
+            // Delete the GUIPort its post in the portlist and its appearance data
             mActiveDynamicParameterPortNames.removeAll(portName);
             (*plit)->disconnectAndRemoveAllConnectedConnectors();
             (*plit)->deleteLater();
@@ -686,7 +681,6 @@ void ModelObject::removeExternalPort(QString portName)
             break;
         }
     }
-    //qDebug() << "mPortListPtrs.size(): " << mPortListPtrs.size();
 }
 
 //! @brief Get the default value of a parameter
@@ -895,6 +889,7 @@ void ModelObject::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
     WorkspaceObject::hoverEnterEvent(event);
     this->setZValue(HoveredModelobjectZValue);
     this->showPorts(true);
+    this->showName(NoUndo);
 }
 
 
@@ -904,6 +899,10 @@ void ModelObject::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     WorkspaceObject::hoverLeaveEvent(event);
     this->setZValue(ModelobjectZValue);
     this->showPorts(false);
+    if (mpParentContainerObject->areSubComponentNamesHidden())
+    {
+        this->hideName(NoUndo);
+    }
 }
 
 

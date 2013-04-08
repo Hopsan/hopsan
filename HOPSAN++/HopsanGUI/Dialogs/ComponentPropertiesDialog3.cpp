@@ -704,29 +704,28 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
     RowAwareToolButton *pResetDefaultToolButton = new RowAwareToolButton(row);
     pResetDefaultToolButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetDefault.png"));
     pResetDefaultToolButton->setToolTip("Reset Default Value");
-    //this->setIndexWidget(model()->index(row,ResetButton), pResetDefaultToolButton);
+    pResetDefaultToolButton->setFixedSize(24,24);
     connect(pResetDefaultToolButton, SIGNAL(triggeredAtRow(int)), this, SLOT(resetDefaultValueAtRow(int)));
     pToolButtonsLayout->addWidget(pResetDefaultToolButton);
 
     RowAwareToolButton *pSystemParameterToolButton = new RowAwareToolButton(row);
     pSystemParameterToolButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-SystemParameter.png"));
     pSystemParameterToolButton->setToolTip("Map To System Parameter");
-    //this->setIndexWidget(model()->index(row,SysparButton), pSystemParameterToolButton);
+    pSystemParameterToolButton->setFixedSize(24,24);
     connect(pSystemParameterToolButton, SIGNAL(triggeredAtRow(int)), this, SLOT(selectSystemParameterAtRow(int)));
     pToolButtonsLayout->addWidget(pSystemParameterToolButton);
 
-    bool isReadVariable = (rData.mName == "Value");
-    if (!isConstant && isReadVariable)
+    bool isInputVariable = (rData.mName == "Value");
+    if (!isConstant && isInputVariable)
     {
         RowAwareCheckBox *pEnablePortCheckBox = new RowAwareCheckBox(row);
-        //pEnablePortCheckBox->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ResetDefault.png"));
         pEnablePortCheckBox->setToolTip("Show/hide port");
-        pEnablePortCheckBox->setChecked(false); //!< @todo decide based on shown ports
-        //this->setIndexWidget(model()->index(row,ShowHidePortButton), pEnablePortCheckBox);
+        pEnablePortCheckBox->setChecked(mpModelObject->getPort(rData.mPortName)!=0);
+        pEnablePortCheckBox->setFixedSize(24,24);
         connect(pEnablePortCheckBox, SIGNAL(checkedAtRow(int, bool)), this, SLOT(makePortAtRow(int,bool)));
         pToolButtonsLayout->addWidget(pEnablePortCheckBox);
     }
-
+    pToolButtonsLayout->addStretch(2);
     this->setIndexWidget(model()->index(row,Buttons), pTooButtons);
 }
 

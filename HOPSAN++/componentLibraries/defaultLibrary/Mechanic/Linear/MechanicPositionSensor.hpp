@@ -49,7 +49,7 @@ namespace hopsan {
         void configure()
         {
             mpP1 = addReadPort("P1", "NodeMechanic", Port::NotRequired);
-            mpOut = addWriteVariable("out", "Position", "m");
+            mpOut = addOutputVariable("out", "Position", "m");
         }
 
 

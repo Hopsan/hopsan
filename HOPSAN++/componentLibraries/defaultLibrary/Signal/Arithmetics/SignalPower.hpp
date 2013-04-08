@@ -51,7 +51,7 @@ namespace hopsan {
         {
             mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
             mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
-            mpX = addReadVariable("x", "Exponential", "-", 0);
+            mpX = addInputVariable("x", "Exponential", "-", 0);
             disableStartValue(mpOut, NodeSignal::Value);
         }
 
