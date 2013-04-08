@@ -94,7 +94,7 @@ public:
     size_t getNumberOfLogSamples();
     void setNumberOfLogSamples(size_t nSamples);
 
-    QString getTypeName();
+    QString getTypeName() const;
     void setName(QString newName);
     QString getTypeCQS();
 

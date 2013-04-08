@@ -602,6 +602,22 @@ Port *ModelObject::createRefreshExternalDynamicParameterPort(QString portName)
     return createRefreshExternalPort(portName);
 }
 
+void ModelObject::hideExternalDynamicParameterPort(QString portName)
+{
+    QList<Port*>::iterator plit;
+    for (plit=mPortListPtrs.begin(); plit!=mPortListPtrs.end(); ++plit)
+    {
+        if ((*plit)->getName() == portName )
+        {
+            // Disconnect port, hide it and forget its a dynamic parmater port (to prevent saving it)
+            (*plit)->disconnectAndRemoveAllConnectedConnectors();
+            (*plit)->setEnable(false);
+            mActiveDynamicParameterPortNames.removeAll(portName);
+            break;
+        }
+    }
+}
+
 //! @brief This method creates ONE external port. Or refreshes existing ports. It assumes that port appearance information for this port exists
 //! @param[portName] The name of the port to create
 //! @todo maybe defualt create that info if it is missing
@@ -642,13 +658,16 @@ Port *ModelObject::createRefreshExternalPort(QString portName)
 
         mPortListPtrs.append(pPort);
 
-        pPort->refreshPortGraphics();
+        //pPort->refreshPortGraphics();
     }
     else
     {
         // The external port already seems to exist, lets update it incase something has changed
         //! @todo Maybe need to have a refresh portappearance function, dont really know if this will ever be used though, will fix when it becomes necessary
         pPort->refreshPortGraphics();
+
+        // Adjust the position
+        pPort->setCenterPosByFraction(pPort->getPortAppearance()->x, pPort->getPortAppearance()->y);
 
         // In this case connections exist, also refresh any attached connectors, if types have changed
         //! @todo we allways update, maybe we should be more smart and only update if changed, but I think this should be handled inside the connector class (the smartness)
@@ -1410,7 +1429,7 @@ void ModelObject::showName(UndoStatusEnumT undoSettings)
 
 
 //! @brief Virtual dummy function that returns the type name of the object (must be reimplemented by children)
-QString ModelObject::getTypeName()
+QString ModelObject::getTypeName() const
 {
     assert(false);
     return "";
@@ -1459,6 +1478,11 @@ void ModelObject::setAppearanceDataBasePath(const QString basePath)
 ModelObjectAppearance* ModelObject::getAppearanceData()
 {
     return &mModelObjectAppearance;
+}
+
+const ModelObjectAppearance *ModelObject::getLibraryAppearanceData() const
+{
+    return gpMainWindow->mpLibrary->getAppearanceData(getTypeName());
 }
 
 //! @brief Refreshes the appearance and position of ports on the model object

@@ -50,7 +50,7 @@ public:
     virtual void setName(QString name);
     virtual QString getName();
     virtual void refreshDisplayName(const QString overrideName="");
-    virtual QString getTypeName();
+    virtual QString getTypeName() const;
     QString getSubTypeName() const;
     void setSubTypeName(const QString subTypeName);
     virtual int getNameTextPos();
@@ -62,6 +62,7 @@ public:
     // Appearance methods
     void setAppearanceDataBasePath(const QString basePath);
     virtual ModelObjectAppearance* getAppearanceData();
+    virtual const ModelObjectAppearance *getLibraryAppearanceData() const;
     bool isVisible();
     QGraphicsSvgItem *getIcon();
 
@@ -103,6 +104,7 @@ public:
     QList<Port*> &getPortListPtrs();
     virtual Port* createRefreshExternalPort(QString portName);
     Port* createRefreshExternalDynamicParameterPort(QString portName);
+    virtual void hideExternalDynamicParameterPort(QString portName);
     virtual void removeExternalPort(QString portName);
 
     enum { Type = ModelObjectType };

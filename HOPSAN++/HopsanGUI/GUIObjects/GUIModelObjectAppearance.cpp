@@ -553,6 +553,17 @@ PortAppearanceMapT &ModelObjectAppearance::getPortAppearanceMap()
     return mPortAppearanceMap;
 }
 
+const PortAppearance *ModelObjectAppearance::getPortAppearance(const QString &rPortName) const
+{
+    PortAppearanceMapT::const_iterator it = mPortAppearanceMap.find(rPortName);
+    if (it != mPortAppearanceMap.end())
+    {
+        return &it.value();
+    }
+    return 0;
+}
+
+
 
 //! @brief Removes a port appearance post for a specified portname
 //! @param[in] portName The port name for the port Appearance to be erased
@@ -659,7 +670,15 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
             QString portname;
             PortAppearance portApp;
             parsePortDomElement(xmlPort, portname, portApp);
-            mPortAppearanceMap.insert(portname, portApp);
+            if (mPortAppearanceMap.contains(portname))
+            {
+                // We need to copy data, not replace as there may be pointers to data (wich is kind of unsafe)
+                mPortAppearanceMap[portname] = portApp;
+            }
+            else
+            {
+                mPortAppearanceMap.insert(portname, portApp);
+            }
             xmlPort = xmlPort.nextSiblingElement(CAF_PORT);
         }
         // There should only be one <ports>, but lets check for more just in case

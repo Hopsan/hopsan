@@ -70,6 +70,7 @@ public:
     void hide();
 
     void setEnable(bool enable);
+    void setModified(bool modified);
 
     virtual QString getPortType(const CoreSystemAccess::PortTypeIndicatorT ind=CoreSystemAccess::ActualPortType);
     virtual QString getNodeType();
@@ -86,6 +87,8 @@ public:
 
     bool isConnected();
     bool isAutoPlaced();
+
+    const PortAppearance* getPortAppearance() const;
 
 public slots:
     void showIfNotConnected(bool doShow=true);

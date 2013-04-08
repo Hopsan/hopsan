@@ -97,7 +97,7 @@ void ContainerPort::createPorts()
 
 
 //! Returns a string with the GUIObject type.
-QString ContainerPort::getTypeName()
+QString ContainerPort::getTypeName() const
 {
     return HOPSANGUICONTAINERPORTTYPENAME;
 }

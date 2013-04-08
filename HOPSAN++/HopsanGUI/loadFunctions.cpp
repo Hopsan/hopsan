@@ -341,16 +341,29 @@ ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, 
                 pObj->getAppearanceData()->readFromDomElement(cafMoStuff);
                 pObj->refreshDisplayName(); //Need to refresh display name if read appearance data contained an incorrect name
 
-                // For all port appearances that have the same name as parameters, create external dynamic parameter ports
-                //! @todo maybe should tag the parameter insted, with some info that it is representing a parameter
+                // Now refresh only thos ports that were new
                 QStringList paramNames = pObj->getParameterNames();
-                QList<QString> portNames = pObj->getAppearanceData()->getPortAppearanceMap().keys();
-                for (int i=0; i<portNames.size(); ++i)
+                QDomElement dom_port = cafMoStuff.firstChildElement("ports").firstChildElement("port");
+                while (!dom_port.isNull())
                 {
-                    if (paramNames.contains(portNames[i]))
+                    // For all port appearances that have the same name as parameters, create external dynamic parameter ports
+                    // For the others refresh
+                    QString portName = dom_port.attribute("name");
+                    if (paramNames.contains(portName))
                     {
-                        pObj->createRefreshExternalDynamicParameterPort(portNames[i]);
+                        pObj->createRefreshExternalDynamicParameterPort(portName);
                     }
+                    else
+                    {
+                        pObj->createRefreshExternalPort(portName);
+                    }
+                    Port *pPort = pObj->getPort(portName);
+                    if (pPort)
+                    {
+                        pPort->setModified(true); //Tag as modified since we loaded override data
+                    }
+
+                    dom_port = dom_port.nextSiblingElement("port");
                 }
             }
         }

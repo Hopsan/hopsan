@@ -53,7 +53,7 @@ public:
     enum { Type = GroupContainerType };
     int type() const;
 
-    QString getTypeName();
+    QString getTypeName() const;
 
     CoreSystemAccess* getCoreSystemAccessPtr();
 

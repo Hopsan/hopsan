@@ -60,7 +60,7 @@
 //! @brief Constructor for the parameter dialog for components
 //! @param pGUIComponent Pointer to the component
 //! @param parent Pointer to the parent widget
-ComponentPropertiesDialog3::ComponentPropertiesDialog3(Component *pModelObject, QWidget *pParent)
+ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject, QWidget *pParent)
     : QDialog(pParent)
 {
     mpModelObject = pModelObject;
@@ -152,7 +152,7 @@ void ComponentPropertiesDialog3::okPressed()
 void ComponentPropertiesDialog3::editPortPos()
 {
     //! @todo who owns the dialog, is it ever removed?
-    MovePortsDialog *dialog = new MovePortsDialog(mpModelObject->getAppearanceData(), mpModelObject->getParentContainerObject()->getGfxType());
+    MovePortsDialog *dialog = new MovePortsDialog(mpModelObject->getAppearanceData(), mpModelObject->getLibraryAppearanceData(), mpModelObject->getParentContainerObject()->getGfxType());
     connect(dialog, SIGNAL(finished()), mpModelObject, SLOT(refreshExternalPortsAppearanceAndPosition()), Qt::UniqueConnection);
 }
 
@@ -402,7 +402,7 @@ void ComponentPropertiesDialog3::createEditStuff()
     this->setMaximumHeight(maxHeight);
 }
 
-VariableTableWidget::VariableTableWidget(Component *pModelObject, QWidget *pParent) :
+VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pParent) :
     TableWidgetTotalSize(pParent)
 {
     mpModelObject = pModelObject;
@@ -609,20 +609,30 @@ void VariableTableWidget::makePortAtRow(int row, bool isPort)
 {
 //! @todo hmm it does not make sense to have startvalues as ports (or maybe it does, but startvalues are run before init and simulate), but then you could have startvalue to startvalue to startvalue ...
     const QString name = item(row,Name)->text().split("::").at(0);
+    Port * pPort=0;
     if (isPort)
     {
-        Port * pPort = mpModelObject->createRefreshExternalDynamicParameterPort(name);
+        pPort = mpModelObject->getPort(name);
         if (pPort)
         {
-            // Make sure that our new port has the "correct" angle
-            pPort->setRotation(180);
+            pPort->setEnable(true);
+            mpModelObject->createRefreshExternalDynamicParameterPort(name);
+        }
+        else
+        {
+            pPort = mpModelObject->createRefreshExternalDynamicParameterPort(name);
+            if (pPort)
+            {
+                // Make sure that our new port has the "correct" angle
+                pPort->setRotation(180);
+                pPort->setModified(true);
+            }
         }
     }
     else
     {
-        mpModelObject->removeExternalPort(name);
+        mpModelObject->hideExternalDynamicParameterPort(name);
     }
-
 }
 
 void VariableTableWidget::cellChangedSlot(const int row, const int col)
@@ -720,7 +730,8 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
     {
         RowAwareCheckBox *pEnablePortCheckBox = new RowAwareCheckBox(row);
         pEnablePortCheckBox->setToolTip("Show/hide port");
-        pEnablePortCheckBox->setChecked(mpModelObject->getPort(rData.mPortName)!=0);
+        Port *pPort = mpModelObject->getPort(rData.mPortName);
+        pEnablePortCheckBox->setChecked((pPort && pPort->getPortAppearance()->mEnabled));
         pEnablePortCheckBox->setFixedSize(24,24);
         connect(pEnablePortCheckBox, SIGNAL(checkedAtRow(int, bool)), this, SLOT(makePortAtRow(int,bool)));
         pToolButtonsLayout->addWidget(pEnablePortCheckBox);

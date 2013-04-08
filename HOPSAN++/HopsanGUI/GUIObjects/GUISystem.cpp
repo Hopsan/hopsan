@@ -129,7 +129,7 @@ void SystemContainer::setName(QString newName)
 
 
 //! Returns a string with the sub system type.
-QString SystemContainer::getTypeName()
+QString SystemContainer::getTypeName() const
 {
     //! @todo is this OK should really ask the subsystem but result should be subsystem i think
     return HOPSANGUISYSTEMTYPENAME;

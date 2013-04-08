@@ -61,7 +61,7 @@ int GroupContainer::type() const
 }
 
 
-QString GroupContainer::getTypeName()
+QString GroupContainer::getTypeName() const
 {
     return HOPSANGUIGROUPTYPENAME;
 }

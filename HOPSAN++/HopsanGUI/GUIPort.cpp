@@ -512,6 +512,10 @@ void Port::refreshPortGraphics()
                 qDebug() << "cqsType: " << cqsType;
             }
         }
+        else
+        {
+            cqsType = getParentModelObject()->getTypeCQS();
+        }
         mpPortAppearance->selectPortIcon(cqsType, getPortType(int_ext_act), getNodeType());
 
         refreshPortMainGraphics();
@@ -716,6 +720,11 @@ bool Port::isAutoPlaced()
     return mpPortAppearance->mAutoPlaced;
 }
 
+const PortAppearance *Port::getPortAppearance() const
+{
+    return mpPortAppearance;
+}
+
 
 //! @brief virtual function, only usefull for group port, guiport will return it self (this)
 Port* Port::getRealPort()
@@ -750,6 +759,12 @@ void Port::setEnable(bool enable)
             show();
         }
     }
+}
+
+//! @brief This function tag or untags the Port appearance data as modified
+void Port::setModified(bool modified)
+{
+    mpPortAppearance->mPoseModified = modified;
 }
 
 

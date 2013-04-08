@@ -33,7 +33,7 @@ class ContainerPort : public ModelObject
 public:
     ContainerPort(QPointF position, qreal rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected = Selected, GraphicsTypeEnumT gfxType = UserGraphics);
     void deleteInHopsanCore();
-    QString getTypeName();
+    QString getTypeName() const;
     void refreshDisplayName(QString overrideName="");
 
     enum { Type = ContainerPortType };

@@ -41,7 +41,8 @@ class MovePortsDialog : public QDialog
     Q_OBJECT
 
 public:
-    MovePortsDialog(ModelObjectAppearance *pComponentAppearance, GraphicsTypeEnumT gfxType = UserGraphics, QWidget *parent = 0);
+    MovePortsDialog(ModelObjectAppearance *pComponentAppearance, const ModelObjectAppearance *pLibraryComponentAppearance,
+                    GraphicsTypeEnumT gfxType = UserGraphics, QWidget *parent = 0);
 
 public slots:
     bool okButtonPressed();
@@ -74,6 +75,7 @@ protected:
     QLineEdit *mpPortYLineEdit;
     QLineEdit *mpPortALineEdit;
     QCheckBox *mpPortAutoCheckBox;
+    QPushButton *mpResetButton;
 
     QPushButton *mpOkButton;
     QPushButton *mpCancelButton;
@@ -85,15 +87,17 @@ class DragPort : public QGraphicsWidget
     Q_OBJECT
 
 public:
-    DragPort(const PortAppearance &rAppearance, QString name, QGraphicsItem *parentComponent);
+    DragPort(QString name, const PortAppearance &rAppearance, const PortAppearance *pOriginalAppearance, QGraphicsItem *parentComponent);
 
     void setPosOnComponent(double x, double y, double rot);
     QPointF getPosOnComponent();
     double getPortRotation();
     QString getName();
     const PortAppearance &getPortAppearance() const;
+    const PortAppearance *getOriginalPortAppearance() const;
 
 public slots:
+    void reset();
     void setEnable(int state);
     void setPortXPos(QString x);
     void setPortYPos(QString y);
@@ -113,6 +117,7 @@ private:
     void refreshLocalAppearanceData();
 
     PortAppearance mPortAppearance;
+    const PortAppearance *mpOriginalPortAppearance;
     QGraphicsItem *mpParentComponent;
     QGraphicsSvgItem *mpSvg;
     QGraphicsTextItem *mpName;

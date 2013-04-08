@@ -49,7 +49,7 @@ public:
     //QString getStartValueTxt(QString portName, QString variable);
     bool setStartValue(QString portName, QString variable, QString sysParName);
 
-    QString getTypeName();
+    QString getTypeName() const;
     QString getTypeCQS();
 
     enum { Type = ComponentType };

@@ -101,7 +101,7 @@ void Component::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
 
 //! @brief Returns a string with the component type.
-QString Component::getTypeName()
+QString Component::getTypeName() const
 {
     return mModelObjectAppearance.getTypeName();
 }
@@ -154,23 +154,12 @@ void Component::openPropertiesDialog()
 
 
 //! @brief Help function to create ports in the component when it is created
-//! @todo duplicate implementation with createExternalPort, maybe remove this and only use the other, slighlty lower speed though but probably better
 void Component::createPorts()
 {
-    //! @todo make sure that all old ports and connections are cleared, (not really necessary in guicomponents)
-    QString cqsType = mpParentContainerObject->getCoreSystemAccessPtr()->getSubComponentTypeCQS(getName());
-    PortAppearanceMapT::iterator i;
-    for (i = mModelObjectAppearance.getPortAppearanceMap().begin(); i != mModelObjectAppearance.getPortAppearanceMap().end(); ++i)
+    QList<QString> names = mModelObjectAppearance.getPortAppearanceMap().keys();
+    for (int i=0; i<names.size(); ++i)
     {
-        QString nodeType = mpParentContainerObject->getCoreSystemAccessPtr()->getNodeType(this->getName(), i.key());
-        QString portType = mpParentContainerObject->getCoreSystemAccessPtr()->getPortType(this->getName(), i.key());
-        i.value().selectPortIcon(cqsType, portType, nodeType);
-
-        qreal x = i.value().x * this->boundingRect().width();
-        qreal y = i.value().y * this->boundingRect().height();
-
-        Port *pNewPort = new Port(i.key(), x, y, &(i.value()), this);
-        mPortListPtrs.append(pNewPort);
+        createRefreshExternalPort(names[i]);
     }
 }
 
@@ -236,7 +225,18 @@ QDomElement Component::saveGuiDataToDomElement(QDomElement &rDomElement)
     ModelObject::saveGuiDataToDomElement(rDomElement);
     QDomElement guiStuff = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
     QDomElement xmlApp = appendOrGetCAFRootTag(guiStuff);
-    mModelObjectAppearance.saveSpecificPortsToDomElement(xmlApp, mActiveDynamicParameterPortNames);
+
+    // Save those ports that have changed appearance (position)
+    QStringList ports;
+    for (int i=0; i<mPortListPtrs.size(); ++i)
+    {
+        const PortAppearance *app = mPortListPtrs[i]->getPortAppearance();
+        if (app->mEnabled && app->mPoseModified) //!< @todo need to rethink this condition
+        {
+            ports.append(mPortListPtrs[i]->getName());
+        }
+    }
+    mModelObjectAppearance.saveSpecificPortsToDomElement(xmlApp, ports);
 
     return rDomElement;
 }

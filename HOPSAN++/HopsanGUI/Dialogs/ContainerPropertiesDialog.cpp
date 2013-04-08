@@ -369,7 +369,7 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
 void ContainerPropertiesDialog::editPortPos()
 {
     //! @warning memory leak, should not create new dialogs every time, they are never removed
-    MovePortsDialog *dialog = new MovePortsDialog(mpContainerObject->getAppearanceData(), mpContainerObject->getGfxType());
+    MovePortsDialog *dialog = new MovePortsDialog(mpContainerObject->getAppearanceData(), 0, mpContainerObject->getGfxType());
     connect(dialog, SIGNAL(finished()), mpContainerObject, SLOT(refreshAppearance()), Qt::UniqueConnection);
 }
 

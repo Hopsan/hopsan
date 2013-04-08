@@ -11,8 +11,8 @@
 //! @param[in] pComponentAppearance Pointer to the component appearance data of the compoennt which has the ports
 //! @param[in] gfxType USER or ISO graphics for the port
 //! @param[in] parent Pointer to the parent widget
-MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, GraphicsTypeEnumT gfxType, QWidget *parent)
-    : QDialog(parent)
+MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, const ModelObjectAppearance *pLibraryComponentAppearance,
+                                 GraphicsTypeEnumT gfxType, QWidget *parent)    : QDialog(parent)
 {
     mpView = new QGraphicsView(this);
     mpView->setScene(new QGraphicsScene());
@@ -29,7 +29,16 @@ MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, Gr
     PortAppearanceMapT::Iterator it;
     for(it=mpActualPortAppearanceMap->begin(); it != mpActualPortAppearanceMap->end(); ++it)
     {
-        DragPort *pDragPort = new DragPort(*it, it.key(), mpSVGComponent);
+        DragPort *pDragPort;
+        if (pLibraryComponentAppearance)
+        {
+            pDragPort = new DragPort(it.key(), *it, pLibraryComponentAppearance->getPortAppearance(it.key()), mpSVGComponent);
+        }
+        else
+        {
+            pDragPort = new DragPort(it.key(), *it, 0, mpSVGComponent);
+        }
+
         pDragPort->setPosOnComponent(it->x, it->y, it->rot);
         mpView->scene()->addItem(pDragPort);
         mDragPortMap.insert(it.key(), pDragPort);
@@ -76,6 +85,8 @@ MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, Gr
     mpPortALineEdit = new QLineEdit(this);
     mpPortALineEdit->setValidator(new QDoubleValidator(0, 360, 2));
     mpPortAutoCheckBox = new QCheckBox(this);
+    mpResetButton = new QPushButton("Reset");
+
 
     QHBoxLayout *buttons = new QHBoxLayout();
     buttons->addWidget(mpOkButton);
@@ -95,6 +106,7 @@ MovePortsDialog::MovePortsDialog(ModelObjectAppearance *pComponentAppearance, Gr
     pPortInfoLayout->addWidget(mpPortALineEdit);
     pPortInfoLayout->addWidget(new QLabel("Auto: ", this));
     pPortInfoLayout->addWidget(mpPortAutoCheckBox);
+    pPortInfoLayout->addWidget(mpResetButton);
 
     pPortInfoLayout->addStretch(1);
     mpMainLayout->addLayout(pPortInfoLayout,1,0);
@@ -117,6 +129,7 @@ void DragPort::setPortXPos(QString x)
     mPortAppearance.x = x.toDouble();
     setPosOnComponent(mPortAppearance.x, mPortAppearance.y, mPortAppearance.rot);
     setPortAutoPlaced(false);
+    mPortAppearance.mPoseModified = true;
 }
 
 //! @brief Updates the y-position of a port in the move port dialog window
@@ -126,6 +139,7 @@ void DragPort::setPortYPos(QString y)
     mPortAppearance.y = y.toDouble();
     setPosOnComponent(mPortAppearance.x, mPortAppearance.y, mPortAppearance.rot);
     setPortAutoPlaced(false);
+    mPortAppearance.mPoseModified = true;
 }
 
 void DragPort::setPortRotation(QString a)
@@ -133,6 +147,7 @@ void DragPort::setPortRotation(QString a)
     mPortAppearance.rot = a.toDouble();
     setPosOnComponent(mPortAppearance.x, mPortAppearance.y, mPortAppearance.rot);
     setPortAutoPlaced(false);
+    mPortAppearance.mPoseModified = true;
 }
 
 void DragPort::setPortAutoPlaced(bool ap)
@@ -154,6 +169,7 @@ void MovePortsDialog::updatePortInfo(DragPort *pDragPort)
     mpPortYLineEdit->setText(QString("%1").arg(p.y(),0,'g',3));
     mpPortALineEdit->setText(QString("%1").arg(pDragPort->getPortRotation(),0,'f',0));
     mpPortAutoCheckBox->setChecked(pDragPort->getPortAppearance().mAutoPlaced);
+    mpResetButton->setEnabled(pDragPort->getOriginalPortAppearance()!=0);
 }
 
 void MovePortsDialog::setSelectPort()
@@ -162,6 +178,7 @@ void MovePortsDialog::setSelectPort()
     disconnect(mpPortYLineEdit, 0, 0, 0);
     disconnect(mpPortALineEdit, 0, 0, 0);
     disconnect(mpPortAutoCheckBox, 0, 0, 0);
+    disconnect(mpResetButton, 0, 0, 0);
 
     DragPort *pDragPort = qobject_cast<DragPort*>(sender());
     updatePortInfo(pDragPort);
@@ -170,6 +187,7 @@ void MovePortsDialog::setSelectPort()
     connect(mpPortYLineEdit, SIGNAL(textEdited(QString)), pDragPort, SLOT(setPortYPos(QString)), Qt::UniqueConnection);
     connect(mpPortALineEdit, SIGNAL(textEdited(QString)), pDragPort, SLOT(setPortRotation(QString)), Qt::UniqueConnection);
     connect(mpPortAutoCheckBox, SIGNAL(clicked(bool)), pDragPort, SLOT(setPortAutoPlaced(bool)), Qt::UniqueConnection);
+    connect(mpResetButton, SIGNAL(clicked()), pDragPort, SLOT(reset()), Qt::UniqueConnection);
 }
 
 void MovePortsDialog::disabledPort()
@@ -179,6 +197,7 @@ void MovePortsDialog::disabledPort()
     disconnect(mpPortYLineEdit, 0, pDragPort, 0);
     disconnect(mpPortALineEdit, 0, pDragPort, 0);
     disconnect(mpPortAutoCheckBox, 0, pDragPort, 0);
+    disconnect(mpResetButton, 0, pDragPort, 0);
     clearPortInfo();
 }
 
@@ -208,6 +227,7 @@ bool MovePortsDialog::okButtonPressed()
             it.value().rot = ports[i]->getPortAppearance().rot;
             it.value().mAutoPlaced = ports[i]->getPortAppearance().mAutoPlaced;
             it.value().mEnabled = ports[i]->getPortAppearance().mEnabled;
+            it.value().mPoseModified = ports[i]->getPortAppearance().mPoseModified;
         }
         //! @todo enabled and autoplaced are set emediately so even if you select cancle they will be set
     }
@@ -228,9 +248,10 @@ bool MovePortsDialog::cancelButtonPressed()
 //! @param[in] appearance Pointer to the port appearance data of the port that should be used
 //! @param[in] name Name of the port
 //! @param[in] parentComponent Pointer to the parent component on which the port is placed on
-DragPort::DragPort(const PortAppearance &rAppearance, QString name, QGraphicsItem *parentComponent)
+DragPort::DragPort(QString name, const PortAppearance &rAppearance, const PortAppearance *pOriginalAppearance, QGraphicsItem *parentComponent)
     : QGraphicsWidget(parentComponent)
 {
+    mpOriginalPortAppearance = pOriginalAppearance;
     mPortAppearance = rAppearance;
     mpParentComponent = parentComponent;
     mpSvg = new QGraphicsSvgItem(mPortAppearance.mMainIconPath, this);
@@ -253,6 +274,7 @@ void DragPort::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
     QGraphicsWidget::mouseMoveEvent(event);
     setPortAutoPlaced(false);
     refreshLocalAppearanceData();
+    mPortAppearance.mPoseModified = true;
     emit portMoved();
 }
 
@@ -316,6 +338,21 @@ QString DragPort::getName()
 const PortAppearance &DragPort::getPortAppearance() const
 {
     return mPortAppearance;
+}
+
+const PortAppearance *DragPort::getOriginalPortAppearance() const
+{
+    return mpOriginalPortAppearance;
+}
+
+void DragPort::reset()
+{
+    if (mpOriginalPortAppearance)
+    {
+        mPortAppearance = *mpOriginalPortAppearance;
+        this->setPosOnComponent(mPortAppearance.x, mPortAppearance.y, mPortAppearance.rot);
+        emit portMoved();
+    }
 }
 
 

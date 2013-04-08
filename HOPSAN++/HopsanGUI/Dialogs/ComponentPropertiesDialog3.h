@@ -5,7 +5,7 @@
 //#include "Dialogs/ModelObjectPropertiesDialog.h"
 #include "CoreAccess.h"
 
-class Component;
+class ModelObject;
 class ParameterSettingsLayout;
 class MainWindow;
 
@@ -58,7 +58,7 @@ class VariableTableWidget :public TableWidgetTotalSize
     Q_OBJECT
 public:
     enum ColumnEnumT {Name, Alias, Unit, Description, Type, Value, Scale, Buttons, NumCols};
-    VariableTableWidget(Component *pModelObject, QWidget *pParent);
+    VariableTableWidget(ModelObject *pModelObject, QWidget *pParent);
     bool setStartValues();
     bool setAliasNames();
 
@@ -75,7 +75,7 @@ private:
     bool cleanAndVerifyParameterValue(QString &rValue, const QString type);
     //void setStartValue(const int row);
     bool setAliasName(const int row);
-    Component *mpModelObject;
+    ModelObject *mpModelObject;
 };
 
 class ComponentPropertiesDialog3 : public QDialog
@@ -83,7 +83,7 @@ class ComponentPropertiesDialog3 : public QDialog
     Q_OBJECT
 
 public:
-    ComponentPropertiesDialog3(Component *pModelObject, QWidget *pParent=0);
+    ComponentPropertiesDialog3(ModelObject *pModelObject, QWidget *pParent=0);
 
 protected slots:
     void okPressed();
@@ -104,7 +104,7 @@ private:
     QWidget* createSourcodeBrowser(QString &rFilePath);
     void createEditStuff();
 
-    Component *mpModelObject;
+    ModelObject *mpModelObject;
     QLineEdit *mpNameEdit;
     VariableTableWidget *mpVariableTableWidget;
 

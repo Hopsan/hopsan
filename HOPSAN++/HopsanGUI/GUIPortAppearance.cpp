@@ -32,6 +32,7 @@ PortAppearance::PortAppearance()
     //Default values
     mEnabled = true;
     mAutoPlaced = true;
+    mPoseModified = false;
 }
 
 //! @brief Contains hardcoded appearance for different hopsancore ports
