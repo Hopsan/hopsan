@@ -142,6 +142,7 @@ namespace hopsan {
         void setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet=false);
         bool changeSubComponentSystemTypeCQS(const std::string name, const CQSEnumT newType);
         void determineCQSType();
+        bool isTopLevelSystem() const;
 
         // Adding removing and renaming components
         void addComponents(std::vector<Component*> &rComponents);

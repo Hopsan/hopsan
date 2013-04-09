@@ -1030,7 +1030,7 @@ void ComponentSystem::setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet)
     if (cqs_type !=  mTypeCQS)
     {
         //Do we have a system parent
-        if ( (mpSystemParent != 0) && (!doOnlyLocalSet) )
+        if ( !this->isTopLevelSystem() && !doOnlyLocalSet )
         {
             //Request change by our parent (som parent changes are neeeded)
             mpSystemParent->changeSubComponentSystemTypeCQS(mName, cqs_type);
@@ -1156,6 +1156,11 @@ void ComponentSystem::determineCQSType()
 //        }
         this->setTypeCQS(UndefinedCQSType);
     }
+}
+
+bool ComponentSystem::isTopLevelSystem() const
+{
+    return (mpSystemParent==0);
 }
 
 
@@ -1507,7 +1512,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
 
     // Update parent cqs-type
     //! @todo we should only do this if we are actually connected directly to our parent, but I dont know what will take the most time, to ckeach if we are connected to parent or to just allways refresh parent
-    if (mpSystemParent != 0)
+    if (!this->isTopLevelSystem())
     {
         this->mpSystemParent->determineCQSType();
     }
@@ -1946,7 +1951,7 @@ bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
 
     //Update parent cqs-type
     //! @todo we should only do this if we are actually connected directly to our parent, but I dont know what will take the most time, to ckeach if we are connected to parent or to just allways refresh parent
-    if (mpSystemParent != 0)
+    if (!this->isTopLevelSystem())
     {
         this->mpSystemParent->determineCQSType();
     }
@@ -2392,9 +2397,13 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
     this->sortComponentVector(mComponentCptrs);
     this->sortComponentVector(mComponentQptrs);
 
-    if(!mKeepStartValues)
+    // Only set startvalues from top-level system, else they will be set again in the subsystem initialize calls
+    if (this->isTopLevelSystem())
     {
-        loadStartValues();
+        if(!mKeepStartValues)
+        {
+            loadStartValues();
+        }
     }
 
     //Init
