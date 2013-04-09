@@ -171,7 +171,6 @@ SOURCES += main.cpp \
     Dialogs/ParameterSettingsLayout.cpp \
     Dialogs/ModelObjectPropertiesDialog.cpp \
     SimulationThreadHandler.cpp \
-    Dialogs/ComponentPropertiesDialog2.cpp \
     Widgets/HcomWidget.cpp \
     LogDataHandler.cpp \
     PlotTab.cpp \
@@ -245,7 +244,6 @@ HEADERS += MainWindow.h \
     Dialogs/ParameterSettingsLayout.h \
     Dialogs/ModelObjectPropertiesDialog.h \
     SimulationThreadHandler.h \
-    Dialogs/ComponentPropertiesDialog2.h \
     Widgets/HcomWidget.h \
     LogDataHandler.h \
     PlotTab.h \

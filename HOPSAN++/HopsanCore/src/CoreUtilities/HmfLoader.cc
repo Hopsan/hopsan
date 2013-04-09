@@ -381,6 +381,7 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
 //! @param [out] rStartTime A reference to the starttime variable
 //! @param [out] rStopTime A reference to the stoptime variable
 //! @returns A pointer to the rootsystem of the loaded model
+//! @todo if possible emrge the two differen main load functions
 ComponentSystem* hopsan::loadHopsanModelFile(const std::string filePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime)
 {
     addLogMess("hopsan::loadHopsanModelFile("+filePath+")");
@@ -396,6 +397,16 @@ ComponentSystem* hopsan::loadHopsanModelFile(const std::string filePath, HopsanE
         //Check for correct root node name
         if (strcmp(pRootNode->name(), "hopsanmodelfile")==0)
         {
+            // Check version
+            string savedwithcoreversion = readStringAttribute(pRootNode, "hopsancoreversion", "0");
+            pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(savedwithcoreversion);
+            if (savedwithcoreversion < "0.6.0" || (savedwithcoreversion > "0.6.x" && savedwithcoreversion < "0.6.x_r5216"))
+            {
+                pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("This hmf model was saved with HopsanCoreVersion: "+savedwithcoreversion+". This old version is not supported by the HopsanCore hmf loader, resave the model with HopsanGUI");
+                return 0;
+            }
+
+
             rapidxml::xml_node<> *pSysNode = pRootNode->first_node("system");
             if (pSysNode != 0)
             {
@@ -473,6 +484,15 @@ ComponentSystem* hopsan::loadHopsanModelFile(char* xmlStr, HopsanEssentials* pHo
         //Check for correct root node name
         if (strcmp(pRootNode->name(), "hopsanmodelfile")==0)
         {
+            // Check version
+            string savedwithcoreversion = readStringAttribute(pRootNode, "hopsancoreversion", "0");
+            pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(savedwithcoreversion);
+            if (savedwithcoreversion < "0.6.0" || (savedwithcoreversion > "0.6.x" && savedwithcoreversion < "0.6.x_r5216"))
+            {
+                pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("This hmf model was saved with HopsanCoreVersion: "+savedwithcoreversion+". This old version is not supported by the HopsanCore hmf loader, resave the model with HopsanGUI");
+                return 0;
+            }
+
             rapidxml::xml_node<> *pSysNode = pRootNode->first_node("system");
             if (pSysNode != 0)
             {

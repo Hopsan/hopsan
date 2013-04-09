@@ -175,8 +175,20 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStat
         }
         return;
     }
-    pObject->setParameterValue(parameterName, parameterValue, true);
 
+    //! @todo this is also a compatibility hack, to prevent startvalues in dynamic parameter ports from overwriting previously renamed but loaded paremter values, when the parmeter has the same name as its port. This prevents data from overwriting if loaded last
+    if (parameterName.contains("::Value") && parameterValue =="0")
+    {
+        gpMainWindow->mpTerminalWidget->mpConsole->printDebugMessage("Prevented overwriting Parameter name "+parameterName+" in component "+pObject->getName()+" mismatch.");
+    }
+    else
+    {
+        // 0 is the default value in signalnodes so skipping setting in this case is Ok
+        // It prevents overwriting previously set values with rubish
+        pObject->setParameterValue(parameterName, parameterValue, true);
+    }
+    //! @todo this below is the original code us this instead of hack above
+    //pObject->setParameterValue(parameterName, parameterValue, true);
 }
 
 
