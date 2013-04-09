@@ -639,12 +639,12 @@ bool verifyParameterValue(QString &rValue, const QString type, const QStringList
             onlyNumbers = false;
         }
 
+        rValue.prepend(initialSign);
         if(!onlyNumbers)
         {
-            rErrorString = QString("Invalid [double] parameter value \"%1\". Only numbers are allowed. Nummeric strings like 1[eE][+-]5 will work.").arg(rValue);
+            rErrorString = QString("Invalid [double] parameter value \"%1\". Only numbers are allowed. Nummeric strings like [-]1[eE][+-]5 will work.").arg(rValue);
         }
 
-        rValue.prepend(initialSign);
         return onlyNumbers;
     }
     else if (type == "integer")
@@ -659,12 +659,12 @@ bool verifyParameterValue(QString &rValue, const QString type, const QStringList
             }
         }
 
+        rValue.prepend(initialSign);
         if(!onlyNumbers)
         {
             rErrorString = QString("Invalid [integer] parameter value \"%1\". Only numbers are allowed.").arg(rValue);
         }
 
-        rValue.prepend(initialSign);
         return onlyNumbers;
     }
     else if (type == "bool")

@@ -63,6 +63,9 @@ public:
     bool isDynamic() const;
 
 protected:
+    void resolveSignPrefix(std::string &rSignPrefix) const;
+    void splitSignPrefix(const std::string &rString, std::string &rPrefix, std::string &rValue);
+
     bool mEnabled;
     bool mIsDynamic;
     std::string mParameterName;

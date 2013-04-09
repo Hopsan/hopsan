@@ -218,32 +218,25 @@ bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
     }
 
     bool success = true;
-    std::string evaluatedParameterValue, prefix, valueName;
+    std::string evaluatedParameterValue, prefix, strippedValue;
 
     // Strip + or - from name incase we want to take a negative value of a system parameter
-    if (!mParameterValue.empty())
-    {
-        if ( (mParameterValue[0] == '-') || (mParameterValue[0] == '+') )
-        {
-            prefix = mParameterValue[0];
-            valueName = mParameterValue.substr(1); //1 to end
-        }
-        else
-        {
-            valueName = mParameterValue;
-        }
-    }
+    splitSignPrefix(mParameterValue, prefix, strippedValue);
 
     // First check if this parameter value is in fact the name of one of the other parameters or system parameter
-    if( mpParentParameters->evaluateParameter(valueName, evaluatedParameterValue, mType, this) )
+    if( mpParentParameters->evaluateParameter(strippedValue, evaluatedParameterValue, mType, this) )
 //        if( mpParentParameters->evaluateParameter(valueName, evaluatedParameterValue, mType, ignoreMe) ) //To allow a parameter to use a systemsparameter with same name the component parameter itself has to be excluded in this check by ignore it here, issue #783
     {
-        evaluatedParameterValue = prefix + evaluatedParameterValue;
+        // Make sure sign is sane
+        splitSignPrefix(prefix + evaluatedParameterValue, prefix, strippedValue);
+        resolveSignPrefix(prefix);
+        evaluatedParameterValue = prefix + strippedValue;
     }
     else
     {
-        // If not then the value is actually the value
-        evaluatedParameterValue = mParameterValue;
+        // If not then the value is actually the value, resolve sign prefix to make it sane
+        resolveSignPrefix(prefix);
+        evaluatedParameterValue = prefix + strippedValue;
     }
 
     if(mType=="double")
@@ -358,6 +351,49 @@ bool Parameter::isEnabled() const
 bool Parameter::isDynamic() const
 {
     return mIsDynamic;
+}
+
+void Parameter::resolveSignPrefix(string &rSignPrefix) const
+{
+    // Resolve prefix, check num -, ignore +
+    size_t nMinus=0;
+    for (size_t n=0; n<rSignPrefix.size(); ++n)
+    {
+        if (rSignPrefix[n] == '-')
+        {
+            ++nMinus;
+        }
+    }
+
+    // Check if odd, then minus else they cancel each other out
+    if ((nMinus % 2) != 0)
+    {
+        rSignPrefix = '-';
+    }
+    else
+    {
+        rSignPrefix.clear();
+    }
+}
+
+void Parameter::splitSignPrefix(const string &rString, string &rPrefix, string &rValue)
+{
+    rPrefix.clear();
+    size_t n=0;
+    for ( ; n<rString.size(); ++n)
+    {
+        if ( (rString[n] == '-') || (rString[n] == '+') )
+        {
+            rPrefix = rPrefix + rString[n];
+        }
+        else
+        {
+            // Break will prevent n from becoming n+1, (and break the loop)
+            break;
+        }
+    }
+    // Copy all but sign prefix
+    rValue = rString.substr(n);
 }
 
 //! @class hopsan::Parameters
