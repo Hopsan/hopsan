@@ -511,20 +511,14 @@ void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion,
     }
 
     // Fix changed parameter names, after introduction of readVariables
-    if (coreVersion < "0.6.0" || (coreVersion > "0.6.x" && coreVersion < "0.6.x_r5210"))
+    if (coreVersion < "0.6.0" || (coreVersion > "0.6.x" && coreVersion < "0.6.x_r5310"))
     {
-        if(element.attribute("typename") == "HydraulicLaminarOrifice")
-        {
-            QDomElement parameter = element.firstChildElement(HMF_PARAMETERS).firstChildElement(HMF_PARAMETERTAG);
-            while (!parameter.isNull())
-            {
-                if (parameter.attribute(HMF_NAMETAG) == "K_c")
-                {
-                    parameter.setAttribute(HMF_NAMETAG, "Kc::Value");
-                }
-                parameter = parameter.nextSiblingElement(HMF_PARAMETERTAG);
-            }
-        }
+        updateRenamedParameter(element, "HydraulicLaminarOrifice", "K_c", "Kc");
+
+        updateRenamedPort(element, "HydraulicPressureSourceC", "In", "p");
+        updateRenamedPort(element, "HydraulicPressureSourceQ", "in", "p");
+        updateRenamedPort(element, "HydraulicMultiPressureSourceC", "In", "p");
+        updateRenamedPort(element, "HydraulicFlowSourceQ", "in", "q");
     }
 
     if(hmfVersion <= 0.2)
@@ -557,4 +551,59 @@ void verifyConfigurationCompatibility(QDomElement &rConfigElement)
 {
     qDebug() << "Current version = " << HOPSANGUIVERSION << ", config version = " << rConfigElement.attribute(HMF_HOPSANGUIVERSIONTAG);
     //Nothing to do yet
+}
+
+void updateRenamedPort(QDomElement &rDomElement, const QString componentType, const QString oldName, const QString newName)
+{
+    if(rDomElement.attribute("typename") == componentType)
+    {
+        // Rename startvalue parameters
+        QDomElement parameter = rDomElement.firstChildElement(HMF_PARAMETERS).firstChildElement(HMF_PARAMETERTAG);
+        while (!parameter.isNull())
+        {
+            QString paramName = parameter.attribute(HMF_NAMETAG);
+            if (paramName.contains(oldName+"::"))
+            {
+                paramName.replace(oldName+"::",newName+"::");
+                parameter.setAttribute(HMF_NAMETAG, paramName);
+            }
+            parameter = parameter.nextSiblingElement(HMF_PARAMETERTAG);
+        }
+
+        // Now try to find all connections, and replace portname
+        QString compName = rDomElement.attribute(HMF_NAMETAG);
+        QDomElement connection = rDomElement.parentNode().parentNode().firstChildElement(HMF_CONNECTIONS).firstChildElement(HMF_CONNECTORTAG);
+        while (!connection.isNull())
+        {
+            QString startComp = connection.attribute(HMF_CONNECTORSTARTCOMPONENTTAG);
+            QString endComp = connection.attribute(HMF_CONNECTORENDCOMPONENTTAG);
+
+            if (startComp == compName)
+            {
+                connection.setAttribute(HMF_CONNECTORSTARTPORTTAG, newName);
+            }
+            if (endComp == compName)
+            {
+                connection.setAttribute(HMF_CONNECTORENDPORTTAG, newName);
+            }
+
+            connection = connection.nextSiblingElement(HMF_CONNECTORTAG);
+        }
+    }
+}
+
+void updateRenamedParameter(QDomElement &rDomElement, const QString componentType, const QString oldName, const QString newName)
+{
+    if(rDomElement.attribute("typename") == componentType)
+    {
+        QDomElement parameter = rDomElement.firstChildElement(HMF_PARAMETERS).firstChildElement(HMF_PARAMETERTAG);
+        while (!parameter.isNull())
+        {
+            if (parameter.attribute(HMF_NAMETAG) == oldName)
+            {
+                parameter.setAttribute(HMF_NAMETAG, newName);
+            }
+            parameter = parameter.nextSiblingElement(HMF_PARAMETERTAG);
+        }
+    }
 }

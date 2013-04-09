@@ -29,7 +29,6 @@
 #include "GUIPort.h"
 #include "PlotWindow.h"
 #include "Dialogs/ComponentPropertiesDialog.h"
-#include "Dialogs/ComponentPropertiesDialog2.h"
 #include "Dialogs/ComponentPropertiesDialog3.h"
 #include "GUIObjects/GUIComponent.h"
 #include "GUIObjects/GUIContainerObject.h"

@@ -183,11 +183,19 @@ void Port::writeNodeSafe(const size_t &idx, const double &value, const size_t /*
     }
 }
 
-//! @brief Get a ptr to the data variable in the node, if node is not created (port not connected) return ptr to dummy node data
+//! @brief Get a ptr to the data variable in the node
 //! @param [in] idx The id of the data variable to return ptr to
+//! @returns Pointer to data vaariable or 0 if idx was not found
 double *Port::getNodeDataPtr(const size_t idx, const size_t /*portIdx*/) const
 {
-    return mpNode->getDataPtr(idx);
+    if (idx < mpNode->getNumDataVariables())
+    {
+        return mpNode->getDataPtr(idx);
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 
@@ -676,6 +684,15 @@ void ReadPort::writeNodeSafe(const size_t /*idx*/, const double /*value*/)
 void ReadPort::writeNode(const size_t /*idx*/, const double /*value*/) const
 {
     mpComponent->addWarningMessage("ReadPort::writeNode(): Could not write to port, this is a ReadPort.");
+}
+
+void ReadPort::loadStartValues()
+{
+    // Prevent loading startvalues if this port is connected, then the write node will set the start value
+    if (!isConnected())
+    {
+        Port::loadStartValues();
+    }
 }
 
 

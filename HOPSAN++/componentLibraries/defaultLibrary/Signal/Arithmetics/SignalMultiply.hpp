@@ -61,14 +61,14 @@ namespace hopsan {
         {
             //If only one input port is conncted, the other shall be 1 (= multiply by 1).
             //If no input ports are connected, mpND_output shall be 0, so one of the inputs are set to 0.
-            mpND_in1 = getNodeDataPtr(mpIn1, NodeSignal::Value);
-            mpND_in2 = getNodeDataPtr(mpIn2, NodeSignal::Value);
+            mpND_in1 = getSafeNodeDataPtr(mpIn1, NodeSignal::Value);
+            mpND_in2 = getSafeNodeDataPtr(mpIn2, NodeSignal::Value);
             if(!mpIn1->isConnected() && !mpIn2->isConnected())
             {
                 (*mpND_in1 = 0);
             }
 
-            mpND_out = getNodeDataPtr(mpOut, NodeSignal::Value);
+            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
             simulateOneTimestep();
         }
 

@@ -73,8 +73,11 @@ qreal parseAttributeQreal(const QDomElement domElement, const QString attributeN
 QString makeRgbString(QColor color);
 void parseRgbString(QString rgb, double &red, double &green, double &blue);
 
+// Update old models functions
 void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion, QString coreVersion);
 void verifyConfigurationCompatibility(QDomElement &rConfigElement);
+void updateRenamedPort(QDomElement &rDomElement, const QString componentType, const QString oldName, const QString newName);
+void updateRenamedParameter(QDomElement &rDomElement, const QString componentType, const QString oldName, const QString newName);
 
 //Save Load Definitions
 //! @todo clean up this list and give some smarter names, remove TAG from end, also make sure we use thses defines where appropriate instead of hardcoded strings

@@ -32,6 +32,7 @@
 #include "Port.h"
 #include "HopsanEssentials.h"
 #include "CoreUtilities/StringUtilities.h"
+#include "ComponentUtilities/num2string.hpp"
 
 #ifdef USETBB
 #include "mutex.h"
@@ -665,15 +666,30 @@ void Component::deletePort(const string name)
 //! @deprecated
 double *Component::getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue)
 {
-    *pPort->getNodeDataPtr(dataId) = defaultValue;
-    return pPort->getNodeDataPtr(dataId);
+    double *pData = getSafeNodeDataPtr(pPort, dataId);
+    *pData = defaultValue;
+    return pData;
 }
 
 //! @deprecated
 //! @note Use getNodeDataPtr(Port *pPort, const int dataId) instead
 double *Component::getSafeNodeDataPtr(Port *pPort, const int dataId)
 {
-    return getNodeDataPtr(pPort, dataId);
+    double *pData=0;
+    if (pPort)
+    {
+        pData = getNodeDataPtr(pPort, dataId);
+    }
+
+    if (!pData)
+    {
+        addErrorMessage("Data pointer could not be retreived in getSafeNodeDataPtr(), Requested dataId: "+to_string(dataId));
+        stopSimulation();
+        // Create a dummy double, this will cause a small memory leak
+        //! @todo maybe solve this somehow leak in the future, maybe keep a dumy variable somwhere to whcihc everyone will point
+        pData = new double();
+    }
+    return pData;
 }
 
 //! @brief This is a help function that returns a pointer to desired NodeData, only for Advanced Use instead of read/write Node
@@ -690,9 +706,20 @@ double *Component::getNodeDataPtr(Port *pPort, const int dataId)
     //If this is one of the multiports then give an error message to the user so that they KNOW that they have made a misstake
     if (pPort->getPortType() >= MultiportType)
     {
-        addErrorMessage("Port: "+pPort->getName()+" is a multiport. Use getSafeMultiPortNodeDataPtr() instead of getNodeDataPtr()");
+        addErrorMessage("Port: "+pPort->getName()+" is a multiport. Use getSafeMultiPortNodeDataPtr() instead of getSafeNodeDataPtr()");
+        return 0;
     }
     return pPort->getNodeDataPtr(dataId);
+}
+
+double *Component::getSafeNodeDataPtr(const string &rPortName, const int dataId)
+{
+    Port *pPort = this->getPort(rPortName);
+    if (!pPort)
+    {
+        addErrorMessage("Could not find Port: "+rPortName+" in getNodeDataPtr()");
+    }
+    return getSafeNodeDataPtr(pPort, dataId);
 }
 
 //! @brief This is a help function that returns a pointer to desired NodeData, only for Advanced Use instead of read/write Node
@@ -818,6 +845,14 @@ Port *Component::addOutputVariable(const string name, const string description, 
     Port *pPort = addWritePort(name, "NodeSignal", Port::NotRequired);
     pPort->setSignalNodeUnitAndDescription(unit, description);
     disableStartValue(pPort,0);
+    return pPort;
+}
+
+Port *Component::addOutputVariable(const string name, const string description, const string unit, const double defaultValue)
+{
+    Port *pPort = addWritePort(name, "NodeSignal", Port::NotRequired);
+    pPort->setSignalNodeUnitAndDescription(unit, description);
+    setStartValue(pPort, 0, defaultValue);
     return pPort;
 }
 

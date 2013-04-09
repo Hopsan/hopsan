@@ -103,7 +103,6 @@ public:
     virtual bool isComponentSignal() const;
 
     // Parameters
-    //void registerDynamicParameter(const std::string name, const std::string description, const std::string unit, double &rValue);
     void initializeDynamicParameters();
     void updateDynamicParameterValues();
 
@@ -188,6 +187,7 @@ protected:
     // Interface variable functions
     Port *addInputVariable(const std::string name, const std::string description, const std::string unit, const double defaultValue);
     Port *addOutputVariable(const std::string name, const std::string description, const std::string unit);
+    Port *addOutputVariable(const std::string name, const std::string description, const std::string unit, const double defaultValue);
 
     // Port functions
     Port* addPort(const std::string portName, const PortTypesEnumT portType, const std::string nodeType, const Port::RequireConnectionEnumT reqConnection);
@@ -202,9 +202,10 @@ protected:
     void deletePort(const std::string name);
 
     // NodeData ptr function
+    //! @todo clean up this mess /Peter
     double *getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue);
     double *getSafeNodeDataPtr(Port* pPort, const int dataId);
-    double *getNodeDataPtr(Port* pPort, const int dataId);
+    double *getSafeNodeDataPtr(const std::string &rPortName, const int dataId);
     double *getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx, const int dataId, const double defaultValue=0);
 
     // Unique name functions
@@ -229,6 +230,7 @@ private:
     // Private member functions
     void setSystemParent(ComponentSystem *pComponentSystem);
     void setTypeName(const std::string typeName);
+    double *getNodeDataPtr(Port* pPort, const int dataId);
 
     // Private member variables
     std::string mName;

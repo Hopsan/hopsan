@@ -47,11 +47,7 @@ namespace hopsan {
     {
 
     private:
-        double mBaseValue;
-        double mAmplitude;
-        double mStepTime;
-        double *mpND_out;
-        Port *mpOut;
+        double *mpOut, *mpBaseValue, *mpAmplitude, *mpStepTime;
 
     public:
         static Component *Creator()
@@ -61,38 +57,36 @@ namespace hopsan {
 
         void configure()
         {
-            mBaseValue = 0.0;
-            mAmplitude = 1.0;
-            mStepTime = 1.0;
+            addOutputVariable("out", "Step output", "-");
 
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
-
-            registerParameter("y_0", "Base Value", "[-]", mBaseValue);
-            registerParameter("y_A", "Amplitude", "[-]", mAmplitude);
-            registerParameter("t_step", "Step Time", "[-]", mStepTime);
-
-            disableStartValue(mpOut, NodeSignal::Value);
+            addInputVariable("y_0", "Base Value", "-", 0.0);
+            addInputVariable("y_A", "Amplitude", "-", 1.0);
+            addInputVariable("t_step", "Step Time", "-", 1.0);
         }
 
 
         void initialize()
         {
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
+            mpOut = getSafeNodeDataPtr("out", NodeSignal::Value);
+            mpBaseValue = getSafeNodeDataPtr("y_0", NodeSignal::Value);
+            mpAmplitude = getSafeNodeDataPtr("y_A", NodeSignal::Value);
+            mpStepTime = getSafeNodeDataPtr("t_step", NodeSignal::Value);
 
-            (*mpND_out) = mBaseValue;
+            // Set initial value
+            simulateOneTimestep();
         }
 
 
         void simulateOneTimestep()
         {
-            //Step Equations
-            if (mTime < mStepTime)
+            // Step Equations
+            if (mTime < *mpStepTime)
             {
-                (*mpND_out) = mBaseValue;     //Before step
+                (*mpOut) = (*mpBaseValue);     //Before step
             }
             else
             {
-                (*mpND_out) = mBaseValue + mAmplitude;     //After step
+                (*mpOut) = (*mpBaseValue) + (*mpAmplitude);     //After step
             }
         }
     };

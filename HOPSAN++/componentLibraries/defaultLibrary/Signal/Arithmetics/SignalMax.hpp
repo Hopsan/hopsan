@@ -66,7 +66,7 @@ namespace hopsan {
             {
                 mNDp_in_vec[i] = getSafeMultiPortNodeDataPtr(mpMultiInPort, i, NodeSignal::Value);
             }
-            mpND_out = getNodeDataPtr(mpOutPort, NodeSignal::Value);
+            mpND_out = getSafeNodeDataPtr(mpOutPort, NodeSignal::Value);
         }
 
 

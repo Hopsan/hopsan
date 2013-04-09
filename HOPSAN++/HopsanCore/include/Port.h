@@ -244,6 +244,7 @@ namespace hopsan {
         ReadPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort=0);
         void writeNodeSafe(const size_t idx, const double value);
         inline void writeNode(const size_t idx, const double value) const;
+        virtual void loadStartValues();
     };
 
     class PowerMultiPort :public MultiPort
