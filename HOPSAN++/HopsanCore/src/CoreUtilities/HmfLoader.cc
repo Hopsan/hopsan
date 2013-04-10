@@ -91,7 +91,7 @@ void splitFullName(const std::string &rFullName, std::string &rCompName, std::st
 
 void updateOldModelFileParameter(rapidxml::xml_node<> *pParameterNode, const std::string &rHmfCoreVersion)
 {
-    if (rHmfCoreVersion < "0.6.0" || (rHmfCoreVersion > "0.6.x" && rHmfCoreVersion < "0.6.x_r5135"))
+    if (rHmfCoreVersion < "0.6.0" || (contains(rHmfCoreVersion,"0.6.x_r")) )
     {
         if (pParameterNode)
         {
@@ -117,8 +117,9 @@ void updateOldModelFileParameter(rapidxml::xml_node<> *pParameterNode, const std
                 }
                 writeStringAttribute(pParameterNode, "name", part1+part2);
             }
+
             // Fix parameter names with illegal chars
-            else if (!isNameValid(name))
+            if (!isNameValid(name))
             {
                 if (name == "sigma^2")
                 {

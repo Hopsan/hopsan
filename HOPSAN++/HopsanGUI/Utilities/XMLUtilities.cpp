@@ -466,21 +466,13 @@ void verifyHmfComponentCompatibility(QDomElement &element, const QString hmfVers
         updateRenamedPort(element, "SignalConstant", "out", "y");
 
         // Fix changed parameter names, after introduction of readVariables
-        if (coreVersion < "0.6.0" || (coreVersion > "0.6.x" && coreVersion < "0.6.x_r5310"))
-        {
-            updateRenamedParameter(element, "HydraulicLaminarOrifice", "K_c", "Kc");
+        updateRenamedParameter(element, "HydraulicLaminarOrifice", "K_c", "Kc");
+        updateRenamedPort(element, "HydraulicPressureSourceC", "In", "p");
+        updateRenamedPort(element, "HydraulicPressureSourceQ", "in", "p");
+        updateRenamedPort(element, "HydraulicMultiPressureSourceC", "In", "p");
+        updateRenamedPort(element, "HydraulicFlowSourceQ", "in", "q");
 
-            updateRenamedPort(element, "HydraulicPressureSourceC", "In", "p");
-            updateRenamedPort(element, "HydraulicPressureSourceQ", "in", "p");
-            updateRenamedPort(element, "HydraulicMultiPressureSourceC", "In", "p");
-            updateRenamedPort(element, "HydraulicFlowSourceQ", "in", "q");
-        }
-
-    }
-
-    // For all versions prior to 0.6.x_r5135 run the following
-    if (coreVersion < "0.6.0" || (coreVersion > "0.6.x" && coreVersion < "0.6.x_r5135"))
-    {
+        // Fix incorrect parameter names
         QDomElement xmlParameter = element.firstChildElement(HMF_PARAMETERS).firstChildElement(HMF_PARAMETERTAG);
         while (!xmlParameter.isNull())
         {
@@ -502,8 +494,9 @@ void verifyHmfComponentCompatibility(QDomElement &element, const QString hmfVers
                 }
                 xmlParameter.setAttribute("name", parts[0]+"::"+parts[1]);
             }
+
             // Fix parameter names with illegal chars
-            else if (!isNameValid(xmlParameter.attribute("name")))
+            if (!isNameValid(xmlParameter.attribute("name")))
             {
                 QString name = xmlParameter.attribute("name");
                 if (name == "sigma^2")
@@ -516,8 +509,6 @@ void verifyHmfComponentCompatibility(QDomElement &element, const QString hmfVers
 
                 xmlParameter.setAttribute("name", name);
             }
-
-
             xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
         }
     }
