@@ -988,6 +988,18 @@ void ProjectTabWidget::loadModel(QString modelFileName, bool ignoreAlreadyOpen)
     {
         //! @todo check if we could load else give error message and dont attempt to load
         QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
+
+        // Check if Format version OK
+        QString hmfFormatVersion = hmfRoot.attribute(HMF_VERSIONTAG, "0");
+        if (!verifyHmfFormatVersion(hmfFormatVersion))
+        {
+            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Model file format: "+hmfFormatVersion+", is to old. Try to update (resave) the model in an previous version of Hopsan");
+        }
+        else if (hmfFormatVersion < HMF_VERSIONNUM)
+        {
+            gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Model file is saved with an older version of Hopsan, but versions should be compatible.");
+        }
+
         pCurrentTab->getTopLevelSystem()->setModelFileInfo(file); //Remember info about the file from which the data was loaded
         pCurrentTab->getTopLevelSystem()->setAppearanceDataBasePath(pCurrentTab->getTopLevelSystem()->getModelFileInfo().absolutePath());
         pCurrentTab->getTopLevelSystem()->loadFromDomElement(systemElement);
@@ -1004,7 +1016,7 @@ void ProjectTabWidget::loadModel(QString modelFileName, bool ignoreAlreadyOpen)
     }
     else
     {
-        //! @todo give some cool error message
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(QString("Model does not contain a HMF root tag: ")+HMF_ROOTTAG);
     }
     pCurrentTab->setSaved(true);
 

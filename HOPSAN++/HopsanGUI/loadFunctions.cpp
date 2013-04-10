@@ -326,7 +326,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, 
                 while (!xmlParameter.isNull())
                 {
                     ContainerObject* pCont = dynamic_cast<ContainerObject*>(pObj);
-                    loadSystemParameter(xmlParameter, 10, pCont);
+                    loadSystemParameter(xmlParameter, "1000", pCont);
                     xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
                 }
             }
@@ -404,14 +404,14 @@ ModelObject* loadContainerPortObject(QDomElement &rDomElement, LibraryWidget* pL
 //! @brief Loads a SystemParameter from the supplied load data
 //! @param[in] rDomElement The SystemParameter DOM element to load from
 //! @param[in] pContainer The Container Object to load into
-void loadSystemParameter(QDomElement &rDomElement, double hmfVersion, ContainerObject* pContainer)
+void loadSystemParameter(QDomElement &rDomElement, const QString hmfVersion, ContainerObject* pContainer)
 {
     QString name = rDomElement.attribute(HMF_NAMETAG);
     QString value = rDomElement.attribute(HMF_VALUETAG);
     QString type = rDomElement.attribute(HMF_TYPE);
     type = rDomElement.attribute(HMF_TYPENAME, type); //!< @deprecated load old typename
 
-    if(hmfVersion <= 0.3 && type.isEmpty())     //Version check, types did not exist in 0.3 and bellow (everything was double)
+    if( (hmfVersion <= "0.3") && type.isEmpty())     //Version check, types did not exist in 0.3 and bellow (everything was double)
     {
         type = "double";
     }

@@ -578,19 +578,10 @@ void SystemContainer::saveToDomElement(QDomElement &rDomElement, SaveContentsEnu
 void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
 {
     // Loop back up to root level to get version numbers
-    double hmfVersion = rDomElement.ownerDocument().firstChildElement(HMF_ROOTTAG).attribute(HMF_VERSIONTAG).toDouble();
-    QString coreHmfVersion = rDomElement.ownerDocument().firstChildElement(HMF_ROOTTAG).attribute(HMF_HOPSANCOREVERSIONTAG);
+    QString hmfFormatVersion = rDomElement.ownerDocument().firstChildElement(HMF_ROOTTAG).attribute(HMF_VERSIONTAG, "0");
+    QString coreHmfVersion = rDomElement.ownerDocument().firstChildElement(HMF_ROOTTAG).attribute(HMF_HOPSANCOREVERSIONTAG, "0");
 
-    if(hmfVersion <= 0.2 && hmfVersion != 0.0)
-    {
-        gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Model file is saved with Hopsan version 0.2 or older. Full compatibility is not guaranteed.");
-    }
-    else if(hmfVersion != QString(HMF_VERSIONNUM).toDouble() && hmfVersion != 0.0)
-    {
-        gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Model file is saved with an older version of Hopsan, but versions are compatible.");
-    }
-
-    //Load model info
+    // Load model info
     QDomElement infoElement = rDomElement.parentNode().firstChildElement(HMF_INFOTAG);
     if(!infoElement.isNull())
     {
@@ -685,7 +676,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         QDomElement xmlSubObject = xmlParameters.firstChildElement(HMF_PARAMETERTAG);
         while (!xmlSubObject.isNull())
         {
-            loadSystemParameter(xmlSubObject, hmfVersion, this);
+            loadSystemParameter(xmlSubObject, hmfFormatVersion, this);
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_PARAMETERTAG);
         }
 
@@ -694,7 +685,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         xmlSubObject = xmlSubObjects.firstChildElement(HMF_COMPONENTTAG);
         while (!xmlSubObject.isNull())
         {
-            verifyHmfSubComponentCompatibility(xmlSubObject, hmfVersion, coreHmfVersion);
+            verifyHmfComponentCompatibility(xmlSubObject, hmfFormatVersion, coreHmfVersion);
             ModelObject* pObj = loadModelObject(xmlSubObject, gpMainWindow->mpLibrary, this, NoUndo);
             if(pObj == NULL)
             {

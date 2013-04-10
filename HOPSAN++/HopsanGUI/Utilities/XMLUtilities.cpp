@@ -445,28 +445,37 @@ void parseRgbString(QString rgb, double &red, double &green, double &blue)
     blue = split[2].toDouble();
 }
 
+//! @brief Make sure hmf version is compatible
+bool verifyHmfFormatVersion(const QString hmfVersion)
+{
+    return (hmfVersion >= HMF_REQUIREDVERSIONNUM);
+}
 
 //! @brief Handles compatibility issues for elements loaded from hmf files
 //! @todo Add check for separate orifice areas in the rest of the valves
 //! @todo coreVersion check will not work later when core can save some data by itself, need to use guiversion also
-void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion, QString coreVersion)
+void verifyHmfComponentCompatibility(QDomElement &element, const QString hmfVersion, QString coreVersion)
 {
-    //Typos (no specific version)
-    if(element.attribute("typename") == "MechanicTranslationalMassWithCoulumbFriction")
+    // For all versions older then 0.6.0 and all 0.6.x DEV versions run the following
+    if (coreVersion < "0.6.0" || (coreVersion.contains("0.6.x_r")))
     {
-        element.setAttribute("typename", "MechanicTranslationalMassWithCoulombFriction");
-        QDomElement guiElement = element.firstChildElement(HMF_HOPSANGUITAG);
-        if(!guiElement.isNull())
+        // Typos (no specific version)
+        updateComponentTypeName(element, "MechanicTranslationalMassWithCoulumbFriction", "MechanicTranslationalMassWithCoulombFriction");
+
+        // Fix changed parameter names, after introduction of readVariables
+        if (coreVersion < "0.6.0" || (coreVersion > "0.6.x" && coreVersion < "0.6.x_r5310"))
         {
-            QDomElement cafElement = guiElement.firstChildElement(CAF_ROOT);
-            if(!cafElement.isNull())
-            {
-                QDomElement objectElement = cafElement.firstChildElement(CAF_MODELOBJECT);
-                objectElement.setAttribute("typename", "MechanicTranslationalMassWithCoulombFriction");
-            }
+            updateRenamedParameter(element, "HydraulicLaminarOrifice", "K_c", "Kc");
+
+            updateRenamedPort(element, "HydraulicPressureSourceC", "In", "p");
+            updateRenamedPort(element, "HydraulicPressureSourceQ", "in", "p");
+            updateRenamedPort(element, "HydraulicMultiPressureSourceC", "In", "p");
+            updateRenamedPort(element, "HydraulicFlowSourceQ", "in", "q");
         }
+
     }
 
+    // For all versions prior to 0.6.x_r5135 run the following
     if (coreVersion < "0.6.0" || (coreVersion > "0.6.x" && coreVersion < "0.6.x_r5135"))
     {
         QDomElement xmlParameter = element.firstChildElement(HMF_PARAMETERS).firstChildElement(HMF_PARAMETERTAG);
@@ -509,40 +518,6 @@ void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion,
             xmlParameter = xmlParameter.nextSiblingElement(HMF_PARAMETERTAG);
         }
     }
-
-    // Fix changed parameter names, after introduction of readVariables
-    if (coreVersion < "0.6.0" || (coreVersion > "0.6.x" && coreVersion < "0.6.x_r5310"))
-    {
-        updateRenamedParameter(element, "HydraulicLaminarOrifice", "K_c", "Kc");
-
-        updateRenamedPort(element, "HydraulicPressureSourceC", "In", "p");
-        updateRenamedPort(element, "HydraulicPressureSourceQ", "in", "p");
-        updateRenamedPort(element, "HydraulicMultiPressureSourceC", "In", "p");
-        updateRenamedPort(element, "HydraulicFlowSourceQ", "in", "q");
-    }
-
-    if(hmfVersion <= 0.2)
-    {
-        if(element.attribute("typename") == "HydraulicPressureSource")
-        {
-            element.setAttribute("typename", "HydraulicPressureSourceC");
-        }
-        else if(element.attribute("typename") == "Hydraulic43Valve")     //Correct individual orifices for 4/3 valve
-        {
-            QDomElement xPaElement = appendDomElement(element, HMF_PARAMETERTAG);
-            xPaElement.setAttribute(HMF_NAMETAG, "f_pa");
-            xPaElement.setAttribute(HMF_VALUETAG, element.firstChildElement("f").attribute(HMF_VALUETAG));
-            QDomElement xPbElement = appendDomElement(element, HMF_PARAMETERTAG);
-            xPbElement.setAttribute(HMF_NAMETAG, "f_pb");
-            xPbElement.setAttribute(HMF_VALUETAG, element.firstChildElement("f").attribute(HMF_VALUETAG));
-            QDomElement xAtElement = appendDomElement(element, HMF_PARAMETERTAG);
-            xAtElement.setAttribute(HMF_NAMETAG, "f_at");
-            xAtElement.setAttribute(HMF_VALUETAG, element.firstChildElement("f").attribute(HMF_VALUETAG));
-            QDomElement xBtElement = appendDomElement(element, HMF_PARAMETERTAG);
-            xBtElement.setAttribute(HMF_NAMETAG, "f_bt");
-            xBtElement.setAttribute(HMF_VALUETAG, element.firstChildElement("f").attribute(HMF_VALUETAG));
-        }
-    }
 }
 
 
@@ -551,6 +526,24 @@ void verifyConfigurationCompatibility(QDomElement &rConfigElement)
 {
     qDebug() << "Current version = " << HOPSANGUIVERSION << ", config version = " << rConfigElement.attribute(HMF_HOPSANGUIVERSIONTAG);
     //Nothing to do yet
+}
+
+void updateComponentTypeName(QDomElement &rDomElement, const QString oldType, const QString newType)
+{
+    if(rDomElement.attribute(HMF_TYPENAME) == oldType)
+    {
+        rDomElement.setAttribute(HMF_TYPENAME, newType);
+        QDomElement guiElement = rDomElement.firstChildElement(HMF_HOPSANGUITAG);
+        if(!guiElement.isNull())
+        {
+            QDomElement cafElement = guiElement.firstChildElement(CAF_ROOT);
+            if(!cafElement.isNull())
+            {
+                QDomElement objectElement = cafElement.firstChildElement(CAF_MODELOBJECT);
+                objectElement.setAttribute(HMF_TYPENAME, newType);
+            }
+        }
+    }
 }
 
 void updateRenamedPort(QDomElement &rDomElement, const QString componentType, const QString oldName, const QString newName)
@@ -580,11 +573,17 @@ void updateRenamedPort(QDomElement &rDomElement, const QString componentType, co
 
             if (startComp == compName)
             {
-                connection.setAttribute(HMF_CONNECTORSTARTPORTTAG, newName);
+                if (connection.attribute(HMF_CONNECTORSTARTPORTTAG) == oldName)
+                {
+                    connection.setAttribute(HMF_CONNECTORSTARTPORTTAG, newName);
+                }
             }
             if (endComp == compName)
             {
-                connection.setAttribute(HMF_CONNECTORENDPORTTAG, newName);
+                if (connection.attribute(HMF_CONNECTORENDPORTTAG) == oldName)
+                {
+                    connection.setAttribute(HMF_CONNECTORENDPORTTAG, newName);
+                }
             }
 
             connection = connection.nextSiblingElement(HMF_CONNECTORTAG);

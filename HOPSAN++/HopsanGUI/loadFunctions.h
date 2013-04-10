@@ -46,7 +46,7 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStat
 
 void loadStartValue(QDomElement &rDomElement, ModelObject* pObject, UndoStatusEnumT undoSettings=Undo);
 
-void loadSystemParameter(QDomElement &rDomElement, double hmfVersion, ContainerObject* pContainer);
+void loadSystemParameter(QDomElement &rDomElement, const QString hmfVersion, ContainerObject* pContainer);
 
 void loadFavoriteVariable(QDomElement &rDomElement, ContainerObject* pContainer);
 

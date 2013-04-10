@@ -74,8 +74,10 @@ QString makeRgbString(QColor color);
 void parseRgbString(QString rgb, double &red, double &green, double &blue);
 
 // Update old models functions
-void verifyHmfSubComponentCompatibility(QDomElement &element, double hmfVersion, QString coreVersion);
+bool verifyHmfFormatVersion(const QString hmfVersion);
+void verifyHmfComponentCompatibility(QDomElement &element, const QString hmfVersion, QString coreVersion);
 void verifyConfigurationCompatibility(QDomElement &rConfigElement);
+void updateComponentTypeName(QDomElement &rDomElement, const QString oldType, const QString newType);
 void updateRenamedPort(QDomElement &rDomElement, const QString componentType, const QString oldName, const QString newName);
 void updateRenamedParameter(QDomElement &rDomElement, const QString componentType, const QString oldName, const QString newName);
 
