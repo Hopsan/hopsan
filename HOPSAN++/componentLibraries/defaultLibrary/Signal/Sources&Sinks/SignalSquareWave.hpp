@@ -49,13 +49,12 @@ namespace hopsan {
     {
 
     private:
-        double mStartTime;
-        double mFrequency;
-        double mAmplitude;
-        double mBaseValue;
-        int relTimeInt;
-        double *mpND_out;
-        Port *mpOut;
+        double *mpStartTime;
+        double *mpFrequency;
+        double *mpAmplitude;
+        double *mpBaseValue;
+        double *mpOut;
+        Port *mpOutPort;
 
     public:
         static Component *Creator()
@@ -65,47 +64,44 @@ namespace hopsan {
 
         void configure()
         {
-            mStartTime = 0.0;
-            mFrequency = 1.0;
-            mAmplitude = 1.0;
-            mBaseValue = 0.0;
+            addInputVariable("t_start", "Start Time", "s", 0.0);
+            addInputVariable("f", "Frequencty", "Hz", 1.0);
+            addInputVariable("y_A", "Amplitude", "-", 1.0);
+            addInputVariable("y_0", "Base Value", "-", 0.0);
 
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
-
-            registerParameter("t_start", "Start Time", "s", mStartTime);
-            registerParameter("f", "Frequencty", "Hz", mFrequency);
-            registerParameter("y_A", "Amplitude", "-", mAmplitude);
-            registerParameter("y_0", "Base Value", "-", mBaseValue);
-
-            disableStartValue(mpOut, NodeSignal::Value);
+            mpOutPort = addOutputVariable("out", "Square wave output", "");
         }
 
 
         void initialize()
         {
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
+            mpOut = getSafeNodeDataPtr(mpOutPort, NodeSignal::Value);
+            mpStartTime = getSafeNodeDataPtr("t_start", NodeSignal::Value);
+            mpFrequency = getSafeNodeDataPtr("f", NodeSignal::Value);
+            mpAmplitude = getSafeNodeDataPtr("y_A", NodeSignal::Value);
+            mpBaseValue = getSafeNodeDataPtr("y_0", NodeSignal::Value);
 
             // Write basevalue value to node
-            (*mpND_out) = mBaseValue;
+            (*mpOut) = (*mpBaseValue);
         }
 
 
         void simulateOneTimestep()
         {
             // Step Equations
-            if (mTime < mStartTime)
+            if (mTime < (*mpStartTime))
             {
-                (*mpND_out) = mBaseValue;
+                (*mpOut) = (*mpBaseValue);
             }
             else
             {
-                if ( sin( (mTime-mStartTime)*2.0*M_PI*mFrequency ) >= 0.0 )
+                if ( sin( (mTime-(*mpStartTime))*2.0*M_PI*(*mpFrequency) ) >= 0.0 )
                 {
-                    (*mpND_out) = mBaseValue + mAmplitude;
+                    (*mpOut) = (*mpBaseValue) + (*mpAmplitude);
                 }
                 else
                 {
-                    (*mpND_out) = mBaseValue - mAmplitude;
+                    (*mpOut) = (*mpBaseValue) - (*mpAmplitude);
                 }
             }
         }

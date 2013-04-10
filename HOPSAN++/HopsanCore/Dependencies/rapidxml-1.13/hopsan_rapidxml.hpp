@@ -172,3 +172,18 @@ double readDoubleNodeValue(rapidxml::xml_node<> *pNode, const double defaultValu
         return defaultValue;
     }
 }
+
+//! @brief Help function to get the first grandchild node, in one go
+//! @param [in] pNode The grandparent node
+//! @param [in] child The name of the child node
+//! @param [in] grandChild The name of the child nodes child node that you want
+//! @returns A pointer to the node or 0 if child or grandChild was not found
+rapidxml::xml_node<> *getGrandChild(rapidxml::xml_node<> *pNode, const std::string child, const std::string grandChild)
+{
+    rapidxml::xml_node<> *pParent = pNode->first_node(child.c_str());
+    if (pParent)
+    {
+        return pParent->first_node(grandChild.c_str());
+    }
+    return 0;
+}

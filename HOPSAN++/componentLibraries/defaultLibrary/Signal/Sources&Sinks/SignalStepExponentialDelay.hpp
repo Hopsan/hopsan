@@ -38,12 +38,12 @@ namespace hopsan {
     {
 
     private:
-        double mBaseValue;
-        double mAmplitude;
-        double mStepTime;
-        double mTimeConstant;
-        double *mpND_out;
-        Port *mpOut;
+        double *mpBaseValue;
+        double *mpAmplitude;
+        double *mpStepTime;
+        double *mpTimeConstant;
+        double *mpOut;
+        Port *mpOutPort;
 
     public:
         static Component *Creator()
@@ -53,40 +53,37 @@ namespace hopsan {
 
         void configure()
         {
-            mBaseValue = 0.0;
-            mAmplitude = 1.0;
-            mStepTime = 1.0;
-            mTimeConstant = 1.0;
+            addInputVariable("y_0", "Base Value", "-", 0.0);
+            addInputVariable("y_A", "Amplitude", "-", 1.0);
+            addInputVariable("tao", "Time Constant of Delay", "-", 1.0);
+            addInputVariable("t_step", "Step Time", "-", 1.0);
 
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
-
-            registerParameter("y_0", "Base Value", "[-]", mBaseValue);
-            registerParameter("y_A", "Amplitude", "[-]", mAmplitude);
-            registerParameter("tao", "Time Constant of Delay", "[-]", mTimeConstant);
-            registerParameter("t_step", "Step Time", "[-]", mStepTime);
-
-            disableStartValue(mpOut, NodeSignal::Value);
+            mpOutPort = addOutputVariable("out", "", "");
         }
 
 
         void initialize()
         {
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
+            mpOut = getSafeNodeDataPtr(mpOutPort, NodeSignal::Value);
+            mpBaseValue = getSafeNodeDataPtr("y_0", NodeSignal::Value);
+            mpAmplitude = getSafeNodeDataPtr("y_A", NodeSignal::Value);
+            mpTimeConstant = getSafeNodeDataPtr("tao", NodeSignal::Value);
+            mpStepTime = getSafeNodeDataPtr("t_step", NodeSignal::Value);
 
-            (*mpND_out) = mBaseValue;
+            (*mpOut) = (*mpBaseValue);
         }
 
 
         void simulateOneTimestep()
         {
             //StepExponentialDelay Equations
-            if (mTime < mStepTime)
+            if (mTime < (*mpStepTime))
             {
-                (*mpND_out) = mBaseValue;     //Before Step
+                (*mpOut) = (*mpBaseValue);     //Before Step
             }
             else
             {
-                (*mpND_out) = mBaseValue + mAmplitude * exp(-(mTime-mStepTime)/mTimeConstant);     //After Step
+                (*mpOut) = (*mpBaseValue) + (*mpAmplitude) * exp(-(mTime-(*mpStepTime))/(*mpTimeConstant));     //After Step
             }
         }
     };

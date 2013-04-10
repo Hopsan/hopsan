@@ -46,12 +46,7 @@ namespace hopsan {
     {
 
     private:
-        double mBaseValue;
-        double mStartTime;
-        double mStopTime;
-        double mAmplitude;
-        double *mpND_out;
-        Port *mpOut;
+        double *mpOut, *mpY0, *mpTstart, *mpTend, *mpYa;
 
     public:
         static Component *Creator()
@@ -61,27 +56,25 @@ namespace hopsan {
 
         void configure()
         {
-            mBaseValue = 0.0;
-            mStartTime = 1.0;
-            mStopTime = 2.0;
-            mAmplitude = 1.0;
+            addInputVariable("y_0", "Base Value", "-", 0.0);
+            addInputVariable("t_start", "Start Time", "s", 1.0);
+            addInputVariable("t_end", "Stop Time", "s", 2.0);
+            addInputVariable("y_A", "Amplitude", "-", 1.0);
 
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
-
-            registerParameter("y_0", "Base Value", "[-]", mBaseValue);
-            registerParameter("t_start", "Start Time", "[s]", mStartTime);
-            registerParameter("t_end", "Stop Time", "[s]", mStopTime);
-            registerParameter("y_A", "Amplitude", "[-]", mAmplitude);
-
-            disableStartValue(mpOut, NodeSignal::Value);
+            addOutputVariable("out", "Pulse", "-");
         }
 
 
         void initialize()
         {
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
+            mpOut = getSafeNodeDataPtr("out", NodeSignal::Value);
+            mpY0 = getSafeNodeDataPtr("y_0", NodeSignal::Value);
+            mpYa = getSafeNodeDataPtr("y_A", NodeSignal::Value);
+            mpTstart = getSafeNodeDataPtr("t_start", NodeSignal::Value);
+            mpTend = getSafeNodeDataPtr("t_end", NodeSignal::Value);
 
-            (*mpND_out) = mBaseValue;
+            // Write initial value
+            (*mpOut) = (*mpY0);
         }
 
 
@@ -89,13 +82,13 @@ namespace hopsan {
         {
                 //Step Equations
             const double time = mTime+0.5*mTimestep;
-            if ( time >= mStartTime && time < mStopTime)
+            if ( time >= (*mpTstart) && time < (*mpTend))
             {
-                (*mpND_out) = mBaseValue + mAmplitude;     //During pulse
+                (*mpOut) = (*mpY0) + (*mpYa);     //During pulse
             }
             else
             {
-                (*mpND_out) = mBaseValue;                   //Not during pulse
+                (*mpOut) = (*mpY0);               //Not during pulse
             }
         }
     };

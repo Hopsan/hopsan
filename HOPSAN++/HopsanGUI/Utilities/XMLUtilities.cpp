@@ -460,9 +460,9 @@ void verifyHmfComponentCompatibility(QDomElement &element, const QString hmfVers
     if (coreVersion < "0.6.0" || (coreVersion.contains("0.6.x_r")))
     {
         // Typos
-        updateComponentTypeName(element, "MechanicTranslationalMassWithCoulumbFriction", "MechanicTranslationalMassWithCoulombFriction");
+        updateRenamedComponentType(element, "MechanicTranslationalMassWithCoulumbFriction", "MechanicTranslationalMassWithCoulombFriction");
 
-        updateComponentTypeName(element, "SignalSource", "SignalConstant");
+        updateRenamedComponentType(element, "SignalSource", "SignalConstant");
         updateRenamedPort(element, "SignalConstant", "out", "y");
 
         // Fix changed parameter names, after introduction of readVariables
@@ -522,7 +522,7 @@ void verifyConfigurationCompatibility(QDomElement &rConfigElement)
     //Nothing to do yet
 }
 
-void updateComponentTypeName(QDomElement &rDomElement, const QString oldType, const QString newType)
+void updateRenamedComponentType(QDomElement &rDomElement, const QString oldType, const QString newType)
 {
     if(rDomElement.attribute(HMF_TYPENAME) == oldType)
     {

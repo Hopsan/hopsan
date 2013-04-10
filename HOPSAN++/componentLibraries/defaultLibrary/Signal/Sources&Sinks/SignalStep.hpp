@@ -80,7 +80,7 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             // Step Equations
-            if (mTime < *mpStepTime)
+            if (mTime < (*mpStepTime))
             {
                 (*mpOut) = (*mpBaseValue);     //Before step
             }

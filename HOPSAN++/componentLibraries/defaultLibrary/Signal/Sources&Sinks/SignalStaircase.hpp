@@ -38,13 +38,13 @@ class SignalStaircase : public ComponentSignal
 {
 
     private:
-        double startT, stepHeight, stepWidth;
+        double *mpStartT, *mpStepHeight, *mpStepWidth;
 
         //Node data pointers
-        double *mpND_out;
+        double *mpOut;
 
         //Ports
-        Port *mpOut;
+        Port *mpOutPort;
 
     public:
         static Component *Creator()
@@ -54,30 +54,29 @@ class SignalStaircase : public ComponentSignal
 
         void configure()
         {
-            //Set member attributes
-            startT=0;
-            stepHeight=1;
-            stepWidth=1;
+            // Register changable parameters to the HOPSAN++ core
+            addInputVariable("T_start", "Start Time", "s", 0.0);
+            addInputVariable("H_step", "Step Height", "-", 1.0);
+            addInputVariable("W_step", "Step Width", "s", 1.0);
 
-            //Add ports to the component
-            mpOut = addWritePort("out", "NodeSignal");
-
-            //Register changable parameters to the HOPSAN++ core
-            registerParameter("T_start", "Start Time", "s", startT);
-            registerParameter("H_step", "Step Height", "-", stepHeight);
-            registerParameter("W_step", "Step Width", "s", stepWidth);
+            // Add ports to the component, (the defaulvalue will be the base level and is changable as parameter)
+            mpOutPort = addOutputVariable("out", "Stair case output", "", 0.0);
         }
 
 
         void initialize()
         {
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value, 0.0);
+            mpStartT = getSafeNodeDataPtr("T_start", NodeSignal::Value);
+            mpStepHeight = getSafeNodeDataPtr("H_step", NodeSignal::Value);
+            mpStepWidth = getSafeNodeDataPtr("W_step", NodeSignal::Value);
+
+            mpOut = getSafeNodeDataPtr(mpOutPort, NodeSignal::Value);
         }
 
         void simulateOneTimestep()
         {
             // +0.5*min(mtimestep,stepWidth) to avoid double!=int nummeric accuracy issue
-            (*mpND_out) = stepHeight*floor(std::max(0.0, mTime-startT+0.5*std::min(mTimestep,stepWidth))/stepWidth);
+            (*mpOut) = (*mpStepHeight)*floor(std::max(0.0, mTime-(*mpStartT)+0.5*std::min(mTimestep,(*mpStepWidth)))/(*mpStepWidth));
         }
     };
 }

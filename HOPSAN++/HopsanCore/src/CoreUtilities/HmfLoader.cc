@@ -29,6 +29,7 @@
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
 #include "HopsanEssentials.h"
 #include "CoreUtilities/StringUtilities.h"
+#include "version.h"
 
 #include "hopsan_rapidxml.hpp"
 
@@ -139,9 +140,75 @@ void updateOldModelFileParameter(rapidxml::xml_node<> *pParameterNode, const std
 void updateOldModelFileComponent(rapidxml::xml_node<> *pComponentNode, const std::string &rHmfCoreVersion)
 {
     // Typos (no specific version)
-    if(readStringAttribute(pComponentNode, "typename", "") == "MechanicTranslationalMassWithCoulumbFriction")
+
+}
+
+void updateRenamedComponentType(rapidxml::xml_node<> *pNode, const string oldType, const string newType)
+{
+    if(readStringAttribute(pNode, "typename", "") == oldType)
     {
-        writeStringAttribute(pComponentNode, "typename", "MechanicTranslationalMassWithCoulombFriction");
+        writeStringAttribute(pNode, "typename", newType);
+    }
+}
+
+void updateRenamedPort(rapidxml::xml_node<> *pNode, const string componentType, const string oldName, const string newName)
+{
+    if(readStringAttribute(pNode, "typename", "") == componentType)
+    {
+        // Rename startvalue parameters
+        rapidxml::xml_node<> *pParamNode = getGrandChild(pNode, "parameters", "parameter");
+        while (pParamNode)
+        {
+            string paramName = readStringAttribute(pParamNode, "name");
+            if (contains(paramName, oldName+"::"))
+            {
+                replace(paramName, oldName+"::", newName+"::");
+                writeStringAttribute(pParamNode, "name", paramName);
+            }
+            pParamNode = pParamNode->next_sibling("parameter");
+        }
+
+        // Now try to find all connections, and replace portname
+        string compName = readStringAttribute(pNode, "name");
+        rapidxml::xml_node<> *pConnNode = getGrandChild(pNode->parent()->parent(),"connections","connect");
+        while (pConnNode)
+        {
+            string startComp = readStringAttribute(pConnNode, "startcomponent");
+            string endComp = readStringAttribute(pConnNode, "endcomponent");
+
+            if (startComp == compName)
+            {
+                if (readStringAttribute(pConnNode, "startport") == oldName)
+                {
+                    writeStringAttribute(pConnNode, "startport", newName);
+                }
+            }
+            if (endComp == compName)
+            {
+                if (readStringAttribute(pConnNode, "endport") == oldName)
+                {
+                    writeStringAttribute(pConnNode, "endport", newName);
+                }
+            }
+
+            pConnNode = pConnNode->next_sibling("connect");
+        }
+    }
+}
+
+void updateRenamedParameter(rapidxml::xml_node<> *pNode, const string componentType, const string oldName, const string newName)
+{
+    if(readStringAttribute(pNode,"typename") == componentType)
+    {
+        rapidxml::xml_node<> *pParamNode = getGrandChild(pNode, "parameters", "parameter");
+        while (pParamNode)
+        {
+            if (readStringAttribute(pParamNode, "name") == oldName)
+            {
+                writeStringAttribute(pParamNode, "name", newName);
+            }
+            pParamNode = pParamNode->next_sibling("parameter");
+        }
     }
 }
 
@@ -401,7 +468,7 @@ ComponentSystem* hopsan::loadHopsanModelFile(const std::string filePath, HopsanE
             // Check version
             string savedwithcoreversion = readStringAttribute(pRootNode, "hopsancoreversion", "0");
             pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(savedwithcoreversion);
-            if (savedwithcoreversion < "0.6.0" || (savedwithcoreversion > "0.6.x" && savedwithcoreversion < "0.6.x_r5216"))
+            if (savedwithcoreversion < "0.6.0" || (savedwithcoreversion > "0.6.x" && savedwithcoreversion < HOPSANCOREVERSION))
             {
                 pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("This hmf model was saved with HopsanCoreVersion: "+savedwithcoreversion+". This old version is not supported by the HopsanCore hmf loader, resave the model with HopsanGUI");
                 return 0;

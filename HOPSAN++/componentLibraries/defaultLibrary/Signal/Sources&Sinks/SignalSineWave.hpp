@@ -52,12 +52,12 @@ namespace hopsan {
     {
 
     private:
-        double mStartTime;
-        double mFrequency;
-        double mAmplitude;
-        double mPhaseTOffset;
-        double *mpND_out;
-        Port *mpOut;
+        double *mpStartTime;
+        double *mpFrequency;
+        double *mpAmplitude;
+        double *mpPhaseTOffset;
+        double *mpOut;
+        Port *mpOutPort;
 
     public:
         static Component *Creator()
@@ -67,25 +67,22 @@ namespace hopsan {
 
         void configure()
         {
-            mStartTime = 0.0;
-            mFrequency = 1.0;
-            mAmplitude = 1.0;
-            mPhaseTOffset = 0.0;
+            addInputVariable("t_start", "Start Time", "s", 0.0);
+            addInputVariable("f", "Frequencty", "Hz", 1.0);
+            addInputVariable("y_A", "Amplitude", "-", 1.0);
+            addInputVariable("y_offset", "(Phase) Offset", "s", 0.0);
 
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
-
-            registerParameter("t_start", "Start Time", "[s]", mStartTime);
-            registerParameter("f", "Frequencty", "[Hz]", mFrequency);
-            registerParameter("y_A", "Amplitude", "[-]", mAmplitude);
-            registerParameter("y_offset", "(Phase) Offset", "[s]", mPhaseTOffset);
-
-            disableStartValue(mpOut, NodeSignal::Value);
+            mpOutPort = addOutputVariable("out", "Sinus wave output", "");
         }
 
 
         void initialize()
         {
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
+            mpOut = getSafeNodeDataPtr(mpOutPort, NodeSignal::Value);
+            mpStartTime = getSafeNodeDataPtr("t_start", NodeSignal::Value);
+            mpFrequency = getSafeNodeDataPtr("f", NodeSignal::Value);
+            mpAmplitude = getSafeNodeDataPtr("y_A", NodeSignal::Value);
+            mpPhaseTOffset = getSafeNodeDataPtr("y_offset", NodeSignal::Value);
 
             simulateOneTimestep();
         }
@@ -94,13 +91,14 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Sinewave Equations
-            if (mTime < mStartTime)
+            if (mTime < (*mpStartTime))
             {
-                (*mpND_out) = 0.0;     //Before start
+                (*mpOut) = 0.0;     //Before start
             }
             else
             {
-                (*mpND_out) = mAmplitude*sin(((mTime-mStartTime) - mPhaseTOffset)*2*M_PI*mFrequency);
+                // out = A * sin( (T-Tstart-Toffset)*2*pi*f )
+                (*mpOut) = (*mpAmplitude) * sin( (mTime-(*mpStartTime)-(*mpPhaseTOffset)) * 2.0*M_PI*(*mpFrequency) );
             }
         }
     };

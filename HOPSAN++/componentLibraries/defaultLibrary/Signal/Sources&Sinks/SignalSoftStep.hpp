@@ -53,14 +53,13 @@ namespace hopsan {
     {
 
     private:
-        double mStartTime;
-        double mStopTime;
-        double mBaseValue;
-        double mAmplitude;
-        double mFrequency;
-        double mOffset;
-        double *mpND_out;
-        Port *mpOut;
+        double *mpStartTime;
+        double *mpStopTime;
+        double *mpBaseValue;
+        double *mpAmplitude;
+        double *mpOffset;
+        double *mpOut;
+        Port *mpOutPort;
 
     public:
         static Component *Creator()
@@ -70,47 +69,45 @@ namespace hopsan {
 
         void configure()
         {
-            mStartTime = 1.0;
-            mStopTime = 2.0;
-            mBaseValue = 0.0;
-            mAmplitude = 1.0;
-            mFrequency = pi/(mStopTime-mStartTime);       //omega = 2pi/T, T = (stoptime-starttime)*4
+            addInputVariable("t_start", "Start Time", "[s]", 1.0);
+            addInputVariable("t_end", "Stop Time", "[s]", 2.0);
+            addInputVariable("y_0", "Base Value", "[-]", 0.0);
+            addInputVariable("y_A", "Amplitude", "[-]", 1.0);
 
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
-
-            registerParameter("t_start", "Start Time", "[s]", mStartTime);
-            registerParameter("t_end", "Stop Time", "[s]", mStopTime);
-            registerParameter("y_0", "Base Value", "[-]", mBaseValue);
-            registerParameter("y_A", "Amplitude", "[-]", mAmplitude);
-
-            disableStartValue(mpOut, NodeSignal::Value);
+            mpOutPort = addOutputVariable("out","","");
         }
 
 
         void initialize()
         {
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
+            mpOut = getSafeNodeDataPtr(mpOutPort, NodeSignal::Value);
+            mpStartTime = getSafeNodeDataPtr("t_start", NodeSignal::Value);
+            mpStopTime = getSafeNodeDataPtr("t_end", NodeSignal::Value);
+            mpBaseValue = getSafeNodeDataPtr("y_0", NodeSignal::Value);
+            mpAmplitude = getSafeNodeDataPtr("y_A", NodeSignal::Value);
 
-            (*mpND_out) = mBaseValue;
+            (*mpOut) = (*mpBaseValue);
         }
 
 
         void simulateOneTimestep()
         {
             //Sinewave Equations
+            const double startT = (*mpStartTime);
+            const double stopT = (*mpStopTime);
+            const double frequency = pi/(stopT-startT); //omega = 2pi/T, T = (stoptime-starttime)*4
 
-            mFrequency = pi/(mStopTime-mStartTime);
-            if (mTime < mStartTime)
+            if (mTime < startT)
             {
-                (*mpND_out) = mBaseValue;     //Before start
+                (*mpOut) = (*mpBaseValue);     //Before start
             }
-            else if (mTime >= mStartTime && mTime < mStopTime)
+            else if (mTime >= startT && mTime < stopT)
             {
-                (*mpND_out) = mBaseValue + 0.5*mAmplitude*sin((mTime-mStartTime)*mFrequency - 3.141592653589/2.0) + mAmplitude*0.5;
+                (*mpOut) = (*mpBaseValue) + 0.5*(*mpAmplitude)*sin((mTime-startT)*frequency - 3.141592653589/2.0) + (*mpAmplitude)*0.5;
             }
             else
             {
-                (*mpND_out) = mBaseValue + mAmplitude;
+                (*mpOut) = (*mpBaseValue) + (*mpAmplitude);
             }
         }
     };

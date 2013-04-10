@@ -38,13 +38,12 @@ namespace hopsan {
     {
 
     private:
-        double mBaseValue;
-        double mStartTime;
-        double mPeriodT;
-        double mDutyCycle;
-        double mAmplitude;
-        double *mpND_out;
-        Port *mpOutPort;
+        double *mpBaseValue;
+        double *mpStartTime;
+        double *mpPeriodT;
+        double *mpDutyCycle;
+        double *mpAmplitude;
+        double *mpOut;
 
     public:
         static Component *Creator()
@@ -54,44 +53,43 @@ namespace hopsan {
 
         void configure()
         {
-            mBaseValue = 0.0;
-            mStartTime = 0.0;
-            mPeriodT = 1.0;
-            mAmplitude = 1.0;
-            mDutyCycle = 0.5;
+            addInputVariable("y_0", "Base Value", "-", 0.0);
+            addInputVariable("t_start", "Start Time", "s", 0.0);
+            addInputVariable("dT", "Time Period", "s", 1.0);
+            addInputVariable("D", "Duty Cycle, (ratio 0<=x<=1)", "-", 0.5);
+            addInputVariable("y_A", "Amplitude", "-", 1.0);
 
-            mpOutPort = addWritePort("out", "NodeSignal", Port::NotRequired);
-
-            registerParameter("y_0", "Base Value", "-", mBaseValue);
-            registerParameter("t_start", "Start Time", "s", mStartTime);
-            registerParameter("dT", "Time Period", "s", mPeriodT);
-            registerParameter("D", "Duty Cycle, (ratio 0<=x<=1)", "-", mDutyCycle);
-            registerParameter("y_A", "Amplitude", "-", mAmplitude);
-
-            disableStartValue(mpOutPort, NodeSignal::Value);
+            addOutputVariable("out", "PulseWave", "");
         }
 
 
         void initialize()
         {
-            mpND_out = getSafeNodeDataPtr(mpOutPort, NodeSignal::Value);
-            (*mpND_out) = mBaseValue;
+            mpBaseValue = getSafeNodeDataPtr("y_0", NodeSignal::Value);
+            mpStartTime = getSafeNodeDataPtr("t_start", NodeSignal::Value);
+            mpPeriodT = getSafeNodeDataPtr("dT", NodeSignal::Value);
+            mpDutyCycle = getSafeNodeDataPtr("D", NodeSignal::Value);
+            mpAmplitude = getSafeNodeDataPtr("y_A", NodeSignal::Value);
+            mpOut = getSafeNodeDataPtr("out", NodeSignal::Value);
+
+            (*mpOut) = (*mpBaseValue);
         }
 
 
         void simulateOneTimestep()
         {
             // +0.5*mTimestep to avoid ronding issues
-            const double time = (mTime-mStartTime+0.5*mTimestep);
-            const bool high = (time - std::floor(time/mPeriodT)*mPeriodT) < mDutyCycle*mPeriodT;
+            const double time = (mTime-(*mpStartTime)+0.5*mTimestep);
+            const double periodT = (*mpPeriodT);
+            const bool high = (time - std::floor(time/periodT)*periodT) < (*mpDutyCycle)*periodT;
 
             if ( (time > 0) && high)
             {
-                (*mpND_out) = mBaseValue + mAmplitude;     //During pulse
+                (*mpOut) = (*mpBaseValue) + (*mpAmplitude);     //During pulse
             }
             else
             {
-                (*mpND_out) = mBaseValue;                  //Not during pulse
+                (*mpOut) = (*mpBaseValue);                  //Not during pulse
             }
         }
     };

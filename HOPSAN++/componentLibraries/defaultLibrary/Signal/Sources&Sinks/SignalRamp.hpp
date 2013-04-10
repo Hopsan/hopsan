@@ -51,12 +51,12 @@ namespace hopsan {
     {
 
     private:
-        double mBaseValue;
-        double mAmplitude;
-        double mStartTime;
-        double mStopTime;
-        double *mpND_out;
-        Port *mpOut;
+        double *mpBaseValue;
+        double *mpAmplitude;
+        double *mpStartTime;
+        double *mpStopTime;
+        double *mpOut;
+        Port *mpOutPort;
 
     public:
         static Component *Creator()
@@ -66,45 +66,40 @@ namespace hopsan {
 
         void configure()
         {
-            mBaseValue = 0.0;
-            mAmplitude = 1.0;
-            mStartTime = 1.0;
-            mStopTime = 2.0;
+            addInputVariable("y_0", "Base Value", "[-]", 0.0);
+            addInputVariable("y_A", "Amplitude", "[-]", 1.0);
+            addInputVariable("t_start", "Start Time", "[s]", 1.0);
+            addInputVariable("t_end", "Stop Time", "[s]", 2.0);
 
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
-
-            registerParameter("y_0", "Base Value", "[-]", mBaseValue);
-            registerParameter("y_A", "Amplitude", "[-]", mAmplitude);
-            registerParameter("t_start", "Start Time", "[s]", mStartTime);
-            registerParameter("t_end", "Stop Time", "[s]", mStopTime);
-
-            disableStartValue(mpOut, NodeSignal::Value);
+            mpOutPort = addOutputVariable("out", "Ramp output", "-");
         }
 
 
         void initialize()
         {
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
+            mpOut = getSafeNodeDataPtr(mpOutPort, NodeSignal::Value);
 
-            (*mpND_out) = mBaseValue;
+            (*mpOut) = (*mpBaseValue);
         }
 
 
         void simulateOneTimestep()
         {
+            const double startT = (*mpStartTime);
+            const double stopT = (*mpStopTime);
 
                 //Step Equations
-            if (mTime < mStartTime)
+            if (mTime < startT)
             {
-                (*mpND_out) = mBaseValue;     //Before ramp
+                (*mpOut) = (*mpBaseValue);     //Before ramp
             }
-            else if (mTime >= mStartTime && mTime < mStopTime)
+            else if (mTime >= startT && mTime < stopT)
             {
-                (*mpND_out) = ((mTime - mStartTime) / (mStopTime - mStartTime)) * mAmplitude + mBaseValue ;     //During ramp
+                (*mpOut) = ((mTime - startT) / (stopT - startT)) * (*mpAmplitude) + (*mpBaseValue);     //During ramp
             }
             else
             {
-                (*mpND_out) = mBaseValue + mAmplitude;     //After ramp
+                (*mpOut) = (*mpBaseValue) + (*mpAmplitude);     //After ramp
             }
         }
     };

@@ -23,10 +23,9 @@ namespace hopsan {
     {
 
     private:
-        double y;
         WhiteGaussianNoise noise;
-        double *mpND_out;
-        Port *mpOut;
+        double *mpOut, *mpStdDev;
+        Port *mpOutPort;
 
     public:
         static Component *Creator()
@@ -36,25 +35,22 @@ namespace hopsan {
 
         void configure()
         {
-            y = 1.0;
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
-
-            registerParameter("std_dev", "Amplitude Variance", "[-]", y);
-
-            disableStartValue(mpOut, NodeSignal::Value);
+            addInputVariable("std_dev", "Amplitude Variance", "-", 1.0);
+            mpOutPort = addOutputVariable("out", "", "", 0.0);
         }
 
 
         void initialize()
         {
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value, 0);
+            mpStdDev = getSafeNodeDataPtr("std_dev", NodeSignal::Value);
+            mpOut = getSafeNodeDataPtr(mpOutPort, NodeSignal::Value);
             simulateOneTimestep();
         }
 
 
         void simulateOneTimestep()
         {
-             (*mpND_out) = y*noise.getValue();
+             (*mpOut) = (*mpStdDev)*noise.getValue();
         }
     };
 }
