@@ -606,6 +606,7 @@ void ProjectTab::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT content
     QFile file(mpToplevelSystem->getModelFileInfo().filePath());   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not open the file: "+file.fileName()+" for writing." );
         return;
     }
 
