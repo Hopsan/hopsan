@@ -6,7 +6,7 @@
 #include "SignalSineWave.hpp"
 #include "SignalSquareWave.hpp"
 #include "SignalRamp.hpp"
-#include "SignalSource.hpp"
+#include "SignalConstant.hpp"
 #include "SignalPulse.hpp"
 #include "SignalPulseWave.hpp"
 #include "SignalNoiseGenerator.hpp"

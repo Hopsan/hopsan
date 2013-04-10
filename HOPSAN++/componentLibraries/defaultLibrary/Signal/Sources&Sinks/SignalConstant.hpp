@@ -14,16 +14,16 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   SignalSource.hpp
+//! @file   SignalConstant.hpp
 //! @author Björn Eriksson <bjorn.eriksson@liu.se>
 //! @date   2010-01-05
 //!
-//! @brief Contains a Signal Source Component
+//! @brief Contains a Signal Constant Component
 //!
 //$Id$
 
-#ifndef SIGNALSOURCE_HPP_INCLUDED
-#define SIGNALSOURCE_HPP_INCLUDED
+#ifndef SIGNALCONSTANT_HPP_INCLUDED
+#define SIGNALCONSTANT_HPP_INCLUDED
 
 #include "ComponentEssentials.h"
 
@@ -33,48 +33,40 @@ namespace hopsan {
     //! @brief
     //! @ingroup SignalComponents
     //!
-    class SignalSource : public ComponentSignal
+    class SignalConstant : public ComponentSignal
     {
 
     private:
         double mValue;
-        double *mpND_out;
-        Port *mpOut;
+        double *mpOut;
 
     public:
         static Component *Creator()
         {
-            return new SignalSource();
+            return new SignalConstant();
         }
 
         void configure()
         {
-            mValue = 1.0;
-
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
-
-            registerParameter("y", "Source Value", "[-]", mValue, Constant);
-
-            disableStartValue(mpOut, NodeSignal::Value);
+            addOutputVariable("y", "Constant value", "-", 1.0);
         }
 
 
         void initialize()
         {
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value, mValue);
-
-            //Initialize value to the node
-           (*mpND_out) = mValue;
+            mpOut = getSafeNodeDataPtr("y", NodeSignal::Value);
+            //Initialize value from the node
+            mValue = *mpOut;
         }
 
 
         void simulateOneTimestep()
         {
-           (*mpND_out) = mValue;          //Temporary RT solution  
+           (*mpOut) = mValue;          //Temporary RT solution
 
-			//Nothing to do (only one write port can exist in the node, so no one else shall write to the value)
+            //Nothing to do (only one write port can exist in the node, so no one else shall write to the value)
         }
     };
 }
 
-#endif // SIGNALSOURCE_HPP_INCLUDED
+#endif // SIGNALCONSTANT_HPP_INCLUDED

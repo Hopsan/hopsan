@@ -459,8 +459,11 @@ void verifyHmfComponentCompatibility(QDomElement &element, const QString hmfVers
     // For all versions older then 0.6.0 and all 0.6.x DEV versions run the following
     if (coreVersion < "0.6.0" || (coreVersion.contains("0.6.x_r")))
     {
-        // Typos (no specific version)
+        // Typos
         updateComponentTypeName(element, "MechanicTranslationalMassWithCoulumbFriction", "MechanicTranslationalMassWithCoulombFriction");
+
+        updateComponentTypeName(element, "SignalSource", "SignalConstant");
+        updateRenamedPort(element, "SignalConstant", "out", "y");
 
         // Fix changed parameter names, after introduction of readVariables
         if (coreVersion < "0.6.0" || (coreVersion > "0.6.x" && coreVersion < "0.6.x_r5310"))

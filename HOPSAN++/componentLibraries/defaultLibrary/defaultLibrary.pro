@@ -190,7 +190,6 @@ HEADERS += \
     Signal/Sources&Sinks/SignalStep.hpp \
     Signal/Sources&Sinks/SignalStaircase.hpp \
     Signal/Sources&Sinks/SignalSquareWave.hpp \
-    Signal/Sources&Sinks/SignalSource.hpp \
     Signal/Sources&Sinks/SignalSoftStep.hpp \
     Signal/Sources&Sinks/SignalSink.hpp \
     Signal/Sources&Sinks/SignalSineWave.hpp \
@@ -260,7 +259,8 @@ HEADERS += \
     Mechanic/Rotational/MechanicRotShaft.hpp \
     Mechanic/Rotational/MechanicJLink.hpp \
     Mechanic/Rotational/MechanicMotor.hpp \
-    Mechanic/Rotational/MechanicRackAndPinion.hpp
+    Mechanic/Rotational/MechanicRackAndPinion.hpp \
+    Signal/Sources&Sinks/SignalConstant.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \

@@ -158,7 +158,7 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     //Signal components
     pComponentFactory->registerCreatorFunction("SignalAnimationSlider", SignalAnimationSlider::Creator);
     pComponentFactory->registerCreatorFunction("SignalAbsoluteValue", SignalAbsoluteValue::Creator);
-    pComponentFactory->registerCreatorFunction("SignalSource", SignalSource::Creator);
+    pComponentFactory->registerCreatorFunction("SignalConstant", SignalConstant::Creator);
     pComponentFactory->registerCreatorFunction("SignalGain", SignalGain::Creator);
     pComponentFactory->registerCreatorFunction("SignalSink", SignalSink::Creator);
     pComponentFactory->registerCreatorFunction("SignalStep", SignalStep::Creator);
