@@ -265,11 +265,11 @@ def buildRelease():
     if buildVCpp:
         if not msvcCompile("2008", "x86"):
             return False
-    if not msvcCompile("2008", "x64"):
+        if not msvcCompile("2008", "x64"):
             return False
-    if not msvcCompile("2010", "x86"):
+        if not msvcCompile("2010", "x86"):
             return False
-    if not msvcCompile("2010", "x64"):
+        if not msvcCompile("2010", "x64"):
             return False
     
     #Make sure the MinGW compilation uses the MAINCORE define, so that log file is enabled
