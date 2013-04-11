@@ -240,7 +240,7 @@ void Component::setName(string name)
 
 
 //! @brief Get the component name
-const string Component::getName() const
+const std::string &Component::getName() const
 {
     return mName;
 }
@@ -278,13 +278,13 @@ string Component::getTypeCQSString() const
 
 
 //! @brief Get the TypeName of the component
-const string Component::getTypeName() const
+const std::string &Component::getTypeName() const
 {
     return mTypeName;
 }
 
 //! @brief Get the SubType name of the component
-const string Component::getSubTypeName() const
+const std::string &Component::getSubTypeName() const
 {
     return mSubTypeName;
 }

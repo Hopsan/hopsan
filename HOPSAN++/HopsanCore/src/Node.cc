@@ -65,7 +65,7 @@ Node::Node(const size_t datalength)
 //!
 //! @brief returns the node type
 //!
-const std::string Node::getNodeType() const
+const std::string &Node::getNodeType() const
 {
     return mNodeType;
 }
@@ -111,7 +111,7 @@ void Node::setNiceName(const string nicename)
 }
 
 
-string Node::getNiceName() const
+const std::string &Node::getNiceName() const
 {
     return mNiceName;
 }

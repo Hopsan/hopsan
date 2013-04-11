@@ -78,6 +78,10 @@ namespace hopsan {
         void initialize()
         {
             mpOut = getSafeNodeDataPtr(mpOutPort, NodeSignal::Value);
+            mpBaseValue = getSafeNodeDataPtr("y_0", NodeSignal::Value);
+            mpAmplitude = getSafeNodeDataPtr("y_A", NodeSignal::Value);
+            mpStartTime = getSafeNodeDataPtr("t_start", NodeSignal::Value);
+            mpStopTime = getSafeNodeDataPtr("t_end", NodeSignal::Value);
 
             (*mpOut) = (*mpBaseValue);
         }

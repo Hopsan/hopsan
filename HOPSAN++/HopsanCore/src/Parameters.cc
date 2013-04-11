@@ -147,7 +147,7 @@ bool Parameter::setParameterValue(const std::string value, Parameter **pNeedEval
 
 //! @brief Returns the type of the parameter
 //! @return The type of the parameter
-std::string Parameter::getType() const
+const std::string &Parameter::getType() const
 {
     return mType;
 }
@@ -325,22 +325,22 @@ bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
     return success;
 }
 
-std::string Parameter::getName() const
+const std::string &Parameter::getName() const
 {
     return mParameterName;
 }
 
-std::string Parameter::getValue() const
+const std::string &Parameter::getValue() const
 {
     return mParameterValue;
 }
 
-std::string Parameter::getUnit() const
+const std::string &Parameter::getUnit() const
 {
     return mUnit;
 }
 
-std::string Parameter::getDescription() const
+const std::string &Parameter::getDescription() const
 {
     return mDescription;
 }

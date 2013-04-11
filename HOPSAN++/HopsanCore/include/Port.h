@@ -108,7 +108,7 @@ namespace hopsan {
 
         const std::string getName() const;
         const std::string getComponentName() const;
-        const std::string getDescription() const;
+        const std::string &getDescription() const;
         void setDescription(const std::string &rDescription);
 
         virtual void loadStartValues();
@@ -116,10 +116,8 @@ namespace hopsan {
 
         Component* getComponent() const;
 
-        char *getVariableAlias(const int id);
+        const std::string &getVariableAlias(const int id);
         int getVariableIdByAlias(const std::string alias) const;
-
-
 
     protected:
         PortTypesEnumT mPortType;
@@ -157,7 +155,8 @@ namespace hopsan {
         std::map<std::string, int> mVariableAliasMap;
         bool mConnectionRequired;
 
-        char* mpTempAlias;
+        //char* mpTempAlias;
+        std::string mEmptyString;
     };
 
 

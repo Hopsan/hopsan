@@ -930,21 +930,26 @@ void LibraryWidget::addExternalLibrary(QString libDir)
     }
     libDir.replace("\\","/");   //Enforce unix-style on path
 
-    if(!libDir.isEmpty())
-    {
-        gConfig.setExternalLibDir(libDir);
-    }
 
-    if(!gConfig.hasUserLib(libDir))     //Check so that path does not already exist
+    if(libDir.isEmpty())
     {
-        loadAndRememberExternalLibrary(libDir);    //Load and register the library in configuration
+        return;
     }
     else
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Error: Library " + libDir + " is already loaded!");
-    }
+        gConfig.setExternalLibDir(libDir);
 
-    checkForFailedComponents();
+        if(!gConfig.hasUserLib(libDir))     //Check so that path does not already exist
+        {
+            loadAndRememberExternalLibrary(libDir);    //Load and register the library in configuration
+        }
+        else
+        {
+            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Error: Library " + libDir + " is already loaded!");
+        }
+
+        checkForFailedComponents();
+    }
 }
 
 

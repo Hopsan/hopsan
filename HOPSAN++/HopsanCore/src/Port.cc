@@ -50,7 +50,7 @@ Port::Port(const string nodeType, const string portName, Component *pParentCompo
     mConnectedPorts.clear();
     mpNode = 0;
     mpStartNode = 0;
-    mpTempAlias=0;
+    //mpTempAlias=0;
 
     // Create the initial node
     mpNode = getComponent()->getHopsanEssentials()->createNode(mNodeType);
@@ -89,7 +89,7 @@ Port::~Port()
         getComponent()->getHopsanEssentials()->removeNode(mpNode);
     }
 
-    free(mpTempAlias);
+    //free(mpTempAlias);
 }
 
 
@@ -301,20 +301,22 @@ void Port::setVariableAlias(const string alias, const int id)
     }
 }
 
-
-char* Port::getVariableAlias(const int id)
+//! @todo return reference to string instead, if that is possible
+const std::string &Port::getVariableAlias(const int id)
 {
     std::map<std::string, int>::const_iterator it;
     for(it=mVariableAliasMap.begin();it!=mVariableAliasMap.end();++it)
     {
         if (it->second == id)
         {
-            copyString(&mpTempAlias, it->first);
-            return mpTempAlias;
+            //copyString(&mpTempAlias, it->first);
+            //return mpTempAlias;
+            return it->first;
         }
     }
-    copyString(&mpTempAlias, "");
-    return mpTempAlias;
+//    copyString(&mpTempAlias, "");
+//    return mpTempAlias;
+    return mEmptyString;
 }
 
 int Port::getVariableIdByAlias(const string alias) const
@@ -608,12 +610,12 @@ const string Port::getName() const
 
 
 //! @brief Get the name of the commponent that the port is attached to
-const string Port::getComponentName() const
+const std::string Port::getComponentName() const
 {
     return getComponent()->getName();
 }
 
-const string Port::getDescription() const
+const std::string &Port::getDescription() const
 {
     return mDescription;
 }

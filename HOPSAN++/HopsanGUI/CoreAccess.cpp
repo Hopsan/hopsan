@@ -1085,7 +1085,7 @@ void CoreSystemAccess::getVariableDescriptions(const QString compname, const QSt
                 CoreVariableData data;
                 data.mName = QString::fromStdString(pDescs->at(i).name);
                 data.mUnit = QString::fromStdString(pDescs->at(i).unit);
-                data.mAlias = QString(pPort->getVariableAlias(i));
+                data.mAlias = QString::fromStdString(pPort->getVariableAlias(i));
                 data.mDescription = QString::fromStdString(pDescs->at(i).description);
                 rVarDescriptions.push_back(data);
             }

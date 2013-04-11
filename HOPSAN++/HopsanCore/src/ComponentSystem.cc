@@ -3559,8 +3559,7 @@ bool AliasHandler::setVariableAlias(const string alias, const string compName, c
         if (pPort)
         {
             // First unregister the old alias (if it exists)
-            char* cstr = pPort->getVariableAlias(varId);
-            string prevAlias = cstr;
+            string prevAlias = pPort->getVariableAlias(varId);
             if (!prevAlias.empty())
             {
                 //! @todo the remove will search for port agin all the way, maybe have a special remove to use when we know the port and id already

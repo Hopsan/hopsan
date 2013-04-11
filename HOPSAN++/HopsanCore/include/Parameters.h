@@ -53,11 +53,11 @@ public:
 
     void* getDataPtr();
 
-    std::string getType() const;
-    std::string getName() const;
-    std::string getValue() const;
-    std::string getUnit() const;
-    std::string getDescription() const;
+    const std::string &getType() const;
+    const std::string &getName() const;
+    const std::string &getValue() const;
+    const std::string &getUnit() const;
+    const std::string &getDescription() const;
 
     bool isEnabled() const;
     bool isDynamic() const;

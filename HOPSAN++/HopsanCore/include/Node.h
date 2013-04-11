@@ -62,8 +62,8 @@ class DLLIMPORTEXPORT Node
 
 public:
     Node(const size_t datalength);
-    std::string getNiceName() const;
-    const std::string getNodeType() const;
+    const std::string &getNiceName() const;
+    const std::string &getNodeType() const;
 
     size_t getNumDataVariables() const;
     virtual int getDataIdFromName(const std::string name) const;
