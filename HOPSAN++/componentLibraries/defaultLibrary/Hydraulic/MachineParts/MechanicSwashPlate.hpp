@@ -38,7 +38,7 @@ namespace hopsan {
     {
 
     private:
-        Port *mpIn1, *mpIn2, *mpOut1, *mpP1;
+        Port *mpP1;
         double *mpND_in1, *mpND_in2, *mpND_out1;
         std::vector<double*> mvpND_f1, mvpND_x1, mvpND_v1, mvpND_c1, mvpND_Zc1, mvpND_me1;
         size_t mNumPorts1;
@@ -62,12 +62,11 @@ namespace hopsan {
             //Register changable parameters to the HOPSAN++ core
             addInputVariable("r", "Swivel Radius", "[m]", 0.05);
             addInputVariable("theta_offset", "Angle Offset", "[m]", 0.0);
+            addInputVariable("angle", "Angle", "rad", 0);
+            addInputVariable("movemenet", "?", "?", 0);
+            addOutputVariable("torque", "Torque", "Nm");
 
             //Add ports to the component
-            mpIn1 = addReadPort("angle", "NodeSignal");
-            mpIn2 = addReadPort("movement", "NodeSignal");
-            mpOut1 = addWritePort("torque", "NodeSignal");
-
             mpP1 = addPowerMultiPort("P1", "NodeMechanic");
         }
 
@@ -87,9 +86,9 @@ namespace hopsan {
             x1.resize(mNumPorts1);
             v1.resize(mNumPorts1);
 
-            mpND_in1 = getSafeNodeDataPtr(mpIn1, NodeSignal::Value);
-            mpND_in2 = getSafeNodeDataPtr(mpIn2, NodeSignal::Value);
-            mpND_out1 = getSafeNodeDataPtr(mpOut1, NodeSignal::Value);
+            mpND_in1 = getSafeNodeDataPtr("angle", NodeSignal::Value);
+            mpND_in2 = getSafeNodeDataPtr("movement", NodeSignal::Value);
+            mpND_out1 = getSafeNodeDataPtr("torque", NodeSignal::Value);
             mpR = getSafeNodeDataPtr("r", NodeSignal::Value);
             mpOffset = getSafeNodeDataPtr("theta_offset", NodeSignal::Value);
 

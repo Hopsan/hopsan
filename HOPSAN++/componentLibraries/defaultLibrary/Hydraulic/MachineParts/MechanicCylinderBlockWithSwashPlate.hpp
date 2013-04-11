@@ -38,7 +38,7 @@ namespace hopsan {
     {
 
     private:
-        Port *mpIn1, *mpOut1, *mpOut2, *mpP1, *mpP2;
+        Port *mpP1, *mpP2;
         size_t mNumPorts1;
 
         double mNumX[3], mNumV[2];
@@ -74,14 +74,14 @@ namespace hopsan {
             addInputVariable("B", "Viscous Friction", "[Nms/rad]", 10.0);
             addInputVariable("r", "Swivel Radius", "[m]", 0.05);
             addInputVariable("theta_offset", "Angle Offset", "[m]", 0.0);
+            addInputVariable("angle", "Angle", "rad", 0);
+            addOutputVariable("torque", "Torque", "Nm");
+            addOutputVariable("movement", "?", "?");
             registerParameter("J", "Moment of Inertia of Cylinder Block", "[kgm^2]", J);
             registerParameter("m_p", "Mass of each Piston", "[kg]", mp);
             registerParameter("r_p", "Piston Radius", "[m]", rp);
 
             //Add ports to the component
-            mpIn1 = addReadPort("angle", "NodeSignal");
-            mpOut1 = addWritePort("torque", "NodeSignal", Port::NotRequired);
-            mpOut2 = addWritePort("movement", "NodeSignal", Port::NotRequired);
             mpP1 = addPowerMultiPort("P1", "NodeMechanic");
             mpP2 = addPowerPort("P2", "NodeMechanicRotational");
         }
@@ -108,9 +108,9 @@ namespace hopsan {
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::WaveVariable);
             mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::CharImpedance);
 
-            mpND_in1 = getSafeNodeDataPtr(mpIn1, NodeSignal::Value);
-            mpND_out1 = getSafeNodeDataPtr(mpOut1, NodeSignal::Value);
-            mpND_out2 = getSafeNodeDataPtr(mpOut2, NodeSignal::Value);
+            mpND_in1 = getSafeNodeDataPtr("angle", NodeSignal::Value);
+            mpND_out1 = getSafeNodeDataPtr("torque", NodeSignal::Value);
+            mpND_out2 = getSafeNodeDataPtr("movement", NodeSignal::Value);
 
             mpOffset = getSafeNodeDataPtr("theta_offset", NodeSignal::Value);
             mpR = getSafeNodeDataPtr("r", NodeSignal::Value);

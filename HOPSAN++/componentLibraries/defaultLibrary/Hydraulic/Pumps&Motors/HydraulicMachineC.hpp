@@ -44,8 +44,8 @@ namespace hopsan {
     {
 
     private:
-        double cp1, cp2, v1min, v2min;
-        double alfa, wfak, betae, je, v1, v2, dp, cim, bm;
+        double cp1, cp2, v1min, v2min, alfa, wfak, je;
+        double *mpBetae, *mpV1, *mpV2, *mpDm, *mpCim, *mpBm;
 
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_t3, *mpND_a3, *mpND_w3,*mpND_c3, *mpND_Zx3, *mpND_eps;
 
@@ -61,13 +61,7 @@ namespace hopsan {
         void configure()
         {
             //Set member attributes
-            betae = 1000000000;
             je = 1;
-            v1 = 0.005;
-            v2 = 0.005;
-            dp = 0.00005;
-            cim = 0;
-            bm = 0;
             alfa = 0.1;
             wfak = 0.1;
 
@@ -75,16 +69,16 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpP3 = addPowerPort("P3", "NodeMechanicRotational");
-            mpIn = addReadPort("eps", "NodeSignal", Port::NotRequired);
+            addInputVariable("eps", "Displacement setting", "", 1);
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("Beta_e", "Bulk modulus of oil", "[Pa]", betae);
+            addInputVariable("Beta_e", "Bulk modulus of oil", "[Pa]", 1000000000);
+            addInputVariable("V_1", "Volume at port 1", "[m^3]", 0.005);
+            addInputVariable("V_2", "Volume at port 2", "[m^3]", 0.005);
+            addInputVariable("D_m", "Displacement", "[m^3/rev]", 0.00005);
+            addInputVariable("C_lm", "Leakage coefficient", "[]", 0.0);
+            addInputVariable("B_m", "Viscous friction coefficient", "[Nms/rad]", 0.0);
             registerParameter("J_em", "Equivalent load of inertia", "[kg*m^2]", je);
-            registerParameter("V_1", "Volume at port 1", "[m^3]", v1);
-            registerParameter("V_2", "Volume at port 2", "[m^3]", v2);
-            registerParameter("D_m", "Displacement", "[m^3/rev]", dp);
-            registerParameter("C_lm", "Leakage coefficient", "[]", cim);
-            registerParameter("B_m", "Viscous friction coefficient", "[Nms/rad]", bm);
 
             setStartValue(mpP1, NodeHydraulic::Pressure, 1.0e5);
             setStartValue(mpP2, NodeHydraulic::Pressure, 1.0e5);
@@ -110,23 +104,34 @@ namespace hopsan {
             mpND_c3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::WaveVariable);
             mpND_Zx3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::CharImpedance);
 
-            mpND_eps = getSafeNodeDataPtr(mpIn, NodeSignal::Value, 1.0);
+            mpND_eps = getSafeNodeDataPtr("eps", NodeSignal::Value);
 
-            double p1, q1, c1, Zc1, p2, q2, c2, Zc2, t3, /*a3,*/ w3, c3, Zx3, eps;
-            double dpr, dpe, ka, v1e, v2e, /*ap, wp,*/ qp1, qp2;
+            mpBetae = getSafeNodeDataPtr("Beta_e", NodeSignal::Value);
+            mpV1 = getSafeNodeDataPtr("V_1", NodeSignal::Value);
+            mpV2 = getSafeNodeDataPtr("V_2", NodeSignal::Value);
+            mpDm = getSafeNodeDataPtr("D_m", NodeSignal::Value);
+            mpCim = getSafeNodeDataPtr("C_lm", NodeSignal::Value);
+            mpBm = getSafeNodeDataPtr("B_m", NodeSignal::Value);
+
+            double dpr, dpe, ka, v1e, v2e, qp1, qp2;
 
             //Read input variables from nodes
-            p1 = (*mpND_p1);
-            q1 = (*mpND_q1);
-            p2 = (*mpND_p2);
-            q2 = (*mpND_q2);
-            t3 = (*mpND_t3);
-           // a3 = (*mpND_a3);
-            w3 = (*mpND_w3);
-            eps = (*mpND_eps);
+            double p1 = (*mpND_p1);
+            double q1 = (*mpND_q1);
+            double p2 = (*mpND_p2);
+            double q2 = (*mpND_q2);
+            double t3 = (*mpND_t3);
+            double w3 = (*mpND_w3);
+            double eps = (*mpND_eps);
+            double betae = (*mpBetae);
+            double v1 = (*mpV1);
+            double v2 = (*mpV2);
+            double dm = (*mpDm);
+            double clm = (*mpCim);
+            double bm = (*mpBm);
 
             //Initialization
-            dpr = dp / (pi * 2);
+            dpr = dm / (pi * 2);
             dpe = dpr * eps;
             ka = 1 / (1 - alfa);
             v1min = 2*ka*betae * mTimestep*mTimestep * dpr*dpr / (2*wfak*je);
@@ -135,25 +140,23 @@ namespace hopsan {
             v2e = v2;
             if (v1e < v1min) { v1e = v1min; }
             if (v2e < v2min) { v2e = v2min; }
-            //ap = -a3;
-            //wp = -w3;
-            Zc1 = 2 * ka*betae*mTimestep / (2*v1e);
-            Zc2 = 2 * ka*betae*mTimestep / (2*v2e);
+            double Zc1 = 2 * ka*betae*mTimestep / (2*v1e);
+            double Zc2 = 2 * ka*betae*mTimestep / (2*v2e);
             mDelayedC1.initialize(1, p1-Zc1*q1);
-            c1 = p1 - Zc1*q1;
+            double c1 = p1 - Zc1*q1;
             mDelayedC2.initialize(1, p2-Zc2*q2);
-            c2 = p2 - Zc2*q2;
+            double c2 = p2 - Zc2*q2;
             qp1 = dpe * w3;
             qp2 = -dpe * w3;
 
-            cp1 = p1 - Zc1 * (qp1 - cim * (p1 - p2));
-            cp2 = p2 - Zc2 * (qp2 - cim * (p2 - p1));
+            cp1 = p1 - Zc1 * (qp1 - clm * (p1 - p2));
+            cp2 = p2 - Zc2 * (qp2 - clm * (p2 - p1));
             mDelayedCp1.initialize(1, cp1);
             mDelayedCp2.initialize(1, cp2);
             mDelayedCp1e.initialize(1, cp1);
             mDelayedCp2e.initialize(1, cp2);
-            c3 = t3;
-            Zx3 = dpe*dpe * Zc1 + dpe*dpe * Zc2 + bm;
+            double c3 = t3;
+            double Zx3 = dpe*dpe * Zc1 + dpe*dpe * Zc2 + bm;
 
             //Write output variables from nodes
             (*mpND_p1) = p1;
@@ -165,8 +168,6 @@ namespace hopsan {
             (*mpND_c2) = c2;
             (*mpND_Zc2) = Zc2;
             (*mpND_t3) = t3;
-            //(*mpND_a3) = a3;
-            //(*mpND_w3) = w3;
             (*mpND_c3) = c3;
             (*mpND_Zx3) = Zx3;
         }
@@ -177,44 +178,47 @@ namespace hopsan {
             double cp10e, cp20e, ka, /*ap, */c1e, c2e, p1e, p2e, ct1, ct2,
                    v1e, v2e, pm1, pp1, qp1, qp2, pp2, pm2, cp10, cp20, dpe, dpr, /*wp, */ct1e,
                    ct2e, pm1e, pm2e, pp1e, qp1e, qp2e, pp2e, cp1e, cp2e;
-            double p1, q1, c1, Zc1, p2, q2, c2, Zc2, /*t3, a3,*/ w3, c3, Zx3, eps;
 
             //Read input variables from nodes
-            p1 = (*mpND_p1);
-            q1 = (*mpND_q1);
-            c1 = (*mpND_c1);
-            p2 = (*mpND_p2);
-            q2 = (*mpND_q2);
-            c2 = (*mpND_c2);
-            //t3 = (*mpND_t3);
-            //a3 = (*mpND_a3);
-            w3 = (*mpND_w3);
-            eps = (*mpND_eps);
+            double p1 = (*mpND_p1);
+            double q1 = (*mpND_q1);
+            double c1 = (*mpND_c1);
+            double p2 = (*mpND_p2);
+            double q2 = (*mpND_q2);
+            double c2 = (*mpND_c2);
+            double w3 = (*mpND_w3);
+            double eps = (*mpND_eps);
+            double betae = (*mpBetae);
+            double v1 = (*mpV1);
+            double v2 = (*mpV2);
+            double dm = (*mpDm);
+            double clm = (*mpCim);
+            double bm = (*mpBm);
 
             //Machine equations
             v1e = std::max(v1,v1min);
             v2e = std::max(v2,v2min);
 
-            dpr = dp / (pi * 2);
+            dpr = dm / (pi * 2);
             limitValue(eps, -1.0, +1.0);
             dpe = dpr * eps;    //Effective displacement
             ka = 1 / (1 - alfa);
             //ap = -a3;
             //wp = -w3;
-            Zc1 = 2*ka*betae*mTimestep / (2*v1e);
-            Zc2 = 2*ka*betae*mTimestep / (2*v2e);
+            double Zc1 = 2*ka*betae*mTimestep / (2*v1e);
+            double Zc2 = 2*ka*betae*mTimestep / (2*v2e);
 
             qp1 = dpe*w3;
             qp2 = -dpe*w3;
 
-            pp1 = (cp1 + qp1*Zc1 + cim*(cp2*Zc1 + cp1*Zc2)) / (cim*(Zc1 + Zc2) + 1);
-            pp2 = (cp2 + qp2*Zc2 + cim*(cp2*Zc1 + cp1*Zc2)) / (cim*(Zc1 + Zc2) + 1);
+            pp1 = (cp1 + qp1*Zc1 + clm*(cp2*Zc1 + cp1*Zc2)) / (clm*(Zc1 + Zc2) + 1);
+            pp2 = (cp2 + qp2*Zc2 + clm*(cp2*Zc1 + cp1*Zc2)) / (clm*(Zc1 + Zc2) + 1);
             pp1e = pp1;
             pp2e = pp2;
             if (pp1e < 0.0) { pp1e = 0.0; }
             if (pp2e < 0.0) { pp2e = 0.0; }
-            qp1e = qp1 - cim * (pp1e - pp2e);
-            qp2e = qp2 - cim * (pp2e - pp1e);
+            qp1e = qp1 - clm * (pp1e - pp2e);
+            qp2e = qp2 - clm * (pp2e - pp1e);
 
             // Characteristics
             ct1 = 0.0;
@@ -261,8 +265,8 @@ namespace hopsan {
             mDelayedCp2e.update(cp2e);
 
                 // Force characteristics
-            c3 = (cp1e - cp2e)*dpe;
-            Zx3 = dpe*dpe * (Zc1 + Zc2) + bm;
+            double c3 = (cp1e - cp2e)*dpe;
+            double Zx3 = dpe*dpe * (Zc1 + Zc2) + bm;
 
             //Write output variables from nodes
             (*mpND_c1) = c1;

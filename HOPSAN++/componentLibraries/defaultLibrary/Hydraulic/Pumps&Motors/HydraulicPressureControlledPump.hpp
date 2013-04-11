@@ -42,8 +42,8 @@ namespace hopsan {
     class HydraulicPressureControlledPump : public ComponentQ
     {
     private:
-        double pnom, movementnom;
-        double pdif, movement, qmax, qmin, lp, rp, wp1, Kcp, taov, tp, tm;
+        double pnom, movementnom, qmin;
+        double *mpPdif, *mpMovement, *mpQmax, *mpLp, *mpRp, *mpWp1, *mpClp, *mpTaov, *mpTp, *mpTm;
         double a1, a2, b1, b2, b3, y1, y2, u1, u2, ud, vd, yd;
         double gamma, qminl, qmaxl;
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_p3, *mpND_q3, *mpND_c3, *mpND_eps, *mpND_a;
@@ -59,35 +59,26 @@ namespace hopsan {
         {
             pnom = 7e6;
             movementnom = 125;
-            pdif = 1000000;
-            movement = 125;
-            qmax = 0.00125;
             qmin = 0;
-            lp = 70000000;
-            rp = 1000000000;
-            wp1 = 200;
-            Kcp = 0.000000000001;
-            taov = 0.001;
-            tp = 0.15;
-            tm = 0.12;
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpPREF = addPowerPort("PREF", "NodeHydraulic");
-            mpOut = addWritePort("eps", "NodeSignal", Port::NotRequired);
-            mpOut2 = addWritePort("a", "NodeSignal", Port::NotRequired);
 
-            registerParameter("p_dif", "Reference pressure difference", "[Pa]", pdif);
-            registerParameter("omega_p", "Pump movement", "[rad/s]", movement);
-            registerParameter("q_max", "Nomainal maximal flow", "[m^3/s]", qmax);
+            addInputVariable("eps", "NodeSignal", "", 1.0);
+            addInputVariable("a", "NodeSignal", "rad", 0);
+            addInputVariable("p_dif", "Reference pressure difference", "[Pa]", 1000000);
+            addInputVariable("omega_p", "Pump movement", "[rad/s]", 125);
+            addInputVariable("q_max", "Nomainal maximal flow", "[m^3/s]", 0.00125);
+            addInputVariable("l_p", "Regulator inductance at nominal pressure", "[]", 70000000);
+            addInputVariable("r_p", "Static characteristic at nominal pressure", "[]", 1000000000);
+            addInputVariable("omega_p1", "Lead frequency of regulator", "[rad/s]", 200);
+            addInputVariable("C_lp", "Leakage coefficient of pump", "[]", 0.000000000001);
+            addInputVariable("tao_v", "Time constant of control valve", "[s]", 0.001);
+            addInputVariable("t_p", "Time from min to full displacement", "[s]", 0.15);
+            addInputVariable("t_m", "Time from full to min displacement", "[s]", 0.12);
+
             registerParameter("q_min", "Nominal minimal flow", "[m^3/s]", qmin);
-            registerParameter("l_p", "Regulator inductance at nominal pressure", "[]", lp);
-            registerParameter("r_p", "Static characteristic at nominal pressure", "[]", rp);
-            registerParameter("omega_p1", "Lead frequency of regulator", "[rad/s]", wp1);
-            registerParameter("C_lp", "Leakage coefficient of pump", "[]", Kcp);
-            registerParameter("tao_v", "Time constant of control valve", "[s]", taov);
-            registerParameter("t_p", "Time from min to full displacement", "[s]", tp);
-            registerParameter("t_m", "Time from full to min displacement", "[s]", tm);
         }
 
 
@@ -107,8 +98,19 @@ namespace hopsan {
             mpND_q3 = getSafeNodeDataPtr(mpPREF, NodeHydraulic::Flow);
             mpND_c3 = getSafeNodeDataPtr(mpPREF, NodeHydraulic::WaveVariable);
 
-            mpND_eps = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
-            mpND_a = getSafeNodeDataPtr(mpOut2, NodeSignal::Value);
+            mpND_eps = getSafeNodeDataPtr("eps", NodeSignal::Value);
+            mpND_a = getSafeNodeDataPtr("a", NodeSignal::Value);
+
+            mpPdif = getSafeNodeDataPtr("p_dif", NodeSignal::Value);
+            mpMovement = getSafeNodeDataPtr("omega_p", NodeSignal::Value);
+            mpQmax = getSafeNodeDataPtr("q_max", NodeSignal::Value);
+            mpLp = getSafeNodeDataPtr("l_p", NodeSignal::Value);
+            mpRp = getSafeNodeDataPtr("r_p", NodeSignal::Value);
+            mpWp1 = getSafeNodeDataPtr("omega_p1", NodeSignal::Value);
+            mpClp = getSafeNodeDataPtr("C_lp", NodeSignal::Value);
+            mpTaov = getSafeNodeDataPtr("tao_v", NodeSignal::Value);
+            mpTp = getSafeNodeDataPtr("t_p", NodeSignal::Value);
+            mpTm = getSafeNodeDataPtr("t_m", NodeSignal::Value);
 
             double p1 = (*mpND_p1);
             double c1 = (*mpND_c1);
@@ -119,9 +121,18 @@ namespace hopsan {
             double Zc1 = (*mpND_Zc1);
             double Zc2 = (*mpND_Zc2);
 
+            double pdif = (*mpPdif);
+            double movement = (*mpMovement);
+            double qmax = (*mpQmax);
+            double lp = (*mpLp);
+            double rp = (*mpRp);
+            double wp1 = (*mpWp1);
+            double Clp = (*mpClp);
+            double taov = (*mpTaov);
+
             double y0, lpe/*, vmin, vmax*/;
 
-            gamma = 1 / (Kcp * (Zc1 + Zc2) + 1);
+            gamma = 1 / (Clp * (Zc1 + Zc2) + 1);
             if (movement < .001) { movement = .001; }
             if (p2 < 1.0) { p2 = 1.0; }
             lpe = lp * sqrt(pnom / p2) * (movementnom / movement);
@@ -136,7 +147,7 @@ namespace hopsan {
             //vmax = qmaxl * sqrt(fabs(p2 - 1e5) / (pnom * tp));
             //vmin = -qmaxl * sqrt(fabs(p2 - 1e5) / (pnom * tm));
 
-            double c2e = (Kcp * Zc1 + 1) * gamma * c2 + Kcp * Zc2 * gamma * c1;
+            double c2e = (Clp * Zc1 + 1) * gamma * c2 + Clp * Zc2 * gamma * c1;
             double u = pdif - c2e + c3;
             yd = y0;
             ud = u;
@@ -159,15 +170,26 @@ namespace hopsan {
             double Zc2 = (*mpND_Zc2);
             double c3 = (*mpND_c3);
 
+            double pdif = (*mpPdif);
+            double movement = (*mpMovement);
+            double qmax = (*mpQmax);
+            double lp = (*mpLp);
+            double rp = (*mpRp);
+            double wp1 = (*mpWp1);
+            double Clp = (*mpClp);
+            double taov = (*mpTaov);
+            double tp = (*mpTp);
+            double tm = (*mpTm);
+
             double lpe, c1e, c2e, qp, ql, q1, q2, ymin, ymax, vmin, vmax;
 
             if (p2 < 1.0) { p2 = 1.0; }
             lpe = lp * sqrt(pnom / p2) * (movementnom / movement);
             if (c3 < 0.0) { c3 = 0.0; }
-            gamma = 1 / (Kcp * (Zc1 + Zc2) + 1);
+            gamma = 1 / (Clp * (Zc1 + Zc2) + 1);
 
-            c1e = (Kcp * Zc2 + 1) * gamma * c1 + Kcp * Zc1 * gamma * c2;
-            c2e = (Kcp * Zc1 + 1) * gamma * c2 + Kcp * Zc2 * gamma * c1;
+            c1e = (Clp * Zc2 + 1) * gamma * c1 + Clp * Zc1 * gamma * c2;
+            c2e = (Clp * Zc1 + 1) * gamma * c2 + Clp * Zc2 * gamma * c1;
 
             double denom = lpe + rp * taov + Zc2 * gamma / wp1;
             double g1 = lpe * taov / denom;
@@ -184,7 +206,7 @@ namespace hopsan {
             p2 = c2e + Zc2 * gamma * qp;
 
             //Leakage flow
-            ql = Kcp * (p2 - p1);
+            ql = Clp * (p2 - p1);
             q2 = qp - ql;
 
 
