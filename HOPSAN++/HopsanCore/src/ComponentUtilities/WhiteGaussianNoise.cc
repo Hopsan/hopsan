@@ -27,13 +27,18 @@
 #include "ComponentUtilities/WhiteGaussianNoise.h"
 #include <stdlib.h>
 #include <time.h>
+#include <float.h>
 
 using namespace hopsan;
 
 double WhiteGaussianNoise::getValue()
 {
     // Calc Gaussian random value
-     double random1 = (double)rand() / (double)RAND_MAX;
+     double random1 = 0;
+     while(random1 == 0)
+     {
+        random1 = (double)rand() / (double)RAND_MAX;
+     }
      double random2 = (double)rand() / (double)RAND_MAX;
      return sqrt((-1.0)*log(random1))*cos(3.1415*random2);
 }
