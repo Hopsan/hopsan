@@ -43,9 +43,11 @@ namespace hopsan {
         std::vector<double*> mvpND_f1, mvpND_x1, mvpND_v1, mvpND_c1, mvpND_Zc1, mvpND_me1;
         size_t mNumPorts1;
 
+        double *mpR, *mpOffset;
+
         Integrator mIntegrator;
 
-        double r,offset, startX;
+        double startX;
 
         std::vector<double> f1, c1, Zc1, x1,v1;
 
@@ -57,12 +59,9 @@ namespace hopsan {
 
         void configure()
         {
-            r = 0.05;
-            offset = 0.0;
-
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("r", "Swivel Radius", "[m]", r);
-            registerParameter("theta_offset", "Angle Offset", "[m]", offset);
+            addInputVariable("r", "Swivel Radius", "[m]", 0.05);
+            addInputVariable("theta_offset", "Angle Offset", "[m]", 0.0);
 
             //Add ports to the component
             mpIn1 = addReadPort("angle", "NodeSignal");
@@ -91,6 +90,8 @@ namespace hopsan {
             mpND_in1 = getSafeNodeDataPtr(mpIn1, NodeSignal::Value);
             mpND_in2 = getSafeNodeDataPtr(mpIn2, NodeSignal::Value);
             mpND_out1 = getSafeNodeDataPtr(mpOut1, NodeSignal::Value);
+            mpR = getSafeNodeDataPtr("r", NodeSignal::Value);
+            mpOffset = getSafeNodeDataPtr("theta_offset", NodeSignal::Value);
 
             //Assign node data pointers
             for (size_t i=0; i<mNumPorts1; ++i)
@@ -119,6 +120,8 @@ namespace hopsan {
             //Get variable values from nodes
             double angle = (*mpND_in1);
             double w1 = (*mpND_in2);
+            double r = (*mpR);
+            double offset = (*mpOffset);
 
             double s = r*tan(angle);
             double diff = 2*3.1416/mNumPorts1;

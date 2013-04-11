@@ -55,14 +55,8 @@ namespace hopsan {
     class HydraulicCylinderQ : public ComponentQ
     {
     private:
-        double mArea1;
-        double mArea2;
-        double mStroke;
-        double mMass;
-        double mBp;
-        double mBl;
-        double mKl;
-        double mTao;
+        double tao;
+        double *mpA1, *mpA2, *mpSl, *mpM, *mpBp, *mpBl, *mpKl;
         SecondOrderTransferFunction mPositionFilter;
         FirstOrderTransferFunction mVelocityFilter;
         double posnum[3], posden[3], velnum[3], velden[3];
@@ -78,26 +72,19 @@ namespace hopsan {
 
         void configure()
         {
-            mArea1  = 0.0001;
-            mArea2  = 0.0001;
-            mStroke = 0.01;
-            mMass   = 0.05;
-            mBp     = 0.0;
-            mBl     = 0;
-            mKl     = 1000;
-            mTao    = 3.0/2.0*mTimestep;        //Velocity filter time constant, should be in initialize?
+            tao    = 3.0/2.0*mTimestep;        //Velocity filter time constant, should be in initialize?
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpP3 = addPowerPort("P3", "NodeMechanic");
 
-            registerParameter("A_1", "Piston Area 1", "[m^2]", mArea1);
-            registerParameter("A_2", "Piston Area 2", "[m^2]", mArea2);
-            registerParameter("s_l", "Stroke", "[m]", mStroke);
-            registerParameter("B_p", "Viscous Friction Coefficient of Piston", "[Ns/m]", mBp);
-            registerParameter("m_l", "Inertia Load", "[kg]", mMass);
-            registerParameter("B_l", "Viscous Friction of Load", "[Ns/m]", mBl);
-            registerParameter("k_l", "Stiffness of Load", "[N/m]", mKl);
+            addInputVariable("A_1", "Piston Area 1", "[m^2]", 0.0001);
+            addInputVariable("A_2", "Piston Area 2", "[m^2]", 0.0001);
+            addInputVariable("s_l", "Stroke", "[m]", 0.01);
+            addInputVariable("B_p", "Viscous Friction Coefficient of Piston", "[Ns/m]", 0.0);
+            addInputVariable("m_l", "Inertia Load", "[kg]", 0.05);
+            addInputVariable("B_l", "Viscous Friction of Load", "[Ns/m]", 0.0);
+            addInputVariable("k_l", "Stiffness of Load", "[N/m]", 1000);
         }
 
 
@@ -118,6 +105,22 @@ namespace hopsan {
             mpND_cx3 = getSafeNodeDataPtr(mpP3, NodeMechanic::WaveVariable);
             mpND_Zx3 = getSafeNodeDataPtr(mpP3, NodeMechanic::CharImpedance);
 
+            mpA1 = getSafeNodeDataPtr("A_1", NodeSignal::Value);
+            mpA2 = getSafeNodeDataPtr("A_2", NodeSignal::Value);
+            mpSl = getSafeNodeDataPtr("s_l", NodeSignal::Value);
+            mpBp = getSafeNodeDataPtr("B_p", NodeSignal::Value);
+            mpM = getSafeNodeDataPtr("m_l", NodeSignal::Value);
+            mpBl = getSafeNodeDataPtr("B_l", NodeSignal::Value);
+            mpKl = getSafeNodeDataPtr("k_l", NodeSignal::Value);
+
+            double A1 = (*mpA1);
+            double A2 = (*mpA2);
+            double sl = (*mpSl);
+            double bp = (*mpBp);
+            double M = (*mpM);
+            double bl = (*mpBl);
+            double kl = (*mpKl);
+
             //Read data from nodes
             x3 = (*mpND_x3);
             v3 = (*mpND_v3);
@@ -126,21 +129,21 @@ namespace hopsan {
             cx3 = (*mpND_cx3);
             Zx3 = (*mpND_Zx3);
 
-            Zx1 = mArea1*mArea1*Zc1 + mArea2*mArea2*Zc2;
+            Zx1 = A1*A1*Zc1 + A2*A2*Zc2;
 
             //Initialization of filters
             posnum[0] = 1.0;
             posnum[1] = 0.0;
             posnum[2] = 0.0;
-            posden[0] = mKl;
-            posden[1] = mBl+mBp;
-            posden[2] = mMass;
+            posden[0] = kl;
+            posden[1] = bl+bp;
+            posden[2] = M;
             velnum[0] = 1.0;
             velnum[1] = 0.0;
-            velden[0] = mBl+mBp;
-            velden[1] = mMass;
+            velden[0] = bl+bp;
+            velden[1] = M;
 
-            mPositionFilter.initialize(mTimestep, posnum, posden, 0, x3, 0.0, mStroke);
+            mPositionFilter.initialize(mTimestep, posnum, posden, 0, x3, 0.0, sl);
             mVelocityFilter.initialize(mTimestep, velnum, velden, 0, v3);
         }
 
@@ -155,26 +158,35 @@ namespace hopsan {
             cx3 = (*mpND_cx3);
             Zx3 = (*mpND_Zx3);
 
+            double A1 = (*mpA1);
+            double A2 = (*mpA2);
+            double sl = (*mpSl);
+            double bp = (*mpBp);
+            double M = (*mpM);
+            double bl = (*mpBl);
+            double kl = (*mpKl);
+
+
             //CylinderCtest Equations
 
             //Internal mechanical port
-            cx1 = mArea1*c1 - mArea2*c2;
-            Zx1 = mArea1*mArea1*Zc1 + mArea2*mArea2*Zc2;
+            cx1 = A1*c1 - A2*c2;
+            Zx1 = A1*A1*Zc1 + A2*A2*Zc2;
 
             //Piston
-            posden[1] = mBl+mBp+Zx1+Zx3;
-            velden[0] = mBl+mBp+Zx1+Zx3;
+            posden[1] = bl+bp+Zx1+Zx3;
+            velden[0] = bl+bp+Zx1+Zx3;
             mPositionFilter.setDen(posden);
             mVelocityFilter.setDen(velden);
             x3 = mPositionFilter.update(cx1-cx3);
-            v3 = mVelocityFilter.update(cx1-cx3 - mKl*x3);
+            v3 = mVelocityFilter.update(cx1-cx3 - kl*x3);
 
             v1 = -v3;
             f3 = cx3 + Zx3*v3;
 
             //Volumes
-            q1 = mArea1*v1;
-            q2 = mArea2*v3;
+            q1 = A1*v1;
+            q2 = A2*v3;
             p1 = c1 + Zc1*q1;
             p2 = c2 + Zc2*q2;
 

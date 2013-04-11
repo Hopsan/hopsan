@@ -47,6 +47,7 @@ namespace hopsan {
         double *mpND_in1, *mpND_out1, *mpND_out2;
         std::vector<double*> mvpND_f1, mvpND_x1, mvpND_v1, mvpND_c1, mvpND_Zc1, mvpND_me1;
         double *mpND_t1, *mpND_a1, *mpND_w1, *mpND_c1, *mpND_Zx1, *mpND_t2, *mpND_a2, *mpND_w2, *mpND_c2, *mpND_Zx2;
+        double *mpOffset, *mpR, *mpB;
 
         double t2, a2, w2, c2, Zx2;
         std::vector<double> f1, c1, Zc1, x1,v1;
@@ -54,7 +55,7 @@ namespace hopsan {
         SecondOrderTransferFunction mFilterX;
         FirstOrderTransferFunction mFilterV;
 
-        double r,offset, J, B, mp, rp, startX;
+        double J, mp, rp, startX;
 
     public:
         static Component *Creator()
@@ -65,20 +66,17 @@ namespace hopsan {
         void configure()
         {
             //Set member attributes
-            r = 0.05;
-            offset = 0.0;
             J = 0.1;
-            B = 10.0;
             mp = 0.001;
             rp = 0.01;
 
             //Register changable parameters to the HOPSAN++ core
+            addInputVariable("B", "Viscous Friction", "[Nms/rad]", 10.0);
+            addInputVariable("r", "Swivel Radius", "[m]", 0.05);
+            addInputVariable("theta_offset", "Angle Offset", "[m]", 0.0);
             registerParameter("J", "Moment of Inertia of Cylinder Block", "[kgm^2]", J);
-            registerParameter("B", "Viscous Friction", "[Nms/rad]", B);
-            registerParameter("r", "Swivel Radius", "[m]", r);
             registerParameter("m_p", "Mass of each Piston", "[kg]", mp);
             registerParameter("r_p", "Piston Radius", "[m]", rp);
-            registerParameter("theta_offset", "Angle Offset", "[m]", offset);
 
             //Add ports to the component
             mpIn1 = addReadPort("angle", "NodeSignal");
@@ -114,6 +112,10 @@ namespace hopsan {
             mpND_out1 = getSafeNodeDataPtr(mpOut1, NodeSignal::Value);
             mpND_out2 = getSafeNodeDataPtr(mpOut2, NodeSignal::Value);
 
+            mpOffset = getSafeNodeDataPtr("theta_offset", NodeSignal::Value);
+            mpR = getSafeNodeDataPtr("r", NodeSignal::Value);
+            mpB = getSafeNodeDataPtr("B", NodeSignal::Value);
+
             //Assign node data pointers
             for (size_t i=0; i<mNumPorts1; ++i)
             {
@@ -129,6 +131,9 @@ namespace hopsan {
             {
                 (*mvpND_me1[i]) = 0.02;
             }
+
+            double r = (*mpR);
+            double B = (*mpB);
 
             startX = (*mvpND_x1[0]);
 
@@ -157,6 +162,10 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
+            double offset = (*mpOffset);
+            double r = (*mpR);
+            double B = (*mpB);
+
             //Get variable values from nodes
             c2 = (*mpND_c2);
             Zx2 = (*mpND_Zx2);
