@@ -140,11 +140,11 @@ def verifyPaths():
     if qtDir == "":
         return False;    
 
-    #Check if qtcreator path exist	
+    #Check if qtcreator path exist  
     creatorDir=selectPathFromList(qtcreatorDirList, "Qt Creator could not be found in one of the expected locations.", "Found Qt Creator!")
     if creatorDir == "":
         return False;
-		
+        
     jomDir=creatorDir+"\\bin"
     qmakeDir=qtDir+"\\bin"
 
@@ -262,14 +262,15 @@ def buildRelease():
     os.rename(hopsanDir+"\HopsanCore\Dependencies\\"+tbbversion, hopsanDir+"\HopsanCore\Dependencies\\"+tbbversion+"_nope")
     
     #BUILD HOPSANCORE WITH MSVC
-    if not msvcCompile("2008", "x86"):
-        return False
+    if buildVCpp:
+        if not msvcCompile("2008", "x86"):
+            return False
     if not msvcCompile("2008", "x64"):
-        return False
+            return False
     if not msvcCompile("2010", "x86"):
-        return False
+            return False
     if not msvcCompile("2010", "x64"):
-        return False
+            return False
     
     #Make sure the MinGW compilation uses the MAINCORE define, so that log file is enabled
     runCmd("ThirdParty\\sed-4.2.1\\sed \"s|.*DEFINES \\*= MAINCORE|DEFINES *= MAINCORE|\" -i HopsanCore\\HopsanCore.pro")
@@ -468,13 +469,16 @@ if not verifyPaths():
 if success:
     global dodevrelease
     global version
+    global buildVCpp
     (version, dodevrelease) = askForVersion()
 
-    abortOnFailValidation = askYesNoQuestion("Shall we abort if validation fail? (y/n)")
+    abortOnFailValidation = False;
+    buildVCpp = askYesNoQuestion("Do you want to build VC++ HopsanCore? (y/n): ")
 
     print "---------------------------------------"
     print "This is a DEV release: " + str(dodevrelease)
     print "Release version number: " + str(version)
+    print "Build VC++ HopsanCore: " + str(buildVCpp)
     print "Abort on faild validation: " + str(abortOnFailValidation)
     print "---------------------------------------"
     if not askYesNoQuestion("Is this OK? (y/n): "):
