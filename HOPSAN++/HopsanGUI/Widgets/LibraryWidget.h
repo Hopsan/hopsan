@@ -148,6 +148,8 @@ private:
     QList<bool> mFailedComponentsHaveCode;
     QList<bool> mFailedComponentsAreRecompilable;
     QStringList mFailedComponentsLibPaths;
+    QList<bool> mFailedComponentsIsModelica;
+    QStringList mFailedComponentsCode;
 
     QStringList mExpandedTreeItems;
 };

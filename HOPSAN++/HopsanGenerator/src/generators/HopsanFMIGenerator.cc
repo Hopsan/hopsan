@@ -566,7 +566,7 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
     QTextStream fmuXmlStream(&fmuXmlFile);
     fmuXmlStream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     fmuXmlStream << "<hopsanobjectappearance version=\"0.3\">\n";
-    fmuXmlStream << "    <modelobject typename=\""+fmuName+"\" displayname=\""+fmuName+"\">\n";
+    fmuXmlStream << "    <modelobject typename=\""+fmuName+"\" displayname=\""+fmuName+"\" sourcecode=\"component_code"+fmuName+".hpp\" libpath=\"\" recompilable=\"true\">\n";
     fmuXmlStream << "        <icons>\n";
     fmuXmlStream << "            <icon type=\"user\" path=\"fmucomponent.svg\" iconrotation=\"ON\" scale=\""+scaleStr+"\"/>\n";
     fmuXmlStream << "        </icons>\n";

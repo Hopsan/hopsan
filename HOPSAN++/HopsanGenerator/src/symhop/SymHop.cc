@@ -1397,7 +1397,7 @@ bool Expression::contains(const Expression expr) const
             return true;
         }
     }
-    Q_FOREACH(const Expression &factor, mTerms)
+    Q_FOREACH(const Expression &factor, mFactors)
     {
         if(factor.contains(expr))
         {
@@ -2761,11 +2761,32 @@ QStringList SymHop::getCustomFunctionList()
 
 //! @brief Finds the first path through a matrix of dependencies, used to sort jacobian matrixes
 //FIXED
-bool SymHop::findPath(QList<int> &order, QList<QList<int> > dependencies, int level)
+bool SymHop::findPath(QList<int> &order, QList<QList<int> > dependencies, int level, QList<int> preferredPath)
 {
     if(level > dependencies.size()-1)
     {
         return true;
+    }
+
+    if(dependencies.at(level).isEmpty())
+    {
+        order.append(-1);
+        ++level;
+    }
+
+    if(level > dependencies.size()-1)
+    {
+        return true;
+    }
+
+    if(preferredPath.size() > level+1 && dependencies.at(level).contains(preferredPath.at(level)) && !order.contains(preferredPath.at(level)))
+    {
+        order.append(preferredPath.at(level));
+        if(findPath(order, dependencies, level+1, preferredPath))
+        {
+            return true;
+        }
+        order.removeLast();
     }
 
     for(int i=0; i<dependencies.at(level).size(); ++i)
@@ -2773,7 +2794,7 @@ bool SymHop::findPath(QList<int> &order, QList<QList<int> > dependencies, int le
         if(!order.contains(dependencies.at(level).at(i)))
         {
             order.append(dependencies.at(level).at(i));
-            if(findPath(order, dependencies, level+1))
+            if(findPath(order, dependencies, level+1, preferredPath))
             {
                 return true;
             }
@@ -2791,7 +2812,7 @@ bool SymHop::findPath(QList<int> &order, QList<QList<int> > dependencies, int le
 //! @param limitedVariableEquations Reference to list with indexes for limitation functions
 //! @param limitedDerivativeEquations Reference to list with indexes for derivative limitation functions
 //FIXED
-bool SymHop::sortEquationSystem(QList<Expression> &equations, QList<QList<Expression> > &jacobian, QList<Expression> stateVars, QList<int> &limitedVariableEquations, QList<int> &limitedDerivativeEquations)
+bool SymHop::sortEquationSystem(QList<Expression> &equations, QList<QList<Expression> > &jacobian, QList<Expression> stateVars, QList<int> &limitedVariableEquations, QList<int> &limitedDerivativeEquations, QList<int> preferredOrder)
 {
     qDebug() << "Jacobian:";
     for(int i=0; i<jacobian.size(); ++i)
@@ -2820,12 +2841,16 @@ bool SymHop::sortEquationSystem(QList<Expression> &equations, QList<QList<Expres
         }
     }
 
+    qDebug() << "Dependencies: " << dependencies;
+
     //Recurse dependency tree to find a good sorting order
     QList<int> order;
-    if(!findPath(order, dependencies))
+    if(!findPath(order, dependencies, 0, preferredOrder))
     {
         return false;
     }
+
+    qDebug() << "Order: " << order;
 
     //Sort equations to new order
     QList<Expression> sortedEquations;

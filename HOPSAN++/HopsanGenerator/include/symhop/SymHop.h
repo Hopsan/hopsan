@@ -155,8 +155,8 @@ QString getFunctionDerivative(const QString &key);
 QStringList getSupportedFunctionsList();
 QStringList getCustomFunctionList();
 
-bool findPath(QList<int> &order, QList<QList<int> > dependencies, int level=0);
-bool sortEquationSystem(QList<Expression> &equations, QList<QList<Expression> > &jacobian, QList<Expression> stateVars, QList<int> &limitedVariableEquations, QList<int> &limitedDerivativeEquations);
+bool findPath(QList<int> &order, QList<QList<int> > dependencies, int level=0, QList<int> preferredPath=QList<int>());
+bool sortEquationSystem(QList<Expression> &equations, QList<QList<Expression> > &jacobian, QList<Expression> stateVars, QList<int> &limitedVariableEquations, QList<int> &limitedDerivativeEquations, QList<int> preferredOrder);
 void removeDuplicates(QList<Expression> &rSet);
 
 bool isWhole(const double value);

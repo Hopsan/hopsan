@@ -200,12 +200,16 @@ void LibraryWidget::checkForFailedComponents()
         QMap<QString, QString> dirToNameMap;
         QMap<QString, int> dirToNumCompMap;
         QMap<QString, bool> dirToRecompMap;
+        QMap<QString, bool> dirToIsModelicaMap;
+        QMap<QString, QString> dirToCodeMap;
         Q_FOREACH(const QString &type, mFailedRecompilableComponents)
         {
             int i=mFailedRecompilableComponents.indexOf(type);
             QString libDir = QDir::cleanPath(mFailedComponentsLibPaths.at(i));
             QString libName = QDir(libDir).dirName();
             bool isRecompilable = mFailedComponentsAreRecompilable.at(i);
+            dirToIsModelicaMap.insert(libDir, mFailedComponentsIsModelica.at(i));
+            dirToCodeMap.insert(libDir, mFailedComponentsCode.at(i));
             dirToNameMap.insert(libDir, libName);
             if(dirToNumCompMap.contains(libDir))
             {
@@ -301,13 +305,28 @@ void LibraryWidget::checkForFailedComponents()
         Q_FOREACH(const QString &lib, libsToRecompile)
         {
             qDebug() << "Recompiling library: " << lib;
-            //! @todo This assumes that it is a C++ library, check if it is Modelica and adapt to it if so
-            recompileComponent(lib);
+            if(dirToIsModelicaMap.find(lib).value())
+            {
+                qDebug() << "Loading source code from: " << dirToCodeMap.find(lib).value();
+                QFile sourceFile(dirToCodeMap.find(lib).value());
+                sourceFile.open(QFile::Text | QFile::ReadOnly);
+                QString code = sourceFile.readAll();
+                qDebug() << "Code: " << code;
+                sourceFile.close();
+                recompileComponent(lib+"/", true, code);
+            }
+            else
+            {
+            ////! @todo This assumes that it is a C++ library, check if it is Modelica and adapt to it if so
+                recompileComponent(lib);
+            }
         }
         mFailedRecompilableComponents.clear();
         mFailedComponentsHaveCode.clear();
         mFailedComponentsAreRecompilable.clear();
         mFailedComponentsLibPaths.clear();
+        mFailedComponentsIsModelica.clear();
+        mFailedComponentsCode.clear();
     }
 }
 
@@ -1283,6 +1302,8 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
                 mFailedComponentsHaveCode << !pAppearanceData->getSourceCodeFile().isEmpty();
                 mFailedComponentsAreRecompilable << pAppearanceData->isRecompilable();
                 mFailedComponentsLibPaths << pAppearanceData->getBasePath() + pAppearanceData->getLibPath();
+                mFailedComponentsIsModelica << pAppearanceData->getSourceCodeFile().endsWith(".mo");
+                mFailedComponentsCode << pAppearanceData->getBasePath()+pAppearanceData->getSourceCodeFile();
             }
         }
 

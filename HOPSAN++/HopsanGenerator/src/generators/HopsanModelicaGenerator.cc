@@ -589,6 +589,29 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         qDebug() << "LEFT SIDED: " << equations[e].toString();
     }
 
+    //Generate a preferred path for sorting, based on the location of derivatives of state variables
+    //This must be done before the bilinear transform, so that we can identify derivatives
+    QList< QList<int> > preferredPath;
+    Q_FOREACH(const Expression &var, stateVars)
+    {
+        preferredPath.append(QList<int>());
+        bool found=false;
+        Q_FOREACH(const Expression &equation, equations)
+        {
+            if(equation.contains(Expression::fromFunctionArguments("der", QList<Expression>() << var)) ||
+               equation.getLeft()->getTerms().contains(var))
+            {
+                preferredPath.last().append(equations.indexOf(equation));
+            }
+        }
+    }
+    qDebug() << preferredPath;
+
+    QList<int> preferredOrder;
+    findPath(preferredOrder, preferredPath, 0);
+    qDebug() << preferredOrder;
+
+
     //Apply bilinear transform
     for(int e=0; e<equations.size(); ++e)
     {
@@ -706,7 +729,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
 
 
     //Sort equation system so that each equation contains its corresponding state variable
-    if(!sortEquationSystem(equations, jacobian, stateVars, limitedVariableEquations, limitedDerivativeEquations))
+    if(!sortEquationSystem(equations, jacobian, stateVars, limitedVariableEquations, limitedDerivativeEquations, preferredOrder))
     {
         printErrorMessage("Could not sort equations. System is probably under-determined.");
         qDebug() << "Could not sort equations. System is probably under-determined.";
