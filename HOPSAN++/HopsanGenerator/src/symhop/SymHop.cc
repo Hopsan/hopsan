@@ -2768,7 +2768,7 @@ bool SymHop::findPath(QList<int> &order, QList<QList<int> > dependencies, int le
         return true;
     }
 
-    if(dependencies.at(level).isEmpty())
+    if(dependencies.at(level).isEmpty())        //Only used to generate preferred path, for the "real" order the dependencies will never have empty rows
     {
         order.append(-1);
         ++level;

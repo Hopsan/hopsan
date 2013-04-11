@@ -102,6 +102,13 @@ ParameterSpecification::ParameterSpecification(QString name, QString displayName
 }
 
 
+VariableSpecification::VariableSpecification(QString name, QString init)
+{
+    this->name = name;
+    this->init = init;
+}
+
+
 UtilitySpecification::UtilitySpecification(QString utility, QString name)
 {
     this->utility = utility;

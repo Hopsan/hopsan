@@ -20,19 +20,20 @@ void HopsanModelicaGenerator::generateFromModelica(QString code)
     QStringList initAlgorithms, equations, finalAlgorithms;
     QList<PortSpecification> portList;
     QList<ParameterSpecification> parametersList;
+    QList<VariableSpecification> variablesList;
     ComponentSpecification comp;
 
     qDebug() << "Parsing!";
     printMessage("Parsing Modelica code...");
 
     //Parse Modelica code and generate equation system
-    parseModelicaModel(code, typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, portList, parametersList);
+    parseModelicaModel(code, typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList);
 
     qDebug() << "Transforming!";
     printMessage("Transforming...");
 
     //Transform equation system, generate Jacobian
-    generateComponentObject(comp, typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, portList, parametersList);
+    generateComponentObject(comp, typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList);
 
     qDebug() << "Compiling!";
     printMessage("Generating component...");
@@ -69,7 +70,7 @@ void HopsanModelicaGenerator::generateFromModelica(QString code)
 void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName, QString &displayName, QString &cqsType,
                                                  QStringList &initAlgorithms, QStringList &equations,
                                                  QStringList &finalAlgorithms, QList<PortSpecification> &portList,
-                                                 QList<ParameterSpecification> &parametersList)
+                                                 QList<ParameterSpecification> &parametersList, QList<VariableSpecification> &variablesList)
 {
     QStringList lines = code.split("\n");
     QStringList portNames;
@@ -125,6 +126,26 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
 
                 ParameterSpecification par(name, name, parDisplayName, unit, init);
                 parametersList.append(par);
+            }
+            else if(words.at(0) == "Real")              //"Real" keyword (local variable)
+            {
+                for(int i=0; i<lines.at(l).count(",")+1; ++i)
+                {
+                    QString var = lines.at(l).trimmed().section(" ", 1).section(",",i,i).section(";",0,0).trimmed();
+                    QString name, init;
+                    if(var.contains("("))
+                    {
+                        name = var.section("(",0,0);
+                        init = var.section("=",1,1).section(")",0,0);
+                    }
+                    else
+                    {
+                        name = var;
+                        init = "";
+                    }
+                    VariableSpecification varSpec(name, init);
+                    variablesList.append(varSpec);
+                }
             }
             else if(words.at(0) == "NodeSignalOut")                //Signal connector (output)
             {
@@ -332,7 +353,7 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
 
 
 //! @brief Generates XML and compiles the new component
-void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QStringList &plainInitAlgorithms, QStringList &plainEquations, QStringList &plainFinalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters)
+void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &comp, QString &typeName, QString &displayName, QString &cqsType, QStringList &plainInitAlgorithms, QStringList &plainEquations, QStringList &plainFinalAlgorithms, QList<PortSpecification> &ports, QList<ParameterSpecification> &parameters, QList<VariableSpecification> &variables)
 {
 
     //Create list of initial algorithms
@@ -580,6 +601,13 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     for(int i=0; i<localVars.size(); ++i)
     {
         allSymbols.removeAll(localVars[i]);
+    }
+    for(int i=0; i<variables.size(); ++i)
+    {
+        if(!localVars.contains(Expression(variables[i].name)))
+        {
+            localVars.append(Expression(variables[i].name));
+        }
     }
 
     //Make all equations left-sided
@@ -936,6 +964,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     if(!jacobian.isEmpty())
     {
         comp.varNames << "order["+QString::number(stateVars.size())+"]" << "jacobianMatrix" << "systemEquations" << "stateVariables" << "mpSolver";
+        comp.varInits << "" << "" << "" << "" << "";
         comp.varTypes << "double" << "Matrix" << "Vec" << "Vec" << "EquationSystemSolver*";
 
         comp.initEquations << "jacobianMatrix.create("+QString::number(equations.size())+","+QString::number(stateVars.size())+");";
@@ -1041,6 +1070,19 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     {
         comp.varNames << localVars[i].toString();
         comp.varTypes << "double";
+        bool foundInit=false;
+        for(int v=0; v<variables.size(); ++v)
+        {
+            if(variables[v].name == localVars[i].toString())
+            {
+                comp.varInits << variables[v].init;
+                foundInit=true;
+            }
+        }
+        if(!foundInit)
+        {
+            comp.varInits << "";
+        }
     }
 }
 

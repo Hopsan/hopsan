@@ -99,6 +99,14 @@ public:
     QString init;
 };
 
+class VariableSpecification
+{
+public:
+    VariableSpecification(QString name = QString(), QString init = QString());
+    QString name;
+    QString init;
+};
+
 class UtilitySpecification
 {
 public:
@@ -131,6 +139,7 @@ public:
     QStringList parUnits;
     QStringList varNames;
     QStringList varTypes;
+    QStringList varInits;
     QStringList portNames;
     QStringList portTypes;
     QStringList portNodeTypes;

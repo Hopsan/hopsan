@@ -312,6 +312,14 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
     codeStream << "            //         AUTO GENERATED COMPONENT!         //\n";
     codeStream << "            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //\n";
     codeStream << "            //*******************************************//\n\n";
+    for(int i=0; i<comp.varInits.size(); ++i)
+    {
+        if(!comp.varInits[i].isEmpty())
+        {
+            codeStream << "            " << comp.varNames[i] << " = " << comp.varInits[i] << ";\n";
+        }
+    }
+    codeStream << "\n";
     portId=1;
     for(int i=0; i<comp.portNames.size(); ++i)
     {
