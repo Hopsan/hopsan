@@ -311,6 +311,8 @@ bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
         // If a data pointer has been set, then write evaluated value to data variable
         if( (mpData!=0) && mEnabled )
         {
+            //! @warning This todo is important
+            //! @todo This is bad if mpData point to a string in an other DLL/SO then core will reallocate it. This will very likely cause a crash (at leat in windows), the dll that owns a variable mut be the one how allocates and deletes it
             *static_cast<string*>(mpData) = evaluatedParameterValue;
         }
     }
