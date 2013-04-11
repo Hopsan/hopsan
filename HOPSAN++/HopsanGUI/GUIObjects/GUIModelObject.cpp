@@ -290,7 +290,7 @@ void ModelObject::refreshDisplayName(const QString overrideName)
 
 
 //! @brief Returns the name of the object
-QString ModelObject::getName()
+QString ModelObject::getName() const
 {
     return mName;
 }

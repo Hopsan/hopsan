@@ -141,6 +141,7 @@ void parsePortDomElement(QDomElement domElement, QString &rPortName, PortAppeara
     rPortAppearance.mAutoPlaced = parseAttributeBool(domElement, "autoplaced", true);
     rPortAppearance.mEnabled = parseAttributeBool(domElement, "enabled", parseAttributeBool(domElement, "visible", true));
 
+    //! @todo port descriptions have been moved into core, remove this load code later /Peter
     QDomElement xmlPortDescription = domElement.firstChildElement(CAF_DESCRIPTION);
     if (!xmlPortDescription.isNull())
     {
@@ -692,7 +693,7 @@ void ModelObjectAppearance::readFromDomElement(QDomElement domElement)
         while (!xmlReplacable.isNull())
         {
             QString typeName = xmlReplacable.attribute(CAF_TYPENAME);
-            gpMainWindow->mpLibrary->addReplacement(mTypeName, typeName);
+            gpMainWindow->mpLibrary->addReplacement(mTypeName, typeName); //!< @todo mainwindow and library should not be called in this file it is suposed to be a leaf class
             xmlReplacable = xmlReplacable.nextSiblingElement(CAF_REPLACABLE);
         }
 

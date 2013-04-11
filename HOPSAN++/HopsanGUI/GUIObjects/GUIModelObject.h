@@ -48,7 +48,7 @@ public:
 
     // Name methods
     virtual void setName(QString name);
-    virtual QString getName();
+    virtual QString getName() const;
     virtual void refreshDisplayName(const QString overrideName="");
     virtual QString getTypeName() const;
     QString getSubTypeName() const;

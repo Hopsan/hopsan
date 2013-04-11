@@ -108,6 +108,8 @@ namespace hopsan {
 
         const std::string getName() const;
         const std::string getComponentName() const;
+        const std::string getDescription() const;
+        void setDescription(const std::string &rDescription);
 
         virtual void loadStartValues();
         virtual void loadStartValuesFromSimulation();
@@ -149,6 +151,7 @@ namespace hopsan {
 
     private:
         std::string mPortName;
+        std::string mDescription;
         Node *mpNode;
         Node *mpStartNode;
         std::map<std::string, int> mVariableAliasMap;

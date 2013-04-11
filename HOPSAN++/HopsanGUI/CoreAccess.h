@@ -167,8 +167,10 @@ public:
 
 
     // Port Functions
+    //! @tood maybe need some get allport info function (instead of separate type nodetype description)
     QString getPortType(const QString componentName, const QString portName, const PortTypeIndicatorT portTypeIndicator=ActualPortType);
     QString getNodeType(QString componentName, QString portName);
+    QString getPortDescription(QString componentName, QString portName);
     bool isPortConnected(QString componentName, QString portName);
 
     // Component creation and removal

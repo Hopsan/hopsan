@@ -559,6 +559,24 @@ Port* Component::addPort(const string portName, const PortTypesEnumT portType, c
     return new_port;
 }
 
+//! @brief Adds a port to the component
+//! @param [in] portName The desired name of the port (may be automatically changed)
+//! @param [in] porttype The type of port
+//! @param [in] nodetype The type of node that must be connected to the port
+//! @param [in] description A description string describing the port
+//! @param [in] connection_requirement Specify if the port must be connecteed or if it is optional
+//! @return A pointer to the created port
+Port *Component::addPort(const string portName, const PortTypesEnumT portType, const string nodeType, const string description, const Port::RequireConnectionEnumT reqConnection)
+{
+    Port *pPort = addPort(portName, portType, nodeType, reqConnection);
+    pPort->setDescription(description);
+}
+
+Port *Component::addWritePort(const string portName, const string nodeType, const string description, const Port::RequireConnectionEnumT reqConnect)
+{
+    return addPort(portName, WritePortType, nodeType, description, reqConnect);
+}
+
 
 //! @brief Convenience method to add a PowerPort
 //! @ingroup ConvenientPortFunctions
@@ -591,6 +609,26 @@ Port* Component::addPowerMultiPort(const string portName, const string nodeType,
 Port* Component::addReadMultiPort(const string portName, const string nodeType, const Port::RequireConnectionEnumT reqConnect)
 {
     return addPort(portName, ReadMultiportType, nodeType, reqConnect);
+}
+
+Port *Component::addPowerPort(const string portName, const string nodeType, const string description, const Port::RequireConnectionEnumT reqConnect)
+{
+    return addPort(portName, PowerPortType, nodeType, description, reqConnect);
+}
+
+Port *Component::addReadPort(const string portName, const string nodeType, const string description, const Port::RequireConnectionEnumT reqConnect)
+{
+    return addPort(portName, ReadPortType, nodeType, description, reqConnect);
+}
+
+Port *Component::addPowerMultiPort(const string portName, const string nodeType, const string description, const Port::RequireConnectionEnumT reqConnect)
+{
+    return addPort(portName, PowerMultiportType, nodeType, description, reqConnect);
+}
+
+Port *Component::addReadMultiPort(const string portName, const string nodeType, const string description, const Port::RequireConnectionEnumT reqConnect)
+{
+    return addPort(portName, ReadMultiportType, nodeType, description, reqConnect);
 }
 
 //! @brief Convenience method to add a ReadPort

@@ -190,12 +190,16 @@ protected:
     Port *addOutputVariable(const std::string name, const std::string description, const std::string unit, const double defaultValue);
 
     // Port functions
-    Port* addPort(const std::string portName, const PortTypesEnumT portType, const std::string nodeType, const Port::RequireConnectionEnumT reqConnection);
     Port* addPowerPort(const std::string portName, const std::string nodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
     Port* addReadPort(const std::string portName, const std::string nodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
     Port* addWritePort(const std::string portName, const std::string nodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
     Port* addPowerMultiPort(const std::string portName, const std::string nodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
     Port* addReadMultiPort(const std::string portname, const std::string nodetype, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+
+    Port* addPowerPort(const std::string portName, const std::string nodeType, const std::string description, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addReadPort(const std::string portName, const std::string nodeType, const std::string description, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addPowerMultiPort(const std::string portName, const std::string nodeType, const std::string description, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addReadMultiPort(const std::string portName, const std::string nodeType, const std::string description, const Port::RequireConnectionEnumT reqConnect=Port::Required);
 
     bool getPort(const std::string portname, Port* &rpPort);
     std::string renamePort(const std::string oldname, const std::string newname);
@@ -231,6 +235,9 @@ private:
     void setSystemParent(ComponentSystem *pComponentSystem);
     void setTypeName(const std::string typeName);
     double *getNodeDataPtr(Port* pPort, const int dataId);
+    Port* addPort(const std::string portName, const PortTypesEnumT portType, const std::string nodeType, const Port::RequireConnectionEnumT reqConnection);
+    Port* addPort(const std::string portName, const PortTypesEnumT portType, const std::string nodeType, const std::string description, const Port::RequireConnectionEnumT reqConnection);
+    Port* addWritePort(const std::string portName, const std::string nodeType, const std::string description, const Port::RequireConnectionEnumT reqConnect=Port::Required);
 
     // Private member variables
     std::string mName;

@@ -40,6 +40,7 @@
 #include "Utilities/GUIUtilities.h"
 #include "Widgets/PlotWidget.h"
 #include "Widgets/ProjectTabWidget.h"
+#include "Widgets/HcomWidget.h"
 
 
 QPointF getOffsetPointfromPort(Port *pStartPort, Port *pEndPort)
@@ -568,10 +569,23 @@ void Port::refreshPortLabelText()
     QString label("<p><span style=\"background-color:lightyellow;font-size:14px;text-align:center\">&#160;&#160;");
 
     label.append(mPortDisplayName).append("&#160;&#160;");
-    if (!mpPortAppearance->mDescription.isEmpty())
+
+    //! @todo should get portdescription once and store it instead of getting it every time (search in core)
+    QString desc = getPortDescription();
+    if (!desc.isEmpty())
     {
         //Append description
-        label.append("<br>\"" + mpPortAppearance->mDescription + "\"");
+        label.append("<br>\"" + desc + "\"");
+    }
+    else
+    {
+        // backwards compatible
+        if (!mpPortAppearance->mDescription.isEmpty())
+        {
+            gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("You seem to have enterned a port description in the xml file, this description should be in the componnet code instead. In the addPort function call.");
+            //Append description
+            label.append("<br>\"" + mpPortAppearance->mDescription + "\"");
+        }
     }
     label.append("</span></p>");
 
@@ -614,6 +628,11 @@ QString Port::getPortType(const CoreSystemAccess::PortTypeIndicatorT ind)
 QString Port::getNodeType()
 {
     return mpParentModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getNodeType(getParentModelObjectName(), this->getName());
+}
+
+QString Port::getPortDescription() const
+{
+    return mpParentModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getPortDescription(getParentModelObjectName(), this->getName());
 }
 
 
@@ -790,7 +809,8 @@ QString Port::getName() const
     return mPortDisplayName;
 }
 
-QString Port::getParentModelObjectName()
+
+QString Port::getParentModelObjectName() const
 {
     return mpParentModelObject->getName();
 }

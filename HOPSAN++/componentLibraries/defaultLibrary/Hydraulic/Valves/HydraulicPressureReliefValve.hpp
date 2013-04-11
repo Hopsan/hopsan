@@ -67,8 +67,8 @@ namespace hopsan {
             ph = 500000;
             pnom = 7e6f;
 
-            mpP1 = addPowerPort("P1", "NodeHydraulic");
-            mpP2 = addPowerPort("P2", "NodeHydraulic");
+            mpP1 = addPowerPort("P1", "NodeHydraulic", "High pressure side");
+            mpP2 = addPowerPort("P2", "NodeHydraulic", "Low pressure side");
             mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
             mpOut = addWritePort("xv", "NodeSignal", Port::NotRequired);
 

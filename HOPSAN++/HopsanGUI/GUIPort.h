@@ -53,7 +53,7 @@ public:
 
     ContainerObject *getParentContainerObject();
     ModelObject *getParentModelObject();
-    QString getParentModelObjectName();
+    QString getParentModelObjectName() const;
 
     QString getName() const;
     void setDisplayName(const QString name);
@@ -74,6 +74,7 @@ public:
 
     virtual QString getPortType(const CoreSystemAccess::PortTypeIndicatorT ind=CoreSystemAccess::ActualPortType);
     virtual QString getNodeType();
+    QString getPortDescription() const;
 
     //void getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<QString> &rValuesTxt, QVector<QString> &rUnits);
     bool getLastNodeData(QString dataName, double& rData);

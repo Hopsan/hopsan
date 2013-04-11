@@ -613,6 +613,16 @@ const string Port::getComponentName() const
     return getComponent()->getName();
 }
 
+const string Port::getDescription() const
+{
+    return mDescription;
+}
+
+void Port::setDescription(const string &rDescription)
+{
+    mDescription = rDescription;
+}
+
 
 //! @brief SystemPort constructor
 SystemPort::SystemPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner, pParentPort)

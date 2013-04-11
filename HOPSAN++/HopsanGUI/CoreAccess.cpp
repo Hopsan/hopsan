@@ -522,6 +522,16 @@ QString CoreSystemAccess::getNodeType(QString componentName, QString portName)
     }
 }
 
+QString CoreSystemAccess::getPortDescription(QString componentName, QString portName)
+{
+    hopsan::Port *pPort = this->getCorePortPtr(componentName, portName);
+    if (pPort)
+    {
+        return QString::fromStdString(pPort->getDescription());
+    }
+    return QString();
+}
+
 
 //void CoreSystemAccess::getStartValueDataNamesValuesAndUnits(QString componentName, QString portName, QVector<QString> &rNames, QVector<QString> &rValuesTxt, QVector<QString> &rUnits)
 //{
