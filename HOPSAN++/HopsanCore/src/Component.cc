@@ -570,6 +570,7 @@ Port *Component::addPort(const string portName, const PortTypesEnumT portType, c
 {
     Port *pPort = addPort(portName, portType, nodeType, reqConnection);
     pPort->setDescription(description);
+    return pPort;
 }
 
 Port *Component::addWritePort(const string portName, const string nodeType, const string description, const Port::RequireConnectionEnumT reqConnect)

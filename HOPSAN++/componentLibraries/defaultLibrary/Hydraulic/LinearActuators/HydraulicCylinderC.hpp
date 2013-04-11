@@ -44,7 +44,7 @@ class HydraulicCylinderC : public ComponentC
 {
 
     private:
-        double A1,A2,sl,cLeak,bp,betae,V01,V02, CxLim, ZxLim, wfak, alpha;
+        double CxLim, ZxLim, wfak, alpha;
 
         double ci1, cl1, ci2, cl2;  //Members because old value need to be remembered (c1 and c2 are remembered through nodes)
         double mNum[2];
@@ -53,6 +53,8 @@ class HydraulicCylinderC : public ComponentC
         //Node data pointers
         std::vector<double*> mvpND_p1, mvpND_q1, mvpND_c1, mvpND_Zc1;
         std::vector<double*> mvpND_p2, mvpND_q2, mvpND_c2, mvpND_Zc2;
+        double *mpND_A1, *mpND_A2, *mpND_sl, *mpND_V01, *mpND_V02, *mpND_bp, *mpND_betae, *mpND_cLeak;
+
         double *mpND_f3, *mpND_x3, *mpND_v3, *mpND_c3, *mpND_Zx3, *mpND_me;
         size_t mNumPorts1, mNumPorts2;
 
@@ -69,14 +71,6 @@ class HydraulicCylinderC : public ComponentC
         {
             //Set member attributes
             wfak = 0.1;
-            betae = 1000000000.0;
-            V01 = 0.0003;
-            V02 = 0.0003;
-            A1 = 0.001;
-            A2 = 0.001;
-            sl = 1.0;
-            cLeak = 0.00000000001;
-            bp = 1000.0;
             alpha = 0.5;
 
             //Add ports to the component
@@ -84,15 +78,17 @@ class HydraulicCylinderC : public ComponentC
             mpP2 = addPowerMultiPort("P2", "NodeHydraulic");
             mpP3 = addPowerPort("P3", "NodeMechanic");
 
+
+
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("A_1", "Piston Area 1", "[m^2]", A1);
-            registerParameter("A_2", "Piston Area 2", "[m^2]", A2);
-            registerParameter("s_l", "Stroke", "[m]", sl);
-            registerParameter("V_1", "Dead Volume in Chamber 1", "[m^3]", V01);
-            registerParameter("V_2", "Dead Volume in Chamber 2", "[m^3]", V02);
-            registerParameter("B_p", "Viscous Friction", "[Ns/m]", bp);
-            registerParameter("Beta_e", "Bulk Modulus", "[Pa]", betae);
-            registerParameter("c_leak", "Leakage Coefficient", "[]", cLeak);
+            addInputVariable("A_1", "Piston Area 1", "m^2", 0.001);
+            addInputVariable("A_2", "Piston Area 2", "m^2", 0.001);
+            addInputVariable("s_l", "Stroke", "[m]", 1.0);
+            addInputVariable("V_1", "Dead Volume in Chamber 1", "[m^3]", 0.0003);
+            addInputVariable("V_2", "Dead Volume in Chamber 2", "[m^3]", 0.0003);
+            addInputVariable("B_p", "Viscous Friction", "[Ns/m]", 1000.0);
+            addInputVariable("Beta_e", "Bulk Modulus", "[Pa]", 1000000000.0);
+            addInputVariable("c_leak", "Leakage Coefficient", "[]", 0.00000000001);
         }
 
 
@@ -110,6 +106,24 @@ class HydraulicCylinderC : public ComponentC
             mvpND_q2.resize(mNumPorts2);
             mvpND_c2.resize(mNumPorts2);
             mvpND_Zc2.resize(mNumPorts2);
+
+            mpND_A1 = getSafeNodeDataPtr("A_1", NodeSignal::Value);
+            mpND_A2 = getSafeNodeDataPtr("A_2", NodeSignal::Value);
+            mpND_sl = getSafeNodeDataPtr("s_l", NodeSignal::Value);
+            mpND_V01 = getSafeNodeDataPtr("V_1", NodeSignal::Value);
+            mpND_V02 = getSafeNodeDataPtr("V_2", NodeSignal::Value);
+            mpND_bp = getSafeNodeDataPtr("B_p", NodeSignal::Value);
+            mpND_betae = getSafeNodeDataPtr("Beta_e", NodeSignal::Value);
+            mpND_cLeak = getSafeNodeDataPtr("c_leak", NodeSignal::Value);
+
+            double A1 = (*mpND_A1);
+            double A2 = (*mpND_A2);
+            double sl = (*mpND_sl);
+            double V01 = (*mpND_V01);
+            double V02 = (*mpND_V02);
+            double bp = (*mpND_bp);
+            double betae = (*mpND_betae);
+            double cLeak = (*mpND_cLeak);
 
             //Assign node data pointers
             for (size_t i=0; i<mNumPorts1; ++i)
@@ -204,12 +218,22 @@ class HydraulicCylinderC : public ComponentC
             double me;
             double V1, V2, qLeak, qi1, qi2, p1mean, p2mean, V1min, V2min;
 
+
             //Read variables from nodes
             Zc1 = (*mvpND_Zc1[0]);          //All Zc should be the same and Q components shall
             Zc2 = (*mvpND_Zc2[0]);          //never touch them, so let's just use first value
             x3 = (*mpND_x3);
             v3 = (*mpND_v3);
             me = (*mpND_me);
+
+            double A1 = (*mpND_A1);
+            double A2 = (*mpND_A2);
+            double sl = (*mpND_sl);
+            double V01 = (*mpND_V01);
+            double V02 = (*mpND_V02);
+            double bp = (*mpND_bp);
+            double betae = (*mpND_betae);
+            double cLeak = (*mpND_cLeak);
 
             //Leakage flow
             qLeak = cLeak*(cl1-cl2)/(1.0+cLeak*(Zc1+Zc2));
