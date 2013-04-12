@@ -56,10 +56,10 @@ namespace hopsan {
 
         void configure()
         {
-            addInputVariable("D_m", "Displacement", "[m^3/rev]", 0.00005);
-            addInputVariable("B_m", "Viscous Friction", "[Nm/rad]", 0.0);
-            addInputVariable("C_lm", "Leakage Coefficient", "[]", 0.0);
-            addInputVariable("J_m", "Inerteia Load", "[kg*m^2]", 0.1);
+            addInputVariable("D_m", "Displacement", "[m^3/rev]", 0.00005, &mpDm);
+            addInputVariable("B_m", "Viscous Friction", "[Nm/rad]", 0.0, &mpBm);
+            addInputVariable("C_lm", "Leakage Coefficient", "[]", 0.0, &mpClm);
+            addInputVariable("J_m", "Inerteia Load", "[kg*m^2]", 0.1, &mpJ);
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
@@ -84,11 +84,6 @@ namespace hopsan {
             mpND_w3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::AngularVelocity);
             mpND_c3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::WaveVariable);
             mpND_Zx3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::CharImpedance);
-
-            mpDm = getSafeNodeDataPtr("D_m", NodeSignal::Value);
-            mpBm = getSafeNodeDataPtr("B_m", NodeSignal::Value);
-            mpClm = getSafeNodeDataPtr("C_lm", NodeSignal::Value);
-            mpJ = getSafeNodeDataPtr("J_m", NodeSignal::Value);
 
             mIntegrator.initialize(mTimestep, 0, 0, 0, 0);
         }

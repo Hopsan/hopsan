@@ -155,79 +155,27 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
     if(comp.cqsType == "S") { comp.cqsType = "Signal"; }
 
 
-    QString code;
-    QTextStream codeStream(&code);
-
-    codeStream << "#ifndef " << comp.typeName.toUpper() << "_HPP_INCLUDED\n";
-    codeStream << "#define " << comp.typeName.toUpper() << "_HPP_INCLUDED\n\n";
-    codeStream << "//*******************************************//\n";
-    codeStream << "//             *** WARNING ***               //\n";
-    codeStream << "//                                           //\n";
-    codeStream << "//         AUTO GENERATED COMPONENT!         //\n";
-    codeStream << "// ANY CHANGES WILL BE LOST IF RE-GENERATED! //\n";
-    codeStream << "//*******************************************//\n\n";
-    codeStream << "#include <math.h>\n";
-    codeStream << "#include \"ComponentEssentials.h\"\n";
-    codeStream << "#include \"ComponentUtilities.h\"\n";
-    codeStream << "#include <sstream>\n\n";
-    codeStream << "using namespace std;\n\n";
-    codeStream << "namespace hopsan {\n\n";
-    codeStream << "    class " << comp.typeName << " : public Component" << comp.cqsType << "\n";
-    codeStream << "    {\n";
-    codeStream << "    private:\n";                         // Private section
-    codeStream << "        double ";
-    int portId=1;
-
-    for(int i=0; i<comp.portNames.size(); ++i)              //Declare variables
+    //Declare variables
+    QString varDeclarations;
+    for(int i=0; i<comp.parNames.size(); ++i)
     {
-        QStringList varNames;
-        if(comp.portNodeTypes[i] == "NodeSignal")
-        {
-            varNames << comp.portNames[i];
-        }
-        else
-        {
-            varNames << NodeInfo(comp.portNodeTypes[i]).qVariables << NodeInfo(comp.portNodeTypes[i]).cVariables;
-        }
-
-        for(int v=0; v<varNames.size()-1; ++v)
-        {
-            QString varName;
-            if(comp.portNodeTypes[i] == "NodeSignal")
-                varName = varNames[v];
-            else
-                varName = varNames[v] + QString::number(portId);
-            codeStream << varName << ", ";
-        }
-        QString varName;
-        if(comp.portNodeTypes[i] == "NodeSignal")
-            varName = varNames.last();
-        else
-            varName = varNames.last() + QString::number(portId);
-        codeStream << varName;
-        ++portId;
-        if(i < comp.portNames.size()-1)
-        {
-            codeStream << ", ";
-        }
-    }
-
-    codeStream << ";\n";
-    for(int i=0; i<comp.parNames.size(); ++i)                   //Declare parameters
-    {
-        codeStream << "        double " << comp.parNames[i] << ";\n";
+        varDeclarations.append("        double "+comp.parNames[i]+";\n");
     }
     for(int i=0; i<comp.varNames.size(); ++i)
     {
-        codeStream << "        " << comp.varTypes[i] << " " << comp.varNames[i] << ";\n";
+        varDeclarations.append("        "+comp.varTypes[i]+" "+comp.varNames[i]+";\n");
     }
     for(int i=0; i<comp.utilities.size(); ++i)
     {
-        codeStream << "        " << comp.utilities[i] << " " << comp.utilityNames[i] << ";\n";
+        varDeclarations.append("        "+comp.utilities[i]+" "+comp.utilityNames[i]+";\n");
     }
-    codeStream << "        double ";
-    portId=1;
-    QStringList allVarNames;                                    //Declare node data pointers
+    varDeclarations.append(";");
+
+
+    //Declare node data pointers
+    QString dataPtrDeclarations = "        double ";
+    int portId=1;
+    QStringList allVarNames;
     for(int i=0; i<comp.portNames.size(); ++i)
     {
         QString id = QString::number(portId);
@@ -247,79 +195,77 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
         }
         ++portId;
     }
-
     if(!allVarNames.isEmpty())
     {
-        codeStream << "*mpND_" << allVarNames[0];
+        dataPtrDeclarations.append("*mpND_"+allVarNames[0]);
         for(int i=1; i<allVarNames.size(); ++i)
         {
-            codeStream << ", *mpND_" << allVarNames[i];
+            dataPtrDeclarations.append(", *mpND_"+allVarNames[i]);
         }
     }
+    dataPtrDeclarations.append(";\n");
 
-    codeStream << ";\n";
-    codeStream << "        Port ";                              //Declare ports
+
+    //Declare ports
+    QString portDeclarations = "        Port ";
     for(int i=0; i<comp.portNames.size(); ++i)
     {
-        codeStream << "*mp" << comp.portNames[i];
+        portDeclarations.append("*mp"+comp.portNames[i]);
         if(i<comp.portNames.size()-1)
         {
-            codeStream << ", ";
+            portDeclarations.append(", ");
         }
     }
+    portDeclarations.append(";\n");
 
-    codeStream << ";\n\n";
-    codeStream << "    public:\n";                              //Public section
-    codeStream << "        static Component *Creator()\n";
-    codeStream << "        {\n";
-    codeStream << "            return new " << comp.typeName << "();\n";
-    codeStream << "        }\n\n";
-    codeStream << "        void configure()\n";
-    codeStream << "        {\n";
+
+    //Initialize parameters
+    QString parameterInit;
     for(int i=0; i<comp.parNames.size(); ++i)
     {
-        codeStream << "            " << comp.parNames[i] << " = " << comp.parInits[i] << ";\n";
+        parameterInit.append("            "+comp.parNames[i]+" = "+comp.parInits[i]+";\n");
     }
-    codeStream << "\n";
 
+
+    //Register parameters
+    QString registerParameters;
     for(int i=0; i<comp.parNames.size(); ++i)
     {
-        codeStream << "            registerParameter(\"" << comp.parDisplayNames[i] << "\", \""
-                   << comp.parDescriptions[i] << "\", \"" << comp.parUnits[i] << "\", " << comp.parNames[i] << ");\n";
+        registerParameters.append("            registerParameter(\""+comp.parDisplayNames[i]+"\", \""
+                  +comp.parDescriptions[i]+"\", \""+comp.parUnits[i]+"\", "+comp.parNames[i]+");\n");
     }
-    codeStream << "\n";
+
+
+    //Add ports
+    QString addPorts;
     for(int i=0; i<comp.portNames.size(); ++i)
     {
 
-        codeStream << "            mp" << comp.portNames[i] << " = add" << comp.portTypes[i]
-                   << "(\"" << comp.portNames[i] << "\", \"" << comp.portNodeTypes[i] << "\"";
+        addPorts.append("            mp"+comp.portNames[i]+" = add"+comp.portTypes[i]
+                  +"(\""+comp.portNames[i]+"\", \""+comp.portNodeTypes[i]+"\"");
         if(comp.portNotReq[i])
         {
-            codeStream << ", Port::NotRequired);\n";
+            addPorts.append(", Port::NotRequired);\n");
         }
         else
         {
-            codeStream << ");\n";
+            addPorts.append(");\n");
         }
     }
 
-    codeStream << "        }\n\n";
-    codeStream << "        void initialize()\n";
-    codeStream << "        {\n";
-    codeStream << "            //*******************************************//\n";
-    codeStream << "            //             *** WARNING ***               //\n";
-    codeStream << "            //                                           //\n";
-    codeStream << "            //         AUTO GENERATED COMPONENT!         //\n";
-    codeStream << "            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //\n";
-    codeStream << "            //*******************************************//\n\n";
+
+    //Initialize variables
+    QString initializeVariables;
     for(int i=0; i<comp.varInits.size(); ++i)
     {
         if(!comp.varInits[i].isEmpty())
         {
-            codeStream << "            " << comp.varNames[i] << " = " << comp.varInits[i] << ";\n";
+            initializeVariables.append("            "+comp.varNames[i]+" = "+comp.varInits[i]+";\n");
         }
     }
-    codeStream << "\n";
+
+    //Get data pointers
+    QString getDataPtrs;
     portId=1;
     for(int i=0; i<comp.portNames.size(); ++i)
     {
@@ -343,103 +289,30 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
                 varName = varNames[v];
             else
                 varName = varNames[v]+QString::number(portId);
-            codeStream << "            mpND_" << varName << " = getSafeNodeDataPtr(mp" << comp.portNames[i] << ", " << comp.portNodeTypes[i] << "::" << varLabels[v];
+            getDataPtrs.append("            mpND_"+varName+" = getSafeNodeDataPtr(mp"+comp.portNames[i]+", "+comp.portNodeTypes[i]+"::"+varLabels[v]);
             if(comp.portNotReq[i])
             {
-                codeStream << ", " << comp.portDefaults[i];
+                getDataPtrs.append(", "+comp.portDefaults[i]);
             }
-            codeStream << ");\n";
+            getDataPtrs.append(");\n");
         }
         ++portId;
     }
 
-    codeStream << "\n";
-    if(!comp.initEquations.isEmpty())
-    {
-        portId=1;
-        for(int i=0; i<comp.portNames.size(); ++i)
-        {
-            QStringList varNames;
-            if(comp.portNodeTypes[i] == "NodeSignal")
-            {
-                varNames << comp.portNames[i];
-            }
-            else
-            {
-                varNames << NodeInfo(comp.portNodeTypes[i]).qVariables << NodeInfo(comp.portNodeTypes[i]).cVariables;
-            }
 
-            for(int v=0; v<varNames.size(); ++v)
-            {
-                QString varName;
-                if(comp.portNodeTypes[i] == "NodeSignal")
-                    varName = varNames[v];
-                else
-                    varName = varNames[v] + QString::number(portId);
-                codeStream << "            " << varName << " = (*mpND_" << varName << ");\n";
-            }
-            ++portId;
-        }
-        codeStream << "\n";
-        for(int i=0; i<comp.initEquations.size(); ++i)
-        {
-            codeStream << "            " << comp.initEquations[i] << "\n";
-        }
-        if(overwriteStartValues)
-        {
-            codeStream << "\n";
-            portId=1;
-            for(int i=0; i<comp.portNames.size(); ++i)
-            {
-                QStringList varNames;
-                if(comp.portNodeTypes[i] == "NodeSignal" && comp.portTypes[i] == "WritePort")
-                {
-                    varNames << comp.portNames[i];
-                }
-                if(comp.portNodeTypes[i] != "NodeSignal" && (comp.cqsType == "Q" || comp.cqsType == "S"))
-                {
-                    varNames << NodeInfo(comp.portNodeTypes[i]).qVariables;
-                }
-                if(comp.portNodeTypes[i] != "NodeSignal" && (comp.cqsType == "C" || comp.cqsType == "S"))
-                {
-                    varNames << NodeInfo(comp.portNodeTypes[i]).cVariables;
-                }
-                for(int v=0; v<varNames.size(); ++v)
-                {
-                    QString varName;
-                    if(comp.portNodeTypes[i] == "NodeSignal")
-                        varName = varNames[v];
-                    else
-                        varName = varNames[v] + QString::number(portId);
-                    codeStream << "            (*mpND_" << varName << ") = " << varName << ";\n";
-                }
-            }
-            ++portId;
-        }
-    }
-    codeStream << "        }\n\n";
-
-    //Simulate one time step
-    codeStream << "        void simulateOneTimestep()\n";
-    codeStream << "        {\n";
-    codeStream << "            //*******************************************//\n";
-    codeStream << "            //             *** WARNING ***               //\n";
-    codeStream << "            //                                           //\n";
-    codeStream << "            //         AUTO GENERATED COMPONENT!         //\n";
-    codeStream << "            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //\n";
-    codeStream << "            //*******************************************//\n\n";
+    //Read input variables
+    QString readInputs;
     portId=1;
     for(int i=0; i<comp.portNames.size(); ++i)
     {
         QStringList varNames;
-        if(comp.portNodeTypes[i] == "NodeSignal" && comp.portTypes[i] == "ReadPort")
+        if(comp.portNodeTypes[i] == "NodeSignal")
         {
             varNames << comp.portNames[i];
         }
-        else if(comp.portTypes[i] != "WritePort")
+        else
         {
-            varNames << NodeInfo(comp.portNodeTypes[i]).qVariables;       //Always create both C- and Q-type variables, regaradless of component type (they may be needed)
-            varNames << NodeInfo(comp.portNodeTypes[i]).cVariables;
+            varNames << NodeInfo(comp.portNodeTypes[i]).qVariables << NodeInfo(comp.portNodeTypes[i]).cVariables;
         }
 
         for(int v=0; v<varNames.size(); ++v)
@@ -449,18 +322,22 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
                 varName = varNames[v];
             else
                 varName = varNames[v] + QString::number(portId);
-            codeStream << "            " << varName << " = (*mpND_" << varName << ");\n";
+            readInputs.append("            double "+varName+" = (*mpND_"+varName+");\n");
         }
         ++portId;
     }
 
 
-    codeStream << "\n";
-    for(int i=0; i<comp.simEquations.size(); ++i)
+    //Initialize code
+    QString initCode;
+    for(int i=0; i<comp.initEquations.size(); ++i)
     {
-        codeStream << "            " << comp.simEquations[i] << "\n";
+        initCode.append("            "+comp.initEquations[i]+"\n");
     }
-    codeStream << "\n";
+
+
+    //Write back values
+    QString writeOutputs;
     portId=1;
     for(int i=0; i<comp.portNames.size(); ++i)
     {
@@ -477,7 +354,6 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
         {
             varNames << NodeInfo(comp.portNodeTypes[i]).cVariables;
         }
-
         for(int v=0; v<varNames.size(); ++v)
         {
             QString varName;
@@ -485,29 +361,68 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
                 varName = varNames[v];
             else
                 varName = varNames[v] + QString::number(portId);
-            codeStream << "            (*mpND_" << varName << ") = " << varName << ";\n";
+            writeOutputs.append("            (*mpND_"+varName+") = "+varName+";\n");
         }
-        ++portId;
+    }
+    ++portId;
+    QString writeStartValues = "";
+    if(overwriteStartValues)
+    {
+        writeStartValues = writeOutputs;
     }
 
-    codeStream << "        }\n\n";
-    codeStream << "        void finalize()\n";
-    codeStream << "        {\n";
-    codeStream << "            //*******************************************//\n";
-    codeStream << "            //             *** WARNING ***               //\n";
-    codeStream << "            //                                           //\n";
-    codeStream << "            //         AUTO GENERATED COMPONENT!         //\n";
-    codeStream << "            // ANY CHANGES WILL BE LOST IF RE-GENERATED! //\n";
-    codeStream << "            //*******************************************//\n\n";
+
+    //Simulate code
+    QString simCode;
+    for(int i=0; i<comp.simEquations.size(); ++i)
+    {
+        simCode.append("            "+comp.simEquations[i]+"\n");
+    }
+
+
+    //Finalize code
+    QString finalCode;
     for(int i=0; i<comp.finalEquations.size(); ++i)
     {
-        codeStream << "            " << comp.finalEquations[i] << "\n";
+        finalCode.append("            "+comp.finalEquations[i]+"\n");
     }
-    codeStream << "        }\n\n";
-    codeStream << "    };\n";
-    codeStream << "}\n\n";
 
-    codeStream << "#endif // " << comp.typeName.toUpper() << "_HPP_INCLUDED\n";
+
+
+    QFile compTemplateFile(":templates/generalComponentTemplate.hpp");
+    if(!compTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        printErrorMessage("Failed to open generalComponentTemplate.hpp for writing.");
+        return "";
+    }
+
+    QString code;
+    QTextStream t(&compTemplateFile);
+    code = t.readAll();
+    compTemplateFile.close();
+    if(code.isEmpty())
+    {
+        printErrorMessage("Failed to generate code for "+comp.typeName+".hpp.");
+        return "";
+    }
+
+    code.replace("<<<uppertypename>>>", comp.typeName.toUpper());
+    code.replace("<<<typename>>>", comp.typeName);
+    code.replace("<<<cqstype>>>", comp.cqsType);
+    code.replace("<<<vardecl>>>", varDeclarations);
+    code.replace("<<<dataptrdecl>>>", dataPtrDeclarations);
+    code.replace("<<<portdecl>>>", portDeclarations);
+    code.replace("<<<parinit>>>", parameterInit);
+    code.replace("<<<regpar>>>", registerParameters);
+    code.replace("<<<addports>>>", addPorts);
+    code.replace("<<<initvars>>>", initializeVariables);
+    code.replace("<<<getdataptrs>>>", getDataPtrs);
+    code.replace("<<<readinputs>>>", readInputs);
+    code.replace("<<<initcode>>>", initCode);
+    code.replace("<<<writestartvalues>>>", writeStartValues);
+    code.replace("<<<simulatecode>>>", simCode);
+    code.replace("<<<writeoutputs>>>", writeOutputs);
+    code.replace("<<<finalcode>>>", finalCode);
 
     return code;
 }

@@ -45,9 +45,9 @@ namespace hopsan {
 
     private:
         double cp1, cp2, v1min, v2min, alfa, wfak, je;
-        double *mpBetae, *mpV1, *mpV2, *mpDm, *mpCim, *mpBm;
+        double *mpBetae, *mpV1, *mpV2, *mpDm, *mpClm, *mpBm;
 
-        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_t3, *mpND_a3, *mpND_w3,*mpND_c3, *mpND_Zx3, *mpND_eps;
+        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_t3, *mpND_a3, *mpND_w3,*mpND_c3, *mpND_Zx3, *mpEps;
 
         Delay mDelayedC1, mDelayedC2, mDelayedCp1, mDelayedCp2, mDelayedCp1e, mDelayedCp2e;
         Port *mpP1, *mpP2, *mpP3, *mpIn;
@@ -69,15 +69,15 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpP3 = addPowerPort("P3", "NodeMechanicRotational");
-            addInputVariable("eps", "Displacement setting", "", 1);
 
             //Register changable parameters to the HOPSAN++ core
-            addInputVariable("Beta_e", "Bulk modulus of oil", "[Pa]", 1000000000);
-            addInputVariable("V_1", "Volume at port 1", "[m^3]", 0.005);
-            addInputVariable("V_2", "Volume at port 2", "[m^3]", 0.005);
-            addInputVariable("D_m", "Displacement", "[m^3/rev]", 0.00005);
-            addInputVariable("C_lm", "Leakage coefficient", "[]", 0.0);
-            addInputVariable("B_m", "Viscous friction coefficient", "[Nms/rad]", 0.0);
+            addInputVariable("eps", "Displacement setting", "", 1, &mpEps);
+            addInputVariable("Beta_e", "Bulk modulus of oil", "[Pa]", 1000000000, &mpBetae);
+            addInputVariable("V_1", "Volume at port 1", "[m^3]", 0.005, &mpV1);
+            addInputVariable("V_2", "Volume at port 2", "[m^3]", 0.005, &mpV2);
+            addInputVariable("D_m", "Displacement", "[m^3/rev]", 0.00005, &mpDm);
+            addInputVariable("C_lm", "Leakage coefficient", "[]", 0.0, &mpClm);
+            addInputVariable("B_m", "Viscous friction coefficient", "[Nms/rad]", 0.0, &mpBm);
             registerParameter("J_em", "Equivalent load of inertia", "[kg*m^2]", je);
 
             setStartValue(mpP1, NodeHydraulic::Pressure, 1.0e5);
@@ -104,15 +104,6 @@ namespace hopsan {
             mpND_c3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::WaveVariable);
             mpND_Zx3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::CharImpedance);
 
-            mpND_eps = getSafeNodeDataPtr("eps", NodeSignal::Value);
-
-            mpBetae = getSafeNodeDataPtr("Beta_e", NodeSignal::Value);
-            mpV1 = getSafeNodeDataPtr("V_1", NodeSignal::Value);
-            mpV2 = getSafeNodeDataPtr("V_2", NodeSignal::Value);
-            mpDm = getSafeNodeDataPtr("D_m", NodeSignal::Value);
-            mpCim = getSafeNodeDataPtr("C_lm", NodeSignal::Value);
-            mpBm = getSafeNodeDataPtr("B_m", NodeSignal::Value);
-
             double dpr, dpe, ka, v1e, v2e, qp1, qp2;
 
             //Read input variables from nodes
@@ -122,12 +113,12 @@ namespace hopsan {
             double q2 = (*mpND_q2);
             double t3 = (*mpND_t3);
             double w3 = (*mpND_w3);
-            double eps = (*mpND_eps);
+            double eps = (*mpEps);
             double betae = (*mpBetae);
             double v1 = (*mpV1);
             double v2 = (*mpV2);
             double dm = (*mpDm);
-            double clm = (*mpCim);
+            double clm = (*mpClm);
             double bm = (*mpBm);
 
             //Initialization
@@ -187,12 +178,12 @@ namespace hopsan {
             double q2 = (*mpND_q2);
             double c2 = (*mpND_c2);
             double w3 = (*mpND_w3);
-            double eps = (*mpND_eps);
+            double eps = (*mpEps);
             double betae = (*mpBetae);
             double v1 = (*mpV1);
             double v2 = (*mpV2);
             double dm = (*mpDm);
-            double clm = (*mpCim);
+            double clm = (*mpClm);
             double bm = (*mpBm);
 
             //Machine equations

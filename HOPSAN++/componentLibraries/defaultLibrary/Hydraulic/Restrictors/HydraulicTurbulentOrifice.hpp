@@ -39,17 +39,14 @@ namespace hopsan {
     class HydraulicTurbulentOrifice : public ComponentQ
     {
     private:
-        double Cq;
-        double A;
-        double Kc;
-        double rho;
         bool cav;
         TurbulentFlowFunction qTurb;
 
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_A;
         double p1,q1, p2, q2, c1, Zc1, c2, Zc2;
 
-        Port *mpP1, *mpP2, *mpArea, *mpCq, *mpRho;
+        Port *mpP1, *mpP2;
+        double *mpA, *mpCq, *mpRho;
 
     public:
         static Component *Creator()
@@ -59,17 +56,12 @@ namespace hopsan {
 
         void configure()
         {
-            Cq = 0.67;
-            A = 0.00001;
-            rho = 890;
-            Kc = Cq*A*sqrt(2.0/rho);
-
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
 
-            mpArea = addInputVariable("A", "Area", "m^2", A);
-            mpCq = addInputVariable("C_q", "Flow coefficient", "-", Cq);
-            mpRho = addInputVariable("rho", "Oil Density", "kg/m^3", rho);
+            addInputVariable("A", "Area", "m^2", 0.00001, &mpA);
+            addInputVariable("C_q", "Flow coefficient", "-", 0.67, &mpCq);
+            addInputVariable("rho", "Oil Density", "kg/m^3", 890, &mpRho);
         }
 
 
@@ -84,21 +76,21 @@ namespace hopsan {
             mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
             mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
-
-            mpND_A = getSafeNodeDataPtr(mpArea, NodeSignal::Value);
         }
 
 
         void simulateOneTimestep()
         {
+            double A, Cq, rho, Kc;
+
             //Get variable values from nodes
             c1 = (*mpND_c1);
             Zc1 = (*mpND_Zc1);
             c2 = (*mpND_c2);
             Zc2 = (*mpND_Zc2);
-            A = (*mpND_A);
-            Cq = mpCq->readNode(NodeSignal::Value);
-            rho = mpRho->readNode(NodeSignal::Value);
+            A = (*mpA);
+            Cq = (*mpCq);
+            rho = (*mpRho);
 
             //Orifice equations
             Kc = Cq*A*sqrt(2.0/rho);

@@ -39,7 +39,7 @@ namespace hopsan {
     class HydraulicVariableDisplacementMotorQ : public ComponentQ
     {
     private:
-        double dp, Bm, cim, J, eps;
+        double *mpDm, *mpBm, *mpClm, *mpJ, *mpEps;
 
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_t3, *mpND_a3, *mpND_w3, *mpND_c3, *mpND_Zx3, *mpND_eps;
 
@@ -54,29 +54,21 @@ namespace hopsan {
 
         void configure()
         {
-            dp = 0.00005;
-            Bm = 0;
-            cim = 0;
-            J = 0.1;
-            eps = 1;
-
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpP3 = addPowerPort("P3", "NodeMechanicRotational");
             mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
 
-            registerParameter("D_m", "Displacement", "[m^3/rev]", dp);
-            registerParameter("B_m", "Viscous Friction", "[Nms/rad]", Bm);
-            registerParameter("C_im", "Leakage Coefficient", "[]", cim);
-            registerParameter("J_m", "Inerteia Load", "[kgm^2]", J);
-            registerParameter("epsilon_m", "Displacement Position", "[-]", eps);
+            addInputVariable("D_m", "Displacement", "[m^3/rev]", 0.00005, &mpDm);
+            addInputVariable("B_m", "Viscous Friction", "[Nms/rad]", 0.0, &mpBm);
+            addInputVariable("C_im", "Leakage Coefficient", "[]", 0.0, &mpClm);
+            addInputVariable("J_m", "Inerteia Load", "[kgm^2]", 0.1, &mpJ);
+            addInputVariable("epsilon_m", "Displacement Position", "[-]", 1.0, &mpEps);
         }
 
 
         void initialize()
         {
-            mpND_eps = getSafeNodeDataPtr(mpIn, NodeSignal::Value, eps);
-
             mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
             mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
             mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
@@ -103,6 +95,12 @@ namespace hopsan {
             double p1, q1, c1, Zc1, p2, q2, c2, Zc2, t3, a3, w3, c3, Zx3;
             double dpe, ble, gamma, c1a, c2a, ct, q1a, q2a, q1leak, q2leak;
 
+            double dm = (*mpDm);
+            double Bm = (*mpBm);
+            double clm = (*mpClm);
+            double J = (*mpJ);
+            double eps = (*mpEps);
+
             //Get variable values from nodes
             c1 = (*mpND_c1);
             Zc1 = (*mpND_Zc1);
@@ -115,11 +113,11 @@ namespace hopsan {
             //Motor equations
             limitValue(eps, -1, 1);
 
-            dpe = dp / (3.1415 * 2) * eps;
+            dpe = dm / (3.1415 * 2) * eps;
             ble = Bm + Zc1 * dpe*dpe + Zc2 * dpe*dpe + Zx3;
-            gamma = 1 / (cim * (Zc1 + Zc2) + 1);
-            c1a = (cim * Zc2 + 1) * gamma * c1 + cim * gamma * Zc1 * c2;
-            c2a = (cim * Zc1 + 1) * gamma * c2 + cim * gamma * Zc2 * c1;
+            gamma = 1 / (clm * (Zc1 + Zc2) + 1);
+            c1a = (clm * Zc2 + 1) * gamma * c1 + clm * gamma * Zc1 * c2;
+            c2a = (clm * Zc1 + 1) * gamma * c2 + clm * gamma * Zc2 * c1;
             ct = c1a * dpe - c2a * dpe - c3;
             mIntegrator.setDamping(ble / J * mTimestep);
             mIntegrator.integrateWithUndo(ct/J);
@@ -149,9 +147,9 @@ namespace hopsan {
             if(cav)
             {
                 ble = Bm + Zc1 * dpe*dpe + Zc2 * dpe*dpe + Zx3;
-                gamma = 1 / (cim * (Zc1 + Zc2) + 1);
-                c1a = (cim * Zc2 + 1) * gamma * c1 + cim * gamma * Zc1 * c2;
-                c2a = (cim * Zc1 + 1) * gamma * c2 + cim * gamma * Zc2 * c1;
+                gamma = 1 / (clm * (Zc1 + Zc2) + 1);
+                c1a = (clm * Zc2 + 1) * gamma * c1 + clm * gamma * Zc1 * c2;
+                c2a = (clm * Zc1 + 1) * gamma * c2 + clm * gamma * Zc2 * c1;
                 ct = c1a * dpe - c2a * dpe - c3;
                 mIntegrator.setDamping(ble / J * mTimestep);
                 mIntegrator.redoIntegrate(ct/J);
@@ -183,7 +181,7 @@ namespace hopsan {
             }
 
             //Leakage Flow
-            q1leak = -cim * (p1 - p2);
+            q1leak = -clm * (p1 - p2);
             q2leak = -q1leak;
 
             //Effective Flow

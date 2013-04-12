@@ -44,7 +44,7 @@ namespace hopsan {
         double mNumX[3], mNumV[2];
         double mDenX[3], mDenV[2];
 
-        double *mpND_in1, *mpND_out1, *mpND_out2;
+        double *mpAngle, *mpTorque, *mpMovement;
         std::vector<double*> mvpND_f1, mvpND_x1, mvpND_v1, mvpND_c1, mvpND_Zc1, mvpND_me1;
         double *mpND_t1, *mpND_a1, *mpND_w1, *mpND_c1, *mpND_Zx1, *mpND_t2, *mpND_a2, *mpND_w2, *mpND_c2, *mpND_Zx2;
         double *mpOffset, *mpR, *mpB;
@@ -71,12 +71,12 @@ namespace hopsan {
             rp = 0.01;
 
             //Register changable parameters to the HOPSAN++ core
-            addInputVariable("B", "Viscous Friction", "[Nms/rad]", 10.0);
-            addInputVariable("r", "Swivel Radius", "[m]", 0.05);
-            addInputVariable("theta_offset", "Angle Offset", "[m]", 0.0);
-            addInputVariable("angle", "Angle", "rad", 0);
-            addOutputVariable("torque", "Torque", "Nm");
-            addOutputVariable("movement", "?", "?");
+            addInputVariable("B", "Viscous Friction", "[Nms/rad]", 10.0, &mpB);
+            addInputVariable("r", "Swivel Radius", "[m]", 0.05, &mpR);
+            addInputVariable("theta_offset", "Angle Offset", "[m]", 0.0, &mpOffset);
+            addInputVariable("angle", "Angle", "rad", 0, &mpAngle);
+            addOutputVariable("torque", "Torque", "Nm", 0.0, &mpTorque);
+            addOutputVariable("movement", "?", "?", 0.0, &mpMovement);
             registerParameter("J", "Moment of Inertia of Cylinder Block", "[kgm^2]", J);
             registerParameter("m_p", "Mass of each Piston", "[kg]", mp);
             registerParameter("r_p", "Piston Radius", "[m]", rp);
@@ -107,14 +107,6 @@ namespace hopsan {
             mpND_w2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::AngularVelocity);
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::WaveVariable);
             mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::CharImpedance);
-
-            mpND_in1 = getSafeNodeDataPtr("angle", NodeSignal::Value);
-            mpND_out1 = getSafeNodeDataPtr("torque", NodeSignal::Value);
-            mpND_out2 = getSafeNodeDataPtr("movement", NodeSignal::Value);
-
-            mpOffset = getSafeNodeDataPtr("theta_offset", NodeSignal::Value);
-            mpR = getSafeNodeDataPtr("r", NodeSignal::Value);
-            mpB = getSafeNodeDataPtr("B", NodeSignal::Value);
 
             //Assign node data pointers
             for (size_t i=0; i<mNumPorts1; ++i)
@@ -171,7 +163,7 @@ namespace hopsan {
             Zx2 = (*mpND_Zx2);
 
             //Calculate constants
-            double angle = (*mpND_in1);
+            double angle = (*mpAngle);
             double s = r*tan(angle);
             double diff = 2*3.1416/mNumPorts1;
 
@@ -213,8 +205,8 @@ namespace hopsan {
             }
 
             //Write new values to nodes
-            (*mpND_out1) = -t2;
-            (*mpND_out2) = w1;
+            (*mpTorque) = -t2;
+            (*mpMovement) = w1;
             for(size_t i=0; i<mNumPorts1; ++i)
             {
                 (*mvpND_f1[i]) = f1[i];

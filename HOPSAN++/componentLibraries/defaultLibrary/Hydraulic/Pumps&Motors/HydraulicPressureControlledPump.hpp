@@ -46,7 +46,7 @@ namespace hopsan {
         double *mpPdif, *mpMovement, *mpQmax, *mpLp, *mpRp, *mpWp1, *mpClp, *mpTaov, *mpTp, *mpTm;
         double a1, a2, b1, b2, b3, y1, y2, u1, u2, ud, vd, yd;
         double gamma, qminl, qmaxl;
-        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_p3, *mpND_q3, *mpND_c3, *mpND_eps, *mpND_a;
+        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_p3, *mpND_q3, *mpND_c3, *mpEps, *mpA;
         Port *mpP1, *mpP2, *mpPREF, *mpOut, *mpOut2;
 
     public:
@@ -65,18 +65,18 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpPREF = addPowerPort("PREF", "NodeHydraulic");
 
-            addInputVariable("eps", "NodeSignal", "", 1.0);
-            addInputVariable("a", "NodeSignal", "rad", 0);
-            addInputVariable("p_dif", "Reference pressure difference", "[Pa]", 1000000);
-            addInputVariable("omega_p", "Pump movement", "[rad/s]", 125);
-            addInputVariable("q_max", "Nomainal maximal flow", "[m^3/s]", 0.00125);
-            addInputVariable("l_p", "Regulator inductance at nominal pressure", "[]", 70000000);
-            addInputVariable("r_p", "Static characteristic at nominal pressure", "[]", 1000000000);
-            addInputVariable("omega_p1", "Lead frequency of regulator", "[rad/s]", 200);
-            addInputVariable("C_lp", "Leakage coefficient of pump", "[]", 0.000000000001);
-            addInputVariable("tao_v", "Time constant of control valve", "[s]", 0.001);
-            addInputVariable("t_p", "Time from min to full displacement", "[s]", 0.15);
-            addInputVariable("t_m", "Time from full to min displacement", "[s]", 0.12);
+            addInputVariable("eps", "NodeSignal", "", 1.0, &mpEps);
+            addInputVariable("a", "NodeSignal", "rad", 0, &mpA);
+            addInputVariable("p_dif", "Reference pressure difference", "[Pa]", 1000000, &mpPdif);
+            addInputVariable("omega_p", "Pump movement", "[rad/s]", 125, &mpMovement);
+            addInputVariable("q_max", "Nomainal maximal flow", "[m^3/s]", 0.00125, &mpQmax);
+            addInputVariable("l_p", "Regulator inductance at nominal pressure", "[]", 70000000, &mpLp);
+            addInputVariable("r_p", "Static characteristic at nominal pressure", "[]", 1000000000, &mpRp);
+            addInputVariable("omega_p1", "Lead frequency of regulator", "[rad/s]", 200, &mpWp1);
+            addInputVariable("C_lp", "Leakage coefficient of pump", "[]", 0.000000000001, &mpClp);
+            addInputVariable("tao_v", "Time constant of control valve", "[s]", 0.001, &mpTaov);
+            addInputVariable("t_p", "Time from min to full displacement", "[s]", 0.15, &mpTp);
+            addInputVariable("t_m", "Time from full to min displacement", "[s]", 0.12, &mpTm);
 
             registerParameter("q_min", "Nominal minimal flow", "[m^3/s]", qmin);
         }
@@ -97,20 +97,6 @@ namespace hopsan {
             mpND_p3 = getSafeNodeDataPtr(mpPREF, NodeHydraulic::Pressure);
             mpND_q3 = getSafeNodeDataPtr(mpPREF, NodeHydraulic::Flow);
             mpND_c3 = getSafeNodeDataPtr(mpPREF, NodeHydraulic::WaveVariable);
-
-            mpND_eps = getSafeNodeDataPtr("eps", NodeSignal::Value);
-            mpND_a = getSafeNodeDataPtr("a", NodeSignal::Value);
-
-            mpPdif = getSafeNodeDataPtr("p_dif", NodeSignal::Value);
-            mpMovement = getSafeNodeDataPtr("omega_p", NodeSignal::Value);
-            mpQmax = getSafeNodeDataPtr("q_max", NodeSignal::Value);
-            mpLp = getSafeNodeDataPtr("l_p", NodeSignal::Value);
-            mpRp = getSafeNodeDataPtr("r_p", NodeSignal::Value);
-            mpWp1 = getSafeNodeDataPtr("omega_p1", NodeSignal::Value);
-            mpClp = getSafeNodeDataPtr("C_lp", NodeSignal::Value);
-            mpTaov = getSafeNodeDataPtr("tao_v", NodeSignal::Value);
-            mpTp = getSafeNodeDataPtr("t_p", NodeSignal::Value);
-            mpTm = getSafeNodeDataPtr("t_m", NodeSignal::Value);
 
             double p1 = (*mpND_p1);
             double c1 = (*mpND_c1);
@@ -155,7 +141,7 @@ namespace hopsan {
             u1 = u;
             vd = 0.0;
 
-            (*mpND_a) = 0;
+            (*mpA) = 0;
         }
 
 
@@ -233,8 +219,8 @@ namespace hopsan {
             (*mpND_q2) = q2;
             (*mpND_p3) = c3;
             (*mpND_q3) = 0.0;
-            (*mpND_eps) = q2/qmax;
-            (*mpND_a) += movement/mTimestep;
+            (*mpEps) = q2/qmax;
+            (*mpA) += movement/mTimestep;
         }
 
 

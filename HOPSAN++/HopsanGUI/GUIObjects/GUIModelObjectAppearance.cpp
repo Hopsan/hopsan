@@ -193,6 +193,10 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
         int idx=0;
         while(!xmlMovable.isNull())
         {
+            if(startX.size() < idx+1)
+            {
+                break;
+            }
             if(settingsOnly)
             {
                 startX[idx] = xmlMovable.firstChildElement("start").attribute("x").toDouble();

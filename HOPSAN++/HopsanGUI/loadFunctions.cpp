@@ -241,7 +241,7 @@ ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, 
     if (pAppearanceData != 0)
     {
         QDomElement animationElement = guiData.firstChildElement("animation");
-        if(!animationElement.isNull())
+        if(!animationElement.isNull() && pAppearanceData->getTypeName() == type)
         {
             pAppearanceData->getAnimationDataPtr()->readFromDomElement(animationElement, pAppearanceData->getBasePath(), true);
         }

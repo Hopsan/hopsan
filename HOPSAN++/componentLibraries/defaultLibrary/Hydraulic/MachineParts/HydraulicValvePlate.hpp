@@ -41,7 +41,7 @@ namespace hopsan {
     private:
         Port /* *mpIn1, */*mpP1, *mpPA, *mpPB;
         size_t mNumPorts1;
-        double *mpND_in1;
+        double *mpMovement;
         std::vector<double*> mvpND_p1, mvpND_q1, mvpND_c1, mvpND_Zc1;
         double *mpND_pa, *mpND_qa, *mpND_ca, *mpND_Zca;
         double *mpND_pb, *mpND_qb, *mpND_cb, *mpND_Zcb;
@@ -65,16 +65,16 @@ namespace hopsan {
         void configure()
         {
             //Register changable parameters to the HOPSAN++ core
-            addInputVariable("phi_P", "Length of grooves", "[deg]", 160);
-            addInputVariable("phi_1", "Length of first pre-compression chamber", "[deg]", 6);
-            addInputVariable("phi_2", "Length of second pre-compression chamber", "[deg]", 6);
-            addInputVariable("Delta_alpha", "-", "[deg]", 5);
-            addInputVariable("alpha_f", "-", "[deg]", 30);
-            addInputVariable("R_f", "Radius to groove center line", "[m]", 0.03);
-            addInputVariable("theta_1", "Angle 1", "[deg]", 6);
-            addInputVariable("theta_2", "Angle 2", "[deg]", 90);
-            addInputVariable("rho", "Oil Density", "[kg/m^3]", 890);
-            addInputVariable("movement", "Movement", "rad/s", 160);
+            addInputVariable("phi_P", "Length of grooves", "[deg]", 160, &mpPhiP);
+            addInputVariable("phi_1", "Length of first pre-compression chamber", "[deg]", 6, &mpPhi1);
+            addInputVariable("phi_2", "Length of second pre-compression chamber", "[deg]", 6, &mpPhi2);
+            addInputVariable("Delta_alpha", "-", "[deg]", 5, &mpDAlpha);
+            addInputVariable("alpha_f", "-", "[deg]", 30, &mpAlphaF);
+            addInputVariable("R_f", "Radius to groove center line", "[m]", 0.03, &mpRf);
+            addInputVariable("theta_1", "Angle 1", "[deg]", 6, &mpTh1);
+            addInputVariable("theta_2", "Angle 2", "[deg]", 90, &mpTh2);
+            addInputVariable("rho", "Oil Density", "[kg/m^3]", 890, &mpRho);
+            addInputVariable("movement", "Movement", "rad/s", 160, &mpMovement);
             addOutputVariable("DEBUG1", "DEBUG1", "");
             addOutputVariable("DEBUG2", "DEBUG1", "");
             addOutputVariable("DEBUG3", "DEBUG1", "");
@@ -101,8 +101,6 @@ namespace hopsan {
             xva.resize(mNumPorts1);
             xvb.resize(mNumPorts1);
 
-            mpND_in1 = getSafeNodeDataPtr("movement", NodeSignal::Value);
-
             for(size_t i=0; i<mNumPorts1; ++i)
             {
                 mvpND_p1[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::Pressure);
@@ -125,16 +123,6 @@ namespace hopsan {
             mpND_Debug2 = getSafeNodeDataPtr("DEBUG2", NodeSignal::Value);
             mpND_Debug3 = getSafeNodeDataPtr("DEBUG3", NodeSignal::Value);
 
-            mpPhiP = getSafeNodeDataPtr("phi_P", NodeSignal::Value);
-            mpPhi1 = getSafeNodeDataPtr("phi_1", NodeSignal::Value);
-            mpPhi2 = getSafeNodeDataPtr("phi_2", NodeSignal::Value);
-            mpDAlpha = getSafeNodeDataPtr("Delta_alpha", NodeSignal::Value);
-            mpAlphaF = getSafeNodeDataPtr("alpha_f", NodeSignal::Value);
-            mpTh1 = getSafeNodeDataPtr("theta_1", NodeSignal::Value);
-            mpTh2 = getSafeNodeDataPtr("theta_2", NodeSignal::Value);
-            mpRf = getSafeNodeDataPtr("R_f", NodeSignal::Value);
-            mpRho = getSafeNodeDataPtr("rho", NodeSignal::Value);
-
             mIntegrator.initialize(mTimestep, 0, 0);
         }
 
@@ -142,7 +130,7 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            double in1 = (*mpND_in1);
+            double in1 = (*mpMovement);
 
             double phiP = (*mpPhiP);
             double phi1 = (*mpPhi1);

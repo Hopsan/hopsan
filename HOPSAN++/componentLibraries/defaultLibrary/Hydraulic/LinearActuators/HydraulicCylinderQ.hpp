@@ -55,8 +55,8 @@ namespace hopsan {
     class HydraulicCylinderQ : public ComponentQ
     {
     private:
-        double tao;
-        double *mpA1, *mpA2, *mpSl, *mpM, *mpBp, *mpBl, *mpKl;
+        double tao, M, sl;
+        double *mpA1, *mpA2, *mpBp, *mpBl, *mpKl;
         SecondOrderTransferFunction mPositionFilter;
         FirstOrderTransferFunction mVelocityFilter;
         double posnum[3], posden[3], velnum[3], velden[3];
@@ -73,18 +73,21 @@ namespace hopsan {
         void configure()
         {
             tao    = 3.0/2.0*mTimestep;        //Velocity filter time constant, should be in initialize?
+            M = 0.05;
+            sl = 0.01;
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpP3 = addPowerPort("P3", "NodeMechanic");
 
-            addInputVariable("A_1", "Piston Area 1", "[m^2]", 0.0001);
-            addInputVariable("A_2", "Piston Area 2", "[m^2]", 0.0001);
-            addInputVariable("s_l", "Stroke", "[m]", 0.01);
-            addInputVariable("B_p", "Viscous Friction Coefficient of Piston", "[Ns/m]", 0.0);
-            addInputVariable("m_l", "Inertia Load", "[kg]", 0.05);
-            addInputVariable("B_l", "Viscous Friction of Load", "[Ns/m]", 0.0);
-            addInputVariable("k_l", "Stiffness of Load", "[N/m]", 1000);
+            addInputVariable("A_1", "Piston Area 1", "[m^2]", 0.0001, &mpA1);
+            addInputVariable("A_2", "Piston Area 2", "[m^2]", 0.0001, &mpA2);
+            addInputVariable("B_p", "Viscous Friction Coefficient of Piston", "[Ns/m]", 0.0, &mpBp);
+            addInputVariable("B_l", "Viscous Friction of Load", "[Ns/m]", 0.0, &mpBl);
+            addInputVariable("k_l", "Stiffness of Load", "[N/m]", 1000, &mpKl);
+
+            registerParameter("m_l", "Inertia Load", "kg", M);
+            registerParameter("s_l", "Stroke", "m", sl);
         }
 
 
@@ -105,19 +108,9 @@ namespace hopsan {
             mpND_cx3 = getSafeNodeDataPtr(mpP3, NodeMechanic::WaveVariable);
             mpND_Zx3 = getSafeNodeDataPtr(mpP3, NodeMechanic::CharImpedance);
 
-            mpA1 = getSafeNodeDataPtr("A_1", NodeSignal::Value);
-            mpA2 = getSafeNodeDataPtr("A_2", NodeSignal::Value);
-            mpSl = getSafeNodeDataPtr("s_l", NodeSignal::Value);
-            mpBp = getSafeNodeDataPtr("B_p", NodeSignal::Value);
-            mpM = getSafeNodeDataPtr("m_l", NodeSignal::Value);
-            mpBl = getSafeNodeDataPtr("B_l", NodeSignal::Value);
-            mpKl = getSafeNodeDataPtr("k_l", NodeSignal::Value);
-
             double A1 = (*mpA1);
             double A2 = (*mpA2);
-            double sl = (*mpSl);
             double bp = (*mpBp);
-            double M = (*mpM);
             double bl = (*mpBl);
             double kl = (*mpKl);
 
@@ -160,9 +153,7 @@ namespace hopsan {
 
             double A1 = (*mpA1);
             double A2 = (*mpA2);
-            double sl = (*mpSl);
             double bp = (*mpBp);
-            double M = (*mpM);
             double bl = (*mpBl);
             double kl = (*mpKl);
 

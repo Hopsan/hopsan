@@ -11,5 +11,6 @@
         <file>templates/simulinkCoSimWrapperTemplate.cpp</file>
         <file>templates/simulinkSocketDeclarationTemplate.cpp</file>
         <file>templates/labviewWrapperTemplate.h</file>
+        <file>templates/generalComponentTemplate.hpp</file>
     </qresource>
 </RCC>

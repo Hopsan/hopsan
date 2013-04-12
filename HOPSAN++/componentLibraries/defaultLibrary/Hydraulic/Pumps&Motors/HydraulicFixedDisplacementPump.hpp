@@ -52,10 +52,10 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
 
-            addOutputVariable("a", "Angle", "rad", 0.0);
-            addInputVariable("n_p", "Angular Velocity", "[rad/s]", 250.0);
-            addInputVariable("D_p", "Displacement", "[m^3/rev]", 0.00005);
-            addInputVariable("C_lp", "Leakage Coefficient", "[(m^3/s)/Pa]", 0.0);
+            addOutputVariable("a", "Angle", "rad", 0.0, &mpND_a);
+            addInputVariable("n_p", "Angular Velocity", "[rad/s]", 250.0, &mpN);
+            addInputVariable("D_p", "Displacement", "[m^3/rev]", 0.00005, &mpDp);
+            addInputVariable("C_lp", "Leakage Coefficient", "[(m^3/s)/Pa]", 0.0, &mpClp);
         }
 
 
@@ -70,11 +70,6 @@ namespace hopsan {
             mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
             mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
-
-            mpND_a = getSafeNodeDataPtr("a", NodeSignal::Value);
-            mpN = getSafeNodeDataPtr("n_p", NodeSignal::Value);
-            mpDp = getSafeNodeDataPtr("D_p", NodeSignal::Value);
-            mpClp = getSafeNodeDataPtr("C_lp", NodeSignal::Value);
 
             (*mpND_a) = 0;
         }

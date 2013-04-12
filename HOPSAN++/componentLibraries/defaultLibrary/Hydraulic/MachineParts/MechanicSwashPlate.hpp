@@ -39,7 +39,7 @@ namespace hopsan {
 
     private:
         Port *mpP1;
-        double *mpND_in1, *mpND_in2, *mpND_out1;
+        double *mpAngle, *mpMovement, *mpTorque;
         std::vector<double*> mvpND_f1, mvpND_x1, mvpND_v1, mvpND_c1, mvpND_Zc1, mvpND_me1;
         size_t mNumPorts1;
 
@@ -60,11 +60,11 @@ namespace hopsan {
         void configure()
         {
             //Register changable parameters to the HOPSAN++ core
-            addInputVariable("r", "Swivel Radius", "[m]", 0.05);
-            addInputVariable("theta_offset", "Angle Offset", "[m]", 0.0);
-            addInputVariable("angle", "Angle", "rad", 0);
-            addInputVariable("movemenet", "?", "?", 0);
-            addOutputVariable("torque", "Torque", "Nm");
+            addInputVariable("r", "Swivel Radius", "[m]", 0.05, &mpR);
+            addInputVariable("theta_offset", "Angle Offset", "[m]", 0.0, &mpOffset);
+            addInputVariable("angle", "Angle", "rad", 0, &mpAngle);
+            addInputVariable("movemenet", "?", "?", 0, &mpMovement);
+            addOutputVariable("torque", "Torque", "Nm", &mpTorque);
 
             //Add ports to the component
             mpP1 = addPowerMultiPort("P1", "NodeMechanic");
@@ -85,12 +85,6 @@ namespace hopsan {
             Zc1.resize(mNumPorts1);
             x1.resize(mNumPorts1);
             v1.resize(mNumPorts1);
-
-            mpND_in1 = getSafeNodeDataPtr("angle", NodeSignal::Value);
-            mpND_in2 = getSafeNodeDataPtr("movement", NodeSignal::Value);
-            mpND_out1 = getSafeNodeDataPtr("torque", NodeSignal::Value);
-            mpR = getSafeNodeDataPtr("r", NodeSignal::Value);
-            mpOffset = getSafeNodeDataPtr("theta_offset", NodeSignal::Value);
 
             //Assign node data pointers
             for (size_t i=0; i<mNumPorts1; ++i)
@@ -117,8 +111,8 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            double angle = (*mpND_in1);
-            double w1 = (*mpND_in2);
+            double angle = (*mpAngle);
+            double w1 = (*mpMovement);
             double r = (*mpR);
             double offset = (*mpOffset);
 
@@ -150,7 +144,7 @@ namespace hopsan {
             }
 
             //Write new values to nodes
-            (*mpND_out1) = torque;
+            (*mpTorque) = torque;
             for(size_t i=0; i<mNumPorts1; ++i)
             {
                 (*mvpND_f1[i]) = f1[i];

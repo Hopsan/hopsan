@@ -31,7 +31,7 @@ namespace hopsan {
     {
     private:
         bool cav;
-        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_Kc;
+        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpKc;
         Port *mpP1, *mpP2, *mpIn;
 
     public:
@@ -44,7 +44,7 @@ namespace hopsan {
         {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
-            mpIn = addInputVariable("Kc", "Pressure-Flow Coefficient", "m^5/Ns", 1.0e-11);
+            mpIn = addInputVariable("Kc", "Pressure-Flow Coefficient", "m^5/Ns", 1.0e-11, &mpKc);
         }
 
 
@@ -59,8 +59,6 @@ namespace hopsan {
             mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
             mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
-
-            mpND_Kc = getSafeNodeDataPtr(mpIn, NodeSignal::Value);
         }
 
 
@@ -73,7 +71,7 @@ namespace hopsan {
             Zc1 = (*mpND_Zc1);
             c2 = (*mpND_c2);
             Zc2 = (*mpND_Zc2);
-            const double Kc = (*mpND_Kc);
+            const double Kc = (*mpKc);
 
             //Orifice equations
             q2 = Kc*(c1-c2)/(1.0+Kc*(Zc1+Zc2));

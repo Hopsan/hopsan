@@ -31,10 +31,7 @@ namespace hopsan {
     class HydraulicVariableDisplacementPump : public ComponentQ
     {
     private:
-        double n;             // rad/s
-        double dp;
-        double Kcp;
-        double eps;
+        double *mpN, *mpDp, *mpKcp, *mpEps;             // rad/s
 
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_eps;
 
@@ -48,26 +45,19 @@ namespace hopsan {
 
         void configure()
         {
-            n = 250.0;
-            dp = 0.00005;
-            Kcp = 0.0;
-            eps = 1.0;
-
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
 
-            registerParameter("omega_p", "Angular Velocity", "[rad/s]", n);
-            registerParameter("D_p", "Displacement", "[m^3/rev]", dp);
-            registerParameter("K_cp", "Leakage Coefficient", "[(m^3/s)/Pa]", Kcp);
-            registerParameter("epsilon_p", "Displacement Setting", "[-]", eps);
+            addInputVariable("omega_p", "Angular Velocity", "[rad/s]", 50.0, &mpN);
+            addInputVariable("D_p", "Displacement", "[m^3/rev]", 0.00005, &mpDp);
+            addInputVariable("K_cp", "Leakage Coefficient", "[(m^3/s)/Pa]", 0.0, &mpKcp);
+            addInputVariable("epsilon_p", "Displacement Setting", "[-]", 1.0, &mpEps);
         }
 
 
         void initialize()
         {
-            mpND_eps = getSafeNodeDataPtr(mpIn, NodeSignal::Value, eps);
-
             mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
             mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
             mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
@@ -83,8 +73,14 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Declare local variables
-            double p1, q1, c1, Zc1, p2, q2, c2, Zc2;
-            bool cav = false;
+            double n, dp, Kcp, eps, p1, q1, c1, Zc1, p2, q2, c2, Zc2;
+            bool cav;
+
+            cav = false;
+            n = (*mpN);
+            dp = (*mpDp);
+            Kcp = (*mpKcp);
+            eps = (*mpEps);
 
             //Get variable values from nodes
             c1 = (*mpND_c1);
