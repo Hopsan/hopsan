@@ -57,20 +57,20 @@ namespace hopsan {
 
         void configure()
         {
-            addOutputVariable("out", "Step output", "-");
+            addOutputVariable("out", "Step output", "-", &mpOut);
 
-            addInputVariable("y_0", "Base Value", "-", 0.0);
-            addInputVariable("y_A", "Amplitude", "-", 1.0);
-            addInputVariable("t_step", "Step Time", "-", 1.0);
+            addInputVariable("y_0", "Base Value", "-", 0.0, &mpBaseValue);
+            addInputVariable("y_A", "Amplitude", "-", 1.0, &mpAmplitude);
+            addInputVariable("t_step", "Step Time", "-", 1.0, &mpStepTime);
         }
 
 
         void initialize()
         {
-            mpOut = getSafeNodeDataPtr("out", NodeSignal::Value);
-            mpBaseValue = getSafeNodeDataPtr("y_0", NodeSignal::Value);
-            mpAmplitude = getSafeNodeDataPtr("y_A", NodeSignal::Value);
-            mpStepTime = getSafeNodeDataPtr("t_step", NodeSignal::Value);
+//            mpOut = getSafeNodeDataPtr("out", NodeSignal::Value);
+//            mpBaseValue = getSafeNodeDataPtr("y_0", NodeSignal::Value);
+//            mpAmplitude = getSafeNodeDataPtr("y_A", NodeSignal::Value);
+//            mpStepTime = getSafeNodeDataPtr("t_step", NodeSignal::Value);
 
             // Set initial value
             simulateOneTimestep();

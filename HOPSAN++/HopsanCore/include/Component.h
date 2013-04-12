@@ -185,9 +185,11 @@ protected:
     }
 
     // Interface variable functions
-    Port *addInputVariable(const std::string name, const std::string description, const std::string unit, const double defaultValue);
-    Port *addOutputVariable(const std::string name, const std::string description, const std::string unit);
-    Port *addOutputVariable(const std::string name, const std::string description, const std::string unit, const double defaultValue);
+    Port *addInputVariable(const std::string name, const std::string description, const std::string unit, const double defaultValue, double **ppNodeData=0);
+    Port *addOutputVariable(const std::string name, const std::string description, const std::string unit, double **ppNodeData=0);
+    Port *addOutputVariable(const std::string name, const std::string description, const std::string unit, const double defaultValue, double **ppNodeData=0);
+
+    void initializeAutoSignalNodeDataPtrs();
 
     // Port functions
     Port* addPowerPort(const std::string portName, const std::string nodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
@@ -249,6 +251,7 @@ private:
     HopsanEssentials *mpHopsanEssentials;
     HopsanCoreMessageHandler *mpMessageHandler;
     std::vector<VariameterDescription> mVariameters;
+    std::map<Port*, double**> mAutoSignalNodeDataPtrPorts;
 };
 
 

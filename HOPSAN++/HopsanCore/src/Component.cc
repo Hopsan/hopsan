@@ -870,29 +870,57 @@ void Component::setTimestep(const double timestep)
     mTimestep = timestep;
 }
 
-Port *Component::addInputVariable(const string name, const string description, const string unit, const double defaultValue)
+Port *Component::addInputVariable(const string name, const string description, const string unit, const double defaultValue, double **ppNodeData)
 {
     //! @todo suport more types
-    Port *pPort = addReadPort(name,"NodeSignal",Port::NotRequired);
+    Port *pPort = addReadPort(name,"NodeSignal", Port::NotRequired);
     pPort->setSignalNodeUnitAndDescription(unit, description);
     setStartValue(pPort, 0, defaultValue);
+
+    if (ppNodeData)
+    {
+        mAutoSignalNodeDataPtrPorts.insert(std::pair<Port*, double**>(pPort, ppNodeData));
+    }
+
     return pPort;
 }
 
-Port *Component::addOutputVariable(const string name, const string description, const string unit)
+Port *Component::addOutputVariable(const string name, const string description, const string unit, double **ppNodeData)
 {
     Port *pPort = addWritePort(name, "NodeSignal", Port::NotRequired);
     pPort->setSignalNodeUnitAndDescription(unit, description);
     disableStartValue(pPort,0);
+
+    if (ppNodeData)
+    {
+        mAutoSignalNodeDataPtrPorts.insert(std::pair<Port*, double**>(pPort, ppNodeData));
+    }
+
     return pPort;
 }
 
-Port *Component::addOutputVariable(const string name, const string description, const string unit, const double defaultValue)
+Port *Component::addOutputVariable(const string name, const string description, const string unit, const double defaultValue, double **ppNodeData)
 {
     Port *pPort = addWritePort(name, "NodeSignal", Port::NotRequired);
     pPort->setSignalNodeUnitAndDescription(unit, description);
     setStartValue(pPort, 0, defaultValue);
+
+    if (ppNodeData)
+    {
+        mAutoSignalNodeDataPtrPorts.insert(std::pair<Port*, double**>(pPort, ppNodeData));
+    }
+
     return pPort;
+}
+
+void Component::initializeAutoSignalNodeDataPtrs()
+{
+    map<Port*,double**>::iterator it;
+    for (it=mAutoSignalNodeDataPtrPorts.begin(); it!=mAutoSignalNodeDataPtrPorts.end(); ++it)
+    {
+        // We run the component locale getSafeNodeData ptr as it does more error checking then calling port->getNodeDataPtr directly
+        (*(it->second)) = getSafeNodeDataPtr(it->first, 0); // 0 = NodeSignal::Value
+    }
 }
 
 

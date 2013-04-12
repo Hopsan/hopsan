@@ -2416,6 +2416,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
             return false;
         }
 
+        mComponentSignalptrs[s]->initializeAutoSignalNodeDataPtrs();
         mComponentSignalptrs[s]->updateParameters();
 
         if (mComponentSignalptrs[s]->isComponentSystem())
@@ -2443,6 +2444,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
             return false;
         }
 
+        mComponentCptrs[c]->initializeAutoSignalNodeDataPtrs();
         mComponentCptrs[c]->updateParameters();
 
         if (mComponentCptrs[c]->isComponentSystem())
@@ -2470,6 +2472,7 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
             return false;
         }
 
+        mComponentQptrs[q]->initializeAutoSignalNodeDataPtrs();
         mComponentQptrs[q]->updateParameters();
 
         if (mComponentQptrs[q]->isComponentSystem())
