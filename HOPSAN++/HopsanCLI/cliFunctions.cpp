@@ -344,28 +344,28 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
                         {
                             for (size_t v=0; v<pVars->size(); ++v)
                             {
-                                //cout << "var: " << v << " of: " <<  pVars->size() << endl;
                                 string fullname = prefix + pComp->getName() + "#" + pPort->getName() + "#" + pVars->at(v).name;
 
-                                //cout << fullname << "," << pPort->getVariableAlias(v) << "," << pVars->at(v).unit;
-                                *pFile << fullname << "," << pPort->getVariableAlias(v) << "," << pVars->at(v).unit;
                                 if (howMany == Final)
                                 {
-                                    //cout <<  "," << pPort->readNode(v) << endl; //!< @todo what about precission
+                                    *pFile << fullname << "," << pPort->getVariableAlias(v) << "," << pVars->at(v).unit;
                                     *pFile << "," << pPort->readNode(v) << endl; //!< @todo what about precission
                                 }
                                 else if (howMany == Full)
                                 {
-                                    //! @todo what about time vector
-                                    vector< vector<double> > *pLogData = pPort->getLogDataVectorPtr();
-                                    //! @todo what about non-connected ports and ports that were not logged
-                                    for (size_t t=0; t<pLogData->size(); ++t)
+                                    // Only write something if data has been logged (skip ports that are not logged)
+                                    // We assume that the data vector has been cleared
+                                    if (pPort->getLogDataVectorPtr()->size() > 0)
                                     {
-                                        //cout << "," << (*pLogData)[t][v];//!< @todo what about precission
-                                        *pFile << "," << (*pLogData)[t][v];//!< @todo what about precission
+                                        *pFile << fullname << "," << pPort->getVariableAlias(v) << "," << pVars->at(v).unit;
+                                        //! @todo what about time vector
+                                        vector< vector<double> > *pLogData = pPort->getLogDataVectorPtr();
+                                        for (size_t t=0; t<pSys->getNumActuallyLoggedSamples(); ++t)
+                                        {
+                                            *pFile << "," << (*pLogData)[t][v];//!< @todo what about precission
+                                        }
+                                        *pFile << endl;
                                     }
-                                    //cout << endl;
-                                    *pFile << endl;
                                 }
                             }
                         }

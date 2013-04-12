@@ -154,11 +154,13 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStat
     //! @todo Remove this check in teh future when models should have been updated
     QStringList existinNames = pObject->getParameterNames();
     // This code makes sure we can load old parameters from before they became ports
+    bool tryingToAddColonColonValue = false;
     if(!existinNames.contains(parameterName))
     {
         if (!parameterName.contains("::"))
         {
             parameterName = parameterName+"::Value";
+            tryingToAddColonColonValue = true;
         }
     }
 
@@ -177,7 +179,7 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStat
     }
 
     //! @todo this is also a compatibility hack, to prevent startvalues in dynamic parameter ports from overwriting previously renamed but loaded paremter values, when the parmeter has the same name as its port. This prevents data from overwriting if loaded last
-    if (parameterName.contains("::Value") && parameterValue =="0")
+    if (parameterName.contains("::Value") && (parameterValue =="0") && !tryingToAddColonColonValue)
     {
         gpMainWindow->mpTerminalWidget->mpConsole->printDebugMessage("Prevented overwriting Parameter name "+parameterName+" in component "+pObject->getName());
     }
