@@ -37,7 +37,7 @@ namespace hopsan {
     class HydraulicTankQ : public ComponentQ
     {
     private:
-        double p;
+        double *mpP;
 
         double *mpND_p, *mpND_q, *mpND_c, *mpND_Zc;
 
@@ -51,11 +51,9 @@ namespace hopsan {
 
         HydraulicTankQ(const std::string name) : ComponentQ(name)
         {
-            p = 1e5;
-
             mpP1 = addPowerPort("P1", "NodeHydraulic");
 
-            registerParameter("p", "Default Pressure", "Pa", p);
+            addInputVariable("p", "Default Pressure", "Pa", 1e5, &mpP);
         }
 
 
@@ -78,7 +76,7 @@ namespace hopsan {
             Zc = (*mpND_Zc);
 
             //Equations
-            q = (p - c)/Zc;
+            q = ((*mpP) - c)/Zc;
 
             //Write variables to nodes
             (*mpND_p) = p;

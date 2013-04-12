@@ -37,8 +37,8 @@ namespace hopsan {
     class HydraulicPressureSourceC : public ComponentC
     {
     private:
-        Port *mpIn, *mpP1;
-        double *mpND_in, *mpND_c, *mpND_Zc;
+        Port *mpP1;
+        double *mpP, *mpND_c, *mpND_Zc;
 
     public:
         static Component *Creator()
@@ -48,7 +48,7 @@ namespace hopsan {
 
         void configure()
         {
-            mpIn = addInputVariable("p", "Set pressure", "Pa", 1.0e5);
+            addInputVariable("p", "Set pressure", "Pa", 1.0e5, &mpP);
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             disableStartValue(mpP1, NodeHydraulic::Pressure);
@@ -58,7 +58,6 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value);
             mpND_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
             mpND_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);
 
@@ -68,7 +67,7 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            *mpND_c = *mpND_in;
+            *mpND_c = *mpP;
             *mpND_Zc = 0.0;
         }
     };

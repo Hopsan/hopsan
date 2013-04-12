@@ -38,10 +38,10 @@ namespace hopsan {
     {
     private:
         double Zc;
-        Port *mpIn, *mpMP;
+        Port *mpMP;
 
         size_t mNumPorts;
-        double *mpND_in;
+        double *mpIn;
         std::vector<double*> mND_p_vec;
         std::vector<double*> mND_q_vec;
         std::vector<double*> mND_c_vec;
@@ -58,7 +58,7 @@ namespace hopsan {
             Zc = 0.0;
 
             mpMP = addPowerMultiPort("MP", "NodeHydraulic");
-            mpIn = addInputVariable("p", "Default pressure", "Pa", 1.0e5);
+            addInputVariable("p", "Default pressure", "Pa", 1.0e5, &mpIn);
 
             disableStartValue(mpMP, NodeHydraulic::Pressure);
         }
@@ -66,8 +66,6 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value);
-
             mNumPorts = mpMP->getNumPorts();
 
             //! @todo write help function to set the size and contents of a these vectors automatically
@@ -82,9 +80,9 @@ namespace hopsan {
                 mND_c_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::WaveVariable);
                 mND_Zc_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::CharImpedance);
 
-                *(mND_p_vec[i]) = (*mpND_in);    //Override the startvalue for the pressure
+                *(mND_p_vec[i]) = (*mpIn);    //Override the startvalue for the pressure
                 *(mND_q_vec[i]) = getStartValue(mpMP, NodeHydraulic::Flow);
-                *(mND_c_vec[i]) = (*mpND_in);
+                *(mND_c_vec[i]) = (*mpIn);
                 *(mND_Zc_vec[i]) = Zc;
             }
         }
@@ -94,7 +92,7 @@ namespace hopsan {
         {
             for (size_t i=0; i<mNumPorts; ++i)
             {
-                *(mND_c_vec[i]) = (*mpND_in);
+                *(mND_c_vec[i]) = (*mpIn);
                 *(mND_Zc_vec[i]) = Zc;
             }
         }

@@ -33,7 +33,7 @@ namespace hopsan {
     private:
         double *mpN, *mpDp, *mpKcp, *mpEps;             // rad/s
 
-        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_eps;
+        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
 
         Port *mpP1, *mpP2, *mpIn;
 
@@ -87,7 +87,6 @@ namespace hopsan {
             Zc1 = (*mpND_Zc1);
             c2 = (*mpND_c2);
             Zc2 = (*mpND_Zc2);
-            eps = (*mpND_eps);
 
             //Variable Displacement Pump equations
 

@@ -37,8 +37,8 @@ namespace hopsan {
     class HydraulicPressureSourceQ : public ComponentQ
     {
     private:
-        double *mpND_in, *mpND_p, *mpND_q, *mpND_c, *mpND_Zc;
-        Port *mpIn, *mpP1;
+        double *mpP, *mpND_p, *mpND_q, *mpND_c, *mpND_Zc;
+        Port *mpP1;
 
     public:
         static Component *Creator()
@@ -49,13 +49,12 @@ namespace hopsan {
         void configure()
         {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
-            mpIn = addInputVariable("p","Set pressure", "Pa", 1e5);
+            addInputVariable("p","Set pressure", "Pa", 1e5, &mpP);
         }
 
 
         void initialize()
         {
-            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value);
             mpND_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
             mpND_q = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
             mpND_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
@@ -69,7 +68,7 @@ namespace hopsan {
             double in, q, p, c, Zc;
 
             //Get variable values from nodes
-            in = (*mpND_in);
+            in = (*mpP);
             c = (*mpND_c);
             Zc = (*mpND_Zc);
 
