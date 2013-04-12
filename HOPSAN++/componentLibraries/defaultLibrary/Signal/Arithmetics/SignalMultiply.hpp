@@ -38,7 +38,7 @@ namespace hopsan {
 
     private:
         double *mpND_in1, *mpND_in2, *mpND_out;
-        Port *mpIn1, *mpIn2, *mpOut;
+        Port *mpIn1Port, *mpIn2Port;
 
     public:
         static Component *Creator()
@@ -48,27 +48,21 @@ namespace hopsan {
 
         void configure()
         {
-            mpIn1 = addReadPort("in1", "NodeSignal");
-            mpIn2 = addReadPort("in2", "NodeSignal");
-            mpOut = addWritePort("out", "NodeSignal");
-            disableStartValue(mpOut, NodeSignal::Value);
-            setStartValue(mpIn1, NodeSignal::Value, 1);
-            setStartValue(mpIn2, NodeSignal::Value, 1);
+            mpIn1Port = addInputVariable("in1", "", "", 1.0, &mpND_in1);
+            mpIn2Port = addInputVariable("in2", "", "", 1.0, &mpND_in2);
+            addOutputVariable("out", "in1*in2", "", &mpND_out);
         }
 
 
         void initialize()
         {
             //If only one input port is conncted, the other shall be 1 (= multiply by 1).
-            //If no input ports are connected, mpND_output shall be 0, so one of the inputs are set to 0.
-            mpND_in1 = getSafeNodeDataPtr(mpIn1, NodeSignal::Value);
-            mpND_in2 = getSafeNodeDataPtr(mpIn2, NodeSignal::Value);
-            if(!mpIn1->isConnected() && !mpIn2->isConnected())
+            //If no input ports are connected, mpND_output shall allways be 0, so one of the inputs are set to 0.
+            if(!mpIn1Port->isConnected() && !mpIn2Port->isConnected())
             {
-                (*mpND_in1 = 0);
+                (*mpND_in1) = 0;
             }
 
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
             simulateOneTimestep();
         }
 

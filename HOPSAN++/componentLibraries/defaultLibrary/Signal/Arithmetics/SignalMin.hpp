@@ -41,7 +41,7 @@ namespace hopsan {
         size_t nInputs;
         std::vector<double *> mNDp_in_vec;
         double *mpND_out;
-        Port *mpMultiInPort, *mpOutPort;
+        Port *mpMultiInPort;
 
     public:
         static Component *Creator()
@@ -52,7 +52,7 @@ namespace hopsan {
         void configure()
         {
             mpMultiInPort = addReadMultiPort("in", "NodeSignal", Port::NotRequired);
-            mpOutPort = addWritePort("out", "NodeSignal", Port::NotRequired);
+            addOutputVariable("out", "Min of the inputs", "", &mpND_out);
         }
 
 
@@ -66,7 +66,6 @@ namespace hopsan {
             {
                 mNDp_in_vec[i] = getSafeMultiPortNodeDataPtr(mpMultiInPort, i, NodeSignal::Value);
             }
-            mpND_out = getSafeNodeDataPtr(mpOutPort, NodeSignal::Value);
         }
 
 

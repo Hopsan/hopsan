@@ -39,7 +39,6 @@ namespace hopsan {
     {
 
     private:
-        Port *mpIn, *mpOut, *mpGain;
         double *mpND_in, *mpND_out, *mpND_gain;
 
     public:
@@ -50,18 +49,13 @@ namespace hopsan {
 
         void configure()
         {
-            mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
-            mpGain = addInputVariable("k", "Gain value", "[-]", 1);
-            disableStartValue(mpOut,NodeSignal::Value);
+            addInputVariable("in","","",0, &mpND_in);
+            addInputVariable("k", "The gain factor", "", 1, &mpND_gain);
+            addOutputVariable("out", "in*k", "", &mpND_out);
         }
-
 
         void initialize()
         {
-            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value);
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
-            mpND_gain = getSafeNodeDataPtr(mpGain, NodeSignal::Value);
             // Now make sure the output initial value is based on the input
             simulateOneTimestep();
         }
