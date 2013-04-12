@@ -39,11 +39,7 @@ namespace hopsan {
     class Hydraulic22DirectionalValve : public ComponentQ
     {
     private:
-        double Cq;
-        double d;
-        double f;
-        double xvmax;
-        double rho;
+        double *mpCq, *mpD, *mpF, *mpXvmax, *mpRho;
         double omegah;
         double deltah;
 
@@ -62,24 +58,17 @@ namespace hopsan {
 
         void configure()
         {
-            Cq = 0.67;
-            d = 0.01;
-            f = 1.0;
-            xvmax = 0.01;
-            rho = 890;
-            omegah = 100.0;
-            deltah = 1.0;
-
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpIn = addReadPort("in", "NodeSignal");
             mpOut = addWritePort("xv", "NodeSignal", Port::NotRequired);
 
-            registerParameter("C_q", "Flow Coefficient", "[-]", Cq);
-            registerParameter("rho", "Oil Density", "[kg/m^3]", rho);
-            registerParameter("d", "Spool Diameter", "[m]", d);
-            registerParameter("f", "Spool Fraction of the Diameter", "[-]", f);
-            registerParameter("x_vmax", "Maximum Spool Displacement", "[m]", xvmax);
+            addInputVariable("C_q", "Flow Coefficient", "[-]", 0.67, &mpCq);
+            addInputVariable("rho", "Oil Density", "[kg/m^3]", 890, &mpRho);
+            addInputVariable("d", "Spool Diameter", "[m]", 0.01, &mpD);
+            addInputVariable("f", "Spool Fraction of the Diameter", "[-]", 1.0, &mpF);
+            addInputVariable("x_vmax", "Maximum Spool Displacement", "[m]", 0.01, &mpXvmax);
+
             registerParameter("omega_h", "Resonance Frequency", "[rad/s]", omegah);
             registerParameter("delta_h", "Damping Factor", "[-]", deltah);
         }
@@ -102,14 +91,14 @@ namespace hopsan {
 
             double num[3] = {1.0, 0.0, 0.0};
             double den[3] = {1.0, 2.0*deltah/omegah, 1.0/(omegah*omegah)};
-            filter.initialize(mTimestep, num, den, 0, 0, 0, xvmax);
+            filter.initialize(mTimestep, num, den, 0, 0, 0, (*mpXvmax));
         }
 
 
         void simulateOneTimestep()
         {
             //Declare local variables
-            double xv, xnom, Kc, q;
+            double xv, xnom, Kc, q, Cq, rho, d, f, xvmax;
             double p1, q1, c1, Zc1, p2, q2, c2, Zc2, xvin;
             bool cav = false;
 
@@ -119,6 +108,12 @@ namespace hopsan {
             c2 = (*mpND_c2);
             Zc2 = (*mpND_Zc2);
             xvin = (*mpND_xvin);
+
+            Cq = (*mpCq);
+            rho = (*mpRho);
+            d = (*mpD);
+            f = (*mpF);
+            xvmax = (*mpXvmax);
 
             if(doubleToBool(xvin))
             {

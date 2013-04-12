@@ -38,24 +38,18 @@ namespace hopsan {
     class Hydraulic33ShuttleValve : public ComponentQ
     {
     private:
-        double Cq;
-        double d;
-        double f_pa, f_at;
-        double xvmax;
-        double rho;
-        double overlap_pa;
-        double overlap_at;
+        double *mpCq, *mpD, *mpRho, *mpF_pa, *mpF_at, *mpX_pa, *mpX_at;
 
-        double d1, d2, K1, K2, A;
+        double xvmax, d1, d2, K1, K2, A;
 
         double *mpND_pa, *mpND_qa, *mpND_ca, *mpND_Zca, *mpND_pp, *mpND_qp, *mpND_cp, *mpND_Zcp, *mpND_pt, *mpND_qt, *mpND_ct, *mpND_Zct;
-        double *mpND_xvout;
+        double *mpXvout;
 
         IntegratorLimited xIntegrator;
 
         TurbulentFlowFunction qTurb_pa;
         TurbulentFlowFunction qTurb_at;
-        Port *mpPP, *mpPT, *mpPA, *mpPB, *mpX, *mpOut;
+        Port *mpPP, *mpPT, *mpPA, *mpPB, *mpX;
 
     public:
         static Component *Creator()
@@ -65,32 +59,26 @@ namespace hopsan {
 
         void configure()
         {
-            Cq = 0.67;
-            d = 0.01;
-            f_pa = 1.0;
-            f_at = 1.0;
-            xvmax = 0.01;
-            rho = 890;
-            overlap_pa = -1e-6;
-            overlap_at = -1e-6;
 
+            xvmax = 0.01;
             d1 = 1e-3;
             d2 = 1e-3;
-            A = pi*d*d/4.0;
 
             mpPP = addPowerPort("PP", "NodeHydraulic");
             mpPT = addPowerPort("PT", "NodeHydraulic");
             mpPA = addPowerPort("PA", "NodeHydraulic");
-            mpOut = addWritePort("xv_out", "NodeSignal", Port::NotRequired);
 
-            registerParameter("C_q", "Flow Coefficient", "[-]", Cq);
-            registerParameter("rho", "Oil Density", "[kg/m^3]", rho);
-            registerParameter("d", "Spool Diameter", "[m]", d);
-            registerParameter("f_pa", "Fraction of spool circumference that is opening P-A", "[-]", f_pa);
-            registerParameter("f_at", "Fraction of spool circumference that is opening A-T", "[-]", f_at);
+            addOutputVariable("xv_out", "Spool position", "", 0.0, &mpXvout);
+
+            addInputVariable("C_q", "Flow Coefficient", "[-]", 0.67, &mpCq);
+            addInputVariable("rho", "Oil Density", "[kg/m^3]", 890, &mpRho);
+            addInputVariable("d", "Spool Diameter", "[m]", 0.01, &mpD);
+            addInputVariable("f_pa", "Fraction of spool circumference that is opening P-A", "[-]", 1.0, &mpF_pa);
+            addInputVariable("f_at", "Fraction of spool circumference that is opening A-T", "[-]", 1.0, &mpF_at);
+            addInputVariable("x_pa", "Spool Overlap From Port P To A", "[m]", -1e-6, &mpX_pa);
+            addInputVariable("x_at", "Spool Overlap From Port A To T", "[m]", -1e-6, &mpX_at);
+
             registerParameter("x_vmax", "Maximum Spool Displacement", "[m]", xvmax);
-            registerParameter("x_pa", "Spool Overlap From Port P To A", "[m]", overlap_pa);
-            registerParameter("x_at", "Spool Overlap From Port A To T", "[m]", overlap_at);
             registerParameter("d_1", "Damp orifice 1 diam.", "[mm]", d1);
             registerParameter("d_2", "Damp orifice 2 diam.", "[mm]", d2);
         }
@@ -113,18 +101,23 @@ namespace hopsan {
             mpND_ca = getSafeNodeDataPtr(mpPA, NodeHydraulic::WaveVariable);
             mpND_Zca = getSafeNodeDataPtr(mpPA, NodeHydraulic::CharImpedance);
 
-            mpND_xvout = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
+            double Cq = (*mpCq);
+            double rho = (*mpRho);
+            double d = (*mpD);
 
             xIntegrator.initialize(mTimestep, 0, 0, -xvmax, xvmax);
 
             K1 = Cq*pi*d1*d1/4.0*sqrt(2.0/rho);
             K2 = Cq*pi*d2*d2/4.0*sqrt(2.0/rho);
+
+            A = pi*d*d/4.0;
         }
 
 
         void simulateOneTimestep()
         {
             //Declare local variables
+            double Cq, rho, d, f_pa, f_at, x_pa, x_at;
             double xv, xpanom, xatnom, Kcpa, Kcat, qpa, qat;
             double pp, pt, pa, qa, ca, Zca, qp, cp, Zcp, qt, ct, Zct;
             double p, v;
@@ -138,14 +131,22 @@ namespace hopsan {
             ca = (*mpND_ca);
             Zca = (*mpND_Zca);
 
+            Cq = (*mpCq);
+            rho = (*mpRho);
+            d = (*mpD);
+            f_pa = (*mpF_pa);
+            f_at = (*mpF_at);
+            x_pa = (*mpX_pa);
+            x_at = (*mpX_at);
+
             p = (K1*K1*(*mpND_pp) + K2*K2*(*mpND_pt))/(K1*K1+K2*K2);
             v = sign((*mpND_pp)-p)*K1*sqrt(fabs((*mpND_pp)-p))/A;
             xv = xIntegrator.update(v);
 
             //xv=-.01+mTime/10.0*0.02; //Test to see q(xv)
 
-            xpanom = std::max(-xv-overlap_pa,0.0);
-            xatnom = std::max(xv-overlap_at,0.0);
+            xpanom = std::max(-xv-x_pa,0.0);
+            xatnom = std::max(xv-x_at,0.0);
 
             Kcpa = Cq*f_pa*pi*d*xpanom*sqrt(2.0/rho);
             Kcat = Cq*f_at*pi*d*xatnom*sqrt(2.0/rho);
@@ -206,7 +207,7 @@ namespace hopsan {
             (*mpND_qa) = qa;
             (*mpND_pt) = pt;
             (*mpND_qt) = qt;
-            (*mpND_xvout) = xv;
+            (*mpXvout) = xv;
         }
     };
 }

@@ -39,21 +39,17 @@ namespace hopsan {
     class Hydraulic32DirectionalValve : public ComponentQ
     {
     private:
-        double Cq;
-        double d;
-        double f;
-        double xvmax;
-        double rho;
+        double *mpCq, *mpD, *mpF, *mpXvmax, *mpRho;
         double omegah;
         double deltah;
 
         double *mpND_pa, *mpND_qa, *mpND_ca, *mpND_Zca, *mpND_pp, *mpND_qp, *mpND_cp, *mpND_Zcp, *mpND_pt, *mpND_qt, *mpND_ct, *mpND_Zct;
-        double *mpND_xvin, *mpND_xvout;
+        double *mpXvIn, *mpXv;
 
         SecondOrderTransferFunction filter;
         TurbulentFlowFunction qTurb_pa;
         TurbulentFlowFunction qTurb_at;
-        Port *mpPP, *mpPT, *mpPA, *mpPB, *mpIn, *mpOut;
+        Port *mpPP, *mpPT, *mpPA, *mpPB;
 
     public:
         static Component *Creator()
@@ -63,25 +59,21 @@ namespace hopsan {
 
         void configure()
         {
-            Cq = 0.67;
-            d = 0.01;
-            f = 1.0;
-            xvmax = 0.01;
-            rho = 890;
             omegah = 100.0;
             deltah = 1.0;
 
             mpPP = addPowerPort("PP", "NodeHydraulic");
             mpPT = addPowerPort("PT", "NodeHydraulic");
             mpPA = addPowerPort("PA", "NodeHydraulic");
-            mpIn = addReadPort("in", "NodeSignal");
-            mpOut = addWritePort("xv", "NodeSignal", Port::NotRequired);
 
-            registerParameter("C_q", "Flow Coefficient", "[-]", Cq);
-            registerParameter("rho", "Oil Density", "[kg/m^3]", rho);
-            registerParameter("d", "Spool Diameter", "[m]", d);
-            registerParameter("f", "Spool Fraction of the Diameter", "[-]", f);
-            registerParameter("x_vmax", "Maximum Spool Displacement", "[m]", xvmax);
+            addOutputVariable("xv", "Spool position", "", 0.0, &mpXv);
+            addInputVariable("in", "Desired spool position", "", 0.0, &mpXvIn);
+            addInputVariable("C_q", "Flow Coefficient", "[-]", 0.67, &mpCq);
+            addInputVariable("rho", "Oil Density", "[kg/m^3]", 890, &mpRho);
+            addInputVariable("d", "Spool Diameter", "[m]", 0.01, &mpD);
+            addInputVariable("f", "Spool Fraction of the Diameter", "[-]", 1.0, &mpF);
+            addInputVariable("x_vmax", "Maximum Spool Displacement", "[m]", 0.01, &mpXvmax);
+
             registerParameter("omega_h", "Resonance Frequency", "[rad/s]", omegah);
             registerParameter("delta_h", "Damping Factor", "[-]", deltah);
         }
@@ -104,9 +96,6 @@ namespace hopsan {
             mpND_ca = getSafeNodeDataPtr(mpPA, NodeHydraulic::WaveVariable);
             mpND_Zca = getSafeNodeDataPtr(mpPA, NodeHydraulic::CharImpedance);
 
-            mpND_xvin = getSafeNodeDataPtr(mpIn, NodeSignal::Value);
-            mpND_xvout = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
-
             double num[3];// = {1.0, 0.0, 0.0};
             double den[3];// = {1.0, 2.0*deltah/omegah, 1.0/(omegah*omegah)};
             num[0] = 1.0;
@@ -116,7 +105,7 @@ namespace hopsan {
             den[1] = 2.0*deltah/omegah;
             den[2] = 1.0/(omegah*omegah);
 
-            filter.initialize(mTimestep, num, den, 0, 0, -xvmax, xvmax);
+            filter.initialize(mTimestep, num, den, 0, 0, -(*mpXvmax), (*mpXvmax));
         }
 
 
@@ -125,6 +114,7 @@ namespace hopsan {
             //Declare local variables
             double xv, xpanom, xatnom, Kcpa, Kcat, qpa, qat;
             double pa, qa, ca, Zca, pp, qp, cp, Zcp, pt, qt, ct, Zct, xvin;
+            double rho, xvmax, Cq, d, f;
             bool cav = false;
 
             //Get variable values from nodes
@@ -134,7 +124,13 @@ namespace hopsan {
             Zct = (*mpND_Zct);
             ca = (*mpND_ca);
             Zca = (*mpND_Zca);
-            xvin = (*mpND_xvin);
+            xvin = (*mpXvIn);
+
+            rho = (*mpRho);
+            xvmax = (*mpXvmax);
+            Cq = (*mpCq);
+            d = (*mpD);
+            f = (*mpF);
 
             if(doubleToBool(xvin))
             {
@@ -229,7 +225,7 @@ namespace hopsan {
             (*mpND_qa) = qa;
             (*mpND_pt) = pt;
             (*mpND_qt) = qt;
-            (*mpND_xvout) = xv;
+            (*mpXv) = xv;
         }
     };
 }
