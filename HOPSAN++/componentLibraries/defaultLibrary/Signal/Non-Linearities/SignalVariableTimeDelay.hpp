@@ -38,11 +38,10 @@ namespace hopsan {
     {
 
     private:
-        double mTimeDelay;
+        double *mpTimeDelay;
         double mMaxMemSize;
         Delay *mpDelay;
         double *mpND_in, *mpND_out;
-        Port *mpIn, *mpOut;
 
     public:
         static Component *Creator()
@@ -53,23 +52,19 @@ namespace hopsan {
         void configure()
         {
             mMaxMemSize = 50;
-            mTimeDelay = 1.0;
             mpDelay = 0;
 
-            registerParameter("dT", "Time delay", "s", mTimeDelay, Dynamic);
+            addInputVariable("dT", "Time delay", "s", 1.0, &mpTimeDelay);
             registerParameter("maxMem", "Maximum allowed memory consumption", "MB", mMaxMemSize, Constant);
 
-            mpIn = addReadPort("in", "NodeSignal");
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
+            addInputVariable("in", "", "", 0.0, &mpND_in);
+            addOutputVariable("out", "", "", &mpND_out);
         }
 
 
         void initialize()
         {
-            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value);
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
-
-            if (mTimeDelay < 0)
+            if (*mpTimeDelay < 0)
             {
                 addWarningMessage("Can not have timedelay < 0 s");
 //                stopSimulation();
@@ -77,7 +72,7 @@ namespace hopsan {
             }
 
             mpDelay = new Delay;
-            mpDelay->initialize(mTimeDelay, mTimestep, (*mpND_in));
+            mpDelay->initialize((*mpTimeDelay), mTimestep, (*mpND_in));
             (*mpND_out) = (*mpND_in);
         }
 
@@ -86,13 +81,13 @@ namespace hopsan {
         {
             // Check if delay have changed, using int truncation and + 0.5  to round to nearest int
             // First make sure timedelay not negative
-            const size_t nSamps = int(std::max(mTimeDelay,0.0)/mTimestep+0.5);
+            const size_t nSamps = int(std::max((*mpTimeDelay),0.0)/mTimestep+0.5);
 
             if ( nSamps != mpDelay->getSize())
             {
                 if (nSamps > size_t((mMaxMemSize*1e6)/double(sizeof(double))) )
                 {
-                    addErrorMessage("Trying to allocate to much memory with current timestep and requested time delay: "+to_string(mTimeDelay)+" s!");
+                    addErrorMessage("Trying to allocate to much memory with current timestep and requested time delay: "+to_string(*mpTimeDelay)+" s!");
                     stopSimulation();
                 }
 

@@ -26,7 +26,6 @@
 #define SIGNALQUADROUTE_HPP_INCLUDED
 
 #include "ComponentEssentials.h"
-#include <vector>
 
 namespace hopsan {
 
@@ -39,7 +38,6 @@ namespace hopsan {
 
     private:
         double *mpND_route, *mpND_in1, *mpND_in2, *mpND_in3, *mpND_in4, *mpND_out;
-        Port *mpRoute, *mpIn1, *mpIn2, *mpIn3, *mpIn4, *mpOut;
 
     public:
         static Component *Creator()
@@ -49,23 +47,18 @@ namespace hopsan {
 
         void configure()
         {
-            mpRoute = addReadPort("route", "NodeSignal", Port::Required);
-            mpIn1 = addReadPort("in1", "NodeSignal", Port::NotRequired);
-            mpIn2 = addReadPort("in2", "NodeSignal", Port::NotRequired);
-            mpIn3 = addReadPort("in3", "NodeSignal", Port::NotRequired);
-            mpIn4 = addReadPort("in4", "NodeSignal", Port::NotRequired);
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
+            addInputVariable("in1", "", "", 0, &mpND_in1);
+            addInputVariable("in2", "", "", 0, &mpND_in2);
+            addInputVariable("in3", "", "", 0, &mpND_in3);
+            addInputVariable("in4", "", "", 0, &mpND_in4);
+            addInputVariable("route", "Input selection", "", 0, &mpND_route);
+            addOutputVariable("out", "Selected input", "", &mpND_out);
         }
 
 
         void initialize()
         {
-            mpND_route  = getSafeNodeDataPtr(mpRoute,  NodeSignal::Value, 0);
-            mpND_in1  = getSafeNodeDataPtr(mpIn1,  NodeSignal::Value, 0);
-            mpND_in2  = getSafeNodeDataPtr(mpIn2,  NodeSignal::Value, 0);
-            mpND_in3  = getSafeNodeDataPtr(mpIn3,  NodeSignal::Value, 0);
-            mpND_in4  = getSafeNodeDataPtr(mpIn4,  NodeSignal::Value, 0);
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value, 0);
+
         }
 
 

@@ -41,7 +41,6 @@ namespace hopsan {
         FirstOrderTransferFunction mTF;
         double mW, mMin, mMax;
         double *mpND_in, *mpND_out;
-        Port *mpIn, *mpOut;
 
     public:
         static Component *Creator()
@@ -57,8 +56,8 @@ namespace hopsan {
 
             mW=1000.0;
 
-            mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
+            addInputVariable("in","","", 0.0, &mpND_in);
+            addOutputVariable("out", "","",0.0, &mpND_out);
 
             registerParameter("omega", "Break frequency", "[rad/s]", mW, Constant);
             registerParameter("y_min", "Lower output limit", "[-]", mMin, Constant);
@@ -68,9 +67,6 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value, 0);
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
-
             double num[2];
             double den[2];
 
@@ -79,9 +75,9 @@ namespace hopsan {
             den[1] = 1.0/mW;
             den[0] = 1.0;
 
-            mTF.initialize(mTimestep, num, den, (*mpND_in), (*mpND_in), mMin, mMax);
+            mTF.initialize(mTimestep, num, den, (*mpND_in), (*mpND_out), mMin, mMax);
 
-            (*mpND_out) = (*mpND_in);
+            //(*mpND_out) = (*mpND_in);
         }
 
 

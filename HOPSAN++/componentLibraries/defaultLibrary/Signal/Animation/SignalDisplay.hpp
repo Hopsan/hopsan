@@ -26,7 +26,6 @@
 #define SIGNALDISPLAY_HPP_INCLUDED
 
 #include "ComponentEssentials.h"
-#include "ComponentUtilities.h"
 
 namespace hopsan {
 
@@ -38,11 +37,6 @@ class SignalDisplay : public ComponentC
 {
 
     private:
-        //Node data pointers
-        double *mpND_in;
-
-        //Ports
-        Port *mpIn;
 
     public:
         static Component *Creator()
@@ -53,7 +47,7 @@ class SignalDisplay : public ComponentC
         void configure()
         {
             //Add ports to the component
-            mpIn = addReadPort("in", "NodeSignal");
+            addInputVariable("in","","",0.0);
         }
 
 

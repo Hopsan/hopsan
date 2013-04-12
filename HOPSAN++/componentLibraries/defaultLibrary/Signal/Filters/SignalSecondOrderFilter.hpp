@@ -62,8 +62,8 @@ namespace hopsan {
             mWden = 1000;
             mDden = 1.0;
 
-            mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
+            addInputVariable("in","","", 0.0, &mpND_in);
+            addOutputVariable("out", "","",0.0, &mpND_out);
 
             registerParameter("k", "Gain", "[-]", mK, Constant);
             registerParameter("omega_1", "Numerator break frequency", "[rad/s]", mWnum, Constant);
@@ -77,9 +77,6 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value, 0);
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
-
             double num[3];
             double den[3];
 
@@ -90,10 +87,10 @@ namespace hopsan {
             den[1] = 2.0*mDden/mWden;
             den[0] = 1.0;
 
-            mTF2.initialize(mTimestep, num, den, (*mpND_in), (*mpND_in), mMin, mMax);
+            mTF2.initialize(mTimestep, num, den, (*mpND_in), (*mpND_out), mMin, mMax);
 
             //Writes out the value for time "zero"
-            (*mpND_out) = (*mpND_in);
+            //(*mpND_out) = (*mpND_in);
         }
 
 

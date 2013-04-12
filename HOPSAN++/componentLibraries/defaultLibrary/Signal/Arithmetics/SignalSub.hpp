@@ -41,7 +41,7 @@ namespace hopsan {
         size_t nSumInputs, nSubInputs;
         std::vector<double *> mNDp_in_sum_vec, mNDp_in_sub_vec;
         double *mpND_out;
-        Port *mpMultiInSumPort, *mpMultiInSubPort, *mpOutPort;
+        Port *mpMultiInSumPort, *mpMultiInSubPort;
 
     public:
         static Component *Creator()
@@ -53,8 +53,7 @@ namespace hopsan {
         {
             mpMultiInSumPort = addReadMultiPort("insum", "NodeSignal", Port::NotRequired);
             mpMultiInSubPort = addReadMultiPort("insub", "NodeSignal", Port::NotRequired);
-            mpOutPort = addWritePort("out", "NodeSignal", Port::NotRequired);
-            disableStartValue(mpOutPort, NodeSignal::Value);
+            addOutputVariable("out", "sum(insum)-sum(insub)", "", &mpND_out);
         }
 
 
@@ -74,7 +73,6 @@ namespace hopsan {
             {
                 mNDp_in_sub_vec[i] = getSafeMultiPortNodeDataPtr(mpMultiInSubPort, i, NodeSignal::Value);
             }
-            mpND_out = getSafeNodeDataPtr(mpOutPort, NodeSignal::Value);
             simulateOneTimestep();
         }
 

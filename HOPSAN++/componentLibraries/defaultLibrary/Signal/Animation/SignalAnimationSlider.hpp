@@ -37,7 +37,6 @@ namespace hopsan {
     {
 
     private:
-        Port *mpOut;
 
     public:
         static Component *Creator()
@@ -47,7 +46,7 @@ namespace hopsan {
 
         void configure()
         {
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
+            addOutputVariable("out", "", "");
         }
 
 

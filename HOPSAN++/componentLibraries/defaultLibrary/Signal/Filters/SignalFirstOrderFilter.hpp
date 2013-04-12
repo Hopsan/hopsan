@@ -42,7 +42,6 @@ namespace hopsan {
         double wnum, wden, k;
         double min, max;
         double *mpND_in, *mpND_out;
-        Port *mpIn, *mpOut;
 
     public:
         static Component *Creator()
@@ -58,8 +57,8 @@ namespace hopsan {
             wnum = 1E+10;
             wden = 1000.0;
 
-            mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
+            addInputVariable("in","","",0.0,&mpND_in);
+            addOutputVariable("out", "Filtered value", "", 0.0, &mpND_out);
 
             registerParameter("k", "Gain", "[-]", k, Constant);
             registerParameter("omega_num", "Numerator break frequency", "[rad/s]", wnum, Constant);
@@ -71,9 +70,6 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value, 0);
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
-
             double num[2];
             double den[2];
 
@@ -82,9 +78,7 @@ namespace hopsan {
             den[1] = 1.0/wden;
             den[0] = 1.0;
 
-            mTF.initialize(mTimestep, num, den, (*mpND_in), (*mpND_in), min, max);
-
-            (*mpND_out) = (*mpND_in);
+            mTF.initialize(mTimestep, num, den, (*mpND_in), (*mpND_out), min, max);
         }
 
 

@@ -26,7 +26,6 @@
 #define SIGNALDUALROUTE_HPP_INCLUDED
 
 #include "ComponentEssentials.h"
-#include <vector>
 
 namespace hopsan {
 
@@ -42,7 +41,6 @@ namespace hopsan {
         double *mpND_in1;
         double *mpND_in2;
         double *mpND_out;
-        Port *mpRoute, *mpIn1, *mpIn2, *mpOut;
 
     public:
         static Component *Creator()
@@ -52,19 +50,16 @@ namespace hopsan {
 
         void configure()
         {
-            mpRoute = addReadPort("route", "NodeSignal", Port::Required);
-            mpIn1 = addReadPort("in1", "NodeSignal", Port::NotRequired);
-            mpIn2 = addReadPort("in2", "NodeSignal", Port::NotRequired);
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
+            addInputVariable("in1", "", "", 0, &mpND_in1);
+            addInputVariable("in2", "", "", 0, &mpND_in2);
+            addInputVariable("route", "Input selection", "", 0, &mpND_route);
+            addOutputVariable("out", "Selected input", "", &mpND_out);
         }
 
 
         void initialize()
         {
-            mpND_route  = getSafeNodeDataPtr(mpRoute,  NodeSignal::Value, 0);
-            mpND_in1  = getSafeNodeDataPtr(mpIn1,  NodeSignal::Value, 0);
-            mpND_in2  = getSafeNodeDataPtr(mpIn2,  NodeSignal::Value, 0);
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value, 0);
+
         }
 
 

@@ -52,19 +52,15 @@ namespace hopsan {
         void configure()
         {
             mTimeDelay = 1.0;
-
             registerParameter("deltat", "Time delay", "[s]", mTimeDelay, Constant);
 
-            mpIn = addReadPort("in", "NodeSignal");
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
+            addInputVariable("in", "", "", 0.0, &mpND_in);
+            addOutputVariable("out", "", "", &mpND_out);
         }
 
 
         void initialize()
         {
-            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value);
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
-
             mDelay.initialize(mTimeDelay, mTimestep, (*mpND_in));
             (*mpND_out) = (*mpND_in);
         }

@@ -39,7 +39,6 @@ namespace hopsan {
 
     private:
         double *mpND_in;
-        Port *mpIn;
 
     public:
         static Component *Creator()
@@ -49,14 +48,13 @@ namespace hopsan {
 
         void configure()
         {
-
-            mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
+            addInputVariable("in", "Stop simulation if >0.5", "", boolToDouble(false), &mpND_in);
         }
 
 
         void initialize()
         {
-            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value, boolToDouble(false));
+            // Nothing
         }
 
 

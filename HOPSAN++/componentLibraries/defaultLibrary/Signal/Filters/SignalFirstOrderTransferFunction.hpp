@@ -42,7 +42,6 @@ namespace hopsan {
         double mNum[2], mDen[2];
 
         double *mpND_in, *mpND_out;
-        Port *mpIn, *mpOut;
 
     public:
         static Component *Creator()
@@ -52,8 +51,8 @@ namespace hopsan {
 
         void configure()
         {
-            mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
+            addInputVariable("in", "","",0.0,&mpND_in);
+            addOutputVariable("out","Filtered value","",0.0,&mpND_out);
 
             mNum[0] = 1;
             mNum[1] = 1;
@@ -70,13 +69,10 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value, 0);
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
-
-            mTF.initialize(mTimestep, mNum, mDen, getStartValue(mpOut, NodeSignal::Value), getStartValue(mpOut, NodeSignal::Value));
+            mTF.initialize(mTimestep, mNum, mDen, *mpND_in, *mpND_out);
 
             //Writes out the value for time "zero"
-            (*mpND_out) = (*mpND_in);
+            //(*mpND_out) = (*mpND_in);
         }
 
 

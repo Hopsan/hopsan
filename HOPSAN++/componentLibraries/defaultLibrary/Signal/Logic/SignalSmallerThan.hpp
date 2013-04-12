@@ -38,9 +38,7 @@ namespace hopsan {
     {
 
     private:
-        double mLimit;
-        double *mpND_in, *mpND_out;
-        Port *mpIn, *mpOut;
+        double *mpND_in, *mpND_out, *mpLimit;
 
     public:
         static Component *Creator()
@@ -50,20 +48,14 @@ namespace hopsan {
 
         void configure()
         {
-            mLimit = 0.0;
-
-            mpIn = addReadPort("in", "NodeSignal");
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
-
-            registerParameter("x_limit", "Limit Value", "-", mLimit);
+            addInputVariable("in", "", "", 0.0, &mpND_in);
+            addInputVariable("x_limit", "Limit Value", "", 0.0, &mpLimit);
+            addOutputVariable("out", "in<x_limit", "", &mpND_out);
         }
 
 
         void initialize()
         {
-            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value);
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
-
             simulateOneTimestep();
         }
 
@@ -71,7 +63,7 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Smaller than equations
-            (*mpND_out) = boolToDouble( (*mpND_in) < mLimit );
+            (*mpND_out) = boolToDouble( (*mpND_in) < (*mpLimit) );
         }
     };
 }

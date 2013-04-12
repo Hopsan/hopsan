@@ -37,7 +37,6 @@ namespace hopsan {
     {
 
     private:
-        Port *mpIn;
         double max;
 
     public:
@@ -49,9 +48,8 @@ namespace hopsan {
         void configure()
         {
             max=1;
-
-            mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
-            registerParameter("max", "Upper limit", "[-]", max, Constant);
+            addInputVariable("in", "", "", 0.0);
+            registerParameter("max", "Upper limit", "", max, Constant);
         }
 
 

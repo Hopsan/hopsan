@@ -49,7 +49,7 @@ namespace hopsan {
         {
             addInputVariable("in1", "", "", 0, &mpND_in1);
             addInputVariable("in2", "", "", 0, &mpND_in2);
-            addOutputVariable("out", "The sum of the inputs", "", &mpND_out);
+            addOutputVariable("out", "in1+in2", "", &mpND_out);
         }
 
 

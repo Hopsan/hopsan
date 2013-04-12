@@ -41,7 +41,6 @@ namespace hopsan {
     {
 
     private:
-        Port *mpIn, *mpOut;
         double *mpND_in, *mpND_out;
 
         int mOutDataId;
@@ -56,12 +55,12 @@ namespace hopsan {
 
         void configure()
         {
-            mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
+            addInputVariable("in", "", "", 0.0, &mpND_in);
+            addOutputVariable("out", "", "", &mpND_out);
 
             mOutDataId=1;
             mDataCurveFileName = "FilePath";
-            registerParameter("filename", "Data file (abs. path or located at model path)", "", mDataCurveFileName);
+            registerParameter("filename", "Data file (absolute or relativ model path)", "", mDataCurveFileName);
             registerParameter("outid", "csv file value column index", "", mOutDataId);
 
             myDataCurve = 0;
@@ -80,9 +79,7 @@ namespace hopsan {
             myDataCurve = new CSVParser(success, findFilePath(mDataCurveFileName));
             if(!success)
             {
-                std::stringstream ss;
-                ss << "Unable to initialize CSV file: " << mDataCurveFileName << ", " << myDataCurve->getErrorString();
-                addErrorMessage(ss.str());
+                addErrorMessage("Unable to initialize CSV file: "+mDataCurveFileName+", "+myDataCurve->getErrorString());
                 stopSimulation();
             }
             else
@@ -113,16 +110,6 @@ namespace hopsan {
                     stopSimulation();
                 }
             }
-
-            if(success)
-            {
-                //                std::stringstream ss;
-                //                ss << mGain << "  " << myDataCurve->interpolate(mGain);
-                //                addInfoMessage(ss.str());
-
-                mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value, 0);
-                mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
-            }
         }
 
 
@@ -136,7 +123,6 @@ namespace hopsan {
 
         void finalize()
         {
-            //! @todo actually this is only needed in destructor to cleanup
             //Cleanup data curve
             if (myDataCurve!=0)
             {

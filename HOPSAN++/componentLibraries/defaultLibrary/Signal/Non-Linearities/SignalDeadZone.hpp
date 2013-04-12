@@ -31,10 +31,9 @@ namespace hopsan {
 
 
     private:
-        double mStartDead;
-        double mEndDead;
+        double *mpStartDead;
+        double *mpEndDead;
         double *mpND_in, *mpND_out;
-        Port *mpIn, *mpOut;
 
     public:
         static Component *Creator()
@@ -44,36 +43,32 @@ namespace hopsan {
 
         void configure()
         {
-            mStartDead = -1.0;
-            mEndDead = 1.0;
+            addInputVariable("in", "", "", 0.0, &mpND_in);
+            addOutputVariable("out", "", "", &mpND_out);
 
-            mpIn = addReadPort("in", "NodeSignal");
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
-
-            registerParameter("u_dstart", "Start of Dead Zone", "[-]", mStartDead);
-            registerParameter("u_dend", "End of Dead Zone", "[-]", mEndDead);
+            addInputVariable("u_dstart", "Start of Dead Zone", "[-]", -1.0, &mpStartDead);
+            addInputVariable("u_dend", "End of Dead Zone", "[-]", 1.0, &mpEndDead);
         }
 
         void initialize()
         {
-            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value);
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
+
         }
 
         void simulateOneTimestep()
         {
             //Deadzone equations
-            if ( (*mpND_in) < mStartDead)
+            if ( (*mpND_in) < (*mpStartDead))
             {
-                (*mpND_out) = (*mpND_in) - mStartDead;
+                (*mpND_out) = (*mpND_in) - (*mpStartDead);
             }
-            else if ( (*mpND_in) > mStartDead && (*mpND_in) < mEndDead)
+            else if ( (*mpND_in) > (*mpStartDead) && (*mpND_in) < (*mpEndDead))
             {
                 (*mpND_out) = 0;
             }
             else
             {
-                (*mpND_out) = (*mpND_in) - mEndDead;
+                (*mpND_out) = (*mpND_in) - (*mpEndDead);
             }
         }
     };
