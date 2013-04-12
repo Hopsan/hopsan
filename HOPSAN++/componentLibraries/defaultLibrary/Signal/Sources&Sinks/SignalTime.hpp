@@ -47,13 +47,12 @@ namespace hopsan {
 
         void configure()
         {
-            addOutputVariable("out", "Simulation time", "s");
+            addOutputVariable("out", "Simulation time", "s", &mpOut);
         }
 
 
         void initialize()
         {
-            mpOut = getSafeNodeDataPtr("out", NodeSignal::Value);
             simulateOneTimestep();
         }
 

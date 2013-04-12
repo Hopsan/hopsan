@@ -57,7 +57,6 @@ namespace hopsan {
         double *mpAmplitude;
         double *mpPhaseTOffset;
         double *mpOut;
-        Port *mpOutPort;
 
     public:
         static Component *Creator()
@@ -67,30 +66,24 @@ namespace hopsan {
 
         void configure()
         {
-            addInputVariable("t_start", "Start Time", "s", 0.0);
-            addInputVariable("f", "Frequencty", "Hz", 1.0);
-            addInputVariable("y_A", "Amplitude", "-", 1.0);
-            addInputVariable("y_offset", "(Phase) Offset", "s", 0.0);
+            addInputVariable("t_start", "Start Time", "s", 0.0, &mpStartTime);
+            addInputVariable("f", "Frequencty", "Hz", 1.0, &mpFrequency);
+            addInputVariable("y_A", "Amplitude", "-", 1.0, &mpAmplitude);
+            addInputVariable("y_offset", "(Phase) Offset", "s", 0.0, &mpPhaseTOffset);
 
-            mpOutPort = addOutputVariable("out", "Sinus wave output", "");
+            addOutputVariable("out", "Sinus wave output", "", &mpOut);
         }
 
 
         void initialize()
         {
-            mpOut = getSafeNodeDataPtr(mpOutPort, NodeSignal::Value);
-            mpStartTime = getSafeNodeDataPtr("t_start", NodeSignal::Value);
-            mpFrequency = getSafeNodeDataPtr("f", NodeSignal::Value);
-            mpAmplitude = getSafeNodeDataPtr("y_A", NodeSignal::Value);
-            mpPhaseTOffset = getSafeNodeDataPtr("y_offset", NodeSignal::Value);
-
             simulateOneTimestep();
         }
 
 
         void simulateOneTimestep()
         {
-            //Sinewave Equations
+            // Sinewave Equations
             if (mTime < (*mpStartTime))
             {
                 (*mpOut) = 0.0;     //Before start

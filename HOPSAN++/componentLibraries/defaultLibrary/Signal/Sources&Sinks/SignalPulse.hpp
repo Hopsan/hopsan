@@ -56,23 +56,17 @@ namespace hopsan {
 
         void configure()
         {
-            addInputVariable("y_0", "Base Value", "-", 0.0);
-            addInputVariable("t_start", "Start Time", "s", 1.0);
-            addInputVariable("t_end", "Stop Time", "s", 2.0);
-            addInputVariable("y_A", "Amplitude", "-", 1.0);
+            addInputVariable("y_0", "Base Value", "-", 0.0, &mpY0);
+            addInputVariable("t_start", "Start Time", "s", 1.0, &mpTstart);
+            addInputVariable("t_end", "Stop Time", "s", 2.0, &mpTend);
+            addInputVariable("y_A", "Amplitude", "-", 1.0, &mpYa);
 
-            addOutputVariable("out", "Pulse", "-");
+            addOutputVariable("out", "Pulse", "-", &mpOut);
         }
 
 
         void initialize()
         {
-            mpOut = getSafeNodeDataPtr("out", NodeSignal::Value);
-            mpY0 = getSafeNodeDataPtr("y_0", NodeSignal::Value);
-            mpYa = getSafeNodeDataPtr("y_A", NodeSignal::Value);
-            mpTstart = getSafeNodeDataPtr("t_start", NodeSignal::Value);
-            mpTend = getSafeNodeDataPtr("t_end", NodeSignal::Value);
-
             // Write initial value
             (*mpOut) = (*mpY0);
         }

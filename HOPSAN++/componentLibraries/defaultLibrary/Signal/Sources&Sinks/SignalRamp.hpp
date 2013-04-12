@@ -56,7 +56,6 @@ namespace hopsan {
         double *mpStartTime;
         double *mpStopTime;
         double *mpOut;
-        Port *mpOutPort;
 
     public:
         static Component *Creator()
@@ -66,23 +65,17 @@ namespace hopsan {
 
         void configure()
         {
-            addInputVariable("y_0", "Base Value", "[-]", 0.0);
-            addInputVariable("y_A", "Amplitude", "[-]", 1.0);
-            addInputVariable("t_start", "Start Time", "[s]", 1.0);
-            addInputVariable("t_end", "Stop Time", "[s]", 2.0);
+            addInputVariable("y_0", "Base Value", "[-]", 0.0, &mpBaseValue);
+            addInputVariable("y_A", "Amplitude", "[-]", 1.0, &mpAmplitude);
+            addInputVariable("t_start", "Start Time", "[s]", 1.0, &mpStartTime);
+            addInputVariable("t_end", "Stop Time", "[s]", 2.0, &mpStopTime);
 
-            mpOutPort = addOutputVariable("out", "Ramp output", "-");
+            addOutputVariable("out", "Ramp output", "-", &mpOut);
         }
 
 
         void initialize()
         {
-            mpOut = getSafeNodeDataPtr(mpOutPort, NodeSignal::Value);
-            mpBaseValue = getSafeNodeDataPtr("y_0", NodeSignal::Value);
-            mpAmplitude = getSafeNodeDataPtr("y_A", NodeSignal::Value);
-            mpStartTime = getSafeNodeDataPtr("t_start", NodeSignal::Value);
-            mpStopTime = getSafeNodeDataPtr("t_end", NodeSignal::Value);
-
             (*mpOut) = (*mpBaseValue);
         }
 
@@ -92,7 +85,7 @@ namespace hopsan {
             const double startT = (*mpStartTime);
             const double stopT = (*mpStopTime);
 
-                //Step Equations
+            // Step Equations
             if (mTime < startT)
             {
                 (*mpOut) = (*mpBaseValue);     //Before ramp

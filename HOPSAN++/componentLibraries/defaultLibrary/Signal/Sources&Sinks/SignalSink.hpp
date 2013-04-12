@@ -37,9 +37,6 @@ namespace hopsan {
     {
 
     private:
-        Port *mpIn;
-        Port *mpInRight;
-        Port *mpInBottom;
 
     public:
         static Component *Creator()
@@ -49,9 +46,9 @@ namespace hopsan {
 
         void configure()
         {
-            mpIn = addReadMultiPort("in", "NodeSignal", Port::NotRequired);
-            mpInRight = addReadMultiPort("in_right", "NodeSignal", Port::NotRequired);
-            mpInBottom = addReadPort("in_bottom", "NodeSignal", Port::NotRequired);
+            addReadMultiPort("in", "NodeSignal", Port::NotRequired);
+            addReadMultiPort("in_right", "NodeSignal", Port::NotRequired);
+            addReadPort("in_bottom", "NodeSignal", Port::NotRequired);
         }
 
 

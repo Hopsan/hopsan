@@ -25,7 +25,6 @@ namespace hopsan {
     private:
         WhiteGaussianNoise noise;
         double *mpOut, *mpStdDev;
-        Port *mpOutPort;
 
     public:
         static Component *Creator()
@@ -35,15 +34,13 @@ namespace hopsan {
 
         void configure()
         {
-            addInputVariable("std_dev", "Amplitude Variance", "-", 1.0);
-            mpOutPort = addOutputVariable("out", "", "", 0.0);
+            addInputVariable("std_dev", "Amplitude Variance", "-", 1.0, &mpStdDev);
+            addOutputVariable("out", "", "", 0.0, &mpOut);
         }
 
 
         void initialize()
         {
-            mpStdDev = getSafeNodeDataPtr("std_dev", NodeSignal::Value);
-            mpOut = getSafeNodeDataPtr(mpOutPort, NodeSignal::Value);
             simulateOneTimestep();
         }
 

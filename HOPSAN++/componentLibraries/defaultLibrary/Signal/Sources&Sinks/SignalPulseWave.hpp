@@ -53,25 +53,18 @@ namespace hopsan {
 
         void configure()
         {
-            addInputVariable("y_0", "Base Value", "-", 0.0);
-            addInputVariable("t_start", "Start Time", "s", 0.0);
-            addInputVariable("dT", "Time Period", "s", 1.0);
-            addInputVariable("D", "Duty Cycle, (ratio 0<=x<=1)", "-", 0.5);
-            addInputVariable("y_A", "Amplitude", "-", 1.0);
+            addInputVariable("y_0", "Base Value", "-", 0.0, &mpBaseValue);
+            addInputVariable("t_start", "Start Time", "s", 0.0, &mpStartTime);
+            addInputVariable("dT", "Time Period", "s", 1.0, &mpPeriodT);
+            addInputVariable("D", "Duty Cycle, (ratio 0<=x<=1)", "-", 0.5, &mpDutyCycle);
+            addInputVariable("y_A", "Amplitude", "-", 1.0, &mpAmplitude);
 
-            addOutputVariable("out", "PulseWave", "");
+            addOutputVariable("out", "PulseWave", "", &mpOut);
         }
 
 
         void initialize()
         {
-            mpBaseValue = getSafeNodeDataPtr("y_0", NodeSignal::Value);
-            mpStartTime = getSafeNodeDataPtr("t_start", NodeSignal::Value);
-            mpPeriodT = getSafeNodeDataPtr("dT", NodeSignal::Value);
-            mpDutyCycle = getSafeNodeDataPtr("D", NodeSignal::Value);
-            mpAmplitude = getSafeNodeDataPtr("y_A", NodeSignal::Value);
-            mpOut = getSafeNodeDataPtr("out", NodeSignal::Value);
-
             (*mpOut) = (*mpBaseValue);
         }
 

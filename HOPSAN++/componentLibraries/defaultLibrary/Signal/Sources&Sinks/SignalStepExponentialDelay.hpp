@@ -43,7 +43,6 @@ namespace hopsan {
         double *mpStepTime;
         double *mpTimeConstant;
         double *mpOut;
-        Port *mpOutPort;
 
     public:
         static Component *Creator()
@@ -53,30 +52,24 @@ namespace hopsan {
 
         void configure()
         {
-            addInputVariable("y_0", "Base Value", "-", 0.0);
-            addInputVariable("y_A", "Amplitude", "-", 1.0);
-            addInputVariable("tao", "Time Constant of Delay", "-", 1.0);
-            addInputVariable("t_step", "Step Time", "-", 1.0);
+            addInputVariable("y_0", "Base Value", "-", 0.0, &mpBaseValue);
+            addInputVariable("y_A", "Amplitude", "-", 1.0, &mpAmplitude);
+            addInputVariable("tao", "Time Constant of Delay", "-", 1.0, &mpTimeConstant);
+            addInputVariable("t_step", "Step Time", "-", 1.0, &mpStepTime);
 
-            mpOutPort = addOutputVariable("out", "", "");
+            addOutputVariable("out", "", "", &mpOut);
         }
 
 
         void initialize()
         {
-            mpOut = getSafeNodeDataPtr(mpOutPort, NodeSignal::Value);
-            mpBaseValue = getSafeNodeDataPtr("y_0", NodeSignal::Value);
-            mpAmplitude = getSafeNodeDataPtr("y_A", NodeSignal::Value);
-            mpTimeConstant = getSafeNodeDataPtr("tao", NodeSignal::Value);
-            mpStepTime = getSafeNodeDataPtr("t_step", NodeSignal::Value);
-
             (*mpOut) = (*mpBaseValue);
         }
 
 
         void simulateOneTimestep()
         {
-            //StepExponentialDelay Equations
+            // StepExponentialDelay Equations
             if (mTime < (*mpStepTime))
             {
                 (*mpOut) = (*mpBaseValue);     //Before Step

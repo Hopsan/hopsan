@@ -37,7 +37,6 @@ namespace hopsan {
     {
 
     private:
-        double mValue;
         double *mpOut;
 
     public:
@@ -48,22 +47,17 @@ namespace hopsan {
 
         void configure()
         {
-            addOutputVariable("y", "Constant value", "-", 1.0);
+            addOutputVariable("y", "Constant value", "-", 1.0, &mpOut);
         }
 
 
         void initialize()
         {
-            mpOut = getSafeNodeDataPtr("y", NodeSignal::Value);
-            //Initialize value from the node
-            mValue = *mpOut;
+            // Nothing to do
         }
-
 
         void simulateOneTimestep()
         {
-           (*mpOut) = mValue;          //Temporary RT solution
-
             //Nothing to do (only one write port can exist in the node, so no one else shall write to the value)
         }
     };

@@ -36,15 +36,8 @@ namespace hopsan {
 //!
 class SignalStaircase : public ComponentSignal
 {
-
     private:
-        double *mpStartT, *mpStepHeight, *mpStepWidth;
-
-        //Node data pointers
-        double *mpOut;
-
-        //Ports
-        Port *mpOutPort;
+        double *mpStartT, *mpStepHeight, *mpStepWidth, *mpOut;
 
     public:
         static Component *Creator()
@@ -55,22 +48,18 @@ class SignalStaircase : public ComponentSignal
         void configure()
         {
             // Register changable parameters to the HOPSAN++ core
-            addInputVariable("T_start", "Start Time", "s", 0.0);
-            addInputVariable("H_step", "Step Height", "-", 1.0);
-            addInputVariable("W_step", "Step Width", "s", 1.0);
+            addInputVariable("T_start", "Start Time", "s", 0.0, &mpStartT);
+            addInputVariable("H_step", "Step Height", "-", 1.0, &mpStepHeight);
+            addInputVariable("W_step", "Step Width", "s", 1.0, &mpStepWidth);
 
             // Add ports to the component, (the defaulvalue will be the base level and is changable as parameter)
-            mpOutPort = addOutputVariable("out", "Stair case output", "", 0.0);
+            addOutputVariable("out", "Stair case output", "", 0.0, &mpOut);
         }
 
 
         void initialize()
         {
-            mpStartT = getSafeNodeDataPtr("T_start", NodeSignal::Value);
-            mpStepHeight = getSafeNodeDataPtr("H_step", NodeSignal::Value);
-            mpStepWidth = getSafeNodeDataPtr("W_step", NodeSignal::Value);
-
-            mpOut = getSafeNodeDataPtr(mpOutPort, NodeSignal::Value);
+            // No startvale calculation, value from startvalue in outpor will be used
         }
 
         void simulateOneTimestep()
