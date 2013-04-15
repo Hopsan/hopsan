@@ -39,9 +39,9 @@ namespace hopsan {
     {
 
     private:
-        double mZc;
-        double mAlpha;
-        double mCapacitance;
+        double Zc;
+        double *mpAlpha;
+        double capacitance;
 
         std::vector<double*> mvpN_uel, mvpN_iel, mvpN_cel, mvpN_Zcel;
         std::vector<double> mvp_C0;
@@ -56,17 +56,9 @@ namespace hopsan {
 
         void configure()
         {
-            //Set member attributes
-            mCapacitance   = 0.0001;
-            mAlpha         = 0.3;
-
-            //Add ports to the component
             mpPel1 = addPowerMultiPort("Pel1", "NodeElectric");
-
-            //Register changable parameters to the HOPSAN++ core
-            registerParameter("Capacitance", "Capacitance", "[Fa]", mCapacitance);
-            registerParameter("alpha", "Low pass coeficient to dampen standing delayline waves", "[-]",  mAlpha);
-
+            addConstant("Capacitance", "Capacitance", "[Fa]", 0.0001, capacitance);
+            addInputVariable("alpha", "Low pass coeficient to dampen standing delayline waves", "[-]", 0.3, &mpAlpha);
             setStartValue(mpPel1, NodeElectric::Current, 0.0);
             setStartValue(mpPel1, NodeElectric::Voltage, 12);
         }
@@ -74,6 +66,9 @@ namespace hopsan {
 
         void initialize()
         {
+            double alpha;
+            alpha = (*mpAlpha);
+
             mNumPorts = mpPel1->getNumPorts();
 
             mvpN_uel.resize(mNumPorts);
@@ -82,7 +77,7 @@ namespace hopsan {
             mvpN_Zcel.resize(mNumPorts);
             mvp_C0.resize(mNumPorts);
 
-            mZc = mNumPorts*mTimestep/(2.0*mCapacitance)/(1.0-mAlpha);
+            Zc = mNumPorts*mTimestep/(2.0*capacitance)/(1.0-alpha);
 
             for (size_t i=0; i<mNumPorts; ++i)
             {
@@ -94,27 +89,30 @@ namespace hopsan {
                 *mvpN_uel[i] = getStartValue(mpPel1, NodeElectric::Voltage);
                 *mvpN_iel[i] = getStartValue(mpPel1, NodeElectric::Current)/mNumPorts;
                 *mvpN_cel[i] = getStartValue(mpPel1, NodeElectric::Voltage);
-                *mvpN_Zcel[i] = mZc;
+                *mvpN_Zcel[i] = Zc;
             }
         }
 
 
         void simulateOneTimestep()
         {
+            double alpha;
+            alpha = (*mpAlpha);
+
             double cTot = 0.0;
             double uAvg;
 
             for (size_t i=0; i<mNumPorts; ++i)
             {
-                cTot += (*mvpN_cel[i]) + 2.0*mZc*(*mvpN_iel[i]);
+                cTot += (*mvpN_cel[i]) + 2.0*Zc*(*mvpN_iel[i]);
             }
             uAvg = cTot/double(mNumPorts);
 
             for (size_t i=0; i<mNumPorts; ++i)
             {
-                mvp_C0[i] = uAvg*2.0-(*mvpN_cel[i]) - 2.0*mZc*(*mvpN_iel[i]);
-                (*mvpN_cel[i]) = mAlpha*(*mvpN_cel[i]) + (1.0-mAlpha)*mvp_C0[i];
-                (*mvpN_Zcel[i]) = mZc;
+                mvp_C0[i] = uAvg*2.0-(*mvpN_cel[i]) - 2.0*Zc*(*mvpN_iel[i]);
+                (*mvpN_cel[i]) = alpha*(*mvpN_cel[i]) + (1.0-alpha)*mvp_C0[i];
+                (*mvpN_Zcel[i]) = Zc;
             }
         }
 

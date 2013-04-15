@@ -28,15 +28,12 @@ public:
      void configure()
      {
         mpIn=addReadPort("Pel1","NodeElectric");
-        mpOut=addWritePort("Puout","NodeSignal", Port::NotRequired);
-        disableStartValue(mpOut,NodeSignal::Value);
+        addOutputVariable("Puout","Voltage","V", 0.0, &mpNDout);
      }
 
     void initialize()
      {
         mpNDin = getSafeNodeDataPtr(mpIn,NodeElectric::Voltage);
-        mpNDout = getSafeNodeDataPtr(mpOut,NodeSignal::Value);
-        mpOut->setSignalNodeUnitAndDescription("V", "Voltage");
         simulateOneTimestep();
 
      }

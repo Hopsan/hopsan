@@ -16,7 +16,6 @@ class ElectricIsensor : public ComponentSignal
 {
 private:
      Port *mpIn;
-     Port *mpOut;
      double *mpNDin, *mpNDout;
 
 public:
@@ -28,15 +27,12 @@ public:
      void configure()
      {
         mpIn=addReadPort("Pel1","NodeElectric");
-        mpOut=addWritePort("Piout","NodeSignal", Port::NotRequired);
-        disableStartValue(mpOut, NodeSignal::Value);
+        addOutputVariable("Piout","Current","A",0.0,&mpNDout);
      }
 
      void initialize()
      {
          mpNDin=getSafeNodeDataPtr(mpIn, NodeElectric::Current);
-         mpNDout=getSafeNodeDataPtr(mpOut, NodeSignal::Value);
-         mpOut->setSignalNodeUnitAndDescription("A", "Current");
          simulateOneTimestep();
      }
 
