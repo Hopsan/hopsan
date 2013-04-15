@@ -349,24 +349,28 @@ void Component::updateDynamicParameterValues()
     }
 }
 
-void Component::addConstant(const string name, const string description, const string unit, double &rValue)
+void Component::addConstant(const string name, const string description, const string unit, const double defaultValue, double &rData)
 {
-    registerParameter(name, description, unit, rValue, Constant);
+    rData = defaultValue;
+    registerParameter(name, description, unit, rData, Constant);
 }
 
-void Component::addConstant(const string name, const string description, const string unit, int &rValue)
+void Component::addConstant(const string name, const string description, const string unit, const int defaultValue, int &rData)
 {
-    registerParameter(name, description, unit, rValue);
+    rData = defaultValue;
+    registerParameter(name, description, unit, rData);
 }
 
-void Component::addConstant(const string name, const string description, const string unit, string &rValue)
+void Component::addConstant(const string name, const string description, const string unit, const char* defaultValue, std::string &rData)
 {
-    registerParameter(name, description, unit, rValue);
+    rData = defaultValue;
+    registerParameter(name, description, unit, rData);
 }
 
-void Component::addConstant(const string name, const string description, const string unit, bool &rValue)
+void Component::addConstant(const string name, const string description, const string unit, const bool defaultValue, bool &rData)
 {
-    registerParameter(name, description, unit, rValue);
+    rData = defaultValue;
+    registerParameter(name, description, unit, rData);
 }
 
 

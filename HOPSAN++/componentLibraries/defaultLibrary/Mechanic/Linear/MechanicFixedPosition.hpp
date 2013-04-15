@@ -46,10 +46,7 @@ namespace hopsan {
         void configure()
         {
             mpPm1 = addPowerPort("Pm1", "NodeMechanic");
-
-            me = 1;
-
-            registerParameter("m_e", "Equivalent Mass", "[kg]", me);
+            addConstant("m_e", "Equivalent Mass", "[kg]", 1, me);
         }
 
         void initialize()

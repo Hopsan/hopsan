@@ -106,10 +106,10 @@ public:
     void initializeDynamicParameters();
     void updateDynamicParameterValues();
 
-    void addConstant(const std::string name, const std::string description, const std::string unit, double &rValue);
-    void addConstant(const std::string name, const std::string description, const std::string unit, int &rValue);
-    void addConstant(const std::string name, const std::string description, const std::string unit, std::string &rValue);
-    void addConstant(const std::string name, const std::string description, const std::string unit, bool &rValue);
+    void addConstant(const std::string name, const std::string description, const std::string unit, const double defaultValue, double &rData);
+    void addConstant(const std::string name, const std::string description, const std::string unit, const int defaultValue, int &rData);
+    void addConstant(const std::string name, const std::string description, const std::string unit, const char* defaultValue, std::string &rData);
+    void addConstant(const std::string name, const std::string description, const std::string unit, const bool defaultValue, bool &rData);
 
     void registerParameter(const std::string name, const std::string description, const std::string unit, double &rValue, const ParamDynConstEnumT dynconst=Dynamic);
     void registerParameter(const std::string name, const std::string description, const std::string unit, int &rValue);

@@ -38,7 +38,6 @@ namespace hopsan {
     {
     private:
         double *mpND_f, *mpND_out;
-        Port *mpP1, *mpOut;
 
     public:
         static Component *Creator()
@@ -49,15 +48,14 @@ namespace hopsan {
         void configure()
         {
 
-            mpP1 = addReadPort("P1", "NodeMechanic", Port::NotRequired);
-            mpOut = addOutputVariable("out", "Force", "N");
+            addReadPort("P1", "NodeMechanic", Port::NotRequired);
+            addOutputVariable("out", "Force", "N", &mpND_out);
         }
 
 
         void initialize()
         {
-            mpND_f = getSafeNodeDataPtr(mpP1, NodeMechanic::Force);
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
+            mpND_f = getSafeNodeDataPtr("P1", NodeMechanic::Force);
             simulateOneTimestep(); //Set initial ouput node value
         }
 

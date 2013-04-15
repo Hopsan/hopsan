@@ -45,7 +45,7 @@ namespace hopsan {
 
         int mOutDataId;
         std::string mDataCurveFileName;
-        CSVParser *myDataCurve;
+        CSVParser *mpDataCurve;
 
     public:
         static Component *Creator()
@@ -58,50 +58,48 @@ namespace hopsan {
             addInputVariable("in", "", "", 0.0, &mpND_in);
             addOutputVariable("out", "", "", &mpND_out);
 
-            mOutDataId=1;
-            mDataCurveFileName = "FilePath";
-            addConstant("filename", "Data file (absolute or relativ model path)", "", mDataCurveFileName);
-            addConstant("outid", "csv file value column index", "", mOutDataId);
+            addConstant("filename", "Data file (absolute or relativ model path)", "", "FilePath", mDataCurveFileName);
+            addConstant("outid", "csv file value column index", "", 1, mOutDataId);
 
-            myDataCurve = 0;
+            mpDataCurve = 0;
         }
 
 
         void initialize()
         {
             bool success=false;
-            if (myDataCurve!=0)
+            if (mpDataCurve!=0)
             {
-                delete myDataCurve;
-                myDataCurve=0;
+                delete mpDataCurve;
+                mpDataCurve=0;
             }
 
-            myDataCurve = new CSVParser(success, findFilePath(mDataCurveFileName));
+            mpDataCurve = new CSVParser(success, findFilePath(mDataCurveFileName));
             if(!success)
             {
-                addErrorMessage("Unable to initialize CSV file: "+mDataCurveFileName+", "+myDataCurve->getErrorString());
+                addErrorMessage("Unable to initialize CSV file: "+mDataCurveFileName+", "+mpDataCurve->getErrorString());
                 stopSimulation();
             }
             else
             {
                 // Make sure that selected data vector is in range
-                if (mOutDataId >= int(myDataCurve->getNumDataCols()))
+                if (mOutDataId >= int(mpDataCurve->getNumDataCols()))
                 {
                     std::stringstream ss;
                     ss << "outid:" << mOutDataId << " is out of range, limiting to: ";
-                    mOutDataId = int(myDataCurve->getNumDataCols())-1;
+                    mOutDataId = int(mpDataCurve->getNumDataCols())-1;
                     ss << mOutDataId;
                     addWarningMessage(ss.str());
                 }
 
 
-                if (myDataCurve->getIncreasingOrDecresing(0) != 1)
+                if (mpDataCurve->getIncreasingOrDecresing(0) != 1)
                 {
-                    myDataCurve->sortIncreasing(0);
-                    myDataCurve->calcIncreasingOrDecreasing();
+                    mpDataCurve->sortIncreasing(0);
+                    mpDataCurve->calcIncreasingOrDecreasing();
                 }
 
-                success = (myDataCurve->getIncreasingOrDecresing(0) == 1);
+                success = (mpDataCurve->getIncreasingOrDecresing(0) == 1);
                 if(!success)
                 {
                     std::stringstream ss;
@@ -118,16 +116,16 @@ namespace hopsan {
 //            (*mpND_out) = myDataCurve->interpolate_old(*mpND_in, 1);
 //            (*mpND_out) = myDataCurve->interpolate(*mpND_in, 1);
 //            (*mpND_out) = myDataCurve->interpolateInc(*mpND_in, 1);
-            (*mpND_out) = myDataCurve->interpolate(*mpND_in, mOutDataId);
+            (*mpND_out) = mpDataCurve->interpolate(*mpND_in, mOutDataId);
         }
 
         void finalize()
         {
             //Cleanup data curve
-            if (myDataCurve!=0)
+            if (mpDataCurve!=0)
             {
-                delete myDataCurve;
-                myDataCurve=0;
+                delete mpDataCurve;
+                mpDataCurve=0;
             }
         }
     };
