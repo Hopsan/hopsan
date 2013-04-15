@@ -39,7 +39,8 @@ namespace hopsan {
     {
 
     private:
-        double gearRatio, J, B, k;
+        double *mpGearRatio, *mpJ, *mpB;
+        double k;
         double num[3];
         double den[3];
         SecondOrderTransferFunction mFilter;
@@ -56,27 +57,23 @@ namespace hopsan {
 
         void configure()
         {
-            //Set member attributes
-            gearRatio = 1;
-            J = 1.0;
-            B = 10;
-            k = 0.0;
-
-            //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeMechanic");
             mpP2 = addPowerPort("P2", "NodeMechanicRotational");
 
-            //Register changable parameters to the HOPSAN++ core
-            registerParameter("omega", "Gear ratio", "[m/rad]", gearRatio);
-            registerParameter("J", "Moment of Inertia", "[kgm^2]", J);
-            registerParameter("B", "Viscous Friction", "[Nms/rad]", B);
-            registerParameter("k", "Spring Coefficient", "[Nm/rad]", k);
+            addInputVariable("omega", "Gear ratio", "[m/rad]", 1.0, &mpGearRatio);
+            addInputVariable("J", "Moment of Inertia", "[kgm^2]", 1.0, &mpJ);
+            addInputVariable("B", "Viscous Friction", "[Nms/rad]", 10, &mpB);
+
+            addConstant("k", "Spring Coefficient", "[Nm/rad]", 0.0, k);
         }
 
 
         void initialize()
         {
-           // double f1, x1, v1;
+            double gearRatio, J, B;
+            gearRatio = (*mpGearRatio);
+            J = (*mpJ);
+            B = (*mpB);
 
             mpND_f1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Force);
             mpND_x1 = getSafeNodeDataPtr(mpP1, NodeMechanic::Position);
@@ -90,10 +87,6 @@ namespace hopsan {
             mpND_w2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::AngularVelocity);
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::WaveVariable);
             mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::CharImpedance);
-
-           // f1 = (*mpND_f1);
-           // x1 = (*mpND_x1);
-           // v1 = (*mpND_v1);
 
             num[0] = 0.0;
             num[1] = 1.0;
@@ -112,12 +105,16 @@ namespace hopsan {
         {
             double f1, x1, v1, c1, Zx1;
             double t2, a2, w2, c2, Zx2;
+            double gearRatio, J, B;
 
             //Get variable values from nodes
             c1  = (*mpND_c1)*gearRatio;
             Zx1 = (*mpND_Zx1)*pow(gearRatio, 2.0);
             c2  = (*mpND_c2);
             Zx2 = (*mpND_Zx2);
+            gearRatio = (*mpGearRatio);
+            J = (*mpJ);
+            B = (*mpB);
 
             //Mass equations
             den[1] = B+Zx1+Zx2;

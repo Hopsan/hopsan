@@ -38,9 +38,8 @@ namespace hopsan {
     {
 
     private:
-        double w;
-        double signal, t, a, c, Zx;
-        double *mpND_signal, *mpND_t, *mpND_a, *mpND_w, *mpND_c, *mpND_Zx;
+        double *mpW;
+        double *mpND_t, *mpND_a, *mpND_w, *mpND_c, *mpND_Zx;
         Integrator mInt;
         Port *mpIn, *mpOut;
 
@@ -52,46 +51,40 @@ namespace hopsan {
 
         void configure()
         {
-            //Set member attributes
-            w = 0.0;
-
-            //Add ports to the component
             mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
             mpOut = addPowerPort("out", "NodeMechanicRotational");
-
-            //Register changable parameters to the HOPSAN++ core
-            registerParameter("omega", "Generated angular velocity", "[rad/s]", w);
+            addInputVariable("omega", "Generated angular velocity", "[rad/s]", 0.0, &mpW);
         }
 
 
         void initialize()
         {
-            mpND_signal = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, w);
             mpND_t = getSafeNodeDataPtr(mpOut, NodeMechanicRotational::Torque);
             mpND_a = getSafeNodeDataPtr(mpOut, NodeMechanicRotational::Angle);
             mpND_w = getSafeNodeDataPtr(mpOut, NodeMechanicRotational::AngularVelocity);
             mpND_c = getSafeNodeDataPtr(mpOut, NodeMechanicRotational::WaveVariable);
             mpND_Zx = getSafeNodeDataPtr(mpOut, NodeMechanicRotational::CharImpedance);
 
-            mInt.initialize(mTimestep, (*mpND_signal), 0.0);
+            mInt.initialize(mTimestep, (*mpW), 0.0);
         }
 
 
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            signal = (*mpND_signal);
+            double w, c, Zx, a, t;
+            w = (*mpW);
             c = (*mpND_c);
             Zx = (*mpND_Zx);
 
             //Spring equations
-            a = mInt.update(signal);
-            t = c + Zx*signal;
+            a = mInt.update(w);
+            t = c + Zx*w;
 
             //Write values to nodes
             (*mpND_t) = t;
             (*mpND_a) = a;
-            (*mpND_w) = signal;
+            (*mpND_w) = w;
         }
     };
 }

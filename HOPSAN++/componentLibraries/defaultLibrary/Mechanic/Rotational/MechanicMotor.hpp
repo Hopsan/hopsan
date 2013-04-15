@@ -38,6 +38,7 @@ namespace hopsan {
     {
 
     private:
+        double *mpWref, *mpKp, *mpKi, *mpKd;
         Port *mpP1;
 
         double *mpND_t1, *mpND_a1, *mpND_w1, *mpND_c1, *mpND_Zc1;
@@ -45,7 +46,7 @@ namespace hopsan {
         Integrator mIntegrator;
         FirstOrderTransferFunction mDerivator;
 
-        double wref, kp, ki, kd, Wmax, Tmax, wmax;
+        double Wmax, Tmax, wmax;
 
     public:
         static Component *Creator()
@@ -55,29 +56,20 @@ namespace hopsan {
 
         void configure()
         {
-            kp = 10;
-            ki = 100;
-            kd = 100;
-            Wmax = 1000;
-            Tmax = 100;
-            wmax = 10;
-
-            //Register changable parameters to the HOPSAN++ core
-            registerParameter("omega_ref", "Desired Angular Velocity", "[-]", wref);
-            registerParameter("K_p", "Proportional Controller Gain", "[-]", kp);
-            registerParameter("K_i", "Integrating Controller Gain", "[-]", ki);
-            registerParameter("K_d", "Derivating Controller Gain", "[-]", kd);
-//            registerParameter("W_max", "Maximum Power", "[W]", Wmax);
-//            registerParameter("T_max", "Maximum Torque", "[Nm]", Tmax);
-//            registerParameter("omega_max", "Maximum Angular Velocity", "[rad/s]", wmax);
-
+            addInputVariable("omega_ref", "Desired Angular Velocity", "[-]", 0.0, &mpWref);
+            addInputVariable("K_p", "Proportional Controller Gain", "[-]", 10.0, &mpKp);
+            addInputVariable("K_i", "Integrating Controller Gain", "[-]", 100.0, &mpKi);
+            addInputVariable("K_d", "Derivating Controller Gain", "[-]", 100.0, &mpKd);
             mpP1 = addPowerPort("P1", "NodeMechanicRotational");
-
         }
 
 
         void initialize()
         {
+            Wmax = 1000;
+            Tmax = 100;
+            wmax = 10;
+
             mpND_t1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::Torque);
             mpND_a1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::Angle);
             mpND_w1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::AngularVelocity);
@@ -100,18 +92,23 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            double w1 = -(*mpND_w1);
+            double wref, kp, ki, kd, w1, werror, x_p, x_i, x_d, t, c1, Zc1;
+            wref = (*mpWref);
+            kp = (*mpKp);
+            ki = (*mpKi);
+            kd = (*mpKd);
+            w1 = -(*mpND_w1);
 
             //PI-Controller
-            double werror = wref-w1;
-            double x_p = werror*kp;
-            double x_i = ki*mIntegrator.update(werror);
-            double x_d = kd*mDerivator.update(werror);
-            double t = x_p+x_i+x_d;
+            werror = wref-w1;
+            x_p = werror*kp;
+            x_i = ki*mIntegrator.update(werror);
+            x_d = kd*mDerivator.update(werror);
+            t = x_p+x_i+x_d;
 
             //Force source
-            double c1 = t;
-            double Zc1 = 0.0;
+            c1 = t;
+            Zc1 = 0.0;
 
             //Write new values to nodes
             (*mpND_c1) = c1;

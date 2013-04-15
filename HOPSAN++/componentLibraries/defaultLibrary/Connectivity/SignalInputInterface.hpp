@@ -36,10 +36,6 @@ namespace hopsan {
     class SignalInputInterface : public ComponentSignal
     {
 
-    private:
-        Port *mpOut;
-  //      double *mpND_out;
-
     public:
         static Component *Creator()
         {
@@ -48,20 +44,11 @@ namespace hopsan {
 
         void configure()
         {
-            mpOut = addWritePort("out", "NodeSignal");
+            addOutputVariable("out", "", "");
         }
 
-
-        void initialize()
-        {
-            //Interfacing is handled through readnode/writenode from the RT wrapper file
-        }
-
-
-        void simulateOneTimestep()
-        {
-            //Interfacing is handled through readnode/writenode from the RT wrapper file
-        }
+        void initialize() {}
+        void simulateOneTimestep() {}
     };
 }
 
