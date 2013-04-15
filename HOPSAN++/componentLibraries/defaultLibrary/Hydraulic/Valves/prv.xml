@@ -12,7 +12,6 @@
         <ports>
             <port x="0.4762" y="0" a="270" name="P1"/>
             <port x="0.4762" y="1" a="90" name="P2"/>
-            <port x="1" y="0.5" a="0" name="in"/>
             <port x="1" y="0.25" a="0" name="xv"/>
         </ports>
         <animation>

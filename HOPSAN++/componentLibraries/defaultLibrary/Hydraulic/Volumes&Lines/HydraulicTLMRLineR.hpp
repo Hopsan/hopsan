@@ -39,11 +39,8 @@ namespace hopsan {
     {
 
     private:
+        double *mpAlpha, *mpZc, *mpR1, *mpR2;
         double mTimeDelay;
-        double mAlpha;
-        double mZc;
-        double mR1;
-        double mR2;
 
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
 
@@ -59,23 +56,15 @@ namespace hopsan {
 
         void configure()
         {
-            //Set member attributes
-            mTimeDelay     = 0.1;
-            mZc            = 1.0e9;
-            mAlpha         = 0.0;
-            mR1            = 0.5;
-            mR2            = 0.5;
-
-            //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
 
-            //Register changable parameters to the HOPSAN++ core
-            registerParameter("deltat", "Time delay", "[s]",   mTimeDelay);
-            registerParameter("alpha", "Low pass coefficient", "[-]", mAlpha);
-            registerParameter("Z_c", "Characteristic Impedance", "[Ns/m^5]",  mZc);
-            registerParameter("R_1", "Resistance 1", "[Ns/m^5]",  mR1);
-            registerParameter("R_2", "Resistance 2", "[Ns/m^5]",  mR2);
+            addInputVariable("alpha", "Low pass coefficient", "[-]", 0.0, &mpAlpha);
+            addInputVariable("Z_c", "Characteristic Impedance", "[Ns/m^5]",  1.0e9, &mpZc);
+            addInputVariable("R_1", "Resistance 1", "[Ns/m^5]",  0.5, &mpR1);
+            addInputVariable("R_2", "Resistance 2", "[Ns/m^5]",  0.5, &mpR2);
+
+            addConstant("deltat", "Time delay", "[s]",   0.1, mTimeDelay);
 
             setStartValue(mpP1, NodeHydraulic::Flow, 0.0);
             setStartValue(mpP1, NodeHydraulic::Pressure, 1.0e5);
@@ -96,11 +85,16 @@ namespace hopsan {
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
             mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
 
+            double Zc, r1, r2;
+            Zc = (*mpZc);
+            r1 = (*mpR1);
+            r2 = (*mpR2);
+
             //Write to nodes
-            (*mpND_c1) = getStartValue(mpP1,NodeHydraulic::Pressure)+(mZc+mR1)*getStartValue(mpP1,NodeHydraulic::Flow);
-            (*mpND_Zc1) = mZc+mR1;
-            (*mpND_c2) = getStartValue(mpP2,NodeHydraulic::Pressure)+(mZc+mR2)*getStartValue(mpP2,NodeHydraulic::Flow);
-            (*mpND_Zc2) = mZc+mR2;
+            (*mpND_c1) = getStartValue(mpP1,NodeHydraulic::Pressure)+(Zc+r1)*getStartValue(mpP1,NodeHydraulic::Flow);
+            (*mpND_Zc1) = Zc+r1;
+            (*mpND_c2) = getStartValue(mpP2,NodeHydraulic::Pressure)+(Zc+r2)*getStartValue(mpP2,NodeHydraulic::Flow);
+            (*mpND_Zc2) = Zc+r2;
 
             if (mTimeDelay-mTimestep < 0)
             {
@@ -119,7 +113,7 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Declare local variables
-            double p1, q1, c1, p2, q2, c2, c10, c20;
+            double p1, q1, c1, p2, q2, c2, c10, c20, alpha, Zc, r1, r2;
 
             //Read variables from nodes
             p1 = (*mpND_p1);
@@ -128,18 +122,22 @@ namespace hopsan {
             q2 = (*mpND_q2);
             c1 = (*mpND_c1);
             c2 = (*mpND_c2);
+            alpha = (*mpAlpha);
+            Zc = (*mpZc);
+            r1 = (*mpR1);
+            r2 = (*mpR2);
 
             //Delay Line equations
-            c10 = p2 + (mZc+mR2) * q2;
-            c20 = p1 + (mZc+mR1) * q1;
-            c1  = mAlpha*c1 + (1.0-mAlpha)*c10;
-            c2  = mAlpha*c2 + (1.0-mAlpha)*c20;
+            c10 = p2 + (Zc+r2) * q2;
+            c20 = p1 + (Zc+r1) * q1;
+            c1  = alpha*c1 + (1.0-alpha)*c10;
+            c2  = alpha*c2 + (1.0-alpha)*c20;
 
             //Write new values to nodes
             (*mpND_c1) = mDelayedC1.update(c1);
-            (*mpND_Zc1) = mZc + mR1;
+            (*mpND_Zc1) = Zc + r1;
             (*mpND_c2) = mDelayedC2.update(c2);
-            (*mpND_Zc2) = mZc + mR2;
+            (*mpND_Zc2) = Zc + r2;
         }
     };
 }

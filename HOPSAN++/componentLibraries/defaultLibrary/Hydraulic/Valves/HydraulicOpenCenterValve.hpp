@@ -39,21 +39,10 @@ namespace hopsan {
     class HydraulicOpenCenterValve : public ComponentQ
     {
     private:
-        double Cq;
-        double d;
-        double f_pa, f_pb, f_at, f_bt, f_cc;
-        double xvmax;
-        double rho;
-        double overlap_pa;
-        double overlap_pb;
-        double overlap_at;
-        double overlap_bt;
-        double overlap_cc;
-        double omegah;
-        double deltah;
+        double *mpXvIn, *mpXv, *mpCq, *mpD, *mpF_pa, *mpF_pb, *mpF_at, *mpF_bt, *mpF_cc, *mpXvmax, *mpRho, *mpX_pa, *mpX_pb, *mpX_at, *mpX_bt, *mpX_cc;
+        double omegah, deltah;
 
         double *mpND_pp, *mpND_qp, *mpND_cp, *mpND_Zcp, *mpND_pt, *mpND_qt, *mpND_ct, *mpND_Zct, *mpND_pa, *mpND_qa, *mpND_ca, *mpND_Zca, *mpND_pb, *mpND_qb, *mpND_cb, *mpND_Zcb, *mpND_pc1, *mpND_qc1, *mpND_cc1, *mpND_Zcc1, *mpND_pc2, *mpND_qc2, *mpND_cc2, *mpND_Zcc2;
-        double *mpND_xvin, *mpND_xvout;
 
         SecondOrderTransferFunction filter;
         TurbulentFlowFunction qTurb_pa;
@@ -61,7 +50,7 @@ namespace hopsan {
         TurbulentFlowFunction qTurb_at;
         TurbulentFlowFunction qTurb_bt;
         TurbulentFlowFunction qTurb_cc;
-        Port *mpPP, *mpPC1, *mpPT, *mpPA, *mpPC2, *mpPB, *mpIn, *mpOut;
+        Port *mpPP, *mpPC1, *mpPT, *mpPA, *mpPC2, *mpPB;
 
     public:
         static Component *Creator()
@@ -71,48 +60,32 @@ namespace hopsan {
 
         void configure()
         {
-            Cq = 0.67;
-            d = 0.01;
-            f_pa = 1.0;
-            f_pb = 1.0;
-            f_at = 1.0;
-            f_bt = 1.0;
-            f_cc = 1.0;
-            xvmax = 0.01;
-            rho = 890;
-            overlap_pa = -1e-6;
-            overlap_pb = -1e-6;
-            overlap_at = -1e-6;
-            overlap_bt = -1e-6;
-            overlap_cc = -1e-6;
-            omegah = 100.0;
-            deltah = 1.0;
-
             mpPP = addPowerPort("PP", "NodeHydraulic");
             mpPT = addPowerPort("PT", "NodeHydraulic");
             mpPA = addPowerPort("PA", "NodeHydraulic");
             mpPB = addPowerPort("PB", "NodeHydraulic");
             mpPC1 = addPowerPort("PC1", "NodeHydraulic");
             mpPC2 = addPowerPort("PC2", "NodeHydraulic");
-            mpIn = addReadPort("in", "NodeSignal");
-            mpOut = addWritePort("xv", "NodeSignal", Port::NotRequired);
 
-            registerParameter("C_q", "Flow Coefficient", "[-]", Cq);
-            registerParameter("rho", "Oil Density", "[kg/m^3]", rho);
-            registerParameter("d", "Diameter", "[m]", d);
-            registerParameter("f_pa", "Fraction of spool circumference that is opening P-A", "[-]", f_pa);
-            registerParameter("f_pb", "Fraction of spool circumference that is opening P-B", "[-]", f_pb);
-            registerParameter("f_at", "Fraction of spool circumference that is opening A-T", "[-]", f_at);
-            registerParameter("f_bt", "Fraction of spool circumference that is opening B-T", "[-]", f_bt);
-            registerParameter("f_cc", "Fraction of spool circumference that is opening C-C", "[-]", f_cc);
-            registerParameter("x_vmax", "Maximum Spool Displacement", "[m]", xvmax);
-            registerParameter("x_pa", "Spool Overlap From Port P To A", "[m]", overlap_pa);
-            registerParameter("x_pb", "Spool Overlap From Port P To B", "[m]", overlap_pb);
-            registerParameter("x_at", "Spool Overlap From Port A To T", "[m]", overlap_at);
-            registerParameter("x_pa", "Spool Overlap From Port B To T", "[m]", overlap_bt);
-            registerParameter("x_cc", "Spool Overlap From Port C1 To C2", "[m]", overlap_bt);
-            registerParameter("omega_h", "Resonance Frequency", "[rad/s]", omegah);
-            registerParameter("delta_h", "Damping Factor", "[-]", deltah);
+            addOutputVariable("xv", "Spool position", "m", 0.0, &mpXv);
+            addInputVariable("in", "Desired spool position", "m", 0.0, &mpXvIn);
+            addInputVariable("C_q", "Flow Coefficient", "[-]", 0.67, &mpCq);
+            addInputVariable("rho", "Oil Density", "[kg/m^3]", 890, &mpRho);
+            addInputVariable("d", "Spool Diameter", "[m]", 0.01, &mpD);
+            addInputVariable("f_pa", "Fraction of spool circumference that is opening P-A", "[-]", 1.0, &mpF_pa);
+            addInputVariable("f_pb", "Fraction of spool circumference that is opening B-T", "[-]", 1.0, &mpF_pb);
+            addInputVariable("f_at", "Fraction of spool circumference that is opening P-A", "[-]", 1.0, &mpF_at);
+            addInputVariable("f_bt", "Fraction of spool circumference that is opening B-T", "[-]", 1.0, &mpF_bt);
+            addInputVariable("f_cc", "Fraction of spool circumference that is opening C-C", "[-]", 1.0, &mpF_cc);
+            addInputVariable("x_pa", "Spool Overlap From Port P To A", "[m]", -1e-6, &mpX_pa);
+            addInputVariable("x_pb", "Spool Overlap From Port A To T", "[m]", -1e-6, &mpX_pb);
+            addInputVariable("x_at", "Spool Overlap From Port P To A", "[m]", -1e-6, &mpX_at);
+            addInputVariable("x_bt", "Spool Overlap From Port A To T", "[m]", -1e-6, &mpX_bt);
+            addInputVariable("x_cc", "Spool Overlap From Port C1 To C2", "[m]", -1e-6, &mpX_cc);
+            addInputVariable("x_vmax", "Maximum Spool Displacement", "[m]", 0.01, &mpXvmax);
+
+            addConstant("omega_h", "Resonance Frequency", "[rad/s]", 100.0, omegah);
+            addConstant("delta_h", "Damping Factor", "[-]", 1.0, deltah);
         }
 
 
@@ -148,13 +121,10 @@ namespace hopsan {
             mpND_cc2 = getSafeNodeDataPtr(mpPC2, NodeHydraulic::WaveVariable);
             mpND_Zcc2 = getSafeNodeDataPtr(mpPC2, NodeHydraulic::CharImpedance);
 
-            mpND_xvin = getSafeNodeDataPtr(mpIn, NodeSignal::Value);
-            mpND_xvout = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
-
-            double xvin  = (*mpND_xvin);
+            double xvin  = (*mpXvIn);
             double num[3] = {1.0, 0.0, 0.0};
             double den[3] = {1.0, 2.0*deltah/omegah, 1.0/(omegah*omegah)};
-            filter.initialize(mTimestep, num, den, xvin, xvin, -xvmax, xvmax);
+            filter.initialize(mTimestep, num, den, (*mpXvIn), (*mpXvIn), -(*mpXvmax), (*mpXvmax));
         }
 
 
@@ -163,6 +133,7 @@ namespace hopsan {
             //Declare local variables
             double xv, xpanom, xpbnom, xatnom, xbtnom, xccnom, Kcpa, Kcpb, Kcat, Kcbt, Kccc, qpa, qpb, qat, qbt, qcc;
             double pp, qp, cp, Zcp, pt, qt, ct, Zct, xvin, pa, qa, ca, Zca, pb, qb, cb, Zcb, pc1, qc1, cc1, Zcc1, pc2, qc2, cc2, Zcc2;
+            double Cq, rho, xvmax, d, f_pa, f_pb, f_at, f_bt, f_cc, x_pa, x_pb, x_at, x_bt, x_cc;
             bool cav = false;
 
             //Get variable values from nodes
@@ -178,18 +149,33 @@ namespace hopsan {
             Zcc1 = (*mpND_Zcc1);
             cc2  = (*mpND_cc2);
             Zcc2 = (*mpND_Zcc2);
-            xvin  = (*mpND_xvin);
+
+            xvin  = (*mpXvIn);
+            Cq = (*mpCq);
+            rho = (*mpRho);
+            xvmax = (*mpXvmax);
+            d = (*mpD);
+            f_pa = (*mpF_pa);
+            f_pb = (*mpF_pb);
+            f_at = (*mpF_at);
+            f_bt = (*mpF_bt);
+            f_cc = (*mpF_cc);
+            x_pa = (*mpX_pa);
+            x_pb = (*mpX_pb);
+            x_at = (*mpX_at);
+            x_bt = (*mpX_bt);
+            x_cc = (*mpX_cc);
 
             limitValue(xvin, -xvmax, xvmax);
             filter.update(xvin);
             xv = filter.value();
 
             //Valve equations
-            xpanom = std::max(xv-overlap_pa,0.0);                       //These orifices are closed in central position, and fully opened at -xvmax and xvmax
-            xpbnom = std::max(-xv-overlap_pb,0.0);
-            xatnom = std::max(-xv-overlap_at,0.0);
-            xbtnom = std::max(xv-overlap_bt,0.0);
-            xccnom = xvmax - std::max(fabs(xv-overlap_cc), 0.0);       //Center orifice is open in central position, and closed at -xvmax and xvmax
+            xpanom = std::max(xv-x_pa,0.0);                       //These orifices are closed in central position, and fully opened at -xvmax and xvmax
+            xpbnom = std::max(-xv-x_pb,0.0);
+            xatnom = std::max(-xv-x_at,0.0);
+            xbtnom = std::max(xv-x_bt,0.0);
+            xccnom = xvmax - std::max(fabs(xv-x_cc), 0.0);       //Center orifice is open in central position, and closed at -xvmax and xvmax
 
             Kcpa = Cq*f_pa*pi*d*xpanom*sqrt(2.0/rho);
             Kcpb = Cq*f_pb*pi*d*xpbnom*sqrt(2.0/rho);
@@ -317,7 +303,7 @@ namespace hopsan {
             (*mpND_qc1) = qc1;
             (*mpND_pc2) = cc2 + qc2*Zcc2;
             (*mpND_qc2) = qc2;
-            (*mpND_xvout) = xv;
+            (*mpXv) = xv;
         }
     };
 }

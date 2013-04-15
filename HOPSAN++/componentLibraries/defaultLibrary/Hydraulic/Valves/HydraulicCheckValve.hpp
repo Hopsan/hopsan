@@ -39,12 +39,11 @@ namespace hopsan {
     class HydraulicCheckValve : public ComponentQ
     {
     private:
-        double mKs;
+        double *mpKs;
         bool cav;
         TurbulentFlowFunction qTurb_;
 
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
-        double p1, q1, c1, Zc1, p2, q2, c2, Zc2;
 
         Port *mpP1, *mpP2;
 
@@ -56,12 +55,10 @@ namespace hopsan {
 
         void configure()
         {
-            mKs = 0.000000025;
-
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
 
-            registerParameter("K_s", "Restrictor Coefficient", "[]", mKs);
+            addInputVariable("K_s", "Restrictor Coefficient", "[]", 0.0000000025, &mpKs);
         }
 
 
@@ -77,20 +74,23 @@ namespace hopsan {
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
             mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
 
-            qTurb_.setFlowCoefficient(mKs);
+            double Ks = (*mpKs);
+            qTurb_.setFlowCoefficient(Ks);
         }
 
 
         void simulateOneTimestep()
         {
             //Get variable values from nodes
+            double p1, q1, c1, Zc1, p2, q2, c2, Zc2, Ks;
             c1 = (*mpND_c1);
             Zc1 = (*mpND_Zc1);
             c2 = (*mpND_c2);
             Zc2 = (*mpND_Zc2);
+            Ks = (*mpKs);
 
             //Checkvalve equations
-            qTurb_.setFlowCoefficient(mKs);
+            qTurb_.setFlowCoefficient(Ks);
             if (c1 > c2) { q2 = qTurb_.getFlow(c1, c2, Zc1, Zc2); }
             else { q2 = 0.0; }
 

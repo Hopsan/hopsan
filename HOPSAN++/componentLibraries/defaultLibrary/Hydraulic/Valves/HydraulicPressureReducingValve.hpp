@@ -38,7 +38,8 @@ namespace hopsan {
     class HydraulicPressureReducingValve : public ComponentQ
     {
     private:
-        double x0, pref, tao, Kcs, Kcf, Cs, Cf, qnom, pnom, ph, x0max;
+        double *mpPref, *mpPh;
+        double x0, tao, Kcs, Kcf, Cs, Cf, qnom, pnom, x0max;
         double mPrevX0;
 
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
@@ -56,26 +57,16 @@ namespace hopsan {
 
         void configure()
         {
-            pref = 20000000.0;
-            tao = 0.01;
-            Kcs = 0.00000001;
-            Kcf = 0.00000001;
-            qnom = 0.001;
-            ph = 500000.0;
-            pnom = 7e6f;
-            x0max = qnom / sqrt(pnom);
-            Cs = sqrt(pnom) / Kcs;
-            Cf = 1.0 / (Kcf*sqrt(pnom));
-
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
 
-            registerParameter("p_ref", "Reference Opening Pressure", "[Pa]", pref);
-            registerParameter("tao", "Time Constant of Spool", "[s]", tao);
-            registerParameter("k_cs", "Steady State Characteristic due to Spring", "[(m^3/s)/Pa]", Kcs);
-            registerParameter("k_cf", "Steady State Characteristic due to Flow Forces", "[(m^3/s)/Pa]", Kcf);
-            registerParameter("q_nom", "Flow with Fully Open Valve and pressure drop Pnom", "[m^3/s]", qnom);
-            registerParameter("p_h", "Hysteresis Width", "[Pa]", ph);
+            addInputVariable("p_ref", "Reference Opening Pressure", "[Pa]", 2000000.0, &mpPref);
+            addInputVariable("p_h", "Hysteresis Width", "[Pa]", 500000.0, &mpPh);
+
+            addConstant("tao", "Time Constant of Spool", "[s]", 0.01, tao);
+            addConstant("k_cs", "Steady State Characteristic due to Spring", "[(m^3/s)/Pa]", 0.00000001, Kcs);
+            addConstant("k_cf", "Steady State Characteristic due to Flow Forces", "[(m^3/s)/Pa]", 0.00000001, Kcf);
+            addConstant("q_nom", "Flow with Fully Open Valve and pressure drop Pnom", "[m^3/s]", 0.001, qnom);
         }
 
 
@@ -91,6 +82,11 @@ namespace hopsan {
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
             mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
 
+            pnom = 7e6f;
+            x0max = qnom / sqrt(pnom);
+            Cs = sqrt(pnom) / Kcs;
+            Cf = 1.0 / (Kcf*sqrt(pnom));
+
             x0 = 0.00001;
 
             mPrevX0 = 0.0;
@@ -105,7 +101,7 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             double p1, q1, c1, Zc1, p2, q2, c2, Zc2;
-            double b1, gamma, b2, xs, xh, xsh, wCutoff;
+            double b1, gamma, b2, xs, xh, xsh, wCutoff, pref, ph;
             bool cav = false;
 
             //Get variable values from nodes
@@ -117,6 +113,8 @@ namespace hopsan {
             q2 = (*mpND_q2);
             c2 = (*mpND_c2);
             Zc2 = (*mpND_Zc2);
+            pref = (*mpPref);
+            ph = (*mpPh);
 
             //PRV Equations
 

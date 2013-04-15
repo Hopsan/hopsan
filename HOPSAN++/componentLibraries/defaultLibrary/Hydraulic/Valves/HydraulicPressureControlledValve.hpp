@@ -39,7 +39,8 @@ namespace hopsan {
     class HydraulicPressureControlledValve : public ComponentQ
     {
     private:
-        double x0, x0max, pref, tao, Kcs, Kcf, Cs, Cf, pnom, qnom, ph;
+        double *mpPref, *mpPh;
+        double x0, x0max, tao, Kcs, Kcf, Cs, Cf, pnom, qnom;
         double mPrevX0;
         TurbulentFlowFunction mTurb;
         ValveHysteresis mHyst;
@@ -58,26 +59,19 @@ namespace hopsan {
 
         void configure()
         {
-            pref = 2000000;
-            tao = 0.01;
-            Kcs = 0.00000001;
-            Kcf = 0.00000001;
-            qnom = 0.001;
-            ph = 500000;
-            pnom = 7e6f;
-
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpP_OPEN = addPowerPort("P_OPEN", "NodeHydraulic");
             mpP_CLOSE = addPowerPort("P_CLOSE", "NodeHydraulic");
 
-            registerParameter("p_ref", "Reference Opening Pressure", "[Pa]", pref);
-            registerParameter("tao", "Time Constant of Spool", "[s]", tao);
-            registerParameter("k_cs", "Steady State Characteristic due to Spring", "[(m^3/s)/Pa]", Kcs);
-            registerParameter("k_cf", "Steady State Characteristic due to Flow Forces", "[(m^3/s)/Pa]", Kcf);
-            registerParameter("q_nom", "Flow with Fully Open Valve and pressure drop p_nom", "[m^3/s]", qnom);
-            registerParameter("p_nom", "Nominal pressure drop", "[Pa]", pnom);
-            registerParameter("p_h", "Hysteresis Width", "[Pa]", ph);
+            addInputVariable("p_ref", "Reference Opening Pressure", "[Pa]", 2000000.0, &mpPref);
+            addInputVariable("p_h", "Hysteresis Width", "[Pa]", 500000, &mpPh);
+
+            addConstant("tao", "Time Constant of Spool", "[s]", 0.01, tao);
+            addConstant("k_cs", "Steady State Characteristic due to Spring", "[(m^3/s)/Pa]", 0.00000001, Kcs);
+            addConstant("k_cf", "Steady State Characteristic due to Flow Forces", "[(m^3/s)/Pa]", 0.00000001, Cf);
+            addConstant("q_nom", "Flow with Fully Open Valve and pressure drop p_nom", "[m^3/s]", 0.001, qnom);
+            addConstant("p_nom", "Nominal pressure drop", "[Pa]", 7e6, pnom);
         }
 
 
@@ -116,7 +110,7 @@ namespace hopsan {
         {
             //Declare local variables
             double p1, q1, c1, Zc1, p2, q2, c2, Zc2, p_open, c_open, p_close, c_close;
-            double b1, xs, xh, xsh;
+            double b1, xs, xh, xsh, pref, ph;
             bool cav = false;
 
             //Get variable values from nodes
@@ -132,6 +126,8 @@ namespace hopsan {
             c_open = (*mpND_c_open);
             p_close = (*mpND_p_close);
             c_close = (*mpND_c_close);
+            pref = (*mpPref);
+            ph = (*mpPh);
 
             /* Equations */
 

@@ -22,7 +22,6 @@
 //! Written by Petter Krus 901015
 //! Revised by Petter Krus 920324
 //! Translated to HOPSAN NG by Robert Braun 100122
-//! Modified to contain input signal by Andreas Klintemyr 111101
 //$Id$
 
 #ifndef HYDRAULICPRESSURERELIEFVALVE_HPP_INCLUDED
@@ -41,15 +40,16 @@ namespace hopsan {
     class HydraulicPressureReliefValve : public ComponentQ
     {
     private:
-        double x0, pmax, tao, Kcs, Kcf, Cs, Cf, qnom, pnom, ph, x0max;
+        double *mpPmax, *mpPh, *mpTao, *mpXv;
+        double x0, Kcs, Kcf, Cs, Cf, qnom, pnom, x0max;
         double mPrevX0;
 
-        double *mpND_in, *mpND_out, *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
+        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
 
         TurbulentFlowFunction mTurb;
         ValveHysteresis mHyst;
         FirstOrderTransferFunction mFilterLP;
-        Port *mpP1, *mpP2, *mpIn, *mpOut;
+        Port *mpP1, *mpP2;
 
     public:
         static Component *Creator()
@@ -59,33 +59,23 @@ namespace hopsan {
 
         void configure()
         {
-            pmax = 20000000;
-            tao = 0.01;
-            Kcs = 0.00000001;
-            Kcf = 0.00000001;
-            qnom = 0.001;
-            ph = 500000;
-            pnom = 7e6f;
-
             mpP1 = addPowerPort("P1", "NodeHydraulic", "High pressure side");
             mpP2 = addPowerPort("P2", "NodeHydraulic", "Low pressure side");
-            mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
-            mpOut = addWritePort("xv", "NodeSignal", Port::NotRequired);
 
-            registerParameter("p_max", "Maximum opening pressure", "[Pa]", pmax);
-            registerParameter("tao", "Time Constant of Spool", "[s]", tao);
-            registerParameter("k_cs", "Steady State Characteristic due to Spring", "[(m^3/s)/Pa]", Kcs);
-            registerParameter("k_cf", "Steady State Characteristic due to Flow Forces", "[(m^3/s)/Pa]", Kcf);
-            registerParameter("q_nom", "Flow with Fully Open Valve and pressure drop Pnom", "[m^3/s]", qnom);
-            registerParameter("p_h", "Hysteresis Width", "[Pa]", ph);
+            addOutputVariable("xv", "Spool position", "m", 0.0, &mpXv);
+
+            addInputVariable("p_max", "Maximum opening pressure", "[Pa]", 20000000.0, &mpPmax);
+            addInputVariable("tao", "Time Constant of Spool", "[s]", 0.01, &mpTao);
+            addInputVariable("p_h", "Hysteresis Width", "[Pa]", 500000.0, &mpPh);
+
+            addConstant("k_cs", "Steady State Characteristic due to Spring", "[(m^3/s)/Pa]", 0.00000001, Kcs);
+            addConstant("k_cf", "Steady State Characteristic due to Flow Forces", "[(m^3/s)/Pa]", 0.00000001, Kcf);
+            addConstant("q_nom", "Flow with Fully Open Valve and pressure drop Pnom", "[m^3/s]", 0.001, qnom);
         }
 
 
         void initialize()
         {
-            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value, 1);
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value, 0);
-
             mpND_p1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
             mpND_q1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::Flow);
             mpND_c1 = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
@@ -95,6 +85,10 @@ namespace hopsan {
             mpND_q2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
             mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
+
+            pnom = 7e6f;
+
+            double tao = (*mpTao);
 
             x0 = 0.00001;
             mPrevX0 = 0;
@@ -111,8 +105,8 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            double in, p1, q1, c1, Zc1, p2, q2, c2, Zc2;
-            double b1, gamma, b2, xs, xh, xsh, wCutoff;
+            double p1, q1, c1, Zc1, p2, q2, c2, Zc2;
+            double b1, gamma, b2, xs, xh, xsh, wCutoff, pmax, ph, tao;
             bool cav = false;
 
             //Get variable values from nodes
@@ -124,11 +118,11 @@ namespace hopsan {
             q2 = (*mpND_q2);
             c2 = (*mpND_c2);
             Zc2 = (*mpND_Zc2);
-            in = (*mpND_in);
+            pmax = (*mpPmax);
+            ph = (*mpPh);
+            tao = (*mpTao);
 
             //PRV Equations
-
-            limitValue(in, 0, 1);
 
             //Help variable b1
             b1 = Cs + (p1-p2)*Cf;
@@ -176,7 +170,7 @@ namespace hopsan {
             }
 
             // Calculation of spool position
-            xs = (gamma*(c1) + b2*x0/2.0 - pmax*in) / (b1+b2);
+            xs = (gamma*(c1) + b2*x0/2.0 - pmax) / (b1+b2);
 
             //Hysteresis
             xh = ph / (b1+b2);                                  //Hysteresis width [m]
@@ -212,7 +206,7 @@ namespace hopsan {
             }
             if (cav)
             {
-                xs = (c1 + b2*x0/2.0 - pmax*in) / (b1+b2);
+                xs = (c1 + b2*x0/2.0 - pmax) / (b1+b2);
                 xsh = mHyst.getValue(xs, xh, mPrevX0);
                 x0 = mFilterLP.value();        //! @todo Make the filter actually redo last step if possible; this will create an undesired delay of one iteration
 
@@ -233,7 +227,7 @@ namespace hopsan {
             (*mpND_q1) = q1;
             (*mpND_p2) = p2;
             (*mpND_q2) = q2;
-            (*mpND_out) = x0;
+            (*mpXv) = x0;
         }
     };
 }

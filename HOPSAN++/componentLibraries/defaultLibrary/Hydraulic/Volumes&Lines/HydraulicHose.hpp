@@ -42,7 +42,8 @@ namespace hopsan {
 
     private:
 
-        double betae, rho, visc, wallVisc, d, l;
+        double *mpRho, *mpVisc, *mpD, *mpL;
+        double betae, wallVisc;
         double NTMAX, kappa;
         int NTIME, NTIME1;
         double Rtot, RL1d, RL2d, Rw, a, TL, NT, TN, area, areaC, Zc0, alfa, den, BC0, BC1, AC1;
@@ -68,29 +69,18 @@ namespace hopsan {
 
         void configure()
         {
-            //Set member attributes
-            betae = 1e9;
-            rho = 870;
-            visc = 0.03;
-            wallVisc = 0.03;
-            d = 0.03;
-            l = 1;
-
-            //pi = 3.1415926;
-            NTMAX = 1000;
-            kappa = 1.25;
-
             //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("beta_e", "Bulk modulus",              "[Pa]",     betae);
-            registerParameter("rho",    "Density",                   "[kg/m^3]", rho);
-            registerParameter("eta",    "Dynamic oil viscosity",     "[Ns/m^2]", visc);
-            registerParameter("eta_w",  "Equivalent wall viscosity", "[Ns/m^2]", wallVisc);
-            registerParameter("d",      "Line diameter",             "[m]",      d);
-            registerParameter("l",      "Line length",               "[m]",      l);
+            addInputVariable("rho",    "Density",                   "[kg/m^3]", 870.0, &mpRho);
+            addInputVariable("eta",    "Dynamic oil viscosity",     "[Ns/m^2]", 0.03, &mpVisc);
+            addInputVariable("d",      "Line diameter",             "[m]",      0.03, &mpD);
+            addInputVariable("l",      "Line length",               "[m]",      1.0, &mpL);
+
+            addConstant("beta_e", "Bulk modulus",              "[Pa]",     1e9, betae);
+            addConstant("eta_w",  "Equivalent wall viscosity", "[Ns/m^2]", 0.03, wallVisc);
         }
 
 
@@ -107,13 +97,20 @@ namespace hopsan {
             mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
 
                 //Declare local variables
-            double p1, q1, c1, Zc1, p2, q2, c2, Zc2;
+            double p1, q1, c1, Zc1, p2, q2, c2, Zc2, rho, visc, d, l;
 
                 //Read variables from nodes
             p1 = (*mpND_p1);
             q1 = (*mpND_q1);
             p2 = (*mpND_p2);
             q2 = (*mpND_q2);
+            rho = (*mpRho);
+            visc = (*mpVisc);
+            d = (*mpD);
+            l = (*mpL);
+
+            NTMAX = 1000;
+            kappa = 1.25;
 
                 // Line resistance
             Rtot = 128*visc*l/(pi*d*d*d*d);
@@ -183,7 +180,7 @@ namespace hopsan {
         void simulateOneTimestep()
         {
                 //Declare local variables
-            double /*p1,*/ q1, c1, Zc1, /*p2,*/ q2, c2, Zc2;
+            double /*p1,*/ q1, c1, Zc1, /*p2,*/ q2, c2, Zc2, rho, visc, d, l;
 
                 //Read variables from nodes
             //p1 = (*mpND_p1);
@@ -192,6 +189,10 @@ namespace hopsan {
             //p2 = (*mpND_p2);
             q2 = (*mpND_q2);
             c2 = (*mpND_c2);
+            rho = (*mpRho);
+            visc = (*mpVisc);
+            d = (*mpD);
+            l = (*mpL);
 
                 //Cyclic memory
             NTIME = NTIME+1;

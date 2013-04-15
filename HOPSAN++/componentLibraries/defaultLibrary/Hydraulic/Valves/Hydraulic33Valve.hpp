@@ -38,23 +38,15 @@ namespace hopsan {
     class Hydraulic33Valve : public ComponentQ
     {
     private:
-        double Cq;
-        double d;
-        double f_pa, f_at;
-        double xvmax;
-        double rho;
-        double overlap_pa;
-        double overlap_at;
-        double omegah;
-        double deltah;
+        double *mpXvIn, *mpXv, *mpCq, *mpD, *mpF_pa, *mpF_at, *mpXvmax, *mpRho, *mpX_pa, *mpX_at;
+        double omegah, deltah;
 
         double *mpND_pa, *mpND_qa, *mpND_ca, *mpND_Zca, *mpND_pp, *mpND_qp, *mpND_cp, *mpND_Zcp, *mpND_pt, *mpND_qt, *mpND_ct, *mpND_Zct;
-        double *mpND_xvin, *mpND_xvout;
 
         SecondOrderTransferFunction filter;
         TurbulentFlowFunction qTurb_pa;
         TurbulentFlowFunction qTurb_at;
-        Port *mpPP, *mpPT, *mpPA, *mpPB, *mpIn, *mpOut;
+        Port *mpPP, *mpPT, *mpPA, *mpPB;
 
     public:
         static Component *Creator()
@@ -64,33 +56,23 @@ namespace hopsan {
 
         void configure()
         {
-            Cq = 0.67;
-            d = 0.01;
-            f_pa = 1.0;
-            f_at = 1.0;
-            xvmax = 0.01;
-            rho = 890;
-            overlap_pa = -1e-6;
-            overlap_at = -1e-6;
-            omegah = 100.0;
-            deltah = 1.0;
-
             mpPP = addPowerPort("PP", "NodeHydraulic");
             mpPT = addPowerPort("PT", "NodeHydraulic");
             mpPA = addPowerPort("PA", "NodeHydraulic");
-            mpIn = addReadPort("in", "NodeSignal");
-            mpOut = addWritePort("xv", "NodeSignal", Port::NotRequired);
 
-            registerParameter("C_q", "Flow Coefficient", "[-]", Cq);
-            registerParameter("rho", "Oil Density", "[kg/m^3]", rho);
-            registerParameter("d", "Spool Diameter", "[m]", d);
-            registerParameter("f_pa", "Fraction of spool circumference that is opening P-A", "[-]", f_pa);
-            registerParameter("f_at", "Fraction of spool circumference that is opening A-T", "[-]", f_at);
-            registerParameter("x_vmax", "Maximum Spool Displacement", "[m]", xvmax);
-            registerParameter("x_pa", "Spool Overlap From Port P To A", "[m]", overlap_pa);
-            registerParameter("x_at", "Spool Overlap From Port A To T", "[m]", overlap_at);
-            registerParameter("omega_h", "Resonance Frequency", "[rad/s]", omegah);
-            registerParameter("delta_h", "Damping Factor", "[-]", deltah);
+            addOutputVariable("xv", "Spool position", "m", 0.0, &mpXv);
+            addInputVariable("in", "Desired spool position", "m", 0.0, &mpXvIn);
+            addInputVariable("C_q", "Flow Coefficient", "[-]", 0.67, &mpCq);
+            addInputVariable("rho", "Oil Density", "[kg/m^3]", 890, &mpRho);
+            addInputVariable("d", "Spool Diameter", "[m]", 0.01, &mpD);
+            addInputVariable("f_pa", "Fraction of spool circumference that is opening P-A", "[-]", 1.0, &mpF_pa);
+            addInputVariable("f_at", "Fraction of spool circumference that is opening A-T", "[-]", 1.0, &mpF_at);
+            addInputVariable("x_vmax", "Maximum Spool Displacement", "[m]", 0.01, &mpXvmax);
+            addInputVariable("x_pa", "Spool Overlap From Port P To A", "[m]", -1e-6, &mpX_pa);
+            addInputVariable("x_at", "Spool Overlap From Port A To T", "[m]", -1e-6, &mpX_at);
+
+            addConstant("omega_h", "Resonance Frequency", "[rad/s]", 100.0, omegah);
+            addConstant("delta_h", "Damping Factor", "[-]", 1.0, deltah);
         }
 
 
@@ -111,12 +93,9 @@ namespace hopsan {
             mpND_ca = getSafeNodeDataPtr(mpPA, NodeHydraulic::WaveVariable);
             mpND_Zca = getSafeNodeDataPtr(mpPA, NodeHydraulic::CharImpedance);
 
-            mpND_xvin = getSafeNodeDataPtr(mpIn, NodeSignal::Value);
-            mpND_xvout = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
-
             double num[3] = {1.0, 0.0, 0.0};
             double den[3] = {1.0, 2.0*deltah/omegah, 1.0/(omegah*omegah)};
-            filter.initialize(mTimestep, num, den, 0, 0, -xvmax, xvmax);
+            filter.initialize(mTimestep, num, den, 0, 0, -(*mpXvmax), (*mpXvmax));
         }
 
 
@@ -124,7 +103,7 @@ namespace hopsan {
         {
             //Declare local variables
             double xv, xpanom, xatnom, Kcpa, Kcat, qpa, qat;
-            double pp, pt, pa, qa, ca, Zca, qp, cp, Zcp, qt, ct, Zct, xvin;
+            double pp, pt, pa, qa, ca, Zca, qp, cp, Zcp, qt, ct, Zct, xvin, Cq, rho, xvmax, d, f_pa, f_at, x_pa, x_at;
             bool cav = false;
 
             //Get variable values from nodes
@@ -134,14 +113,24 @@ namespace hopsan {
             Zct = (*mpND_Zct);
             ca = (*mpND_ca);
             Zca = (*mpND_Zca);
-            xvin = (*mpND_xvin);
+            xvin = (*mpXvIn);
+
+            Cq = (*mpCq);
+            rho = (*mpRho);
+            xvmax = (*mpXvmax);
+            d = (*mpD);
+            f_pa = (*mpF_pa);
+            f_at = (*mpF_at);
+            x_pa = (*mpX_pa);
+            x_at = (*mpX_at);
+
 
             limitValue(xvin, -xvmax, xvmax);
             filter.update(xvin);
             xv = filter.value();
 
-            xpanom = std::max(xv-overlap_pa,0.0);
-            xatnom = std::max(-xv-overlap_at,0.0);
+            xpanom = std::max(xv-x_pa,0.0);
+            xatnom = std::max(-xv-x_at,0.0);
 
             Kcpa = Cq*f_pa*pi*d*xpanom*sqrt(2.0/rho);
             Kcat = Cq*f_at*pi*d*xatnom*sqrt(2.0/rho);
@@ -220,7 +209,7 @@ namespace hopsan {
             (*mpND_qa) = qa;
             (*mpND_pt) = pt;
             (*mpND_qt) = qt;
-            (*mpND_xvout) = xv;
+            (*mpXv) = xv;
         }
     };
 }
