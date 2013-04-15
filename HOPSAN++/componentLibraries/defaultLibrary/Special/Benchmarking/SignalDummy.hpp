@@ -37,9 +37,7 @@ namespace hopsan {
     {
 
     private:
-        Port *mpIn, *mpOut;
-
-        double *mpND_in, *mpND_out;
+        double *mpIn, *mpOut;
 
     public:
         static Component *Creator()
@@ -49,25 +47,18 @@ namespace hopsan {
 
         void configure()
         {
-
-            mpIn = addReadPort("in", "NodeSignal");
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
+            addInputVariable("in", "", "", 0.0, &mpIn);
+            addOutputVariable("out", "", "", &mpOut);
         }
 
-
-        void initialize()
-        {
-            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::Value);
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
-        }
-
+        void initialize() {}
 
         void simulateOneTimestep()
         {
-            (*mpND_out) = 1;
-            for(int i=0; i<(*mpND_in); ++i)
+            (*mpOut) = 1;
+            for(int i=0; i<(*mpIn); ++i)
             {
-                (*mpND_out) = (*mpND_out) * i;
+                (*mpOut) = (*mpOut) * i;
             }
         }
     };

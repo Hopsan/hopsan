@@ -26,8 +26,8 @@ namespace hopsan {
     {
 
     private:
-        Port *mpP1, *mpP2;
-        double *mpND_in, *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1;
+        Port *mpP2;
+        double *mpIn, *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1;
 
     public:
         static Component *Creator()
@@ -37,17 +37,13 @@ namespace hopsan {
 
         void configure()
         {
-            //Set member attributes
-
-            //Add ports to the component
-            mpP1 = addReadPort("in", "NodeSignal");
+            addInputVariable("in", "", "", 0.0, &mpIn);
             mpP2 = addPowerPort("P1", "NodeHydraulic");
         }
 
 
         void initialize()
         {
-            mpND_in = getSafeNodeDataPtr(mpP1, NodeSignal::Value);
             mpND_p1 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Pressure);
             mpND_q1 = getSafeNodeDataPtr(mpP2, NodeHydraulic::Flow);
             mpND_c1 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
@@ -58,16 +54,11 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             (*mpND_c1) = (*mpND_p1)+(*mpND_q1);
-            for(int i=0; i<(*mpND_in); ++i)
+            for(int i=0; i<(*mpIn); ++i)
             {
                 (*mpND_c1) = (*mpND_c1) * i;
             }
-            *mpND_Zc1 = *mpND_in;
-        }
-
-        void finalize()
-        {
-
+            *mpND_Zc1 = *mpIn;
         }
     };
 }
