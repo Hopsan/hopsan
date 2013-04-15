@@ -57,6 +57,7 @@ class VariableTableWidget :public TableWidgetTotalSize
 {
     Q_OBJECT
 public:
+    enum VariameterTypEnumT {Constant, InputVaraiable, OutputVariable, PortVariable, OtherVariable}; //!< @todo maybe not only here
     enum ColumnEnumT {Name, Alias, Unit, Description, Type, Value, Scale, Buttons, NumCols};
     VariableTableWidget(ModelObject *pModelObject, QWidget *pParent);
     bool setStartValues();
@@ -69,7 +70,7 @@ private slots:
     void cellChangedSlot(const int row, const int col);
 
 private:
-    void createTableRow(const int row, const CoreVariameterDescription &rData);
+    void createTableRow(const int row, const CoreVariameterDescription &rData, const VariameterTypEnumT variametertype);
     void createSeparatorRow(const int row, const QString name);
     void selectValueTextColor(const int row);
     bool cleanAndVerifyParameterValue(QString &rValue, const QString type);

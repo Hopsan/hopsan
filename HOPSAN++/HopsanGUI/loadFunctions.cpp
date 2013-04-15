@@ -181,7 +181,7 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStat
     //! @todo this is also a compatibility hack, to prevent startvalues in dynamic parameter ports from overwriting previously renamed but loaded paremter values, when the parmeter has the same name as its port. This prevents data from overwriting if loaded last
     if (parameterName.contains("::Value") && (parameterValue =="0") && !tryingToAddColonColonValue)
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printDebugMessage("Prevented overwriting Parameter name "+parameterName+" in component "+pObject->getName());
+        gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Prevented overwriting Parameter: "+parameterName+" in component: "+pObject->getName()+ ". Ignored value: "+parameterValue);
     }
     else
     {

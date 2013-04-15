@@ -309,7 +309,7 @@ HopsanEssentials *Component::getHopsanEssentials()
     return mpHopsanEssentials;
 }
 
-
+//! @deprecated
 void Component::initializeDynamicParameters()
 {
     mDynamicParameterDataPtrs.clear();
@@ -340,16 +340,33 @@ void Component::initializeDynamicParameters()
     }
 }
 
+//! @deprecated
 void Component::updateDynamicParameterValues()
 {
     for (size_t i=0; i<mDynamicParameterDataPtrs.size(); ++i)
     {
-//        std::cout << &(mDynamicParameterDataPtrs[i].first) << std::endl;
-//        std::cout << &(mDynamicParameterDataPtrs[i].second) << std::endl << std::endl;
-//        std::cout << *(mDynamicParameterDataPtrs[i].first) << std::endl;
-//        std::cout << *(mDynamicParameterDataPtrs[i].second) << std::endl << std::endl;
         *(mDynamicParameterDataPtrs[i].second) = *(mDynamicParameterDataPtrs[i].first);
     }
+}
+
+void Component::addConstant(const string name, const string description, const string unit, double &rValue)
+{
+    registerParameter(name, description, unit, rValue, Constant);
+}
+
+void Component::addConstant(const string name, const string description, const string unit, int &rValue)
+{
+    registerParameter(name, description, unit, rValue);
+}
+
+void Component::addConstant(const string name, const string description, const string unit, string &rValue)
+{
+    registerParameter(name, description, unit, rValue);
+}
+
+void Component::addConstant(const string name, const string description, const string unit, bool &rValue)
+{
+    registerParameter(name, description, unit, rValue);
 }
 
 
@@ -378,9 +395,12 @@ void Component::registerParameter(const string name, const string description, c
     ss << rValue;
     if (dynconst == Dynamic)
     {
+        //! @deprecated
+        //! @todo remove this later in 0.7
         // Make a port with same name so that parameter can be switch to dynamic parameter that can be changed during simulation
         this->addReadPort(name, "NodeSignal", Port::NotRequired);
         mpParameters->addParameter(name, ss.str(), description, unit, "double", true, &rValue);
+        this->addErrorMessage("Dynamic parmeters are no longer supported!!! Use:   addInputVariable()   instead!");
     }
     else
     {

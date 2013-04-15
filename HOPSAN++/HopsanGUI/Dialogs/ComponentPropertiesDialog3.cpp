@@ -445,7 +445,7 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
         variameter.mDescription = parameters[constantsIds[i]].mDescription;
         variameter.mUnit = parameters[constantsIds[i]].mUnit;
         variameter.mDataType = parameters[constantsIds[i]].mType;
-        createTableRow(r, variameter);
+        createTableRow(r, variameter, Constant);
         //! @todo need to disable som fields for constants, like alias
         ++r;
     }
@@ -461,12 +461,22 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
         QString portName = variameters[i].mPortName;
         if (portName != currPortName)
         {
-            createSeparatorRow(r,"Port: "+portName);
             currPortName = portName;
+
+            Port* pPort = mpModelObject->getPort(portName);
+            if (pPort)
+            {
+                QString desc = pPort->getPortDescription();
+                if (!desc.isEmpty())
+                {
+                    portName.append("     "+desc);
+                }
+            }
+            createSeparatorRow(r,"Port: "+portName);
             ++r;
         }
 
-        createTableRow(r, variameters[i]);
+        createTableRow(r, variameters[i], OtherVariable);
         ++r;
     }
 
@@ -643,9 +653,8 @@ void VariableTableWidget::cellChangedSlot(const int row, const int col)
     }
 }
 
-void VariableTableWidget::createTableRow(const int row, const CoreVariameterDescription &rData)
+void VariableTableWidget::createTableRow(const int row, const CoreVariameterDescription &rData, const VariameterTypEnumT variametertype)
 {
-    bool isConstant=false;
     QString fullName;
     QTableWidgetItem *pItem;
     insertRow(row);
@@ -653,7 +662,6 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
     //! @todo maybe store the variamter data objects localy, and check for hiden info there, would also make it possible to check for changes without asking core all of the time /Peter
     if (rData.mPortName.isEmpty())
     {
-        isConstant = true;
         fullName = rData.mName;
     }
     else
@@ -669,7 +677,10 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
     pItem = new QTableWidgetItem(rData.mAlias);
     pItem->setTextAlignment(Qt::AlignCenter);
     pItem->setFlags(Qt::NoItemFlags);
-    pItem->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
+    if (variametertype > Constant)
+    {
+        pItem->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
+    }
     setItem(row,Alias,pItem);
 
     //pItem = new QTableWidgetItem(parseVariableUnit(rData.mUnit));
@@ -704,7 +715,11 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
 
     pItem = new QTableWidgetItem("--");
     pItem->setTextAlignment(Qt::AlignCenter);
-    pItem->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
+    pItem->setFlags(Qt::NoItemFlags);
+    if (variametertype > Constant)
+    {
+        pItem->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
+    }
     setItem(row,Scale,pItem);
 
     // Set tool buttons
@@ -725,8 +740,8 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
     connect(pSystemParameterToolButton, SIGNAL(triggeredAtRow(int)), this, SLOT(selectSystemParameterAtRow(int)));
     pToolButtonsLayout->addWidget(pSystemParameterToolButton);
 
-    bool isInputVariable = (rData.mName == "Value");
-    if (!isConstant && isInputVariable)
+    bool isInputVariable = (rData.mName == "Value"); //!< @todo this info should be in the variameter
+    if ((variametertype > Constant) && isInputVariable)
     {
         RowAwareCheckBox *pEnablePortCheckBox = new RowAwareCheckBox(row);
         pEnablePortCheckBox->setToolTip("Show/hide port");

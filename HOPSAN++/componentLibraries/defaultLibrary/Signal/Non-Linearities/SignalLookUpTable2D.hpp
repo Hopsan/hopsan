@@ -60,8 +60,8 @@ namespace hopsan {
 
             mOutDataId=1;
             mDataCurveFileName = "FilePath";
-            registerParameter("filename", "Data file (absolute or relativ model path)", "", mDataCurveFileName);
-            registerParameter("outid", "csv file value column index", "", mOutDataId);
+            addConstant("filename", "Data file (absolute or relativ model path)", "", mDataCurveFileName);
+            addConstant("outid", "csv file value column index", "", mOutDataId);
 
             myDataCurve = 0;
         }
