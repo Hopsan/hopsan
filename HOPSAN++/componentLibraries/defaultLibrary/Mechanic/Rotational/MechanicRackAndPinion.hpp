@@ -106,6 +106,9 @@ namespace hopsan {
             double f1, x1, v1, c1, Zx1;
             double t2, a2, w2, c2, Zx2;
             double gearRatio, J, B;
+            gearRatio = (*mpGearRatio);
+            J = (*mpJ);
+            B = (*mpB);
 
             //Get variable values from nodes
             c1  = (*mpND_c1)*gearRatio;

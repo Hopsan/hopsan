@@ -37,9 +37,8 @@ namespace hopsan {
     {
 
     private:
-        double t;
-        double *mpND_signal,*mpND_t, *mpND_c, *mpND_Zx;
-        Port *mpIn, *mpP1;
+        double *mpTref,*mpND_t, *mpND_c, *mpND_Zx;
+        Port *mpP1;
 
     public:
         static Component *Creator()
@@ -49,35 +48,26 @@ namespace hopsan {
 
         void configure()
         {
-            //Set member attributes
-            t = 0.0;
-
-            //Add ports to the component
-            mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
             mpP1 = addPowerPort("P1", "NodeMechanicRotational");
-
-            //Register changable parameters to the HOPSAN++ core
-            registerParameter("T", "Generated Torque", "[Nm]", t);
-
+            addInputVariable("T", "", "", 0.0, &mpTref);
             disableStartValue(mpP1, NodeMechanicRotational::Torque);
         }
 
 
         void initialize()
         {
-            mpND_signal = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, t);
             mpND_t = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::Torque);
             mpND_c = getSafeNodeDataPtr(mpP1, NodeMechanic::WaveVariable);
             mpND_Zx = getSafeNodeDataPtr(mpP1, NodeMechanic::CharImpedance);
 
-            (*mpND_t) = t;
+            (*mpND_t) = (*mpTref);
             (*mpND_Zx) = 0.0;
         }
 
 
         void simulateOneTimestep()
         {
-            (*mpND_c) = (*mpND_signal);
+            (*mpND_c) = (*mpTref);
             (*mpND_Zx) = 0.0;
         }
     };

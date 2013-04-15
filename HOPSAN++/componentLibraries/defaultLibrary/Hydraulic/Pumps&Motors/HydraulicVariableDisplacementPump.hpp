@@ -35,7 +35,7 @@ namespace hopsan {
 
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
 
-        Port *mpP1, *mpP2, *mpIn;
+        Port *mpP1, *mpP2;
 
     public:
         static Component *Creator()
@@ -47,12 +47,11 @@ namespace hopsan {
         {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
-            mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
 
+            addInputVariable("in", "Displacement setting", "", 1.0, &mpEps);
             addInputVariable("omega_p", "Angular Velocity", "[rad/s]", 50.0, &mpN);
             addInputVariable("D_p", "Displacement", "[m^3/rev]", 0.00005, &mpDp);
             addInputVariable("K_cp", "Leakage Coefficient", "[(m^3/s)/Pa]", 0.0, &mpKcp);
-            addInputVariable("epsilon_p", "Displacement Setting", "[-]", 1.0, &mpEps);
         }
 
 

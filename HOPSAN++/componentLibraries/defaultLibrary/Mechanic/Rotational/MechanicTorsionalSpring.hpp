@@ -50,15 +50,9 @@ namespace hopsan {
 
         void configure()
         {
-            //Set member attributes
-            k   = 100.0;
-
-            //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeMechanicRotational");
             mpP2 = addPowerPort("P2", "NodeMechanicRotational");
-
-            //Register changable parameters to the HOPSAN++ core
-            registerParameter("k", "Spring Coefficient", "[Nm/rad]",  k);
+            addConstant("k", "Spring Coefficient", "[Nm/rad]", 100.0, k);
         }
 
 

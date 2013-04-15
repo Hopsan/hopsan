@@ -41,10 +41,10 @@ namespace hopsan {
     private:
         double *mpDm, *mpBm, *mpClm, *mpJ, *mpEps;
 
-        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_t3, *mpND_a3, *mpND_w3, *mpND_c3, *mpND_Zx3, *mpND_eps;
+        double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2, *mpND_t3, *mpND_a3, *mpND_w3, *mpND_c3, *mpND_Zx3;
 
         DoubleIntegratorWithDamping mIntegrator;
-        Port *mpP1, *mpP2, *mpP3, *mpIn;
+        Port *mpP1, *mpP2, *mpP3;
 
     public:
         static Component *Creator()
@@ -57,13 +57,12 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpP3 = addPowerPort("P3", "NodeMechanicRotational");
-            mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
 
             addInputVariable("D_m", "Displacement", "[m^3/rev]", 0.00005, &mpDm);
             addInputVariable("B_m", "Viscous Friction", "[Nms/rad]", 0.0, &mpBm);
             addInputVariable("C_im", "Leakage Coefficient", "[]", 0.0, &mpClm);
             addInputVariable("J_m", "Inerteia Load", "[kgm^2]", 0.1, &mpJ);
-            addInputVariable("epsilon_m", "Displacement Position", "[-]", 1.0, &mpEps);
+            addInputVariable("in", "Displacement Position", "[]", 1.0, &mpEps);
         }
 
 
@@ -108,7 +107,6 @@ namespace hopsan {
             Zc2 = (*mpND_Zc2);
             c3 = (*mpND_c3);
             Zx3 = (*mpND_Zx3);
-            eps = (*mpND_eps);
 
             //Motor equations
             limitValue(eps, -1, 1);

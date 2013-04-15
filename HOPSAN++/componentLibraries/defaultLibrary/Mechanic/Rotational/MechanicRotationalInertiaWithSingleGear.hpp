@@ -24,7 +24,8 @@ namespace hopsan {
     {
 
     private:
-        double gearRatio, J, B, k;
+        double *mpGearRatio, *mpB;
+        double J;
         double mNumTheta[3];
         double mDenTheta[3];
         double mNumOmega[2];
@@ -33,8 +34,6 @@ namespace hopsan {
         FirstOrderTransferFunction mFilterOmega;
         double *mpND_t1, *mpND_a1, *mpND_w1, *mpND_c1, *mpND_Zx1,
                *mpND_t2, *mpND_a2, *mpND_w2, *mpND_c2, *mpND_Zx2;
-        double t1, a1, w1, c1, Zx1,
-               t2, a2, w2, c2, Zx2;
         Port *mpP1, *mpP2;
 
     public:
@@ -45,19 +44,11 @@ namespace hopsan {
 
         void configure()
         {
-            //Set member attributes
-            gearRatio = 1;
-            J = 1.0;
-            B = 10;
-
-            //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeMechanicRotational");
             mpP2 = addPowerPort("P2", "NodeMechanicRotational");
-
-            //Register changable parameters to the HOPSAN++ core
-            registerParameter("omega", "Gear ratio", "[-]", gearRatio);
-            registerParameter("J", "Moment of Inertia", "[kgm^2]", J);
-            registerParameter("B", "Viscous Friction", "[Nms/rad]", B);
+            addInputVariable("omega", "Gear ratio", "[-]", 1.0, &mpGearRatio);
+            addInputVariable("B", "Viscous Friction", "[Nms/rad]", 10.0, &mpB);
+            addConstant("J", "Moment of Inertia", "[kgm^2]", 0.1, J);
         }
 
 
@@ -75,12 +66,13 @@ namespace hopsan {
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::WaveVariable);
             mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::CharImpedance);
 
+            double t1, a1, w1, t2, gearRatio, B;
+            gearRatio = (*mpGearRatio);
+            B = (*mpB);
             t1 = -(*mpND_t1)*gearRatio;
             a1 = -(*mpND_a1)/gearRatio;
             w1 = -(*mpND_w1)/gearRatio;
             t2 = (*mpND_t2);
-            a2 = (*mpND_a2);
-            w2 = (*mpND_w2);
 
             mNumTheta[0] = 1.0;
             mNumTheta[1] = 0.0;
@@ -97,10 +89,13 @@ namespace hopsan {
             mFilterOmega.initialize(mTimestep, mNumOmega, mDenOmega, t1-t2, -w1);
         }
 
-
         void simulateOneTimestep()
         {
+            double t1, a1, w1, c1, Zx1, t2, a2, w2, c2, Zx2, gearRatio, B;
+
             //Get variable values from nodes
+            gearRatio = (*mpGearRatio);
+            B = (*mpB);
             c1  = -(*mpND_c1)*gearRatio;
             Zx1 = (*mpND_Zx1)*pow(gearRatio, 2.0);
             c2  = (*mpND_c2);

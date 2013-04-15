@@ -23,14 +23,13 @@ namespace hopsan {
     {
 
     private:
-        double J, B, k;
+        double J;
+        double *mpB, *mpK;
         double mNumX[3], mNumV[2];
         double mDenX[3], mDenV[2];
-//        DoubleIntegratorWithDamping mIntegrator;
         SecondOrderTransferFunction mFilterX;
         FirstOrderTransferFunction mFilterV;
         double *mpND_t1, *mpND_a1, *mpND_w1, *mpND_c1, *mpND_Zx1, *mpND_t2, *mpND_a2, *mpND_w2, *mpND_c2, *mpND_Zx2;
-        double t1, a1, w1, c1, Zx1, t2, a2, w2, c2, Zx2;
         Port *mpP1, *mpP2;
 
     public:
@@ -41,19 +40,11 @@ namespace hopsan {
 
         void configure()
         {
-            //Set member attributes
-            J = 0.1;
-            B = 10.0;
-            k = 0.0;
-
-            //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeMechanicRotational");
             mpP2 = addPowerPort("P2", "NodeMechanicRotational");
-
-            //Register changable parameters to the HOPSAN++ core
-            registerParameter("J", "Moment of Inertia", "[kgm^2]", J);
-            registerParameter("B", "Viscous Friction", "[Nms/rad]", B);
-            registerParameter("k", "Spring Constant", "[Nm/rad]", k);
+            addConstant("J", "Moment of Inertia", "[kgm^2]", 0.1, J);
+            addInputVariable("B", "Viscous Friction", "[Nms/rad]", 10.0, &mpB);
+            addInputVariable("k", "Spring Constant", "[Nm/rad]", 0.0, &mpK);
         }
 
 
@@ -70,6 +61,10 @@ namespace hopsan {
             mpND_w2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::AngularVelocity);
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::WaveVariable);
             mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::CharImpedance);
+
+            double t1, a1, w1, t2, a2, B, k;
+            B = (*mpB);
+            k = (*mpK);
 
             t1 = (*mpND_t1);
             t2 = (*mpND_t2);
@@ -88,7 +83,6 @@ namespace hopsan {
             mDenV[0] = B;
             mDenV[1] = J;
 
-//            mIntegrator.initialize(mTimestep, 0, 0, 0, 0);
             mFilterX.initialize(mTimestep, mNumX, mDenX, t1-t2, -a1);
             mFilterV.initialize(mTimestep, mNumV, mDenV, t1-t2 - k*a2, -w1);
         }
@@ -97,14 +91,15 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Get variable values from nodes
+            double B, k, t1, a1, w1, c1, Zx1, t2, a2, w2, c2, Zx2;
             c1 = (*mpND_c1);
             Zx1 = (*mpND_Zx1);
             c2 = (*mpND_c2);
             Zx2 = (*mpND_Zx2);
+            B = (*mpB);
+            k = (*mpK);
 
             //Inertia equations
-//            mIntegrator.setDamping((B+Zx1+Zx2)/J*mTimestep);
-//            mIntegrator.integrate((c1-c2)/J);
             mDenX[1] = B+Zx1+Zx2;
             mDenV[0] = B+Zx1+Zx2;
             mFilterX.setDen(mDenX);
@@ -113,8 +108,6 @@ namespace hopsan {
             a2 = mFilterX.update(c1-c2);
             w2 = mFilterV.update(c1-c2 - k*a2);
 
-//            w2 = mIntegrator.valueFirst();
-//            a2 = mIntegrator.valueSecond();
             w1 = -w2;
             a1 = -a2;
             t1 = c1 + Zx1*w1;

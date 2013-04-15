@@ -121,7 +121,6 @@ namespace hopsan {
             mpND_cc2 = getSafeNodeDataPtr(mpPC2, NodeHydraulic::WaveVariable);
             mpND_Zcc2 = getSafeNodeDataPtr(mpPC2, NodeHydraulic::CharImpedance);
 
-            double xvin  = (*mpXvIn);
             double num[3] = {1.0, 0.0, 0.0};
             double den[3] = {1.0, 2.0*deltah/omegah, 1.0/(omegah*omegah)};
             filter.initialize(mTimestep, num, den, (*mpXvIn), (*mpXvIn), -(*mpXvmax), (*mpXvmax));
