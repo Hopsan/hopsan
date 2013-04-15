@@ -26,7 +26,8 @@ namespace hopsan {
     {
 
     private:
-        double L1, L2, w, m, B;
+        double L1, L2, w;
+        double *mpM, *mpB;
         double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_me1, *mpND_c1, *mpND_Zx1,
                *mpND_f2, *mpND_x2, *mpND_v2, *mpND_me2, *mpND_c2, *mpND_Zx2;  //Node data pointers
         double f1, x1, v1, c1, Zx1,
@@ -47,10 +48,6 @@ namespace hopsan {
             //! @todo set eqmass to some good values, should consider lever.
 
             //Set member attributes
-            L1 = 1;
-            L2 = 1;
-            m = 1.0;
-            B = 10;
             w = 1.0;
 
             //Add ports to the component
@@ -58,10 +55,10 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeMechanic");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("L_1", "Length", "[m]",               L1);
-            registerParameter("L_2", "Length", "[m]",               L2);
-            registerParameter("m",  "Mass", "[kg]",                m);
-            registerParameter("B",  "Viscous Friction", "[Ns/m]",  B);
+            addConstant("L_1", "Length", "[m]", 1,              L1);
+            addConstant("L_2", "Length", "[m]", 1,              L2);
+            addInputVariable("m",  "Mass", "[kg]",  1.0,              &mpM);
+            addInputVariable("B",  "Viscous Friction", "[Ns/m]", 10,  &mpB);
         }
 
 
@@ -90,7 +87,7 @@ namespace hopsan {
 
             w = (L1+L2)/L1;
 
-            mIntegrator.initialize(mTimestep, 0, (f1-f2)/m, -x1*w, -v1*w);
+            mIntegrator.initialize(mTimestep, 0, (f1-f2)/(*mpM), -x1*w, -v1*w);
             (*mpND_x2) = -x1*w;
             (*mpND_v2) = -v1*w;
 
@@ -103,8 +100,8 @@ namespace hopsan {
                 this->addDebugMessage(ss.str());
             }
 
-            (*mpND_me1) = m*w;
-            (*mpND_me2) = m;
+            (*mpND_me1) = (*mpM)*w;
+            (*mpND_me2) = (*mpM);
         }
 
 
@@ -115,6 +112,8 @@ namespace hopsan {
             Zx1 = (*mpND_Zx1)/pow(w, 2.0);
             c2 = (*mpND_c2);
             Zx2 = (*mpND_Zx2);
+            const double m = (*mpM);
+            const double B = (*mpB);
 
             //Mass equations
             mIntegrator.setDamping((B+Zx1+Zx2) / m * mTimestep);

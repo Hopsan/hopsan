@@ -34,7 +34,8 @@ namespace hopsan {
     {
 
     private:
-        double B, me;
+        double me;
+        double *mpB;
         double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_me1, *mpND_c1, *mpND_Zx1;  //Node data pointers
         double f1, x1, v1, c1, Zx1;                                                    //Node data variables
         double mNumX[2], mNumV[2];
@@ -51,9 +52,12 @@ namespace hopsan {
 
         void configure()
         {
+            //Add ports to the component
             mpP1 = addPowerPort("Pm1", "NodeMechanic");
-            addConstant("B", "Viscous Friction", "[Ns/m]", 0.001, B);
-            addConstant("m_e", "Equivalent Mass", "[kg]", 1.0, me);
+            addInputVariable("B", "Viscous Friction", "[Ns/m]", 0.001, &mpB); // B, Must not be zero - velocity will become very oscillative
+
+            // Add constants
+            addConstant("m_e", "Equivalent Mass", "[kg]", 1, me);
         }
 
 
@@ -75,10 +79,10 @@ namespace hopsan {
             mNumX[0] = 1.0;
             mNumX[1] = 0.0;
             mDenX[0] = 0.0;
-            mDenX[1] = B;
+            mDenX[1] = (*mpB);
             mNumV[0] = 1.0;
             mNumV[1] = 0.0;
-            mDenV[0] = B;
+            mDenV[0] = (*mpB);
             mDenV[1] = 0.0;
 
             mFilterX.initialize(mTimestep, mNumX, mDenX, -f1, x1);
@@ -95,8 +99,8 @@ namespace hopsan {
             Zx1 = (*mpND_Zx1);
 
             //Mass equations
-            mDenX[1] = B+Zx1;
-            mDenV[0] = B+Zx1;
+            mDenX[1] = (*mpB)+Zx1;
+            mDenV[0] = (*mpB)+Zx1;
             mFilterX.setDen(mDenX);
             mFilterV.setDen(mDenV);
 

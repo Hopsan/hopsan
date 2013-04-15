@@ -29,7 +29,7 @@
 using namespace hopsan;
 
 
-void Integrator::initialize(double timestep, double u0, double y0)
+void Integrator::initialize(const double timestep, const double u0, const double y0)
 {
 
     mDelayU = u0;
@@ -39,14 +39,14 @@ void Integrator::initialize(double timestep, double u0, double y0)
 }
 
 
-void Integrator::initializeValues(double u0, double y0)
+void Integrator::initializeValues(const double u0, const double y0)
 {
     mDelayU = u0;
     mDelayY = y0;
 }
 
 //! Updates the integrator one timestep and returns the new value
-double Integrator::update(double &u)
+double Integrator::update(const double &u)
 {
     //Filter equation
     //Bilinear transform is used

@@ -465,6 +465,15 @@ void verifyHmfComponentCompatibility(QDomElement &element, const QString hmfVers
         updateRenamedComponentType(element, "SignalSource", "SignalConstant");
         updateRenamedPort(element, "SignalConstant", "out", "y");
 
+        updateRenamedPort(element, "MechanicForceTransformer", "in", "F");
+
+        updateRenamedPort(element, "MechanicTranslationalMassWithCoulombFriction", "Pfs", "f_s");
+        updateRenamedPort(element, "MechanicTranslationalMassWithCoulombFriction", "Pfk", "f_k");
+
+        updateRenamedPort(element, "MechanicVelocityTransformer", "vin", "v");
+        updateRenamedPort(element, "MechanicVelocityTransformer", "xin", "x");
+
+
         // Fix changed parameter names, after introduction of readVariables
         updateRenamedParameter(element, "HydraulicLaminarOrifice", "K_c", "Kc");
         updateRenamedPort(element, "HydraulicPressureSourceC", "In", "p");

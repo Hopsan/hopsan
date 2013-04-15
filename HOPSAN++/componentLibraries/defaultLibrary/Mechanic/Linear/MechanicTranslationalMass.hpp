@@ -34,7 +34,8 @@ namespace hopsan {
     {
 
     private:
-        double m, B, k, xMin, xMax;
+        double m;
+        double *mpB, *mpK, *xMin, *xMax;
         double mLength;         //This length is not accesible by the user,
                                 //it is set from the start values by the c-components in the ends
         double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1, *mpND_me1, *mpND_f2, *mpND_x2, *mpND_v2, *mpND_c2, *mpND_Zx2, *mpND_me2;  //Node data pointers
@@ -53,23 +54,16 @@ namespace hopsan {
 
         void configure()
         {
-            //Set member attributes
-            m = 100.0;
-            B = 10;
-            k = 0.0;
-            xMin = 0.0;
-            xMax = 1.0;
-
             //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeMechanic");
             mpP2 = addPowerPort("P2", "NodeMechanic");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("m", "Mass", "[kg]",                  m);
-            registerParameter("B", "Viscous Friction", "[Ns/m]",    B);
-            registerParameter("k", "Spring Coefficient", "[N/m]",   k);
-            registerParameter("x_min", "Minimum Position", "[m]",   xMin);
-            registerParameter("x_max", "Maximum Position", "[m]",   xMax);
+            addConstant("m", "Mass", "[kg]",                      100.0, m);
+            addInputVariable("B", "Viscous Friction", "[Ns/m]",   10.0, &mpB);
+            addInputVariable("k", "Spring Coefficient", "[N/m]", 0.0, &mpK);
+            addInputVariable("x_min", "Minimum Position", "[m]", 0.0, &xMin);
+            addInputVariable("x_max", "Maximum Position", "[m]", 1.0, &xMax);
         }
 
 
@@ -103,16 +97,16 @@ namespace hopsan {
             mNumX[0] = 1.0;
             mNumX[1] = 0.0;
             mNumX[2] = 0.0;
-            mDenX[0] = k;
-            mDenX[1] = B;
+            mDenX[0] = (*mpK);
+            mDenX[1] = (*mpB);
             mDenX[2] = m;
             mNumV[0] = 1.0;
             mNumV[1] = 0.0;
-            mDenV[0] = B;
+            mDenV[0] = (*mpB);
             mDenV[1] = m;
 
             mFilterX.initialize(mTimestep, mNumX, mDenX, f1-f2, x2);
-            mFilterV.initialize(mTimestep, mNumV, mDenV, f1-f2 - k*x2, v2);
+            mFilterV.initialize(mTimestep, mNumV, mDenV, f1-f2 - (*mpK)*x2, v2);
 
             (*mpND_me1) = m;
             (*mpND_me2) = m;
@@ -136,8 +130,11 @@ namespace hopsan {
             Zx1 = (*mpND_Zx1);
             c2 = (*mpND_c2);
             Zx2 = (*mpND_Zx2);
+            const double k = (*mpK);
+            const double B = (*mpB);
 
             //Mass equations
+            mDenX[0] = k;
             mDenX[1] = B+Zx1+Zx2;
             mDenV[0] = B+Zx1+Zx2;
             mFilterX.setDen(mDenX);
@@ -154,16 +151,16 @@ namespace hopsan {
 //                addDebugMessage(ss.str());
 //            }
 
-            if(x2<xMin)
+            if(x2<(*xMin))
             {
-                x2=xMin;
+                x2=(*xMin);
                 v2=0.0;
                 mFilterX.initializeValues(c1-c2, x2);
                 mFilterV.initializeValues(c1-c2, 0.0);
             }
-            if(x2>xMax)
+            if(x2>(*xMax))
             {
-                x2=xMax;
+                x2=(*xMax);
                 v2=0.0;
                 mFilterX.initializeValues(c1-c2, x2);
                 mFilterV.initializeValues(c1-c2, 0.0);

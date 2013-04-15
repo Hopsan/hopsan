@@ -32,11 +32,11 @@ namespace hopsan {
     {
 
     private:
-        double v;
-        double signal, f, vin, x, c, Zx, me;
-        double *mpND_xin, *mpND_vin, *mpND_f, *mpND_x, *mpND_v, *mpND_c, *mpND_Zx, *mpND_me;
+        bool mXIsConnected;
+        double me;
+        double *mpND_f, *mpND_x, *mpND_v, *mpND_c, *mpND_Zx, *mpND_me;
         Integrator mInt;
-        Port *mpXin, *mpVin, *mpPm1;
+        Port *mpXPort, *mpVPort, *mpPm1;
 
     public:
         static Component *Creator()
@@ -46,26 +46,20 @@ namespace hopsan {
 
         void configure()
         {
-            //Set member attributes
-            v = 0.0;
-            me = 10;
-
             //Add ports to the component
-            mpXin = addReadPort("xin", "NodeSignal", Port::NotRequired);
-            mpVin = addReadPort("vin", "NodeSignal", Port::NotRequired);
             mpPm1 = addPowerPort("Pm1", "NodeMechanic");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("v", "Generated Velocity", "[m/s]", v);
-            registerParameter("m_e", "Equivalent Mass", "[kg]", me);
+            mpVPort = addInputVariable("v", "Generated Velocity", "[m/s]", 0.0, &mpND_v);
+            mpXPort = addInputVariable("x", "Generated Position", "m", 0.0, &mpND_x);
+
+            // add constants
+            addConstant("m_e", "Equivalent Mass", "[kg]", 10, me);
         }
 
 
         void initialize()
         {
-            mpND_xin  = getSafeNodeDataPtr(mpXin, NodeSignal::Value, x);
-            mpND_vin  = getSafeNodeDataPtr(mpVin, NodeSignal::Value, v);
-
             mpND_f = getSafeNodeDataPtr(mpPm1, NodeMechanic::Force);
             mpND_x = getSafeNodeDataPtr(mpPm1, NodeMechanic::Position);
             mpND_v = getSafeNodeDataPtr(mpPm1, NodeMechanic::Velocity);
@@ -74,20 +68,24 @@ namespace hopsan {
             mpND_me = getSafeNodeDataPtr(mpPm1, NodeMechanic::EquivalentMass);
 
             mInt.initialize(mTimestep, (*mpND_v), (*mpND_x));
-
             (*mpND_me) = me;
 
-            if(mpXin->isConnected() && !mpVin->isConnected())
+            if (mpXPort->isConnected())
             {
-                std::stringstream ss;
-                ss << "Position input is connected but velocity is constant, kinematic relationsship must be manually enforced.";
-                addWarningMessage(ss.str());
+               mXIsConnected = true;
             }
-            else if(mpXin->isConnected() && mpVin->isConnected())
+            else
             {
-                std::stringstream ss;
-                ss << "Both position and velocity inputs are connected, kinematic relationsship must be manually enforced.";
-                addWarningMessage(ss.str());
+               mXIsConnected = false;
+            }
+
+            if(mXIsConnected && !mpVPort->isConnected())
+            {
+                addWarningMessage("Position input is connected but velocity is constant, kinematic relationsship must be manually enforced.");
+            }
+            else if(mXIsConnected && mpVPort->isConnected())
+            {
+                addWarningMessage("Both position and velocity inputs are connected, kinematic relationsship must be manually enforced.");
             }
         }
 
@@ -95,25 +93,25 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            vin = (*mpND_vin);
-            c = (*mpND_c);
-            Zx = (*mpND_Zx);
+            const double v = (*mpND_v);
+            const double c = (*mpND_c);
+            const double Zx = (*mpND_Zx);
+            double x;
 
             //Source equations
-            if(mpXin->isConnected())
+            if(mXIsConnected)
             {
-                x = (*mpND_xin);
+                x = (*mpND_x);
             }
             else
             {
-                x = mInt.update(vin);
+                x = mInt.update(v);
             }
-            f = c + Zx*vin;
 
             //Write values to nodes
-            (*mpND_f) = f;
+            (*mpND_f) = c + Zx*v;
             (*mpND_x) = x;
-            (*mpND_v) = vin;
+            (*mpND_v) = v;
         }
     };
 }

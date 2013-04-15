@@ -30,9 +30,8 @@ namespace hopsan {
     {
 
     private:
-        double f;
         double *mpND_signal, *mpND_f, *mpND_c, *mpND_Zx;
-        Port *mpIn, *mpP1;
+        Port *mpP1;
 
     public:
         static Component *Creator()
@@ -42,17 +41,14 @@ namespace hopsan {
 
         void configure()
         {
-            mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
+            addInputVariable("F", "Generated force", "[N]", 0.0, &mpND_signal);
             mpP1 = addPowerPort("P1", "NodeMechanic");
-            addConstant("F", "Generated force", "[N]", 0.0, f);
             disableStartValue(mpP1, NodeMechanic::Force);
         }
 
 
         void initialize()
         {
-            mpND_signal = getSafeNodeDataPtr(mpIn, NodeSignal::Value, f);
-
             mpND_f = getSafeNodeDataPtr(mpP1, NodeMechanic::Force);
             mpND_c = getSafeNodeDataPtr(mpP1, NodeMechanic::WaveVariable);
             mpND_Zx = getSafeNodeDataPtr(mpP1, NodeMechanic::CharImpedance);
@@ -65,15 +61,7 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             (*mpND_c) = (*mpND_signal);
-//            if(mpIn->isConnected())				//Temporary RT solution
-//                (*mpND_c) = (*mpND_signal);
-//            else
-//                (*mpND_c) = f;
             (*mpND_Zx) = 0.0;
-
-//            std::stringstream ss;
-//            ss << "C: " << (*mpND_c);
-//            addInfoMessage(ss.str());
         }
     };
 }

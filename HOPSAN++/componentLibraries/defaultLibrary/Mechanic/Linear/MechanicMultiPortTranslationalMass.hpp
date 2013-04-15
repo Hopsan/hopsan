@@ -34,7 +34,7 @@ namespace hopsan {
     {
 
     private:
-        double m, B, k, xMin, xMax;
+        double *mpM, *B, *k, *xMin, *xMax;
         double mLength;         //This length is not accesible by the user,
                                 //it is set from the start values by the c-components in the ends
         double f1, v1, c1, Zx1, f2, v2, c2, Zx2;                                                    //Node data variables
@@ -54,14 +54,17 @@ namespace hopsan {
 
         void configure()
         {
+            //Add ports to the component
             mpP1 = addPowerMultiPort("P1", "NodeMechanic");
             mpP2 = addPowerMultiPort("P2", "NodeMechanic");
 
-            addConstant("m", "Mass", "[kg]", 100.0, m);
-            addConstant("B", "Viscous Friction", "[Ns/m]", 10.0, B);
-            addConstant("k", "Spring Coefficient", "[N/m]", 0.0, k);
-            addConstant("x_min", "Minimum Position", "[m]", 0.0, xMin);
-            addConstant("x_max", "Maximum Position", "[m]", 1.0, xMax);
+            //Register changable parameters to the HOPSAN++ core
+            addInputVariable("m", "Mass", "[kg]",                100.0, &mpM);
+            addInputVariable("B", "Viscous Friction", "[Ns/m]",  10.0,  &B);
+            //addInputVariable("k", "Spring Coefficient", "[N/m]", 0.0,   &k);
+            //! @todo what about k
+            addInputVariable("x_min", "Minimum Position", "[m]", 0.0,   &xMin);
+            addInputVariable("x_max", "Maximum Position", "[m]", 1.0,   &xMax);
         }
 
 
@@ -172,11 +175,11 @@ namespace hopsan {
 
             for (size_t i=0; i<mNumPorts1; ++i)
             {
-                (*mvpN_me1[i]) = m;
+                (*mvpN_me1[i]) = (*mpM);
             }
             for (size_t i=0; i<mNumPorts2; ++i)
             {
-                (*mvpN_me2[i]) = m;
+                (*mvpN_me2[i]) = (*mpM);
             }
         }
 
@@ -205,20 +208,22 @@ namespace hopsan {
                 Zx2 += (*mvpN_Zx2[i]);
             }
 
-            mIntegrator.setDamping((B+Zx1+Zx2) / m * mTimestep);
+            const double m = (*mpM);
+
+            mIntegrator.setDamping(((*B)+Zx1+Zx2) / m * mTimestep);
             mIntegrator.integrateWithUndo((c1-c2)/m);
             v2 = mIntegrator.valueFirst();
             double x_nom = mIntegrator.valueSecond();
 
-            if(x_nom<xMin)
+            if(x_nom<(*xMin))
             {
-                x_nom=xMin;
+                x_nom=(*xMin);
                 v2=std::max(0.0, v2);
                 mIntegrator.initializeValues(0.0, x_nom, v2);
             }
-            if(x_nom>xMax)
+            if(x_nom>(*xMax))
             {
-                x_nom=xMax;
+                x_nom=(*xMax);
                 v2=std::min(0.0, v2);
                 mIntegrator.initializeValues(0.0, x_nom, v2);
             }

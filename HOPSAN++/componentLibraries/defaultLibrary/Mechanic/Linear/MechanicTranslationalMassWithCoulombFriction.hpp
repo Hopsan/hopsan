@@ -39,20 +39,19 @@ namespace hopsan {
     {
 
     private:
-        double m, B, fs, fk, xMin, xMax;                                                                        //Changeable parameters
+        double m;
+        double *mpB, *mpFs, *mpFk, *xMin, *xMax;                                                                        //Changeable parameters
         double wx, u0, f, be, fe;                                                                              //Local Variables
         double mLength;                                                                                     //This length is not accesible by the user, it is set from the start values by the c-components in the ends
         double *mpND_f1, *mpND_x1, *mpND_v1, *mpND_c1, *mpND_Zx1, *mpND_me1;    //Node data pointers
         double *mpND_f2, *mpND_x2, *mpND_v2, *mpND_c2, *mpND_Zx2, *mpND_me2;
-        double *mpND_fs, *mpND_fk;
         double f1, x1, v1, c1, Zx1, f2, x2, v2, c2, Zx2;                                                    //Node data variables
-        //DoubleIntegratorWithDamping mIntegrator;                                                            //External functions
+                                                           //External functions
         double mNum[3];
         double mDen[3];
         DoubleIntegratorWithDampingAndCoulombFriction mIntegrator;
-//        SecondOrderFilter mFilter;
-//        Integrator mInt;
-        Port *mpP1, *mpP2, *mpPfs, *mpPfk;                                                                                  //Ports
+
+        Port *mpP1, *mpP2;                                                                                  //Ports
 
     public:
         static Component *Creator()
@@ -62,27 +61,18 @@ namespace hopsan {
 
         void configure()
         {
-            //Set member attributes
-            m = 100.0;
-            B = 10;
-            fs = 50;
-            fk = 45;
-            xMin = 0;
-            xMax = 1;
-
             //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeMechanic");
             mpP2 = addPowerPort("P2", "NodeMechanic");
-            mpPfs = addReadPort("Pfs", "NodeSignal", Port::NotRequired);
-            mpPfk = addReadPort("Pfk", "NodeSignal", Port::NotRequired);
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("m", "Mass", "[kg]", m);
-            registerParameter("b", "Viscous Friction Coefficient", "[Ns/m]", B);
-            registerParameter("f_s", "Static Friction Force", "[N]",  fs);
-            registerParameter("f_k", "Kinetic Friction Force", "[N]",  fk);
-            registerParameter("x_min", "Lower Limit of Position", "[m]",  xMin);
-            registerParameter("x_max", "Upper Limit of Position", "[m]",  xMax);
+            addConstant("m", "Mass", "[kg]", 100.0, m);
+
+            addInputVariable("b", "Viscous Friction Coefficient", "[Ns/m]", 10, &mpB);
+            addInputVariable("f_s", "Static Friction Force", "[N]", 50,  &mpFs);
+            addInputVariable("f_k", "Kinetic Friction Force", "[N]", 45,  &mpFk);
+            addInputVariable("x_min", "Lower Limit of Position", "[m]", 0,  &xMin);
+            addInputVariable("x_max", "Upper Limit of Position", "[m]", 1,  &xMax);
         }
 
 
@@ -103,9 +93,6 @@ namespace hopsan {
             mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanic::CharImpedance);
             mpND_me2 = getSafeNodeDataPtr(mpP2, NodeMechanic::EquivalentMass);
 
-            mpND_fs = getSafeNodeDataPtr(mpPfs, NodeSignal::Value, fs);
-            mpND_fk = getSafeNodeDataPtr(mpPfk, NodeSignal::Value, fk);
-
             f1 = (*mpND_f1);
             x1 = (*mpND_x1);
             v1 = (*mpND_v1);
@@ -115,16 +102,8 @@ namespace hopsan {
 
             mLength = x1+x2;
 
-//            //Initialize integrator
-//            mNum[0] = 0.0;
-//            mNum[1] = 1.0;
-//            mNum[2] = 0.0;
-//            mDen[0] = 0;
-//            mDen[1] = b;
-//            mDen[2] = m;
-//            mFilter.initialize(mTimestep, mNum, mDen, -f1, -v1);
-//            mInt.initialize(mTimestep, -v1, -x1+mLength);
-            mIntegrator.initialize(mTimestep, 0, m, fs, fk, 0, 0, 0);
+            //Initialize integrator
+            mIntegrator.initialize(mTimestep, 0, m, (*mpFs), (*mpFk), 0, 0, 0);
 
             (*mpND_me1) = m;
             (*mpND_me2) = m;
@@ -149,25 +128,23 @@ namespace hopsan {
             x2 = (*mpND_x2);
             c2 = (*mpND_c2);
             Zx2 = (*mpND_Zx2);
-            fs = (*mpND_fs);
-            fk = (*mpND_fk);
 
-            mIntegrator.setFriction(fs, fk);
+            mIntegrator.setFriction((*mpFs), (*mpFk));
 
-            mIntegrator.setDamping((B+Zx1+Zx2) / m * mTimestep);
+            mIntegrator.setDamping(((*mpB)+Zx1+Zx2) / m * mTimestep);
             mIntegrator.integrateWithUndo((c1-c2)/m);
             v2 = mIntegrator.valueFirst();
             x2 = mIntegrator.valueSecond();
 
-            if(x2<xMin)
+            if(x2<(*xMin))
             {
-                x2=xMin;
+                x2=(*xMin);
                 v2=std::max(0.0, v2);
                 mIntegrator.initializeValues(0.0, x2, v2);
             }
-            if(x2>xMax)
+            if(x2>(*xMax))
             {
-                x2=xMax;
+                x2=(*xMax);
                 v2=std::min(0.0, v2);
                 mIntegrator.initializeValues(0.0, x2, v2);
             }

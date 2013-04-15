@@ -33,9 +33,9 @@ namespace hopsan {
 class DLLIMPORTEXPORT Integrator
 {
     public:
-        void initialize(double timestep, double u0=0.0, double y0=0.0);
-        void initializeValues(double u0, double y0);
-        double update(double &u);
+        void initialize(const double timestep, const double u0=0.0, const double y0=0.0);
+        void initializeValues(const double u0, const double y0);
+        double update(const double &u);
         double value();
 
     private:

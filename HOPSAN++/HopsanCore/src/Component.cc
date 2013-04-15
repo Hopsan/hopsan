@@ -729,13 +729,12 @@ void Component::deletePort(const string name)
 //! @deprecated
 double *Component::getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue)
 {
+    addErrorMessage("getSafeNodeDataPtr(pPort, dataId, defaultValue), is no longer supported. Use setStartValue() instead");
     double *pData = getSafeNodeDataPtr(pPort, dataId);
     *pData = defaultValue;
     return pData;
 }
 
-//! @deprecated
-//! @note Use getNodeDataPtr(Port *pPort, const int dataId) instead
 double *Component::getSafeNodeDataPtr(Port *pPort, const int dataId)
 {
     double *pData=0;

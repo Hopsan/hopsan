@@ -30,8 +30,7 @@ namespace hopsan {
     {
 
     private:
-        double k;
-        double v1, c1, lastc1, v2, c2, lastc2, Zc;
+        double *mpK;
         double *mpND_f1, *mpND_f2, *mpND_v1, *mpND_c1, *mpND_Zc1, *mpND_v2, *mpND_c2, *mpND_Zc2;
         Port *mpP1, *mpP2;
 
@@ -43,15 +42,12 @@ namespace hopsan {
 
         void configure()
         {
-            //Set member attributes
-            k = 100.0;
-
             //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeMechanic");
             mpP2 = addPowerPort("P2", "NodeMechanic");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("k", "Spring Coefficient", "[N/m]",  k);
+            addInputVariable("k", "Spring Coefficient", "[N/m]", 100.0,  &mpK);
         }
 
 
@@ -66,28 +62,26 @@ namespace hopsan {
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanic::WaveVariable);
             mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeMechanic::CharImpedance);
 
-            Zc = k*mTimestep;
-
             //! @todo Is this correct? Ask Petter!
             //(*mpND_c1) = (*mpND_f2)+2.0*Zc*(*mpND_v2);
             //(*mpND_c2) = (*mpND_f1)+2.0*Zc*(*mpND_v1);
-            (*mpND_Zc1) = Zc;
-            (*mpND_Zc2) = Zc;
+            (*mpND_Zc1) = (*mpK)*mTimestep;
+            (*mpND_Zc2) = (*mpK)*mTimestep;
         }
 
 
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            v1 = (*mpND_v1);
-            lastc1 = (*mpND_c1);
-            v2 = (*mpND_v2);
-            lastc2 = (*mpND_c2);
+            const double v1 = (*mpND_v1);
+            const double lastc1 = (*mpND_c1);
+            const double v2 = (*mpND_v2);
+            const double lastc2 = (*mpND_c2);
 
             //Spring equations
-            Zc = k*mTimestep;
-            c1 = lastc2 + 2.0*Zc*v2;
-            c2 = lastc1 + 2.0*Zc*v1;
+            const double Zc = (*mpK)*mTimestep;
+            const double c1 = lastc2 + 2.0*Zc*v2;
+            const double c2 = lastc1 + 2.0*Zc*v1;
 
             //Write new values to nodes
             (*mpND_c1) = c1;
