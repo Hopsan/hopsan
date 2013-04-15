@@ -56,8 +56,8 @@ private:
 
 public:
     LoadExternal(ComponentFactory* pComponentFactory, NodeFactory* pNodefactory, HopsanCoreMessageHandler *pMessenger);
-    bool load(const std::string libpath);
-    bool unLoad(const std::string libpath);
+    bool load(const std::string &rLibpath);
+    bool unLoad(const std::string &rLibpath);
     void setFactory();
     void getLoadedLibNames(std::vector<std::string> &rLibNames);
     void getLibContents(const std::string libpath, std::vector<std::string> &rComponents, std::vector<std::string> &rNodes);

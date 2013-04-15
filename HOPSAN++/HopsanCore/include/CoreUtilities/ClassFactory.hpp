@@ -55,38 +55,33 @@ namespace hopsan {
 
     public:
         //! @brief Used to register creator functions
-        _Key registerCreatorFunction(_Key idKey, CreatorFunctionT classCreator)
+        void registerCreatorFunction(const _Key &rIdKey, CreatorFunctionT classCreator)
         {
-            //std::cout << "Registering: " << idKey << std::endl;
-            //std::cout << "BeforeInsert: Size: " << mFactoryMap.size() << std::endl;
             std::pair<typename FactoryMapT::iterator, bool> rc;
-            rc = mFactoryMap.insert(FactoryPairT(idKey, classCreator));
+            rc = mFactoryMap.insert(FactoryPairT(rIdKey, classCreator));
             if (!rc.second)
             {
-                //std::cout << "Warning! You are trying to register a Key value that already exist. This registration will be ignored, Key: " << idKey << std::endl;
-                mRegStatusVector.push_back(std::pair<_Key, int>(idKey, AllreadyRegistered));
+                mRegStatusVector.push_back(std::pair<_Key, int>(rIdKey, AllreadyRegistered));
             }
             else
             {
-                mRegStatusVector.push_back(std::pair<_Key, int>(idKey, RegisteredOk));
+                mRegStatusVector.push_back(std::pair<_Key, int>(rIdKey, RegisteredOk));
             }
-            //std::cout << "AfterInsert: Size: " << mFactoryMap.size() << std::endl;
-            return idKey;
         }
 
         //! @brief Reserve keyword by inserting NULL ptr,
-        bool reserveKey(_Key idKey)
+        bool reserveKey(const _Key &rIdKey)
         {
             std::pair<typename FactoryMapT::iterator, bool> rc;
-            rc = mFactoryMap.insert(FactoryPairT(idKey, static_cast<CreatorFunctionT>(0)));
+            rc = mFactoryMap.insert(FactoryPairT(rIdKey, static_cast<CreatorFunctionT>(0)));
             return rc.second;
         }
 
         //! @brief Creates an instance based on the key using creator function (if registered)
-        _Base* createInstance(_Key idKey)
+        _Base* createInstance(const _Key &rIdKey)
         {
             //std::cout << "Create: Size: " << mFactoryMap.size() << std::endl;
-            typename FactoryMapT::iterator it = mFactoryMap.find(idKey);
+            typename FactoryMapT::iterator it = mFactoryMap.find(rIdKey);
             if (it != mFactoryMap.end())
             {
                 if (it->second)
@@ -94,15 +89,15 @@ namespace hopsan {
                     return it->second();
                 }
             }
-            mRegStatusVector.push_back(std::pair<_Key, int>(idKey, NotRegistered));
+            mRegStatusVector.push_back(std::pair<_Key, int>(rIdKey, NotRegistered));
             //std::cout << "Warning key: " << idKey << " not found!" << std::endl;
             return NULL;
         }
 
         //! @brief Check if the factory has key registerd
-        bool hasKey(_Key idKey) const
+        bool hasKey(const _Key &rIdKey) const
         {
-            if (mFactoryMap.find(idKey) != mFactoryMap.end())
+            if (mFactoryMap.find(rIdKey) != mFactoryMap.end())
             {
                 return true;
             }
@@ -113,7 +108,7 @@ namespace hopsan {
         }
 
         //! @brief Return a vector with all registered keys
-        std::vector<_Key> getRegisteredKeys() const
+        const std::vector<_Key> getRegisteredKeys() const
         {
             std::vector<_Key> keys;
             keys.reserve(mFactoryMap.size());
@@ -126,10 +121,10 @@ namespace hopsan {
         }
 
         //! @brief Unregister creator functions for given key
-        void unRegisterCreatorFunction(_Key idKey)
+        void unRegisterCreatorFunction(const _Key &rIdKey)
         {
             size_t rc;
-            rc = mFactoryMap.erase(idKey);
+            rc = mFactoryMap.erase(rIdKey);
             if (rc > 0)
             {
                 //std::cout << "Sucessfully unregistered: " << idKey << std::endl;
@@ -137,7 +132,7 @@ namespace hopsan {
             }
             else
             {
-                mRegStatusVector.push_back(std::pair<_Key, int>(idKey, NotRegistered));
+                mRegStatusVector.push_back(std::pair<_Key, int>(rIdKey, NotRegistered));
                 //std::cout << "Failed to unregister: " << idKey << std::endl;
             }
         }

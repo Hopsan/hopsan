@@ -40,7 +40,6 @@ namespace hopsan {
     private:
         Integrator mIntegrator;
         double *mpND_in, *mpND_out;
-        Port *mpIn, *mpOut;
 
     public:
         static Component *Creator()
@@ -50,22 +49,16 @@ namespace hopsan {
 
         void configure()
         {
-
-            mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
+            addInputVariable("in", "", "", 0.0, &mpND_in);
+            addOutputVariable("out", "", "", 0.0, &mpND_out);
         }
 
 
         void initialize()
         {
-            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE, 0);
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
-
-            double startY = mpOut->getStartValue(NodeSignal::VALUE);
+            double startY = (*mpND_out);
             double startU = (*mpND_in);
             mIntegrator.initialize(mTimestep, startU, startY);
-
-//            (*mpND_out) = (*mpND_in);
         }
 
 

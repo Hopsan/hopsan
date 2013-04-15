@@ -30,7 +30,7 @@ class MyExampleOrifice : public ComponentQ
 {
 private:
     // Private member variables
-    double mKc;
+    double *mpKc;
     Port *mpP1, *mpP2;
 
 public:
@@ -46,15 +46,13 @@ public:
     // This function is mandatory
     void configure()
     {
-        // Set initial member variable values
-        mKc = 1.0e-11;
 
         // Add ports to the component
-        mpP1 = addPowerPort("P1", "NodeHydraulic");
-        mpP2 = addPowerPort("P2", "NodeHydraulic");
+        mpP1 = addPowerPort("P1", "NodeHydraulic", "Port 1");
+        mpP2 = addPowerPort("P2", "NodeHydraulic", "Port 2");
 
-        // Register component parameters that can be changed by the user
-        registerParameter("Kc", "Pressure-Flow Coefficient", "[m^5/Ns]", mKc);
+        // Add inputVariable, if the port is not connected the default value is used
+        addInputVariable("Kc", "Pressure-Flow Coefficient", "[m^5/Ns]", 1.0e-11, &mpKc);
     }
 
     // The initialize function is called before simulation begins.
@@ -72,13 +70,14 @@ public:
     void simulateOneTimestep()
     {
         //Get variable values from nodes
-        double c1 = mpP1->readNode(NodeHydraulic::WaveVariable);
-        double Zc1 = mpP1->readNode(NodeHydraulic::CharImpedance);
-        double c2 = mpP2->readNode(NodeHydraulic::WaveVariable);
-        double Zc2 = mpP2->readNode(NodeHydraulic::CharImpedance);
+        const double c1 = mpP1->readNode(NodeHydraulic::WaveVariable);
+        const double Zc1 = mpP1->readNode(NodeHydraulic::CharImpedance);
+        const double c2 = mpP2->readNode(NodeHydraulic::WaveVariable);
+        const double Zc2 = mpP2->readNode(NodeHydraulic::CharImpedance);
+        const double Kc = (*mpKc); //Copy directly from data ptr
 
         //Orifice equations
-        double q2 = mKc*(c1-c2)/(1.0+mKc*(Zc1+Zc2));
+        double q2 = Kc*(c1-c2)/(1.0+Kc*(Zc1+Zc2));
         double q1 = -q2;
         double p1 = c1 + q1*Zc1;
         double p2 = c2 + q2*Zc2;

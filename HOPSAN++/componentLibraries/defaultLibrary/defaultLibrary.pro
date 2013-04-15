@@ -258,7 +258,11 @@ HEADERS += \
     Mechanic/Rotational/MechanicJLink.hpp \
     Mechanic/Rotational/MechanicMotor.hpp \
     Mechanic/Rotational/MechanicRackAndPinion.hpp \
-    Signal/Sources&Sinks/SignalConstant.hpp
+    Signal/Sources&Sinks/SignalConstant.hpp \
+    Signal/Filters/SignalIntegrator2.hpp \
+    Signal/Filters/SignalIntegratorLimited2.hpp \
+    Signal/Filters/SignalIntegratorLimited.hpp \
+    Signal/Filters/SignalIntegrator.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \
@@ -266,4 +270,5 @@ SOURCES += \
 
 OTHER_FILES += \
     Special/SignalFFB/HopsanDefaultFBBComponents.cci \
-    Electric/HopsanDefaultElectricComponents.cci
+    Electric/HopsanDefaultElectricComponents.cci \
+    Signal/Filters/hp1filter.svg

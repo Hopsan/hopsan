@@ -30,6 +30,7 @@
 #include "Parameters.h"
 #include "win32dll.h"
 #include <string>
+//#include <cstring>
 #include <map>
 
 namespace hopsan {
@@ -282,6 +283,10 @@ class DLLIMPORTEXPORT ComponentQ : public Component
     bool isComponentQ() const {return true;}
 };
 
+//struct ComponentKeyComp {
+//  bool operator() (const char* lhs, const char* rhs) const
+//  {return strcmp(lhs, rhs)!=0;}
+//};
 typedef ClassFactory<std::string, Component> ComponentFactory;
 }
 

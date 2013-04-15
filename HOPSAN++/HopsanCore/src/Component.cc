@@ -140,6 +140,7 @@ const std::vector<VariameterDescription>* Component::getVariameters()
     PortPtrMapT::iterator pit;
     for (pit=mPortPtrMap.begin(); pit!=mPortPtrMap.end(); ++pit)
     {
+        //! @todo we should get name unit and description from startnode, as the actual node may have description from someone else, or maybe that info should not be in the actual node
         const vector<NodeDataDescription>* pDescs = pit->second->getNodeDataDescriptions();
         if (pDescs)
         {
@@ -729,7 +730,7 @@ void Component::deletePort(const string name)
 //! @deprecated
 double *Component::getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue)
 {
-    addErrorMessage("getSafeNodeDataPtr(pPort, dataId, defaultValue), is no longer supported. Use setStartValue() instead");
+    addErrorMessage("In: "+this->getName()+", getSafeNodeDataPtr(pPort, dataId, defaultValue), is no longer supported. Use setStartValue() instead");
     double *pData = getSafeNodeDataPtr(pPort, dataId);
     *pData = defaultValue;
     return pData;

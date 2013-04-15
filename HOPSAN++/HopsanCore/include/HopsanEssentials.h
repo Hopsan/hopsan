@@ -59,13 +59,13 @@ public:
     ComponentSystem* createComponentSystem();
     void removeComponent(Component *pComponent);
     void removeNode(Node *pNode);
-    bool hasComponent(const std::string type);
-    bool reserveComponentTypeName(const std::string typeName);
-    std::vector<std::string> getRegisteredComponentTypes() const;
+    bool hasComponent(const std::string &rType);
+    bool reserveComponentTypeName(const std::string &rTypeName);
+    const std::vector<std::string> getRegisteredComponentTypes() const;
 
     // Node creation
     Node* createNode(const std::string &rNodeType);
-    std::vector<std::string> getRegisteredNodeTypes() const;
+    const std::vector<std::string> getRegisteredNodeTypes() const;
 
     // Messages
     HopsanCoreMessageHandler* getCoreMessageHandler();
@@ -73,13 +73,13 @@ public:
     size_t checkMessage();
 
     // External libraries
-    bool loadExternalComponentLib(const std::string path);
-    bool unLoadExternalComponentLib(const std::string path);
+    bool loadExternalComponentLib(const std::string &rPath);
+    bool unLoadExternalComponentLib(const std::string &rPath);
     void getExternalComponentLibNames(std::vector<std::string> &rLibNames);
-    void getExternalLibraryContents(const std::string libpath, std::vector<std::string> &rComponents, std::vector<std::string> &rNodes);
+    void getExternalLibraryContents(const std::string &rLibpath, std::vector<std::string> &rComponents, std::vector<std::string> &rNodes);
 
     // Loading HMF models
-    ComponentSystem* loadHMFModel(const std::string filePath, double &rStartTime, double &rStopTime);
+    ComponentSystem* loadHMFModel(const std::string &rFilePath, double &rStartTime, double &rStopTime);
     ComponentSystem* loadHMFModel(const std::vector<unsigned char> xmlVector);
     ComponentSystem* loadHMFModel(const std::string xmlString);
 
@@ -89,6 +89,6 @@ public:
 
 void openLogFile();
 void closeLogFile();
-void addLogMess(const std::string log);
+void addLogMess(const std::string &rMessage);
 }
 #endif // HopsanEssentials_H

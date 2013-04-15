@@ -30,15 +30,9 @@ class MyExampleVolume : public ComponentC
 {
 private:
     // Private member variables
-    double mStartPressure;
-    double mStartFlow;
-    double mZc;
     double mAlpha;
-    double mVolume;
-    double mBulkmodulus;
+    double *mpVolume, *mpBulkmodulus;
     Port *mpP1, *mpP2;
-
-    double debug,tid1,tid2;
 
 public:
     // The creator function that is registered when a component lib is loaded into Hopsan
@@ -53,21 +47,16 @@ public:
     // This function is mandatory
     void configure()
     {
-        // Set initial member variable values
-        mStartPressure = 0.0;
-        mStartFlow     = 0.0;
-        mBulkmodulus   = 1.0e9;
-        mVolume        = 1.0e-3;
-        mAlpha         = 0.1;
-
         // Add ports to the component
-        mpP1 = addPowerPort("P1", "NodeHydraulic");
-        mpP2 = addPowerPort("P2", "NodeHydraulic");
+        mpP1 = addPowerPort("P1", "NodeHydraulic", "Port1");
+        mpP2 = addPowerPort("P2", "NodeHydraulic", "Port2");
 
-        // Register component parameters that can be changed by the user
-        registerParameter("V", "Volume", "[m^3]",            mVolume);
-        registerParameter("Be", "Bulkmodulus", "[Pa]", mBulkmodulus);
-        registerParameter("a", "Low pass coeficient to dampen standing delayline waves", "[-]",  mAlpha);
+        // Add inputVariables, if the ports is not connected the default value is used
+        addInputVariable("V", "Volume", "m^3", 1.0e-3, &mpVolume);
+        addInputVariable("Be", "Bulkmodulus", "Pa", 1.0e9, &mpBulkmodulus);
+
+        // Register parameters that are constant during simulation
+        addConstant("a", "Low pass coeficient to dampen standing delayline waves", "", 0.1, mAlpha);
     }
 
 
@@ -77,17 +66,25 @@ public:
     // This function is optional but most likely needed
     void initialize()
     {
-        mZc = mBulkmodulus/mVolume*mTimestep/(1-mAlpha); //Need to be updated at simulation start since it is volume and bulk that are set.
+        // Read from node data ptrs
+        const double Be = (*mpBulkmodulus);
+        const double V = (*mpVolume);
+
+        // Decide initial Zc
+        const double Zc = Be/V*mTimestep/(1.0-mAlpha);
+
+        // Set initial values
+        const double startPressure1 = getStartValue(mpP1,NodeHydraulic::Pressure);
+        const double startFlow1     = getStartValue(mpP1,NodeHydraulic::Flow);
+        const double startPressure2 = getStartValue(mpP2,NodeHydraulic::Pressure);
+        const double startFlow2     = getStartValue(mpP2,NodeHydraulic::Flow);
 
         // Write to nodes
-        mpP1->writeNode(NodeHydraulic::Flow,         mStartFlow);
-        mpP1->writeNode(NodeHydraulic::Pressure,     mStartPressure);
-        mpP1->writeNode(NodeHydraulic::WaveVariable, mStartPressure+mZc*mStartFlow);
-        mpP1->writeNode(NodeHydraulic::CharImpedance,      mZc);
-        mpP2->writeNode(NodeHydraulic::Flow,         mStartFlow);
-        mpP2->writeNode(NodeHydraulic::Pressure,     mStartPressure);
-        mpP2->writeNode(NodeHydraulic::WaveVariable, mStartPressure+mZc*mStartFlow);
-        mpP2->writeNode(NodeHydraulic::CharImpedance,      mZc);
+        mpP1->writeNode(NodeHydraulic::WaveVariable, startPressure2+Zc*startFlow2);
+        mpP1->writeNode(NodeHydraulic::CharImpedance,      Zc);
+
+        mpP2->writeNode(NodeHydraulic::WaveVariable, startPressure1+Zc*startFlow1);
+        mpP2->writeNode(NodeHydraulic::CharImpedance,      Zc);
     }
 
     // The simulateOneTimestep() function is called ONCE every time step
@@ -100,10 +97,16 @@ public:
         double c1  = mpP1->readNode(NodeHydraulic::WaveVariable);
         double q2  = mpP2->readNode(NodeHydraulic::Flow);
         double c2  = mpP2->readNode(NodeHydraulic::WaveVariable);
+        // Read from inputVariable node-data ptrs
+        const double Be = (*mpBulkmodulus);
+        const double V = (*mpVolume);
+
+        // Update Zc, Be and V may have changed
+        const double Zc = Be/V*mTimestep/(1.0-mAlpha);
 
         // Volume equations
-        double c10 = c2 + 2.0*mZc * q2;
-        double c20 = c1 + 2.0*mZc * q1;
+        double c10 = c2 + 2.0*Zc * q2;
+        double c20 = c1 + 2.0*Zc * q1;
 
         c1 = mAlpha*c1 + (1.0-mAlpha)*c10;
         c2 = mAlpha*c2 + (1.0-mAlpha)*c20;
@@ -111,8 +114,8 @@ public:
         // Write new values back to the nodes
         mpP1->writeNode(NodeHydraulic::WaveVariable, c1);
         mpP2->writeNode(NodeHydraulic::WaveVariable, c2);
-        mpP1->writeNode(NodeHydraulic::CharImpedance,      mZc);
-        mpP2->writeNode(NodeHydraulic::CharImpedance,      mZc);
+        mpP1->writeNode(NodeHydraulic::CharImpedance, Zc);
+        mpP2->writeNode(NodeHydraulic::CharImpedance, Zc);
     }
 
     // The finalize function is called after simulation ends

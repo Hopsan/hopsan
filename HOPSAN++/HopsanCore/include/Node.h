@@ -27,6 +27,7 @@
 #include <string>
 #include "CoreUtilities/ClassFactory.hpp"
 #include "win32dll.h"
+//#include <cstring>
 
 namespace hopsan {
 
@@ -119,6 +120,10 @@ private:
     bool mDoLog;
 };
 
+//struct NodeKeyComp {
+//  bool operator() (const char* lhs, const char* rhs) const
+//  {return strcmp(lhs, rhs)!=0;}
+//};
 typedef ClassFactory<std::string, Node> NodeFactory;
 }
 
