@@ -39,9 +39,7 @@ namespace hopsan {
             //         AUTO GENERATED COMPONENT!         //
             // ANY CHANGES WILL BE LOST IF RE-GENERATED! //
             //*******************************************//
-        
-<<<parinit>>>
-            
+
 <<<regpar>>>
 
 <<<addports>>>

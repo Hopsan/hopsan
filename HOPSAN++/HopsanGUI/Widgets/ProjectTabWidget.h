@@ -60,6 +60,7 @@ public slots:
     void addNewProjectTab(QString tabName="Untitled");
     bool closeProjectTab(int index);
     bool closeAllProjectTabs();
+    void launchDebugger();
     void loadModel();
     void loadModel(QAction *action);
     void loadModel(QString modelFileName, bool ignoreAlreadyOpen=false);

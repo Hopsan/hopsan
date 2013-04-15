@@ -43,6 +43,7 @@
 #include "UndoStack.h"
 #include "version_gui.h"
 
+#include "Widgets/DebuggerWidget.h"
 #include "Widgets/PlotWidget.h"
 #include "Widgets/MessageWidget.h"
 #include "Widgets/HcomWidget.h"
@@ -672,7 +673,7 @@ void MainWindow::createActions()
     mpDebug1Action = new QAction(this);
     mpDebug1Action->setShortcut(QKeySequence("Ctrl+D+1"));
     this->addAction(mpDebug1Action);
-    //connect(mpDebug1Action, SIGNAL(triggered()), mpProjectTabs, SLOT(simulateAllOpenModelsWithSplit()));
+    connect(mpDebug1Action, SIGNAL(triggered()), mpProjectTabs, SLOT(launchDebugger()));
 
     mpDebug2Action = new QAction(this);
     mpDebug2Action->setShortcut(QKeySequence("Ctrl+D+2"));

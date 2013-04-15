@@ -219,20 +219,20 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
     portDeclarations.append(";\n");
 
 
-    //Initialize parameters
-    QString parameterInit;
-    for(int i=0; i<comp.parNames.size(); ++i)
-    {
-        parameterInit.append("            "+comp.parNames[i]+" = "+comp.parInits[i]+";\n");
-    }
+//    //Initialize parameters
+//    QString parameterInit;
+//    for(int i=0; i<comp.parNames.size(); ++i)
+//    {
+//        parameterInit.append("            "+comp.parNames[i]+" = "+comp.parInits[i]+";\n");
+//    }
 
 
     //Register parameters
     QString registerParameters;
     for(int i=0; i<comp.parNames.size(); ++i)
     {
-        registerParameters.append("            registerParameter(\""+comp.parDisplayNames[i]+"\", \""
-                  +comp.parDescriptions[i]+"\", \""+comp.parUnits[i]+"\", "+comp.parNames[i]+");\n");
+        registerParameters.append("            addConstant(\""+comp.parDisplayNames[i]+"\", \""
+                  +comp.parDescriptions[i]+"\", \""+comp.parUnits[i]+"\", "+comp.parInits[i]+", "+comp.parNames[i]+");\n");
     }
 
 
@@ -240,16 +240,25 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
     QString addPorts;
     for(int i=0; i<comp.portNames.size(); ++i)
     {
-
-        addPorts.append("            mp"+comp.portNames[i]+" = add"+comp.portTypes[i]
-                  +"(\""+comp.portNames[i]+"\", \""+comp.portNodeTypes[i]+"\"");
-        if(comp.portNotReq[i])
+        if(comp.portNodeTypes[i] == "Signal")
         {
-            addPorts.append(", Port::NotRequired);\n");
+            if(comp.portTypes[i] == "ReadPort")
+            {
+                addPorts.append("            addInputVariable(\""+comp.portNames[i]+"\", \"\", \"\", "+comp.portDefaults[i]+", &mp"+comp.portNames[i]+");\n");
+            }
         }
         else
         {
-            addPorts.append(");\n");
+            addPorts.append("            mp"+comp.portNames[i]+" = add"+comp.portTypes[i]
+                      +"(\""+comp.portNames[i]+"\", \""+comp.portNodeTypes[i]+"\"");
+            if(comp.portNotReq[i])
+            {
+                addPorts.append(", Port::NotRequired);\n");
+            }
+            else
+            {
+                addPorts.append(");\n");
+            }
         }
     }
 
@@ -271,12 +280,7 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
     {
         QStringList varNames;
         QStringList varLabels;
-        if(comp.portNodeTypes[i] == "NodeSignal")
-        {
-            varNames << comp.portNames[i];
-            varLabels << "VALUE";
-        }
-        else
+        if(comp.portNodeTypes[i] != "NodeSignal")
         {
             varNames << NodeInfo(comp.portNodeTypes[i]).qVariables << NodeInfo(comp.portNodeTypes[i]).cVariables;
             varLabels << NodeInfo(comp.portNodeTypes[i]).variableLabels;
@@ -412,7 +416,7 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
     code.replace("<<<vardecl>>>", varDeclarations);
     code.replace("<<<dataptrdecl>>>", dataPtrDeclarations);
     code.replace("<<<portdecl>>>", portDeclarations);
-    code.replace("<<<parinit>>>", parameterInit);
+    //code.replace("<<<parinit>>>", parameterInit);
     code.replace("<<<regpar>>>", registerParameters);
     code.replace("<<<addports>>>", addPorts);
     code.replace("<<<initvars>>>", initializeVariables);

@@ -180,7 +180,8 @@ SOURCES += main.cpp \
     CachableDataVector.cpp \
     DesktopHandler.cpp \
     Dialogs/ComponentPropertiesDialog3.cpp \
-    Dialogs/EditComponentDialog.cpp
+    Dialogs/EditComponentDialog.cpp \
+    Widgets/DebuggerWidget.cpp
 
 
 
@@ -253,7 +254,8 @@ HEADERS += MainWindow.h \
     CachableDataVector.h \
     DesktopHandler.h \
     Dialogs/ComponentPropertiesDialog3.h \
-    Dialogs/EditComponentDialog.h
+    Dialogs/EditComponentDialog.h \
+    Widgets/DebuggerWidget.h
 
 OTHER_FILES += \
     ../hopsandefaults \

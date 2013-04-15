@@ -43,6 +43,7 @@
 #include "GUIConnector.h"
 #include "Widgets/HcomWidget.h"
 #include "DesktopHandler.h"
+#include "Widgets/DebuggerWidget.h"
 
 #include "SimulationThreadHandler.h"
 
@@ -916,6 +917,16 @@ bool ProjectTabWidget::closeAllProjectTabs()
         }
     }
     return true;
+}
+
+
+void ProjectTabWidget::launchDebugger()
+{
+    if(getCurrentTopLevelSystem() == 0) return;
+
+    DebuggerWidget *pDebugger = new DebuggerWidget(getCurrentTopLevelSystem(), gpMainWindow);
+    pDebugger->show();
+    pDebugger->exec();
 }
 
 
