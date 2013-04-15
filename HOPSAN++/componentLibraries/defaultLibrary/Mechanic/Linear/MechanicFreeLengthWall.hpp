@@ -51,16 +51,9 @@ namespace hopsan {
 
         void configure()
         {
-            //Set member attributes
-            B = 0.001;              //Must not be zero - velocity will become very oscillative
-            me = 1;
-
-            //Add ports to the component
             mpP1 = addPowerPort("Pm1", "NodeMechanic");
-
-            //Register changable parameters to the HOPSAN++ core
-            registerParameter("B", "Viscous Friction", "[Ns/m]",    B);
-            registerParameter("m_e", "Equivalent Mass", "[kg]", me);
+            addConstant("B", "Viscous Friction", "[Ns/m]", 0.001, B);
+            addConstant("m_e", "Equivalent Mass", "[kg]", 1.0, me);
         }
 
 

@@ -59,11 +59,6 @@ namespace hopsan {
 
         void configure()
         {
-
-            xvmax = 0.01;
-            d1 = 1e-3;
-            d2 = 1e-3;
-
             mpPP = addPowerPort("PP", "NodeHydraulic");
             mpPT = addPowerPort("PT", "NodeHydraulic");
             mpPA = addPowerPort("PA", "NodeHydraulic");
@@ -78,9 +73,9 @@ namespace hopsan {
             addInputVariable("x_pa", "Spool Overlap From Port P To A", "[m]", -1e-6, &mpX_pa);
             addInputVariable("x_at", "Spool Overlap From Port A To T", "[m]", -1e-6, &mpX_at);
 
-            registerParameter("x_vmax", "Maximum Spool Displacement", "[m]", xvmax);
-            registerParameter("d_1", "Damp orifice 1 diam.", "[mm]", d1);
-            registerParameter("d_2", "Damp orifice 2 diam.", "[mm]", d2);
+            addConstant("x_vmax", "Maximum Spool Displacement", "[m]", 0.01, xvmax);
+            addConstant("d_1", "Damp orifice 1 diam.", "[mm]", 1.0e-3, d1);
+            addConstant("d_2", "Damp orifice 2 diam.", "[mm]", 1.0e-3, d2);
         }
 
 

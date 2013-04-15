@@ -65,23 +65,18 @@ namespace hopsan {
 
         void configure()
         {
-            //Set member attributes
-            J = 0.1;
-            mp = 0.001;
-            rp = 0.01;
-
-            //Register changable parameters to the HOPSAN++ core
             addInputVariable("B", "Viscous Friction", "[Nms/rad]", 10.0, &mpB);
             addInputVariable("r", "Swivel Radius", "[m]", 0.05, &mpR);
             addInputVariable("theta_offset", "Angle Offset", "[m]", 0.0, &mpOffset);
             addInputVariable("angle", "Angle", "rad", 0, &mpAngle);
+
             addOutputVariable("torque", "Torque", "Nm", 0.0, &mpTorque);
             addOutputVariable("movement", "?", "?", 0.0, &mpMovement);
-            registerParameter("J", "Moment of Inertia of Cylinder Block", "[kgm^2]", J);
-            registerParameter("m_p", "Mass of each Piston", "[kg]", mp);
-            registerParameter("r_p", "Piston Radius", "[m]", rp);
 
-            //Add ports to the component
+            addConstant("J", "Moment of Inertia of Cylinder Block", "[kgm^2]", 0.1, J);
+            addConstant("m_p", "Mass of each Piston", "[kg]", 0.001, mp);
+            addConstant("r_p", "Piston Radius", "[m]", 0.01, rp);
+
             mpP1 = addPowerMultiPort("P1", "NodeMechanic");
             mpP2 = addPowerPort("P2", "NodeMechanicRotational");
         }

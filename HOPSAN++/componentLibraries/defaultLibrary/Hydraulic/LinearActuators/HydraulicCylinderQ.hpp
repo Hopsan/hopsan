@@ -72,10 +72,6 @@ namespace hopsan {
 
         void configure()
         {
-            tao    = 3.0/2.0*mTimestep;        //Velocity filter time constant, should be in initialize?
-            M = 0.05;
-            sl = 0.01;
-
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpP3 = addPowerPort("P3", "NodeMechanic");
@@ -86,8 +82,8 @@ namespace hopsan {
             addInputVariable("B_l", "Viscous Friction of Load", "[Ns/m]", 0.0, &mpBl);
             addInputVariable("k_l", "Stiffness of Load", "[N/m]", 1000, &mpKl);
 
-            registerParameter("m_l", "Inertia Load", "kg", M);
-            registerParameter("s_l", "Stroke", "m", sl);
+            addConstant("m_l", "Inertia Load", "kg", 0.05, M);
+            addConstant("s_l", "Stroke", "m", 0.01, sl);
         }
 
 
@@ -123,6 +119,7 @@ namespace hopsan {
             Zx3 = (*mpND_Zx3);
 
             Zx1 = A1*A1*Zc1 + A2*A2*Zc2;
+            tao    = 3.0/2.0*mTimestep;        //Velocity filter time constant, should be in initialize?
 
             //Initialization of filters
             posnum[0] = 1.0;

@@ -135,8 +135,6 @@ HEADERS += \
     Hydraulic/Pumps&Motors/HydraulicFixedDisplacementMotorQ.hpp \
     Hydraulic/Pumps&Motors/HopsanDefaulHydraulicPumpsAndMotors.h \
     Hydraulic/Volumes&Lines/HydraulicVolumeMultiPort.hpp \
-    Hydraulic/Volumes&Lines/HydraulicVolume4.hpp \
-    Hydraulic/Volumes&Lines/HydraulicVolume3.hpp \
     Hydraulic/Volumes&Lines/HydraulicVolume.hpp \
     Hydraulic/Volumes&Lines/HydraulicTLMRLineR.hpp \
     Hydraulic/Volumes&Lines/HydraulicTLMlossless.hpp \

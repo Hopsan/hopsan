@@ -59,9 +59,6 @@ namespace hopsan {
 
         void configure()
         {
-            omegah = 100.0;
-            deltah = 1.0;
-
             mpPP = addPowerPort("PP", "NodeHydraulic");
             mpPT = addPowerPort("PT", "NodeHydraulic");
             mpPA = addPowerPort("PA", "NodeHydraulic");
@@ -74,8 +71,8 @@ namespace hopsan {
             addInputVariable("f", "Spool Fraction of the Diameter", "[-]", 1.0, &mpF);
             addInputVariable("x_vmax", "Maximum Spool Displacement", "[m]", 0.01, &mpXvmax);
 
-            registerParameter("omega_h", "Resonance Frequency", "[rad/s]", omegah);
-            registerParameter("delta_h", "Damping Factor", "[-]", deltah);
+            addConstant("omega_h", "Resonance Frequency", "[rad/s]", 100.0, omegah);
+            addConstant("delta_h", "Damping Factor", "[-]", 1.0, deltah);
         }
 
 

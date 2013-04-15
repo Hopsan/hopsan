@@ -42,16 +42,9 @@ namespace hopsan {
 
         void configure()
         {
-            //Set member attributes
-            f = 0.0;
-
-            //Add ports to the component
             mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
             mpP1 = addPowerPort("P1", "NodeMechanic");
-
-            //Register changable parameters to the HOPSAN++ core
-            registerParameter("F", "Generated force", "[N]", f);
-
+            addConstant("F", "Generated force", "[N]", 0.0, f);
             disableStartValue(mpP1, NodeMechanic::Force);
         }
 

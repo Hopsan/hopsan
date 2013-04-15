@@ -37,10 +37,10 @@ namespace hopsan {
     {
 
     private:
-        double mZc;
-        double mAlpha;
-        double mVolume;
-        double mBulkmodulus;
+        double *mpAlpha;
+        double Zc;
+        double V;
+        double betae;
 
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2;
 
@@ -54,19 +54,13 @@ namespace hopsan {
 
         void configure()
         {
-            //Set member attributes
-            mBulkmodulus   = 1.0e9;
-            mVolume        = 1.0e-3;
-            mAlpha         = 0.1;
-
-            //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
 
-            //Register changable parameters to the HOPSAN++ core
-            registerParameter("V", "Volume", "[m^3]",            mVolume);
-            registerParameter("Beta_e", "Bulkmodulus", "[Pa]", mBulkmodulus);
-            registerParameter("alpha", "Low pass coeficient to dampen standing delayline waves", "[-]",  mAlpha);
+            addInputVariable("alpha", "Low pass coeficient to dampen standing delayline waves", "[-]", 0.1 ,&mpAlpha);
+
+            addConstant("V", "Volume", "[m^3]", 1.0e-3, V);
+            addConstant("Beta_e", "Bulkmodulus", "[Pa]", 1.0e9, betae);
 
             setStartValue(mpP1, NodeHydraulic::Flow, 0.0);
             setStartValue(mpP1, NodeHydraulic::Pressure, 1.0e5);
@@ -87,39 +81,41 @@ namespace hopsan {
             mpND_c2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::WaveVariable);
             mpND_Zc2 = getSafeNodeDataPtr(mpP2, NodeHydraulic::CharImpedance);
 
-            mZc = mBulkmodulus/mVolume*mTimestep/(1.0-mAlpha); //Need to be updated at simulation start since it is volume and bulk that are set.
+            double alpha = (*mpAlpha);
+            Zc = betae/V*mTimestep/(1.0-alpha); //Need to be updated at simulation start since it is volume and bulk that are set.
 
             //Write to nodes
-            (*mpND_c1) = getStartValue(mpP2,NodeHydraulic::Pressure)+mZc*getStartValue(mpP2,NodeHydraulic::Flow);
-            (*mpND_Zc1) = mZc;
-            (*mpND_c2) = getStartValue(mpP1,NodeHydraulic::Pressure)+mZc*getStartValue(mpP1,NodeHydraulic::Flow);
-            (*mpND_Zc2) = mZc;
+            (*mpND_c1) = getStartValue(mpP2,NodeHydraulic::Pressure)+Zc*getStartValue(mpP2,NodeHydraulic::Flow);
+            (*mpND_Zc1) = Zc;
+            (*mpND_c2) = getStartValue(mpP1,NodeHydraulic::Pressure)+Zc*getStartValue(mpP1,NodeHydraulic::Flow);
+            (*mpND_Zc2) = Zc;
         }
 
 
         void simulateOneTimestep()
         {
             //Declare local variables
-            double q1, c1, q2, c2, c10, c20;
+            double q1, c1, q2, c2, c10, c20, alpha;
 
             //Get variable values from nodes
             q1 = (*mpND_q1);
             q2 = (*mpND_q2);
             c1 = (*mpND_c1);
             c2 = (*mpND_c2);
+            alpha = (*mpAlpha);
 
             //Volume equations
-            c10 = c2 + 2.0*mZc * q2;     //These two equations are from old Hopsan
-            c20 = c1 + 2.0*mZc * q1;
+            c10 = c2 + 2.0*Zc * q2;     //These two equations are from old Hopsan
+            c20 = c1 + 2.0*Zc * q1;
 
-            c1 = mAlpha*c1 + (1.0-mAlpha)*c10;
-            c2 = mAlpha*c2 + (1.0-mAlpha)*c20;
+            c1 = alpha*c1 + (1.0-alpha)*c10;
+            c2 = alpha*c2 + (1.0-alpha)*c20;
 
             //Write new values to nodes
             (*mpND_c1) = c1;
-            (*mpND_Zc1) = mZc;
+            (*mpND_Zc1) = Zc;
             (*mpND_c2) = c2;
-            (*mpND_Zc2) = mZc;
+            (*mpND_Zc2) = Zc;
         }
 
         void finalize()

@@ -52,13 +52,8 @@ namespace hopsan {
 
         void configure()
         {
-            mPressure       = 1.0e5;
-            mZc             = 0.0;
-
             mpP1 = addPowerPort("P1", "NodeHydraulic");
-
-            registerParameter("p", "Default Pressure", "Pa", mPressure);
-
+            addConstant("p", "Default Pressure", "Pa", 1.0e5, mPressure);
             disableStartValue(mpP1, NodeHydraulic::Pressure);
             setStartValue(mpP1, NodeHydraulic::Flow, 0.0);
         }
@@ -66,6 +61,8 @@ namespace hopsan {
 
         void initialize()
         {
+            mZc = 0.0;
+
             mpND_p = getSafeNodeDataPtr(mpP1, NodeHydraulic::Pressure);
             mpND_c = getSafeNodeDataPtr(mpP1, NodeHydraulic::WaveVariable);
             mpND_Zc = getSafeNodeDataPtr(mpP1, NodeHydraulic::CharImpedance);

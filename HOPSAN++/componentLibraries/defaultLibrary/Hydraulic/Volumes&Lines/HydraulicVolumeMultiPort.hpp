@@ -42,10 +42,7 @@ namespace hopsan {
     {
 
     private:
-        double mZc;
-        double mAlpha;
-        double mVolume;
-        double mBulkmodulus;
+        double *mpAlpha, *mpBetae, *mpV;
 
         std::vector<double*> mvpN_p, mvpN_q, mvpN_c, mvpN_Zc;
         std::vector<double> mv_c_new;
@@ -61,18 +58,11 @@ namespace hopsan {
 
         void configure()
         {
-            //Set member attributes
-            mBulkmodulus   = 1.0e9;
-            mVolume        = 1.0e-3;
-            mAlpha         = 0.1;
-
-            //Add ports to the component
             mpP1 = addPowerMultiPort("P1", "NodeHydraulic");
 
-            //Register changable parameters to the HOPSAN++ core
-            registerParameter("V", "Volume", "[m^3]",            mVolume);
-            registerParameter("Beta_e", "Bulkmodulus", "[Pa]", mBulkmodulus);
-            registerParameter("alpha", "Low pass coeficient to dampen standing delayline waves", "[-]",  mAlpha);
+            addInputVariable("V", "Volume", "[m^3]", 1.0e-3, &mpV);
+            addInputVariable("Beta_e", "Bulkmodulus", "[Pa]", 1.0e9, &mpBetae);
+            addInputVariable("alpha", "Low pass coeficient to dampen standing delayline waves", "[-]", 0.1, &mpAlpha);
 
             setStartValue(mpP1, NodeHydraulic::Flow, 0.0);
             setStartValue(mpP1, NodeHydraulic::Pressure, 1.0e5);
@@ -81,6 +71,11 @@ namespace hopsan {
 
         void initialize()
         {
+            double Zc, betae, alpha, V;
+            betae = (*mpBetae);
+            alpha = (*mpAlpha);
+            V = (*mpV);
+
             mNumPorts = mpP1->getNumPorts();
 
             mvpN_p.resize(mNumPorts);
@@ -91,7 +86,7 @@ namespace hopsan {
 
             mv_c_new.resize(mNumPorts);
 
-            mZc = mNumPorts*mBulkmodulus/(2.0*mVolume)*mTimestep/(1.0-mAlpha);
+            Zc = mNumPorts*betae/(2.0*V)*mTimestep/(1.0-alpha);
 
             double pTot=0.0;
             for (size_t i=0; i<mNumPorts; ++i)
@@ -103,13 +98,13 @@ namespace hopsan {
 
                 *mvpN_p[i]  = getStartValue(mpP1, NodeHydraulic::Pressure, i);
                 *mvpN_q[i]  = getStartValue(mpP1, NodeHydraulic::Flow, i);
-                pTot       += getStartValue(mpP1,NodeHydraulic::Pressure, i)+mZc*getStartValue(mpP1,NodeHydraulic::Flow, i);
-                *mvpN_Zc[i] = mZc;
+                pTot       += getStartValue(mpP1,NodeHydraulic::Pressure, i)+Zc*getStartValue(mpP1,NodeHydraulic::Flow, i);
+                *mvpN_Zc[i] = Zc;
             }
             pTot = pTot/double(mNumPorts);
             for (size_t i=0; i<mNumPorts; ++i)
             {
-                *mvpN_c[i] = pTot*2.0-(*mvpN_p[i]) - mZc*(*mvpN_q[i]);
+                *mvpN_c[i] = pTot*2.0-(*mvpN_p[i]) - Zc*(*mvpN_q[i]);
             }
         }
 
@@ -117,26 +112,30 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             double cTot = 0.0;
-            double pAvg;
-            mZc = mNumPorts*mBulkmodulus/(2.0*mVolume)*mTimestep/(1.0-mAlpha);
+            double pAvg, Zc, V, betae, alpha;
+            betae = (*mpBetae);
+            alpha = (*mpAlpha);
+            V = (*mpV);
+
+            Zc = mNumPorts*betae/(2.0*V)*mTimestep/(1.0-alpha);
 
             //Equations
             for (size_t i=0; i<mNumPorts; ++i)
             {
-                cTot += (*mvpN_c[i]) + 2.0*mZc*(*mvpN_q[i]);
+                cTot += (*mvpN_c[i]) + 2.0*Zc*(*mvpN_q[i]);
             }
             pAvg = cTot/double(mNumPorts);
 
             for (size_t i=0; i<mNumPorts; ++i)
             {
-                mvp_C0[i] = pAvg*2.0-(*mvpN_c[i]) - 2.0*mZc*(*mvpN_q[i]);
-                mv_c_new[i] = mAlpha*(*mvpN_c[i]) + (1.0-mAlpha)*mvp_C0[i];
+                mvp_C0[i] = pAvg*2.0-(*mvpN_c[i]) - 2.0*Zc*(*mvpN_q[i]);
+                mv_c_new[i] = alpha*(*mvpN_c[i]) + (1.0-alpha)*mvp_C0[i];
             }
 
             //Write new values
             for(size_t i=0; i<mNumPorts; ++i)
             {
-                (*mvpN_Zc[i]) = mZc;
+                (*mvpN_Zc[i]) = Zc;
                 (*mvpN_c[i]) = mv_c_new[i];
             }
         }

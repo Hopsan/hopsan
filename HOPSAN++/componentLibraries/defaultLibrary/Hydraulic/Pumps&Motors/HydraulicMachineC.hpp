@@ -60,17 +60,10 @@ namespace hopsan {
 
         void configure()
         {
-            //Set member attributes
-            je = 1;
-            alfa = 0.1;
-            wfak = 0.1;
-
-            //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpP3 = addPowerPort("P3", "NodeMechanicRotational");
 
-            //Register changable parameters to the HOPSAN++ core
             addInputVariable("eps", "Displacement setting", "", 1, &mpEps);
             addInputVariable("Beta_e", "Bulk modulus of oil", "[Pa]", 1000000000, &mpBetae);
             addInputVariable("V_1", "Volume at port 1", "[m^3]", 0.005, &mpV1);
@@ -78,7 +71,8 @@ namespace hopsan {
             addInputVariable("D_m", "Displacement", "[m^3/rev]", 0.00005, &mpDm);
             addInputVariable("C_lm", "Leakage coefficient", "[]", 0.0, &mpClm);
             addInputVariable("B_m", "Viscous friction coefficient", "[Nms/rad]", 0.0, &mpBm);
-            registerParameter("J_em", "Equivalent load of inertia", "[kg*m^2]", je);
+
+            addConstant("J_em", "Equivalent load of inertia", "[kg*m^2]", 1, je);
 
             setStartValue(mpP1, NodeHydraulic::Pressure, 1.0e5);
             setStartValue(mpP2, NodeHydraulic::Pressure, 1.0e5);
@@ -122,6 +116,8 @@ namespace hopsan {
             double bm = (*mpBm);
 
             //Initialization
+            alfa = 0.1;
+            wfak = 0.1;
             dpr = dm / (pi * 2);
             dpe = dpr * eps;
             ka = 1 / (1 - alfa);

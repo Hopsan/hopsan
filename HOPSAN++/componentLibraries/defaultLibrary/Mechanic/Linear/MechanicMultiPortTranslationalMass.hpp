@@ -54,23 +54,14 @@ namespace hopsan {
 
         void configure()
         {
-            //Set member attributes
-            m = 100.0;
-            B = 10;
-            k = 0.0;
-            xMin = 0.0;
-            xMax = 1.0;
-
-            //Add ports to the component
             mpP1 = addPowerMultiPort("P1", "NodeMechanic");
             mpP2 = addPowerMultiPort("P2", "NodeMechanic");
 
-            //Register changable parameters to the HOPSAN++ core
-            registerParameter("m", "Mass", "[kg]",                  m);
-            registerParameter("B", "Viscous Friction", "[Ns/m]",    B);
-            registerParameter("k", "Spring Coefficient", "[N/m]",   k);
-            registerParameter("x_min", "Minimum Position", "[m]",   xMin);
-            registerParameter("x_max", "Maximum Position", "[m]",   xMax);
+            addConstant("m", "Mass", "[kg]", 100.0, m);
+            addConstant("B", "Viscous Friction", "[Ns/m]", 10.0, B);
+            addConstant("k", "Spring Coefficient", "[N/m]", 0.0, k);
+            addConstant("x_min", "Minimum Position", "[m]", 0.0, xMin);
+            addConstant("x_max", "Maximum Position", "[m]", 1.0, xMax);
         }
 
 

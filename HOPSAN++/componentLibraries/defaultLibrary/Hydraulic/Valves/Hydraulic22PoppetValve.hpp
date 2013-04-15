@@ -62,9 +62,6 @@ namespace hopsan {
 
         void configure()
         {
-            xvmax = 0.01;
-            dd = 0.1e-3;
-
             mpAN = addPowerPort("PN", "NodeHydraulic");
             mpAS = addPowerPort("PS", "NodeHydraulic");
             mpAC = addPowerPort("PC", "NodeHydraulic");
@@ -78,8 +75,8 @@ namespace hopsan {
             addInputVariable("F_0", "Spring pre-load", "[N]", 100.0, &mpF0);
             addInputVariable("f", "Fraction of poppet diameter that is opening", "[-]", 1.0, &mpF);
 
-            registerParameter("x_vmax", "Maximum Spool Displacement", "[m]", xvmax);
-            registerParameter("d_d", "Damp orifice diam.", "[m]", dd);
+            addConstant("x_vmax", "Maximum Spool Displacement", "[m]", 0.01, xvmax);
+            addConstant("d_d", "Damp orifice diam.", "[m]", 0.1e-3, dd);
         }
 
 

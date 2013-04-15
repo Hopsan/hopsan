@@ -55,19 +55,16 @@ namespace hopsan {
 
         void configure()
         {
-            p         = 1.0e5;
-            Zc        = 0.0;
-
             mpMP = addPowerMultiPort("MP", "NodeHydraulic");
-
-            registerParameter("p", "Default pressure", "Pa", p);
-
+            addConstant("p", "Default pressure", "Pa", 1.0e5, p);
             disableStartValue(mpMP, NodeHydraulic::Pressure);
         }
 
 
         void initialize()
         {
+            Zc        = 0.0;
+
             mNumPorts = mpMP->getNumPorts();
 
             //! @todo write help function to set the size and contents of a these vectors automatically
