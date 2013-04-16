@@ -217,7 +217,7 @@ public slots:
     void flipSubObjectsVertical();
 
     //Plot data slots
-    void collectPlotData();
+    void collectPlotData(bool overWriteLastGeneration=false);
 
     //Losses
     void showLosses(bool show);

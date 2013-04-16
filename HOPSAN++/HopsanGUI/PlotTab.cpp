@@ -585,7 +585,7 @@ void PlotTab::rescaleToCurves()
             yMinLeft = 0;
             yMaxLeft = 10;
         }
-        else if(yMinRight > yMaxRight)
+        if(yMinRight > yMaxRight)
         {
             yMinRight = 0;
             yMaxRight = 10;

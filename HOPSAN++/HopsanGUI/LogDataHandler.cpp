@@ -435,8 +435,13 @@ bool LogDataHandler::isEmpty()
 
 
 //! @brief Collects plot data from last simulation
-void LogDataHandler::collectPlotDataFromModel()
+void LogDataHandler::collectPlotDataFromModel(bool overWriteLastGeneration)
 {
+    if(overWriteLastGeneration)
+    {
+        --mGenerationNumber;
+    }
+
     if(mpParentContainerObject->getCoreSystemAccessPtr()->getNSamples() == 0)
     {
         return;         //Don't collect plot data if logging is disabled (to avoid empty generations)
@@ -446,7 +451,10 @@ void LogDataHandler::collectPlotDataFromModel()
     bool foundData = false;
     bool timeVectorObtained = false;
 
-    this->getGenerationMultiCache(mGenerationNumber)->beginMultiAppend();
+    if(!overWriteLastGeneration)
+    {
+        this->getGenerationMultiCache(mGenerationNumber)->beginMultiAppend();
+    }
     // Iterate components
     for(int m=0; m<mpParentContainerObject->getModelObjectNames().size(); ++m)
     {
@@ -534,7 +542,10 @@ void LogDataHandler::collectPlotDataFromModel()
             }
         }
     }
-    this->getGenerationMultiCache(mGenerationNumber)->endMultiAppend();
+    if(!overWriteLastGeneration)
+    {
+        this->getGenerationMultiCache(mGenerationNumber)->endMultiAppend();
+    }
 
     // Iterate and create/add aliases
 //    //! @todo maybe a function that retreives alias and fullnames in one

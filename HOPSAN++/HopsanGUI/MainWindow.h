@@ -119,6 +119,7 @@ public:
     QAction *mpCopyAction;
     QAction *mpPasteAction;
     QAction *mpSimulateAction;
+    QAction *mpOpenDebuggerAction;
     QAction *mpCoSimulationAction;
     QAction *mpOptimizeAction;
     QAction *mpSensitivityAnalysisAction;

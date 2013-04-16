@@ -21,6 +21,7 @@
 #include "CoreAccess.h"
 #include "MainWindow.h"
 #include "DesktopHandler.h"
+#include "Widgets/ProjectTabWidget.h"
 
 #include "ComponentSystem.h"
 
@@ -28,6 +29,8 @@
 DebuggerWidget::DebuggerWidget(SystemContainer *pSystem, QWidget *parent) :
     QDialog(parent)
 {
+    this->setWindowIcon(QIcon(QString(ICONPATH)+"Hopsan-Debug.png"));
+
     mpSystem = pSystem;
 
     this->resize(800, 600);
@@ -99,13 +102,11 @@ DebuggerWidget::DebuggerWidget(SystemContainer *pSystem, QWidget *parent) :
     connect(mpRemoveButton,     SIGNAL(clicked()),                      this, SLOT(removeVariable()));
     connect(mpInitializeButton, SIGNAL(clicked()),                      this, SLOT(runInitialization()));
     connect(mpForwardButton,    SIGNAL(clicked()),                      this, SLOT(stepForward()));
-
+    connect(mpGotoButton,       SIGNAL(clicked()),                      this, SLOT(simulateTo()));
 
     retranslateUi();
     setInitData();
 }
-
-
 
 
 void DebuggerWidget::retranslateUi()
@@ -118,7 +119,7 @@ void DebuggerWidget::retranslateUi()
     mpCurrentStepLabel->setText(tr("Current time:"));
     mTimeIndicatorLabel->setText(tr("0"));
     mpAbortButton->setText(tr("Abort"));
-    mpGotoButton->setText(tr("Go to step "));
+    mpGotoButton->setText(tr("Go to time"));
     mpForwardButton->setText(tr("Step forward"));
     mpInitializeButton->setText(tr("Initialize"));
 }
@@ -212,18 +213,27 @@ void DebuggerWidget::removeVariable()
 
 void DebuggerWidget::runInitialization()
 {
-    if(mpSystem->getCoreSystemAccessPtr()->initialize(gpMainWindow->getStartTimeFromToolBar(),gpMainWindow->getFinishTimeFromToolBar(), 0))
+    double startT = getStartTime();
+    double stopT = getStopTime();
+    int nSteps = int((stopT-startT)/mpSystem->getTimeStep());
+    if(mpSystem->getCoreSystemAccessPtr()->initialize(startT,stopT, nSteps+1))
     {
         mpGotoButton->setEnabled(true);
         mpForwardButton->setEnabled(true);
     }
-    collectLastData();
+    collectLastData(false);
     updateTimeDisplay();
 }
 
 void DebuggerWidget::stepForward()
 {
     simulateTo(getCurrentTime()+getTimeStep());
+}
+
+void DebuggerWidget::simulateTo()
+{
+    double targetTime = QInputDialog::getDouble(this, "Hopsan Debugger", "Choose target time", getCurrentTime()+getTimeStep(), getCurrentTime()+getTimeStep(), getStopTime());
+    simulateTo(targetTime);
 }
 
 void DebuggerWidget::simulateTo(double targetTime)
@@ -233,8 +243,9 @@ void DebuggerWidget::simulateTo(double targetTime)
     updateTimeDisplay();
 }
 
-void DebuggerWidget::collectLastData()
+void DebuggerWidget::collectLastData(bool overWriteGeneration)
 {
+    mpSystem->collectPlotData(overWriteGeneration);
 
     QString outputLine;
 
@@ -274,13 +285,23 @@ void DebuggerWidget::updateTimeDisplay()
     mTimeIndicatorLabel->setText(QString::number(getCurrentTime()));
 }
 
-double DebuggerWidget::getCurrentTime()
+double DebuggerWidget::getCurrentTime() const
 {
     return mpSystem->getCoreSystemAccessPtr()->getCurrentTime();
 }
 
-double DebuggerWidget::getTimeStep()
+double DebuggerWidget::getTimeStep() const
 {
     return mpSystem->getTimeStep();
+}
+
+double DebuggerWidget::getStartTime() const
+{
+    return gpMainWindow->getStartTimeFromToolBar();
+}
+
+double DebuggerWidget::getStopTime() const
+{
+    return gpMainWindow->getFinishTimeFromToolBar();
 }
 

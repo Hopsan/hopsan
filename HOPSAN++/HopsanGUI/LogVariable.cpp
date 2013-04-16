@@ -593,8 +593,15 @@ void LogVariableContainer::addDataGeneration(const int generation, const QVector
     }
     //! @todo what if a generation already exist, then we must properly delete the old data before we add new one
 
-    connect(this, SIGNAL(nameChanged()), pData.data(), SIGNAL(nameChanged()));
-    mDataGenerations.insert(generation, pData);
+    if(mDataGenerations.contains(generation))
+    {
+        mDataGenerations.find(generation).value().data()->assignFrom(pData);
+    }
+    else
+    {
+        connect(this, SIGNAL(nameChanged()), pData.data(), SIGNAL(nameChanged()));
+        mDataGenerations.insert(generation, pData);
+    }
 }
 
 void LogVariableContainer::addDataGeneration(const int generation, const SharedTimeVectorPtrT time, const QVector<double> &rData)
@@ -610,8 +617,15 @@ void LogVariableContainer::addDataGeneration(const int generation, const SharedT
     }
     //! @todo what if a generation already exist, then we must properly delete the old data before we add new one
 
-    connect(this, SIGNAL(nameChanged()), pData.data(), SIGNAL(nameChanged()));
-    mDataGenerations.insert(generation, pData);
+    if(mDataGenerations.contains(generation))
+    {
+        mDataGenerations.find(generation).value().data()->assignFrom(pData);
+    }
+    else
+    {
+        connect(this, SIGNAL(nameChanged()), pData.data(), SIGNAL(nameChanged()));
+        mDataGenerations.insert(generation, pData);
+    }
 }
 
 //! @todo Need to remove this class if final generation is deleted

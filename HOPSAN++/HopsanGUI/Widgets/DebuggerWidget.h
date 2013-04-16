@@ -41,11 +41,14 @@ private slots:
 
     void runInitialization();
     void stepForward();
+    void simulateTo();
     void simulateTo(double targetTime);
-    void collectLastData();
+    void collectLastData(bool overWriteGeneration=true);
     void updateTimeDisplay();
-    double getCurrentTime();
-    double getTimeStep();
+    double getCurrentTime() const;
+    double getTimeStep() const;
+    double getStartTime() const;
+    double getStopTime() const;
 
 
 private:

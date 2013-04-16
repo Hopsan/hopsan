@@ -522,6 +522,11 @@ void MainWindow::createActions()
     mpCoSimulationAction->setToolTip(tr("Start Co-Simulation"));
     connect(mpCoSimulationAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
+    mpOpenDebuggerAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Debug.png"), tr("&Launch Debugger"), this);
+    mpOpenDebuggerAction->setToolTip(tr("Launch Debugger"));
+    connect(mpOpenDebuggerAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
+    connect(mpOpenDebuggerAction,  SIGNAL(triggered()), mpProjectTabs, SLOT(launchDebugger()));
+
     mpOptimizeAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Optimize.png"), tr("&Optimize"), this);
     mpOptimizeAction->setToolTip(tr("Open Optimization Dialog (Ctrl+Shift+Z)"));
     mpOptimizeAction->setShortcut(QKeySequence("Ctrl+Shift+z"));
@@ -772,6 +777,7 @@ void MainWindow::createMenus()
     this->updateRecentList();
 
     mpSimulationMenu->addAction(mpSimulateAction);
+    mpSimulationMenu->addAction(mpOpenDebuggerAction);
 #ifdef DEVELOPMENT
     mpSimulationMenu->addAction(mpCoSimulationAction);
 #endif
@@ -903,6 +909,7 @@ void MainWindow::createToolbars()
     mpSimToolBar->addWidget(mpTimeLabelDeliminator2);
     mpSimToolBar->addWidget(mpStopTimeLineEdit);
     mpSimToolBar->addAction(mpSimulateAction);
+    mpSimToolBar->addAction(mpOpenDebuggerAction);
 #ifdef DEVELOPMENT
     mpSimToolBar->addAction(mpCoSimulationAction);
 #endif
@@ -1089,6 +1096,10 @@ void MainWindow::showToolBarHelpPopup()
     if(pHoveredAction == mpSimulateAction)
     {
         showHelpPopupMessage("Starts a new simulation of current model.");
+    }
+    else if(pHoveredAction == mpOpenDebuggerAction)
+    {
+        showHelpPopupMessage("Open debugger dialog to examine the current model in detail.");
     }
     else if(pHoveredAction == mpOptimizeAction)
     {
@@ -1305,6 +1316,7 @@ void MainWindow::updateToolBarsToNewTab()
     mpTimeStepLineEdit->setEnabled(!noTabs);
     mpStopTimeLineEdit->setEnabled(!noTabs);
     mpSimulateAction->setEnabled(!noTabs);
+    mpOpenDebuggerAction->setEnabled(!noTabs);
     mpCoSimulationAction->setEnabled(!noTabs);
     mpOptimizeAction->setEnabled(!noTabs);
     mpSensitivityAnalysisAction->setEnabled(!noTabs);

@@ -149,5 +149,6 @@
         <file>graphics/uiicons/Hopsan-Folder.png</file>
         <file>graphics/uiicons/Hopsan-Print.png</file>
         <file>graphics/uiicons/Hopsan-Success.png</file>
+        <file>graphics/uiicons/Hopsan-Debug.png</file>
     </qresource>
 </RCC>

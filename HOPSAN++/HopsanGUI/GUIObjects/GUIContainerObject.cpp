@@ -2607,9 +2607,9 @@ void ContainerObject::flipSubObjectsVertical()
 
 
 //! @brief Collects the plot data from the last simulation for all plot variables from the core and stores them locally.
-void ContainerObject::collectPlotData()
+void ContainerObject::collectPlotData(bool overWriteLastGeneration)
 {
-    mpLogDataHandler->collectPlotDataFromModel();
+    mpLogDataHandler->collectPlotDataFromModel(overWriteLastGeneration);
 
     // Now collect plotdata from all subsystems
     ModelObjectMapT::iterator it;

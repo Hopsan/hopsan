@@ -138,7 +138,8 @@ bool MultiDataVectorCache::appendToCache(const QVector<double> &rDataVector, qui
 
 bool MultiDataVectorCache::readToMem(const quint64 startByte, const quint64 nBytes, QVector<double> *pDataVector)
 {
-    if (mCacheFile.open(QIODevice::ReadOnly))
+    bool wasOpen = mCacheFile.isOpen();
+    if (wasOpen || mCacheFile.open(QIODevice::ReadOnly))
     {
         if (mCacheFile.seek(startByte))
         {
@@ -146,7 +147,8 @@ bool MultiDataVectorCache::readToMem(const quint64 startByte, const quint64 nByt
             qint64 n = mCacheFile.read((char*)pDataVector->data(), nBytes);
             if (n == nBytes)
             {
-                mCacheFile.close();
+                if(!wasOpen)
+                    mCacheFile.close();
                 return true;
             }
             mError = mCacheFile.errorString();
@@ -155,7 +157,8 @@ bool MultiDataVectorCache::readToMem(const quint64 startByte, const quint64 nByt
         {
             mError = mCacheFile.errorString();
         }
-        mCacheFile.close();
+        if(!wasOpen)
+            mCacheFile.close();
     }
     else
     {
