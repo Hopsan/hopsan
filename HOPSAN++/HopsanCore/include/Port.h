@@ -79,6 +79,7 @@ namespace hopsan {
         virtual double *getNodeDataPtr(const size_t idx, const size_t portIdx=0) const;
         virtual std::vector<double> *getDataVectorPtr(const size_t portIdx=0);
 
+        virtual size_t getNumDataVariables() const;
         virtual const std::vector<NodeDataDescription>* getNodeDataDescriptions(const size_t portIdx=0);
         virtual const NodeDataDescription* getNodeDataDescription(const size_t dataid, const size_t portIdx=0);
         virtual int getNodeDataIdFromName(const std::string name, const size_t portIdx=0);

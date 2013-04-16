@@ -31,44 +31,44 @@
 #include <QVector>
 #include <QMap>
 
+////! @todo this could be a template
+//class CachedSingleDataVector
+//{
+//public:
+//    CachedSingleDataVector(const QVector<double> &rDataVector, const QString fileName=QString());
+//    ~CachedSingleDataVector();
+
+//    bool setCacheFile(const QString fileName);
+//    bool setCached(const bool cached);
+//    bool isCached() const;
+
+//    int size() const;
+//    bool isEmpty() const;
+
+//    bool copyData(QVector<double> &rData);
+//    bool replaceData(const QVector<double> &rNewData);
+//    bool peek(const int idx, double &rVal);
+//    bool poke(const int idx, const double val);
+
+//    QVector<double> *beginFullVectorOperation();
+//    bool endFullVectorOperation(QVector<double> *&rpData);
+
+//    QString getError() const;
+
+//private:
+//    bool writeToCache(const QVector<double> &rDataVector);
+//    bool moveToCache();
+//    bool readToMem(QVector<double> &rDataVector);
+//    bool moveToMem();
+
+//    QString mError;
+//    QFile mCacheFile;
+//    QVector<double> mDataVector;
+//    int mNumElements;
+//};
+
+
 //! @todo this could be a template
-class CachedSingleDataVector
-{
-public:
-    CachedSingleDataVector(const QVector<double> &rDataVector, const QString fileName=QString());
-    ~CachedSingleDataVector();
-
-    bool setCacheFile(const QString fileName);
-    bool setCached(const bool cached);
-    bool isCached() const;
-
-    int size() const;
-    bool isEmpty() const;
-
-    bool copyData(QVector<double> &rData);
-    bool replaceData(const QVector<double> &rNewData);
-    bool peek(const int idx, double &rVal);
-    bool poke(const int idx, const double val);
-
-    QVector<double> *beginFullVectorOperation();
-    bool endFullVectorOperation(QVector<double> *&rpData);
-
-    QString getError() const;
-
-private:
-    bool writeToCache(const QVector<double> &rDataVector);
-    bool moveToCache();
-    bool readToMem(QVector<double> &rDataVector);
-    bool moveToMem();
-
-    QString mError;
-    QFile mCacheFile;
-    QVector<double> mDataVector;
-    int mNumElements;
-};
-
-
-
 class MultiDataVectorCache
 {
 public:
@@ -78,8 +78,8 @@ public:
     bool beginMultiAppend();
     void endMultiAppend();
 
-    bool copyData(const quint64 startByte, const quint64 nBytes, QVector<double> &rData);
-    bool replaceData(const quint64 startByte, const QVector<double> &rNewData);
+    bool copyDataTo(const quint64 startByte, const quint64 nBytes, QVector<double> &rData);
+    bool replaceData(const quint64 startByte, const QVector<double> &rNewData, quint64 &rNumBytes);
     bool peek(const quint64 byte, double &rVal);
     bool poke(const quint64 byte, const double val);
 
@@ -98,9 +98,11 @@ protected:
         quint64 nBytes;
     }CheckoutInfoT;
 
-    bool writeInCache(const quint64 startByte, const QVector<double> &rDataVector);
+    bool writeInCache(const quint64 startByte, const QVector<double> &rDataVector, quint64 &rBytesWriten);
     bool appendToCache(const QVector<double> &rDataVector, quint64 &rStartByte, quint64 &rNumBytes);
     bool readToMem(const quint64 startByte, const quint64 nBytes, QVector<double> *pDataVector);
+    bool smartOpenFile(QIODevice::OpenMode flags);
+    void smartCloseFile();
     void removeCacheFile();
 
     QMap<QVector<double> *, CheckoutInfoT> mCheckoutMap;
@@ -108,6 +110,8 @@ protected:
     QFile mCacheFile;
     QString mError;
     bool mIsMultiAppending;
+    bool mIsMultiReadWriting;
+    bool mIsMultiReading;
 };
 typedef QSharedPointer<MultiDataVectorCache> SharedMultiDataVectorCacheT;
 

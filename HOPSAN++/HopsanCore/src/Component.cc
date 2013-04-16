@@ -140,26 +140,41 @@ const std::vector<VariameterDescription>* Component::getVariameters()
     PortPtrMapT::iterator pit;
     for (pit=mPortPtrMap.begin(); pit!=mPortPtrMap.end(); ++pit)
     {
-        //! @todo we should get name unit and description from startnode, as the actual node may have description from someone else, or maybe that info should not be in the actual node
-        const vector<NodeDataDescription>* pDescs = pit->second->getNodeDataDescriptions();
-        if (pDescs)
+        Port *pPort = pit->second;
+        for (size_t id=0; id<pPort->getNumDataVariables(); ++id)
         {
-            for (size_t i=0; i<pDescs->size(); ++i)
+            const NodeDataDescription *pDesc = pPort->getNodeDataDescription(id);
+            if (pDesc)
             {
                 VariameterDescription data;
-                data.mName = pDescs->at(i).name;
-                data.mShortName = pDescs->at(i).shortname;
-                data.mPortName = pit->second->getName();
-                data.mUnit = pDescs->at(i).unit;
-                data.mDescription = pDescs->at(i).description;
-                data.mVariableId = pDescs->at(i).id;
-                data.mVarType = pDescs->at(i).varType;
-                data.mAlias = pit->second->getVariableAlias(data.mVariableId);
+                data.mName = pDesc->name;
+                data.mShortName = pDesc->shortname;
+                data.mPortName = pPort->getName();
+                data.mUnit = pDesc->unit;
+                data.mDescription = pDesc->description;
+                data.mVariableId = pDesc->id;
+                data.mVarType = pDesc->varType;
+                data.mAlias = pPort->getVariableAlias(data.mVariableId);
                 data.mDataType = "double"; //!< @todo not hardcoded
+
+                if ( (pPort->getNodeType() == "NodeSignal") && (pPort->getPortType() == ReadPortType) )
+                {
+                    data.mVariameterType = InputVariable;
+                }
+                else if ( (pPort->getNodeType() == "NodeSignal") && (pPort->getPortType() == WritePortType) )
+                {
+                    data.mVariameterType = OutputVariable;
+                }
+                else
+                {
+                    data.mVariameterType = OtherVariable;
+                }
+
                 mVariameters.push_back(data);
                 //! @todo some of these will never change after a component has been configured, (but som may, like alias description unit)
             }
         }
+
     }
     return &mVariameters;
 }

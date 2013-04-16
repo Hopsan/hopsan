@@ -446,7 +446,6 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
         variameter.mUnit = parameters[constantsIds[i]].mUnit;
         variameter.mDataType = parameters[constantsIds[i]].mType;
         createTableRow(r, variameter, Constant);
-        //! @todo need to disable som fields for constants, like alias
         ++r;
     }
 
@@ -454,30 +453,57 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
     QVector<CoreVariameterDescription> variameters;
     mpModelObject->getVariameterDescriptions(variameters);
 
+    // Write inputVariables
+    createSeparatorRow(r,"InputVariables");
+    ++r;
+    for (int i=0; i<variameters.size(); ++i)
+    {
+        if (variameters[i].mVariameterType == InputVaraiable)
+        {
+            createTableRow(r, variameters[i], InputVaraiable);
+            ++r;
+        }
+    }
+
+    // Write outputVariables
+    createSeparatorRow(r,"OutputVariables");
+    ++r;
+    for (int i=0; i<variameters.size(); ++i)
+    {
+        if (variameters[i].mVariameterType == OutputVariable)
+        {
+            createTableRow(r, variameters[i], OutputVariable);
+            ++r;
+        }
+    }
+
+    // Write remaning port variables
     QString currPortName;
     for (int i=0; i<variameters.size(); ++i)
     {
-        // Extract current port name to see if we should make a separator
-        QString portName = variameters[i].mPortName;
-        if (portName != currPortName)
+        if (variameters[i].mVariameterType == OtherVariable)
         {
-            currPortName = portName;
-
-            Port* pPort = mpModelObject->getPort(portName);
-            if (pPort)
+            // Extract current port name to see if we should make a separator
+            QString portName = variameters[i].mPortName;
+            if (portName != currPortName)
             {
-                QString desc = pPort->getPortDescription();
-                if (!desc.isEmpty())
+                currPortName = portName;
+                Port* pPort = mpModelObject->getPort(portName);
+                if (pPort)
                 {
-                    portName.append("     "+desc);
+                    QString desc = pPort->getPortDescription();
+                    if (!desc.isEmpty())
+                    {
+                        portName.append("     "+desc);
+                    }
                 }
+                createSeparatorRow(r,"Port: "+portName);
+                ++r;
             }
-            createSeparatorRow(r,"Port: "+portName);
+
+            createTableRow(r, variameters[i], OtherVariable);
             ++r;
         }
-
-        createTableRow(r, variameters[i], OtherVariable);
-        ++r;
     }
 
     resizeColumnToContents(Name);
@@ -677,7 +703,7 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
     pItem = new QTableWidgetItem(rData.mAlias);
     pItem->setTextAlignment(Qt::AlignCenter);
     pItem->setFlags(Qt::NoItemFlags);
-    if (variametertype > Constant)
+    if (variametertype != Constant)
     {
         pItem->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
     }
@@ -740,8 +766,7 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
     connect(pSystemParameterToolButton, SIGNAL(triggeredAtRow(int)), this, SLOT(selectSystemParameterAtRow(int)));
     pToolButtonsLayout->addWidget(pSystemParameterToolButton);
 
-    bool isInputVariable = (rData.mName == "Value"); //!< @todo this info should be in the variameter
-    if ((variametertype > Constant) && isInputVariable)
+    if (variametertype == InputVaraiable)
     {
         RowAwareCheckBox *pEnablePortCheckBox = new RowAwareCheckBox(row);
         pEnablePortCheckBox->setToolTip("Show/hide port");

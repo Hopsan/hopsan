@@ -53,6 +53,8 @@ class HopsanCoreMessageHandler;
 //! @deprecated
 enum ParamDynConstEnumT {Dynamic, Constant};
 
+enum VariameterTypeEnumT {InputVariable, OutputVariable, OtherVariable};
+
 class VariameterDescription
 {
 public:
@@ -63,6 +65,7 @@ public:
     std::string mDataType;
     std::string mUnit;
     std::string mDescription;
+    VariameterTypeEnumT mVariameterType;
     NodeDataVariableTypeEnumT mVarType;
     unsigned int mVariableId;
 };

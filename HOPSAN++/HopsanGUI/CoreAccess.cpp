@@ -577,6 +577,7 @@ void CoreSystemAccess::getVariameters(QString componentName, QVector<CoreVariame
             data.mDataType = QString::fromStdString(pDescs->at(i).mDataType);
             data.mAlias = QString::fromStdString(pDescs->at(i).mAlias);
             data.mVariabelId = pDescs->at(i).mVariableId;
+            data.mVariameterType = pDescs->at(i).mVariameterType;
             //data.mVariabelType =
             //! @todo type
             rVariameterDescriptions.push_back(data);

@@ -404,7 +404,16 @@ bool Port::haveLogData(const size_t /*portIdx*/)
 //! @param [in,out] rUnits This vector will contain the units
 const std::vector<NodeDataDescription>* Port::getNodeDataDescriptions(const size_t /*portIdx*/)
 {
-    return mpNode->getDataDescriptions();
+    // We prefere to use the startnode
+    if (mpStartNode)
+    {
+        return mpStartNode->getDataDescriptions();
+    }
+    else
+    {
+        // This node could contain descriptions copied by someone else
+        return mpNode->getDataDescriptions();
+    }
 }
 
 
@@ -413,18 +422,23 @@ const std::vector<NodeDataDescription>* Port::getNodeDataDescriptions(const size
 //! @returns A pointer to teh node data description, or 0 if no node exist
 const NodeDataDescription* Port::getNodeDataDescription(const size_t dataid, const size_t /*portIdx*/)
 {
-    //! @todo since mpNode should always be set maybe we could remove (almost) all the checks (but not for multiports their mpNOde will be 0)
-    if (mpNode != 0)
+    // We prefere to use the startnode
+    if (mpStartNode)
     {
+        return mpStartNode->getDataDescription(dataid);
+    }
+    else
+    {
+        // This node could contain descriptions copied by someone else
         return mpNode->getDataDescription(dataid);
     }
-    return 0;
 }
 
 
 //! @brief Wraper for the Node function
 int Port::getNodeDataIdFromName(const string name, const size_t /*portIdx*/)
 {
+    //! @todo since mpNode should always be set maybe we could remove (almost) all the checks (but not for multiports their mpNOde will be 0)
     if (mpNode != 0)
     {
         return mpNode->getDataIdFromName(name);
@@ -483,6 +497,11 @@ vector<double> *Port::getDataVectorPtr(const size_t /*portIdx*/)
     {
         return 0;
     }
+}
+
+size_t Port::getNumDataVariables() const
+{
+    return mpNode->getNumDataVariables();
 }
 
 

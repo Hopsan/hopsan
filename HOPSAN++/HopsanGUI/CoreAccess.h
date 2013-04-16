@@ -118,6 +118,7 @@ public:
     QString mUnit;
     QString mDescription;
     QString mVariabelType;
+    int mVariameterType;
     int mVariabelId;
 };
 

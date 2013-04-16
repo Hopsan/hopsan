@@ -57,7 +57,7 @@ class VariableTableWidget :public TableWidgetTotalSize
 {
     Q_OBJECT
 public:
-    enum VariameterTypEnumT {Constant, InputVaraiable, OutputVariable, PortVariable, OtherVariable}; //!< @todo maybe not only here
+    enum VariameterTypEnumT {InputVaraiable, OutputVariable, OtherVariable, Constant}; //!< @todo maybe not only here
     enum ColumnEnumT {Name, Alias, Unit, Description, Type, Value, Scale, Buttons, NumCols};
     VariableTableWidget(ModelObject *pModelObject, QWidget *pParent);
     bool setStartValues();
