@@ -370,7 +370,7 @@ bool CachableDataVector::replaceData(const QVector<double> &rNewData)
     if (isCached())
     {
         // If same length, then replace actual data
-        if (rNewData.size() <= sizeof(double)*mCacheNumBytes)
+        if (rNewData.size() <= mCacheNumBytes/sizeof(double))
         {
             return mpMultiCache->replaceData(mCacheStartByte, rNewData, mCacheNumBytes);
         }
