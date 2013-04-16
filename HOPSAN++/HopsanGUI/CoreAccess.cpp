@@ -1140,7 +1140,7 @@ NodeInfo::NodeInfo(QString nodeType)
            pNode->getDataDescription(i)->varType == hopsan::FlowType)        //Q variable
         {
             qVariables << pNode->getDataDescription(i)->shortname.c_str();
-            variableLabels << QString(pNode->getDataDescription(i)->name.c_str()).toUpper();
+            variableLabels << QString(pNode->getDataDescription(i)->name.c_str())/*.toUpper()*/;
             varIdx << pNode->getDataDescription(i)->id;
         }
         if(pNode->getDataDescription(i)->varType == hopsan::IntensityType)
@@ -1157,7 +1157,7 @@ NodeInfo::NodeInfo(QString nodeType)
         if(pNode->getDataDescription(i)->varType == hopsan::TLMType)        //C variable
         {
             cVariables << pNode->getDataDescription(i)->shortname.c_str();
-            variableLabels << QString(pNode->getDataDescription(i)->name.c_str()).toUpper();
+            variableLabels << QString(pNode->getDataDescription(i)->name.c_str())/*.toUpper()*/;
             varIdx << pNode->getDataDescription(i)->id;
         }
     }

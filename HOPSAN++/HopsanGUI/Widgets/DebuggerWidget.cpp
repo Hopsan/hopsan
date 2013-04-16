@@ -19,6 +19,11 @@
 #include "GUIObjects/GUISystem.h"
 #include "GUIPort.h"
 #include "CoreAccess.h"
+#include "MainWindow.h"
+#include "DesktopHandler.h"
+
+#include "ComponentSystem.h"
+
 
 DebuggerWidget::DebuggerWidget(SystemContainer *pSystem, QWidget *parent) :
     QDialog(parent)
@@ -65,11 +70,11 @@ DebuggerWidget::DebuggerWidget(SystemContainer *pSystem, QWidget *parent) :
     //Buttons widget
     mpButtonsWidget = new QWidget(this);
     mpCurrentStepLabel = new QLabel(mpButtonsWidget);
-    mpStepIndicatorLabel = new QLabel(mpButtonsWidget);
+    mTimeIndicatorLabel = new QLabel(mpButtonsWidget);
     QFont font;
     font.setBold(true);
     font.setWeight(75);
-    mpStepIndicatorLabel->setFont(font);
+    mTimeIndicatorLabel->setFont(font);
     mpHorizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
     mpAbortButton = new QPushButton(mpButtonsWidget);
     mpInitializeButton = new QPushButton(mpButtonsWidget);
@@ -78,7 +83,7 @@ DebuggerWidget::DebuggerWidget(SystemContainer *pSystem, QWidget *parent) :
 
     mpHorizontalLayout = new QHBoxLayout(mpButtonsWidget);
     mpHorizontalLayout->addWidget(mpCurrentStepLabel);
-    mpHorizontalLayout->addWidget(mpStepIndicatorLabel);
+    mpHorizontalLayout->addWidget(mTimeIndicatorLabel);
     mpHorizontalLayout->addItem(mpHorizontalSpacer);
     mpHorizontalLayout->addWidget(mpAbortButton);
     mpHorizontalLayout->addWidget(mpInitializeButton);
@@ -87,11 +92,13 @@ DebuggerWidget::DebuggerWidget(SystemContainer *pSystem, QWidget *parent) :
 
     mpVerticalLayout->addWidget(mpButtonsWidget);
 
-    connect(mpAbortButton, SIGNAL(clicked()), this, SLOT(accept()));
-    connect(mpComponentsList, SIGNAL(currentTextChanged(QString)), this, SLOT(updatePortsList(QString)));
-    connect(mpPortsList, SIGNAL(currentTextChanged(QString)), this, SLOT(updateVariablesList(QString)));
-    connect(mpAddButton, SIGNAL(clicked()), this, SLOT(addVariable()));
-    connect(mpRemoveButton, SIGNAL(clicked()), this, SLOT(removeVariable()));
+    connect(mpAbortButton,      SIGNAL(clicked()),                      this, SLOT(accept()));
+    connect(mpComponentsList,   SIGNAL(currentTextChanged(QString)),    this, SLOT(updatePortsList(QString)));
+    connect(mpPortsList,        SIGNAL(currentTextChanged(QString)),    this, SLOT(updateVariablesList(QString)));
+    connect(mpAddButton,        SIGNAL(clicked()),                      this, SLOT(addVariable()));
+    connect(mpRemoveButton,     SIGNAL(clicked()),                      this, SLOT(removeVariable()));
+    connect(mpInitializeButton, SIGNAL(clicked()),                      this, SLOT(runInitialization()));
+    connect(mpForwardButton,    SIGNAL(clicked()),                      this, SLOT(stepForward()));
 
 
     retranslateUi();
@@ -108,8 +115,8 @@ void DebuggerWidget::retranslateUi()
     mpRemoveButton->setText(tr("Remove"));
     mpAddButton->setText(tr("Add"));
     mpTabWidget->setTabText(mpTabWidget->indexOf(mpVariablesTab), tr("Select variables"));
-    mpCurrentStepLabel->setText(tr("Current step:"));
-    mpStepIndicatorLabel->setText(tr("27"));
+    mpCurrentStepLabel->setText(tr("Current time:"));
+    mTimeIndicatorLabel->setText(tr("0"));
     mpAbortButton->setText(tr("Abort"));
     mpGotoButton->setText(tr("Go to step "));
     mpForwardButton->setText(tr("Step forward"));
@@ -119,7 +126,20 @@ void DebuggerWidget::retranslateUi()
 
 void DebuggerWidget::setInitData()
 {
+    mCurrentTime = gpMainWindow->getStartTimeFromToolBar();
+
     mpComponentsList->addItems(mpSystem->getModelObjectNames());
+    mpGotoButton->setDisabled(true);
+    mpForwardButton->setDisabled(true);
+
+    QString dateString = QDateTime::currentDateTime().toString(Qt::DefaultLocaleShortDate);
+    qDebug() << "dateString = " << dateString.toUtf8();
+    dateString.replace(":", "_");
+    dateString.replace(".", "_");
+    dateString.replace(" ", "_");
+    dateString.replace("/", "_");
+    dateString.replace("\\", "_");
+    mOutputFile.setFileName(gDesktopHandler.getDocumentsPath()+"HopsanDebuggerOutput_"+dateString+".csv");
 }
 
 
@@ -189,3 +209,78 @@ void DebuggerWidget::removeVariable()
     mpChoosenVariablesList->clear();
     mpChoosenVariablesList->addItems(mVariables);
 }
+
+void DebuggerWidget::runInitialization()
+{
+    if(mpSystem->getCoreSystemAccessPtr()->initialize(gpMainWindow->getStartTimeFromToolBar(),gpMainWindow->getFinishTimeFromToolBar(), 0))
+    {
+        mpGotoButton->setEnabled(true);
+        mpForwardButton->setEnabled(true);
+    }
+    collectLastData();
+    updateTimeDisplay();
+}
+
+void DebuggerWidget::stepForward()
+{
+    simulateTo(getCurrentTime()+getTimeStep());
+}
+
+void DebuggerWidget::simulateTo(double targetTime)
+{
+    mpSystem->getCoreSystemAccessPtr()->simulate(getCurrentTime(), targetTime, -1, true);
+    collectLastData();
+    updateTimeDisplay();
+}
+
+void DebuggerWidget::collectLastData()
+{
+
+    QString outputLine;
+
+    mpTraceTable->insertRow(mpTraceTable->rowCount());
+    QTableWidgetItem *pItem = new QTableWidgetItem(QString::number(getCurrentTime()));
+    mpTraceTable->setVerticalHeaderItem(mpTraceTable->rowCount()-1, pItem);
+    Q_FOREACH(const QString &var, mVariables)
+    {
+        QString component = var.split("::").at(0);
+        QString port = var.split("::").at(1);
+        QString data = var.split("::").at(2);
+
+        double value;
+        mpSystem->getCoreSystemAccessPtr()->getLastNodeData(component, port, data, value);
+        outputLine.append(QString::number(value)+",");
+        QTableWidgetItem *pDataItem = new QTableWidgetItem(QString::number(value));
+        for(int c=0; c<mpTraceTable->columnCount(); ++c)
+        {
+            if(mpTraceTable->horizontalHeaderItem(c)->text() == var)
+            {
+                mpTraceTable->setItem(mpTraceTable->rowCount()-1, c, pDataItem);
+            }
+        }
+    }
+    mpTraceTable->scrollToBottom();
+    //mpTraceTable->verticalScrollBar()->setSliderPosition (mpTraceTable->verticalScrollBar()->maximum());
+
+    outputLine.chop(1);
+    outputLine.append("\n");
+    mOutputFile.open(QFile::WriteOnly | QFile::Text | QFile::Append);
+    mOutputFile.write(outputLine .toUtf8());
+    mOutputFile.close();
+}
+
+void DebuggerWidget::updateTimeDisplay()
+{
+    mTimeIndicatorLabel->setText(QString::number(getCurrentTime()));
+}
+
+double DebuggerWidget::getCurrentTime()
+{
+    return mpSystem->getCoreSystemAccessPtr()->getCurrentTime();
+}
+
+double DebuggerWidget::getTimeStep()
+{
+    return mpSystem->getTimeStep();
+}
+

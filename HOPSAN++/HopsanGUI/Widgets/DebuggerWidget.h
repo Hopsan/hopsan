@@ -28,6 +28,7 @@ public:
     void retranslateUi();
     void setInitData();
 
+
 signals:
     
 public slots:
@@ -37,6 +38,14 @@ private slots:
     void updateVariablesList(QString port);
     void addVariable();
     void removeVariable();
+
+    void runInitialization();
+    void stepForward();
+    void simulateTo(double targetTime);
+    void collectLastData();
+    void updateTimeDisplay();
+    double getCurrentTime();
+    double getTimeStep();
 
 
 private:
@@ -58,7 +67,7 @@ private:
     QWidget *mpButtonsWidget;
     QHBoxLayout *mpHorizontalLayout;
     QLabel *mpCurrentStepLabel;
-    QLabel *mpStepIndicatorLabel;
+    QLabel *mTimeIndicatorLabel;
     QSpacerItem *mpHorizontalSpacer;
     QPushButton *mpAbortButton;
     QPushButton *mpGotoButton;
@@ -66,7 +75,9 @@ private:
     QPushButton *mpInitializeButton;
 
     QStringList mVariables;
-
+    bool mIsInitialized();
+    double mCurrentTime;
+    QFile mOutputFile;
 };
 
 #endif // DEBUGGERWIDGET_H
