@@ -249,6 +249,8 @@ void DebuggerWidget::collectLastData(bool overWriteGeneration)
 
     QString outputLine;
 
+    outputLine.append(QString::number(getCurrentTime())+",");
+
     mpTraceTable->insertRow(mpTraceTable->rowCount());
     QTableWidgetItem *pItem = new QTableWidgetItem(QString::number(getCurrentTime()));
     mpTraceTable->setVerticalHeaderItem(mpTraceTable->rowCount()-1, pItem);
