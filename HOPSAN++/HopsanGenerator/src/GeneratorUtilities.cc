@@ -561,7 +561,7 @@ QStringList getHopsanCoreIncludeFiles(bool skipDependencies)
 
 
 
-NodeInfo::NodeInfo(QString nodeType)
+GeneratorNodeInfo::GeneratorNodeInfo(QString nodeType)
 {
     hopsan::HopsanEssentials hopsanCore;
     Node *pNode = hopsanCore.createNode(nodeType.toStdString());
@@ -590,7 +590,7 @@ NodeInfo::NodeInfo(QString nodeType)
     hopsanCore.removeNode(pNode);
 }
 
-void NodeInfo::getNodeTypes(QStringList &nodeTypes)
+void GeneratorNodeInfo::getNodeTypes(QStringList &nodeTypes)
 {
     nodeTypes << "NodeMechanic" << "NodeMechanicRotational" << "NodeHydraulic" << "NodePneumatic" << "NodeElectric";
 }

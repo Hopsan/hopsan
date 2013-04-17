@@ -169,7 +169,6 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
     {
         varDeclarations.append("        "+comp.utilities[i]+" "+comp.utilityNames[i]+";\n");
     }
-    varDeclarations.append(";");
 
 
     //Declare node data pointers
@@ -186,7 +185,7 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
         else
         {
             QStringList vars;
-            vars << NodeInfo(comp.portNodeTypes[i]).qVariables << NodeInfo(comp.portNodeTypes[i]).cVariables;
+            vars << GeneratorNodeInfo(comp.portNodeTypes[i]).qVariables << GeneratorNodeInfo(comp.portNodeTypes[i]).cVariables;
 
             for(int v=0; v<vars.size(); ++v)
             {
@@ -240,11 +239,20 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
     QString addPorts;
     for(int i=0; i<comp.portNames.size(); ++i)
     {
-        if(comp.portNodeTypes[i] == "Signal")
+        if(comp.portNodeTypes[i] == "NodeSignal")
         {
+            QString init = comp.portDefaults[i];
+            if(init.isEmpty())
+            {
+                init = "0";
+            }
             if(comp.portTypes[i] == "ReadPort")
             {
-                addPorts.append("            addInputVariable(\""+comp.portNames[i]+"\", \"\", \"\", "+comp.portDefaults[i]+", &mp"+comp.portNames[i]+");\n");
+                addPorts.append("            addInputVariable(\""+comp.portNames[i]+"\", \"\", \"\", "+init+", &mpND_"+comp.portNames[i]+");\n");
+            }
+            else if(comp.portTypes[i] == "WritePort")
+            {
+                addPorts.append("            addOutputVariable(\""+comp.portNames[i]+"\", \"\", \"\", "+init+", &mpND_"+comp.portNames[i]+");\n");
             }
         }
         else
@@ -282,8 +290,8 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
         QStringList varLabels;
         if(comp.portNodeTypes[i] != "NodeSignal")
         {
-            varNames << NodeInfo(comp.portNodeTypes[i]).qVariables << NodeInfo(comp.portNodeTypes[i]).cVariables;
-            varLabels << NodeInfo(comp.portNodeTypes[i]).variableLabels;
+            varNames << GeneratorNodeInfo(comp.portNodeTypes[i]).qVariables << GeneratorNodeInfo(comp.portNodeTypes[i]).cVariables;
+            varLabels << GeneratorNodeInfo(comp.portNodeTypes[i]).variableLabels;
         }
 
         for(int v=0; v<varNames.size(); ++v)
@@ -316,7 +324,7 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
         }
         else
         {
-            varNames << NodeInfo(comp.portNodeTypes[i]).qVariables << NodeInfo(comp.portNodeTypes[i]).cVariables;
+            varNames << GeneratorNodeInfo(comp.portNodeTypes[i]).qVariables << GeneratorNodeInfo(comp.portNodeTypes[i]).cVariables;
         }
 
         for(int v=0; v<varNames.size(); ++v)
@@ -352,11 +360,11 @@ QString HopsanGenerator::generateSourceCodefromComponentObject(ComponentSpecific
         }
         if(comp.portNodeTypes[i] != "NodeSignal" && (comp.cqsType == "Q" || comp.cqsType == "S"))
         {
-            varNames << NodeInfo(comp.portNodeTypes[i]).qVariables;
+            varNames << GeneratorNodeInfo(comp.portNodeTypes[i]).qVariables;
         }
         if(comp.portNodeTypes[i] != "NodeSignal" && (comp.cqsType == "C" || comp.cqsType == "S"))
         {
-            varNames << NodeInfo(comp.portNodeTypes[i]).cVariables;
+            varNames << GeneratorNodeInfo(comp.portNodeTypes[i]).cVariables;
         }
         for(int v=0; v<varNames.size(); ++v)
         {

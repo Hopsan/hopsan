@@ -171,10 +171,10 @@ QStringList getHopsanCoreSourceFiles();
 QStringList getHopsanCoreIncludeFiles(bool skipDependencies=false);
 
 
-class NodeInfo
+class GeneratorNodeInfo
 {
     public:
-        NodeInfo(QString nodeType);
+        GeneratorNodeInfo(QString nodeType);
         static void getNodeTypes(QStringList &nodeTypes);
 
         QString niceName;

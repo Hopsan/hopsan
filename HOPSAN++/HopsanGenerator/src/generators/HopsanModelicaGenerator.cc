@@ -188,7 +188,7 @@ void HopsanModelicaGenerator::parseModelicaModel(QString code, QString &typeName
             else                                                //Power connector
             {
                 QStringList nodeTypes;
-                NodeInfo::getNodeTypes(nodeTypes);
+                GeneratorNodeInfo::getNodeTypes(nodeTypes);
                 Q_FOREACH(const QString &type, nodeTypes)
                 {
                     if(words.at(0) == type)
@@ -511,14 +511,14 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     for(int i=0; i<ports.size(); ++i)
     {
         QString num = QString::number(i+1);
-        if(ports[i].porttype == "ReadPortType")
+        if(ports[i].porttype == "ReadPort")
         {
             nonStateVars.append(Expression(ports[i].name));
         }
         else if(ports[i].porttype == "PowerPort" && cqsType == "C")
         {
             QStringList qVars;
-            qVars << NodeInfo(ports[i].nodetype).qVariables;
+            qVars << GeneratorNodeInfo(ports[i].nodetype).qVariables;
             for(int v=0; v<qVars.size(); ++v)
             {
                 nonStateVars.append(Expression(qVars[v]+num));
@@ -527,7 +527,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         else if(ports[i].porttype == "PowerPort" && cqsType == "Q")
         {
             QStringList cVars;
-            cVars << NodeInfo(ports[i].nodetype).cVariables;
+            cVars << GeneratorNodeInfo(ports[i].nodetype).cVariables;
             for(int v=0; v<cVars.size(); ++v)
             {
                 nonStateVars.append(Expression(cVars[v]+num));
@@ -576,8 +576,8 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         {
             QStringList qVars;
             QStringList cVars;
-            qVars << NodeInfo(ports[i].nodetype).qVariables;
-            cVars << NodeInfo(ports[i].nodetype).cVariables;
+            qVars << GeneratorNodeInfo(ports[i].nodetype).qVariables;
+            cVars << GeneratorNodeInfo(ports[i].nodetype).cVariables;
             for(int v=0; v<qVars.size(); ++v)
             {
                 nonLocals.append(Expression(qVars[v]+num));      //Remove all Q-type variables

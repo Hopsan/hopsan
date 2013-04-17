@@ -256,22 +256,22 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
         QStringList mpndNames, dataTypes, causalities;
 
         QStringList nodeTypes;
-        NodeInfo::getNodeTypes(nodeTypes);
+        GeneratorNodeInfo::getNodeTypes(nodeTypes);
         Q_FOREACH(const QString &type, nodeTypes)
         {
-            if(tlmPortTypes[i] == NodeInfo(type).niceName+"q")
+            if(tlmPortTypes[i] == GeneratorNodeInfo(type).niceName+"q")
             {
                 nodeType = type;
                 cqType = "q";
             }
-            else if(tlmPortTypes[i] == NodeInfo(type).niceName+"c")
+            else if(tlmPortTypes[i] == GeneratorNodeInfo(type).niceName+"c")
             {
                 nodeType = type;
                 cqType = "c";
             }
         }
 
-        NodeInfo info = NodeInfo(nodeType);
+        GeneratorNodeInfo info = GeneratorNodeInfo(nodeType);
         if(cqType == "q")
         {
             int j=0;
@@ -1205,10 +1205,10 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
             type = portElement.attribute("type");
 
             QStringList nodeTypes;
-            NodeInfo::getNodeTypes(nodeTypes);
+            GeneratorNodeInfo::getNodeTypes(nodeTypes);
             Q_FOREACH(const QString &nodeType, nodeTypes)
             {
-                NodeInfo info = NodeInfo(nodeType);
+                GeneratorNodeInfo info = GeneratorNodeInfo(nodeType);
                 if(type == info.niceName+"q" || type == info.niceName+"c")
                 {
                     Q_FOREACH(const QString &var, info.qVariables)
@@ -1236,7 +1236,7 @@ bool HopsanFMIGenerator::readTLMSpecsFromFile(const QString &fileName, QStringLi
 
             Q_FOREACH(const QString &nodeType, nodeTypes)
             {
-                NodeInfo info = NodeInfo(nodeType);
+                GeneratorNodeInfo info = GeneratorNodeInfo(nodeType);
                 if(type == info.niceName+"q")
                 {
                     QStringList varNames;
@@ -1355,7 +1355,7 @@ void HopsanFMIGenerator::getInterfaceInfo(QString typeName, QString compName,
         QString name=compName;
         name.remove(' ').remove("-");
 
-        NodeInfo info = NodeInfo(nodeType);
+        GeneratorNodeInfo info = GeneratorNodeInfo(nodeType);
 
         tlmPorts.append(QStringList() << info.niceName+"q");
         Q_FOREACH(const QString &var, info.qVariables)
@@ -1379,7 +1379,7 @@ void HopsanFMIGenerator::getInterfaceInfo(QString typeName, QString compName,
     {
         QString name=compName.remove(' ').remove("-");
 
-        NodeInfo info = NodeInfo(nodeType);
+        GeneratorNodeInfo info = GeneratorNodeInfo(nodeType);
 
         tlmPorts.append(QStringList() << info.niceName+"c");
         Q_FOREACH(const QString &var, info.qVariables)
