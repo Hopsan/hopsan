@@ -27,11 +27,10 @@
 #include <string>
 #include "CoreUtilities/ClassFactory.hpp"
 #include "win32dll.h"
-//#include <cstring>
 
 namespace hopsan {
 
-//Forward Declarations
+// Forward Declarations
 class Port;
 class Component;
 class ComponentSystem;
@@ -98,7 +97,7 @@ protected:
 
     double *getDataPtr(const size_t data_type);
 
-    //Protected member variables
+    // Protected member variables
     std::string mNiceName;
     std::vector<NodeDataDescription> mDataDescriptions;
     std::vector<double> mDataValues;
@@ -120,10 +119,6 @@ private:
     bool mDoLog;
 };
 
-//struct NodeKeyComp {
-//  bool operator() (const char* lhs, const char* rhs) const
-//  {return strcmp(lhs, rhs)!=0;}
-//};
 typedef ClassFactory<std::string, Node> NodeFactory;
 }
 

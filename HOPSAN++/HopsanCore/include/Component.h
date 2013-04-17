@@ -30,7 +30,6 @@
 #include "Parameters.h"
 #include "win32dll.h"
 #include <string>
-//#include <cstring>
 #include <map>
 
 namespace hopsan {
@@ -190,7 +189,7 @@ protected:
     inline virtual size_t calcNumSimSteps(const double startT, const double stopT)
     {
         // Round to nearest, we may not get exactly the stop time that we want
-        return size_t((stopT-startT)/mTimestep+0.5);
+        return size_t(std::max(stopT-startT,0.0)/mTimestep+0.5);
     }
 
     // Interface variable functions
@@ -286,10 +285,6 @@ class DLLIMPORTEXPORT ComponentQ : public Component
     bool isComponentQ() const {return true;}
 };
 
-//struct ComponentKeyComp {
-//  bool operator() (const char* lhs, const char* rhs) const
-//  {return strcmp(lhs, rhs)!=0;}
-//};
 typedef ClassFactory<std::string, Component> ComponentFactory;
 }
 
