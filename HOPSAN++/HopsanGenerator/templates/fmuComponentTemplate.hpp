@@ -54,16 +54,16 @@ namespace hopsan {
         double *prez;             // previous values of state event indicators
 
         //Declare ports
->>>2>>>        Port *<<<varname>>>;
-<<<2<<<
+>>>portdecl>>>        Port *<<<varname>>>;
+<<<portdecl<<<
 
         //Declare node data pointers
->>>3>>>        double *<<<mpndname>>>;
-<<<3<<<
+>>>dataptrdecl>>>        double *<<<mpndname>>>;
+<<<dataptrdecl<<<
 
         //Declare parameters
->>>4>>>        double <<<varname>>>;
-<<<4<<<
+>>>pardecl>>>        double <<<varname>>>;
+<<<pardecl<<<
 
     public:
         static Component *Creator()
@@ -82,17 +82,16 @@ namespace hopsan {
 
             mFMU.modelDescription = parse("<<<fmudir>>>/modelDescription.xml");
             assert(mFMU.modelDescription);
-            assert(loadLib("<<<fmudir>>>/<<<modelname>>>.<<<13>>>"));
+            assert(loadLib("<<<fmudir>>>/<<<modelname>>>.<<<fileext>>>"));
             addInfoMessage(getString(mFMU.modelDescription, att_modelIdentifier));
 
             //Add ports
->>>7>>>            <<<varname>>> = add<<<porttype>>>("<<<portname>>>", "<<<nodetype>>>", <<<notrequired>>>);
-<<<7<<<
+>>>addports>>>            <<<varname>>> = add<<<porttype>>>("<<<portname>>>", "<<<nodetype>>>", <<<notrequired>>>);
+<<<addports<<<
 
             //Initialize and register parameters
->>>8>>>            <<<varname>>> = <<<initvalue>>>;
-            registerParameter("<<<parname>>>", "<<<description>>>", "-", <<<varname>>>);
-<<<8<<<        }
+>>>addconstants>>>            addConstant("<<<parname>>>", "<<<description>>>", "-", <<<initvalue>>>, <<<varname>>>);
+<<<addconstants<<<        }
 
         void initialize()
         {
@@ -110,9 +109,9 @@ namespace hopsan {
                 return;
             }
 
-            //Declare node data pointers
->>>9>>>            <<<mpndname>>> = getSafeNodeDataPtr(<<<varname>>>, <<<datatype>>>);
-<<<9<<<
+            //Initialize node data pointers
+>>>initdataptrs>>>            <<<mpndname>>> = getSafeNodeDataPtr(<<<varname>>>, <<<datatype>>>);
+<<<initdataptrs<<<
            
             //Initialize FMU
             ModelDescription* md;            // handle to the parsed XML file
@@ -148,11 +147,11 @@ namespace hopsan {
             fmiValueReference vr;
                         
             //Set parameters
->>>10>>>            sv = vars[<<<valueref>>>];
+>>>setpars>>>            sv = vars[<<<valueref>>>];
             vr = getValueReference(sv);
             value=<<<varname>>>;
             mFMU.setReal(c, &vr, 1, &value);
-<<<10<<<
+<<<setpars<<<
 
             // set the start time and initialize
             fmiFlag =  mFMU.setTime(c, t0);
@@ -174,23 +173,23 @@ namespace hopsan {
             fmiValueReference vr;
 
             //write input values
->>>11>>>            if(<<<varname>>>->isConnected())
+>>>readinputs>>>            if(<<<varname>>>->isConnected())
             {
                 sv = vars[<<<valueref>>>];
                 vr = getValueReference(sv);
                 value = (*<<<mpndname>>>);
                 mFMU.setReal(c, &vr, 1, &value);
             }
-<<<11<<<
+<<<readinputs<<<
             //run simulation
             simulateFMU();
 
             //write back output values
->>>12>>>            sv = vars[<<<valueref>>>];
+>>>writeoutputs>>>            sv = vars[<<<valueref>>>];
             vr = getValueReference(sv);
             mFMU.getReal(c, &vr, 1, &value);
             (*<<<varname>>>) = value;
-<<<12<<<
+<<<writeoutputs<<<
         }
         void finalize()
         {
