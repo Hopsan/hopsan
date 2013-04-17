@@ -6,7 +6,7 @@
         </icons>
         <ports>
             <port x="1" y="0.5" a="0" name="P1"/>
-            <port x="0" y="0.5" a="180" name="in"/>
+            <port x="0" y="0.5" a="180" name="T"/>
         </ports>
     </modelobject>
 </hopsanobjectappearance>

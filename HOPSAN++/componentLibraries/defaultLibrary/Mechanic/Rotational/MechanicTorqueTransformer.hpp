@@ -48,8 +48,8 @@ namespace hopsan {
 
         void configure()
         {
-            mpP1 = addPowerPort("P1", "NodeMechanicRotational");
             addInputVariable("T", "", "", 0.0, &mpTref);
+            mpP1 = addPowerPort("P1", "NodeMechanicRotational");
             disableStartValue(mpP1, NodeMechanicRotational::Torque);
         }
 

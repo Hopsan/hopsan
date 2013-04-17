@@ -9,8 +9,8 @@
         </help>
         <ports>
             <port x="1" y="0.5" a="0" name="Pm1"/>
-            <port x="0" y="1" a="180" name="vin"/>
-            <port x="0" y="0" a="180" name="xin"/>
+            <port x="0" y="1" a="180" name="v"/>
+            <port x="0" y="0" a="180" name="x"/>
         </ports>
     </modelobject>
 </hopsanobjectappearance>
