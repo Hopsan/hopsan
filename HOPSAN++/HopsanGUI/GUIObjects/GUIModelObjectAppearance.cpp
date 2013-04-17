@@ -193,12 +193,12 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
         int idx=0;
         while(!xmlMovable.isNull())
         {
-            if(startX.size() < idx+1)
-            {
-                break;
-            }
             if(settingsOnly)
             {
+                if(startX.size() < idx+1)
+                {
+                    break;
+                }
                 startX[idx] = xmlMovable.firstChildElement("start").attribute("x").toDouble();
                 startY[idx] = xmlMovable.firstChildElement("start").attribute("y").toDouble();
                 startTheta[idx] = xmlMovable.firstChildElement("start").attribute("a").toDouble();

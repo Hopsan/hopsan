@@ -186,11 +186,11 @@ void AnimatedComponent::updateAnimation()
             //Apply parameter multipliers/divisors
             if(mpAnimationData->multipliers[m] != QString())    //! @todo Multipliers and divisors currently only work for first data
             {
-                data[0] = data[0]*mpModelObject->getParameterValue(mpAnimationData->multipliers[m]).toDouble();
+                data[0] = data[0]*mpModelObject->getParameterValue(mpAnimationData->multipliers[m]+"::Value").toDouble();
             }
             if(mpAnimationData->divisors[m] != QString())
             {
-                data[0] = data[0]/mpModelObject->getParameterValue(mpAnimationData->divisors[m]).toDouble();
+                data[0] = data[0]/mpModelObject->getParameterValue(mpAnimationData->divisors[m]+"::Value").toDouble();
             }
 
             //Set rotation
