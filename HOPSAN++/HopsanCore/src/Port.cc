@@ -820,7 +820,7 @@ const NodeDataDescription* MultiPort::getNodeDataDescription(const size_t dataid
     {
         return mSubPortsVector[portIdx]->getNodeDataDescription(dataid);
     }
-    else
+    else if (mpStartNode)
     {
         return mpStartNode->getDataDescription(dataid);
     }

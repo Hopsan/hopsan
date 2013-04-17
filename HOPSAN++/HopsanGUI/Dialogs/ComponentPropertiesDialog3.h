@@ -86,9 +86,13 @@ class ComponentPropertiesDialog3 : public QDialog
 public:
     ComponentPropertiesDialog3(ModelObject *pModelObject, QWidget *pParent=0);
 
+signals:
+    void lockProjectTab(bool);
+
 protected slots:
     void okPressed();
     void editPortPos();
+    virtual void reject();
 
 protected:
     bool setAliasNames();
@@ -96,7 +100,6 @@ protected:
     void setName();
     void recompileCppFromDialog();
     virtual void closeEvent(QCloseEvent* event);
-    virtual void reject();
 
 private:
     QGridLayout* createNameAndTypeEdit();

@@ -131,6 +131,7 @@ public slots:
     void setExternalSystem(bool value);
     void setEditingEnabled(bool value);
     void openAnimation();
+    void lockTab(bool locked);
 
 
 private slots:

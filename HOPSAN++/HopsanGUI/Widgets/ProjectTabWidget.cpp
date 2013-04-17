@@ -519,6 +519,11 @@ void ProjectTab::openAnimation()
     }
 }
 
+void ProjectTab::lockTab(bool locked)
+{
+    setDisabled(locked);
+}
+
 
 void ProjectTab::closeAnimation()
 {

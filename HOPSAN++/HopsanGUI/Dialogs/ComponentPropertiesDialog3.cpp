@@ -66,21 +66,23 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject
     mpModelObject = pModelObject;
     this->setPalette(gConfig.getPalette());
     setWindowTitle(tr("Component Properties"));
-//    if(mpModelObject->getTypeName().startsWith("CppComponent"))
-//    {
-//        createCppEditStuff();
-//    }
-//    else if(mpModelObject->getTypeName().startsWith("ModelicaComponent"))
-//    {
-//        createModelicaEditStuff();
-//    }
-//    else
-//    {
-        createEditStuff();
-//    }
+    //    if(mpModelObject->getTypeName().startsWith("CppComponent"))
+    //    {
+    //        createCppEditStuff();
+    //    }
+    //    else if(mpModelObject->getTypeName().startsWith("ModelicaComponent"))
+    //    {
+    //        createModelicaEditStuff();
+    //    }
+    //    else
+    //    {
+    createEditStuff();
+    //    }
+
+    connect(this, SIGNAL(lockProjectTab(bool)), mpModelObject->getParentContainerObject()->mpParentProjectTab, SLOT(lockTab(bool)));
 
     // Lock model for changes
-    mpModelObject->getParentContainerObject()->mpParentProjectTab->setDisabled(true);
+    emit lockProjectTab(true);
 }
 
 
@@ -212,14 +214,15 @@ void ComponentPropertiesDialog3::recompileCppFromDialog()
 
 void ComponentPropertiesDialog3::closeEvent(QCloseEvent* event)
 {
-    mpModelObject->getParentContainerObject()->mpParentProjectTab->setDisabled(false);
+    emit lockProjectTab(false);
     QWidget::closeEvent(event);
 }
 
 void ComponentPropertiesDialog3::reject()
 {
-    mpModelObject->getParentContainerObject()->mpParentProjectTab->setDisabled(false);
+    emit lockProjectTab(false);
     QDialog::reject();
+    QDialog::close();
 }
 
 QGridLayout* ComponentPropertiesDialog3::createNameAndTypeEdit()

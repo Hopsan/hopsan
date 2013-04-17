@@ -145,7 +145,9 @@ bool Component::setStartValue(QString portName, QString /*variable*/, QString sy
 void Component::openPropertiesDialog()
 {
     //ComponentPropertiesDialog dialog(this, gpMainWindow);
-    ComponentPropertiesDialog3 dialog(this, 0);
+    ComponentPropertiesDialog3 dialog(this, mpDialogParentWidget);
+    connect(this, SIGNAL(objectDeleted()), &dialog, SLOT(reject()));
+    //! @todo should we have delete on close
     dialog.setModal(false);
     dialog.show();
     dialog.exec();

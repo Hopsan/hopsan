@@ -190,6 +190,7 @@ protected:
     QString mModelicaCode;
 
     bool mDragCopying;
+    QWidget *mpDialogParentWidget;
 
 protected slots:
     void snapNameTextPosition(QPointF pos);

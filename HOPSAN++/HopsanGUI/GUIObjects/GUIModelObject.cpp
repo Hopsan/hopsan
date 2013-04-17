@@ -55,6 +55,7 @@ ModelObject::ModelObject(QPointF position, qreal rotation, const ModelObjectAppe
     mpNameText = 0;
     mTextOffset = 5.0;
     mDragCopying = false;
+    mpDialogParentWidget = new QWidget(gpMainWindow);
 
         //Set the hmf save tag name
     mHmfTagName = HMF_OBJECTTAG; //!< @todo change this
@@ -120,6 +121,7 @@ ModelObject::ModelObject(QPointF position, qreal rotation, const ModelObjectAppe
 ModelObject::~ModelObject()
 {
     emit objectDeleted();
+    mpDialogParentWidget;
 }
 
 void ModelObject::deleteInHopsanCore()
