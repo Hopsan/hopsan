@@ -997,7 +997,7 @@ void ProjectTabWidget::loadModel(QString modelFileName, bool ignoreAlreadyOpen)
     pCurrentTab->getTopLevelSystem()->getCoreSystemAccessPtr()->addSearchPath(fileInfo.absoluteDir().absolutePath());
     pCurrentTab->getTopLevelSystem()->setUndoEnabled(false, true);
 
-    gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Loading model: "+fileInfo.fileName());
+    gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Loading model: "+fileInfo.absoluteFilePath());
     //Check if this is an expected hmf xml file
     //! @todo maybe write helpfunction that does this directly in system (or container)
     QDomDocument domDocument;
