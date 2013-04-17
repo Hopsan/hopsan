@@ -1610,20 +1610,24 @@ void LibraryWidget::unloadExternalLibrary(const QString libName, const QString p
             }
         }
 
-        QMessageBox::StandardButton button = QMessageBox::Ok;
-        if (gpMainWindow->mpProjectTabs->count() > 0 && doWarn)
-        {
-            button = QMessageBox::question(this, "Unload Warning!",
-                                           "You have open models containing components from the library you are trying to unload. Unloading will likely result in a program crash.\n\nDo you want to continue?",
-                                           QMessageBox::Ok | QMessageBox::Cancel );
-        }
+        gpMainWindow->mpProjectTabs->saveState();
 
-        if (button == QMessageBox::Ok)
-        {
+//        QMessageBox::StandardButton button = QMessageBox::Ok;
+//        if (gpMainWindow->mpProjectTabs->count() > 0 && doWarn)
+//        {
+//            button = QMessageBox::question(this, "Unload Warning!",
+//                                           "You have open models containing components from the library you are trying to unload. Unloading will likely result in a program crash.\n\nDo you want to continue?",
+//                                           QMessageBox::Ok | QMessageBox::Cancel );
+//        }
+
+//        if (button == QMessageBox::Ok)
+//        {
             gConfig.removeUserLib(pLibContTree->mLibDir);
             unLoadLibrarySubTree(pLibContTree, parentLibName);
             update();
-        }
+//        }
+
+        gpMainWindow->mpProjectTabs->restoreState();
     }
 
 }
@@ -1786,7 +1790,7 @@ void LibraryTreeWidget::mousePressEvent(QMouseEvent *event)
             gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(libPath, "");
         }
         delete(pEditDialog);
-        this->setCurrentItem(this->topLevelItem(0));
+        this->setCurrentItem(this->topLevelItem(0));        //Reset current item, so that this action does not auto-trigger when clicking somewhere else
         return;
     }
     if(item == gpMainWindow->mpLibrary->mpAddCppComponentItem)
@@ -1803,12 +1807,13 @@ void LibraryTreeWidget::mousePressEvent(QMouseEvent *event)
             gpMainWindow->mpLibrary->loadAndRememberExternalLibrary(libPath, "");
         }
         delete(pEditDialog);
-        this->setCurrentItem(this->topLevelItem(0));
+        this->setCurrentItem(this->topLevelItem(0));        //Reset current item, so that this action does not auto-trigger when clicking somewhere else
         return;
     }
     if(item == gpMainWindow->mpLibrary->mpLoadLibraryItem)
     {
         gpMainWindow->mpLibrary->addExternalLibrary();
+        this->setCurrentItem(this->topLevelItem(0));        //Reset current item, so that this action does not auto-trigger when clicking somewhere else
         return;
     }
 

@@ -3036,6 +3036,13 @@ LogDataHandler *ContainerObject::getLogDataHandler()
 }
 
 
+void ContainerObject::setLogDataHandler(LogDataHandler *pHandler)
+{
+    mpLogDataHandler = pHandler;
+    mpLogDataHandler->setParent(this);
+}
+
+
 void ContainerObject::recompileCppComponents(ModelObject *pComponent)
 {
     QList<ModelObject*> componentPtrs;

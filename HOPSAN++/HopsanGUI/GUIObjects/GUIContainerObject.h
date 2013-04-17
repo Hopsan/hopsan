@@ -121,6 +121,7 @@ public:
 
     //Plot and simulation results methods
     LogDataHandler *getLogDataHandler();
+    void setLogDataHandler(LogDataHandler *pHandler);
 
     //Undo/redo methods
     UndoStack *getUndoStackPtr();

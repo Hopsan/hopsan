@@ -1233,6 +1233,7 @@ void ProjectTabWidget::saveState()
     mStateInfoHmfList.clear();
     mStateInfoModels.clear();
     mStateInfoTabNames.clear();
+    mStateInfoLogDataHandlersList.clear();
 
     while(count() > 0)
     {
@@ -1240,6 +1241,8 @@ void ProjectTabWidget::saveState()
         mStateInfoHmfList << pTab->getTopLevelSystem()->getModelFileInfo().filePath();
         mStateInfoHasChanged << !pTab->isSaved();
         mStateInfoTabNames << tabText(indexOf(pTab));
+        pTab->getTopLevelSystem()->getLogDataHandler()->setParent(0);       //Make sure it is not removed when deleting the container object
+        mStateInfoLogDataHandlersList << pTab->getTopLevelSystem()->getLogDataHandler();
         if(!pTab->isSaved())
         {
             //! @todo This code is duplicated from ProjectTab::saveModel(), make it a common function somehow
@@ -1294,5 +1297,6 @@ void ProjectTabWidget::restoreState()
             loadModel(mStateInfoHmfList[i]);
         }
         setTabText(i, mStateInfoTabNames[i]);
+        getCurrentTab()->getTopLevelSystem()->setLogDataHandler(mStateInfoLogDataHandlersList[i]);
     }
 }
