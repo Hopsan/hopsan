@@ -169,28 +169,39 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStat
     {
         if (parameterName.contains("::"))
         {
-            gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Startvalue name "+parameterName+" in component "+pObject->getName()+" mismatch. Startvalue ignored.", "startvaluemismatch");
+            gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Startvalue mismatch:  "+parameterName+" = "+parameterValue+" in component "+pObject->getName()+". Startvalue ignored.", "startvaluemismatch");
         }
         else
         {
-            gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Parameter name "+parameterName+" in component "+pObject->getName()+" mismatch. Parameter ignored.", "parametermismatch");
+            gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Parameter mismatch: "+parameterName+" = "+parameterValue+" in component "+pObject->getName()+". Parameter ignored.", "parametermismatch");
         }
         return;
     }
 
     //! @todo this is also a compatibility hack, to prevent startvalues in dynamic parameter ports from overwriting previously renamed but loaded paremter values, when the parmeter has the same name as its port. This prevents data from overwriting if loaded last
-    if (parameterName.contains("::Value") && (parameterValue =="0") && !tryingToAddColonColonValue)
+    if (!tryingToAddColonColonValue && parameterName.contains("::Value"))
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Prevented overwriting Parameter: "+parameterName+" in component: "+pObject->getName()+ ". Ignored value: "+parameterValue);
+        QStringList theotherparameternames;
+        QDomElement parameterDOM = rDomElement.parentNode().firstChildElement(HMF_PARAMETERTAG);
+        while (!parameterDOM.isNull())
+        {
+            theotherparameternames.append(parameterDOM.attribute(HMF_NAMETAG));
+            parameterDOM = parameterDOM.nextSiblingElement(HMF_PARAMETERTAG);
+        }
+
+        QString portparname = parameterName.split("::")[0];
+        if (theotherparameternames.contains(portparname))
+        {
+            gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Prevented overwriting: "+parameterName+" = "+parameterValue+" in component: "+pObject->getName()+"   (This is a good thing and probably nothing to worry about)");
+        }
+        else
+        {
+            pObject->setParameterValue(parameterName, parameterValue, true);
+        }
+        return;
     }
-    else
-    {
-        // 0 is the default value in signalnodes so skipping setting in this case is Ok
-        // It prevents overwriting previously set values with rubish
-        pObject->setParameterValue(parameterName, parameterValue, true);
-    }
-    //! @todo this below is the original code us this instead of hack above
-    //pObject->setParameterValue(parameterName, parameterValue, true);
+
+    pObject->setParameterValue(parameterName, parameterValue, true);
 }
 
 

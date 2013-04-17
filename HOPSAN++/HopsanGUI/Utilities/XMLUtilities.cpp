@@ -473,8 +473,10 @@ void verifyHmfComponentCompatibility(QDomElement &element, const QString hmfVers
         updateRenamedPort(element, "MechanicVelocityTransformer", "vin", "v");
         updateRenamedPort(element, "MechanicVelocityTransformer", "xin", "x");
 
-        updateRenamedParameter(element, "HydraulicVariableDisplacementMotorQ", "epsilon_m", "in");
-        updateRenamedParameter(element, "HydraulicVariableDisplacementPump", "epsilon_m", "in");
+        updateRenamedParameter(element, "HydraulicVariableDisplacementMotorQ", "epsilon_m", "eps");
+        updateRenamedParameter(element, "HydraulicVariableDisplacementPump", "epsilon_p", "eps");
+        updateRenamedPort(element, "HydraulicVariableDisplacementMotorQ", "in", "eps");
+        updateRenamedPort(element, "HydraulicVariableDisplacementPump", "in", "eps");
 
 
 

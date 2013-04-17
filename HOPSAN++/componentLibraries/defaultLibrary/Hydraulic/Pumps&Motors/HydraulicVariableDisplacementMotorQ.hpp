@@ -62,7 +62,7 @@ namespace hopsan {
             addInputVariable("B_m", "Viscous Friction", "[Nms/rad]", 0.0, &mpBm);
             addInputVariable("C_im", "Leakage Coefficient", "[]", 0.0, &mpClm);
             addInputVariable("J_m", "Inerteia Load", "[kgm^2]", 0.1, &mpJ);
-            addInputVariable("in", "Displacement Position", "[]", 1.0, &mpEps);
+            addInputVariable("eps", "Displacement Position", "[]", 1.0, &mpEps);
         }
 
 
