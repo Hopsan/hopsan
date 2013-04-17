@@ -458,13 +458,28 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
     addedPorts.clear();
     for(int p=0; p<portSpecs.size(); ++p)
     {
-        if(!addedPorts.contains(portSpecs[p].varName))
+        if(!addedPorts.contains(portSpecs[p].varName) && portSpecs[p].portType == "PowerPort")
         {
             fmuComponentReplace7.append(replaceTags(addPortLine, QStringList() << "varname" << "portname" << "porttype" << "nodetype" << "notrequired",
                                                     QStringList() << portSpecs[p].varName << portSpecs[p].portName << portSpecs[p].portType << portSpecs[p].nodeType << "Port::NotRequired"));
             addedPorts << portSpecs[p].varName;
         }
     }
+
+    //Add variables
+    QString fmuComponentReplaceAddVars;
+    for(int p=0; p<portSpecs.size(); ++p)
+    {
+        if(portSpecs[p].portType == "ReadPort")
+        {
+            fmuComponentReplaceAddVars.append("            addInputVariable(\""+portSpecs[p].portName+"\",\"\",\"\",0,&"+portSpecs[p].mpndName+");\n");
+        }
+        if(portSpecs[p].portType == "WritePort")
+        {
+            fmuComponentReplaceAddVars.append("            addOutputVariable(\""+portSpecs[p].portName+"\",\"\",\"\",0,&"+portSpecs[p].mpndName+");\n");
+        }
+    }
+
 
     //Initialize and register parameters
     QString fmuComponentReplace8;
@@ -480,7 +495,10 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
     QString getNodePtrLine = extractTaggedSection(fmuComponentCode, "initdataptrs");
     for(int p=0; p<portSpecs.size(); ++p)
     {
-        fmuComponentReplace9.append(replaceTags(getNodePtrLine,QStringList() << "mpndname" << "varname" << "datatype", QStringList() << portSpecs[p].mpndName << portSpecs[p].varName << portSpecs[p].dataType));
+        if(portSpecs[p].portType == "PowerPort")
+        {
+            fmuComponentReplace9.append(replaceTags(getNodePtrLine,QStringList() << "mpndname" << "varname" << "datatype", QStringList() << portSpecs[p].mpndName << portSpecs[p].varName << portSpecs[p].dataType));
+        }
     }
 
 
@@ -525,6 +543,7 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
     replaceTaggedSection(fmuComponentCode, "pardecl", fmuComponentReplace4);
     fmuComponentCode.replace("<<<fmudir>>>", fmuDir.path());
     replaceTaggedSection(fmuComponentCode, "addports", fmuComponentReplace7);
+    fmuComponentCode.replace("<<<addvars>>>", fmuComponentReplaceAddVars);
     replaceTaggedSection(fmuComponentCode, "addconstants", fmuComponentReplace8);
     replaceTaggedSection(fmuComponentCode, "initdataptrs", fmuComponentReplace9);
     replaceTaggedSection(fmuComponentCode, "setpars", fmuComponentReplace10);

@@ -89,6 +89,8 @@ namespace hopsan {
 >>>addports>>>            <<<varname>>> = add<<<porttype>>>("<<<portname>>>", "<<<nodetype>>>", <<<notrequired>>>);
 <<<addports<<<
 
+<<<addvars>>>
+
             //Initialize and register parameters
 >>>addconstants>>>            addConstant("<<<parname>>>", "<<<description>>>", "-", <<<initvalue>>>, <<<varname>>>);
 <<<addconstants<<<        }
