@@ -129,7 +129,7 @@ bool MultiDataVectorCache::readToMem(const quint64 startByte, const quint64 nByt
     {
         if (mCacheFile.seek(startByte))
         {
-            pDataVector->resize(nBytes/sizeof(double)); //!< @todo should check that division is becomes a resonable value
+            pDataVector->resize(nBytes/sizeof(double));
             qint64 n = mCacheFile.read((char*)pDataVector->data(), nBytes);
             if (n == nBytes)
             {
@@ -370,7 +370,7 @@ bool CachableDataVector::replaceData(const QVector<double> &rNewData)
     if (isCached())
     {
         // If same length, then replace actual data
-        if (rNewData.size() <= mCacheNumBytes/sizeof(double))
+        if (rNewData.size()*sizeof(double) <= mCacheNumBytes)
         {
             return mpMultiCache->replaceData(mCacheStartByte, rNewData, mCacheNumBytes);
         }
@@ -399,7 +399,11 @@ bool CachableDataVector::peek(const int idx, double &rVal)
     }
     else
     {
-        //! @todo bounds check
+        if (idx >= mDataVector.size())
+        {
+            mError = "Index out of bounds";
+            return false;
+        }
         rVal = mDataVector[idx];
     }
     return true;
@@ -417,7 +421,11 @@ bool CachableDataVector::poke(const int idx, const double val)
     }
     else
     {
-        //! @todo bounds check
+        if (idx >= mDataVector.size())
+        {
+            mError = "Index out of bounds";
+            return false;
+        }
         mDataVector[idx] = val;
     }
     return true;
@@ -461,11 +469,11 @@ QString CachableDataVector::getError() const
     return mError;
 }
 
-//! @todo handle if new vector is longer or shorter then cahced one
 bool CachableDataVector::moveToCache()
 {
     if (mpMultiCache)
     {
+        // If not cached then add to cache
         if (mCacheNumBytes == 0)
         {
             if (mpMultiCache->addVector(mDataVector, mCacheStartByte, mCacheNumBytes))
@@ -475,11 +483,22 @@ bool CachableDataVector::moveToCache()
                 return true;
             }
         }
-        else if (mpMultiCache->replaceData(mCacheStartByte, mDataVector, mCacheNumBytes))
+        // If data same length or shorter then replace data in cache
+        else if (mDataVector.size()*sizeof(double) <= mCacheNumBytes)
+        {
+            if (mpMultiCache->replaceData(mCacheStartByte, mDataVector, mCacheNumBytes))
+            {
+                mDataVector.clear();
+                return true;
+            }
+        }
+        // Else new data is longer, add to cache and update adress and byte length
+        else if (mpMultiCache->addVector(mDataVector, mCacheStartByte, mCacheNumBytes))
         {
             mDataVector.clear();
             return true;
         }
+        // If we get here some error happened
         mError = mpMultiCache->getError();
         return false;
     }

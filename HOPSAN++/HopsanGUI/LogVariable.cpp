@@ -124,17 +124,6 @@ void LogVariableData::setTimeOffset(double offset)
     emit dataChanged();
 }
 
-LogVariableData::LogVariableData(const int generation, const QVector<double> &rTime, const QVector<double> &rData, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent)
-{
-    mpParentVariableContainer = pParent;
-    mpVariableDescription = varDesc;
-    mAppliedValueOffset = 0;
-    mAppliedTimeOffset = 0;
-    mGeneration = generation;
-    mSharedTimeVectorPtr = SharedTimeVectorPtrT(new QVector<double>(rTime));
-    mpCachedDataVector = new CachableDataVector(rData, pGenerationMultiCache, gConfig.getCacheLogData());
-}
-
 LogVariableData::LogVariableData(const int generation, SharedTimeVectorPtrT time, const QVector<double> &rData, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent)
 {
     mpParentVariableContainer = pParent;
@@ -206,7 +195,7 @@ int LogVariableData::getGeneration() const
 
 int LogVariableData::getLowestGeneration() const
 {
-    //! @todo will crash if container removed before data
+    // Using QPointer to avoid crash if container removed before data
     if (mpParentVariableContainer.isNull())
     {
         return mGeneration;
@@ -216,7 +205,7 @@ int LogVariableData::getLowestGeneration() const
 
 int LogVariableData::getHighestGeneration() const
 {
-    //! @todo will crash if container removed before data
+    // Using QPointer to avoid crash if container removed before data
     if (mpParentVariableContainer.isNull())
     {
         return mGeneration;
@@ -226,7 +215,7 @@ int LogVariableData::getHighestGeneration() const
 
 int LogVariableData::getNumGenerations() const
 {
-    //! @todo will crash if container removed before data
+    // Using QPointer to avoid crash if container removed before data
     if (mpParentVariableContainer.isNull())
     {
         return 1;
@@ -251,10 +240,6 @@ void LogVariableData::addToData(const double other)
        (*pData)[i] += other;
     }
     mpCachedDataVector->endFullVectorOperation(pData);
-//    for (int i=0; i<mDataVector.size(); ++i)
-//    {
-//        mDataVector[i] += other;
-//    }
     emit dataChanged();
 }
 void LogVariableData::subFromData(const SharedLogVariableDataPtrT pOther)
@@ -265,11 +250,6 @@ void LogVariableData::subFromData(const SharedLogVariableDataPtrT pOther)
        (*pData)[i] += -pOther->peekData(i);
     }
     mpCachedDataVector->endFullVectorOperation(pData);
-////! @todo DANGER will crash if other not as long (also in other places)
-//    for (int i=0; i<mDataVector.size(); ++i)
-//    {
-//        mDataVector[i] -= pOther->mDataVector[i];
-//    }
     emit dataChanged();
 }
 void LogVariableData::subFromData(const double other)
@@ -280,10 +260,6 @@ void LogVariableData::subFromData(const double other)
        (*pData)[i] += -other;
     }
     mpCachedDataVector->endFullVectorOperation(pData);
-//    for (int i=0; i<mDataVector.size(); ++i)
-//    {
-//        mDataVector[i] -= other;
-//    }
     emit dataChanged();
 }
 
@@ -295,10 +271,6 @@ void LogVariableData::multData(const SharedLogVariableDataPtrT pOther)
        (*pData)[i] *= pOther->peekData(i);
     }
     mpCachedDataVector->endFullVectorOperation(pData);
-//    for (int i=0; i<mDataVector.size(); ++i)
-//    {
-//       mDataVector[i] *= pOther->mDataVector[i];
-//    }
     emit dataChanged();
 }
 
@@ -310,10 +282,6 @@ void LogVariableData::multData(const double other)
        (*pData)[i] *= other;
     }
     mpCachedDataVector->endFullVectorOperation(pData);
-//    for (int i=0; i<mDataVector.size(); ++i)
-//    {
-//        mDataVector[i] *= other;
-//    }
     emit dataChanged();
 }
 
@@ -325,10 +293,6 @@ void LogVariableData::divData(const SharedLogVariableDataPtrT pOther)
        (*pData)[i] /= pOther->peekData(i);
     }
     mpCachedDataVector->endFullVectorOperation(pData);
-//    for (int i=0; i<mDataVector.size(); ++i)
-//    {
-//       mDataVector[i] /= pOther->mDataVector[i];
-//    }
     emit dataChanged();
 }
 
@@ -340,10 +304,6 @@ void LogVariableData::divData(const double other)
        (*pData)[i] /= other;
     }
     mpCachedDataVector->endFullVectorOperation(pData);
-//    for (int i=0; i<mDataVector.size(); ++i)
-//    {
-//        mDataVector[i] /= other;
-//    }
     emit dataChanged();
 }
 void LogVariableData::assignFrom(const SharedLogVariableDataPtrT pOther)
@@ -357,6 +317,13 @@ void LogVariableData::assignFrom(const QVector<double> &rSrc)
 {
     mpCachedDataVector->replaceData(rSrc);
     mSharedTimeVectorPtr = SharedTimeVectorPtrT(); //No time vector assigned
+    emit dataChanged();
+}
+
+void LogVariableData::assignFrom(SharedTimeVectorPtrT time, const QVector<double> &rData)
+{
+    mpCachedDataVector->replaceData(rData);
+    mSharedTimeVectorPtr = time;
     emit dataChanged();
 }
 
@@ -445,7 +412,7 @@ bool LogVariableData::indexInRange(const int idx) const
 
 LogDataHandler *LogVariableData::getLogDataHandler()
 {
-    //! @todo will crash if container removed before data
+    // Using QPointer to avoid crash if container removed before data
     if (mpParentVariableContainer.isNull())
     {
         return 0;
@@ -579,50 +546,29 @@ bool LogVariableContainer::hasDataGeneration(const int gen)
     return mDataGenerations.contains(gen);
 }
 
-//! @todo not two functions with almost same implementation
 void LogVariableContainer::addDataGeneration(const int generation, const QVector<double> &rTime, const QVector<double> &rData)
 {
-    SharedLogVariableDataPtrT pData;
-    if (mpParentLogDataHandler)
-    {
-        pData = SharedLogVariableDataPtrT(new LogVariableData(generation, rTime, rData, mVariableDescription, mpParentLogDataHandler->getGenerationMultiCache(generation), this));
-    }
-    else
-    {
-        pData = SharedLogVariableDataPtrT(new LogVariableData(generation, rTime, rData, mVariableDescription, SharedMultiDataVectorCacheT(), this));
-    }
-    //! @todo what if a generation already exist, then we must properly delete the old data before we add new one
-
-    if(mDataGenerations.contains(generation))
-    {
-        mDataGenerations.find(generation).value().data()->assignFrom(pData);
-    }
-    else
-    {
-        connect(this, SIGNAL(nameChanged()), pData.data(), SIGNAL(nameChanged()));
-        mDataGenerations.insert(generation, pData);
-    }
+    addDataGeneration(generation, SharedTimeVectorPtrT(new QVector<double>(rTime)), rData);
 }
 
 void LogVariableContainer::addDataGeneration(const int generation, const SharedTimeVectorPtrT time, const QVector<double> &rData)
 {
-    SharedLogVariableDataPtrT pData;
-    if (mpParentLogDataHandler)
-    {
-        pData = SharedLogVariableDataPtrT(new LogVariableData(generation, time, rData, mVariableDescription, mpParentLogDataHandler->getGenerationMultiCache(generation), this));
-    }
-    else
-    {
-        pData = SharedLogVariableDataPtrT(new LogVariableData(generation, time, rData, mVariableDescription, SharedMultiDataVectorCacheT(), this));
-    }
-    //! @todo what if a generation already exist, then we must properly delete the old data before we add new one
-
     if(mDataGenerations.contains(generation))
     {
-        mDataGenerations.find(generation).value().data()->assignFrom(pData);
+        mDataGenerations.find(generation).value().data()->assignFrom(time, rData);
     }
     else
     {
+        SharedLogVariableDataPtrT pData;
+        if (mpParentLogDataHandler)
+        {
+            pData = SharedLogVariableDataPtrT(new LogVariableData(generation, time, rData, mVariableDescription, mpParentLogDataHandler->getGenerationMultiCache(generation), this));
+        }
+        else
+        {
+            pData = SharedLogVariableDataPtrT(new LogVariableData(generation, time, rData, mVariableDescription, SharedMultiDataVectorCacheT(), this));
+        }
+
         connect(this, SIGNAL(nameChanged()), pData.data(), SIGNAL(nameChanged()));
         mDataGenerations.insert(generation, pData);
     }

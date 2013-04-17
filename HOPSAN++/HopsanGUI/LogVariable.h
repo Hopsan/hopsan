@@ -166,6 +166,7 @@ public:
     void divData(const double other);
     void assignFrom(const SharedLogVariableDataPtrT pOther);
     void assignFrom(const QVector<double> &rSrc);
+    void assignFrom(SharedTimeVectorPtrT time, const QVector<double> &rData);
     double pokeData(const int index, const double value, QString &rErr);
     double peekData(const int index, QString &rErr) const;
     bool indexInRange(const int idx) const;
@@ -186,7 +187,6 @@ signals:
     void nameChanged();
 
 protected:
-    LogVariableData(const int generation, const QVector<double> &rTime, const QVector<double> &rData, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent);
     LogVariableData(const int generation, SharedTimeVectorPtrT time, const QVector<double> &rData, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent);
     double peekData(const int idx) const;
 
