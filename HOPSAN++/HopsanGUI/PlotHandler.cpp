@@ -46,6 +46,17 @@ PlotWindow *PlotHandler::createNewPlotWindowOrGetCurrentOne(QString name)
     return pPlotWindow;
 }
 
+PlotWindow *PlotHandler::createNewOrReplacePlotwindow(const QString &rName)
+{
+    PlotWindow *pWindow = getPlotWindow(rName);
+    if (pWindow)
+    {
+        // We clear all contents, this will then look like a new plot window, but remain in the same position and size
+        pWindow->closeAllTabs();
+    }
+    return createNewPlotWindowOrGetCurrentOne(rName);
+}
+
 void PlotHandler::forgetPlotWindow(PlotWindow *pWindow)
 {
     // Destruction of plot window data will happen by itself so we dont need to do that here

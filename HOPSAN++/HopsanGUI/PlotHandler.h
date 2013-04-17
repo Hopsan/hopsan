@@ -22,6 +22,7 @@ public:
     ~PlotHandler();
 
     PlotWindow *createNewPlotWindowOrGetCurrentOne(QString name="");
+    PlotWindow *createNewOrReplacePlotwindow(const QString &rName="");
     PlotWindow *getPlotWindow(const QString name);
 
     void createPlotWindow(QString name="");

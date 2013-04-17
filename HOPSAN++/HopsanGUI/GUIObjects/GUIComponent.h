@@ -80,7 +80,6 @@ protected:
     void rotate(qreal angle, UndoStatusEnumT undoSettings = Undo);
     void flipVertical(UndoStatusEnumT undoSettings = Undo);
     void flipHorizontal(UndoStatusEnumT undoSettings = Undo);
-
 };
 
 #endif // GUICOMPONENT_H

@@ -256,28 +256,29 @@ void ScopeComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     // Not very nice code, but a nice feature...
     if( !mpParentContainerObject->getLogDataHandler()->isEmpty() && !mpParentContainerObject->isCreatingConnector() )
     {
-        QString plotName = "";
+        pPlotWindow = gpPlotHandler->createNewOrReplacePlotwindow(getName());
+
         for(int i=0; i<getPort("in")->getConnectedPorts().size(); ++i)
         {
             QString fullName = makeConcatName(getPort("in")->getConnectedPorts().at(i)->getParentModelObjectName(),
                                               getPort("in")->getConnectedPorts().at(i)->getName(),"Value");
-            plotName = getParentContainerObject()->getLogDataHandler()->plotVariable(plotName, fullName, -1, 0);
+            getParentContainerObject()->getLogDataHandler()->plotVariable(pPlotWindow, fullName, -1, 0);
         }
         for(int i=0; i<getPort("in_right")->getConnectedPorts().size(); ++i)
         {
             QString fullName = makeConcatName(getPort("in_right")->getConnectedPorts().at(i)->getParentModelObjectName(),
                                               getPort("in_right")->getConnectedPorts().at(i)->getName(),"Value");
-            plotName = getParentContainerObject()->getLogDataHandler()->plotVariable(plotName, fullName, -1, 1);
+            getParentContainerObject()->getLogDataHandler()->plotVariable(pPlotWindow, fullName, -1, 1);
         }
 
-        //! @todo try to solve this without needding the actual plotwindow pointer
-        pPlotWindow = gpPlotHandler->getPlotWindow(plotName);
         if(this->getPort("in_bottom")->isConnected() && pPlotWindow)
         {
             QString fullName = makeConcatName(getPort("in_bottom")->getConnectedPorts().at(0)->getParentModelObjectName(),
                                               getPort("in_bottom")->getConnectedPorts().at(0)->getName(),"Value");
             pPlotWindow->setCustomXVector(getParentContainerObject()->getLogDataHandler()->getPlotData(fullName, -1));
         }
+
+        pPlotWindow->showNormal();
     }
 
     // No plot window was opened, so it is a non-connected sink - open properties instead

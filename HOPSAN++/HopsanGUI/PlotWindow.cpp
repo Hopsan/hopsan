@@ -379,7 +379,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
 
     mpPlotTabWidget = new PlotTabWidget(this);
     this->addPlotTab();
-    this->changedTab();
+    //this->changedTab();
 
     mpLayout = new QGridLayout(this);
     mpLayout->addWidget(mpPlotTabWidget,0,0,2,4);
@@ -531,6 +531,11 @@ PlotCurve* PlotWindow::addPlotCurve(SharedLogVariableDataPtrT pData, int axisY, 
         connect(pData->getLogDataHandler(), SIGNAL(closePlotsWithOwnedData()), this, SLOT(close()), Qt::UniqueConnection);
     }
 
+    // Make sure that we have a tab
+    if (!getCurrentPlotTab())
+    {
+        addPlotTab();
+    }
     PlotCurve *pTempCurve = new PlotCurve(pData, axisY, getCurrentPlotTab());
     getCurrentPlotTab()->addCurve(pTempCurve, desiredColor);
     refreshWindowTitle();
@@ -1125,6 +1130,11 @@ void PlotWindow::closeIfEmpty()
 
     if(curves == 0)
         close();
+}
+
+void PlotWindow::closeAllTabs()
+{
+    mpPlotTabWidget->closeAllTabs();
 }
 
 

@@ -95,6 +95,7 @@ public slots:
     void createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve, int Fmax);
     void showToolBarHelpPopup();
     void closeIfEmpty();
+    void closeAllTabs();
     void hidePlotCurveInfo();
     void setLegendsVisible(bool value);
 
