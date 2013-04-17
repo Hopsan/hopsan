@@ -1696,6 +1696,32 @@ void PlotTab::exportToPng()
     }
 }
 
+void PlotTab::shiftAllGenerationsDown()
+{
+    for (int i=0; i<mPlotCurvePtrs[0].size(); ++i)
+    {
+        mPlotCurvePtrs[0][i]->setPreviousGeneration();
+    }
+
+    for (int i=0; i<mPlotCurvePtrs[1].size(); ++i)
+    {
+        mPlotCurvePtrs[1][i]->setPreviousGeneration();
+    }
+}
+
+void PlotTab::shiftAllGenerationsUp()
+{
+    for (int i=0; i<mPlotCurvePtrs[0].size(); ++i)
+    {
+        mPlotCurvePtrs[0][i]->setNextGeneration();
+    }
+
+    for (int i=0; i<mPlotCurvePtrs[1].size(); ++i)
+    {
+        mPlotCurvePtrs[1][i]->setNextGeneration();
+    }
+}
+
 
 void PlotTab::enableZoom(bool value)
 {

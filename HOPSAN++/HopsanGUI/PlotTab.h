@@ -106,6 +106,9 @@ public slots:
     void exportToOldHop();
     void exportToPng();
 
+    void shiftAllGenerationsDown();
+    void shiftAllGenerationsUp();
+
     void insertMarker(PlotCurve *pCurve, double x, double y, QString altLabel=QString(), bool movable=true);
     void insertMarker(PlotCurve *pCurve, QPoint pos, bool movable=true);
 

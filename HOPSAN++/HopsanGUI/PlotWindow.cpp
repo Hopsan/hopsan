@@ -285,7 +285,13 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpBodePlotButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-TransferFunctionAnalysis.png"));
     connect(mpBodePlotButton, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
+    mpAllGenerationsDown = new QAction(this);
+    mpAllGenerationsDown->setIcon(QIcon(QString(ICONPATH) + "Hopsan-StepLeft.png"));
+    mpAllGenerationsDown->setToolTip("Shift all curve generations down");
 
+    mpAllGenerationsUp = new QAction(this);
+    mpAllGenerationsUp->setIcon(QIcon(QString(ICONPATH) + "Hopsan-StepRight.png"));
+    mpAllGenerationsUp->setToolTip("Shift all curve generations up");
 
     //Initialize the help message popup
     mpHelpPopup = new QWidget(this);
@@ -355,6 +361,8 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpToolBar->addSeparator();
     mpToolBar->addAction(mpResetXVectorButton);
     mpToolBar->addAction(mpBodePlotButton);
+    mpToolBar->addAction(mpAllGenerationsDown);
+    mpToolBar->addAction(mpAllGenerationsUp);
     mpToolBar->addSeparator();
     mpToolBar->addAction(mpGridButton);
     mpToolBar->addAction(mpBackgroundColorButton);
@@ -543,6 +551,7 @@ void PlotWindow::importPlo()
 {
     gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->importFromPlo();;
 }
+
 
 //! @brief Saves the plot window to XML
 //! All generations of all open curves will be saved, together with all cosmetic information about the plot window.
@@ -1170,6 +1179,8 @@ void PlotWindow::changedTab()
     disconnect(mpExportPngAction,           SIGNAL(triggered()),    0,  0);
     disconnect(mpLegendButton,              SIGNAL(triggered()),    0,  0);
     disconnect(mpLocktheAxis,               SIGNAL(triggered()),    0,  0);
+    disconnect(mpAllGenerationsDown,        SIGNAL(triggered()),    0,  0);
+    disconnect(mpAllGenerationsUp,          SIGNAL(triggered()),    0,  0);
 
     // If there are any tabs then show the widget and reestablish connections to the current tab
     if(mpPlotTabWidget->count() > 0)
@@ -1198,6 +1209,8 @@ void PlotWindow::changedTab()
             mpBodePlotButton->setDisabled(true);
             mpExportPdfAction->setDisabled(true);
             mpExportToGraphicsAction->setDisabled(true);
+            mpAllGenerationsDown->setDisabled(true);
+            mpAllGenerationsUp->setDisabled(true);
         }
         else
         {
@@ -1221,6 +1234,8 @@ void PlotWindow::changedTab()
             mpBodePlotButton->setDisabled(false);
             mpExportPdfAction->setDisabled(false);
             mpExportToGraphicsAction->setDisabled(false);
+            mpAllGenerationsDown->setDisabled(false);
+            mpAllGenerationsUp->setDisabled(false);
             mpZoomButton->setChecked(pCurrentTab->mpZoomerLeft[FirstPlot]->isEnabled());
             mpPanButton->setChecked(pCurrentTab->mpPanner[FirstPlot]->isEnabled());
             mpGridButton->setChecked(pCurrentTab->mpGrid[FirstPlot]->isVisible());
@@ -1246,6 +1261,8 @@ void PlotWindow::changedTab()
         connect(mpExportToGraphicsAction,   SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToGraphics()));
         connect(mpLegendButton,             SIGNAL(triggered()),    pCurrentTab,    SLOT(openLegendSettingsDialog()));
         connect(mpLocktheAxis,              SIGNAL(triggered()),    pCurrentTab,    SLOT(openAxisSettingsDialog()));
+        connect(mpAllGenerationsDown,       SIGNAL(triggered()),    pCurrentTab,    SLOT(shiftAllGenerationsDown()));
+        connect(mpAllGenerationsUp,         SIGNAL(triggered()),    pCurrentTab,    SLOT(shiftAllGenerationsUp()));
 
         // Set the plottab specific info layout
         mpCurveInfoStack->setCurrentWidget(pCurrentTab->mpCurveInfoScrollArea);

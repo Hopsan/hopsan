@@ -131,6 +131,8 @@ private:
     QAction *mpBackgroundColorButton;
     QAction *mpNewWindowFromTabButton;
     QAction *mpResetXVectorButton;
+    QAction *mpAllGenerationsDown;
+    QAction *mpAllGenerationsUp;
 
     QAction *mpBodePlotButton;
     QMenu *mpExportMenu;

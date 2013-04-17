@@ -706,7 +706,8 @@ SharedLogVariableDataPtrT PlotCurve::getLogDataVariablePtr()
 //! @brief Changes a curve to the previous available gneraetion of its data
 void PlotCurve::setPreviousGeneration()
 {
-    setGeneration(getGeneration()-1);
+    // Prevent cykeling back to last by not sending in -1
+    setGeneration(std::max(getGeneration()-1,0));
 }
 
 
