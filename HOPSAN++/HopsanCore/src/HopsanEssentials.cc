@@ -129,14 +129,14 @@ Component* HopsanEssentials::createComponent(const string &rTypeName)
 //! @returns True or False depending on if type exist
 bool HopsanEssentials::hasComponent(const std::string &rType)
 {
-    return mpComponentFactory->hasKey(rType.c_str());
+    return mpComponentFactory->hasKey(rType);
 }
 
 //! @brief Reserves a component TypeName in the component factory map
 //! @param [in] typeName The TypeName to reserve
 bool HopsanEssentials::reserveComponentTypeName(const std::string &rTypeName)
 {
-    return mpComponentFactory->reserveKey(rTypeName.c_str());
+    return mpComponentFactory->reserveKey(rTypeName);
 }
 
 //! @brief Returns a vector containing all registered component types
@@ -169,7 +169,7 @@ void HopsanEssentials::removeNode(Node *pNode)
 //! @returns A pointer to the created node
 Node* HopsanEssentials::createNode(const std::string &rNodeType)
 {
-    Node *pNode = mpNodeFactory->createInstance(rNodeType.c_str());
+    Node *pNode = mpNodeFactory->createInstance(rNodeType);
     if (pNode)
     {
         pNode->mNodeType = rNodeType;

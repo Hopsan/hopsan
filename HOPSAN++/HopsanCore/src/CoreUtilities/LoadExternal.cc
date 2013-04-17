@@ -267,6 +267,8 @@ bool LoadExternal::load(const std::string &rLibpath)
     mpComponentFactory->clearRegisterStatus();
     mpNodeFactory->clearRegisterStatus();
 
+    mpMessageHandler->addInfoMessage("Loaded library: "+rLibpath);
+
     return true;
 }
 
