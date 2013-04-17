@@ -232,7 +232,7 @@ void DebuggerWidget::stepForward()
 
 void DebuggerWidget::simulateTo()
 {
-    double targetTime = QInputDialog::getDouble(this, "Hopsan Debugger", "Choose target time", getCurrentTime()+getTimeStep(), getCurrentTime()+getTimeStep(), getStopTime());
+    double targetTime = QInputDialog::getDouble(this, "Hopsan Debugger", "Choose target time", getCurrentTime()+getTimeStep(), getCurrentTime()+getTimeStep(), getStopTime(), int(log10(1.0/getTimeStep())));
     simulateTo(targetTime);
 }
 
@@ -252,7 +252,7 @@ void DebuggerWidget::collectLastData(bool overWriteGeneration)
     outputLine.append(QString::number(getCurrentTime())+",");
 
     mpTraceTable->insertRow(mpTraceTable->rowCount());
-    QTableWidgetItem *pItem = new QTableWidgetItem(QString::number(getCurrentTime()));
+    QTableWidgetItem *pItem = new QTableWidgetItem(QString::number(getCurrentStep())+": "+QString::number(getCurrentTime()));
     mpTraceTable->setVerticalHeaderItem(mpTraceTable->rowCount()-1, pItem);
     Q_FOREACH(const QString &var, mVariables)
     {
@@ -290,6 +290,11 @@ void DebuggerWidget::updateTimeDisplay()
 double DebuggerWidget::getCurrentTime() const
 {
     return mpSystem->getCoreSystemAccessPtr()->getCurrentTime();
+}
+
+int DebuggerWidget::getCurrentStep() const
+{
+    return mpSystem->getLogDataHandler()->getAllVariablesAtNewestGeneration().first()->getDataSize()-1;
 }
 
 double DebuggerWidget::getTimeStep() const

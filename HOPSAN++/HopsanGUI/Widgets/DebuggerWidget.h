@@ -28,7 +28,6 @@ public:
     void retranslateUi();
     void setInitData();
 
-
 signals:
     
 public slots:
@@ -47,6 +46,7 @@ private slots:
     void updateTimeDisplay();
     double getCurrentTime() const;
     double getTimeStep() const;
+    int getCurrentStep() const;
     double getStartTime() const;
     double getStopTime() const;
 
