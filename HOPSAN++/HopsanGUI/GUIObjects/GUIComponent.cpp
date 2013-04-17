@@ -250,39 +250,40 @@ void ScopeComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
     QGraphicsWidget::mouseDoubleClickEvent(event);
 
-    PlotWindow *pPlotWindow=0;
-
     // If this is a sink component that has plot data, plot it instead of showing the dialog
     // Not very nice code, but a nice feature...
     if( !mpParentContainerObject->getLogDataHandler()->isEmpty() && !mpParentContainerObject->isCreatingConnector() )
     {
-        pPlotWindow = gpPlotHandler->createNewOrReplacePlotwindow(getName());
-
-        for(int i=0; i<getPort("in")->getConnectedPorts().size(); ++i)
+        // If we dont have valid plotwindow then create one
+        if (mpPlotWindow.isNull())
         {
-            QString fullName = makeConcatName(getPort("in")->getConnectedPorts().at(i)->getParentModelObjectName(),
-                                              getPort("in")->getConnectedPorts().at(i)->getName(),"Value");
-            getParentContainerObject()->getLogDataHandler()->plotVariable(pPlotWindow, fullName, -1, 0);
-        }
-        for(int i=0; i<getPort("in_right")->getConnectedPorts().size(); ++i)
-        {
-            QString fullName = makeConcatName(getPort("in_right")->getConnectedPorts().at(i)->getParentModelObjectName(),
-                                              getPort("in_right")->getConnectedPorts().at(i)->getName(),"Value");
-            getParentContainerObject()->getLogDataHandler()->plotVariable(pPlotWindow, fullName, -1, 1);
-        }
+            mpPlotWindow = gpPlotHandler->createNewOrReplacePlotwindow(getName());
 
-        if(this->getPort("in_bottom")->isConnected() && pPlotWindow)
-        {
-            QString fullName = makeConcatName(getPort("in_bottom")->getConnectedPorts().at(0)->getParentModelObjectName(),
-                                              getPort("in_bottom")->getConnectedPorts().at(0)->getName(),"Value");
-            pPlotWindow->setCustomXVector(getParentContainerObject()->getLogDataHandler()->getPlotData(fullName, -1));
-        }
+            for(int i=0; i<getPort("in")->getConnectedPorts().size(); ++i)
+            {
+                QString fullName = makeConcatName(getPort("in")->getConnectedPorts().at(i)->getParentModelObjectName(),
+                                                  getPort("in")->getConnectedPorts().at(i)->getName(),"Value");
+                getParentContainerObject()->getLogDataHandler()->plotVariable(mpPlotWindow, fullName, -1, 0);
+            }
+            for(int i=0; i<getPort("in_right")->getConnectedPorts().size(); ++i)
+            {
+                QString fullName = makeConcatName(getPort("in_right")->getConnectedPorts().at(i)->getParentModelObjectName(),
+                                                  getPort("in_right")->getConnectedPorts().at(i)->getName(),"Value");
+                getParentContainerObject()->getLogDataHandler()->plotVariable(mpPlotWindow, fullName, -1, 1);
+            }
 
-        pPlotWindow->showNormal();
+            if(this->getPort("in_bottom")->isConnected() && mpPlotWindow)
+            {
+                QString fullName = makeConcatName(getPort("in_bottom")->getConnectedPorts().at(0)->getParentModelObjectName(),
+                                                  getPort("in_bottom")->getConnectedPorts().at(0)->getName(),"Value");
+                mpPlotWindow->setCustomXVector(getParentContainerObject()->getLogDataHandler()->getPlotData(fullName, -1));
+            }
+        }
+        mpPlotWindow->showNormal();
     }
 
     // No plot window was opened, so it is a non-connected sink - open properties instead
-    if(!pPlotWindow)
+    if(mpPlotWindow.isNull())
     {
         openPropertiesDialog();
     }

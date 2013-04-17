@@ -34,6 +34,7 @@
 class Connector;
 class Port;
 class ContainerObject;
+class PlotWindow;
 
 class Component : public ModelObject
 {
@@ -80,6 +81,8 @@ protected:
     void rotate(qreal angle, UndoStatusEnumT undoSettings = Undo);
     void flipVertical(UndoStatusEnumT undoSettings = Undo);
     void flipHorizontal(UndoStatusEnumT undoSettings = Undo);
+
+    QPointer<PlotWindow> mpPlotWindow;
 };
 
 #endif // GUICOMPONENT_H
