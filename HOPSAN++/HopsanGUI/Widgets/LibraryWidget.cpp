@@ -519,6 +519,23 @@ void LibraryWidget::loadDualView(LibraryContentsTree *tree, QTreeWidgetItem *par
                 loadDualView(tree->mChildNodesPtrs.at(i), tempItem);
             }
         }
+        mpAddModelicaComponentItem = new QTreeWidgetItem();
+        mpAddModelicaComponentItem->setText(0, "Add Modelica component");
+        mpAddModelicaComponentItem->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
+        mpAddModelicaComponentItem->setToolTip(0, "Add Modelica component");
+        mpTree->addTopLevelItem(mpAddModelicaComponentItem);
+
+        mpAddCppComponentItem = new QTreeWidgetItem();
+        mpAddCppComponentItem->setText(0, "Add C++ component");
+        mpAddCppComponentItem->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
+        mpAddCppComponentItem->setToolTip(0, "Add C++ component");
+        mpTree->addTopLevelItem(mpAddCppComponentItem);
+
+        mpLoadLibraryItem = new QTreeWidgetItem();
+        mpLoadLibraryItem->setText(0, "Load external library");
+        mpLoadLibraryItem->setIcon(0, QIcon(QString(ICONPATH)+"Hopsan-Add.png"));
+        mpLoadLibraryItem->setToolTip(0, "Load external library");
+        mpTree->addTopLevelItem(mpLoadLibraryItem);
     }
     else
     {
