@@ -3052,12 +3052,16 @@ void ComponentSystem::distributeSignalcomponents(vector< vector<Component*> > &r
     //Loop through all signal components
     for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
     {
+        bool foundOneConnection=false;
+
         //Loop through all ports in each signal component
         for(size_t p=0; p<mComponentSignalptrs[s]->getPortPtrVector().size(); ++p)
         {
             //Loop through all connected ports to each port in each signal component
             for(size_t c=0; c<mComponentSignalptrs[s]->getPortPtrVector()[p]->getConnectedPorts().size(); ++c)
             {
+                foundOneConnection=true;
+
                 //Compare group number between current signal component and each connected component
                 Component *A = mComponentSignalptrs[s];
                 Component *B = mComponentSignalptrs[s]->getPortPtrVector()[p]->getConnectedPorts()[c]->getComponent();
@@ -3085,6 +3089,13 @@ void ComponentSystem::distributeSignalcomponents(vector< vector<Component*> > &r
                     }
                 }
             }
+        }
+
+        //If not connections were found, this is a lonely component, so add it to its own group
+        if(!foundOneConnection)
+        {
+            groupMap.insert(std::pair<Component *, size_t>(mComponentSignalptrs[s], curMax));
+            ++curMax;
         }
     }
 
