@@ -9,10 +9,7 @@
 #include "SignalFirstOrderTransferFunction.hpp"
 #include "SignalSecondOrderFilter.hpp"
 #include "SignalSecondOrderTransferFunction.hpp"
-
-#include "SignalIntegrator.hpp"
 #include "SignalIntegrator2.hpp"
-#include "SignalIntegratorLimited.hpp"
-#include "SignalIntegratorLimited2.hpp"
+
 
 #endif // HOPSANDEFAULTSIGNALTFCOMPONENTS_H

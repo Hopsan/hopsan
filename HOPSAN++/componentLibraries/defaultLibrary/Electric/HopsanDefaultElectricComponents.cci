@@ -1,4 +1,4 @@
-// This is a "cc include file" do not attempt to compile this file, it should be included insede an other cc file.
+// This is a "cc include file" do not attempt to compile this file, it should be included inside an other cc file.
 
     pComponentFactory->registerCreatorFunction("ElectricBattery", ElectricBattery::Creator);
     pComponentFactory->registerCreatorFunction("ElectricCapacitance2", ElectricCapacitance2::Creator);

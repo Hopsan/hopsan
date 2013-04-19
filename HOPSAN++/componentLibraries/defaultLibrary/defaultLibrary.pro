@@ -271,4 +271,5 @@ SOURCES += \
 OTHER_FILES += \
     Special/SignalFFB/HopsanDefaultFBBComponents.cci \
     Electric/HopsanDefaultElectricComponents.cci \
-    Signal/Filters/hp1filter.svg
+    Signal/Filters/hp1filter.svg \
+    Signal/HopsanDefaultSignalComponents.cci
