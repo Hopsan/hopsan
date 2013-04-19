@@ -183,7 +183,7 @@ void GraphicsView::dropEvent(QDropEvent *event)
         mpContainerObject->getUndoStackPtr()->newPost();
         event->accept();
         QPointF position = event->pos();
-        mpContainerObject->addModelObject(text, this->mapToScene(position.toPoint()).toPoint());
+        mpContainerObject->addModelObject(text, this->mapToScene(position.toPoint()));
         this->setFocus();
     }
 
@@ -569,6 +569,21 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 
 void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
 {
+    bool createdUndoPost=false;
+
+    Q_FOREACH(ModelObject* object, mpContainerObject->getSelectedModelObjectPtrs())
+    {
+        if(object->getOldPos() != object->pos())
+        {
+            if(!createdUndoPost)
+            {
+                mpContainerObject->getUndoStackPtr()->newPost("movedmultiple");
+                createdUndoPost = true;
+            }
+            mpContainerObject->getUndoStackPtr()->registerMovedObject(object->getOldPos(), object->pos(), object->getName());
+            object->updateOldPos();
+        }
+    }
     mLeftMouseButtonPressed = false;
     QGraphicsView::mouseReleaseEvent(event);
 }

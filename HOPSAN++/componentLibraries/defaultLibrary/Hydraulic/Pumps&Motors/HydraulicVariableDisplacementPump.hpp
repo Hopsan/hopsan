@@ -117,11 +117,13 @@ namespace hopsan {
                 {
                     p1 = 0.0;
                     q2 = std::min(q2, 0.0);
+                    p2 = c2;
                 }
                 if (p2 <= 0.0)
                 {
                     p2 = 0.0;
                     q2 = std::max(q2, 0.0);
+                    p1 = c1;
                 }
                 q1 = -q2;
             }

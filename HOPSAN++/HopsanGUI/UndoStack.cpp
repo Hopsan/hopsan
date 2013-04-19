@@ -236,6 +236,7 @@ void UndoStack::undoOneStep()
                 return;
             }
             mpParentContainerObject->getModelObject(name)->setPos(x, y);
+            mpParentContainerObject->getModelObject(name)->updateOldPos();
             movedObjects.append(name);
             dx = x_new - x;
             dy = y_new - y;
@@ -623,6 +624,7 @@ void UndoStack::redoOneStep()
                 return;
             }
             mpParentContainerObject->getModelObject(name)->setPos(x, y);
+            mpParentContainerObject->getModelObject(name)->updateOldPos();
             movedObjects.append(name);
             dx = x - x_old;
             dy = y - y_old;

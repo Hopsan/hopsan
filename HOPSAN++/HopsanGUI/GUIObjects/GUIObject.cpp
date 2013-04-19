@@ -60,7 +60,7 @@ WorkspaceObject::WorkspaceObject(QPointF pos, qreal rot, SelectionStatusEnumT, C
     this->setTransformOriginPoint(boundingRect().center());
     this->setCenterPos(pos);
     this->rotate(rot);
-    mOldPos=this->pos();
+    updateOldPos();
 }
 
 
@@ -181,7 +181,7 @@ void WorkspaceObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
     setFlag(QGraphicsItem::ItemIsSelectable, true); //Make the component selactable if not (it is not selectable during creation of connector)
 
         //Store old positions for all components, in case more than one is selected
-    mOldPos = this->pos();  //Make sure current objects oldpos is changed (it may not be selected before being clicked)
+    updateOldPos();  //Make sure current objects oldpos is changed (it may not be selected before being clicked)
     if(event->button() == Qt::LeftButton && mpParentContainerObject != 0)
     {
         for(int i = 0; i < mpParentContainerObject->getSelectedGUIWidgetPtrs().size(); ++i)
@@ -372,6 +372,12 @@ void WorkspaceObject::deleteMe()
 {
     //Should not be used
     assert(false);
+}
+
+
+void WorkspaceObject::updateOldPos()
+{
+    mOldPos = this->pos();
 }
 
 

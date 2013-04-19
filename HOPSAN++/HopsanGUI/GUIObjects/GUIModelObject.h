@@ -112,6 +112,7 @@ public:
     void getLosses(double &total, QMap<QString, double> domainSpecificLosses);
     bool isLossesDisplayVisible();
 
+    QPointF getOldPos() const;
 public slots:
     virtual void refreshAppearance();
     virtual void refreshExternalPortsAppearanceAndPosition();

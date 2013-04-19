@@ -77,6 +77,8 @@ public slots:
 
     virtual void deleteMe();
 
+    void updateOldPos();
+
 signals:
     void objectMoved();
     void objectDeleted();

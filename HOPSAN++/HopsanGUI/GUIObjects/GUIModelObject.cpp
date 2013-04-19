@@ -72,6 +72,7 @@ ModelObject::ModelObject(QPointF position, qreal rotation, const ModelObjectAppe
     this->setIcon(gfxType);
     this->refreshAppearance();
     this->setCenterPos(position);
+    updateOldPos();
     this->setZValue(ModelobjectZValue);
     this->setSelected(startSelected);
 
@@ -297,6 +298,13 @@ QString ModelObject::getName() const
 {
     return mName;
 }
+
+
+QPointF ModelObject::getOldPos() const
+{
+    return mOldPos;
+}
+
 
 void ModelObject::setName(QString /*name*/)
 {
