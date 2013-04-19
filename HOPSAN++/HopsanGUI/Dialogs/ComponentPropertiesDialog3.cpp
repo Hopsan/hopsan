@@ -655,11 +655,11 @@ void VariableTableWidget::makePortAtRow(int row, bool isPort)
         if (pPort)
         {
             pPort->setEnable(true);
-            mpModelObject->createRefreshExternalDynamicParameterPort(name);
+            mpModelObject->createRefreshExternalPort(name);
         }
         else
         {
-            pPort = mpModelObject->createRefreshExternalDynamicParameterPort(name);
+            pPort = mpModelObject->createRefreshExternalPort(name);
             if (pPort)
             {
                 // Make sure that our new port has the "correct" angle

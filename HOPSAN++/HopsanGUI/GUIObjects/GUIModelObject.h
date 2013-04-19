@@ -103,7 +103,6 @@ public:
     Port *getPort(const QString &rName);
     QList<Port*> &getPortListPtrs();
     virtual Port* createRefreshExternalPort(QString portName);
-    Port* createRefreshExternalDynamicParameterPort(QString portName);
     virtual void hideExternalDynamicParameterPort(QString portName);
     virtual void removeExternalPort(QString portName);
 

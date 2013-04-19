@@ -31,6 +31,7 @@
 #include "GUIConnector.h"
 #include "GUIPort.h"
 #include "Widgets/MessageWidget.h"
+#include "Widgets/HcomWidget.h"
 #include "Widgets/LibraryWidget.h"
 #include "UndoStack.h"
 #include "Configuration.h"
@@ -598,12 +599,6 @@ Port *ModelObject::getPort(const QString &rName)
 }
 
 
-Port *ModelObject::createRefreshExternalDynamicParameterPort(QString portName)
-{
-    mActiveDynamicParameterPortNames.append(portName);
-    return createRefreshExternalPort(portName);
-}
-
 void ModelObject::hideExternalDynamicParameterPort(QString portName)
 {
     QList<Port*>::iterator plit;
@@ -614,53 +609,59 @@ void ModelObject::hideExternalDynamicParameterPort(QString portName)
             // Disconnect port, hide it and forget its a dynamic parmater port (to prevent saving it)
             (*plit)->disconnectAndRemoveAllConnectedConnectors();
             (*plit)->setEnable(false);
-            mActiveDynamicParameterPortNames.removeAll(portName);
             break;
         }
     }
 }
 
-//! @brief This method creates ONE external port. Or refreshes existing ports. It assumes that port appearance information for this port exists
+//! @brief This method creates ONE external port. Or refreshes existing ports. If port appearance information for this port does not exist, it is created
 //! @param[portName] The name of the port to create
-//! @todo maybe defualt create that info if it is missing
 Port *ModelObject::createRefreshExternalPort(QString portName)
 {
-    //If port appearance is not already existing then we create it
-    if ( mModelObjectAppearance.getPortAppearanceMap().count(portName) == 0 )
-    {
-        mModelObjectAppearance.addPortAppearance(portName);
-    }
+    // Fetch port if we have it
+    Port *pPort = this->getPort(portName);
 
-    //Fetch appearance data
-    PortAppearanceMapT::iterator it = mModelObjectAppearance.getPortAppearanceMap().find(portName);
-    //Create new external port if it does not already exist (this is the usual case for individual components)
-    Port *pPort = this->getPort(it.key());
+    // Create new external port if it does not already exist (this is the usual case for components)
     if ( pPort == 0 )
     {
-        qDebug() << "##This is OK though as this means that we should create the stupid port for the first time";
+        PortAppearance *pPortApp = mModelObjectAppearance.getPortAppearance(portName);
+        // If port appearance is not already existing then we create it
+        if ( !pPortApp )
+        {
+            mModelObjectAppearance.addPortAppearance(portName);
+            pPortApp = mModelObjectAppearance.getPortAppearance(portName);
+        }
 
         //! @todo to minimaze search time make a get porttype  and nodetype function, we need to search twice now
-        QString nodeType = getParentContainerObject()->getCoreSystemAccessPtr()->getNodeType(this->getName(), it.key());
-        QString portType = getParentContainerObject()->getCoreSystemAccessPtr()->getPortType(this->getName(), it.key());
-        it.value().selectPortIcon(getTypeCQS(), portType, nodeType);
+        QString nodeType = getParentContainerObject()->getCoreSystemAccessPtr()->getNodeType(this->getName(), portName);
+        QString portType = getParentContainerObject()->getCoreSystemAccessPtr()->getPortType(this->getName(), portName);
 
-        qreal x = it.value().x*boundingRect().width();
-        qreal y = it.value().y*boundingRect().height();
-        qDebug() << "x,y: " << x << " " << y;
-
-        if (this->type() == GroupContainerType)
+        if (!portType.isEmpty())
         {
-            pPort = new GroupPort(it.key(), x, y, &(it.value()), this);
+            pPortApp->selectPortIcon(getTypeCQS(), portType, nodeType);
+
+            qreal x = pPortApp->x*boundingRect().width();
+            qreal y = pPortApp->y*boundingRect().height();
+            qDebug() << "x,y: " << x << " " << y;
+
+            if (this->type() == GroupContainerType)
+            {
+                pPort = new GroupPort(portName, x, y, pPortApp, this);
+            }
+            else
+            {
+                pPort = new Port(portName, x, y, pPortApp, this);
+            }
+
+
+            mPortListPtrs.append(pPort);
         }
         else
         {
-            pPort = new Port(it.key(), x, y, &(it.value()), this);
+            // Port does not exist in core, lets print warning message and remove its appearance data
+            gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Port:  "+portName+"  does not exist in Component:  "+getName()+"  when trying to create port graphics. Ignoring!");
+            mModelObjectAppearance.erasePortAppearance(portName);
         }
-
-
-        mPortListPtrs.append(pPort);
-
-        //pPort->refreshPortGraphics();
     }
     else
     {
@@ -679,7 +680,7 @@ Port *ModelObject::createRefreshExternalPort(QString portName)
             connectors[i]->refreshConnectorAppearance();
         }
 
-        qDebug() << "--------------------------ExternalPort already exist refreshing its graphics: " << it.key() << " in: " << this->getName();
+        qDebug() << "--------------------------ExternalPort already exist refreshing its graphics: " << portName << " in: " << this->getName();
     }
     return pPort;
 }
@@ -694,7 +695,6 @@ void ModelObject::removeExternalPort(QString portName)
         if ((*plit)->getName() == portName )
         {
             // Delete the GUIPort its post in the portlist and its appearance data
-            mActiveDynamicParameterPortNames.removeAll(portName);
             (*plit)->disconnectAndRemoveAllConnectedConnectors();
             (*plit)->deleteLater();
             mPortListPtrs.erase(plit);

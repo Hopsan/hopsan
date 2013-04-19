@@ -568,6 +568,16 @@ const PortAppearance *ModelObjectAppearance::getPortAppearance(const QString &rP
     return 0;
 }
 
+PortAppearance *ModelObjectAppearance::getPortAppearance(const QString &rPortName)
+{
+    PortAppearanceMapT::iterator it = mPortAppearanceMap.find(rPortName);
+    if (it != mPortAppearanceMap.end())
+    {
+        return &it.value();
+    }
+    return 0;
+}
+
 
 
 //! @brief Removes a port appearance post for a specified portname

@@ -140,6 +140,7 @@ public:
     
     PortAppearanceMapT &getPortAppearanceMap();
     const PortAppearance *getPortAppearance(const QString &rPortName) const;
+    PortAppearance *getPortAppearance(const QString &rPortName);
     void erasePortAppearance(const QString portName);
     void addPortAppearance(const QString portName, PortAppearance *pPortAppearance=0);
 

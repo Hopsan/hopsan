@@ -169,11 +169,11 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStat
     {
         if (parameterName.contains("::"))
         {
-            gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Startvalue mismatch:  "+parameterName+" = "+parameterValue+" in component "+pObject->getName()+". Startvalue ignored.", "startvaluemismatch");
+            gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Startvalue mismatch:  "+parameterName+" = "+parameterValue+"  in Component:  "+pObject->getName()+".  Startvalue ignored.", "startvaluemismatch");
         }
         else
         {
-            gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Parameter mismatch: "+parameterName+" = "+parameterValue+" in component "+pObject->getName()+". Parameter ignored.", "parametermismatch");
+            gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Parameter mismatch: "+parameterName+" = "+parameterValue+"  in Component:  "+pObject->getName()+".  Parameter ignored.", "parametermismatch");
         }
         return;
     }
@@ -192,7 +192,7 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStat
         QString portparname = parameterName.split("::")[0];
         if (theotherparameternames.contains(portparname))
         {
-            gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Prevented overwriting: "+parameterName+" = "+parameterValue+" in component: "+pObject->getName()+"   (This is a good thing and probably nothing to worry about)");
+            gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Prevented overwriting:  "+parameterName+" = "+parameterValue+"  in Component:  "+pObject->getName()+"   (This is a good thing and probably nothing to worry about)");
         }
         else
         {
@@ -367,21 +367,13 @@ ModelObject* loadModelObject(QDomElement &rDomElement, LibraryWidget* pLibrary, 
                 pObj->refreshDisplayName(); //Need to refresh display name if read appearance data contained an incorrect name
 
                 // Now refresh only thos ports that were new
-                QStringList paramNames = pObj->getParameterNames();
                 QDomElement dom_port = cafMoStuff.firstChildElement("ports").firstChildElement("port");
                 while (!dom_port.isNull())
                 {
-                    // For all port appearances that have the same name as parameters, create external dynamic parameter ports
-                    // For the others refresh
+                    // Create or refresh modified ports
                     QString portName = dom_port.attribute("name");
-                    if (paramNames.contains(portName))
-                    {
-                        pObj->createRefreshExternalDynamicParameterPort(portName);
-                    }
-                    else
-                    {
-                        pObj->createRefreshExternalPort(portName);
-                    }
+                    pObj->createRefreshExternalPort(portName);
+
                     Port *pPort = pObj->getPort(portName);
                     if (pPort)
                     {
