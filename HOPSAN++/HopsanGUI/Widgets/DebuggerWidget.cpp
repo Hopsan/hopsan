@@ -247,7 +247,8 @@ void DebuggerWidget::runInitialization()
         mpForwardButton->setEnabled(true);
         mpMultiForwardButton->setEnabled(true);
     }
-    collectLastData(false);
+    collectPlotData(false);
+    logLastData();
     updateTimeDisplay();
 }
 
@@ -258,7 +259,12 @@ void DebuggerWidget::stepForward()
 
 void DebuggerWidget::nStepsForward()
 {
-    simulateTo(getCurrentTime()+getTimeStep()*double(mpNumStepsSpinBox->value()));
+    for(int i=0; i<mpNumStepsSpinBox->value(); ++i)
+    {
+        simulateTo(getCurrentTime()+getTimeStep(), false);
+    }
+    collectPlotData();
+    //simulateTo(getCurrentTime()+getTimeStep()*double(mpNumStepsSpinBox->value()));
 }
 
 void DebuggerWidget::simulateTo()
@@ -267,17 +273,26 @@ void DebuggerWidget::simulateTo()
     simulateTo(mpGotoTimeSpinBox->value());
 }
 
-void DebuggerWidget::simulateTo(double targetTime)
+void DebuggerWidget::simulateTo(double targetTime, bool doCollectData)
 {
     mpSystem->getCoreSystemAccessPtr()->simulate(getCurrentTime(), targetTime, -1, true);
-    collectLastData();
+    if(doCollectData)
+    {
+        collectPlotData();
+    }
+    logLastData();
     updateTimeDisplay();
 }
 
-void DebuggerWidget::collectLastData(bool overWriteGeneration)
+
+void DebuggerWidget::collectPlotData(bool overWriteGeneration)
 {
     mpSystem->collectPlotData(overWriteGeneration);
+}
 
+
+void DebuggerWidget::logLastData()
+{
     QString outputLine;
 
     outputLine.append(QString::number(getCurrentTime())+",");
@@ -327,7 +342,8 @@ double DebuggerWidget::getCurrentTime() const
 
 int DebuggerWidget::getCurrentStep() const
 {
-    return mpSystem->getLogDataHandler()->getAllVariablesAtNewestGeneration().first()->getDataSize()-1;
+    //return mpSystem->getLogDataHandler()->getAllVariablesAtNewestGeneration().first()->getDataSize()-1;
+    return int(mpSystem->getCoreSystemAccessPtr()->getCurrentTime() / getTimeStep());
 }
 
 double DebuggerWidget::getTimeStep() const

@@ -43,8 +43,9 @@ private slots:
     void stepForward();
     void nStepsForward();
     void simulateTo();
-    void simulateTo(double targetTime);
-    void collectLastData(bool overWriteGeneration=true);
+    void simulateTo(double targetTime, bool doLog=true);
+    void collectPlotData(bool overWriteGeneration=true);
+    void logLastData();
     void updateTimeDisplay();
     double getCurrentTime() const;
     double getTimeStep() const;
