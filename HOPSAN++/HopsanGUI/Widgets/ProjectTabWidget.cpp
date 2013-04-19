@@ -92,6 +92,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     mpSimulationThreadHandler = new SimulationThreadHandler();
 
     connect(mpSimulationThreadHandler, SIGNAL(done(bool)), this, SIGNAL(simulationFinished()));
+    connect(this, SIGNAL(simulationFinished()), this, SLOT(unlockSimulateMutex()));
     connect(this, SIGNAL(checkMessages()), mpParentProjectTabWidget, SIGNAL(checkMessages()), Qt::UniqueConnection);
     connect(this, SIGNAL(simulationFinished()), this, SLOT(collectPlotData()), Qt::UniqueConnection);
 
@@ -281,6 +282,8 @@ void ProjectTab::setSaved(bool value)
 //! @note this is experimental code to replace madness simulation code in the future
 bool ProjectTab::simulate_nonblocking()
 {
+    if(!mSimulateMutex.tryLock()) return false;
+
     qDebug() << "Calling simulate_nonblocking()";
     //QVector<SystemContainer*> vec;
     //vec.push_back(mpSystem);
@@ -294,6 +297,8 @@ bool ProjectTab::simulate_nonblocking()
 
 bool ProjectTab::simulate_blocking()
 {
+    if(!mSimulateMutex.tryLock()) return false;
+
     mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getNumberOfLogSamples());
     mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
     QVector<SystemContainer*> vec;
@@ -532,6 +537,13 @@ void ProjectTab::closeAnimation()
     mpAnimationWidget = 0;
     mpParentProjectTabWidget->show();
 }
+
+
+void ProjectTab::unlockSimulateMutex()
+{
+    mSimulateMutex.unlock();
+}
+
 
 //! @brief Opens current container in new tab
 //! Used for opening external subsystems for editing. If current container is not external, it will

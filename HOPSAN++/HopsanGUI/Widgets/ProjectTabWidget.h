@@ -138,6 +138,7 @@ private slots:
     void collectPlotData();
     void openCurrentContainerInNewTab();
     void closeAnimation();
+    void unlockSimulateMutex();
 
 signals:
     void checkMessages();
@@ -155,6 +156,8 @@ private:
     QWidget *mpExternalSystemWidget;
     int mLastSimulationTime;
     bool mEditingEnabled;
+
+    QMutex mSimulateMutex;
 };
 
 #endif // PROJECTTABWIDGET_H
