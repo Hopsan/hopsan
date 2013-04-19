@@ -198,22 +198,24 @@ private:
 
     // Axis settings related member variables
     QDialog *mpSetAxisDialog;
-    QCheckBox *mpXbSetLockCheckBox;
-    QCheckBox *mpYLSetLockCheckBox;
-    QCheckBox *mpYRSetLockCheckBox;
+    QCheckBox *mpXAutoCheckBox;
+    QCheckBox *mpYLAutoCheckBox;
+    QCheckBox *mpYRAutoCheckBox;
     QDoubleSpinBox *mpXminSpinBox;
     QDoubleSpinBox *mpXmaxSpinBox;
     QDoubleSpinBox *mpYLminSpinBox;
     QDoubleSpinBox *mpYLmaxSpinBox;
     QDoubleSpinBox *mpYRminSpinBox;
     QDoubleSpinBox *mpYRmaxSpinBox;
-    typedef struct _AxisLimits
+    typedef struct _AxisLimits // Persistent axis limits
     {
-        double xbMin, xbMax;
-        double yLMin, yLMax;
-        double yRMin, yRMax;
+        double min, max;
     }AxisLimitsT;
-    AxisLimitsT mAxisLimits[2];     // Persistent axis limits
+    AxisLimitsT mXAxisLimits[2];
+    AxisLimitsT mYLAxisLimits[2];
+    AxisLimitsT mYRAxisLimits[2];
+    AxisLimitsT mAxisLimits[2];
+    void rescaleAxistoIncludeLegendBuffer(const int plotId, const QwtPlot::Axis axisId, const double contentMin, const double contentMax, const AxisLimitsT &rLegendBufferOffset, AxisLimitsT &rAxisLimits);
 };
 
 #endif // PLOTTAB_H

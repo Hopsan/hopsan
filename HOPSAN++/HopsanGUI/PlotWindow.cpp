@@ -659,53 +659,7 @@ void PlotWindow::loadFromXml()
     gpMainWindow->mpPlotWidget->loadFromXml();
 }
 
-//! @todo currently only supports settings axis for top plot
-void PlotTab::openAxisSettingsDialog()
-{
-    mpXminSpinBox->setValue(mAxisLimits[FirstPlot].xbMin);
-    mpXmaxSpinBox->setValue(mAxisLimits[FirstPlot].xbMax);
 
-    mpYLminSpinBox->setValue(mAxisLimits[FirstPlot].yLMin);
-    mpYLmaxSpinBox->setValue(mAxisLimits[FirstPlot].yLMax);
-
-    mpYRminSpinBox->setValue(mAxisLimits[FirstPlot].yRMin);
-    mpYRmaxSpinBox->setValue(mAxisLimits[FirstPlot].yRMax);
-
-    mpSetAxisDialog->exec();
-}
-
-//! @todo currently only supports settings axis for top plot
-void PlotTab::applyAxisSettings()
-{
-    //If a box is checked for axis lcok then set axis value AND remember the value since we do not know how to ask for it later
-
-    if(mpXbSetLockCheckBox->isChecked())
-    {
-        this->getPlot(FirstPlot)->setAxisScale(QwtPlot::xBottom, mpXminSpinBox->value(),mpXmaxSpinBox->value());
-        mAxisLimits[FirstPlot].xbMin = mpXminSpinBox->value();
-        mAxisLimits[FirstPlot].xbMax = mpXmaxSpinBox->value();
-    }
-
-    if(mpYLSetLockCheckBox->isChecked())
-    {
-        this->getPlot(FirstPlot)->setAxisScale(QwtPlot::yLeft, mpYLminSpinBox->value(),mpYLmaxSpinBox->value());
-        mAxisLimits[FirstPlot].yLMin = mpYLminSpinBox->value();
-        mAxisLimits[FirstPlot].yLMax = mpYLmaxSpinBox->value();
-    }
-
-    if(mpYRSetLockCheckBox->isChecked())
-    {
-        this->getPlot(FirstPlot)->setAxisScale(QwtPlot::yRight, mpYRminSpinBox->value(),mpYRmaxSpinBox->value());
-        mAxisLimits[FirstPlot].yRMin = mpYRminSpinBox->value();
-        mAxisLimits[FirstPlot].yRMax = mpYRmaxSpinBox->value();
-    }
-
-    // If anyone of the boxes are not checked we call rescale in case we just unchecked it as it needs to auto refresh
-    if (!mpXbSetLockCheckBox->isChecked() || !mpYLSetLockCheckBox->isChecked() || !mpYRSetLockCheckBox->isChecked())
-    {
-        this->rescaleToCurves();
-    }
-}
 void PlotWindow::performFrequencyAnalysis(PlotCurve *curve)
 {
     mpFrequencyAnalysisCurve = curve;

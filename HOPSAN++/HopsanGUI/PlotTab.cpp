@@ -278,6 +278,55 @@ void PlotTab::applyLegendSettings()
     rescaleToCurves();
 }
 
+
+//! @todo currently only supports settings axis for top plot
+void PlotTab::openAxisSettingsDialog()
+{
+    mpXminSpinBox->setValue(mXAxisLimits[FirstPlot].min);
+    mpXmaxSpinBox->setValue(mXAxisLimits[FirstPlot].max);
+
+    mpYLminSpinBox->setValue(mYLAxisLimits[FirstPlot].min);
+    mpYLmaxSpinBox->setValue(mYLAxisLimits[FirstPlot].max);
+
+    mpYRminSpinBox->setValue(mYRAxisLimits[FirstPlot].min);
+    mpYRmaxSpinBox->setValue(mYRAxisLimits[FirstPlot].max);
+
+    mpSetAxisDialog->exec();
+}
+
+//! @todo currently only supports settings axis for top plot
+void PlotTab::applyAxisSettings()
+{
+    //If a box is not checked then use manual settings AND remember the value since we do not know how to ask for it later
+    if(!mpXAutoCheckBox->isChecked())
+    {
+        this->getPlot(FirstPlot)->setAxisScale(QwtPlot::xBottom, mpXminSpinBox->value(),mpXmaxSpinBox->value());
+        mXAxisLimits[FirstPlot].min = mpXminSpinBox->value();
+        mXAxisLimits[FirstPlot].max = mpXmaxSpinBox->value();
+    }
+
+    if(!mpYLAutoCheckBox->isChecked())
+    {
+        this->getPlot(FirstPlot)->setAxisScale(QwtPlot::yLeft, mpYLminSpinBox->value(),mpYLmaxSpinBox->value());
+        mYLAxisLimits[FirstPlot].min = mpYLminSpinBox->value();
+        mYLAxisLimits[FirstPlot].max = mpYLmaxSpinBox->value();
+    }
+
+    if(!mpYRAutoCheckBox->isChecked())
+    {
+        this->getPlot(FirstPlot)->setAxisScale(QwtPlot::yRight, mpYRminSpinBox->value(),mpYRmaxSpinBox->value());
+        mYRAxisLimits[FirstPlot].min = mpYRminSpinBox->value();
+        mYRAxisLimits[FirstPlot].max = mpYRmaxSpinBox->value();
+    }
+
+    // If anyone of the boxes are checked we call rescale in case we just unchecked it as it needs to auto refresh
+    if (mpXAutoCheckBox->isChecked() || mpYLAutoCheckBox->isChecked() || mpYRAutoCheckBox->isChecked())
+    {
+        this->rescaleToCurves();
+    }
+}
+
+
 void PlotTab::openLegendSettingsDialog()
 {
     mpLegendSettingsDialog->exec();
@@ -451,7 +500,7 @@ void PlotTab::rescaleToCurves()
     //Cycle plots and rescale each of them
     for(int plotID=0; plotID<2; ++plotID)
     {
-        double xMin, xMax, yMinLeft, yMaxLeft, yMinRight, yMaxRight, heightLeft, heightRight;
+        double xMin, xMax, yMinLeft, yMaxLeft, yMinRight, yMaxRight;
 
         //Cycle plots
         if(!mPlotCurvePtrs[plotID].empty())
@@ -482,6 +531,7 @@ void PlotTab::rescaleToCurves()
                 }
 
                 //! @todo we could speed this up by not checking min max values in case an axis is set to be locked
+                //! @todo min max should be decided by the curves them self when their data is set or changed, to avoid checking every curve every time
                 if(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yLeft)
                 {
                     if(foundFirstLeft == false)     //First left-axis curve, use min and max Y values as initial values
@@ -623,9 +673,9 @@ void PlotTab::rescaleToCurves()
             yMinRight = yMinRight*2;
         }
 
-        //Calculate heights (used for calculating margins at top and bottom
-        heightLeft = yMaxLeft-yMinLeft;
-        heightRight = yMaxRight-yMinRight;
+        // Calculate the axis ranges (used for calculating margins at top and bottom
+        double leftAxisRange = yMaxLeft-yMinLeft;
+        double rightAxisRange = yMaxRight-yMinRight;
 
         //If plot has log scale, we use a different approach for calculating margins
         //(fixed margins would not make sense with a log scale)
@@ -633,38 +683,40 @@ void PlotTab::rescaleToCurves()
         //! @todo In new qwt the type in the transform has been removed, Trying with dynamic cast instead
         if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlots[plotID]->axisScaleEngine(QwtPlot::yLeft)))
         {
-            heightLeft = 0;
+            leftAxisRange = 0;
             yMaxLeft = yMaxLeft*2.0;
             yMinLeft = yMinLeft/2.0;
         }
         if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlots[plotID]->axisScaleEngine(QwtPlot::yRight)))
         {
-            heightRight = 0;
+            rightAxisRange = 0;
             yMaxRight = yMaxRight*2.0;
             yMinRight = yMinRight/2.0;
         }
 
 
         //Scale the axes
-        if (!mpXbSetLockCheckBox->isChecked())
+        if (mpXAutoCheckBox->isChecked())
         {
-            mpQwtPlots[plotID]->setAxisScale(QwtPlot::xBottom, xMin, xMax);
-            mAxisLimits[plotID].xbMin = xMin;
-            mAxisLimits[plotID].xbMax = xMax;
+            mXAxisLimits[plotID].min = xMin;
+            mXAxisLimits[plotID].max = xMax;
+            mpQwtPlots[plotID]->setAxisScale(QwtPlot::xBottom, mXAxisLimits[plotID].min, mXAxisLimits[plotID].max);
         }
 
-        if (!mpYLSetLockCheckBox->isChecked())
+        if (mpYLAutoCheckBox->isChecked())
         {
-            mpQwtPlots[plotID]->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft);
-            mAxisLimits[plotID].yLMin = yMinLeft-0.05*heightLeft;
-            mAxisLimits[plotID].yLMax =  yMaxLeft+0.05*heightLeft;
+            mYLAxisLimits[plotID].min = yMinLeft-0.05*leftAxisRange;
+            mYLAxisLimits[plotID].max =  yMaxLeft+0.05*leftAxisRange;
+            mpQwtPlots[plotID]->setAxisScale(QwtPlot::yLeft, mYLAxisLimits[plotID].min, mYLAxisLimits[plotID].max);
+
         }
 
-        if (!mpYRSetLockCheckBox->isChecked())
+        if (mpYRAutoCheckBox->isChecked())
         {
-            mpQwtPlots[plotID]->setAxisScale(QwtPlot::yRight, yMinRight-0.05*heightRight, yMaxRight+0.05*heightRight);
-            mAxisLimits[plotID].yRMin = yMinRight-0.05*heightRight;
-            mAxisLimits[plotID].yRMax = yMaxRight+0.05*heightRight;
+            mYRAxisLimits[plotID].min = yMinRight-0.05*rightAxisRange;
+            mYRAxisLimits[plotID].max = yMaxRight+0.05*rightAxisRange;
+            mpQwtPlots[plotID]->setAxisScale(QwtPlot::yRight, mYRAxisLimits[plotID].min, mYRAxisLimits[plotID].max);
+
         }
         //! @todo will these Locks be overridden by ybuffer ? below
 
@@ -672,152 +724,77 @@ void PlotTab::rescaleToCurves()
         //! @todo only works for linear scale right now, need to check for log scale also
         double leftLegendHeight = mpLeftPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
         double rightLegendHeight = mpRightPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
-        double leftTopBufferOffset, leftBottomBufferOffset, rightTopBufferOffset, rightBottomBufferOffset;
+        AxisLimitsT leftBufferOffset, rightBufferOffset; // min = bottom offset, max = top offset
         if(mpLegendsAutoOffsetCheckBox->isChecked())
         {
             if ((mpLegendLPosition->currentText() == mpLegendRPosition->currentText()) && (mpLegendRPosition->currentText() == "Top"))
             {
-                leftTopBufferOffset = rightTopBufferOffset = qMax(leftLegendHeight,rightLegendHeight);
-                leftBottomBufferOffset = rightBottomBufferOffset = 0;
+                leftBufferOffset.max = rightBufferOffset.max = qMax(leftLegendHeight,rightLegendHeight);
+                leftBufferOffset.min = rightBufferOffset.max = 0;
             }
             if ((mpLegendLPosition->currentText() == mpLegendRPosition->currentText()) && (mpLegendRPosition->currentText() == "Bottom"))
             {
-                leftTopBufferOffset = rightTopBufferOffset = 0;
-                leftBottomBufferOffset = rightBottomBufferOffset = qMax(leftLegendHeight,rightLegendHeight);
+                leftBufferOffset.max = rightBufferOffset.max = 0;
+                leftBufferOffset.min = rightBufferOffset.min = qMax(leftLegendHeight,rightLegendHeight);
             }
             else if (mpLegendLPosition->currentText() == "Bottom")
             {
-                leftBottomBufferOffset = leftLegendHeight;
-                rightTopBufferOffset = rightLegendHeight;
-                leftTopBufferOffset = rightBottomBufferOffset = 0;
+                leftBufferOffset.min = leftLegendHeight;
+                rightBufferOffset.max = rightLegendHeight;
+                leftBufferOffset.max = rightBufferOffset.min = 0;
             }
             else if (mpLegendRPosition->currentText() == "Bottom")
             {
-                rightBottomBufferOffset = rightLegendHeight;
-                leftTopBufferOffset = leftLegendHeight;
-                rightTopBufferOffset = leftBottomBufferOffset = 0;
+                rightBufferOffset.min = rightLegendHeight;
+                leftBufferOffset.max = leftLegendHeight;
+                rightBufferOffset.max = leftBufferOffset.min = 0;
             }
         }
         else
         {
             if (mpLegendLPosition->currentText() == "Top")
             {
-                leftTopBufferOffset = mpLegendLeftOffset->value()*leftLegendHeight;
-                leftBottomBufferOffset = 0;
+                leftBufferOffset.max = mpLegendLeftOffset->value()*leftLegendHeight;
+                leftBufferOffset.min = 0;
             }
             else if (mpLegendLPosition->currentText() == "Bottom")
             {
-                leftTopBufferOffset = 0;
-                leftBottomBufferOffset = mpLegendLeftOffset->value()*leftLegendHeight;
+                leftBufferOffset.max = 0;
+                leftBufferOffset.min = mpLegendLeftOffset->value()*leftLegendHeight;
             }
             //! @todo Center? than what to do
 
             if (mpLegendRPosition->currentText() == "Top")
             {
-                rightTopBufferOffset = mpLegendRightOffset->value()*rightLegendHeight;
-                rightBottomBufferOffset = 0;
+                rightBufferOffset.max = mpLegendRightOffset->value()*rightLegendHeight;
+                rightBufferOffset.min = 0;
             }
             else if (mpLegendRPosition->currentText() == "Bottom")
             {
-                rightTopBufferOffset = 0;
-                rightBottomBufferOffset = mpLegendRightOffset->value()*rightLegendHeight;
+                rightBufferOffset.max = 0;
+                rightBufferOffset.min = mpLegendRightOffset->value()*rightLegendHeight;
             }
             //! @todo Center? than what to do
         }
 
         // Rescale axis to include mLegendYBufferOffset
-        //! @todo only works for top buffer right now
-        if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlots[plotID]->axisScaleEngine(QwtPlot::yLeft)))
-        {
-            //! @todo what shoul happen here ?
-            //                double leftlegendheigh = mpLeftPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
-            //                double rightlegendheigh = mpRightPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
-            //                bufferoffset = max(leftlegendheigh,rightlegendheigh);
-            //                double rheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yRight)->size().height();
-            //                double rinterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yRight).width();
-            //                //                double rscale = rinterval/rheight; //change
-            //                double lheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yLeft)->size().height();
-            //                double linterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yLeft).width();
-            //                double lscale = linterval/lheight;
-            //                heightLeft = 0;
-            //                yMaxLeft = yMaxLeft*2.0;
-            //                yMinLeft = yMinLeft/2.0;
-            //                heightRight = 0;
-            //                yMaxRight = yMaxRight*2.0;
-            //                yMinRight = yMinRight/2.0;
-            //                double bufferoffsetL =  bufferoffset*lscale;//marginss1;
-            //                //                double bufferoffsetR =  bufferoffset*rscale;//marginss2;
-            //                mpQwtPlots[plotID]->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft+bufferoffsetL);
-            //                mAxisLimits[plotID].yLMin = yMinLeft-0.05*heightLeft;
-            //                mAxisLimits[plotID].yLMax =  yMaxLeft+0.05*heightLeft+bufferoffsetL;
-            //                //                mpQwtPlots[plotID]->setAxisScale(QwtPlot::yRight, yMinRight-0.05*heightRight, yMaxRight+0.05*heightRight+bufferoffsetR);
-            //                //                mAxisLimits[plotID].yRMin = yMinRight-0.05*heightRight;
-            //                //                mAxisLimits[plotID].yRMax = yMaxRight+0.05*heightRight+bufferoffsetR;
-        }
-        else
-        {
-            const double lheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yLeft)->size().height();
-            const double linterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yLeft).width();
-            const double lscale = linterval/lheight;
-
-            mAxisLimits[plotID].yLMin = yMinLeft-0.05*heightLeft-leftBottomBufferOffset*lscale;
-            mAxisLimits[plotID].yLMax =  yMaxLeft+0.05*heightLeft+leftTopBufferOffset*lscale;
-            mpQwtPlots[plotID]->setAxisScale(QwtPlot::yLeft, mAxisLimits[plotID].yLMin, mAxisLimits[plotID].yLMax);
-        }
-        if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlots[plotID]->axisScaleEngine(QwtPlot::yRight)))
-        {
-            //! @todo what shoul happen here ?
-            //                double leftlegendheigh = mpLeftPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
-            //                double rightlegendheigh = mpRightPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
-            //                bufferoffset = max(leftlegendheigh,rightlegendheigh);
-
-            //                double rheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yRight)->size().height();
-            //                double rinterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yRight).width();
-            //                double rscale = rinterval/rheight; //change
-
-            //                double lheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yLeft)->size().height();
-            //                double linterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yLeft).width();
-            //                //                double lscale = linterval/lheight;
-            //                heightLeft = 0;
-            //                yMaxLeft = yMaxLeft*2.0;
-            //                yMinLeft = yMinLeft/2.0;
-            //                heightRight = 0;
-            //                yMaxRight = yMaxRight*2.0;
-            //                yMinRight = yMinRight/2.0;
-            //                //                double bufferoffsetL =  bufferoffset*lscale;
-            //                double bufferoffsetR =  bufferoffset*rscale;
-            //                //                mpQwtPlots[plotID]->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft+bufferoffsetL);
-            //                //                mAxisLimits[plotID].yLMin = yMinLeft-0.05*heightLeft;
-            //                //                mAxisLimits[plotID].yLMax =  yMaxLeft+0.05*heightLeft+bufferoffsetL;
-            //                mpQwtPlots[plotID]->setAxisScale(QwtPlot::yRight, yMinRight-0.05*heightRight, yMaxRight+0.05*heightRight+bufferoffsetR);
-            //                mAxisLimits[plotID].yRMin = yMinRight-0.05*heightRight;
-            //                mAxisLimits[plotID].yRMax = yMaxRight+0.05*heightRight+bufferoffsetR;
-        }
-        else
-        {
-            const double rheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yRight)->size().height();
-            const double rinterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yRight).width();
-            const double rscale = rinterval/rheight;
-
-            mAxisLimits[plotID].yRMin = yMinRight-0.05*heightRight-rightBottomBufferOffset*rscale;
-            mAxisLimits[plotID].yRMax = yMaxRight+0.05*heightRight+rightTopBufferOffset*rscale;
-            mpQwtPlots[plotID]->setAxisScale(QwtPlot::yRight, mAxisLimits[plotID].yRMin, mAxisLimits[plotID].yRMax);
-        }
+        rescaleAxistoIncludeLegendBuffer(plotID, QwtPlot::yLeft, yMinLeft, yMaxLeft, leftBufferOffset, mYLAxisLimits[plotID]);
+        rescaleAxistoIncludeLegendBuffer(plotID, QwtPlot::yRight, yMinRight, yMaxRight, rightBufferOffset, mYRAxisLimits[plotID]);
         mpQwtPlots[plotID]->updateAxes();
         //! @todo left only applies to left even if the right is overshadowed, problem is that if left, right are bottom and top calculated buffers will be different on each axis
 
         //Scale the zoom base (maximum zoom)
         QRectF tempDoubleRect;
         tempDoubleRect.setX(xMin);
-        tempDoubleRect.setY(yMinLeft-0.05*heightLeft);
+        tempDoubleRect.setY(yMinLeft-0.05*leftAxisRange);
         tempDoubleRect.setWidth(xMax-xMin);
-        tempDoubleRect.setHeight(yMaxLeft-yMinLeft+0.1*heightLeft);
+        tempDoubleRect.setHeight(yMaxLeft-yMinLeft+0.1*leftAxisRange);
         mpZoomerLeft[plotID]->setZoomBase(tempDoubleRect);
 
         QRectF tempDoubleRect2;
         tempDoubleRect2.setX(xMin);
-        tempDoubleRect2.setY(yMinRight-0.05*heightRight);
-        tempDoubleRect2.setHeight(yMaxRight-yMinRight+0.1*heightRight);
+        tempDoubleRect2.setY(yMinRight-0.05*rightAxisRange);
+        tempDoubleRect2.setHeight(yMaxRight-yMinRight+0.1*rightAxisRange);
         tempDoubleRect2.setWidth(xMax-xMin);
         mpZoomerRight[plotID]->setZoomBase(tempDoubleRect2);
     }
@@ -2428,51 +2405,43 @@ void PlotTab::constructLegendSettingsDialog()
 void PlotTab::constructAxisSettingsDialog()
 {
     mpSetAxisDialog = new QDialog(this);
-    mpSetAxisDialog->setWindowTitle("Set Lock on Axis");
-    //mpSetAxisDialog->setWindowModality(Qt::WindowModal);
+    mpSetAxisDialog->setWindowTitle("Set Axis Limits");
 
-    mpXbSetLockCheckBox = new QCheckBox("Lock X-Axis");
-    mpXbSetLockCheckBox->setCheckable(true);
-    mpYLSetLockCheckBox = new QCheckBox("Lock YL-Axis");
-    mpYLSetLockCheckBox->setCheckable(true);
-    mpYRSetLockCheckBox = new QCheckBox("Lock YR-Axis");
-    mpYRSetLockCheckBox->setCheckable(true);
+    mpXAutoCheckBox = new QCheckBox("Auto limits");
+    mpXAutoCheckBox->setCheckable(true);
+    mpXAutoCheckBox->setChecked(true);
+    mpYLAutoCheckBox = new QCheckBox("Auto limits");
+    mpYLAutoCheckBox->setCheckable(true);
+    mpYLAutoCheckBox->setChecked(true);
+    mpYRAutoCheckBox = new QCheckBox("Auto limits");
+    mpYRAutoCheckBox->setCheckable(true);
+    mpYRAutoCheckBox->setChecked(true);
 
-    mpXbSetLockCheckBox->setChecked(false);
-    mpYLSetLockCheckBox->setChecked(false);
-    mpYRSetLockCheckBox->setChecked(false);
-
-    QLabel *pXminLabel = new QLabel("X Axis Min: ", mpSetAxisDialog);
     mpXminSpinBox = new QDoubleSpinBox(mpSetAxisDialog);
     mpXminSpinBox->setRange(-DBLMAX, DBLMAX);
     mpXminSpinBox->setDecimals(10);
     mpXminSpinBox->setSingleStep(0.1);
 
-    QLabel *pXmaxLabel = new QLabel("X Axis Max: ", mpSetAxisDialog);
     mpXmaxSpinBox = new QDoubleSpinBox(mpSetAxisDialog);
     mpXmaxSpinBox->setRange(-DBLMAX, DBLMAX);
     mpXmaxSpinBox->setDecimals(10);
     mpXmaxSpinBox->setSingleStep(0.1);
 
-    QLabel *pYLminLabel = new QLabel("YL Axis Min: ", mpSetAxisDialog);
     mpYLminSpinBox = new QDoubleSpinBox(mpSetAxisDialog);
     mpYLminSpinBox->setRange(-DBLMAX, DBLMAX);
     mpYLminSpinBox->setDecimals(10);
     mpYLminSpinBox->setSingleStep(0.1);
 
-    QLabel *pYLmaxLabel = new QLabel("YL Axis Max: ", mpSetAxisDialog);
     mpYLmaxSpinBox = new QDoubleSpinBox(mpSetAxisDialog);
     mpYLmaxSpinBox->setRange(-DBLMAX, DBLMAX);
     mpYLmaxSpinBox->setDecimals(10);
     mpYLmaxSpinBox->setSingleStep(0.1);
 
-    QLabel *pYRminLabel = new QLabel("YR Axis Min: ", mpSetAxisDialog);
     mpYRminSpinBox = new QDoubleSpinBox(mpSetAxisDialog);
     mpYRminSpinBox->setRange(-DBLMAX, DBLMAX);
     mpYRminSpinBox->setDecimals(10);
     mpYRminSpinBox->setSingleStep(0.1);
 
-    QLabel *pYRmaxLabel = new QLabel("YR Axis Max: ", mpSetAxisDialog);
     mpYRmaxSpinBox = new QDoubleSpinBox(mpSetAxisDialog);
     mpYRmaxSpinBox->setRange(-DBLMAX, DBLMAX);
     mpYRmaxSpinBox->setDecimals(10);
@@ -2482,39 +2451,58 @@ void PlotTab::constructAxisSettingsDialog()
     QDialogButtonBox *pFinishedButtonBox = new QDialogButtonBox(Qt::Horizontal);
     pFinishedButtonBox->addButton(pFinishedButton, QDialogButtonBox::ActionRole);
 
-    QGridLayout *pLockAxisDialogLayout = new QGridLayout(mpSetAxisDialog);
+    QGridLayout *pAxisLimitsDialogLayout = new QGridLayout(mpSetAxisDialog);
 
-    pLockAxisDialogLayout->addWidget(pXminLabel,                0, 0);
-    pLockAxisDialogLayout->addWidget(mpXminSpinBox,             0, 1);
-    pLockAxisDialogLayout->addWidget(pXmaxLabel,                0, 2);
-    pLockAxisDialogLayout->addWidget(mpXmaxSpinBox,             0, 3);
-    pLockAxisDialogLayout->addWidget(mpXbSetLockCheckBox,         0, 4);
-    pLockAxisDialogLayout->addWidget(pYLminLabel,                1, 0);
-    pLockAxisDialogLayout->addWidget(mpYLminSpinBox,             1, 1);
-    pLockAxisDialogLayout->addWidget(pYLmaxLabel,                1, 2);
-    pLockAxisDialogLayout->addWidget(mpYLmaxSpinBox,             1, 3);
-    pLockAxisDialogLayout->addWidget(mpYLSetLockCheckBox,         1, 4);
-    pLockAxisDialogLayout->addWidget(pYRminLabel,                2, 0);
-    pLockAxisDialogLayout->addWidget(mpYRminSpinBox,             2, 1);
-    pLockAxisDialogLayout->addWidget(pYRmaxLabel,                2, 2);
-    pLockAxisDialogLayout->addWidget(mpYRmaxSpinBox,             2, 3);
-    pLockAxisDialogLayout->addWidget(mpYRSetLockCheckBox,         2, 4);
-    //pLockAxisDialogLayout->addWidget(mpSetLockCheckBox,         6, 0, 1, 2);
-    pLockAxisDialogLayout->addWidget(pFinishedButtonBox,       6, 1, 1, 2);
-    //pLockAxisDialogLayout->addWidget(pNextButton,              3, 1, 1, 1);
+    int r=0,c=0;
+    pAxisLimitsDialogLayout->addWidget(new QLabel(tr("X Axis")),r,c,1,2, Qt::AlignCenter);
+    ++r;
+    pAxisLimitsDialogLayout->addWidget(new QLabel(tr("min")), r, c);
+    pAxisLimitsDialogLayout->addWidget(mpXminSpinBox, r, c+1);
+    ++r;
+    pAxisLimitsDialogLayout->addWidget(new QLabel(tr("max")), r, c);
+    pAxisLimitsDialogLayout->addWidget(mpXmaxSpinBox, r, c+1);
+    ++r;
+    pAxisLimitsDialogLayout->addWidget(mpXAutoCheckBox, r, c, 1, 2, Qt::AlignCenter);
+    pAxisLimitsDialogLayout->setColumnMinimumWidth(c+2, 20);
 
-    mpSetAxisDialog->setLayout(pLockAxisDialogLayout);
+    r=0;c=3;
+    pAxisLimitsDialogLayout->addWidget(new QLabel(tr("Left Y Axis")),r,c,1,2, Qt::AlignCenter);
+    ++r;
+    pAxisLimitsDialogLayout->addWidget(new QLabel(tr("min")), r, c);
+    pAxisLimitsDialogLayout->addWidget(mpYLminSpinBox, r, c+1);
+    ++r;
+    pAxisLimitsDialogLayout->addWidget(new QLabel(tr("max")), r, c);
+    pAxisLimitsDialogLayout->addWidget(mpYLmaxSpinBox, r, c+1);
+    ++r;
+    pAxisLimitsDialogLayout->addWidget(mpYLAutoCheckBox, r, c, 1, 2, Qt::AlignCenter);
+    pAxisLimitsDialogLayout->setColumnMinimumWidth(c+2, 20);
 
-    connect(mpXminSpinBox, SIGNAL(valueChanged(double)), this, SLOT(applyAxisSettings()));
-    connect(mpXmaxSpinBox, SIGNAL(valueChanged(double)), this, SLOT(applyAxisSettings()));
-    connect(mpYLminSpinBox, SIGNAL(valueChanged(double)), this, SLOT(applyAxisSettings()));
-    connect(mpYLmaxSpinBox, SIGNAL(valueChanged(double)), this, SLOT(applyAxisSettings()));
-    connect(mpYRminSpinBox, SIGNAL(valueChanged(double)), this, SLOT(applyAxisSettings()));
-    connect(mpYRmaxSpinBox, SIGNAL(valueChanged(double)), this, SLOT(applyAxisSettings()));
-    connect(mpXbSetLockCheckBox, SIGNAL(toggled(bool)), this, SLOT(applyAxisSettings()));
-    connect(mpYLSetLockCheckBox, SIGNAL(toggled(bool)), this, SLOT(applyAxisSettings()));
-    connect(mpYRSetLockCheckBox, SIGNAL(toggled(bool)), this, SLOT(applyAxisSettings()));
-    connect(pFinishedButton, SIGNAL(clicked()), mpSetAxisDialog, SLOT(close()));
+    r=0;c=6;
+    pAxisLimitsDialogLayout->addWidget(new QLabel(tr("Right Y Axis")),r,c,1,2, Qt::AlignCenter);
+    ++r;
+    pAxisLimitsDialogLayout->addWidget(new QLabel(tr("min")), r, c);
+    pAxisLimitsDialogLayout->addWidget(mpYRminSpinBox, r, c+1);
+    ++r;
+    pAxisLimitsDialogLayout->addWidget(new QLabel(tr("max")), r, c);
+    pAxisLimitsDialogLayout->addWidget(mpYRmaxSpinBox, r, c+1);
+    ++r;
+    pAxisLimitsDialogLayout->addWidget(mpYRAutoCheckBox, r, c, 1, 2, Qt::AlignCenter);
+
+    r=4;c=7;
+    pAxisLimitsDialogLayout->addWidget(pFinishedButtonBox, r, c, 1, 2);
+
+    mpSetAxisDialog->setLayout(pAxisLimitsDialogLayout);
+
+    connect(mpXminSpinBox,      SIGNAL(valueChanged(double)),   this,           SLOT(applyAxisSettings()));
+    connect(mpXmaxSpinBox,      SIGNAL(valueChanged(double)),   this,           SLOT(applyAxisSettings()));
+    connect(mpYLminSpinBox,     SIGNAL(valueChanged(double)),   this,           SLOT(applyAxisSettings()));
+    connect(mpYLmaxSpinBox,     SIGNAL(valueChanged(double)),   this,           SLOT(applyAxisSettings()));
+    connect(mpYRminSpinBox,     SIGNAL(valueChanged(double)),   this,           SLOT(applyAxisSettings()));
+    connect(mpYRmaxSpinBox,     SIGNAL(valueChanged(double)),   this,           SLOT(applyAxisSettings()));
+    connect(mpXAutoCheckBox,    SIGNAL(toggled(bool)),          this,           SLOT(applyAxisSettings()));
+    connect(mpYLAutoCheckBox,   SIGNAL(toggled(bool)),          this,           SLOT(applyAxisSettings()));
+    connect(mpYRAutoCheckBox,   SIGNAL(toggled(bool)),          this,           SLOT(applyAxisSettings()));
+    connect(pFinishedButton,    SIGNAL(clicked()),              mpSetAxisDialog, SLOT(close()));
 
 }
 
@@ -2642,6 +2630,49 @@ void PlotTab::updateGraphicsExportSizeEdits()
 
     mpImageSetWidth->setValue(newSize.width());
     mpImageSetHeight->setValue(newSize.height());
+}
+
+void PlotTab::rescaleAxistoIncludeLegendBuffer(const int plotId, const QwtPlot::Axis axisId, const double contentMin, const double contentMax, const AxisLimitsT &rLegendBufferOffset, AxisLimitsT &rAxisLimits)
+{
+    double contentRange = contentMax-contentMin;
+    //! @todo only works for top buffer right now
+    if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlots[plotId]->axisScaleEngine(axisId)))
+    {
+        //! @todo what shoul happen here ?
+        //                double leftlegendheigh = mpLeftPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
+        //                double rightlegendheigh = mpRightPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
+        //                bufferoffset = max(leftlegendheigh,rightlegendheigh);
+        //                double rheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yRight)->size().height();
+        //                double rinterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yRight).width();
+        //                //                double rscale = rinterval/rheight; //change
+        //                double lheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yLeft)->size().height();
+        //                double linterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yLeft).width();
+        //                double lscale = linterval/lheight;
+        //                heightLeft = 0;
+        //                yMaxLeft = yMaxLeft*2.0;
+        //                yMinLeft = yMinLeft/2.0;
+        //                heightRight = 0;
+        //                yMaxRight = yMaxRight*2.0;
+        //                yMinRight = yMinRight/2.0;
+        //                double bufferoffsetL =  bufferoffset*lscale;//marginss1;
+        //                //                double bufferoffsetR =  bufferoffset*rscale;//marginss2;
+        //                mpQwtPlots[plotID]->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft+bufferoffsetL);
+        //                mAxisLimits[plotID].yLMin = yMinLeft-0.05*heightLeft;
+        //                mAxisLimits[plotID].yLMax =  yMaxLeft+0.05*heightLeft+bufferoffsetL;
+        //                //                mpQwtPlots[plotID]->setAxisScale(QwtPlot::yRight, yMinRight-0.05*heightRight, yMaxRight+0.05*heightRight+bufferoffsetR);
+        //                //                mAxisLimits[plotID].yRMin = yMinRight-0.05*heightRight;
+        //                //                mAxisLimits[plotID].yRMax = yMaxRight+0.05*heightRight+bufferoffsetR;
+    }
+    else
+    {
+        const double axis_height = mpQwtPlots[plotId]->axisWidget(axisId)->size().height();
+        const double axis_interval = mpQwtPlots[plotId]->axisInterval(axisId).width(); //!< @todo  isnt this same as contentrange ?
+        const double scale = axis_interval/axis_height;
+
+        rAxisLimits.min = contentMin-0.05*contentRange - scale*rLegendBufferOffset.min;
+        rAxisLimits.max = contentMax+0.05*contentRange + scale*rLegendBufferOffset.max;
+        mpQwtPlots[plotId]->setAxisScale(axisId, rAxisLimits.min, rAxisLimits.max);
+    }
 }
 
 
