@@ -1338,6 +1338,7 @@ QString LogDataHandler::plotVariable(const QString plotName, const QString &rFul
     {
         return gpPlotHandler->plotDataToWindow(plotName, pDataX, pDataY, axis, color);
     }
+    return "";
 }
 
 PlotWindow *LogDataHandler::plotVariable(PlotWindow *pPlotWindow, const QString fullVarName, const int gen, const int axis, QColor color)

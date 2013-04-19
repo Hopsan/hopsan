@@ -159,6 +159,7 @@ private:
     QTextEdit *mpXmlOutputTextBox;
 
     // Export graphics settings
+    QCheckBox *mpKeepAspectRatio;
     QComboBox *mpImageDimUnit;
     QDoubleSpinBox *mpImageSetWidth;
     QDoubleSpinBox *mpImageSetHeight;
@@ -169,6 +170,7 @@ private:
     QString mPreviousImageUnit;
     QSizeF calcMMSize() const;
     QSizeF calcPXSize(QString unit=QString()) const;
+    void updateGraphicsExportSizeEdits();
 
 
     // Legend related member variables

@@ -446,6 +446,7 @@ void ComponentSystem::addComponent(Component *pComponent)
         {
             if (ports[i]->getPortType() < MultiportType)
             {
+                // Dummy nodes have only one port (the port itself)
                 if (ports[i]->getNodePtr()->getNumConnectedPorts() == 1)
                 {
                     this->addSubNode(ports[i]->getNodePtr());

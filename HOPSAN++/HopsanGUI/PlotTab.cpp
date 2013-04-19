@@ -1488,6 +1488,9 @@ void PlotTab::exportToGraphics()
     mpImageFormat->addItem("png");
     mpImageFormat->addItem("jpeg");
 
+    mpKeepAspectRatio = new QCheckBox("Keep Aspect Ratio");
+    mpKeepAspectRatio->setChecked(true);
+
     int r=0;
     QGridLayout *pLayout = new QGridLayout();
     pLayout->addWidget(new QLabel("Format:"),r,0, 1,1,Qt::AlignRight);
@@ -1505,6 +1508,8 @@ void PlotTab::exportToGraphics()
     pLayout->addWidget(new QLabel("DPI:"),r,0, 1,1,Qt::AlignRight);
     pLayout->addWidget(mpImageDPI,r,1);
     mpImageDPI->setDisabled(true);
+    ++r;
+    pLayout->addWidget(mpKeepAspectRatio,r,1);
     ++r;
 
     QPushButton *pExportButton = new QPushButton("Export");
@@ -2211,49 +2216,40 @@ void PlotTab::exportImage()
 
 void PlotTab::changedGraphicsExportSettings()
 {
+
     // Recalculate values for setSize boxes if unit changes
     if (mPreviousImageUnit != mpImageDimUnit->currentText())
     {
-        QSizeF newSize;
-        mpImageDPI->setDisabled(false);
-        if (mpImageDimUnit->currentText() == "px")
-        {
-            newSize.setWidth(round(mImagePixelSize.width()));
-            newSize.setHeight(round(mImagePixelSize.height()));
-            mpImageSetWidth->setDecimals(0);
-            mpImageSetHeight->setDecimals(0);
-            mpImageDPI->setDisabled(true);
-        }
-        else if (mpImageDimUnit->currentText() == "mm")
-        {
-            const double px2mm = 1.0/mpImageDPI->value()*in2mm;
-            newSize = mImagePixelSize*px2mm;
-            mpImageSetWidth->setDecimals(2);
-            mpImageSetHeight->setDecimals(2);
-        }
-        else if (mpImageDimUnit->currentText() == "cm")
-        {
-            const double px2cm = 1.0/(10*mpImageDPI->value())*in2mm;
-            newSize = mImagePixelSize*px2cm;
-            mpImageSetWidth->setDecimals(3);
-            mpImageSetHeight->setDecimals(3);
-        }
-        else if (mpImageDimUnit->currentText() == "in")
-        {
-            const double px2in = 1.0/(mpImageDPI->value());
-            newSize = mImagePixelSize*px2in;
-            mpImageSetWidth->setDecimals(3);
-            mpImageSetHeight->setDecimals(3);
-        }
-
-        mpImageSetWidth->setValue(newSize.width());
-        mpImageSetHeight->setValue(newSize.height());
-
+        updateGraphicsExportSizeEdits();
         mPreviousImageUnit = mpImageDimUnit->currentText();
+
+        mImagePixelSize = calcPXSize(); // Set new pxSize
+    }
+    else if (mpKeepAspectRatio->isChecked())
+    {
+        // Calc new actual pixel resolution
+         QSizeF pxSize = calcPXSize();
+
+        // Adjust size according to AR
+        double ar = mImagePixelSize.width() / mImagePixelSize.height();
+        // See which one changed
+        if ( fabs(pxSize.width() - mImagePixelSize.width()) > fabs(pxSize.height() - mImagePixelSize.height()) )
+        {
+            pxSize.rheight() = pxSize.width() * 1/ar;
+        }
+        else
+        {
+            pxSize.rwidth() = pxSize.height() * ar;
+        }
+        mImagePixelSize = pxSize; // Set new pxSize
+
+        updateGraphicsExportSizeEdits();
+    }
+    else
+    {
+        mImagePixelSize = calcPXSize(); // Set new pxSize
     }
 
-    // Calc new actual pixel resolution
-    mImagePixelSize = calcPXSize();
     mpPixelSizeLabel->setText(QString("%1X%2").arg(round(mImagePixelSize.width())).arg(round(mImagePixelSize.height())));
 }
 
@@ -2607,8 +2603,45 @@ QSizeF PlotTab::calcPXSize(QString unit) const
     }
 
     //! @todo round to int, ceil or floor, handle truncation
-
     return pxSize;
+}
+
+void PlotTab::updateGraphicsExportSizeEdits()
+{
+    QSizeF newSize;
+    mpImageDPI->setDisabled(false);
+    if (mpImageDimUnit->currentText() == "px")
+    {
+        newSize.setWidth(round(mImagePixelSize.width()));
+        newSize.setHeight(round(mImagePixelSize.height()));
+        mpImageSetWidth->setDecimals(0);
+        mpImageSetHeight->setDecimals(0);
+        mpImageDPI->setDisabled(true);
+    }
+    else if (mpImageDimUnit->currentText() == "mm")
+    {
+        const double px2mm = 1.0/mpImageDPI->value()*in2mm;
+        newSize = mImagePixelSize*px2mm;
+        mpImageSetWidth->setDecimals(2);
+        mpImageSetHeight->setDecimals(2);
+    }
+    else if (mpImageDimUnit->currentText() == "cm")
+    {
+        const double px2cm = 1.0/(10*mpImageDPI->value())*in2mm;
+        newSize = mImagePixelSize*px2cm;
+        mpImageSetWidth->setDecimals(3);
+        mpImageSetHeight->setDecimals(3);
+    }
+    else if (mpImageDimUnit->currentText() == "in")
+    {
+        const double px2in = 1.0/(mpImageDPI->value());
+        newSize = mImagePixelSize*px2in;
+        mpImageSetWidth->setDecimals(3);
+        mpImageSetHeight->setDecimals(3);
+    }
+
+    mpImageSetWidth->setValue(newSize.width());
+    mpImageSetHeight->setValue(newSize.height());
 }
 
 
