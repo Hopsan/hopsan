@@ -3,6 +3,7 @@
 
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
+#include <QtGui/QSpinBox>
 #include <QtGui/QApplication>
 #include <QtGui/QButtonGroup>
 #include <QtGui/QDialog>
@@ -40,6 +41,7 @@ private slots:
 
     void runInitialization();
     void stepForward();
+    void nStepsForward();
     void simulateTo();
     void simulateTo(double targetTime);
     void collectLastData(bool overWriteGeneration=true);
@@ -54,7 +56,6 @@ private slots:
 private:
     SystemContainer *mpSystem;
 
-    QVBoxLayout *mpVerticalLayout;
     QTabWidget *mpTabWidget;
     QWidget *mpTraceTab;
     QVBoxLayout *mpTraceTabLayout;
@@ -67,14 +68,15 @@ private:
     QPushButton *mpAddButton;
     QListWidget *mpComponentsList;
     QListWidget *mpChoosenVariablesList;
-    QWidget *mpButtonsWidget;
-    QHBoxLayout *mpHorizontalLayout;
     QLabel *mpCurrentStepLabel;
     QLabel *mTimeIndicatorLabel;
-    QSpacerItem *mpHorizontalSpacer;
+
     QPushButton *mpAbortButton;
+    QDoubleSpinBox *mpGotoTimeSpinBox;
     QPushButton *mpGotoButton;
     QPushButton *mpForwardButton;
+    QSpinBox *mpNumStepsSpinBox;
+    QPushButton *mpMultiForwardButton;
     QPushButton *mpInitializeButton;
 
     QStringList mVariables;

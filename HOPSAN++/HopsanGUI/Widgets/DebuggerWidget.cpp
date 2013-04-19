@@ -34,7 +34,7 @@ DebuggerWidget::DebuggerWidget(SystemContainer *pSystem, QWidget *parent) :
     mpSystem = pSystem;
 
     this->resize(800, 600);
-    mpVerticalLayout = new QVBoxLayout(this);
+    QVBoxLayout *pVerticalLayout = new QVBoxLayout(this);
 
 
     //Trace tab
@@ -67,42 +67,50 @@ DebuggerWidget::DebuggerWidget(SystemContainer *pSystem, QWidget *parent) :
     mpTabWidget->addTab(mpTraceTab, QString());
     mpTabWidget->addTab(mpVariablesTab, QString());
     mpTabWidget->setCurrentIndex(0);
-    mpVerticalLayout->addWidget(mpTabWidget);
+    pVerticalLayout->addWidget(mpTabWidget);
 
 
     //Buttons widget
-    mpButtonsWidget = new QWidget(this);
-    mpCurrentStepLabel = new QLabel(mpButtonsWidget);
-    mTimeIndicatorLabel = new QLabel(mpButtonsWidget);
+    QWidget *pButtonsWidget = new QWidget(this);
+    mpCurrentStepLabel = new QLabel(pButtonsWidget);
+    mTimeIndicatorLabel = new QLabel(pButtonsWidget);
     QFont font;
     font.setBold(true);
     font.setWeight(75);
     mTimeIndicatorLabel->setFont(font);
-    mpHorizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-    mpAbortButton = new QPushButton(mpButtonsWidget);
-    mpInitializeButton = new QPushButton(mpButtonsWidget);
-    mpGotoButton = new QPushButton(mpButtonsWidget);
-    mpForwardButton = new QPushButton(mpButtonsWidget);
+    mpAbortButton = new QPushButton(pButtonsWidget);
+    mpInitializeButton = new QPushButton(pButtonsWidget);
+    mpGotoTimeSpinBox = new QDoubleSpinBox(pButtonsWidget);
+    mpGotoButton = new QPushButton(pButtonsWidget);
+    mpForwardButton = new QPushButton(pButtonsWidget);
+    mpNumStepsSpinBox = new QSpinBox(pButtonsWidget);
+    mpMultiForwardButton = new QPushButton(pButtonsWidget);
 
-    mpHorizontalLayout = new QHBoxLayout(mpButtonsWidget);
-    mpHorizontalLayout->addWidget(mpCurrentStepLabel);
-    mpHorizontalLayout->addWidget(mTimeIndicatorLabel);
-    mpHorizontalLayout->addItem(mpHorizontalSpacer);
-    mpHorizontalLayout->addWidget(mpAbortButton);
-    mpHorizontalLayout->addWidget(mpInitializeButton);
-    mpHorizontalLayout->addWidget(mpGotoButton);
-    mpHorizontalLayout->addWidget(mpForwardButton);
+    QGridLayout *pButtonLayout = new QGridLayout(pButtonsWidget);
+    pButtonLayout->addWidget(mpCurrentStepLabel,0,0);
+    pButtonLayout->addWidget(mTimeIndicatorLabel,0,1);
+    //pButtonLayout->addItem(pHorizontalSpacer,0,2,2,1);
+    pButtonLayout->addWidget(mpAbortButton,0,3);
+    pButtonLayout->addWidget(mpInitializeButton,0,4);
+    pButtonLayout->addWidget(mpGotoButton,0,5);
+    pButtonLayout->addWidget(mpGotoTimeSpinBox,1,5);
+    pButtonLayout->addWidget(mpForwardButton,0,6);
+    pButtonLayout->addWidget(mpNumStepsSpinBox,1,7);
+    pButtonLayout->addWidget(mpMultiForwardButton,0,7);
+    pButtonLayout->setColumnMinimumWidth(2,40);
+    pButtonLayout->setColumnStretch(2,1);
 
-    mpVerticalLayout->addWidget(mpButtonsWidget);
+    pVerticalLayout->addWidget(pButtonsWidget);
 
-    connect(mpAbortButton,      SIGNAL(clicked()),                      this, SLOT(accept()));
-    connect(mpComponentsList,   SIGNAL(currentTextChanged(QString)),    this, SLOT(updatePortsList(QString)));
-    connect(mpPortsList,        SIGNAL(currentTextChanged(QString)),    this, SLOT(updateVariablesList(QString)));
-    connect(mpAddButton,        SIGNAL(clicked()),                      this, SLOT(addVariable()));
-    connect(mpRemoveButton,     SIGNAL(clicked()),                      this, SLOT(removeVariable()));
-    connect(mpInitializeButton, SIGNAL(clicked()),                      this, SLOT(runInitialization()));
-    connect(mpForwardButton,    SIGNAL(clicked()),                      this, SLOT(stepForward()));
-    connect(mpGotoButton,       SIGNAL(clicked()),                      this, SLOT(simulateTo()));
+    connect(mpAbortButton,        SIGNAL(clicked()),                      this, SLOT(accept()));
+    connect(mpComponentsList,     SIGNAL(currentTextChanged(QString)),    this, SLOT(updatePortsList(QString)));
+    connect(mpPortsList,          SIGNAL(currentTextChanged(QString)),    this, SLOT(updateVariablesList(QString)));
+    connect(mpAddButton,          SIGNAL(clicked()),                      this, SLOT(addVariable()));
+    connect(mpRemoveButton,       SIGNAL(clicked()),                      this, SLOT(removeVariable()));
+    connect(mpInitializeButton,   SIGNAL(clicked()),                      this, SLOT(runInitialization()));
+    connect(mpForwardButton,      SIGNAL(clicked()),                      this, SLOT(stepForward()));
+    connect(mpMultiForwardButton, SIGNAL(clicked()),                      this, SLOT(nStepsForward()));
+    connect(mpGotoButton,         SIGNAL(clicked()),                      this, SLOT(simulateTo()));
 
     retranslateUi();
     setInitData();
@@ -120,7 +128,10 @@ void DebuggerWidget::retranslateUi()
     mTimeIndicatorLabel->setText(tr("0"));
     mpAbortButton->setText(tr("Abort"));
     mpGotoButton->setText(tr("Go to time"));
-    mpForwardButton->setText(tr("Step forward"));
+    mpForwardButton->setText(tr("step forward"));
+    mpMultiForwardButton->setText(tr("n steps fwd."));
+    mpGotoTimeSpinBox->setToolTip(tr("Target time"));
+    mpNumStepsSpinBox->setToolTip(tr("Num steps"));
     mpInitializeButton->setText(tr("Initialize"));
 }
 
@@ -130,8 +141,20 @@ void DebuggerWidget::setInitData()
     mCurrentTime = gpMainWindow->getStartTimeFromToolBar();
 
     mpComponentsList->addItems(mpSystem->getModelObjectNames());
+    mpComponentsList->sortItems();
     mpGotoButton->setDisabled(true);
     mpForwardButton->setDisabled(true);
+    mpMultiForwardButton->setDisabled(true);
+
+    mpNumStepsSpinBox->setMinimum(0);
+    mpNumStepsSpinBox->setMaximum(INT_MAX);
+    mpNumStepsSpinBox->setValue(10);
+
+    mpGotoTimeSpinBox->setMinimum(getStartTime()+getTimeStep());
+    mpGotoTimeSpinBox->setValue(getStartTime()+getTimeStep());
+    mpGotoTimeSpinBox->setMaximum(getStopTime());
+    mpGotoTimeSpinBox->setDecimals( int(log10(1.0/getTimeStep())));
+    mpGotoTimeSpinBox->setSingleStep(getTimeStep());
 
     QString dateString = QDateTime::currentDateTime().toString(Qt::DefaultLocaleShortDate);
     qDebug() << "dateString = " << dateString.toUtf8();
@@ -153,6 +176,7 @@ void DebuggerWidget::updatePortsList(QString component)
     {
         mpPortsList->addItem(port->getName());
     }
+    mpPortsList->sortItems();
 }
 
 
@@ -164,6 +188,7 @@ void DebuggerWidget::updateVariablesList(QString port)
     NodeInfo info(mpSystem->getModelObject(component)->getPort(port)->getNodeType());
     QStringList variables = info.variableLabels;
     mpVariablesList->addItems(variables);
+    // Note we dont want to sort here, we want them to appear in the correct order
 }
 
 
@@ -220,6 +245,7 @@ void DebuggerWidget::runInitialization()
     {
         mpGotoButton->setEnabled(true);
         mpForwardButton->setEnabled(true);
+        mpMultiForwardButton->setEnabled(true);
     }
     collectLastData(false);
     updateTimeDisplay();
@@ -230,10 +256,15 @@ void DebuggerWidget::stepForward()
     simulateTo(getCurrentTime()+getTimeStep());
 }
 
+void DebuggerWidget::nStepsForward()
+{
+    simulateTo(getCurrentTime()+getTimeStep()*double(mpNumStepsSpinBox->value()));
+}
+
 void DebuggerWidget::simulateTo()
 {
-    double targetTime = QInputDialog::getDouble(this, "Hopsan Debugger", "Choose target time", getCurrentTime()+getTimeStep(), getCurrentTime()+getTimeStep(), getStopTime(), int(log10(1.0/getTimeStep())));
-    simulateTo(targetTime);
+    //double targetTime = QInputDialog::getDouble(this, "Hopsan Debugger", "Choose target time", getCurrentTime()+getTimeStep(), getCurrentTime()+getTimeStep(), getStopTime(), int(log10(1.0/getTimeStep())));
+    simulateTo(mpGotoTimeSpinBox->value());
 }
 
 void DebuggerWidget::simulateTo(double targetTime)
@@ -285,6 +316,8 @@ void DebuggerWidget::collectLastData(bool overWriteGeneration)
 void DebuggerWidget::updateTimeDisplay()
 {
     mTimeIndicatorLabel->setText(QString::number(getCurrentTime()));
+    mpGotoTimeSpinBox->setMinimum(getCurrentTime()+getTimeStep());
+    mpGotoTimeSpinBox->setValue(getCurrentTime()+getTimeStep());
 }
 
 double DebuggerWidget::getCurrentTime() const
