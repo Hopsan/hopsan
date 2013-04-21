@@ -29,6 +29,7 @@ class PlotTabWidget;
 class PlotCurve;
 class PlotMarker;
 class PlotLegend;
+class PainterWidget;
 
 //! @brief Plot window tab containing a plot area with plot curves
 class PlotTab : public QWidget
@@ -139,10 +140,10 @@ private:
     QwtPlotMagnifier *mpMagnifier[2];
     QwtPlotPanner *mpPanner[2];
     QList<PlotMarker *> mMarkerPtrs[2];
-    QRubberBand *mpHoverRect;
     PlotCurve *mpActivePlotCurve;
     QStringList mCurveColors;
     QStringList mUsedColors;
+    PainterWidget *mpPainterWidget;
 
     bool mIsSpecialPlot;
 
@@ -217,5 +218,22 @@ private:
     AxisLimitsT mAxisLimits[2];
     void rescaleAxistoIncludeLegendBuffer(const int plotId, const QwtPlot::Axis axisId, const double contentMin, const double contentMax, const AxisLimitsT &rLegendBufferOffset, AxisLimitsT &rAxisLimits);
 };
+
+
+class PainterWidget : public QWidget
+{
+public:
+    PainterWidget(QWidget *parent=0);
+    void createRect(int x, int y, int w, int h);
+    void clearRect();
+
+protected:
+    virtual void paintEvent(QPaintEvent *);
+
+private:
+    int mX, mY, mWidth, mHeight;
+    bool mErase;
+};
+
 
 #endif // PLOTTAB_H

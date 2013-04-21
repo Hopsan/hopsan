@@ -150,6 +150,9 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
         mpTabLayout->addWidget(mpQwtPlots[plotID]);
     }
 
+    mpPainterWidget = new PainterWidget(this);
+    mpTabLayout->addWidget(mpPainterWidget, 0, 0);
+
     connect(mpQwtPlots[FirstPlot], SIGNAL(legendClicked(QwtPlotItem*)), this, SLOT(updateLegend(QwtPlotItem *)));//QwtPlotItem *, bool)));
 
     for(int plotID=1; plotID<2; ++plotID)       //Hide all plots except first one by default
@@ -2685,11 +2688,7 @@ void PlotTab::dragEnterEvent(QDragEnterEvent *event)
     if (event->mimeData()->hasText())
     {
         // Create the hover rectangle (size will be changed by dragMoveEvent)
-        mpHoverRect = new QRubberBand(QRubberBand::Rectangle,this);
-        mpHoverRect->setGeometry(0, 0, this->width(), this->height());
-        mpHoverRect->setStyleSheet("selection-background-color: blue");
-        mpHoverRect->setWindowOpacity(1);
-        mpHoverRect->show();
+        mpPainterWidget->createRect(0,0,this->width(), this->height());
 
         event->acceptProposedAction();
     }
@@ -2705,17 +2704,17 @@ void PlotTab::dragMoveEvent(QDragMoveEvent *event)
     QCursor cursor;
     if(this->mapFromGlobal(cursor.pos()).y() > getPlot()->canvas()->height()*2.0/3.0+getPlot()->canvas()->y()+10 && getNumberOfCurves(FirstPlot) >= 1)
     {
-        mpHoverRect->setGeometry(getPlot()->canvas()->x()+9, getPlot()->canvas()->height()*2.0/3.0+getPlot()->canvas()->y()+10, getPlot()->canvas()->width(), getPlot()->canvas()->height()*1.0/3.0);
+        mpPainterWidget->createRect(getPlot()->canvas()->x(), getPlot()->canvas()->height()*2.0/3.0+getPlot()->canvas()->y(), getPlot()->canvas()->width(), getPlot()->canvas()->height()*1.0/3.0);
         mpParentPlotWindow->showHelpPopupMessage("Replace X-axis with selected variable.");
     }
     else if(this->mapFromGlobal(cursor.pos()).x() < getPlot()->canvas()->x()+9 + getPlot()->canvas()->width()/2)
     {
-        mpHoverRect->setGeometry(getPlot()->canvas()->x()+9, getPlot()->canvas()->y()+9, getPlot()->canvas()->width()/2, getPlot()->canvas()->height());
+        mpPainterWidget->createRect(getPlot()->canvas()->x(), getPlot()->canvas()->y(), getPlot()->canvas()->width()/2, getPlot()->canvas()->height());
         mpParentPlotWindow->showHelpPopupMessage("Add selected variable to left Y-axis.");
     }
     else
     {
-        mpHoverRect->setGeometry(getPlot()->canvas()->x()+9 + getPlot()->canvas()->width()/2, getPlot()->canvas()->y()+9, getPlot()->canvas()->width()/2, getPlot()->canvas()->height());
+        mpPainterWidget->createRect(getPlot()->canvas()->x() + getPlot()->canvas()->width()/2, getPlot()->canvas()->y(), getPlot()->canvas()->width()/2, getPlot()->canvas()->height());
         mpParentPlotWindow->showHelpPopupMessage("Add selected variable to right Y-axis.");
     }
     QWidget::dragMoveEvent(event);
@@ -2725,10 +2724,11 @@ void PlotTab::dragMoveEvent(QDragMoveEvent *event)
 //! @brief Defines what happens when user drags something out from the plot window.
 void PlotTab::dragLeaveEvent(QDragLeaveEvent *event)
 {
+    mpPainterWidget->clearRect();
+
     //Don't accept drag events to FFT and Bode plots
     if(mPlotCurvePtrs[0].size() > 0 && mPlotCurvePtrs[0][0]->getCurveType() != PortVariableType) return;
 
-    delete(mpHoverRect);
     QWidget::dragLeaveEvent(event);
 }
 
@@ -2738,13 +2738,13 @@ void PlotTab::dropEvent(QDropEvent *event)
 {
     QWidget::dropEvent(event);
 
+    mpPainterWidget->clearRect();
+
     //Don't accept drag events to FFT and Bode plots
     if(mPlotCurvePtrs[0].size() > 0 && mPlotCurvePtrs[0][0]->getCurveType() != PortVariableType) return;
 
     if (event->mimeData()->hasText())
     {
-        delete(mpHoverRect);
-
         QString mimeText = event->mimeData()->text();
         if(mimeText.startsWith("HOPSANPLOTDATA:"))
         {
@@ -2916,4 +2916,48 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
         insertMarker(actionToCurveMap.find(selectedAction).value(), event->pos());
     }
 
+}
+
+
+//! @brief Constructor for painter widget, used for painting transparent rectangles when dragging things to plot tabs
+PainterWidget::PainterWidget(QWidget *parent)
+    : QWidget(parent)
+{
+    setMouseTracking(true);
+    setAttribute(Qt::WA_TransparentForMouseEvents);
+}
+
+
+//! @brief Creates a rectangle with specified dimensions
+void PainterWidget::createRect(int x, int y, int w, int h)
+{
+    mX = x;
+    mY = y;
+    mWidth = w;
+    mHeight = h;
+    mErase=false;
+    update();
+}
+
+
+//! @brief Removes any previously drawn rectangles
+void PainterWidget::clearRect()
+{
+    mErase=true;
+    update();
+}
+
+
+//! @brief Paint event, does the actual drawing
+void PainterWidget::paintEvent(QPaintEvent *)
+{
+    QPainter painter(this);
+    if(!mErase)
+    {
+        QBrush  brush(Qt::blue);		// yellow solid pattern
+        painter.setBrush( brush );		// set the yellow brush
+        painter.setOpacity(0.5);
+        painter.setPen( Qt::NoPen );		// do not draw outline
+        painter.drawRect(mX,mY,mWidth,mHeight);	// draw filled rectangle
+    }
 }
