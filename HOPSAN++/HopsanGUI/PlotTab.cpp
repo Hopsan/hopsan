@@ -151,6 +151,7 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
     }
 
     mpPainterWidget = new PainterWidget(this);
+    mpPainterWidget->clearRect();
     mpTabLayout->addWidget(mpPainterWidget, 0, 0);
 
     connect(mpQwtPlots[FirstPlot], SIGNAL(legendClicked(QwtPlotItem*)), this, SLOT(updateLegend(QwtPlotItem *)));//QwtPlotItem *, bool)));
