@@ -31,6 +31,17 @@ class PlotMarker;
 class PlotLegend;
 class PainterWidget;
 
+class HopQwtPlot : public QwtPlot
+{
+    Q_OBJECT
+public:
+    HopQwtPlot(QWidget *pParent=0);
+signals:
+    void resized();
+protected:
+    void resizeEvent( QResizeEvent *e );
+};
+
 //! @brief Plot window tab containing a plot area with plot curves
 class PlotTab : public QWidget
 {
@@ -63,6 +74,7 @@ public:
     bool isGridVisible();
     bool isSpecialPlot();
     bool hasLogarithmicBottomAxis();
+    bool isZoomed(const int plotId) const;
 
     void showPlot(HopsanPlotIDEnumT plotID, bool visible);
     void setBottomAxisLogarithmic(bool value);
@@ -84,7 +96,7 @@ protected:
     virtual void contextMenuEvent(QContextMenuEvent *);
 
 public slots:
-    void rescaleToCurves();
+    void rescaleAxesToCurves();
 
     void openLegendSettingsDialog();
     void openAxisSettingsDialog();
@@ -208,6 +220,7 @@ private:
     QDoubleSpinBox *mpYLmaxSpinBox;
     QDoubleSpinBox *mpYRminSpinBox;
     QDoubleSpinBox *mpYRmaxSpinBox;
+
     typedef struct _AxisLimits // Persistent axis limits
     {
         double min, max;
@@ -215,8 +228,9 @@ private:
     AxisLimitsT mXAxisLimits[2];
     AxisLimitsT mYLAxisLimits[2];
     AxisLimitsT mYRAxisLimits[2];
-    AxisLimitsT mAxisLimits[2];
-    void rescaleAxistoIncludeLegendBuffer(const int plotId, const QwtPlot::Axis axisId, const double contentMin, const double contentMax, const AxisLimitsT &rLegendBufferOffset, AxisLimitsT &rAxisLimits);
+
+    void rescaleAxistoIncludeLegendBufferOffset(const int plotId, const QwtPlot::Axis axisId, const AxisLimitsT &rLegendBufferOffset, AxisLimitsT &rAxisLimits);
+    void calculateLegendBufferOffsets(const int plotId, AxisLimitsT &rLeftLegendOffset, AxisLimitsT &rRightLegendOffset);
 };
 
 

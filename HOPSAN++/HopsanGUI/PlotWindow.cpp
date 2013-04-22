@@ -724,7 +724,7 @@ void PlotWindow::performFrequencyAnalysisFromDialog()
         getCurrentPlotTab()->getPlot(FirstPlot)->setAxisScaleEngine(QwtPlot::yLeft, new QwtLogScaleEngine(10));
         getCurrentPlotTab()->getPlot(FirstPlot)->setAxisScaleEngine(QwtPlot::xBottom, new QwtLogScaleEngine(10));
     }
-    getCurrentPlotTab()->rescaleToCurves();
+    getCurrentPlotTab()->rescaleAxesToCurves();
 }
 
 
@@ -940,7 +940,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
                                               getCurrentPlotTab(), FirstPlot, NyquistType);
     getCurrentPlotTab()->addCurve(pNyquistCurve2);
     getCurrentPlotTab()->getPlot()->replot();
-    getCurrentPlotTab()->rescaleToCurves();
+    getCurrentPlotTab()->rescaleAxesToCurves();
     getCurrentPlotTab()->updateGeometry();
 
     addPlotTab("Bode Diagram");
@@ -961,7 +961,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
 
     getCurrentPlotTab()->setBottomAxisLogarithmic(true);
 
-    getCurrentPlotTab()->rescaleToCurves();
+    getCurrentPlotTab()->rescaleAxesToCurves();
 
 
     //Add a curve marker at the amplitude margin

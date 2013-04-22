@@ -498,7 +498,7 @@ void PlotCurve::setGeneration(int generation)
     }
 
     //! @todo should not all updates happen automatically from one command
-    mpParentPlotTab->rescaleToCurves();
+    mpParentPlotTab->rescaleAxesToCurves();
     mpParentPlotTab->update();
     updateCurve();
     updatePlotInfoBox();
@@ -956,7 +956,7 @@ void PlotCurve::openScaleDialog()
 void PlotCurve::updateScaleFromDialog()
 {
     setScaling(mpXScaleSpinBox->value(), mpYScaleSpinBox->value(), mpXOffsetSpinBox->value(), mpYOffsetSpinBox->value());
-    mpParentPlotTab->rescaleToCurves();
+    mpParentPlotTab->rescaleAxesToCurves();
 }
 
 
@@ -973,7 +973,7 @@ void PlotCurve::updateToNewGeneration()
     if(mAutoUpdate)     //Only change the generation if auto update is on
         setGeneration(-1);
     updatePlotInfoBox();    //Update the plot info box regardless of auto update setting, to show number of available generations correctly
-    mpParentPlotTab->rescaleToCurves();
+    mpParentPlotTab->rescaleAxesToCurves();
 }
 
 void PlotCurve::updatePlotInfoBox()
