@@ -510,7 +510,8 @@ void Component::unRegisterParameter(const string name)
 void Component::setDesiredTimestep(const double timestep)
 {
     setInheritTimestep(false);
-    setTimestep(timestep);
+    mDesiredTimestep = timestep;
+    //setTimestep(timestep);
     //addWarningMessage("Function setDesiredTimestep() is only available on subsystem components.");
 }
 

@@ -54,6 +54,9 @@ public:
     void executeAverageCommand(QString cmd);
     void executeMinCommand(QString cmd);
     void executeMaxCommand(QString cmd);
+    void executeChangeTimestepCommand(QString cmd);
+    void executeInheritTimestepCommand(QString cmd);
+    void executeRandomCommand(QString cmd);
 
     //Help functions
     void changePlotVariables(QString cmd, int axis);
@@ -79,6 +82,7 @@ public:
     int getNumberOfArguments(const QString cmd) const;
     QString getArgument(const QString cmd, const int idx) const;
     void abortHCOM();
+    void returnScalar(const double retval);
 
 private:
     TerminalConsole *mpConsole;
@@ -97,6 +101,8 @@ private:
 
     //Local variables
     QMap<QString, double> mLocalVars;
+
+    VariableType mRetvalType;
 };
 
 

@@ -2027,7 +2027,7 @@ void ComponentSystem::setTimestep(const double timestep)
 
     for (size_t s=0; s < mComponentSignalptrs.size(); ++s)
     {
-        if (!(mComponentSignalptrs[s]->isComponentSystem()) && mComponentSignalptrs[s]->doesInheritTimestep())
+        if (!(mComponentSignalptrs[s]->isComponentSystem())/* && mComponentSignalptrs[s]->doesInheritTimestep()*/)
         {
             mComponentSignalptrs[s]->setTimestep(timestep);
         }
@@ -2036,16 +2036,16 @@ void ComponentSystem::setTimestep(const double timestep)
     //C components
     for (size_t c=0; c < mComponentCptrs.size(); ++c)
     {
-        if (!(mComponentCptrs[c]->isComponentSystem()) && mComponentCptrs[c]->doesInheritTimestep())
+        if (!(mComponentCptrs[c]->isComponentSystem())/* && mComponentCptrs[c]->doesInheritTimestep()*/)
         {
             mComponentCptrs[c]->setTimestep(timestep);
         }
     }
 
     //Q components
-    for (size_t q=0; q < mComponentQptrs.size(); ++q && mComponentQptrs[q]->doesInheritTimestep())
+    for (size_t q=0; q < mComponentQptrs.size(); ++q)
     {
-        if (!(mComponentQptrs[q]->isComponentSystem()))
+        if (!(mComponentQptrs[q]->isComponentSystem())/* && mComponentQptrs[q]->doesInheritTimestep()*/)
         {
             mComponentQptrs[q]->setTimestep(timestep);
         }
@@ -2059,8 +2059,8 @@ void ComponentSystem::adjustTimestep(vector<Component*> componentPtrs)
 {
     for (size_t c=0; c < componentPtrs.size(); ++c)
     {
-        if (componentPtrs[c]->isComponentSystem())
-        {
+  //      if (componentPtrs[c]->isComponentSystem())
+  //      {
             if(componentPtrs[c]->doesInheritTimestep()) //Inherit timestep from parent system
             {
                 componentPtrs[c]->setTimestep(mTimestep);
@@ -2083,11 +2083,11 @@ void ComponentSystem::adjustTimestep(vector<Component*> componentPtrs)
                 }
                 componentPtrs[c]->setTimestep(subTs);
             }
-        }
-        else
-        {
-            componentPtrs[c]->setTimestep(mTimestep);
-        }
+//        }
+//        else
+//        {
+//            componentPtrs[c]->setTimestep(mTimestep);
+//        }
     }
 }
 

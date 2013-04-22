@@ -26,6 +26,8 @@
 HcomHandler::HcomHandler(TerminalConsole *pConsole)
 {
     mAborted = false;
+    mLocalVars.insert("ans", 0);
+    mRetvalType = Scalar;
 
     mpConsole = pConsole;
 
@@ -275,6 +277,27 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole)
     maxCmd.help.append("Usage: max [variable]");
     maxCmd.fnc = &HcomHandler::executeMaxCommand;
     mCmdList << maxCmd;
+
+    HcomCommand chtsCmd;
+    chtsCmd.cmd = "chts";
+    chtsCmd.description.append("Change time step of sub-component");
+    chtsCmd.help.append("Usage: chts [comp timestep]");
+    chtsCmd.fnc = &HcomHandler::executeChangeTimestepCommand;
+    mCmdList << chtsCmd;
+
+    HcomCommand intsCmd;
+    intsCmd.cmd = "ints";
+    intsCmd.description.append("Inherit time step of sub-component from system time step");
+    intsCmd.help.append("Usage: ints [comp]");
+    intsCmd.fnc = &HcomHandler::executeInheritTimestepCommand;
+    mCmdList << intsCmd;
+
+    HcomCommand randCmd;
+    randCmd.cmd = "rand";
+    randCmd.description.append("Calculates a random number between min and max");
+    randCmd.help.append("Usage: rand [min max]");
+    randCmd.fnc = &HcomHandler::executeRandomCommand;
+    mCmdList << randCmd;
 }
 
 
@@ -392,30 +415,6 @@ void HcomHandler::executeDisplayParameterCommand(QString cmd)
         output.append(getParameterValue(parameters[p]));
         mpConsole->print(output);
     }
-
-
-
-
-
-//    cmd.remove("\"");
-//    QStringList splitCmd = cmd.split(".");
-//    if(splitCmd.size() == 2)
-//    {
-//        SystemContainer *pCurrentSystem = gpMainWindow->mpProjectTabs->getCurrentTab()->getTopLevelSystem();
-//        if(!pCurrentSystem) { return; }
-//        ModelObject *pModelObject = pCurrentSystem->getModelObject(splitCmd[0]);
-//        if(!pModelObject) { return; }
-//        QString parameterValue = pModelObject->getParameterValue(splitCmd[1]);
-//        if(parameterValue.isEmpty())
-//        {
-//            parameterValue = "Parameter " + splitCmd[1] + " not found.";
-//        }
-//        mpConsole->print(parameterValue);
-//    }
-//    else
-//    {
-//        mpConsole->printErrorMessage("Wrong number of arguments.","",false);
-//    }
 }
 
 
@@ -755,7 +754,7 @@ void HcomHandler::executePeekCommand(QString cmd)
         double r = pData->peekData(id, err);
         if (err.isEmpty())
         {
-            mpConsole->print(QString::number(r));
+            returnScalar(r);
         }
         else
         {
@@ -1229,7 +1228,7 @@ void HcomHandler::executeAverageCommand(QString cmd)
     SharedLogVariableDataPtrT pData = getVariablePtr(variable);
     if(pData)
     {
-        mpConsole->print(QString::number(pData->averageOfData()));
+        returnScalar(pData->averageOfData());
     }
     else
     {
@@ -1246,12 +1245,12 @@ void HcomHandler::executeMinCommand(QString cmd)
         mpConsole->print("Wrong number of arguments.");
         return;
     }
-    QString variable = splitWithRespectToQuotations(cmd, ' ')[0];
+    QString variable = split[0];
 
     SharedLogVariableDataPtrT pData = getVariablePtr(variable);
     if(pData)
     {
-        mpConsole->print(QString::number(pData->minOfData()));
+        returnScalar(pData->minOfData());
     }
     else
     {
@@ -1268,17 +1267,96 @@ void HcomHandler::executeMaxCommand(QString cmd)
         mpConsole->print("Wrong number of arguments.");
         return;
     }
-    QString variable = splitWithRespectToQuotations(cmd, ' ')[0];
+    QString variable = split[0];
 
     SharedLogVariableDataPtrT pData = getVariablePtr(variable);
     if(pData)
     {
-        mpConsole->print(QString::number(pData->maxOfData()));
+        returnScalar(pData->maxOfData());
     }
     else
     {
         mpConsole->print("Data variable not found");
     }
+}
+
+
+void HcomHandler::executeChangeTimestepCommand(QString cmd)
+{
+    QStringList split = splitWithRespectToQuotations(cmd, ' ');
+    if(split.size() != 2)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        return;
+    }
+    QString component = split[0];
+    QString timeStep = split[1];
+
+    VariableType retType;
+    bool isNumber;
+    double value = evaluateExpression(split[1], &retType, &isNumber).toDouble();
+    if(!isNumber)
+    {
+        mpConsole->printErrorMessage("Second argument is not a number.", "", false);
+    }
+    else if(!gpMainWindow->mpProjectTabs->getCurrentContainer()->hasModelObject(component))
+    {
+        mpConsole->printErrorMessage("Component not found.", "", false);
+    }
+    else
+    {
+        gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->setDesiredTimeStep(component, value);
+        gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->setInheritTimeStep(false);
+        mpConsole->print("Setting time step of "+component+" to "+QString::number(value));
+    }
+}
+
+
+void HcomHandler::executeInheritTimestepCommand(QString cmd)
+{
+    QStringList split = splitWithRespectToQuotations(cmd, ' ');
+    if(split.size() != 1)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        return;
+    }
+    QString component = split[0];
+
+    if(!gpMainWindow->mpProjectTabs->getCurrentContainer()->hasModelObject(component))
+    {
+        mpConsole->printErrorMessage("Component not found.", "", false);
+    }
+    else
+    {
+        gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->setInheritTimeStep(component, true);
+        mpConsole->print("Setting time step of "+component+" to inherited.");
+    }
+}
+
+void HcomHandler::executeRandomCommand(QString cmd)
+{
+    QStringList split = splitWithRespectToQuotations(cmd, ' ');
+    if(split.size() != 2)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        return;
+    }
+
+    VariableType retType;
+    bool isNumber;
+    double min = evaluateExpression(split[0], &retType, &isNumber).toDouble();
+    if(!isNumber)
+    {
+        mpConsole->printErrorMessage("Second argument is not a number.", "", false);
+    }
+    double max = evaluateExpression(split[1], &retType, &isNumber).toDouble();
+    if(!isNumber)
+    {
+        mpConsole->printErrorMessage("Second argument is not a number.", "", false);
+    }
+
+    double rd = rand() / (double)RAND_MAX;          //Random value between  0 and 1
+    returnScalar(min+rd*(max-min));    //Random value between min and max
 }
 
 
@@ -1378,6 +1456,13 @@ void HcomHandler::removePlotCurves(int axis)
 
 QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, bool *evalOk)
 {
+//    if(expr == "ans")
+//    {
+//        *returnType = mRetvalType;
+//        *evalOk = true;
+//        return mLocalVars.find(a);
+//    }
+
     *evalOk = true;
     *returnType = Scalar;
 
@@ -2041,6 +2126,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
         {
             mLocalVars.insert(left, value.toDouble());
             mpConsole->print("Assigning "+left+" with "+value);
+            mLocalVars.insert("ans", value.toDouble());
             return true;
         }
         else if(evalOk && type==DataVector)
@@ -2069,11 +2155,12 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
         QString value=evaluateExpression(cmd, &type, &evalOk);
         if(evalOk && type==Scalar)
         {
-            mpConsole->print(value);
+            returnScalar(value.toDouble());
             return true;
         }
         else if(evalOk && type==DataVector)
         {
+            mRetvalType = DataVector;
             mpConsole->print(value);
             return true;
         }
@@ -2297,4 +2384,11 @@ QString HcomHandler::getArgument(const QString cmd, const int idx) const
 void HcomHandler::abortHCOM()
 {
     mAborted = true;
+}
+
+void HcomHandler::returnScalar(const double retval)
+{
+    mLocalVars.insert("ans", retval);
+    mRetvalType = Scalar;
+    mpConsole->print(QString::number(retval));
 }
