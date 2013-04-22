@@ -221,7 +221,7 @@ void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSyste
     string subTypeName = readStringAttribute(pComponentNode, "subtypename", "");
     string displayName = readStringAttribute(pComponentNode, "name", typeName);
 
-    Component *pComp = pHopsanEssentials->createComponent(typeName);
+    Component *pComp = pHopsanEssentials->createComponent(typeName.c_str());
     if (pComp != 0)
     {
         pComp->setName(displayName);

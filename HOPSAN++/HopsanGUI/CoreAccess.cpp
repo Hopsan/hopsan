@@ -385,16 +385,31 @@ void CoreSystemAccess::setDesiredTimeStep(double timestep)
     mpCoreComponentSystem->setDesiredTimestep(timestep);
 }
 
+void CoreSystemAccess::setDesiredTimeStep(QString compname, double timestep)
+{
+    mpCoreComponentSystem->getSubComponent(compname.toStdString())->setDesiredTimestep(timestep);
+}
+
 
 void CoreSystemAccess::setInheritTimeStep(bool inherit)
 {
     mpCoreComponentSystem->setInheritTimestep(inherit);
 }
 
+void CoreSystemAccess::setInheritTimeStep(QString compname, bool inherit)
+{
+    mpCoreComponentSystem->getSubComponent(compname.toStdString())->setInheritTimestep(inherit);
+}
+
 
 bool CoreSystemAccess::doesInheritTimeStep()
 {
     return mpCoreComponentSystem->doesInheritTimestep();
+}
+
+bool CoreSystemAccess::doesInheritTimeStep(QString compname)
+{
+    return mpCoreComponentSystem->getSubComponent(compname.toStdString())->doesInheritTimestep();
 }
 
 
@@ -699,7 +714,7 @@ void CoreSystemAccess::finalize()
 QString CoreSystemAccess::createComponent(QString type, QString name)
 {
     //qDebug() << "createComponent: " << "type: " << type << " desired name:  " << name << " in system: " << this->getRootSystemName();
-    hopsan::Component *pCoreComponent = gHopsanCore.createComponent(type.toStdString());
+    hopsan::Component *pCoreComponent = gHopsanCore.createComponent(type.toStdString().c_str());
     if (pCoreComponent != 0)
     {
         mpCoreComponentSystem->addComponent(pCoreComponent);

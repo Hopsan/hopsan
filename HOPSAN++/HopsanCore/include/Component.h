@@ -85,9 +85,9 @@ public:
     virtual bool initialize(const double startT, const double stopT);
     virtual void simulate(const double stopT);
     virtual void finalize(const double startT, const double Ts);
-    virtual void setDesiredTimestep(const double timestep);
-    virtual void setInheritTimestep(const bool inherit=true);
-    virtual bool doesInheritTimestep() const;
+    void setDesiredTimestep(const double timestep);
+    void setInheritTimestep(const bool inherit=true);
+    bool doesInheritTimestep() const;
     virtual bool checkModelBeforeSimulation();
 
     // Name and type

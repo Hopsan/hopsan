@@ -199,8 +199,12 @@ public:
     void setLoadStartValues(bool load);
 
     void setDesiredTimeStep(double timestep);
+    void setDesiredTimeStep(QString compname, double timestep);
     void setInheritTimeStep(bool inherit);
+    void setInheritTimeStep(QString compname, bool inherit);
     bool doesInheritTimeStep();
+    bool doesInheritTimeStep(QString compname);
+
     double getDesiredTimeStep();
     size_t getNSamples();
 

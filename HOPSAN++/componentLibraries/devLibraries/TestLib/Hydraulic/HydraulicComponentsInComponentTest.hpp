@@ -43,7 +43,7 @@ namespace hopsan {
         //! @returns Pointer to created component or dummy
         Component* createSafeComponent(const std::string type)
         {
-            Component* pComp = getHopsanEssentials()->createComponent(type);
+            Component* pComp = getHopsanEssentials()->createComponent(type.c_str());
             if (pComp == 0)
             {
                 addErrorMessage("Could not create subcomponent: " + type);

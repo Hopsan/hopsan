@@ -104,16 +104,16 @@ std::string HopsanEssentials::getCoreVersion()
 
 //! Creates a component with the specified key-value and returns a pointer to this component.
 //! @param [in] rString The
-Component* HopsanEssentials::createComponent(const string &rTypeName)
+Component* HopsanEssentials::createComponent(const char* typeName)
 {
-    addLogMess(rTypeName + "::createComponent");
-    Component* pComp = mpComponentFactory->createInstance(rTypeName.c_str());
+    addLogMess(std::string(typeName) + "::createComponent");
+    Component* pComp = mpComponentFactory->createInstance(typeName);
     if (pComp)
     {
         pComp->mpHopsanEssentials = this;
         pComp->mpMessageHandler = mpMessageHandler; //!< @todo maybe it should only be in HopsanEssentials but then the core message handler will be accesible in main program also (maybe not a big deal)
-        pComp->setTypeName(rTypeName);
-        pComp->setName(rTypeName);
+        pComp->setTypeName(typeName);
+        pComp->setName(typeName);
         pComp->configure();
     }
     else

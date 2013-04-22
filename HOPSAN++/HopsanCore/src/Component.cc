@@ -61,6 +61,7 @@ Component::Component()
     mSubTypeName = "";
     mName = "NoNameSetYet";
 
+    mInheritTimestep = true;
     mTimestep = 0.001;
 
     mpSystemParent = 0;
@@ -506,22 +507,26 @@ void Component::unRegisterParameter(const string name)
 }
 
 
-void Component::setDesiredTimestep(const double /*timestep*/)
+void Component::setDesiredTimestep(const double timestep)
 {
-    addWarningMessage("Function setDesiredTimestep() is only available on subsystem components.");
+    setInheritTimestep(false);
+    setTimestep(timestep);
+    //addWarningMessage("Function setDesiredTimestep() is only available on subsystem components.");
 }
 
 
-void Component::setInheritTimestep(const bool /*inherit*/)
+void Component::setInheritTimestep(const bool inherit)
 {
-    addWarningMessage("Function setInheritTimestep() is only available on subsystem components.");
+    mInheritTimestep = inherit;
+    //addWarningMessage("Function setInheritTimestep() is only available on subsystem components.");
 }
 
 
 bool Component::doesInheritTimestep() const
 {
-    addWarningMessage("Function doesInheritTimestep() is only available on subsystem components.");
-    return true;       //Components always inherit timestep, so let's return true
+    return mInheritTimestep;
+    //addWarningMessage("Function doesInheritTimestep() is only available on subsystem components.");
+    //return true;       //Components always inherit timestep, so let's return true
 }
 
 

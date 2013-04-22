@@ -55,7 +55,7 @@ public:
     std::string getCoreVersion();
 
     // Component creation
-    Component* createComponent(const std::string &rTypeName);
+    Component* createComponent(const char *typeName);
     ComponentSystem* createComponentSystem();
     void removeComponent(Component *pComponent);
     void removeNode(Node *pNode);

@@ -181,7 +181,8 @@ SOURCES += main.cpp \
     DesktopHandler.cpp \
     Dialogs/ComponentPropertiesDialog3.cpp \
     Dialogs/EditComponentDialog.cpp \
-    Widgets/DebuggerWidget.cpp
+    Widgets/DebuggerWidget.cpp \
+    HcomHandler.cpp
 
 
 
@@ -255,7 +256,8 @@ HEADERS += MainWindow.h \
     DesktopHandler.h \
     Dialogs/ComponentPropertiesDialog3.h \
     Dialogs/EditComponentDialog.h \
-    Widgets/DebuggerWidget.h
+    Widgets/DebuggerWidget.h \
+    HcomHandler.h
 
 OTHER_FILES += \
     ../hopsandefaults \
