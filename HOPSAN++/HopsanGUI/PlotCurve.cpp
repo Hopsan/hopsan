@@ -12,7 +12,7 @@
 #include "LogDataHandler.h"
 
 #include <limits>
-const double DBLMAX = std::numeric_limits<double>::max();
+const double DoubleMax = std::numeric_limits<double>::max();
 
 CustomXDataDropEdit::CustomXDataDropEdit(QWidget *pParent)
     : QLineEdit(pParent)
@@ -902,7 +902,7 @@ void PlotCurve::openScaleDialog()
 
     QLabel *pXScaleLabel = new QLabel("Time Axis Scale: ", pScaleDialog);
     mpXScaleSpinBox = new QDoubleSpinBox(pScaleDialog);
-    mpXScaleSpinBox->setRange(-DBLMAX, DBLMAX);
+    mpXScaleSpinBox->setRange(-DoubleMax, DoubleMax);
     mpXScaleSpinBox->setDecimals(10);
     mpXScaleSpinBox->setSingleStep(0.1);
     mpXScaleSpinBox->setValue(mPlotScaleX);
@@ -910,7 +910,7 @@ void PlotCurve::openScaleDialog()
     QLabel *pXOffsetLabel = new QLabel("Time Axis Offset: ", pScaleDialog);
     mpXOffsetSpinBox = new QDoubleSpinBox(pScaleDialog);
     mpXOffsetSpinBox->setDecimals(10);
-    mpXOffsetSpinBox->setRange(-DBLMAX, DBLMAX);
+    mpXOffsetSpinBox->setRange(-DoubleMax, DoubleMax);
     mpXOffsetSpinBox->setSingleStep(0.1);
     mpXOffsetSpinBox->setValue(mPlotOffsetX);
 
@@ -918,13 +918,13 @@ void PlotCurve::openScaleDialog()
     mpYScaleSpinBox = new QDoubleSpinBox(pScaleDialog);
     mpYScaleSpinBox->setSingleStep(0.1);
     mpYScaleSpinBox->setDecimals(10);
-    mpYScaleSpinBox->setRange(-DBLMAX, DBLMAX);
+    mpYScaleSpinBox->setRange(-DoubleMax, DoubleMax);
     mpYScaleSpinBox->setValue(mPlotScaleY);
 
     QLabel *pYOffsetLabel = new QLabel("Y-Axis Offset: ", pScaleDialog);
     mpYOffsetSpinBox = new QDoubleSpinBox(pScaleDialog);
     mpYOffsetSpinBox->setDecimals(10);
-    mpYOffsetSpinBox->setRange(-DBLMAX, DBLMAX);
+    mpYOffsetSpinBox->setRange(-DoubleMax, DoubleMax);
     mpYOffsetSpinBox->setSingleStep(0.1);
     mpYOffsetSpinBox->setValue(mPlotOffsetY);
 

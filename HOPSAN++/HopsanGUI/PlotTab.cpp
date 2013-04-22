@@ -30,7 +30,8 @@
 
 #include <cmath>
 
-const double DBLMAX = std::numeric_limits<double>::max();
+const double DoubleMax = std::numeric_limits<double>::max();
+const double DoubleEps = std::numeric_limits<double>::epsilon();
 const double in2mm = 25.4;
 
 //! @brief Constructor for plot tabs.
@@ -510,26 +511,24 @@ void PlotTab::rescaleAxesToCurves()
     //Cycle plots and rescale each of them
     for(int plotID=0; plotID<2; ++plotID)
     {
+        // Ignore if zoomed
         if (!isZoomed(plotID))
         {
-            double xMin, xMax, yMinLeft, yMaxLeft, yMinRight, yMaxRight;
+            AxisLimitsT xAxisLim, ylAxisLim, yrAxisLim;
 
-            // Cycle plots, ignore if no curves or if zoomed
+            // Cycle plots, ignore if no curves
             if(!mPlotCurvePtrs[plotID].empty())
             {
-                xMin=0;         //Min value for X axis
-                xMax=10;        //Max value for X axis
-                yMinLeft=DBLMAX;     //Min value for left Y axis
-                yMaxLeft=-DBLMAX;    //Max value for left Y axis
-                yMinRight=DBLMAX;    //Min value for right Y axis
-                yMaxRight=-DBLMAX;   //Max value for right Y axis
+                xAxisLim.min=0;           //Min value for X axis
+                xAxisLim.max=10;          //Max value for X axis
+                ylAxisLim.min=DoubleMax;     //Min value for left Y axis
+                ylAxisLim.max=-DoubleMax;    //Max value for left Y axis
+                yrAxisLim.min=DoubleMax;     //Min value for right Y axis
+                yrAxisLim.max=-DoubleMax;    //Max value for right Y axis
 
-                bool foundFirstLeft = false;        //Tells that first left axis curve was found
-                bool foundFirstRight = false;       //Tells that first right axis curve was found
-
-                //Initialize values for X axis by using the first curve
-                xMin=mPlotCurvePtrs[plotID].first()->minXValue();
-                xMax=mPlotCurvePtrs[plotID].first()->maxXValue();
+                // Initialize values for X axis by using the first curve
+                xAxisLim.min=mPlotCurvePtrs[plotID].first()->minXValue();
+                xAxisLim.max=mPlotCurvePtrs[plotID].first()->maxXValue();
 
                 bool someoneHasCustomXdata = false;
                 for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
@@ -542,89 +541,39 @@ void PlotTab::rescaleAxesToCurves()
                         setTabOnlyCustomXVector(mPlotCurvePtrs[plotID].at(i)->getCustomXData());
                     }
 
-                    //! @todo we could speed this up by not checking min max values in case an axis is set to be locked
-                    //! @todo min max should be decided by the curves them self when their data is set or changed, to avoid checking every curve every time
                     if(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yLeft)
                     {
-                        if(foundFirstLeft == false)     //First left-axis curve, use min and max Y values as initial values
+                        if(mLeftAxisLogarithmic)
                         {
-                            if(mLeftAxisLogarithmic)    //Only consider positive values if logarithmic scaling (negative ones will be discarded by Qwt)
-                            {
-                                yMinLeft = findSmallestValueGreaterThanZero(mPlotCurvePtrs[plotID].at(i)->getDataVector());
-                            }
-                            else
-                            {
-                                yMinLeft=mPlotCurvePtrs[plotID].at(i)->minYValue();
-                            }
-                            yMaxLeft=mPlotCurvePtrs[plotID].at(i)->maxYValue();
-                            foundFirstLeft = true;
+                            //Only consider positive values if logarithmic scaling (negative ones will be discarded by Qwt)
+                            double minVal = qMax(mPlotCurvePtrs[plotID].at(i)->minYValue(), DoubleEps);
+                            ylAxisLim.min = qMin(ylAxisLim.min, minVal);
                         }
-                        else    //Compare min/max Y value with previous and change if the new one is smaller/larger
+                        else
                         {
-                            if(mLeftAxisLogarithmic)    //Only consider positive values if logarithmic scaling (negative ones will be discarded by Qwt)
-                            {
-                                if(findSmallestValueGreaterThanZero(mPlotCurvePtrs[plotID].at(i)->getDataVector()) < yMinLeft)
-                                {
-                                    yMinLeft=findSmallestValueGreaterThanZero(mPlotCurvePtrs[plotID].at(i)->getDataVector());
-                                }
-                            }
-                            else
-                            {
-                                if(mPlotCurvePtrs[plotID].at(i)->minYValue() < yMinLeft)
-                                {
-                                    yMinLeft=mPlotCurvePtrs[plotID].at(i)->minYValue();
-                                }
-                            }
-                            if(mPlotCurvePtrs[plotID].at(i)->maxYValue() > yMaxLeft)
-                            {
-                                yMaxLeft=mPlotCurvePtrs[plotID].at(i)->maxYValue();
-                            }
+                            ylAxisLim.min = qMin( ylAxisLim.min, mPlotCurvePtrs[plotID].at(i)->minYValue());
                         }
+                        ylAxisLim.max = qMax(ylAxisLim.max, mPlotCurvePtrs[plotID].at(i)->maxYValue());
                     }
 
                     if(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yRight)
                     {
-                        if(foundFirstRight == false)    //First right-axis curve, use min and max Y values as initial values
+                        if(mRightAxisLogarithmic)
                         {
-                            if(mRightAxisLogarithmic)   //Only consider positive values if logarithmic scaling (negative ones will be discarded by Qwt)
-                            {
-                                yMinRight = findSmallestValueGreaterThanZero(mPlotCurvePtrs[plotID].at(i)->getDataVector());
-                            }
-                            else
-                            {
-                                yMinRight=mPlotCurvePtrs[plotID].at(i)->minYValue();
-                            }
-                            yMaxRight=mPlotCurvePtrs[plotID].at(i)->maxYValue();
-                            foundFirstRight = true;
+                            //Only consider positive values if logarithmic scaling (negative ones will be discarded by Qwt)
+                            double minVal = qMax(mPlotCurvePtrs[plotID].at(i)->minYValue(), DoubleEps);
+                            yrAxisLim.min = qMin(yrAxisLim.min, minVal);
                         }
-                        else    //Compare min/max Y value with previous and change if the new one is smaller/larger
+                        else
                         {
-                            if(mRightAxisLogarithmic)       //Only consider positive values if logarithmic scaling (negative ones will be discarded by Qwt)
-                            {
-                                if(findSmallestValueGreaterThanZero(mPlotCurvePtrs[plotID].at(i)->getDataVector()) < yMinRight)
-                                {
-                                    yMinRight=findSmallestValueGreaterThanZero(mPlotCurvePtrs[plotID].at(i)->getDataVector());
-                                }
-                            }
-                            else
-                            {
-                                if(mPlotCurvePtrs[plotID].at(i)->minYValue() < yMinRight)
-                                {
-                                    yMinRight=mPlotCurvePtrs[plotID].at(i)->minYValue();
-                                }
-                            }
-                            if(mPlotCurvePtrs[plotID].at(i)->maxYValue() > yMaxRight)
-                            {
-                                yMaxRight=mPlotCurvePtrs[plotID].at(i)->maxYValue();
-                            }
+                            yrAxisLim.min = qMin(yrAxisLim.min, mPlotCurvePtrs[plotID].at(i)->minYValue());
                         }
+                        yrAxisLim.max = qMax(yrAxisLim.max, mPlotCurvePtrs[plotID].at(i)->maxYValue());
                     }
 
-                    //Compare min/max X value with previous and change if the new one is smaller/larger
-                    if(mPlotCurvePtrs[plotID].at(i)->minXValue() < xMin)
-                        xMin=mPlotCurvePtrs[plotID].at(i)->minXValue();
-                    if(mPlotCurvePtrs[plotID].at(i)->maxXValue() > xMax)
-                        xMax=mPlotCurvePtrs[plotID].at(i)->maxXValue();
+                    // find min / max x-value
+                    xAxisLim.min = qMin(xAxisLim.min, mPlotCurvePtrs[plotID].at(i)->minXValue());
+                    xAxisLim.max = qMax(xAxisLim.max, mPlotCurvePtrs[plotID].at(i)->maxXValue());
                 }
 
                 if (mHasCustomXData && !someoneHasCustomXdata)
@@ -634,60 +583,61 @@ void PlotTab::rescaleAxesToCurves()
             }
             else    //No curves
             {
-                xMin=0;         //Min value for X axis
-                xMax=10;        //Max value for X axis
-                yMinLeft=0;     //Min value for left Y axis
-                yMaxLeft=10;    //Max value for left Y axis
-                yMinRight=0;    //Min value for right Y axis
-                yMaxRight=10;   //Max value for right Y axis
+                xAxisLim.min=0;         //Min value for X axis
+                xAxisLim.max=10;        //Max value for X axis
+                ylAxisLim.min=0;     //Min value for left Y axis
+                ylAxisLim.max=10;    //Max value for left Y axis
+                yrAxisLim.min=0;    //Min value for right Y axis
+                yrAxisLim.max=10;   //Max value for right Y axis
             }
 
-            if(yMinLeft > yMaxLeft)
+            // Fix incorrect or bad limit values
+            if(ylAxisLim.min > ylAxisLim.max)
             {
-                yMinLeft = 0;
-                yMaxLeft = 10;
+                ylAxisLim.min = 0;
+                ylAxisLim.max = 10;
             }
-            if(yMinRight > yMaxRight)
+            if(yrAxisLim.min > yrAxisLim.max)
             {
-                yMinRight = 0;
-                yMaxRight = 10;
+                yrAxisLim.min = 0;
+                yrAxisLim.max = 10;
             }
 
-            //Max and min must not be same value; if they are, decrease/increase
-            if(yMaxLeft == 0 && yMinLeft == 0)
+            // Max and min must not be same value; if they are, decrease/increase
+            if(ylAxisLim.max == 0 && ylAxisLim.min == 0)
             {
-                yMaxLeft = 1;
-                yMinLeft = -1;
+                ylAxisLim.max = 1;
+                ylAxisLim.min = -1;
             }
-            else if(yMaxLeft == yMinLeft && yMaxLeft > 0)
+            else if(ylAxisLim.max == ylAxisLim.min && ylAxisLim.max > 0)
             {
-                yMaxLeft = yMaxLeft*2;
-                yMinLeft = 0;
+                ylAxisLim.max = ylAxisLim.max*2;
+                ylAxisLim.min = 0;
             }
-            else if(yMaxLeft == yMinLeft && yMaxLeft < 0)
+            else if(ylAxisLim.max == ylAxisLim.min && ylAxisLim.max < 0)
             {
-                yMaxLeft = 0;
-                yMinLeft = yMinLeft*2;
+                ylAxisLim.max = 0;
+                ylAxisLim.min = ylAxisLim.min*2;
             }
-            if(yMaxRight == 0 && yMinRight == 0)
+            if(yrAxisLim.max == 0 && yrAxisLim.min == 0)
             {
-                yMaxRight = 1;
-                yMinRight = -1;
+                yrAxisLim.max = 1;
+                yrAxisLim.min = -1;
             }
-            else if(yMaxRight == yMinRight && yMaxRight > 0)
+            else if(yrAxisLim.max == yrAxisLim.min && yrAxisLim.max > 0)
             {
-                yMaxRight = yMaxRight*2;
-                yMinRight = 0;
+                yrAxisLim.max = yrAxisLim.max*2;
+                yrAxisLim.min = 0;
             }
-            else if(yMaxRight == yMinRight && yMaxRight < 0)
+            else if(yrAxisLim.max == yrAxisLim.min && yrAxisLim.max < 0)
             {
-                yMaxRight = 0;
-                yMinRight = yMinRight*2;
+                yrAxisLim.max = 0;
+                yrAxisLim.min = yrAxisLim.min*2;
             }
 
             // Calculate the axis ranges (used for calculating margins at top and bottom
-            double leftAxisRange = yMaxLeft-yMinLeft;
-            double rightAxisRange = yMaxRight-yMinRight;
+            double leftAxisRange = ylAxisLim.max-ylAxisLim.min;
+            double rightAxisRange = yrAxisLim.max-yrAxisLim.min;
 
             //If plot has log scale, we use a different approach for calculating margins
             //(fixed margins would not make sense with a log scale)
@@ -696,14 +646,14 @@ void PlotTab::rescaleAxesToCurves()
             if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlots[plotID]->axisScaleEngine(QwtPlot::yLeft)))
             {
                 leftAxisRange = 0;
-                yMaxLeft = yMaxLeft*2.0;
-                yMinLeft = yMinLeft/2.0;
+                ylAxisLim.max = ylAxisLim.max*2.0;
+                ylAxisLim.min = ylAxisLim.min/2.0;
             }
             if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlots[plotID]->axisScaleEngine(QwtPlot::yRight)))
             {
                 rightAxisRange = 0;
-                yMaxRight = yMaxRight*2.0;
-                yMinRight = yMinRight/2.0;
+                yrAxisLim.max = yrAxisLim.max*2.0;
+                yrAxisLim.min = yrAxisLim.min/2.0;
             }
 
 
@@ -712,43 +662,40 @@ void PlotTab::rescaleAxesToCurves()
             AxisLimitsT leftLegendBufferOffset, rightLegendBufferOffset; // min = bottom offset, max = top offset
             calculateLegendBufferOffsets(plotID, leftLegendBufferOffset, rightLegendBufferOffset);
 
-            //Scale the axes
+            // Scale the axes autoamtically if that option is set
             if (mpXAutoCheckBox->isChecked())
             {
-                mXAxisLimits[plotID].min = xMin;
-                mXAxisLimits[plotID].max = xMax;
+                mXAxisLimits[plotID].min = xAxisLim.min;
+                mXAxisLimits[plotID].max = xAxisLim.max;
                 mpQwtPlots[plotID]->setAxisScale(QwtPlot::xBottom, mXAxisLimits[plotID].min, mXAxisLimits[plotID].max);
                 mpQwtPlots[plotID]->setAxisAutoScale(QwtPlot::xBottom,true);
             }
-
             if (mpYLAutoCheckBox->isChecked())
             {
-                mYLAxisLimits[plotID].min = yMinLeft-0.05*leftAxisRange;
-                mYLAxisLimits[plotID].max =  yMaxLeft+0.05*leftAxisRange;
+                mYLAxisLimits[plotID].min = ylAxisLim.min-0.05*leftAxisRange;
+                mYLAxisLimits[plotID].max =  ylAxisLim.max+0.05*leftAxisRange;
                 rescaleAxistoIncludeLegendBufferOffset(plotID, QwtPlot::yLeft, leftLegendBufferOffset, mYLAxisLimits[plotID]);
             }
-
             if (mpYRAutoCheckBox->isChecked())
             {
-                mYRAxisLimits[plotID].min = yMinRight-0.05*rightAxisRange;
-                mYRAxisLimits[plotID].max = yMaxRight+0.05*rightAxisRange;
+                mYRAxisLimits[plotID].min = yrAxisLim.min-0.05*rightAxisRange;
+                mYRAxisLimits[plotID].max = yrAxisLim.max+0.05*rightAxisRange;
                 rescaleAxistoIncludeLegendBufferOffset(plotID, QwtPlot::yRight, rightLegendBufferOffset, mYRAxisLimits[plotID]);
             }
             //! @todo left only applies to left even if the right is overshadowed, problem is that if left, right are bottom and top calculated buffers will be different on each axis
 
-            // Scale the zoom base (maximum zoom)
+            // Create the zoom base (origianl zoom) rectangle
             leftAxisRange = mYLAxisLimits[plotID].max - mYLAxisLimits[plotID].min;
             rightAxisRange = mYRAxisLimits[plotID].max - mYRAxisLimits[plotID].min;
             double xAxisRange = mXAxisLimits[plotID].max - mXAxisLimits[plotID].min;
-
             QRectF tempDoubleRect;
             tempDoubleRect.setX(mXAxisLimits[plotID].min);
             tempDoubleRect.setWidth(xAxisRange);
             tempDoubleRect.setY(mYLAxisLimits[plotID].min);
-            tempDoubleRect.setHeight(leftAxisRange/*+0.1*leftAxisRange*/);
+            tempDoubleRect.setHeight(leftAxisRange);
             mpZoomerLeft[plotID]->setZoomBase(tempDoubleRect);
             tempDoubleRect.setY(mYRAxisLimits[plotID].min);
-            tempDoubleRect.setHeight(rightAxisRange/*+0.1*rightAxisRange*/);
+            tempDoubleRect.setHeight(rightAxisRange);
             mpZoomerRight[plotID]->setZoomBase(tempDoubleRect);
 
             // Now call the actual refresh of the axes
@@ -2229,13 +2176,13 @@ void PlotTab::constructLegendSettingsDialog()
     mpLegendCols->setValue(1);
 
     mpLegendLeftOffset = new QDoubleSpinBox(this);
-    mpLegendLeftOffset->setRange(-DBLMAX, DBLMAX);
+    mpLegendLeftOffset->setRange(-DoubleMax, DoubleMax);
     mpLegendLeftOffset->setDecimals(2);
     mpLegendLeftOffset->setSingleStep(0.1);
     mpLegendLeftOffset->setValue(0);
 
     mpLegendRightOffset = new QDoubleSpinBox(this);
-    mpLegendRightOffset->setRange(-DBLMAX, DBLMAX);
+    mpLegendRightOffset->setRange(-DoubleMax, DoubleMax);
     mpLegendRightOffset->setDecimals(2);
     mpLegendRightOffset->setSingleStep(0.1);
     mpLegendRightOffset->setValue(0);
@@ -2385,32 +2332,32 @@ void PlotTab::constructAxisSettingsDialog()
     mpYRAutoCheckBox->setChecked(true);
 
     mpXminSpinBox = new QDoubleSpinBox(mpSetAxisDialog);
-    mpXminSpinBox->setRange(-DBLMAX, DBLMAX);
+    mpXminSpinBox->setRange(-DoubleMax, DoubleMax);
     mpXminSpinBox->setDecimals(10);
     mpXminSpinBox->setSingleStep(0.1);
 
     mpXmaxSpinBox = new QDoubleSpinBox(mpSetAxisDialog);
-    mpXmaxSpinBox->setRange(-DBLMAX, DBLMAX);
+    mpXmaxSpinBox->setRange(-DoubleMax, DoubleMax);
     mpXmaxSpinBox->setDecimals(10);
     mpXmaxSpinBox->setSingleStep(0.1);
 
     mpYLminSpinBox = new QDoubleSpinBox(mpSetAxisDialog);
-    mpYLminSpinBox->setRange(-DBLMAX, DBLMAX);
+    mpYLminSpinBox->setRange(-DoubleMax, DoubleMax);
     mpYLminSpinBox->setDecimals(10);
     mpYLminSpinBox->setSingleStep(0.1);
 
     mpYLmaxSpinBox = new QDoubleSpinBox(mpSetAxisDialog);
-    mpYLmaxSpinBox->setRange(-DBLMAX, DBLMAX);
+    mpYLmaxSpinBox->setRange(-DoubleMax, DoubleMax);
     mpYLmaxSpinBox->setDecimals(10);
     mpYLmaxSpinBox->setSingleStep(0.1);
 
     mpYRminSpinBox = new QDoubleSpinBox(mpSetAxisDialog);
-    mpYRminSpinBox->setRange(-DBLMAX, DBLMAX);
+    mpYRminSpinBox->setRange(-DoubleMax, DoubleMax);
     mpYRminSpinBox->setDecimals(10);
     mpYRminSpinBox->setSingleStep(0.1);
 
     mpYRmaxSpinBox = new QDoubleSpinBox(mpSetAxisDialog);
-    mpYRmaxSpinBox->setRange(-DBLMAX, DBLMAX);
+    mpYRmaxSpinBox->setRange(-DoubleMax, DoubleMax);
     mpYRmaxSpinBox->setDecimals(10);
     mpYRmaxSpinBox->setSingleStep(0.1);
 

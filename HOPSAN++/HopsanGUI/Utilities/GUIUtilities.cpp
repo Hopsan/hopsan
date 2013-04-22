@@ -51,7 +51,7 @@
 #define NUMBERS_HIGH 57
 
 using namespace std;
-const double DBLMAX = std::numeric_limits<double>::max();
+const double DoubleMax = std::numeric_limits<double>::max();
 
 //! @brief This function extracts the name from a text stream
 //! @return The extracted name without quotes, empty string if failed
@@ -689,7 +689,7 @@ bool verifyParameterValue(QString &rValue, const QString type, const QStringList
 
 double findSmallestValueGreaterThanZero(QVector<double> data)
 {
-    double retval = DBLMAX;
+    double retval = DoubleMax;
 
     for(int i=0; i<data.size(); ++i)
     {
