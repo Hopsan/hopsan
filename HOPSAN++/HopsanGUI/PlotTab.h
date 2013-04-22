@@ -59,7 +59,7 @@ public:
 
     void setTabName(QString name);
 
-    void addCurve(PlotCurve *curve, QColor desiredColor=QColor(), HopsanPlotIDEnumT plotID=FirstPlot);
+    void addCurve(PlotCurve *pCurve, QColor desiredColor=QColor(), HopsanPlotIDEnumT plotID=FirstPlot);
     void setCustomXVectorForAll(QVector<double> xarray, const VariableDescription &rVarDesc, HopsanPlotIDEnumT plotID=FirstPlot);
     void setCustomXVectorForAll(SharedLogVariableDataPtrT pData, HopsanPlotIDEnumT plotID=FirstPlot);
     void removeCurve(PlotCurve *curve);

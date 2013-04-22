@@ -321,6 +321,7 @@ void PlotCurve::commonConstructorCode(int axisY,
     mPlotOffsetY = 0;
 
     // Set QwtPlotCurve stuff
+    //! @todo maybe this code should be run when we are adding a curve to a plottab
     this->setTitle(getCurveName());
     updateCurve();
     this->setRenderHint(QwtPlotItem::RenderAntialiased);

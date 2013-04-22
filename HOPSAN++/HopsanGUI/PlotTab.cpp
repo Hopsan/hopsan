@@ -225,8 +225,11 @@ void PlotTab::applyLegendSettings()
             mpRightPlotLegend->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
         }
 
-        mpRightPlotLegend->setBackgroundBrush(QColor(mpLegendBgColor->currentText()));
-        mpLeftPlotLegend->setBackgroundBrush(QColor(mpLegendBgColor->currentText()));
+        QColor bgColor(mpLegendBgColor->currentText());
+        //bgColor.setAlpha(128);
+        mpRightPlotLegend->setBackgroundBrush(bgColor);
+        mpLeftPlotLegend->setBackgroundBrush(bgColor);
+
 
         QFont fontl = mpLeftPlotLegend->font();
         fontl.setPointSize(mpLegendFontSize->value());
@@ -415,37 +418,37 @@ void PlotTab::addBarChart(QStandardItemModel *pItemModel)
 //! @brief Adds a plot curve to a plot tab
 //! @param curve Pointer to the plot curve
 //! @param desiredColor Desired color for curve (will override default colors)
-void PlotTab::addCurve(PlotCurve *curve, QColor desiredColor, HopsanPlotIDEnumT plotID)
+void PlotTab::addCurve(PlotCurve *pCurve, QColor desiredColor, HopsanPlotIDEnumT plotID)
 {
     if(mHasCustomXData)
     {
-        if (curve->hasCustomXData())
+        if (pCurve->hasCustomXData())
         {
             //! @todo check that same unit
             qWarning("todo Check that same unit");
         }
         else
         {
-            curve->setCustomXData(mpCustomXData);
+            pCurve->setCustomXData(mpCustomXData);
         }
     }
 
     // Use the default unit for this curve, unless it is a "Value" with an actual unit set
-    QString defaultUnit = gConfig.getDefaultUnit(curve->getDataName());
-    if ( curve->getDataName() != "Value" && (defaultUnit != curve->getDataUnit()) )
+    QString defaultUnit = gConfig.getDefaultUnit(pCurve->getDataName());
+    if ( pCurve->getDataName() != "Value" && (defaultUnit != pCurve->getDataUnit()) )
     {
-        curve->setCustomDataUnit(defaultUnit);
+        pCurve->setCustomDataUnit(defaultUnit);
     }
-    else if (curve->getDataUnit() == "-")
+    else if (pCurve->getDataUnit() == "-")
     {
-        curve->setCustomDataUnit(defaultUnit);
+        pCurve->setCustomDataUnit(defaultUnit);
     }
 
     // If all curves on the same axis has the same custom unit, assign this unit to the new curve as well
     QString customUnit;
     for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
     {
-        if(mPlotCurvePtrs[plotID].at(i)->getAxisY() == curve->getAxisY())
+        if(mPlotCurvePtrs[plotID].at(i)->getAxisY() == pCurve->getAxisY())
         {
             if(customUnit.isEmpty())
             {
@@ -460,12 +463,12 @@ void PlotTab::addCurve(PlotCurve *curve, QColor desiredColor, HopsanPlotIDEnumT 
     }
     if(!customUnit.isEmpty())
     {
-        curve->setCustomDataUnit(customUnit);
+        pCurve->setCustomDataUnit(customUnit);
     }
 
 
-    mPlotCurvePtrs[plotID].append(curve);
-    connect(curve, SIGNAL(curveDataUpdated()), this, SLOT(rescaleAxesToCurves()));
+    mPlotCurvePtrs[plotID].append(pCurve);
+    connect(pCurve, SIGNAL(curveDataUpdated()), this, SLOT(rescaleAxesToCurves()));
 
     if(desiredColor == QColor())
     {
@@ -478,21 +481,23 @@ void PlotTab::addCurve(PlotCurve *curve, QColor desiredColor, HopsanPlotIDEnumT 
             if(i>mCurveColors.size()) break;
         }
         mUsedColors.append(mCurveColors.first());
-        curve->setLineColor(mCurveColors.first());
+        pCurve->setLineColor(mCurveColors.first());
     }
     else
     {
-        curve->setLineColor(desiredColor);
+        pCurve->setLineColor(desiredColor);
     }
 
-    mpQwtPlots[plotID]->enableAxis(curve->getAxisY());
+    mpQwtPlots[plotID]->enableAxis(pCurve->getAxisY());
     rescaleAxesToCurves();
     updateLabels();
-    mpQwtPlots[plotID]->replot();
-    mpQwtPlots[plotID]->updateGeometry();
-    curve->setLineWidth(2);
+    pCurve->setZ(1000);
+    pCurve->setLineWidth(2);
 
     setLegendSymbol(mpLegendSymbolType->currentText());
+
+    mpQwtPlots[plotID]->replot();
+    mpQwtPlots[plotID]->updateGeometry();
 
     mpParentPlotWindow->mpBodePlotButton->setEnabled(mPlotCurvePtrs[FirstPlot].size() > 1);
 }
