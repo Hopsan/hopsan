@@ -298,6 +298,41 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole)
     randCmd.help.append("Usage: rand [min max]");
     randCmd.fnc = &HcomHandler::executeRandomCommand;
     mCmdList << randCmd;
+
+    HcomCommand floorCmd;
+    floorCmd.cmd = "floor";
+    floorCmd.description.append("Rounds value to closest smaller integer value");
+    floorCmd.help.append("Usage: floor [value]");
+    floorCmd.fnc = &HcomHandler::executeFloorCommand;
+    mCmdList << floorCmd;
+
+    HcomCommand ceilCmd;
+    ceilCmd.cmd = "ceil";
+    ceilCmd.description.append("Rounds value to closest larger integer value");
+    ceilCmd.help.append("Usage: ceil [value]");
+    ceilCmd.fnc = &HcomHandler::executeCeilCommand;
+    mCmdList << ceilCmd;
+
+    HcomCommand roundCmd;
+    roundCmd.cmd = "round";
+    roundCmd.description.append("Rounds value to closest integer value");
+    roundCmd.help.append("Usage: round [value]");
+    roundCmd.fnc = &HcomHandler::executeRoundCommand;
+    mCmdList << roundCmd;
+
+    HcomCommand sizeCmd;
+    sizeCmd.cmd = "size";
+    sizeCmd.description.append("Returns the size of specified vector");
+    sizeCmd.help.append("Usage: size [vector]");
+    sizeCmd.fnc = &HcomHandler::executeSizeCommand;
+    mCmdList << sizeCmd;
+
+    HcomCommand bodeCmd;
+    bodeCmd.cmd = "bode";
+    bodeCmd.description.append("Creates a bode plot from specified curves");
+    bodeCmd.help.append("Usage: bode [invar outvar maxfreq]");
+    bodeCmd.fnc = &HcomHandler::executeBodeCommand;
+    mCmdList << bodeCmd;
 }
 
 
@@ -528,12 +563,12 @@ void HcomHandler::executeChangeSimulationSettingsCommand(QString cmd)
         }
         else
         {
-            mpConsole->print("Failed to apply simulation settings.");
+            mpConsole->printErrorMessage("Failed to apply simulation settings.","",false);
         }
     }
     else
     {
-        mpConsole->print("Wrong number of arguments.");
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
     }
 }
 
@@ -579,7 +614,7 @@ void HcomHandler::executeHelpCommand(QString cmd)
 
         if(idx < 0)
         {
-            mpConsole->print("No help available for this command.");
+            mpConsole->printErrorMessage("No help available for this command.","",false);
         }
         else
         {
@@ -620,7 +655,7 @@ void HcomHandler::executeRunScriptCommand(QString cmd)
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        mpConsole->print("Unable to read file.");
+        mpConsole->printErrorMessage("Unable to read file.","",false);
         return;
     }
 
@@ -648,7 +683,8 @@ void HcomHandler::executeRunScriptCommand(QString cmd)
         {
             if(lines[l].startsWith("&"+gotoLabel))
             {
-                gotoLabel = runScriptCommands(lines.mid(l, lines.size()-l));
+                QStringList commands = lines.mid(l, lines.size()-l);
+                gotoLabel = runScriptCommands(commands);
             }
         }
     }
@@ -676,7 +712,7 @@ void HcomHandler::executeWriteHistoryToFileCommand(QString cmd)
     QFile file(path);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        mpConsole->print("Unable to write to file.");
+        mpConsole->printErrorMessage("Unable to write to file.","",false);
         return;
     }
 
@@ -693,7 +729,7 @@ void HcomHandler::executeWriteHistoryToFileCommand(QString cmd)
 //! @todo Implement
 void HcomHandler::executePrintCommand(QString /*cmd*/)
 {
-    mpConsole->print("Function not yet implemented.");
+    mpConsole->printErrorMessage("Function not yet implemented.","",false);
 }
 
 
@@ -734,7 +770,7 @@ void HcomHandler::executePeekCommand(QString cmd)
     QStringList split = cmd.split(" ");
     if(split.size() != 2)
     {
-        mpConsole->print("Wrong number of arguments.");
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
         return;
     }
 
@@ -743,7 +779,7 @@ void HcomHandler::executePeekCommand(QString cmd)
     int id = getNumber(split.last(), &ok);
     if(!ok)
     {
-        mpConsole->print("Illegal value.");
+        mpConsole->printErrorMessage("Illegal value.","",false);
         return;
     }
 
@@ -758,12 +794,12 @@ void HcomHandler::executePeekCommand(QString cmd)
         }
         else
         {
-            mpConsole->print(err);
+            mpConsole->printErrorMessage(err,"",false);
         }
     }
     else
     {
-        mpConsole->print("Data variable not found");
+        mpConsole->printErrorMessage("Data variable not found","",false);
     }
 }
 
@@ -775,7 +811,7 @@ void HcomHandler::executePokeCommand(QString cmd)
     QStringList split = cmd.split(" ");
     if(split.size() != 3)
     {
-        mpConsole->print("Wrong number of arguments.");
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
         return;
     }
 
@@ -785,7 +821,7 @@ void HcomHandler::executePokeCommand(QString cmd)
     double value = getNumber(split.last(), &ok2);
     if(!ok1 || !ok2)
     {
-        mpConsole->print("Illegal value.");
+        mpConsole->printErrorMessage("Illegal value.","",false);
         return;
     }
 
@@ -800,12 +836,12 @@ void HcomHandler::executePokeCommand(QString cmd)
         }
         else
         {
-            mpConsole->print(err);
+            mpConsole->printErrorMessage(err,"",false);
         }
     }
     else
     {
-        mpConsole->print("Data variable not found.");
+        mpConsole->printErrorMessage("Data variable not found.","",false);
     }
     return;
 }
@@ -828,7 +864,7 @@ void HcomHandler::executeDefineAliasCommand(QString cmd)
 
     if(!pVariable || !gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->definePlotAlias(alias, pVariable->getFullVariableName()))
     {
-        mpConsole->print("Failed to assign variable alias.");
+        mpConsole->printErrorMessage("Failed to assign variable alias.","",false);
     }
 
     gpMainWindow->mpPlotWidget->mpPlotVariableTree->updateList();
@@ -842,7 +878,7 @@ void HcomHandler::executeSetCommand(QString cmd)
     QStringList splitCmd = cmd.split(" ");
     if(splitCmd.size() != 2)
     {
-        mpConsole->print("Wrong number of arguments.");
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
         return;
     }
     QString pref = splitCmd[0];
@@ -852,7 +888,7 @@ void HcomHandler::executeSetCommand(QString cmd)
     {
         if(value != "on" && value != "off")
         {
-            mpConsole->print("Unknown value.");
+            mpConsole->printErrorMessage("Unknown value.","",false);
             return;
         }
         gConfig.setUseMultiCore(value=="on");
@@ -863,7 +899,7 @@ void HcomHandler::executeSetCommand(QString cmd)
         int nThreads = value.toInt(&ok);
         if(!ok)
         {
-            mpConsole->print("Unknown value.");
+            mpConsole->printErrorMessage("Unknown value.","",false);
             return;
         }
         gConfig.setNumberOfThreads(nThreads);
@@ -1220,7 +1256,7 @@ void HcomHandler::executeAverageCommand(QString cmd)
     QStringList split = splitWithRespectToQuotations(cmd, ' ');
     if(split.size() != 1)
     {
-        mpConsole->print("Wrong number of arguments.");
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
         return;
     }
     QString variable = splitWithRespectToQuotations(cmd, ' ')[0];
@@ -1232,7 +1268,7 @@ void HcomHandler::executeAverageCommand(QString cmd)
     }
     else
     {
-        mpConsole->print("Data variable not found");
+        mpConsole->printErrorMessage("Data variable not found","",false);
     }
 }
 
@@ -1242,7 +1278,7 @@ void HcomHandler::executeMinCommand(QString cmd)
     QStringList split = splitWithRespectToQuotations(cmd, ' ');
     if(split.size() != 1)
     {
-        mpConsole->print("Wrong number of arguments.");
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
         return;
     }
     QString variable = split[0];
@@ -1254,7 +1290,7 @@ void HcomHandler::executeMinCommand(QString cmd)
     }
     else
     {
-        mpConsole->print("Data variable not found");
+        mpConsole->printErrorMessage("Data variable not found","",false);
     }
 }
 
@@ -1264,7 +1300,7 @@ void HcomHandler::executeMaxCommand(QString cmd)
     QStringList split = splitWithRespectToQuotations(cmd, ' ');
     if(split.size() != 1)
     {
-        mpConsole->print("Wrong number of arguments.");
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
         return;
     }
     QString variable = split[0];
@@ -1276,7 +1312,7 @@ void HcomHandler::executeMaxCommand(QString cmd)
     }
     else
     {
-        mpConsole->print("Data variable not found");
+        mpConsole->printErrorMessage("Data variable not found","",false);
     }
 }
 
@@ -1359,6 +1395,115 @@ void HcomHandler::executeRandomCommand(QString cmd)
     returnScalar(min+rd*(max-min));    //Random value between min and max
 }
 
+void HcomHandler::executeFloorCommand(QString cmd)
+{
+    QStringList split = splitWithRespectToQuotations(cmd, ' ');
+    if(split.size() != 1)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        return;
+    }
+
+    VariableType retType;
+    bool isNumber;
+    double value = evaluateExpression(split[0], &retType, &isNumber).toDouble();
+    if(!isNumber)
+    {
+        mpConsole->printErrorMessage("Second argument is not a number.", "", false);
+    }
+
+    returnScalar(floor(value));
+}
+
+void HcomHandler::executeCeilCommand(QString cmd)
+{
+    QStringList split = splitWithRespectToQuotations(cmd, ' ');
+    if(split.size() != 1)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        return;
+    }
+
+    VariableType retType;
+    bool isNumber;
+    double value = evaluateExpression(split[0], &retType, &isNumber).toDouble();
+    if(!isNumber)
+    {
+        mpConsole->printErrorMessage("Second argument is not a number.", "", false);
+    }
+
+    returnScalar(ceil(value));
+}
+
+void HcomHandler::executeRoundCommand(QString cmd)
+{
+    QStringList split = splitWithRespectToQuotations(cmd, ' ');
+    if(split.size() != 1)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        return;
+    }
+
+    VariableType retType;
+    bool isNumber;
+    double value = evaluateExpression(split[0], &retType, &isNumber).toDouble();
+    if(!isNumber)
+    {
+        mpConsole->printErrorMessage("Second argument is not a number.", "", false);
+    }
+
+    returnScalar(round(value));
+}
+
+void HcomHandler::executeSizeCommand(QString cmd)
+{
+    QStringList split = cmd.split(" ");
+    if(split.size() != 1)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        return;
+    }
+
+    QString variable = split.first();
+
+    SharedLogVariableDataPtrT pData = getVariablePtr(variable);
+    if(pData)
+    {
+         returnScalar(pData->getDataSize());
+    }
+    else
+    {
+        mpConsole->printErrorMessage("Data variable not found","",false);
+    }
+}
+
+void HcomHandler::executeBodeCommand(QString cmd)
+{
+    QStringList split = cmd.split(" ");
+    if(split.size() < 2 || split.size() > 4)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        return;
+    }
+
+    QString var1 = split[0];
+    QString var2 = split[1];
+    SharedLogVariableDataPtrT pData1 = getVariablePtr(var1);
+    SharedLogVariableDataPtrT pData2 = getVariablePtr(var2);
+    if(!pData1 || !pData2)
+    {
+        mpConsole->printErrorMessage("Data variable not found.", "", false);
+        return;
+    }
+    int fMax = 500;
+    if(split.size() > 2)
+    {
+        fMax = split[2].toInt();
+    }
+
+    gpPlotHandler->createNewPlotWindowOrGetCurrentOne("Bode plot")->createBodePlot(pData1, pData2, fMax);
+}
+
 
 //! @brief Changes plot variables on specified axes
 //! @param cmd Command containing the plot variables
@@ -1434,7 +1579,7 @@ void HcomHandler::addPlotCurve(QString cmd, int axis)
     SharedLogVariableDataPtrT pData = getVariablePtr(cmd);
     if(!pData)
     {
-        mpConsole->print("Variable not found.");
+        mpConsole->printErrorMessage("Variable not found.","",false);
         return;
     }
 
@@ -1615,7 +1760,7 @@ bool HcomHandler::containsOutsideParentheses(QString str, QString c)
 }
 
 
-QString HcomHandler::runScriptCommands(QStringList lines)
+QString HcomHandler::runScriptCommands(QStringList &lines)
 {
     mAborted = false; //Reset if pushed when script didn't run
 
@@ -1644,7 +1789,7 @@ QString HcomHandler::runScriptCommands(QStringList lines)
                 ++l;
                 if(l>lines.size()-1)
                 {
-                    mpConsole->print("Missing REPEAT in while loop.");
+                    mpConsole->printErrorMessage("Missing REPEAT in while loop.","",false);
                     return QString();
                 }
 
@@ -1655,16 +1800,11 @@ QString HcomHandler::runScriptCommands(QStringList lines)
             }
             loop.removeLast();
 
-            bool evalOk;
-            VariableType type;
-            while(evaluateExpression(argument, &type, &evalOk).toInt() > 0)
+            //Evaluate expression using SymHop
+            SymHop::Expression symHopExpr = SymHop::Expression(argument);
+            while(symHopExpr.evaluate(mLocalVars) > 0)
             {
-                if(!evalOk)
-                {
-                    mpConsole->print("Evaluation of loop argument failed.");
-                    break;
-                }
-                else if(mAborted)
+                if(mAborted)
                 {
                     mpConsole->print("Script aborted.");
                     mAborted = false;
@@ -1689,7 +1829,7 @@ QString HcomHandler::runScriptCommands(QStringList lines)
                 ++l;
                 if(l>lines.size()-1)
                 {
-                    mpConsole->print("Missing ENDIF in if-statement.");
+                    mpConsole->printErrorMessage("Missing ENDIF in if-statement.","",false);
                     return QString();
                 }
                 if(lines[l].startsWith("endif"))
@@ -1716,7 +1856,7 @@ QString HcomHandler::runScriptCommands(QStringList lines)
             {
                 if(!evalOk)
                 {
-                    mpConsole->print("Evaluation of if-statement argument failed.");
+                    mpConsole->printErrorMessage("Evaluation of if-statement argument failed.","",false);
                     return QString();
                 }
                 QString gotoLabel = runScriptCommands(ifCode);
@@ -1729,7 +1869,7 @@ QString HcomHandler::runScriptCommands(QStringList lines)
             {
                 if(!evalOk)
                 {
-                    mpConsole->print("Evaluation of if-statement argument failed.");
+                    mpConsole->printErrorMessage("Evaluation of if-statement argument failed.","",false);
                     return QString();
                 }
                 QString gotoLabel = runScriptCommands(elseCode);
@@ -2107,7 +2247,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
         if(!leftIsOk && !plotDataNames.contains(left))
         if(!leftIsOk && (gpMainWindow->mpProjectTabs->count() == 0 || !getVariablePtr(left)))
         {
-            mpConsole->print("Illegal variable name.");
+            mpConsole->printErrorMessage("Illegal variable name.","",false);
             return false;
         }
 
@@ -2392,3 +2532,4 @@ void HcomHandler::returnScalar(const double retval)
     mRetvalType = Scalar;
     mpConsole->print(QString::number(retval));
 }
+

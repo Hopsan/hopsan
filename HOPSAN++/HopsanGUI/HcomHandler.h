@@ -57,6 +57,11 @@ public:
     void executeChangeTimestepCommand(QString cmd);
     void executeInheritTimestepCommand(QString cmd);
     void executeRandomCommand(QString cmd);
+    void executeFloorCommand(QString cmd);
+    void executeCeilCommand(QString cmd);
+    void executeRoundCommand(QString cmd);
+    void executeSizeCommand(QString cmd);
+    void executeBodeCommand(QString cmd);
 
     //Help functions
     void changePlotVariables(QString cmd, int axis);
@@ -73,7 +78,7 @@ public:
     bool evaluateArithmeticExpression(QString cmd);
     void splitAtFirst(QString str, QString c, QString &left, QString &right);
     bool containsOutsideParentheses(QString str, QString c);
-    QString runScriptCommands(QStringList lines);
+    QString runScriptCommands(QStringList &lines);
     SharedLogVariableDataPtrT getVariablePtr(QString fullName) const;
     double getNumber(const QString str, bool *ok) const;
     void toShortDataNames(QString &variable) const;

@@ -92,6 +92,7 @@ public slots:
     void showFrequencyAnalysisHelp();
     void createBodePlot();
     void createBodePlotFromDialog();
+    void createBodePlot(SharedLogVariableDataPtrT var1, SharedLogVariableDataPtrT var2, int Fmax);
     void createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve, int Fmax);
     void showToolBarHelpPopup();
     void closeIfEmpty();

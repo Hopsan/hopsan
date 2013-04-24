@@ -842,6 +842,14 @@ void PlotWindow::createBodePlotFromDialog()
 }
 
 
+void PlotWindow::createBodePlot(SharedLogVariableDataPtrT var1, SharedLogVariableDataPtrT var2, int Fmax)
+{
+    PlotCurve *pCurve1 = new PlotCurve(var1,QwtPlot::yLeft, getCurrentPlotTab());
+    PlotCurve *pCurve2 = new PlotCurve(var2,QwtPlot::yLeft, getCurrentPlotTab());
+    createBodePlot(pCurve1, pCurve2, Fmax);
+}
+
+
 void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve, int Fmax)
 {
     //Create temporary real vectors
