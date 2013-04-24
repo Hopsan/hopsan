@@ -123,7 +123,6 @@ ModelObject::ModelObject(QPointF position, qreal rotation, const ModelObjectAppe
 ModelObject::~ModelObject()
 {
     emit objectDeleted();
-    mpDialogParentWidget;
 }
 
 void ModelObject::deleteInHopsanCore()

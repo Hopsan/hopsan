@@ -64,7 +64,7 @@ void PlotHandler::forgetPlotWindow(PlotWindow *pWindow)
 }
 
 //! @todo write equivalent function
-PlotWindow *PlotHandler::createPlotWindow(QVector<double> xVector, QVector<double> yVector, int axis, QString componentName, QString portName, QString dataName, QString dataUnit, QString name)
+PlotWindow *PlotHandler::createPlotWindow(QVector<double> xVector, QVector<double> yVector, int /*axis*/, QString /*componentName*/, QString /*portName*/, QString /*dataName*/, QString /*dataUnit*/, QString name)
 {
     if((xVector.isEmpty()) || (yVector.isEmpty()))
         return 0;

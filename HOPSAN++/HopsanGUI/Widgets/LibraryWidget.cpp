@@ -1613,19 +1613,19 @@ void LibraryWidget::unloadExternalLibrary(const QString libName, const QString p
         qDebug() << "Components in library: " << components;
         qDebug() << "Nodes in library: " << nodes;
 
-        bool doWarn = false;
-        for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
-        {
-            QStringList modelComponents = gpMainWindow->mpProjectTabs->getContainer(i)->getModelObjectNames();
-            for(int c=0; c<modelComponents.size(); ++c)
-            {
-                QString type = gpMainWindow->mpProjectTabs->getContainer(i)->getModelObject(modelComponents[c])->getTypeName();
-                if(components.contains(type))
-                {
-                    doWarn = true;
-                }
-            }
-        }
+//        bool doWarn = false;
+//        for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
+//        {
+//            QStringList modelComponents = gpMainWindow->mpProjectTabs->getContainer(i)->getModelObjectNames();
+//            for(int c=0; c<modelComponents.size(); ++c)
+//            {
+//                QString type = gpMainWindow->mpProjectTabs->getContainer(i)->getModelObject(modelComponents[c])->getTypeName();
+//                if(components.contains(type))
+//                {
+//                    doWarn = true;
+//                }
+//            }
+//        }
 
         gpMainWindow->mpProjectTabs->saveState();
 

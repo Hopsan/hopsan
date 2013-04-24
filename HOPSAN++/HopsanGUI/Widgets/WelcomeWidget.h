@@ -96,7 +96,7 @@ private slots:
     void openRecentModel();
     void openExampleModel();
     void showNews(QNetworkReply *pReply);
-    void checkVersion(bool loadedSuccessfully);
+    void checkVersion();
     void updateLoadingWebProgressBar();
     void urlClicked(const QUrl &link);
     void openDownloadPage();

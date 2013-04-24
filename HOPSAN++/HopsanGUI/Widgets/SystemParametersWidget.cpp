@@ -193,7 +193,7 @@ QVariant SysParamTableModel::headerData(int section, Qt::Orientation orientation
     return QVariant();
 }
 
-bool SysParamTableModel::removeRows(int row, int count, const QModelIndex &parent)
+bool SysParamTableModel::removeRows(int row, int count, const QModelIndex &/*parent*/)
 {
     beginRemoveRows(QModelIndex(), row, row+count-1);
 
@@ -206,7 +206,7 @@ bool SysParamTableModel::removeRows(int row, int count, const QModelIndex &paren
     return true;
 }
 
-bool SysParamTableModel::insertRows(int row, int count, const QModelIndex &parent)
+bool SysParamTableModel::insertRows(int row, int count, const QModelIndex &/*parent*/)
 {
     beginInsertRows(QModelIndex(), row, row+count-1);
     // No need to do anything else for now

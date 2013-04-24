@@ -626,14 +626,14 @@ void OptionsDialog::updateCustomUnits()
     }
 
     mpAngularVelocityUnitComboBox->clear();
-    QMap<QString, double> customAngularVelocityUnits = gConfig.getCustomUnits("Angular Velocity");
+    QMap<QString, double> customAngularVelocityUnits = gConfig.getCustomUnits("AngularVelocity");
     for(it = customAngularVelocityUnits.begin(); it != customAngularVelocityUnits.end(); ++it)
     {
         mpAngularVelocityUnitComboBox->addItem(it.key());
     }
     for(int i = 0; i<mpAngularVelocityUnitComboBox->count(); ++i)
     {
-        if(mpAngularVelocityUnitComboBox->itemText(i) == gConfig.getDefaultUnit("Angular Velocity"))
+        if(mpAngularVelocityUnitComboBox->itemText(i) == gConfig.getDefaultUnit("AngularVelocity"))
         {
             mpAngularVelocityUnitComboBox->setCurrentIndex(i);
         }

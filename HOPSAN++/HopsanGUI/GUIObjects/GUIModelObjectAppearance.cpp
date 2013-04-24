@@ -312,8 +312,7 @@ void ModelObjectAnimationData::readFromDomElement(QDomElement &rDomElement, QStr
 void ModelObjectAnimationData::saveToDomElement(QDomElement &rDomElement)
 {
     rDomElement.setAttribute("flowspeed", flowSpeed);
-    int i=0;
-    Q_FOREACH(const int &j, movableIdx)
+    for(int i=0; i<movableIdx.size(); ++i)
     {
         QDomElement movableElement = appendDomElement(rDomElement, "movable");
         QDomElement startElement = appendDomElement(movableElement, "start");
@@ -324,7 +323,6 @@ void ModelObjectAnimationData::saveToDomElement(QDomElement &rDomElement)
         movementElement.setAttribute("x", speedX[i]);
         movementElement.setAttribute("y", speedY[i]);
         movementElement.setAttribute("a", speedTheta[i]);
-        ++i;
     }
 }
 

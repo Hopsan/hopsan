@@ -2458,7 +2458,7 @@ void PlotTab::setLegendSymbol(const QString symStyle)
     }
 }
 
-void PlotTab::setTabOnlyCustomXVector(SharedLogVariableDataPtrT pData, HopsanPlotIDEnumT plotID)
+void PlotTab::setTabOnlyCustomXVector(SharedLogVariableDataPtrT pData, HopsanPlotIDEnumT /*plotID*/)
 {
     mHasCustomXData = true;
     mpCustomXData = pData;

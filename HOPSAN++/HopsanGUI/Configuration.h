@@ -32,6 +32,7 @@
 #include <QPen>
 #include <QPalette>
 #include <QFont>
+#include <QDomElement>
 
 #include "common.h"
 
@@ -140,6 +141,13 @@ public:
     void setFmuExportDir(QString value);
 
 private:
+    void loadUserSettings(QDomElement &rDomElement);
+    void loadStyleSettings(QDomElement &rDomElement);
+    void loadUnitSettings(QDomElement &rDomElement);
+    void loadLibrarySettings(QDomElement &rDomElement);
+    void loadModelSettings(QDomElement &rDomElement);
+    void loadScriptSettings(QDomElement &rPythonElement, QDomElement &rHcomElement);
+
     int mLibraryStyle;
     bool mAlwaysLoadLastSession;
     bool mShowPopupHelp;

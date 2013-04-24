@@ -344,7 +344,7 @@ void  PyMainWindowClassWrapper::offset(MainWindow* o, const QString varName, con
     //! @todo what about error message if not found
 }
 
-void PyMainWindowClassWrapper::savePlotData(MainWindow* o, const QString& fileName, const QString& windowName)
+void PyMainWindowClassWrapper::savePlotData(MainWindow* /*o*/, const QString& fileName, const QString& windowName)
 {
     PlotWindow *pPW = gpPlotHandler->getPlotWindow(windowName);
     if (pPW)
@@ -403,13 +403,13 @@ void PyMainWindowClassWrapper::openAbortDialog(MainWindow *o, const QString &tex
     mpDialog->show();
 }
 
-bool PyMainWindowClassWrapper::isAborted(MainWindow *o)
+bool PyMainWindowClassWrapper::isAborted(MainWindow */*o*/)
 {
     qApp->processEvents();
     return mAbort;
 }
 
-void PyMainWindowClassWrapper::abort(MainWindow* o)
+void PyMainWindowClassWrapper::abort(MainWindow* /*o*/)
 {
     mAbort=true;
     if(mpDialog)

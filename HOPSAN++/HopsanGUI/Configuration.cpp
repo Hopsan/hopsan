@@ -233,183 +233,31 @@ void Configuration::loadFromXml()
         else
         {
             verifyConfigurationCompatibility(configRoot);     //Check version compatibility
+
+            //Load user settings
             QDomElement settingsElement = configRoot.firstChildElement("settings");
+            loadUserSettings(settingsElement);
 
-            if(!settingsElement.firstChildElement("librarystyle").isNull())
-                mLibraryStyle = parseDomIntegerNode(settingsElement.firstChildElement("librarystyle"));
-            if(!settingsElement.firstChildElement("alwaysloadlastsession").isNull())
-                mAlwaysLoadLastSession = parseDomBooleanNode(settingsElement.firstChildElement("showwelcomedialog"));
-            if(!settingsElement.firstChildElement("showpopuphelp").isNull())
-                mShowPopupHelp = parseDomBooleanNode(settingsElement.firstChildElement("showpopuphelp"));
-            if(!settingsElement.firstChildElement("nativestylesheet").isNull())
-                mUseNativeStyleSheet = parseDomBooleanNode(settingsElement.firstChildElement("nativestylesheet"));
-            if(!settingsElement.firstChildElement("backgroundcolor").isNull())
-                mBackgroundColor.setNamedColor(settingsElement.firstChildElement("backgroundcolor").text());
-            if(!settingsElement.firstChildElement("antialiasing").isNull())
-                mAntiAliasing = parseDomBooleanNode(settingsElement.firstChildElement("antialiasing"));
-            if(!settingsElement.firstChildElement("invertwheel").isNull())
-                mInvertWheel = parseDomBooleanNode(settingsElement.firstChildElement("invertwheel"));
-            if(!settingsElement.firstChildElement("snapping").isNull())
-                mSnapping = parseDomBooleanNode(settingsElement.firstChildElement("snapping"));
-            if(!settingsElement.firstChildElement("progressbar").isNull())
-                mEnableProgressBar = parseDomBooleanNode(settingsElement.firstChildElement("progressbar"));
-            if(!settingsElement.firstChildElement("progressbar_step").isNull())
-                mProgressBarStep = parseDomValueNode(settingsElement.firstChildElement("progressbar_step"));
-            if(!settingsElement.firstChildElement("multicore").isNull())
-                mUseMulticore = parseDomBooleanNode(settingsElement.firstChildElement("multicore"));
-            if(!settingsElement.firstChildElement("numberofthreads").isNull())
-                mNumberOfThreads = parseDomValueNode(settingsElement.firstChildElement("numberofthreads"));
-            if(!settingsElement.firstChildElement("togglenamesbuttonchecked").isNull())
-                mToggleNamesButtonCheckedLastSession = parseDomBooleanNode(settingsElement.firstChildElement("togglenamesbuttonchecked"));
-            if(!settingsElement.firstChildElement("toggleportsbuttonchecked").isNull())
-                mTogglePortsButtonCheckedLastSession = parseDomBooleanNode(settingsElement.firstChildElement("toggleportsbuttonchecked"));
-            if(!settingsElement.firstChildElement("groupmessagesbytag").isNull())
-                mGroupMessagesByTag = parseDomBooleanNode(settingsElement.firstChildElement("groupmessagesbytag"));
-            if(!settingsElement.firstChildElement("generationlimit").isNull())
-                mGenerationLimit = parseDomIntegerNode(settingsElement.firstChildElement("generationlimit"));
-            if(!settingsElement.firstChildElement("cachelogdata").isNull())
-                mCacheLogData = parseDomBooleanNode(settingsElement.firstChildElement("cachelogdata"));
-            if(!settingsElement.firstChildElement("loadmodeldir").isNull())
-                mLoadModelDir = settingsElement.firstChildElement("loadmodeldir").text();
-            if(!settingsElement.firstChildElement("modelgfxdir").isNull())
-                mModelGfxDir = settingsElement.firstChildElement("modelgfxdir").text();
-            if(!settingsElement.firstChildElement("plotdatadir").isNull())
-                mPlotDataDir = settingsElement.firstChildElement("plotdatadir").text();
-            if(!settingsElement.firstChildElement("plotgfxdir").isNull())
-                mPlotGfxDir = settingsElement.firstChildElement("plotgfxdir").text();
-            if(!settingsElement.firstChildElement("simulinkexportdir").isNull())
-                mSimulinkExportDir = settingsElement.firstChildElement("simulinkexportdir").text();
-            if(!settingsElement.firstChildElement("subsystemdir").isNull())
-                mSubsystemDir = settingsElement.firstChildElement("subsystemdir").text();
-            if(!settingsElement.firstChildElement("modelicamodelsdir").isNull())
-                mModelicaModelsDir = settingsElement.firstChildElement("modelicamodelsdir").text();
-            if(!settingsElement.firstChildElement("externallibdir").isNull())
-                mExternalLibDir = settingsElement.firstChildElement("externallibdir").text();
-            if(!settingsElement.firstChildElement("scriptdir").isNull())
-                mScriptDir = settingsElement.firstChildElement("scriptdir").text();
-            if(!settingsElement.firstChildElement("plotwindowdir").isNull())
-                mPlotWindowDir = settingsElement.firstChildElement("plotwindowdir").text();
-            if(!settingsElement.firstChildElement("fmuimportdir").isNull())
-                mFmuImportDir = settingsElement.firstChildElement("fmuimportdir").text();
-            if(!settingsElement.firstChildElement("fmuexportdir").isNull())
-                mFmuExportDir = settingsElement.firstChildElement("fmuexportdir").text();
-
+            //Load style settings
             QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
-            QDomElement penElement = styleElement.firstChildElement("penstyle");
-            while(!penElement.isNull())
-            {
-                QString type = penElement.attribute("type");
-                QString gfxType = penElement.attribute("gfxtype");
-                QString situation = penElement.attribute("situation");
-                QString color = penElement.attribute("color");
-                double width = penElement.attribute("width").toDouble();
-                Qt::PenStyle penstyle = Qt::PenStyle(penElement.attribute(HMF_STYLETAG).toInt());
-                Qt::PenCapStyle capStyle = Qt::PenCapStyle(penElement.attribute("capstyle").toInt());
-                QPen pen = QPen(QColor(color), width, penstyle, capStyle, Qt::RoundJoin);
+            loadStyleSettings(styleElement);
 
-                ConnectorStyleEnumT style;
-                if(type=="Power") style = PowerConnectorStyle;
-                if(type=="Signal") style = SignalConnectorStyle;
-                if(type=="Broken") style = BrokenConnectorStyle;
-                if(type=="Undefined") style = UndefinedConnectorStyle;
-
-                if(!mPenStyles.contains(style))
-                {
-                    QMap<QString, QMap<QString, QPen> > tempMap;
-                    mPenStyles.insert(style, tempMap);
-                }
-                if(!mPenStyles.find(style).value().contains(gfxType))
-                {
-                    QMap<QString, QPen> tempMap;
-                    mPenStyles.find(style).value().insert(gfxType, tempMap);
-                }
-                mPenStyles.find(style).value().find(gfxType).value().insert(situation, pen);
-
-                penElement = penElement.nextSiblingElement("penstyle");
-            }
-
+            //Load library settings
             QDomElement libsElement = configRoot.firstChildElement("libs");
-            QDomElement userLibElement = libsElement.firstChildElement("userlib");
-            while (!userLibElement.isNull())
-            {
-                mUserLibs.append(userLibElement.text());
-                if(userLibElement.hasAttribute("lib"))
-                {
-                    mUserLibFolders.append(userLibElement.attribute("lib"));
-                }
-                else
-                {
-                    mUserLibFolders.append("");
-                }
-                userLibElement = userLibElement.nextSiblingElement(("userlib"));
-            }
+            loadLibrarySettings(libsElement);
 
+            //Load model settings
             QDomElement modelsElement = configRoot.firstChildElement("models");
-            QDomElement lastSessionElement = modelsElement.firstChildElement("lastsessionmodel");
-            while (!lastSessionElement.isNull())
-            {
-                mLastSessionModels.prepend(lastSessionElement.text());
-                lastSessionElement = lastSessionElement.nextSiblingElement("lastsessionmodel");
-            }
-            QDomElement recentModelElement = modelsElement.firstChildElement("recentmodel");
-            while (!recentModelElement.isNull())
-            {
-                mRecentModels.prepend(recentModelElement.text());
-                recentModelElement = recentModelElement.nextSiblingElement("recentmodel");
-            }
-            QDomElement recentGeneratorModelElement = modelsElement.firstChildElement("recentgeneratormodel");
-            while (!recentGeneratorModelElement.isNull())
-            {
-                mRecentGeneratorModels.prepend(recentGeneratorModelElement.text());
-                recentGeneratorModelElement = recentGeneratorModelElement.nextSiblingElement("recentgeneratormodel");
-            }
+            loadModelSettings(modelsElement);
 
-
+            //Load unit settings
             QDomElement unitsElement = configRoot.firstChildElement("units");
-            QDomElement defaultUnitElement = unitsElement.firstChildElement("defaultunit");
-            while (!defaultUnitElement.isNull())
-            {
-                mDefaultUnits.insert(defaultUnitElement.attribute(HMF_NAMETAG),
-                                     defaultUnitElement.attribute("unit"));
-                defaultUnitElement = defaultUnitElement.nextSiblingElement("defaultunit");
-            }
-
-            QDomElement customUnitElement = unitsElement.firstChildElement("customunit");
-            while (!customUnitElement.isNull())
-            {
-                QString physicalQuantity = customUnitElement.attribute(HMF_NAMETAG);
-                QString unitName = customUnitElement.attribute("unit");
-                double unitScale = customUnitElement.attribute("scale").toDouble();
-
-                if(!mCustomUnits.find(physicalQuantity).value().contains(unitName))
-                {
-                    mCustomUnits.find(physicalQuantity).value().insert(unitName, unitScale);
-                }
-                customUnitElement = customUnitElement.nextSiblingElement("customunit");
-            }
+            loadUnitSettings(unitsElement);
 
             //Load settings to PyDockWidget in MainWindow
             QDomElement pythonElement = configRoot.firstChildElement("python");
-            if(!pythonElement.isNull())
-            {
-                QDomElement lastScriptElement = pythonElement.firstChildElement("lastscript");
-                mLastScriptFile = lastScriptElement.attribute("file");
-
-                QDomElement initScriptElement = pythonElement.firstChildElement("initscript");
-                mInitScript = initScriptElement.text();
-            }
-
             QDomElement hcomElement = configRoot.firstChildElement("hcom");
-            if(!hcomElement.isNull())
-            {
-                QDomElement commandElement = hcomElement.firstChildElement("command");
-                while(!commandElement.isNull())
-                {
-                    mTerminalHistory.append(commandElement.text());
-                    commandElement = commandElement.nextSiblingElement("command");
-                }
-            }
-
+            loadScriptSettings(pythonElement, hcomElement);
         }
     }
     file.close();
@@ -450,182 +298,270 @@ void Configuration::loadDefaultsFromXml()
         }
         else
         {
+            verifyConfigurationCompatibility(configRoot);
+
                 //Load default user settings
             QDomElement settingsElement = configRoot.firstChildElement("settings");
-            if(!settingsElement.firstChildElement("librarystyle").isNull())
-                mLibraryStyle = parseDomIntegerNode(settingsElement.firstChildElement("librarystyle"));
-            if(!settingsElement.firstChildElement("alwaysloadlastsession").isNull())
-                mAlwaysLoadLastSession = parseDomBooleanNode(settingsElement.firstChildElement("showwelcomedialog"));
-            if(!settingsElement.firstChildElement("showpopuphelp").isNull())
-                mShowPopupHelp = parseDomBooleanNode(settingsElement.firstChildElement("showpopuphelp"));
-            if(!settingsElement.firstChildElement("nativestylesheet").isNull())
-                mUseNativeStyleSheet = parseDomBooleanNode(settingsElement.firstChildElement("nativestylesheet"));
-            if(!settingsElement.firstChildElement("backgroundcolor").isNull())
-                mBackgroundColor.setNamedColor(settingsElement.firstChildElement("backgroundcolor").text());
-            if(!settingsElement.firstChildElement("antialiasing").isNull())
-                mAntiAliasing = parseDomBooleanNode(settingsElement.firstChildElement("antialiasing"));
-            if(!settingsElement.firstChildElement("invertwheel").isNull())
-                mInvertWheel = parseDomBooleanNode(settingsElement.firstChildElement("invertwheel"));
-            if(!settingsElement.firstChildElement("snapping").isNull())
-                mSnapping = parseDomBooleanNode(settingsElement.firstChildElement("snapping"));
-            if(!settingsElement.firstChildElement("progressbar").isNull())
-                mEnableProgressBar = parseDomBooleanNode(settingsElement.firstChildElement("progressbar"));
-            if(!settingsElement.firstChildElement("progressbar_step").isNull())
-                mProgressBarStep = parseDomValueNode(settingsElement.firstChildElement("progressbar_step"));
-            if(!settingsElement.firstChildElement("multicore").isNull())
-                mUseMulticore = parseDomBooleanNode(settingsElement.firstChildElement("multicore"));
-            if(!settingsElement.firstChildElement("numberofthreads").isNull())
-                this->mNumberOfThreads = parseDomValueNode(settingsElement.firstChildElement("numberofthreads"));
-            if(!settingsElement.firstChildElement("togglenamesbuttonchecked").isNull())
-                mToggleNamesButtonCheckedLastSession = parseDomBooleanNode(settingsElement.firstChildElement("togglenamesbuttonchecked"));
-            if(!settingsElement.firstChildElement("toggleportsbuttonchecked").isNull())
-                mTogglePortsButtonCheckedLastSession = parseDomBooleanNode(settingsElement.firstChildElement("toggleportsbuttonchecked"));
-            if(!settingsElement.firstChildElement("groupmessagesbytag").isNull())
-                mGroupMessagesByTag = parseDomBooleanNode(settingsElement.firstChildElement("groupmessagesbytag"));
-            if(!settingsElement.firstChildElement("generationlimit").isNull())
-                mGenerationLimit = parseDomIntegerNode(settingsElement.firstChildElement("generationlimit"));
-            if(!settingsElement.firstChildElement("cachelogdata").isNull())
-                mCacheLogData = parseDomBooleanNode(settingsElement.firstChildElement("cachelogdata"));
-            if(!settingsElement.firstChildElement("loadmodeldir").isNull())
-                mLoadModelDir = settingsElement.firstChildElement("loadmodeldir").text();
-            if(!settingsElement.firstChildElement("modelgfxdir").isNull())
-                mModelGfxDir = settingsElement.firstChildElement("modelgfxdir").text();
-            if(!settingsElement.firstChildElement("plotdatadir").isNull())
-                mPlotDataDir = settingsElement.firstChildElement("plotdatadir").text();
-            if(!settingsElement.firstChildElement("plotgfxdir").isNull())
-                mPlotGfxDir = settingsElement.firstChildElement("plotgfxdir").text();
-            if(!settingsElement.firstChildElement("simulinkexportdir").isNull())
-                mSimulinkExportDir = settingsElement.firstChildElement("simulinkexportdir").text();
-            if(!settingsElement.firstChildElement("subsystemdir").isNull())
-                mSubsystemDir = settingsElement.firstChildElement("subsystemdir").text();
-            if(!settingsElement.firstChildElement("modelicamodelsdir").isNull())
-                mModelicaModelsDir = settingsElement.firstChildElement("modelicamodelsdir").text();
-            if(!settingsElement.firstChildElement("externallibdir").isNull())
-                mExternalLibDir = settingsElement.firstChildElement("externallibdir").text();
-            if(!settingsElement.firstChildElement("scriptdir").isNull())
-                mScriptDir = settingsElement.firstChildElement("scriptdir").text();
-            if(!settingsElement.firstChildElement("plotwindowdir").isNull())
-                mPlotWindowDir = settingsElement.firstChildElement("plotwindowdir").text();
-            if(!settingsElement.firstChildElement("fmudir").isNull())
-                mFmuImportDir = settingsElement.firstChildElement("fmudir").text();
-            if(!settingsElement.firstChildElement("fmuimportdir").isNull())
-                mFmuImportDir = settingsElement.firstChildElement("fmuimportdir").text();
-            if(!settingsElement.firstChildElement("fmuexportdir").isNull())
-                mFmuExportDir = settingsElement.firstChildElement("fmuexportdir").text();
+            loadUserSettings(settingsElement);
 
                 //Load default GUI style
             QDomElement styleElement = configRoot.firstChildElement(HMF_STYLETAG);
-            QDomElement penElement = styleElement.firstChildElement("penstyle");
-            while(!penElement.isNull())
-            {
-                QString type = penElement.attribute("type");
-                QString gfxType = penElement.attribute("gfxtype");
-                QString situation = penElement.attribute("situation");
-                QString color = penElement.attribute("color");
-                double width = penElement.attribute("width").toDouble();
-                Qt::PenStyle penstyle = Qt::PenStyle(penElement.attribute(HMF_STYLETAG).toInt());
-                Qt::PenCapStyle capStyle = Qt::PenCapStyle(penElement.attribute("capstyle").toInt());
-                QPen pen = QPen(QColor(color), width, penstyle, capStyle);
-
-                ConnectorStyleEnumT style;
-                if(type=="Power")
-                {
-                    style = PowerConnectorStyle;
-                }
-                else if(type=="Signal")
-                {
-                    style = SignalConnectorStyle;
-                }
-                else if (type=="Broken")
-                {
-                    style = BrokenConnectorStyle;
-                }
-                else
-                {
-                    style = UndefinedConnectorStyle;
-                }
-
-                if(!mPenStyles.contains(style))
-                {
-                    QMap<QString, QMap<QString, QPen> > tempMap;
-                    mPenStyles.insert(style, tempMap);
-                }
-                if(!mPenStyles.find(style).value().contains(gfxType))
-                {
-                    QMap<QString, QPen> tempMap;
-                    mPenStyles.find(style).value().insert(gfxType, tempMap);
-                }
-                mPenStyles.find(style).value().find(gfxType).value().insert(situation, pen);
-
-                penElement = penElement.nextSiblingElement("penstyle");
-            }
-            QDomElement paletteElement = styleElement.firstChildElement("palette");
-            double red, green, blue;
-            QColor windowText, button, light, dark, mid, text, bright_text, base, window;
-            parseRgbString(paletteElement.attribute("windowText"), red, green, blue);
-            windowText.setRgb(red, green, blue);
-            parseRgbString(paletteElement.attribute("button"), red, green, blue);
-            button.setRgb(red, green, blue);
-            parseRgbString(paletteElement.attribute("light"), red, green, blue);
-            light.setRgb(red, green, blue);
-            parseRgbString(paletteElement.attribute("dark"), red, green, blue);
-            dark.setRgb(red, green, blue);
-            parseRgbString(paletteElement.attribute("mid"), red, green, blue);
-            mid.setRgb(red, green, blue);
-            parseRgbString(paletteElement.attribute("text"), red, green, blue);
-            text.setRgb(red, green, blue);
-            parseRgbString(paletteElement.attribute("bright_text"), red, green, blue);
-            bright_text.setRgb(red, green, blue);
-            parseRgbString(paletteElement.attribute("base"), red, green, blue);
-            base.setRgb(red, green, blue);
-            parseRgbString(paletteElement.attribute("window"), red, green, blue);
-            window.setRgb(red, green, blue);
-            mPalette = QPalette(windowText, button, light, dark, mid, text, bright_text, base, window);
-            QDomElement fontElement = styleElement.firstChildElement("font");
-            mFont = QFont(fontElement.attribute("family"), fontElement.attribute("size").toInt());
-            mFont.setStyleStrategy(QFont::PreferAntialias);
-            mFont.setStyleHint(QFont::SansSerif);
-            qDebug() << "Setting font to: " << mFont.family();
-            QDomElement styleSheetElement = styleElement.firstChildElement("stylesheet");
-            mStyleSheet.append(styleSheetElement.text());
+            loadStyleSettings(styleElement);
 
                 //Load default units
             QDomElement unitsElement = configRoot.firstChildElement("units");
-            QDomElement defaultUnitElement = unitsElement.firstChildElement("defaultunit");
-            while (!defaultUnitElement.isNull())
-            {
-                mDefaultUnits.insert(defaultUnitElement.attribute(HMF_NAMETAG),
-                                     defaultUnitElement.attribute("unit"));
-                defaultUnitElement = defaultUnitElement.nextSiblingElement("defaultunit");
-            }
-            mCustomUnits.insert("Pressure", QMap<QString, double>());
-            mCustomUnits.insert("Flow", QMap<QString, double>());
-            mCustomUnits.insert("Force", QMap<QString, double>());
-            mCustomUnits.insert("Position", QMap<QString, double>());
-            mCustomUnits.insert("Velocity", QMap<QString, double>());
-            mCustomUnits.insert("Torque", QMap<QString, double>());
-            mCustomUnits.insert("Angle", QMap<QString, double>());
-            mCustomUnits.insert("AngularVelocity", QMap<QString, double>());
-            mCustomUnits.insert("Value", QMap<QString, double>());
-            mCustomUnits.insert("Voltage", QMap<QString, double>());
-            mCustomUnits.insert("Current", QMap<QString, double>());
-            QDomElement customUnitElement = unitsElement.firstChildElement("customunit");
-            while (!customUnitElement.isNull())
-            {
-                QString physicalQuantity = customUnitElement.attribute(HMF_NAMETAG);
-                QString unitName = customUnitElement.attribute("unit");
-                double unitScale = customUnitElement.attribute("scale").toDouble();
-                if(!mCustomUnits.find(physicalQuantity).value().contains(unitName))
-                {
-                    mCustomUnits.find(physicalQuantity).value().insert(unitName, unitScale);
-                }
-                customUnitElement = customUnitElement.nextSiblingElement("customunit");
-            }
+            loadUnitSettings(unitsElement);
         }
     }
     file.close();
 
     return;
+}
+
+//! @brief Utility function that loads user settings from dom element
+void Configuration::loadUserSettings(QDomElement &rDomElement)
+{
+    if(!rDomElement.firstChildElement("librarystyle").isNull())
+        mLibraryStyle = parseDomIntegerNode(rDomElement.firstChildElement("librarystyle"));
+    if(!rDomElement.firstChildElement("alwaysloadlastsession").isNull())
+        mAlwaysLoadLastSession = parseDomBooleanNode(rDomElement.firstChildElement("showwelcomedialog"));
+    if(!rDomElement.firstChildElement("showpopuphelp").isNull())
+        mShowPopupHelp = parseDomBooleanNode(rDomElement.firstChildElement("showpopuphelp"));
+    if(!rDomElement.firstChildElement("nativestylesheet").isNull())
+        mUseNativeStyleSheet = parseDomBooleanNode(rDomElement.firstChildElement("nativestylesheet"));
+    if(!rDomElement.firstChildElement("backgroundcolor").isNull())
+        mBackgroundColor.setNamedColor(rDomElement.firstChildElement("backgroundcolor").text());
+    if(!rDomElement.firstChildElement("antialiasing").isNull())
+        mAntiAliasing = parseDomBooleanNode(rDomElement.firstChildElement("antialiasing"));
+    if(!rDomElement.firstChildElement("invertwheel").isNull())
+        mInvertWheel = parseDomBooleanNode(rDomElement.firstChildElement("invertwheel"));
+    if(!rDomElement.firstChildElement("snapping").isNull())
+        mSnapping = parseDomBooleanNode(rDomElement.firstChildElement("snapping"));
+    if(!rDomElement.firstChildElement("progressbar").isNull())
+        mEnableProgressBar = parseDomBooleanNode(rDomElement.firstChildElement("progressbar"));
+    if(!rDomElement.firstChildElement("progressbar_step").isNull())
+        mProgressBarStep = parseDomValueNode(rDomElement.firstChildElement("progressbar_step"));
+    if(!rDomElement.firstChildElement("multicore").isNull())
+        mUseMulticore = parseDomBooleanNode(rDomElement.firstChildElement("multicore"));
+    if(!rDomElement.firstChildElement("numberofthreads").isNull())
+        mNumberOfThreads = parseDomValueNode(rDomElement.firstChildElement("numberofthreads"));
+    if(!rDomElement.firstChildElement("togglenamesbuttonchecked").isNull())
+        mToggleNamesButtonCheckedLastSession = parseDomBooleanNode(rDomElement.firstChildElement("togglenamesbuttonchecked"));
+    if(!rDomElement.firstChildElement("toggleportsbuttonchecked").isNull())
+        mTogglePortsButtonCheckedLastSession = parseDomBooleanNode(rDomElement.firstChildElement("toggleportsbuttonchecked"));
+    if(!rDomElement.firstChildElement("groupmessagesbytag").isNull())
+        mGroupMessagesByTag = parseDomBooleanNode(rDomElement.firstChildElement("groupmessagesbytag"));
+    if(!rDomElement.firstChildElement("generationlimit").isNull())
+        mGenerationLimit = parseDomIntegerNode(rDomElement.firstChildElement("generationlimit"));
+    if(!rDomElement.firstChildElement("cachelogdata").isNull())
+        mCacheLogData = parseDomBooleanNode(rDomElement.firstChildElement("cachelogdata"));
+    if(!rDomElement.firstChildElement("loadmodeldir").isNull())
+        mLoadModelDir = rDomElement.firstChildElement("loadmodeldir").text();
+    if(!rDomElement.firstChildElement("modelgfxdir").isNull())
+        mModelGfxDir = rDomElement.firstChildElement("modelgfxdir").text();
+    if(!rDomElement.firstChildElement("plotdatadir").isNull())
+        mPlotDataDir = rDomElement.firstChildElement("plotdatadir").text();
+    if(!rDomElement.firstChildElement("plotgfxdir").isNull())
+        mPlotGfxDir = rDomElement.firstChildElement("plotgfxdir").text();
+    if(!rDomElement.firstChildElement("simulinkexportdir").isNull())
+        mSimulinkExportDir = rDomElement.firstChildElement("simulinkexportdir").text();
+    if(!rDomElement.firstChildElement("subsystemdir").isNull())
+        mSubsystemDir = rDomElement.firstChildElement("subsystemdir").text();
+    if(!rDomElement.firstChildElement("modelicamodelsdir").isNull())
+        mModelicaModelsDir = rDomElement.firstChildElement("modelicamodelsdir").text();
+    if(!rDomElement.firstChildElement("externallibdir").isNull())
+        mExternalLibDir = rDomElement.firstChildElement("externallibdir").text();
+    if(!rDomElement.firstChildElement("scriptdir").isNull())
+        mScriptDir = rDomElement.firstChildElement("scriptdir").text();
+    if(!rDomElement.firstChildElement("plotwindowdir").isNull())
+        mPlotWindowDir = rDomElement.firstChildElement("plotwindowdir").text();
+    if(!rDomElement.firstChildElement("fmudir").isNull())
+        mFmuImportDir = rDomElement.firstChildElement("fmudir").text();
+    if(!rDomElement.firstChildElement("fmuimportdir").isNull())
+        mFmuImportDir = rDomElement.firstChildElement("fmuimportdir").text();
+    if(!rDomElement.firstChildElement("fmuexportdir").isNull())
+        mFmuExportDir = rDomElement.firstChildElement("fmuexportdir").text();
+}
+
+
+
+//! @brief Utility function that loads style settings from dom element
+void Configuration::loadStyleSettings(QDomElement &rDomElement)
+{
+    QDomElement penElement = rDomElement.firstChildElement("penstyle");
+    while(!penElement.isNull())
+    {
+        QString type = penElement.attribute("type");
+        QString gfxType = penElement.attribute("gfxtype");
+        QString situation = penElement.attribute("situation");
+        QString color = penElement.attribute("color");
+        double width = penElement.attribute("width").toDouble();
+        Qt::PenStyle penstyle = Qt::PenStyle(penElement.attribute(HMF_STYLETAG).toInt());
+        Qt::PenCapStyle capStyle = Qt::PenCapStyle(penElement.attribute("capstyle").toInt());
+        QPen pen = QPen(QColor(color), width, penstyle, capStyle);
+
+        ConnectorStyleEnumT style;
+        if(type=="Power") style = PowerConnectorStyle;
+        if(type=="Signal") style = SignalConnectorStyle;
+        if(type=="Broken") style = BrokenConnectorStyle;
+        if(type=="Undefined") style = UndefinedConnectorStyle;
+
+        if(!mPenStyles.contains(style))
+        {
+            QMap<QString, QMap<QString, QPen> > tempMap;
+            mPenStyles.insert(style, tempMap);
+        }
+        if(!mPenStyles.find(style).value().contains(gfxType))
+        {
+            QMap<QString, QPen> tempMap;
+            mPenStyles.find(style).value().insert(gfxType, tempMap);
+        }
+        mPenStyles.find(style).value().find(gfxType).value().insert(situation, pen);
+
+        penElement = penElement.nextSiblingElement("penstyle");
+    }
+    QDomElement paletteElement = rDomElement.firstChildElement("palette");
+    if(!paletteElement.isNull())
+    {
+        double red, green, blue;
+        QColor windowText, button, light, dark, mid, text, bright_text, base, window;
+        parseRgbString(paletteElement.attribute("windowText"), red, green, blue);
+        windowText.setRgb(red, green, blue);
+        parseRgbString(paletteElement.attribute("button"), red, green, blue);
+        button.setRgb(red, green, blue);
+        parseRgbString(paletteElement.attribute("light"), red, green, blue);
+        light.setRgb(red, green, blue);
+        parseRgbString(paletteElement.attribute("dark"), red, green, blue);
+        dark.setRgb(red, green, blue);
+        parseRgbString(paletteElement.attribute("mid"), red, green, blue);
+        mid.setRgb(red, green, blue);
+        parseRgbString(paletteElement.attribute("text"), red, green, blue);
+        text.setRgb(red, green, blue);
+        parseRgbString(paletteElement.attribute("bright_text"), red, green, blue);
+        bright_text.setRgb(red, green, blue);
+        parseRgbString(paletteElement.attribute("base"), red, green, blue);
+        base.setRgb(red, green, blue);
+        parseRgbString(paletteElement.attribute("window"), red, green, blue);
+        window.setRgb(red, green, blue);
+        mPalette = QPalette(windowText, button, light, dark, mid, text, bright_text, base, window);
+    }
+    QDomElement fontElement = rDomElement.firstChildElement("font");
+    if(!fontElement.isNull())
+    {
+        mFont = QFont(fontElement.attribute("family"), fontElement.attribute("size").toInt());
+        mFont.setStyleStrategy(QFont::PreferAntialias);
+        mFont.setStyleHint(QFont::SansSerif);
+    }
+    QDomElement styleSheetElement = rDomElement.firstChildElement("stylesheet");
+    if(!styleSheetElement.isNull())
+    {
+        mStyleSheet.append(styleSheetElement.text());
+    }
+}
+
+
+//! @brief Utility  functio nthat loads default units from xml
+void Configuration::loadUnitSettings(QDomElement &rDomElement)
+{
+    QDomElement defaultUnitElement = rDomElement.firstChildElement("defaultunit");
+    while (!defaultUnitElement.isNull())
+    {
+        mDefaultUnits.insert(defaultUnitElement.attribute(HMF_NAMETAG),
+                             defaultUnitElement.attribute("unit"));
+        defaultUnitElement = defaultUnitElement.nextSiblingElement("defaultunit");
+    }
+
+    if(!mCustomUnits.contains("Pressure")) mCustomUnits.insert("Pressure", QMap<QString, double>());
+    if(!mCustomUnits.contains("Flow")) mCustomUnits.insert("Flow", QMap<QString, double>());
+    if(!mCustomUnits.contains("Force")) mCustomUnits.insert("Force", QMap<QString, double>());
+    if(!mCustomUnits.contains("Position")) mCustomUnits.insert("Position", QMap<QString, double>());
+    if(!mCustomUnits.contains("Velocity")) mCustomUnits.insert("Velocity", QMap<QString, double>());
+    if(!mCustomUnits.contains("Torque")) mCustomUnits.insert("Torque", QMap<QString, double>());
+    if(!mCustomUnits.contains("Angle")) mCustomUnits.insert("Angle", QMap<QString, double>());
+    if(!mCustomUnits.contains("AngularVelocity")) mCustomUnits.insert("AngularVelocity", QMap<QString, double>());
+    if(!mCustomUnits.contains("Value")) mCustomUnits.insert("Value", QMap<QString, double>());
+    if(!mCustomUnits.contains("Voltage")) mCustomUnits.insert("Voltage", QMap<QString, double>());
+    if(!mCustomUnits.contains("Current")) mCustomUnits.insert("Current", QMap<QString, double>());
+    QDomElement customUnitElement = rDomElement.firstChildElement("customunit");
+    while (!customUnitElement.isNull())
+    {
+        QString physicalQuantity = customUnitElement.attribute(HMF_NAMETAG);
+        QString unitName = customUnitElement.attribute("unit");
+        double unitScale = customUnitElement.attribute("scale").toDouble();
+        if(!mCustomUnits.find(physicalQuantity).value().contains(unitName))
+        {
+            mCustomUnits.find(physicalQuantity).value().insert(unitName, unitScale);
+        }
+        customUnitElement = customUnitElement.nextSiblingElement("customunit");
+    }
+}
+
+
+//! @brief Utility function that loads library settings
+void Configuration::loadLibrarySettings(QDomElement &rDomElement)
+{
+    QDomElement userLibElement = rDomElement.firstChildElement("userlib");
+    while (!userLibElement.isNull())
+    {
+        mUserLibs.append(userLibElement.text());
+        if(userLibElement.hasAttribute("lib"))
+        {
+            mUserLibFolders.append(userLibElement.attribute("lib"));
+        }
+        else
+        {
+            mUserLibFolders.append("");
+        }
+        userLibElement = userLibElement.nextSiblingElement(("userlib"));
+    }
+}
+
+
+//! @brief Utility function that loads model settings
+void Configuration::loadModelSettings(QDomElement &rDomElement)
+{
+    QDomElement lastSessionElement = rDomElement.firstChildElement("lastsessionmodel");
+    while (!lastSessionElement.isNull())
+    {
+        mLastSessionModels.prepend(lastSessionElement.text());
+        lastSessionElement = lastSessionElement.nextSiblingElement("lastsessionmodel");
+    }
+    QDomElement recentModelElement = rDomElement.firstChildElement("recentmodel");
+    while (!recentModelElement.isNull())
+    {
+        mRecentModels.prepend(recentModelElement.text());
+        recentModelElement = recentModelElement.nextSiblingElement("recentmodel");
+    }
+    QDomElement recentGeneratorModelElement = rDomElement.firstChildElement("recentgeneratormodel");
+    while (!recentGeneratorModelElement.isNull())
+    {
+        mRecentGeneratorModels.prepend(recentGeneratorModelElement.text());
+        recentGeneratorModelElement = recentGeneratorModelElement.nextSiblingElement("recentgeneratormodel");
+    }
+}
+
+
+//! @brief Utility function that loads script settings from dom elements
+void Configuration::loadScriptSettings(QDomElement &rPythonElement, QDomElement &rHcomElement)
+{
+    if(!rPythonElement.isNull())
+    {
+        QDomElement lastScriptElement = rPythonElement.firstChildElement("lastscript");
+        mLastScriptFile = lastScriptElement.attribute("file");
+
+        QDomElement initScriptElement = rPythonElement.firstChildElement("initscript");
+        mInitScript = initScriptElement.text();
+    }
+
+    if(!rHcomElement.isNull())
+    {
+        QDomElement commandElement = rHcomElement.firstChildElement("command");
+        while(!commandElement.isNull())
+        {
+            mTerminalHistory.append(commandElement.text());
+            commandElement = commandElement.nextSiblingElement("command");
+        }
+    }
 }
 
 

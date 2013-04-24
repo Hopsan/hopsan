@@ -610,7 +610,7 @@ ModelObject *Port::getParentModelObject()
 //! Plots the variable with name 'dataName' in the node the port is connected to.
 //! @param dataName tells which variable to plot.
 //! @param dataUnit sets the unit to show in the plot (has no connection to data, just text).
-PlotWindow *Port::plot(QString dataName, QString dataUnit, QColor desiredCurveColor)
+PlotWindow *Port::plot(QString dataName, QString /*dataUnit*/, QColor desiredCurveColor)
 {
     QString fullName = makeConcatName(mpParentModelObject->getName(),this->getName(),dataName);
     //! @todo  why do we have unit here

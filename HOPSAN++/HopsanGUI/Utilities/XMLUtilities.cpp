@@ -454,7 +454,7 @@ bool verifyHmfFormatVersion(const QString hmfVersion)
 //! @brief Handles compatibility issues for elements loaded from hmf files
 //! @todo Add check for separate orifice areas in the rest of the valves
 //! @todo coreVersion check will not work later when core can save some data by itself, need to use guiversion also
-void verifyHmfComponentCompatibility(QDomElement &element, const QString hmfVersion, QString coreVersion)
+void verifyHmfComponentCompatibility(QDomElement &element, const QString /*hmfVersion*/, QString coreVersion)
 {
     // For all versions older then 0.6.0 and all 0.6.x DEV versions run the following
     if (coreVersion < "0.6.0" || (coreVersion.contains("0.6.x_r")))
@@ -536,7 +536,20 @@ void verifyHmfComponentCompatibility(QDomElement &element, const QString hmfVers
 void verifyConfigurationCompatibility(QDomElement &rConfigElement)
 {
     qDebug() << "Current version = " << HOPSANGUIVERSION << ", config version = " << rConfigElement.attribute(HMF_HOPSANGUIVERSIONTAG);
-    //Nothing to do yet
+
+    QDomElement unitsElement = rConfigElement.firstChildElement("units");
+    if(!unitsElement.isNull())
+    {
+        QDomElement customUnitElement = unitsElement.firstChildElement("customunit");
+        while(!customUnitElement.isNull())
+        {
+            if(customUnitElement.attribute("name") == "Angular Velocity")
+            {
+                customUnitElement.setAttribute("name", "AngularVelocity");
+            }
+            customUnitElement = customUnitElement.nextSiblingElement("customunit");
+        }
+    }
 }
 
 void updateRenamedComponentType(QDomElement &rDomElement, const QString oldType, const QString newType)

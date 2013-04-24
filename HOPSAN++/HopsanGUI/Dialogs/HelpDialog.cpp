@@ -38,7 +38,7 @@
 //! Constructor for the help dialog
 //! @param parent Pointer to the main window
 HelpDialog::HelpDialog(MainWindow *parent)
-    : QDialog()
+    : QDialog(parent)
 {
     this->setWindowIcon(gpMainWindow->windowIcon());
     this->setObjectName("HelpDialog");
