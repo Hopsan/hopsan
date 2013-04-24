@@ -522,7 +522,7 @@ Expression Expression::fromEquation(const Expression left, const Expression righ
 //!
 //! @param variables Map with variable names and values
 //! @returns Evaluated value of expression
-double Expression::evaluate(const QMap<QString, double> variables) const
+double Expression::evaluate(const QMap<QString, double> &variables) const
 {
     double retval = 0;
 
