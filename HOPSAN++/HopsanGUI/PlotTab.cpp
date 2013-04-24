@@ -77,7 +77,7 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
         mpZoomerLeft[plotID]->setTrackerMode(QwtPicker::AlwaysOff);
         mpZoomerLeft[plotID]->setMousePattern(QwtEventPattern::MouseSelect2, Qt::RightButton, Qt::ControlModifier);
         mpZoomerLeft[plotID]->setMousePattern(QwtEventPattern::MouseSelect3, Qt::RightButton);
-        mpZoomerLeft[plotID]->setZoomBase(QRectF());
+        //mpZoomerLeft[plotID]->setZoomBase(QRectF());
         mpZoomerLeft[plotID]->setEnabled(false);
 
         mpZoomerRight[plotID] = new QwtPlotZoomer( QwtPlot::xTop, QwtPlot::yRight, mpQwtPlots[plotID]->canvas());   //Zoomer for right y axis
@@ -1634,8 +1634,12 @@ void PlotTab::enableZoom(bool value)
 
 void PlotTab::resetZoom()
 {
+//    qDebug() << "Zoom stack L0: " << mpZoomerLeft[FirstPlot]->zoomStack().size();
+//    qDebug() << "Zoom stack R0: " << mpZoomerRight[FirstPlot]->zoomStack().size();
     mpZoomerLeft[FirstPlot]->zoom(0);
     mpZoomerRight[FirstPlot]->zoom(0);
+    mpZoomerLeft[SecondPlot]->zoom(0);
+    mpZoomerRight[SecondPlot]->zoom(0);
     rescaleAxesToCurves();
 }
 
@@ -1948,9 +1952,8 @@ bool PlotTab::isZoomed(const int plotId) const
 {
 //    uint l = mpZoomerLeft[plotId]->zoomRectIndex();
 //    uint r = mpZoomerRight[plotId]->zoomRectIndex();
-//    qDebug() << "l,r: " << l <<" "<< r;
-//    return (l!=0) && (r!=0);
-    return (mpZoomerLeft[plotId]->zoomRectIndex() != 0) && (mpZoomerRight[plotId]->zoomRectIndex() != 0);
+//    qDebug() << "id,l,r: " << plotId <<" "<< l <<" "<< r;
+    return (mpZoomerLeft[plotId]->zoomRectIndex() > 0);// && (mpZoomerRight[plotId]->zoomRectIndex() > 1);
 }
 
 
