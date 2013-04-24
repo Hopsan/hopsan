@@ -9,10 +9,10 @@
             <port x="0.45" y="0" a="270" name="Pa"/>
             <port x="0.71" y="0" a="270" name="Pb"/>
             <port x="0.71" y="1" a="90" name="Pt"/>
-            <port x="0" y="0.68" a="180" name="Pxvta"/>
-            <port x="0" y="0.78" a="180" name="Pxvtb"/>
-            <port x="0" y="0.37" a="180" name="Pxvpa"/>
-            <port x="0" y="0.47" a="180" name="Pxvpb"/>
+            <port x="0" y="0.68" a="180" name="xvta"/>
+            <port x="0" y="0.78" a="180" name="xvtb"/>
+            <port x="0" y="0.37" a="180" name="xvpa"/>
+            <port x="0" y="0.47" a="180" name="xvpb"/>
             <port x="0.45" y="1" a="90" name="Pp"/>
         </ports>
     </modelobject>
