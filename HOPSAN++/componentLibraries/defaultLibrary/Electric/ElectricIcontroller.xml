@@ -6,7 +6,7 @@
             <icon scale="1" path="ElectricIcontroller.svg" iconrotation="ON" type="iso"/>
         </icons>
         <ports>
-            <port x="0.5" y="0" a="270" name="Piref"/>
+            <port x="0.5" y="0" a="270" name="iref"/>
             <port x="0" y="0.2782948064" a="180" name="Pel1"/>
             <port x="1" y="0.2782948064" a="0" name="Pel2"/>
         </ports>

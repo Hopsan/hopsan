@@ -6,8 +6,8 @@
             <icon scale="1" path="ElectricBattery.svg" iconrotation="ON" type="iso"/>
         </icons>
         <ports>
-            <port x="1" y="0.3" a="0" name="Pubatt"/>
-            <port x="1" y="0.1" a="0" name="Psoc"/>
+            <port x="1" y="0.3" a="0" name="ubatt"/>
+            <port x="1" y="0.1" a="0" name="soc"/>
             <port x="0.5" y="0" a="270" name="Pel1"/>
         </ports>
     </modelobject>

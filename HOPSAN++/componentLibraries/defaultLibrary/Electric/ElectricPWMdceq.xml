@@ -6,7 +6,7 @@
             <icon scale="1" path="ElectricPWMdceq.svg" iconrotation="ON" type="iso"/>
         </icons>
         <ports>
-            <port x="0.5" y="0" enabled="true" a="270" name="Ptfac" autoplaced="true"/>
+            <port x="0.5" y="0" enabled="true" a="270" name="tfac" autoplaced="true"/>
             <port x="0" y="0.25" enabled="true" a="180" name="Pel1" autoplaced="true"/>
             <port x="1" y="0.25" enabled="true" a="0" name="Pel2" autoplaced="true"/>
         </ports>
