@@ -100,6 +100,7 @@ void Configuration::saveToXml()
                 QString type;
                 if(it1.key() == PowerConnectorStyle) type = "Power";
                 if(it1.key() == SignalConnectorStyle) type = "Signal";
+                if(it1.key() == BrokenConnectorStyle) type = "Broken";
                 if(it1.key() == UndefinedConnectorStyle) type = "Undefined";
 
                 QDomElement tempElement = appendDomElement(style, "penstyle");
@@ -309,6 +310,7 @@ void Configuration::loadFromXml()
                 ConnectorStyleEnumT style;
                 if(type=="Power") style = PowerConnectorStyle;
                 if(type=="Signal") style = SignalConnectorStyle;
+                if(type=="Broken") style = BrokenConnectorStyle;
                 if(type=="Undefined") style = UndefinedConnectorStyle;
 
                 if(!mPenStyles.contains(style))
@@ -534,6 +536,10 @@ void Configuration::loadDefaultsFromXml()
                 {
                     style = SignalConnectorStyle;
                 }
+                else if (type=="Broken")
+                {
+                    style = BrokenConnectorStyle;
+                }
                 else
                 {
                     style = UndefinedConnectorStyle;
@@ -599,7 +605,7 @@ void Configuration::loadDefaultsFromXml()
             mCustomUnits.insert("Velocity", QMap<QString, double>());
             mCustomUnits.insert("Torque", QMap<QString, double>());
             mCustomUnits.insert("Angle", QMap<QString, double>());
-            mCustomUnits.insert("Angular Velocity", QMap<QString, double>());
+            mCustomUnits.insert("AngularVelocity", QMap<QString, double>());
             mCustomUnits.insert("Value", QMap<QString, double>());
             mCustomUnits.insert("Voltage", QMap<QString, double>());
             mCustomUnits.insert("Current", QMap<QString, double>());

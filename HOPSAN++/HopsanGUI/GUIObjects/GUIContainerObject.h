@@ -281,8 +281,6 @@ protected:
     virtual void addExternalContainerPortObject(ModelObject *pModelObject);
 
     // Helpfunctions for creating connectors
-    void startConnector(Port *startPort);
-    bool finilizeConnector(Port *endPort);
     void disconnectGroupPortFromItsRealPort(Port *pGroupPort, Port *pRealPort);
 
     //Protected overloaded Qt methods

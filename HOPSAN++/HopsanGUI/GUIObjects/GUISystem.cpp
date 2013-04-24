@@ -752,24 +752,24 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         {
             if(!loadConnector(xmlSubObject, this, NoUndo))
             {
-                failedConnections.append(xmlSubObject);
+//                failedConnections.append(xmlSubObject);
             }
             xmlSubObject = xmlSubObject.nextSiblingElement(HMF_CONNECTORTAG);
         }
-        //If some connectors failed to load, it could mean that they were loaded in wrong order.
-        //Try again until they work, or abort if number of attempts are greater than maximum possible for success.
-        int stop=failedConnections.size()*(failedConnections.size()+1)/2;
-        int i=0;
-        while(!failedConnections.isEmpty())
-        {
-            if(!loadConnector(failedConnections.first(), this, NoUndo))
-            {
-                failedConnections.append(failedConnections.first());
-            }
-            failedConnections.removeFirst();
-            ++i;
-            if(i>stop) break;
-        }
+//        //If some connectors failed to load, it could mean that they were loaded in wrong order.
+//        //Try again until they work, or abort if number of attempts are greater than maximum possible for success.
+//        int stop=failedConnections.size()*(failedConnections.size()+1)/2;
+//        int i=0;
+//        while(!failedConnections.isEmpty())
+//        {
+//            if(!loadConnector(failedConnections.first(), this, NoUndo))
+//            {
+//                failedConnections.append(failedConnections.first());
+//            }
+//            failedConnections.removeFirst();
+//            ++i;
+//            if(i>stop) break;
+//        }
 
 
         //8. Load favorite variables

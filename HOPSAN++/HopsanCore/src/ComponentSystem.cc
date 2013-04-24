@@ -1690,12 +1690,13 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
         mpComponentSystem->addErrorMessage("Trying to connect WritePort and PowerPort to same node");
         return false;
     }
-    if ((n_PowerPorts == 0) && (n_WritePorts == 0) && (n_SystemPorts == 0))
-    {
-        cout << "Trying to connect only ReadPorts" << endl;
-        mpComponentSystem->addErrorMessage("Trying to connect only ReadPorts");
-        return false;
-    }
+    //! @todo maybe this only readport check should give a warning, but only if we do Strict check mode (maybe send in a bool for that), but we want to allow it when loading in case connectors are saved in the wrong order
+//    if ((n_PowerPorts == 0) && (n_WritePorts == 0) && (n_SystemPorts == 0))
+//    {
+//        cout << "Trying to connect only ReadPorts" << endl;
+//        mpComponentSystem->addErrorMessage("Trying to connect only ReadPorts");
+//        return false;
+//    }
 
     //cout << "nQ: " << n_Qcomponents << " nC: " << n_Ccomponents << endl;
 

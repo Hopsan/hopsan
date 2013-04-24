@@ -27,6 +27,12 @@
         <penstyle width="1.5" situation="Primary" capstyle="32" type="Undefined" style="1" color="#778899" gfxtype="User"/>
         <penstyle width="2" situation="Active" capstyle="32" type="Undefined" style="1" color="#ff0000" gfxtype="User"/>
         <penstyle width="2" situation="Hover" capstyle="32" type="Undefined" style="1" color="#8b0000" gfxtype="User"/>
+        <penstyle width="2" situation="Primary" capstyle="32" type="Broken" style="2" color="#F660AB" gfxtype="Iso"/>
+        <penstyle width="4" situation="Active" capstyle="32" type="Broken" style="2" color="#F660AB" gfxtype="Iso"/>
+        <penstyle width="3" situation="Hover" capstyle="32" type="Broken" style="2" color="#F660AB" gfxtype="Iso"/>
+        <penstyle width="2" situation="Primary" capstyle="32" type="Broken" style="2" color="#F660AB" gfxtype="User"/>
+        <penstyle width="4" situation="Active" capstyle="32" type="Broken" style="2" color="#F660AB" gfxtype="User"/>
+        <penstyle width="3" situation="Hover" capstyle="32" type="Broken" style="2" color="#F660AB" gfxtype="User"/>
         <penstyle width="2" situation="Active" capstyle="32" type="Power" style="1" color="#ff0000" gfxtype="Iso"/>
         <penstyle width="2" situation="Hover" capstyle="32" type="Power" style="1" color="#8b0000" gfxtype="Iso"/>
         <penstyle width="1" situation="Primary" capstyle="32" type="Power" style="1" color="#000000" gfxtype="Iso"/>
@@ -113,7 +119,7 @@
         <defaultunit unit="V" name="Voltage"/>
         <defaultunit unit="A" name="Current"/>
         <defaultunit unit="rad" name="Angle"/>
-        <defaultunit unit="rad/s" name="Angular Velocity"/>
+        <defaultunit unit="rad/s" name="AngularVelocity"/>
         <defaultunit unit="m^3/s" name="Flow"/>
         <defaultunit unit="N" name="Force"/>
         <defaultunit unit="m" name="Position"/>
@@ -124,10 +130,10 @@
         <customunit unit="A" scale="1" name="Current"/>
         <customunit unit="deg" scale="57.296" name="Angle"/>
         <customunit unit="rad" scale="1" name="Angle"/>
-        <customunit unit="deg/s" scale="57.296" name="Angular Velocity"/>
-        <customunit unit="rad/s" scale="1" name="Angular Velocity"/>
-        <customunit unit="rev/s" scale="0.159155" name="Angular Velocity"/>
-        <customunit unit="rpm" scale="9.549296585" name="Angular Velocity"/>
+        <customunit unit="deg/s" scale="57.296" name="AngularVelocity"/>
+        <customunit unit="rad/s" scale="1" name="AngularVelocity"/>
+        <customunit unit="rev/s" scale="0.159155" name="AngularVelocity"/>
+        <customunit unit="rpm" scale="9.549296585" name="AngularVelocity"/>
         <customunit unit="l/min" scale="60000" name="Flow"/>
         <customunit unit="m^3/s" scale="1" name="Flow"/>
         <customunit unit="N" scale="1" name="Force"/>

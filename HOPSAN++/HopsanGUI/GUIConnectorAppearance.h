@@ -32,22 +32,23 @@
 class ConnectorAppearance
 {
 public:
-    //GUIConnectorAppearance();
     ConnectorAppearance(QString porttype, GraphicsTypeEnumT gfxType);
+
     void setStyle(ConnectorStyleEnumT style);
-    ConnectorStyleEnumT getStyle();
+    ConnectorStyleEnumT getStyle() const;
     void setIsoStyle(GraphicsTypeEnumT gfxType);
     void setTypeAndIsoStyle(QString porttype, GraphicsTypeEnumT gfxType);
-    QPen getPen(ConnectorStyleEnumT style, GraphicsTypeEnumT gfxType, QString situation);
-    QPen getPen(QString situation);
-    void setCustomColor(QColor color);
-    QColor getCustomColor();
+
+    QPen getPen(ConnectorStyleEnumT style, GraphicsTypeEnumT gfxType, const QString &rSituation) const;
+    QPen getPen(const QString &rSituation) const;
+
+    void setCustomColor(const QColor &rColor);
+    QColor getCustomColor() const;
 
 private:
     ConnectorStyleEnumT mConnectorStyle;
     GraphicsTypeEnumT mGfxType;
     QColor mCustomColor;
-
 };
 
 #endif // GUICONNECTORAPPEARANCE_H

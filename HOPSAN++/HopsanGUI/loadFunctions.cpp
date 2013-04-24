@@ -104,20 +104,21 @@ bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, UndoSt
     bool success=false;
     Port *startPort = pContainer->getModelObjectPort(startComponentName, startPortName);
     Port *endPort = pContainer->getModelObjectPort(endComponentName, endPortName);
-    if ((startPort != 0) && (endPort != 0))
-    {
-        Connector* pConn = pContainer->createConnector(startPort, endPort, NoUndo);
-        if (pConn != 0)
-        {
-            pConn->setPointsAndGeometries(pointVector, geometryList);
-            pConn->setDashed(isDashed);
-            pConn->refreshConnectorAppearance();
-            pConn->setColor(color);
 
-            if(undoSettings == Undo)
-            {
-                pContainer->getUndoStackPtr()->registerAddedConnector(pConn);
-            }
+    Connector* pConn = pContainer->createConnector(startPort, endPort, NoUndo);
+    if (pConn)
+    {
+        pConn->setPointsAndGeometries(pointVector, geometryList);
+        pConn->setDashed(isDashed);
+        pConn->refreshConnectorAppearance();
+        pConn->setColor(color);
+
+        if(undoSettings == Undo)
+        {
+            pContainer->getUndoStackPtr()->registerAddedConnector(pConn);
+        }
+        if (pConn->isConnected())
+        {
             success = true;
         }
     }
@@ -126,10 +127,8 @@ bool loadConnector(QDomElement &rDomElement, ContainerObject* pContainer, UndoSt
 
     if (!success)
     {
-        QString str;
-        str = QString("Failed to load connector between: ") + startComponentName + QString("->") + startPortName
-            + QString(" and ") + endComponentName + QString("->") + endPortName;
-        gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage(str, "FailedLoadConnector");
+        const QString str("Failed to load connector between: "+startComponentName+"->"+startPortName+" and "+endComponentName+"->"+endPortName+" in system: "+pContainer->getName());
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(str, "FailedLoadConnector");
     }
 
     return success;

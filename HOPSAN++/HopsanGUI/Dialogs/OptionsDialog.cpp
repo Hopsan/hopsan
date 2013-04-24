@@ -477,7 +477,7 @@ void OptionsDialog::addAngleUnit()
 
 void OptionsDialog::addAngularVelocityUnit()
 {
-    addCustomUnitDialog("Angular Velocity");
+    addCustomUnitDialog("AngularVelocity");
 }
 
 

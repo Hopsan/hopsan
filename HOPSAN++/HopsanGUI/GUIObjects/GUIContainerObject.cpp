@@ -1182,6 +1182,10 @@ void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT 
                  }
                  emit checkMessages();
              }
+             else if (pConnector->isBroken())
+             {
+                 success = true;
+             }
              break;
         }
     }
@@ -1194,18 +1198,20 @@ void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT 
             mpUndoStack->registerDeletedConnector(pConnector);
         }
 
-        if(pConnector->getEndPort() != 0)
+        if(pConnector->getEndPort())
         {
             pConnector->getEndPort()->forgetConnection(pConnector);
         }
-
-        pConnector->getStartPort()->forgetConnection(pConnector);
+        if (pConnector->getStartPort())
+        {
+            pConnector->getStartPort()->forgetConnection(pConnector);
+        }
 
         // Forget and delete the connector
         mSubConnectorList.removeAll(pConnector);
         mSelectedSubConnectorsList.removeAll(pConnector);
         mpScene->removeItem(pConnector);
-        delete pConnector;
+        pConnector->deleteLater();
 
         emit connectorRemoved();
     }
@@ -1222,34 +1228,147 @@ void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT 
 //! @return A pointer to the created connector, 0 if failed, or connector unfinnished
 Connector* ContainerObject::createConnector(Port *pPort, UndoStatusEnumT undoSettings)
 {
-        //When clicking start port (begin creation of connector)
-    if (!mIsCreatingConnector)
+    // When clicking end port (finish creation of connector)
+    if (mIsCreatingConnector)
     {
-        deselectAll();
-        this->startConnector(pPort);
-        gpMainWindow->showHelpPopupMessage("Create the connector by clicking in the workspace. Finish connector by clicking on another component port.");
-        return 0; //The connector is still unfinnished
-    }
-        //When clicking end port (finish creation of connector)
-    else
-    {
-        bool success = finilizeConnector(pPort);
-        emit checkMessages();
+        bool success = false;
+        if (mpTempConnector->isDangling() && pPort)
+        {
+            // Check if we are connecting group ports
+            Port *pStartRealPort=0, *pEndRealPort=0;
+            bool startPortIsGroupPort=false, endPortIsGroupPort=false;
+            if (mpTempConnector->getStartPort()->getPortType() == "GroupPortType")
+            {
+                startPortIsGroupPort=true;
+                pStartRealPort = mpTempConnector->getStartPort()->getRealPort();
+            }
+            else
+            {
+                pStartRealPort = mpTempConnector->getStartPort();
+            }
+
+            if (pPort->getPortType() == "GroupPortType")
+            {
+                endPortIsGroupPort=true;
+                pEndRealPort = pPort->getRealPort();
+            }
+            else
+            {
+                pEndRealPort = pPort;
+            }
+            //qDebug() << "startPortIsGroupPort: " << startPortIsGroupPort << " endPortIsGroupPort: " << endPortIsGroupPort;
+
+            // Abort with error if trying to connect two group ports to each other
+            //! @todo this must work in the future, connect will probably be OK, but disconnect is a bit more tricky
+            if ( startPortIsGroupPort && endPortIsGroupPort )
+            {
+                gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("You are not allowed to connect two groups to each other yet. This will be suported in the future");
+                return false;
+            }
+
+            // Abort with error if trying to connect two undefined group ports to each other
+            if ( (pStartRealPort==0) && (pEndRealPort==0) )
+            {
+                gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("You are not allowed to connect two undefined group ports to each other");
+                return false;
+            }
+
+            // Handle if one or both ports are group ports
+            //! @todo cleanup and rewrite
+            if ( startPortIsGroupPort || endPortIsGroupPort )
+            {
+                // If both group ports are defined
+                if ( (pStartRealPort != 0) && (pEndRealPort != 0) )
+                {
+                    success = this->getCoreSystemAccessPtr()->connect(pStartRealPort->getParentModelObjectName(),
+                                                                      pStartRealPort->getName(),
+                                                                      pEndRealPort->getParentModelObjectName(),
+                                                                      pEndRealPort->getName());
+                }
+                // If start known but not end
+                else if ( (pStartRealPort != 0) && (pEndRealPort == 0) )
+                {
+                    success = true;
+
+                }
+                // Else start unknown but end known
+                else if ( (pStartRealPort == 0) && (pEndRealPort != 0) )
+                {
+                    success = true;
+                }
+                else
+                {
+                    //This should never happen, handled above
+                    success = false;
+                }
+            }
+            // Else treat as normal ports
+            else
+            {
+                success = this->getCoreSystemAccessPtr()->connect(pStartRealPort->getParentModelObjectName(),
+                                                                  pStartRealPort->getName(),
+                                                                  pEndRealPort->getParentModelObjectName(),
+                                                                  pEndRealPort->getName());
+            }
+        }
 
         if (success)
         {
+            gpMainWindow->hideHelpPopupMessage();
+            mpTempConnector->setEndPort(pPort);
+            mpTempConnector->finishCreation();
+            mSubConnectorList.append(mpTempConnector);
+
+            // Refresh startport now that end port has been connected (for system ports)
+            if (mpTempConnector->getStartPort()->getPortType() == "SystemPortType")
+            {
+                mpTempConnector->getStartPort()->refreshPortGraphics();
+            }
+
             if(undoSettings == Undo)
             {
                 mpUndoStack->newPost();
                 mpUndoStack->registerAddedConnector(mpTempConnector);
             }
             mpParentProjectTab->hasChanged();
-            return mpTempConnector; //Return ptr to the created connector
+
+            mIsCreatingConnector = false;
         }
-        else
+
+        emit checkMessages();
+
+        // Return ptr to the created connector
+        return mpTempConnector;
+    }
+    // When clicking start port (begin creation of connector)
+    else
+    {
+        deselectAll();
+
+        mpTempConnector = new Connector(this);
+
+        QPointF startPos;
+        if (pPort)
         {
-            return 0; //Failed creation
+            // Make Connector and Port/ModelObject know about this each other
+            mpTempConnector->setStartPort(pPort);
+
+            // Get initial start position for the connector
+            startPos = mapToScene(mapFromItem(pPort, pPort->boundingRect().center()));
         }
+        // Add and set startpoint (If port was 0 then 0,0 will be used)
+        mpTempConnector->setPos(startPos);
+        mpTempConnector->updateStartPoint(startPos);
+        mpTempConnector->addPoint(startPos);
+        mpTempConnector->addPoint(startPos);
+
+        mpTempConnector->drawConnector();
+
+        gpMainWindow->showHelpPopupMessage("Create the connector by clicking in the workspace. Finish connector by clicking on another component port.");
+        mIsCreatingConnector = true;
+
+        // Return ptr to the created connector
+        return mpTempConnector;
     }
 }
 
@@ -1260,11 +1379,16 @@ Connector* ContainerObject::createConnector(Port *pPort1, Port *pPort2, UndoStat
     {
         createConnector(pPort1, undoSettings);
         Connector* pConn = createConnector(pPort2, undoSettings);
-        if ( pConn  == 0) //Returns ptr to the created connector, or 0
+
+        // If we failed we still want to finnish and ad this connector (if success it was already added)
+        if (!pConn->isConnected())
         {
-            //We failed for some reason, cancle creation
-            cancelCreatingConnector();
+            mpTempConnector->finishCreation();
+            mSubConnectorList.append(mpTempConnector);
         }
+
+        // Regardless if fail or not we are no longer creating a connector
+        mIsCreatingConnector = false;
 
         return pConn;
     }
@@ -1274,126 +1398,6 @@ Connector* ContainerObject::createConnector(Port *pPort1, Port *pPort2, UndoStat
         gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not create connector, connector creation already in progress");
         return 0;
     }
-}
-
-void ContainerObject::startConnector(Port *startPort)
-{
-    mpTempConnector = new Connector(this);
-
-    // Make connector know its startport and make modelobject know about this connector
-    mpTempConnector->setStartPort(startPort);
-    startPort->getParentModelObject()->rememberConnector(mpTempConnector);
-
-    // Get and Set initial start position for the connector
-    QPointF startPos = mapToScene(mapFromItem(startPort, startPort->boundingRect().center()));
-    mpTempConnector->setPos(startPos);
-    mpTempConnector->updateStartPoint(startPos);
-    mpTempConnector->addPoint(startPos);
-    mpTempConnector->addPoint(startPos);
-
-    mIsCreatingConnector = true;
-    mpTempConnector->drawConnector();
-}
-
-bool ContainerObject::finilizeConnector(Port *endPort)
-{
-    bool success = false;
-
-    // Check if we are connecting group ports
-    Port *pStartRealPort=0, *pEndRealPort=0;
-    bool startPortIsGroupPort=false, endPortIsGroupPort=false;
-    if (mpTempConnector->getStartPort()->getPortType() == "GroupPortType")
-    {
-        startPortIsGroupPort=true;
-        pStartRealPort = mpTempConnector->getStartPort()->getRealPort();
-    }
-    else
-    {
-        pStartRealPort = mpTempConnector->getStartPort();
-    }
-
-    if (endPort->getPortType() == "GroupPortType")
-    {
-        endPortIsGroupPort=true;
-        pEndRealPort = endPort->getRealPort();
-    }
-    else
-    {
-        pEndRealPort = endPort;
-    }
-    //qDebug() << "startPortIsGroupPort: " << startPortIsGroupPort << " endPortIsGroupPort: " << endPortIsGroupPort;
-
-    // Abort with error if trying to connect two group ports to each other
-    //! @todo this must work in the future, connect will probably be OK, but disconnect is a bit more tricky
-    if ( startPortIsGroupPort && endPortIsGroupPort )
-    {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("You are not allowed to connect two groups to each other yet. This will be suported in the future");
-        return false;
-    }
-
-    // Abort with error if trying to connect two undefined group ports to each other
-    if ( (pStartRealPort==0) && (pEndRealPort==0) )
-    {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("You are not allowed to connect two undefined group ports to each other");
-        return false;
-    }
-
-    // Handle if one or both ports are group ports
-    //! @todo cleanup and rewrite
-    if ( startPortIsGroupPort || endPortIsGroupPort )
-    {
-        // If both group ports are defined
-        if ( (pStartRealPort != 0) && (pEndRealPort != 0) )
-        {
-            success = this->getCoreSystemAccessPtr()->connect(pStartRealPort->getParentModelObjectName(),
-                                                              pStartRealPort->getName(),
-                                                              pEndRealPort->getParentModelObjectName(),
-                                                              pEndRealPort->getName());
-        }
-        // If start known but not end
-        else if ( (pStartRealPort != 0) && (pEndRealPort == 0) )
-        {
-            success = true;
-
-        }
-        // Else start unknown but end known
-        else if ( (pStartRealPort == 0) && (pEndRealPort != 0) )
-        {
-            success = true;
-        }
-        else
-        {
-            //This should never happen, handled above
-            success = false;
-        }
-    }
-    // Else treat as normal ports
-    else
-    {
-        success = this->getCoreSystemAccessPtr()->connect(pStartRealPort->getParentModelObjectName(),
-                                                          pStartRealPort->getName(),
-                                                          pEndRealPort->getParentModelObjectName(),
-                                                          pEndRealPort->getName());
-    }
-
-    if (success)
-    {
-        gpMainWindow->hideHelpPopupMessage();
-        endPort->getParentModelObject()->rememberConnector(mpTempConnector);
-        mpTempConnector->setEndPort(endPort);
-        mpTempConnector->finishCreation();
-
-        //Refresh startport now that end port has been connected (for system ports)
-        if (mpTempConnector->getStartPort()->getPortType() == "SystemPortType")
-        {
-            mpTempConnector->getStartPort()->refreshPortGraphics();
-        }
-
-        mSubConnectorList.append(mpTempConnector);
-        mIsCreatingConnector = false;
-    }
-
-    return success;
 }
 
 
@@ -1792,23 +1796,22 @@ void ContainerObject::replaceComponent(QString name, QString newType)
     QDomElement connectorElement = copyRoot->firstChildElement(HMF_CONNECTORTAG);
     while(!connectorElement.isNull())
     {
-
         bool sucess = loadConnector(connectorElement, this, Undo);
         if (sucess)
         {
             Connector *tempConnector = this->findConnector(connectorElement.attribute("startcomponent"), connectorElement.attribute("startport"),
-                                                              connectorElement.attribute("endcomponent"), connectorElement.attribute("endport"));
+                                                           connectorElement.attribute("endcomponent"), connectorElement.attribute("endport"));
 
-                //Apply offset to connector and register it in undo stack
+            //Apply offset to connector and register it in undo stack
             tempConnector->drawConnector(true);
             for(int i=0; i<(tempConnector->getNumberOfLines()-2); ++i)
             {
                 mpUndoStack->registerModifiedConnector(QPointF(tempConnector->getLine(i)->pos().x(), tempConnector->getLine(i)->pos().y()),
-                                                      tempConnector->getLine(i+1)->pos(), tempConnector, i+1);
+                                                       tempConnector->getLine(i+1)->pos(), tempConnector, i+1);
             }
         }
 
-    connectorElement = connectorElement.nextSiblingElement("connect");
+        connectorElement = connectorElement.nextSiblingElement("connect");
     }
 
 
@@ -2148,7 +2151,6 @@ void ContainerObject::cancelCreatingConnector()
         {
             mpTempConnector->getStartPort()->show();
         }
-        mpTempConnector->getStartPort()->getParentModelObject()->forgetConnector(mpTempConnector);
         mIsCreatingConnector = false;
         delete(mpTempConnector);
         gpMainWindow->hideHelpPopupMessage();

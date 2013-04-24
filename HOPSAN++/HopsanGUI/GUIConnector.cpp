@@ -49,9 +49,10 @@ Connector::Connector(ContainerObject *pParentContainer)
     mpParentContainerObject = 0;
     mpStartPort = 0;
     mpEndPort = 0;
-    mIsConnected = false;
+
     mMakingDiagonal = false;
     mIsDashed = false;
+    mIsBroken = false;
 
     // Set parent
     this->setParentContainer(pParentContainer);
@@ -67,84 +68,71 @@ Connector::Connector(ContainerObject *pParentContainer)
 //! @brief Destructor for connector class
 Connector::~Connector()
 {
-    // Delete all the line segments
-    this->removeAllLines();
-
-    delete mpConnectorAppearance;
-
-    mpStartPort->getParentModelObject()->forgetConnector(this);
-    if(mIsConnected)
+    // Make port parent object forget this connector
+    if (mpStartPort)
+    {
+        mpStartPort->getParentModelObject()->forgetConnector(this);
+    }
+    if (mpEndPort)
     {
         mpEndPort->getParentModelObject()->forgetConnector(this);
     }
+
+    // Delete all the line segments
+    this->removeAllLines();
+    delete mpConnectorAppearance;
 }
 
 
-Connector *Connector::createDummyCopy()
-{
-    Connector* pTempConnector = new Connector(mpParentContainerObject);
+//Connector *Connector::createDummyCopy()
+//{
+//    Connector* pTempConnector = new Connector(mpParentContainerObject);
 
-    pTempConnector->setStartPort(mpStartPort);
-    pTempConnector->setEndPort(mpEndPort);
-    pTempConnector->setParentContainer(mpParentContainerObject);
-    mpParentContainerObject->rememberSubConnector(pTempConnector);
-    pTempConnector->setConnected();
+//    pTempConnector->setStartPort(mpStartPort);
+//    pTempConnector->setEndPort(mpEndPort);
+//    pTempConnector->setParentContainer(mpParentContainerObject);
+//    mpParentContainerObject->rememberSubConnector(pTempConnector);
+//    //pTempConnector->setConnected();
 
-    //Convert geometry vector to string list (because setPointAndGeometries wants strings)
-    QStringList geometries;
-    for(int i=0; i<mGeometries.size(); ++i)
-    {
-        if(mGeometries.at(i) == Diagonal)
-            geometries.append("diagonal");
-        else if(mGeometries.at(i) == Vertical)
-            geometries.append("vertical");
-        else
-            geometries.append("horizontal");
-    }
+//    //Convert geometry vector to string list (because setPointAndGeometries wants strings)
+//    QStringList geometries;
+//    for(int i=0; i<mGeometries.size(); ++i)
+//    {
+//        if(mGeometries.at(i) == Diagonal)
+//            geometries.append("diagonal");
+//        else if(mGeometries.at(i) == Vertical)
+//            geometries.append("vertical");
+//        else
+//            geometries.append("horizontal");
+//    }
 
-    pTempConnector->setPointsAndGeometries(mPoints, geometries);
-    return pTempConnector;
-}
+//    pTempConnector->setPointsAndGeometries(mPoints, geometries);
+//    return pTempConnector;
+//}
 
 
 void Connector::disconnectPortSigSlots(Port* pPort)
 {
-    bool sucess1 = true;
-    bool sucess2 = true;
-    if (pPort != 0)
+    if (pPort)
     {
-        sucess1 = disconnect(pPort->getParentModelObject(), SIGNAL(objectDeleted()), this, SLOT(deleteMeWithNoUndo()));
-        sucess2 = disconnect(pPort->getParentModelObject(), SIGNAL(objectSelected()), this, SLOT(selectIfBothComponentsSelected()));
+        disconnect(pPort->getParentModelObject(), SIGNAL(objectDeleted()),  this, SLOT(deleteMeWithNoUndo()));
+        disconnect(pPort->getParentModelObject(), SIGNAL(objectSelected()), this, SLOT(selectIfBothComponentsSelected()));
     }
-
-    if (!sucess1 || !sucess2)
-    {
-        qDebug() << "Connector::disconnectPortSigLots(): Disconnect failed: " << sucess1 << " " << sucess2;
-    }
-
 }
 
 //! @todo if we would let the guimodelobjects connect to the connector we could avoid having two separate disconnect / connect functions we could just let the modelobject refresh the sigslot connections against the connector
 void Connector::connectPortSigSlots(Port* pPort)
 {
-    bool sucess1 = true;
-    bool sucess2 = true;
-
-    if (pPort != 0)
+    if (pPort)
     {
-        sucess1 = connect(pPort->getParentModelObject(),   SIGNAL(objectDeleted()),    this,   SLOT(deleteMeWithNoUndo()), Qt::UniqueConnection);
-        sucess2 = connect(pPort->getParentModelObject(),   SIGNAL(objectSelected()),   this,   SLOT(selectIfBothComponentsSelected()), Qt::UniqueConnection);
-    }
-
-    if (!sucess1 || !sucess2)
-    {
-        qDebug() << "Connector::disconnectPortSigLots(): Connect failed: " << sucess1 << " " << sucess2;
+        connect(pPort->getParentModelObject(),   SIGNAL(objectDeleted()),    this,   SLOT(deleteMeWithNoUndo()), Qt::UniqueConnection);
+        connect(pPort->getParentModelObject(),   SIGNAL(objectSelected()),   this,   SLOT(selectIfBothComponentsSelected()), Qt::UniqueConnection);
     }
 }
 
 void Connector::setParentContainer(ContainerObject *pParentContainer)
 {
-    if (mpParentContainerObject != 0)
+    if (mpParentContainerObject)
     {
         //Disconnect all old sigslot connections
         disconnect(mpParentContainerObject, SIGNAL(selectAllConnectors()),          this, SLOT(select()));
@@ -169,29 +157,31 @@ ContainerObject *Connector::getParentContainer()
 //! @see removePoint(bool deleteIfEmpty)
 void Connector::addPoint(QPointF point)
 {
-    //point = this->mapFromScene(point);
     mPoints.push_back(point);
 
+    PortDirectionT startPortDir= LeftRightDirectionType;;
+    if (mpStartPort)
+    {
+        startPortDir = mpStartPort->getPortDirection();
+    }
 
-    //qDebug() << "the enum: " << getStartPort()->getPortDirection();
-
-    if(getNumberOfLines() == 0 && getStartPort()->getPortDirection() == TopBottomDirectionType)
+    if(getNumberOfLines() == 0 && startPortDir == TopBottomDirectionType)
     {
         mGeometries.push_back(Horizontal);
     }
-    else if(getNumberOfLines() == 0 && getStartPort()->getPortDirection() == LeftRightDirectionType)
+    else if(getNumberOfLines() == 0 && startPortDir == LeftRightDirectionType)
     {
         mGeometries.push_back(Vertical);
     }
-    else if(getNumberOfLines() != 0 && mGeometries.back() == Horizontal)
+    else if(getNumberOfLines() > 0 && mGeometries.back() == Horizontal)
     {
         mGeometries.push_back(Vertical);
     }
-    else if(getNumberOfLines() != 0 && mGeometries.back() == Vertical)
+    else if(getNumberOfLines() > 0 && mGeometries.back() == Vertical)
     {
         mGeometries.push_back(Horizontal);
     }
-    else if(getNumberOfLines() != 0 && mGeometries.back() == Diagonal)
+    else if(getNumberOfLines() > 0 && mGeometries.back() == Diagonal)
     {
         mGeometries.push_back(Diagonal);
         //Give new line correct angle!
@@ -208,7 +198,7 @@ void Connector::removePoint(bool deleteIfEmpty)
 {
     mPoints.pop_back();
     mGeometries.pop_back();
-    //qDebug() << "removePoint, getNumberOfLines = " << getNumberOfLines();
+
     if( (getNumberOfLines() > 3) && !mMakingDiagonal )
     {
         if((mGeometries[mGeometries.size()-1] == Diagonal) || ((mGeometries[mGeometries.size()-2] == Diagonal)))
@@ -262,12 +252,15 @@ void Connector::removePoint(bool deleteIfEmpty)
 //! @see setEndPort(GUIPort *port)
 //! @see getStartPort()
 //! @see getEndPort()
-void Connector::setStartPort(Port *port)
+void Connector::setStartPort(Port *pPort)
 {
-    this->disconnectPortSigSlots(mpStartPort);
-    mpStartPort = port;
-    mpStartPort->rememberConnection(this);
-    this->connectPortSigSlots(mpStartPort);
+    if (pPort)
+    {
+        this->disconnectPortSigSlots(mpStartPort);
+        mpStartPort = pPort;
+        mpStartPort->rememberConnection(this);
+        this->connectPortSigSlots(mpStartPort);
+    }
 }
 
 
@@ -276,109 +269,117 @@ void Connector::setStartPort(Port *port)
 //! @see setStartPort(GUIPort *port)
 //! @see getStartPort()
 //! @see getEndPort()
-void Connector::setEndPort(Port *port)
+void Connector::setEndPort(Port *pPort)
 {
-    this->disconnectPortSigSlots(mpEndPort);
-    mpEndPort = port;
-    mpEndPort->rememberConnection(this);
-    this->connectPortSigSlots(mpEndPort);
+    if (pPort)
+    {
+        this->disconnectPortSigSlots(mpEndPort);
+        mpEndPort = pPort;
+        mpEndPort->rememberConnection(this);
+        this->connectPortSigSlots(mpEndPort);
+    }
 }
 
 
 //! @brief Executes the final tasks before creation of the connetor is complete. Then flags that the connection if finished.
 void Connector::finishCreation()
 {
-    mIsConnected = true;
-
-        //Figure out whether or not the last line had the right direction, and make necessary corrections
-    if( ( ((mpEndPort->getPortDirection() == LeftRightDirectionType) && (mGeometries.back() == Horizontal)) ||
-          ((mpEndPort->getPortDirection() == TopBottomDirectionType) && (mGeometries.back() == Vertical)) ) ||
-          (mGeometries[mGeometries.size()-2] == Diagonal) ||
-          mpEndPort->getPortType() == "ReadMultiportType" || mpEndPort->getPortType() == "PowerMultiportType")
+    if (mpStartPort && mpEndPort)
     {
-            //Wrong direction of last line, so remove last point. This is because an extra line was added with the last click, that shall not be there. It is also possible that we end up here because the end port is a multi port, which mean that we shall not add any offset to it.
-        this->removePoint();
-        this->scene()->removeItem(mpLines.back());
-        delete(mpLines.back());
-        this->mpLines.pop_back();
-    }
-    else
-    {
-            //Correct direction of last line, which was added due to the final mouse click. This means that the last "real" line has the wrong direction.
-            //We therefore keep the extra line, and move second last line a bit outwards from the component.
-        QPointF offsetPoint = getOffsetPointfromPort(mpStartPort, mpEndPort);
-        mPoints[mPoints.size()-2] = mpEndPort->mapToScene(mpEndPort->boundingRect().center()) + offsetPoint;
-        if(offsetPoint.x() != 0.0)
+        // Figure out whether or not the last line had the right direction, and make necessary corrections
+        if( ( ((mpEndPort->getPortDirection() == LeftRightDirectionType) && (mGeometries.back() == Horizontal)) ||
+              ((mpEndPort->getPortDirection() == TopBottomDirectionType) && (mGeometries.back() == Vertical)) ) ||
+                (mGeometries[mGeometries.size()-2] == Diagonal) ||
+                mpEndPort->getPortType() == "ReadMultiportType" || mpEndPort->getPortType() == "PowerMultiportType")
         {
-            mPoints[mPoints.size()-3].setX(mPoints[mPoints.size()-2].x());
+            // Wrong direction of last line, so remove last point. This is because an extra line was added with the last click, that shall not be there. It is also possible that we end up here because the end port is a multi port, which mean that we shall not add any offset to it.
+            this->removePoint();
+            this->scene()->removeItem(mpLines.back());
+            delete(mpLines.back());
+            this->mpLines.pop_back();
         }
         else
         {
-            mPoints[mPoints.size()-3].setY(mPoints[mPoints.size()-2].y());
+            // Correct direction of last line, which was added due to the final mouse click. This means that the last "real" line has the wrong direction.
+            // We therefore keep the extra line, and move second last line a bit outwards from the component.
+            QPointF offsetPoint = getOffsetPointfromPort(mpStartPort, mpEndPort);
+            mPoints[mPoints.size()-2] = mpEndPort->mapToScene(mpEndPort->boundingRect().center()) + offsetPoint;
+            if(offsetPoint.x() != 0.0)
+            {
+                mPoints[mPoints.size()-3].setX(mPoints[mPoints.size()-2].x());
+            }
+            else
+            {
+                mPoints[mPoints.size()-3].setY(mPoints[mPoints.size()-2].y());
+            }
+            this->determineAppearance();    //Figure out which connector appearance to use
+            this->drawConnector();
+            mpParentContainerObject->mpParentProjectTab->getGraphicsView()->updateViewPort();
         }
-        this->determineAppearance();    //Figure out which connector appearance to use
-        this->drawConnector();
-        mpParentContainerObject->mpParentProjectTab->getGraphicsView()->updateViewPort();
+
+        // Make sure the end point of the connector is the center position of the end port
+        this->updateEndPoint(mpEndPort->mapToScene(mpEndPort->boundingRect().center()));
+
+        // Snap if close to a snapping position
+        if(gConfig.getSnapping())
+        {
+            if( ((getNumberOfLines() == 1) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE)) ||
+                    ((getNumberOfLines() < 3) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE)) )
+            {
+                if(mpStartPort->getParentModelObject()->getConnectorPtrs().size() == 1)
+                {
+                    mpStartPort->getParentModelObject()->moveBy(mPoints.last().x() - mPoints.first().x(), 0);
+                }
+                else if (mpEndPort->getParentModelObject()->getConnectorPtrs().size() == 1)
+                {
+                    mpEndPort->getParentModelObject()->moveBy(mPoints.first().x() - mPoints.last().x(), 0);
+                }
+            }
+            else if( ((getNumberOfLines() == 1) && (abs(mPoints.first().y() - mPoints.last().y()) < SNAPDISTANCE)) ||
+                     ((getNumberOfLines() < 4) && (abs(mPoints.first().y() - mPoints.last().y()) < SNAPDISTANCE)) )
+            {
+                if(mpStartPort->getParentModelObject()->getConnectorPtrs().size() == 1)
+                {
+                    mpStartPort->getParentModelObject()->moveBy(0, mPoints.last().y() - mPoints.first().y());
+                }
+                else if (mpEndPort->getParentModelObject()->getConnectorPtrs().size() == 1)
+                {
+                    mpEndPort->getParentModelObject()->moveBy(0, mPoints.first().y() - mPoints.last().y());
+                }
+            }
+        }
+
+        // Hide ports; connected ports shall not be visible
+        mpStartPort->hide();
+        mpEndPort->hide();
+
+        // Not broken
+        mIsBroken = false;
     }
 
-        //Make sure the end point of the connector is the center position of the end port
-    this->updateEndPoint(mpEndPort->mapToScene(mpEndPort->boundingRect().center()));
-
-        //Make all lines selectable and all lines except first and last movable
-    if(mpLines.size() > 1)
+    // Make all lines selectable and all lines except first and last movable
+    for(int i=1; i<(mpLines.size()-1); ++i)
     {
-        for(int i=1; i<(mpLines.size()-1); ++i)
-        {
-            mpLines[i]->setFlag(QGraphicsItem::ItemIsMovable, true);
-        }
+        mpLines[i]->setFlag(QGraphicsItem::ItemIsMovable, true);
     }
     for(int i=0; i<mpLines.size(); ++i)
     {
         mpLines[i]->setFlag(QGraphicsItem::ItemIsSelectable, true);
     }
 
-    emit connectionFinished();      //Let the world know that we are connected!
-    this->determineAppearance();    //Figure out which connector appearance to use
-    this->setPassive();             //Make line passive (deselected)
-
-        //Snap if close to a snapping position
-    if(gConfig.getSnapping())
-    {
-        if( ((getNumberOfLines() == 1) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE)) ||
-            ((getNumberOfLines() < 3) && (abs(mPoints.first().x() - mPoints.last().x()) < SNAPDISTANCE)) )
-        {
-            if(mpStartPort->getParentModelObject()->getConnectorPtrs().size() == 1)
-            {
-                mpStartPort->getParentModelObject()->moveBy(mPoints.last().x() - mPoints.first().x(), 0);
-            }
-            else if (mpEndPort->getParentModelObject()->getConnectorPtrs().size() == 1)
-            {
-                mpEndPort->getParentModelObject()->moveBy(mPoints.first().x() - mPoints.last().x(), 0);
-            }
-        }
-        else if( ((getNumberOfLines() == 1) && (abs(mPoints.first().y() - mPoints.last().y()) < SNAPDISTANCE)) ||
-                 ((getNumberOfLines() < 4) && (abs(mPoints.first().y() - mPoints.last().y()) < SNAPDISTANCE)) )
-        {
-            if(mpStartPort->getParentModelObject()->getConnectorPtrs().size() == 1)
-            {
-                mpStartPort->getParentModelObject()->moveBy(0, mPoints.last().y() - mPoints.first().y());
-            }
-            else if (mpEndPort->getParentModelObject()->getConnectorPtrs().size() == 1)
-            {
-                mpEndPort->getParentModelObject()->moveBy(0, mPoints.first().y() - mPoints.last().y());
-            }
-        }
-    }
-
-
-        //Hide ports; connected ports shall not be visible
-    mpStartPort->hide();
-    mpEndPort->hide();
-
     if(mpConnectorAppearance->getStyle() == SignalConnectorStyle)
     {
         connect(mpParentContainerObject, SIGNAL(showOrHideSignals(bool)), this, SLOT(setVisible(bool)), Qt::UniqueConnection);
     }
+
+    if (!(mpStartPort && mpEndPort))
+    {
+        mIsBroken = true;
+    }
+
+    this->determineAppearance();    // Figure out which connector appearance to use
+    this->setPassive();             // Make line passive (deselected)
+    emit connectionFinished();      // Let everyone know that the connection process is finished
 }
 
 
@@ -387,7 +388,7 @@ void Connector::finishCreation()
 void Connector::setIsoStyle(GraphicsTypeEnumT gfxType)
 {
     mpConnectorAppearance->setIsoStyle(gfxType);
-    for (int i=0; i!=mpLines.size(); ++i )
+    for (int i=0; i<mpLines.size(); ++i )
     {
         //Refresh each line by setting to passive (primary) appearance
         mpLines[i]->setPassive();
@@ -445,33 +446,49 @@ QPointF Connector::getEndPoint()
 
 //! @brief Returns the name of the start port of a connector
 //! @see getEndPortName()
-QString Connector::getStartPortName()
+QString Connector::getStartPortName() const
 {
-    return mpStartPort->getName();
+    if (mpStartPort)
+    {
+        return mpStartPort->getName();
+    }
+    return QString();
 }
 
 
 //! @brief Returns the name of the end port of a connector
 //! @see getStartPortName()
-QString Connector::getEndPortName()
+QString Connector::getEndPortName() const
 {
-    return mpEndPort->getName();
+    if (mpEndPort)
+    {
+        return mpEndPort->getName();
+    }
+    return QString();
 }
 
 
 //! @brief Returns the name of the start component of a connector
 //! @see getEndComponentName()
-QString Connector::getStartComponentName()
+QString Connector::getStartComponentName() const
 {
-    return mpStartPort->getParentModelObjectName();
+    if (mpStartPort)
+    {
+        return mpStartPort->getParentModelObjectName();
+    }
+    return QString();
 }
 
 
 //! @brief Returns the name of the end component of a connector
 //! @see getStartComponentName()
-QString Connector::getEndComponentName()
+QString Connector::getEndComponentName() const
 {
-    return mpEndPort->getParentModelObjectName();
+    if (mpEndPort)
+    {
+        return mpEndPort->getParentModelObjectName();
+    }
+    return QString();
 }
 
 
@@ -499,24 +516,36 @@ ConnectorLine *Connector::getLastLine()
 //! @brief Returns true if the connector is connected at both ends, otherwise false
 bool Connector::isConnected()
 {
-    //qDebug() << "Entering isConnected()";
-    //return (getStartPort()->isConnected and getEndPort()->isConnected);
-    return (getStartPort()->isConnected() && mIsConnected);
+    if (mpStartPort && mpEndPort)
+    {
+        return (getStartPort()->isConnected() && mpEndPort->isConnected());
+    }
+    return false;
 }
 
 
 //! @brief Returns true if the line currently being drawn is a diagonal one, otherwise false
 //! @see makeDiagonal(bool enable)
-bool Connector::isMakingDiagonal()
+bool Connector::isMakingDiagonal() const
 {
     return mMakingDiagonal;
 }
 
 
 //! @brief Returns true if the connector is active (= "selected")
-bool Connector::isActive()
+bool Connector::isActive() const
 {
     return mIsActive;
+}
+
+bool Connector::isBroken() const
+{
+    return mIsBroken;
+}
+
+bool Connector::isDangling()
+{
+    return (mpStartPort && !mpEndPort);
 }
 
 
@@ -568,16 +597,23 @@ void Connector::drawConnector(bool alignOperation)
     //Do not try to draw if no points have been added yet (avoid crash in code bellow)
     if (mPoints.size() > 0)
     {
-        if(!mIsConnected)        //End port is not connected, which means we are creating a new line
+        // First prepare connector before the actual reddraw
+//        // If broken nothing special should happen
+//        if (isBroken())
+//        {
+
+//        }
+        // If end port is not connected, which means we are creating a new line,
+        if(isDangling() || isBroken() || !mpStartPort)
         {
-            //Remove lines if there are too many
+            // Remove lines if there are too many
             while(mpLines.size() > mPoints.size()-1)
             {
                 this->scene()->removeItem(mpLines.back());
                 mpLines.back()->deleteLater();
                 mpLines.pop_back();
             }
-            //Add lines if there are too few
+            // Add lines if there are too few
             while(mpLines.size() < mPoints.size()-1)
             {
                 ConnectorLine *pLine = new ConnectorLine(0, 0, 0, 0, mpConnectorAppearance, mpLines.size(), this);
@@ -585,11 +621,12 @@ void Connector::drawConnector(bool alignOperation)
             }
 
         }
-        else        //End port is connected, so the connector is modified or has moved
+        // else end port is connected, so the connector is modified or has moved
+        else
         {
             if(mpStartPort->getParentModelObject()->isSelected() && mpEndPort->getParentModelObject()->isSelected() && this->isActive() && !alignOperation)
             {
-                //Both components and connector are selected, so move whole connector along with components
+                // Both components and connector are selected, so move whole connector along with components
                 moveAllPoints(getStartPort()->mapToScene(getStartPort()->boundingRect().center()).x()-mPoints[0].x(),
                               getStartPort()->mapToScene(getStartPort()->boundingRect().center()).y()-mPoints[0].y());
             }
@@ -601,7 +638,7 @@ void Connector::drawConnector(bool alignOperation)
             }
         }
 
-        //Redraw the lines based on the mPoints vector
+        // Redraw the actual lines based on the mPoints vector
         for(int i=0; i<mPoints.size()-1; ++i)
         {
             if( (mpLines[i]->line().p1() != mPoints[i]) || (mpLines[i]->line().p2() != mPoints[i+1]) )   //Don't redraw the line if it has not changed
@@ -658,8 +695,7 @@ void Connector::updateEndPoint(QPointF point)
 //! @param lineNumber Number of the line to update (the line that has moved)
 void Connector::updateLine(int lineNumber)
 {
-    //! @todo what da heck is (lineNumber != int(mpLines.size()) supposed to mean, maybe it should be < instead of !=
-   if ((mIsConnected) && (lineNumber != 0) && (lineNumber != int(mpLines.size())))
+    if ( !isDangling() && (lineNumber > 0) && (lineNumber < int(mpLines.size())) )
     {
         if(mGeometries[lineNumber] == Horizontal)
         {
@@ -763,7 +799,8 @@ void Connector::makeDiagonal(bool enable)
 //! @see setPassive()
 void Connector::doSelect(bool lineSelected, int lineNumber)
 {
-    if(mIsConnected)     //Non-finished connectors shall not be selectable
+    // Non-finished connectors shall not be selectable
+    if(!isDangling() || isBroken())
     {
         if(lineSelected)
         {
@@ -811,7 +848,7 @@ void Connector::doSelect(bool lineSelected, int lineNumber)
 //! @see doSelect(bool lineSelected, int lineNumber)
 void Connector::selectIfBothComponentsSelected()
 {
-    if(mIsConnected && mpStartPort->getParentModelObject()->isSelected() && mpEndPort->getParentModelObject()->isSelected())
+    if(isConnected() && mpStartPort->getParentModelObject()->isSelected() && mpEndPort->getParentModelObject()->isSelected())
     {
         mpLines[0]->setSelected(true);
         doSelect(true,0);
@@ -819,9 +856,12 @@ void Connector::selectIfBothComponentsSelected()
 }
 
 
-void Connector::setColor(QColor color)
+void Connector::setColor(const QColor &rColor)
 {
-    mpConnectorAppearance->setCustomColor(color);
+    if (!mIsBroken)
+    {
+        mpConnectorAppearance->setCustomColor(rColor);
+    }
     setPassive();
 }
 
@@ -831,7 +871,7 @@ void Connector::setColor(QColor color)
 void Connector::setActive()
 {
     connect(mpParentContainerObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
-    if(mIsConnected)
+    if( !isDangling() || isBroken() )
     {
         mIsActive = true;
         for (int i=0; i!=mpLines.size(); ++i )
@@ -848,7 +888,7 @@ void Connector::setActive()
 void Connector::setPassive()
 {
     disconnect(mpParentContainerObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
-    if(mIsConnected)
+    if(!isDangling() || isBroken())
     {
         mIsActive = false;
         for (int i=0; i!=mpLines.size(); ++i )
@@ -866,7 +906,7 @@ void Connector::setPassive()
 //! @see setUnHovered()
 void Connector::setHovered()
 {
-    if(mIsConnected && !mIsActive)
+    if( (!isDangling() || isBroken()) && !mIsActive)
     {
         for (int i=0; i!=mpLines.size(); ++i )
         {
@@ -881,7 +921,7 @@ void Connector::setHovered()
 //! @see setPassive()
 void Connector::setUnHovered()
 {
-    if(mIsConnected && !mIsActive)
+    if( (!isDangling() || isBroken()) && !mIsActive)
     {
         for (int i=0; i!=mpLines.size(); ++i )
         {
@@ -923,52 +963,59 @@ bool Connector::isFirstAndLastDiagonal()
 //! @brief Uppdates the appearance of the connector (setting its type and line endings)
 void Connector::determineAppearance()
 {
-    QString startPortType = mpStartPort->getPortType();
-    QString endPortType = mpEndPort->getPortType();
-
-    //We need to determine if we want arrows before we replace systemporttypes with internal port types
-    //Add arrow to the connector if it is of signal type
-    if (mpEndPort->getNodeType() == "NodeSignal")
+    if (isBroken())
     {
-        if( !( (endPortType == "ReadPortType" || endPortType == "ReadMultiportType") && (startPortType == "ReadPortType" || startPortType == "ReadMultiportType") ) )    //No arrow if connecting two read ports
-        {
-            if ( (endPortType == "ReadPortType") || (endPortType == "ReadMultiportType") || (startPortType == "WritePortType" && endPortType == "SystemPortType"))
-            {
-                this->getLastLine()->addEndArrow();
-            }
-            else if ( (startPortType == "ReadPortType") || (startPortType == "ReadMultiportType") || (startPortType == "SystemPortType" && endPortType == "WritePortType"))
-            {
-                //Assumes that the startport was a read port or multiread port
-                mpLines[0]->addStartArrow();
-            }
-        }
-    }
-
-    //Now replace tpes if systemports to select correct connector graphics
-    if (startPortType == "SystemPortType")
-    {
-        startPortType = mpStartPort->getPortType(CoreSystemAccess::InternalPortType);
-    }
-    if (endPortType == "SystemPortType")
-    {
-        endPortType = mpEndPort->getPortType(CoreSystemAccess::InternalPortType);
-    }
-
-    if( (startPortType == "PowerPortType") || (endPortType == "PowerPortType") || (startPortType == "PowerMultiportType") || (endPortType == "PowerMultiportType") )
-    {
-        mpConnectorAppearance->setStyle(PowerConnectorStyle);
-    }
-    else if( (startPortType == "ReadPortType") || (endPortType == "ReadPortType") || (startPortType == "ReadMultiportType") || (endPortType == "ReadMultiportType") )
-    {
-        mpConnectorAppearance->setStyle(SignalConnectorStyle);
-    }
-    else if( (startPortType == "WritePortType") || (endPortType == "WritePortType") )
-    {
-        mpConnectorAppearance->setStyle(SignalConnectorStyle);
+        mpConnectorAppearance->setStyle(BrokenConnectorStyle);
     }
     else
     {
-        mpConnectorAppearance->setStyle(UndefinedConnectorStyle);
+        QString startPortType = mpStartPort->getPortType();
+        QString endPortType = mpEndPort->getPortType();
+
+        //We need to determine if we want arrows before we replace systemporttypes with internal port types
+        //Add arrow to the connector if it is of signal type
+        if (mpEndPort->getNodeType() == "NodeSignal")
+        {
+            if( !( (endPortType == "ReadPortType" || endPortType == "ReadMultiportType") && (startPortType == "ReadPortType" || startPortType == "ReadMultiportType") ) )    //No arrow if connecting two read ports
+            {
+                if ( (endPortType == "ReadPortType") || (endPortType == "ReadMultiportType") || (startPortType == "WritePortType" && endPortType == "SystemPortType"))
+                {
+                    this->getLastLine()->addEndArrow();
+                }
+                else if ( (startPortType == "ReadPortType") || (startPortType == "ReadMultiportType") || (startPortType == "SystemPortType" && endPortType == "WritePortType"))
+                {
+                    //Assumes that the startport was a read port or multiread port
+                    mpLines[0]->addStartArrow();
+                }
+            }
+        }
+
+        //Now replace tpes if systemports to select correct connector graphics
+        if (startPortType == "SystemPortType")
+        {
+            startPortType = mpStartPort->getPortType(CoreSystemAccess::InternalPortType);
+        }
+        if (endPortType == "SystemPortType")
+        {
+            endPortType = mpEndPort->getPortType(CoreSystemAccess::InternalPortType);
+        }
+
+        if( (startPortType == "PowerPortType") || (endPortType == "PowerPortType") || (startPortType == "PowerMultiportType") || (endPortType == "PowerMultiportType") )
+        {
+            mpConnectorAppearance->setStyle(PowerConnectorStyle);
+        }
+        else if( (startPortType == "ReadPortType") || (endPortType == "ReadPortType") || (startPortType == "ReadMultiportType") || (endPortType == "ReadMultiportType") )
+        {
+            mpConnectorAppearance->setStyle(SignalConnectorStyle);
+        }
+        else if( (startPortType == "WritePortType") || (endPortType == "WritePortType") )
+        {
+            mpConnectorAppearance->setStyle(SignalConnectorStyle);
+        }
+        else
+        {
+            mpConnectorAppearance->setStyle(UndefinedConnectorStyle);
+        }
     }
 
     //Run this to actually change the pen
@@ -986,7 +1033,6 @@ void Connector::refreshConnectorAppearance()
 //! @brief Slot that "deactivates" a connector if it is deselected
 void Connector::deselect()
 {
-    //qDebug() << "Deselecting connector!";
     this->setPassive();
 }
 
@@ -994,7 +1040,6 @@ void Connector::deselect()
 //! @brief Slot that "activates" a connector if it is selected
 void Connector::select()
 {
-    //qDebug() << "Selecting connector!";
     this->doSelect(true, -1);
 }
 
@@ -1023,10 +1068,10 @@ void Connector::setDashed(bool value)
 }
 
 
-void Connector::setConnected()
-{
-    mIsConnected = true;
-}
+//void Connector::setConnected()
+//{
+//    mIsNoLongerCreating = true;
+//}
 
 
 void Connector::setVisible(bool visible)
@@ -1088,9 +1133,8 @@ void Connector::setPointsAndGeometries(const QVector<QPointF> &rPoints, const QS
         }
     }
 
-    //Make sure the start point and end point of the connector is the center position of the end port
-    this->updateStartPoint(getStartPort()->mapToScene(getStartPort()->boundingRect().center()));
-    this->updateEndPoint(getEndPort()->mapToScene(getEndPort()->boundingRect().center()));
+    // Make sure the start point and end point of the connector is the center position of the end port
+    updateStartEndPositions();
 }
 
 //! @brief Helpfunction to add linesegment to connector
@@ -1112,6 +1156,19 @@ void Connector::removeAllLines()
         mpLines[i]->deleteLater();
     }
     mpLines.clear();
+}
+
+void Connector::updateStartEndPositions()
+{
+    if (mpStartPort)
+    {
+        updateStartPoint(mpStartPort->mapToScene(mpStartPort->boundingRect().center()));
+    }
+
+    if (mpEndPort)
+    {
+        updateEndPoint(mpEndPort->mapToScene(mpEndPort->boundingRect().center()));
+    }
 }
 
 //------------------------------------------------------------------------------------------------------------------------//
@@ -1164,15 +1221,15 @@ void ConnectorLine::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidge
 //! @see setHovered()
 void ConnectorLine::setActive()
 {
-        this->setPen(mpConnectorAppearance->getPen("Active"));
-        if(mpParentConnector->mIsDashed && mpConnectorAppearance->getStyle() != SignalConnectorStyle)
-        {
-            QPen tempPen = this->pen();
-            tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
-            tempPen.setStyle(Qt::CustomDashLine);
-            this->setPen(tempPen);
-        }
-        this->mpParentConnector->setZValue(ConnectorZValue);
+    this->setPen(mpConnectorAppearance->getPen("Active"));
+    if(mpParentConnector->mIsDashed && mpConnectorAppearance->getStyle() != SignalConnectorStyle)
+    {
+        QPen tempPen = this->pen();
+        tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
+        tempPen.setStyle(Qt::CustomDashLine);
+        this->setPen(tempPen);
+    }
+    this->mpParentConnector->setZValue(ConnectorZValue);
 }
 
 
@@ -1181,7 +1238,7 @@ void ConnectorLine::setActive()
 //! @see setHovered()
 void ConnectorLine::setPassive()
 {
-    if(!mpParentConnector->isConnected())
+    if(!mpParentConnector->isConnected() && !mpParentConnector->isBroken())
     {
         this->setPen(mpConnectorAppearance->getPen("NonFinished"));
     }

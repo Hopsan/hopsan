@@ -663,6 +663,7 @@ PortDirectionT Port::getPortDirection()
 void Port::rememberConnection(Connector *pConnector)
 {
     mConnectedConnectors.append(pConnector);
+    getParentModelObject()->rememberConnector(pConnector);
     //qDebug() << "Adding connection, connections = " << mnConnections;
 
     // Refresh port graphics if it is a system port
@@ -677,6 +678,7 @@ void Port::forgetConnection(Connector *pConnector)
 {
     int idx = mConnectedConnectors.indexOf(pConnector);
     mConnectedConnectors.remove(idx);
+    getParentModelObject()->forgetConnector(pConnector);
 
     // Refresh port graphics if it is a system port
     if (getPortType() == "SystemPortType")

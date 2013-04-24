@@ -56,7 +56,6 @@
 #define HOPSANGUISCOPECOMPONENTTYPENAME "SignalSink"
 
 //! @todo all of these dont have to be common
-//! @todo enums should NOT have all captitals, risc of colission with defines
 //Enums
 enum SelectionStatusEnumT {Deselected, Selected};
 enum NameVisibilityEnumT {NameVisible, NameNotVisible, UseDefault};
@@ -66,7 +65,7 @@ enum RenameRestrictionEnumT {Unrestricted, CoreRenameOnly};
 enum UndoStatusEnumT {NoUndo, Undo};
 enum SaveTargetEnumT {ExistingFile, NewFile};
 enum SaveContentsEnumT {FullModel, ParametersOnly};
-enum ConnectorStyleEnumT {PowerConnectorStyle, SignalConnectorStyle, UndefinedConnectorStyle};
+enum ConnectorStyleEnumT {PowerConnectorStyle, SignalConnectorStyle, BrokenConnectorStyle, UndefinedConnectorStyle};
 enum HopsanPlotIDEnumT {FirstPlot, SecondPlot};
 enum HopsanPlotCurveTypeEnumT {PortVariableType, FrequencyAnalysisType, NyquistType, BodeGainType, BodePhaseType, GeneralType};
 enum ContainerChildrenZValuesEnumT {WidgetZValue, ConnectorZValue, ModelobjectZValue, HoveredConnectorZValue, HoveredModelobjectZValue};

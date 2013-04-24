@@ -39,7 +39,7 @@ void ConnectorAppearance::setStyle(const ConnectorStyleEnumT style)
     mConnectorStyle = style;
 }
 
-ConnectorStyleEnumT ConnectorAppearance::getStyle()
+ConnectorStyleEnumT ConnectorAppearance::getStyle() const
 {
     return mConnectorStyle;
 }
@@ -66,30 +66,30 @@ void ConnectorAppearance::setTypeAndIsoStyle(QString porttype, GraphicsTypeEnumT
     setIsoStyle(gfxType);
 }
 
-QPen ConnectorAppearance::getPen(QString situation)
+QPen ConnectorAppearance::getPen(const QString &rSituation) const
 {
-    return getPen(mConnectorStyle, mGfxType, situation);
+    return getPen(mConnectorStyle, mGfxType, rSituation);
 }
 
-void ConnectorAppearance::setCustomColor(QColor color)
+void ConnectorAppearance::setCustomColor(const QColor &rColor)
 {
-    mCustomColor = color;
+    mCustomColor = rColor;
 }
 
-QColor ConnectorAppearance::getCustomColor()
+QColor ConnectorAppearance::getCustomColor() const
 {
     return mCustomColor;
 }
 
 
-//! Get function for primary pen style
-QPen ConnectorAppearance::getPen(ConnectorStyleEnumT style, GraphicsTypeEnumT gfxType, QString situation)
+//! @brief Get function for primary pen style
+QPen ConnectorAppearance::getPen(ConnectorStyleEnumT style, GraphicsTypeEnumT gfxType, const QString &rSituation) const
 {
-    if(situation == "Primary" && mCustomColor != QColor())
+    if(rSituation == "Primary" && mCustomColor != QColor())
     {
-        QPen retval = gConfig.getPen(style, gfxType, situation);
+        QPen retval = gConfig.getPen(style, gfxType, rSituation);
         retval.setColor(mCustomColor);
         return retval;
     }
-    return gConfig.getPen(style, gfxType, situation);
+    return gConfig.getPen(style, gfxType, rSituation);
 }

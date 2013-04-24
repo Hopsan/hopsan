@@ -52,28 +52,25 @@ public:
     Connector(ContainerObject *pParentContainer);
     ~Connector();
 
-    Connector *createDummyCopy();
+//    Connector *createDummyCopy();
 
     void setParentContainer(ContainerObject *pParentContainer);
     ContainerObject *getParentContainer();
 
-    enum { Type = UserType + 1 };           //!< @todo is this really necessary, we dont check Type on connectors (only one version exist)
+    Port *getStartPort();
+    Port *getEndPort();
+    QString getStartPortName() const;
+    QString getEndPortName() const;
+    QString getStartComponentName() const;
+    QString getEndComponentName() const;
+    void setStartPort(Port *pPort);
+    void setEndPort(Port *pPort);
+
+    void finishCreation();
 
     void addPoint(QPointF point);
     void removePoint(bool deleteIfEmpty = false);
-    void finishCreation();
     void setPointsAndGeometries(const QVector<QPointF> &rPoints, const QStringList &rGeometries);
-
-    void setStartPort(Port *port);
-    void setEndPort(Port *port);
-
-    Port *getStartPort();
-    Port *getEndPort();
-    QString getStartPortName();
-    QString getEndPortName();
-    QString getStartComponentName();
-    QString getEndComponentName();
-
     QPointF getStartPoint();
     QPointF getEndPoint();
     ConnectorLine *getLine(int line);
@@ -84,12 +81,13 @@ public:
     ConnectorGeometryEnumT getGeometry(const int lineNumber);
 
     void setPens(QPen activePen, QPen primaryPen, QPen hoverPen);
-
     void refreshConnectorAppearance();
 
     bool isConnected();
-    bool isMakingDiagonal();
-    bool isActive();
+    bool isMakingDiagonal() const;
+    bool isActive() const;
+    bool isBroken() const;
+    bool isDangling();
 
     void saveToDomElement(QDomElement &rDomElement);
 
@@ -103,7 +101,7 @@ public slots:
     void makeDiagonal(bool diagonal);
     void doSelect(bool lineSelected, int lineNumber);
     void selectIfBothComponentsSelected();
-    void setColor(QColor color);
+    void setColor(const QColor &rColor);
     void setActive();
     void setPassive();
     void setHovered();
@@ -113,7 +111,7 @@ public slots:
     void deselect();
     void select();
     void setDashed(bool value);
-    void setConnected();
+    //void setConnected();
 
 private slots:
     void setVisible(bool visible);
@@ -128,9 +126,10 @@ private:
     void connectPortSigSlots(Port* pPort);
     void addLine(ConnectorLine *pLine);
     void removeAllLines();
+    void updateStartEndPositions();
 
     bool mIsActive;
-    bool mIsConnected;
+    bool mIsBroken;
     bool mMakingDiagonal;
     bool mIsDashed;
 
@@ -170,7 +169,6 @@ public slots:
     void setConnected();
 
 signals:
-    void lineClicked();
     void lineMoved(int);
     void lineHoverEnter();
     void lineHoverLeave();
