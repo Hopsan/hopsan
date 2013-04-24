@@ -388,11 +388,7 @@ void Connector::finishCreation()
 void Connector::setIsoStyle(GraphicsTypeEnumT gfxType)
 {
     mpConnectorAppearance->setIsoStyle(gfxType);
-    for (int i=0; i<mpLines.size(); ++i )
-    {
-        //Refresh each line by setting to passive (primary) appearance
-        mpLines[i]->setPassive();
-    }
+    setPassive();
 }
 
 
@@ -553,6 +549,12 @@ bool Connector::isDangling()
 //! @param rDomElement Reference to the DOM element to write to
 void Connector::saveToDomElement(QDomElement &rDomElement)
 {
+    // Ignore if conector broken
+    if (mIsBroken)
+    {
+        return;
+    }
+
     //Core necessary stuff
     QDomElement xmlConnect = appendDomElement(rDomElement, HMF_CONNECTORTAG);
 
@@ -616,7 +618,7 @@ void Connector::drawConnector(bool alignOperation)
             // Add lines if there are too few
             while(mpLines.size() < mPoints.size()-1)
             {
-                ConnectorLine *pLine = new ConnectorLine(0, 0, 0, 0, mpConnectorAppearance, mpLines.size(), this);
+                ConnectorLine *pLine = new ConnectorLine(0, 0, 0, 0, mpLines.size(), this);
                 this->addLine(pLine);
             }
 
@@ -873,13 +875,23 @@ void Connector::setActive()
     connect(mpParentContainerObject, SIGNAL(deleteSelected()), this, SLOT(deleteMe()));
     if( !isDangling() || isBroken() )
     {
-        mIsActive = true;
-        for (int i=0; i!=mpLines.size(); ++i )
+        // Decide which pen to use
+        QPen pen = mpConnectorAppearance->getPen("Active");
+        if(mIsDashed && mpConnectorAppearance->getStyle() != SignalConnectorStyle)
         {
-            mpLines[i]->setActive();
+            pen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
+            pen.setStyle(Qt::CustomDashLine);
+        }
+
+        // Set pen for all lines
+        for (int i=0; i<mpLines.size(); ++i )
+        {
+            mpLines[i]->setPen(pen);
             //mpLines[i]->setSelected(true);         //???
         }
+        mIsActive = true;
     }
+    this->setZValue(ConnectorZValue);
 }
 
 
@@ -891,13 +903,30 @@ void Connector::setPassive()
     if(!isDangling() || isBroken())
     {
         mIsActive = false;
-        for (int i=0; i!=mpLines.size(); ++i )
+
+        // Decide pen
+        QPen pen;
+        if(!isConnected() && !isBroken())
         {
-            mpLines[i]->setPassive();
+            pen = mpConnectorAppearance->getPen("NonFinished");
+        }
+        else
+        {
+            pen = mpConnectorAppearance->getPen("Primary");
+        }
+        if(mIsDashed && mpConnectorAppearance->getStyle() != SignalConnectorStyle)
+        {
+            pen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
+            pen.setStyle(Qt::CustomDashLine);
+        }
+
+        // Set pen for all lines
+        for (int i=0; i<mpLines.size(); ++i )
+        {
+            mpLines[i]->setPen(pen);
             mpLines[i]->setSelected(false);       //OBS! Kanske inte blir bra...
         }
     }
-
     this->setZValue(ConnectorZValue);
 }
 
@@ -908,9 +937,16 @@ void Connector::setHovered()
 {
     if( (!isDangling() || isBroken()) && !mIsActive)
     {
-        for (int i=0; i!=mpLines.size(); ++i )
+        QPen pen = mpConnectorAppearance->getPen("Hover");
+        if(mIsDashed && mpConnectorAppearance->getStyle() != SignalConnectorStyle)
         {
-            mpLines[i]->setHovered();
+            pen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
+            pen.setStyle(Qt::CustomDashLine);
+        }
+
+        for (int i=0; i<mpLines.size(); ++i)
+        {
+            mpLines[i]->setPen(pen);
         }
     }
 }
@@ -923,10 +959,7 @@ void Connector::setUnHovered()
 {
     if( (!isDangling() || isBroken()) && !mIsActive)
     {
-        for (int i=0; i!=mpLines.size(); ++i )
-        {
-            mpLines[i]->setPassive();
-        }
+        setPassive();
     }
 }
 
@@ -1068,12 +1101,6 @@ void Connector::setDashed(bool value)
 }
 
 
-//void Connector::setConnected()
-//{
-//    mIsNoLongerCreating = true;
-//}
-
-
 void Connector::setVisible(bool visible)
 {
     for(int i=0; i<mpLines.size(); ++i)
@@ -1097,10 +1124,10 @@ void Connector::setPointsAndGeometries(const QVector<QPointF> &rPoints, const QS
     {
         ConnectorLine *pLine = new ConnectorLine(mapFromScene(mPoints[i]).x(), mapFromScene(mPoints[i]).y(),
                                                  mapFromScene(mPoints[i+1]).x(), mapFromScene(mPoints[i+1]).y(),
-                                                 mpConnectorAppearance, i, this);
+                                                 i, this);
         //qDebug() << "Creating line from " << mPoints[i].x() << ", " << mPoints[i].y() << " to " << mPoints[i+1].x() << " " << mPoints[i+1].y();
         this->addLine(pLine);
-        pLine->setConnected();
+        pLine->setConnectorFinished();
     }
 
     // Make all lines selectable and all lines except first and last movable
@@ -1141,12 +1168,11 @@ void Connector::setPointsAndGeometries(const QVector<QPointF> &rPoints, const QS
 void Connector::addLine(ConnectorLine *pLine)
 {
     mpLines.push_back(pLine);
-    pLine->setPassive();
     connect(pLine,  SIGNAL(lineSelected(bool, int)),    this,       SLOT(doSelect(bool, int)),  Qt::UniqueConnection);
     connect(pLine,  SIGNAL(lineMoved(int)),             this,       SLOT(updateLine(int)),      Qt::UniqueConnection);
     connect(pLine,  SIGNAL(lineHoverEnter()),           this,       SLOT(setHovered()),         Qt::UniqueConnection);
     connect(pLine,  SIGNAL(lineHoverLeave()),           this,       SLOT(setUnHovered()),       Qt::UniqueConnection);
-    connect(this,   SIGNAL(connectionFinished()),       pLine,      SLOT(setConnected()),       Qt::UniqueConnection);
+    connect(this,   SIGNAL(connectionFinished()),       pLine,      SLOT(setConnectorFinished()),       Qt::UniqueConnection);
 }
 
 void Connector::removeAllLines()
@@ -1182,15 +1208,14 @@ void Connector::updateStartEndPositions()
 //! @param pConnApp Pointer to the connector appearance data, containing pens
 //! @param lineNumber Number of the line in the connector's line vector.
 //! @param *parent Pointer to the parent object (the connector)
-ConnectorLine::ConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, ConnectorAppearance* pConnApp, int lineNumber, Connector *parent)
-        : QGraphicsLineItem(x1,y1,x2,y2,parent)
+ConnectorLine::ConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, int lineNumber, Connector *pParentConnector)
+        : QGraphicsLineItem(x1,y1,x2,y2,pParentConnector)
 {
-    mpParentConnector = parent;
+    mpParentConnector = pParentConnector;
     setFlags(QGraphicsItem::ItemSendsGeometryChanges | QGraphicsItem::ItemUsesExtendedStyleOption);
-    mpConnectorAppearance = pConnApp;
     mLineNumber = lineNumber;
     this->setAcceptHoverEvents(true);
-    mParentConnectorEndPortConnected = false;
+    mParentConnectorFinished = false;
     this->mStartPos = QPointF(x1,y1);
     this->mEndPos = QPointF(x2,y2);
     mHasStartArrow = false;
@@ -1216,60 +1241,6 @@ void ConnectorLine::paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidge
 }
 
 
-//! @brief Changes the style of the line to active
-//! @see setPassive()
-//! @see setHovered()
-void ConnectorLine::setActive()
-{
-    this->setPen(mpConnectorAppearance->getPen("Active"));
-    if(mpParentConnector->mIsDashed && mpConnectorAppearance->getStyle() != SignalConnectorStyle)
-    {
-        QPen tempPen = this->pen();
-        tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
-        tempPen.setStyle(Qt::CustomDashLine);
-        this->setPen(tempPen);
-    }
-    this->mpParentConnector->setZValue(ConnectorZValue);
-}
-
-
-//! @brief Changes the style of the line to default
-//! @see setActive()
-//! @see setHovered()
-void ConnectorLine::setPassive()
-{
-    if(!mpParentConnector->isConnected() && !mpParentConnector->isBroken())
-    {
-        this->setPen(mpConnectorAppearance->getPen("NonFinished"));
-    }
-    else
-    {
-        this->setPen(mpConnectorAppearance->getPen("Primary"));
-    }
-    if(mpParentConnector->mIsDashed && mpConnectorAppearance->getStyle() != SignalConnectorStyle)
-    {
-        QPen tempPen = this->pen();
-        tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
-        tempPen.setStyle(Qt::CustomDashLine);
-        this->setPen(tempPen);
-    }
-}
-
-
-//! @brief Changes the style of the line to hovered
-//! @see setActive()
-//! @see setPassive()
-void ConnectorLine::setHovered()
-{
-    this->setPen(mpConnectorAppearance->getPen("Hover"));
-    if(mpParentConnector->mIsDashed && mpConnectorAppearance->getStyle() != SignalConnectorStyle)
-    {
-        QPen tempPen = this->pen();
-        tempPen.setDashPattern(QVector<qreal>() << 1.5 << 3.5);
-        tempPen.setStyle(Qt::CustomDashLine);
-        this->setPen(tempPen);
-    }
-}
 
 
 //! @brief Defines what happens if a mouse key is pressed while hovering a connector line
@@ -1302,11 +1273,11 @@ void ConnectorLine::hoverEnterEvent(QGraphicsSceneHoverEvent */*event*/)
 {
     if(this->flags().testFlag((QGraphicsItem::ItemIsMovable)))
     {
-        if(mParentConnectorEndPortConnected && mpParentConnector->getGeometry(getLineNumber()) == Vertical)
+        if(mParentConnectorFinished && mpParentConnector->getGeometry(getLineNumber()) == Vertical)
         {
             this->setCursor(Qt::SizeVerCursor);
         }
-        else if(mParentConnectorEndPortConnected && mpParentConnector->getGeometry(getLineNumber()) == Horizontal)
+        else if(mParentConnectorFinished && mpParentConnector->getGeometry(getLineNumber()) == Horizontal)
         {
             this->setCursor(Qt::SizeHorCursor);
         }
@@ -1464,9 +1435,9 @@ QVariant ConnectorLine::itemChange(GraphicsItemChange change, const QVariant &va
 
 
 //! @brief Tells the line that its parent connector has been connected at both ends
-void ConnectorLine::setConnected()
+void ConnectorLine::setConnectorFinished()
 {
-    mParentConnectorEndPortConnected = true;
+    mParentConnectorFinished = true;
 }
 
 
@@ -1554,6 +1525,6 @@ void ConnectorLine::setPen (const QPen &pen)
         tempPen = QPen(tempPen.color(), tempPen.width(), Qt::SolidLine);
         mArrowLine1->setPen(tempPen);
         mArrowLine2->setPen(tempPen);
-        mArrowLine1->line();
+        //mArrowLine1->line();
     }
 }

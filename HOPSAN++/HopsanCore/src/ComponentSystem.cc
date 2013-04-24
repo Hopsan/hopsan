@@ -2200,38 +2200,38 @@ void ComponentSystem::setLoadStartValues(bool load)
 //! @brief Checks that everything is OK before simulation
 bool ComponentSystem::checkModelBeforeSimulation()
 {
-    //Make sure that there are no components or systems with an undefined cqs_type present
+    // Make sure that there are no components or systems with an undefined cqs_type present
     if (mComponentUndefinedptrs.size() > 0)
     {
 
         for (size_t i=0; i<mComponentUndefinedptrs.size(); ++i)
         {
-            addErrorMessage(string("The component {") + mComponentUndefinedptrs[i]->getName() + string("} has an invalid CQS-type: ") + mComponentUndefinedptrs[i]->getTypeCQSString());
+            addErrorMessage("The Component:  "+mComponentUndefinedptrs[i]->getName()+"  has an invalid CQS-Type:  "+mComponentUndefinedptrs[i]->getTypeCQSString());
         }
         return false;
     }
 
-    //Check this systems own SystemPorts, are they connected (they must be)
+    // Check this systems own SystemPorts, are they connected (they must be)
     vector<Port*> ports = getPortPtrVector();
     for (size_t i=0; i<ports.size(); ++i)
     {
         if ( ports[i]->isConnectionRequired() && !ports[i]->isConnected() )
         {
-            addErrorMessage("Port " + ports[i]->getName() + " in " + getName() + " is not connected!");
+            addErrorMessage("Port:  "+ports[i]->getName()+"  on SystemComponent:  "+getName()+"  is not connected!");
             return false;
         }
         else if( ports[i]->isConnected() )
         {
             if(ports[i]->getNodePtr()->getNumberOfPortsByType(PowerPortType) == 1)
             {
-                addErrorMessage("Port " + ports[i]->getName() + " in " + ports[i]->getComponentName() + " is connected to a node with only one attached power port!");
+                addErrorMessage("Port:  "+ports[i]->getName()+"  on Component:  "+ports[i]->getComponentName()+"  is connected to a node with only one attached power port!");
                 return false;
             }
         }
     }
 
-    //Check all subcomponents to make sure that all requirements for simulation are met
-    //scmit = The subcomponent map iterator
+    // Check all subcomponents to make sure that all requirements for simulation are met
+    // scmit = The subcomponent map iterator
     SubComponentMapT::iterator scmit = mSubComponentMap.begin();
     for ( ; scmit!=mSubComponentMap.end(); ++scmit)
     {
@@ -2243,14 +2243,14 @@ bool ComponentSystem::checkModelBeforeSimulation()
         {
             if ( ports[i]->isConnectionRequired() && !ports[i]->isConnected() )
             {
-                addErrorMessage("Port " + ports[i]->getName() + " on " + pComp->getName() + " is not connected!");
+                addErrorMessage("Port:  "+ports[i]->getName()+"  on Component:  " + pComp->getName() + "  is not connected!");
                 return false;
             }
             else if( ports[i]->isConnected() )
             {
                 if(ports[i]->getNodePtr()->getNumberOfPortsByType(PowerPortType) == 1)
                 {
-                    addErrorMessage("Port " + ports[i]->getName() + " in " + ports[i]->getComponentName() + " is connected to a node with only one power port!");
+                    addErrorMessage("Port:  "+ports[i]->getName()+"  on Component:  "+ports[i]->getComponentName()+"  is connected to a node with only one power port!");
                     return false;
                 }
             }
@@ -2259,20 +2259,20 @@ bool ComponentSystem::checkModelBeforeSimulation()
             std::string errParName;
             if(!(pComp->checkParameters(errParName)))
             {
-                addErrorMessage("The parameter " + errParName + " in system " + getName() + " and component " + pComp->getName() + " can not be evaluated, a system parameter has maybe been deleted or re-typed.");
+                addErrorMessage("The parameter:  "+errParName+"  in System:  "+getName()+"  and Component:  "+pComp->getName()+"  can not be evaluated, a system parameter has maybe been deleted or re-typed.");
                 return false;
             }
         }
 
-        //Check parameters in system
+        // Check parameters in system
         std::string errParName;
         if(!(checkParameters(errParName)))
         {
-            addErrorMessage("The system parameter " + errParName + " in system " + getName() + " can not be evaluated, it maybe depend on a deleted system parameter.");
+            addErrorMessage("The system parameter:  "+errParName+"  in System:  "+getName()+"  can not be evaluated, it maybe depend on a deleted system parameter.");
             return false;
         }
 
-        //Recures testing into subsystems
+        // Recures testing into subsystems
         if (pComp->isComponentSystem())
         {
             if (!pComp->checkModelBeforeSimulation())

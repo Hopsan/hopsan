@@ -52,8 +52,6 @@ public:
     Connector(ContainerObject *pParentContainer);
     ~Connector();
 
-//    Connector *createDummyCopy();
-
     void setParentContainer(ContainerObject *pParentContainer);
     ContainerObject *getParentContainer();
 
@@ -111,7 +109,6 @@ public slots:
     void deselect();
     void select();
     void setDashed(bool value);
-    //void setConnected();
 
 private slots:
     void setVisible(bool visible);
@@ -150,23 +147,18 @@ class ConnectorLine : public QObject, public QGraphicsLineItem
     friend class AnimatedConnector;
     Q_OBJECT
 public:
-    ConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, ConnectorAppearance *pConnApp, int lineNumber, Connector *parent = 0);
+    ConnectorLine(qreal x1, qreal y1, qreal x2, qreal y2, int lineNumber, Connector *pParentConnector);
     ~ConnectorLine();
 
     void paint(QPainter *p, const QStyleOptionGraphicsItem *o, QWidget *w);
     void addEndArrow();
     void addStartArrow();
-    void setActive();
-    void setPassive();
-    void setHovered();
-    void setGeometry(ConnectorGeometryEnumT geometry);
     void setLine(QPointF pos1, QPointF pos2);
     int getLineNumber();
     void setPen(const QPen &pen);
 
 public slots:
-
-    void setConnected();
+    void setConnectorFinished();
 
 signals:
     void lineMoved(int);
@@ -186,10 +178,8 @@ private:
     void clearArrows();
 
     Connector *mpParentConnector;
-    ConnectorAppearance *mpConnectorAppearance;
 
-    bool mIsActive;
-    bool mParentConnectorEndPortConnected;
+    bool mParentConnectorFinished;
     bool mHasStartArrow;
     bool mHasEndArrow;
     int mLineNumber;
@@ -197,8 +187,8 @@ private:
     ConnectorGeometryEnumT mGeometry;
     QGraphicsLineItem *mArrowLine1;
     QGraphicsLineItem *mArrowLine2;
-    qreal mArrowSize;
-    qreal mArrowAngle;
+    double mArrowSize;
+    double mArrowAngle;
 
     QPointF mStartPos;
     QPointF mEndPos;
