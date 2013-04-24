@@ -478,7 +478,7 @@ void WelcomeWidget::showNews(QNetworkReply *pReply)
 }
 
 
-void WelcomeWidget::checkVersion()
+void WelcomeWidget::checkVersion(bool)
 {
     //Verify that the loaded page is the correct one, otherwise do not show it
     if(mpWeb->page()->currentFrame()->metaData().contains("type", "hopsanngnews"))
