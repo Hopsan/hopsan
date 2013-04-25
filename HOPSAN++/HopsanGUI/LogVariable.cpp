@@ -478,6 +478,7 @@ QString LogVariableContainer::getDataUnit() const
 
 void LogVariableContainer::preventAutoRemove(const int gen)
 {
+    //! @todo what happens if we tell it to keep a generation it does not have
     //! @todo maybe special -1 input for ALL
     if (!mKeepGenerations.contains(gen))
     {

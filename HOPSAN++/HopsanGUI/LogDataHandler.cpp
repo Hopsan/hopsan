@@ -865,6 +865,35 @@ void LogDataHandler::limitPlotGenerations()
     }
 }
 
+void LogDataHandler::preventGenerationAutoRemoval(const int gen)
+{
+    // Tag the generations in each log data variable container
+    LogDataMapT::iterator dit = mLogDataMap.begin();
+    for ( ; dit!=mLogDataMap.end(); ++dit)
+    {
+        dit.value()->preventAutoRemove(gen);
+    }
+
+    // Remember generation to keep
+    if (!mKeepGenerationsList.contains(gen))
+    {
+        mKeepGenerationsList.prepend(gen);
+    }
+}
+
+void LogDataHandler::allowGenerationAutoRemoval(const int gen)
+{
+    // Tag the generations in each log data variable container
+    LogDataMapT::iterator dit = mLogDataMap.begin();
+    for ( ; dit!=mLogDataMap.end(); ++dit)
+    {
+        dit.value()->allowAutoRemove(gen);
+    }
+
+    // Remove generation to keep
+    mKeepGenerationsList.removeOne(gen);
+}
+
 ContainerObject *LogDataHandler::getParentContainerObject()
 {
     return mpParentContainerObject;

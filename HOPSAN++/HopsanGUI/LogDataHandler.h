@@ -80,6 +80,8 @@ public:
     QString getAliasFromFullName(QString fullName);
 
     void limitPlotGenerations();
+    void preventGenerationAutoRemoval(const int gen);
+    void allowGenerationAutoRemoval(const int gen);
 
     ContainerObject *getParentContainerObject();
     QDir getCacheDir() const;
@@ -146,6 +148,7 @@ private:
 
     FavoriteListT mFavoriteVariables;
     QMap<int, SharedMultiDataVectorCacheT> mGenerationCacheMap;
+    QList<int> mKeepGenerationsList;
 
     int mnPlotCurves;
     int mGenerationNumber;
