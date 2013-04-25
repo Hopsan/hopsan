@@ -404,6 +404,22 @@ double LogVariableData::maxOfData() const
     return ret;
 }
 
+void LogVariableData::preventAutoRemoval()
+{
+    if (!mpParentVariableContainer.isNull())
+    {
+        mpParentVariableContainer.data()->preventAutoRemove(mGeneration);
+    }
+}
+
+void LogVariableData::allowAutoRemoval()
+{
+    if (!mpParentVariableContainer.isNull())
+    {
+        mpParentVariableContainer.data()->allowAutoRemove(mGeneration);
+    }
+}
+
 bool LogVariableData::indexInRange(const int idx) const
 {
     //! @todo Do we need to check timevector also ? (or should we assume thay are the same)
@@ -460,6 +476,21 @@ QString LogVariableContainer::getDataUnit() const
     return mVariableDescription->mDataUnit;
 }
 
+void LogVariableContainer::preventAutoRemove(const int gen)
+{
+    //! @todo maybe special -1 input for ALL
+    if (!mKeepGenerations.contains(gen))
+    {
+        mKeepGenerations.prepend(gen);
+    }
+}
+
+void LogVariableContainer::allowAutoRemove(const int gen)
+{
+    //! @todo maybe special -1 input for ALL
+    mKeepGenerations.removeOne(gen);
+}
+
 LogDataHandler *LogVariableContainer::getLogDataHandler()
 {
     return mpParentLogDataHandler;
@@ -475,16 +506,16 @@ QString VariableDescription::getVarTypeString() const
 {
     switch (mVarType)
     {
-    case S :
+    case ScriptVariableType :
         return "Script";
         break;
-    case ST :
+    case ScriptTempVariableType :
         return "Script_Temp";
         break;
-    case M :
+    case ModelVariableType :
         return "Model";
         break;
-    case I :
+    case ImportedVariableType :
         return "Import";
         break;
     default :
@@ -577,8 +608,12 @@ void LogVariableContainer::addDataGeneration(const int generation, const SharedT
 //! @todo Need to remove this class if final generation is deleted
 void LogVariableContainer::removeDataGeneration(const int generation)
 {
-    //! @todo cache data will still be in the cachegenreationmap, need to clear whenevevr generation is removed (from anywere), mabe should restore inc dec Subscribers
-    mDataGenerations.remove(generation);
+    // Skip removal of generations that should be kept
+    if (!mKeepGenerations.contains(generation))
+    {
+        //! @todo cache data will still be in the cachegenreationmap, need to clear whenevevr generation is removed (from anywere), mabe should restore inc dec Subscribers
+        mDataGenerations.remove(generation);
+    }
 }
 
 void LogVariableContainer::removeGenerationsOlderThen(const int gen)
@@ -601,8 +636,12 @@ void LogVariableContainer::removeGenerationsOlderThen(const int gen)
 
 void LogVariableContainer::removeAllGenerations()
 {
-    //! @todo cache data will still be in the cachegenreationmap, need to clear whenevevr generation is removed (from anywere), mabe should restore inc dec Subscribers
-    mDataGenerations.clear();
+    // It is assumed that the generation map is sorted by key which it should be since adding will allways append
+    QList<int> gens = mDataGenerations.keys();
+    for (int it=0; it<gens.size(); ++it)
+    {
+        removeDataGeneration(gens[it]);
+    }
 }
 
 LogVariableContainer::LogVariableContainer(const VariableDescription &rVarDesc, LogDataHandler *pParentLogDataHandler) : QObject()

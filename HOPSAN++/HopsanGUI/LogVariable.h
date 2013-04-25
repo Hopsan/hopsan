@@ -58,7 +58,7 @@ void splitConcatName(const QString fullName, QString &rCompName, QString &rPortN
 class VariableDescription
 {
 public:
-    enum VarTypeT {M, I, S, ST};
+    enum VarTypeT {ModelVariableType, ImportedVariableType, ScriptVariableType, ScriptTempVariableType};
     QString mModelPath;
     QString mComponentName;
     QString mPortName;
@@ -113,6 +113,9 @@ public:
     QString getDataName() const;
     QString getDataUnit() const;
 
+    void preventAutoRemove(const int gen);
+    void allowAutoRemove(const int gen);
+
     LogDataHandler *getLogDataHandler();
 
     void setAliasName(const QString alias);
@@ -124,6 +127,7 @@ private:
     LogDataHandler *mpParentLogDataHandler;
     SharedVariableDescriptionT mVariableDescription;
     GenerationMapT mDataGenerations;
+    QList<int> mKeepGenerations;
 };
 
 
@@ -173,6 +177,10 @@ public:
     double averageOfData() const;
     double minOfData() const;
     double maxOfData() const;
+
+    void preventAutoRemoval();
+    void allowAutoRemoval();
+
 
     LogDataHandler *getLogDataHandler();
 

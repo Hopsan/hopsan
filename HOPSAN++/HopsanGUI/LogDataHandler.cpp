@@ -358,7 +358,7 @@ void LogDataHandler::importFromPlo()
             foundData=true;
             VariableDescription varDesc;
             varDesc.mDataName = hopOldVector[i].mDataName;
-            varDesc.mVarType = VariableDescription::I;
+            varDesc.mVarType = VariableDescription::ImportedVariableType;
             //! @todo what about reading the unit
 
             // First check if a data variable with this name alread exist
@@ -501,7 +501,7 @@ void LogDataHandler::collectPlotDataFromModel(bool overWriteLastGeneration)
                     varDesc.mDataUnit = varDescs[i].mUnit;
                     varDesc.mDataDescription = varDescs[i].mDescription;
                     varDesc.mAliasName  = varDescs[i].mAlias;
-                    varDesc.mVarType = VariableDescription::M;
+                    varDesc.mVarType = VariableDescription::ModelVariableType;
 
                     // First check if a data variable with this name alread exist
                     QString catName = varDesc.getFullName();
@@ -1249,7 +1249,7 @@ SharedLogVariableDataPtrT LogDataHandler::defineNewVariable(const QString desire
     {
         VariableDescription varDesc;
         varDesc.mDataName = desiredname;
-        varDesc.mVarType = VariableDescription::S;
+        varDesc.mVarType = VariableDescription::ScriptVariableType;
         LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc, this);
         pDataContainer->addDataGeneration(mGenerationNumber, QVector<double>(), QVector<double>());
         mLogDataMap.insert(varDesc.getFullName(), pDataContainer);
