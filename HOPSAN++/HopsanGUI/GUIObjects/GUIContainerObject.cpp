@@ -1263,14 +1263,14 @@ Connector* ContainerObject::createConnector(Port *pPort, UndoStatusEnumT undoSet
             if ( startPortIsGroupPort && endPortIsGroupPort )
             {
                 gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("You are not allowed to connect two groups to each other yet. This will be suported in the future");
-                return false;
+                return 0;
             }
 
             // Abort with error if trying to connect two undefined group ports to each other
             if ( (pStartRealPort==0) && (pEndRealPort==0) )
             {
                 gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("You are not allowed to connect two undefined group ports to each other");
-                return false;
+                return 0;
             }
 
             // Handle if one or both ports are group ports

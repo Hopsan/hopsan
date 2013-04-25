@@ -61,6 +61,11 @@ Node::Node(const size_t datalength)
     disableLog();
 }
 
+Node::~Node()
+{
+    // Nothing special, but needed to prevent warning about undefined behaviour
+}
+
 
 //!
 //! @brief returns the node type

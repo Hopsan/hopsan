@@ -62,6 +62,7 @@ class DLLIMPORTEXPORT Node
 
 public:
     Node(const size_t datalength);
+    virtual ~Node();
     const std::string &getNiceName() const;
     const std::string &getNodeType() const;
 

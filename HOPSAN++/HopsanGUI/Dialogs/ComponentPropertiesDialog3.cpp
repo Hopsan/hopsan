@@ -769,7 +769,7 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
     connect(pSystemParameterToolButton, SIGNAL(triggeredAtRow(int)), this, SLOT(selectSystemParameterAtRow(int)));
     pToolButtonsLayout->addWidget(pSystemParameterToolButton);
 
-    if (variametertype == InputVaraiable)
+    if ( (variametertype == InputVaraiable) || (variametertype == OutputVariable))
     {
         RowAwareCheckBox *pEnablePortCheckBox = new RowAwareCheckBox(row);
         pEnablePortCheckBox->setToolTip("Show/hide port");
