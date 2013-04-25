@@ -181,6 +181,9 @@ public:
     void preventAutoRemoval();
     void allowAutoRemoval();
 
+    void cacheDataToDisk(const bool toDisk);
+    bool isCachingDataToDisk() const;
+
 
     LogDataHandler *getLogDataHandler();
 

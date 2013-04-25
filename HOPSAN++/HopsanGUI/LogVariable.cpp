@@ -420,6 +420,16 @@ void LogVariableData::allowAutoRemoval()
     }
 }
 
+void LogVariableData::cacheDataToDisk(const bool toDisk)
+{
+    mpCachedDataVector->setCached(toDisk);
+}
+
+bool LogVariableData::isCachingDataToDisk() const
+{
+    return mpCachedDataVector->isCached();
+}
+
 bool LogVariableData::indexInRange(const int idx) const
 {
     //! @todo Do we need to check timevector also ? (or should we assume thay are the same)
