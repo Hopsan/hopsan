@@ -16,9 +16,9 @@
 // Include your component code code files here
 // If you have lots of them you can include them in separate .h files and then include those files here instead.
 
-#include "Hydraulic/HydraulicComponentsInComponentTest.hpp"
-#include "Hydraulic/HydraulicLaminarOrifice.hpp"
-
+#include "Hydraulic/HydraulicUndefinedConnectionC.hpp"
+#include "Hydraulic/HydraulicUndefinedConnectionQ.hpp"
+#include "Signal/SignalComponents.h"
 
 // You need to include ComponentEssentials.h in order to gain access to the register function and the Factory types
 // Also use the hopsan namespace
@@ -39,8 +39,8 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory,
     // Suggestion, let the KeyValue (TypeName) be the same as your Class name
     // If that name is already in use, use something similar
 
-    pComponentFactory->registerCreatorFunction("HydraulicComponentsInComponentTest", HydraulicComponentsInComponentTest::Creator);
-    pComponentFactory->registerCreatorFunction("HydraulicLamOrfPortParamTest", HydraulicLaminarOrificeInterfaceVar::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicUndefinedConnectionC", HydraulicUndefinedConnectionC::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicUndefinedConnectionQ", HydraulicUndefinedConnectionQ::Creator);
 
     // ========== Register Custom Nodes (if any) ==========
     // This is not yet supported
@@ -54,7 +54,7 @@ extern "C" DLLEXPORT void get_hopsan_info(HopsanExternalLibInfoT *pHopsanExterna
 {
     //Change the name of the lib to something unique
     //You can include numbers in your name to indicate library version (if you want)
-    pHopsanExternalLibInfo->libName = (char*)"HopsanDevTestLibrary";
+    pHopsanExternalLibInfo->libName = (char*)"ObsoleteComponentsLibrary";
 
     // Leave these two lines as they are
     pHopsanExternalLibInfo->hopsanCoreVersion = (char*)HOPSANCOREVERSION;
