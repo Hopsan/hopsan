@@ -230,7 +230,7 @@ void LibraryWidget::checkForFailedComponents()
         }
 
         QDialog *pRecompDialog = new QDialog(this);
-        pRecompDialog->setWindowFlags(pRecompDialog->windowFlags() | Qt::Tool);
+        pRecompDialog->setWindowFlags(pRecompDialog->windowFlags()  | Qt::WindowStaysOnTopHint);
         pRecompDialog->setWindowTitle("Failed Loading Libraries");
         QGridLayout *pRecompLayout = new QGridLayout();
         pRecompDialog->setLayout(pRecompLayout);

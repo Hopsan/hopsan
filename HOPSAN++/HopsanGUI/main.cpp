@@ -69,13 +69,14 @@ int main(int argc, char *argv[])
     QPixmap pixmap(QString(GRAPHICSPATH) + "splash.png");
     QSplashScreen splash(pixmap);
     splash.show();
+    // Trigger splashscreen close in one second
+    QTimer::singleShot(1000, &splash, SLOT(close()));
 
     // Create the mainwindow
     MainWindow mainwindow;
     gpMainWindow = &mainwindow;
 
-    //Show splash screen, show main window and initialize workspace
-    QTimer::singleShot(1000, &splash, SLOT(close()));
+    //Show main window and initialize workspace
     QTimer::singleShot(20, &mainwindow, SLOT(showMaximized()));
     //mainwindow.initializeWorkspace();
 
