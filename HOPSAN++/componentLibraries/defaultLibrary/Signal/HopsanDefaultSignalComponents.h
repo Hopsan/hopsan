@@ -10,6 +10,4 @@
 #include "SignalRouting/HopsanDefaultSignalRoutingComponents.h"
 #include "Sources&Sinks/HopsanDefaultSignalSourcesAndSinks.h"
 
-#include "SignalUndefinedConnection.hpp"
-
 #endif // HOPSANDEFAULTSIGNALCOMPONENTS_H

@@ -10,7 +10,4 @@
 #include "Valves/HopsanDefaultHydraulicValves.h"
 #include "Volumes&Lines/HopsanDefaulHydraulicVolumesAndLines.h"
 
-#include "HydraulicUndefinedConnectionC.hpp"
-#include "HydraulicUndefinedConnectionQ.hpp"
-
 #endif

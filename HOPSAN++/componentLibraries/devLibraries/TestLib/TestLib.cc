@@ -18,6 +18,8 @@
 
 #include "Hydraulic/HydraulicComponentsInComponentTest.hpp"
 #include "Hydraulic/HydraulicLaminarOrifice.hpp"
+#include "Hydraulic/HydraulicUndefinedConnectionC.hpp"
+#include "Hydraulic/HydraulicUndefinedConnectionQ.hpp"
 
 // You need to include ComponentEssentials.h in order to gain access to the register function and the Factory types
 // Also use the hopsan namespace
@@ -40,6 +42,8 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory,
 
     pComponentFactory->registerCreatorFunction("HydraulicComponentsInComponentTest", HydraulicComponentsInComponentTest::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicLamOrfPortParamTest", HydraulicLaminarOrificeInterfaceVar::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicUndefinedConnectionC", HydraulicUndefinedConnectionC::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicUndefinedConnectionQ", HydraulicUndefinedConnectionQ::Creator);
 
     // ========== Register Custom Nodes (if any) ==========
     // This is not yet supported

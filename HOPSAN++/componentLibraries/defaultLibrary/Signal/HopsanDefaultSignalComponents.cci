@@ -63,6 +63,4 @@
     pComponentFactory->registerCreatorFunction("SignalUnitDelay", SignalUnitDelay::Creator);
     pComponentFactory->registerCreatorFunction("SignalSRlatch", SignalSRlatch::Creator);
 
-    pComponentFactory->registerCreatorFunction("SignalUndefinedConnection", SignalUndefinedConnection::Creator);
-
     pComponentFactory->registerCreatorFunction("SignalVariableTimeDelay", SignalVariableTimeDelay::Creator);
