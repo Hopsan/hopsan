@@ -31,17 +31,6 @@ class PlotMarker;
 class PlotLegend;
 class PainterWidget;
 
-class HopQwtPlot : public QwtPlot
-{
-    Q_OBJECT
-public:
-    HopQwtPlot(QWidget *pParent=0);
-signals:
-    void resized();
-protected:
-    void resizeEvent( QResizeEvent *e );
-};
-
 //! @brief Plot window tab containing a plot area with plot curves
 class PlotTab : public QWidget
 {
@@ -89,6 +78,7 @@ public:
 protected:
     void addBarChart(QStandardItemModel *pItemModel);
 
+    virtual void resizeEvent(QResizeEvent *event);
     virtual void dragEnterEvent(QDragEnterEvent *event);
     virtual void dragLeaveEvent(QDragLeaveEvent *event);
     virtual void dragMoveEvent(QDragMoveEvent *event);

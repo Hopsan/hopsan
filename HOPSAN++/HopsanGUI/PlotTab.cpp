@@ -54,12 +54,11 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
     for(int plotID=0; plotID<2; ++plotID)
     {
         //Plots
-        mpQwtPlots[plotID] = new HopQwtPlot(this);
+        mpQwtPlots[plotID] = new QwtPlot(this);
         mpQwtPlots[plotID]->setMouseTracking(true);
         mpQwtPlots[plotID]->setAcceptDrops(false);
         mpQwtPlots[plotID]->setCanvasBackground(QColor(Qt::white));
         mpQwtPlots[plotID]->setAutoReplot(true);
-        connect(mpQwtPlots[plotID], SIGNAL(resized()), this, SLOT(rescaleAxesToCurves()));
 
         //Panning Tool
         mpPanner[plotID] = new QwtPlotPanner(mpQwtPlots[plotID]->canvas());
@@ -413,6 +412,12 @@ void PlotTab::addBarChart(QStandardItemModel *pItemModel)
     mpBarPlot->setModel(pItemModel);
 
     mpTabLayout->addWidget(mpBarPlot);
+}
+
+void PlotTab::resizeEvent(QResizeEvent *event)
+{
+    QWidget::resizeEvent(event);
+    //this->rescaleAxesToCurves();
 }
 
 
@@ -2934,17 +2939,4 @@ void PainterWidget::paintEvent(QPaintEvent *)
         painter.setPen( Qt::NoPen );		// do not draw outline
         painter.drawRect(mX,mY,mWidth,mHeight);	// draw filled rectangle
     }
-}
-
-
-void HopQwtPlot::resizeEvent(QResizeEvent *e)
-{
-    QwtPlot::resizeEvent(e);
-    emit resized();
-}
-
-
-HopQwtPlot::HopQwtPlot(QWidget *pParent) : QwtPlot(pParent)
-{
-    // Nothing special
 }

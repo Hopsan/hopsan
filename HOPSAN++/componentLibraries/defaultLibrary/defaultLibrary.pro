@@ -262,7 +262,23 @@ HEADERS += \
     Signal/Filters/SignalIntegrator2.hpp \
     Signal/Filters/SignalIntegratorLimited2.hpp \
     Signal/Filters/SignalIntegratorLimited.hpp \
-    Signal/Filters/SignalIntegrator.hpp
+    Signal/Filters/SignalIntegrator.hpp \
+    Special/AeroComponents/AeroAircraft6DOF.hpp \
+    Special/AeroComponents/SignalWaypoint.hpp \
+    Special/AeroComponents/SignalTimeAccelerator.hpp \
+    Special/AeroComponents/SignalStateMonitor.hpp \
+    Special/AeroComponents/SignalEarthCoordinates.hpp \
+    Special/AeroComponents/SignalAttitudeTVCcontrol.hpp \
+    Special/AeroComponents/SignalAttitudeControl.hpp \
+    Special/AeroComponents/AeroVehicleTVC.hpp \
+    Special/AeroComponents/AeroPropeller.hpp \
+    Special/AeroComponents/AeroJetEngine.hpp \
+    Special/AeroComponents/AeroFuelTank.hpp \
+    Special/AeroComponents/AeroAtmosphere.hpp \
+    Special/AeroComponents/AeroAircraft6DOFS.hpp \
+    Special/AeroComponents/FuelComponents/HydraulicFuelTankG.hpp \
+    Special/AeroComponents/FuelComponents/HydraulicCentrifugalPumpJ.hpp \
+    Special/AeroComponents/FuelComponents/HydraulicCentrifugalPump.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \
