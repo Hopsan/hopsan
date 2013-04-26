@@ -30,7 +30,11 @@ SOURCES += \
 
 HEADERS += \
     Hydraulic/HydraulicComponentsInComponentTest.hpp \
-    Hydraulic/HydraulicLaminarOrifice.hpp
+    Hydraulic/HydraulicLaminarOrifice.hpp \
+    Hydraulic/HopsanHydraulicComponents.h \
+    Hydraulic/HydraulicAlternativePRV.hpp \
+    Signal/SignalBETest.hpp \
+    Signal/SignalComponents.h
 
 OTHER_FILES += \
     hopsanDebugReleaseCompile.prf

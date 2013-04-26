@@ -16,8 +16,8 @@
 // Include your component code code files here
 // If you have lots of them you can include them in separate .h files and then include those files here instead.
 
-#include "Hydraulic/HydraulicComponentsInComponentTest.hpp"
-#include "Hydraulic/HydraulicLaminarOrifice.hpp"
+#include "Hydraulic/HopsanHydraulicComponents.h"
+#include "Signal/SignalComponents.h"
 
 
 // You need to include ComponentEssentials.h in order to gain access to the register function and the Factory types
