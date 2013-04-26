@@ -417,7 +417,7 @@ void PlotTab::addBarChart(QStandardItemModel *pItemModel)
 void PlotTab::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
-    //this->rescaleAxesToCurves();
+    this->rescaleAxesToCurves();
 }
 
 
