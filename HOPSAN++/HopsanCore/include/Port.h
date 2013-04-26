@@ -68,13 +68,13 @@ namespace hopsan {
         //! @brief Writes a value to the connected node
         //! @param [in] idx The data id of the data to write
         //! @param [in] value The value of the data to read
-        virtual inline void writeNode(const size_t &idx, const double &value, const size_t /*portIdx*/=0) const
+        virtual inline void writeNode(const size_t idx, const double value, const size_t /*portIdx*/=0) const
         {
             mpNode->mDataValues[idx] = value;
         }
 
         virtual double readNodeSafe(const size_t idx, const size_t portIdx=0);
-        virtual void writeNodeSafe(const size_t &idx, const double &value, const size_t portIdx=0);
+        virtual void writeNodeSafe(const size_t idx, const double value, const size_t portIdx=0);
 
         virtual double *getNodeDataPtr(const size_t idx, const size_t portIdx=0) const;
         virtual std::vector<double> *getDataVectorPtr(const size_t portIdx=0);
@@ -188,9 +188,9 @@ namespace hopsan {
 
         // Overloaded virtual functions
         double readNodeSafe(const size_t idx, const size_t portIdx);
-        void writeNodeSafe(const size_t &idx, const double &value, const size_t portIdx);
+        void writeNodeSafe(const size_t idx, const double value, const size_t portIdx);
         inline double readNode(const size_t idx, const size_t portIdx) const;
-        inline void writeNode(const size_t &idx, const double &value, const size_t portIdx) const;
+        inline void writeNode(const size_t idx, const double value, const size_t portIdx) const;
 
         double *getNodeDataPtr(const size_t idx, const size_t portIdx) const;
         std::vector<double> *getDataVectorPtr(const size_t portIdx=0);
@@ -248,6 +248,8 @@ namespace hopsan {
         void writeNodeSafe(const size_t idx, const double value);
         inline void writeNode(const size_t idx, const double value) const;
         virtual void loadStartValues();
+        virtual bool hasConnectedExternalSystemWritePort();
+        virtual void forceLoadStartValue();
     };
 
     class PowerMultiPort :public MultiPort

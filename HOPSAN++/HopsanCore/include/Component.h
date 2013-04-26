@@ -145,6 +145,11 @@ public:
     Port *getPort(const std::string portname);
     std::vector<std::string> getPortNames();
 
+    // Node Data ptrs
+    double *getSafeNodeDataPtr(Port* pPort, const int dataId);
+    double *getSafeNodeDataPtr(const std::string &rPortName, const int dataId);
+    double *getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx, const int dataId, const double defaultValue=0);
+
     // System parent
     ComponentSystem *getSystemParent();
     size_t getModelHierarchyDepth();
@@ -218,9 +223,6 @@ protected:
     // NodeData ptr function
     //! @todo clean up this mess /Peter
     double *getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue);
-    double *getSafeNodeDataPtr(Port* pPort, const int dataId);
-    double *getSafeNodeDataPtr(const std::string &rPortName, const int dataId);
-    double *getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx, const int dataId, const double defaultValue=0);
 
     // Unique name functions
     virtual std::string determineUniquePortName(std::string portname);

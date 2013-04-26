@@ -81,7 +81,10 @@ namespace hopsan {
         }
 
         // External port pointers
-        Port *mpSysPort1, *mpSysPort2, *mpSysPort3, *mpSysPort4;
+        Port *mpSysPort1, *mpSysPort2, *mpSysPortKc1, *mpSysPortKc2, *mpSysPortVolPressureOut;
+
+        // Node data ptrs
+        double *mpInternalVolumePressure;
 
     public:
         static Component *Creator()
@@ -91,19 +94,17 @@ namespace hopsan {
 
         void configure()
         {
-            //Initialize parameters
-            Volume = 1e-3;
+            // Add Constant Parameters
+            addConstant("V", "Volume", "[m^3]", 1e-3, Volume);
 
+            // Add Input Variables
+            mpSysPortKc1 = addInputVariable("Kc1", "", "", 1e-11);
+            mpSysPortKc2 = addInputVariable("Kc2", "", "", 1e-11);
 
-            //Register parameters
-            registerParameter("V", "Volume", "[m^3]", Volume);
-
-
-            //Initialize external ports
-            mpSysPort1 = addSystemPort("P1");
-            mpSysPort2 = addSystemPort("P2");
-            mpSysPort3 = addSystemPort("Kc1");
-            mpSysPort4 = addSystemPort("Kc2");
+            // Add external ports
+            mpSysPort1 = addSystemPort("P1", "Hydraulic port 1");
+            mpSysPort2 = addSystemPort("P2", "Hydraulic port 2");
+            mpSysPortVolPressureOut = addOutputVariable("out", "Internal volume pressure", "bar");
 
 
             //Initialize sub components
@@ -121,27 +122,47 @@ namespace hopsan {
 
             //Initialize connections
             connect(mpSysPort1, mpOrifice1->getPort("P1"));
-            connect(mpSysPort3, mpOrifice1->getPort("Kc"));
+            connect(mpSysPortKc1, mpOrifice1->getPort("Kc"));
             connect(mpOrifice1->getPort("P2"), mpVolume->getPort("P1"));
             connect(mpVolume->getPort("P2"), mpOrifice2->getPort("P1"));
-            connect(mpSysPort4, mpOrifice2->getPort("Kc"));
+            connect(mpSysPortKc2, mpOrifice2->getPort("Kc"));
             connect(mpSysPort2, mpOrifice2->getPort("P2"));
         }
 
 
         bool initialize(const double startT, const double stopT)     //Important, initialize must have these arguments
         {
-            //Set parameters
+            // Propagate constant parameters into respective components
             mpVolume->setParameterValue("V", to_string(Volume), true);
+            mpInternalVolumePressure = mpVolume->getSafeNodeDataPtr("P2", NodeHydraulic::Pressure);
 
-            return ComponentSystem::initialize(startT, stopT);
+            if (checkModelBeforeSimulation())
+            {
+                return ComponentSystem::initialize(startT, stopT);
+            }
+            else
+            {
+                stopSimulation();
+                return false;
+            }
+
+            // Initialize the output signal value
+            //! @todo this is not working, value from last simulation remains allways
+            mpSysPortVolPressureOut->writeNode(NodeSignal::Value, (*mpInternalVolumePressure));
         }
 
 
-        void simulateOneTimestep()
+        void simulate(const double stopTime)
         {
-            //Don't do anything, just call the ComponentSystem::simulate() function
-            simulate(mTime);
+            // Do some magic stuff
+            // Note! if you use mTime before the call to simulate at the bottom, mTime = previousTime
+
+            // Call the ComponentSystem::simulate() function to increment mTime and simulate all subcomponents
+            // Note! Will simulate from mTime to stopTime (this could include multiple timesteps (mTimestep))
+            ComponentSystem::simulate(stopTime);
+
+            // Write any output variables after simulation completes
+            mpSysPortVolPressureOut->writeNode(NodeSignal::Value, (*mpInternalVolumePressure));
         }
     };
 }

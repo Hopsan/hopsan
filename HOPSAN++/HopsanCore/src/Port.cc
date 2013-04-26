@@ -174,7 +174,7 @@ double Port::readNodeSafe(const size_t idx, const size_t /*portIdx*/)
 //! @brief Writes a value to the connected node
 //! @param [in] idx The data id of the data to write
 //! @param [in] value The value of the data to read
-void Port::writeNodeSafe(const size_t &idx, const double &value, const size_t /*portIdx*/)
+void Port::writeNodeSafe(const size_t idx, const double value, const size_t /*portIdx*/)
 {
     //! @note This if-statement will slow simulation down, but if optimization is desired readNode and writeNode shall not be used anyway.
     if(isConnected())
@@ -726,6 +726,42 @@ void ReadPort::loadStartValues()
     }
 }
 
+bool ReadPort::hasConnectedExternalSystemWritePort()
+{
+    // Frist figure out who my system parent is
+    Component *pSystemParent;
+    if (this->getComponent()->isComponentSystem())
+    {
+        // If my parent component is a system, then I am a kind of systemport (I am a normal port as interface port on a system)
+        pSystemParent = this->getComponent();
+    }
+    else
+    {
+        // Take my parent components systemparent
+        pSystemParent = this->getComponent()->getSystemParent();
+    }
+
+    // Now check all connected ports, find a write port
+    vector<Port*>::iterator portIt;
+    for (portIt = mConnectedPorts.begin(); portIt != mConnectedPorts.end(); ++portIt)
+    {
+        Port *pPort = (*portIt);
+        if (pPort->getPortType() == WritePortType)
+        {
+            // Check if this writport belongs to a component whos parent system is the same as my system grand parent
+            if (pPort->getComponent()->getSystemParent() == pSystemParent->getSystemParent())
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void ReadPort::forceLoadStartValue()
+{
+    Port::loadStartValues();
+}
 
 WritePort::WritePort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner, pParentPort)
 {
@@ -769,7 +805,7 @@ double MultiPort::readNodeSafe(const size_t idx, const size_t portIdx)
     return mSubPortsVector[portIdx]->readNodeSafe(idx);
 }
 
-void MultiPort::writeNodeSafe(const size_t &idx, const double &value, const size_t portIdx)
+void MultiPort::writeNodeSafe(const size_t idx, const double value, const size_t portIdx)
 {
     return mSubPortsVector[portIdx]->writeNode(idx,value);
 }
@@ -781,7 +817,7 @@ double MultiPort::readNode(const size_t idx, const size_t portIdx) const
     return mSubPortsVector[portIdx]->readNode(idx);
 }
 
-void MultiPort::writeNode(const size_t &idx, const double &value, const size_t portIdx) const
+void MultiPort::writeNode(const size_t idx, const double value, const size_t portIdx) const
 {
     return mSubPortsVector[portIdx]->writeNode(idx,value);
 }

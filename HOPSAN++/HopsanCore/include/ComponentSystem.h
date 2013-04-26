@@ -157,7 +157,7 @@ namespace hopsan {
         bool renameParameter(const std::string oldName, const std::string newName);
 
         // Handle system ports
-        Port* addSystemPort(std::string portName);
+        Port* addSystemPort(std::string portName, const std::string description="");
         std::string renameSystemPort(const std::string oldname, const std::string newname);
         void deleteSystemPort(const std::string name);
 

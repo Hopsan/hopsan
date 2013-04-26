@@ -988,7 +988,7 @@ bool ComponentSystem::renameParameter(const std::string oldName, const std::stri
 }
 
 //! @brief Adds a transparent SubSystemPort
-Port* ComponentSystem::addSystemPort(string portName)
+Port* ComponentSystem::addSystemPort(string portName, const string description)
 {
     // Force default portname p, if nothing else specified
     if (portName.empty())
@@ -996,7 +996,7 @@ Port* ComponentSystem::addSystemPort(string portName)
         portName = "p";
     }
 
-    return addPort(portName, SystemPortType, "NodeEmpty", Port::Required);
+    return addPort(portName, SystemPortType, "NodeEmpty", description, Port::Required);
 }
 
 
@@ -2292,6 +2292,27 @@ bool ComponentSystem::checkModelBeforeSimulation()
 //! @brief Load start values by telling each component to load their start values
 void ComponentSystem::loadStartValues()
 {
+    // First load startvalues for any non-systemport readports on this system (very rare occurance)
+    //! @todo since this is very specific maybe it should be in a poweruser help function
+    PortPtrMapT::iterator portIt;
+    for (portIt=mPortPtrMap.begin(); portIt!=mPortPtrMap.end(); ++portIt)
+    {
+        Port* pPort = portIt->second;
+        if (pPort->getPortType() == ReadPortType) //! @todo what about readmultiport
+        {
+            ReadPort *pReadPort = dynamic_cast<ReadPort*>(pPort);
+            if (pReadPort)
+            {
+                // Only write readport start value if it does not have an external connected port
+                if (!pReadPort->hasConnectedExternalSystemWritePort())
+                {
+                    pReadPort->forceLoadStartValue();
+                }
+            }
+        }
+    }
+
+    // Now load startvalues for all sub components
     std::vector<Component*>::iterator compIt;
     for(compIt = mComponentSignalptrs.begin(); compIt != mComponentSignalptrs.end(); ++compIt)
     {
