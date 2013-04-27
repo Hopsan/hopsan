@@ -127,10 +127,10 @@ private:
         setNiceName("pneumatic");
         setDataCharacteristics(MassFlow, "MassFlow", "mdot", "kg/s", FlowType);
         setDataCharacteristics(Pressure, "Pressure", "p", "Pa", IntensityType);
-        setDataCharacteristics(Temperature, "Temperature", "T", "K", HiddenType);
+        setDataCharacteristics(Temperature, "Temperature", "T", "K", DefaultType);
         setDataCharacteristics(WaveVariable, "WaveVariable", "c", "Pa", TLMType);
         setDataCharacteristics(CharImpedance, "CharImpedance", "Zc", "?", TLMType);
-        setDataCharacteristics(EnergyFlow, "EnergyFlow", "Qdot", "J/s", HiddenType);
+        setDataCharacteristics(EnergyFlow, "EnergyFlow", "Qdot", "J/s", DefaultType);
 
         // Set default intial startvales to resonable (non-zero) values
         mDataValues[Pressure] = 100000;
