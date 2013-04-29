@@ -1,4 +1,4 @@
-//HopsanGUI includes
+﻿//HopsanGUI includes
 #include "common.h"
 #include "Configuration.h"
 #include "DesktopHandler.h"
@@ -35,6 +35,8 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole)
 
     mPwd = gDesktopHandler.getDocumentsPath();
     mPwd.chop(1);
+
+    mOptAlgorithm = Uninitialized;
 
     HcomCommand helpCmd;
     helpCmd.cmd = "help";
@@ -333,6 +335,43 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole)
     bodeCmd.help.append("Usage: bode [invar outvar maxfreq]");
     bodeCmd.fnc = &HcomHandler::executeBodeCommand;
     mCmdList << bodeCmd;
+
+    HcomCommand absCmd;
+    absCmd.cmd = "abs";
+    absCmd.description.append("Calculates absolute value of scalar of variable");
+    absCmd.help.append("Usage: abs [var]");
+    absCmd.fnc = &HcomHandler::executeAbsCommand;
+    mCmdList << absCmd;
+
+    HcomCommand timeCmd;
+    timeCmd.cmd = "time";
+    timeCmd.description.append("Returns last simulation time in milliseconds.");
+    timeCmd.help.append("Usage: simt [no arguments]");
+    timeCmd.fnc = &HcomHandler::executeSimulationTimeCommand;
+    mCmdList << timeCmd;
+
+    HcomCommand optCmd;
+    optCmd.cmd = "opt";
+    optCmd.description.append("Initialize an optimization.");
+    optCmd.help.append("Usage: opt [algorithm partype parnum parmin parmax -flags]");
+    optCmd.help.append("\nAlgorithms:   Flags:");
+    optCmd.help.append("\ncomplex       alpha");
+    optCmd.fnc = &HcomHandler::executeOptimizationCommand;
+    mCmdList << optCmd;
+
+    HcomCommand callCmd;
+    callCmd.cmd = "call";
+    callCmd.description.append("Calls a pre-defined function.");
+    callCmd.help.append("Usage: call [funcname]");
+    callCmd.fnc = &HcomHandler::executeCallFunctionCommand;
+    mCmdList << callCmd;
+
+    HcomCommand echoCmd;
+    echoCmd.cmd = "echo";
+    echoCmd.description.append("Sets terminal output on or off.");
+    echoCmd.help.append("Usage: echo [on/off]");
+    echoCmd.fnc = &HcomHandler::executeEchoCommand;
+    mCmdList << echoCmd;
 }
 
 
@@ -672,7 +711,15 @@ void HcomHandler::executeRunScriptCommand(QString cmd)
 
     QStringList lines = code.split("\n");
     lines.removeAll("");
-    QString gotoLabel = runScriptCommands(lines);
+    bool *abort = new bool;
+    *abort = false;
+    QString gotoLabel = runScriptCommands(lines, abort);
+    if(*abort)
+    {
+        delete abort;
+        return;
+    }
+    delete abort;
     while(!gotoLabel.isEmpty())
     {
         if(gotoLabel == "%%%%%EOF")
@@ -684,7 +731,8 @@ void HcomHandler::executeRunScriptCommand(QString cmd)
             if(lines[l].startsWith("&"+gotoLabel))
             {
                 QStringList commands = lines.mid(l, lines.size()-l);
-                gotoLabel = runScriptCommands(commands);
+                bool *abort;
+                gotoLabel = runScriptCommands(commands, abort);
             }
         }
     }
@@ -1504,6 +1552,241 @@ void HcomHandler::executeBodeCommand(QString cmd)
     gpPlotHandler->createNewPlotWindowOrGetCurrentOne("Bode plot")->createBodePlot(pData1, pData2, fMax);
 }
 
+void HcomHandler::executeAbsCommand(QString cmd)
+{
+    QStringList split = cmd.split(" ");
+    if(split.size() != 1)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        return;
+    }
+    SharedLogVariableDataPtrT var = getVariablePtr(split[0]);
+    if(var)
+    {
+        var.data()->absData();
+    }
+    else
+    {
+        bool ok;
+        double retval = fabs(getNumber(split[0], &ok));
+        if(ok) returnScalar(retval);
+        else
+        {
+            mpConsole->printErrorMessage("Variable not found.", "", false);
+        }
+    }
+}
+
+void HcomHandler::executeSimulationTimeCommand(QString cmd)
+{
+    cmd.remove(" ");
+    if(!cmd.isEmpty())
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        return;
+    }
+
+    if(gpMainWindow->mpProjectTabs->count() == 0)
+    {
+        mpConsole->printErrorMessage("No model is open.", "", false);
+        return;
+    }
+    returnScalar(gpMainWindow->mpProjectTabs->getCurrentTab()->getLastSimulationTime());
+}
+
+void HcomHandler::executeOptimizationCommand(QString cmd)
+{
+    QStringList split = cmd.split(" ");
+    if(split.size() == 1 && split[0] == "undo")
+    {
+        if(mOptAlgorithm == Uninitialized)
+        {
+            mpConsole->printErrorMessage("Optimization not initialized.", "", false);
+            return;
+        }
+        if(mOptAlgorithm != Complex)
+        {
+            mpConsole->printErrorMessage("Only available for complex algorithm.", "", false);
+            return;
+        }
+
+        mOptParameters = mOptOldParameters;
+        return;
+    }
+    if(split.size() == 1 && split[0] == "worst")
+    {
+        if(mOptAlgorithm == Uninitialized)
+        {
+            mpConsole->printErrorMessage("Optimization not initialized.", "", false);
+            return;
+        }
+        if(mOptAlgorithm != Complex)
+        {
+            mpConsole->printErrorMessage("Only available for complex algorithm.", "", false);
+            return;
+        }
+
+        returnScalar(mOptLastWorstId);
+        return;
+    }
+    if(split.size() == 3 && split[0] == "setobj")
+    {
+        bool ok;
+        int nPoint = getNumber(split[1], &ok);
+        if(!ok)
+        {
+            mpConsole->printErrorMessage("Argument number 2 must be a number.");
+            return;
+        }
+        if(nPoint < 0 || nPoint > mOptObjectives.size()-1)
+        {
+            mpConsole->printErrorMessage("Index out of range.");
+            return;
+        }
+
+        double val = getNumber(split[2], &ok);
+        if(!ok)
+        {
+            mpConsole->printErrorMessage("Argument number 3 must be a number.");
+            return;
+        }
+
+        mOptObjectives[nPoint] = val;
+        return;
+    }
+    if(split.size() == 4 && split[0] == "setparminmax")
+    {
+        bool ok;
+        int nPoint = getNumber(split[1], &ok);
+        if(!ok)
+        {
+            mpConsole->printErrorMessage("Argument number 2 must be a number.");
+            return;
+        }
+        if(nPoint < 0 || nPoint > mOptParameters.size()-1)
+        {
+            mpConsole->printErrorMessage("Index out of range.");
+            return;
+        }
+
+
+        double min = getNumber(split[2], &ok);
+        if(!ok)
+        {
+            mpConsole->printErrorMessage("Argument number 3 must be a number.");
+            return;
+        }
+
+        double max = getNumber(split[3], &ok);
+        if(!ok)
+        {
+            mpConsole->printErrorMessage("Argument number 4 must be a number.");
+            return;
+        }
+
+        mOptParMin[nPoint] = min;
+        mOptParMax[nPoint] = max;
+        return;
+    }
+
+    if(split.size() == 3 && split[0] == "init")
+    {
+        if(split[1] == "complex")
+        {
+            mOptAlgorithm = Complex;
+        }
+        else
+        {
+            mpConsole->printErrorMessage("Unknown algorithm. Only complex is supported.", "", false);
+            return;
+        }
+
+        if(split[2] == "int")
+        {
+            mOptParameterType = Int;
+        }
+        else if(split[2] == "double")
+        {
+            mOptParameterType = Double;
+        }
+        else
+        {
+            mpConsole->printErrorMessage("Unknown data type. Only int and double are supported.");
+            return;
+        }
+
+
+
+        //Everything is fine, initialize and run optimization
+
+        bool ok;
+        mOptNumPoints = getNumber("npoints", &ok);
+        mOptNumParameters = getNumber("nparams", &ok);
+        mOptLastWorstId = -1;
+        mOptWorstCounter = 0;
+        mOptParameters.resize(mOptNumPoints);
+        mOptParMin.resize(mOptNumPoints);
+        mOptParMax.resize(mOptNumPoints);
+        mOptMaxEvals = getNumber("maxevals", &ok);
+        mOptAlpha = getNumber("alpha", &ok);
+        mOptRfak = getNumber("rfak", &ok);
+        mOptGamma = getNumber("gamma", &ok);
+        mOptFuncTol = getNumber("functol", &ok);
+        mOptParTol = getNumber("partol", &ok);
+
+        return;
+    }
+
+    if(split.size() == 1 && split[0] == "run")
+    {
+        opt_complex_init();
+        opt_complex_run();
+    }
+}
+
+void HcomHandler::executeCallFunctionCommand(QString cmd)
+{
+    QStringList split = cmd.split(" ");
+    if(split.size() != 1)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        return;
+    }
+
+    if(!mFunctions.contains(split[0]))
+    {
+        mpConsole->printErrorMessage("Undefined function.", "", false);
+        return;
+    }
+
+    bool *abort = new bool;
+    *abort = false;
+    runScriptCommands(mFunctions.find(split[0]).value(), abort);
+}
+
+void HcomHandler::executeEchoCommand(QString cmd)
+{
+    QStringList split = cmd.split(" ");
+    if(split.size() != 1)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        return;
+    }
+
+    if(split[0] == "on")
+    {
+        mpConsole->setDontPrint(false);
+    }
+    else if(split[0] == "off")
+    {
+        mpConsole->setDontPrint(true);
+    }
+    else
+    {
+        mpConsole->printErrorMessage("Unknown argument, use \"on\" or \"off\"");
+    }
+}
+
 
 //! @brief Changes plot variables on specified axes
 //! @param cmd Command containing the plot variables
@@ -1643,6 +1926,33 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
         return QString::number(mLocalVars.find(expr).value());
     }
 
+    //Optimization parameter
+    if(expr.startsWith("par(") && expr.endsWith(")"))
+    {
+        QString nPointsStr = expr.section("(",1,1).section(",",0,0);
+        QString nParStr = expr.section(",",1,1).section(")",0,0);
+        bool ok1, ok2;
+        int nPoint = getNumber(nPointsStr,&ok1);
+        int nPar = getNumber(nParStr, &ok2);
+        if(ok1 && ok2 && nPoint>=0 && nPoint < mOptParameters.size() && nPar>= 0 && nPar < mOptParameters[nPoint].size())
+        {
+            return QString::number(mOptParameters[nPoint][nPar]);
+        }
+    }
+
+    //Optimization objective
+    if(expr.startsWith("obj(") && expr.endsWith(")"))
+    {
+        QString nPointsStr = expr.section("(",1,1).section(")",0,0);
+
+        bool ok;
+        int nPoint = nPointsStr.toInt(&ok);
+        if(ok && nPoint>=0 && nPoint < mOptObjectives.size())
+        {
+            return QString::number(mOptObjectives[nPoint]);
+        }
+    }
+
     //Parameter name, return its value
     if(getParameterValue(expr) != "NaN")
     {
@@ -1719,6 +2029,14 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
     }
 
     *returnType = Scalar;
+//    for(int p=0; p<mOptNumPoints; ++p)
+//    {
+//        for(int i=0; i<mOptNumParameters; ++i)
+//        {
+//            mLocalVars.insert("par("+QString::number(p)+".0,"+QString::number(i)+".0)", mOptParameters[p][i]);
+//        }
+//    }
+
     return QString::number(symHopExpr.evaluate(mLocalVars));
 }
 
@@ -1760,19 +2078,40 @@ bool HcomHandler::containsOutsideParentheses(QString str, QString c)
 }
 
 
-QString HcomHandler::runScriptCommands(QStringList &lines)
+QString HcomHandler::runScriptCommands(QStringList &lines, bool *abort)
 {
     mAborted = false; //Reset if pushed when script didn't run
+
+    QString funcName="";
+    QStringList funcCommands;
 
     qDebug() << "Number of commands to run: " << lines.size();
 
     for(int l=0; l<lines.size(); ++l)
     {
+        while(lines[l].startsWith(" "))
+        {
+            lines[l] = lines[l].right(lines[l].size()-1);
+        }
         if(lines[l].startsWith("#") || lines[l].startsWith("&")) { continue; }  //Ignore comments and labels
 
         if(lines[l].startsWith("stop"))
         {
             return "%%%%%EOF";
+        }
+        else if(lines[l].startsWith("define "))
+        {
+            funcName = lines[l].section(" ",1);
+            ++l;
+            while(!lines[l].startsWith("enddefine"))
+            {
+                funcCommands << lines[l];
+                ++l;
+            }
+            mFunctions.insert(funcName, funcCommands);
+            mpConsole->print("Defined function: "+funcName);
+            funcName.clear();
+            funcCommands.clear();
         }
         else if(lines[l].startsWith("goto"))
         {
@@ -1787,6 +2126,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines)
             while(nLoops > 0)
             {
                 ++l;
+                lines[l] = lines[l].trimmed();
                 if(l>lines.size()-1)
                 {
                     mpConsole->printErrorMessage("Missing REPEAT in while loop.","",false);
@@ -1808,9 +2148,14 @@ QString HcomHandler::runScriptCommands(QStringList &lines)
                 {
                     mpConsole->print("Script aborted.");
                     mAborted = false;
-                    break;
+                    *abort=true;
+                    return "";
                 }
-                QString gotoLabel = runScriptCommands(loop);
+                QString gotoLabel = runScriptCommands(loop, abort);
+                if(*abort)
+                {
+                    return "";
+                }
                 if(!gotoLabel.isEmpty())
                 {
                     return gotoLabel;
@@ -1827,6 +2172,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines)
             while(true)
             {
                 ++l;
+                lines[l] = lines[l].trimmed();
                 if(l>lines.size()-1)
                 {
                     mpConsole->printErrorMessage("Missing ENDIF in if-statement.","",false);
@@ -1859,7 +2205,11 @@ QString HcomHandler::runScriptCommands(QStringList &lines)
                     mpConsole->printErrorMessage("Evaluation of if-statement argument failed.","",false);
                     return QString();
                 }
-                QString gotoLabel = runScriptCommands(ifCode);
+                QString gotoLabel = runScriptCommands(ifCode, abort);
+                if(*abort)
+                {
+                    return "";
+                }
                 if(!gotoLabel.isEmpty())
                 {
                     return gotoLabel;
@@ -1872,7 +2222,11 @@ QString HcomHandler::runScriptCommands(QStringList &lines)
                     mpConsole->printErrorMessage("Evaluation of if-statement argument failed.","",false);
                     return QString();
                 }
-                QString gotoLabel = runScriptCommands(elseCode);
+                QString gotoLabel = runScriptCommands(elseCode, abort);
+                if(*abort)
+                {
+                    return "";
+                }
                 if(!gotoLabel.isEmpty())
                 {
                     return gotoLabel;
@@ -1918,7 +2272,11 @@ QString HcomHandler::runScriptCommands(QStringList &lines)
                     tempCmd.replace("$"+var, vars[v]);
                     tempCmds.append(tempCmd);
                 }
-                QString gotoLabel = runScriptCommands(tempCmds);
+                QString gotoLabel = runScriptCommands(tempCmds, abort);
+                if(*abort)
+                {
+                    return "";
+                }
                 if(!gotoLabel.isEmpty())
                 {
                     return gotoLabel;
@@ -2318,6 +2676,11 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
 //! @returns Pointer to the data variable
 SharedLogVariableDataPtrT HcomHandler::getVariablePtr(QString fullName) const
 {
+    if(gpMainWindow->mpProjectTabs->count() == 0)
+    {
+        return SharedLogVariableDataPtrT(0);
+    }
+
     fullName.replace(".","#");
     int generation = -1;
 
@@ -2395,7 +2758,7 @@ SharedLogVariableDataPtrT HcomHandler::getVariablePtr(QString fullName) const
 //! @brief Parses a string into a number
 //! @param str String to parse, should be a number of a variable name
 //! @param ok Pointer to boolean that tells if parsing was successful
-double HcomHandler::getNumber(const QString str, bool *ok) const
+double HcomHandler::getNumber(const QString str, bool *ok)
 {
     *ok = true;
     if(str.toDouble())
@@ -2405,6 +2768,16 @@ double HcomHandler::getNumber(const QString str, bool *ok) const
     else if(mLocalVars.contains(str))
     {
         return mLocalVars.find(str).value();
+    }
+    else
+    {
+        VariableType retType;
+        bool isNumber;
+        double retval = evaluateExpression(str, &retType, &isNumber).toDouble();
+        if(isNumber && retType==Scalar)
+        {
+            return retval;
+        }
     }
     *ok = false;
     return 0;
@@ -2532,4 +2905,263 @@ void HcomHandler::returnScalar(const double retval)
     mRetvalType = Scalar;
     mpConsole->print(QString::number(retval));
 }
+
+void HcomHandler::opt_complex_init()
+{
+    for(int p=0; p<mOptNumPoints; ++p)
+    {
+        mOptParameters[p].resize(mOptNumParameters);
+        for(int i=0; i<mOptNumParameters; ++i)
+        {
+            double r = (double)rand() / (double)RAND_MAX;
+            mOptParameters[p][i] = mOptParMin[i] + r*(mOptParMax[i]-mOptParMin[i]);
+            if(mOptParameterType == Int)
+            {
+                mOptParameters[p][i] = round(mOptParameters[p][i]);
+            }
+        }
+    }
+    mOptObjectives.resize(mOptNumPoints);
+
+    mOptKf = 1.0-pow(mOptAlpha/2.0, mOptGamma/mOptNumPoints);
+}
+
+
+void HcomHandler::opt_complex_run()
+{
+    mOptConvergenceReason=0;
+
+    if(mOptAlgorithm == Uninitialized)
+    {
+        mpConsole->printErrorMessage("Optimization not initialized.", "", false);
+        return;
+    }
+    if(!mFunctions.contains("evalall"))
+    {
+        mpConsole->printErrorMessage("Function \"evalall\" not defined.","",false);
+        return;
+    }
+    if(!mFunctions.contains("evalworst"))
+    {
+        mpConsole->printErrorMessage("Function \"evalworst\" not defined.","",false);
+        return;
+    }
+
+    mpConsole->print("Running optimization...");
+    executeCommand("echo off");
+
+    //Evaluate initial objevtive values
+    executeCommand("call evalall");
+
+    //Store parameters for undo
+    mOptOldParameters = mOptParameters;
+
+    int i=0;
+    int percent=-1;
+    for(; i<mOptMaxEvals && !mAborted; ++i)
+    {
+        int dummy=int(100.0*double(i)/mOptMaxEvals);
+        if(dummy != percent)
+        {
+            mpConsole->setDontPrint(false);
+            mpConsole->print(QString::number(dummy)+" %");
+            mpConsole->setDontPrint(true);
+            percent = dummy;
+        }
+
+        //Check convergence
+        if(opt_comlex_checkConvergence()) break;
+
+        //Increase all objective values (forgetting principle)
+        opt_complex_forget();
+
+        //Calculate best and worst point
+        opt_complex_calculateBestAndWorstId();
+
+        //Find geometrical center
+        opt_complex_findCenter();
+
+        //Reflect worst point
+        QVector<double> newPoint;
+        newPoint.resize(mOptNumParameters);
+        for(int j=0; j<mOptNumParameters; ++j)
+        {
+            int wid = mOptWorstId;
+
+            //Reflect
+            double worst = mOptParameters[wid][j];
+            mOptParameters[wid][j] = mOptCenter[j] + (mOptCenter[j]-worst)*mOptAlpha;
+
+            //Add some random noise
+            double maxDiff = opt_complex_maxParDiff();
+            double r = (double)rand() / (double)RAND_MAX;
+            mOptParameters[wid][j] = mOptParameters[wid][j] + mOptRfak*(mOptParMax[wid]-mOptParMin[wid])*maxDiff*(r-0.5);
+        }
+        newPoint = mOptParameters[mOptWorstId];
+
+        //Evaluate new point
+        executeCommand("call evalworst");
+
+        //Calculate best and worst points
+        mOptLastWorstId=mOptWorstId;
+        opt_complex_calculateBestAndWorstId();
+
+        //Iterate until worst point is no longer the same
+        mOptWorstCounter=0;
+        while(mOptLastWorstId == mOptWorstId)
+        {
+            if(i>mOptMaxEvals) break;
+
+            double a1 = 1.0-exp(-double(mOptWorstCounter)/5.0);
+
+            //Reflect worst point
+            for(int j=0; j<mOptNumParameters; ++j)
+            {
+                double best = mOptParameters[mOptBestId][j];
+                //! @todo Implement random factor
+                mOptParameters[mOptWorstId][j] = (mOptCenter[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 /*+random*/;
+            }
+            newPoint = mOptParameters[mOptWorstId];
+
+            //Evaluate new point
+            executeCommand("call evalworst");
+
+            //Calculate best and worst points
+            mOptLastWorstId=mOptWorstId;
+            opt_complex_calculateBestAndWorstId();
+
+            ++mOptWorstCounter;
+            ++i;
+        }
+    }
+
+    executeCommand("echo on");
+
+    switch(mOptConvergenceReason)
+    {
+    case 0:
+        mpConsole->print("Optimization failed to converge after "+QString::number(i)+" iterations.");
+        break;
+    case 1:
+        mpConsole->print("Optimization converged in function values after "+QString::number(i)+" iterations.");
+        break;
+    case 2:
+        mpConsole->print("Optimization converged in parameter values after "+QString::number(i)+" iterations.");
+        break;
+    }
+
+    return;
+}
+
+
+void HcomHandler::opt_complex_forget()
+{
+    double maxObj = mOptObjectives[0];
+    double minObj = mOptObjectives[0];
+    for(int i=0; i<mOptObjectives[0]; ++i)
+    {
+        double obj = mOptObjectives[i];
+        if(obj > maxObj) maxObj = obj;
+        if(obj < minObj) minObj = obj;
+    }
+    for(int i=0; i<mOptObjectives[0]; ++i)
+    {
+        mOptObjectives[0] = mOptObjectives[0]+(maxObj-minObj)*mOptKf;
+    }
+}
+
+void HcomHandler::opt_complex_calculateBestAndWorstId()
+{
+    double maxObj = mOptObjectives[0];
+    double minObj = mOptObjectives[0];
+    mOptWorstId=0;
+    mOptBestId=0;
+    for(int i=1; i<mOptNumPoints; ++i)
+    {
+        double obj = mOptObjectives[i];
+        if(obj > maxObj)
+        {
+            maxObj = obj;
+            mOptWorstId = i;
+        }
+        if(obj < minObj)
+        {
+            minObj = obj;
+            mOptBestId = i;
+        }
+    }
+}
+
+void HcomHandler::opt_complex_findCenter()
+{
+    mOptCenter.resize(mOptNumParameters);
+    for(int p=0; p<mOptNumPoints; ++p)
+    {
+        for(int i=0; i<mOptNumParameters; ++i)
+        {
+            mOptCenter[i] = mOptCenter[i]+mOptParameters[p][i];
+        }
+    }
+    for(int i=0; i<mOptCenter.size(); ++i)
+    {
+        mOptCenter[i] = mOptCenter[i]/double(mOptNumPoints);
+    }
+}
+
+bool HcomHandler::opt_comlex_checkConvergence()
+{
+    //Check objective function convergence
+    double maxObj = mOptObjectives[0];
+    double minObj = mOptObjectives[0];
+    for(int i=0; i<mOptObjectives[0]; ++i)
+    {
+        double obj = mOptObjectives[i];
+        if(obj > maxObj) maxObj = obj;
+        if(obj < minObj) minObj = obj;
+    }
+    if(minObj == 0.0)
+    {
+        if(fabs(maxObj-minObj) <= mOptFuncTol)
+        {
+            mOptConvergenceReason=1;
+            return true;
+        }
+        else if(fabs(maxObj-minObj)/fabs(minObj) <= mOptFuncTol)
+        {
+            mOptConvergenceReason=1;
+            return true;
+        }
+    }
+
+    //Check parameter value convergence
+    double maxDiff=opt_complex_maxParDiff();
+    if(abs(maxDiff) < mOptParTol)
+    {
+        mOptConvergenceReason=2;
+        return true;
+    }
+    return false;
+}
+
+
+double HcomHandler::opt_complex_maxParDiff()
+{
+    double maxDiff = -1e100;
+    for(int i=0; i<mOptNumParameters; ++i)
+    {
+        double maxPar = -1e100;
+        double minPar = 1e100;
+        for(int p=0; p<mOptNumPoints; ++p)
+        {
+            if(mOptParameters[p][i] > maxPar) maxPar = mOptParameters[p][i];
+            if(mOptParameters[p][i] < minPar) minPar = mOptParameters[p][i];
+        }
+        if((maxPar-minPar)/(mOptParMax[i]-mOptParMin[i]) > maxDiff)
+        {
+            maxDiff = (maxPar-minPar)/(mOptParMax[i]-mOptParMin[i]);
+        }
+    }
+    return maxDiff;
+}
+
 

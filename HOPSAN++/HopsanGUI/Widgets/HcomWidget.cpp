@@ -205,6 +205,7 @@ TerminalConsole::TerminalConsole(TerminalWidget *pParent)
 
     mGroupByTag = gConfig.getGroupMessagesByTag();
 
+    mDontPrint = false;
     mShowErrorMessages = true;
     mShowWarningMessages = true;
     mShowInfoMessages = true;
@@ -313,6 +314,8 @@ void TerminalConsole::updateNewMessages()
 
 void TerminalConsole::appendOneMessage(GUIMessage msg, bool timeStamp)
 {
+    if(mDontPrint) return;
+
     if( !(msg.type == "error" && !mShowErrorMessages) &&          //Do not show message if its type shall not be shown
         !(msg.type == "warning" && !mShowWarningMessages) &&
         !(msg.type == "info" && !mShowInfoMessages) &&
@@ -418,7 +421,12 @@ void TerminalConsole::showInfoMessages(bool value)
 void TerminalConsole::showDebugMessages(bool value)
 {
     mShowDebugMessages = value;
-//   updateEverything();
+    //   updateEverything();
+}
+
+void TerminalConsole::setDontPrint(bool value)
+{
+    mDontPrint = value;
 }
 
 

@@ -53,6 +53,7 @@ using namespace SymHop;
 //FIXED
 Expression::Expression(const QString indata, const ExpressionSimplificationT simplifications)
 {
+    QString::number(indata.toDouble(), 'f', 20);
     commonConstructorCode(QStringList() << indata, simplifications);
 }
 
@@ -627,8 +628,10 @@ double Expression::evaluate(const QMap<QString, double> &variables) const
             else if(val < min) { retval = min; }
             else { retval = val; }
         }
-
-
+        else if(variables.contains(this->toString()))
+        {
+            return variables.find(this->toString()).value();
+        }
     }
     else if(isNumericalSymbol())
     {
@@ -2250,7 +2253,7 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
         }
         if(foundOne)
         {
-            mFactors << Expression(QString::number(value));
+            mFactors << Expression(QString::number(value, 'f', 20));
             this->replaceBy(Expression::fromFactorsDivisors(mFactors, mDivisors));
         }
 

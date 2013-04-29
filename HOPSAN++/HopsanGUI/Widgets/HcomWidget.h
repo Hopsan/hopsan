@@ -101,6 +101,7 @@ public slots:
     void showWarningMessages(bool value);
     void showInfoMessages(bool value);
     void showDebugMessages(bool value);
+    void setDontPrint(bool value);
 
 protected:
     virtual void keyPressEvent(QKeyEvent * event);
@@ -137,6 +138,7 @@ private:
     QString mLastTag;
     int mSubsequentTags;
     bool mGroupByTag;
+    bool mDontPrint;
     bool mShowErrorMessages;
     bool mShowInfoMessages;
     bool mShowWarningMessages;

@@ -47,7 +47,7 @@ DesktopHandler::DesktopHandler()
     mDefaultDocumentsPath = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation) + "/Hopsan/";
     mBackupPath = mDefaultDocumentsPath+"/Backup/";
     mModelsPath = mDefaultDocumentsPath+"/Models/";
-    mScriptsPath = mDefaultDocumentsPath+"Scripts";
+    mScriptsPath = mDefaultDocumentsPath+"/Scripts";
     mMainPath = mExecPath+"../";
     mHelpPath = mExecPath+"../doc/user/html/";
     mComponentsPath = mExecPath+"../componentLibraries/defaultLibrary/";
@@ -57,7 +57,7 @@ DesktopHandler::DesktopHandler()
     mMSVC2008X64Path = mExecPath+"MSVC2008_x64/";
     mMSVC2010X64Path = mExecPath+"MSVC2010_x64/";
     mFMUPath = mExecPath+"../import/FMU/";
-    mLogDataPath = mDefaultTempPath + "/LogData";
+    mLogDataPath = mDefaultDocumentsPath + "/LogData";
 }
 
 
@@ -132,8 +132,8 @@ void DesktopHandler::setupPaths()
     //Update paths depending on data, temp and documents paths
     mBackupPath = getDocumentsPath()+"/Backup/";
     mModelsPath = getDocumentsPath()+"/Models/";
-    mScriptsPath = getDocumentsPath()+"Scripts/";
-    mLogDataPath = getTempPath() + "/LogData/";
+    mScriptsPath = getDocumentsPath()+"/Scripts/";
+    mLogDataPath = getDocumentsPath() + "/LogData/";
 
 
      // Make sure backup folder exists, create it if not

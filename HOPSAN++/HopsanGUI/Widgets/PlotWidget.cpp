@@ -375,7 +375,7 @@ void PlotVariableTree::mousePressEvent(QMouseEvent *event)
 //! @brief Defines what happens when mouse is moving in variable list. Used to handle drag operations.
 void PlotVariableTree::mouseMoveEvent(QMouseEvent *event)
 {
-    qDebug() << "mouseMoveEvent";
+    //qDebug() << "mouseMoveEvent";
 
     this->setFrameShape(QFrame::Box);
 

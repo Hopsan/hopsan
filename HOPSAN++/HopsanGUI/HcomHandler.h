@@ -14,6 +14,8 @@ class HcomHandler
 {
 public:
     enum VariableType{Scalar, DataVector};
+    enum OptDataType{Int, Double};
+    enum OptAlgorithmType{Uninitialized, Complex};
     HcomHandler(TerminalConsole *pConsole);
 
     QStringList getCommands();
@@ -62,6 +64,11 @@ public:
     void executeRoundCommand(QString cmd);
     void executeSizeCommand(QString cmd);
     void executeBodeCommand(QString cmd);
+    void executeAbsCommand(QString cmd);
+    void executeSimulationTimeCommand(QString cmd);
+    void executeOptimizationCommand(QString cmd);
+    void executeCallFunctionCommand(QString cmd);
+    void executeEchoCommand(QString cmd);
 
     //Help functions
     void changePlotVariables(QString cmd, int axis);
@@ -78,9 +85,9 @@ public:
     bool evaluateArithmeticExpression(QString cmd);
     void splitAtFirst(QString str, QString c, QString &left, QString &right);
     bool containsOutsideParentheses(QString str, QString c);
-    QString runScriptCommands(QStringList &lines);
+    QString runScriptCommands(QStringList &lines, bool *abort);
     SharedLogVariableDataPtrT getVariablePtr(QString fullName) const;
-    double getNumber(const QString str, bool *ok) const;
+    double getNumber(const QString str, bool *ok);
     void toShortDataNames(QString &variable) const;
     QString getDirectory(const QString cmd) const;
     QStringList getArguments(const QString cmd) const;
@@ -90,6 +97,14 @@ public:
     void returnScalar(const double retval);
 
 private:
+    void opt_complex_init();
+    void opt_complex_run();
+    void opt_complex_forget();
+    void opt_complex_calculateBestAndWorstId();
+    void opt_complex_findCenter();
+    bool opt_comlex_checkConvergence();
+    double opt_complex_maxParDiff();
+
     TerminalConsole *mpConsole;
 
     //Used to abort HCOM evaluation
@@ -108,6 +123,27 @@ private:
     QMap<QString, double> mLocalVars;
 
     VariableType mRetvalType;
+
+    //Functions
+    QMap<QString, QStringList> mFunctions;
+
+    //Optimization
+    int mOptNumPoints;
+    int mOptNumParameters;
+    QVector<double> mOptParMin, mOptParMax;
+    QVector< QVector<double> > mOptParameters, mOptOldParameters;
+    QVector<double> mOptObjectives;
+    OptAlgorithmType mOptAlgorithm;
+    OptDataType mOptParameterType;
+    int mOptWorstCounter;
+    double mOptMaxEvals;
+    double mOptAlpha, mOptRfak, mOptGamma, mOptKf;
+    double mOptWorst;
+    int mOptWorstId, mOptBestId, mOptLastWorstId;
+    QVector<double> mOptCenter;
+    int mOptConvergenceReason;
+    double mOptParTol, mOptFuncTol;
+
 };
 
 

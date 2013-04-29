@@ -168,6 +168,7 @@ public:
     void multData(const double other);
     void divData(const SharedLogVariableDataPtrT pOther);
     void divData(const double other);
+    void absData();
     void assignFrom(const SharedLogVariableDataPtrT pOther);
     void assignFrom(const QVector<double> &rSrc);
     void assignFrom(SharedTimeVectorPtrT time, const QVector<double> &rData);

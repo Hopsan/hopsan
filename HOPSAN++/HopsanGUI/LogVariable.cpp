@@ -306,6 +306,20 @@ void LogVariableData::divData(const double other)
     mpCachedDataVector->endFullVectorOperation(pData);
     emit dataChanged();
 }
+
+
+void LogVariableData::absData()
+{
+    DataVectorT* pData = mpCachedDataVector->beginFullVectorOperation();
+    for (int i=0; i<pData->size(); ++i)
+    {
+        (*pData)[i] = fabs((*pData)[i]);
+    }
+    mpCachedDataVector->endFullVectorOperation(pData);
+    emit dataChanged();
+}
+
+
 void LogVariableData::assignFrom(const SharedLogVariableDataPtrT pOther)
 {
     mpCachedDataVector->replaceData(pOther->getDataVector());
