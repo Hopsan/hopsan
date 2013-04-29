@@ -6,10 +6,10 @@
             <icon scale="1" path="SignalPIlead.svg" iconrotation="ON" type="iso"/>
         </icons>
         <ports>
-            <port x="1" y="0.5" a="0" name="Pu"/>
-            <port x="0" y="0.5" a="180" name="Pyref"/>
-            <port x="0" y="0.75" a="180" name="Py"/>
-            <port x="0.5" y="0" a="270" name="Pkx"/>
+            <port x="1" y="0.5" a="0" name="u"/>
+            <port x="0" y="0.5" a="180" name="yref"/>
+            <port x="0" y="0.75" a="180" name="y"/>
+            <port x="0.5" y="0" a="270" name="kx"/>
         </ports>
     </modelobject>
 </hopsanobjectappearance>
