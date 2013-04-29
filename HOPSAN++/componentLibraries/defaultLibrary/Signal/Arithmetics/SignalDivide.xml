@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject typename="SignalDivide" displayname="Divide">
         <icons>
-            <icon scale="1" path="divide.svg" iconrotation="ON" type="iso"/>
+            <icon scale="1" path="SignalDivide.svg" iconrotation="ON" type="iso"/>
         </icons>
         <ports>
             <port x="1" y="0.5" a="0" name="out"/>

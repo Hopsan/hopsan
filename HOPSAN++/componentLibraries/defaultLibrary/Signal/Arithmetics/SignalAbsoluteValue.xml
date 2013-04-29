@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="SignalSign" displayname="Sign">
+    <modelobject typename="SignalAbsoluteValue" displayname="Absolute Value">
         <icons>
-            <icon scale="1" path="sign.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="SignalAbsoluteValue.svg" iconrotation="OFF" type="iso"/>
         </icons>
         <ports>
             <port x="0" y="0.5" a="180" name="in"/>

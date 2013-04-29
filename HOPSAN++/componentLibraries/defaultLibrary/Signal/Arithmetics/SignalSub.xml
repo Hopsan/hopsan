@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject typename="SignalSub" displayname="Subtract Multi">
         <icons>
-            <icon scale="1" path="submulti.svg" iconrotation="ON" type="iso"/>
+            <icon scale="1" path="SignalSub.svg" iconrotation="ON" type="iso"/>
         </icons>
         <ports>
             <port x="1" y="0.5" a="0" name="out"/>

@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject typename="SignalTan" displayname="Tan">
         <icons>
-            <icon scale="1" path="tan.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="SignalTan.svg" iconrotation="ON" type="user"/>
         </icons>
         <ports>
             <port x="0" y="0.5" a="180" name="in"/>

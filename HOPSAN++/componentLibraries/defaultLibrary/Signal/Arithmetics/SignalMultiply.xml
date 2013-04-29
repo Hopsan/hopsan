@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="SignalSubtract" displayname="Subtract">
+    <modelobject typename="SignalMultiply" displayname="Multiply">
         <icons>
-            <icon scale="1" path="sub.svg" iconrotation="ON" type="iso"/>
+            <icon scale="1" path="SignalMultiply.svg" iconrotation="ON" type="iso"/>
         </icons>
         <ports>
             <port x="1" y="0.5" a="0" name="out"/>

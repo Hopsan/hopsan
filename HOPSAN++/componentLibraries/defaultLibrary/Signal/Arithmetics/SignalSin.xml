@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject typename="SignalSin" displayname="Sin">
         <icons>
-            <icon scale="1" path="sin.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="SignalSin.svg" iconrotation="ON" type="user"/>
         </icons>
         <ports>
             <port x="0" y="0.5" a="180" name="in"/>
