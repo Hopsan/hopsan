@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.3">
-    <modelobject typename="SignalWaypoint" displayname="SignalWaypoint">
-        <icons>
-            <icon scale="1" path="SignalWaypoint.svg" iconrotation="ON" type="user"/>
-            <icon scale="1" path="SignalWaypoint.svg" iconrotation="ON" type="iso"/>
-        </icons>
-        <ports>
-            <port x="0.333333" y="1" enabled="true" visible="false" a="90" name="PaltitudeRef" autoplaced="true"/>
-            <port x="0.666667" y="1" enabled="true" visible="false" a="90" name="PvelocityRef" autoplaced="true"/>
-            <port x="0.6" y="0" enabled="true" visible="false" a="270" name="Pyc" autoplaced="true"/>
-            <port x="0.4" y="0" enabled="true" visible="false" a="270" name="Pxc" autoplaced="true"/>
-            <port x="0.833333" y="1" enabled="true" visible="false" a="90" name="PdistanceWp" autoplaced="true"/>
-            <port x="0.5" y="1" enabled="true" visible="false" a="90" name="PheadingRef" autoplaced="true"/>
-            <port x="0.2" y="0" enabled="true" visible="false" a="270" name="Ps1" autoplaced="true"/>
-            <port x="0.8" y="0" enabled="true" visible="false" a="270" name="Pset1" autoplaced="true"/>
-        </ports>
-    </modelobject>
+  <modelobject typename="SignalWaypoint" displayname="SignalWaypoint">
+    <icons/>
+    <ports>
+      <port x="0.5" y="1" enabled="true" a="90" name="headingRef" autoplaced="true"/>
+      <port x="0.25" y="0" enabled="true" a="90" name="s1" autoplaced="true"/>
+      <port x="0.166667" y="1" enabled="true" a="90" name="set1" autoplaced="true"/>
+      <port x="0.666667" y="1" enabled="true" a="90" name="velocityRef" autoplaced="true"/>
+      <port x="0.333333" y="1" enabled="true" a="90" name="altitudeRef" autoplaced="true"/>
+      <port x="0.75" y="0" enabled="true" a="90" name="yc" autoplaced="true"/>
+      <port x="0.5" y="0" enabled="true" a="90" name="xc" autoplaced="true"/>
+      <port x="0.833333" y="1" enabled="true" a="90" name="distanceWp" autoplaced="true"/>
+    </ports>
+    <animation flowspeed="100"/>
+  </modelobject>
 </hopsanobjectappearance>

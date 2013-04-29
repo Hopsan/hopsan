@@ -5,12 +5,12 @@
             <icon scale="1" path="SignalEarthCoordinates.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="SignalEarthCoordinates.svg" iconrotation="ON" type="iso"/>
         </icons>        <ports>
-            <port x="0.5" y="0" a="270" name="Pvxcg"/>
-            <port x="0.75" y="0" a="270" name="Pvycg"/>
-            <port x="0.5" y="1" a="90" name="Plongitude"/>
-            <port x="0.25" y="1" a="90" name="PtimeE"/>
-            <port x="0.75" y="1" a="90" name="Plattitude"/>
-            <port x="0.25" y="0" a="270" name="Ptimecomp"/>
+            <port x="0.5" y="0" a="270" name="vxcg"/>
+            <port x="0.75" y="0" a="270" name="vycg"/>
+            <port x="0.5" y="1" a="90" name="longitude"/>
+            <port x="0.25" y="1" a="90" name="timeE"/>
+            <port x="0.75" y="1" a="90" name="lattitude"/>
+            <port x="0.25" y="0" a="270" name="timecomp"/>
         </ports>
     </modelobject>
 </hopsanobjectappearance>

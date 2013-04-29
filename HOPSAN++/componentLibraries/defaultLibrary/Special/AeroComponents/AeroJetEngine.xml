@@ -6,16 +6,16 @@
             <icon scale="1" path="AeroJetEngine.svg" iconrotation="ON" type="iso"/>
         </icons>
         <ports>
-            <port x="0.4" y="1" enabled="true" visible="false" a="90" name="Pmfuel" autoplaced="true"/>
-            <port x="0.2" y="1" enabled="true" visible="false" a="90" name="Pthrust" autoplaced="true"/>
-            <port x="0.6" y="1" enabled="true" visible="false" a="90" name="PShspeed" autoplaced="true"/>
-            <port x="0.428571" y="0" enabled="true" visible="false" a="270" name="PT" autoplaced="true"/>
-            <port x="0.857143" y="0" enabled="true" visible="false" a="270" name="Pspeed" autoplaced="true"/>
-            <port x="0.285714" y="0" enabled="true" visible="false" a="270" name="Prho" autoplaced="true"/>
-            <port x="0.142857" y="0" enabled="true" visible="false" a="270" name="Puin" autoplaced="true"/>
-            <port x="0.8" y="1" enabled="true" visible="false" a="90" name="Pqmfuel" autoplaced="true"/>
-            <port x="0.714286" y="0" enabled="true" visible="false" a="270" name="PVsound" autoplaced="true"/>
-            <port x="0.571429" y="0" enabled="true" visible="false" a="270" name="Pp0" autoplaced="true"/>
+            <port x="0.4" y="1" enabled="true" visible="false" a="90" name="mfuel" autoplaced="true"/>
+            <port x="0.2" y="1" enabled="true" visible="false" a="90" name="thrust" autoplaced="true"/>
+            <port x="0.6" y="1" enabled="true" visible="false" a="90" name="Shspeed" autoplaced="true"/>
+            <port x="0.428571" y="0" enabled="true" visible="false" a="270" name="T" autoplaced="true"/>
+            <port x="0.857143" y="0" enabled="true" visible="false" a="270" name="speed" autoplaced="true"/>
+            <port x="0.285714" y="0" enabled="true" visible="false" a="270" name="rho" autoplaced="true"/>
+            <port x="0.142857" y="0" enabled="true" visible="false" a="270" name="uin" autoplaced="true"/>
+            <port x="0.8" y="1" enabled="true" visible="false" a="90" name="qmfuel" autoplaced="true"/>
+            <port x="0.714286" y="0" enabled="true" visible="false" a="270" name="Vsound" autoplaced="true"/>
+            <port x="0.571429" y="0" enabled="true" visible="false" a="270" name="p0" autoplaced="true"/>
         </ports>
     </modelobject>
 </hopsanobjectappearance>

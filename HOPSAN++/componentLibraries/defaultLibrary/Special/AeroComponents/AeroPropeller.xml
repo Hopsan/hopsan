@@ -6,14 +6,14 @@
             <icon scale="1" path="AeroPropeller.svg" iconrotation="ON" type="iso"/>
         </icons>
         <ports>
-            <port x="0.166667" y="1" enabled="true" a="90" name="Pthrust" autoplaced="true"/>
-            <port x="0.333333" y="0" enabled="true" a="90" name="PUp" autoplaced="true"/>
-            <port x="0.333333" y="1" enabled="true" a="90" name="Ptorque" autoplaced="true"/>
-            <port x="0.5" y="1" enabled="true" a="90" name="PPin" autoplaced="true"/>
-            <port x="0.666667" y="0" enabled="true" a="90" name="Prho" autoplaced="true"/>
-            <port x="0.666667" y="1" enabled="true" a="90" name="PPout" autoplaced="true"/>
+            <port x="0.166667" y="1" enabled="true" a="90" name="thrust" autoplaced="true"/>
+            <port x="0.333333" y="0" enabled="true" a="90" name="Up" autoplaced="true"/>
+            <port x="0.333333" y="1" enabled="true" a="90" name="torque" autoplaced="true"/>
+            <port x="0.5" y="1" enabled="true" a="90" name="Pin" autoplaced="true"/>
+            <port x="0.666667" y="0" enabled="true" a="90" name="rho" autoplaced="true"/>
+            <port x="0.666667" y="1" enabled="true" a="90" name="Pout" autoplaced="true"/>
             <port x="0" y="0.5" enabled="true" a="90" name="Pmr1" autoplaced="true"/>
-            <port x="0.833333" y="1" enabled="true" a="90" name="PJp" autoplaced="true"/>
+            <port x="0.833333" y="1" enabled="true" a="90" name="Jp" autoplaced="true"/>
         </ports>
     </modelobject>
 </hopsanobjectappearance>
