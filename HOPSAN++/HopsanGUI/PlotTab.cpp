@@ -2589,7 +2589,8 @@ void PlotTab::rescaleAxistoIncludeLegendBufferOffset(const int plotId, const Qwt
     else
     {
         const double axis_height = mpQwtPlots[plotId]->axisWidget(axisId)->size().height();
-        const double axis_interval = mpQwtPlots[plotId]->axisInterval(axisId).width();
+        //const double axis_interval = mpQwtPlots[plotId]->axisInterval(axisId).width();
+        const double axis_interval = rAxisLimits.max - rAxisLimits.min; // The desired range
         const double scale = axis_interval/axis_height;
 
         rAxisLimits.min += scale*rLegendBufferOffset.min;

@@ -328,7 +328,13 @@ bool CachableDataVector::setCached(const bool cached)
 
 bool CachableDataVector::isCached() const
 {
-    return mDataVector.isEmpty();
+    // If we have a multicache then check if data vector is empty (data is in cache or should be in cache)
+    if (mpMultiCache)
+    {
+        return mDataVector.isEmpty();
+    }
+    // If no cache file then data can not be cached
+    return false;
 }
 
 int CachableDataVector::size() const
