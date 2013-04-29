@@ -228,22 +228,25 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpExportButton->setPopupMode(QToolButton::InstantPopup);
     mpExportButton->setMouseTracking(true);
 
-    mpExportPdfAction = new QAction("Export to PDF", mpToolBar);
-    mpExportPngAction = new QAction("Export to PNG", mpToolBar);
-    mpExportToGraphicsAction = new QAction("Export to Graphics", mpToolBar);
+//    mpExportPdfAction = new QAction("Export to PDF", mpToolBar);
+//    mpExportPngAction = new QAction("Export to PNG", mpToolBar);
+
+    mpExportToGraphicsAction = new QAction("Export as Graphics", mpToolBar);
+    mpExportToGraphicsAction->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ExportGfx.png"));
+    mpExportToGraphicsAction->setToolTip("Export to Graphics File");
 
 
-    mpExportGfxMenu = new QMenu(mpToolBar);
-    mpExportGfxMenu->addAction(mpExportPdfAction);
-    mpExportGfxMenu->addAction(mpExportPngAction);
-    mpExportGfxMenu->addAction(mpExportToGraphicsAction);
+//    mpExportGfxMenu = new QMenu(mpToolBar);
+//    mpExportGfxMenu->addAction(mpExportPdfAction);
+//    mpExportGfxMenu->addAction(mpExportPngAction);
+//    mpExportGfxMenu->addAction(mpExportToGraphicsAction);
 
-    mpExportGfxButton = new QToolButton(mpToolBar);
-    mpExportGfxButton->setToolTip("Export to Graphics File");
-    mpExportGfxButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ExportGfx.png"));
-    mpExportGfxButton->setMenu(mpExportGfxMenu);
-    mpExportGfxButton->setPopupMode(QToolButton::InstantPopup);
-    mpExportGfxButton->setMouseTracking(true);
+//    mpExportGfxButton = new QToolButton(mpToolBar);
+//    mpExportGfxButton->setToolTip("Export to Graphics File");
+//    mpExportGfxButton->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ExportGfx.png"));
+//    mpExportGfxButton->setMenu(mpExportGfxMenu);
+//    mpExportGfxButton->setPopupMode(QToolButton::InstantPopup);
+//    mpExportGfxButton->setMouseTracking(true);
 
     mpLoadFromXmlButton = new QAction(this);
     mpLoadFromXmlButton->setToolTip("Import Plot");
@@ -352,7 +355,8 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
     mpToolBar->addAction(mpSaveButton);
     mpToolBar->addAction(mpImportClassicData);
     mpToolBar->addWidget(mpExportButton);
-    mpToolBar->addWidget(mpExportGfxButton);
+    //mpToolBar->addWidget(mpExportGfxButton);
+    mpToolBar->addAction(mpExportToGraphicsAction);
     mpToolBar->addSeparator();
     mpToolBar->addAction(mpArrowButton);
     mpToolBar->addAction(mpPanButton);
@@ -1147,9 +1151,9 @@ void PlotWindow::changedTab()
     disconnect(mpExportToOldHopAction,      SIGNAL(triggered()),    0,  0);
     disconnect(mpExportToMatlabAction,      SIGNAL(triggered()),    0,  0);
     disconnect(mpExportToGnuplotAction,     SIGNAL(triggered()),    0,  0);
-    disconnect(mpExportPdfAction,           SIGNAL(triggered()),    0,  0);
+    //disconnect(mpExportPdfAction,           SIGNAL(triggered()),    0,  0);
     disconnect(mpExportToGraphicsAction,    SIGNAL(triggered()),    0,  0);
-    disconnect(mpExportPngAction,           SIGNAL(triggered()),    0,  0);
+    //disconnect(mpExportPngAction,           SIGNAL(triggered()),    0,  0);
     disconnect(mpLegendButton,              SIGNAL(triggered()),    0,  0);
     disconnect(mpLocktheAxis,               SIGNAL(triggered()),    0,  0);
     disconnect(mpAllGenerationsDown,        SIGNAL(triggered()),    0,  0);
@@ -1180,7 +1184,7 @@ void PlotWindow::changedTab()
             mpNewWindowFromTabButton->setDisabled(true);
             mpResetXVectorButton->setDisabled(true);
             mpBodePlotButton->setDisabled(true);
-            mpExportPdfAction->setDisabled(true);
+            //mpExportPdfAction->setDisabled(true);
             mpExportToGraphicsAction->setDisabled(true);
             mpAllGenerationsDown->setDisabled(true);
             mpAllGenerationsUp->setDisabled(true);
@@ -1198,14 +1202,14 @@ void PlotWindow::changedTab()
             mpExportToGnuplotAction->setDisabled(false);
             mpExportToOldHopAction->setDisabled(false);
             mpExportToMatlabAction->setDisabled(false);
-            mpExportGfxButton->setDisabled(false);
+            //mpExportGfxButton->setDisabled(false);
             mpLoadFromXmlButton->setDisabled(false);
             mpGridButton->setDisabled(false);
             mpBackgroundColorButton->setDisabled(false);
             mpNewWindowFromTabButton->setDisabled(false);
             mpResetXVectorButton->setDisabled(false);
             mpBodePlotButton->setDisabled(false);
-            mpExportPdfAction->setDisabled(false);
+            //mpExportPdfAction->setDisabled(false);
             mpExportToGraphicsAction->setDisabled(false);
             mpAllGenerationsDown->setDisabled(false);
             mpAllGenerationsUp->setDisabled(false);
@@ -1229,8 +1233,8 @@ void PlotWindow::changedTab()
         connect(mpExportToMatlabAction,     SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToMatlab()));
         connect(mpExportToGnuplotAction,    SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToGnuplot()));
         connect(mpExportToOldHopAction,     SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToOldHop()));
-        connect(mpExportPdfAction,          SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToPdf()));
-        connect(mpExportPngAction,          SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToPng()));
+        //connect(mpExportPdfAction,          SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToPdf()));
+        //connect(mpExportPngAction,          SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToPng()));
         connect(mpExportToGraphicsAction,   SIGNAL(triggered()),    pCurrentTab,    SLOT(exportToGraphics()));
         connect(mpLegendButton,             SIGNAL(triggered()),    pCurrentTab,    SLOT(openLegendSettingsDialog()));
         connect(mpLocktheAxis,              SIGNAL(triggered()),    pCurrentTab,    SLOT(openAxisSettingsDialog()));

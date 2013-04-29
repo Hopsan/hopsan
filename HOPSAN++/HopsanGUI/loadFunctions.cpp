@@ -191,7 +191,7 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStat
         QString portparname = parameterName.split("::")[0];
         if (theotherparameternames.contains(portparname))
         {
-            gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Prevented overwriting:  "+parameterName+" = "+parameterValue+"  in Component:  "+pObject->getName()+"   (This is a good thing and probably nothing to worry about)");
+            gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Prevented overwriting:  "+portparname+"  with:  "+parameterName+" = "+parameterValue+"  in Component:  "+pObject->getName()+"   (This is a good thing and probably nothing to worry about)");
         }
         else
         {

@@ -24,6 +24,7 @@
 
 #include "ComponentUtilities/AuxiliarySimulationFunctions.h"
 #include <cmath>
+#include <limits>
 
 using namespace hopsan;
 
@@ -55,6 +56,38 @@ void hopsan::limitValue(double &rValue, double min, double max)
     else if(rValue < min)
     {
         rValue = min;
+    }
+}
+
+
+//! @brief checks if two double varaiables are equal with a tolerance
+//! @ingroup AuxiliarySimulationFunctions
+//! @param [in] x First value
+//! @param [in] y Second value
+//! @param [in] eps Allowed relative error
+//! @note Based on http://floating-point-gui.de/errors/comparison (20130429)
+bool hopsan::fuzzyEqual(const double x, const double y, const double epsilon)
+{
+    const double absX = fabs(x);
+    const double absY = fabs(y);
+    const double diff = fabs(x-y);
+
+    // shortcut, handles infinities
+    if (x == y)
+    {
+        return true;
+    }
+    // a or b is zero or both are extremely close to it
+    // relative error is less meaningful here
+    else if (x == 0 || y == 0 || diff < std::numeric_limits<double>::epsilon() )
+    {
+
+        return diff < (epsilon * std::numeric_limits<double>::epsilon() );
+    }
+    // use relative error
+    else
+    {
+        return diff / (absX + absY) < epsilon;
     }
 }
 

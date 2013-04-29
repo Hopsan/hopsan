@@ -127,7 +127,7 @@ private:
     QAction *mpPanButton;
     QAction *mpSaveButton;
     QToolButton *mpExportButton;
-    QToolButton *mpExportGfxButton;
+    //QToolButton *mpExportGfxButton;
     QAction *mpLoadFromXmlButton;
     QAction *mpGridButton;
     QAction *mpBackgroundColorButton;
@@ -145,9 +145,9 @@ private:
     QAction *mpExportToMatlabAction;
     QAction *mpExportToGnuplotAction;
     QAction *mpExportToOldHopAction;
-    QMenu *mpExportGfxMenu;
-    QAction *mpExportPdfAction;
-    QAction *mpExportPngAction;
+    //QMenu *mpExportGfxMenu;
+    //QAction *mpExportPdfAction;
+    //QAction *mpExportPngAction;
     QAction *mpExportToGraphicsAction;
     QAction *mpLocktheAxis;
 

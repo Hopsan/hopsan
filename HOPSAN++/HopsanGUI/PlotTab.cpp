@@ -1368,10 +1368,10 @@ void PlotTab::exportToGraphics()
     // Vector
     mpImageFormat = new QComboBox();
     mpImageFormat->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-    mpImageFormat->addItem("pdf");
-    mpImageFormat->addItem("ps");
-    mpImageFormat->addItem("svg");
     mpImageFormat->addItem("png");
+    mpImageFormat->addItem("pdf");
+    mpImageFormat->addItem("svg");
+    mpImageFormat->addItem("ps");
     mpImageFormat->addItem("jpeg");
 
     mpKeepAspectRatio = new QCheckBox("Keep Aspect Ratio");
@@ -1411,31 +1411,31 @@ void PlotTab::exportToGraphics()
     pGraphicsSettingsDialog->exec();
 }
 
-//! @brief Slot that exports plot tab as vector graphics to specified .pdf file
-void PlotTab::exportToPdf()
-{
-    QString selectedFilter;
-    QString fileName = QFileDialog::getSaveFileName(this, "Export File Name", gConfig.getPlotGfxDir(), "Portable Document Format (*.pdf);;PostScript Format (*.ps)", &selectedFilter);
-    if ( !fileName.isEmpty() )
-    {
-        QFileInfo file(fileName);
-        gConfig.setPlotGfxDir(file.absolutePath());
+////! @brief Slot that exports plot tab as vector graphics to specified .pdf file
+//void PlotTab::exportToPdf()
+//{
+//    QString selectedFilter;
+//    QString fileName = QFileDialog::getSaveFileName(this, "Export File Name", gConfig.getPlotGfxDir(), "Portable Document Format (*.pdf);;PostScript Format (*.ps)", &selectedFilter);
+//    if ( !fileName.isEmpty() )
+//    {
+//        QFileInfo file(fileName);
+//        gConfig.setPlotGfxDir(file.absolutePath());
 
-        QwtPlotRenderer renderer;
+//        QwtPlotRenderer renderer;
 
-        QPrinter *printer = new QPrinter(QPrinter::HighResolution);
-        printer->setPaperSize(QPrinter::Custom);
-        printer->setPaperSize(mpQwtPlots[FirstPlot]->size(), QPrinter::Point);
-        printer->setOrientation(QPrinter::Landscape);
-        printer->setFullPage(false);
-        if(selectedFilter == "Portable Document Format (*.pdf)")
-            printer->setOutputFormat(QPrinter::PdfFormat);
-        else
-            printer->setOutputFormat(QPrinter::PostScriptFormat);
-        printer->setOutputFileName(fileName);
-        renderer.renderTo(mpQwtPlots[FirstPlot],*printer);
-    }
-}
+//        QPrinter *printer = new QPrinter(QPrinter::HighResolution);
+//        printer->setPaperSize(QPrinter::Custom);
+//        printer->setPaperSize(mpQwtPlots[FirstPlot]->size(), QPrinter::Point);
+//        printer->setOrientation(QPrinter::Landscape);
+//        printer->setFullPage(false);
+//        if(selectedFilter == "Portable Document Format (*.pdf)")
+//            printer->setOutputFormat(QPrinter::PdfFormat);
+//        else
+//            printer->setOutputFormat(QPrinter::PostScriptFormat);
+//        printer->setOutputFileName(fileName);
+//        renderer.renderTo(mpQwtPlots[FirstPlot],*printer);
+//    }
+//}
 
 void PlotTab::exportToOldHop()
 {
@@ -1559,33 +1559,33 @@ void PlotTab::exportToOldHop()
     //    file.close();
 }
 
-//! @brief Slot that exports plot tab as bitmap to specified .png file
-void PlotTab::exportToPng()
-{
-    QString fileName = QFileDialog::getSaveFileName(
-                this, "Export File Name", gConfig.getPlotGfxDir(),
-                "Portable Network Graphics (*.png)");
+////! @brief Slot that exports plot tab as bitmap to specified .png file
+//void PlotTab::exportToPng()
+//{
+//    QString fileName = QFileDialog::getSaveFileName(
+//                this, "Export File Name", gConfig.getPlotGfxDir(),
+//                "Portable Network Graphics (*.png)");
 
-    if(!fileName.isEmpty())
-    {
-        QFileInfo file(fileName);
-        gConfig.setPlotGfxDir(file.absolutePath());
+//    if(!fileName.isEmpty())
+//    {
+//        QFileInfo file(fileName);
+//        gConfig.setPlotGfxDir(file.absolutePath());
 
-        if(mpBarPlot->isVisible())
-        {
-            QPixmap pixmap = QPixmap::grabWidget(this);
-            pixmap.save(fileName);
-        }
-        else
-        {
-            QPixmap pixmap(mpQwtPlots[FirstPlot]->width(), mpQwtPlots[FirstPlot]->height());
-            pixmap.fill();
-            QwtPlotRenderer renderer;
-            renderer.renderTo(mpQwtPlots[FirstPlot], pixmap);
-            pixmap.save(fileName);
-        }
-    }
-}
+//        if(mpBarPlot->isVisible())
+//        {
+//            QPixmap pixmap = QPixmap::grabWidget(this);
+//            pixmap.save(fileName);
+//        }
+//        else
+//        {
+//            QPixmap pixmap(mpQwtPlots[FirstPlot]->width(), mpQwtPlots[FirstPlot]->height());
+//            pixmap.fill();
+//            QwtPlotRenderer renderer;
+//            renderer.renderTo(mpQwtPlots[FirstPlot], pixmap);
+//            pixmap.save(fileName);
+//        }
+//    }
+//}
 
 void PlotTab::shiftAllGenerationsDown()
 {

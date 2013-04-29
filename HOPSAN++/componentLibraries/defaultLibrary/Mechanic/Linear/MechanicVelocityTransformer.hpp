@@ -20,7 +20,6 @@
 
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
-#include <sstream>
 
 namespace hopsan {
 
@@ -34,7 +33,8 @@ namespace hopsan {
     private:
         bool mXIsConnected;
         double me;
-        double *mpND_f, *mpND_x, *mpND_v, *mpND_c, *mpND_Zx, *mpND_me;
+        double *mpPm1_f, *mpPm1_x, *mpPm1_v, *mpPm1_c, *mpPm1_Zx, *mpPm1_me;
+        double *mpIn_x, *mpIn_v;
         Integrator mInt;
         Port *mpXPort, *mpVPort, *mpPm1;
 
@@ -50,8 +50,8 @@ namespace hopsan {
             mpPm1 = addPowerPort("Pm1", "NodeMechanic");
 
             //Register changable parameters to the HOPSAN++ core
-            mpVPort = addInputVariable("v", "Generated Velocity", "[m/s]", 0.0, &mpND_v);
-            mpXPort = addInputVariable("x", "Generated Position", "m", 0.0, &mpND_x);
+            mpVPort = addInputVariable("v", "Generated Velocity", "[m/s]", 0.0, &mpIn_v);
+            mpXPort = addInputVariable("x", "Generated Position", "m", 0.0, &mpIn_x);
 
             // add constants
             addConstant("m_e", "Equivalent Mass", "[kg]", 10, me);
@@ -60,25 +60,14 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_f = getSafeNodeDataPtr(mpPm1, NodeMechanic::Force);
-            mpND_x = getSafeNodeDataPtr(mpPm1, NodeMechanic::Position);
-            mpND_v = getSafeNodeDataPtr(mpPm1, NodeMechanic::Velocity);
-            mpND_c = getSafeNodeDataPtr(mpPm1, NodeMechanic::WaveVariable);
-            mpND_Zx = getSafeNodeDataPtr(mpPm1, NodeMechanic::CharImpedance);
-            mpND_me = getSafeNodeDataPtr(mpPm1, NodeMechanic::EquivalentMass);
+            mpPm1_f = getSafeNodeDataPtr(mpPm1, NodeMechanic::Force);
+            mpPm1_x = getSafeNodeDataPtr(mpPm1, NodeMechanic::Position);
+            mpPm1_v = getSafeNodeDataPtr(mpPm1, NodeMechanic::Velocity);
+            mpPm1_c = getSafeNodeDataPtr(mpPm1, NodeMechanic::WaveVariable);
+            mpPm1_Zx = getSafeNodeDataPtr(mpPm1, NodeMechanic::CharImpedance);
+            mpPm1_me = getSafeNodeDataPtr(mpPm1, NodeMechanic::EquivalentMass);
 
-            mInt.initialize(mTimestep, (*mpND_v), (*mpND_x));
-            (*mpND_me) = me;
-
-            if (mpXPort->isConnected())
-            {
-               mXIsConnected = true;
-            }
-            else
-            {
-               mXIsConnected = false;
-            }
-
+            mXIsConnected = mpXPort->isConnected();
             if(mXIsConnected && !mpVPort->isConnected())
             {
                 addWarningMessage("Position input is connected but velocity is constant, kinematic relationsship must be manually enforced.");
@@ -87,21 +76,29 @@ namespace hopsan {
             {
                 addWarningMessage("Both position and velocity inputs are connected, kinematic relationsship must be manually enforced.");
             }
+
+            // Initialize node values
+            mInt.initialize(mTimestep, (*mpIn_v), (*mpIn_x));
+            (*mpPm1_me) = me;
+
+            (*mpPm1_f) = (*mpPm1_c) + (*mpPm1_Zx)*(*mpIn_v);
+            (*mpPm1_x) = (*mpIn_x);
+            (*mpPm1_v) = (*mpIn_v);
         }
 
 
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            const double v = (*mpND_v);
-            const double c = (*mpND_c);
-            const double Zx = (*mpND_Zx);
+            const double v = (*mpIn_v);
+            const double c = (*mpPm1_c);
+            const double Zx = (*mpPm1_Zx);
             double x;
 
             //Source equations
             if(mXIsConnected)
             {
-                x = (*mpND_x);
+                x = (*mpIn_x);
             }
             else
             {
@@ -109,9 +106,9 @@ namespace hopsan {
             }
 
             //Write values to nodes
-            (*mpND_f) = c + Zx*v;
-            (*mpND_x) = x;
-            (*mpND_v) = v;
+            (*mpPm1_f) = c + Zx*v;
+            (*mpPm1_x) = x;
+            (*mpPm1_v) = v;
         }
     };
 }

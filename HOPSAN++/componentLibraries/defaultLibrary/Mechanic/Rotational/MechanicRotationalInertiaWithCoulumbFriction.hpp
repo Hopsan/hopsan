@@ -25,8 +25,6 @@
 #ifndef MECHANICROTATIONALINERTIAWITHCOULUMBFRICTION_HPP_INCLUDED
 #define MECHANICROTATIONALINERTIAWITHCOULUMBFRICTION_HPP_INCLUDED
 
-#include <sstream>
-
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
 
@@ -42,9 +40,7 @@ namespace hopsan {
     private:
         double *mpJ, *mpB;
         double ts, tk;
-        double *mpND_t1, *mpND_a1, *mpND_w1, *mpND_c1, *mpND_Zx1, *mpND_t2, *mpND_a2, *mpND_w2, *mpND_c2, *mpND_Zx2;  //Node data pointers
-        double mNum[3];
-        double mDen[3];
+        double *mpP1_T, *mpP1_a, *mpP1_w, *mpP1_c, *mpP1_Zx, *mpP2_T, *mpP2_a, *mpP2_w, *mpP2_c, *mpP2_Zx;  //Node data pointers
         DoubleIntegratorWithDampingAndCoulombFriction mIntegrator;
         Port *mpP1, *mpP2;                                                                                  //Ports
 
@@ -68,37 +64,31 @@ namespace hopsan {
         void initialize()
         {
             //Assign node data pointers
-            mpND_t1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::Torque);
-            mpND_a1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::Angle);
-            mpND_w1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::AngularVelocity);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::WaveVariable);
-            mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::CharImpedance);
+            mpP1_T = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::Torque);
+            mpP1_a = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::Angle);
+            mpP1_w = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::AngularVelocity);
+            mpP1_c = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::WaveVariable);
+            mpP1_Zx = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::CharImpedance);
 
-            mpND_t2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::Torque);
-            mpND_a2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::Angle);
-            mpND_w2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::AngularVelocity);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::WaveVariable);
-            mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::CharImpedance);
+            mpP2_T = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::Torque);
+            mpP2_a = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::Angle);
+            mpP2_w = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::AngularVelocity);
+            mpP2_c = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::WaveVariable);
+            mpP2_Zx = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::CharImpedance);
 
-            double J = (*mpJ);
-
-            mIntegrator.initialize(mTimestep, 0, J, ts, tk, 0, 0, 0);
-
-            //Print debug message if start angles or velocities doe not match
-            if((*mpND_a1) != -(*mpND_a2))
+            // Print debug message if start angles or velocities doe not match
+            if( !fuzzyEqual((*mpP1_a), -(*mpP2_a)) )
             {
-                std::stringstream ss;
-                ss << "Start angles does not match, {" << getName() << "::" << mpP1->getName() <<
-                        "} and {" << getName() << "::" << mpP2->getName() << "}.";
-                this->addWarningMessage(ss.str());
+                addWarningMessage("Start angles does not match in:  "+mpP1->getName()+"  and  "+mpP2->getName());
             }
-            if((*mpND_w1) != -(*mpND_w2))
+            if( !fuzzyEqual((*mpP1_w), -(*mpP2_w)) )
             {
-                std::stringstream ss;
-                ss << "Start velocities does not match, {" << getName() << "::" << mpP1->getName() <<
-                        "} and {" << getName() << "::" << mpP2->getName() << "}.";
-                this->addWarningMessage(ss.str());
+                addWarningMessage("Start velocities does not match in:  "+mpP1->getName()+"  and  "+mpP2->getName());
             }
+
+            // Initialize
+            //! @todo the integrator is not initialized with correct torque angle and angular vel
+            mIntegrator.initialize(mTimestep, 0, (*mpJ), ts, tk, (*mpP1_T)-(*mpP2_T), (*mpP2_a), (*mpP2_w));
         }
 
 
@@ -107,12 +97,12 @@ namespace hopsan {
             double t1, a1, w1, c1, Zx1, t2, a2, w2, c2, Zx2, J, B;
 
             //Get variable values from nodes
-            a1 = (*mpND_a1);
-            c1 = (*mpND_c1);
-            Zx1 = (*mpND_Zx1);
-            a2 = (*mpND_a2);
-            c2 = (*mpND_c2);
-            Zx2 = (*mpND_Zx2);
+            a1 = (*mpP1_a);
+            c1 = (*mpP1_c);
+            Zx1 = (*mpP1_Zx);
+            a2 = (*mpP2_a);
+            c2 = (*mpP2_c);
+            Zx2 = (*mpP2_Zx);
             J = (*mpJ);
             B = (*mpB);
 
@@ -127,12 +117,12 @@ namespace hopsan {
             t2 = c2 + Zx2*w2;
 
             //Write new values to nodes
-            (*mpND_t1) = t1;
-            (*mpND_a1) = a1;
-            (*mpND_w1) = w1;
-            (*mpND_t2) = t2;
-            (*mpND_a2) = a2;
-            (*mpND_w2) = w2;
+            (*mpP1_T) = t1;
+            (*mpP1_a) = a1;
+            (*mpP1_w) = w1;
+            (*mpP2_T) = t2;
+            (*mpP2_a) = a2;
+            (*mpP2_w) = w2;
         }
     };
 }

@@ -104,10 +104,10 @@ public slots:
     void exportToHvc(QString fileName="");
     void exportToMatlab();
     void exportToGnuplot();
-    void exportToPdf();
+    //void exportToPdf();
     void exportToGraphics();
     void exportToOldHop();
-    void exportToPng();
+    //void exportToPng();
 
     void shiftAllGenerationsDown();
     void shiftAllGenerationsUp();

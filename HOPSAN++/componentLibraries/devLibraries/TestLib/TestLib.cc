@@ -41,6 +41,7 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory,
 
     pComponentFactory->registerCreatorFunction("HydraulicComponentsInComponentTest", HydraulicComponentsInComponentTest::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicLamOrfPortParamTest", HydraulicLaminarOrificeInterfaceVar::Creator);
+    pComponentFactory->registerCreatorFunction("SignalBETest", SignalBETest::Creator);
 
     // ========== Register Custom Nodes (if any) ==========
     // This is not yet supported

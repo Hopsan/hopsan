@@ -23,8 +23,6 @@
 //!
 //$Id$
 
-//#include <iostream>
-//#include <cassert>
 #include "ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h"
 
 using namespace hopsan;
@@ -69,7 +67,7 @@ void DoubleIntegratorWithDampingAndCoulombFriction::integrate(double u)
 {
     double tempDelaySY = mDelaySY;
     double ue;    //Effective acceleration
-    double ues = -(2-mW0)/mTimeStep*tempDelaySY-mDelayU;
+    double ues = -(2.0-mW0)/mTimeStep*tempDelaySY-mDelayU;
 
     ue = ues;           //First assume no movement
     if(ues>(u-mUs) && ues<(u+mUs))
@@ -87,8 +85,8 @@ void DoubleIntegratorWithDampingAndCoulombFriction::integrate(double u)
         {
             ue = u+mUk;
         }
-        mDelaySY = (2-mW0)/(2+mW0)*tempDelaySY + mTimeStep/(2+mW0)*(ue+mDelayU);
-        mDelayY = mDelayY + mTimeStep/2*(mDelaySY+tempDelaySY);
+        mDelaySY = (2.0-mW0)/(2.0+mW0)*tempDelaySY + mTimeStep/(2.0+mW0)*(ue+mDelayU);
+        mDelayY = mDelayY + mTimeStep/2.0*(mDelaySY+tempDelaySY);
     }
     mDelayU = ue;
 }
@@ -109,7 +107,7 @@ void DoubleIntegratorWithDampingAndCoulombFriction::integrateWithUndo(double u)
 //! Last step must have been called with integrateWithUndo() for this to work.
 void DoubleIntegratorWithDampingAndCoulombFriction::redoIntegrate(double u)
 {
-    mDelaySY = (2-mW0)/(2+mW0)*mDelaySYbackup + mTimeStep/(2.0+mW0)*(u + mDelayUbackup);
+    mDelaySY = (2.0-mW0)/(2.0+mW0)*mDelaySYbackup + mTimeStep/(2.0+mW0)*(u + mDelayUbackup);
     mDelayY = mDelayYbackup + mTimeStep/2.0*(mDelaySY+mDelaySYbackup);
     mDelayU = u;
 }

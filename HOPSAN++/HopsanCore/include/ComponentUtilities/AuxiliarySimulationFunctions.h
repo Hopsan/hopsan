@@ -34,6 +34,7 @@ namespace hopsan {
 const double pi = 3.14159265358979323846;
 
 void DLLIMPORTEXPORT limitValue(double &rValue, double min, double max);
+bool DLLIMPORTEXPORT fuzzyEqual(const double x, const double y, const double epsilon=0.00001);
 
 // ----------Functions converted from auxhop in old Hopsan----------
 double DLLIMPORTEXPORT signedSquareL(const double x, const double x0);
