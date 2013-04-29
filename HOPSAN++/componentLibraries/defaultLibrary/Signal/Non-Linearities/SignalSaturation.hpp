@@ -37,10 +37,9 @@ namespace hopsan {
     {
 
     private:
-        double mUpperLimit;
-        double mLowerLimit;
-        double *mpND_in, *mpND_out;
-        Port *mpIn, *mpOut;
+        double *mpUpperLimit;
+        double *mpLowerLimit;
+        double *mpIn, *mpOut;
 
     public:
         static Component *Creator()
@@ -50,40 +49,33 @@ namespace hopsan {
 
         void configure()
         {
-            mUpperLimit = 1.0;
-            mLowerLimit = -1.0;
-
-            mpIn = addReadPort("in", "NodeSignal");
-            mpOut = addWritePort("out", "NodeSignal", Port::NotRequired);
-
-            registerParameter("y_upper", "Upper Limit", "[-]", mUpperLimit);
-            registerParameter("y_lower", "Lower Limit", "[-]", mLowerLimit);
+            addInputVariable("in", "", "", 0, &mpIn);
+            addInputVariable("y_upper", "Upper Limit", "", 1.0, &mpUpperLimit);
+            addInputVariable("y_lower", "Lower Limit", "", -1.0, &mpLowerLimit);
+            addOutputVariable("out", "", "", &mpOut);
         }
 
 
         void initialize()
         {
-            mpND_in = getSafeNodeDataPtr(mpIn, NodeSignal::VALUE);
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::VALUE);
-
             simulateOneTimestep();
         }
 
 
         void simulateOneTimestep()
         {
-               //Gain equations
-            if ( (*mpND_in) > mUpperLimit )
+            // Saturate equations
+            if ( (*mpIn) > (*mpUpperLimit) )
             {
-                (*mpND_out) = mUpperLimit;
+                (*mpOut) = (*mpUpperLimit);
             }
-            else if ( (*mpND_in) < mLowerLimit )
+            else if ( (*mpIn) < (*mpLowerLimit) )
             {
-                (*mpND_out) = mLowerLimit;
+                (*mpOut) = (*mpLowerLimit);
             }
             else
             {
-                (*mpND_out) = (*mpND_in);
+                (*mpOut) = (*mpIn);
             }
         }
     };

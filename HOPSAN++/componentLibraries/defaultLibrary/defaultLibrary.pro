@@ -278,7 +278,8 @@ HEADERS += \
     Special/AeroComponents/AeroAircraft6DOFS.hpp \
     Special/AeroComponents/FuelComponents/HydraulicFuelTankG.hpp \
     Special/AeroComponents/FuelComponents/HydraulicCentrifugalPumpJ.hpp \
-    Special/AeroComponents/FuelComponents/HydraulicCentrifugalPump.hpp
+    Special/AeroComponents/FuelComponents/HydraulicCentrifugalPump.hpp \
+    Signal/Non-Linearities/SignalSaturation.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \
