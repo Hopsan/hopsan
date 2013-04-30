@@ -1149,11 +1149,17 @@ bool LogDataHandler::deleteVariable(const QString &a)
     if(it != mLogDataMap.end())
     {
         it.value()->removeAllGenerations();
+        it.value()->deleteLater();
         mLogDataMap.erase(it);
         return true;
     }
     gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("No such variable: " + a);
     return false;
+}
+
+bool LogDataHandler::deleteVariable(SharedLogVariableDataPtrT a)
+{
+    return deleteVariable(a->getFullVariableName());
 }
 
 double LogDataHandler::peekVariable(const QString &a, const int index)
@@ -1227,18 +1233,6 @@ double LogDataHandler::pokeVariable(SharedLogVariableDataPtrT a, const int index
         gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(err);
     }
     return r;
-}
-
-bool LogDataHandler::deleteVariable(SharedLogVariableDataPtrT a)
-{
-    LogDataMapT::iterator it = mLogDataMap.find(a->getFullVariableName());
-    if(it != mLogDataMap.end())
-    {
-        it.value()->removeAllGenerations();
-        mLogDataMap.erase(it);
-        return true;
-    }
-    return false;
 }
 
 SharedLogVariableDataPtrT LogDataHandler::saveVariable(SharedLogVariableDataPtrT a)

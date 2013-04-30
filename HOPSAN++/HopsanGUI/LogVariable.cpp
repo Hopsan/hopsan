@@ -630,7 +630,6 @@ void LogVariableContainer::addDataGeneration(const int generation, const SharedT
     }
 }
 
-//! @todo Need to remove this class if final generation is deleted
 void LogVariableContainer::removeDataGeneration(const int generation)
 {
     // Skip removal of generations that should be kept
@@ -638,6 +637,12 @@ void LogVariableContainer::removeDataGeneration(const int generation)
     {
         //! @todo cache data will still be in the cachegenreationmap, need to clear whenevevr generation is removed (from anywere), mabe should restore inc dec Subscribers
         mDataGenerations.remove(generation);
+    }
+
+    // If last data generation removed tehn ask my parent to delete me
+    if (mDataGenerations.isEmpty())
+    {
+        mpParentLogDataHandler->deleteVariable(this->getFullVariableName());
     }
 }
 
