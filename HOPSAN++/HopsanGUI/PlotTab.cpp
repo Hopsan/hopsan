@@ -2540,7 +2540,7 @@ void PlotTab::rescaleAxisToMakeRoomForLegend(const int plotId, const QwtPlot::Ax
     //! @todo only works for top buffer right now
     if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlots[plotId]->axisScaleEngine(axisId)))
     {
-        //! @todo what shoul happen here ?
+        //! @todo what should happen here ?
         mpQwtPlots[plotId]->setAxisAutoScale(axisId, true);
     }
     else
@@ -2573,11 +2573,19 @@ void PlotTab::rescaleAxisToMakeRoomForLegend(const int plotId, const QwtPlot::Ax
     }
 }
 
+//! @todo only works for linear scale right now, need to check for log scale also
 void PlotTab::calculateLegendBufferOffsets(const int plotId, const QwtPlot::Axis axisId, double &rBottomOffset, double &rTopOffset)
 {
-    //! @todo only works for linear scale right now, need to check for log scale also
-    const double leftLegendHeight = mpLeftPlotLegend->geometry(mpQwtPlots[plotId]->geometry()).height()+mpLeftPlotLegend->borderDistance();
-    const double rightLegendHeight = mpRightPlotLegend->geometry(mpQwtPlots[plotId]->geometry()).height()+mpRightPlotLegend->borderDistance();
+    double leftLegendHeight=0, rightLegendHeight=0;
+    if (mpLeftPlotLegend->isVisible())
+    {
+        leftLegendHeight = mpLeftPlotLegend->geometry(mpQwtPlots[plotId]->geometry()).height() + mpLeftPlotLegend->borderDistance();
+    }
+    if (mpRightPlotLegend->isVisible())
+    {
+        rightLegendHeight = mpRightPlotLegend->geometry(mpQwtPlots[plotId]->geometry()).height() + mpRightPlotLegend->borderDistance();
+    }
+    //! @todo even if a legend is empty it seems to be visible and the borderDistance will be added, this causes unecssary space when on top or bottom (and the other legend is not)
 
     // Figure out vertical alginemnt, by bitwise masking
     Qt::Alignment lva = mpLeftPlotLegend->alignment() & Qt::AlignVertical_Mask;
