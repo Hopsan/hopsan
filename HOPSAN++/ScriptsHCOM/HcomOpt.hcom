@@ -16,8 +16,7 @@ define evalworst
     dt = ans
     error = Mass.P2.x-Step.out.val
     abs error
-    aver error
-    opt setobj worstId ans
+    opt setobj worstId aver(error)
 enddefine
 
 
@@ -35,8 +34,7 @@ define evalall
         dt = ans
         error = Mass.P2.x-Step.out.val
         abs error
-        aver error
-        opt setobj i ans      
+        opt setobj i aver(error)      
         i=i+1
     repeat
 enddefine
@@ -45,13 +43,14 @@ enddefine
 
 npoints=6
 nparams=2
-maxevals=100
+maxevals=500
 alpha=1.3
-rfak=0.1
-gamma=0.3
+rfak=0.3
+gamma=0.0
 functol=0.0001
 partol=0.001
 
+sim
 chpv Step.out.val Mass.P2.x
 
 opt init complex double

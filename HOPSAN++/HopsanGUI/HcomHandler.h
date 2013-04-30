@@ -160,7 +160,16 @@ public:
     QString cmd;
     QString description;
     QString help;
+    QString group;
     void (HcomHandler::*fnc)(QString);
 };
+
+
+double _funcAver(QString str);
+double _funcMin(QString str);
+double _funcMax(QString str);
+double _funcPeek(QString str);
+double _funcRand(QString str);
+double _funcSize(QString str);
 
 #endif // HCOMHANDLER_H

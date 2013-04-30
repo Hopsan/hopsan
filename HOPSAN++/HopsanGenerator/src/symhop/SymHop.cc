@@ -523,7 +523,7 @@ Expression Expression::fromEquation(const Expression left, const Expression righ
 //!
 //! @param variables Map with variable names and values
 //! @returns Evaluated value of expression
-double Expression::evaluate(const QMap<QString, double> &variables) const
+double Expression::evaluate(const QMap<QString, double> &variables, const QMap<QString, SymHop::Function> &functions) const
 {
     double retval = 0;
 
@@ -531,7 +531,7 @@ double Expression::evaluate(const QMap<QString, double> &variables) const
     {
         Q_FOREACH(const Expression &term, mTerms)
         {
-            retval += term.evaluate(variables);
+            retval += term.evaluate(variables, functions);
         }
     }
     else if(isMultiplyOrDivide())
@@ -539,76 +539,86 @@ double Expression::evaluate(const QMap<QString, double> &variables) const
         retval = 1;
         Q_FOREACH(const Expression &factor, mFactors)
         {
-            retval *= factor.evaluate(variables);
+            retval *= factor.evaluate(variables, functions);
         }
         Q_FOREACH(const Expression &divisor, mDivisors)
         {
-            retval /= divisor.evaluate(variables);
+            retval /= divisor.evaluate(variables, functions);
         }
     }
     else if(isPower())
     {
-        retval = pow(mpBase->evaluate(variables), mpPower->evaluate(variables));
+        retval = pow(mpBase->evaluate(variables, functions), mpPower->evaluate(variables, functions));
     }
     else if(isFunction())
     {
-        if(mFunction == "sin") { retval = sin(mArguments[0].evaluate(variables)); }
-        else if(mFunction == "cos") { retval = cos(mArguments[0].evaluate(variables)); }
-        else if(mFunction == "tan") { retval = tan(mArguments[0].evaluate(variables)); }
-        else if(mFunction == "asin") { retval = asin(mArguments[0].evaluate(variables)); }
-        else if(mFunction == "acos") { retval = acos(mArguments[0].evaluate(variables)); }
-        else if(mFunction == "atan") { retval = atan(mArguments[0].evaluate(variables)); }
-        else if(mFunction == "sinh") { retval = sinh(mArguments[0].evaluate(variables)); }
-        else if(mFunction == "cosh") { retval = cosh(mArguments[0].evaluate(variables)); }
-        else if(mFunction == "tanh") { retval = tanh(mArguments[0].evaluate(variables)); }
-        else if(mFunction == "log") { retval = log(mArguments[0].evaluate(variables)); }
-        else if(mFunction == "exp") { retval = exp(mArguments[0].evaluate(variables)); }
-        else if(mFunction == "sqrt") { retval = sqrt(mArguments[0].evaluate(variables)); }
-        else if(mFunction == "abs") { retval = fabs(mArguments[0].evaluate(variables)); }
-        else if(mFunction == "integer") { retval = int(mArguments[0].evaluate(variables)); }
-        else if(mFunction == "floor") { retval = floor(mArguments[0].evaluate(variables)); }
-        else if(mFunction == "ceil") { retval = ceil(mArguments[0].evaluate(variables)); }
+        if(functions.contains(mFunction))
+        {
+            QString argString;
+            for(int a=0; a<mArguments.size(); ++a)
+            {
+                argString.append(mArguments[a].toString()+",");
+            }
+            argString.chop(1);
+            return (*functions.find(mFunction).value())(argString);
+        }
+        if(mFunction == "sin") { retval = sin(mArguments[0].evaluate(variables, functions)); }
+        else if(mFunction == "cos") { retval = cos(mArguments[0].evaluate(variables, functions)); }
+        else if(mFunction == "tan") { retval = tan(mArguments[0].evaluate(variables, functions)); }
+        else if(mFunction == "asin") { retval = asin(mArguments[0].evaluate(variables, functions)); }
+        else if(mFunction == "acos") { retval = acos(mArguments[0].evaluate(variables, functions)); }
+        else if(mFunction == "atan") { retval = atan(mArguments[0].evaluate(variables, functions)); }
+        else if(mFunction == "sinh") { retval = sinh(mArguments[0].evaluate(variables, functions)); }
+        else if(mFunction == "cosh") { retval = cosh(mArguments[0].evaluate(variables, functions)); }
+        else if(mFunction == "tanh") { retval = tanh(mArguments[0].evaluate(variables, functions)); }
+        else if(mFunction == "log") { retval = log(mArguments[0].evaluate(variables, functions)); }
+        else if(mFunction == "exp") { retval = exp(mArguments[0].evaluate(variables, functions)); }
+        else if(mFunction == "sqrt") { retval = sqrt(mArguments[0].evaluate(variables, functions)); }
+        else if(mFunction == "abs") { retval = fabs(mArguments[0].evaluate(variables, functions)); }
+        else if(mFunction == "integer") { retval = int(mArguments[0].evaluate(variables, functions)); }
+        else if(mFunction == "floor") { retval = floor(mArguments[0].evaluate(variables, functions)); }
+        else if(mFunction == "ceil") { retval = ceil(mArguments[0].evaluate(variables, functions)); }
 
         else if(mFunction == "der") { retval = 0; }
 
-        else if(mFunction == "rem") { retval = fmod(mArguments[0].evaluate(variables), mArguments[1].evaluate(variables)); }
+        else if(mFunction == "rem") { retval = fmod(mArguments[0].evaluate(variables, functions), mArguments[1].evaluate(variables, functions)); }
 
-        else if(mFunction == "mod") { retval = fmod(mArguments[0].evaluate(variables), mArguments[1].evaluate(variables)); }
-        else if(mFunction == "div") { retval = mArguments[0].evaluate(variables)/mArguments[1].evaluate(variables); }
-        else if(mFunction == "atan2") { retval = atan2(mArguments[0].evaluate(variables), mArguments[1].evaluate(variables)); }
-        else if(mFunction == "pow") { retval = pow(mArguments[0].evaluate(variables), mArguments[1].evaluate(variables)); }
+        else if(mFunction == "mod") { retval = fmod(mArguments[0].evaluate(variables, functions), mArguments[1].evaluate(variables, functions)); }
+        else if(mFunction == "div") { retval = mArguments[0].evaluate(variables, functions)/mArguments[1].evaluate(variables, functions); }
+        else if(mFunction == "atan2") { retval = atan2(mArguments[0].evaluate(variables, functions), mArguments[1].evaluate(variables, functions)); }
+        else if(mFunction == "pow") { retval = pow(mArguments[0].evaluate(variables, functions), mArguments[1].evaluate(variables, functions)); }
 
         else if(mFunction == "equal")
         {
-            if(mArguments[0].evaluate(variables) == mArguments[1].evaluate(variables))
+            if(mArguments[0].evaluate(variables, functions) == mArguments[1].evaluate(variables, functions))
                 return 1.0;
             else
                 return 0.0;
         }
         else if(mFunction == "greaterThan")
         {
-            if(mArguments[0].evaluate(variables) > mArguments[1].evaluate(variables))
+            if(mArguments[0].evaluate(variables, functions) > mArguments[1].evaluate(variables, functions))
                 return 1.0;
             else
                 return 0.0;
         }
         else if(mFunction == "greaterThanOrEqual")
         {
-            if(mArguments[0].evaluate(variables) >= mArguments[1].evaluate(variables))
+            if(mArguments[0].evaluate(variables, functions) >= mArguments[1].evaluate(variables, functions))
                 return 1.0;
             else
                 return 0.0;
         }
         else if(mFunction == "smallerThan")
         {
-            if(mArguments[0].evaluate(variables) < mArguments[1].evaluate(variables))
+            if(mArguments[0].evaluate(variables, functions) < mArguments[1].evaluate(variables, functions))
                 return 1.0;
             else
                 return 0.0;
         }
         else if(mFunction == "smallerThanOrEqual")
         {
-            if(mArguments[0].evaluate(variables) <= mArguments[1].evaluate(variables))
+            if(mArguments[0].evaluate(variables, functions) <= mArguments[1].evaluate(variables, functions))
                 return 1.0;
             else
                 return 0.0;
@@ -616,14 +626,14 @@ double Expression::evaluate(const QMap<QString, double> &variables) const
 
         else if(mFunction == "sign")
         {
-            if(mArguments[0].evaluate(variables) >= 0.0) { retval = 1.0; }
+            if(mArguments[0].evaluate(variables, functions) >= 0.0) { retval = 1.0; }
             else { retval = 0.0; }
         }
         else if(mFunction == "limit")
         {
-            double val = mArguments[0].evaluate(variables);
-            double min = mArguments[1].evaluate(variables);
-            double max = mArguments[2].evaluate(variables);
+            double val = mArguments[0].evaluate(variables, functions);
+            double min = mArguments[1].evaluate(variables, functions);
+            double max = mArguments[2].evaluate(variables, functions);
             if(val > max) { retval = max; }
             else if(val < min) { retval = min; }
             else { retval = val; }
@@ -646,7 +656,7 @@ double Expression::evaluate(const QMap<QString, double> &variables) const
     }
     else if(isEquation())
     {
-        if(mpLeft->evaluate(variables) == mpRight->evaluate(variables))
+        if(mpLeft->evaluate(variables, functions) == mpRight->evaluate(variables, functions))
             return 1;
         else
             return 0;
