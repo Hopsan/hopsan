@@ -219,8 +219,8 @@ private:
     AxisLimitsT mYLAxisLimits[2];
     AxisLimitsT mYRAxisLimits[2];
 
-    void rescaleAxistoIncludeLegendBufferOffset(const int plotId, const QwtPlot::Axis axisId, const AxisLimitsT &rLegendBufferOffset, AxisLimitsT &rAxisLimits);
-    void calculateLegendBufferOffsets(const int plotId, AxisLimitsT &rLeftLegendOffset, AxisLimitsT &rRightLegendOffset);
+    void rescaleAxisToMakeRoomForLegend(const int plotId, const QwtPlot::Axis axisId, AxisLimitsT &rAxisLimits);
+    void calculateLegendBufferOffsets(const int plotId, const QwtPlot::Axis axisId, double &rBottomOffset, double &rTopOffset);
 };
 
 

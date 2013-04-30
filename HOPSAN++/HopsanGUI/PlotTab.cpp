@@ -114,11 +114,11 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
 
     mpRightPlotLegend = new PlotLegend(QwtPlot::yRight);
     mpRightPlotLegend->attach(this->getPlot());
-    mpRightPlotLegend->setAlignment(Qt::AlignRight);
+    mpRightPlotLegend->setAlignment(Qt::AlignRight | Qt::AlignTop);
 
     mpLeftPlotLegend = new PlotLegend(QwtPlot::yLeft);
     mpLeftPlotLegend->attach(this->getPlot());
-    mpLeftPlotLegend->setAlignment(Qt::AlignLeft);
+    mpLeftPlotLegend->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
 
     // Create the lock axis dialog
@@ -269,18 +269,6 @@ void PlotTab::applyLegendSettings()
         mpQwtPlots[FirstPlot]->insertLegend(NULL, QwtPlot::TopLegend);
         // Since it is deleted set ptr to NULL
         mpExternalLegend = 0;
-    }
-
-    // Decide if we should hide or show manual legend offset controls
-    if (mpLegendsAutoOffsetCheckBox->isChecked())
-    {
-        mpLegendLeftOffset->setDisabled(true);
-        mpLegendRightOffset->setDisabled(true);
-    }
-    else
-    {
-        mpLegendLeftOffset->setDisabled(false);
-        mpLegendRightOffset->setDisabled(false);
     }
 
     rescaleAxesToCurves();
@@ -662,30 +650,25 @@ void PlotTab::rescaleAxesToCurves()
             }
 
 
-            // Auto calculate legend hight buffer offsets (Space needed to avoid overshadowing the plots)
-            //! @todo only works for linear scale right now, need to check for log scale also
-            AxisLimitsT leftLegendBufferOffset, rightLegendBufferOffset; // min = bottom offset, max = top offset
-            calculateLegendBufferOffsets(plotID, leftLegendBufferOffset, rightLegendBufferOffset);
-
             // Scale the axes autoamtically if that option is set
             if (mpXAutoCheckBox->isChecked())
             {
                 mXAxisLimits[plotID].min = xAxisLim.min;
                 mXAxisLimits[plotID].max = xAxisLim.max;
                 mpQwtPlots[plotID]->setAxisScale(QwtPlot::xBottom, mXAxisLimits[plotID].min, mXAxisLimits[plotID].max);
-                mpQwtPlots[plotID]->setAxisAutoScale(QwtPlot::xBottom,true);
+                //mpQwtPlots[plotID]->setAxisAutoScale(QwtPlot::xBottom,true);
             }
             if (mpYLAutoCheckBox->isChecked())
             {
                 mYLAxisLimits[plotID].min = ylAxisLim.min-0.05*leftAxisRange;
-                mYLAxisLimits[plotID].max =  ylAxisLim.max+0.05*leftAxisRange;
-                rescaleAxistoIncludeLegendBufferOffset(plotID, QwtPlot::yLeft, leftLegendBufferOffset, mYLAxisLimits[plotID]);
+                mYLAxisLimits[plotID].max = ylAxisLim.max+0.05*leftAxisRange;
+                rescaleAxisToMakeRoomForLegend(plotID, QwtPlot::yLeft, mYLAxisLimits[plotID]);
             }
             if (mpYRAutoCheckBox->isChecked())
             {
                 mYRAxisLimits[plotID].min = yrAxisLim.min-0.05*rightAxisRange;
                 mYRAxisLimits[plotID].max = yrAxisLim.max+0.05*rightAxisRange;
-                rescaleAxistoIncludeLegendBufferOffset(plotID, QwtPlot::yRight, rightLegendBufferOffset, mYRAxisLimits[plotID]);
+                rescaleAxisToMakeRoomForLegend(plotID, QwtPlot::yRight, mYRAxisLimits[plotID]);
             }
             //! @todo left only applies to left even if the right is overshadowed, problem is that if left, right are bottom and top calculated buffers will be different on each axis
 
@@ -2183,24 +2166,23 @@ void PlotTab::constructLegendSettingsDialog()
     mpLegendCols->setSingleStep(1);
     mpLegendCols->setValue(1);
 
+    mpLegendsAutoOffsetCheckBox = new QCheckBox(this);
+    mpLegendsAutoOffsetCheckBox->setCheckable(true);
+    mpLegendsAutoOffsetCheckBox->setChecked(true);
+
     mpLegendLeftOffset = new QDoubleSpinBox(this);
     mpLegendLeftOffset->setRange(-DoubleMax, DoubleMax);
     mpLegendLeftOffset->setDecimals(2);
     mpLegendLeftOffset->setSingleStep(0.1);
     mpLegendLeftOffset->setValue(0);
+    mpLegendLeftOffset->setDisabled(mpLegendsAutoOffsetCheckBox->isChecked());
 
     mpLegendRightOffset = new QDoubleSpinBox(this);
     mpLegendRightOffset->setRange(-DoubleMax, DoubleMax);
     mpLegendRightOffset->setDecimals(2);
     mpLegendRightOffset->setSingleStep(0.1);
     mpLegendRightOffset->setValue(0);
-
-    mpLegendsAutoOffsetCheckBox = new QCheckBox(this);
-    mpLegendsAutoOffsetCheckBox->setCheckable(true);
-    mpLegendsAutoOffsetCheckBox->setChecked(true);
-
-//    mpLegendsOffYREnabledCheckBox = new QCheckBox(this);
-//    mpLegendsOffYREnabledCheckBox->setCheckable(true);
+    mpLegendRightOffset->setDisabled(mpLegendsAutoOffsetCheckBox->isChecked());
 
     mpLegendsInternalEnabledCheckBox = new QCheckBox(this);
     mpLegendsInternalEnabledCheckBox->setCheckable(true);
@@ -2248,63 +2230,60 @@ void PlotTab::constructLegendSettingsDialog()
     mpLegendSymbolType->addItem("Symbol", PlotCurve::LegendShowSymbol );
     mpLegendSymbolType->addItem("Rectangle", PlotCurve::LegendNoAttribute );
 
-    QGroupBox *legendBox = new QGroupBox( "Legend" );
-    QGridLayout *legendBoxLayout = new QGridLayout( legendBox );
+    QGridLayout *legendBoxLayout = new QGridLayout();
 
+    const int blankline = 12;
     int row = 0;
-    legendBoxLayout->addWidget( new QLabel( "Size" ), row, 0 );
-    legendBoxLayout->addWidget( mpLegendFontSize, row, 1 );
-
-    row++;
-    legendBoxLayout->addWidget( new QLabel( "Columns" ), row, 0 );
-    legendBoxLayout->addWidget( mpLegendCols, row, 1 );
-
-    row++;
-    legendBoxLayout->addWidget( new QLabel( "Left Legend Position" ), row, 0 );
-    legendBoxLayout->addWidget( mpLegendLPosition, row, 1 );
-
-    row++;
-    legendBoxLayout->addWidget( new QLabel( "Right Legend Position" ), row, 0 );
-    legendBoxLayout->addWidget( mpLegendRPosition, row, 1 );
-
-    row++;
-    legendBoxLayout->addWidget( new QLabel( "Background" ), row, 0 );
-    legendBoxLayout->addWidget( mpLegendBgType, row, 1 );
-
-    QPushButton *pFinishedLegButton = new QPushButton("Close", mpLegendSettingsDialog);
-    QDialogButtonBox *pFinishedLegButtonBox = new QDialogButtonBox(Qt::Horizontal);
-    pFinishedLegButtonBox->addButton(pFinishedLegButton, QDialogButtonBox::ActionRole);
-
-    row++;
-    legendBoxLayout->addWidget( new QLabel( "Internal Legends" ), row, 0 );
+    legendBoxLayout->addWidget( new QLabel( "Legends on/off: " ), row, 0 );
     legendBoxLayout->addWidget( mpLegendsInternalEnabledCheckBox, row, 1 );
 
     row++;
-    legendBoxLayout->addWidget( new QLabel( "External Legends" ), row, 0 );
-    legendBoxLayout->addWidget( mpLegendsExternalEnabledCheckBox, row, 1 );
-
+    legendBoxLayout->addWidget( new QLabel( "Size: " ), row, 0, 1, 1, Qt::AlignRight );
+    legendBoxLayout->addWidget( mpLegendFontSize, row, 1 );
+    legendBoxLayout->addWidget( new QLabel( "Columns: " ), row, 2, 1, 1, Qt::AlignRight );
+    legendBoxLayout->addWidget( mpLegendCols, row, 3 );
     row++;
-    legendBoxLayout->addWidget( new QLabel( "Legend BG Color" ), row, 0 );
-    legendBoxLayout->addWidget( mpLegendBgColor, row, 1 );
-
-    row++;
-    legendBoxLayout->addWidget( new QLabel( "Legend Symbol" ), row, 0 );
+    legendBoxLayout->addWidget( new QLabel( "Symbol Type: " ), row, 0, 1, 1, Qt::AlignRight );
     legendBoxLayout->addWidget( mpLegendSymbolType, row, 1 );
 
     row++;
-    legendBoxLayout->addWidget( new QLabel( "Auto Offset" ), row, 0 );
+    legendBoxLayout->setRowMinimumHeight(row, blankline);
+    row++;
+    legendBoxLayout->addWidget( new QLabel( "Legend background" ), row, 0, 1, 4, Qt::AlignHCenter);
+    row++;
+    legendBoxLayout->addWidget( new QLabel( "Color: "), row, 0, 1, 1, Qt::AlignRight );
+    legendBoxLayout->addWidget( mpLegendBgColor, row, 1 );
+    legendBoxLayout->addWidget( new QLabel( "Type: " ), row, 2, 1, 1, Qt::AlignRight );
+    legendBoxLayout->addWidget( mpLegendBgType, row, 3 );
+
+    row++;
+    legendBoxLayout->setRowMinimumHeight(row, blankline);
+    row++;
+    legendBoxLayout->addWidget( new QLabel( "Vertical legend position" ), row, 0, 1, 4, Qt::AlignHCenter);
+    row++;
+    legendBoxLayout->addWidget( new QLabel( "Left: " ), row, 0, 1, 1, Qt::AlignRight );
+    legendBoxLayout->addWidget( mpLegendLPosition, row, 1 );
+    legendBoxLayout->addWidget( new QLabel( "Right: " ), row, 2, 1, 1, Qt::AlignRight );
+    legendBoxLayout->addWidget( mpLegendRPosition, row, 3 );
+
+    row++;
+    legendBoxLayout->setRowMinimumHeight(row, blankline);
+    row++;
+    legendBoxLayout->addWidget( new QLabel( "Axis compensation for legend height" ), row, 0, 1, 4, Qt::AlignHCenter);
+    row++;
+    legendBoxLayout->addWidget( new QLabel( "Left: " ), row, 0, 1, 1, Qt::AlignRight );
+    legendBoxLayout->addWidget( mpLegendLeftOffset, row, 1 );
+    legendBoxLayout->addWidget( new QLabel( "Right: " ), row, 2, 1, 1, Qt::AlignRight );
+    legendBoxLayout->addWidget( mpLegendRightOffset, row, 3 );
+    row++;
+    legendBoxLayout->addWidget( new QLabel( "Auto Offset: " ), row, 0, 1, 1, Qt::AlignRight );
     legendBoxLayout->addWidget( mpLegendsAutoOffsetCheckBox, row, 1 );
 
     row++;
-    legendBoxLayout->addWidget( new QLabel( "Left Legend Offset" ), row, 0 );
-    legendBoxLayout->addWidget( mpLegendLeftOffset, row, 1 );
-
-    row++;
-    legendBoxLayout->addWidget( new QLabel( "Right Legend Offset" ), row, 0 );
-    legendBoxLayout->addWidget( mpLegendRightOffset, row, 1 );
-
-    row++;
-    legendBoxLayout->addWidget( pFinishedLegButton, row, 1 );
+    QPushButton *pFinishedLegButton = new QPushButton("Close", mpLegendSettingsDialog);
+    QDialogButtonBox *pFinishedLegButtonBox = new QDialogButtonBox(Qt::Horizontal);
+    pFinishedLegButtonBox->addButton(pFinishedLegButton, QDialogButtonBox::ActionRole);
+    legendBoxLayout->addWidget( pFinishedLegButton, row, 3 );
 
     mpLegendSettingsDialog->setLayout(legendBoxLayout);
 
@@ -2319,6 +2298,8 @@ void PlotTab::constructLegendSettingsDialog()
     connect(mpLegendBgColor, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
     connect(mpLegendLeftOffset, SIGNAL(valueChanged(double)), this, SLOT(applyLegendSettings()));
     connect(mpLegendRightOffset, SIGNAL(valueChanged(double)), this, SLOT(applyLegendSettings()));
+    connect(mpLegendsAutoOffsetCheckBox, SIGNAL(toggled(bool)), mpLegendLeftOffset, SLOT(setDisabled(bool)));
+    connect(mpLegendsAutoOffsetCheckBox, SIGNAL(toggled(bool)), mpLegendRightOffset, SLOT(setDisabled(bool)));
     connect(mpLegendsAutoOffsetCheckBox, SIGNAL(toggled(bool)), this, SLOT(applyLegendSettings()));
     connect(pFinishedLegButton, SIGNAL(clicked()), mpLegendSettingsDialog, SLOT(close()));
 }
@@ -2554,105 +2535,137 @@ void PlotTab::updateGraphicsExportSizeEdits()
     mpImageSetHeight->setValue(newSize.height());
 }
 
-void PlotTab::rescaleAxistoIncludeLegendBufferOffset(const int plotId, const QwtPlot::Axis axisId, const AxisLimitsT &rLegendBufferOffset, AxisLimitsT &rAxisLimits)
+void PlotTab::rescaleAxisToMakeRoomForLegend(const int plotId, const QwtPlot::Axis axisId, PlotTab::AxisLimitsT &rAxisLimits)
 {
     //! @todo only works for top buffer right now
     if(dynamic_cast<QwtLogScaleEngine*>(mpQwtPlots[plotId]->axisScaleEngine(axisId)))
     {
         //! @todo what shoul happen here ?
-        //                double leftlegendheigh = mpLeftPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
-        //                double rightlegendheigh = mpRightPlotLegend->geometry(mpQwtPlots[plotID]->geometry()).height();
-        //                bufferoffset = max(leftlegendheigh,rightlegendheigh);
-        //                double rheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yRight)->size().height();
-        //                double rinterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yRight).width();
-        //                //                double rscale = rinterval/rheight; //change
-        //                double lheight = mpQwtPlots[plotID]->axisWidget(QwtPlot::yLeft)->size().height();
-        //                double linterval = mpQwtPlots[plotID]->axisInterval(QwtPlot::yLeft).width();
-        //                double lscale = linterval/lheight;
-        //                heightLeft = 0;
-        //                yMaxLeft = yMaxLeft*2.0;
-        //                yMinLeft = yMinLeft/2.0;
-        //                heightRight = 0;
-        //                yMaxRight = yMaxRight*2.0;
-        //                yMinRight = yMinRight/2.0;
-        //                double bufferoffsetL =  bufferoffset*lscale;//marginss1;
-        //                //                double bufferoffsetR =  bufferoffset*rscale;//marginss2;
-        //                mpQwtPlots[plotID]->setAxisScale(QwtPlot::yLeft, yMinLeft-0.05*heightLeft, yMaxLeft+0.05*heightLeft+bufferoffsetL);
-        //                mAxisLimits[plotID].yLMin = yMinLeft-0.05*heightLeft;
-        //                mAxisLimits[plotID].yLMax =  yMaxLeft+0.05*heightLeft+bufferoffsetL;
-        //                //                mpQwtPlots[plotID]->setAxisScale(QwtPlot::yRight, yMinRight-0.05*heightRight, yMaxRight+0.05*heightRight+bufferoffsetR);
-        //                //                mAxisLimits[plotID].yRMin = yMinRight-0.05*heightRight;
-        //                //                mAxisLimits[plotID].yRMax = yMaxRight+0.05*heightRight+bufferoffsetR;
-        //mpQwtPlots[plotId]->setAxisScale(axisId, rAxisLimits.min, rAxisLimits.max);
         mpQwtPlots[plotId]->setAxisAutoScale(axisId, true);
     }
     else
     {
-        const double axis_height = mpQwtPlots[plotId]->axisWidget(axisId)->size().height();
-        //const double axis_interval = mpQwtPlots[plotId]->axisInterval(axisId).width();
-        const double axis_interval = rAxisLimits.max - rAxisLimits.min; // The desired range
-        const double scale = axis_interval/axis_height;
+        // Curves range
+        const double cr = rAxisLimits.max - rAxisLimits.min;
 
-        rAxisLimits.min += scale*rLegendBufferOffset.min;
-        rAxisLimits.max += scale*rLegendBufferOffset.max;
+        // Find largest legend height in pixels
+        double lht, lhb;
+        calculateLegendBufferOffsets(plotId, axisId, lhb, lht);
+
+        // Axis height
+        const double ah = mpQwtPlots[plotId]->axisWidget(axisId)->size().height();
+
+        // Remove legend and margin height from axis height, what remains is the height for the curves
+        // Divid with the curves value range to get the scale
+        double s = (ah-(lht+lhb))/cr; //[px/unit]
+        //qDebug() << "s: " << s;
+        if (s < std::numeric_limits<double>::epsilon())
+        {
+            s = 1;
+        }
+        // Calculate new axis range for current axis height given the scale
+        const double ar = ah/s;
+
+        rAxisLimits.max = rAxisLimits.min + ar - lhb/s;
+        rAxisLimits.min = rAxisLimits.min - lhb/s;
+        //! @todo befor setting we should check so that min max is resonable else hopsan will crash (example: Inf)
         mpQwtPlots[plotId]->setAxisScale(axisId, rAxisLimits.min, rAxisLimits.max);
     }
 }
 
-void PlotTab::calculateLegendBufferOffsets(const int plotId, PlotTab::AxisLimitsT &rLeftLegendOffset, PlotTab::AxisLimitsT &rRightLegendOffset)
+void PlotTab::calculateLegendBufferOffsets(const int plotId, const QwtPlot::Axis axisId, double &rBottomOffset, double &rTopOffset)
 {
     //! @todo only works for linear scale right now, need to check for log scale also
-    double leftLegendHeight = mpLeftPlotLegend->geometry(mpQwtPlots[plotId]->geometry()).height() + mpLeftPlotLegend->margin();
-    double rightLegendHeight = mpRightPlotLegend->geometry(mpQwtPlots[plotId]->geometry()).height()  + mpRightPlotLegend->margin();
+    const double leftLegendHeight = mpLeftPlotLegend->geometry(mpQwtPlots[plotId]->geometry()).height()+mpLeftPlotLegend->borderDistance();
+    const double rightLegendHeight = mpRightPlotLegend->geometry(mpQwtPlots[plotId]->geometry()).height()+mpRightPlotLegend->borderDistance();
 
+    // Figure out vertical alginemnt, by bitwise masking
+    Qt::Alignment lva = mpLeftPlotLegend->alignment() & Qt::AlignVertical_Mask;
+    Qt::Alignment rva = mpRightPlotLegend->alignment() & Qt::AlignVertical_Mask;
+
+    rBottomOffset = rTopOffset = 0;
     if(mpLegendsAutoOffsetCheckBox->isChecked())
     {
-        if ((mpLegendLPosition->currentText() == mpLegendRPosition->currentText()) && (mpLegendRPosition->currentText() == "Top"))
+        if ( (lva == Qt::AlignTop) && (rva == Qt::AlignTop) )
         {
-            rLeftLegendOffset.max = rRightLegendOffset.max = qMax(leftLegendHeight,rightLegendHeight);
-            rLeftLegendOffset.min = rRightLegendOffset.max = 0;
+           rTopOffset = qMax(leftLegendHeight,rightLegendHeight);
         }
-        if ((mpLegendLPosition->currentText() == mpLegendRPosition->currentText()) && (mpLegendRPosition->currentText() == "Bottom"))
+        else if ( (lva == Qt::AlignBottom) && (rva == Qt::AlignBottom) )
         {
-            rLeftLegendOffset.max = rRightLegendOffset.max = 0;
-            rLeftLegendOffset.min = rRightLegendOffset.min = qMax(leftLegendHeight,rightLegendHeight);
+            rBottomOffset = qMax(leftLegendHeight,rightLegendHeight);
         }
-        else if (mpLegendLPosition->currentText() == "Bottom")
+        else if ( (lva == Qt::AlignBottom) && (rva == Qt::AlignTop) )
         {
-            rLeftLegendOffset.min = leftLegendHeight;
-            rRightLegendOffset.max = rightLegendHeight;
-            rLeftLegendOffset.max = rRightLegendOffset.min = 0;
+            if (axisId == QwtPlot::yLeft)
+            {
+                rBottomOffset = leftLegendHeight;
+                rTopOffset = rightLegendHeight;
+            }
+            else
+            {
+                rBottomOffset = rightLegendHeight;
+                rTopOffset = leftLegendHeight;
+            }
         }
-        else if (mpLegendRPosition->currentText() == "Bottom")
+        else if ( (lva == Qt::AlignTop) && (rva == Qt::AlignBottom) )
         {
-            rRightLegendOffset.min = rightLegendHeight;
-            rLeftLegendOffset.max = leftLegendHeight;
-            rRightLegendOffset.max = rLeftLegendOffset.min = 0;
+            if (axisId == QwtPlot::yLeft)
+            {
+                rBottomOffset = rightLegendHeight;
+                rTopOffset = leftLegendHeight;
+            }
+            else
+            {
+                rBottomOffset = leftLegendHeight;
+                rTopOffset = rightLegendHeight;
+            }
+        }
+        else if ( (lva == Qt::AlignVCenter) && (axisId == QwtPlot::yRight)  )
+        {
+            if (rva == Qt::AlignTop)
+            {
+                rTopOffset = rightLegendHeight;
+            }
+            else if (rva == Qt::AlignBottom)
+            {
+                rBottomOffset = rightLegendHeight;
+            }
+        }
+        else if ( (rva == Qt::AlignVCenter) && (axisId == QwtPlot::yLeft)  )
+        {
+            if (lva == Qt::AlignTop)
+            {
+                rTopOffset = leftLegendHeight;
+            }
+            else if (lva == Qt::AlignBottom)
+            {
+                rBottomOffset = leftLegendHeight;
+            }
         }
     }
     else
     {
-        if (mpLegendLPosition->currentText() == "Top")
+        if (axisId == QwtPlot::yLeft)
         {
-            rLeftLegendOffset.max = mpLegendLeftOffset->value()*leftLegendHeight;
-            rLeftLegendOffset.min = 0;
+            if (lva == Qt::AlignTop)
+            {
+                rTopOffset = mpLegendLeftOffset->value()*leftLegendHeight;
+            }
+            else if (lva == Qt::AlignBottom)
+            {
+                rBottomOffset = mpLegendLeftOffset->value()*leftLegendHeight;
+            }
         }
-        else if (mpLegendLPosition->currentText() == "Bottom")
+        else if (axisId == QwtPlot::yRight)
         {
-            rLeftLegendOffset.max = 0;
-            rLeftLegendOffset.min = mpLegendLeftOffset->value()*leftLegendHeight;
-        }
-        //! @todo Center? than what to do
-
-        if (mpLegendRPosition->currentText() == "Top")
-        {
-            rRightLegendOffset.max = mpLegendRightOffset->value()*rightLegendHeight;
-            rRightLegendOffset.min = 0;
-        }
-        else if (mpLegendRPosition->currentText() == "Bottom")
-        {
-            rRightLegendOffset.max = 0;
-            rRightLegendOffset.min = mpLegendRightOffset->value()*rightLegendHeight;
+            if (rva == Qt::AlignTop)
+            {
+                rTopOffset = mpLegendLeftOffset->value()*leftLegendHeight;
+            }
+            else if (rva == Qt::AlignBottom)
+            {
+                rBottomOffset = mpLegendLeftOffset->value()*leftLegendHeight;
+            }
         }
         //! @todo Center? than what to do
     }
