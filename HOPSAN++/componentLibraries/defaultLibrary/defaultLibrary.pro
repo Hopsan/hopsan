@@ -280,7 +280,10 @@ HEADERS += \
     Special/AeroComponents/FuelComponents/HydraulicCentrifugalPumpJ.hpp \
     Special/AeroComponents/FuelComponents/HydraulicCentrifugalPump.hpp \
     Signal/Non-Linearities/SignalSaturation.hpp \
-    Special/AeroComponents/HopsanDefaultAerocomponents.h
+    Special/AeroComponents/HopsanDefaultAerocomponents.h \
+    Hydraulic/MachineParts/HydraulicPumpPiston.hpp \
+    Hydraulic/Valves/HydraulicPilotControlledCheckValve.hpp \
+    Hydraulic/Valves/HydraulicPilotClosableCheckValve.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \
