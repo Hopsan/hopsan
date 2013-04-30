@@ -69,6 +69,7 @@ public:
     void executeOptimizationCommand(QString cmd);
     void executeCallFunctionCommand(QString cmd);
     void executeEchoCommand(QString cmd);
+    void executeEditCommand(QString cmd);
 
     //Help functions
     void changePlotVariables(QString cmd, int axis);

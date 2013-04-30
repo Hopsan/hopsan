@@ -372,6 +372,13 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole)
     echoCmd.help.append("Usage: echo [on/off]");
     echoCmd.fnc = &HcomHandler::executeEchoCommand;
     mCmdList << echoCmd;
+
+    HcomCommand editCmd;
+    editCmd.cmd = "edit";
+    editCmd.description.append("Open file in external editor.");
+    editCmd.help.append("Usage: edit [filepath]");
+    editCmd.fnc = &HcomHandler::executeEditCommand;
+    mCmdList << editCmd;
 }
 
 
@@ -1762,6 +1769,13 @@ void HcomHandler::executeCallFunctionCommand(QString cmd)
     bool *abort = new bool;
     *abort = false;
     runScriptCommands(mFunctions.find(split[0]).value(), abort);
+    if(*abort)
+    {
+        mpConsole->print("Function aborted");
+        returnScalar(-1);
+        return;
+    }
+    returnScalar(0);
 }
 
 void HcomHandler::executeEchoCommand(QString cmd)
@@ -1785,6 +1799,18 @@ void HcomHandler::executeEchoCommand(QString cmd)
     {
         mpConsole->printErrorMessage("Unknown argument, use \"on\" or \"off\"");
     }
+}
+
+void HcomHandler::executeEditCommand(QString cmd)
+{
+    QStringList split = cmd.split(" ");
+    if(split.size() != 1)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        return;
+    }
+
+    QDesktopServices::openUrl(QUrl(split[0]));
 }
 
 
@@ -2089,6 +2115,14 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *abort)
 
     for(int l=0; l<lines.size(); ++l)
     {
+        qApp->processEvents();
+        if(mAborted)
+        {
+            mpConsole->print("Script aborted.");
+            mAborted = false;
+            *abort=true;
+        }
+
         while(lines[l].startsWith(" "))
         {
             lines[l] = lines[l].right(lines[l].size()-1);
@@ -2144,6 +2178,7 @@ QString HcomHandler::runScriptCommands(QStringList &lines, bool *abort)
             SymHop::Expression symHopExpr = SymHop::Expression(argument);
             while(symHopExpr.evaluate(mLocalVars) > 0)
             {
+                qApp->processEvents();
                 if(mAborted)
                 {
                     mpConsole->print("Script aborted.");
@@ -2635,6 +2670,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
             if(pValueData != 0) { value = pValueData->getFullVariableName(); }
 
             gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->assignVariable(left, value);
+            gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->getPlotData(left,-1).data()->preventAutoRemoval();
             return true;
         }
         else
@@ -2960,6 +2996,14 @@ void HcomHandler::opt_complex_run()
     int percent=-1;
     for(; i<mOptMaxEvals && !mAborted; ++i)
     {
+        qApp->processEvents();
+        if(mAborted)
+        {
+            mpConsole->print("Optimization aborted.");
+            return;
+        }
+
+        //Print progress %
         int dummy=int(100.0*double(i)/mOptMaxEvals);
         if(dummy != percent)
         {
@@ -2977,6 +3021,8 @@ void HcomHandler::opt_complex_run()
 
         //Calculate best and worst point
         opt_complex_calculateBestAndWorstId();
+        mpConsole->print("WORST: "+QString::number(mOptWorstId));
+        int wid = mOptWorstId;
 
         //Find geometrical center
         opt_complex_findCenter();
@@ -2986,7 +3032,7 @@ void HcomHandler::opt_complex_run()
         newPoint.resize(mOptNumParameters);
         for(int j=0; j<mOptNumParameters; ++j)
         {
-            int wid = mOptWorstId;
+
 
             //Reflect
             double worst = mOptParameters[wid][j];
@@ -2996,20 +3042,38 @@ void HcomHandler::opt_complex_run()
             double maxDiff = opt_complex_maxParDiff();
             double r = (double)rand() / (double)RAND_MAX;
             mOptParameters[wid][j] = mOptParameters[wid][j] + mOptRfak*(mOptParMax[wid]-mOptParMin[wid])*maxDiff*(r-0.5);
+            mOptParameters[wid][j] = min(mOptParameters[wid][j], mOptParMax[j]);
+            mOptParameters[wid][j] = max(mOptParameters[wid][j], mOptParMin[j]);
         }
-        newPoint = mOptParameters[mOptWorstId];
+        newPoint = mOptParameters[wid];
 
         //Evaluate new point
         executeCommand("call evalworst");
+        if(mLocalVars.find("ans").value() == -1)    //This check is needed if abort key is pressed while evaluating
+        {
+            executeCommand("echo on");
+            mpConsole->print("Optimization aborted.");
+            return;
+        }
 
         //Calculate best and worst points
-        mOptLastWorstId=mOptWorstId;
+        mOptLastWorstId=wid;
         opt_complex_calculateBestAndWorstId();
+        wid = mOptWorstId;
 
         //Iterate until worst point is no longer the same
         mOptWorstCounter=0;
-        while(mOptLastWorstId == mOptWorstId)
+        while(mOptLastWorstId == wid)
         {
+            qApp->processEvents();
+            if(mAborted)
+            {
+                executeCommand("echo on");
+                mpConsole->print("Optimization aborted.");
+                mAborted = false;
+                return;
+            }
+
             if(i>mOptMaxEvals) break;
 
             double a1 = 1.0-exp(-double(mOptWorstCounter)/5.0);
@@ -3017,18 +3081,28 @@ void HcomHandler::opt_complex_run()
             //Reflect worst point
             for(int j=0; j<mOptNumParameters; ++j)
             {
-                double best = mOptParameters[mOptBestId][j];
-                //! @todo Implement random factor
-                mOptParameters[mOptWorstId][j] = (mOptCenter[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 /*+random*/;
+                int best = mOptParameters[mOptBestId][j];
+                double maxDiff = opt_complex_maxParDiff();
+                double r = (double)rand() / (double)RAND_MAX;
+                mOptParameters[wid][j] = (mOptCenter[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mOptRfak*(mOptParMax[wid]-mOptParMin[wid])*maxDiff*(r-0.5);
+                mOptParameters[wid][j] = min(mOptParameters[wid][j], mOptParMax[j]);
+                mOptParameters[wid][j] = max(mOptParameters[wid][j], mOptParMin[j]);
             }
-            newPoint = mOptParameters[mOptWorstId];
+            newPoint = mOptParameters[wid];
 
             //Evaluate new point
             executeCommand("call evalworst");
+            if(mLocalVars.find("ans").value() == -1)    //This check is needed if abort key is pressed while evaluating
+            {
+                executeCommand("echo on");
+                mpConsole->print("Optimization aborted.");
+                return;
+            }
 
             //Calculate best and worst points
-            mOptLastWorstId=mOptWorstId;
+            mOptLastWorstId=wid;
             opt_complex_calculateBestAndWorstId();
+            wid = mOptWorstId;
 
             ++mOptWorstCounter;
             ++i;
