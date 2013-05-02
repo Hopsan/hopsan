@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject typename="MechanicThetaSource" displayname="Angle &amp; Velocity Source">
         <icons>
-            <icon scale="1" path="angularvelocitytransformer.svg" iconrotation="ON" type="iso"/>
+            <icon scale="1" path="MechanicAngularVelocityTransformer.svg" iconrotation="ON" type="iso"/>
         </icons>
         <help>
             <text>Applies specified angle and velocity. Parameter values will be used if their corresponding input port is not connected. If velocity is connected but not angle, the angle will be integrated from the velocity. Connecting both inputs simultaneously or connecting only angle input is possible, but the kinematic relationship between angle and velocity must then be enforced manually.</text>

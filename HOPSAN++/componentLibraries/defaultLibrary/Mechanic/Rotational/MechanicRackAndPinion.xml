@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject typename="MechanicRackAndPinion" displayname="Rack and Pinion">
         <icons>
-            <icon scale="1" path="rackandpinion.svg" iconrotation="ON" type="user"/>
+            <icon scale="1" path="MechanicRackAndPinion.svg" iconrotation="ON" type="user"/>
         </icons>
         <ports>
             <port x="0.0442" y="0.9743" a="0" name="P1"/>

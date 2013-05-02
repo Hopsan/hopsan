@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject typename="MechanicForceTransformer" displayname="Force Source">
         <icons>
-            <icon scale="1" path="forcetransformer.svg" iconrotation="ON" type="iso"/>
+            <icon scale="1" path="MechanicForceTransformer.svg" iconrotation="ON" type="iso"/>
         </icons>
         <ports>
             <port x="1" y="0.5" a="0" name="P1"/>
@@ -11,7 +11,7 @@
 	<animation>
             <icon userpath="forcetransformer_base.svg"/>
             <movable>
-                <icon userpath="forcetransformer.svg"/>
+                <icon userpath="MechanicForceTransformer.svg"/>
                 <data port="P1" dataname="Position"/> 
                 <movement x="77.5" y="0" a="0"/>
                 <start x="0" y="0" a="0"/>

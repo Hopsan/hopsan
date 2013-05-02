@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject typename="MechanicMotor" displayname="Ideal Motor With Speed Control">
         <icons>
-            <icon scale="1" path="motor.svg" iconrotation="OFF" type="user"/>
+            <icon scale="1" path="MechanicMotor.svg" iconrotation="OFF" type="user"/>
         </icons>
         <ports>
             <port x="1.0" y="0.5" a="0" name="P1"/>

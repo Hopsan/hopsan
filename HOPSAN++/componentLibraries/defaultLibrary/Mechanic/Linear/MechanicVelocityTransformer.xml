@@ -2,7 +2,7 @@
 <hopsanobjectappearance version="0.3">
     <modelobject typename="MechanicVelocityTransformer" displayname="Position &amp; Velocity Source">
         <icons>
-            <icon scale="1" path="velocitytransformer.svg" iconrotation="ON" type="iso"/>
+            <icon scale="1" path="MechanicVelocityTransformer.svg" iconrotation="ON" type="iso"/>
         </icons>
         <help>
             <text>Applies specified position and velocity. Parameter values will be used if their corresponding input port is not connected. If velocity is connected but not position, the position will be integrated from the velocity. Connecting both inputs simultaneously or connecting only position input is possible, but the kinematic relationship between position and velocity must then be enforced manually.</text>
