@@ -11,8 +11,8 @@
         </help>
         <ports>
             <port x="0.5" y="1" a="90" name="P1"/>
-            <port x="0.5" y="0" a="270" name="PVa"/>
-            <port x="1" y="0.5" a="0" name="Ppa"/>
+            <port x="0.5" y="0" a="270" name="Va"/>
+            <port x="1" y="0.5" a="0" name="pa"/>
         </ports>
     </modelobject>
 </hopsanobjectappearance>

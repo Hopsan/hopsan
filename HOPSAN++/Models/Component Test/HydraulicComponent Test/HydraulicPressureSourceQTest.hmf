@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5204" hopsancoreversion="0.6.x_r5205">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5334" hopsancoreversion="0.6.x_r5348">
   <requirements>
     <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+    <componentlibrary>HopsanExampleComponentLibrary</componentlibrary>
   </requirements>
   <info/>
   <system logsamples="2048" typename="Subsystem" name="HydraulicPressureSourceQTest">
@@ -12,7 +13,7 @@
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="1"/>
       <animation flowspeed="100"/>
-      <viewport x="2372.5" y="2484" zoom="1"/>
+      <viewport x="2366" y="2478.5" zoom="1"/>
       <ports hidden="1"/>
       <names hidden="0"/>
       <graphics type="user"/>
@@ -59,12 +60,9 @@
           <parameter unit="Pa" value="100000" type="double" name="P2::WaveVariable"/>
           <parameter unit="?" value="0" type="double" name="P2::CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="P2::HeatFlow"/>
-          <parameter unit="-" value="0" type="double" name="V::Value"/>
+          <parameter unit="-" value="0.1" type="double" name="alpha::Value"/>
           <parameter unit="[m^3]" value="0.001" type="double" name="V"/>
-          <parameter unit="-" value="0" type="double" name="Beta_e::Value"/>
           <parameter unit="[Pa]" value="1e+009" type="double" name="Beta_e"/>
-          <parameter unit="-" value="0" type="double" name="alpha::Value"/>
-          <parameter unit="[-]" value="0.1" type="double" name="alpha"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -124,7 +122,7 @@
           <animation flowspeed="100">
             <movable>
               <start x="0" y="0" a="-60"/>
-              <movement x="0" y="0" a="-6e-06"/>
+              <movement x="0" y="0" a="-6e-006"/>
             </movable>
           </animation>
           <hopsanobjectappearance version="0.3">
@@ -141,7 +139,6 @@
           <parameter unit="Pa" value="100000" type="double" name="P1::WaveVariable"/>
           <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
-          <parameter unit="-" value="0" type="double" name="p::Value"/>
           <parameter unit="Pa" value="100000" type="double" name="p"/>
         </parameters>
         <ports>
@@ -160,12 +157,9 @@
       </component>
       <component typename="SignalStep" name="Step">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="y_0::Value"/>
-          <parameter unit="[-]" value="1e6" type="double" name="y_0"/>
-          <parameter unit="-" value="0" type="double" name="y_A::Value"/>
-          <parameter unit="[-]" value="1e6" type="double" name="y_A"/>
-          <parameter unit="-" value="0" type="double" name="t_step::Value"/>
-          <parameter unit="[-]" value="1" type="double" name="t_step"/>
+          <parameter unit="-" value="1e6" type="double" name="y_0::Value"/>
+          <parameter unit="-" value="1e6" type="double" name="y_A::Value"/>
+          <parameter unit="-" value="1" type="double" name="t_step::Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
@@ -292,6 +286,20 @@
           <style>solid</style>
         </hopsangui>
       </connect>
+      <connect endport="p" endcomponent="Q_type_Pressure_Source" startport="out" startcomponent="Step">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2154.50000000000000000000" y="2565.00000000000000000000"/>
+            <coordinate x="2242.00000000000000000000" y="2565.00000000000000000000"/>
+            <coordinate x="2242.00000000000000000000" y="2530.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
       <connect endport="P1" endcomponent="Pressure_Transducer" startport="P1" startcomponent="Q_type_Pressure_Source">
         <hopsangui>
           <coordinates>
@@ -334,20 +342,6 @@
             <geometry>vertical</geometry>
             <geometry>horizontal</geometry>
             <geometry>vertical</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="p" endcomponent="Q_type_Pressure_Source" startport="out" startcomponent="Step">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2154.50000000000000000000" y="2565.00000000000000000000"/>
-            <coordinate x="2242.00000000000000000000" y="2565.00000000000000000000"/>
-            <coordinate x="2242.00000000000000000000" y="2530.00000000000000000000"/>
-          </coordinates>
-          <geometries>
-            <geometry>vertical</geometry>
-            <geometry>horizontal</geometry>
           </geometries>
           <style>solid</style>
         </hopsangui>

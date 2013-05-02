@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5204" hopsancoreversion="0.6.x_r5205">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5334" hopsancoreversion="0.6.x_r5348">
   <requirements>
     <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+    <componentlibrary>HopsanExampleComponentLibrary</componentlibrary>
   </requirements>
   <info/>
   <system logsamples="2048" typename="Subsystem" name="HydraulicPressureControlPumpVolumeTest">
@@ -12,7 +13,7 @@
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="1"/>
       <animation flowspeed="100"/>
-      <viewport x="2509.09" y="2459.04" zoom="0.70922"/>
+      <viewport x="2499.93" y="2451.28" zoom="0.70922"/>
       <ports hidden="1"/>
       <names hidden="0"/>
       <graphics type="user"/>
@@ -43,164 +44,6 @@
         <parameters/>
         <objectives/>
       </optimization>
-      <hopsanundo>
-        <post number="-1"/>
-        <post number="0"/>
-        <post number="1"/>
-        <post number="2"/>
-        <post number="3"/>
-        <post number="4"/>
-        <post number="5"/>
-        <post number="6"/>
-        <post number="7"/>
-        <post number="8"/>
-        <post number="9"/>
-        <post number="10"/>
-        <post number="11"/>
-        <post number="12"/>
-        <post number="13"/>
-        <post number="14"/>
-        <post number="15"/>
-        <post number="16" type="changedparameters"/>
-        <post number="17" type="changedparameters"/>
-        <post number="18" type="changedparameters"/>
-        <post number="19" type="changedparameters"/>
-        <post number="20" type="changedparameters"/>
-        <post number="21"/>
-        <post number="22" type="changedparameters"/>
-        <post number="23" type="changedparameters"/>
-        <post number="24"/>
-        <post number="25"/>
-        <post number="26"/>
-        <post number="27" type="changedparameters"/>
-        <post number="28" type="changedparameters"/>
-        <post number="29"/>
-        <post number="30"/>
-        <post number="31"/>
-        <post number="32" type="changedparameters"/>
-        <post number="33" type="changedparameters"/>
-        <post number="34" type="changedparameters"/>
-        <post number="35" type="changedparameters"/>
-        <post number="36" type="changedparameters"/>
-        <post number="37" type="changedparameters"/>
-        <post number="38" type="changedparameters"/>
-        <post number="39" type="changedparameters"/>
-        <post number="40" type="changedparameters"/>
-        <post number="41" type="changedparameters"/>
-        <post number="42" type="changedparameters"/>
-        <post number="43" type="changedparameters"/>
-        <post number="44" type="changedparameters"/>
-        <post number="45" type="changedparameters"/>
-        <post number="46" type="changedparameters"/>
-        <post number="47">
-          <stuff what="addedobject">
-            <component typename="HydraulicFlowSourceQ" name="Q-type Flow Source">
-              <parameters>
-                <parameter value="0.001" type="double" name="q"/>
-              </parameters>
-              <hopsangui>
-                <pose x="2118" y="2380" flipped="false" a="0"/>
-                <nametext position="0" visible="1"/>
-                <hopsanobjectappearance version="0.3">
-                  <modelobject typename="HydraulicFlowSourceQ" displayname="Q-type Flow Source">
-                    <ports/>
-                  </modelobject>
-                </hopsanobjectappearance>
-              </hopsangui>
-            </component>
-          </stuff>
-        </post>
-        <post number="48">
-          <stuff what="addedconnector">
-            <connect endport="P1" endcomponent="Hydraulic Volume Multi Port" startport="P1" startcomponent="Q-type Flow Source">
-              <hopsangui>
-                <coordinates>
-                  <coordinate x="2130.00000000000000000000" y="2373.00000000000000000000"/>
-                  <coordinate x="2481.00000000000000000000" y="2373.00000000000000000000"/>
-                  <coordinate x="2481.00000000000000000000" y="2373.00000000000000000000"/>
-                </coordinates>
-                <geometries>
-                  <geometry>vertical</geometry>
-                  <geometry>horizontal</geometry>
-                </geometries>
-                <style>solid</style>
-              </hopsangui>
-            </connect>
-          </stuff>
-        </post>
-        <post number="49">
-          <stuff what="movedobject" name="Q-type Flow Source">
-            <oldpos>2106 2361</oldpos>
-            <newpos>2289.3 2361</newpos>
-          </stuff>
-        </post>
-        <post number="50">
-          <stuff what="addedobject">
-            <component typename="SignalPulse" name="Pulse">
-              <parameters>
-                <parameter value="0" type="double" name="y_0"/>
-                <parameter value="1" type="double" name="t_start"/>
-                <parameter value="2" type="double" name="t_end"/>
-                <parameter value="1" type="double" name="y_A"/>
-              </parameters>
-              <hopsangui>
-                <pose x="2135" y="2374" flipped="false" a="0"/>
-                <nametext position="0" visible="1"/>
-                <hopsanobjectappearance version="0.3">
-                  <modelobject typename="SignalPulse" displayname="Pulse">
-                    <ports/>
-                  </modelobject>
-                </hopsanobjectappearance>
-              </hopsangui>
-            </component>
-          </stuff>
-        </post>
-        <post number="51">
-          <stuff what="addedconnector">
-            <connect endport="in" endcomponent="Q-type Flow Source" startport="out" startcomponent="Pulse">
-              <hopsangui>
-                <coordinates>
-                  <coordinate x="2147.50000000000000000000" y="2373.00000000000000000000"/>
-                  <coordinate x="2315.21953695609272472211" y="2373.00000000000000000000"/>
-                  <coordinate x="2315.21953695609272472211" y="2373.00000000000000000000"/>
-                  <coordinate x="2289.29996334000725255464" y="2373.00000000000000000000"/>
-                </coordinates>
-                <geometries>
-                  <geometry>vertical</geometry>
-                  <geometry>horizontal</geometry>
-                  <geometry>vertical</geometry>
-                </geometries>
-                <style>solid</style>
-              </hopsangui>
-            </connect>
-          </stuff>
-        </post>
-        <post number="52" type="changedparameters">
-          <stuff newvalue=".5" what="changedparameter" oldvalue="1" parametername="t_start" objectname="Pulse"/>
-          <stuff newvalue=".6" what="changedparameter" oldvalue="2" parametername="t_end" objectname="Pulse"/>
-          <stuff newvalue="-.001" what="changedparameter" oldvalue="1" parametername="y_A" objectname="Pulse"/>
-        </post>
-        <post number="53">
-          <stuff what="addedconnector">
-            <connect endport="q" endcomponent="Q_type_Flow_Source" startport="out" startcomponent="Pulse">
-              <hopsangui>
-                <coordinates>
-                  <coordinate x="2147.50000000000000000000" y="2373.00000000000000000000"/>
-                  <coordinate x="2269.29996299999993425445" y="2373.00000000000000000000"/>
-                  <coordinate x="2269.29996299999993425445" y="2373.00000000000000000000"/>
-                  <coordinate x="2289.29996299999993425445" y="2373.00000000000000000000"/>
-                </coordinates>
-                <geometries>
-                  <geometry>vertical</geometry>
-                  <geometry>horizontal</geometry>
-                  <geometry>vertical</geometry>
-                </geometries>
-                <style>solid</style>
-              </hopsangui>
-            </connect>
-          </stuff>
-        </post>
-      </hopsanundo>
     </hopsangui>
     <objects>
       <component typename="HydraulicVolumeMultiPort" name="Hydraulic_Volume_Multi_Port">
@@ -211,12 +54,9 @@
           <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
           <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
-          <parameter unit="-" value="0" type="double" name="V::Value"/>
-          <parameter unit="[m^3]" value="0.001" type="double" name="V"/>
-          <parameter unit="-" value="0" type="double" name="Beta_e::Value"/>
-          <parameter unit="[Pa]" value="1e+009" type="double" name="Beta_e"/>
-          <parameter unit="-" value="0" type="double" name="alpha::Value"/>
-          <parameter unit="[-]" value="0.1" type="double" name="alpha"/>
+          <parameter unit="-" value="0.001" type="double" name="V::Value"/>
+          <parameter unit="-" value="1e+009" type="double" name="Beta_e::Value"/>
+          <parameter unit="-" value="0.1" type="double" name="alpha::Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -240,13 +80,9 @@
       <component typename="SignalPulse" name="Pulse">
         <parameters>
           <parameter unit="-" value="0" type="double" name="y_0::Value"/>
-          <parameter unit="[-]" value="0" type="double" name="y_0"/>
-          <parameter unit="-" value="0" type="double" name="t_start::Value"/>
-          <parameter unit="[s]" value=".5" type="double" name="t_start"/>
-          <parameter unit="-" value="0" type="double" name="t_end::Value"/>
-          <parameter unit="[s]" value=".6" type="double" name="t_end"/>
-          <parameter unit="-" value="0" type="double" name="y_A::Value"/>
-          <parameter unit="[-]" value="-.001" type="double" name="y_A"/>
+          <parameter unit="-" value=".5" type="double" name="t_start::Value"/>
+          <parameter unit="-" value=".6" type="double" name="t_end::Value"/>
+          <parameter unit="-" value="-.001" type="double" name="y_A::Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
@@ -269,7 +105,6 @@
           <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
           <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
-          <parameter unit="-" value="0" type="double" name="p::Value"/>
           <parameter unit="Pa" value="100000" type="double" name="p"/>
         </parameters>
         <ports>
@@ -290,28 +125,17 @@
         <parameters>
           <parameter unit="-" value="0" type="double" name="eps::Value"/>
           <parameter unit="-" value="0" type="double" name="a::Value"/>
-          <parameter unit="-" value="0" type="double" name="p_dif::Value"/>
-          <parameter unit="[Pa]" value="28e6" type="double" name="p_dif"/>
-          <parameter unit="-" value="0" type="double" name="omega_p::Value"/>
-          <parameter unit="[rad/s]" value="125" type="double" name="omega_p"/>
-          <parameter unit="-" value="0" type="double" name="q_max::Value"/>
-          <parameter unit="[m^3/s]" value="0.00125" type="double" name="q_max"/>
-          <parameter unit="-" value="0" type="double" name="q_min::Value"/>
+          <parameter unit="-" value="28e6" type="double" name="p_dif::Value"/>
+          <parameter unit="-" value="125" type="double" name="omega_p::Value"/>
+          <parameter unit="-" value="0.00125" type="double" name="q_max::Value"/>
+          <parameter unit="-" value="7e7" type="double" name="l_p::Value"/>
+          <parameter unit="-" value="1e9" type="double" name="r_p::Value"/>
+          <parameter unit="-" value="200" type="double" name="omega_p1::Value"/>
+          <parameter unit="-" value="1e-012" type="double" name="C_lp::Value"/>
+          <parameter unit="-" value="0.003" type="double" name="tao_v::Value"/>
+          <parameter unit="-" value="0.15" type="double" name="t_p::Value"/>
+          <parameter unit="-" value="0.12" type="double" name="t_m::Value"/>
           <parameter unit="[m^3/s]" value="0" type="double" name="q_min"/>
-          <parameter unit="-" value="0" type="double" name="l_p::Value"/>
-          <parameter unit="[]" value="7e7" type="double" name="l_p"/>
-          <parameter unit="-" value="0" type="double" name="r_p::Value"/>
-          <parameter unit="[]" value="1e9" type="double" name="r_p"/>
-          <parameter unit="-" value="0" type="double" name="omega_p1::Value"/>
-          <parameter unit="[rad/s]" value="200" type="double" name="omega_p1"/>
-          <parameter unit="-" value="0" type="double" name="C_lp::Value"/>
-          <parameter unit="[]" value="1e-012" type="double" name="C_lp"/>
-          <parameter unit="-" value="0" type="double" name="tao_v::Value"/>
-          <parameter unit="[s]" value="0.003" type="double" name="tao_v"/>
-          <parameter unit="-" value="0" type="double" name="t_p::Value"/>
-          <parameter unit="[s]" value="0.15" type="double" name="t_p"/>
-          <parameter unit="-" value="0" type="double" name="t_m::Value"/>
-          <parameter unit="[s]" value="0.12" type="double" name="t_m"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="eps"/>
@@ -326,7 +150,7 @@
           <animation flowspeed="100">
             <movable>
               <start x="0" y="0" a="0"/>
-              <movement x="0" y="0" a="-1e-06"/>
+              <movement x="0" y="0" a="-1e-006"/>
             </movable>
             <movable>
               <start x="45.653" y="9.941000000000001" a="0"/>
@@ -342,12 +166,9 @@
       </component>
       <component typename="SignalStep" name="Step">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="y_0::Value"/>
-          <parameter unit="[-]" value="1e-007" type="double" name="y_0"/>
-          <parameter unit="-" value="0" type="double" name="y_A::Value"/>
-          <parameter unit="[-]" value="-1e-007" type="double" name="y_A"/>
-          <parameter unit="-" value="0" type="double" name="t_step::Value"/>
-          <parameter unit="[-]" value="0.5" type="double" name="t_step"/>
+          <parameter unit="-" value="1e-007" type="double" name="y_0::Value"/>
+          <parameter unit="-" value="-1e-007" type="double" name="y_A::Value"/>
+          <parameter unit="-" value="0.5" type="double" name="t_step::Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
@@ -411,7 +232,6 @@
           <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
           <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
-          <parameter unit="-" value="0" type="double" name="p::Value"/>
           <parameter unit="Pa" value="100000" type="double" name="p"/>
         </parameters>
         <ports>
@@ -435,7 +255,6 @@
           <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
           <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
-          <parameter unit="-" value="0" type="double" name="p::Value"/>
           <parameter unit="Pa" value="100000" type="double" name="p"/>
         </parameters>
         <ports>
@@ -566,8 +385,8 @@
         <hopsangui>
           <coordinates>
             <coordinate x="2147.50000000000000000000" y="2373.00000000000000000000"/>
-            <coordinate x="2269.29996299999993425445" y="2373.00000000000000000000"/>
-            <coordinate x="2269.29996299999993425445" y="2373.00000000000000000000"/>
+            <coordinate x="2315.21953695609272472211" y="2373.00000000000000000000"/>
+            <coordinate x="2315.21953695609272472211" y="2373.00000000000000000000"/>
             <coordinate x="2289.29996299999993425445" y="2373.00000000000000000000"/>
           </coordinates>
           <geometries>

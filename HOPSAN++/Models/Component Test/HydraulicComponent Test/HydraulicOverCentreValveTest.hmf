@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5204" hopsancoreversion="0.6.x_r5205">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5334" hopsancoreversion="0.6.x_r5348">
   <requirements>
     <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+    <componentlibrary>HopsanExampleComponentLibrary</componentlibrary>
   </requirements>
   <info/>
   <system logsamples="2048" typename="Subsystem" name="HydraulicOverCentreValveTest">
@@ -12,8 +13,8 @@
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="1"/>
       <animation flowspeed="100"/>
-      <viewport x="2411.08" y="2535.17" zoom="0.842152"/>
-      <ports hidden="1"/>
+      <viewport x="2403.37" y="2528.64" zoom="0.842152"/>
+      <ports hidden="0"/>
       <names hidden="1"/>
       <graphics type="user"/>
       <scriptfile path=""/>
@@ -67,22 +68,14 @@
       </component>
       <component typename="HydraulicOverCenterValve" name="Over_Center_Valve">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="p_ref::Value"/>
-          <parameter unit="[Pa]" value="2e+006" type="double" name="p_ref"/>
-          <parameter unit="-" value="0" type="double" name="tao::Value"/>
+          <parameter unit="-" value="2e+006" type="double" name="p_ref::Value"/>
+          <parameter unit="-" value="10" type="double" name="p_h::Value"/>
+          <parameter unit="-" value="10000" type="double" name="a_ratio::Value"/>
           <parameter unit="[s]" value="0.01" type="double" name="tao"/>
-          <parameter unit="-" value="0" type="double" name="k_cs::Value"/>
           <parameter unit="[(m^3/s)/Pa]" value="1e-009" type="double" name="k_cs"/>
-          <parameter unit="-" value="0" type="double" name="k_cf::Value"/>
           <parameter unit="[(m^3/s)/Pa]" value="1e-009" type="double" name="k_cf"/>
-          <parameter unit="-" value="0" type="double" name="q_nom::Value"/>
           <parameter unit="[m^3/s]" value="0.001" type="double" name="q_nom"/>
-          <parameter unit="-" value="0" type="double" name="p_nom::Value"/>
           <parameter unit="[Pa]" value="7e+006" type="double" name="p_nom"/>
-          <parameter unit="-" value="0" type="double" name="p_h::Value"/>
-          <parameter unit="[Pa]" value="10" type="double" name="p_h"/>
-          <parameter unit="-" value="0" type="double" name="a_ratio::Value"/>
-          <parameter unit="[-]" value="10000" type="double" name="a_ratio"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -122,14 +115,10 @@
       </component>
       <component typename="SignalSoftStep" name="Soft_step_1">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="t_start::Value"/>
-          <parameter unit="[s]" value="2" type="double" name="t_start"/>
-          <parameter unit="-" value="0" type="double" name="t_end::Value"/>
-          <parameter unit="[s]" value="3" type="double" name="t_end"/>
-          <parameter unit="-" value="0" type="double" name="y_0::Value"/>
-          <parameter unit="[-]" value="1e7" type="double" name="y_0"/>
-          <parameter unit="-" value="0" type="double" name="y_A::Value"/>
-          <parameter unit="[-]" value="1e7" type="double" name="y_A"/>
+          <parameter unit="-" value="2" type="double" name="t_start::Value"/>
+          <parameter unit="-" value="3" type="double" name="t_end::Value"/>
+          <parameter unit="-" value="1e7" type="double" name="y_0::Value"/>
+          <parameter unit="-" value="1e7" type="double" name="y_A::Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
@@ -172,7 +161,6 @@
           <parameter unit="Pa" value="100000" type="double" name="P1::WaveVariable"/>
           <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
-          <parameter unit="-" value="0" type="double" name="p::Value"/>
           <parameter unit="Pa" value="100000" type="double" name="p"/>
         </parameters>
         <ports>
@@ -268,14 +256,10 @@
       </component>
       <component typename="SignalSoftStep" name="Soft_step">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="t_start::Value"/>
-          <parameter unit="[s]" value="1" type="double" name="t_start"/>
-          <parameter unit="-" value="0" type="double" name="t_end::Value"/>
-          <parameter unit="[s]" value="2" type="double" name="t_end"/>
+          <parameter unit="-" value="1" type="double" name="t_start::Value"/>
+          <parameter unit="-" value="2" type="double" name="t_end::Value"/>
           <parameter unit="-" value="0" type="double" name="y_0::Value"/>
-          <parameter unit="[-]" value="0" type="double" name="y_0"/>
-          <parameter unit="-" value="0" type="double" name="y_A::Value"/>
-          <parameter unit="[-]" value="1e7" type="double" name="y_A"/>
+          <parameter unit="-" value="1e7" type="double" name="y_A::Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
@@ -347,6 +331,20 @@
           <style>dashed</style>
         </hopsangui>
       </connect>
+      <connect endport="p" endcomponent="C_type_Pressure_Source_1" startport="out" startcomponent="Soft_step">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2237.50000000000000000000" y="2618.00000000000000000000"/>
+            <coordinate x="2357.74657900000011068187" y="2618.00000000000000000000"/>
+            <coordinate x="2357.74657900000011068187" y="2598.87434200000006967457"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
       <connect endport="P1" endcomponent="Flow_Rate_Transducer" startport="P1" startcomponent="C_type_Tank">
         <hopsangui>
           <coordinates>
@@ -383,6 +381,20 @@
             <coordinate x="2237.50000000000000000000" y="2618.00000000000000000000"/>
             <coordinate x="2607.81256600000006073969" y="2618.00000000000000000000"/>
             <coordinate x="2607.81256600000006073969" y="2558.81256600000006073969"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="p" endcomponent="C_type_Pressure_Source" startport="out" startcomponent="Soft_step_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2233.50000000000000000000" y="2456.87434200000006967457"/>
+            <coordinate x="2354.50052599999980884604" y="2456.87434200000006967457"/>
+            <coordinate x="2354.50052599999980884604" y="2437.87539500000002590241"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -461,34 +473,6 @@
             <geometry>vertical</geometry>
             <geometry>horizontal</geometry>
             <geometry>vertical</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="p" endcomponent="C_type_Pressure_Source" startport="out" startcomponent="Soft_step_1">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2233.50000000000000000000" y="2456.87434200000006967457"/>
-            <coordinate x="2354.50052599999980884604" y="2456.87434200000006967457"/>
-            <coordinate x="2354.50052599999980884604" y="2437.87539500000002590241"/>
-          </coordinates>
-          <geometries>
-            <geometry>vertical</geometry>
-            <geometry>horizontal</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="p" endcomponent="C_type_Pressure_Source_1" startport="out" startcomponent="Soft_step">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2237.50000000000000000000" y="2618.00000000000000000000"/>
-            <coordinate x="2357.74657900000011068187" y="2618.00000000000000000000"/>
-            <coordinate x="2357.74657900000011068187" y="2598.87434200000006967457"/>
-          </coordinates>
-          <geometries>
-            <geometry>vertical</geometry>
-            <geometry>horizontal</geometry>
           </geometries>
           <style>solid</style>
         </hopsangui>
