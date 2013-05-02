@@ -135,7 +135,7 @@ namespace hopsan {
             Zcb = (*mpND_Zcb);
             cload = (*mpND_cload);
             Zcload = (*mpND_Zcload);
-            xvin = (*mpXv);
+            xvin = (*mpXvIn);
 
             Cq = (*mpCq);
             rho = (*mpRho);
