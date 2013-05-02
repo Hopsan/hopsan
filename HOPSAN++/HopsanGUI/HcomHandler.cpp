@@ -38,6 +38,21 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole)
 
     mOptAlgorithm = Uninitialized;
 
+    //Setup local function pointers (used to evaluate expressions in SymHop)
+    mLocalFunctionPtrs.insert("aver", &(_funcAver));
+    mLocalFunctionPtrs.insert("size", &(_funcSize));
+    mLocalFunctionPtrs.insert("min", &(_funcMin));
+    mLocalFunctionPtrs.insert("max", &(_funcMax));
+    mLocalFunctionPtrs.insert("peek", &(_funcPeek));
+    mLocalFunctionPtrs.insert("rand", &(_funcRand));
+
+    createCommands();
+}
+
+
+//! @brief Creates all command objects that can be used in terminal
+void HcomHandler::createCommands()
+{
     HcomCommand helpCmd;
     helpCmd.cmd = "help";
     helpCmd.description.append("Shows help information");
@@ -383,14 +398,14 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole)
 
     HcomCommand timeCmd;
     timeCmd.cmd = "time";
-    timeCmd.description.append("Returns last simulation time in milliseconds.");
+    timeCmd.description.append("Returns last simulation time in milliseconds");
     timeCmd.help.append("Usage: simt [no arguments]");
     timeCmd.fnc = &HcomHandler::executeSimulationTimeCommand;
     mCmdList << timeCmd;
 
     HcomCommand optCmd;
     optCmd.cmd = "opt";
-    optCmd.description.append("Initialize an optimization.");
+    optCmd.description.append("Initialize an optimization");
     optCmd.help.append("Usage: opt [algorithm partype parnum parmin parmax -flags]");
     optCmd.help.append("\nAlgorithms:   Flags:");
     optCmd.help.append("\ncomplex       alpha");
@@ -399,30 +414,38 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole)
 
     HcomCommand callCmd;
     callCmd.cmd = "call";
-    callCmd.description.append("Calls a pre-defined function.");
+    callCmd.description.append("Calls a pre-defined function");
     callCmd.help.append("Usage: call [funcname]");
     callCmd.fnc = &HcomHandler::executeCallFunctionCommand;
     mCmdList << callCmd;
 
     HcomCommand echoCmd;
     echoCmd.cmd = "echo";
-    echoCmd.description.append("Sets terminal output on or off.");
+    echoCmd.description.append("Sets terminal output on or off");
     echoCmd.help.append("Usage: echo [on/off]");
     echoCmd.fnc = &HcomHandler::executeEchoCommand;
     mCmdList << echoCmd;
 
     HcomCommand editCmd;
     editCmd.cmd = "edit";
-    editCmd.description.append("Open file in external editor.");
+    editCmd.description.append("Open file in external editor");
     editCmd.help.append("Usage: edit [filepath]");
     editCmd.fnc = &HcomHandler::executeEditCommand;
     editCmd.group = "File Commands";
     mCmdList << editCmd;
+
+    HcomCommand lp1Cmd;
+    lp1Cmd.cmd = "lp1";
+    lp1Cmd.description.append("Applies low-pass filter of first degree to vector");
+    lp1Cmd.help.append("Usage: lp1 [var]");
+    lp1Cmd.fnc = &HcomHandler::executeLp1Command;
+    lp1Cmd.group = "Variable Commands";
+    mCmdList << lp1Cmd;
 }
 
 
 //! @brief Returns a list of available commands
-QStringList HcomHandler::getCommands()
+QStringList HcomHandler::getCommands() const
 {
     QStringList ret;
     for(int i=0; i<mCmdList.size(); ++i)
@@ -433,6 +456,22 @@ QStringList HcomHandler::getCommands()
 }
 
 
+//! @brief Returns a map with all local variables and their values
+QMap<QString, double> HcomHandler::getLocalVariables() const
+{
+    return mLocalVars;
+}
+
+
+//! @brief Returns a map with all local functions and pointers to them
+QMap<QString, SymHop::Function> HcomHandler::getLocalFunctionPointers() const
+{
+    return mLocalFunctionPtrs;
+}
+
+
+//! @brief Executes a HCOM command
+//! @param cmd The command entered by user
 void HcomHandler::executeCommand(QString cmd)
 {
     cmd = cmd.simplified();
@@ -477,14 +516,15 @@ void HcomHandler::executeCommand(QString cmd)
 }
 
 
-
-void HcomHandler::executeExitCommand(QString /*cmd*/)
+//! @brief Execute function for "exit" command
+void HcomHandler::executeExitCommand(const QString /*cmd*/)
 {
     gpMainWindow->close();
 }
 
 
-void HcomHandler::executeSimulateCommand(QString /*cmd*/)
+//! @brief Execute function for "sim" command
+void HcomHandler::executeSimulateCommand(const QString /*cmd*/)
 {
     ProjectTab *pCurrentTab = gpMainWindow->mpProjectTabs->getCurrentTab();
     if(pCurrentTab)
@@ -494,22 +534,29 @@ void HcomHandler::executeSimulateCommand(QString /*cmd*/)
 }
 
 
-void HcomHandler::executePlotCommand(QString cmd)
+//! @brief Execute function for "chpv" command
+void HcomHandler::executePlotCommand(const QString cmd)
 {
     changePlotVariables(cmd, -1);
 }
 
-void HcomHandler::executePlotLeftAxisCommand(QString cmd)
+
+//! @brief Execute function for "chpvl" command
+void HcomHandler::executePlotLeftAxisCommand(const QString cmd)
 {
     changePlotVariables(cmd, 0);
 }
 
-void HcomHandler::executePlotRightAxisCommand(QString cmd)
+
+//! @brief Execute function for "chpvr" command
+void HcomHandler::executePlotRightAxisCommand(const QString cmd)
 {
     changePlotVariables(cmd, 1);
 }
 
-void HcomHandler::executeDisplayParameterCommand(QString cmd)
+
+//! @brief Execute function for "disp" command
+void HcomHandler::executeDisplayParameterCommand(const QString cmd)
 {
     QStringList parameters;
     getParameters(cmd, parameters);
@@ -538,7 +585,8 @@ void HcomHandler::executeDisplayParameterCommand(QString cmd)
 }
 
 
-void HcomHandler::executeChangeParameterCommand(QString cmd)
+//! @brief Execute function for "chpa" command
+void HcomHandler::executeChangeParameterCommand(const QString cmd)
 {
     QStringList splitCmd;
     bool withinQuotations = false;
@@ -608,12 +656,12 @@ void HcomHandler::executeChangeParameterCommand(QString cmd)
 }
 
 
-//Change Simulation Settings
-//Usage: CHSS [starttime] [timestep] [stoptime] ([samples])
-void HcomHandler::executeChangeSimulationSettingsCommand(QString cmd)
+//! @brief Execute function for "chss" command
+void HcomHandler::executeChangeSimulationSettingsCommand(const QString cmd)
 {
-    cmd.remove("\"");
-    QStringList splitCmd = cmd.split(" ");
+    QString temp = cmd;
+    temp.remove("\"");
+    QStringList splitCmd = temp.split(" ");
     if(splitCmd.size() == 3 || splitCmd.size() == 4)
     {
         bool allOk=true;
@@ -658,12 +706,12 @@ void HcomHandler::executeChangeSimulationSettingsCommand(QString cmd)
 }
 
 
-//! @brief Executes the "help" command, showing help to the user
-//! @param cmd Command with first word removed
-void HcomHandler::executeHelpCommand(QString cmd)
+//! @brief Execute function for "help" command
+void HcomHandler::executeHelpCommand(const QString cmd)
 {
-    cmd.remove(" ");
-    if(cmd.isEmpty())
+    QString temp=cmd;
+    temp.remove(" ");
+    if(temp.isEmpty())
     {
         mpConsole->print("-------------------------------------------------------------------------");
         mpConsole->print(" Hopsan HCOM Terminal v0.1");
@@ -705,6 +753,40 @@ void HcomHandler::executeHelpCommand(QString cmd)
                 }
             }
         }
+        commands.append("\n Custom Functions:\n\n");
+        commands.append("   lp1()");
+        for(int i=0; i<n+3-5; ++i)
+            commands.append(" ");
+        commands.append("Low-pass filter variable\n");
+        commands.append("   ddt()");
+        for(int i=0; i<n+3-5; ++i)
+            commands.append(" ");
+        commands.append("Differentiate variable\n");
+        commands.append("   aver()");
+        for(int i=0; i<n+3-6; ++i)
+            commands.append(" ");
+        commands.append("Calculate average value of vector\n");
+        commands.append("   min()");
+        for(int i=0; i<n+3-5; ++i)
+            commands.append(" ");
+        commands.append("Calculate minimum of vector\n");
+        commands.append("   max()");
+        for(int i=0; i<n+3-5; ++i)
+            commands.append(" ");
+        commands.append("Calculate maximum of vector\n");
+        commands.append("   size()");
+        for(int i=0; i<n+3-5; ++i)
+            commands.append(" ");
+        commands.append("Returns the size of a vector\n");
+        commands.append("   rand()");
+        for(int i=0; i<n+3-5; ++i)
+            commands.append(" ");
+        commands.append("Generate a random value between 0 and 1\n");
+        commands.append("   peek()");
+        for(int i=0; i<n+3-5; ++i)
+            commands.append(" ");
+        commands.append("Return vector value at specified index\n");
+
         mpConsole->print(commands);
         mpConsole->print(" Type: \"help [command]\" for more information about a specific command.");
         mpConsole->print("-------------------------------------------------------------------------");
@@ -714,7 +796,7 @@ void HcomHandler::executeHelpCommand(QString cmd)
         int idx = -1;
         for(int i=0; i<mCmdList.size(); ++i)
         {
-            if(mCmdList[i].cmd == cmd) { idx = i; }
+            if(mCmdList[i].cmd == temp) { idx = i; }
         }
 
         if(idx < 0)
@@ -740,9 +822,8 @@ void HcomHandler::executeHelpCommand(QString cmd)
 }
 
 
-//! @brief Executes the "exec" command, which excutes a script file
-//! @param cmd Command with first word removed
-void HcomHandler::executeRunScriptCommand(QString cmd)
+//! @brief Execute function for "exec" command
+void HcomHandler::executeRunScriptCommand(const QString cmd)
 {
     QStringList splitCmd = cmd.split(" ");
 
@@ -807,9 +888,8 @@ void HcomHandler::executeRunScriptCommand(QString cmd)
 }
 
 
-//! @brief Executes the "wrhi" command, that writes history to specified file
-//! @param cmd Command with fist word removed
-void HcomHandler::executeWriteHistoryToFileCommand(QString cmd)
+//! @brief Execute function for "wrhi" command
+void HcomHandler::executeWriteHistoryToFileCommand(const QString cmd)
 {
     if(cmd.isEmpty()) { return; }
 
@@ -839,33 +919,29 @@ void HcomHandler::executeWriteHistoryToFileCommand(QString cmd)
 }
 
 
-//! @brief Executes print command
-//! @todo Implement
-void HcomHandler::executePrintCommand(QString /*cmd*/)
+//! @brief Execute function for "print" command
+void HcomHandler::executePrintCommand(const QString /*cmd*/)
 {
     mpConsole->printErrorMessage("Function not yet implemented.","",false);
 }
 
 
-//! @brief Executes the chpw command, changing current plot window
-//! @param cmd Command with first word removed
-void HcomHandler::executeChangePlotWindowCommand(QString cmd)
+//! @brief Execute function for "chpw" command
+void HcomHandler::executeChangePlotWindowCommand(const QString cmd)
 {
     mCurrentPlotWindowName = cmd;
 }
 
 
-//! @brief Executes the dipw command, displaying current plot window
-//! @param cmd Command with first word removed
-void HcomHandler::executeDisplayPlotWindowCommand(QString /*cmd*/)
+//! @brief Execute function for "dipw" command
+void HcomHandler::executeDisplayPlotWindowCommand(const QString /*cmd*/)
 {
     mpConsole->print(mCurrentPlotWindowName);
 }
 
 
-//! @brief Executes the "disp" command, displaying all variables matching a filter pattern
-//! @param cmd Name filter
-void HcomHandler::executeDisplayVariablesCommand(QString cmd)
+//! @brief Execute function for "disp" command
+void HcomHandler::executeDisplayVariablesCommand(const QString cmd)
 {
     QStringList output;
     getVariables(cmd, output);
@@ -877,9 +953,8 @@ void HcomHandler::executeDisplayVariablesCommand(QString cmd)
 }
 
 
-//! @brief Executes the "peek" command, allowing user to read the value at a position in a data vector
-//! @param cmd Command (with the first command word already removed)
-void HcomHandler::executePeekCommand(QString cmd)
+//! @brief Execute function for "peek" command
+void HcomHandler::executePeekCommand(const QString cmd)
 {
     QStringList split = cmd.split(" ");
     if(split.size() != 2)
@@ -918,9 +993,8 @@ void HcomHandler::executePeekCommand(QString cmd)
 }
 
 
-//! @brief Executes the "poke" command, allowing user to write a new value at a position in a data vector
-//! @param cmd Command (with the first command word already removed)
-void HcomHandler::executePokeCommand(QString cmd)
+//! @brief Execute function for "poke" command
+void HcomHandler::executePokeCommand(const QString cmd)
 {
     QStringList split = cmd.split(" ");
     if(split.size() != 3)
@@ -961,7 +1035,8 @@ void HcomHandler::executePokeCommand(QString cmd)
 }
 
 
-void HcomHandler::executeDefineAliasCommand(QString cmd)
+//! @brief Execute function for "alias" command
+void HcomHandler::executeDefineAliasCommand(const QString cmd)
 {
     if(splitWithRespectToQuotations(cmd, ' ').size() != 2)
     {
@@ -987,7 +1062,8 @@ void HcomHandler::executeDefineAliasCommand(QString cmd)
 }
 
 
-void HcomHandler::executeSetCommand(QString cmd)
+//! @brief Execute function for "set" command
+void HcomHandler::executeSetCommand(const QString cmd)
 {
     QStringList splitCmd = cmd.split(" ");
     if(splitCmd.size() != 2)
@@ -1021,14 +1097,16 @@ void HcomHandler::executeSetCommand(QString cmd)
 }
 
 
-void HcomHandler::executeSaveToPloCommand(QString cmd)
+//! @brief Execute function for "sapl" command
+void HcomHandler::executeSaveToPloCommand(const QString cmd)
 {
-    if(!cmd.contains(" "))
+    QStringList split = cmd.split(" ");
+    if(split.size() < 2)
     {
         mpConsole->printErrorMessage("Too few arguments.", "", false);
         return;
     }
-    QString path = cmd.split(" ").first();
+    QString path = split.first();
 
     if(!path.contains("/"))
     {
@@ -1039,24 +1117,24 @@ void HcomHandler::executeSaveToPloCommand(QString cmd)
     path = dir+path.right(path.size()-path.lastIndexOf("/"));
 
 
-    cmd = cmd.right(cmd.size()-path.size()-1);
+    QString temp = cmd.right(cmd.size()-path.size()-1);
 
     QStringList splitCmdMajor;
     bool withinQuotations = false;
     int start=0;
-    for(int i=0; i<cmd.size(); ++i)
+    for(int i=0; i<temp.size(); ++i)
     {
-        if(cmd[i] == '\"')
+        if(temp[i] == '\"')
         {
             withinQuotations = !withinQuotations;
         }
-        if(cmd[i] == ' ' && !withinQuotations)
+        if(temp[i] == ' ' && !withinQuotations)
         {
-            splitCmdMajor.append(cmd.mid(start, i-start));
+            splitCmdMajor.append(temp.mid(start, i-start));
             start = i+1;
         }
     }
-    splitCmdMajor.append(cmd.right(cmd.size()-start));
+    splitCmdMajor.append(temp.right(temp.size()-start));
     QStringList allVariables;
     for(int i=0; i<splitCmdMajor.size(); ++i)
     {
@@ -1133,7 +1211,8 @@ void HcomHandler::executeSaveToPloCommand(QString cmd)
 }
 
 
-void HcomHandler::executeLoadModelCommand(QString cmd)
+//! @brief Execute function for "load" command
+void HcomHandler::executeLoadModelCommand(const QString cmd)
 {
     QString path = cmd;
     if(!path.contains("/"))
@@ -1148,37 +1227,67 @@ void HcomHandler::executeLoadModelCommand(QString cmd)
 }
 
 
-void HcomHandler::executeLoadRecentCommand(QString /*cmd*/)
+//! @brief Execute function for "loadr" command
+void HcomHandler::executeLoadRecentCommand(const QString /*cmd*/)
 {
     gpMainWindow->mpProjectTabs->loadModel(gConfig.getRecentModels().first());
 }
 
-void HcomHandler::executePwdCommand(QString /*cmd*/)
+
+//! @brief Execute function for "pwd" command
+void HcomHandler::executePwdCommand(const QString /*cmd*/)
 {
     mpConsole->print(mPwd);
 }
 
-void HcomHandler::executeChangeDirectoryCommand(QString cmd)
+
+//! @brief Execute function for "cd" command
+void HcomHandler::executeChangeDirectoryCommand(const QString cmd)
 {
+    if(getNumberOfArguments(cmd) != 1)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments", "", false);
+        return;
+    }
     mPwd = QDir().cleanPath(mPwd+"/"+cmd);
     mpConsole->print(mPwd);
 }
 
-void HcomHandler::executeListFilesCommand(QString cmd)
+
+//! @brief Execute function for "ls" command
+void HcomHandler::executeListFilesCommand(const QString cmd)
 {
-    if(cmd.isEmpty())
+    if(getNumberOfArguments(cmd) != 0)
     {
-        cmd = "*";
+        mpConsole->printErrorMessage("Wrong number of arguments", "", false);
+        return;
     }
-    QStringList contents = QDir(mPwd).entryList(QStringList() << cmd);
+
+    QStringList contents;
+    if(!cmd.isEmpty())
+    {
+        contents = QDir(mPwd).entryList(QStringList() << "*");
+    }
+    else
+    {
+        contents = QDir(mPwd).entryList(QStringList() << cmd);
+    }
     for(int c=0; c<contents.size(); ++c)
     {
         mpConsole->print(contents[c]);
     }
 }
 
-void HcomHandler::executeCloseModelCommand(QString /*cmd*/)
+
+//! @brief Execute function for "close" command
+void HcomHandler::executeCloseModelCommand(const QString cmd)
 {
+    if(getNumberOfArguments(cmd) != 0)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments", "", false);
+        return;
+    }
+
     if(gpMainWindow->mpProjectTabs->count() > 0)
     {
         gpMainWindow->mpProjectTabs->closeProjectTab(gpMainWindow->mpProjectTabs->currentIndex());
@@ -1186,20 +1295,29 @@ void HcomHandler::executeCloseModelCommand(QString /*cmd*/)
 }
 
 
-void HcomHandler::executeChangeTabCommand(QString cmd)
+//! @brief Execute function for "chtab" command
+void HcomHandler::executeChangeTabCommand(const QString cmd)
 {
+    if(getNumberOfArguments(cmd) != 1)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments", "", false);
+        return;
+    }
+
     gpMainWindow->mpProjectTabs->setCurrentIndex(cmd.toInt());
 }
 
 
-void HcomHandler::executeAddComponentCommand(QString cmd)
+//! @brief Execute function for "adco" command
+void HcomHandler::executeAddComponentCommand(const QString cmd)
 {
-    QStringList args = cmd.split(" ");
-    if(args.size() < 5)
+    if(getNumberOfArguments(cmd) < 5)
     {
-        mpConsole->printErrorMessage("Too few arguments.", "", false);
+        mpConsole->printErrorMessage("Wrong number of arguments", "", false);
         return;
     }
+    QStringList args = getArguments(cmd);
+
     QString typeName = args[0];
     QString name = args[1];
     args.removeFirst();
@@ -1319,9 +1437,10 @@ void HcomHandler::executeAddComponentCommand(QString cmd)
 }
 
 
-void HcomHandler::executeConnectCommand(QString cmd)
+//! @brief Execute function for "coco" command
+void HcomHandler::executeConnectCommand(const QString cmd)
 {
-    QStringList args = cmd.split(" ");
+    QStringList args = getArguments(cmd);
     if(args.size() != 4)
     {
         mpConsole->printErrorMessage("Wrong number of arguments", "", false);
@@ -1348,13 +1467,20 @@ void HcomHandler::executeConnectCommand(QString cmd)
 }
 
 
-void HcomHandler::executeCreateModelCommand(QString /*cmd*/)
+//! @brief Execute function for "crmo" command
+void HcomHandler::executeCreateModelCommand(const QString cmd)
 {
+    if(getNumberOfArguments(cmd) != 0)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments", "", false);
+        return;
+    }
     gpMainWindow->mpProjectTabs->addNewProjectTab();
 }
 
 
-void HcomHandler::executeExportToFMUCommand(QString cmd)
+//! @brief Execute function for "fmu" command
+void HcomHandler::executeExportToFMUCommand(const QString cmd)
 {
     if(getNumberOfArguments(cmd) != 1)
     {
@@ -1365,7 +1491,9 @@ void HcomHandler::executeExportToFMUCommand(QString cmd)
 }
 
 
-void HcomHandler::executeAverageCommand(QString cmd)
+//! @brief Execute function for "aver" command
+//! @todo Remove?
+void HcomHandler::executeAverageCommand(const QString cmd)
 {
     QStringList split = splitWithRespectToQuotations(cmd, ' ');
     if(split.size() != 1)
@@ -1387,7 +1515,9 @@ void HcomHandler::executeAverageCommand(QString cmd)
 }
 
 
-void HcomHandler::executeMinCommand(QString cmd)
+//! @brief Execute function for "min" command
+//! @todo Remove?
+void HcomHandler::executeMinCommand(const QString cmd)
 {
     QStringList split = splitWithRespectToQuotations(cmd, ' ');
     if(split.size() != 1)
@@ -1409,7 +1539,9 @@ void HcomHandler::executeMinCommand(QString cmd)
 }
 
 
-void HcomHandler::executeMaxCommand(QString cmd)
+//! @brief Execute function for "max" command
+//! @todo Remove?
+void HcomHandler::executeMaxCommand(const QString cmd)
 {
     QStringList split = splitWithRespectToQuotations(cmd, ' ');
     if(split.size() != 1)
@@ -1431,7 +1563,8 @@ void HcomHandler::executeMaxCommand(QString cmd)
 }
 
 
-void HcomHandler::executeChangeTimestepCommand(QString cmd)
+//! @brief Execute function for "chts" command
+void HcomHandler::executeChangeTimestepCommand(const QString cmd)
 {
     QStringList split = splitWithRespectToQuotations(cmd, ' ');
     if(split.size() != 2)
@@ -1462,7 +1595,8 @@ void HcomHandler::executeChangeTimestepCommand(QString cmd)
 }
 
 
-void HcomHandler::executeInheritTimestepCommand(QString cmd)
+//! @brief Execute function for "ihts" command
+void HcomHandler::executeInheritTimestepCommand(const QString cmd)
 {
     QStringList split = splitWithRespectToQuotations(cmd, ' ');
     if(split.size() != 1)
@@ -1483,7 +1617,10 @@ void HcomHandler::executeInheritTimestepCommand(QString cmd)
     }
 }
 
-void HcomHandler::executeRandomCommand(QString cmd)
+
+//! @brief Execute function for "rand" command
+//! @todo Remove?
+void HcomHandler::executeRandomCommand(const QString cmd)
 {
     QStringList split = splitWithRespectToQuotations(cmd, ' ');
     if(split.size() != 2)
@@ -1509,7 +1646,10 @@ void HcomHandler::executeRandomCommand(QString cmd)
     returnScalar(min+rd*(max-min));    //Random value between min and max
 }
 
-void HcomHandler::executeFloorCommand(QString cmd)
+
+//! @brief Execute function for "floor" command
+//! @todo Remove?
+void HcomHandler::executeFloorCommand(const QString cmd)
 {
     QStringList split = splitWithRespectToQuotations(cmd, ' ');
     if(split.size() != 1)
@@ -1529,7 +1669,10 @@ void HcomHandler::executeFloorCommand(QString cmd)
     returnScalar(floor(value));
 }
 
-void HcomHandler::executeCeilCommand(QString cmd)
+
+//! @brief Execute function for "ceil" command
+//! @todo Remove?
+void HcomHandler::executeCeilCommand(const QString cmd)
 {
     QStringList split = splitWithRespectToQuotations(cmd, ' ');
     if(split.size() != 1)
@@ -1549,7 +1692,10 @@ void HcomHandler::executeCeilCommand(QString cmd)
     returnScalar(ceil(value));
 }
 
-void HcomHandler::executeRoundCommand(QString cmd)
+
+//! @brief Execute function for "round" command
+//! @todo Remove?
+void HcomHandler::executeRoundCommand(const QString cmd)
 {
     QStringList split = splitWithRespectToQuotations(cmd, ' ');
     if(split.size() != 1)
@@ -1569,7 +1715,10 @@ void HcomHandler::executeRoundCommand(QString cmd)
     returnScalar(round(value));
 }
 
-void HcomHandler::executeSizeCommand(QString cmd)
+
+//! @brief Execute function for "size" command
+//! @todo Remove?
+void HcomHandler::executeSizeCommand(const QString cmd)
 {
     QStringList split = cmd.split(" ");
     if(split.size() != 1)
@@ -1591,17 +1740,19 @@ void HcomHandler::executeSizeCommand(QString cmd)
     }
 }
 
-void HcomHandler::executeBodeCommand(QString cmd)
+
+//! @brief Execute function for "bode" command
+void HcomHandler::executeBodeCommand(const QString cmd)
 {
-    QStringList split = cmd.split(" ");
-    if(split.size() < 2 || split.size() > 4)
+    int nArgs = getNumberOfArguments(cmd);
+    if(nArgs < 2 || nArgs > 4)
     {
         mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
         return;
     }
 
-    QString var1 = split[0];
-    QString var2 = split[1];
+    QString var1 = getArgument(cmd,0);
+    QString var2 = getArgument(cmd,1);
     SharedLogVariableDataPtrT pData1 = getVariablePtr(var1);
     SharedLogVariableDataPtrT pData2 = getVariablePtr(var2);
     if(!pData1 || !pData2)
@@ -1610,23 +1761,26 @@ void HcomHandler::executeBodeCommand(QString cmd)
         return;
     }
     int fMax = 500;
-    if(split.size() > 2)
+    if(nArgs > 2)
     {
-        fMax = split[2].toInt();
+        fMax = getArgument(cmd,2).toInt();
     }
 
     gpPlotHandler->createNewPlotWindowOrGetCurrentOne("Bode plot")->createBodePlot(pData1, pData2, fMax);
 }
 
-void HcomHandler::executeAbsCommand(QString cmd)
+
+//! @brief Execute function for "abs" command
+void HcomHandler::executeAbsCommand(const QString cmd)
 {
-    QStringList split = cmd.split(" ");
-    if(split.size() != 1)
+    if(getNumberOfArguments(cmd) != 1)
     {
         mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
         return;
     }
-    SharedLogVariableDataPtrT var = getVariablePtr(split[0]);
+    QString varName = getArgument(cmd,0);
+
+    SharedLogVariableDataPtrT var = getVariablePtr(varName);
     if(var)
     {
         var.data()->absData();
@@ -1634,7 +1788,7 @@ void HcomHandler::executeAbsCommand(QString cmd)
     else
     {
         bool ok;
-        double retval = fabs(getNumber(split[0], &ok));
+        double retval = fabs(getNumber(varName, &ok));
         if(ok) returnScalar(retval);
         else
         {
@@ -1643,10 +1797,12 @@ void HcomHandler::executeAbsCommand(QString cmd)
     }
 }
 
-void HcomHandler::executeSimulationTimeCommand(QString cmd)
+
+//! @brief Execute function for "time" command
+//! @todo Convert to function?
+void HcomHandler::executeSimulationTimeCommand(const QString cmd)
 {
-    cmd.remove(" ");
-    if(!cmd.isEmpty())
+    if(getNumberOfArguments(cmd) != 0)
     {
         mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
         return;
@@ -1660,25 +1816,27 @@ void HcomHandler::executeSimulationTimeCommand(QString cmd)
     returnScalar(gpMainWindow->mpProjectTabs->getCurrentTab()->getLastSimulationTime());
 }
 
-void HcomHandler::executeOptimizationCommand(QString cmd)
-{
-    QStringList split = cmd.split(" ");
-    if(split.size() == 1 && split[0] == "undo")
-    {
-        if(mOptAlgorithm == Uninitialized)
-        {
-            mpConsole->printErrorMessage("Optimization not initialized.", "", false);
-            return;
-        }
-        if(mOptAlgorithm != Complex)
-        {
-            mpConsole->printErrorMessage("Only available for complex algorithm.", "", false);
-            return;
-        }
 
-        mOptParameters = mOptOldParameters;
-        return;
-    }
+//! @brief Execute function for "opt" command
+void HcomHandler::executeOptimizationCommand(const QString cmd)
+{
+    QStringList split = getArguments(cmd);
+//    if(split.size() == 1 && split[0] == "undo")
+//    {
+//        if(mOptAlgorithm == Uninitialized)
+//        {
+//            mpConsole->printErrorMessage("Optimization not initialized.", "", false);
+//            return;
+//        }
+//        if(mOptAlgorithm != Complex)
+//        {
+//            mpConsole->printErrorMessage("Only available for complex algorithm.", "", false);
+//            return;
+//        }
+
+//        mOptParameters = mOptOldParameters;
+//        return;
+//    }
     if(split.size() == 1 && split[0] == "worst")
     {
         if(mOptAlgorithm == Uninitialized)
@@ -1805,21 +1963,23 @@ void HcomHandler::executeOptimizationCommand(QString cmd)
 
     if(split.size() == 1 && split[0] == "run")
     {
-        opt_complex_init();
-        opt_complex_run();
+        optComplexInit();
+        optComplexRun();
     }
 }
 
-void HcomHandler::executeCallFunctionCommand(QString cmd)
+
+//! @brief Execute function for "call" command
+void HcomHandler::executeCallFunctionCommand(const QString cmd)
 {
-    QStringList split = cmd.split(" ");
-    if(split.size() != 1)
+    if(getNumberOfArguments(cmd) != 1)
     {
         mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
         return;
     }
+    QString funcName = getArgument(cmd,0);
 
-    if(!mFunctions.contains(split[0]))
+    if(!mFunctions.contains(funcName))
     {
         mpConsole->printErrorMessage("Undefined function.", "", false);
         return;
@@ -1827,7 +1987,7 @@ void HcomHandler::executeCallFunctionCommand(QString cmd)
 
     bool *abort = new bool;
     *abort = false;
-    runScriptCommands(mFunctions.find(split[0]).value(), abort);
+    runScriptCommands(mFunctions.find(funcName).value(), abort);
     if(*abort)
     {
         mpConsole->print("Function aborted");
@@ -1837,20 +1997,23 @@ void HcomHandler::executeCallFunctionCommand(QString cmd)
     returnScalar(0);
 }
 
-void HcomHandler::executeEchoCommand(QString cmd)
+
+//! @brief Execute function for "echo" command
+void HcomHandler::executeEchoCommand(const QString cmd)
 {
-    QStringList split = cmd.split(" ");
-    if(split.size() != 1)
+    if(getNumberOfArguments(cmd) != 1)
     {
         mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
         return;
     }
+    QString arg = getArgument(cmd,0);
 
-    if(split[0] == "on")
+
+    if(arg == "on")
     {
         mpConsole->setDontPrint(false);
     }
-    else if(split[0] == "off")
+    else if(arg == "off")
     {
         mpConsole->setDontPrint(true);
     }
@@ -1860,40 +2023,34 @@ void HcomHandler::executeEchoCommand(QString cmd)
     }
 }
 
-void HcomHandler::executeEditCommand(QString cmd)
+
+//! @brief Execute function for "edit" command
+void HcomHandler::executeEditCommand(const QString cmd)
 {
-    QStringList split = cmd.split(" ");
-    if(split.size() != 1)
+    if(getNumberOfArguments(cmd) != 1)
     {
         mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
         return;
     }
 
-    QDesktopServices::openUrl(QUrl(split[0]));
+    QString path = getArgument(cmd,0);
+    QDesktopServices::openUrl(QUrl(path));
 }
+
+
+void HcomHandler::executeLp1Command(const QString /*cmd*/)
+{
+
+}
+
 
 
 //! @brief Changes plot variables on specified axes
 //! @param cmd Command containing the plot variables
 //! @param axis Axis specification (0=left, 1=right, -1=both, separeted by "-r")
-void HcomHandler::changePlotVariables(QString cmd, int axis)
+void HcomHandler::changePlotVariables(const QString cmd, const int axis) const
 {
-    QStringList splitCmdMajor;
-    bool withinQuotations = false;
-    int start=0;
-    for(int i=0; i<cmd.size(); ++i)
-    {
-        if(cmd[i] == '\"')
-        {
-            withinQuotations = !withinQuotations;
-        }
-        if(cmd[i] == ' ' && !withinQuotations)
-        {
-            splitCmdMajor.append(cmd.mid(start, i-start));
-            start = i+1;
-        }
-    }
-    splitCmdMajor.append(cmd.right(cmd.size()-start));
+    QStringList varNames = getArguments(cmd);
 
     if(axis == -1 || axis == 0)
     {
@@ -1913,16 +2070,16 @@ void HcomHandler::changePlotVariables(QString cmd, int axis)
     {
         axisId = QwtPlot::yRight;
     }
-    for(int s=0; s<splitCmdMajor.size(); ++s)
+    for(int s=0; s<varNames.size(); ++s)
     {
-        if(axis == -1 && splitCmdMajor[s] == "-r")
+        if(axis == -1 && varNames[s] == "-r")
         {
             axisId = QwtPlot::yRight;
         }
         else
         {
             QStringList variables;
-            getVariables(splitCmdMajor[s], variables);
+            getVariables(varNames[s], variables);
             for(int v=0; v<variables.size(); ++v)
             {
                 addPlotCurve(variables[v], axisId);
@@ -1932,14 +2089,12 @@ void HcomHandler::changePlotVariables(QString cmd, int axis)
 }
 
 
-
 //! @brief Adds a plot curve to specified axis in current plot
 //! @param cmd Name of variable
 //! @param axis Axis to add curve to
-void HcomHandler::addPlotCurve(QString cmd, int axis)
+void HcomHandler::addPlotCurve(QString cmd, const int axis) const
 {
     cmd.remove("\"");
-    //QStringList splitCmd = cmd.split(".");
 
     SystemContainer *pCurrentSystem = gpMainWindow->mpProjectTabs->getCurrentTab()->getTopLevelSystem();
     if(!pCurrentSystem) { return; }
@@ -1957,7 +2112,7 @@ void HcomHandler::addPlotCurve(QString cmd, int axis)
 
 //! @brief Removes all curves at specified axis in current plot
 //! @param axis Axis to remove from
-void HcomHandler::removePlotCurves(int axis)
+void HcomHandler::removePlotCurves(const int axis) const
 {
     PlotWindow *pPlotWindow = gpPlotHandler->getPlotWindow(mCurrentPlotWindowName);
     if(pPlotWindow)
@@ -1967,15 +2122,8 @@ void HcomHandler::removePlotCurves(int axis)
 }
 
 
-QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, bool *evalOk)
+QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, bool *evalOk) const
 {
-//    if(expr == "ans")
-//    {
-//        *returnType = mRetvalType;
-//        *evalOk = true;
-//        return mLocalVars.find(a);
-//    }
-
     *evalOk = true;
     *returnType = Scalar;
 
@@ -2053,15 +2201,53 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
         return variables.first();
     }
 
-    //Evaluate expression using SymHop
-    SymHop::Expression symHopExpr = SymHop::Expression(expr);
-
-    //Multiplication between data vector and scalar
+    //Vector functions
     LogDataHandler *pLogData=0;
     if(gpMainWindow->mpProjectTabs->count() > 0)
     {
         pLogData = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler();
     }
+    if(expr.startsWith("ddt(") && expr.endsWith(")"))
+    {
+        QString args = expr.mid(4, expr.size()-5);
+        if(!args.contains(","))
+        {
+            *returnType = DataVector;
+            SharedLogVariableDataPtrT var = getVariablePtr(args);
+            return pLogData->diffVariables(var.data()->getFullVariableName(), "time");
+        }
+        else
+        {
+            *returnType = DataVector;
+            SharedLogVariableDataPtrT var1 = getVariablePtr(args.section(",",0,0));
+            SharedLogVariableDataPtrT var2 = getVariablePtr(args.section(",",1,1));
+            return pLogData->diffVariables(var1.data()->getFullVariableName(), var2.data()->getFullVariableName());
+        }
+    }
+    else if(expr.startsWith("lp1(") && expr.endsWith(")"))
+    {
+        QString args = expr.mid(4, expr.size()-5);
+        if(args.count(",")==1)
+        {
+            double freq = args.section(",",1,1).toDouble();
+            *returnType = DataVector;
+            SharedLogVariableDataPtrT var = getVariablePtr(args.section(",",0,0));
+            return pLogData->lowPassFilterVariable(var.data()->getFullVariableName(), "time", freq);
+        }
+        else if(args.count(",") == 2)
+        {
+            double freq = args.section(",",2,2).toDouble();
+            *returnType = DataVector;
+            SharedLogVariableDataPtrT var = getVariablePtr(args.section(",",0,0));
+            SharedLogVariableDataPtrT timeVar = getVariablePtr(args.section(",",1,1));
+            return pLogData->lowPassFilterVariable(var.data()->getFullVariableName(), timeVar.data()->getFullVariableName(), freq);
+        }
+    }
+
+    //Evaluate expression using SymHop
+    SymHop::Expression symHopExpr = SymHop::Expression(expr);
+
+    //Multiplication between data vector and scalar
     *returnType = DataVector;
     if(symHopExpr.getFactors().size() == 2 && pLogData)
     {
@@ -2115,15 +2301,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
 
     *returnType = Scalar;
 
-    QMap<QString, SymHop::Function> funcMap;
-    funcMap.insert("aver", &(_funcAver));
-    funcMap.insert("size", &(_funcSize));
-    funcMap.insert("min", &(_funcMin));
-    funcMap.insert("max", &(_funcMax));
-    funcMap.insert("peek", &(_funcPeek));
-    funcMap.insert("rand", &(_funcRand));
-
-    return QString::number(symHopExpr.evaluate(mLocalVars, funcMap));
+    return QString::number(symHopExpr.evaluate(mLocalVars, mLocalFunctionPtrs));
 }
 
 
@@ -2429,7 +2607,10 @@ void HcomHandler::getParameters(QString str, ModelObject* pComponent, QStringLis
 }
 
 
-void HcomHandler::getParameters(QString str, QStringList &parameters)
+//! @brief Generates a list of parameters based on wildcards
+//! @param str String with (or without) wildcards
+//! @param parameters Reference to list of parameters
+void HcomHandler::getParameters(const QString str, QStringList &parameters)
 {
     if(gpMainWindow->mpProjectTabs->count() == 0) { return; }
 
@@ -2467,7 +2648,8 @@ void HcomHandler::getParameters(QString str, QStringList &parameters)
         allParameters.append(systemParameters[s]);
     }
 
-    QStringList splitStr = str.split("*");
+    QString temp = str;
+    QStringList splitStr = temp.split("*");
     for(int p=0; p<allParameters.size(); ++p)
     {
         bool ok=true;
@@ -2509,7 +2691,7 @@ void HcomHandler::getParameters(QString str, QStringList &parameters)
 }
 
 
-
+//! @brief Returns the value of specified parameter
 QString HcomHandler::getParameterValue(QString parameter) const
 {
     parameter.remove("\"");
@@ -2658,30 +2840,18 @@ QString HcomHandler::getWorkingDirectory() const
 //! @returns True if it is a correct exrpession, otherwise false
 bool HcomHandler::evaluateArithmeticExpression(QString cmd)
 {
-    //cmd.replace("==", "§§§§§");
     cmd.replace("**", "%%%%%");
 
-/*    if(cmd.count("=") > 1)
-    {
-        mpConsole->print("Multiple assignments not allowed.");
-        return false;
-    }
-    else */
-
-//    cmd.replace(">=", "!!!gtoe!!!");
-//    cmd.replace("<=", "!!!stoe!!!");
-
-//    cmd.replace("!!!gtoe!!!", ">=");
-//    cmd.replace("!!!stoe!!!", "<=");
     if(cmd.endsWith("*")) { return false; }
 
     SymHop::Expression expr = SymHop::Expression(cmd);
 
-    //if(cmd.count("=") == 1)     //Assignment
+    //Assignment  (handle separately to update local variables not known to SymHop)
     if(expr.isAssignment())
     {
         QString left = expr.getLeft()->toString();
 
+        //Make sure left side is an acceptable variable name
         bool leftIsOk = left[0].isLetter();
         for(int i=1; i<left.size(); ++i)
         {
@@ -2691,13 +2861,13 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
             }
         }
 
-        QStringList plotDataNames;
-        if(gpMainWindow->mpProjectTabs->count() > 0)
-        {
-            LogDataHandler *pLogData = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler();
-            plotDataNames = pLogData->getPlotDataNames();
-        }
-        if(!leftIsOk && !plotDataNames.contains(left))
+//        QStringList plotDataNames;
+//        if(gpMainWindow->mpProjectTabs->count() > 0)
+//        {
+//            LogDataHandler *pLogData = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler();
+//            plotDataNames = pLogData->getPlotDataNames();
+//        }
+//        if(!leftIsOk && !plotDataNames.contains(left))
         if(!leftIsOk && (gpMainWindow->mpProjectTabs->count() == 0 || !getVariablePtr(left)))
         {
             mpConsole->printErrorMessage("Illegal variable name.","",false);
@@ -2707,13 +2877,6 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
         VariableType type;
         bool evalOk;
         QString value = evaluateExpression(expr.getRight()->toString(), &type, &evalOk);
-
-        //QString right = cmd.split("=").at(1);
-        //right.remove(" ");
-
-        //bool evalOk;
-        //VariableType type;
-        //QString value=evaluateExpression(right,&type,&evalOk);
 
         if(evalOk && type==Scalar)
         {
@@ -2738,11 +2901,8 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
             return false;
         }
     }
-    else
+    else  //Not an assignment, evaluate with SymHop
     {
-//        cmd.replace("!!!gtoe!!!", ">=");
-//        cmd.replace("!!!stoe!!!", "<=");
-
         //! @todo Should we allow pure expessions without assignment?
         bool evalOk;
         VariableType type;
@@ -2854,7 +3014,7 @@ SharedLogVariableDataPtrT HcomHandler::getVariablePtr(QString fullName) const
 //! @brief Parses a string into a number
 //! @param str String to parse, should be a number of a variable name
 //! @param ok Pointer to boolean that tells if parsing was successful
-double HcomHandler::getNumber(const QString str, bool *ok)
+double HcomHandler::getNumber(const QString str, bool *ok) const
 {
     *ok = true;
     if(str.toDouble())
@@ -2880,6 +3040,8 @@ double HcomHandler::getNumber(const QString str, bool *ok)
 }
 
 
+//! @brief Converts long data names to short data names (e.g. "Pressure" -> "p")
+//! @param variable Reference to variable string
 void HcomHandler::toShortDataNames(QString &variable) const
 {
     if(variable.endsWith(".Position"))
@@ -2940,6 +3102,7 @@ void HcomHandler::toShortDataNames(QString &variable) const
 }
 
 
+//! @brief Converts a command to a directory path, or returns an empty string if command is invalid
 QString HcomHandler::getDirectory(const QString cmd) const
 {
     if(QDir().exists(QDir().cleanPath(mPwd+"/"+cmd)))
@@ -2956,6 +3119,8 @@ QString HcomHandler::getDirectory(const QString cmd) const
     }
 }
 
+
+//! @brief Returns a list of arguments in a command with respect to quotation marks
 QStringList HcomHandler::getArguments(const QString cmd) const
 {
     QStringList splitCmd;
@@ -2974,27 +3139,37 @@ QStringList HcomHandler::getArguments(const QString cmd) const
         }
     }
     splitCmd.append(cmd.right(cmd.size()-start));
-    splitCmd.removeFirst();
+    //splitCmd.removeFirst();
+    splitCmd.removeAll("");
 
     return splitCmd;
 }
 
 
+//! @brief Returns number of arguments in command with respect to quotation marks
 int HcomHandler::getNumberOfArguments(const QString cmd) const
 {
     return getArguments(cmd).size();
 }
 
+
+//! @brief Returns argument in command at specified index with respect to quotation marks
+//! @param cmd Command
+//! @param idx Index
 QString HcomHandler::getArgument(const QString cmd, const int idx) const
 {
     return getArguments(cmd).at(idx);
 }
 
+
+//! @brief Slot that aborts any HCOM script currently running
 void HcomHandler::abortHCOM()
 {
     mAborted = true;
 }
 
+
+//! @brief Auxiliary function used by command functions to "return" a scalar
 void HcomHandler::returnScalar(const double retval)
 {
     mLocalVars.insert("ans", retval);
@@ -3050,7 +3225,12 @@ double _funcPeek(QString str)
 {
     QString var = str.section(",",0,0);
     SharedLogVariableDataPtrT pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(var);
-    int idx = str.section(",",1,1).toDouble();
+    QString idxStr = str.section(",",1,1);
+
+    SymHop::Expression idxExpr = SymHop::Expression(idxStr);
+    QMap<QString, double> localVars = gpMainWindow->mpTerminalWidget->mpHandler->getLocalVariables();
+    QMap<QString, SymHop::Function> localFuncs = gpMainWindow->mpTerminalWidget->mpHandler->getLocalFunctionPointers();
+    int idx = idxExpr.evaluate(localVars, localFuncs);
 
     if(pData)
     {
@@ -3066,7 +3246,7 @@ double _funcRand(QString str)
 }
 
 
-void HcomHandler::opt_complex_init()
+void HcomHandler::optComplexInit()
 {
     for(int p=0; p<mOptNumPoints; ++p)
     {
@@ -3087,7 +3267,7 @@ void HcomHandler::opt_complex_init()
 }
 
 
-void HcomHandler::opt_complex_run()
+void HcomHandler::optComplexRun()
 {
     mOptConvergenceReason=0;
 
@@ -3138,18 +3318,18 @@ void HcomHandler::opt_complex_run()
         }
 
         //Check convergence
-        if(opt_comlex_checkConvergence()) break;
+        if(optComlexCheckconvergence()) break;
 
         //Increase all objective values (forgetting principle)
-        opt_complex_forget();
+        optComplexForget();
 
         //Calculate best and worst point
-        opt_complex_calculateBestAndWorstId();
+        optComplexCalculatebestandworstid();
         mpConsole->print("WORST: "+QString::number(mOptWorstId));
         int wid = mOptWorstId;
 
         //Find geometrical center
-        opt_complex_findCenter();
+        optComplexFindcenter();
 
         //Reflect worst point
         QVector<double> newPoint;
@@ -3163,7 +3343,7 @@ void HcomHandler::opt_complex_run()
             mOptParameters[wid][j] = mOptCenter[j] + (mOptCenter[j]-worst)*mOptAlpha;
 
             //Add some random noise
-            double maxDiff = opt_complex_maxParDiff();
+            double maxDiff = optComplexMaxpardiff();
             double r = (double)rand() / (double)RAND_MAX;
             mOptParameters[wid][j] = mOptParameters[wid][j] + mOptRfak*(mOptParMax[wid]-mOptParMin[wid])*maxDiff*(r-0.5);
             mOptParameters[wid][j] = min(mOptParameters[wid][j], mOptParMax[j]);
@@ -3182,7 +3362,7 @@ void HcomHandler::opt_complex_run()
 
         //Calculate best and worst points
         mOptLastWorstId=wid;
-        opt_complex_calculateBestAndWorstId();
+        optComplexCalculatebestandworstid();
         wid = mOptWorstId;
 
         //Iterate until worst point is no longer the same
@@ -3206,7 +3386,7 @@ void HcomHandler::opt_complex_run()
             for(int j=0; j<mOptNumParameters; ++j)
             {
                 int best = mOptParameters[mOptBestId][j];
-                double maxDiff = opt_complex_maxParDiff();
+                double maxDiff = optComplexMaxpardiff();
                 double r = (double)rand() / (double)RAND_MAX;
                 mOptParameters[wid][j] = (mOptCenter[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mOptRfak*(mOptParMax[wid]-mOptParMin[wid])*maxDiff*(r-0.5);
                 mOptParameters[wid][j] = min(mOptParameters[wid][j], mOptParMax[j]);
@@ -3225,7 +3405,7 @@ void HcomHandler::opt_complex_run()
 
             //Calculate best and worst points
             mOptLastWorstId=wid;
-            opt_complex_calculateBestAndWorstId();
+            optComplexCalculatebestandworstid();
             wid = mOptWorstId;
 
             ++mOptWorstCounter;
@@ -3252,7 +3432,7 @@ void HcomHandler::opt_complex_run()
 }
 
 
-void HcomHandler::opt_complex_forget()
+void HcomHandler::optComplexForget()
 {
     double maxObj = mOptObjectives[0];
     double minObj = mOptObjectives[0];
@@ -3268,7 +3448,7 @@ void HcomHandler::opt_complex_forget()
     }
 }
 
-void HcomHandler::opt_complex_calculateBestAndWorstId()
+void HcomHandler::optComplexCalculatebestandworstid()
 {
     double maxObj = mOptObjectives[0];
     double minObj = mOptObjectives[0];
@@ -3290,7 +3470,7 @@ void HcomHandler::opt_complex_calculateBestAndWorstId()
     }
 }
 
-void HcomHandler::opt_complex_findCenter()
+void HcomHandler::optComplexFindcenter()
 {
     mOptCenter.resize(mOptNumParameters);
     for(int p=0; p<mOptNumPoints; ++p)
@@ -3306,7 +3486,7 @@ void HcomHandler::opt_complex_findCenter()
     }
 }
 
-bool HcomHandler::opt_comlex_checkConvergence()
+bool HcomHandler::optComlexCheckconvergence()
 {
     //Check objective function convergence
     double maxObj = mOptObjectives[0];
@@ -3332,7 +3512,7 @@ bool HcomHandler::opt_comlex_checkConvergence()
     }
 
     //Check parameter value convergence
-    double maxDiff=opt_complex_maxParDiff();
+    double maxDiff=optComplexMaxpardiff();
     if(abs(maxDiff) < mOptParTol)
     {
         mOptConvergenceReason=2;
@@ -3342,7 +3522,7 @@ bool HcomHandler::opt_comlex_checkConvergence()
 }
 
 
-double HcomHandler::opt_complex_maxParDiff()
+double HcomHandler::optComplexMaxpardiff()
 {
     double maxDiff = -1e100;
     for(int i=0; i<mOptNumParameters; ++i)

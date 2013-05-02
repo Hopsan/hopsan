@@ -319,6 +319,60 @@ void LogVariableData::absData()
     emit dataChanged();
 }
 
+void LogVariableData::diffBy(const SharedLogVariableDataPtrT pOther)
+{
+    DataVectorT* pData = mpCachedDataVector->beginFullVectorOperation();
+    QVector<double> time;
+    if(pOther != 0)
+    {
+        time = pOther->getDataVector();
+    }
+    else
+    {
+        time = getLogDataHandler()->getTimeVector(getHighestGeneration()-1);
+    }
+    for(int i=0; i<pData->size()-1; ++i)
+    {
+        (*pData)[i] = ((*pData)[i+1]-(*pData)[i])/(time[i+1]-time[i]);
+    }
+    pData->resize(pData->size()-1);
+    mpCachedDataVector->endFullVectorOperation(pData);
+    emit dataChanged();
+}
+
+void LogVariableData::lowPassFilter(const SharedLogVariableDataPtrT pTime, const double w)
+{
+    DataVectorT* pData = mpCachedDataVector->beginFullVectorOperation();
+    DataVectorT timeData;
+    if(pTime == 0)
+    {
+        timeData = mpParentVariableContainer->getLogDataHandler()->getTimeVector(getHighestGeneration()-1);
+    }
+    else
+    {
+        timeData = pTime.data()->getDataVector();
+    }
+
+    double Al = 2.0/(2.0*3.14159265359*w);
+    double temp1 = (*pData)[0];
+    double temp = temp1;
+    (*pData)[0] = temp;
+    for(int i=1; i<pData->size(); ++i)
+    {
+        double T = timeData[i]-timeData[i-1];
+        double ALF = Al/T;
+        double G = 1.0+ALF;
+        double A1 = (1.0-ALF)/G;
+        double B1 = 1.0/G;
+        temp = temp1;
+        temp1 = (*pData)[i];
+        (*pData)[i] = -A1*(*pData)[i-1] + B1*(temp1+temp);
+    }
+
+    mpCachedDataVector->endFullVectorOperation(pData);
+    emit dataChanged();
+}
+
 
 void LogVariableData::assignFrom(const SharedLogVariableDataPtrT pOther)
 {

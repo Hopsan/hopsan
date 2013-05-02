@@ -1100,6 +1100,66 @@ QString LogDataHandler::divVariables(const QString &a, const QString &b)
     }
 }
 
+SharedLogVariableDataPtrT LogDataHandler::diffVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b)
+{
+    SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+"Diff");
+    pTempVar->assignFrom(a);
+    pTempVar->diffBy(b);
+    return pTempVar;
+}
+
+QString LogDataHandler::diffVariables(const QString &a, const QString &b)
+{
+    SharedLogVariableDataPtrT pData1 = getPlotData(a, -1);
+    SharedLogVariableDataPtrT pData2;
+    if(b!="time")
+    {
+        pData2 = getPlotData(b, -1);
+    }
+
+
+    if( (pData1 == 0) || (pData2 == 0 && b != "time") )
+    {
+        return QString();
+    }
+    else
+    {
+        SharedLogVariableDataPtrT pTemp = diffVariables(pData1,pData2);
+        return pTemp->getFullVariableName();
+    }
+}
+
+SharedLogVariableDataPtrT LogDataHandler::lowPassFilterVariable(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b, const double freq)
+{
+    SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+"Lp1");
+    pTempVar->assignFrom(a);
+    pTempVar->lowPassFilter(b, freq);
+    return pTempVar;
+}
+
+QString LogDataHandler::lowPassFilterVariable(const QString &a, const QString &b, const double freq)
+{
+    SharedLogVariableDataPtrT pData1 = getPlotData(a, -1);
+    SharedLogVariableDataPtrT pData2;
+    if(b!="time")
+    {
+        pData2 = getPlotData(b, -1);
+    }
+
+
+    if( (pData1 == 0) || (pData2 == 0 && b != "time") )
+    {
+        return QString();
+    }
+    else
+    {
+        SharedLogVariableDataPtrT pTemp = lowPassFilterVariable(pData1,pData2,freq);
+        return pTemp->getFullVariableName();
+    }
+}
+
+
+
 QString LogDataHandler::assignVariable(const QString &dst, const QString &src)
 {
     SharedLogVariableDataPtrT pDstData = getPlotData(dst, -1);

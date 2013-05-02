@@ -2,6 +2,7 @@
 #define HCOMHANDLER_H
 
 #include "LogVariable.h"
+#include "symhop/SymHop.h"
 
 class TerminalWidget;
 class TerminalConsole;
@@ -12,70 +13,89 @@ class HcomCommand;
 
 class HcomHandler
 {
+    friend class TerminalWidget;
+    friend class TerminalConsole;
 public:
+    //Enums
     enum VariableType{Scalar, DataVector};
     enum OptDataType{Int, Double};
     enum OptAlgorithmType{Uninitialized, Complex};
-    HcomHandler(TerminalConsole *pConsole);
 
-    QStringList getCommands();
+    //Constructor
+    HcomHandler(TerminalConsole *pConsole);
 
     //Command functions
     void executeCommand(QString cmd);
-    void executeExitCommand(QString cmd);
-    void executeSimulateCommand(QString cmd);
-    void executePlotCommand(QString cmd);
-    void executePlotLeftAxisCommand(QString cmd);
-    void executePlotRightAxisCommand(QString cmd);
-    void executeDisplayParameterCommand(QString cmd);
-    void executeChangeParameterCommand(QString cmd);
-    void executeChangeSimulationSettingsCommand(QString cmd);
-    void executeHelpCommand(QString cmd);
-    void executeRunScriptCommand(QString cmd);
-    void executeWriteHistoryToFileCommand(QString cmd);
-    void executePrintCommand(QString cmd);
-    void executeChangePlotWindowCommand(QString cmd);
-    void executeDisplayPlotWindowCommand(QString cmd);
-    void executeDisplayVariablesCommand(QString cmd);
-    void executePeekCommand(QString cmd);
-    void executePokeCommand(QString cmd);
-    void executeDefineAliasCommand(QString cmd);
-    void executeSetCommand(QString cmd);
-    void executeSaveToPloCommand(QString cmd);
-    void executeLoadModelCommand(QString cmd);
-    void executeLoadRecentCommand(QString cmd);
-    void executePwdCommand(QString cmd);
-    void executeChangeDirectoryCommand(QString cmd);
-    void executeListFilesCommand(QString cmd);
-    void executeCloseModelCommand(QString cmd);
-    void executeChangeTabCommand(QString cmd);
-    void executeAddComponentCommand(QString cmd);
-    void executeConnectCommand(QString cmd);
-    void executeCreateModelCommand(QString cmd);
-    void executeExportToFMUCommand(QString cmd);
-    void executeAverageCommand(QString cmd);
-    void executeMinCommand(QString cmd);
-    void executeMaxCommand(QString cmd);
-    void executeChangeTimestepCommand(QString cmd);
-    void executeInheritTimestepCommand(QString cmd);
-    void executeRandomCommand(QString cmd);
-    void executeFloorCommand(QString cmd);
-    void executeCeilCommand(QString cmd);
-    void executeRoundCommand(QString cmd);
-    void executeSizeCommand(QString cmd);
-    void executeBodeCommand(QString cmd);
-    void executeAbsCommand(QString cmd);
-    void executeSimulationTimeCommand(QString cmd);
-    void executeOptimizationCommand(QString cmd);
-    void executeCallFunctionCommand(QString cmd);
-    void executeEchoCommand(QString cmd);
-    void executeEditCommand(QString cmd);
+
+    //Public access functions
+    SharedLogVariableDataPtrT getVariablePtr(QString fullName) const;
+    QStringList getCommands() const;
+    QMap<QString, double> getLocalVariables() const;
+    QMap<QString, SymHop::Function> getLocalFunctionPointers() const;
+
+
+public slots:
+    void abortHCOM();
+
+private:
+
+    //Private command functions (to be accessed by public executeCommand function)
+    void executeExitCommand(const QString cmd);
+    void executeSimulateCommand(const QString cmd);
+    void executePlotCommand(const QString cmd);
+    void executePlotLeftAxisCommand(const QString cmd);
+    void executePlotRightAxisCommand(const QString cmd);
+    void executeDisplayParameterCommand(const QString cmd);
+    void executeChangeParameterCommand(const QString cmd);
+    void executeChangeSimulationSettingsCommand(const QString cmd);
+    void executeHelpCommand(const QString cmd);
+    void executeRunScriptCommand(const QString cmd);
+    void executeWriteHistoryToFileCommand(const QString cmd);
+    void executePrintCommand(const QString cmd);
+    void executeChangePlotWindowCommand(const QString cmd);
+    void executeDisplayPlotWindowCommand(const QString cmd);
+    void executeDisplayVariablesCommand(const QString cmd);
+    void executePeekCommand(const QString cmd);
+    void executePokeCommand(const QString cmd);
+    void executeDefineAliasCommand(const QString cmd);
+    void executeSetCommand(const QString cmd);
+    void executeSaveToPloCommand(const QString cmd);
+    void executeLoadModelCommand(const QString cmd);
+    void executeLoadRecentCommand(const QString cmd);
+    void executePwdCommand(const QString cmd);
+    void executeChangeDirectoryCommand(const QString cmd);
+    void executeListFilesCommand(const QString cmd);
+    void executeCloseModelCommand(const QString cmd);
+    void executeChangeTabCommand(const QString cmd);
+    void executeAddComponentCommand(const QString cmd);
+    void executeConnectCommand(const QString cmd);
+    void executeCreateModelCommand(const QString cmd);
+    void executeExportToFMUCommand(const QString cmd);
+    void executeAverageCommand(const QString cmd);
+    void executeMinCommand(const QString cmd);
+    void executeMaxCommand(const QString cmd);
+    void executeChangeTimestepCommand(const QString cmd);
+    void executeInheritTimestepCommand(const QString cmd);
+    void executeRandomCommand(const QString cmd);
+    void executeFloorCommand(const QString cmd);
+    void executeCeilCommand(const QString cmd);
+    void executeRoundCommand(const QString cmd);
+    void executeSizeCommand(const QString cmd);
+    void executeBodeCommand(const QString cmd);
+    void executeAbsCommand(const QString cmd);
+    void executeSimulationTimeCommand(const QString cmd);
+    void executeOptimizationCommand(const QString cmd);
+    void executeCallFunctionCommand(const QString cmd);
+    void executeEchoCommand(const QString cmd);
+    void executeEditCommand(const QString cmd);
+    void executeLp1Command(const QString cmd);
 
     //Help functions
-    void changePlotVariables(QString cmd, int axis);
-    void addPlotCurve(QString cmd, int axis);
-    void removePlotCurves(int axis);
-    QString evaluateExpression(QString expr, VariableType *returnType, bool *evalOk);
+    void createCommands();
+    void changePlotVariables(const QString cmd, const int axis) const;
+    void addPlotCurve(QString cmd, const int axis) const;
+    void removePlotCurves(const int axis) const;
+    QString evaluateExpression(QString expr, VariableType *returnType, bool *evalOk) const;
     void getComponents(QString str, QList<ModelObject*> &components);
     void getParameters(QString str, ModelObject* pComponent, QStringList &parameters);
     void getParameters(QString str, QStringList &parameters);
@@ -87,24 +107,21 @@ public:
     void splitAtFirst(QString str, QString c, QString &left, QString &right);
     bool containsOutsideParentheses(QString str, QString c);
     QString runScriptCommands(QStringList &lines, bool *abort);
-    SharedLogVariableDataPtrT getVariablePtr(QString fullName) const;
-    double getNumber(const QString str, bool *ok);
+    double getNumber(const QString str, bool *ok) const;
     void toShortDataNames(QString &variable) const;
     QString getDirectory(const QString cmd) const;
     QStringList getArguments(const QString cmd) const;
     int getNumberOfArguments(const QString cmd) const;
     QString getArgument(const QString cmd, const int idx) const;
-    void abortHCOM();
     void returnScalar(const double retval);
 
-private:
-    void opt_complex_init();
-    void opt_complex_run();
-    void opt_complex_forget();
-    void opt_complex_calculateBestAndWorstId();
-    void opt_complex_findCenter();
-    bool opt_comlex_checkConvergence();
-    double opt_complex_maxParDiff();
+    void optComplexInit();
+    void optComplexRun();
+    void optComplexForget();
+    void optComplexCalculatebestandworstid();
+    void optComplexFindcenter();
+    bool optComlexCheckconvergence();
+    double optComplexMaxpardiff();
 
     TerminalConsole *mpConsole;
 
@@ -122,6 +139,7 @@ private:
 
     //Local variables
     QMap<QString, double> mLocalVars;
+    QMap<QString, SymHop::Function> mLocalFunctionPtrs;
 
     VariableType mRetvalType;
 

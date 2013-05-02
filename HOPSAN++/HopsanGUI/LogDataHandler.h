@@ -118,6 +118,12 @@ public:
     QString multVariables(const QString &a, const QString &b);
     QString divVariables(const QString &a, const QString &b);
 
+    SharedLogVariableDataPtrT diffVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b);
+    QString diffVariables(const QString &a, const QString &b);
+
+    SharedLogVariableDataPtrT lowPassFilterVariable(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b, const double freq);
+    QString lowPassFilterVariable(const QString &a, const QString &b, const double freq);
+
     SharedLogVariableDataPtrT assignVariable(SharedLogVariableDataPtrT dst, const SharedLogVariableDataPtrT src);
     QString assignVariable(const QString &dst, const QString &src);
     QString assignVariable(const QString &dst, const QVector<double> &src);
@@ -136,7 +142,6 @@ public:
 signals:
     void newDataAvailable();
     void closePlotsWithOwnedData();
-
 
 private:
     QString getNewCacheName();
