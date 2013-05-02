@@ -180,7 +180,7 @@ private:
     QwtLegend *mpExternalLegend;
     PlotLegend *mpLeftPlotLegend, *mpRightPlotLegend;
     QCheckBox *mpLegendsInternalEnabledCheckBox;
-    QCheckBox *mpLegendsExternalEnabledCheckBox;
+    //QCheckBox *mpLegendsExternalEnabledCheckBox;
     QCheckBox *mpLegendsAutoOffsetCheckBox;
     //QCheckBox *mpLegendsOffYREnabledCheckBox;
     QDialog *mpLegendSettingsDialog;

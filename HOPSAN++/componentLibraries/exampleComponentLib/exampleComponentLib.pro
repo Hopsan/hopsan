@@ -39,7 +39,8 @@ SOURCES += \
 HEADERS += \
     HydraulicComponents/MyExampleVolume.hpp \
     HydraulicComponents/MyExampleOrifice.hpp \
-    SignalComponents/SignalSum.hpp
+    SignalComponents/SignalSum.hpp \
+    HydraulicComponents/MyExampleVolume2.hpp
 
 OTHER_FILES += \
     hopsanDebugReleaseCompile.prf

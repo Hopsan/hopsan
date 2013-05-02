@@ -82,28 +82,6 @@ size_t Node::getNumDataVariables() const
 }
 
 
-//!
-//! @brief set data in node
-//! @param [in] data_type Identifier for the typ of node data to set
-//! @param [in] data The data value
-//!
-void Node::setDataValue(const size_t data_type, const double data)
-{
-    mDataValues[data_type] = data;
-}
-
-
-//!
-//! @brief get data from node
-//! @param [in] data_type Identifier for the type of node data to get
-//! @return The data value
-//!
-double Node::getDataValue(const size_t data_type) const
-{
-    return mDataValues[data_type];
-}
-
-
 double *Node::getDataPtr(const size_t data_type)
 {
     return &mDataValues[data_type];

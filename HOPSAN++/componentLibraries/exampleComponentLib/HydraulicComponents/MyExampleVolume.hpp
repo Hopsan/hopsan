@@ -74,10 +74,10 @@ public:
         const double Zc = Be/V*mTimestep/(1.0-mAlpha);
 
         // Set initial values
-        const double startPressure1 = getStartValue(mpP1,NodeHydraulic::Pressure);
-        const double startFlow1     = getStartValue(mpP1,NodeHydraulic::Flow);
-        const double startPressure2 = getStartValue(mpP2,NodeHydraulic::Pressure);
-        const double startFlow2     = getStartValue(mpP2,NodeHydraulic::Flow);
+        const double startPressure1 = mpP1->readNode(NodeHydraulic::Pressure);
+        const double startFlow1     = mpP1->readNode(NodeHydraulic::Flow);
+        const double startPressure2 = mpP2->readNode(NodeHydraulic::Pressure);
+        const double startFlow2     = mpP2->readNode(NodeHydraulic::Flow);
 
         // Write to nodes
         mpP1->writeNode(NodeHydraulic::WaveVariable, startPressure2+Zc*startFlow2);

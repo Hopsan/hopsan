@@ -76,6 +76,7 @@ namespace hopsan {
         virtual double readNodeSafe(const size_t idx, const size_t portIdx=0);
         virtual void writeNodeSafe(const size_t idx, const double value, const size_t portIdx=0);
 
+        virtual const Node *getNodePtr(const size_t portIdx=0)const;
         virtual double *getNodeDataPtr(const size_t idx, const size_t portIdx=0) const;
         virtual std::vector<double> *getDataVectorPtr(const size_t portIdx=0);
 
@@ -102,7 +103,7 @@ namespace hopsan {
 
         bool isMultiPort() const;
         Port *getParentPort() const;
-        const std::string getNodeType() const;
+        const std::string &getNodeType() const;
         PortTypesEnumT getPortType() const;
         virtual PortTypesEnumT getExternalPortType();
         virtual PortTypesEnumT getInternalPortType();
@@ -192,6 +193,7 @@ namespace hopsan {
         inline double readNode(const size_t idx, const size_t portIdx) const;
         inline void writeNode(const size_t idx, const double value, const size_t portIdx) const;
 
+        const Node *getNodePtr(const size_t portIdx=0)const;
         double *getNodeDataPtr(const size_t idx, const size_t portIdx) const;
         std::vector<double> *getDataVectorPtr(const size_t portIdx=0);
 

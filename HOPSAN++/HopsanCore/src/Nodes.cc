@@ -21,6 +21,7 @@
 //!
 //$Id$
 #include "Nodes.h"
+#include "Port.h"
 
 //! @defgroup Nodes Nodes
 
@@ -51,7 +52,7 @@ using namespace hopsan;
 //! @brief Registers the creator function of all built in nodes
 //! @param [in] pNodeFactory A pointer the the node factory in which to register the nodes
 //!
-DLLIMPORTEXPORT void hopsan::register_default_nodes(NodeFactory* pNodeFactory)
+void hopsan::register_default_nodes(NodeFactory* pNodeFactory)
 {
     pNodeFactory->registerCreatorFunction("NodeSignal", NodeSignal::CreatorFunction);
     pNodeFactory->registerCreatorFunction("NodeHydraulic", NodeHydraulic::CreatorFunction);
@@ -60,4 +61,44 @@ DLLIMPORTEXPORT void hopsan::register_default_nodes(NodeFactory* pNodeFactory)
     pNodeFactory->registerCreatorFunction("NodeMechanicRotational", NodeMechanicRotational::CreatorFunction);
     pNodeFactory->registerCreatorFunction("NodeElectric", NodeElectric::CreatorFunction);
     pNodeFactory->registerCreatorFunction("NodeEmpty", NodeEmpty::CreatorFunction);
+}
+
+HydraulicNodeDataPointerStructT hopsan::getHydraulicNodeDataPointerStruct(const Port *pPort)
+{
+    HydraulicNodeDataPointerStructT data;
+    if (pPort->getNodeType() == "NodeHydraulic")
+    {
+        data.pQ = pPort->getNodeDataPtr(NodeHydraulic::Flow);
+        data.pP = pPort->getNodeDataPtr(NodeHydraulic::Pressure);
+        data.pT = pPort->getNodeDataPtr(NodeHydraulic::Temperature);
+        data.pQdot = pPort->getNodeDataPtr(NodeHydraulic::HeatFlow);
+        data.pZc = pPort->getNodeDataPtr(NodeHydraulic::CharImpedance);
+        data.pC = pPort->getNodeDataPtr(NodeHydraulic::WaveVariable);
+    }
+    return data;
+}
+
+HydraulicNodeDataValueStructT hopsan::getHydraulicNodeDataValueStruct(const Port *pPort)
+{
+    HydraulicNodeDataValueStructT data;
+    const Node *pNode = pPort->getNodePtr();
+    data.q = pNode->getDataValue(NodeHydraulic::Flow);
+    data.p = pNode->getDataValue(NodeHydraulic::Pressure);
+    data.T = pNode->getDataValue(NodeHydraulic::Temperature);
+    data.Qdot = pNode->getDataValue(NodeHydraulic::HeatFlow);
+    data.Zc = pNode->getDataValue(NodeHydraulic::CharImpedance);
+    data.c = pNode->getDataValue(NodeHydraulic::WaveVariable);
+    return data;
+}
+
+HydraulicNodeDataValueStructT hopsan::getHydraulicNodeDataValueStruct(const HydraulicNodeDataPointerStructT &rPtrStruct)
+{
+    HydraulicNodeDataValueStructT data;
+    data.q = *rPtrStruct.pQ;
+    data.p = *rPtrStruct.pP;
+    data.T = *rPtrStruct.pT;
+    data.Qdot = *rPtrStruct.pQdot;
+    data.Zc = *rPtrStruct.pZc;
+    data.c = *rPtrStruct.pC;
+    return data;
 }

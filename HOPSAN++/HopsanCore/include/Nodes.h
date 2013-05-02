@@ -28,7 +28,7 @@
 
 namespace hopsan {
 
-DLLIMPORTEXPORT void register_default_nodes(NodeFactory* pNodeFactory);
+void register_default_nodes(NodeFactory* pNodeFactory);
 
 //! @brief A signal node
 //! @ingroup NodeSignal
@@ -109,6 +109,29 @@ private:
     }
 };
 
+typedef struct HydraulcNodeDataPointerStruct_
+{
+    double *pQ;
+    double *pP;
+    double *pT;
+    double *pC;
+    double *pZc;
+    double *pQdot;
+} HydraulicNodeDataPointerStructT;
+
+typedef struct HydraulcNodeDataValueStruct_
+{
+    double q;
+    double p;
+    double T;
+    double c;
+    double Zc;
+    double Qdot;
+} HydraulicNodeDataValueStructT;
+
+HydraulicNodeDataPointerStructT DLLIMPORTEXPORT getHydraulicNodeDataPointerStruct(const Port *pPort);
+HydraulicNodeDataValueStructT DLLIMPORTEXPORT getHydraulicNodeDataValueStruct(const Port *pPort);
+HydraulicNodeDataValueStructT DLLIMPORTEXPORT getHydraulicNodeDataValueStruct(const HydraulicNodeDataPointerStructT &rPtrStruct);
 
 //! @brief A pneumatic node
 //! @ingroup NodePneumatic

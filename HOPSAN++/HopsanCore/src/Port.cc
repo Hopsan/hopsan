@@ -95,7 +95,7 @@ Port::~Port()
 
 
 //! @brief Returns the type of node that can be connected to this port
-const string Port::getNodeType() const
+const string &Port::getNodeType() const
 {
     return mNodeType;
 }
@@ -181,6 +181,11 @@ void Port::writeNodeSafe(const size_t idx, const double value, const size_t /*po
     {
         mpNode->mDataValues[idx] = value;       //Write to node if there is a node to write to
     }
+}
+
+const Node *Port::getNodePtr(const size_t /*portIdx*/) const
+{
+    return mpNode;
 }
 
 //! @brief Get a ptr to the data variable in the node
@@ -820,6 +825,11 @@ double MultiPort::readNode(const size_t idx, const size_t portIdx) const
 void MultiPort::writeNode(const size_t idx, const double value, const size_t portIdx) const
 {
     return mSubPortsVector[portIdx]->writeNode(idx,value);
+}
+
+const Node *MultiPort::getNodePtr(const size_t portIdx) const
+{
+    return mSubPortsVector[portIdx]->getNodePtr();
 }
 
 //! @todo why do we even want a unsafe getNodeDataPtr it should be the safe version

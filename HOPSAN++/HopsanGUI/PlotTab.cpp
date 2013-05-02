@@ -245,31 +245,31 @@ void PlotTab::applyLegendSettings()
         mpLeftPlotLegend->hide();
     }
 
-    // Handle external legend
-    if (mpLegendsExternalEnabledCheckBox->isChecked())
-    {
-        if (mpExternalLegend == 0)
-        {
-            mpExternalLegend = new QwtLegend();
-            mpExternalLegend->setAutoFillBackground(false);
-            mpExternalLegend->setFrameStyle(QFrame::NoFrame | QFrame::Sunken);
-            mpExternalLegend->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-            mpQwtPlots[FirstPlot]->insertLegend(mpExternalLegend, QwtPlot::TopLegend);
-        }
+//    // Handle external legend
+//    if (mpLegendsExternalEnabledCheckBox->isChecked())
+//    {
+//        if (mpExternalLegend == 0)
+//        {
+//            mpExternalLegend = new QwtLegend();
+//            mpExternalLegend->setAutoFillBackground(false);
+//            mpExternalLegend->setFrameStyle(QFrame::NoFrame | QFrame::Sunken);
+//            mpExternalLegend->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+//            mpQwtPlots[FirstPlot]->insertLegend(mpExternalLegend, QwtPlot::TopLegend);
+//        }
 
-        QFont font = mpExternalLegend->font();
-        font.setPointSize(mpLegendFontSize->value());
-        mpExternalLegend->setFont(font);
+//        QFont font = mpExternalLegend->font();
+//        font.setPointSize(mpLegendFontSize->value());
+//        mpExternalLegend->setFont(font);
 
-        QString symStyle = mpLegendSymbolType->currentText();
-        setLegendSymbol(symStyle);
-    }
-    else
-    {
+//        QString symStyle = mpLegendSymbolType->currentText();
+//        setLegendSymbol(symStyle);
+//    }
+//    else
+//    {
         mpQwtPlots[FirstPlot]->insertLegend(NULL, QwtPlot::TopLegend);
         // Since it is deleted set ptr to NULL
         mpExternalLegend = 0;
-    }
+//    }
 
     rescaleAxesToCurves();
 }
@@ -1956,7 +1956,7 @@ void PlotTab::setLegendsVisible(bool value)
     else
     {
         mpLegendsInternalEnabledCheckBox->setChecked(false);
-        mpLegendsExternalEnabledCheckBox->setChecked(false);
+        //mpLegendsExternalEnabledCheckBox->setChecked(false);
     }
     applyLegendSettings();
 }
@@ -2188,8 +2188,8 @@ void PlotTab::constructLegendSettingsDialog()
     mpLegendsInternalEnabledCheckBox->setCheckable(true);
     mpLegendsInternalEnabledCheckBox->setChecked(true); //Internal on by default
 
-    mpLegendsExternalEnabledCheckBox = new QCheckBox(this);
-    mpLegendsExternalEnabledCheckBox->setCheckable(true);
+//    mpLegendsExternalEnabledCheckBox = new QCheckBox(this);
+//    mpLegendsExternalEnabledCheckBox->setCheckable(true);
 
     mpLegendLPosition = new QComboBox(this);
     mpLegendLPosition->addItem("Top");
@@ -2290,7 +2290,7 @@ void PlotTab::constructLegendSettingsDialog()
     connect(mpLegendFontSize, SIGNAL(valueChanged(int)), this, SLOT(applyLegendSettings()));
     connect(mpLegendCols, SIGNAL(valueChanged(int)), this, SLOT(applyLegendSettings()));
     connect(mpLegendsInternalEnabledCheckBox, SIGNAL(toggled(bool)), this, SLOT(applyLegendSettings()));
-    connect(mpLegendsExternalEnabledCheckBox, SIGNAL(toggled(bool)), this, SLOT(applyLegendSettings()));
+    //connect(mpLegendsExternalEnabledCheckBox, SIGNAL(toggled(bool)), this, SLOT(applyLegendSettings()));
     connect(mpLegendBgType, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
     connect(mpLegendSymbolType, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));
     connect(mpLegendLPosition, SIGNAL(currentIndexChanged(int)), this, SLOT(applyLegendSettings()));

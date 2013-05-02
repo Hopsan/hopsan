@@ -68,8 +68,20 @@ public:
 
     size_t getNumDataVariables() const;
     virtual int getDataIdFromName(const std::string name) const;
-    double getDataValue(const size_t data_type) const;
-    void setDataValue(const size_t data_type, const double data);
+    //! @brief get data from node
+    //! @param [in] dataId Identifier for the type of node data to get, (no bounds check is performed)
+    //! @return The data value
+    inline double getDataValue(const size_t dataId) const
+    {
+        return mDataValues[dataId];
+    }
+    //! @brief set data in node
+    //! @param [in] dataId Identifier for the typ of node data to set, (no bounds check is performed)
+    //! @param [in] data The data value
+    inline void setDataValue(const size_t dataId, const double data)
+    {
+        mDataValues[dataId] = data;
+    }
 
     const std::vector<NodeDataDescription>* getDataDescriptions() const;
     const NodeDataDescription* getDataDescription(const size_t id) const;
