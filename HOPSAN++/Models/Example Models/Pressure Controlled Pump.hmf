@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5204" hopsancoreversion="0.6.x_r5205">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5334" hopsancoreversion="0.6.x_r5348">
   <requirements>
     <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+    <componentlibrary>HopsanExampleComponentLibrary</componentlibrary>
   </requirements>
   <info>
     <author>Fluid &amp; Mechatronic Systems (Flumes)</author>
@@ -17,7 +18,7 @@
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="1"/>
       <animation flowspeed="100"/>
-      <viewport x="2505.49" y="2504.97" zoom="0.968475"/>
+      <viewport x="2498.77" y="2499.29" zoom="0.968475"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>
@@ -58,12 +59,9 @@
           <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
           <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
-          <parameter unit="-" value="0" type="double" name="V::Value"/>
-          <parameter unit="[m^3]" value="0.001" type="double" name="V"/>
-          <parameter unit="-" value="0" type="double" name="Beta_e::Value"/>
-          <parameter unit="[Pa]" value="1e+009" type="double" name="Beta_e"/>
-          <parameter unit="-" value="0" type="double" name="alpha::Value"/>
-          <parameter unit="[-]" value="0.1" type="double" name="alpha"/>
+          <parameter unit="-" value="0.001" type="double" name="V::Value"/>
+          <parameter unit="-" value="1e+009" type="double" name="Beta_e::Value"/>
+          <parameter unit="-" value="0.1" type="double" name="alpha::Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -91,7 +89,6 @@
           <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
           <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
-          <parameter unit="-" value="0" type="double" name="p::Value"/>
           <parameter unit="Pa" value="100000" type="double" name="p"/>
         </parameters>
         <ports>
@@ -110,12 +107,9 @@
       </component>
       <component typename="SignalStep" name="Reference_Pressure">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="y_0::Value"/>
-          <parameter unit="[-]" value="1e5" type="double" name="y_0"/>
-          <parameter unit="-" value="0" type="double" name="y_A::Value"/>
-          <parameter unit="[-]" value="2e7" type="double" name="y_A"/>
-          <parameter unit="-" value="0" type="double" name="t_step::Value"/>
-          <parameter unit="[-]" value="1" type="double" name="t_step"/>
+          <parameter unit="-" value="1e5" type="double" name="y_0::Value"/>
+          <parameter unit="-" value="2e7" type="double" name="y_A::Value"/>
+          <parameter unit="-" value="1" type="double" name="t_step::Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
@@ -162,20 +156,15 @@
       </component>
       <component typename="HydraulicVariableDisplacementPump" name="Q_Type_Variable_Displacement_Pump">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
-          <parameter unit="-" value="0" type="double" name="omega_p::Value"/>
-          <parameter unit="[rad/s]" value="125" type="double" name="omega_p"/>
-          <parameter unit="-" value="0" type="double" name="D_p::Value"/>
-          <parameter unit="[m^3/rev]" value="10e-005" type="double" name="D_p"/>
+          <parameter unit="-" value="1" type="double" name="eps::Value"/>
+          <parameter unit="-" value="125" type="double" name="omega_p::Value"/>
+          <parameter unit="-" value="10e-005" type="double" name="D_p::Value"/>
           <parameter unit="-" value="0" type="double" name="K_cp::Value"/>
-          <parameter unit="[(m^3/s)/Pa]" value="0" type="double" name="K_cp"/>
-          <parameter unit="-" value="0" type="double" name="epsilon_p::Value"/>
-          <parameter unit="[-]" value="1" type="double" name="epsilon_p"/>
         </parameters>
         <ports>
+          <port nodetype="NodeSignal" name="eps"/>
           <port nodetype="NodeHydraulic" name="P1"/>
           <port nodetype="NodeHydraulic" name="P2"/>
-          <port nodetype="NodeSignal" name="in"/>
         </ports>
         <hopsangui>
           <pose x="2536.725284" y="2563.632648" flipped="false" a="0"/>
@@ -195,17 +184,14 @@
       </component>
       <component typename="MechanicVelocityTransformer" name="Position___Velocity_Source">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="xin::Value"/>
-          <parameter unit="-" value="0" type="double" name="vin::Value"/>
           <parameter unit="-" value="0" type="double" name="v::Value"/>
-          <parameter unit="[m/s]" value="0" type="double" name="v"/>
-          <parameter unit="-" value="0" type="double" name="m_e::Value"/>
+          <parameter unit="-" value="0" type="double" name="x::Value"/>
           <parameter unit="[kg]" value="10" type="double" name="m_e"/>
         </parameters>
         <ports>
+          <port nodetype="NodeSignal" name="x"/>
           <port nodetype="NodeMechanic" name="Pm1"/>
-          <port nodetype="NodeSignal" name="vin"/>
-          <port nodetype="NodeSignal" name="xin"/>
+          <port nodetype="NodeSignal" name="v"/>
         </ports>
         <hopsangui>
           <pose x="2594.670069" y="2611.315178" flipped="false" a="0"/>
@@ -220,16 +206,11 @@
       </component>
       <component typename="MechanicTranslationalMass" name="Translational_Mass">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="m::Value"/>
           <parameter unit="[kg]" value="1" type="double" name="m"/>
-          <parameter unit="-" value="0" type="double" name="B::Value"/>
-          <parameter unit="[Ns/m]" value="1000" type="double" name="B"/>
+          <parameter unit="-" value="1000" type="double" name="B::Value"/>
           <parameter unit="-" value="0" type="double" name="k::Value"/>
-          <parameter unit="[N/m]" value="0" type="double" name="k"/>
-          <parameter unit="-" value="0" type="double" name="x_min::Value"/>
-          <parameter unit="[m]" value="-0.01" type="double" name="x_min"/>
-          <parameter unit="-" value="0" type="double" name="x_max::Value"/>
-          <parameter unit="[m]" value="0.01" type="double" name="x_max"/>
+          <parameter unit="-" value="-0.01" type="double" name="x_min::Value"/>
+          <parameter unit="-" value="0.01" type="double" name="x_max::Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeMechanic" name="P1"/>
@@ -253,12 +234,9 @@
       </component>
       <component typename="SignalStep" name="Disturbance">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="y_0::Value"/>
-          <parameter unit="[-]" value="1e-11" type="double" name="y_0"/>
-          <parameter unit="-" value="0" type="double" name="y_A::Value"/>
-          <parameter unit="[-]" value="-5e-12" type="double" name="y_A"/>
-          <parameter unit="-" value="0" type="double" name="t_step::Value"/>
-          <parameter unit="[-]" value="5" type="double" name="t_step"/>
+          <parameter unit="-" value="1e-11" type="double" name="y_0::Value"/>
+          <parameter unit="-" value="-5e-12" type="double" name="y_A::Value"/>
+          <parameter unit="-" value="5" type="double" name="t_step::Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
@@ -281,7 +259,6 @@
           <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
           <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
           <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
-          <parameter unit="-" value="0" type="double" name="p::Value"/>
           <parameter unit="Pa" value="100000" type="double" name="p"/>
         </parameters>
         <ports>
@@ -429,22 +406,14 @@
           <parameter unit="N" value="0" type="double" name="P3::WaveVariable"/>
           <parameter unit="N s/m" value="0" type="double" name="P3::CharImpedance"/>
           <parameter unit="kg" value="0" type="double" name="P3::EquivalentMass"/>
-          <parameter unit="-" value="0" type="double" name="A_1::Value"/>
-          <parameter unit="[m^2]" value="0.0001" type="double" name="A_1"/>
-          <parameter unit="-" value="0" type="double" name="A_2::Value"/>
-          <parameter unit="[m^2]" value="0.0001" type="double" name="A_2"/>
-          <parameter unit="-" value="0" type="double" name="s_l::Value"/>
-          <parameter unit="[m]" value="0.01" type="double" name="s_l"/>
-          <parameter unit="-" value="0" type="double" name="V_1::Value"/>
-          <parameter unit="[m^3]" value="0.00003" type="double" name="V_1"/>
-          <parameter unit="-" value="0" type="double" name="V_2::Value"/>
-          <parameter unit="[m^3]" value="0.00003" type="double" name="V_2"/>
+          <parameter unit="-" value="0.0001" type="double" name="A_1::Value"/>
+          <parameter unit="-" value="0.0001" type="double" name="A_2::Value"/>
+          <parameter unit="-" value="0.01" type="double" name="s_l::Value"/>
+          <parameter unit="-" value="0.00003" type="double" name="V_1::Value"/>
+          <parameter unit="-" value="0.00003" type="double" name="V_2::Value"/>
           <parameter unit="-" value="0" type="double" name="B_p::Value"/>
-          <parameter unit="[Ns/m]" value="0" type="double" name="B_p"/>
-          <parameter unit="-" value="0" type="double" name="Beta_e::Value"/>
-          <parameter unit="[Pa]" value="1e+009" type="double" name="Beta_e"/>
-          <parameter unit="-" value="0" type="double" name="c_leak::Value"/>
-          <parameter unit="[]" value="5e-11" type="double" name="c_leak"/>
+          <parameter unit="-" value="1e+009" type="double" name="Beta_e::Value"/>
+          <parameter unit="-" value="5e-11" type="double" name="c_leak::Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeHydraulic" name="P1"/>
@@ -509,8 +478,7 @@
           <parameter unit="N" value="0" type="double" name="P2::WaveVariable"/>
           <parameter unit="N s/m" value="0" type="double" name="P2::CharImpedance"/>
           <parameter unit="kg" value="0" type="double" name="P2::EquivalentMass"/>
-          <parameter unit="-" value="0" type="double" name="k::Value"/>
-          <parameter unit="[N/m]" value="12000" type="double" name="k"/>
+          <parameter unit="-" value="12000" type="double" name="k::Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeMechanic" name="P1"/>
@@ -600,7 +568,7 @@
           <style>solid</style>
         </hopsangui>
       </connect>
-      <connect endport="out" endcomponent="Gain" startport="in" startcomponent="Q_Type_Variable_Displacement_Pump">
+      <connect endport="out" endcomponent="Gain" startport="eps" startcomponent="Q_Type_Variable_Displacement_Pump">
         <hopsangui>
           <coordinates>
             <coordinate x="2588.72528400000010151416" y="2519.13264799999979004497"/>
@@ -742,6 +710,18 @@
           <style>solid</style>
         </hopsangui>
       </connect>
+      <connect endport="p" endcomponent="C_type_Pressure_Source_1" startport="out" startcomponent="Reference_Pressure">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2908.32686599999988175114" y="2724.85137200000008306233"/>
+            <coordinate x="2908.32686599999988175114" y="2700.49086500000021260348"/>
+          </coordinates>
+          <geometries>
+            <geometry>diagonal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
       <connect endport="Kc" endcomponent="Load" startport="out" startcomponent="Disturbance">
         <hopsangui>
           <coordinates>
@@ -750,22 +730,6 @@
           </coordinates>
           <geometries>
             <geometry>diagonal</geometry>
-          </geometries>
-          <style>solid</style>
-        </hopsangui>
-      </connect>
-      <connect endport="p" endcomponent="C_type_Pressure_Source_1" startport="out" startcomponent="Reference_Pressure">
-        <hopsangui>
-          <coordinates>
-            <coordinate x="2908.32686599999988175114" y="2724.85137200000008306233"/>
-            <coordinate x="2908.32686599999988175114" y="2719.21620347499992931262"/>
-            <coordinate x="2908.32686599999988175114" y="2719.21620347499992931262"/>
-            <coordinate x="2908.32686599999988175114" y="2700.49086500000021260348"/>
-          </coordinates>
-          <geometries>
-            <geometry>horizontal</geometry>
-            <geometry>vertical</geometry>
-            <geometry>horizontal</geometry>
           </geometries>
           <style>solid</style>
         </hopsangui>
