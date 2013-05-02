@@ -59,7 +59,6 @@ namespace hopsan {
         {
             pnom = 7e6;
             movementnom = 125;
-            qmin = 0;
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
@@ -78,7 +77,7 @@ namespace hopsan {
             addInputVariable("t_p", "Time from min to full displacement", "[s]", 0.15, &mpTp);
             addInputVariable("t_m", "Time from full to min displacement", "[s]", 0.12, &mpTm);
 
-            registerParameter("q_min", "Nominal minimal flow", "[m^3/s]", qmin);
+            addConstant("q_min", "Nominal minimal flow", "[m^3/s]", 0, qmin);
         }
 
 

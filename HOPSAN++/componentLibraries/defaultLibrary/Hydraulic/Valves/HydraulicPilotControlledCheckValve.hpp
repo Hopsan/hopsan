@@ -40,8 +40,8 @@ namespace hopsan {
     {
     private:
         double mKs;
-        double phi;
-        double pf;
+        double *mpPhi;
+        double *mpPf;
         bool cav;
         TurbulentFlowFunction qTurb_;
 
@@ -59,17 +59,14 @@ namespace hopsan {
 
         void configure()
         {
-            mKs = 0.000000025;
-            phi = 3.5;
-            pf = 1e+5;
-
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpP_PILOT = addPowerPort("P_PILOT", "NodeHydraulic");
 
-            registerParameter("K_s", "Restrictor Coefficient", "[-]", mKs);
-            registerParameter("phi", "Pilot Ratio","[-]", phi);
-            registerParameter("p_f", "Cracking Pressure", "[Pa]", pf);
+            addInputVariable("phi", "Pilot Ratio","[-]", 3.5, &mpPhi);
+            addInputVariable("p_f", "Cracking Pressure", "[Pa]", 1e+5, &mpPf);
+
+            addConstant("K_s", "Restrictor Coefficient", "[-]", 0.000000025, mKs);
         }
 
 
@@ -102,7 +99,7 @@ namespace hopsan {
             c_pilot = (*mpND_c_pilot);
 
             //Checkvalve equations
-            if ((c1 > (c2 + pf)) || c_pilot > ((c1-c2) / phi) + c2 + pf )
+            if ((c1 > (c2 + (*mpPf))) || c_pilot > ((c1-c2) / (*mpPhi)) + c2 + (*mpPf) )
             {
                 q2 = qTurb_.getFlow(c1, c2, Zc1, Zc2);
             }

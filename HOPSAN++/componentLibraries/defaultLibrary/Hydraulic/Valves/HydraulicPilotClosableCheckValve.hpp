@@ -39,10 +39,11 @@ namespace hopsan {
     class HydraulicPilotClosableCheckValve : public ComponentQ
     {
     private:
-        double mKs;
+
         bool cav;
         TurbulentFlowFunction qTurb_;
 
+        double mKs;
         double *mpND_p1, *mpND_q1, *mpND_c1, *mpND_Zc1, *mpND_p2, *mpND_q2, *mpND_c2, *mpND_Zc2,
         *mpND_p_pilot, *mpND_c_pilot;
         double p1, q1, c1, Zc1, p2, q2, c2, Zc2, p_pilot, c_pilot;
@@ -57,13 +58,11 @@ namespace hopsan {
 
         void configure()
         {
-            mKs = 0.000000025;
-
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpP_PILOT = addPowerPort("P_PILOT", "NodeHydraulic");
 
-            registerParameter("K_s", "Restrictor Coefficient", "[]", mKs);
+            addConstant("K_s", "Restrictor Coefficient", "", 0.000000025, mKs);
         }
 
 
