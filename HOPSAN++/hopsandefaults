@@ -143,7 +143,7 @@
         <customunit unit="inch" scale="39.3700787" name="Position"/>
         <customunit unit="m" scale="1" name="Position"/>
         <customunit unit="mm" scale="1000" name="Position"/>
-        <customunit unit="Bar" scale="1e-005" name="Pressure"/>
+        <customunit unit="bar" scale="1e-005" name="Pressure"/>
         <customunit unit="MPa" scale="1e-006" name="Pressure"/>
         <customunit unit="Pa" scale="1" name="Pressure"/>
         <customunit unit="psi" scale="0.0001450326" name="Pressure"/>
