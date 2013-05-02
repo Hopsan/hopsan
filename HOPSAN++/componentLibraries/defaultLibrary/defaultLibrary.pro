@@ -143,7 +143,6 @@ HEADERS += \
     Hydraulic/Volumes&Lines/HopsanDefaulHydraulicVolumesAndLines.h \
     Hydraulic/Sensors/HydraulicPowerSensor.hpp \
     Hydraulic/Valves/HopsanDefaultHydraulicValves.h \
-    Hydraulic/Sources&Sinks/HydraulicTankQ.hpp \
     Hydraulic/Sources&Sinks/HydraulicTankC.hpp \
     Hydraulic/Sources&Sinks/HydraulicPressureSourceQ.hpp \
     Hydraulic/Sources&Sinks/HydraulicPressureSourceC.hpp \
@@ -260,9 +259,6 @@ HEADERS += \
     Mechanic/Rotational/MechanicRackAndPinion.hpp \
     Signal/Sources&Sinks/SignalConstant.hpp \
     Signal/Filters/SignalIntegrator2.hpp \
-    Signal/Filters/SignalIntegratorLimited2.hpp \
-    Signal/Filters/SignalIntegratorLimited.hpp \
-    Signal/Filters/SignalIntegrator.hpp \
     Special/AeroComponents/AeroAircraft6DOF.hpp \
     Special/AeroComponents/SignalWaypoint.hpp \
     Special/AeroComponents/SignalTimeAccelerator.hpp \
