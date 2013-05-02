@@ -87,7 +87,6 @@ namespace hopsan {
             }
 
             // Initialize
-            //! @todo the integrator is not initialized with correct torque angle and angular vel
             mIntegrator.initialize(mTimestep, 0, (*mpJ), ts, tk, (*mpP1_T)-(*mpP2_T), (*mpP2_a), (*mpP2_w));
         }
 
