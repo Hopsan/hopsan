@@ -367,11 +367,6 @@ void Connector::finishCreation()
         mpLines[i]->setFlag(QGraphicsItem::ItemIsSelectable, true);
     }
 
-    if(mpConnectorAppearance->getStyle() == SignalConnectorStyle)
-    {
-        connect(mpParentContainerObject, SIGNAL(showOrHideSignals(bool)), this, SLOT(setVisible(bool)), Qt::UniqueConnection);
-    }
-
     if (!(mpStartPort && mpEndPort))
     {
         mIsBroken = true;
@@ -379,6 +374,12 @@ void Connector::finishCreation()
 
     this->determineAppearance();    // Figure out which connector appearance to use
     this->setPassive();             // Make line passive (deselected)
+
+    if(mpConnectorAppearance->getStyle() == SignalConnectorStyle)
+    {
+        connect(mpParentContainerObject, SIGNAL(showOrHideSignals(bool)), this, SLOT(setVisible(bool)), Qt::UniqueConnection);
+    }
+
     emit connectionFinished();      // Let everyone know that the connection process is finished
 }
 
