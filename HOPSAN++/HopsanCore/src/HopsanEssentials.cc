@@ -96,17 +96,17 @@ HopsanEssentials::~HopsanEssentials()
     delete mpMessageHandler;
 }
 
-//! Returns the hopsan core version as a string
-std::string HopsanEssentials::getCoreVersion()
+//! @brief Returns the hopsan core version as a string
+const char *HopsanEssentials::getCoreVersion()
 {
     return HOPSANCOREVERSION;
 }
 
-//! Creates a component with the specified key-value and returns a pointer to this component.
+//! @brief Creates a component with the specified key-value and returns a pointer to this component.
 //! @param [in] rString The
 Component* HopsanEssentials::createComponent(const char* typeName)
 {
-    addLogMess(std::string(typeName) + "::createComponent");
+    addLogMess((string(typeName)+"::createComponent").c_str());
     Component* pComp = mpComponentFactory->createInstance(typeName);
     if (pComp)
     {
@@ -127,16 +127,16 @@ Component* HopsanEssentials::createComponent(const char* typeName)
 //! @brief Check if a component with given typename exist in the ComponentFactory
 //! @param [in] type The typename to check
 //! @returns True or False depending on if type exist
-bool HopsanEssentials::hasComponent(const std::string &rType)
+bool HopsanEssentials::hasComponent(const char* type)
 {
-    return mpComponentFactory->hasKey(rType);
+    return mpComponentFactory->hasKey(type);
 }
 
 //! @brief Reserves a component TypeName in the component factory map
 //! @param [in] typeName The TypeName to reserve
-bool HopsanEssentials::reserveComponentTypeName(const std::string &rTypeName)
+bool HopsanEssentials::reserveComponentTypeName(const char* typeName)
 {
-    return mpComponentFactory->reserveKey(rTypeName);
+    return mpComponentFactory->reserveKey(typeName);
 }
 
 //! @brief Returns a vector containing all registered component types
@@ -167,12 +167,12 @@ void HopsanEssentials::removeNode(Node *pNode)
 //! @brief Creates a Node of given node type
 //! @param [in] rNodeType The type of node to create
 //! @returns A pointer to the created node
-Node* HopsanEssentials::createNode(const std::string &rNodeType)
+Node* HopsanEssentials::createNode(const char* nodeType)
 {
-    Node *pNode = mpNodeFactory->createInstance(rNodeType);
+    Node *pNode = mpNodeFactory->createInstance(nodeType);
     if (pNode)
     {
-        pNode->mNodeType = rNodeType;
+        pNode->mNodeType = nodeType;
     }
     else
     {
@@ -199,10 +199,10 @@ HopsanCoreMessageHandler *HopsanEssentials::getCoreMessageHandler()
 //! @param [in,out] rStartTime A reference to the starttime variable
 //! @param [in,out] rStopTime A reference to the stoptime variable
 //! @returns A pointer to the rootsystem of the loaded model
-ComponentSystem* HopsanEssentials::loadHMFModel(const string &rFilePath, double &rStartTime, double &rStopTime)
+ComponentSystem* HopsanEssentials::loadHMFModel(const char *filePath, double &rStartTime, double &rStopTime)
 {
     addLogMess("HopsanEssentials::loadHMFModel()");
-    return loadHopsanModelFile(rFilePath, this, rStartTime, rStopTime);
+    return loadHopsanModelFile(filePath, this, rStartTime, rStopTime);
 }
 
 ComponentSystem* HopsanEssentials::loadHMFModel(const std::vector<unsigned char> xmlVector)
@@ -210,9 +210,9 @@ ComponentSystem* HopsanEssentials::loadHMFModel(const std::vector<unsigned char>
     return loadHopsanModelFile(xmlVector, this);
 }
 
-ComponentSystem* HopsanEssentials::loadHMFModel(const std::string xmlString)
+ComponentSystem* HopsanEssentials::loadHMFModel(const char *xmlString)
 {
-    return loadHopsanModelFileFromStdString(xmlString, this);
+    return loadHopsanModelFile(xmlString, this);
 }
 
 SimulationHandler *HopsanEssentials::getSimulationHandler()
@@ -240,17 +240,17 @@ size_t HopsanEssentials::checkMessage()
 //! @brief Loads an external component library
 //! @param [in] path The path to the library DLL or SO file
 //! @returns True if loaded sucessfully, otherwise false
-bool HopsanEssentials::loadExternalComponentLib(const std::string &rPath)
+bool HopsanEssentials::loadExternalComponentLib(const char *path)
 {
-    return mpExternalLoader->load(rPath);
+    return mpExternalLoader->load(path);
 }
 
 //! @brief Unloads an external component library
 //! @param [in] path The path to the library DLL or SO file to unload
 //! @returns True if unloaded sucessfully, otherwise false
-bool HopsanEssentials::unLoadExternalComponentLib(const std::string &rPath)
+bool HopsanEssentials::unLoadExternalComponentLib(const char *path)
 {
-    return mpExternalLoader->unLoad(rPath);
+    return mpExternalLoader->unLoad(path);
 }
 
 //! @brief Get the libNames of the currently loaded libs (the names compiled into libs)
@@ -265,9 +265,9 @@ void HopsanEssentials::getExternalComponentLibNames(std::vector<std::string> &rL
 //! @param [in] libpath Path to the external library
 //! @param [out] rComponents A reference to the vector that will contain the component names
 //! @param [out] rNodes A reference to the vector that will contain the node names
-void HopsanEssentials::getExternalLibraryContents(const std::string &rLibpath, std::vector<std::string> &rComponents, std::vector<std::string> &rNodes)
+void HopsanEssentials::getExternalLibraryContents(const char *libPath, std::vector<std::string> &rComponents, std::vector<std::string> &rNodes)
 {
-    mpExternalLoader->getLibContents(rLibpath, rComponents, rNodes);
+    mpExternalLoader->getLibContents(libPath, rComponents, rNodes);
 }
 
 
@@ -290,12 +290,12 @@ void hopsan::closeLogFile()
 }
 
 //! @brief Adds a message to the HopsanCore runtime log
-void hopsan::addLogMess(const std::string &rMessage)
+void hopsan::addLogMess(const char *message)
 {
 #ifdef MAINCORE
     if(hopsanLogFile.good())
     {
-        hopsanLogFile << rMessage << "\n";
+        hopsanLogFile << message << "\n";
     }
 #endif
 }

@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
         // Load the actual external lib .dll/.so files
         for (size_t i=0; i<externalComponentLibraries.size(); ++i)
         {
-            bool rc = gHopsanCore.loadExternalComponentLib(externalComponentLibraries[i]);
+            bool rc = gHopsanCore.loadExternalComponentLib(externalComponentLibraries[i].c_str());
             printWaitingMessages(printDebugOption.getValue()); // Print after loading
             if (rc)
             {
@@ -142,7 +142,7 @@ int main(int argc, char *argv[])
 
             cout << "Loading Hopsan Model File: " << hmfPathOption.getValue() << endl;
             double startTime=0, stopTime=2;
-            ComponentSystem* pRootSystem = gHopsanCore.loadHMFModel(hmfPathOption.getValue(), startTime, stopTime);
+            ComponentSystem* pRootSystem = gHopsanCore.loadHMFModel(hmfPathOption.getValue().c_str(), startTime, stopTime);
             printWaitingMessages(printDebugOption.getValue());
 
             if (parameterImportOption.isSet())

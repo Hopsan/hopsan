@@ -449,10 +449,10 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
 //! @param [out] rStartTime A reference to the starttime variable
 //! @param [out] rStopTime A reference to the stoptime variable
 //! @returns A pointer to the rootsystem of the loaded model
-//! @todo if possible emrge the two differen main load functions
+//! @todo if possible merge the two differen main load functions
 ComponentSystem* hopsan::loadHopsanModelFile(const std::string filePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime)
 {
-    addLogMess("hopsan::loadHopsanModelFile("+filePath+")");
+    addLogMess(("hopsan::loadHopsanModelFile("+filePath+")").c_str());
     try
     {
         rapidxml::file<> hmfFile(filePath.c_str());
@@ -528,12 +528,13 @@ ComponentSystem* hopsan::loadHopsanModelFile(std::vector<unsigned char> xmlVecto
 //! @brief This function is used to load a HMF file from model string.
 //! @param [in] xmlModel The xml representation of the model
 //! @returns A pointer to the rootsystem of the loaded model
-ComponentSystem* hopsan::loadHopsanModelFileFromStdString(std::string xmlStr, HopsanEssentials* pHopsanEssentials)
+ComponentSystem* hopsan::loadHopsanModelFile(const char* xmlStr, HopsanEssentials* pHopsanEssentials)
 {
-    char *cstr = new char[xmlStr.length() + 1];
-    strcpy(cstr, xmlStr.c_str());
-    ComponentSystem *pSystem = loadHopsanModelFile(cstr, pHopsanEssentials);
-    delete [] cstr;
+    // Rapid xml requires a non-const char* to work with, we need to copy the text
+    char *str = new char[strlen(xmlStr)+1];
+    strcpy(str, xmlStr);
+    ComponentSystem *pSystem = loadHopsanModelFile(str, pHopsanEssentials);
+    delete [] str;
     return pSystem;
 }
 
@@ -601,7 +602,7 @@ ComponentSystem* hopsan::loadHopsanModelFile(char* xmlStr, HopsanEssentials* pHo
 //! @returns A pointer to the rootsystem of the loaded model
 void hopsan::loadHopsanParameterFile(const std::string filePath, HopsanEssentials* pHopsanEssentials, ComponentSystem *pSystem)
 {
-    addLogMess("hopsan::loadHopsanParameterFile("+filePath+")");
+    addLogMess(("hopsan::loadHopsanParameterFile("+filePath+")").c_str());
     try
     {
         rapidxml::file<> hmfFile(filePath.c_str());

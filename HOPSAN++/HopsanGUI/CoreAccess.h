@@ -56,12 +56,13 @@ public:
 class CoreLibraryAccess
 {
 public:
-    bool hasComponent(QString componentName);
-    bool loadComponentLib(QString fileName);
-    bool unLoadComponentLib(QString fileName);
-    bool reserveComponentTypeName(const QString typeName);
+    bool hasComponent(const QString &rComponentName);
+    bool loadComponentLib(const QString &rFileName);
+    bool unLoadComponentLib(const QString &rFileName);
+    bool reserveComponentTypeName(const QString &rTypeName);
     void getLoadedLibNames(QVector<QString> &rLibNames);
     void getLibraryContents(QString libPath, QStringList &rComponents, QStringList &rNodes);
+
 };
 
 class CoreMessagesAccess

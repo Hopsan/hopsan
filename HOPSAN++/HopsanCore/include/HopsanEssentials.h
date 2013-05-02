@@ -52,19 +52,19 @@ public:
     ~HopsanEssentials();
 
     // Version info
-    std::string getCoreVersion();
+    const char *getCoreVersion();
 
     // Component creation
-    Component* createComponent(const char *typeName);
+    Component* createComponent(const char* typeName);
     ComponentSystem* createComponentSystem();
     void removeComponent(Component *pComponent);
     void removeNode(Node *pNode);
-    bool hasComponent(const std::string &rType);
-    bool reserveComponentTypeName(const std::string &rTypeName);
+    bool hasComponent(const char* type);
+    bool reserveComponentTypeName(const char* typeName);
     const std::vector<std::string> getRegisteredComponentTypes() const;
 
     // Node creation
-    Node* createNode(const std::string &rNodeType);
+    Node* createNode(const char* nodeType);
     const std::vector<std::string> getRegisteredNodeTypes() const;
 
     // Messages
@@ -73,15 +73,15 @@ public:
     size_t checkMessage();
 
     // External libraries
-    bool loadExternalComponentLib(const std::string &rPath);
-    bool unLoadExternalComponentLib(const std::string &rPath);
+    bool loadExternalComponentLib(const char* path);
+    bool unLoadExternalComponentLib(const char* path);
     void getExternalComponentLibNames(std::vector<std::string> &rLibNames);
-    void getExternalLibraryContents(const std::string &rLibpath, std::vector<std::string> &rComponents, std::vector<std::string> &rNodes);
+    void getExternalLibraryContents(const char* libPath, std::vector<std::string> &rComponents, std::vector<std::string> &rNodes);
 
     // Loading HMF models
-    ComponentSystem* loadHMFModel(const std::string &rFilePath, double &rStartTime, double &rStopTime);
+    ComponentSystem* loadHMFModel(const char* filePath, double &rStartTime, double &rStopTime);
     ComponentSystem* loadHMFModel(const std::vector<unsigned char> xmlVector);
-    ComponentSystem* loadHMFModel(const std::string xmlString);
+    ComponentSystem* loadHMFModel(const char* xmlString);
 
     // Running simulation
     SimulationHandler *getSimulationHandler();
@@ -89,6 +89,6 @@ public:
 
 void openLogFile();
 void closeLogFile();
-void addLogMess(const std::string &rMessage);
+void addLogMess(const char* message);
 }
 #endif // HopsanEssentials_H

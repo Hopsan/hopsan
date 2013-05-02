@@ -200,26 +200,26 @@ bool CoreGeneratorAccess::compileComponentLibrary(QString path, QString name, QS
 }
 
 
-bool CoreLibraryAccess::hasComponent(QString componentName)
+bool CoreLibraryAccess::hasComponent(const QString &rComponentName)
 {
-    return gHopsanCore.hasComponent(componentName.toStdString());
+    return gHopsanCore.hasComponent(rComponentName.toStdString().c_str());
 }
 
 
-bool CoreLibraryAccess::loadComponentLib(QString fileName)
+bool CoreLibraryAccess::loadComponentLib(const QString &rFileName)
 {
-    return gHopsanCore.loadExternalComponentLib(fileName.toStdString());
+    return gHopsanCore.loadExternalComponentLib(rFileName.toStdString().c_str());
 }
 
-bool CoreLibraryAccess::unLoadComponentLib(QString fileName)
+bool CoreLibraryAccess::unLoadComponentLib(const QString &rFileName)
 {
-    return gHopsanCore.unLoadExternalComponentLib(fileName.toStdString());
+    return gHopsanCore.unLoadExternalComponentLib(rFileName.toStdString().c_str());
 }
 
 //! @brief Reserves a type name in the Hopsan Core, to prevent external libs from loading components with that specific typename
-bool CoreLibraryAccess::reserveComponentTypeName(const QString typeName)
+bool CoreLibraryAccess::reserveComponentTypeName(const QString &rTypeName)
 {
-    return gHopsanCore.reserveComponentTypeName(typeName.toStdString());
+    return gHopsanCore.reserveComponentTypeName(rTypeName.toStdString().c_str());
 }
 
 void CoreLibraryAccess::getLoadedLibNames(QVector<QString> &rLibNames)
@@ -238,7 +238,7 @@ void CoreLibraryAccess::getLoadedLibNames(QVector<QString> &rLibNames)
 void CoreLibraryAccess::getLibraryContents(QString libPath, QStringList &rComponents, QStringList &rNodes)
 {
     std::vector<std::string> components, nodes;
-    gHopsanCore.getExternalLibraryContents(libPath.toStdString(), components, nodes);
+    gHopsanCore.getExternalLibraryContents(libPath.toStdString().c_str(), components, nodes);
 
     rComponents.clear();
     rComponents.reserve(components.size());
@@ -1145,7 +1145,7 @@ void CoreSystemAccess::addSearchPath(QString searchPath)
 
 NodeInfo::NodeInfo(QString nodeType)
 {
-    hopsan::Node *pNode = gHopsanCore.createNode(nodeType.toStdString());
+    hopsan::Node *pNode = gHopsanCore.createNode(nodeType.toStdString().c_str());
     if(!pNode) return;
 
     niceName = pNode->getNiceName().c_str();

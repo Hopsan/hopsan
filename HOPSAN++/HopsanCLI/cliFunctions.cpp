@@ -800,7 +800,7 @@ bool performModelTest(const std::string hvcFilePath)
                         }
 
                         double startTime=0, stopTime=1;
-                        ComponentSystem* pRootSystem = gHopsanCore.loadHMFModel(modelfile, startTime, stopTime);
+                        ComponentSystem* pRootSystem = gHopsanCore.loadHMFModel(modelfile.c_str(), startTime, stopTime);
 
                         if (pRootSystem!=0)
                         {

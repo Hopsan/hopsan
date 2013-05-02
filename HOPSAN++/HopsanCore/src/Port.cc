@@ -53,7 +53,7 @@ Port::Port(const string nodeType, const string portName, Component *pParentCompo
     //mpTempAlias=0;
 
     // Create the initial node
-    mpNode = getComponent()->getHopsanEssentials()->createNode(mNodeType);
+    mpNode = getComponent()->getHopsanEssentials()->createNode(mNodeType.c_str());
     this->setNode(mpNode);
     if (getComponent()->getSystemParent())
     {
@@ -263,7 +263,7 @@ size_t Port::getNumConnectedPorts(const int portIdx)
 
 void Port::createStartNode(std::string nodeType)
 {
-    mpStartNode = getComponent()->getHopsanEssentials()->createNode(nodeType);
+    mpStartNode = getComponent()->getHopsanEssentials()->createNode(nodeType.c_str());
     //!< @todo Maye I dont even need to create startnodes for subports in multiports, in that case, move this line into if bellow
 
     // Prevent registering startvalues for subports in multiports, It will be very difficult to ensure that those would actually work as expected

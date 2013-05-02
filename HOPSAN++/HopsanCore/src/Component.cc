@@ -581,7 +581,7 @@ double *Component::getTimePtr()
 //! @return A pointer to the created port
 Port* Component::addPort(const string portName, const PortTypesEnumT portType, const std::string nodeType, const Port::RequireConnectionEnumT reqConnection)
 {
-    addLogMess(getName()+"::addPort");
+    addLogMess((getName()+"::addPort").c_str());
 
     //Make sure name is unique before insert
     string newname = this->determineUniquePortName(portName);
@@ -786,7 +786,7 @@ double *Component::getSafeNodeDataPtr(Port *pPort, const int dataId)
 //! @todo Dont know if name really good, should indicate that you should only run this once in initialize (otherwise a lot of new doubls may be created)
 double *Component::getNodeDataPtr(Port *pPort, const int dataId)
 {
-    addLogMess(getName() + string("::getNodeDataPtr"));
+    addLogMess((getName()+"::getNodeDataPtr").c_str());
     //If this is one of the multiports then give an error message to the user so that they KNOW that they have made a misstake
     if (pPort->getPortType() >= MultiportType)
     {
@@ -817,7 +817,7 @@ double *Component::getSafeNodeDataPtr(const string &rPortName, const int dataId)
 //! @todo Dont know if name really good, should indicate that you should only run this once in initialize (otherwise a lot of new doubls may be created)
 double *Component::getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx, const int dataId, const double defaultValue)
 {
-    addLogMess(getName() + string("::getSafeMultiPortNodeDataPtr"));
+    addLogMess((getName()+"::getSafeMultiPortNodeDataPtr").c_str());
     //If this is not a multiport then give an error message to the user so that they KNOW that they have made a misstake
     if (pPort->getPortType() < MultiportType)
     {
@@ -1036,10 +1036,10 @@ void Component::addInfoMessage(const string message, const string tag) const
 //! @param [in] message The message string
 void Component::addFatalMessage(const string message, const string tag) const
 {
-    addLogMess(message);
+    addLogMess(message.c_str());
     if (mpMessageHandler)
     {
-        mpMessageHandler->addFatalMessage(getName()+ "::" + message, tag);
+        mpMessageHandler->addFatalMessage(getName()+"::"+message, tag);
     }
 }
 
@@ -1060,7 +1060,7 @@ double Component::getStartValue(Port* pPort, const size_t idx, const size_t port
 //! @param[in] value is the start value that should be written
 void Component::setStartValue(Port* pPort, const size_t idx, const double value)
 {
-    addLogMess(getName()+"::setStartValue");
+    addLogMess((getName()+"::setStartValue").c_str());
     pPort->setStartValue(idx, value);
     // If a description exist, then refresh the value text
     if (pPort->getNodeDataDescription(idx))

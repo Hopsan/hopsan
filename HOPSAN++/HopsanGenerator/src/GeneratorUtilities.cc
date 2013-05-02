@@ -564,7 +564,7 @@ QStringList getHopsanCoreIncludeFiles(bool skipDependencies)
 GeneratorNodeInfo::GeneratorNodeInfo(QString nodeType)
 {
     hopsan::HopsanEssentials hopsanCore;
-    Node *pNode = hopsanCore.createNode(nodeType.toStdString());
+    Node *pNode = hopsanCore.createNode(nodeType.toStdString().c_str());
 
     niceName = pNode->getNiceName().c_str();
     for(size_t i=0; i<pNode->getDataDescriptions()->size(); ++i)

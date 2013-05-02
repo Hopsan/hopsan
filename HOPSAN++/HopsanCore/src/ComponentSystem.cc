@@ -1241,7 +1241,7 @@ bool ConnectionAssistant::mergeNodeConnection(Port *pPort1, Port *pPort2)
     }
 
     // Create a new node and recursively set in all ports
-    Node *pNewNode = mpComponentSystem->getHopsanEssentials()->createNode(pPort1->getNodeType());
+    Node *pNewNode = mpComponentSystem->getHopsanEssentials()->createNode(pPort1->getNodeType().c_str());
     recursivelySetNode(pPort1, 0, pNewNode);
     recursivelySetNode(pPort2, 0, pNewNode);
 
@@ -1352,8 +1352,8 @@ bool ConnectionAssistant::splitNodeConnection(Port *pPort1, Port *pPort2)
     }
 
     Node *pOldNode = pPort1->getNodePtr();
-    Node *pNewNode1 = mpComponentSystem->getHopsanEssentials()->createNode(pOldNode->getNodeType());
-    Node *pNewNode2 = mpComponentSystem->getHopsanEssentials()->createNode(pOldNode->getNodeType());
+    Node *pNewNode1 = mpComponentSystem->getHopsanEssentials()->createNode(pOldNode->getNodeType().c_str());
+    Node *pNewNode2 = mpComponentSystem->getHopsanEssentials()->createNode(pOldNode->getNodeType().c_str());
 
     // Make the ports forget about each other, If the ports becomes empty the nodes will be reset
     pPort1->eraseConnectedPort(pPort2);
