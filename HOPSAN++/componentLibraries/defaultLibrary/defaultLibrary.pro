@@ -279,7 +279,8 @@ HEADERS += \
     Special/AeroComponents/HopsanDefaultAerocomponents.h \
     Hydraulic/MachineParts/HydraulicPumpPiston.hpp \
     Hydraulic/Valves/HydraulicPilotControlledCheckValve.hpp \
-    Hydraulic/Valves/HydraulicPilotClosableCheckValve.hpp
+    Hydraulic/Valves/HydraulicPilotClosableCheckValve.hpp \
+    Hydraulic/Sources&Sinks/HydraulicPlugQ.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \

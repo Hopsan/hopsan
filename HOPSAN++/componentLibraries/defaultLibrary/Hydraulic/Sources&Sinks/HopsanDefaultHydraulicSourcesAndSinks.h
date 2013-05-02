@@ -7,6 +7,7 @@
 #include "HydraulicPressureSourceQ.hpp"
 #include "HydraulicTankC.hpp"
 #include "HydraulicMultiTankC.hpp"
+#include "HydraulicPlugQ.hpp"
 //#include "HydraulicTankQ.hpp"
 
 #endif // HOPSANDEFAULTHYDRAULICSOURCESANDSINKS_H

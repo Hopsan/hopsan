@@ -151,6 +151,7 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("HydraulicCentrifugalPump", HydraulicCentrifugalPump::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicCentrifugalPumpJ", HydraulicCentrifugalPumpJ::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicFuelTankG", HydraulicFuelTankG::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicPlugQ", HydraulicPlugQ::Creator);
 
     //Signal components
     #include "Signal/HopsanDefaultSignalComponents.cci"
