@@ -6,10 +6,10 @@
             <icon scale="1" path="SignalFFBor.svg" iconrotation="ON" type="iso"/>
         </icons>
         <ports>
-            <port x="0.8" y="1" a="90" name="Pstate"/>
-            <port x="1" y="0.5" a="0" name="Pexiting"/>
-            <port x="0" y="0.5" a="180" name="Pin0"/>
-            <port x="0.5" y="1" a="90" name="Pin1"/>
+            <port x="0.8" y="1" a="90" name="state"/>
+            <port x="1" y="0.5" a="0" name="exiting"/>
+            <port x="0" y="0.5" a="180" name="in0"/>
+            <port x="0.5" y="1" a="90" name="in1"/>
         </ports>
     </modelobject>
 </hopsanobjectappearance>

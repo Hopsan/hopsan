@@ -10,11 +10,11 @@
             <picture>SignalFFBhelp.svg</picture>
         </help>
         <ports>
-            <port x="0.333333" y="1" a="90" name="Pstate"/>
-            <port x="0.66667" y="1" a="90" name="Pexit"/>
-            <port x="0.5" y="0" a="270" name="Pleave"/>
-            <port x="1" y="0.5" a="0" name="Pexiting"/>
-            <port x="0" y="0.5" a="180" name="Pset"/>
+            <port x="0.333333" y="1" a="90" name="state"/>
+            <port x="0.66667" y="1" a="90" name="exit"/>
+            <port x="0.5" y="0" a="270" name="leave"/>
+            <port x="1" y="0.5" a="0" name="exiting"/>
+            <port x="0" y="0.5" a="180" name="set"/>
         </ports>
     </modelobject>
 </hopsanobjectappearance>
