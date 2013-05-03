@@ -1,316 +1,343 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r4730" hopsancoreversion="0.6.x_r4718">
-    <requirements>
-        <componentlibrary>PettersComponentLibrary</componentlibrary>
-        <componentlibrary>PettersComponentLibrary</componentlibrary>
-    </requirements>
-    <system logsamples="2048" typename="Subsystem" name="JetEngineTest">
-        <simulationtime stop="100" timestep="0.001" start="0" inherit_timestep="true"/>
-        <aliases/>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5339" hopsancoreversion="0.6.x_r5334">
+  <requirements>
+    <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+    <componentlibrary>PettersComponentLibrary</componentlibrary>
+  </requirements>
+  <info/>
+  <system logsamples="2048" typename="Subsystem" name="JetEngineTest">
+    <simulationtime stop="100" timestep="0.001" start="0" inherit_timestep="true"/>
+    <parameters/>
+    <aliases/>
+    <hopsangui>
+      <pose x="0" y="0" flipped="false" a="0"/>
+      <nametext position="0" visible="1"/>
+      <animation flowspeed="100"/>
+      <viewport x="2659" y="2474.5" zoom="1"/>
+      <ports hidden="1"/>
+      <names hidden="0"/>
+      <graphics type="user"/>
+      <scriptfile path=""/>
+      <hopsanobjectappearance version="0.3">
+        <modelobject typename="Subsystem" displayname="JetEngineTest">
+          <icons>
+            <icon path="subsystemDefault.svg" type="defaultmissing"/>
+          </icons>
+          <ports/>
+          <animation flowspeed="100"/>
+        </modelobject>
+      </hopsanobjectappearance>
+      <favoritevariables/>
+      <optimization>
+        <settings>
+          <niter>100</niter>
+          <nsearchp>8</nsearchp>
+          <refcoeff>1.3</refcoeff>
+          <randfac>0.3</randfac>
+          <forgfac>0</forgfac>
+          <functol>1e-05</functol>
+          <partol>0.0001</partol>
+          <plot>true</plot>
+          <savecsv>false</savecsv>
+          <logpar>false</logpar>
+        </settings>
         <parameters/>
+        <objectives/>
+      </optimization>
+    </hopsangui>
+    <objects>
+      <component typename="SignalRamp" name="Ramp">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="y_0::Value"/>
+          <parameter unit="-" value="15000" type="double" name="y_A::Value"/>
+          <parameter unit="-" value="1" type="double" name="t_start::Value"/>
+          <parameter unit="-" value="100" type="double" name="t_end::Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
         <hopsangui>
-            <pose x="0" y="0" flipped="false" a="0"/>
-            <nametext position="0" visible="1"/>
-            <viewport x="2501.5" y="2453.5" zoom="1"/>
-            <ports hidden="1"/>
-            <names hidden="0"/>
-            <scriptfile path=""/>
-            <hopsanobjectappearance version="0.3">
-                <modelobject typename="Subsystem" displayname="JetEngineTest">
-                    <icons>
-                        <icon path="subsystemDefault.svg" type="defaultmissing"/>
-                    </icons>
-                    <ports/>
-                </modelobject>
-            </hopsanobjectappearance>
-            <favoritevariables/>
-            <optimization>
-                <settings>
-                    <niter>100</niter>
-                    <nsearchp>8</nsearchp>
-                    <refcoeff>1.3</refcoeff>
-                    <randfac>0.3</randfac>
-                    <forgfac>0</forgfac>
-                    <functol>1e-05</functol>
-                    <partol>0.0001</partol>
-                    <plot>true</plot>
-                    <savecsv>false</savecsv>
-                    <logpar>false</logpar>
-                </settings>
-                <parameters/>
-                <objectives/>
-            </optimization>
+          <pose x="2119" y="2306" flipped="false" a="0"/>
+          <nametext position="0" visible="1"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalRamp" displayname="Ramp">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
         </hopsangui>
-        <objects>
-            <component typename="SignalRamp" name="Ramp">
-                <parameters>
-                    <parameter value="0" type="double" name="y_0"/>
-                    <parameter value="15000" type="double" name="y_A"/>
-                    <parameter value="1" type="double" name="t_start"/>
-                    <parameter value="100" type="double" name="t_end"/>
-                </parameters>
-                <hopsangui>
-                    <pose x="2119" y="2306" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
-                    <hopsanobjectappearance version="0.3">
-                        <modelobject typename="SignalRamp" displayname="Ramp">
-                            <ports/>
-                        </modelobject>
-                    </hopsanobjectappearance>
-                </hopsangui>
-            </component>
-            <component typename="SignalSink" name="Sink">
-                <parameters/>
-                <hopsangui>
-                    <pose x="2467" y="2549" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
-                    <hopsanobjectappearance version="0.3">
-                        <modelobject typename="SignalSink" displayname="Sink">
-                            <ports/>
-                        </modelobject>
-                    </hopsanobjectappearance>
-                </hopsangui>
-            </component>
-            <component typename="AeroAtmosphere" name="AeroAtmosphere">
-                <parameters>
-                    <parameter value="0" type="double" name="Prho::Value"/>
-                    <parameter value="0" type="double" name="PT::Value"/>
-                    <parameter value="0" type="double" name="Pp0::Value"/>
-                    <parameter value="0" type="double" name="PVsound::Value"/>
-                    <parameter value="9.81" type="double" name="g0"/>
-                    <parameter value="1.225" type="double" name="rhos"/>
-                    <parameter value="-0.0065" type="double" name="a"/>
-                    <parameter value="287" type="double" name="R"/>
-                    <parameter value="1.4" type="double" name="gamma"/>
-                    <parameter value="288.16" type="double" name="Ts"/>
-                    <parameter value="101300" type="double" name="p0s"/>
-                    <parameter value="11000" type="double" name="htp"/>
-                    <parameter value="216.66" type="double" name="Ttp"/>
-                    <parameter value="22610" type="double" name="ptp"/>
-                    <parameter value="0.363649" type="double" name="rhotp"/>
-                    <parameter value="2.71828" type="double" name="e"/>
-                    <parameter value="0" type="double" name="ha"/>
-                </parameters>
-                <hopsangui>
-                    <pose x="2347" y="2363" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
-                    <hopsanobjectappearance version="0.3">
-                        <modelobject typename="AeroAtmosphere" displayname="AeroAtmosphere">
-                            <ports/>
-                        </modelobject>
-                    </hopsanobjectappearance>
-                </hopsangui>
-            </component>
-            <component typename="SignalSource" name="Constant">
-                <parameters>
-                    <parameter value="1" type="double" name="y"/>
-                </parameters>
-                <hopsangui>
-                    <pose x="2122" y="2404" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
-                    <hopsanobjectappearance version="0.3">
-                        <modelobject typename="SignalSource" displayname="Constant">
-                            <ports/>
-                        </modelobject>
-                    </hopsanobjectappearance>
-                </hopsangui>
-            </component>
-            <component typename="SignalSink" name="Sink_1">
-                <parameters/>
-                <hopsangui>
-                    <pose x="2469" y="2620" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
-                    <hopsanobjectappearance version="0.3">
-                        <modelobject typename="SignalSink" displayname="Sink_1">
-                            <ports/>
-                        </modelobject>
-                    </hopsanobjectappearance>
-                </hopsangui>
-            </component>
-            <component typename="AeroJetEngine" name="AeroJetEngine">
-                <parameters>
-                    <parameter value="5000" type="double" name="Pthrust::Value"/>
-                    <parameter value="0" type="double" name="Pmfuel::Value"/>
-                    <parameter value="0" type="double" name="PShspeed::Value"/>
-                    <parameter value="0" type="double" name="Pqmfuel::Value"/>
-                    <parameter value="5000" type="double" name="thrustmax"/>
-                    <parameter value="1.71e-005" type="double" name="SFC"/>
-                    <parameter value="2" type="double" name="BR"/>
-                    <parameter value="1" type="double" name="thau"/>
-                    <parameter value="1" type="double" name="Cspeed"/>
-                    <parameter value="1" type="double" name="uin"/>
-                    <parameter value="1.25" type="double" name="rho"/>
-                    <parameter value="273" type="double" name="T"/>
-                    <parameter value="100000" type="double" name="p0"/>
-                    <parameter value="340" type="double" name="Vsound"/>
-                    <parameter value="100" type="double" name="speed"/>
-                </parameters>
-                <hopsangui>
-                    <pose x="2350" y="2498" flipped="false" a="0"/>
-                    <nametext position="0" visible="1"/>
-                    <hopsanobjectappearance version="0.3">
-                        <modelobject typename="AeroJetEngine" displayname="AeroJetEngine">
-                            <ports/>
-                        </modelobject>
-                    </hopsanobjectappearance>
-                </hopsangui>
-            </component>
-        </objects>
-        <connections>
-            <connect endport="Prho" endcomponent="AeroJetEngine" startport="Prho" startcomponent="AeroAtmosphere">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2317.30000000000018189894" y="2396.00000000000000000000"/>
-                        <coordinate x="2317.30000000000018189894" y="2422.50000000000000000000"/>
-                        <coordinate x="2307.14280000000007930794" y="2422.50000000000000000000"/>
-                        <coordinate x="2307.14280000000007930794" y="2471.50000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="PT" endcomponent="AeroJetEngine" startport="PT" startcomponent="AeroAtmosphere">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2337.09999999999990905053" y="2396.00000000000000000000"/>
-                        <coordinate x="2337.09999999999990905053" y="2422.50000000000000000000"/>
-                        <coordinate x="2335.71419999999989158823" y="2422.50000000000000000000"/>
-                        <coordinate x="2335.71419999999989158823" y="2471.50000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="Pp0" endcomponent="AeroJetEngine" startport="Pp0" startcomponent="AeroAtmosphere">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2356.90000000000009094947" y="2396.00000000000000000000"/>
-                        <coordinate x="2356.90000000000009094947" y="2422.50000000000000000000"/>
-                        <coordinate x="2364.28580000000010841177" y="2422.50000000000000000000"/>
-                        <coordinate x="2364.28580000000010841177" y="2471.50000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="PVsound" endcomponent="AeroJetEngine" startport="PVsound" startcomponent="AeroAtmosphere">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2376.69999999999981810106" y="2396.00000000000000000000"/>
-                        <coordinate x="2376.69999999999981810106" y="2422.50000000000000000000"/>
-                        <coordinate x="2392.85719999999992069206" y="2422.50000000000000000000"/>
-                        <coordinate x="2392.85719999999992069206" y="2471.50000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Sink" startport="Pthrust" startcomponent="AeroJetEngine">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2290.00000000000000000000" y="2524.50000000000000000000"/>
-                        <coordinate x="2290.00000000000000000000" y="2549.00000000000000000000"/>
-                        <coordinate x="2447.00000000000000000000" y="2549.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="Puin" endcomponent="AeroJetEngine" startport="out" startcomponent="Constant">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2134.50000000000000000000" y="2404.00000000000000000000"/>
-                        <coordinate x="2278.57139999999981228029" y="2404.00000000000000000000"/>
-                        <coordinate x="2278.57139999999981228029" y="2471.50000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="in_bottom" endcomponent="Sink" startport="Prho" startcomponent="AeroAtmosphere">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2317.30000000000018189894" y="2396.00000000000000000000"/>
-                        <coordinate x="2317.30000000000018189894" y="2579.00000000000000000000"/>
-                        <coordinate x="2467.00000000000000000000" y="2579.00000000000000000000"/>
-                        <coordinate x="2467.00000000000000000000" y="2564.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="in" endcomponent="Sink_1" startport="Pqmfuel" startcomponent="AeroJetEngine">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2410.00000000000000000000" y="2524.50000000000000000000"/>
-                        <coordinate x="2410.00000000000000000000" y="2620.00000000000000000000"/>
-                        <coordinate x="2449.00000000000000000000" y="2620.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="in_right" endcomponent="Sink_1" startport="Pmfuel" startcomponent="AeroJetEngine">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2330.00000000000000000000" y="2524.50000000000000000000"/>
-                        <coordinate x="2330.00000000000000000000" y="2655.00000000000000000000"/>
-                        <coordinate x="2505.00000000000000000000" y="2655.00000000000000000000"/>
-                        <coordinate x="2505.00000000000000000000" y="2620.00000000000000000000"/>
-                        <coordinate x="2489.00000000000000000000" y="2620.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                        <geometry>vertical</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-            <connect endport="Pha" endcomponent="AeroAtmosphere" startport="out" startcomponent="Ramp">
-                <hopsangui>
-                    <coordinates>
-                        <coordinate x="2131.50000000000000000000" y="2306.00000000000000000000"/>
-                        <coordinate x="2347.00000000000000000000" y="2306.00000000000000000000"/>
-                        <coordinate x="2347.00000000000000000000" y="2330.00000000000000000000"/>
-                    </coordinates>
-                    <geometries>
-                        <geometry>vertical</geometry>
-                        <geometry>horizontal</geometry>
-                    </geometries>
-                    <style>solid</style>
-                </hopsangui>
-            </connect>
-        </connections>
-    </system>
+      </component>
+      <component typename="SignalSink" name="Sink">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in_right"/>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="in_bottom"/>
+        </ports>
+        <hopsangui>
+          <pose x="2467" y="2549" flipped="false" a="0"/>
+          <nametext position="0" visible="1"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Sink">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="AeroAtmosphere" name="AeroAtmosphere">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="ha::Value"/>
+          <parameter unit="-" value="1.25" type="double" name="rho::Value"/>
+          <parameter unit="-" value="273" type="double" name="Tav::Value"/>
+          <parameter unit="-" value="100000" type="double" name="p0::Value"/>
+          <parameter unit="-" value="340" type="double" name="Vsound::Value"/>
+          <parameter unit="m/s^2" value="9.81" type="double" name="g0"/>
+          <parameter unit="kg/m3" value="1.225" type="double" name="rhos"/>
+          <parameter unit="" value="-0.0065" type="double" name="a"/>
+          <parameter unit="" value="287" type="double" name="R"/>
+          <parameter unit="" value="1.4" type="double" name="gamma"/>
+          <parameter unit="K" value="288.16" type="double" name="Ts"/>
+          <parameter unit="Pa" value="101300" type="double" name="p0s"/>
+          <parameter unit="m" value="11000" type="double" name="htp"/>
+          <parameter unit="K" value="216.66" type="double" name="Ttp"/>
+          <parameter unit="Pa" value="22610" type="double" name="ptp"/>
+          <parameter unit="kg/m3" value="0.363649" type="double" name="rhotp"/>
+          <parameter unit="" value="2.71828" type="double" name="e"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="rho"/>
+          <port nodetype="NodeSignal" name="p0"/>
+          <port nodetype="NodeSignal" name="Vsound"/>
+          <port nodetype="NodeSignal" name="ha"/>
+        </ports>
+        <hopsangui>
+          <pose x="2347" y="2363" flipped="false" a="0"/>
+          <nametext position="0" visible="1"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="AeroAtmosphere" displayname="AeroAtmosphere">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalConstant" name="Constant">
+        <parameters>
+          <parameter unit="-" value="1" type="double" name="y::Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="y"/>
+        </ports>
+        <hopsangui>
+          <pose x="2122" y="2404" flipped="false" a="0"/>
+          <nametext position="0" visible="1"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalConstant" displayname="Constant">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSink" name="Sink_1">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in_right"/>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="in_bottom"/>
+        </ports>
+        <hopsangui>
+          <pose x="2469" y="2620" flipped="false" a="0"/>
+          <nametext position="0" visible="1"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Sink_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="AeroJetEngine" name="AeroJetEngine">
+        <parameters>
+          <parameter unit="-" value="1" type="double" name="uin::Value"/>
+          <parameter unit="-" value="1.25" type="double" name="rho::Value"/>
+          <parameter unit="-" value="273" type="double" name="Tav::Value"/>
+          <parameter unit="-" value="100000" type="double" name="p0::Value"/>
+          <parameter unit="-" value="340" type="double" name="Vsound::Value"/>
+          <parameter unit="-" value="100" type="double" name="speed::Value"/>
+          <parameter unit="-" value="5000" type="double" name="thrust::Value"/>
+          <parameter unit="-" value="0" type="double" name="mfuel::Value"/>
+          <parameter unit="-" value="1" type="double" name="Shspeed::Value"/>
+          <parameter unit="-" value="1" type="double" name="qmfuel::Value"/>
+          <parameter unit="N" value="5000" type="double" name="thrustmax"/>
+          <parameter unit="kg/(N s)" value="1.71e-005" type="double" name="SFC"/>
+          <parameter unit="" value="2" type="double" name="BR"/>
+          <parameter unit="s" value="1" type="double" name="thau"/>
+          <parameter unit="" value="1" type="double" name="Cspeed"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="speed"/>
+          <port nodetype="NodeSignal" name="qmfuel"/>
+          <port nodetype="NodeSignal" name="rho"/>
+          <port nodetype="NodeSignal" name="uin"/>
+          <port nodetype="NodeSignal" name="p0"/>
+          <port nodetype="NodeSignal" name="Vsound"/>
+          <port nodetype="NodeSignal" name="thrust"/>
+          <port nodetype="NodeSignal" name="mfuel"/>
+          <port nodetype="NodeSignal" name="Shspeed"/>
+        </ports>
+        <hopsangui>
+          <pose x="2350" y="2498" flipped="false" a="0"/>
+          <nametext position="0" visible="1"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="AeroJetEngine" displayname="AeroJetEngine">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+    </objects>
+    <connections>
+      <connect endport="uin" endcomponent="AeroJetEngine" startport="y" startcomponent="Constant">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2134.50000000000000000000" y="2404.00000000000000000000"/>
+            <coordinate x="2278.57139999999981228029" y="2404.00000000000000000000"/>
+            <coordinate x="2278.57139999999981228029" y="2471.50000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="rho" endcomponent="AeroJetEngine" startport="rho" startcomponent="AeroAtmosphere">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2317.30000000000018189894" y="2396.00000000000000000000"/>
+            <coordinate x="2317.30000000000018189894" y="2451.50000000000000000000"/>
+            <coordinate x="2307.14280000000007930794" y="2451.50000000000000000000"/>
+            <coordinate x="2307.14280000000007930794" y="2471.50000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Sink_1" startport="rho" startcomponent="AeroAtmosphere">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2317.30000000000018189894" y="2396.00000000000000000000"/>
+            <coordinate x="2317.30000000000018189894" y="2620.00000000000000000000"/>
+            <coordinate x="2449.00000000000000000000" y="2620.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Sink_1" startport="qmfuel" startcomponent="AeroJetEngine">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2410.00000000000000000000" y="2524.50000000000000000000"/>
+            <coordinate x="2410.00000000000000000000" y="2620.00000000000000000000"/>
+            <coordinate x="2449.00000000000000000000" y="2620.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Sink" startport="thrust" startcomponent="AeroJetEngine">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2290.00000000000000000000" y="2524.50000000000000000000"/>
+            <coordinate x="2290.00000000000000000000" y="2549.00000000000000000000"/>
+            <coordinate x="2447.00000000000000000000" y="2549.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in_bottom" endcomponent="Sink_1" startport="mfuel" startcomponent="AeroJetEngine">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2330.00000000000000000000" y="2524.50000000000000000000"/>
+            <coordinate x="2330.00000000000000000000" y="2668.00000000000000000000"/>
+            <coordinate x="2469.00000000000000000000" y="2668.00000000000000000000"/>
+            <coordinate x="2469.00000000000000000000" y="2635.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="p0" endcomponent="AeroJetEngine" startport="p0" startcomponent="AeroAtmosphere">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2356.90000000000009094947" y="2396.00000000000000000000"/>
+            <coordinate x="2356.90000000000009094947" y="2451.50000000000000000000"/>
+            <coordinate x="2364.28580000000010841177" y="2451.50000000000000000000"/>
+            <coordinate x="2364.28580000000010841177" y="2471.50000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="Vsound" endcomponent="AeroJetEngine" startport="Vsound" startcomponent="AeroAtmosphere">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2376.69999999999981810106" y="2396.00000000000000000000"/>
+            <coordinate x="2376.69999999999981810106" y="2451.50000000000000000000"/>
+            <coordinate x="2392.85719999999992069206" y="2451.50000000000000000000"/>
+            <coordinate x="2392.85719999999992069206" y="2471.50000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="ha" endcomponent="AeroAtmosphere" startport="out" startcomponent="Ramp">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2131.50000000000000000000" y="2306.00000000000000000000"/>
+            <coordinate x="2347.00000000000000000000" y="2306.00000000000000000000"/>
+            <coordinate x="2347.00000000000000000000" y="2330.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+    </connections>
+  </system>
 </hopsanmodelfile>

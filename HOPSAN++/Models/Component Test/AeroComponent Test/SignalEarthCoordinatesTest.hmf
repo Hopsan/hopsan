@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5339" hopsancoreversion="0.6.x_r5334">
+  <requirements>
+    <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+    <componentlibrary>PettersComponentLibrary</componentlibrary>
+  </requirements>
+  <info/>
+  <system logsamples="2048" typename="Subsystem" name="SignalEarthCoordinatesTest">
+    <simulationtime stop="10" timestep="0.001" start="0" inherit_timestep="true"/>
+    <parameters/>
+    <aliases/>
+    <hopsangui>
+      <pose x="0" y="0" flipped="false" a="0"/>
+      <nametext position="0" visible="1"/>
+      <animation flowspeed="100"/>
+      <viewport x="2537" y="2408.5" zoom="1"/>
+      <ports hidden="1"/>
+      <names hidden="0"/>
+      <graphics type="user"/>
+      <scriptfile path=""/>
+      <hopsanobjectappearance version="0.3">
+        <modelobject typename="Subsystem" displayname="SignalEarthCoordinatesTest">
+          <icons>
+            <icon path="subsystemDefault.svg" type="defaultmissing"/>
+          </icons>
+          <ports/>
+          <animation flowspeed="100"/>
+        </modelobject>
+      </hopsanobjectappearance>
+      <favoritevariables/>
+      <optimization>
+        <settings>
+          <niter>100</niter>
+          <nsearchp>8</nsearchp>
+          <refcoeff>1.3</refcoeff>
+          <randfac>0.3</randfac>
+          <forgfac>0</forgfac>
+          <functol>1e-05</functol>
+          <partol>0.0001</partol>
+          <plot>true</plot>
+          <savecsv>false</savecsv>
+          <logpar>false</logpar>
+        </settings>
+        <parameters/>
+        <objectives/>
+      </optimization>
+    </hopsangui>
+    <objects>
+      <component typename="SignalRamp" name="Ramp">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="y_0::Value"/>
+          <parameter unit="-" value="1" type="double" name="y_A::Value"/>
+          <parameter unit="-" value="1" type="double" name="t_start::Value"/>
+          <parameter unit="-" value="2" type="double" name="t_end::Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2153" y="2314" flipped="false" a="0"/>
+          <nametext position="0" visible="1"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalRamp" displayname="Ramp">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalConstant" name="Constant">
+        <parameters>
+          <parameter unit="-" value="1" type="double" name="y::Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="y"/>
+        </ports>
+        <hopsangui>
+          <pose x="2093" y="2363" flipped="false" a="0"/>
+          <nametext position="0" visible="1"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalConstant" displayname="Constant">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalRamp" name="Ramp_1">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="y_0::Value"/>
+          <parameter unit="-" value="1" type="double" name="y_A::Value"/>
+          <parameter unit="-" value="1" type="double" name="t_start::Value"/>
+          <parameter unit="-" value="2" type="double" name="t_end::Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2211" y="2275" flipped="false" a="0"/>
+          <nametext position="0" visible="1"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalRamp" displayname="Ramp_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalEarthCoordinates" name="SignalEarthCoordinates">
+        <parameters>
+          <parameter unit="-" value="1" type="double" name="timecomp::Value"/>
+          <parameter unit="-" value="0" type="double" name="vxcg::Value"/>
+          <parameter unit="-" value="0" type="double" name="vycg::Value"/>
+          <parameter unit="-" value="0" type="double" name="timeE::Value"/>
+          <parameter unit="-" value="15" type="double" name="longitude::Value"/>
+          <parameter unit="-" value="57" type="double" name="lattitude::Value"/>
+          <parameter unit="m" value="6.3675e+006" type="double" name="R"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="timeE"/>
+          <port nodetype="NodeSignal" name="lattitude"/>
+          <port nodetype="NodeSignal" name="vxcg"/>
+          <port nodetype="NodeSignal" name="vycg"/>
+          <port nodetype="NodeSignal" name="timecomp"/>
+          <port nodetype="NodeSignal" name="longitude"/>
+        </ports>
+        <hopsangui>
+          <pose x="2248" y="2446" flipped="false" a="0"/>
+          <nametext position="0" visible="1"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalEarthCoordinates" displayname="SignalEarthCoordinates">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSink" name="Scope">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in_right"/>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="in_bottom"/>
+        </ports>
+        <hopsangui>
+          <pose x="2354" y="2517" flipped="false" a="0"/>
+          <nametext position="0" visible="1"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+    </objects>
+    <connections>
+      <connect endport="timecomp" endcomponent="SignalEarthCoordinates" startport="y" startcomponent="Constant">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2105.50000000000000000000" y="2363.00000000000000000000"/>
+            <coordinate x="2218.75000000000000000000" y="2363.00000000000000000000"/>
+            <coordinate x="2218.75000000000000000000" y="2416.50000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="vxcg" endcomponent="SignalEarthCoordinates" startport="out" startcomponent="Ramp">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2165.50000000000000000000" y="2314.00000000000000000000"/>
+            <coordinate x="2248.00000000000000000000" y="2314.00000000000000000000"/>
+            <coordinate x="2248.00000000000000000000" y="2416.50000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="vycg" endcomponent="SignalEarthCoordinates" startport="out" startcomponent="Ramp_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2223.50000000000000000000" y="2275.00000000000000000000"/>
+            <coordinate x="2277.25000000000000000000" y="2275.00000000000000000000"/>
+            <coordinate x="2277.25000000000000000000" y="2416.50000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope" startport="lattitude" startcomponent="SignalEarthCoordinates">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2277.25000000000000000000" y="2475.50000000000000000000"/>
+            <coordinate x="2277.25000000000000000000" y="2517.00000000000000000000"/>
+            <coordinate x="2334.00000000000000000000" y="2517.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in_bottom" endcomponent="Scope" startport="longitude" startcomponent="SignalEarthCoordinates">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2248.00000000000000000000" y="2475.50000000000000000000"/>
+            <coordinate x="2248.00000000000000000000" y="2566.00000000000000000000"/>
+            <coordinate x="2354.00000000000000000000" y="2566.00000000000000000000"/>
+            <coordinate x="2354.00000000000000000000" y="2532.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in_right" endcomponent="Scope" startport="timeE" startcomponent="SignalEarthCoordinates">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2218.75000000000000000000" y="2475.50000000000000000000"/>
+            <coordinate x="2218.75000000000000000000" y="2553.00000000000000000000"/>
+            <coordinate x="2415.00000000000000000000" y="2553.00000000000000000000"/>
+            <coordinate x="2415.00000000000000000000" y="2517.00000000000000000000"/>
+            <coordinate x="2374.00000000000000000000" y="2517.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+    </connections>
+  </system>
+</hopsanmodelfile>
