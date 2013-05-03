@@ -4,7 +4,8 @@
          <icons>
             <icon scale="1" path="SignalEarthCoordinates.svg" iconrotation="ON" type="user"/>
             <icon scale="1" path="SignalEarthCoordinates.svg" iconrotation="ON" type="iso"/>
-        </icons>        <ports>
+        </icons>        
+		<ports>
             <port x="0.5" y="0" a="270" name="vxcg"/>
             <port x="0.75" y="0" a="270" name="vycg"/>
             <port x="0.5" y="1" a="90" name="longitude"/>

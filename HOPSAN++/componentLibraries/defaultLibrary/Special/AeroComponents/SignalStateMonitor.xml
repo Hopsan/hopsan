@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.3">
   <modelobject typename="SignalStateMonitor" displayname="SignalStateMonitor">
-    <icons/>
+    <icons>
+      <icon scale="1" path="SignalStateMonitor.svg" iconrotation="ON" type="user"/>
+      <icon scale="1" path="SignalStateMonitor.svg" iconrotation="ON" type="iso"/>
+	</icons>
     <ports>
       <port x="0.2" y="1" enabled="true" a="90" name="s1" autoplaced="true"/>
       <port x="0.8" y="1" enabled="true" a="90" name="y3f" autoplaced="true"/>
       <port x="0.6" y="1" enabled="true" a="90" name="y2f" autoplaced="true"/>
       <port x="0.4" y="1" enabled="true" a="90" name="y1f" autoplaced="true"/>
-      <port x="0.8" y="0" enabled="true" a="90" name="sOn" autoplaced="true"/>
-      <port x="0.2" y="0" enabled="true" a="90" name="y1" autoplaced="true"/>
-      <port x="0.4" y="0" enabled="true" a="90" name="y2" autoplaced="true"/>
-      <port x="0.6" y="0" enabled="true" a="90" name="y3" autoplaced="true"/>
+      <port x="0.8" y="0" enabled="true" a="270" name="sOn" autoplaced="true"/>
+      <port x="0.2" y="0" enabled="true" a="270" name="y1" autoplaced="true"/>
+      <port x="0.4" y="0" enabled="true" a="270" name="y2" autoplaced="true"/>
+      <port x="0.6" y="0" enabled="true" a="270" name="y3" autoplaced="true"/>
     </ports>
     <animation flowspeed="100"/>
   </modelobject>

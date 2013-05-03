@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.3">
-  <modelobject typename="SignalAttitudeControl" displayname="SignalAttitudeControl">
-    <icons>
-      <icon scale="1" path="SignalAttitudeControl.svg" iconrotation="ON" type="user"/>
-      <icon scale="1" path="SignalAttitudeControl.svg" iconrotation="ON" type="iso"/>
-    </icons>
-    <ports>
-      <port x="0.6" y="1" enabled="true" a="90" name="psi" autoplaced="true"/>
-      <port x="0.8" y="1" enabled="true" a="90" name="beta" autoplaced="true"/>
-      <port x="0.0" y="0.2" enabled="true" a="180" name="phiref" autoplaced="true"/>
-      <port x="0.0" y="0.4" enabled="true" a="180" name="thetaref" autoplaced="true"/>
-      <port x="0.0" y="0.8" enabled="true" a="180" name="phimax" autoplaced="true"/>
-      <port x="1" y=".2" enabled="true" a="0" name="uaerR" autoplaced="true"/>
-      <port x="1" y=".6" enabled="true" a="0" name="uelev" autoplaced="true"/>
-      <port x="0.4" y="1" enabled="true" a="90" name="theta" autoplaced="true"/>
-      <port x="0.2" y="1" enabled="true" a="90" name="phi" autoplaced="true"/>
-      <port x="0" y="0.6" enabled="true" a="180" name="psiref" autoplaced="true"/>
-      <port x="0.9" y="1" enabled="true" a="90" name="Ub" autoplaced="true"/>
-      <port x="1" y="0.8" enabled="true" a="0" name="urud" autoplaced="true"/>
-      <port x="1" y="0.4" enabled="true" a="0" name="uaerL" autoplaced="true"/>
-      <port x="0.7" y="1" enabled="true" a="90" name="Rb" autoplaced="true"/>
-    </ports>
-    <animation flowspeed="100"/>
-  </modelobject>
+	<modelobject typename="SignalAttitudeControl" displayname="SignalAttitudeControl">
+		<icons>
+			<icon scale="1" path="SignalAttitudeControl.svg" iconrotation="ON" type="user"/>
+			<icon scale="1" path="SignalAttitudeControl.svg" iconrotation="ON" type="iso"/>
+		</icons>
+		<ports>
+			<port x="0.6" y="1" enabled="true" a="90" name="psi" autoplaced="true"/>
+			<port x="0.8" y="1" enabled="true" a="90" name="beta" autoplaced="true"/>
+			<port x="0.0" y="0.2" enabled="true" a="180" name="phiref" autoplaced="true"/>
+			<port x="0.0" y="0.4" enabled="true" a="180" name="thetaref" autoplaced="true"/>
+			<port x="0.0" y="0.8" enabled="true" a="180" name="phimax" autoplaced="true"/>
+			<port x="1" y="0.4" enabled="true" a="0" name="uaerR" autoplaced="true"/>
+			<port x="1" y=".6" enabled="true" a="0" name="uelev" autoplaced="true"/>
+			<port x="0.4" y="1" enabled="true" a="90" name="theta" autoplaced="true"/>
+			<port x="0.2" y="1" enabled="true" a="90" name="phi" autoplaced="true"/>
+			<port x="0" y="0.6" enabled="true" a="180" name="psiref" autoplaced="true"/>
+			<port x="0.9" y="1" enabled="true" a="90" name="Ub" autoplaced="true"/>
+			<port x="1" y="0.8" enabled="true" a="0" name="urud" autoplaced="true"/>
+			<port x="1" y="0.2" enabled="true" a="0" name="uaerL" autoplaced="true"/>
+			<port x="0.7" y="1" enabled="true" a="90" name="Rb" autoplaced="true"/>
+		</ports>
+		<animation flowspeed="100"/>
+	</modelobject>
 </hopsanobjectappearance>

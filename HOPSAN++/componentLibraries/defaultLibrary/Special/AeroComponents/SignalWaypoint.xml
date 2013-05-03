@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.3">
   <modelobject typename="SignalWaypoint" displayname="SignalWaypoint">
-    <icons/>
+     <icons>
+      <icon scale="1" path="SignalWaypoint.svg" iconrotation="ON" type="user"/>
+      <icon scale="1" path="SignalWaypoint.svg" iconrotation="ON" type="iso"/>
+    </icons>
     <ports>
       <port x="0.5" y="1" enabled="true" a="90" name="headingRef" autoplaced="true"/>
-      <port x="0.25" y="0" enabled="true" a="90" name="s1" autoplaced="true"/>
+      <port x="0.25" y="0" enabled="true" a="270" name="s1" autoplaced="true"/>
       <port x="0.166667" y="1" enabled="true" a="90" name="set1" autoplaced="true"/>
       <port x="0.666667" y="1" enabled="true" a="90" name="velocityRef" autoplaced="true"/>
       <port x="0.333333" y="1" enabled="true" a="90" name="altitudeRef" autoplaced="true"/>
-      <port x="0.75" y="0" enabled="true" a="90" name="yc" autoplaced="true"/>
-      <port x="0.5" y="0" enabled="true" a="90" name="xc" autoplaced="true"/>
+      <port x="0.75" y="0" enabled="true" a="270" name="yc" autoplaced="true"/>
+      <port x="0.5" y="0" enabled="true" a="270" name="xc" autoplaced="true"/>
       <port x="0.833333" y="1" enabled="true" a="90" name="distanceWp" autoplaced="true"/>
     </ports>
     <animation flowspeed="100"/>

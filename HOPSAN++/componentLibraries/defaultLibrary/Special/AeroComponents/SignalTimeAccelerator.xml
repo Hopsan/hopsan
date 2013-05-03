@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.3">
   <modelobject typename="SignalTimeAccelerator" displayname="SignalTimeAccelerator">
-    <icons/>
+    <icons>
+      <icon scale="1" path="SignalTimeAccelerator.svg" iconrotation="ON" type="user"/>
+      <icon scale="1" path="SignalTimeAccelerator.svg" iconrotation="ON" type="iso"/>
+	   </icons>
     <ports>
       <port x="0.2" y="1" enabled="true" a="90" name="timeE" autoplaced="true"/>
-      <port x="0.6" y="0" enabled="true" a="90" name="vxcg" autoplaced="true"/>
-      <port x="0.8" y="0" enabled="true" a="90" name="vycg" autoplaced="true"/>
-      <port x="0.2" y="0" enabled="true" a="90" name="timecomp" autoplaced="true"/>
+      <port x="0.6" y="0" enabled="true" a="270" name="vxcg" autoplaced="true"/>
+      <port x="0.8" y="0" enabled="true" a="270" name="vycg" autoplaced="true"/>
+      <port x="0.2" y="0" enabled="true" a="270" name="timecomp" autoplaced="true"/>
       <port x="0.8" y="1" enabled="true" a="90" name="ycgE" autoplaced="true"/>
       <port x="0.4" y="1" enabled="true" a="90" name="massflowE" autoplaced="true"/>
       <port x="0.6" y="1" enabled="true" a="90" name="xcgE" autoplaced="true"/>
-      <port x="0.4" y="0" enabled="true" a="90" name="massflow" autoplaced="true"/>
+      <port x="0.4" y="0" enabled="true" a="270" name="massflow" autoplaced="true"/>
     </ports>
     <animation flowspeed="100"/>
   </modelobject>
