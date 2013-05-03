@@ -717,12 +717,13 @@ void PlotWindow::performFrequencyAnalysisFromDialog()
     addPlotTab();
     getCurrentPlotTab()->getPlot()->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
     getCurrentPlotTab()->updateLabels();
-    PlotCurve *pNewCurve = new PlotCurve(mpFrequencyAnalysisCurve->getLogDataVariablePtr(),
-                                         mpFrequencyAnalysisCurve->getAxisY(),
-                                         getCurrentPlotTab(), FirstPlot, FrequencyAnalysisType);
+    LogDataHandler *pLogDataHandler = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler();
+    SharedLogVariableDataPtrT pVariable = mpFrequencyAnalysisCurve->getLogDataVariablePtr();
+    bool power = mpPowerSpectrumCheckBox->isChecked();
+    SharedLogVariableDataPtrT pNewVar = pLogDataHandler->fftVariable(pVariable, SharedLogVariableDataPtrT(), power);
+    PlotCurve *pNewCurve = new PlotCurve(pNewVar, QwtPlot::yLeft, getCurrentPlotTab(), FirstPlot, FrequencyAnalysisType);
     getCurrentPlotTab()->addCurve(pNewCurve);
-    pNewCurve->toFrequencySpectrum(mpPowerSpectrumCheckBox->isChecked());
-    //! @todo Make logged axis an option for user
+
     if(mpLogScaleCheckBox->isChecked())
     {
         getCurrentPlotTab()->getPlot(FirstPlot)->setAxisScaleEngine(QwtPlot::yLeft, new QwtLogScaleEngine(10));
@@ -999,6 +1000,20 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
             break;
         }
     }
+
+    SharedLogVariableDataPtrT gainVar = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->defineNewVariable("bodegain");
+    if(gainVar.isNull())
+    {
+        gainVar = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotData("bodegain",-1);
+    }
+    gainVar.data()->assignFrom(F, vBodeGain);
+
+    SharedLogVariableDataPtrT phaseVar = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->defineNewVariable("bodephase");
+    if(phaseVar.isNull())
+    {
+        phaseVar = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotData("bodegain",-1);
+    }
+    phaseVar.data()->assignFrom(F, vBodePhase);
 }
 
 

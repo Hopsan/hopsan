@@ -1158,6 +1158,35 @@ QString LogDataHandler::lowPassFilterVariable(const QString &a, const QString &b
     }
 }
 
+SharedLogVariableDataPtrT LogDataHandler::fftVariable(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b, const bool doPowerSpectrum)
+{
+    SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+"Lp1");
+    pTempVar->assignFrom(a);
+    pTempVar->frequencySpectrum(b, doPowerSpectrum);
+    return pTempVar;
+}
+
+QString LogDataHandler::fftVariable(const QString &a, const QString &b, const bool doPowerSpectrum)
+{
+    SharedLogVariableDataPtrT pData1 = getPlotData(a, -1);
+    SharedLogVariableDataPtrT pData2;
+    if(b!="time")
+    {
+        pData2 = getPlotData(b, -1);
+    }
+
+
+    if( (pData1 == 0) || (pData2 == 0 && b != "time") )
+    {
+        return QString();
+    }
+    else
+    {
+        SharedLogVariableDataPtrT pTemp = fftVariable(pData1,pData2,doPowerSpectrum);
+        return pTemp->getFullVariableName();
+    }
+}
+
 
 
 QString LogDataHandler::assignVariable(const QString &dst, const QString &src)

@@ -198,6 +198,7 @@ extern "C" DLLIMPORTEXPORT void callSimulinkCoSimExportGenerator(string path, ho
 //! @param coreIncludePath Path to HopsanCore include files
 //! @param binPath Path to HopsanCore binary files
 //! @param showDialog True if generator output shall be displayed in a dialog window
+
 extern "C" DLLIMPORTEXPORT void callLabViewSITGenerator(string path, hopsan::ComponentSystem *pSystem, string coreIncludePath, string binPath, bool showDialog=false)
 {
     HopsanLabViewGenerator *pGenerator = new HopsanLabViewGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);

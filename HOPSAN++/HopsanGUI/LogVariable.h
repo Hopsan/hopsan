@@ -171,9 +171,11 @@ public:
     void absData();
     void diffBy(const SharedLogVariableDataPtrT pOther);
     void lowPassFilter(const SharedLogVariableDataPtrT pTime, const double w);
+    void frequencySpectrum(const SharedLogVariableDataPtrT pTime, const bool doPowerSpectrum);
     void assignFrom(const SharedLogVariableDataPtrT pOther);
     void assignFrom(const QVector<double> &rSrc);
     void assignFrom(SharedTimeVectorPtrT time, const QVector<double> &rData);
+    void assignFrom(QVector<double> &rTime, QVector<double> &rData);
     double pokeData(const int index, const double value, QString &rErr);
     double peekData(const int index, QString &rErr) const;
     bool indexInRange(const int idx) const;

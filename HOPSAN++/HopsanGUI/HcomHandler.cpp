@@ -1766,6 +1766,8 @@ void HcomHandler::executeBodeCommand(const QString cmd)
         fMax = getArgument(cmd,2).toInt();
     }
 
+    gpPlotHandler->createNewPlotWindowOrGetCurrentOne("Bode plot")->closeAllTabs();
+    gpPlotHandler->createNewPlotWindowOrGetCurrentOne("Bode plot")->addPlotTab();
     gpPlotHandler->createNewPlotWindowOrGetCurrentOne("Bode plot")->createBodePlot(pData1, pData2, fMax);
 }
 
@@ -2241,6 +2243,41 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
             SharedLogVariableDataPtrT var = getVariablePtr(args.section(",",0,0));
             SharedLogVariableDataPtrT timeVar = getVariablePtr(args.section(",",1,1));
             return pLogData->lowPassFilterVariable(var.data()->getFullVariableName(), timeVar.data()->getFullVariableName(), freq);
+        }
+    }
+    else if(expr.startsWith("fft(") && expr.endsWith(")"))
+    {
+        QString args = expr.mid(4, expr.size()-5);
+        if(args.count(",")==0)
+        {
+            *returnType = DataVector;
+            SharedLogVariableDataPtrT var = getVariablePtr(args.section(",",0,0));
+            return pLogData->fftVariable(var.data()->getFullVariableName(), "time", false);
+        }
+        if(args.count(",")==1)
+        {
+            QString arg2=args.section(",",1,1);
+            bool power=false;
+            QString timeVec = "time";
+            if(arg2 == "true" || arg2 == "false")
+            {
+                power = (args.section(",",1,1) == "true");
+            }
+            else
+            {
+                timeVec = arg2;
+            }
+            *returnType = DataVector;
+            SharedLogVariableDataPtrT var = getVariablePtr(args.section(",",0,0));
+            return pLogData->fftVariable(var.data()->getFullVariableName(), timeVec, power);
+        }
+        else if(args.count(",") == 2)
+        {
+            bool power = (args.section(",",2,2) == "true");
+            *returnType = DataVector;
+            SharedLogVariableDataPtrT var = getVariablePtr(args.section(",",0,0));
+            SharedLogVariableDataPtrT timeVar = getVariablePtr(args.section(",",1,1));
+            return pLogData->fftVariable(var.data()->getFullVariableName(), timeVar.data()->getFullVariableName(), power);
         }
     }
 

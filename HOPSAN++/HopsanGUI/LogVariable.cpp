@@ -22,12 +22,14 @@
 //!
 //$Id$
 
+#include "Configuration.h"
 #include "LogVariable.h"
 #include "LogDataHandler.h"
+#include "MainWindow.h"
 #include "Utilities/GUIUtilities.h"
-#include "Configuration.h"
 
 #include <limits>
+#include <QMessageBox>
 
 //! @todo this should not be here should be togheter with plotsvariable stuf in some other file later
 QString makeConcatName(const QString componentName, const QString portName, const QString dataName)
@@ -373,6 +375,68 @@ void LogVariableData::lowPassFilter(const SharedLogVariableDataPtrT pTime, const
     emit dataChanged();
 }
 
+void LogVariableData::frequencySpectrum(const SharedLogVariableDataPtrT pTime, const bool doPowerSpectrum)
+{
+    DataVectorT* pDataVec = mpCachedDataVector->beginFullVectorOperation();
+    DataVectorT timeVec;
+    if(pTime == 0)
+    {
+        timeVec = mpParentVariableContainer->getLogDataHandler()->getTimeVector(getHighestGeneration()-1);
+    }
+    else
+    {
+        timeVec = pTime.data()->getDataVector();
+    }
+
+    //Vector size has to be an even potential of 2.
+    //Calculate largets potential that is smaller than or equal to the vector size.
+    int n = pow(2, int(log2(pDataVec->size())));
+    if(n != pDataVec->size())     //Vector is not an exact potential, so reduce it
+    {
+        QString oldString, newString;
+        oldString.setNum(pDataVec->size());
+        newString.setNum(n);
+        QMessageBox::information(gpMainWindow, gpMainWindow->tr("Wrong Vector Size"),
+                                 "Size of data vector must be an even power of 2. Number of log samples was reduced from " + oldString + " to " + newString + ".");
+        reduceVectorSize((*pDataVec), n);
+        reduceVectorSize(timeVec, n);
+    }
+
+    //Create a complex vector
+    QVector< std::complex<double> > vComplex = realToComplex(*pDataVec);
+
+    //Apply the fourier transform
+    FFT(vComplex);
+
+    //Scalar multiply complex vector with its conjugate, and divide it with its size
+    pDataVec->clear();
+    for(int i=1; i<n/2; ++i)        //FFT is symmetric, so only use first half
+    {
+        if(doPowerSpectrum)
+        {
+            pDataVec->append(real(vComplex[i]*conj(vComplex[i]))/n);
+        }
+        else
+        {
+            pDataVec->append(sqrt(vComplex[i].real()*vComplex[i].real() + vComplex[i].imag()*vComplex[i].imag()));
+        }
+    }
+
+    //Create the x vector (frequency)
+    double max = timeVec.last();
+    timeVec.clear();
+    for(int i=1; i<n/2; ++i)
+    {
+        timeVec.append(double(i)/max);
+    }
+
+    QVector<double>* pTimeVector = new QVector<double>(timeVec);
+    mSharedTimeVectorPtr = SharedTimeVectorPtrT(pTimeVector);
+
+    mpCachedDataVector->endFullVectorOperation(pDataVec);
+    emit dataChanged();
+}
+
 
 void LogVariableData::assignFrom(const SharedLogVariableDataPtrT pOther)
 {
@@ -393,6 +457,13 @@ void LogVariableData::assignFrom(SharedTimeVectorPtrT time, const QVector<double
     mpCachedDataVector->replaceData(rData);
     mSharedTimeVectorPtr = time;
     emit dataChanged();
+}
+
+void LogVariableData::assignFrom(QVector<double> &rTime, QVector<double> &rData)
+{
+    UniqueSharedTimeVectorPtrHelper timeVecHelper;
+    SharedTimeVectorPtrT timeVecPtr = timeVecHelper.makeSureUnique(rTime);
+    this->assignFrom(timeVecPtr, rData);
 }
 
 double LogVariableData::pokeData(const int index, const double value, QString &rErr)

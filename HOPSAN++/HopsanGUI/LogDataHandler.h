@@ -124,6 +124,9 @@ public:
     SharedLogVariableDataPtrT lowPassFilterVariable(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b, const double freq);
     QString lowPassFilterVariable(const QString &a, const QString &b, const double freq);
 
+    SharedLogVariableDataPtrT fftVariable(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b, const bool doPowerSpectrum);
+    QString fftVariable(const QString &a, const QString &b, const bool doPowerSpectrum);
+
     SharedLogVariableDataPtrT assignVariable(SharedLogVariableDataPtrT dst, const SharedLogVariableDataPtrT src);
     QString assignVariable(const QString &dst, const QString &src);
     QString assignVariable(const QString &dst, const QVector<double> &src);

@@ -244,6 +244,7 @@ const QString &DesktopHandler::getMSVC2010X86Path() const
 {
     return mMSVC2010X86Path;
 }
+
 const QString &DesktopHandler::getMSVC2008X64Path() const
 {
     return mMSVC2008X64Path;
