@@ -294,10 +294,12 @@ void ComponentPropertiesDialog::createEditStuff()
         if(filePath.endsWith(".hpp"))
         {
             CppHighlighter *pHighLighter = new CppHighlighter(pSourceCodeTextEdit->document());
+            Q_UNUSED(pHighLighter);
         }
         else if(filePath.endsWith(".mo"))
         {
             ModelicaHighlighter *pHighLighter = new ModelicaHighlighter(pSourceCodeTextEdit->document());
+            Q_UNUSED(pHighLighter);
         }
 
         QVBoxLayout *pSourceCodeLayout = new QVBoxLayout(this);
@@ -379,6 +381,7 @@ void ComponentPropertiesDialog::createCppEditStuff()
     mpTextEdit = new QTextEdit(this);
     mpTextEdit->setPlainText(mpComponent->getCppCode());
     CppHighlighter *pTextEditHighlighter = new CppHighlighter(mpTextEdit->document());
+    Q_UNUSED(pTextEditHighlighter);
 
     QGridLayout *pNameLayout = new QGridLayout();
     QLabel *pNameLabel = new QLabel("Name: ", this);
@@ -466,6 +469,7 @@ void ComponentPropertiesDialog::createModelicaEditStuff()
     mpTextEdit->setPlainText(mpComponent->getModelicaCode());
     mpTextEdit->setMinimumWidth(640);
     ModelicaHighlighter *pTextEditHighlighter = new ModelicaHighlighter(mpTextEdit->document());
+    Q_UNUSED(pTextEditHighlighter);
 
     QGridLayout *pNameLayout = new QGridLayout();
     QLabel *pNameLabel = new QLabel("Name: ", this);

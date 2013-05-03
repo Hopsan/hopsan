@@ -310,6 +310,7 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     //Output box tab
     mpOutputBox = new QTextEdit(this);
     PythonHighlighter *pHighligter = new PythonHighlighter(mpOutputBox->document());
+    Q_UNUSED(pHighligter);
     QFont monoFont = mpOutputBox->font();
     monoFont.setFamily("Courier");
     mpOutputBox->setFont(monoFont);

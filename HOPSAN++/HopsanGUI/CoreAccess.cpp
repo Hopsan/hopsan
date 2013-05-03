@@ -581,7 +581,7 @@ void CoreSystemAccess::getVariameters(QString componentName, QVector<CoreVariame
     if (pComp)
     {
         const std::vector<hopsan::VariameterDescription>* pDescs = pComp->getVariameters();
-        for (int i=0; i<pDescs->size(); ++i)
+        for (size_t i=0; i<pDescs->size(); ++i)
         {
             CoreVariameterDescription data;
             data.mName = QString::fromStdString(pDescs->at(i).mName);

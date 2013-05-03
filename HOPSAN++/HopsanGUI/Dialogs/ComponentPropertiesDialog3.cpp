@@ -327,10 +327,12 @@ QWidget *ComponentPropertiesDialog3::createSourcodeBrowser(QString &rFilePath)
     {
         //! @todo who own and who deleats
         CppHighlighter *pHighLighter = new CppHighlighter(pSourceCodeTextEdit->document());
+        Q_UNUSED(pHighLighter);
     }
     else if(rFilePath.endsWith(".mo"))
     {
         ModelicaHighlighter *pHighLighter = new ModelicaHighlighter(pSourceCodeTextEdit->document());
+        Q_UNUSED(pHighLighter);
     }
 
     return pSourceCodeTextEdit;

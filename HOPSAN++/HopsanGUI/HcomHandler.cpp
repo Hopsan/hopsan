@@ -878,7 +878,7 @@ void HcomHandler::executeRunScriptCommand(const QString cmd)
             if(lines[l].startsWith("&"+gotoLabel))
             {
                 QStringList commands = lines.mid(l, lines.size()-l);
-                bool *abort;
+                bool *abort = new bool;
                 gotoLabel = runScriptCommands(commands, abort);
             }
         }
@@ -3279,6 +3279,7 @@ double _funcPeek(QString str)
 
 double _funcRand(QString str)
 {
+    Q_UNUSED(str);
     return rand() / (double)RAND_MAX;          //Random value between  0 and 1
 }
 
