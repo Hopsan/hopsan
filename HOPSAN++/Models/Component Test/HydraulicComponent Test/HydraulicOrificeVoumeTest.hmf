@@ -1,0 +1,2403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5146" hopsancoreversion="0.6.x_r5148">
+  <requirements>
+    <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+    <componentlibrary>PettersComponentLibrary</componentlibrary>
+  </requirements>
+  <info/>
+  <system logsamples="2048" typename="Subsystem" name="HydraulicOrificeVoumeTest">
+    <simulationtime stop="2" timestep="0.03" start="0" inherit_timestep="true"/>
+    <parameters/>
+    <aliases/>
+    <hopsangui>
+      <pose x="0" y="0" flipped="false" a="0"/>
+      <nametext position="0" visible="1"/>
+      <viewport x="2075.5" y="2593" zoom="1"/>
+      <ports hidden="1"/>
+      <names hidden="1"/>
+      <graphics type="user"/>
+      <scriptfile path=""/>
+      <hopsanobjectappearance version="0.3">
+        <modelobject typename="Subsystem" displayname="HydraulicOrificeVoumeTest">
+          <icons>
+            <icon path="subsystemDefault.svg" type="defaultmissing"/>
+          </icons>
+          <ports/>
+          <animation flowspeed="100"/>
+        </modelobject>
+      </hopsanobjectappearance>
+      <favoritevariables/>
+      <optimization>
+        <settings>
+          <niter>100</niter>
+          <nsearchp>8</nsearchp>
+          <refcoeff>1.3</refcoeff>
+          <randfac>0.3</randfac>
+          <forgfac>0</forgfac>
+          <functol>1e-05</functol>
+          <partol>0.0001</partol>
+          <plot>true</plot>
+          <savecsv>false</savecsv>
+          <logpar>false</logpar>
+        </settings>
+        <parameters/>
+        <objectives/>
+      </optimization>
+    </hopsangui>
+    <objects>
+      <component typename="HydraulicVolume" name="Hydraulic_Volume_1">
+        <parameters>
+          <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
+          <parameter unit="Pa" value="0" type="double" name="P1::Pressure"/>
+          <parameter unit="K" value="0" type="double" name="P1::Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P2::Flow"/>
+          <parameter unit="Pa" value="0" type="double" name="P2::Pressure"/>
+          <parameter unit="K" value="0" type="double" name="P2::Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="P2::WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P2::CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P2::HeatFlow"/>
+          <parameter unit="[m^3]" value="0.001" type="double" name="V"/>
+          <parameter unit="[Pa]" value="1e+009" type="double" name="Beta_e"/>
+          <parameter unit="[-]" value="0.1" type="double" name="alpha"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeHydraulic" name="P1"/>
+          <port nodetype="NodeHydraulic" name="P2"/>
+        </ports>
+        <hopsangui>
+          <pose x="2576" y="2598.5" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="HydraulicVolume" displayname="Hydraulic_Volume_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="HydraulicPressureSourceC" name="C_type_Pressure_Source">
+        <parameters>
+          <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
+          <parameter unit="K" value="0" type="double" name="P1::Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
+          <parameter unit="[Pa]" value="1000000" type="double" name="p"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="In"/>
+          <port nodetype="NodeHydraulic" name="P1"/>
+        </ports>
+        <hopsangui>
+          <pose x="1943" y="2545" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="HydraulicPressureSourceC" displayname="C_type_Pressure_Source">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalMultiply" name="Multiply_1">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="out::Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+          <port nodetype="NodeSignal" name="in1"/>
+          <port nodetype="NodeSignal" name="in2"/>
+        </ports>
+        <hopsangui>
+          <pose x="1944.5" y="2771.5" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalMultiply" displayname="Multiply_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="HydraulicQPsrc" name="HydraulicQPsrc_2">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="Pcout::Value"/>
+          <parameter unit="-" value="0" type="double" name="PZcout::Value"/>
+          <parameter unit="m3/s" value="0" type="double" name="qinput"/>
+          <parameter unit="Pa" value="100000" type="double" name="pinput"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="Ppinput"/>
+          <port nodetype="NodeHydraulic" name="P1"/>
+          <port nodetype="NodeSignal" name="PZcout"/>
+          <port nodetype="NodeSignal" name="Pcout"/>
+          <port nodetype="NodeSignal" name="Pqinput"/>
+        </ports>
+        <hopsangui>
+          <pose x="2406" y="2602" flipped="true" a="0"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="HydraulicQPsrc" displayname="HydraulicQPsrc_2">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalAdd" name="Add_1">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="out::Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+          <port nodetype="NodeSignal" name="in1"/>
+          <port nodetype="NodeSignal" name="in2"/>
+        </ports>
+        <hopsangui>
+          <pose x="2016" y="2772.5" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalAdd" displayname="Add_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="HydraulicLaminarOrifice" name="Laminar_Orifice">
+        <parameters>
+          <parameter unit="[m^5/Ns]" value="1e-011" type="double" name="K_c"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeHydraulic" name="P1"/>
+          <port nodetype="NodeHydraulic" name="P2"/>
+          <port nodetype="NodeSignal" name="Kc"/>
+        </ports>
+        <hopsangui>
+          <pose x="2180" y="2513" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="HydraulicLaminarOrifice" displayname="Laminar_Orifice">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalGain" name="Gain">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="out::Value"/>
+          <parameter unit="[-]" value="-1" type="double" name="k"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2116" y="2611" flipped="true" a="0"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalGain" displayname="Gain">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="HydraulicFlowSourceQ" name="Q_type_Flow_Source_1">
+        <parameters>
+          <parameter unit="[m^3/s]" value="0.001" type="double" name="q"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeHydraulic" name="P1"/>
+          <port nodetype="NodeSignal" name="in"/>
+        </ports>
+        <hopsangui>
+          <pose x="2570" y="2535.5" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="HydraulicFlowSourceQ" displayname="Q_type_Flow_Source_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSubtract" name="Subtract">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="out::Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+          <port nodetype="NodeSignal" name="in1"/>
+          <port nodetype="NodeSignal" name="in2"/>
+        </ports>
+        <hopsangui>
+          <pose x="2119" y="2671" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSubtract" displayname="Subtract">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalMultiply" name="Multiply">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="out::Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+          <port nodetype="NodeSignal" name="in1"/>
+          <port nodetype="NodeSignal" name="in2"/>
+        </ports>
+        <hopsangui>
+          <pose x="2292" y="2732" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalMultiply" displayname="Multiply">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalDivide" name="Divide">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="out::Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+          <port nodetype="NodeSignal" name="in1"/>
+          <port nodetype="NodeSignal" name="in2"/>
+        </ports>
+        <hopsangui>
+          <pose x="2176" y="2676" flipped="true" a="180"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalDivide" displayname="Divide">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalAdd" name="Add">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="out::Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+          <port nodetype="NodeSignal" name="in1"/>
+          <port nodetype="NodeSignal" name="in2"/>
+        </ports>
+        <hopsangui>
+          <pose x="2334" y="2731" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalAdd" displayname="Add">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSource" name="Constant">
+        <parameters>
+          <parameter unit="[-]" value="1e11" type="double" name="y"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="1968" y="2700" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSource" displayname="Constant">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <system logsamples="2048" typename="Subsystem" name="Subsystem">
+        <simulationtime stop="2" timestep="0.001" start="0" inherit_timestep="true"/>
+        <parameters/>
+        <aliases/>
+        <hopsangui>
+          <pose x="1746" y="2746" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <viewport x="2075.5" y="2593" zoom="1"/>
+          <ports hidden="1"/>
+          <names hidden="1"/>
+          <graphics type="user"/>
+          <scriptfile path=""/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="Subsystem" displayname="Subsystem">
+              <icons>
+                <icon path="subsystemDefault.svg" type="defaultmissing"/>
+              </icons>
+              <ports>
+                <port x="1" y="0.5" enabled="true" a="0" name="Container_Port_1" autoplaced="true"/>
+                <port x="0" y="0.5" enabled="true" a="180" name="Container_Port" autoplaced="true"/>
+              </ports>
+              <animation flowspeed="100"/>
+            </modelobject>
+          </hopsanobjectappearance>
+          <favoritevariables/>
+          <optimization>
+            <settings>
+              <niter>100</niter>
+              <nsearchp>8</nsearchp>
+              <refcoeff>1.3</refcoeff>
+              <randfac>0.3</randfac>
+              <forgfac>0</forgfac>
+              <functol>1e-05</functol>
+              <partol>0.0001</partol>
+              <plot>true</plot>
+              <savecsv>false</savecsv>
+              <logpar>false</logpar>
+            </settings>
+            <parameters/>
+            <objectives/>
+          </optimization>
+          <hopsanundo>
+            <post number="-1"/>
+            <post number="0" type="paste">
+              <stuff what="addedobject">
+                <component typename="HydraulicQPsrc" name="HydraulicQPsrc">
+                  <parameters>
+                    <parameter unit="-" value="0" type="double" name="Pcout::Value"/>
+                    <parameter unit="-" value="0" type="double" name="PZcout::Value"/>
+                    <parameter unit="m3/s" value="0" type="double" name="qinput"/>
+                    <parameter unit="Pa" value="100000" type="double" name="pinput"/>
+                  </parameters>
+                  <ports>
+                    <port nodetype="NodeSignal" name="Ppinput"/>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                    <port nodetype="NodeSignal" name="PZcout"/>
+                    <port nodetype="NodeSignal" name="Pcout"/>
+                    <port nodetype="NodeSignal" name="Pqinput"/>
+                  </ports>
+                  <hopsangui>
+                    <pose x="1908" y="2604" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                      <modelobject typename="HydraulicQPsrc" displayname="HydraulicQPsrc">
+                        <ports/>
+                      </modelobject>
+                    </hopsanobjectappearance>
+                  </hopsangui>
+                </component>
+              </stuff>
+              <stuff what="rotate" angle="0.000000" objectname="HydraulicQPsrc"/>
+              <stuff what="movedobject" name="HydraulicQPsrc">
+                <oldpos>1878 2584</oldpos>
+                <newpos>1622.12 2647.33</newpos>
+              </stuff>
+              <stuff what="addedobject">
+                <component typename="HydraulicPressureSourceC" name="C_type_Pressure_Source">
+                  <parameters>
+                    <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
+                    <parameter unit="K" value="0" type="double" name="P1::Temperature"/>
+                    <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
+                    <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
+                    <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
+                    <parameter unit="[Pa]" value="100000" type="double" name="p"/>
+                  </parameters>
+                  <ports>
+                    <port nodetype="NodeSignal" name="In"/>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                  </ports>
+                  <hopsangui>
+                    <pose x="1943" y="2545" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                      <modelobject typename="HydraulicPressureSourceC" displayname="C_type_Pressure_Source">
+                        <ports/>
+                      </modelobject>
+                    </hopsanobjectappearance>
+                  </hopsangui>
+                </component>
+              </stuff>
+              <stuff what="rotate" angle="0.000000" objectname="C_type_Pressure_Source"/>
+              <stuff what="movedobject" name="C_type_Pressure_Source">
+                <oldpos>1931 2533</oldpos>
+                <newpos>1675.12 2596.33</newpos>
+              </stuff>
+              <stuff what="addedobject">
+                <component typename="SignalGain" name="Gain">
+                  <parameters>
+                    <parameter unit="-" value="0" type="double" name="out::Value"/>
+                    <parameter unit="[-]" value="1" type="double" name="k"/>
+                  </parameters>
+                  <ports>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="out"/>
+                  </ports>
+                  <hopsangui>
+                    <pose x="2116" y="2611" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                      <modelobject typename="SignalGain" displayname="Gain">
+                        <ports/>
+                      </modelobject>
+                    </hopsanobjectappearance>
+                  </hopsangui>
+                </component>
+              </stuff>
+              <stuff what="horizontalflip" objectname="Gain"/>
+              <stuff what="rotate" angle="0.000000" objectname="Gain"/>
+              <stuff what="movedobject" name="Gain">
+                <oldpos>2128.5 2598.5</oldpos>
+                <newpos>1872.62 2661.83</newpos>
+              </stuff>
+              <stuff what="addedobject">
+                <component typename="SignalSubtract" name="Subtract">
+                  <parameters>
+                    <parameter unit="-" value="0" type="double" name="out::Value"/>
+                  </parameters>
+                  <ports>
+                    <port nodetype="NodeSignal" name="out"/>
+                    <port nodetype="NodeSignal" name="in1"/>
+                    <port nodetype="NodeSignal" name="in2"/>
+                  </ports>
+                  <hopsangui>
+                    <pose x="2119" y="2671" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                      <modelobject typename="SignalSubtract" displayname="Subtract">
+                        <ports/>
+                      </modelobject>
+                    </hopsanobjectappearance>
+                  </hopsangui>
+                </component>
+              </stuff>
+              <stuff what="rotate" angle="0.000000" objectname="Subtract"/>
+              <stuff what="movedobject" name="Subtract">
+                <oldpos>2106.5 2658.5</oldpos>
+                <newpos>1850.62 2721.83</newpos>
+              </stuff>
+              <stuff what="addedobject">
+                <component typename="SignalSource" name="Constant">
+                  <parameters>
+                    <parameter unit="[-]" value="1" type="double" name="y"/>
+                  </parameters>
+                  <ports>
+                    <port nodetype="NodeSignal" name="out"/>
+                  </ports>
+                  <hopsangui>
+                    <pose x="1968" y="2700" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                      <modelobject typename="SignalSource" displayname="Constant">
+                        <ports/>
+                      </modelobject>
+                    </hopsanobjectappearance>
+                  </hopsangui>
+                </component>
+              </stuff>
+              <stuff what="rotate" angle="0.000000" objectname="Constant"/>
+              <stuff what="movedobject" name="Constant">
+                <oldpos>1955.5 2687.5</oldpos>
+                <newpos>1699.62 2750.83</newpos>
+              </stuff>
+              <stuff what="addedobject">
+                <component typename="SignalDivide" name="Divide">
+                  <parameters>
+                    <parameter unit="-" value="0" type="double" name="out::Value"/>
+                  </parameters>
+                  <ports>
+                    <port nodetype="NodeSignal" name="out"/>
+                    <port nodetype="NodeSignal" name="in1"/>
+                    <port nodetype="NodeSignal" name="in2"/>
+                  </ports>
+                  <hopsangui>
+                    <pose x="2176" y="2676" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                      <modelobject typename="SignalDivide" displayname="Divide">
+                        <ports/>
+                      </modelobject>
+                    </hopsanobjectappearance>
+                  </hopsangui>
+                </component>
+              </stuff>
+              <stuff what="horizontalflip" objectname="Divide"/>
+              <stuff what="rotate" angle="180.000000" objectname="Divide"/>
+              <stuff what="movedobject" name="Divide">
+                <oldpos>2188.5 2663.5</oldpos>
+                <newpos>1932.62 2726.83</newpos>
+              </stuff>
+              <stuff what="addedobject">
+                <component typename="SignalSum" name="Sum">
+                  <parameters>
+                    <parameter unit="-" value="0" type="double" name="out::Value"/>
+                  </parameters>
+                  <ports>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="out"/>
+                  </ports>
+                  <hopsangui>
+                    <pose x="2156" y="2728" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                      <modelobject typename="SignalSum" displayname="Sum">
+                        <ports/>
+                      </modelobject>
+                    </hopsanobjectappearance>
+                  </hopsangui>
+                </component>
+              </stuff>
+              <stuff what="rotate" angle="0.000000" objectname="Sum"/>
+              <stuff what="movedobject" name="Sum">
+                <oldpos>2143.5 2715.5</oldpos>
+                <newpos>1887.62 2778.83</newpos>
+              </stuff>
+              <stuff what="addedobject">
+                <component typename="SignalMultiply" name="Multiply">
+                  <parameters>
+                    <parameter unit="-" value="0" type="double" name="out::Value"/>
+                  </parameters>
+                  <ports>
+                    <port nodetype="NodeSignal" name="out"/>
+                    <port nodetype="NodeSignal" name="in1"/>
+                    <port nodetype="NodeSignal" name="in2"/>
+                  </ports>
+                  <hopsangui>
+                    <pose x="2292" y="2732" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                      <modelobject typename="SignalMultiply" displayname="Multiply">
+                        <ports/>
+                      </modelobject>
+                    </hopsanobjectappearance>
+                  </hopsangui>
+                </component>
+              </stuff>
+              <stuff what="rotate" angle="0.000000" objectname="Multiply"/>
+              <stuff what="movedobject" name="Multiply">
+                <oldpos>2279.5 2719.5</oldpos>
+                <newpos>2023.62 2782.83</newpos>
+              </stuff>
+              <stuff what="addedobject">
+                <component typename="SignalMultiply" name="Multiply_1">
+                  <parameters>
+                    <parameter unit="-" value="0" type="double" name="out::Value"/>
+                  </parameters>
+                  <ports>
+                    <port nodetype="NodeSignal" name="out"/>
+                    <port nodetype="NodeSignal" name="in1"/>
+                    <port nodetype="NodeSignal" name="in2"/>
+                  </ports>
+                  <hopsangui>
+                    <pose x="1944.5" y="2771.5" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                      <modelobject typename="SignalMultiply" displayname="Multiply_1">
+                        <ports/>
+                      </modelobject>
+                    </hopsanobjectappearance>
+                  </hopsangui>
+                </component>
+              </stuff>
+              <stuff what="rotate" angle="0.000000" objectname="Multiply_1"/>
+              <stuff what="movedobject" name="Multiply_1">
+                <oldpos>1932 2759</oldpos>
+                <newpos>1676.12 2822.33</newpos>
+              </stuff>
+              <stuff what="addedobject">
+                <component typename="SignalAdd" name="Add_1">
+                  <parameters>
+                    <parameter unit="-" value="0" type="double" name="out::Value"/>
+                  </parameters>
+                  <ports>
+                    <port nodetype="NodeSignal" name="out"/>
+                    <port nodetype="NodeSignal" name="in1"/>
+                    <port nodetype="NodeSignal" name="in2"/>
+                  </ports>
+                  <hopsangui>
+                    <pose x="2016" y="2772.5" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                      <modelobject typename="SignalAdd" displayname="Add_1">
+                        <ports/>
+                      </modelobject>
+                    </hopsanobjectappearance>
+                  </hopsangui>
+                </component>
+              </stuff>
+              <stuff what="rotate" angle="0.000000" objectname="Add_1"/>
+              <stuff what="movedobject" name="Add_1">
+                <oldpos>2003.5 2760</oldpos>
+                <newpos>1747.62 2823.33</newpos>
+              </stuff>
+              <stuff what="addedobject">
+                <component typename="SignalAdd" name="Add">
+                  <parameters>
+                    <parameter unit="-" value="0" type="double" name="out::Value"/>
+                  </parameters>
+                  <ports>
+                    <port nodetype="NodeSignal" name="out"/>
+                    <port nodetype="NodeSignal" name="in1"/>
+                    <port nodetype="NodeSignal" name="in2"/>
+                  </ports>
+                  <hopsangui>
+                    <pose x="2334" y="2731" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                      <modelobject typename="SignalAdd" displayname="Add">
+                        <ports/>
+                      </modelobject>
+                    </hopsanobjectappearance>
+                  </hopsangui>
+                </component>
+              </stuff>
+              <stuff what="rotate" angle="0.000000" objectname="Add"/>
+              <stuff what="movedobject" name="Add">
+                <oldpos>2321.5 2718.5</oldpos>
+                <newpos>2065.62 2781.83</newpos>
+              </stuff>
+              <stuff what="addedobject">
+                <component typename="HydraulicQPsrc" name="HydraulicQPsrc_2">
+                  <parameters>
+                    <parameter unit="-" value="0" type="double" name="Pcout::Value"/>
+                    <parameter unit="-" value="0" type="double" name="PZcout::Value"/>
+                    <parameter unit="m3/s" value="0" type="double" name="qinput"/>
+                    <parameter unit="Pa" value="100000" type="double" name="pinput"/>
+                  </parameters>
+                  <ports>
+                    <port nodetype="NodeSignal" name="Ppinput"/>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                    <port nodetype="NodeSignal" name="PZcout"/>
+                    <port nodetype="NodeSignal" name="Pcout"/>
+                    <port nodetype="NodeSignal" name="Pqinput"/>
+                  </ports>
+                  <hopsangui>
+                    <pose x="2406" y="2602" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                      <modelobject typename="HydraulicQPsrc" displayname="HydraulicQPsrc_2">
+                        <ports/>
+                      </modelobject>
+                    </hopsanobjectappearance>
+                  </hopsangui>
+                </component>
+              </stuff>
+              <stuff what="horizontalflip" objectname="HydraulicQPsrc_2"/>
+              <stuff what="rotate" angle="0.000000" objectname="HydraulicQPsrc_2"/>
+              <stuff what="movedobject" name="HydraulicQPsrc_2">
+                <oldpos>2436 2582</oldpos>
+                <newpos>2180.12 2645.33</newpos>
+              </stuff>
+              <stuff what="addedconnector">
+                <connect endport="in" endcomponent="Sum" startport="PZcout" startcomponent="HydraulicQPsrc">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="1662.12501999999994950485" y="2687.33333333333348491578"/>
+                      <coordinate x="1662.12501999999994950485" y="2791.33333333333348491578"/>
+                      <coordinate x="1887.62500000000000000000" y="2791.33333333333348491578"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+              <stuff what="addedconnector">
+                <connect endport="in" endcomponent="Sum" startport="PZcout" startcomponent="HydraulicQPsrc_2">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="2140.12498000000005049515" y="2685.33333333333348491578"/>
+                      <coordinate x="2140.12498000000005049515" y="2775.00000000000000000000"/>
+                      <coordinate x="2131.00000000000000000000" y="2775.00000000000000000000"/>
+                      <coordinate x="2131.00000000000000000000" y="2791.33333333333348491578"/>
+                      <coordinate x="1887.62500000000000000000" y="2791.33333333333348491578"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+              <stuff what="addedconnector">
+                <connect endport="in" endcomponent="Sum" startport="out" startcomponent="Constant">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="1724.62500000000000000000" y="2763.33333333333348491578"/>
+                      <coordinate x="1887.62500000000000000000" y="2763.33333333333348491578"/>
+                      <coordinate x="1887.62500000000000000000" y="2791.33333333333348491578"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+              <stuff what="addedconnector">
+                <connect endport="in1" endcomponent="Subtract" startport="Pcout" startcomponent="HydraulicQPsrc">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="1642.12498000000005049515" y="2687.33333333333348491578"/>
+                      <coordinate x="1642.12498000000005049515" y="2734.33333333333348491578"/>
+                      <coordinate x="1850.62500000000000000000" y="2734.33333333333348491578"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+              <stuff what="addedconnector">
+                <connect endport="in2" endcomponent="Subtract" startport="Pcout" startcomponent="HydraulicQPsrc_2">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="2160.12501999999994950485" y="2685.33333333333348491578"/>
+                      <coordinate x="2160.12501999999994950485" y="2637.00000000000000000000"/>
+                      <coordinate x="1863.12500000000000000000" y="2637.00000000000000000000"/>
+                      <coordinate x="1863.12500000000000000000" y="2721.83333333333348491578"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+              <stuff what="addedconnector">
+                <connect endport="in1" endcomponent="Divide" startport="out" startcomponent="Subtract">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="1875.62500000000000000000" y="2734.33333333333348491578"/>
+                      <coordinate x="2203.50000000000000000000" y="2734.33333333333348491578"/>
+                      <coordinate x="2203.50000000000000000000" y="2739.33333333333348491578"/>
+                      <coordinate x="1907.62500000000000000000" y="2739.33333333333348491578"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+              <stuff what="addedconnector">
+                <connect endport="in2" endcomponent="Divide" startport="out" startcomponent="Sum">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="1912.62500000000000000000" y="2791.33333333333348491578"/>
+                      <coordinate x="1920.12500000000000000000" y="2791.33333333333348491578"/>
+                      <coordinate x="1920.12500000000000000000" y="2751.83333333333348491578"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+              <stuff what="addedconnector">
+                <connect endport="Pqinput" endcomponent="HydraulicQPsrc_2" startport="out" startcomponent="Divide">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="1932.62500000000000000000" y="2739.33333333333348491578"/>
+                      <coordinate x="2338.00000000000000000000" y="2739.33333333333348491578"/>
+                      <coordinate x="2338.00000000000000000000" y="2565.00000000000000000000"/>
+                      <coordinate x="2160.12501999999994950485" y="2565.00000000000000000000"/>
+                      <coordinate x="2160.12501999999994950485" y="2645.33333333333348491578"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+              <stuff what="addedconnector">
+                <connect endport="out" endcomponent="Divide" startport="in" startcomponent="Gain">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="1872.62500000000000000000" y="2674.33333333333348491578"/>
+                      <coordinate x="2268.50000000000000000000" y="2674.33333333333348491578"/>
+                      <coordinate x="2268.50000000000000000000" y="2739.33333333333348491578"/>
+                      <coordinate x="1932.62500000000000000000" y="2739.33333333333348491578"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+              <stuff what="addedconnector">
+                <connect endport="Pqinput" endcomponent="HydraulicQPsrc" startport="out" startcomponent="Gain">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="1847.62500000000000000000" y="2674.33333333333348491578"/>
+                      <coordinate x="2058.00000000000000000000" y="2674.33333333333348491578"/>
+                      <coordinate x="2058.00000000000000000000" y="2563.00000000000000000000"/>
+                      <coordinate x="1642.12498000000005049515" y="2563.00000000000000000000"/>
+                      <coordinate x="1642.12498000000005049515" y="2647.33333333333348491578"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+              <stuff what="addedconnector">
+                <connect endport="in1" endcomponent="Multiply" startport="out" startcomponent="Divide">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="1932.62500000000000000000" y="2739.33333333333348491578"/>
+                      <coordinate x="2262.45491502499999114661" y="2739.33333333333348491578"/>
+                      <coordinate x="2262.45491502499999114661" y="2795.33333333333348491578"/>
+                      <coordinate x="2023.62500000000000000000" y="2795.33333333333348491578"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+              <stuff what="addedconnector">
+                <connect endport="in2" endcomponent="Multiply" startport="PZcout" startcomponent="HydraulicQPsrc_2">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="2140.12498000000005049515" y="2685.33333333333348491578"/>
+                      <coordinate x="2140.12498000000005049515" y="2587.00000000000000000000"/>
+                      <coordinate x="2036.12500000000000000000" y="2587.00000000000000000000"/>
+                      <coordinate x="2036.12500000000000000000" y="2782.83333333333348491578"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+              <stuff what="addedconnector">
+                <connect endport="in2" endcomponent="Add" startport="Pcout" startcomponent="HydraulicQPsrc_2">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="2160.12501999999994950485" y="2685.33333333333348491578"/>
+                      <coordinate x="2160.12501999999994950485" y="2674.50000000000000000000"/>
+                      <coordinate x="2078.12500000000000000000" y="2674.50000000000000000000"/>
+                      <coordinate x="2078.12500000000000000000" y="2781.83333333333348491578"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+              <stuff what="addedconnector">
+                <connect endport="in1" endcomponent="Add" startport="out" startcomponent="Multiply">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="2048.62500000000000000000" y="2795.33333333333348491578"/>
+                      <coordinate x="2355.45491502499999114661" y="2795.33333333333348491578"/>
+                      <coordinate x="2355.45491502499999114661" y="2794.33333333333348491578"/>
+                      <coordinate x="2065.62500000000000000000" y="2794.33333333333348491578"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+              <stuff what="addedconnector">
+                <connect endport="Ppinput" endcomponent="HydraulicQPsrc_2" startport="out" startcomponent="Add">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="2090.62500000000000000000" y="2794.33333333333348491578"/>
+                      <coordinate x="2361.00000000000000000000" y="2794.33333333333348491578"/>
+                      <coordinate x="2361.00000000000000000000" y="2573.00000000000000000000"/>
+                      <coordinate x="2140.12498000000005049515" y="2573.00000000000000000000"/>
+                      <coordinate x="2140.12498000000005049515" y="2645.33333333333348491578"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+              <stuff what="addedconnector">
+                <connect endport="in2" endcomponent="Multiply_1" startport="out" startcomponent="Gain">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="1847.62500000000000000000" y="2674.33333333333348491578"/>
+                      <coordinate x="1688.62500000000000000000" y="2674.33333333333348491578"/>
+                      <coordinate x="1688.62500000000000000000" y="2822.33333333333348491578"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+              <stuff what="addedconnector">
+                <connect endport="in1" endcomponent="Multiply_1" startport="PZcout" startcomponent="HydraulicQPsrc">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="1662.12501999999994950485" y="2687.33333333333348491578"/>
+                      <coordinate x="1662.12501999999994950485" y="2834.83333333333348491578"/>
+                      <coordinate x="1676.12500000000000000000" y="2834.83333333333348491578"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+              <stuff what="addedconnector">
+                <connect endport="in2" endcomponent="Add_1" startport="Pcout" startcomponent="HydraulicQPsrc">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="1642.12498000000005049515" y="2687.33333333333348491578"/>
+                      <coordinate x="1642.12498000000005049515" y="2739.00000000000000000000"/>
+                      <coordinate x="1760.12500000000000000000" y="2739.00000000000000000000"/>
+                      <coordinate x="1760.12500000000000000000" y="2823.33333333333348491578"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+              <stuff what="addedconnector">
+                <connect endport="in1" endcomponent="Add_1" startport="out" startcomponent="Multiply_1">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="1701.12500000000000000000" y="2834.83333333333348491578"/>
+                      <coordinate x="1958.20491502499999114661" y="2834.83333333333348491578"/>
+                      <coordinate x="1958.20491502499999114661" y="2835.83333333333348491578"/>
+                      <coordinate x="1747.62500000000000000000" y="2835.83333333333348491578"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+              <stuff what="addedconnector">
+                <connect endport="Ppinput" endcomponent="HydraulicQPsrc" startport="out" startcomponent="Add_1">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="1772.62500000000000000000" y="2835.83333333333348491578"/>
+                      <coordinate x="2047.00000000000000000000" y="2835.83333333333348491578"/>
+                      <coordinate x="2047.00000000000000000000" y="2572.00000000000000000000"/>
+                      <coordinate x="1662.12501999999994950485" y="2572.00000000000000000000"/>
+                      <coordinate x="1662.12501999999994950485" y="2647.33333333333348491578"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+            </post>
+            <post number="1" type="movedmultiple">
+              <stuff what="movedobject" name="Multiply_1">
+                <oldpos>1944.5 2771.5</oldpos>
+                <newpos>1849.12 2734.33</newpos>
+              </stuff>
+              <stuff what="movedobject" name="Add_1">
+                <oldpos>2016 2772.5</oldpos>
+                <newpos>1920.62 2735.33</newpos>
+              </stuff>
+              <stuff what="movedobject" name="HydraulicQPsrc">
+                <oldpos>1908 2604</oldpos>
+                <newpos>1795.12 2559.33</newpos>
+              </stuff>
+              <stuff what="movedobject" name="Constant">
+                <oldpos>1968 2700</oldpos>
+                <newpos>1872.62 2662.83</newpos>
+              </stuff>
+              <stuff what="movedobject" name="Subtract">
+                <oldpos>2119 2671</oldpos>
+                <newpos>2023.62 2633.83</newpos>
+              </stuff>
+              <stuff what="movedobject" name="Sum">
+                <oldpos>2156 2728</oldpos>
+                <newpos>2060.62 2690.83</newpos>
+              </stuff>
+              <stuff what="movedobject" name="Divide">
+                <oldpos>2176 2676</oldpos>
+                <newpos>2105.62 2638.83</newpos>
+              </stuff>
+              <stuff what="movedobject" name="C_type_Pressure_Source">
+                <oldpos>1943 2545</oldpos>
+                <newpos>1848.12 2508.33</newpos>
+              </stuff>
+              <stuff what="movedobject" name="Gain">
+                <oldpos>1872.62 2661.83</oldpos>
+                <newpos>2045.62 2573.83</newpos>
+              </stuff>
+              <stuff what="movedobject" name="Multiply">
+                <oldpos>2292 2732</oldpos>
+                <newpos>2196.62 2694.83</newpos>
+              </stuff>
+              <stuff what="movedobject" name="Add">
+                <oldpos>2334 2731</oldpos>
+                <newpos>2238.62 2693.83</newpos>
+              </stuff>
+              <stuff what="movedobject" name="HydraulicQPsrc_2">
+                <oldpos>2406 2602</oldpos>
+                <newpos>2353.12 2557.33</newpos>
+              </stuff>
+            </post>
+            <post number="2">
+              <stuff what="addedcontainerport">
+                <systemport typename="HopsanGUIContainerPort" name="Container_Port">
+                  <hopsangui>
+                    <pose x="1729" y="2593" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                  </hopsangui>
+                </systemport>
+              </stuff>
+            </post>
+            <post number="3">
+              <stuff what="addedconnector">
+                <connect endport="P1" endcomponent="HydraulicQPsrc" startport="Container_Port" startcomponent="Container_Port">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="1729.00000000000000000000" y="2593.00000000000000000000"/>
+                      <coordinate x="1795.12500000000000000000" y="2593.00000000000000000000"/>
+                      <coordinate x="1795.12500000000000000000" y="2579.33333333333348491578"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+            </post>
+            <post number="4">
+              <stuff what="movedobject" name="Container_Port">
+                <oldpos>1709 2583</oldpos>
+                <newpos>1719 2569.33</newpos>
+              </stuff>
+            </post>
+            <post number="5">
+              <stuff what="deletedobject">
+                <component typename="HydraulicPressureSourceC" name="C_type_Pressure_Source">
+                  <parameters>
+                    <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
+                    <parameter unit="K" value="0" type="double" name="P1::Temperature"/>
+                    <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
+                    <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
+                    <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
+                    <parameter unit="[Pa]" value="1000000" type="double" name="p"/>
+                  </parameters>
+                  <ports>
+                    <port nodetype="NodeSignal" name="In"/>
+                    <port nodetype="NodeHydraulic" name="P1"/>
+                  </ports>
+                  <hopsangui>
+                    <pose x="1860.125" y="2520.333333" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                    <hopsanobjectappearance version="0.3">
+                      <modelobject typename="HydraulicPressureSourceC" displayname="C_type_Pressure_Source">
+                        <ports/>
+                      </modelobject>
+                    </hopsanobjectappearance>
+                  </hopsangui>
+                </component>
+              </stuff>
+            </post>
+            <post number="6">
+              <stuff what="addedcontainerport">
+                <systemport typename="HopsanGUIContainerPort" name="Container_Port_1">
+                  <hopsangui>
+                    <pose x="2413" y="2582" flipped="false" a="0"/>
+                    <nametext position="0" visible="0"/>
+                  </hopsangui>
+                </systemport>
+              </stuff>
+            </post>
+            <post number="7">
+              <stuff what="addedconnector">
+                <connect endport="Container_Port_1" endcomponent="Container_Port_1" startport="P1" startcomponent="HydraulicQPsrc_2">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="2353.12500000000000000000" y="2577.33333333333348491578"/>
+                      <coordinate x="2353.12500000000000000000" y="2577.33333333333348491578"/>
+                      <coordinate x="2413.00000000000000000000" y="2577.33333333333348491578"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+            </post>
+          </hopsanundo>
+        </hopsangui>
+        <objects>
+          <component typename="SignalMultiply" name="Multiply_1">
+            <parameters>
+              <parameter unit="-" value="0" type="double" name="out::Value"/>
+            </parameters>
+            <ports>
+              <port nodetype="NodeSignal" name="out"/>
+              <port nodetype="NodeSignal" name="in1"/>
+              <port nodetype="NodeSignal" name="in2"/>
+            </ports>
+            <hopsangui>
+              <pose x="1861.625" y="2746.833333" flipped="false" a="0"/>
+              <nametext position="0" visible="0"/>
+              <hopsanobjectappearance version="0.3">
+                <modelobject typename="SignalMultiply" displayname="Multiply_1">
+                  <ports/>
+                </modelobject>
+              </hopsanobjectappearance>
+            </hopsangui>
+          </component>
+          <component typename="SignalAdd" name="Add_1">
+            <parameters>
+              <parameter unit="-" value="0" type="double" name="out::Value"/>
+            </parameters>
+            <ports>
+              <port nodetype="NodeSignal" name="out"/>
+              <port nodetype="NodeSignal" name="in1"/>
+              <port nodetype="NodeSignal" name="in2"/>
+            </ports>
+            <hopsangui>
+              <pose x="1933.125" y="2747.833333" flipped="false" a="0"/>
+              <nametext position="0" visible="0"/>
+              <hopsanobjectappearance version="0.3">
+                <modelobject typename="SignalAdd" displayname="Add_1">
+                  <ports/>
+                </modelobject>
+              </hopsanobjectappearance>
+            </hopsangui>
+          </component>
+          <component typename="HydraulicQPsrc" name="HydraulicQPsrc">
+            <parameters>
+              <parameter unit="-" value="0" type="double" name="Pcout::Value"/>
+              <parameter unit="-" value="0" type="double" name="PZcout::Value"/>
+              <parameter unit="m3/s" value="0" type="double" name="qinput"/>
+              <parameter unit="Pa" value="100000" type="double" name="pinput"/>
+            </parameters>
+            <ports>
+              <port nodetype="NodeSignal" name="Ppinput"/>
+              <port nodetype="NodeHydraulic" name="P1"/>
+              <port nodetype="NodeSignal" name="PZcout"/>
+              <port nodetype="NodeSignal" name="Pcout"/>
+              <port nodetype="NodeSignal" name="Pqinput"/>
+            </ports>
+            <hopsangui>
+              <pose x="1825.125" y="2579.333333" flipped="false" a="0"/>
+              <nametext position="0" visible="0"/>
+              <hopsanobjectappearance version="0.3">
+                <modelobject typename="HydraulicQPsrc" displayname="HydraulicQPsrc">
+                  <ports/>
+                </modelobject>
+              </hopsanobjectappearance>
+            </hopsangui>
+          </component>
+          <component typename="SignalSource" name="Constant">
+            <parameters>
+              <parameter unit="[-]" value="1e11" type="double" name="y"/>
+            </parameters>
+            <ports>
+              <port nodetype="NodeSignal" name="out"/>
+            </ports>
+            <hopsangui>
+              <pose x="1885.125" y="2675.333333" flipped="false" a="0"/>
+              <nametext position="0" visible="0"/>
+              <hopsanobjectappearance version="0.3">
+                <modelobject typename="SignalSource" displayname="Constant">
+                  <ports/>
+                </modelobject>
+              </hopsanobjectappearance>
+            </hopsangui>
+          </component>
+          <systemport typename="HopsanGUIContainerPort" name="Container_Port_1">
+            <hopsangui>
+              <pose x="2413" y="2577.333333" flipped="false" a="0"/>
+              <nametext position="0" visible="0"/>
+            </hopsangui>
+          </systemport>
+          <component typename="SignalSubtract" name="Subtract">
+            <parameters>
+              <parameter unit="-" value="0" type="double" name="out::Value"/>
+            </parameters>
+            <ports>
+              <port nodetype="NodeSignal" name="out"/>
+              <port nodetype="NodeSignal" name="in1"/>
+              <port nodetype="NodeSignal" name="in2"/>
+            </ports>
+            <hopsangui>
+              <pose x="2036.125" y="2646.333333" flipped="false" a="0"/>
+              <nametext position="0" visible="0"/>
+              <hopsanobjectappearance version="0.3">
+                <modelobject typename="SignalSubtract" displayname="Subtract">
+                  <ports/>
+                </modelobject>
+              </hopsanobjectappearance>
+            </hopsangui>
+          </component>
+          <component typename="SignalSum" name="Sum">
+            <parameters>
+              <parameter unit="-" value="0" type="double" name="out::Value"/>
+            </parameters>
+            <ports>
+              <port nodetype="NodeSignal" name="in"/>
+              <port nodetype="NodeSignal" name="out"/>
+            </ports>
+            <hopsangui>
+              <pose x="2073.125" y="2703.333333" flipped="false" a="0"/>
+              <nametext position="0" visible="0"/>
+              <hopsanobjectappearance version="0.3">
+                <modelobject typename="SignalSum" displayname="Sum">
+                  <ports/>
+                </modelobject>
+              </hopsanobjectappearance>
+            </hopsangui>
+          </component>
+          <component typename="SignalDivide" name="Divide">
+            <parameters>
+              <parameter unit="-" value="0" type="double" name="out::Value"/>
+            </parameters>
+            <ports>
+              <port nodetype="NodeSignal" name="out"/>
+              <port nodetype="NodeSignal" name="in1"/>
+              <port nodetype="NodeSignal" name="in2"/>
+            </ports>
+            <hopsangui>
+              <pose x="2093.125" y="2651.333333" flipped="true" a="180"/>
+              <nametext position="0" visible="0"/>
+              <hopsanobjectappearance version="0.3">
+                <modelobject typename="SignalDivide" displayname="Divide">
+                  <ports/>
+                </modelobject>
+              </hopsanobjectappearance>
+            </hopsangui>
+          </component>
+          <systemport typename="HopsanGUIContainerPort" name="Container_Port">
+            <hopsangui>
+              <pose x="1739" y="2579.333333" flipped="false" a="0"/>
+              <nametext position="0" visible="0"/>
+            </hopsangui>
+          </systemport>
+          <component typename="SignalGain" name="Gain">
+            <parameters>
+              <parameter unit="-" value="0" type="double" name="out::Value"/>
+              <parameter unit="[-]" value="-1" type="double" name="k"/>
+            </parameters>
+            <ports>
+              <port nodetype="NodeSignal" name="in"/>
+              <port nodetype="NodeSignal" name="out"/>
+            </ports>
+            <hopsangui>
+              <pose x="2033.125" y="2586.333333" flipped="true" a="0"/>
+              <nametext position="0" visible="0"/>
+              <hopsanobjectappearance version="0.3">
+                <modelobject typename="SignalGain" displayname="Gain">
+                  <ports/>
+                </modelobject>
+              </hopsanobjectappearance>
+            </hopsangui>
+          </component>
+          <component typename="SignalMultiply" name="Multiply">
+            <parameters>
+              <parameter unit="-" value="0" type="double" name="out::Value"/>
+            </parameters>
+            <ports>
+              <port nodetype="NodeSignal" name="out"/>
+              <port nodetype="NodeSignal" name="in1"/>
+              <port nodetype="NodeSignal" name="in2"/>
+            </ports>
+            <hopsangui>
+              <pose x="2209.125" y="2707.333333" flipped="false" a="0"/>
+              <nametext position="0" visible="0"/>
+              <hopsanobjectappearance version="0.3">
+                <modelobject typename="SignalMultiply" displayname="Multiply">
+                  <ports/>
+                </modelobject>
+              </hopsanobjectappearance>
+            </hopsangui>
+          </component>
+          <component typename="SignalAdd" name="Add">
+            <parameters>
+              <parameter unit="-" value="0" type="double" name="out::Value"/>
+            </parameters>
+            <ports>
+              <port nodetype="NodeSignal" name="out"/>
+              <port nodetype="NodeSignal" name="in1"/>
+              <port nodetype="NodeSignal" name="in2"/>
+            </ports>
+            <hopsangui>
+              <pose x="2251.125" y="2706.333333" flipped="false" a="0"/>
+              <nametext position="0" visible="0"/>
+              <hopsanobjectappearance version="0.3">
+                <modelobject typename="SignalAdd" displayname="Add">
+                  <ports/>
+                </modelobject>
+              </hopsanobjectappearance>
+            </hopsangui>
+          </component>
+          <component typename="HydraulicQPsrc" name="HydraulicQPsrc_2">
+            <parameters>
+              <parameter unit="-" value="0" type="double" name="Pcout::Value"/>
+              <parameter unit="-" value="0" type="double" name="PZcout::Value"/>
+              <parameter unit="m3/s" value="0" type="double" name="qinput"/>
+              <parameter unit="Pa" value="100000" type="double" name="pinput"/>
+            </parameters>
+            <ports>
+              <port nodetype="NodeSignal" name="Ppinput"/>
+              <port nodetype="NodeHydraulic" name="P1"/>
+              <port nodetype="NodeSignal" name="PZcout"/>
+              <port nodetype="NodeSignal" name="Pcout"/>
+              <port nodetype="NodeSignal" name="Pqinput"/>
+            </ports>
+            <hopsangui>
+              <pose x="2323.125" y="2577.333333" flipped="true" a="0"/>
+              <nametext position="0" visible="0"/>
+              <hopsanobjectappearance version="0.3">
+                <modelobject typename="HydraulicQPsrc" displayname="HydraulicQPsrc_2">
+                  <ports/>
+                </modelobject>
+              </hopsanobjectappearance>
+            </hopsangui>
+          </component>
+        </objects>
+        <connections>
+          <connect endport="in" endcomponent="Sum" startport="PZcout" startcomponent="HydraulicQPsrc">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="1835.12501999999994950485" y="2599.33333333333348491578"/>
+                <coordinate x="1835.12501999999994950485" y="2703.33333333333348491578"/>
+                <coordinate x="2060.62500000000000000000" y="2703.33333333333348491578"/>
+              </coordinates>
+              <geometries>
+                <geometry>horizontal</geometry>
+                <geometry>vertical</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="in" endcomponent="Sum" startport="PZcout" startcomponent="HydraulicQPsrc_2">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="2313.12498000000005049515" y="2597.33333333333348491578"/>
+                <coordinate x="2313.12498000000005049515" y="2750.33333333333348491578"/>
+                <coordinate x="2048.12500000000000000000" y="2750.33333333333348491578"/>
+                <coordinate x="2048.12500000000000000000" y="2703.33333333333348491578"/>
+                <coordinate x="2060.62500000000000000000" y="2703.33333333333348491578"/>
+              </coordinates>
+              <geometries>
+                <geometry>horizontal</geometry>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+                <geometry>vertical</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="in" endcomponent="Sum" startport="out" startcomponent="Constant">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="1897.62500000000000000000" y="2675.33333333333348491578"/>
+                <coordinate x="2060.62500000000000000000" y="2675.33333333333348491578"/>
+                <coordinate x="2060.62500000000000000000" y="2703.33333333333348491578"/>
+              </coordinates>
+              <geometries>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="in1" endcomponent="Subtract" startport="Pcout" startcomponent="HydraulicQPsrc">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="1815.12498000000005049515" y="2599.33333333333348491578"/>
+                <coordinate x="1815.12498000000005049515" y="2646.33333333333348491578"/>
+                <coordinate x="2023.62500000000000000000" y="2646.33333333333348491578"/>
+              </coordinates>
+              <geometries>
+                <geometry>horizontal</geometry>
+                <geometry>vertical</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="in2" endcomponent="Subtract" startport="Pcout" startcomponent="HydraulicQPsrc_2">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="2333.12501999999994950485" y="2597.33333333333348491578"/>
+                <coordinate x="2333.12501999999994950485" y="2612.33333333333348491578"/>
+                <coordinate x="2036.12500000000000000000" y="2612.33333333333348491578"/>
+                <coordinate x="2036.12500000000000000000" y="2633.83333333333348491578"/>
+              </coordinates>
+              <geometries>
+                <geometry>horizontal</geometry>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="in1" endcomponent="Divide" startport="out" startcomponent="Subtract">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="2048.62500000000000000000" y="2646.33333333333348491578"/>
+                <coordinate x="2120.62500000000000000000" y="2646.33333333333348491578"/>
+                <coordinate x="2120.62500000000000000000" y="2651.33333333333348491578"/>
+                <coordinate x="2080.62500000000000000000" y="2651.33333333333348491578"/>
+              </coordinates>
+              <geometries>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+                <geometry>vertical</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="in2" endcomponent="Divide" startport="out" startcomponent="Sum">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="2085.62500000000000000000" y="2703.33333333333348491578"/>
+                <coordinate x="2093.12500000000000000000" y="2703.33333333333348491578"/>
+                <coordinate x="2093.12500000000000000000" y="2663.83333333333348491578"/>
+              </coordinates>
+              <geometries>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="Pqinput" endcomponent="HydraulicQPsrc_2" startport="out" startcomponent="Divide">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="2105.62500000000000000000" y="2651.33333333333348491578"/>
+                <coordinate x="2255.12500000000000000000" y="2651.33333333333348491578"/>
+                <coordinate x="2255.12500000000000000000" y="2540.33333333333348491578"/>
+                <coordinate x="2333.12501999999994950485" y="2540.33333333333348491578"/>
+                <coordinate x="2333.12501999999994950485" y="2557.33333333333348491578"/>
+              </coordinates>
+              <geometries>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="out" endcomponent="Divide" startport="in" startcomponent="Gain">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="2045.62500000000000000000" y="2586.33333333333348491578"/>
+                <coordinate x="2185.62500000000000000000" y="2586.33333333333348491578"/>
+                <coordinate x="2185.62500000000000000000" y="2651.33333333333348491578"/>
+                <coordinate x="2105.62500000000000000000" y="2651.33333333333348491578"/>
+              </coordinates>
+              <geometries>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+                <geometry>vertical</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="Pqinput" endcomponent="HydraulicQPsrc" startport="out" startcomponent="Gain">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="2020.62500000000000000000" y="2586.33333333333348491578"/>
+                <coordinate x="1975.12500000000000000000" y="2586.33333333333348491578"/>
+                <coordinate x="1975.12500000000000000000" y="2538.33333333333348491578"/>
+                <coordinate x="1815.12498000000005049515" y="2538.33333333333348491578"/>
+                <coordinate x="1815.12498000000005049515" y="2559.33333333333348491578"/>
+              </coordinates>
+              <geometries>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="in1" endcomponent="Multiply" startport="out" startcomponent="Divide">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="2105.62500000000000000000" y="2651.33333333333348491578"/>
+                <coordinate x="2179.57991502499999114661" y="2651.33333333333348491578"/>
+                <coordinate x="2179.57991502499999114661" y="2707.33333333333348491578"/>
+                <coordinate x="2196.62500000000000000000" y="2707.33333333333348491578"/>
+              </coordinates>
+              <geometries>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+                <geometry>vertical</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="in2" endcomponent="Multiply" startport="PZcout" startcomponent="HydraulicQPsrc_2">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="2313.12498000000005049515" y="2597.33333333333348491578"/>
+                <coordinate x="2313.12498000000005049515" y="2562.33333333333348491578"/>
+                <coordinate x="2209.12500000000000000000" y="2562.33333333333348491578"/>
+                <coordinate x="2209.12500000000000000000" y="2694.83333333333348491578"/>
+              </coordinates>
+              <geometries>
+                <geometry>horizontal</geometry>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="in2" endcomponent="Add" startport="Pcout" startcomponent="HydraulicQPsrc_2">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="2333.12501999999994950485" y="2597.33333333333348491578"/>
+                <coordinate x="2333.12501999999994950485" y="2649.83333333333348491578"/>
+                <coordinate x="2251.12500000000000000000" y="2649.83333333333348491578"/>
+                <coordinate x="2251.12500000000000000000" y="2693.83333333333348491578"/>
+              </coordinates>
+              <geometries>
+                <geometry>horizontal</geometry>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="in1" endcomponent="Add" startport="out" startcomponent="Multiply">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="2221.62500000000000000000" y="2707.33333333333348491578"/>
+                <coordinate x="2272.57991502499999114661" y="2707.33333333333348491578"/>
+                <coordinate x="2272.57991502499999114661" y="2706.33333333333348491578"/>
+                <coordinate x="2238.62500000000000000000" y="2706.33333333333348491578"/>
+              </coordinates>
+              <geometries>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+                <geometry>vertical</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="Ppinput" endcomponent="HydraulicQPsrc_2" startport="out" startcomponent="Add">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="2263.62500000000000000000" y="2706.33333333333348491578"/>
+                <coordinate x="2278.12500000000000000000" y="2706.33333333333348491578"/>
+                <coordinate x="2278.12500000000000000000" y="2548.33333333333348491578"/>
+                <coordinate x="2313.12498000000005049515" y="2548.33333333333348491578"/>
+                <coordinate x="2313.12498000000005049515" y="2557.33333333333348491578"/>
+              </coordinates>
+              <geometries>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="in2" endcomponent="Multiply_1" startport="out" startcomponent="Gain">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="2020.62500000000000000000" y="2586.33333333333348491578"/>
+                <coordinate x="1861.62500000000000000000" y="2586.33333333333348491578"/>
+                <coordinate x="1861.62500000000000000000" y="2734.33333333333348491578"/>
+              </coordinates>
+              <geometries>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="in1" endcomponent="Multiply_1" startport="PZcout" startcomponent="HydraulicQPsrc">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="1835.12501999999994950485" y="2599.33333333333348491578"/>
+                <coordinate x="1835.12501999999994950485" y="2746.83333333333348491578"/>
+                <coordinate x="1849.12500000000000000000" y="2746.83333333333348491578"/>
+              </coordinates>
+              <geometries>
+                <geometry>horizontal</geometry>
+                <geometry>vertical</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="in2" endcomponent="Add_1" startport="Pcout" startcomponent="HydraulicQPsrc">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="1815.12498000000005049515" y="2599.33333333333348491578"/>
+                <coordinate x="1815.12498000000005049515" y="2714.33333333333348491578"/>
+                <coordinate x="1933.12500000000000000000" y="2714.33333333333348491578"/>
+                <coordinate x="1933.12500000000000000000" y="2735.33333333333348491578"/>
+              </coordinates>
+              <geometries>
+                <geometry>horizontal</geometry>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="in1" endcomponent="Add_1" startport="out" startcomponent="Multiply_1">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="1874.12500000000000000000" y="2746.83333333333348491578"/>
+                <coordinate x="1875.32991502499999114661" y="2746.83333333333348491578"/>
+                <coordinate x="1875.32991502499999114661" y="2747.83333333333348491578"/>
+                <coordinate x="1920.62500000000000000000" y="2747.83333333333348491578"/>
+              </coordinates>
+              <geometries>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+                <geometry>vertical</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="Ppinput" endcomponent="HydraulicQPsrc" startport="out" startcomponent="Add_1">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="1945.62500000000000000000" y="2747.83333333333348491578"/>
+                <coordinate x="1964.12500000000000000000" y="2747.83333333333348491578"/>
+                <coordinate x="1964.12500000000000000000" y="2547.33333333333348491578"/>
+                <coordinate x="1835.12501999999994950485" y="2547.33333333333348491578"/>
+                <coordinate x="1835.12501999999994950485" y="2559.33333333333348491578"/>
+              </coordinates>
+              <geometries>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="P1" endcomponent="HydraulicQPsrc" startport="Container_Port" startcomponent="Container_Port">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="1739.00000000000000000000" y="2579.33333333333348491578"/>
+                <coordinate x="1795.12500000000000000000" y="2579.33333333333348491578"/>
+                <coordinate x="1795.12500000000000000000" y="2579.33333333333348491578"/>
+              </coordinates>
+              <geometries>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="Container_Port_1" endcomponent="Container_Port_1" startport="P1" startcomponent="HydraulicQPsrc_2">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="2353.12500000000000000000" y="2577.33333333333348491578"/>
+                <coordinate x="2353.12500000000000000000" y="2577.33333333333348491578"/>
+                <coordinate x="2413.00000000000000000000" y="2577.33333333333348491578"/>
+              </coordinates>
+              <geometries>
+                <geometry>horizontal</geometry>
+                <geometry>vertical</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+        </connections>
+      </system>
+      <component typename="HydraulicPressureSourceC" name="C_type_Pressure_Source_1">
+        <parameters>
+          <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
+          <parameter unit="K" value="0" type="double" name="P1::Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
+          <parameter unit="[Pa]" value="1000000" type="double" name="p"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="In"/>
+          <port nodetype="NodeHydraulic" name="P1"/>
+        </ports>
+        <hopsangui>
+          <pose x="1823" y="2674" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="HydraulicPressureSourceC" displayname="C_type_Pressure_Source_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="HydraulicFlowSourceQ" name="Q_type_Flow_Source">
+        <parameters>
+          <parameter unit="[m^3/s]" value="0.001" type="double" name="q"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeHydraulic" name="P1"/>
+          <port nodetype="NodeSignal" name="in"/>
+        </ports>
+        <hopsangui>
+          <pose x="2283" y="2450" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="HydraulicFlowSourceQ" displayname="Q_type_Flow_Source">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSum" name="Sum">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="out::Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2156" y="2728" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSum" displayname="Sum">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="HydraulicFlowSensor" name="Flow_Rate_Transducer">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="out::Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeHydraulic" name="P1"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2230" y="2473" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="HydraulicFlowSensor" displayname="Flow_Rate_Transducer">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="HydraulicQPsrc" name="HydraulicQPsrc">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="Pcout::Value"/>
+          <parameter unit="-" value="0" type="double" name="PZcout::Value"/>
+          <parameter unit="m3/s" value="0" type="double" name="qinput"/>
+          <parameter unit="Pa" value="100000" type="double" name="pinput"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="Ppinput"/>
+          <port nodetype="NodeHydraulic" name="P1"/>
+          <port nodetype="NodeSignal" name="PZcout"/>
+          <port nodetype="NodeSignal" name="Pcout"/>
+          <port nodetype="NodeSignal" name="Pqinput"/>
+        </ports>
+        <hopsangui>
+          <pose x="1908" y="2604" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="HydraulicQPsrc" displayname="HydraulicQPsrc">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="HydraulicFlowSensor" name="Flow_Rate_Transducer_1">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="out::Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeHydraulic" name="P1"/>
+          <port nodetype="NodeSignal" name="out"/>
+        </ports>
+        <hopsangui>
+          <pose x="2511" y="2556" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="HydraulicFlowSensor" displayname="Flow_Rate_Transducer_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSink" name="Scope">
+        <parameters/>
+        <ports>
+          <port nodetype="NodeSignal" name="in_right"/>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="in_bottom"/>
+        </ports>
+        <hopsangui>
+          <pose x="2562" y="2412" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="HydraulicVolume" name="Hydraulic_Volume">
+        <parameters>
+          <parameter unit="m^3/s" value="0" type="double" name="P1::Flow"/>
+          <parameter unit="Pa" value="0" type="double" name="P1::Pressure"/>
+          <parameter unit="K" value="0" type="double" name="P1::Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="P1::WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P1::CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P1::HeatFlow"/>
+          <parameter unit="m^3/s" value="0" type="double" name="P2::Flow"/>
+          <parameter unit="Pa" value="0" type="double" name="P2::Pressure"/>
+          <parameter unit="K" value="0" type="double" name="P2::Temperature"/>
+          <parameter unit="Pa" value="0" type="double" name="P2::WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="P2::CharImpedance"/>
+          <parameter unit="?" value="0" type="double" name="P2::HeatFlow"/>
+          <parameter unit="[m^3]" value="0.001" type="double" name="V"/>
+          <parameter unit="[Pa]" value="1e+009" type="double" name="Beta_e"/>
+          <parameter unit="[-]" value="0.1" type="double" name="alpha"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeHydraulic" name="P1"/>
+          <port nodetype="NodeHydraulic" name="P2"/>
+        </ports>
+        <hopsangui>
+          <pose x="2289" y="2513" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="HydraulicVolume" displayname="Hydraulic_Volume">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+    </objects>
+    <connections>
+      <connect endport="P2" endcomponent="Hydraulic_Volume" startport="P1" startcomponent="Q_type_Flow_Source">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2295.00000000000000000000" y="2450.00000000000000000000"/>
+            <coordinate x="2360.00000000000000000000" y="2450.00000000000000000000"/>
+            <coordinate x="2360.00000000000000000000" y="2513.00000000000000000000"/>
+            <coordinate x="2314.00000000000000000000" y="2513.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="P1" endcomponent="Hydraulic_Volume" startport="P1" startcomponent="Laminar_Orifice">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2215.00000000000000000000" y="2513.00000000000000000000"/>
+            <coordinate x="2244.00000000000000000000" y="2513.00000000000000000000"/>
+            <coordinate x="2244.00000000000000000000" y="2513.00000000000000000000"/>
+            <coordinate x="2264.00000000000000000000" y="2513.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="P2" endcomponent="Laminar_Orifice" startport="P1" startcomponent="C_type_Pressure_Source">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="1943.00000000000000000000" y="2533.00000000000000000000"/>
+            <coordinate x="1943.00000000000000000000" y="2513.00000000000000000000"/>
+            <coordinate x="2145.00000000000000000000" y="2513.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Sum" startport="PZcout" startcomponent="HydraulicQPsrc">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="1918.00001999999994950485" y="2624.00000000000000000000"/>
+            <coordinate x="1918.00001999999994950485" y="2728.00000000000000000000"/>
+            <coordinate x="2143.50000000000000000000" y="2728.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Sum" startport="PZcout" startcomponent="HydraulicQPsrc_2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2395.99998000000005049515" y="2622.00000000000000000000"/>
+            <coordinate x="2395.99998000000005049515" y="2775.00000000000000000000"/>
+            <coordinate x="2131.00000000000000000000" y="2775.00000000000000000000"/>
+            <coordinate x="2131.00000000000000000000" y="2728.00000000000000000000"/>
+            <coordinate x="2143.50000000000000000000" y="2728.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Sum" startport="out" startcomponent="Constant">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="1980.50000000000000000000" y="2700.00000000000000000000"/>
+            <coordinate x="2143.50000000000000000000" y="2700.00000000000000000000"/>
+            <coordinate x="2143.50000000000000000000" y="2728.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in1" endcomponent="Subtract" startport="Pcout" startcomponent="HydraulicQPsrc">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="1897.99998000000005049515" y="2624.00000000000000000000"/>
+            <coordinate x="1897.99998000000005049515" y="2671.00000000000000000000"/>
+            <coordinate x="2106.50000000000000000000" y="2671.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in2" endcomponent="Subtract" startport="Pcout" startcomponent="HydraulicQPsrc_2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2416.00001999999994950485" y="2622.00000000000000000000"/>
+            <coordinate x="2416.00001999999994950485" y="2637.00000000000000000000"/>
+            <coordinate x="2119.00000000000000000000" y="2637.00000000000000000000"/>
+            <coordinate x="2119.00000000000000000000" y="2658.50000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in1" endcomponent="Divide" startport="out" startcomponent="Subtract">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2131.50000000000000000000" y="2671.00000000000000000000"/>
+            <coordinate x="2203.50000000000000000000" y="2671.00000000000000000000"/>
+            <coordinate x="2203.50000000000000000000" y="2676.00000000000000000000"/>
+            <coordinate x="2163.50000000000000000000" y="2676.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in2" endcomponent="Divide" startport="out" startcomponent="Sum">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2168.50000000000000000000" y="2728.00000000000000000000"/>
+            <coordinate x="2176.00000000000000000000" y="2728.00000000000000000000"/>
+            <coordinate x="2176.00000000000000000000" y="2688.50000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="Pqinput" endcomponent="HydraulicQPsrc_2" startport="out" startcomponent="Divide">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2188.50000000000000000000" y="2676.00000000000000000000"/>
+            <coordinate x="2338.00000000000000000000" y="2676.00000000000000000000"/>
+            <coordinate x="2338.00000000000000000000" y="2565.00000000000000000000"/>
+            <coordinate x="2416.00001999999994950485" y="2565.00000000000000000000"/>
+            <coordinate x="2416.00001999999994950485" y="2582.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="out" endcomponent="Divide" startport="in" startcomponent="Gain">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2128.50000000000000000000" y="2611.00000000000000000000"/>
+            <coordinate x="2268.50000000000000000000" y="2611.00000000000000000000"/>
+            <coordinate x="2268.50000000000000000000" y="2676.00000000000000000000"/>
+            <coordinate x="2188.50000000000000000000" y="2676.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="Pqinput" endcomponent="HydraulicQPsrc" startport="out" startcomponent="Gain">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2103.50000000000000000000" y="2611.00000000000000000000"/>
+            <coordinate x="2058.00000000000000000000" y="2611.00000000000000000000"/>
+            <coordinate x="2058.00000000000000000000" y="2563.00000000000000000000"/>
+            <coordinate x="1897.99998000000005049515" y="2563.00000000000000000000"/>
+            <coordinate x="1897.99998000000005049515" y="2584.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="P1" endcomponent="HydraulicQPsrc" startport="P1" startcomponent="C_type_Pressure_Source_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="1823.00000000000000000000" y="2662.00000000000000000000"/>
+            <coordinate x="1823.00000000000000000000" y="2605.00000000000000000000"/>
+            <coordinate x="1878.00000000000000000000" y="2605.00000000000000000000"/>
+            <coordinate x="1878.00000000000000000000" y="2604.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="P2" endcomponent="Hydraulic_Volume_1" startport="P1" startcomponent="Q_type_Flow_Source_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2582.00000000000000000000" y="2535.50000000000000000000"/>
+            <coordinate x="2647.00000000000000000000" y="2535.50000000000000000000"/>
+            <coordinate x="2647.00000000000000000000" y="2598.50000000000000000000"/>
+            <coordinate x="2601.00000000000000000000" y="2598.50000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="P1" endcomponent="Hydraulic_Volume_1" startport="P1" startcomponent="HydraulicQPsrc_2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2436.00000000000000000000" y="2602.00000000000000000000"/>
+            <coordinate x="2436.00000000000000000000" y="2598.50000000000000000000"/>
+            <coordinate x="2551.00000000000000000000" y="2598.50000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="P1" endcomponent="Laminar_Orifice" startport="P1" startcomponent="Flow_Rate_Transducer">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2230.00000000000000000000" y="2491.00000000000000000000"/>
+            <coordinate x="2230.00000000000000000000" y="2513.00000000000000000000"/>
+            <coordinate x="2215.00000000000000000000" y="2513.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="P1" endcomponent="HydraulicQPsrc_2" startport="P1" startcomponent="Flow_Rate_Transducer_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2511.00000000000000000000" y="2574.00000000000000000000"/>
+            <coordinate x="2511.00000000000000000000" y="2589.54508497500000885339"/>
+            <coordinate x="2436.00000000000000000000" y="2589.54508497500000885339"/>
+            <coordinate x="2436.00000000000000000000" y="2602.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope" startport="out" startcomponent="Flow_Rate_Transducer">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2230.00000000000000000000" y="2455.00000000000000000000"/>
+            <coordinate x="2230.00000000000000000000" y="2412.00000000000000000000"/>
+            <coordinate x="2542.00000000000000000000" y="2412.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope" startport="out" startcomponent="Flow_Rate_Transducer_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2511.00000000000000000000" y="2538.00000000000000000000"/>
+            <coordinate x="2511.00000000000000000000" y="2412.00000000000000000000"/>
+            <coordinate x="2542.00000000000000000000" y="2412.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in1" endcomponent="Multiply" startport="out" startcomponent="Divide">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2188.50000000000000000000" y="2676.00000000000000000000"/>
+            <coordinate x="2262.45491502499999114661" y="2676.00000000000000000000"/>
+            <coordinate x="2262.45491502499999114661" y="2732.00000000000000000000"/>
+            <coordinate x="2279.50000000000000000000" y="2732.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in2" endcomponent="Multiply" startport="PZcout" startcomponent="HydraulicQPsrc_2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2395.99998000000005049515" y="2622.00000000000000000000"/>
+            <coordinate x="2395.99998000000005049515" y="2587.00000000000000000000"/>
+            <coordinate x="2292.00000000000000000000" y="2587.00000000000000000000"/>
+            <coordinate x="2292.00000000000000000000" y="2719.50000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in2" endcomponent="Add" startport="Pcout" startcomponent="HydraulicQPsrc_2">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2416.00001999999994950485" y="2622.00000000000000000000"/>
+            <coordinate x="2416.00001999999994950485" y="2674.50000000000000000000"/>
+            <coordinate x="2334.00000000000000000000" y="2674.50000000000000000000"/>
+            <coordinate x="2334.00000000000000000000" y="2718.50000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in1" endcomponent="Add" startport="out" startcomponent="Multiply">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2304.50000000000000000000" y="2732.00000000000000000000"/>
+            <coordinate x="2355.45491502499999114661" y="2732.00000000000000000000"/>
+            <coordinate x="2355.45491502499999114661" y="2731.00000000000000000000"/>
+            <coordinate x="2321.50000000000000000000" y="2731.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="Ppinput" endcomponent="HydraulicQPsrc_2" startport="out" startcomponent="Add">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2346.50000000000000000000" y="2731.00000000000000000000"/>
+            <coordinate x="2361.00000000000000000000" y="2731.00000000000000000000"/>
+            <coordinate x="2361.00000000000000000000" y="2573.00000000000000000000"/>
+            <coordinate x="2395.99998000000005049515" y="2573.00000000000000000000"/>
+            <coordinate x="2395.99998000000005049515" y="2582.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in2" endcomponent="Multiply_1" startport="out" startcomponent="Gain">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2103.50000000000000000000" y="2611.00000000000000000000"/>
+            <coordinate x="1944.50000000000000000000" y="2611.00000000000000000000"/>
+            <coordinate x="1944.50000000000000000000" y="2759.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in1" endcomponent="Multiply_1" startport="PZcout" startcomponent="HydraulicQPsrc">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="1918.00001999999994950485" y="2624.00000000000000000000"/>
+            <coordinate x="1918.00001999999994950485" y="2771.50000000000000000000"/>
+            <coordinate x="1932.00000000000000000000" y="2771.50000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in2" endcomponent="Add_1" startport="Pcout" startcomponent="HydraulicQPsrc">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="1897.99998000000005049515" y="2624.00000000000000000000"/>
+            <coordinate x="1897.99998000000005049515" y="2739.00000000000000000000"/>
+            <coordinate x="2016.00000000000000000000" y="2739.00000000000000000000"/>
+            <coordinate x="2016.00000000000000000000" y="2760.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in1" endcomponent="Add_1" startport="out" startcomponent="Multiply_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="1957.00000000000000000000" y="2771.50000000000000000000"/>
+            <coordinate x="1958.20491502499999114661" y="2771.50000000000000000000"/>
+            <coordinate x="1958.20491502499999114661" y="2772.50000000000000000000"/>
+            <coordinate x="2003.50000000000000000000" y="2772.50000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="Ppinput" endcomponent="HydraulicQPsrc" startport="out" startcomponent="Add_1">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2028.50000000000000000000" y="2772.50000000000000000000"/>
+            <coordinate x="2047.00000000000000000000" y="2772.50000000000000000000"/>
+            <coordinate x="2047.00000000000000000000" y="2572.00000000000000000000"/>
+            <coordinate x="1918.00001999999994950485" y="2572.00000000000000000000"/>
+            <coordinate x="1918.00001999999994950485" y="2584.00000000000000000000"/>
+          </coordinates>
+          <geometries>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+    </connections>
+  </system>
+</hopsanmodelfile>
