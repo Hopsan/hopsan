@@ -427,6 +427,77 @@ void LogDataHandler::importFromPlo()
 }
 
 
+//! @todo this function assumes , separated format and only values,
+//! @todo what if file does not have a time vector
+void LogDataHandler::importTimeVariablesFromCSVColumns(const QString csvFilePath, QVector<int> columns, QStringList names, const int timeColumnId)
+{
+    if (columns.size() == names.size())
+    {
+        //! @todo in the future use a HopsanCSV parser
+        QFile csvFile(csvFilePath);
+        csvFile.open(QIODevice::ReadOnly | QIODevice::Text);
+        if (csvFile.isOpen())
+        {
+            QTextStream csvStream(&csvFile);
+
+            QVector<double> timeColumn;
+            QVector< QVector<double> > dataColumns;
+            dataColumns.resize(columns.size());
+            while (!csvStream.atEnd())
+            {
+                QStringList row = csvStream.readLine().split(",");
+                if (row.size() > 0)
+                {
+                    timeColumn.append(row[timeColumnId].toDouble());
+                    for (int i=0; i<columns.size(); ++i)
+                    {
+                        if (columns[i] < row.size())
+                        {
+                            dataColumns[i].push_back(row[i].toDouble());
+                        }
+                    }
+                }
+            }
+
+            // Ok now we have the data lets add it as a variable
+            for (int n=0; n<names.size(); ++n)
+            {
+                //! @todo what if data name already exists?
+
+                VariableDescription varDesc;
+                varDesc.mDataName = names[n];
+                //varDesc.mDataUnit = "";
+                //varDesc.mDataDescription = "";
+                //varDesc.mAliasName  = "";
+                varDesc.mVarType = VariableDescription::ImportedVariableType;
+
+                UniqueSharedTimeVectorPtrHelper helper;
+                SharedTimeVectorPtrT uniqeTimeVectorPtr = helper.makeSureUnique(timeColumn);
+
+                insertVariableBasedOnDescription(varDesc, uniqeTimeVectorPtr, dataColumns[n]);
+
+                //            defineNewVariable(names[n]);
+                //            assignVariable(name, dataColumns[n]);
+            }
+
+
+            //! @todo what about generation
+
+
+            csvFile.close();
+        }
+        else
+        {
+            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("columns.size() != names.size() in:  "+csvFilePath);
+        }
+    }
+    else
+    {
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not open data file:  "+csvFilePath);
+    }
+}
+
+
 //! @brief Returns whether or not plot data is empty
 bool LogDataHandler::isEmpty()
 {
@@ -503,41 +574,42 @@ void LogDataHandler::collectPlotDataFromModel(bool overWriteLastGeneration)
                     varDesc.mAliasName  = varDescs[i].mAlias;
                     varDesc.mVarType = VariableDescription::ModelVariableType;
 
-                    // First check if a data variable with this name alread exist
-                    QString catName = varDesc.getFullName();
-                    LogDataMapT::iterator it = mLogDataMap.find(catName);
-                    // If it exist insert into it
-                    if (it != mLogDataMap.end())
-                    {
-                        // Insert it into the generations map
-                        it.value()->addDataGeneration(mGenerationNumber, timeVecPtr, dataVec);
+                    insertVariableBasedOnDescription(varDesc, timeVecPtr, dataVec);
+//                    // First check if a data variable with this name alread exist
+//                    QString catName = varDesc.getFullName();
+//                    LogDataMapT::iterator it = mLogDataMap.find(catName);
+//                    // If it exist insert into it
+//                    if (it != mLogDataMap.end())
+//                    {
+//                        // Insert it into the generations map
+//                        it.value()->addDataGeneration(mGenerationNumber, timeVecPtr, dataVec);
 
-                        // Update alias if needed
-                        if ( varDesc.mAliasName != it.value()->getAliasName() )
-                        {
-                            // Remove old mention of alias
-                            mLogDataMap.remove(it.value()->getAliasName());
+//                        // Update alias if needed
+//                        if ( varDesc.mAliasName != it.value()->getAliasName() )
+//                        {
+//                            // Remove old mention of alias
+//                            mLogDataMap.remove(it.value()->getAliasName());
 
-                            // Update the local alias
-                            it.value()->setAliasName(varDesc.mAliasName);
+//                            // Update the local alias
+//                            it.value()->setAliasName(varDesc.mAliasName);
 
-                            // Insert new alias kv pair
-                            mLogDataMap.insert(varDesc.mAliasName, it.value());
-                        }
-                    }
-                    else
-                    {
-                        // Create a new toplevel map item and insert data into the generations map
-                        LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc, this);
-                        pDataContainer->addDataGeneration(mGenerationNumber, timeVecPtr, dataVec);
-                        mLogDataMap.insert(catName, pDataContainer);
+//                            // Insert new alias kv pair
+//                            mLogDataMap.insert(varDesc.mAliasName, it.value());
+//                        }
+//                    }
+//                    else
+//                    {
+//                        // Create a new toplevel map item and insert data into the generations map
+//                        LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc, this);
+//                        pDataContainer->addDataGeneration(mGenerationNumber, timeVecPtr, dataVec);
+//                        mLogDataMap.insert(catName, pDataContainer);
 
-                        // Also insert alias if it exist
-                        if ( !varDesc.mAliasName.isEmpty() )
-                        {
-                            mLogDataMap.insert(varDesc.mAliasName, pDataContainer);
-                        }
-                    }
+//                        // Also insert alias if it exist
+//                        if ( !varDesc.mAliasName.isEmpty() )
+//                        {
+//                            mLogDataMap.insert(varDesc.mAliasName, pDataContainer);
+//                        }
+//                    }
                 }
             }
         }
@@ -1522,4 +1594,44 @@ QStringList LogDataHandler::getPlotDataNames()
 QString LogDataHandler::getNewCacheName()
 {
     return mCacheDir.absoluteFilePath("g"+QString("%1").arg(mCacheSubDirCtr++));
+}
+
+
+void LogDataHandler::insertVariableBasedOnDescription(VariableDescription &rVarDesc, SharedTimeVectorPtrT pTimeVector, QVector<double> &rDataVector)
+{
+    // First check if a data variable with this name alread exist
+    QString fullName = rVarDesc.getFullName();
+    LogDataMapT::iterator it = mLogDataMap.find(fullName);
+    // If it exist insert into it
+    if (it != mLogDataMap.end())
+    {
+        // Insert it into the generations map
+        it.value()->addDataGeneration(mGenerationNumber, pTimeVector, rDataVector);
+
+        // Update alias if needed
+        if ( rVarDesc.mAliasName != it.value()->getAliasName() )
+        {
+            // Remove old mention of alias
+            mLogDataMap.remove(it.value()->getAliasName());
+
+            // Update the local alias
+            it.value()->setAliasName(rVarDesc.mAliasName);
+
+            // Insert new alias kv pair
+            mLogDataMap.insert(rVarDesc.mAliasName, it.value());
+        }
+    }
+    else
+    {
+        // Create a new toplevel map item and insert data into the generations map
+        LogVariableContainer *pDataContainer = new LogVariableContainer(rVarDesc, this);
+        pDataContainer->addDataGeneration(mGenerationNumber, pTimeVector, rDataVector);
+        mLogDataMap.insert(fullName, pDataContainer);
+
+        // Also insert alias if it exist
+        if ( !rVarDesc.mAliasName.isEmpty() )
+        {
+            mLogDataMap.insert(rVarDesc.mAliasName, pDataContainer);
+        }
+    }
 }

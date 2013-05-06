@@ -155,7 +155,7 @@ namespace hopsan {
         void simulate(const double stopTime)
         {
             // Do some magic stuff
-            // Note! if you use mTime before the call to simulate at the bottom, mTime = previousTime
+            // Note! if you use mTime before the call to simulate below, mTime = previousTime
 
             // Call the ComponentSystem::simulate() function to increment mTime and simulate all subcomponents
             // Note! Will simulate from mTime to stopTime (this could include multiple timesteps (mTimestep))

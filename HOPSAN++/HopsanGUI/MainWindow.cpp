@@ -53,6 +53,7 @@
 #include "Widgets/SystemParametersWidget.h"
 #include "Widgets/UndoWidget.h"
 #include "Widgets/WelcomeWidget.h"
+#include "Widgets/HVCWidget.h"
 
 #include "Dialogs/OptionsDialog.h"
 #include "Dialogs/AboutDialog.h"
@@ -192,6 +193,10 @@ MainWindow::MainWindow(QWidget *parent)
     //Create the system parameter widget and hide it
     mpSystemParametersWidget = new SystemParametersWidget(this);
     mpSystemParametersWidget->setVisible(false);
+
+    // Create the HVC Widget
+    mpHVCWidget = new HVCWidget(this);
+    mpHVCWidget->setVisible(false);
 
     //Create the plot dock widget and hide it
     mpPlotWidgetDock = new QDockWidget(tr("Plot Variables"), this);
@@ -499,6 +504,9 @@ void MainWindow::createActions()
     connect(mpOpenSystemParametersAction,SIGNAL(triggered()),this,SLOT(openSystemParametersWidget()));
     connect(mpOpenSystemParametersAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 
+    mpOpenHvcWidgetAction = new QAction(tr("&Model Validation"), this);
+    mpOpenHvcWidgetAction->setToolTip("Open the HopsanValidationConfiguration Widget");
+    connect(mpOpenHvcWidgetAction, SIGNAL(triggered()), this, SLOT(openHVCWidget()));
 
     mpCutAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Cut.png"), tr("&Cut"), this);
     mpCutAction->setShortcut(tr("Ctrl+x"));
@@ -813,6 +821,7 @@ void MainWindow::createMenus()
 
     mpToolsMenu->addAction(mpOptionsAction);
     mpToolsMenu->addAction(mpOpenSystemParametersAction);
+    mpToolsMenu->addAction(mpOpenHvcWidgetAction);
 
     mpImportMenu->addAction(mpLoadModelParametersAction);
     mpImportMenu->addSeparator();
@@ -1507,4 +1516,9 @@ void MainWindow::simulateKeyWasPressed()
         mpTimeStepLineEdit->clearFocus();
     }
     emit simulateKeyPressed();
+}
+
+void MainWindow::openHVCWidget()
+{
+    mpHVCWidget->setVisible(true);
 }

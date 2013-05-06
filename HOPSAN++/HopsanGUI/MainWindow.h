@@ -50,6 +50,7 @@ class SensitivityAnalysisDialog;
 class ComponentGeneratorDialog;
 class TerminalWidget;
 class UndoWidget;
+class HVCWidget;
 
 class MainWindow : public QMainWindow
 {
@@ -96,6 +97,7 @@ public:
     QStatusBar *mpStatusBar;  //Not used, but gives some nice extra space at bottom :)
     QGridLayout *mpCentralGridLayout;
     HelpDialog *mpHelpDialog;   //Should not be public but accessable from other widgets somehow
+    HVCWidget *mpHVCWidget;
 
     //Actions (public because other widgets connect to them)
     QAction *mpNewAction;
@@ -114,6 +116,7 @@ public:
     QAction *mpRedoAction;
     QAction *mpOpenUndoAction;
     QAction *mpOpenSystemParametersAction;
+    QAction *mpOpenHvcWidgetAction;
     QAction *mpDisableUndoAction;
     QAction *mpCutAction;
     QAction *mpCopyAction;
@@ -179,6 +182,7 @@ protected:
 
 private slots:
     void simulateKeyWasPressed();
+    void openHVCWidget();
     void openPlotWidget();
     void openUndoWidget();
     void openSystemParametersWidget();
