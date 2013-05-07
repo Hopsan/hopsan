@@ -7,9 +7,11 @@
 #include "math.h"
 
 //!
-//! @file SignalPIlead.hpp
+//! @file \
+C:\HopsanTrunk\HOPSAN++\componentLibraries\defaultLibrary\Signal\Control\Sign\
+alPIlead.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Tue 30 Apr 2013 15:43:47
+//! @date Mon 6 May 2013 22:14:27
 //! @brief PI-controler with lead filter in feadback path
 //! @ingroup SignalComponents
 //!
