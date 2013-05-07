@@ -67,23 +67,23 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_t1A = getSafeNodeDataPtr(mpP1A, NodeMechanicRotational::Torque);
-            mpND_a1A = getSafeNodeDataPtr(mpP1A, NodeMechanicRotational::Angle);
-            mpND_w1A = getSafeNodeDataPtr(mpP1A, NodeMechanicRotational::AngularVelocity);
-            mpND_c1A = getSafeNodeDataPtr(mpP1A, NodeMechanicRotational::WaveVariable);
-            mpND_Zx1A = getSafeNodeDataPtr(mpP1A, NodeMechanicRotational::CharImpedance);
+            mpND_t1A = getSafeNodeDataPtr(mpP1A, NodeMechanicRotational::TORQUE);
+            mpND_a1A = getSafeNodeDataPtr(mpP1A, NodeMechanicRotational::ANGLE);
+            mpND_w1A = getSafeNodeDataPtr(mpP1A, NodeMechanicRotational::ANGULARVELOCITY);
+            mpND_c1A = getSafeNodeDataPtr(mpP1A, NodeMechanicRotational::WAVEVARIABLE);
+            mpND_Zx1A = getSafeNodeDataPtr(mpP1A, NodeMechanicRotational::CHARIMP);
 
-            mpND_t2B = getSafeNodeDataPtr(mpP2B, NodeMechanicRotational::Torque);
-            mpND_a2B = getSafeNodeDataPtr(mpP2B, NodeMechanicRotational::Angle);
-            mpND_w2B = getSafeNodeDataPtr(mpP2B, NodeMechanicRotational::AngularVelocity);
-            mpND_c2B = getSafeNodeDataPtr(mpP2B, NodeMechanicRotational::WaveVariable);
-            mpND_Zx2B = getSafeNodeDataPtr(mpP2B, NodeMechanicRotational::CharImpedance);
+            mpND_t2B = getSafeNodeDataPtr(mpP2B, NodeMechanicRotational::TORQUE);
+            mpND_a2B = getSafeNodeDataPtr(mpP2B, NodeMechanicRotational::ANGLE);
+            mpND_w2B = getSafeNodeDataPtr(mpP2B, NodeMechanicRotational::ANGULARVELOCITY);
+            mpND_c2B = getSafeNodeDataPtr(mpP2B, NodeMechanicRotational::WAVEVARIABLE);
+            mpND_Zx2B = getSafeNodeDataPtr(mpP2B, NodeMechanicRotational::CHARIMP);
 
-            mpND_t3A = getSafeNodeDataPtr(mpP3A, NodeMechanicRotational::Torque);
-            mpND_a3A = getSafeNodeDataPtr(mpP3A, NodeMechanicRotational::Angle);
-            mpND_w3A = getSafeNodeDataPtr(mpP3A, NodeMechanicRotational::AngularVelocity);
-            mpND_c3A = getSafeNodeDataPtr(mpP3A, NodeMechanicRotational::WaveVariable);
-            mpND_Zx3A = getSafeNodeDataPtr(mpP3A, NodeMechanicRotational::CharImpedance);
+            mpND_t3A = getSafeNodeDataPtr(mpP3A, NodeMechanicRotational::TORQUE);
+            mpND_a3A = getSafeNodeDataPtr(mpP3A, NodeMechanicRotational::ANGLE);
+            mpND_w3A = getSafeNodeDataPtr(mpP3A, NodeMechanicRotational::ANGULARVELOCITY);
+            mpND_c3A = getSafeNodeDataPtr(mpP3A, NodeMechanicRotational::WAVEVARIABLE);
+            mpND_Zx3A = getSafeNodeDataPtr(mpP3A, NodeMechanicRotational::CHARIMP);
 
             t1A = (*mpND_t1A);
             t2B = (*mpND_t2B);
