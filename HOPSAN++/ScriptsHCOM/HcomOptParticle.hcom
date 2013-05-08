@@ -1,25 +1,6 @@
 # Example HCOM script, takes one argument, runs a simulation arg number of times
 # $Id: simLoop.hcom 4939 2013-01-28 10:52:04Z petno25 $
 
-
-#Simulate worst points and evaluate objective function
-define evalworst
-    opt worst
-    worstId = ans
-    chpa GainP.k::Value par(worstId,0)
-    chpa GainI.k::Value par(worstId,1)
-
-    sim
-
-    #Objective function
-    time
-    dt = ans
-    error = Mass.P2.x-Step.out.val
-    abs error
-    opt setobj worstId aver(error)
-enddefine
-
-
 #Simulate to get initial objective values
 define evalall
     i=0
@@ -41,23 +22,24 @@ enddefine
 
 
 
-npoints=6
+npoints=20
 nparams=2
-maxevals=500
-alpha=1.3
-rfak=0.3
-gamma=0.0
+maxevals=1000
 functol=0.0001
 partol=0.001
+
+omega=0.5
+c1=1
+c2=1
 
 sim
 chpv Step.out.val Mass.P2.x
 
-opt init complex double
+opt init particleswarm double
 
 #Set min and max values for parameters
-opt setparminmax 0 0.00001 0.01
-opt setparminmax 1 0.000001 0.0001
+opt setparminmax 0 0.0001 0.1
+opt setparminmax 1 0.00001 0.01
 
 
 

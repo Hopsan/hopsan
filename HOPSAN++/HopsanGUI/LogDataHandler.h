@@ -56,6 +56,7 @@ public:
     void importTimeVariablesFromCSVColumns(const QString csvFilePath, QVector<int> columns, QStringList names, const int timeColumnId=0);
 
     SharedLogVariableDataPtrT defineNewVariable(const QString desiredname);
+    SharedLogVariableDataPtrT defineNewVariable(const QString desiredname, QVector<double> x, QVector<double> y);
 
     bool deleteVariable(SharedLogVariableDataPtrT a);
     bool deleteVariable(const QString &a);

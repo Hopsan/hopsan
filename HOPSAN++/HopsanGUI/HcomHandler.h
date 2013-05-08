@@ -11,15 +11,17 @@ class HcomCommand;
 
 
 
-class HcomHandler
+class HcomHandler : public QObject
 {
+    Q_OBJECT
+
     friend class TerminalWidget;
     friend class TerminalConsole;
 public:
     //Enums
     enum VariableType{Scalar, DataVector};
     enum OptDataType{Int, Double};
-    enum OptAlgorithmType{Uninitialized, Complex};
+    enum OptAlgorithmType{Uninitialized, Complex, ParticleSwarm};
 
     //Constructor
     HcomHandler(TerminalConsole *pConsole);
@@ -32,10 +34,12 @@ public:
     QStringList getCommands() const;
     QMap<QString, double> getLocalVariables() const;
     QMap<QString, SymHop::Function> getLocalFunctionPointers() const;
+    double getOptimizationObjectiveValue(int idx);
 
 
 public slots:
     void abortHCOM();
+    void optPlotPoints(bool dummy=true);
 
 private:
 
@@ -123,6 +127,11 @@ private:
     bool optComlexCheckconvergence();
     double optComplexMaxpardiff();
 
+    void optParticleInit();
+    void optParticleRun();
+
+
+
     TerminalConsole *mpConsole;
 
     //Used to abort HCOM evaluation
@@ -151,18 +160,19 @@ private:
     int mOptNumParameters;
     QVector<double> mOptParMin, mOptParMax;
     QVector< QVector<double> > mOptParameters, mOptOldParameters;
-    QVector<double> mOptObjectives;
+    QVector< QVector<double> > mOptVelocities, mOptBestKnowns;
+    QVector<double> mOptObjectives, mOptBestObjectives;
     OptAlgorithmType mOptAlgorithm;
     OptDataType mOptParameterType;
     int mOptWorstCounter;
     double mOptMaxEvals;
     double mOptAlpha, mOptRfak, mOptGamma, mOptKf;
+    double mOptOmega, mOptC1, mOptC2;
     double mOptWorst;
     int mOptWorstId, mOptBestId, mOptLastWorstId;
     QVector<double> mOptCenter;
     int mOptConvergenceReason;
     double mOptParTol, mOptFuncTol;
-
 };
 
 
@@ -189,5 +199,6 @@ double _funcMax(QString str);
 double _funcPeek(QString str);
 double _funcRand(QString str);
 double _funcSize(QString str);
+double _funcObj(QString str);
 
 #endif // HCOMHANDLER_H

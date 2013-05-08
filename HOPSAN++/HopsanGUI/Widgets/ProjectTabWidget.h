@@ -120,6 +120,7 @@ public:
     ProjectTabWidget *mpParentProjectTabWidget;
     GraphicsView *mpGraphicsView;
     AnimationWidget *mpAnimationWidget;
+    SimulationThreadHandler *mpSimulationThreadHandler;
 
 public slots:
     bool simulate_nonblocking();
@@ -148,7 +149,6 @@ private:
     void saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT contents=FullModel);
 
     QString mStartTime, mStopTime;
-    SimulationThreadHandler *mpSimulationThreadHandler;
 
     bool mIsSaved;
     SystemContainer *mpToplevelSystem;

@@ -137,7 +137,7 @@ void updateOldModelFileParameter(rapidxml::xml_node<> *pParameterNode, const std
     }
 }
 
-void updateOldModelFileComponent(rapidxml::xml_node<> *pComponentNode, const std::string &rHmfCoreVersion)
+void updateOldModelFileComponent(rapidxml::xml_node<> */*pComponentNode*/, const std::string &/*rHmfCoreVersion*/)
 {
     // Typos (no specific version)
 

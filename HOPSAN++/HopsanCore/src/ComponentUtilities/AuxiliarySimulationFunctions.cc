@@ -197,7 +197,7 @@ double hopsan::CDragInd(const double alpha, const double AR, const double e, con
 
 //! @brief Moment coefficient for aircraft model
 //! @ingroup AuxiliarySimulationFunctions
-double hopsan::CMoment(const double alpha, const double Cm0, const double Cmfs, const double ap, const double an, const double awp, const double awn)
+double hopsan::CMoment(const double alpha, const double Cm0, const double Cmfs, const double /*ap*/, const double /*an*/, const double /*awp*/, const double /*awn*/)
 {
     return (1 - 1/(1 + pow(2.71828,-20.*(-0.5 - alpha))) - 1/(1 + pow(2.71828,-20.*(-0.5 + alpha))))*Cm0 +
             (1/(1 + pow(2.71828,-20.*(-0.5 - alpha))) + 1/(1 + pow(2.71828,-20.*(-0.5 + alpha))))*Cmfs*sign(alpha);

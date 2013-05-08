@@ -971,7 +971,7 @@ void PlotCurve::removeMe()
 //! @brief Updates a plot curve to the most recent available generation of its data
 void PlotCurve::updateToNewGeneration()
 {
-    if(mAutoUpdate)     //Only change the generation if auto update is on
+    if(mAutoUpdate && mpData->getLogDataHandler())     //Only change the generation if auto update is on
         setGeneration(-1);
     updatePlotInfoBox();    //Update the plot info box regardless of auto update setting, to show number of available generations correctly
     mpParentPlotTab->rescaleAxesToCurves();

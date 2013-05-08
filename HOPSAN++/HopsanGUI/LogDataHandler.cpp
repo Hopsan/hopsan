@@ -1442,6 +1442,17 @@ SharedLogVariableDataPtrT LogDataHandler::defineNewVariable(const QString desire
     return SharedLogVariableDataPtrT();
 }
 
+SharedLogVariableDataPtrT LogDataHandler::defineNewVariable(const QString desiredname, QVector<double> x, QVector<double> y)
+{
+    VariableDescription varDesc;
+    varDesc.mDataName = desiredname;
+    varDesc.mVarType = VariableDescription::ScriptVariableType;
+    LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc, this);
+    pDataContainer->addDataGeneration(mGenerationNumber, x, y);
+    mLogDataMap.insert(varDesc.getFullName(), pDataContainer);
+    return pDataContainer->getDataGeneration(mGenerationNumber);
+}
+
 
 
 //! @brief Tells whether or not the model has open plot curves

@@ -123,6 +123,7 @@ void SimulationHandler::finalizeSystem(std::vector<ComponentSystem*> &rSystemVec
 
 void SimulationHandler::runCoSimulation(ComponentSystem *pSystem)
 {
+    (void)pSystem;
 #ifdef USEBOOST
 
     std::vector<std::string> inputComponents;
@@ -888,6 +889,12 @@ void ComponentSystem::removeSubNode(Node* pNode)
 //! @brief preAllocates log space (to speed up later access for log writing)
 void ComponentSystem::preAllocateLogSpace(const double startT, const double stopT, const size_t nSamples)
 {
+    //Suppress unused variable warnings
+    //! @todo Shall we keep these parameters?
+    (void)startT;
+    (void)stopT;
+    (void)nSamples;
+
     bool success = true;
 //    //cout << "stopT = " << stopT << ", startT = " << startT << ", mTimestep = " << mTimestep << endl;
 //    this->setLogSettingsNSamples(nSamples, startT, stopT, mTimestep);
@@ -3490,6 +3497,7 @@ vector<double> *ComponentSystem::getLogTimeVector()
 //! @param systemVector Vector of pointers to systems to simulate
 bool SimulationHandler::simulateMultipleSystemsMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads, vector<ComponentSystem*> &rSystemVector, bool noChanges)
 {
+    (void)startT;
 #ifdef USETBB
     size_t nThreads = determineActualNumberOfThreads(nDesiredThreads);              //Calculate how many threads to actually use
 
@@ -3620,7 +3628,7 @@ bool AliasHandler::setVariableAlias(const string alias, const string compName, c
     return false;
 }
 
-bool AliasHandler::setParameterAlias(const string alias, const string compName, const string parameterName)
+bool AliasHandler::setParameterAlias(const string /*alias*/, const string /*compName*/, const string /*parameterName*/)
 {
     mpSystem->addErrorMessage("AliasHandler::setParameterAlias has not been implemented");
     return false;
@@ -3647,7 +3655,7 @@ void AliasHandler::componentRenamed(const string oldCompName, const string newCo
     }
 }
 
-void AliasHandler::portRenamed(const string compName, const string oldPortName, const string newPortName)
+void AliasHandler::portRenamed(const string /*compName*/, const string /*oldPortName*/, const string /*newPortName*/)
 {
     mpSystem->addErrorMessage("AliasHandler::portRenamed has not been implemented");
 }
@@ -3665,7 +3673,7 @@ void AliasHandler::componentRemoved(const string compName)
     }
 }
 
-void AliasHandler::portRemoved(const string compName, const string portName)
+void AliasHandler::portRemoved(const string /*compName*/, const string /*portName*/)
 {
     mpSystem->addErrorMessage("AliasHandler::portRemoved has not been implemented");
 }
@@ -3775,7 +3783,7 @@ void AliasHandler::getVariableFromAlias(const string alias, string &rCompName, s
     }
 }
 
-void AliasHandler::getParameterFromAlias(const string alias, string &rCompName, string &rParameterName)
+void AliasHandler::getParameterFromAlias(const string /*alias*/, string &/*rCompName*/, string &/*rParameterName*/)
 {
     mpSystem->addErrorMessage("AliasHandler::getParameterFromAlias has not been implemented");
 }

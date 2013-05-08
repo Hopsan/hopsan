@@ -212,6 +212,8 @@ bool Parameter::refreshParameterValueText()
 //! @see evaluate()
 bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
 {
+    (void)ignoreMe;
+
     if(!((mType=="double") || (mType=="integer") || (mType=="bool") || (mType=="string")))
     {
         mpParentParameters->getParentComponent()->addErrorMessage("Parameter could not be evaluated, unknown type: " + mType);

@@ -8,9 +8,11 @@
 #include "GUIPort.h"
 #include "HcomHandler.h"
 #include "MainWindow.h"
+#include "PlotCurve.h"
 #include "PlotHandler.h"
 #include "PlotTab.h"
 #include "PlotWindow.h"
+#include "SimulationThreadHandler.h"
 #include "Utilities/GUIUtilities.h"
 #include "Widgets/PlotWidget.h"
 #include "Widgets/HcomWidget.h"
@@ -23,7 +25,7 @@
 #include "qwt_plot.h"
 
 
-HcomHandler::HcomHandler(TerminalConsole *pConsole)
+HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
 {
     mAborted = false;
     mLocalVars.insert("ans", 0);
@@ -45,6 +47,7 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole)
     mLocalFunctionPtrs.insert("max", &(_funcMax));
     mLocalFunctionPtrs.insert("peek", &(_funcPeek));
     mLocalFunctionPtrs.insert("rand", &(_funcRand));
+    mLocalFunctionPtrs.insert("obj",  &(_funcObj));
 
     createCommands();
 }
@@ -467,6 +470,15 @@ QMap<QString, double> HcomHandler::getLocalVariables() const
 QMap<QString, SymHop::Function> HcomHandler::getLocalFunctionPointers() const
 {
     return mLocalFunctionPtrs;
+}
+
+double HcomHandler::getOptimizationObjectiveValue(int idx)
+{
+    if(idx<0 || idx > mOptObjectives.size()-1)
+    {
+        return 0;
+    }
+    return mOptObjectives[idx];
 }
 
 
@@ -1855,6 +1867,22 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         returnScalar(mOptLastWorstId);
         return;
     }
+    if(split.size() == 1 && split[0] == "best")
+    {
+        if(mOptAlgorithm == Uninitialized)
+        {
+            mpConsole->printErrorMessage("Optimization not initialized.", "", false);
+            return;
+        }
+        if(mOptAlgorithm != Complex)
+        {
+            mpConsole->printErrorMessage("Only available for complex algorithm.", "", false);
+            return;
+        }
+
+        returnScalar(mOptBestId);
+        return;
+    }
     if(split.size() == 3 && split[0] == "setobj")
     {
         bool ok;
@@ -1921,6 +1949,10 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         {
             mOptAlgorithm = Complex;
         }
+        else if(split[1] == "particleswarm")
+        {
+            mOptAlgorithm = ParticleSwarm;
+        }
         else
         {
             mpConsole->printErrorMessage("Unknown algorithm. Only complex is supported.", "", false);
@@ -1946,27 +1978,55 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         //Everything is fine, initialize and run optimization
 
         bool ok;
-        mOptNumPoints = getNumber("npoints", &ok);
-        mOptNumParameters = getNumber("nparams", &ok);
-        mOptLastWorstId = -1;
-        mOptWorstCounter = 0;
-        mOptParameters.resize(mOptNumPoints);
-        mOptParMin.resize(mOptNumPoints);
-        mOptParMax.resize(mOptNumPoints);
-        mOptMaxEvals = getNumber("maxevals", &ok);
-        mOptAlpha = getNumber("alpha", &ok);
-        mOptRfak = getNumber("rfak", &ok);
-        mOptGamma = getNumber("gamma", &ok);
-        mOptFuncTol = getNumber("functol", &ok);
-        mOptParTol = getNumber("partol", &ok);
+        if(mOptAlgorithm == Complex)
+        {
+            mOptNumPoints = getNumber("npoints", &ok);
+            mOptNumParameters = getNumber("nparams", &ok);
+            mOptLastWorstId = -1;
+            mOptWorstCounter = 0;
+            mOptParameters.resize(mOptNumPoints);
+            mOptParMin.resize(mOptNumPoints);
+            mOptParMax.resize(mOptNumPoints);
+            mOptMaxEvals = getNumber("maxevals", &ok);
+            mOptAlpha = getNumber("alpha", &ok);
+            mOptRfak = getNumber("rfak", &ok);
+            mOptGamma = getNumber("gamma", &ok);
+            mOptFuncTol = getNumber("functol", &ok);
+            mOptParTol = getNumber("partol", &ok);
+        }
+        else if(mOptAlgorithm == ParticleSwarm)
+        {
+            mOptNumPoints = getNumber("npoints", &ok);
+            mOptNumParameters = getNumber("nparams", &ok);
+            mOptParameters.resize(mOptNumPoints);
+            mOptVelocities.resize(mOptNumPoints);
+            mOptBestKnowns.resize(mOptNumPoints);
+            mOptBestObjectives.resize(mOptNumPoints);
+            mOptParMin.resize(mOptNumPoints);
+            mOptParMax.resize(mOptNumPoints);
+            mOptMaxEvals = getNumber("maxevals", &ok);
+            mOptOmega = getNumber("omega", &ok);
+            mOptC1 = getNumber("c1", &ok);
+            mOptC2 = getNumber("c2", &ok);
+            mOptFuncTol = getNumber("functol", &ok);
+            mOptParTol = getNumber("partol", &ok);
+        }
 
         return;
     }
 
     if(split.size() == 1 && split[0] == "run")
     {
-        optComplexInit();
-        optComplexRun();
+        if(mOptAlgorithm == Complex)
+        {
+            optComplexInit();
+            optComplexRun();
+        }
+        else if(mOptAlgorithm == ParticleSwarm)
+        {
+            optParticleInit();
+            optParticleRun();
+        }
     }
 }
 
@@ -2175,18 +2235,18 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
         }
     }
 
-    //Optimization objective
-    if(expr.startsWith("obj(") && expr.endsWith(")"))
-    {
-        QString nPointsStr = expr.section("(",1,1).section(")",0,0);
+//    //Optimization objective
+//    if(expr.startsWith("obj(") && expr.endsWith(")"))
+//    {
+//        QString nPointsStr = expr.section("(",1,1).section(")",0,0);
 
-        bool ok;
-        int nPoint = nPointsStr.toInt(&ok);
-        if(ok && nPoint>=0 && nPoint < mOptObjectives.size())
-        {
-            return QString::number(mOptObjectives[nPoint]);
-        }
-    }
+//        bool ok;
+//        int nPoint = nPointsStr.toInt(&ok);
+//        if(ok && nPoint>=0 && nPoint < mOptObjectives.size())
+//        {
+//            return QString::number(mOptObjectives[nPoint]);
+//        }
+//    }
 
     //Parameter name, return its value
     if(getParameterValue(expr) != "NaN")
@@ -3236,6 +3296,12 @@ double _funcSize(QString str)
     return 0;
 }
 
+double _funcObj(QString str)
+{
+    int idx = str.toDouble();
+    return gpMainWindow->mpTerminalWidget->mpHandler->getOptimizationObjectiveValue(idx);
+}
+
 double _funcMin(QString str)
 {
     SharedLogVariableDataPtrT pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(str);
@@ -3474,7 +3540,7 @@ void HcomHandler::optComplexForget()
 {
     double maxObj = mOptObjectives[0];
     double minObj = mOptObjectives[0];
-    for(int i=0; i<mOptObjectives[0]; ++i)
+    for(int i=0; i<mOptNumPoints; ++i)
     {
         double obj = mOptObjectives[i];
         if(obj > maxObj) maxObj = obj;
@@ -3529,7 +3595,7 @@ bool HcomHandler::optComlexCheckconvergence()
     //Check objective function convergence
     double maxObj = mOptObjectives[0];
     double minObj = mOptObjectives[0];
-    for(int i=0; i<mOptObjectives[0]; ++i)
+    for(int i=0; i<mOptNumPoints; ++i)
     {
         double obj = mOptObjectives[i];
         if(obj > maxObj) maxObj = obj;
@@ -3579,5 +3645,212 @@ double HcomHandler::optComplexMaxpardiff()
     }
     return maxDiff;
 }
+
+
+void HcomHandler::optParticleInit()
+{
+    for(int p=0; p<mOptNumPoints; ++p)
+    {
+        mOptParameters[p].resize(mOptNumParameters);
+        mOptVelocities[p].resize(mOptNumParameters);
+        for(int i=0; i<mOptNumParameters; ++i)
+        {
+            //Initialize points
+            double r = double(rand()) / double(RAND_MAX);
+            mOptParameters[p][i] = mOptParMin[i] + r*(mOptParMax[i]-mOptParMin[i]);
+            if(mOptParameterType == Int)
+            {
+                mOptParameters[p][i] = round(mOptParameters[p][i]);
+            }
+
+            //Initialize velocities
+            double minVel = -abs(mOptParMax[i]-mOptParMin[i]);
+            double maxVel = abs(mOptParMax[i]-mOptParMin[i]);
+            r = double(rand()) / double(RAND_MAX);
+            mOptVelocities[p][i] = minVel + r*(maxVel-minVel);
+        }
+    }
+    mOptObjectives.resize(mOptNumPoints);
+}
+
+
+void HcomHandler::optParticleRun()
+{
+    optPlotPoints();
+
+    //connect(gpMainWindow->mpProjectTabs->getCurrentTab()->mpSimulationThreadHandler, SIGNAL(done(bool)), this, SLOT(optPlotPoints(bool)));
+
+    mOptConvergenceReason=0;
+
+    if(mOptAlgorithm == Uninitialized)
+    {
+        mpConsole->printErrorMessage("Optimization not initialized.", "", false);
+        return;
+    }
+    if(!mFunctions.contains("evalall"))
+    {
+        mpConsole->printErrorMessage("Function \"evalall\" not defined.","",false);
+        return;
+    }
+
+    mpConsole->print("Running optimization...");
+    executeCommand("echo off");
+
+    //Evaluate initial objevtive values
+    executeCommand("call evalall");
+    if(mLocalVars.find("ans").value() == -1)    //This check is needed if abort key is pressed while evaluating
+    {
+        executeCommand("echo on");
+        mpConsole->print("Optimization aborted.");
+        return;
+    }
+
+    //Initialize best known point for each point
+    for(int i=0; i<mOptNumPoints; ++i)
+    {
+        mOptBestKnowns[i] = mOptParameters[i];
+        mOptBestObjectives[i] = mOptObjectives[i];
+    }
+
+    int i=0;
+    int percent=-1;
+    for(; i<mOptMaxEvals && !mAborted; ++i)
+    {
+        qApp->processEvents();
+        if(mAborted)
+        {
+            mpConsole->print("Optimization aborted.");
+            return;
+        }
+
+        //Print progress %
+        int dummy=int(100.0*double(i)/mOptMaxEvals);
+        if(dummy != percent)
+        {
+            mpConsole->setDontPrint(false);
+            mpConsole->print(QString::number(dummy)+" %");
+            mpConsole->setDontPrint(true);
+            percent = dummy;
+        }
+
+        //Move particles
+        for (int p=0; p<mOptNumPoints; ++p)
+        {
+          double r1 = double(rand())/double(RAND_MAX);
+          double r2 = double(rand())/double(RAND_MAX);
+          for(int j=0; j<mOptNumParameters; ++j)
+          {
+              mOptVelocities[p][j] = mOptOmega*mOptVelocities[p][j] + mOptC1*r1*(mOptBestKnowns[p][j]-mOptParameters[p][j]) + mOptC2*r2*(mOptParameters[mOptBestId][j]-mOptParameters[p][j]);
+              mOptParameters[p][j] = mOptParameters[p][j]+mOptVelocities[p][j];
+              if(mOptParameters[p][j] <= mOptParMin[j])
+              {
+                  mOptParameters[p][j] = mOptParMin[j];
+                  mOptVelocities[p][j] = 0.0;
+              }
+              if(mOptParameters[p][j] >= mOptParMax[j])
+              {
+                  mOptParameters[p][j] = mOptParMax[j];
+                  mOptVelocities[p][j] = 0.0;
+              }
+          }
+        }
+
+        //Evaluate objevtive values
+        executeCommand("call evalall");
+        if(mLocalVars.find("ans").value() == -1)    //This check is needed if abort key is pressed while evaluating
+        {
+            executeCommand("echo on");
+            mpConsole->print("Optimization aborted.");
+            return;
+        }
+
+        //Calculate best known positions
+        for(int p=0; p<mOptNumPoints; ++p)
+        {
+            if(mOptObjectives[p] < mOptBestObjectives[p])
+            {
+                mOptBestKnowns[p] = mOptParameters[p];
+                mOptBestObjectives[p] = mOptObjectives[p];
+            }
+        }
+
+        //Calculate best known global position
+        optComplexCalculatebestandworstid();
+
+        optPlotPoints();
+
+        //Check convergence
+        if(optComlexCheckconvergence()) break;      //Use complex method, it's the same principle
+
+        //optPlotPoints();
+    }
+
+    executeCommand("echo on");
+
+    switch(mOptConvergenceReason)
+    {
+    case 0:
+        mpConsole->print("Optimization failed to converge after "+QString::number(i)+" iterations.");
+        break;
+    case 1:
+        mpConsole->print("Optimization converged in function values after "+QString::number(i)+" iterations.");
+        break;
+    case 2:
+        mpConsole->print("Optimization converged in parameter values after "+QString::number(i)+" iterations.");
+        break;
+    }
+
+    return;
+}
+
+void HcomHandler::optPlotPoints(bool /*dummy*/)
+{
+    if(mOptNumParameters != 2)
+    {
+        mpConsole->printErrorMessage("Points can only be plotted with two parameters.");
+        return;
+    }
+
+    LogDataHandler *pHandler = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler();
+    for(int p=0; p<mOptNumPoints; ++p)
+    {
+        QString name = "par"+QString::number(p);
+        double x = mOptParameters[p][0];
+        double y = mOptParameters[p][1];
+        SharedLogVariableDataPtrT parVar1 = pHandler->getPlotData(name, -1);
+        if(!parVar1)
+        {
+            parVar1 = pHandler->defineNewVariable(name, QVector<double>() << x, QVector<double>() << y);
+            parVar1.data()->preventAutoRemoval();
+            gpPlotHandler->plotDataToWindow("parplot", parVar1, 0);
+        }
+        else
+        {
+            SharedLogVariableDataPtrT dummy = pHandler->defineNewVariable("dummy", QVector<double>() << x, QVector<double>() << y);
+
+            parVar1.data()->assignFrom(dummy);
+        }
+    }
+
+    PlotTab *pTab = gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab();
+    pTab->getPlot(FirstPlot)->setAxisScale(QwtPlot::xBottom, mOptParMin[0], mOptParMax[0]);
+    pTab->getPlot(FirstPlot)->setAxisScale(QwtPlot::yLeft, mOptParMin[1], mOptParMax[1]);
+    pTab->update();
+
+    for(int c=0; c<pTab->getCurves(FirstPlot).size(); ++c)
+    {
+        if(c==mOptBestId)
+        {
+            pTab->getCurves(FirstPlot).at(c)->setLineSymbol("Star 1");
+        }
+        else
+        {
+            pTab->getCurves(FirstPlot).at(c)->setLineSymbol("XCross");
+        }
+    }
+}
+
+
+
 
 
