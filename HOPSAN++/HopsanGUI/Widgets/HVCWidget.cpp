@@ -37,9 +37,12 @@ HVCWidget::HVCWidget(QWidget *parent) :
 
 
     mpAllVariablesTree = new FullNameVariableTreeWidget();
-    mpAllVariablesTree->setDragDropMode(QAbstractItemView::DragOnly);
+    //mpAllVariablesTree->setDragDropMode(QAbstractItemView::DragOnly);
     mpAllVariablesTree->setDragEnabled(true);
     mpSelectedVariablesTree = new FullNameVariableTreeWidget();
+    //mpSelectedVariablesTree->setDragDropMode(QAbstractItemView::DragDrop);
+    //mpSelectedVariablesTree->setDragEnabled(true);
+    mpSelectedVariablesTree->setAcceptDrops(true);
     QHBoxLayout *pVariablesHLayout = new QHBoxLayout();
 
     pVariablesHLayout->addWidget(mpAllVariablesTree);
@@ -306,4 +309,40 @@ FullNameVariableTreeWidget::FullNameVariableTreeWidget(QWidget *pParent) : QTree
 void FullNameVariableTreeWidget::addFullNameVariable(const QString &rFullName)
 {
     addFullNameVariable(rFullName, rFullName, 0);
+}
+
+void FullNameVariableTreeWidget::mousePressEvent(QMouseEvent *event)
+{
+    QTreeWidget::mousePressEvent(event);
+
+    //! @todo dragstartposition
+    QTreeWidgetItem *pItem = this->itemAt(event->pos());
+
+    if (pItem && (pItem->childCount() == 0))
+    {
+        QDrag *pDrag = new QDrag(this);
+        QMimeData *pMime = new QMimeData;
+
+        pMime->setText(pItem->data(0, Qt::UserRole).toString());
+        pDrag->setMimeData(pMime);
+
+        Qt::DropAction dropAction = pDrag->exec(Qt::CopyAction | Qt::MoveAction);
+    }
+}
+
+void FullNameVariableTreeWidget::dropEvent(QDropEvent *event)
+{
+    if (!event->mimeData()->text().isEmpty())
+    {
+        addFullNameVariable(event->mimeData()->text());
+        event->acceptProposedAction();
+    }
+}
+
+void FullNameVariableTreeWidget::dragEnterEvent(QDragEnterEvent *event)
+{
+    if (!event->mimeData()->text().isEmpty())
+    {
+        event->acceptProposedAction();
+    }
 }

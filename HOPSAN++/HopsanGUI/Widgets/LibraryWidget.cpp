@@ -1906,7 +1906,7 @@ LibraryListWidget::LibraryListWidget(LibraryWidget *parent)
     setSelectionRectVisible(false);
 }
 
-
+//! @todo use the dragstartposition according to documentation to avoid starting drag on every click
 void LibraryListWidget::mousePressEvent(QMouseEvent *event)
 {
     QListWidget::mousePressEvent(event);

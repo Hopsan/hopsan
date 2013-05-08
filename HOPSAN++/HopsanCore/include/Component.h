@@ -133,6 +133,9 @@ public:
     // Variabels and Parameters
     const std::vector<VariameterDescription>* getVariameters();
 
+    // Constants
+    void setConstantValue(const char* name, const double value);
+
     // Start values
     double getStartValue(Port* pPort, const size_t idx, const size_t portIdx=0);
     void setStartValue(Port* pPort, const size_t idx, const double value);
@@ -149,6 +152,10 @@ public:
     double *getSafeNodeDataPtr(Port* pPort, const int dataId);
     double *getSafeNodeDataPtr(const std::string &rPortName, const int dataId);
     double *getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx, const int dataId, const double defaultValue=0);
+
+    // Node data access
+    double readNodeSafeSlow(const char* portName, const char* dataName);
+    void writeNodeSafeSlow(const char* portName, const char* dataName, const double value);
 
     // System parent
     ComponentSystem *getSystemParent();

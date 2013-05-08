@@ -5,13 +5,16 @@
 #include <QLineEdit>
 #include <QTreeWidget>
 
-
 class FullNameVariableTreeWidget : public QTreeWidget
 {
 public:
     FullNameVariableTreeWidget(QWidget *pParent=0);
     void addFullNameVariable(const QString &rFullName);
 
+protected:
+    void mousePressEvent(QMouseEvent *event);
+    void dropEvent(QDropEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event);
 
 private:
     void addFullNameVariable(const QString &rFullName, const QString &rRemaningName, QTreeWidgetItem *pParentItem);

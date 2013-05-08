@@ -180,6 +180,12 @@ const std::vector<VariameterDescription>* Component::getVariameters()
     return &mVariameters;
 }
 
+//! @note Dont use this function during simulation, it is slow
+void Component::setConstantValue(const char *name, const double value)
+{
+    setParameterValue(name, to_string(value), true);
+}
+
 
 //! @brief Virtual Function, base version which gives you an error if you try to use it.
 void Component::finalize(const double /*startT*/, const double /*stopT*/)
@@ -825,6 +831,43 @@ double *Component::getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx
     }
     *pPort->getNodeDataPtr(dataId, portIdx) = defaultValue;
     return pPort->getNodeDataPtr(dataId, portIdx);
+}
+
+double Component::readNodeSafeSlow(const char *portName, const char *dataName)
+{
+    Port *pPort = getPort(portName);
+    if (pPort)
+    {
+        //! @todo what about multiports
+        int id = pPort->getNodeDataIdFromName(dataName);
+        if (id > 0)
+        {
+            return pPort->readNode(id);
+        }
+        addErrorMessage("You are trying to get a dataName: "+string(dataName)+" that does not exist in port: "+string(portName));
+        return -1;
+    }
+    addErrorMessage("You are trying to access port: "+string(portName)+" that does not exist");
+    return -1;
+}
+
+void Component::writeNodeSafeSlow(const char *portName, const char *dataName, const double value)
+{
+    Port *pPort = getPort(portName);
+    if (pPort)
+    {
+        //! @todo what about multiports
+        int id = pPort->getNodeDataIdFromName(dataName);
+        if (id >= 0)
+        {
+            pPort->writeNode(id, value);
+            return;
+        }
+        addErrorMessage("You are trying to set value for dataName: "+string(dataName)+" that does not exist in port: "+string(portName));
+        return;
+    }
+    addErrorMessage("You are trying to access port: "+string(portName)+" that does not exist");
+    return;
 }
 
 
