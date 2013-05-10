@@ -1,0 +1,40 @@
+# Example HCOM script, takes one argument, runs a simulation arg number of times
+# $Id: simLoop.hcom 4939 2013-01-28 10:52:04Z petno25 $
+
+#Evaluate function
+define eval
+<<<setpars>>>
+    sim
+    call obj    
+enddefine
+
+
+#Objective function
+define obj
+<<<objfuncs>>>
+    totalObj = <<<totalobj>>>
+    opt setobj evalId totalObj
+enddefine
+
+
+npoints=<<<npoints>>>
+nparams=<<<nparams>>>
+maxevals=<<<maxevals>>>
+alpha=<<<alpha>>>
+rfak=<<<rfak>>>
+gamma=<<<gamma>>>
+functol=<<<functol>>>
+partol=<<<partol>>>
+<<<objpars>>>
+
+sim
+chpv <<<plotvars>>>
+
+opt init complex double
+
+#Set min and max values for parameters
+<<<setminmax>>>
+
+opt run
+
+    

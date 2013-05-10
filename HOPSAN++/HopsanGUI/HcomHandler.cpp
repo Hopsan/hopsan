@@ -50,6 +50,8 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     mLocalFunctionPtrs.insert("obj",  &(_funcObj));
 
     createCommands();
+
+    generateCommandsHelpText();
 }
 
 
@@ -444,6 +446,84 @@ void HcomHandler::createCommands()
     lp1Cmd.fnc = &HcomHandler::executeLp1Command;
     lp1Cmd.group = "Variable Commands";
     mCmdList << lp1Cmd;
+}
+
+void HcomHandler::generateCommandsHelpText()
+{
+    QFile htmlFile(gDesktopHandler.getHelpPath()+"userHcomScripting.html");
+    htmlFile.open(QFile::ReadWrite | QFile::Text | QFile::Truncate);
+    QString htmlString = htmlFile.readAll();
+
+    QString commands="</p>";
+    QStringList groups;
+    for(int c=0; c<mCmdList.size(); ++c)
+    {
+        if(!groups.contains(mCmdList[c].group))
+        {
+            groups << mCmdList[c].group;
+        }
+    }
+    groups.removeAll("");
+    groups << "";
+    for(int g=0; g<groups.size(); ++g)
+    {
+        if(groups[g].isEmpty())
+        {
+
+            commands.append("\n<h2><a class=\"anchor\" id=\"othercommands\"></a>Other Commands</h2>");
+        }
+        else
+        {
+            commands.append("\n<h2><a class=\"anchor\" id=\""+groups[g].toLower().replace(" ","")+"\"></a>"+groups[g]+"</h2>");
+        }
+        for(int c=0; c<mCmdList.size(); ++c)
+        {
+            if(mCmdList[c].group == groups[g])
+            {
+                commands.append("\n<h3><a class=\"anchor\" id=\""+mCmdList[c].cmd+"\"></a>"+mCmdList[c].cmd+"</h3>");
+                commands.append("\n<p>"+mCmdList[c].description.replace("\n", "<br>")+"</p>");
+            }
+        }
+    }
+//    commands.append("\n Custom Functions:\n\n");
+//    commands.append("   lp1()");
+//    for(int i=0; i<n+3-5; ++i)
+//        commands.append(" ");
+//    commands.append("Low-pass filter variable\n");
+//    commands.append("   ddt()");
+//    for(int i=0; i<n+3-5; ++i)
+//        commands.append(" ");
+//    commands.append("Differentiate variable\n");
+//    commands.append("   aver()");
+//    for(int i=0; i<n+3-6; ++i)
+//        commands.append(" ");
+//    commands.append("Calculate average value of vector\n");
+//    commands.append("   min()");
+//    for(int i=0; i<n+3-5; ++i)
+//        commands.append(" ");
+//    commands.append("Calculate minimum of vector\n");
+//    commands.append("   max()");
+//    for(int i=0; i<n+3-5; ++i)
+//        commands.append(" ");
+//    commands.append("Calculate maximum of vector\n");
+//    commands.append("   size()");
+//    for(int i=0; i<n+3-5; ++i)
+//        commands.append(" ");
+//    commands.append("Returns the size of a vector\n");
+//    commands.append("   rand()");
+//    for(int i=0; i<n+3-5; ++i)
+//        commands.append(" ");
+//    commands.append("Generate a random value between 0 and 1\n");
+//    commands.append("   peek()");
+//    for(int i=0; i<n+3-5; ++i)
+//        commands.append(" ");
+//    commands.append("Return vector value at specified index\n");
+
+
+
+    htmlString.replace("<<<commands>>>", commands);
+    htmlFile.write(htmlString.toUtf8());
+    htmlFile.close();
 }
 
 
@@ -3352,6 +3432,9 @@ double _funcRand(QString str)
 
 void HcomHandler::optComplexInit()
 {
+    //Load default optimization functions
+    executeCommand("exec ../ScriptsHCOM/optDefaultFunctions.hcom");
+
     for(int p=0; p<mOptNumPoints; ++p)
     {
         mOptParameters[p].resize(mOptNumParameters);

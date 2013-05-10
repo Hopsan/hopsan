@@ -22,6 +22,7 @@
 -# \subpage userGettingStarted \n
 -# \subpage userAnalysisTools \n
 -# \subpage userModelExport \n
+-# \subpage userHcomScripting \n
 -# \subpage userPythonScripting \n
 -# \subpage userMultiThreaded \n
 -# \subpage userTransmissionLineElementMethod \n

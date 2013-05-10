@@ -1,0 +1,7 @@
+#Minimize overshoot
+maxVal = max(<<<var1>>>)
+if(maxVal > <<<arg1>>>)
+    obj<<<id>>> = maxVal-<<<arg1>>>
+else
+    obj<<<id>>> = 0
+endif

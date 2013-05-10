@@ -29,6 +29,7 @@
 #include "DesktopHandler.h"
 #include "GUIPort.h"
 #include "Dialogs/OptimizationDialog.h"
+#include "HcomHandler.h"
 #include "GUIObjects/GUISystem.h"
 #include "Utilities/GUIUtilities.h"
 #include "Widgets/HcomWidget.h"
@@ -657,8 +658,90 @@ void OptimizationDialog::generateScriptFile()
     }
 }
 
-
 void OptimizationDialog::generateComplexScript()
+{
+    QFile templateFile(gDesktopHandler.getExecPath()+"../ScriptsHCOM/optTemplateComplex.hcom");
+    templateFile.open(QFile::ReadOnly | QFile::Text);
+    QString templateCode = templateFile.readAll();
+    templateFile.close();
+
+    QString objFuncs;
+    QString totalObj;
+    QString objPars;
+    QStringList plotVarsList;
+    QString plotVars;
+    QString setMinMax;
+    QString setPars;
+    for(int i=0; i<mFunctionName.size(); ++i)
+    {
+        QString objFunc = mObjectiveFunctionCalls[mObjectiveFunctionDescriptions.indexOf(mFunctionName[i])];
+        objFunc.prepend("    ");
+        objFunc.replace("\n", "\n    ");
+        objFunc.replace("<<<id>>>", QString::number(i+1));
+        for(int j=0; j<mFunctionComponents[i].size(); ++j)
+        {
+            QString varName = mFunctionComponents[i][j]+"."+mFunctionPorts[i][j]+"."+mFunctionVariables[i][j];
+            gpMainWindow->mpTerminalWidget->mpHandler->toShortDataNames(varName);
+            objFunc.replace("<<<var"+QString::number(j+1)+">>>", varName);
+
+            if(!plotVarsList.contains(varName))
+            {
+                plotVarsList.append(varName);
+                plotVars.append(varName+" ");
+            }
+        }
+        for(int j=0; j<mDataLineEditPtrs[i].size(); ++j)
+        {
+            objFunc.replace("<<<arg"+QString::number(j+1)+">>>", mDataLineEditPtrs[i][j]->text());
+        }
+        objFuncs.append(objFunc+"\n");
+
+        if(mSelectedFunctionsMinMax.at(i) == "Minimize")
+        {
+            totalObj.append("-");
+        }
+        else
+        {
+            totalObj.append("+");
+        }
+        QString idx = QString::number(i+1);
+        totalObj.append("w"+idx+"*r"+idx+"*exp(e"+idx+")*obj"+idx);
+
+        objPars.append("w"+idx+"="+mWeightLineEditPtrs[i]->text()+"\n");
+        objPars.append("r"+idx+"="+mNormLineEditPtrs[i]->text()+"\n");
+        objPars.append("e"+idx+"="+mExpLineEditPtrs[i]->text()+"\n");
+
+    }
+
+    for(int p=0; p<mSelectedParameters.size(); ++p)
+    {
+        QString par = mSelectedComponents[p]+"."+mSelectedParameters[p];
+        setPars.append("    chpa "+par+" par(evalId,"+QString::number(p)+")\n");
+
+        setMinMax.append("opt setparminmax "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
+    }
+
+
+    templateCode.replace("<<<objfuncs>>>", objFuncs);
+    templateCode.replace("<<<totalobj>>>", totalObj);
+    templateCode.replace("<<<objpars>>>", objPars);
+    templateCode.replace("<<<plotvars>>>", plotVars);
+    templateCode.replace("<<<setminmax>>>", setMinMax);
+    templateCode.replace("<<<setpars>>>", setPars);
+    templateCode.replace("<<<npoints>>>", QString::number(mpSearchPointsSpinBox->value()));
+    templateCode.replace("<<<nparams>>>", QString::number(mSelectedParameters.size()));
+    templateCode.replace("<<<maxevals>>>", QString::number(mpIterationsSpinBox->value()));
+    templateCode.replace("<<<alpha>>>", mpAlphaLineEdit->text());
+    templateCode.replace("<<<rfak>>>", mpBetaLineEdit->text());
+    templateCode.replace("<<<gamma>>>", mpGammaLineEdit->text());
+    templateCode.replace("<<<functol>>>", mpEpsilonFLineEdit->text());
+    templateCode.replace("<<<partol>>>", mpEpsilonXLineEdit->text());
+
+    mScript = templateCode;
+}
+
+
+void OptimizationDialog::generateComplexScriptOld()
 {
     bool multicore = mpMultiThreadedCheckBox->isChecked();
     int nThreads = mpThreadsSpinBox->value();
@@ -1793,88 +1876,145 @@ bool OptimizationDialog::verifyNumberOfVariables(int idx, int nSelVar)
 
 bool OptimizationDialog::loadObjectiveFunctions()
 {
-    mObjectiveFunctionDescriptions.clear();
-    mObjectiveFunctionCalls.clear();
-    mObjectiveFunctionNumberOfVariables.clear();
-    mObjectiveFunctionUsesTimeVector.clear();
-    mObjectiveFunctionDataLists.clear();
+    QDir scriptsDir(gDesktopHandler.getExecPath()+"../ScriptsHCOM/objFuncTemplates");
+    QStringList files = scriptsDir.entryList(QStringList() << "*.hcom");
 
-    // If the file could not be found, try in the DEV path
-    // This is usefull for Linux builds that do not install files to Documents folder
-    // It should also be usefull for zip and portable releases that has not installed the script files
-    //! @todo this is a quickhack that copies the optimization files to the Documents/Scripts folder every time if they do not exist, in the future we should handle this in a smarter way (ex: if we have updated scripts in new release, then we should copy)
-    //! @todo The Qfile copy will not overwrite if already exist, but we dont want to overwrite if user has made changes
-    // If OptimizationObjectiveFunctions.xml missing
-    QString dstPath = gDesktopHandler.getMainPath() + "Scripts/OptimizationObjectiveFunctions.xml";
-    QString srcPath = gDesktopHandler.getScriptsPath() + "OptimizationObjectiveFunctions.xml";
-    QFile::copy(srcPath,dstPath);
-    // If OptimizationObjectiveFunctions.py missing
-    dstPath = QString(gDesktopHandler.getScriptsPath() ) + "OptimizationObjectiveFunctions.py";
-    srcPath = gDesktopHandler.getScriptsPath()  + "OptimizationObjectiveFunctions.py";
-    QFile::copy(srcPath,dstPath);
-    // If HopsanOptimization.py missing
-    dstPath = QString(gDesktopHandler.getScriptsPath() ) + "HopsanOptimization.py";
-    srcPath = gDesktopHandler.getScriptsPath() + "HopsanOptimization.py";
-    QFile::copy(srcPath,dstPath);
 
-    QFile file(QString(gDesktopHandler.getScriptsPath()) + "OptimizationObjectiveFunctions.xml");
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    Q_FOREACH(const QString fileName, files)
     {
-        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
-                                 "Unable to read objective functions file. Please make sure that it is located in the Scripts directory.\n");
-        qDebug() << "Looking for objective function script file in: " << gDesktopHandler.getScriptsPath();
-        return false;
-    }
-    QDomDocument domDocument;
-    QString errorStr;
-    int errorLine, errorColumn;
-    if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
-    {
-        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
-                                 gpMainWindow->tr("HopsanObjectiveFunctions: Parse error at line %1, column %2:\n%3")
-                                 .arg(errorLine)
-                                 .arg(errorColumn)
-                                 .arg(errorStr));
-        file.close();
-        return false;
-    }
-    else
-    {
-        QDomElement functionsRoot = domDocument.documentElement();
-        if (functionsRoot.tagName() != "hopsanobjectivefunctions")
+        QFile templateFile(scriptsDir.absolutePath()+"/"+fileName);
+        templateFile.open(QFile::ReadOnly | QFile::Text);
+        QString code = templateFile.readAll();
+        templateFile.close();
+
+        //Get description
+        if(code.startsWith("#"))
         {
-            QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
-                                     "The file is not an Hopsan objective function file. Incorrect hmf root tag name: "
-                                     + functionsRoot.tagName() + " != hopsanobjectivefunctions");
-            file.close();
-            return false;
+            mObjectiveFunctionDescriptions << code.section("#",1,1).section("\n",0,0);
         }
         else
         {
-                //Load default user settings
-            QDomElement functionElement = functionsRoot.firstChildElement("objectivefunction");
-            while(!functionElement.isNull())
-            {
-                mObjectiveFunctionDescriptions << functionElement.attribute("description");
-                mObjectiveFunctionCalls << functionElement.attribute("call");
-                mObjectiveFunctionNumberOfVariables << functionElement.attribute("numberofvariables").toInt();
-                mObjectiveFunctionUsesTimeVector << (functionElement.attribute("needstimevector") == "true");
-                QStringList parameters;
-                QDomElement parameterElement = functionElement.firstChildElement("parameter");
-                while(!parameterElement.isNull())
-                {
-                    parameters << parameterElement.text();
-                    parameterElement = parameterElement.nextSiblingElement("parameter");
-                }
-                mObjectiveFunctionDataLists.append(parameters);
-                functionElement = functionElement.nextSiblingElement("objectivefunction");
-            }
+            mObjectiveFunctionDescriptions << QFileInfo(templateFile).fileName();
         }
 
-    file.close();
+        //Count variables
+        int varCounter=0;
+        for(int i=1; ; ++i)
+        {
+            if(code.contains("var"+QString::number(i)))
+            {
+                ++varCounter;
+            }
+            else
+            {
+                break;
+            }
+        }
+        mObjectiveFunctionNumberOfVariables << varCounter;
+
+        //Count arguments
+        QStringList args;
+        for(int i=1; ; ++i)
+        {
+            if(code.contains("arg"+QString::number(i)))
+            {
+                args << "arg"+QString::number(i);
+            }
+            else
+            {
+                break;
+            }
+        }
+        mObjectiveFunctionDataLists << args;
+
+        mObjectiveFunctionUsesTimeVector << false;
+        mObjectiveFunctionCalls << code;
+    }
+
     return true;
 
-}
+//    mObjectiveFunctionDescriptions.clear();
+//    mObjectiveFunctionCalls.clear();
+//    mObjectiveFunctionNumberOfVariables.clear();
+//    mObjectiveFunctionUsesTimeVector.clear();
+//    mObjectiveFunctionDataLists.clear();
+
+//    // If the file could not be found, try in the DEV path
+//    // This is usefull for Linux builds that do not install files to Documents folder
+//    // It should also be usefull for zip and portable releases that has not installed the script files
+//    //! @todo this is a quickhack that copies the optimization files to the Documents/Scripts folder every time if they do not exist, in the future we should handle this in a smarter way (ex: if we have updated scripts in new release, then we should copy)
+//    //! @todo The Qfile copy will not overwrite if already exist, but we dont want to overwrite if user has made changes
+//    // If OptimizationObjectiveFunctions.xml missing
+//    QString dstPath = gDesktopHandler.getMainPath() + "Scripts/OptimizationObjectiveFunctions.xml";
+//    QString srcPath = gDesktopHandler.getScriptsPath() + "OptimizationObjectiveFunctions.xml";
+//    QFile::copy(srcPath,dstPath);
+//    // If OptimizationObjectiveFunctions.py missing
+//    dstPath = QString(gDesktopHandler.getScriptsPath() ) + "OptimizationObjectiveFunctions.py";
+//    srcPath = gDesktopHandler.getScriptsPath()  + "OptimizationObjectiveFunctions.py";
+//    QFile::copy(srcPath,dstPath);
+//    // If HopsanOptimization.py missing
+//    dstPath = QString(gDesktopHandler.getScriptsPath() ) + "HopsanOptimization.py";
+//    srcPath = gDesktopHandler.getScriptsPath() + "HopsanOptimization.py";
+//    QFile::copy(srcPath,dstPath);
+
+//    QFile file(QString(gDesktopHandler.getScriptsPath()) + "OptimizationObjectiveFunctions.xml");
+//    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+//    {
+//        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
+//                                 "Unable to read objective functions file. Please make sure that it is located in the Scripts directory.\n");
+//        qDebug() << "Looking for objective function script file in: " << gDesktopHandler.getScriptsPath();
+//        return false;
+//    }
+//    QDomDocument domDocument;
+//    QString errorStr;
+//    int errorLine, errorColumn;
+//    if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
+//    {
+//        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
+//                                 gpMainWindow->tr("HopsanObjectiveFunctions: Parse error at line %1, column %2:\n%3")
+//                                 .arg(errorLine)
+//                                 .arg(errorColumn)
+//                                 .arg(errorStr));
+//        file.close();
+//        return false;
+//    }
+//    else
+//    {
+//        QDomElement functionsRoot = domDocument.documentElement();
+//        if (functionsRoot.tagName() != "hopsanobjectivefunctions")
+//        {
+//            QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
+//                                     "The file is not an Hopsan objective function file. Incorrect hmf root tag name: "
+//                                     + functionsRoot.tagName() + " != hopsanobjectivefunctions");
+//            file.close();
+//            return false;
+//        }
+//        else
+//        {
+//                //Load default user settings
+//            QDomElement functionElement = functionsRoot.firstChildElement("objectivefunction");
+//            while(!functionElement.isNull())
+//            {
+//                mObjectiveFunctionDescriptions << functionElement.attribute("description");
+//                mObjectiveFunctionCalls << functionElement.attribute("call");
+//                mObjectiveFunctionNumberOfVariables << functionElement.attribute("numberofvariables").toInt();
+//                mObjectiveFunctionUsesTimeVector << (functionElement.attribute("needstimevector") == "true");
+//                QStringList parameters;
+//                QDomElement parameterElement = functionElement.firstChildElement("parameter");
+//                while(!parameterElement.isNull())
+//                {
+//                    parameters << parameterElement.text();
+//                    parameterElement = parameterElement.nextSiblingElement("parameter");
+//                }
+//                mObjectiveFunctionDataLists.append(parameters);
+//                functionElement = functionElement.nextSiblingElement("objectivefunction");
+//            }
+//        }
+
+//    file.close();
+//    return true;
+
+//}
 
 
 

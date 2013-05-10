@@ -36,6 +36,8 @@ public:
     QMap<QString, SymHop::Function> getLocalFunctionPointers() const;
     double getOptimizationObjectiveValue(int idx);
 
+    //Public utilities
+    void toShortDataNames(QString &variable) const;
 
 public slots:
     void abortHCOM();
@@ -96,6 +98,7 @@ private:
 
     //Help functions
     void createCommands();
+    void generateCommandsHelpText();
     void changePlotVariables(const QString cmd, const int axis) const;
     void addPlotCurve(QString cmd, const int axis) const;
     void removePlotCurves(const int axis) const;
@@ -112,7 +115,6 @@ private:
     bool containsOutsideParentheses(QString str, QString c);
     QString runScriptCommands(QStringList &lines, bool *abort);
     double getNumber(const QString str, bool *ok) const;
-    void toShortDataNames(QString &variable) const;
     QString getDirectory(const QString cmd) const;
     QStringList getArguments(const QString cmd) const;
     int getNumberOfArguments(const QString cmd) const;

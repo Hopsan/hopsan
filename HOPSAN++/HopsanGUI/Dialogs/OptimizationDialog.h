@@ -75,9 +75,11 @@ class OptimizationDialog : public QDialog
 public:
     OptimizationDialog(MainWindow *parent = 0);
 
+
 private:
     void generateScriptFile();
     void generateComplexScript();
+    void generateComplexScriptOld();
     void generateParticleSwarmScript();
     bool verifyNumberOfVariables(int i, int nSelVar);
     bool loadObjectiveFunctions();

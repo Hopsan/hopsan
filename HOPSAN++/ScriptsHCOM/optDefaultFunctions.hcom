@@ -1,0 +1,17 @@
+#Simulate worst points and evaluate objective function
+define evalworst
+    opt worst
+    evalId = ans
+    call eval
+enddefine
+
+
+#Simulate to get initial objective values
+define evalall
+    i=0
+    while (i<npoints)
+        evalId = i
+        call eval
+        i=i+1
+    repeat
+enddefine

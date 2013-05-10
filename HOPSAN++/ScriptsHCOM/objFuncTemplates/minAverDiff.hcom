@@ -1,0 +1,4 @@
+#Minimize absolute average difference
+error = <<<var1>>>-<<<var2>>>
+abs error
+obj<<<id>>> = aver(error)

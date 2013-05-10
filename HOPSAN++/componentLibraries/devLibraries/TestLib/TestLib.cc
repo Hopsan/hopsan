@@ -17,7 +17,7 @@
 // If you have lots of them you can include them in separate .h files and then include those files here instead.
 
 #include "Hydraulic/HopsanHydraulicComponents.h"
-#include "Signal/SignalComponents.h"
+//#include "Signal/SignalComponents.h"
 
 
 // You need to include ComponentEssentials.h in order to gain access to the register function and the Factory types
@@ -41,7 +41,7 @@ extern "C" DLLEXPORT void register_contents(ComponentFactory* pComponentFactory,
 
     pComponentFactory->registerCreatorFunction("HydraulicComponentsInComponentTest", HydraulicComponentsInComponentTest::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicLamOrfPortParamTest", HydraulicLaminarOrificeInterfaceVar::Creator);
-    pComponentFactory->registerCreatorFunction("SignalBETest", SignalBETest::Creator);
+    //pComponentFactory->registerCreatorFunction("SignalBETest", SignalBETest::Creator);
 
     // ========== Register Custom Nodes (if any) ==========
     // This is not yet supported
