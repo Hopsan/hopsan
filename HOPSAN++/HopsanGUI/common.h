@@ -27,6 +27,7 @@
 
 #include <QString>
 #include <QDesktopServices>
+#include <QSplashScreen>
 
 //Numerical definitions
 #define GOLDENRATIO 1.61803399
@@ -89,6 +90,8 @@ extern CopyStack gCopyStack;
 
 class PlotHandler;
 extern PlotHandler *gpPlotHandler;
+
+extern QSplashScreen *gpSplash;
 
 extern QString gHopsanCoreVersion;
 

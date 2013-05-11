@@ -120,6 +120,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpTerminalWidget->mpConsole->printInfoMessage("HopsanGUI, Version: " + QString(HOPSANGUIVERSION));
 
     //Load configuration from settings file
+    gpSplash->showMessage("Loading configuration...");
     gConfig.loadFromXml();      //!< @todo This does not really belong in main window constructor, but it depends on main window so keep it for now
 
     //Update style sheet setting
@@ -140,6 +141,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     //Set dock widget corner owner
     setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
+
+    gpSplash->showMessage("Initializing GUI...");
 
     //Create dialogs
     mpAboutDialog = new AboutDialog(this);
@@ -272,6 +275,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     mpWelcomeWidget = 0;
 
+
     initializeWorkspace();
 
 
@@ -292,6 +296,11 @@ MainWindow::MainWindow(QWidget *parent)
 //    this->move(x, y);       //Move window to center of screen
 
     updateToolBarsToNewTab();
+
+    //gpSplash->close();
+    // Trigger splashscreen close in one second
+    QTimer::singleShot(500, gpSplash, SLOT(close()));
+
 }
 
 
@@ -312,6 +321,8 @@ void MainWindow::initializeWorkspace()
 {
     mpPyDockWidget->runCommand(gConfig.getInitScript());
 
+    gpSplash->showMessage("Loading component libraries...");
+
     // Load HopsanGui built in secret components
     mpLibrary->loadHiddenSecretDir(QString(BUILTINCAFPATH) + "hidden/");
 
@@ -326,6 +337,7 @@ void MainWindow::initializeWorkspace()
 
     for(int i=0; i<gConfig.getUserLibs().size(); ++i)
     {
+        gpSplash->showMessage("Loading library: "+gConfig.getUserLibs()[i]+"...");
         mpLibrary->loadAndRememberExternalLibrary(gConfig.getUserLibs().at(i), gConfig.getUserLibFolders().at(i));
     }
 
@@ -350,6 +362,8 @@ void MainWindow::initializeWorkspace()
 
     if(gConfig.getAlwaysLoadLastSession())
     {
+        gpSplash->showMessage("Loading last session...");
+
         if(!gConfig.getLastSessionModels().empty())
         {
             for(int i=0; i<gConfig.getLastSessionModels().size(); ++i)

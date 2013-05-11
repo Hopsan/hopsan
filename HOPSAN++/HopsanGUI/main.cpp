@@ -40,6 +40,7 @@ MainWindow* gpMainWindow = 0;
 Configuration gConfig;
 DesktopHandler gDesktopHandler;
 CopyStack gCopyStack;
+QSplashScreen *gpSplash;
 
 void loadApplicationFonts();
 
@@ -67,10 +68,9 @@ int main(int argc, char *argv[])
 
     //Create the splash screen
     QPixmap pixmap(QString(GRAPHICSPATH) + "splash.png");
-    QSplashScreen splash(pixmap);
-    splash.show();
-    // Trigger splashscreen close in one second
-    QTimer::singleShot(1000, &splash, SLOT(close()));
+    gpSplash = new QSplashScreen(pixmap, Qt::WindowStaysOnTopHint);
+    gpSplash->showMessage("Starting Hopsan...");
+    gpSplash->show();
 
     // Create the mainwindow
     MainWindow mainwindow;

@@ -50,8 +50,6 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     mLocalFunctionPtrs.insert("obj",  &(_funcObj));
 
     createCommands();
-
-    generateCommandsHelpText();
 }
 
 
@@ -451,8 +449,9 @@ void HcomHandler::createCommands()
 void HcomHandler::generateCommandsHelpText()
 {
     QFile htmlFile(gDesktopHandler.getHelpPath()+"userHcomScripting.html");
-    htmlFile.open(QFile::ReadWrite | QFile::Text | QFile::Truncate);
+    htmlFile.open(QFile::ReadOnly | QFile::Text);
     QString htmlString = htmlFile.readAll();
+    htmlFile.close();
 
     QString commands="</p>";
     QStringList groups;
@@ -481,7 +480,7 @@ void HcomHandler::generateCommandsHelpText()
             if(mCmdList[c].group == groups[g])
             {
                 commands.append("\n<h3><a class=\"anchor\" id=\""+mCmdList[c].cmd+"\"></a>"+mCmdList[c].cmd+"</h3>");
-                commands.append("\n<p>"+mCmdList[c].description.replace("\n", "<br>")+"</p>");
+                commands.append("\n<p>"+mCmdList[c].description.replace("\n", "<br>")+"<br>"+mCmdList[c].help.replace("\n", "<br>")+"</p>");
             }
         }
     }
@@ -520,7 +519,7 @@ void HcomHandler::generateCommandsHelpText()
 //    commands.append("Return vector value at specified index\n");
 
 
-
+    htmlFile.open(QFile::WriteOnly | QFile::Text | QFile::Truncate);
     htmlString.replace("<<<commands>>>", commands);
     htmlFile.write(htmlString.toUtf8());
     htmlFile.close();

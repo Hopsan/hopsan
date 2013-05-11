@@ -1334,6 +1334,10 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
             pTree->addComponent(pAppearanceData);
             mLoadedComponents << pAppearanceData->getTypeName();
             qDebug() << "Adding: " << pAppearanceData->getTypeName();
+            if(gpSplash)
+            {
+                gpSplash->showMessage("Loaded component: " + pAppearanceData->getTypeName());
+            }
         }
     }
 
