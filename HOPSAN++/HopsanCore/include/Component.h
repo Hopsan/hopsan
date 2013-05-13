@@ -151,7 +151,8 @@ public:
     // Node Data ptrs
     double *getSafeNodeDataPtr(Port* pPort, const int dataId);
     double *getSafeNodeDataPtr(const std::string &rPortName, const int dataId);
-    double *getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx, const int dataId, const double defaultValue=0);
+    double *getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx, const int dataId);
+    double *getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx, const int dataId, const double defaultValue);
 
     // Node data access
     double readNodeSafeSlow(const char* portName, const char* dataName);

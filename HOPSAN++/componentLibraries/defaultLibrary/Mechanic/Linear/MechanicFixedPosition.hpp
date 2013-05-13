@@ -57,7 +57,6 @@ namespace hopsan {
             mpND_c = getSafeNodeDataPtr(mpPm1, NodeMechanic::WaveVariable);
             mpND_me = getSafeNodeDataPtr(mpPm1, NodeMechanic::EquivalentMass);
 
-            (*mpND_x) = 0;
             (*mpND_v) = 0;
             (*mpND_me) = me;
         }

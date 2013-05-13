@@ -817,20 +817,34 @@ double *Component::getSafeNodeDataPtr(const string &rPortName, const int dataId)
 //! @param[in] pPort A pointer to the port from which to fetch NodeData pointer
 //! @param[in] portIdx The index of the subport in a multiport
 //! @param[in] dataId The enum id for the node value to fetch pointer to
+//! @returns A pointer to the specified NodeData or a pointer to dummy NodeData
+//! @details It is only ment to be used inside individual component code and automatically handles creation of dummy veriables in case optional ports are not connected
+//! @todo Dont know if name really good, should indicate that you should only run this once in initialize (otherwise a lot of new doubls may be created)
+double *Component::getSafeMultiPortNodeDataPtr(Port *pPort, const size_t portIdx, const int dataId)
+{
+    addLogMess((getName()+"::getSafeMultiPortNodeDataPtr").c_str());
+    //If this is not a multiport then give an error message to the user so that they KNOW that they have made a misstake
+    if (pPort->getPortType() < MultiportType)
+    {
+        addErrorMessage("Port: "+pPort->getName()+" is NOT a multiport. Use getSafeNodeDataPtr() instead of getSafeMultiPortNodeDataPtr()");
+    }
+    return pPort->getNodeDataPtr(dataId, portIdx);
+}
+
+//! @brief This is a help function that returns a pointer to desired NodeData, only for Advanced Use instead of read/write Node
+//! @ingroup ConvenientPortFunctions
+//! @param[in] pPort A pointer to the port from which to fetch NodeData pointer
+//! @param[in] portIdx The index of the subport in a multiport
+//! @param[in] dataId The enum id for the node value to fetch pointer to
 //! @param[in] defaultValue Optional default value if port should not be connected (optional), if ommitet it will be 0
 //! @returns A pointer to the specified NodeData or a pointer to dummy NodeData
 //! @details It is only ment to be used inside individual component code and automatically handles creation of dummy veriables in case optional ports are not connected
 //! @todo Dont know if name really good, should indicate that you should only run this once in initialize (otherwise a lot of new doubls may be created)
 double *Component::getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx, const int dataId, const double defaultValue)
 {
-    addLogMess((getName()+"::getSafeMultiPortNodeDataPtr").c_str());
-    //If this is not a multiport then give an error message to the user so that they KNOW that they have made a misstake
-    if (pPort->getPortType() < MultiportType)
-    {
-        addErrorMessage(string("Port: ")+pPort->getName()+string(" is NOT a multiport. Use getSafeNodeDataPtr() instead of getSafeMultiPortNodeDataPtr()"));
-    }
-    *pPort->getNodeDataPtr(dataId, portIdx) = defaultValue;
-    return pPort->getNodeDataPtr(dataId, portIdx);
+    double* pData = getSafeMultiPortNodeDataPtr(pPort, portIdx, dataId);
+    *pData = defaultValue; // Set desired initial value
+    return pData;
 }
 
 double Component::readNodeSafeSlow(const char *portName, const char *dataName)

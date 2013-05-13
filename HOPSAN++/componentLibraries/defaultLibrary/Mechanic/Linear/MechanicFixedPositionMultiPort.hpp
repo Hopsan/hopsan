@@ -76,7 +76,6 @@ namespace hopsan {
                 mND_Zc_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeMechanic::CharImpedance);
                 mND_me_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeMechanic::EquivalentMass);
 
-                *(mND_x_vec[i]) = 0;    //Override the startvalue for the pressure
                 *(mND_v_vec[i]) = 0;
                 *(mND_me_vec[i]) = me;
             }
