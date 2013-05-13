@@ -157,17 +157,12 @@ void Port::loadStartValuesFromSimulation()
 //! @return The data value
 double Port::readNodeSafe(const size_t idx, const size_t /*portIdx*/)
 {
-    //! @note This if-statement will slow simulation down, but if optimization is desired readNode and writeNode shall not be used anyway.
-    if(!isConnected())
-    {
-        mpComponent->addErrorMessage("Attempted to call readNode() for non-connected port \""+this->getName()+"\".");
-        mpComponent->getSystemParent()->stopSimulation();     //Read attempt from non-connected port; abort simulation and give error message
-        return 0;
-    }
-    else
+    if (idx < mpNode->getNumDataVariables())
     {
         return mpNode->mDataValues[idx];
     }
+    getComponent()->addErrorMessage("data idx out of range in Port::readNodeSafe()");
+    return -1;
 }
 
 
@@ -176,10 +171,13 @@ double Port::readNodeSafe(const size_t idx, const size_t /*portIdx*/)
 //! @param [in] value The value of the data to read
 void Port::writeNodeSafe(const size_t idx, const double value, const size_t /*portIdx*/)
 {
-    //! @note This if-statement will slow simulation down, but if optimization is desired readNode and writeNode shall not be used anyway.
-    if(isConnected())
+    if (idx < mpNode->getNumDataVariables())
     {
-        mpNode->mDataValues[idx] = value;       //Write to node if there is a node to write to
+        mpNode->mDataValues[idx] = value;
+    }
+    else
+    {
+        getComponent()->addErrorMessage("data idx out of range in Port::writeNodeSafe()");
     }
 }
 
@@ -713,13 +711,13 @@ ReadPort::ReadPort(std::string node_type, std::string portname, Component *portO
 
 void ReadPort::writeNodeSafe(const size_t /*idx*/, const double /*value*/)
 {
-    mpComponent->addWarningMessage("ReadPort::writeNodeSafe(): Could not write to port, this is a ReadPort.");
+    mpComponent->addErrorMessage("ReadPort::writeNodeSafe(): Could not write to port, this is a ReadPort.");
 }
 
 
 void ReadPort::writeNode(const size_t /*idx*/, const double /*value*/) const
 {
-    mpComponent->addWarningMessage("ReadPort::writeNode(): Could not write to port, this is a ReadPort.");
+    mpComponent->addErrorMessage("ReadPort::writeNode(): Could not write to port, this is a ReadPort.");
 }
 
 void ReadPort::loadStartValues()
@@ -775,12 +773,6 @@ WritePort::WritePort(std::string node_type, std::string portname, Component *por
 }
 
 
-double WritePort::readNodeSafe(const size_t /*idx*/)
-{
-    mpComponent->addWarningMessage("WritePort::readNodeSafe(): Could not read to port, this is a WritePort");
-    return -1;
-}
-
 double WritePort::readNode(const size_t /*idx*/) const
 {
     mpComponent->addWarningMessage("WritePort::readNode(): Could not read to port, this is a WritePort");
@@ -806,13 +798,24 @@ MultiPort::~MultiPort()
 
 double MultiPort::readNodeSafe(const size_t idx, const size_t portIdx)
 {
-    //! @todo handle portIdx ot of range
-    return mSubPortsVector[portIdx]->readNodeSafe(idx);
+    if (portIdx < mSubPortsVector.size())
+    {
+        return mSubPortsVector[portIdx]->readNodeSafe(idx);
+    }
+    getComponent()->addErrorMessage("portIdx out of range in MultiPort::readNodeSafe()");
+    return -1;
 }
 
 void MultiPort::writeNodeSafe(const size_t idx, const double value, const size_t portIdx)
 {
-    return mSubPortsVector[portIdx]->writeNode(idx,value);
+    if (portIdx < mSubPortsVector.size())
+    {
+        mSubPortsVector[portIdx]->writeNodeSafe(idx,value);
+    }
+    else
+    {
+        getComponent()->addErrorMessage("portIdx out of range in MultiPort::readNodeSafe()");
+    }
 }
 
 

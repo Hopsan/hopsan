@@ -295,7 +295,6 @@ namespace hopsan {
         //Constructor
         WritePort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort=0);
 
-        double readNodeSafe(const size_t idx);
         inline double readNode(const size_t idx) const;
     };
 
