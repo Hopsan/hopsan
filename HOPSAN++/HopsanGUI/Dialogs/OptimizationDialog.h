@@ -68,7 +68,7 @@ private:
 
 
 
-class OptimizationDialog : public QDialog
+class OptimizationDialog : public QWizard
 {
     Q_OBJECT
 
@@ -81,6 +81,7 @@ private:
     void generateComplexScript();
     void generateComplexScriptOld();
     void generateParticleSwarmScript();
+    void generateParticleSwarmScriptOld();
     bool verifyNumberOfVariables(int i, int nSelVar);
     bool loadObjectiveFunctions();
     QString generateFunctionCode(int i);
@@ -104,14 +105,14 @@ private slots:
     void updateChosenVariables(QTreeWidgetItem* item, int i);
     void addFunction();
     void removeFunction();
-    void updateOutputBox();
-    QString generateFileName();
+    void update(int idx);
     void run();
+    void saveScriptFile();
 
 private:
-    //Settings tab
+    //Settings page
+    QWizardPage *mpSettingsWidget;
     QLabel *mpSettingsLabel;
-    QWidget *mpSettingsWidget;
     QGridLayout *mpSettingsLayout;
     QLabel *mpAlgorithmLabel;
     QComboBox *mpAlgorithmBox;
@@ -143,17 +144,18 @@ private:
     QCheckBox *mpPlottingCheckBox;
     QCheckBox *mpExport2CSVBox;
 
-    //Parameters tab
+    //Parameters page
+    QWizardPage *mpParametersWidget;
     QLabel *mpParametersLabel;
     QCheckBox *mpParametersLogCheckBox;
     QTreeWidget *mpParametersList;
     QGridLayout *mpParametersLayout;
-    QWidget *mpParametersWidget;
     QLabel *mpParameterMinLabel;
     QLabel *mpParameterNameLabel;
     QLabel *mpParameterMaxLabel;
 
-    //Objective function tab
+    //Objective function page
+    QWizardPage *mpObjectiveWidget;
     QComboBox *mpMinMaxComboBox;
     QComboBox *mpFunctionsComboBox;
     QLabel *mpObjectiveLabel;
@@ -173,9 +175,11 @@ private:
     QList< QList<QLineEdit*> > mDataLineEditPtrs;
     QList<QToolButton*> mRemoveFunctionButtonPtrs;
     QGridLayout *mpObjectiveLayout;
-    QWidget *mpObjectiveWidget;
+
+    //Output page
+    QWizardPage *mpOutputWidget;
     QGridLayout *mpOutputLayout;
-    QWidget *mpOutputWidget;
+
 
     QStringList mObjectiveFunctionDescriptions;
     QStringList mObjectiveFunctionCalls;
@@ -183,25 +187,25 @@ private:
     QList<bool> mObjectiveFunctionUsesTimeVector;
     QList<QStringList> mObjectiveFunctionDataLists;
 
-    //Tab widget
-    QTabWidget *mpTabWidget;
+//    //Tab widget
+//    QTabWidget *mpTabWidget;
 
     //Output
     QTextEdit *mpOutputBox;
 
-    //Buttons
-    QPushButton *mpCancelButton;
-    QPushButton *mpOkButton;
-    QPushButton *mpGenerateButton;
-    QPushButton *mpRunButton;
-    QDialogButtonBox *mpButtonBox;
+//    //Buttons
+//    QPushButton *mpCancelButton;
+//    QPushButton *mpOkButton;
+//    QPushButton *mpGenerateButton;
+//    QPushButton *mpRunButton;
+//    QDialogButtonBox *mpButtonBox;
 
     //Toolbar
     QAction *mpHelpAction;
     QToolBar *mpToolBar;
 
     //Main layout
-    QGridLayout *mpLayout;
+   // QGridLayout *mpLayout;
 
     //Member variables
     QString mScript;

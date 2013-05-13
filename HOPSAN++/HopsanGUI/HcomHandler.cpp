@@ -2080,6 +2080,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
             mOptParameters.resize(mOptNumPoints);
             mOptVelocities.resize(mOptNumPoints);
             mOptBestKnowns.resize(mOptNumPoints);
+            mOptBestPoint.resize(mOptNumParameters);
             mOptBestObjectives.resize(mOptNumPoints);
             mOptParMin.resize(mOptNumPoints);
             mOptParMax.resize(mOptNumPoints);
@@ -3731,6 +3732,9 @@ double HcomHandler::optComplexMaxpardiff()
 
 void HcomHandler::optParticleInit()
 {
+    //Load default optimization functions
+    executeCommand("exec ../ScriptsHCOM/optDefaultFunctions.hcom");
+
     for(int p=0; p<mOptNumPoints; ++p)
     {
         mOptParameters[p].resize(mOptNumParameters);
@@ -3794,6 +3798,11 @@ void HcomHandler::optParticleRun()
         mOptBestObjectives[i] = mOptObjectives[i];
     }
 
+    //Calculate best known global position
+    optComplexCalculatebestandworstid();
+    mOptBestObj = mOptObjectives[mOptBestId];
+    mOptBestPoint = mOptParameters[mOptBestId];
+
     int i=0;
     int percent=-1;
     for(; i<mOptMaxEvals && !mAborted; ++i)
@@ -3822,7 +3831,7 @@ void HcomHandler::optParticleRun()
           double r2 = double(rand())/double(RAND_MAX);
           for(int j=0; j<mOptNumParameters; ++j)
           {
-              mOptVelocities[p][j] = mOptOmega*mOptVelocities[p][j] + mOptC1*r1*(mOptBestKnowns[p][j]-mOptParameters[p][j]) + mOptC2*r2*(mOptParameters[mOptBestId][j]-mOptParameters[p][j]);
+              mOptVelocities[p][j] = mOptOmega*mOptVelocities[p][j] + mOptC1*r1*(mOptBestKnowns[p][j]-mOptParameters[p][j]) + mOptC2*r2*(mOptBestPoint[j]-mOptParameters[p][j]);
               mOptParameters[p][j] = mOptParameters[p][j]+mOptVelocities[p][j];
               if(mOptParameters[p][j] <= mOptParMin[j])
               {
@@ -3858,6 +3867,11 @@ void HcomHandler::optParticleRun()
 
         //Calculate best known global position
         optComplexCalculatebestandworstid();
+        if(mOptObjectives[mOptBestId] < mOptBestObj)
+        {
+            mOptBestObj = mOptObjectives[mOptBestId];
+            mOptBestPoint = mOptParameters[mOptBestId];
+        }
 
         optPlotPoints();
 

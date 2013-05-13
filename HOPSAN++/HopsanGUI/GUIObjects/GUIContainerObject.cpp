@@ -2425,6 +2425,7 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
         gConfig.setLoadModelDir(fileInfo.absolutePath());
 
         QFile file(modelFilePath);   //Create a QFile object
+        //! @todo Why do we open this file?
         if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
         {
             return;

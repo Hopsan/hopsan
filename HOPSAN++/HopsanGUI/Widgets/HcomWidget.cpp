@@ -45,7 +45,7 @@ TerminalWidget::TerminalWidget(MainWindow *pParent)
     this->setMouseTracking(true);
 
     mpClearMessageWidgetButton = new QPushButton("Clear Messages");
-    mpAbortHCOMWidgetButton = new QPushButton("Stop HCOM exec");
+    mpAbortHCOMWidgetButton = new QPushButton("Abort Script");
     mpAbortHCOMWidgetButton->setDisabled(true);
     QFont tempFont = mpClearMessageWidgetButton->font();
     tempFont.setBold(true);

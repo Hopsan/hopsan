@@ -104,7 +104,7 @@ void PythonHighlighter::highlightBlock(const QString &text)
 
 //! @brief Constructor
 OptimizationDialog::OptimizationDialog(MainWindow *parent)
-    : QDialog(parent)
+    : QWizard(parent)
 {
         //Set the name and size of the main window
     this->resize(640,480);
@@ -232,7 +232,7 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     mpSettingsLayout->setRowStretch(8, 0);
     mpSettingsLayout->setRowStretch(9, 1);
     mpSettingsLayout->setRowStretch(10, 1);
-    mpSettingsWidget = new QWidget(this);
+    mpSettingsWidget = new QWizardPage(this);
     mpSettingsWidget->setLayout(mpSettingsLayout);
     setAlgorithm(0);
 
@@ -258,7 +258,7 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     mpParametersLayout->addWidget(mpParameterMinLabel,      3, 0, 1, 1);
     mpParametersLayout->addWidget(mpParameterNameLabel,     3, 1, 1, 1);
     mpParametersLayout->addWidget(mpParameterMaxLabel,      3, 2, 1, 1);
-    mpParametersWidget = new QWidget(this);
+    mpParametersWidget = new QWizardPage(this);
     mpParametersWidget->setLayout(mpParametersLayout);
 
 
@@ -305,7 +305,7 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     mpObjectiveLayout->setColumnStretch(4, 1);
     mpObjectiveLayout->setColumnStretch(5, 0);
     mpObjectiveLayout->setColumnStretch(6, 0);
-    mpObjectiveWidget = new QWidget(this);
+    mpObjectiveWidget = new QWizardPage(this);
     mpObjectiveWidget->setLayout(mpObjectiveLayout);
 
     //Output box tab
@@ -318,30 +318,8 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     mpOutputBox->setMinimumWidth(450);
     mpOutputLayout = new QGridLayout(this);
     mpOutputLayout->addWidget(mpOutputBox);
-    mpOutputWidget = new QWidget(this);
+    mpOutputWidget = new QWizardPage(this);
     mpOutputWidget->setLayout(mpOutputLayout);
-
-    //Tab widget
-    mpTabWidget = new QTabWidget(this);
-    mpTabWidget->addTab(mpSettingsWidget, "Settings");
-    mpTabWidget->addTab(mpParametersWidget, "Parameters");
-    mpTabWidget->addTab(mpObjectiveWidget, "Objective Function");
-    mpTabWidget->addTab(mpOutputWidget, "Output Code");
-
-    //Buttons
-    mpCancelButton = new QPushButton(tr("&Cancel"), this);
-    mpCancelButton->setAutoDefault(false);
-    mpOkButton = new QPushButton(tr("&Ok"), this);
-    mpOkButton->setAutoDefault(false);
-    mpGenerateButton = new QPushButton(tr("&Generate Script"), this);
-    mpGenerateButton->setDefault(true);
-    mpRunButton = new QPushButton(tr("&Run Optimization"), this);
-    mpRunButton->setDefault(true);
-    mpButtonBox = new QDialogButtonBox(Qt::Horizontal);
-    mpButtonBox->addButton(mpCancelButton, QDialogButtonBox::ActionRole);
-    mpButtonBox->addButton(mpOkButton, QDialogButtonBox::ActionRole);
-    mpButtonBox->addButton(mpGenerateButton, QDialogButtonBox::ActionRole);
-    mpButtonBox->addButton(mpRunButton, QDialogButtonBox::ActionRole);
 
     //Toolbar
     mpHelpAction = new QAction("Show Context Help", this);
@@ -349,21 +327,23 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     mpToolBar = new QToolBar(this);
     mpToolBar->addAction(mpHelpAction);
 
-    //Main layout
-    QGridLayout *pLayout = new QGridLayout;
-    pLayout->addWidget(mpTabWidget, 0, 0, 1, 2);
-    //pLayout->addWidget(mpOutputBox, 1, 3, 1, 1);
-    pLayout->addWidget(mpButtonBox, 1, 1);
-    pLayout->addWidget(mpToolBar, 1, 0);
-    setLayout(pLayout);
+    this->addPage(mpSettingsWidget);
+    this->addPage(mpParametersWidget);
+    this->addPage(mpObjectiveWidget);
+    this->addPage(mpOutputWidget);
+
+    setButtonText(QWizard::FinishButton, tr("&Execute Script"));
+    setButtonText(QWizard::CustomButton1, tr("&Save To Script File"));
+    setOption(QWizard::HaveCustomButton1, true);
+    setOption(QWizard::CancelButtonOnLeft, true);
+    button(QWizard::CustomButton1)->setDisabled(true);
 
     //Connections
-    connect(mpCancelButton,                 SIGNAL(clicked()),      this,                   SLOT(reject()));
-    connect(mpOkButton,                     SIGNAL(clicked()),      this,                   SLOT(okPressed()));
-    connect(mpGenerateButton,               SIGNAL(clicked()),      this,                   SLOT(updateOutputBox()));
-    connect(mpRunButton,                    SIGNAL(clicked()),      this,                   SLOT(run()));
+    connect(this, SIGNAL(currentIdChanged(int)), this, SLOT(update(int)));
     connect(mpAddFunctionButton,            SIGNAL(clicked()),      this,                   SLOT(addFunction()));
     connect(mpHelpAction,                   SIGNAL(triggered()),    gpMainWindow,           SLOT(openContextHelp()));
+    connect(this, SIGNAL(accepted()), this, SLOT(run()));
+    connect(button(QWizard::CustomButton1), SIGNAL(clicked()), this, SLOT(saveScriptFile()));
 }
 
 
@@ -598,7 +578,7 @@ void OptimizationDialog::open()
 
     mScript.clear();
     mpOutputBox->clear();
-    mpRunButton->setDisabled(true);
+    //mpRunButton->setDisabled(true);
 
     loadConfiguration();
 
@@ -698,11 +678,11 @@ void OptimizationDialog::generateComplexScript()
 
         if(mSelectedFunctionsMinMax.at(i) == "Minimize")
         {
-            totalObj.append("-");
+            totalObj.append("+");
         }
         else
         {
-            totalObj.append("+");
+            totalObj.append("-");
         }
         QString idx = QString::number(i+1);
         totalObj.append("w"+idx+"*r"+idx+"*exp(e"+idx+")*obj"+idx);
@@ -741,705 +721,87 @@ void OptimizationDialog::generateComplexScript()
 }
 
 
-void OptimizationDialog::generateComplexScriptOld()
-{
-    bool multicore = mpMultiThreadedCheckBox->isChecked();
-    int nThreads = mpThreadsSpinBox->value();
-    QString modelPath = gpMainWindow->mpProjectTabs->getCurrentContainer()->getModelFileInfo().filePath();
-    QString iterationsString = QString().setNum(mpIterationsSpinBox->value());
-    QString alphaString = QString().setNum(mpAlphaLineEdit->text().toDouble());
-    QString betaString = QString().setNum(mpBetaLineEdit->text().toDouble());
-    QString gammaString = QString().setNum(mpGammaLineEdit->text().toDouble());
-    QString nParString = QString().setNum(mpParameterLabels.size());
-    mScript.clear();
-
-    QTextStream scriptStream(&mScript);
-
-    scriptStream << "# coding=utf-8\n";
-    scriptStream << "##########################################################\n";
-    scriptStream << "## Complex Optimization Script for Hopsan               ##\n";
-    scriptStream << "##                                                      ##\n";
-    scriptStream << "## Export routine written by Robert Braun, October 2011 ##\n";
-    scriptStream << "##########################################################\n";
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "##### Import required packages #####\n";
-    scriptStream << "\n";
-    scriptStream << "import time\n";
-    scriptStream << "\n";
-    scriptStream << "startTime = time.time()\n";
-    scriptStream << "\n";
-    scriptStream << "from HopsanOptimization import *\n";
-    scriptStream << "from OptimizationObjectiveFunctions import *\n";
-    scriptStream << "import random\n";
-    scriptStream << "from time import sleep\n";
-    scriptStream << "from types import FloatType\n";
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "##### Simulation settings #####\n";
-    scriptStream << "\n";
-    scriptStream << "iterations=" << iterationsString << "\n";
-    scriptStream << "hopsan.turnOffProgressBar()\n";
-    scriptStream << "alpha=" << alphaString << "\n";
-    scriptStream << "beta=" << betaString << "\n";
-    scriptStream << "gamma=" << gammaString << "\n";
-    scriptStream << "tolFunc=" << QString().setNum(mpEpsilonFLineEdit->text().toDouble()) << "\n";
-    scriptStream << "tolX=" << QString().setNum(mpEpsilonXLineEdit->text().toDouble()) << "\n";
-    if(multicore)
-    {
-        scriptStream << "nThreads=" << QString().setNum(nThreads) << "\n";
-        scriptStream << "\n";
-        scriptStream << "\n";
-        scriptStream << "\n";
-        scriptStream << "##### Load More Models #####\n";
-        scriptStream << "\n";
-        scriptStream << "modelPath = \"" << modelPath << "\"\n";
-        scriptStream << "hopsan.closeAllModels()\n";
-        scriptStream << "for i in range(nThreads):\n";
-        scriptStream << "  hopsan.loadModel(modelPath)\n";
-        scriptStream << "hopsan.useMultiCore()\n";
-    }
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "##### Optimization parameters #####\n";
-    scriptStream << "\n";
-    scriptStream << "parameters = [[0.0";
-    for(int i=1; i<mpParameterLabels.size(); ++i)
-        scriptStream << ", 0.0";
-    scriptStream << "]";
-    for(int i=1; i<mpSearchPointsSpinBox->value(); ++i)
-    {
-        scriptStream << ",\n           [0.0";
-        for(int i=1; i<mpParameterLabels.size(); ++i)
-            scriptStream << ", 0.0";
-        scriptStream << "]";
-    }
-    scriptStream << "]\n";
-    scriptStream << "componentNames = [\""+mSelectedComponents.at(0)+"\"";
-    for(int i=1; i<mSelectedComponents.size(); ++i)
-        scriptStream << ", \"" << mSelectedComponents.at(i) << "\"";
-    scriptStream << "]   #Names of components where parameters are located\n";
-    scriptStream << "parameterNames = [\""+mSelectedParameters.at(0)+"\"";
-    for(int i=1; i<mSelectedParameters.size(); ++i)
-        scriptStream << ", \"" << mSelectedParameters.at(i) << "\"";
-    scriptStream << "]           #Names of parameters to optimize\n";
-    scriptStream << "minValues = ["+QString().setNum(mpParameterMinLineEdits.at(0)->text().toDouble());
-    for(int i=1; i<mSelectedParameters.size(); ++i)
-        scriptStream << ", "+QString().setNum(mpParameterMinLineEdits.at(i)->text().toDouble());
-    scriptStream << "]                    #Minimum value for each parameter\n";
-    scriptStream << "maxValues = ["+QString().setNum(mpParameterMaxLineEdits.at(0)->text().toDouble());
-    for(int i=1; i<mSelectedParameters.size(); ++i)
-        scriptStream << ", "+QString().setNum(mpParameterMaxLineEdits.at(i)->text().toDouble());
-    scriptStream << "]                    #Maximum value for each parameter\n";
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "##### Trace log #####\n";
-    scriptStream << "\n";
-    scriptStream << "trace = {}\n";
-    scriptStream << "trace['parameters']=[[0]*len(parameters[0])]*iterations;\ntrace['fitness']=[0 for i in range(iterations)];\n";
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "##### Objective function #####\n";
-    scriptStream << "\n";
-    scriptStream << "obj = [0.0";
-    for(int i=1; i<mpSearchPointsSpinBox->value(); ++i)
-        scriptStream << ", 0.0";
-    scriptStream << "]\n";
-    scriptStream << "def getObjective():\n";
-    for(int i=0; i<mWeightLineEditPtrs.size(); ++i)
-        scriptStream << "  w"+QString().setNum(i)+"="+QString().setNum(mWeightLineEditPtrs.at(i)->text().toDouble())+"\n";
-    for(int i=0; i<mNormLineEditPtrs.size(); ++i)
-        scriptStream << "  n"+QString().setNum(i)+"="+QString().setNum(mNormLineEditPtrs.at(i)->text().toDouble())+"\n";
-    for(int i=0; i<mExpLineEditPtrs.size(); ++i)
-        scriptStream << "  g"+QString().setNum(i)+"="+QString().setNum(mExpLineEditPtrs.at(i)->text().toDouble())+"\n";
-
-    scriptStream << "  time=hopsan.component(\""+mFunctionComponents.first().first()+"\").port(\""+mFunctionPorts.first().first()+"\").time()\n";
-    QMap<QString, QString> addedVariables;
-    for(int i=0; i<mFunctionVariables.size(); ++i)
-    {
-        for(int j=0; j<mFunctionVariables.at(i).size(); ++j)
-        {
-            QString variable = "\""+mFunctionComponents.at(i).at(j)+"\").port(\""+mFunctionPorts.at(i).at(j)+"\").data(\""+mFunctionVariables.at(i).at(j)+"\"";
-            QString variableId = "data"+QString().setNum(i)+QString().setNum(j);
-            if(addedVariables.contains(variable))
-            {
-                scriptStream << "  "+variableId+"="+addedVariables.find(variable).value()+"\n";
-            }
-            else
-            {
-                addedVariables.insert(variable, variableId);
-                scriptStream << "  "+variableId+"=hopsan.component("+variable+")\n";
-            }
-        }
-
-    }
-    scriptStream << "  return ";
-    for(int i=0; i<mFunctionVariables.size(); ++i)
-        scriptStream << generateFunctionCode(i);
-    scriptStream << "\n\n";
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "##### Starting points #####\n";
-    scriptStream << "\n";
-    scriptStream << "for i in range(len(parameters)):\n";
-    scriptStream << "  for j in range(len(parameterNames)):\n";
-    scriptStream << "    parameters[i][j] = minValues[j]+(maxValues[j]-minValues[j])*random.random()\n";
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "##### Execute optimization #####\n";
-    scriptStream << "\n";
-    if(multicore)
-    {
-        scriptStream << "for i in range(len(parameters)):\n";
-        scriptStream << "  for t in range(nThreads):\n";
-        scriptStream << "    hopsan.gotoTab(t)\n";
-        scriptStream << "    for j in range(len(parameterNames)):\n";
-        scriptStream << "      hopsan.setParameter(componentNames[j], parameterNames[j], parameters[i][j])\n";
-        scriptStream << "  hopsan.simulateAllOpenModels(False)\n";
-        scriptStream << "  for t in range(nThreads):\n";
-        scriptStream << "    obj[i] = getObjective()\n";
-    }
-    else
-    {
-          scriptStream << "for i in range(len(parameters)):\n";
-          scriptStream << "  for j in range(len(parameterNames)):\n";
-          scriptStream << "    hopsan.setParameter(componentNames[j], parameterNames[j], parameters[i][j])\n";
-          scriptStream << "  hopsan.simulate()\n";
-          scriptStream << "  obj[i] = getObjective()\n\n";
-
-    }
-    if(mpPlottingCheckBox->isChecked())
-    {
-        scriptStream << "#Run one simulation first and open plot window, if user wants to see plots in real-time\n";
-        QStringList plottedVariables;
-        for(int i=0; i<mFunctionVariables.size(); ++i)
-        {
-            for(int j=0; j<mFunctionVariables.at(i).size(); ++j)
-            {
-                QString plotCommand = "hopsan.plot(\""+mFunctionComponents.at(i).at(j)+"\",\""+mFunctionPorts.at(i).at(j)+"\",\""+mFunctionVariables.at(i).at(j)+"\")\n";
-                if(!plottedVariables.contains(plotCommand))
-                {
-                    scriptStream << plotCommand;
-                    plottedVariables.append(plotCommand);
-                }
-            }
-        }
-        scriptStream << "\n";
-    }
-    if(multicore)
-    {
-        scriptStream << "worstIds = indexOfMaxN(obj, nThreads)\n";
-        scriptStream << "previousWorstIds = [-1 -1]\n";
-        scriptStream << "previousObj = obj\n";
-    }
-    else
-    {
-        scriptStream << "worstId = indexOfMax(obj)\n";
-        scriptStream << "previousWorstId = -1\n";
-    }
-    scriptStream << "kf=1-(alpha/2)**(gamma/(2*"+nParString+"))\n";
-    scriptStream << "\n";
-    scriptStream << "hopsan.openAbortDialog(\"Running optimization...\")\n";
-    scriptStream << "for k in range(iterations):\n";
-    scriptStream << "  if hopsan.isAborted():\n";
-    scriptStream << "    break\n\n";
-    if(multicore)
-    {
-        //! @todo Implement logarithmic scale support for multithreaded simulations!
-        scriptStream << "  for t in range(nThreads):\n";
-        scriptStream << "    hopsan.gotoTab(t)\n";
-        scriptStream << "    for j in range(len(parameterNames)):\n";
-        scriptStream << "      hopsan.setParameter(componentNames[j], parameterNames[j], parameters[worstIds[t]][j])\n";
-        scriptStream << "  hopsan.simulateAllOpenModels(True)\n";
-        scriptStream << "  for t in range(nThreads):\n";
-        scriptStream << "    hopsan.gotoTab(t)\n";
-        scriptStream << "    obj[worstIds[t]] = getObjective()\n";
-        scriptStream << "  objspread=max(obj)-min(obj)\n";
-        scriptStream << "  for i in range(len(parameters)):\n";
-        scriptStream << "    obj[i] = obj[i] + objspread*kf		#Apply forgetting factor\n";
-        scriptStream << "\n";
-        scriptStream << "  contracted = False				#Contract points if they were reflected last step and are worse now\n";
-        scriptStream << "  for w in range(len(worstIds)):\n";
-        scriptStream << "    if obj[worstIds[w]] > previousObj[worstIds[w]]:\n";
-        if(mpParametersLogCheckBox->isChecked())
-        {
-            scriptStream << "      toLogSpace(minValues)\n";
-            scriptStream << "      toLogSpace(maxValues)\n";
-            scriptStream << "      toLogSpace2(parameters)\n";
-        }
-        scriptStream << "      contract(parameters, worstIds[w], previousWorstIds,minValues,maxValues)\n";
-        if(mpParametersLogCheckBox->isChecked())
-        {
-            scriptStream << "      toLinearSpace(minValues)\n";
-            scriptStream << "      toLinearSpace(maxValues)\n";
-            scriptStream << "      toLinearSpace2(parameters)\n";
-        }
-        scriptStream << "      contracted = True\n";
-        scriptStream << "\n";
-        scriptStream << "  if not contracted:\n";
-        scriptStream << "    worstIds = indexOfMaxN(obj, nThreads)\n";
-        if(mpParametersLogCheckBox->isChecked())
-        {
-            scriptStream << "    toLogSpace(minValues)\n";
-            scriptStream << "    toLogSpace(maxValues)\n";
-            scriptStream << "    toLogSpace2(parameters)\n";
-        }
-        scriptStream << "    reflectWorstN(parameters,worstIds,previousWorstIds,alpha,minValues,maxValues,beta)\n";
-        if(mpParametersLogCheckBox->isChecked())
-        {
-            scriptStream << "    toLinearSpace(minValues)\n";
-            scriptStream << "    toLinearSpace(maxValues)\n";
-            scriptStream << "    toLinearSpace2(parameters)\n";
-        }
-        scriptStream << "\n";
-        scriptStream << "  previousWorstIds = worstIds[:]\n";
-        scriptStream << "  previousObj = obj[:]\n";
-    }
-    else
-    {
-        scriptStream << "  for j in range(len(parameterNames)):\n";
-        scriptStream << "    hopsan.setParameter(componentNames[j], parameterNames[j], parameters[worstId][j])\n";
-        scriptStream << "  hopsan.simulate()\n";
-        scriptStream << "  obj[worstId] = getObjective()\n";
-        scriptStream << "  objspread=max(obj)-min(obj)\n";
-        scriptStream << "  for i in range(len(parameters)):\n";
-        scriptStream << "    obj[i] = obj[i] + objspread*kf\n";
-        scriptStream << "  worstId = indexOfMax(obj)\n";
-        scriptStream << "  if worstId == previousWorstId:\n";
-        if(mpParametersLogCheckBox->isChecked())
-        {
-            scriptStream << "    toLogSpace(minValues)\n";
-            scriptStream << "    toLogSpace(maxValues)\n";
-            scriptStream << "    toLogSpace2(parameters)\n";
-        }
-        scriptStream << "    reflectWorst(parameters,worstId,0.5,minValues,maxValues,beta)  #Same as previous, move halfway to centroid\n";
-        if(mpParametersLogCheckBox->isChecked())
-        {
-            scriptStream << "    toLinearSpace(minValues)\n";
-            scriptStream << "    toLinearSpace(maxValues)\n";
-            scriptStream << "    toLinearSpace2(parameters)\n";
-        }
-        scriptStream << "  else:\n";
-        if(mpParametersLogCheckBox->isChecked())
-        {
-            scriptStream << "    toLogSpace(minValues)\n";
-            scriptStream << "    toLogSpace(maxValues)\n";
-            scriptStream << "    toLogSpace2(parameters)\n";
-        }
-        scriptStream << "    reflectWorst(parameters,worstId,alpha,minValues,maxValues,beta)      #Reflect worst through centroid of the remaining points\n";
-        if(mpParametersLogCheckBox->isChecked())
-        {
-            scriptStream << "    toLinearSpace(minValues)\n";
-            scriptStream << "    toLinearSpace(maxValues)\n";
-            scriptStream << "    toLinearSpace2(parameters)\n";
-        }
-        scriptStream << "  previousWorstId=worstId\n";
-        scriptStream << "  trace['parameters'][k]=parameters[worstId]\n  trace['fitness'][k]=obj[worstId]\n";
-    }
-    scriptStream << "  if min(obj) == 0:\n";
-    scriptStream << "    if abs(max(obj)-min(obj)) <= tolFunc:\n";
-    scriptStream << "      elapsedTime = (time.time() - startTime)\n";
-    scriptStream << "      print 'Converged in function values after {} iterations in {} seconds. Worst objective function value = {!r}.'.format(k, elapsedTime, max(obj))\n";
-    scriptStream << "      break\n";
-    scriptStream << "  elif abs(max(obj)-min(obj))/abs(min(obj)) <= tolFunc:\n";
-    scriptStream << "    elapsedTime = (time.time() - startTime)\n";
-    scriptStream << "    print 'Converged in function values after {} iterations in {} seconds. Worst objective function value = {!r}.'.format(k, elapsedTime, max(obj))\n";
-    scriptStream << "    break\n";
-    scriptStream << "  xConverged=True\n";
-    scriptStream << "  for i in range(len(parameterNames)):\n";
-    scriptStream << "    if abs((maxPar(parameters, i)-minPar(parameters,i))/(maxValues[i]-minValues[i])) > tolX:\n";
-    scriptStream << "      xConverged=False;\n";
-    scriptStream << "  if xConverged:\n";
-    scriptStream << "    elapsedTime = (time.time() - startTime)\n";
-    scriptStream << "    print 'Converged in parameter values after {} iterations in {} seconds. Worst objective function value = {!r}.'.format(k, elapsedTime, max(obj))\n";
-    scriptStream << "    break\n";
-    scriptStream << "hopsan.abort()\n";
-    scriptStream << "\n";
-    if(!mpPlottingCheckBox->isChecked())
-    {
-        scriptStream << "#Plot when simulation is finished\n";
-        for(int i=0; i<mFunctionVariables.size(); ++i)
-            for(int j=0; j<mFunctionVariables.at(i).size(); ++j)
-                scriptStream << "hopsan.plot(\""+mFunctionComponents.at(i).at(j)+"\",\""+mFunctionPorts.at(i).at(j)+"\",\""+mFunctionVariables.at(i).at(j)+"\")\n";
-        scriptStream << "\n";
-    }
-    if(mpExport2CSVBox->isChecked())
-    {
-        scriptStream << "\n";
-        scriptStream << "\n";
-        scriptStream << "\n";
-        scriptStream << "##### Save trace log to file #####\n";
-        scriptStream << "\n";
-        scriptStream << "import csv\n\n";
-        scriptStream << "fl = open('";
-        scriptStream << generateFileName().replace("Script", "Result").replace(".py",".csv");
-        scriptStream << "', 'wb')\n";
-        scriptStream << "writer = csv.writer(fl,dialect='excel',delimiter=';')\n";
-        scriptStream << "writer.writerow([";
-        for(int i=0; i<mSelectedComponents.size(); ++i)
-            scriptStream << "'" << mSelectedComponents.at(i) << "::" << mSelectedParameters.at(i) << "',";
-        scriptStream << "'ObjectiveFunction'])\n";
-        scriptStream << "data=[[0]*(len(trace['parameters'][0])+len([trace['fitness'][0]])) for i in range(iterations)]\n";
-        scriptStream << "parI=range(len(trace['parameters'][0]))\n";
-        scriptStream << "objI=range(len(trace['parameters'][0]),len(trace['parameters'][0])+len([trace['fitness'][0]]))\n";
-        scriptStream << "for i in range(len(trace['parameters'])):\n";
-        scriptStream << "  for j in range(len(trace['parameters'][0])):\n";
-        scriptStream << "    data[i][j]=trace['parameters'][i][j]\n";
-        scriptStream << "    data[i][j+1]=trace['fitness'][i]\n";
-        scriptStream << "for values in data:\n";
-        scriptStream << "    writer.writerow(values)\n";
-        scriptStream << "fl.close()\n";
-    }
-}
-
-
 void OptimizationDialog::generateParticleSwarmScript()
 {
-    bool multicore = mpMultiThreadedCheckBox->isChecked();
-    QString iterationsString = QString().setNum(mpIterationsSpinBox->value());
-    QString particlesString = QString().setNum(mpParticlesSpinBox->value());
-    QString omegaString = QString().setNum(mpOmegaLineEdit->text().toDouble());
-    QString c1String = QString().setNum(mpC1LineEdit->text().toDouble());
-    QString c2String = QString().setNum(mpC2LineEdit->text().toDouble());
-    QString tolFuncString = QString().setNum(mpEpsilonFLineEdit->text().toDouble());
-    QString tolXString = QString().setNum(mpEpsilonXLineEdit->text().toDouble());
-    int nParameters = mpParameterLabels.size();
-    int nParticles = mpParticlesSpinBox->value();
-    int nComponents = mSelectedComponents.size();
-    QString modelPath = gpMainWindow->mpProjectTabs->getCurrentContainer()->getModelFileInfo().filePath();
+    QFile templateFile(gDesktopHandler.getExecPath()+"../ScriptsHCOM/optTemplateParticle.hcom");
+    templateFile.open(QFile::ReadOnly | QFile::Text);
+    QString templateCode = templateFile.readAll();
+    templateFile.close();
 
-    mScript.clear();
-
-    QTextStream scriptStream(&mScript);
-
-    scriptStream << "# coding=utf-8\n";
-    scriptStream << "##########################################################\n";
-    scriptStream << "## Particle Swarm Optimization Script for Hopsan        ##\n";
-    scriptStream << "##                                                      ##\n";
-    scriptStream << "## Export routine written by Robert Braun, October 2011 ##\n";
-    scriptStream << "##########################################################\n";
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "##### Import required packages #####\n";
-    scriptStream << "\n";
-    scriptStream << "import time\n";
-    scriptStream << "\n";
-    scriptStream << "startTime = time.time()\n";
-    scriptStream << "\n";
-    scriptStream << "from HopsanOptimization import *\n";
-    scriptStream << "from OptimizationObjectiveFunctions import *\n";
-    scriptStream << "import random\n";
-    scriptStream << "from time import sleep\n";
-    scriptStream << "from types import FloatType\n";
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "##### Initialize Hopsan #####\n";
-    scriptStream << "\n";
-    scriptStream << "hopsan.turnOffProgressBar()\n";
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "##### Simulation settings #####\n";
-    scriptStream << "\n";
-    scriptStream << "iterations=" << iterationsString << "\n";
-    scriptStream << "omega=" << omegaString << "\n";
-    scriptStream << "c1=" << c1String << "\n";
-    scriptStream << "c2=" << c2String << "\n";
-    scriptStream << "tolFunc=" << tolFuncString << "\n";
-    scriptStream << "tolX=" << tolXString << "\n";
-    scriptStream << "np=" << particlesString << "\n";
-    if(multicore)
+    QString objFuncs;
+    QString totalObj;
+    QString objPars;
+    QStringList plotVarsList;
+    QString plotVars;
+    QString setMinMax;
+    QString setPars;
+    for(int i=0; i<mFunctionName.size(); ++i)
     {
-        int nThreads = mpThreadsSpinBox->value();
-        scriptStream << "nThreads=" << QString().setNum(nThreads) << "\n";
-        scriptStream << "\n";
-        scriptStream << "\n";
-        scriptStream << "\n";
-        scriptStream << "##### Load More Models #####\n";
-        scriptStream << "\n";
-        scriptStream << "modelPath = \"" << modelPath << "\"\n";
-        scriptStream << "hopsan.closeAllModels()\n";
-        scriptStream << "for i in range(nThreads):\n";
-        scriptStream << "  hopsan.loadModel(modelPath)\n";
-        scriptStream << "hopsan.useMultiCore()\n";
-    }
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "##### Optimization particles #####\n";
-    scriptStream << "\n";
-    scriptStream << "# Particles\n";
-    scriptStream << "particles = [[0.0";
-    for(int i=1; i<nParameters; ++i)
-        scriptStream << ", 0.0";
-    scriptStream << "]";
-    for(int i=1; i<nParticles; ++i)
-    {
-        scriptStream << ",\n           [0.0";
-        for(int i=1; i<nParameters; ++i)
-            scriptStream << ", 0.0";
-        scriptStream << "]";
-    }
-    scriptStream << "]\n";
-    scriptStream << "\n";
-    scriptStream << "# Velocities\n";
-    scriptStream << "velocities = [[0.0";
-    for(int i=1; i<nParameters; ++i)
-        scriptStream << ", 0.0";
-    scriptStream << "]";
-    for(int i=1; i<nParticles; ++i)
-    {
-        scriptStream << ",\n           [0.0";
-        for(int i=1; i<nParameters; ++i)
-            scriptStream << ", 0.0";
-        scriptStream << "]";
-    }
-    scriptStream << "]\n";
-    scriptStream << "\n";
-    scriptStream << "# Best known point for each particle\n";
-    scriptStream << "pi = [[0.0";
-    for(int i=1; i<nParameters; ++i)
-        scriptStream << ", 0.0";
-    scriptStream << "]";
-    for(int i=1; i<nParticles; ++i)
-    {
-        scriptStream << ",\n           [0.0";
-        for(int i=1; i<nParameters; ++i)
-            scriptStream << ", 0.0";
-        scriptStream << "]";
-    }
-    scriptStream << "]\n";
-    scriptStream << "\n";
-    scriptStream << "# Objective functions for best known points\n";
-    scriptStream << "pi_obj = [0.0";
-    for(int i=1; i<nParticles; ++i)
-        scriptStream << ", 0.0";
-    scriptStream << "]\n";
-    scriptStream << "\n";
-    scriptStream << "# Best known point in swarm\n";
-    scriptStream << "g = ["+QString().setNum(0.0);
-    for(int i=1; i<nParameters; ++i)
-        scriptStream << ", "+QString().setNum(0.0);
-    scriptStream << "]\n";
-    scriptStream << "g_obj = 0.0";
-
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "##### Optimization parameters #####\n";
-    scriptStream << "\n";
-    scriptStream << "componentNames = [\""+mSelectedComponents.at(0)+"\"";
-    for(int i=1; i<nComponents; ++i)
-        scriptStream << ", \"" << mSelectedComponents.at(i) << "\"";
-    scriptStream << "]   #Names of components where parameters are located\n";
-    scriptStream << "parameterNames = [\""+mSelectedParameters.at(0)+"\"";
-    for(int i=1; i<nParameters; ++i)
-        scriptStream << ", \"" << mSelectedParameters.at(i) << "\"";
-    scriptStream << "]           #Names of parameters to optimize\n";
-    scriptStream << "minValues = ["+QString().setNum(mpParameterMinLineEdits.at(0)->text().toDouble());
-    for(int i=1; i<nParameters; ++i)
-        scriptStream << ", "+QString().setNum(mpParameterMinLineEdits.at(i)->text().toDouble());
-    scriptStream << "]                    #Minimum value for each parameter\n";
-    scriptStream << "maxValues = ["+QString().setNum(mpParameterMaxLineEdits.at(0)->text().toDouble());
-    for(int i=1; i<nParameters; ++i)
-        scriptStream << ", "+QString().setNum(mpParameterMaxLineEdits.at(i)->text().toDouble());
-    scriptStream << "]                    #Maximum value for each parameter\n";
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "##### Objective function #####\n";
-    scriptStream << "\n";
-    scriptStream << "obj = [0.0";
-    for(int i=1; i<nParticles; ++i)
-        scriptStream << ", 0.0";
-    scriptStream << "]\n";
-    scriptStream << "def getObjective():\n";
-    for(int i=0; i<mWeightLineEditPtrs.size(); ++i)
-        scriptStream << "  w"+QString().setNum(i)+"="+QString().setNum(mWeightLineEditPtrs.at(i)->text().toDouble())+"\n";
-    for(int i=0; i<mNormLineEditPtrs.size(); ++i)
-        scriptStream << "  n"+QString().setNum(i)+"="+QString().setNum(mNormLineEditPtrs.at(i)->text().toDouble())+"\n";
-    for(int i=0; i<mExpLineEditPtrs.size(); ++i)
-        scriptStream << "  g"+QString().setNum(i)+"="+QString().setNum(mExpLineEditPtrs.at(i)->text().toDouble())+"\n";
-
-    scriptStream << "  time=hopsan.component(\""+mFunctionComponents.first().first()+"\").port(\""+mFunctionPorts.first().first()+"\").time()\n";
-    QMap<QString, QString> addedVariables;
-    for(int i=0; i<mFunctionVariables.size(); ++i)
-    {
-        for(int j=0; j<mFunctionVariables.at(i).size(); ++j)
+        QString objFunc = mObjectiveFunctionCalls[mObjectiveFunctionDescriptions.indexOf(mFunctionName[i])];
+        objFunc.prepend("    ");
+        objFunc.replace("\n", "\n    ");
+        objFunc.replace("<<<id>>>", QString::number(i+1));
+        for(int j=0; j<mFunctionComponents[i].size(); ++j)
         {
-            QString variable = "\""+mFunctionComponents.at(i).at(j)+"\").port(\""+mFunctionPorts.at(i).at(j)+"\").data(\""+mFunctionVariables.at(i).at(j)+"\"";
-            QString variableId = "data"+QString().setNum(i)+QString().setNum(j);
-            if(addedVariables.contains(variable))
+            QString varName = mFunctionComponents[i][j]+"."+mFunctionPorts[i][j]+"."+mFunctionVariables[i][j];
+            gpMainWindow->mpTerminalWidget->mpHandler->toShortDataNames(varName);
+            objFunc.replace("<<<var"+QString::number(j+1)+">>>", varName);
+
+            if(!plotVarsList.contains(varName))
             {
-                scriptStream << "  "+variableId+"="+addedVariables.find(variable).value()+"\n";
-            }
-            else
-            {
-                addedVariables.insert(variable, variableId);
-                scriptStream << "  "+variableId+"=hopsan.component("+variable+")\n";
+                plotVarsList.append(varName);
+                plotVars.append(varName+" ");
             }
         }
-    }
-    scriptStream << "  return ";
-    for(int i=0; i<mFunctionVariables.size(); ++i)
-        scriptStream << generateFunctionCode(i);
-    scriptStream << "\n\n";
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "##### Initialize swarm #####\n";
-    scriptStream << "\n";
-    scriptStream << "# Generate random particles\n";
-    scriptStream << "for i in range(len(particles)):\n";
-    scriptStream << "  for j in range(len(parameterNames)):\n";
-    scriptStream << "    particles[i][j] = minValues[j]+(maxValues[j]-minValues[j])*random.random()\n";
-    scriptStream << "\n";
-    scriptStream << "# Generate random starting velocities";
-    scriptStream << "for i in range(len(velocities)):\n";
-    scriptStream << "  for j in range(len(parameterNames)):\n";
-    scriptStream << "    minVel = -abs(maxValues[j]-minValues[j])\n";
-    scriptStream << "    maxVel = abs(maxValues[j]-minValues[j])\n";
-    scriptStream << "    particles[i][j] = minVel + (maxVel-minVel)*random.random()\n";
-    scriptStream << "\n";
-    scriptStream << "# Find best point in swarm\n";
-    if(multicore)
-    {
-        scriptStream << "for t in range(np):\n";
-        scriptStream << "  hopsan.gotoTab(t)\n";
-        scriptStream << "  for j in range(len(parameterNames)):\n";
-        scriptStream << "    hopsan.setParameter(componentNames[j], parameterNames[j], particles[i][j])\n";
-        scriptStream << "  hopsan.simulateAllOpenModels(False)\n";
-        scriptStream << "  for t in range(np):\n";
-        scriptStream << "    hopsan.gotoTab(t)\n";
-        scriptStream << "    obj[i] = getObjective()\n";
-    }
-    else
-    {
-          scriptStream << "for i in range(np):\n";
-          scriptStream << "  for j in range(len(parameterNames)):\n";
-          scriptStream << "    hopsan.setParameter(componentNames[j], parameterNames[j], particles[i][j])\n";
-          scriptStream << "  hopsan.simulate()\n";
-          scriptStream << "  obj[i] = getObjective()\n";
-    }
-    scriptStream << "\n";
-    scriptStream << "#Calculate best known positions\n";
-    scriptStream << "for i in range(np):\n";
-    scriptStream << "  pi[i] = particles[i]\n";
-    scriptStream << "  pi_obj[i] = obj[i]\n";
-    scriptStream << "g = particles[indexOfMin(pi_obj)]\n";
-    scriptStream << "g_obj = obj[indexOfMin(pi_obj)]\n";
-    if(mpPlottingCheckBox->isChecked())
-    {
-        scriptStream << "# Run one simulation first and open plot window, if user wants to see plots in real-time\n";
-        QStringList plottedVariables;
-        for(int i=0; i<mFunctionVariables.size(); ++i)
+        for(int j=0; j<mDataLineEditPtrs[i].size(); ++j)
         {
-            for(int j=0; j<mFunctionVariables.at(i).size(); ++j)
-            {
-                QString plotCommand = "hopsan.plot(\""+mFunctionComponents.at(i).at(j)+"\",\""+mFunctionPorts.at(i).at(j)+"\",\""+mFunctionVariables.at(i).at(j)+"\")\n";
-                if(!plottedVariables.contains(plotCommand))
-                {
-                    scriptStream << plotCommand;
-                    plottedVariables.append(plotCommand);
-                }
-            }
+            objFunc.replace("<<<arg"+QString::number(j+1)+">>>", mDataLineEditPtrs[i][j]->text());
         }
-        scriptStream << "\n";
+        objFuncs.append(objFunc+"\n");
+
+        if(mSelectedFunctionsMinMax.at(i) == "Minimize")
+        {
+            totalObj.append("+");
+        }
+        else
+        {
+            totalObj.append("-");
+        }
+        QString idx = QString::number(i+1);
+        totalObj.append("w"+idx+"*r"+idx+"*exp(e"+idx+")*obj"+idx);
+
+        objPars.append("w"+idx+"="+mWeightLineEditPtrs[i]->text()+"\n");
+        objPars.append("r"+idx+"="+mNormLineEditPtrs[i]->text()+"\n");
+        objPars.append("e"+idx+"="+mExpLineEditPtrs[i]->text()+"\n");
+
     }
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "\n";
-    scriptStream << "##### Run optimization #####\n";
-    scriptStream << "\n";
-    scriptStream << "hopsan.openAbortDialog(\"Running optimization...\")\n";
-    scriptStream << "for k in range(iterations):\n";
-    scriptStream << "  if hopsan.isAborted():\n";
-    scriptStream << "    break\n\n";
-    scriptStream << "  \n";
-    scriptStream << "  #  Move the particles\n";
-    scriptStream << "  for i in range(np):\n";
-    scriptStream << "    r1 = random.random()\n";
-    scriptStream << "    r2 = random.random()\n";
-    scriptStream << "    for j in range(len(parameterNames)):\n";
-    scriptStream << "      velocities[i][j] = omega*velocities[i][j] + c1*r1*(pi[i][j]-particles[i][j]) + c2*r2*(g[j]-particles[i][j])\n";
-    scriptStream << "      particles[i][j] = particles[i][j]+velocities[i][j]\n";
-    scriptStream << "      if particles[i][j] <= minValues[j]: \n";
-    scriptStream << "        particles[i][j] = minValues[j]\n";
-    scriptStream << "        velocities[i][j] = 0.0\n";
-    scriptStream << "      if particles[i][j] >= maxValues[j]:\n";
-    scriptStream << "        particles[i][j] = maxValues[j]\n";
-    scriptStream << "        velocities[i][j] = 0.0\n";
-    scriptStream << "  \n";
-    scriptStream << "  #  Simulate and evaluate objective functions\n";
-    if(multicore)
+
+    for(int p=0; p<mSelectedParameters.size(); ++p)
     {
-        scriptStream << "  for i in range(np):\n";
-        scriptStream << "    hopsan.gotoTab(t)\n";
-        scriptStream << "    for j in range(len(parameterNames)):\n";
-        scriptStream << "      hopsan.setParameter(componentNames[j], parameterNames[j], particles[i][j])\n";
-        scriptStream << "    hopsan.simulateAllOpenModels(True)\n";
-        scriptStream << "    for t in range(np):\n";
-        scriptStream << "      hopsan.gotoTab(t)\n";
-        scriptStream << "      obj[i] = getObjective()\n";
+        QString par = mSelectedComponents[p]+"."+mSelectedParameters[p];
+        setPars.append("    chpa "+par+" par(evalId,"+QString::number(p)+")\n");
+
+        setMinMax.append("opt setparminmax "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
     }
-    else
-    {
-         scriptStream << "  for i in range(np):\n";
-         scriptStream << "    for j in range(len(parameterNames)):\n";
-         scriptStream << "      hopsan.setParameter(componentNames[j], parameterNames[j], particles[i][j])\n";
-         scriptStream << "    hopsan.simulate()\n";
-         scriptStream << "    obj[i] = getObjective()\n";
-    }
-    scriptStream << "  \n";
-    scriptStream << "  # Calculate best known positions\n";
-    scriptStream << "  for i in range(np):\n";
-    scriptStream << "    if obj[i] < pi_obj[i]:\n";
-    scriptStream << "      pi[i] = particles[i][:]\n";
-    scriptStream << "      pi_obj[i] = obj[i]\n";
-    scriptStream << "      if pi_obj[i] < g_obj:\n";
-    scriptStream << "        g = pi[i][:]\n";
-    scriptStream << "        g_obj = pi_obj[i]\n";
-    scriptStream << "  \n";
-    scriptStream << "    # Check for convergence\n";
-    scriptStream << "    if min(obj) == 0:\n";
-    scriptStream << "      if abs(max(obj)-min(obj)) <= tolFunc:\n";
-    scriptStream << "        elapsedTime = (time.time() - startTime)\n";
-    scriptStream << "        print 'Converged in function values after {} iterations in {} seconds. Worst objective function value = {!r}.'.format(k, elapsedTime, max(obj))\n";
-    scriptStream << "        hopsan.abort()\n";
-    scriptStream << "        break\n";
-    scriptStream << "    elif abs(max(obj)-min(obj))/abs(min(obj)) <= tolFunc:\n";
-    scriptStream << "      elapsedTime = (time.time() - startTime)\n";
-    scriptStream << "      print 'Converged in function values after {} iterations in {} seconds. Worst objective function value = {!r}.'.format(k, elapsedTime, max(obj))\n";
-    scriptStream << "      hopsan.abort()\n";
-    scriptStream << "      break\n";
-    scriptStream << "    xConverged=True\n";
-    scriptStream << "    for i in range(len(parameterNames)):\n";
-    scriptStream << "      if abs((maxPar(pi, i)-minPar(pi,i))/(maxValues[i]-minValues[i])) > tolX:\n";
-    scriptStream << "        xConverged=False;\n";
-    scriptStream << "    if xConverged:\n";
-    scriptStream << "      elapsedTime = (time.time() - startTime)\n";
-    scriptStream << "      print 'Converged in parameter values after {} iterations in {} seconds. Worst objective function value = {!r}.'.format(k, elapsedTime, max(obj))\n";
-    scriptStream << "      hopsan.abort()\n";
-    scriptStream << "      break\n";
-    scriptStream << "hopsan.abort()\n";
-    scriptStream << "\n";
-    if(!mpPlottingCheckBox->isChecked())
-    {
-        scriptStream << "#Plot when simulation is finished\n";
-        for(int i=0; i<mFunctionVariables.size(); ++i)
-            for(int j=0; j<mFunctionVariables.at(i).size(); ++j)
-                scriptStream << "hopsan.plot(\""+mFunctionComponents.at(i).at(j)+"\",\""+mFunctionPorts.at(i).at(j)+"\",\""+mFunctionVariables.at(i).at(j)+"\")\n";
-        scriptStream << "\n";
-    }
+
+
+    templateCode.replace("<<<objfuncs>>>", objFuncs);
+    templateCode.replace("<<<totalobj>>>", totalObj);
+    templateCode.replace("<<<objpars>>>", objPars);
+    templateCode.replace("<<<plotvars>>>", plotVars);
+    templateCode.replace("<<<setminmax>>>", setMinMax);
+    templateCode.replace("<<<setpars>>>", setPars);
+    templateCode.replace("<<<npoints>>>", QString::number(mpSearchPointsSpinBox->value()));
+    templateCode.replace("<<<nparams>>>", QString::number(mSelectedParameters.size()));
+    templateCode.replace("<<<maxevals>>>", QString::number(mpIterationsSpinBox->value()));
+    templateCode.replace("<<<omega>>>", mpOmegaLineEdit->text());
+    templateCode.replace("<<<c1>>>", mpC1LineEdit->text());
+    templateCode.replace("<<<c2>>>", mpC2LineEdit->text());
+    templateCode.replace("<<<functol>>>", mpEpsilonFLineEdit->text());
+    templateCode.replace("<<<partol>>>", mpEpsilonXLineEdit->text());
+
+    mScript = templateCode;
 }
-
 
 
 void OptimizationDialog::setAlgorithm(int i)
@@ -1595,24 +957,6 @@ void OptimizationDialog::removeParameter()
     }
     else
     {
-
-//    for(int c=0; c<mpParametersList->topLevelItemCount(); ++c)      //Uncheck the parameter in the list before removing it
-//    {
-//        if(mpParametersList->topLevelItem(c)->text(0) == mSelectedComponents.at(i))
-//        {
-//            bool doBreak = false;
-//            for(int p=0; p<mpParametersList->topLevelItem(c)->childCount(); ++p)
-//            {
-//                if(mpParametersList->topLevelItem(c)->child(p)->text(0) == mSelectedParameters.at(i))
-//                {
-//                    mpParametersList->topLevelItem(c)->child(p)->setCheckState(0, Qt::Unchecked);       //Will trigger actual remove in updateChosenVariables()
-//                    doBreak = true;
-//                    break;
-//                }
-//            }
-//            if(doBreak) return;
-//        }
-//    }
 
     //Parameter is not in list (should not really happen), so remove it here instead
     mpParametersLayout->removeWidget(mpParameterLabels.at(i));
@@ -1786,31 +1130,40 @@ void OptimizationDialog::removeFunction()
 
 
 //! @brief Generates the script code and shows it in the output box
-void OptimizationDialog::updateOutputBox()
+void OptimizationDialog::update(int idx)
 {
-    //! @todo Implement
+    //Finished parameters tab
+    if(idx == 2)
+    {
+        if(mSelectedParameters.isEmpty())
+        {
+            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("No parameters specified for optimization.");
+            this->back();
+            return;
+        }
+    }
 
-    generateScriptFile();
-    mpOutputBox->clear();
-    mpOutputBox->insertPlainText(mScript);
-    mpRunButton->setDisabled(mScript.isEmpty());
-
-    saveConfiguration();
+    //Finished objective function tab
+    if(idx == 3)
+    {
+        if(mSelectedFunctions.isEmpty())
+        {
+            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("No objective functions specified for optimization.");
+            this->back();
+            return;
+        }
+        else
+        {
+            button(QWizard::CustomButton1)->setDisabled(false);
+            generateScriptFile();
+            mpOutputBox->clear();
+            mpOutputBox->insertPlainText(mScript);
+            saveConfiguration();
+            return;
+        }
+    }
 }
 
-
-//! @brief Generates file name for the script
-QString OptimizationDialog::generateFileName()
-{
-    QString dateString = QDateTime::currentDateTime().toString(Qt::DefaultLocaleShortDate);
-    qDebug() << "dateString = " << dateString.toUtf8();
-    dateString.replace(":", "_");
-    dateString.replace(".", "_");
-    dateString.replace(" ", "_");
-    dateString.replace("/", "_");
-    dateString.replace("\\", "_");
-    return "OptimizationScript_"+dateString.toUtf8()+".py";
-}
 
 
 //! @brief Saves the generated script code to file and executes the script
@@ -1818,39 +1171,38 @@ void OptimizationDialog::run()
 {
     saveConfiguration();
 
-    QString dateString = QDateTime::currentDateTime().toString();
-    qDebug() << "dateString = " << dateString.toUtf8();
-    dateString.replace(":", "_");
-    dateString.replace(".", "_");
-    dateString.replace(" ", "_");
-    QString pyPath = QString(gDesktopHandler.getScriptsPath())+generateFileName();
-    pyPath.replace("\\", "/");
-    pyPath.replace("//", "/");
+    QStringList commands = mpOutputBox->toPlainText().split("\n");
+    bool *abort = new bool;
+    gpMainWindow->mpTerminalWidget->setEnabledAbortButton(true);
+    gpMainWindow->mpTerminalWidget->mpHandler->runScriptCommands(commands, abort);
+    gpMainWindow->mpTerminalWidget->setEnabledAbortButton(false);
+    delete(abort);
+}
 
-    QFile pyFile(pyPath);
-    if (!pyFile.open(QIODevice::WriteOnly | QIODevice::Text))
+
+//! @brief Saves generated script to a script file
+void OptimizationDialog::saveScriptFile()
+{
+    QString filePath = QFileDialog::getSaveFileName(gpMainWindow, tr("Save Script File"),
+                                                 gConfig.getScriptDir(),
+                                                 gpMainWindow->tr("HCOM Script (*.hcom)"));
+
+    if(filePath.isEmpty())     //Don't save anything if user presses cancel
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Failed to open file for writing: " + pyPath);
         return;
     }
-    QTextStream pyStream(&pyFile);
-    //pyStream << mScript;
-    pyStream << mpOutputBox->toPlainText().toAscii();
-    pyFile.close();
 
-    QTime simTimer;
-    simTimer.start();
+    QFileInfo fileInfo = QFileInfo(filePath);
+    gConfig.setScriptDir(fileInfo.absolutePath());
 
-    QString scriptPath = QString(gDesktopHandler.getScriptsPath());
-    scriptPath.replace("\\", "/");
-    scriptPath.replace("//", "/");
-
-    //gpMainWindow->mpPyDockWidget->runCommand("import sys");
-    //gpMainWindow->mpPyDockWidget->runCommand("sys.path.append(\""+scriptPath+"\")");
-    gpMainWindow->mpPyDockWidget->runPyScript(pyPath);
-    QString timeString = QString().setNum(simTimer.elapsed());
-    gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Optimization finished after " + timeString + " ms");
-    close();
+    QFile file(filePath);   //Create a QFile object
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+    {
+        return;
+    }
+    QTextStream out(&file);
+    out << mpOutputBox->toPlainText();
+    file.close();
 }
 
 
@@ -1932,103 +1284,6 @@ bool OptimizationDialog::loadObjectiveFunctions()
     }
 
     return true;
-
-//    mObjectiveFunctionDescriptions.clear();
-//    mObjectiveFunctionCalls.clear();
-//    mObjectiveFunctionNumberOfVariables.clear();
-//    mObjectiveFunctionUsesTimeVector.clear();
-//    mObjectiveFunctionDataLists.clear();
-
-//    // If the file could not be found, try in the DEV path
-//    // This is usefull for Linux builds that do not install files to Documents folder
-//    // It should also be usefull for zip and portable releases that has not installed the script files
-//    //! @todo this is a quickhack that copies the optimization files to the Documents/Scripts folder every time if they do not exist, in the future we should handle this in a smarter way (ex: if we have updated scripts in new release, then we should copy)
-//    //! @todo The Qfile copy will not overwrite if already exist, but we dont want to overwrite if user has made changes
-//    // If OptimizationObjectiveFunctions.xml missing
-//    QString dstPath = gDesktopHandler.getMainPath() + "Scripts/OptimizationObjectiveFunctions.xml";
-//    QString srcPath = gDesktopHandler.getScriptsPath() + "OptimizationObjectiveFunctions.xml";
-//    QFile::copy(srcPath,dstPath);
-//    // If OptimizationObjectiveFunctions.py missing
-//    dstPath = QString(gDesktopHandler.getScriptsPath() ) + "OptimizationObjectiveFunctions.py";
-//    srcPath = gDesktopHandler.getScriptsPath()  + "OptimizationObjectiveFunctions.py";
-//    QFile::copy(srcPath,dstPath);
-//    // If HopsanOptimization.py missing
-//    dstPath = QString(gDesktopHandler.getScriptsPath() ) + "HopsanOptimization.py";
-//    srcPath = gDesktopHandler.getScriptsPath() + "HopsanOptimization.py";
-//    QFile::copy(srcPath,dstPath);
-
-//    QFile file(QString(gDesktopHandler.getScriptsPath()) + "OptimizationObjectiveFunctions.xml");
-//    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-//    {
-//        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
-//                                 "Unable to read objective functions file. Please make sure that it is located in the Scripts directory.\n");
-//        qDebug() << "Looking for objective function script file in: " << gDesktopHandler.getScriptsPath();
-//        return false;
-//    }
-//    QDomDocument domDocument;
-//    QString errorStr;
-//    int errorLine, errorColumn;
-//    if (!domDocument.setContent(&file, false, &errorStr, &errorLine, &errorColumn))
-//    {
-//        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
-//                                 gpMainWindow->tr("HopsanObjectiveFunctions: Parse error at line %1, column %2:\n%3")
-//                                 .arg(errorLine)
-//                                 .arg(errorColumn)
-//                                 .arg(errorStr));
-//        file.close();
-//        return false;
-//    }
-//    else
-//    {
-//        QDomElement functionsRoot = domDocument.documentElement();
-//        if (functionsRoot.tagName() != "hopsanobjectivefunctions")
-//        {
-//            QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"),
-//                                     "The file is not an Hopsan objective function file. Incorrect hmf root tag name: "
-//                                     + functionsRoot.tagName() + " != hopsanobjectivefunctions");
-//            file.close();
-//            return false;
-//        }
-//        else
-//        {
-//                //Load default user settings
-//            QDomElement functionElement = functionsRoot.firstChildElement("objectivefunction");
-//            while(!functionElement.isNull())
-//            {
-//                mObjectiveFunctionDescriptions << functionElement.attribute("description");
-//                mObjectiveFunctionCalls << functionElement.attribute("call");
-//                mObjectiveFunctionNumberOfVariables << functionElement.attribute("numberofvariables").toInt();
-//                mObjectiveFunctionUsesTimeVector << (functionElement.attribute("needstimevector") == "true");
-//                QStringList parameters;
-//                QDomElement parameterElement = functionElement.firstChildElement("parameter");
-//                while(!parameterElement.isNull())
-//                {
-//                    parameters << parameterElement.text();
-//                    parameterElement = parameterElement.nextSiblingElement("parameter");
-//                }
-//                mObjectiveFunctionDataLists.append(parameters);
-//                functionElement = functionElement.nextSiblingElement("objectivefunction");
-//            }
-//        }
-
-//    file.close();
-//    return true;
-
-//}
-
-
-
-//    mObjectiveFunctionDescriptions = QStringList() << "Highest value" << "Lowest value" << "Overshoot over value" << "First time to value" << "Difference from value at time" << "Average absolute difference between variables";
-//    mObjectiveFunctionCalls = QStringList() << "maxValue" << "minValue" << "overShoot" << "firstTimeAt" << "diffFromValueAtTime" << "averageAbsoluteDifference";
-//    mObjectiveFunctionNumberOfVariables = QList<int>() << 1 << 1 << 1 << 1 << 1 << 2;
-//    mObjectiveFunctionUsesTimeVector = QList<bool>() << false << false << false << true << true << false;
-
-//    mObjectiveFunctionDataLists.append(QStringList());
-//    mObjectiveFunctionDataLists.append(QStringList());
-//    mObjectiveFunctionDataLists.append(QStringList() << "x");
-//    mObjectiveFunctionDataLists.append(QStringList() << "x");
-//    mObjectiveFunctionDataLists.append(QStringList() << "x" << "t");
-//    mObjectiveFunctionDataLists.append(QStringList());
 }
 
 

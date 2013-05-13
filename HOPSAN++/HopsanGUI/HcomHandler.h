@@ -30,6 +30,7 @@ public:
     void executeCommand(QString cmd);
 
     //Public access functions
+    QString runScriptCommands(QStringList &lines, bool *abort);
     SharedLogVariableDataPtrT getVariablePtr(QString fullName) const;
     QStringList getCommands() const;
     QMap<QString, double> getLocalVariables() const;
@@ -113,7 +114,6 @@ private:
     bool evaluateArithmeticExpression(QString cmd);
     void splitAtFirst(QString str, QString c, QString &left, QString &right);
     bool containsOutsideParentheses(QString str, QString c);
-    QString runScriptCommands(QStringList &lines, bool *abort);
     double getNumber(const QString str, bool *ok) const;
     QString getDirectory(const QString cmd) const;
     QStringList getArguments(const QString cmd) const;
@@ -163,10 +163,11 @@ private:
     QVector<double> mOptParMin, mOptParMax;
     QVector< QVector<double> > mOptParameters, mOptOldParameters;
     QVector< QVector<double> > mOptVelocities, mOptBestKnowns;
-    QVector<double> mOptObjectives, mOptBestObjectives;
+    QVector<double> mOptObjectives, mOptBestObjectives, mOptBestPoint;
     OptAlgorithmType mOptAlgorithm;
     OptDataType mOptParameterType;
     int mOptWorstCounter;
+    double mOptBestObj;
     double mOptMaxEvals;
     double mOptAlpha, mOptRfak, mOptGamma, mOptKf;
     double mOptOmega, mOptC1, mOptC2;
