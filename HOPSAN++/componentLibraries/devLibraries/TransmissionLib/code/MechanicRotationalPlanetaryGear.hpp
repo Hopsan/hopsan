@@ -23,20 +23,22 @@ namespace hopsan {
     {
 
     private:
+        // Declare member variables
         double J, B, k, R;
         double mNumX[3],mNumV[2];
         double mDenX[3],mDenV[2];
-//        DoubleIntegratorWithDamping mIntegrator;
+
         SecondOrderTransferFunction mFilterX;
         FirstOrderTransferFunction mFilterV;
         Integrator mInt1;
         Integrator mInt2;
         Integrator mInt3;
-        double *mpND_t1A, *mpND_a1A, *mpND_w1A, *mpND_c1A, *mpND_Zx1A,
-        *mpND_t2B, *mpND_a2B, *mpND_w2B, *mpND_c2B, *mpND_Zx2B,
-        *mpND_t3A, *mpND_a3A, *mpND_w3A, *mpND_c3A, *mpND_Zx3A;
-        double t1A, a1A, w1A, c1A, Zx1A, t2B, a2B, w2B, c2B, Zx2B, t3A, a3A, w3A, c3A, Zx3A;
+
+        // Declare port and node data pointers
         Port *mpP1A, *mpP2B, *mpP3A;
+        double *mpP1A_t, *mpP1A_a, *mpP1A_w, *mpP1A_c, *mpP1A_Zx,
+        *mpP2B_t, *mpP2B_a, *mpP2B_w, *mpP2B_c, *mpP2B_Zx,
+        *mpP3A_t, *mpP3A_a, *mpP3A_w, *mpP3A_c, *mpP3A_Zx;
 
     public:
         static Component *Creator()
@@ -46,52 +48,51 @@ namespace hopsan {
 
         void configure()
         {
-            //Set member attributes
-            J = 0.1;
-            B = 10.0;
-            k = 0.0;
-            R = -1;
-
             //Add ports to the component
             mpP1A = addPowerPort("P1A", "NodeMechanicRotational");
             mpP2B = addPowerPort("P2B", "NodeMechanicRotational");
             mpP3A = addPowerPort("P3A", "NodeMechanicRotational");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("J", "Moment of Inertia", "[kgm^2]", J);
-            registerParameter("B", "Viscous Friction", "[Nms/rad]", B);
-            registerParameter("R", "Gear Ratio", "[Nms/rad]", R);
-            registerParameter("k", "Spring Constant", "[Nm/rad]", k);
+            addConstant("J", "Moment of Inertia", "[kgm^2]", 0.1, J);
+            addConstant("B", "Viscous Friction", "[Nms/rad]", 10.0, B);
+            addConstant("R", "Gear Ratio", "[Nms/rad]", -1, R);
+            addConstant("k", "Spring Constant", "[Nm/rad]", 0.0, k);
         }
 
 
         void initialize()
         {
-            mpND_t1A = getSafeNodeDataPtr(mpP1A, NodeMechanicRotational::TORQUE);
-            mpND_a1A = getSafeNodeDataPtr(mpP1A, NodeMechanicRotational::ANGLE);
-            mpND_w1A = getSafeNodeDataPtr(mpP1A, NodeMechanicRotational::ANGULARVELOCITY);
-            mpND_c1A = getSafeNodeDataPtr(mpP1A, NodeMechanicRotational::WAVEVARIABLE);
-            mpND_Zx1A = getSafeNodeDataPtr(mpP1A, NodeMechanicRotational::CHARIMP);
+            mpP1A_t = getSafeNodeDataPtr(mpP1A, NodeMechanicRotational::Torque);
+            mpP1A_a = getSafeNodeDataPtr(mpP1A, NodeMechanicRotational::Angle);
+            mpP1A_w = getSafeNodeDataPtr(mpP1A, NodeMechanicRotational::AngularVelocity);
+            mpP1A_c = getSafeNodeDataPtr(mpP1A, NodeMechanicRotational::WaveVariable);
+            mpP1A_Zx = getSafeNodeDataPtr(mpP1A, NodeMechanicRotational::CharImpedance);
 
-            mpND_t2B = getSafeNodeDataPtr(mpP2B, NodeMechanicRotational::TORQUE);
-            mpND_a2B = getSafeNodeDataPtr(mpP2B, NodeMechanicRotational::ANGLE);
-            mpND_w2B = getSafeNodeDataPtr(mpP2B, NodeMechanicRotational::ANGULARVELOCITY);
-            mpND_c2B = getSafeNodeDataPtr(mpP2B, NodeMechanicRotational::WAVEVARIABLE);
-            mpND_Zx2B = getSafeNodeDataPtr(mpP2B, NodeMechanicRotational::CHARIMP);
+            mpP2B_t = getSafeNodeDataPtr(mpP2B, NodeMechanicRotational::Torque);
+            mpP2B_a = getSafeNodeDataPtr(mpP2B, NodeMechanicRotational::Angle);
+            mpP2B_w = getSafeNodeDataPtr(mpP2B, NodeMechanicRotational::AngularVelocity);
+            mpP2B_c = getSafeNodeDataPtr(mpP2B, NodeMechanicRotational::WaveVariable);
+            mpP2B_Zx = getSafeNodeDataPtr(mpP2B, NodeMechanicRotational::CharImpedance);
 
-            mpND_t3A = getSafeNodeDataPtr(mpP3A, NodeMechanicRotational::TORQUE);
-            mpND_a3A = getSafeNodeDataPtr(mpP3A, NodeMechanicRotational::ANGLE);
-            mpND_w3A = getSafeNodeDataPtr(mpP3A, NodeMechanicRotational::ANGULARVELOCITY);
-            mpND_c3A = getSafeNodeDataPtr(mpP3A, NodeMechanicRotational::WAVEVARIABLE);
-            mpND_Zx3A = getSafeNodeDataPtr(mpP3A, NodeMechanicRotational::CHARIMP);
+            mpP3A_t = getSafeNodeDataPtr(mpP3A, NodeMechanicRotational::Torque);
+            mpP3A_a = getSafeNodeDataPtr(mpP3A, NodeMechanicRotational::Angle);
+            mpP3A_w = getSafeNodeDataPtr(mpP3A, NodeMechanicRotational::AngularVelocity);
+            mpP3A_c = getSafeNodeDataPtr(mpP3A, NodeMechanicRotational::WaveVariable);
+            mpP3A_Zx = getSafeNodeDataPtr(mpP3A, NodeMechanicRotational::CharImpedance);
 
-            t1A = (*mpND_t1A);
-            t2B = (*mpND_t2B);
-            t3A = (*mpND_t3A);
-            a1A = (*mpND_a1A);
-            a2B = (*mpND_a2B);
-            a3A = (*mpND_a3A);
-            w1A = (*mpND_w1A);
+            const double t1A = (*mpP1A_t);
+            const double a1A = (*mpP1A_a);
+            const double w1A = (*mpP1A_w);
+            const double Zx1A =(*mpP1A_Zx);
+            //const double t2B = (*mpP2B_t);
+            const double a2B = (*mpP2B_a);
+            const double w2B = (*mpP2B_w);
+            const double Zx2B =(*mpP2B_Zx);
+            const double t3A = (*mpP3A_t);
+            const double a3A = (*mpP3A_a);
+            const double w3A = (*mpP3A_w);
+            const double Zx3A =(*mpP3A_Zx);
 
             mNumX[0] = 1.0;
             mNumX[1] = 0.0;
@@ -114,13 +115,16 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
-            //Get variable values from nodes
-            c1A = (*mpND_c1A);
-            Zx1A =(*mpND_Zx1A);
-            c2B = (*mpND_c2B);
-            Zx2B =(*mpND_Zx2B);
-            c3A = (*mpND_c3A);
-            Zx3A =(*mpND_Zx3A);
+            // Local variables
+            double t1A, a1A, w1A, t2B, a2B, w2B, t3A, a3A, w3A;
+
+            // Get node data values from nodes
+            const double c1A = (*mpP1A_c);
+            const double Zx1A =(*mpP1A_Zx);
+            const double c2B = (*mpP2B_c);
+            const double Zx2B =(*mpP2B_Zx);
+            const double c3A = (*mpP3A_c);
+            const double Zx3A =(*mpP3A_Zx);
 
             //System equations
 //            mIntegrator.setDamping((B+Zx1+Zx2)/J*mTimestep);
@@ -147,15 +151,15 @@ namespace hopsan {
             t3A = c3A + Zx3A*w3A;
 
             //Write new values to nodes
-            (*mpND_t1A) = t1A;
-            (*mpND_a1A) = a1A;
-            (*mpND_w1A) = w1A;
-            (*mpND_t2B) = t2B;
-            (*mpND_a2B) = a2B;
-            (*mpND_w2B) = w2B;
-            (*mpND_t3A) = t3A;
-            (*mpND_a3A) = a3A;
-            (*mpND_w3A) = w3A;
+            (*mpP1A_t) = t1A;
+            (*mpP1A_a) = a1A;
+            (*mpP1A_w) = w1A;
+            (*mpP2B_t) = t2B;
+            (*mpP2B_a) = a2B;
+            (*mpP2B_w) = w2B;
+            (*mpP3A_t) = t3A;
+            (*mpP3A_a) = a3A;
+            (*mpP3A_w) = w3A;
         }
     };
 }

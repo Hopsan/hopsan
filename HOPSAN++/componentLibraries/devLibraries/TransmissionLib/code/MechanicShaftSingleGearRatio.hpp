@@ -22,19 +22,20 @@ namespace hopsan {
     //!
     class MechanicShaftSingleGearRatio : public ComponentQ
     {
-
     private:
+        // Declare member variables
         double gearRatio, J, B, k;
         double num[3];
         double den[3];
         DoubleIntegratorWithDamping mIntegrator;
-        double *mpND_t1, *mpND_a1, *mpND_w1, *mpND_c1, *mpND_Zx1,
-               *mpND_t2, *mpND_a2, *mpND_w2, *mpND_c2, *mpND_Zx2,
-               *mpND_t3, *mpND_a3, *mpND_w3, *mpND_c3, *mpND_Zx3;
-        double t1, a1, w1, c1, Zx1,
-               t2, a2, w2, c2, Zx2,
-               t3, a3, w3, c3, Zx3;
+        double t1, a1, w1;
+
+
+        // Declare port and node data pointers
         Port *mpP1, *mpP2, *mpP3;
+        double *mpP1_t, *mpP1_a, *mpP1_w, *mpP1_c, *mpP1_Zx,
+               *mpP2_t, *mpP2_a, *mpP2_w, *mpP2_c, *mpP2_Zx,
+               *mpP3_t, *mpP3_a, *mpP3_w, *mpP3_c, *mpP3_Zx;
 
     public:
         static Component *Creator()
@@ -44,46 +45,41 @@ namespace hopsan {
 
         void configure()
         {
-            //Set member attributes
-            gearRatio = 1;
-            J = 1.0;
-            B = 10;
-
             //Add ports to the component
             mpP1 = addPowerPort("P1", "NodeMechanicRotational");
             mpP2 = addPowerPort("P2", "NodeMechanicRotational");
             mpP3 = addPowerPort("P3", "NodeMechanicRotational");
 
             //Register changable parameters to the HOPSAN++ core
-            registerParameter("omega", "Gear ratio", "[-]", gearRatio);
-            registerParameter("J", "Moment of Inertia", "[kgm^2]", J);
-            registerParameter("B", "Viscous Friction", "[Nms/rad]", B);
+            addConstant("omega", "Gear ratio", "[-]", 1, gearRatio);
+            addConstant("J", "Moment of Inertia", "[kgm^2]", 1.0, J);
+            addConstant("B", "Viscous Friction", "[Nms/rad]", 10, B);
         }
 
 
         void initialize()
         {
-            mpND_t1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::TORQUE);
-            mpND_a1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::ANGLE);
-            mpND_w1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::ANGULARVELOCITY);
-            mpND_c1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::WAVEVARIABLE);
-            mpND_Zx1 = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::CHARIMP);
+            mpP1_t = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::Torque);
+            mpP1_a = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::Angle);
+            mpP1_w = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::AngularVelocity);
+            mpP1_c = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::WaveVariable);
+            mpP1_Zx = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::CharImpedance);
 
-            mpND_t2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::TORQUE);
-            mpND_a2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::ANGLE);
-            mpND_w2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::ANGULARVELOCITY);
-            mpND_c2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::WAVEVARIABLE);
-            mpND_Zx2 = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::CHARIMP);
+            mpP2_t = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::Torque);
+            mpP2_a = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::Angle);
+            mpP2_w = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::AngularVelocity);
+            mpP2_c = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::WaveVariable);
+            mpP2_Zx = getSafeNodeDataPtr(mpP2, NodeMechanicRotational::CharImpedance);
 
-            mpND_t3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::TORQUE);
-            mpND_a3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::ANGLE);
-            mpND_w3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::ANGULARVELOCITY);
-            mpND_c3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::WAVEVARIABLE);
-            mpND_Zx3 = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::CHARIMP);
+            mpP3_t = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::Torque);
+            mpP3_a = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::Angle);
+            mpP3_w = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::AngularVelocity);
+            mpP3_c = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::WaveVariable);
+            mpP3_Zx = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::CharImpedance);
 
-            t1 = (*mpND_t1);
-            a1 = (*mpND_a1);
-            w1 = (*mpND_w1);
+            t1 = (*mpP1_t);
+            a1 = (*mpP1_a);
+            w1 = (*mpP1_w);
 
             mIntegrator.initialize(mTimestep, 0, 0, 0, 0);
         }
@@ -91,13 +87,17 @@ namespace hopsan {
 
         void simulateOneTimestep()
         {
+            // Declare local variables
+            double t2, a2, w2,
+                   t3, a3, w3;
+
             //Get variable values from nodes
-            c1  = (*mpND_c1);
-            Zx1 = (*mpND_Zx1);
-            c2  = (*mpND_c2);
-            Zx2 = (*mpND_Zx2);
-            c3 = (*mpND_c3);
-            Zx3 = (*mpND_Zx3);
+            const double c1  = (*mpP1_c);
+            const double Zx1 = (*mpP1_Zx);
+            const double c2  = (*mpP2_c);
+            const double Zx2 = (*mpP2_Zx);
+            const double c3 = (*mpP3_c);
+            const double Zx3 = (*mpP3_Zx);
 
             //Mass equations
             mIntegrator.setDamping((B+pow(gearRatio,2)*(Zx1+Zx2)-Zx3) / J * mTimestep);
@@ -114,15 +114,15 @@ namespace hopsan {
             t3 = c3 + Zx3*w3;
 
             //Write new values to nodes
-            (*mpND_t1) = t1;
-            (*mpND_a1) = a1;
-            (*mpND_w1) = w1;
-            (*mpND_t2) = t2;
-            (*mpND_a2) = a2;
-            (*mpND_w2) = w2;
-            (*mpND_t3) = t3;
-            (*mpND_a3) = a3;
-            (*mpND_w3) = w3;
+            (*mpP1_t) = t1;
+            (*mpP1_a) = a1;
+            (*mpP1_w) = w1;
+            (*mpP2_t) = t2;
+            (*mpP2_a) = a2;
+            (*mpP2_w) = w2;
+            (*mpP3_t) = t3;
+            (*mpP3_a) = a3;
+            (*mpP3_w) = w3;
         }
     };
 }
