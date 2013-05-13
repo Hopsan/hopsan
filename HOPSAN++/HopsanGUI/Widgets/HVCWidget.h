@@ -12,9 +12,9 @@ public:
     void addFullNameVariable(const QString &rFullName);
 
 protected:
-    void mousePressEvent(QMouseEvent *event);
-    void dropEvent(QDropEvent *event);
-    void dragEnterEvent(QDragEnterEvent *event);
+//    void mousePressEvent(QMouseEvent *event);
+//    void dropEvent(QDropEvent *event);
+//    void dragEnterEvent(QDragEnterEvent *event);
 
 private:
     void addFullNameVariable(const QString &rFullName, const QString &rRemaningName, QTreeWidgetItem *pParentItem);

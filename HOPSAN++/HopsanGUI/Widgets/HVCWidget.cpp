@@ -2,6 +2,7 @@
 #include "Utilities/XMLUtilities.h"
 #include "MainWindow.h"
 #include "ProjectTabWidget.h"
+#include "common.h"
 
 #include "LogDataHandler.h"
 #include "PlotHandler.h"
@@ -22,8 +23,10 @@ HVCWidget::HVCWidget(QWidget *parent) :
 {
     mpHvcOpenPathEdit = new QLineEdit();
     QPushButton *pBrowseButton = new QPushButton();
+    pBrowseButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Open.png"));
 
     QHBoxLayout *pOpenFileHLayout = new QHBoxLayout();
+    pOpenFileHLayout->addWidget(new QLabel("HVC: "));
     pOpenFileHLayout->addWidget(mpHvcOpenPathEdit);
     pOpenFileHLayout->addWidget(pBrowseButton);
 
@@ -37,12 +40,7 @@ HVCWidget::HVCWidget(QWidget *parent) :
 
 
     mpAllVariablesTree = new FullNameVariableTreeWidget();
-    //mpAllVariablesTree->setDragDropMode(QAbstractItemView::DragOnly);
-    mpAllVariablesTree->setDragEnabled(true);
     mpSelectedVariablesTree = new FullNameVariableTreeWidget();
-    //mpSelectedVariablesTree->setDragDropMode(QAbstractItemView::DragDrop);
-    //mpSelectedVariablesTree->setDragEnabled(true);
-    mpSelectedVariablesTree->setAcceptDrops(true);
     QHBoxLayout *pVariablesHLayout = new QHBoxLayout();
 
     pVariablesHLayout->addWidget(mpAllVariablesTree);
@@ -51,6 +49,7 @@ HVCWidget::HVCWidget(QWidget *parent) :
 
     QHBoxLayout *pButtonLayout = new QHBoxLayout();
     QPushButton *pSaveButton = new QPushButton("Save hvc");
+    pSaveButton->setDisabled(true);
     QPushButton *pCloseButton = new QPushButton("Close");
     QPushButton *pCompareButton = new QPushButton("Compare");
     pButtonLayout->addWidget(pCompareButton);
@@ -58,6 +57,8 @@ HVCWidget::HVCWidget(QWidget *parent) :
     pButtonLayout->addWidget(pCloseButton);
 
     QVBoxLayout *pMainLayout = new QVBoxLayout();
+    pMainLayout->addWidget(new QLabel("Not yet finished, but you can use the compare function"));
+    pMainLayout->addWidget(new QLabel("You can generate new HVC files from the plotwindow"));
     pMainLayout->addLayout(pOpenFileHLayout);
     pMainLayout->addLayout(pOpenStatusHLayout);
     pMainLayout->addLayout(pVariablesHLayout);
@@ -67,8 +68,10 @@ HVCWidget::HVCWidget(QWidget *parent) :
 
     connect(pCloseButton, SIGNAL(clicked()), this, SLOT(close()));
     connect(pBrowseButton, SIGNAL(clicked()), this, SLOT(openHvcFile()));
+    connect(pCompareButton, SIGNAL(clicked()), this, SLOT(runHvcTest()));
 
     this->resize(800, 600);
+    this->setWindowTitle("Hopsan Model Validation");
 
 }
 
@@ -121,7 +124,7 @@ void HVCWidget::openHvcFile()
                         if (dataFilePath.isEmpty())
                         {
                             // Use same name as hvc file instead
-                            dataFilePath = hvcFileInfo.absolutePath()+hvcFileInfo.baseName()+".csv";
+                            dataFilePath = hvcFileInfo.absolutePath()+"/"+hvcFileInfo.baseName()+".csv";
                         }
                         dataFile.setFileName(dataFilePath);
 
@@ -135,7 +138,7 @@ void HVCWidget::openHvcFile()
                                 if (dataFilePath.isEmpty())
                                 {
                                     // Use same name as hvc file instead
-                                    dataFilePath = hvcFileInfo.absolutePath()+hvcFileInfo.baseName()+".csv";
+                                    dataFilePath = hvcFileInfo.absolutePath()+"/"+hvcFileInfo.baseName()+".csv";
                                 }
                                 dataFile.setFileName(dataFilePath);
                             }
@@ -149,6 +152,7 @@ void HVCWidget::openHvcFile()
 
                             // Populate the tree
                             mpAllVariablesTree->addFullNameVariable(conf.mFullVarName);
+                            mpSelectedVariablesTree->addFullNameVariable(conf.mFullVarName);
 
                             // Next variable to check
                             xmlVariable = xmlVariable.nextSiblingElement("variable");
@@ -187,6 +191,7 @@ void HVCWidget::clearContents()
     mpAllVariablesTree->clear();
     mpSelectedVariablesTree->clear();
     mModelFilePath.clear();
+    mDataConfigs.clear();
 }
 
 void HVCWidget::runHvcTest()
@@ -311,38 +316,38 @@ void FullNameVariableTreeWidget::addFullNameVariable(const QString &rFullName)
     addFullNameVariable(rFullName, rFullName, 0);
 }
 
-void FullNameVariableTreeWidget::mousePressEvent(QMouseEvent *event)
-{
-    QTreeWidget::mousePressEvent(event);
+//void FullNameVariableTreeWidget::mousePressEvent(QMouseEvent *event)
+//{
+//    QTreeWidget::mousePressEvent(event);
 
-    //! @todo dragstartposition
-    QTreeWidgetItem *pItem = this->itemAt(event->pos());
+//    //! @todo dragstartposition
+//    QTreeWidgetItem *pItem = this->itemAt(event->pos());
 
-    if (pItem && (pItem->childCount() == 0))
-    {
-        QDrag *pDrag = new QDrag(this);
-        QMimeData *pMime = new QMimeData;
+//    if (pItem && (pItem->childCount() == 0))
+//    {
+//        QDrag *pDrag = new QDrag(this);
+//        QMimeData *pMime = new QMimeData;
 
-        pMime->setText(pItem->data(0, Qt::UserRole).toString());
-        pDrag->setMimeData(pMime);
+//        pMime->setText(pItem->data(0, Qt::UserRole).toString());
+//        pDrag->setMimeData(pMime);
 
-        Qt::DropAction dropAction = pDrag->exec(Qt::CopyAction | Qt::MoveAction);
-    }
-}
+//        Qt::DropAction dropAction = pDrag->exec(Qt::CopyAction | Qt::MoveAction);
+//    }
+//}
 
-void FullNameVariableTreeWidget::dropEvent(QDropEvent *event)
-{
-    if (!event->mimeData()->text().isEmpty())
-    {
-        addFullNameVariable(event->mimeData()->text());
-        event->acceptProposedAction();
-    }
-}
+//void FullNameVariableTreeWidget::dropEvent(QDropEvent *event)
+//{
+//    if (!event->mimeData()->text().isEmpty())
+//    {
+//        addFullNameVariable(event->mimeData()->text());
+//        event->acceptProposedAction();
+//    }
+//}
 
-void FullNameVariableTreeWidget::dragEnterEvent(QDragEnterEvent *event)
-{
-    if (!event->mimeData()->text().isEmpty())
-    {
-        event->acceptProposedAction();
-    }
-}
+//void FullNameVariableTreeWidget::dragEnterEvent(QDragEnterEvent *event)
+//{
+//    if (!event->mimeData()->text().isEmpty())
+//    {
+//        event->acceptProposedAction();
+//    }
+//}

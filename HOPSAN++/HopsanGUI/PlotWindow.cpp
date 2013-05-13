@@ -526,25 +526,29 @@ QString PlotWindow::getName() const
 //! @param dataUnit Unit of variable
 PlotCurve* PlotWindow::addPlotCurve(SharedLogVariableDataPtrT pData, int axisY, QColor desiredColor)
 {
-    //! @todo check if model path same as earlier to prvent mixing data
-    // Remember which model it belongs to, and connect the closeWindow signal from the data handler
-    // this makes it possible to autoclose all plotwindows with data from a particaulr model(logdatahandler)
-    mModelName = pData->getModelPath();
-    if (pData->getLogDataHandler())
+    if (pData)
     {
-        connect(pData->getLogDataHandler(), SIGNAL(closePlotsWithOwnedData()), this, SLOT(close()), Qt::UniqueConnection);
-    }
+        //! @todo check if model path same as earlier to prvent mixing data
+        // Remember which model it belongs to, and connect the closeWindow signal from the data handler
+        // this makes it possible to autoclose all plotwindows with data from a particaulr model(logdatahandler)
+        mModelName = pData->getModelPath();
+        if (pData->getLogDataHandler())
+        {
+            connect(pData->getLogDataHandler(), SIGNAL(closePlotsWithOwnedData()), this, SLOT(close()), Qt::UniqueConnection);
+        }
 
-    // Make sure that we have a tab
-    if (!getCurrentPlotTab())
-    {
-        addPlotTab();
-        changedTab();
+        // Make sure that we have a tab
+        if (!getCurrentPlotTab())
+        {
+            addPlotTab();
+            changedTab();
+        }
+        PlotCurve *pTempCurve = new PlotCurve(pData, axisY, getCurrentPlotTab());
+        getCurrentPlotTab()->addCurve(pTempCurve, desiredColor);
+        refreshWindowTitle();
+        return pTempCurve;
     }
-    PlotCurve *pTempCurve = new PlotCurve(pData, axisY, getCurrentPlotTab());
-    getCurrentPlotTab()->addCurve(pTempCurve, desiredColor);
-    refreshWindowTitle();
-    return pTempCurve;
+    return 0;
 }
 
 

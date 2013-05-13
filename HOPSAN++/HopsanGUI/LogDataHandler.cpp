@@ -453,7 +453,7 @@ void LogDataHandler::importTimeVariablesFromCSVColumns(const QString csvFilePath
                     {
                         if (columns[i] < row.size())
                         {
-                            dataColumns[i].push_back(row[i].toDouble());
+                            dataColumns[i].push_back(row[columns[i]].toDouble());
                         }
                     }
                 }
@@ -488,12 +488,12 @@ void LogDataHandler::importTimeVariablesFromCSVColumns(const QString csvFilePath
         }
         else
         {
-            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("columns.size() != names.size() in:  "+csvFilePath);
+            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not open data file:  "+csvFilePath);
         }
     }
     else
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not open data file:  "+csvFilePath);
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("columns.size() != names.size() in:  LogDataHandler::importTimeVariablesFromCSVColumns()");
     }
 }
 
