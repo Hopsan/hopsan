@@ -196,16 +196,16 @@ void HVCWidget::clearContents()
 
 void HVCWidget::runHvcTest()
 {
+    // First load the model
+    gpMainWindow->mpProjectTabs->loadModel(mModelFilePath, true);
+    // Switch to that tab
+
+    // Simulate the system
+    gpMainWindow->mpProjectTabs->getCurrentTab()->simulate_blocking();
+
     // Run each test
     for (int t=0; t<mDataConfigs.size(); ++t)
     {
-        // First load the model
-        gpMainWindow->mpProjectTabs->loadModel(mModelFilePath, true);
-        // Switch to that tab
-
-        // Simulate the system
-        gpMainWindow->mpProjectTabs->getCurrentTab()->simulate_blocking();
-
         LogDataHandler *pLogDataHandler = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler();
 
         QVector<int> columns;
