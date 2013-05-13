@@ -99,12 +99,12 @@ namespace hopsan {
             mNumX[2] = 0.0;
             mDenX[0] = 0.0;
             //mDenX[0] = 0;
-            mDenX[2] = J*(Zx2B+Zx3A*pow((-1+R),2));
+            mDenX[2] = J*(Zx2B+Zx3A*pow((-1.0+R),2));
             mDenX[1] = (B-Zx1A)*(Zx2B+Zx3A*pow((-1+R),2))+pow(R,2)*Zx3A*Zx2B;
             mNumV[0] = 1.0;
             mNumV[1] = 0.0;
-            mDenV[1] = J*(Zx2B+Zx3A*pow((-1+R),2));
-            mDenV[0] = (B-Zx1A)*Zx2B+Zx3A*pow((-1+R),2)*(B-Zx1A);
+            mDenV[1] = J*(Zx2B+Zx3A*pow((-1.0+R),2));
+            mDenV[0] = (B-Zx1A)*Zx2B+Zx3A*pow((-1.0+R),2)*(B-Zx1A);
 
             mFilterX.initialize(mTimestep, mNumX, mDenX, t1A+t3A*R, -a1A);
             mFilterV.initialize(mTimestep, mNumV, mDenV, t1A+t3A*R, -w1A);
@@ -129,21 +129,21 @@ namespace hopsan {
             //System equations
 //            mIntegrator.setDamping((B+Zx1+Zx2)/J*mTimestep);
 //            mIntegrator.integrate((c1-c2)/J);
-            mDenX[2] = J*(Zx2B+Zx3A*pow((-1+R),2));
+            mDenX[2] = J*(Zx2B+Zx3A*pow((-1.0+R),2));
             mDenX[1] = (B+Zx1A)*(Zx2B+Zx3A*pow((-1+R),2))-pow(R,2)*Zx3A*Zx2B;
-            mDenX[0] = k*Zx2B+k*Zx3A*pow((-1+R),2);
-            mDenV[1] = J*(Zx2B+Zx3A*pow((-1+R),2));
-            mDenV[0] = (B+Zx1A)*(Zx2B+Zx3A*pow((-1+R),2))-pow(R,2)*Zx3A*Zx2B;
+            mDenX[0] = k*Zx2B+k*Zx3A*pow((-1.0+R),2);
+            mDenV[1] = J*(Zx2B+Zx3A*pow((-1.0+R),2));
+            mDenV[0] = (B+Zx1A)*(Zx2B+Zx3A*pow((-1.0+R),2))-pow(R,2)*Zx3A*Zx2B;
             mFilterX.setDen(mDenX);
             mFilterV.setDen(mDenV);
 
-            a1A = mFilterX.update((-c1A+c3A*R)*Zx2B-(-1+R)*(c1A*(-1+R)+c2B*R)*Zx3A);
-            w1A = mFilterV.update((-c1A+c3A*R)*Zx2B-(-1+R)*(c1A*(-1+R)+c2B*R)*Zx3A)+k*a1A;
+            a1A = mFilterX.update((-c1A+c3A*R)*Zx2B-(-1.0+R)*(c1A*(-1+R)+c2B*R)*Zx3A);
+            w1A = mFilterV.update((-c1A+c3A*R)*Zx2B-(-1.0+R)*(c1A*(-1+R)+c2B*R)*Zx3A)+k*a1A;
 
-            w3A = (-(c2B+c3A*(-1+R))*(-1+R)+R*w1A*Zx2B)/(Zx2B+pow((-1+R),2)*Zx3A);
+            w3A = (-(c2B+c3A*(-1.0+R))*(-1.0+R)+R*w1A*Zx2B)/(Zx2B+pow((-1.0+R),2)*Zx3A);
             a3A = mInt2.update(w3A);
 
-            w2B = (-w1A*R+w3A)/(R-1);
+            w2B = (-w1A*R+w3A)/(R-1.0);
             a2B = mInt3.update(w2B);
 
             t1A = c1A + Zx1A*w1A;

@@ -28,8 +28,6 @@ namespace hopsan {
         double num[3];
         double den[3];
         DoubleIntegratorWithDamping mIntegrator;
-        double t1, a1, w1;
-
 
         // Declare port and node data pointers
         Port *mpP1, *mpP2, *mpP3;
@@ -77,10 +75,7 @@ namespace hopsan {
             mpP3_c = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::WaveVariable);
             mpP3_Zx = getSafeNodeDataPtr(mpP3, NodeMechanicRotational::CharImpedance);
 
-            t1 = (*mpP1_t);
-            a1 = (*mpP1_a);
-            w1 = (*mpP1_w);
-
+            //! @todo The integrator should be initialized (angel vel and angle and intial torque)
             mIntegrator.initialize(mTimestep, 0, 0, 0, 0);
         }
 
@@ -88,7 +83,8 @@ namespace hopsan {
         void simulateOneTimestep()
         {
             // Declare local variables
-            double t2, a2, w2,
+            double t1, a1, w1,
+                   t2, a2, w2,
                    t3, a3, w3;
 
             //Get variable values from nodes
