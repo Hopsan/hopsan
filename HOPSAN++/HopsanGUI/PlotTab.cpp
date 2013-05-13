@@ -2356,26 +2356,16 @@ void PlotTab::constructAxisSettingsDialog()
 
     QGridLayout *pAxisLimitsDialogLayout = new QGridLayout(mpSetAxisDialog);
 
-    int r=0,c=0;
-    pAxisLimitsDialogLayout->addWidget(new QLabel(tr("X Axis")),r,c,1,2, Qt::AlignCenter);
-    ++r;
-    pAxisLimitsDialogLayout->addWidget(new QLabel(tr("min")), r, c);
-    pAxisLimitsDialogLayout->addWidget(mpXminSpinBox, r, c+1);
-    ++r;
-    pAxisLimitsDialogLayout->addWidget(new QLabel(tr("max")), r, c);
-    pAxisLimitsDialogLayout->addWidget(mpXmaxSpinBox, r, c+1);
-    ++r;
-    pAxisLimitsDialogLayout->addWidget(mpXAutoCheckBox, r, c, 1, 2, Qt::AlignCenter);
-    pAxisLimitsDialogLayout->setColumnMinimumWidth(c+2, 20);
 
-    r=0;c=3;
+    int r,c;
+    r=0;c=0;
     pAxisLimitsDialogLayout->addWidget(new QLabel(tr("Left Y Axis")),r,c,1,2, Qt::AlignCenter);
-    ++r;
-    pAxisLimitsDialogLayout->addWidget(new QLabel(tr("min")), r, c);
-    pAxisLimitsDialogLayout->addWidget(mpYLminSpinBox, r, c+1);
     ++r;
     pAxisLimitsDialogLayout->addWidget(new QLabel(tr("max")), r, c);
     pAxisLimitsDialogLayout->addWidget(mpYLmaxSpinBox, r, c+1);
+    ++r;
+    pAxisLimitsDialogLayout->addWidget(new QLabel(tr("min")), r, c);
+    pAxisLimitsDialogLayout->addWidget(mpYLminSpinBox, r, c+1);
     ++r;
     pAxisLimitsDialogLayout->addWidget(mpYLAutoCheckBox, r, c, 1, 2, Qt::AlignCenter);
     pAxisLimitsDialogLayout->setColumnMinimumWidth(c+2, 20);
@@ -2383,15 +2373,27 @@ void PlotTab::constructAxisSettingsDialog()
     r=0;c=6;
     pAxisLimitsDialogLayout->addWidget(new QLabel(tr("Right Y Axis")),r,c,1,2, Qt::AlignCenter);
     ++r;
-    pAxisLimitsDialogLayout->addWidget(new QLabel(tr("min")), r, c);
-    pAxisLimitsDialogLayout->addWidget(mpYRminSpinBox, r, c+1);
-    ++r;
     pAxisLimitsDialogLayout->addWidget(new QLabel(tr("max")), r, c);
     pAxisLimitsDialogLayout->addWidget(mpYRmaxSpinBox, r, c+1);
     ++r;
+    pAxisLimitsDialogLayout->addWidget(new QLabel(tr("min")), r, c);
+    pAxisLimitsDialogLayout->addWidget(mpYRminSpinBox, r, c+1);
+    ++r;
     pAxisLimitsDialogLayout->addWidget(mpYRAutoCheckBox, r, c, 1, 2, Qt::AlignCenter);
 
-    r=4;c=7;
+    r=3,c=3;
+    pAxisLimitsDialogLayout->addWidget(new QLabel(tr("X Axis")),r,c,1,2, Qt::AlignCenter);
+    ++r;
+    pAxisLimitsDialogLayout->addWidget(new QLabel(tr("max")), r, c);
+    pAxisLimitsDialogLayout->addWidget(mpXmaxSpinBox, r, c+1);
+    ++r;
+    pAxisLimitsDialogLayout->addWidget(new QLabel(tr("min")), r, c);
+    pAxisLimitsDialogLayout->addWidget(mpXminSpinBox, r, c+1);
+    ++r;
+    pAxisLimitsDialogLayout->addWidget(mpXAutoCheckBox, r, c, 1, 2, Qt::AlignCenter);
+    pAxisLimitsDialogLayout->setColumnMinimumWidth(c+2, 20);
+
+    r=6;c=7;
     pAxisLimitsDialogLayout->addWidget(pFinishedButtonBox, r, c, 1, 2);
 
     mpSetAxisDialog->setLayout(pAxisLimitsDialogLayout);

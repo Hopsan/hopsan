@@ -693,7 +693,7 @@ void ProjectTab::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT content
         this->setSaved(true);
     }
 
-    gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Saved model: " + tabName);
+    gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Saved model: " + mpToplevelSystem->getModelFileInfo().filePath());
 
     mpToplevelSystem->getCoreSystemAccessPtr()->addSearchPath(mpToplevelSystem->getModelFileInfo().absolutePath());
 }

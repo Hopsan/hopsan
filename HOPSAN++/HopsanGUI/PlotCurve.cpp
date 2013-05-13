@@ -490,33 +490,36 @@ const SharedLogVariableDataPtrT PlotCurve::getCustomXData() const
 //! @param genereation Genereation to use
 void PlotCurve::setGeneration(int generation)
 {
-    SharedLogVariableDataPtrT pNewData = mpData->getLogDataHandler()->getPlotData(mpData->getFullVariableName(), generation);
-    if (pNewData)
+    // Make sure we don try to use logdata handler from a variable that does not have one
+    if(mpData->getLogDataHandler())
     {
-        this->disconnect(mpData.data());
-        mpData = pNewData;
-        connectDataSignals();
-    }
-
-    //! @todo should not all updates happen automatically from one command
-    mpParentPlotTab->rescaleAxesToCurves();
-    mpParentPlotTab->update();
-    updateCurve();
-    updatePlotInfoBox();
-
-    if (hasCustomXData())
-    {
-        //! @todo why not be able to ask parent data container for other generations
-        LogDataHandler *pDataHandler = mpCustomXdata->getLogDataHandler();
-        if (pDataHandler)
+        SharedLogVariableDataPtrT pNewData = mpData->getLogDataHandler()->getPlotData(mpData->getFullVariableName(), generation);
+        if (pNewData)
         {
-            SharedLogVariableDataPtrT pNewXData = pDataHandler->getPlotData(mpCustomXdata->getFullVariableName(), generation);
-            if (pNewXData)
+            this->disconnect(mpData.data());
+            mpData = pNewData;
+            connectDataSignals();
+        }
+
+        //! @todo should not all updates happen automatically from one command
+//        mpParentPlotTab->rescaleAxesToCurves();
+//        mpParentPlotTab->update();
+
+        if (hasCustomXData())
+        {
+            //! @todo why not be able to ask parent data container for other generations
+            if (mpCustomXdata->getLogDataHandler())
             {
-                setCustomXData(pNewXData);
+                SharedLogVariableDataPtrT pNewXData = mpCustomXdata->getLogDataHandler()->getPlotData(mpCustomXdata->getFullVariableName(), generation);
+                if (pNewXData)
+                {
+                    setCustomXData(pNewXData);
+                }
             }
         }
 
+        updateCurve();
+        updatePlotInfoBox();
     }
 }
 
@@ -971,10 +974,12 @@ void PlotCurve::removeMe()
 //! @brief Updates a plot curve to the most recent available generation of its data
 void PlotCurve::updateToNewGeneration()
 {
-    if(mAutoUpdate && mpData->getLogDataHandler())     //Only change the generation if auto update is on
+    if(mAutoUpdate)     //Only change the generation if auto update is on
+    {
         setGeneration(-1);
+    }
     updatePlotInfoBox();    //Update the plot info box regardless of auto update setting, to show number of available generations correctly
-    mpParentPlotTab->rescaleAxesToCurves();
+//    mpParentPlotTab->rescaleAxesToCurves();
 }
 
 void PlotCurve::updatePlotInfoBox()
