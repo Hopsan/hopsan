@@ -64,13 +64,15 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     mOptAlgorithm = Uninitialized;
 
     //Setup local function pointers (used to evaluate expressions in SymHop)
-    mLocalFunctionPtrs.insert("aver", &(_funcAver));
-    mLocalFunctionPtrs.insert("size", &(_funcSize));
-    mLocalFunctionPtrs.insert("min", &(_funcMin));
-    mLocalFunctionPtrs.insert("max", &(_funcMax));
-    mLocalFunctionPtrs.insert("peek", &(_funcPeek));
-    mLocalFunctionPtrs.insert("rand", &(_funcRand));
-    mLocalFunctionPtrs.insert("obj",  &(_funcObj));
+    registerFunction("aver", "Calculate average value of vector", &(_funcAver));
+    registerFunction("min", "Calculate minimum value of vector", &(_funcMin));
+    registerFunction("max", "Calculate maximum value of vector", &(_funcMax));
+    registerFunction("imin", "Calculate index of minimum value of vector", &(_funcIMin));
+    registerFunction("imax", "Calculate index of maximum value of vector", &(_funcIMax));
+    registerFunction("size", "Calculate the size of a vector", &(_funcSize));
+    registerFunction("rand", "Generates a random value between 0 and 1", &(_funcRand));
+    registerFunction("peek", "Returns vector value at specified index", &(_funcPeek));
+    registerFunction("obj", "Returns optimization objective function value with specified index", &(_funcObj));
 
     createCommands();
 }
@@ -843,6 +845,7 @@ void HcomHandler::executeHelpCommand(const QString cmd)
                 groups << mCmdList[c].group;
             }
         }
+        n=n+4;
         groups.removeAll("");
         groups << "";
         for(int g=0; g<groups.size(); ++g)
@@ -861,7 +864,7 @@ void HcomHandler::executeHelpCommand(const QString cmd)
                 {
                     commands.append("   ");
                     commands.append(mCmdList[c].cmd);
-                    for(int i=0; i<n+3-mCmdList[c].cmd.size(); ++i)
+                    for(int i=0; i<n-mCmdList[c].cmd.size(); ++i)
                     {
                         commands.append(" ");
                     }
@@ -870,39 +873,20 @@ void HcomHandler::executeHelpCommand(const QString cmd)
                 }
             }
         }
+
+        //Print help descriptions for local functions
         commands.append("\n Custom Functions:\n\n");
-        commands.append("   lp1()");
-        for(int i=0; i<n+3-5; ++i)
-            commands.append(" ");
-        commands.append("Low-pass filter variable\n");
-        commands.append("   ddt()");
-        for(int i=0; i<n+3-5; ++i)
-            commands.append(" ");
-        commands.append("Differentiate variable\n");
-        commands.append("   aver()");
-        for(int i=0; i<n+3-6; ++i)
-            commands.append(" ");
-        commands.append("Calculate average value of vector\n");
-        commands.append("   min()");
-        for(int i=0; i<n+3-5; ++i)
-            commands.append(" ");
-        commands.append("Calculate minimum of vector\n");
-        commands.append("   max()");
-        for(int i=0; i<n+3-5; ++i)
-            commands.append(" ");
-        commands.append("Calculate maximum of vector\n");
-        commands.append("   size()");
-        for(int i=0; i<n+3-5; ++i)
-            commands.append(" ");
-        commands.append("Returns the size of a vector\n");
-        commands.append("   rand()");
-        for(int i=0; i<n+3-5; ++i)
-            commands.append(" ");
-        commands.append("Generate a random value between 0 and 1\n");
-        commands.append("   peek()");
-        for(int i=0; i<n+3-5; ++i)
-            commands.append(" ");
-        commands.append("Return vector value at specified index\n");
+        QMapIterator<QString, QString> funcIt(mLocalFunctionDescriptions);
+        while(funcIt.hasNext())
+        {
+            funcIt.next();
+            commands.append("   "+funcIt.key()+"()");
+            for(int i=0; i<n-funcIt.key().size()-2; ++i)
+            {
+                commands.append(" ");
+            }
+            commands.append(funcIt.value()+"\n");
+        }
 
         mpConsole->print(commands);
         mpConsole->print(" Type: \"help [command]\" for more information about a specific command.");
@@ -3436,6 +3420,12 @@ void HcomHandler::returnScalar(const double retval)
     mpConsole->print(QString::number(retval));
 }
 
+void HcomHandler::registerFunction(const QString func, const QString description, const SymHop::Function fptr)
+{
+    mLocalFunctionPtrs.insert(func, fptr);
+    mLocalFunctionDescriptions.insert(func, description);
+}
+
 double _funcAver(QString str)
 {
     SharedLogVariableDataPtrT pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(str);
@@ -3482,6 +3472,28 @@ double _funcMax(QString str)
     if(pData)
     {
         return(pData->maxOfData());
+    }
+    return 0;
+}
+
+double _funcIMin(QString str)
+{
+    SharedLogVariableDataPtrT pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(str);
+
+    if(pData)
+    {
+        return(pData->indexOfMinOfData());
+    }
+    return 0;
+}
+
+double _funcIMax(QString str)
+{
+    SharedLogVariableDataPtrT pData = HcomHandler(gpMainWindow->mpTerminalWidget->mpConsole).getVariablePtr(str);
+
+    if(pData)
+    {
+        return(pData->indexOfMaxOfData());
     }
     return 0;
 }

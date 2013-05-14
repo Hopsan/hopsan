@@ -120,6 +120,7 @@ private:
     int getNumberOfArguments(const QString cmd) const;
     QString getArgument(const QString cmd, const int idx) const;
     void returnScalar(const double retval);
+    void registerFunction(const QString func, const QString description, const SymHop::Function fptr);
 
     void optComplexInit();
     void optComplexRun();
@@ -151,6 +152,7 @@ private:
     //Local variables
     QMap<QString, double> mLocalVars;
     QMap<QString, SymHop::Function> mLocalFunctionPtrs;
+    QMap<QString, QString> mLocalFunctionDescriptions;
 
     VariableType mRetvalType;
 
@@ -199,6 +201,8 @@ public:
 double _funcAver(QString str);
 double _funcMin(QString str);
 double _funcMax(QString str);
+double _funcIMin(QString str);
+double _funcIMax(QString str);
 double _funcPeek(QString str);
 double _funcRand(QString str);
 double _funcSize(QString str);

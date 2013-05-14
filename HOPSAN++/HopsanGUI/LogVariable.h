@@ -182,13 +182,14 @@ public:
     double averageOfData() const;
     double minOfData() const;
     double maxOfData() const;
+    double indexOfMinOfData() const;
+    double indexOfMaxOfData() const;
 
     void preventAutoRemoval();
     void allowAutoRemoval();
 
     void cacheDataToDisk(const bool toDisk);
     bool isCachingDataToDisk() const;
-
 
     LogDataHandler *getLogDataHandler();
 

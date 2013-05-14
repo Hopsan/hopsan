@@ -528,6 +528,40 @@ double LogVariableData::minOfData() const
     return ret;
 }
 
+double LogVariableData::indexOfMinOfData() const
+{
+    double minVal = std::numeric_limits<double>::max();
+    double ret = 0;
+    QVector<double> *pVector = mpCachedDataVector->beginFullVectorOperation();
+    for(int i=0; i<pVector->size(); ++i)
+    {
+        if(pVector->at(i) < minVal)
+        {
+            minVal = pVector->at(i);
+            ret=i;
+        }
+    }
+    mpCachedDataVector->endFullVectorOperation(pVector);
+    return ret;
+}
+
+double LogVariableData::indexOfMaxOfData() const
+{
+    double maxVal = std::numeric_limits<double>::min();
+    double ret = 0;
+    QVector<double> *pVector = mpCachedDataVector->beginFullVectorOperation();
+    for(int i=0; i<pVector->size(); ++i)
+    {
+        if(pVector->at(i) > maxVal)
+        {
+            maxVal = pVector->at(i);
+            ret=i;
+        }
+    }
+    mpCachedDataVector->endFullVectorOperation(pVector);
+    return ret;
+}
+
 double LogVariableData::maxOfData() const
 {
     double ret = std::numeric_limits<double>::min();
