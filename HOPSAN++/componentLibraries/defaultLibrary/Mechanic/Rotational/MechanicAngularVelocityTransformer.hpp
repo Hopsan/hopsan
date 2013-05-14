@@ -38,10 +38,10 @@ namespace hopsan {
     {
 
     private:
-        double *mpW;
-        double *mpND_t, *mpND_a, *mpND_w, *mpND_c, *mpND_Zx;
         Integrator mInt;
-        Port *mpIn, *mpOut;
+        Port *mpOut;
+        double *mpOut_t, *mpOut_a, *mpOut_w, *mpOut_c, *mpOut_Zx;
+        double *mpW;
 
     public:
         static Component *Creator()
@@ -51,7 +51,6 @@ namespace hopsan {
 
         void configure()
         {
-            mpIn = addReadPort("in", "NodeSignal", Port::NotRequired);
             mpOut = addPowerPort("out", "NodeMechanicRotational");
             addInputVariable("omega", "Generated angular velocity", "[rad/s]", 0.0, &mpW);
         }
@@ -59,32 +58,32 @@ namespace hopsan {
 
         void initialize()
         {
-            mpND_t = getSafeNodeDataPtr(mpOut, NodeMechanicRotational::Torque);
-            mpND_a = getSafeNodeDataPtr(mpOut, NodeMechanicRotational::Angle);
-            mpND_w = getSafeNodeDataPtr(mpOut, NodeMechanicRotational::AngularVelocity);
-            mpND_c = getSafeNodeDataPtr(mpOut, NodeMechanicRotational::WaveVariable);
-            mpND_Zx = getSafeNodeDataPtr(mpOut, NodeMechanicRotational::CharImpedance);
+            mpOut_t = getSafeNodeDataPtr(mpOut, NodeMechanicRotational::Torque);
+            mpOut_a = getSafeNodeDataPtr(mpOut, NodeMechanicRotational::Angle);
+            mpOut_w = getSafeNodeDataPtr(mpOut, NodeMechanicRotational::AngularVelocity);
+            mpOut_c = getSafeNodeDataPtr(mpOut, NodeMechanicRotational::WaveVariable);
+            mpOut_Zx = getSafeNodeDataPtr(mpOut, NodeMechanicRotational::CharImpedance);
 
-            mInt.initialize(mTimestep, (*mpW), 0.0);
+            mInt.initialize(mTimestep, (*mpW), (*mpOut_a));
         }
 
 
         void simulateOneTimestep()
         {
             //Get variable values from nodes
-            double w, c, Zx, a, t;
-            w = (*mpW);
-            c = (*mpND_c);
-            Zx = (*mpND_Zx);
+            double a, t;
+            const double w = (*mpW);
+            const double c = (*mpOut_c);
+            const double Zx = (*mpOut_Zx);
 
             //Spring equations
             a = mInt.update(w);
             t = c + Zx*w;
 
             //Write values to nodes
-            (*mpND_t) = t;
-            (*mpND_a) = a;
-            (*mpND_w) = w;
+            (*mpOut_t) = t;
+            (*mpOut_a) = a;
+            (*mpOut_w) = w;
         }
     };
 }
