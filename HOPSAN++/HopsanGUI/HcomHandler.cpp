@@ -1,4 +1,27 @@
-﻿//HopsanGUI includes
+﻿/*-----------------------------------------------------------------------------
+ This source file is part of Hopsan NG
+
+ Copyright (c) 2011
+    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
+    Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
+
+ This file is provided "as is", with no guarantee or warranty for the
+ functionality or reliability of the contents. All contents in this file is
+ the original work of the copyright holders at the Division of Fluid and
+ Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
+ redistributing any part of this file is prohibited without explicit
+ permission from the copyright holders.
+-----------------------------------------------------------------------------*/
+
+//!
+//! @file   HcomHandler.cpp
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2013
+//! @version $Id$
+//!
+//! @brief Contains a handler for the HCOM scripting language
+//!
+//HopsanGUI includes
 #include "common.h"
 #include "Configuration.h"
 #include "DesktopHandler.h"
@@ -14,8 +37,8 @@
 #include "PlotWindow.h"
 #include "SimulationThreadHandler.h"
 #include "Utilities/GUIUtilities.h"
-#include "Widgets/PlotWidget.h"
 #include "Widgets/HcomWidget.h"
+#include "Widgets/PlotWidget.h"
 #include "Widgets/ProjectTabWidget.h"
 
 //HopsanGenerator includes
@@ -916,9 +939,12 @@ void HcomHandler::executeHelpCommand(const QString cmd)
 //! @brief Execute function for "exec" command
 void HcomHandler::executeRunScriptCommand(const QString cmd)
 {
-    QStringList splitCmd = cmd.split(" ");
-
-    if(splitCmd.isEmpty()) { return; }
+    QStringList splitCmd = splitWithRespectToQuotations(cmd, ' ');
+    if(splitCmd.size() != 1)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        return;
+    }
 
     QString path = splitCmd[0];
     if(!path.contains("/"))
@@ -982,7 +1008,12 @@ void HcomHandler::executeRunScriptCommand(const QString cmd)
 //! @brief Execute function for "wrhi" command
 void HcomHandler::executeWriteHistoryToFileCommand(const QString cmd)
 {
-    if(cmd.isEmpty()) { return; }
+    QStringList split = splitWithRespectToQuotations(cmd, ' ');
+    if(split.size() != 1)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        return;
+    }
 
     QString path = cmd;
     if(!path.contains("/"))
@@ -1020,6 +1051,13 @@ void HcomHandler::executePrintCommand(const QString /*cmd*/)
 //! @brief Execute function for "chpw" command
 void HcomHandler::executeChangePlotWindowCommand(const QString cmd)
 {
+    QStringList split = splitWithRespectToQuotations(cmd, ' ');
+    if(split.size() != 1)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        return;
+    }
+
     mCurrentPlotWindowName = cmd;
 }
 
@@ -1034,6 +1072,13 @@ void HcomHandler::executeDisplayPlotWindowCommand(const QString /*cmd*/)
 //! @brief Execute function for "disp" command
 void HcomHandler::executeDisplayVariablesCommand(const QString cmd)
 {
+    QStringList split = splitWithRespectToQuotations(cmd, ' ');
+    if(split.size() != 1)
+    {
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        return;
+    }
+
     QStringList output;
     getVariables(cmd, output);
 

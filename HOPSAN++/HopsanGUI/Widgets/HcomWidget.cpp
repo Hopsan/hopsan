@@ -35,8 +35,8 @@
 #include "DesktopHandler.h"
 #include "HcomHandler.h"
 #include "MainWindow.h"
+#include "Utilities/GUIUtilities.h"
 #include "Widgets/HcomWidget.h"
-
 
 
 TerminalWidget::TerminalWidget(MainWindow *pParent)
@@ -603,6 +603,8 @@ void TerminalConsole::handleDownKeyPress()
 }
 
 
+//! @brief Handles tab key press (used for autocomplete
+//! @todo This functionality belongs in the HCOM handler I think
 void TerminalConsole::handleTabKeyPress()
 {
     ++mCurrentAutoCompleteIndex;
@@ -615,6 +617,7 @@ void TerminalConsole::handleTabKeyPress()
     {
         mAutoCompleteFilter = this->document()->lastBlock().text();
         mAutoCompleteFilter = mAutoCompleteFilter.right(mAutoCompleteFilter.size()-3);
+        QStringList args = splitWithRespectToQuotations(mAutoCompleteFilter, ' ');
 
         QStringList availableCommands = getHandler()->getCommands();
         for(int c=0; c<availableCommands.size(); ++c)
@@ -625,16 +628,21 @@ void TerminalConsole::handleTabKeyPress()
             }
         }
 
-        QStringList variableCmds = QStringList() << "disp " << "chpv " << "chpvr " << "chpvl " << "peek " << "poke " << "alias " << "aver " << "min " << "max ";
+        QStringList variableCmds = QStringList() << "disp" << "chpv" << "chpvr" << "chpvl" << "peek" << "poke" << "alias" << "aver" << "min" << "max";
         for(int c=0; c<variableCmds.size(); ++c)
         {
-            if(mAutoCompleteFilter.startsWith(variableCmds[c]))
+            if(args[0] == variableCmds[c])
             {
                 QStringList variables;
-                getHandler()->getVariablesThatStartsWithString(mAutoCompleteFilter.right(mAutoCompleteFilter.size()-variableCmds[c].size()),variables);
+                getHandler()->getVariablesThatStartsWithString(args.last()/*mAutoCompleteFilter.right(mAutoCompleteFilter.size()-variableCmds[c].size())*/,variables);
                 for(int v=0; v<variables.size(); ++v)
                 {
-                    variables[v].prepend(variableCmds[c]);
+                    QString temp;
+                    for(int i=0; i<args.size()-1; ++i)
+                    {
+                        temp.append(args[i]+" ");
+                    }
+                    variables[v].prepend(temp/*variableCmds[c]*/);
                 }
                 mAutoCompleteResults.append(variables);
             }
