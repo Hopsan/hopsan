@@ -228,7 +228,10 @@ void HcomHandler::createCommands()
     setCmd.help.append(" Usage: set [preference value]\n");
     setCmd.help.append(" Available commands:\n");
     setCmd.help.append("  multicore [on/off]\n");
-    setCmd.help.append("  threads [number]");
+    setCmd.help.append("  threads [number]\n");
+    setCmd.help.append("  cachetodisk [on/off]\n");
+    setCmd.help.append("  generationlimit [number]\n");
+    setCmd.help.append("  samples [number]");
     setCmd.fnc = &HcomHandler::executeSetCommand;
     mCmdList << setCmd;
 
@@ -1229,6 +1232,40 @@ void HcomHandler::executeSetCommand(const QString cmd)
             return;
         }
         gConfig.setNumberOfThreads(nThreads);
+    }
+    else if(pref == "cachetodisk")
+    {
+        if(value != "on" && value != "off")
+        {
+            mpConsole->printErrorMessage("Unknown value.","",false);
+        }
+        gConfig.setCacheLogData(value=="on");
+    }
+    else if(pref == "generationlimit")
+    {
+        bool ok;
+        int limit = value.toInt(&ok);
+        if(!ok)
+        {
+            mpConsole->printErrorMessage("Unknown value.","",false);
+            return;
+        }
+        gConfig.setGenerationLimit(limit);
+    }
+    else if(pref == "samples")
+    {
+        bool ok;
+        int samples = value.toInt(&ok);
+        if(!ok)
+        {
+            mpConsole->printErrorMessage("Unknown value.","",false);
+            return;
+        }
+        gpMainWindow->mpProjectTabs->getCurrentContainer()->setNumberOfLogSamples(samples);
+    }
+    else
+    {
+        mpConsole->printErrorMessage("Unknown command.","",false);
     }
 }
 
@@ -3298,7 +3335,7 @@ void HcomHandler::toShortDataNames(QString &variable) const
     }
     else if(variable.endsWith(".CharImpedance"))
     {
-        variable.chop(8);
+        variable.chop(14);
         variable.append(".Zc");
     }
     else if(variable.endsWith(".WaveVariable"))
