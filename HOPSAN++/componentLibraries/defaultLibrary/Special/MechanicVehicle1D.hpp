@@ -9,7 +9,7 @@
 //!
 //! @file MechanicVehicle1D.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Mon 29 Apr 2013 10:31:07
+//! @date Mon 13 May 2013 18:18:23
 //! @brief This is a one dimmensional model of a vehicle
 //! @ingroup MechanicComponents
 //!
