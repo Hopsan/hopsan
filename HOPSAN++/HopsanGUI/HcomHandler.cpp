@@ -681,11 +681,11 @@ void HcomHandler::executeChangeSimulationSettingsCommand(const QString cmd)
     {
         bool allOk=true;
         bool ok;
-        double startT = splitCmd[0].toDouble(&ok);
+        double startT = getNumber(splitCmd[0], &ok);
         if(!ok) { allOk=false; }
-        double timeStep = splitCmd[1].toDouble(&ok);
+        double timeStep = getNumber(splitCmd[1], &ok);
         if(!ok) { allOk=false; }
-        double stopT = splitCmd[2].toDouble(&ok);
+        double stopT = getNumber(splitCmd[2], &ok);
         if(!ok) { allOk=false; }
 
         int samples;
@@ -1570,7 +1570,7 @@ void HcomHandler::executeChangeTimestepCommand(const QString cmd)
     else
     {
         gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->setDesiredTimeStep(component, value);
-        gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->setInheritTimeStep(false);
+        //gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->setInheritTimeStep(false);
         mpConsole->print("Setting time step of "+component+" to "+QString::number(value));
     }
 }
@@ -3714,7 +3714,13 @@ void HcomHandler::optPlotPoints(bool /*dummy*/)
         }
     }
 
-    PlotTab *pTab = gpPlotHandler->getPlotWindow("parplot")->getCurrentPlotTab();
+    PlotWindow *pPlotWindow = gpPlotHandler->getPlotWindow("parplot");
+    if(!pPlotWindow)
+    {
+        gpPlotHandler->createPlotWindow("parplot");
+        pPlotWindow = gpPlotHandler->getPlotWindow("parplot");
+    }
+    PlotTab *pTab = pPlotWindow->getCurrentPlotTab();
     pTab->getPlot(FirstPlot)->setAxisScale(QwtPlot::xBottom, mOptParMin[0], mOptParMax[0]);
     pTab->getPlot(FirstPlot)->setAxisScale(QwtPlot::yLeft, mOptParMin[1], mOptParMax[1]);
     pTab->update();
