@@ -9,7 +9,7 @@
 //!
 //! @file ElectricSwitch.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 24 Apr 2013 12:07:32
+//! @date Wed 24 Apr 2013 20:39:44
 //! @brief Electric on/off switch
 //! @ingroup ElectricComponents
 //!

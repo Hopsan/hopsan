@@ -9,7 +9,7 @@
 //!
 //! @file ElectricCapacitance2.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 24 Apr 2013 12:07:33
+//! @date Wed 24 Apr 2013 20:39:48
 //! @brief Capacitance
 //! @ingroup ElectricComponents
 //!

@@ -9,7 +9,7 @@
 //!
 //! @file ElectricIcontroller.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 24 Apr 2013 12:07:34
+//! @date Wed 24 Apr 2013 20:39:48
 //! @brief This is an imaginary analog component that represents a PWM \
 current controller.
 //! @ingroup ElectricComponents
