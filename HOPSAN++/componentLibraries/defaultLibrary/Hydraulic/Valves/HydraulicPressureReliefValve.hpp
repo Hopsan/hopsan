@@ -71,7 +71,7 @@ namespace hopsan {
             addConstant("k_cs", "Steady State Characteristic due to Spring", "[(m^3/s)/Pa]", 0.00000001, Kcs);
             addConstant("k_cf", "Steady State Characteristic due to Flow Forces", "[(m^3/s)/Pa]", 0.00000001, Kcf);
             addConstant("q_nom", "Flow with Fully Open Valve and pressure drop Pnom", "[m^3/s]", 0.001, qnom);
-        }
+      }
 
 
         void initialize()

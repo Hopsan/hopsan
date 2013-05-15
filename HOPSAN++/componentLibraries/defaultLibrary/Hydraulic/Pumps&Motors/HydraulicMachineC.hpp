@@ -195,7 +195,7 @@ namespace hopsan {
             double Zc1 = 2*ka*betae*mTimestep / (2*v1e);
             double Zc2 = 2*ka*betae*mTimestep / (2*v2e);
 
-            qp1 = dpe*w3;
+            qp1 = dpe*(w3);
             qp2 = -dpe*w3;
 
             pp1 = (cp1 + qp1*Zc1 + clm*(cp2*Zc1 + cp1*Zc2)) / (clm*(Zc1 + Zc2) + 1);

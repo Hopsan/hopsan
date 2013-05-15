@@ -4,6 +4,7 @@
 #include "HydraulicVolume.hpp"
 #include "HydraulicHose.hpp"
 #include "HydraulicAckumulator.hpp"
+#include "HydraulicPistonAckumulator.hpp"
 #include "HydraulicTLMRLineR.hpp"
 #include "HydraulicTLMlossless.hpp"
 #include "HydraulicVolumeMultiPort.hpp"

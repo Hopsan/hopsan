@@ -7,9 +7,11 @@
 #include "math.h"
 
 //!
-//! @file HydraulicValve416.hpp
+//! @file \
+C:\HopsanTrunk\HOPSAN++\componentLibraries\defaultLibrary\Hydraulic\Valves\Hy\
+draulicValve416.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Mon 29 Apr 2013 13:08:04
+//! @date Mon 13 May 2013 18:36:26
 //! @brief A hydraulic valve with separate orifices
 //! @ingroup HydraulicComponents
 //!

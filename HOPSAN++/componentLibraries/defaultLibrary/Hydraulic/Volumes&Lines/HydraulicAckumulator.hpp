@@ -7,9 +7,11 @@
 #include "math.h"
 
 //!
-//! @file HydraulicAckumulator.hpp
+//! @file \
+C:\HopsanTrunk\HOPSAN++\componentLibraries\defaultLibrary\Hydraulic\Volumes&L\
+ines\HydraulicAckumulator.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Mon 29 Apr 2013 13:08:05
+//! @date Mon 13 May 2013 18:36:30
 //! @brief This is piston with an inertia load
 //! @ingroup HydraulicComponents
 //!
