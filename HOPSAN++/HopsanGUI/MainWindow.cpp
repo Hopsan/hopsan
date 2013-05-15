@@ -1201,11 +1201,7 @@ void MainWindow::openContextHelp()
     QAction *action = qobject_cast<QAction *>(sender());
     if(action != 0)
     {
-        if(action->parent() == mpOptimizationDialog)
-        {
-            mpHelpDialog->open("userOptimization.html");
-        }
-        else if(action->parent() == mpSensitivityAnalysisDialog)
+        if(action->parent() == mpSensitivityAnalysisDialog)
         {
             mpHelpDialog->open("userSensitivityAnalysis.html");
         }
@@ -1232,6 +1228,10 @@ void MainWindow::openContextHelp()
         if(button->parent() == mpLibrary)
         {
             mpHelpDialog->open("userCustomComponents.html");
+        }
+        else if(button->objectName() == "optimizationHelpButton")
+        {
+            mpHelpDialog->open("userOptimization.html");
         }
         else
         {

@@ -322,10 +322,12 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     mpOutputWidget->setLayout(mpOutputLayout);
 
     //Toolbar
-    mpHelpAction = new QAction("Show Context Help", this);
-    mpHelpAction->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Help.png"));
-    mpToolBar = new QToolBar(this);
-    mpToolBar->addAction(mpHelpAction);
+    mpHelpButton = new QToolButton(this);
+    mpHelpButton->setToolTip(tr("Show context help"));
+    mpHelpButton->setIcon(QIcon(QString(ICONPATH)+"Hopsan-Help.png"));
+    this->setButton(QWizard::HelpButton, mpHelpButton);
+    this->setOption(QWizard::HaveHelpButton);
+    mpHelpButton->setObjectName("optimizationHelpButton");
 
     this->addPage(mpSettingsWidget);
     this->addPage(mpParametersWidget);
@@ -341,7 +343,7 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
     //Connections
     connect(this, SIGNAL(currentIdChanged(int)), this, SLOT(update(int)));
     connect(mpAddFunctionButton,            SIGNAL(clicked()),      this,                   SLOT(addFunction()));
-    connect(mpHelpAction,                   SIGNAL(triggered()),    gpMainWindow,           SLOT(openContextHelp()));
+    connect(mpHelpButton,                   SIGNAL(clicked()),    gpMainWindow,           SLOT(openContextHelp()));
     connect(this, SIGNAL(accepted()), this, SLOT(run()));
     connect(button(QWizard::CustomButton1), SIGNAL(clicked()), this, SLOT(saveScriptFile()));
 }
@@ -491,6 +493,8 @@ void OptimizationDialog::open()
             pComponentItem->insertChild(0, pParameterItem);
         }
     }
+    mpParametersList->sortItems(0,Qt::AscendingOrder);
+    mpParametersList->sortItems(1,Qt::AscendingOrder);
     connect(mpParametersList, SIGNAL(itemChanged(QTreeWidgetItem*,int)), SLOT(updateChosenParameters(QTreeWidgetItem*,int)), Qt::UniqueConnection);
 
     //Clear all objective functions
@@ -517,6 +521,9 @@ void OptimizationDialog::open()
             pComponentItem->insertChild(0, pPortItem);
         }
     }
+    mpVariablesList->sortItems(0,Qt::AscendingOrder);
+    mpVariablesList->sortItems(1,Qt::AscendingOrder);
+    mpVariablesList->sortItems(2,Qt::AscendingOrder);
     connect(mpVariablesList, SIGNAL(itemChanged(QTreeWidgetItem*,int)), SLOT(updateChosenVariables(QTreeWidgetItem*,int)), Qt::UniqueConnection);
 
     mSelectedVariables.clear();

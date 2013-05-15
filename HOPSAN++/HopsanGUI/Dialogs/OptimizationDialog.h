@@ -187,25 +187,11 @@ private:
     QList<bool> mObjectiveFunctionUsesTimeVector;
     QList<QStringList> mObjectiveFunctionDataLists;
 
-//    //Tab widget
-//    QTabWidget *mpTabWidget;
-
     //Output
     QTextEdit *mpOutputBox;
 
-//    //Buttons
-//    QPushButton *mpCancelButton;
-//    QPushButton *mpOkButton;
-//    QPushButton *mpGenerateButton;
-//    QPushButton *mpRunButton;
-//    QDialogButtonBox *mpButtonBox;
-
     //Toolbar
-    QAction *mpHelpAction;
-    QToolBar *mpToolBar;
-
-    //Main layout
-   // QGridLayout *mpLayout;
+    QToolButton *mpHelpButton;
 
     //Member variables
     QString mScript;
