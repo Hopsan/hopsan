@@ -9,7 +9,7 @@
 //!
 //! @file SignalFFBandIn.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Thu 2 May 2013 10:54:01
+//! @date Mon 13 May 2013 18:19:15
 //! @brief FFBD AND(in)
 //! @ingroup SignalComponents
 //!
