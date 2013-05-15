@@ -9,7 +9,7 @@
 //!
 //! @file AeroAtmosphere.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 24 Apr 2013 14:07:28
+//! @date Mon 13 May 2013 18:22:21
 //! @brief model of standard atmosphere
 //! @ingroup AeroComponents
 //!

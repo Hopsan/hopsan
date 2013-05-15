@@ -8,6 +8,7 @@
 #include "AeroJetEngine.hpp"
 #include "AeroFuelTank.hpp"
 #include "AeroPropeller.hpp"
+#include "AeroCombustionChamberMono.hpp"
 #include "SignalAttitudeControl.hpp"
 #include "SignalAttitudeTVCcontrol.hpp"
 #include "SignalStateMonitor.hpp"

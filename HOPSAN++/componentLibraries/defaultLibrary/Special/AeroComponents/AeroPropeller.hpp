@@ -9,7 +9,7 @@
 //!
 //! @file AeroPropeller.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 24 Apr 2013 14:07:27
+//! @date Mon 13 May 2013 18:22:20
 //! @brief Model of a propeller
 //! @ingroup AeroComponents
 //!

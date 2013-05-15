@@ -11,7 +11,7 @@
 C:\HopsanTrunk\HOPSAN++\ComponentLibraries\defaultLibrary\Special\AeroCompone\
 nts\SignalEarthCoordinates.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Thu 2 May 2013 22:27:58
+//! @date Mon 13 May 2013 18:46:48
 //! @brief Calculates earth coordinates
 //! @ingroup SignalComponents
 //!
@@ -90,8 +90,8 @@ public:
         //Add inputVariables to the component
             addInputVariable("timecomp","time compression \
 rate","",1.,&mptimecomp);
-            addInputVariable("vxcg","eastward speed","m/s",0.,&mpvxcg);
-            addInputVariable("vycg","northward speed","m/s",0.,&mpvycg);
+            addInputVariable("vxcg","northward speed","m/s",0.,&mpvxcg);
+            addInputVariable("vycg","eastward speed","m/s",0.,&mpvycg);
 
         //Add outputVariables to the component
             addOutputVariable("timeE","effective time","sec",0.,&mptimeE);
@@ -127,10 +127,10 @@ y-position","m",0.,&mplattitude);
 
         //Initialize delays
         delayParts1[1] = (0.5*(-2.*lattitude*R - \
-57.2958*mTimestep*timecomp*vycg))/R;
+57.2958*mTimestep*timecomp*vxcg))/R;
         mDelayedPart11.initialize(mNstep,delayParts1[1]);
         delayParts2[1] = (0.5*(-2.*longitude*R - \
-57.2958*mTimestep*timecomp*vxcg*Sec(0.0174533*lattitude)))/R;
+57.2958*mTimestep*timecomp*vycg*SecL(0.0174533*lattitude)))/R;
         mDelayedPart21.initialize(mNstep,delayParts2[1]);
         delayParts3[1] = (-(mTimestep*timecomp) - 2*timeE)/2.;
         mDelayedPart31.initialize(mNstep,delayParts3[1]);
@@ -166,10 +166,10 @@ y-position","m",0.,&mplattitude);
          //Differential-algebraic system of equation parts
 
           //Assemble differential-algebraic equations
-          systemEquations[0] =lattitude - (28.6479*mTimestep*timecomp*vycg)/R \
+          systemEquations[0] =lattitude - (28.6479*mTimestep*timecomp*vxcg)/R \
 + delayedPart[1][1];
           systemEquations[1] =longitude + delayedPart[2][1] - \
-(28.6479*mTimestep*timecomp*vxcg*Sec(0.0174533*lattitude))/R;
+(28.6479*mTimestep*timecomp*vycg*SecL(0.0174533*lattitude))/R;
           systemEquations[2] =-(mTimestep*timecomp)/2. + timeE + \
 delayedPart[3][1];
 
@@ -178,8 +178,7 @@ delayedPart[3][1];
           jacobianMatrix[0][1] = 0;
           jacobianMatrix[0][2] = 0;
           jacobianMatrix[1][0] = \
-(-0.5*mTimestep*timecomp*vxcg*Sec(0.0174533*lattitude)*Tan(0.0174533*lattitud\
-e))/R;
+(-0.5*mTimestep*timecomp*vycg*DxSecL(0.0174533*lattitude))/R;
           jacobianMatrix[1][1] = 1;
           jacobianMatrix[1][2] = 0;
           jacobianMatrix[2][0] = 0;
@@ -196,9 +195,9 @@ e))/R;
 
         //Calculate the delayed parts
         delayParts1[1] = (0.5*(-2.*lattitude*R - \
-57.2958*mTimestep*timecomp*vycg))/R;
+57.2958*mTimestep*timecomp*vxcg))/R;
         delayParts2[1] = (0.5*(-2.*longitude*R - \
-57.2958*mTimestep*timecomp*vxcg*Sec(0.0174533*lattitude)))/R;
+57.2958*mTimestep*timecomp*vycg*SecL(0.0174533*lattitude)))/R;
         delayParts3[1] = (-(mTimestep*timecomp) - 2*timeE)/2.;
 
         delayedPart[1][1] = delayParts1[1];
