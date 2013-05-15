@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[     18137,        513]
-NotebookOptionsPosition[     16317,        455]
-NotebookOutlinePosition[     16736,        471]
-CellTagsIndexPosition[     16693,        468]
+NotebookDataLength[     67143,       1537]
+NotebookOptionsPosition[     63339,       1428]
+NotebookOutlinePosition[     63782,       1445]
+CellTagsIndexPosition[     63739,       1442]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -47,7 +47,25 @@ University\>\""}], ";"}]}], "Input",
 Cell[BoxData[
  RowBox[{"<<", "C:\\\\Hopsan\\Compgen\\CompgenNG02.mx"}]], "Input",
  CellChangeTimes->{{3.525533906765625*^9, 3.525533914734375*^9}}]
-}, Closed]],
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"path", "=", 
+   RowBox[{"ToFileName", "[", 
+    RowBox[{"{", 
+     RowBox[{
+     "\"\<C:\>\"", ",", "\"\<HopsanTrunk\>\"", ",", "\"\<HOPSAN++\>\"", ",", 
+      "\"\<componentLibraries\>\"", ",", "\"\<defaultLibrary\>\"", ",", 
+      "\"\<Signal\>\"", ",", "\"\<Control\>\""}], "}"}], "]"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.5757727777685804`*^9, 3.575772792541806*^9}, {
+   3.5757728423954945`*^9, 3.5757728498367076`*^9}, {3.57577333888545*^9, 
+   3.5757733706315055`*^9}, 3.5757734316206255`*^9, {3.575776746610216*^9, 
+   3.57577674854722*^9}, {3.5758034373456383`*^9, 3.5758034687537785`*^9}, {
+   3.576215299790524*^9, 3.576215340163597*^9}, {3.5762155444425898`*^9, 
+   3.576215547684914*^9}, 3.5762159940865498`*^9, 3.5762161254666862`*^9, {
+   3.576244738757578*^9, 3.5762447467603917`*^9}}],
 
 Cell[CellGroupData[{
 
@@ -60,9 +78,9 @@ Cell[BoxData[{
  RowBox[{
   RowBox[{"domain", "=", "\"\<Signal\>\""}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
-  RowBox[{"displayName", "=", "\"\<PID controller\>\""}], ";"}], "\n", 
+  RowBox[{"displayName", "=", "\"\<PID\>\""}], ";"}], "\n", 
  RowBox[{
-  RowBox[{"brief", "=", "\"\<PID controller\>\""}], ";"}], "\n", 
+  RowBox[{"brief", "=", "\"\<Differential PID controller\>\""}], ";"}], "\n", 
  RowBox[{
   RowBox[{"componentType", "=", "\"\<ComponentSignal\>\""}], ";"}], "\n", 
  RowBox[{
@@ -74,8 +92,8 @@ Cell[BoxData[{
    "\"\<Division of Fluid and Mechatronic Systems, Link\[ODoubleDot]ping \
 University\>\""}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
-  RowBox[{"SetFile", "[", 
-   RowBox[{"domain", ",", "displayName"}], "]"}], 
+  RowBox[{"SetFilenames", "[", 
+   RowBox[{"path", ",", "domain", ",", "displayName"}], "]"}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{
   RowBox[{"ResetComponentVariables", "[", "]"}], ";"}]}], "Input",
@@ -83,25 +101,14 @@ University\>\""}], ";"}], "\[IndentingNewLine]",
    3.520932125875*^9, 3.520932753984375*^9, {3.52093324790625*^9, 
    3.520933251453125*^9}, {3.521775289609375*^9, 3.521775289921875*^9}, {
    3.52249560790625*^9, 3.522495611953125*^9}, {3.5353435506144285`*^9, 
-   3.5353435625103617`*^9}}],
+   3.5353435625103617`*^9}, 3.576244764653623*^9, 3.576860059469*^9, {
+   3.5774503212411766`*^9, 3.577450340626115*^9}}],
 
 Cell[BoxData[
  RowBox[{
   RowBox[{"inputParameters", ":=", 
    RowBox[{"{", "\[IndentingNewLine]", 
     RowBox[{
-     RowBox[{"{", 
-      RowBox[{
-      "Kp", ",", "1.", ",", "double", ",", "\"\<\>\"", ",", 
-       "\"\<Proportional gain\>\""}], "}"}], ",", "\[IndentingNewLine]", 
-     RowBox[{"{", 
-      RowBox[{
-      "KI", ",", "1.", ",", "double", ",", "\"\<\>\"", ",", 
-       "\"\<Integral gain\>\""}], "}"}], ",", "\[IndentingNewLine]", 
-     RowBox[{"{", 
-      RowBox[{
-      "Kd", ",", "1.", ",", "double", ",", "\"\<\>\"", ",", 
-       "\"\<Differential gain\>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{"umin", ",", 
        RowBox[{"-", "1."}], ",", "double", ",", "\"\<\>\"", ",", 
@@ -114,7 +121,7 @@ Cell[BoxData[
    3.520938265609375*^9, 3.520938271921875*^9}, {3.52094199159375*^9, 
    3.520941998328125*^9}, 3.520942056578125*^9, 3.521775446796875*^9, 
    3.52177700921875*^9, {3.53534356809194*^9, 3.535343632888136*^9}, 
-   3.5353437390628457`*^9}],
+   3.5353437390628457`*^9, 3.5768588850888295`*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -132,11 +139,24 @@ Cell[BoxData[
      RowBox[{"{", 
       RowBox[{
       "dy", ",", "0.", ",", "double", ",", "\"\<\>\"", ",", 
-       "\"\<Differential of actual value\>\""}], "}"}]}], "\n", "}"}]}], 
-  ";"}]], "Input",
+       "\"\<Differential of actual value\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Kp", ",", "1.", ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<Proportional gain\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "KI", ",", "1.", ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<Integral gain\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Kd", ",", "1.", ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<Differential gain\>\""}], "}"}]}], "\n", "}"}]}], ";"}]], "Input",
  CellChangeTimes->{{3.520880034703125*^9, 3.520880034703125*^9}, {
   3.520932825078125*^9, 3.520932825328125*^9}, {3.521777012078125*^9, 
-  3.52177702803125*^9}, {3.5353436227072124`*^9, 3.5353436587224226`*^9}}],
+  3.52177702803125*^9}, {3.5353436227072124`*^9, 3.5353436587224226`*^9}, {
+  3.5768588871509476`*^9, 3.576858898773612*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -191,9 +211,281 @@ Cell[BoxData[
     RowBox[{"{", 
      RowBox[{"u", ",", "umin", ",", "umax"}], "}"}], "}"}]}], ";"}]], "Input"],
 
+Cell[CellGroupData[{
+
 Cell[BoxData[
- RowBox[{"Compgen", "[", "file", "]"}]], "Input"]
-}, Closed]],
+ RowBox[{"Compgen", "[", "file", "]"}]], "Input"],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Part", "::", "partd"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Part specification \[NoBreak]\\!\\(delayedPart \
+\[LeftDoubleBracket] \\(\\(1, 1\\)\\) \[RightDoubleBracket]\\)\[NoBreak] is \
+longer than depth of object. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/partd\\\", ButtonNote -> \
+\\\"Part::partd\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.576244881263411*^9, 3.5763182268600445`*^9, 
+  3.576859825239603*^9, 3.5768600098691635`*^9, 3.5768600672054424`*^9, 
+  3.577450356884741*^9, 3.5774505060176525`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Set", "::", "noval"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(inputParameters\\)\[NoBreak] in \
+part assignment does not have an immediate value. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/noval\\\", ButtonNote -> \
+\\\"Set::noval\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.576244881263411*^9, 3.5763182268600445`*^9, 
+  3.576859825239603*^9, 3.5768600098691635`*^9, 3.5768600672054424`*^9, 
+  3.577450356884741*^9, 3.577450506041655*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Set", "::", "noval"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(inputParameters\\)\[NoBreak] in \
+part assignment does not have an immediate value. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/noval\\\", ButtonNote -> \
+\\\"Set::noval\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.576244881263411*^9, 3.5763182268600445`*^9, 
+  3.576859825239603*^9, 3.5768600098691635`*^9, 3.5768600672054424`*^9, 
+  3.577450356884741*^9, 3.577450506042655*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Set", "::", "noval"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(inputVariables\\)\[NoBreak] in part \
+assignment does not have an immediate value. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/noval\\\", ButtonNote -> \
+\\\"Set::noval\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.576244881263411*^9, 3.5763182268600445`*^9, 
+  3.576859825239603*^9, 3.5768600098691635`*^9, 3.5768600672054424`*^9, 
+  3.577450356884741*^9, 3.577450506044655*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"General", "::", "stop"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Further output of \[NoBreak]\\!\\(\\*StyleBox[\\(Set :: \
+noval\\), \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this \
+calculation. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
+\\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.576244881263411*^9, 3.5763182268600445`*^9, 
+  3.576859825239603*^9, 3.5768600098691635`*^9, 3.5768600672054424`*^9, 
+  3.577450356884741*^9, 3.5774505060466557`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"XMLElement", "::", "cntsList"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"\[NoBreak]\\!\\(XMLElement[\\(\\(\\\"modelobject\\\", \
+\\(\\(\[LeftSkeleton] 1 \[RightSkeleton]\\)\\), \
+\\(\\({\\(\\(XMLElement[\\(\\(\\\"icon\\\", \\(\\({\\(\\(\\\"isopath\\\" \
+\[Rule] \\\"SignalPID.svg\\\"\\)\\), \\(\\(\\\"iconrotation\\\" \[Rule] \
+\\\"ON\\\"\\)\\), \\(\\(\\\"userpath\\\" \[Rule] \\\"SignalPID.svg\\\"\\)\\)}\
+\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \\(\\(XMLElement[\\(\\(\\\"portpositions\
+\\\", \\(\\(\[LeftSkeleton] 1 \[RightSkeleton]\\)\\), \
+\\(\\({\\(\\(XMLElement[\\(\\(\\\"portpose\\\", \\(\\({\\(\\(\\\"x\\\" \
+\[Rule] 0.14285714285714285`\\)\\), \\(\\(\\\"y\\\" \[Rule] \\\"0\\\"\\)\\), \
+\\(\\(\\\"a\\\" \[Rule] \\\"270\\\"\\)\\), \\(\\(\\\"name\\\" \[Rule] \
+\\\"yref\\\"\\)\\)}\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \
+\\(\\(XMLElement[\\(\\(\\\"portpose\\\", \\(\\({\\(\\(\\\"x\\\" \[Rule] \
+0.2857142857142857`\\)\\), \\(\\(\\\"y\\\" \[Rule] \\\"0\\\"\\)\\), \
+\\(\\(\\\"a\\\" \[Rule] \\\"270\\\"\\)\\), \\(\\(\\\"name\\\" \[Rule] \\\"y\\\
+\"\\)\\)}\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \
+\\(\\(XMLElement[\\(\\(\\\"portpose\\\", \\(\\({\\(\\(\\\"x\\\" \[Rule] \
+0.42857142857142855`\\)\\), \\(\\(\\\"y\\\" \[Rule] \\\"0\\\"\\)\\), \\(\\(\\\
+\"a\\\" \[Rule] \\\"270\\\"\\)\\), \\(\\(\\\"name\\\" \[Rule] \
+\\\"dy\\\"\\)\\)}\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \\(\\(\[LeftSkeleton] 1 \
+\[RightSkeleton]\\)\\), \\(\\(\\(\\(\[LeftSkeleton] 10 \
+\[RightSkeleton]\\)\\)[\\(\\(\[LeftSkeleton] 1 \[RightSkeleton]\\)\\)]\\)\\), \
+\\(\\(XMLElement[\\(\\(\\\"portpose\\\", \\(\\({\\(\\(\\\"x\\\" \[Rule] \
+0.8571428571428571`\\)\\), \\(\\(\\\"y\\\" \[Rule] \\\"0\\\"\\)\\), \
+\\(\\(\\\"a\\\" \[Rule] \\\"270\\\"\\)\\), \\(\\(\\\"name\\\" \[Rule] \
+\\\"Kd\\\"\\)\\)}\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \\(\\(XMLElement[\\(\\(\
+\\\"portpose\\\", \\(\\({\\(\\(\\\"x\\\" \[Rule] \\\"0.5\\\"\\)\\), \
+\\(\\(\\\"y\\\" \[Rule] \\\"1\\\"\\)\\), \\(\\(\\\"a\\\" \[Rule] \
+\\\"90\\\"\\)\\), \\(\\(\\\"name\\\" \[Rule] \\\"u\\\"\\)\\)}\\)\\), \\(\\({}\
+\\)\\)\\)\\)]\\)\\)}\\)\\)\\)\\)]\\)\\)}\\)\\)\\)\\)]\\)\[NoBreak] in \
+\[NoBreak]\\!\\(XMLElement[\\(\\(\\\"hopsanobjectappearance\\\", \\(\\(\
+\[LeftSkeleton] 1 \[RightSkeleton]\\)\\), \
+\\(\\(XMLElement[\\(\\(\\\"modelobject\\\", \\(\\({\\(\\(\\(\\(\\\"\\\" \
+\[Ellipsis] \\\"\\\"\\)\\) \[Rule] \\(\\(\\\"\\\" \[Ellipsis] \
+\\\"\\\"\\)\\)\\)\\), \\(\\(\[LeftSkeleton] 1 \[RightSkeleton]\\)\\)}\\)\\), \
+\\(\\({\\(\\(XMLElement[\\(\\(\\\"icon\\\", \\(\\({\\(\\(\\\"isopath\\\" \
+\[Rule] \\\"SignalPID.svg\\\"\\)\\), \\(\\(\\\"iconrotation\\\" \[Rule] \
+\\\"ON\\\"\\)\\), \\(\\(\\\"userpath\\\" \[Rule] \\\"SignalPID.svg\\\"\\)\\)}\
+\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \\(\\(XMLElement[\\(\\(\\\"portpositions\
+\\\", \\(\\({}\\)\\), \\(\\({\\(\\(XMLElement[\\(\\(\\\"portpose\\\", \\(\\({\
+\\(\\(\\\"x\\\" \[Rule] 0.14285714285714285`\\)\\), \\(\\(\\\"y\\\" \[Rule] \
+\\\"0\\\"\\)\\), \\(\\(\\\"a\\\" \[Rule] \\\"270\\\"\\)\\), \
+\\(\\(\\\"name\\\" \[Rule] \\\"yref\\\"\\)\\)}\\)\\), \
+\\(\\({}\\)\\)\\)\\)]\\)\\), \\(\\(XMLElement[\\(\\(\\\"portpose\\\", \\(\\({\
+\\(\\(\\\"x\\\" \[Rule] 0.2857142857142857`\\)\\), \\(\\(\\\"y\\\" \[Rule] \\\
+\"0\\\"\\)\\), \\(\\(\\\"a\\\" \[Rule] \\\"270\\\"\\)\\), \\(\\(\\\"name\\\" \
+\[Rule] \\\"y\\\"\\)\\)}\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \
+\\(\\(XMLElement[\\(\\(\\\"portpose\\\", \\(\\(\[LeftSkeleton] 1 \
+\[RightSkeleton]\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \\(\\(\[LeftSkeleton] 1 \
+\[RightSkeleton]\\)\\), \\(\\(XMLElement[\\(\\(\[LeftSkeleton] 1 \
+\[RightSkeleton]\\)\\)]\\)\\), \\(\\(XMLElement[\\(\\(\\\"portpose\\\", \
+\\(\\({\\(\\(\\\"x\\\" \[Rule] 0.8571428571428571`\\)\\), \\(\\(\\\"y\\\" \
+\[Rule] \\\"0\\\"\\)\\), \\(\\(\\\"a\\\" \[Rule] \\\"270\\\"\\)\\), \
+\\(\\(\\\"name\\\" \[Rule] \\\"Kd\\\"\\)\\)}\\)\\), \
+\\(\\({}\\)\\)\\)\\)]\\)\\), \\(\\(XMLElement[\\(\\(\\\"portpose\\\", \\(\\({\
+\\(\\(\\\"x\\\" \[Rule] \\\"0.5\\\"\\)\\), \\(\\(\\\"y\\\" \[Rule] \
+\\\"1\\\"\\)\\), \\(\\(\\\"a\\\" \[Rule] \\\"90\\\"\\)\\), \\(\\(\\\"name\\\" \
+\[Rule] \\\"u\\\"\\)\\)}\\)\\), \
+\\(\\({}\\)\\)\\)\\)]\\)\\)}\\)\\)\\)\\)]\\)\\)}\\)\\)\\)\\)]\\)\\)\\)\\)]\\)\
+\[NoBreak] is not a list of contents. The third item in an XMLElement must be \
+a list of contents, even if it is an empty list. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
+\\\"XMLElement::cntsList\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.576244881263411*^9, 3.5763182268600445`*^9, 
+  3.576859825239603*^9, 3.5768600098691635`*^9, 3.5768600672054424`*^9, 
+  3.577450356884741*^9, 3.5774505060506563`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Export", "::", "autofix"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Malformed symbolic XML expression encountered. This may \
+result in unexpected XML data. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/Export\\\", ButtonNote -> \\\"Export::autofix\\\"]\
+\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.576244881263411*^9, 3.5763182268600445`*^9, 
+  3.576859825239603*^9, 3.5768600098691635`*^9, 3.5768600672054424`*^9, 
+  3.577450356884741*^9, 3.577450506051656*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"XMLElement", "::", "attrhs"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"\[NoBreak]\\!\\(0.14285714285714285`\\)\[NoBreak] in \
+\[NoBreak]\\!\\(\\\"x\\\" \[Rule] 0.14285714285714285`\\)\[NoBreak] is not a \
+valid value for an attribute in an XMLElement. The value of the attribute \
+must be a string. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
+\\\"XMLElement::attrhs\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.576244881263411*^9, 3.5763182268600445`*^9, 
+  3.576859825239603*^9, 3.5768600098691635`*^9, 3.5768600672054424`*^9, 
+  3.577450356884741*^9, 3.577450506053656*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Export", "::", "autofix"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Malformed symbolic XML expression encountered. This may \
+result in unexpected XML data. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/Export\\\", ButtonNote -> \\\"Export::autofix\\\"]\
+\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.576244881263411*^9, 3.5763182268600445`*^9, 
+  3.576859825239603*^9, 3.5768600098691635`*^9, 3.5768600672054424`*^9, 
+  3.577450356884741*^9, 3.5774505060546565`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"XMLElement", "::", "attrhs"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"\[NoBreak]\\!\\(0.2857142857142857`\\)\[NoBreak] in \
+\[NoBreak]\\!\\(\\\"x\\\" \[Rule] 0.2857142857142857`\\)\[NoBreak] is not a \
+valid value for an attribute in an XMLElement. The value of the attribute \
+must be a string. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
+\\\"XMLElement::attrhs\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.576244881263411*^9, 3.5763182268600445`*^9, 
+  3.576859825239603*^9, 3.5768600098691635`*^9, 3.5768600672054424`*^9, 
+  3.577450356884741*^9, 3.5774505060556564`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Export", "::", "autofix"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Malformed symbolic XML expression encountered. This may \
+result in unexpected XML data. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/Export\\\", ButtonNote -> \\\"Export::autofix\\\"]\
+\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.576244881263411*^9, 3.5763182268600445`*^9, 
+  3.576859825239603*^9, 3.5768600098691635`*^9, 3.5768600672054424`*^9, 
+  3.577450356884741*^9, 3.5774505060566564`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"General", "::", "stop"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Further output of \[NoBreak]\\!\\(\\*StyleBox[\\(Export :: \
+autofix\\), \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this \
+calculation. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
+\\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.576244881263411*^9, 3.5763182268600445`*^9, 
+  3.576859825239603*^9, 3.5768600098691635`*^9, 3.5768600672054424`*^9, 
+  3.577450356884741*^9, 3.5774505060576563`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"XMLElement", "::", "attrhs"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"\[NoBreak]\\!\\(0.42857142857142855`\\)\[NoBreak] in \
+\[NoBreak]\\!\\(\\\"x\\\" \[Rule] 0.42857142857142855`\\)\[NoBreak] is not a \
+valid value for an attribute in an XMLElement. The value of the attribute \
+must be a string. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
+\\\"XMLElement::attrhs\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.576244881263411*^9, 3.5763182268600445`*^9, 
+  3.576859825239603*^9, 3.5768600098691635`*^9, 3.5768600672054424`*^9, 
+  3.577450356884741*^9, 3.5774505060586567`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"General", "::", "stop"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Further output of \
+\[NoBreak]\\!\\(\\*StyleBox[\\(XMLElement :: attrhs\\), \
+\\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this calculation. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/stop\\\", \
+ButtonNote -> \\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.576244881263411*^9, 3.5763182268600445`*^9, 
+  3.576859825239603*^9, 3.5768600098691635`*^9, 3.5768600672054424`*^9, 
+  3.577450356884741*^9, 3.577450506059657*^9}],
+
+Cell[BoxData["\<\"SignalPID.xml\"\>"], "Output",
+ CellChangeTimes->{3.5762448813258114`*^9, 3.5763182269090495`*^9, 
+  3.576859825275605*^9, 3.5768600099001646`*^9, 3.576860067233444*^9, 
+  3.577450357335786*^9, 3.5774505060606565`*^9}]
+}, Open  ]]
+}, Open  ]],
 
 Cell[CellGroupData[{
 
@@ -221,15 +513,15 @@ Cell[BoxData[{
    "\"\<Division of Fluid and Mechatronic Systems, Link\[ODoubleDot]ping \
 University\>\""}], ";"}], "\[IndentingNewLine]", 
  RowBox[{
-  RowBox[{"SetFile", "[", 
-   RowBox[{"domain", ",", "displayName"}], "]"}], ";"}]}], "Input",
+  RowBox[{"SetFilenames", "[", 
+   RowBox[{"path", ",", "domain", ",", "displayName"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"ResetComponentVariables", "[", "]"}], ";"}]}], "Input",
  CellChangeTimes->{{3.520880152296875*^9, 3.520880230078125*^9}, 
    3.520932125875*^9, 3.520932753984375*^9, {3.52093324790625*^9, 
-   3.520933251453125*^9}, 3.522342790078125*^9}],
-
-Cell[BoxData[
- RowBox[{
-  RowBox[{"ResetComponentVariables", "[", "]"}], ";"}]], "Input"],
+   3.520933251453125*^9}, 3.522342790078125*^9, {3.576244777211645*^9, 
+   3.5762447808620515`*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -243,15 +535,11 @@ Cell[BoxData[
      RowBox[{"{", 
       RowBox[{
       "da", ",", "1.", ",", "double", ",", "\"\<\>\"", ",", 
-       "\"\<relative damping\>\""}], "}"}], ",", 
-     RowBox[{"{", 
-      RowBox[{
-      "kx", ",", "1.", ",", "double", ",", "\"\<rad/s\>\"", ",", 
-       "\"\<Break frequency\>\""}], "}"}], ",", 
+       "\"\<relative damping\>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{"umin", ",", 
        RowBox[{"-", "1."}], ",", "double", ",", "\"\<\>\"", ",", 
-       "\"\<Minium output signal\>\""}], "}"}], ",", 
+       "\"\<Minium output signal\>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
       "umax", ",", "1.", ",", "double", ",", "\"\<\>\"", ",", 
@@ -259,7 +547,7 @@ Cell[BoxData[
     "}"}]}], ";"}]], "Input",
  CellChangeTimes->{{3.520933349796875*^9, 3.5209333498125*^9}, {
   3.520938265609375*^9, 3.520938271921875*^9}, {3.534617535859375*^9, 
-  3.53461754240625*^9}}],
+  3.53461754240625*^9}, {3.5763181929046497`*^9, 3.576318200817441*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -272,11 +560,15 @@ Cell[BoxData[
        "\"\<Reference value\>\""}], "}"}], ",", "\[IndentingNewLine]", 
      RowBox[{"{", 
       RowBox[{
+      "kx", ",", "1.", ",", "double", ",", "\"\<rad/s\>\"", ",", 
+       "\"\<Break frequency\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
       "y", ",", "0.", ",", "double", ",", "\"\<\>\"", ",", 
        "\"\<Actual value\>\""}], "}"}]}], "\n", "}"}]}], ";"}]], "Input",
  CellChangeTimes->{{3.520880034703125*^9, 3.520880034703125*^9}, {
   3.520932825078125*^9, 3.520932825328125*^9}, {3.5719095024473763`*^9, 
-  3.5719095054581814`*^9}}],
+  3.5719095054581814`*^9}, {3.5763182024526043`*^9, 3.576318203885748*^9}}],
 
 Cell[BoxData[
  RowBox[{
@@ -361,100 +653,782 @@ Cell[BoxData[
 Cell[BoxData[
  RowBox[{
   StyleBox[
-   RowBox[{"Part", "::", "partd"}], "MessageName"], ":", 
-  " ", "\<\"Part specification \[NoBreak]\\!\\(delayedPart \
+   RowBox[{"Part", "::", "partd"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Part specification \[NoBreak]\\!\\(delayedPart \
 \[LeftDoubleBracket] \\(\\(1, 1\\)\\) \[RightDoubleBracket]\\)\[NoBreak] is \
 longer than depth of object. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
 ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
 ButtonData:>\\\"paclet:ref/message/General/partd\\\", ButtonNote -> \
 \\\"Part::partd\\\"]\\)\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.53465184090625*^9}],
+ CellChangeTimes->{3.53465184090625*^9, 3.576244881435011*^9, 
+  3.5763182270350623`*^9, 3.5768598254516153`*^9, 3.5768600100291724`*^9, 
+  3.5768600673604517`*^9, 3.5774503578578377`*^9, 3.577450506202671*^9}],
 
 Cell[BoxData[
  RowBox[{
   StyleBox[
-   RowBox[{"Part", "::", "partd"}], "MessageName"], ":", 
-  " ", "\<\"Part specification \[NoBreak]\\!\\(delayedPart \
-\[LeftDoubleBracket] \\(\\(1, 1\\)\\) \[RightDoubleBracket]\\)\[NoBreak] is \
-longer than depth of object. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
-ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
-ButtonData:>\\\"paclet:ref/message/General/partd\\\", ButtonNote -> \
-\\\"Part::partd\\\"]\\)\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.534651840953125*^9}],
-
-Cell[BoxData[
- RowBox[{
-  StyleBox[
-   RowBox[{"Part", "::", "partd"}], "MessageName"], ":", 
-  " ", "\<\"Part specification \[NoBreak]\\!\\(delayedPart \
+   RowBox[{"Part", "::", "partd"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Part specification \[NoBreak]\\!\\(delayedPart \
 \[LeftDoubleBracket] \\(\\(1, 2\\)\\) \[RightDoubleBracket]\\)\[NoBreak] is \
 longer than depth of object. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
 ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
 ButtonData:>\\\"paclet:ref/message/General/partd\\\", ButtonNote -> \
 \\\"Part::partd\\\"]\\)\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.53465184096875*^9}],
+ CellChangeTimes->{3.53465184090625*^9, 3.576244881435011*^9, 
+  3.5763182270350623`*^9, 3.5768598254516153`*^9, 3.5768600100291724`*^9, 
+  3.5768600673604517`*^9, 3.5774503578578377`*^9, 3.5774505062036715`*^9}],
 
 Cell[BoxData[
  RowBox[{
   StyleBox[
-   RowBox[{"General", "::", "stop"}], "MessageName"], ":", 
-  " ", "\<\"Further output of \[NoBreak]\\!\\(\\*StyleBox[\\(Part :: \
-partd\\), \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this \
+   RowBox[{"Set", "::", "noval"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(inputParameters\\)\[NoBreak] in \
+part assignment does not have an immediate value. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/noval\\\", ButtonNote -> \
+\\\"Set::noval\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.53465184090625*^9, 3.576244881435011*^9, 
+  3.5763182270350623`*^9, 3.5768598254516153`*^9, 3.5768600100291724`*^9, 
+  3.5768600673604517`*^9, 3.5774503578578377`*^9, 3.577450506228674*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Set", "::", "noval"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(inputParameters\\)\[NoBreak] in \
+part assignment does not have an immediate value. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/noval\\\", ButtonNote -> \
+\\\"Set::noval\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.53465184090625*^9, 3.576244881435011*^9, 
+  3.5763182270350623`*^9, 3.5768598254516153`*^9, 3.5768600100291724`*^9, 
+  3.5768600673604517`*^9, 3.5774503578578377`*^9, 3.577450506229674*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Set", "::", "noval"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Symbol \[NoBreak]\\!\\(inputParameters\\)\[NoBreak] in \
+part assignment does not have an immediate value. \\!\\(\\*ButtonBox[\\\"\
+\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/noval\\\", ButtonNote -> \
+\\\"Set::noval\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.53465184090625*^9, 3.576244881435011*^9, 
+  3.5763182270350623`*^9, 3.5768598254516153`*^9, 3.5768600100291724`*^9, 
+  3.5768600673604517`*^9, 3.5774503578578377`*^9, 3.577450506229674*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"General", "::", "stop"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Further output of \[NoBreak]\\!\\(\\*StyleBox[\\(Set :: \
+noval\\), \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this \
 calculation. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
 ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
 ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
 \\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.53465184096875*^9}],
+ CellChangeTimes->{3.53465184090625*^9, 3.576244881435011*^9, 
+  3.5763182270350623`*^9, 3.5768598254516153`*^9, 3.5768600100291724`*^9, 
+  3.5768600673604517`*^9, 3.5774503578578377`*^9, 3.577450506230674*^9}],
 
 Cell[BoxData[
  RowBox[{
   StyleBox[
-   RowBox[{"Set", "::", "noval"}], "MessageName"], ":", 
-  " ", "\<\"Symbol \[NoBreak]\\!\\(inputParameters\\)\[NoBreak] in part \
-assignment does not have an immediate value. \\!\\(\\*ButtonBox[\\\"\
+   RowBox[{"XMLElement", "::", "cntsList"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"\[NoBreak]\\!\\(XMLElement[\\(\\(\\\"modelobject\\\", \
+\\(\\({\\(\\(\\\"typename\\\" \[Rule] \\\"SignalPIlead\\\"\\)\\), \
+\\(\\(\\\"displayname\\\" \[Rule] \\\"SignalPIlead\\\"\\)\\)}\\)\\), \
+\\(\\({\\(\\(XMLElement[\\(\\(\\\"icon\\\", \\(\\({\\(\\(\\\"isopath\\\" \
+\[Rule] \\\"SignalPIlead.svg\\\"\\)\\), \\(\\(\\\"iconrotation\\\" \[Rule] \\\
+\"ON\\\"\\)\\), \\(\\(\\\"userpath\\\" \[Rule] \
+\\\"SignalPIlead.svg\\\"\\)\\)}\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \
+\\(\\(XMLElement[\\(\\(\\\"portpositions\\\", \\(\\({}\\)\\), \
+\\(\\({\\(\\(XMLElement[\\(\\(\\\"portpose\\\", \\(\\({\\(\\(\\\"x\\\" \
+\[Rule] 0.25`\\)\\), \\(\\(\\\"y\\\" \[Rule] \\\"0\\\"\\)\\), \\(\\(\\\"a\\\" \
+\[Rule] \\\"270\\\"\\)\\), \\(\\(\\\"name\\\" \[Rule] \
+\\\"yref\\\"\\)\\)}\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \
+\\(\\(XMLElement[\\(\\(\\\"portpose\\\", \\(\\({\\(\\(\\\"x\\\" \[Rule] \
+0.5`\\)\\), \\(\\(\\\"y\\\" \[Rule] \\\"0\\\"\\)\\), \\(\\(\\\"a\\\" \[Rule] \
+\\\"270\\\"\\)\\), \\(\\(\\\"name\\\" \[Rule] \\\"kx\\\"\\)\\)}\\)\\), \
+\\(\\({}\\)\\)\\)\\)]\\)\\), \\(\\(XMLElement[\\(\\(\\\"portpose\\\", \\(\\({\
+\\(\\(\\\"x\\\" \[Rule] 0.75`\\)\\), \\(\\(\\\"y\\\" \[Rule] \\\"0\\\"\\)\\), \
+\\(\\(\\\"a\\\" \[Rule] \\\"270\\\"\\)\\), \\(\\(\\\"name\\\" \[Rule] \\\"y\\\
+\"\\)\\)}\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \
+\\(\\(XMLElement[\\(\\(\\\"portpose\\\", \\(\\({\\(\\(\\\"x\\\" \[Rule] \
+\\\"0.5\\\"\\)\\), \\(\\(\\\"y\\\" \[Rule] \\\"1\\\"\\)\\), \\(\\(\\\"a\\\" \
+\[Rule] \\\"90\\\"\\)\\), \\(\\(\\\"name\\\" \[Rule] \\\"u\\\"\\)\\)}\\)\\), \
+\\(\\({}\\)\\)\\)\\)]\\)\\)}\\)\\)\\)\\)]\\)\\)}\\)\\)\\)\\)]\\)\[NoBreak] in \
+\[NoBreak]\\!\\(XMLElement[\\(\\(\\\"hopsanobjectappearance\\\", \
+\\(\\({\\\"version\\\" \[Rule] \\\"0.1\\\"}\\)\\), \
+\\(\\(XMLElement[\\(\\(\\\"modelobject\\\", \\(\\({\\(\\(\\\"typename\\\" \
+\[Rule] \\\"SignalPIlead\\\"\\)\\), \\(\\(\\\"displayname\\\" \[Rule] \
+\\\"SignalPIlead\\\"\\)\\)}\\)\\), \
+\\(\\({\\(\\(XMLElement[\\(\\(\\\"icon\\\", \\(\\({\\(\\(\\\"isopath\\\" \
+\[Rule] \\\"SignalPIlead.svg\\\"\\)\\), \\(\\(\\\"iconrotation\\\" \[Rule] \\\
+\"ON\\\"\\)\\), \\(\\(\\\"userpath\\\" \[Rule] \
+\\\"SignalPIlead.svg\\\"\\)\\)}\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \
+\\(\\(XMLElement[\\(\\(\\\"portpositions\\\", \\(\\({}\\)\\), \
+\\(\\({\\(\\(XMLElement[\\(\\(\\\"portpose\\\", \\(\\({\\(\\(\\\"x\\\" \
+\[Rule] 0.25`\\)\\), \\(\\(\\\"y\\\" \[Rule] \\\"0\\\"\\)\\), \\(\\(\\\"a\\\" \
+\[Rule] \\\"270\\\"\\)\\), \\(\\(\\\"name\\\" \[Rule] \
+\\\"yref\\\"\\)\\)}\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \
+\\(\\(XMLElement[\\(\\(\\\"portpose\\\", \\(\\({\\(\\(\\\"x\\\" \[Rule] \
+0.5`\\)\\), \\(\\(\\\"y\\\" \[Rule] \\\"0\\\"\\)\\), \\(\\(\\\"a\\\" \[Rule] \
+\\\"270\\\"\\)\\), \\(\\(\\\"name\\\" \[Rule] \\\"kx\\\"\\)\\)}\\)\\), \
+\\(\\({}\\)\\)\\)\\)]\\)\\), \\(\\(XMLElement[\\(\\(\\\"portpose\\\", \\(\\({\
+\\(\\(\\\"x\\\" \[Rule] 0.75`\\)\\), \\(\\(\\\"y\\\" \[Rule] \\\"0\\\"\\)\\), \
+\\(\\(\\\"a\\\" \[Rule] \\\"270\\\"\\)\\), \\(\\(\\\"name\\\" \[Rule] \\\"y\\\
+\"\\)\\)}\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \
+\\(\\(XMLElement[\\(\\(\\\"portpose\\\", \\(\\({\\(\\(\\\"x\\\" \[Rule] \
+\\\"0.5\\\"\\)\\), \\(\\(\\\"y\\\" \[Rule] \\\"1\\\"\\)\\), \\(\\(\\\"a\\\" \
+\[Rule] \\\"90\\\"\\)\\), \\(\\(\\\"name\\\" \[Rule] \\\"u\\\"\\)\\)}\\)\\), \
+\\(\\({}\\)\\)\\)\\)]\\)\\)}\\)\\)\\)\\)]\\)\\)}\\)\\)\\)\\)]\\)\\)\\)\\)]\\)\
+\[NoBreak] is not a list of contents. The third item in an XMLElement must be \
+a list of contents, even if it is an empty list. \\!\\(\\*ButtonBox[\\\"\
 \[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
-ButtonData:>\\\"paclet:ref/message/General/noval\\\", ButtonNote -> \
-\\\"Set::noval\\\"]\\)\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.534651841265625*^9}],
+ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
+\\\"XMLElement::cntsList\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.53465184090625*^9, 3.576244881435011*^9, 
+  3.5763182270350623`*^9, 3.5768598254516153`*^9, 3.5768600100291724`*^9, 
+  3.5768600673604517`*^9, 3.5774503578578377`*^9, 3.577450506230674*^9}],
 
 Cell[BoxData[
  RowBox[{
   StyleBox[
-   RowBox[{"Set", "::", "noval"}], "MessageName"], ":", 
-  " ", "\<\"Symbol \[NoBreak]\\!\\(inputParameters\\)\[NoBreak] in part \
-assignment does not have an immediate value. \\!\\(\\*ButtonBox[\\\"\
-\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
-ButtonData:>\\\"paclet:ref/message/General/noval\\\", ButtonNote -> \
-\\\"Set::noval\\\"]\\)\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.53465184128125*^9}],
+   RowBox[{"Export", "::", "autofix"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Malformed symbolic XML expression encountered. This may \
+result in unexpected XML data. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/Export\\\", ButtonNote -> \\\"Export::autofix\\\"]\
+\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.53465184090625*^9, 3.576244881435011*^9, 
+  3.5763182270350623`*^9, 3.5768598254516153`*^9, 3.5768600100291724`*^9, 
+  3.5768600673604517`*^9, 3.5774503578578377`*^9, 3.577450506231674*^9}],
 
 Cell[BoxData[
  RowBox[{
   StyleBox[
-   RowBox[{"Set", "::", "noval"}], "MessageName"], ":", 
-  " ", "\<\"Symbol \[NoBreak]\\!\\(inputParameters\\)\[NoBreak] in part \
-assignment does not have an immediate value. \\!\\(\\*ButtonBox[\\\"\
+   RowBox[{"XMLElement", "::", "attrhs"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"\[NoBreak]\\!\\(0.25`\\)\[NoBreak] in \
+\[NoBreak]\\!\\(\\\"x\\\" \[Rule] 0.25`\\)\[NoBreak] is not a valid value for \
+an attribute in an XMLElement. The value of the attribute must be a string. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
+\\\"XMLElement::attrhs\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.53465184090625*^9, 3.576244881435011*^9, 
+  3.5763182270350623`*^9, 3.5768598254516153`*^9, 3.5768600100291724`*^9, 
+  3.5768600673604517`*^9, 3.5774503578578377`*^9, 3.577450506231674*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Export", "::", "autofix"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Malformed symbolic XML expression encountered. This may \
+result in unexpected XML data. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/Export\\\", ButtonNote -> \\\"Export::autofix\\\"]\
+\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.53465184090625*^9, 3.576244881435011*^9, 
+  3.5763182270350623`*^9, 3.5768598254516153`*^9, 3.5768600100291724`*^9, 
+  3.5768600673604517`*^9, 3.5774503578578377`*^9, 3.5774505062326736`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"XMLElement", "::", "attrhs"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"\[NoBreak]\\!\\(0.5`\\)\[NoBreak] in \[NoBreak]\\!\\(\\\"x\
+\\\" \[Rule] 0.5`\\)\[NoBreak] is not a valid value for an attribute in an \
+XMLElement. The value of the attribute must be a string. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
+\\\"XMLElement::attrhs\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.53465184090625*^9, 3.576244881435011*^9, 
+  3.5763182270350623`*^9, 3.5768598254516153`*^9, 3.5768600100291724`*^9, 
+  3.5768600673604517`*^9, 3.5774503578578377`*^9, 3.5774505062326736`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Export", "::", "autofix"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Malformed symbolic XML expression encountered. This may \
+result in unexpected XML data. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/Export\\\", ButtonNote -> \\\"Export::autofix\\\"]\
+\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.53465184090625*^9, 3.576244881435011*^9, 
+  3.5763182270350623`*^9, 3.5768598254516153`*^9, 3.5768600100291724`*^9, 
+  3.5768600673604517`*^9, 3.5774503578578377`*^9, 3.577450506233674*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"General", "::", "stop"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Further output of \[NoBreak]\\!\\(\\*StyleBox[\\(Export :: \
+autofix\\), \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this \
+calculation. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
+\\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.53465184090625*^9, 3.576244881435011*^9, 
+  3.5763182270350623`*^9, 3.5768598254516153`*^9, 3.5768600100291724`*^9, 
+  3.5768600673604517`*^9, 3.5774503578578377`*^9, 3.5774505062346745`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"XMLElement", "::", "attrhs"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"\[NoBreak]\\!\\(0.75`\\)\[NoBreak] in \
+\[NoBreak]\\!\\(\\\"x\\\" \[Rule] 0.75`\\)\[NoBreak] is not a valid value for \
+an attribute in an XMLElement. The value of the attribute must be a string. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
+\\\"XMLElement::attrhs\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.53465184090625*^9, 3.576244881435011*^9, 
+  3.5763182270350623`*^9, 3.5768598254516153`*^9, 3.5768600100291724`*^9, 
+  3.5768600673604517`*^9, 3.5774503578578377`*^9, 3.5774505062346745`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"General", "::", "stop"}], "MessageName"], 
+  RowBox[{
+  ":", " "}], "\<\"Further output of \
+\[NoBreak]\\!\\(\\*StyleBox[\\(XMLElement :: attrhs\\), \
+\\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this calculation. \
+\\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/stop\\\", \
+ButtonNote -> \\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{3.53465184090625*^9, 3.576244881435011*^9, 
+  3.5763182270350623`*^9, 3.5768598254516153`*^9, 3.5768600100291724`*^9, 
+  3.5768600673604517`*^9, 3.5774503578578377`*^9, 3.5774505062356744`*^9}],
+
+Cell[BoxData["\<\"SignalPIlead.xml\"\>"], "Output",
+ CellChangeTimes->{3.5762448814662113`*^9, 3.5763182270650654`*^9, 
+  3.5768598254626155`*^9, 3.5768600100611744`*^9, 3.5768600673904533`*^9, 
+  3.577450357865839*^9, 3.5774505062366743`*^9}]
+}, Open  ]]
+}, Closed]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"path", "=", 
+   RowBox[{"ToFileName", "[", 
+    RowBox[{"{", 
+     RowBox[{
+     "\"\<C:\>\"", ",", "\"\<HopsanTrunk\>\"", ",", "\"\<HOPSAN++\>\"", ",", 
+      "\"\<componentLibraries\>\"", ",", "\"\<defaultLibrary\>\"", ",", 
+      "\"\<Special\>\"", ",", "\"\<AeroComponents\>\""}], "}"}], "]"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.5757727777685804`*^9, 3.575772792541806*^9}, {
+   3.5757728423954945`*^9, 3.5757728498367076`*^9}, {3.57577333888545*^9, 
+   3.5757733706315055`*^9}, 3.5757734316206255`*^9, {3.575776746610216*^9, 
+   3.57577674854722*^9}, {3.5758034373456383`*^9, 3.5758034687537785`*^9}, {
+   3.576215299790524*^9, 3.576215340163597*^9}, {3.5762155444425898`*^9, 
+   3.576215547684914*^9}, 3.5762159940865498`*^9, 3.5762161254666862`*^9, {
+   3.576244738757578*^9, 3.5762447467603917`*^9}, {3.5762448228729253`*^9, 
+   3.576244855585766*^9}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Attitude Control", "Section",
+ CellChangeTimes->{{3.520873963671875*^9, 3.520873967265625*^9}, {
+  3.5769482475613537`*^9, 3.5769482533236833`*^9}}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"domain", "=", "\"\<Signal\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"displayName", "=", "\"\<AttitudeControl\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"brief", "=", "\"\<Attitude control unit for an aircraft\>\""}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"componentType", "=", "\"\<ComponentSignal\>\""}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"author", "=", "\"\<Petter Krus <petter.krus@liu.se>\>\""}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+  "affiliation", " ", "=", " ", 
+   "\"\<Division of Fluid and Mechatronic Systems, Link\[ODoubleDot]ping \
+University\>\""}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"SetFilenames", "[", 
+   RowBox[{"defaultPath", ",", "domain", ",", "displayName"}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"ResetComponentVariables", "[", "]"}], ";"}]}], "Input",
+ CellChangeTimes->{{3.520874016125*^9, 3.520874068265625*^9}, {
+   3.52087448028125*^9, 3.52087450728125*^9}, 3.52087996896875*^9, {
+   3.520880203578125*^9, 3.52088022325*^9}, {3.520932119625*^9, 
+   3.5209321425*^9}, 3.5209322290625*^9, {3.520932736140625*^9, 
+   3.520932737640625*^9}, 3.522342782453125*^9, {3.5256245293125*^9, 
+   3.52562454328125*^9}, {3.526016819973899*^9, 3.5260168209582806`*^9}, 
+   3.5765096986176724`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputVariables", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "phiref", ",", "0.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Reference signal roll\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "thetaref", ",", "0.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Reference signal tip\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "psiref", ",", "0.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Reference signal yaw\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "phimax", ",", "1.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Maximum bank angle for turn\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "phi", ",", "0.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<roll angle\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "theta", ",", "0.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<tipp angle\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "psi", ",", "0.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<yaw angle\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "beta", ",", "0.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<side slip angle\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Qb", ",", "0.", ",", "double", ",", "\"\<rad/s\>\"", ",", 
+       "\"\<tip angle rate\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Rb", ",", "0.", ",", "double", ",", "\"\<rad/s\>\"", ",", 
+       "\"\<yaw angle rate\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Ub", ",", "0.", ",", "double", ",", "\"\<m/s\>\"", ",", 
+       "\"\<actual speed\>\""}], "}"}]}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.520874548453125*^9, 3.520874548453125*^9}, {
+   3.520874718671875*^9, 3.520874721046875*^9}, {3.520874755734375*^9, 
+   3.520874766015625*^9}, {3.534151799828125*^9, 3.53415180021875*^9}, {
+   3.573711698540125*^9, 3.573711705164504*^9}, 3.574059944319121*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"inputParameters", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "Kphi", ",", "3.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Gain roll\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Kphipsi", ",", "2.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Gain yaw/roll\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Kelev", ",", "4.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Gain tip, default\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Kdelev", ",", "1.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Gain tip, default\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Krud", ",", "1.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Gain yaw, default\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "Kdrud", ",", "1.", ",", "double", ",", "\"\<\>\"", ",", 
+       "\"\<Gain yaw rate, default\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"u1min", ",", 
+       RowBox[{"-", ".9"}], ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Minium output signal roll\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "u1max", ",", ".9", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Maximum output signal roll\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"u2min", ",", 
+       RowBox[{"-", ".7"}], ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Minium output signal tip\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "u2max", ",", ".7", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Maximum output signal tip\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"u3min", ",", 
+       RowBox[{"-", ".7"}], ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Minium output signal yaw\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "u3max", ",", ".7", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<Maximum output signal yaw\>\""}], "}"}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "U0", ",", "100.", ",", "double", ",", "\"\<m/s\>\"", ",", 
+       "\"\<Reference speed for compensation\>\""}], "}"}]}], 
+    "\[IndentingNewLine]", "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.520874584265625*^9, 3.520874584265625*^9}, {
+   3.520874721515625*^9, 3.5208747834375*^9}, {3.52562634321875*^9, 
+   3.5256264030625*^9}, 3.5261184740790405`*^9, {3.534151810859375*^9, 
+   3.534151811265625*^9}, {3.5363116760362206`*^9, 3.5363116829580956`*^9}, {
+   3.571925345921828*^9, 3.5719253572630477`*^9}, {3.5737116595478945`*^9, 
+   3.573711681356142*^9}, 3.5740599485465436`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"outputVariables", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "uaerL", ",", "0.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<left aerleron\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "uaerR", ",", "0.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<right aerleron\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "uelev", ",", "0.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<elevator\>\""}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{
+      "urud", ",", "0.", ",", "double", ",", "\"\<rad\>\"", ",", 
+       "\"\<rudder\>\""}], "}"}]}], "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.520874568515625*^9, 3.520874568515625*^9}, {
+  3.52087472571875*^9, 3.520874753328125*^9}, {3.520874792546875*^9, 
+  3.520874801671875*^9}}],
+
+Cell["\<\
+localExpressions = {
+   {Kv, Kvexpr, double, \"\", \"Speed compensation factor\"},
+   {u1cmin, Kv u1min, double, \"\"; \"min rudder deflection 1\"},
+   {u1cmax, Kv u1max, double, \"rad\", \"max rudder deflection 1\"},
+   {u2cmin, Kv u2min, double, \"rad\", \"min rudder deflection 2\"},
+   {u2cmax, Kv u2max, double, \"rad\", \"max rudder deflection 2\"},
+   {u3cmin, u3min, double, \"rad\", \"min rudder deflection 3\"},
+   {u3cmax, u3max, double, \"rad\", \"max rudder deflection 3\"}
+   };\
+\>", "Text",
+ CellChangeTimes->{{3.52087472684375*^9, 3.52087472896875*^9}, {
+   3.5223471696875*^9, 3.522347170765625*^9}, {3.53413052296875*^9, 
+   3.53413053071875*^9}, 3.571909059311759*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"localExpressions", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"Kv", "==", 
+      FractionBox[
+       SuperscriptBox["U0", "2"], 
+       RowBox[{
+        SuperscriptBox["U0", "2"], "+", 
+        RowBox[{"Abs", "[", 
+         SuperscriptBox["Ub", "2"], "]"}]}]]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"u1cmin", "==", 
+      RowBox[{"Kv", " ", "u1min"}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"u1cmax", "==", 
+      RowBox[{"Kv", " ", "u1max"}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"u2cmin", "==", 
+      RowBox[{"Kv", " ", "u2min"}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"u2cmax", "==", 
+      RowBox[{"Kv", " ", "u2max"}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"u3cmin", "==", "u3min"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"u3cmax", "==", "u3max"}]}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}]], "Input",
+ CellChangeTimes->{{3.52087472684375*^9, 3.52087472896875*^9}, {
+   3.5223471696875*^9, 3.522347170765625*^9}, {3.53413052296875*^9, 
+   3.53413053071875*^9}, {3.571909066643772*^9, 3.5719091085610456`*^9}, 
+   3.571909210894826*^9}],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"yaerexpr", "   ", "=", " ", 
+   RowBox[{
+    RowBox[{"-", "Kv"}], " ", "Kphi", " ", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"diffAngle", "[", 
+       RowBox[{"phiref", ",", "phi"}], "]"}], "+", 
+      RowBox[{"limit", "[", 
+       RowBox[{
+        RowBox[{"Kphipsi", " ", 
+         RowBox[{"diffAngle", "[", 
+          RowBox[{"psiref", ",", "psi"}], "]"}]}], ",", 
+        RowBox[{"-", "phimax"}], ",", "phimax"}], "]"}]}], ")"}]}]}], " ", 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"yelevexpr", " ", "=", " ", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"-", "Kv"}], " ", "Kelev", " ", 
+     RowBox[{"(", 
+      RowBox[{"diffAngle", "[", 
+       RowBox[{"thetaref", ",", "theta"}], "]"}], " ", ")"}]}], "-", 
+    RowBox[{"Kv", " ", "Kdelev", " ", "Qb"}]}]}], ";"}], "\n", 
+ RowBox[{
+  RowBox[{"yrudexpr", "   ", "=", " ", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"-", " ", "Krud"}], " ", "beta"}], " ", "-", 
+    RowBox[{"Kv", " ", "Kdrud", " ", "Rb"}]}]}], ";"}]}], "Input",
+ CellChangeTimes->{
+  3.520874640046875*^9, 3.520874692546875*^9, {3.5209330574375*^9, 
+   3.520933060859375*^9}, 3.525580570849698*^9, {3.53413054015625*^9, 
+   3.5341305480625*^9}, {3.534151750078125*^9, 3.534151759390625*^9}, {
+   3.5737116015705786`*^9, 3.57371165019936*^9}, {3.574059958854574*^9, 
+   3.5740599614458337`*^9}, 3.574060060633751*^9, 3.574060794573138*^9, 
+   3.574061556452866*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"expressions", " ", "=", " ", 
+   RowBox[{"{", "\[IndentingNewLine]", "\t", 
+    RowBox[{
+     RowBox[{"uaerL", "==", 
+      RowBox[{"limit", "[", 
+       RowBox[{
+        RowBox[{"-", "yaerexpr"}], ",", "u1cmin", ",", "u1cmax"}], "]"}]}], 
+     ",", "\[IndentingNewLine]", "\t", 
+     RowBox[{"uaerR", "==", 
+      RowBox[{"limit", "[", 
+       RowBox[{"yaerexpr", ",", "u1cmin", ",", "u1cmax"}], "]"}]}], ",", 
+     "\[IndentingNewLine]", "\t", 
+     RowBox[{"uelev", "==", 
+      RowBox[{"limit", "[", 
+       RowBox[{"yelevexpr", ",", "u2cmin", ",", "u2cmax"}], "]"}]}], ",", 
+     "\[IndentingNewLine]", "\t", 
+     RowBox[{"urud", "==", 
+      RowBox[{"limit", "[", 
+       RowBox[{"yrudexpr", ",", "u3cmin", ",", "u3cmax"}], "]"}]}]}], 
+    "\[IndentingNewLine]", "}"}]}], ";"}]], "Input",
+ CellChangeTimes->{{3.520874644515625*^9, 3.5208746525*^9}, {
+   3.5208746850625*^9, 3.520874689984375*^9}, 3.520932942234375*^9, 
+   3.536319993245064*^9, {3.5719091158462586`*^9, 3.571909136781495*^9}, {
+   3.5737116261829863`*^9, 3.5737116270600367`*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Compgen", "[", "file", "]"}]], "Input",
+ CellChangeTimes->{{3.520938682*^9, 3.520938682484375*^9}, {
+  3.5719092689269276`*^9, 3.5719092692857285`*^9}}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"XMLElement", "::", "cntsList"}], "MessageName"], ":", 
+  " ", "\<\"\[NoBreak]\\!\\(XMLElement[\\(\\(\\\"modelobject\\\", \\(\\(\
+\[LeftSkeleton] 1 \[RightSkeleton]\\)\\), \
+\\(\\({\\(\\(XMLElement[\\(\\(\\\"icon\\\", \\(\\({\\(\\(\\\"isopath\\\" \
+\[Rule] \\\"SignalAttitudeControl.svg\\\"\\)\\), \\(\\(\\\"iconrotation\\\" \
+\[Rule] \\\"ON\\\"\\)\\), \\(\\(\\\"userpath\\\" \[Rule] \
+\\\"SignalAttitudeControl.svg\\\"\\)\\)}\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \
+\\(\\(XMLElement[\\(\\(\\\"portpositions\\\", \\(\\({}\\)\\), \
+\\(\\({\\(\\(XMLElement[\\(\\(\\\"portpose\\\", \\(\\({\\(\\(\\\"x\\\" \
+\[Rule] 0.08333333333333333`\\)\\), \\(\\(\\\"y\\\" \[Rule] \\\"0\\\"\\)\\), \
+\\(\\(\\\"a\\\" \[Rule] \\\"270\\\"\\)\\), \\(\\(\\\"name\\\" \[Rule] \
+\\\"phiref\\\"\\)\\)}\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \\(\\(\
+\[LeftSkeleton] 13 \[RightSkeleton]\\)\\), \
+\\(\\(XMLElement[\\(\\(\\\"portpose\\\", \\(\\({\\(\\(\\\"x\\\" \[Rule] \
+\\\"0.8\\\"\\)\\), \\(\\(\\\"y\\\" \[Rule] \\\"1\\\"\\)\\), \\(\\(\\\"a\\\" \
+\[Rule] \\\"90\\\"\\)\\), \\(\\(\\\"name\\\" \[Rule] \
+\\\"urud\\\"\\)\\)}\\)\\), \
+\\(\\({}\\)\\)\\)\\)]\\)\\)}\\)\\)\\)\\)]\\)\\)}\\)\\)\\)\\)]\\)\[NoBreak] in \
+\[NoBreak]\\!\\(XMLElement[\\(\\(\\\"hopsanobjectappearance\\\", \
+\\(\\({\\(\\(\\\"\\\" \[Ellipsis] \\\"\\\"\\)\\) \[Rule] \
+\\(\\(\[LeftSkeleton] 5 \[RightSkeleton]\\)\\)}\\)\\), \
+\\(\\(XMLElement[\\(\\(\\\"modelobject\\\", \\(\\({\\(\\(\[LeftSkeleton] 1 \
+\[RightSkeleton]\\)\\), \\(\\(\\(\\(\\\"d\\\" \[Ellipsis] \\\"me\\\"\\)\\) \
+\[Rule] \\(\\(\\\"\\\" \[Ellipsis] \\\"\\\"\\)\\)\\)\\)}\\)\\), \
+\\(\\({\\(\\(XMLElement[\\(\\(\\\"icon\\\", \\(\\({\\(\\(\\\"isopath\\\" \
+\[Rule] \\\"SignalAttitudeControl.svg\\\"\\)\\), \\(\\(\\\"iconrotation\\\" \
+\[Rule] \\\"ON\\\"\\)\\), \\(\\(\\\"userpath\\\" \[Rule] \
+\\\"SignalAttitudeControl.svg\\\"\\)\\)}\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \
+\\(\\(XMLElement[\\(\\(\\\"portpositions\\\", \\(\\({}\\)\\), \
+\\(\\({\\(\\(XMLElement[\\(\\(\\\"portpose\\\", \\(\\({\\(\\(\\\"x\\\" \
+\[Rule] 0.08333333333333333`\\)\\), \\(\\(\\\"y\\\" \[Rule] \\\"0\\\"\\)\\), \
+\\(\\(\\\"a\\\" \[Rule] \\\"270\\\"\\)\\), \\(\\(\\\"name\\\" \[Rule] \
+\\\"phiref\\\"\\)\\)}\\)\\), \\(\\({}\\)\\)\\)\\)]\\)\\), \\(\\(\
+\[LeftSkeleton] 13 \[RightSkeleton]\\)\\), \
+\\(\\(XMLElement[\\(\\(\\\"portpose\\\", \\(\\({\\(\[LeftSkeleton] 1 \
+\[RightSkeleton]\\)}\\)\\), \
+\\(\\({}\\)\\)\\)\\)]\\)\\)}\\)\\)\\)\\)]\\)\\)}\\)\\)\\)\\)]\\)\\)\\)\\)]\\)\
+\[NoBreak] is not a list of contents. The third item in an XMLElement must be \
+a list of contents, even if it is an empty list. \\!\\(\\*ButtonBox[\\\"\
 \[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
-ButtonData:>\\\"paclet:ref/message/General/noval\\\", ButtonNote -> \
-\\\"Set::noval\\\"]\\)\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.534651841328125*^9}],
+ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
+\\\"XMLElement::cntsList\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{
+  3.5740558854752584`*^9, {3.5740569137570763`*^9, 3.574056915004201*^9}, 
+   3.5740599985705457`*^9, 3.5740600664073286`*^9, 3.5740608054942303`*^9, 
+   3.574061560260485*^9, 3.5769483039215775`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Export", "::", "autofix"}], "MessageName"], ":", 
+  " ", "\<\"Malformed symbolic XML expression encountered. This may result in \
+unexpected XML data. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/Export\\\", ButtonNote -> \\\"Export::autofix\\\"]\
+\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{
+  3.5740558854752584`*^9, {3.5740569137570763`*^9, 3.574056915004201*^9}, 
+   3.5740599985705457`*^9, 3.5740600664073286`*^9, 3.5740608054942303`*^9, 
+   3.574061560260485*^9, 3.576948303925577*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"XMLElement", "::", "attrhs"}], "MessageName"], ":", 
+  " ", "\<\"\[NoBreak]\\!\\(0.08333333333333333`\\)\[NoBreak] in \
+\[NoBreak]\\!\\(\\\"x\\\" \[Rule] 0.08333333333333333`\\)\[NoBreak] is not a \
+valid value for an attribute in an XMLElement. The value of the attribute \
+must be a string. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
+\\\"XMLElement::attrhs\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{
+  3.5740558854752584`*^9, {3.5740569137570763`*^9, 3.574056915004201*^9}, 
+   3.5740599985705457`*^9, 3.5740600664073286`*^9, 3.5740608054942303`*^9, 
+   3.574061560260485*^9, 3.5769483039275775`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Export", "::", "autofix"}], "MessageName"], ":", 
+  " ", "\<\"Malformed symbolic XML expression encountered. This may result in \
+unexpected XML data. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/Export\\\", ButtonNote -> \\\"Export::autofix\\\"]\
+\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{
+  3.5740558854752584`*^9, {3.5740569137570763`*^9, 3.574056915004201*^9}, 
+   3.5740599985705457`*^9, 3.5740600664073286`*^9, 3.5740608054942303`*^9, 
+   3.574061560260485*^9, 3.5769483039285774`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"XMLElement", "::", "attrhs"}], "MessageName"], ":", 
+  " ", "\<\"\[NoBreak]\\!\\(0.16666666666666666`\\)\[NoBreak] in \
+\[NoBreak]\\!\\(\\\"x\\\" \[Rule] 0.16666666666666666`\\)\[NoBreak] is not a \
+valid value for an attribute in an XMLElement. The value of the attribute \
+must be a string. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
+\\\"XMLElement::attrhs\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{
+  3.5740558854752584`*^9, {3.5740569137570763`*^9, 3.574056915004201*^9}, 
+   3.5740599985705457`*^9, 3.5740600664073286`*^9, 3.5740608054942303`*^9, 
+   3.574061560260485*^9, 3.576948303929578*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"Export", "::", "autofix"}], "MessageName"], ":", 
+  " ", "\<\"Malformed symbolic XML expression encountered. This may result in \
+unexpected XML data. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/Export\\\", ButtonNote -> \\\"Export::autofix\\\"]\
+\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{
+  3.5740558854752584`*^9, {3.5740569137570763`*^9, 3.574056915004201*^9}, 
+   3.5740599985705457`*^9, 3.5740600664073286`*^9, 3.5740608054942303`*^9, 
+   3.574061560260485*^9, 3.5769483039315777`*^9}],
 
 Cell[BoxData[
  RowBox[{
   StyleBox[
    RowBox[{"General", "::", "stop"}], "MessageName"], ":", 
-  " ", "\<\"Further output of \[NoBreak]\\!\\(\\*StyleBox[\\(Set :: noval\\), \
-\\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this calculation. \
+  " ", "\<\"Further output of \[NoBreak]\\!\\(\\*StyleBox[\\(Export :: \
+autofix\\), \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this \
+calculation. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
+\\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{
+  3.5740558854752584`*^9, {3.5740569137570763`*^9, 3.574056915004201*^9}, 
+   3.5740599985705457`*^9, 3.5740600664073286`*^9, 3.5740608054942303`*^9, 
+   3.574061560260485*^9, 3.576948303932578*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"XMLElement", "::", "attrhs"}], "MessageName"], ":", 
+  " ", "\<\"\[NoBreak]\\!\\(0.25`\\)\[NoBreak] in \[NoBreak]\\!\\(\\\"x\\\" \
+\[Rule] 0.25`\\)\[NoBreak] is not a valid value for an attribute in an \
+XMLElement. The value of the attribute must be a string. \
 \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", ButtonStyle->\\\"Link\\\", \
-ButtonFrame->None, ButtonData:>\\\"paclet:ref/message/General/stop\\\", \
-ButtonNote -> \\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
- CellChangeTimes->{3.53465184134375*^9}]
+ButtonFrame->None, ButtonData:>\\\"paclet:ref/XMLElement\\\", ButtonNote -> \
+\\\"XMLElement::attrhs\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{
+  3.5740558854752584`*^9, {3.5740569137570763`*^9, 3.574056915004201*^9}, 
+   3.5740599985705457`*^9, 3.5740600664073286`*^9, 3.5740608054942303`*^9, 
+   3.574061560260485*^9, 3.5769483039335775`*^9}],
+
+Cell[BoxData[
+ RowBox[{
+  StyleBox[
+   RowBox[{"General", "::", "stop"}], "MessageName"], ":", 
+  " ", "\<\"Further output of \[NoBreak]\\!\\(\\*StyleBox[\\(XMLElement :: \
+attrhs\\), \\\"MessageName\\\"]\\)\[NoBreak] will be suppressed during this \
+calculation. \\!\\(\\*ButtonBox[\\\"\[RightSkeleton]\\\", \
+ButtonStyle->\\\"Link\\\", ButtonFrame->None, \
+ButtonData:>\\\"paclet:ref/message/General/stop\\\", ButtonNote -> \
+\\\"General::stop\\\"]\\)\"\>"}]], "Message", "MSG",
+ CellChangeTimes->{
+  3.5740558854752584`*^9, {3.5740569137570763`*^9, 3.574056915004201*^9}, 
+   3.5740599985705457`*^9, 3.5740600664073286`*^9, 3.5740608054942303`*^9, 
+   3.574061560260485*^9, 3.576948303934578*^9}],
+
+Cell[BoxData["\<\"SignalAttitudeControl.xml\"\>"], "Output",
+ CellChangeTimes->{
+  3.5341355259375*^9, 3.5346518395*^9, 3.574055885523263*^9, {
+   3.5740569137710776`*^9, 3.574056915015202*^9}, 3.574059998584547*^9, 
+   3.574060066493337*^9, 3.5740608055092316`*^9, 3.5740615602754836`*^9, 
+   3.5769483039355783`*^9}]
 }, Open  ]]
 }, Closed]]
-}, Open  ]]
 },
-WindowSize->{805, 318},
-WindowMargins->{{78, Automatic}, {91, Automatic}},
+CellGrouping->Manual,
+WindowSize->{1197, 541},
+WindowMargins->{{43, Automatic}, {Automatic, 131}},
 FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
 StyleDefinitions->FrontEnd`FileName[{"Creative"}, "PastelColor.nb", 
   CharacterEncoding -> "WindowsANSI"]
@@ -476,45 +1450,95 @@ Cell[CellGroupData[{
 Cell[768, 28, 96, 1, 75, "Section"],
 Cell[867, 31, 481, 13, 82, "Input"],
 Cell[1351, 46, 147, 2, 41, "Input"]
+}, Open  ]],
+Cell[1513, 51, 845, 16, 41, "Input"],
+Cell[CellGroupData[{
+Cell[2383, 71, 187, 3, 75, "Section"],
+Cell[2573, 76, 1240, 28, 182, "Input"],
+Cell[3816, 106, 805, 17, 82, "Input"],
+Cell[4624, 125, 1406, 33, 182, "Input"],
+Cell[6033, 160, 403, 9, 82, "Input"],
+Cell[6439, 171, 108, 2, 41, "Input"],
+Cell[6550, 175, 486, 14, 57, "Input"],
+Cell[7039, 191, 346, 7, 41, "Input"],
+Cell[7388, 200, 171, 4, 41, "Input"],
+Cell[7562, 206, 171, 5, 41, "Input"],
+Cell[CellGroupData[{
+Cell[7758, 215, 63, 1, 41, "Input"],
+Cell[7824, 218, 678, 13, 21, "Message"],
+Cell[8505, 233, 625, 12, 21, "Message"],
+Cell[9133, 247, 625, 12, 21, "Message"],
+Cell[9761, 261, 624, 12, 21, "Message"],
+Cell[10388, 275, 673, 13, 21, "Message"],
+Cell[11064, 290, 4741, 70, 141, "Message"],
+Cell[15808, 362, 602, 12, 21, "Message"],
+Cell[16413, 376, 751, 14, 21, "Message"],
+Cell[17167, 392, 604, 12, 21, "Message"],
+Cell[17774, 406, 751, 14, 21, "Message"],
+Cell[18528, 422, 604, 12, 21, "Message"],
+Cell[19135, 436, 678, 13, 21, "Message"],
+Cell[19816, 451, 753, 14, 21, "Message"],
+Cell[20572, 467, 679, 13, 21, "Message"],
+Cell[21254, 482, 236, 3, 40, "Output"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[21539, 491, 139, 2, 75, "Section"],
+Cell[21681, 495, 1100, 28, 182, "Input"],
+Cell[22784, 525, 1053, 24, 142, "Input"],
+Cell[23840, 551, 841, 19, 122, "Input"],
+Cell[24684, 572, 342, 9, 82, "Input"],
+Cell[25029, 583, 617, 20, 76, "Input"],
+Cell[25649, 605, 705, 16, 183, "Input"],
+Cell[26357, 623, 346, 7, 41, "Input"],
+Cell[26706, 632, 171, 4, 41, "Input"],
+Cell[26880, 638, 280, 7, 41, "Input"],
+Cell[CellGroupData[{
+Cell[27185, 649, 63, 1, 41, "Input"],
+Cell[27251, 652, 701, 13, 70, "Message"],
+Cell[27955, 667, 703, 13, 70, "Message"],
+Cell[28661, 682, 650, 12, 70, "Message"],
+Cell[29314, 696, 650, 12, 70, "Message"],
+Cell[29967, 710, 650, 12, 70, "Message"],
+Cell[30620, 724, 696, 13, 70, "Message"],
+Cell[31319, 739, 4034, 60, 70, "Message"],
+Cell[35356, 801, 627, 12, 70, "Message"],
+Cell[35986, 815, 744, 13, 70, "Message"],
+Cell[36733, 830, 629, 12, 70, "Message"],
+Cell[37365, 844, 744, 13, 70, "Message"],
+Cell[38112, 859, 627, 12, 70, "Message"],
+Cell[38742, 873, 703, 13, 70, "Message"],
+Cell[39448, 888, 746, 13, 70, "Message"],
+Cell[40197, 903, 706, 13, 70, "Message"],
+Cell[40906, 918, 243, 3, 70, "Output"]
+}, Open  ]]
 }, Closed]],
+Cell[41176, 925, 905, 17, 38, "Input"]
+}, Open  ]],
 Cell[CellGroupData[{
-Cell[1535, 53, 187, 3, 45, "Section"],
-Cell[1725, 58, 1127, 27, 182, "Input"],
-Cell[2855, 87, 1284, 29, 142, "Input"],
-Cell[4142, 118, 849, 20, 122, "Input"],
-Cell[4994, 140, 403, 9, 82, "Input"],
-Cell[5400, 151, 108, 2, 41, "Input"],
-Cell[5511, 155, 486, 14, 57, "Input"],
-Cell[6000, 171, 346, 7, 41, "Input"],
-Cell[6349, 180, 171, 4, 41, "Input"],
-Cell[6523, 186, 171, 5, 41, "Input"],
-Cell[6697, 193, 63, 1, 41, "Input"]
-}, Closed]],
+Cell[42118, 947, 154, 2, 75, "Section"],
+Cell[42275, 951, 1305, 30, 182, "Input"],
+Cell[43583, 983, 2304, 53, 262, "Input"],
+Cell[45890, 1038, 2962, 69, 322, "Input"],
+Cell[48855, 1109, 945, 23, 122, "Input"],
+Cell[49803, 1134, 698, 13, 173, "Text"],
+Cell[50504, 1149, 1140, 26, 242, "Input"],
+Cell[51647, 1177, 1410, 37, 82, "Input"],
+Cell[53060, 1216, 1089, 25, 142, "Input"],
 Cell[CellGroupData[{
-Cell[6797, 199, 139, 2, 45, "Section"],
-Cell[6939, 203, 937, 24, 162, "Input"],
-Cell[7879, 229, 89, 2, 41, "Input"],
-Cell[7971, 233, 1108, 28, 122, "Input"],
-Cell[9082, 263, 621, 15, 102, "Input"],
-Cell[9706, 280, 342, 9, 82, "Input"],
-Cell[10051, 291, 617, 20, 76, "Input"],
-Cell[10671, 313, 705, 16, 183, "Input"],
-Cell[11379, 331, 346, 7, 41, "Input"],
-Cell[11728, 340, 171, 4, 41, "Input"],
-Cell[11902, 346, 280, 7, 41, "Input"],
-Cell[CellGroupData[{
-Cell[12207, 357, 63, 1, 41, "Input"],
-Cell[12273, 360, 518, 10, 21, "Message"],
-Cell[12794, 372, 519, 10, 21, "Message"],
-Cell[13316, 384, 518, 10, 21, "Message"],
-Cell[13837, 396, 514, 10, 21, "Message"],
-Cell[14354, 408, 468, 9, 21, "Message"],
-Cell[14825, 419, 467, 9, 21, "Message"],
-Cell[15295, 430, 468, 9, 21, "Message"],
-Cell[15766, 441, 511, 9, 21, "Message"]
+Cell[54174, 1245, 176, 3, 41, "Input"],
+Cell[54353, 1250, 3063, 48, 124, "Message"],
+Cell[57419, 1300, 622, 12, 21, "Message"],
+Cell[58044, 1314, 773, 14, 21, "Message"],
+Cell[58820, 1330, 624, 12, 21, "Message"],
+Cell[59447, 1344, 771, 14, 21, "Message"],
+Cell[60221, 1360, 624, 12, 21, "Message"],
+Cell[60848, 1374, 696, 13, 21, "Message"],
+Cell[61547, 1389, 741, 13, 21, "Message"],
+Cell[62291, 1404, 699, 13, 21, "Message"],
+Cell[62993, 1419, 318, 5, 40, "Output"]
 }, Open  ]]
 }, Closed]]
-}, Open  ]]
 }
 ]
 *)
