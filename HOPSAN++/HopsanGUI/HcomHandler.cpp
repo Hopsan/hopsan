@@ -3242,6 +3242,8 @@ void HcomHandler::optComplexInit()
 
 void HcomHandler::optComplexRun()
 {
+    optPlotPoints();
+
     mOptConvergenceReason=0;
 
     if(mOptAlgorithm == Uninitialized)
@@ -3273,6 +3275,8 @@ void HcomHandler::optComplexRun()
     int percent=-1;
     for(; i<mOptMaxEvals && !mAborted; ++i)
     {
+        optPlotPoints();
+
         qApp->processEvents();
         if(mAborted)
         {
@@ -3309,8 +3313,6 @@ void HcomHandler::optComplexRun()
         newPoint.resize(mOptNumParameters);
         for(int j=0; j<mOptNumParameters; ++j)
         {
-
-
             //Reflect
             double worst = mOptParameters[wid][j];
             mOptParameters[wid][j] = mOptCenter[j] + (mOptCenter[j]-worst)*mOptAlpha;
@@ -3318,7 +3320,7 @@ void HcomHandler::optComplexRun()
             //Add some random noise
             double maxDiff = optComplexMaxpardiff();
             double r = (double)rand() / (double)RAND_MAX;
-            mOptParameters[wid][j] = mOptParameters[wid][j] + mOptRfak*(mOptParMax[wid]-mOptParMin[wid])*maxDiff*(r-0.5);
+            mOptParameters[wid][j] = mOptParameters[wid][j] + mOptRfak*(mOptParMax[j]-mOptParMin[j])*maxDiff*(r-0.5);
             mOptParameters[wid][j] = min(mOptParameters[wid][j], mOptParMax[j]);
             mOptParameters[wid][j] = max(mOptParameters[wid][j], mOptParMin[j]);
         }
@@ -3342,6 +3344,8 @@ void HcomHandler::optComplexRun()
         mOptWorstCounter=0;
         while(mOptLastWorstId == wid)
         {
+            optPlotPoints();
+
             qApp->processEvents();
             if(mAborted)
             {
@@ -3358,10 +3362,10 @@ void HcomHandler::optComplexRun()
             //Reflect worst point
             for(int j=0; j<mOptNumParameters; ++j)
             {
-                int best = mOptParameters[mOptBestId][j];
+                double best = mOptParameters[mOptBestId][j];
                 double maxDiff = optComplexMaxpardiff();
                 double r = (double)rand() / (double)RAND_MAX;
-                mOptParameters[wid][j] = (mOptCenter[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mOptRfak*(mOptParMax[wid]-mOptParMin[wid])*maxDiff*(r-0.5);
+                mOptParameters[wid][j] = (mOptCenter[j]*(1.0-a1) + best*a1 + newPoint[j])/2.0 + mOptRfak*(mOptParMax[j]-mOptParMin[j])*maxDiff*(r-0.5);
                 mOptParameters[wid][j] = min(mOptParameters[wid][j], mOptParMax[j]);
                 mOptParameters[wid][j] = max(mOptParameters[wid][j], mOptParMin[j]);
             }
@@ -3446,6 +3450,10 @@ void HcomHandler::optComplexCalculatebestandworstid()
 void HcomHandler::optComplexFindcenter()
 {
     mOptCenter.resize(mOptNumParameters);
+    for(int i=0; i<mOptCenter.size(); ++i)
+    {
+        mOptCenter[i] = 0;
+    }
     for(int p=0; p<mOptNumPoints; ++p)
     {
         for(int i=0; i<mOptNumParameters; ++i)
@@ -3736,6 +3744,11 @@ void HcomHandler::optPlotPoints(bool /*dummy*/)
             pTab->getCurves(FirstPlot).at(c)->setLineSymbol("XCross");
         }
     }
+}
+
+void HcomHandler::optPlotBestWorstObj(bool dummy)
+{
+
 }
 
 

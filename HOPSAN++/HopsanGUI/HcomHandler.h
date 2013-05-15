@@ -43,6 +43,7 @@ public:
 public slots:
     void abortHCOM();
     void optPlotPoints(bool dummy=true);
+    void optPlotBestWorstObj(bool dummy=true);
 
 private:
 
