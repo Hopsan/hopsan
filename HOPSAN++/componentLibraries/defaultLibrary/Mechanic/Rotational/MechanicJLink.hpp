@@ -9,7 +9,7 @@
 //!
 //! @file MechanicJLink.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Mon 29 Apr 2013 10:31:07
+//! @date Mon 13 May 2013 18:18:24
 //! @brief Link with inertia
 //! @ingroup MechanicComponents
 //!

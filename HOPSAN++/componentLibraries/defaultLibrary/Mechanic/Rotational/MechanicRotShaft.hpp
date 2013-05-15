@@ -9,7 +9,7 @@
 //!
 //! @file MechanicRotShaft.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Tue 30 Apr 2013 14:45:54
+//! @date Mon 13 May 2013 18:18:23
 //! @brief Rotational shaft with torsional spring
 //! @ingroup MechanicComponents
 //!
