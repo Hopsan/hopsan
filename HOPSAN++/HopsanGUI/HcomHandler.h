@@ -207,5 +207,6 @@ double _funcPeek(QString str);
 double _funcRand(QString str);
 double _funcSize(QString str);
 double _funcObj(QString str);
+double _funcTime(QString);
 
 #endif // HCOMHANDLER_H

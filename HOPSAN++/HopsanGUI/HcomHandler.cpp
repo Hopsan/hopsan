@@ -73,6 +73,7 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     registerFunction("rand", "Generates a random value between 0 and 1", &(_funcRand));
     registerFunction("peek", "Returns vector value at specified index", &(_funcPeek));
     registerFunction("obj", "Returns optimization objective function value with specified index", &(_funcObj));
+    registerFunction("time", "Returns last simulation time", &(_funcTime));
 
     createCommands();
 }
@@ -331,30 +332,6 @@ void HcomHandler::createCommands()
     fmuCmd.fnc = &HcomHandler::executeExportToFMUCommand;
     mCmdList << fmuCmd;
 
-    //! @todo Remove?
-//    HcomCommand averCmd;
-//    averCmd.cmd = "aver";
-//    averCmd.description.append("Calculates average value of a variable");
-//    averCmd.help.append("Usage: aver [variable]");
-//    averCmd.fnc = &HcomHandler::executeAverageCommand;
-//    mCmdList << averCmd;
-
-    //! @todo Remove?
-//    HcomCommand minCmd;
-//    minCmd.cmd = "min";
-//    minCmd.description.append("Calculates minimum value of a variable");
-//    minCmd.help.append("Usage: min [variable]");
-//    minCmd.fnc = &HcomHandler::executeMinCommand;
-//    mCmdList << minCmd;
-
-    //! @todo Remove?
-//    HcomCommand maxCmd;
-//    maxCmd.cmd = "max";
-//    maxCmd.description.append("Calculates maximum value of a variable");
-//    maxCmd.help.append("Usage: max [variable]");
-//    maxCmd.fnc = &HcomHandler::executeMaxCommand;
-//    mCmdList << maxCmd;
-
     HcomCommand chtsCmd;
     chtsCmd.cmd = "chts";
     chtsCmd.description.append("Change time step of sub-component");
@@ -371,46 +348,6 @@ void HcomHandler::createCommands()
     intsCmd.group = "Simulation Commands";
     mCmdList << intsCmd;
 
-    //! @todo Remove?
-//    HcomCommand randCmd;
-//    randCmd.cmd = "rand";
-//    randCmd.description.append("Calculates a random number between min and max");
-//    randCmd.help.append("Usage: rand [min max]");
-//    randCmd.fnc = &HcomHandler::executeRandomCommand;
-//    mCmdList << randCmd;
-
-    //! @todo Remove?
-//    HcomCommand floorCmd;
-//    floorCmd.cmd = "floor";
-//    floorCmd.description.append("Rounds value to closest smaller integer value");
-//    floorCmd.help.append("Usage: floor [value]");
-//    floorCmd.fnc = &HcomHandler::executeFloorCommand;
-//    mCmdList << floorCmd;
-
-    //! @todo Remove?
-//    HcomCommand ceilCmd;
-//    ceilCmd.cmd = "ceil";
-//    ceilCmd.description.append("Rounds value to closest larger integer value");
-//    ceilCmd.help.append("Usage: ceil [value]");
-//    ceilCmd.fnc = &HcomHandler::executeCeilCommand;
-//    mCmdList << ceilCmd;
-
-    //! @todo Remove?
-//    HcomCommand roundCmd;
-//    roundCmd.cmd = "round";
-//    roundCmd.description.append("Rounds value to closest integer value");
-//    roundCmd.help.append("Usage: round [value]");
-//    roundCmd.fnc = &HcomHandler::executeRoundCommand;
-//    mCmdList << roundCmd;
-
-    //! @todo Remove?
-//    HcomCommand sizeCmd;
-//    sizeCmd.cmd = "size";
-//    sizeCmd.description.append("Returns the size of specified vector");
-//    sizeCmd.help.append("Usage: size [vector]");
-//    sizeCmd.fnc = &HcomHandler::executeSizeCommand;
-//    mCmdList << sizeCmd;
-
     HcomCommand bodeCmd;
     bodeCmd.cmd = "bode";
     bodeCmd.description.append("Creates a bode plot from specified curves");
@@ -426,13 +363,6 @@ void HcomHandler::createCommands()
     absCmd.fnc = &HcomHandler::executeAbsCommand;
     absCmd.group = "Variable Commands";
     mCmdList << absCmd;
-
-    HcomCommand timeCmd;
-    timeCmd.cmd = "time";
-    timeCmd.description.append("Returns last simulation time in milliseconds");
-    timeCmd.help.append("Usage: simt [no arguments]");
-    timeCmd.fnc = &HcomHandler::executeSimulationTimeCommand;
-    mCmdList << timeCmd;
 
     HcomCommand optCmd;
     optCmd.cmd = "opt";
@@ -512,40 +442,6 @@ void HcomHandler::generateCommandsHelpText()
             }
         }
     }
-//    commands.append("\n Custom Functions:\n\n");
-//    commands.append("   lp1()");
-//    for(int i=0; i<n+3-5; ++i)
-//        commands.append(" ");
-//    commands.append("Low-pass filter variable\n");
-//    commands.append("   ddt()");
-//    for(int i=0; i<n+3-5; ++i)
-//        commands.append(" ");
-//    commands.append("Differentiate variable\n");
-//    commands.append("   aver()");
-//    for(int i=0; i<n+3-6; ++i)
-//        commands.append(" ");
-//    commands.append("Calculate average value of vector\n");
-//    commands.append("   min()");
-//    for(int i=0; i<n+3-5; ++i)
-//        commands.append(" ");
-//    commands.append("Calculate minimum of vector\n");
-//    commands.append("   max()");
-//    for(int i=0; i<n+3-5; ++i)
-//        commands.append(" ");
-//    commands.append("Calculate maximum of vector\n");
-//    commands.append("   size()");
-//    for(int i=0; i<n+3-5; ++i)
-//        commands.append(" ");
-//    commands.append("Returns the size of a vector\n");
-//    commands.append("   rand()");
-//    for(int i=0; i<n+3-5; ++i)
-//        commands.append(" ");
-//    commands.append("Generate a random value between 0 and 1\n");
-//    commands.append("   peek()");
-//    for(int i=0; i<n+3-5; ++i)
-//        commands.append(" ");
-//    commands.append("Return vector value at specified index\n");
-
 
     htmlFile.open(QFile::WriteOnly | QFile::Text | QFile::Truncate);
     htmlString.replace("<<<commands>>>", commands);
@@ -1648,78 +1544,6 @@ void HcomHandler::executeExportToFMUCommand(const QString cmd)
 }
 
 
-//! @brief Execute function for "aver" command
-//! @todo Remove?
-void HcomHandler::executeAverageCommand(const QString cmd)
-{
-    QStringList split = splitWithRespectToQuotations(cmd, ' ');
-    if(split.size() != 1)
-    {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
-        return;
-    }
-    QString variable = splitWithRespectToQuotations(cmd, ' ')[0];
-
-    SharedLogVariableDataPtrT pData = getVariablePtr(variable);
-    if(pData)
-    {
-        returnScalar(pData->averageOfData());
-    }
-    else
-    {
-        mpConsole->printErrorMessage("Data variable not found","",false);
-    }
-}
-
-
-//! @brief Execute function for "min" command
-//! @todo Remove?
-void HcomHandler::executeMinCommand(const QString cmd)
-{
-    QStringList split = splitWithRespectToQuotations(cmd, ' ');
-    if(split.size() != 1)
-    {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
-        return;
-    }
-    QString variable = split[0];
-
-    SharedLogVariableDataPtrT pData = getVariablePtr(variable);
-    if(pData)
-    {
-        returnScalar(pData->minOfData());
-    }
-    else
-    {
-        mpConsole->printErrorMessage("Data variable not found","",false);
-    }
-}
-
-
-//! @brief Execute function for "max" command
-//! @todo Remove?
-void HcomHandler::executeMaxCommand(const QString cmd)
-{
-    QStringList split = splitWithRespectToQuotations(cmd, ' ');
-    if(split.size() != 1)
-    {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
-        return;
-    }
-    QString variable = split[0];
-
-    SharedLogVariableDataPtrT pData = getVariablePtr(variable);
-    if(pData)
-    {
-        returnScalar(pData->maxOfData());
-    }
-    else
-    {
-        mpConsole->printErrorMessage("Data variable not found","",false);
-    }
-}
-
-
 //! @brief Execute function for "chts" command
 void HcomHandler::executeChangeTimestepCommand(const QString cmd)
 {
@@ -1771,129 +1595,6 @@ void HcomHandler::executeInheritTimestepCommand(const QString cmd)
     {
         gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->setInheritTimeStep(component, true);
         mpConsole->print("Setting time step of "+component+" to inherited.");
-    }
-}
-
-
-//! @brief Execute function for "rand" command
-//! @todo Remove?
-void HcomHandler::executeRandomCommand(const QString cmd)
-{
-    QStringList split = splitWithRespectToQuotations(cmd, ' ');
-    if(split.size() != 2)
-    {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
-        return;
-    }
-
-    VariableType retType;
-    bool isNumber;
-    double min = evaluateExpression(split[0], &retType, &isNumber).toDouble();
-    if(!isNumber)
-    {
-        mpConsole->printErrorMessage("Second argument is not a number.", "", false);
-    }
-    double max = evaluateExpression(split[1], &retType, &isNumber).toDouble();
-    if(!isNumber)
-    {
-        mpConsole->printErrorMessage("Second argument is not a number.", "", false);
-    }
-
-    double rd = rand() / (double)RAND_MAX;          //Random value between  0 and 1
-    returnScalar(min+rd*(max-min));    //Random value between min and max
-}
-
-
-//! @brief Execute function for "floor" command
-//! @todo Remove?
-void HcomHandler::executeFloorCommand(const QString cmd)
-{
-    QStringList split = splitWithRespectToQuotations(cmd, ' ');
-    if(split.size() != 1)
-    {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
-        return;
-    }
-
-    VariableType retType;
-    bool isNumber;
-    double value = evaluateExpression(split[0], &retType, &isNumber).toDouble();
-    if(!isNumber)
-    {
-        mpConsole->printErrorMessage("Second argument is not a number.", "", false);
-    }
-
-    returnScalar(floor(value));
-}
-
-
-//! @brief Execute function for "ceil" command
-//! @todo Remove?
-void HcomHandler::executeCeilCommand(const QString cmd)
-{
-    QStringList split = splitWithRespectToQuotations(cmd, ' ');
-    if(split.size() != 1)
-    {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
-        return;
-    }
-
-    VariableType retType;
-    bool isNumber;
-    double value = evaluateExpression(split[0], &retType, &isNumber).toDouble();
-    if(!isNumber)
-    {
-        mpConsole->printErrorMessage("Second argument is not a number.", "", false);
-    }
-
-    returnScalar(ceil(value));
-}
-
-
-//! @brief Execute function for "round" command
-//! @todo Remove?
-void HcomHandler::executeRoundCommand(const QString cmd)
-{
-    QStringList split = splitWithRespectToQuotations(cmd, ' ');
-    if(split.size() != 1)
-    {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
-        return;
-    }
-
-    VariableType retType;
-    bool isNumber;
-    double value = evaluateExpression(split[0], &retType, &isNumber).toDouble();
-    if(!isNumber)
-    {
-        mpConsole->printErrorMessage("Second argument is not a number.", "", false);
-    }
-
-    returnScalar(round(value));
-}
-
-
-//! @brief Execute function for "size" command
-//! @todo Remove?
-void HcomHandler::executeSizeCommand(const QString cmd)
-{
-    QStringList split = cmd.split(" ");
-    if(split.size() != 1)
-    {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
-        return;
-    }
-
-    QString variable = split.first();
-
-    SharedLogVariableDataPtrT pData = getVariablePtr(variable);
-    if(pData)
-    {
-         returnScalar(pData->getDataSize());
-    }
-    else
-    {
-        mpConsole->printErrorMessage("Data variable not found","",false);
     }
 }
 
@@ -1954,25 +1655,6 @@ void HcomHandler::executeAbsCommand(const QString cmd)
             mpConsole->printErrorMessage("Variable not found.", "", false);
         }
     }
-}
-
-
-//! @brief Execute function for "time" command
-//! @todo Convert to function?
-void HcomHandler::executeSimulationTimeCommand(const QString cmd)
-{
-    if(getNumberOfArguments(cmd) != 0)
-    {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
-        return;
-    }
-
-    if(gpMainWindow->mpProjectTabs->count() == 0)
-    {
-        mpConsole->printErrorMessage("No model is open.", "", false);
-        return;
-    }
-    returnScalar(gpMainWindow->mpProjectTabs->getCurrentTab()->getLastSimulationTime());
 }
 
 
@@ -3447,6 +3129,16 @@ double _funcSize(QString str)
     }
     return 0;
 }
+
+double _funcTime(QString /*str*/)
+{
+    if(gpMainWindow->mpProjectTabs->count() > 0)
+    {
+        return gpMainWindow->mpProjectTabs->getCurrentTab()->getLastSimulationTime();
+    }
+    return 0;
+}
+
 
 double _funcObj(QString str)
 {
