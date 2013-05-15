@@ -3237,6 +3237,10 @@ void HcomHandler::optComplexInit()
     mOptObjectives.resize(mOptNumPoints);
 
     mOptKf = 1.0-pow(mOptAlpha/2.0, mOptGamma/mOptNumPoints);
+
+    LogDataHandler *pHandler = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler();
+    pHandler->deleteVariable("Worst Objective");
+    pHandler->deleteVariable("Best Objective");
 }
 
 
@@ -3304,6 +3308,8 @@ void HcomHandler::optComplexRun()
         optComplexCalculatebestandworstid();
         mpConsole->print("WORST: "+QString::number(mOptWorstId));
         int wid = mOptWorstId;
+
+        optPlotBestWorstObj();
 
         //Find geometrical center
         optComplexFindcenter();
@@ -3551,6 +3557,10 @@ void HcomHandler::optParticleInit()
         }
     }
     mOptObjectives.resize(mOptNumPoints);
+
+    LogDataHandler *pHandler = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler();
+    pHandler->deleteVariable("Worst Objective");
+    pHandler->deleteVariable("Best Objective");
 }
 
 
@@ -3668,6 +3678,7 @@ void HcomHandler::optParticleRun()
         }
 
         optPlotPoints();
+        optPlotBestWorstObj();
 
         //Check convergence
         if(optComlexCheckconvergence()) break;      //Use complex method, it's the same principle
@@ -3693,7 +3704,7 @@ void HcomHandler::optParticleRun()
     return;
 }
 
-void HcomHandler::optPlotPoints(bool /*dummy*/)
+void HcomHandler::optPlotPoints()
 {
     if(mOptNumParameters != 2)
     {
@@ -3746,9 +3757,39 @@ void HcomHandler::optPlotPoints(bool /*dummy*/)
     }
 }
 
-void HcomHandler::optPlotBestWorstObj(bool dummy)
-{
 
+void HcomHandler::optPlotBestWorstObj()
+{
+    LogDataHandler *pHandler = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler();
+    SharedLogVariableDataPtrT bestVar = pHandler->getPlotData("Best Objective", -1);
+    if(bestVar.isNull())
+    {
+        bestVar = pHandler->defineNewVariable("Best Objective", QVector<double>() << 0, QVector<double>() << mOptObjectives[mOptBestId]);
+        bestVar.data()->preventAutoRemoval();
+    }
+    else
+    {
+        pHandler->appendVariable(bestVar, bestVar.data()->getDataSize(), mOptObjectives[mOptBestId]);
+    }
+    SharedLogVariableDataPtrT worstVar = pHandler->getPlotData("Worst Objective", -1);
+    if(worstVar.isNull())
+    {
+        worstVar = pHandler->defineNewVariable("Worst Objective", QVector<double>() << 0, QVector<double>() << mOptObjectives[mOptWorstId]);
+        worstVar.data()->preventAutoRemoval();
+    }
+    else
+    {
+        pHandler->appendVariable(worstVar, worstVar.data()->getDataSize(), mOptObjectives[mOptWorstId]);
+    }
+
+    PlotWindow *pPlotWindow = gpPlotHandler->getPlotWindow("parplot");
+    if(bestVar.data()->getDataSize() == 1)
+    {
+        gpPlotHandler->plotDataToWindow("Objective Function", bestVar, 0, QColor("Green"));
+        gpPlotHandler->plotDataToWindow("Objective Function", worstVar, 0, QColor("Red"));
+    }
+
+    pPlotWindow->getCurrentPlotTab()->update();
 }
 
 

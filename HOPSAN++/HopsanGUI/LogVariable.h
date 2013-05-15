@@ -184,6 +184,7 @@ public:
     double maxOfData() const;
     double indexOfMinOfData() const;
     double indexOfMaxOfData() const;
+    void append(const double x, const double y);
 
     void preventAutoRemoval();
     void allowAutoRemoval();

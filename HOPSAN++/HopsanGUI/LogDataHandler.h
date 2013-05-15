@@ -144,6 +144,9 @@ public:
 
     SharedLogVariableDataPtrT defineTempVariable(QString desiredname);
 
+    void appendVariable(const SharedLogVariableDataPtrT a, const double x, const double y);
+    void appendVariable(const QString &a, const double x, const double y);
+
 signals:
     void newDataAvailable();
     void closePlotsWithOwnedData();

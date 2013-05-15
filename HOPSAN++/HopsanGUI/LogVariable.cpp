@@ -562,6 +562,17 @@ double LogVariableData::indexOfMaxOfData() const
     return ret;
 }
 
+
+//! @brief Appends one point to a curve, NEVER USE THIS UNLESS A CUSTOM (PRIVATE) X VECTOR IS USED!
+void LogVariableData::append(const double x, const double y)
+{
+    DataVectorT *pData = mpCachedDataVector->beginFullVectorOperation();
+    pData->append(y);
+    mpCachedDataVector->endFullVectorOperation(pData);
+    mSharedTimeVectorPtr.data()->append(x);
+}
+
+
 double LogVariableData::maxOfData() const
 {
     double ret = std::numeric_limits<double>::min();

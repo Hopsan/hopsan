@@ -1427,6 +1427,24 @@ SharedLogVariableDataPtrT LogDataHandler::defineTempVariable(QString desiredname
     return pData;
 }
 
+void LogDataHandler::appendVariable(const SharedLogVariableDataPtrT a, const double x, const double y)
+{
+    a->append(x,y);
+    return;
+}
+
+void LogDataHandler::appendVariable(const QString &a, const double x, const double y)
+{
+    SharedLogVariableDataPtrT pData1 = getPlotData(a, -1);
+    if(pData1)
+    {
+        appendVariable(pData1,x,y);
+        return;
+    }
+    gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("No such variable: " + a);
+    return;
+}
+
 SharedLogVariableDataPtrT LogDataHandler::defineNewVariable(const QString desiredname)
 {
     if(mLogDataMap.find(desiredname) == mLogDataMap.end())
