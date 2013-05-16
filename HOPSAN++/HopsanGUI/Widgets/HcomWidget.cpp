@@ -674,7 +674,6 @@ void TerminalConsole::handleTabKeyPress()
                 dir.append("/"+filter);
 
                 QDir parentDir = QDir(dir.left(dir.lastIndexOf("/")));
-                QString parentDirStr = parentDir.path();
                 QString lastFilterDir = filter.right(filter.size()-filter.lastIndexOf("/")-1);
                 QString leftFilterDir = "";
                 if(filter.contains("/"))
@@ -687,6 +686,33 @@ void TerminalConsole::handleTabKeyPress()
                 {
                     subDirs[d].prepend(leftFilterDir);
                     mAutoCompleteResults.append(directoryCmds[c]+subDirs[d]);
+                }
+            }
+        }
+
+        QStringList fileCmds = QStringList() << "exec " << "edit ";
+        for(int c=0; c<fileCmds.size(); ++c)
+        {
+            if(mAutoCompleteFilter.startsWith(fileCmds[c]))
+            {
+                QString pwd = getHandler()->getWorkingDirectory();
+                QString dir = pwd;
+                QString filter = mAutoCompleteFilter.right(mAutoCompleteFilter.size()-fileCmds[c].size());
+                dir.append("/"+filter);
+
+                QDir parentDir = QDir(dir.left(dir.lastIndexOf("/")));
+                QString lastFilterDir = filter.right(filter.size()-filter.lastIndexOf("/")-1);
+                QString leftFilterDir = "";
+                if(filter.contains("/"))
+                {
+                    leftFilterDir = filter.left(filter.lastIndexOf("/"))+"/";
+                }
+                QStringList subDirs = parentDir.entryList(QStringList() << lastFilterDir+"*", QDir::AllEntries);
+
+                for(int d=0; d<subDirs.size(); ++d)
+                {
+                    subDirs[d].prepend(leftFilterDir);
+                    mAutoCompleteResults.append(fileCmds[c]+subDirs[d]);
                 }
             }
         }

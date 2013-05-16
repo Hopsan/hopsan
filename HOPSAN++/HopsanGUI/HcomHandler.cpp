@@ -834,6 +834,7 @@ void HcomHandler::executeRunScriptCommand(const QString cmd)
     {
         path.prepend("./");
     }
+    path.prepend(mPwd+"/");
     QString dir = path.left(path.lastIndexOf("/"));
     dir = getDirectory(dir);
     path = dir+path.right(path.size()-path.lastIndexOf("/"));
@@ -1924,6 +1925,7 @@ void HcomHandler::executeEditCommand(const QString cmd)
     }
 
     QString path = getArgument(cmd,0);
+    path.prepend(mPwd+"/");
     QDesktopServices::openUrl(QUrl(path));
 }
 
@@ -2054,6 +2056,10 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
     {
         QString nPointsStr = expr.section("(",1,1).section(",",0,0);
         QString nParStr = expr.section(",",1,1).section(")",0,0);
+        if(nPointsStr.isEmpty() || nParStr.isEmpty())
+        {
+            return QString::number(0);
+        }
         bool ok1, ok2;
         int nPoint = getNumber(nPointsStr,&ok1);
         int nPar = getNumber(nParStr, &ok2);
@@ -3219,7 +3225,10 @@ double _funcRand(QString str)
 void HcomHandler::optComplexInit()
 {
     //Load default optimization functions
+    QString oldPath = mPwd;
+    mPwd = gDesktopHandler.getExecPath();
     executeCommand("exec ../ScriptsHCOM/optDefaultFunctions.hcom");
+    mPwd = oldPath;
 
     for(int p=0; p<mOptNumPoints; ++p)
     {
@@ -3533,7 +3542,10 @@ double HcomHandler::optComplexMaxpardiff()
 void HcomHandler::optParticleInit()
 {
     //Load default optimization functions
+    QString oldPath = mPwd;
+    mPwd = gDesktopHandler.getExecPath();
     executeCommand("exec ../ScriptsHCOM/optDefaultFunctions.hcom");
+    mPwd = oldPath;
 
     for(int p=0; p<mOptNumPoints; ++p)
     {
@@ -3782,14 +3794,17 @@ void HcomHandler::optPlotBestWorstObj()
         pHandler->appendVariable(worstVar, worstVar.data()->getDataSize(), mOptObjectives[mOptWorstId]);
     }
 
-    PlotWindow *pPlotWindow = gpPlotHandler->getPlotWindow("parplot");
+
     if(bestVar.data()->getDataSize() == 1)
     {
         gpPlotHandler->plotDataToWindow("Objective Function", bestVar, 0, QColor("Green"));
         gpPlotHandler->plotDataToWindow("Objective Function", worstVar, 0, QColor("Red"));
     }
-
-    pPlotWindow->getCurrentPlotTab()->update();
+    PlotWindow *pPlotWindow = gpPlotHandler->getPlotWindow("Objective Function");
+    if(pPlotWindow)
+    {
+        pPlotWindow->getCurrentPlotTab()->update();
+    }
 }
 
 
