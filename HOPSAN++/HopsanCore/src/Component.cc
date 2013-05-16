@@ -591,6 +591,7 @@ Port* Component::addPort(const string portName, const PortTypesEnumT portType, c
 
     //Make sure name is unique before insert
     string newname = this->determineUniquePortName(portName);
+    //! @todo for ordinary components give an error message, users rarely check debug messages
 
     Port* new_port = createPort(portType, nodeType, newname, this);
 

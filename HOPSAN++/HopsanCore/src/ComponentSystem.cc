@@ -1533,17 +1533,20 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
 
 bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pPort2)
 {
-    size_t n_ReadPorts = 0;
-    size_t n_WritePorts = 0;
-    size_t n_PowerPorts = 0;
-    size_t n_SystemPorts = 0;
-    size_t n_OwnSystemPorts = 0; //Number of systemports that belong to the connecting system
+    size_t nReadPorts = 0;
+    size_t nWritePorts = 0;
+    size_t nPowerPorts = 0;
+    size_t nSystemPorts = 0;
+    size_t nOwnSystemPorts = 0; //Number of systemports that belong to the connecting system
     //size_t n_MultiPorts = 0;
 
-    size_t n_Ccomponents = 0;
-    size_t n_Qcomponents = 0;
-    size_t n_SYScomponentCs = 0;
-    size_t n_SYScomponentQs = 0;
+    size_t nCComponents = 0;
+    size_t nQComponents = 0;
+    size_t nSYScomponentCs = 0;
+    size_t nSYScomponentQs = 0;
+
+    size_t nQPowerPorts = 0;
+    size_t nCPowerPorts = 0;
 
     //Count the different kind of ports and C,Q components in the node
     vector<Port*>::iterator it;
@@ -1551,22 +1554,30 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
     {
         if ((*it)->getPortType() == ReadPortType)
         {
-            n_ReadPorts += 1;
+            nReadPorts += 1;
         }
         else if ((*it)->getPortType() == WritePortType)
         {
-            n_WritePorts += 1;
+            nWritePorts += 1;
         }
         else if ((*it)->getPortType() == PowerPortType)
         {
-            n_PowerPorts += 1;
+            nPowerPorts += 1;
+            if ((*it)->getComponent()->isComponentC())
+            {
+                nCPowerPorts += 1;
+            }
+            else if ((*it)->getComponent()->isComponentQ())
+            {
+                nQPowerPorts += 1;
+            }
         }
         else if ((*it)->getPortType() == SystemPortType)
         {
-            n_SystemPorts += 1;
+            nSystemPorts += 1;
             if ((*it)->getComponent() == mpComponentSystem)
             {
-                n_OwnSystemPorts += 1;
+                nOwnSystemPorts += 1;
             }
         }
 //        else if((*it)->getPortType() > MULTIPORT)
@@ -1575,18 +1586,18 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
 //        }
         if ((*it)->getComponent()->isComponentC())
         {
-            n_Ccomponents += 1;
+            nCComponents += 1;
             if ((*it)->getComponent()->isComponentSystem())
             {
-                n_SYScomponentCs += 1;
+                nSYScomponentCs += 1;
             }
         }
         else if ((*it)->getComponent()->isComponentQ())
         {
-            n_Qcomponents += 1;
+            nQComponents += 1;
             if ((*it)->getComponent()->isComponentSystem())
             {
-                n_SYScomponentQs += 1;
+                nSYScomponentQs += 1;
             }
         }
     }
@@ -1597,19 +1608,27 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
     {
         if ( pPort1->getPortType() == ReadPortType )
         {
-            n_ReadPorts += 1;
+            nReadPorts += 1;
         }
         if ( pPort1->getPortType() == WritePortType )
         {
-            n_WritePorts += 1;
+            nWritePorts += 1;
         }
         if ( pPort1->getPortType() == PowerPortType )
         {
-            n_PowerPorts += 1;
+            nPowerPorts += 1;
+            if ((*it)->getComponent()->isComponentC())
+            {
+                nCPowerPorts += 1;
+            }
+            else if ((*it)->getComponent()->isComponentQ())
+            {
+                nQPowerPorts += 1;
+            }
         }
         if ( pPort1->getPortType() == SystemPortType )
         {
-            n_SystemPorts += 1;
+            nSystemPorts += 1;
         }
 //        if( pPort1->getPortType() > MULTIPORT)
 //        {
@@ -1617,18 +1636,18 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
 //        }
         if ( pPort1->getComponent()->isComponentC() )
         {
-            n_Ccomponents += 1;
+            nCComponents += 1;
             if ( pPort1->getComponent()->isComponentSystem() )
             {
-                n_SYScomponentCs += 1;
+                nSYScomponentCs += 1;
             }
         }
         if ( pPort1->getComponent()->isComponentQ() )
         {
-            n_Qcomponents += 1;
+            nQComponents += 1;
             if ( pPort1->getComponent()->isComponentSystem() )
             {
-                n_SYScomponentQs += 1;
+                nSYScomponentQs += 1;
             }
         }
     }
@@ -1638,41 +1657,49 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
     {
         if ( pPort2->getPortType() == ReadPortType )
         {
-            n_ReadPorts += 1;
+            nReadPorts += 1;
         }
         if ( pPort2->getPortType() == WritePortType )
         {
-            n_WritePorts += 1;
+            nWritePorts += 1;
         }
         if ( pPort2->getPortType() == PowerPortType )
         {
-            n_PowerPorts += 1;
+            nPowerPorts += 1;
+            if ((*it)->getComponent()->isComponentC())
+            {
+                nCPowerPorts += 1;
+            }
+            else if ((*it)->getComponent()->isComponentQ())
+            {
+                nQPowerPorts += 1;
+            }
         }
         if ( pPort2->getPortType() == SystemPortType )
         {
-            n_SystemPorts += 1;
+            nSystemPorts += 1;
         }
         if ( pPort2->getComponent()->isComponentC() )
         {
-            n_Ccomponents += 1;
+            nCComponents += 1;
             if ( pPort2->getComponent()->isComponentSystem() )
             {
-                n_SYScomponentCs += 1;
+                nSYScomponentCs += 1;
             }
         }
         if ( pPort2->getComponent()->isComponentQ() )
         {
-            n_Qcomponents += 1;
+            nQComponents += 1;
             if ( pPort2->getComponent()->isComponentSystem() )
             {
-                n_SYScomponentQs += 1;
+                nSYScomponentQs += 1;
             }
         }
     }
 
     //  Check if there are some problems with the connection
 
-    if ((n_PowerPorts > 0) && (n_OwnSystemPorts > 1))
+    if ((nPowerPorts > 0) && (nOwnSystemPorts > 1))
     {
         mpComponentSystem->addErrorMessage("Trying to connect one powerport to two systemports, this is not allowed");
         return false;
@@ -1682,17 +1709,17 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
 //        addErrorMessage("Trying to connect two MultiPorts to each other");
 //        return false;
 //    }
-    if (n_PowerPorts > 2)
+    if (nPowerPorts > 2)
     {
         mpComponentSystem->addErrorMessage("Trying to connect more than two PowerPorts to same node");
         return false;
     }
-    if (n_WritePorts > 1)
+    if (nWritePorts > 1)
     {
         mpComponentSystem->addErrorMessage("Trying to connect more than one WritePort to same node");
         return false;
     }
-    if ((n_PowerPorts > 0) && (n_WritePorts > 0))
+    if ((nPowerPorts > 0) && (nWritePorts > 0))
     {
         mpComponentSystem->addErrorMessage("Trying to connect WritePort and PowerPort to same node");
         return false;
@@ -1710,12 +1737,14 @@ bool ConnectionAssistant::ensureConnectionOK(Node *pNode, Port *pPort1, Port *pP
     // Normaly we want at most one c and one q component but if there happen to be a subsystem in the picture allow one extra
     // This is only true if at least one powerport is connected - signal connecetions can be between any types of components
     //! @todo not 100% sure that this will work allways. Only work if we assume that the subsystem has the correct cqs type when connecting
-    if ((n_Ccomponents > 1+n_SYScomponentCs) && (n_PowerPorts > 0))
+    //if ((nCComponents > 1+nSYScomponentCs) && (nPowerPorts > 1))
+    if (nCPowerPorts > 1)
     {
         mpComponentSystem->addErrorMessage("You can not connect two C-Component power ports to each other");
         return false;
     }
-    if ((n_Qcomponents > 1+n_SYScomponentQs) && (n_PowerPorts > 0))
+    //if ((nQComponents > 1+nSYScomponentQs) && (nPowerPorts > 1))
+    if (nQPowerPorts > 1)
     {
         mpComponentSystem->addErrorMessage("You can not connect two Q-Component power ports to each other");
         return false;
