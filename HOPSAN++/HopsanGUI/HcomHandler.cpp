@@ -556,18 +556,18 @@ void HcomHandler::executeSimulateCommand(const QString cmd)
         }
         return;
     }
-    else if(splitCmd.size() == 1)
-    {
-        mpConsole->printErrorMessage("Unknown argument.", "", false);
-        return;
-    }
-    else
+    else if(cmd == "")
     {
         ProjectTab *pCurrentTab = gpMainWindow->mpProjectTabs->getCurrentTab();
         if(pCurrentTab)
         {
             pCurrentTab->simulate_blocking();
         }
+    }
+    else
+    {
+        mpConsole->printErrorMessage("Unknown argument.", "", false);
+        return;
     }
 }
 
@@ -1831,6 +1831,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         bool ok;
         if(mOptAlgorithm == Complex)
         {
+            mOptMulticore=false;
             mOptNumPoints = getNumber("npoints", &ok);
             mOptNumParameters = getNumber("nparams", &ok);
             mOptLastWorstId = -1;
@@ -1847,7 +1848,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         }
         else if(mOptAlgorithm == ParticleSwarm)
         {
-            mOptMulticore=true;
+            mOptMulticore=false;
             mOptNumPoints = getNumber("npoints", &ok);
             mOptNumParameters = getNumber("nparams", &ok);
             mOptParameters.resize(mOptNumPoints);

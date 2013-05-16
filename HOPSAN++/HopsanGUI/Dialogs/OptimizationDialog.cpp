@@ -102,6 +102,67 @@ void PythonHighlighter::highlightBlock(const QString &text)
 }
 
 
+HcomHighlighter::HcomHighlighter(QTextDocument *parent)
+    : QSyntaxHighlighter(parent)
+{
+    HighlightingRule rule;
+
+    commandFormat.setForeground(Qt::darkGreen);
+    commandFormat.setFontWeight(QFont::Bold);
+    QStringList commandPatterns = gpMainWindow->mpTerminalWidget->mpHandler->getCommands();
+    commandPatterns << "define" << "enddefine" << "while" << "if" << "foreach" << "repeat" << "goto" << "end";
+    for(int i=0; i<commandPatterns.size(); ++i)
+    {
+        commandPatterns[i].prepend("\\b");
+        commandPatterns[i].append("\\b");
+    }
+    foreach (const QString &pattern, commandPatterns)
+    {
+        rule.pattern = QRegExp(pattern);
+        rule.format = commandFormat;
+        highlightingRules.append(rule);
+    }
+
+    singleLineCommentFormat.setForeground(Qt::red);
+    rule.pattern = QRegExp("#[^\n]*");
+    rule.format = singleLineCommentFormat;
+    highlightingRules.append(rule);
+
+    multiLineCommentFormat.setForeground(Qt::red);
+
+    quotationFormat.setForeground(Qt::darkGreen);
+    rule.pattern = QRegExp("<.*>");
+    rule.format = quotationFormat;
+    highlightingRules.append(rule);
+
+    tagFormat.setForeground(Qt::darkGreen);
+    rule.pattern = QRegExp("\".*\"");
+    rule.format = quotationFormat;
+    highlightingRules.append(rule);
+
+    functionFormat.setFontWeight(QFont::Bold);
+    functionFormat.setForeground(Qt::blue);
+    rule.pattern = QRegExp("\\b[A-Za-z0-9_]+(?=\\()");
+    rule.format = functionFormat;
+    highlightingRules.append(rule);
+}
+
+
+void HcomHighlighter::highlightBlock(const QString &text)
+{
+    foreach (const HighlightingRule &rule, highlightingRules) {
+        QRegExp expression(rule.pattern);
+        int index = expression.indexIn(text);
+        while (index >= 0) {
+            int length = expression.matchedLength();
+            setFormat(index, length, rule.format);
+            index = expression.indexIn(text, index + length);
+        }
+    }
+    setCurrentBlockState(0);
+}
+
+
 //! @brief Constructor
 OptimizationDialog::OptimizationDialog(MainWindow *parent)
     : QWizard(parent)
@@ -310,10 +371,11 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
 
     //Output box tab
     mpOutputBox = new QTextEdit(this);
-    PythonHighlighter *pHighligter = new PythonHighlighter(mpOutputBox->document());
+    HcomHighlighter *pHighligter = new HcomHighlighter(mpOutputBox->document());
     Q_UNUSED(pHighligter);
     QFont monoFont = mpOutputBox->font();
     monoFont.setFamily("Courier");
+    monoFont.setPointSize(11);
     mpOutputBox->setFont(monoFont);
     mpOutputBox->setMinimumWidth(450);
     mpOutputLayout = new QGridLayout(this);
