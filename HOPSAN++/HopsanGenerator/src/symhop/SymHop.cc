@@ -2055,7 +2055,7 @@ bool Expression::_verifyFunctions() const
 //FIXED
 void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecursiveT recursive)
 {
-    restartFullRecursive:
+    //restartFullRecursive:
 
     if(type == NoSimplifications)
     {
@@ -2086,7 +2086,7 @@ void Expression::_simplify(ExpressionSimplificationT type, const ExpressionRecur
         if(mpRight) { mpRight->_simplify(type, recursive); }
     }
 
-    restartFull:
+    //restartFull:
 
     //Trivial simplifications
     if(this->isMultiplyOrDivide())

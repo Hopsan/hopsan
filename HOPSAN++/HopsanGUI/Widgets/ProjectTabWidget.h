@@ -54,6 +54,7 @@ public:
     ContainerObject *getContainer(int index);
     ContainerObject *getCurrentContainer();
     SystemContainer *getSystem(int index);
+    SimulationThreadHandler *mpSimulationThreadHandler;
 
 public slots:
     void addProjectTab(ProjectTab *projectTab, QString tabName="Untitled");
@@ -86,7 +87,6 @@ signals:
 private:
     void setToolBarSimulationTimeParametersFromSystem(SystemContainer *pSystem);
     size_t mNumberOfUntitledTabs;
-    SimulationThreadHandler *mpSimulationThreadHandler;
     QStringList mStateInfoHmfList;
     QStringList mStateInfoBackupList;
     QList<bool> mStateInfoHasChanged;

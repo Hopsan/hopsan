@@ -91,8 +91,8 @@ void HcomHandler::createCommands()
 
     HcomCommand simCmd;
     simCmd.cmd = "sim";
-    simCmd.description.append("Simulates current model");
-    simCmd.help.append("Usage: sim [no arguments]");
+    simCmd.description.append("Simulates current model (or all open models)");
+    simCmd.help.append("Usage: sim [all]");
     simCmd.fnc = &HcomHandler::executeSimulateCommand;
     simCmd.group = "Simulation Commands";
     mCmdList << simCmd;
@@ -539,12 +539,35 @@ void HcomHandler::executeExitCommand(const QString /*cmd*/)
 
 
 //! @brief Execute function for "sim" command
-void HcomHandler::executeSimulateCommand(const QString /*cmd*/)
+void HcomHandler::executeSimulateCommand(const QString cmd)
 {
-    ProjectTab *pCurrentTab = gpMainWindow->mpProjectTabs->getCurrentTab();
-    if(pCurrentTab)
+    QStringList splitCmd = splitWithRespectToQuotations(cmd, ' ');
+    if(splitCmd.size() > 1)
     {
-        pCurrentTab->simulate_blocking();
+        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        return;
+    }
+    else if(splitCmd.size() == 1 && splitCmd[0] == "all")
+    {
+        ProjectTabWidget *pTabs = gpMainWindow->mpProjectTabs;
+        if(pTabs)
+        {
+            pTabs->simulateAllOpenModels_blocking(false);
+        }
+        return;
+    }
+    else if(splitCmd.size() == 1)
+    {
+        mpConsole->printErrorMessage("Unknown argument.", "", false);
+        return;
+    }
+    else
+    {
+        ProjectTab *pCurrentTab = gpMainWindow->mpProjectTabs->getCurrentTab();
+        if(pCurrentTab)
+        {
+            pCurrentTab->simulate_blocking();
+        }
     }
 }
 
@@ -1824,6 +1847,7 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         }
         else if(mOptAlgorithm == ParticleSwarm)
         {
+            mOptMulticore=true;
             mOptNumPoints = getNumber("npoints", &ok);
             mOptNumParameters = getNumber("nparams", &ok);
             mOptParameters.resize(mOptNumPoints);
@@ -3546,6 +3570,17 @@ void HcomHandler::optParticleInit()
     mPwd = gDesktopHandler.getExecPath();
     executeCommand("exec ../ScriptsHCOM/optDefaultFunctions.hcom");
     mPwd = oldPath;
+
+    if(mOptMulticore)
+    {
+        QString modelPath = gpMainWindow->mpProjectTabs->getCurrentContainer()->getModelFileInfo().filePath();
+        gpMainWindow->mpProjectTabs->getCurrentTab()->save();
+        gpMainWindow->mpProjectTabs->closeAllProjectTabs();
+        for(int i=0; i<mOptNumPoints; ++i)
+        {
+            gpMainWindow->mpProjectTabs->loadModel(modelPath, true);
+        }
+    }
 
     for(int p=0; p<mOptNumPoints; ++p)
     {

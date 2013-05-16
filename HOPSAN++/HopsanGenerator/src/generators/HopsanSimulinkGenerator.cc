@@ -19,6 +19,8 @@ HopsanSimulinkGenerator::HopsanSimulinkGenerator(QString coreIncludePath, QStrin
 
 void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString modelFile, hopsan::ComponentSystem *pSystem, bool disablePortLabels, int compiler)
 {
+    Q_UNUSED(compiler);
+
     printMessage("Initializing Simulink S-function export...");
 
     QDir saveDir;
@@ -625,6 +627,8 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
 
 void HopsanSimulinkGenerator::generateToSimulinkCoSim(QString savePath, hopsan::ComponentSystem *pSystem, bool disablePortLabels, int compiler)
 {
+    Q_UNUSED(compiler);
+
     printMessage("Initializing Simulink Co-Simulation Export");
 
     QDir saveDir;

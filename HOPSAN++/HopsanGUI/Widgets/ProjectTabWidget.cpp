@@ -95,6 +95,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     connect(this, SIGNAL(simulationFinished()), this, SLOT(unlockSimulateMutex()));
     connect(this, SIGNAL(checkMessages()), mpParentProjectTabWidget, SIGNAL(checkMessages()), Qt::UniqueConnection);
     connect(this, SIGNAL(simulationFinished()), this, SLOT(collectPlotData()), Qt::UniqueConnection);
+    connect(mpParentProjectTabWidget->mpSimulationThreadHandler, SIGNAL(done(bool)), this, SIGNAL(simulationFinished()));
 
     emit checkMessages();
 
@@ -726,7 +727,6 @@ ProjectTabWidget::ProjectTabWidget(MainWindow *pParentMainWindow)
     connect(this,   SIGNAL(tabCloseRequested(int)), SLOT(tabChanged()),         Qt::UniqueConnection);
 
     mpSimulationThreadHandler = new SimulationThreadHandler();
-    connect(mpSimulationThreadHandler, SIGNAL(done(bool)), this, SIGNAL(simulationFinished()));
     this->hide();
 }
 

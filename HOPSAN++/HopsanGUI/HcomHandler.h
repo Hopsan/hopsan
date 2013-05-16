@@ -170,6 +170,7 @@ private:
     QVector<double> mOptCenter;
     int mOptConvergenceReason;
     double mOptParTol, mOptFuncTol;
+    bool mOptMulticore;
 };
 
 

@@ -101,9 +101,15 @@ QString EditComponentDialog::getCode()
 void EditComponentDialog::setHighlighter(SourceCodeEnumT language)
 {
     if(language == Modelica)
+    {
         ModelicaHighlighter *pEquationHighLighter = new ModelicaHighlighter(mpCodeTextEdit->document());
+        Q_UNUSED(pEquationHighLighter);
+    }
     else
+    {
         CppHighlighter *pEquationHighLighter = new CppHighlighter(mpCodeTextEdit->document());
+        Q_UNUSED(pEquationHighLighter);
+    }
 }
 
 

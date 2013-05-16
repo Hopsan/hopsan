@@ -623,7 +623,6 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     Q_FOREACH(const Expression &var, stateVars)
     {
         preferredPath.append(QList<int>());
-        bool found=false;
         Q_FOREACH(const Expression &equation, equations)
         {
             if(equation.contains(Expression::fromFunctionArguments("der", QList<Expression>() << var)) ||
