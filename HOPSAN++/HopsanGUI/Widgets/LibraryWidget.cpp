@@ -287,6 +287,10 @@ void LibraryWidget::checkForFailedComponents()
         pRecompLayout->addWidget(pButtonBox, pRecompLayout->rowCount(), 0, 1, 3);
         connect(pDoneButton, SIGNAL(clicked()), pRecompDialog, SLOT(close()));
 
+        if(gpSplash)
+        {
+            gpSplash->close();
+        }
         pRecompDialog->show();
         pRecompDialog->exec();
 
@@ -1250,6 +1254,10 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
                         QPushButton* pYesToAll = questionBox.addButton(QMessageBox::YesToAll);
                         QPushButton* pNoToAll = questionBox.addButton(QMessageBox::NoToAll);
                         questionBox.setDefaultButton(QMessageBox::No);
+                        if(gpSplash)
+                        {
+                            gpSplash->close();
+                        }
                         questionBox.exec();
                         QAbstractButton* pClickedButton = questionBox.clickedButton();
 

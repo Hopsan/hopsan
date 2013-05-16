@@ -69,6 +69,7 @@ int main(int argc, char *argv[])
     //Create the splash screen
     QPixmap pixmap(QString(GRAPHICSPATH) + "splash.png");
     gpSplash = new QSplashScreen(pixmap, Qt::WindowStaysOnTopHint);
+    gpSplash->setAttribute(Qt::WA_DeleteOnClose);
     gpSplash->showMessage("Starting Hopsan...");
     gpSplash->show();
 

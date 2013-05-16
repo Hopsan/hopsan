@@ -275,6 +275,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     mpWelcomeWidget = 0;
 
+    // Trigger splashscreen close in one second
+    QTimer::singleShot(3000, gpSplash, SLOT(close()));
 
     initializeWorkspace();
 
@@ -297,9 +299,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     updateToolBarsToNewTab();
 
-    //gpSplash->close();
-    // Trigger splashscreen close in one second
-    QTimer::singleShot(500, gpSplash, SLOT(close()));
+
 
 }
 
