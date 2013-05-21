@@ -100,10 +100,20 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("Hydraulic43ValveNeutralSupplyToTank", Hydraulic43ValveNeutralSupplyToTank::Creator);
     pComponentFactory->registerCreatorFunction("Hydraulic43LoadSensingValve", Hydraulic43LoadSensingValve::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicPressureReliefValve", HydraulicPressureReliefValve::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicPressureReliefValveG", HydraulicPressureReliefValveG::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicPressureReducingValve", HydraulicPressureReducingValve::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicPressureReducingValveG", HydraulicPressureReducingValveG::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicPressureDropValve", HydraulicPressureDropValve::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicPressureControlledValve", HydraulicPressureControlledValve::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicPressureControlValveG", HydraulicPressureControlValveG::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicPressureCompensatingValve", HydraulicPressureCompensatingValve::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicPressureCompensatingValveG", HydraulicPressureCompensatingValveG::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicCounterBalanceValveG", HydraulicCounterBalanceValveG::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicValve63OC", HydraulicValve63OC::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicValve43LS", HydraulicValve43LS::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicMotorJload", HydraulicMotorJload::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicPistonMload", HydraulicPistonMload::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicPistonMkload", HydraulicPistonMkload::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicShuttleValve", HydraulicShuttleValve::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicCheckValvePreLoaded", HydraulicCheckValvePreLoaded::Creator);
 
