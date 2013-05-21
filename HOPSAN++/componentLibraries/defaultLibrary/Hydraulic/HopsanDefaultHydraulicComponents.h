@@ -9,5 +9,7 @@
 #include "Sources&Sinks/HopsanDefaultHydraulicSourcesAndSinks.h"
 #include "Valves/HopsanDefaultHydraulicValves.h"
 #include "Volumes&Lines/HopsanDefaulHydraulicVolumesAndLines.h"
+#include "Special/HopsanDefaultHydraulicSpecial.h"
+
 
 #endif
