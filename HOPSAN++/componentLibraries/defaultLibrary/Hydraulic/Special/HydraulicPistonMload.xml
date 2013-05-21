@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+  <modelobject typename="HydraulicPistonMload" displayname="HydraulicPistonMload">
+    <icons>
+        <icon scale="1" path="HydraulicPistonMload.svg" iconrotation="ON" type="user"/>
+        <icon scale="1" path="HydraulicPistonMload.svg" iconrotation="ON" type="iso"/>
+    </icons>
+    <ports>
+      <port x="0.274" y="1" enabled="true" a="90" name="P1" autoplaced="true"/>
+      <port x="0.466" y="1" enabled="true" a="90" name="P2" autoplaced="true"/>
+      <port x="1" y="0.5" enabled="true" a="0" name="Pmp" autoplaced="true"/>
+    </ports>
+    <animation flowspeed="100"/>
+  </modelobject>
+</hopsanobjectappearance>

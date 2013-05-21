@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+  <modelobject typename="HydraulicPressureCompensatingValveG" displayname="HydraulicPressureCompensatingValveG">
+    <icons>
+      <icon scale="1" path="HydraulicPressureCompensatingValveG.svg" iconrotation="ON" type="user"/>
+      <icon scale="1" path="HydraulicPressureCompensatingValveG.svg" iconrotation="ON" type="iso"/>
+    </icons>
+    <ports>
+      <port x="1" y="0.1" enabled="true" a="0" name="dxv" autoplaced="true"/>
+      <port x="0.48" y="0" enabled="true" a="270" name="P1" autoplaced="true"/>
+      <port x="0.48" y="1" enabled="true" a="90" name="P2" autoplaced="true"/>
+      <port x="1" y="0.65" enabled="true" a="0" name="P3" autoplaced="true"/>
+      <port x="1" y="0.2" enabled="true" a="0" name="xv" autoplaced="true"/>
+      <port x="1" y="0.5" enabled="true" a="0" name="pref" autoplaced="true"/>
+    </ports>
+    <animation flowspeed="100"/>
+  </modelobject>
+</hopsanobjectappearance>
