@@ -51,24 +51,16 @@ namespace hopsan {
 
         void configure()
         {
-
-            a0 = 1;
-            a1 = 1;
-            a2 = 1;
-            b0 = 1;
-            b1 = 1;
-            b2 = 1;
-
             addInputVariable("in","","", 0.0, &mpND_in);
             addOutputVariable("out", "","",0.0, &mpND_out);
 
-            registerParameter("a_2", "S^2 numerator coefficient", "[-]", a2, Constant);
-            registerParameter("a_1", "S^1 numerator coefficient", "[-]", a1, Constant);
-            registerParameter("a_0", "S^0 numerator coefficient", "[-]", a0, Constant);
+            addConstant("a_2", "S^2 numerator coefficient", "[-]", 1, a2);
+            addConstant("a_1", "S^1 numerator coefficient", "[-]", 1, a1);
+            addConstant("a_0", "S^0 numerator coefficient", "[-]", 1, a0);
 
-            registerParameter("b_2", "S^2 denominator coefficient", "[-]", b2, Constant);
-            registerParameter("b_1", "S^1 denominator coefficient", "[-]", b1, Constant);
-            registerParameter("b_0", "S^0 denominator coefficient", "[-]", b0, Constant);
+            addConstant("b_2", "S^2 denominator coefficient", "[-]", 1, b2);
+            addConstant("b_1", "S^1 denominator coefficient", "[-]", 1, b1);
+            addConstant("b_0", "S^0 denominator coefficient", "[-]", 1, b0);
         }
 
 
@@ -86,8 +78,7 @@ namespace hopsan {
 
             mTF2.initialize(mTimestep, num, den, *mpND_in, *mpND_out);
 
-            //Writes out the value for time "zero"
-            //(*mpND_out) = (*mpND_in);
+            // Do not write initial value to out port, its startvalue is used to initialize the filter
         }
 
 

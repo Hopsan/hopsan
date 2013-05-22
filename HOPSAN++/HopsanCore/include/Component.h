@@ -106,18 +106,22 @@ public:
     virtual bool isComponentSignal() const;
 
     // Parameters
+    //! @todo these two are deprecated
     void initializeDynamicParameters();
     void updateDynamicParameterValues();
 
+    // Constants
+    void addConstant(const std::string name, const std::string description, const std::string unit, double &rData);
     void addConstant(const std::string name, const std::string description, const std::string unit, const double defaultValue, double &rData);
+    void addConstant(const std::string name, const std::string description, const std::string unit, int &rData);
     void addConstant(const std::string name, const std::string description, const std::string unit, const int defaultValue, int &rData);
+    void addConstant(const std::string name, const std::string description, const std::string unit, std::string &rData);
     void addConstant(const std::string name, const std::string description, const std::string unit, const char* defaultValue, std::string &rData);
+    void addConstant(const std::string name, const std::string description, const std::string unit, bool &rData);
     void addConstant(const std::string name, const std::string description, const std::string unit, const bool defaultValue, bool &rData);
+    void setConstantValue(const char* name, const double value);
 
-    void registerParameter(const std::string name, const std::string description, const std::string unit, double &rValue, const ParamDynConstEnumT dynconst=Dynamic);
-    void registerParameter(const std::string name, const std::string description, const std::string unit, int &rValue);
-    void registerParameter(const std::string name, const std::string description, const std::string unit, std::string &rValue);
-    void registerParameter(const std::string name, const std::string description, const std::string unit, bool &rValue);
+    void registerParameter(const std::string name, const std::string description, const std::string unit, double &rValue);
     virtual void unRegisterParameter(const std::string name);
 
     bool hasParameter(const std::string name) const;
@@ -133,12 +137,10 @@ public:
     // Variabels and Parameters
     const std::vector<VariameterDescription>* getVariameters();
 
-    // Constants
-    void setConstantValue(const char* name, const double value);
-
     // Start values
     double getStartValue(Port* pPort, const size_t idx, const size_t portIdx=0);
     void setStartValue(Port* pPort, const size_t idx, const double value);
+    void setDefaultStartValue(Port* pPort, const size_t idx, const double value);
     void disableStartValue(Port* pPort, const size_t idx);
     virtual void loadStartValues();
     virtual void loadStartValuesFromSimulation();
@@ -227,6 +229,13 @@ protected:
     bool getPort(const std::string portname, Port* &rpPort);
     std::string renamePort(const std::string oldname, const std::string newname);
     void deletePort(const std::string name);
+
+    // Parameter registration
+    //! @todo clean this up /Peter
+    void registerParameter(const std::string name, const std::string description, const std::string unit, double &rValue, const ParamDynConstEnumT dynconst);
+    void registerParameter(const std::string name, const std::string description, const std::string unit, int &rValue);
+    void registerParameter(const std::string name, const std::string description, const std::string unit, std::string &rValue);
+    void registerParameter(const std::string name, const std::string description, const std::string unit, bool &rValue);
 
     // NodeData ptr function
     //! @todo clean up this mess /Peter

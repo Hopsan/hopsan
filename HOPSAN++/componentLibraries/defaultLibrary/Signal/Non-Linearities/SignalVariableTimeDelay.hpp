@@ -51,11 +51,10 @@ namespace hopsan {
 
         void configure()
         {
-            mMaxMemSize = 50;
             mpDelay = 0;
 
             addInputVariable("dT", "Time delay", "s", 1.0, &mpTimeDelay);
-            registerParameter("maxMem", "Maximum allowed memory consumption", "MB", mMaxMemSize, Constant);
+            addConstant("maxMem", "Maximum allowed memory consumption", "MB", 50, mMaxMemSize);
 
             addInputVariable("in", "", "", 0.0, &mpND_in);
             addOutputVariable("out", "", "", &mpND_out);

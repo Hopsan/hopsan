@@ -272,7 +272,7 @@ void Port::createStartNode(std::string nodeType)
             const NodeDataDescription* pDesc = mpStartNode->getDataDescription(i);
             const string desc = string("startvalue:")+"Port "+getName();
             const string name = getName()+"::"+pDesc->name;
-            getComponent()->registerParameter(name, desc, pDesc->unit, *(mpStartNode->getDataPtr(pDesc->id)), Constant);
+            getComponent()->addConstant(name, desc, pDesc->unit, *(mpStartNode->getDataPtr(pDesc->id)));
         }
     }
 }
@@ -529,7 +529,7 @@ double Port::getStartValue(const size_t idx, const size_t /*portIdx*/)
 //! @brief Set the an actual start value of the port
 //! @param[in] idx is the index of the start value e.g. NodeHydraulic::Pressure
 //! @param[in] value is the start value that should be written
-void Port::setStartValue(const size_t idx, const double value, const size_t /*portIdx*/)
+void Port::setDefaultStartValue(const size_t idx, const double value, const size_t /*portIdx*/)
 {
     if(mpStartNode)
     {

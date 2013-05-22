@@ -50,18 +50,12 @@ namespace hopsan {
 
         void configure()
         {
-
-            mMin = -1.5E+300;
-            mMax = 1.5E+300;
-
-            mW=1000.0;
-
             addInputVariable("in","","", 0.0, &mpND_in);
             addOutputVariable("out", "","",0.0, &mpND_out);
 
-            registerParameter("omega", "Break frequency", "[rad/s]", mW, Constant);
-            registerParameter("y_min", "Lower output limit", "[-]", mMin, Constant);
-            registerParameter("y_max", "Upper output limit", "[-]", mMax, Constant);
+            addConstant("omega", "Break frequency", "[rad/s]", 1000.0, mW);
+            addConstant("y_min", "Lower output limit", "[-]", -1.5E+300, mMin);
+            addConstant("y_max", "Upper output limit", "[-]", 1.5E+300, mMax);
         }
 
 
@@ -77,8 +71,7 @@ namespace hopsan {
 
             mTF.initialize(mTimestep, num, den, (*mpND_in), (*mpND_out), mMin, mMax);
 
-            //Writes out the value for time "zero"
-            //(*mpND_out) = (*mpND_in);
+            // Do not write initial value to out port, its startvalue is used to initialize the filter
         }
 
 

@@ -52,26 +52,16 @@ namespace hopsan {
 
         void configure()
         {
-
-            mMin = -1.5E+300;
-            mMax = 1.5E+300;
-
-            mK = 1.0;
-            mWnum = 1.0e10;
-            mDnum = 1.0;
-            mWden = 1000;
-            mDden = 1.0;
-
             addInputVariable("in","","", 0.0, &mpND_in);
             addOutputVariable("out", "","",0.0, &mpND_out);
 
-            registerParameter("k", "Gain", "[-]", mK, Constant);
-            registerParameter("omega_1", "Numerator break frequency", "[rad/s]", mWnum, Constant);
-            registerParameter("delta_1", "Numerator damp coefficient", "[-]", mDnum, Constant);
-            registerParameter("omega_2", "Denominator break frequency", "[rad/s]", mWden, Constant);
-            registerParameter("delta_2", "Denominator damp coefficient", "[-]", mDden, Constant);
-            registerParameter("y_min", "Lower output limit", "[-]", mMin, Constant);
-            registerParameter("y_max", "Upper output limit", "[-]", mMax, Constant);
+            addConstant("k", "Gain", "[-]", 1.0, mK);
+            addConstant("omega_1", "Numerator break frequency", "[rad/s]", 1.0e10, mWnum);
+            addConstant("delta_1", "Numerator damp coefficient", "[-]", 1.0, mDnum);
+            addConstant("omega_2", "Denominator break frequency", "[rad/s]", 1000, mWden);
+            addConstant("delta_2", "Denominator damp coefficient", "[-]", 1.0, mDden);
+            addConstant("y_min", "Lower output limit", "[-]", -1.5E+300, mMin);
+            addConstant("y_max", "Upper output limit", "[-]", 1.5E+300, mMax);
         }
 
 
@@ -89,8 +79,7 @@ namespace hopsan {
 
             mTF2.initialize(mTimestep, num, den, (*mpND_in), (*mpND_out), mMin, mMax);
 
-            //Writes out the value for time "zero"
-            //(*mpND_out) = (*mpND_in);
+            // Do not write initial value to out port, its startvalue is used to initialize the filter
         }
 
 

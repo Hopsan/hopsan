@@ -52,7 +52,7 @@ namespace hopsan {
 
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             disableStartValue(mpP1, NodeHydraulic::Pressure);
-            setStartValue(mpP1, NodeHydraulic::Flow, 0.0);
+            setDefaultStartValue(mpP1, NodeHydraulic::Flow, 0.0);
         }
 
 

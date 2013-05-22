@@ -47,9 +47,8 @@ namespace hopsan {
 
         void configure()
         {
-            max=1;
             addInputVariable("in", "", "", 0.0);
-            registerParameter("max", "Upper limit", "", max, Constant);
+            addConstant("max", "Upper limit", "", 1, max);
         }
 
 

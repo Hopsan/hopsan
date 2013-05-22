@@ -74,8 +74,8 @@ namespace hopsan {
 
             addConstant("J_em", "Equivalent load of inertia", "[kg*m^2]", 1, je);
 
-            setStartValue(mpP1, NodeHydraulic::Pressure, 1.0e5);
-            setStartValue(mpP2, NodeHydraulic::Pressure, 1.0e5);
+            setDefaultStartValue(mpP1, NodeHydraulic::Pressure, 1.0e5);
+            setDefaultStartValue(mpP2, NodeHydraulic::Pressure, 1.0e5);
         }
 
 

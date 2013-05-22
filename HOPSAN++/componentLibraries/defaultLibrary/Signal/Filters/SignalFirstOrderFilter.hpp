@@ -51,20 +51,14 @@ namespace hopsan {
 
         void configure()
         {
-            k = 1;
-            min = -1.5E+300;
-            max = 1.5E+300;
-            wnum = 1E+10;
-            wden = 1000.0;
-
             addInputVariable("in","","",0.0,&mpND_in);
             addOutputVariable("out", "Filtered value", "", 0.0, &mpND_out);
 
-            registerParameter("k", "Gain", "[-]", k, Constant);
-            registerParameter("omega_num", "Numerator break frequency", "[rad/s]", wnum, Constant);
-            registerParameter("omega_den", "Denominator break frequency", "[rad/s]", wden, Constant);
-            registerParameter("y_min", "Lower output limit", "[-]", min, Constant);
-            registerParameter("y_max", "Upper output limit", "[-]", max, Constant);
+            addConstant("k", "Gain", "[-]", 1, k);
+            addConstant("omega_num", "Numerator break frequency", "[rad/s]", 1E+10, wnum);
+            addConstant("omega_den", "Denominator break frequency", "[rad/s]", 1000.0, wden);
+            addConstant("y_min", "Lower output limit", "[-]", -1.5E+300, min);
+            addConstant("y_max", "Upper output limit", "[-]", 1.5E+300, max);
         }
 
 

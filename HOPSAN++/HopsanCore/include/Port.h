@@ -132,7 +132,7 @@ namespace hopsan {
 
         std::vector<Port*> mConnectedPorts;
 
-        virtual void setStartValue(const size_t idx, const double value, const size_t portIdx=0);
+        virtual void setDefaultStartValue(const size_t idx, const double value, const size_t portIdx=0);
         virtual void disableStartValue(const size_t idx);
 
         virtual Node *getStartNodePtr();

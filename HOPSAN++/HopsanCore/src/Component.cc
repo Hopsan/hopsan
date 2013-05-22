@@ -372,28 +372,55 @@ void Component::updateDynamicParameterValues()
     }
 }
 
+void Component::addConstant(const string name, const string description, const string unit, double &rData)
+{
+    registerParameter(name, description, unit, rData, Constant);
+}
+
 void Component::addConstant(const string name, const string description, const string unit, const double defaultValue, double &rData)
 {
     rData = defaultValue;
-    registerParameter(name, description, unit, rData, Constant);
+    addConstant(name, description, unit, rData);
+}
+
+void Component::addConstant(const string name, const string description, const string unit, int &rData)
+{
+    registerParameter(name, description, unit, rData);
 }
 
 void Component::addConstant(const string name, const string description, const string unit, const int defaultValue, int &rData)
 {
     rData = defaultValue;
+    addConstant(name, description, unit, rData);
+}
+
+void Component::addConstant(const string name, const string description, const string unit, string &rData)
+{
     registerParameter(name, description, unit, rData);
 }
 
 void Component::addConstant(const string name, const string description, const string unit, const char* defaultValue, std::string &rData)
 {
     rData = defaultValue;
+    addConstant(name, description, unit, rData);
+}
+
+void Component::addConstant(const string name, const string description, const string unit, bool &rData)
+{
     registerParameter(name, description, unit, rData);
 }
 
 void Component::addConstant(const string name, const string description, const string unit, const bool defaultValue, bool &rData)
 {
     rData = defaultValue;
-    registerParameter(name, description, unit, rData);
+    addConstant(name, description, unit, rData);
+}
+
+//! @deprecated
+void Component::registerParameter(const string name, const string description, const string unit, double &rValue)
+{
+    addErrorMessage("registerParameter() is deprecated, use addConstant or addInputvariable instead!");
+    registerParameter(name,description,unit,rValue,Constant);
 }
 
 
@@ -978,7 +1005,7 @@ Port *Component::addInputVariable(const string name, const string description, c
     //! @todo suport more types
     Port *pPort = addReadPort(name,"NodeSignal", Port::NotRequired);
     pPort->setSignalNodeUnitAndDescription(unit, description);
-    setStartValue(pPort, 0, defaultValue);
+    setDefaultStartValue(pPort, 0, defaultValue);
 
     if (ppNodeData)
     {
@@ -1006,7 +1033,7 @@ Port *Component::addOutputVariable(const string name, const string description, 
 {
     Port *pPort = addWritePort(name, "NodeSignal", Port::NotRequired);
     pPort->setSignalNodeUnitAndDescription(unit, description);
-    setStartValue(pPort, 0, defaultValue);
+    setDefaultStartValue(pPort, 0, defaultValue);
 
     if (ppNodeData)
     {
@@ -1112,14 +1139,21 @@ double Component::getStartValue(Port* pPort, const size_t idx, const size_t port
 }
 
 
-//! @brief Set the an actual start value of a port
+//! @deprecated
+void Component::setStartValue(Port* pPort, const size_t idx, const double value)
+{
+    addErrorMessage("setStartValue() is deprecated, use setDefaultStartValue() instead. Note!, it will not set the initial value!");
+    setDefaultStartValue(pPort,idx,value);
+}
+
+//! @brief Set the default startvalue in a port
 //! @param[in] pPort is the port which should be written to
 //! @param[in] idx is the index of the start value e.g. NodeHydraulic::Pressure
 //! @param[in] value is the start value that should be written
-void Component::setStartValue(Port* pPort, const size_t idx, const double value)
+void Component::setDefaultStartValue(Port *pPort, const size_t idx, const double value)
 {
-    addLogMess((getName()+"::setStartValue").c_str());
-    pPort->setStartValue(idx, value);
+    addLogMess((getName()+"::setDefaultStartValue").c_str());
+    pPort->setDefaultStartValue(idx, value);
     // If a description exist, then refresh the value text
     if (pPort->getNodeDataDescription(idx))
     {

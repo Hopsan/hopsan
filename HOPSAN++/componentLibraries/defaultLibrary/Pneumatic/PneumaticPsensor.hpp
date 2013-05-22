@@ -75,12 +75,12 @@ public:
         //Register changable parameters to the HOPSAN++ core
         //Set start values in nodes
         //Port Pp1
-        setStartValue(mpPp1, NodePneumatic::Pressure,100000.);
-        setStartValue(mpPp1, NodePneumatic::MassFlow,0.);
-        setStartValue(mpPp1, NodePneumatic::Temperature,293.);
-        setStartValue(mpPp1, NodePneumatic::EnergyFlow,0.);
-        setStartValue(mpPp1, NodePneumatic::WaveVariable,0.);
-        setStartValue(mpPp1, NodePneumatic::CharImpedance,0.);
+        setDefaultStartValue(mpPp1, NodePneumatic::Pressure,100000.);
+        setDefaultStartValue(mpPp1, NodePneumatic::MassFlow,0.);
+        setDefaultStartValue(mpPp1, NodePneumatic::Temperature,293.);
+        setDefaultStartValue(mpPp1, NodePneumatic::EnergyFlow,0.);
+        setDefaultStartValue(mpPp1, NodePneumatic::WaveVariable,0.);
+        setDefaultStartValue(mpPp1, NodePneumatic::CharImpedance,0.);
      }
 
     void initialize()

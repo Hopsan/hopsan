@@ -59,8 +59,8 @@ namespace hopsan {
             mpPel1 = addPowerMultiPort("Pel1", "NodeElectric");
             addConstant("Capacitance", "Capacitance", "[Fa]", 0.0001, capacitance);
             addInputVariable("alpha", "Low pass coeficient to dampen standing delayline waves", "[-]", 0.3, &mpAlpha);
-            setStartValue(mpPel1, NodeElectric::Current, 0.0);
-            setStartValue(mpPel1, NodeElectric::Voltage, 12);
+            setDefaultStartValue(mpPel1, NodeElectric::Current, 0.0);
+            setDefaultStartValue(mpPel1, NodeElectric::Voltage, 12);
         }
 
 

@@ -66,10 +66,10 @@ namespace hopsan {
 
             addConstant("deltat", "Time delay", "[s]",   0.1, mTimeDelay);
 
-            setStartValue(mpP1, NodeHydraulic::Flow, 0.0);
-            setStartValue(mpP1, NodeHydraulic::Pressure, 1.0e5);
-            setStartValue(mpP2, NodeHydraulic::Flow, 0.0);
-            setStartValue(mpP2, NodeHydraulic::Pressure, 1.0e5);
+            setDefaultStartValue(mpP1, NodeHydraulic::Flow, 0.0);
+            setDefaultStartValue(mpP1, NodeHydraulic::Pressure, 1.0e5);
+            setDefaultStartValue(mpP2, NodeHydraulic::Flow, 0.0);
+            setDefaultStartValue(mpP2, NodeHydraulic::Pressure, 1.0e5);
         }
 
 
