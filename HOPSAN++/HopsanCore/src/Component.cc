@@ -181,7 +181,26 @@ const std::vector<VariameterDescription>* Component::getVariameters()
 }
 
 //! @note Dont use this function during simulation, it is slow
+//! @todo check returnvalue from setParameter check if Ok error emssage otherwise, also in the other functions
 void Component::setConstantValue(const char *name, const double value)
+{
+    setParameterValue(name, to_string(value), true);
+}
+
+//! @note Dont use this function during simulation, it is slow
+void Component::setConstantValue(const char *name, const int value)
+{
+    setParameterValue(name, to_string(value), true);
+}
+
+//! @note Dont use this function during simulation, it is slow
+void Component::setConstantValue(const char *name, const string value)
+{
+    setParameterValue(name, value, true);
+}
+
+//! @note Dont use this function during simulation, it is slow
+void Component::setConstantValue(const char *name, const bool value)
 {
     setParameterValue(name, to_string(value), true);
 }

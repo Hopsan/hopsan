@@ -120,6 +120,9 @@ public:
     void addConstant(const std::string name, const std::string description, const std::string unit, bool &rData);
     void addConstant(const std::string name, const std::string description, const std::string unit, const bool defaultValue, bool &rData);
     void setConstantValue(const char* name, const double value);
+    void setConstantValue(const char* name, const int value);
+    void setConstantValue(const char* name, const std::string value);
+    void setConstantValue(const char* name, const bool value);
 
     void registerParameter(const std::string name, const std::string description, const std::string unit, double &rValue);
     virtual void unRegisterParameter(const std::string name);
