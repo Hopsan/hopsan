@@ -53,20 +53,6 @@ bool initSystem()
 }
 
 
-bool initComponents()
-{
-    if(spCoreComponentSystem->checkModelBeforeSimulation())
-    {
-        for(size_t i=0; i<sComponentNames.size(); ++i)
-        {
-            spCoreComponentSystem->getSubComponentOrThisIfSysPort(sComponentNames.at(i))->initialize();
-        }
-        return true;
-    }
-    return false;
-}
-
-
 bool connect(string comp1, string port1, string comp2, string port2)
 {
     return spCoreComponentSystem->connect(comp1, port1, comp2, port2);
@@ -94,7 +80,7 @@ bool simulateOneTimestep(double time)
     if(spCoreComponentSystem->checkModelBeforeSimulation())
     {
         double timestep = spCoreComponentSystem->getDesiredTimeStep();
-        spCoreComponentSystem->simulate(time, time+timestep);
+        spCoreComponentSystem->simulate(time+timestep);
         return true;
     }
     return false;
