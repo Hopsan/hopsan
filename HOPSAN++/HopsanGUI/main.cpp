@@ -69,7 +69,8 @@ int main(int argc, char *argv[])
     //Create the splash screen
     QPixmap pixmap(QString(GRAPHICSPATH) + "splash.png");
     gpSplash = new QSplashScreen(pixmap, Qt::WindowStaysOnTopHint);
-    gpSplash->setAttribute(Qt::WA_DeleteOnClose);
+    //! @todo We need to delete it somehow, but still be able to check if it has been deleted or not (perhaps a QPointer will work)
+    //gpSplash->setAttribute(Qt::WA_DeleteOnClose);
     gpSplash->showMessage("Starting Hopsan...");
     gpSplash->show();
 
