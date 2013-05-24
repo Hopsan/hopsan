@@ -27,10 +27,10 @@
 //#include "Widgets/ProjectTabWidget.h"
 
 //! Constructor.
-ProgressBarThread::ProgressBarThread(QObject *parent/*ProjectTab *parent*/)
+ProgressBarThread::ProgressBarThread(QObject *parent/*ModelWidget *parent*/)
     : QThread(parent)
 {
-    //mpParentProjectTab = parent; //!< @todo Why do we need project tab here it is never used, we could use QObject* as parent in constructor instead
+    //mpParentModelWidget = parent; //!< @todo Why do we need project tab here it is never used, we could use QObject* as parent in constructor instead
 }
 
 

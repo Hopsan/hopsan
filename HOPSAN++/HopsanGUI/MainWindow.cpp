@@ -39,6 +39,7 @@
 #include "CopyStack.h"
 #include "DesktopHandler.h"
 #include "MainWindow.h"
+#include "ModelHandler.h"
 #include "PlotHandler.h"
 #include "UndoStack.h"
 #include "version_gui.h"
@@ -115,6 +116,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpTerminalDock->setWidget(mpTerminalWidget);
     mpTerminalDock->setFeatures(QDockWidget::DockWidgetVerticalTitleBar | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable);
     addDockWidget(Qt::BottomDockWidgetArea, mpTerminalDock);
+    mpTerminalDock->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     mpTerminalWidget->checkMessages();
     mpTerminalWidget->mpConsole->printInfoMessage("HopsanGUI, Version: " + QString(HOPSANGUIVERSION));
@@ -187,11 +189,25 @@ MainWindow::MainWindow(QWidget *parent)
     mpCentralGridLayout = new QGridLayout(mpCentralWidget);
     mpCentralGridLayout->setContentsMargins(4,4,4,4);
 
+    //Create the model handler object
+    mpModelHandler = new ModelHandler(this);
+
     //Create the main tab container, need at least one tab
-    mpProjectTabs = new ProjectTabWidget(this);
-    mpProjectTabs->setObjectName("projectTabs");
-    mpProjectTabs->setMouseTracking(true);
-    mpCentralGridLayout->addWidget(mpProjectTabs,0,0,4,4);
+    mpCentralTabs = new CentralTabWidget(this);
+    mpCentralTabs->setObjectName("centralTabs");
+    mpCentralTabs->setMouseTracking(true);
+    mpCentralGridLayout->addWidget(mpCentralTabs,0,0,4,4);
+
+
+    QToolButton *pHideTerminalButton = new QToolButton(this);
+    pHideTerminalButton->setText("Hide");
+    pHideTerminalButton->setFixedSize(300,12);
+    pHideTerminalButton->setCheckable(true);
+    pHideTerminalButton->setChecked(false);
+    mpCentralGridLayout->addWidget(pHideTerminalButton,5,0,1,4, Qt::AlignCenter);
+    connect(pHideTerminalButton, SIGNAL(toggled(bool)), mpTerminalDock, SLOT(setVisible(bool)));
+    connect(pHideTerminalButton, SIGNAL(toggled(bool)), mpPyDockWidget, SLOT(setVisible(bool)));
+    connect(pHideTerminalButton, SIGNAL(toggled(bool)), mpMessageDock, SLOT(setVisible(bool)));
 
     //Create the system parameter widget and hide it
     mpSystemParametersWidget = new SystemParametersWidget(this);
@@ -282,8 +298,10 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     mpWelcomeWidget = new WelcomeWidget(this);
-    mpCentralGridLayout->addWidget(mpWelcomeWidget,0,0,4,4);
-    mpCentralGridLayout->setAlignment(mpWelcomeWidget, Qt::AlignTop);
+    //mpCentralGridLayout->addWidget(mpWelcomeWidget,0,0,4,4);
+    //mpCentralGridLayout->setAlignment(mpWelcomeWidget, Qt::AlignTop);
+    mpCentralTabs->addTab(mpWelcomeWidget, "Welcome");
+    mpCentralTabs->setTabNotClosable(0);
 
     mpComponentGeneratorDialog = new ComponentGeneratorDialog(this);    //Needs configuration
 
@@ -309,7 +327,8 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete gpPlotHandler;
-    delete mpProjectTabs;
+    delete mpCentralTabs;
+    delete mpModelHandler;
     delete mpMenuBar;
     delete mpStatusBar;
 }
@@ -354,8 +373,8 @@ void MainWindow::initializeWorkspace()
     {
         if(qApp->arguments().at(i).endsWith(".hmf"))
         {
-            mpProjectTabs->closeAllProjectTabs();
-            mpProjectTabs->loadModel(qApp->arguments().at(i));
+            mpModelHandler->closeAllModels();
+            mpModelHandler->loadModel(qApp->arguments().at(i));
             return;
         }
     }
@@ -368,7 +387,7 @@ void MainWindow::initializeWorkspace()
         {
             for(int i=0; i<gConfig.getLastSessionModels().size(); ++i)
             {
-                mpProjectTabs->loadModel(gConfig.getLastSessionModels().at(i));
+                mpModelHandler->loadModel(gConfig.getLastSessionModels().at(i));
             }
         }
         else
@@ -384,7 +403,7 @@ void MainWindow::initializeWorkspace()
 //! @brief Opens the plot widget.
 void MainWindow::openPlotWidget()
 {
-    if(mpProjectTabs->count() != 0)
+    if(mpCentralTabs->count() != 0)
     {
         if(!mpPlotWidgetDock->isVisible())
         {
@@ -406,7 +425,7 @@ void MainWindow::openPlotWidget()
 
 //! @brief Event triggered re-implemented method that closes the main window.
 //! First all tabs (models) are closed, if the user do not push Cancel
-//! (closeAllProjectTabs then returns 'false') the event is accepted and
+//! (closeAllModels then returns 'false') the event is accepted and
 //! the main window is closed.
 //! @param event contains information of the closing operation.
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -415,7 +434,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     //! @todo need to restore function that closes those plots beloning to a particular tab/model automatically /Peter
     gpPlotHandler->closeAllOpenWindows();
 
-    if (mpProjectTabs->closeAllProjectTabs())
+    if (mpModelHandler->closeAllModels())
     {
         event->accept();
     }
@@ -467,12 +486,12 @@ void MainWindow::createActions()
     mpNewAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-New.png"), tr("&New"), this);
     mpNewAction->setShortcut(tr("New"));
     mpNewAction->setToolTip(tr("Create New Project"));
-    connect(mpNewAction, SIGNAL(triggered()), mpProjectTabs, SLOT(addNewProjectTab()));
+    connect(mpNewAction, SIGNAL(triggered()), mpModelHandler, SLOT(addNewModel()));
 
     mpOpenAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Open.png"), tr("&Open"), this);
     mpOpenAction->setShortcut(QKeySequence("Ctrl+o"));
     mpOpenAction->setToolTip(tr("Load Model File (Ctrl+O)"));
-    connect(mpOpenAction, SIGNAL(triggered()), mpProjectTabs, SLOT(loadModel()));
+    connect(mpOpenAction, SIGNAL(triggered()), mpModelHandler, SLOT(loadModel()));
 
     mpSaveAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Save.png"), tr("&Save"), this);
     mpSaveAction->setShortcut(QKeySequence("Ctrl+s"));
@@ -547,7 +566,7 @@ void MainWindow::createActions()
     mpOpenDebuggerAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Debug.png"), tr("&Launch Debugger"), this);
     mpOpenDebuggerAction->setToolTip(tr("Launch Debugger"));
     connect(mpOpenDebuggerAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
-    connect(mpOpenDebuggerAction,  SIGNAL(triggered()), mpProjectTabs, SLOT(launchDebugger()));
+    connect(mpOpenDebuggerAction,  SIGNAL(triggered()), mpModelHandler, SLOT(launchDebugger()));
 
     mpOptimizeAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Optimize.png"), tr("&Optimize"), this);
     mpOptimizeAction->setToolTip(tr("Open Optimization Dialog (Ctrl+Shift+Z)"));
@@ -564,7 +583,7 @@ void MainWindow::createActions()
     mpMeasureSimulationTimeAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-MeasureSimulationTime.png"), tr("&Measure Simulation Times"), this);
     mpMeasureSimulationTimeAction->setToolTip(tr("Measure Simulation Times"));
     connect(mpMeasureSimulationTimeAction, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
-    connect(mpMeasureSimulationTimeAction, SIGNAL(triggered()), mpProjectTabs, SLOT(measureSimulationTime()));
+    connect(mpMeasureSimulationTimeAction, SIGNAL(triggered()), mpModelHandler, SLOT(measureSimulationTime()));
 
     mpPlotAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Plot.png"), tr("&Plot Variables"), this);
     mpPlotAction->setToolTip(tr("Plot Variables (Ctrl+Shift+P)"));
@@ -589,7 +608,7 @@ void MainWindow::createActions()
 
     mpAnimateAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Animation.png"), tr("&Animate"), this);
     mpAnimateAction->setToolTip("Animate");
-    connect(mpAnimateAction, SIGNAL(triggered()),mpProjectTabs, SLOT(openAnimation()));
+    connect(mpAnimateAction, SIGNAL(triggered()),mpModelHandler, SLOT(openAnimation()));
 
     mpAlignXAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-AlignX.png"), tr("&Align Vertical (by last selected)"), this);
     mpAlignXAction->setText("Align Vertical");
@@ -700,18 +719,18 @@ void MainWindow::createActions()
     mpDebug1Action = new QAction(this);
     mpDebug1Action->setShortcut(QKeySequence("Ctrl+D+1"));
     this->addAction(mpDebug1Action);
-    connect(mpDebug1Action, SIGNAL(triggered()), mpProjectTabs, SLOT(launchDebugger()));
+    connect(mpDebug1Action, SIGNAL(triggered()), mpModelHandler, SLOT(launchDebugger()));
 
     mpDebug2Action = new QAction(this);
     mpDebug2Action->setShortcut(QKeySequence("Ctrl+D+2"));
     this->addAction(mpDebug2Action);
-    //connect(mpDebug2Action, SIGNAL(triggered()), mpProjectTabs, SLOT(simulateAllOpenModelsWithoutSplit()));
+    //connect(mpDebug2Action, SIGNAL(triggered()), mpModelHandler, SLOT(simulateAllOpenModelsWithoutSplit()));
 
     mpShowLossesAction = new QAction(QIcon(QString(ICONPATH) + "Hopsan-Losses.png"), tr("Calculate Losses"), this);
     mpShowLossesAction->setShortcut(QKeySequence("Ctrl+L"));
     mpShowLossesAction->setCheckable(true);
     this->addAction(mpShowLossesAction);
-    connect(mpShowLossesAction, SIGNAL(triggered(bool)), mpProjectTabs, SLOT(showLosses(bool)));
+    connect(mpShowLossesAction, SIGNAL(triggered(bool)), mpModelHandler, SLOT(showLosses(bool)));
 
     mpStartTimeLineEdit = new QLineEdit("0.0");
     mpStartTimeLineEdit->setMaximumWidth(70);
@@ -991,11 +1010,11 @@ void MainWindow::createToolbars()
 
 
     connect(mpImportFMUAction,              SIGNAL(triggered()), mpLibrary,     SLOT(importFmu()));
-    connect(mpExportToSimulinkAction,       SIGNAL(triggered()), mpProjectTabs, SLOT(exportCurrentModelToSimulink()));
-    connect(mpExportToSimulinkCoSimAction,  SIGNAL(triggered()), mpProjectTabs, SLOT(exportCurrentModelToSimulinkCoSim()));
-    connect(mpExportToFMUAction,            SIGNAL(triggered()), mpProjectTabs, SLOT(exportCurrentModelToFMU()));
-    connect(mpExportToLabviewAction,        SIGNAL(triggered()), mpProjectTabs, SLOT(createLabviewWrapperFromCurrentModel()));
-    connect(mpLoadModelParametersAction,    SIGNAL(triggered()), mpProjectTabs, SLOT(loadModelParameters()));
+    connect(mpExportToSimulinkAction,       SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToSimulink()));
+    connect(mpExportToSimulinkCoSimAction,  SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToSimulinkCoSim()));
+    connect(mpExportToFMUAction,            SIGNAL(triggered()), mpModelHandler, SLOT(exportCurrentModelToFMU()));
+    connect(mpExportToLabviewAction,        SIGNAL(triggered()), mpModelHandler, SLOT(createLabviewWrapperFromCurrentModel()));
+    connect(mpLoadModelParametersAction,    SIGNAL(triggered()), mpModelHandler, SLOT(loadModelParameters()));
 }
 
 void MainWindow::buildModelActionsMenu(QMenu *pParentMenu, QDir dir)
@@ -1060,7 +1079,7 @@ void MainWindow::openRecentModel()
     qDebug() << "Trying to open " << action->text();
     if (action)
     {
-        mpProjectTabs->loadModel(action->text());
+        mpModelHandler->loadModel(action->text());
     }
 }
 
@@ -1164,7 +1183,7 @@ void MainWindow::openModelByAction()
     {
         QString modelPath = pAction->data().toString();
         qDebug() << "Trying to open " << modelPath;
-        mpProjectTabs->loadModel(modelPath);
+        mpModelHandler->loadModel(modelPath);
     }
 }
 
@@ -1209,7 +1228,7 @@ void MainWindow::openContextHelp()
         {
             mpHelpDialog->open("component-generator.html");
         }
-        else if(action->parent() == mpProjectTabs->getCurrentContainer())
+        else if(action->parent() == mpModelHandler->getCurrentContainer())
         {
             mpHelpDialog->open("userEnergyLosses.html");
         }
@@ -1304,12 +1323,12 @@ void MainWindow::showReleaseNotes()
 //! @brief Updates the toolbar values that are tab specific when a new tab is activated
 void MainWindow::updateToolBarsToNewTab()
 {
-    if(mpProjectTabs->count() > 0)
+    if(mpModelHandler->count() > 0 && mpModelHandler->getCurrentModel())
     {
-        mpTogglePortsAction->setChecked(!mpProjectTabs->getCurrentTab()->getTopLevelSystem()->areSubComponentPortsHidden());
+        mpTogglePortsAction->setChecked(!mpModelHandler->getCurrentModel()->getTopLevelSystem()->areSubComponentPortsHidden());
     }
 
-    bool noTabs = !(mpProjectTabs->count() > 0);
+    bool noTabs = !(mpModelHandler->count() > 0);
     mpSaveAction->setEnabled(!noTabs);
     mpSaveAsAction->setEnabled(!noTabs);
     mpExportModelParametersAction->setEnabled(!noTabs);
@@ -1355,10 +1374,10 @@ void MainWindow::updateToolBarsToNewTab()
     mpExportToSimulinkCoSimAction->setEnabled(!noTabs);
     mpLoadModelParametersAction->setEnabled(!noTabs);
 
-    if(mpWelcomeWidget)
-    {
-        mpWelcomeWidget->setVisible(noTabs);
-    }
+//    if(mpWelcomeWidget)
+//    {
+//        mpWelcomeWidget->setVisible(noTabs);
+//    }
 }
 
 
@@ -1395,7 +1414,7 @@ void MainWindow::updateRecentList()
                 QAction *tempAction;
                 tempAction = mpRecentMenu->addAction(gConfig.getRecentModels().at(i));
                 tempAction->setIcon(QIcon(QString(ICONPATH) + "hmf.ico"));
-                disconnect(mpRecentMenu, SIGNAL(triggered(QAction *)), mpProjectTabs, SLOT(loadModel(QAction *)));    //Ugly hack to make sure connecetions are not made twice (then program would try to open model more than once...)
+                disconnect(mpRecentMenu, SIGNAL(triggered(QAction *)), mpModelHandler, SLOT(loadModel(QAction *)));    //Ugly hack to make sure connecetions are not made twice (then program would try to open model more than once...)
                 connect(tempAction, SIGNAL(triggered()), this, SLOT(openRecentModel()));
             }
         }
@@ -1511,7 +1530,7 @@ void MainWindow::setProjectSimulationTimeParameterValues()
     if(mpStopTimeLineEdit->text().toDouble() > MAXSTOPTIME) { mpStopTimeLineEdit->setText(QString::number(MAXSTOPTIME)); }
 
 
-    mpProjectTabs->setCurrentTopLevelSimulationTimeParameters(mpStartTimeLineEdit->text(), mpTimeStepLineEdit->text(), mpStopTimeLineEdit->text() );
+    mpModelHandler->setCurrentTopLevelSimulationTimeParameters(mpStartTimeLineEdit->text(), mpTimeStepLineEdit->text(), mpStopTimeLineEdit->text() );
 
 }
 

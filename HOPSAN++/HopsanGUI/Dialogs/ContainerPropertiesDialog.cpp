@@ -317,7 +317,7 @@ ContainerPropertiesDialog::ContainerPropertiesDialog(ContainerObject *pContainer
     pPrimaryLayout->addWidget(mpButtonBox);
     setLayout(pPrimaryLayout);
 
-    if( (mpContainerObject != gpMainWindow->mpProjectTabs->getCurrentContainer()) && (mvParameterLayoutPtrs.size()>0))
+    if( (mpContainerObject != gpMainWindow->mpModelHandler->getCurrentContainer()) && (mvParameterLayoutPtrs.size()>0))
     {
         QGridLayout *pParameterLayout = new QGridLayout();
         //mpSystemParametersGroupBox = new QGroupBox("System Parameters", this);

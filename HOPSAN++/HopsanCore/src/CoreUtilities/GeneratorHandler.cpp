@@ -116,7 +116,7 @@ GeneratorHandler::GeneratorHandler()
 #else
     lib_ptr = dlopen("libHopsanGenerator_d.so", RTLD_NOW);  //Load the dll
 #endif
-    if (!lib_ptr)
+    if(!lib_ptr)
     {
         fprintf (stderr, "%s\n", dlerror());
         //! @todo Error message
@@ -126,7 +126,7 @@ GeneratorHandler::GeneratorHandler()
     //Load modelica generator function
     callModelicaGenerator = (call_modelica_generator_t)dlsym(lib_ptr, "callModelicaGenerator");
     char *dlsym_error = dlerror();
-    if (dlsym_error)
+    if(dlsym_error)
     {
         //! @todo Error message
         return;
@@ -135,7 +135,7 @@ GeneratorHandler::GeneratorHandler()
     //Load C++ generator function
     callCppGenerator = (call_cpp_generator_t)dlsym(lib_ptr, "callCppGenerator");
     dlsym_error = dlerror();
-    if (dlsym_error)
+    if(dlsym_error)
     {
         //! @todo Error message
         return;
@@ -144,7 +144,7 @@ GeneratorHandler::GeneratorHandler()
     //Load FMU generator function
     callFmuImportGenerator = (call_fmu_import_generator_t)dlsym(lib_ptr, "callFmuImportGenerator");
     dlsym_error = dlerror();
-    if (dlsym_error)
+    if(dlsym_error)
     {
         //! @todo Error message
         return;
@@ -153,7 +153,7 @@ GeneratorHandler::GeneratorHandler()
     //Load FMU generator function
     callFmuExportGenerator = (call_fmu_export_generator_t)dlsym(lib_ptr, "callFmuExportGenerator");
     dlsym_error = dlerror();
-    if (dlsym_error)
+    if(dlsym_error)
     {
         //! @todo Error message
         return;
@@ -163,7 +163,25 @@ GeneratorHandler::GeneratorHandler()
     //Load Simulink Co-Simulation generator function
     callSimulinkCoSimExportGenerator = (call_simulink_cosim_export_generator_t)dlsym(lib_ptr, "callSimulinkCoSimExportGenerator");
     dlsym_error = dlerror();
+    if(dlsym_error)
+    {
+        //! @todo Error message
+        return;
+    }
+
+    //Load LabVIEW/SIT generator function
+    callLabViewSITGenerator = (call_lvsit_export_generator_t)dlsym(lib_ptr, "callLabViewSITGenerator");
+    dlsym_error = dlerror();
     if (dlsym_error)
+    {
+        //! @todo Error message
+        return;
+    }
+
+    //Load compile component library function
+    callComponentLibraryCompiler = (call_complib_compiler_t)dlsym(lib_ptr, "callComponentLibraryCompiler");
+    dlsym_error = dlerror();
+    if(dlsym_error)
     {
         //! @todo Error message
         return;

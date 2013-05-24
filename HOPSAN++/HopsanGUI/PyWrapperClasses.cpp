@@ -27,6 +27,7 @@
 #include "PlotWindow.h"
 #include "PlotTab.h"
 #include "PlotHandler.h"
+#include "ModelHandler.h"
 
 //Implementations are done in h-file right now
 QString PyPortClassWrapper::plot(Port* o, const QString& dataName)
@@ -112,19 +113,19 @@ QStringList PyModelObjectClassWrapper::portNames(ModelObject* o)
 }
 void PyMainWindowClassWrapper::newModel(MainWindow* o)
 {
-    o->mpProjectTabs->addNewProjectTab();
+    o->mpModelHandler->addNewModel();
 }
 void PyMainWindowClassWrapper::loadModel(MainWindow* o, const QString& modelFileName)
 {
-    o->mpProjectTabs->loadModel(modelFileName, true);
+    o->mpModelHandler->loadModel(modelFileName, true);
 }
 void PyMainWindowClassWrapper::closeAllModels(MainWindow* o)
 {
-    o->mpProjectTabs->closeAllProjectTabs();
+    o->mpModelHandler->closeAllModels();
 }
 void PyMainWindowClassWrapper::gotoTab(MainWindow* o, int tab)
 {
-    o->mpProjectTabs->setCurrentIndex(tab);
+    o->mpModelHandler->setCurrentModel(tab);
 }
 void PyMainWindowClassWrapper::printMessage(MainWindow* o, const QString& message)
 {
@@ -148,7 +149,7 @@ void PyMainWindowClassWrapper::printError(MainWindow* o, const QString& message)
 }
 ModelObject* PyMainWindowClassWrapper::component(MainWindow* o, const QString& compName)
 {
-    return o->mpProjectTabs->getCurrentContainer()->getModelObject(compName);
+    return o->mpModelHandler->getCurrentContainer()->getModelObject(compName);
 }
 void PyMainWindowClassWrapper::setStartTime(MainWindow* o, const double& start)
 {
@@ -181,7 +182,7 @@ bool PyMainWindowClassWrapper::simulate(MainWindow* o)
 {
     //bool previousProgressBarSetting = o->mpConfig->getEnableProgressBar();
     //o->mpConfig->setEnableProgressBar(false);
-    bool success = o->mpProjectTabs->getCurrentTab()->simulate_blocking();
+    bool success = o->mpModelHandler->getCurrentModel()->simulate_blocking();
     //o->mpConfig->setEnableProgressBar(previousProgressBarSetting);
     //qApp->processEvents();
     return success;
@@ -192,7 +193,7 @@ bool PyMainWindowClassWrapper::simulateAllOpenModels(MainWindow* o, bool modelsH
 {
     //bool previousProgressBarSetting = o->mpConfig->getEnableProgressBar();
     //o->mpConfig->setEnableProgressBar(false);
-    bool success = o->mpProjectTabs->simulateAllOpenModels_blocking(modelsHaveNotChanged);
+    bool success = o->mpModelHandler->simulateAllOpenModels_blocking(modelsHaveNotChanged);
     //o->mpConfig->setEnableProgressBar(previousProgressBarSetting);
     //qApp->processEvents();
     return success;
@@ -201,9 +202,9 @@ bool PyMainWindowClassWrapper::simulateAllOpenModels(MainWindow* o, bool modelsH
 
 double PyMainWindowClassWrapper::getParameter(MainWindow* o, const QString& compName, const QString& parName)
 {
-    if(o->mpProjectTabs->getCurrentContainer()->hasModelObject(compName))
+    if(o->mpModelHandler->getCurrentContainer()->hasModelObject(compName))
     {
-        QString strParValue = o->mpProjectTabs->getCurrentContainer()->getModelObject(compName)->getParameterValue(parName);
+        QString strParValue = o->mpModelHandler->getCurrentContainer()->getModelObject(compName)->getParameterValue(parName);
         return strParValue.toDouble(); //! @todo Not good if parameter not double
     }
     //assert(false);
@@ -212,17 +213,17 @@ double PyMainWindowClassWrapper::getParameter(MainWindow* o, const QString& comp
 
 void PyMainWindowClassWrapper::setParameter(MainWindow* o, const QString& compName, const QString& parName, const double& value)
 {
-    if(o->mpProjectTabs->getCurrentContainer()->hasModelObject(compName))
+    if(o->mpModelHandler->getCurrentContainer()->hasModelObject(compName))
     {
-        o->mpProjectTabs->getCurrentContainer()->getModelObject(compName)->setParameterValue(parName, QString::number(value));
+        o->mpModelHandler->getCurrentContainer()->getModelObject(compName)->setParameterValue(parName, QString::number(value));
     }
 }
 
 void PyMainWindowClassWrapper::setParameter(MainWindow* o, const QString& compName, const QString& parName, const QString& value)
 {
-    if(o->mpProjectTabs->getCurrentContainer()->hasModelObject(compName))
+    if(o->mpModelHandler->getCurrentContainer()->hasModelObject(compName))
     {
-        o->mpProjectTabs->getCurrentContainer()->getModelObject(compName)->setParameterValue(parName, value);
+        o->mpModelHandler->getCurrentContainer()->getModelObject(compName)->setParameterValue(parName, value);
     }
 }
 
@@ -230,7 +231,7 @@ void PyMainWindowClassWrapper::setSystemParameter(MainWindow* o, const QString& 
 {
     CoreParameterData paramData(parName, "", "double");
     paramData.mValue.setNum(value);
-    o->mpProjectTabs->getCurrentContainer()->setOrAddParameter(paramData);
+    o->mpModelHandler->getCurrentContainer()->setOrAddParameter(paramData);
     o->mpSystemParametersWidget->update();
 }
 
@@ -240,7 +241,7 @@ QString PyMainWindowClassWrapper::addComponent(MainWindow* o, const QString& nam
     if(!pAppearance)
         return "Could not find component type.";
     pAppearance->setDisplayName(name);
-    ModelObject *pObj = o->mpProjectTabs->getCurrentContainer()->addModelObject(pAppearance, QPointF(x,y),rot);
+    ModelObject *pObj = o->mpModelHandler->getCurrentContainer()->addModelObject(pAppearance, QPointF(x,y),rot);
     if(!pObj)
         return "Could not create component.";
     return pObj->getName();
@@ -252,7 +253,7 @@ QString PyMainWindowClassWrapper::addComponent(MainWindow* o, const QString& nam
     if(!pAppearance)
         return "Could not find component type.";
     pAppearance->setDisplayName(name);
-    ModelObject *pObj = o->mpProjectTabs->getCurrentContainer()->addModelObject(pAppearance, QPointF(x,y),rot);
+    ModelObject *pObj = o->mpModelHandler->getCurrentContainer()->addModelObject(pAppearance, QPointF(x,y),rot);
     if(!pObj)
         return "Could not create component.";
     return pObj->getName();
@@ -261,9 +262,9 @@ QString PyMainWindowClassWrapper::addComponent(MainWindow* o, const QString& nam
 
 bool PyMainWindowClassWrapper::connect(MainWindow* o, const QString& comp1, const QString& port1, const QString& comp2, const QString& port2)
 {
-    Port *pPort1 = o->mpProjectTabs->getCurrentContainer()->getModelObject(comp1)->getPort(port1);
-    Port *pPort2 = o->mpProjectTabs->getCurrentContainer()->getModelObject(comp2)->getPort(port2);
-    Connector *pConn = o->mpProjectTabs->getCurrentContainer()->createConnector(pPort1, pPort2);
+    Port *pPort1 = o->mpModelHandler->getCurrentContainer()->getModelObject(comp1)->getPort(port1);
+    Port *pPort2 = o->mpModelHandler->getCurrentContainer()->getModelObject(comp2)->getPort(port2);
+    Connector *pConn = o->mpModelHandler->getCurrentContainer()->createConnector(pPort1, pPort2);
 
     if (pConn != 0)
     {
@@ -287,7 +288,7 @@ bool PyMainWindowClassWrapper::connect(MainWindow* o, const QString& comp1, cons
 
 void PyMainWindowClassWrapper::enterSystem(MainWindow* o, const QString& sysName)
 {
-    ModelObject *sysObj = o->mpProjectTabs->getCurrentContainer()->getModelObject(sysName);
+    ModelObject *sysObj = o->mpModelHandler->getCurrentContainer()->getModelObject(sysName);
     SystemContainer *system = dynamic_cast<SystemContainer *>(sysObj);
     system->enterContainer();
 }
@@ -295,34 +296,34 @@ void PyMainWindowClassWrapper::enterSystem(MainWindow* o, const QString& sysName
 
 void PyMainWindowClassWrapper::exitSystem(MainWindow* o)
 {
-    //o->mpProjectTabs->getCurrentContainer()->exitContainer();
-    int id = o->mpProjectTabs->getCurrentTab()->getQuickNavigationWidget()->getCurrentId();
-    o->mpProjectTabs->getCurrentTab()->getQuickNavigationWidget()->gotoContainerAndCloseSubcontainers(id-1);
+    //o->mpModelHandler->getCurrentContainer()->exitContainer();
+    int id = o->mpModelHandler->getCurrentModel()->getQuickNavigationWidget()->getCurrentId();
+    o->mpModelHandler->getCurrentModel()->getQuickNavigationWidget()->gotoContainerAndCloseSubcontainers(id-1);
 }
 
 
 void PyMainWindowClassWrapper::clear(MainWindow* o)
 {
-    while(!o->mpProjectTabs->getCurrentContainer()->getModelObjectNames().isEmpty())
+    while(!o->mpModelHandler->getCurrentContainer()->getModelObjectNames().isEmpty())
     {
-        o->mpProjectTabs->getCurrentContainer()->deleteModelObject(o->mpProjectTabs->getCurrentContainer()->getModelObjectNames().first());
+        o->mpModelHandler->getCurrentContainer()->deleteModelObject(o->mpModelHandler->getCurrentContainer()->getModelObjectNames().first());
     }
 }
 
 
 void PyMainWindowClassWrapper::plot(MainWindow* o, const QString& compName, const QString& portName, const QString& dataName)
 {
-    //o->mpProjectTabs->getCurrentContainer()->getModelObject(compName)->getPort(portName)->plot(dataName, "");
-    o->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->plotVariable("", makeConcatName(compName, portName, dataName), -1, 0);
+    //o->mpModelHandler->getCurrentContainer()->getModelObject(compName)->getPort(portName)->plot(dataName, "");
+    o->mpModelHandler->getCurrentContainer()->getLogDataHandler()->plotVariable("", makeConcatName(compName, portName, dataName), -1, 0);
     qApp->processEvents();
 }
 
 void PyMainWindowClassWrapper::plot(MainWindow* o, const QString &portAlias)
 {
-    QString fullName = o->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getFullNameFromAlias(portAlias);
+    QString fullName = o->mpModelHandler->getCurrentContainer()->getLogDataHandler()->getFullNameFromAlias(portAlias);
     if (!fullName.isEmpty())
     {
-        o->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->plotVariable("", fullName, -1, 0);
+        o->mpModelHandler->getCurrentContainer()->getLogDataHandler()->plotVariable("", fullName, -1, 0);
     }
     qApp->processEvents();
 }
@@ -331,12 +332,12 @@ void PyMainWindowClassWrapper::plot(MainWindow* o, const QString &portAlias)
 void PyMainWindowClassWrapper::plotToWindow(MainWindow* o, const int& generation, const QString& compName, const QString& portName, const QString& dataName, const QString& windowName)
 {
     QString fullName = makeConcatName(compName, portName, dataName);
-    o->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->plotVariable(windowName, fullName, generation, 0);
+    o->mpModelHandler->getCurrentContainer()->getLogDataHandler()->plotVariable(windowName, fullName, generation, 0);
 }
 
 void  PyMainWindowClassWrapper::offset(MainWindow* o, const QString varName, const double value, const int gen)
 {
-    SharedLogVariableDataPtrT pData = o->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotData(varName, gen);
+    SharedLogVariableDataPtrT pData = o->mpModelHandler->getCurrentContainer()->getLogDataHandler()->getPlotData(varName, gen);
     if (pData)
     {
         pData->setValueOffset(value);
@@ -356,7 +357,7 @@ void PyMainWindowClassWrapper::savePlotData(MainWindow* /*o*/, const QString& fi
 
 int PyMainWindowClassWrapper::getSimulationTime(MainWindow* o)
 {
-    return o->mpProjectTabs->getCurrentTab()->getLastSimulationTime();
+    return o->mpModelHandler->getCurrentModel()->getLastSimulationTime();
 }
 
 void PyMainWindowClassWrapper::useMultiCore(MainWindow* o)
@@ -386,12 +387,12 @@ void PyMainWindowClassWrapper::turnOffProgressBar(MainWindow* o)
 
 QStringList PyMainWindowClassWrapper::componentNames(MainWindow* o)
 {
-    return o->mpProjectTabs->getCurrentContainer()->getModelObjectNames();
+    return o->mpModelHandler->getCurrentContainer()->getModelObjectNames();
 }
 
 LogDataHandler *PyMainWindowClassWrapper::getLogDataHandler(MainWindow *o)
 {
-    return o->mpProjectTabs->getCurrentContainer()->getLogDataHandler();
+    return o->mpModelHandler->getCurrentContainer()->getLogDataHandler();
 }
 
 void PyMainWindowClassWrapper::openAbortDialog(MainWindow *o, const QString &text)

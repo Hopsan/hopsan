@@ -31,77 +31,40 @@
 #include "AnimationWidget.h"
 #include "common.h"
 #include <QDomDocument>
+#include "ModelHandler.h"
 
 //Forward declaration
 class QGraphicsScene;
 class GraphicsView;
-class ProjectTab;
+class ModelWidget;
 class SystemContainer;
 class AnimationWidget;
 class SimulationThreadHandler;
+class ModelHandler;
 
 
-class ProjectTabWidget : public QTabWidget
+class CentralTabWidget : public QTabWidget
 {
     Q_OBJECT
 
 public:
-    ProjectTabWidget(MainWindow *pParentMainWindow = 0);
-    ~ProjectTabWidget();
-    ProjectTab *getCurrentTab();
-    ProjectTab *getTab(int index);
-    SystemContainer *getCurrentTopLevelSystem();
-    ContainerObject *getContainer(int index);
-    ContainerObject *getCurrentContainer();
-    SystemContainer *getSystem(int index);
-    SimulationThreadHandler *mpSimulationThreadHandler;
+    CentralTabWidget(MainWindow *pParentMainWindow = 0);
 
-public slots:
-    void addProjectTab(ProjectTab *projectTab, QString tabName="Untitled");
-    void addNewProjectTab(QString tabName="Untitled");
-    bool closeProjectTab(int index);
-    bool closeAllProjectTabs();
-    void launchDebugger();
-    void loadModel();
-    void loadModel(QAction *action);
-    void loadModel(QString modelFileName, bool ignoreAlreadyOpen=false);
-    void tabChanged();
-    void createLabviewWrapperFromCurrentModel();
-    void exportCurrentModelToFMU();
-    void exportCurrentModelToSimulink();
-    void exportCurrentModelToSimulinkCoSim();
-    void loadModelParameters();
-    void showLosses(bool show);
-    void measureSimulationTime();
-    bool simulateAllOpenModels_nonblocking(bool modelsHaveNotChanged=false);
-    bool simulateAllOpenModels_blocking(bool modelsHaveNotChanged=false);
-    void setCurrentTopLevelSimulationTimeParameters(const QString startTime, const QString timeStep, const QString stopTime);
-    void openAnimation();
-    void saveState();
-    void restoreState();
+    void setTabNotClosable(int index);
 
-signals:
-    void checkMessages();
-    void newTabAdded();
+protected:
+    void tabInserted(int index);
+    void tabRemoved(int index);
 
-private:
-    void setToolBarSimulationTimeParametersFromSystem(SystemContainer *pSystem);
-    size_t mNumberOfUntitledTabs;
-    QStringList mStateInfoHmfList;
-    QStringList mStateInfoBackupList;
-    QList<bool> mStateInfoHasChanged;
-    QStringList mStateInfoTabNames;
-    QList<LogDataHandler*> mStateInfoLogDataHandlersList;
-    QList<QDomDocument> mStateInfoModels;
 };
 
-class ProjectTab : public QWidget
+class ModelWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-    ProjectTab(ProjectTabWidget *parent = 0);
-    ~ProjectTab();
+    ModelWidget(ModelHandler *modelHandler, CentralTabWidget *parent = 0);
+    ~ModelWidget();
 
     void setTopLevelSimulationTime(const QString startTime, const QString timeStep, const QString stopTime);
     void setToolBarSimulationTimeParametersFromTab();
@@ -117,7 +80,7 @@ public:
     void setLastSimulationTime(int time);
     int getLastSimulationTime();
     bool isEditingEnabled();
-    ProjectTabWidget *mpParentProjectTabWidget;
+    ModelHandler *mpParentModelHandler;
     GraphicsView *mpGraphicsView;
     AnimationWidget *mpAnimationWidget;
     SimulationThreadHandler *mpSimulationThreadHandler;

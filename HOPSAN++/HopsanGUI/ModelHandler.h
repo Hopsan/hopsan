@@ -3,11 +3,15 @@
 
 #include <QtGui>
 #include <QObject>
+#include <QDomElement>
+#include "Widgets/ProjectTabWidget.h"
 
-class ProjectTab;
-class ProjectTabWidget;
+class ModelWidget;
+class CentralTabWidget;
 class SystemContainer;
 class ContainerObject;
+class LogDataHandler;
+class SimulationThreadHandler;
 
 class ModelHandler : public QObject
 {
@@ -15,52 +19,66 @@ class ModelHandler : public QObject
 public:
     ModelHandler(QObject *parent=0);
 
-    void addModelWidget(ProjectTab *pModelWidget, QString name);
-    void addNewProjectTab(QString modelName);
+    void addModelWidget(ModelWidget *pModelWidget, QString name);
 
-    ProjectTab *getModel(int idx);
-    ProjectTab *getCurrentModel();
+    void setCurrentModel(int idx);
+
+    ModelWidget *getModel(int idx);
+    ModelWidget *getCurrentModel();
     SystemContainer *getTopLevelSystem(int idx);
     SystemContainer *getCurrentTopLevelSystem();
     ContainerObject *getContainer(int idx);
     ContainerObject *getCurrentContainer();
 
+    int count();
+
     void loadModel(QString modelFileName, bool ignoreAlreadyOpen=false);
 
     void setCurrentTopLevelSimulationTimeParameters(const QString startTime, const QString timeStep, const QString stopTime);
 
+    SimulationThreadHandler *mpSimulationThreadHandler;
+
 
 public slots:
+    void addNewModel(QString modelName="Untitled");
     void loadModel();
     void loadModel(QAction *action);
-    //void loadModelParameters();
+    void loadModelParameters();
+    bool closeModelByTabIndex(int tabIdx);
     bool closeModel(int idx);
     bool closeAllModels();
     void modelChanged();
-    //void saveState();
-    //void restoreState();
+    void saveState();
+    void restoreState();
 
-    //void createLabviewWrapperFromCurrentModel();
-    //void exportCurrentModelToFMU();
-    //void exportCurrentModelToSimulink();
-    //void exportCurrentModelToSimulinkCoSim();
+    void createLabviewWrapperFromCurrentModel();
+    void exportCurrentModelToFMU();
+    void exportCurrentModelToSimulink();
+    void exportCurrentModelToSimulinkCoSim();
 
-    //void showLosses(bool show);
-    //void measureSimulationTime();
+    void showLosses(bool show);
+    void measureSimulationTime();
     void launchDebugger();
-    //void openAnimation();
+    void openAnimation();
 
-    //bool simulateAllOpenModels_nonblocking(bool modelsHaveNotChanged=false);
-    //bool simulateAllOpenModels_blocking(bool modelsHaveNotChanged=false);
+    bool simulateAllOpenModels_nonblocking(bool modelsHaveNotChanged=false);
+    bool simulateAllOpenModels_blocking(bool modelsHaveNotChanged=false);
 
 signals:
     void newModelWidgetAdded();
+    void checkMessages();
 
 private:
-    QList<ProjectTab*> mModelPtrs;
+    QList<ModelWidget*> mModelPtrs;
     int mCurrentIdx;
     int mNumberOfUntitledModels;
-    ProjectTabWidget *mpProjectTabWidget;
+
+    QStringList mStateInfoHmfList;
+    QStringList mStateInfoBackupList;
+    QList<bool> mStateInfoHasChanged;
+    QStringList mStateInfoTabNames;
+    QList<LogDataHandler*> mStateInfoLogDataHandlersList;
+    QList<QDomDocument> mStateInfoModels;
 };
 
 #endif // MODELHANDLER_H

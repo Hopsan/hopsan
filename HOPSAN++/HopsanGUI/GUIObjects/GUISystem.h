@@ -37,7 +37,7 @@
 #include "common.h"
 
 //Forward Declaration
-class ProjectTab;
+class ModelWidget;
 
 
 class OptParameter
@@ -85,7 +85,7 @@ class SystemContainer : public ContainerObject
     Q_OBJECT
 public:
     SystemContainer(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected = Deselected, GraphicsTypeEnumT gfxType = UserGraphics);
-    SystemContainer(ProjectTab *parentProjectTab, QGraphicsItem *pParent);
+    SystemContainer(ModelWidget *parentModelWidget, QGraphicsItem *pParent);
     void deleteInHopsanCore();
 
     double getTimeStep();

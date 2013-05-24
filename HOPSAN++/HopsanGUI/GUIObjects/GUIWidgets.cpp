@@ -114,7 +114,7 @@ void Widget::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
                 {
                     mpParentContainerObject->getUndoStackPtr()->newPost();
                 }
-                mpParentContainerObject->mpParentProjectTab->hasChanged();
+                mpParentContainerObject->mpModelWidget->hasChanged();
                 alreadyClearedRedo = true;
             }
 
@@ -561,7 +561,7 @@ void TextBoxWidget::updateWidgetFromDialog()
                                                                               mpTextBoxInDialog->toPlainText(), mSelectedFont, mSelectedColor,
                                                                               mpRectItem->pen().width(), mpRectItem->pen().style(), mpWidthBoxInDialog->value(), selectedStyle,
                                                                               mpRectItem->isVisible(), mpShowBoxCheckBoxInDialog->isChecked());
-    mpParentContainerObject->mpParentProjectTab->hasChanged();
+    mpParentContainerObject->mpModelWidget->hasChanged();
 
     mpTextItem->setPlainText(mpTextBoxInDialog->toPlainText());
     mpTextItem->setFont(mSelectedFont);

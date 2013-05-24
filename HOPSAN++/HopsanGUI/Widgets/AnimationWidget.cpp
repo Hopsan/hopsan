@@ -45,7 +45,7 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     QWidget(parent)
 {
     //Define public member pointer variables
-    mpContainer = gpMainWindow->mpProjectTabs->getCurrentContainer();
+    mpContainer = gpMainWindow->mpModelHandler->getCurrentContainer();
 
     mpAnimationData = mpContainer->getAppearanceData()->getAnimationDataPtr();
 
@@ -134,7 +134,7 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     mCurrentAnimationTime = 0;
     mLastAnimationTime = 0;
     mSimulationSpeed = 0;
-    mTimeStep = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getTimeStep(); //! @todo This is not used, but it should be
+    mTimeStep = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getTimeStep(); //! @todo This is not used, but it should be
     mFps=60;   //Frames per second
     mSpeedSliderSensitivity=100;
 
@@ -233,7 +233,7 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     connect(mpPlayRealTimeButton,   SIGNAL(clicked()),          this,   SLOT(playRT()));
     connect(mpPauseButton,          SIGNAL(clicked()),          this,   SLOT(pause()));
     connect(mpStopButton,           SIGNAL(clicked()),          this,   SLOT(stop()));
-    connect(mpCloseButton,          SIGNAL(pressed()),          gpMainWindow->mpProjectTabs->getCurrentTab(), SLOT(closeAnimation()));
+    connect(mpCloseButton,          SIGNAL(pressed()),          gpMainWindow->mpModelHandler->getCurrentModel(), SLOT(closeAnimation()));
 
     //Define slider connections
     connect(mpTimeSlider,           SIGNAL(sliderPressed()),    this,   SLOT(pause()));
@@ -319,7 +319,7 @@ void AnimationWidget::openPreferencesDialog()
     {
         if(pFlowSpeedLineEdit->text().toDouble() != mpAnimationData->flowSpeed)
         {
-            mpContainer->mpParentProjectTab->hasChanged();
+            mpContainer->mpModelWidget->hasChanged();
             mpAnimationData->flowSpeed = pFlowSpeedLineEdit->text().toDouble();
         }
 
@@ -565,6 +565,6 @@ int AnimationWidget::getLastIndex()
  void AnimationWidget::closeEvent(QCloseEvent *event)
  {
      this->stop();
-     //delete mpParent->mpProjectTabs->getCurrentTab()->mpAnimationWidget;
+     //delete mpParent->mpCentralTabs->getCurrentTab()->mpAnimationWidget;
      event->accept();
  }

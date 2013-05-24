@@ -36,7 +36,7 @@
 #include "Widgets/ProjectTabWidget.h"
 #include "Widgets/PyDockWidget.h"
 
-class ProjectTabWidget;
+class CentralTabWidget;
 
 
 PythonHighlighter::PythonHighlighter(QTextDocument *parent)
@@ -413,7 +413,7 @@ OptimizationDialog::OptimizationDialog(MainWindow *parent)
 
 void OptimizationDialog::loadConfiguration()
 {
-    SystemContainer *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
+    SystemContainer *pSystem = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem();
 
     OptimizationSettings optSettings = pSystem->getOptimizationSettings();
 
@@ -432,8 +432,8 @@ void OptimizationDialog::loadConfiguration()
     for(int i=0; i<optSettings.mParamters.size(); ++i)
     {
         //Check if component and parameter exists before checking the tree item (otherwise tree item does not exist = crash)
-        if(gpMainWindow->mpProjectTabs->getCurrentContainer()->hasModelObject(optSettings.mParamters.at(i).mComponentName) &&
-           gpMainWindow->mpProjectTabs->getCurrentContainer()->getModelObject(optSettings.mParamters.at(i).mComponentName)->getParameterNames().contains(optSettings.mParamters.at(i).mParameterName))
+        if(gpMainWindow->mpModelHandler->getCurrentContainer()->hasModelObject(optSettings.mParamters.at(i).mComponentName) &&
+           gpMainWindow->mpModelHandler->getCurrentContainer()->getModelObject(optSettings.mParamters.at(i).mComponentName)->getParameterNames().contains(optSettings.mParamters.at(i).mParameterName))
         {
             findParameterTreeItem(optSettings.mParamters.at(i).mComponentName, optSettings.mParamters.at(i).mParameterName)->setCheckState(0, Qt::Checked);
         }
@@ -509,7 +509,7 @@ void OptimizationDialog::saveConfiguration()
 
 
 
-    SystemContainer *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
+    SystemContainer *pSystem = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem();
     pSystem->setOptimizationSettings(optSettings);
 }
 
@@ -538,7 +538,7 @@ void OptimizationDialog::open()
     mpParametersList->clear();
 
     //Populate parameters list
-    SystemContainer *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
+    SystemContainer *pSystem = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem();
     QStringList componentNames = pSystem->getModelObjectNames();
     for(int c=0; c<componentNames.size(); ++c)
     {
@@ -905,7 +905,7 @@ void OptimizationDialog::updateChosenParameters(QTreeWidgetItem* item, int /*i*/
     {
         mSelectedComponents.append(item->parent()->text(0));
         mSelectedParameters.append(item->text(0));
-        SystemContainer *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
+        SystemContainer *pSystem = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem();
         QString currentValue = pSystem->getModelObject(item->parent()->text(0))->getParameterValue(item->text(0));
 
         QLabel *pLabel = new QLabel(trUtf8(" <  ") + item->parent()->text(0) + ", " + item->text(0) + " (" + currentValue + trUtf8(")  < "));

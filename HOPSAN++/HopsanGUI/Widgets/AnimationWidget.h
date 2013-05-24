@@ -45,15 +45,15 @@
 #include <QtGui>
 
 class ContainerObject;
-class ProjectTabWidget;
-class ProjectTab;
+class CentralTabWidget;
+class ModelWidget;
 class GUIGroup;
 class GUIComponent;
 class Connector;
 class Port;
 class AnimatedConnector;
 
-class ProjectTabWidget;
+class CentralTabWidget;
 class GraphicsView;
 class QGraphicsScene;
 class LibraryWidget;

@@ -87,7 +87,7 @@ public:
     ComponentPropertiesDialog3(ModelObject *pModelObject, QWidget *pParent=0);
 
 signals:
-    void lockProjectTab(bool);
+    void lockModelWidget(bool);
 
 protected slots:
     void okPressed();

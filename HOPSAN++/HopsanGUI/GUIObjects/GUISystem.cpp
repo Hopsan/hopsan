@@ -43,16 +43,16 @@
 SystemContainer::SystemContainer(QPointF position, qreal rotation, const ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)
     : ContainerObject(position, rotation, pAppearanceData, startSelected, gfxType, pParentContainer, pParentContainer)
 {
-    this->mpParentProjectTab = pParentContainer->mpParentProjectTab;
+    this->mpModelWidget = pParentContainer->mpModelWidget;
     this->commonConstructorCode();
 }
 
 //Root system specific constructor
-SystemContainer::SystemContainer(ProjectTab *parentProjectTab, QGraphicsItem *pParent)
+SystemContainer::SystemContainer(ModelWidget *parentModelWidget, QGraphicsItem *pParent)
     : ContainerObject(QPointF(0,0), 0, 0, Deselected, UserGraphics, 0, pParent)
 {
     this->mModelObjectAppearance = *(gpMainWindow->mpLibrary->getAppearanceData(HOPSANGUISYSTEMTYPENAME)); //This will crash if Subsystem not already loaded
-    this->mpParentProjectTab = parentProjectTab;
+    this->mpModelWidget = parentModelWidget;
     this->commonConstructorCode();
     this->mpUndoStack->newPost();
     this->mSaveUndoStack = false;       //Do not save undo stack by default
@@ -221,7 +221,7 @@ void SystemContainer::saveCoreDataToDomElement(QDomElement &rDomElement, SaveCon
 
     if (mLoadType != "EXTERNAL" && contents == FullModel)
     {
-        appendSimulationTimeTag(rDomElement, mpParentProjectTab->getStartTime().toDouble(), this->getTimeStep(), mpParentProjectTab->getStopTime().toDouble(), this->doesInheritTimeStep());
+        appendSimulationTimeTag(rDomElement, mpModelWidget->getStartTime().toDouble(), this->getTimeStep(), mpModelWidget->getStopTime().toDouble(), this->doesInheritTimeStep());
 
 //        //AllDataGenerations::AliasMapT::iterator ita;
 //        QDomElement xmlAliases = appendDomElement(rDomElement, HMF_ALIASES);
@@ -441,10 +441,10 @@ QDomElement SystemContainer::saveGuiDataToDomElement(QDomElement &rDomElement)
     if (mLoadType!="EXTERNAL")
     {
         //! @todo what happens if a subsystem (embeded) is asved, then we dont want to set the current graphics view
-        if (this->mpParentProjectTab->getGraphicsView() != 0)
+        if (this->mpModelWidget->getGraphicsView() != 0)
         {
             qreal x,y,zoom;
-            this->mpParentProjectTab->getGraphicsView()->getViewPort(x,y,zoom);
+            this->mpModelWidget->getGraphicsView()->getViewPort(x,y,zoom);
             appendViewPortTag(guiStuff, x, y, zoom);
         }
         QDomElement portsHiddenElement = appendDomElement(guiStuff, HMF_PORTSTAG);
@@ -500,7 +500,7 @@ QDomElement SystemContainer::saveGuiDataToDomElement(QDomElement &rDomElement)
 //! @param[in] rDomElement The DOM Element to save to
 void SystemContainer::saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents)
 {
-    if(this == mpParentProjectTab->getTopLevelSystem() && contents==FullModel)
+    if(this == mpModelWidget->getTopLevelSystem() && contents==FullModel)
     {
         //Append model info
         QString author, email, affiliation, description;
@@ -645,10 +645,10 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
             mSaveUndoStack = true;      //Set save undo stack setting to true if loading a hmf file with undo stack saved
         }
 
-        mpParentProjectTab->getGraphicsView()->setZoomFactor(zoom);
+        mpModelWidget->getGraphicsView()->setZoomFactor(zoom);
 
         qDebug() << "Center on " << x << ", " << y;
-        mpParentProjectTab->getGraphicsView()->centerOn(x, y);
+        mpModelWidget->getGraphicsView()->centerOn(x, y);
         //! @todo load viewport and pose and stuff
 
         //Load simulation time
@@ -667,8 +667,8 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         //Only set start stop time for the top level system
         if (mpParentContainerObject == 0)
         {
-            mpParentProjectTab->setTopLevelSimulationTime(startT,stepT,stopT);
-            mpParentProjectTab->setToolBarSimulationTimeParametersFromTab();
+            mpModelWidget->setTopLevelSimulationTime(startT,stepT,stopT);
+            mpModelWidget->setToolBarSimulationTimeParametersFromTab();
         }
 
         //1. Load global parameters
@@ -828,10 +828,10 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
         //! @todo maybe can do this for subsystems to (even if we dont see them right now)
         if (this->mpParentContainerObject == 0)
         {
-            //mpParentProjectTab->getGraphicsView()->centerView();
-            mpParentProjectTab->getGraphicsView()->updateViewPort();
+            //mpParentModelWidget->getGraphicsView()->centerView();
+            mpModelWidget->getGraphicsView()->updateViewPort();
         }
-        this->mpParentProjectTab->setSaved(true);
+        this->mpModelWidget->setSaved(true);
 
         gpMainWindow->mpPyDockWidget->runPyScript(mScriptFilePath);
 
@@ -915,7 +915,7 @@ void SystemContainer::exportToFMU(QString savePath)
     saveDir.setFilter(QDir::NoFilter);
 
     //Save model to hmf in export directory
-    //! @todo This code is duplicated from ProjectTab::saveModel(), make it a common function somehow
+    //! @todo This code is duplicated from ModelWidget::saveModel(), make it a common function somehow
     QDomDocument domDocument;
     QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, "0");
     saveToDomElement(hmfRoot);
@@ -1344,7 +1344,7 @@ void SystemContainer::exportToFMU(QString savePath)
 
 
 //    //Save model to hmf in export directory
-//    //! @todo This code is duplicated from ProjectTab::saveModel(), make it a common function somehow
+//    //! @todo This code is duplicated from ModelWidget::saveModel(), make it a common function somehow
 //    QDomDocument domDocument;
 //    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, "0");
 //    saveToDomElement(hmfRoot);
@@ -1451,7 +1451,7 @@ void SystemContainer::exportToSimulink()
 
 
 
-    //! @todo This code is duplicated from ProjectTab::saveModel(), make it a common function somehow
+    //! @todo This code is duplicated from ModelWidget::saveModel(), make it a common function somehow
         //Save xml document
     QDomDocument domDocument;
     QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());

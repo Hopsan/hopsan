@@ -39,7 +39,8 @@
 #include "Utilities/GUIUtilities.h"
 #include "Widgets/HcomWidget.h"
 #include "Widgets/PlotWidget.h"
-#include "Widgets/ProjectTabWidget.h"
+#include "ModelHandler.h"
+//#include "Widgets/ProjectTabWidget.h"
 
 //HopsanGenerator includes
 #include "symhop/SymHop.h"
@@ -508,7 +509,7 @@ void HcomHandler::executeCommand(QString cmd)
         if(mCmdList[i].cmd == majorCmd) { idx = i; }
     }
 
-//    ProjectTab *pCurrentTab = gpMainWindow->mpProjectTabs->getCurrentTab();
+//    ModelWidget *pCurrentTab = gpMainWindow->mpModelHandler->getCurrentModel();
 //    SystemContainer *pCurrentSystem;
 //    if(pCurrentTab)
 //    {
@@ -549,19 +550,15 @@ void HcomHandler::executeSimulateCommand(const QString cmd)
     }
     else if(splitCmd.size() == 1 && splitCmd[0] == "all")
     {
-        ProjectTabWidget *pTabs = gpMainWindow->mpProjectTabs;
-        if(pTabs)
-        {
-            pTabs->simulateAllOpenModels_blocking(false);
-        }
+        gpMainWindow->mpModelHandler->simulateAllOpenModels_blocking(false);
         return;
     }
     else if(cmd == "")
     {
-        ProjectTab *pCurrentTab = gpMainWindow->mpProjectTabs->getCurrentTab();
-        if(pCurrentTab)
+        ModelWidget *pCurrentModel = gpMainWindow->mpModelHandler->getCurrentModel();
+        if(pCurrentModel)
         {
-            pCurrentTab->simulate_blocking();
+            pCurrentModel->simulate_blocking();
         }
     }
     else
@@ -649,7 +646,7 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
 
     if(splitCmd.size() == 2)
     {
-        ProjectTab *pCurrentTab = gpMainWindow->mpProjectTabs->getCurrentTab();
+        ModelWidget *pCurrentTab = gpMainWindow->mpModelHandler->getCurrentModel();
         if(!pCurrentTab) { return; }
         SystemContainer *pSystem = pCurrentTab->getTopLevelSystem();
         if(!pSystem) { return; }
@@ -725,7 +722,7 @@ void HcomHandler::executeChangeSimulationSettingsCommand(const QString cmd)
             gpMainWindow->setStopTimeInToolBar(stopT);
             if(splitCmd.size() == 4)
             {
-                ProjectTab *pCurrentTab = gpMainWindow->mpProjectTabs->getCurrentTab();
+                ModelWidget *pCurrentTab = gpMainWindow->mpModelHandler->getCurrentModel();
                 if(!pCurrentTab) { return; }
                 SystemContainer *pCurrentSystem = pCurrentTab->getTopLevelSystem();
                 if(!pCurrentSystem) { return; }
@@ -1094,7 +1091,7 @@ void HcomHandler::executeDefineAliasCommand(const QString cmd)
 
     SharedLogVariableDataPtrT pVariable = getVariablePtr(variable);
 
-    if(!pVariable || !gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->definePlotAlias(alias, pVariable->getFullVariableName()))
+    if(!pVariable || !gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->definePlotAlias(alias, pVariable->getFullVariableName()))
     {
         mpConsole->printErrorMessage("Failed to assign variable alias.","",false);
     }
@@ -1165,7 +1162,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
             mpConsole->printErrorMessage("Unknown value.","",false);
             return;
         }
-        gpMainWindow->mpProjectTabs->getCurrentContainer()->setNumberOfLogSamples(samples);
+        gpMainWindow->mpModelHandler->getCurrentContainer()->setNumberOfLogSamples(samples);
     }
     else
     {
@@ -1284,7 +1281,7 @@ void HcomHandler::executeSaveToPloCommand(const QString cmd)
         //splitCmdMajor[i] = getVariablePtr(splitCmdMajor[i])->getFullVariableName();
     }
 
-    gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->exportToPlo(path, allVariables);
+    gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->exportToPlo(path, allVariables);
 }
 
 
@@ -1300,14 +1297,14 @@ void HcomHandler::executeLoadModelCommand(const QString cmd)
     dir = getDirectory(dir);
     path = dir+path.right(path.size()-path.lastIndexOf("/"));
 
-    gpMainWindow->mpProjectTabs->loadModel(path);
+    gpMainWindow->mpModelHandler->loadModel(path);
 }
 
 
 //! @brief Execute function for "loadr" command
 void HcomHandler::executeLoadRecentCommand(const QString /*cmd*/)
 {
-    gpMainWindow->mpProjectTabs->loadModel(gConfig.getRecentModels().first());
+    gpMainWindow->mpModelHandler->loadModel(gConfig.getRecentModels().first());
 }
 
 
@@ -1365,9 +1362,9 @@ void HcomHandler::executeCloseModelCommand(const QString cmd)
         return;
     }
 
-    if(gpMainWindow->mpProjectTabs->count() > 0)
+    if(gpMainWindow->mpModelHandler->count() > 0)
     {
-        gpMainWindow->mpProjectTabs->closeProjectTab(gpMainWindow->mpProjectTabs->currentIndex());
+        gpMainWindow->mpModelHandler->closeModel(gpMainWindow->mpCentralTabs->currentIndex());
     }
 }
 
@@ -1381,7 +1378,7 @@ void HcomHandler::executeChangeTabCommand(const QString cmd)
         return;
     }
 
-    gpMainWindow->mpProjectTabs->setCurrentIndex(cmd.toInt());
+    gpMainWindow->mpModelHandler->setCurrentModel(cmd.toInt());
 }
 
 
@@ -1427,7 +1424,7 @@ void HcomHandler::executeAddComponentCommand(const QString cmd)
                 return;
             }
             QString otherName = args[1];
-            Component *pOther = qobject_cast<Component*>(gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getModelObject(otherName));
+            Component *pOther = qobject_cast<Component*>(gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getModelObject(otherName));
             if(!pOther)
             {
                 mpConsole->printErrorMessage("Master component not found.");
@@ -1447,7 +1444,7 @@ void HcomHandler::executeAddComponentCommand(const QString cmd)
                 return;
             }
             QString otherName = args[1];
-            Component *pOther = qobject_cast<Component*>(gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getModelObject(otherName));
+            Component *pOther = qobject_cast<Component*>(gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getModelObject(otherName));
             if(!pOther)
             {
                 mpConsole->printErrorMessage("Master component not found.");
@@ -1467,7 +1464,7 @@ void HcomHandler::executeAddComponentCommand(const QString cmd)
                 return;
             }
             QString otherName = args[1];
-            Component *pOther = qobject_cast<Component*>(gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getModelObject(otherName));
+            Component *pOther = qobject_cast<Component*>(gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getModelObject(otherName));
             if(!pOther)
             {
                 mpConsole->printErrorMessage("Master component not found.");
@@ -1487,7 +1484,7 @@ void HcomHandler::executeAddComponentCommand(const QString cmd)
                 return;
             }
             QString otherName = args[1];
-            Component *pOther = qobject_cast<Component*>(gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getModelObject(otherName));
+            Component *pOther = qobject_cast<Component*>(gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getModelObject(otherName));
             if(!pOther)
             {
                 mpConsole->printErrorMessage("Master component not found.");
@@ -1501,7 +1498,7 @@ void HcomHandler::executeAddComponentCommand(const QString cmd)
     }
 
     QPointF pos = QPointF(xPos, yPos);
-    Component *pObj = qobject_cast<Component*>(gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->addModelObject(typeName, pos, rot));
+    Component *pObj = qobject_cast<Component*>(gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->addModelObject(typeName, pos, rot));
     if(!pObj)
     {
         mpConsole->printErrorMessage("Failed to add new component. Incorrect typename?", "", false);
@@ -1509,7 +1506,7 @@ void HcomHandler::executeAddComponentCommand(const QString cmd)
     else
     {
         mpConsole->print("Added "+typeName+" to current model.");
-        gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->renameModelObject(pObj->getName(), name);
+        gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->renameModelObject(pObj->getName(), name);
     }
 }
 
@@ -1524,10 +1521,10 @@ void HcomHandler::executeConnectCommand(const QString cmd)
         return;
     }
 
-    Port *pPort1 = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getModelObject(args[0])->getPort(args[1]);
-    Port *pPort2 = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getModelObject(args[2])->getPort(args[3]);
+    Port *pPort1 = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getModelObject(args[0])->getPort(args[1]);
+    Port *pPort2 = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getModelObject(args[2])->getPort(args[3]);
 
-    Connector *pConn = gpMainWindow->mpProjectTabs->getCurrentContainer()->createConnector(pPort1, pPort2);
+    Connector *pConn = gpMainWindow->mpModelHandler->getCurrentContainer()->createConnector(pPort1, pPort2);
 
     if (pConn != 0)
     {
@@ -1552,7 +1549,7 @@ void HcomHandler::executeCreateModelCommand(const QString cmd)
         mpConsole->printErrorMessage("Wrong number of arguments", "", false);
         return;
     }
-    gpMainWindow->mpProjectTabs->addNewProjectTab();
+    gpMainWindow->mpModelHandler->addNewModel();
 }
 
 
@@ -1564,7 +1561,7 @@ void HcomHandler::executeExportToFMUCommand(const QString cmd)
         mpConsole->printErrorMessage("Wrong number of arguments.");
     }
 
-    gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->exportToFMU(getArgument(cmd, 0));
+    gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->exportToFMU(getArgument(cmd, 0));
 }
 
 
@@ -1587,14 +1584,14 @@ void HcomHandler::executeChangeTimestepCommand(const QString cmd)
     {
         mpConsole->printErrorMessage("Second argument is not a number.", "", false);
     }
-    else if(!gpMainWindow->mpProjectTabs->getCurrentContainer()->hasModelObject(component))
+    else if(!gpMainWindow->mpModelHandler->getCurrentContainer()->hasModelObject(component))
     {
         mpConsole->printErrorMessage("Component not found.", "", false);
     }
     else
     {
-        gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->setDesiredTimeStep(component, value);
-        //gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->setInheritTimeStep(false);
+        gpMainWindow->mpModelHandler->getCurrentContainer()->getCoreSystemAccessPtr()->setDesiredTimeStep(component, value);
+        //gpMainWindow->mpModelHandler->getCurrentContainer()->getCoreSystemAccessPtr()->setInheritTimeStep(false);
         mpConsole->print("Setting time step of "+component+" to "+QString::number(value));
     }
 }
@@ -1611,13 +1608,13 @@ void HcomHandler::executeInheritTimestepCommand(const QString cmd)
     }
     QString component = split[0];
 
-    if(!gpMainWindow->mpProjectTabs->getCurrentContainer()->hasModelObject(component))
+    if(!gpMainWindow->mpModelHandler->getCurrentContainer()->hasModelObject(component))
     {
         mpConsole->printErrorMessage("Component not found.", "", false);
     }
     else
     {
-        gpMainWindow->mpProjectTabs->getCurrentContainer()->getCoreSystemAccessPtr()->setInheritTimeStep(component, true);
+        gpMainWindow->mpModelHandler->getCurrentContainer()->getCoreSystemAccessPtr()->setInheritTimeStep(component, true);
         mpConsole->print("Setting time step of "+component+" to inherited.");
     }
 }
@@ -2013,7 +2010,7 @@ void HcomHandler::addPlotCurve(QString cmd, const int axis) const
 {
     cmd.remove("\"");
 
-    SystemContainer *pCurrentSystem = gpMainWindow->mpProjectTabs->getCurrentTab()->getTopLevelSystem();
+    SystemContainer *pCurrentSystem = gpMainWindow->mpModelHandler->getCurrentModel()->getTopLevelSystem();
     if(!pCurrentSystem) { return; }
 
     SharedLogVariableDataPtrT pData = getVariablePtr(cmd);
@@ -2124,9 +2121,9 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
 
     //Vector functions
     LogDataHandler *pLogData=0;
-    if(gpMainWindow->mpProjectTabs->count() > 0)
+    if(gpMainWindow->mpCentralTabs->count() > 0)
     {
-        pLogData = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler();
+        pLogData = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler();
     }
     if(expr.startsWith("ddt(") && expr.endsWith(")"))
     {
@@ -2529,7 +2526,7 @@ void HcomHandler::getComponents(QString str, QList<ModelObject*> &components)
     QString left = str.split("*").first();
     QString right = str.split("*").last();
 
-    ProjectTab *pCurrentTab = gpMainWindow->mpProjectTabs->getCurrentTab();
+    ModelWidget *pCurrentTab = gpMainWindow->mpModelHandler->getCurrentModel();
     if(!pCurrentTab) { return; }
     SystemContainer *pCurrentSystem = pCurrentTab->getTopLevelSystem();
     if(!pCurrentSystem) { return; }
@@ -2568,9 +2565,9 @@ void HcomHandler::getParameters(QString str, ModelObject* pComponent, QStringLis
 //! @param parameters Reference to list of parameters
 void HcomHandler::getParameters(const QString str, QStringList &parameters)
 {
-    if(gpMainWindow->mpProjectTabs->count() == 0) { return; }
+    if(gpMainWindow->mpCentralTabs->count() == 0) { return; }
 
-    SystemContainer *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
+    SystemContainer *pSystem = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem();
 
     QStringList componentNames = pSystem->getModelObjectNames();
 
@@ -2654,12 +2651,12 @@ QString HcomHandler::getParameterValue(QString parameter) const
     QString compName = parameter.split(".").first();
     QString parName = parameter.split(".").last();
 
-    if(gpMainWindow->mpProjectTabs->count() == 0)
+    if(gpMainWindow->mpCentralTabs->count() == 0)
     {
         return "NaN";
     }
 
-    SystemContainer *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
+    SystemContainer *pSystem = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem();
     ModelObject *pComp = pSystem->getModelObject(compName);
     if(pComp && pComp->getParameterNames().contains(parName))
     {
@@ -2677,9 +2674,9 @@ QString HcomHandler::getParameterValue(QString parameter) const
 //! @param variables Reference to list of found variables
 void HcomHandler::getVariables(const QString str, QStringList &variables) const
 {
-    if(gpMainWindow->mpProjectTabs->count() == 0) { return; }
+    if(gpMainWindow->mpCentralTabs->count() == 0) { return; }
 
-    SystemContainer *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
+    SystemContainer *pSystem = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem();
     QStringList names = pSystem->getLogDataHandler()->getPlotDataNames();
     names.append(pSystem->getAliasNames());
 
@@ -2752,9 +2749,9 @@ void HcomHandler::getVariables(const QString str, QStringList &variables) const
 //! @param variables Reference to list of found variables
 void HcomHandler::getVariablesThatStartsWithString(const QString str, QStringList &variables) const
 {
-    if(gpMainWindow->mpProjectTabs->count() == 0) { return; }
+    if(gpMainWindow->mpCentralTabs->count() == 0) { return; }
 
-    SystemContainer *pSystem = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem();
+    SystemContainer *pSystem = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem();
     QStringList names = pSystem->getLogDataHandler()->getPlotDataNames();
     names.append(pSystem->getAliasNames());
 
@@ -2818,13 +2815,13 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
         }
 
 //        QStringList plotDataNames;
-//        if(gpMainWindow->mpProjectTabs->count() > 0)
+//        if(gpMainWindow->mpModelWidgets->count() > 0)
 //        {
-//            LogDataHandler *pLogData = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler();
+//            LogDataHandler *pLogData = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler();
 //            plotDataNames = pLogData->getPlotDataNames();
 //        }
 //        if(!leftIsOk && !plotDataNames.contains(left))
-        if(!leftIsOk && (gpMainWindow->mpProjectTabs->count() == 0 || !getVariablePtr(left)))
+        if(!leftIsOk && (gpMainWindow->mpCentralTabs->count() == 0 || !getVariablePtr(left)))
         {
             mpConsole->printErrorMessage("Illegal variable name.","",false);
             return false;
@@ -2848,8 +2845,8 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
             if(pLeftData != 0) { left = pLeftData->getFullVariableName(); }
             if(pValueData != 0) { value = pValueData->getFullVariableName(); }
 
-            gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->assignVariable(left, value);
-            gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->getPlotData(left,-1).data()->preventAutoRemoval();
+            gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->assignVariable(left, value);
+            gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->getPlotData(left,-1).data()->preventAutoRemoval();
             return true;
         }
         else
@@ -2888,7 +2885,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
 //! @returns Pointer to the data variable
 SharedLogVariableDataPtrT HcomHandler::getVariablePtr(QString fullName) const
 {
-    if(gpMainWindow->mpProjectTabs->count() == 0)
+    if(gpMainWindow->mpCentralTabs->count() == 0)
     {
         return SharedLogVariableDataPtrT(0);
     }
@@ -2958,10 +2955,10 @@ SharedLogVariableDataPtrT HcomHandler::getVariablePtr(QString fullName) const
         fullName.append("#Temperature");
     }
 
-//    SharedLogVariableDataPtrT pRetVal = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->getPlotDataByAlias(fullName,generation);
+//    SharedLogVariableDataPtrT pRetVal = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->getPlotDataByAlias(fullName,generation);
 //    if(!pRetVal)
 //    {
-        SharedLogVariableDataPtrT pRetVal = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler()->getPlotData(fullName,generation);
+        SharedLogVariableDataPtrT pRetVal = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->getPlotData(fullName,generation);
 //    }
     return pRetVal;
 }
@@ -3163,9 +3160,9 @@ double _funcSize(QString str)
 
 double _funcTime(QString /*str*/)
 {
-    if(gpMainWindow->mpProjectTabs->count() > 0)
+    if(gpMainWindow->mpCentralTabs->count() > 0)
     {
-        return gpMainWindow->mpProjectTabs->getCurrentTab()->getLastSimulationTime();
+        return gpMainWindow->mpModelHandler->getCurrentModel()->getLastSimulationTime();
     }
     return 0;
 }
@@ -3272,7 +3269,7 @@ void HcomHandler::optComplexInit()
 
     mOptKf = 1.0-pow(mOptAlpha/2.0, mOptGamma/mOptNumPoints);
 
-    LogDataHandler *pHandler = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler();
+    LogDataHandler *pHandler = gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler();
     pHandler->deleteVariable("Worst Objective");
     pHandler->deleteVariable("Best Objective");
 }
@@ -3574,12 +3571,12 @@ void HcomHandler::optParticleInit()
 
     if(mOptMulticore)
     {
-        QString modelPath = gpMainWindow->mpProjectTabs->getCurrentContainer()->getModelFileInfo().filePath();
-        gpMainWindow->mpProjectTabs->getCurrentTab()->save();
-        gpMainWindow->mpProjectTabs->closeAllProjectTabs();
+        QString modelPath = gpMainWindow->mpModelHandler->getCurrentContainer()->getModelFileInfo().filePath();
+        gpMainWindow->mpModelHandler->getCurrentModel()->save();
+        gpMainWindow->mpModelHandler->closeAllModels();
         for(int i=0; i<mOptNumPoints; ++i)
         {
-            gpMainWindow->mpProjectTabs->loadModel(modelPath, true);
+            gpMainWindow->mpModelHandler->loadModel(modelPath, true);
         }
     }
 
@@ -3606,7 +3603,7 @@ void HcomHandler::optParticleInit()
     }
     mOptObjectives.resize(mOptNumPoints);
 
-    LogDataHandler *pHandler = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler();
+    LogDataHandler *pHandler = gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler();
     pHandler->deleteVariable("Worst Objective");
     pHandler->deleteVariable("Best Objective");
 }
@@ -3616,7 +3613,7 @@ void HcomHandler::optParticleRun()
 {
     optPlotPoints();
 
-    //connect(gpMainWindow->mpProjectTabs->getCurrentTab()->mpSimulationThreadHandler, SIGNAL(done(bool)), this, SLOT(optPlotPoints(bool)));
+    //connect(gpMainWindow->mpModelHandler->getCurrentModel()->mpSimulationThreadHandler, SIGNAL(done(bool)), this, SLOT(optPlotPoints(bool)));
 
     mOptConvergenceReason=0;
 
@@ -3760,7 +3757,7 @@ void HcomHandler::optPlotPoints()
         return;
     }
 
-    LogDataHandler *pHandler = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler();
+    LogDataHandler *pHandler = gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler();
     for(int p=0; p<mOptNumPoints; ++p)
     {
         QString name = "par"+QString::number(p);
@@ -3808,7 +3805,7 @@ void HcomHandler::optPlotPoints()
 
 void HcomHandler::optPlotBestWorstObj()
 {
-    LogDataHandler *pHandler = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler();
+    LogDataHandler *pHandler = gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler();
     SharedLogVariableDataPtrT bestVar = pHandler->getPlotData("Best Objective", -1);
     if(bestVar.isNull())
     {

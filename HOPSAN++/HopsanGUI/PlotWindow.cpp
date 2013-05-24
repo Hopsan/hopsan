@@ -563,7 +563,7 @@ void PlotWindow::addBarChart(QStandardItemModel *pItemModel)
 
 void PlotWindow::importPlo()
 {
-    gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->importFromPlo();;
+    gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler()->importFromPlo();;
 }
 
 
@@ -721,7 +721,7 @@ void PlotWindow::performFrequencyAnalysisFromDialog()
     addPlotTab();
     getCurrentPlotTab()->getPlot()->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
     getCurrentPlotTab()->updateLabels();
-    LogDataHandler *pLogDataHandler = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler();
+    LogDataHandler *pLogDataHandler = gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler();
     SharedLogVariableDataPtrT pVariable = mpFrequencyAnalysisCurve->getLogDataVariablePtr();
     bool power = mpPowerSpectrumCheckBox->isChecked();
     SharedLogVariableDataPtrT pNewVar = pLogDataHandler->fftVariable(pVariable, SharedLogVariableDataPtrT(), power);
@@ -1005,17 +1005,17 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
         }
     }
 
-    SharedLogVariableDataPtrT gainVar = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->defineNewVariable("bodegain");
+    SharedLogVariableDataPtrT gainVar = gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler()->defineNewVariable("bodegain");
     if(gainVar.isNull())
     {
-        gainVar = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotData("bodegain",-1);
+        gainVar = gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler()->getPlotData("bodegain",-1);
     }
     gainVar.data()->assignFrom(F, vBodeGain);
 
-    SharedLogVariableDataPtrT phaseVar = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->defineNewVariable("bodephase");
+    SharedLogVariableDataPtrT phaseVar = gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler()->defineNewVariable("bodephase");
     if(phaseVar.isNull())
     {
-        phaseVar = gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotData("bodegain",-1);
+        phaseVar = gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler()->getPlotData("bodegain",-1);
     }
     phaseVar.data()->assignFrom(F, vBodePhase);
 }

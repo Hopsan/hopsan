@@ -1458,7 +1458,7 @@ void PlotTab::exportToOldHop()
     //    QVector<double> Scalings;
     //    QString ScaleVal;
 
-    //    QString modelPathwayy = gpMainWindow->mpProjectTabs->getCurrentContainer()->getModelFileInfo().filePath();
+    //    QString modelPathwayy = gpMainWindow->mpModelHandler->getCurrentContainer()->getModelFileInfo().filePath();
     //    QFileInfo fiz(modelPathwayy);
     //    QString namemodel = fiz.baseName();
 
@@ -2758,17 +2758,17 @@ void PlotTab::dropEvent(QDropEvent *event)
             if(this->mapFromGlobal(cursor.pos()).y() > getPlot()->canvas()->height()*2.0/3.0+getPlot()->canvas()->y()+10 && getNumberOfCurves(FirstPlot) >= 1)
             {
 //                pNewDesc->mDataUnit = gConfig.getDefaultUnit(pNewDesc->mDataName);
-//                setCustomXVector(gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotDataValues(desc->getFullName(), -1), pNewDesc );
-                setCustomXVectorForAll(gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotData(mimeText, -1));
+//                setCustomXVector(gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler()->getPlotDataValues(desc->getFullName(), -1), pNewDesc );
+                setCustomXVectorForAll(gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler()->getPlotData(mimeText, -1));
                 //! @todo do we need to reset to default unit too ?
             }
             else if(this->mapFromGlobal(cursor.pos()).x() < getPlot()->canvas()->x()+9 + getPlot()->canvas()->width()/2)
             {
-                mpParentPlotWindow->addPlotCurve(gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotData(mimeText, -1), QwtPlot::yLeft);
+                mpParentPlotWindow->addPlotCurve(gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler()->getPlotData(mimeText, -1), QwtPlot::yLeft);
             }
             else
             {
-                mpParentPlotWindow->addPlotCurve(gpMainWindow->mpProjectTabs->getCurrentContainer()->getLogDataHandler()->getPlotData(mimeText, -1), QwtPlot::yRight);
+                mpParentPlotWindow->addPlotCurve(gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler()->getPlotData(mimeText, -1), QwtPlot::yRight);
             }
         }
     }

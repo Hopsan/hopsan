@@ -109,7 +109,7 @@ Port::Port(QString portName, qreal xpos, qreal ypos, PortAppearance* pPortAppear
 
     //Setup overlay (if it exists)
     this->refreshPortOverlayGraphics();
-    this->refreshPortOverlayScale(mpParentModelObject->getParentContainerObject()->mpParentProjectTab->getGraphicsView()->getZoomFactor());
+    this->refreshPortOverlayScale(mpParentModelObject->getParentContainerObject()->mpModelWidget->getGraphicsView()->getZoomFactor());
 
     mPortAppearanceAfterLastRefresh = *mpPortAppearance; //Remember current appearance
 
@@ -122,7 +122,7 @@ Port::Port(QString portName, qreal xpos, qreal ypos, PortAppearance* pPortAppear
     }
 
     // Create signal connection to the zoom change signal for port overlay scaling and port hide/show function
-    GraphicsView *pView = getParentContainerObject()->mpParentProjectTab->getGraphicsView(); //!< @todo need to be able to access this in some nicer way then ptr madness, also in aother places
+    GraphicsView *pView = getParentContainerObject()->mpModelWidget->getGraphicsView(); //!< @todo need to be able to access this in some nicer way then ptr madness, also in aother places
     connect(getParentContainerObject(),  SIGNAL(showOrHideAllSubComponentPorts(bool)),   this,   SLOT(showIfNotConnected(bool)),         Qt::UniqueConnection);
     connect(mpParentModelObject,         SIGNAL(visibleChanged()),                       this,   SLOT(showIfNotConnected()),             Qt::UniqueConnection);
     connect(pView,                          SIGNAL(zoomChange(qreal)),                      this,   SLOT(refreshPortOverlayScale(qreal)),   Qt::UniqueConnection);
@@ -249,7 +249,7 @@ void Port::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (mpPortAppearance->mEnabled)
     {
-        if(!mpParentModelObject->getParentContainerObject()->mpParentProjectTab->isEditingEnabled())
+        if(!mpParentModelObject->getParentContainerObject()->mpModelWidget->isEditingEnabled())
             return;
 
         //QGraphicsSvgItem::mousePressEvent(event); //Don't work if this is called

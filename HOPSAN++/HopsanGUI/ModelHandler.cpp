@@ -24,11 +24,13 @@
 
 #include "common.h"
 #include "Configuration.h"
+#include "DesktopHandler.h"
 #include "GraphicsView.h"
 #include "GUIObjects/GUISystem.h"
 #include "LogDataHandler.h"
 #include "MainWindow.h"
 #include "ModelHandler.h"
+#include "SimulationThreadHandler.h"
 #include "version_gui.h"
 #include "Widgets/DebuggerWidget.h"
 #include "Widgets/HcomWidget.h"
@@ -39,15 +41,25 @@ ModelHandler::ModelHandler(QObject *parent)
     : QObject(parent)
 {
     mNumberOfUntitledModels=0;
-    mpProjectTabWidget = gpMainWindow->mpProjectTabs;
+
+    mpSimulationThreadHandler = new SimulationThreadHandler();
+
+    mCurrentIdx = -1;
+
+    connect(this, SIGNAL(checkMessages()),      gpMainWindow->mpTerminalWidget,    SLOT(checkMessages()), Qt::UniqueConnection);
+
 }
 
-void ModelHandler::addModelWidget(ProjectTab *pModelWidget, QString name)
+void ModelHandler::addModelWidget(ModelWidget *pModelWidget, QString name)
 {
-    pModelWidget->setParent(mpProjectTabWidget);    //! @todo Should probably use ModelHandler as parent
+    pModelWidget->setParent(gpMainWindow->mpCentralTabs);    //! @todo Should probably use ModelHandler as parent
 
-    mpProjectTabWidget->addTab(pModelWidget, name);
-    mpProjectTabWidget->setCurrentWidget(pModelWidget);
+    mModelPtrs.append(pModelWidget);
+    mCurrentIdx = mModelPtrs.size()-1;
+
+    gpMainWindow->mpCentralTabs->addTab(pModelWidget, name);
+    gpMainWindow->mpCentralTabs->setCurrentWidget(pModelWidget);
+    //gpMainWindow->mpCentralTabs->setVisible(true);
 
     pModelWidget->setToolBarSimulationTimeParametersFromTab();
 
@@ -55,13 +67,13 @@ void ModelHandler::addModelWidget(ProjectTab *pModelWidget, QString name)
 }
 
 
-//! @brief Adds a ProjectTab object (a new tab) to itself.
-//! @see closeProjectTab(int index)
-void ModelHandler::addNewProjectTab(QString modelName)
+//! @brief Adds a ModelWidget object (a new tab) to itself.
+//! @see closeModel(int index)
+void ModelHandler::addNewModel(QString modelName)
 {
     modelName.append(QString::number(mNumberOfUntitledModels));
 
-    ProjectTab *newTab = new ProjectTab(mpProjectTabWidget);    //! @todo Should probably use ModelHandler as parent
+    ModelWidget *newTab = new ModelWidget(this,gpMainWindow->mpCentralTabs);    //! @todo Should probably use ModelHandler as parent
     newTab->getTopLevelSystem()->setName(modelName);
 
     addModelWidget(newTab, modelName);
@@ -71,19 +83,25 @@ void ModelHandler::addNewProjectTab(QString modelName)
     mNumberOfUntitledModels += 1;
 }
 
-ProjectTab *ModelHandler::getModel(int idx)
+void ModelHandler::setCurrentModel(int idx)
 {
-    if(idx > 0 && idx < mModelPtrs.size()-1)
+    mCurrentIdx = idx;
+    gpMainWindow->mpCentralTabs->setCurrentWidget(mModelPtrs[idx]);
+}
+
+ModelWidget *ModelHandler::getModel(int idx)
+{
+    if(idx >= 0 && idx <= mModelPtrs.size()-1)
     {
-        return 0;
+        return mModelPtrs[idx];
     }
-    return mModelPtrs[idx];
+    return 0;
 }
 
 
-ProjectTab *ModelHandler::getCurrentModel()
+ModelWidget *ModelHandler::getCurrentModel()
 {
-    if(mModelPtrs.isEmpty())
+    if(mModelPtrs.isEmpty() || mCurrentIdx < 0)
     {
         return 0;
     }
@@ -92,16 +110,16 @@ ProjectTab *ModelHandler::getCurrentModel()
 
 SystemContainer *ModelHandler::getTopLevelSystem(int idx)
 {
-    if(idx > 0 && idx < mModelPtrs.size()-1)
+    if(idx >= 0 && idx <= mModelPtrs.size()-1)
     {
-        return 0;
+        return mModelPtrs[idx]->getTopLevelSystem();
     }
-    return mModelPtrs[idx]->getTopLevelSystem();
+    return 0;
 }
 
 SystemContainer *ModelHandler::getCurrentTopLevelSystem()
 {
-    if(mModelPtrs.isEmpty())
+    if(mModelPtrs.isEmpty() || mCurrentIdx < 0)
     {
         return 0;
     }
@@ -110,20 +128,25 @@ SystemContainer *ModelHandler::getCurrentTopLevelSystem()
 
 ContainerObject *ModelHandler::getContainer(int idx)
 {
-    if(idx > 0 && idx < mModelPtrs.size()-1)
+    if(idx >= 0 && idx <= mModelPtrs.size()-1)
     {
-        return 0;
+        return mModelPtrs[idx]->getGraphicsView()->getContainerPtr();
     }
-    return mModelPtrs[idx]->getGraphicsView()->getContainerPtr();
+    return 0;
 }
 
 ContainerObject *ModelHandler::getCurrentContainer()
 {
-    if(mModelPtrs.isEmpty())
+    if(mModelPtrs.isEmpty() || mCurrentIdx < 0)
     {
         return 0;
     }
     return mModelPtrs[mCurrentIdx]->getGraphicsView()->getContainerPtr();
+}
+
+int ModelHandler::count()
+{
+    return mModelPtrs.size();
 }
 
 
@@ -150,6 +173,12 @@ void ModelHandler::loadModel()
 void ModelHandler::loadModel(QAction *action)
 {
     loadModel(action->text());
+}
+
+
+void ModelHandler::loadModelParameters()
+{
+    qobject_cast<SystemContainer*>(getCurrentContainer())->loadParameterFile();
 }
 
 
@@ -184,8 +213,8 @@ void ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOpen)
 
     gpMainWindow->registerRecentModel(fileInfo);
 
-    this->addModelWidget(new ProjectTab(/*this*/), fileInfo.baseName());
-    ProjectTab *pCurrentTab = this->getCurrentModel();
+    this->addModelWidget(new ModelWidget(this, gpMainWindow->mpCentralTabs), fileInfo.baseName());
+    ModelWidget *pCurrentTab = this->getCurrentModel();
     pCurrentTab->getTopLevelSystem()->getCoreSystemAccessPtr()->addSearchPath(fileInfo.absoluteDir().absolutePath());
     pCurrentTab->getTopLevelSystem()->setUndoEnabled(false, true);
 
@@ -235,16 +264,46 @@ void ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOpen)
     emit newModelWidgetAdded();
 }
 
+void ModelHandler::setCurrentTopLevelSimulationTimeParameters(const QString startTime, const QString timeStep, const QString stopTime)
+{
+    if (count() > 0)
+    {
+        getCurrentModel()->setTopLevelSimulationTime(startTime, timeStep, stopTime);
+    }
+}
+
+
+bool ModelHandler::closeModelByTabIndex(int tabIdx)
+{
+    bool found=false;
+    int idx;
+    for(int i=0; i<mModelPtrs.size(); ++i)
+    {
+        if(mModelPtrs[i] == gpMainWindow->mpCentralTabs->widget(tabIdx))
+        {
+            found=true;
+            idx=i;
+        }
+    }
+    if(!found)
+    {
+        return false;
+    }
+
+    closeModel(idx);
+}
+
+
 //! @brief Closes current project.
 //! @param index defines which project to close.
 //! @return true if closing went ok. false if the user canceled the operation.
-//! @see closeAllProjectTabs()
+//! @see closeAllModels()
 bool ModelHandler::closeModel(int idx)
 {
     if (!(this->getModel(idx)->isSaved()))
     {
         QString modelName;
-        modelName = mpProjectTabWidget->tabText(idx);
+        modelName = gpMainWindow->mpCentralTabs->tabText(idx);
         modelName.chop(1);
         QMessageBox msgBox;
         msgBox.setWindowIcon(gpMainWindow->windowIcon());
@@ -301,7 +360,7 @@ bool ModelHandler::closeModel(int idx)
     }
 
     //Disconnect signals
-    //std::cout << "ProjectTabWidget: " << "Closing project: " << qPrintable(tabText(index)) << std::endl;
+    //std::cout << "CentralTabWidget: " << "Closing project: " << qPrintable(tabText(index)) << std::endl;
     //statusBar->showMessage(QString("Closing project: ").append(tabText(index)));
     disconnect(gpMainWindow->mpResetZoomAction,     SIGNAL(triggered()),    getModel(idx)->getGraphicsView(),   SLOT(resetZoom()));
     disconnect(gpMainWindow->mpZoomInAction,        SIGNAL(triggered()),    getModel(idx)->getGraphicsView(),   SLOT(zoomIn()));
@@ -320,7 +379,12 @@ bool ModelHandler::closeModel(int idx)
     getContainer(idx)->setUndoEnabled(false, true);  //This is necessary to prevent each component from registering it being deleted in the undo stack
 
     //Delete project tab, We dont need to call removeTab here, this seems to be handled automatically
-    delete getModel(idx);
+    ModelWidget *pModelToDelete = getModel(idx);
+    gpMainWindow->mpCentralTabs->removeTab(gpMainWindow->mpCentralTabs->indexOf(pModelToDelete));
+    mModelPtrs.removeAt(idx);
+    --mCurrentIdx;
+    delete pModelToDelete;
+    gpMainWindow->updateToolBarsToNewTab();
 
     return true;
 }
@@ -328,8 +392,8 @@ bool ModelHandler::closeModel(int idx)
 
 //! @brief Closes all opened projects.
 //! @return true if closing went ok. false if the user canceled the operation.
-//! @see closeProjectTab(int index)
-//! @see saveProjectTab()
+//! @see closeModel(int index)
+//! @see saveModel()
 bool ModelHandler::closeAllModels()
 {
     gConfig.clearLastSessionModels();
@@ -350,8 +414,17 @@ bool ModelHandler::closeAllModels()
 void ModelHandler::modelChanged()
 {
     //! @todo We might need to change this
-    if(mModelPtrs.size() > 0) { mpProjectTabWidget->show(); }
-    else { mpProjectTabWidget->hide(); }
+    //if(mModelPtrs.size() > 0) { gpMainWindow->mpCentralTabs->show(); }
+    //else { gpMainWindow->mpCentralTabs->hide(); }
+
+    mCurrentIdx = -1;
+    for(int i=0; i<mModelPtrs.size(); ++i)
+    {
+        if(mModelPtrs[i] == gpMainWindow->mpCentralTabs->currentWidget())
+        {
+            mCurrentIdx=i;
+        }
+    }
 
     for(int i=0; i<mModelPtrs.size(); ++i)
     {
@@ -374,7 +447,7 @@ void ModelHandler::modelChanged()
         disconnect(gpMainWindow->mpSaveAsAction,        SIGNAL(triggered()),            getModel(i),  SLOT(saveAs()));
         disconnect(gpMainWindow->mpExportModelParametersAction,   SIGNAL(triggered()),            getModel(i),  SLOT(exportModelParameters()));
     }
-    if(this->mModelPtrs.size() != 0)
+    if(this->mModelPtrs.size() != 0 && getCurrentModel())
     {
         //connect(gpMainWindow,                       SIGNAL(simulateKeyPressed()),   getCurrentModel(),        SLOT(simulate()), Qt::UniqueConnection);
         connect(gpMainWindow,                                   SIGNAL(simulateKeyPressed()),   getCurrentModel(),    SLOT(simulate_nonblocking()), Qt::UniqueConnection);
@@ -408,6 +481,115 @@ void ModelHandler::modelChanged()
     }
 }
 
+void ModelHandler::saveState()
+{
+    mStateInfoBackupList.clear();
+    mStateInfoHasChanged.clear();
+    mStateInfoHmfList.clear();
+    mStateInfoModels.clear();
+    mStateInfoTabNames.clear();
+    mStateInfoLogDataHandlersList.clear();
+
+    while(!mModelPtrs.isEmpty())
+    {
+        ModelWidget *pModel = getModel(0);
+        mStateInfoHmfList << pModel->getTopLevelSystem()->getModelFileInfo().filePath();
+        mStateInfoHasChanged << !pModel->isSaved();
+        mStateInfoTabNames << gpMainWindow->mpCentralTabs->tabText(gpMainWindow->mpCentralTabs->indexOf(pModel));
+        pModel->getTopLevelSystem()->getLogDataHandler()->setParent(0);       //Make sure it is not removed when deleting the container object
+        mStateInfoLogDataHandlersList << pModel->getTopLevelSystem()->getLogDataHandler();
+        if(!pModel->isSaved())
+        {
+            //! @todo This code is duplicated from ModelWidget::saveModel(), make it a common function somehow
+                //Save xml document
+            QDomDocument domDocument;
+            QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
+            pModel->getTopLevelSystem()->saveToDomElement(hmfRoot);
+            QString fileNameWithoutHmf = getCurrentTopLevelSystem()->getModelFileInfo().fileName();
+            fileNameWithoutHmf.chop(4);
+            mStateInfoBackupList << gDesktopHandler.getBackupPath()+fileNameWithoutHmf+"_savedstate.hmf";
+            QFile xmlhmf(gDesktopHandler.getBackupPath()+fileNameWithoutHmf+"_savedstate.hmf");
+            if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+            {
+                return;
+            }
+            QTextStream out(&xmlhmf);
+            appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
+            domDocument.save(out, XMLINDENTATION);
+            xmlhmf.close();
+            pModel->setSaved(true);
+            closeModel(0);
+            //pTab->close();
+        }
+        else
+        {
+            mStateInfoBackupList << "";
+            closeModel(0);
+            //pTab->close();
+        }
+    }
+}
+
+void ModelHandler::restoreState()
+{
+    for(int i=0; i<mStateInfoHmfList.size(); ++i)
+    {
+        if(mStateInfoHasChanged[i])
+        {
+            loadModel(mStateInfoBackupList[i]);
+            getCurrentModel()->hasChanged();
+            getCurrentTopLevelSystem()->setModelFile(mStateInfoHmfList[i]);
+            QString basePath = QFileInfo(mStateInfoHmfList[i]).absolutePath();
+            QStringListIterator objIt(getCurrentTopLevelSystem()->getModelObjectNames());
+            while (objIt.hasNext())
+            {
+                getCurrentTopLevelSystem()->getModelObject(objIt.next())->getAppearanceData()->setBasePath(basePath);
+            }
+        }
+        else
+        {
+            loadModel(mStateInfoHmfList[i]);
+        }
+        gpMainWindow->mpCentralTabs->setTabText(i, mStateInfoTabNames[i]);
+        getCurrentTopLevelSystem()->setLogDataHandler(mStateInfoLogDataHandlersList[i]);
+    }
+}
+
+void ModelHandler::createLabviewWrapperFromCurrentModel()
+{
+    qobject_cast<SystemContainer*>(getCurrentContainer())->createLabviewSourceFiles();
+}
+
+
+void ModelHandler::exportCurrentModelToFMU()
+{
+    qobject_cast<SystemContainer*>(getCurrentContainer())->exportToFMU();
+}
+
+
+void ModelHandler::exportCurrentModelToSimulink()
+{
+    qobject_cast<SystemContainer*>(getCurrentContainer())->exportToSimulink();
+}
+
+
+void ModelHandler::exportCurrentModelToSimulinkCoSim()
+{
+    qobject_cast<SystemContainer*>(getCurrentContainer())->exportToSimulinkCoSim();
+}
+
+
+void ModelHandler::showLosses(bool show)
+{
+    qobject_cast<SystemContainer*>(getCurrentContainer())->showLosses(show);
+}
+
+
+void ModelHandler::measureSimulationTime()
+{
+    qobject_cast<SystemContainer*>(getCurrentContainer())->measureSimulationTime();
+}
+
 
 void ModelHandler::launchDebugger()
 {
@@ -417,3 +599,72 @@ void ModelHandler::launchDebugger()
     pDebugger->show();
     pDebugger->exec();
 }
+
+
+void ModelHandler::openAnimation()
+{
+    if(!mModelPtrs.isEmpty())
+    {
+        getCurrentModel()->openAnimation();
+    }
+}
+
+
+bool ModelHandler::simulateAllOpenModels_nonblocking(bool modelsHaveNotChanged)
+{
+    if(!mModelPtrs.isEmpty())
+    {
+        //All systems will use start time, stop time and time step from this system
+        SystemContainer *pMainSystem = getCurrentTopLevelSystem();
+
+            //Setup simulation parameters
+        double startTime = getCurrentModel()->getStartTime().toDouble();
+        double stopTime = getCurrentModel()->getStopTime().toDouble();
+        size_t nSamples = pMainSystem->getNumberOfLogSamples();
+
+        // Ask core to initialize simulation
+        QVector<SystemContainer*> systemsVector;
+        for(int i=0; i<mModelPtrs.size(); ++i)
+        {
+            systemsVector.append(getTopLevelSystem(i));
+        }
+
+        mpSimulationThreadHandler->setSimulationTimeVariables(startTime, stopTime, nSamples);
+        mpSimulationThreadHandler->initSimulateFinalize(systemsVector, modelsHaveNotChanged);
+
+        //! @todo fix return code (maybe remove)
+        return true;
+    }
+    return false;
+}
+
+
+bool ModelHandler::simulateAllOpenModels_blocking(bool modelsHaveNotChanged)
+{
+    if(!mModelPtrs.isEmpty())
+    {
+        //All systems will use start time, stop time and time step from this system
+        SystemContainer *pMainSystem = getCurrentTopLevelSystem();
+
+            //Setup simulation parameters
+        double startTime = getCurrentModel()->getStartTime().toDouble();
+        double stopTime = getCurrentModel()->getStopTime().toDouble();
+        size_t nSamples = pMainSystem->getNumberOfLogSamples();
+
+        // Ask core to initialize simulation
+        QVector<SystemContainer*> systemsVector;
+        for(int i=0; i<mModelPtrs.size(); ++i)
+        {
+            systemsVector.append(getTopLevelSystem(i));
+        }
+
+        mpSimulationThreadHandler->setSimulationTimeVariables(startTime, stopTime, nSamples);
+        mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
+        mpSimulationThreadHandler->initSimulateFinalize_blocking(systemsVector, modelsHaveNotChanged);
+
+        //! @todo fix return code (maybe remove)
+        return true;
+    }
+    return false;
+}
+

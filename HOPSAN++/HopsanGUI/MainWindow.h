@@ -29,7 +29,7 @@
 #include <QtGui>
 #include <QtNetwork/QNetworkReply>
 
-class ProjectTabWidget;
+class CentralTabWidget;
 class GraphicsView;
 class QGraphicsScene;
 class LibraryWidget;
@@ -51,6 +51,7 @@ class ComponentGeneratorDialog;
 class TerminalWidget;
 class UndoWidget;
 class HVCWidget;
+class ModelHandler;
 
 class MainWindow : public QMainWindow
 {
@@ -86,7 +87,8 @@ public:
     //Widgets
     //! @todo These should probably not be public
     UndoWidget *mpUndoWidget;
-    ProjectTabWidget *mpProjectTabs;
+    CentralTabWidget *mpCentralTabs;
+    ModelHandler *mpModelHandler;
     WelcomeWidget *mpWelcomeWidget;
     LibraryWidget *mpLibrary;
     MessageWidget *mpMessageWidget;
@@ -161,6 +163,8 @@ public:
     QAction *mpDebug1Action;
     QAction *mpDebug2Action;
 
+    QDockWidget *mpTerminalDock;
+
 public slots:
 //    void show();
     void initializeWorkspace();
@@ -221,7 +225,6 @@ private:
 
     //Dock area widgets
     QDockWidget *mpMessageDock;
-    QDockWidget *mpTerminalDock;
     QDockWidget *mpLibDock;
     QDockWidget *mpPlotWidgetDock;
     QDockWidget *mpUndoWidgetDock;

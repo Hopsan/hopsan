@@ -87,8 +87,8 @@ GroupContainer::GroupContainer(QPointF position, qreal rotation, const ModelObje
     QString newname = this->getCoreSystemAccessPtr()->reserveUniqueName("Grupp_test"); //Dont forget to unreserve this later when renaming or deleting
     this->setName(newname);
 
-    //! @todo this is not good all mpParentProjectTab should be set in one common place not in guigroup and guisystem
-    this->mpParentProjectTab = pParentContainer->mpParentProjectTab;
+    //! @todo this is not good all mpModelWidget should be set in one common place not in guigroup and guisystem
+    this->mpModelWidget = pParentContainer->mpModelWidget;
 
     gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Groups are not yet fully implemented, DO NOT use them, it will only end in tears!");
 }
@@ -184,7 +184,7 @@ GroupContainer::~GroupContainer()
 ////    }
 
 ////    //Constructs a new scene for the group
-////    //getContainedScenePtr() = new QGraphicsScene(mpParentContainerObject->mpParentProjectTab);
+////    //getContainedScenePtr() = new QGraphicsScene(mpParentContainerObject->mpParentModelWidget);
 
 ////    double xMin = mGUICompList.at(0)->x()+mGUICompList.at(0)->rect().width()/2.0,
 ////           xMax = mGUICompList.at(0)->x()+mGUICompList.at(0)->rect().width()/2.0,
@@ -374,7 +374,7 @@ void GroupContainer::addExternalContainerPortObject(ModelObject *pModelObject)
 //void GUIGroup::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 //{
 //    QGraphicsItem::mouseDoubleClickEvent(event);
-//    mpParentContainerObject->mpParentProjectTab->getGraphicsView()->setScene(getContainedScenePtr());
+//    mpParentContainerObject->mpParentModelWidget->getGraphicsView()->setScene(getContainedScenePtr());
 
 ////    gpMainWindow->mpBackButton->show();
 
@@ -397,7 +397,7 @@ void GroupContainer::addExternalContainerPortObject(ModelObject *pModelObject)
 
 //        i.value().selectPortIcon("", "", "Undefined"); //Dont realy need to write undefined here, could be empty, (just to make it clear)
 
-////        mModelObjectAppearance.setName(mpParentSystem->mpParentProjectTab->mGUIRootSystem.addSystemPort(i.key()));
+////        mModelObjectAppearance.setName(mpParentSystem->mpParentModelWidget->mGUIRootSystem.addSystemPort(i.key()));
 //        mModelObjectAppearance.setName(i.key());
 
 //        //We supply ptr to rootsystem to indicate that this is a systemport

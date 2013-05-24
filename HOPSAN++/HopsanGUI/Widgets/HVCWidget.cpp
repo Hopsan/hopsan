@@ -1,7 +1,7 @@
 #include "HVCWidget.h"
 #include "Utilities/XMLUtilities.h"
 #include "MainWindow.h"
-#include "ProjectTabWidget.h"
+#include "ModelHandler.h"
 #include "common.h"
 
 #include "LogDataHandler.h"
@@ -197,16 +197,16 @@ void HVCWidget::clearContents()
 void HVCWidget::runHvcTest()
 {
     // First load the model
-    gpMainWindow->mpProjectTabs->loadModel(mModelFilePath, true);
+    gpMainWindow->mpModelHandler->loadModel(mModelFilePath, true);
     // Switch to that tab
 
     // Simulate the system
-    gpMainWindow->mpProjectTabs->getCurrentTab()->simulate_blocking();
+    gpMainWindow->mpModelHandler->getCurrentModel()->simulate_blocking();
 
     // Run each test
     for (int t=0; t<mDataConfigs.size(); ++t)
     {
-        LogDataHandler *pLogDataHandler = gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->getLogDataHandler();
+        LogDataHandler *pLogDataHandler = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler();
 
         QVector<int> columns;
         QStringList names;

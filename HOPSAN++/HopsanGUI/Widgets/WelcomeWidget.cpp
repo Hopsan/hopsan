@@ -13,7 +13,8 @@
 #include "Dialogs/OptionsDialog.h"
 #include "Widgets/LibraryWidget.h"
 #include "Widgets/PlotWidget.h" //!< @todo why is this needed in here
-#include "Widgets/ProjectTabWidget.h"
+#include "ModelHandler.h"
+//#include "Widgets/ProjectTabWidget.h"
 #include "Widgets/WelcomeWidget.h"
 
 WelcomeWidget::WelcomeWidget(QWidget *parent) :
@@ -379,17 +380,17 @@ void WelcomeWidget::mousePressEvent(QMouseEvent *event)
 {
     if(mpNewFrame->underMouse())
     {
-        gpMainWindow->mpProjectTabs->addNewProjectTab();
+        gpMainWindow->mpModelHandler->addNewModel();
     }
     else if(mpLoadFrame->underMouse())
     {
-        gpMainWindow->mpProjectTabs->loadModel();
+        gpMainWindow->mpModelHandler->loadModel();
     }
     else if(mpLastSessionFrame->underMouse())
     {
         for(int i=0; i<gConfig.getLastSessionModels().size(); ++i)
         {
-            gpMainWindow->mpProjectTabs->loadModel(gConfig.getLastSessionModels().at(i));
+            gpMainWindow->mpModelHandler->loadModel(gConfig.getLastSessionModels().at(i));
         }
     }
     else if(mpOptionsFrame->underMouse())
@@ -405,14 +406,14 @@ void WelcomeWidget::mousePressEvent(QMouseEvent *event)
 //! @brief Opens selected recent model from the list and closes the welcome dialog.
 void WelcomeWidget::openRecentModel()
 {
-    gpMainWindow->mpProjectTabs->loadModel(mRecentModelList.at(mpRecentList->currentIndex().row()));
+    gpMainWindow->mpModelHandler->loadModel(mRecentModelList.at(mpRecentList->currentIndex().row()));
 }
 
 
 //! @brief Slot that loads an example model, based on the name of the calling action
 void WelcomeWidget::openExampleModel()
 {
-    gpMainWindow->mpProjectTabs->loadModel(gDesktopHandler.getMainPath()+"Models/Example Models/"+mExampleModelList.at(mpExampleList->currentIndex().row()));
+    gpMainWindow->mpModelHandler->loadModel(gDesktopHandler.getMainPath()+"Models/Example Models/"+mExampleModelList.at(mpExampleList->currentIndex().row()));
 }
 
 

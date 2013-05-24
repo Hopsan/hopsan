@@ -233,11 +233,11 @@ QVariant WorkspaceObject::itemChange(GraphicsItemChange change, const QVariant &
             connect(mpParentContainerObject, SIGNAL(rotateSelectedObjectsLeft()), this, SLOT(rotate90ccw()));
             connect(mpParentContainerObject, SIGNAL(flipSelectedObjectsHorizontal()), this, SLOT(flipHorizontal()));
             connect(mpParentContainerObject, SIGNAL(flipSelectedObjectsVertical()), this, SLOT(flipVertical()));
-            connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
-            connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
-            connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
-            connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
-            connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
+            connect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+            connect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
+            connect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
+            connect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
+            connect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
             disconnect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
             connect(mpParentContainerObject, SIGNAL(deselectAllGUIObjects()), this, SLOT(deselect()));
             emit objectSelected();
@@ -249,11 +249,11 @@ QVariant WorkspaceObject::itemChange(GraphicsItemChange change, const QVariant &
             disconnect(mpParentContainerObject, SIGNAL(rotateSelectedObjectsLeft()), this, SLOT(rotate90ccw()));
             disconnect(mpParentContainerObject, SIGNAL(flipSelectedObjectsHorizontal()), this, SLOT(flipHorizontal()));
             disconnect(mpParentContainerObject, SIGNAL(flipSelectedObjectsVertical()), this, SLOT(flipVertical()));
-            disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
-            disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
-            disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
-            disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
-            disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
+            disconnect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+            disconnect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressCtrlUp()), this, SLOT(moveUp()));
+            disconnect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressCtrlDown()), this, SLOT(moveDown()));
+            disconnect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressCtrlLeft()), this, SLOT(moveLeft()));
+            disconnect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressCtrlRight()), this, SLOT(moveRight()));
             connect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
             disconnect(mpParentContainerObject, SIGNAL(deselectAllGUIObjects()), this, SLOT(deselect()));
             mpSelectionBox->setPassive();
@@ -265,7 +265,7 @@ QVariant WorkspaceObject::itemChange(GraphicsItemChange change, const QVariant &
     // Move component only horizontal, vertical or snap to original position if Ctrl is pressed
     if (change == QGraphicsItem::ItemPositionHasChanged)
     {
-        if(mpParentContainerObject != 0 && mpParentContainerObject->mpParentProjectTab->getGraphicsView()->isCtrlKeyPressed() && mpParentContainerObject->mpParentProjectTab->getGraphicsView()->isLeftMouseButtonPressed())
+        if(mpParentContainerObject != 0 && mpParentContainerObject->mpModelWidget->getGraphicsView()->isCtrlKeyPressed() && mpParentContainerObject->mpModelWidget->getGraphicsView()->isLeftMouseButtonPressed())
         {
             QPointF diff = this->pos()-mOldPos;
             if( diff.manhattanLength() < SNAPDISTANCE)
@@ -328,7 +328,7 @@ void WorkspaceObject::moveUp()
 {
     //qDebug() << "Move up!";
     this->setPos(this->pos().x(), this->mapFromScene(this->mapToScene(this->pos())).y()-1);
-    mpParentContainerObject->mpParentProjectTab->getGraphicsView()->updateViewPort(); //!< @todo If we have many objects selected this will probably call MANY updates of the viewport, maybe should do in some other way, same "problem" in other places
+    mpParentContainerObject->mpModelWidget->getGraphicsView()->updateViewPort(); //!< @todo If we have many objects selected this will probably call MANY updates of the viewport, maybe should do in some other way, same "problem" in other places
 }
 
 
@@ -339,7 +339,7 @@ void WorkspaceObject::moveUp()
 void WorkspaceObject::moveDown()
 {
     this->setPos(this->pos().x(), this->mapFromScene(this->mapToScene(this->pos())).y()+1);
-    mpParentContainerObject->mpParentProjectTab->getGraphicsView()->updateViewPort();
+    mpParentContainerObject->mpModelWidget->getGraphicsView()->updateViewPort();
 }
 
 
@@ -350,7 +350,7 @@ void WorkspaceObject::moveDown()
 void WorkspaceObject::moveLeft()
 {
     this->setPos(this->mapFromScene(this->mapToScene(this->pos())).x()-1, this->pos().y());
-    mpParentContainerObject->mpParentProjectTab->getGraphicsView()->updateViewPort();
+    mpParentContainerObject->mpModelWidget->getGraphicsView()->updateViewPort();
 }
 
 
@@ -361,7 +361,7 @@ void WorkspaceObject::moveLeft()
 void WorkspaceObject::moveRight()
 {
     this->setPos(this->mapFromScene(this->mapToScene(this->pos())).x()+1, this->pos().y());
-    mpParentContainerObject->mpParentProjectTab->getGraphicsView()->updateViewPort();
+    mpParentContainerObject->mpModelWidget->getGraphicsView()->updateViewPort();
 }
 
 

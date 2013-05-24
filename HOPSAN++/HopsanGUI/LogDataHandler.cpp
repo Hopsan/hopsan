@@ -107,7 +107,7 @@ void LogDataHandler::exportToPlo(QString filePath, QStringList variables)
     QVector<double> scalings;
     //QString ScaleVal;
 
-    QString modelPathwayy = gpMainWindow->mpProjectTabs->getCurrentContainer()->getModelFileInfo().filePath();
+    QString modelPathwayy = gpMainWindow->mpModelHandler->getCurrentContainer()->getModelFileInfo().filePath();
     QFileInfo fiz(modelPathwayy);
     QString namemodel = fiz.baseName();
 
@@ -1513,7 +1513,7 @@ void LogDataHandler::setFavoriteVariable(QString componentName, QString portName
     }
     gpMainWindow->mpPlotWidget->mpPlotVariableTree->updateList();
 
-    mpParentContainerObject->mpParentProjectTab->hasChanged();
+    mpParentContainerObject->mpModelWidget->hasChanged();
 }
 
 

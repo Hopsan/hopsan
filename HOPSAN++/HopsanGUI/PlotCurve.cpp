@@ -344,8 +344,8 @@ void PlotCurve::commonConstructorCode(int axisY,
 
     //Create connections
     //! @todo we should not connect like this /Peter
-    connect(gpMainWindow->mpProjectTabs->getCurrentTab(),SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
-    connect(gpMainWindow->mpProjectTabs,SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
+    connect(gpMainWindow->mpModelHandler->getCurrentModel(),SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
+    connect(gpMainWindow->mpCentralTabs,SIGNAL(simulationFinished()),this,SLOT(updateToNewGeneration()));
 
     connectDataSignals();
 

@@ -797,7 +797,7 @@ bool LibraryWidget::recompileComponent(QString libPath, const bool modelica, con
 
     qDebug() << "Success!";
 
-    gpMainWindow->mpProjectTabs->saveState();
+    gpMainWindow->mpModelHandler->saveState();
 
     if(!mpCoreAccess->loadComponentLib(newLibFileName))
     {
@@ -828,7 +828,7 @@ bool LibraryWidget::recompileComponent(QString libPath, const bool modelica, con
 
     qDebug() << "Loaded successfully!";
 
-    gpMainWindow->mpProjectTabs->restoreState();
+    gpMainWindow->mpModelHandler->restoreState();
 
     update();
 
@@ -1626,12 +1626,12 @@ void LibraryWidget::unloadExternalLibrary(const QString libName, const QString p
         qDebug() << "Nodes in library: " << nodes;
 
 //        bool doWarn = false;
-//        for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
+//        for(int i=0; i<gpMainWindow->mpModelHandler->count(); ++i)
 //        {
-//            QStringList modelComponents = gpMainWindow->mpProjectTabs->getContainer(i)->getModelObjectNames();
+//            QStringList modelComponents = gpMainWindow->mpModelHandler->getContainer(i)->getModelObjectNames();
 //            for(int c=0; c<modelComponents.size(); ++c)
 //            {
-//                QString type = gpMainWindow->mpProjectTabs->getContainer(i)->getModelObject(modelComponents[c])->getTypeName();
+//                QString type = gpMainWindow->mpModelHandler->getContainer(i)->getModelObject(modelComponents[c])->getTypeName();
 //                if(components.contains(type))
 //                {
 //                    doWarn = true;
@@ -1639,10 +1639,10 @@ void LibraryWidget::unloadExternalLibrary(const QString libName, const QString p
 //            }
 //        }
 
-        gpMainWindow->mpProjectTabs->saveState();
+        gpMainWindow->mpModelHandler->saveState();
 
 //        QMessageBox::StandardButton button = QMessageBox::Ok;
-//        if (gpMainWindow->mpProjectTabs->count() > 0 && doWarn)
+//        if (gpMainWindow->mpModelHandler->count() > 0 && doWarn)
 //        {
 //            button = QMessageBox::question(this, "Unload Warning!",
 //                                           "You have open models containing components from the library you are trying to unload. Unloading will likely result in a program crash.\n\nDo you want to continue?",
@@ -1656,7 +1656,7 @@ void LibraryWidget::unloadExternalLibrary(const QString libName, const QString p
             update();
 //        }
 
-        gpMainWindow->mpProjectTabs->restoreState();
+        gpMainWindow->mpModelHandler->restoreState();
     }
 
 }

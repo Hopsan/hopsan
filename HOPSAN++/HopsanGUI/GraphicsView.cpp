@@ -31,6 +31,7 @@
 #include "UndoStack.h"
 
 #include "Widgets/ProjectTabWidget.h"
+#include "ModelHandler.h"
 #include "Widgets/PlotWidget.h"
 #include "Widgets/HcomWidget.h"
 #include "GUIObjects/GUIContainerObject.h"
@@ -47,11 +48,11 @@
 
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
-GraphicsView::GraphicsView(ProjectTab *parent)
+GraphicsView::GraphicsView(ModelWidget *parent)
         : QGraphicsView(parent)
 {
-    mpParentProjectTab = parent;
-    mpContainerObject = mpParentProjectTab->getTopLevelSystem();
+    mpParentModelWidget = parent;
+    mpContainerObject = mpParentModelWidget->getTopLevelSystem();
 
     mIgnoreNextContextMenuEvent = false;
     mCtrlKeyPressed = false;
@@ -136,7 +137,7 @@ void GraphicsView::dragMoveEvent(QDragMoveEvent *event)
 //! @param event contains information of the drop operation.
 void GraphicsView::dropEvent(QDropEvent *event)
 {
-    if(!mpParentProjectTab->isEditingEnabled())
+    if(!mpParentModelWidget->isEditingEnabled())
         return;
 
     //A HMF file was dropped in the graphics view, so try to open the model
@@ -146,14 +147,14 @@ void GraphicsView::dropEvent(QDropEvent *event)
         {
             if(event->mimeData()->urls().at(i).toString().endsWith(".hmf"))
             {
-                gpMainWindow->mpProjectTabs->loadModel(event->mimeData()->urls().at(i).toString().remove(0,8));
+                gpMainWindow->mpModelHandler->loadModel(event->mimeData()->urls().at(i).toString().remove(0,8));
             }
         }
         return;
     }
     if (event->mimeData()->hasText())
     {
-        mpParentProjectTab->hasChanged();
+        mpParentModelWidget->hasChanged();
         QString text = event->mimeData()->text();
 
         //Dropped item is a drag copy operation
@@ -195,11 +196,11 @@ void GraphicsView::dropEvent(QDropEvent *event)
 //! Also changes to the correct background color if it is not the correct one.
 void GraphicsView::updateViewPort()
 {
-    if( (mpParentProjectTab->getTopLevelSystem()->getGfxType() == UserGraphics) && (this->backgroundBrush().color() != gConfig.getBackgroundColor()) )
+    if( (mpParentModelWidget->getTopLevelSystem()->getGfxType() == UserGraphics) && (this->backgroundBrush().color() != gConfig.getBackgroundColor()) )
     {
         this->setBackgroundBrush(gConfig.getBackgroundColor());
     }
-    else if( (mpParentProjectTab->getTopLevelSystem()->getGfxType() == ISOGraphics) && (this->backgroundBrush().color() != mIsoColor) )
+    else if( (mpParentModelWidget->getTopLevelSystem()->getGfxType() == ISOGraphics) && (this->backgroundBrush().color() != mIsoColor) )
     {
         this->setBackgroundBrush(mIsoColor);
     }
@@ -329,7 +330,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         if(mpContainerObject->isSubObjectSelected() || mpContainerObject->isConnectorSelected())
         {
             mpContainerObject->getUndoStackPtr()->newPost();
-            mpParentProjectTab->hasChanged();
+            mpParentModelWidget->hasChanged();
         }
         emit keyPressDelete();
     }
@@ -431,7 +432,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         if(mpContainerObject->isSubObjectSelected())
         {
             mpContainerObject->getUndoStackPtr()->newPost();
-            mpParentProjectTab->hasChanged();
+            mpParentModelWidget->hasChanged();
         }
         emit keyPressCtrlDown();
         doNotForwardEvent = true;
@@ -450,7 +451,7 @@ void GraphicsView::keyPressEvent(QKeyEvent *event)
         if(mpContainerObject->isSubObjectSelected())
         {
             mpContainerObject->getUndoStackPtr()->newPost();
-            mpParentProjectTab->hasChanged();
+            mpParentModelWidget->hasChanged();
         }
         emit keyPressCtrlRight();
         doNotForwardEvent = true;
@@ -531,7 +532,7 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 //! @param event contains information of the mouse click operation.
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
-    if(!mpParentProjectTab->isEditingEnabled())
+    if(!mpParentModelWidget->isEditingEnabled())
         return;
 
     mLeftMouseButtonPressed = true;
@@ -575,6 +576,7 @@ void GraphicsView::mouseReleaseEvent(QMouseEvent *event)
     {
         if(object->getOldPos() != object->pos())
         {
+            mpParentModelWidget->hasChanged();
             if(!createdUndoPost)
             {
                 mpContainerObject->getUndoStackPtr()->newPost("movedmultiple");

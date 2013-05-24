@@ -109,7 +109,7 @@ ContainerObject::~ContainerObject()
 //! @brief Notify the parent project tab that changes has occured
 void ContainerObject::hasChanged()
 {
-    mpParentProjectTab->hasChanged();
+    mpModelWidget->hasChanged();
 }
 
 //! @brief Connects all SignalAndSlot connections to the mainwindow buttons from this container
@@ -588,7 +588,7 @@ TextBoxWidget *ContainerObject::addTextBoxWidget(QPointF position, UndoStatusEnu
     {
         mpUndoStack->registerAddedWidget(pTempTextBoxWidget);
     }
-    mpParentProjectTab->hasChanged();
+    mpModelWidget->hasChanged();
 
     return pTempTextBoxWidget;
 }
@@ -658,7 +658,7 @@ void ContainerObject::deleteModelObject(QString objectName, UndoStatusEnumT undo
         gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Error: Could not delete object with name " + objectName + ", object not found");
     }
     emit checkMessages();
-    mpParentProjectTab->getGraphicsView()->updateViewPort();
+    mpModelWidget->getGraphicsView()->updateViewPort();
 }
 
 
@@ -1217,7 +1217,7 @@ void ContainerObject::removeSubConnector(Connector* pConnector, UndoStatusEnumT 
     }
 
     //Refresh the graphics view
-    mpParentProjectTab->getGraphicsView()->updateViewPort();
+    mpModelWidget->getGraphicsView()->updateViewPort();
 }
 
 
@@ -1330,7 +1330,7 @@ Connector* ContainerObject::createConnector(Port *pPort, UndoStatusEnumT undoSet
                 mpUndoStack->newPost();
                 mpUndoStack->registerAddedConnector(mpTempConnector);
             }
-            mpParentProjectTab->hasChanged();
+            mpModelWidget->hasChanged();
 
             mIsCreatingConnector = false;
         }
@@ -1409,7 +1409,7 @@ void ContainerObject::cutSelected(CopyStack *xmlStack)
     this->copySelected(xmlStack);
     this->mpUndoStack->newPost("cut");
     emit deleteSelected();
-    mpParentProjectTab->getGraphicsView()->updateViewPort();
+    mpModelWidget->getGraphicsView()->updateViewPort();
 }
 
 
@@ -1491,7 +1491,7 @@ void ContainerObject::paste(CopyStack *xmlStack)
     //gpMainWindow->mpHcomWidget->mpConsole->printDebugMessage(gCopyStack.getXML());
 
     mpUndoStack->newPost("paste");
-    mpParentProjectTab->hasChanged();
+    mpModelWidget->hasChanged();
 
     QDomElement *copyRoot;
     if(xmlStack == 0)
@@ -1516,7 +1516,7 @@ void ContainerObject::paste(CopyStack *xmlStack)
     QPointF oldCenter = QPointF(x, y);
 
     QCursor cursor;
-    QPointF newCenter = mpParentProjectTab->getGraphicsView()->mapToScene(mpParentProjectTab->getGraphicsView()->mapFromGlobal(cursor.pos()));
+    QPointF newCenter = mpModelWidget->getGraphicsView()->mapToScene(mpModelWidget->getGraphicsView()->mapFromGlobal(cursor.pos()));
 
     qDebug() << "Pasting at " << newCenter;
 
@@ -1631,7 +1631,7 @@ void ContainerObject::paste(CopyStack *xmlStack)
         mModelObjectMap.find(itn.value()).value()->setSelected(true);
     }
 
-    mpParentProjectTab->getGraphicsView()->updateViewPort();
+    mpModelWidget->getGraphicsView()->updateViewPort();
 }
 
 
@@ -1652,7 +1652,7 @@ void ContainerObject::alignX()
                 mSelectedModelObjectsList.at(i)->getConnectorPtrs().at(j)->drawConnector(true);
             }
         }
-        mpParentProjectTab->hasChanged();
+        mpModelWidget->hasChanged();
     }
 }
 
@@ -1674,7 +1674,7 @@ void ContainerObject::alignY()
                 mSelectedModelObjectsList.at(i)->getConnectorPtrs().at(j)->drawConnector(true);
             }
         }
-        mpParentProjectTab->hasChanged();
+        mpModelWidget->hasChanged();
     }
 }
 
@@ -1962,7 +1962,7 @@ bool ContainerObject::isSubObjectSelected()
 
 void ContainerObject::setVariableAlias(QString compName, QString portName, QString varName, QString alias)
 {
-    mpParentProjectTab->hasChanged();
+    mpModelWidget->hasChanged();
     getCoreSystemAccessPtr()->setVariableAlias(compName, portName, varName, alias);
 }
 
@@ -2166,7 +2166,7 @@ void ContainerObject::makeConnectorDiagonal(bool diagonal)
     {
         mpTempConnector->makeDiagonal(diagonal);
         mpTempConnector->drawConnector();
-        mpParentProjectTab->getGraphicsView()->updateViewPort();
+        mpModelWidget->getGraphicsView()->updateViewPort();
     }
 }
 
@@ -2201,7 +2201,7 @@ void ContainerObject::removeOneConnectorLine(QPointF pos)
         }
         mpTempConnector->getStartPort()->getParentModelObject()->forgetConnector(mpTempConnector);
         mIsCreatingConnector = false;
-        mpParentProjectTab->getGraphicsView()->setIgnoreNextContextMenuEvent();
+        mpModelWidget->getGraphicsView()->setIgnoreNextContextMenuEvent();
         delete(mpTempConnector);
         gpMainWindow->hideHelpPopupMessage();
     }
@@ -2211,7 +2211,7 @@ void ContainerObject::removeOneConnectorLine(QPointF pos)
         mpTempConnector->removePoint(true);
         mpTempConnector->updateEndPoint(pos);
         mpTempConnector->drawConnector();
-        mpParentProjectTab->getGraphicsView()->updateViewPort();
+        mpModelWidget->getGraphicsView()->updateViewPort();
     }
 }
 
@@ -2244,7 +2244,7 @@ void ContainerObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
         {
             this->clearUndo();
             mUndoDisabled = true;
-            if(gpMainWindow->mpProjectTabs->getCurrentContainer() == this)      //Only modify main window actions if this is current container
+            if(gpMainWindow->mpModelHandler->getCurrentContainer() == this)      //Only modify main window actions if this is current container
             {
                 gpMainWindow->mpUndoAction->setDisabled(true);
                 gpMainWindow->mpRedoAction->setDisabled(true);
@@ -2254,7 +2254,7 @@ void ContainerObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
     else
     {
         mUndoDisabled = false;
-        if(gpMainWindow->mpProjectTabs->getCurrentContainer() == this)      //Only modify main window actions if this is current container
+        if(gpMainWindow->mpModelHandler->getCurrentContainer() == this)      //Only modify main window actions if this is current container
         {
             gpMainWindow->mpUndoAction->setDisabled(false);
             gpMainWindow->mpRedoAction->setDisabled(false);
@@ -2323,7 +2323,7 @@ void ContainerObject::updateMainWindowButtons()
 void ContainerObject::setGfxType(GraphicsTypeEnumT gfxType)
 {
     this->mGfxType = gfxType;
-    this->mpParentProjectTab->getGraphicsView()->updateViewPort();
+    this->mpModelWidget->getGraphicsView()->updateViewPort();
     emit setAllGfxType(mGfxType);
 }
 
@@ -2368,7 +2368,7 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     if (pAction == loadAction)
     {
         QDir fileDialog; QFile file;
-        QString modelFilePath = QFileDialog::getOpenFileName(mpParentProjectTab->mpParentProjectTabWidget, tr("Choose Subsystem File"),
+        QString modelFilePath = QFileDialog::getOpenFileName(gpMainWindow, tr("Choose Subsystem File"),
                                                              gConfig.getSubsystemDir(),
                                                              tr("Hopsan Model Files (*.hmf)"));
         if (!modelFilePath.isNull())
@@ -2408,7 +2408,7 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     }
     else if(pAction == saveAction)
     {
-        //! @todo This code is mostly duplicated from ProjectTab::saveModel(), it should either be moved to a save object or to a function in container object
+        //! @todo This code is mostly duplicated from ModelWidget::saveModel(), it should either be moved to a save object or to a function in container object
 
         //Get file name in case this is a save as operation
         QString modelFilePath;
@@ -2525,9 +2525,9 @@ void ContainerObject::enterContainer()
     mpParentContainerObject->deselectAll(); //deselect myself and anyone else
 
     // Show this scene
-    mpParentProjectTab->getGraphicsView()->setScene(getContainedScenePtr());
-    mpParentProjectTab->getGraphicsView()->setContainerPtr(this);
-    mpParentProjectTab->getQuickNavigationWidget()->addOpenContainer(this);
+    mpModelWidget->getGraphicsView()->setScene(getContainedScenePtr());
+    mpModelWidget->getGraphicsView()->setContainerPtr(this);
+    mpModelWidget->getQuickNavigationWidget()->addOpenContainer(this);
 
     // Disconnect parent system and connect new system with actions
     mpParentContainerObject->unmakeMainWindowConnectionsAndRefresh();
@@ -2537,8 +2537,8 @@ void ContainerObject::enterContainer()
 
     refreshInternalContainerPortGraphics();
 
-    mpParentProjectTab->setExternalSystem((this->isExternal() &&
-                                           this != mpParentProjectTab->getTopLevelSystem()) ||
+    mpModelWidget->setExternalSystem((this->isExternal() &&
+                                           this != mpModelWidget->getTopLevelSystem()) ||
                                            this->isAncestorOfExternalSubsystem());
 }
 
@@ -2548,11 +2548,11 @@ void ContainerObject::exitContainer()
     this->deselectAll();
 
     // Go back to parent system
-    mpParentProjectTab->getGraphicsView()->setScene(this->mpParentContainerObject->getContainedScenePtr());
-    mpParentProjectTab->getGraphicsView()->setContainerPtr(this->mpParentContainerObject);
+    mpModelWidget->getGraphicsView()->setScene(this->mpParentContainerObject->getContainedScenePtr());
+    mpModelWidget->getGraphicsView()->setContainerPtr(this->mpParentContainerObject);
 
-    mpParentProjectTab->setExternalSystem((mpParentContainerObject->isExternal() &&
-                                           mpParentContainerObject != mpParentProjectTab->getTopLevelSystem()) ||
+    mpModelWidget->setExternalSystem((mpParentContainerObject->isExternal() &&
+                                           mpParentContainerObject != mpModelWidget->getTopLevelSystem()) ||
                                            mpParentContainerObject->isAncestorOfExternalSubsystem());
 
     // Disconnect this system and connect parent system with undo and redo actions
@@ -3011,7 +3011,7 @@ void ContainerObject::measureSimulationTime()
 
 bool ContainerObject::isAncestorOfExternalSubsystem()
 {
-    if(this == mpParentProjectTab->getTopLevelSystem())
+    if(this == mpModelWidget->getTopLevelSystem())
     {
         return false;
     }

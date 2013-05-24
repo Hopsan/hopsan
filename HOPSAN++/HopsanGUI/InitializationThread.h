@@ -29,13 +29,13 @@
 #include <QThread>
 #include <QVector>
 
-class ProjectTab;
+class ModelWidget;
 class CoreSystemAccess;
 
 class InitializationThread : public QThread
 {
 public:
-    InitializationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, size_t nSamples, ProjectTab *parent);
+    InitializationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, size_t nSamples, ModelWidget *parent);
     bool wasInitSuccessful() const;
 
 protected:
@@ -47,7 +47,7 @@ private:
     size_t mSamples;
     bool mInitSuccessful;
 
-    ProjectTab *mpParentProjectTab;
+    ModelWidget *mpParentModelWidget;
     CoreSystemAccess *mpGUIRootSystem;
 };
 

@@ -81,7 +81,7 @@ ModelObject::ModelObject(QPointF position, qreal rotation, const ModelObjectAppe
     mpNameText->setFlag(QGraphicsItem::ItemIsSelectable, false); //To minimize problems when move after copy and so on
     if(this->mpParentContainerObject != 0)
     {
-        this->setNameTextScale(mpParentContainerObject->mpParentProjectTab->mpGraphicsView->getZoomFactor());
+        this->setNameTextScale(mpParentContainerObject->mpModelWidget->mpGraphicsView->getZoomFactor());
     }
     this->setNameTextPos(0); //Set initial name text position
     if(pParentContainer != 0 && pParentContainer->areSubComponentNamesHidden())
@@ -97,7 +97,7 @@ ModelObject::ModelObject(QPointF position, qreal rotation, const ModelObjectAppe
     connect(mpNameText, SIGNAL(textMoved(QPointF)), SLOT(snapNameTextPosition(QPointF)));
     if(mpParentContainerObject != 0)
     {
-        connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(zoomChange(qreal)), this, SLOT(setNameTextScale(qreal)));
+        connect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(zoomChange(qreal)), this, SLOT(setNameTextScale(qreal)));
 //        connect(mpParentContainerObject, SIGNAL(selectAllGUIObjects()), this, SLOT(select()));
         connect(mpParentContainerObject, SIGNAL(hideAllNameText()), this, SLOT(hideName()));
         connect(mpParentContainerObject, SIGNAL(showAllNameText()), this, SLOT(showName()));
@@ -179,7 +179,7 @@ void ModelObject::snapNameTextPosition(QPointF pos)
 
     if(mpParentContainerObject != 0)
     {
-        mpParentContainerObject->mpParentProjectTab->getGraphicsView()->updateViewPort();
+        mpParentContainerObject->mpModelWidget->getGraphicsView()->updateViewPort();
     }
 }
 
@@ -345,7 +345,7 @@ void ModelObject::setIcon(GraphicsTypeEnumT gfxType)
         if (mpIcon != 0)
         {
             mpIcon->deleteLater(); //Shedule previous icon for deletion
-            disconnect(this->getParentContainerObject()->mpParentProjectTab->getGraphicsView(), SIGNAL(zoomChange(qreal)), this, SLOT(setIconZoom(qreal)));
+            disconnect(this->getParentContainerObject()->mpModelWidget->getGraphicsView(), SIGNAL(zoomChange(qreal)), this, SLOT(setIconZoom(qreal)));
         }
 
         mpIcon = new QGraphicsSvgItem(iconPath, this);
@@ -369,8 +369,8 @@ void ModelObject::setIcon(GraphicsTypeEnumT gfxType)
             mpIcon->setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
             if (this->getParentContainerObject() != 0)
             {
-                mpIcon->setScale(this->getParentContainerObject()->mpParentProjectTab->getGraphicsView()->getZoomFactor()*iconScale);
-                connect(this->getParentContainerObject()->mpParentProjectTab->getGraphicsView(), SIGNAL(zoomChange(qreal)), this, SLOT(setIconZoom(qreal)), Qt::UniqueConnection);
+                mpIcon->setScale(this->getParentContainerObject()->mpModelWidget->getGraphicsView()->getZoomFactor()*iconScale);
+                connect(this->getParentContainerObject()->mpModelWidget->getGraphicsView(), SIGNAL(zoomChange(qreal)), this, SLOT(setIconZoom(qreal)), Qt::UniqueConnection);
             }
             //! @todo we need to disconnect this also at some point, when swapping between systems or groups
         }
@@ -903,7 +903,7 @@ void ModelObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     if(event->reason() == QGraphicsSceneContextMenuEvent::Mouse)
         return;
 
-    if(!mpParentContainerObject->mpParentProjectTab->isEditingEnabled())
+    if(!mpParentContainerObject->mpModelWidget->isEditingEnabled())
         return;
 
     QMenu menu;
@@ -966,7 +966,7 @@ void ModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
         mDragCopying = true;
     }
 
-//    if(mpParentContainerObject != 0 && mpParentContainerObject->mpParentProjectTab->getGraphicsView()->isShiftKeyPressed())
+//    if(mpParentContainerObject != 0 && mpParentContainerObject->mpParentModelWidget->getGraphicsView()->isShiftKeyPressed())
 //    {
 //        mpParentContainerObject->deselectAll();
 //        this->select();
@@ -975,7 +975,7 @@ void ModelObject::mousePressEvent(QGraphicsSceneMouseEvent *event)
 //        QMimeData *mimeData = new QMimeData;
 //        mimeData->setText("HOPSANDRAGCOPY");
 
-//        QDrag *drag = new QDrag(mpParentContainerObject->mpParentProjectTab->getGraphicsView());
+//        QDrag *drag = new QDrag(mpParentContainerObject->mpParentModelWidget->getGraphicsView());
 //        drag->setMimeData(mimeData);
 //        drag->setPixmap(QIcon(QPixmap(this->mModelObjectAppearance.getIconPath(mIconType, ABSOLUTE))).pixmap(40,40));
 //        drag->setHotSpot(QPoint(20, 20));
@@ -1001,7 +1001,7 @@ void ModelObject::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         QMimeData *mimeData = new QMimeData;
         mimeData->setText("HOPSANDRAGCOPY");
 
-        QDrag *drag = new QDrag(mpParentContainerObject->mpParentProjectTab->getGraphicsView());
+        QDrag *drag = new QDrag(mpParentContainerObject->mpModelWidget->getGraphicsView());
         drag->setMimeData(mimeData);
         drag->setPixmap(QIcon(QPixmap(this->mModelObjectAppearance.getIconPath(mIconType, Absolute))).pixmap(40,40));
         drag->setHotSpot(QPoint(20, 20));
@@ -1045,7 +1045,7 @@ void ModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
                 {
                     mpParentContainerObject->getUndoStackPtr()->newPost();
                 }
-                mpParentContainerObject->mpParentProjectTab->hasChanged();
+                mpParentContainerObject->mpModelWidget->hasChanged();
                 alreadyClearedRedo = true;
             }
             mpParentContainerObject->getUndoStackPtr()->registerMovedObject((*it)->mOldPos, (*it)->pos(), (*it)->getName());
@@ -1058,7 +1058,7 @@ void ModelObject::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         QGraphicsSceneContextMenuEvent *test = new QGraphicsSceneContextMenuEvent(QGraphicsSceneContextMenuEvent::ContextMenu);
         test->setScenePos(event->scenePos());
         test->setScreenPos(event->screenPos());
-        mpParentContainerObject->mpParentProjectTab->mpGraphicsView->setIgnoreNextContextMenuEvent();       //! @todo No idea why this is needed, but it is...
+        mpParentContainerObject->mpModelWidget->mpGraphicsView->setIgnoreNextContextMenuEvent();       //! @todo No idea why this is needed, but it is...
         this->contextMenuEvent(test);
     }
 
@@ -1210,14 +1210,14 @@ QVariant ModelObject::itemChange(GraphicsItemChange change, const QVariant &valu
         if(this->isSelected() && mpParentContainerObject != 0)
         {
             mpParentContainerObject->rememberSelectedModelObject(this);
-            connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
-            connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
+            connect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
+            connect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
         }
         else if(mpParentContainerObject != 0)
         {
             mpParentContainerObject->forgetSelectedModelObject(this);
-            disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
-            disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
+            disconnect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressShiftK()), this, SLOT(flipVertical()));
+            disconnect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressShiftL()), this, SLOT(flipHorizontal()));
         }
     }
 
@@ -1298,7 +1298,7 @@ void ModelObject::showPorts(bool visible)
 //! @todo try to reuse the code in rotate guiobject,
 void ModelObject::rotate(qreal angle, UndoStatusEnumT undoSettings)
 {
-    mpParentContainerObject->mpParentProjectTab->hasChanged();
+    mpParentContainerObject->mpModelWidget->hasChanged();
 
     if(mIsFlipped)
     {
@@ -1351,7 +1351,7 @@ void ModelObject::flipHorizontal(UndoStatusEnumT undoSettings)
 {
     if(mpParentContainerObject)
     {
-        mpParentContainerObject->mpParentProjectTab->hasChanged();
+        mpParentContainerObject->mpModelWidget->hasChanged();
     }
     QTransform transf;
     transf.scale(-1.0, 1.0);

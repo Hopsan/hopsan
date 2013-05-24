@@ -44,19 +44,20 @@
 #include "Widgets/HcomWidget.h"
 #include "DesktopHandler.h"
 #include "Widgets/DebuggerWidget.h"
+#include "ModelHandler.h"
 
 #include "SimulationThreadHandler.h"
 
-//! @class ProjectTab
-//! @brief The ProjectTab class is a Widget to contain a simulation model
+//! @class ModelWidget
+//! @brief The ModelWidget class is a Widget to contain a simulation model
 //!
-//! ProjectTab contains a drawing space to create models.
+//! ModelWidget contains a drawing space to create models.
 //!
 
 
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
-ProjectTab::ProjectTab(ProjectTabWidget *parent)
+ModelWidget::ModelWidget(ModelHandler *modelHandler, CentralTabWidget *parent)
     : QWidget(parent)
 {
     mStartTime.setNum(0.0,'g',10);
@@ -68,7 +69,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
     this->setPalette(gConfig.getPalette());
     this->setMouseTracking(true);
 
-    mpParentProjectTabWidget = parent;
+    mpParentModelHandler = modelHandler;
     mpQuickNavigationWidget = new QuickNavigationWidget(this);
 
     mpExternalSystemWidget = new QWidget(this);
@@ -93,9 +94,9 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 
     connect(mpSimulationThreadHandler, SIGNAL(done(bool)), this, SIGNAL(simulationFinished()));
     connect(this, SIGNAL(simulationFinished()), this, SLOT(unlockSimulateMutex()));
-    connect(this, SIGNAL(checkMessages()), mpParentProjectTabWidget, SIGNAL(checkMessages()), Qt::UniqueConnection);
+    connect(this, SIGNAL(checkMessages()), mpParentModelHandler, SIGNAL(checkMessages()), Qt::UniqueConnection);
     connect(this, SIGNAL(simulationFinished()), this, SLOT(collectPlotData()), Qt::UniqueConnection);
-    connect(mpParentProjectTabWidget->mpSimulationThreadHandler, SIGNAL(done(bool)), this, SIGNAL(simulationFinished()));
+    connect(mpParentModelHandler->mpSimulationThreadHandler, SIGNAL(done(bool)), this, SIGNAL(simulationFinished()));
 
     emit checkMessages();
 
@@ -133,7 +134,7 @@ ProjectTab::ProjectTab(ProjectTabWidget *parent)
 }
 
 
-ProjectTab::~ProjectTab()
+ModelWidget::~ModelWidget()
 {
     //First make sure that we go to the top level system, we dont want to be inside a subsystem while it is beeing deleted
     this->mpQuickNavigationWidget->gotoContainerAndCloseSubcontainers(0);
@@ -143,7 +144,7 @@ ProjectTab::~ProjectTab()
     mpSimulationThreadHandler->deleteLater();
 }
 
-void ProjectTab::setTopLevelSimulationTime(const QString startTime, const QString timeStep, const QString stopTime)
+void ModelWidget::setTopLevelSimulationTime(const QString startTime, const QString timeStep, const QString stopTime)
 {
     mStartTime = startTime;
     mStopTime = stopTime;
@@ -171,26 +172,26 @@ void ProjectTab::setTopLevelSimulationTime(const QString startTime, const QStrin
 }
 
 //! @brief Help function to update the toolbar simulation time parameters from a tab
-void ProjectTab::setToolBarSimulationTimeParametersFromTab()
+void ModelWidget::setToolBarSimulationTimeParametersFromTab()
 {
     QString ts;
     ts.setNum(mpToplevelSystem->getTimeStep(),'g',10);
     gpMainWindow->displaySimulationTimeParameters(mStartTime, ts, mStopTime);
 }
 
-QString ProjectTab::getStartTime()
+QString ModelWidget::getStartTime()
 {
     return mStartTime;
 }
 
-QString ProjectTab::getTimeStep()
+QString ModelWidget::getTimeStep()
 {
     QString num;
     num.setNum(getTopLevelSystem()->getTimeStep());
     return num;
 }
 
-QString ProjectTab::getStopTime()
+QString ModelWidget::getStopTime()
 {
     return mStopTime;
 }
@@ -198,18 +199,18 @@ QString ProjectTab::getStopTime()
 
 //! Should be called when a model has changed in some sense,
 //! e.g. a component added or a connection has changed.
-void ProjectTab::hasChanged()
+void ModelWidget::hasChanged()
 {
     //qDebug() << "hasChanged()";
     if (mIsSaved)
     {
-        QString tabName = mpParentProjectTabWidget->tabText(mpParentProjectTabWidget->currentIndex());
+        QString tabName = gpMainWindow->mpCentralTabs->tabText(gpMainWindow->mpCentralTabs->indexOf(mpParentModelHandler->getCurrentModel()));
 
         if(!tabName.endsWith("*"))
         {
             tabName.append("*");
         }
-        mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
+        gpMainWindow->mpCentralTabs->setTabText(gpMainWindow->mpCentralTabs->indexOf(this), tabName);
 
         mIsSaved = false;
     }
@@ -217,71 +218,71 @@ void ProjectTab::hasChanged()
 
 
 //! @brief Returns a pointer to the system in the tab
-SystemContainer *ProjectTab::getTopLevelSystem()
+SystemContainer *ModelWidget::getTopLevelSystem()
 {
     return mpToplevelSystem;
 }
 
 
 //! @brief Returns a pointer to the graphics view displayed in the tab
-GraphicsView *ProjectTab::getGraphicsView()
+GraphicsView *ModelWidget::getGraphicsView()
 {
     return mpGraphicsView;
 }
 
 
 //! @brief Returns a pointer to the quick navigation widget
-QuickNavigationWidget *ProjectTab::getQuickNavigationWidget()
+QuickNavigationWidget *ModelWidget::getQuickNavigationWidget()
 {
     return mpQuickNavigationWidget;
 }
 
 
 //! @brief Sets last simulation time (only use this from project tab widget!)
-void ProjectTab::setLastSimulationTime(int time)
+void ModelWidget::setLastSimulationTime(int time)
 {
     mLastSimulationTime = time;
 }
 
 
 //! @brief Returns last simulation time for tab
-int ProjectTab::getLastSimulationTime()
+int ModelWidget::getLastSimulationTime()
 {
     return mpSimulationThreadHandler->getLastSimulationTime();
    // return mLastSimulationTime;
 }
 
 
-bool ProjectTab::isEditingEnabled()
+bool ModelWidget::isEditingEnabled()
 {
     return mEditingEnabled;
 }
 
 
 //! @brief Returns whether or not the current project is saved
-bool ProjectTab::isSaved()
+bool ModelWidget::isSaved()
 {
     return mIsSaved;
 }
 
 
 //! @brief Set function to tell the tab whether or not it is saved
-void ProjectTab::setSaved(bool value)
+void ModelWidget::setSaved(bool value)
 {
     if(value)
     {
-        QString tabName = mpParentProjectTabWidget->tabText(mpParentProjectTabWidget->currentIndex());
+        QString tabName = gpMainWindow->mpCentralTabs->tabText(gpMainWindow->mpCentralTabs->indexOf(mpParentModelHandler->getCurrentModel()));
         if(tabName.endsWith("*"))
         {
             tabName.chop(1);
         }
-        mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
+        gpMainWindow->mpCentralTabs->setTabText(gpMainWindow->mpCentralTabs->indexOf(mpParentModelHandler->getCurrentModel()), tabName);
     }
     mIsSaved = value;
 }
 
 //! @note this is experimental code to replace madness simulation code in the future
-bool ProjectTab::simulate_nonblocking()
+bool ModelWidget::simulate_nonblocking()
 {
     if(!mSimulateMutex.tryLock()) return false;
 
@@ -296,7 +297,7 @@ bool ProjectTab::simulate_nonblocking()
     //! @todo fix return code
 }
 
-bool ProjectTab::simulate_blocking()
+bool ModelWidget::simulate_blocking()
 {
     if(!mSimulateMutex.tryLock()) return false;
 
@@ -310,7 +311,7 @@ bool ProjectTab::simulate_blocking()
     //! @todo fix return code
 }
 
-void ProjectTab::startCoSimulation()
+void ModelWidget::startCoSimulation()
 {
     CoreSimulationHandler *pHandler = new CoreSimulationHandler();
     pHandler->runCoSimulation(mpToplevelSystem->getCoreSystemAccessPtr());
@@ -321,21 +322,21 @@ void ProjectTab::startCoSimulation()
 
 
 //! Slot that saves current project to old file name if it exists.
-//! @see saveProjectTab(int index)
-void ProjectTab::save()
+//! @see saveModel(int index)
+void ModelWidget::save()
 {
     saveModel(ExistingFile);
 }
 
 
 //! Slot that saves current project to a new model file.
-//! @see saveProjectTab(int index)
-void ProjectTab::saveAs()
+//! @see saveModel(int index)
+void ModelWidget::saveAs()
 {
     saveModel(NewFile);
 }
 
-void ProjectTab::exportModelParameters()
+void ModelWidget::exportModelParameters()
 {
     saveModel(NewFile, ParametersOnly);
 
@@ -387,12 +388,12 @@ void ProjectTab::exportModelParameters()
 ////    }
 
 ////    QDomElement XMLparameters = appendDomElement(hmfRoot, "parameters");
-////    for(int i = 0; i < gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mOptSettings.mParamters.size(); ++i)
+////    for(int i = 0; i < gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->mOptSettings.mParamters.size(); ++i)
 ////    {
 ////        QDomElement XMLparameter = appendDomElement(XMLparameters, "parameter");
-////        appendDomTextNode(XMLparameter, "componentname", gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mComponentName);
-////        appendDomTextNode(XMLparameter, "parametername", gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mParameterName);
-////        appendDomValueNode2(XMLparameter, "minmax", gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mMin, gpMainWindow->mpProjectTabs->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mMax);
+////        appendDomTextNode(XMLparameter, "componentname", gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mComponentName);
+////        appendDomTextNode(XMLparameter, "parametername", gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mParameterName);
+////        appendDomValueNode2(XMLparameter, "minmax", gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mMin, gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->mOptSettings.mParamters.at(i).mMax);
 ////    }
 
 ////    //Save the model component hierarcy
@@ -416,7 +417,7 @@ void ProjectTab::exportModelParameters()
 
 //    //Set the tab name to the model name, efectively removing *, also mark the tab as saved
 //    QString tabName = mpSystem->getModelFileInfo().baseName();
-//    mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
+//    mpParentCentralTabWidget->setTabText(mpParentCentralTabWidget->currentIndex(), tabName);
 //    gConfig.addRecentModel(mpSystem->getModelFileInfo().filePath());
 //    gpMainWindow->updateRecentList();
 //    this->setSaved(true);
@@ -426,14 +427,14 @@ void ProjectTab::exportModelParameters()
 }
 
 
-void ProjectTab::setExternalSystem(bool value)
+void ModelWidget::setExternalSystem(bool value)
 {
     setEditingEnabled(!value);
     mpExternalSystemWidget->setVisible(value);
 }
 
 
-void ProjectTab::setEditingEnabled(bool value)
+void ModelWidget::setEditingEnabled(bool value)
 {
     mEditingEnabled = value;
 
@@ -496,7 +497,7 @@ void ProjectTab::setEditingEnabled(bool value)
 
 
 //! @brief Slot that tells the current system to collect plot data from core
-void ProjectTab::collectPlotData()
+void ModelWidget::collectPlotData()
 {
     //If we collect plot data, we can plot and calculate losses, so enable these buttons
     gpMainWindow->mpPlotAction->setEnabled(true);
@@ -508,7 +509,7 @@ void ProjectTab::collectPlotData()
 }
 
 
-void ProjectTab::openAnimation()
+void ModelWidget::openAnimation()
 {
     //Generate animation dialog
     if(mpAnimationWidget !=0)
@@ -521,26 +522,26 @@ void ProjectTab::openAnimation()
         mpAnimationWidget = new AnimationWidget(gpMainWindow);
         gpMainWindow->mpCentralGridLayout->addWidget(mpAnimationWidget, 0, 0, 4, 4);
         mpAnimationWidget->show();
-        mpParentProjectTabWidget->hide();
+        gpMainWindow->mpCentralTabs->hide();
     }
 }
 
-void ProjectTab::lockTab(bool locked)
+void ModelWidget::lockTab(bool locked)
 {
     setDisabled(locked);
 }
 
 
-void ProjectTab::closeAnimation()
+void ModelWidget::closeAnimation()
 {
     gpMainWindow->mpCentralGridLayout->removeWidget(mpAnimationWidget);
     delete mpAnimationWidget;
     mpAnimationWidget = 0;
-    mpParentProjectTabWidget->show();
+    gpMainWindow->mpCentralTabs->show();
 }
 
 
-void ProjectTab::unlockSimulateMutex()
+void ModelWidget::unlockSimulateMutex()
 {
     mSimulateMutex.unlock();
 }
@@ -549,7 +550,7 @@ void ProjectTab::unlockSimulateMutex()
 //! @brief Opens current container in new tab
 //! Used for opening external subsystems for editing. If current container is not external, it will
 //! iterate through parent containers until it finds one that is.
-void ProjectTab::openCurrentContainerInNewTab()
+void ModelWidget::openCurrentContainerInNewTab()
 {
     ContainerObject *pContainer = mpGraphicsView->getContainerPtr();
 
@@ -565,7 +566,7 @@ void ProjectTab::openCurrentContainerInNewTab()
         }
         else
         {
-            mpParentProjectTabWidget->loadModel(pContainer->getModelFileInfo().filePath());
+            mpParentModelHandler->loadModel(pContainer->getModelFileInfo().filePath());
             break;
         }
     }
@@ -574,9 +575,9 @@ void ProjectTab::openCurrentContainerInNewTab()
 
 //! Saves the model and the viewport settings in the tab to a model file.
 //! @param saveAsFlag tells whether or not an already existing file name shall be used
-//! @see saveProjectTab()
+//! @see saveModel()
 //! @see loadModel()
-void ProjectTab::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT contents)
+void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT contents)
 {
     // Backup old save file before saving (if old file exists)
     if(saveAsFlag == ExistingFile)
@@ -686,7 +687,7 @@ void ProjectTab::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT content
 
         //Set the tab name to the model name, efectively removing *, also mark the tab as saved
     QString tabName = mpToplevelSystem->getModelFileInfo().baseName();
-    mpParentProjectTabWidget->setTabText(mpParentProjectTabWidget->currentIndex(), tabName);
+    gpMainWindow->mpCentralTabs->setTabText(gpMainWindow->mpCentralTabs->indexOf(mpParentModelHandler->getCurrentModel()), tabName);
     if(contents == FullModel)
     {
         gConfig.addRecentModel(mpToplevelSystem->getModelFileInfo().filePath());
@@ -701,619 +702,46 @@ void ProjectTab::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT content
 
 
 
-//! @class ProjectTabWidget
-//! @brief The ProjectTabWidget class is a container class for ProjectTab class
-//!
-//! ProjectTabWidget contains ProjectTabWidget widgets.
-//!
-
+//! @class CentralTabWidget
+//! @brief The CentralTabWidget class is the central tab widget in the main window
 
 //! Constructor.
 //! @param parent defines a parent to the new instanced object.
-ProjectTabWidget::ProjectTabWidget(MainWindow *pParentMainWindow)
+CentralTabWidget::CentralTabWidget(MainWindow *pParentMainWindow)
         :   QTabWidget(pParentMainWindow)
 {
     this->setPalette(gConfig.getPalette());
 
-    connect(this, SIGNAL(checkMessages()),      pParentMainWindow->mpTerminalWidget,    SLOT(checkMessages()), Qt::UniqueConnection);
     connect(this, SIGNAL(currentChanged(int)),  pParentMainWindow,                      SLOT(updateToolBarsToNewTab()), Qt::UniqueConnection);
     connect(this, SIGNAL(currentChanged(int)),  pParentMainWindow,                      SLOT(refreshUndoWidgetList()), Qt::UniqueConnection);
 
     setTabsClosable(true);
-    mNumberOfUntitledTabs = 0;
 
-    connect(this,   SIGNAL(currentChanged(int)),    SLOT(tabChanged()),         Qt::UniqueConnection);
-    connect(this,   SIGNAL(tabCloseRequested(int)), SLOT(closeProjectTab(int)), Qt::UniqueConnection);
-    connect(this,   SIGNAL(tabCloseRequested(int)), SLOT(tabChanged()),         Qt::UniqueConnection);
+    connect(this,   SIGNAL(currentChanged(int)),    gpMainWindow->mpModelHandler, SLOT(modelChanged()),         Qt::UniqueConnection);
+    connect(this,   SIGNAL(tabCloseRequested(int)), gpMainWindow->mpModelHandler, SLOT(closeModelByTabIndex(int)), Qt::UniqueConnection);
+    connect(this,   SIGNAL(tabCloseRequested(int)), gpMainWindow->mpModelHandler, SLOT(modelChanged()),         Qt::UniqueConnection);
 
-    mpSimulationThreadHandler = new SimulationThreadHandler();
-    this->hide();
+    //this->hide();
 }
 
-ProjectTabWidget::~ProjectTabWidget()
+void CentralTabWidget::setTabNotClosable(int index)
 {
-    delete mpSimulationThreadHandler;
+    tabBar()->tabButton(index, QTabBar::RightSide)->resize(0, 0);
 }
+
+void CentralTabWidget::tabInserted(int index)
+{
+    tabBar()->setVisible(this->count() > 1);
+    QTabWidget::tabInserted(index);
+}
+
+void CentralTabWidget::tabRemoved(int index)
+{
+    tabBar()->setVisible(this->count() > 1);
+    QTabWidget::tabRemoved(index);
+}
+
 
 
 //!  Tells current tab to export itself to PDF. This is needed because a direct connection to current tab would be too complicated.
 
-
-//! Returns a pointer to the currently active project tab - be sure to check that the number of tabs is not zero before calling this
-ProjectTab *ProjectTabWidget::getCurrentTab()
-{
-    return qobject_cast<ProjectTab *>(currentWidget());
-}
-
-
-//! Returns a pointer to the currently active project tab - be sure to check that the number of tabs is not zero before calling this
-ProjectTab *ProjectTabWidget::getTab(int index)
-{
-    return qobject_cast<ProjectTab *>(widget(index));
-}
-
-
-//! @brief Returns a pointer to the current top level system model
-//! Be sure to check that the number of tabs is not zero before calling this.
-SystemContainer *ProjectTabWidget::getCurrentTopLevelSystem()
-{
-    return getCurrentTab()->getTopLevelSystem();
-}
-
-
-//! @brief Returns a pointer to the currently open container object in current tab
-ContainerObject *ProjectTabWidget::getCurrentContainer()
-{
-    if(getCurrentTab())
-    {
-        return getCurrentTab()->getGraphicsView()->getContainerPtr();
-    }
-    else
-    {
-        return 0;
-    }
-}
-
-
-//! @brief Returns a pointer to the currently open container object in specified tab
-ContainerObject *ProjectTabWidget::getContainer(int index)
-{
-    return getTab(index)->getGraphicsView()->getContainerPtr();
-}
-
-
-//! @brief Returns a pointer to the top level system model at specified tab
-//! Be sure to check that the tab exist before calling this.
-SystemContainer *ProjectTabWidget::getSystem(int index)
-{
-    return getTab(index)->getTopLevelSystem();
-}
-
-
-//! @brief Adds an existing ProjectTab object to itself.
-//! @see closeProjectTab(int index)
-void ProjectTabWidget::addProjectTab(ProjectTab *projectTab, QString tabName)
-{
-    projectTab->setParent(this);
-
-    addTab(projectTab, tabName);
-    setCurrentWidget(projectTab);
-
-    projectTab->setToolBarSimulationTimeParametersFromTab();
-
-    emit newTabAdded();
-}
-
-
-//! @brief Adds a ProjectTab object (a new tab) to itself.
-//! @see closeProjectTab(int index)
-void ProjectTabWidget::addNewProjectTab(QString tabName)
-{
-    tabName.append(QString::number(mNumberOfUntitledTabs));
-
-    ProjectTab *newTab = new ProjectTab(this);
-    newTab->getTopLevelSystem()->setName(tabName);
-
-    this->addTab(newTab, tabName);
-    this->setCurrentWidget(newTab);
-
-    newTab->setToolBarSimulationTimeParametersFromTab();
-
-    newTab->setSaved(true);
-
-    mNumberOfUntitledTabs += 1;
-}
-
-
-//! @brief Closes current project.
-//! @param index defines which project to close.
-//! @return true if closing went ok. false if the user canceled the operation.
-//! @see closeAllProjectTabs()
-bool ProjectTabWidget::closeProjectTab(int index)
-{
-    if (!(getTab(index)->isSaved()))
-    {
-        QString modelName;
-        modelName = tabText(index);
-        modelName.chop(1);
-        QMessageBox msgBox;
-        msgBox.setWindowIcon(gpMainWindow->windowIcon());
-        msgBox.setText(QString("The model '").append(modelName).append("'").append(QString(" is not saved.")));
-        msgBox.setInformativeText("Do you want to save your changes before closing?");
-        msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-        msgBox.setDefaultButton(QMessageBox::Save);
-
-        int answer = msgBox.exec();
-
-        switch (answer)
-        {
-        case QMessageBox::Save:
-            // Save was clicked
-            getTab(index)->save();
-            break;
-        case QMessageBox::Discard:
-            // Don't Save was clicked
-            break;
-        case QMessageBox::Cancel:
-            // Cancel was clicked
-            return false;
-        default:
-            // should never be reached
-            return false;
-        }
-    }
-
-
-    if (getTab(index)->getTopLevelSystem()->getLogDataHandler()->hasOpenPlotCurves())
-    {
-        QMessageBox msgBox;
-        msgBox.setWindowIcon(gpMainWindow->windowIcon());
-        msgBox.setText(QString("All open plot curves from this model will be lost."));
-        msgBox.setInformativeText("Are you sure you want to close?");
-        msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-        msgBox.setDefaultButton(QMessageBox::Cancel);
-
-        int answer = msgBox.exec();
-
-        switch (answer)
-        {
-        case QMessageBox::Ok:
-            // Ok was clicked
-            getTab(index)->getTopLevelSystem()->getLogDataHandler()->closePlotsWithCurvesBasedOnOwnedData();
-            break;
-        case QMessageBox::Cancel:
-            // Cancel was clicked
-            return false;
-        default:
-            // should never be reached
-            return false;
-        }
-    }
-
-    //Disconnect signals
-    //std::cout << "ProjectTabWidget: " << "Closing project: " << qPrintable(tabText(index)) << std::endl;
-    //statusBar->showMessage(QString("Closing project: ").append(tabText(index)));
-    disconnect(gpMainWindow->mpResetZoomAction,     SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(resetZoom()));
-    disconnect(gpMainWindow->mpZoomInAction,        SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(zoomIn()));
-    disconnect(gpMainWindow->mpZoomOutAction,       SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(zoomOut()));
-    disconnect(gpMainWindow->mpPrintAction,         SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(print()));
-    disconnect(gpMainWindow->mpExportPDFAction,     SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(exportToPDF()));
-    disconnect(gpMainWindow->mpExportPNGAction,     SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(exportToPNG()));
-    disconnect(gpMainWindow->mpCenterViewAction,    SIGNAL(triggered()),    getTab(index)->getGraphicsView(),   SLOT(centerView()));
-
-    disconnect(gpMainWindow,                                SIGNAL(simulateKeyPressed()),   getTab(index),  SLOT(simulate()));
-    disconnect(gpMainWindow->mpSaveAction,                  SIGNAL(triggered()),            getTab(index),  SLOT(save()));
-    disconnect(gpMainWindow->mpExportModelParametersAction, SIGNAL(triggered()),            getTab(index),  SLOT(exportModelParameters()));
-
-    getContainer(index)->unmakeMainWindowConnectionsAndRefresh();
-
-    getCurrentContainer()->setUndoEnabled(false, true);  //This is necessary to prevent each component from registering it being deleted in the undo stack
-
-    //Delete project tab, We dont need to call removeTab here, this seems to be handled automatically
-    delete widget(index);
-
-    return true;
-}
-
-
-//! @brief Closes all opened projects.
-//! @return true if closing went ok. false if the user canceled the operation.
-//! @see closeProjectTab(int index)
-//! @see saveProjectTab()
-bool ProjectTabWidget::closeAllProjectTabs()
-{
-    gConfig.clearLastSessionModels();
-
-    while(count() > 0)
-    {
-        setCurrentIndex(count()-1);
-        gConfig.addLastSessionModel(getCurrentTopLevelSystem()->getModelFileInfo().filePath());
-        if (!closeProjectTab(count()-1))
-        {
-            return false;
-        }
-    }
-    return true;
-}
-
-
-void ProjectTabWidget::launchDebugger()
-{
-    if(getCurrentTopLevelSystem() == 0) return;
-
-    DebuggerWidget *pDebugger = new DebuggerWidget(getCurrentTopLevelSystem(), gpMainWindow);
-    pDebugger->show();
-    pDebugger->exec();
-}
-
-
-//! @brief Loads a model from a file and opens it in a new project tab.
-//! @see loadModel(QString modelFileName)
-//! @see Model(saveTarget saveAsFlag)
-void ProjectTabWidget::loadModel()
-{
-    QDir fileDialogOpenDir;
-    QString modelFileName = QFileDialog::getOpenFileName(this, tr("Choose Model File"),
-                                                         gConfig.getLoadModelDir(),
-                                                         tr("Hopsan Model Files (*.hmf *.xml)"));
-    if(!modelFileName.isEmpty())
-    {
-        loadModel(modelFileName);
-        QFileInfo fileInfo = QFileInfo(modelFileName);
-        gConfig.setLoadModelDir(fileInfo.absolutePath());
-    }
-}
-
-
-//! @brief Help function that loads a model from the text in a QAction object.
-//! Used to facilitate recent models function.
-void ProjectTabWidget::loadModel(QAction *action)
-{
-    loadModel(action->text());
-}
-
-
-//! @brief Loads a model from a file and opens it in a new project tab.
-//! @param modelFileName is the path to the loaded file
-//! @see loadModel()
-//! @see saveModel(saveTarget saveAsFlag)
-void ProjectTabWidget::loadModel(QString modelFileName, bool ignoreAlreadyOpen)
-{
-    //! @todo maybe  write utility function that opens filel checks existance and sets fileinfo
-    QFile file(modelFileName);   //Create a QFile object
-    if(!file.exists())
-    {
-        qDebug() << "File not found: " + file.fileName();
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("File not found: " + file.fileName());
-        return;
-    }
-    QFileInfo fileInfo(file);
-
-    //Make sure file not already open
-    if(!ignoreAlreadyOpen)
-    {
-        for(int t=0; t!=this->count(); ++t)
-        {
-            if(this->getSystem(t)->getModelFileInfo().filePath() == fileInfo.filePath())
-            {
-                QMessageBox::information(this, tr("Error"), tr("Unable to load model. File is already open."));
-                return;
-            }
-        }
-    }
-
-    gpMainWindow->registerRecentModel(fileInfo);
-
-    this->addProjectTab(new ProjectTab(this), fileInfo.baseName());
-    ProjectTab *pCurrentTab = this->getCurrentTab();
-    pCurrentTab->getTopLevelSystem()->getCoreSystemAccessPtr()->addSearchPath(fileInfo.absoluteDir().absolutePath());
-    pCurrentTab->getTopLevelSystem()->setUndoEnabled(false, true);
-
-    gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Loading model: "+fileInfo.absoluteFilePath());
-    //Check if this is an expected hmf xml file
-    //! @todo maybe write helpfunction that does this directly in system (or container)
-    QDomDocument domDocument;
-    QDomElement hmfRoot = loadXMLDomDocument(file, domDocument, HMF_ROOTTAG);
-    if (!hmfRoot.isNull())
-    {
-        //! @todo check if we could load else give error message and dont attempt to load
-        QDomElement systemElement = hmfRoot.firstChildElement(HMF_SYSTEMTAG);
-
-        // Check if Format version OK
-        QString hmfFormatVersion = hmfRoot.attribute(HMF_VERSIONTAG, "0");
-        if (!verifyHmfFormatVersion(hmfFormatVersion))
-        {
-            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Model file format: "+hmfFormatVersion+", is to old. Try to update (resave) the model in an previous version of Hopsan");
-        }
-        else if (hmfFormatVersion < HMF_VERSIONNUM)
-        {
-            gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Model file is saved with an older version of Hopsan, but versions should be compatible.");
-        }
-
-        pCurrentTab->getTopLevelSystem()->setModelFileInfo(file); //Remember info about the file from which the data was loaded
-        pCurrentTab->getTopLevelSystem()->setAppearanceDataBasePath(pCurrentTab->getTopLevelSystem()->getModelFileInfo().absolutePath());
-        pCurrentTab->getTopLevelSystem()->loadFromDomElement(systemElement);
-
-        //! @todo not hardcoded strings
-        //! @todo in the future not only debug message but an actual check that libs are present
-        QDomElement reqDom = hmfRoot.firstChildElement("requirements");
-        QDomElement compLib = reqDom.firstChildElement("componentlibrary");
-        while (!compLib.isNull())
-        {
-            gpMainWindow->mpTerminalWidget->mpConsole->printDebugMessage("This model MIGHT require Lib: " + compLib.text());
-            compLib = compLib.nextSiblingElement("componentlibrary");
-        }
-    }
-    else
-    {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(QString("Model does not contain a HMF root tag: ")+HMF_ROOTTAG);
-    }
-    pCurrentTab->setSaved(true);
-
-    pCurrentTab->getTopLevelSystem()->setUndoEnabled(true, true);
-
-    emit newTabAdded();
-}
-
-
-void ProjectTabWidget::tabChanged()
-{
-    if(count() > 0) { this->show(); }
-    else { this->hide(); }
-
-    for(int i=0; i<count(); ++i)
-    {
-        //If you add a disconnect here, remember to also add it to the close tab function!
-        //! @todo  Are these connections such connection that are supposed to be permanent conections? otherwise they should be in the disconnectMainWindowActions function
-        disconnect(gpMainWindow->mpResetZoomAction,       SIGNAL(triggered()),        getTab(i)->getGraphicsView(),  SLOT(resetZoom()));
-        disconnect(gpMainWindow->mpZoomInAction,          SIGNAL(triggered()),        getTab(i)->getGraphicsView(),  SLOT(zoomIn()));
-        disconnect(gpMainWindow->mpZoomOutAction,         SIGNAL(triggered()),        getTab(i)->getGraphicsView(),  SLOT(zoomOut()));
-        disconnect(gpMainWindow->mpPrintAction,           SIGNAL(triggered()),        getTab(i)->getGraphicsView(),  SLOT(print()));
-        disconnect(gpMainWindow->mpExportPDFAction,       SIGNAL(triggered()),        getTab(i)->getGraphicsView(),  SLOT(exportToPDF()));
-        disconnect(gpMainWindow->mpExportPNGAction,       SIGNAL(triggered()),        getTab(i)->getGraphicsView(),  SLOT(exportToPNG()));
-        disconnect(gpMainWindow->mpCenterViewAction,      SIGNAL(triggered()),        getTab(i)->getGraphicsView(),  SLOT(centerView()));
-
-        getContainer(i)->unmakeMainWindowConnectionsAndRefresh();
-
-        //disconnect(gpMainWindow,                    SIGNAL(simulateKeyPressed()),   getTab(i),  SLOT(simulate()));
-        disconnect(gpMainWindow,                        SIGNAL(simulateKeyPressed()),   getTab(i),  SLOT(simulate_nonblocking()));
-        disconnect(gpMainWindow->mpCoSimulationAction,  SIGNAL(triggered()),            getTab(i),  SLOT(startCoSimulation()));
-        disconnect(gpMainWindow->mpSaveAction,          SIGNAL(triggered()),            getTab(i),  SLOT(save()));
-        disconnect(gpMainWindow->mpSaveAsAction,        SIGNAL(triggered()),            getTab(i),  SLOT(saveAs()));
-        disconnect(gpMainWindow->mpExportModelParametersAction,   SIGNAL(triggered()),            getTab(i),  SLOT(exportModelParameters()));
-    }
-    if(this->count() != 0)
-    {
-        //connect(gpMainWindow,                       SIGNAL(simulateKeyPressed()),   getCurrentTab(),        SLOT(simulate()), Qt::UniqueConnection);
-        connect(gpMainWindow,                                   SIGNAL(simulateKeyPressed()),   getCurrentTab(),    SLOT(simulate_nonblocking()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpCoSimulationAction,             SIGNAL(triggered()),            getCurrentTab(),    SLOT(startCoSimulation()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpSaveAction,                     SIGNAL(triggered()),            getCurrentTab(),    SLOT(save()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpSaveAsAction,                   SIGNAL(triggered()),            getCurrentTab(),    SLOT(saveAs()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpExportModelParametersAction,    SIGNAL(triggered()),            getCurrentTab(),    SLOT(exportModelParameters()), Qt::UniqueConnection);
-
-        connect(gpMainWindow->mpResetZoomAction,    SIGNAL(triggered()),    getCurrentTab()->getGraphicsView(),    SLOT(resetZoom()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpZoomInAction,       SIGNAL(triggered()),    getCurrentTab()->getGraphicsView(),    SLOT(zoomIn()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpZoomOutAction,      SIGNAL(triggered()),    getCurrentTab()->getGraphicsView(),    SLOT(zoomOut()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpPrintAction,        SIGNAL(triggered()),    getCurrentTab()->getGraphicsView(),    SLOT(print()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpExportPDFAction,    SIGNAL(triggered()),    getCurrentTab()->getGraphicsView(),    SLOT(exportToPDF()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpExportPNGAction,    SIGNAL(triggered()),    getCurrentTab()->getGraphicsView(),    SLOT(exportToPNG()), Qt::UniqueConnection);
-        connect(gpMainWindow->mpCenterViewAction,   SIGNAL(triggered()),    getCurrentTab()->getGraphicsView(),    SLOT(centerView()), Qt::UniqueConnection);
-
-        getCurrentContainer()->makeMainWindowConnectionsAndRefresh();
-
-        getCurrentContainer()->updateMainWindowButtons();
-        getCurrentTab()->setToolBarSimulationTimeParametersFromTab();
-
-
-        if(gpMainWindow->mpLibrary->mGfxType != getCurrentTab()->getTopLevelSystem()->getGfxType())
-        {
-            gpMainWindow->mpLibrary->setGfxType(getCurrentTab()->getTopLevelSystem()->getGfxType());
-        }
-
-        gpMainWindow->mpToggleNamesAction->setChecked(!getCurrentContainer()->areSubComponentNamesHidden());
-        gpMainWindow->mpTogglePortsAction->setChecked(!getCurrentContainer()->areSubComponentPortsHidden());
-        gpMainWindow->mpShowLossesAction->setChecked(getCurrentContainer()->areLossesVisible());
-    }
-}
-
-void ProjectTabWidget::createLabviewWrapperFromCurrentModel()
-{
-    qobject_cast<SystemContainer*>(getCurrentContainer())->createLabviewSourceFiles();
-}
-
-
-void ProjectTabWidget::exportCurrentModelToFMU()
-{
-    qobject_cast<SystemContainer*>(getCurrentContainer())->exportToFMU();
-}
-
-
-void ProjectTabWidget::exportCurrentModelToSimulink()
-{
-    qobject_cast<SystemContainer*>(getCurrentContainer())->exportToSimulink();
-}
-
-
-void ProjectTabWidget::exportCurrentModelToSimulinkCoSim()
-{
-    qobject_cast<SystemContainer*>(getCurrentContainer())->exportToSimulinkCoSim();
-}
-
-
-void ProjectTabWidget::loadModelParameters()
-{
-    qDebug() << "loadModelParameters()";
-    qobject_cast<SystemContainer*>(getCurrentContainer())->loadParameterFile();
-}
-
-
-void ProjectTabWidget::showLosses(bool show)
-{
-    qobject_cast<SystemContainer*>(getCurrentContainer())->showLosses(show);
-}
-
-
-void ProjectTabWidget::measureSimulationTime()
-{
-    qDebug() << "ProjectTabWidget::measureSimulationTime";
-
-    qobject_cast<SystemContainer*>(getCurrentContainer())->measureSimulationTime();
-}
-
-
-//! @brief This function simulates all open models in paralell (if multicore on)
-//! @note This is experimental code to replace other simulation code in the future
-bool ProjectTabWidget::simulateAllOpenModels_nonblocking(bool modelsHaveNotChanged)
-{
-    qDebug() << "simulateAllOpenModels()";
-
-    if(count() > 0)
-    {
-        //All systems will use start time, stop time and time step from this system
-        SystemContainer *pMainSystem = getCurrentTopLevelSystem();
-
-            //Setup simulation parameters
-        double startTime = getCurrentTab()->getStartTime().toDouble();
-        double stopTime = getCurrentTab()->getStopTime().toDouble();
-        size_t nSamples = pMainSystem->getNumberOfLogSamples();
-
-        // Ask core to initialize simulation
-        QVector<SystemContainer*> systemsVector;
-        for(int i=0; i<count(); ++i)
-        {
-            systemsVector.append(getSystem(i));
-        }
-
-        mpSimulationThreadHandler->setSimulationTimeVariables(startTime, stopTime, nSamples);
-        mpSimulationThreadHandler->initSimulateFinalize(systemsVector, modelsHaveNotChanged);
-
-        //! @todo fix return code (maybe remove)
-        return true;
-    }
-    return false;
-}
-
-bool ProjectTabWidget::simulateAllOpenModels_blocking(bool modelsHaveNotChanged)
-{
-    qDebug() << "simulateAllOpenModels()";
-
-    if(count() > 0)
-    {
-        //All systems will use start time, stop time and time step from this system
-        SystemContainer *pMainSystem = getCurrentTopLevelSystem();
-
-            //Setup simulation parameters
-        double startTime = getCurrentTab()->getStartTime().toDouble();
-        double stopTime = getCurrentTab()->getStopTime().toDouble();
-        size_t nSamples = pMainSystem->getNumberOfLogSamples();
-
-        // Ask core to initialize simulation
-        QVector<SystemContainer*> systemsVector;
-        for(int i=0; i<count(); ++i)
-        {
-            systemsVector.append(getSystem(i));
-        }
-
-        mpSimulationThreadHandler->setSimulationTimeVariables(startTime, stopTime, nSamples);
-        mpSimulationThreadHandler->setProgressDilaogBehaviour(true, false);
-        mpSimulationThreadHandler->initSimulateFinalize_blocking(systemsVector, modelsHaveNotChanged);
-
-        //! @todo fix return code (maybe remove)
-        return true;
-    }
-    return false;
-}
-
-void ProjectTabWidget::setCurrentTopLevelSimulationTimeParameters(const QString startTime, const QString timeStep, const QString stopTime)
-{
-    if (count() > 0)
-    {
-        getCurrentTab()->setTopLevelSimulationTime(startTime, timeStep, stopTime);
-    }
-}
-
-
-void ProjectTabWidget::openAnimation()
-{
-    if(count() > 0)
-    {
-        getCurrentTab()->openAnimation();
-    }
-}
-
-
-void ProjectTabWidget::saveState()
-{
-
-    mStateInfoBackupList.clear();
-    mStateInfoHasChanged.clear();
-    mStateInfoHmfList.clear();
-    mStateInfoModels.clear();
-    mStateInfoTabNames.clear();
-    mStateInfoLogDataHandlersList.clear();
-
-    while(count() > 0)
-    {
-        ProjectTab *pTab = getTab(0);
-        mStateInfoHmfList << pTab->getTopLevelSystem()->getModelFileInfo().filePath();
-        mStateInfoHasChanged << !pTab->isSaved();
-        mStateInfoTabNames << tabText(indexOf(pTab));
-        pTab->getTopLevelSystem()->getLogDataHandler()->setParent(0);       //Make sure it is not removed when deleting the container object
-        mStateInfoLogDataHandlersList << pTab->getTopLevelSystem()->getLogDataHandler();
-        if(!pTab->isSaved())
-        {
-            //! @todo This code is duplicated from ProjectTab::saveModel(), make it a common function somehow
-                //Save xml document
-            QDomDocument domDocument;
-            QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
-            pTab->getTopLevelSystem()->saveToDomElement(hmfRoot);
-            QString fileNameWithoutHmf = getCurrentTopLevelSystem()->getModelFileInfo().fileName();
-            fileNameWithoutHmf.chop(4);
-            mStateInfoBackupList << gDesktopHandler.getBackupPath()+fileNameWithoutHmf+"_savedstate.hmf";
-            QFile xmlhmf(gDesktopHandler.getBackupPath()+fileNameWithoutHmf+"_savedstate.hmf");
-            if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-            {
-                return;
-            }
-            QTextStream out(&xmlhmf);
-            appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
-            domDocument.save(out, XMLINDENTATION);
-            xmlhmf.close();
-            pTab->setSaved(true);
-            closeProjectTab(0);
-            //pTab->close();
-        }
-        else
-        {
-            mStateInfoBackupList << "";
-            closeProjectTab(0);
-            //pTab->close();
-        }
-    }
-}
-
-
-void ProjectTabWidget::restoreState()
-{
-    for(int i=0; i<mStateInfoHmfList.size(); ++i)
-    {
-        if(mStateInfoHasChanged[i])
-        {
-            loadModel(mStateInfoBackupList[i]);
-            getCurrentTab()->hasChanged();
-            getCurrentTopLevelSystem()->setModelFile(mStateInfoHmfList[i]);
-            QString basePath = QFileInfo(mStateInfoHmfList[i]).absolutePath();
-            QStringListIterator objIt(getCurrentTopLevelSystem()->getModelObjectNames());
-            while (objIt.hasNext())
-            {
-                getCurrentTopLevelSystem()->getModelObject(objIt.next())->getAppearanceData()->setBasePath(basePath);
-            }
-        }
-        else
-        {
-            loadModel(mStateInfoHmfList[i]);
-        }
-        setTabText(i, mStateInfoTabNames[i]);
-        getCurrentTab()->getTopLevelSystem()->setLogDataHandler(mStateInfoLogDataHandlersList[i]);
-    }
-}

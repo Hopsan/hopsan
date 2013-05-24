@@ -32,7 +32,7 @@
 #include "common.h"
 #include <assert.h>
 
-class ProjectTabWidget;
+class CentralTabWidget;
 class GraphicsView;
 class Connector;
 class Port;

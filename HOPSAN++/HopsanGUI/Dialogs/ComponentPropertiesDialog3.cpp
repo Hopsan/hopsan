@@ -79,10 +79,10 @@ ComponentPropertiesDialog3::ComponentPropertiesDialog3(ModelObject *pModelObject
     createEditStuff();
     //    }
 
-    connect(this, SIGNAL(lockProjectTab(bool)), mpModelObject->getParentContainerObject()->mpParentProjectTab, SLOT(lockTab(bool)));
+    connect(this, SIGNAL(lockModelWidget(bool)), mpModelObject->getParentContainerObject()->mpModelWidget, SLOT(lockTab(bool)));
 
     // Lock model for changes
-    emit lockProjectTab(true);
+    emit lockModelWidget(true);
 }
 
 
@@ -214,13 +214,13 @@ void ComponentPropertiesDialog3::recompileCppFromDialog()
 
 void ComponentPropertiesDialog3::closeEvent(QCloseEvent* event)
 {
-    emit lockProjectTab(false);
+    emit lockModelWidget(false);
     QWidget::closeEvent(event);
 }
 
 void ComponentPropertiesDialog3::reject()
 {
-    emit lockProjectTab(false);
+    emit lockModelWidget(false);
     QDialog::reject();
     QDialog::close();
 }

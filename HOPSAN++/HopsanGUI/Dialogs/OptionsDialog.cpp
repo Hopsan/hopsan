@@ -34,7 +34,7 @@
 #include "Widgets/PlotWidget.h"
 #include "Widgets/ProjectTabWidget.h"
 
-class ProjectTabWidget;
+class CentralTabWidget;
 
 
 //! @class OptionsDialog
@@ -334,14 +334,14 @@ void OptionsDialog::updateValues()
     gConfig.setInvertWheel(mpInvertWheelCheckBox->isChecked());
     gConfig.setAntiAliasing(mpAntiAliasingCheckBox->isChecked());
     gConfig.setSnapping(mpSnappingCheckBox->isChecked());
-    for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
+    for(int i=0; i<gpMainWindow->mpCentralTabs->count(); ++i)
     {
-        gpMainWindow->mpProjectTabs->getTab(i)->getGraphicsView()->setRenderHint(QPainter::Antialiasing, gConfig.getAntiAliasing());
+        gpMainWindow->mpModelHandler->getModel(i)->getGraphicsView()->setRenderHint(QPainter::Antialiasing, gConfig.getAntiAliasing());
     }
     gConfig.setBackgroundColor(mPickedBackgroundColor);
-    for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)
+    for(int i=0; i<gpMainWindow->mpCentralTabs->count(); ++i)
     {
-        gpMainWindow->mpProjectTabs->getTab(i)->getGraphicsView()->updateViewPort();
+        gpMainWindow->mpModelHandler->getModel(i)->getGraphicsView()->updateViewPort();
     }
     gConfig.setEnableProgressBar(mpEnableProgressBarCheckBox->isChecked());
     gConfig.setProgressBarStep(mpProgressBarSpinBox->value());
@@ -349,9 +349,9 @@ void OptionsDialog::updateValues()
     gConfig.setNumberOfThreads(mpThreadsSpinBox->value());
     gConfig.setGenerationLimit(mpGenerationLimitSpinBox->value());
     gConfig.setCacheLogData(mpCacheLogDataCeckBox->isChecked());
-    for(int i=0; i<gpMainWindow->mpProjectTabs->count(); ++i)       //Loop through all containers and reduce their plot data
+    for(int i=0; i<gpMainWindow->mpCentralTabs->count(); ++i)       //Loop through all containers and reduce their plot data
     {
-        gpMainWindow->mpProjectTabs->getContainer(i)->getLogDataHandler()->limitPlotGenerations();
+        gpMainWindow->mpModelHandler->getContainer(i)->getLogDataHandler()->limitPlotGenerations();
     }
     gConfig.setDefaultUnit("Pressure", mpPressureUnitComboBox->currentText());
     gConfig.setDefaultUnit("Flow", mpFlowUnitComboBox->currentText());

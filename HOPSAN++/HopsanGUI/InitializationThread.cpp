@@ -40,10 +40,10 @@
 //! @param pComponentSystem is a pointer to the system to initialize.
 //! @param startTime is the start time for the initialization.
 //! @param finishTime is the finish time for the initialization.
-//! @param parent is the parent of the thread, the a ProjectTabWidget
-InitializationThread::InitializationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, size_t nSamples, ProjectTab *parent)
+//! @param parent is the parent of the thread, the a CentralTabWidget
+InitializationThread::InitializationThread(CoreSystemAccess *pGUIRootSystem, double startTime, double finishTime, size_t nSamples, ModelWidget *parent)
 {
-    mpParentProjectTab = parent;
+    mpParentModelWidget = parent;
 
     mpGUIRootSystem = pGUIRootSystem;
 

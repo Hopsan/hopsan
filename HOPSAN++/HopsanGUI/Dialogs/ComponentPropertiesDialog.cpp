@@ -77,7 +77,7 @@ ComponentPropertiesDialog::ComponentPropertiesDialog(Component *pComponent, Main
         createEditStuff();
     }
 
-    mpComponent->getParentContainerObject()->mpParentProjectTab->setDisabled(true);
+    mpComponent->getParentContainerObject()->mpModelWidget->setDisabled(true);
 }
 
 
@@ -558,7 +558,7 @@ void ComponentPropertiesDialog::editPortPos()
 //! @see setParametersAndStartValues(QVector<ParameterLayout *> vParLayout)
 void ComponentPropertiesDialog::setParametersAndStartValues()
 {
-    mpComponent->getParentContainerObject()->mpParentProjectTab->setDisabled(false);
+    mpComponent->getParentContainerObject()->mpModelWidget->setDisabled(false);
     if(setParameterValues(mvParameterLayout) && setParameterValues(mvStartValueLayout))
     {
         qDebug() << "Parameters and start values updated.";
@@ -582,7 +582,7 @@ void ComponentPropertiesDialog::recompileCppFromDialog()
 
 void ComponentPropertiesDialog::closeEvent(QCloseEvent *event)
 {
-    mpComponent->getParentContainerObject()->mpParentProjectTab->setDisabled(false);
+    mpComponent->getParentContainerObject()->mpModelWidget->setDisabled(false);
 
     ModelObjectPropertiesDialog::closeEvent(event);
 }
@@ -590,7 +590,7 @@ void ComponentPropertiesDialog::closeEvent(QCloseEvent *event)
 
 void ComponentPropertiesDialog::reject()
 {
-    mpComponent->getParentContainerObject()->mpParentProjectTab->setDisabled(false);
+    mpComponent->getParentContainerObject()->mpModelWidget->setDisabled(false);
 
     ModelObjectPropertiesDialog::reject();
 }

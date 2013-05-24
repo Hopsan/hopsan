@@ -144,7 +144,7 @@ namespace hopsan {
             //            x0=mXmax;                           //No filter function G = 1/mK
             //        if(x0<0.0)                              //No filter function G = 1/mK
             //            x0=0.0;                             //No filter function G = 1/mK
-            double x0h = mHyst.getValue(x0, mXhyst, mPrevX0); //Hysteresis
+            //double x0h = mHyst.getValue(x0, mXhyst, mPrevX0); //Hysteresis
 
 
             //Turbulent flow equation

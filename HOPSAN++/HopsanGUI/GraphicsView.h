@@ -31,7 +31,7 @@
 #include "common.h"
 
 //Forward Declarations
-class ProjectTab;
+class ModelWidget;
 class ContainerObject;
 
 class GraphicsView : public QGraphicsView
@@ -39,7 +39,7 @@ class GraphicsView : public QGraphicsView
     Q_OBJECT
 
 public:
-    GraphicsView(ProjectTab *parent = 0);
+    GraphicsView(ModelWidget *parent = 0);
 
     void updateViewPort();
     void getViewPort(qreal &rX, qreal &rY, qreal &rZoom);
@@ -52,7 +52,7 @@ public:
     void setZoomFactor(double zoomFactor);
     double getZoomFactor();
 
-    ProjectTab *mpParentProjectTab;
+    ModelWidget *mpParentModelWidget;
 
 signals:
     void keyPressDelete();

@@ -91,7 +91,7 @@ bool Component::hasPowerPorts()
 //! @brief Event when double clicking on component icon.
 void Component::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(!mpParentContainerObject->mpParentProjectTab->isEditingEnabled())
+    if(!mpParentContainerObject->mpModelWidget->isEditingEnabled())
         return;
 
     QGraphicsWidget::mouseDoubleClickEvent(event);
@@ -245,7 +245,7 @@ QDomElement Component::saveGuiDataToDomElement(QDomElement &rDomElement)
 
 void ScopeComponent::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(!mpParentContainerObject->mpParentProjectTab->isEditingEnabled())
+    if(!mpParentContainerObject->mpModelWidget->isEditingEnabled())
         return;
 
     QGraphicsWidget::mouseDoubleClickEvent(event);

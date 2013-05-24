@@ -33,7 +33,7 @@
 
 //Forward Declarations
 class PlotWindow;
-class ProjectTab;
+class ModelWidget;
 class UndoStack;
 class MainWindow;
 class QGraphicsScene;
@@ -53,7 +53,7 @@ public:
     virtual ~ContainerObject();
 
     void hasChanged();
-    ProjectTab *mpParentProjectTab;  //!< @todo not public
+    ModelWidget *mpModelWidget;  //!< @todo not public
 
     //Signal/slot connection methods
     virtual void makeMainWindowConnectionsAndRefresh();

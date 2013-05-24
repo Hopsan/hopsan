@@ -95,7 +95,7 @@ void UndoWidget::show()
 //! @brief Refresh function for the list. Reads from the current undo stack and displays the results in the table.
 void UndoWidget::refreshList()
 {
-    if(gpMainWindow->mpProjectTabs->count() == 0)
+    if(gpMainWindow->mpModelHandler->count() == 0)
     {
         mpClearButton->setEnabled(false);
         mpUndoButton->setEnabled(false);
@@ -120,12 +120,17 @@ void UndoWidget::refreshList()
     QColor evenColor = QColor("whitesmoke");
     QColor activeColor = QColor("chartreuse");
 
+    if(gpMainWindow->mpModelHandler->count() == 0 || !gpMainWindow->mpModelHandler->getCurrentContainer())
+    {
+        return;
+    }
+
     int pos = 0;
     bool found = true;
 
-    //qDebug() << "refreshList for Undo in: " << gpMainWindow->mpProjectTabs->getCurrentContainer();
-    //qDebug() << "refreshList for Undo in: " << gpMainWindow->mpProjectTabs->getCurrentContainer()->getName();
-    QDomElement undoRoot = gpMainWindow->mpProjectTabs->getCurrentContainer()->getUndoStackPtr()->mUndoRoot;
+    //qDebug() << "refreshList for Undo in: " << gpMainWindow->mpModelHandler->getCurrentContainer();
+    //qDebug() << "refreshList for Undo in: " << gpMainWindow->mpModelHandler->getCurrentContainer()->getName();
+    QDomElement undoRoot = gpMainWindow->mpModelHandler->getCurrentContainer()->getUndoStackPtr()->mUndoRoot;
     QDomElement postElement = undoRoot.firstChildElement("post");
     while(found)
     {
@@ -141,7 +146,7 @@ void UndoWidget::refreshList()
                     item = new QTableWidgetItem();
                     item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
                     item->setText(translateTag(postElement.attribute("type")));
-                    if(pos == gpMainWindow->mpProjectTabs->getCurrentContainer()->getUndoStackPtr()->mCurrentStackPosition)
+                    if(pos == gpMainWindow->mpModelHandler->getCurrentContainer()->getUndoStackPtr()->mCurrentStackPosition)
                     {
                         item->setBackgroundColor(activeColor);
                     }
@@ -153,7 +158,7 @@ void UndoWidget::refreshList()
                     {
                         item->setBackgroundColor(oddColor);
                     }
-                    if(pos > gpMainWindow->mpProjectTabs->getCurrentContainer()->getUndoStackPtr()->mCurrentStackPosition)
+                    if(pos > gpMainWindow->mpModelHandler->getCurrentContainer()->getUndoStackPtr()->mCurrentStackPosition)
                     {
                         item->setForeground(QColor("gray"));
                     }
@@ -168,7 +173,7 @@ void UndoWidget::refreshList()
                         item = new QTableWidgetItem();
                         item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
                         item->setText(translateTag(stuffElement.attribute("what")));
-                        if(pos == gpMainWindow->mpProjectTabs->getCurrentContainer()->getUndoStackPtr()->mCurrentStackPosition)
+                        if(pos == gpMainWindow->mpModelHandler->getCurrentContainer()->getUndoStackPtr()->mCurrentStackPosition)
                         {
                             item->setBackgroundColor(activeColor);
                         }
@@ -180,7 +185,7 @@ void UndoWidget::refreshList()
                         {
                             item->setBackgroundColor(oddColor);
                         }
-                        if(pos > gpMainWindow->mpProjectTabs->getCurrentContainer()->getUndoStackPtr()->mCurrentStackPosition)
+                        if(pos > gpMainWindow->mpModelHandler->getCurrentContainer()->getUndoStackPtr()->mCurrentStackPosition)
                         {
                             item->setForeground(QColor("gray"));
                         }
@@ -195,7 +200,7 @@ void UndoWidget::refreshList()
         }
         ++pos;
     }
-    //qDebug() << gpMainWindow->mpProjectTabs->getCurrentContainer()->mUndoStack->mDomDocument.toString();
+    //qDebug() << gpMainWindow->mpModelHandler->getCurrentContainer()->mUndoStack->mDomDocument.toString();
 }
 
 

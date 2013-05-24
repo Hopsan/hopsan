@@ -79,7 +79,7 @@ bool ModelObjectPropertiesDialog::setParameterValues(QVector<ParameterSettingsLa
                                                                                                        rParamLayouts[i]->getDataName(),
                                                                                                        oldValueTxt,
                                                                                                        valueTxt);
-                mpModelObject->getParentContainerObject()->mpParentProjectTab->hasChanged();
+                mpModelObject->getParentContainerObject()->mpModelWidget->hasChanged();
             }
         }
         else

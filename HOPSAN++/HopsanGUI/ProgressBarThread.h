@@ -29,18 +29,18 @@
 #include <QThread>
 //#include <QProgressDialog>
 
-//class ProjectTab;
+//class ModelWidget;
 
 class ProgressBarThread : public QThread
 {
 public:
-    ProgressBarThread(QObject *parent/*ProjectTab *parent*/);
+    ProgressBarThread(QObject *parent/*ModelWidget *parent*/);
 
 protected:
     void run();
 
 private:
-    //ProjectTab *mpParentProjectTab;
+    //ModelWidget *mpParentModelWidget;
 };
 
 #endif // PROGRESSBARTHREAD_H

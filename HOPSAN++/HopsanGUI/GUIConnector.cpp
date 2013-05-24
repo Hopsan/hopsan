@@ -314,7 +314,7 @@ void Connector::finishCreation()
             }
             this->determineAppearance();    //Figure out which connector appearance to use
             this->drawConnector();
-            mpParentContainerObject->mpParentProjectTab->getGraphicsView()->updateViewPort();
+            mpParentContainerObject->mpModelWidget->getGraphicsView()->updateViewPort();
         }
 
         // Make sure the end point of the connector is the center position of the end port
@@ -648,7 +648,7 @@ void Connector::drawConnector(bool alignOperation)
                 mpLines[i]->setLine(mapFromScene(mPoints[i]), mapFromScene(mPoints[i+1]));
         }
 
-        mpParentContainerObject->mpParentProjectTab->getGraphicsView()->updateViewPort();
+        mpParentContainerObject->mpModelWidget->getGraphicsView()->updateViewPort();
     }
 }
 
@@ -739,7 +739,7 @@ void Connector::makeDiagonal(bool enable)
         mMakingDiagonal = true;
         removePoint();
         mGeometries.back() = Diagonal;
-        mPoints.back() = mpParentContainerObject->mpParentProjectTab->getGraphicsView()->mapToScene(mpParentContainerObject->mpParentProjectTab->getGraphicsView()->mapFromGlobal(cursor.pos()));
+        mPoints.back() = mpParentContainerObject->mpModelWidget->getGraphicsView()->mapToScene(mpParentContainerObject->mpModelWidget->getGraphicsView()->mapFromGlobal(cursor.pos()));
         drawConnector();
     }
     else
@@ -770,11 +770,11 @@ void Connector::makeDiagonal(bool enable)
                 }
 
             }
-            addPoint(mpParentContainerObject->mpParentProjectTab->getGraphicsView()->mapToScene(mpParentContainerObject->mpParentProjectTab->getGraphicsView()->mapFromGlobal(cursor.pos())));
+            addPoint(mpParentContainerObject->mpModelWidget->getGraphicsView()->mapToScene(mpParentContainerObject->mpModelWidget->getGraphicsView()->mapFromGlobal(cursor.pos())));
         }
         else    //Only one (diagonal) line exist, so special solution is required
         {
-            addPoint(mpParentContainerObject->mapToScene(mpParentContainerObject->mpParentProjectTab->getGraphicsView()->mapFromGlobal(cursor.pos())));
+            addPoint(mpParentContainerObject->mapToScene(mpParentContainerObject->mpModelWidget->getGraphicsView()->mapFromGlobal(cursor.pos())));
             if(getStartPort()->getPortDirection() == LeftRightDirectionType)
             {
                 mGeometries[0] = Vertical;
@@ -810,7 +810,7 @@ void Connector::doSelect(bool lineSelected, int lineNumber)
             mpParentContainerObject->rememberSelectedSubConnector(this);
             connect(mpParentContainerObject, SIGNAL(deselectAllConnectors()), this, SLOT(deselect()));
             disconnect(mpParentContainerObject, SIGNAL(selectAllConnectors()), this, SLOT(select()));
-            connect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+            connect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             this->setActive();
             for (int i=0; i != mpLines.size(); ++i)
             {
@@ -840,7 +840,7 @@ void Connector::doSelect(bool lineSelected, int lineNumber)
                 mpParentContainerObject->forgetSelectedSubConnector(this);
                 disconnect(mpParentContainerObject, SIGNAL(deselectAllConnectors()), this, SLOT(deselect()));
                 connect(mpParentContainerObject, SIGNAL(selectAllConnectors()), this, SLOT(select()));
-                disconnect(mpParentContainerObject->mpParentProjectTab->getGraphicsView(), SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
+                disconnect(mpParentContainerObject->mpModelWidget->getGraphicsView(), SIGNAL(keyPressDelete()), this, SLOT(deleteMe()));
             }
         }
     }
@@ -1085,7 +1085,7 @@ void Connector::setDashed(bool value)
     if(mpConnectorAppearance->getStyle() == SignalConnectorStyle)
         return;
 
-    mpParentContainerObject->mpParentProjectTab->hasChanged();
+    mpParentContainerObject->mpModelWidget->hasChanged();
     mIsDashed=value;
     for(int i=0; i<mpLines.size(); ++i)
     {
@@ -1261,7 +1261,7 @@ void ConnectorLine::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     if((this->pos() != mOldPos) && (event->button() == Qt::LeftButton))
     {
         mpParentConnector->mpParentContainerObject->getUndoStackPtr()->newPost();
-        mpParentConnector->mpParentContainerObject->mpParentProjectTab->hasChanged();
+        mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
         mpParentConnector->mpParentContainerObject->getUndoStackPtr()->registerModifiedConnector(mOldPos, this->pos(), mpParentConnector, getLineNumber());
     }
     QGraphicsLineItem::mouseReleaseEvent(event);
@@ -1359,55 +1359,55 @@ void ConnectorLine::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     {
         mpParentConnector->setColor(QColor());
         mpParentConnector->setPassive();
-        mpParentConnector->mpParentContainerObject->mpParentProjectTab->hasChanged();
+        mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
     }
     if(selectedAction == pBlueAction)
     {
         mpParentConnector->setColor(QColor("Blue"));
         mpParentConnector->setPassive();
-        mpParentConnector->mpParentContainerObject->mpParentProjectTab->hasChanged();
+        mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
     }
     if(selectedAction == pRedAction)
     {
         mpParentConnector->setColor(QColor("Red"));
         mpParentConnector->setPassive();
-        mpParentConnector->mpParentContainerObject->mpParentProjectTab->hasChanged();
+        mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
     }
     if(selectedAction == pGreenAction)
     {
         mpParentConnector->setColor(QColor("Green"));
         mpParentConnector->setPassive();
-        mpParentConnector->mpParentContainerObject->mpParentProjectTab->hasChanged();
+        mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
     }
     if(selectedAction == pYellowAction)
     {
         mpParentConnector->setColor(QColor("Yellow"));
         mpParentConnector->setPassive();
-        mpParentConnector->mpParentContainerObject->mpParentProjectTab->hasChanged();
+        mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
     }
     if(selectedAction == pPurpleAction)
     {
         mpParentConnector->setColor(QColor("Purple"));
         mpParentConnector->setPassive();
-        mpParentConnector->mpParentContainerObject->mpParentProjectTab->hasChanged();
+        mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
     }
     if(selectedAction == pBrownAction)
     {
         mpParentConnector->setColor(QColor("Brown"));
         mpParentConnector->setPassive();
-        mpParentConnector->mpParentContainerObject->mpParentProjectTab->hasChanged();
+        mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
     }
     if(selectedAction == pOrangeAction)
     {
         mpParentConnector->setColor(QColor("Orange"));
         mpParentConnector->setPassive();
-        mpParentConnector->mpParentContainerObject->mpParentProjectTab->hasChanged();
+        mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
     }
     if(selectedAction == pPinkAction)
     {
         mpParentConnector->setColor(QColor("Pink"));
         mpParentConnector->setPassive();
-        mpParentConnector->mpParentContainerObject->mpParentProjectTab->hasChanged();
+        mpParentConnector->mpParentContainerObject->mpModelWidget->hasChanged();
     }
 }
 

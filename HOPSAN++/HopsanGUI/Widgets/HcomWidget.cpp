@@ -85,6 +85,7 @@ TerminalWidget::TerminalWidget(MainWindow *pParent)
     mpHandler = new HcomHandler(mpConsole);
 
     QGridLayout *pLayout = new QGridLayout(this);
+    pLayout->addWidget(mpConsole,0,0,1,1);
     pLayout->addWidget(mpConsole,0,0,1,7);
     size_t x = 0;
     pLayout->addWidget(mpClearMessageWidgetButton,1,x++,1,1);
@@ -99,7 +100,7 @@ TerminalWidget::TerminalWidget(MainWindow *pParent)
 
     this->installEventFilter(this);
     this->setMouseTracking(true);
-    this->setMinimumHeight(155);
+    this->setMinimumHeight(0);
 
     connect(mpClearMessageWidgetButton, SIGNAL(clicked()),mpConsole, SLOT(clear()));
     connect(mpAbortHCOMWidgetButton, SIGNAL(clicked()),mpConsole, SLOT(abortHCOM()));
