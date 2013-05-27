@@ -843,9 +843,9 @@ void HcomHandler::executeHelpCommand(const QString cmd)
 void HcomHandler::executeRunScriptCommand(const QString cmd)
 {
     QStringList splitCmd = splitWithRespectToQuotations(cmd, ' ');
-    if(splitCmd.size() != 1)
+    if(splitCmd.size() < 1)
     {
-        mpConsole->printErrorMessage("Wrong number of arguments.", "", false);
+        mpConsole->printErrorMessage("Too few arguments.", "", false);
         return;
     }
 
