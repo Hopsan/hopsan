@@ -103,7 +103,7 @@ public:
     void setModelFileInfo(QFile &rFile);
     void loadParameterFile();
 
-    void createLabviewSourceFiles();
+    void exportToLabView();
     void exportToFMU();
     void exportToFMU(QString savePath);
     void exportToSimulink();

@@ -491,7 +491,7 @@ void WelcomeWidget::checkVersion(bool)
         thisVersionString.remove('.');
         double thisVersion = thisVersionString.toDouble();
         webVersionString = mpWeb->page()->currentFrame()->metaData().find("hopsanversionfull").value();
-#ifndef DEVELOPMENET
+#ifndef DEVELOPMENT
         mpNewVersionButton->setText("Version " + webVersionString + " is now available!");
         mpNewVersionButton->setVisible(webVersion>thisVersion);
 #endif

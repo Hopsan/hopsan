@@ -83,6 +83,7 @@ void Configuration::saveToXml()
     appendDomTextNode(settings, "plotwindowdir", mPlotWindowDir);
     appendDomTextNode(settings, "fmuimportdir", mFmuImportDir);
     appendDomTextNode(settings, "fmuexportdir", mFmuExportDir);
+    appendDomTextNode(settings, "labviewexportdir", mLabViewExportDir);
 
 
     QDomElement style = appendDomElement(configRoot, HMF_STYLETAG);
@@ -381,6 +382,8 @@ void Configuration::loadUserSettings(QDomElement &rDomElement)
         mFmuImportDir = rDomElement.firstChildElement("fmuimportdir").text();
     if(!rDomElement.firstChildElement("fmuexportdir").isNull())
         mFmuExportDir = rDomElement.firstChildElement("fmuexportdir").text();
+    if(!rDomElement.firstChildElement("labviewexportdir").isNull())
+        mLabViewExportDir = rDomElement.firstChildElement("labviewexportdir").text();
 }
 
 
@@ -980,6 +983,15 @@ QString Configuration::getFmuExportDir()
     return mFmuExportDir;
 }
 
+QString Configuration::getLabViewExportDir()
+{
+    if(mLabViewExportDir.isEmpty())
+    {
+        return gDesktopHandler.getDocumentsPath();
+    }
+    return mLabViewExportDir;
+}
+
 
 //! @brief Set function for library style option
 //! @param value Desired setting
@@ -1295,4 +1307,9 @@ void Configuration::setFmuImportDir(QString value)
 void Configuration::setFmuExportDir(QString value)
 {
     mFmuExportDir = value;
+}
+
+void Configuration::setLabViewExportDir(QString value)
+{
+    mLabViewExportDir = value;
 }

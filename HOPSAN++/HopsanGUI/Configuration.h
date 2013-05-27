@@ -99,6 +99,7 @@ public:
     QString getPlotWindowDir();
     QString getFmuImportDir();
     QString getFmuExportDir();
+    QString getLabViewExportDir();
 
     void setLibraryStyle(int value);
     void setAlwaysLoadLastSession(bool value);
@@ -139,6 +140,7 @@ public:
     void storeTerminalHistory(QStringList value);
     void setFmuImportDir(QString value);
     void setFmuExportDir(QString value);
+    void setLabViewExportDir(QString value);
 
 private:
     void loadUserSettings(QDomElement &rDomElement);
@@ -190,6 +192,7 @@ private:
     QStringList mTerminalHistory;
     QString mFmuImportDir;
     QString mFmuExportDir;
+    QString mLabViewExportDir;
 
     QMap < ConnectorStyleEnumT, QMap< QString, QMap<QString, QPen> > > mPenStyles;
 };

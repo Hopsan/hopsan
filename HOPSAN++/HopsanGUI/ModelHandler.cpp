@@ -557,7 +557,7 @@ void ModelHandler::restoreState()
 
 void ModelHandler::createLabviewWrapperFromCurrentModel()
 {
-    qobject_cast<SystemContainer*>(getCurrentContainer())->createLabviewSourceFiles();
+    qobject_cast<SystemContainer*>(getCurrentContainer())->exportToLabView();
 }
 
 

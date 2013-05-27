@@ -1,0 +1,10 @@
+1. Use Visual C++ 2003 compiler (included in Visual Studio .NET 2003).
+2. Create a new project. Use "Win32 Console Project", "DLL" and "Empty Project" settings.
+3. Add all header files and source files in this folder, including subfolders, EXCEPT codegen.c and SIT_API.h.
+4. In project properties, add the following include directories (absolute paths): 
+<thispath>\HopsanCore
+<thispath>\HopsanCore\Dependencies\libcsv_parser++-1.0.0\include\csv_parser 
+<thispath>\HopsanCore\Dependencies\rapidxml-1.13
+5. In project properties, add a preprocessor definition called STATICCORE
+6. In project properties, set "Struct member alignment" to 1 byte.
+7. Compile and use the DLL!

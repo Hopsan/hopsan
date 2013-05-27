@@ -18,10 +18,137 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
 
     QFileInfo fileInfo;
     fileInfo.setFile(savePath);
+    QString path = fileInfo.path();
+
+    QFile modelHeaderFile;
+    modelHeaderFile.setFileName(path + "/model.h");
+    if(!modelHeaderFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        printErrorMessage("Failed to open model.h for writing.");
+        return;
+    }
+
+    QFile codegenSourceFile;
+    codegenSourceFile.setFileName(path + "/codegen.c");
+    if(!codegenSourceFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        printErrorMessage("Failed to open codegen.c for writing.");
+        return;
+    }
+
+    QFile apiHeaderFile;
+    apiHeaderFile.setFileName(path + "/SIT_API.h");
+    if(!apiHeaderFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        printErrorMessage("Failed to open SIT_API.h for writing.");
+        return;
+    }
+
+    QFile howToFile;
+    howToFile.setFileName(path + "/HOW_TO_COMPILE.txt");
+    if(!howToFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        printErrorMessage("Failed to open SIT_API.h for writing.");
+        return;
+    }
+
+    printMessage("Writing model.h...");
+
+    QFile modelHeaderTemplateFile(":templates/labviewModelTemplate.h");
+    if(!modelHeaderTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        printErrorMessage("Failed to open labviewModelTemplate.h for reading.");
+        return;
+    }
+
+    QString modelHeaderCode;
+    QTextStream t1(&modelHeaderTemplateFile);
+    modelHeaderCode = t1.readAll();
+    modelHeaderTemplateFile.close();
+    if(modelHeaderCode.isEmpty())
+    {
+        printErrorMessage("Failed to generate code for model.h.");
+        return;
+    }
+
+    QTextStream modelHeaderStream(&modelHeaderFile);
+    modelHeaderStream << modelHeaderCode;
+    modelHeaderFile.close();
+
+
+    printMessage("Writing codegen.c...");
+
+    QFile codegenSourceTemplateFile(":templates/labviewCodegenTemplate.c");
+    if(!codegenSourceTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        printErrorMessage("Failed to open labviewCodegenTemplate.c for reading.");
+        return;
+    }
+
+    QString codegenSourceCode;
+    QTextStream t2(&codegenSourceTemplateFile);
+    codegenSourceCode = t2.readAll();
+    codegenSourceTemplateFile.close();
+    if(codegenSourceCode.isEmpty())
+    {
+        printErrorMessage("Failed to generate code for codegen.c.");
+        return;
+    }
+
+    QTextStream codegenSourceStream(&codegenSourceFile);
+    codegenSourceStream << codegenSourceCode;
+    codegenSourceFile.close();
+
+
+    printMessage("Writing SIT_API.h...");
+
+    QFile apiHeaderTemplateFile(":templates/labviewApiTemplate.h");
+    if(!apiHeaderTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        printErrorMessage("Failed to open labviewApiTemplate.h for reading.");
+        return;
+    }
+
+    QString apiHeaderCode;
+    QTextStream t3(&apiHeaderTemplateFile);
+    apiHeaderCode = t3.readAll();
+    apiHeaderTemplateFile.close();
+    if(apiHeaderCode.isEmpty())
+    {
+        printErrorMessage("Failed to generate code for SIT_API.h.");
+        return;
+    }
+
+    QTextStream apiHeaderStream(&apiHeaderFile);
+    apiHeaderStream << apiHeaderCode;
+    apiHeaderFile.close();
+
+
+    printMessage("Writing HOW_TO_COMPILE.txt...");
+
+    QFile howToTemplateFile(":templates/labviewHowToTemplate.txt");
+    if(!howToTemplateFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        printErrorMessage("Failed to open labviewHowToTemplate.txt for reading.");
+        return;
+    }
+
+    QString howToCode;
+    QTextStream t4(&howToTemplateFile);
+    howToCode = t4.readAll();
+    howToTemplateFile.close();
+    if(howToCode.isEmpty())
+    {
+        printErrorMessage("Failed to generate code for HOW_TO_COMPILE.txt.");
+        return;
+    }
+
+    QTextStream howToStream(&howToFile);
+    howToStream << howToCode;
+    howToFile.close();
 
 
     printMessage("Creating "+fileInfo.fileName());
-
 
     QFile file;
     file.setFileName(fileInfo.filePath());   //Create a QFile object

@@ -845,7 +845,7 @@ void SystemContainer::loadFromDomElement(QDomElement &rDomElement)
 }
 
 
-void SystemContainer::createLabviewSourceFiles()
+void SystemContainer::exportToLabView()
 {
     QMessageBox::StandardButton reply;
     reply = QMessageBox::question(gpMainWindow, tr("Export to LabVIEW/SIT"),
@@ -855,14 +855,16 @@ void SystemContainer::createLabviewSourceFiles()
         return;
 
     //Open file dialog and initialize the file stream
-    QDir fileDialogSaveDir;
     QString filePath;
     //QFileInfo fileInfo;
     //QFile file;
     filePath = QFileDialog::getSaveFileName(gpMainWindow, tr("Export Project to HopsanRT Wrapper Code"),
-                                            fileDialogSaveDir.currentPath(),
-                                            tr("Text file (*.txt)"));
+                                            gConfig.getLabViewExportDir(),
+                                            tr("C++ Source File (*.cpp)"));
     if(filePath.isEmpty()) return;    //Don't save anything if user presses cancel
+
+    QFileInfo file(filePath);
+    gConfig.setLabViewExportDir(file.absolutePath());
 
     CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
     pCoreAccess->generateToLabViewSIT(filePath, this);

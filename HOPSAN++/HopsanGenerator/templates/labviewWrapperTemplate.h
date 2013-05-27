@@ -30,13 +30,13 @@ void loadModel(string path)
 {
     double startT = 0.0;
     double stopT = 10.0;
-	spCoreComponentSystem = gHopsanCore.loadHMFModel(path, startT, stopT);
+    spCoreComponentSystem = gHopsanCore.loadHMFModel(path.c_str(), startT, stopT);
 }
 
 void addComponent(string name, string type)
 {
 	hopsan::Component *pCoreComponent;
-    pCoreComponent = gHopsanCore.createComponent(type);
+    pCoreComponent = gHopsanCore.createComponent(type.c_str());
     spCoreComponentSystem->addComponent(pCoreComponent);
     pCoreComponent->setName(name);
     sComponentNames.push_back(name);
