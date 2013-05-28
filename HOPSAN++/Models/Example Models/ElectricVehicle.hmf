@@ -18,7 +18,7 @@
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="1"/>
       <animation flowspeed="100"/>
-      <viewport x="2316.5" y="2483.5" zoom="1"/>
+      <viewport x="2304.5" y="2334.5" zoom="1"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>
@@ -558,9 +558,9 @@
       </component>
       <textboxwidget>
         <hopsangui>
-          <pose x="2112.000000" y="2266.000000"/>
-          <textobject fontcolor="#005500" text="Example: Electric Vehicle" font="Calibri,20,-1,5,50,0,0,0,0,0"/>
-          <size width="389.000000" height="41.000000"/>
+          <pose x="2084.000000" y="2235.000000"/>
+          <textobject fontcolor="#000000" text="Example: Electric Vehicle" font="Calibri,26,-1,0,75,0,0,0,0,0"/>
+          <size width="389.000000" height="50.000000"/>
           <line width="2.000000" visible="0" style="solidline"/>
         </hopsangui>
       </textboxwidget>
