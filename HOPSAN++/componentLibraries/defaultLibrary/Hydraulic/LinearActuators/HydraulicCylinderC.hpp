@@ -71,7 +71,7 @@ class HydraulicCylinderC : public ComponentC
         {
             //Set member attributes
             wfak = 0.1;
-            alpha = 0.5;
+            alpha = 0.1;
 
             //Add ports to the component
             mpP1 = addPowerMultiPort("P1", "NodeHydraulic");
