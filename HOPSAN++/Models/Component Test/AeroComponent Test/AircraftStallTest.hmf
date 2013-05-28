@@ -6,16 +6,16 @@
   </requirements>
   <info/>
   <system logsamples="2048" typename="Subsystem" name="AircraftStallTest">
-    <simulationtime stop="200" timestep="0.001" start="0" inherit_timestep="true"/>
+    <simulationtime stop="180" timestep="0.005" start="0" inherit_timestep="true"/>
     <parameters/>
     <aliases/>
     <hopsangui>
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="1"/>
       <animation flowspeed="100"/>
-      <viewport x="2294.78" y="2625.42" zoom="0.70922"/>
+      <viewport x="2294.77" y="2625.42" zoom="0.70922"/>
       <ports hidden="1"/>
-      <names hidden="0"/>
+      <names hidden="1"/>
       <graphics type="user"/>
       <scriptfile path=""/>
       <hopsanobjectappearance version="0.3">
@@ -57,7 +57,7 @@
         </ports>
         <hopsangui>
           <pose x="2773.46" y="2704.31" flipped="false" a="0"/>
-          <nametext position="0" visible="1"/>
+          <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalSink" displayname="Scope_1">
@@ -75,7 +75,7 @@
         </ports>
         <hopsangui>
           <pose x="1687" y="2505.569991" flipped="false" a="0"/>
-          <nametext position="0" visible="1"/>
+          <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalConstant" displayname="Constant">
@@ -89,11 +89,12 @@
           <parameter unit="-" value="0" type="double" name="phiref::Value"/>
           <parameter unit="-" value="0" type="double" name="thetaref::Value"/>
           <parameter unit="-" value="0" type="double" name="psiref::Value"/>
+          <parameter unit="-" value="1" type="double" name="phimax::Value"/>
           <parameter unit="-" value="0" type="double" name="phi::Value"/>
           <parameter unit="-" value="0" type="double" name="theta::Value"/>
           <parameter unit="-" value="0" type="double" name="psi::Value"/>
           <parameter unit="-" value="0" type="double" name="beta::Value"/>
-          <parameter unit="-" value="1" type="double" name="phimax::Value"/>
+          <parameter unit="-" value="0" type="double" name="Qb::Value"/>
           <parameter unit="-" value="0" type="double" name="Rb::Value"/>
           <parameter unit="-" value="0" type="double" name="Ub::Value"/>
           <parameter unit="-" value="0" type="double" name="uaerL::Value"/>
@@ -103,8 +104,9 @@
           <parameter unit="rad" value="2" type="double" name="Kphi"/>
           <parameter unit="rad" value="5" type="double" name="Kphipsi"/>
           <parameter unit="rad" value="8" type="double" name="Kelev"/>
+          <parameter unit="rad" value="1" type="double" name="Kdelev"/>
           <parameter unit="rad" value="5" type="double" name="Krud"/>
-          <parameter unit="" value="1" type="double" name="KRrud"/>
+          <parameter unit="" value="1" type="double" name="Kdrud"/>
           <parameter unit="rad" value="-0.9" type="double" name="u1min"/>
           <parameter unit="rad" value="0.9" type="double" name="u1max"/>
           <parameter unit="rad" value="-0.9" type="double" name="u2min"/>
@@ -131,7 +133,7 @@
         </ports>
         <hopsangui>
           <pose x="1980" y="2502.225" flipped="false" a="0"/>
-          <nametext position="0" visible="1"/>
+          <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalAttitudeControl" displayname="SignalAttitudeControl">
@@ -151,7 +153,7 @@
         </ports>
         <hopsangui>
           <pose x="2713.41" y="2758.95" flipped="false" a="0"/>
-          <nametext position="0" visible="1"/>
+          <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalSink" displayname="Scope_2">
@@ -172,7 +174,7 @@
         </ports>
         <hopsangui>
           <pose x="2146" y="2436.75" flipped="false" a="0"/>
-          <nametext position="0" visible="1"/>
+          <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="MechanicThetaSource" displayname="Angle___Velocity_Source_1">
@@ -192,7 +194,7 @@
         </ports>
         <hopsangui>
           <pose x="2895" y="2679" flipped="false" a="0"/>
-          <nametext position="0" visible="1"/>
+          <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalSink" displayname="Scope_3">
@@ -213,10 +215,30 @@
         </ports>
         <hopsangui>
           <pose x="2155" y="2462.875" flipped="false" a="0"/>
-          <nametext position="0" visible="1"/>
+          <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="MechanicThetaSource" displayname="Angle___Velocity_Source_2">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
+      <component typename="SignalSink" name="Scope_4">
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="in_right"/>
+          <port nodetype="NodeSignal" name="in"/>
+          <port nodetype="NodeSignal" name="in_bottom"/>
+        </ports>
+        <hopsangui>
+          <pose x="2856.659429" y="2841.149432" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="SignalSink" displayname="Scope_4">
               <ports/>
             </modelobject>
           </hopsanobjectappearance>
@@ -234,7 +256,7 @@
         </ports>
         <hopsangui>
           <pose x="2158" y="2489" flipped="false" a="0"/>
-          <nametext position="0" visible="1"/>
+          <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="MechanicThetaSource" displayname="Angle___Velocity_Source_3">
@@ -262,7 +284,7 @@
         </ports>
         <hopsangui>
           <pose x="1827.425578" y="2505.569991" flipped="false" a="0"/>
-          <nametext position="0" visible="1"/>
+          <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalPIlead" displayname="SignalPIlead">
@@ -283,7 +305,7 @@
         </ports>
         <hopsangui>
           <pose x="2159" y="2515.125" flipped="false" a="0"/>
-          <nametext position="0" visible="1"/>
+          <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="MechanicThetaSource" displayname="Angle___Velocity_Source_4">
@@ -304,7 +326,7 @@
         </ports>
         <hopsangui>
           <pose x="2159" y="2410.625" flipped="false" a="0"/>
-          <nametext position="0" visible="1"/>
+          <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="MechanicThetaSource" displayname="Angle___Velocity_Source">
@@ -325,7 +347,7 @@
         </ports>
         <hopsangui>
           <pose x="1831.574422" y="2572.43001" flipped="false" a="0"/>
-          <nametext position="0" visible="1"/>
+          <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalSaturation" displayname="Saturation">
@@ -346,7 +368,7 @@
         </ports>
         <hopsangui>
           <pose x="2138" y="2541.25" flipped="false" a="0"/>
-          <nametext position="0" visible="1"/>
+          <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="MechanicThetaSource" displayname="Angle___Velocity_Source_5">
@@ -367,7 +389,7 @@
         </ports>
         <hopsangui>
           <pose x="2159" y="2567.375" flipped="false" a="0"/>
-          <nametext position="0" visible="1"/>
+          <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="MechanicThetaSource" displayname="Angle___Velocity_Source_6">
@@ -525,13 +547,13 @@
           <parameter unit="" value="0.15" type="double" name="rc20"/>
           <parameter unit="" value="0.1" type="double" name="rcfin0"/>
           <parameter unit="m2" value="40" type="double" name="S1"/>
-          <parameter unit="" value="0.5" type="double" name="S20"/>
+          <parameter unit="" value="0.3" type="double" name="S20"/>
           <parameter unit="" value="0.2" type="double" name="Sbh0"/>
           <parameter unit="" value="0.2" type="double" name="Sbv0"/>
           <parameter unit="" value="0.17" type="double" name="Sfin0"/>
           <parameter unit="" value="2" type="double" name="xbach0"/>
           <parameter unit=" " value="2" type="double" name="xbacv0"/>
-          <parameter unit=" " value="1.55" type="double" name="xbcge0"/>
+          <parameter unit=" " value="1.4" type="double" name="xbcge0"/>
           <parameter unit=" " value="1.4" type="double" name="xcargo0"/>
           <parameter unit=" " value="1.4" type="double" name="xfuel0"/>
           <parameter unit=" " value="1.55" type="double" name="xw10"/>
@@ -598,7 +620,7 @@
         </ports>
         <hopsangui>
           <pose x="2536" y="2489" flipped="false" a="0"/>
-          <nametext position="0" visible="1"/>
+          <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="AeroAircraft6DOFS" displayname="AeroAircraft6DOFS">
@@ -618,7 +640,7 @@
         </ports>
         <hopsangui>
           <pose x="2780" y="2625" flipped="false" a="0"/>
-          <nametext position="0" visible="1"/>
+          <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalSink" displayname="Scope">
@@ -899,7 +921,7 @@
             <coordinate x="2596.00012000000015177648" y="2593.50000000000000000000"/>
             <coordinate x="2596.00012000000015177648" y="2800.26000000000067302608"/>
             <coordinate x="2713.40999999999985448085" y="2800.26000000000067302608"/>
-            <coordinate x="2713.40999999999985448085" y="2773.95000000000027284841"/>
+            <coordinate x="2713.40999999999985448085" y="2773.94999999999981810106"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -913,8 +935,8 @@
         <hopsangui>
           <coordinates>
             <coordinate x="2668.00012000000015177648" y="2593.50000000000000000000"/>
-            <coordinate x="2668.00012000000015177648" y="2758.95000000000027284841"/>
-            <coordinate x="2693.40999999999985448085" y="2758.95000000000027284841"/>
+            <coordinate x="2668.00012000000015177648" y="2758.94999999999981810106"/>
+            <coordinate x="2693.40999999999985448085" y="2758.94999999999981810106"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -927,8 +949,8 @@
         <hopsangui>
           <coordinates>
             <coordinate x="2680.00000000000000000000" y="2593.50000000000000000000"/>
-            <coordinate x="2680.00000000000000000000" y="2758.95000000000027284841"/>
-            <coordinate x="2693.40999999999985448085" y="2758.95000000000027284841"/>
+            <coordinate x="2680.00000000000000000000" y="2758.94999999999981810106"/>
+            <coordinate x="2693.40999999999985448085" y="2758.94999999999981810106"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -1085,6 +1107,34 @@
           <geometries>
             <geometry>horizontal</geometry>
             <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope_4" startport="Thetao" startcomponent="AeroAircraft6DOFS">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2452.00012000000015177648" y="2593.50000000000000000000"/>
+            <coordinate x="2452.00012000000015177648" y="2841.14943177011400621268"/>
+            <coordinate x="2836.65942866811474232236" y="2841.14943177011400621268"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="in" endcomponent="Scope_4" startport="AlphaAttack" startcomponent="AeroAircraft6DOFS">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2596.00012000000015177648" y="2593.50000000000000000000"/>
+            <coordinate x="2596.00012000000015177648" y="2841.14943177011400621268"/>
+            <coordinate x="2836.65942866811474232236" y="2841.14943177011400621268"/>
+          </coordinates>
+          <geometries>
             <geometry>horizontal</geometry>
             <geometry>vertical</geometry>
           </geometries>
