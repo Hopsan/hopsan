@@ -64,14 +64,16 @@ Name: "{userdocs}\Hopsan\Scripts"
 
 [Files]
 ;Hopsan files
-Source: "C:\temp_release\bin\*";                    DestDir: "{app}\bin";                   Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\temp_release\componentLibraries\*";     DestDir: "{app}\componentLibraries";    Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\temp_release\HopsanCore\*";             DestDir: "{app}\HopsanCore";            Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\temp_release\hopsandefaults";           DestDir: "{app}";                       Flags: ignoreversion
-Source: "C:\temp_release\Hopsan-release-notes.txt"; DestDir: "{app}";                       Flags: ignoreversion
-Source: "C:\temp_release\doc\*";                  	DestDir: "{app}\doc";                   Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\temp_release\models\*";               	DestDir: "{app}\Models";                Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\temp_release\scripts\*";              	DestDir: "{userdocs}\Hopsan\Scripts";   Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\temp_release\bin\*";                            DestDir: "{app}\bin";                   Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\temp_release\componentLibraries\*";             DestDir: "{app}\componentLibraries";    Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\temp_release\HopsanCore\*";                     DestDir: "{app}\HopsanCore";            Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\temp_release\hopsandefaults";                   DestDir: "{app}";                       Flags: ignoreversion
+Source: "C:\temp_release\Hopsan-release-notes.txt";         DestDir: "{app}";                       Flags: ignoreversion
+Source: "C:\temp_release\HopsanCoreSourceCode.zip";         DestDir: "{app}";                       Flags: ignoreversion skipifsourcedoesntexist
+Source: "C:\temp_release\componentLibrariesSourceCode.zip"; DestDir: "{app}";                       Flags: ignoreversion skipifsourcedoesntexist
+Source: "C:\temp_release\doc\*";                  	        DestDir: "{app}\doc";                   Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\temp_release\models\*";               	        DestDir: "{app}\Models";                Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\temp_release\scripts\*";              	        DestDir: "{userdocs}\Hopsan\Scripts";   Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 

@@ -402,8 +402,15 @@ def copyFiles():
 
     #Copy "hopsandefaults" file to temporary directory
     os.system(r'copy hopsandefaults "'+raw(tempDir)+r'"\hopsandefaults')
+    
     #Copy "release notes" file to temporary directory
     os.system(r'copy Hopsan-release-notes.txt "'+raw(tempDir)+r'"\Hopsan-release-notes.txt')
+    
+    #Copy HopsanCoreSourceCode.zip to temporary directory
+    os.system(r'copy HopsanCoreSourceCode.zip "'+raw(tempDir)+r'"\HopsanCoreSourceCode.zip')
+    
+    #Copy componentLibrariesSourceCode.zip to temporary directory
+    os.system(r'copy componentLibrariesSourceCode.zip "'+raw(tempDir)+r'"\componentLibrariesSourceCode.zip')
     
     return True
     
@@ -428,7 +435,7 @@ def createInstallFiles():
         return False
     printSuccess("Generated install executable!")
 
-    #Move release notse to output directory
+    #Move release notes to output directory
     os.system("copy Hopsan-release-notes.txt \"output/\"")
     
     return True
