@@ -9,7 +9,7 @@
 //!
 //! @file SignalFFBloop.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Mon 13 May 2013 18:19:16
+//! @date Wed 15 May 2013 12:27:35
 //! @brief FFBD loop out
 //! @ingroup SignalComponents
 //!
