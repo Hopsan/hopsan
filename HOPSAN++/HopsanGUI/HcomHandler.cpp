@@ -1338,7 +1338,7 @@ void HcomHandler::executeListFilesCommand(const QString cmd)
     }
 
     QStringList contents;
-    if(!cmd.isEmpty())
+    if(cmd.isEmpty())
     {
         contents = QDir(mPwd).entryList(QStringList() << "*");
     }
