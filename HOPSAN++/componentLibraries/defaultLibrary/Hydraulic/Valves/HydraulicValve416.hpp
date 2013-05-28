@@ -7,11 +7,9 @@
 #include "math.h"
 
 //!
-//! @file \
-C:\HopsanTrunk\HOPSAN++\componentLibraries\defaultLibrary\Hydraulic\Valves\Hy\
-draulicValve416.hpp
+//! @file HydraulicValve416.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Mon 13 May 2013 18:36:26
+//! @date Sun 26 May 2013 00:28:28
 //! @brief A hydraulic valve with separate orifices
 //! @ingroup HydraulicComponents
 //!
@@ -346,10 +344,10 @@ Kstb*signedSquareL(-pb + pt,plam);
 Ksta*signedSquareL(-pa + pt,plam);
           systemEquations[3] =qb - Kspb*signedSquareL(-pb + pp,plam) - \
 Kstb*signedSquareL(-pb + pt,plam);
-          systemEquations[4] =pp - (cp + qp*Zcp)*onPositive(pp);
-          systemEquations[5] =pt - (ct + qt*Zct)*onPositive(pt);
-          systemEquations[6] =pa - (ca + qa*Zca)*onPositive(pa);
-          systemEquations[7] =pb - (cb + qb*Zcb)*onPositive(pb);
+          systemEquations[4] =pp - lowLimit(cp + qp*Zcp*onPositive(pp),0);
+          systemEquations[5] =pt - lowLimit(ct + qt*Zct*onPositive(pt),0);
+          systemEquations[6] =pa - lowLimit(ca + qa*Zca*onPositive(pa),0);
+          systemEquations[7] =pb - lowLimit(cb + qb*Zcb*onPositive(pb),0);
 
           //Jacobian matrix
           jacobianMatrix[0][0] = 1;
@@ -388,7 +386,8 @@ Ksta*dxSignedSquareL(-pa + pt,plam);
           jacobianMatrix[3][6] = 0;
           jacobianMatrix[3][7] = Kspb*dxSignedSquareL(-pb + pp,plam) + \
 Kstb*dxSignedSquareL(-pb + pt,plam);
-          jacobianMatrix[4][0] = -(Zcp*onPositive(pp));
+          jacobianMatrix[4][0] = -(Zcp*dxLowLimit(cp + \
+qp*Zcp*onPositive(pp),0)*onPositive(pp));
           jacobianMatrix[4][1] = 0;
           jacobianMatrix[4][2] = 0;
           jacobianMatrix[4][3] = 0;
@@ -397,7 +396,8 @@ Kstb*dxSignedSquareL(-pb + pt,plam);
           jacobianMatrix[4][6] = 0;
           jacobianMatrix[4][7] = 0;
           jacobianMatrix[5][0] = 0;
-          jacobianMatrix[5][1] = -(Zct*onPositive(pt));
+          jacobianMatrix[5][1] = -(Zct*dxLowLimit(ct + \
+qt*Zct*onPositive(pt),0)*onPositive(pt));
           jacobianMatrix[5][2] = 0;
           jacobianMatrix[5][3] = 0;
           jacobianMatrix[5][4] = 0;
@@ -406,7 +406,8 @@ Kstb*dxSignedSquareL(-pb + pt,plam);
           jacobianMatrix[5][7] = 0;
           jacobianMatrix[6][0] = 0;
           jacobianMatrix[6][1] = 0;
-          jacobianMatrix[6][2] = -(Zca*onPositive(pa));
+          jacobianMatrix[6][2] = -(Zca*dxLowLimit(ca + \
+qa*Zca*onPositive(pa),0)*onPositive(pa));
           jacobianMatrix[6][3] = 0;
           jacobianMatrix[6][4] = 0;
           jacobianMatrix[6][5] = 0;
@@ -415,7 +416,8 @@ Kstb*dxSignedSquareL(-pb + pt,plam);
           jacobianMatrix[7][0] = 0;
           jacobianMatrix[7][1] = 0;
           jacobianMatrix[7][2] = 0;
-          jacobianMatrix[7][3] = -(Zcb*onPositive(pb));
+          jacobianMatrix[7][3] = -(Zcb*dxLowLimit(cb + \
+qb*Zcb*onPositive(pb),0)*onPositive(pb));
           jacobianMatrix[7][4] = 0;
           jacobianMatrix[7][5] = 0;
           jacobianMatrix[7][6] = 0;
