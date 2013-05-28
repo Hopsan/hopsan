@@ -69,6 +69,7 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     // ----- Special Components -----
     pComponentFactory->registerCreatorFunction("AeroAircraft6DOF", AeroAircraft6DOF::Creator);
     pComponentFactory->registerCreatorFunction("AeroAircraft6DOFS", AeroAircraft6DOFS::Creator);
+    pComponentFactory->registerCreatorFunction("AeroAircraft6DOFSS", AeroAircraft6DOFSS::Creator);
     pComponentFactory->registerCreatorFunction("AeroVehicleTVC", AeroVehicleTVC::Creator);
     pComponentFactory->registerCreatorFunction("AeroAtmosphere", AeroAtmosphere::Creator);
     pComponentFactory->registerCreatorFunction("AeroJetEngine", AeroJetEngine::Creator);
