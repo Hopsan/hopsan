@@ -280,7 +280,20 @@ HEADERS += \
     Hydraulic/MachineParts/HydraulicPumpPiston.hpp \
     Hydraulic/Valves/HydraulicPilotControlledCheckValve.hpp \
     Hydraulic/Valves/HydraulicPilotClosableCheckValve.hpp \
-    Hydraulic/Sources&Sinks/HydraulicPlugQ.hpp
+    Hydraulic/Sources&Sinks/HydraulicPlugQ.hpp \
+    Hydraulic/Special/HydraulicValve63OC.hpp \
+    Hydraulic/Special/HydraulicValve43LS.hpp \
+    Hydraulic/Special/HydraulicPressureReliefValveG.hpp \
+    Hydraulic/Special/HydraulicPressureRelief2ValveG.hpp \
+    Hydraulic/Special/HydraulicPressureReducingValveG.hpp \
+    Hydraulic/Special/HydraulicPressureControlValveG.hpp \
+    Hydraulic/Special/HydraulicPressureCompensatingValveG.hpp \
+    Hydraulic/Special/HydraulicPistonMload.hpp \
+    Hydraulic/Special/HydraulicPistonMkload.hpp \
+    Hydraulic/Special/HydraulicPistonJload.hpp \
+    Hydraulic/Special/HydraulicMotorJload.hpp \
+    Hydraulic/Special/HydraulicCounterBalanceValveG.hpp \
+    Hydraulic/Special/HopsanDefaultHydraulicSpecial.h
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \
