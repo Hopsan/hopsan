@@ -324,6 +324,8 @@ def copyFiles():
     os.system("mkdir \""+raw(tempDir)+"\"\\doc")
     os.system("mkdir \""+raw(tempDir)+"\"\\doc\\user")
     os.system("mkdir \""+raw(tempDir)+"\"\\doc\\user\\html")
+    os.system("mkdir \""+raw(tempDir)+"\"\\ThirdParty")
+    os.system("mkdir \""+raw(tempDir)+"\"\\ThirdParty\7z")
 
     
     #Unpack depedency bin files to bin folder
@@ -411,6 +413,9 @@ def copyFiles():
     
     #Copy componentLibrariesSourceCode.zip to temporary directory
     os.system(r'copy componentLibrariesSourceCode.zip "'+raw(tempDir)+r'"\componentLibrariesSourceCode.zip')
+    
+    #Copy 7zip to temporary directory
+    os.system(r'xcopy ThirdParty\7z\* "'+raw(tempDir)+r'"\ThirdParty\7z\ /s')
     
     return True
     
