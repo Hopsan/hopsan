@@ -7,11 +7,9 @@
 #include "math.h"
 
 //!
-//! @file \
-C:\HopsanTrunk\HOPSAN++\componentLibraries\defaultLibrary\Special\AeroCompone\
-nts\FuelComponents\HydraulicTurboPumpJ.hpp
+//! @file HydraulicTurboPumpJ.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Mon 13 May 2013 18:36:31
+//! @date Sun 26 May 2013 00:28:33
 //! @brief Centrifugal pump
 //! @ingroup HydraulicComponents
 //!

@@ -3,6 +3,7 @@
 
 #include "AeroAircraft6DOF.hpp"
 #include "AeroAircraft6DOFS.hpp"
+#include "AeroAircraft6DOFSS.hpp"
 #include "AeroVehicleTVC.hpp"
 #include "AeroAtmosphere.hpp"
 #include "AeroJetEngine.hpp"

@@ -7,11 +7,9 @@
 #include "math.h"
 
 //!
-//! @file \
-C:\HopsanTrunk\HOPSAN++\componentLibraries\defaultLibrary\Special\AeroCompone\
-nts\FuelComponents\HydraulicFuelTankG.hpp
+//! @file HydraulicFuelTankG.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Mon 13 May 2013 18:36:31
+//! @date Mon 27 May 2013 12:23:49
 //! @brief Calulates the mass of remaining fuel in tank
 //! @ingroup HydraulicComponents
 //!
@@ -26,7 +24,6 @@ class HydraulicFuelTankG : public ComponentC
 private:
      double rhofuel;
      double p0;
-     double h0;
      double hf;
      double massfuel0;
      double massfuelmax;
@@ -110,7 +107,6 @@ mass","kg",0.,&mpconsfuel);
         //Add constants/parameters
             addConstant("rhofuel", "Fuel density", "kg/m3", 700.,rhofuel);
             addConstant("p0", "tank pressure", "Pa", 100000.,p0);
-            addConstant("h0", "tank height", "m/s2", 1.,h0);
             addConstant("hf", "fuel in tank height", "m/s2", 5.,hf);
             addConstant("massfuel0", "The intitial fuel mass", "kg/s", \
 1000.,massfuel0);
