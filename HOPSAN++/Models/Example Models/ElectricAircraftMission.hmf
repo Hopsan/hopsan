@@ -5,21 +5,21 @@
     <componentlibrary>PettersComponentLibrary</componentlibrary>
   </requirements>
   <info/>
-  <system logsamples="2048" typename="Subsystem" name="ElectricAircraftMission1">
-    <simulationtime stop="3000" timestep="0.008" start="0" inherit_timestep="true"/>
+  <system logsamples="2048" typename="Subsystem" name="ElectricAircraftMission">
+    <simulationtime stop="3000" timestep="0.005" start="0" inherit_timestep="true"/>
     <parameters/>
     <aliases/>
     <hopsangui>
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="1"/>
       <animation flowspeed="100"/>
-      <viewport x="1854.15" y="2595.1" zoom="0.709221"/>
+      <viewport x="2059.67" y="2617.33" zoom="0.502994"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>
       <scriptfile path=""/>
       <hopsanobjectappearance version="0.3">
-        <modelobject typename="Subsystem" displayname="ElectricAircraftMission1">
+        <modelobject typename="Subsystem" displayname="ElectricAircraftMission">
           <icons>
             <icon path="subsystemDefault.svg" type="defaultmissing"/>
           </icons>
@@ -151,11 +151,12 @@
           <parameter unit="-" value="0" type="double" name="phiref::Value"/>
           <parameter unit="-" value="0" type="double" name="thetaref::Value"/>
           <parameter unit="-" value="0" type="double" name="psiref::Value"/>
+          <parameter unit="-" value="1" type="double" name="phimax::Value"/>
           <parameter unit="-" value="0" type="double" name="phi::Value"/>
           <parameter unit="-" value="0" type="double" name="theta::Value"/>
           <parameter unit="-" value="0" type="double" name="psi::Value"/>
           <parameter unit="-" value="0" type="double" name="beta::Value"/>
-          <parameter unit="-" value="1" type="double" name="phimax::Value"/>
+          <parameter unit="-" value="0" type="double" name="Qb::Value"/>
           <parameter unit="-" value="0" type="double" name="Rb::Value"/>
           <parameter unit="-" value="0" type="double" name="Ub::Value"/>
           <parameter unit="-" value="0" type="double" name="uaerL::Value"/>
@@ -165,8 +166,9 @@
           <parameter unit="rad" value="1" type="double" name="Kphi"/>
           <parameter unit="rad" value=".5" type="double" name="Kphipsi"/>
           <parameter unit="rad" value=".5" type="double" name="Kelev"/>
+          <parameter unit="rad" value="1" type="double" name="Kdelev"/>
           <parameter unit="rad" value="5" type="double" name="Krud"/>
-          <parameter unit="" value="1" type="double" name="KRrud"/>
+          <parameter unit="" value="1" type="double" name="Kdrud"/>
           <parameter unit="rad" value="-0.9" type="double" name="u1min"/>
           <parameter unit="rad" value="0.9" type="double" name="u1max"/>
           <parameter unit="rad" value="-0.7" type="double" name="u2min"/>
@@ -177,6 +179,7 @@
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="psi"/>
+          <port nodetype="NodeSignal" name="Qb"/>
           <port nodetype="NodeSignal" name="beta"/>
           <port nodetype="NodeSignal" name="phiref"/>
           <port nodetype="NodeSignal" name="thetaref"/>
@@ -210,7 +213,7 @@
           <pose x="2419.029126" y="2324.925698" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
-          <viewport x="1854.15" y="2595.1" zoom="0.709221"/>
+          <viewport x="2059.67" y="2617.33" zoom="0.502994"/>
           <ports hidden="1"/>
           <names hidden="0"/>
           <graphics type="user"/>
@@ -248,6 +251,9 @@
             <parameters/>
             <objectives/>
           </optimization>
+          <hopsanundo>
+            <post number="-1"/>
+          </hopsanundo>
         </hopsangui>
         <objects>
           <component typename="ElectricIsensor" name="Current_sensor_1">
@@ -530,7 +536,7 @@
             </ports>
             <hopsangui>
               <pose x="1522.858858" y="2339.295777" flipped="false" a="0"/>
-              <nametext position="0" visible="0"/>
+              <nametext position="0" visible="1"/>
               <animation flowspeed="100"/>
               <hopsanobjectappearance version="0.3">
                 <modelobject typename="ElectricCapacitance2" displayname="ElectricCapacitance2_1">
@@ -824,8 +830,8 @@
               <coordinates>
                 <coordinate x="1356.00002799999992930680" y="2200.69577699999990727520"/>
                 <coordinate x="1525.85885766848309685884" y="2200.69577699999990727520"/>
-                <coordinate x="1525.85885766848309685884" y="2154.16584386318800170557"/>
-                <coordinate x="1541.62886407847167902219" y="2154.16584386318800170557"/>
+                <coordinate x="1525.85885766848309685884" y="2154.16584400000010646181"/>
+                <coordinate x="1541.62886400000002140587" y="2154.16584400000010646181"/>
               </coordinates>
               <geometries>
                 <geometry>vertical</geometry>
@@ -954,8 +960,8 @@
           <connect endport="iref" endcomponent="ElectricIcontroller" startport="out" startcomponent="First_order_low_pass_filter">
             <hopsangui>
               <coordinates>
-                <coordinate x="1591.62886407847167902219" y="2154.16584386318800170557"/>
-                <coordinate x="1625.85885800000005474431" y="2154.16584386318800170557"/>
+                <coordinate x="1591.62886400000002140587" y="2154.16584400000010646181"/>
+                <coordinate x="1625.85885800000005474431" y="2154.16584400000010646181"/>
                 <coordinate x="1625.85885800000005474431" y="2304.19577699999990727520"/>
               </coordinates>
               <geometries>
@@ -983,8 +989,8 @@
             <hopsangui>
               <coordinates>
                 <coordinate x="1356.00002799999992930680" y="2200.69577699999990727520"/>
-                <coordinate x="1711.47751187893618407543" y="2200.69577699999990727520"/>
-                <coordinate x="1711.47751187893618407543" y="2153.06690605792800852214"/>
+                <coordinate x="1711.47751199999993332312" y="2200.69577699999990727520"/>
+                <coordinate x="1711.47751199999993332312" y="2153.06690600000001722947"/>
               </coordinates>
               <geometries>
                 <geometry>vertical</geometry>
@@ -996,9 +1002,9 @@
           <connect endport="in" endcomponent="Sink_2" startport="out" startcomponent="First_order_low_pass_filter">
             <hopsangui>
               <coordinates>
-                <coordinate x="1591.62886407847167902219" y="2154.16584386318800170557"/>
-                <coordinate x="1711.47751187893618407543" y="2154.16584386318800170557"/>
-                <coordinate x="1711.47751187893618407543" y="2153.06690605792800852214"/>
+                <coordinate x="1591.62886400000002140587" y="2154.16584400000010646181"/>
+                <coordinate x="1711.47751199999993332312" y="2154.16584400000010646181"/>
+                <coordinate x="1711.47751199999993332312" y="2153.06690600000001722947"/>
               </coordinates>
               <geometries>
                 <geometry>vertical</geometry>
@@ -1056,7 +1062,7 @@
           <parameter unit="-" value="35" type="double" name="kx::Value"/>
           <parameter unit="-" value="0" type="double" name="y::Value"/>
           <parameter unit="-" value="0" type="double" name="u::Value"/>
-          <parameter unit="rad/s" value=".3" type="double" name="wa"/>
+          <parameter unit="rad/s" value=".2" type="double" name="wa"/>
           <parameter unit="" value="1" type="double" name="da"/>
           <parameter unit="" value="-.5" type="double" name="umin"/>
           <parameter unit="" value=".5" type="double" name="umax"/>
@@ -1359,7 +1365,7 @@
           <port nodetype="NodeSignal" name="in_bottom"/>
         </ports>
         <hopsangui>
-          <pose x="2625.419489" y="2852.319585" flipped="false" a="0"/>
+          <pose x="2624.009491" y="2852.319585" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -1370,14 +1376,14 @@
         </hopsangui>
       </component>
       <system logsamples="2048" typename="Subsystem" name="Subsystem">
-        <simulationtime stop="3000" timestep="0.001" start="0" inherit_timestep="true"/>
+        <simulationtime stop="3000" timestep="0.008" start="0" inherit_timestep="true"/>
         <parameters/>
         <aliases/>
         <hopsangui>
-          <pose x="1759.820003" y="2317.132658" flipped="false" a="0"/>
+          <pose x="1759.820003" y="2324.182647" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
-          <viewport x="1854.15" y="2595.1" zoom="0.709221"/>
+          <viewport x="2059.67" y="2617.33" zoom="0.502994"/>
           <ports hidden="1"/>
           <names hidden="1"/>
           <graphics type="user"/>
@@ -1388,11 +1394,11 @@
                 <icon path="subsystemDefault.svg" type="defaultmissing"/>
               </icons>
               <ports>
-                <port x="0.6666666667" y="1" enabled="true" a="90" name="headingRef" autoplaced="true"/>
-                <port x="1" y="0.3333333333" enabled="true" a="0" name="Phimax" autoplaced="true"/>
+                <port x="0.4711111111" y="1" enabled="true" a="90" name="headingRef" autoplaced="false"/>
+                <port x="1" y="0.5" enabled="true" a="0" name="Phimax" autoplaced="true"/>
                 <port x="0" y="0.6666666667" enabled="true" a="180" name="lattitude" autoplaced="true"/>
-                <port x="1" y="0.6666666667" enabled="true" a="0" name="velocityRef" autoplaced="true"/>
-                <port x="0.3333333333" y="1" enabled="true" a="90" name="altitudeRef" autoplaced="true"/>
+                <port x="0.7644444444" y="1" enabled="true" a="90" name="velocityRef" autoplaced="false"/>
+                <port x="0.1822222222" y="1" enabled="true" a="90" name="altitudeRef" autoplaced="false"/>
                 <port x="0" y="0.3333333333" enabled="true" a="180" name="longitude" autoplaced="true"/>
               </ports>
               <animation flowspeed="100"/>
@@ -1415,6 +1421,9 @@
             <parameters/>
             <objectives/>
           </optimization>
+          <hopsanundo>
+            <post number="-1"/>
+          </hopsanundo>
         </hopsangui>
         <objects>
           <component typename="SignalSum" name="Sum_1">
@@ -3628,8 +3637,8 @@
           <connect endport="Phimax" endcomponent="Phimax" startport="y" startcomponent="Constant">
             <hopsangui>
               <coordinates>
-                <coordinate x="1264.57820077239034617378" y="2494.71342141851573614986"/>
-                <coordinate x="2187.37196399999993445817" y="2494.71342141851573614986"/>
+                <coordinate x="1264.57820100000003549212" y="2494.71342099999992569792"/>
+                <coordinate x="2187.37196399999993445817" y="2494.71342099999992569792"/>
                 <coordinate x="2187.37196399999993445817" y="2617.24338500000021667802"/>
                 <coordinate x="2207.37196399999993445817" y="2617.24338500000021667802"/>
               </coordinates>
@@ -3779,15 +3788,15 @@
       </component>
       <textboxwidget>
         <hopsangui>
-          <pose x="2609.260028" y="2742.839951"/>
+          <pose x="2639.000000" y="2720.000000"/>
           <textobject fontcolor="#556b2f" text="Distance travelled" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
-          <size width="127.000000" height="42.190013"/>
+          <size width="127.000000" height="35.140024"/>
           <line width="2.000000" visible="1" style="solidline"/>
         </hopsangui>
       </textboxwidget>
       <textboxwidget>
         <hopsangui>
-          <pose x="1758.000000" y="2439.000000"/>
+          <pose x="1757.000000" y="2428.000000"/>
           <textobject fontcolor="#ff0000" text="Flight controller" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
           <size width="315.729957" height="150.097993"/>
           <line width="2.000000" visible="1" style="dashline"/>
@@ -3795,7 +3804,7 @@
       </textboxwidget>
       <textboxwidget>
         <hopsangui>
-          <pose x="2365.406210" y="2895.963272"/>
+          <pose x="2423.000000" y="2889.000000"/>
           <textobject fontcolor="#556b2f" text="The trajectory in lattitude longitude&#xa;can be seen here" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
           <size width="239.000000" height="46.000000"/>
           <line width="2.000000" visible="1" style="solidline"/>
@@ -3803,7 +3812,7 @@
       </textboxwidget>
       <textboxwidget>
         <hopsangui>
-          <pose x="1672.000000" y="2211.000000"/>
+          <pose x="1621.000000" y="2231.000000"/>
           <textobject fontcolor="#556b2f" text="Mission controller&#xa;with waypoints" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
           <size width="126.000000" height="56.290009"/>
           <line width="2.000000" visible="1" style="solidline"/>
@@ -3811,10 +3820,18 @@
       </textboxwidget>
       <textboxwidget>
         <hopsangui>
-          <pose x="2036.000000" y="2164.000000"/>
-          <textobject fontcolor="#005500" text="Example: Electric aircraft flying a mission" font="Calibri,20,-1,5,50,0,0,0,0,0"/>
-          <size width="451.000000" height="41.000000"/>
+          <pose x="1916.000000" y="2129.000000"/>
+          <textobject fontcolor="#000000" text="Example: Electric aircraft flying a mission" font="Calibri,24,-1,0,75,0,0,0,0,0"/>
+          <size width="549.000000" height="47.000000"/>
           <line width="2.000000" visible="0" style="solidline"/>
+        </hopsangui>
+      </textboxwidget>
+      <textboxwidget>
+        <hopsangui>
+          <pose x="2340.000000" y="2220.000000"/>
+          <textobject fontcolor="#556b2f" text="Propulsion system with&#xa;propeller driven by &#xa;electric motor" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
+          <size width="159.000000" height="65.000000"/>
+          <line width="2.000000" visible="1" style="solidline"/>
         </hopsangui>
       </textboxwidget>
     </objects>
@@ -3928,8 +3945,8 @@
       <connect endport="in1" endcomponent="Subtract" startport="velocityRef" startcomponent="Subsystem">
         <hopsangui>
           <coordinates>
-            <coordinate x="1804.82000300000004244794" y="2327.13265799999999217107"/>
-            <coordinate x="1804.82000300000004244794" y="2382.89952342009564745240"/>
+            <coordinate x="1783.62000299600003927480" y="2354.18264700000008815550"/>
+            <coordinate x="1783.62000299600003927480" y="2382.89952342009564745240"/>
             <coordinate x="2021.93959561208112063468" y="2382.89952342009564745240"/>
             <coordinate x="2021.93959561208112063468" y="2325.00000000000000000000"/>
             <coordinate x="2110.50000000000000000000" y="2325.00000000000000000000"/>
@@ -4048,8 +4065,8 @@
           <coordinates>
             <coordinate x="2411.21821799999997892883" y="2629.68835900000021865708"/>
             <coordinate x="2411.21821799999997892883" y="2650.38776095949742739322"/>
-            <coordinate x="2012.50000000000000000000" y="2650.38776095949742739322"/>
-            <coordinate x="2012.50000000000000000000" y="2528.00000000000000000000"/>
+            <coordinate x="1999.50000000000000000000" y="2650.38776095949742739322"/>
+            <coordinate x="1999.50000000000000000000" y="2528.00000000000000000000"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -4062,8 +4079,8 @@
       <connect endport="Thetao" endcomponent="AeroAircraft6DOFS" startport="theta" startcomponent="SignalAttitudeControl">
         <hopsangui>
           <coordinates>
-            <coordinate x="1999.50000000000000000000" y="2528.00000000000000000000"/>
-            <coordinate x="1999.50000000000000000000" y="2660.43345051461847106111"/>
+            <coordinate x="1986.50000000000000000000" y="2528.00000000000000000000"/>
+            <coordinate x="1986.50000000000000000000" y="2660.43345051461847106111"/>
             <coordinate x="2423.21845800000028248178" y="2660.43345051461847106111"/>
             <coordinate x="2423.21845800000028248178" y="2629.68835900000021865708"/>
           </coordinates>
@@ -4078,8 +4095,8 @@
       <connect endport="Phi" endcomponent="AeroAircraft6DOFS" startport="phi" startcomponent="SignalAttitudeControl">
         <hopsangui>
           <coordinates>
-            <coordinate x="1986.50000000000000000000" y="2528.00000000000000000000"/>
-            <coordinate x="1986.50000000000000000000" y="2667.13057688469916683971"/>
+            <coordinate x="1973.50000000000000000000" y="2528.00000000000000000000"/>
+            <coordinate x="1973.50000000000000000000" y="2667.13057688469916683971"/>
             <coordinate x="2435.21833800000013070530" y="2667.13057688469916683971"/>
             <coordinate x="2435.21833800000013070530" y="2629.68835900000021865708"/>
           </coordinates>
@@ -4094,8 +4111,8 @@
       <connect endport="Rb" endcomponent="AeroAircraft6DOFS" startport="Rb" startcomponent="SignalAttitudeControl">
         <hopsangui>
           <coordinates>
-            <coordinate x="2019.00000000000000000000" y="2528.00000000000000000000"/>
-            <coordinate x="2019.00000000000000000000" y="2643.69063458941627686727"/>
+            <coordinate x="2028.75000000000000000000" y="2528.00000000000000000000"/>
+            <coordinate x="2028.75000000000000000000" y="2643.69063458941627686727"/>
             <coordinate x="2507.21833800000013070530" y="2643.69063458941627686727"/>
             <coordinate x="2507.21833800000013070530" y="2629.68835900000021865708"/>
           </coordinates>
@@ -4110,8 +4127,8 @@
       <connect endport="BetaSlip" endcomponent="AeroAircraft6DOFS" startport="beta" startcomponent="SignalAttitudeControl">
         <hopsangui>
           <coordinates>
-            <coordinate x="2025.50000000000000000000" y="2528.00000000000000000000"/>
-            <coordinate x="2025.50000000000000000000" y="2660.43345051461847106111"/>
+            <coordinate x="2012.50000000000000000000" y="2528.00000000000000000000"/>
+            <coordinate x="2012.50000000000000000000" y="2660.43345051461847106111"/>
             <coordinate x="2579.21833800000013070530" y="2660.43345051461847106111"/>
             <coordinate x="2579.21833800000013070530" y="2629.68835900000021865708"/>
           </coordinates>
@@ -4126,8 +4143,8 @@
       <connect endport="Ub" endcomponent="AeroAircraft6DOFS" startport="Ub" startcomponent="SignalAttitudeControl">
         <hopsangui>
           <coordinates>
-            <coordinate x="2032.00000000000000000000" y="2528.00000000000000000000"/>
-            <coordinate x="2032.00000000000000000000" y="2638.66778981185552765965"/>
+            <coordinate x="2038.50000000000000000000" y="2528.00000000000000000000"/>
+            <coordinate x="2038.50000000000000000000" y="2638.66778981185552765965"/>
             <coordinate x="2447.21821799999997892883" y="2638.66778981185552765965"/>
             <coordinate x="2447.21821799999997892883" y="2629.68835900000021865708"/>
           </coordinates>
@@ -4178,8 +4195,8 @@
       <connect endport="yref" endcomponent="SignalPIlead" startport="altitudeRef" startcomponent="Subsystem">
         <hopsangui>
           <coordinates>
-            <coordinate x="1744.82000300000004244794" y="2347.13265799999999217107"/>
-            <coordinate x="1744.82000300000004244794" y="2489.68532099999993079109"/>
+            <coordinate x="1731.22000299800015454821" y="2354.18264700000008815550"/>
+            <coordinate x="1731.22000299800015454821" y="2489.68532099999993079109"/>
             <coordinate x="1798.87381099999993239180" y="2489.68532099999993079109"/>
           </coordinates>
           <geometries>
@@ -4193,9 +4210,9 @@
         <hopsangui>
           <coordinates>
             <coordinate x="2591.21821799999997892883" y="2629.68835900000021865708"/>
-            <coordinate x="2591.21821799999997892883" y="2708.98761669770465232432"/>
-            <coordinate x="1744.60141940606195021246" y="2708.98761669770465232432"/>
-            <coordinate x="1744.60141940606195021246" y="2498.93532099999993079109"/>
+            <coordinate x="2591.21821799999997892883" y="2690.65764620895697589731"/>
+            <coordinate x="1731.91143983692904839700" y="2690.65764620895697589731"/>
+            <coordinate x="1731.91143983692904839700" y="2498.93532099999993079109"/>
             <coordinate x="1798.87381099999993239180" y="2498.93532099999993079109"/>
           </coordinates>
           <geometries>
@@ -4210,8 +4227,8 @@
       <connect endport="psiref" endcomponent="SignalAttitudeControl" startport="headingRef" startcomponent="Subsystem">
         <hopsangui>
           <coordinates>
-            <coordinate x="1774.82000300000004244794" y="2347.13265799999999217107"/>
-            <coordinate x="1774.82000300000004244794" y="2399.24552208146542398026"/>
+            <coordinate x="1757.22000299900014397281" y="2354.18264700000008815550"/>
+            <coordinate x="1757.22000299900014397281" y="2399.24552208146542398026"/>
             <coordinate x="1917.05242343564395923750" y="2399.24552208146542398026"/>
             <coordinate x="1917.05242343564395923750" y="2502.40000000000009094947"/>
             <coordinate x="1973.50000000000000000000" y="2502.40000000000009094947"/>
@@ -4228,8 +4245,8 @@
       <connect endport="phimax" endcomponent="SignalAttitudeControl" startport="Phimax" startcomponent="Subsystem">
         <hopsangui>
           <coordinates>
-            <coordinate x="1804.82000300000004244794" y="2307.13265799999999217107"/>
-            <coordinate x="1933.79523936084615343134" y="2307.13265799999999217107"/>
+            <coordinate x="1804.82000300000004244794" y="2324.18264700000008815550"/>
+            <coordinate x="1933.79523936084615343134" y="2324.18264700000008815550"/>
             <coordinate x="1933.79523936084615343134" y="2515.19999999999981810106"/>
             <coordinate x="1973.50000000000000000000" y="2515.19999999999981810106"/>
           </coordinates>
@@ -4296,8 +4313,8 @@
           <coordinates>
             <coordinate x="2375.21821799999997892883" y="2629.68835900000021865708"/>
             <coordinate x="2375.21821799999997892883" y="2767.67959335414980159840"/>
-            <coordinate x="2378.03821902615709404927" y="2767.67959335414980159840"/>
-            <coordinate x="2378.03821902615709404927" y="2766.52962374650769561413"/>
+            <coordinate x="2378.03821900000002642628" y="2767.67959335414980159840"/>
+            <coordinate x="2378.03821900000002642628" y="2766.52962399999978515552"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -4311,9 +4328,9 @@
         <hopsangui>
           <coordinates>
             <coordinate x="2387.21845800000028248178" y="2629.68835900000021865708"/>
-            <coordinate x="2387.21845800000028248178" y="2762.03960145877863396890"/>
-            <coordinate x="2407.28821902615709404927" y="2762.03960145877863396890"/>
-            <coordinate x="2407.28821902615709404927" y="2766.52962374650769561413"/>
+            <coordinate x="2387.21845800000028248178" y="2736.65964232051283033798"/>
+            <coordinate x="2407.28821900000002642628" y="2736.65964232051283033798"/>
+            <coordinate x="2407.28821900000002642628" y="2766.52962399999978515552"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -4326,9 +4343,9 @@
       <connect endport="in" endcomponent="Sink_3" startport="lattitude" startcomponent="SignalEarthCoordinates">
         <hopsangui>
           <coordinates>
-            <coordinate x="2407.28821902615709404927" y="2825.52962374650769561413"/>
-            <coordinate x="2407.28821902615709404927" y="2852.31958524952051448054"/>
-            <coordinate x="2605.41948920925824495498" y="2852.31958524952051448054"/>
+            <coordinate x="2407.28821900000002642628" y="2825.52962399999978515552"/>
+            <coordinate x="2407.28821900000002642628" y="2852.31958500000018830178"/>
+            <coordinate x="2604.00949099999979807762" y="2852.31958500000018830178"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -4340,10 +4357,10 @@
       <connect endport="in_bottom" endcomponent="Sink_3" startport="longitude" startcomponent="SignalEarthCoordinates">
         <hopsangui>
           <coordinates>
-            <coordinate x="2378.03821902615709404927" y="2825.52962374650769561413"/>
-            <coordinate x="2378.03821902615709404927" y="2876.14421221760085245478"/>
-            <coordinate x="2625.41948920925824495498" y="2876.14421221760085245478"/>
-            <coordinate x="2625.41948920925824495498" y="2867.31958524952051448054"/>
+            <coordinate x="2378.03821900000002642628" y="2825.52962399999978515552"/>
+            <coordinate x="2378.03821900000002642628" y="2876.14421221760085245478"/>
+            <coordinate x="2624.00949099999979807762" y="2876.14421221760085245478"/>
+            <coordinate x="2624.00949099999979807762" y="2867.31958500000018830178"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -4359,8 +4376,8 @@
             <coordinate x="2591.21821799999997892883" y="2629.68835900000021865708"/>
             <coordinate x="2591.21821799999997892883" y="2806.09594906387701485073"/>
             <coordinate x="2697.26764555006320733810" y="2806.09594906387701485073"/>
-            <coordinate x="2697.26764555006320733810" y="2852.31958524952051448054"/>
-            <coordinate x="2645.41948920925824495498" y="2852.31958524952051448054"/>
+            <coordinate x="2697.26764555006320733810" y="2852.31958500000018830178"/>
+            <coordinate x="2644.00949099999979807762" y="2852.31958500000018830178"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -4374,11 +4391,11 @@
       <connect endport="lattitude" endcomponent="Subsystem" startport="lattitude" startcomponent="SignalEarthCoordinates">
         <hopsangui>
           <coordinates>
-            <coordinate x="2407.28821902615709404927" y="2825.52962374650769561413"/>
-            <coordinate x="2407.28821902615709404927" y="2893.64514420792238524882"/>
+            <coordinate x="2407.28821900000002642628" y="2825.52962399999978515552"/>
+            <coordinate x="2407.28821900000002642628" y="2893.64514420792238524882"/>
             <coordinate x="1687.53839516653420105285" y="2893.64514420792238524882"/>
-            <coordinate x="1687.53839516653420105285" y="2327.13265799999999217107"/>
-            <coordinate x="1714.82000300000004244794" y="2327.13265799999999217107"/>
+            <coordinate x="1687.53839516653420105285" y="2334.18264700000008815550"/>
+            <coordinate x="1714.82000300000004244794" y="2334.18264700000008815550"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -4409,8 +4426,8 @@
         <hopsangui>
           <coordinates>
             <coordinate x="2639.21845800000028248178" y="2629.68835900000021865708"/>
-            <coordinate x="2639.21845800000028248178" y="2698.73612168556428514421"/>
-            <coordinate x="2685.78611164735502825351" y="2698.73612168556428514421"/>
+            <coordinate x="2639.21845800000028248178" y="2698.73612199999979566201"/>
+            <coordinate x="2685.78611199999977543484" y="2698.73612199999979566201"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -4422,11 +4439,11 @@
       <connect endport="longitude" endcomponent="Subsystem" startport="longitude" startcomponent="SignalEarthCoordinates">
         <hopsangui>
           <coordinates>
-            <coordinate x="2378.03821902615709404927" y="2825.52962374650769561413"/>
-            <coordinate x="2378.03821902615709404927" y="2913.05581395918761700159"/>
+            <coordinate x="2378.03821900000002642628" y="2825.52962399999978515552"/>
+            <coordinate x="2378.03821900000002642628" y="2913.05581395918761700159"/>
             <coordinate x="1662.38761116063983536151" y="2913.05581395918761700159"/>
-            <coordinate x="1662.38761116063983536151" y="2307.13265799999999217107"/>
-            <coordinate x="1714.82000300000004244794" y="2307.13265799999999217107"/>
+            <coordinate x="1662.38761116063983536151" y="2314.18264700000008815550"/>
+            <coordinate x="1714.82000300000004244794" y="2314.18264700000008815550"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -4440,9 +4457,9 @@
       <connect endport="in" endcomponent="Sink_2" startport="headingRef" startcomponent="Subsystem">
         <hopsangui>
           <coordinates>
-            <coordinate x="1774.82000300000004244794" y="2347.13265799999999217107"/>
-            <coordinate x="1774.82000300000004244794" y="2263.04674776814454162377"/>
-            <coordinate x="2082.30697881648711700109" y="2263.04674776814454162377"/>
+            <coordinate x="1757.22000299900014397281" y="2354.18264700000008815550"/>
+            <coordinate x="1757.22000299900014397281" y="2263.04674800000020695734"/>
+            <coordinate x="2082.30697899999995570397" y="2263.04674800000020695734"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -4455,10 +4472,10 @@
         <hopsangui>
           <coordinates>
             <coordinate x="2411.21821799999997892883" y="2629.68835900000021865708"/>
-            <coordinate x="2411.21821799999997892883" y="2697.32612396124159204192"/>
-            <coordinate x="1961.30718161530967336148" y="2697.32612396124159204192"/>
-            <coordinate x="1961.30718161530967336148" y="2263.04674776814454162377"/>
-            <coordinate x="2082.30697881648711700109" y="2263.04674776814454162377"/>
+            <coordinate x="2411.21821799999997892883" y="2681.81614893230107554700"/>
+            <coordinate x="1961.30718161530967336148" y="2681.81614893230107554700"/>
+            <coordinate x="1961.30718161530967336148" y="2263.04674800000020695734"/>
+            <coordinate x="2082.30697899999995570397" y="2263.04674800000020695734"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -4472,8 +4489,8 @@
       <connect endport="thetain" endcomponent="Angle___Velocity_Source_1" startport="uaerR" startcomponent="SignalAttitudeControl">
         <hopsangui>
           <coordinates>
-            <coordinate x="2038.50000000000000000000" y="2476.80000000000018189894"/>
-            <coordinate x="2131.50000000000000000000" y="2476.80000000000018189894"/>
+            <coordinate x="2038.50000000000000000000" y="2489.59999999999990905053"/>
+            <coordinate x="2131.50000000000000000000" y="2489.59999999999990905053"/>
             <coordinate x="2131.50000000000000000000" y="2469.30144500000005791662"/>
             <coordinate x="2151.50000000000000000000" y="2469.30144500000005791662"/>
           </coordinates>
@@ -4488,8 +4505,8 @@
       <connect endport="thetain" endcomponent="Angle___Velocity_Source" startport="uaerL" startcomponent="SignalAttitudeControl">
         <hopsangui>
           <coordinates>
-            <coordinate x="2038.50000000000000000000" y="2489.59999999999990905053"/>
-            <coordinate x="2093.84699115653120315983" y="2489.59999999999990905053"/>
+            <coordinate x="2038.50000000000000000000" y="2476.80000000000018189894"/>
+            <coordinate x="2093.84699115653120315983" y="2476.80000000000018189894"/>
             <coordinate x="2093.84699115653120315983" y="2441.51825800000005983748"/>
             <coordinate x="2152.50000000000000000000" y="2441.51825800000005983748"/>
           </coordinates>
