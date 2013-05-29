@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.3">
-  <modelobject typename="AeroAircraft6DOFSS" displayname="AeroAircraft6DOFSS">
+  <modelobject typename="AeroAircraft6DOFS" displayname="AeroAircraft6DOFS">
     <icons>
       <icon scale="1" path="AeroAircraft6DOFS.svg" iconrotation="ON" type="user"/>
       <icon scale="1" path="AeroAircraft6DOFS.svg" iconrotation="ON" type="iso"/>
