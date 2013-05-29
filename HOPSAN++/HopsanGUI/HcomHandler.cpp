@@ -1323,6 +1323,14 @@ void HcomHandler::executeChangeDirectoryCommand(const QString cmd)
         mpConsole->printErrorMessage("Wrong number of arguments", "", false);
         return;
     }
+
+    QDir newDir(mPwd+"/"+cmd);
+    if(!newDir.exists())
+    {
+        mpConsole->printErrorMessage("Illegal directory.", "", false);
+        return;
+    }
+
     mPwd = QDir().cleanPath(mPwd+"/"+cmd);
     mpConsole->print(mPwd);
 }
@@ -1364,7 +1372,7 @@ void HcomHandler::executeCloseModelCommand(const QString cmd)
 
     if(gpMainWindow->mpModelHandler->count() > 0)
     {
-        gpMainWindow->mpModelHandler->closeModel(gpMainWindow->mpCentralTabs->currentIndex());
+        gpMainWindow->mpModelHandler->closeModelByTabIndex(gpMainWindow->mpCentralTabs->currentIndex());
     }
 }
 

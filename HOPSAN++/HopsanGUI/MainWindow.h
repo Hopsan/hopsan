@@ -212,7 +212,7 @@ private:
 
     //Dialogs
     OptionsDialog *mpOptionsDialog;
-    WelcomeDialog *mpWelcomeDialog;
+    WelcomeDialog *mpWelcomeDialog; //! @todo This is never used, should probably be removed (including the class)
     AboutDialog *mpAboutDialog;
     OptimizationDialog *mpOptimizationDialog;
     SensitivityAnalysisDialog *mpSensitivityAnalysisDialog;

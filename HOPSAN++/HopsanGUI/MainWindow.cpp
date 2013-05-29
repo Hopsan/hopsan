@@ -303,6 +303,8 @@ MainWindow::MainWindow(QWidget *parent)
     mpCentralTabs->addTab(mpWelcomeWidget, "Welcome");
     mpCentralTabs->setTabNotClosable(0);
 
+    this->updateRecentList();
+
     mpComponentGeneratorDialog = new ComponentGeneratorDialog(this);    //Needs configuration
 
     //Set the size and position of the main window
@@ -814,8 +816,6 @@ void MainWindow::createMenus()
     mpFileMenu->addAction(mpOpenSystemParametersAction);
     mpFileMenu->addSeparator();
     mpFileMenu->addAction(mpCloseAction);
-
-    this->updateRecentList();
 
     mpSimulationMenu->addAction(mpSimulateAction);
     mpSimulationMenu->addAction(mpOpenDebuggerAction);
@@ -1419,6 +1419,8 @@ void MainWindow::updateRecentList()
             }
         }
     }
+
+    mpWelcomeWidget->updateRecentList();
 }
 
 

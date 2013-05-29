@@ -20,9 +20,9 @@
 WelcomeWidget::WelcomeWidget(QWidget *parent) :
     QWidget(parent)
 {
-    int frameH = 180;
-    int frameW = 140;
-    int spacing = 20;
+    mFrameH = 180;
+    mFrameW = 140;
+    mSpacing = 20;
 
     this->setMouseTracking(true);
     this->setAttribute(Qt::WA_NoMousePropagation, false);
@@ -58,7 +58,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpNewFrame = new QFrame(this);
     mpNewFrame->setFrameShape(QFrame::StyledPanel);
     mpNewFrame->setMouseTracking(true);
-    mpNewFrame->setFixedSize(frameW,frameH);
+    mpNewFrame->setFixedSize(mFrameW,mFrameH);
     mpNewFrame->setLayout(mpNewLayout);
 
     mpLoadIcon = new QLabel(this);
@@ -74,7 +74,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpLoadFrame = new QFrame(this);
     mpLoadFrame->setFrameShape(QFrame::StyledPanel);
     mpLoadFrame->setMouseTracking(true);
-    mpLoadFrame->setFixedSize(frameW,frameH);
+    mpLoadFrame->setFixedSize(mFrameW,mFrameH);
     mpLoadFrame->setLayout(mpLoadLayout);
 
     mpLastSessionIcon = new QLabel(this);
@@ -92,11 +92,11 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpLastSessionFrame = new QFrame(this);
     mpLastSessionFrame->setFrameShape(QFrame::StyledPanel);
     mpLastSessionFrame->setMouseTracking(true);
-    mpLastSessionFrame->setFixedSize(frameW,frameH);
+    mpLastSessionFrame->setFixedSize(mFrameW,mFrameH);
     mpLastSessionFrame->setLayout(mpLastSessionLayout);
 
     mpRecentList = new QListWidget(this);
-    mpRecentList->setFixedSize(frameW*2+spacing-20,frameH-50);
+    mpRecentList->setFixedSize(mFrameW*2+mSpacing-20,mFrameH-50);
     mpRecentList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     mpRecentList->setMouseTracking(true);
     connect(mpRecentList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(openRecentModel()));
@@ -109,31 +109,14 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpRecentFrame = new QFrame(this);
     mpRecentFrame->setFrameShape(QFrame::StyledPanel);
     mpRecentFrame->setMouseTracking(true);
-    mpRecentFrame->setFixedSize(frameW*2+spacing,frameH);
+    mpRecentFrame->setFixedSize(mFrameW*2+mSpacing,mFrameH);
     mpRecentFrame->setLayout(mpRecentLayout);
-    QStringList recentModels = gConfig.getRecentModels();
-    for(int i=0; i<recentModels.size(); ++i)
-    {
-        if(!recentModels.at(i).isEmpty())
-        {
-            mRecentModelList.append(recentModels.at(i));
-            QString displayName = recentModels.at(i);
-            displayName = displayName.section('/', -1);
-            displayName.chop(4);
-            QString toolTipName = displayName;
-            while(mpRecentList->fontMetrics().width(displayName) > frameW*2+spacing-35)
-            {
-                displayName.chop(4);
-                displayName.append("...");
-            }
-            mpRecentList->addItem(displayName);
-            mpRecentList->item(mpRecentList->count()-1)->setToolTip(toolTipName);
-        }
-    }
+
+    updateRecentList();
 
 
     mpExampleList = new QListWidget(this);
-    mpExampleList->setFixedSize(frameW*2+spacing-20,frameH-50);
+    mpExampleList->setFixedSize(mFrameW*2+mSpacing-20,mFrameH-50);
     mpExampleList->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     mpExampleList->setMouseTracking(true);
     connect(mpExampleList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(openExampleModel()));
@@ -146,7 +129,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpExampleFrame = new QFrame(this);
     mpExampleFrame->setFrameShape(QFrame::StyledPanel);
     mpExampleFrame->setMouseTracking(true);
-    mpExampleFrame->setFixedSize(frameW*2+spacing,frameH);
+    mpExampleFrame->setFixedSize(mFrameW*2+mSpacing,mFrameH);
     mpExampleFrame->setLayout(mpExampleLayout);
     QDir exampleModelsDir(gDesktopHandler.getMainPath()+"Models/Example Models/");
     QStringList filters;
@@ -162,7 +145,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
             displayName = displayName.section('/', -1);
             displayName.chop(4);
             QString toolTipName = displayName;
-            while(mpExampleList->fontMetrics().width(displayName) > frameW*2+spacing-35)
+            while(mpExampleList->fontMetrics().width(displayName) > mFrameW*2+mSpacing-35)
             {
                 displayName.chop(4);
                 displayName.append("...");
@@ -185,7 +168,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpOptionsFrame = new QFrame(this);
     mpOptionsFrame->setFrameShape(QFrame::StyledPanel);
     mpOptionsFrame->setMouseTracking(true);
-    mpOptionsFrame->setFixedSize(frameW,frameH);
+    mpOptionsFrame->setFixedSize(mFrameW,mFrameH);
     mpOptionsFrame->setLayout(mpOptionsLayout);
 
     mpLoadingWebProgressBar = new QProgressBar(this);
@@ -235,7 +218,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpNewsFrame = new QFrame(this);
     mpNewsFrame->setFrameShape(QFrame::StyledPanel);
     mpNewsFrame->setMouseTracking(true);
-    mpNewsFrame->setFixedSize(frameW*2,frameH*2+spacing);
+    mpNewsFrame->setFixedSize(mFrameW*2,mFrameH*2+mSpacing);
     mpNewsFrame->setLayout(mpNewsLayout);
 
     mpAutoUpdateAction = new QAction("Launch Auto Updater", this);
@@ -267,7 +250,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpLayout->addWidget(mpExampleFrame,                     2, 2, 1, 2);
     mpLayout->addWidget(mpNewsFrame,                        1, 4, 2, 1);
     mpLayout->addWidget(mpNewVersionButton,                 0, 4, 1, 1);
-    mpLayout->setSpacing(spacing);
+    mpLayout->setSpacing(mSpacing);
     mpLayout->setSizeConstraint(QLayout::SetFixedSize);
     //mpLayout->addWidget(pTestLabel);
 
@@ -282,6 +265,30 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
 QString WelcomeWidget::getUpdateLink()
 {
     return mpUpdateLink;
+}
+
+void WelcomeWidget::updateRecentList()
+{
+    mpRecentList->clear();
+    QStringList recentModels = gConfig.getRecentModels();
+    for(int i=0; i<recentModels.size(); ++i)
+    {
+        if(!recentModels.at(i).isEmpty())
+        {
+            mRecentModelList.append(recentModels.at(i));
+            QString displayName = recentModels.at(i);
+            displayName = displayName.section('/', -1);
+            displayName.chop(4);
+            QString toolTipName = displayName;
+            while(mpRecentList->fontMetrics().width(displayName) > mFrameW*2+mSpacing-35)
+            {
+                displayName.chop(4);
+                displayName.append("...");
+            }
+            mpRecentList->addItem(displayName);
+            mpRecentList->item(mpRecentList->count()-1)->setToolTip(toolTipName);
+        }
+    }
 }
 
 

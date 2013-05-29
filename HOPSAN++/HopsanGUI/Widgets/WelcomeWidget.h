@@ -18,6 +18,7 @@ class WelcomeWidget : public QWidget
 public:
     explicit WelcomeWidget(QWidget *parent = 0);
     QString getUpdateLink();
+    void updateRecentList();
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *);
@@ -84,6 +85,10 @@ private:
     QString mpUpdateLink;
 
     QMap <QListWidgetItem *, QString> exampleModelsMap;
+
+    int mFrameH;
+    int mFrameW;
+    int mSpacing;
 
 signals:
     void hovered();
