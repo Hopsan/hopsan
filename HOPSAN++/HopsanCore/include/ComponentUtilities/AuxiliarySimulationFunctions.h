@@ -52,6 +52,9 @@ double DLLIMPORTEXPORT equalSigns(const double x, const double y);
 double DLLIMPORTEXPORT limit(const double x, const double xmin, const double xmax);
 double DLLIMPORTEXPORT dxLimit(const double x, const double xmin, const double xmax);
 double DLLIMPORTEXPORT dxLimit2(const double x, const double sx, const double xmin, const double xmax);
+double DLLIMPORTEXPORT lowLimit(const double x, const double xmin);
+double DLLIMPORTEXPORT dxLowLimit(const double x, const double xmin);
+double DLLIMPORTEXPORT dxLowLimit2(const double x, const double sx, const double xmin);
 double DLLIMPORTEXPORT div(const double x, const double y);
 
 
@@ -110,7 +113,7 @@ inline double dxOnPositive(const double /*x*/)
 //! @param x Value to determine if it is positive
 inline double onNegative(const double x)
 {
-    if (x < 0.0) { return 1.0; }
+    if (x >= 0.0) { return 1.0; }
     return 0.0;
 }
 
