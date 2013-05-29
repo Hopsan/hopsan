@@ -46,11 +46,11 @@ hopsan::HopsanEssentials gHopsanCore;
 //! @brief Help function to copy parameter data from core to GUI class
 void copyParameterData(const hopsan::Parameter *pCoreParam, CoreParameterData &rGUIParam)
 {
-    rGUIParam.mName = QString::fromStdString(pCoreParam->getName());
-    rGUIParam.mType = QString::fromStdString(pCoreParam->getType());
-    rGUIParam.mValue = QString::fromStdString(pCoreParam->getValue());
-    rGUIParam.mUnit = QString::fromStdString(pCoreParam->getUnit());
-    rGUIParam.mDescription = QString::fromStdString(pCoreParam->getDescription());
+    rGUIParam.mName = QString(pCoreParam->getName().c_str());
+    rGUIParam.mType = QString(pCoreParam->getType().c_str());
+    rGUIParam.mValue = QString(pCoreParam->getValue().c_str());
+    rGUIParam.mUnit = QString(pCoreParam->getUnit().c_str());
+    rGUIParam.mDescription = QString::fromStdString(pCoreParam->getDescription().c_str());
     rGUIParam.mIsDynamic = pCoreParam->isDynamic();
     rGUIParam.mIsEnabled = pCoreParam->isEnabled();
 }
@@ -778,14 +778,14 @@ void CoreSystemAccess::getParameter(QString componentName, QString parameterName
 QStringList CoreSystemAccess::getParameterNames(QString componentName)
 {
     QStringList qParameterNames;
-    std::vector<std::string> parameterNames;
+    std::vector<hopsan::HString> parameterNames;
     hopsan::Component* pComp =  mpCoreComponentSystem->getSubComponent(componentName.toStdString());
     if (pComp!=0)
     {
         pComp->getParameterNames(parameterNames);
         for(size_t i=0; i<parameterNames.size(); ++i)
         {
-            qParameterNames.push_back(QString::fromStdString(parameterNames[i]));
+            qParameterNames.push_back(QString(parameterNames[i].c_str()));
         }
     }
 
@@ -801,12 +801,12 @@ void CoreSystemAccess::loadParameterFile(QString fileName)
 
 QStringList CoreSystemAccess::getSystemParameterNames()
 {
-    std::vector<std::string> parameterNames;
+    std::vector<hopsan::HString> parameterNames;
     mpCoreComponentSystem->getParameterNames(parameterNames);
     QStringList qParameterNames;
     for(size_t i=0; i<parameterNames.size(); ++i)
     {
-        qParameterNames.push_back(QString::fromStdString(parameterNames[i]));
+        qParameterNames.push_back(QString(parameterNames[i].c_str()));
     }
     return qParameterNames;
 }
@@ -818,9 +818,9 @@ QString CoreSystemAccess::getParameterValue(QString componentName, QString param
     hopsan::Component* pComp = mpCoreComponentSystem->getSubComponent(componentName.toStdString());
     if (pComp != 0)
     {
-        char *value;
-        pComp->getParameterValue(parameterName.toStdString(), &value);
-        parameterValue = value;
+        hopsan::HString value;
+        pComp->getParameterValue(parameterName.toStdString(), value);
+        parameterValue = value.c_str();
     }
 
     return QString::fromStdString(parameterValue);
@@ -1059,9 +1059,9 @@ bool CoreSystemAccess::setSystemParameterValue(QString name, QString value, bool
 //! @returns The aprameter value as a QString or "" if parameter not found
 QString CoreSystemAccess::getSystemParameterValue(const QString name)
 {
-    char* value;
-    mpCoreComponentSystem->getParameterValue(name.toStdString(), &value);
-    return QString(value);
+    hopsan::HString value;
+    mpCoreComponentSystem->getParameterValue(name.toStdString(), value);
+    return QString(value.c_str());
 }
 
 

@@ -115,27 +115,27 @@ public:
     void addConstant(const std::string name, const std::string description, const std::string unit, const double defaultValue, double &rData);
     void addConstant(const std::string name, const std::string description, const std::string unit, int &rData);
     void addConstant(const std::string name, const std::string description, const std::string unit, const int defaultValue, int &rData);
-    void addConstant(const std::string name, const std::string description, const std::string unit, std::string &rData);
-    void addConstant(const std::string name, const std::string description, const std::string unit, const char* defaultValue, std::string &rData);
+    void addConstant(const std::string name, const std::string description, const std::string unit, HString &rData);
+    void addConstant(const std::string name, const std::string description, const std::string unit, const HString &defaultValue, HString &rData);
     void addConstant(const std::string name, const std::string description, const std::string unit, bool &rData);
     void addConstant(const std::string name, const std::string description, const std::string unit, const bool defaultValue, bool &rData);
     void setConstantValue(const char* name, const double value);
     void setConstantValue(const char* name, const int value);
-    void setConstantValue(const char* name, const std::string value);
+    void setConstantValue(const char* name, const HString &rValue);
     void setConstantValue(const char* name, const bool value);
 
     void registerParameter(const std::string name, const std::string description, const std::string unit, double &rValue);
     virtual void unRegisterParameter(const std::string name);
 
-    bool hasParameter(const std::string name) const;
+    bool hasParameter(const HString name) const;
     const std::vector<Parameter*> *getParametersVectorPtr() const;
-    void getParameterNames(std::vector<std::string> &rParameterNames);
-    const Parameter *getParameter(const std::string name);
-    void getParameterValue(const std::string name, char **pValue);
-    void* getParameterDataPtr(const std::string name);
-    bool setParameterValue(const std::string name, const std::string value, bool force=false);
+    void getParameterNames(std::vector<HString> &rParameterNames);
+    const Parameter *getParameter(const HString name);
+    void getParameterValue(const HString name, HString &rValue);
+    void* getParameterDataPtr(const HString name);
+    bool setParameterValue(const HString name, const HString value, bool force=false);
     void updateParameters();
-    bool checkParameters(std::string &errParName);
+    bool checkParameters(HString &errParName);
 
     // Variabels and Parameters
     const std::vector<VariameterDescription>* getVariameters();
@@ -191,7 +191,7 @@ public:
     HopsanEssentials *getHopsanEssentials();
 
     //Searchpath
-    std::string findFilePath(const std::string fileName);
+    HString findFilePath(const HString &rFileName);
 
 protected:
     //==========Protected member functions==========
@@ -237,7 +237,7 @@ protected:
     //! @todo clean this up /Peter
     void registerParameter(const std::string name, const std::string description, const std::string unit, double &rValue, const ParamDynConstEnumT dynconst);
     void registerParameter(const std::string name, const std::string description, const std::string unit, int &rValue);
-    void registerParameter(const std::string name, const std::string description, const std::string unit, std::string &rValue);
+    void registerParameter(const std::string name, const std::string description, const std::string unit, HString &rValue);
     void registerParameter(const std::string name, const std::string description, const std::string unit, bool &rValue);
 
     // NodeData ptr function

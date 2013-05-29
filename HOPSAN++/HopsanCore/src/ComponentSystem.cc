@@ -382,9 +382,9 @@ Parameters &ComponentSystem::getSystemParameters()
 bool ComponentSystem::setSystemParameter(const std::string name, const std::string value, const std::string type, const std::string description, const std::string unit, const bool force)
 {
     bool success;
-    if(mpParameters->exist(name))
+    if(mpParameters->exist(name.c_str()))
     {
-        success = mpParameters->setParameter(name, value, description, unit, type, force);
+        success = mpParameters->setParameter(name.c_str(), value.c_str(), description.c_str(), unit.c_str(), type.c_str(), force);
     }
     else
     {
@@ -395,7 +395,7 @@ bool ComponentSystem::setSystemParameter(const std::string name, const std::stri
         }
         else
         {
-            success = mpParameters->addParameter(name, value, description, unit, type, false, 0, force);
+            success = mpParameters->addParameter(name.c_str(), value.c_str(), description.c_str(), unit.c_str(), type.c_str(), false, 0, force);
             if (success)
             {
                 reserveUniqueName(name,UniqueSysparamNameType);
@@ -985,7 +985,7 @@ bool ComponentSystem::renameParameter(const std::string oldName, const std::stri
     {
         addErrorMessage(string("The desired system parameter name: ") + newName + string(" is already used"));
     }
-    else if (mpParameters->renameParameter(oldName, newName))
+    else if (mpParameters->renameParameter(oldName.c_str(), newName.c_str()))
     {
         unReserveUniqueName(oldName);
         reserveUniqueName(newName);
@@ -2292,19 +2292,19 @@ bool ComponentSystem::checkModelBeforeSimulation()
             }
 
             //Check parameters in subcomponents
-            std::string errParName;
+            HString errParName;
             if(!(pComp->checkParameters(errParName)))
             {
-                addErrorMessage("The parameter:  "+errParName+"  in System:  "+getName()+"  and Component:  "+pComp->getName()+"  can not be evaluated, a system parameter has maybe been deleted or re-typed.");
+                addErrorMessage("The parameter:  "+toStdString(errParName)+"  in System:  "+getName()+"  and Component:  "+pComp->getName()+"  can not be evaluated, a system parameter has maybe been deleted or re-typed.");
                 return false;
             }
         }
 
         // Check parameters in system
-        std::string errParName;
+        HString errParName;
         if(!(checkParameters(errParName)))
         {
-            addErrorMessage("The system parameter:  "+errParName+"  in System:  "+getName()+"  can not be evaluated, it maybe depend on a deleted system parameter.");
+            addErrorMessage("The system parameter:  "+toStdString(errParName)+"  in System:  "+getName()+"  can not be evaluated, it maybe depend on a deleted system parameter.");
             return false;
         }
 

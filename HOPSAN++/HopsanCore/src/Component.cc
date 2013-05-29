@@ -82,12 +82,12 @@ bool Component::initialize(const double startT, const double /*stopT*/)
     return true;        //Always return true, because we cannot know if it was successful or not (yet)
 }
 
-void Component::getParameterNames(std::vector<std::string> &rParameterNames)
+void Component::getParameterNames(std::vector<HString> &rParameterNames)
 {
     mpParameters->getParameterNames(rParameterNames);
 }
 
-const Parameter *Component::getParameter(const std::string name)
+const Parameter *Component::getParameter(const HString name)
 {
     return mpParameters->getParameter(name);
 }
@@ -98,25 +98,25 @@ const std::vector<Parameter*> *Component::getParametersVectorPtr() const
 }
 
 //! @brief Check if a component has a specific parameter
-bool Component::hasParameter(const std::string name) const
+bool Component::hasParameter(const HString name) const
 {
     return mpParameters->exist(name);
 }
 
-void Component::getParameterValue(const std::string name, char** pValue)
+void Component::getParameterValue(const HString name, HString &rValue)
 {
-    mpParameters->getParameterValue(name, pValue);
+    mpParameters->getParameterValue(name, rValue);
 }
 
 //! @brief Returns a pointer directly to the parameter data variable
 //! @warning Dont use this function unless YOU REALLY KNOW WHAT YOU ARE DOING
 //! @warning This function may be removed in the future
-void* Component::getParameterDataPtr(const std::string name)
+void* Component::getParameterDataPtr(const HString name)
 {
     return mpParameters->getParameterDataPtr(name);
 }
 
-bool Component::setParameterValue(const std::string name, const std::string value, bool force)
+bool Component::setParameterValue(const HString name, const HString value, bool force)
 {
     return mpParameters->setParameterValue(name, value, force);
 }
@@ -128,7 +128,7 @@ void Component::updateParameters()
 }
 
 
-bool Component::checkParameters(std::string &errParName)
+bool Component::checkParameters(HString &errParName)
 {
     return mpParameters->checkParameters(errParName);
 }
@@ -184,25 +184,25 @@ const std::vector<VariameterDescription>* Component::getVariameters()
 //! @todo check returnvalue from setParameter check if Ok error emssage otherwise, also in the other functions
 void Component::setConstantValue(const char *name, const double value)
 {
-    setParameterValue(name, to_string(value), true);
+    setParameterValue(name, to_hstring(value), true);
 }
 
 //! @note Dont use this function during simulation, it is slow
 void Component::setConstantValue(const char *name, const int value)
 {
-    setParameterValue(name, to_string(value), true);
+    setParameterValue(name, to_hstring(value), true);
 }
 
 //! @note Dont use this function during simulation, it is slow
-void Component::setConstantValue(const char *name, const string value)
+void Component::setConstantValue(const char *name, const HString &rValue)
 {
-    setParameterValue(name, value, true);
+    setParameterValue(name, rValue, true);
 }
 
 //! @note Dont use this function during simulation, it is slow
 void Component::setConstantValue(const char *name, const bool value)
 {
-    setParameterValue(name, to_string(value), true);
+    setParameterValue(name, to_hstring(value), true);
 }
 
 
@@ -355,7 +355,7 @@ HopsanEssentials *Component::getHopsanEssentials()
 void Component::initializeDynamicParameters()
 {
     mDynamicParameterDataPtrs.clear();
-    vector<string> parNames;
+    vector<HString> parNames;
     mpParameters->getParameterNames(parNames);
 
     for (size_t i=0; i<parNames.size(); ++i)
@@ -366,9 +366,9 @@ void Component::initializeDynamicParameters()
 
         // Check if dynamic parameter, Port with same name exist
         //! @todo must make sure that other ports with this name do not exist, of other types then signal 1d readport
-        if (mPortPtrMap.count(parNames[i]) > 0)
+        if (mPortPtrMap.count(toStdString(parNames[i])) > 0)
         {
-            Port* pPort = mPortPtrMap.find(parNames[i])->second;
+            Port* pPort = mPortPtrMap.find(toStdString(parNames[i]))->second;
             if (pPort->isConnected())
             {
                 mpParameters->enableParameter(parNames[i], false);
@@ -413,12 +413,12 @@ void Component::addConstant(const string name, const string description, const s
     addConstant(name, description, unit, rData);
 }
 
-void Component::addConstant(const string name, const string description, const string unit, string &rData)
+void Component::addConstant(const string name, const string description, const string unit, HString &rData)
 {
     registerParameter(name, description, unit, rData);
 }
 
-void Component::addConstant(const string name, const string description, const string unit, const char* defaultValue, std::string &rData)
+void Component::addConstant(const string name, const string description, const string unit, const HString &defaultValue, HString &rData)
 {
     rData = defaultValue;
     addConstant(name, description, unit, rData);
@@ -512,7 +512,7 @@ void Component::registerParameter(const string name, const string description, c
 //! @param [in] unit The unit of the parameter value
 //! @param [in] rValue A reference to the string variable representing the value, its adress will be registered
 //! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
-void Component::registerParameter(const string name, const string description, const string unit, string &rValue)
+void Component::registerParameter(const string name, const string description, const string unit, HString &rValue)
 {
     if (!isNameValid(name))
     {
@@ -1266,11 +1266,11 @@ void Component::loadStartValuesFromSimulation()
 //! @brief Find and return the full file path name of fileName within the system search path, parent systems included (path to HMF file is always in here)
 //! @param fileName the name of the searched file
 //! @return full file name path, empty string if it does not exsits
-std::string Component::findFilePath(const std::string fileName)
+HString Component::findFilePath(const HString &rFileName)
 {
     bool found = false;
-    std::string fullPath;
-    std::string replacer = "/";
+    HString fullPath;
+    HString replacer = "/";
 
     if(!(mSearchPaths.empty()))
     {
@@ -1283,7 +1283,7 @@ std::string Component::findFilePath(const std::string fileName)
 
             fullPath.clear();
             fullPath = mSearchPaths[i];
-            fullPath.append(replacer).append(fileName);
+            fullPath.append(replacer).append(rFileName);
 
             FILE *fp = fopen(fullPath.c_str(),"r");
             if( fp ) {
@@ -1298,9 +1298,9 @@ std::string Component::findFilePath(const std::string fileName)
     if(!found)
     {
         if(!getSystemParent())
-            fullPath = fileName;
+            fullPath = rFileName;
         else
-            fullPath = getSystemParent()->findFilePath(fileName);
+            fullPath = getSystemParent()->findFilePath(rFileName);
     }
 
     return fullPath;

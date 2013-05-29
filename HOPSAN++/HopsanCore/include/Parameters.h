@@ -25,7 +25,7 @@
 #define PARAMETERS_H
 
 #include "win32dll.h"
-#include <string>
+#include "HopsanTypes.h"
 #include <vector>
 
 namespace hopsan {
@@ -38,41 +38,41 @@ class DLLIMPORTEXPORT Parameter
 {
     friend class Parameters;
 public:
-    Parameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit,
-              std::string type, bool isDynamic=false, void* pDataPtr=0, Parameters* parentParameters=0);
+    Parameter(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rUnit,
+              const HString &rType, bool isDynamic=false, void* pDataPtr=0, Parameters* parentParameters=0);
 
-    bool setParameterValue(const std::string value, Parameter **pNeedEvaluation=0);
-    bool setParameter(std::string parameterValue, std::string description, std::string unit,
-                      std::string type, Parameter **pNeedEvaluation=0, bool force=false);
+    bool setParameterValue(const HString &rValue, Parameter **pNeedEvaluation=0);
+    bool setParameter(const HString &rValue, const HString &rDescription, const HString &rUnit,
+                      const HString &rType, Parameter **pNeedEvaluation=0, bool force=false);
 
     void setEnabled(const bool enabled);
 
-    bool evaluate(std::string &rResult, Parameter *ignoreMe=0);
+    bool evaluate(HString &rResult, Parameter *ignoreMe=0);
     bool evaluate();
     bool refreshParameterValueText();
 
     void* getDataPtr();
 
-    const std::string &getType() const;
-    const std::string &getName() const;
-    const std::string &getValue() const;
-    const std::string &getUnit() const;
-    const std::string &getDescription() const;
+    const HString &getType() const;
+    const HString &getName() const;
+    const HString &getValue() const;
+    const HString &getUnit() const;
+    const HString &getDescription() const;
 
     bool isEnabled() const;
     bool isDynamic() const;
 
 protected:
-    void resolveSignPrefix(std::string &rSignPrefix) const;
-    void splitSignPrefix(const std::string &rString, std::string &rPrefix, std::string &rValue);
+    void resolveSignPrefix(HString &rSignPrefix) const;
+    void splitSignPrefix(const HString &rString, HString &rPrefix, HString &rValue);
 
     bool mEnabled;
     bool mIsDynamic;
-    std::string mParameterName;
-    std::string mParameterValue;
-    std::string mDescription;
-    std::string mUnit;
-    std::string mType;
+    HString mParameterName;
+    HString mParameterValue;
+    HString mDescription;
+    HString mUnit;
+    HString mType;
     void* mpData;
     Parameters* mpParentParameters;
 };
@@ -84,30 +84,30 @@ public:
     Parameters(Component* parentComponent);
     ~Parameters();
 
-    bool addParameter(std::string parameterName, std::string parameterValue, std::string description,
-                      std::string unit, std::string type, bool isDynamic, void* dataPtr=0, bool force=false);
-    void deleteParameter(const std::string parameterName);
-    bool renameParameter(const std::string oldName, const std::string newName);
+    bool addParameter(const HString &rName, const HString &rValue, const HString &rDescription,
+                      const HString &rUnit, const HString &rType, bool isDynamic, void* dataPtr=0, bool force=false);
+    void deleteParameter(const HString &rName);
+    bool renameParameter(const HString &rOldName, const HString &rNewName);
 
-    void enableParameter(std::string parameterName, const bool enable);
+    void enableParameter(const HString &rName, const bool enable);
 
     const std::vector<Parameter*> *getParametersVectorPtr() const;
-    const Parameter* getParameter(const std::string parameterName) const;
-    void getParameterNames(std::vector<std::string> &rParameterNames);
-    bool setParameter(const std::string name, const std::string value, const std::string description="",
-                      const std::string unit="", const std::string type="", const bool force=false);
+    const Parameter* getParameter(const HString &rName) const;
+    void getParameterNames(std::vector<HString> &rParameterNames);
+    bool setParameter(const HString &rName, const HString &rValue, const HString &rDescription="",
+                      const HString &rUnit="", const HString &rType="", const bool force=false);
 
-    void getParameterValue(const std::string name, char **pValue);
-    bool setParameterValue(const std::string name, const std::string value, bool force=false);
+    void getParameterValue(const HString &rName, HString &rValue);
+    bool setParameterValue(const HString &rName, const HString &rValue, bool force=false);
 
-    void* getParameterDataPtr(const std::string name);
+    void* getParameterDataPtr(const HString &rName);
 
-    bool evaluateParameter(const std::string parameterName, std::string &rEvaluatedParameterValue, const std::string type, Parameter *ignoreMe=0);
+    bool evaluateParameter(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType, Parameter *ignoreMe=0);
     bool evaluateParameters();
-    bool refreshParameterValueText(const std::string &rParameterName);
+    bool refreshParameterValueText(const HString &rParameterName);
 
-    bool exist(const std::string parameterName);
-    bool checkParameters(std::string &errParName);
+    bool exist(const HString &rName) const;
+    bool checkParameters(HString &rErrParName);
 
     Component *getParentComponent() const;
 
@@ -115,8 +115,6 @@ protected:
     std::vector<Parameter*> mParameters;
     Component* mParentComponent;
     std::vector<Parameter*> mParametersNeedEvaluation; //! @todo Use this vector to ensure parameters are valid at simulation time e.g. if a used system parameter is deleted before simulation
-
-    char *mTempValue;
 };
 
 }

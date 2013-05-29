@@ -27,6 +27,7 @@
 
 #include <string>
 #include <sstream>
+#include <HopsanTypes.h>
 
 template<typename T>
 inline std::string to_string(const T num)
@@ -34,6 +35,14 @@ inline std::string to_string(const T num)
     std::stringstream ss;
     ss << num;
     return ss.str();
+}
+
+template<typename T>
+inline hopsan::HString to_hstring(const T num)
+{
+    std::stringstream ss;
+    ss << num;
+    return ss.str().c_str();
 }
 
 #endif // NUM2STRING_HPP

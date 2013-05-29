@@ -172,7 +172,7 @@ void printSystemParams(ComponentSystem* pSystem)
     const vector<Parameter*> *pParams = pSystem->getParametersVectorPtr();
     for (size_t i=0; i<pParams->size(); ++i)
     {
-        cout << " SysParam: " << pParams->at(i)->getName() << "=" << pParams->at(i)->getValue();
+        cout << " SysParam: " << pParams->at(i)->getName().c_str() << "=" << pParams->at(i)->getValue().c_str();
     }
 }
 
@@ -462,8 +462,8 @@ void exportParameterValuesToCSV(const std::string &rFileName, hopsan::ComponentS
         for (size_t p=0; p<pSysParameters->size(); ++p)
         {
             //! @todo what about alias name
-            string fullname = prefix + pSystem->getName() + "#" + pSysParameters->at(p)->getName();
-            *pFile << fullname << "," << pSysParameters->at(p)->getValue() << endl;
+            string fullname = prefix + pSystem->getName() + "#" + toStdString(pSysParameters->at(p)->getName());
+            *pFile << fullname << "," << pSysParameters->at(p)->getValue().c_str() << endl;
         }
 
         // Now handle subcomponent parameters
@@ -484,8 +484,8 @@ void exportParameterValuesToCSV(const std::string &rFileName, hopsan::ComponentS
                     for (size_t p=0; p<pParameters->size(); ++p)
                     {
                         //! @todo what about alias name
-                        string fullname = prefix + pComp->getName() + "#" + pParameters->at(p)->getName();
-                        *pFile << fullname << "," << pParameters->at(p)->getValue() << endl;
+                        string fullname = prefix + pComp->getName() + "#" + toStdString(pParameters->at(p)->getName());
+                        *pFile << fullname << "," << pParameters->at(p)->getValue().c_str() << endl;
                     }
                 }
             }

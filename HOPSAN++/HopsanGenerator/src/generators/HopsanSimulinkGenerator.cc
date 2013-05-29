@@ -26,7 +26,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     QDir saveDir;
     saveDir.setPath(savePath);
 
-    std::vector<std::string> parameterNames;
+    std::vector<HString> parameterNames;
     pSystem->getParameterNames(parameterNames);
     QStringList tunableParameters;
     for(size_t i=0; i<parameterNames.size(); ++i)
@@ -635,7 +635,7 @@ void HopsanSimulinkGenerator::generateToSimulinkCoSim(QString savePath, hopsan::
     saveDir.setPath(savePath);
 
 
-    std::vector<std::string> parameterNames;
+    std::vector<HString> parameterNames;
     pSystem->getParameterNames(parameterNames);
     QStringList tunableParameters;
     for(size_t i=0; i<parameterNames.size(); ++i)

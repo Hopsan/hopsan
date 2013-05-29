@@ -397,13 +397,13 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     for(size_t n=0; n<compNames.size(); ++n)
     {
         Component *pComp = pSystem->getSubComponent(compNames[n]);
-        std::vector<std::string> parNames;
+        std::vector<HString> parNames;
         pComp->getParameterNames(parNames);
         for(size_t p=0; p<parNames.size(); ++p)
         {
-            char* parValue;
-            pComp->getParameterValue(parNames[p], &parValue);
-            replaceParameters.append("    setParameter(\"" + QString(compNames[n].c_str()) + "\", \"" + QString(parNames[p].c_str()) +  "\", " + QString(parValue) + ");\n");
+            HString parValue;
+            pComp->getParameterValue(parNames[p], parValue);
+            replaceParameters.append("    setParameter(\"" + QString(compNames[n].c_str()) + "\", \"" + QString(parNames[p].c_str()) +  "\", " + QString(parValue.c_str()) + ");\n");
         }
     }
 

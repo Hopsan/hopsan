@@ -48,14 +48,14 @@ using namespace std;
 //! @param [in] type The type of the parameter e.g. double
 //! @param [in] pDataPtr Only used by Components, system parameters don't use this, default: 0
 //! @param [in] pParentParameters A pointer to the Parameters object that contains the Parameter
-Parameter::Parameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit, std::string type, bool isDynamic, void* pDataPtr, Parameters* pParentParameters)
+Parameter::Parameter(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rUnit, const HString &rType, bool isDynamic, void* pDataPtr, Parameters* pParentParameters)
 {
     mEnabled = true;
-    mParameterName = parameterName;
-    mParameterValue = parameterValue;
-    mDescription = description;
-    mUnit = unit;
-    mType = type;
+    mParameterName = rName;
+    mParameterValue = rValue;
+    mDescription = rDescription;
+    mUnit = rUnit;
+    mType = rType;
 
     mIsDynamic = isDynamic;
     mpData = pDataPtr;
@@ -78,30 +78,30 @@ void Parameter::setEnabled(const bool enabled)
 }
 
 
-bool Parameter::setParameter(std::string parameterValue, std::string description, std::string unit, std::string type, Parameter **pNeedEvaluation, bool force)
+bool Parameter::setParameter(const HString &rValue, const HString &rDescription, const HString &rUnit, const HString &rType, Parameter **pNeedEvaluation, bool force)
 {
     bool success;
-    std::string oldValue = mParameterValue;
-    std::string oldDescription = mDescription;
-    std::string oldUnit = mUnit;
-    std::string oldType = mType;
-    if(!description.empty())
+    HString oldValue = mParameterValue;
+    HString oldDescription = mDescription;
+    HString oldUnit = mUnit;
+    HString oldType = mType;
+    if(!rDescription.empty())
     {
-        mDescription = description;
+        mDescription = rDescription;
     }
-    if(!unit.empty())
+    if(!rUnit.empty())
     {
-        mUnit = unit;
+        mUnit = rUnit;
     }
-    if(!type.empty())
+    if(!rType.empty())
     {
-        mType = type;
+        mType = rType;
     }
-    success = setParameterValue(parameterValue, pNeedEvaluation);
+    success = setParameterValue(rValue, pNeedEvaluation);
     if((force) && !(success))
     {
         *pNeedEvaluation = this;
-        mParameterValue = parameterValue;
+        mParameterValue = rValue;
     }
     else if(!success)
     {
@@ -119,20 +119,20 @@ bool Parameter::setParameter(std::string parameterValue, std::string description
 //! @return true if success, otherwise false
 //!
 //! This function is used by Parameters
-bool Parameter::setParameterValue(const std::string value, Parameter **pNeedEvaluation)
+bool Parameter::setParameterValue(const HString &rValue, Parameter **pNeedEvaluation)
 {
     bool success=false;
  //   if(!(mParameterName==value))
     {
-        std::string oldValue = mParameterValue;
-        mParameterValue = value;
-        std::string evalResult = value;
+        HString oldValue = mParameterValue;
+        mParameterValue = rValue;
+        HString evalResult = rValue;
         success = evaluate(evalResult, this);
         if(!success)
         {
             mParameterValue = oldValue;
         }
-        if(value != evalResult)
+        if(rValue != evalResult)
         {
             *pNeedEvaluation = this;
         }
@@ -147,7 +147,7 @@ bool Parameter::setParameterValue(const std::string value, Parameter **pNeedEval
 
 //! @brief Returns the type of the parameter
 //! @return The type of the parameter
-const std::string &Parameter::getType() const
+const HString &Parameter::getType() const
 {
     return mType;
 }
@@ -161,7 +161,7 @@ const std::string &Parameter::getType() const
 //! @see evaluate(std::string &result)
 bool Parameter::evaluate()
 {
-    std::string dummy;
+    HString dummy;
     return evaluate(dummy);
 }
 
@@ -197,7 +197,7 @@ bool Parameter::refreshParameterValueText()
         {
             return false;
         }
-        mParameterValue = ss.str();
+        mParameterValue = ss.str().c_str();
         return true;
     }
     return false;
@@ -210,17 +210,17 @@ bool Parameter::refreshParameterValueText()
 //!
 //! This function is used by Parameters
 //! @see evaluate()
-bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
+bool Parameter::evaluate(HString &rResult, Parameter *ignoreMe)
 {
     (void)ignoreMe;
 
     if(!((mType=="double") || (mType=="integer") || (mType=="bool") || (mType=="string")))
     {
-        mpParentParameters->getParentComponent()->addErrorMessage("Parameter could not be evaluated, unknown type: " + mType);
+        mpParentParameters->getParentComponent()->addErrorMessage("Parameter could not be evaluated, unknown type: " + toStdString(mType));
     }
 
     bool success = true;
-    std::string evaluatedParameterValue, prefix, strippedValue;
+    HString evaluatedParameterValue, prefix, strippedValue;
 
     // Strip + or - from name incase we want to take a negative value of a system parameter
     splitSignPrefix(mParameterValue, prefix, strippedValue);
@@ -244,7 +244,7 @@ bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
     if(mType=="double")
     {
         double tmpParameterValue;
-        istringstream is(evaluatedParameterValue);
+        istringstream is(toStdString(evaluatedParameterValue));
         if(is >> tmpParameterValue)
         {
             // If a data pointer has been set, then write evaluated value to data variable
@@ -261,7 +261,7 @@ bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
     else if(mType=="integer")
     {
         int tmpParameterValue;
-        istringstream is(evaluatedParameterValue);
+        istringstream is(toStdString(evaluatedParameterValue));
         if(is >> tmpParameterValue)
         {
             // If a data pointer has been set, then write evaluated value to data variable
@@ -278,7 +278,7 @@ bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
     else if(mType=="bool")
     {
         bool tmpParameterValue;
-        istringstream is(evaluatedParameterValue);
+        istringstream is(toStdString(evaluatedParameterValue));
         if(is >> tmpParameterValue)
         {
             // If a data pointer has been set, then write evaluated value to data variable
@@ -313,9 +313,7 @@ bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
         // If a data pointer has been set, then write evaluated value to data variable
         if( (mpData!=0) && mEnabled )
         {
-            //! @warning This todo is important
-            //! @todo This is bad if mpData point to a string in an other DLL/SO then core will reallocate it. This will very likely cause a crash (at leat in windows), the dll that owns a variable mut be the one how allocates and deletes it
-            *static_cast<string*>(mpData) = evaluatedParameterValue;
+            static_cast<HString*>(mpData)->setString(evaluatedParameterValue.c_str());
         }
     }
     else
@@ -327,22 +325,22 @@ bool Parameter::evaluate(std::string &rResult, Parameter *ignoreMe)
     return success;
 }
 
-const std::string &Parameter::getName() const
+const HString &Parameter::getName() const
 {
     return mParameterName;
 }
 
-const std::string &Parameter::getValue() const
+const HString &Parameter::getValue() const
 {
     return mParameterValue;
 }
 
-const std::string &Parameter::getUnit() const
+const HString &Parameter::getUnit() const
 {
     return mUnit;
 }
 
-const std::string &Parameter::getDescription() const
+const HString &Parameter::getDescription() const
 {
     return mDescription;
 }
@@ -357,7 +355,7 @@ bool Parameter::isDynamic() const
     return mIsDynamic;
 }
 
-void Parameter::resolveSignPrefix(string &rSignPrefix) const
+void Parameter::resolveSignPrefix(HString &rSignPrefix) const
 {
     // Resolve prefix, check num -, ignore +
     size_t nMinus=0;
@@ -380,7 +378,7 @@ void Parameter::resolveSignPrefix(string &rSignPrefix) const
     }
 }
 
-void Parameter::splitSignPrefix(const string &rString, string &rPrefix, string &rValue)
+void Parameter::splitSignPrefix(const HString &rString, HString &rPrefix, HString &rValue)
 {
     rPrefix.clear();
     size_t n=0;
@@ -410,8 +408,6 @@ void Parameter::splitSignPrefix(const string &rString, string &rPrefix, string &
 Parameters::Parameters(Component* pParentComponent)
 {
     mParentComponent = pParentComponent;
-
-    mTempValue = (char*)malloc(sizeof(char));
 }
 
 //! @brief Destructor
@@ -422,8 +418,6 @@ Parameters::~Parameters()
     {
         delete mParameters[i];
     }
-
-    free(mTempValue);
 }
 
 
@@ -435,15 +429,15 @@ Parameters::~Parameters()
 //! @param [in] type The type of the parameter e.g. double, default: ""
 //! @param [in] pDataPtr Only used by Components, system parameters don't use this, default: 0
 //! @return true if success, otherwise false
-bool Parameters::addParameter(std::string parameterName, std::string parameterValue, std::string description, std::string unit, std::string type, bool isDynamic, void* dataPtr, bool force)
+bool Parameters::addParameter(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rUnit, const HString &rType, bool isDynamic, void* dataPtr, bool force)
 {
     bool success = false;
-    if (!parameterName.empty())
+    if (!rName.empty())
     {
-        if(!exist(parameterName))
+        if(!exist(rName))
         {
             //! @todo should make sure that parameter names do not have + - * / . or similar as first charater
-            Parameter* newParameter = new Parameter(parameterName, parameterValue, description, unit, type, isDynamic, dataPtr, this);
+            Parameter* newParameter = new Parameter(rName, rValue, rDescription, rUnit, rType, isDynamic, dataPtr, this);
             success = newParameter && newParameter->evaluate();
             if(success || force)
             {
@@ -462,12 +456,12 @@ bool Parameters::addParameter(std::string parameterName, std::string parameterVa
 
 //! @brief Deletes a parameter
 //! @param parameterName The name of the paramter to delete
-void Parameters::deleteParameter(const std::string parameterName)
+void Parameters::deleteParameter(const HString &rName)
 {
     std::vector<Parameter*>::iterator parIt;
     for(parIt=mParameters.begin(); parIt!=mParameters.end(); ++parIt)
     {
-        if( parameterName == (*parIt)->getName() )
+        if( rName == (*parIt)->getName() )
         {
             delete *parIt;
             mParameters.erase(parIt);
@@ -480,16 +474,16 @@ void Parameters::deleteParameter(const std::string parameterName)
 
 //! @brief Rename a parameter (only useful for system paramters)
 //! @todo do I need to call some needs evaluation here or ?
-bool Parameters::renameParameter(const std::string oldName, const std::string newName)
+bool Parameters::renameParameter(const HString &rOldName, const HString &rNewName)
 {
-    if (!exist(newName))
+    if (!exist(rNewName))
     {
         std::vector<Parameter*>::iterator parIt;
         for(parIt=mParameters.begin(); parIt!=mParameters.end(); ++parIt)
         {
-            if( oldName == (*parIt)->getName() )
+            if( rOldName == (*parIt)->getName() )
             {
-                (*parIt)->mParameterName = newName;
+                (*parIt)->mParameterName = rNewName;
                 return true;
             }
         }
@@ -498,12 +492,12 @@ bool Parameters::renameParameter(const std::string oldName, const std::string ne
 }
 
 
-void Parameters::enableParameter(std::string parameterName, const bool enable)
+void Parameters::enableParameter(const HString &rName, const bool enable)
 {
     std::vector<Parameter*>::iterator parIt;
     for(parIt=mParameters.begin(); parIt!=mParameters.end(); ++parIt)
     {
-        if( parameterName == (*parIt)->getName() )
+        if( rName == (*parIt)->getName() )
         {
             (*parIt)->setEnabled(enable);
 
@@ -514,11 +508,11 @@ void Parameters::enableParameter(std::string parameterName, const bool enable)
 }
 
 
-const Parameter* Parameters::getParameter(const std::string parameterName) const
+const Parameter* Parameters::getParameter(const HString &rName) const
 {
     for (size_t i=0; i<mParameters.size(); ++i)
     {
-        if (mParameters[i]->getName() == parameterName)
+        if (mParameters[i]->getName() == rName)
         {
             return mParameters[i];
         }
@@ -528,7 +522,7 @@ const Parameter* Parameters::getParameter(const std::string parameterName) const
     return 0;
 }
 
-void Parameters::getParameterNames(std::vector<std::string> &rParameterNames)
+void Parameters::getParameterNames(std::vector<HString> &rParameterNames)
 {
     rParameterNames.resize(mParameters.size());
     for(size_t i=0; i<mParameters.size(); ++i)
@@ -540,29 +534,27 @@ void Parameters::getParameterNames(std::vector<std::string> &rParameterNames)
 //! @brief Get the value of specified parameter
 //! @param [in] name The parameter name to get value of
 //! @param [out] rValue Reference to the string variable that will contain the parameter value. The variable will be "" if parameter not found
-void Parameters::getParameterValue(const std::string name, char** pValue)
+void Parameters::getParameterValue(const HString &rName, HString &rValue)
 {
     for(size_t i=0; i<mParameters.size(); ++i)
     {
-        if (mParameters[i]->getName() == name)
+        if (mParameters[i]->getName() == rName)
         {
-            copyString(&mTempValue, mParameters[i]->getValue());
-            *pValue = mTempValue;
+            rValue = mParameters[i]->getValue();
             return; //Abort function as value has been set
         }
     }
-    copyString(&mTempValue, "");
-    *pValue = mTempValue;
+    rValue = "";
 }
 
 //! @brief Returns a pointer directly to the parameter data variable
 //! @warning Dont use this function unless YOU REALLY KNOW WHAT YOU ARE DOING
 //! @warning This function may be removed in the future
-void* Parameters::getParameterDataPtr(const std::string name)
+void* Parameters::getParameterDataPtr(const HString &rName)
 {
     for(size_t i=0; i<mParameters.size(); ++i)
     {
-        if (mParameters[i]->getName() == name)
+        if (mParameters[i]->getName() == rName)
         {
             return mParameters[i]->getDataPtr();
         }
@@ -576,8 +568,8 @@ const std::vector<Parameter*> *Parameters::getParametersVectorPtr() const
 }
 
 
-bool Parameters::setParameter(const std::string name, const std::string value, const std::string description,
-                              const std::string unit, const std::string type,  const bool force)
+bool Parameters::setParameter(const HString &rName, const HString &rValue, const HString &rDescription,
+                              const HString &rUnit, const HString &rType,  const bool force)
 {
     bool success = false;
 
@@ -585,10 +577,10 @@ bool Parameters::setParameter(const std::string name, const std::string value, c
     for(size_t i=0; i<mParameters.size(); ++i)
     {
         // If Found (It cannot find itself)
-        if( (name == mParameters[i]->getName()) )//&& (value != mParameters[i]->getName()) ) //By commenting this a parameter can be set to a systems parameter with same name as component parameter e.g. mass m = m (system parameter) related to issue #783
+        if( (rName == mParameters[i]->getName()) )//&& (value != mParameters[i]->getName()) ) //By commenting this a parameter can be set to a systems parameter with same name as component parameter e.g. mass m = m (system parameter) related to issue #783
         {
             Parameter *needEvaluation=0;
-            success = mParameters[i]->setParameter(value, description, unit, type, &needEvaluation, force); //Sets the new value, if the parameter is of the type to need evaluation e.g. if it is a system parameter needEvaluation points to the parameter
+            success = mParameters[i]->setParameter(rValue, rDescription, rUnit, rType, &needEvaluation, force); //Sets the new value, if the parameter is of the type to need evaluation e.g. if it is a system parameter needEvaluation points to the parameter
             if(needEvaluation)
             {
                 if(mParametersNeedEvaluation.end() == find(mParametersNeedEvaluation.begin(), mParametersNeedEvaluation.end(), needEvaluation))
@@ -621,9 +613,9 @@ bool Parameters::setParameter(const std::string name, const std::string value, c
 //! @param [in] name The name of the parameter to be set
 //! @param [in] value The new value for the parameter
 //! @return true if success, otherwise false
-bool Parameters::setParameterValue(const std::string name, const std::string value, bool force)
+bool Parameters::setParameterValue(const HString &rName, const HString &rValue, bool force)
 {
-    return setParameter(name, value, "", "", "", force);
+    return setParameter(rName, rValue, "", "", "", force);
 }
 
 
@@ -632,14 +624,14 @@ bool Parameters::setParameterValue(const std::string name, const std::string val
 //! @param [out] rEvaluatedParameterValue The result of the evaluation
 //! @param [in] type The type of how the parameter should be interpreted
 //! @return true if success, otherwise false
-bool Parameters::evaluateParameter(const std::string parameterName, std::string &rEvaluatedParameterValue, const std::string type, Parameter *ignoreMe)
+bool Parameters::evaluateParameter(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType, Parameter *ignoreMe)
 {
     bool success = false;
     //Try our own parameters
     for(size_t i = 0; i < mParameters.size(); ++i)
     {
-        if ( (mParameters[i]->getName() == parameterName) &&
-             (mParameters[i]->getType() == type) &&
+        if ( (mParameters[i]->getName() == rName) &&
+             (mParameters[i]->getType() == rType) &&
              (mParameters[i] != ignoreMe) )
         {
             success = mParameters[i]->evaluate(rEvaluatedParameterValue, ignoreMe);
@@ -652,7 +644,7 @@ bool Parameters::evaluateParameter(const std::string parameterName, std::string 
         {
             if(mParentComponent->getSystemParent())
             {
-                success = mParentComponent->getSystemParent()->getSystemParameters().evaluateParameter(parameterName, rEvaluatedParameterValue , type);
+                success = mParentComponent->getSystemParent()->getSystemParameters().evaluateParameter(rName, rEvaluatedParameterValue , rType);
             }
         }
     }
@@ -672,7 +664,7 @@ bool Parameters::evaluateParameters()
     return success;
 }
 
-bool Parameters::refreshParameterValueText(const string &rParameterName)
+bool Parameters::refreshParameterValueText(const HString &rParameterName)
 {
     for(size_t i=0; i<mParameters.size(); ++i)
     {
@@ -687,11 +679,11 @@ bool Parameters::refreshParameterValueText(const string &rParameterName)
 //! @brief Check if a parameter with given name exist among the parameters
 //! @param [in] parameterName The name of the parameter to check for
 //! @returns true if found else false
-bool Parameters::exist(const std::string parameterName)
+bool Parameters::exist(const HString &rName) const
 {
     for(size_t i=0; i<mParameters.size(); ++i)
     {
-        if(mParameters[i]->getName() == parameterName)
+        if(mParameters[i]->getName() == rName)
         {
             return true;
         }
@@ -707,7 +699,7 @@ bool Parameters::exist(const std::string parameterName)
 //! Check all parameters that need evaluation are able to be evaluated. The function will
 //! stop as soon as one parameter turns out to be faulty. So in the case of many bad parameters
 //! only the name of the first one is returned.
-bool Parameters::checkParameters(std::string &errParName)
+bool Parameters::checkParameters(HString &rErrParName)
 {
     bool success = true;
     std::vector<Parameter*>::iterator parIt;
@@ -716,7 +708,7 @@ bool Parameters::checkParameters(std::string &errParName)
         success = (success && (*parIt)->evaluate());
         if(!success)
         {
-            errParName = (*parIt)->getName();
+            rErrParName = (*parIt)->getName();
             break;
         }
     }

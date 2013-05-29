@@ -731,7 +731,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     //Collect information about system parameters
     QStringList parameterNames;
     QStringList parameterValues;
-    std::vector<std::string> parameterNamesStd;
+    std::vector<HString> parameterNamesStd;
     pSystem->getParameterNames(parameterNamesStd);
     for(size_t p=0; p<parameterNamesStd.size(); ++p)
     {
@@ -739,9 +739,9 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     }
     for(int p=0; p<parameterNames.size(); ++p)
     {
-        char* value;
-        pSystem->getParameterValue(parameterNamesStd[p], &value);
-        parameterValues.append(QString(value));
+        HString value;
+        pSystem->getParameterValue(parameterNamesStd[p], value);
+        parameterValues.append(QString(value.c_str()));
     }
 
 

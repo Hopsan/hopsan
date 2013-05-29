@@ -120,7 +120,8 @@ SOURCES += \
     src/CoreUtilities/GeneratorHandler.cpp \
     src/CoreUtilities/MultiThreadingUtilities.cpp \
     src/CoreUtilities/CoSimulationUtilities.cpp \
-    src/CoreUtilities/StringUtilities.cpp
+    src/CoreUtilities/StringUtilities.cpp \
+    src/HopsanTypes.cc
 HEADERS += \
     include/win32dll.h \
     include/version.h \
@@ -162,7 +163,8 @@ HEADERS += \
     include/CoreUtilities/GeneratorHandler.h \
     include/CoreUtilities/MultiThreadingUtilities.h \
     include/CoreUtilities/CoSimulationUtilities.h \
-    include/CoreUtilities/StringUtilities.h
+    include/CoreUtilities/StringUtilities.h \
+    include/HopsanTypes.h
 
 OTHER_FILES += \
     HopsanCoreBuild.prf
