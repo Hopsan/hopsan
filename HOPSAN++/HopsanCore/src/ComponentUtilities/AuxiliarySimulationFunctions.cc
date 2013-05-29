@@ -217,6 +217,23 @@ double hopsan::limit(const double x, const double xmin, const double xmax)
 }
 
 
+//! @brief Overloads void hopsan::limitValue() with a return value.
+//! @ingroup AuxiliarySimulationFunctions
+//! @see void hopsan::limitValue(&value, min, max)
+//! @param x Value to be limited
+//! @param xmin Minimum value of x
+//! @param xmax Maximum value of x
+double hopsan::lowLimit(const double x, const double xmin)
+{
+    double output = x;
+    if(x < xmin)
+    {
+        output = xmin;
+    }
+    return output;
+}
+
+
 //! @brief Sets the derivative of x to zero if x is outside of limits.
 //! @ingroup AuxiliarySimulationFunctions
 //! @details Returns 1.0 if x is within limits, else 0.0. Used to make the derivative of x zero if limit is reached.
@@ -231,7 +248,28 @@ double hopsan::dxLimit(const double x, const double xmin, const double xmax)
     return 1.0;
 }
 
-
+//! @brief Sets the derivative of x to zero if x is outside of limits.
+//! @ingroup AuxiliarySimulationFunctions
+//! @details Returns 1.0 if x is within limits, else 0.0. Used to make the derivative of x zero if limit is reached.
+//! @param x Value whos derivative is to be limited
+//! @param xmin Minimum value of x
+//! @returns Limited derivative of x
+double hopsan::dxLowLimit(const double x,const double xmin)
+{
+    if (x <= xmin) { return 0.0000001; }
+    return 1.0;
+}
+//! @brief Sets the derivative of x to zero if x is outside of limits.
+//! @ingroup AuxiliarySimulationFunctions
+//! @details Returns 1.0 if x is within limits, else 0.0. Used to make the derivative of x zero if limit is reached.
+//! @param x Value whos derivative is to be limited
+//! @param xmin Minimum value of x
+//! @returns Limited derivative of x
+double hopsan::dxLowLimit2(const double x, const double sx, const double xmin)
+{
+    if (x <= xmin && sx <= 0.0) { return 0.0000001; }
+    return 1.0;
+}
 
 //! @brief Limits the derivative of x when x is outside of its limits.
 //! @ingroup AuxiliarySimulationFunctions
