@@ -100,32 +100,32 @@ void splitStringOnDelimiter(const std::string &rString, const char delim, std::v
 //! @param [in] printDebug Should debug messages also be printed
 void printWaitingMessages(const bool printDebug)
 {
-    char *msg, *type, *tag;
+    hopsan::HString msg, type, tag;
     while (gHopsanCore.checkMessage() > 0)
     {
-        gHopsanCore.getMessage(&msg,&type,&tag);
-        if ( (strcmp(type,"error")==0) || (strcmp(type,"fatal")==0) )
+        gHopsanCore.getMessage(msg,type,tag);
+        if ( (type == "error") || ( type == "fatal") )
         {
             setTerminalColor(Red);
-            cout << msg << endl;
+            cout << msg.c_str() << endl;
         }
-        else if (strcmp(type,"warning")==0)
+        else if (type == "warning")
         {
             setTerminalColor(Yellow);
-            cout << msg << endl;
+            cout << msg.c_str() << endl;
         }
-        else if (strcmp(type,"debug")==0)
+        else if (type == "debug")
         {
             if (printDebug)
             {
                 setTerminalColor(Blue);
-                cout << msg << endl;
+                cout << msg.c_str() << endl;
             }
         }
         else
         {
             setTerminalColor(White);
-            cout << msg << endl;
+            cout << msg.c_str() << endl;
         }
     }
     setTerminalColor(Reset);
