@@ -574,7 +574,7 @@ void PlotTreeWidget::loadFromXml()
 //            QString modelName = curveElement.attribute("model");        //Find project tab with model file. Do nothing if not found.
 //            bool foundModel = false;
 //            int i;
-//            for(i=0; i<gpMainWindow->mpCentralTabs->count(); ++i)
+//            for(i=0; i<gpMainWindow->mpModelHandler->count(); ++i)
 //            {
 //                if(gpMainWindow->mpCentralTabs->getSystem(i)->getModelFileInfo().filePath() == modelName)
 //                {

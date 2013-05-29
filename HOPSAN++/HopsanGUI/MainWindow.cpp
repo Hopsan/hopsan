@@ -403,7 +403,7 @@ void MainWindow::initializeWorkspace()
 //! @brief Opens the plot widget.
 void MainWindow::openPlotWidget()
 {
-    if(mpCentralTabs->count() != 0)
+    if(mpModelHandler->count() != 0)
     {
         if(!mpPlotWidgetDock->isVisible())
         {

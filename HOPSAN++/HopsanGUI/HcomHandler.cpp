@@ -2121,7 +2121,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
 
     //Vector functions
     LogDataHandler *pLogData=0;
-    if(gpMainWindow->mpCentralTabs->count() > 0)
+    if(gpMainWindow->mpModelHandler->count() > 0)
     {
         pLogData = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler();
     }
@@ -2565,7 +2565,7 @@ void HcomHandler::getParameters(QString str, ModelObject* pComponent, QStringLis
 //! @param parameters Reference to list of parameters
 void HcomHandler::getParameters(const QString str, QStringList &parameters)
 {
-    if(gpMainWindow->mpCentralTabs->count() == 0) { return; }
+    if(gpMainWindow->mpModelHandler->count() == 0) { return; }
 
     SystemContainer *pSystem = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem();
 
@@ -2651,7 +2651,7 @@ QString HcomHandler::getParameterValue(QString parameter) const
     QString compName = parameter.split(".").first();
     QString parName = parameter.split(".").last();
 
-    if(gpMainWindow->mpCentralTabs->count() == 0)
+    if(gpMainWindow->mpModelHandler->count() == 0)
     {
         return "NaN";
     }
@@ -2674,7 +2674,7 @@ QString HcomHandler::getParameterValue(QString parameter) const
 //! @param variables Reference to list of found variables
 void HcomHandler::getVariables(const QString str, QStringList &variables) const
 {
-    if(gpMainWindow->mpCentralTabs->count() == 0) { return; }
+    if(gpMainWindow->mpModelHandler->count() == 0) { return; }
 
     SystemContainer *pSystem = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem();
     QStringList names = pSystem->getLogDataHandler()->getPlotDataNames();
@@ -2749,7 +2749,7 @@ void HcomHandler::getVariables(const QString str, QStringList &variables) const
 //! @param variables Reference to list of found variables
 void HcomHandler::getVariablesThatStartsWithString(const QString str, QStringList &variables) const
 {
-    if(gpMainWindow->mpCentralTabs->count() == 0) { return; }
+    if(gpMainWindow->mpModelHandler->count() == 0) { return; }
 
     SystemContainer *pSystem = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem();
     QStringList names = pSystem->getLogDataHandler()->getPlotDataNames();
@@ -2821,7 +2821,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
 //            plotDataNames = pLogData->getPlotDataNames();
 //        }
 //        if(!leftIsOk && !plotDataNames.contains(left))
-        if(!leftIsOk && (gpMainWindow->mpCentralTabs->count() == 0 || !getVariablePtr(left)))
+        if(!leftIsOk && (gpMainWindow->mpModelHandler->count() == 0 || !getVariablePtr(left)))
         {
             mpConsole->printErrorMessage("Illegal variable name.","",false);
             return false;
@@ -2885,7 +2885,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
 //! @returns Pointer to the data variable
 SharedLogVariableDataPtrT HcomHandler::getVariablePtr(QString fullName) const
 {
-    if(gpMainWindow->mpCentralTabs->count() == 0)
+    if(gpMainWindow->mpModelHandler->count() == 0)
     {
         return SharedLogVariableDataPtrT(0);
     }
@@ -3160,7 +3160,7 @@ double _funcSize(QString str)
 
 double _funcTime(QString /*str*/)
 {
-    if(gpMainWindow->mpCentralTabs->count() > 0)
+    if(gpMainWindow->mpModelHandler->count() > 0)
     {
         return gpMainWindow->mpModelHandler->getCurrentModel()->getLastSimulationTime();
     }

@@ -334,12 +334,12 @@ void OptionsDialog::updateValues()
     gConfig.setInvertWheel(mpInvertWheelCheckBox->isChecked());
     gConfig.setAntiAliasing(mpAntiAliasingCheckBox->isChecked());
     gConfig.setSnapping(mpSnappingCheckBox->isChecked());
-    for(int i=0; i<gpMainWindow->mpCentralTabs->count(); ++i)
+    for(int i=0; i<gpMainWindow->mpModelHandler->count(); ++i)
     {
         gpMainWindow->mpModelHandler->getModel(i)->getGraphicsView()->setRenderHint(QPainter::Antialiasing, gConfig.getAntiAliasing());
     }
     gConfig.setBackgroundColor(mPickedBackgroundColor);
-    for(int i=0; i<gpMainWindow->mpCentralTabs->count(); ++i)
+    for(int i=0; i<gpMainWindow->mpModelHandler->count(); ++i)
     {
         gpMainWindow->mpModelHandler->getModel(i)->getGraphicsView()->updateViewPort();
     }
@@ -349,7 +349,7 @@ void OptionsDialog::updateValues()
     gConfig.setNumberOfThreads(mpThreadsSpinBox->value());
     gConfig.setGenerationLimit(mpGenerationLimitSpinBox->value());
     gConfig.setCacheLogData(mpCacheLogDataCeckBox->isChecked());
-    for(int i=0; i<gpMainWindow->mpCentralTabs->count(); ++i)       //Loop through all containers and reduce their plot data
+    for(int i=0; i<gpMainWindow->mpModelHandler->count(); ++i)       //Loop through all containers and reduce their plot data
     {
         gpMainWindow->mpModelHandler->getContainer(i)->getLogDataHandler()->limitPlotGenerations();
     }
