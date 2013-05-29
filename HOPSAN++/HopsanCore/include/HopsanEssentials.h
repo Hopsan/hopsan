@@ -69,7 +69,7 @@ public:
 
     // Messages
     HopsanCoreMessageHandler* getCoreMessageHandler();
-    void getMessage(char **message, char **type, char **tag);
+    void getMessage(HString &rMessage, HString &rType, HString &rTag);
     size_t checkMessage();
 
     // External libraries

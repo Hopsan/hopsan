@@ -36,9 +36,6 @@ using namespace hopsan;
 
 HopsanCoreMessageHandler::HopsanCoreMessageHandler()
 {
-    mTempMessage = 0;
-    mTempTag = 0;
-    mTempType = 0;
     mMaxQueueSize = 10000;
 #ifdef USETBB
     mpMutex = new tbb::mutex;
@@ -47,9 +44,6 @@ HopsanCoreMessageHandler::HopsanCoreMessageHandler()
 
 HopsanCoreMessageHandler::~HopsanCoreMessageHandler()
 {
-    free(mTempMessage);
-    free(mTempType);
-    free(mTempTag);
     clear();
 #ifdef USETBB
     delete mpMutex;
@@ -62,7 +56,7 @@ HopsanCoreMessageHandler::~HopsanCoreMessageHandler()
 //! @param [in] message The message string
 //! @param [in] tag A tag describing the message
 //! @param [in] dbglevel The debuglevel for the message
-void HopsanCoreMessageHandler::addMessage(const int type, const string preFix, const string message, const string tag, const int debuglevel)
+void HopsanCoreMessageHandler::addMessage(const int type, const HString &rPreFix, const HString &rMessage, const HString &rTag, const int debuglevel)
 {
 #ifdef USETBB
     mpMutex->lock();
@@ -70,8 +64,8 @@ void HopsanCoreMessageHandler::addMessage(const int type, const string preFix, c
     HopsanCoreMessage* pMsg = new HopsanCoreMessage;
     pMsg->mType = type;
     pMsg->mDebugLevel = debuglevel;
-    pMsg->mMessage = preFix + message;
-    pMsg->mTag = tag;
+    pMsg->mMessage = rPreFix + rMessage;
+    pMsg->mTag = rTag;
     mMessageQueue.push(pMsg);
     if (mMessageQueue.size() > mMaxQueueSize)
     {
@@ -106,75 +100,74 @@ void HopsanCoreMessageHandler::clear()
 //! @param [in] message The message string
 //! @param [in] tag A tag describing the message
 //! @param [in] dbglevel The debuglevel for the message
-void HopsanCoreMessageHandler::addInfoMessage(const string message, const string tag, const int dbglevel)
+void HopsanCoreMessageHandler::addInfoMessage(const HString &rMessage, const HString &rTag, const int dbglevel)
 {
-    addMessage(HopsanCoreMessage::Info, "Info: ", message, tag, dbglevel);
+    addMessage(HopsanCoreMessage::Info, "Info: ", rMessage, rTag, dbglevel);
 }
 
 //! @brief Convenience function to add warning message
 //! @param [in] message The message string
 //! @param [in] tag A tag describing the message
 //! @param [in] dbglevel The debuglevel for the message
-void HopsanCoreMessageHandler::addWarningMessage(const string message, const string tag, const int dbglevel)
+void HopsanCoreMessageHandler::addWarningMessage(const HString &rMessage, const HString &rTag, const int dbglevel)
 {
-    addMessage(HopsanCoreMessage::Warning, "Warning: ", message, tag, dbglevel);
+    addMessage(HopsanCoreMessage::Warning, "Warning: ", rMessage, rTag, dbglevel);
 }
 
 //! @brief Convenience function to add error message
 //! @param [in] message The message string
 //! @param [in] tag A tag describing the message
 //! @param [in] dbglevel The debuglevel for the message
-void HopsanCoreMessageHandler::addErrorMessage(const string message, const string tag, const int dbglevel)
+void HopsanCoreMessageHandler::addErrorMessage(const HString &rMessage, const HString &rTag, const int dbglevel)
 {
-    addMessage(HopsanCoreMessage::Error, "Error: ", message, tag, dbglevel);
+    addMessage(HopsanCoreMessage::Error, "Error: ", rMessage, rTag, dbglevel);
 }
 
 //! @brief Convenience function to add debug message
 //! @param [in] message The message string
 //! @param [in] tag A tag describing the message
 //! @param [in] dbglevel The debuglevel for the message
-void HopsanCoreMessageHandler::addDebugMessage(const string message, const string tag, const int dbglevel)
+void HopsanCoreMessageHandler::addDebugMessage(const HString &rMessage, const HString &rTag, const int dbglevel)
 {
-    addMessage(HopsanCoreMessage::Debug, "Debug: ", message, tag, dbglevel);
+    addMessage(HopsanCoreMessage::Debug, "Debug: ", rMessage, rTag, dbglevel);
 }
 
 
 //! @brief Convenience function to add fatal message. Also tells the receiver of the message to close program in a controlled way.
-void HopsanCoreMessageHandler::addFatalMessage(const string message, const string tag, const int dbglevel)
+void HopsanCoreMessageHandler::addFatalMessage(const HString &rMessage, const HString &rTag, const int dbglevel)
 {
-    addMessage(HopsanCoreMessage::Fatal, "Fatal error: ", message, tag, dbglevel);
+    addMessage(HopsanCoreMessage::Fatal, "Fatal error: ", rMessage, rTag, dbglevel);
 }
 
 
 //! @brief Returns the next, (pops) message on the message queue
-void HopsanCoreMessageHandler::getMessage(char** message, char** type, char** tag)
+void HopsanCoreMessageHandler::getMessage(HString &rMessage, HString &rType, HString &rTag)
 {
 #ifdef USETBB
     mpMutex->lock();
 #endif
 
-    //HopsanCoreMessage msg;
     if (mMessageQueue.size() > 0)
     {
-        copyString(&mTempMessage, mMessageQueue.front()->mMessage);
-        copyString(&mTempTag, mMessageQueue.front()->mTag);
+        rMessage = mMessageQueue.front()->mMessage;
+        rTag = mMessageQueue.front()->mTag;
 
         switch (mMessageQueue.front()->mType)
         {
         case HopsanCoreMessage::Fatal:
-            copyString(&mTempType, "fatal");
+            rType = "fatal";
             break;
         case HopsanCoreMessage::Error:
-            copyString(&mTempType, "error");
+            rType = "error";
             break;
         case HopsanCoreMessage::Warning:
-            copyString(&mTempType, "warning");
+            rType = "warning";
             break;
         case HopsanCoreMessage::Info:
-            copyString(&mTempType, "info");
+            rType = "info";
             break;
         case HopsanCoreMessage::Debug:
-            copyString(&mTempType, "debug");
+            rType = "debug";
             break;
         }
 
@@ -183,14 +176,10 @@ void HopsanCoreMessageHandler::getMessage(char** message, char** type, char** ta
     }
     else
     {
-        copyString(&mTempMessage, "Error: You requested a message even though the message queue is empty");
-        copyString(&mTempTag, "");
-        copyString(&mTempType, "error");
+        rMessage = "Error: You requested a message even though the message queue is empty";
+        rTag = "";
+        rType = "error";
     }
-
-    *message = mTempMessage;
-    *tag = mTempTag;
-    *type = mTempType;
 
 #ifdef USETBB
     mpMutex->unlock();

@@ -224,10 +224,10 @@ SimulationHandler *HopsanEssentials::getSimulationHandler()
 //! @param [out] rMessage A reference to the message string
 //! @param [out] rType A reference to the message type string
 //! @param [out] rTag A reference to the message type Tag
-void HopsanEssentials::getMessage(char **message, char **type, char **tag)
+void HopsanEssentials::getMessage(HString &rMessage, HString &rType, HString &rTag)
 {
     //! @todo Utility function
-    mpMessageHandler->getMessage(message, type, tag);
+    mpMessageHandler->getMessage(rMessage, rType, rTag);
 }
 
 //! @brief Check if there are any messages waiting in the queue

@@ -26,7 +26,7 @@
 #define HOPSANCOREMESSAGEHANDLER_H
 
 #include <queue>
-#include <string>
+#include "HopsanTypes.h"
 #include "win32dll.h"
 
 #ifdef USETBB
@@ -46,8 +46,6 @@ public:
     {
         mType = 0;
         mDebugLevel = 0;
-        mMessage.clear();
-        mTag.clear();
     }
 
     HopsanCoreMessage &operator=(const HopsanCoreMessage &src)
@@ -61,21 +59,18 @@ public:
 
     int mType;
     int mDebugLevel;
-    std::string mMessage;
-    std::string mTag;
+    HString mMessage;
+    HString mTag;
 };
 
 class HopsanCoreMessageHandler
 {
 private:
     std::queue<HopsanCoreMessage*> mMessageQueue;
-    void addMessage(const int type, const std::string preFix, const std::string message, const std::string tag, const int debuglevel=0);
+    void addMessage(const int type, const HString &rPreFix, const HString &rMessage, const HString &rTag, const int debuglevel=0);
     void clear();
     size_t mMaxQueueSize;
 
-    char* mTempMessage;
-    char* mTempType;
-    char* mTempTag;
 #ifdef USETBB
     tbb::mutex *mpMutex;
 #endif
@@ -84,13 +79,13 @@ public:
     HopsanCoreMessageHandler();
     ~HopsanCoreMessageHandler();
 
-    void addInfoMessage(const std::string message, const std::string tag="", const int dbglevel=0);
-    void addWarningMessage(const std::string message, const std::string tag="", const int dbglevel=0);
-    void addErrorMessage(const std::string message, const std::string tag="", const int dbglevel=0);
-    void addDebugMessage(const std::string message, const std::string tag="", const int dbglevel=0);
-    void addFatalMessage(const std::string message, const std::string tag="", const int dbglevel=0);
+    void addInfoMessage(const HString &rMessage, const HString &rTag="", const int dbglevel=0);
+    void addWarningMessage(const HString &rMessage, const HString &rTag="", const int dbglevel=0);
+    void addErrorMessage(const HString &rMessage, const HString &rTag="", const int dbglevel=0);
+    void addDebugMessage(const HString &rMessage, const HString &rTag="", const int dbglevel=0);
+    void addFatalMessage(const HString &rMessage, const HString &rTag="", const int dbglevel=0);
 
-    void getMessage(char **message, char **type, char **tag);
+    void getMessage(HString &rMessage, HString &rType, HString &rTag);
     size_t getNumWaitingMessages() const;
 };
 

@@ -1091,11 +1091,11 @@ double Component::getMeasuredTime() const
 //! @brief Write an Debug message, i.e. for debugging purposes.
 //! @ingroup ConvenientMessageFunctions
 //! @param [in] message The message string
-void Component::addDebugMessage(const string message, const string tag) const
+void Component::addDebugMessage(const HString &rMessage, const HString &rTag) const
 {
     if (mpMessageHandler)
     {
-        mpMessageHandler->addDebugMessage("In "+getName()+ ";  " + message, tag);
+        mpMessageHandler->addDebugMessage("In "+getName()+ ";  " + rMessage, rTag);
     }
 }
 
@@ -1103,11 +1103,11 @@ void Component::addDebugMessage(const string message, const string tag) const
 //! @brief Write an Warning message.
 //! @ingroup ConvenientMessageFunctions
 //! @param [in] message The message string
-void Component::addWarningMessage(const string message, const string tag) const
+void Component::addWarningMessage(const HString &rMessage, const HString &rTag) const
 {
     if (mpMessageHandler)
     {
-        mpMessageHandler->addWarningMessage("In "+getName()+ ";  " + message, tag);
+        mpMessageHandler->addWarningMessage("In "+getName()+ ";  " + rMessage, rTag);
     }
 }
 
@@ -1115,11 +1115,11 @@ void Component::addWarningMessage(const string message, const string tag) const
 //! @brief Write an Error message.
 //! @ingroup ConvenientMessageFunctions
 //! @param [in] message The message string
-void Component::addErrorMessage(const string message, const string tag) const
+void Component::addErrorMessage(const HString &rMessage, const HString &rTag) const
 {
     if (mpMessageHandler)
     {
-        mpMessageHandler->addErrorMessage("In "+getName()+ ";  " + message, tag);
+        mpMessageHandler->addErrorMessage("In "+getName()+ ";  " + rMessage, rTag);
     }
 }
 
@@ -1127,23 +1127,23 @@ void Component::addErrorMessage(const string message, const string tag) const
 //! @brief Write an Info message.
 //! @ingroup ConvenientMessageFunctions
 //! @param [in] message The message string
-void Component::addInfoMessage(const string message, const string tag) const
+void Component::addInfoMessage(const HString &rMessage, const HString &rTag) const
 {
     if (mpMessageHandler)
     {
-        mpMessageHandler->addInfoMessage("In "+getName()+ ";  " + message, tag);
+        mpMessageHandler->addInfoMessage("In "+getName()+ ";  " + rMessage, rTag);
     }
 }
 
 //! @brief Writes a Fatal message and tells the receiver of the message to close program in a controlled way. Also prints message to log file.
 //! @ingroup ConvenientMessageFunctions
 //! @param [in] message The message string
-void Component::addFatalMessage(const string message, const string tag) const
+void Component::addFatalMessage(const HString &rMessage, const HString &rTag) const
 {
-    addLogMess(message.c_str());
+    addLogMess(rMessage.c_str());
     if (mpMessageHandler)
     {
-        mpMessageHandler->addFatalMessage(getName()+"::"+message, tag);
+        mpMessageHandler->addFatalMessage(getName()+"::"+rMessage, rTag);
     }
 }
 

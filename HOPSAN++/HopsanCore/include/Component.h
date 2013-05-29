@@ -178,11 +178,11 @@ public:
     void setMeasuredTime(const double time);
     double getMeasuredTime() const;
 
-    void addDebugMessage(const std::string message, const std::string tag="") const;
-    void addWarningMessage(const std::string message, const std::string tag="") const;
-    void addErrorMessage(const std::string message, const std::string tag="") const;
-    void addInfoMessage(const std::string message, const std::string tag="") const;
-    void addFatalMessage(const std::string message, const std::string tag="") const;
+    void addDebugMessage(const HString &rMessage, const HString &rTag="") const;
+    void addWarningMessage(const HString &rMessage, const HString &rTag="") const;
+    void addErrorMessage(const HString &rMessage, const HString &rTag="") const;
+    void addInfoMessage(const HString &rMessage, const HString &rTag="") const;
+    void addFatalMessage(const HString &rMessage, const HString &rTag="") const;
 
     // Stop a running simulation
     void stopSimulation();

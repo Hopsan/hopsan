@@ -263,13 +263,11 @@ unsigned int CoreMessagesAccess::getNumberOfMessages()
 
 void CoreMessagesAccess::getMessage(QString &rMessage, QString &rType, QString &rTag)
 {
-    char *msg;
-    char *tag;
-    char *type;
-    gHopsanCore.getMessage(&msg, &type, &tag);
-    rMessage = msg;
-    rTag = tag;
-    rType = type;
+    hopsan::HString msg, type, tag;
+    gHopsanCore.getMessage(msg, type, tag);
+    rMessage = msg.c_str();
+    rTag = tag.c_str();
+    rType = type.c_str();
 }
 
 bool CoreSimulationHandler::initialize(const double startTime, const double stopTime, const int nLogSamples, CoreSystemAccess* pCoreSystemAccess)
