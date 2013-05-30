@@ -1324,14 +1324,22 @@ void HcomHandler::executeChangeDirectoryCommand(const QString cmd)
         return;
     }
 
-    QDir newDir(mPwd+"/"+cmd);
-    if(!newDir.exists())
+    QDir newDirAbs(cmd);
+    QDir newDirRel(mPwd+"/"+cmd);
+    if(newDirAbs.exists() && cmd != ".." && cmd != ".")
+    {
+        mPwd = QDir().cleanPath(cmd);
+    }
+    else if(newDirRel.exists())
+    {
+        mPwd = QDir().cleanPath(mPwd+"/"+cmd);
+    }
+    else
     {
         mpConsole->printErrorMessage("Illegal directory.", "", false);
         return;
     }
 
-    mPwd = QDir().cleanPath(mPwd+"/"+cmd);
     mpConsole->print(mPwd);
 }
 

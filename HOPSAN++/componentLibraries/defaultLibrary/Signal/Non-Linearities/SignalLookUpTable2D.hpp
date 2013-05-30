@@ -27,6 +27,7 @@
 
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
+#include "HopsanTypes.h"
 #include <algorithm>
 #include <sstream>
 
