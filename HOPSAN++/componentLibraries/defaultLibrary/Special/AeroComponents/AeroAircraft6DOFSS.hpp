@@ -9,7 +9,7 @@
 //!
 //! @file AeroAircraft6DOFSS.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Mon 27 May 2013 18:40:39
+//! @date Wed 29 May 2013 13:41:41
 //! @brief Flight dynamics model of super-sonic aircraft
 //! @ingroup AeroComponents
 //!
@@ -346,6 +346,84 @@ private:
      double *mpwturbx;
      double *mpwturby;
      double *mpwturbz;
+     //inputParameters pointers
+     double *mpafin;
+     double *mpan1;
+     double *mpan2;
+     double *mpap1;
+     double *mpap2;
+     double *mpAR1;
+     double *mpAR2;
+     double *mpARfin;
+     double *mpCd01;
+     double *mpCd02;
+     double *mpCd0b;
+     double *mpCd0fin;
+     double *mpCLalpha1;
+     double *mpCLalpha2;
+     double *mpCLalphabh;
+     double *mpCLalphabv;
+     double *mpCLalphafin;
+     double *mpCLde1;
+     double *mpCLde12;
+     double *mpCdide1;
+     double *mpCdide12;
+     double *mpCdide112;
+     double *mpde10;
+     double *mpde120;
+     double *mpCm01;
+     double *mpCmfs1;
+     double *mpCmde1;
+     double *mpCmde12;
+     double *mpCLdefin;
+     double *mpdah1;
+     double *mpdah2;
+     double *mpe1;
+     double *mpe2;
+     double *mpefin;
+     double *mpawfin;
+     double *mpawn1;
+     double *mpawn2;
+     double *mpawp1;
+     double *mpawp2;
+     double *mpgamma1;
+     double *mpgamma2;
+     double *mphthrust0;
+     double *mpia1;
+     double *mpia2;
+     double *mpIx0;
+     double *mpIxz0;
+     double *mpIy0;
+     double *mpIz0;
+     double *mplambda1;
+     double *mplambda2;
+     double *mplambdafin;
+     double *mplc10;
+     double *mplc20;
+     double *mplc120;
+     double *mplcfin0;
+     double *mpMe;
+     double *mprc10;
+     double *mprc20;
+     double *mprcfin0;
+     double *mpS1;
+     double *mpS20;
+     double *mpSbh0;
+     double *mpSbv0;
+     double *mpSfin0;
+     double *mpxbach0;
+     double *mpxbacv0;
+     double *mpxbcge0;
+     double *mpxcargo0;
+     double *mpxfuel0;
+     double *mpxw10;
+     double *mpxw20;
+     double *mpxwfin0;
+     double *mpxeng0;
+     double *mpyeng0;
+     double *mpg0;
+     double *mpkground;
+     double *mpcground;
      //outputVariables pointers
      double *mpxcg;
      double *mpycg;
@@ -457,6 +535,150 @@ y","rad/s",0.,&mpwturby);
             addInputVariable("wturbz","air turbulence \
 z","rad/s",0.,&mpwturbz);
 
+        //Add inputParammeters to the component
+            addInputVariable("afin", "&mpbreak angle 1", "rad", 0.3,&mpafin);
+            addInputVariable("an1", "&mpNeg. break angle 1", "rad", \
+0.6,&mpan1);
+            addInputVariable("an2", "&mpNeg. break angle 2", "rad", \
+0.6,&mpan2);
+            addInputVariable("ap1", "&mpPos. break angle 1", "rad", \
+0.9,&mpap1);
+            addInputVariable("ap2", "&mpPos. break angle 2", "rad", \
+0.7,&mpap2);
+            addInputVariable("AR1", "&mpAspect ratio 1", "", 3.62,&mpAR1);
+            addInputVariable("AR2", "&mpAspect ratio 2", "", 3.62,&mpAR2);
+            addInputVariable("ARfin", "&mpAspect ratio fin", "", \
+1.5,&mpARfin);
+            addInputVariable("Cd01", "&mpDrag coef. 1", "", 0.0045,&mpCd01);
+            addInputVariable("Cd02", "&mpDrag coef. 2", "", 0.0045,&mpCd02);
+            addInputVariable("Cd0b", "&mpDrag coef. body", "", \
+0.004,&mpCd0b);
+            addInputVariable("Cd0fin", "&mpDrag coef. fin", "", \
+0.0045,&mpCd0fin);
+            addInputVariable("CLalpha1", "&mpL. slope coef. 1", "", \
+2.1,&mpCLalpha1);
+            addInputVariable("CLalpha2", "&mpL. slope coef. 2", "", \
+2.2,&mpCLalpha2);
+            addInputVariable("CLalphabh", "&mpL. slope c. body h", "", \
+2.,&mpCLalphabh);
+            addInputVariable("CLalphabv", "&mpL. slope c. bodyv", "", \
+2.,&mpCLalphabv);
+            addInputVariable("CLalphafin", "&mpL. sl. c. fin", "", \
+0.8,&mpCLalphafin);
+            addInputVariable("CLde1", "&mpCtrl surface coef 1", "", \
+0.1,&mpCLde1);
+            addInputVariable("CLde12", "&mpFlap rudder coef 1", "", \
+0.2,&mpCLde12);
+            addInputVariable("Cdide1", "&mpFlap rudder drag coef 1", "", \
+0.,&mpCdide1);
+            addInputVariable("Cdide12", "&mpFlap rudder drag coef 1", "", \
+0.,&mpCdide12);
+            addInputVariable("Cdide112", "&mpFlap rudder cross drag coef 1", \
+"", 0.,&mpCdide112);
+            addInputVariable("de10", "&mprudder min drag angle 1", "", \
+0.01,&mpde10);
+            addInputVariable("de120", "&mpFlap min drag angle 1", "", \
+0.01,&mpde120);
+            addInputVariable("Cm01", "&mpMom coeff. wing 1", "", \
+-0.1,&mpCm01);
+            addInputVariable("Cmfs1", "&mpMom coeff.1, fully separated", "", \
+-0.5,&mpCmfs1);
+            addInputVariable("Cmde1", "&mpMom slop coeff 1", "", \
+0.02,&mpCmde1);
+            addInputVariable("Cmde12", "&mpFlap Mom slop coeff 1", "", \
+0.1,&mpCmde12);
+            addInputVariable("CLdefin", "&mpRudder coef 1", "", \
+0.0827084,&mpCLdefin);
+            addInputVariable("dah1", "&mpdown wash effect on 1", "", \
+1.,&mpdah1);
+            addInputVariable("dah2", "&mpdown wash effect on 2", "", \
+0.6,&mpdah2);
+            addInputVariable("e1", "&mpOsw. effic. factor 1", "", \
+0.95,&mpe1);
+            addInputVariable("e2", "&mpOsw. effic. factor 1", "", \
+0.95,&mpe2);
+            addInputVariable("efin", "&mpOsw. eff. f. fin", "", \
+0.95,&mpefin);
+            addInputVariable("awfin", "&mpCL exponent fin", "", \
+0.2,&mpawfin);
+            addInputVariable("awn1", "&mpCL exponent neg. 1", "", \
+0.2,&mpawn1);
+            addInputVariable("awn2", "&mpCL exponent neg. 2", "", \
+0.2,&mpawn2);
+            addInputVariable("awp1", "&mpCL exponent pos 1", "", \
+0.2,&mpawp1);
+            addInputVariable("awp2", "&mpCL exponent neg 1", "", \
+0.2,&mpawp2);
+            addInputVariable("gamma1", "&mpdehidral", "rad", \
+-0.0872665,&mpgamma1);
+            addInputVariable("gamma2", "&mpdehidral", "rad", \
+-0.0872665,&mpgamma2);
+            addInputVariable("hthrust0", "&mpengine vert. pos", "", \
+0.,&mphthrust0);
+            addInputVariable("ia1", "&mpincidence angle 1", "rad", \
+0.,&mpia1);
+            addInputVariable("ia2", "&mpincidence angle 1", " rad", \
+0.02,&mpia2);
+            addInputVariable("Ix0", "&mpNorm. Inertia moment Ix/(Me S1)", " \
+", 0.0022,&mpIx0);
+            addInputVariable("Ixz0", "&mpNorm. Inertia moment", " ", \
+0.001,&mpIxz0);
+            addInputVariable("Iy0", "&mpNorm. Inertia moment", " ", \
+0.06,&mpIy0);
+            addInputVariable("Iz0", "&mpInertia moment", " ", 0.08,&mpIz0);
+            addInputVariable("lambda1", "&mpsweep 1", "rad", \
+0.436332,&mplambda1);
+            addInputVariable("lambda2", "&mpsweep 2", "rad", \
+0.436332,&mplambda2);
+            addInputVariable("lambdafin", "&mpsweep fin", "rad", \
+0.785398,&mplambdafin);
+            addInputVariable("lc10", "&mpnorm. ctrl surf. 1 ac fr hinge \
+lc1/sqrt(AR1 S1)", "", 0.01,&mplc10);
+            addInputVariable("lc20", "&mpnorm. ctrl surf. 2 ac fr hinge \
+lc1/sqrt(AR1 S1)", "", 0.05,&mplc20);
+            addInputVariable("lc120", "&mpnorm. flap 1 ac fr hinge", "", \
+0.01,&mplc120);
+            addInputVariable("lcfin0", "&mpctrl s. fin ac fr hinge", "", \
+0.01,&mplcfin0);
+            addInputVariable("Me", "&mpEmpty weight", "kg", 8700.,&mpMe);
+            addInputVariable("rc10", "&mpnorm. ctrl surface 1 mom. arm", "", \
+0.25,&mprc10);
+            addInputVariable("rc20", "&mpnorm. ctrl surface 1 mom. arm", "", \
+0.15,&mprc20);
+            addInputVariable("rcfin0", "&mpnorm. ctrl surf. fin mom. arm", \
+"", 0.1,&mprcfin0);
+            addInputVariable("S1", "&mpwing area 1", "m2", 27.,&mpS1);
+            addInputVariable("S20", "&mpnorm. wing area 2", "", 0.36,&mpS20);
+            addInputVariable("Sbh0", "&mpnorm. hor. proj. area", "", \
+0.1,&mpSbh0);
+            addInputVariable("Sbv0", "&mpnorm.body vert. proj. area", "", \
+0.1,&mpSbv0);
+            addInputVariable("Sfin0", "&mpnorm. fin area", "", \
+0.17,&mpSfin0);
+            addInputVariable("xbach0", "&mpnorm. body ac. hor.", "", \
+3,&mpxbach0);
+            addInputVariable("xbacv0", "&mpnorm. body ac vert.", " ", \
+3,&mpxbacv0);
+            addInputVariable("xbcge0", "&mpnorm. body cg", " ", 3,&mpxbcge0);
+            addInputVariable("xcargo0", "&mpnorm. cargo pos.", " ", \
+3,&mpxcargo0);
+            addInputVariable("xfuel0", "&mp", " ", 3,&mpxfuel0);
+            addInputVariable("xw10", "&mpnorm. wing1  position", " ", \
+3,&mpxw10);
+            addInputVariable("xw20", "&mpnorm. wing 2 position", " ", \
+4.8,&mpxw20);
+            addInputVariable("xwfin0", "&mpnorm. fin position", "", \
+4.8,&mpxwfin0);
+            addInputVariable("xeng0", "&mpnorm. fin position", "", \
+4.8,&mpxeng0);
+            addInputVariable("yeng0", "&mpengines off. from center", "", \
+0.,&mpyeng0);
+            addInputVariable("g0", "&mpGravity acceleration", "m/s^2", \
+9.81,&mpg0);
+            addInputVariable("kground", "&mpGround stiffness (for \
+limitiation)", "N/m", 10000.,&mpkground);
+            addInputVariable("cground", "&mpGround damping (for \
+limitiation)", "Ns/m", 1000.,&mpcground);
         //Add outputVariables to the component
             addOutputVariable("xcg","Horizontal position 1","m",0,&mpxcg);
             addOutputVariable("ycg","Horizontal position 2","m",0,&mpycg);
@@ -491,97 +713,7 @@ angle","rad/s",0,&mpBetaSlip);
             addOutputVariable("Faz","Aero force in x","N",0,&mpFaz);
 
 //==This code has been autogenerated using Compgen==
-        //Add constants/parameters
-            addConstant("afin", "break angle 1", "rad", 0.3,afin);
-            addConstant("an1", "Neg. break angle 1", "rad", 0.6,an1);
-            addConstant("an2", "Neg. break angle 2", "rad", 0.6,an2);
-            addConstant("ap1", "Pos. break angle 1", "rad", 0.9,ap1);
-            addConstant("ap2", "Pos. break angle 2", "rad", 0.7,ap2);
-            addConstant("AR1", "Aspect ratio 1", "", 3.62,AR1);
-            addConstant("AR2", "Aspect rati 2o", "", 3.62,AR2);
-            addConstant("ARfin", "Aspect ratio fin", "", 1.5,ARfin);
-            addConstant("Cd01", "Drag coef. 1", "", 0.0045,Cd01);
-            addConstant("Cd02", "Drag coef. 2", "", 0.0045,Cd02);
-            addConstant("Cd0b", "Drag coef. body", "", 0.004,Cd0b);
-            addConstant("Cd0fin", "Drag coef. fin", "", 0.0045,Cd0fin);
-            addConstant("CLalpha1", "L. slope coef. 1", "", 2.1,CLalpha1);
-            addConstant("CLalpha2", "L. slope coef. 2", "", 2.2,CLalpha2);
-            addConstant("CLalphabh", "L. slope c. body h", "", 2.,CLalphabh);
-            addConstant("CLalphabv", "L. slope c. bodyv", "", 2.,CLalphabv);
-            addConstant("CLalphafin", "L. sl. c. fin", "", 0.8,CLalphafin);
-            addConstant("CLde1", "Ctrl surface coef 1", "", 0.1,CLde1);
-            addConstant("CLde12", "Flap rudder coef 1", "", 0.2,CLde12);
-            addConstant("Cdide1", "Flap rudder drag coef 1", "", 0.,Cdide1);
-            addConstant("Cdide12", "Flap rudder drag coef 1", "", \
-0.,Cdide12);
-            addConstant("Cdide112", "Flap rudder cross drag coef 1", "", \
-0.,Cdide112);
-            addConstant("de10", "rudder min drag angle 1", "", 0.01,de10);
-            addConstant("de120", "Flap min drag angle 1", "", 0.01,de120);
-            addConstant("Cm01", "Mom coeff. wing 1", "", -0.1,Cm01);
-            addConstant("Cmfs1", "Mom coeff.1, fully separated", "", \
--0.5,Cmfs1);
-            addConstant("Cmde1", "Mom slop coeff 1", "", 0.02,Cmde1);
-            addConstant("Cmde12", "Flap Mom slop coeff 1", "", 0.1,Cmde12);
-            addConstant("CLdefin", "Rudder coef 1", "", 0.0827084,CLdefin);
-            addConstant("dah1", "down wash effect on 1", "", 1.,dah1);
-            addConstant("dah2", "down wash effect on 2", "", 0.6,dah2);
-            addConstant("e1", "Osw. effic. factor 1", "", 0.95,e1);
-            addConstant("e2", "Osw. effic. factor 1", "", 0.95,e2);
-            addConstant("efin", "Osw. eff. f. fin", "", 0.95,efin);
-            addConstant("awfin", "CL exponent fin", "", 0.2,awfin);
-            addConstant("awn1", "CL exponent neg. 1", "", 0.2,awn1);
-            addConstant("awn2", "CL exponent neg. 2", "", 0.2,awn2);
-            addConstant("awp1", "CL exponent pos 1", "", 0.2,awp1);
-            addConstant("awp2", "CL exponent neg 1", "", 0.2,awp2);
-            addConstant("gamma1", "dehidral", "rad", -0.0872665,gamma1);
-            addConstant("gamma2", "dehidral", "rad", -0.0872665,gamma2);
-            addConstant("hthrust0", "engine vert. pos", "", 0.,hthrust0);
-            addConstant("ia1", "incidence angle 1", "rad", 0.,ia1);
-            addConstant("ia2", "incidence angle 1", " rad", 0.02,ia2);
-            addConstant("Ix0", "Norm. Inertia moment Ix/(Me S1)", " ", \
-0.0022,Ix0);
-            addConstant("Ixz0", "Norm. Inertia moment", " ", 0.001,Ixz0);
-            addConstant("Iy0", "Norm. Inertia moment", " ", 0.06,Iy0);
-            addConstant("Iz0", "Inertia moment", " ", 0.08,Iz0);
-            addConstant("lambda1", "sweep 1", "rad", 0.436332,lambda1);
-            addConstant("lambda2", "sweep 2", "rad", 0.436332,lambda2);
-            addConstant("lambdafin", "sweep fin", "rad", 0.785398,lambdafin);
-            addConstant("lc10", "norm. ctrl surf. 1 ac fr hinge lc1/sqrt(AR1 \
-S1)", "", 0.005,lc10);
-            addConstant("lc20", "norm. ctrl surf. 2 ac fr hinge lc1/sqrt(AR1 \
-S1)", "", 0.005,lc20);
-            addConstant("lc120", "norm. flap 1 ac fr hinge", "", \
-0.005,lc120);
-            addConstant("lcfin0", "ctrl s. fin ac fr hinge", "", \
-0.005,lcfin0);
-            addConstant("Me", "Empty weight", "kg", 8700.,Me);
-            addConstant("rc10", "norm. ctrl surface 1 mom. arm", "", \
-0.25,rc10);
-            addConstant("rc20", "norm. ctrl surface 1 mom. arm", "", \
-0.15,rc20);
-            addConstant("rcfin0", "norm. ctrl surf. fin mom. arm", "", \
-0.1,rcfin0);
-            addConstant("S1", "wing area 1", "m2", 27.,S1);
-            addConstant("S20", "norm. wing area 2", "", 0.36,S20);
-            addConstant("Sbh0", "norm. hor. proj. area", "", 0.1,Sbh0);
-            addConstant("Sbv0", "norm.body vert. proj. area", "", 0.1,Sbv0);
-            addConstant("Sfin0", "norm. fin area", "", 0.17,Sfin0);
-            addConstant("xbach0", "norm. body ac. hor.", "", 3,xbach0);
-            addConstant("xbacv0", "norm. body ac vert.", " ", 3,xbacv0);
-            addConstant("xbcge0", "norm. body cg", " ", 3,xbcge0);
-            addConstant("xcargo0", "norm. cargo pos.", " ", 3,xcargo0);
-            addConstant("xfuel0", "", " ", 3,xfuel0);
-            addConstant("xw10", "norm. wing1  position", " ", 3,xw10);
-            addConstant("xw20", "norm. wing 2 position", " ", 4.8,xw20);
-            addConstant("xwfin0", "norm. fin position", "", 4.8,xwfin0);
-            addConstant("xeng0", "norm. fin position", "", 4.8,xeng0);
-            addConstant("yeng0", "engines off. from center", "", 0.,yeng0);
-            addConstant("g0", "Gravity acceleration", "m/s^2", 9.81,g0);
-            addConstant("kground", "Ground stiffness (for limitiation)", \
-"N/m", 10000.,kground);
-            addConstant("cground", "Ground damping (for limitiation)", \
-"Ns/m", 1000.,cground);
+        //Add constantParameters
         mpSolver = new EquationSystemSolver(this,13);
      }
 
@@ -748,6 +880,85 @@ NodeMechanicRotational::EquivalentInertia);
         wturby = (*mpwturby);
         wturbz = (*mpwturbz);
 
+        //Read inputParameters from nodes
+        afin = (*mpafin);
+        an1 = (*mpan1);
+        an2 = (*mpan2);
+        ap1 = (*mpap1);
+        ap2 = (*mpap2);
+        AR1 = (*mpAR1);
+        AR2 = (*mpAR2);
+        ARfin = (*mpARfin);
+        Cd01 = (*mpCd01);
+        Cd02 = (*mpCd02);
+        Cd0b = (*mpCd0b);
+        Cd0fin = (*mpCd0fin);
+        CLalpha1 = (*mpCLalpha1);
+        CLalpha2 = (*mpCLalpha2);
+        CLalphabh = (*mpCLalphabh);
+        CLalphabv = (*mpCLalphabv);
+        CLalphafin = (*mpCLalphafin);
+        CLde1 = (*mpCLde1);
+        CLde12 = (*mpCLde12);
+        Cdide1 = (*mpCdide1);
+        Cdide12 = (*mpCdide12);
+        Cdide112 = (*mpCdide112);
+        de10 = (*mpde10);
+        de120 = (*mpde120);
+        Cm01 = (*mpCm01);
+        Cmfs1 = (*mpCmfs1);
+        Cmde1 = (*mpCmde1);
+        Cmde12 = (*mpCmde12);
+        CLdefin = (*mpCLdefin);
+        dah1 = (*mpdah1);
+        dah2 = (*mpdah2);
+        e1 = (*mpe1);
+        e2 = (*mpe2);
+        efin = (*mpefin);
+        awfin = (*mpawfin);
+        awn1 = (*mpawn1);
+        awn2 = (*mpawn2);
+        awp1 = (*mpawp1);
+        awp2 = (*mpawp2);
+        gamma1 = (*mpgamma1);
+        gamma2 = (*mpgamma2);
+        hthrust0 = (*mphthrust0);
+        ia1 = (*mpia1);
+        ia2 = (*mpia2);
+        Ix0 = (*mpIx0);
+        Ixz0 = (*mpIxz0);
+        Iy0 = (*mpIy0);
+        Iz0 = (*mpIz0);
+        lambda1 = (*mplambda1);
+        lambda2 = (*mplambda2);
+        lambdafin = (*mplambdafin);
+        lc10 = (*mplc10);
+        lc20 = (*mplc20);
+        lc120 = (*mplc120);
+        lcfin0 = (*mplcfin0);
+        Me = (*mpMe);
+        rc10 = (*mprc10);
+        rc20 = (*mprc20);
+        rcfin0 = (*mprcfin0);
+        S1 = (*mpS1);
+        S20 = (*mpS20);
+        Sbh0 = (*mpSbh0);
+        Sbv0 = (*mpSbv0);
+        Sfin0 = (*mpSfin0);
+        xbach0 = (*mpxbach0);
+        xbacv0 = (*mpxbacv0);
+        xbcge0 = (*mpxbcge0);
+        xcargo0 = (*mpxcargo0);
+        xfuel0 = (*mpxfuel0);
+        xw10 = (*mpxw10);
+        xw20 = (*mpxw20);
+        xwfin0 = (*mpxwfin0);
+        xeng0 = (*mpxeng0);
+        yeng0 = (*mpyeng0);
+        g0 = (*mpg0);
+        kground = (*mpkground);
+        cground = (*mpcground);
+
         //Read outputVariables from nodes
         xcg = (*mpxcg);
         ycg = (*mpycg);
@@ -837,10 +1048,10 @@ ia1,AR1,e1,CLalpha1,ap1,an1,awp1,awn1)/2.);
 CLift(Alpha*dah1 - ia1,CLalpha1,ap1,an1,awp1,awn1)/2.);
         Liftr1 = qpress*S1*(CLde1*thetaar1 + CLde12*thetaar12 + \
 CLift(Alpha*dah1 - ia1,CLalpha1,ap1,an1,awp1,awn1)/2.);
-        Dragl2 = qpress*S2*(Cd02/2. + CDragInd(Alpha*dah2 - \
-ia2,AR2,e2,CLalpha2,ap2,an2,awp2,awn2)/2.);
-        Dragr2 = qpress*S2*(Cd02/2. + CDragInd(Alpha*dah2 - \
-ia2,AR2,e2,CLalpha2,ap2,an2,awp2,awn2)/2.);
+        Dragl2 = qpress*S2*(Cd02/2. + CDragInd(Alpha*dah2 - ia2 + \
+thetaal2,AR2,e2,CLalpha2,ap2,an2,awp2,awn2)/2.);
+        Dragr2 = qpress*S2*(Cd02/2. + CDragInd(Alpha*dah2 - ia2 + \
+thetaar2,AR2,e2,CLalpha2,ap2,an2,awp2,awn2)/2.);
         Liftl2 = (qpress*S2*CLift(Alpha*dah2 - ia2 + \
 thetaal2,CLalpha2,ap2,an2,awp2,awn2))/2.;
         Liftr2 = (qpress*S2*CLift(Alpha*dah2 - ia2 + \
@@ -1071,10 +1282,10 @@ ia1,AR1,e1,CLalpha1,ap1,an1,awp1,awn1)/2.);
 CLift(Alpha*dah1 - ia1,CLalpha1,ap1,an1,awp1,awn1)/2.);
         Liftr1 = qpress*S1*(CLde1*thetaar1 + CLde12*thetaar12 + \
 CLift(Alpha*dah1 - ia1,CLalpha1,ap1,an1,awp1,awn1)/2.);
-        Dragl2 = qpress*S2*(Cd02/2. + CDragInd(Alpha*dah2 - \
-ia2,AR2,e2,CLalpha2,ap2,an2,awp2,awn2)/2.);
-        Dragr2 = qpress*S2*(Cd02/2. + CDragInd(Alpha*dah2 - \
-ia2,AR2,e2,CLalpha2,ap2,an2,awp2,awn2)/2.);
+        Dragl2 = qpress*S2*(Cd02/2. + CDragInd(Alpha*dah2 - ia2 + \
+thetaal2,AR2,e2,CLalpha2,ap2,an2,awp2,awn2)/2.);
+        Dragr2 = qpress*S2*(Cd02/2. + CDragInd(Alpha*dah2 - ia2 + \
+thetaar2,AR2,e2,CLalpha2,ap2,an2,awp2,awn2)/2.);
         Liftl2 = (qpress*S2*CLift(Alpha*dah2 - ia2 + \
 thetaal2,CLalpha2,ap2,an2,awp2,awn2))/2.;
         Liftr2 = (qpress*S2*CLift(Alpha*dah2 - ia2 + \
@@ -1444,7 +1655,9 @@ Cdide112*(-de10 + thetaal1)*(-de120 + thetaal12) + Cdide12*Power(-de120 + \
 thetaal12,2) + Cdide1*Power(-de10 + thetaar1,2) - Cdide112*(-de10 + \
 thetaar1)*(-de120 + thetaar12) + Cdide12*Power(-de120 + thetaar12,2) + \
 CDragInd(Alpha*dah1 - ia1,AR1,e1,CLalpha1,ap1,an1,awp1,awn1) + (S2*(Cd02 + \
-CDragInd(Alpha*dah2 - ia2,AR2,e2,CLalpha2,ap2,an2,awp2,awn2)))/S1;
+CDragInd(Alpha*dah2 - ia2 + thetaal2,AR2,e2,CLalpha2,ap2,an2,awp2,awn2)/2. + \
+CDragInd(Alpha*dah2 - ia2 + \
+thetaar2,AR2,e2,CLalpha2,ap2,an2,awp2,awn2)/2.))/S1;
           Zcfin = CLdefin*lcfin*mTimestep*qpress*Sfin;
           Zcal1 = CLde1*lc1*mTimestep*qpress*S1;
           Zcar1 = CLde1*lc1*mTimestep*qpress*S1;

@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanobjectappearance version="0.3">
   <modelobject typename="AeroAircraft6DOFSS" displayname="AeroAircraft6DOFSS">
-    <icons/>
+    <icons>
+      <icon scale="1" path="AeroAircraft6DOFSS.svg" iconrotation="ON" type="user"/>
+      <icon scale="1" path="AeroAircraft6DOFSS.svg" iconrotation="ON" type="iso"/>
+    </icons>
     <ports>
       <port x="0.2" y="1" enabled="true" a="90" name="vz" autoplaced="true"/>
       <port x="0.366667" y="1" enabled="true" a="90" name="Vb" autoplaced="true"/>
