@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       145,          7]
-NotebookDataLength[    278070,       6132]
-NotebookOptionsPosition[    275294,       6049]
-NotebookOutlinePosition[    275716,       6065]
-CellTagsIndexPosition[    275673,       6062]
+NotebookDataLength[    283686,       6260]
+NotebookOptionsPosition[    280910,       6177]
+NotebookOutlinePosition[    281332,       6193]
+CellTagsIndexPosition[    281289,       6190]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -2090,13 +2090,14 @@ Cell[BoxData[
      RowBox[{"WriteCode", "[", 
       RowBox[{"file", ",", "\"\<\>\""}], "]"}], ";", "\[IndentingNewLine]", 
      RowBox[{"WriteCode", "[", 
-      RowBox[{"file", ",", "\"\<//!\>\""}], "]"}], ";", "\[IndentingNewLine]", 
+      RowBox[{"file", ",", "\"\<//!\>\""}], "]"}], ";", "\[IndentingNewLine]",
+      "\[IndentingNewLine]", 
      RowBox[{"WriteCode", "[", 
       RowBox[{"file", ",", 
        RowBox[{"StringJoin", "[", 
         RowBox[{"\"\<//! @file \>\"", ",", 
          RowBox[{"ToString", "[", "filename", "]"}]}], "]"}]}], "]"}], ";", 
-     "\[IndentingNewLine]", 
+     "\[IndentingNewLine]", "\[IndentingNewLine]", 
      RowBox[{"WriteCode", "[", 
       RowBox[{"file", ",", 
        RowBox[{"StringJoin", "[", 
@@ -3443,7 +3444,7 @@ Cell[BoxData[
        RowBox[{"i", "=", "1"}], ",", 
        RowBox[{"i", "<", 
         RowBox[{"n", "+", "1"}]}], ",", 
-       RowBox[{"i", "++"}], ",", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       RowBox[{"i", "++"}], ",", "\[IndentingNewLine]", 
        RowBox[{"WriteCode", "[", 
         RowBox[{"file", ",", 
          RowBox[{"StringJoin", "[", 
@@ -3454,6 +3455,30 @@ Cell[BoxData[
               RowBox[{"i", ",", "1"}], "]"}], "]"}], "]"}], ",", 
            "\"\<;\>\""}], "]"}]}], "]"}]}], "\[IndentingNewLine]", "]"}], ";",
       "\[IndentingNewLine]", 
+     RowBox[{"n", "=", 
+      RowBox[{"Length", "[", "inputParameters", "]"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"WriteCode", "[", 
+      RowBox[{"file", ",", 
+       RowBox[{
+       "StringJoin", "[", "\"\<     //inputParameters pointers\>\"", "]"}]}], 
+      "]"}], ";", "\[IndentingNewLine]", 
+     RowBox[{"For", "[", 
+      RowBox[{
+       RowBox[{"i", "=", "1"}], ",", 
+       RowBox[{"i", "<", 
+        RowBox[{"n", "+", "1"}]}], ",", 
+       RowBox[{"i", "++"}], ",", "\[IndentingNewLine]", 
+       RowBox[{"WriteCode", "[", 
+        RowBox[{"file", ",", 
+         RowBox[{"StringJoin", "[", 
+          RowBox[{"\"\<     double *mp\>\"", ",", 
+           RowBox[{"ToString", "[", 
+            RowBox[{"inputParameters", "[", 
+             RowBox[{"[", 
+              RowBox[{"i", ",", "1"}], "]"}], "]"}], "]"}], ",", 
+           "\"\<;\>\""}], "]"}]}], "]"}]}], "\[IndentingNewLine]", "]"}], ";",
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
      RowBox[{"n", "=", 
       RowBox[{"Length", "[", "outputVariables", "]"}]}], ";", 
      "\[IndentingNewLine]", 
@@ -3790,6 +3815,60 @@ Cell[BoxData[
      "\[IndentingNewLine]", 
      RowBox[{"WriteCode", "[", 
       RowBox[{
+      "file", ",", 
+       "\"\<        //Add inputParammeters to the component\>\""}], "]"}], 
+     ";", "\[IndentingNewLine]", 
+     RowBox[{"If", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Depth", "[", "inputParameters", "]"}], ">", "1"}], ",", 
+       "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"n", "=", 
+         RowBox[{"Length", "[", "inputParameters", "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"For", "[", 
+         RowBox[{
+          RowBox[{"i", "=", "1"}], ",", 
+          RowBox[{"i", "<", 
+           RowBox[{"n", "+", "1"}]}], ",", 
+          RowBox[{"i", "++"}], ",", "\[IndentingNewLine]", 
+          RowBox[{"WriteCode", "[", 
+           RowBox[{"file", ",", 
+            RowBox[{"StringJoin", "[", 
+             RowBox[{
+             "\"\<            addInputVariable(\>\"", ",", "\"\<\\\"\>\"", 
+              ",", 
+              RowBox[{"ToString", "[", 
+               RowBox[{"inputParameters", "[", 
+                RowBox[{"[", 
+                 RowBox[{"i", ",", "1"}], "]"}], "]"}], "]"}], ",", 
+              "\"\<\\\", \\\"\>\"", ",", "\"\<&mp\>\"", ",", 
+              RowBox[{"ToString", "[", 
+               RowBox[{"inputParameters", "[", 
+                RowBox[{"[", 
+                 RowBox[{"i", ",", "5"}], "]"}], "]"}], "]"}], ",", 
+              "\"\<\\\", \>\"", ",", "\"\<\\\"\>\"", ",", 
+              RowBox[{"ToString", "[", 
+               RowBox[{"inputParameters", "[", 
+                RowBox[{"[", 
+                 RowBox[{"i", ",", "4"}], "]"}], "]"}], "]"}], ",", 
+              "\"\<\\\", \>\"", ",", 
+              RowBox[{"ToString", "[", 
+               RowBox[{"CForm", "[", 
+                RowBox[{"inputParameters", "[", 
+                 RowBox[{"[", 
+                  RowBox[{"i", ",", "2"}], "]"}], "]"}], "]"}], "]"}], ",", 
+              "\"\<,\>\"", ",", "\"\<&mp\>\"", ",", 
+              RowBox[{"ToString", "[", 
+               RowBox[{"inputParameters", "[", 
+                RowBox[{"[", 
+                 RowBox[{"i", ",", "1"}], "]"}], "]"}], "]"}], ",", 
+              "\"\<);\>\""}], "]"}]}], "]"}]}], "\[IndentingNewLine]", 
+         "]"}]}]}], "]"}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+     "\[IndentingNewLine]", 
+     RowBox[{"WriteCode", "[", 
+      RowBox[{
       "file", ",", "\"\<        //Add outputVariables to the component\>\""}],
        "]"}], ";", "\[IndentingNewLine]", 
      RowBox[{"n", "=", 
@@ -3845,16 +3924,16 @@ Cell[BoxData[
       RowBox[{"file", ",", "AutoCodeAlert"}], "]"}], ";", 
      "\[IndentingNewLine]", "\[IndentingNewLine]", 
      RowBox[{"WriteCode", "[", 
-      RowBox[{"file", ",", "\"\<        //Add constants/parameters\>\""}], 
+      RowBox[{"file", ",", "\"\<        //Add constantParameters\>\""}], 
       "]"}], ";", "\[IndentingNewLine]", 
      RowBox[{"If", "[", 
       RowBox[{
        RowBox[{
-        RowBox[{"Depth", "[", "inputParameters", "]"}], ">", "1"}], ",", 
+        RowBox[{"Depth", "[", "constantParameters", "]"}], ">", "1"}], ",", 
        "\[IndentingNewLine]", 
        RowBox[{
         RowBox[{"n", "=", 
-         RowBox[{"Length", "[", "inputParameters", "]"}]}], ";", 
+         RowBox[{"Length", "[", "constantParameters", "]"}]}], ";", 
         "\[IndentingNewLine]", 
         RowBox[{"For", "[", 
          RowBox[{
@@ -3868,28 +3947,28 @@ Cell[BoxData[
              RowBox[{
              "\"\<            addConstant(\>\"", ",", "\"\<\\\"\>\"", ",", 
               RowBox[{"ToString", "[", 
-               RowBox[{"inputParameters", "[", 
+               RowBox[{"constantParameters", "[", 
                 RowBox[{"[", 
                  RowBox[{"i", ",", "1"}], "]"}], "]"}], "]"}], ",", 
               "\"\<\\\", \\\"\>\"", ",", 
               RowBox[{"ToString", "[", 
-               RowBox[{"inputParameters", "[", 
+               RowBox[{"constantParameters", "[", 
                 RowBox[{"[", 
                  RowBox[{"i", ",", "5"}], "]"}], "]"}], "]"}], ",", 
               "\"\<\\\", \>\"", ",", "\"\<\\\"\>\"", ",", 
               RowBox[{"ToString", "[", 
-               RowBox[{"inputParameters", "[", 
+               RowBox[{"constantParameters", "[", 
                 RowBox[{"[", 
                  RowBox[{"i", ",", "4"}], "]"}], "]"}], "]"}], ",", 
               "\"\<\\\", \>\"", ",", 
               RowBox[{"ToString", "[", 
                RowBox[{"CForm", "[", 
-                RowBox[{"inputParameters", "[", 
+                RowBox[{"constantParameters", "[", 
                  RowBox[{"[", 
                   RowBox[{"i", ",", "2"}], "]"}], "]"}], "]"}], "]"}], ",", 
               "\"\<,\>\"", ",", 
               RowBox[{"ToString", "[", 
-               RowBox[{"inputParameters", "[", 
+               RowBox[{"constantParameters", "[", 
                 RowBox[{"[", 
                  RowBox[{"i", ",", "1"}], "]"}], "]"}], "]"}], ",", 
               "\"\<);\>\""}], "]"}]}], "]"}]}], "\[IndentingNewLine]", 
@@ -4197,6 +4276,47 @@ nodeConnections[[i,1]]],\>\""}], ")"}], "=",
      RowBox[{"WriteCode", "[", 
       RowBox[{"file", ",", "\"\<\>\""}], "]"}], ";", "\[IndentingNewLine]", 
      "\[IndentingNewLine]", 
+     RowBox[{"WriteCode", "[", 
+      RowBox[{
+      "file", ",", "\"\<        //Read inputParameters from nodes\>\""}], 
+      "]"}], ";", "\[IndentingNewLine]", 
+     RowBox[{"n", "=", 
+      RowBox[{"Length", "[", "inputParameters", "]"}]}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"For", "[", 
+      RowBox[{
+       RowBox[{"i", "=", "1"}], ",", 
+       RowBox[{"i", "<", 
+        RowBox[{"n", "+", "1"}]}], ",", 
+       RowBox[{"i", "++"}], ",", "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{
+         RowBox[{"WriteCode", "[", 
+          RowBox[{"file", ",", 
+           RowBox[{"StringJoin", "[", 
+            RowBox[{"\"\<        //Port P\>\"", ",", 
+             RowBox[{"ToString", "[", 
+              RowBox[{"inputVariables", "[", 
+               RowBox[{"[", 
+                RowBox[{"i", ",", "1"}], "]"}], "]"}], "]"}]}], "]"}]}], 
+          "]"}], ";"}], "*)"}], "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"WriteCode", "[", 
+         RowBox[{"file", ",", 
+          RowBox[{"StringJoin", "[", 
+           RowBox[{"\"\<        \>\"", ",", 
+            RowBox[{"ToString", "[", 
+             RowBox[{"inputParNames", "[", 
+              RowBox[{"[", "i", "]"}], "]"}], "]"}], ",", "\"\< = (*mp\>\"", 
+            ",", 
+            RowBox[{"ToString", "[", 
+             RowBox[{"inputParNames", "[", 
+              RowBox[{"[", "i", "]"}], "]"}], "]"}], ",", "\"\<);\>\""}], 
+           "]"}]}], "]"}], ";"}]}], "\[IndentingNewLine]", "]"}], ";", 
+     "\[IndentingNewLine]", 
+     RowBox[{"WriteCode", "[", 
+      RowBox[{"file", ",", "\"\<\>\""}], "]"}], ";", "\[IndentingNewLine]", 
+     "\[IndentingNewLine]", "\[IndentingNewLine]", 
      RowBox[{"(*", 
       RowBox[{
        RowBox[{"WriteCode", "[", 
@@ -5878,7 +5998,12 @@ deltaStateVar[i];\>\""}], "]"}], ";", "\[IndentingNewLine]",
    3.578396926359457*^9}, {3.5783969565154724`*^9, 3.5783969567064915`*^9}, {
    3.5785053959408913`*^9, 3.5785054219173765`*^9}, {3.57850547931966*^9, 
    3.578505483097876*^9}, {3.578505567671714*^9, 3.578505572348981*^9}, {
-   3.578505648121315*^9, 3.5785056496824045`*^9}}]
+   3.578505648121315*^9, 3.5785056496824045`*^9}, {3.578806679021571*^9, 
+   3.5788067242590947`*^9}, {3.5788069339590626`*^9, 3.578806978628529*^9}, {
+   3.578807070220687*^9, 3.5788070873403993`*^9}, 3.578807186941358*^9, {
+   3.57880735907657*^9, 3.578807368750537*^9}, {3.578807416141276*^9, 
+   3.5788074307637377`*^9}, {3.5788076024259024`*^9, 3.578807610069667*^9}, {
+   3.5788164470463667`*^9, 3.578816491488367*^9}, 3.5788165413783665`*^9}]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -6042,13 +6167,16 @@ Cell[BoxData[
    3.5783856150953503`*^9, 3.578395613461171*^9, 3.5783967407679*^9, {
    3.5783969332021413`*^9, 3.5783969615169725`*^9}, {3.5785051471906633`*^9, 
    3.5785051510728855`*^9}, 3.578505434608103*^9, 3.578505488448182*^9, 
-   3.5785055864937897`*^9, 3.5785056543116693`*^9}]
+   3.5785055864937897`*^9, 3.5785056543116693`*^9, 3.5788065088175526`*^9, 
+   3.5788067295276213`*^9, 3.5788070929969645`*^9, 3.5788071906147256`*^9, 
+   3.5788074341260743`*^9, 3.5788076137360334`*^9, 3.5788163099113665`*^9, 
+   3.578816494642367*^9}]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]
 },
-WindowSize->{1350, 365},
-WindowMargins->{{-64, Automatic}, {127, Automatic}},
+WindowSize->{1351, 618},
+WindowMargins->{{146, Automatic}, {120, Automatic}},
 FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
 StyleDefinitions->FrontEnd`FileName[{"Creative"}, "PastelColor.nb", 
   CharacterEncoding -> "WindowsANSI"]
@@ -6124,13 +6252,13 @@ Cell[74682, 1705, 1964, 42, 142, "Input"]
 }, Open  ]],
 Cell[CellGroupData[{
 Cell[76683, 1752, 155, 2, 36, "Subsection"],
-Cell[76841, 1756, 187842, 4124, 17029, "Input"]
+Cell[76841, 1756, 193256, 4249, 17529, "Input"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[264720, 5885, 35, 0, 37, "Subsection"],
+Cell[270134, 6010, 35, 0, 37, "Subsection"],
 Cell[CellGroupData[{
-Cell[264780, 5889, 317, 7, 41, "Input"],
-Cell[265100, 5898, 10154, 146, 40, "Output"]
+Cell[270194, 6014, 317, 7, 41, "Input"],
+Cell[270514, 6023, 10356, 149, 40, "Output"]
 }, Open  ]]
 }, Open  ]]
 }, Open  ]]
