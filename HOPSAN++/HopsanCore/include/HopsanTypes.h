@@ -3,11 +3,12 @@
 
 #include <string>
 #include <ostream>
+#include "win32dll.h"
 
 
 namespace hopsan {
 
-class HString
+class DLLIMPORTEXPORT HString
 {
 private:
     char *mpDataBuffer;
