@@ -57,13 +57,13 @@ enum VariameterTypeEnumT {InputVariable, OutputVariable, OtherVariable};
 class VariameterDescription
 {
 public:
-    std::string mName;
-    std::string mShortName;
-    std::string mPortName;
-    std::string mAlias;
-    std::string mDataType;
-    std::string mUnit;
-    std::string mDescription;
+    HString mName;
+    HString mShortName;
+    HString mPortName;
+    HString mAlias;
+    HString mDataType;
+    HString mUnit;
+    HString mDescription;
     VariameterTypeEnumT mVariameterType;
     NodeDataVariableTypeEnumT mVarType;
     unsigned int mVariableId;
@@ -91,15 +91,15 @@ public:
     virtual bool checkModelBeforeSimulation();
 
     // Name and type
-    void setName(std::string name);
-    const std::string &getName() const;
-    const std::string &getTypeName() const;
-    const std::string &getSubTypeName() const;
+    void setName(HString name);
+    const HString &getName() const;
+    const HString &getTypeName() const;
+    const HString &getSubTypeName() const;
     void setSubTypeName(const std::string subTypeName);
 
     // Component type identification
     virtual CQSEnumT getTypeCQS() const;
-    std::string getTypeCQSString() const;
+    HString getTypeCQSString() const;
     virtual bool isComponentC() const;
     virtual bool isComponentQ() const;
     virtual bool isComponentSystem() const;
@@ -111,7 +111,7 @@ public:
     void updateDynamicParameterValues();
 
     // Constants
-    void addConstant(const std::string name, const std::string description, const std::string unit, double &rData);
+    void addConstant(const HString &rName, const HString &description, const HString &unit, double &rData);
     void addConstant(const std::string name, const std::string description, const std::string unit, const double defaultValue, double &rData);
     void addConstant(const std::string name, const std::string description, const std::string unit, int &rData);
     void addConstant(const std::string name, const std::string description, const std::string unit, const int defaultValue, int &rData);
@@ -125,7 +125,7 @@ public:
     void setConstantValue(const char* name, const bool value);
 
     void registerParameter(const std::string name, const std::string description, const std::string unit, double &rValue);
-    virtual void unRegisterParameter(const std::string name);
+    virtual void unRegisterParameter(const HString &rName);
 
     bool hasParameter(const HString name) const;
     const std::vector<Parameter*> *getParametersVectorPtr() const;
@@ -150,8 +150,8 @@ public:
 
     // Ports
     std::vector<Port*> getPortPtrVector();
-    Port *getPort(const std::string portname);
-    std::vector<std::string> getPortNames();
+    Port *getPort(const HString &rPortname) const;
+    std::vector<HString> getPortNames();
 
     // Node Data ptrs
     double *getSafeNodeDataPtr(Port* pPort, const int dataId);
@@ -218,24 +218,24 @@ protected:
     void initializeAutoSignalNodeDataPtrs();
 
     // Port functions
-    Port* addPowerPort(const std::string portName, const std::string nodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
-    Port* addReadPort(const std::string portName, const std::string nodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
-    Port* addWritePort(const std::string portName, const std::string nodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
-    Port* addPowerMultiPort(const std::string portName, const std::string nodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
-    Port* addReadMultiPort(const std::string portname, const std::string nodetype, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addPowerPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addReadPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addWritePort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addPowerMultiPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addReadMultiPort(const HString &rPortname, const HString &rNodetype, const Port::RequireConnectionEnumT reqConnect=Port::Required);
 
-    Port* addPowerPort(const std::string portName, const std::string nodeType, const std::string description, const Port::RequireConnectionEnumT reqConnect=Port::Required);
-    Port* addReadPort(const std::string portName, const std::string nodeType, const std::string description, const Port::RequireConnectionEnumT reqConnect=Port::Required);
-    Port* addPowerMultiPort(const std::string portName, const std::string nodeType, const std::string description, const Port::RequireConnectionEnumT reqConnect=Port::Required);
-    Port* addReadMultiPort(const std::string portName, const std::string nodeType, const std::string description, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addPowerPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addReadPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addPowerMultiPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addReadMultiPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
 
-    bool getPort(const std::string portname, Port* &rpPort);
-    std::string renamePort(const std::string oldname, const std::string newname);
-    void deletePort(const std::string name);
+    bool getPort(const HString &rPortname, Port* &rpPort);
+    HString renamePort(const HString &rOldname, const HString &rNewname);
+    void deletePort(const HString &rName);
 
     // Parameter registration
     //! @todo clean this up /Peter
-    void registerParameter(const std::string name, const std::string description, const std::string unit, double &rValue, const ParamDynConstEnumT dynconst);
+    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue, const ParamDynConstEnumT dynconst);
     void registerParameter(const std::string name, const std::string description, const std::string unit, int &rValue);
     void registerParameter(const std::string name, const std::string description, const std::string unit, HString &rValue);
     void registerParameter(const std::string name, const std::string description, const std::string unit, bool &rValue);
@@ -245,7 +245,7 @@ protected:
     double *getSafeNodeDataPtr(Port* pPort, const int dataId, const double defaultValue);
 
     // Unique name functions
-    virtual std::string determineUniquePortName(std::string portname);
+    virtual HString determineUniquePortName(const HString &rPortname);
 
     //==========Protected member variables==========
     bool mInheritTimestep;
@@ -257,24 +257,24 @@ protected:
 
     ComponentSystem* mpSystemParent;
 
-    std::vector<std::string> mSearchPaths;
+    std::vector<HString> mSearchPaths;
 
 private:
-    typedef std::map<std::string, Port*> PortPtrMapT;
-    typedef std::pair<std::string, Port*> PortPtrPairT;
+    typedef std::map<HString, Port*> PortPtrMapT;
+    typedef std::pair<HString, Port*> PortPtrPairT;
 
     // Private member functions
     void setSystemParent(ComponentSystem *pComponentSystem);
-    void setTypeName(const std::string typeName);
+    void setTypeName(const HString &rTypeName);
     double *getNodeDataPtr(Port* pPort, const int dataId);
-    Port* addPort(const std::string portName, const PortTypesEnumT portType, const std::string nodeType, const Port::RequireConnectionEnumT reqConnection);
-    Port* addPort(const std::string portName, const PortTypesEnumT portType, const std::string nodeType, const std::string description, const Port::RequireConnectionEnumT reqConnection);
-    Port* addWritePort(const std::string portName, const std::string nodeType, const std::string description, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addPort(const HString &rPortName, const PortTypesEnumT portType, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnection);
+    Port* addPort(const HString &rPortName, const PortTypesEnumT portType, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnection);
+    Port* addWritePort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
 
     // Private member variables
-    std::string mName;
-    std::string mTypeName;
-    std::string mSubTypeName;
+    HString mName;
+    HString mTypeName;
+    HString mSubTypeName;
     Parameters *mpParameters;
     PortPtrMapT mPortPtrMap;
     double mMeasuredTime;

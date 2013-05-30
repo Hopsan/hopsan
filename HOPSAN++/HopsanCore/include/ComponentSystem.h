@@ -65,32 +65,32 @@ namespace hopsan {
     {
     public:
         AliasHandler(ComponentSystem *pSystem);
-        bool setVariableAlias(const std::string alias, const std::string compName, const std::string portName, const std::string varName);
-        bool setVariableAlias(const std::string alias, const std::string compName, const std::string portName, const int varId);
-        bool setParameterAlias(const std::string alias, const std::string compName, const std::string parameterName);
-        void componentRenamed(const std::string oldCompName, const std::string newCompName);
-        void portRenamed(const std::string compName, const std::string oldPortName, const std::string newPortName);
-        void componentRemoved(const std::string compName);
-        void portRemoved(const std::string compName, const std::string portName);
-        bool hasAlias(const std::string alias);
-        bool removeAlias(const std::string alias);
+        bool setVariableAlias(const HString &rAlias, const HString &rCompName, const HString &rPortName, const HString &rVarName);
+        bool setVariableAlias(const HString &rAlias, const HString &rCompName, const HString &rPortName, const int varId);
+        bool setParameterAlias(const HString &rAlias, const HString &rCompName, const HString &rParameterName);
+        void componentRenamed(const HString &rOldCompName, const HString &rNewCompName);
+        void portRenamed(const HString &rCompName, const HString &rOldPortName, const HString &rNewPortName);
+        void componentRemoved(const HString &rCompName);
+        void portRemoved(const HString &rCompName, const HString &rPortName);
+        bool hasAlias(const HString &rAlias);
+        bool removeAlias(const HString &rAlias);
 
-        std::vector<std::string> getAliases() const;
+        std::vector<HString> getAliases() const;
 
-        void getVariableFromAlias(const std::string alias, std::string &rCompName, std::string &rPortName, int &rVarId);
-        void getVariableFromAlias(const std::string alias, std::string &rCompName, std::string &rPortName, std::string &rVarName);
-        void getParameterFromAlias(const std::string alias, std::string &rCompName, std::string &rParameterName);
+        void getVariableFromAlias(const HString &rAlias, HString &rCompName, HString &rPortName, int &rVarId);
+        void getVariableFromAlias(const HString &rAlias, HString &rCompName, HString &rPortName, HString &rVarName);
+        void getParameterFromAlias(const HString &rAlias, HString &rCompName, HString &rParameterName);
 
     private:
         enum {Parameter, Variable};
         typedef struct _ParamOrVariable
         {
             int type;
-            std::string componentName;
-            std::string name;
+            HString componentName;
+            HString name;
         } ParamOrVariableT;
 
-        typedef std::map<std::string, ParamOrVariableT> AliasMapT;
+        typedef std::map<HString, ParamOrVariableT> AliasMapT;
         AliasMapT mAliasMap;
         ComponentSystem *mpSystem;
     };
@@ -140,33 +140,33 @@ namespace hopsan {
         bool isComponentSystem() const {return true;}
         CQSEnumT getTypeCQS() const;
         void setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet=false);
-        bool changeSubComponentSystemTypeCQS(const std::string name, const CQSEnumT newType);
+        bool changeSubComponentSystemTypeCQS(const HString &rName, const CQSEnumT newType);
         void determineCQSType();
         bool isTopLevelSystem() const;
 
         // Adding removing and renaming components
         void addComponents(std::vector<Component*> &rComponents);
         void addComponent(Component *pComponent);
-        void renameSubComponent(std::string old_name, std::string new_name);
-        void removeSubComponent(std::string name, bool doDelete=false);
+        void renameSubComponent(const HString &rOld_name, const HString &rNew_name);
+        void removeSubComponent(const HString &rName, bool doDelete=false);
         void removeSubComponent(Component *pComponent, bool doDelete=false);
-        std::string reserveUniqueName(const std::string desiredName, const UniqeNameEnumT type=UniqueReservedNameType);
-        void unReserveUniqueName(const std::string name);
+        HString reserveUniqueName(const HString &rDesiredName, const UniqeNameEnumT type=UniqueReservedNameType);
+        void unReserveUniqueName(const HString &rName);
 
         // System Parameter functions
         bool renameParameter(const std::string oldName, const std::string newName);
 
         // Handle system ports
-        Port* addSystemPort(std::string portName, const std::string description="");
-        std::string renameSystemPort(const std::string oldname, const std::string newname);
-        void deleteSystemPort(const std::string name);
+        Port* addSystemPort(HString portName, const HString &rDescription="");
+        HString renameSystemPort(const HString &rOldname, const HString &rNewname);
+        void deleteSystemPort(const HString &rName);
 
         // Getting added components and component names
-        Component* getSubComponentOrThisIfSysPort(std::string name);
-        Component* getSubComponent(std::string name);
-        ComponentSystem* getSubComponentSystem(std::string name);
-        std::vector<std::string> getSubComponentNames();
-        bool haveSubComponent(const std::string name) const;
+        Component* getSubComponentOrThisIfSysPort(const HString &rName);
+        Component* getSubComponent(const HString &rName) const;
+        ComponentSystem* getSubComponentSystem(const HString &rName) const;
+        std::vector<HString> getSubComponentNames();
+        bool haveSubComponent(const HString &rName) const;
         bool isEmpty() const;
 
         // Alias handler
@@ -264,14 +264,14 @@ namespace hopsan {
         bool componentVectorContains(std::vector<Component*> vector, Component *pComp);
 
         // UniqueName specific functions
-        std::string determineUniquePortName(std::string portname);
-        std::string determineUniqueComponentName(std::string name);
-        bool hasReservedUniqueName(const std::string &rName) const;
+        HString determineUniquePortName(const HString &rPortname);
+        HString determineUniqueComponentName(const HString &rName) const;
+        bool hasReservedUniqueName(const HString &rName) const;
 
         //==========Private member variables==========
         CQSEnumT mTypeCQS;
 
-        typedef std::map<std::string, Component*> SubComponentMapT;
+        typedef std::map<HString, Component*> SubComponentMapT;
         SubComponentMapT mSubComponentMap;
         std::vector<Component*> mComponentSignalptrs;
         std::vector<Component*> mComponentQptrs;
@@ -279,7 +279,7 @@ namespace hopsan {
         std::vector<Component*> mComponentUndefinedptrs;
         std::vector<Node*> mSubNodePtrs;
 
-        typedef std::map<std::string, UniqeNameEnumT> TakenNamesMapT;
+        typedef std::map<HString, UniqeNameEnumT> TakenNamesMapT;
         TakenNamesMapT mTakenNames;
 
 

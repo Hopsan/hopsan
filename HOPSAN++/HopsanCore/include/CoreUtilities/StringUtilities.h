@@ -25,46 +25,49 @@
 #ifndef STRINGUTILITIES_H
 #define STRINGUTILITIES_H
 
-#include <string>
 #include <sstream>
+#include "HopsanTypes.h"
 
 namespace hopsan {
 
-void santizeName(std::string &rString);
-std::string santizeName(const std::string &rString);
+void santizeName(HString &rName);
+HString santizeName(const HString &rName);
 
-bool isNameValid(const std::string &rString);
-bool isNameValid(const std::string &rString, const std::string &rExceptions);
+bool isNameValid(const HString &rString);
+bool isNameValid(const HString &rString, const HString &rExceptions);
 
 //! @brief Help function for create a unique name among names from one STL Container
 template<typename ContainerT>
-std::string findUniqueName(const ContainerT &rContainer, std::string name)
+HString findUniqueName(const ContainerT &rContainer, const HString &rName)
 {
+    //! @todo need string conversion since HString lacks some string functions
+    std::string sname = rName.c_str();
+
     // New name must not be empty, empty name is "reserved" to be used in the API to indicate that we want to manipulate the current root system
-    if (name.empty())
+    if (sname.empty())
     {
-        name = "noName";
+        sname = "noName";
     }
 
     // Make sure name is sane
-    santizeName(name);
+    santizeName(sname);
 
     size_t ctr = 1; //The suffix number
-    while(rContainer.find(name) != rContainer.end())
+    while(rContainer.find(sname) != rContainer.end())
     {
         //strip suffix
-        size_t foundpos = name.rfind("_");
+        size_t foundpos = sname.rfind("_");
         if (foundpos != std::string::npos)
         {
-            if (foundpos+1 < name.size())
+            if (foundpos+1 < sname.size())
             {
-                unsigned char nr = name.at(foundpos+1);
+                unsigned char nr = sname.at(foundpos+1);
                 //cout << "nr after _: " << nr << endl;
                 //Check the ascii code for the charachter
                 if ((nr >= 48) && (nr <= 57))
                 {
                     //Is number lets assume that the _ found is the beginning of a suffix
-                    name.erase(foundpos, std::string::npos);
+                    sname.erase(foundpos, std::string::npos);
                 }
             }
         }
@@ -73,14 +76,14 @@ std::string findUniqueName(const ContainerT &rContainer, std::string name)
         //add new suffix
         std::stringstream suffix;
         suffix << ctr;
-        name.append("_");
-        name.append(suffix.str());
+        sname.append("_");
+        sname.append(suffix.str());
         ++ctr;
         //cout << "ctr: " << ctr << " appended tempname: " << name << endl;
     }
     //cout << name << endl;
 
-    return name;
+    return sname.c_str();
 }
 
 inline bool contains(const std::string &rString, const std::string &rPattern)

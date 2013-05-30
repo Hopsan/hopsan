@@ -18,7 +18,6 @@
 #ifndef MECHANICTRANSLATIONALMASS_HPP_INCLUDED
 #define MECHANICTRANSLATIONALMASS_HPP_INCLUDED
 
-#include <sstream>
 #include <math.h>
 
 #include "ComponentEssentials.h"
@@ -114,10 +113,8 @@ namespace hopsan {
             //Print debug message if velocities do not match
             if((*mpND_v1) != -(*mpND_v2))
             {
-                std::stringstream ss;
-                ss << "Start velocities does not match, {" << getName() << "::" << mpP1->getName() <<
-                        "} and {" << getName() << "::" << mpP2->getName() << "}.";
-                this->addErrorMessage(ss.str());
+                this->addErrorMessage("Start velocities does not match, {"+getName()+"::"+mpP1->getName()+
+                                      "} and {"+getName()+"::"+mpP2->getName()+"}.");
                 stopSimulation();
             }
         }

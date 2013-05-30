@@ -36,10 +36,13 @@
 #define NUMBERS_LOW 48
 #define NUMBERS_HIGH 57
 
-void hopsan::santizeName(std::string &rString)
+void hopsan::santizeName(HString &rName)
 {
+    //! @todo HString do not have iterators, need to work with temp string for now
+    //! @todo whay do we even need iterators can use normal index instead
+    std::string str = rName.c_str();
     std::string::iterator it;
-    for (it=rString.begin(); it!=rString.end(); ++it)
+    for (it=str.begin(); it!=str.end(); ++it)
     {
         if ( !( ((*it >= LOWERCASE_LOW) && (*it <= LOWERCASE_HIGH)) ||
                 ((*it >= UPPERCASE_LOW) && (*it <= UPPERCASE_HIGH)) ||
@@ -49,17 +52,18 @@ void hopsan::santizeName(std::string &rString)
             *it = UNDERSCORE;
         }
     }
+    // Copy back the string
+    rName = str.c_str();
 }
 
-bool hopsan::isNameValid(const std::string &rString)
+bool hopsan::isNameValid(const HString &rString)
 {
-    std::string::const_iterator it;
-    for (it=rString.begin(); it!=rString.end(); ++it)
+    for (size_t i=0; i<rString.size(); ++i)
     {
-        if ( !( ((*it >= LOWERCASE_LOW) && (*it <= LOWERCASE_HIGH)) ||
-                ((*it >= UPPERCASE_LOW) && (*it <= UPPERCASE_HIGH)) ||
-                ((*it >= NUMBERS_LOW)   && (*it <= NUMBERS_HIGH))   ||
-                (*it == UNDERSCORE)                                   ) )
+        if ( !( ((rString[i] >= LOWERCASE_LOW) && (rString[i] <= LOWERCASE_HIGH)) ||
+                ((rString[i] >= UPPERCASE_LOW) && (rString[i] <= UPPERCASE_HIGH)) ||
+                ((rString[i] >= NUMBERS_LOW)   && (rString[i] <= NUMBERS_HIGH))   ||
+                (rString[i] == UNDERSCORE)                                   ) )
         {
             // Return if we find invalid character
             return false;
@@ -68,15 +72,15 @@ bool hopsan::isNameValid(const std::string &rString)
     return true;
 }
 
-bool hopsan::isNameValid(const std::string &rString, const std::string &rExceptions)
+bool hopsan::isNameValid(const HString &rString, const HString &rExceptions)
 {
-    std::string::const_iterator it;
-    for (it=rString.begin(); it!=rString.end(); ++it)
+    std::string sexceptions = rExceptions.c_str(); //!< @todo convert since we dont have find in hstring yet
+    for (size_t i=0; i<rString.size(); ++i)
     {
-        if ( !( ((*it >= LOWERCASE_LOW) && (*it <= LOWERCASE_HIGH)) ||
-                ((*it >= UPPERCASE_LOW) && (*it <= UPPERCASE_HIGH)) ||
-                ((*it >= NUMBERS_LOW)   && (*it <= NUMBERS_HIGH))   ||
-                (*it == UNDERSCORE) || (rExceptions.find(*it)!=std::string::npos) ) )
+        if ( !( ((rString[i] >= LOWERCASE_LOW) && (rString[i] <= LOWERCASE_HIGH)) ||
+                ((rString[i] >= UPPERCASE_LOW) && (rString[i] <= UPPERCASE_HIGH)) ||
+                ((rString[i] >= NUMBERS_LOW)   && (rString[i] <= NUMBERS_HIGH))   ||
+                (rString[i] == UNDERSCORE) || (sexceptions.find(rString[i])!=std::string::npos) ) )
         {
             // Return if we find invalid character
             return false;
@@ -85,11 +89,11 @@ bool hopsan::isNameValid(const std::string &rString, const std::string &rExcepti
     return true;
 }
 
-std::string hopsan::santizeName(const std::string &rString)
+hopsan::HString hopsan::santizeName(const HString &rName)
 {
-    std::string newString = rString;
-    santizeName(newString);
-    return newString;
+    HString name = rName;
+    santizeName(name);
+    return name;
 }
 
 std::string &hopsan::replace(std::string &rString, const std::string &rOld, const std::string &rNew)

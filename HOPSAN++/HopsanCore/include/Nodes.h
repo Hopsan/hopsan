@@ -60,7 +60,7 @@ public:
     }
 
     //! @brief For signals allways return Value slot even if name has been changed
-    int getDataIdFromName(const std::string /*name*/) const
+    int getDataIdFromName(const HString &/*rName*/) const
     {
         return Value;
     }

@@ -111,10 +111,8 @@ namespace hopsan {
             //Print debug message if start velocities doe not match
             if((*mpND_v1) != -(*mpND_v2))
             {
-                std::stringstream ss;
-                ss << "Start velocities does not match, {" << getName() << "::" << mpP1->getName() <<
-                        "} and {" << getName() << "::" << mpP2->getName() << "}.";
-                this->addDebugMessage(ss.str());
+                this->addDebugMessage("Start velocities does not match, {"+getName()+"::"+mpP1->getName()+
+                                      "} and {"+getName()+"::"+mpP2->getName()+"}.");
             }
         }
 

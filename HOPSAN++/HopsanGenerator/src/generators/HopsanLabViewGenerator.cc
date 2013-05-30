@@ -168,7 +168,7 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
     QStringList hydCinterfaces;
     QStringList hydQinterfaces;
 
-    std::vector<std::string> compNames = pSystem->getSubComponentNames();
+    std::vector<HString> compNames = pSystem->getSubComponentNames();
     for(size_t n=0; n<compNames.size(); ++n)
     {
         Component *pComp = pSystem->getSubComponent(compNames[n]);

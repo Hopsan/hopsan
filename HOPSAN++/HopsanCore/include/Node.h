@@ -24,7 +24,7 @@
 #define NODE_H_INCLUDED
 
 #include <vector>
-#include <string>
+#include "HopsanTypes.h"
 #include "CoreUtilities/ClassFactory.hpp"
 #include "win32dll.h"
 
@@ -67,7 +67,7 @@ public:
     const std::string &getNodeType() const;
 
     size_t getNumDataVariables() const;
-    virtual int getDataIdFromName(const std::string name) const;
+    virtual int getDataIdFromName(const HString &rName) const;
     //! @brief get data from node
     //! @param [in] dataId Identifier for the type of node data to get, (no bounds check is performed)
     //! @return The data value

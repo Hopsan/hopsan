@@ -719,7 +719,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     QList<int> outputDatatypes;
     QList<QStringList> tlmPorts;
 
-    std::vector<std::string> names = pSystem->getSubComponentNames();
+    std::vector<HString> names = pSystem->getSubComponentNames();
         for(size_t i=0; i<names.size(); ++i)
     {
         getInterfaceInfo(pSystem->getSubComponent(names[i])->getTypeName().c_str(), names[i].c_str(),
@@ -747,7 +747,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
 
     //Create file objects for all files that shall be created
     QFile modelSourceFile;
-    QString modelName = QString::fromStdString(pSystem->getName());
+    QString modelName = pSystem->getName().c_str();
    // modelName.chop(4);
     QString realModelName = modelName;          //Actual model name (used for hmf file)
     modelName.replace(" ", "_");        //Replace white spaces with underscore, to avoid problems

@@ -426,13 +426,13 @@ size_t CoreSystemAccess::getNSamples()
 QString CoreSystemAccess::getSystemTypeCQS()
 {
     //qDebug() << "getRootTypeCQS: " << componentName;
-    return QString::fromStdString(mpCoreComponentSystem->getTypeCQSString());
+    return mpCoreComponentSystem->getTypeCQSString().c_str();
 }
 
 QString CoreSystemAccess::getSubComponentTypeCQS(const QString componentName)
 {
     //qDebug() << "getSubComponentTypeCQS: " << componentName << " in " << QString::fromStdString(mpCoreComponentSystem->getName());
-    QString ans = QString::fromStdString(mpCoreComponentSystem->getSubComponent(componentName.toStdString())->getTypeCQSString());
+    QString ans = mpCoreComponentSystem->getSubComponent(componentName.toUtf8().constData())->getTypeCQSString().c_str();
     //qDebug() << "cqs answer: " << ans;
     return ans;
 }
@@ -462,7 +462,7 @@ QString CoreSystemAccess::setSystemName(QString name)
     //qDebug() << "setting root system name to: " << name;
     mpCoreComponentSystem->setName(name.toStdString());
     //qDebug() << "root system name after rename: " << QString::fromStdString(mpCoreComponentSystem->getName());
-    return QString::fromStdString(mpCoreComponentSystem->getName());
+    return mpCoreComponentSystem->getName().c_str();
 }
 
 
@@ -470,15 +470,15 @@ QString CoreSystemAccess::renameSubComponent(QString componentName, QString name
 {
     qDebug() << "rename subcomponent from " << componentName << " to: " << name;
     hopsan::Component *pTempComponent = mpCoreComponentSystem->getSubComponent(componentName.toStdString());
-    pTempComponent->setName(name.toStdString());
-    qDebug() << "name after: " << QString::fromStdString(pTempComponent->getName());
-    return QString::fromStdString(pTempComponent->getName());
+    pTempComponent->setName(name.toStdString().c_str());
+    qDebug() << "name after: " << pTempComponent->getName().c_str();
+    return pTempComponent->getName().c_str();
 }
 
 QString CoreSystemAccess::getSystemName()
 {
    // qDebug() << "getNAme from core root: " << QString::fromStdString(mpCoreComponentSystem->getName());
-    return QString::fromStdString(mpCoreComponentSystem->getName());
+    return mpCoreComponentSystem->getName().c_str();
 }
 
 double CoreSystemAccess::getCurrentTime() const
@@ -540,7 +540,7 @@ QString CoreSystemAccess::getPortDescription(QString componentName, QString port
     hopsan::Port *pPort = this->getCorePortPtr(componentName, portName);
     if (pPort)
     {
-        return QString::fromStdString(pPort->getDescription());
+        return pPort->getDescription().c_str();
     }
     return QString();
 }
@@ -582,13 +582,13 @@ void CoreSystemAccess::getVariameters(QString componentName, QVector<CoreVariame
         for (size_t i=0; i<pDescs->size(); ++i)
         {
             CoreVariameterDescription data;
-            data.mName = QString::fromStdString(pDescs->at(i).mName);
-            data.mShortName = QString::fromStdString(pDescs->at(i).mShortName);
-            data.mPortName = QString::fromStdString(pDescs->at(i).mPortName);
-            data.mUnit = QString::fromStdString(pDescs->at(i).mUnit);
-            data.mDescription = QString::fromStdString(pDescs->at(i).mDescription);
-            data.mDataType = QString::fromStdString(pDescs->at(i).mDataType);
-            data.mAlias = QString::fromStdString(pDescs->at(i).mAlias);
+            data.mName = pDescs->at(i).mName.c_str();
+            data.mShortName = pDescs->at(i).mShortName.c_str();
+            data.mPortName = pDescs->at(i).mPortName.c_str();
+            data.mUnit = pDescs->at(i).mUnit.c_str();
+            data.mDescription = pDescs->at(i).mDescription.c_str();
+            data.mDataType = pDescs->at(i).mDataType.c_str();
+            data.mAlias = pDescs->at(i).mAlias.c_str();
             data.mVariabelId = pDescs->at(i).mVariableId;
             data.mVariameterType = pDescs->at(i).mVariameterType;
             //data.mVariabelType =
@@ -611,21 +611,21 @@ void CoreSystemAccess::setParameterAlias(QString compName, QString paramName, QS
 
 void CoreSystemAccess::getFullVariableNameByAlias(QString alias, QString &rCompName, QString &rPortName, QString &rVarName)
 {
-    std::string comp, port, var;
-    mpCoreComponentSystem->getAliasHandler().getVariableFromAlias(alias.toStdString(), comp, port, var);
-    rCompName = QString::fromStdString(comp);
-    rPortName = QString::fromStdString(port);
-    rVarName = QString::fromStdString(var);
+    hopsan::HString comp, port, var;
+    mpCoreComponentSystem->getAliasHandler().getVariableFromAlias(alias.toStdString().c_str(), comp, port, var);
+    rCompName = comp.c_str();
+    rPortName = port.c_str();
+    rVarName = var.c_str();
 }
 
 QStringList CoreSystemAccess::getAliasNames() const
 {
-    std::vector<std::string> str_vec = mpCoreComponentSystem->getAliasHandler().getAliases();
+    std::vector<hopsan::HString> str_vec = mpCoreComponentSystem->getAliasHandler().getAliases();
     QStringList qvec;
     qvec.reserve(str_vec.size());
     for (size_t i=0; i<str_vec.size(); ++i)
     {
-        qvec.push_back(QString::fromStdString(str_vec[i]));
+        qvec.push_back(str_vec[i].c_str());
     }
     return qvec;
 }
@@ -721,7 +721,7 @@ QString CoreSystemAccess::createComponent(QString type, QString name)
             pCoreComponent->setName(name.toStdString());
         }
         //qDebug() << "createComponent: name after add: " << QString::fromStdString(pCoreComponent->getName()) << " added to: " << QString::fromStdString(mpCoreComponentSystem->getName());
-        return QString::fromStdString(pCoreComponent->getName());
+        return pCoreComponent->getName().c_str();
     }
     else
     {
@@ -736,9 +736,9 @@ QString CoreSystemAccess::createSubSystem(QString name)
     mpCoreComponentSystem->addComponent(pTempComponentSystem);
     if (!name.isEmpty())
     {
-        pTempComponentSystem->setName(name.toStdString());
+        pTempComponentSystem->setName(name.toStdString().c_str());
     }
-    return QString::fromStdString(pTempComponentSystem->getName());
+    return pTempComponentSystem->getName().c_str();
 }
 
 void CoreSystemAccess::getParameters(QString componentName, QVector<CoreParameterData> &rParameterDataVec)
@@ -832,22 +832,26 @@ void CoreSystemAccess::deleteSystemPort(QString portname)
 QString CoreSystemAccess::addSystemPort(QString portname)
 {
     //qDebug() << "add system port: " << portname;
-    return QString::fromStdString(mpCoreComponentSystem->addSystemPort(portname.toStdString())->getName());
+    return mpCoreComponentSystem->addSystemPort(portname.toUtf8().constData())->getName().c_str();
 }
 
 QString CoreSystemAccess::renameSystemPort(QString oldname, QString newname)
 {
-    return QString::fromStdString(mpCoreComponentSystem->renameSystemPort(oldname.toStdString(), newname.toStdString()));
+    QByteArray ba_old = oldname.toUtf8();
+    QByteArray ba_new = newname.toUtf8();
+    return mpCoreComponentSystem->renameSystemPort(ba_old.data(), ba_new.data()).c_str();
 }
 
 QString CoreSystemAccess::reserveUniqueName(QString desiredName)
 {
-    return QString::fromStdString(mpCoreComponentSystem->reserveUniqueName(desiredName.toStdString()));
+    QByteArray ba = desiredName.toUtf8();
+    return mpCoreComponentSystem->reserveUniqueName(ba.data()).c_str();
 }
 
 void CoreSystemAccess::unReserveUniqueName(QString name)
 {
-    mpCoreComponentSystem->unReserveUniqueName(name.toStdString());
+    QByteArray ba = name.toUtf8();
+    mpCoreComponentSystem->unReserveUniqueName(ba.data());
 }
 
 
@@ -979,10 +983,10 @@ void CoreSystemAccess::measureSimulationTime(QStringList &rComponentNames, QList
 
     getCoreSystemPtr()->finalize();
 
-    std::vector<std::string> names = getCoreSystemPtr()->getSubComponentNames();
+    std::vector<hopsan::HString> names = getCoreSystemPtr()->getSubComponentNames();
     for(size_t i=0; i<names.size(); ++i)
     {
-        rComponentNames.append(QString(names.at(i).c_str()));
+        rComponentNames.append(names.at(i).c_str());
         rTimes.append(getCoreSystemPtr()->getSubComponent(names.at(i))->getMeasuredTime());
     }
 }
@@ -1097,10 +1101,10 @@ void CoreSystemAccess::getVariableDescriptions(const QString compname, const QSt
             for (size_t i=0; i<pDescs->size(); ++i)
             {
                 CoreVariableData data;
-                data.mName = QString::fromStdString(pDescs->at(i).name);
-                data.mUnit = QString::fromStdString(pDescs->at(i).unit);
-                data.mAlias = QString::fromStdString(pPort->getVariableAlias(i));
-                data.mDescription = QString::fromStdString(pDescs->at(i).description);
+                data.mName = pDescs->at(i).name.c_str();
+                data.mUnit = pDescs->at(i).unit.c_str();
+                data.mAlias = pPort->getVariableAlias(i).c_str();
+                data.mDescription = pDescs->at(i).description.c_str();
                 rVarDescriptions.push_back(data);
             }
         }

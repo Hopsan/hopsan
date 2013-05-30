@@ -103,8 +103,10 @@ HString &HString::append(const char *str)
 HString &HString::append(const char chr)
 {
     mpDataBuffer = static_cast<char*>(realloc(mpDataBuffer,size()+2));
-    mpDataBuffer[size()] = chr;
-    mSize = size()+1;
+    mpDataBuffer[mSize] = chr;
+    mSize = mSize+1;
+    mpDataBuffer[mSize] = '\0';
+
     return *this;
 }
 
@@ -164,6 +166,30 @@ bool HString::compare(const HString &rOther) const
         return false;
     }
     return (strcmp(mpDataBuffer, rOther.c_str()) == 0);
+}
+
+unsigned int HString::find_first_of(char c, unsigned int pos) const
+{
+    for (unsigned int i=pos; i<mSize; ++i)
+    {
+        if (mpDataBuffer[i] == c)
+        {
+            return i;
+        }
+    }
+    return npos;
+}
+
+bool HString::operator <(const HString &rhs) const
+{
+    if (empty())
+    {
+        return strcmp("", rhs.c_str()) < 0;
+    }
+    else
+    {
+        return strcmp(mpDataBuffer, rhs.c_str()) < 0;
+    }
 }
 
 //! @todo these could be inlined
@@ -232,23 +258,23 @@ HString HString::substr(const unsigned int pos, const unsigned int len) const
     return sub;
 }
 
-bool operator< (const HString& lhs, const HString& rhs)
-{
-    unsigned int size = lhs.size();
-    if (size > rhs.size())
-    {
-        size = rhs.size();
-    }
+//bool operator< (const HString& lhs, const HString& rhs)
+//{
+//    unsigned int size = lhs.size();
+//    if (size > rhs.size())
+//    {
+//        size = rhs.size();
+//    }
 
-    for (unsigned int i=0; i<size; ++i)
-    {
-        if (lhs[i]>rhs[i])
-        {
-            return false;
-        }
-    }
-    return true;
-}
+//    for (unsigned int i=0; i<size; ++i)
+//    {
+//        if (lhs[i]>rhs[i])
+//        {
+//            return false;
+//        }
+//    }
+//    return true;
+//}
 
 //std::ostream& operator<<(std::ostream& os, const HString& obj)
 //{

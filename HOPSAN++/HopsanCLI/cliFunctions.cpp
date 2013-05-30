@@ -187,7 +187,7 @@ void printComponentHierarchy(ComponentSystem *pSystem, std::string prefix,
 {
     if (pSystem)
     {
-        cout << prefix << pSystem->getName() << ", ";
+        cout << prefix << pSystem->getName().c_str() << ", ";
         if (doPrintTsInfo)
         {
             printTsInfo(pSystem);
@@ -203,7 +203,7 @@ void printComponentHierarchy(ComponentSystem *pSystem, std::string prefix,
 
 
         prefix.append("  ");
-        vector<string> names = pSystem->getSubComponentNames();
+        vector<HString> names = pSystem->getSubComponentNames();
         for (size_t i=0; i<names.size(); ++i)
         {
             if ( pSystem->getSubComponent(names[i])->isComponentSystem() )
@@ -212,7 +212,7 @@ void printComponentHierarchy(ComponentSystem *pSystem, std::string prefix,
             }
             else
             {
-                cout << prefix << names[i] << endl;
+                cout << prefix << names[i].c_str() << endl;
             }
         }
     }
@@ -315,8 +315,8 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
 
     if (pSys)
     {
-        prefix = prefix + pSys->getName() + "$";
-        vector<string> names = pSys->getSubComponentNames();
+        prefix = prefix + pSys->getName().c_str() + "$";
+        vector<HString> names = pSys->getSubComponentNames();
         for (size_t c=0; c<names.size(); ++c)
         {
             Component *pComp = pSys->getSubComponent(names[c]);
@@ -344,11 +344,11 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
                         {
                             for (size_t v=0; v<pVars->size(); ++v)
                             {
-                                string fullname = prefix + pComp->getName() + "#" + pPort->getName() + "#" + pVars->at(v).name;
+                                HString fullname = prefix + pComp->getName() + "#" + pPort->getName() + "#" + pVars->at(v).name;
 
                                 if (howMany == Final)
                                 {
-                                    *pFile << fullname << "," << pPort->getVariableAlias(v) << "," << pVars->at(v).unit;
+                                    *pFile << fullname.c_str() << "," << pPort->getVariableAlias(v).c_str() << "," << pVars->at(v).unit.c_str();
                                     *pFile << "," << pPort->readNode(v) << endl; //!< @todo what about precission
                                 }
                                 else if (howMany == Full)
@@ -357,7 +357,7 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
                                     // We assume that the data vector has been cleared
                                     if (pPort->getLogDataVectorPtr()->size() > 0)
                                     {
-                                        *pFile << fullname << "," << pPort->getVariableAlias(v) << "," << pVars->at(v).unit;
+                                        *pFile << fullname.c_str() << "," << pPort->getVariableAlias(v).c_str() << "," << pVars->at(v).unit.c_str();
                                         //! @todo what about time vector
                                         vector< vector<double> > *pLogData = pPort->getLogDataVectorPtr();
                                         for (size_t t=0; t<pSys->getNumActuallyLoggedSamples(); ++t)
@@ -462,13 +462,13 @@ void exportParameterValuesToCSV(const std::string &rFileName, hopsan::ComponentS
         for (size_t p=0; p<pSysParameters->size(); ++p)
         {
             //! @todo what about alias name
-            string fullname = prefix + pSystem->getName() + "#" + toStdString(pSysParameters->at(p)->getName());
-            *pFile << fullname << "," << pSysParameters->at(p)->getValue().c_str() << endl;
+            HString fullname = prefix + pSystem->getName() + "#" + toStdString(pSysParameters->at(p)->getName());
+            *pFile << fullname.c_str() << "," << pSysParameters->at(p)->getValue().c_str() << endl;
         }
 
         // Now handle subcomponent parameters
-        prefix = prefix + pSystem->getName() + "$";
-        vector<string> names = pSystem->getSubComponentNames();
+        prefix = prefix + pSystem->getName().c_str() + "$";
+        vector<HString> names = pSystem->getSubComponentNames();
         for (size_t c=0; c<names.size(); ++c)
         {
             Component *pComp = pSystem->getSubComponent(names[c]);
@@ -484,8 +484,8 @@ void exportParameterValuesToCSV(const std::string &rFileName, hopsan::ComponentS
                     for (size_t p=0; p<pParameters->size(); ++p)
                     {
                         //! @todo what about alias name
-                        string fullname = prefix + pComp->getName() + "#" + toStdString(pParameters->at(p)->getName());
-                        *pFile << fullname << "," << pParameters->at(p)->getValue().c_str() << endl;
+                        HString fullname = prefix + pComp->getName() + "#" + pParameters->at(p)->getName();
+                        *pFile << fullname.c_str() << "," << pParameters->at(p)->getValue().c_str() << endl;
                     }
                 }
             }
@@ -550,7 +550,7 @@ void importParameterValuesFromCSV(const std::string filePath, hopsan::ComponentS
                                 ComponentSystem *pSubSys = pParentSys->getSubComponentSystem(syshierarcy[s]);
                                 if (!pSubSys)
                                 {
-                                    printErrorMessage(string("Subsystem: ") + syshierarcy[s] + string(" could not be found in parent system: ") + pParentSys->getName());
+                                    printErrorMessage(string("Subsystem: ") + syshierarcy[s] + string(" could not be found in parent system: ") + toStdString(pParentSys->getName()));
                                     pParentSys = 0;
                                     break;
                                 }
@@ -576,7 +576,7 @@ void importParameterValuesFromCSV(const std::string filePath, hopsan::ComponentS
                                 }
                                 else
                                 {
-                                    printErrorMessage("No component: " + componentName + " in system: " + pParentSys->getName() );
+                                    printErrorMessage("No component: " + componentName + " in system: " + toStdString(pParentSys->getName()) );
                                 }
                             }
                         }
@@ -844,7 +844,7 @@ bool performModelTest(const std::string hvcFilePath)
                             int dataId = pPort->getNodeDataIdFromName(varname);
                             if (dataId < 0)
                             {
-                                printErrorMessage("No such varaiable name: " + varname + " in: " + pPort->getNodeType());
+                                printErrorMessage("No such varaiable name: " + varname + " in: " + toStdString(pPort->getNodeType()));
                                 return false;
                             }
 
@@ -887,17 +887,17 @@ bool performModelTest(const std::string hvcFilePath)
 
                         if(!compareVectors(vSim1, vRef, tolerance))
                         {
-                            printColorMessage(Red, "Validation data test failed: " + pRootSystem->getName() + ":" + compName + ":" + portName + ":" + varname);
+                            printColorMessage(Red, "Validation data test failed: " + toStdString(pRootSystem->getName()) + ":" + compName + ":" + portName + ":" + varname);
                             return false;
                         }
 
                         if(!compareVectors(vSim1, vSim2, tolerance))
                         {
-                            printColorMessage(Red, "Consistency test failed (two consecutive simulations gave different results): " + pRootSystem->getName() + ":" + compName + ":" + portName + ":" + varname);
+                            printColorMessage(Red, "Consistency test failed (two consecutive simulations gave different results): " + toStdString(pRootSystem->getName()) + ":" + compName + ":" + portName + ":" + varname);
                             return false;
                         }
 
-                        printColorMessage(Green, "Test successful: " + pRootSystem->getName() + ":" + compName + ":" + portName + ":" + varname);
+                        printColorMessage(Green, "Test successful: " + toStdString(pRootSystem->getName()) + ":" + compName + ":" + portName + ":" + varname);
 
                         pVariableNode = pVariableNode->next_sibling("variable");
                     }

@@ -39,11 +39,11 @@ using namespace std;
 using namespace hopsan;
 
 //! @brief Port base class constructor
-Port::Port(const string nodeType, const string portName, Component *pParentComponent, Port *pParentPort)
+Port::Port(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort)
 {
     mPortType = UndefinedPortType;
-    mPortName = portName;
-    mNodeType = nodeType;
+    mPortName = rPortName;
+    mNodeType = rNodeType;
     mpComponent = pParentComponent;
     mpParentPort = pParentPort; //Only used by subports in multiports
     mConnectionRequired = true;
@@ -95,7 +95,7 @@ Port::~Port()
 
 
 //! @brief Returns the type of node that can be connected to this port
-const string &Port::getNodeType() const
+const HString &Port::getNodeType() const
 {
     return mNodeType;
 }
@@ -235,6 +235,9 @@ void Port::eraseConnectedPort(Port* pPort, const size_t /*portIdx*/)
     vector<Port*>::iterator it;
     for (it=mConnectedPorts.begin(); it!=mConnectedPorts.end(); ++it)
     {
+        printf("*it: %p pPort: %p", (void*)(*it), (void*)pPort);
+        cout << endl;
+        //cout << "*it: " << *it << " pPort: " << pPort << endl;
         if (*it == pPort)
         {
             mConnectedPorts.erase(it);
@@ -259,9 +262,9 @@ size_t Port::getNumConnectedPorts(const int portIdx)
 }
 
 
-void Port::createStartNode(std::string nodeType)
+void Port::createStartNode(const HString &rNodeType)
 {
-    mpStartNode = getComponent()->getHopsanEssentials()->createNode(nodeType.c_str());
+    mpStartNode = getComponent()->getHopsanEssentials()->createNode(rNodeType.c_str());
     //!< @todo Maye I dont even need to create startnodes for subports in multiports, in that case, move this line into if bellow
 
     // Prevent registering startvalues for subports in multiports, It will be very difficult to ensure that those would actually work as expected
@@ -270,19 +273,19 @@ void Port::createStartNode(std::string nodeType)
         for(size_t i = 0; i < mpStartNode->getNumDataVariables(); ++i)
         {
             const NodeDataDescription* pDesc = mpStartNode->getDataDescription(i);
-            const string desc = string("startvalue:")+"Port "+getName();
-            const string name = getName()+"::"+pDesc->name;
+            const HString desc = string("startvalue:")+"Port "+getName();
+            const HString name = getName()+"::"+pDesc->name;
             getComponent()->addConstant(name, desc, pDesc->unit, *(mpStartNode->getDataPtr(pDesc->id)));
         }
     }
 }
 
 //! @note This one should be called by system, do not call this manually (that will create a mess)
-void Port::setVariableAlias(const string alias, const int id)
+void Port::setVariableAlias(const HString &rAlias, const int id)
 {
     //! @todo check id
     // First remove it if already set
-    std::map<std::string, int>::iterator it = mVariableAliasMap.begin();
+    std::map<HString, int>::iterator it = mVariableAliasMap.begin();
     while (it!=mVariableAliasMap.end())
     {
         if (it->second == id)
@@ -298,16 +301,16 @@ void Port::setVariableAlias(const string alias, const int id)
     }
 
     // Replace with new name, if not empty
-    if (!alias.empty())
+    if (!rAlias.empty())
     {
-        mVariableAliasMap.insert(std::pair<std::string, int>(alias, id));
+        mVariableAliasMap.insert(std::pair<HString, int>(rAlias, id));
     }
 }
 
 //! @todo return reference to string instead, if that is possible
-const std::string &Port::getVariableAlias(const int id)
+const HString &Port::getVariableAlias(const int id)
 {
-    std::map<std::string, int>::const_iterator it;
+    std::map<HString, int>::const_iterator it;
     for(it=mVariableAliasMap.begin();it!=mVariableAliasMap.end();++it)
     {
         if (it->second == id)
@@ -322,9 +325,9 @@ const std::string &Port::getVariableAlias(const int id)
     return mEmptyString;
 }
 
-int Port::getVariableIdByAlias(const string alias) const
+int Port::getVariableIdByAlias(const HString &rAlias) const
 {
-    std::map<std::string, int>::const_iterator it = mVariableAliasMap.find(alias);
+    std::map<HString, int>::const_iterator it = mVariableAliasMap.find(rAlias);
     {
         if (it!=mVariableAliasMap.end())
         {
@@ -346,7 +349,7 @@ void Port::saveLogData(string filename, const size_t /*portIdx*/)
 {
     if (mpNode != 0)
     {
-        string header = getComponentName() + "::" + getName();
+        HString header = getComponentName() + "::" + getName();
 
         ofstream out_file;
         out_file.open(filename.c_str());
@@ -359,7 +362,7 @@ void Port::saveLogData(string filename, const size_t /*portIdx*/)
             }
 
             // First write HEADER info containing node info
-            out_file << header << " " << mpNode->getNodeType() << endl;
+            out_file << header.c_str() << " " << mpNode->getNodeType().c_str() << endl;
             out_file << "time";
             for (size_t i=0; i<mpNode->getNumDataVariables(); ++i)
             {
@@ -387,7 +390,7 @@ void Port::saveLogData(string filename, const size_t /*portIdx*/)
     }
     else
     {
-        cout << getComponentName() << "-port:" << mPortName << " can not log data, the Port has no Node connected" << endl;
+        cout << getComponentName().c_str() << "-port:" << mPortName.c_str() << " can not log data, the Port has no Node connected" << endl;
     }
 }
 
@@ -439,12 +442,12 @@ const NodeDataDescription* Port::getNodeDataDescription(const size_t dataid, con
 
 
 //! @brief Wraper for the Node function
-int Port::getNodeDataIdFromName(const string name, const size_t /*portIdx*/)
+int Port::getNodeDataIdFromName(const HString &rName, const size_t /*portIdx*/)
 {
     //! @todo since mpNode should always be set maybe we could remove (almost) all the checks (but not for multiports their mpNOde will be 0)
     if (mpNode != 0)
     {
-        return mpNode->getDataIdFromName(name);
+        return mpNode->getDataIdFromName(rName);
     }
     else
     {
@@ -550,7 +553,7 @@ void Port::disableStartValue(const size_t idx)
     {
         // The start value has already been registered as a parameter in the component, so we must unregister it.
         // This is probably not the most beautiful solution.
-        std::string name = getName()+"::"+mpStartNode->getDataDescription(idx)->name;
+        HString name = getName()+"::"+mpStartNode->getDataDescription(idx)->name;
         mpComponent->addDebugMessage("Disabling_StartValue: "+name);
         mpComponent->unRegisterParameter(name);
 
@@ -571,15 +574,25 @@ bool Port::isConnected()
 //! @todo how do we handle multiports
 bool Port::isConnectedTo(Port *pOtherPort)
 {
-    std::vector<Port*>::iterator pit;
-    for(pit=mConnectedPorts.begin(); pit!=mConnectedPorts.end(); ++pit)
+    //! @todo this is a hack for now, since isConnectedTo is overloaded we want the actual multiport to check, Make smarter in the future
+    if (pOtherPort->isMultiPort())
     {
-        if ( *pit == pOtherPort )
-        {
-            return true;
-        }
+        return pOtherPort->isConnectedTo(this);
     }
-    return false;
+    else
+    {
+        std::vector<Port*>::iterator pit;
+        for(pit=mConnectedPorts.begin(); pit!=mConnectedPorts.end(); ++pit)
+        {
+            printf("isConnectedTo: *pit: %p pOtherPort: %p", (void*)(*pit), (void*)pOtherPort);
+            cout << endl;
+            if ( *pit == pOtherPort )
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 
@@ -625,31 +638,31 @@ PortTypesEnumT Port::getInternalPortType()
 
 
 //! @brief Get the port name
-const string Port::getName() const
+const HString &Port::getName() const
 {
     return mPortName;
 }
 
 
 //! @brief Get the name of the commponent that the port is attached to
-const std::string Port::getComponentName() const
+const HString &Port::getComponentName() const
 {
     return getComponent()->getName();
 }
 
-const std::string &Port::getDescription() const
+const HString &Port::getDescription() const
 {
     return mDescription;
 }
 
-void Port::setDescription(const string &rDescription)
+void Port::setDescription(const HString &rDescription)
 {
     mDescription = rDescription;
 }
 
 
 //! @brief SystemPort constructor
-SystemPort::SystemPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner, pParentPort)
+SystemPort::SystemPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort) : Port(rNodeType, rPortName, portOwner, pParentPort)
 {
     mPortType = SystemPortType;
 }
@@ -692,7 +705,7 @@ PortTypesEnumT SystemPort::getInternalPortType()
 
 
 //! @brief PowerPort constructor
-PowerPort::PowerPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner, pParentPort)
+PowerPort::PowerPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort) : Port(rNodeType, rPortName, portOwner, pParentPort)
 {
     mPortType = PowerPortType;
     if(getComponent()->isComponentC())
@@ -702,10 +715,10 @@ PowerPort::PowerPort(std::string node_type, std::string portname, Component *por
 }
 
 
-ReadPort::ReadPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner, pParentPort)
+ReadPort::ReadPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort) : Port(rNodeType, rPortName, portOwner, pParentPort)
 {
     mPortType = ReadPortType;
-    createStartNode(node_type);
+    createStartNode(rNodeType);
 }
 
 
@@ -766,7 +779,7 @@ void ReadPort::forceLoadStartValue()
     Port::loadStartValues();
 }
 
-WritePort::WritePort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner, pParentPort)
+WritePort::WritePort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort) : Port(rNodeType, rPortName, portOwner, pParentPort)
 {
     mPortType = WritePortType;
     createStartNode(mNodeType);
@@ -779,7 +792,7 @@ double WritePort::readNode(const size_t /*idx*/) const
     return -1;
 }
 
-MultiPort::MultiPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : Port(node_type, portname, portOwner, pParentPort)
+MultiPort::MultiPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort) : Port(rNodeType, rPortName, portOwner, pParentPort)
 {
     mPortType = MultiportType;
 }
@@ -876,11 +889,11 @@ const NodeDataDescription* MultiPort::getNodeDataDescription(const size_t dataid
     return 0;
 }
 
-int MultiPort::getNodeDataIdFromName(const std::string name, const size_t portIdx)
+int MultiPort::getNodeDataIdFromName(const HString &rName, const size_t portIdx)
 {
     if (isConnected())
     {
-        return mSubPortsVector[portIdx]->getNodeDataIdFromName(name);
+        return mSubPortsVector[portIdx]->getNodeDataIdFromName(rName);
     }
     return -1;
 }
@@ -946,6 +959,25 @@ void MultiPort::loadStartValues()
 void MultiPort::loadStartValuesFromSimulation()
 {
     //! @todo what about this one then how should we handle this
+}
+
+bool MultiPort::isConnectedTo(Port *pOtherPort)
+{
+    if (this->isMultiPort() && pOtherPort->isMultiPort())
+    {
+        getComponent()->addFatalMessage("In isConnectedTo() both ports are multiports, this should not happen!");
+        return false;
+    }
+
+    for (size_t i=0; i<mSubPortsVector.size(); ++i)
+    {
+        if (mSubPortsVector[i]->isConnectedTo(pOtherPort))
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 //! @brief Check if the port is curently connected
@@ -1015,7 +1047,7 @@ void MultiPort::setNode(Node* /*pNode*/)
     // Do nothing for multiports, only subports are interfaced with
 }
 
-PowerMultiPort::PowerMultiPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : MultiPort(node_type, portname, portOwner, pParentPort)
+PowerMultiPort::PowerMultiPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort) : MultiPort(rNodeType, rPortName, portOwner, pParentPort)
 {
     mPortType = PowerMultiportType;
     if(getComponent()->isComponentC())
@@ -1031,7 +1063,7 @@ Port* PowerMultiPort::addSubPort()
     return mSubPortsVector.back();
 }
 
-ReadMultiPort::ReadMultiPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort) : MultiPort(node_type, portname, portOwner, pParentPort)
+ReadMultiPort::ReadMultiPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort) : MultiPort(rNodeType, rPortName, portOwner, pParentPort)
 {
     mPortType = ReadMultiportType;
 }
@@ -1050,27 +1082,27 @@ Port* ReadMultiPort::addSubPort()
 //! @param [in] pPortOwner A pointer to the owner component
 //! @param [in] pParentPort A pointer to the parent port in case of creation of a subport to a multiport
 //! @return A pointer to the created port
-Port* hopsan::createPort(const PortTypesEnumT portType, const std::string nodeType, const string name, Component *pParentComponent, Port *pParentPort)
+Port* hopsan::createPort(const PortTypesEnumT portType, const HString &rNodeType, const HString &rName, Component *pParentComponent, Port *pParentPort)
 {
     switch (portType)
     {
     case PowerPortType :
-        return new PowerPort(nodeType, name, pParentComponent, pParentPort);
+        return new PowerPort(rNodeType, rName, pParentComponent, pParentPort);
         break;
     case WritePortType :
-        return new WritePort(nodeType, name, pParentComponent, pParentPort);
+        return new WritePort(rNodeType, rName, pParentComponent, pParentPort);
         break;
     case ReadPortType :
-        return new ReadPort(nodeType, name, pParentComponent, pParentPort);
+        return new ReadPort(rNodeType, rName, pParentComponent, pParentPort);
         break;
     case SystemPortType :
-        return new SystemPort(nodeType, name, pParentComponent, pParentPort);
+        return new SystemPort(rNodeType, rName, pParentComponent, pParentPort);
         break;
     case PowerMultiportType :
-        return new PowerMultiPort(nodeType, name, pParentComponent, pParentPort);
+        return new PowerMultiPort(rNodeType, rName, pParentComponent, pParentPort);
         break;
     case ReadMultiportType :
-        return new ReadMultiPort(nodeType, name, pParentComponent, pParentPort);
+        return new ReadMultiPort(rNodeType, rName, pParentComponent, pParentPort);
         break;
     default :
        return 0;

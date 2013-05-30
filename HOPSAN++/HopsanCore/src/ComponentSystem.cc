@@ -23,6 +23,7 @@
 //$Id$
 
 #include <sstream>
+#include <string>
 #include <cassert>
 #include <limits>
 #include <cmath>
@@ -36,6 +37,7 @@
 #include "CoreUtilities/MultiThreadingUtilities.h"
 #include "CoreUtilities/CoSimulationUtilities.h"
 #include "CoreUtilities/HmfLoader.h"
+#include "ComponentUtilities/num2string.hpp"
 
 #ifdef USETBB
 #include "mutex.h"
@@ -429,7 +431,7 @@ void ComponentSystem::addComponent(Component *pComponent)
     if (pComponent)
     {
         // First check if the name already exists, in that case change the suffix
-        string modname = this->reserveUniqueName(pComponent->getName(), UniqueComponentNameType);
+        HString modname = this->reserveUniqueName(pComponent->getName(), UniqueComponentNameType);
         pComponent->setName(modname);
 
         // Add to the cqs component vectors
@@ -463,10 +465,10 @@ void ComponentSystem::addComponent(Component *pComponent)
 
 
 //! @brief Rename a sub component and automatically fix unique names
-void ComponentSystem::renameSubComponent(string oldname, string newname)
+void ComponentSystem::renameSubComponent(const HString &rOld_name, const HString &rNew_name)
 {
     // First find the post in the map where the old name resides, copy the data stored there
-    SubComponentMapT::iterator it = mSubComponentMap.find(oldname);
+    SubComponentMapT::iterator it = mSubComponentMap.find(rOld_name);
     Component* temp_comp_ptr;
     if (it != mSubComponentMap.end())
     {
@@ -475,17 +477,17 @@ void ComponentSystem::renameSubComponent(string oldname, string newname)
         mSubComponentMap.erase(it);
 
         // Insert new (with new name)
-        string mod_new_name = this->reserveUniqueName(newname, UniqueComponentNameType);
-        this->unReserveUniqueName(oldname);
+        HString mod_new_name = this->reserveUniqueName(rNew_name, UniqueComponentNameType);
+        this->unReserveUniqueName(rOld_name);
 
-        mSubComponentMap.insert(pair<string, Component*>(mod_new_name, temp_comp_ptr));
+        mSubComponentMap.insert(pair<HString, Component*>(mod_new_name, temp_comp_ptr));
 
         // Now change the actual component name, without trying to do rename (we are in rename now, would cause infinite loop)
         temp_comp_ptr->mName = mod_new_name;
     }
     else
     {
-        addErrorMessage("No component with old_name: "+oldname+" found when renaming!");
+        addErrorMessage("No component with old_name: "+rOld_name+" found when renaming!");
     }
 }
 
@@ -493,9 +495,9 @@ void ComponentSystem::renameSubComponent(string oldname, string newname)
 //! @brief Remove a dub component from a system, can also be used to actually delete the component
 //! @param[in] name The name of the component to remove from the system
 //! @param[in] doDelete Set this to true if the component should be deleted after removal
-void ComponentSystem::removeSubComponent(string name, bool doDelete)
+void ComponentSystem::removeSubComponent(const HString &rName, bool doDelete)
 {
-    Component* pComp = getSubComponent(name);
+    Component* pComp = getSubComponent(rName);
     removeSubComponent(pComp, doDelete);
 }
 
@@ -505,7 +507,7 @@ void ComponentSystem::removeSubComponent(string name, bool doDelete)
 //! @param[in] doDelete Set this to true if the component should be deleted after removal
 void ComponentSystem::removeSubComponent(Component* pComponent, bool doDelete)
 {
-    std::string compName = pComponent->getName();
+   HString compName = pComponent->getName();
 
     // Disconnect all ports before erase from system
     PortPtrMapT::iterator ports_it;
@@ -554,18 +556,18 @@ void ComponentSystem::removeSubComponent(Component* pComponent, bool doDelete)
 //! @brief Reserves a unique name in the system
 //! @param [in] desiredName The desired name to reserve
 //! @returns The actual name reserved
-string ComponentSystem::reserveUniqueName(const string desiredName, const UniqeNameEnumT type)
+HString ComponentSystem::reserveUniqueName(const HString &rDesiredName, const UniqeNameEnumT type)
 {
-    string newname = this->determineUniqueComponentName(desiredName);
-    mTakenNames.insert(std::pair<std::string, UniqeNameEnumT>(newname, type));
+    HString newname = this->determineUniqueComponentName(rDesiredName);
+    mTakenNames.insert(std::pair<HString, UniqeNameEnumT>(newname, type));
     return newname;
 }
 
 //! @brief unReserves a unique name in the system
 //! @param [in] name The name to unreserve
-void ComponentSystem::unReserveUniqueName(const string name)
+void ComponentSystem::unReserveUniqueName(const HString &rName)
 {
-    mTakenNames.erase(name);
+    mTakenNames.erase(rName);
 }
 
 void ComponentSystem::addSubComponentPtrToStorage(Component* pComponent)
@@ -589,7 +591,7 @@ void ComponentSystem::addSubComponentPtrToStorage(Component* pComponent)
         return;
     }
 
-    mSubComponentMap.insert(pair<string, Component*>(pComponent->getName(), pComponent));
+    mSubComponentMap.insert(pair<HString, Component*>(pComponent->getName(), pComponent));
 }
 
 void ComponentSystem::removeSubComponentPtrFromStorage(Component* pComponent)
@@ -723,11 +725,13 @@ bool ComponentSystem::sortComponentVector(std::vector<Component*> &rComponentVec
         rComponentVector = newComponentVector;
         if(newComponentVector.size() > 0 && newComponentVector[0]->getTypeCQS() == SType)
         {
-            stringstream ss;
+            HString ss;
             std::vector<Component*>::iterator it;
             for(it=newComponentVector.begin(); it!=newComponentVector.end(); ++it)
-                ss << (*it)->getName() << "\n";                                                                                               //DEBUG
-            addDebugMessage("Sorted components successfully!\nSignal components will be simulated in the following order:\n" + ss.str());
+            {
+                ss += (*it)->getName()+"\n";                                                                                               //DEBUG
+            }
+            addDebugMessage("Sorted components successfully!\nSignal components will be simulated in the following order:\n" + ss);
         }
     }
     else    //Something went wrong, all components were not moved. This is likely due to an algebraic loop.
@@ -761,21 +765,21 @@ bool ComponentSystem::componentVectorContains(std::vector<Component*> vector, Co
 //! @brief Overloaded function that behaves slightly different when determining unique port names
 //! In systemcomponents we must make sure that systemports and subcomponents have unique names, this simplifies things in the GUI later on
 //! It is VERY important that systemports dont have the same name as a subcomponent
-std::string ComponentSystem::determineUniquePortName(std::string portname)
+HString ComponentSystem::determineUniquePortName(const HString &rPortname)
 {
-    return this->reserveUniqueName(portname, UniqueSysportNameTyp);
+    return this->reserveUniqueName(rPortname, UniqueSysportNameTyp);
 }
 
 //! @brief Overloaded function that behaves slightly different when determining unique component names
 //! In systemcomponents we must make sure that systemports and subcomponents have unique names, this simplifies things in the GUI later on
 //! It is VERY important that systemports dont have the same name as a subcomponent
 //! @todo the determineUniquePortNAme and ComponentName looks VERY similar maybe we could use the same function for both
-std::string ComponentSystem::determineUniqueComponentName(std::string name)
+HString ComponentSystem::determineUniqueComponentName(const HString &rName) const
 {
-    return findUniqueName<TakenNamesMapT>(mTakenNames, name);
+    return findUniqueName<TakenNamesMapT>(mTakenNames, rName);
 }
 
-bool ComponentSystem::hasReservedUniqueName(const string &rName) const
+bool ComponentSystem::hasReservedUniqueName(const HString &rName) const
 {
     return (mTakenNames.find(rName) != mTakenNames.end());
 }
@@ -783,14 +787,14 @@ bool ComponentSystem::hasReservedUniqueName(const string &rName) const
 
 //! @brief Get a Component ptr to the component with supplied name, can also return a ptr to self if no subcomponent found but systemport with name found
 //! @details For this to work we need to make sure that the sub components and systemports have unique names
-Component* ComponentSystem::getSubComponentOrThisIfSysPort(string name)
+Component* ComponentSystem::getSubComponentOrThisIfSysPort(const HString &rName)
 {
     // First try to find among subcomponents
-    Component *tmp = getSubComponent(name);
+    Component *tmp = getSubComponent(rName);
     if (tmp == 0)
     {
         // Now try to find among systemports
-        Port* pPort = this->getPort(name);
+        Port* pPort = this->getPort(rName);
         if (pPort != 0)
         {
             if (pPort->getPortType() == SystemPortType)
@@ -804,9 +808,9 @@ Component* ComponentSystem::getSubComponentOrThisIfSysPort(string name)
 }
 
 
-Component* ComponentSystem::getSubComponent(string name)
+Component* ComponentSystem::getSubComponent(const HString &rName) const
 {
-    SubComponentMapT::iterator it = mSubComponentMap.find(name);
+    SubComponentMapT::const_iterator it = mSubComponentMap.find(rName);
     if (it != mSubComponentMap.end())
     {
         return it->second;
@@ -819,16 +823,16 @@ Component* ComponentSystem::getSubComponent(string name)
 }
 
 
-ComponentSystem* ComponentSystem::getSubComponentSystem(string name)
+ComponentSystem* ComponentSystem::getSubComponentSystem(const HString &rName) const
 {
-    return dynamic_cast<ComponentSystem*>(getSubComponent(name));
+    return dynamic_cast<ComponentSystem*>(getSubComponent(rName));
 }
 
 
-vector<string> ComponentSystem::getSubComponentNames()
+std::vector<HString> ComponentSystem::getSubComponentNames()
 {
     //! @todo for now create a vector of the component names, later maybe we should return a pointer to the real internal map
-    vector<string> names;
+    vector<HString> names;
     SubComponentMapT::iterator it;
     for (it = mSubComponentMap.begin(); it != mSubComponentMap.end(); ++it)
     {
@@ -841,9 +845,9 @@ vector<string> ComponentSystem::getSubComponentNames()
 //! @brief Check if a system has a subcomponent with given name
 //! @param name The name to check for
 //! @returns true or false
-bool ComponentSystem::haveSubComponent(const string name) const
+bool ComponentSystem::haveSubComponent(const HString &rName) const
 {
-    return (mSubComponentMap.count(name) > 0);
+    return (mSubComponentMap.count(rName) > 0);
 }
 
 //! @brief Checks if a system is empty (if there are no components or systemports)
@@ -995,7 +999,7 @@ bool ComponentSystem::renameParameter(const std::string oldName, const std::stri
 }
 
 //! @brief Adds a transparent SubSystemPort
-Port* ComponentSystem::addSystemPort(string portName, const string description)
+Port* ComponentSystem::addSystemPort(HString portName, const HString &rDescription)
 {
     // Force default portname p, if nothing else specified
     if (portName.empty())
@@ -1003,17 +1007,17 @@ Port* ComponentSystem::addSystemPort(string portName, const string description)
         portName = "p";
     }
 
-    return addPort(portName, SystemPortType, "NodeEmpty", description, Port::Required);
+    return addPort(portName, SystemPortType, "NodeEmpty", rDescription, Port::Required);
 }
 
 
 //! @brief Rename system port
-string ComponentSystem::renameSystemPort(const string oldname, const string newname)
+HString ComponentSystem::renameSystemPort(const HString &rOldname, const HString &rNewname)
 {
-    string newmodename = renamePort(oldname,newname);
-    if (newmodename != oldname)
+    HString newmodename = renamePort(rOldname,rNewname);
+    if (newmodename != rOldname)
     {
-        unReserveUniqueName(oldname);
+        unReserveUniqueName(rOldname);
     }
     return newmodename;
 }
@@ -1021,10 +1025,10 @@ string ComponentSystem::renameSystemPort(const string oldname, const string newn
 
 //! @brief Delete a System port from the component
 //! @param [in] name The name of the port to delete
-void ComponentSystem::deleteSystemPort(const string name)
+void ComponentSystem::deleteSystemPort(const HString &rName)
 {
-    deletePort(name);
-    unReserveUniqueName(name);
+    deletePort(rName);
+    unReserveUniqueName(rName);
 }
 
 
@@ -1071,10 +1075,10 @@ void ComponentSystem::setTypeCQS(CQSEnumT cqs_type, bool doOnlyLocalSet)
 }
 
 //! @brief Change the cqs type of a stored subsystem component
-bool ComponentSystem::changeSubComponentSystemTypeCQS(const string name, const CQSEnumT newType)
+bool ComponentSystem::changeSubComponentSystemTypeCQS(const HString &rName, const CQSEnumT newType)
 {
     //First get the componentsystem ptr and check if we are requesting new type
-    ComponentSystem* tmpptr = getSubComponentSystem(name);
+    ComponentSystem* tmpptr = getSubComponentSystem(rName);
     if (tmpptr != 0)
     {
         // If the ptr was not = 0 then we have found a subsystem, lets change the type
@@ -1220,10 +1224,10 @@ bool ConnectionAssistant::ensureSameNodeType(Port *pPort1, Port *pPort2)
     // Check if both ports have the same node type specified
     if (pPort1->getNodeType() != pPort2->getNodeType())
     {
-        stringstream ss;
-        ss << "You can not connect a {" << pPort1->getNodeType() << "} port to a {" << pPort2->getNodeType()  << "} port." <<
-              " When connecting: {" << pPort1->getComponent()->getName() << "::" << pPort1->getName() << "} to {" << pPort2->getComponent()->getName() << "::" << pPort2->getName() << "}";
-        mpComponentSystem->addErrorMessage(ss.str());
+        HString ss;
+        ss+="You can not connect a {"+pPort1->getNodeType()+"} port to a {"+pPort2->getNodeType()+"} port."+
+              " When connecting: {"+pPort1->getComponent()->getName()+"::"+pPort1->getName()+"} to {"+pPort2->getComponent()->getName()+"::"+pPort2->getName()+"}";
+        mpComponentSystem->addErrorMessage(ss);
         return false;
     }
     return true;
@@ -1391,8 +1395,9 @@ void ConnectionAssistant::clearSysPortNodeTypeIfEmpty(Port *pPort)
 {
     if ( (pPort->getPortType() == SystemPortType) && (!pPort->isConnected()) )
     {
-        removeNode(pPort->getNodePtr());
+        Node *pOldNode = pPort->getNodePtr();
         pPort->setNode(mpComponentSystem->getHopsanEssentials()->createNode("NodeEmpty"));
+        removeNode(pOldNode);
         pPort->mNodeType = "NodeEmpty";
     }
 }
@@ -1434,7 +1439,7 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     //! @todo What will happend with multiports
     if (pPort1->isConnectedTo(pPort2))
     {
-        addErrorMessage("These two ports are already connected to each other", "allreadyconnected");
+        addErrorMessage("Port: " + pComp1->getName()+"::"+pPort1->getName() + "  is already connected to: " + pComp2->getName()+"::"+pPort2->getName());
         return false;
     }
 
@@ -1940,65 +1945,71 @@ bool ComponentSystem::disconnect(const string compname1, const string portname1,
 //! @param pPort2 Pointer to second port
 bool ComponentSystem::disconnect(Port *pPort1, Port *pPort2)
 {
-    cout << "disconnecting " << pPort1->getComponentName() << " " << pPort1->getName() << "  and  " << pPort2->getComponentName() << " " << pPort2->getName() << endl;
-
-    ConnectionAssistant disconnAssistant(this);
-    stringstream ss;
-    bool success = false;
-    //! @todo some more advanced error handling (are the ports really connected to each other and such)
-
-    if (pPort1->isConnected() && pPort2->isConnected())
+    // First check if prots not null
+    if (pPort1 && pPort2)
     {
-        // If non of the ports are multiports
-        if ( !(pPort1->isMultiPort() || pPort2->isMultiPort()) )
+        cout << "disconnecting " << pPort1->getComponentName().c_str() << " " << pPort1->getName().c_str() << "  and  " << pPort2->getComponentName().c_str() << " " << pPort2->getName().c_str() << endl;
+
+        ConnectionAssistant disconnAssistant(this);
+        //! @todo some more advanced error handling
+        if (pPort1->isConnectedTo(pPort2))
         {
-            success = disconnAssistant.splitNodeConnection(pPort1, pPort2);
-        }
-        // If one of the ports is a multiport
-        else if ( pPort1->isMultiPort() || pPort2->isMultiPort() )
-        {
-            //! @todo what happens if we disconnect a multiport from a port with multiple connections (can that even happen)
-            if(pPort1->isMultiPort() && pPort2->isMultiPort())
+            bool success = false;
+
+            // If non of the ports are multiports
+            if ( !(pPort1->isMultiPort() || pPort2->isMultiPort()) )
             {
-                addFatalMessage("ComponentSystem::disconnect(): Trying to disconnect two multiports.");
-                return false;
+                success = disconnAssistant.splitNodeConnection(pPort1, pPort2);
+            }
+            // If one of the ports is a multiport
+            else if ( pPort1->isMultiPort() || pPort2->isMultiPort() )
+            {
+                //! @todo what happens if we disconnect a multiport from a port with multiple connections (can that even happen)
+                if(pPort1->isMultiPort() && pPort2->isMultiPort())
+                {
+                    addFatalMessage("ComponentSystem::disconnect(): Trying to disconnect two multiports.");
+                    return false;
+                }
+
+                // Handle multiports
+                Port *pActualPort1, *pActualPort2;
+                disconnAssistant.ifMultiportPrepareDissconnect(pPort1, pPort2, pActualPort1, pActualPort2);
+
+                success = disconnAssistant.splitNodeConnection(pActualPort1, pActualPort2);
+
+                // Handle multiport connection sucess or failure
+                disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort1, pActualPort1, success);
+                disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort2, pActualPort2, success);
             }
 
-            // Handle multiports
-            Port *pActualPort1, *pActualPort2;
-            disconnAssistant.ifMultiportPrepareDissconnect(pPort1, pPort2, pActualPort1, pActualPort2);
+            disconnAssistant.clearSysPortNodeTypeIfEmpty(pPort1);
+            disconnAssistant.clearSysPortNodeTypeIfEmpty(pPort2);
+            //! @todo maybe incorporate the clear checks into delete node and unmerge
 
-            success = disconnAssistant.splitNodeConnection(pActualPort1, pActualPort2);
+            //Update the CQS type
+            this->determineCQSType();
 
-            // Handle multiport connection sucess or failure
-            disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort1, pActualPort1, success);
-            disconnAssistant.ifMultiportCleanupAfterDissconnect(pPort2, pActualPort2, success);
+            //Update parent cqs-type
+            //! @todo we should only do this if we are actually connected directly to our parent, but I dont know what will take the most time, to ckeach if we are connected to parent or to just allways refresh parent
+            if (!this->isTopLevelSystem())
+            {
+                this->mpSystemParent->determineCQSType();
+            }
+
+            HString msg;
+            msg = "Disconnected: {"+pPort1->getComponent()->getName()+"::"+pPort1->getName()+"} and {"+pPort2->getComponent()->getName()+"::"+pPort2->getName()+"}";
+            addDebugMessage(msg, "succesfuldisconnect");
+
+            return success;
         }
-
-        disconnAssistant.clearSysPortNodeTypeIfEmpty(pPort1);
-        disconnAssistant.clearSysPortNodeTypeIfEmpty(pPort2);
-        //! @todo maybe incorporate the clear checks into delete node and unmerge
+        else
+        {
+            addErrorMessage("When attempting disconnect: Port: " + pPort1->getComponentName()+"::"+pPort1->getName() + "  is not connected to: " + pPort2->getComponentName()+"::"+pPort2->getName());
+            return false;
+        }
+        addFatalMessage("When attempting disconnect: One of the ports is NULL");
     }
-    else
-    {
-        addWarningMessage("In disconnect: At least one of the ports do not seem to be connected, (does nothing)");
-    }
-
-    //Update the CQS type
-    this->determineCQSType();
-
-    //Update parent cqs-type
-    //! @todo we should only do this if we are actually connected directly to our parent, but I dont know what will take the most time, to ckeach if we are connected to parent or to just allways refresh parent
-    if (!this->isTopLevelSystem())
-    {
-        this->mpSystemParent->determineCQSType();
-    }
-
-    ss << "Disconnected: {"<< pPort1->getComponent()->getName() << "::" << pPort1->getName() << "} and {" << pPort2->getComponent()->getName() << "::" << pPort2->getName() << "}";
-    cout << ss.str() << endl;
-    addDebugMessage(ss.str(), "succesfuldisconnect");
-
-    return success;
+    return false;
 }
 
 
@@ -2707,21 +2718,15 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 
         for(size_t q=0; q<mComponentQptrs.size(); ++q)
         {
-            std::stringstream ss;
-            ss << "Time for " << mComponentQptrs.at(q)->getName() << ": " << mComponentQptrs.at(q)->getMeasuredTime();
-            addDebugMessage(ss.str());
+            addDebugMessage("Time for "+mComponentQptrs.at(q)->getName()+": "+ to_hstring(mComponentQptrs.at(q)->getMeasuredTime()));
         }
         for(size_t c=0; c<mComponentCptrs.size(); ++c)
         {
-            std::stringstream ss;
-            ss << "Time for " << mComponentCptrs.at(c)->getName() << ": " << mComponentCptrs.at(c)->getMeasuredTime();
-            addDebugMessage(ss.str());
+            addDebugMessage("Time for "+mComponentCptrs.at(c)->getName()+": "+to_hstring(mComponentCptrs.at(c)->getMeasuredTime()));
         }
         for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
         {
-            std::stringstream ss;
-            ss << "Time for " << mComponentSignalptrs.at(s)->getName() << ": " << mComponentSignalptrs.at(s)->getMeasuredTime();
-            addDebugMessage(ss.str());
+            addDebugMessage("Time for "+mComponentSignalptrs.at(s)->getName()+": "+to_hstring(mComponentSignalptrs.at(s)->getMeasuredTime()));
         }
 
         distributeCcomponents(mSplitCVector, nThreads);              //Distribute components and nodes
@@ -3576,37 +3581,37 @@ AliasHandler::AliasHandler(ComponentSystem *pSystem)
 }
 
 //! @todo maybe this should be the default version, right now search comp/port twice
-bool AliasHandler::setVariableAlias(const std::string alias, const std::string compName, const std::string portName, const std::string varName)
+bool AliasHandler::setVariableAlias(const HString &rAlias, const HString &rCompName, const HString &rPortName, const HString &rVarName)
 {
-    Component *pComp = mpSystem->getSubComponent(compName);
+    Component *pComp = mpSystem->getSubComponent(rCompName);
     if (pComp)
     {
-        Port *pPort = pComp->getPort(portName);
+        Port *pPort = pComp->getPort(rPortName);
         if (pPort)
         {
-            int id = pPort->getNodeDataIdFromName(varName);
-            return setVariableAlias(alias, compName, portName, id);
+            int id = pPort->getNodeDataIdFromName(rVarName);
+            return setVariableAlias(rAlias, rCompName, rPortName, id);
         }
     }
     return false;
 }
 
-bool AliasHandler::setVariableAlias(const string alias, const string compName, const string portName, const int varId)
+bool AliasHandler::setVariableAlias(const HString &rAlias, const HString &rCompName, const HString &rPortName, const int varId)
 {
-    if (!isNameValid(alias))
+    if (!isNameValid(rAlias))
     {
-        mpSystem->addErrorMessage("Invalid characters in requested alias name: "+alias);
+        mpSystem->addErrorMessage("Invalid characters in requested alias name: "+rAlias);
         return false;
     }
 
     //! @todo must check if existing alias is set for the same component that already have it to avoid warning
     // Check if alias already exist
-    if (hasAlias(alias))
+    if (hasAlias(rAlias))
     {
-        string comp,port;
+        HString comp,port;
         int var;
-        getVariableFromAlias(alias,comp,port,var);
-        if ( (comp==compName) && (port==portName) && (var==varId) )
+        getVariableFromAlias(rAlias,comp,port,var);
+        if ( (comp==rCompName) && (port==rPortName) && (var==varId) )
         {
             // We are setting the same alias again, skip without warning
             return true;
@@ -3614,26 +3619,26 @@ bool AliasHandler::setVariableAlias(const string alias, const string compName, c
         else
         {
             // The alias already exist somwhere else
-            mpSystem->addErrorMessage("Alias: "+alias+" already exist");
+            mpSystem->addErrorMessage("Alias: "+rAlias+" already exist");
             return false;
         }
     }
 
-    if (mpSystem->hasReservedUniqueName(alias))
+    if (mpSystem->hasReservedUniqueName(rAlias))
     {
-        mpSystem->addErrorMessage("The alias: " + alias + " is already used as some other name");
+        mpSystem->addErrorMessage("The alias: " + rAlias + " is already used as some other name");
         return false;
     }
 
     // Set the alias for the given component port and var
-    Component *pComp = mpSystem->getSubComponent(compName);
+    Component *pComp = mpSystem->getSubComponent(rCompName);
     if (pComp)
     {
-        Port *pPort = pComp->getPort(portName);
+        Port *pPort = pComp->getPort(rPortName);
         if (pPort)
         {
             // First unregister the old alias (if it exists)
-            string prevAlias = pPort->getVariableAlias(varId);
+            HString prevAlias = pPort->getVariableAlias(varId);
             if (!prevAlias.empty())
             {
                 //! @todo the remove will search for port agin all the way, maybe have a special remove to use when we know the port and id already
@@ -3641,14 +3646,14 @@ bool AliasHandler::setVariableAlias(const string alias, const string compName, c
             }
 
             // If alias is non empty, set it
-            if (!alias.empty())
+            if (!rAlias.empty())
             {
                 //! @todo do we need to check if this is OK ??
-                pPort->setVariableAlias(alias, varId);
+                pPort->setVariableAlias(rAlias, varId);
 
-                ParamOrVariableT data = {Variable, compName, portName};
-                mAliasMap.insert(std::pair<string, ParamOrVariableT>(alias, data));
-                mpSystem->reserveUniqueName(alias);
+                ParamOrVariableT data = {Variable, rCompName, rPortName};
+                mAliasMap.insert(std::pair<HString, ParamOrVariableT>(rAlias, data));
+                mpSystem->reserveUniqueName(rAlias);
             }
             return true;
         }
@@ -3657,26 +3662,26 @@ bool AliasHandler::setVariableAlias(const string alias, const string compName, c
     return false;
 }
 
-bool AliasHandler::setParameterAlias(const string /*alias*/, const string /*compName*/, const string /*parameterName*/)
+bool AliasHandler::setParameterAlias(const HString & /*alias*/, const HString & /*compName*/, const HString & /*parameterName*/)
 {
     mpSystem->addErrorMessage("AliasHandler::setParameterAlias has not been implemented");
     return false;
 }
 
-void AliasHandler::componentRenamed(const string oldCompName, const string newCompName)
+void AliasHandler::componentRenamed(const HString &rOldCompName, const HString &rNewCompName)
 {
-    std::map<std::string, ParamOrVariableT>::iterator it;
+    std::map<HString, ParamOrVariableT>::iterator it;
     for (it=mAliasMap.begin(); it!=mAliasMap.end(); ++it)
     {
-        if (it->second.componentName == oldCompName)
+        if (it->second.componentName == rOldCompName)
         {
-            string alias = it->first;
+            HString alias = it->first;
             ParamOrVariableT data = it->second;
             mAliasMap.erase(it);
-            data.componentName = newCompName;
+            data.componentName = rNewCompName;
 
             // Re-insert data (with new comp name)
-            mAliasMap.insert(std::pair<string, ParamOrVariableT>(alias, data));
+            mAliasMap.insert(std::pair<HString, ParamOrVariableT>(alias, data));
 
             // Restart search for more components
             it = mAliasMap.begin();
@@ -3684,17 +3689,17 @@ void AliasHandler::componentRenamed(const string oldCompName, const string newCo
     }
 }
 
-void AliasHandler::portRenamed(const string /*compName*/, const string /*oldPortName*/, const string /*newPortName*/)
+void AliasHandler::portRenamed(const HString & /*compName*/, const HString & /*oldPortName*/, const HString & /*newPortName*/)
 {
     mpSystem->addErrorMessage("AliasHandler::portRenamed has not been implemented");
 }
 
-void AliasHandler::componentRemoved(const string compName)
+void AliasHandler::componentRemoved(const HString &rCompName)
 {
-    std::map<std::string, ParamOrVariableT>::iterator it;
+    std::map<HString, ParamOrVariableT>::iterator it;
     for (it=mAliasMap.begin(); it!=mAliasMap.end(); ++it)
     {
-        if (it->second.componentName == compName)
+        if (it->second.componentName == rCompName)
         {
             mAliasMap.erase(it);
             it = mAliasMap.begin(); //Restart search for more components
@@ -3702,23 +3707,23 @@ void AliasHandler::componentRemoved(const string compName)
     }
 }
 
-void AliasHandler::portRemoved(const string /*compName*/, const string /*portName*/)
+void AliasHandler::portRemoved(const HString & /*compName*/, const HString & /*portName*/)
 {
     mpSystem->addErrorMessage("AliasHandler::portRemoved has not been implemented");
 }
 
-bool AliasHandler::hasAlias(const string alias)
+bool AliasHandler::hasAlias(const HString &rAlias)
 {
-    if (mAliasMap.count(alias)>0)
+    if (mAliasMap.count(rAlias)>0)
     {
         return true;
     }
     return false;
 }
 
-bool AliasHandler::removeAlias(const string alias)
+bool AliasHandler::removeAlias(const HString &rAlias)
 {
-    std::map<std::string, ParamOrVariableT>::iterator it = mAliasMap.find(alias);
+    std::map<HString, ParamOrVariableT>::iterator it = mAliasMap.find(rAlias);
     if (it != mAliasMap.end())
     {
         if (it->second.type == Variable)
@@ -3729,24 +3734,24 @@ bool AliasHandler::removeAlias(const string alias)
                 Port *pPort = pComp->getPort(it->second.name);
                 if (pPort)
                 {
-                    int id = pPort->getVariableIdByAlias(alias);
+                    int id = pPort->getVariableIdByAlias(rAlias);
                     pPort->setVariableAlias("",id); //Remove variable alias
                 }
             }
         }
         mAliasMap.erase(it);
-        mpSystem->unReserveUniqueName(alias);
+        mpSystem->unReserveUniqueName(rAlias);
         return true;
     }
     return false;
 }
 
-std::vector<std::string> AliasHandler::getAliases() const
+std::vector<HString> AliasHandler::getAliases() const
 {
-    vector<string> aliasNames;
+    vector<HString> aliasNames;
     aliasNames.reserve(mAliasMap.size());
 
-    std::map<std::string, ParamOrVariableT>::const_iterator it;
+    std::map<HString, ParamOrVariableT>::const_iterator it;
     for (it=mAliasMap.begin(); it!=mAliasMap.end(); ++it)
     {
         aliasNames.push_back(it->first);
@@ -3754,14 +3759,14 @@ std::vector<std::string> AliasHandler::getAliases() const
     return aliasNames;
 }
 
-void AliasHandler::getVariableFromAlias(const string alias, string &rCompName, string &rPortName, int &rVarId)
+void AliasHandler::getVariableFromAlias(const HString &rAlias, HString &rCompName, HString &rPortName, int &rVarId)
 {
     // Clear return vars to indicate any failure
     rCompName.clear(); rPortName.clear(); rVarId=-1;
 
     // Search through map for specified alias
-    std::map<std::string, ParamOrVariableT>::iterator it;
-    it = mAliasMap.find(alias);
+    std::map<HString, ParamOrVariableT>::iterator it;
+    it = mAliasMap.find(rAlias);
     if (it != mAliasMap.end())
     {
         if (it->second.type == Variable)
@@ -3776,20 +3781,20 @@ void AliasHandler::getVariableFromAlias(const string alias, string &rCompName, s
                 Port *pPort = pComp->getPort(rPortName);
                 if (pPort)
                 {
-                    rVarId = pPort->getVariableIdByAlias(alias);
+                    rVarId = pPort->getVariableIdByAlias(rAlias);
                 }
             }
         }
     }
 }
 
-void AliasHandler::getVariableFromAlias(const string alias, string &rCompName, string &rPortName, string &rVarName)
+void AliasHandler::getVariableFromAlias(const HString &rAlias, HString &rCompName, HString &rPortName, HString &rVarName)
 {
     // Clear return vars to indicate any failure
     rCompName.clear(); rPortName.clear(); rVarName.clear();
 
     // Search through map for specified alias
-    AliasMapT::iterator it = mAliasMap.find(alias);
+    AliasMapT::iterator it = mAliasMap.find(rAlias);
     if (it != mAliasMap.end())
     {
         if (it->second.type == Variable)
@@ -3804,7 +3809,7 @@ void AliasHandler::getVariableFromAlias(const string alias, string &rCompName, s
                 Port *pPort = pComp->getPort(rPortName);
                 if (pPort)
                 {
-                    int id = pPort->getVariableIdByAlias(alias);
+                    int id = pPort->getVariableIdByAlias(rAlias);
                     rVarName = pPort->getNodeDataDescription(id)->name;
                 }
             }
@@ -3812,7 +3817,7 @@ void AliasHandler::getVariableFromAlias(const string alias, string &rCompName, s
     }
 }
 
-void AliasHandler::getParameterFromAlias(const string /*alias*/, string &/*rCompName*/, string &/*rParameterName*/)
+void AliasHandler::getParameterFromAlias(const HString & /*alias*/, HString &/*rCompName*/, HString &/*rParameterName*/)
 {
     mpSystem->addErrorMessage("AliasHandler::getParameterFromAlias has not been implemented");
 }

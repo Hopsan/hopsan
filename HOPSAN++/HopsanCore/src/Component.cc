@@ -258,7 +258,7 @@ void Component::finalize()
 //! If you set doOnlyLocalRename to true, the smart rename will not be atempted, avoid doing this as the component storage map will not be updated on anme change
 //! This is a somewhat ugly fix for some special situations where we want to make sure that a smart rename is not atempted
 //!
-void Component::setName(string name)
+void Component::setName(HString name)
 {
     // Make sure name is clean
     santizeName(name);
@@ -282,7 +282,7 @@ void Component::setName(string name)
 
 
 //! @brief Get the component name
-const std::string &Component::getName() const
+const HString &Component::getName() const
 {
     return mName;
 }
@@ -296,7 +296,7 @@ Component::CQSEnumT Component::getTypeCQS() const
 
 
 //! @brief Get the CQStype as string
-string Component::getTypeCQSString() const
+HString Component::getTypeCQSString() const
 {
     switch (getTypeCQS())
     {
@@ -320,13 +320,13 @@ string Component::getTypeCQSString() const
 
 
 //! @brief Get the TypeName of the component
-const std::string &Component::getTypeName() const
+const HString &Component::getTypeName() const
 {
     return mTypeName;
 }
 
 //! @brief Get the SubType name of the component
-const std::string &Component::getSubTypeName() const
+const HString &Component::getSubTypeName() const
 {
     return mSubTypeName;
 }
@@ -391,9 +391,9 @@ void Component::updateDynamicParameterValues()
     }
 }
 
-void Component::addConstant(const string name, const string description, const string unit, double &rData)
+void Component::addConstant(const HString &rName, const HString &description, const HString &unit, double &rData)
 {
-    registerParameter(name, description, unit, rData, Constant);
+    registerParameter(rName, description, unit, rData, Constant);
 }
 
 void Component::addConstant(const string name, const string description, const string unit, const double defaultValue, double &rData)
@@ -451,17 +451,17 @@ void Component::registerParameter(const string name, const string description, c
 //! @param [in] rValue A reference to the double variable representing the value, its adress will be registered
 //! @param [in] dynconst Choose if parameter is dynamic (default) or constant (one that can not be converted into a port)
 //! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
-void Component::registerParameter(const string name, const string description, const string unit, double &rValue, const ParamDynConstEnumT dynconst)
+void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue, const ParamDynConstEnumT dynconst)
 {
     // We allow the : exception for registring start value parameters
-    if (!isNameValid(name, ":"))
+    if (!isNameValid(rName, ":"))
     {
-        addErrorMessage("Will not register Invalid parameter name: "+name);
+        addErrorMessage("Will not register Invalid parameter name: "+rName);
         return;
     }
 
-    if(mpParameters->exist(name))
-        mpParameters->deleteParameter(name);     //Remove parameter if it is already registered
+    if(mpParameters->exist(rName))
+        mpParameters->deleteParameter(rName);     //Remove parameter if it is already registered
 
     //! @todo what if dynamic parameter should we not remove the port as well
     stringstream ss;
@@ -471,13 +471,13 @@ void Component::registerParameter(const string name, const string description, c
         //! @deprecated
         //! @todo remove this later in 0.7
         // Make a port with same name so that parameter can be switch to dynamic parameter that can be changed during simulation
-        this->addReadPort(name, "NodeSignal", Port::NotRequired);
-        mpParameters->addParameter(name, ss.str(), description, unit, "double", true, &rValue);
+        this->addReadPort(rName, "NodeSignal", Port::NotRequired);
+        mpParameters->addParameter(rName, ss.str().c_str(), rDescription, rUnit, "double", true, &rValue);
         this->addErrorMessage("Dynamic parmeters are no longer supported!!! Use:   addInputVariable()   instead!");
     }
     else
     {
-        mpParameters->addParameter(name, ss.str(), description, unit, "double", false, &rValue);
+        mpParameters->addParameter(rName, ss.str().c_str(), rDescription, rUnit, "double", false, &rValue);
     }
 }
 
@@ -553,9 +553,9 @@ void Component::registerParameter(const string name, const string description, c
 
 
 //! @brief Removes a parameter value from the component
-void Component::unRegisterParameter(const string name)
+void Component::unRegisterParameter(const HString &rName)
 {
-    mpParameters->deleteParameter(name);
+    mpParameters->deleteParameter(rName);
 }
 
 
@@ -631,15 +631,15 @@ double *Component::getTimePtr()
 //! @param [in] nodetype The type of node that must be connected to the port
 //! @param [in] connection_requirement Specify if the port must be connecteed or if it is optional
 //! @return A pointer to the created port
-Port* Component::addPort(const string portName, const PortTypesEnumT portType, const std::string nodeType, const Port::RequireConnectionEnumT reqConnection)
+Port* Component::addPort(const HString &rPortName, const PortTypesEnumT portType, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnection)
 {
     addLogMess((getName()+"::addPort").c_str());
 
     //Make sure name is unique before insert
-    string newname = this->determineUniquePortName(portName);
+    HString newname = this->determineUniquePortName(rPortName);
     //! @todo for ordinary components give an error message, users rarely check debug messages
 
-    Port* new_port = createPort(portType, nodeType, newname, this);
+    Port* new_port = createPort(portType, rNodeType, newname, this);
 
     //Set wheter the port must be connected before simulation
     if (reqConnection == Port::NotRequired)
@@ -651,9 +651,9 @@ Port* Component::addPort(const string portName, const PortTypesEnumT portType, c
     mPortPtrMap.insert(PortPtrPairT(newname, new_port));
 
     //Signal autmatic name change
-    if (newname != portName)
+    if (newname != rPortName)
     {
-        addDebugMessage("Automatically changed name of added port from: {" + portName + "} to {" + newname + "}");
+        addDebugMessage("Automatically changed name of added port from: {" + rPortName + "} to {" + newname + "}");
     }
     return new_port;
 }
@@ -665,16 +665,16 @@ Port* Component::addPort(const string portName, const PortTypesEnumT portType, c
 //! @param [in] description A description string describing the port
 //! @param [in] connection_requirement Specify if the port must be connecteed or if it is optional
 //! @return A pointer to the created port
-Port *Component::addPort(const string portName, const PortTypesEnumT portType, const string nodeType, const string description, const Port::RequireConnectionEnumT reqConnection)
+Port *Component::addPort(const HString &rPortName, const PortTypesEnumT portType, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnection)
 {
-    Port *pPort = addPort(portName, portType, nodeType, reqConnection);
-    pPort->setDescription(description);
+    Port *pPort = addPort(rPortName, portType, rNodeType, reqConnection);
+    pPort->setDescription(rDescription);
     return pPort;
 }
 
-Port *Component::addWritePort(const string portName, const string nodeType, const string description, const Port::RequireConnectionEnumT reqConnect)
+Port *Component::addWritePort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect)
 {
-    return addPort(portName, WritePortType, nodeType, description, reqConnect);
+    return addPort(rPortName, WritePortType, rNodeType, rDescription, reqConnect);
 }
 
 
@@ -684,9 +684,9 @@ Port *Component::addWritePort(const string portName, const string nodeType, cons
 //! @param [in] nodeType The type of node that must be connected to the port
 //! @param [in] reqConnect Specify if the port must be connecteed or if it is optional (Required or NotRequired)
 //! @return A pointer to the created port
-Port* Component::addPowerPort(const string portName, const string nodeType, const Port::RequireConnectionEnumT reqConnect)
+Port* Component::addPowerPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect)
 {
-    return addPort(portName, PowerPortType, nodeType, reqConnect);
+    return addPort(rPortName, PowerPortType, rNodeType, reqConnect);
 }
 
 //! @brief Convenience method to add a PowerMultiPort
@@ -695,9 +695,9 @@ Port* Component::addPowerPort(const string portName, const string nodeType, cons
 //! @param [in] nodeType The type of node that must be connected to the port
 //! @param [in] reqConnect Specify if the port must be connecteed or if it is optional (Required or NotRequired)
 //! @return A pointer to the created port
-Port* Component::addPowerMultiPort(const string portName, const string nodeType, const Port::RequireConnectionEnumT reqConnect)
+Port* Component::addPowerMultiPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect)
 {
-    return addPort(portName, PowerMultiportType, nodeType, reqConnect);
+    return addPort(rPortName, PowerMultiportType, rNodeType, reqConnect);
 }
 
 //! @brief Convenience method to add a ReadMultiPort
@@ -706,29 +706,29 @@ Port* Component::addPowerMultiPort(const string portName, const string nodeType,
 //! @param [in] nodeType The type of node that must be connected to the port
 //! @param [in] reqConnect Specify if the port must be connecteed or if it is optional (Required or NotRequired)
 //! @return A pointer to the created port
-Port* Component::addReadMultiPort(const string portName, const string nodeType, const Port::RequireConnectionEnumT reqConnect)
+Port* Component::addReadMultiPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect)
 {
-    return addPort(portName, ReadMultiportType, nodeType, reqConnect);
+    return addPort(rPortName, ReadMultiportType, rNodeType, reqConnect);
 }
 
-Port *Component::addPowerPort(const string portName, const string nodeType, const string description, const Port::RequireConnectionEnumT reqConnect)
+Port *Component::addPowerPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect)
 {
-    return addPort(portName, PowerPortType, nodeType, description, reqConnect);
+    return addPort(rPortName, PowerPortType, rNodeType, rDescription, reqConnect);
 }
 
-Port *Component::addReadPort(const string portName, const string nodeType, const string description, const Port::RequireConnectionEnumT reqConnect)
+Port *Component::addReadPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect)
 {
-    return addPort(portName, ReadPortType, nodeType, description, reqConnect);
+    return addPort(rPortName, ReadPortType, rNodeType, rDescription, reqConnect);
 }
 
-Port *Component::addPowerMultiPort(const string portName, const string nodeType, const string description, const Port::RequireConnectionEnumT reqConnect)
+Port *Component::addPowerMultiPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect)
 {
-    return addPort(portName, PowerMultiportType, nodeType, description, reqConnect);
+    return addPort(rPortName, PowerMultiportType, rNodeType, rDescription, reqConnect);
 }
 
-Port *Component::addReadMultiPort(const string portName, const string nodeType, const string description, const Port::RequireConnectionEnumT reqConnect)
+Port *Component::addReadMultiPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect)
 {
-    return addPort(portName, ReadMultiportType, nodeType, description, reqConnect);
+    return addPort(rPortName, ReadMultiportType, rNodeType, rDescription, reqConnect);
 }
 
 //! @brief Convenience method to add a ReadPort
@@ -737,9 +737,9 @@ Port *Component::addReadMultiPort(const string portName, const string nodeType, 
 //! @param [in] nodeType The type of node that must be connected to the port
 //! @param [in] reqConnect Specify if the port must be connecteed or if it is optional (Required or NotRequired)
 //! @return A pointer to the created port
-Port* Component::addReadPort(const string portName, const string nodeType, const Port::RequireConnectionEnumT reqConnect)
+Port* Component::addReadPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect)
 {
-    return addPort(portName, ReadPortType, nodeType, reqConnect);
+    return addPort(rPortName, ReadPortType, rNodeType, reqConnect);
 }
 
 
@@ -749,9 +749,9 @@ Port* Component::addReadPort(const string portName, const string nodeType, const
 //! @param [in] nodeType The type of node that must be connected to the port
 //! @param [in] reqConnect Specify if the port must be connecteed or if it is optional (Required or NotRequired)
 //! @return A pointer to the created port
-Port* Component::addWritePort(const string portName, const string nodeType, const Port::RequireConnectionEnumT reqConnect)
+Port* Component::addWritePort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect)
 {
-    return addPort(portName, WritePortType, nodeType, reqConnect);
+    return addPort(rPortName, WritePortType, rNodeType, reqConnect);
 }
 
 
@@ -760,35 +760,35 @@ Port* Component::addWritePort(const string portName, const string nodeType, cons
 //! @param [in] newname The desired new name of the the port
 //! @return The actual new name of the port or old name if not renamed
 //! @todo this could be a template function to use with all rename in map
-string Component::renamePort(const string oldname, const string newname)
+HString Component::renamePort(const HString &rOldname, const HString &rNewname)
 {
-    if (mPortPtrMap.count(oldname) != 0)
+    if (mPortPtrMap.count(rOldname) != 0)
     {
         Port* temp_port_ptr;
         PortPtrMapT::iterator it;
 
-        it = mPortPtrMap.find(oldname); //Find iterator to port
+        it = mPortPtrMap.find(rOldname); //Find iterator to port
         temp_port_ptr = it->second;     //Backup copy of port ptr
         mPortPtrMap.erase(it);          //Erase old value
-        string modnewname = determineUniquePortName(newname); //Make sure new name is unique
+        HString modnewname = determineUniquePortName(rNewname); //Make sure new name is unique
         temp_port_ptr->mPortName = modnewname;  //Set new name in port
         mPortPtrMap.insert(PortPtrPairT(modnewname, temp_port_ptr)); //Re add to map
         return modnewname;
     }
     else
     {
-        addWarningMessage("Trying to rename port {" + oldname + "}, but not found");
-        return oldname;
+        addWarningMessage("Trying to rename port {" + rOldname + "}, but not found");
+        return rOldname;
     }
 }
 
 //! @brief Removes and deletes a port from a component
 //! @param [in] name The name of the port to delete
 //! @note Only use this function to remove systemports, removing ordinary ports from components is a bad idea
-void Component::deletePort(const string name)
+void Component::deletePort(const HString &rName)
 {
     PortPtrMapT::iterator it;
-    it = mPortPtrMap.find(name);
+    it = mPortPtrMap.find(rName);
     if (it != mPortPtrMap.end())
     {
         delete it->second;
@@ -796,7 +796,7 @@ void Component::deletePort(const string name)
     }
     else
     {
-        addWarningMessage("Trying to delete port {" + name + "}, but not found");
+        addWarningMessage("Trying to delete port {" + rName + "}, but not found");
     }
 }
 
@@ -933,9 +933,9 @@ void Component::writeNodeSafeSlow(const char *portName, const char *dataName, co
 
 
 //! @brief a virtual function that detmines a unique port name, needs to be overloaded in ComponentSystem to do this slightly different
-std::string Component::determineUniquePortName(std::string portname)
+HString Component::determineUniquePortName(const HString &rPortname)
 {
-    return findUniqueName<PortPtrMapT>(mPortPtrMap, portname);
+    return findUniqueName<PortPtrMapT>(mPortPtrMap, rPortname);
 }
 
 //! @brief Set the component parent system (tell component who parent is)
@@ -946,9 +946,9 @@ void Component::setSystemParent(ComponentSystem *pComponentSystem)
 }
 
 //! @brief This is suposed to be used by hopsan essentials to set the typename to the same as the registered key value
-void Component::setTypeName(const string typeName)
+void Component::setTypeName(const HString &rTypeName)
 {
-    mTypeName = typeName;
+    mTypeName = rTypeName;
 }
 
 
@@ -968,25 +968,25 @@ vector<Port*> Component::getPortPtrVector()
 //! @brief Returns a pointer to the port with the given name.
 //! @param[in] portname The name of the port
 //! @returns A pointer to the port, or 0 if port not found
-Port *Component::getPort(const string portname)
+Port *Component::getPort(const HString &rPortname) const
 {
-    PortPtrMapT::iterator it = mPortPtrMap.find(portname);
+    PortPtrMapT::const_iterator it = mPortPtrMap.find(rPortname);
     if (it != mPortPtrMap.end())
     {
         return it->second;
     }
     else
     {
-        addDebugMessage("Trying to get port '" + portname + "' in component '" + this->getName() + "', but not found, pointer invalid");
+        addDebugMessage("Trying to get port '" + rPortname + "' in component '" + this->getName() + "', but not found, pointer invalid");
         return 0;
     }
 }
 
 //! @brief Returns a string vector containing names of all ports in the component
 //! @returns A vector with the port names
-std::vector<std::string> Component::getPortNames()
+std::vector<HString> Component::getPortNames()
 {
-    vector<string> names;
+    vector<HString> names;
     PortPtrMapT::iterator ports_it;
 
     //Copy every port name
@@ -1000,9 +1000,9 @@ std::vector<std::string> Component::getPortNames()
 
 //! @brief Get a port as reference to pointer
 //! @todo do we really need this function
-bool Component::getPort(const string portname, Port* &rpPort)
+bool Component::getPort(const HString &rPortname, Port* &rpPort)
 {
-    rpPort = getPort(portname);
+    rpPort = getPort(rPortname);
     if (rpPort != 0)
     {
         return true;

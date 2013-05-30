@@ -136,11 +136,11 @@ void Node::setSignalDataUnitAndDescription(const string &/*rUnit*/, const string
 //! @brief This function gives you the data Id for a names data variable
 //! @param [in] name The data name
 //! @return The Id, -1 if requested data name is not found
-int Node::getDataIdFromName(const string name) const
+int Node::getDataIdFromName(const HString &rName) const
 {
     for (size_t i=0; i<mDataDescriptions.size(); ++i)
     {
-        if (name == mDataDescriptions.at(i).name)
+        if (rName == mDataDescriptions.at(i).name)
         {
             return i;
         }

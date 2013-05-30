@@ -35,6 +35,9 @@ public:
     bool empty() const;
     bool compare(const char* other) const;
     bool compare(const HString &rOther) const;
+    unsigned int find_first_of(char c, unsigned int pos = 0) const;
+
+    bool operator<(const HString &rhs) const;
 
     HString& operator+=(const HString& rhs);
     HString& operator+=(const char *rhs);
@@ -49,11 +52,11 @@ public:
 };
 
 inline bool operator==(const HString& lhs, const HString& rhs){return lhs.compare(rhs);}
-bool operator< (const HString& lhs, const HString& rhs);
+//bool DLLIMPORTEXPORT operator< (const HString& lhs, const HString& rhs);
 inline bool operator!=(const HString& lhs, const HString& rhs){return !operator==(lhs,rhs);}
-inline bool operator> (const HString& lhs, const HString& rhs){return  operator< (rhs,lhs);}
+inline bool operator> (const HString& lhs, const HString& rhs){return rhs<lhs;}
 inline bool operator<=(const HString& lhs, const HString& rhs){return !operator> (lhs,rhs);}
-inline bool operator>=(const HString& lhs, const HString& rhs){return !operator< (lhs,rhs);}
+inline bool operator>=(const HString& lhs, const HString& rhs){return !(lhs<rhs);}
 
 inline HString operator+(HString lhs, const HString& rhs)
 {

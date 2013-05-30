@@ -284,7 +284,7 @@ void loadConnection(rapidxml::xml_node<> *pConnectNode, ComponentSystem* pSystem
 //! @brief This help function loads a SystemPort
 void loadSystemPort(rapidxml::xml_node<> *pSysPortNode, ComponentSystem* pSystem)
 {
-    string name = readStringAttribute(pSysPortNode, "name", "ERROR_NO_NAME_GIVEN");
+    HString name = readStringAttribute(pSysPortNode, "name", "ERROR_NO_NAME_GIVEN");
     pSystem->addSystemPort(name);
 }
 

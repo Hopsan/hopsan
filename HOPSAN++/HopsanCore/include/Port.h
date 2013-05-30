@@ -27,7 +27,7 @@
 
 #include "Node.h"
 #include "win32dll.h"
-#include <string>
+#include "HopsanTypes.h"
 
 namespace hopsan {
 
@@ -55,7 +55,7 @@ namespace hopsan {
         enum RequireConnectionEnumT {Required, NotRequired, REQUIRED=Required, NOTREQUIRED=NotRequired};
 
         //Constructors - Destructors
-        Port(const std::string nodeType, const std::string portName, Component *pParentComponent, Port *pParentPort=0);
+        Port(const HString &rNodeType, const HString &rPortName, Component *pParentComponent, Port *pParentPort=0);
         virtual ~Port();
 
         //! @brief Reads a value from the connected node
@@ -83,7 +83,7 @@ namespace hopsan {
         virtual size_t getNumDataVariables() const;
         virtual const std::vector<NodeDataDescription>* getNodeDataDescriptions(const size_t portIdx=0);
         virtual const NodeDataDescription* getNodeDataDescription(const size_t dataid, const size_t portIdx=0);
-        virtual int getNodeDataIdFromName(const std::string name, const size_t portIdx=0);
+        virtual int getNodeDataIdFromName(const HString &rName, const size_t portIdx=0);
         virtual void setSignalNodeUnitAndDescription(const std::string &rUnit, const std::string &rDescription);
 
         virtual void saveLogData(std::string filename, const size_t portIdx=0);
@@ -103,27 +103,27 @@ namespace hopsan {
 
         bool isMultiPort() const;
         Port *getParentPort() const;
-        const std::string &getNodeType() const;
+        const HString &getNodeType() const;
         PortTypesEnumT getPortType() const;
         virtual PortTypesEnumT getExternalPortType();
         virtual PortTypesEnumT getInternalPortType();
 
-        const std::string getName() const;
-        const std::string getComponentName() const;
-        const std::string &getDescription() const;
-        void setDescription(const std::string &rDescription);
+        const HString &getName() const;
+        const HString &getComponentName() const;
+        const HString &getDescription() const;
+        void setDescription(const HString &rDescription);
 
         virtual void loadStartValues();
         virtual void loadStartValuesFromSimulation();
 
         Component* getComponent() const;
 
-        const std::string &getVariableAlias(const int id);
-        int getVariableIdByAlias(const std::string alias) const;
+        const HString &getVariableAlias(const int id);
+        int getVariableIdByAlias(const HString &rAlias) const;
 
     protected:
         PortTypesEnumT mPortType;
-        std::string mNodeType;
+        HString mNodeType;
 
 
         Component* mpComponent;
@@ -145,20 +145,19 @@ namespace hopsan {
         void addConnectedPort(Port* pPort, const size_t portIdx=0);
         void eraseConnectedPort(Port* pPort, const size_t portIdx=0);
 
-        void createStartNode(std::string nodeType);
+        void createStartNode(const HString &rNodeType);
 
-        void setVariableAlias(const std::string alias, const int id);
+        void setVariableAlias(const HString &rAlias, const int id);
 
     private:
-        std::string mPortName;
-        std::string mDescription;
+        HString mPortName;
+        HString mDescription;
         Node *mpNode;
         Node *mpStartNode;
-        std::map<std::string, int> mVariableAliasMap;
+        std::map<HString, int> mVariableAliasMap;
         bool mConnectionRequired;
 
-        //char* mpTempAlias;
-        std::string mEmptyString;
+        HString mEmptyString;
     };
 
 
@@ -170,7 +169,7 @@ namespace hopsan {
 
     public:
         //Constructors
-        SystemPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort=0);
+        SystemPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort=0);
         PortTypesEnumT getExternalPortType();
         PortTypesEnumT getInternalPortType();
     };
@@ -184,7 +183,7 @@ namespace hopsan {
 
     public:
         // Constructor, Destructor
-        MultiPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort=0);
+        MultiPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort=0);
         ~MultiPort();
 
         // Overloaded virtual functions
@@ -199,7 +198,7 @@ namespace hopsan {
 
         const std::vector<NodeDataDescription>* getNodeDataDescriptions(const size_t portIdx=0);
         const NodeDataDescription* getNodeDataDescription(const size_t dataid, const size_t portIdx=0);
-        int getNodeDataIdFromName(const std::string name, const size_t portIdx=0);
+        int getNodeDataIdFromName(const HString &rName, const size_t portIdx=0);
 
         bool haveLogData(const size_t portIdx=0);
         void saveLogData(std::string filename, const size_t portIdx=0);
@@ -211,6 +210,7 @@ namespace hopsan {
         void loadStartValues();
         void loadStartValuesFromSimulation();
 
+        virtual bool isConnectedTo(Port *pOtherPort);
         bool isConnected();
         size_t getNumPorts();
 
@@ -234,7 +234,7 @@ namespace hopsan {
 
     public:
         //Constructor
-        PowerPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort=0);
+        PowerPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort=0);
     };
 
 
@@ -246,7 +246,7 @@ namespace hopsan {
 
     public:
         //Constructor
-        ReadPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort=0);
+        ReadPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort=0);
         void writeNodeSafe(const size_t idx, const double value);
         inline void writeNode(const size_t idx, const double value) const;
         virtual void loadStartValues();
@@ -262,7 +262,7 @@ namespace hopsan {
 
     public:
         //Constructor
-        PowerMultiPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort=0);
+        PowerMultiPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort=0);
 
     protected:
         Port* addSubPort();
@@ -277,7 +277,7 @@ namespace hopsan {
 
     public:
         //Constructor
-        ReadMultiPort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort=0);
+        ReadMultiPort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort=0);
 
     protected:
         Port* addSubPort();
@@ -293,12 +293,12 @@ namespace hopsan {
 
     public:
         //Constructor
-        WritePort(std::string node_type, std::string portname, Component *portOwner, Port *pParentPort=0);
+        WritePort(const HString &rNodeType, const HString &rPortName, Component *portOwner, Port *pParentPort=0);
 
         inline double readNode(const size_t idx) const;
     };
 
-    Port* createPort(const PortTypesEnumT portType, const std::string nodeType, const std::string name, Component *pParentComponent, Port *pParentPort=0);
+    Port* createPort(const PortTypesEnumT portType, const HString &rNodeType, const HString &rName, Component *pParentComponent, Port *pParentPort=0);
     std::string DLLIMPORTEXPORT portTypeToString(const PortTypesEnumT type);
 }
 

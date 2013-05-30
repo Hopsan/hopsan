@@ -46,7 +46,7 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     QStringList mechanicRotationalCComponents;
     QStringList mechanicRotationalCPorts;
 
-    std::vector<std::string> names = pSystem->getSubComponentNames();
+    std::vector<HString> names = pSystem->getSubComponentNames();
     for(size_t i=0; i<names.size(); ++i)
     {
         Component *pComponent = pSystem->getSubComponent(names[i]);
@@ -655,7 +655,7 @@ void HopsanSimulinkGenerator::generateToSimulinkCoSim(QString savePath, hopsan::
     QStringList mechanicRotationalCComponents;
     QStringList mechanicRotationalCPorts;
 
-    std::vector<std::string> names = pSystem->getSubComponentNames();
+    std::vector<HString> names = pSystem->getSubComponentNames();
     for(size_t i=0; i<names.size(); ++i)
     {
         Component *pComponent = pSystem->getSubComponent(names[i]);

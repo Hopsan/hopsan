@@ -10,8 +10,6 @@
 #ifndef MECHANICTRANSLATIONALMASSWITHLEVER_HPP_INCLUDED
 #define MECHANICTRANSLATIONALMASSWITHLEVER_HPP_INCLUDED
 
-#include <sstream>
-
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
 
@@ -94,10 +92,8 @@ namespace hopsan {
             //Print debug message if velocities do not match
             if(mpP1->readNode(NodeMechanic::Velocity)*w != -mpP2->readNode(NodeMechanic::Velocity))
             {
-                std::stringstream ss;
-                ss << "Start velocities does not match, {" << getName() << "::" << mpP1->getName() <<
-                        "} and {" << getName() << "::" << mpP2->getName() << "}.";
-                this->addDebugMessage(ss.str());
+                this->addDebugMessage("Start velocities does not match, {"+getName()+"::"+mpP1->getName()+
+                                      "} and {"+getName()+"::"+mpP2->getName()+"}.");
             }
 
             (*mpND_me1) = (*mpM)*w;

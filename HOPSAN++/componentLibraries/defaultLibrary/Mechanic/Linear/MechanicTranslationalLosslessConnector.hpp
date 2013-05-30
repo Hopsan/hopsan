@@ -74,10 +74,8 @@ namespace hopsan {
             //Print debug message if velocities do not match
             if(mpP1->readNode(NodeMechanic::Velocity) != -mpP2->readNode(NodeMechanic::Velocity))
             {
-                std::stringstream ss;
-                ss << "Start velocities does not match, {" << getName() << "::" << mpP1->getName() <<
-                        "} and {" << getName() << "::" << mpP2->getName() << "}.";
-                this->addDebugMessage(ss.str());
+                addDebugMessage("Start velocities does not match, {"+getName()+"::"+mpP1->getName()+
+                                "} and {"+getName()+"::"+mpP2->getName()+"}.");
             }
         }
 
