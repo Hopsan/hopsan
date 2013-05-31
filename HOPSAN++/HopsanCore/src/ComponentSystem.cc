@@ -2336,6 +2336,35 @@ bool ComponentSystem::checkModelBeforeSimulation()
     return true;
 }
 
+//! @todo if we recononect we should actually run checkbefore simulation, BEFORE simulating, this is not done right now
+bool ComponentSystem::preInitialize()
+{
+    // Recursively run preinitialize
+    std::vector<Component*>::iterator compIt;
+    for(compIt = mComponentSignalptrs.begin(); compIt != mComponentSignalptrs.end(); ++compIt)
+    {
+        if (!(*compIt)->preInitialize())
+        {
+            return false;
+        }
+    }
+    for(compIt = mComponentCptrs.begin(); compIt != mComponentCptrs.end(); ++compIt)
+    {
+        if (!(*compIt)->preInitialize())
+        {
+            return false;
+        }
+    }
+    for(compIt = mComponentQptrs.begin(); compIt != mComponentQptrs.end(); ++compIt)
+    {
+        if (!(*compIt)->preInitialize())
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 //! @brief Load start values by telling each component to load their start values
 void ComponentSystem::loadStartValues()
 {
@@ -2428,6 +2457,12 @@ void ComponentSystem::loadParameters(std::map<std::string, std::pair<std::vector
 bool ComponentSystem::initialize(const double startT, const double stopT)
 {
     addLogMess("ComponentSystem::initialize()");
+
+    if (this->isTopLevelSystem())
+    {
+        preInitialize();
+    }
+
 
     //cout << "Initializing SubSystem: " << this->mName << endl;
     mStopSimulation = false; //This variable cannot be written on below, then problem might occur with thread safety, it's a bit ugly to write on it on this row.

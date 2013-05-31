@@ -193,6 +193,7 @@ namespace hopsan {
 
         // Initialize and simulate
         bool checkModelBeforeSimulation();
+        virtual bool preInitialize();
         bool initialize(const double startT, const double stopT);
         void simulate(const double stopT);
         void simulateMultiThreaded(const double startT, const double stopT, const size_t nDesiredThreads = 0, bool noChanges=false);

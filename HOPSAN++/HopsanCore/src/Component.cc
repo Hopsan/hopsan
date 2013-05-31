@@ -1241,6 +1241,13 @@ void Component::deconfigure()
     // Does nothing by default
 }
 
+bool Component::preInitialize()
+{
+    // This function can be overloaded in components if needed
+    // Does nothing by default
+    return true;
+}
+
 
 //! @brief Loads the start values to the connected Node from the "start value node" at each Port of the component
 void Component::loadStartValues()

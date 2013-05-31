@@ -82,6 +82,7 @@ public:
     // Configureation and simulation functions
     virtual void configure();
     virtual void deconfigure();
+    virtual bool preInitialize();
     virtual bool initialize(const double startT, const double stopT);
     virtual void simulate(const double stopT);
     virtual void finalize(const double startT, const double Ts);
