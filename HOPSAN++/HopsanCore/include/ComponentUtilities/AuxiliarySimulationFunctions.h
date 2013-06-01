@@ -97,7 +97,7 @@ inline double boolToDouble(const bool value)
 //! @param x Value to determine if it is positive
 inline double onPositive(const double x)
 {
-    if (x < 0.0) { return 0.0; }
+    if (x <= 0.0) { return 0.0; }
     return 1.0;
 }
 
@@ -113,7 +113,7 @@ inline double dxOnPositive(const double /*x*/)
 //! @param x Value to determine if it is positive
 inline double onNegative(const double x)
 {
-    if (x >= 0.0) { return 1.0; }
+    if (x <= 0.0) { return 1.0; }
     return 0.0;
 }
 
