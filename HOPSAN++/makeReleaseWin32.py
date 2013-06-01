@@ -317,7 +317,7 @@ def copyFiles():
         return False
     
     os.system("mkdir \""+raw(tempDir)+"\"\\models")
-    os.system("mkdir \""+raw(tempDir)+"\"\\scripts")    
+    os.system("mkdir \""+raw(tempDir)+"\"\\Scripts")    
     os.system("mkdir \""+raw(tempDir)+"\"\\bin")    
     os.system("mkdir \""+raw(tempDir)+"\"\\HopsanCore")
     os.system("mkdir \""+raw(tempDir)+"\"\\componentLibraries")    
@@ -398,9 +398,9 @@ def copyFiles():
     os.system(r'xcopy doc\graphics\* "'+raw(tempDir)+r'"\doc\graphics\ /s')
 
     #Export "Scripts" folder to temporary directory
-    os.system(r'xcopy Scripts\HopsanOptimization.py "'+raw(tempDir)+r'"\scripts\ /s')
-    os.system(r'xcopy Scripts\OptimizationObjectiveFunctions.py "'+raw(tempDir)+r'"\scripts\ /s')
-    os.system(r'xcopy Scripts\OptimizationObjectiveFunctions.xml "'+raw(tempDir)+r'"\scripts\ /s')
+    os.system(r'xcopy Scripts\HopsanOptimization.py "'+raw(tempDir)+r'"\Scripts\ /s')
+    os.system(r'xcopy Scripts\OptimizationObjectiveFunctions.py "'+raw(tempDir)+r'"\Scripts\ /s')
+    os.system(r'xcopy Scripts\OptimizationObjectiveFunctions.xml "'+raw(tempDir)+r'"\Scripts\ /s')
 
     #Copy "hopsandefaults" file to temporary directory
     os.system(r'copy hopsandefaults "'+raw(tempDir)+r'"\hopsandefaults')

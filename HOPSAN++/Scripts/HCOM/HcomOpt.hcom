@@ -9,7 +9,6 @@ define evalworst
     call eval
 enddefine
 
-
 #Simulate to get initial objective values
 define evalall
     i=0

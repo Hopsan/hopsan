@@ -59,6 +59,7 @@ Name: "{app}\componentLibraries\defaultLibrary"
 Name: "{app}\doc"
 Name: "{app}\HopsanCore"
 Name: "{app}\models"
+Name: "{app}\Scripts"
 Name: "{app}\ThirdParty"
 Name: "{app}\ThirdParty\7z"
 Name: "{userdocs}\Hopsan"
@@ -77,7 +78,8 @@ Source: "C:\temp_release\componentLibrariesSourceCode.zip";     DestDir: "{app}"
 Source: "C:\temp_release\doc\*";                  	            DestDir: "{app}\doc";                               Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "C:\temp_release\models\*";               	            DestDir: "{app}\Models";                            Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "C:\temp_release\ThirdParty\7z\*";                      DestDir: "{app}\ThirdParty\7z";                     Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "C:\temp_release\scripts\*";              	            DestDir: "{userdocs}\Hopsan\Scripts";               Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\temp_release\Scripts\*";              	            DestDir: "{userdocs}\Hopsan\Scripts";               Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\temp_release\Scripts\*";              	            DestDir: "{app}\Scripts";                           Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 

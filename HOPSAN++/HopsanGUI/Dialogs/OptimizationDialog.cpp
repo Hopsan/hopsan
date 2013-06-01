@@ -709,7 +709,7 @@ void OptimizationDialog::generateScriptFile()
 
 void OptimizationDialog::generateComplexScript()
 {
-    QFile templateFile(gDesktopHandler.getExecPath()+"../ScriptsHCOM/optTemplateComplex.hcom");
+    QFile templateFile(gDesktopHandler.getExecPath()+"../Scripts/HCOM/optTemplateComplex.hcom");
     templateFile.open(QFile::ReadOnly | QFile::Text);
     QString templateCode = templateFile.readAll();
     templateFile.close();
@@ -792,7 +792,7 @@ void OptimizationDialog::generateComplexScript()
 
 void OptimizationDialog::generateParticleSwarmScript()
 {
-    QFile templateFile(gDesktopHandler.getExecPath()+"../ScriptsHCOM/optTemplateParticle.hcom");
+    QFile templateFile(gDesktopHandler.getExecPath()+"../Scripts/HCOM/optTemplateParticle.hcom");
     templateFile.open(QFile::ReadOnly | QFile::Text);
     QString templateCode = templateFile.readAll();
     templateFile.close();
@@ -1297,13 +1297,27 @@ bool OptimizationDialog::verifyNumberOfVariables(int idx, int nSelVar)
 
 bool OptimizationDialog::loadObjectiveFunctions()
 {
-    QDir scriptsDir(gDesktopHandler.getExecPath()+"../ScriptsHCOM/objFuncTemplates");
-    QStringList files = scriptsDir.entryList(QStringList() << "*.hcom");
+    // Look in both local and global scripts directory in case they are different
 
+    //QDir scriptsDir(gDesktopHandler.getExecPath()+"../Scripts/HCOM/objFuncTemplates");
+    QDir scriptsDir(gDesktopHandler.getScriptsPath()+"/HCOM/objFuncTemplates");
+    QStringList files = scriptsDir.entryList(QStringList() << "*.hcom");
+    int f=0;
+    for(; f<files.size(); ++f)
+    {
+        files[f].prepend(scriptsDir.absolutePath()+"/");
+    }
+    QDir localScriptsDir(gDesktopHandler.getExecPath()+"/../Scripts/HCOM/objFuncTemplates");
+    files.append(localScriptsDir.entryList(QStringList() << "*.hcom"));
+    for(int g=f; g<files.size(); ++g)
+    {
+        files[g].prepend(localScriptsDir.absolutePath()+"/");
+    }
+    files.removeDuplicates();
 
     Q_FOREACH(const QString fileName, files)
     {
-        QFile templateFile(scriptsDir.absolutePath()+"/"+fileName);
+        QFile templateFile(fileName);
         templateFile.open(QFile::ReadOnly | QFile::Text);
         QString code = templateFile.readAll();
         templateFile.close();

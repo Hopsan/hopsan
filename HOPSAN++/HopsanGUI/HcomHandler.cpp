@@ -849,21 +849,29 @@ void HcomHandler::executeRunScriptCommand(const QString cmd)
         return;
     }
 
+
     QString path = splitCmd[0];
+    path.replace("\\","/");
     if(!path.contains("/"))
     {
         path.prepend("./");
     }
-    path.prepend(mPwd+"/");
     QString dir = path.left(path.lastIndexOf("/"));
     dir = getDirectory(dir);
     path = dir+path.right(path.size()-path.lastIndexOf("/"));
-
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        mpConsole->printErrorMessage("Unable to read file.","",false);
-        return;
+        path.prepend(mPwd+"/");
+        dir = path.left(path.lastIndexOf("/"));
+        dir = getDirectory(dir);
+        path = dir+path.right(path.size()-path.lastIndexOf("/"));
+        file.setFileName(path);
+        if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        {
+            mpConsole->printErrorMessage("Unable to read file.","",false);
+            return;
+        }
     }
 
     QString code;
@@ -3265,7 +3273,8 @@ void HcomHandler::optComplexInit()
     //Load default optimization functions
     QString oldPath = mPwd;
     mPwd = gDesktopHandler.getExecPath();
-    executeCommand("exec ../ScriptsHCOM/optDefaultFunctions.hcom");
+    //executeCommand("exec ../Scripts/HCOM/optDefaultFunctions.hcom");
+    executeCommand("exec "+gDesktopHandler.getScriptsPath()+"/HCOM/optDefaultFunctions.hcom");
     mPwd = oldPath;
 
     for(int p=0; p<mOptNumPoints; ++p)
@@ -3582,7 +3591,7 @@ void HcomHandler::optParticleInit()
     //Load default optimization functions
     QString oldPath = mPwd;
     mPwd = gDesktopHandler.getExecPath();
-    executeCommand("exec ../ScriptsHCOM/optDefaultFunctions.hcom");
+    executeCommand("exec ../Scripts/HCOM/optDefaultFunctions.hcom");
     mPwd = oldPath;
 
     if(mOptMulticore)
