@@ -9,7 +9,7 @@
 //!
 //! @file AeroAtmosphere.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 29 May 2013 14:46:25
+//! @date Sun 2 Jun 2013 00:46:15
 //! @brief model of standard atmosphere
 //! @ingroup AeroComponents
 //!
@@ -159,16 +159,13 @@ h","m/s",340.,&mpVsound);
         //LocalExpressions
 
           //Expressions
-          rho = (rhotp*onPositive(ha - htp))/Power(e,(g0*(ha - htp))/(R*Ttp)) \
-+ rhos*onNegative(ha - htp)*Power(((a*ha + Ts)*onNegative(ha - htp) + (a*htp \
-+ Ts)*onPositive(ha - htp))/Ts,-1 - g0/(a*R));
           T = (a*ha + Ts)*onNegative(ha - htp) + (a*htp + Ts)*onPositive(ha - \
 htp);
-          p0 = (ptp*onPositive(ha - htp))/Power(e,(g0*(ha - htp))/(R*Ttp)) + \
-(p0s*onNegative(ha - htp))/Power(((a*ha + Ts)*onNegative(ha - htp) + (a*htp + \
-Ts)*onPositive(ha - htp))/Ts,g0/(a*R));
-          Vsound = Sqrt(gamma*R*((a*ha + Ts)*onNegative(ha - htp) + (a*htp + \
-Ts)*onPositive(ha - htp)));
+          rho = rhos*Power(T/Ts,-1 - g0/(a*R))*onNegative(ha - htp) + \
+(rhotp*onPositive(ha - htp))/Power(e,(g0*(ha - htp))/(R*Ttp));
+          p0 = (p0s*onNegative(ha - htp))/Power(T/Ts,g0/(a*R)) + \
+(ptp*onPositive(ha - htp))/Power(e,(g0*(ha - htp))/(R*Ttp));
+          Vsound = Sqrt(gamma*R*T);
 
         //Calculate the delayed parts
 
