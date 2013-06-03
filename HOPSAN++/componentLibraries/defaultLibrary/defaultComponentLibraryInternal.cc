@@ -75,6 +75,7 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("AeroJetEngine", AeroJetEngine::Creator);
     pComponentFactory->registerCreatorFunction("AeroFuelTank", AeroFuelTank::Creator);
     pComponentFactory->registerCreatorFunction("AeroPropeller", AeroPropeller::Creator);
+    pComponentFactory->registerCreatorFunction("AeroCombustionChamberMono", AeroCombustionChamberMono::Creator);
 
     pComponentFactory->registerCreatorFunction("SignalAttitudeControl", SignalAttitudeControl::Creator);
     pComponentFactory->registerCreatorFunction("SignalAttitudeTVCcontrol", SignalAttitudeTVCcontrol::Creator);
@@ -112,6 +113,8 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("HydraulicCounterBalanceValveG", HydraulicCounterBalanceValveG::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicValve63OC", HydraulicValve63OC::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicValve43LS", HydraulicValve43LS::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicValve43", HydraulicValve43::Creator);
+    pComponentFactory->registerCreatorFunction("HydraulicValve33", HydraulicValve33::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicMotorJload", HydraulicMotorJload::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicPistonMload", HydraulicPistonMload::Creator);
     pComponentFactory->registerCreatorFunction("HydraulicPistonMkload", HydraulicPistonMkload::Creator);
