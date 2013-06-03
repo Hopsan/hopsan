@@ -27,7 +27,6 @@
 
 #include "ClassFactory.hpp"
 #include "HopsanCoreMessageHandler.h"
-#include <string>
 
 namespace hopsan {
 
@@ -44,15 +43,15 @@ void checkClassFactoryStatus(FactoryT  *pFactory, HopsanCoreMessageHandler *pMes
     {
         if ( it->second == FactoryT::RegisteredOk )
         {
-            pMessenger->addDebugMessage(std::string("Registered: ") + std::string(it->first) + std::string(" in core"), "successfulregister");
+            pMessenger->addDebugMessage("Registered: "+ it->first + " in core", "successfulregister");
         }
         else if ( it->second == FactoryT::AllreadyRegistered )
         {
-            pMessenger->addWarningMessage(std::string("Keyvalue: ") + std::string(it->first) + std::string(" was already registerd in core. Your new Component or Node will NOT be availiable!"), "alreadyregistered");
+            pMessenger->addWarningMessage("Keyvalue: "+ it->first + " was already registerd in core. Your new Component or Node will NOT be availiable!", "alreadyregistered");
         }
         else if ( it->second == FactoryT::NotRegistered )
         {
-            pMessenger->addWarningMessage(std::string("Keyvalue: ") + std::string(it->first) + std::string(" has not been registered in core"), "notregistered");
+            pMessenger->addWarningMessage("Keyvalue: "+ it->first + " has not been registered in core", "notregistered");
         }
     }
 }

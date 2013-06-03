@@ -1,7 +1,7 @@
 #ifndef COSIMULATIONUTILITIES_H
 #define COSIMULATIONUTILITIES_H
 
-#include <string>
+#include "HopsanTypes.h"
 #include <cstdlib>
 
 //#define USEBOOST
@@ -17,9 +17,9 @@
 
 namespace hopsan {
 
-double *getDoubleSharedMemoryPointer(std::string name);
-bool *getBoolSharedMemoryPointer(std::string name);
-void removeSharedMemoryPointer(std::string name);
+double *getDoubleSharedMemoryPointer(HString name);
+bool *getBoolSharedMemoryPointer(HString name);
+void removeSharedMemoryPointer(HString name);
 
 }
 

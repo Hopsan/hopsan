@@ -75,10 +75,10 @@ namespace hopsan {
                 mpDataCurve=0;
             }
 
-            mpDataCurve = new CSVParser(success, toStdString(findFilePath(mDataCurveFileName)));
+            mpDataCurve = new CSVParser(success, findFilePath(mDataCurveFileName));
             if(!success)
             {
-                addErrorMessage("Unable to initialize CSV file: "+toStdString(mDataCurveFileName)+", "+mpDataCurve->getErrorString());
+                addErrorMessage("Unable to initialize CSV file: "+mDataCurveFileName+", "+mpDataCurve->getErrorString());
                 stopSimulation();
             }
             else
@@ -90,7 +90,7 @@ namespace hopsan {
                     ss << "outid:" << mOutDataId << " is out of range, limiting to: ";
                     mOutDataId = int(mpDataCurve->getNumDataCols())-1;
                     ss << mOutDataId;
-                    addWarningMessage(ss.str());
+                    addWarningMessage(ss.str().c_str());
                 }
 
 
@@ -103,9 +103,7 @@ namespace hopsan {
                 success = (mpDataCurve->getIncreasingOrDecresing(0) == 1);
                 if(!success)
                 {
-                    std::stringstream ss;
-                    ss << "Unable to initialize CSV file: " << mDataCurveFileName.c_str() << ", " << "Even after sorting, index column is still not strictly increasing";
-                    addErrorMessage(ss.str());
+                    addErrorMessage("Unable to initialize CSV file: "+mDataCurveFileName+", "+"Even after sorting, index column is still not strictly increasing");
                     stopSimulation();
                 }
             }

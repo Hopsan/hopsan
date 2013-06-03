@@ -41,10 +41,10 @@ enum NodeDataVariableTypeEnumT {DefaultType, IntensityType, FlowType, TLMType, H
 class NodeDataDescription
 {
 public:
-    std::string name;
-    std::string shortname;
-    std::string unit;
-    std::string description;
+    HString name;
+    HString shortname;
+    HString unit;
+    HString description;
     NodeDataVariableTypeEnumT varType;
     unsigned int id;
 };
@@ -63,8 +63,8 @@ class DLLIMPORTEXPORT Node
 public:
     Node(const size_t datalength);
     virtual ~Node();
-    const std::string &getNiceName() const;
-    const std::string &getNodeType() const;
+    const HString &getNiceName() const;
+    const HString &getNodeType() const;
 
     size_t getNumDataVariables() const;
     virtual int getDataIdFromName(const HString &rName) const;
@@ -85,7 +85,7 @@ public:
 
     const std::vector<NodeDataDescription>* getDataDescriptions() const;
     const NodeDataDescription* getDataDescription(const size_t id) const;
-    virtual void setSignalDataUnitAndDescription(const std::string &rUnit, const std::string &rDescription);
+    virtual void setSignalDataUnitAndDescription(const HString &rUnit, const HString &rDescription);
 
     void logData(const size_t logSlot);
 
@@ -98,9 +98,9 @@ public:
 
 protected:
     // Protected member functions
-    void setNiceName(const std::string nicename);
-    void setDataCharacteristics(const size_t id, const std::string name, const std::string shortname,
-                                const std::string unit, const NodeDataVariableTypeEnumT vartype=DefaultType);
+    void setNiceName(const HString nicename);
+    void setDataCharacteristics(const size_t id, const HString name, const HString shortname,
+                                const HString unit, const NodeDataVariableTypeEnumT vartype=DefaultType);
 
     void copyNodeDataValuesTo(Node *pOtherNode) const;
     virtual void copySignalDataUnitAndDescriptionTo(Node *pOtherNode) const;
@@ -111,7 +111,7 @@ protected:
     double *getDataPtr(const size_t data_type);
 
     // Protected member variables
-    std::string mNiceName;
+    HString mNiceName;
     std::vector<NodeDataDescription> mDataDescriptions;
     std::vector<double> mDataValues;
 
@@ -123,7 +123,7 @@ private:
     void disableLog();
 
     // Private member variables
-    std::string mNodeType;
+    HString mNodeType;
     std::vector<Port*> mConnectedPorts;
     ComponentSystem *mpOwnerSystem;
 
@@ -132,7 +132,7 @@ private:
     bool mDoLog;
 };
 
-typedef ClassFactory<std::string, Node> NodeFactory;
+typedef ClassFactory<HString, Node> NodeFactory;
 }
 
 #endif // NODE_H_INCLUDED

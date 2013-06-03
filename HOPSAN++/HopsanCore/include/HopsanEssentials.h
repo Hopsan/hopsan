@@ -29,7 +29,6 @@
 #include "Component.h"
 #include "ComponentSystem.h"
 #include <vector>
-#include <fstream>
 
 namespace hopsan {
 
@@ -61,11 +60,11 @@ public:
     void removeNode(Node *pNode);
     bool hasComponent(const char* type);
     bool reserveComponentTypeName(const char* typeName);
-    const std::vector<std::string> getRegisteredComponentTypes() const;
+    const std::vector<HString> getRegisteredComponentTypes() const;
 
     // Node creation
     Node* createNode(const char* nodeType);
-    const std::vector<std::string> getRegisteredNodeTypes() const;
+    const std::vector<HString> getRegisteredNodeTypes() const;
 
     // Messages
     HopsanCoreMessageHandler* getCoreMessageHandler();
@@ -75,8 +74,8 @@ public:
     // External libraries
     bool loadExternalComponentLib(const char* path);
     bool unLoadExternalComponentLib(const char* path);
-    void getExternalComponentLibNames(std::vector<std::string> &rLibNames);
-    void getExternalLibraryContents(const char* libPath, std::vector<std::string> &rComponents, std::vector<std::string> &rNodes);
+    void getExternalComponentLibNames(std::vector<HString> &rLibNames);
+    void getExternalLibraryContents(const char* libPath, std::vector<HString> &rComponents, std::vector<HString> &rNodes);
 
     // Loading HMF models
     ComponentSystem* loadHMFModel(const char* filePath, double &rStartTime, double &rStopTime);

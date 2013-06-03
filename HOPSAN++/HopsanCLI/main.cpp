@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
         {
             cout <<  "Testing to instanciate each registered component. Error and Warning messages will be shown below:" << endl;
             //! @todo write as function
-            vector<std::string> types =  gHopsanCore.getRegisteredComponentTypes();
+            vector<HString> types =  gHopsanCore.getRegisteredComponentTypes();
             for (size_t i=0; i<types.size(); ++i)
             {
                 Component *pComp = gHopsanCore.createComponent(types[i].c_str());

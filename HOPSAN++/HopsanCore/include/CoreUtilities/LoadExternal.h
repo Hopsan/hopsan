@@ -38,9 +38,9 @@ class LoadedLibInfo
 {
 public:
     void* mpLib;
-    std::string mLibName;
-    std::vector<std::string> mRegistredComponents;
-    std::vector<std::string> mRegistredNodes;
+    HString mLibName;
+    std::vector<HString> mRegistredComponents;
+    std::vector<HString> mRegistredNodes;
 };
 
 //! @brief This class handles loading and unloading of external component and node libs
@@ -51,16 +51,16 @@ private:
     NodeFactory *mpNodeFactory;
     HopsanCoreMessageHandler *mpMessageHandler;
 
-    typedef std::map<std::string, LoadedLibInfo> LoadedExtLibsMapT;
+    typedef std::map<HString, LoadedLibInfo> LoadedExtLibsMapT;
     LoadedExtLibsMapT mLoadedExtLibsMap;
 
 public:
     LoadExternal(ComponentFactory* pComponentFactory, NodeFactory* pNodefactory, HopsanCoreMessageHandler *pMessenger);
-    bool load(const std::string &rLibpath);
-    bool unLoad(const std::string &rLibpath);
+    bool load(const HString &rLibpath);
+    bool unLoad(const HString &rLibpath);
     void setFactory();
-    void getLoadedLibNames(std::vector<std::string> &rLibNames);
-    void getLibContents(const std::string libpath, std::vector<std::string> &rComponents, std::vector<std::string> &rNodes);
+    void getLoadedLibNames(std::vector<HString> &rLibNames);
+    void getLibContents(const HString libpath, std::vector<HString> &rComponents, std::vector<HString> &rNodes);
 };
 }
 

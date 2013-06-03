@@ -70,7 +70,7 @@ Node::~Node()
 //!
 //! @brief returns the node type
 //!
-const std::string &Node::getNodeType() const
+const HString &Node::getNodeType() const
 {
     return mNodeType;
 }
@@ -88,13 +88,13 @@ double *Node::getDataPtr(const size_t data_type)
 }
 
 
-void Node::setNiceName(const string nicename)
+void Node::setNiceName(const HString nicename)
 {
     mNiceName = nicename;
 }
 
 
-const std::string &Node::getNiceName() const
+const HString &Node::getNiceName() const
 {
     return mNiceName;
 }
@@ -104,7 +104,7 @@ const std::string &Node::getNiceName() const
 //! @param [in] id This is the ENUM data id
 //! @param [in] name The variable name
 //! @param [in] unit The variable unit
-void Node::setDataCharacteristics(const size_t id, const string name, const string shortname, const string unit, const NodeDataVariableTypeEnumT vartype)
+void Node::setDataCharacteristics(const size_t id, const HString name, const HString shortname, const HString unit, const NodeDataVariableTypeEnumT vartype)
 {
     mDataDescriptions[id].id = id;
     mDataDescriptions[id].name = name;
@@ -127,7 +127,7 @@ const NodeDataDescription* Node::getDataDescription(const size_t id) const
 }
 
 //! @brief This function can be used to set unit string and displayName for signal nodes ONLY
-void Node::setSignalDataUnitAndDescription(const string &/*rUnit*/, const string &/*rDescription*/)
+void Node::setSignalDataUnitAndDescription(const HString &/*rUnit*/, const HString &/*rDescription*/)
 {
     // Do nothing by default
 }

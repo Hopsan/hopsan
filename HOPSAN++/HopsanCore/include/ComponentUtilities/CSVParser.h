@@ -26,8 +26,8 @@
 #define CVSPARSER_H_INCLUDED
 
 #include "win32dll.h"
-#include <string>
 #include <vector>
+#include "HopsanTypes.h"
 
 namespace hopsan {
 
@@ -36,11 +36,11 @@ class DLLIMPORTEXPORT CSVParser
 {
 public:
     CSVParser(bool &rSuccess,
-              const std::string filename,
+              const HString filename,
               const char line_terminator = '\n',
               const char enclosure_char = '"');
 
-    std::string getErrorString() const;
+    HString getErrorString() const;
     size_t getNumDataRows() const;
     size_t getNumDataCols() const;
     const std::vector<double> getDataColumn(const size_t idx) const;
@@ -67,7 +67,7 @@ protected:
     std::vector<double> mFirstValues, mLastValues;
     size_t mnDataRows, mnDataCols;
     std::vector< int > mIncDec;
-    std::string mErrorString;
+    HString mErrorString;
 };
 
 }

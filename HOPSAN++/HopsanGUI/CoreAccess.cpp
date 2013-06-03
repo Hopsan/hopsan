@@ -62,7 +62,7 @@ bool CoreGeneratorAccess::generateFromModelica(QString code, QString outputPath,
 
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callModelicaGenerator(code.toStdString(), gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), true, outputPath.toStdString(), target.toStdString());
+        pHandler->callModelicaGenerator(code.toStdString().c_str(), gDesktopHandler.getCoreIncludePath().toStdString().c_str(), gDesktopHandler.getExecPath().toStdString().c_str(), true, outputPath.toStdString().c_str(), target.toStdString().c_str());
         return true;
     }
     delete(pHandler);
@@ -76,7 +76,7 @@ bool CoreGeneratorAccess::generateFromCpp(QString code, bool showOutputDialog, Q
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callCppGenerator(code.toStdString(), gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), showOutputDialog, outputPath.toStdString());
+        pHandler->callCppGenerator(code.toStdString().c_str(), gDesktopHandler.getCoreIncludePath().toStdString().c_str(), gDesktopHandler.getExecPath().toStdString().c_str(), showOutputDialog, outputPath.toStdString().c_str());
         return true;
     }
     delete(pHandler);
@@ -112,7 +112,7 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
             }
         }
 
-        pHandler->callFmuImportGenerator(path.toStdString(), gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), true);
+        pHandler->callFmuImportGenerator(path.toStdString().c_str(), gDesktopHandler.getCoreIncludePath().toStdString().c_str(), gDesktopHandler.getExecPath().toStdString().c_str(), true);
 
         if(QDir().exists(gDesktopHandler.getFMUPath() + fmuName))
         {
@@ -140,7 +140,7 @@ bool CoreGeneratorAccess::generateToFmu(QString path, SystemContainer *pSystem)
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callFmuExportGenerator(path.toStdString(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), true);
+        pHandler->callFmuExportGenerator(path.toStdString().c_str(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), gDesktopHandler.getCoreIncludePath().toStdString().c_str(), gDesktopHandler.getExecPath().toStdString().c_str(), true);
         return true;
     }
     delete(pHandler);
@@ -153,7 +153,7 @@ bool CoreGeneratorAccess::generateToSimulink(QString path, SystemContainer *pSys
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callSimulinkExportGenerator(path.toStdString(), pSystem->getModelFileInfo().fileName().toStdString(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), disablePortLabels, compiler, gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), true);
+        pHandler->callSimulinkExportGenerator(path.toStdString().c_str(), pSystem->getModelFileInfo().fileName().toStdString().c_str(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), disablePortLabels, compiler, gDesktopHandler.getCoreIncludePath().toStdString().c_str(), gDesktopHandler.getExecPath().toStdString().c_str(), true);
         return true;
     }
     delete(pHandler);
@@ -166,7 +166,7 @@ bool CoreGeneratorAccess::generateToSimulinkCoSim(QString path, SystemContainer 
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callSimulinkCoSimExportGenerator(path.toStdString(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), disablePortLabels, compiler, gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), true);
+        pHandler->callSimulinkCoSimExportGenerator(path.toStdString().c_str(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), disablePortLabels, compiler, gDesktopHandler.getCoreIncludePath().toStdString().c_str(), gDesktopHandler.getExecPath().toStdString().c_str(), true);
         return true;
     }
     delete(pHandler);
@@ -179,7 +179,7 @@ bool CoreGeneratorAccess::generateToLabViewSIT(QString path, SystemContainer *pS
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callLabViewSITGenerator(path.toStdString(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), true);
+        pHandler->callLabViewSITGenerator(path.toStdString().c_str(), pSystem->getCoreSystemAccessPtr()->getCoreSystemPtr(), gDesktopHandler.getCoreIncludePath().toStdString().c_str(), gDesktopHandler.getExecPath().toStdString().c_str(), true);
         return true;
     }
     delete(pHandler);
@@ -192,7 +192,7 @@ bool CoreGeneratorAccess::compileComponentLibrary(QString path, QString name, QS
     hopsan::GeneratorHandler *pHandler = new hopsan::GeneratorHandler();
     if(pHandler->isLoadedSuccessfully())
     {
-        pHandler->callComponentLibraryCompiler(path.toStdString(), name.toStdString(), extraLibs.toStdString(), gDesktopHandler.getCoreIncludePath().toStdString(), gDesktopHandler.getExecPath().toStdString(), true);
+        pHandler->callComponentLibraryCompiler(path.toStdString().c_str(), name.toStdString().c_str(), extraLibs.toStdString().c_str(), gDesktopHandler.getCoreIncludePath().toStdString().c_str(), gDesktopHandler.getExecPath().toStdString().c_str(), true);
         return true;
     }
     delete(pHandler);
@@ -224,34 +224,34 @@ bool CoreLibraryAccess::reserveComponentTypeName(const QString &rTypeName)
 
 void CoreLibraryAccess::getLoadedLibNames(QVector<QString> &rLibNames)
 {
-    std::vector<std::string> names;
+    std::vector<hopsan::HString> names;
     gHopsanCore.getExternalComponentLibNames(names);
 
     rLibNames.clear();
     rLibNames.reserve(names.size());
     for (unsigned int i=0; i<names.size(); ++i)
     {
-        rLibNames.push_back(QString::fromStdString(names[i]));
+        rLibNames.push_back(names[i].c_str());
     }
 }
 
 void CoreLibraryAccess::getLibraryContents(QString libPath, QStringList &rComponents, QStringList &rNodes)
 {
-    std::vector<std::string> components, nodes;
+    std::vector<hopsan::HString> components, nodes;
     gHopsanCore.getExternalLibraryContents(libPath.toStdString().c_str(), components, nodes);
 
     rComponents.clear();
     rComponents.reserve(components.size());
     for (unsigned int i=0; i<components.size(); ++i)
     {
-        rComponents.push_back(QString::fromStdString(components[i]));
+        rComponents.push_back(components[i].c_str());
     }
 
     rNodes.clear();
     rNodes.reserve(nodes.size());
     for (unsigned int i=0; i<nodes.size(); ++i)
     {
-        rNodes.push_back(QString::fromStdString(nodes[i]));
+        rNodes.push_back(nodes[i].c_str());
     }
 }
 
@@ -348,7 +348,7 @@ hopsan::ComponentSystem* CoreSystemAccess::getCoreSystemPtr()
 hopsan::ComponentSystem* CoreSystemAccess::getCoreSubSystemPtr(QString name)
 {
     //qDebug() << " corecomponentsystemname: " <<  QString::fromStdString(mpCoreComponentSystem->getName()) << "  Subname: " << name;
-    return mpCoreComponentSystem->getSubComponentSystem(name.toStdString());
+    return mpCoreComponentSystem->getSubComponentSystem(name.toStdString().c_str());
 }
 
 CoreSystemAccess::~CoreSystemAccess()
@@ -367,14 +367,14 @@ void CoreSystemAccess::deleteRootSystemPtr()
 bool CoreSystemAccess::connect(QString compname1, QString portname1, QString compname2, QString portname2)
 {
     //*****Core Interaction*****
-    return mpCoreComponentSystem->connect(compname1.toStdString(), portname1.toStdString(), compname2.toStdString(), portname2.toStdString());
+    return mpCoreComponentSystem->connect(compname1.toStdString().c_str(), portname1.toStdString().c_str(), compname2.toStdString().c_str(), portname2.toStdString().c_str());
     //**************************
 }
 
 bool CoreSystemAccess::disconnect(QString compname1, QString portname1, QString compname2, QString portname2)
 {
     //*****Core Interaction*****
-    return mpCoreComponentSystem->disconnect(compname1.toStdString(), portname1.toStdString(), compname2.toStdString(), portname2.toStdString());
+    return mpCoreComponentSystem->disconnect(compname1.toStdString().c_str(), portname1.toStdString().c_str(), compname2.toStdString().c_str(), portname2.toStdString().c_str());
     //**************************
 }
 
@@ -385,7 +385,7 @@ void CoreSystemAccess::setDesiredTimeStep(double timestep)
 
 void CoreSystemAccess::setDesiredTimeStep(QString compname, double timestep)
 {
-    mpCoreComponentSystem->getSubComponent(compname.toStdString())->setDesiredTimestep(timestep);
+    mpCoreComponentSystem->getSubComponent(compname.toStdString().c_str())->setDesiredTimestep(timestep);
 }
 
 
@@ -396,7 +396,7 @@ void CoreSystemAccess::setInheritTimeStep(bool inherit)
 
 void CoreSystemAccess::setInheritTimeStep(QString compname, bool inherit)
 {
-    mpCoreComponentSystem->getSubComponent(compname.toStdString())->setInheritTimestep(inherit);
+    mpCoreComponentSystem->getSubComponent(compname.toStdString().c_str())->setInheritTimestep(inherit);
 }
 
 
@@ -407,7 +407,7 @@ bool CoreSystemAccess::doesInheritTimeStep()
 
 bool CoreSystemAccess::doesInheritTimeStep(QString compname)
 {
-    return mpCoreComponentSystem->getSubComponent(compname.toStdString())->doesInheritTimestep();
+    return mpCoreComponentSystem->getSubComponent(compname.toStdString().c_str())->doesInheritTimestep();
 }
 
 
@@ -460,7 +460,7 @@ QString CoreSystemAccess::getSubComponentTypeCQS(const QString componentName)
 QString CoreSystemAccess::setSystemName(QString name)
 {
     //qDebug() << "setting root system name to: " << name;
-    mpCoreComponentSystem->setName(name.toStdString());
+    mpCoreComponentSystem->setName(name.toStdString().c_str());
     //qDebug() << "root system name after rename: " << QString::fromStdString(mpCoreComponentSystem->getName());
     return mpCoreComponentSystem->getName().c_str();
 }
@@ -469,7 +469,7 @@ QString CoreSystemAccess::setSystemName(QString name)
 QString CoreSystemAccess::renameSubComponent(QString componentName, QString name)
 {
     qDebug() << "rename subcomponent from " << componentName << " to: " << name;
-    hopsan::Component *pTempComponent = mpCoreComponentSystem->getSubComponent(componentName.toStdString());
+    hopsan::Component *pTempComponent = mpCoreComponentSystem->getSubComponent(componentName.toStdString().c_str());
     pTempComponent->setName(name.toStdString().c_str());
     qDebug() << "name after: " << pTempComponent->getName().c_str();
     return pTempComponent->getName().c_str();
@@ -502,13 +502,13 @@ QString CoreSystemAccess::getPortType(const QString componentName, const QString
         switch (portTypeIndicator)
         {
         case InternalPortType:
-            return QString::fromStdString( portTypeToString(pPort->getInternalPortType()) );
+            return portTypeToString(pPort->getInternalPortType()).c_str();
             break;
         case ActualPortType:
-            return QString::fromStdString( portTypeToString(pPort->getPortType()) );
+            return portTypeToString(pPort->getPortType()).c_str();
             break;
         case ExternalPortType:
-            return QString::fromStdString( portTypeToString(pPort->getExternalPortType()) );
+            return portTypeToString(pPort->getExternalPortType()).c_str();
             break;
         default:
             return QString("Invalid  portTypeIndicator specified");
@@ -569,13 +569,13 @@ QString CoreSystemAccess::getPortDescription(QString componentName, QString port
 
 bool CoreSystemAccess::setParameterValue(QString componentName, QString parameterName, QString value, bool force)
 {
-    return mpCoreComponentSystem->getSubComponent(componentName.toStdString())->setParameterValue(parameterName.toStdString(), value.toStdString(), force);
+    return mpCoreComponentSystem->getSubComponent(componentName.toStdString().c_str())->setParameterValue(parameterName.toStdString().c_str(), value.toStdString().c_str(), force);
 }
 
 void CoreSystemAccess::getVariameters(QString componentName, QVector<CoreVariameterDescription> &rVariameterDescriptions)
 {
     rVariameterDescriptions.clear();
-    hopsan::Component* pComp = mpCoreComponentSystem->getSubComponent(componentName.toStdString());
+    hopsan::Component* pComp = mpCoreComponentSystem->getSubComponent(componentName.toStdString().c_str());
     if (pComp)
     {
         const std::vector<hopsan::VariameterDescription>* pDescs = pComp->getVariameters();
@@ -600,13 +600,13 @@ void CoreSystemAccess::getVariameters(QString componentName, QVector<CoreVariame
 
 void CoreSystemAccess::setVariableAlias(QString compName, QString portName, QString varName, QString alias)
 {
-    mpCoreComponentSystem->getAliasHandler().setVariableAlias(alias.toStdString(), compName.toStdString(),
-                                                              portName.toStdString(), varName.toStdString());
+    mpCoreComponentSystem->getAliasHandler().setVariableAlias(alias.toStdString().c_str(), compName.toStdString().c_str(),
+                                                              portName.toStdString().c_str(), varName.toStdString().c_str());
 }
 
 void CoreSystemAccess::setParameterAlias(QString compName, QString paramName, QString alias)
 {
-    mpCoreComponentSystem->getAliasHandler().setParameterAlias(alias.toStdString(), compName.toStdString(), paramName.toStdString());
+    mpCoreComponentSystem->getAliasHandler().setParameterAlias(alias.toStdString().c_str(), compName.toStdString().c_str(), paramName.toStdString().c_str());
 }
 
 void CoreSystemAccess::getFullVariableNameByAlias(QString alias, QString &rCompName, QString &rPortName, QString &rVarName)
@@ -633,17 +633,17 @@ QStringList CoreSystemAccess::getAliasNames() const
 
 void CoreSystemAccess::removeSubComponent(QString componentName, bool doDelete)
 {
-    mpCoreComponentSystem->removeSubComponent(componentName.toStdString(), doDelete);
+    mpCoreComponentSystem->removeSubComponent(componentName.toStdString().c_str(), doDelete);
 }
 
 
 vector<double> CoreSystemAccess::getTimeVector(QString componentName, QString portName)
 {
     //qDebug() << "getTimeVector, " << componentName << ", " << portName;
-    hopsan::Component* pComp = mpCoreComponentSystem->getSubComponentOrThisIfSysPort(componentName.toStdString());
+    hopsan::Component* pComp = mpCoreComponentSystem->getSubComponentOrThisIfSysPort(componentName.toStdString().c_str());
     if (pComp != 0)
     {
-        hopsan::Port* pPort = pComp->getPort(portName.toStdString());
+        hopsan::Port* pPort = pComp->getPort(portName.toStdString().c_str());
         if (pPort != 0)
         {
             vector<double> *ptr = pPort->getLogTimeVectorPtr();
@@ -718,7 +718,7 @@ QString CoreSystemAccess::createComponent(QString type, QString name)
         mpCoreComponentSystem->addComponent(pCoreComponent);
         if (!name.isEmpty())
         {
-            pCoreComponent->setName(name.toStdString());
+            pCoreComponent->setName(name.toStdString().c_str());
         }
         //qDebug() << "createComponent: name after add: " << QString::fromStdString(pCoreComponent->getName()) << " added to: " << QString::fromStdString(mpCoreComponentSystem->getName());
         return pCoreComponent->getName().c_str();
@@ -744,7 +744,7 @@ QString CoreSystemAccess::createSubSystem(QString name)
 void CoreSystemAccess::getParameters(QString componentName, QVector<CoreParameterData> &rParameterDataVec)
 {
     rParameterDataVec.clear();
-    hopsan::Component* pComp =  mpCoreComponentSystem->getSubComponent(componentName.toStdString());
+    hopsan::Component* pComp =  mpCoreComponentSystem->getSubComponent(componentName.toStdString().c_str());
     if (pComp!=0)
     {
         const std::vector<hopsan::Parameter*> *pParams = pComp->getParametersVectorPtr();
@@ -761,10 +761,10 @@ void CoreSystemAccess::getParameters(QString componentName, QVector<CoreParamete
 
 void CoreSystemAccess::getParameter(QString componentName, QString parameterName, CoreParameterData &rData)
 {
-    hopsan::Component* pComp =  mpCoreComponentSystem->getSubComponent(componentName.toStdString());
+    hopsan::Component* pComp =  mpCoreComponentSystem->getSubComponent(componentName.toStdString().c_str());
     if (pComp!=0)
     {
-        const hopsan::Parameter *pParam = pComp->getParameter(parameterName.toStdString());
+        const hopsan::Parameter *pParam = pComp->getParameter(parameterName.toStdString().c_str());
         if (pParam!=0)
         {
             copyParameterData(pParam, rData);
@@ -777,7 +777,7 @@ QStringList CoreSystemAccess::getParameterNames(QString componentName)
 {
     QStringList qParameterNames;
     std::vector<hopsan::HString> parameterNames;
-    hopsan::Component* pComp =  mpCoreComponentSystem->getSubComponent(componentName.toStdString());
+    hopsan::Component* pComp =  mpCoreComponentSystem->getSubComponent(componentName.toStdString().c_str());
     if (pComp!=0)
     {
         pComp->getParameterNames(parameterNames);
@@ -793,7 +793,7 @@ QStringList CoreSystemAccess::getParameterNames(QString componentName)
 
 void CoreSystemAccess::loadParameterFile(QString fileName)
 {
-    mpCoreComponentSystem->loadParameters(fileName.toStdString());
+    mpCoreComponentSystem->loadParameters(fileName.toStdString().c_str());
 }
 
 
@@ -812,21 +812,21 @@ QStringList CoreSystemAccess::getSystemParameterNames()
 
 QString CoreSystemAccess::getParameterValue(QString componentName, QString parameterName)
 {
-    std::string parameterValue="";
-    hopsan::Component* pComp = mpCoreComponentSystem->getSubComponent(componentName.toStdString());
+    hopsan::HString parameterValue="";
+    hopsan::Component* pComp = mpCoreComponentSystem->getSubComponent(componentName.toStdString().c_str());
     if (pComp != 0)
     {
         hopsan::HString value;
-        pComp->getParameterValue(parameterName.toStdString(), value);
+        pComp->getParameterValue(parameterName.toStdString().c_str(), value);
         parameterValue = value.c_str();
     }
 
-    return QString::fromStdString(parameterValue);
+    return parameterValue.c_str();
 }
 
 void CoreSystemAccess::deleteSystemPort(QString portname)
 {
-    mpCoreComponentSystem->deleteSystemPort(portname.toStdString());
+    mpCoreComponentSystem->deleteSystemPort(portname.toStdString().c_str());
 }
 
 QString CoreSystemAccess::addSystemPort(QString portname)
@@ -870,8 +870,8 @@ void CoreSystemAccess::getPlotDataNamesAndUnits(const QString compname, const QS
             //Copy into QT datatype vector
             for (size_t i=0; i<pDescs->size(); ++i)
             {
-                rNames.push_back(QString::fromStdString(pDescs->at(i).name));
-                rUnits.push_back(QString::fromStdString(pDescs->at(i).unit));
+                rNames.push_back(pDescs->at(i).name.c_str());
+                rUnits.push_back(pDescs->at(i).unit.c_str());
             }
         }
     }
@@ -883,7 +883,7 @@ void CoreSystemAccess::getPlotData(const QString compname, const QString portnam
     hopsan::Port* pPort = this->getCorePortPtr(compname, portname);
     if (pPort)
     {
-        dataId = pPort->getNodeDataIdFromName(dataname.toStdString());
+        dataId = pPort->getNodeDataIdFromName(dataname.toStdString().c_str());
         if (dataId > -1)
         {
             vector< vector<double> > *pData = pPort->getLogDataVectorPtr();
@@ -912,7 +912,7 @@ bool CoreSystemAccess::havePlotData(const QString compname, const QString portna
         bool exists=false;
         for(size_t i=0; i<pPort->getNodeDataDescriptions()->size(); ++i)
         {
-            if(pPort->getNodeDataDescriptions()->at(i).name == dataname.toStdString())
+            if(pPort->getNodeDataDescriptions()->at(i).name == dataname.toStdString().c_str())
             {
                 exists = true;
             }
@@ -937,7 +937,7 @@ bool CoreSystemAccess::getLastNodeData(const QString compname, const QString por
     hopsan::Port* pPort = this->getCorePortPtr(compname, portname);
     if (pPort)
     {
-        dataId = pPort->getNodeDataIdFromName(dataname.toStdString());
+        dataId = pPort->getNodeDataIdFromName(dataname.toStdString().c_str());
 
         if (dataId >= 0)
         {
@@ -956,7 +956,7 @@ double *CoreSystemAccess::getNodeDataPtr(const QString compname, const QString p
     hopsan::Port* pPort = this->getCorePortPtr(compname, portname);
     if (pPort)
     {
-        dataId = pPort->getNodeDataIdFromName(dataname.toStdString());
+        dataId = pPort->getNodeDataIdFromName(dataname.toStdString().c_str());
 
         if (dataId >= 0)
         {
@@ -1012,7 +1012,7 @@ bool CoreSystemAccess::writeNodeData(const QString compname, const QString portn
     int dataId = -1;
     if(pPort)
     {
-        dataId = pPort->getNodeDataIdFromName(dataname.toStdString());
+        dataId = pPort->getNodeDataIdFromName(dataname.toStdString().c_str());
 
         if(dataId >= 0)
         {
@@ -1032,10 +1032,10 @@ hopsan::Port* CoreSystemAccess::getCorePortPtr(QString componentName, QString po
 {
     //We must use getcomponent here if we want to be able to find root system ptr
     //! @todo see if we can reduce the number f public get functions one, the one which only searches subcomponents make function in core to solve the other access type like bellow
-    hopsan::Component* pComp = mpCoreComponentSystem->getSubComponentOrThisIfSysPort(componentName.toStdString());
+    hopsan::Component* pComp = mpCoreComponentSystem->getSubComponentOrThisIfSysPort(componentName.toStdString().c_str());
     if (pComp)
     {
-        return pComp->getPort(portName.toStdString());
+        return pComp->getPort(portName.toStdString().c_str());
     }
     return 0;
 }
@@ -1043,18 +1043,18 @@ hopsan::Port* CoreSystemAccess::getCorePortPtr(QString componentName, QString po
 
 bool CoreSystemAccess::setSystemParameter(const CoreParameterData &rParameter, bool force)
 {
-    return mpCoreComponentSystem->setSystemParameter(rParameter.mName.toStdString(),
-                                                     rParameter.mValue.toStdString(),
-                                                     rParameter.mType.toStdString(),
-                                                     rParameter.mDescription.toStdString(),
-                                                     rParameter.mUnit.toStdString(),
+    return mpCoreComponentSystem->setSystemParameter(rParameter.mName.toStdString().c_str(),
+                                                     rParameter.mValue.toStdString().c_str(),
+                                                     rParameter.mType.toStdString().c_str(),
+                                                     rParameter.mDescription.toStdString().c_str(),
+                                                     rParameter.mUnit.toStdString().c_str(),
                                                      force);
 }
 
 
 bool CoreSystemAccess::setSystemParameterValue(QString name, QString value, bool force)
 {
-    return mpCoreComponentSystem->setParameterValue(name.toStdString(), value.toStdString(), force);
+    return mpCoreComponentSystem->setParameterValue(name.toStdString().c_str(), value.toStdString().c_str(), force);
 }
 
 //! @brief Get the value of a parameter in the system
@@ -1062,7 +1062,7 @@ bool CoreSystemAccess::setSystemParameterValue(QString name, QString value, bool
 QString CoreSystemAccess::getSystemParameterValue(const QString name)
 {
     hopsan::HString value;
-    mpCoreComponentSystem->getParameterValue(name.toStdString(), value);
+    mpCoreComponentSystem->getParameterValue(name.toStdString().c_str(), value);
     return QString(value.c_str());
 }
 
@@ -1070,20 +1070,20 @@ QString CoreSystemAccess::getSystemParameterValue(const QString name)
 //! @todo Dont know if this is actually used
 bool CoreSystemAccess::hasSystemParameter(const QString name)
 {
-    return mpCoreComponentSystem->hasParameter(name.toStdString());
+    return mpCoreComponentSystem->hasParameter(name.toStdString().c_str());
 }
 
 //! @brief Rename a system parameter
 bool CoreSystemAccess::renameSystemParameter(const QString oldName, const QString newName)
 {
-    return mpCoreComponentSystem->renameParameter(oldName.toStdString(), newName.toStdString());
+    return mpCoreComponentSystem->renameParameter(oldName.toStdString().c_str(), newName.toStdString().c_str());
 }
 
 //! @brief Removes the parameter with given name
 //! @param [in] name The name of the system parameter to remove
 void CoreSystemAccess::removeSystemParameter(const QString name)
 {
-    mpCoreComponentSystem->unRegisterParameter(name.toStdString());
+    mpCoreComponentSystem->unRegisterParameter(name.toStdString().c_str());
 }
 
 //! @todo how to handle fetching from systemports, component names will not be found
@@ -1113,7 +1113,7 @@ void CoreSystemAccess::getVariableDescriptions(const QString compname, const QSt
 
 void CoreSystemAccess::getSystemParameter(const QString name, CoreParameterData &rParameterData)
 {
-    const hopsan::Parameter *pParam = mpCoreComponentSystem->getParameter(name.toStdString());
+    const hopsan::Parameter *pParam = mpCoreComponentSystem->getParameter(name.toStdString().c_str());
     if (pParam!=0)
     {
         copyParameterData(pParam, rParameterData);
@@ -1140,7 +1140,7 @@ void CoreSystemAccess::getSystemParameters(QVector<CoreParameterData> &rParamete
 //! @param searchPath the search path to be added
 void CoreSystemAccess::addSearchPath(QString searchPath)
 {
-    mpCoreComponentSystem->addSearchPath(searchPath.toStdString());
+    mpCoreComponentSystem->addSearchPath(searchPath.toStdString().c_str());
 }
 
 

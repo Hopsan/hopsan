@@ -216,7 +216,7 @@ bool Parameter::evaluate(HString &rResult, Parameter *ignoreMe)
 
     if(!((mType=="double") || (mType=="integer") || (mType=="bool") || (mType=="string")))
     {
-        mpParentParameters->getParentComponent()->addErrorMessage("Parameter could not be evaluated, unknown type: " + toStdString(mType));
+        mpParentParameters->getParentComponent()->addErrorMessage("Parameter could not be evaluated, unknown type: " + mType);
     }
 
     bool success = true;
@@ -244,7 +244,7 @@ bool Parameter::evaluate(HString &rResult, Parameter *ignoreMe)
     if(mType=="double")
     {
         double tmpParameterValue;
-        istringstream is(toStdString(evaluatedParameterValue));
+        istringstream is(evaluatedParameterValue.c_str());
         if(is >> tmpParameterValue)
         {
             // If a data pointer has been set, then write evaluated value to data variable
@@ -261,7 +261,7 @@ bool Parameter::evaluate(HString &rResult, Parameter *ignoreMe)
     else if(mType=="integer")
     {
         int tmpParameterValue;
-        istringstream is(toStdString(evaluatedParameterValue));
+        istringstream is(evaluatedParameterValue.c_str());
         if(is >> tmpParameterValue)
         {
             // If a data pointer has been set, then write evaluated value to data variable
@@ -278,7 +278,7 @@ bool Parameter::evaluate(HString &rResult, Parameter *ignoreMe)
     else if(mType=="bool")
     {
         bool tmpParameterValue;
-        istringstream is(toStdString(evaluatedParameterValue));
+        istringstream is(evaluatedParameterValue.c_str());
         if(is >> tmpParameterValue)
         {
             // If a data pointer has been set, then write evaluated value to data variable

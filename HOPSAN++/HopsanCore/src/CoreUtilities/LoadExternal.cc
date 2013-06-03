@@ -51,7 +51,7 @@ LoadExternal::LoadExternal(ComponentFactory *pComponentFactory, NodeFactory *pNo
     mpMessageHandler = pMessenger;
 }
 
-bool LoadExternal::load(const std::string &rLibpath)
+bool LoadExternal::load(const HString &rLibpath)
 {
     typedef void (*register_contents_t)(ComponentFactory* pComponentFactory, NodeFactory* pNodeFactory);
     typedef void (*get_hopsan_info_t)(HopsanExternalLibInfoT *pHopsanExternalLibInfo);
@@ -136,16 +136,12 @@ bool LoadExternal::load(const std::string &rLibpath)
     //lib_ptr = dlopen(libpath.c_str(), RTLD_LAZY);
     if (!lib_ptr)
     {
-        stringstream ss;
-        ss << "Opening external lib: " << rLibpath << " dlerror(): " << dlerror();
-        mpMessageHandler->addErrorMessage(ss.str());
+        mpMessageHandler->addErrorMessage("Opening external lib: "+rLibpath+" dlerror(): "+dlerror());
         return false;
     }
     else
     {
-        stringstream ss;
-        ss << "Success (probably) opening external lib: " << rLibpath;
-        mpMessageHandler->addDebugMessage(ss.str());
+        mpMessageHandler->addDebugMessage("Success (probably) opening external lib: "+rLibpath);
     }
 
     bool isHopsanComponentLib=true;
@@ -156,9 +152,7 @@ bool LoadExternal::load(const std::string &rLibpath)
 
     if (dlsym_error)
     {
-        stringstream ss;
-        ss << "Cannot load symbol 'get_hopsan_info' for: " << rLibpath << " Error: " << dlsym_error;
-        mpMessageHandler->addDebugMessage(ss.str());
+        mpMessageHandler->addDebugMessage("Cannot load symbol 'get_hopsan_info' for: "+rLibpath+" Error: "+dlsym_error);
         isHopsanComponentLib = false;
     }
 
@@ -167,9 +161,7 @@ bool LoadExternal::load(const std::string &rLibpath)
     dlsym_error = dlerror();
     if (dlsym_error)
     {
-        stringstream ss;
-        ss << "Cannot load symbol 'register_contents' for: " << rLibpath << " Error: " << dlsym_error;
-        mpMessageHandler->addErrorMessage(ss.str());
+        mpMessageHandler->addErrorMessage("Cannot load symbol 'register_contents' for: "+rLibpath+" Error: "+dlsym_error);
         isHopsanComponentLib=false;
     }
 
@@ -194,15 +186,15 @@ bool LoadExternal::load(const std::string &rLibpath)
     }
 
     stringstream ss;
-    ss << "ExternalLib: " << rLibpath <<  " compiled as: " << externalLibInfo.libCompiledDebugRelease << " against HopsanCore: " << externalLibInfo.hopsanCoreVersion;
-    mpMessageHandler->addDebugMessage(ss.str());
+    ss << "ExternalLib: " << rLibpath.c_str() <<  " compiled as: " << externalLibInfo.libCompiledDebugRelease << " against HopsanCore: " << externalLibInfo.hopsanCoreVersion;
+    mpMessageHandler->addDebugMessage(ss.str().c_str());
 
     //Now check if we are compiled against correct version number
     if ( strcmp(externalLibInfo.hopsanCoreVersion, HOPSANCOREVERSION) != 0 )
     {
         stringstream ss;
-        ss << "External lib: " << rLibpath << " compiled against wrong HopsanCore version: " << externalLibInfo.hopsanCoreVersion << ", current version is: " << HOPSANCOREVERSION;
-        mpMessageHandler->addErrorMessage(ss.str());
+        ss << "External lib: " << rLibpath.c_str() << " compiled against wrong HopsanCore version: " << externalLibInfo.hopsanCoreVersion << ", current version is: " << HOPSANCOREVERSION;
+        mpMessageHandler->addErrorMessage(ss.str().c_str());
         isCorrectVersion = false;
     }
 
@@ -210,8 +202,8 @@ bool LoadExternal::load(const std::string &rLibpath)
     if ( strcmp(externalLibInfo.libCompiledDebugRelease, DEBUGRELEASECOMPILED) != 0 )
     {
         stringstream ss;
-        ss << "ExternalLib: " << rLibpath << " compiled as: " << externalLibInfo.libCompiledDebugRelease << " HopsanCore compiled as: " << DEBUGRELEASECOMPILED << ", You may run into problems!";
-        mpMessageHandler->addWarningMessage(ss.str());
+        ss << "ExternalLib: " << rLibpath.c_str() << " compiled as: " << externalLibInfo.libCompiledDebugRelease << " HopsanCore compiled as: " << DEBUGRELEASECOMPILED << ", You may run into problems!";
+        mpMessageHandler->addWarningMessage(ss.str().c_str());
         //isCorrectVersion = false;
     }
 
@@ -261,7 +253,7 @@ bool LoadExternal::load(const std::string &rLibpath)
     }
 
     // Insert lib info in map
-    mLoadedExtLibsMap.insert( std::pair<string, LoadedLibInfo>( rLibpath, lelInfo ) );
+    mLoadedExtLibsMap.insert( std::pair<HString, LoadedLibInfo>( rLibpath, lelInfo ) );
 
     //Clear factory status
     mpComponentFactory->clearRegisterStatus();
@@ -273,9 +265,8 @@ bool LoadExternal::load(const std::string &rLibpath)
 }
 
 //! @brief This function unloads a library and its components and nodes
-bool LoadExternal::unLoad(const std::string &rLibpath)
+bool LoadExternal::unLoad(const HString &rLibpath)
 {
-    stringstream ss;
     LoadedExtLibsMapT::iterator lelit = mLoadedExtLibsMap.find(rLibpath);
     if (lelit != mLoadedExtLibsMap.end())
     {
@@ -304,19 +295,17 @@ bool LoadExternal::unLoad(const std::string &rLibpath)
         // Remove from lib map
         mLoadedExtLibsMap.erase(lelit);
 
-        ss << "Successfully unloaded: " << rLibpath;
-        mpMessageHandler->addInfoMessage(ss.str());
+        mpMessageHandler->addInfoMessage("Successfully unloaded: "+rLibpath);
     }
     else
     {
-        ss << "Could not unload: " << rLibpath << ", library not found";
-        mpMessageHandler->addWarningMessage(ss.str());
+        mpMessageHandler->addWarningMessage("Could not unload: "+rLibpath+", library not found");
     }
 
     return true;
 }
 
-void LoadExternal::getLoadedLibNames(std::vector<std::string> &rLibNames)
+void LoadExternal::getLoadedLibNames(std::vector<HString> &rLibNames)
 {
     rLibNames.clear();
     rLibNames.reserve(mLoadedExtLibsMap.size());
@@ -331,7 +320,7 @@ void LoadExternal::getLoadedLibNames(std::vector<std::string> &rLibNames)
 //! @param libpath Path to library
 //! @param rComponents Reference to vector with components
 //! @param rNodes Reference to vector with nodes
-void LoadExternal::getLibContents(const std::string libpath, std::vector<std::string> &rComponents, std::vector<std::string> &rNodes)
+void LoadExternal::getLibContents(const HString libpath, std::vector<HString> &rComponents, std::vector<HString> &rNodes)
 {
     LoadedExtLibsMapT::iterator lelit = mLoadedExtLibsMap.find(libpath);
     if (lelit != mLoadedExtLibsMap.end())

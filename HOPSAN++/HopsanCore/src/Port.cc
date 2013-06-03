@@ -273,7 +273,7 @@ void Port::createStartNode(const HString &rNodeType)
         for(size_t i = 0; i < mpStartNode->getNumDataVariables(); ++i)
         {
             const NodeDataDescription* pDesc = mpStartNode->getDataDescription(i);
-            const HString desc = string("startvalue:")+"Port "+getName();
+            const HString desc = "startvalue: Port "+getName();
             const HString name = getName()+"::"+pDesc->name;
             getComponent()->addConstant(name, desc, pDesc->unit, *(mpStartNode->getDataPtr(pDesc->id)));
         }
@@ -343,56 +343,56 @@ Node *Port::getStartNodePtr()
 }
 
 
-//! @brief Debug function to dump logged node data to a file
-//! @param [in] filename The name of the file to write to
-void Port::saveLogData(string filename, const size_t /*portIdx*/)
-{
-    if (mpNode != 0)
-    {
-        HString header = getComponentName() + "::" + getName();
+////! @brief Debug function to dump logged node data to a file
+////! @param [in] filename The name of the file to write to
+//void Port::saveLogData(string filename, const size_t /*portIdx*/)
+//{
+//    if (mpNode != 0)
+//    {
+//        HString header = getComponentName() + "::" + getName();
 
-        ofstream out_file;
-        out_file.open(filename.c_str());
-        if (out_file.good())
-        {
-            vector<double>* pTimeStorage = mpNode->getOwnerSystem()->getLogTimeVector();
-            if(pTimeStorage->size() != mpNode->mDataStorage.size())
-            {
-                mpComponent->addFatalMessage("Port::saveLogData(): pTimeStorage->size() != mpNode->mDataStorage.size()");
-            }
+//        ofstream out_file;
+//        out_file.open(filename.c_str());
+//        if (out_file.good())
+//        {
+//            vector<double>* pTimeStorage = mpNode->getOwnerSystem()->getLogTimeVector();
+//            if(pTimeStorage->size() != mpNode->mDataStorage.size())
+//            {
+//                mpComponent->addFatalMessage("Port::saveLogData(): pTimeStorage->size() != mpNode->mDataStorage.size()");
+//            }
 
-            // First write HEADER info containing node info
-            out_file << header.c_str() << " " << mpNode->getNodeType().c_str() << endl;
-            out_file << "time";
-            for (size_t i=0; i<mpNode->getNumDataVariables(); ++i)
-            {
-                out_file << " " << mpNode->getDataDescription(i)->name;
-            }
-            out_file << endl;
+//            // First write HEADER info containing node info
+//            out_file << header.c_str() << " " << mpNode->getNodeType().c_str() << endl;
+//            out_file << "time";
+//            for (size_t i=0; i<mpNode->getNumDataVariables(); ++i)
+//            {
+//                out_file << " " << mpNode->getDataDescription(i)->name;
+//            }
+//            out_file << endl;
 
-            //Write log data to file
-            for (size_t row=0; row<pTimeStorage->size(); ++row)
-            {
-                out_file << pTimeStorage->at(row);
-                for (size_t datacol=0; datacol<mpNode->getNumDataVariables(); ++datacol)
-                {
-                    out_file << " " << mpNode->mDataStorage[row][datacol];
-                }
-                out_file << endl;
-            }
-            out_file.close();
-            cout << "Done! Saving node data to file: " << filename << endl;
-        }
-        else
-        {
-            cout << "Warning! Could not open out file for writing: " << filename << endl;
-        }
-    }
-    else
-    {
-        cout << getComponentName().c_str() << "-port:" << mPortName.c_str() << " can not log data, the Port has no Node connected" << endl;
-    }
-}
+//            //Write log data to file
+//            for (size_t row=0; row<pTimeStorage->size(); ++row)
+//            {
+//                out_file << pTimeStorage->at(row);
+//                for (size_t datacol=0; datacol<mpNode->getNumDataVariables(); ++datacol)
+//                {
+//                    out_file << " " << mpNode->mDataStorage[row][datacol];
+//                }
+//                out_file << endl;
+//            }
+//            out_file.close();
+//            cout << "Done! Saving node data to file: " << filename << endl;
+//        }
+//        else
+//        {
+//            cout << "Warning! Could not open out file for writing: " << filename << endl;
+//        }
+//    }
+//    else
+//    {
+//        cout << getComponentName().c_str() << "-port:" << mPortName.c_str() << " can not log data, the Port has no Node connected" << endl;
+//    }
+//}
 
 bool Port::haveLogData(const size_t /*portIdx*/)
 {
@@ -455,7 +455,7 @@ int Port::getNodeDataIdFromName(const HString &rName, const size_t /*portIdx*/)
     }
 }
 
-void Port::setSignalNodeUnitAndDescription(const string &rUnit, const string &rDescription)
+void Port::setSignalNodeUnitAndDescription(const HString &rUnit, const HString &rDescription)
 {
     //! @todo multiport version needed
     mpNode->setSignalDataUnitAndDescription(rUnit, rDescription);
@@ -862,10 +862,10 @@ double *MultiPort::getNodeDataPtr(const size_t idx, const size_t portIdx) const
     }
 }
 
-void MultiPort::saveLogData(std::string filename, const size_t portIdx)
-{
-    return mSubPortsVector[portIdx]->saveLogData(filename);
-}
+//void MultiPort::saveLogData(std::string filename, const size_t portIdx)
+//{
+//    return mSubPortsVector[portIdx]->saveLogData(filename);
+//}
 
 const std::vector<NodeDataDescription>* MultiPort::getNodeDataDescriptions(const size_t portIdx)
 {
@@ -1112,7 +1112,7 @@ Port* hopsan::createPort(const PortTypesEnumT portType, const HString &rNodeType
 //! @brief Converts a PortTypeEnum to string
 //! @param [in] type The port type enum
 //! @return The port type in string format
-std::string hopsan::portTypeToString(const PortTypesEnumT type)
+HString hopsan::portTypeToString(const PortTypesEnumT type)
 {
     switch (type)
     {

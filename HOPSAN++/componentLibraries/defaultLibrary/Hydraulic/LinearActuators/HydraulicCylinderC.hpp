@@ -29,8 +29,6 @@
 #ifndef HYDRAULICCYLINDERC_HPP_INCLUDED
 #define HYDRAULICCYLINDERC_HPP_INCLUDED
 
-#include <sstream>
-
 #include "ComponentEssentials.h"
 #include "ComponentUtilities.h"
 
@@ -233,9 +231,7 @@ class HydraulicCylinderC : public ComponentC
             V2 = V02+A2*(sl+x3);
             if(me <= 0)        //Me must be bigger than zero
             {
-                std::stringstream ss;
-                ss << "Me = " << me;
-                addDebugMessage(ss.str());
+                addDebugMessage("Me = "+to_hstring(me));
 
                 //! @todo what the heck is this all about?
                 if(mTime > mTimestep*1.5)

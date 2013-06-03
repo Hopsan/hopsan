@@ -351,15 +351,15 @@ bool ComponentSystem::wasSimulationAborted()
 
 //! @brief Adds a search path that can be used by its components to look for external files, e.g. area curves
 //! @param searchPath the search path to be added
-void ComponentSystem::addSearchPath(const std::string searchPath)
+void ComponentSystem::addSearchPath(const HString searchPath)
 {
-    std::string fixedSearchString;
+    HString fixedSearchString;
     fixedSearchString = searchPath;
     if (!fixedSearchString.empty())
     {
-        while((!fixedSearchString.empty()) && ((*fixedSearchString.rbegin() == '/') || (*fixedSearchString.rbegin() == '\\')))
+        while( (!fixedSearchString.empty()) && ((fixedSearchString.back() == '/') || (fixedSearchString.back() == '\\')) )
         {
-            fixedSearchString = fixedSearchString.substr (0,fixedSearchString.length()-1);
+            fixedSearchString = fixedSearchString.substr(0,fixedSearchString.size()-1);
         }
     }
 
@@ -381,7 +381,7 @@ Parameters &ComponentSystem::getSystemParameters()
 }
 
 //!
-bool ComponentSystem::setSystemParameter(const std::string name, const std::string value, const std::string type, const std::string description, const std::string unit, const bool force)
+bool ComponentSystem::setSystemParameter(const HString name, const HString value, const HString type, const HString description, const HString unit, const bool force)
 {
     bool success;
     if(mpParameters->exist(name.c_str()))
@@ -392,7 +392,7 @@ bool ComponentSystem::setSystemParameter(const std::string name, const std::stri
     {
         if (this->hasReservedUniqueName(name) || !isNameValid(name))
         {
-            addErrorMessage(string("The desired system parameter name: ") + name + string(" is invalid or already used by somthing else"));
+            addErrorMessage("The desired system parameter name: " + name + " is invalid or already used by somthing else");
             success=false;
         }
         else
@@ -408,7 +408,7 @@ bool ComponentSystem::setSystemParameter(const std::string name, const std::stri
     return success;
 }
 
-void ComponentSystem::unRegisterParameter(const string name)
+void ComponentSystem::unRegisterParameter(const HString name)
 {
     Component::unRegisterParameter(name);
     unReserveUniqueName(name);
@@ -983,13 +983,13 @@ void ComponentSystem::logTimeAndNodes(const size_t simStep)
 }
 
 //! @brief Rename a system parameter
-bool ComponentSystem::renameParameter(const std::string oldName, const std::string newName)
+bool ComponentSystem::renameParameter(const HString oldName, const HString newName)
 {
     if (hasReservedUniqueName(newName))
     {
-        addErrorMessage(string("The desired system parameter name: ") + newName + string(" is already used"));
+        addErrorMessage("The desired system parameter name: "+newName+" is already used");
     }
-    else if (mpParameters->renameParameter(oldName.c_str(), newName.c_str()))
+    else if (mpParameters->renameParameter(oldName, newName))
     {
         unReserveUniqueName(oldName);
         reserveUniqueName(newName);
@@ -1182,7 +1182,7 @@ bool ComponentSystem::isTopLevelSystem() const
 //! @param [in] compname2 The name of the second component
 //! @param [in] portname2 The name of the port on the second component
 //! @returns True if success else False
-bool ComponentSystem::connect(const string compname1, const string portname1, const string compname2, const string portname2)
+bool ComponentSystem::connect(const HString &compname1, const HString &portname1, const HString &compname2, const HString &portname2)
 {
     // Check if the components exist (and can be found)
     Component* pComp1 = getSubComponentOrThisIfSysPort(compname1);
@@ -1915,7 +1915,7 @@ void ConnectionAssistant::removeNode(Node *pNode)
 //! @param [in] compname2 The name of the second component
 //! @param [in] portname2 The name of the port on the second component
 //! @returns True if success, False if failed
-bool ComponentSystem::disconnect(const string compname1, const string portname1, const string compname2, const string portname2)
+bool ComponentSystem::disconnect(const HString &compname1, const HString &portname1, const HString &compname2, const HString &portname2)
 {
     Component *pComp1, *pComp2;
     Port *pPort1, *pPort2;
@@ -1934,9 +1934,7 @@ bool ComponentSystem::disconnect(const string compname1, const string portname1,
         }
     }
 
-    stringstream ss;
-    ss << "Disconnect: Could not find either " << compname1 << "->" << portname1 << " or " << compname2 << "->" << portname2 << endl;
-    addDebugMessage(ss.str());
+    addDebugMessage("Disconnect: Could not find either " +compname1+"->"+portname1+" or "+compname2+"->"+portname2);
     return false;
 }
 
@@ -2306,7 +2304,7 @@ bool ComponentSystem::checkModelBeforeSimulation()
             HString errParName;
             if(!(pComp->checkParameters(errParName)))
             {
-                addErrorMessage("The parameter:  "+toStdString(errParName)+"  in System:  "+getName()+"  and Component:  "+pComp->getName()+"  can not be evaluated, a system parameter has maybe been deleted or re-typed.");
+                addErrorMessage("The parameter:  "+errParName+"  in System:  "+getName()+"  and Component:  "+pComp->getName()+"  can not be evaluated, a system parameter has maybe been deleted or re-typed.");
                 return false;
             }
         }
@@ -2315,7 +2313,7 @@ bool ComponentSystem::checkModelBeforeSimulation()
         HString errParName;
         if(!(checkParameters(errParName)))
         {
-            addErrorMessage("The system parameter:  "+toStdString(errParName)+"  in System:  "+getName()+"  can not be evaluated, it maybe depend on a deleted system parameter.");
+            addErrorMessage("The system parameter:  "+errParName+"  in System:  "+getName()+"  can not be evaluated, it maybe depend on a deleted system parameter.");
             return false;
         }
 
@@ -2424,22 +2422,22 @@ void ComponentSystem::loadStartValuesFromSimulation()
 }
 
 
-void ComponentSystem::loadParameters(std::string filePath)
+void ComponentSystem::loadParameters(HString filePath)
 {
     loadHopsanParameterFile(filePath, getHopsanEssentials(), this);
 }
 
 
-void ComponentSystem::loadParameters(std::map<std::string, std::pair<std::vector<std::string>, std::vector<std::string> > > parameterMap)
+void ComponentSystem::loadParameters(std::map<HString, std::pair<std::vector<HString>, std::vector<HString> > > parameterMap)
 {
-    std::map<std::string, std::pair<std::vector<std::string>, std::vector<std::string> > >::iterator it;
+    std::map<HString, std::pair<std::vector<HString>, std::vector<HString> > >::iterator it;
     for(it=parameterMap.begin(); it!=parameterMap.end(); ++it)
     {
-        std::string name = it->first;
+        HString name = it->first;
         if(this->haveSubComponent(name))
         {
-            std::vector<std::string> parNames = it->second.first;
-            std::vector<std::string> parValues = it->second.second;
+            std::vector<HString> parNames = it->second.first;
+            std::vector<HString> parValues = it->second.second;
             for(size_t i=0; i<parNames.size(); ++i)
             {
                 this->getSubComponent(name)->setParameterValue(parNames[i], parValues[i]);
@@ -2531,8 +2529,8 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         }
         else
         {
-            mComponentSignalptrs[s]->initializeDynamicParameters();
-            mComponentSignalptrs[s]->updateDynamicParameterValues();
+            //mComponentSignalptrs[s]->initializeDynamicParameters();
+            //mComponentSignalptrs[s]->updateDynamicParameterValues();
         }
 
         if(!mComponentSignalptrs[s]->initialize(startT, stopT))
@@ -2559,8 +2557,8 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         }
         else
         {
-            mComponentCptrs[c]->initializeDynamicParameters();
-            mComponentCptrs[c]->updateDynamicParameterValues();
+            //mComponentCptrs[c]->initializeDynamicParameters();
+            //mComponentCptrs[c]->updateDynamicParameterValues();
         }
 
         if(!mComponentCptrs[c]->initialize(startT, stopT))
@@ -2587,8 +2585,8 @@ bool ComponentSystem::initialize(const double startT, const double stopT)
         }
         else
         {
-            mComponentQptrs[q]->initializeDynamicParameters();
-            mComponentQptrs[q]->updateDynamicParameterValues();
+            //mComponentQptrs[q]->initializeDynamicParameters();
+            //mComponentQptrs[q]->updateDynamicParameterValues();
         }
 
         if(!mComponentQptrs[q]->initialize(startT, stopT))
@@ -3072,9 +3070,7 @@ void ComponentSystem::distributeCcomponents(vector< vector<Component*> > &rSplit
 
     for(size_t i=0; i<nThreads; ++i)
     {
-        stringstream ss;
-        ss << timeVector[i]*1000;
-        addDebugMessage("Creating C-type thread vector, measured time = " + ss.str() + " ms", "cvector");
+        addDebugMessage("Creating C-type thread vector, measured time = " + to_hstring(timeVector[i]*1000) + " ms", "cvector");
     }
 
         //Finally we sort each component vector, so that
@@ -3122,9 +3118,7 @@ void ComponentSystem::distributeQcomponents(vector< vector<Component*> > &rSplit
 
     for(size_t i=0; i<nThreads; ++i)
     {
-        stringstream ss;
-        ss << timeVector[i]*1000;
-        addDebugMessage("Creating Q-type thread vector, measured time = " + ss.str() + " ms", "qvector");
+        addDebugMessage("Creating Q-type thread vector, measured time = " + to_hstring(timeVector[i]*1000) + " ms", "qvector");
     }
 
         //Finally we sort each component vector, so that
@@ -3470,9 +3464,7 @@ void ComponentSystem::setLogSettingsNSamples(int nSamples, double start, double 
         if ( ((stop - start) / sampletime + 1) < nSamples )
         {
             mnLogSlots = size_t((stop - start) / sampletime + 1);
-            std::stringstream ss;
-            ss << "Requested nLogSamples: " << nSamples << " but this is more than the total simulation samples, limiting to: " << mnLogSlots;
-            addWarningMessage(ss.str(), "toofewsamples");
+            addWarningMessage("Requested nLogSamples: "+to_hstring(nSamples)+" but this is more than the total simulation samples, limiting to: "+to_hstring(mnLogSlots), "toofewsamples");
         }
         else
         {

@@ -39,7 +39,7 @@ using namespace hopsan;
 // vvvvvvvvvv Help Functions vvvvvvvvvv
 //! @brief Helpfunction to strip filename from path
 //! @note Assumes that dir separator is forward slash /
-std::string stripFilenameFromPath(std::string filePath)
+HString stripFilenameFromPath(HString filePath)
 {
     //cout << "Stripping from: " << filePath << endl;
     size_t pos = filePath.rfind('/');
@@ -53,18 +53,18 @@ std::string stripFilenameFromPath(std::string filePath)
 
 //! @brief Splits a full name into comp port and variable names
 //! @todo this should be in a more "global" place since it may be usefull elsewhere
-void splitFullName(const std::string &rFullName, std::string &rCompName, std::string &rPortName, std::string &rVarName)
+void splitFullName(const HString &rFullName, HString &rCompName, HString &rPortName, HString &rVarName)
 {
-    vector<string> parts;
+    vector<HString> parts;
     parts.reserve(3);
 
     size_t start=0, end=0;
-    while (end != string::npos)
+    while (end != HString::npos)
     {
         end = rFullName.find_first_of('#', start);
         parts.push_back(rFullName.substr(start, end-start));
         start = end+1;
-        if (end == string::npos)
+        if (end == HString::npos)
         {
             break;
         }
@@ -90,19 +90,19 @@ void splitFullName(const std::string &rFullName, std::string &rCompName, std::st
     }
 }
 
-void updateOldModelFileParameter(rapidxml::xml_node<> *pParameterNode, const std::string &rHmfCoreVersion)
+void updateOldModelFileParameter(rapidxml::xml_node<> *pParameterNode, const HString &rHmfCoreVersion)
 {
-    if (rHmfCoreVersion < "0.6.0" || (contains(rHmfCoreVersion,"0.6.x_r")) )
+    if (rHmfCoreVersion < "0.6.0" || rHmfCoreVersion.containes("0.6.x_r") )
     {
         if (pParameterNode)
         {
             // Fix renamed node data vaariables
-            string name = readStringAttribute(pParameterNode,"name","");
-            if (contains(name, "::"))
+            HString name = readStringAttribute(pParameterNode,"name","").c_str();
+            if (name.containes("::"))
             {
                 // split string
-                string part1 = name.substr(0, name.rfind(":")+1);
-                string part2 = name.substr(name.rfind(":")+1);
+                HString part1 = name.substr(0, name.rfind(':')+1);
+                HString part2 = name.substr(name.rfind(':')+1);
 
                 if (part2 == "Angular Velocity")
                 {
@@ -116,22 +116,22 @@ void updateOldModelFileParameter(rapidxml::xml_node<> *pParameterNode, const std
                 {
                     part2 = "CharImpedance";
                 }
-                writeStringAttribute(pParameterNode, "name", part1+part2);
+                writeStringAttribute(pParameterNode, "name", (part1+part2).c_str());
             }
 
             // Fix parameter names with illegal chars
-            if (!isNameValid(name))
+            if (!isNameValid(name.c_str()))
             {
                 if (name == "sigma^2")
                 {
                     name = "std_dev";
                 }
 
-                replace(name,",","");
-                replace(name,".","");
-                replace(name," ","_");
+                name.replace(",","");
+                name.replace(".","");
+                name.replace(" ","_");
 
-                writeStringAttribute(pParameterNode, "name", name);
+                writeStringAttribute(pParameterNode, "name", name.c_str());
             }
         }
     }
@@ -151,7 +151,7 @@ void updateRenamedComponentType(rapidxml::xml_node<> *pNode, const string oldTyp
     }
 }
 
-void updateRenamedPort(rapidxml::xml_node<> *pNode, const string componentType, const string oldName, const string newName)
+void updateRenamedPort(rapidxml::xml_node<> *pNode, const string componentType, const HString oldName, const HString newName)
 {
     if(readStringAttribute(pNode, "typename", "") == componentType)
     {
@@ -159,11 +159,11 @@ void updateRenamedPort(rapidxml::xml_node<> *pNode, const string componentType, 
         rapidxml::xml_node<> *pParamNode = getGrandChild(pNode, "parameters", "parameter");
         while (pParamNode)
         {
-            string paramName = readStringAttribute(pParamNode, "name");
-            if (contains(paramName, oldName+"::"))
+            HString paramName = readStringAttribute(pParamNode, "name").c_str();
+            if (paramName.containes(oldName+"::"))
             {
-                replace(paramName, oldName+"::", newName+"::");
-                writeStringAttribute(pParamNode, "name", paramName);
+                paramName.replace(oldName+"::", newName+"::");
+                writeStringAttribute(pParamNode, "name", paramName.c_str());
             }
             pParamNode = pParamNode->next_sibling("parameter");
         }
@@ -178,16 +178,16 @@ void updateRenamedPort(rapidxml::xml_node<> *pNode, const string componentType, 
 
             if (startComp == compName)
             {
-                if (readStringAttribute(pConnNode, "startport") == oldName)
+                if (readStringAttribute(pConnNode, "startport").c_str() == oldName)
                 {
-                    writeStringAttribute(pConnNode, "startport", newName);
+                    writeStringAttribute(pConnNode, "startport", newName.c_str());
                 }
             }
             if (endComp == compName)
             {
-                if (readStringAttribute(pConnNode, "endport") == oldName)
+                if (readStringAttribute(pConnNode, "endport").c_str() == oldName)
                 {
-                    writeStringAttribute(pConnNode, "endport", newName);
+                    writeStringAttribute(pConnNode, "endport", newName.c_str());
                 }
             }
 
@@ -217,15 +217,15 @@ void updateRenamedParameter(rapidxml::xml_node<> *pNode, const string componentT
 //! @brief This help function loads a component
 void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSystem, HopsanEssentials *pHopsanEssentials)
 {
-    string typeName = readStringAttribute(pComponentNode, "typename", "ERROR_NO_TYPE_GIVEN");
-    string subTypeName = readStringAttribute(pComponentNode, "subtypename", "");
-    string displayName = readStringAttribute(pComponentNode, "name", typeName);
+    HString typeName = readStringAttribute(pComponentNode, "typename", "ERROR_NO_TYPE_GIVEN").c_str();
+    HString subTypeName = readStringAttribute(pComponentNode, "subtypename", "").c_str();
+    HString displayName = readStringAttribute(pComponentNode, "name", typeName.c_str()).c_str();
 
     Component *pComp = pHopsanEssentials->createComponent(typeName.c_str());
     if (pComp != 0)
     {
         pComp->setName(displayName);
-        pComp->setSubTypeName(subTypeName);
+        pComp->setSubTypeName(subTypeName.c_str());
         pSystem->addComponent(pComp);
 
         //Load parameters
@@ -236,15 +236,15 @@ void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSyste
             rapidxml::xml_node<> *pParam = pParams->first_node("parameter");
             while (pParam != 0)
             {
-                updateOldModelFileParameter(pParam, readStringAttribute(pComponentNode->document()->first_node(), "hopsancoreversion"));
+                updateOldModelFileParameter(pParam, readStringAttribute(pComponentNode->document()->first_node(), "hopsancoreversion").c_str());
 
-                string paramName = readStringAttribute(pParam, "name", "ERROR_NO_PARAM_NAME_GIVEN");
-                string val = readStringAttribute(pParam, "value", "ERROR_NO_PARAM_VALUE_GIVEN");
+                HString paramName = readStringAttribute(pParam, "name", "ERROR_NO_PARAM_NAME_GIVEN").c_str();
+                HString val = readStringAttribute(pParam, "value", "ERROR_NO_PARAM_VALUE_GIVEN").c_str();
 
                 //! @todo this is a hack to update old parameters, remove at some point in the future
                 if (!pComp->hasParameter(paramName))
                 {
-                    if (paramName.find("::") == string::npos)
+                    if (paramName.find("::") == HString::npos)
                     {
                         paramName=paramName+"::Value";
                     }
@@ -252,7 +252,7 @@ void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSyste
 
                 // We need force=true here to make sure that parameters with system variable names are set even if they can not yet be evaluated
                 //! @todo why cant they be evaluated, if everything loaded in correct order that should work
-                bool ok = pComp->setParameterValue(paramName, val, true);
+                bool ok = pComp->setParameterValue(paramName.c_str(), val.c_str(), true);
                 if(!ok)
                 {
                     pComp->addWarningMessage("Failed to set parameter: "+paramName+"="+val);
@@ -273,19 +273,19 @@ void loadConnection(rapidxml::xml_node<> *pConnectNode, ComponentSystem* pSystem
     string endcomponent = readStringAttribute(pConnectNode, "endcomponent", "ERROR_NOENDCOMPNAME_GIVEN");
     string endport = readStringAttribute(pConnectNode, "endport", "ERROR_NOENDPORTNAME_GIVEN");
 
-    santizeName(startcomponent);
-    santizeName(startport);
-    santizeName(endcomponent);
-    santizeName(endport);
+    santizeName(startcomponent.c_str());
+    santizeName(startport.c_str());
+    santizeName(endcomponent.c_str());
+    santizeName(endport.c_str());
 
-    pSystem->connect(startcomponent, startport, endcomponent, endport);
+    pSystem->connect(startcomponent.c_str(), startport.c_str(), endcomponent.c_str(), endport.c_str());
 }
 
 //! @brief This help function loads a SystemPort
 void loadSystemPort(rapidxml::xml_node<> *pSysPortNode, ComponentSystem* pSystem)
 {
-    HString name = readStringAttribute(pSysPortNode, "name", "ERROR_NO_NAME_GIVEN");
-    pSystem->addSystemPort(name);
+    string name = readStringAttribute(pSysPortNode, "name", "ERROR_NO_NAME_GIVEN");
+    pSystem->addSystemPort(name.c_str());
 }
 
 //! @brief Help function to load system parameters
@@ -298,7 +298,7 @@ void loadSystemParameters(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSyst
         rapidxml::xml_node<> *pParameter = pParameters->first_node("parameter");
         while (pParameter != 0)
         {
-            updateOldModelFileParameter(pParameter, readStringAttribute(pSysNode->document()->first_node(), "hopsancoreversion"));
+            updateOldModelFileParameter(pParameter, readStringAttribute(pSysNode->document()->first_node(), "hopsancoreversion").c_str());
 
             string paramName = readStringAttribute(pParameter, "name", "ERROR_NO_PARAM_NAME_GIVEN");
             string val = readStringAttribute(pParameter, "value", "ERROR_NO_PARAM_VALUE_GIVEN");
@@ -307,10 +307,10 @@ void loadSystemParameters(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSyst
 
             // Here we use force=true to make sure system parameters laoded even if they do not evaluate
             //! @todo if system parameters are loaded in the correct order (top to bottom) they should evaluete, why dont they?
-            bool ok = pSystem->setSystemParameter(paramName, val, type, "", "", true);
+            bool ok = pSystem->setSystemParameter(paramName.c_str(), val.c_str(), type.c_str(), "", "", true);
             if(!ok)
             {
-                pSystem->addErrorMessage("Failed to load parameter: "+paramName+"="+val);
+                pSystem->addErrorMessage(HString("Failed to load parameter: ")+(paramName+"="+val).c_str());
             }
 
             pParameter = pParameter->next_sibling("parameter");
@@ -323,18 +323,18 @@ void loadAliases(rapidxml::xml_node<> *pAliasesNode, ComponentSystem* pSystem)
     rapidxml::xml_node<> *pAlias = pAliasesNode->first_node("alias");
     while(pAlias)
     {
-        string type = readStringAttribute(pAlias, "type", "ERROR_NO_ALIAS_TYPE_GIVEN");
-        string alias = readStringAttribute(pAlias, "name", "ERROR_NO_ALIAS_NAME_GIVEN");
-        string fullName = readStringNodeValue(pAlias->first_node("fullname"), "ERROR_NO_FULLNAME_GIVEN");
+        HString type = readStringAttribute(pAlias, "type", "ERROR_NO_ALIAS_TYPE_GIVEN").c_str();
+        HString alias = readStringAttribute(pAlias, "name", "ERROR_NO_ALIAS_NAME_GIVEN").c_str();
+        HString fullName = readStringNodeValue(pAlias->first_node("fullname"), "ERROR_NO_FULLNAME_GIVEN").c_str();
 
-        string comp, port, var;
+        HString comp, port, var;
         splitFullName(fullName, comp, port, var);
         //cout << "splitOut: " << fullName << " ! " << comp << " ! " << port << " ! " << var << endl;
 
         if (type == "variable" || type == "Variable")
         {
             //! @todo check bool and display warning if false
-            pSystem->getAliasHandler().setVariableAlias(alias, comp, port, var);
+            pSystem->getAliasHandler().setVariableAlias(alias.c_str(), comp.c_str(), port.c_str(), var.c_str());
         }
 
 
@@ -344,11 +344,11 @@ void loadAliases(rapidxml::xml_node<> *pAliasesNode, ComponentSystem* pSystem)
 
 
 //! @brief This function loads a subsystem
-void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem, HopsanEssentials* pHopsanEssentials, const std::string rootFilePath="")
+void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem, HopsanEssentials* pHopsanEssentials, const HString rootFilePath="")
 {
     string typeName = readStringAttribute(pSysNode, "typename", "ERROR_NO_TYPE_GIVEN");
     string displayName = readStringAttribute(pSysNode, "name", typeName );
-    pSystem->setName(displayName);
+    pSystem->setName(displayName.c_str());
 
     rapidxml::xml_node<> *pSimtimeNode = pSysNode->first_node("simulationtime");
     double Ts = readDoubleAttribute(pSimtimeNode, "timestep", 0.001);
@@ -383,8 +383,8 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
                 if (isExternal)
                 {
                     double dummy1,dummy2;
-                    string externalPath = stripFilenameFromPath(rootFilePath) + readStringAttribute(pObject,"external_path","");
-                    cout << "externalPath: " << externalPath << endl;
+                    HString externalPath = stripFilenameFromPath(rootFilePath) + readStringAttribute(pObject,"external_path","").c_str();
+                    cout << "externalPath: " << externalPath.c_str() << endl;
                     pSys = loadHopsanModelFile(externalPath, pHopsanEssentials, dummy1, dummy2);
                     if (pSys != 0)
                     {
@@ -392,7 +392,7 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
                         loadSystemParameters(pObject, pSys);
                         // Overwrite name
                         string displayNameExt = readStringAttribute(pObject, "name", typeName );
-                        pSys->setName(displayNameExt);
+                        pSys->setName(displayNameExt.c_str());
                         // Add new system to parent
                         pSystem->addComponent(pSys);
                     }
@@ -450,7 +450,7 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
 //! @param [out] rStopTime A reference to the stoptime variable
 //! @returns A pointer to the rootsystem of the loaded model
 //! @todo if possible merge the two differen main load functions
-ComponentSystem* hopsan::loadHopsanModelFile(const std::string filePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime)
+ComponentSystem* hopsan::loadHopsanModelFile(const HString filePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime)
 {
     addLogMess(("hopsan::loadHopsanModelFile("+filePath+")").c_str());
     try
@@ -466,7 +466,7 @@ ComponentSystem* hopsan::loadHopsanModelFile(const std::string filePath, HopsanE
         if (strcmp(pRootNode->name(), "hopsanmodelfile")==0)
         {
             // Check version
-            string savedwithcoreversion = readStringAttribute(pRootNode, "hopsancoreversion", "0");
+            HString savedwithcoreversion = readStringAttribute(pRootNode, "hopsancoreversion", "0").c_str();
             pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(savedwithcoreversion);
             if (savedwithcoreversion < "0.6.0" || (savedwithcoreversion > "0.6.x" && savedwithcoreversion < HOPSANCOREVERSION))
             {
@@ -541,7 +541,7 @@ ComponentSystem* hopsan::loadHopsanModelFile(const char* xmlStr, HopsanEssential
 
 ComponentSystem* hopsan::loadHopsanModelFile(char* xmlStr, HopsanEssentials* pHopsanEssentials)
 {
-    std::string filePath("");
+    HString filePath("");
 
     try
     {
@@ -554,7 +554,7 @@ ComponentSystem* hopsan::loadHopsanModelFile(char* xmlStr, HopsanEssentials* pHo
         if (strcmp(pRootNode->name(), "hopsanmodelfile")==0)
         {
             // Check version
-            string savedwithcoreversion = readStringAttribute(pRootNode, "hopsancoreversion", "0");
+            HString savedwithcoreversion = readStringAttribute(pRootNode, "hopsancoreversion", "0").c_str();
             pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(savedwithcoreversion);
             if (savedwithcoreversion < "0.6.0" || (savedwithcoreversion > "0.6.x" && savedwithcoreversion < "0.6.x_r5216"))
             {
@@ -600,7 +600,7 @@ ComponentSystem* hopsan::loadHopsanModelFile(char* xmlStr, HopsanEssentials* pHo
 //! @param [out] rStartTime A reference to the starttime variable
 //! @param [out] rStopTime A reference to the stoptime variable
 //! @returns A pointer to the rootsystem of the loaded model
-void hopsan::loadHopsanParameterFile(const std::string filePath, HopsanEssentials* pHopsanEssentials, ComponentSystem *pSystem)
+void hopsan::loadHopsanParameterFile(const HString filePath, HopsanEssentials* pHopsanEssentials, ComponentSystem *pSystem)
 {
     addLogMess(("hopsan::loadHopsanParameterFile("+filePath+")").c_str());
     try
@@ -618,7 +618,7 @@ void hopsan::loadHopsanParameterFile(const std::string filePath, HopsanEssential
             rapidxml::xml_node<> *pSysNode = pRootNode->first_node("system");
             if (pSysNode != 0)
             {
-                std::map<std::string, std::pair<std::vector<std::string>, std::vector<std::string> > > parMap;
+                std::map<HString, std::pair<std::vector<HString>, std::vector<HString> > > parMap;
 
                 //Load contents
                 rapidxml::xml_node<> *pObjects = pSysNode->first_node("objects");
@@ -627,26 +627,26 @@ void hopsan::loadHopsanParameterFile(const std::string filePath, HopsanEssential
                     rapidxml::xml_node<> *pComponent = pObjects->first_node("component");
                     while (pComponent != 0)
                     {
-                        std::string name = readStringAttribute(pComponent, "name", "");
+                        HString name = readStringAttribute(pComponent, "name", "").c_str();
 
-                        std::vector<std::string> parameterNames;
-                        std::vector<std::string> parameterValues;
+                        std::vector<HString> parameterNames;
+                        std::vector<HString> parameterValues;
                         rapidxml::xml_node<> *pParameters = pComponent->first_node("parameters");
                         if (pParameters != 0)
                         {
                             rapidxml::xml_node<> *pParameter = pParameters->first_node("parameter");
                             while (pParameter != 0)
                             {
-                                parameterNames.push_back(readStringAttribute(pParameter, "name", ""));
-                                parameterValues.push_back(readStringAttribute(pParameter, "value", ""));
+                                parameterNames.push_back(readStringAttribute(pParameter, "name", "").c_str());
+                                parameterValues.push_back(readStringAttribute(pParameter, "value", "").c_str());
                                 pParameter = pParameter->next_sibling();
                             }
                         }
 
-                        std::pair<std::vector<std::string>, std::vector<std::string> > parameters;
-                        parameters = std::pair<std::vector<std::string>, std::vector<std::string> >(parameterNames, parameterValues);
+                        std::pair<std::vector<HString>, std::vector<HString> > parameters;
+                        parameters = std::pair<std::vector<HString>, std::vector<HString> >(parameterNames, parameterValues);
 
-                        parMap.insert(std::pair<std::string, std::pair<std::vector<std::string>, std::vector<std::string> > >(name, parameters));
+                        parMap.insert(std::pair<HString, std::pair<std::vector<HString>, std::vector<HString> > >(name, parameters));
 
                         pComponent = pComponent->next_sibling();
                     }

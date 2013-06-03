@@ -38,36 +38,33 @@ bool isNameValid(const HString &rString, const HString &rExceptions);
 
 //! @brief Help function for create a unique name among names from one STL Container
 template<typename ContainerT>
-HString findUniqueName(const ContainerT &rContainer, const HString &rName)
+HString findUniqueName(const ContainerT &rContainer, HString name)
 {
-    //! @todo need string conversion since HString lacks some string functions
-    std::string sname = rName.c_str();
-
     // New name must not be empty, empty name is "reserved" to be used in the API to indicate that we want to manipulate the current root system
-    if (sname.empty())
+    if (name.empty())
     {
-        sname = "noName";
+        name = "noName";
     }
 
     // Make sure name is sane
-    santizeName(sname);
+    santizeName(name);
 
     size_t ctr = 1; //The suffix number
-    while(rContainer.find(sname) != rContainer.end())
+    while(rContainer.find(name) != rContainer.end())
     {
         //strip suffix
-        size_t foundpos = sname.rfind("_");
-        if (foundpos != std::string::npos)
+        size_t foundpos = name.rfind('_');
+        if (foundpos != HString::npos)
         {
-            if (foundpos+1 < sname.size())
+            if (foundpos+1 < name.size())
             {
-                unsigned char nr = sname.at(foundpos+1);
+                unsigned char nr = name.at(foundpos+1);
                 //cout << "nr after _: " << nr << endl;
                 //Check the ascii code for the charachter
                 if ((nr >= 48) && (nr <= 57))
                 {
                     //Is number lets assume that the _ found is the beginning of a suffix
-                    sname.erase(foundpos, std::string::npos);
+                    name.erase(foundpos, HString::npos);
                 }
             }
         }
@@ -76,24 +73,23 @@ HString findUniqueName(const ContainerT &rContainer, const HString &rName)
         //add new suffix
         std::stringstream suffix;
         suffix << ctr;
-        sname.append("_");
-        sname.append(suffix.str());
+        name.append("_").append(suffix.str().c_str());
         ++ctr;
         //cout << "ctr: " << ctr << " appended tempname: " << name << endl;
     }
     //cout << name << endl;
 
-    return sname.c_str();
+    return name.c_str();
 }
 
-inline bool contains(const std::string &rString, const std::string &rPattern)
-{
-    return rString.find(rPattern) != std::string::npos;
-}
+//inline bool contains(const HString &rString, const HString &rPattern)
+//{
+//    return rString.find(rPattern) != HString::npos;
+//}
 
-std::string &replace(std::string &rString, const std::string &rOld, const std::string &rNew);
+//HString &replace(HString &rString, const HString &rOld, const HString &rNew);
 
-void copyString(char** c, std::string s);
+//void copyString(char** c, std::string s);
 
 }
 

@@ -96,26 +96,26 @@ hopsan::HString hopsan::santizeName(const HString &rName)
     return name;
 }
 
-std::string &hopsan::replace(std::string &rString, const std::string &rOld, const std::string &rNew)
-{
-    size_t pos = rString.find(rOld);
-    while (pos!=std::string::npos)
-    {
-        rString.replace(pos, rOld.size(), rNew);
-        pos = rString.find(rOld);
-    }
-    return rString;
-}
+//hopsan::HString &hopsan::replace(HString &rString, const HString &rOld, const HString &rNew)
+//{
+//    size_t pos = rString.find(rOld);
+//    while (pos!=HString::npos)
+//    {
+//        rString.replace(pos, rOld.size(), rNew.c_str());
+//        pos = rString.find(rOld);
+//    }
+//    return rString;
+//}
 
 
-//! @brief Copies a std::string to a char* (with memory allocation)
-//! @param [out] c Target string
-//! @param [in] s Source string
-void hopsan::copyString(char** c, std::string s)
-{
-    *c = (char *)realloc(*c, (strlen(s.c_str())+1)*sizeof(char));
-    strcpy(*c, s.c_str());
-}
+////! @brief Copies a std::string to a char* (with memory allocation)
+////! @param [out] c Target string
+////! @param [in] s Source string
+//void hopsan::copyString(char** c, std::string s)
+//{
+//    *c = (char *)realloc(*c, (strlen(s.c_str())+1)*sizeof(char));
+//    strcpy(*c, s.c_str());
+//}
 
 
 

@@ -41,7 +41,7 @@ namespace hopsan {
 
         //! @brief Helpfunction to create components and abort safely if that fails
         //! @returns Pointer to created component or dummy
-        Component* createSafeComponent(const std::string type)
+        Component* createSafeComponent(const HString type)
         {
             Component* pComp = getHopsanEssentials()->createComponent(type.c_str());
             if (pComp == 0)
@@ -58,10 +58,10 @@ namespace hopsan {
         //! @note circumvents the ordinary parameter system, use only if you know what you are doing
         //! @returns A pointer to the parameter or a dummy parameter (to avoid crash on further use)
         template<typename T>
-        T* getParameterSafeDataPtr(Component *pComp, const std::string paramName)
+        T* getParameterSafeDataPtr(Component *pComp, const HString paramName)
         {
             double* pTmp = 0;
-            std::string compType = "NULL";
+            HString compType = "NULL";
 
             // First handle if component ptr is null
             if (pComp != 0)
@@ -133,7 +133,7 @@ namespace hopsan {
         bool initialize(const double startT, const double stopT)     //Important, initialize must have these arguments
         {
             // Propagate constant parameters into respective components
-            mpVolume->setParameterValue("V", to_string(Volume), true);
+            mpVolume->setParameterValue("V", to_hstring(Volume), true);
             mpInternalVolumePressure = mpVolume->getSafeNodeDataPtr("P2", NodeHydraulic::Pressure);
 
             if (checkModelBeforeSimulation())

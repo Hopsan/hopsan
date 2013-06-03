@@ -41,7 +41,7 @@ public:
     enum DataIndexEnumOldT {VALUE};
     static Node* CreatorFunction() {return new NodeSignal;}
 
-    void setSignalDataUnitAndDescription(const std::string &rUnit, const std::string &rDescription)
+    void setSignalDataUnitAndDescription(const HString &rUnit, const HString &rDescription)
     {
         mDataDescriptions[Value].unit = rUnit;
         mDataDescriptions[Value].description = rDescription;

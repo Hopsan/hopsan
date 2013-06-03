@@ -84,9 +84,9 @@ namespace hopsan {
         virtual const std::vector<NodeDataDescription>* getNodeDataDescriptions(const size_t portIdx=0);
         virtual const NodeDataDescription* getNodeDataDescription(const size_t dataid, const size_t portIdx=0);
         virtual int getNodeDataIdFromName(const HString &rName, const size_t portIdx=0);
-        virtual void setSignalNodeUnitAndDescription(const std::string &rUnit, const std::string &rDescription);
+        virtual void setSignalNodeUnitAndDescription(const HString &rUnit, const HString &rDescription);
 
-        virtual void saveLogData(std::string filename, const size_t portIdx=0);
+        //virtual void saveLogData(std::string filename, const size_t portIdx=0);
         virtual bool haveLogData(const size_t portIdx=0);
         virtual std::vector<double> *getLogTimeVectorPtr(const size_t portIdx=0);
         virtual std::vector<std::vector<double> > *getLogDataVectorPtr(const size_t portIdx=0);
@@ -299,7 +299,7 @@ namespace hopsan {
     };
 
     Port* createPort(const PortTypesEnumT portType, const HString &rNodeType, const HString &rName, Component *pParentComponent, Port *pParentPort=0);
-    std::string DLLIMPORTEXPORT portTypeToString(const PortTypesEnumT type);
+    HString DLLIMPORTEXPORT portTypeToString(const PortTypesEnumT type);
 }
 
 #endif // PORT_H_INCLUDED

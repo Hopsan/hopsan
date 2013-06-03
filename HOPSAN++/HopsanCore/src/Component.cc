@@ -25,6 +25,7 @@
 #include <iostream>
 #include <sstream>
 #include <cassert>
+#include <fstream>
 #include <algorithm>
 #include "Component.h"
 #include "ComponentSystem.h"
@@ -182,25 +183,25 @@ const std::vector<VariameterDescription>* Component::getVariameters()
 
 //! @note Dont use this function during simulation, it is slow
 //! @todo check returnvalue from setParameter check if Ok error emssage otherwise, also in the other functions
-void Component::setConstantValue(const char *name, const double value)
+void Component::setConstantValue(HString name, const double value)
 {
     setParameterValue(name, to_hstring(value), true);
 }
 
 //! @note Dont use this function during simulation, it is slow
-void Component::setConstantValue(const char *name, const int value)
+void Component::setConstantValue(HString name, const int value)
 {
     setParameterValue(name, to_hstring(value), true);
 }
 
 //! @note Dont use this function during simulation, it is slow
-void Component::setConstantValue(const char *name, const HString &rValue)
+void Component::setConstantValue(HString name, const HString &rValue)
 {
     setParameterValue(name, rValue, true);
 }
 
 //! @note Dont use this function during simulation, it is slow
-void Component::setConstantValue(const char *name, const bool value)
+void Component::setConstantValue(HString name, const bool value)
 {
     setParameterValue(name, to_hstring(value), true);
 }
@@ -218,7 +219,7 @@ void Component::finalize(const double /*startT*/, const double /*stopT*/)
 //! @param [in] stopT Stop time
 void Component::simulate(const double stopT)
 {
-    updateDynamicParameterValues();
+    //updateDynamicParameterValues();
     const size_t nSteps = calcNumSimSteps(mTime, stopT); //Here mTime is the last time step since it is not updated yet
     for (size_t i=0; i<nSteps; ++i)
     {
@@ -332,9 +333,9 @@ const HString &Component::getSubTypeName() const
 }
 
 //! @brief Set the SubType name of the component
-void Component::setSubTypeName(const string subTypeName)
+void Component::setSubTypeName(const HString &rSubTypeName)
 {
-    mSubTypeName = subTypeName;
+    mSubTypeName = rSubTypeName;
 }
 
 
@@ -354,41 +355,41 @@ HopsanEssentials *Component::getHopsanEssentials()
 //! @deprecated
 void Component::initializeDynamicParameters()
 {
-    mDynamicParameterDataPtrs.clear();
-    vector<HString> parNames;
-    mpParameters->getParameterNames(parNames);
+//    mDynamicParameterDataPtrs.clear();
+//    vector<HString> parNames;
+//    mpParameters->getParameterNames(parNames);
 
-    for (size_t i=0; i<parNames.size(); ++i)
-    {
-        // For now make sure enabled by default
-        //! @todo maybe this should be set when enabling disabling not every time
-        mpParameters->enableParameter(parNames[i], true);
+//    for (size_t i=0; i<parNames.size(); ++i)
+//    {
+//        // For now make sure enabled by default
+//        //! @todo maybe this should be set when enabling disabling not every time
+//        mpParameters->enableParameter(parNames[i], true);
 
-        // Check if dynamic parameter, Port with same name exist
-        //! @todo must make sure that other ports with this name do not exist, of other types then signal 1d readport
-        if (mPortPtrMap.count(toStdString(parNames[i])) > 0)
-        {
-            Port* pPort = mPortPtrMap.find(toStdString(parNames[i]))->second;
-            if (pPort->isConnected())
-            {
-                mpParameters->enableParameter(parNames[i], false);
-                //! @todo Not getNodeData(0) not hardcoded 0
-                //! @todo this assumes signal node and double data ptr in parameter
-                mDynamicParameterDataPtrs.push_back(std::pair<double*, double*>(pPort->getNodeDataPtr(0),
-                                                              static_cast<double*>(mpParameters->getParameterDataPtr(parNames[i]))));
+//        // Check if dynamic parameter, Port with same name exist
+//        //! @todo must make sure that other ports with this name do not exist, of other types then signal 1d readport
+//        if (mPortPtrMap.count(toStdString(parNames[i])) > 0)
+//        {
+//            Port* pPort = mPortPtrMap.find(toStdString(parNames[i]))->second;
+//            if (pPort->isConnected())
+//            {
+//                mpParameters->enableParameter(parNames[i], false);
+//                //! @todo Not getNodeData(0) not hardcoded 0
+//                //! @todo this assumes signal node and double data ptr in parameter
+//                mDynamicParameterDataPtrs.push_back(std::pair<double*, double*>(pPort->getNodeDataPtr(0),
+//                                                              static_cast<double*>(mpParameters->getParameterDataPtr(parNames[i]))));
 
-            }
-        }
-    }
+//            }
+//        }
+//    }
 }
 
 //! @deprecated
 void Component::updateDynamicParameterValues()
 {
-    for (size_t i=0; i<mDynamicParameterDataPtrs.size(); ++i)
-    {
-        *(mDynamicParameterDataPtrs[i].second) = *(mDynamicParameterDataPtrs[i].first);
-    }
+//    for (size_t i=0; i<mDynamicParameterDataPtrs.size(); ++i)
+//    {
+//        *(mDynamicParameterDataPtrs[i].second) = *(mDynamicParameterDataPtrs[i].first);
+//    }
 }
 
 void Component::addConstant(const HString &rName, const HString &description, const HString &unit, double &rData)
@@ -396,47 +397,47 @@ void Component::addConstant(const HString &rName, const HString &description, co
     registerParameter(rName, description, unit, rData, Constant);
 }
 
-void Component::addConstant(const string name, const string description, const string unit, const double defaultValue, double &rData)
+void Component::addConstant(const HString name, const HString description, const HString unit, const double defaultValue, double &rData)
 {
     rData = defaultValue;
     addConstant(name, description, unit, rData);
 }
 
-void Component::addConstant(const string name, const string description, const string unit, int &rData)
+void Component::addConstant(const HString name, const HString description, const HString unit, int &rData)
 {
     registerParameter(name, description, unit, rData);
 }
 
-void Component::addConstant(const string name, const string description, const string unit, const int defaultValue, int &rData)
+void Component::addConstant(const HString name, const HString description, const HString unit, const int defaultValue, int &rData)
 {
     rData = defaultValue;
     addConstant(name, description, unit, rData);
 }
 
-void Component::addConstant(const string name, const string description, const string unit, HString &rData)
+void Component::addConstant(const HString name, const HString description, const HString unit, HString &rData)
 {
     registerParameter(name, description, unit, rData);
 }
 
-void Component::addConstant(const string name, const string description, const string unit, const HString &defaultValue, HString &rData)
+void Component::addConstant(const HString name, const HString description, const HString unit, const HString &defaultValue, HString &rData)
 {
     rData = defaultValue;
     addConstant(name, description, unit, rData);
 }
 
-void Component::addConstant(const string name, const string description, const string unit, bool &rData)
+void Component::addConstant(const HString name, const HString description, const HString unit, bool &rData)
 {
     registerParameter(name, description, unit, rData);
 }
 
-void Component::addConstant(const string name, const string description, const string unit, const bool defaultValue, bool &rData)
+void Component::addConstant(const HString name, const HString description, const HString unit, const bool defaultValue, bool &rData)
 {
     rData = defaultValue;
     addConstant(name, description, unit, rData);
 }
 
 //! @deprecated
-void Component::registerParameter(const string name, const string description, const string unit, double &rValue)
+void Component::registerParameter(const HString name, const HString description, const HString unit, double &rValue)
 {
     addErrorMessage("registerParameter() is deprecated, use addConstant or addInputvariable instead!");
     registerParameter(name,description,unit,rValue,Constant);
@@ -469,10 +470,10 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
     if (dynconst == Dynamic)
     {
         //! @deprecated
-        //! @todo remove this later in 0.7
-        // Make a port with same name so that parameter can be switch to dynamic parameter that can be changed during simulation
-        this->addReadPort(rName, "NodeSignal", Port::NotRequired);
-        mpParameters->addParameter(rName, ss.str().c_str(), rDescription, rUnit, "double", true, &rValue);
+//        //! @todo remove this later in 0.7
+//        // Make a port with same name so that parameter can be switch to dynamic parameter that can be changed during simulation
+//        this->addReadPort(rName, "NodeSignal", Port::NotRequired);
+//        mpParameters->addParameter(rName, ss.str().c_str(), rDescription, rUnit, "double", true, &rValue);
         this->addErrorMessage("Dynamic parmeters are no longer supported!!! Use:   addInputVariable()   instead!");
     }
     else
@@ -488,7 +489,7 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
 //! @param [in] unit The unit of the parameter value
 //! @param [in] rValue A reference to the double variable representing the value, its adress will be registered
 //! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
-void Component::registerParameter(const string name, const string description, const string unit, int &rValue)
+void Component::registerParameter(const HString name, const HString description, const HString unit, int &rValue)
 {
     if (!isNameValid(name))
     {
@@ -499,9 +500,7 @@ void Component::registerParameter(const string name, const string description, c
     if(mpParameters->exist(name))
         mpParameters->deleteParameter(name);     //Remove parameter if it is already registered
 
-    stringstream ss;
-    ss << rValue;
-    mpParameters->addParameter(name, ss.str(), description, unit, "integer", false, &rValue);
+    mpParameters->addParameter(name, to_hstring(rValue), description, unit, "integer", false, &rValue);
 }
 
 
@@ -512,7 +511,7 @@ void Component::registerParameter(const string name, const string description, c
 //! @param [in] unit The unit of the parameter value
 //! @param [in] rValue A reference to the string variable representing the value, its adress will be registered
 //! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
-void Component::registerParameter(const string name, const string description, const string unit, HString &rValue)
+void Component::registerParameter(const HString name, const HString description, const HString unit, HString &rValue)
 {
     if (!isNameValid(name))
     {
@@ -534,7 +533,7 @@ void Component::registerParameter(const string name, const string description, c
 //! @param [in] unit The unit of the parameter value
 //! @param [in] rValue A reference to the bool variable representing the value, its adress will be registered
 //! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
-void Component::registerParameter(const string name, const string description, const string unit, bool &rValue)
+void Component::registerParameter(const HString name, const HString description, const HString unit, bool &rValue)
 {
     if (!isNameValid(name))
     {
@@ -820,7 +819,7 @@ double *Component::getSafeNodeDataPtr(Port *pPort, const int dataId)
 
     if (!pData)
     {
-        addErrorMessage("Data pointer could not be retreived in getSafeNodeDataPtr(), Requested dataId: "+to_string(dataId));
+        addErrorMessage("Data pointer could not be retreived in getSafeNodeDataPtr(), Requested dataId: "+to_hstring(dataId));
         stopSimulation();
         // Create a dummy double, this will cause a small memory leak
         //! @todo maybe solve this somehow leak in the future, maybe keep a dumy variable somwhere to whcihc everyone will point
@@ -849,7 +848,7 @@ double *Component::getNodeDataPtr(Port *pPort, const int dataId)
     return pPort->getNodeDataPtr(dataId);
 }
 
-double *Component::getSafeNodeDataPtr(const string &rPortName, const int dataId)
+double *Component::getSafeNodeDataPtr(const HString &rPortName, const int dataId)
 {
     Port *pPort = this->getPort(rPortName);
     if (!pPort)
@@ -894,40 +893,40 @@ double *Component::getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx
     return pData;
 }
 
-double Component::readNodeSafeSlow(const char *portName, const char *dataName)
+double Component::readNodeSafeSlow(const HString &rPortName, const HString &rDataName)
 {
-    Port *pPort = getPort(portName);
+    Port *pPort = getPort(rPortName);
     if (pPort)
     {
         //! @todo what about multiports
-        int id = pPort->getNodeDataIdFromName(dataName);
+        int id = pPort->getNodeDataIdFromName(rDataName);
         if (id > 0)
         {
             return pPort->readNode(id);
         }
-        addErrorMessage("You are trying to get a dataName: "+string(dataName)+" that does not exist in port: "+string(portName));
+        addErrorMessage("You are trying to get a dataName: "+rDataName+" that does not exist in port: "+rPortName);
         return -1;
     }
-    addErrorMessage("You are trying to access port: "+string(portName)+" that does not exist");
+    addErrorMessage("You are trying to access port: "+rPortName+" that does not exist");
     return -1;
 }
 
-void Component::writeNodeSafeSlow(const char *portName, const char *dataName, const double value)
+void Component::writeNodeSafeSlow(const HString &rPortName, const HString &rDataName, const double value)
 {
-    Port *pPort = getPort(portName);
+    Port *pPort = getPort(rPortName);
     if (pPort)
     {
         //! @todo what about multiports
-        int id = pPort->getNodeDataIdFromName(dataName);
+        int id = pPort->getNodeDataIdFromName(rDataName);
         if (id >= 0)
         {
             pPort->writeNode(id, value);
             return;
         }
-        addErrorMessage("You are trying to set value for dataName: "+string(dataName)+" that does not exist in port: "+string(portName));
+        addErrorMessage("You are trying to set value for dataName: "+rDataName+" that does not exist in port: "+rPortName);
         return;
     }
-    addErrorMessage("You are trying to access port: "+string(portName)+" that does not exist");
+    addErrorMessage("You are trying to access port: "+rPortName+" that does not exist");
     return;
 }
 
@@ -1019,7 +1018,7 @@ void Component::setTimestep(const double timestep)
     mTimestep = timestep;
 }
 
-Port *Component::addInputVariable(const string name, const string description, const string unit, const double defaultValue, double **ppNodeData)
+Port *Component::addInputVariable(const HString name, const HString description, const HString unit, const double defaultValue, double **ppNodeData)
 {
     //! @todo suport more types
     Port *pPort = addReadPort(name,"NodeSignal", Port::NotRequired);
@@ -1034,7 +1033,7 @@ Port *Component::addInputVariable(const string name, const string description, c
     return pPort;
 }
 
-Port *Component::addOutputVariable(const string name, const string description, const string unit, double **ppNodeData)
+Port *Component::addOutputVariable(const HString name, const HString description, const HString unit, double **ppNodeData)
 {
     Port *pPort = addWritePort(name, "NodeSignal", Port::NotRequired);
     pPort->setSignalNodeUnitAndDescription(unit, description);
@@ -1048,7 +1047,7 @@ Port *Component::addOutputVariable(const string name, const string description, 
     return pPort;
 }
 
-Port *Component::addOutputVariable(const string name, const string description, const string unit, const double defaultValue, double **ppNodeData)
+Port *Component::addOutputVariable(const HString name, const HString description, const HString unit, const double defaultValue, double **ppNodeData)
 {
     Port *pPort = addWritePort(name, "NodeSignal", Port::NotRequired);
     pPort->setSignalNodeUnitAndDescription(unit, description);

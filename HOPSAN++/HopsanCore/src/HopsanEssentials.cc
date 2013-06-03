@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <stdlib.h>
+#include <fstream>
 
 
 #ifdef BUILTINDEFAULTCOMPONENTLIB
@@ -74,7 +75,7 @@ HopsanEssentials::HopsanEssentials()
 
 
     // Do some other stuff
-    mpMessageHandler->addInfoMessage("HopsanCore, Version: " + string(HOPSANCOREVERSION));
+    mpMessageHandler->addInfoMessage("HopsanCore, Version: " + HString(HOPSANCOREVERSION));
 
     openLogFile();
     addLogMess("This file logs the actions done by HopsanCore,\nto trace a program crash one can see what was the last logged action.\nLook at the last rows in this file.\n\n\n");
@@ -140,7 +141,7 @@ bool HopsanEssentials::reserveComponentTypeName(const char* typeName)
 }
 
 //! @brief Returns a vector containing all registered component types
-const std::vector<std::string> HopsanEssentials::getRegisteredComponentTypes() const
+const std::vector<HString> HopsanEssentials::getRegisteredComponentTypes() const
 {
     return mpComponentFactory->getRegisteredKeys();
 }
@@ -183,7 +184,7 @@ Node* HopsanEssentials::createNode(const char* nodeType)
 }
 
 //! @brief Returns a vector containing all registered node types
-const std::vector<std::string> HopsanEssentials::getRegisteredNodeTypes() const
+const std::vector<HString> HopsanEssentials::getRegisteredNodeTypes() const
 {
     return mpNodeFactory->getRegisteredKeys();
 }
@@ -255,7 +256,7 @@ bool HopsanEssentials::unLoadExternalComponentLib(const char *path)
 
 //! @brief Get the libNames of the currently loaded libs (the names compiled into libs)
 //! @param [out] rLibNames A reference to the vector that will contain the lib names
-void HopsanEssentials::getExternalComponentLibNames(std::vector<std::string> &rLibNames)
+void HopsanEssentials::getExternalComponentLibNames(std::vector<HString> &rLibNames)
 {
     mpExternalLoader->getLoadedLibNames(rLibNames);
 }
@@ -265,7 +266,7 @@ void HopsanEssentials::getExternalComponentLibNames(std::vector<std::string> &rL
 //! @param [in] libpath Path to the external library
 //! @param [out] rComponents A reference to the vector that will contain the component names
 //! @param [out] rNodes A reference to the vector that will contain the node names
-void HopsanEssentials::getExternalLibraryContents(const char *libPath, std::vector<std::string> &rComponents, std::vector<std::string> &rNodes)
+void HopsanEssentials::getExternalLibraryContents(const char *libPath, std::vector<HString> &rComponents, std::vector<HString> &rNodes)
 {
     mpExternalLoader->getLibContents(libPath, rComponents, rNodes);
 }

@@ -19,7 +19,7 @@ public:
 
     HString();
     ~HString();
-    HString(const std::string &rStdString);
+    //HString(const std::string &rStdString);
     HString(const char* str);
     HString(const HString &rOther);
     HString(const HString &rOther, const unsigned int pos, const unsigned int len=npos);
@@ -27,23 +27,43 @@ public:
     HString &append(const char* str);
     HString &append(const char chr);
     HString &append(const HString &str);
+    HString &erase (unsigned int pos = 0, unsigned int len = npos);
     void clear();
 
-    HString substr(const unsigned int pos, const unsigned int len=npos) const;
+    void replace(const unsigned int pos, const unsigned int len, const char* str);
+    HString &replace(const char* oldstr, const char* newstr);
+    HString &replace(const HString &rOldstr, const HString &rNewstr);
+
     const char *c_str() const;
     unsigned int size() const;
     bool empty() const;
     bool compare(const char* other) const;
     bool compare(const HString &rOther) const;
-    unsigned int find_first_of(char c, unsigned int pos = 0) const;
+
+    HString substr(const unsigned int pos, const unsigned int len=npos) const;
+
+    unsigned int find_first_of(const char c, unsigned int pos = 0) const;
+    unsigned int rfind(const char c, unsigned int pos = npos) const;
+    unsigned int find(const char c, unsigned int pos = 0) const;
+    unsigned int find(const char *s, unsigned int pos = 0) const;
+    unsigned int find(const HString &s, unsigned int pos = 0) const;
+    bool containes(const HString &rString) const;
+    bool containes(const char *s) const;
+
+    char front() const;
+    char &front();
+    char back() const;
+    char &back();
+    char at(const unsigned int pos) const;
+    char& operator[](const unsigned int idx);
+    const char& operator[](const unsigned int idx) const;
 
     bool operator<(const HString &rhs) const;
 
     HString& operator+=(const HString& rhs);
     HString& operator+=(const char *rhs);
     HString& operator+=(const char rhs);
-    char& operator[](const unsigned int idx);
-    const char& operator[](const unsigned int idx) const;
+
     HString& operator=(const char* rhs);
     HString& operator=(const char rhs);
     HString& operator=(const HString &rhs);
@@ -72,11 +92,11 @@ inline HString operator+(HString lhs, const char rhs)
 
 //std::ostream& operator<<(std::ostream& os, const HString& obj);
 
-//! @todo this might not be needed later when/if we use hstrings everywhere
-inline std::string toStdString(const hopsan::HString &rString)
-{
-    return std::string(rString.c_str());
-}
+////! @todo this might not be needed later when/if we use hstrings everywhere
+//inline std::string toStdString(const hopsan::HString &rString)
+//{
+//    return std::string(rString.c_str());
+//}
 
 template<typename T>
 class HVector

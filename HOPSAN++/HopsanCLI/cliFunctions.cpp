@@ -272,30 +272,30 @@ void setTerminalColor(const ColorsEnumT color)
 }
 
 // ===== Save functions =====
-//! @brief Saved specified node data to text file
-//! @param [in] pSys The system in whcih the component live
-//! @param [in] compName The name of the component
-//! @param [in] portName The name of the port in which the node exist
-//! @param [in] fileName The name of the output file
-void saveNodeDataToFile(ComponentSystem* pSys, const string compName, const string portName, const string fileName)
-{
-    if (pSys)
-    {
-        Component* pComp = pSys->getSubComponentOrThisIfSysPort(compName);
-        if (pComp)
-        {
-            Port* pPort = pComp->getPort(portName);
-            if (pPort)
-            {
-                pPort->saveLogData(fileName);
-                return; //Abort function
-            }
-            printErrorMessage("Could not find portName: " + portName);
-            return; //Abort function
-        }
-        printErrorMessage("Could not find compName: " + compName);
-    }
-}
+////! @brief Saved specified node data to text file
+////! @param [in] pSys The system in whcih the component live
+////! @param [in] compName The name of the component
+////! @param [in] portName The name of the port in which the node exist
+////! @param [in] fileName The name of the output file
+//void saveNodeDataToFile(ComponentSystem* pSys, const string compName, const string portName, const string fileName)
+//{
+//    if (pSys)
+//    {
+//        Component* pComp = pSys->getSubComponentOrThisIfSysPort(compName);
+//        if (pComp)
+//        {
+//            Port* pPort = pComp->getPort(portName);
+//            if (pPort)
+//            {
+//                pPort->saveLogData(fileName);
+//                return; //Abort function
+//            }
+//            printErrorMessage("Could not find portName: " + portName);
+//            return; //Abort function
+//        }
+//        printErrorMessage("Could not find compName: " + compName);
+//    }
+//}
 
 void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResults howMany, string prefix, ofstream *pFile)
 {
@@ -344,7 +344,7 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
                         {
                             for (size_t v=0; v<pVars->size(); ++v)
                             {
-                                HString fullname = prefix + pComp->getName() + "#" + pPort->getName() + "#" + pVars->at(v).name;
+                                HString fullname = prefix.c_str() + pComp->getName() + "#" + pPort->getName() + "#" + pVars->at(v).name;
 
                                 if (howMany == Final)
                                 {
@@ -462,7 +462,7 @@ void exportParameterValuesToCSV(const std::string &rFileName, hopsan::ComponentS
         for (size_t p=0; p<pSysParameters->size(); ++p)
         {
             //! @todo what about alias name
-            HString fullname = prefix + pSystem->getName() + "#" + toStdString(pSysParameters->at(p)->getName());
+            HString fullname = prefix.c_str() + pSystem->getName() + "#" + pSysParameters->at(p)->getName();
             *pFile << fullname.c_str() << "," << pSysParameters->at(p)->getValue().c_str() << endl;
         }
 
@@ -484,7 +484,7 @@ void exportParameterValuesToCSV(const std::string &rFileName, hopsan::ComponentS
                     for (size_t p=0; p<pParameters->size(); ++p)
                     {
                         //! @todo what about alias name
-                        HString fullname = prefix + pComp->getName() + "#" + pParameters->at(p)->getName();
+                        HString fullname = prefix.c_str() + pComp->getName() + "#" + pParameters->at(p)->getName();
                         *pFile << fullname.c_str() << "," << pParameters->at(p)->getValue().c_str() << endl;
                     }
                 }
@@ -547,10 +547,10 @@ void importParameterValuesFromCSV(const std::string filePath, hopsan::ComponentS
                             for (size_t s=1; s<syshierarcy.size(); ++s)
                             {
                                 //! @todo what about first level (0), should we check that name is ok
-                                ComponentSystem *pSubSys = pParentSys->getSubComponentSystem(syshierarcy[s]);
+                                ComponentSystem *pSubSys = pParentSys->getSubComponentSystem(syshierarcy[s].c_str());
                                 if (!pSubSys)
                                 {
-                                    printErrorMessage(string("Subsystem: ") + syshierarcy[s] + string(" could not be found in parent system: ") + toStdString(pParentSys->getName()));
+                                    printErrorMessage("Subsystem: "+syshierarcy[s]+" could not be found in parent system: "+pParentSys->getName().c_str());
                                     pParentSys = 0;
                                     break;
                                 }
@@ -563,12 +563,12 @@ void importParameterValuesFromCSV(const std::string filePath, hopsan::ComponentS
                             // Set the parameter value if component is found
                             if (pParentSys)
                             {
-                                Component *pComp = pParentSys->getSubComponent(componentName);
+                                Component *pComp = pParentSys->getSubComponent(componentName.c_str());
                                 if (pComp)
                                 {
                                     // lineVec[1] should be parameter value
                                     //! @todo what about parameter alias
-                                    bool ok = pComp->setParameterValue(parameterName, lineVec[1]);
+                                    bool ok = pComp->setParameterValue(parameterName.c_str(), lineVec[1].c_str());
                                     if (!ok)
                                     {
                                         printErrorMessage("Setting parameter: " + parameterName + " in component: " + componentName);
@@ -576,7 +576,7 @@ void importParameterValuesFromCSV(const std::string filePath, hopsan::ComponentS
                                 }
                                 else
                                 {
-                                    printErrorMessage("No component: " + componentName + " in system: " + toStdString(pParentSys->getName()) );
+                                    printErrorMessage("No component: " + componentName + " in system: " + pParentSys->getName().c_str() );
                                 }
                             }
                         }
@@ -792,10 +792,10 @@ bool performModelTest(const std::string hvcFilePath)
                         // Load reference data curve
                         //! @todo should not reload if same as already laoded
                         bool success=false;
-                        CSVParser refData(success, csvfile, '\n', '"');
+                        CSVParser refData(success, csvfile.c_str(), '\n', '"');
                         if(!success)
                         {
-                            printErrorMessage("Unable to initialize CSV file: " + csvfile + " : " + refData.getErrorString());
+                            printErrorMessage("Unable to initialize CSV file: " + csvfile + " : " + refData.getErrorString().c_str());
                             return false;
                         }
 
@@ -826,13 +826,13 @@ bool performModelTest(const std::string hvcFilePath)
                             pRootSystem->finalize();
 
                             //copy the data
-                            Component* pComp = pRootSystem->getSubComponent(compName);
+                            Component* pComp = pRootSystem->getSubComponent(compName.c_str());
                             if (!pComp)
                             {
                                 printErrorMessage("No such component name: " + compName);
                                 return false;
                             }
-                            Port *pPort = pComp->getPort(portName);
+                            Port *pPort = pComp->getPort(portName.c_str());
                             if (!pPort)
                             {
                                 printErrorMessage("No such port name: " + portName + " in component: " + compName);
@@ -841,16 +841,16 @@ bool performModelTest(const std::string hvcFilePath)
 
                             //! @todo with better access function in core we could avoid copying data and work directly with the data stored
                             vTime = *pPort->getLogTimeVectorPtr();
-                            int dataId = pPort->getNodeDataIdFromName(varname);
+                            int dataId = pPort->getNodeDataIdFromName(varname.c_str());
                             if (dataId < 0)
                             {
-                                printErrorMessage("No such varaiable name: " + varname + " in: " + toStdString(pPort->getNodeType()));
+                                printErrorMessage("No such varaiable name: " + varname + " in: " + pPort->getNodeType().c_str());
                                 return false;
                             }
 
                             for(size_t i=0; i<vTime.size(); ++i)
                             {
-                                vSim1.push_back(pRootSystem->getSubComponent(compName)->getPort(portName)->getLogDataVectorPtr()->at(i).at(dataId));
+                                vSim1.push_back(pRootSystem->getSubComponent(compName.c_str())->getPort(portName.c_str())->getLogDataVectorPtr()->at(i).at(dataId));
                             }
 
                             //Second simulation
@@ -868,7 +868,7 @@ bool performModelTest(const std::string hvcFilePath)
 
                             for(size_t i=0; i<vTime.size(); ++i)
                             {
-                                vSim2.push_back(pRootSystem->getSubComponent(compName)->getPort(portName)->getLogDataVectorPtr()->at(i).at(dataId));
+                                vSim2.push_back(pRootSystem->getSubComponent(compName.c_str())->getPort(portName.c_str())->getLogDataVectorPtr()->at(i).at(dataId));
                             }
                         }
                         else
@@ -887,17 +887,17 @@ bool performModelTest(const std::string hvcFilePath)
 
                         if(!compareVectors(vSim1, vRef, tolerance))
                         {
-                            printColorMessage(Red, "Validation data test failed: " + toStdString(pRootSystem->getName()) + ":" + compName + ":" + portName + ":" + varname);
+                            printColorMessage(Red, string("Validation data test failed: ") + pRootSystem->getName().c_str() + ":" + compName + ":" + portName + ":" + varname);
                             return false;
                         }
 
                         if(!compareVectors(vSim1, vSim2, tolerance))
                         {
-                            printColorMessage(Red, "Consistency test failed (two consecutive simulations gave different results): " + toStdString(pRootSystem->getName()) + ":" + compName + ":" + portName + ":" + varname);
+                            printColorMessage(Red, string("Consistency test failed (two consecutive simulations gave different results): ") + pRootSystem->getName().c_str() + ":" + compName + ":" + portName + ":" + varname);
                             return false;
                         }
 
-                        printColorMessage(Green, "Test successful: " + toStdString(pRootSystem->getName()) + ":" + compName + ":" + portName + ":" + varname);
+                        printColorMessage(Green, string("Test successful: ") + pRootSystem->getName().c_str() + ":" + compName + ":" + portName + ":" + varname);
 
                         pVariableNode = pVariableNode->next_sibling("variable");
                     }

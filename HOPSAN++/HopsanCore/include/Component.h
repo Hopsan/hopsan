@@ -96,7 +96,7 @@ public:
     const HString &getName() const;
     const HString &getTypeName() const;
     const HString &getSubTypeName() const;
-    void setSubTypeName(const std::string subTypeName);
+    void setSubTypeName(const HString &rSubTypeName);
 
     // Component type identification
     virtual CQSEnumT getTypeCQS() const;
@@ -113,19 +113,19 @@ public:
 
     // Constants
     void addConstant(const HString &rName, const HString &description, const HString &unit, double &rData);
-    void addConstant(const std::string name, const std::string description, const std::string unit, const double defaultValue, double &rData);
-    void addConstant(const std::string name, const std::string description, const std::string unit, int &rData);
-    void addConstant(const std::string name, const std::string description, const std::string unit, const int defaultValue, int &rData);
-    void addConstant(const std::string name, const std::string description, const std::string unit, HString &rData);
-    void addConstant(const std::string name, const std::string description, const std::string unit, const HString &defaultValue, HString &rData);
-    void addConstant(const std::string name, const std::string description, const std::string unit, bool &rData);
-    void addConstant(const std::string name, const std::string description, const std::string unit, const bool defaultValue, bool &rData);
-    void setConstantValue(const char* name, const double value);
-    void setConstantValue(const char* name, const int value);
-    void setConstantValue(const char* name, const HString &rValue);
-    void setConstantValue(const char* name, const bool value);
+    void addConstant(const HString name, const HString description, const HString unit, const double defaultValue, double &rData);
+    void addConstant(const HString name, const HString description, const HString unit, int &rData);
+    void addConstant(const HString name, const HString description, const HString unit, const int defaultValue, int &rData);
+    void addConstant(const HString name, const HString description, const HString unit, HString &rData);
+    void addConstant(const HString name, const HString description, const HString unit, const HString &defaultValue, HString &rData);
+    void addConstant(const HString name, const HString description, const HString unit, bool &rData);
+    void addConstant(const HString name, const HString description, const HString unit, const bool defaultValue, bool &rData);
+    void setConstantValue(HString name, const double value);
+    void setConstantValue(HString name, const int value);
+    void setConstantValue(HString name, const HString &rValue);
+    void setConstantValue(HString name, const bool value);
 
-    void registerParameter(const std::string name, const std::string description, const std::string unit, double &rValue);
+    void registerParameter(const HString name, const HString description, const HString unit, double &rValue);
     virtual void unRegisterParameter(const HString &rName);
 
     bool hasParameter(const HString name) const;
@@ -156,13 +156,13 @@ public:
 
     // Node Data ptrs
     double *getSafeNodeDataPtr(Port* pPort, const int dataId);
-    double *getSafeNodeDataPtr(const std::string &rPortName, const int dataId);
+    double *getSafeNodeDataPtr(const HString &rPortName, const int dataId);
     double *getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx, const int dataId);
     double *getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx, const int dataId, const double defaultValue);
 
     // Node data access
-    double readNodeSafeSlow(const char* portName, const char* dataName);
-    void writeNodeSafeSlow(const char* portName, const char* dataName, const double value);
+    double readNodeSafeSlow(const HString &rPortName, const HString &rDataName);
+    void writeNodeSafeSlow(const HString &rPortName, const HString &rDataName, const double value);
 
     // System parent
     ComponentSystem *getSystemParent();
@@ -212,9 +212,9 @@ protected:
     }
 
     // Interface variable functions
-    Port *addInputVariable(const std::string name, const std::string description, const std::string unit, const double defaultValue, double **ppNodeData=0);
-    Port *addOutputVariable(const std::string name, const std::string description, const std::string unit, double **ppNodeData=0);
-    Port *addOutputVariable(const std::string name, const std::string description, const std::string unit, const double defaultValue, double **ppNodeData=0);
+    Port *addInputVariable(const HString name, const HString description, const HString unit, const double defaultValue, double **ppNodeData=0);
+    Port *addOutputVariable(const HString name, const HString description, const HString unit, double **ppNodeData=0);
+    Port *addOutputVariable(const HString name, const HString description, const HString unit, const double defaultValue, double **ppNodeData=0);
 
     void initializeAutoSignalNodeDataPtrs();
 
@@ -237,9 +237,9 @@ protected:
     // Parameter registration
     //! @todo clean this up /Peter
     void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue, const ParamDynConstEnumT dynconst);
-    void registerParameter(const std::string name, const std::string description, const std::string unit, int &rValue);
-    void registerParameter(const std::string name, const std::string description, const std::string unit, HString &rValue);
-    void registerParameter(const std::string name, const std::string description, const std::string unit, bool &rValue);
+    void registerParameter(const HString name, const HString description, const HString unit, int &rValue);
+    void registerParameter(const HString name, const HString description, const HString unit, HString &rValue);
+    void registerParameter(const HString name, const HString description, const HString unit, bool &rValue);
 
     // NodeData ptr function
     //! @todo clean up this mess /Peter
@@ -308,7 +308,7 @@ class DLLIMPORTEXPORT ComponentQ : public Component
     bool isComponentQ() const {return true;}
 };
 
-typedef ClassFactory<std::string, Component> ComponentFactory;
+typedef ClassFactory<HString, Component> ComponentFactory;
 }
 
 #endif // COMPONENT_H_INCLUDED

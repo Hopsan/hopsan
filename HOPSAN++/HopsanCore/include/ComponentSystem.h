@@ -154,7 +154,7 @@ namespace hopsan {
         void unReserveUniqueName(const HString &rName);
 
         // System Parameter functions
-        bool renameParameter(const std::string oldName, const std::string newName);
+        bool renameParameter(const HString oldName, const HString newName);
 
         // Handle system ports
         Port* addSystemPort(HString portName, const HString &rDescription="");
@@ -174,8 +174,8 @@ namespace hopsan {
 
         // Connecting and disconnecting components
         bool connect(Port *pPort1, Port *pPort2);
-        bool connect(const std::string compname1, const std::string portname1, const std::string compname2, const std::string portname2);
-        bool disconnect(const std::string compname1, const std::string portname1, const std::string compname2, const std::string portname2);
+        bool connect(const HString &compname1, const HString &portname1, const HString &compname2, const HString &portname2);
+        bool disconnect(const HString &compname1, const HString &portname1, const HString &compname2, const HString &portname2);
         bool disconnect(Port *pPort1, Port *pPort2);
 
         // Convenience functions for enable and dissable data logging
@@ -188,8 +188,8 @@ namespace hopsan {
         void loadStartValuesFromSimulation();
 
         // Parameter loading
-        void loadParameters(std::string filePath);
-        void loadParameters(std::map<std::string, std::pair<std::vector<std::string>, std::vector<std::string> > > parameterMap);
+        void loadParameters(HString filePath);
+        void loadParameters(std::map<HString, std::pair<std::vector<HString>, std::vector<HString> > > parameterMap);
 
         // Initialize and simulate
         bool checkModelBeforeSimulation();
@@ -228,10 +228,10 @@ namespace hopsan {
         bool wasSimulationAborted();
 
         // System parameters
-        bool setSystemParameter(const std::string name, const std::string value, const std::string type, const std::string description="", const std::string unit="", const bool force=false);
-        void unRegisterParameter(const std::string name);
+        bool setSystemParameter(const HString name, const HString value, const HString type, const HString description="", const HString unit="", const bool force=false);
+        void unRegisterParameter(const HString name);
         Parameters &getSystemParameters();
-        void addSearchPath(const std::string searchPath);
+        void addSearchPath(const HString searchPath);
 
         // Add and Remove sub-nodes
         void addSubNode(Node* pNode);

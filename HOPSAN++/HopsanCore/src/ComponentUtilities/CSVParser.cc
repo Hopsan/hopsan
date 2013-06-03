@@ -24,6 +24,7 @@
 
 #include "ComponentUtilities/CSVParser.h"
 #include "csv_parser.hpp"
+#include "ComponentUtilities/num2string.hpp"
 #include <algorithm>
 #include <sstream>
 #include <fstream>
@@ -32,7 +33,7 @@
 using namespace hopsan;
 
 CSVParser::CSVParser(bool &rSuccess,
-          const std::string filename,
+          const HString filename,
           const char line_terminator,
           const char enclosure_char)
 {
@@ -119,9 +120,7 @@ CSVParser::CSVParser(bool &rSuccess,
                     if (row.size() != mnDataCols)
                     {
                         rSuccess = false;
-                        stringstream ss;
-                        ss << "Row: " << rowCtr << " does not have the same number of columns as the previous rows";
-                        mErrorString = ss.str();
+                        mErrorString = "Row: "+to_hstring(rowCtr)+" does not have the same number of columns as the previous rows";
                         break;
                     }
                 }
@@ -182,7 +181,7 @@ void CSVParser::setFirstLastValues()
 }
 
 //! @brief Returns the last error message
-std::string CSVParser::getErrorString() const
+HString CSVParser::getErrorString() const
 {
     return mErrorString;
 }

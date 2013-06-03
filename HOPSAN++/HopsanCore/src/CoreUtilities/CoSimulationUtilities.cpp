@@ -12,7 +12,7 @@ std::map<std::string, MEMOBJ*> sharedMemoryMap;
 std::map<std::string, MEMREG*> memoryRegionMap;
 #endif
 
-double *hopsan::getDoubleSharedMemoryPointer(std::string name)
+double *hopsan::getDoubleSharedMemoryPointer(HString name)
 {
     (void)name;
 #ifdef USEBOOST
@@ -28,7 +28,7 @@ double *hopsan::getDoubleSharedMemoryPointer(std::string name)
 #endif
 }
 
-bool *hopsan::getBoolSharedMemoryPointer(std::string name)
+bool *hopsan::getBoolSharedMemoryPointer(HString name)
 {
     (void)name;
 #ifdef USEBOOST
@@ -45,7 +45,7 @@ bool *hopsan::getBoolSharedMemoryPointer(std::string name)
 
 }
 
-void hopsan::removeSharedMemoryPointer(std::string name)
+void hopsan::removeSharedMemoryPointer(HString name)
 {
     (void)name;
 #ifdef USEBOOST
