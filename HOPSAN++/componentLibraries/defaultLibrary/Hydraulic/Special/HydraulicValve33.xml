@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hopsanobjectappearance version="0.3">
+  <modelobject typename="HydraulicValve33" displayname="HydraulicValve33">
+    <icons>
+      <icon scale="1" path="HydraulicValve33.svg" iconrotation="ON" type="user"/>
+      <icon scale="1" path="HydraulicValve33.svg" iconrotation="ON" type="iso"/>
+    </icons>
+    <ports>
+      <port x="0.56" y="0" enabled="true" a="270" name="Pa" autoplaced="true"/>
+      <port x="0.69" y="1" enabled="true" a="90" name="Pt" autoplaced="true"/>
+      <port x="0.56" y="1" enabled="true" a="90" name="Pp" autoplaced="true"/>
+      <port x="0" y="0.7" enabled="true" a="180" name="xv" autoplaced="true"/>
+    </ports>
+    <animation flowspeed="100"/>
+  </modelobject>
+</hopsanobjectappearance>

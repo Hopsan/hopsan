@@ -11,7 +11,7 @@
       <port x="0.68" y="1" enabled="true" a="90" name="Pt" autoplaced="true"/>
       <port x="0.59" y="1" enabled="true" a="90" name="Pls" autoplaced="true"/>
       <port x="0.5" y="1" enabled="true" a="90" name="Pp" autoplaced="true"/>
-      <port x="0" y="0.69" enabled="true" a="180" name="xv" autoplaced="true"/>
+      <port x="0" y="0.7" enabled="true" a="180" name="xv" autoplaced="true"/>
     </ports>
     <animation flowspeed="100"/>
   </modelobject>
