@@ -283,6 +283,8 @@ HEADERS += \
     Hydraulic/Sources&Sinks/HydraulicPlugQ.hpp \
     Hydraulic/Special/HydraulicValve63OC.hpp \
     Hydraulic/Special/HydraulicValve43LS.hpp \
+    Hydraulic/Special/HydraulicValve43.hpp \
+    Hydraulic/Special/HydraulicValve33.hpp \
     Hydraulic/Special/HydraulicPressureReliefValveG.hpp \
     Hydraulic/Special/HydraulicPressureRelief2ValveG.hpp \
     Hydraulic/Special/HydraulicPressureReducingValveG.hpp \
@@ -293,7 +295,10 @@ HEADERS += \
     Hydraulic/Special/HydraulicPistonJload.hpp \
     Hydraulic/Special/HydraulicMotorJload.hpp \
     Hydraulic/Special/HydraulicCounterBalanceValveG.hpp \
-    Hydraulic/Special/HopsanDefaultHydraulicSpecial.h
+    Hydraulic/Special/HopsanDefaultHydraulicSpecial.h \
+    Special/AeroComponents/AeroAircraft6DOFS.hpp \
+    Special/AeroComponents/AeroAircraft6DOFSS.hpp \
+    Special/AeroComponents/AeroCombustionChamberMono.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \
