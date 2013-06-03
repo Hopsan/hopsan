@@ -27,6 +27,7 @@
 
 #include <map>
 #include <vector>
+#include <cstddef>
 
 namespace hopsan {
 
@@ -91,7 +92,7 @@ namespace hopsan {
             }
             mRegStatusVector.push_back(std::pair<_Key, int>(rIdKey, NotRegistered));
             //std::cout << "Warning key: " << idKey << " not found!" << std::endl;
-            return NULL;
+            return 0;
         }
 
         //! @brief Check if the factory has key registerd

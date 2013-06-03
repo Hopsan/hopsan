@@ -23,7 +23,6 @@
 //$Id$
 
 #include <sstream>
-#include <string>
 #include <cassert>
 #include <limits>
 #include <cmath>
@@ -128,17 +127,17 @@ void SimulationHandler::runCoSimulation(ComponentSystem *pSystem)
     (void)pSystem;
 #ifdef USEBOOST
 
-    std::vector<std::string> inputComponents;
-    std::vector<std::string> inputPorts;
+    std::vector<HString> inputComponents;
+    std::vector<HString> inputPorts;
     std::vector<int> inputData;
 
-    std::vector<std::string> outputComponents;
-    std::vector<std::string> outputPorts;
+    std::vector<HString> outputComponents;
+    std::vector<HString> outputPorts;
     std::vector<int> outputData;
 
     //////////////////////////
 
-    std::vector<std::string> names = pSystem->getSubComponentNames();
+    std::vector<HString> names = pSystem->getSubComponentNames();
     for(size_t i=0; i<names.size(); ++i)
     {
         Component *pComponent = pSystem->getSubComponent(names[i]);

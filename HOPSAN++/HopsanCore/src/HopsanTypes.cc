@@ -1,6 +1,7 @@
 #include "HopsanTypes.h"
 #include <cstdlib>
 #include <cstring>
+#include <string>
 
 using namespace hopsan;
 
@@ -14,14 +15,6 @@ HString::~HString()
 {
     clear();
 }
-
-////! @todo, maybe remove this copyconstructor since it may be unsafe if std::string comes from an other DLL/SO
-//HString::HString(const std::string &rStdString)
-//{
-//    mpDataBuffer=0;
-//    mSize=0;
-//    setString(rStdString.c_str());
-//}
 
 HString::HString(const char *str)
 {
@@ -38,13 +31,13 @@ HString::HString(const HString &rOther)
     setString(rOther.c_str());
 }
 
-HString::HString(const HString &rOther, const unsigned int pos, const unsigned int len)
+HString::HString(const HString &rOther, const size_t pos, const size_t len)
 {
     mpDataBuffer=0;
     mSize=0;
 
     // First caluclate end index and make sure it is within bounds
-    unsigned int otherNumChar;
+    size_t otherNumChar;
     if (len == npos)
     {
         otherNumChar = rOther.size()-pos;
@@ -116,7 +109,7 @@ HString &HString::append(const HString &str)
     return *this;
 }
 
-HString &HString::erase(unsigned int pos, unsigned int len)
+HString &HString::erase(size_t pos, size_t len)
 {
     HString n1(*this, 0, pos);
     HString n2(*this, pos+len);
@@ -140,7 +133,7 @@ const char *HString::c_str() const
 
 }
 
-unsigned int HString::size() const
+size_t HString::size() const
 {
     return mSize;
 }
@@ -176,14 +169,14 @@ bool HString::compare(const HString &rOther) const
     return (strcmp(mpDataBuffer, rOther.c_str()) == 0);
 }
 
-unsigned int HString::find_first_of(const char c, unsigned int pos) const
+size_t HString::find_first_of(const char c, size_t pos) const
 {
     return find(c,pos);
 }
 
-unsigned int HString::rfind(const char c, unsigned int pos) const
+size_t HString::rfind(const char c, size_t pos) const
 {
-    unsigned int i = pos;
+    size_t i = pos;
     if (i > mSize)
     {
         i = mSize;
@@ -198,9 +191,9 @@ unsigned int HString::rfind(const char c, unsigned int pos) const
     return npos;
 }
 
-unsigned int HString::find(const char c, unsigned int pos) const
+size_t HString::find(const char c, size_t pos) const
 {
-    for (unsigned int i=pos; i<mSize; ++i)
+    for (size_t i=pos; i<mSize; ++i)
     {
         if (mpDataBuffer[i] == c)
         {
@@ -210,7 +203,7 @@ unsigned int HString::find(const char c, unsigned int pos) const
     return npos;
 }
 
-unsigned int HString::find(const char *s, unsigned int pos) const
+size_t HString::find(const char *s, size_t pos) const
 {
     const char* pFirst = strstr(mpDataBuffer+pos, s);
     if (pFirst)
@@ -223,7 +216,7 @@ unsigned int HString::find(const char *s, unsigned int pos) const
     }
 }
 
-unsigned int HString::find(const HString &s, unsigned int pos) const
+size_t HString::find(const HString &s, size_t pos) const
 {
     return find(s.c_str(),pos);
 }
@@ -231,6 +224,11 @@ unsigned int HString::find(const HString &s, unsigned int pos) const
 bool HString::containes(const HString &rString) const
 {
     return (find(rString) != npos);
+}
+
+bool HString::containes(const char c) const
+{
+    return (find(c) != npos);
 }
 
 bool HString::containes(const char *s) const
@@ -258,7 +256,7 @@ char &HString::back()
     return mpDataBuffer[mSize-1];
 }
 
-char HString::at(const unsigned int pos) const
+char HString::at(const size_t pos) const
 {
     if (pos < mSize)
     {
@@ -298,12 +296,12 @@ HString &HString::operator +=(const char rhs)
     return append(rhs);
 }
 
-char &HString::operator [](const unsigned int idx)
+char &HString::operator [](const size_t idx)
 {
     return mpDataBuffer[idx];
 }
 
-const char &HString::operator [](const unsigned int idx) const
+const char &HString::operator [](const size_t idx) const
 {
     return mpDataBuffer[idx];
 }
@@ -338,7 +336,7 @@ void HString::clear()
     }
 }
 
-void HString::replace(const unsigned int pos, const unsigned int len, const char *str)
+void HString::replace(const size_t pos, const size_t len, const char *str)
 {
     //! @todo do this properly without using local string
     std::string temp = mpDataBuffer;
@@ -366,32 +364,8 @@ HString &HString::replace(const HString &rOldstr, const HString &rNewstr)
 //! @param [in] pos First index of substring
 //! @param [in] len Num bytes in substring, or HString::npos for all
 //! @returns A substring
-HString HString::substr(const unsigned int pos, const unsigned int len) const
+HString HString::substr(const size_t pos, const size_t len) const
 {
     HString sub(*this, pos, len);
     return sub;
 }
-
-//bool operator< (const HString& lhs, const HString& rhs)
-//{
-//    unsigned int size = lhs.size();
-//    if (size > rhs.size())
-//    {
-//        size = rhs.size();
-//    }
-
-//    for (unsigned int i=0; i<size; ++i)
-//    {
-//        if (lhs[i]>rhs[i])
-//        {
-//            return false;
-//        }
-//    }
-//    return true;
-//}
-
-//std::ostream& operator<<(std::ostream& os, const HString& obj)
-//{
-//  os << obj.c_str();
-//  return os;
-//}

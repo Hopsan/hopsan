@@ -29,7 +29,6 @@
 #include "ComponentUtilities.h"
 #include "HopsanTypes.h"
 #include <algorithm>
-#include <sstream>
 
 namespace hopsan {
 
@@ -86,11 +85,11 @@ namespace hopsan {
                 // Make sure that selected data vector is in range
                 if (mOutDataId >= int(mpDataCurve->getNumDataCols()))
                 {
-                    std::stringstream ss;
-                    ss << "outid:" << mOutDataId << " is out of range, limiting to: ";
+                    HString ss;
+                    ss = "outid:" + to_hstring(mOutDataId) + " is out of range, limiting to: ";
                     mOutDataId = int(mpDataCurve->getNumDataCols())-1;
-                    ss << mOutDataId;
-                    addWarningMessage(ss.str().c_str());
+                    ss += to_hstring(mOutDataId);
+                    addWarningMessage(ss);
                 }
 
 

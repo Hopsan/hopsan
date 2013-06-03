@@ -862,10 +862,6 @@ double *MultiPort::getNodeDataPtr(const size_t idx, const size_t portIdx) const
     }
 }
 
-//void MultiPort::saveLogData(std::string filename, const size_t portIdx)
-//{
-//    return mSubPortsVector[portIdx]->saveLogData(filename);
-//}
 
 const std::vector<NodeDataDescription>* MultiPort::getNodeDataDescriptions(const size_t portIdx)
 {

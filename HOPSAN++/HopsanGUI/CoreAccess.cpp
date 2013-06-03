@@ -546,27 +546,6 @@ QString CoreSystemAccess::getPortDescription(QString componentName, QString port
 }
 
 
-//void CoreSystemAccess::getStartValueDataNamesValuesAndUnits(QString componentName, QString portName, QVector<QString> &rNames, QVector<QString> &rValuesTxt, QVector<QString> &rUnits)
-//{
-//    std::vector<std::string> stdNames, stdUnits;
-//    std::vector<std::string> stdValuesTxt;
-//    hopsan::Port *pPort = this->getCorePortPtr(componentName, portName);
-//    if(pPort)
-//    {
-//        pPort->getStartValueDataNamesValuesAndUnits(stdNames, stdValuesTxt, stdUnits);
-//    }
-//    rNames.resize(stdNames.size());
-//    rValuesTxt.resize(stdValuesTxt.size());
-//    rUnits.resize(stdUnits.size());
-//    for(size_t i=0; i < stdNames.size(); ++i) //! @todo Make a nicer conversion fron std::vector<std::string> --> QVector<QString>
-//    {
-//        rNames[i] = QString::fromStdString(stdNames[i]);
-//        rValuesTxt[i] = QString::fromStdString(stdValuesTxt[i]);
-//        rUnits[i] = QString::fromStdString(stdUnits[i]);
-//    }
-//}
-
-
 bool CoreSystemAccess::setParameterValue(QString componentName, QString parameterName, QString value, bool force)
 {
     return mpCoreComponentSystem->getSubComponent(componentName.toStdString().c_str())->setParameterValue(parameterName.toStdString().c_str(), value.toStdString().c_str(), force);

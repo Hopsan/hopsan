@@ -86,7 +86,6 @@ namespace hopsan {
         virtual int getNodeDataIdFromName(const HString &rName, const size_t portIdx=0);
         virtual void setSignalNodeUnitAndDescription(const HString &rUnit, const HString &rDescription);
 
-        //virtual void saveLogData(std::string filename, const size_t portIdx=0);
         virtual bool haveLogData(const size_t portIdx=0);
         virtual std::vector<double> *getLogTimeVectorPtr(const size_t portIdx=0);
         virtual std::vector<std::vector<double> > *getLogDataVectorPtr(const size_t portIdx=0);
@@ -201,7 +200,6 @@ namespace hopsan {
         int getNodeDataIdFromName(const HString &rName, const size_t portIdx=0);
 
         bool haveLogData(const size_t portIdx=0);
-        void saveLogData(std::string filename, const size_t portIdx=0);
         std::vector<double> *getLogTimeVectorPtr(const size_t portIdx=0);
         std::vector<std::vector<double> > *getLogDataVectorPtr(const size_t portIdx=0);
 

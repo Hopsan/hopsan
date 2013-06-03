@@ -43,7 +43,7 @@ HString stripFilenameFromPath(HString filePath)
 {
     //cout << "Stripping from: " << filePath << endl;
     size_t pos = filePath.rfind('/');
-    if (pos != std::string::npos)
+    if (pos != HString::npos)
     {
         filePath.erase(pos+1);
     }
@@ -137,7 +137,7 @@ void updateOldModelFileParameter(rapidxml::xml_node<> *pParameterNode, const HSt
     }
 }
 
-void updateOldModelFileComponent(rapidxml::xml_node<> */*pComponentNode*/, const std::string &/*rHmfCoreVersion*/)
+void updateOldModelFileComponent(rapidxml::xml_node<> */*pComponentNode*/, const HString &/*rHmfCoreVersion*/)
 {
     // Typos (no specific version)
 
@@ -372,7 +372,7 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
         {
             if (strcmp(pObject->name(), "component")==0)
             {
-                updateOldModelFileComponent(pObject, readStringAttribute(pObject->document()->first_node(), "hopsancoreversion", ""));
+                updateOldModelFileComponent(pObject, readStringAttribute(pObject->document()->first_node(), "hopsancoreversion", "").c_str());
                 loadComponent(pObject, pSystem, pHopsanEssentials);
             }
             else if (strcmp(pObject->name(), "system")==0)

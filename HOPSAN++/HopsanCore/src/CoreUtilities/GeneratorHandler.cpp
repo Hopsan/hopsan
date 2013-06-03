@@ -13,7 +13,6 @@
  permission from the copyright holders.
 -----------------------------------------------------------------------------*/
 
-#include <string>
 #include <stdio.h>
 #ifdef WIN32
 #define _WIN32_WINNT 0x0502

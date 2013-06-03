@@ -29,7 +29,6 @@
 #include "Port.h"
 #include "Parameters.h"
 #include "win32dll.h"
-#include <string>
 #include <map>
 
 namespace hopsan {

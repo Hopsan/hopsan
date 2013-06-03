@@ -8,8 +8,8 @@
 
 #ifdef USEBOOST
 //Maps are needed, because the shared memory objects and mapped regions must be kept alive as long as the memory pointer is used
-std::map<std::string, MEMOBJ*> sharedMemoryMap;
-std::map<std::string, MEMREG*> memoryRegionMap;
+std::map<HString, MEMOBJ*> sharedMemoryMap;
+std::map<HString, MEMREG*> memoryRegionMap;
 #endif
 
 double *hopsan::getDoubleSharedMemoryPointer(HString name)
@@ -17,10 +17,10 @@ double *hopsan::getDoubleSharedMemoryPointer(HString name)
     (void)name;
 #ifdef USEBOOST
     MEMOBJ *shdmem = new MEMOBJ(BSTIPC::open_or_create, name.c_str(), BSTIPC::read_write);
-    sharedMemoryMap.insert(std::pair<std::string, MEMOBJ*>(name, shdmem));
+    sharedMemoryMap.insert(std::pair<HString, MEMOBJ*>(name, shdmem));
     shdmem->truncate(sizeof(double));
     MEMREG *region = new MEMREG(*shdmem, BSTIPC::read_write);
-    memoryRegionMap.insert(std::pair<std::string, MEMREG*>(name, region));
+    memoryRegionMap.insert(std::pair<HString, MEMREG*>(name, region));
     double *mem_ptr = static_cast<double*>(region->get_address());
     return mem_ptr;
 #else
@@ -33,10 +33,10 @@ bool *hopsan::getBoolSharedMemoryPointer(HString name)
     (void)name;
 #ifdef USEBOOST
     MEMOBJ *shdmem = new MEMOBJ(BSTIPC::open_or_create, name.c_str(), BSTIPC::read_write);
-    sharedMemoryMap.insert(std::pair<std::string, MEMOBJ*>(name, shdmem));
+    sharedMemoryMap.insert(std::pair<HString, MEMOBJ*>(name, shdmem));
     shdmem->truncate(sizeof(bool));
     MEMREG *region = new MEMREG(*shdmem, BSTIPC::read_write);
-    memoryRegionMap.insert(std::pair<std::string, MEMREG*>(name, region));
+    memoryRegionMap.insert(std::pair<HString, MEMREG*>(name, region));
     bool *mem_ptr = static_cast<bool*>(region->get_address());
     return mem_ptr;
 #else

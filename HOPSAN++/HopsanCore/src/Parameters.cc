@@ -158,7 +158,7 @@ const HString &Parameter::getType() const
 //!
 //! This function is used by Parameters. The point with run this function is
 //! to write the right value to the mData pointer.
-//! @see evaluate(std::string &result)
+//! @see evaluate(HString &result)
 bool Parameter::evaluate()
 {
     HString dummy;

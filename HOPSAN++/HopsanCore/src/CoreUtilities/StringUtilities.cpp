@@ -23,10 +23,9 @@
 //$Id$
 
 #include "CoreUtilities/StringUtilities.h"
-#include <string.h>
-#include <stdio.h>
-#include <iostream>
-#include <stdlib.h>
+//#include <stdio.h>
+//#include <iostream>
+//#include <stdlib.h>
 
 #define UNDERSCORE 95
 #define UPPERCASE_LOW 65
@@ -38,22 +37,16 @@
 
 void hopsan::santizeName(HString &rName)
 {
-    //! @todo HString do not have iterators, need to work with temp string for now
-    //! @todo whay do we even need iterators can use normal index instead
-    std::string str = rName.c_str();
-    std::string::iterator it;
-    for (it=str.begin(); it!=str.end(); ++it)
+    for (size_t i=0; i<rName.size(); ++i)
     {
-        if ( !( ((*it >= LOWERCASE_LOW) && (*it <= LOWERCASE_HIGH)) ||
-                ((*it >= UPPERCASE_LOW) && (*it <= UPPERCASE_HIGH)) ||
-                ((*it >= NUMBERS_LOW)   && (*it <= NUMBERS_HIGH))     ) )
+        if ( !( ((rName[i] >= LOWERCASE_LOW) && (rName[i] <= LOWERCASE_HIGH)) ||
+                ((rName[i] >= UPPERCASE_LOW) && (rName[i] <= UPPERCASE_HIGH)) ||
+                ((rName[i] >= NUMBERS_LOW)   && (rName[i] <= NUMBERS_HIGH))     ) )
         {
             // Replace invalid char with underscore
-            *it = UNDERSCORE;
+            rName[i] = UNDERSCORE;
         }
     }
-    // Copy back the string
-    rName = str.c_str();
 }
 
 bool hopsan::isNameValid(const HString &rString)
@@ -74,13 +67,12 @@ bool hopsan::isNameValid(const HString &rString)
 
 bool hopsan::isNameValid(const HString &rString, const HString &rExceptions)
 {
-    std::string sexceptions = rExceptions.c_str(); //!< @todo convert since we dont have find in hstring yet
     for (size_t i=0; i<rString.size(); ++i)
     {
         if ( !( ((rString[i] >= LOWERCASE_LOW) && (rString[i] <= LOWERCASE_HIGH)) ||
                 ((rString[i] >= UPPERCASE_LOW) && (rString[i] <= UPPERCASE_HIGH)) ||
                 ((rString[i] >= NUMBERS_LOW)   && (rString[i] <= NUMBERS_HIGH))   ||
-                (rString[i] == UNDERSCORE) || (sexceptions.find(rString[i])!=std::string::npos) ) )
+                (rString[i] == UNDERSCORE) || (rExceptions.containes(rString[i])) ) )
         {
             // Return if we find invalid character
             return false;
@@ -95,27 +87,3 @@ hopsan::HString hopsan::santizeName(const HString &rName)
     santizeName(name);
     return name;
 }
-
-//hopsan::HString &hopsan::replace(HString &rString, const HString &rOld, const HString &rNew)
-//{
-//    size_t pos = rString.find(rOld);
-//    while (pos!=HString::npos)
-//    {
-//        rString.replace(pos, rOld.size(), rNew.c_str());
-//        pos = rString.find(rOld);
-//    }
-//    return rString;
-//}
-
-
-////! @brief Copies a std::string to a char* (with memory allocation)
-////! @param [out] c Target string
-////! @param [in] s Source string
-//void hopsan::copyString(char** c, std::string s)
-//{
-//    *c = (char *)realloc(*c, (strlen(s.c_str())+1)*sizeof(char));
-//    strcpy(*c, s.c_str());
-//}
-
-
-

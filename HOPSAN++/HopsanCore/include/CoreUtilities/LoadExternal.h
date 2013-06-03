@@ -25,7 +25,6 @@
 #ifndef LOADEXTERNAL_H
 #define LOADEXTERNAL_H
 
-#include <string>
 #include "win32dll.h"
 #include "Component.h"
 

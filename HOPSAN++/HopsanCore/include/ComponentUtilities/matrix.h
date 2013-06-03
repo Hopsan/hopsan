@@ -28,8 +28,7 @@
 
 #ifndef __MATRIX_H
 #define __MATRIX_H
-#include <string>
-#include <assert.h>
+
 #include "win32dll.h"
 
 namespace hopsan {
@@ -80,8 +79,6 @@ namespace hopsan {
         double *body;	            //!< contains the elements of the vector
         Vec &copy(const Vec &src);  //!< replace current vector with src
     };
-
-    std::ostream& operator << (std::ostream& s, const Vec& v);
 
     //! defines a two-dimensional Matrix of doubles
     //! @ingroup ComponentUtilityClasses

@@ -1,10 +1,8 @@
 #ifndef HOPSANTYPES_H
 #define HOPSANTYPES_H
 
-#include <string>
-#include <ostream>
 #include "win32dll.h"
-
+#include <cstddef>
 
 namespace hopsan {
 
@@ -12,51 +10,51 @@ class DLLIMPORTEXPORT HString
 {
 private:
     char *mpDataBuffer;
-    unsigned int mSize;
+    size_t mSize;
 
 public:
-    static const unsigned int npos = -1;
+    static const size_t npos = -1;
 
     HString();
     ~HString();
-    //HString(const std::string &rStdString);
     HString(const char* str);
     HString(const HString &rOther);
-    HString(const HString &rOther, const unsigned int pos, const unsigned int len=npos);
+    HString(const HString &rOther, const size_t pos, const size_t len=npos);
     void setString(const char* str);
     HString &append(const char* str);
     HString &append(const char chr);
     HString &append(const HString &str);
-    HString &erase (unsigned int pos = 0, unsigned int len = npos);
+    HString &erase (size_t pos = 0, size_t len = npos);
     void clear();
 
-    void replace(const unsigned int pos, const unsigned int len, const char* str);
+    void replace(const size_t pos, const size_t len, const char* str);
     HString &replace(const char* oldstr, const char* newstr);
     HString &replace(const HString &rOldstr, const HString &rNewstr);
 
     const char *c_str() const;
-    unsigned int size() const;
+    size_t size() const;
     bool empty() const;
     bool compare(const char* other) const;
     bool compare(const HString &rOther) const;
 
-    HString substr(const unsigned int pos, const unsigned int len=npos) const;
+    HString substr(const size_t pos, const size_t len=npos) const;
 
-    unsigned int find_first_of(const char c, unsigned int pos = 0) const;
-    unsigned int rfind(const char c, unsigned int pos = npos) const;
-    unsigned int find(const char c, unsigned int pos = 0) const;
-    unsigned int find(const char *s, unsigned int pos = 0) const;
-    unsigned int find(const HString &s, unsigned int pos = 0) const;
+    size_t find_first_of(const char c, size_t pos = 0) const;
+    size_t rfind(const char c, size_t pos = npos) const;
+    size_t find(const char c, size_t pos = 0) const;
+    size_t find(const char *s, size_t pos = 0) const;
+    size_t find(const HString &s, size_t pos = 0) const;
     bool containes(const HString &rString) const;
+    bool containes(const char c) const;
     bool containes(const char *s) const;
 
     char front() const;
     char &front();
     char back() const;
     char &back();
-    char at(const unsigned int pos) const;
-    char& operator[](const unsigned int idx);
-    const char& operator[](const unsigned int idx) const;
+    char at(const size_t pos) const;
+    char& operator[](const size_t idx);
+    const char& operator[](const size_t idx) const;
 
     bool operator<(const HString &rhs) const;
 
@@ -67,12 +65,9 @@ public:
     HString& operator=(const char* rhs);
     HString& operator=(const char rhs);
     HString& operator=(const HString &rhs);
-
-    //friend std::ostream& operator<<(std::ostream& os, const HString& obj);
 };
 
 inline bool operator==(const HString& lhs, const HString& rhs){return lhs.compare(rhs);}
-//bool DLLIMPORTEXPORT operator< (const HString& lhs, const HString& rhs);
 inline bool operator!=(const HString& lhs, const HString& rhs){return !operator==(lhs,rhs);}
 inline bool operator> (const HString& lhs, const HString& rhs){return rhs<lhs;}
 inline bool operator<=(const HString& lhs, const HString& rhs){return !operator> (lhs,rhs);}
@@ -90,20 +85,13 @@ inline HString operator+(HString lhs, const char rhs)
   return lhs;
 }
 
-//std::ostream& operator<<(std::ostream& os, const HString& obj);
-
-////! @todo this might not be needed later when/if we use hstrings everywhere
-//inline std::string toStdString(const hopsan::HString &rString)
-//{
-//    return std::string(rString.c_str());
-//}
 
 template<typename T>
 class HVector
 {
 private:
     T *mpDataArray;
-    unsigned int mSize;
+    size_t mSize;
 
 public:
     HVector()
@@ -118,7 +106,7 @@ public:
         clear();
         mpDataArray = new T[rOther.size()];
         mSize = rOther.size();
-        for (unsigned int i=0; i<rOther.size(); ++i)
+        for (size_t i=0; i<rOther.size(); ++i)
         {
             (*mpDataArray)[i] = rOther[i];
         }
@@ -144,20 +132,20 @@ public:
     //! @detailed If new size is smaller than old, old data will be truncated
     //! If new size is larger than old, the additional elements will be uninitialized
     //! @param [in] s New size
-    void resize(const unsigned int s)
+    void resize(const size_t s)
     {
         // Create new dummy array
         T* pNewArray = new T[s];
 
         // Check how many elements to copy
-        unsigned int n = s;
+        size_t n = s;
         if (size() < s)
         {
             n = size();
         }
 
         // Copy old data to new array
-        for (unsigned int i=0; i<n; ++i)
+        for (size_t i=0; i<n; ++i)
         {
             pNewArray[i] = mpDataArray[i];
         }
@@ -173,7 +161,7 @@ public:
     //! @brief Resize the array, initializing all values to defaultValue
     //! @param [in] s New size
     //! @param [in] s defaultValue initialize value for all elements
-    void resize(const unsigned int s, const T defaultValue)
+    void resize(const size_t s, const T defaultValue)
     {
         clear();
         mpDataArray = new T[s](defaultValue);
@@ -189,19 +177,19 @@ public:
         mpDataArray[size()-1] = rData;
     }
 
-    const T& operator[] (const unsigned int i) const
+    const T& operator[] (const size_t i) const
     {
         return mpDataArray[i];
     }
 
-    T& operator[] (const unsigned int i)
+    T& operator[] (const size_t i)
     {
         return mpDataArray[i];
     }
 
     //! @brief Returns the number of elements in the array
     //! @returns Number of elements in the array
-    unsigned int size() const
+    size_t size() const
     {
         return mSize;
     }
