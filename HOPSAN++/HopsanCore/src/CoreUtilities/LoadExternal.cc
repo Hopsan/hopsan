@@ -78,7 +78,7 @@ bool LoadExternal::load(const HString &rLibpath)
     if (slashidx!=string::npos)
     {
         //Set search path for dependencies
-        const string libdir = rLibpath.substr(0,slashidx);
+        const HString libdir = rLibpath.substr(0,slashidx);
         SetDllDirectoryA(libdir.c_str());
         mpMessageHandler->addDebugMessage("SetDllDirectoryA: " + libdir);
     }
@@ -91,15 +91,15 @@ bool LoadExternal::load(const HString &rLibpath)
     if (!lib_ptr)
     {
         stringstream ss;
-        ss << "Opening external library: " << rLibpath << " GetLastError(): " << GetLastError();
-        mpMessageHandler->addErrorMessage(ss.str());
+        ss << "Opening external library: " << rLibpath.c_str() << " GetLastError(): " << GetLastError();
+        mpMessageHandler->addErrorMessage(ss.str().c_str());
         return false;
     }
     else
     {
         stringstream ss;
-        ss << "Success (probably) opening external library: " << rLibpath;
-        mpMessageHandler->addDebugMessage(ss.str());
+        ss << "Success (probably) opening external library: " << rLibpath.c_str();
+        mpMessageHandler->addDebugMessage(ss.str().c_str());
     }
 
     bool isHopsanComponentLib=true;
@@ -109,8 +109,8 @@ bool LoadExternal::load(const HString &rLibpath)
     if (!get_hopsan_info)
     {
         stringstream ss;
-        ss << "Cannot load symbol 'get_hopsan_info' for: " << rLibpath << " Error: " << GetLastError();
-        mpMessageHandler->addDebugMessage(ss.str());
+        ss << "Cannot load symbol 'get_hopsan_info' for: " << rLibpath.c_str() << " Error: " << GetLastError();
+        mpMessageHandler->addDebugMessage(ss.str().c_str());
         isHopsanComponentLib=false;
     }
 
@@ -119,8 +119,8 @@ bool LoadExternal::load(const HString &rLibpath)
     if (!register_contents)
     {
         stringstream ss;
-        ss << "Cannot load symbol 'register_contents' for: " << rLibpath << " Error: " << GetLastError();
-        mpMessageHandler->addDebugMessage(ss.str());
+        ss << "Cannot load symbol 'register_contents' for: " << rLibpath.c_str() << " Error: " << GetLastError();
+        mpMessageHandler->addDebugMessage(ss.str().c_str());
         isHopsanComponentLib=false;
     }
 
