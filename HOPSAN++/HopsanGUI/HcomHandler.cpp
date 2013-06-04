@@ -3274,7 +3274,21 @@ void HcomHandler::optComplexInit()
     QString oldPath = mPwd;
     mPwd = gDesktopHandler.getExecPath();
     //executeCommand("exec ../Scripts/HCOM/optDefaultFunctions.hcom");
-    executeCommand("exec "+gDesktopHandler.getScriptsPath()+"/HCOM/optDefaultFunctions.hcom");
+    QFile testFile1(gDesktopHandler.getScriptsPath()+"/HCOM/optDefaultFunctions.hcom");
+    QFile testFile2(gDesktopHandler.getExecPath()+"../Scripts/HCOM/optDefaultFunctions.hcom");
+    if(testFile1.exists())
+    {
+        executeCommand("exec "+testFile1.fileName());
+    }
+    else if(testFile2.exists())
+    {
+        executeCommand("exec "+testFile2.fileName());
+    }
+    else
+    {
+        mpConsole->printErrorMessage("Cannot find optimization default functions script file.","",false);
+        return;
+    }
     mPwd = oldPath;
 
     for(int p=0; p<mOptNumPoints; ++p)
