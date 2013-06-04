@@ -291,6 +291,7 @@ bool ModelHandler::closeModelByTabIndex(int tabIdx)
     }
 
     closeModel(idx);
+    return true;
 }
 
 
