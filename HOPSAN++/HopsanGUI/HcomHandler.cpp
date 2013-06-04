@@ -3295,8 +3295,8 @@ void HcomHandler::optComplexInit()
     mOptKf = 1.0-pow(mOptAlpha/2.0, mOptGamma/mOptNumPoints);
 
     LogDataHandler *pHandler = gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler();
-    pHandler->deleteVariable("Worst Objective");
-    pHandler->deleteVariable("Best Objective");
+    pHandler->deleteVariable("WorstObjective");
+    pHandler->deleteVariable("BestObjective");
 }
 
 
@@ -3629,8 +3629,8 @@ void HcomHandler::optParticleInit()
     mOptObjectives.resize(mOptNumPoints);
 
     LogDataHandler *pHandler = gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler();
-    pHandler->deleteVariable("Worst Objective");
-    pHandler->deleteVariable("Best Objective");
+    pHandler->deleteVariable("WorstObjective");
+    pHandler->deleteVariable("BestObjective");
 }
 
 
@@ -3835,7 +3835,8 @@ void HcomHandler::optPlotBestWorstObj()
     if(bestVar.isNull())
     {
         bestVar = pHandler->defineNewVariable("BestObjective", QVector<double>() << 0, QVector<double>() << mOptObjectives[mOptBestId]);
-        bestVar.data()->preventAutoRemoval();
+        bestVar->preventAutoRemoval();
+        bestVar->cacheDataToDisk(false);
     }
     else
     {
@@ -3846,6 +3847,7 @@ void HcomHandler::optPlotBestWorstObj()
     {
         worstVar = pHandler->defineNewVariable("WorstObjective", QVector<double>() << 0, QVector<double>() << mOptObjectives[mOptWorstId]);
         worstVar.data()->preventAutoRemoval();
+        worstVar->cacheDataToDisk(false);
     }
     else
     {

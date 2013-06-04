@@ -2366,7 +2366,6 @@ bool ComponentSystem::preInitialize()
 void ComponentSystem::loadStartValues()
 {
     // First load startvalues for any non-systemport readports on this system (very rare occurance)
-    //! @todo since this is very specific maybe it should be in a poweruser help function
     PortPtrMapT::iterator portIt;
     for (portIt=mPortPtrMap.begin(); portIt!=mPortPtrMap.end(); ++portIt)
     {
