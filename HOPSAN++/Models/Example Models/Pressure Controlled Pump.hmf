@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5334" hopsancoreversion="0.6.x_r5348">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5499" hopsancoreversion="0.6.x_r5500">
   <requirements>
     <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
-    <componentlibrary>HopsanExampleComponentLibrary</componentlibrary>
   </requirements>
   <info>
     <author>Fluid &amp; Mechatronic Systems (Flumes)</author>
@@ -18,7 +17,7 @@
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="1"/>
       <animation flowspeed="100"/>
-      <viewport x="2498.77" y="2499.29" zoom="0.968475"/>
+      <viewport x="2500.32" y="2428.04" zoom="0.968475"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>
