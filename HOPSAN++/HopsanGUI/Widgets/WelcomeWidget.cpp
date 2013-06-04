@@ -270,6 +270,7 @@ QString WelcomeWidget::getUpdateLink()
 void WelcomeWidget::updateRecentList()
 {
     mpRecentList->clear();
+    mRecentModelList.clear();
     QStringList recentModels = gConfig.getRecentModels();
     for(int i=0; i<recentModels.size(); ++i)
     {

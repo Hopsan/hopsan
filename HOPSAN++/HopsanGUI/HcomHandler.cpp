@@ -3831,20 +3831,20 @@ void HcomHandler::optPlotPoints()
 void HcomHandler::optPlotBestWorstObj()
 {
     LogDataHandler *pHandler = gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler();
-    SharedLogVariableDataPtrT bestVar = pHandler->getPlotData("Best Objective", -1);
+    SharedLogVariableDataPtrT bestVar = pHandler->getPlotData("BestObjective", -1);
     if(bestVar.isNull())
     {
-        bestVar = pHandler->defineNewVariable("Best Objective", QVector<double>() << 0, QVector<double>() << mOptObjectives[mOptBestId]);
+        bestVar = pHandler->defineNewVariable("BestObjective", QVector<double>() << 0, QVector<double>() << mOptObjectives[mOptBestId]);
         bestVar.data()->preventAutoRemoval();
     }
     else
     {
         pHandler->appendVariable(bestVar, bestVar.data()->getDataSize(), mOptObjectives[mOptBestId]);
     }
-    SharedLogVariableDataPtrT worstVar = pHandler->getPlotData("Worst Objective", -1);
+    SharedLogVariableDataPtrT worstVar = pHandler->getPlotData("WorstObjective", -1);
     if(worstVar.isNull())
     {
-        worstVar = pHandler->defineNewVariable("Worst Objective", QVector<double>() << 0, QVector<double>() << mOptObjectives[mOptWorstId]);
+        worstVar = pHandler->defineNewVariable("WorstObjective", QVector<double>() << 0, QVector<double>() << mOptObjectives[mOptWorstId]);
         worstVar.data()->preventAutoRemoval();
     }
     else
@@ -3855,10 +3855,10 @@ void HcomHandler::optPlotBestWorstObj()
 
     if(bestVar.data()->getDataSize() == 1)
     {
-        gpPlotHandler->plotDataToWindow("Objective Function", bestVar, 0, QColor("Green"));
-        gpPlotHandler->plotDataToWindow("Objective Function", worstVar, 0, QColor("Red"));
+        gpPlotHandler->plotDataToWindow("ObjectiveFunction", bestVar, 0, QColor("Green"));
+        gpPlotHandler->plotDataToWindow("ObjectiveFunction", worstVar, 0, QColor("Red"));
     }
-    PlotWindow *pPlotWindow = gpPlotHandler->getPlotWindow("Objective Function");
+    PlotWindow *pPlotWindow = gpPlotHandler->getPlotWindow("ObjectiveFunction");
     if(pPlotWindow)
     {
         pPlotWindow->getCurrentPlotTab()->update();
