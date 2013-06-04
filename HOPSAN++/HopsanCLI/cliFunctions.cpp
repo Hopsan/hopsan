@@ -873,6 +873,7 @@ bool performModelTest(const std::string hvcFilePath)
                         }
                         else
                         {
+                            printWaitingMessages(false);
                             printErrorMessage("Could not load modelfile: " + modelfile);
                             return false;
                         }

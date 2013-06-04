@@ -235,8 +235,8 @@ void Port::eraseConnectedPort(Port* pPort, const size_t /*portIdx*/)
     vector<Port*>::iterator it;
     for (it=mConnectedPorts.begin(); it!=mConnectedPorts.end(); ++it)
     {
-        printf("*it: %p pPort: %p", (void*)(*it), (void*)pPort);
-        cout << endl;
+        //printf("*it: %p pPort: %p", (void*)(*it), (void*)pPort);
+        //cout << endl;
         //cout << "*it: " << *it << " pPort: " << pPort << endl;
         if (*it == pPort)
         {
@@ -584,8 +584,8 @@ bool Port::isConnectedTo(Port *pOtherPort)
         std::vector<Port*>::iterator pit;
         for(pit=mConnectedPorts.begin(); pit!=mConnectedPorts.end(); ++pit)
         {
-            printf("isConnectedTo: *pit: %p pOtherPort: %p", (void*)(*pit), (void*)pOtherPort);
-            cout << endl;
+            //printf("isConnectedTo: *pit: %p pOtherPort: %p", (void*)(*pit), (void*)pOtherPort);
+            //cout << endl;
             if ( *pit == pOtherPort )
             {
                 return true;

@@ -1474,8 +1474,8 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     if ( ( (pPort1->getPortType() == SystemPortType) && (!pPort1->isConnected()) ) || ( (pPort2->getPortType() == SystemPortType) && (!pPort2->isConnected()) ) )
     {
         // Now lets find out wich of the ports that is a blank systemport
-        Port *pBlankSysPort;
-        Port *pOtherPort;
+        Port *pBlankSysPort=0;
+        Port *pOtherPort=0;
 
         //! @todo write help function
         if ( (pPort1->getPortType() == SystemPortType) && (!pPort1->isConnected()) )
@@ -2177,10 +2177,10 @@ void ComponentSystem::setupLogTimesteps(const double startT, const double stopT,
             cout << "Error: mnLogSlots: " << mnLogSlots << " mLogTheseTimeSteps.size(): " << mLogTheseTimeSteps.size() << endl;
         }
 
-        //cout << "n: " << n << endl;
-        cout << "mNumSimulationSteps: " << size_t((stopT-logStartT)/Ts+0.5) << endl;
-        cout << "mLastStepToLog: " << mLogTheseTimeSteps.back() << endl;
-        cout << "mLogTimeDt: " << mLogTimeDt << " mTimeStepsToLog.size(): " << mLogTheseTimeSteps.size() << endl;
+//        //cout << "n: " << n << endl;
+//        cout << "mNumSimulationSteps: " << size_t((stopT-logStartT)/Ts+0.5) << endl;
+//        cout << "mLastStepToLog: " << mLogTheseTimeSteps.back() << endl;
+//        cout << "mLogTimeDt: " << mLogTimeDt << " mTimeStepsToLog.size(): " << mLogTheseTimeSteps.size() << endl;
     }
     else
     {
