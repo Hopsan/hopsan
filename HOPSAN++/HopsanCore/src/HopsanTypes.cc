@@ -166,7 +166,14 @@ bool HString::compare(const HString &rOther) const
     {
         return false;
     }
-    return (strcmp(mpDataBuffer, rOther.c_str()) == 0);
+    else if ( (mSize == rOther.size()) && (mSize == 0) )
+    {
+        return true;
+    }
+    else
+    {
+        return (strcmp(mpDataBuffer, rOther.c_str()) == 0);
+    }
 }
 
 size_t HString::find_first_of(const char c, size_t pos) const
