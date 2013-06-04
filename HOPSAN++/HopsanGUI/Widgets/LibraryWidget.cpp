@@ -984,6 +984,11 @@ void LibraryWidget::importFmu()
         return;
 
     QFileInfo fmuFileInfo = QFileInfo(filePath);
+    if(!fmuFileInfo.exists())
+    {
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("File not found: "+filePath);
+        return;
+    }
     gConfig.setFmuImportDir(fmuFileInfo.absolutePath());
 
     CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
