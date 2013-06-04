@@ -5,6 +5,8 @@
 
 using namespace hopsan;
 
+const size_t HString::npos = -1;
+
 HString::HString()
 {
     mpDataBuffer=0;
@@ -31,35 +33,33 @@ HString::HString(const HString &rOther)
     setString(rOther.c_str());
 }
 
-HString::HString(const HString &rOther, const size_t pos, const size_t len)
+HString::HString(const HString &rOther, size_t pos, size_t len)
 {
     mpDataBuffer=0;
     mSize=0;
 
-    // First caluclate end index and make sure it is within bounds
-    size_t otherNumChar;
+    // Make sure initial pos is not to high
+    if (pos > rOther.size())
+    {
+        pos = rOther.size();
+    }
+
+    // Auto caluclate end index and make sure it is within bounds
     if (len == npos)
     {
-        otherNumChar = rOther.size()-pos;
+        len = rOther.size()-pos;
     }
-    else
+
+    // If given length to long then set maximum allowed length
+    if (pos+len > rOther.size())
     {
-        // If given length is within bounds, use it
-        if (pos+len <= rOther.size())
-        {
-            otherNumChar = pos+len;
-        }
-        // Else use the maximum allowed length
-        else
-        {
-            otherNumChar = rOther.size()-pos;
-        }
+        len = rOther.size()-pos;
     }
 
     // Reallocate memmory and copy string
-    mpDataBuffer = static_cast<char*>(realloc(mpDataBuffer,otherNumChar+1));
-    mSize = otherNumChar;
-    strncpy(mpDataBuffer, rOther.c_str()+pos, otherNumChar);
+    mpDataBuffer = static_cast<char*>(realloc(mpDataBuffer,len+1));
+    mSize = len;
+    strncpy(mpDataBuffer, rOther.c_str()+pos, len);
     mpDataBuffer[mSize] = '\0';
 }
 
@@ -111,7 +111,15 @@ HString &HString::append(const HString &str)
 
 HString &HString::erase(size_t pos, size_t len)
 {
+    if (pos > mSize)
+    {
+        pos = mSize;
+    }
     HString n1(*this, 0, pos);
+    if (len == npos)
+    {
+        len = mSize-pos;
+    }
     HString n2(*this, pos+len);
     setString((n1+n2).c_str());
     return *this;
@@ -212,15 +220,20 @@ size_t HString::find(const char c, size_t pos) const
 
 size_t HString::find(const char *s, size_t pos) const
 {
-    const char* pFirst = strstr(mpDataBuffer+pos, s);
-    if (pFirst)
+    // Make sure s or local string is not null string
+    if ( (strlen(s) > 0) && !empty() && pos<mSize)
     {
-        return (pFirst - mpDataBuffer);
+        // Try to find substring pointer
+        const char* pFirst = strstr(mpDataBuffer+pos, s);
+        if (pFirst)
+        {
+            // Calculate adress offset from pointers
+            return (pFirst - mpDataBuffer);
+        }
     }
-    else
-    {
-        return npos;
-    }
+
+    // Return npos if not found
+    return npos;
 }
 
 size_t HString::find(const HString &s, size_t pos) const

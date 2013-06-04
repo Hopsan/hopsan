@@ -441,33 +441,19 @@ void loadSystemContents(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSystem
     }
 }
 
-
-// vvvvvvvvvv The public function vvvvvvvvvv
-
-//! @brief This function is used to load a HMF file.
-//! @param [in] filePath The name (path) of the HMF file
-//! @param [out] rStartTime A reference to the starttime variable
-//! @param [out] rStopTime A reference to the stoptime variable
-//! @returns A pointer to the rootsystem of the loaded model
-//! @todo if possible merge the two differen main load functions
-ComponentSystem* hopsan::loadHopsanModelFile(const HString filePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime)
+// The actual model load function
+ComponentSystem* loadHopsanModelFileActual(const rapidxml::xml_document<> &rDoc, const HString &rFilePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime)
 {
-    addLogMess(("hopsan::loadHopsanModelFile("+filePath+")").c_str());
     try
     {
-        rapidxml::file<> hmfFile(filePath.c_str());
-
-        rapidxml::xml_document<> doc;
-        doc.parse<0>(hmfFile.data());
-
-        rapidxml::xml_node<> *pRootNode = doc.first_node();
+        rapidxml::xml_node<> *pRootNode = rDoc.first_node();
 
         //Check for correct root node name
         if (strcmp(pRootNode->name(), "hopsanmodelfile")==0)
         {
             // Check version
             HString savedwithcoreversion = readStringAttribute(pRootNode, "hopsancoreversion", "0").c_str();
-            pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(savedwithcoreversion);
+            pHopsanEssentials->getCoreMessageHandler()->addDebugMessage("Model saved with core version: " + savedwithcoreversion);
             if (savedwithcoreversion < "0.6.0" || (savedwithcoreversion > "0.6.x" && savedwithcoreversion < HOPSANCOREVERSION))
             {
                 pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("This hmf model was saved with HopsanCoreVersion: "+savedwithcoreversion+". This old version is not supported by the HopsanCore hmf loader, resave the model with HopsanGUI");
@@ -484,23 +470,56 @@ ComponentSystem* hopsan::loadHopsanModelFile(const HString filePath, HopsanEssen
                 rStartTime = readDoubleAttribute(pSimtimeNode, "start", 0);
                 rStopTime = readDoubleAttribute(pSimtimeNode, "stop", 2);
                 ComponentSystem * pSys = pHopsanEssentials->createComponentSystem(); //Create root system
-                loadSystemContents(pSysNode, pSys, pHopsanEssentials, filePath);
+                loadSystemContents(pSysNode, pSys, pHopsanEssentials, rFilePath);
 
-                pSys->addSearchPath(stripFilenameFromPath(filePath));
+                pSys->addSearchPath(stripFilenameFromPath(rFilePath));
                 return pSys;
             }
             else
             {
                 addLogMess("hopsan::loadHopsanModelFile(): No system found in file.");
-                pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(filePath+" Has no system to load");
+                pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(rFilePath+" Has no system to load");
             }
         }
         else
         {
             addLogMess("hopsan::loadHopsanModelFile(): Wrong root tag name.");
-            pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(filePath+" Has wrong root tag name: "+pRootNode->name());
+            pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(rFilePath+" Has wrong root tag name: "+pRootNode->name());
             cout << "Not correct hmf file root node name: " << pRootNode->name() << endl;
         }
+    }
+    catch(std::exception &e)
+    {
+        addLogMess("hopsan::loadHopsanModelFile(): Unable to parse xml doc.");
+        pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("Unable to parse xml doc");
+        cout << "throws: " << e.what() << endl;
+    }
+
+    addLogMess("hopsan::loadHopsanModelFile(): Failed.");
+
+    // We failed, return 0 ptr
+    return 0;
+}
+
+
+// vvvvvvvvvv The public function vvvvvvvvvv
+
+//! @brief This function is used to load a HMF file.
+//! @param [in] filePath The name (path) of the HMF file
+//! @param [out] rStartTime A reference to the starttime variable
+//! @param [out] rStopTime A reference to the stoptime variable
+//! @returns A pointer to the rootsystem of the loaded model
+//! @todo if possible merge the two differen main load functions
+ComponentSystem* hopsan::loadHopsanModelFile(const HString filePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime)
+{
+    addLogMess(("hopsan::loadHopsanModelFile("+filePath+")").c_str());
+    try
+    {
+        rapidxml::file<> hmfFile(filePath.c_str());
+        rapidxml::xml_document<> doc;
+        doc.parse<0>(hmfFile.data());
+
+        return loadHopsanModelFileActual(doc, filePath, pHopsanEssentials, rStartTime, rStopTime);
     }
     catch(std::exception &e)
     {
@@ -508,9 +527,7 @@ ComponentSystem* hopsan::loadHopsanModelFile(const HString filePath, HopsanEssen
         pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("Could not open file: "+filePath);
         cout << "Could not open file, throws: " << e.what() << endl;
     }
-
     addLogMess("hopsan::loadHopsanModelFile(): Failed.");
-
     // We failed, return 0 ptr
     return 0;
 }
@@ -541,51 +558,52 @@ ComponentSystem* hopsan::loadHopsanModelFile(const char* xmlStr, HopsanEssential
 
 ComponentSystem* hopsan::loadHopsanModelFile(char* xmlStr, HopsanEssentials* pHopsanEssentials)
 {
-    HString filePath("");
-
     try
     {
+        double startT, stopT;
         rapidxml::xml_document<> doc;
         doc.parse<0>( xmlStr);
 
-        rapidxml::xml_node<> *pRootNode = doc.first_node();
+        return loadHopsanModelFileActual(doc, "", pHopsanEssentials, startT, stopT);
 
-        //Check for correct root node name
-        if (strcmp(pRootNode->name(), "hopsanmodelfile")==0)
-        {
-            // Check version
-            HString savedwithcoreversion = readStringAttribute(pRootNode, "hopsancoreversion", "0").c_str();
-            pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(savedwithcoreversion);
-            if (savedwithcoreversion < "0.6.0" || (savedwithcoreversion > "0.6.x" && savedwithcoreversion < "0.6.x_r5216"))
-            {
-                pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("This hmf model was saved with HopsanCoreVersion: "+savedwithcoreversion+". This old version is not supported by the HopsanCore hmf loader, resave the model with HopsanGUI");
-                return 0;
-            }
+//        rapidxml::xml_node<> *pRootNode = doc.first_node();
 
-            rapidxml::xml_node<> *pSysNode = pRootNode->first_node("system");
-            if (pSysNode != 0)
-            {
-                //! @todo more error check
-                ComponentSystem * pSys = pHopsanEssentials->createComponentSystem(); //Create root system
-                loadSystemContents(pSysNode, pSys, pHopsanEssentials, filePath);
+//        //Check for correct root node name
+//        if (strcmp(pRootNode->name(), "hopsanmodelfile")==0)
+//        {
+//            // Check version
+//            HString savedwithcoreversion = readStringAttribute(pRootNode, "hopsancoreversion", "0").c_str();
+//            pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(savedwithcoreversion);
+//            if (savedwithcoreversion < "0.6.0" || (savedwithcoreversion > "0.6.x" && savedwithcoreversion < "0.6.x_r5216"))
+//            {
+//                pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("This hmf model was saved with HopsanCoreVersion: "+savedwithcoreversion+". This old version is not supported by the HopsanCore hmf loader, resave the model with HopsanGUI");
+//                return 0;
+//            }
 
-                return pSys;
-            }
-            else
-            {
-                pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(filePath+" Has no system to load");
-            }
-        }
-        else
-        {
-            pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(filePath+" Has wrong root tag name: "+pRootNode->name());
-            cout << "Not correct hmf file root node name: " << pRootNode->name() << endl;
-        }
+//            rapidxml::xml_node<> *pSysNode = pRootNode->first_node("system");
+//            if (pSysNode != 0)
+//            {
+//                //! @todo more error check
+//                ComponentSystem * pSys = pHopsanEssentials->createComponentSystem(); //Create root system
+//                loadSystemContents(pSysNode, pSys, pHopsanEssentials, filePath);
+
+//                return pSys;
+//            }
+//            else
+//            {
+//                pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(filePath+" Has no system to load");
+//            }
+//        }
+//        else
+//        {
+//            pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(filePath+" Has wrong root tag name: "+pRootNode->name());
+//            cout << "Not correct hmf file root node name: " << pRootNode->name() << endl;
+//        }
     }
     catch(std::exception &e)
     {
-        pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("Could not open file: "+filePath);
-        cout << "Could not open file, throws: " << e.what() << endl;
+        pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("Could not parse xml string");
+        cout << "throws: " << e.what() << endl;
     }
 
     // We failed, return 0 ptr

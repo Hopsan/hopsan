@@ -13,13 +13,13 @@ private:
     size_t mSize;
 
 public:
-    static const size_t npos = -1;
+    static const size_t npos;
 
     HString();
     ~HString();
     HString(const char* str);
     HString(const HString &rOther);
-    HString(const HString &rOther, const size_t pos, const size_t len=npos);
+    HString(const HString &rOther, size_t pos, size_t len=npos);
     void setString(const char* str);
     HString &append(const char* str);
     HString &append(const char chr);
