@@ -399,7 +399,7 @@ void PlotTab::addBarChart(QStandardItemModel *pItemModel)
 
     mpBarPlot->setModel(pItemModel);
 
-    mpTabLayout->addWidget(mpBarPlot);
+    mpTabLayout->addWidget(mpBarPlot,0,0);
 }
 
 void PlotTab::resizeEvent(QResizeEvent *event)
