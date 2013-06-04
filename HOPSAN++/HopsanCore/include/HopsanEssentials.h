@@ -54,16 +54,16 @@ public:
     const char *getCoreVersion();
 
     // Component creation
-    Component* createComponent(const char* typeName);
+    Component* createComponent(const HString &rTypeName);
     ComponentSystem* createComponentSystem();
     void removeComponent(Component *pComponent);
     void removeNode(Node *pNode);
-    bool hasComponent(const char* type);
-    bool reserveComponentTypeName(const char* typeName);
+    bool hasComponent(const HString &rType) const;
+    bool reserveComponentTypeName(const HString &rTypeName);
     const std::vector<HString> getRegisteredComponentTypes() const;
 
     // Node creation
-    Node* createNode(const char* nodeType);
+    Node* createNode(const HString &rNodeType);
     const std::vector<HString> getRegisteredNodeTypes() const;
 
     // Messages

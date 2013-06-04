@@ -272,31 +272,6 @@ void setTerminalColor(const ColorsEnumT color)
 }
 
 // ===== Save functions =====
-////! @brief Saved specified node data to text file
-////! @param [in] pSys The system in whcih the component live
-////! @param [in] compName The name of the component
-////! @param [in] portName The name of the port in which the node exist
-////! @param [in] fileName The name of the output file
-//void saveNodeDataToFile(ComponentSystem* pSys, const string compName, const string portName, const string fileName)
-//{
-//    if (pSys)
-//    {
-//        Component* pComp = pSys->getSubComponentOrThisIfSysPort(compName);
-//        if (pComp)
-//        {
-//            Port* pPort = pComp->getPort(portName);
-//            if (pPort)
-//            {
-//                pPort->saveLogData(fileName);
-//                return; //Abort function
-//            }
-//            printErrorMessage("Could not find portName: " + portName);
-//            return; //Abort function
-//        }
-//        printErrorMessage("Could not find compName: " + compName);
-//    }
-//}
-
 void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResults howMany, string prefix, ofstream *pFile)
 {
     bool doCloseFile=false;

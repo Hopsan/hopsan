@@ -121,7 +121,8 @@ SOURCES += \
     src/CoreUtilities/MultiThreadingUtilities.cpp \
     src/CoreUtilities/CoSimulationUtilities.cpp \
     src/CoreUtilities/StringUtilities.cpp \
-    src/HopsanTypes.cc
+    src/HopsanTypes.cc \
+    src/ComponentUtilities/HopsanPowerUser.cc
 HEADERS += \
     include/win32dll.h \
     include/version.h \
@@ -164,7 +165,8 @@ HEADERS += \
     include/CoreUtilities/MultiThreadingUtilities.h \
     include/CoreUtilities/CoSimulationUtilities.h \
     include/CoreUtilities/StringUtilities.h \
-    include/HopsanTypes.h
+    include/HopsanTypes.h \
+    include/ComponentUtilities/HopsanPowerUser.h
 
 OTHER_FILES += \
     HopsanCoreBuild.prf

@@ -86,7 +86,7 @@ namespace hopsan {
             {
                 if (nSamps > size_t((mMaxMemSize*1e6)/double(sizeof(double))) )
                 {
-                    addErrorMessage("Trying to allocate to much memory with current timestep and requested time delay: "+to_hstring(*mpTimeDelay)+" s!");
+                    addErrorMessage("Trying to allocate to much memory with current timestep and requested time delay: "+to_string(*mpTimeDelay)+" s!");
                     stopSimulation();
                 }
 
@@ -102,7 +102,7 @@ namespace hopsan {
                     }
                     catch (int e)
                     {
-                        addErrorMessage("Exception nr: "+to_hstring(e)+" occured");
+                        addErrorMessage("Exception nr: "+to_string(e)+" occured");
                         stopSimulation();
                     }
 

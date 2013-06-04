@@ -120,7 +120,7 @@ CSVParser::CSVParser(bool &rSuccess,
                     if (row.size() != mnDataCols)
                     {
                         rSuccess = false;
-                        mErrorString = "Row: "+to_hstring(rowCtr)+" does not have the same number of columns as the previous rows";
+                        mErrorString = "Row: "+to_string(rowCtr)+" does not have the same number of columns as the previous rows";
                         break;
                     }
                 }

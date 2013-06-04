@@ -105,16 +105,16 @@ const char *HopsanEssentials::getCoreVersion()
 
 //! @brief Creates a component with the specified key-value and returns a pointer to this component.
 //! @param [in] rString The
-Component* HopsanEssentials::createComponent(const char* typeName)
+Component* HopsanEssentials::createComponent(const HString &rTypeName)
 {
-    addLogMess((string(typeName)+"::createComponent").c_str());
-    Component* pComp = mpComponentFactory->createInstance(typeName);
+    addLogMess((rTypeName+"::createComponent").c_str());
+    Component* pComp = mpComponentFactory->createInstance(rTypeName);
     if (pComp)
     {
         pComp->mpHopsanEssentials = this;
         pComp->mpMessageHandler = mpMessageHandler; //!< @todo maybe it should only be in HopsanEssentials but then the core message handler will be accesible in main program also (maybe not a big deal)
-        pComp->setTypeName(typeName);
-        pComp->setName(typeName);
+        pComp->setTypeName(rTypeName);
+        pComp->setName(rTypeName);
         pComp->configure();
     }
     else
@@ -128,16 +128,16 @@ Component* HopsanEssentials::createComponent(const char* typeName)
 //! @brief Check if a component with given typename exist in the ComponentFactory
 //! @param [in] type The typename to check
 //! @returns True or False depending on if type exist
-bool HopsanEssentials::hasComponent(const char* type)
+bool HopsanEssentials::hasComponent(const HString &rType) const
 {
-    return mpComponentFactory->hasKey(type);
+    return mpComponentFactory->hasKey(rType);
 }
 
 //! @brief Reserves a component TypeName in the component factory map
 //! @param [in] typeName The TypeName to reserve
-bool HopsanEssentials::reserveComponentTypeName(const char* typeName)
+bool HopsanEssentials::reserveComponentTypeName(const HString &rTypeName)
 {
-    return mpComponentFactory->reserveKey(typeName);
+    return mpComponentFactory->reserveKey(rTypeName);
 }
 
 //! @brief Returns a vector containing all registered component types
@@ -168,12 +168,12 @@ void HopsanEssentials::removeNode(Node *pNode)
 //! @brief Creates a Node of given node type
 //! @param [in] rNodeType The type of node to create
 //! @returns A pointer to the created node
-Node* HopsanEssentials::createNode(const char* nodeType)
+Node* HopsanEssentials::createNode(const HString &rNodeType)
 {
-    Node *pNode = mpNodeFactory->createInstance(nodeType);
+    Node *pNode = mpNodeFactory->createInstance(rNodeType);
     if (pNode)
     {
-        pNode->mNodeType = nodeType;
+        pNode->mNodeType = rNodeType;
     }
     else
     {
