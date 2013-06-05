@@ -20,7 +20,7 @@
                 <icon userpath="cylinderc_user_movable_2.svg"/>
                 <data port="P3" dataname="Position"/> 
                 <data port="P1" dataname="Pressure"/> 
-				<divisor name="s_l"/>
+				<divisor name="s_l::Value"/>
                 <start x="1.5" y="1.5" a="0"/>
                 <initcolor r="0" g="0" b="255"/>
                 <color r="-0.00001275" g="0" b="0.00001275" idx="1"/>
@@ -31,7 +31,7 @@
                 <icon userpath="cylinderc_user_movable_2.svg"/>
                 <data port="P3" dataname="Position"/> 
                 <data port="P2" dataname="Pressure"/>
-				<divisor name="s_l"/>
+				<divisor name="s_l::Value"/>
                 <movement x="77" y="0" a="0"/>
                 <start x="11" y="1.5" a="0"/> 
                 <resize x="-1" y="0"/>
@@ -44,7 +44,7 @@
             <movable>
                 <icon userpath="cylinderc_user_movable.svg"/>
                 <data port="P3" dataname="Position"/> 
-				<divisor name="s_l"/>
+				<divisor name="s_l::Value"/>
                 <movement x="77.5" y="0" a="0"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>

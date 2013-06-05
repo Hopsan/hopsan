@@ -24,7 +24,7 @@
                 <movement x="-4000" y="0" a="0"/>
                 <start x="0" y="0" a="0"/>
                 <transformorigin x="0" y="0"/>
-		<adjustable xmin="-40" xmax="40" ymin="0" ymax="0" port="in" dataname="Value" xgain="0.00025" ygain="0"/>
+                <adjustable xmin="-40" xmax="40" ymin="0" ymax="0" port="in" dataname="Value" xgain="0.00025" ygain="0"/>
             </movable>
         </animation>
     </modelobject>

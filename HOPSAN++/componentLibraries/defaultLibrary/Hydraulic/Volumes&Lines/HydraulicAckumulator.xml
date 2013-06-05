@@ -14,5 +14,38 @@
             <port x="0.5" y="0" a="270" name="Va"/>
             <port x="1" y="0.5" a="0" name="pa"/>
         </ports>
+        <animation>
+            <icon userpath="ackumulator_user.svg"/>
+            <movable>
+                <icon userpath="ackumulator_movable2.svg"/>
+                <data port="P1" dataname="Pressure" idx="0"/> 
+                <start x="0" y="0" a="0"/>
+                <initcolor r="0" g="0" b="255"/>
+                <color r="-0.00001275" g="0" b="0.00001275" idx="0"/>
+                <transformorigin x="0" y="0"/>
+            </movable>    
+            <movable>
+                <icon userpath="ackumulator_movable3.svg"/>
+                <data port="P1" dataname="Pressure" idx="0"/>
+                <start x="0" y="0" a="0"/> 
+                <initcolor r="0" g="0" b="255"/>
+                <color r="-0.00001275" g="0" b="0.00001275" idx="0"/>
+                <transformorigin x="0" y="0"/>
+            </movable>
+            <movable>
+                <icon userpath="ackumulator_movable1.svg"/>
+                <data port="Va" dataname="Value"/> 
+                <divisor name="V0"/>
+                <start x="0" y="-50" a="0"/>
+                <movement x="0" y="-50" a="0"/>
+                <transformorigin x="0" y="0"/>                
+            </movable>
+            <movable>
+                <data port="Va" dataname="Value"/> 
+                <icon userpath="ackumulator_movable4.svg"/>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="0" y="0"/>                
+            </movable>
+        </animation>
     </modelobject>
 </hopsanobjectappearance>
