@@ -300,8 +300,14 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
     else                                                                            //Symbol
     {
         //mType = Expression::Symbol;
-        mString = symbols.first();
-
+        if(symbols.isEmpty())
+        {
+            mString = "0";
+        }
+        else
+        {
+            mString = symbols.first();
+        }
         //Make sure numerical symbols have double precision
         bool isInt;
         mString.toInt(&isInt);
@@ -320,9 +326,18 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
     if(!this->isSymbol())
         _simplify(simplifications);
 
-    assert(!(mFactors.size() == 1 && mDivisors.isEmpty()));
-    assert(!(mFactors.isEmpty() && !mDivisors.isEmpty()));
-    assert(mTerms.size() != 1);
+    if(mFactors.size() == 1 && mDivisors.isEmpty())
+    {
+        this->replaceBy(mFactors[0]);
+    }
+    else if(mFactors.isEmpty() && !mDivisors.isEmpty())
+    {
+        this->replaceBy(Expression(0));
+    }
+    else if(mTerms.size() == 1)
+    {
+        this->replaceBy(mTerms[0]);
+    }
 }
 
 

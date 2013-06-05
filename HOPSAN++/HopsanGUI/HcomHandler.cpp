@@ -2066,7 +2066,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
     *returnType = Scalar;
 
     //expr.replace("==", "§§§§§");
-    expr.replace("**", "%%%%%");
+    //expr.replace("**", "%%%%%");
 
     //Remove parentheses around expression
     QString tempStr = expr.mid(1, expr.size()-2);
@@ -2817,7 +2817,7 @@ QString HcomHandler::getWorkingDirectory() const
 //! @returns True if it is a correct exrpession, otherwise false
 bool HcomHandler::evaluateArithmeticExpression(QString cmd)
 {
-    cmd.replace("**", "%%%%%");
+    //cmd.replace("**", "%%%%%");
 
     if(cmd.endsWith("*")) { return false; }
 
