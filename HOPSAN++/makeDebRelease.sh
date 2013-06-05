@@ -13,7 +13,7 @@ devversion=0.6.
 pbuilderBaseTGZpath="/var/cache/pbuilder/"
 
 # Pbuilder dists and archs
-distArchArray=( quantal:amd64 quantal:i386 precise:amd64 precise:i386 oneiric:amd64 oneiric:i386 )
+distArchArray=( raring:amd64 raring:i386 quantal:amd64 quantal:i386 precise:amd64 precise:i386 )
 distArchArrayDo=()
 
 # Ask user for version input
@@ -104,6 +104,7 @@ mv $srcExportDir/$packageorigsrcfile .
 # -----------------------------------------------------------------------------
 # Now build DEB package
 #
+buildStatusArray=()
 
 # First clear dir if it already exist
 rm -rf $packagedir
@@ -141,7 +142,7 @@ if [ "$doPbuild" = "true" ]; then
       resultPath="$pbuilderBaseTGZpath/result/$dist"
 
       # Update or create pbuild environments
-      extraPackages="debhelper unzip subversion lsb-release libtbb-dev libqt4-dev libqtwebkit-dev libqt4-opengl-dev"
+      extraPackages="debhelper unzip subversion lsb-release libtbb-dev libqt4-dev libqtwebkit-dev libqt4-opengl-dev python-dev"
       debootstrapOk="true"
       if [ "$doCreateUpdatePbuilderBaseTGZ" = "true" ]; then
 	    if [ -f $basetgzFile ]; then
@@ -149,9 +150,10 @@ if [ "$doPbuild" = "true" ]; then
 	    else
 	      sudo pbuilder --create --components "main universe" --extrapackages "$extraPackages" --distribution $dist --architecture $arch --basetgz $basetgzFile
 	    fi
-	    # Check for sucess
+	    # Check for success
 	    if [ $? -ne 0 ]; then
 		debootstrapOk="false"
+		buildStatusArray=("${buildStatusArray[@]}" "$dist_$arch":DebootstrapFailed)
 		echo "pubulider create or update FAILED! for $dist $arch, aborting!"
 		read -p "press any key to continue"
 	    fi
@@ -159,8 +161,14 @@ if [ "$doPbuild" = "true" ]; then
       
       if [ "$debootstrapOk" = "true" ]; then
           # Now build source package
-	  sudo pbuilder --build --removepackages "ccache" --basetgz $basetgzFile --buildresult $resultPath $dscFile
+	  sudo pbuilder --build --removepackages "ccache" --basetgz $basetgzFile --logfile "$resultPath/$outputbasename.log" --buildresult $resultPath $dscFile
 	  outputDebName=`ls $resultPath/$outputbasename*_$arch.deb`
+	  
+	  if [ -f $outputDebName ]; then
+	    buildStatusArray=("${buildStatusArray[@]}" "$dist_$arch":BuildOk)
+	  else
+	    buildStatusArray=("${buildStatusArray[@]}" "$dist_$arch":BuildFailed)
+	  fi
 	  
           # Now copy and rename output deb file to dist output dir
 	  mkdir -p $outputDir/$dist
@@ -174,6 +182,9 @@ if [ "$doPbuild" = "true" ]; then
   
   mv $packagedir* $outputDir/
   mv $outputbasename* $outputDir/
+  
+  echo "Build Status:"
+  echo ${buildStatusArray[@]}
 
 else
   # Now lets create and test the package

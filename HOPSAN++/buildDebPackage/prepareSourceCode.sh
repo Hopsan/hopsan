@@ -1,7 +1,7 @@
 #!/bin/bash
 # $Id$
 
-# Shell script for exporting and preparingn the Hopsan src code before RELEASE build
+# Shell script for exporting and preparing the Hopsan source code before RELEASE build
 # Author: Peter Nordin peter.nordin@liu.se
 # Date:   2012-04-01
 # For use in Hopsan, requires "subversion commandline" installed (apt-get install subversion)
@@ -20,7 +20,7 @@ doDevRelease="$4"
 doBuildInComponents="$5"
 
 # -----------------------------------------------------------------------------
-# Determine the Core Gui and CLI svn rev numbers for this relase
+# Determine the Core Gui and CLI svn rev numbers for this release
 #
 cd $srcDir/HopsanCore; coresvnrev=`../getSvnRevision.sh`; cd $OLDPWD
 cd $srcDir/HopsanGUI; guisvnrev=`../getSvnRevision.sh`; cd $OLDPWD
@@ -41,7 +41,7 @@ cd $dstDir
 # Clean bin folder
 rm -rf ./bin/*
 
-# Remove the inclusion of the svnrevnum file in core. It is only usefull for dev trunk use
+# Remove the inclusion of the svnrevnum file in core. It is only useful for dev trunk use
 sed "s|.*#include \"svnrevnum.h\"|//#include \"svnrevnum.h\"|g" -i HopsanCore/include/version.h
 
 # Set the Core Gui and CLI svn rev numbers for this release
@@ -65,7 +65,7 @@ fi
 # Make sure we compile defaultLibrary into core
 if [ "$doBuildInComponents" = "true" ]; then
   sed 's|.*DEFINES \*= BUILTINDEFAULTCOMPONENTLIB|DEFINES *= BUILTINDEFAULTCOMPONENTLIB|g' -i Common.prf
-  sed 's|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/code/defaultComponentLibraryInternal.cc \\|g' -i HopsanCore/HopsanCore.pro
+  sed 's|#INTERNALCOMPLIB.CC#|../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc \\|g' -i HopsanCore/HopsanCore.pro
   sed 's|componentLibraries||g' -i HopsanNG.pro
 fi
 

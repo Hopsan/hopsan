@@ -1,7 +1,7 @@
 #!/bin/bash
 # $Id$
 
-# Shell script for copying "Installing" the necessary files from a prebuild hopsan root dir
+# Shell script for copying "Installing" the necessary files from a pre-build hopsan root dir
 # The root dir is assumed to have been exported from svn
 # Author: Peter Nordin peter.nordin@liu.se
 # Date:   2012-03-04
@@ -17,28 +17,32 @@ srcDir=$1
 dstDir=$2
 echo "Copy installing Hopsan from $srcDir to $dstDir"
 
-# Create needed dst directories
-mkdir -p $dstDir/HopsanCore
-mkdir -p $dstDir/componentLibraries/defaultLibrary
-mkdir -p $dstDir/Models
-mkdir -p $dstDir/doc/user
-mkdir -p $dstDir/bin
-
-
 # Copy whole directories
-cp -a $srcDir/HopsanCore/include $dstDir/HopsanCore/include
-cp -a $srcDir/componentLibraries/defaultLibrary/components $dstDir/componentLibraries/defaultLibrary/components
-cp -a $srcDir/componentLibraries/exampleComponentLib $dstDir/componentLibraries/exampleComponentLib
-cp -a $srcDir/Models/Example\ Models $dstDir/Models/
-cp -a $srcDir/Models/Component\ Test $dstDir/Models/
-cp -a $srcDir/doc/graphics $dstDir/doc/graphics
-cp -a $srcDir/Scripts $dstDir/Scripts 
-cp -a $srcDir/doc/user/html $dstDir/doc/user/html
+# ======================
+mkdir -p                                                   $dstDir/HopsanCore
+cp -a    $srcDir/HopsanCore/include                        $dstDir/HopsanCore/include
 
-# copy files
-cp -a $srcDir/bin/*.so* $dstDir/bin/
-cp -a $srcDir/bin/Hopsan* $dstDir/bin/
-cp -a $srcDir/componentLibraries/defaultLibrary/components/*.so* $dstDir/componentLibraries/defaultLibrary/components/
-cp -a $srcDir/hopsandefaults $dstDir/
-cp -a $srcDir/Hopsan-release-notes.txt $dstDir/
+mkdir -p                                                   $dstDir/componentLibraries
+cp -a    $srcDir/componentLibraries/defaultLibrary         $dstDir/componentLibraries
+cp -a    $srcDir/componentLibraries/exampleComponentLib    $dstDir/componentLibraries
 
+mkdir -p                                                   $dstDir/Models
+cp -a    $srcDir/Models/Example\ Models                    $dstDir/Models
+cp -a    $srcDir/Models/Component\ Test                    $dstDir/Models
+
+mkdir -p                                                   $dstDir/doc/user
+cp -a    $srcDir/doc/user/html                             $dstDir/doc/user
+cp -a    $srcDir/doc/graphics                              $dstDir/doc
+
+cp -a    $srcDir/Scripts                                   $dstDir/Scripts
+
+# Copy compiled libs and exec files
+# =================================
+mkdir -p                                                   $dstDir/bin
+cp -a    $srcDir/bin/*.so*                                 $dstDir/bin
+cp -a    $srcDir/bin/Hopsan*                               $dstDir/bin
+
+# Copy additional files
+# =====================
+cp -a    $srcDir/hopsandefaults                            $dstDir
+cp -a    $srcDir/Hopsan-release-notes.txt                  $dstDir
