@@ -129,17 +129,25 @@ bool SysParamTableModel::setData(const QModelIndex &index, const QVariant &value
             // If new name given try to rename
             if (value.toString() != mParameterData[index.row()].mName)
             {
-                isOk = mpContainerObject->renameParameter(mParameterData[index.row()].mName, value.toString());
-                if (isOk)
+                if (mpContainerObject)
                 {
-                   mParameterData[index.row()].mName = value.toString();
-                   emit dataChanged(index, index);
+                    isOk = mpContainerObject->renameParameter(mParameterData[index.row()].mName, value.toString());
+                    if (isOk)
+                    {
+                       mParameterData[index.row()].mName = value.toString();
+                       emit dataChanged(index, index);
+                    }
+                    else
+                    {
+                        QMessageBox::critical(0, "Error",
+                                              QString("'%1' is an invalid parameter name or name already exist")
+                                              .arg(value.toString()));
+                    }
                 }
                 else
                 {
-                    QMessageBox::critical(0, "Error",
-                                          QString("'%1' is an invalid parameter name or name already exist")
-                                          .arg(value.toString()));
+                    isOk = false;
+                    QMessageBox::critical(0, "Error", "The container object has been removed, (this should not happen!)");
                 }
             }
             break;
@@ -225,7 +233,7 @@ bool SysParamTableModel::addOrSetParameter(CoreParameterData &rParameterData)
     {
         QMessageBox::critical(0, "Error", errorString);
     }
-    else
+    else if (mpContainerObject)
     {
         CoreParameterData oldParamData;
         mpContainerObject->getParameter(rParameterData.mName, oldParamData);
@@ -250,6 +258,10 @@ bool SysParamTableModel::addOrSetParameter(CoreParameterData &rParameterData)
             mpContainerObject->hasChanged();
         }
     }
+    else
+    {
+        isOk = false;
+    }
 
     //! @todo if Ok then we should update or emit data changed or something
     return isOk;
@@ -257,7 +269,14 @@ bool SysParamTableModel::addOrSetParameter(CoreParameterData &rParameterData)
 
 bool SysParamTableModel::hasParameter(const QString name)
 {
-    return mpContainerObject->getCoreSystemAccessPtr()->hasSystemParameter(name);
+    if (mpContainerObject)
+    {
+        return mpContainerObject->getCoreSystemAccessPtr()->hasSystemParameter(name);
+    }
+    else
+    {
+        return false;
+    }
 }
 
 void SysParamTableModel::setContainer(ContainerObject *pContainerObject)
@@ -269,14 +288,23 @@ void SysParamTableModel::setContainer(ContainerObject *pContainerObject)
         mpContainerObject->getParameters(mParameterData);
         emit layoutChanged();
     }
+    else
+    {
+        emit layoutAboutToBeChanged();
+        mParameterData.clear();
+        emit layoutChanged();
+    }
 }
 
 
 void SysParamTableModel::removeParameter(const int row)
 {
-    mpContainerObject->getCoreSystemAccessPtr()->removeSystemParameter(mParameterData[row].mName);
-    mParameterData.remove(row);
-    mpContainerObject->hasChanged();
+    if (mpContainerObject)
+    {
+        mpContainerObject->getCoreSystemAccessPtr()->removeSystemParameter(mParameterData[row].mName);
+        mParameterData.remove(row);
+        mpContainerObject->hasChanged();
+    }
 }
 
 
@@ -347,13 +375,15 @@ void SystemParametersWidget::update(ContainerObject *pNewContainer)
 
 void SystemParametersWidget::update()
 {
-    if (mpContainerObject!=0)
+    // Set container will refresh the internal parameter data and emit layoutChanged to the view
+    qobject_cast<SysParamTableModel*>(mpSysParamTableView->model())->setContainer(mpContainerObject);
+
+    if (mpContainerObject)
     {
         mpAddButton->setEnabled(true);
         mpRemoveButton->setEnabled(true);
 
-        // Set container will refresh the internal parameter data and emit layoutChanged to the view
-        qobject_cast<SysParamTableModel*>(mpSysParamTableView->model())->setContainer(mpContainerObject);
+        // Make sure we show the widget, if it is hidden
         mpSysParamTableView->show();
 
         qDebug() << "--------------List isEnabled: " << mpSysParamTableView->isEnabled();

@@ -75,7 +75,7 @@ public:
 protected:
     void removeParameter(const int row);
 
-    ContainerObject *mpContainerObject;
+    QPointer<ContainerObject> mpContainerObject;
     QVector<CoreParameterData> mParameterData;
 };
 
