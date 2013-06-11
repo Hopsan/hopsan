@@ -767,7 +767,7 @@ void OptimizationDialog::generateComplexScript()
         QString par = mSelectedComponents[p]+"."+mSelectedParameters[p];
         setPars.append("    chpa "+par+" par(evalId,"+QString::number(p)+")\n");
 
-        setMinMax.append("opt setparminmax "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
+        setMinMax.append("opt set limits "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
     }
 
 
@@ -850,7 +850,7 @@ void OptimizationDialog::generateParticleSwarmScript()
         QString par = mSelectedComponents[p]+"."+mSelectedParameters[p];
         setPars.append("    chpa "+par+" par(evalId,"+QString::number(p)+")\n");
 
-        setMinMax.append("opt setparminmax "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
+        setMinMax.append("opt set limits "+QString::number(p)+" "+mpParameterMinLineEdits[p]->text()+" "+mpParameterMaxLineEdits[p]->text()+"\n");
     }
 
 

@@ -95,7 +95,7 @@ private:
     void changePlotVariables(const QString cmd, const int axis) const;
     void addPlotCurve(QString cmd, const int axis) const;
     void removePlotCurves(const int axis) const;
-    QString evaluateExpression(QString expr, VariableType *returnType, bool *evalOk) const;
+    QString evaluateExpression(QString expr, VariableType *returnType, bool *evalOk);
     void getComponents(QString str, QList<ModelObject*> &components);
     void getParameters(QString str, ModelObject* pComponent, QStringList &parameters);
     void getParameters(QString str, QStringList &parameters);
@@ -106,7 +106,7 @@ private:
     bool evaluateArithmeticExpression(QString cmd);
     void splitAtFirst(QString str, QString c, QString &left, QString &right);
     bool containsOutsideParentheses(QString str, QString c);
-    double getNumber(const QString str, bool *ok) const;
+    double getNumber(const QString str, bool *ok);
     QString getDirectory(const QString cmd) const;
     QStringList getArguments(const QString cmd) const;
     int getNumberOfArguments(const QString cmd) const;
@@ -171,6 +171,9 @@ private:
     int mOptConvergenceReason;
     double mOptParTol, mOptFuncTol;
     bool mOptMulticore;
+    bool mOptPlotPoints;
+    bool mOptPlotBestWorst;
+    bool mOptPlotVariables;
 };
 
 

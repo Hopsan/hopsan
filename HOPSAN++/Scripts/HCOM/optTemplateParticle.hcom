@@ -13,7 +13,7 @@ enddefine
 define obj
 <<<objfuncs>>>
     totalObj = <<<totalobj>>>
-    opt setobj evalId totalObj
+    opt set obj evalId totalObj
 enddefine
 
 

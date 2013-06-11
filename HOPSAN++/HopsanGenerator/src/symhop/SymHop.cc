@@ -203,7 +203,7 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
         int start=0;        //Start index of each symbol
         for(int i=0; i<str.size(); ++i)
         {
-            if(!var && parBal==0 && (str.at(i).isLetterOrNumber() || str.at(i) == '_' || str.at(i) == '-' || str.at(i) == '.')) //New variable or function string
+            if(!var && parBal==0 && (str.at(i).isLetterOrNumber() || str.at(i) == '_' || str.at(i) == '-' || str.at(i) == '.' || str.at(i) == ':')) //New variable or function string
             {
                 var = true;
                 start = i;
@@ -226,7 +226,10 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
                     symbols.append(str.mid(start, i-start+1));
                 }
             }
-            else if(var && !(str.at(i).isLetterOrNumber() || str.at(i) == '_' || str.at(i) == '.'))     //End of variable, append it to symbols
+            else if(var && !(str.at(i).isLetterOrNumber() || str.at(i) == '_' || str.at(i) == '.' || str.at(i) == ':' ||
+                             (i>1 && str.size() > i+2 && str.at(i) == '+' && str.at(i+1) == '-' && str.at(i-1) == 'e' && str.at(i+2).isNumber()) ||
+                             (i>0 && str.size() > i+1 && str.at(i) == '-' && str.at(i-1) == '+' && str.at(i-2) == 'e' && str.at(i+1).isNumber()) ||
+                             (i>0 && str.size() > i+1 && str.at(i) == '+' && str.at(i-1) == 'e' && str.at(i+1).isNumber())))     //End of variable, append it to symbols (last two checks makes sure that Xe+Y and Xe-Y are treated as one symbol)
             {
                 var = false;
                 symbols.append(str.mid(start, i-start));
@@ -320,6 +323,9 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
             mString = mString.right(mString.size()-1);
             this->replaceBy(Expression::fromFactorsDivisors(QList<Expression>() << Expression("-1") << (*this), QList<Expression>()));
         }
+
+        //Replace Xe+-Y with Xe-Y
+        mString.replace("e+-", "e-");
     }
 
     //Perform simplifications (but not for symbols, because that is pointless)
@@ -3385,6 +3391,10 @@ void SymHop::validateFunctions()
     hAssert(fuzzyEqual(expr.evaluate(variables), y));
     expr = Expression("x+A");
     hAssert(fuzzyEqual(expr.evaluate(variables), x));
+    expr = Expression("2e5+2");
+    hAssert(fuzzyEqual(expr.evaluate(variables), 2e5+2));
+    expr = Expression("2e-5+2");
+    hAssert(fuzzyEqual(expr.evaluate(variables), 2e-5+2));
 }
 
 

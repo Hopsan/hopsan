@@ -63,6 +63,8 @@ HcomHandler::HcomHandler(TerminalConsole *pConsole) : QObject(pConsole)
     mPwd.chop(1);
 
     mOptAlgorithm = Uninitialized;
+    mOptPlotPoints = false;
+    mOptPlotBestWorst = false;
 
     //Setup local function pointers (used to evaluate expressions in SymHop)
     registerFunction("aver", "Calculate average value of vector", &(_funcAver));
@@ -1755,64 +1757,83 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
         returnScalar(mOptBestId);
         return;
     }
-    if(split.size() == 3 && split[0] == "setobj")
+    if(split[0] == "set")
     {
-        bool ok;
-        int nPoint = getNumber(split[1], &ok);
-        if(!ok)
+        if(split.size() == 4 && split[1] == "obj")
         {
-            mpConsole->printErrorMessage("Argument number 2 must be a number.");
-            return;
-        }
-        if(nPoint < 0 || nPoint > mOptObjectives.size()-1)
-        {
-            mpConsole->printErrorMessage("Index out of range.");
-            return;
-        }
+            bool ok;
+            int nPoint = getNumber(split[2], &ok);
+            if(!ok)
+            {
+                mpConsole->printErrorMessage("Argument number 2 must be a number.");
+                return;
+            }
+            if(nPoint < 0 || nPoint > mOptObjectives.size()-1)
+            {
+                mpConsole->printErrorMessage("Index out of range.");
+                return;
+            }
 
-        double val = getNumber(split[2], &ok);
-        if(!ok)
-        {
-            mpConsole->printErrorMessage("Argument number 3 must be a number.");
+            double val = getNumber(split[3], &ok);
+            if(!ok)
+            {
+                mpConsole->printErrorMessage("Argument number 3 must be a number.");
+                return;
+            }
+
+            mOptObjectives[nPoint] = val;
             return;
         }
-
-        mOptObjectives[nPoint] = val;
-        return;
-    }
-    if(split.size() == 4 && split[0] == "setparminmax")
-    {
-        bool ok;
-        int nPoint = getNumber(split[1], &ok);
-        if(!ok)
+        else if(split.size() == 5 && split[1] == "limits")
         {
-            mpConsole->printErrorMessage("Argument number 2 must be a number.");
+            bool ok;
+            int nPoint = getNumber(split[2], &ok);
+            if(!ok)
+            {
+                mpConsole->printErrorMessage("Argument number 2 must be a number.");
+                return;
+            }
+            if(nPoint < 0 || nPoint > mOptParameters.size()-1)
+            {
+                mpConsole->printErrorMessage("Index out of range.");
+                return;
+            }
+
+
+            double min = getNumber(split[3], &ok);
+            if(!ok)
+            {
+                mpConsole->printErrorMessage("Argument number 3 must be a number.");
+                return;
+            }
+
+            double max = getNumber(split[4], &ok);
+            if(!ok)
+            {
+                mpConsole->printErrorMessage("Argument number 4 must be a number.");
+                return;
+            }
+
+            mOptParMin[nPoint] = min;
+            mOptParMax[nPoint] = max;
             return;
         }
-        if(nPoint < 0 || nPoint > mOptParameters.size()-1)
+        else if(split.size() == 3 && split[1] == "plotpoints")
         {
-            mpConsole->printErrorMessage("Index out of range.");
-            return;
+            mOptPlotPoints = (split[2] == "on");
         }
-
-
-        double min = getNumber(split[2], &ok);
-        if(!ok)
+        else if(split.size() == 3 && split[1] == "plotbestworst")
         {
-            mpConsole->printErrorMessage("Argument number 3 must be a number.");
-            return;
+            mOptPlotBestWorst = (split[2] == "on");
         }
-
-        double max = getNumber(split[3], &ok);
-        if(!ok)
+        else if(split.size() == 3 && split[1] == "plotvariables")
         {
-            mpConsole->printErrorMessage("Argument number 4 must be a number.");
-            return;
+            mOptPlotVariables = (split[2] == "on");
         }
-
-        mOptParMin[nPoint] = min;
-        mOptParMax[nPoint] = max;
-        return;
+        else
+        {
+            mpConsole->printErrorMessage("Unknown optimization setting: "+split[1], "", false);
+        }
     }
 
     if(split.size() == 3 && split[0] == "init")
@@ -2060,7 +2081,7 @@ void HcomHandler::removePlotCurves(const int axis) const
 }
 
 
-QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, bool *evalOk) const
+QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, bool *evalOk)
 {
     *evalOk = true;
     *returnType = Scalar;
@@ -2278,7 +2299,14 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
 
     *returnType = Scalar;
 
-    return QString::number(symHopExpr.evaluate(mLocalVars, mLocalFunctionPtrs));
+    QMap<QString, double> localVars = mLocalVars;
+    QStringList localPars;
+    getParameters("*", localPars);
+    for(int p=0; p<localPars.size(); ++p)
+    {
+        localVars.insert(localPars[p],getParameterValue(localPars[p]).toDouble());
+    }
+    return QString::number(symHopExpr.evaluate(localVars, mLocalFunctionPtrs));
 }
 
 
@@ -2570,16 +2598,22 @@ void HcomHandler::getComponents(QString str, QList<ModelObject*> &components)
 //! @param parameterse Reference to list of found parameters
 void HcomHandler::getParameters(QString str, ModelObject* pComponent, QStringList &parameters)
 {
-    QString left = str.split("*").first();
-    QString right = str.split("*").last();
-
-
-    for(int n=0; n<pComponent->getParameterNames().size(); ++n)
+    if(str.contains("*"))
     {
-        if(pComponent->getParameterNames().at(n).startsWith(left) && pComponent->getParameterNames().at(n).endsWith(right))
+        QString left = str.split("*").first();
+        QString right = str.split("*").last();
+
+        for(int n=0; n<pComponent->getParameterNames().size(); ++n)
         {
-            parameters.append(pComponent->getParameterNames().at(n));
+            if(pComponent->getParameterNames().at(n).startsWith(left) && pComponent->getParameterNames().at(n).endsWith(right))
+            {
+                parameters.append(pComponent->getParameterNames().at(n));
+            }
         }
+    }
+    else
+    {
+        parameters.append(str);
     }
 }
 
@@ -2625,45 +2659,52 @@ void HcomHandler::getParameters(const QString str, QStringList &parameters)
         allParameters.append(systemParameters[s]);
     }
 
-    QString temp = str;
-    QStringList splitStr = temp.split("*");
-    for(int p=0; p<allParameters.size(); ++p)
+    if(str.contains("*"))
     {
-        bool ok=true;
-        QString name = allParameters[p];
-        for(int s=0; s<splitStr.size(); ++s)
+        QString temp = str;
+        QStringList splitStr = temp.split("*");
+        for(int p=0; p<allParameters.size(); ++p)
         {
-            if(s==0)
+            bool ok=true;
+            QString name = allParameters[p];
+            for(int s=0; s<splitStr.size(); ++s)
             {
-                if(!name.startsWith(splitStr[s]))
+                if(s==0)
                 {
-                    ok=false;
-                    break;
+                    if(!name.startsWith(splitStr[s]))
+                    {
+                        ok=false;
+                        break;
+                    }
+                    name.remove(0, splitStr[s].size());
                 }
-                name.remove(0, splitStr[s].size());
+                else if(s==splitStr.size()-1)
+                {
+                    if(!name.endsWith(splitStr[s]))
+                    {
+                        ok=false;
+                        break;
+                    }
+                }
+                else
+                {
+                    if(!name.contains(splitStr[s]))
+                    {
+                        ok=false;
+                        break;
+                    }
+                    name.remove(0, name.indexOf(splitStr[s])+splitStr[s].size());
+                }
             }
-            else if(s==splitStr.size()-1)
+            if(ok)
             {
-                if(!name.endsWith(splitStr[s]))
-                {
-                    ok=false;
-                    break;
-                }
-            }
-            else
-            {
-                if(!name.contains(splitStr[s]))
-                {
-                    ok=false;
-                    break;
-                }
-                name.remove(0, name.indexOf(splitStr[s])+splitStr[s].size());
+                parameters.append(allParameters[p]);
             }
         }
-        if(ok)
-        {
-            parameters.append(allParameters[p]);
-        }
+    }
+    else
+    {
+        parameters.append(str);
     }
 }
 
@@ -2832,7 +2873,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
         bool leftIsOk = left[0].isLetter();
         for(int i=1; i<left.size(); ++i)
         {
-            if(!left.at(i).isLetterOrNumber())
+            if(!(left.at(i).isLetterOrNumber() || left.at(i) == '_'))
             {
                 leftIsOk = false;
             }
@@ -2857,6 +2898,12 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
 
         if(evalOk && type==Scalar)
         {
+            QStringList pars;
+            getParameters(left, pars);
+            if(!pars.isEmpty())
+            {
+                executeCommand("chpa "+left+" "+value);
+            }
             mLocalVars.insert(left, value.toDouble());
             mpConsole->print("Assigning "+left+" with "+value);
             mLocalVars.insert("ans", value.toDouble());
@@ -2991,7 +3038,7 @@ SharedLogVariableDataPtrT HcomHandler::getVariablePtr(QString fullName) const
 //! @brief Parses a string into a number
 //! @param str String to parse, should be a number of a variable name
 //! @param ok Pointer to boolean that tells if parsing was successful
-double HcomHandler::getNumber(const QString str, bool *ok) const
+double HcomHandler::getNumber(const QString str, bool *ok)
 {
     *ok = true;
     if(str.toDouble())
@@ -3790,6 +3837,8 @@ void HcomHandler::optParticleRun()
 
 void HcomHandler::optPlotPoints()
 {
+    if(!mOptPlotPoints) { return; }
+
     if(mOptNumParameters != 2)
     {
         mpConsole->printErrorMessage("Points can only be plotted with two parameters.");
@@ -3844,6 +3893,8 @@ void HcomHandler::optPlotPoints()
 
 void HcomHandler::optPlotBestWorstObj()
 {
+    if(!mOptPlotBestWorst) { return; }
+
     LogDataHandler *pHandler = gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler();
     SharedLogVariableDataPtrT bestVar = pHandler->getPlotData("BestObjective", -1);
     if(bestVar.isNull())

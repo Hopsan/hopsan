@@ -71,7 +71,7 @@ AnimatedComponent::AnimatedComponent(ModelObject* unanimatedComponent, Animation
         for(int i=0; i<mpAnimationData->movableIconPaths.size(); ++i)
         {
             setupAnimationMovable(i);
-            if(!mpAnimationData->dataPorts.at(i).isEmpty() && unanimatedComponent->getPort(mpAnimationData->dataPorts.at(i).first())->isConnected())
+            if(!mpAnimationData->dataPorts.at(i).isEmpty()/* && unanimatedComponent->getPort(mpAnimationData->dataPorts.at(i).first())->isConnected()*/)
             {
                 mpData->append(QList<QVector<double> >());
                 mpNodeDataPtrs->append(QList<double*>());
@@ -156,7 +156,7 @@ void AnimatedComponent::updateAnimation()
 
             if(mpAnimationWidget->isRealTimeAnimation() && !mpNodeDataPtrs->isEmpty())    //Real-time simulation, read from node vector directly
             {
-                if(mpModelObject->getPort(mpAnimationData->dataPorts.at(m).first())->isConnected())
+                if(true/*mpModelObject->getPort(mpAnimationData->dataPorts.at(m).first())->isConnected()*/)
                 {
                     for(int i=0; i<mpNodeDataPtrs->at(m).size(); ++i)
                     {
