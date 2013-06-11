@@ -317,6 +317,12 @@ void Expression::commonConstructorCode(QStringList symbols, const ExpressionSimp
         if(isInt && !mString.contains("."))
             mString.append(".0");
 
+        //Convert ".X" to "0.X"
+        if(mString.startsWith("."))
+        {
+            mString.prepend("0");
+        }
+
         //Replace negative symbols with multiplication with -1
         if(mString.startsWith("-") && mString != "-1.0" && int(mString.toDouble()) != -1)
         {
