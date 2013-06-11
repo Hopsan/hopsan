@@ -2906,11 +2906,19 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
     {
         QString left = expr.getLeft()->toString();
 
+        QStringList vars;
+        getVariables(left, vars);
+        if(!vars.isEmpty())
+        {
+            mpConsole->printErrorMessage("Not very clever to assign a data vector with a scalar.", "", false);
+            return true;
+        }
+
         //Make sure left side is an acceptable variable name
         bool leftIsOk = left[0].isLetter();
         for(int i=1; i<left.size(); ++i)
         {
-            if(!(left.at(i).isLetterOrNumber() || left.at(i) == '_'))
+            if(!(left.at(i).isLetterOrNumber() || left.at(i) == '_' || left.at(i) == '.' || left.at(i) == ':'))
             {
                 leftIsOk = false;
             }
@@ -2940,6 +2948,8 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
             if(!pars.isEmpty())
             {
                 executeCommand("chpa "+left+" "+value);
+                mpConsole->print("Assigning "+left+" with "+value);
+                return true;
             }
             mLocalVars.insert(left, value.toDouble());
             mpConsole->print("Assigning "+left+" with "+value);
