@@ -208,6 +208,16 @@ void SimulationThreadHandler::initSimulateFinalize(QVector<SystemContainer*> vpS
         emit startProgressBarRefreshTimer(gConfig.getProgressBarStep());
     }
 
+    //Create a timer to make sure messages are displayed in terminal during simulation
+    if(!gConfig.getUseMulticore())
+    {
+        QTimer *pCheckMessagesTimer = new QTimer();
+        connect(pCheckMessagesTimer, SIGNAL(timeout()), gpMainWindow->mpTerminalWidget, SLOT(checkMessages()));
+        connect(this, SIGNAL(done(bool)), pCheckMessagesTimer, SLOT(deleteLater()));
+        pCheckMessagesTimer->setSingleShot(false);
+        pCheckMessagesTimer->start(1000);
+    }
+
     //! @todo make it possible to select priority in options
     // Start the simulation thread and then signal that the simulation can start
     //simulationThread.start(QThread::TimeCriticalPriority);
