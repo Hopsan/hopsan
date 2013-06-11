@@ -594,7 +594,8 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
     }
 
     //Get file name in case this is a save as operation
-    if((mpToplevelSystem->getModelFileInfo().filePath().isEmpty()) || (saveAsFlag == NewFile))
+    QString modelFilePathToSave = mpToplevelSystem->getModelFileInfo().filePath();
+    if((modelFilePathToSave.isEmpty()) || (saveAsFlag == NewFile))
     {
         QString filter;
         if(contents==FullModel)
@@ -606,24 +607,24 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
             filter = tr("Hopsan Parameter Files (*.hpf)");
         }
 
-        QString modelFilePath;
-        modelFilePath = QFileDialog::getSaveFileName(this, tr("Save Model File"),
+
+        modelFilePathToSave = QFileDialog::getSaveFileName(this, tr("Save Model File"),
                                                      gConfig.getLoadModelDir(),
                                                      filter);
 
-        if(modelFilePath.isEmpty())     //Don't save anything if user presses cancel
+        if(modelFilePathToSave.isEmpty())     //Don't save anything if user presses cancel
         {
             return;
         }
         if(contents==FullModel)
         {
-            mpToplevelSystem->setModelFile(modelFilePath);
+            mpToplevelSystem->setModelFile(modelFilePathToSave);
         }
-        QFileInfo fileInfo = QFileInfo(modelFilePath);
+        QFileInfo fileInfo = QFileInfo(modelFilePathToSave);
         gConfig.setLoadModelDir(fileInfo.absolutePath());
     }
 
-    QFile file(mpToplevelSystem->getModelFileInfo().filePath());   //Create a QFile object
+    QFile file(modelFilePathToSave);   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
         gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not open the file: "+file.fileName()+" for writing." );
@@ -672,20 +673,21 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
     mpToplevelSystem->saveToDomElement(rootElement, contents);
 
         //Save to file
-    QFile xmlhmf(mpToplevelSystem->getModelFileInfo().filePath());
-    if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
+    QFile xmlFile(modelFilePathToSave);
+    if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not save to file: " + mpToplevelSystem->getModelFileInfo().filePath());
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not save to file: " + modelFilePathToSave);
         return;
     }
-    QTextStream out(&xmlhmf);
+    QTextStream out(&xmlFile);
     appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
     domDocument.save(out, XMLINDENTATION);
 
     //Close the file
-    xmlhmf.close();
+    xmlFile.close();
 
         //Set the tab name to the model name, efectively removing *, also mark the tab as saved
+    //! @todo this should not happen when saving parameters, This needs to be rewritten in a smarter way so that we do not need a special argument and lots of ifs to do special saving of parameters, actually parameters should be saved using the CLI method (and that code should be in a shared utility library)
     QString tabName = mpToplevelSystem->getModelFileInfo().baseName();
     gpMainWindow->mpCentralTabs->setTabText(gpMainWindow->mpCentralTabs->indexOf(mpParentModelHandler->getCurrentModel()), tabName);
     if(contents == FullModel)
@@ -695,7 +697,7 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
         this->setSaved(true);
     }
 
-    gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Saved model: " + mpToplevelSystem->getModelFileInfo().filePath());
+    gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Saved model: " + modelFilePathToSave);
 
     mpToplevelSystem->getCoreSystemAccessPtr()->addSearchPath(mpToplevelSystem->getModelFileInfo().absolutePath());
 }

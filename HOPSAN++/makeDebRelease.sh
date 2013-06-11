@@ -10,7 +10,9 @@ name=hopsan
 devversion=0.6.
 
 # Pbuildpath
-pbuilderBaseTGZpath="/var/cache/pbuilder/"
+pbuilderWorkDir="$PWD/output/pbuilder/"
+pbuilderBuildDir="$pbuilderWorkDir""build/"
+mkdir -p $pbuilderBuildDir
 
 # Pbuilder dists and archs
 distArchArray=( raring:amd64 raring:i386 quantal:amd64 quantal:i386 precise:amd64 precise:i386 )
@@ -135,25 +137,36 @@ if [ "$doPbuild" = "true" ]; then
     doBuild="${arr[2]}"
 
     if [ "$doBuild" = "true" ]; then
+      echo
+      echo "==========================="
       echo "Building for $dist $arch"
+      echo "==========================="
       sleep 1
       doCreateUpdatePbuilderBaseTGZ="true"
-      basetgzFile=$pbuilderBaseTGZpath$dist$arch.tgz
-      resultPath="$pbuilderBaseTGZpath/result/$dist"
+      basetgzFile="$pbuilderWorkDir$dist$arch.tgz"
+      resultPath="$pbuilderWorkDir""result/$dist"
+      mkdir -p "$resultPath"
+      logFile="$resultPath/$outputbasename.log"
 
       # Update or create pbuild environments
       extraPackages="debhelper unzip subversion lsb-release libtbb-dev libqt4-dev libqtwebkit-dev libqt4-opengl-dev python-dev"
       debootstrapOk="true"
       if [ "$doCreateUpdatePbuilderBaseTGZ" = "true" ]; then
 	    if [ -f $basetgzFile ]; then
-	      sudo pbuilder --update --extrapackages "$extraPackages" --basetgz $basetgzFile
+	      echo
+	      echo "Updating existing TGZ: $basetgzFile"
+	      echo "------------------------"
+	      sudo pbuilder --update --extrapackages "$extraPackages"  --aptcache "" --buildplace "$pbuilderBuildDir" --basetgz $basetgzFile
 	    else
-	      sudo pbuilder --create --components "main universe" --extrapackages "$extraPackages" --distribution $dist --architecture $arch --basetgz $basetgzFile
+	      echo
+	      echo "Creating new TGZ: $basetgzFile"
+	      echo "------------------------"
+	      sudo pbuilder --create --components "main universe" --extrapackages "$extraPackages" --aptcache "" --buildplace "$pbuilderBuildDir" --distribution $dist --architecture $arch --basetgz $basetgzFile
 	    fi
 	    # Check for success
 	    if [ $? -ne 0 ]; then
 		debootstrapOk="false"
-		buildStatusArray=("${buildStatusArray[@]}" "$dist_$arch":DebootstrapFailed)
+		buildStatusArray=("${buildStatusArray[@]}" "$dist"\_"$arch":DebootstrapFailed)
 		echo "pubulider create or update FAILED! for $dist $arch, aborting!"
 		read -p "press any key to continue"
 	    fi
@@ -161,21 +174,28 @@ if [ "$doPbuild" = "true" ]; then
       
       if [ "$debootstrapOk" = "true" ]; then
           # Now build source package
-	  sudo pbuilder --build --removepackages "ccache" --basetgz $basetgzFile --logfile "$resultPath/$outputbasename.log" --buildresult $resultPath $dscFile
+          echo
+	  echo "Building with pbuilder"
+	  echo "------------------------"
+	  sudo pbuilder --build --basetgz $basetgzFile --logfile "$logFile" --aptcache "" --buildplace "$pbuilderBuildDir" --buildresult $resultPath $dscFile
+	  
+	  # Figure out the actual output file name
 	  outputDebName=`ls $resultPath/$outputbasename*_$arch.deb`
 	  
-	  if [ -f $outputDebName ]; then
+	  # Check if it exist (success)
+	  if [ -f "$outputDebName" ]; then
 	    buildStatusArray=("${buildStatusArray[@]}" "$dist_$arch":BuildOk)
+	    
+	    # Now copy and rename output deb file to dist output dir
+	    mkdir -p $outputDir/$dist
+	    cp $outputDebName $outputDir/$dist/$outputbasename\_$dist\_$arch.deb
+	  
+	    # Check package with lintian
+	    lintian --color always -X files $outputDir/$dist/$outputbasename\_$dist\_$arch.deb
+	    
 	  else
 	    buildStatusArray=("${buildStatusArray[@]}" "$dist_$arch":BuildFailed)
 	  fi
-	  
-          # Now copy and rename output deb file to dist output dir
-	  mkdir -p $outputDir/$dist
-	  cp $outputDebName $outputDir/$dist/$outputbasename\_$dist\_$arch.deb
-	  
-          # Check package with lintian
-	  lintian --color always -X files $outputDir/$dist/$outputbasename\_$dist\_$arch.deb
       fi
     fi
   done
@@ -183,7 +203,10 @@ if [ "$doPbuild" = "true" ]; then
   mv $packagedir* $outputDir/
   mv $outputbasename* $outputDir/
   
+  echo
   echo "Build Status:"
+  echo "-------------"
+  
   echo ${buildStatusArray[@]}
 
 else
@@ -198,4 +221,5 @@ else
   mv $outputbasename* $outputDir/thismachine
 fi
 
+echo
 echo Done!
