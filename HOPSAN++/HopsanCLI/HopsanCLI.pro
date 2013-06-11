@@ -59,6 +59,9 @@ unix {
 }
 win32 {
 
+    #Activate large adress aware, to access more the 2GB virtual RAM (for 32-bit version)
+    QMAKE_LFLAGS += -Wl,--large-address-aware
+
     #Get the svn revision in here if script succeed, we dont care about the external file generated,
     system($${PWD}/../getSvnRevision.bat) {
         DEFINES *= "HOPSANCLISVNREVISION=\"\\\"$$system($${PWD}/../getSvnRevision.bat)\\\"\""
