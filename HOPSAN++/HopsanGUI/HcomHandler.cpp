@@ -872,15 +872,23 @@ void HcomHandler::executeRunScriptCommand(const QString cmd)
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        path.prepend(mPwd+"/");
-        dir = path.left(path.lastIndexOf("/"));
-        dir = getDirectory(dir);
-        path = dir+path.right(path.size()-path.lastIndexOf("/"));
-        file.setFileName(path);
-        if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        file.setFileName(path+".hcom");
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         {
-            mpConsole->printErrorMessage("Unable to read file.","",false);
-            return;
+            path.prepend(mPwd+"/");
+            dir = path.left(path.lastIndexOf("/"));
+            dir = getDirectory(dir);
+            path = dir+path.right(path.size()-path.lastIndexOf("/"));
+            file.setFileName(path);
+            if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+            {
+                file.setFileName(path+".hcom");
+                if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+                {
+                    mpConsole->printErrorMessage("Unable to read file.","",false);
+                    return;
+                }
+            }
         }
     }
 
