@@ -10,7 +10,7 @@ name=hopsan
 devversion=0.6.
 
 # Pbuildpath
-pbuilderWorkDir="$PWD/output/pbuilder/"
+pbuilderWorkDir="$PWD/buildDebPackage/output/pbuilder/"
 pbuilderBuildDir="$pbuilderWorkDir""build/"
 mkdir -p $pbuilderBuildDir
 
