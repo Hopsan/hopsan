@@ -173,6 +173,7 @@ void Configuration::saveToXml()
     gpMainWindow->getPythonDock()->saveSettingsToDomElement(python);
 
     QDomElement hcom = appendDomElement(configRoot, "hcom");
+    appendDomTextNode(hcom, "pwd", mHcomWorkingDirectory);
     for(int i=0; i<mTerminalHistory.size(); ++i)
     {
         appendDomTextNode(hcom, "command", mTerminalHistory.at(i));
@@ -558,6 +559,11 @@ void Configuration::loadScriptSettings(QDomElement &rPythonElement, QDomElement 
 
     if(!rHcomElement.isNull())
     {
+        QDomElement pwdElement = rHcomElement.firstChildElement("pwd");
+        if(!pwdElement.isNull())
+        {
+            mHcomWorkingDirectory = pwdElement.text();
+        }
         QDomElement commandElement = rHcomElement.firstChildElement("command");
         while(!commandElement.isNull())
         {
@@ -973,6 +979,11 @@ QStringList Configuration::getTerminalHistory()
     return mTerminalHistory;
 }
 
+QString Configuration::getHcomWorkingDirectory() const
+{
+    return mHcomWorkingDirectory;
+}
+
 //! @brief Returns the last used directory for importing FMUs
 QString Configuration::getFmuExportDir()
 {
@@ -1297,6 +1308,11 @@ void Configuration::setPlotWindowDir(QString value)
 void Configuration::storeTerminalHistory(QStringList value)
 {
     mTerminalHistory = value;
+}
+
+void Configuration::setHcomWorkingDirectory(QString value)
+{
+    mHcomWorkingDirectory = value;
 }
 
 void Configuration::setFmuImportDir(QString value)

@@ -270,8 +270,16 @@ void HcomHandler::createCommands()
     pwdCmd.description.append("Displays present working directory");
     pwdCmd.help.append("Usage: pwd [no arguments]");
     pwdCmd.fnc = &HcomHandler::executePwdCommand;
-    pwdCmd.group = "Model Commands";
+    pwdCmd.group = "File Commands";
     mCmdList << pwdCmd;
+
+    HcomCommand mwdCmd;
+    mwdCmd.cmd = "mwd";
+    mwdCmd.description.append("Displays working directory of current model");
+    mwdCmd.help.append("Usage: mwd [no arguments]");
+    mwdCmd.fnc = &HcomHandler::executeMwdCommand;
+    mwdCmd.group = "File Commands";
+    mCmdList << mwdCmd;
 
     HcomCommand cdCmd;
     cdCmd.cmd = "cd";
@@ -1324,6 +1332,14 @@ void HcomHandler::executePwdCommand(const QString /*cmd*/)
     mpConsole->print(mPwd);
 }
 
+void HcomHandler::executeMwdCommand(const QString /*cmd*/)
+{
+    if(gpMainWindow->mpModelHandler->count() > 0)
+        mpConsole->print(gpMainWindow->mpModelHandler->getCurrentModel()->getTopLevelSystem()->getModelFileInfo().absoluteDir().path());
+    else
+        mpConsole->printErrorMessage("No model is open.", "", false);
+}
+
 
 //! @brief Execute function for "cd" command
 void HcomHandler::executeChangeDirectoryCommand(const QString cmd)
@@ -1331,6 +1347,14 @@ void HcomHandler::executeChangeDirectoryCommand(const QString cmd)
     if(getNumberOfArguments(cmd) != 1)
     {
         mpConsole->printErrorMessage("Wrong number of arguments", "", false);
+        return;
+    }
+
+    //Handle "cd mwd" command
+    if(cmd == "mwd")
+    {
+        mPwd = gpMainWindow->mpModelHandler->getCurrentModel()->getTopLevelSystem()->getModelFileInfo().absoluteDir().path();
+        mpConsole->print(mPwd);
         return;
     }
 
@@ -2844,6 +2868,11 @@ void HcomHandler::getVariablesThatStartsWithString(const QString str, QStringLis
             variables.append(names[n]);
         }
     }
+}
+
+void HcomHandler::setWorkingDirectory(QString dir)
+{
+    mPwd = dir;
 }
 
 

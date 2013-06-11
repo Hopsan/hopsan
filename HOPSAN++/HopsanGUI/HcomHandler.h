@@ -71,6 +71,7 @@ private:
     void executeLoadModelCommand(const QString cmd);
     void executeLoadRecentCommand(const QString cmd);
     void executePwdCommand(const QString cmd);
+    void executeMwdCommand(const QString cmd);
     void executeChangeDirectoryCommand(const QString cmd);
     void executeListFilesCommand(const QString cmd);
     void executeCloseModelCommand(const QString cmd);
@@ -102,6 +103,7 @@ private:
     QString getParameterValue(QString parameter) const;
     void getVariables(const QString str, QStringList &variables) const;
     void getVariablesThatStartsWithString(const QString str, QStringList &variables) const;
+    void setWorkingDirectory(QString dir);
     QString getWorkingDirectory() const;
     bool evaluateArithmeticExpression(QString cmd);
     void splitAtFirst(QString str, QString c, QString &left, QString &right);

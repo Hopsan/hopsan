@@ -84,6 +84,7 @@ public:
 
     bool getGroupMessagesByTag();
     QStringList getTerminalHistory();
+    QString getHcomWorkingDirectory() const;
     int getGenerationLimit() const;
     bool getCacheLogData() const;
 
@@ -138,6 +139,7 @@ public:
     void setScriptDir(QString value);
     void setPlotWindowDir(QString value);
     void storeTerminalHistory(QStringList value);
+    void setHcomWorkingDirectory(QString value);
     void setFmuImportDir(QString value);
     void setFmuExportDir(QString value);
     void setLabViewExportDir(QString value);
@@ -190,6 +192,7 @@ private:
     QString mScriptDir;
     QString mPlotWindowDir;
     QStringList mTerminalHistory;
+    QString mHcomWorkingDirectory;
     QString mFmuImportDir;
     QString mFmuExportDir;
     QString mLabViewExportDir;

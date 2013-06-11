@@ -130,6 +130,9 @@ void TerminalWidget::loadConfig()
 {
     mpGroupByTagCheckBox->setChecked(gConfig.getGroupMessagesByTag());
     mpConsole->mHistory = gConfig.getTerminalHistory();
+
+    if(!gConfig.getHcomWorkingDirectory().isEmpty())
+        mpHandler->setWorkingDirectory(gConfig.getHcomWorkingDirectory());
 }
 
 
@@ -141,6 +144,7 @@ void TerminalWidget::saveConfig()
         mpConsole->mHistory.prepend("--- "+QDateTime::currentDateTime().toString()+" ---");
         gConfig.storeTerminalHistory(mpConsole->mHistory);
     }
+    gConfig.setHcomWorkingDirectory(mpConsole->getHandler()->getWorkingDirectory());
 }
 
 
