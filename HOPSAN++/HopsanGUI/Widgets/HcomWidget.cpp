@@ -521,6 +521,20 @@ void TerminalConsole::keyPressEvent(QKeyEvent *event)
             //Move cursor back to last line
             this->moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
         }
+        else if(event->key() == Qt::Key_C)
+        {
+            int len1 = this->toPlainText().size();
+            QTextEdit::keyPressEvent(event);
+            int len2 = this->toPlainText().size();
+            if(len1!=len2)
+            {
+                undo();
+            }
+        }
+        else if(event->key() == Qt::Key_Control)
+        {
+            QTextEdit::keyPressEvent(event);
+        }
     }
 }
 
