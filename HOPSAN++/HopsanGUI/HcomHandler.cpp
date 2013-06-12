@@ -2736,7 +2736,10 @@ void HcomHandler::getParameters(const QString str, QStringList &parameters)
     }
     else
     {
-        parameters.append(str);
+        if(allParameters.contains(str))
+        {
+            parameters.append(str);
+        }
     }
 }
 
@@ -2906,9 +2909,13 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
     {
         QString left = expr.getLeft()->toString();
 
+        VariableType type;
+        bool evalOk;
+        QString value = evaluateExpression(expr.getRight()->toString(), &type, &evalOk);
+
         QStringList vars;
         getVariables(left, vars);
-        if(!vars.isEmpty())
+        if(!vars.isEmpty() && type==Scalar)
         {
             mpConsole->printErrorMessage("Not very clever to assign a data vector with a scalar.", "", false);
             return true;
@@ -2936,10 +2943,6 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
             mpConsole->printErrorMessage("Illegal variable name.","",false);
             return false;
         }
-
-        VariableType type;
-        bool evalOk;
-        QString value = evaluateExpression(expr.getRight()->toString(), &type, &evalOk);
 
         if(evalOk && type==Scalar)
         {
@@ -3573,6 +3576,12 @@ void HcomHandler::optComplexRun()
     case 2:
         mpConsole->print("Optimization converged in parameter values after "+QString::number(i)+" iterations.");
         break;
+    }
+
+    mpConsole->print("\nBest point:");
+    for(int i=0; i<mOptNumParameters; ++i)
+    {
+        mpConsole->print("par("+QString::number(i)+"): "+QString::number(mOptParameters[mOptBestId][i]));
     }
 
     return;
