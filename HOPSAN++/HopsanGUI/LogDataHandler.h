@@ -63,7 +63,8 @@ public:
 
     bool isEmpty();
 
-    QVector<double> getTimeVector(int generation);
+    const SharedLogVariableDataPtrT getTimeVectorPtr(int generation) const;
+    QVector<double> getTimeVectorCopy(int generation) const;
     QVector<double> getPlotDataValues(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
     QVector<double> getPlotDataValues(const QString fullName, int generation);
     SharedLogVariableDataPtrT getPlotData(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
@@ -152,13 +153,12 @@ signals:
     void closePlotsWithOwnedData();
 
 private:
-    void insertVariableBasedOnDescription(VariableDescription &rVarDesc, SharedTimeVectorPtrT pTimeVector, QVector<double> &rDataVector);
+    SharedLogVariableDataPtrT insertTimeVariable(QVector<double> &rTimeVector);
+    void insertVariableBasedOnDescription(VariableDescription &rVarDesc, SharedLogVariableDataPtrT pTimeVector, QVector<double> &rDataVector);
     QString getNewCacheName();
     ContainerObject *mpParentContainerObject;
 
     LogDataMapT mLogDataMap;
-    //AliasMapT mPlotAliasMap;
-    QList<SharedTimeVectorPtrT> mTimeVectorPtrs;
 
     FavoriteListT mFavoriteVariables;
     QMap<int, SharedMultiDataVectorCacheT> mGenerationCacheMap;
@@ -166,7 +166,7 @@ private:
 
     int mnPlotCurves;
     int mGenerationNumber;
-    unsigned long int mTempVarCtr;
+    quint64 mTempVarCtr;
     QDir mCacheDir;
     quint64 mCacheSubDirCtr;
 };

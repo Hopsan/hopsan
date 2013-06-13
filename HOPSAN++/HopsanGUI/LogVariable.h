@@ -38,15 +38,36 @@
 class LogVariableData;
 class LogDataHandler;
 
-typedef QSharedPointer<QVector<double> > SharedTimeVectorPtrT;
-class UniqueSharedTimeVectorPtrHelper
-{
-public:
-    SharedTimeVectorPtrT makeSureUnique(QVector<double> &rTimeVector);
+//class LogVariableTime : public QObject
+//{
+//    Q_OBJECT
+//private:
+//    double mScale;
+//    QVector<double> mTimeData;
 
-private:
-    QVector< SharedTimeVectorPtrT > mSharedTimeVecPointers;
-};
+//public:
+//    LogVariableTime();
+//    LogVariableTime(const QVector<double> &rVector);
+//    void setScale(const double scale);
+//    inline double getScale() const { return mScale; }
+
+//    inline const QVector<double> &data() const { return mTimeData; }
+//    inline int size() const { return mTimeData.size(); }
+//    inline const double &at(int idx) const { return mTimeData[idx]; }
+
+//signals:
+//    void dataChanged();
+//};
+
+
+//class UniqueSharedTimeVectorPtrHelper
+//{
+//public:
+//    SharedTimeVectorPtrT makeSureUnique(const QVector<double> &rTimeVector);
+
+//private:
+//    QVector< SharedTimeVectorPtrT > mSharedTimeVecPointers;
+//};
 
 QString makeConcatName(const QString componentName, const QString portName, const QString dataName);
 void splitConcatName(const QString fullName, QString &rCompName, QString &rPortName, QString &rVarName);
@@ -80,7 +101,7 @@ public:
 typedef QSharedPointer<VariableDescription> SharedVariableDescriptionT;
 typedef QSharedPointer<LogVariableData> SharedLogVariableDataPtrT;
 
-
+SharedLogVariableDataPtrT makeFreeTimeVariabel(const QVector<double> &rTime);
 
 class LogVariableContainer : public QObject
 {
@@ -92,7 +113,7 @@ public:
     LogVariableContainer(const VariableDescription &rVarDesc, LogDataHandler *pParentLogDataHandler);
     ~LogVariableContainer();
     void addDataGeneration(const int generation, const QVector<double> &rTime, const QVector<double> &rData);
-    void addDataGeneration(const int generation, const SharedTimeVectorPtrT time, const QVector<double> &rData);
+    void addDataGeneration(const int generation, const SharedLogVariableDataPtrT time, const QVector<double> &rData);
     void removeDataGeneration(const int generation);
     void removeGenerationsOlderThen(const int gen);
     void removeAllGenerations();
@@ -137,9 +158,9 @@ class LogVariableData : public QObject
     friend class LogVariableContainer;
 
 public:
+    LogVariableData(const int generation, SharedLogVariableDataPtrT time, const QVector<double> &rData, SharedVariableDescriptionT varDesc,
+                    SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent);
     ~LogVariableData();
-
-    SharedTimeVectorPtrT mSharedTimeVectorPtr;
 
     const SharedVariableDescriptionT getVariableDescription() const;
     QString getAliasName() const;
@@ -155,10 +176,13 @@ public:
     int getHighestGeneration() const;
     int getNumGenerations() const;
 
-    double getOffset() const;
-    //double getScale() const;
-    QVector<double> getDataVector();
+    const SharedLogVariableDataPtrT getSharedTimePointer() const;
+    double getPlotOffset() const;
+    double getPlotScale() const;
+    QVector<double> getDataVectorCopy();
     int getDataSize() const;
+    double first() const;
+    double last() const;
 
     void addToData(const SharedLogVariableDataPtrT pOther);
     void addToData(const double other);
@@ -174,7 +198,7 @@ public:
     void frequencySpectrum(const SharedLogVariableDataPtrT pTime, const bool doPowerSpectrum);
     void assignFrom(const SharedLogVariableDataPtrT pOther);
     void assignFrom(const QVector<double> &rSrc);
-    void assignFrom(SharedTimeVectorPtrT time, const QVector<double> &rData);
+    void assignFrom(SharedLogVariableDataPtrT time, const QVector<double> &rData);
     void assignFrom(QVector<double> &rTime, QVector<double> &rData);
     double pokeData(const int index, const double value, QString &rErr);
     double peekData(const int index, QString &rErr) const;
@@ -189,15 +213,20 @@ public:
     void preventAutoRemoval();
     void allowAutoRemoval();
 
-    void cacheDataToDisk(const bool toDisk);
+    void setCacheDataToDisk(const bool toDisk);
     bool isCachingDataToDisk() const;
 
     LogDataHandler *getLogDataHandler();
 
 public slots:
-    void setValueOffset(double offset);
-    void setTimeOffset(double offset);
-    //setScale(double scale);
+    void setTimePlotScaleAndOffset(const double scale, const double offset);
+    void setTimePlotScale(double scale);
+    void setTimePlotOffset(double offset);
+    void setXPlotScale(double scale);
+    void setPlotScale(double scale);
+    void setPlotOffset(double offset);
+    void setPlotScaleAndOffset(const double scale, const double offset);
+
 
 
 signals:
@@ -205,17 +234,17 @@ signals:
     void nameChanged();
 
 protected:
-    LogVariableData(const int generation, SharedTimeVectorPtrT time, const QVector<double> &rData, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent);
     double peekData(const int idx) const;
 
 private:
     typedef QVector<double> DataVectorT;
+    SharedLogVariableDataPtrT mSharedTimeVectorPtr;
     CachableDataVector *mpCachedDataVector;
     QPointer<LogVariableContainer> mpParentVariableContainer;
     SharedVariableDescriptionT mpVariableDescription;
 
-    double mAppliedValueOffset;
-    double mAppliedTimeOffset;
+    double mDataPlotScale;
+    double mDataPlotOffset;
     int mGeneration;
 };
 

@@ -146,7 +146,7 @@ void LogDataHandler::exportToPlo(QString filePath, QStringList variables)
     QString err;
     for(int i=0; i<dataPtrs[0]->getDataSize(); ++i)
     {
-        str.setNum(dataPtrs[0]->mSharedTimeVectorPtr->at(i),'E',6);
+        str.setNum(dataPtrs[0]->getSharedTimePointer()->peekData(i,err),'E',6);
         fileStream <<"  "<<str;
         for(int j=0; j<12-str.size(); ++j)
         {
@@ -338,20 +338,40 @@ void LogDataHandler::importFromPlo()
     progressImportBar.setValue(10);
     progressImportBar.setLabelText("Data Fetched.");
 
-    UniqueSharedTimeVectorPtrHelper timeVecHelper;
+    //UniqueSharedTimeVectorPtrHelper timeVecHelper;
     bool foundData = false;
     //for(QVector<HopImpData>::iterator git=hopOldVector.begin(); git!=hopOldVector.end(); ++git)
     {
-        bool timeVectorObtained = false;
-        SharedTimeVectorPtrT timeVecPtr = timeVecHelper.makeSureUnique(hopOldVector.first().mDataValues);
+//        bool timeVectorObtained = false;
+        //SharedTimeVectorPtrT timeVecPtr = timeVecHelper.makeSureUnique(hopOldVector.first().mDataValues);
         //! @todo Should be possible to have multiple timevectors per generation
         //Store time data (only once)
-        if(!timeVectorObtained)
-        {
-            mTimeVectorPtrs.append(timeVecPtr);
-            timeVectorObtained = true;
-        }
+//        if(!timeVectorObtained)
+//        {
+//            //! @todo this should not be done/checked here every time should have been prepered someewhere else, but no point in doing it properly now since we must rewrite logdatahandler to be global anyway
+//            LogVariableContainer *pTime = mLogDataMap.value("time");
+//            if (pTime)
+//            {
+//                pTime->addDataGeneration(mGenerationNumber, SharedTimeVectorPtrT(), hopOldVector.first().mDataValues); //Note! Time vector itself does not have a time vector it only has a data vector
+//            }
+//            else
+//            {
+//                VariableDescription varDesc;
+//                varDesc.mDataName = "time"; //! @todo this name must be reserved
+//                varDesc.mDataUnit = "s";
+//                varDesc.mDataDescription = "time";
+//                varDesc.mVarType = VariableDescription::ModelVariableType; //! @todo maybe timetype (dont know, check with old hopsan)
+//                insertVariableBasedOnDescription(varDesc, SharedTimeVectorPtrT(), hopOldVector.first().mDataValues);
+//            }
 
+//            timeVectorObtained = true;
+//        }
+
+        SharedLogVariableDataPtrT timeVecPtr;
+        if (hopOldVector.size() > 1)
+        {
+            timeVecPtr = insertTimeVariable(hopOldVector.first().mDataValues);
+        }
 
         for (int i=1; i<hopOldVector.size(); ++i)
         {
@@ -361,22 +381,24 @@ void LogDataHandler::importFromPlo()
             varDesc.mVarType = VariableDescription::ImportedVariableType;
             //! @todo what about reading the unit
 
-            // First check if a data variable with this name alread exist
-            QString catName = varDesc.getFullName();
-            LogDataMapT::iterator dit = mLogDataMap.find(catName);
-            // If it exist insert into it
-            if (dit != mLogDataMap.end())
-            {
-                // Insert it into the generations map
-                dit.value()->addDataGeneration(mGenerationNumber, timeVecPtr, hopOldVector[i].mDataValues);
-            }
-            else
-            {
-                // Create a new toplevel map item and insert data into the generations map
-                LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc, this);
-                pDataContainer->addDataGeneration(mGenerationNumber, hopOldVector.first().mDataValues, hopOldVector[i].mDataValues);
-                mLogDataMap.insert(catName, pDataContainer);
-            }
+//            //! @todo use the insert function
+//            // First check if a data variable with this name alread exist
+//            QString catName = varDesc.getFullName();
+//            LogDataMapT::iterator dit = mLogDataMap.find(catName);
+//            // If it exist insert into it
+//            if (dit != mLogDataMap.end())
+//            {
+//                // Insert it into the generations map
+//                dit.value()->addDataGeneration(mGenerationNumber, timeVecPtr, hopOldVector[i].mDataValues);
+//            }
+//            else
+//            {
+//                // Create a new toplevel map item and insert data into the generations map
+//                LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc, this);
+//                pDataContainer->addDataGeneration(mGenerationNumber, hopOldVector.first().mDataValues, hopOldVector[i].mDataValues);
+//                mLogDataMap.insert(catName, pDataContainer);
+//            }
+            insertVariableBasedOnDescription(varDesc, timeVecPtr, hopOldVector[i].mDataValues);
         }
 
         if (foundData)
@@ -386,44 +408,8 @@ void LogDataHandler::importFromPlo()
         }
     }
 
-       //    //Store time data (only once)
-//    if(!HopOldVector.isEmpty())
-//    {
-//        mTimeVectors.append(HopOldVector.first().mDataValues);
-//        //timeVectorObtained = true;
-
-//        for (int i=1; i<HopOldVector.size(); ++i)
-//        {
-
-//            //QPair<QVector<double>, QVector<double> > dataImported;
-
-//            //Store variable data
-
-//            ImpdataMap.insert(HopOldVector[i].mDataName, HopOldVector[i].mDataValues);
-//            ImpPortMap.insert(HopOldVector[i].mDataName, ImpdataMap);
-
-//            ImpcomponentMap.insert(HopOldVector[i].mDataName, ImpPortMap);
-
-//            //register alias
-//            definePlotAlias(HopOldVector[i].mDataName, HopOldVector[i].mDataName, HopOldVector[i].mDataName, HopOldVector[i].mDataName);
-//            setFavoriteVariable(HopOldVector[i].mDataName, HopOldVector[i].mDataName, HopOldVector[i].mDataName, HopOldVector[i].mDataName);
-
-//        }
-
-//    }
-
-//    if(!ImpcomponentMap.isEmpty())     //Don't insert a generation if no plot data was collected (= model is empty)
-//    {
-//        mPlotData.append(ImpcomponentMap);
-//    }
-
-//    //Limit number of plot generations if there are too many
+    // Limit number of plot generations if there are too many
     limitPlotGenerations();
-    //gpMainWindow->mpPlotWidget->mpPlotVariableTree->updateList();
-
-
-
-
 }
 
 
@@ -459,6 +445,8 @@ void LogDataHandler::importTimeVariablesFromCSVColumns(const QString csvFilePath
                 }
             }
 
+            SharedLogVariableDataPtrT pTime = insertTimeVariable(timeColumn);
+
             // Ok now we have the data lets add it as a variable
             for (int n=0; n<names.size(); ++n)
             {
@@ -471,20 +459,16 @@ void LogDataHandler::importTimeVariablesFromCSVColumns(const QString csvFilePath
                 //varDesc.mAliasName  = "";
                 varDesc.mVarType = VariableDescription::ImportedVariableType;
 
-                UniqueSharedTimeVectorPtrHelper helper;
-                SharedTimeVectorPtrT uniqeTimeVectorPtr = helper.makeSureUnique(timeColumn);
+                //UniqueSharedTimeVectorPtrHelper helper;
+                //SharedTimeVectorPtrT uniqeTimeVectorPtr = helper.makeSureUnique(timeColumn);
 
-                insertVariableBasedOnDescription(varDesc, uniqeTimeVectorPtr, dataColumns[n]);
-
-                //            defineNewVariable(names[n]);
-                //            assignVariable(name, dataColumns[n]);
+                insertVariableBasedOnDescription(varDesc, pTime, dataColumns[n]);
             }
 
-
-            //! @todo what about generation
-
-
             csvFile.close();
+
+            ++mGenerationNumber;
+            emit newDataAvailable();
         }
         else
         {
@@ -518,10 +502,12 @@ void LogDataHandler::collectPlotDataFromModel(bool overWriteLastGeneration)
         return;         //Don't collect plot data if logging is disabled (to avoid empty generations)
     }
 
-    UniqueSharedTimeVectorPtrHelper timeVecHelper;
+    //UniqueSharedTimeVectorPtrHelper timeVecHelper;
     bool foundData = false;
     bool timeVectorObtained = false;
+    SharedLogVariableDataPtrT timeVecPtr;
 
+    //! @todo why not run multiappend when overwriting generation ?
     if(!overWriteLastGeneration)
     {
         this->getGenerationMultiCache(mGenerationNumber)->beginMultiAppend();
@@ -549,19 +535,17 @@ void LogDataHandler::collectPlotDataFromModel(bool overWriteLastGeneration)
                 // Prevent adding data if time or data vector was empty
                 if (!pTimeVector->empty() && !dataVec.isEmpty())
                 {
-                    // Make sure we use the same time vector
-                    QVector<double> timeVec = QVector<double>::fromStdVector(*pTimeVector);//!< @todo not copy here, should maybe rewrite makeSureUniqe to handled std::vector also
-                    SharedTimeVectorPtrT timeVecPtr = timeVecHelper.makeSureUnique(timeVec);
-
                     //! @todo Should be possible to have multiple timevectors per generation
                     // Store time data (only once)
                     if(!timeVectorObtained)
                     {
-                        //! @todo this vector is never cleared when generations are removed
-                        mTimeVectorPtrs.append(timeVecPtr);
+                        // Make sure we use the same time vector
+                        QVector<double> timeVec = QVector<double>::fromStdVector(*pTimeVector);//!< @todo not copy here, should maybe rewrite makeSureUniqe to handled std::vector also
+                        //SharedTimeVectorPtrT timeVecPtr = timeVecHelper.makeSureUnique(timeVec);
+
+                        timeVecPtr = insertTimeVariable(timeVec);
                         timeVectorObtained = true;
                     }
-
 
                     foundData=true;
                     VariableDescription varDesc;
@@ -575,41 +559,6 @@ void LogDataHandler::collectPlotDataFromModel(bool overWriteLastGeneration)
                     varDesc.mVarType = VariableDescription::ModelVariableType;
 
                     insertVariableBasedOnDescription(varDesc, timeVecPtr, dataVec);
-//                    // First check if a data variable with this name alread exist
-//                    QString catName = varDesc.getFullName();
-//                    LogDataMapT::iterator it = mLogDataMap.find(catName);
-//                    // If it exist insert into it
-//                    if (it != mLogDataMap.end())
-//                    {
-//                        // Insert it into the generations map
-//                        it.value()->addDataGeneration(mGenerationNumber, timeVecPtr, dataVec);
-
-//                        // Update alias if needed
-//                        if ( varDesc.mAliasName != it.value()->getAliasName() )
-//                        {
-//                            // Remove old mention of alias
-//                            mLogDataMap.remove(it.value()->getAliasName());
-
-//                            // Update the local alias
-//                            it.value()->setAliasName(varDesc.mAliasName);
-
-//                            // Insert new alias kv pair
-//                            mLogDataMap.insert(varDesc.mAliasName, it.value());
-//                        }
-//                    }
-//                    else
-//                    {
-//                        // Create a new toplevel map item and insert data into the generations map
-//                        LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc, this);
-//                        pDataContainer->addDataGeneration(mGenerationNumber, timeVecPtr, dataVec);
-//                        mLogDataMap.insert(catName, pDataContainer);
-
-//                        // Also insert alias if it exist
-//                        if ( !varDesc.mAliasName.isEmpty() )
-//                        {
-//                            mLogDataMap.insert(varDesc.mAliasName, pDataContainer);
-//                        }
-//                    }
                 }
             }
         }
@@ -618,40 +567,6 @@ void LogDataHandler::collectPlotDataFromModel(bool overWriteLastGeneration)
     {
         this->getGenerationMultiCache(mGenerationNumber)->endMultiAppend();
     }
-
-    // Iterate and create/add aliases
-//    //! @todo maybe a function that retreives alias and fullnames in one
-//    QStringList aliasNames = mpParentContainerObject->getAliasNames();
-
-//    AliasMapT::iterator ait = mPlotAliasMap.begin();
-//    while(ait!=mPlotAliasMap.end())
-//    {
-//        if (!aliasNames.contains(ait.key()))
-//        {
-//            ait.value()->setAliasName("");
-//            mPlotAliasMap.erase(ait);
-//            ait=mPlotAliasMap.begin(); //Restart since itarator breaks
-//        }
-//        else
-//        {
-//            ++ait;
-//        }
-//    }
-
-//    for (int i=0; i<aliasNames.size(); ++i)
-//    {
-//        QString fullName = mpParentContainerObject->getFullNameFromAlias(aliasNames[i]);
-////        DataMapT::iterator it = mAllPlotData.find(fullName);
-////        if (it != mAllPlotData.end())
-////        {
-////            it->second->setAliasName(aliasNames[i]);
-////        }
-
-//        //! @todo This will not work when a alias have chenged as this function will reject it, but that coude should change anyhow
-//        //! @todo Do not register parameter aliases as variable aliases
-//        definePlotAlias(aliasNames[i], fullName);
-//    }
-
 
     // Limit number of plot generations if there are too many
     limitPlotGenerations();
@@ -701,7 +616,7 @@ QVector<double> LogDataHandler::getPlotDataValues(int generation, QString compon
     SharedLogVariableDataPtrT pData = getPlotData(generation, componentName, portName, dataName);
     if (pData)
     {
-        return pData->getDataVector();
+        return pData->getDataVectorCopy();
     }
 
     return QVector<double>();
@@ -712,7 +627,7 @@ QVector<double> LogDataHandler::getPlotDataValues(const QString fullName, int ge
     SharedLogVariableDataPtrT pData = getPlotData(fullName, generation);
     if (pData)
     {
-        return pData->getDataVector();
+        return pData->getDataVectorCopy();
     }
 
     return QVector<double>();
@@ -763,9 +678,31 @@ SharedLogVariableDataPtrT LogDataHandler::getPlotData(const QString fullName, co
 
 //! @brief Returns the time vector for specified generation
 //! @param[in] generation Generation
-QVector<double> LogDataHandler::getTimeVector(int generation)
+const SharedLogVariableDataPtrT LogDataHandler::getTimeVectorPtr(int generation) const
 {
-    return *mTimeVectorPtrs.at(generation);
+    LogVariableContainer *pCont = mLogDataMap.value("time",0);
+    if (pCont)
+    {
+        if (generation < 0)
+        {
+            generation = pCont->getHighestGeneration();
+        }
+        return pCont->getDataGeneration(generation);
+    }
+    else
+    {
+        return SharedLogVariableDataPtrT();
+    }
+}
+
+QVector<double> LogDataHandler::getTimeVectorCopy(int generation) const
+{
+    SharedLogVariableDataPtrT pTime = getTimeVectorPtr(generation);
+    if (pTime)
+    {
+        return pTime->getDataVectorCopy();
+    }
+    return QVector<double>();
 }
 
 
@@ -1626,7 +1563,7 @@ QString LogDataHandler::getNewCacheName()
 }
 
 
-void LogDataHandler::insertVariableBasedOnDescription(VariableDescription &rVarDesc, SharedTimeVectorPtrT pTimeVector, QVector<double> &rDataVector)
+void LogDataHandler::insertVariableBasedOnDescription(VariableDescription &rVarDesc, SharedLogVariableDataPtrT pTimeVector, QVector<double> &rDataVector)
 {
     // First check if a data variable with this name alread exist
     QString fullName = rVarDesc.getFullName();
@@ -1662,5 +1599,29 @@ void LogDataHandler::insertVariableBasedOnDescription(VariableDescription &rVarD
         {
             mLogDataMap.insert(rVarDesc.mAliasName, pDataContainer);
         }
+    }
+}
+
+
+SharedLogVariableDataPtrT LogDataHandler::insertTimeVariable(QVector<double> &rTimeVector)
+{
+    //! @todo this should not be done/checked here every time should have been prepered someewhere else, but no point in doing it properly now since we must rewrite logdatahandler to be global anyway
+    LogVariableContainer *pTime = mLogDataMap.value("time");
+    if (pTime)
+    {
+        pTime->addDataGeneration(mGenerationNumber, SharedLogVariableDataPtrT(), rTimeVector); //Note! Time vector itself does not have a time vector it only has a data vector
+        return  pTime->getDataGeneration(-1);
+    }
+    else
+    {
+        VariableDescription varDesc;
+        //varDesc.mModelPath = pModelObject->getParentContainerObject()->getModelFileInfo().fileName();
+        varDesc.mDataName = "time"; //! @todo this name must be reserved
+        varDesc.mDataUnit = "s";
+        varDesc.mDataDescription = "time";
+        varDesc.mVarType = VariableDescription::ModelVariableType; //! @todo maybe timetype (dont know, check with old hopsan)
+
+        insertVariableBasedOnDescription(varDesc, SharedLogVariableDataPtrT(), rTimeVector);
+        return  mLogDataMap.value("time")->getDataGeneration(mGenerationNumber);
     }
 }

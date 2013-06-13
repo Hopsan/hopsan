@@ -759,7 +759,7 @@ void PlotTab::removeAllCurvesOnAxis(const int axis)
 void PlotTab::setCustomXVectorForAll(QVector<double> xArray, const VariableDescription &rVarDesc, HopsanPlotIDEnumT plotID)
 {
     LogVariableContainer *cont = new LogVariableContainer(rVarDesc,0);
-    cont->addDataGeneration(0, SharedTimeVectorPtrT(), xArray);
+    cont->addDataGeneration(0, SharedLogVariableDataPtrT(), xArray);
     setCustomXVectorForAll(cont->getDataGeneration(-1),plotID);
 }
 
@@ -818,6 +818,8 @@ void PlotTab::updateLabels()
             }
             else
             {
+                //! @todo this is wrong, it should be decided someplace else where we know stuff nuthere in the plot tab
+                //! @todo wil lshow wrong for non time and non custom data
                 mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, QwtText("Time [s]"));
             }
         }
@@ -979,7 +981,7 @@ void PlotTab::exportToCsv(QString fileName)
         //! @todo how to handle this with multiple xvectors per curve
         //! @todo take into account wheter cached or not, Should have some smart auto function for this in the data object
 
-        QVector<double> xvec = mpCustomXData->getDataVector(); //! @todo shoudl direct access if not in cache
+        QVector<double> xvec = mpCustomXData->getDataVectorCopy(); //! @todo shoudl direct access if not in cache
         for(int i=0; i<xvec.size(); ++i)
         {
             fileStream << xvec[i];
@@ -992,11 +994,13 @@ void PlotTab::exportToCsv(QString fileName)
     }
     else
     {
-        for(int i=0; i<mPlotCurvePtrs[FirstPlot][0]->getTimeVector().size(); ++i)
+        QVector<double> time = mPlotCurvePtrs[FirstPlot][0]->getTimeVectorPtr()->getDataVectorCopy();
+        for(int i=0; i<time.size(); ++i)
         {
-            fileStream << mPlotCurvePtrs[FirstPlot][0]->getTimeVector()[i];
+            fileStream << time[i];
             for(int j=0; j<mPlotCurvePtrs[FirstPlot].size(); ++j)
             {
+                //! @todo a stream function for the data vector should be nivce instead of madness copy every time
                 fileStream << ", " << mPlotCurvePtrs[FirstPlot][j]->getDataVector()[i];
             }
             fileStream << "\n";
@@ -1145,7 +1149,7 @@ void PlotTab::exportToMatlab()
         if(mHasCustomXData)
         {
             //! @todo need smart function to autoselect copy or direct access depending on cached or not (also in other places)
-            QVector<double> xvec = mpCustomXData->getDataVector();
+            QVector<double> xvec = mpCustomXData->getDataVectorCopy();
             for(int j=0; j<xvec.size(); ++j)
             {
                 if(j>0) fileStream << ",";
@@ -1154,10 +1158,12 @@ void PlotTab::exportToMatlab()
         }
         else
         {
-            for(int j=0; j<mPlotCurvePtrs[FirstPlot][i]->getTimeVector().size(); ++j)
+            //! @todo what if not timevector then this will crash
+            QVector<double> time = mPlotCurvePtrs[FirstPlot][i]->getTimeVectorPtr()->getDataVectorCopy();
+            for(int j=0; j<time.size(); ++j)
             {
                 if(j>0) fileStream << ",";
-                fileStream << mPlotCurvePtrs[FirstPlot][i]->getTimeVector()[j];
+                fileStream << time[j];
             }
         }
         fileStream << "];\n";
@@ -1178,7 +1184,7 @@ void PlotTab::exportToMatlab()
         if(mHasCustomXData)
         {
             //! @todo need smart function to autoselect copy or direct access depending on cached or not (also in other places)
-            QVector<double> xvec = mpCustomXData->getDataVector();
+            QVector<double> xvec = mpCustomXData->getDataVectorCopy();
             for(int j=0; j<xvec.size(); ++j)
             {
                 if(j>0) fileStream << ",";
@@ -1187,10 +1193,11 @@ void PlotTab::exportToMatlab()
         }
         else
         {
-            for(int j=0; j<mPlotCurvePtrs[SecondPlot][i]->getTimeVector().size(); ++j)
+            QVector<double> time = mPlotCurvePtrs[SecondPlot][i]->getTimeVectorPtr()->getDataVectorCopy();
+            for(int j=0; j<time.size(); ++j)
             {
                 if(j>0) fileStream << ",";
-                fileStream << mPlotCurvePtrs[SecondPlot][i]->getTimeVector()[j];
+                fileStream << time[j];
             }
         }
         fileStream << "];\n";
@@ -1290,9 +1297,10 @@ void PlotTab::exportToGnuplot()
 
     //Write time and data vectors
     QString dummy;
-    for(int i=0; i<mPlotCurvePtrs[FirstPlot].first()->getTimeVector().size(); ++i)
+    QVector<double> time = mPlotCurvePtrs[FirstPlot].first()->getTimeVectorPtr()->getDataVectorCopy();
+    for(int i=0; i<time.size(); ++i)
     {
-        dummy.setNum(mPlotCurvePtrs[FirstPlot].first()->getTimeVector()[i]);
+        dummy.setNum(time[i]);
         fileStream << dummy;
         for(int j=0; j<20-dummy.size(); ++j) { fileStream << " "; }
 
@@ -1871,7 +1879,8 @@ void PlotTab::saveToDomElement(QDomElement &rDomElement, bool dateTime, bool des
 
         //Cycle plot curves and write data tags
         QString dummy;
-        for(int j=0; j<mPlotCurvePtrs[FirstPlot][0]->getTimeVector().size(); ++j)
+        QVector<double> time = mPlotCurvePtrs[FirstPlot].first()->getTimeVectorPtr()->getDataVectorCopy();
+        for(int j=0; j<time.size(); ++j)
         {
             QDomElement dataTag = appendDomElement(rDomElement, "data");
 
@@ -1881,7 +1890,7 @@ void PlotTab::saveToDomElement(QDomElement &rDomElement, bool dateTime, bool des
             }
             else                        //X-axis = time
             {
-                setQrealAttribute(dataTag, "time", mPlotCurvePtrs[FirstPlot][0]->getTimeVector()[j], 10, 'g');
+                setQrealAttribute(dataTag, "time", time[j], 10, 'g');
             }
 
             //Write variable tags for each variable

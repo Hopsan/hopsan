@@ -315,10 +315,6 @@ void PlotCurve::commonConstructorCode(int axisY,
 
     mAxisY = axisY;
     mAutoUpdate = true;
-    mPlotScaleX = 1.0;
-    mPlotScaleY = 1.0;
-    mPlotOffsetX = 0;
-    mPlotOffsetY = 0;
 
     // Set QwtPlotCurve stuff
     //! @todo maybe this code should be run when we are adding a curve to a plottab
@@ -463,15 +459,15 @@ int PlotCurve::getAxisY()
 QVector<double> PlotCurve::getDataVector() const
 {
     //! @todo this is no longer a reference need to see where it was used to avoid REALY slow code feetching data all the time /Peter
-    return mpData->getDataVector();
+    return mpData->getDataVectorCopy();
 }
 
 
-//! @brief Returns the (unscaled) time vector of a plot curve
+//! @brief Returns the time vector of a plot curve
 //! This returns the TIME vector, NOT any special X-axes if they are used.
-const QVector<double> &PlotCurve::getTimeVector() const
+const SharedLogVariableDataPtrT PlotCurve::getTimeVectorPtr() const
 {
-    return *(mpData->mSharedTimeVectorPtr.data());
+    return mpData->getSharedTimePointer();
 }
 
 bool PlotCurve::hasCustomXData() const
@@ -556,13 +552,14 @@ void PlotCurve::setCustomDataUnit(const QString unit, double scale)
 //! @param scaleY Scale factor for Y-axis
 //! @param offsetX Offset value for X-axis
 //! @param offsetY Offset value for Y-axis
-void PlotCurve::setScaling(double scaleX, double scaleY, double offsetX, double offsetY)
+void PlotCurve::setTimePlotScalingAndOffset(double scale, double offset)
 {
-    mPlotScaleX=scaleX;
-    mPlotScaleY=scaleY;
-    mPlotOffsetX=offsetX;
-    mPlotOffsetY=offsetY;
-    updateCurve();
+    mpData->setTimePlotScaleAndOffset(scale, offset);
+}
+
+void PlotCurve::setValuePlotScalingAndOffset(double scale, double offset)
+{
+    mpData->setPlotScaleAndOffset(scale, offset);
 }
 
 
@@ -590,7 +587,7 @@ void PlotCurve::setCustomXData(const VariableDescription &rVarDesc, const QVecto
 {
     //! @todo need a nicer way to easily create a new shared logdatavariables
     LogVariableContainer *pData = new LogVariableContainer(rVarDesc,0);
-    pData->addDataGeneration(0, SharedTimeVectorPtrT(), rvXdata);
+    pData->addDataGeneration(0, SharedLogVariableDataPtrT(), rvXdata);
     setCustomXData(pData->getDataGeneration(0));
 }
 
@@ -636,8 +633,8 @@ void PlotCurve::setCustomXData(const QString fullName)
 void PlotCurve::toFrequencySpectrum(const bool doPowerSpectrum)
 {
     QVector<double> timeVec, dataVec;
-    timeVec = *(mpData->mSharedTimeVectorPtr.data());
-    dataVec = mpData->getDataVector();
+    timeVec = mpData->getSharedTimePointer()->getDataVectorCopy();
+    dataVec = mpData->getDataVectorCopy();
 
     //Vector size has to be an even potential of 2.
     //Calculate largets potential that is smaller than or equal to the vector size.
@@ -901,35 +898,68 @@ void PlotCurve::setLineColor(QString colorName)
 void PlotCurve::openScaleDialog()
 {
     QDialog *pScaleDialog = new QDialog(mpParentPlotTab->mpParentPlotWindow);
-    pScaleDialog->setWindowTitle("Change Curve Scale");
+    pScaleDialog->setWindowTitle("Change data plot-scale and plot-offsets");
 
     QLabel *pXScaleLabel = new QLabel("Time Axis Scale: ", pScaleDialog);
     mpXScaleSpinBox = new QDoubleSpinBox(pScaleDialog);
     mpXScaleSpinBox->setRange(-DoubleMax, DoubleMax);
     mpXScaleSpinBox->setDecimals(10);
     mpXScaleSpinBox->setSingleStep(0.1);
-    mpXScaleSpinBox->setValue(mPlotScaleX);
+    if (mpData->getSharedTimePointer())
+    {
+        mpXScaleSpinBox->setValue(mpData->getSharedTimePointer()->getPlotScale());
+    }
+    else
+    {
+        mpXScaleSpinBox->setValue(0);
+        mpXScaleSpinBox->setEnabled(false);
+    }
+
 
     QLabel *pXOffsetLabel = new QLabel("Time Axis Offset: ", pScaleDialog);
     mpXOffsetSpinBox = new QDoubleSpinBox(pScaleDialog);
     mpXOffsetSpinBox->setDecimals(10);
     mpXOffsetSpinBox->setRange(-DoubleMax, DoubleMax);
     mpXOffsetSpinBox->setSingleStep(0.1);
-    mpXOffsetSpinBox->setValue(mPlotOffsetX);
+    if (mpData->getSharedTimePointer())
+    {
+        mpXOffsetSpinBox->setValue(mpData->getSharedTimePointer()->getPlotOffset());
+    }
+    else
+    {
+        mpXOffsetSpinBox->setValue(0);
+        mpXOffsetSpinBox->setEnabled(false);
+    }
 
     QLabel *pYScaleLabel = new QLabel("Y-Axis Scale: ", pScaleDialog);
     mpYScaleSpinBox = new QDoubleSpinBox(pScaleDialog);
     mpYScaleSpinBox->setSingleStep(0.1);
     mpYScaleSpinBox->setDecimals(10);
     mpYScaleSpinBox->setRange(-DoubleMax, DoubleMax);
-    mpYScaleSpinBox->setValue(mPlotScaleY);
+    if (mpData->getSharedTimePointer())
+    {
+        mpYScaleSpinBox->setValue(mpData->getSharedTimePointer()->getPlotScale());
+    }
+    else
+    {
+        mpYScaleSpinBox->setValue(0);
+        mpYScaleSpinBox->setEnabled(false);
+    }
 
     QLabel *pYOffsetLabel = new QLabel("Y-Axis Offset: ", pScaleDialog);
     mpYOffsetSpinBox = new QDoubleSpinBox(pScaleDialog);
     mpYOffsetSpinBox->setDecimals(10);
     mpYOffsetSpinBox->setRange(-DoubleMax, DoubleMax);
     mpYOffsetSpinBox->setSingleStep(0.1);
-    mpYOffsetSpinBox->setValue(mPlotOffsetY);
+    if (mpData->getSharedTimePointer())
+    {
+        mpYOffsetSpinBox->setValue(mpData->getSharedTimePointer()->getPlotOffset());
+    }
+    else
+    {
+        mpYOffsetSpinBox->setValue(0);
+        mpYOffsetSpinBox->setEnabled(false);
+    }
 
     QPushButton *pDoneButton = new QPushButton("Done", pScaleDialog);
     QDialogButtonBox *pButtonBox = new QDialogButtonBox(Qt::Horizontal);
@@ -949,18 +979,22 @@ void PlotCurve::openScaleDialog()
     pScaleDialog->show();
 
     connect(pDoneButton,SIGNAL(clicked()),pScaleDialog,SLOT(close()));
-    connect(mpXScaleSpinBox, SIGNAL(valueChanged(double)), SLOT(updateScaleFromDialog()));
-    connect(mpXOffsetSpinBox, SIGNAL(valueChanged(double)), SLOT(updateScaleFromDialog()));
-    connect(mpYScaleSpinBox, SIGNAL(valueChanged(double)), SLOT(updateScaleFromDialog()));
-    connect(mpYOffsetSpinBox, SIGNAL(valueChanged(double)), SLOT(updateScaleFromDialog()));
+    connect(mpXScaleSpinBox, SIGNAL(valueChanged(double)), SLOT(updateTimePlotScaleFromDialog()));
+    connect(mpXOffsetSpinBox, SIGNAL(valueChanged(double)), SLOT(updateTimePlotScaleFromDialog()));
+    connect(mpYScaleSpinBox, SIGNAL(valueChanged(double)), SLOT(updateValuePlotScaleFromDialog()));
+    connect(mpYOffsetSpinBox, SIGNAL(valueChanged(double)), SLOT(updateValuePlotScaleFromDialog()));
 }
 
 
 //! @brief Updates the scaling of a plot curve form values in scaling dialog
-void PlotCurve::updateScaleFromDialog()
+void PlotCurve::updateTimePlotScaleFromDialog()
 {
-    setScaling(mpXScaleSpinBox->value(), mpYScaleSpinBox->value(), mpXOffsetSpinBox->value(), mpYOffsetSpinBox->value());
-    mpParentPlotTab->rescaleAxesToCurves();
+    setTimePlotScalingAndOffset(mpXScaleSpinBox->value(), mpXOffsetSpinBox->value());
+}
+
+void PlotCurve::updateValuePlotScaleFromDialog()
+{
+    setValuePlotScalingAndOffset(mpYScaleSpinBox->value(), mpYOffsetSpinBox->value());
 }
 
 
@@ -979,7 +1013,6 @@ void PlotCurve::updateToNewGeneration()
         setGeneration(-1);
     }
     updatePlotInfoBox();    //Update the plot info box regardless of auto update setting, to show number of available generations correctly
-//    mpParentPlotTab->rescaleAxesToCurves();
 }
 
 void PlotCurve::updatePlotInfoBox()
@@ -1017,35 +1050,48 @@ void PlotCurve::updateCurve()
 {
     QVector<double> tempX;
     // We copy here, it should be faster then peek (at least when data is cached on disc)
-    QVector<double> tempY = mpData->getDataVector();
+    //! @todo maybe be smart about doing this copy
+    QVector<double> tempY = mpData->getDataVectorCopy();
+    const double dataScale = mpData->getPlotScale();
+    const double dataOffset = mpData->getPlotOffset();
 
     if(mpCustomXdata.isNull())
     {
         // No special X-data use time vector if it exist else we cant draw curve (yet, x-date might be set later)
-        if (mpData->mSharedTimeVectorPtr)
+        if (mpData->getSharedTimePointer())
         {
-            tempX.resize(mpData->mSharedTimeVectorPtr->size());
+            tempX = mpData->getSharedTimePointer()->getDataVectorCopy();
+            const double timeScale = mpData->getSharedTimePointer()->getPlotScale();
+            const double timeOffset = mpData->getSharedTimePointer()->getPlotOffset();
+
             for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
             {
-                tempX[i] = mpData->mSharedTimeVectorPtr->at(i)*mPlotScaleX + mPlotOffsetX;
-                tempY[i] = tempY[i]*mCustomDataUnitScale*mPlotScaleY + mPlotOffsetY;
+                tempX[i] = tempX[i]*timeScale + timeOffset;
+                tempY[i] = tempY[i]*mCustomDataUnitScale*dataScale + dataOffset;
             }
         }
         else
         {
-            //! @todo this is a HACK really need a curve constructor for two variables x,y /Peter
-            tempX = tempY;
+            // No timevector or special x-vector, plot vs samples
+            tempX.resize(tempY.size());
+            for (int i=0; i< tempX.size(); ++i)
+            {
+                tempX[i] = i;
+                tempY[i] = tempY[i]*mCustomDataUnitScale*dataScale + dataOffset;
+            }
         }
     }
     else
     {
         // Use special X-data
         // We copy here, it should be faster then peek (at least when data is cached on disc)
-        tempX = mpCustomXdata->getDataVector();
+        tempX = mpCustomXdata->getDataVectorCopy();
+        const double xScale = mpCustomXdata->getPlotScale();
+        const double xOffset = mpCustomXdata->getPlotOffset();
         for(int i=0; i<tempX.size() && i<tempY.size(); ++i)
         {
-            tempX[i] = tempX[i]*mPlotScaleX + mPlotOffsetX;
-            tempY[i] = tempY[i]*mCustomDataUnitScale*mPlotScaleY + mPlotOffsetY;
+            tempX[i] = tempX[i]*xScale + xOffset;
+            tempY[i] = tempY[i]*mCustomDataUnitScale*dataScale + dataOffset;
         }
     }
 

@@ -774,7 +774,7 @@ void PlotWindow::createBodePlot()
     }
     pOutputGroupBox->setLayout(pOutputGroupBoxLayout);
 
-    double maxFreq = (getCurrentPlotTab()->getCurves(FirstPlot).first()->getTimeVector().size()+1)/getCurrentPlotTab()->getCurves(FirstPlot).first()->getTimeVector().last()/2;
+    double maxFreq = (getCurrentPlotTab()->getCurves(FirstPlot).first()->getTimeVectorPtr()->getDataSize()+1)/getCurrentPlotTab()->getCurves(FirstPlot).first()->getTimeVectorPtr()->last()/2;
     QLabel *pMaxFrequencyLabel = new QLabel("Maximum frequency in bode plot:");
     QLabel *pMaxFrequencyValue = new QLabel();
     QLabel *pMaxFrequencyUnit = new QLabel("Hz");
@@ -920,7 +920,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
             vIm.append(G[i].imag());
             vImNeg.append(-G[i].imag());
             vBodeGain.append(20*log10(sqrt(G[i].real()*G[i].real() + G[i].imag()*G[i].imag())));  //Gain: abs(G) = sqrt(R^2 + X^2)
-            vBodePhaseUncorrected.append(atan2(G[i].imag(), G[i].real())*180/3.14159265);          //Phase: arg(G) = arctan(X/R)
+            vBodePhaseUncorrected.append(atan2(G[i].imag(), G[i].real())*180./3.14159265);          //Phase: arg(G) = arctan(X/R)
 
             // Correct the phase plot to make it continous (because atan2 is limited from -180 to +180)
             if(vBodePhaseUncorrected.size() > 1)
@@ -936,7 +936,7 @@ void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve,
 
 
     QVector<double> F;
-    double stoptime = pInputCurve->getTimeVector().last();
+    double stoptime = pInputCurve->getTimeVectorPtr()->last();
     for(int i=1; i<G.size(); ++i)
     {
         F.append((i+1)/stoptime);

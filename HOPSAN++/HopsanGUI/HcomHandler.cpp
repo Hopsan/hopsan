@@ -3957,7 +3957,7 @@ void HcomHandler::optPlotBestWorstObj()
     {
         bestVar = pHandler->defineNewVariable("BestObjective", QVector<double>() << 0, QVector<double>() << mOptObjectives[mOptBestId]);
         bestVar->preventAutoRemoval();
-        bestVar->cacheDataToDisk(false);
+        bestVar->setCacheDataToDisk(false);
     }
     else
     {
@@ -3968,7 +3968,7 @@ void HcomHandler::optPlotBestWorstObj()
     {
         worstVar = pHandler->defineNewVariable("WorstObjective", QVector<double>() << 0, QVector<double>() << mOptObjectives[mOptWorstId]);
         worstVar.data()->preventAutoRemoval();
-        worstVar->cacheDataToDisk(false);
+        worstVar->setCacheDataToDisk(false);
     }
     else
     {

@@ -340,7 +340,7 @@ void  PyMainWindowClassWrapper::offset(MainWindow* o, const QString varName, con
     SharedLogVariableDataPtrT pData = o->mpModelHandler->getCurrentContainer()->getLogDataHandler()->getPlotData(varName, gen);
     if (pData)
     {
-        pData->setValueOffset(value);
+        pData->setPlotOffset(value);
     }
     //! @todo what about error message if not found
 }

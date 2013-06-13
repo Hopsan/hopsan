@@ -152,16 +152,16 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     if(!mpPlotData->isEmpty())
     {
         //Obtain time values from plot data
-        mpTimeValues = getTimeValues();
+        mTimeValues = mpContainer->getLogDataHandler()->getTimeVectorPtr(-1)->getDataVectorCopy();
 
         //Calculate total simulation time and number of samples
-        mTotalTime = mpTimeValues->last();
-        mnSamples = mpTimeValues->size();
+        mTotalTime = mTimeValues.last();
+        mnSamples = mTimeValues.size();
 
         //Set min, max and step values for time slider
         mpTimeSlider->setMinimum(0);
-        mpTimeSlider->setMaximum(mpTimeValues->size());
-        mpTimeSlider->setSingleStep(mpTimeValues->size()/mFps);
+        mpTimeSlider->setMaximum(mTimeValues.size());
+        mpTimeSlider->setSingleStep(mTimeValues.size()/mFps);
     }
     else
     {
@@ -251,23 +251,6 @@ AnimationWidget::~AnimationWidget()
 {
     mpTimer->stop();
     delete(mpTimer);
-}
-
-
-//! @brief Calculates time values from plot data object
-QVector<double> *AnimationWidget::getTimeValues()
-{
-    int latestGen = mpContainer->getLogDataHandler()->getLatestGeneration();
-    QVector<SharedLogVariableDataPtrT> vData = mpContainer->getLogDataHandler()->getOnlyVariablesAtGeneration(latestGen);
-
-    if (!vData.empty())
-    {
-        return vData.first()->mSharedTimeVectorPtr.data();
-    }
-    else
-    {
-        return 0;
-    }
 }
 
 
@@ -396,9 +379,9 @@ void AnimationWidget::changeIndex(int newIndex)
     }
     else
     {
-        mIndex = std::min(std::max(newIndex,0), mpTimeValues->size()-1);
-        mLastAnimationTime = mpTimeValues->at(mIndex);
-        mpTimeDisplay->setText(QString::number(mpTimeValues->at(mIndex)));
+        mIndex = std::min(std::max(newIndex,0), mTimeValues.size()-1);
+        mLastAnimationTime = mTimeValues.at(mIndex);
+        mpTimeDisplay->setText(QString::number(mTimeValues.at(mIndex)));
     }
 }
 
@@ -440,15 +423,15 @@ void AnimationWidget::updateAnimation()
 
         //Calculate index for time slider (with limitations)
         mIndex = mCurrentAnimationTime/mTotalTime*mnSamples;
-        mIndex = round(std::min(mpTimeValues->size()-1, std::max(0, mIndex)));
+        mIndex = round(std::min(mTimeValues.size()-1, std::max(0, mIndex)));
         mpTimeSlider->setValue(mIndex);
-        mpTimeDisplay->setText(QString::number(mpTimeValues->at(mIndex)));
+        mpTimeDisplay->setText(QString::number(mTimeValues.at(mIndex)));
 
         //Update animated connectors and components
         updateMovables();
 
         //Stop playback if maximum time is reached
-        if(mIndex==mpTimeValues->size()-1)
+        if(mIndex==mTimeValues.size()-1)
         {
             updateAnimationSpeed(0);
         }
@@ -559,7 +542,7 @@ int AnimationWidget::getIndex()
 //! @brief Returns last time index of animation
 int AnimationWidget::getLastIndex()
 {
- return mpTimeValues->size()-1;
+ return mTimeValues.size()-1;
 }
 
  void AnimationWidget::closeEvent(QCloseEvent *event)

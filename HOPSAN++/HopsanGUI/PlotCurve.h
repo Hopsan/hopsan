@@ -109,7 +109,7 @@ public:
     SharedLogVariableDataPtrT getLogDataVariablePtr(); //! @todo is this needed
     const SharedLogVariableDataPtrT getLogDataVariablePtr() const;
     QVector<double> getDataVector() const;
-    const QVector<double> &getTimeVector() const;
+    const SharedLogVariableDataPtrT getTimeVectorPtr() const;
     bool hasCustomXData() const;
     const SharedLogVariableDataPtrT getCustomXData() const;
 
@@ -121,7 +121,8 @@ public:
 
     void setCustomDataUnit(const QString unit);
     void setCustomDataUnit(const QString unit, double scale);
-    void setScaling(double scaleX, double scaleY, double offsetX, double offsetY);
+    void setTimePlotScalingAndOffset(double scale, double offset);
+    void setValuePlotScalingAndOffset(double scale, double offset);
 
     void setCustomData(const VariableDescription &rVarDesc, const QVector<double> &rvTime, const QVector<double> &rvData);
     void setCustomXData(const VariableDescription &rVarDesc, const QVector<double> &rvXdata);
@@ -148,7 +149,8 @@ public slots:
     void setLineColor(QColor color);
     void setLineColor(QString colorName=QString());
     void openScaleDialog();
-    void updateScaleFromDialog();
+    void updateTimePlotScaleFromDialog();
+    void updateValuePlotScaleFromDialog();
     void updateToNewGeneration();
     void updatePlotInfoBox();
     void removeMe();
@@ -172,10 +174,7 @@ private:
     SharedLogVariableDataPtrT mpData;
     SharedLogVariableDataPtrT mpCustomXdata;
     bool mHaveCustomData;
-    double mPlotScaleX;
-    double mPlotScaleY;
-    double mPlotOffsetX;
-    double mPlotOffsetY;
+
     QString mCustomDataUnit;
     double mCustomDataUnitScale;
 

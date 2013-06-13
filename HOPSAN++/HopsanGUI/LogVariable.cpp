@@ -31,6 +31,17 @@
 #include <limits>
 #include <QMessageBox>
 
+//! @brief Creates a free unhandled time vector logvariable, it can not have generations or be cached
+SharedLogVariableDataPtrT makeFreeTimeVariabel(const QVector<double> &rTime)
+{
+    SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription());
+    pVarDesc->mDataName = "time";
+    pVarDesc->mDataUnit = "s";
+    // Since there is no parent we can nog cahe this to disk or give it a generation, it is a free floating time vector (logvariable)
+    // Note! the time vaariable does not have a time vector, the time is the data in this case
+    return SharedLogVariableDataPtrT(new LogVariableData(0, SharedLogVariableDataPtrT(0), rTime, pVarDesc, SharedMultiDataVectorCacheT(0), 0));
+}
+
 //! @todo this should not be here should be togheter with plotsvariable stuf in some other file later
 QString makeConcatName(const QString componentName, const QString portName, const QString dataName)
 {
@@ -99,41 +110,63 @@ bool VariableDescription::operator==(const VariableDescription &other) const
     return (mComponentName == other.mComponentName && mPortName == other.mPortName && mDataName == other.mDataName && mDataUnit == other.mDataUnit);
 }
 
-//! @todo is this needed now that we have addToData
-void LogVariableData::setValueOffset(double offset)
+void LogVariableData::setPlotOffset(double offset)
 {
-    mAppliedValueOffset += offset;
-    addToData(offset);
+    mDataPlotOffset = offset;
     emit dataChanged();
 }
 
-void LogVariableData::setTimeOffset(double offset)
+void LogVariableData::setPlotScaleAndOffset(const double scale, const double offset)
 {
-    mAppliedTimeOffset += offset; //! @todo this does not make sense any more
-//    for (int i=0; mTimeVector.size(); ++i)
-//    {
-//        mTimeVector[i] += offset;
-//    }
+    mDataPlotScale = scale;
+    mDataPlotOffset = offset;
+    emit dataChanged();
+}
 
-    for (int i=0; mSharedTimeVectorPtr->size(); ++i)
+void LogVariableData::setTimePlotOffset(double offset)
+{
+    if (!mSharedTimeVectorPtr.isNull())
     {
-        //! @todo FIX
-        //QVector<double>* ptr = mSharedTimeVectorPtr.data();
-        (*mSharedTimeVectorPtr)[i] += offset;
-        //(*ptr)[i] += offset;
+        mSharedTimeVectorPtr->setPlotOffset(offset);
     }
+}
 
+void LogVariableData::setTimePlotScale(double scale)
+{
+    if (!mSharedTimeVectorPtr.isNull())
+    {
+        mSharedTimeVectorPtr->setPlotScale(scale);
+    }
+}
+
+void LogVariableData::setTimePlotScaleAndOffset(const double scale, const double offset)
+{
+    if (!mSharedTimeVectorPtr.isNull())
+    {
+        mSharedTimeVectorPtr->setPlotScaleAndOffset(scale, offset);
+    }
+}
+
+void LogVariableData::setXPlotScale(double scale)
+{
+    //! @todo fix this
+}
+
+void LogVariableData::setPlotScale(double scale)
+{
+    mDataPlotScale = scale;
     emit dataChanged();
 }
 
-LogVariableData::LogVariableData(const int generation, SharedTimeVectorPtrT time, const QVector<double> &rData, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent)
+LogVariableData::LogVariableData(const int generation, SharedLogVariableDataPtrT time, const QVector<double> &rData, SharedVariableDescriptionT varDesc, SharedMultiDataVectorCacheT pGenerationMultiCache, LogVariableContainer *pParent)
 {
     mpParentVariableContainer = pParent;
     mpVariableDescription = varDesc;
-    mAppliedValueOffset = 0;
-    mAppliedTimeOffset = 0;
+    mDataPlotOffset = 0.0;
+    mDataPlotScale = 1.0;
     mGeneration = generation;
     mSharedTimeVectorPtr = time;
+    connect(mSharedTimeVectorPtr.data(), SIGNAL(dataChanged()), this, SIGNAL(dataChanged()), Qt::UniqueConnection);
     mpCachedDataVector = new CachableDataVector(rData, pGenerationMultiCache, gConfig.getCacheLogData());
 }
 
@@ -223,6 +256,16 @@ int LogVariableData::getNumGenerations() const
         return 1;
     }
     return mpParentVariableContainer->getNumGenerations();
+}
+
+const SharedLogVariableDataPtrT LogVariableData::getSharedTimePointer() const
+{
+    return mSharedTimeVectorPtr;
+}
+
+double LogVariableData::getPlotOffset() const
+{
+    return mDataPlotOffset;
 }
 
 void LogVariableData::addToData(const SharedLogVariableDataPtrT pOther)
@@ -324,18 +367,28 @@ void LogVariableData::absData()
 void LogVariableData::diffBy(const SharedLogVariableDataPtrT pOther)
 {
     DataVectorT* pData = mpCachedDataVector->beginFullVectorOperation();
-    QVector<double> time;
+    QVector<double> diffX;
     if(pOther != 0)
     {
-        time = pOther->getDataVector();
+        diffX = pOther->getDataVectorCopy();
     }
     else
     {
-        time = getLogDataHandler()->getTimeVector(getHighestGeneration()-1);
+        // If no diff vector supplied, use time
+        if (mSharedTimeVectorPtr)
+        {
+            diffX = mSharedTimeVectorPtr->getDataVectorCopy();
+        }
+        else
+        {
+            //! @todo error message
+            // Abort
+            return;
+        }
     }
     for(int i=0; i<pData->size()-1; ++i)
     {
-        (*pData)[i] = ((*pData)[i+1]-(*pData)[i])/(time[i+1]-time[i]);
+        (*pData)[i] = ((*pData)[i+1]-(*pData)[i])/(diffX[i+1]-diffX[i]);
     }
     pData->resize(pData->size()-1);
     mpCachedDataVector->endFullVectorOperation(pData);
@@ -348,11 +401,20 @@ void LogVariableData::lowPassFilter(const SharedLogVariableDataPtrT pTime, const
     DataVectorT timeData;
     if(pTime == 0)
     {
-        timeData = mpParentVariableContainer->getLogDataHandler()->getTimeVector(getHighestGeneration()-1);
+        if (mSharedTimeVectorPtr)
+        {
+            timeData = mSharedTimeVectorPtr->getDataVectorCopy();
+        }
+        else
+        {
+            //! @todo error message
+            // Abort
+            return;
+        }
     }
     else
     {
-        timeData = pTime.data()->getDataVector();
+        timeData = pTime.data()->getDataVectorCopy();
     }
 
     double Al = 2.0/(2.0*3.14159265359*w);
@@ -381,11 +443,20 @@ void LogVariableData::frequencySpectrum(const SharedLogVariableDataPtrT pTime, c
     DataVectorT timeVec;
     if(pTime == 0)
     {
-        timeVec = mpParentVariableContainer->getLogDataHandler()->getTimeVector(getHighestGeneration()-1);
+        if (mSharedTimeVectorPtr)
+        {
+            timeVec = mSharedTimeVectorPtr->getDataVectorCopy();
+        }
+        else
+        {
+            //! @todo error message
+            // Abort
+            return;
+        }
     }
     else
     {
-        timeVec = pTime.data()->getDataVector();
+        timeVec = pTime.data()->getDataVectorCopy();
     }
 
     //Vector size has to be an even potential of 2.
@@ -430,8 +501,14 @@ void LogVariableData::frequencySpectrum(const SharedLogVariableDataPtrT pTime, c
         timeVec.append(double(i)/max);
     }
 
-    QVector<double>* pTimeVector = new QVector<double>(timeVec);
-    mSharedTimeVectorPtr = SharedTimeVectorPtrT(pTimeVector);
+    //! @todo need an easier way to create individual free data variables, hmm dont I already have one in Logdatahandler ?
+    //! @todo maybe need a special function to create a free time vector log data variable
+    VariableDescription varDesc;
+    varDesc.mDataName = "time";
+    varDesc.mDataUnit = "s";
+    LogVariableContainer dummyTimeContainer(varDesc, 0);
+    dummyTimeContainer.addDataGeneration(this->getGeneration(), SharedLogVariableDataPtrT(), timeVec);
+    mSharedTimeVectorPtr = dummyTimeContainer.getDataGeneration(-1);
 
     mpCachedDataVector->endFullVectorOperation(pDataVec);
     emit dataChanged();
@@ -440,7 +517,7 @@ void LogVariableData::frequencySpectrum(const SharedLogVariableDataPtrT pTime, c
 
 void LogVariableData::assignFrom(const SharedLogVariableDataPtrT pOther)
 {
-    mpCachedDataVector->replaceData(pOther->getDataVector());
+    mpCachedDataVector->replaceData(pOther->getDataVectorCopy());
     mSharedTimeVectorPtr = pOther->mSharedTimeVectorPtr;
     emit dataChanged();
 }
@@ -448,11 +525,11 @@ void LogVariableData::assignFrom(const SharedLogVariableDataPtrT pOther)
 void LogVariableData::assignFrom(const QVector<double> &rSrc)
 {
     mpCachedDataVector->replaceData(rSrc);
-    mSharedTimeVectorPtr = SharedTimeVectorPtrT(); //No time vector assigned
+    mSharedTimeVectorPtr = SharedLogVariableDataPtrT(); //No time vector assigned
     emit dataChanged();
 }
 
-void LogVariableData::assignFrom(SharedTimeVectorPtrT time, const QVector<double> &rData)
+void LogVariableData::assignFrom(SharedLogVariableDataPtrT time, const QVector<double> &rData)
 {
     mpCachedDataVector->replaceData(rData);
     mSharedTimeVectorPtr = time;
@@ -461,9 +538,10 @@ void LogVariableData::assignFrom(SharedTimeVectorPtrT time, const QVector<double
 
 void LogVariableData::assignFrom(QVector<double> &rTime, QVector<double> &rData)
 {
-    UniqueSharedTimeVectorPtrHelper timeVecHelper;
-    SharedTimeVectorPtrT timeVecPtr = timeVecHelper.makeSureUnique(rTime);
-    this->assignFrom(timeVecPtr, rData);
+    //UniqueSharedTimeVectorPtrHelper timeVecHelper;
+    //SharedTimeVectorPtrT timeVecPtr = timeVecHelper.makeSureUnique(rTime);
+    this->assignFrom(rTime, rData);
+    //! @todo in this case a new unique timevector will be assigned
 }
 
 double LogVariableData::pokeData(const int index, const double value, QString &rErr)
@@ -569,7 +647,8 @@ void LogVariableData::append(const double x, const double y)
     DataVectorT *pData = mpCachedDataVector->beginFullVectorOperation();
     pData->append(y);
     mpCachedDataVector->endFullVectorOperation(pData);
-    mSharedTimeVectorPtr.data()->append(x);
+    //mSharedTimeVectorPtr.data()->append(x);
+    //! @todo FIXA Peter
 }
 
 
@@ -604,7 +683,7 @@ void LogVariableData::allowAutoRemoval()
     }
 }
 
-void LogVariableData::cacheDataToDisk(const bool toDisk)
+void LogVariableData::setCacheDataToDisk(const bool toDisk)
 {
     mpCachedDataVector->setCached(toDisk);
 }
@@ -629,6 +708,7 @@ LogDataHandler *LogVariableData::getLogDataHandler()
     }
     return mpParentVariableContainer->getLogDataHandler();
 }
+
 
 QString LogVariableContainer::getAliasName() const
 {
@@ -774,10 +854,10 @@ bool LogVariableContainer::hasDataGeneration(const int gen)
 
 void LogVariableContainer::addDataGeneration(const int generation, const QVector<double> &rTime, const QVector<double> &rData)
 {
-    addDataGeneration(generation, SharedTimeVectorPtrT(new QVector<double>(rTime)), rData);
+    addDataGeneration(generation, makeFreeTimeVariabel(rTime), rData);
 }
 
-void LogVariableContainer::addDataGeneration(const int generation, const SharedTimeVectorPtrT time, const QVector<double> &rData)
+void LogVariableContainer::addDataGeneration(const int generation, const SharedLogVariableDataPtrT time, const QVector<double> &rData)
 {
     if(mDataGenerations.contains(generation))
     {
@@ -856,37 +936,36 @@ LogVariableContainer::~LogVariableContainer()
     mDataGenerations.clear();
 }
 
-SharedTimeVectorPtrT UniqueSharedTimeVectorPtrHelper::makeSureUnique(QVector<double> &rTimeVector)
-{
-    const int nElements = rTimeVector.size();
-    if (nElements > 0)
-    {
-        const double newFirst = rTimeVector[0];
-        const double newLast = rTimeVector[nElements-1];
+//SharedTimeVectorPtrT UniqueSharedTimeVectorPtrHelper::makeSureUnique(const QVector<double> &rTimeVector)
+//{
+//    const int nElements = rTimeVector.size();
+//    if (nElements > 0)
+//    {
+//        const double newFirst = rTimeVector[0];
+//        const double newLast = rTimeVector[nElements-1];
 
-        for (int idx=0; idx<mSharedTimeVecPointers.size(); ++idx)
-        {
-            const int oldElements = mSharedTimeVecPointers[idx]->size();
-            const double oldFirst = mSharedTimeVecPointers[idx]->at(0);
-            const double oldLast = mSharedTimeVecPointers[idx]->at(oldElements-1);
-            if ( (oldElements == nElements) &&
-                 fuzzyEqual(newFirst, oldFirst, 1e-10) &&
-                 fuzzyEqual(newLast, oldLast, 1e-10) )
-            {
-                return mSharedTimeVecPointers[idx];
-            }
-        }
+//        for (int idx=0; idx<mSharedTimeVecPointers.size(); ++idx)
+//        {
+//            const int oldElements = mSharedTimeVecPointers[idx]->size();
+//            const double oldFirst = mSharedTimeVecPointers[idx]->at(0);
+//            const double oldLast = mSharedTimeVecPointers[idx]->at(oldElements-1);
+//            if ( (oldElements == nElements) &&
+//                 fuzzyEqual(newFirst, oldFirst, 1e-10) &&
+//                 fuzzyEqual(newLast, oldLast, 1e-10) )
+//            {
+//                return mSharedTimeVecPointers[idx];
+//            }
+//        }
 
-        // If we did not already return then add this pointer
-        QVector<double>* pNewVector = new QVector<double>(rTimeVector);
-        mSharedTimeVecPointers.append(SharedTimeVectorPtrT(pNewVector));
-        return mSharedTimeVecPointers.last();
-    }
-    return SharedTimeVectorPtrT();
-}
+//        // If we did not already return then add this pointer
+//        mSharedTimeVecPointers.append(SharedTimeVectorPtrT(new LogVariableTime(rTimeVector)));
+//        return mSharedTimeVecPointers.last();
+//    }
+//    return SharedTimeVectorPtrT();
+//}
 
 
-QVector<double> LogVariableData::getDataVector()
+QVector<double> LogVariableData::getDataVectorCopy()
 {
     QVector<double> vec;
     mpCachedDataVector->copyDataTo(vec);
@@ -898,7 +977,15 @@ int LogVariableData::getDataSize() const
     return mpCachedDataVector->size();
 }
 
+double LogVariableData::first() const
+{
+    return peekData(0);
+}
 
+double LogVariableData::last() const
+{
+    return peekData(mpCachedDataVector->size());
+}
 
 
 
@@ -913,4 +1000,26 @@ double LogVariableData::peekData(const int idx) const
 }
 
 
+//LogVariableTime::LogVariableTime(const QVector<double> &rVector)
+//{
+//    mScale = 1.0;
+//    mTimeData = rVector;
+//    emit dataChanged();
+//}
 
+//void LogVariableTime::setScale(const double scale)
+//{
+//    mScale *= scale;
+//    emit dataChanged();
+//}
+
+//LogVariableTime::LogVariableTime()
+//{
+//    mScale = 1.0;
+//}
+
+
+double LogVariableData::getPlotScale() const
+{
+    return mDataPlotScale;
+}

@@ -80,7 +80,6 @@ public:
     void closeEvent(QCloseEvent *event);
 
     //Get functions
-    QVector<double> *getTimeValues();
     QGraphicsScene* getGraphicsScene();
     LogDataHandler* getPlotDataPtr();
 
@@ -152,7 +151,7 @@ private:
     LogDataHandler *mpPlotData;
 
     //Copy of time values
-    QVector<double>* mpTimeValues;
+    QVector<double> mTimeValues;
 
     //Lists of sub objects
     QList<ModelObject*> mModelObjectsList;
