@@ -949,7 +949,14 @@ double MultiPort::getStartValue(const size_t idx, const size_t portIdx)
 
 void MultiPort::loadStartValues()
 {
-    //! @todo what should we do here actaully, from where should we copy the starvalues and where to, maybe we should tell the component programmer to fix this
+    if(mpStartNode)
+    {
+        for(size_t p=0; p<mSubPortsVector.size(); ++p)
+        {
+            mpStartNode->copyNodeDataValuesTo(mSubPortsVector[p]->mpNode);
+            mpStartNode->copySignalDataUnitAndDescriptionTo(mSubPortsVector[p]->mpNode);
+        }
+    }
 }
 
 void MultiPort::loadStartValuesFromSimulation()

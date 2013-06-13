@@ -94,6 +94,7 @@ signals:
     void hovered();
 
 public slots:
+    void autoHide();
 
 private slots:
     void debugSlot();

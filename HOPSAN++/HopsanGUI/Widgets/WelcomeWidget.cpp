@@ -185,6 +185,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpLoadingWebLayout->setAlignment(mpLoadingWebLabel, Qt::AlignCenter);
     mpLoadingWebLayout->setAlignment(mpLoadingWebProgressBar, Qt::AlignCenter);
     mpLoadingWebWidget = new QWidget(this);
+    mpLoadingWebWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     mpLoadingWebWidget->setFixedHeight(168);
     mpLoadingWebWidget->setFixedWidth(400);
     mpLoadingWebWidget->setLayout(mpLoadingWebLayout);
@@ -200,8 +201,10 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpFeed->get(QNetworkRequest(QUrl(NEWSLINK)));
 
     mpNewsScrollWidget = new QWidget(this);
+    mpNewsScrollWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     mpNewsScrollLayout = new QVBoxLayout(mpNewsScrollWidget);
     mpNewsScrollArea = new QScrollArea(this);
+    mpNewsScrollArea->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     mpNewsScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     mpNewsScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     mpNewsScrollArea->setWidget(mpNewsScrollWidget);
@@ -210,12 +213,14 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpNewsText = new QLabel("Hopsan News", this);
     mpNewsText->setAlignment(Qt::AlignCenter);
     mpNewsText->setMouseTracking(true);
+    mpNewsText->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     mpNewsLayout = new QVBoxLayout(this);
     mpNewsLayout->addWidget(mpNewsText, 0, Qt::AlignTop);
     mpNewsLayout->addWidget(mpLoadingWebWidget);
     //mpNewsLayout->addWidget(mpWeb);
     mpNewsLayout->addWidget(mpNewsScrollArea);
     mpNewsFrame = new QFrame(this);
+    mpNewsFrame->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     mpNewsFrame->setFrameShape(QFrame::StyledPanel);
     mpNewsFrame->setMouseTracking(true);
     mpNewsFrame->setFixedSize(mFrameW*2,mFrameH*2+mSpacing);
@@ -250,7 +255,11 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpLayout->addWidget(mpExampleFrame,                     2, 2, 1, 2);
     mpLayout->addWidget(mpNewsFrame,                        1, 4, 2, 1);
     mpLayout->addWidget(mpNewVersionButton,                 0, 4, 1, 1);
+    mpLayout->addWidget(new QWidget(this),                  3, 0, 1, 4);
+    mpLayout->addWidget(new QWidget(this),                  0, 5, 2, 1);
     mpLayout->setSpacing(mSpacing);
+    mpLayout->setRowStretch(3,1);
+    mpLayout->setColumnStretch(5, 1);
     mpLayout->setSizeConstraint(QLayout::SetFixedSize);
     //mpLayout->addWidget(pTestLabel);
 
@@ -258,7 +267,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
 
     connect(this, SIGNAL(hovered()), gpMainWindow->mpLibrary, SLOT(clearHoverEffects()));
     connect(this, SIGNAL(hovered()), gpMainWindow->mpPlotWidget, SLOT(clearHoverEffects()));
-
+    connect(gpMainWindow->mpCentralTabs, SIGNAL(currentChanged(int)), this, SLOT(autoHide()));
 }
 
 
@@ -526,4 +535,18 @@ void WelcomeWidget::urlClicked(const QUrl &link)
 void WelcomeWidget::openDownloadPage()
 {
     QDesktopServices::openUrl(QUrl(QString(DOWNLOADLINK)));
+}
+
+
+void WelcomeWidget::autoHide()
+{
+    if(gpMainWindow->mpCentralTabs->currentWidget() != this)
+    {
+        this->setFixedSize(1,1);
+    }
+    else
+    {
+        this->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+        this->setMinimumSize(0,0);
+    }
 }
