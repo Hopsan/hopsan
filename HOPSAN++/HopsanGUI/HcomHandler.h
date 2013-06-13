@@ -8,6 +8,7 @@ class TerminalWidget;
 class TerminalConsole;
 class ModelObject;
 class HcomCommand;
+class ModelWidget;
 
 
 
@@ -176,6 +177,7 @@ private:
     bool mOptPlotPoints;
     bool mOptPlotBestWorst;
     bool mOptPlotVariables;
+    ModelWidget *mpOptModel;
 };
 
 

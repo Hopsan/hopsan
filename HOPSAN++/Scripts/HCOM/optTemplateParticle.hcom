@@ -1,5 +1,4 @@
-# Example HCOM script, takes one argument, runs a simulation arg number of times
-# $Id: simLoop.hcom 4939 2013-01-28 10:52:04Z petno25 $
+# Auto-generated HCOM script for particle swarm optimization algorithm
 
 #Evaluate function
 define eval
@@ -27,14 +26,13 @@ functol=<<<functol>>>
 partol=<<<partol>>>
 <<<objpars>>>
 
+opt init particleswarm double
+
 sim
 chpv <<<plotvars>>>
-
-opt init particleswarm double
 
 #Set min and max values for parameters
 <<<setminmax>>>
 
 opt run
-
-    
+   

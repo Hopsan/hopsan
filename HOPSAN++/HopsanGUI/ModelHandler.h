@@ -19,9 +19,10 @@ class ModelHandler : public QObject
 public:
     ModelHandler(QObject *parent=0);
 
-    void addModelWidget(ModelWidget *pModelWidget, QString name);
+    void addModelWidget(ModelWidget *pModelWidget, QString name, bool hidden=false);
 
     void setCurrentModel(int idx);
+    void setCurrentModel(ModelWidget *pWidget);
 
     ModelWidget *getModel(int idx);
     ModelWidget *getCurrentModel();
@@ -32,20 +33,20 @@ public:
 
     int count();
 
-    void loadModel(QString modelFileName, bool ignoreAlreadyOpen=false);
+    ModelWidget *loadModel(QString modelFileName, bool ignoreAlreadyOpen=false, bool hidden=false);
 
     void setCurrentTopLevelSimulationTimeParameters(const QString startTime, const QString timeStep, const QString stopTime);
 
     SimulationThreadHandler *mpSimulationThreadHandler;
 
-
 public slots:
-    void addNewModel(QString modelName="Untitled");
+    ModelWidget *addNewModel(QString modelName="Untitled", bool hidden=false);
     void loadModel();
     void loadModel(QAction *action);
     void loadModelParameters();
     bool closeModelByTabIndex(int tabIdx);
     bool closeModel(int idx);
+    bool closeModel(ModelWidget *pModel);
     bool closeAllModels();
     void modelChanged();
     void saveState();

@@ -50,44 +50,63 @@ ModelHandler::ModelHandler(QObject *parent)
 
 }
 
-void ModelHandler::addModelWidget(ModelWidget *pModelWidget, QString name)
+void ModelHandler::addModelWidget(ModelWidget *pModelWidget, QString name, bool hidden)
 {
     pModelWidget->setParent(gpMainWindow->mpCentralTabs);    //! @todo Should probably use ModelHandler as parent
 
     mModelPtrs.append(pModelWidget);
     mCurrentIdx = mModelPtrs.size()-1;
 
-    gpMainWindow->mpCentralTabs->addTab(pModelWidget, name);
-    gpMainWindow->mpCentralTabs->setCurrentWidget(pModelWidget);
+    if(!hidden)
+    {
+        gpMainWindow->mpCentralTabs->addTab(pModelWidget, name);
+        gpMainWindow->mpCentralTabs->setCurrentWidget(pModelWidget);
+        pModelWidget->setToolBarSimulationTimeParametersFromTab();
+    }
     //gpMainWindow->mpCentralTabs->setVisible(true);
 
-    pModelWidget->setToolBarSimulationTimeParametersFromTab();
-
+    //Should we emit this also when hidden?
     emit newModelWidgetAdded();
 }
 
 
 //! @brief Adds a ModelWidget object (a new tab) to itself.
 //! @see closeModel(int index)
-void ModelHandler::addNewModel(QString modelName)
+ModelWidget *ModelHandler::addNewModel(QString modelName, bool hidden)
 {
     modelName.append(QString::number(mNumberOfUntitledModels));
 
     ModelWidget *newTab = new ModelWidget(this,gpMainWindow->mpCentralTabs);    //! @todo Should probably use ModelHandler as parent
     newTab->getTopLevelSystem()->setName(modelName);
 
-    addModelWidget(newTab, modelName);
+    addModelWidget(newTab, modelName, hidden);
 
-    newTab->setToolBarSimulationTimeParametersFromTab();
+    if(!hidden)
+    {
+        newTab->setToolBarSimulationTimeParametersFromTab();
+    }
     newTab->setSaved(true);
     mNumberOfUntitledModels += 1;
+
+    return newTab;
 }
+
 
 void ModelHandler::setCurrentModel(int idx)
 {
     mCurrentIdx = idx;
-    gpMainWindow->mpCentralTabs->setCurrentWidget(mModelPtrs[idx]);
+    if(gpMainWindow->mpCentralTabs->indexOf(mModelPtrs[idx]) != -1)
+        gpMainWindow->mpCentralTabs->setCurrentWidget(mModelPtrs[idx]);
 }
+
+
+void ModelHandler::setCurrentModel(ModelWidget *pWidget)
+{
+    mCurrentIdx = mModelPtrs.indexOf(pWidget);
+    if(gpMainWindow->mpCentralTabs->indexOf(pWidget) != -1)
+        gpMainWindow->mpCentralTabs->setCurrentWidget(pWidget);
+}
+
 
 ModelWidget *ModelHandler::getModel(int idx)
 {
@@ -186,7 +205,7 @@ void ModelHandler::loadModelParameters()
 //! @param modelFileName is the path to the loaded file
 //! @see loadModel()
 //! @see saveModel(saveTarget saveAsFlag)
-void ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOpen)
+ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOpen, bool hidden)
 {
     //! @todo maybe  write utility function that opens filel checks existance and sets fileinfo
     QFile file(modelFileName);   //Create a QFile object
@@ -194,7 +213,7 @@ void ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOpen)
     {
         qDebug() << "File not found: " + file.fileName();
         gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("File not found: " + file.fileName());
-        return;
+        return 0;
     }
     QFileInfo fileInfo(file);
 
@@ -203,22 +222,24 @@ void ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOpen)
     {
         for(int t=0; t!=mModelPtrs.size(); ++t)
         {
-            if(this->getTopLevelSystem(t)->getModelFileInfo().filePath() == fileInfo.filePath())
+            if(this->getTopLevelSystem(t)->getModelFileInfo().filePath() == fileInfo.filePath() && gpMainWindow->mpCentralTabs->indexOf(mModelPtrs[t]) > -1)
             {
                 QMessageBox::information(gpMainWindow, tr("Error"), tr("Unable to load model. File is already open."));
-                return;
+                return 0;
             }
         }
     }
 
     gpMainWindow->registerRecentModel(fileInfo);
 
-    this->addModelWidget(new ModelWidget(this, gpMainWindow->mpCentralTabs), fileInfo.baseName());
-    ModelWidget *pCurrentTab = this->getCurrentModel();
-    pCurrentTab->getTopLevelSystem()->getCoreSystemAccessPtr()->addSearchPath(fileInfo.absoluteDir().absolutePath());
-    pCurrentTab->getTopLevelSystem()->setUndoEnabled(false, true);
+    ModelWidget *pNewModel = new ModelWidget(this, gpMainWindow->mpCentralTabs);
+    this->addModelWidget(pNewModel, fileInfo.baseName(), hidden);
+    pNewModel->getTopLevelSystem()->getCoreSystemAccessPtr()->addSearchPath(fileInfo.absoluteDir().absolutePath());
+    pNewModel->getTopLevelSystem()->setUndoEnabled(false, true);
 
-    gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Loading model: "+fileInfo.absoluteFilePath());
+    if(!hidden)
+        gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Loading model: "+fileInfo.absoluteFilePath());
+
     //Check if this is an expected hmf xml file
     //! @todo maybe write helpfunction that does this directly in system (or container)
     QDomDocument domDocument;
@@ -239,9 +260,9 @@ void ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOpen)
             gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Model file is saved with an older version of Hopsan, but versions should be compatible.");
         }
 
-        pCurrentTab->getTopLevelSystem()->setModelFileInfo(file); //Remember info about the file from which the data was loaded
-        pCurrentTab->getTopLevelSystem()->setAppearanceDataBasePath(pCurrentTab->getTopLevelSystem()->getModelFileInfo().absolutePath());
-        pCurrentTab->getTopLevelSystem()->loadFromDomElement(systemElement);
+        pNewModel->getTopLevelSystem()->setModelFileInfo(file); //Remember info about the file from which the data was loaded
+        pNewModel->getTopLevelSystem()->setAppearanceDataBasePath(pNewModel->getTopLevelSystem()->getModelFileInfo().absolutePath());
+        pNewModel->getTopLevelSystem()->loadFromDomElement(systemElement);
 
         //! @todo not hardcoded strings
         //! @todo in the future not only debug message but an actual check that libs are present
@@ -257,11 +278,13 @@ void ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOpen)
     {
         gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(QString("Model does not contain a HMF root tag: ")+HMF_ROOTTAG);
     }
-    pCurrentTab->setSaved(true);
+    pNewModel->setSaved(true);
 
-    pCurrentTab->getTopLevelSystem()->setUndoEnabled(true, true);
+    pNewModel->getTopLevelSystem()->setUndoEnabled(true, true);
 
     emit newModelWidgetAdded();
+
+    return pNewModel;
 }
 
 void ModelHandler::setCurrentTopLevelSimulationTimeParameters(const QString startTime, const QString timeStep, const QString stopTime)
@@ -292,6 +315,19 @@ bool ModelHandler::closeModelByTabIndex(int tabIdx)
 
     closeModel(idx);
     return true;
+}
+
+
+bool ModelHandler::closeModel(ModelWidget *pModel)
+{
+    if(mModelPtrs.contains(pModel))
+    {
+        return closeModel(mModelPtrs.indexOf(pModel));
+    }
+    else
+    {
+        return false;
+    }
 }
 
 

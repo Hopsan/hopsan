@@ -1902,6 +1902,8 @@ void HcomHandler::executeOptimizationCommand(const QString cmd)
 
         //Everything is fine, initialize and run optimization
 
+        mpOptModel = gpMainWindow->mpModelHandler->loadModel(gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getModelFileInfo().absoluteFilePath(), true, true);
+
         bool ok;
         if(mOptAlgorithm == Complex)
         {
@@ -3367,6 +3369,8 @@ double _funcRand(QString str)
 
 void HcomHandler::optComplexInit()
 {
+    gpMainWindow->mpModelHandler->setCurrentModel(mpOptModel);
+
     //Load default optimization functions
     QString oldPath = mPwd;
     mPwd = gDesktopHandler.getExecPath();
@@ -3405,9 +3409,15 @@ void HcomHandler::optComplexInit()
 
     mOptKf = 1.0-pow(mOptAlpha/2.0, mOptGamma/mOptNumPoints);
 
-    LogDataHandler *pHandler = gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler();
-    pHandler->deleteVariable("WorstObjective");
-    pHandler->deleteVariable("BestObjective");
+//    LogDataHandler *pHandler = gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler();
+//    pHandler->deleteVariable("WorstObjective");
+//    pHandler->deleteVariable("BestObjective");
+
+    if(!gpMainWindow->mpModelHandler->getCurrentModel()->isSaved())
+    {
+        mpConsole->printErrorMessage("Current model is not saved. Please save it before running an optimization.", "", false);
+        return;
+    }
 }
 
 
@@ -3460,7 +3470,7 @@ void HcomHandler::optComplexRun()
         if(dummy != percent)
         {
             mpConsole->setDontPrint(false);
-            mpConsole->print(QString::number(dummy)+" %");
+            mpConsole->print(QString::number(dummy)+"%");
             mpConsole->setDontPrint(true);
             percent = dummy;
         }
@@ -3584,6 +3594,9 @@ void HcomHandler::optComplexRun()
         mpConsole->print("par("+QString::number(i)+"): "+QString::number(mOptParameters[mOptBestId][i]));
     }
 
+    //gpMainWindow->mpModelHandler->closeModel(mpOptModel);
+    gpMainWindow->mpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpMainWindow->mpCentralTabs->currentWidget()));
+
     return;
 }
 
@@ -3705,6 +3718,8 @@ double HcomHandler::optComplexMaxpardiff()
 
 void HcomHandler::optParticleInit()
 {
+    gpMainWindow->mpModelHandler->setCurrentModel(mpOptModel);
+
     //Load default optimization functions
     QString oldPath = mPwd;
     mPwd = gDesktopHandler.getExecPath();
@@ -3810,7 +3825,7 @@ void HcomHandler::optParticleRun()
         if(dummy != percent)
         {
             mpConsole->setDontPrint(false);
-            mpConsole->print(QString::number(dummy)+" %");
+            mpConsole->print(QString::number(dummy)+"%");
             mpConsole->setDontPrint(true);
             percent = dummy;
         }
@@ -3887,6 +3902,9 @@ void HcomHandler::optParticleRun()
         mpConsole->print("Optimization converged in parameter values after "+QString::number(i)+" iterations.");
         break;
     }
+
+    //gpMainWindow->mpModelHandler->closeModel(mpOptModel);
+    gpMainWindow->mpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpMainWindow->mpCentralTabs->currentWidget()));
 
     return;
 }
