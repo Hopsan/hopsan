@@ -7,16 +7,19 @@ REM Date:   2012-12-18
 
 REM TODO: Hardcoded to use python27 in the patch file
 
-set dst="qwt-trunk"
+set filename="qwt-6.1.0"
 
 REM Unpack or checkout
 echo.
 echo ======================
-echo Checking out qwt trunk (will unpack later when stable relase are availible)
+echo Unpack libQWT
 echo ======================
-rd \s\q %dst%
-mkdir %dst%
-svn co svn://svn.code.sf.net/p/qwt/code/trunk/qwt %dst%
+rd \s\q %filename%
+mkdir %filename%
+REM Use this for svn version
+REM svn co svn://svn.code.sf.net/p/qwt/code/trunk/qwt %dst%
+REM Unpack using tar
+..\..\ThirdParty\7z\7z.exe x %filename%.zip -y
 
 REM Build
 echo.

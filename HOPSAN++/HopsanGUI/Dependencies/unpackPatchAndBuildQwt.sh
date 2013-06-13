@@ -5,8 +5,8 @@
 # Author: Peter Nordin peter.nordin@liu.se
 # Date:   2012-03-29
 
-qwtzipfile="qwt-trunk_r1590.zip"
-qwtname="qwt-trunk"
+qwtzipfile="qwt-6.1.0.zip"
+qwtname="qwt-6.1.0"
 basepwd=`pwd`
 
 # Abort if dir already exist. When running release build script we dont want to build twice
