@@ -18,6 +18,24 @@ mkdir -p $pbuilderBuildDir
 distArchArray=( raring:amd64 raring:i386 quantal:amd64 quantal:i386 precise:amd64 precise:i386 )
 distArchArrayDo=()
 
+#--------------------------------------------------------------------------------------------------
+# Code starts here
+#--------------------------------------------------------------------------------------------------
+
+# Move and rename directory function
+# Move a directory renaming it if dst already exist
+mvrDir ()
+{
+  dst="$2"
+  n=0
+  while [ -d "$dst" ]; do
+    let n+=1
+    dst="$2"\_"$n"
+  done
+  #Now move to unique directory
+  mv $1 $dst
+}
+
 # Ask user for version input
 echo
 echo -n "Enter release version number on the form a.b.c or leave blank for DEV build release:"
@@ -200,7 +218,9 @@ if [ "$doPbuild" = "true" ]; then
     fi
   done
   
-  mv $packagedir* $outputDir/
+  # Move the package directory
+  mvrDir $packagedir $outputDir/
+  # Move the package related files
   mv $outputbasename* $outputDir/
   
   echo
@@ -217,7 +237,7 @@ else
 
   # Move new files to output dir
   mkdir -p $outputDir/thismachine
-  mv $packagedir* $outputDir/thismachine
+  mvrDir $packagedir $outputDir/thismachine
   mv $outputbasename* $outputDir/thismachine
 fi
 
