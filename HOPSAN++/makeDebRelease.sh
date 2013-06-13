@@ -5,35 +5,30 @@
 # Author: Peter Nordin peter.nordin@liu.se
 # Date:   2012-04-04
 
-outputDir=output
+buildRoot="buildDebPackage/"
 name=hopsan
 devversion=0.6.
 
-# Pbuildpath
-pbuilderWorkDir="$PWD/buildDebPackage/output/pbuilder/"
-pbuilderBuildDir="$pbuilderWorkDir""build/"
-mkdir -p $pbuilderBuildDir
-
 # Pbuilder dists and archs
 distArchArray=( raring:amd64 raring:i386 quantal:amd64 quantal:i386 precise:amd64 precise:i386 )
-distArchArrayDo=()
 
 #--------------------------------------------------------------------------------------------------
 # Code starts here
 #--------------------------------------------------------------------------------------------------
+distArchArrayDo=()
 
-# Move and rename directory function
-# Move a directory renaming it if dst already exist
+# Move directory overwriting dst function, dst dir will be removed if name is same
 mvrDir ()
 {
-  dst="$2"
-  n=0
-  while [ -d "$dst" ]; do
-    let n+=1
-    dst="$2"\_"$n"
-  done
+  src=${1%/}
+  dst=${2%/}
+  dstname="$dst/$src"
+  if [ -d "$dstname" ]; then
+    rm -r $dstname
+  fi
   #Now move to unique directory
-  mv $1 $dst
+  echo "mv $1 to $dstname"
+  mv $1 $dstname
 }
 
 # Ask user for version input
@@ -96,11 +91,15 @@ fi
 echo
 
 # -----------------------------------------------------------------------------
-# Go to dir and clear old files
+# Go to buildRoot before build
+# Set output directories and absolute Pbuildpath
 #
-cd buildDebPackage
-#rm -rf $outputDir
-mkdir -p $outputDir
+cd $buildRoot
+outputDir=output
+pbuilderWorkDir="$PWD/$outputDir/pbuilder/"
+outputDebDir="$outputDir/debs"
+mkdir -p $outputDebDir
+mkdir -p $pbuilderWorkDir
 
 # -----------------------------------------------------------------------------
 # Determine deb dir name
@@ -162,12 +161,14 @@ if [ "$doPbuild" = "true" ]; then
       sleep 1
       doCreateUpdatePbuilderBaseTGZ="true"
       basetgzFile="$pbuilderWorkDir$dist$arch.tgz"
+      pbuilderBuildDir="$pbuilderWorkDir""build/"
+      mkdir -p $pbuilderBuildDir
       resultPath="$pbuilderWorkDir""result/$dist"
       mkdir -p "$resultPath"
       logFile="$resultPath/$outputbasename.log"
 
       # Update or create pbuild environments
-      extraPackages="debhelper unzip subversion lsb-release libtbb-dev libqt4-dev libqtwebkit-dev libqt4-opengl-dev python-dev"
+      extraPackages="debhelper unzip subversion lsb-release libtbb-dev libqt4-dev libqtwebkit-dev libqt4-opengl-dev python-dev fakeroot"
       debootstrapOk="true"
       if [ "$doCreateUpdatePbuilderBaseTGZ" = "true" ]; then
 	    if [ -f $basetgzFile ]; then
@@ -184,7 +185,7 @@ if [ "$doPbuild" = "true" ]; then
 	    # Check for success
 	    if [ $? -ne 0 ]; then
 		debootstrapOk="false"
-		buildStatusArray=("${buildStatusArray[@]}" "$dist"\_"$arch":DebootstrapFailed)
+		buildStatusArray=("${buildStatusArray[@]}" "$dist""_""$arch"":DebootstrapFailed")
 		echo "pubulider create or update FAILED! for $dist $arch, aborting!"
 		read -p "press any key to continue"
 	    fi
@@ -202,26 +203,25 @@ if [ "$doPbuild" = "true" ]; then
 	  
 	  # Check if it exist (success)
 	  if [ -f "$outputDebName" ]; then
-	    buildStatusArray=("${buildStatusArray[@]}" "$dist_$arch":BuildOk)
+	    buildStatusArray=("${buildStatusArray[@]}" "$dist""_""$arch"":BuildOk")
 	    
 	    # Now copy and rename output deb file to dist output dir
-	    mkdir -p $outputDir/$dist
-	    cp $outputDebName $outputDir/$dist/$outputbasename\_$dist\_$arch.deb
+	    cp $outputDebName $outputDebDir/$outputbasename\_$dist\_$arch.deb
 	  
 	    # Check package with lintian
-	    lintian --color always -X files $outputDir/$dist/$outputbasename\_$dist\_$arch.deb
+	    lintian --color always -X files $outputDebDir/$outputbasename\_$dist\_$arch.deb
 	    
 	  else
-	    buildStatusArray=("${buildStatusArray[@]}" "$dist_$arch":BuildFailed)
+	    buildStatusArray=("${buildStatusArray[@]}" "$dist""_""$arch"":BuildFailed")
 	  fi
       fi
     fi
   done
   
   # Move the package directory
-  mvrDir $packagedir $outputDir/
+  mvrDir $packagedir $outputDir
   # Move the package related files
-  mv $outputbasename* $outputDir/
+  mv $outputbasename* $outputDir
   
   echo
   echo "Build Status:"
