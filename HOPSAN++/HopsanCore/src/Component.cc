@@ -185,13 +185,13 @@ const std::vector<VariameterDescription>* Component::getVariameters()
 //! @todo check returnvalue from setParameter check if Ok error emssage otherwise, also in the other functions
 void Component::setConstantValue(HString name, const double value)
 {
-    setParameterValue(name, to_string(value), true);
+    setParameterValue(name, to_hstring(value), true);
 }
 
 //! @note Dont use this function during simulation, it is slow
 void Component::setConstantValue(HString name, const int value)
 {
-    setParameterValue(name, to_string(value), true);
+    setParameterValue(name, to_hstring(value), true);
 }
 
 //! @note Dont use this function during simulation, it is slow
@@ -203,7 +203,7 @@ void Component::setConstantValue(HString name, const HString &rValue)
 //! @note Dont use this function during simulation, it is slow
 void Component::setConstantValue(HString name, const bool value)
 {
-    setParameterValue(name, to_string(value), true);
+    setParameterValue(name, to_hstring(value), true);
 }
 
 
@@ -500,7 +500,7 @@ void Component::registerParameter(const HString name, const HString description,
     if(mpParameters->exist(name))
         mpParameters->deleteParameter(name);     //Remove parameter if it is already registered
 
-    mpParameters->addParameter(name, to_string(rValue), description, unit, "integer", false, &rValue);
+    mpParameters->addParameter(name, to_hstring(rValue), description, unit, "integer", false, &rValue);
 }
 
 
@@ -819,7 +819,7 @@ double *Component::getSafeNodeDataPtr(Port *pPort, const int dataId)
 
     if (!pData)
     {
-        addErrorMessage("Data pointer could not be retreived in getSafeNodeDataPtr(), Requested dataId: "+to_string(dataId));
+        addErrorMessage("Data pointer could not be retreived in getSafeNodeDataPtr(), Requested dataId: "+to_hstring(dataId));
         stopSimulation();
         // Create a dummy double, this will cause a small memory leak
         //! @todo maybe solve this somehow leak in the future, maybe keep a dumy variable somwhere to whcihc everyone will point

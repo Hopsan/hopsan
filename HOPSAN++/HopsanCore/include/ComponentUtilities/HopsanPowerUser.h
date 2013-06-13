@@ -6,7 +6,7 @@
 
 namespace hopsan {
 
-Component* DLLIMPORTEXPORT createSafeComponent(ComponentSystem *pSystem, const HString &rType);
+Component DLLIMPORTEXPORT *createSafeComponent(ComponentSystem *pSystem, const HString &rType);
 bool DLLIMPORTEXPORT smartConnect(ComponentSystem *pSystem, Port *pPort1, Port *pPort2);
 bool DLLIMPORTEXPORT smartDisconnect(ComponentSystem *pSystem, Port *pPort1, Port *pPort2);
 

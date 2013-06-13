@@ -29,7 +29,7 @@
 #include <HopsanTypes.h>
 
 template<typename T>
-inline hopsan::HString to_string(const T num)
+inline hopsan::HString to_hstring(const T num)
 {
     std::stringstream ss;
     ss << num;

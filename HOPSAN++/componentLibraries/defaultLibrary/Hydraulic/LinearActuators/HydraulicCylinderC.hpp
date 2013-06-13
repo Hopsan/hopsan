@@ -231,7 +231,7 @@ class HydraulicCylinderC : public ComponentC
             V2 = V02+A2*(sl+x3);
             if(me <= 0)        //Me must be bigger than zero
             {
-                addDebugMessage("Me = "+to_string(me));
+                addDebugMessage("Me = "+to_hstring(me));
 
                 //! @todo what the heck is this all about?
                 if(mTime > mTimestep*1.5)

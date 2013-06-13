@@ -133,7 +133,7 @@ namespace hopsan {
         bool initialize(const double startT, const double stopT)     //Important, initialize must have these arguments
         {
             // Propagate constant parameters into respective components
-            mpVolume->setParameterValue("V", to_string(Volume), true);
+            mpVolume->setParameterValue("V", to_hstring(Volume), true);
             mpInternalVolumePressure = mpVolume->getSafeNodeDataPtr("P2", NodeHydraulic::Pressure);
 
             if (checkModelBeforeSimulation())

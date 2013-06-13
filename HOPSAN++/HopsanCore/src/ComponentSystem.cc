@@ -2749,15 +2749,15 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
 
         for(size_t q=0; q<mComponentQptrs.size(); ++q)
         {
-            addDebugMessage("Time for "+mComponentQptrs.at(q)->getName()+": "+ to_string(mComponentQptrs.at(q)->getMeasuredTime()));
+            addDebugMessage("Time for "+mComponentQptrs.at(q)->getName()+": "+ to_hstring(mComponentQptrs.at(q)->getMeasuredTime()));
         }
         for(size_t c=0; c<mComponentCptrs.size(); ++c)
         {
-            addDebugMessage("Time for "+mComponentCptrs.at(c)->getName()+": "+to_string(mComponentCptrs.at(c)->getMeasuredTime()));
+            addDebugMessage("Time for "+mComponentCptrs.at(c)->getName()+": "+to_hstring(mComponentCptrs.at(c)->getMeasuredTime()));
         }
         for(size_t s=0; s<mComponentSignalptrs.size(); ++s)
         {
-            addDebugMessage("Time for "+mComponentSignalptrs.at(s)->getName()+": "+to_string(mComponentSignalptrs.at(s)->getMeasuredTime()));
+            addDebugMessage("Time for "+mComponentSignalptrs.at(s)->getName()+": "+to_hstring(mComponentSignalptrs.at(s)->getMeasuredTime()));
         }
 
         distributeCcomponents(mSplitCVector, nThreads);              //Distribute components and nodes
@@ -3068,7 +3068,7 @@ void ComponentSystem::distributeCcomponents(vector< vector<Component*> > &rSplit
 
     for(size_t i=0; i<nThreads; ++i)
     {
-        addDebugMessage("Creating C-type thread vector, measured time = " + to_string(timeVector[i]*1000) + " ms", "cvector");
+        addDebugMessage("Creating C-type thread vector, measured time = " + to_hstring(timeVector[i]*1000) + " ms", "cvector");
     }
 
         //Finally we sort each component vector, so that
@@ -3116,7 +3116,7 @@ void ComponentSystem::distributeQcomponents(vector< vector<Component*> > &rSplit
 
     for(size_t i=0; i<nThreads; ++i)
     {
-        addDebugMessage("Creating Q-type thread vector, measured time = " + to_string(timeVector[i]*1000) + " ms", "qvector");
+        addDebugMessage("Creating Q-type thread vector, measured time = " + to_hstring(timeVector[i]*1000) + " ms", "qvector");
     }
 
         //Finally we sort each component vector, so that
@@ -3462,7 +3462,7 @@ void ComponentSystem::setLogSettingsNSamples(int nSamples, double start, double 
         if ( ((stop - start) / sampletime + 1) < nSamples )
         {
             mnLogSlots = size_t((stop - start) / sampletime + 1);
-            addWarningMessage("Requested nLogSamples: "+to_string(nSamples)+" but this is more than the total simulation samples, limiting to: "+to_string(mnLogSlots), "toofewsamples");
+            addWarningMessage("Requested nLogSamples: "+to_hstring(nSamples)+" but this is more than the total simulation samples, limiting to: "+to_hstring(mnLogSlots), "toofewsamples");
         }
         else
         {

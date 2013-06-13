@@ -86,9 +86,9 @@ namespace hopsan {
                 if (mOutDataId >= int(mpDataCurve->getNumDataCols()))
                 {
                     HString ss;
-                    ss = "outid:" + to_string(mOutDataId) + " is out of range, limiting to: ";
+                    ss = "outid:" + to_hstring(mOutDataId) + " is out of range, limiting to: ";
                     mOutDataId = int(mpDataCurve->getNumDataCols())-1;
-                    ss += to_string(mOutDataId);
+                    ss += to_hstring(mOutDataId);
                     addWarningMessage(ss);
                 }
 
