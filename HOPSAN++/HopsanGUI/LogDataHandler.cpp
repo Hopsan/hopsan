@@ -1711,7 +1711,7 @@ void LogDataHandler::insertVariableBasedOnDescription(VariableDescription &rVarD
 SharedLogVariableDataPtrT LogDataHandler::insertTimeVariable(QVector<double> &rTimeVector)
 {
     //! @todo this should not be done/checked here every time should have been prepered someewhere else, but no point in doing it properly now since we must rewrite logdatahandler to be global anyway
-    LogVariableContainer *pTime = mLogDataMap.value("time");
+    LogVariableContainer *pTime = mLogDataMap.value("Time");
     if (pTime)
     {
         pTime->addDataGeneration(mGenerationNumber, SharedLogVariableDataPtrT(), rTimeVector); //Note! Time vector itself does not have a time vector it only has a data vector
@@ -1721,12 +1721,11 @@ SharedLogVariableDataPtrT LogDataHandler::insertTimeVariable(QVector<double> &rT
     {
         VariableDescription varDesc;
         //varDesc.mModelPath = pModelObject->getParentContainerObject()->getModelFileInfo().fileName();
-        varDesc.mDataName = "time"; //! @todo this name must be reserved
+        varDesc.mDataName = "Time"; //! @todo this name must be reserved
         varDesc.mDataUnit = "s";
-        varDesc.mDataDescription = "time";
         varDesc.mVarType = VariableDescription::ModelVariableType; //! @todo maybe timetype (dont know, check with old hopsan)
 
         insertVariableBasedOnDescription(varDesc, SharedLogVariableDataPtrT(), rTimeVector);
-        return  mLogDataMap.value("time")->getDataGeneration(mGenerationNumber);
+        return  mLogDataMap.value("Time")->getDataGeneration(mGenerationNumber);
     }
 }

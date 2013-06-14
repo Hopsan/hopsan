@@ -90,7 +90,9 @@ public slots:
 
     void openLegendSettingsDialog();
     void openAxisSettingsDialog();
+    void openAxisLabelDialog();
     void applyAxisSettings();
+    void applyAxisLabelSettings();
     void applyLegendSettings();
     void enableZoom(bool value);
     void resetZoom();
@@ -126,6 +128,7 @@ private:
     int getPlotIDFromCurve(PlotCurve *pCurve);
     void constructLegendSettingsDialog();
     void constructAxisSettingsDialog();
+    void constructAxisLabelDialog();
     void setLegendSymbol(const QString symStyle);
     void setTabOnlyCustomXVector(SharedLogVariableDataPtrT pData, HopsanPlotIDEnumT plotID=FirstPlot);
 
@@ -153,13 +156,7 @@ private:
 
     // Custom X data axis variables
     bool mHasCustomXData;
-    QString mCustomXDataLabel;
     SharedLogVariableDataPtrT mpCustomXData;
-
-    // User defined axes labels
-    QString mUserDefinedXLabel;
-    QString mUserDefinedYlLabel;
-    QString mUserDefinedYrLabel;
 
     //Stuff used in export to xml dialog
     QDialog *mpExportXmlDialog;
@@ -217,6 +214,11 @@ private:
     QDoubleSpinBox *mpYLmaxSpinBox;
     QDoubleSpinBox *mpYRminSpinBox;
     QDoubleSpinBox *mpYRmaxSpinBox;
+    QDialog *mpUserDefinedLabelsDialog;
+    QLineEdit *mpUserDefinedXLabel;
+    QLineEdit *mpUserDefinedYlLabel;
+    QLineEdit *mpUserDefinedYrLabel;
+    QCheckBox *mpUserDefinedLabelsCheckBox;
 
     typedef struct _AxisLimits // Persistent axis limits
     {

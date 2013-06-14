@@ -128,6 +128,7 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
 
     // Create the lock axis dialog
     constructAxisSettingsDialog();
+    constructAxisLabelDialog();
 
     mpTabLayout = new QGridLayout(this);
 
@@ -295,6 +296,11 @@ void PlotTab::openAxisSettingsDialog()
     mpSetAxisDialog->exec();
 }
 
+void PlotTab::openAxisLabelDialog()
+{
+    mpUserDefinedLabelsDialog->exec();
+}
+
 //! @todo currently only supports settings axis for top plot
 void PlotTab::applyAxisSettings()
 {
@@ -325,6 +331,11 @@ void PlotTab::applyAxisSettings()
     {
         this->rescaleAxesToCurves();
     }
+}
+
+void PlotTab::applyAxisLabelSettings()
+{
+    updateLabels();
 }
 
 
@@ -782,8 +793,6 @@ void PlotTab::setCustomXVectorForAll(SharedLogVariableDataPtrT pData, HopsanPlot
         {
             mPlotCurvePtrs[plotID].at(i)->setCustomXData(pData);
         }
-        //mPlotCurvePtrs[plotID].at(i)->setSamples(mSpecialXVector, mPlotCurvePtrs[plotID].at(i)->getDataVector());
-        //mPlotCurvePtrs[plotID].at(i)->setDataUnit(mPlotCurvePtrs[plotID].at(i)->getDataUnit());
     }
     rescaleAxesToCurves();
 
@@ -800,70 +809,95 @@ void PlotTab::updateLabels()
         mpQwtPlots[plotID]->setAxisTitle(QwtPlot::yLeft, QwtText());
         mpQwtPlots[plotID]->setAxisTitle(QwtPlot::yRight, QwtText());
 
-        if(mPlotCurvePtrs[plotID].size()>0 && mPlotCurvePtrs[plotID][0]->getCurveType() == PortVariableType)
+        if (mPlotCurvePtrs[plotID].size()>0)
         {
-            QStringList leftUnits, rightUnits;
-            for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
+            if(mPlotCurvePtrs[plotID][0]->getCurveType() == PortVariableType)
             {
-                QString newUnit = QString(mPlotCurvePtrs[plotID].at(i)->getDataName() + " [" + mPlotCurvePtrs[plotID].at(i)->getDataUnit() + "]");
-                if( !(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yLeft && leftUnits.contains(newUnit)) && !(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yRight && rightUnits.contains(newUnit)) )
+                QStringList leftUnits, rightUnits;
+                for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
                 {
-                    if(!mpQwtPlots[plotID]->axisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY()).isEmpty())
+                    QString newUnit = QString(mPlotCurvePtrs[plotID].at(i)->getDataName() + " [" + mPlotCurvePtrs[plotID].at(i)->getDataUnit() + "]");
+                    if( !(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yLeft && leftUnits.contains(newUnit)) && !(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yRight && rightUnits.contains(newUnit)) )
                     {
-                        mpQwtPlots[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), QwtText(QString(mpQwtPlots[plotID]->axisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY()).text().append(", "))));
-                    }
-                    mpQwtPlots[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), QwtText(QString(mpQwtPlots[plotID]->axisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY()).text().append(newUnit))));
-                    if(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yLeft)
-                    {
-                        leftUnits.append(newUnit);
-                    }
-                    if(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yRight)
-                    {
-                        rightUnits.append(newUnit);
+                        if(!mpQwtPlots[plotID]->axisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY()).isEmpty())
+                        {
+                            mpQwtPlots[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), QwtText(QString(mpQwtPlots[plotID]->axisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY()).text().append(", "))));
+                        }
+                        mpQwtPlots[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), QwtText(QString(mpQwtPlots[plotID]->axisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY()).text().append(newUnit))));
+                        if(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yLeft)
+                        {
+                            leftUnits.append(newUnit);
+                        }
+                        if(mPlotCurvePtrs[plotID].at(i)->getAxisY() == QwtPlot::yRight)
+                        {
+                            rightUnits.append(newUnit);
+                        }
                     }
                 }
+                if (mHasCustomXData)
+                {
+                    mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, QwtText(QString(mpCustomXData->getDataName() + " [" + mpCustomXData->getDataUnit() + "]")));
+                }
+                else
+                {
+                    // Ok since there is not custom x-data lets assume that all curves have the same x variable (usually time), lets ask the first one
+                    SharedLogVariableDataPtrT pTime = mPlotCurvePtrs[plotID].first()->getTimeVectorPtr();
+                    if (pTime)
+                    {
+                        mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, QwtText(pTime->getDataName()+" ["+pTime->getDataUnit()+"] "));
+                    }
+
+                    // Else no automatic x-label
+                }
             }
-            if (mHasCustomXData)
+            else if(mPlotCurvePtrs[plotID][0]->getCurveType() == FrequencyAnalysisType)
             {
-                mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, QwtText(mCustomXDataLabel));
+                for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
+                {
+                    mpQwtPlots[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), "Relative Magnitude [-]");
+                    mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
+                }
             }
-            else
+            else if(mPlotCurvePtrs[plotID][0]->getCurveType() == NyquistType)
             {
-                //! @todo this is wrong, it should be decided someplace else where we know stuff nuthere in the plot tab
-                //! @todo wil lshow wrong for non time and non custom data
-                mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, QwtText("Time [s]"));
+                for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
+                {
+                    mpQwtPlots[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), "Im");
+                    mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, "Re");
+                }
             }
-        }
-        else if(mPlotCurvePtrs[plotID].size()>0 && mPlotCurvePtrs[plotID][0]->getCurveType() == FrequencyAnalysisType)
-        {
-            for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
+            else if(mPlotCurvePtrs[plotID][0]->getCurveType() == BodeGainType)
             {
-                mpQwtPlots[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), "Relative Magnitude [-]");
-                mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
+                for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
+                {
+                    mpQwtPlots[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), "Magnitude [dB]");
+                    mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, QwtText());      //No label, because there will be a phase plot bellow with same label
+                }
             }
-        }
-        else if(mPlotCurvePtrs[plotID].size()>0 && mPlotCurvePtrs[plotID][0]->getCurveType() == NyquistType)
-        {
-            for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
+            else if(mPlotCurvePtrs[plotID][0]->getCurveType() == BodePhaseType)
             {
-                mpQwtPlots[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), "Im");
-                mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, "Re");
+                for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
+                {
+                    mpQwtPlots[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), "Phase [deg]");
+                    mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
+                }
             }
-        }
-        else if(mPlotCurvePtrs[plotID].size()>0 && mPlotCurvePtrs[plotID][0]->getCurveType() == BodeGainType)
-        {
-            for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
+
+            // If Usercustom labels exist overwrite automatic label
+            if (mpUserDefinedLabelsCheckBox->isChecked())
             {
-                mpQwtPlots[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), "Magnitude [dB]");
-                mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, QwtText());      //No label, because there will be a phase plot bellow with same label
-            }
-        }
-        else if(mPlotCurvePtrs[plotID].size()>0 && mPlotCurvePtrs[plotID][0]->getCurveType() == BodePhaseType)
-        {
-            for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
-            {
-                mpQwtPlots[plotID]->setAxisTitle(mPlotCurvePtrs[plotID].at(i)->getAxisY(), "Phase [deg]");
-                mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, "Frequency [Hz]");
+                if (!mpUserDefinedXLabel->text().isEmpty())
+                {
+                    mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, QwtText(mpUserDefinedXLabel->text()));
+                }
+                if (!mpUserDefinedYlLabel->text().isEmpty())
+                {
+                    mpQwtPlots[plotID]->setAxisTitle(QwtPlot::yLeft, QwtText(mpUserDefinedYlLabel->text()));
+                }
+                if (!mpUserDefinedYrLabel->text().isEmpty())
+                {
+                    mpQwtPlots[plotID]->setAxisTitle(QwtPlot::yRight, QwtText(mpUserDefinedYrLabel->text()));
+                }
             }
         }
     }
@@ -878,14 +912,12 @@ bool PlotTab::isGridVisible()
 void PlotTab::resetXTimeVector()
 {
     mHasCustomXData = false;
-    mCustomXDataLabel = "";
+    mpCustomXData = SharedLogVariableDataPtrT(0);
 
     //! @todo what about second plot
     for(int i=0; i<mPlotCurvePtrs[FirstPlot].size(); ++i)
     {
-        mPlotCurvePtrs[FirstPlot].at(i)->setCustomXData(SharedLogVariableDataPtrT()); //Remove any custom x-data
-        //mPlotCurvePtrs[FIRSTPLOT].at(i)->setSamples(mPlotCurvePtrs[FIRSTPLOT].at(i)->getTimeVector(), mPlotCurvePtrs[FIRSTPLOT].at(i)->getDataVector());
-        //mPlotCurvePtrs[FIRSTPLOT].at(i)->setDataUnit(mPlotCurvePtrs[FIRSTPLOT].at(i)->getDataUnit());
+        mPlotCurvePtrs[FirstPlot].at(i)->setCustomXData(SharedLogVariableDataPtrT(0)); //Remove any custom x-data
     }
 
     updateLabels();
@@ -2431,6 +2463,40 @@ void PlotTab::constructAxisSettingsDialog()
 
 }
 
+void PlotTab::constructAxisLabelDialog()
+{
+    mpUserDefinedLabelsDialog = new QDialog(this);
+    mpUserDefinedLabelsDialog->setWindowTitle("Set custom axis labels");
+
+    mpUserDefinedLabelsCheckBox = new QCheckBox("Activate user defined labels");
+    mpUserDefinedLabelsCheckBox->setCheckable(true);
+    mpUserDefinedLabelsCheckBox->setChecked(false);
+
+    mpUserDefinedXLabel = new QLineEdit();
+    mpUserDefinedYlLabel = new QLineEdit();
+    mpUserDefinedYrLabel = new QLineEdit();
+
+    QGridLayout *pGridLayout = new QGridLayout(mpUserDefinedLabelsDialog);
+
+    pGridLayout->addWidget(new QLabel(tr("Left axis")), 0, 0);
+    pGridLayout->addWidget(mpUserDefinedYlLabel, 0, 1);
+    pGridLayout->addWidget(new QLabel(tr("Right axis")), 0, 4);
+    pGridLayout->addWidget(mpUserDefinedYrLabel, 0, 5);
+    pGridLayout->addWidget(new QLabel(tr("Bottom axis")), 1, 2);
+    pGridLayout->addWidget(mpUserDefinedXLabel, 1, 3);
+
+    pGridLayout->addWidget(mpUserDefinedLabelsCheckBox, 2, 0, 1, 3);
+
+    QPushButton *pFinishedButton = new QPushButton("Done", mpSetAxisDialog);
+    QDialogButtonBox *pFinishedButtonBox = new QDialogButtonBox(Qt::Horizontal);
+    pFinishedButtonBox->addButton(pFinishedButton, QDialogButtonBox::ActionRole);
+
+    pGridLayout->addWidget(pFinishedButtonBox, 3, 5);
+
+    connect(pFinishedButton, SIGNAL(clicked()), this, SLOT(applyAxisLabelSettings()));
+    connect(pFinishedButton, SIGNAL(clicked()), mpUserDefinedLabelsDialog, SLOT(close()));
+}
+
 //! @brief Help function to set legend symbole style
 //! @todo allways sets for all curves, maybe should only set for one
 void PlotTab::setLegendSymbol(const QString symStyle)
@@ -2473,7 +2539,6 @@ void PlotTab::setTabOnlyCustomXVector(SharedLogVariableDataPtrT pData, HopsanPlo
 {
     mHasCustomXData = true;
     mpCustomXData = pData;
-    mCustomXDataLabel = QString(mpCustomXData->getDataName() + " [" + mpCustomXData->getDataUnit() + "]");
 
     updateLabels();
     update();
@@ -2816,6 +2881,8 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
     QAction *setRightAxisLogarithmic = 0;
     QAction *setLeftAxisLogarithmic = 0;
 
+    QAction *pSetUserDefinedAxisLabels = 0;
+
 
     yAxisLeftMenu = menu.addMenu(QString("Left Y Axis"));
     yAxisRightMenu = menu.addMenu(QString("Right Y Axis"));
@@ -2823,7 +2890,8 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
     yAxisLeftMenu->setEnabled(mpQwtPlots[FirstPlot]->axisEnabled(QwtPlot::yLeft));
     yAxisRightMenu->setEnabled(mpQwtPlots[FirstPlot]->axisEnabled(QwtPlot::yRight));
 
-    //Create menu and actions for changing units
+
+    // Create menu and actions for changing units
     changeUnitsMenu = menu.addMenu(QString("Change Units"));
     QMap<QAction *, PlotCurve *> actionToCurveMap;
     QMap<QString, double> unitMap;
@@ -2840,8 +2908,7 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
         }
     }
 
-
-    //Create actions for making axis logarithmic
+    // Create actions for making axis logarithmic
     if(mpQwtPlots[FirstPlot]->axisEnabled(QwtPlot::yLeft))
     {
         setLeftAxisLogarithmic = yAxisLeftMenu->addAction("Logarithmic Scale");
@@ -2856,7 +2923,7 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
     }
 
 
-    //Create menu for inserting curve markers
+    // Create menu for inserting curve markers
     insertMarkerMenu = menu.addMenu(QString("Insert Curve Marker"));
     for(int plotID=0; plotID<2; ++plotID)
     {
@@ -2867,7 +2934,8 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
         }
     }
 
-
+    // Create option for changing axis labels
+    pSetUserDefinedAxisLabels = menu.addAction("Set userdefined axis labels");
 
     // ----- Wait for user to make a selection ----- //
 
@@ -2930,6 +2998,12 @@ void PlotTab::contextMenuEvent(QContextMenuEvent *event)
             mpQwtPlots[FirstPlot]->replot();
             mpQwtPlots[FirstPlot]->updateGeometry();
         }
+    }
+
+    // Set user axes labels
+    if (selectedAction == pSetUserDefinedAxisLabels)
+    {
+        openAxisLabelDialog();
     }
 
 

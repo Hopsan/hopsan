@@ -35,7 +35,7 @@
 SharedLogVariableDataPtrT makeFreeTimeVariabel(const QVector<double> &rTime)
 {
     SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription());
-    pVarDesc->mDataName = "time";
+    pVarDesc->mDataName = "Time";
     pVarDesc->mDataUnit = "s";
     // Since there is no parent we can nog cahe this to disk or give it a generation, it is a free floating time vector (logvariable)
     // Note! the time vaariable does not have a time vector, the time is the data in this case
