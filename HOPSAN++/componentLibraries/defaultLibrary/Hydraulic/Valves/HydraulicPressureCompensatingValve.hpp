@@ -39,7 +39,7 @@ namespace hopsan {
     class HydraulicPressureCompensatingValve : public ComponentQ
     {
     private:
-        double *mpPref, *mpPh;
+        double *mpPref, *mpPh, *mpXv;
         double x0, x0max, tao, Kcs, Kcf, Cs, Cf, pnom, qnom;
         double mPrevX0;
         TurbulentFlowFunction mTurb;
@@ -66,6 +66,7 @@ namespace hopsan {
 
             addInputVariable("p_ref", "Reference Opening Pressure", "[Pa]", 2000000.0, &mpPref);
             addInputVariable("p_h", "Hysteresis Width", "[Pa]", 500000.0, &mpPh);
+            addOutputVariable("xv", "Spool position", "m", 0, &mpXv);
 
             addConstant("tao", "Time Constant of Spool", "[s]", 0.01, tao);
             addConstant("k_cs", "Steady State Characteristic due to Spring", "[(m^3/s)/Pa]", 0.00000001, Kcs);
@@ -178,6 +179,7 @@ namespace hopsan {
             (*mpND_q2) = q2;
             (*mpND_p_open) = p_open;
             (*mpND_p_close) = p_close;
+            (*mpXv) = x0;
         }
     };
 }

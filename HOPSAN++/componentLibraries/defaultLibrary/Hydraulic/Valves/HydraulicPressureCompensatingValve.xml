@@ -14,5 +14,15 @@
             <port x="0.625" y="0.375" a="180" name="P_CLOSE"/>
             <port x="0" y="0.375" a="0" name="P_OPEN"/>
         </ports>
+        <animation>
+            <icon userpath="pcomp_user_base.svg"/>
+            <movable>
+                <icon userpath="pcomp_user_movable.svg"/>
+                <data port="xv" dataname="Value"/> 
+                <movement x="-5e6" y="0" a="0"/>
+                <start x="0" y="0" a="0"/>
+                <transformorigin x="0" y="0"/>
+            </movable>
+        </animation>
     </modelobject>
 </hopsanobjectappearance>
