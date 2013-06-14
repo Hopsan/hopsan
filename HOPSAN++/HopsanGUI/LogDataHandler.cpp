@@ -1599,7 +1599,7 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, int gene
         int maxOGen = pOtherHandler->getHighestGenerationNumber();
         // Since generations are not necessarily continous and same in all datavariables we try with every generation between min and max
         // We cant take them all at once, that colut change the internal ordering
-        for (int i=minOGen; i<maxOGen; ++i)
+        for (int i=minOGen; i<=maxOGen; ++i)
         {
             // Take one at a time
             takeOwnershipOfData(pOtherHandler, i);
@@ -1634,7 +1634,7 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, int gene
                 if (odit.value()->hasDataGeneration(generation))
                 {
                     tdit.value()->addDataGeneration(mGenerationNumber, odit.value()->getDataGeneration(generation));
-                    odit.value()->removeDataGeneration(generation);
+                    odit.value()->removeDataGeneration(generation, true);
                 }
             }
             else
@@ -1644,7 +1644,7 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, int gene
                     LogVariableContainer *pNewContainer = new LogVariableContainer(*(odit.value()->getVariableDescription().data()), this);
                     pNewContainer->addDataGeneration(mGenerationNumber, odit.value()->getDataGeneration(generation));
                     mLogDataMap.insert(fullName, pNewContainer);
-                    odit.value()->removeDataGeneration(generation);
+                    odit.value()->removeDataGeneration(generation, true);
                 }
             }
         }

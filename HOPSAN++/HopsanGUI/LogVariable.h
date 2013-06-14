@@ -115,7 +115,7 @@ public:
     void addDataGeneration(const int generation, const QVector<double> &rTime, const QVector<double> &rData);
     void addDataGeneration(const int generation, const SharedLogVariableDataPtrT time, const QVector<double> &rData);
     void addDataGeneration(const int generation, SharedLogVariableDataPtrT pData);
-    void removeDataGeneration(const int generation);
+    void removeDataGeneration(const int generation, const bool force=false);
     void removeGenerationsOlderThen(const int gen);
     void removeAllGenerations();
 

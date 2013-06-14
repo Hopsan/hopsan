@@ -894,10 +894,18 @@ void LogVariableContainer::addDataGeneration(const int generation, SharedLogVari
     }
 }
 
-void LogVariableContainer::removeDataGeneration(const int generation)
+void LogVariableContainer::removeDataGeneration(const int generation, const bool force)
 {
     // Skip removal of generations that should be kept
-    if (!mKeepGenerations.contains(generation))
+    if (mKeepGenerations.contains(generation))
+    {
+        if (force)
+        {
+            mDataGenerations.remove(generation);
+            mKeepGenerations.removeOne(generation);
+        }
+    }
+    else
     {
         //! @todo cache data will still be in the cachegenreationmap, need to clear whenevevr generation is removed (from anywere), mabe should restore inc dec Subscribers
         mDataGenerations.remove(generation);
