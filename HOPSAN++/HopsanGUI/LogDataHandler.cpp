@@ -58,7 +58,7 @@ LogDataHandler::LogDataHandler(ContainerObject *pParent) : QObject(pParent)
         ++ctr;
     }while(tmp.exists());
     tmp.mkpath(tmp.absolutePath());
-    mCacheDir = tmp;
+    mCacheDirs.append(tmp);
     mCacheSubDirCtr = 0;
 }
 
@@ -81,7 +81,10 @@ LogDataHandler::~LogDataHandler()
     mGenerationCacheMap.clear();
 
     // Remove the cache directory if it is empty, if it is not then cleanup should happen on program exit
-    mCacheDir.rmdir(mCacheDir.path());
+    for (int i=0; i<mCacheDirs.size(); ++i)
+    {
+        mCacheDirs[i].rmdir(mCacheDirs[i].path());
+    }
 }
 
 
@@ -932,9 +935,9 @@ ContainerObject *LogDataHandler::getParentContainerObject()
     return mpParentContainerObject;
 }
 
-QDir LogDataHandler::getCacheDir() const
+const QList<QDir> &LogDataHandler::getCacheDirs() const
 {
-    return mCacheDir;
+    return mCacheDirs;
 }
 
 SharedMultiDataVectorCacheT LogDataHandler::getOrCreateGenerationMultiCache(const int gen)
@@ -1583,7 +1586,8 @@ QStringList LogDataHandler::getPlotDataNames()
 
 QString LogDataHandler::getNewCacheName()
 {
-    return mCacheDir.absoluteFilePath("g"+QString("%1").arg(mCacheSubDirCtr++));
+    //The first dir is the main one, any other dirs have been appended later when taking ownership of someone elses data
+    return mCacheDirs.first().absoluteFilePath("cf"+QString("%1").arg(mCacheSubDirCtr++));
 }
 
 void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, int generation)
@@ -1609,6 +1613,14 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, int gene
         {
             mGenerationCacheMap.insert(mGenerationNumber, pOtherHandler->mGenerationCacheMap.value(generation));
             pOtherHandler->mGenerationCacheMap.remove(generation);
+
+            // Only take ownership of dir if we do not already own it
+            QDir cacheDir = mGenerationCacheMap.value(mGenerationNumber)->getCacheFileInfo().absoluteDir();
+            if (!mCacheDirs.contains(cacheDir))
+            {
+                mCacheDirs.append(cacheDir);
+                //! @todo this will leave the dir in the other object aswell but I dont think it will remove the files in the dir when it dies, may need to deal with that.
+            }
         }
 
         // Take the data
@@ -1637,11 +1649,22 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, int gene
             }
         }
 
+        //! @todo what about collision with tempvariable names
+        // Take the tempvariable counter
+        //! @todo do this, or is it even necessary
+
+        // Take ownership of keep generation list contents
+        if (pOtherHandler->mKeepGenerationsList.contains(generation))
+        {
+            mKeepGenerationsList.append(mGenerationNumber);
+            pOtherHandler->mKeepGenerationsList.removeOne(generation);
+        }
+
         // Increment generation
         ++mGenerationNumber;
     }
 
-    //! @todo what about cahcedir, chadirsubdir ctr, keepgenlist, favorite variables, tempvar counter
+    //! @todo favorite variables, tempvar counter
 }
 
 

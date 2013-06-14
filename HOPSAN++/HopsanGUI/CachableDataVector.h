@@ -27,6 +27,7 @@
 
 #include <QString>
 #include <QFile>
+#include <QFileInfo>
 #include <QSharedPointer>
 #include <QVector>
 #include <QMap>
@@ -87,6 +88,7 @@ public:
     bool returnVector(QVector<double> *&rpData);
 
     QString getError() const;
+    QFileInfo getCacheFileInfo() const;
 
     void incrementSubscribers();
     void decrementSubscribers();

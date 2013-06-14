@@ -89,7 +89,7 @@ public:
     void allowGenerationAutoRemoval(const int gen);
 
     ContainerObject *getParentContainerObject();
-    QDir getCacheDir() const;
+    const QList<QDir> &getCacheDirs() const;
     SharedMultiDataVectorCacheT getOrCreateGenerationMultiCache(const int gen);
 
     void incrementOpenPlotCurves();
@@ -172,7 +172,7 @@ private:
     int mnPlotCurves;
     int mGenerationNumber;
     quint64 mTempVarCtr;
-    QDir mCacheDir;
+    QList<QDir> mCacheDirs;
     quint64 mCacheSubDirCtr;
 };
 

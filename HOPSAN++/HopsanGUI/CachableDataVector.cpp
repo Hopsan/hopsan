@@ -264,6 +264,11 @@ QString MultiDataVectorCache::getError() const
     return mError;
 }
 
+QFileInfo MultiDataVectorCache::getCacheFileInfo() const
+{
+    return QFileInfo(mCacheFile);
+}
+
 void MultiDataVectorCache::incrementSubscribers()
 {
     ++mNumSubscribers;
