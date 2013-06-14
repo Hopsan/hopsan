@@ -3911,6 +3911,12 @@ void HcomHandler::optParticleRun()
         break;
     }
 
+
+    ModelWidget *pOrgModel = qobject_cast<ModelWidget*>(gpMainWindow->mpCentralTabs->currentWidget());
+    while(!mpOptModel->getTopLevelSystem()->getLogDataHandler()->isEmpty())
+    {
+        pOrgModel->getTopLevelSystem()->getLogDataHandler()->takeOwnershipOfData(mpOptModel->getTopLevelSystem()->getLogDataHandler(), -2);
+    }
     //gpMainWindow->mpModelHandler->closeModel(mpOptModel);
     gpMainWindow->mpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpMainWindow->mpCentralTabs->currentWidget()));
 

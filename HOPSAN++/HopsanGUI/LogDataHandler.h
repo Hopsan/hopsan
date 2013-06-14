@@ -150,6 +150,8 @@ public:
     void appendVariable(const SharedLogVariableDataPtrT a, const double x, const double y);
     void appendVariable(const QString &a, const double x, const double y);
 
+    void takeOwnershipOfData(LogDataHandler *pOtherHandler, int generation=-2);
+
 signals:
     void newDataAvailable();
     void closePlotsWithOwnedData();
@@ -158,8 +160,6 @@ private:
     SharedLogVariableDataPtrT insertTimeVariable(QVector<double> &rTimeVector);
     void insertVariableBasedOnDescription(VariableDescription &rVarDesc, SharedLogVariableDataPtrT pTimeVector, QVector<double> &rDataVector);
     QString getNewCacheName();
-    void takeOwnershipOfData(LogDataHandler *pOtherHandler, int generation=-2);
-
 
     ContainerObject *mpParentContainerObject;
 
