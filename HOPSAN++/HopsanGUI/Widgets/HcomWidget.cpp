@@ -673,7 +673,7 @@ void TerminalConsole::handleTabKeyPress()
             if(mAutoCompleteFilter.startsWith(parameterCmds[c]))
             {
                 QStringList parameters;
-                getHandler()->getParameters(mAutoCompleteFilter.right(mAutoCompleteFilter.size()-parameterCmds[c].size()),parameters);
+                getHandler()->getParameters(mAutoCompleteFilter.right(mAutoCompleteFilter.size()-parameterCmds[c].size())+"*",parameters);
                 for(int v=0; v<parameters.size(); ++v)
                 {
                     parameters[v].prepend(parameterCmds[c]);

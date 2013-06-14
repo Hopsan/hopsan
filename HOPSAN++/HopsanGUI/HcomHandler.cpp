@@ -687,12 +687,20 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
                         {
                             bool ok;
                             VariableType varType;
-                            components[c]->setParameterValue(parameters[p], evaluateExpression(newValue, &varType, &ok));
+                            if(pSystem->getParameterNames().contains(newValue)) //System parameter
+                            {
+                                components[c]->setParameterValue(parameters[p], newValue);
+                            }
+                            else
+                            {
+                                components[c]->setParameterValue(parameters[p], evaluateExpression(newValue, &varType, &ok));
+                            }
                         }
                     }
                 }
             }
         }
+        mpConsole->print("Changed value for "+QString::number(parameterNames.size())+" parameters.");
     }
     else
     {
