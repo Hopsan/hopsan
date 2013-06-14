@@ -429,7 +429,7 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
     QStringList addedPorts;
     for(int p=0; p<portSpecs.size(); ++p)
     {
-        if(!addedPorts.contains(portSpecs[p].varName))
+        if(!addedPorts.contains(portSpecs[p].varName) && portSpecs[p].nodeType != "NodeSignal")
         {
             fmuComponentReplace2.append(replaceTag(portLine, "varname", portSpecs[p].varName));
             addedPorts << portSpecs[p].varName;
@@ -510,12 +510,22 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
         fmuComponentReplace10.append(replaceTags(writeParLines, QStringList() << "valueref" << "varname", QStringList() << parSpecs[p].valueRef << parSpecs[p].varName));
     }
 
+    //Write signal input values
+    QString fmuComponentReplace14;
+    QString writeSignalVarLines = extractTaggedSection(fmuComponentCode, "readsignalinputs");
+    for(int p=0; p<portSpecs.size(); ++p)
+    {
+        if(portSpecs[p].causality != "output" && portSpecs[p].nodeType == "NodeSignal")
+            fmuComponentReplace14.append(replaceTags(writeSignalVarLines, QStringList() << "valueref" << "mpndname", QStringList() << portSpecs[p].valueRef << portSpecs[p].mpndName));
+    }
+
+
     //Write input values
     QString fmuComponentReplace11;
     QString writeVarLines = extractTaggedSection(fmuComponentCode, "readinputs");
     for(int p=0; p<portSpecs.size(); ++p)
     {
-        if(portSpecs[p].causality != "output")
+        if(portSpecs[p].causality != "output" && portSpecs[p].nodeType != "NodeSignal")
             fmuComponentReplace11.append(replaceTags(writeVarLines, QStringList() << "varname" << "valueref" << "mpndname", QStringList() << portSpecs[p].varName << portSpecs[p].valueRef << portSpecs[p].mpndName));
     }
 
@@ -549,6 +559,7 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
     replaceTaggedSection(fmuComponentCode, "setpars", fmuComponentReplace10);
     replaceTaggedSection(fmuComponentCode, "readinputs", fmuComponentReplace11);
     replaceTaggedSection(fmuComponentCode, "writeoutputs", fmuComponentReplace12);
+    replaceTaggedSection(fmuComponentCode,  "readsignalinputs", fmuComponentReplace14);
     fmuComponentCode.replace("<<<fileext>>>", fmuComponentReplace13);
 
     QTextStream fmuComponentHppStream(&fmuComponentHppFile);

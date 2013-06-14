@@ -175,6 +175,11 @@ namespace hopsan {
             fmiValueReference vr;
 
             //write input values
+>>>readsignalinputs>>>            sv = vars[<<<valueref>>>];
+                vr = getValueReference(sv);
+                value = (*<<<mpndname>>>);
+                mFMU.setReal(c, &vr, 1, &value);
+<<<readsignalinputs<<<
 >>>readinputs>>>            if(<<<varname>>>->isConnected())
             {
                 sv = vars[<<<valueref>>>];
