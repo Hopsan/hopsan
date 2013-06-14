@@ -32,6 +32,7 @@
 
 const double DoubleMax = std::numeric_limits<double>::max();
 const double DoubleEps = std::numeric_limits<double>::epsilon();
+const double Double10Eps = 10*std::numeric_limits<double>::epsilon();
 const double in2mm = 25.4;
 
 //! @brief Constructor for plot tabs.
@@ -103,6 +104,10 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
         mpGrid[plotID]->setMajorPen(QPen(Qt::black, 0, Qt::DotLine));
         mpGrid[plotID]->setMinorPen(QPen(Qt::gray, 0 , Qt::DotLine));
         mpGrid[plotID]->attach(mpQwtPlots[plotID]);
+
+        // Init curve counters
+        mNumYlCurves[plotID] = 0;
+        mNumYrCurves[plotID] = 0;
     }
 
     mpBarPlot = new QSint::BarChartPlotter(this);
@@ -482,6 +487,16 @@ void PlotTab::addCurve(PlotCurve *pCurve, QColor desiredColor, HopsanPlotIDEnumT
         pCurve->setLineColor(desiredColor);
     }
 
+    // Count num curves by axis
+    if (pCurve->getAxisY() == QwtPlot::yLeft)
+    {
+        ++mNumYlCurves[plotID];
+    }
+    else if (pCurve->getAxisY() == QwtPlot::yRight)
+    {
+        ++mNumYrCurves[plotID];
+    }
+
     mpQwtPlots[plotID]->enableAxis(pCurve->getAxisY());
     rescaleAxesToCurves();
     updateLabels();
@@ -500,8 +515,7 @@ void PlotTab::addCurve(PlotCurve *pCurve, QColor desiredColor, HopsanPlotIDEnumT
 //! @brief Rescales the axes and the zommers so that all plot curves will fit
 void PlotTab::rescaleAxesToCurves()
 {
-    //! @todo get freeze in here if x or y data vectors are empty (that has to be fixed)
-    //Cycle plots and rescale each of them
+    // Cycle plots and rescale each of them
     for(int plotID=0; plotID<2; ++plotID)
     {
         // Ignore if zoomed
@@ -509,15 +523,23 @@ void PlotTab::rescaleAxesToCurves()
         {
             AxisLimitsT xAxisLim, ylAxisLim, yrAxisLim;
 
+            // Set defaults when no axis available
+            xAxisLim.min=0;  xAxisLim.max=10;
+            ylAxisLim.min=0; ylAxisLim.max=10;
+            yrAxisLim.min=0; yrAxisLim.max=10;
+
             // Cycle plots, ignore if no curves
             if(!mPlotCurvePtrs[plotID].empty())
             {
-                xAxisLim.min=0;           //Min value for X axis
-                xAxisLim.max=10;          //Max value for X axis
-                ylAxisLim.min=DoubleMax;     //Min value for left Y axis
-                ylAxisLim.max=-DoubleMax;    //Max value for left Y axis
-                yrAxisLim.min=DoubleMax;     //Min value for right Y axis
-                yrAxisLim.max=-DoubleMax;    //Max value for right Y axis
+                // Init left/right min max
+                if (mNumYlCurves[plotID] > 0)
+                {
+                    ylAxisLim.min = DoubleMax; ylAxisLim.max = -DoubleMax;
+                }
+                if (mNumYrCurves[plotID] > 0)
+                {
+                    yrAxisLim.min = DoubleMax; yrAxisLim.max = -DoubleMax;
+                }
 
                 // Initialize values for X axis by using the first curve
                 xAxisLim.min=mPlotCurvePtrs[plotID].first()->minXValue();
@@ -574,15 +596,6 @@ void PlotTab::rescaleAxesToCurves()
                     this->resetXTimeVector();
                 }
             }
-            else    //No curves
-            {
-                xAxisLim.min=0;         //Min value for X axis
-                xAxisLim.max=10;        //Max value for X axis
-                ylAxisLim.min=0;     //Min value for left Y axis
-                ylAxisLim.max=10;    //Max value for left Y axis
-                yrAxisLim.min=0;    //Min value for right Y axis
-                yrAxisLim.max=10;   //Max value for right Y axis
-            }
 
             // Fix incorrect or bad limit values
             if(ylAxisLim.min > ylAxisLim.max)
@@ -596,37 +609,24 @@ void PlotTab::rescaleAxesToCurves()
                 yrAxisLim.max = 10;
             }
 
+
             // Max and min must not be same value; if they are, decrease/increase
-            //! @todo double == double comparison will likely fail, also no check for xmin == xmax
-            if(ylAxisLim.max == 0 && ylAxisLim.min == 0)
+            if ( (ylAxisLim.max - ylAxisLim.min) < Double10Eps)
             {
-                ylAxisLim.max = 1;
-                ylAxisLim.min = -1;
+                ylAxisLim.max += ylAxisLim.max;
+                ylAxisLim.min -= ylAxisLim.min;
             }
-            else if(ylAxisLim.max == ylAxisLim.min && ylAxisLim.max > 0)
+
+            if ( (yrAxisLim.max - yrAxisLim.min) < Double10Eps)
             {
-                ylAxisLim.max = ylAxisLim.max*2;
-                ylAxisLim.min = 0;
+                yrAxisLim.max += yrAxisLim.max;
+                yrAxisLim.min -= yrAxisLim.min;
             }
-            else if(ylAxisLim.max == ylAxisLim.min && ylAxisLim.max < 0)
+
+            if ( (xAxisLim.max - xAxisLim.min) < Double10Eps)
             {
-                ylAxisLim.max = 0;
-                ylAxisLim.min = ylAxisLim.min*2;
-            }
-            if(yrAxisLim.max == 0 && yrAxisLim.min == 0)
-            {
-                yrAxisLim.max = 1;
-                yrAxisLim.min = -1;
-            }
-            else if(yrAxisLim.max == yrAxisLim.min && yrAxisLim.max > 0)
-            {
-                yrAxisLim.max = yrAxisLim.max*2;
-                yrAxisLim.min = 0;
-            }
-            else if(yrAxisLim.max == yrAxisLim.min && yrAxisLim.max < 0)
-            {
-                yrAxisLim.max = 0;
-                yrAxisLim.min = yrAxisLim.min*2;
+                xAxisLim.max += xAxisLim.max;
+                xAxisLim.min -= xAxisLim.min;
             }
 
             // Calculate the axis ranges (used for calculating margins at top and bottom
@@ -720,12 +720,22 @@ void PlotTab::removeCurve(PlotCurve *curve)
         }
     }
 
+    if (curve->getAxisY() == QwtPlot::yLeft)
+    {
+        --mNumYlCurves[plotID];
+    }
+    else if (curve->getAxisY() == QwtPlot::yRight)
+    {
+        --mNumYrCurves[plotID];
+    }
+
     curve->detach();
     for(int plotID=0; plotID<2; ++plotID)
     {
         mPlotCurvePtrs[plotID].removeAll(curve);
     }
     delete(curve);
+
 
     // Reset timevector incase we had special x-axis set previously
     if (mPlotCurvePtrs[plotID].isEmpty() && mHasCustomXData)

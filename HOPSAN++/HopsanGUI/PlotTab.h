@@ -136,6 +136,8 @@ private:
 
     QwtPlot *mpQwtPlots[2];
     QList<PlotCurve *> mPlotCurvePtrs[2];
+    quint32 mNumYlCurves[2];
+    quint32 mNumYrCurves[2];
     QwtPlotGrid *mpGrid[2];
     QwtPlotZoomer *mpZoomerLeft[2];
     QwtPlotZoomer *mpZoomerRight[2];
@@ -153,6 +155,11 @@ private:
     bool mHasCustomXData;
     QString mCustomXDataLabel;
     SharedLogVariableDataPtrT mpCustomXData;
+
+    // User defined axes labels
+    QString mUserDefinedXLabel;
+    QString mUserDefinedYlLabel;
+    QString mUserDefinedYrLabel;
 
     //Stuff used in export to xml dialog
     QDialog *mpExportXmlDialog;
