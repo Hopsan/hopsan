@@ -597,6 +597,7 @@ void PlotTab::rescaleAxesToCurves()
             }
 
             // Max and min must not be same value; if they are, decrease/increase
+            //! @todo double == double comparison will likely fail, also no check for xmin == xmax
             if(ylAxisLim.max == 0 && ylAxisLim.min == 0)
             {
                 ylAxisLim.max = 1;

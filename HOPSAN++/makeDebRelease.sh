@@ -5,6 +5,10 @@
 # Author: Peter Nordin peter.nordin@liu.se
 # Date:   2012-04-04
 
+
+#--------------------------------------------------------------------------------------------------
+# Config starts here
+#--------------------------------------------------------------------------------------------------
 buildRoot="buildDebPackage/"
 name=hopsan
 devversion=0.6.
@@ -15,7 +19,6 @@ distArchArray=( raring:amd64 raring:i386 quantal:amd64 quantal:i386 precise:amd6
 #--------------------------------------------------------------------------------------------------
 # Code starts here
 #--------------------------------------------------------------------------------------------------
-distArchArrayDo=()
 
 # Move directory overwriting dst function, dst dir will be removed if name is same
 mvrDir ()
@@ -31,11 +34,26 @@ mvrDir ()
   mv $1 $dstname
 }
 
+# Ask yes/no question, returning true or false in the global variable boolYNQuestionAnswer
+boolYNQuestionAnswer="false"
+boolAskYNQuestion()
+{
+  boolYNQuestionAnswer="false"
+  echo -n "$1" "Answer y/n [""$2""]: "
+  read ans
+  if [ -z "$ans" ]; then
+    if [ "$2" = "y" ]; then
+      boolYNQuestionAnswer="true"
+    fi
+  elif [ "$ans" = "y" ]; then
+    boolYNQuestionAnswer="true"
+  fi
+}
+
 # Ask user for version input
 echo
 echo -n "Enter release version number on the form a.b.c or leave blank for DEV build release:"
 read version
-
 doDevRelease="false"
 if [ -z "$version" ]; then
   doDevRelease="true"
@@ -44,30 +62,17 @@ if [ -z "$version" ]; then
 fi
 
 echo
-echo -n "Do you want the defaultComponentLibrary to be build in? Answer: y/n : "
-read ans
-
-doBuildInComponents="false"
-if [ "$ans" = "y" ]; then
-  doBuildInComponents="true"
-fi
+boolAskYNQuestion "Do you want the defaultComponentLibrary to be build in?" "n"
+doBuildInComponents="$boolYNQuestionAnswer"
 
 echo
-echo -n "Do you want to build for multiple supported dists, using pbuilder? Answer: y/n : "
-read ans
-
-doPbuild="false"
-if [ "$ans" = "y" ]; then
-  doPbuild="true"
+distArchArrayDo=()
+boolAskYNQuestion "Do you want to build for multiple supported dists, using pbuilder?" "y"
+doPbuild="$boolYNQuestionAnswer"
+if [ "$doPbuild" = "true" ]; then
   for i in "${distArchArray[@]}"; do
-    echo -n "Do you want to build, "$i", y/n: "
-    read ans
-
-    if [ "$ans" = "y" ]; then
-      distArchArrayDo=( "${distArchArrayDo[@]}" "$i":true )
-    else
-      distArchArrayDo=( "${distArchArrayDo[@]}" "$i":false )
-    fi
+    boolAskYNQuestion "Do you want to build, "$i"?" "y"
+    distArchArrayDo+=("$i"":""$boolYNQuestionAnswer")
   done
 fi
 
@@ -81,9 +86,8 @@ if [ "$doPbuild" = "true" ]; then
   echo ${distArchArrayDo[@]}
 fi
 echo ---------------------------------------
-echo -n "Is this OK? y/n: "
-read ans
-if [ "$ans" != "y" ]; then
+boolAskYNQuestion "Is this OK?" "n"
+if [ "$boolYNQuestionAnswer" = "false" ]; then
   echo Aborting!
   exit 1
 fi
@@ -185,9 +189,8 @@ if [ "$doPbuild" = "true" ]; then
 	    # Check for success
 	    if [ $? -ne 0 ]; then
 		debootstrapOk="false"
-		buildStatusArray=("${buildStatusArray[@]}" "$dist""_""$arch"":DebootstrapFailed")
+		buildStatusArray+=("$dist""_""$arch"":DebootstrapFailed")
 		echo "pubulider create or update FAILED! for $dist $arch, aborting!"
-		read -p "press any key to continue"
 	    fi
       fi
       
@@ -203,16 +206,16 @@ if [ "$doPbuild" = "true" ]; then
 	  
 	  # Check if it exist (success)
 	  if [ -f "$outputDebName" ]; then
-	    buildStatusArray=("${buildStatusArray[@]}" "$dist""_""$arch"":BuildOk")
+	    buildStatusArray+=("$dist""_""$arch"":BuildOk")
 	    
-	    # Now copy and rename output deb file to dist output dir
-	    cp $outputDebName $outputDebDir/$outputbasename\_$dist\_$arch.deb
+	    # Now move and rename output deb file to dist output dir
+	    mv $outputDebName $outputDebDir/$outputbasename\_$dist\_$arch.deb
 	  
 	    # Check package with lintian
 	    lintian --color always -X files $outputDebDir/$outputbasename\_$dist\_$arch.deb
 	    
 	  else
-	    buildStatusArray=("${buildStatusArray[@]}" "$dist""_""$arch"":BuildFailed")
+	    buildStatusArray+=("$dist""_""$arch"":BuildFailed")
 	  fi
       fi
     fi

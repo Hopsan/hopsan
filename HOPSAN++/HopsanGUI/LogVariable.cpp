@@ -868,13 +868,27 @@ void LogVariableContainer::addDataGeneration(const int generation, const SharedL
         SharedLogVariableDataPtrT pData;
         if (mpParentLogDataHandler)
         {
-            pData = SharedLogVariableDataPtrT(new LogVariableData(generation, time, rData, mVariableDescription, mpParentLogDataHandler->getGenerationMultiCache(generation), this));
+            pData = SharedLogVariableDataPtrT(new LogVariableData(generation, time, rData, mVariableDescription, mpParentLogDataHandler->getOrCreateGenerationMultiCache(generation), this));
         }
         else
         {
             pData = SharedLogVariableDataPtrT(new LogVariableData(generation, time, rData, mVariableDescription, SharedMultiDataVectorCacheT(), this));
         }
 
+        connect(this, SIGNAL(nameChanged()), pData.data(), SIGNAL(nameChanged()));
+        mDataGenerations.insert(generation, pData);
+    }
+}
+
+//! @note Make sure that pData is not some other variable, that will screw things up badly
+void LogVariableContainer::addDataGeneration(const int generation, SharedLogVariableDataPtrT pData)
+{
+    if(mDataGenerations.contains(generation))
+    {
+        mDataGenerations.find(generation).value().data()->assignFrom(pData);
+    }
+    else
+    {
         connect(this, SIGNAL(nameChanged()), pData.data(), SIGNAL(nameChanged()));
         mDataGenerations.insert(generation, pData);
     }

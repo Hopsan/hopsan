@@ -82,13 +82,15 @@ public:
     QString getFullNameFromAlias(QString alias);
     QString getAliasFromFullName(QString fullName);
 
+    int getLowestGenerationNumber() const;
+    int getHighestGenerationNumber() const;
     void limitPlotGenerations();
     void preventGenerationAutoRemoval(const int gen);
     void allowGenerationAutoRemoval(const int gen);
 
     ContainerObject *getParentContainerObject();
     QDir getCacheDir() const;
-    SharedMultiDataVectorCacheT getGenerationMultiCache(const int gen);
+    SharedMultiDataVectorCacheT getOrCreateGenerationMultiCache(const int gen);
 
     void incrementOpenPlotCurves();
     void decrementOpenPlotCurves();
@@ -156,6 +158,9 @@ private:
     SharedLogVariableDataPtrT insertTimeVariable(QVector<double> &rTimeVector);
     void insertVariableBasedOnDescription(VariableDescription &rVarDesc, SharedLogVariableDataPtrT pTimeVector, QVector<double> &rDataVector);
     QString getNewCacheName();
+    void takeOwnershipOfData(LogDataHandler *pOtherHandler, int generation=-2);
+
+
     ContainerObject *mpParentContainerObject;
 
     LogDataMapT mLogDataMap;

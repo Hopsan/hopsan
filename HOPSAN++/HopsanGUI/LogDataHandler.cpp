@@ -510,7 +510,7 @@ void LogDataHandler::collectPlotDataFromModel(bool overWriteLastGeneration)
     //! @todo why not run multiappend when overwriting generation ?
     if(!overWriteLastGeneration)
     {
-        this->getGenerationMultiCache(mGenerationNumber)->beginMultiAppend();
+        this->getOrCreateGenerationMultiCache(mGenerationNumber)->beginMultiAppend();
     }
     // Iterate components
     for(int m=0; m<mpParentContainerObject->getModelObjectNames().size(); ++m)
@@ -565,7 +565,7 @@ void LogDataHandler::collectPlotDataFromModel(bool overWriteLastGeneration)
     }
     if(!overWriteLastGeneration)
     {
-        this->getGenerationMultiCache(mGenerationNumber)->endMultiAppend();
+        this->getOrCreateGenerationMultiCache(mGenerationNumber)->endMultiAppend();
     }
 
     // Limit number of plot generations if there are too many
@@ -845,6 +845,30 @@ QString LogDataHandler::getAliasFromFullName(QString fullName)
     return QString();
 }
 
+int LogDataHandler::getLowestGenerationNumber() const
+{
+    int min=INT_MAX;
+    // We must search through and ask all variables since they may have different sets of non-contious generations
+    LogDataMapT::const_iterator it;
+    for (it=mLogDataMap.begin(); it!=mLogDataMap.end(); ++it)
+    {
+        min = qMin(min,(it.value()->getLowestGeneration()));
+    }
+    return min;
+}
+
+int LogDataHandler::getHighestGenerationNumber() const
+{
+    int max=INT_MIN;
+    // We must search through and ask all variables since they may have different sets of non-contious generations
+    LogDataMapT::const_iterator it;
+    for (it=mLogDataMap.begin(); it!=mLogDataMap.end(); ++it)
+    {
+        max = qMax(max,(it.value()->getHighestGeneration()));
+    }
+    return max;
+}
+
 
 //! @brief Limits number of plot generations to value specified in configuration
 void LogDataHandler::limitPlotGenerations()
@@ -913,7 +937,7 @@ QDir LogDataHandler::getCacheDir() const
     return mCacheDir;
 }
 
-SharedMultiDataVectorCacheT LogDataHandler::getGenerationMultiCache(const int gen)
+SharedMultiDataVectorCacheT LogDataHandler::getOrCreateGenerationMultiCache(const int gen)
 {
     SharedMultiDataVectorCacheT pCache = mGenerationCacheMap.value(gen, SharedMultiDataVectorCacheT());
     if (!pCache)
@@ -1560,6 +1584,64 @@ QStringList LogDataHandler::getPlotDataNames()
 QString LogDataHandler::getNewCacheName()
 {
     return mCacheDir.absoluteFilePath("g"+QString("%1").arg(mCacheSubDirCtr++));
+}
+
+void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, int generation)
+{
+    // If generation < -1 then take everything
+    if (generation < -1)
+    {
+        int minOGen = pOtherHandler->getLowestGenerationNumber();
+        int maxOGen = pOtherHandler->getHighestGenerationNumber();
+        // Since generations are not necessarily continous and same in all datavariables we try with every generation between min and max
+        // We cant take them all at once, that colut change the internal ordering
+        for (int i=minOGen; i<maxOGen; ++i)
+        {
+            // Take one at a time
+            takeOwnershipOfData(pOtherHandler, i);
+        }
+    }
+    else
+    // Take only specified generation (-1 = latest)
+    {
+        // Take the generation cache map
+        if (pOtherHandler->mGenerationCacheMap.contains(generation))
+        {
+            mGenerationCacheMap.insert(mGenerationNumber, pOtherHandler->mGenerationCacheMap.value(generation));
+            pOtherHandler->mGenerationCacheMap.remove(generation);
+        }
+
+        // Take the data
+        LogDataMapT::iterator odit; //odit = OtherDataIterator
+        for (odit = pOtherHandler->mLogDataMap.begin(); odit!=pOtherHandler->mLogDataMap.end(); ++odit)
+        {
+            QString fullName = odit.key();
+            LogDataMapT::iterator tdit = mLogDataMap.find(fullName); //tdit = ThisDataIterator
+            if (tdit != mLogDataMap.end())
+            {
+                if (odit.value()->hasDataGeneration(generation))
+                {
+                    tdit.value()->addDataGeneration(mGenerationNumber, odit.value()->getDataGeneration(generation));
+                    odit.value()->removeDataGeneration(generation);
+                }
+            }
+            else
+            {
+                if (odit.value()->hasDataGeneration(generation))
+                {
+                    LogVariableContainer *pNewContainer = new LogVariableContainer(*(odit.value()->getVariableDescription().data()), this);
+                    pNewContainer->addDataGeneration(mGenerationNumber, odit.value()->getDataGeneration(generation));
+                    mLogDataMap.insert(fullName, pNewContainer);
+                    odit.value()->removeDataGeneration(generation);
+                }
+            }
+        }
+
+        // Increment generation
+        ++mGenerationNumber;
+    }
+
+    //! @todo what about cahcedir, chadirsubdir ctr, keepgenlist, favorite variables, tempvar counter
 }
 
 
