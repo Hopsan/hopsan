@@ -1623,32 +1623,6 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, int gene
             }
         }
 
-        // Take the data
-        LogDataMapT::iterator odit; //odit = OtherDataIterator
-        for (odit = pOtherHandler->mLogDataMap.begin(); odit!=pOtherHandler->mLogDataMap.end(); ++odit)
-        {
-            QString fullName = odit.key();
-            LogDataMapT::iterator tdit = mLogDataMap.find(fullName); //tdit = ThisDataIterator
-            if (tdit != mLogDataMap.end())
-            {
-                if (odit.value()->hasDataGeneration(generation))
-                {
-                    tdit.value()->addDataGeneration(mGenerationNumber, odit.value()->getDataGeneration(generation));
-                    odit.value()->removeDataGeneration(generation, true);
-                }
-            }
-            else
-            {
-                if (odit.value()->hasDataGeneration(generation))
-                {
-                    LogVariableContainer *pNewContainer = new LogVariableContainer(*(odit.value()->getVariableDescription().data()), this);
-                    pNewContainer->addDataGeneration(mGenerationNumber, odit.value()->getDataGeneration(generation));
-                    mLogDataMap.insert(fullName, pNewContainer);
-                    odit.value()->removeDataGeneration(generation, true);
-                }
-            }
-        }
-
         //! @todo what about collision with tempvariable names
         // Take the tempvariable counter
         //! @todo do this, or is it even necessary
@@ -1660,9 +1634,42 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, int gene
             pOtherHandler->mKeepGenerationsList.removeOne(generation);
         }
 
-        // Increment generation
-        ++mGenerationNumber;
+        // Take the data, and only increment this->mGeneration if data was taken
+        bool tookData=false;
+        LogDataMapT::iterator odit; //odit = OtherDataIterator
+        for (odit = pOtherHandler->mLogDataMap.begin(); odit!=pOtherHandler->mLogDataMap.end(); ++odit)
+        {
+            QString fullName = odit.key();
+            LogDataMapT::iterator tdit = mLogDataMap.find(fullName); //tdit = ThisDataIterator
+            if (tdit != mLogDataMap.end())
+            {
+                if (odit.value()->hasDataGeneration(generation))
+                {
+                    tdit.value()->addDataGeneration(mGenerationNumber, odit.value()->getDataGeneration(generation));
+                    odit.value()->removeDataGeneration(generation, true);
+                    tookData=true;
+                }
+            }
+            else
+            {
+                if (odit.value()->hasDataGeneration(generation))
+                {
+                    LogVariableContainer *pNewContainer = new LogVariableContainer(*(odit.value()->getVariableDescription().data()), this);
+                    pNewContainer->addDataGeneration(mGenerationNumber, odit.value()->getDataGeneration(generation));
+                    mLogDataMap.insert(fullName, pNewContainer);
+                    odit.value()->removeDataGeneration(generation, true);
+                    tookData=true;
+                }
+            }
+        }
+
+        if (tookData)
+        {
+            ++mGenerationNumber; // Increment generation
+        }
     }
+
+
 
     //! @todo favorite variables, tempvar counter
 }

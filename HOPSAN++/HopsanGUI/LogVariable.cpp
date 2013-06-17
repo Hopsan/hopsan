@@ -889,7 +889,12 @@ void LogVariableContainer::addDataGeneration(const int generation, SharedLogVari
     }
     else
     {
+        // Set some data that was set by LogvariableData constructor when creating a new variable, in this case we need to overwrite
+        pData->mpParentVariableContainer = this;
+        pData->mGeneration = generation;
+        // Connect the namechanged signal
         connect(this, SIGNAL(nameChanged()), pData.data(), SIGNAL(nameChanged()));
+        // Insert into generation storage
         mDataGenerations.insert(generation, pData);
     }
 }
