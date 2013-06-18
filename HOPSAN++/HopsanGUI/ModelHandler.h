@@ -19,7 +19,7 @@ class ModelHandler : public QObject
 public:
     ModelHandler(QObject *parent=0);
 
-    void addModelWidget(ModelWidget *pModelWidget, QString name, bool hidden=false);
+    void addModelWidget(ModelWidget *pModelWidget, const QString &name, bool hidden=false);
 
     void setCurrentModel(int idx);
     void setCurrentModel(ModelWidget *pWidget);
@@ -31,7 +31,7 @@ public:
     ContainerObject *getContainer(int idx);
     ContainerObject *getCurrentContainer();
 
-    int count();
+    int count() const;
 
     ModelWidget *loadModel(QString modelFileName, bool ignoreAlreadyOpen=false, bool hidden=false);
 

@@ -47,25 +47,23 @@ ModelHandler::ModelHandler(QObject *parent)
     mCurrentIdx = -1;
 
     connect(this, SIGNAL(checkMessages()),      gpMainWindow->mpTerminalWidget,    SLOT(checkMessages()), Qt::UniqueConnection);
-
 }
 
-void ModelHandler::addModelWidget(ModelWidget *pModelWidget, QString name, bool hidden)
+void ModelHandler::addModelWidget(ModelWidget *pModelWidget, const QString &name, bool hidden)
 {
     pModelWidget->setParent(gpMainWindow->mpCentralTabs);    //! @todo Should probably use ModelHandler as parent
 
     mModelPtrs.append(pModelWidget);
     mCurrentIdx = mModelPtrs.size()-1;
 
+    // If the Modelwidget should not be hidden then add it as a tab and switch to that tab
     if(!hidden)
     {
-        gpMainWindow->mpCentralTabs->addTab(pModelWidget, name);
-        gpMainWindow->mpCentralTabs->setCurrentWidget(pModelWidget);
+        gpMainWindow->mpCentralTabs->setCurrentIndex(gpMainWindow->mpCentralTabs->addTab(pModelWidget, name));
         pModelWidget->setToolBarSimulationTimeParametersFromTab();
     }
-    //gpMainWindow->mpCentralTabs->setVisible(true);
 
-    //Should we emit this also when hidden?
+    //! @todo Should we emit this also when hidden?
     emit newModelWidgetAdded();
 }
 
@@ -76,25 +74,26 @@ ModelWidget *ModelHandler::addNewModel(QString modelName, bool hidden)
 {
     modelName.append(QString::number(mNumberOfUntitledModels));
 
-    ModelWidget *newTab = new ModelWidget(this,gpMainWindow->mpCentralTabs);    //! @todo Should probably use ModelHandler as parent
-    newTab->getTopLevelSystem()->setName(modelName);
+    ModelWidget *pNewModelWidget = new ModelWidget(this,gpMainWindow->mpCentralTabs);    //! @todo Should probably use ModelHandler as parent
+    pNewModelWidget->getTopLevelSystem()->setName(modelName);
 
-    addModelWidget(newTab, modelName, hidden);
+    addModelWidget(pNewModelWidget, modelName, hidden);
 
-    if(!hidden)
-    {
-        newTab->setToolBarSimulationTimeParametersFromTab();
-    }
-    newTab->setSaved(true);
+//    if(!hidden)
+//    {
+//        pNewModelWidget->setToolBarSimulationTimeParametersFromTab();
+//    }
+    pNewModelWidget->setSaved(true);
     mNumberOfUntitledModels += 1;
 
-    return newTab;
+    return pNewModelWidget;
 }
 
 
 void ModelHandler::setCurrentModel(int idx)
 {
     mCurrentIdx = idx;
+    // Also switch tab if it is visible among the tabs
     if(gpMainWindow->mpCentralTabs->indexOf(mModelPtrs[idx]) != -1)
         gpMainWindow->mpCentralTabs->setCurrentWidget(mModelPtrs[idx]);
 }
@@ -102,15 +101,13 @@ void ModelHandler::setCurrentModel(int idx)
 
 void ModelHandler::setCurrentModel(ModelWidget *pWidget)
 {
-    mCurrentIdx = mModelPtrs.indexOf(pWidget);
-    if(gpMainWindow->mpCentralTabs->indexOf(pWidget) != -1)
-        gpMainWindow->mpCentralTabs->setCurrentWidget(pWidget);
+    setCurrentModel(mModelPtrs.indexOf(pWidget));
 }
 
 
 ModelWidget *ModelHandler::getModel(int idx)
 {
-    if(idx >= 0 && idx <= mModelPtrs.size()-1)
+    if( (idx >= 0) && (idx < mModelPtrs.size()) )
     {
         return mModelPtrs[idx];
     }
@@ -120,7 +117,7 @@ ModelWidget *ModelHandler::getModel(int idx)
 
 ModelWidget *ModelHandler::getCurrentModel()
 {
-    if(mModelPtrs.isEmpty() || mCurrentIdx < 0)
+    if( mModelPtrs.isEmpty() || (mCurrentIdx < 0) )
     {
         return 0;
     }
@@ -129,41 +126,45 @@ ModelWidget *ModelHandler::getCurrentModel()
 
 SystemContainer *ModelHandler::getTopLevelSystem(int idx)
 {
-    if(idx >= 0 && idx <= mModelPtrs.size()-1)
+    ModelWidget *pMW = getModel(idx);
+    if (pMW)
     {
-        return mModelPtrs[idx]->getTopLevelSystem();
+        return pMW->getTopLevelSystem();
     }
     return 0;
 }
 
 SystemContainer *ModelHandler::getCurrentTopLevelSystem()
 {
-    if(mModelPtrs.isEmpty() || mCurrentIdx < 0)
+    ModelWidget *pMW = getCurrentModel();
+    if (pMW)
     {
-        return 0;
+        return pMW->getTopLevelSystem();
     }
-    return mModelPtrs[mCurrentIdx]->getTopLevelSystem();
+    return 0;
 }
 
 ContainerObject *ModelHandler::getContainer(int idx)
 {
-    if(idx >= 0 && idx <= mModelPtrs.size()-1)
+    ModelWidget *pMW = getModel(idx);
+    if (pMW)
     {
-        return mModelPtrs[idx]->getGraphicsView()->getContainerPtr();
+        return pMW->getGraphicsView()->getContainerPtr();
     }
     return 0;
 }
 
 ContainerObject *ModelHandler::getCurrentContainer()
 {
-    if(mModelPtrs.isEmpty() || mCurrentIdx < 0)
+    ModelWidget *pMW = getCurrentModel();
+    if (pMW)
     {
-        return 0;
+        return pMW->getGraphicsView()->getContainerPtr();
     }
-    return mModelPtrs[mCurrentIdx]->getGraphicsView()->getContainerPtr();
+    return 0;
 }
 
-int ModelHandler::count()
+int ModelHandler::count() const
 {
     return mModelPtrs.size();
 }
@@ -298,36 +299,21 @@ void ModelHandler::setCurrentTopLevelSimulationTimeParameters(const QString star
 
 bool ModelHandler::closeModelByTabIndex(int tabIdx)
 {
-    bool found=false;
-    int idx;
     for(int i=0; i<mModelPtrs.size(); ++i)
     {
+        // When found close and return, else return false when loop ends
         if(mModelPtrs[i] == gpMainWindow->mpCentralTabs->widget(tabIdx))
         {
-            found=true;
-            idx=i;
+            return closeModel(i);
         }
     }
-    if(!found)
-    {
-        return false;
-    }
-
-    closeModel(idx);
-    return true;
+    return false;
 }
 
 
 bool ModelHandler::closeModel(ModelWidget *pModel)
 {
-    if(mModelPtrs.contains(pModel))
-    {
-        return closeModel(mModelPtrs.indexOf(pModel));
-    }
-    else
-    {
-        return false;
-    }
+    return closeModel(mModelPtrs.indexOf(pModel));
 }
 
 
@@ -337,93 +323,104 @@ bool ModelHandler::closeModel(ModelWidget *pModel)
 //! @see closeAllModels()
 bool ModelHandler::closeModel(int idx)
 {
-    if (!(this->getModel(idx)->isSaved()))
+    // Only remove if we found the model by index
+    ModelWidget *pModelToClose = getModel(idx);
+    if(pModelToClose)
     {
-        QString modelName;
-        modelName = gpMainWindow->mpCentralTabs->tabText(idx);
-        modelName.chop(1);
-        QMessageBox msgBox;
-        msgBox.setWindowIcon(gpMainWindow->windowIcon());
-        msgBox.setText(QString("The model '").append(modelName).append("'").append(QString(" is not saved.")));
-        msgBox.setInformativeText("Do you want to save your changes before closing?");
-        msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-        msgBox.setDefaultButton(QMessageBox::Save);
-
-        int answer = msgBox.exec();
-
-        switch (answer)
+        if (!pModelToClose->isSaved())
         {
-        case QMessageBox::Save:
-            // Save was clicked
-            getModel(idx)->save();
-            break;
-        case QMessageBox::Discard:
-            // Don't Save was clicked
-            break;
-        case QMessageBox::Cancel:
-            // Cancel was clicked
-            return false;
-        default:
-            // should never be reached
-            return false;
+            QString modelName = pModelToClose->getTopLevelSystem()->getName();
+            QMessageBox msgBox;
+            msgBox.setWindowIcon(gpMainWindow->windowIcon());
+            msgBox.setText(QString("The model '").append(modelName).append("'  is not saved."));
+            msgBox.setInformativeText("Do you want to save your changes before closing?");
+            msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+            msgBox.setDefaultButton(QMessageBox::Save);
+
+            int answer = msgBox.exec();
+            switch (answer)
+            {
+            case QMessageBox::Save:
+                // Save was clicked
+                pModelToClose->save();
+                break;
+            case QMessageBox::Discard:
+                // Don't Save was clicked
+                break;
+            case QMessageBox::Cancel:
+                // Cancel was clicked
+                return false;
+            default:
+                // should never be reached
+                return false;
+            }
         }
-    }
 
 
-    if (getTopLevelSystem(idx)->getLogDataHandler()->hasOpenPlotCurves())
-    {
-        QMessageBox msgBox;
-        msgBox.setWindowIcon(gpMainWindow->windowIcon());
-        msgBox.setText(QString("All open plot curves from this model will be lost."));
-        msgBox.setInformativeText("Are you sure you want to close?");
-        msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-        msgBox.setDefaultButton(QMessageBox::Cancel);
-
-        int answer = msgBox.exec();
-
-        switch (answer)
+        if (pModelToClose->getTopLevelSystem()->getLogDataHandler()->hasOpenPlotCurves())
         {
-        case QMessageBox::Ok:
-            // Ok was clicked
-            getTopLevelSystem(idx)->getLogDataHandler()->closePlotsWithCurvesBasedOnOwnedData();
-            break;
-        case QMessageBox::Cancel:
-            // Cancel was clicked
-            return false;
-        default:
-            // should never be reached
-            return false;
+            QMessageBox msgBox;
+            msgBox.setWindowIcon(gpMainWindow->windowIcon());
+            msgBox.setText(QString("All open plot curves from this model will be lost."));
+            msgBox.setInformativeText("Are you sure you want to close?");
+            msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+            msgBox.setDefaultButton(QMessageBox::Cancel);
+
+            int answer = msgBox.exec();
+            switch (answer)
+            {
+            case QMessageBox::Ok:
+                // Ok was clicked
+                getTopLevelSystem(idx)->getLogDataHandler()->closePlotsWithCurvesBasedOnOwnedData();
+                break;
+            case QMessageBox::Cancel:
+                // Cancel was clicked
+                return false;
+            default:
+                // should never be reached
+                return false;
+            }
         }
+
+        // Disconnect signals
+        disconnect(gpMainWindow->mpResetZoomAction,     SIGNAL(triggered()),    pModelToClose->getGraphicsView(),   SLOT(resetZoom()));
+        disconnect(gpMainWindow->mpZoomInAction,        SIGNAL(triggered()),    pModelToClose->getGraphicsView(),   SLOT(zoomIn()));
+        disconnect(gpMainWindow->mpZoomOutAction,       SIGNAL(triggered()),    pModelToClose->getGraphicsView(),   SLOT(zoomOut()));
+        disconnect(gpMainWindow->mpPrintAction,         SIGNAL(triggered()),    pModelToClose->getGraphicsView(),   SLOT(print()));
+        disconnect(gpMainWindow->mpExportPDFAction,     SIGNAL(triggered()),    pModelToClose->getGraphicsView(),   SLOT(exportToPDF()));
+        disconnect(gpMainWindow->mpExportPNGAction,     SIGNAL(triggered()),    pModelToClose->getGraphicsView(),   SLOT(exportToPNG()));
+        disconnect(gpMainWindow->mpCenterViewAction,    SIGNAL(triggered()),    pModelToClose->getGraphicsView(),   SLOT(centerView()));
+
+        disconnect(gpMainWindow,                                SIGNAL(simulateKeyPressed()),   pModelToClose,  SLOT(simulate()));
+        disconnect(gpMainWindow->mpSaveAction,                  SIGNAL(triggered()),            pModelToClose,  SLOT(save()));
+        disconnect(gpMainWindow->mpExportModelParametersAction, SIGNAL(triggered()),            pModelToClose,  SLOT(exportModelParameters()));
+
+        getContainer(idx)->unmakeMainWindowConnectionsAndRefresh();
+
+        // Deactivate Undo to prevent each component from registering it being deleted in the undo stack
+        getContainer(idx)->setUndoEnabled(false, true);
+
+        // Delete model tab if any
+        gpMainWindow->mpCentralTabs->removeTab(gpMainWindow->mpCentralTabs->indexOf(pModelToClose));
+
+        // Remove and delete the model
+        mModelPtrs.removeAt(idx);
+        delete pModelToClose;
+
+        // When a model widget is removed all previous indexes for later models will become incorrect,
+        // lets set the new current to the latest in that case
+        if (mCurrentIdx >= idx)
+        {
+            --mCurrentIdx;
+        }
+
+        // Refresh toolbar connections if tab has been changed
+        gpMainWindow->updateToolBarsToNewTab();
+
+        // We are done removing the model widget
+        return true;
     }
-
-    //Disconnect signals
-    //std::cout << "CentralTabWidget: " << "Closing project: " << qPrintable(tabText(index)) << std::endl;
-    //statusBar->showMessage(QString("Closing project: ").append(tabText(index)));
-    disconnect(gpMainWindow->mpResetZoomAction,     SIGNAL(triggered()),    getModel(idx)->getGraphicsView(),   SLOT(resetZoom()));
-    disconnect(gpMainWindow->mpZoomInAction,        SIGNAL(triggered()),    getModel(idx)->getGraphicsView(),   SLOT(zoomIn()));
-    disconnect(gpMainWindow->mpZoomOutAction,       SIGNAL(triggered()),    getModel(idx)->getGraphicsView(),   SLOT(zoomOut()));
-    disconnect(gpMainWindow->mpPrintAction,         SIGNAL(triggered()),    getModel(idx)->getGraphicsView(),   SLOT(print()));
-    disconnect(gpMainWindow->mpExportPDFAction,     SIGNAL(triggered()),    getModel(idx)->getGraphicsView(),   SLOT(exportToPDF()));
-    disconnect(gpMainWindow->mpExportPNGAction,     SIGNAL(triggered()),    getModel(idx)->getGraphicsView(),   SLOT(exportToPNG()));
-    disconnect(gpMainWindow->mpCenterViewAction,    SIGNAL(triggered()),    getModel(idx)->getGraphicsView(),   SLOT(centerView()));
-
-    disconnect(gpMainWindow,                                SIGNAL(simulateKeyPressed()),   getModel(idx),  SLOT(simulate()));
-    disconnect(gpMainWindow->mpSaveAction,                  SIGNAL(triggered()),            getModel(idx),  SLOT(save()));
-    disconnect(gpMainWindow->mpExportModelParametersAction, SIGNAL(triggered()),            getModel(idx),  SLOT(exportModelParameters()));
-
-    getContainer(idx)->unmakeMainWindowConnectionsAndRefresh();
-
-    getContainer(idx)->setUndoEnabled(false, true);  //This is necessary to prevent each component from registering it being deleted in the undo stack
-
-    //Delete project tab, We dont need to call removeTab here, this seems to be handled automatically
-    ModelWidget *pModelToDelete = getModel(idx);
-    gpMainWindow->mpCentralTabs->removeTab(gpMainWindow->mpCentralTabs->indexOf(pModelToDelete));
-    mModelPtrs.removeAt(idx);
-    --mCurrentIdx;
-    delete pModelToDelete;
-    gpMainWindow->updateToolBarsToNewTab();
-
-    return true;
+    return false;
 }
 
 
