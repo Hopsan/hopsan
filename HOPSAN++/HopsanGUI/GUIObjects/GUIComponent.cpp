@@ -53,7 +53,7 @@ Component::Component(QPointF position, qreal rotation, ModelObjectAppearance* pA
 
     //Component shall be hidden when toggle signals is deactivated, if it is of signal type and has no power ports (= is a sensor)
     //! @todo not hardcoded Sensor check for typename
-    if((this->getTypeCQS() == "S" && !this->hasPowerPorts() || this->getTypeName().endsWith("Sensor")))
+    if(this->getTypeCQS() == "S")
     {
         connect(mpParentContainerObject, SIGNAL(showOrHideSignals(bool)), this, SLOT(setVisible(bool)));
     }

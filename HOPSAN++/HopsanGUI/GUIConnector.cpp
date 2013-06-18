@@ -375,9 +375,7 @@ void Connector::finishCreation()
     this->determineAppearance();    // Figure out which connector appearance to use
     this->setPassive();             // Make line passive (deselected)
 
-    if(mpConnectorAppearance->getStyle() == SignalConnectorStyle ||
-            (mpStartPort && mpStartPort->getParentModelObject()->getTypeName().endsWith("Sensor")) ||
-            (mpEndPort && mpEndPort->getParentModelObject()->getTypeName().endsWith("Sensor")))
+    if(mpStartPort->getParentModelObject()->getTypeCQS() == "S" || mpEndPort->getParentModelObject()->getTypeCQS() == "S")
     {
         connect(mpParentContainerObject, SIGNAL(showOrHideSignals(bool)), this, SLOT(setVisible(bool)), Qt::UniqueConnection);
     }
