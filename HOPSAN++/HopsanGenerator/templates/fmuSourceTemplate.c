@@ -31,7 +31,7 @@ void initializeHopsanWrapper(char* filename)
 
 void initializeHopsanWrapperFromBuiltInModel()
 {
-    spCoreComponentSystem = gHopsanCore.loadHMFModel(getModelString());
+    spCoreComponentSystem = gHopsanCore.loadHMFModel(getModelString().c_str());
 
     //Assert that model was successfully loaded
     assert(spCoreComponentSystem);
@@ -42,7 +42,7 @@ void initializeHopsanWrapperFromBuiltInModel()
     {
         std::stringstream ss;
         ss << it->second;
-        spCoreComponentSystem->setSystemParameter(it->first, ss.str(), "double");
+        spCoreComponentSystem->setSystemParameter(it->first.c_str(), ss.str().c_str(), "double");
     }
 
     //Initialize systsem
@@ -59,7 +59,7 @@ void initializeHopsanWrapperFromBuiltInModel()
 void simulateOneStep()
 {
     double timestep = getTimeStep();
-    spCoreComponentSystem->simulate(fmu_time, fmu_time+timestep);
+    spCoreComponentSystem->simulate(fmu_time+timestep);
     fmu_time = fmu_time+timestep;
 }
 

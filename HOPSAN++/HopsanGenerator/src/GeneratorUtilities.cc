@@ -471,6 +471,7 @@ QStringList getHopsanCoreSourceFiles()
     srcFiles << "../HopsanCore/src/Component.cc" <<
                 "../HopsanCore/src/ComponentSystem.cc" <<
                 "../HopsanCore/src/HopsanEssentials.cc" <<
+                "../HopsanCore/src/HopsanTypes.cc" <<
                 "../HopsanCore/src/Node.cc" <<
                 "../HopsanCore/src/Nodes.cc" <<
                 "../HopsanCore/src/Parameters.cc" <<
@@ -481,6 +482,7 @@ QStringList getHopsanCoreSourceFiles()
                 "../HopsanCore/src/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.cc" <<
                 "../HopsanCore/src/ComponentUtilities/EquationSystemSolver.cpp" <<
                 "../HopsanCore/src/ComponentUtilities/FirstOrderTransferFunction.cc" <<
+                "../HopsanCore/src/ComponentUtilities/HopsanPowerUser.cc" <<
                 "../HopsanCore/src/ComponentUtilities/Integrator.cc" <<
                 "../HopsanCore/src/ComponentUtilities/IntegratorLimited.cc" <<
                 "../HopsanCore/src/ComponentUtilities/ludcmp.cc" <<
@@ -495,6 +497,7 @@ QStringList getHopsanCoreSourceFiles()
                 "../HopsanCore/src/CoreUtilities/HopsanCoreMessageHandler.cc" <<
                 "../HopsanCore/src/CoreUtilities/LoadExternal.cc" <<
                 "../HopsanCore/src/CoreUtilities/MultiThreadingUtilities.cpp" <<
+                "../HopsanCore/src/CoreUtilities/StringUtilities.cpp" <<
                 "../componentLibraries/defaultLibrary/defaultComponentLibraryInternal.cc" <<
                 "../HopsanCore/Dependencies/libcsv_parser++-1.0.0/csv_parser.cpp";
     return srcFiles;
@@ -510,6 +513,7 @@ QStringList getHopsanCoreIncludeFiles(bool skipDependencies)
                     "../HopsanCore/include/ComponentUtilities.h" <<
                     "../HopsanCore/include/HopsanCore.h" <<
                     "../HopsanCore/include/HopsanEssentials.h" <<
+                    "../HopsanCore/include/HopsanTypes.h" <<
                     "../HopsanCore/include/Node.h" <<
                     "../HopsanCore/include/Nodes.h" <<
                     "../HopsanCore/include/Parameters.h" <<
@@ -528,6 +532,7 @@ QStringList getHopsanCoreIncludeFiles(bool skipDependencies)
                     "../HopsanCore/include/ComponentUtilities/DoubleIntegratorWithDampingAndCoulumbFriction.h" <<
                     "../HopsanCore/include/ComponentUtilities/EquationSystemSolver.h" <<
                     "../HopsanCore/include/ComponentUtilities/FirstOrderTransferFunction.h" <<
+                    "../HopsanCore/include/ComponentUtilities/HopsanPowerUser.h" <<
                     "../HopsanCore/include/ComponentUtilities/Integrator.h" <<
                     "../HopsanCore/include/ComponentUtilities/IntegratorLimited.h" <<
                     "../HopsanCore/include/ComponentUtilities/ludcmp.h" <<
@@ -544,7 +549,8 @@ QStringList getHopsanCoreIncludeFiles(bool skipDependencies)
                     "../HopsanCore/include/CoreUtilities/HmfLoader.h" <<
                     "../HopsanCore/include/CoreUtilities/HopsanCoreMessageHandler.h" <<
                     "../HopsanCore/include/CoreUtilities/LoadExternal.h" <<
-                    "../HopsanCore/include/CoreUtilities/MultiThreadingUtilities.h";
+                    "../HopsanCore/include/CoreUtilities/MultiThreadingUtilities.h" <<
+                    "../HopsanCore/include/CoreUtilities/StringUtilities.h";
 
     if (!skipDependencies)
     {

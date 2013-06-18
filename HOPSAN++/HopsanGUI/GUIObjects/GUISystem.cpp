@@ -919,7 +919,7 @@ void SystemContainer::exportToFMU(QString savePath)
     //Save model to hmf in export directory
     //! @todo This code is duplicated from ModelWidget::saveModel(), make it a common function somehow
     QDomDocument domDocument;
-    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, "0");
+    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
     saveToDomElement(hmfRoot);
     QFile xmlhmf(savePath + "/" + mModelFileInfo.fileName());
     if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
@@ -1348,7 +1348,7 @@ void SystemContainer::exportToFMU(QString savePath)
 //    //Save model to hmf in export directory
 //    //! @todo This code is duplicated from ModelWidget::saveModel(), make it a common function somehow
 //    QDomDocument domDocument;
-//    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, "0");
+//    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
 //    saveToDomElement(hmfRoot);
 //    const int IndentSize = 4;
 //    QFile xmlhmf(savePath + "/" + mModelFileInfo.fileName());
