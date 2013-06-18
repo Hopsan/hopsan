@@ -3608,7 +3608,7 @@ void HcomHandler::optComplexRun()
     gpMainWindow->mpModelHandler->setCurrentModel(pOrgModel);
 
     // Close the obsolete optimisation model
-    mpOptModel->close();
+    gpMainWindow->mpModelHandler->closeModel(mpOptModel);
 
     return;
 }
@@ -3922,7 +3922,7 @@ void HcomHandler::optParticleRun()
     gpMainWindow->mpModelHandler->setCurrentModel(pOrgModel);
 
     // Close the obsolete optimisation model
-    mpOptModel->close();
+    gpMainWindow->mpModelHandler->closeModel(mpOptModel);
 }
 
 void HcomHandler::optPlotPoints()
