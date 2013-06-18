@@ -3602,8 +3602,13 @@ void HcomHandler::optComplexRun()
         mpConsole->print("par("+QString::number(i)+"): "+QString::number(mOptParameters[mOptBestId][i]));
     }
 
-    //gpMainWindow->mpModelHandler->closeModel(mpOptModel);
-    gpMainWindow->mpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpMainWindow->mpCentralTabs->currentWidget()));
+    //! @todo currentWidget MAY hav changed, solve in better way
+    ModelWidget *pOrgModel = qobject_cast<ModelWidget*>(gpMainWindow->mpCentralTabs->currentWidget());
+    pOrgModel->getTopLevelSystem()->getLogDataHandler()->takeOwnershipOfData(mpOptModel->getTopLevelSystem()->getLogDataHandler(), -2);
+    gpMainWindow->mpModelHandler->setCurrentModel(pOrgModel);
+
+    // Close the obsolete optimisation model
+    mpOptModel->close();
 
     return;
 }
@@ -3913,14 +3918,11 @@ void HcomHandler::optParticleRun()
 
 
     ModelWidget *pOrgModel = qobject_cast<ModelWidget*>(gpMainWindow->mpCentralTabs->currentWidget());
-    while(!mpOptModel->getTopLevelSystem()->getLogDataHandler()->isEmpty())
-    {
-        pOrgModel->getTopLevelSystem()->getLogDataHandler()->takeOwnershipOfData(mpOptModel->getTopLevelSystem()->getLogDataHandler(), -2);
-    }
-    //gpMainWindow->mpModelHandler->closeModel(mpOptModel);
-    gpMainWindow->mpModelHandler->setCurrentModel(qobject_cast<ModelWidget*>(gpMainWindow->mpCentralTabs->currentWidget()));
+    pOrgModel->getTopLevelSystem()->getLogDataHandler()->takeOwnershipOfData(mpOptModel->getTopLevelSystem()->getLogDataHandler(), -2);
+    gpMainWindow->mpModelHandler->setCurrentModel(pOrgModel);
 
-    return;
+    // Close the obsolete optimisation model
+    mpOptModel->close();
 }
 
 void HcomHandler::optPlotPoints()

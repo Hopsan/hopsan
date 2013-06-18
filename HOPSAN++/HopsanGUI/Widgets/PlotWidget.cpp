@@ -210,6 +210,11 @@ void PlotVariableTree::updateList()
     QVector<SharedLogVariableDataPtrT> variables = mpLogDataHandler->getAllVariablesAtNewestGeneration();
     for(int i=0; i<variables.size(); ++i)
     {
+        if (variables[i]->getVariableDescription()->mVariableSourceType == VariableDescription::TempVariableType)
+        {
+            continue;
+        }
+
         // Check if this is an alias variable, if alias is set and not already in the aliasLevelItemMap map
         if ( !variables[i]->getAliasName().isEmpty() && (aliasLevelItemList.count(variables[i]->getAliasName()) < 1) )
         {

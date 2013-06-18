@@ -1313,6 +1313,7 @@ SharedLogVariableDataPtrT LogDataHandler::defineTempVariable(QString desiredname
     numStr.setNum(mTempVarCtr);
     desiredname.append(numStr);
     SharedLogVariableDataPtrT pData = defineNewVariable(desiredname);
+    pData->mpVariableDescription->mVariableSourceType = VariableDescription::TempVariableType;
     if (pData)
     {
        ++mTempVarCtr;
