@@ -32,7 +32,8 @@
 
 const double DoubleMax = std::numeric_limits<double>::max();
 const double DoubleEps = std::numeric_limits<double>::epsilon();
-const double Double10Eps = 10*std::numeric_limits<double>::epsilon();
+const double Double20Eps = 20*std::numeric_limits<double>::epsilon();
+const double QwtLowestAxisLabelValue = 2e-12; //!< @todo Using this as lowest limit since there seems to be a "bug" in Qwt that prevents lower values from showing on the axis
 const double in2mm = 25.4;
 
 //! @brief Constructor for plot tabs.
@@ -611,6 +612,7 @@ void PlotTab::rescaleAxesToCurves()
             // Fix incorrect or bad limit values
             if(ylAxisLim.min > ylAxisLim.max)
             {
+                //! @todo use QwtInterval instaead of custom struct
                 ylAxisLim.min = 0;
                 ylAxisLim.max = 10;
             }
@@ -622,22 +624,28 @@ void PlotTab::rescaleAxesToCurves()
 
 
             // Max and min must not be same value; if they are, decrease/increase
-            if ( (ylAxisLim.max - ylAxisLim.min) < Double10Eps)
+            if ( (ylAxisLim.max - ylAxisLim.min) < QwtLowestAxisLabelValue)
             {
-                ylAxisLim.max += ylAxisLim.max;
-                ylAxisLim.min -= ylAxisLim.min;
+//                ylAxisLim.max += ylAxisLim.max;
+//                ylAxisLim.min -= ylAxisLim.min;
+                ylAxisLim.max += QwtLowestAxisLabelValue;
+                ylAxisLim.min -= QwtLowestAxisLabelValue;
             }
 
-            if ( (yrAxisLim.max - yrAxisLim.min) < Double10Eps)
+            if ( (yrAxisLim.max - yrAxisLim.min) < QwtLowestAxisLabelValue)
             {
-                yrAxisLim.max += yrAxisLim.max;
-                yrAxisLim.min -= yrAxisLim.min;
+//                yrAxisLim.max += yrAxisLim.max;
+//                yrAxisLim.min -= yrAxisLim.min;
+                yrAxisLim.max += QwtLowestAxisLabelValue;
+                yrAxisLim.min -= QwtLowestAxisLabelValue;
             }
 
-            if ( (xAxisLim.max - xAxisLim.min) < Double10Eps)
+            if ( (xAxisLim.max - xAxisLim.min) < QwtLowestAxisLabelValue)
             {
-                xAxisLim.max += xAxisLim.max;
-                xAxisLim.min -= xAxisLim.min;
+//                xAxisLim.max += xAxisLim.max;
+//                xAxisLim.min -= xAxisLim.min;
+                xAxisLim.max += QwtLowestAxisLabelValue;
+                xAxisLim.min -= QwtLowestAxisLabelValue;
             }
 
             // Calculate the axis ranges (used for calculating margins at top and bottom

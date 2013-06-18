@@ -100,315 +100,244 @@ void LogDataHandler::exportToPlo(QString filePath, QStringList variables)
         return;
     }
 
-    QTextStream fileStream(&file);  //Create a QTextStream object to stream the content of file
-    QDateTime dateTime = QDateTime::currentDateTime();
-    QString dateTimeString = dateTime.toString();
-    QFileInfo fii(filePath);
-    QString namez = fii.baseName();
-    QStringList scalingValuesList;
-    QStringList startvaluesList;
-    QVector<double> scalings;
-    //QString ScaleVal;
+    // Create a QTextStream object to stream the content of file
+    QTextStream fileStream(&file);
+    QString dateTimeString = QDateTime::currentDateTime().toString();
+    QFileInfo ploFileInfo(filePath);
+    QString modelPath = mpParentContainerObject->getModelFileInfo().filePath();
+    QFileInfo modelFileInfo(modelPath);
 
-    QString modelPathwayy = gpMainWindow->mpModelHandler->getCurrentContainer()->getModelFileInfo().filePath();
-    QFileInfo fiz(modelPathwayy);
-    QString namemodel = fiz.baseName();
+    QStringList plotScaleStringList;
+    QStringList startvaluesList;
 
     QList<SharedLogVariableDataPtrT> dataPtrs;
+    dataPtrs.append(getPlotData("Time", -1)); //!< @todo this assumes that time exists and is named Time
     for(int v=0; v<variables.size(); ++v)
     {
         dataPtrs.append(getPlotData(variables[v],-1));
     }
 
-    // Write initial comment
-    fileStream << "    'VERSION' " << QString(HOPSANGUIVERSION) << " " << dateTimeString << "\n";
-    fileStream << "    1 " << "\n";
-    fileStream << "    '"<<namez<<".PLO"<<"'"<<"\n";
-    fileStream << "        " << dataPtrs.size() <<"    "<< dataPtrs[0]->getDataSize()<<"\n";
-    fileStream << "    'Time      '";
+    int nDataRows = dataPtrs[0]->getDataSize();
+    int nDataCols = dataPtrs.size();
+
+    // Write initial Header data
+    fileStream << "    'VERSION'\n";
+    fileStream << "    2\n";
+    fileStream << "    '"<<ploFileInfo.baseName()<<".PLO' " << "'GUIVERSION " << QString(HOPSANGUIVERSION) << "' 'DATE "<<dateTimeString<<"'\n";
+    fileStream << "    " << nDataCols  <<"    "<< nDataRows <<"\n";
+    fileStream << "    'Time'";
+    for(int i=1; i<dataPtrs.size(); ++i)
+    {
+        //! @todo fix this formating so that it looks nice in plo file (need to know length of previous
+        fileStream << ",    '" << dataPtrs[i]->getSmartName()<<"'";
+    }
+    fileStream << "\n";
+
+    // Write plotScalings line
     for(int i=0; i<dataPtrs.size(); ++i)
     {
-        fileStream << ",    'Y" << i<<"      '";
-    }
-    fileStream <<",    '"<< "\n";
-
-    // Write time and data vectors
-    QString str;
-    for(int i=0; i<dataPtrs.size()+1; ++i)
-    {
-        scalingValuesList.append(str.setNum(1.0,'E',6));
-        fileStream <<"  "<< str;
-        for(int j=0; j<12-str.size(); ++j)
+        QString str;
+        str.setNum(dataPtrs[i]->getPlotScale(),'E',6);
+        plotScaleStringList.append(str); //Remember till later
+        if (str[0] == '-')
         {
-            fileStream << " ";
+            fileStream << " " << str;
+        }
+        else
+        {
+            fileStream << "  " << str;
         }
     }
     fileStream << "\n";
 
-
+    // Write data lines
     QString err;
-    for(int i=0; i<dataPtrs[0]->getDataSize(); ++i)
+    for(int row=0; row<nDataRows; ++row)
     {
-        str.setNum(dataPtrs[0]->getSharedTimePointer()->peekData(i,err),'E',6);
-        fileStream <<"  "<<str;
-        for(int j=0; j<12-str.size(); ++j)
+        QString str;
+        for(int col=0; col<dataPtrs.size(); ++col)
         {
-            fileStream << " ";
-        }
+            str.setNum(dataPtrs[col]->peekData(row,err),'E',6);
+//            if(row == 0)
+//            {
+//                startvaluesList.append(str.setNum(dataPtrs[col]->peekData(row,err),'E',6));
+//            }
 
-        for(int k=0; k<dataPtrs.size(); ++k)
-        {
-            str.setNum(dataPtrs[k]->peekData(i,err),'E',6);
-            //scalings = dataPtrs[k]->mDataVector;
-            if(i == 0)
+            if (str[0] == '-')
             {
-                startvaluesList.append(str.setNum(dataPtrs[k]->peekData(i,err),'E',6));
+                fileStream << " " << str;
             }
-
-            fileStream <<"  "<< str;
-            for(int j=0; j<12-str.size(); ++j)
+            else
             {
-                fileStream << " ";
+                fileStream << "  " << str;
             }
         }
         fileStream << "\n";
     }
-    fileStream << "  "+namez+".PLO.DAT_-1" <<"\n";
-    fileStream << "  "+namemodel+".for" <<"\n";
-    fileStream <<"   Variable     Startvalue     Scaling" <<"\n";
-    fileStream <<"------------------------------------------------------" <<"\n";
-    for(int i=0; i<dataPtrs.size(); ++i)
-    {
-        fileStream << "  Y" << i << "     " << startvaluesList[i]<<"      "<<scalingValuesList[i]<<"\n";
-    }
+    fileStream << "  "+ploFileInfo.baseName()+".PLO.DAT_-1" <<"\n";
+    fileStream << "  "+modelFileInfo.fileName() <<"\n";
+//    fileStream <<"   Variable     Startvalue     Scaling" <<"\n";
+//    fileStream <<"------------------------------------------------------" <<"\n";
+//    for(int i=0; i<dataPtrs.size(); ++i)
+//    {
+//        fileStream << "  " << dataPtrs[i]->getSmartName() << "     " << "STARTVALUEGOESHERE"<<"      "<<plotScaleStringList[i]<<"\n";
+//    }
 
     file.close();
 }
 
-class HopImpData
+class PLOImportData
 {
 public:
       QString mDataName;
-      double scale;
+      double mPlotScale;
       double startvalue;
       QVector<double> mDataValues;
 };
 
-void LogDataHandler::importFromPlo()
+void LogDataHandler::importFromPlo(QString rImportFilePath)
 {
-    QString ImportFileName = QFileDialog::getOpenFileName(0,tr("Choose Old Hopsan File"),
-                                                          gConfig.getModelicaModelsDir(),
-                                                          tr("Old Hopsan File (*.plo)"));
-    if(ImportFileName.isEmpty())
+    if(rImportFilePath.isEmpty())
+    {
+
+        rImportFilePath = QFileDialog::getOpenFileName(0,tr("Choose Hopsan .plo File"),
+                                                       gConfig.getModelicaModelsDir(),
+                                                       tr("Hopsan File (*.plo)"));
+    }
+    if(rImportFilePath.isEmpty())
     {
         return;
     }
 
-    QFile file(ImportFileName);
+    QFile file(rImportFilePath);
     QFileInfo fileInfo(file);
     gConfig.setModelicaModelsDir(fileInfo.absolutePath());
 
-    QProgressDialog progressImportBar(tr("Initializing"), QString(), 0, 0, gpMainWindow);
-    progressImportBar.show();
-
-    progressImportBar.setMaximum(10);
-    progressImportBar.setWindowModality(Qt::WindowModal);
-    progressImportBar.setWindowTitle(tr("Importing PLO"));
-    progressImportBar.setValue(0);
-
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"), "Unable to read Old Hopsan file.");
+        QMessageBox::information(gpMainWindow->window(), gpMainWindow->tr("Hopsan"), "Unable to read .PLO file.");
         return;
     }
 
+    QProgressDialog progressImportBar(tr("Importing PLO"), QString(), 0, 0, gpMainWindow);
+    progressImportBar.setWindowModality(Qt::WindowModal);
+    progressImportBar.setRange(0,0);
+    progressImportBar.show();
 
-    QString tt;
-    //QStringList Imcode;
-    int colNum = 0;
-    int lineNumber = 0;
-    int tempcounter = 999000;
-    int rowdepth = 0;
-    //HopImpData stateList;
-    QVector<HopImpData> hopOldVector;
+    int nDataRows = 0;
+    int nDataColumns = 0;
+    int ploVersion = 0;
+
+    QVector<PLOImportData> importedPLODataVector;
 
     // Stream all data and then manipulate
     QTextStream t(&file);
-    //Imcode = t.readAll();
-    while(true)
+
+    // Read header data
+    for (int lineNum=1; lineNum<7; ++lineNum)
     {
-        QString line = t.readLine();
-        if(line.isNull())
+        QString line = t.readLine().trimmed();
+        if(!line.isNull())
         {
-            break;
-        }
-        else
-        {
-            QString linet = line.trimmed();
-            progressImportBar.setValue(1);
-            progressImportBar.setLabelText("Reading file (.plo).");
-            ++lineNumber;
-
-            if(lineNumber == 4)
+            // Check PLO format version
+            if(lineNum == 2)
             {
-                QStringList tempholder = linet.split(" ");
-                colNum = tempholder[0].toInt();
-                hopOldVector.resize(colNum+1);
-                rowdepth = tempholder[4].toInt();
-                progressImportBar.setMaximum(rowdepth);
-
+                ploVersion = line.toInt();
             }
-
-            else if(linet.startsWith("'Time"))
+            // Else check for num data info
+            else if(lineNum == 4)
             {
-
-                QStringList tempheader = linet.split(",");
-                tempcounter = lineNumber;
-                for(int yy=0; yy<colNum+1; ++yy)
+                QStringList colsandrows = line.simplified().split(" ");
+                nDataColumns = colsandrows[0].toInt();
+                nDataRows = colsandrows[1].toInt();
+                // Reserve memory for reading data
+                importedPLODataVector.resize(nDataColumns);
+                for(int c=0; c<nDataColumns; ++c)
                 {
-                    QString word;
-                    //int bb = tempheader[yy].size();
-                    word = tempheader[yy].remove(QRegExp("'"));
-                    word = word.remove(QRegExp(" "));
-                    hopOldVector[yy].mDataName = word.trimmed();
-                    progressImportBar.setLabelText("Finding variables.");
-
+                    importedPLODataVector[c].mDataValues.reserve(nDataRows); //! @todo is it +- 0 or 1
                 }
-                //tt = tempheader[0];
-
-
             }
-            else if (lineNumber > 6)
-           {
-               if( (lineNumber< (rowdepth+tempcounter+1)))
+            // Else check for data header info
+            else if(lineNum == 5)//(line.startsWith("'Time"))
+            {
+                if ((ploVersion == 1) && line.startsWith("'Time"))
                 {
-                    //rowdepth = depth;
-                    //break;
-                   int bb = 0;
-                   int occurences = linet.count(QRegExp(" -"));
-                   for(int nn=0;nn<occurences+1; ++nn)
-                   {
-                       if(occurences == 0)
-                       {
-                           break;
-                       }
-                       else if (nn == occurences)
-                       {
-                           break;
-                       }
-                       else
-                       {
-                           QString cc = " -";
-                           int pp = linet.indexOf(cc,bb);
-                           linet = linet.insert(pp, QString(" "));
-                           bb = pp + 5;
-                       }
-                   }
-
-                    QStringList tempdataObj = linet.split("  ");
-
-                    for(int kk=0; kk<colNum+1; ++kk)
+                    // We add one to include "time or x column"
+                    nDataColumns+=1;
+                    importedPLODataVector.resize(nDataColumns);
+                    for(int c=0; c<nDataColumns; ++c)
                     {
-                        hopOldVector[kk].mDataValues.append(tempdataObj[kk].toDouble());
+                        importedPLODataVector[c].mDataValues.reserve(nDataRows); //! @todo is it +- 0 or 1
                     }
                 }
-               else
-               {
-                   break;
-               }
 
+                QStringList dataheader = line.split(",");
+                for(int c=0; c<nDataColumns; ++c)
+                {
+                    QString word;
+                    word = dataheader[c].remove('\'');
+                    importedPLODataVector[c].mDataName = word.trimmed();
+                }
             }
-            //            else if (depth > (rowdepth-1+5))
-            //            {
-            //                for(int ss; ss<counter+1; ++ss)
-            //                {
-            //                    int aa = QString::compare(HopOldVector[ss].ImpHopString, linet, Qt::CaseInsensitive);
-            //                    if(aa == 0)
-            //                    {
-            //                        HopOldVector[ss].startvalue = linet.section(" ",1,1).toDouble();
-            //                        HopOldVector[ss].scale = linet.section(" ",2,2).toDouble();
-            //                    }
-            //                }
-
-            //            }
-
-
+            // Else check for plot scale
+            else if (lineNum == 6)
+            {
+                // Read plotscales
+                QTextStream linestream(&line);
+                for(int c=0; c<nDataColumns; ++c)
+                {
+                    linestream >> importedPLODataVector[c].mPlotScale;
+                }
+            }
 
         }
     }
+
+    // Read the logged data
+    for (int lineNum=7; lineNum<7+nDataRows; ++lineNum)
+    {
+        QString line = t.readLine().trimmed();
+        if(!line.isNull())
+        {
+            // We check if data row first since it will happen most often
+            QTextStream linestream(&line);
+            for(int c=0; c<nDataColumns; ++c)
+            {
+                double tmp;
+                linestream >> tmp;
+                importedPLODataVector[c].mDataValues.append(tmp);
+            }
+        }
+    }
+
+    // Ignore the rest of the data for now
+
+    // We are done reading, close the file
     file.close();
 
-    progressImportBar.setValue(10);
-    progressImportBar.setLabelText("Data Fetched.");
-
-    //UniqueSharedTimeVectorPtrHelper timeVecHelper;
-    bool foundData = false;
-    //for(QVector<HopImpData>::iterator git=hopOldVector.begin(); git!=hopOldVector.end(); ++git)
+    if (importedPLODataVector.size() > 0)
     {
-//        bool timeVectorObtained = false;
-        //SharedTimeVectorPtrT timeVecPtr = timeVecHelper.makeSureUnique(hopOldVector.first().mDataValues);
-        //! @todo Should be possible to have multiple timevectors per generation
-        //Store time data (only once)
-//        if(!timeVectorObtained)
-//        {
-//            //! @todo this should not be done/checked here every time should have been prepered someewhere else, but no point in doing it properly now since we must rewrite logdatahandler to be global anyway
-//            LogVariableContainer *pTime = mLogDataMap.value("time");
-//            if (pTime)
-//            {
-//                pTime->addDataGeneration(mGenerationNumber, SharedTimeVectorPtrT(), hopOldVector.first().mDataValues); //Note! Time vector itself does not have a time vector it only has a data vector
-//            }
-//            else
-//            {
-//                VariableDescription varDesc;
-//                varDesc.mDataName = "time"; //! @todo this name must be reserved
-//                varDesc.mDataUnit = "s";
-//                varDesc.mDataDescription = "time";
-//                varDesc.mVarType = VariableDescription::ModelVariableType; //! @todo maybe timetype (dont know, check with old hopsan)
-//                insertVariableBasedOnDescription(varDesc, SharedTimeVectorPtrT(), hopOldVector.first().mDataValues);
-//            }
+        SharedLogVariableDataPtrT timeVecPtr(0);
 
-//            timeVectorObtained = true;
-//        }
-
-        SharedLogVariableDataPtrT timeVecPtr;
-        if (hopOldVector.size() > 1)
+        if (importedPLODataVector[0].mDataName == "Time")
         {
-            timeVecPtr = insertTimeVariable(hopOldVector.first().mDataValues);
+            timeVecPtr = insertTimeVariable(importedPLODataVector.first().mDataValues);
+            timeVecPtr->mpVariableDescription->mVariableSourceType = VariableDescription::ImportedVariableType;
         }
 
-        for (int i=1; i<hopOldVector.size(); ++i)
+        for (int i=1; i<importedPLODataVector.size(); ++i)
         {
-            foundData=true;
             VariableDescription varDesc;
-            varDesc.mDataName = hopOldVector[i].mDataName;
-            varDesc.mVarType = VariableDescription::ImportedVariableType;
+            varDesc.mDataName = importedPLODataVector[i].mDataName;
+            varDesc.mVariableSourceType = VariableDescription::ImportedVariableType;
             //! @todo what about reading the unit
 
-//            //! @todo use the insert function
-//            // First check if a data variable with this name alread exist
-//            QString catName = varDesc.getFullName();
-//            LogDataMapT::iterator dit = mLogDataMap.find(catName);
-//            // If it exist insert into it
-//            if (dit != mLogDataMap.end())
-//            {
-//                // Insert it into the generations map
-//                dit.value()->addDataGeneration(mGenerationNumber, timeVecPtr, hopOldVector[i].mDataValues);
-//            }
-//            else
-//            {
-//                // Create a new toplevel map item and insert data into the generations map
-//                LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc, this);
-//                pDataContainer->addDataGeneration(mGenerationNumber, hopOldVector.first().mDataValues, hopOldVector[i].mDataValues);
-//                mLogDataMap.insert(catName, pDataContainer);
-//            }
-            insertVariableBasedOnDescription(varDesc, timeVecPtr, hopOldVector[i].mDataValues);
+            SharedLogVariableDataPtrT pNewData = insertVariableBasedOnDescription(varDesc, timeVecPtr, importedPLODataVector[i].mDataValues);
+            pNewData->setPlotScale(importedPLODataVector[i].mPlotScale);
         }
 
-        if (foundData)
-        {
-            ++mGenerationNumber;
-            emit newDataAvailable();
-        }
+        ++mGenerationNumber;
+        emit newDataAvailable();
     }
 
     // Limit number of plot generations if there are too many
@@ -460,7 +389,7 @@ void LogDataHandler::importTimeVariablesFromCSVColumns(const QString csvFilePath
                 //varDesc.mDataUnit = "";
                 //varDesc.mDataDescription = "";
                 //varDesc.mAliasName  = "";
-                varDesc.mVarType = VariableDescription::ImportedVariableType;
+                varDesc.mVariableSourceType = VariableDescription::ImportedVariableType;
 
                 //UniqueSharedTimeVectorPtrHelper helper;
                 //SharedTimeVectorPtrT uniqeTimeVectorPtr = helper.makeSureUnique(timeColumn);
@@ -559,7 +488,7 @@ void LogDataHandler::collectPlotDataFromModel(bool overWriteLastGeneration)
                     varDesc.mDataUnit = varDescs[i].mUnit;
                     varDesc.mDataDescription = varDescs[i].mDescription;
                     varDesc.mAliasName  = varDescs[i].mAlias;
-                    varDesc.mVarType = VariableDescription::ModelVariableType;
+                    varDesc.mVariableSourceType = VariableDescription::ModelVariableType;
 
                     insertVariableBasedOnDescription(varDesc, timeVecPtr, dataVec);
                 }
@@ -1415,7 +1344,7 @@ SharedLogVariableDataPtrT LogDataHandler::defineNewVariable(const QString desire
     {
         VariableDescription varDesc;
         varDesc.mDataName = desiredname;
-        varDesc.mVarType = VariableDescription::ScriptVariableType;
+        varDesc.mVariableSourceType = VariableDescription::ScriptVariableType;
         LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc, this);
         pDataContainer->addDataGeneration(mGenerationNumber, QVector<double>(), QVector<double>());
         mLogDataMap.insert(varDesc.getFullName(), pDataContainer);
@@ -1428,7 +1357,7 @@ SharedLogVariableDataPtrT LogDataHandler::defineNewVariable(const QString desire
 {
     VariableDescription varDesc;
     varDesc.mDataName = desiredname;
-    varDesc.mVarType = VariableDescription::ScriptVariableType;
+    varDesc.mVariableSourceType = VariableDescription::ScriptVariableType;
     LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc, this);
     pDataContainer->addDataGeneration(mGenerationNumber, x, y);
     mLogDataMap.insert(varDesc.getFullName(), pDataContainer);
@@ -1675,8 +1604,9 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, int gene
 }
 
 
-void LogDataHandler::insertVariableBasedOnDescription(VariableDescription &rVarDesc, SharedLogVariableDataPtrT pTimeVector, QVector<double> &rDataVector)
+SharedLogVariableDataPtrT LogDataHandler::insertVariableBasedOnDescription(VariableDescription &rVarDesc, SharedLogVariableDataPtrT pTimeVector, QVector<double> &rDataVector)
 {
+    SharedLogVariableDataPtrT pNewData;
     // First check if a data variable with this name alread exist
     QString fullName = rVarDesc.getFullName();
     LogDataMapT::iterator it = mLogDataMap.find(fullName);
@@ -1684,7 +1614,7 @@ void LogDataHandler::insertVariableBasedOnDescription(VariableDescription &rVarD
     if (it != mLogDataMap.end())
     {
         // Insert it into the generations map
-        it.value()->addDataGeneration(mGenerationNumber, pTimeVector, rDataVector);
+        pNewData = it.value()->addDataGeneration(mGenerationNumber, pTimeVector, rDataVector);
 
         // Update alias if needed
         if ( rVarDesc.mAliasName != it.value()->getAliasName() )
@@ -1703,7 +1633,7 @@ void LogDataHandler::insertVariableBasedOnDescription(VariableDescription &rVarD
     {
         // Create a new toplevel map item and insert data into the generations map
         LogVariableContainer *pDataContainer = new LogVariableContainer(rVarDesc, this);
-        pDataContainer->addDataGeneration(mGenerationNumber, pTimeVector, rDataVector);
+        pNewData = pDataContainer->addDataGeneration(mGenerationNumber, pTimeVector, rDataVector);
         mLogDataMap.insert(fullName, pDataContainer);
 
         // Also insert alias if it exist
@@ -1712,6 +1642,7 @@ void LogDataHandler::insertVariableBasedOnDescription(VariableDescription &rVarD
             mLogDataMap.insert(rVarDesc.mAliasName, pDataContainer);
         }
     }
+    return pNewData;
 }
 
 
@@ -1721,8 +1652,7 @@ SharedLogVariableDataPtrT LogDataHandler::insertTimeVariable(QVector<double> &rT
     LogVariableContainer *pTime = mLogDataMap.value("Time");
     if (pTime)
     {
-        pTime->addDataGeneration(mGenerationNumber, SharedLogVariableDataPtrT(), rTimeVector); //Note! Time vector itself does not have a time vector it only has a data vector
-        return  pTime->getDataGeneration(-1);
+        return pTime->addDataGeneration(mGenerationNumber, SharedLogVariableDataPtrT(), rTimeVector); //Note! Time vector itself does not have a time vector it only has a data vector
     }
     else
     {
@@ -1730,9 +1660,8 @@ SharedLogVariableDataPtrT LogDataHandler::insertTimeVariable(QVector<double> &rT
         //varDesc.mModelPath = pModelObject->getParentContainerObject()->getModelFileInfo().fileName();
         varDesc.mDataName = "Time"; //! @todo this name must be reserved
         varDesc.mDataUnit = "s";
-        varDesc.mVarType = VariableDescription::ModelVariableType; //! @todo maybe timetype (dont know, check with old hopsan)
+        varDesc.mVariableSourceType = VariableDescription::ModelVariableType; //! @todo maybe timetype (dont know, check with old hopsan)
 
-        insertVariableBasedOnDescription(varDesc, SharedLogVariableDataPtrT(), rTimeVector);
-        return  mLogDataMap.value("Time")->getDataGeneration(mGenerationNumber);
+        return insertVariableBasedOnDescription(varDesc, SharedLogVariableDataPtrT(), rTimeVector);
     }
 }

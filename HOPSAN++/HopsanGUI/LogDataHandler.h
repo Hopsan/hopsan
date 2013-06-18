@@ -52,7 +52,7 @@ public:
 
     void collectPlotDataFromModel(bool overWriteLastGeneration=false);
     void exportToPlo(QString filePath, QStringList variables);
-    void importFromPlo();
+    void importFromPlo(QString rImportFilePath=QString());
     void importTimeVariablesFromCSVColumns(const QString csvFilePath, QVector<int> columns, QStringList names, const int timeColumnId=0);
 
     SharedLogVariableDataPtrT defineNewVariable(const QString desiredname);
@@ -158,7 +158,7 @@ signals:
 
 private:
     SharedLogVariableDataPtrT insertTimeVariable(QVector<double> &rTimeVector);
-    void insertVariableBasedOnDescription(VariableDescription &rVarDesc, SharedLogVariableDataPtrT pTimeVector, QVector<double> &rDataVector);
+    SharedLogVariableDataPtrT insertVariableBasedOnDescription(VariableDescription &rVarDesc, SharedLogVariableDataPtrT pTimeVector, QVector<double> &rDataVector);
     QString getNewCacheName();
 
     ContainerObject *mpParentContainerObject;

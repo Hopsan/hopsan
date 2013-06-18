@@ -79,7 +79,7 @@ void splitConcatName(const QString fullName, QString &rCompName, QString &rPortN
 class VariableDescription
 {
 public:
-    enum VarTypeT {ModelVariableType, ImportedVariableType, ScriptVariableType, ScriptTempVariableType};
+    enum VariableSourceTypeT {ModelVariableType, ImportedVariableType, ScriptVariableType, TempVariableType};
     QString mModelPath;
     QString mComponentName;
     QString mPortName;
@@ -87,13 +87,13 @@ public:
     QString mDataUnit;
     QString mDataDescription;
     QString mAliasName;
-    VarTypeT mVarType;
+    VariableSourceTypeT mVariableSourceType;
 
     QString getFullName() const;
     QString getFullNameWithSeparator(const QString sep) const;
     void setFullName(const QString compName, const QString portName, const QString dataName);
 
-    QString getVarTypeString() const;
+    QString getVariableSourceTypeString() const;
 
     bool operator==(const VariableDescription &other) const;
 };
@@ -112,8 +112,8 @@ public:
     //! @todo also need qucik constructor for creating a container with one generation directly
     LogVariableContainer(const VariableDescription &rVarDesc, LogDataHandler *pParentLogDataHandler);
     ~LogVariableContainer();
-    void addDataGeneration(const int generation, const QVector<double> &rTime, const QVector<double> &rData);
-    void addDataGeneration(const int generation, const SharedLogVariableDataPtrT time, const QVector<double> &rData);
+    SharedLogVariableDataPtrT addDataGeneration(const int generation, const QVector<double> &rTime, const QVector<double> &rData);
+    SharedLogVariableDataPtrT addDataGeneration(const int generation, const SharedLogVariableDataPtrT time, const QVector<double> &rData);
     void addDataGeneration(const int generation, SharedLogVariableDataPtrT pData);
     void removeDataGeneration(const int generation, const bool force=false);
     void removeGenerationsOlderThen(const int gen);
@@ -126,14 +126,15 @@ public:
     int getNumGenerations() const;
 
     SharedVariableDescriptionT getVariableDescription() const;
-    QString getAliasName() const;
+    const QString &getAliasName() const;
     QString getFullVariableName() const;
     QString getFullVariableNameWithSeparator(const QString sep) const;
-    QString getModelPath() const;
-    QString getComponentName() const;
-    QString getPortName() const;
-    QString getDataName() const;
-    QString getDataUnit() const;
+    QString getSmartName() const;
+    const QString &getModelPath() const;
+    const QString &getComponentName() const;
+    const QString &getPortName() const;
+    const QString &getDataName() const;
+    const QString &getDataUnit() const;
 
     void preventAutoRemove(const int gen);
     void allowAutoRemove(const int gen);
@@ -157,6 +158,7 @@ class LogVariableData : public QObject
 {
     Q_OBJECT
     friend class LogVariableContainer;
+    friend class LogDataHandler;
 
 public:
     LogVariableData(const int generation, SharedLogVariableDataPtrT time, const QVector<double> &rData, SharedVariableDescriptionT varDesc,
@@ -164,14 +166,16 @@ public:
     ~LogVariableData();
 
     const SharedVariableDescriptionT getVariableDescription() const;
-    QString getAliasName() const;
+    const QString &getAliasName() const;
     QString getFullVariableName() const;
     QString getFullVariableNameWithSeparator(const QString sep) const;
-    QString getModelPath() const;
-    QString getComponentName() const;
-    QString getPortName() const;
-    QString getDataName() const;
-    QString getDataUnit() const;
+    QString getSmartName() const;
+    const QString &getModelPath() const;
+    const QString &getComponentName() const;
+    const QString &getPortName() const;
+    const QString &getDataName() const;
+    const QString &getDataUnit() const;
+    bool hasAliasName() const;
     int getGeneration() const;
     int getLowestGeneration() const;
     int getHighestGeneration() const;

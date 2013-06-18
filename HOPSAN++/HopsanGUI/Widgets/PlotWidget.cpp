@@ -64,6 +64,10 @@ PlotVariableTreeItem::PlotVariableTreeItem(SharedLogVariableDataPtrT pData, QTre
     {
         this->setText(0, alias + ", [" + dataUnit + "]");
     }
+    else if (parent->text(0) == "__Imported__")
+    {
+        this->setText(0, pData->getFullVariableName() + ", [" + dataUnit + "]");
+    }
     else
     {
         QString portName = pData->getPortName();
@@ -73,7 +77,14 @@ PlotVariableTreeItem::PlotVariableTreeItem(SharedLogVariableDataPtrT pData, QTre
             alias.prepend("<");
             alias.append("> ");
         }
-        this->setText(0, alias + portName + ", " + dataName + ", [" + dataUnit + "]");
+        if (portName.isEmpty())
+        {
+            this->setText(0, alias + dataName + ", [" + dataUnit + "]");
+        }
+        else
+        {
+            this->setText(0, alias + portName + ", " + dataName + ", [" + dataUnit + "]");
+        }
     }
 }
 
@@ -187,22 +198,22 @@ void PlotVariableTree::updateList()
         return;
     }
 
-    //mpCurrentContainer = gpMainWindow->mpModelHandler->getCurrentContainer();
+
     QTreeWidgetItem *pComponentLevelItem;             //Tree item for components
     QTreeWidgetItem *pAliasLevelItem=0;               //Tree item for aliases
+    QTreeWidgetItem *pImportedLevelItem=0;               //Tree item for imports
     PlotVariableTreeItem *plotVariableLevelItem;      //Tree item for variables - reimplemented so they can store information about the variable
 
-    QStringList aliasLevelItemList;
+    QStringList aliasLevelItemList, importLevelItemList;
     QMap<QString, QTreeWidgetItem*> componentLevelItemMap;
     QMap<QString, QTreeWidgetItem*>::iterator cilIt;
     QVector<SharedLogVariableDataPtrT> variables = mpLogDataHandler->getAllVariablesAtNewestGeneration();
     for(int i=0; i<variables.size(); ++i)
     {
-        cilIt = componentLevelItemMap.find(variables[i]->getComponentName());
-
         // Check if this is an alias variable, if alias is set and not already in the aliasLevelItemMap map
         if ( !variables[i]->getAliasName().isEmpty() && (aliasLevelItemList.count(variables[i]->getAliasName()) < 1) )
         {
+            // Create the __Alias__ top level item the fioirst time it is needed
             if (!pAliasLevelItem)
             {
                 pAliasLevelItem = new QTreeWidgetItem();
@@ -213,24 +224,48 @@ void PlotVariableTree::updateList()
                 addTopLevelItem(pAliasLevelItem);
                 pAliasLevelItem->setExpanded(true);
             }
+
+            // Add a sub item with alias name
             new PlotVariableTreeItem(variables[i], pAliasLevelItem);
             aliasLevelItemList.append(variables[i]->getAliasName());
         }
-        else
+        // Handle if variable is imported
+        else if (variables[i]->getVariableDescription()->mVariableSourceType == VariableDescription::ImportedVariableType)
         {
+            if (!pImportedLevelItem)
+            {
+                pImportedLevelItem = new QTreeWidgetItem();
+                pImportedLevelItem->setText(0, "__Imported__");
+                QFont tempFont = pImportedLevelItem->font(0);
+                tempFont.setBold(true);
+                pImportedLevelItem->setFont(0, tempFont);
+                addTopLevelItem(pImportedLevelItem);
+            }
+
+            // Add a sub item with alias name
+            new PlotVariableTreeItem(variables[i], pImportedLevelItem);
+            importLevelItemList.append(variables[i]->getFullVariableName());
+        }
+        else
+        // Ok, we do not need to add this item as an alias
+        {
+            // Did we have the top-level component item (in that case use it)
+            QString cname = variables[i]->getComponentName();
+            if (cname.isEmpty())
+            {
+                // Mostly for the timevariable
+                cname = variables[i]->getFullVariableName();
+            }
+            cilIt = componentLevelItemMap.find(cname);
             if (cilIt != componentLevelItemMap.end())
             {
                 pComponentLevelItem = cilIt.value();
             }
             else
+            // Ok, we did not find it, then this is the first time the component is added, lets create and add that top-lvel item
             {
                 pComponentLevelItem = new QTreeWidgetItem();
-                pComponentLevelItem->setText(0, variables[i]->getComponentName());
-                if(variables[i]->getComponentName().isEmpty())
-                {
-                    //! @todo what if we have a component named Imported
-                    pComponentLevelItem->setText(0,"Imported");
-                }
+                pComponentLevelItem->setText(0, cname);
                 QFont tempFont = pComponentLevelItem->font(0);
                 tempFont.setBold(true);
                 pComponentLevelItem->setFont(0, tempFont);

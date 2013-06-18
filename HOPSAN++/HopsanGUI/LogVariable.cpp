@@ -183,7 +183,7 @@ const SharedVariableDescriptionT LogVariableData::getVariableDescription() const
     return mpVariableDescription;
 }
 
-QString LogVariableData::getAliasName() const
+const QString &LogVariableData::getAliasName() const
 {
     return mpVariableDescription->mAliasName;
 }
@@ -198,29 +198,46 @@ QString LogVariableData::getFullVariableNameWithSeparator(const QString sep) con
     return mpVariableDescription->getFullNameWithSeparator(sep);
 }
 
-QString LogVariableData::getModelPath() const
+QString LogVariableData::getSmartName() const
+{
+    if (mpVariableDescription->mAliasName.isEmpty())
+    {
+        return mpVariableDescription->getFullName();
+    }
+    else
+    {
+        return mpVariableDescription->mAliasName;
+    }
+}
+
+const QString &LogVariableData::getModelPath() const
 {
     return mpVariableDescription->mModelPath;
 }
 
-QString LogVariableData::getComponentName() const
+const QString &LogVariableData::getComponentName() const
 {
     return mpVariableDescription->mComponentName;
 }
 
-QString LogVariableData::getPortName() const
+const QString &LogVariableData::getPortName() const
 {
     return mpVariableDescription->mPortName;
 }
 
-QString LogVariableData::getDataName() const
+const QString &LogVariableData::getDataName() const
 {
     return mpVariableDescription->mDataName;
 }
 
-QString LogVariableData::getDataUnit() const
+const QString &LogVariableData::getDataUnit() const
 {
     return mpVariableDescription->mDataUnit;
+}
+
+bool LogVariableData::hasAliasName() const
+{
+    return !mpVariableDescription->mAliasName.isEmpty();
 }
 
 int LogVariableData::getGeneration() const
@@ -710,7 +727,7 @@ LogDataHandler *LogVariableData::getLogDataHandler()
 }
 
 
-QString LogVariableContainer::getAliasName() const
+const QString &LogVariableContainer::getAliasName() const
 {
     return mVariableDescription->mAliasName;
 }
@@ -725,27 +742,39 @@ QString LogVariableContainer::getFullVariableNameWithSeparator(const QString sep
     return mVariableDescription->getFullNameWithSeparator(sep);
 }
 
-QString LogVariableContainer::getModelPath() const
+QString LogVariableContainer::getSmartName() const
+{
+    if (mVariableDescription->mAliasName.isEmpty())
+    {
+        return mVariableDescription->getFullName();
+    }
+    else
+    {
+        return mVariableDescription->mAliasName;
+    }
+}
+
+const QString &LogVariableContainer::getModelPath() const
 {
     return mVariableDescription->mModelPath;
 }
 
-QString LogVariableContainer::getComponentName() const
+const QString &LogVariableContainer::getComponentName() const
 {
     return mVariableDescription->mComponentName;
 }
 
-QString LogVariableContainer::getPortName() const
+const QString &LogVariableContainer::getPortName() const
 {
     return mVariableDescription->mPortName;
 }
 
-QString LogVariableContainer::getDataName() const
+const QString &LogVariableContainer::getDataName() const
 {
     return mVariableDescription->mDataName;
 }
 
-QString LogVariableContainer::getDataUnit() const
+const QString &LogVariableContainer::getDataUnit() const
 {
     return mVariableDescription->mDataUnit;
 }
@@ -777,26 +806,24 @@ void LogVariableContainer::setAliasName(const QString alias)
     emit nameChanged();
 }
 
-QString VariableDescription::getVarTypeString() const
+QString VariableDescription::getVariableSourceTypeString() const
 {
-    switch (mVarType)
+    switch (mVariableSourceType)
     {
     case ScriptVariableType :
-        return "Script";
+        return "ScriptVariableType";
         break;
-    case ScriptTempVariableType :
-        return "Script_Temp";
+    case TempVariableType :
+        return "TempVariableType";
         break;
     case ModelVariableType :
-        return "Model";
+        return "ModelVariableType";
         break;
     case ImportedVariableType :
-        return "Import";
+        return "ImportedVariableType";
         break;
-    default :
-        return "UNDEFINEDTYPE";
     }
-    return "";           //Needed for VC compilations
+    return "UndefinedVariableSourceType";
 }
 
 
@@ -852,20 +879,22 @@ bool LogVariableContainer::hasDataGeneration(const int gen)
     return mDataGenerations.contains(gen);
 }
 
-void LogVariableContainer::addDataGeneration(const int generation, const QVector<double> &rTime, const QVector<double> &rData)
+SharedLogVariableDataPtrT LogVariableContainer::addDataGeneration(const int generation, const QVector<double> &rTime, const QVector<double> &rData)
 {
-    addDataGeneration(generation, makeFreeTimeVariabel(rTime), rData);
+    return addDataGeneration(generation, makeFreeTimeVariabel(rTime), rData);
 }
 
-void LogVariableContainer::addDataGeneration(const int generation, const SharedLogVariableDataPtrT time, const QVector<double> &rData)
+SharedLogVariableDataPtrT LogVariableContainer::addDataGeneration(const int generation, const SharedLogVariableDataPtrT time, const QVector<double> &rData)
 {
+    SharedLogVariableDataPtrT pData;
     if(mDataGenerations.contains(generation))
     {
-        mDataGenerations.find(generation).value().data()->assignFrom(time, rData);
+        pData = mDataGenerations.find(generation).value();
+        pData->assignFrom(time, rData);
     }
     else
     {
-        SharedLogVariableDataPtrT pData;
+
         if (mpParentLogDataHandler)
         {
             pData = SharedLogVariableDataPtrT(new LogVariableData(generation, time, rData, mVariableDescription, mpParentLogDataHandler->getOrCreateGenerationMultiCache(generation), this));
@@ -878,6 +907,7 @@ void LogVariableContainer::addDataGeneration(const int generation, const SharedL
         connect(this, SIGNAL(nameChanged()), pData.data(), SIGNAL(nameChanged()));
         mDataGenerations.insert(generation, pData);
     }
+    return pData;
 }
 
 //! @note Make sure that pData is not some other variable, that will screw things up badly
