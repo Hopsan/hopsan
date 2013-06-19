@@ -46,7 +46,7 @@ LogDataHandler::LogDataHandler(ContainerObject *pParent) : QObject(pParent)
 {
     mpParentContainerObject = pParent;
     mnPlotCurves = 0;
-    mGenerationNumber = 0;
+    mGenerationNumber = -1;
     mTempVarCtr = 0;
 
     // Create the temporary directory that will contain cache data
@@ -317,6 +317,7 @@ void LogDataHandler::importFromPlo(QString rImportFilePath)
 
     if (importedPLODataVector.size() > 0)
     {
+        ++mGenerationNumber;
         SharedLogVariableDataPtrT timeVecPtr(0);
 
         if (importedPLODataVector[0].mDataName == "Time")
@@ -336,7 +337,6 @@ void LogDataHandler::importFromPlo(QString rImportFilePath)
             pNewData->setPlotScale(importedPLODataVector[i].mPlotScale);
         }
 
-        ++mGenerationNumber;
         emit newDataAvailable();
     }
 
@@ -377,6 +377,8 @@ void LogDataHandler::importTimeVariablesFromCSVColumns(const QString csvFilePath
                 }
             }
 
+            //! @todo check if data was found
+            ++mGenerationNumber;
             SharedLogVariableDataPtrT pTime = insertTimeVariable(timeColumn);
 
             // Ok now we have the data lets add it as a variable
@@ -399,7 +401,6 @@ void LogDataHandler::importTimeVariablesFromCSVColumns(const QString csvFilePath
 
             csvFile.close();
 
-            ++mGenerationNumber;
             emit newDataAvailable();
         }
         else
@@ -424,9 +425,9 @@ bool LogDataHandler::isEmpty()
 //! @brief Collects plot data from last simulation
 void LogDataHandler::collectPlotDataFromModel(bool overWriteLastGeneration)
 {
-    if(overWriteLastGeneration)
+    if(!overWriteLastGeneration)
     {
-        --mGenerationNumber;
+        ++mGenerationNumber;
     }
 
     if(mpParentContainerObject->getCoreSystemAccessPtr()->getNSamples() == 0)
@@ -507,7 +508,11 @@ void LogDataHandler::collectPlotDataFromModel(bool overWriteLastGeneration)
     if (foundData)
     {
         emit newDataAvailable();
-        ++mGenerationNumber;
+    }
+    else if (!overWriteLastGeneration)
+    {
+        // Revert generation number if no data was found, and we were not overwriting this generation
+        --mGenerationNumber;
     }
 }
 
@@ -807,7 +812,7 @@ void LogDataHandler::limitPlotGenerations()
 {
     if ( (mGenerationNumber - gConfig.getGenerationLimit()) > 0 )
     {
-        // Remove old generation in each data varaible container
+        // Remove old generation in each data variable container
         LogDataMapT::iterator dit = mLogDataMap.begin();
         for ( ; dit!=mLogDataMap.end(); ++dit)
         {
@@ -1497,8 +1502,7 @@ QVector<SharedLogVariableDataPtrT> LogDataHandler::getOnlyVariablesAtGeneration(
 
 int LogDataHandler::getLatestGeneration() const
 {
-    // Since we post increment the counter after sucessfull import / collect we need to subtract one
-    return mGenerationNumber-1;
+    return mGenerationNumber;
 }
 
 
@@ -1538,6 +1542,10 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, int gene
     else
     // Take only specified generation (-1 = latest)
     {
+        // Increment generation
+        ++mGenerationNumber;
+        bool tookOwnershipOfSomeData=false;
+
         // Take the generation cache map
         if (pOtherHandler->mGenerationCacheMap.contains(generation))
         {
@@ -1551,21 +1559,19 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, int gene
                 mCacheDirs.append(cacheDir);
                 //! @todo this will leave the dir in the other object aswell but I dont think it will remove the files in the dir when it dies, may need to deal with that.
             }
-        }
 
-        //! @todo what about collision with tempvariable names
-        // Take the tempvariable counter
-        //! @todo do this, or is it even necessary
+            tookOwnershipOfSomeData = true;
+        }
 
         // Take ownership of keep generation list contents
         if (pOtherHandler->mKeepGenerationsList.contains(generation))
         {
             mKeepGenerationsList.append(mGenerationNumber);
             pOtherHandler->mKeepGenerationsList.removeOne(generation);
+            tookOwnershipOfSomeData=true;
         }
 
         // Take the data, and only increment this->mGeneration if data was taken
-        bool tookData=false;
         LogDataMapT::iterator odit; //odit = OtherDataIterator
         for (odit = pOtherHandler->mLogDataMap.begin(); odit!=pOtherHandler->mLogDataMap.end(); ++odit)
         {
@@ -1577,7 +1583,7 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, int gene
                 {
                     tdit.value()->addDataGeneration(mGenerationNumber, odit.value()->getDataGeneration(generation));
                     odit.value()->removeDataGeneration(generation, true);
-                    tookData=true;
+                    tookOwnershipOfSomeData=true;
                 }
             }
             else
@@ -1588,20 +1594,23 @@ void LogDataHandler::takeOwnershipOfData(LogDataHandler *pOtherHandler, int gene
                     pNewContainer->addDataGeneration(mGenerationNumber, odit.value()->getDataGeneration(generation));
                     mLogDataMap.insert(fullName, pNewContainer);
                     odit.value()->removeDataGeneration(generation, true);
-                    tookData=true;
+                    tookOwnershipOfSomeData=true;
                 }
             }
         }
 
-        if (tookData)
+        if (tookOwnershipOfSomeData)
         {
-            ++mGenerationNumber; // Increment generation
+            // If we did actually take some data then it might be a good idea to make sure our tempvariable counter is set high enough to avoid colision
+            mTempVarCtr = qMax(mTempVarCtr, pOtherHandler->mTempVarCtr);
+        }
+        else
+        {
+            // Revert generation if no data was taken
+            --mGenerationNumber;
         }
     }
-
-
-
-    //! @todo favorite variables, tempvar counter
+    //! @todo favorite variables, plotwindows
 }
 
 

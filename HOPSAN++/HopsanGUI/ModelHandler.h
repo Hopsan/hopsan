@@ -28,8 +28,8 @@ public:
     ModelWidget *getCurrentModel();
     SystemContainer *getTopLevelSystem(int idx);
     SystemContainer *getCurrentTopLevelSystem();
-    ContainerObject *getContainer(int idx);
-    ContainerObject *getCurrentContainer();
+    ContainerObject *getViewContainerObject(int idx);
+    ContainerObject *getCurrentViewContainerObject();
 
     int count() const;
 

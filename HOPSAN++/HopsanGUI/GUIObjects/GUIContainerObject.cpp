@@ -154,7 +154,7 @@ void ContainerObject::makeMainWindowConnectionsAndRefresh()
 //! This is useful when we are swithching what continer we want to the buttons to trigger actions in
 void ContainerObject::unmakeMainWindowConnectionsAndRefresh()
 {
-    // Update Systemparameter widget tohave no contents
+    // Update Systemparameter widget to have no contents
     gpMainWindow->mpSystemParametersWidget->update(0);
     gpMainWindow->mpPlotWidget->mpPlotVariableTree->setLogDataHandler(0);
 
@@ -2244,7 +2244,7 @@ void ContainerObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
         {
             this->clearUndo();
             mUndoDisabled = true;
-            if(gpMainWindow->mpModelHandler->getCurrentContainer() == this)      //Only modify main window actions if this is current container
+            if(gpMainWindow->mpModelHandler->getCurrentViewContainerObject() == this)      //Only modify main window actions if this is current container
             {
                 gpMainWindow->mpUndoAction->setDisabled(true);
                 gpMainWindow->mpRedoAction->setDisabled(true);
@@ -2254,7 +2254,7 @@ void ContainerObject::setUndoEnabled(bool enabled, bool dontAskJustDoIt)
     else
     {
         mUndoDisabled = false;
-        if(gpMainWindow->mpModelHandler->getCurrentContainer() == this)      //Only modify main window actions if this is current container
+        if(gpMainWindow->mpModelHandler->getCurrentViewContainerObject() == this)      //Only modify main window actions if this is current container
         {
             gpMainWindow->mpUndoAction->setDisabled(false);
             gpMainWindow->mpRedoAction->setDisabled(false);
@@ -2538,7 +2538,7 @@ void ContainerObject::enterContainer()
     refreshInternalContainerPortGraphics();
 
     mpModelWidget->setExternalSystem((this->isExternal() &&
-                                           this != mpModelWidget->getTopLevelSystem()) ||
+                                           this != mpModelWidget->getTopLevelSystemContainer()) ||
                                            this->isAncestorOfExternalSubsystem());
 }
 
@@ -2552,7 +2552,7 @@ void ContainerObject::exitContainer()
     mpModelWidget->getGraphicsView()->setContainerPtr(this->mpParentContainerObject);
 
     mpModelWidget->setExternalSystem((mpParentContainerObject->isExternal() &&
-                                           mpParentContainerObject != mpModelWidget->getTopLevelSystem()) ||
+                                           mpParentContainerObject != mpModelWidget->getTopLevelSystemContainer()) ||
                                            mpParentContainerObject->isAncestorOfExternalSubsystem());
 
     // Disconnect this system and connect parent system with undo and redo actions
@@ -3011,7 +3011,7 @@ void ContainerObject::measureSimulationTime()
 
 bool ContainerObject::isAncestorOfExternalSubsystem()
 {
-    if(this == mpModelWidget->getTopLevelSystem())
+    if(this == mpModelWidget->getTopLevelSystemContainer())
     {
         return false;
     }

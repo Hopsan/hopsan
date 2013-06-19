@@ -1228,7 +1228,7 @@ void MainWindow::openContextHelp()
         {
             mpHelpDialog->open("component-generator.html");
         }
-        else if(action->parent() == mpModelHandler->getCurrentContainer())
+        else if(action->parent() == mpModelHandler->getCurrentViewContainerObject())
         {
             mpHelpDialog->open("userEnergyLosses.html");
         }
@@ -1325,7 +1325,7 @@ void MainWindow::updateToolBarsToNewTab()
 {
     if(mpModelHandler->count() > 0 && mpModelHandler->getCurrentModel())
     {
-        mpTogglePortsAction->setChecked(!mpModelHandler->getCurrentModel()->getTopLevelSystem()->areSubComponentPortsHidden());
+        mpTogglePortsAction->setChecked(!mpModelHandler->getCurrentModel()->getTopLevelSystemContainer()->areSubComponentPortsHidden());
     }
 
     bool noTabs = !(mpModelHandler->count() > 0);

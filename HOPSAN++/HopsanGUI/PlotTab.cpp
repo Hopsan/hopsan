@@ -2852,16 +2852,16 @@ void PlotTab::dropEvent(QDropEvent *event)
             {
 //                pNewDesc->mDataUnit = gConfig.getDefaultUnit(pNewDesc->mDataName);
 //                setCustomXVector(gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler()->getPlotDataValues(desc->getFullName(), -1), pNewDesc );
-                setCustomXVectorForAll(gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler()->getPlotData(mimeText, -1));
+                setCustomXVectorForAll(gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getPlotData(mimeText, -1));
                 //! @todo do we need to reset to default unit too ?
             }
             else if(this->mapFromGlobal(cursor.pos()).x() < getPlot()->canvas()->x()+9 + getPlot()->canvas()->width()/2)
             {
-                mpParentPlotWindow->addPlotCurve(gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler()->getPlotData(mimeText, -1), QwtPlot::yLeft);
+                mpParentPlotWindow->addPlotCurve(gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getPlotData(mimeText, -1), QwtPlot::yLeft);
             }
             else
             {
-                mpParentPlotWindow->addPlotCurve(gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler()->getPlotData(mimeText, -1), QwtPlot::yRight);
+                mpParentPlotWindow->addPlotCurve(gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler()->getPlotData(mimeText, -1), QwtPlot::yRight);
             }
         }
     }

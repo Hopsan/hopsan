@@ -432,8 +432,8 @@ void OptimizationDialog::loadConfiguration()
     for(int i=0; i<optSettings.mParamters.size(); ++i)
     {
         //Check if component and parameter exists before checking the tree item (otherwise tree item does not exist = crash)
-        if(gpMainWindow->mpModelHandler->getCurrentContainer()->hasModelObject(optSettings.mParamters.at(i).mComponentName) &&
-           gpMainWindow->mpModelHandler->getCurrentContainer()->getModelObject(optSettings.mParamters.at(i).mComponentName)->getParameterNames().contains(optSettings.mParamters.at(i).mParameterName))
+        if(gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->hasModelObject(optSettings.mParamters.at(i).mComponentName) &&
+           gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getModelObject(optSettings.mParamters.at(i).mComponentName)->getParameterNames().contains(optSettings.mParamters.at(i).mParameterName))
         {
             findParameterTreeItem(optSettings.mParamters.at(i).mComponentName, optSettings.mParamters.at(i).mParameterName)->setCheckState(0, Qt::Checked);
         }

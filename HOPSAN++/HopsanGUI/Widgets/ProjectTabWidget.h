@@ -74,7 +74,8 @@ public:
     bool isSaved();
     void setSaved(bool value);
     void hasChanged();
-    SystemContainer *getTopLevelSystem();
+    SystemContainer *getTopLevelSystemContainer();
+    ContainerObject *getViewContainerObject();
     GraphicsView *getGraphicsView();
     QuickNavigationWidget *getQuickNavigationWidget();
     void setLastSimulationTime(int time);

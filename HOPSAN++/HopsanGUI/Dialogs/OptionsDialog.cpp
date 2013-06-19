@@ -351,7 +351,7 @@ void OptionsDialog::updateValues()
     gConfig.setCacheLogData(mpCacheLogDataCeckBox->isChecked());
     for(int i=0; i<gpMainWindow->mpModelHandler->count(); ++i)       //Loop through all containers and reduce their plot data
     {
-        gpMainWindow->mpModelHandler->getContainer(i)->getLogDataHandler()->limitPlotGenerations();
+        gpMainWindow->mpModelHandler->getViewContainerObject(i)->getLogDataHandler()->limitPlotGenerations();
     }
     gConfig.setDefaultUnit("Pressure", mpPressureUnitComboBox->currentText());
     gConfig.setDefaultUnit("Flow", mpFlowUnitComboBox->currentText());

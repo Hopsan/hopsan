@@ -164,7 +164,7 @@ void ModelWidget::setTopLevelSimulationTime(const QString startTime, const QStri
     }
     else
     {
-        getTopLevelSystem()->setTimeStep(timeStep.toDouble());
+        getTopLevelSystemContainer()->setTimeStep(timeStep.toDouble());
     }
 
     this->hasChanged();
@@ -187,7 +187,7 @@ QString ModelWidget::getStartTime()
 QString ModelWidget::getTimeStep()
 {
     QString num;
-    num.setNum(getTopLevelSystem()->getTimeStep());
+    num.setNum(getTopLevelSystemContainer()->getTimeStep());
     return num;
 }
 
@@ -218,9 +218,15 @@ void ModelWidget::hasChanged()
 
 
 //! @brief Returns a pointer to the system in the tab
-SystemContainer *ModelWidget::getTopLevelSystem()
+SystemContainer *ModelWidget::getTopLevelSystemContainer()
 {
     return mpToplevelSystem;
+}
+
+//! @brief Returns a pointer to the currently opened container in this model
+ContainerObject *ModelWidget::getViewContainerObject()
+{
+    return mpGraphicsView->getContainerPtr();
 }
 
 
@@ -517,7 +523,7 @@ void ModelWidget::openAnimation()
         delete mpAnimationWidget;
         mpAnimationWidget = 0;
     }
-    if(!getTopLevelSystem()->getModelObjectNames().isEmpty())   //Animation widget cannot be created with no objects
+    if(!getTopLevelSystemContainer()->getModelObjectNames().isEmpty())   //Animation widget cannot be created with no objects
     {
         mpAnimationWidget = new AnimationWidget(gpMainWindow);
         gpMainWindow->mpCentralGridLayout->addWidget(mpAnimationWidget, 0, 0, 4, 4);
@@ -721,7 +727,6 @@ CentralTabWidget::CentralTabWidget(MainWindow *pParentMainWindow)
 
     connect(this,   SIGNAL(currentChanged(int)),    gpMainWindow->mpModelHandler, SLOT(modelChanged()),         Qt::UniqueConnection);
     connect(this,   SIGNAL(tabCloseRequested(int)), gpMainWindow->mpModelHandler, SLOT(closeModelByTabIndex(int)), Qt::UniqueConnection);
-    connect(this,   SIGNAL(tabCloseRequested(int)), gpMainWindow->mpModelHandler, SLOT(modelChanged()),         Qt::UniqueConnection);
 
     //this->hide();
 }

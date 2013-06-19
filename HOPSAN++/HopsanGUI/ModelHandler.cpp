@@ -75,7 +75,7 @@ ModelWidget *ModelHandler::addNewModel(QString modelName, bool hidden)
     modelName.append(QString::number(mNumberOfUntitledModels));
 
     ModelWidget *pNewModelWidget = new ModelWidget(this,gpMainWindow->mpCentralTabs);    //! @todo Should probably use ModelHandler as parent
-    pNewModelWidget->getTopLevelSystem()->setName(modelName);
+    pNewModelWidget->getTopLevelSystemContainer()->setName(modelName);
 
     addModelWidget(pNewModelWidget, modelName, hidden);
 
@@ -129,7 +129,7 @@ SystemContainer *ModelHandler::getTopLevelSystem(int idx)
     ModelWidget *pMW = getModel(idx);
     if (pMW)
     {
-        return pMW->getTopLevelSystem();
+        return pMW->getTopLevelSystemContainer();
     }
     return 0;
 }
@@ -139,27 +139,27 @@ SystemContainer *ModelHandler::getCurrentTopLevelSystem()
     ModelWidget *pMW = getCurrentModel();
     if (pMW)
     {
-        return pMW->getTopLevelSystem();
+        return pMW->getTopLevelSystemContainer();
     }
     return 0;
 }
 
-ContainerObject *ModelHandler::getContainer(int idx)
+ContainerObject *ModelHandler::getViewContainerObject(int idx)
 {
     ModelWidget *pMW = getModel(idx);
     if (pMW)
     {
-        return pMW->getGraphicsView()->getContainerPtr();
+        return pMW->getViewContainerObject();
     }
     return 0;
 }
 
-ContainerObject *ModelHandler::getCurrentContainer()
+ContainerObject *ModelHandler::getCurrentViewContainerObject()
 {
     ModelWidget *pMW = getCurrentModel();
     if (pMW)
     {
-        return pMW->getGraphicsView()->getContainerPtr();
+        return pMW->getViewContainerObject();
     }
     return 0;
 }
@@ -198,7 +198,7 @@ void ModelHandler::loadModel(QAction *action)
 
 void ModelHandler::loadModelParameters()
 {
-    qobject_cast<SystemContainer*>(getCurrentContainer())->loadParameterFile();
+    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->loadParameterFile();
 }
 
 
@@ -235,8 +235,8 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOp
 
     ModelWidget *pNewModel = new ModelWidget(this, gpMainWindow->mpCentralTabs);
     this->addModelWidget(pNewModel, fileInfo.baseName(), hidden);
-    pNewModel->getTopLevelSystem()->getCoreSystemAccessPtr()->addSearchPath(fileInfo.absoluteDir().absolutePath());
-    pNewModel->getTopLevelSystem()->setUndoEnabled(false, true);
+    pNewModel->getTopLevelSystemContainer()->getCoreSystemAccessPtr()->addSearchPath(fileInfo.absoluteDir().absolutePath());
+    pNewModel->getTopLevelSystemContainer()->setUndoEnabled(false, true);
 
     if(!hidden)
         gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Loading model: "+fileInfo.absoluteFilePath());
@@ -261,9 +261,9 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOp
             gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Model file is saved with an older version of Hopsan, but versions should be compatible.");
         }
 
-        pNewModel->getTopLevelSystem()->setModelFileInfo(file); //Remember info about the file from which the data was loaded
-        pNewModel->getTopLevelSystem()->setAppearanceDataBasePath(pNewModel->getTopLevelSystem()->getModelFileInfo().absolutePath());
-        pNewModel->getTopLevelSystem()->loadFromDomElement(systemElement);
+        pNewModel->getTopLevelSystemContainer()->setModelFileInfo(file); //Remember info about the file from which the data was loaded
+        pNewModel->getTopLevelSystemContainer()->setAppearanceDataBasePath(pNewModel->getTopLevelSystemContainer()->getModelFileInfo().absolutePath());
+        pNewModel->getTopLevelSystemContainer()->loadFromDomElement(systemElement);
 
         //! @todo not hardcoded strings
         //! @todo in the future not only debug message but an actual check that libs are present
@@ -281,7 +281,7 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOp
     }
     pNewModel->setSaved(true);
 
-    pNewModel->getTopLevelSystem()->setUndoEnabled(true, true);
+    pNewModel->getTopLevelSystemContainer()->setUndoEnabled(true, true);
 
     emit newModelWidgetAdded();
 
@@ -329,7 +329,7 @@ bool ModelHandler::closeModel(int idx)
     {
         if (!pModelToClose->isSaved())
         {
-            QString modelName = pModelToClose->getTopLevelSystem()->getName();
+            QString modelName = pModelToClose->getTopLevelSystemContainer()->getName();
             QMessageBox msgBox;
             msgBox.setWindowIcon(gpMainWindow->windowIcon());
             msgBox.setText(QString("The model '").append(modelName).append("'  is not saved."));
@@ -357,7 +357,7 @@ bool ModelHandler::closeModel(int idx)
         }
 
 
-        if (pModelToClose->getTopLevelSystem()->getLogDataHandler()->hasOpenPlotCurves())
+        if (pModelToClose->getTopLevelSystemContainer()->getLogDataHandler()->hasOpenPlotCurves())
         {
             QMessageBox msgBox;
             msgBox.setWindowIcon(gpMainWindow->windowIcon());
@@ -395,10 +395,10 @@ bool ModelHandler::closeModel(int idx)
         disconnect(gpMainWindow->mpSaveAction,                  SIGNAL(triggered()),            pModelToClose,  SLOT(save()));
         disconnect(gpMainWindow->mpExportModelParametersAction, SIGNAL(triggered()),            pModelToClose,  SLOT(exportModelParameters()));
 
-        getContainer(idx)->unmakeMainWindowConnectionsAndRefresh();
+        pModelToClose->getViewContainerObject()->unmakeMainWindowConnectionsAndRefresh();
 
-        // Deactivate Undo to prevent each component from registering it being deleted in the undo stack
-        getContainer(idx)->setUndoEnabled(false, true);
+        // Deactivate Undo to prevent each component from registering it being deleted in the undo stack (waste of time)
+        pModelToClose->getViewContainerObject()->setUndoEnabled(false, true);
 
         // Delete model tab if any
         gpMainWindow->mpCentralTabs->removeTab(gpMainWindow->mpCentralTabs->indexOf(pModelToClose));
@@ -413,6 +413,9 @@ bool ModelHandler::closeModel(int idx)
         {
             --mCurrentIdx;
         }
+
+        // Run the changed slot to refresh connections
+        modelChanged();
 
         // Refresh toolbar connections if tab has been changed
         gpMainWindow->updateToolBarsToNewTab();
@@ -472,7 +475,7 @@ void ModelHandler::modelChanged()
         disconnect(gpMainWindow->mpExportPNGAction,       SIGNAL(triggered()),        getModel(i)->getGraphicsView(),  SLOT(exportToPNG()));
         disconnect(gpMainWindow->mpCenterViewAction,      SIGNAL(triggered()),        getModel(i)->getGraphicsView(),  SLOT(centerView()));
 
-        getContainer(i)->unmakeMainWindowConnectionsAndRefresh();
+        getViewContainerObject(i)->unmakeMainWindowConnectionsAndRefresh();
 
         //disconnect(gpMainWindow,                    SIGNAL(simulateKeyPressed()),   getModel(i),  SLOT(simulate()));
         disconnect(gpMainWindow,                        SIGNAL(simulateKeyPressed()),   getModel(i),  SLOT(simulate_nonblocking()));
@@ -481,7 +484,7 @@ void ModelHandler::modelChanged()
         disconnect(gpMainWindow->mpSaveAsAction,        SIGNAL(triggered()),            getModel(i),  SLOT(saveAs()));
         disconnect(gpMainWindow->mpExportModelParametersAction,   SIGNAL(triggered()),            getModel(i),  SLOT(exportModelParameters()));
     }
-    if(this->mModelPtrs.size() != 0 && getCurrentModel())
+    if(getCurrentModel())
     {
         //connect(gpMainWindow,                       SIGNAL(simulateKeyPressed()),   getCurrentModel(),        SLOT(simulate()), Qt::UniqueConnection);
         connect(gpMainWindow,                                   SIGNAL(simulateKeyPressed()),   getCurrentModel(),    SLOT(simulate_nonblocking()), Qt::UniqueConnection);
@@ -498,9 +501,9 @@ void ModelHandler::modelChanged()
         connect(gpMainWindow->mpExportPNGAction,    SIGNAL(triggered()),    getCurrentModel()->getGraphicsView(),    SLOT(exportToPNG()), Qt::UniqueConnection);
         connect(gpMainWindow->mpCenterViewAction,   SIGNAL(triggered()),    getCurrentModel()->getGraphicsView(),    SLOT(centerView()), Qt::UniqueConnection);
 
-        getCurrentContainer()->makeMainWindowConnectionsAndRefresh();
+        getCurrentViewContainerObject()->makeMainWindowConnectionsAndRefresh();
 
-        getCurrentContainer()->updateMainWindowButtons();
+        getCurrentViewContainerObject()->updateMainWindowButtons();
         getCurrentModel()->setToolBarSimulationTimeParametersFromTab();
 
 
@@ -509,9 +512,9 @@ void ModelHandler::modelChanged()
             gpMainWindow->mpLibrary->setGfxType(getCurrentTopLevelSystem()->getGfxType());
         }
 
-        gpMainWindow->mpToggleNamesAction->setChecked(!getCurrentContainer()->areSubComponentNamesHidden());
-        gpMainWindow->mpTogglePortsAction->setChecked(!getCurrentContainer()->areSubComponentPortsHidden());
-        gpMainWindow->mpShowLossesAction->setChecked(getCurrentContainer()->areLossesVisible());
+        gpMainWindow->mpToggleNamesAction->setChecked(!getCurrentViewContainerObject()->areSubComponentNamesHidden());
+        gpMainWindow->mpTogglePortsAction->setChecked(!getCurrentViewContainerObject()->areSubComponentPortsHidden());
+        gpMainWindow->mpShowLossesAction->setChecked(getCurrentViewContainerObject()->areLossesVisible());
     }
 }
 
@@ -527,18 +530,18 @@ void ModelHandler::saveState()
     while(!mModelPtrs.isEmpty())
     {
         ModelWidget *pModel = getModel(0);
-        mStateInfoHmfList << pModel->getTopLevelSystem()->getModelFileInfo().filePath();
+        mStateInfoHmfList << pModel->getTopLevelSystemContainer()->getModelFileInfo().filePath();
         mStateInfoHasChanged << !pModel->isSaved();
         mStateInfoTabNames << gpMainWindow->mpCentralTabs->tabText(gpMainWindow->mpCentralTabs->indexOf(pModel));
-        pModel->getTopLevelSystem()->getLogDataHandler()->setParent(0);       //Make sure it is not removed when deleting the container object
-        mStateInfoLogDataHandlersList << pModel->getTopLevelSystem()->getLogDataHandler();
+        pModel->getTopLevelSystemContainer()->getLogDataHandler()->setParent(0);       //Make sure it is not removed when deleting the container object
+        mStateInfoLogDataHandlersList << pModel->getTopLevelSystemContainer()->getLogDataHandler();
         if(!pModel->isSaved())
         {
             //! @todo This code is duplicated from ModelWidget::saveModel(), make it a common function somehow
                 //Save xml document
             QDomDocument domDocument;
             QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
-            pModel->getTopLevelSystem()->saveToDomElement(hmfRoot);
+            pModel->getTopLevelSystemContainer()->saveToDomElement(hmfRoot);
             QString fileNameWithoutHmf = getCurrentTopLevelSystem()->getModelFileInfo().fileName();
             fileNameWithoutHmf.chop(4);
             mStateInfoBackupList << gDesktopHandler.getBackupPath()+fileNameWithoutHmf+"_savedstate.hmf";
@@ -591,37 +594,37 @@ void ModelHandler::restoreState()
 
 void ModelHandler::createLabviewWrapperFromCurrentModel()
 {
-    qobject_cast<SystemContainer*>(getCurrentContainer())->exportToLabView();
+    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToLabView();
 }
 
 
 void ModelHandler::exportCurrentModelToFMU()
 {
-    qobject_cast<SystemContainer*>(getCurrentContainer())->exportToFMU();
+    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToFMU();
 }
 
 
 void ModelHandler::exportCurrentModelToSimulink()
 {
-    qobject_cast<SystemContainer*>(getCurrentContainer())->exportToSimulink();
+    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToSimulink();
 }
 
 
 void ModelHandler::exportCurrentModelToSimulinkCoSim()
 {
-    qobject_cast<SystemContainer*>(getCurrentContainer())->exportToSimulinkCoSim();
+    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->exportToSimulinkCoSim();
 }
 
 
 void ModelHandler::showLosses(bool show)
 {
-    qobject_cast<SystemContainer*>(getCurrentContainer())->showLosses(show);
+    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->showLosses(show);
 }
 
 
 void ModelHandler::measureSimulationTime()
 {
-    qobject_cast<SystemContainer*>(getCurrentContainer())->measureSimulationTime();
+    qobject_cast<SystemContainer*>(getCurrentViewContainerObject())->measureSimulationTime();
 }
 
 

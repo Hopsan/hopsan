@@ -52,7 +52,7 @@ GraphicsView::GraphicsView(ModelWidget *parent)
         : QGraphicsView(parent)
 {
     mpParentModelWidget = parent;
-    mpContainerObject = mpParentModelWidget->getTopLevelSystem();
+    mpContainerObject = mpParentModelWidget->getTopLevelSystemContainer();
 
     mIgnoreNextContextMenuEvent = false;
     mCtrlKeyPressed = false;
@@ -196,11 +196,11 @@ void GraphicsView::dropEvent(QDropEvent *event)
 //! Also changes to the correct background color if it is not the correct one.
 void GraphicsView::updateViewPort()
 {
-    if( (mpParentModelWidget->getTopLevelSystem()->getGfxType() == UserGraphics) && (this->backgroundBrush().color() != gConfig.getBackgroundColor()) )
+    if( (mpParentModelWidget->getTopLevelSystemContainer()->getGfxType() == UserGraphics) && (this->backgroundBrush().color() != gConfig.getBackgroundColor()) )
     {
         this->setBackgroundBrush(gConfig.getBackgroundColor());
     }
-    else if( (mpParentModelWidget->getTopLevelSystem()->getGfxType() == ISOGraphics) && (this->backgroundBrush().color() != mIsoColor) )
+    else if( (mpParentModelWidget->getTopLevelSystemContainer()->getGfxType() == ISOGraphics) && (this->backgroundBrush().color() != mIsoColor) )
     {
         this->setBackgroundBrush(mIsoColor);
     }

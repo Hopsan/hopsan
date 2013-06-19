@@ -45,7 +45,7 @@ AnimationWidget::AnimationWidget(MainWindow *parent) :
     QWidget(parent)
 {
     //Define public member pointer variables
-    mpContainer = gpMainWindow->mpModelHandler->getCurrentContainer();
+    mpContainer = gpMainWindow->mpModelHandler->getCurrentViewContainerObject();
 
     mpAnimationData = mpContainer->getAppearanceData()->getAnimationDataPtr();
 

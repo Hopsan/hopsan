@@ -120,7 +120,7 @@ void UndoWidget::refreshList()
     QColor evenColor = QColor("whitesmoke");
     QColor activeColor = QColor("chartreuse");
 
-    if(gpMainWindow->mpModelHandler->count() == 0 || !gpMainWindow->mpModelHandler->getCurrentContainer())
+    if(gpMainWindow->mpModelHandler->count() == 0 || !gpMainWindow->mpModelHandler->getCurrentViewContainerObject())
     {
         return;
     }
@@ -130,7 +130,7 @@ void UndoWidget::refreshList()
 
     //qDebug() << "refreshList for Undo in: " << gpMainWindow->mpModelHandler->getCurrentContainer();
     //qDebug() << "refreshList for Undo in: " << gpMainWindow->mpModelHandler->getCurrentContainer()->getName();
-    QDomElement undoRoot = gpMainWindow->mpModelHandler->getCurrentContainer()->getUndoStackPtr()->mUndoRoot;
+    QDomElement undoRoot = gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getUndoStackPtr()->mUndoRoot;
     QDomElement postElement = undoRoot.firstChildElement("post");
     while(found)
     {
@@ -146,7 +146,7 @@ void UndoWidget::refreshList()
                     item = new QTableWidgetItem();
                     item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
                     item->setText(translateTag(postElement.attribute("type")));
-                    if(pos == gpMainWindow->mpModelHandler->getCurrentContainer()->getUndoStackPtr()->mCurrentStackPosition)
+                    if(pos == gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getUndoStackPtr()->mCurrentStackPosition)
                     {
                         item->setBackgroundColor(activeColor);
                     }
@@ -158,7 +158,7 @@ void UndoWidget::refreshList()
                     {
                         item->setBackgroundColor(oddColor);
                     }
-                    if(pos > gpMainWindow->mpModelHandler->getCurrentContainer()->getUndoStackPtr()->mCurrentStackPosition)
+                    if(pos > gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getUndoStackPtr()->mCurrentStackPosition)
                     {
                         item->setForeground(QColor("gray"));
                     }
@@ -173,7 +173,7 @@ void UndoWidget::refreshList()
                         item = new QTableWidgetItem();
                         item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
                         item->setText(translateTag(stuffElement.attribute("what")));
-                        if(pos == gpMainWindow->mpModelHandler->getCurrentContainer()->getUndoStackPtr()->mCurrentStackPosition)
+                        if(pos == gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getUndoStackPtr()->mCurrentStackPosition)
                         {
                             item->setBackgroundColor(activeColor);
                         }
@@ -185,7 +185,7 @@ void UndoWidget::refreshList()
                         {
                             item->setBackgroundColor(oddColor);
                         }
-                        if(pos > gpMainWindow->mpModelHandler->getCurrentContainer()->getUndoStackPtr()->mCurrentStackPosition)
+                        if(pos > gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getUndoStackPtr()->mCurrentStackPosition)
                         {
                             item->setForeground(QColor("gray"));
                         }

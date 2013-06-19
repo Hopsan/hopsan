@@ -658,7 +658,7 @@ void HcomHandler::executeChangeParameterCommand(const QString cmd)
     {
         ModelWidget *pCurrentTab = gpMainWindow->mpModelHandler->getCurrentModel();
         if(!pCurrentTab) { return; }
-        SystemContainer *pSystem = pCurrentTab->getTopLevelSystem();
+        SystemContainer *pSystem = pCurrentTab->getTopLevelSystemContainer();
         if(!pSystem) { return; }
 
         QStringList parameterNames;
@@ -742,7 +742,7 @@ void HcomHandler::executeChangeSimulationSettingsCommand(const QString cmd)
             {
                 ModelWidget *pCurrentTab = gpMainWindow->mpModelHandler->getCurrentModel();
                 if(!pCurrentTab) { return; }
-                SystemContainer *pCurrentSystem = pCurrentTab->getTopLevelSystem();
+                SystemContainer *pCurrentSystem = pCurrentTab->getTopLevelSystemContainer();
                 if(!pCurrentSystem) { return; }
                 pCurrentSystem->setNumberOfLogSamples(samples);
             }
@@ -1196,7 +1196,7 @@ void HcomHandler::executeSetCommand(const QString cmd)
             mpConsole->printErrorMessage("Unknown value.","",false);
             return;
         }
-        gpMainWindow->mpModelHandler->getCurrentContainer()->setNumberOfLogSamples(samples);
+        gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->setNumberOfLogSamples(samples);
     }
     else
     {
@@ -1351,7 +1351,7 @@ void HcomHandler::executePwdCommand(const QString /*cmd*/)
 void HcomHandler::executeMwdCommand(const QString /*cmd*/)
 {
     if(gpMainWindow->mpModelHandler->count() > 0)
-        mpConsole->print(gpMainWindow->mpModelHandler->getCurrentModel()->getTopLevelSystem()->getModelFileInfo().absoluteDir().path());
+        mpConsole->print(gpMainWindow->mpModelHandler->getCurrentModel()->getTopLevelSystemContainer()->getModelFileInfo().absoluteDir().path());
     else
         mpConsole->printErrorMessage("No model is open.", "", false);
 }
@@ -1369,7 +1369,7 @@ void HcomHandler::executeChangeDirectoryCommand(const QString cmd)
     //Handle "cd mwd" command
     if(cmd == "mwd")
     {
-        mPwd = gpMainWindow->mpModelHandler->getCurrentModel()->getTopLevelSystem()->getModelFileInfo().absoluteDir().path();
+        mPwd = gpMainWindow->mpModelHandler->getCurrentModel()->getTopLevelSystemContainer()->getModelFileInfo().absoluteDir().path();
         mpConsole->print(mPwd);
         return;
     }
@@ -1590,7 +1590,7 @@ void HcomHandler::executeConnectCommand(const QString cmd)
     Port *pPort1 = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getModelObject(args[0])->getPort(args[1]);
     Port *pPort2 = gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getModelObject(args[2])->getPort(args[3]);
 
-    Connector *pConn = gpMainWindow->mpModelHandler->getCurrentContainer()->createConnector(pPort1, pPort2);
+    Connector *pConn = gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->createConnector(pPort1, pPort2);
 
     if (pConn != 0)
     {
@@ -1650,13 +1650,13 @@ void HcomHandler::executeChangeTimestepCommand(const QString cmd)
     {
         mpConsole->printErrorMessage("Second argument is not a number.", "", false);
     }
-    else if(!gpMainWindow->mpModelHandler->getCurrentContainer()->hasModelObject(component))
+    else if(!gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->hasModelObject(component))
     {
         mpConsole->printErrorMessage("Component not found.", "", false);
     }
     else
     {
-        gpMainWindow->mpModelHandler->getCurrentContainer()->getCoreSystemAccessPtr()->setDesiredTimeStep(component, value);
+        gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getCoreSystemAccessPtr()->setDesiredTimeStep(component, value);
         //gpMainWindow->mpModelHandler->getCurrentContainer()->getCoreSystemAccessPtr()->setInheritTimeStep(false);
         mpConsole->print("Setting time step of "+component+" to "+QString::number(value));
     }
@@ -1674,13 +1674,13 @@ void HcomHandler::executeInheritTimestepCommand(const QString cmd)
     }
     QString component = split[0];
 
-    if(!gpMainWindow->mpModelHandler->getCurrentContainer()->hasModelObject(component))
+    if(!gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->hasModelObject(component))
     {
         mpConsole->printErrorMessage("Component not found.", "", false);
     }
     else
     {
-        gpMainWindow->mpModelHandler->getCurrentContainer()->getCoreSystemAccessPtr()->setInheritTimeStep(component, true);
+        gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getCoreSystemAccessPtr()->setInheritTimeStep(component, true);
         mpConsole->print("Setting time step of "+component+" to inherited.");
     }
 }
@@ -2097,7 +2097,7 @@ void HcomHandler::addPlotCurve(QString cmd, const int axis) const
 {
     cmd.remove("\"");
 
-    SystemContainer *pCurrentSystem = gpMainWindow->mpModelHandler->getCurrentModel()->getTopLevelSystem();
+    SystemContainer *pCurrentSystem = gpMainWindow->mpModelHandler->getCurrentModel()->getTopLevelSystemContainer();
     if(!pCurrentSystem) { return; }
 
     SharedLogVariableDataPtrT pData = getVariablePtr(cmd);
@@ -2622,7 +2622,7 @@ void HcomHandler::getComponents(QString str, QList<ModelObject*> &components)
 
     ModelWidget *pCurrentTab = gpMainWindow->mpModelHandler->getCurrentModel();
     if(!pCurrentTab) { return; }
-    SystemContainer *pCurrentSystem = pCurrentTab->getTopLevelSystem();
+    SystemContainer *pCurrentSystem = pCurrentTab->getTopLevelSystemContainer();
     if(!pCurrentSystem) { return; }
     for(int n=0; n<pCurrentSystem->getModelObjectNames().size(); ++n)
     {
@@ -3604,7 +3604,7 @@ void HcomHandler::optComplexRun()
 
     //! @todo currentWidget MAY hav changed, solve in better way
     ModelWidget *pOrgModel = qobject_cast<ModelWidget*>(gpMainWindow->mpCentralTabs->currentWidget());
-    pOrgModel->getTopLevelSystem()->getLogDataHandler()->takeOwnershipOfData(mpOptModel->getTopLevelSystem()->getLogDataHandler(), -2);
+    pOrgModel->getTopLevelSystemContainer()->getLogDataHandler()->takeOwnershipOfData(mpOptModel->getTopLevelSystemContainer()->getLogDataHandler(), -2);
     gpMainWindow->mpModelHandler->setCurrentModel(pOrgModel);
 
     // Close the obsolete optimisation model
@@ -3741,7 +3741,7 @@ void HcomHandler::optParticleInit()
 
     if(mOptMulticore)
     {
-        QString modelPath = gpMainWindow->mpModelHandler->getCurrentContainer()->getModelFileInfo().filePath();
+        QString modelPath = gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getModelFileInfo().filePath();
         gpMainWindow->mpModelHandler->getCurrentModel()->save();
         gpMainWindow->mpModelHandler->closeAllModels();
         for(int i=0; i<mOptNumPoints; ++i)
@@ -3773,7 +3773,7 @@ void HcomHandler::optParticleInit()
     }
     mOptObjectives.resize(mOptNumPoints);
 
-    LogDataHandler *pHandler = gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler();
+    LogDataHandler *pHandler = gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
     pHandler->deleteVariable("WorstObjective");
     pHandler->deleteVariable("BestObjective");
 }
@@ -3918,7 +3918,7 @@ void HcomHandler::optParticleRun()
 
 
     ModelWidget *pOrgModel = qobject_cast<ModelWidget*>(gpMainWindow->mpCentralTabs->currentWidget());
-    pOrgModel->getTopLevelSystem()->getLogDataHandler()->takeOwnershipOfData(mpOptModel->getTopLevelSystem()->getLogDataHandler(), -2);
+    pOrgModel->getTopLevelSystemContainer()->getLogDataHandler()->takeOwnershipOfData(mpOptModel->getTopLevelSystemContainer()->getLogDataHandler(), -2);
     gpMainWindow->mpModelHandler->setCurrentModel(pOrgModel);
 
     // Close the obsolete optimisation model
@@ -3935,7 +3935,7 @@ void HcomHandler::optPlotPoints()
         return;
     }
 
-    LogDataHandler *pHandler = gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler();
+    LogDataHandler *pHandler = gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
     for(int p=0; p<mOptNumPoints; ++p)
     {
         QString name = "par"+QString::number(p);
@@ -3985,7 +3985,7 @@ void HcomHandler::optPlotBestWorstObj()
 {
     if(!mOptPlotBestWorst) { return; }
 
-    LogDataHandler *pHandler = gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler();
+    LogDataHandler *pHandler = gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
     SharedLogVariableDataPtrT bestVar = pHandler->getPlotData("BestObjective", -1);
     if(bestVar.isNull())
     {

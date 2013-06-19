@@ -500,7 +500,7 @@ QDomElement SystemContainer::saveGuiDataToDomElement(QDomElement &rDomElement)
 //! @param[in] rDomElement The DOM Element to save to
 void SystemContainer::saveToDomElement(QDomElement &rDomElement, SaveContentsEnumT contents)
 {
-    if(this == mpModelWidget->getTopLevelSystem() && contents==FullModel)
+    if(this == mpModelWidget->getTopLevelSystemContainer() && contents==FullModel)
     {
         //Append model info
         QString author, email, affiliation, description;
