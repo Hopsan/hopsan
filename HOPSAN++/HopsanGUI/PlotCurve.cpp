@@ -261,9 +261,19 @@ void CurveInfoBox::resetTimeVector()
     mpParentPlotCurve->setCustomXData("");
 }
 
-void CurveInfoBox::setGeneration(int gen)
+void CurveInfoBox::setGeneration(const int gen)
 {
-    mpParentPlotCurve->setGeneration(--gen);
+    // Since info box begins counting at 1 we need to subtract one, but we do not want underflow as that would set latest generation (-1)
+    if (!mpParentPlotCurve->setGeneration(qMax(gen-1,0)))
+    {
+        mpGenerationSpinBox->setPrefix("NA<");
+        mpGenerationSpinBox->setSuffix(">");
+    }
+    else
+    {
+        mpGenerationSpinBox->setPrefix("");
+        mpGenerationSpinBox->setSuffix("");
+    }
 }
 
 //! @brief Constructor for plot curves.
@@ -484,17 +494,25 @@ const SharedLogVariableDataPtrT PlotCurve::getCustomXData() const
 //! @brief Sets the generation of a plot curve
 //! Updates the data to specified generation, and updates plot info box.
 //! @param genereation Genereation to use
-void PlotCurve::setGeneration(int generation)
+bool PlotCurve::setGeneration(int generation)
 {
     // Make sure we don try to use logdata handler from a variable that does not have one
     if(mpData->getLogDataHandler())
     {
+         //! @todo maybe not set generation if same as current but what aboput custom x-axis
+
+        // Make sure we have the data requested
         SharedLogVariableDataPtrT pNewData = mpData->getLogDataHandler()->getPlotData(mpData->getFullVariableName(), generation);
         if (pNewData)
         {
             this->disconnect(mpData.data());
             mpData = pNewData;
             connectDataSignals();
+        }
+        else
+        {
+            //! @todo we should actually check custom x data also to make sure that we have data that will be ok
+            return false;
         }
 
         if (hasCustomXData())
@@ -512,7 +530,10 @@ void PlotCurve::setGeneration(int generation)
 
         updateCurve();
         updatePlotInfoBox();
+
+        return true;
     }
+    return false;
 }
 
 
@@ -703,15 +724,24 @@ SharedLogVariableDataPtrT PlotCurve::getLogDataVariablePtr()
 //! @brief Changes a curve to the previous available gneraetion of its data
 void PlotCurve::setPreviousGeneration()
 {
-    // Prevent cykeling back to last by not sending in -1
-    setGeneration(std::max(getGeneration()-1,0));
+    // Loop until we find next lower generation, abort if gen<0
+    int gen = getGeneration()-1;
+    while ((gen >= 0) && (gen >= mpData->getLowestGeneration())  && !setGeneration(gen))
+    {
+        --gen;
+    }
 }
 
 
 //! @brief Changes a curve to the next available generation of its data
 void PlotCurve::setNextGeneration()
 {
-    setGeneration(getGeneration()+1);
+    // Loop until we find next higher generation, abort if we reach the highest
+    int gen = getGeneration()+1;
+    while ((gen <= mpData->getHighestGeneration()) && !setGeneration(gen))
+    {
+        ++gen;
+    }
 }
 
 

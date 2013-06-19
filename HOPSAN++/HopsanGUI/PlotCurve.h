@@ -74,7 +74,7 @@ private slots:
     void actiavateCurve(bool active);
     void setXData(QString fullName);
     void resetTimeVector();
-    void setGeneration(int gen);
+    void setGeneration(const int gen);
 };
 
 
@@ -139,7 +139,7 @@ signals:
     void curveDataUpdated();
 
 public slots:
-    void setGeneration(int generation);
+    bool setGeneration(int generation);
     void setPreviousGeneration();
     void setNextGeneration();
 
