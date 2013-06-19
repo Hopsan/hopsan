@@ -349,6 +349,12 @@ void Connector::finishCreation()
             }
         }
 
+        // Connect show/hide signal-stuff signalto the conector if any of the components are signal components
+        if(mpStartPort->getParentModelObject()->getTypeCQS() == "S" || mpEndPort->getParentModelObject()->getTypeCQS() == "S")
+        {
+            connect(mpParentContainerObject, SIGNAL(showOrHideSignals(bool)), this, SLOT(setVisible(bool)), Qt::UniqueConnection);
+        }
+
         // Hide ports; connected ports shall not be visible
         mpStartPort->hide();
         mpEndPort->hide();
@@ -374,11 +380,6 @@ void Connector::finishCreation()
 
     this->determineAppearance();    // Figure out which connector appearance to use
     this->setPassive();             // Make line passive (deselected)
-
-    if(mpStartPort->getParentModelObject()->getTypeCQS() == "S" || mpEndPort->getParentModelObject()->getTypeCQS() == "S")
-    {
-        connect(mpParentContainerObject, SIGNAL(showOrHideSignals(bool)), this, SLOT(setVisible(bool)), Qt::UniqueConnection);
-    }
 
     emit connectionFinished();      // Let everyone know that the connection process is finished
 }

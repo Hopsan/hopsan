@@ -439,7 +439,7 @@ void LogDataHandler::collectPlotDataFromModel(bool overWriteLastGeneration)
     bool timeVectorObtained = false;
     SharedLogVariableDataPtrT timeVecPtr;
 
-    //! @todo why not run multiappend when overwriting generation ?
+    //! @todo why not run multiappend when overwriting generation ? Baecouse tehn we are not appending, need som common open mode
     if(!overWriteLastGeneration)
     {
         this->getOrCreateGenerationMultiCache(mGenerationNumber)->beginMultiAppend();

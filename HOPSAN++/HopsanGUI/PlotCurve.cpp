@@ -497,10 +497,6 @@ void PlotCurve::setGeneration(int generation)
             connectDataSignals();
         }
 
-        //! @todo should not all updates happen automatically from one command
-//        mpParentPlotTab->rescaleAxesToCurves();
-//        mpParentPlotTab->update();
-
         if (hasCustomXData())
         {
             //! @todo why not be able to ask parent data container for other generations
