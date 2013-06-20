@@ -203,6 +203,7 @@ public:
     void frequencySpectrum(const SharedLogVariableDataPtrT pTime, const bool doPowerSpectrum);
     void assignFrom(const SharedLogVariableDataPtrT pOther);
     void assignFrom(const QVector<double> &rSrc);
+    void assignFrom(const double src);
     void assignFrom(SharedLogVariableDataPtrT time, const QVector<double> &rData);
     void assignFrom(QVector<double> &rTime, QVector<double> &rData);
     double pokeData(const int index, const double value, QString &rErr);
@@ -213,7 +214,7 @@ public:
     double maxOfData() const;
     double indexOfMinOfData() const;
     double indexOfMaxOfData() const;
-    void append(const double x, const double y);
+    void append(const double t, const double y);
     void append(const double y);
 
     void preventAutoRemoval();
@@ -228,7 +229,6 @@ public slots:
     void setTimePlotScaleAndOffset(const double scale, const double offset);
     void setTimePlotScale(double scale);
     void setTimePlotOffset(double offset);
-    void setXPlotScale(double scale);
     void setPlotScale(double scale);
     void setPlotOffset(double offset);
     void setPlotScaleAndOffset(const double scale, const double offset);

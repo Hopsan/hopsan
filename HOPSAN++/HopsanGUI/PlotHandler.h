@@ -31,6 +31,7 @@ public:
     QString plotDataToWindow(QString windowName, SharedLogVariableDataPtrT pData, int axis, QColor curveColor=QColor());
     QString plotDataToWindow(QString windowName, SharedLogVariableDataPtrT pDataX, SharedLogVariableDataPtrT pDataY, int axis, QColor curveColor=QColor());
 
+    void closeWindow(const QString &rWindowName);
     void closeAllOpenWindows();
 
     PlotWindow *createPlotWindow(QVector<double> xVector, QVector<double> yVector, int axis, QString componentName, QString portName, QString dataName, QString dataUnit, QString name="");

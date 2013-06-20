@@ -1326,18 +1326,13 @@ SharedLogVariableDataPtrT LogDataHandler::defineTempVariable(QString desiredname
     return pData;
 }
 
-void LogDataHandler::appendVariable(const SharedLogVariableDataPtrT a, const double x, const double y)
-{
-    a->append(x,y);
-    return;
-}
 
 void LogDataHandler::appendVariable(const QString &a, const double x, const double y)
 {
     SharedLogVariableDataPtrT pData1 = getPlotData(a, -1);
     if(pData1)
     {
-        appendVariable(pData1,x,y);
+        pData1->append(x,y);
         return;
     }
     gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("No such variable: " + a);
@@ -1359,16 +1354,24 @@ SharedLogVariableDataPtrT LogDataHandler::defineNewVariable(const QString desire
     return SharedLogVariableDataPtrT();
 }
 
-SharedLogVariableDataPtrT LogDataHandler::defineNewVariable(const QString desiredname, QVector<double> x, QVector<double> y)
+SharedLogVariableDataPtrT LogDataHandler::defineNewVariable(const QString desiredname, const QString &rUnit, const QString &rDescription)
 {
-    VariableDescription varDesc;
-    varDesc.mDataName = desiredname;
-    varDesc.mVariableSourceType = VariableDescription::ScriptVariableType;
-    LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc, this);
-    pDataContainer->addDataGeneration(mGenerationNumber, x, y);
-    mLogDataMap.insert(varDesc.getFullName(), pDataContainer);
-    return pDataContainer->getDataGeneration(mGenerationNumber);
+    SharedLogVariableDataPtrT pData = defineNewVariable(desiredname);
+    pData->mpVariableDescription->mDataUnit = rUnit;
+    pData->mpVariableDescription->mDataUnit = rDescription;
+    return pData;
 }
+
+//SharedLogVariableDataPtrT LogDataHandler::defineNewVariable(const QString desiredname, QVector<double> x, QVector<double> y)
+//{
+//    VariableDescription varDesc;
+//    varDesc.mDataName = desiredname;
+//    varDesc.mVariableSourceType = VariableDescription::ScriptVariableType;
+//    LogVariableContainer *pDataContainer = new LogVariableContainer(varDesc, this);
+//    pDataContainer->addDataGeneration(mGenerationNumber, x, y);
+//    mLogDataMap.insert(varDesc.getFullName(), pDataContainer);
+//    return pDataContainer->getDataGeneration(mGenerationNumber);
+//}
 
 
 
@@ -1674,4 +1677,10 @@ SharedLogVariableDataPtrT LogDataHandler::insertTimeVariable(QVector<double> &rT
 
         return insertVariableBasedOnDescription(varDesc, SharedLogVariableDataPtrT(), rTimeVector);
     }
+}
+
+
+bool LogDataHandler::hasPlotData(const QString &rFullName, const int generation)
+{
+    return (getPlotData(rFullName, generation) != 0);
 }

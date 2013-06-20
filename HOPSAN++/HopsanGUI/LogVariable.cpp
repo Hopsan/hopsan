@@ -147,11 +147,6 @@ void LogVariableData::setTimePlotScaleAndOffset(const double scale, const double
     }
 }
 
-void LogVariableData::setXPlotScale(double scale)
-{
-    //! @todo fix this
-}
-
 void LogVariableData::setPlotScale(double scale)
 {
     mDataPlotScale = scale;
@@ -546,6 +541,11 @@ void LogVariableData::assignFrom(const QVector<double> &rSrc)
     emit dataChanged();
 }
 
+void LogVariableData::assignFrom(const double src)
+{
+    assignFrom(QVector<double>() << src);
+}
+
 void LogVariableData::assignFrom(SharedLogVariableDataPtrT time, const QVector<double> &rData)
 {
     mpCachedDataVector->replaceData(rData);
@@ -656,19 +656,21 @@ double LogVariableData::indexOfMaxOfData() const
 }
 
 
-//! @brief Appends one point to a curve, NEVER USE THIS UNLESS A CUSTOM (PRIVATE) X VECTOR IS USED!
-void LogVariableData::append(const double x, const double y)
+//! @brief Appends one point to a curve, NEVER USE THIS UNLESS A CUSTOM (PRIVATE) X (TIME) VECTOR IS USED!
+void LogVariableData::append(const double t, const double y)
 {
     DataVectorT *pData = mpCachedDataVector->beginFullVectorOperation();
     pData->append(y);
     mpCachedDataVector->endFullVectorOperation(pData);
-    mSharedTimeVectorPtr.data()->append(x);
+    mSharedTimeVectorPtr.data()->append(t);
     //! @todo FIXA, it is bad to append x-data to shared time vector, there should be a custom private xvector Peter
 }
 
-//! @brief Appends one point to a curve, NEVER USE THIS UNLESS A CUSTOM (PRIVATE) Y and no X vector IS USED!
+//! @brief Appends one point to a curve, NEVER USE THIS WHEN A SHARED TIMEVECTOR EXIST
 void LogVariableData::append(const double y)
 {
+    //! @todo smarter append regardless of cached or not
+    //! @todo mayebe a reserve function to reserve memory if we know how much to expect
     DataVectorT *pData = mpCachedDataVector->beginFullVectorOperation();
     pData->append(y);
     mpCachedDataVector->endFullVectorOperation(pData);

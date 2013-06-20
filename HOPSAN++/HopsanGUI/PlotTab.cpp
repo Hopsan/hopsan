@@ -844,7 +844,25 @@ void PlotTab::updateLabels()
                 }
                 if (mHasCustomXData)
                 {
-                    mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, QwtText(QString(mpCustomXData->getDataName() + " [" + mpCustomXData->getDataUnit() + "]")));
+                    // Check all curves to make sure if it is the same custom x on all
+                    QList<SharedLogVariableDataPtrT> customXdatas;
+                    //! @todo checking this stuff every time is stupid, this should be sorted out upon adding removin curves
+                    for(int i=0; i<mPlotCurvePtrs[plotID].size(); ++i)
+                    {
+                        SharedLogVariableDataPtrT pX = mPlotCurvePtrs[plotID].at(i)->getCustomXData();
+                        if (!pX.isNull() && !customXdatas.contains(pX))
+                        {
+                            customXdatas.append(mPlotCurvePtrs[plotID].at(i)->getCustomXData());
+                        }
+                    }
+
+                    QString text;
+                    for (int i=0; i<customXdatas.size(); ++i)
+                    {
+                        text.append(customXdatas[i]->getDataName() + " [" + customXdatas[i]->getDataUnit() + "], ");
+                    }
+                    text.chop(2);
+                    mpQwtPlots[plotID]->setAxisTitle(QwtPlot::xBottom, text);
                 }
                 else
                 {

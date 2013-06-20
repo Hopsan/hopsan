@@ -258,7 +258,7 @@ void CurveInfoBox::setXData(QString fullName)
 
 void CurveInfoBox::resetTimeVector()
 {
-    mpParentPlotCurve->setCustomXData("");
+    mpParentPlotCurve->setCustomXData(0);
 }
 
 void CurveInfoBox::setGeneration(const int gen)
@@ -622,6 +622,7 @@ void PlotCurve::setCustomXData(SharedLogVariableDataPtrT pData)
     // Redraw curve
     updateCurve();
     mpPlotCurveInfoBox->updateInfo();
+    mpParentPlotTab->updateLabels();
 }
 
 void PlotCurve::setCustomXData(const QString fullName)

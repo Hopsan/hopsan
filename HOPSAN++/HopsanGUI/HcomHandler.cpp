@@ -3418,15 +3418,26 @@ void HcomHandler::optComplexInit()
 
     mOptKf = 1.0-pow(mOptAlpha/2.0, mOptGamma/mOptNumPoints);
 
-//    LogDataHandler *pHandler = gpMainWindow->mpModelHandler->getCurrentContainer()->getLogDataHandler();
-//    pHandler->deleteVariable("WorstObjective");
-//    pHandler->deleteVariable("BestObjective");
-
     if(!gpMainWindow->mpModelHandler->getCurrentModel()->isSaved())
     {
         mpConsole->printErrorMessage("Current model is not saved. Please save it before running an optimization.", "", false);
         return;
     }
+
+    LogDataHandler *pHandler = gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
+    // Check if exist at any generation first to avoid error message
+    if (pHandler->hasPlotData("WorstObjective"))
+    {
+        pHandler->deleteVariable("WorstObjective");
+    }
+    if (pHandler->hasPlotData("BestObjective"))
+    {
+        pHandler->deleteVariable("BestObjective");
+    }
+
+    // Close these plotwindows before optimization to make sure old data is removed
+    //! @todo should have define or const for this name "parplot"
+    gpPlotHandler->closeWindow("parplot");
 }
 
 
@@ -3775,8 +3786,19 @@ void HcomHandler::optParticleInit()
     mOptObjectives.resize(mOptNumPoints);
 
     LogDataHandler *pHandler = gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
-    pHandler->deleteVariable("WorstObjective");
-    pHandler->deleteVariable("BestObjective");
+    // Check if exist at any generation first to avoid error message
+    if (pHandler->hasPlotData("WorstObjective"))
+    {
+        pHandler->deleteVariable("WorstObjective");
+    }
+    if (pHandler->hasPlotData("BestObjective"))
+    {
+        pHandler->deleteVariable("BestObjective");
+    }
+
+    // Close these plotwindows before optimization to make sure old data is removed
+    //! @todo should have define or const for this name "parplot"
+    gpPlotHandler->closeWindow("parplot");
 }
 
 
@@ -3939,45 +3961,51 @@ void HcomHandler::optPlotPoints()
     LogDataHandler *pHandler = gpMainWindow->mpModelHandler->getCurrentViewContainerObject()->getLogDataHandler();
     for(int p=0; p<mOptNumPoints; ++p)
     {
-        QString name = "par"+QString::number(p);
+        QString namex = "par"+QString::number(p)+"x";
+        QString namey = "par"+QString::number(p)+"y";
         double x = mOptParameters[p][0];
         double y = mOptParameters[p][1];
-        SharedLogVariableDataPtrT parVar1 = pHandler->getPlotData(name, -1);
-        if(!parVar1)
+        SharedLogVariableDataPtrT parVar_x = pHandler->getPlotData(namex, -1);
+        SharedLogVariableDataPtrT parVar_y = pHandler->getPlotData(namey, -1);
+        if(!parVar_x)
         {
-            parVar1 = pHandler->defineNewVariable(name, QVector<double>() << x, QVector<double>() << y);
-            parVar1.data()->preventAutoRemoval();
+            //! @todo we should set name and unit and maybe description (in define variable)
+            parVar_x = pHandler->defineNewVariable(namex);
+            parVar_y = pHandler->defineNewVariable(namey);
+            parVar_x->preventAutoRemoval();
+            parVar_y->preventAutoRemoval();
 
-            PlotWindow *pPW = gpPlotHandler->createNewOrReplacePlotwindow("parplot");
-            gpPlotHandler->plotDataToWindow(pPW, parVar1, 0);
+            parVar_x->assignFrom(x);
+            parVar_y->assignFrom(y);
+
+            gpPlotHandler->plotDataToWindow("parplot", parVar_x, parVar_y, 0);
         }
         else
         {
-            parVar1->assignFrom(QVector<double>() << x, QVector<double>() << y);
+            //! @todo need to turn of auto refresh on plot and trygger it manually to avoid multiple redraws here
+            parVar_x->assignFrom(x);
+            parVar_y->assignFrom(y);
         }
     }
 
     PlotWindow *pPlotWindow = gpPlotHandler->getPlotWindow("parplot");
-    if(!pPlotWindow)
+    if(pPlotWindow)
     {
-        gpPlotHandler->createPlotWindow("parplot");
-        pPlotWindow = gpPlotHandler->getPlotWindow("parplot");
-    }
-    PlotTab *pTab = pPlotWindow->getCurrentPlotTab();
-    pTab->getPlot(FirstPlot)->setAxisScale(QwtPlot::xBottom, mOptParMin[0], mOptParMax[0]);
-    pTab->getPlot(FirstPlot)->setAxisScale(QwtPlot::yLeft, mOptParMin[1], mOptParMax[1]);
-    pTab->update();
-
-    for(int c=0; c<pTab->getCurves(FirstPlot).size(); ++c)
-    {
-        if(c==mOptBestId)
+        PlotTab *pTab = pPlotWindow->getCurrentPlotTab();
+        for(int c=0; c<pTab->getCurves(FirstPlot).size(); ++c)
         {
-            pTab->getCurves(FirstPlot).at(c)->setLineSymbol("Star 1");
+            if(c==mOptBestId)
+            {
+                pTab->getCurves(FirstPlot).at(c)->setLineSymbol("Star 1");
+            }
+            else
+            {
+                pTab->getCurves(FirstPlot).at(c)->setLineSymbol("XCross");
+            }
         }
-        else
-        {
-            pTab->getCurves(FirstPlot).at(c)->setLineSymbol("XCross");
-        }
+        pTab->getPlot(FirstPlot)->setAxisScale(QwtPlot::xBottom, mOptParMin[0], mOptParMax[0]);
+        pTab->getPlot(FirstPlot)->setAxisScale(QwtPlot::yLeft, mOptParMin[1], mOptParMax[1]);
+        pTab->update();
     }
 }
 
@@ -3990,24 +4018,27 @@ void HcomHandler::optPlotBestWorstObj()
     SharedLogVariableDataPtrT bestVar = pHandler->getPlotData("BestObjective", -1);
     if(bestVar.isNull())
     {
-        bestVar = pHandler->defineNewVariable("BestObjective", QVector<double>() << 0, QVector<double>() << mOptObjectives[mOptBestId]);
+        //! @todo unit and description
+        bestVar = pHandler->defineNewVariable("BestObjective");
         bestVar->preventAutoRemoval();
+        bestVar->assignFrom(mOptObjectives[mOptBestId]);
         bestVar->setCacheDataToDisk(false);
     }
     else
     {
-        pHandler->appendVariable(bestVar, bestVar.data()->getDataSize(), mOptObjectives[mOptBestId]);
+        bestVar->append(mOptObjectives[mOptBestId]);
     }
     SharedLogVariableDataPtrT worstVar = pHandler->getPlotData("WorstObjective", -1);
     if(worstVar.isNull())
     {
-        worstVar = pHandler->defineNewVariable("WorstObjective", QVector<double>() << 0, QVector<double>() << mOptObjectives[mOptWorstId]);
-        worstVar.data()->preventAutoRemoval();
+        worstVar = pHandler->defineNewVariable("WorstObjective");
+        worstVar->preventAutoRemoval();
+        worstVar->assignFrom(mOptObjectives[mOptWorstId]);
         worstVar->setCacheDataToDisk(false);
     }
     else
     {
-        pHandler->appendVariable(worstVar, worstVar.data()->getDataSize(), mOptObjectives[mOptWorstId]);
+        worstVar->append(mOptObjectives[mOptWorstId]);
     }
 
     // If this is the first time, then recreate the plotwindows

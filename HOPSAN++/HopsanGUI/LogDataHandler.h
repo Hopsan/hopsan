@@ -56,7 +56,9 @@ public:
     void importTimeVariablesFromCSVColumns(const QString csvFilePath, QVector<int> columns, QStringList names, const int timeColumnId=0);
 
     SharedLogVariableDataPtrT defineNewVariable(const QString desiredname);
-    SharedLogVariableDataPtrT defineNewVariable(const QString desiredname, QVector<double> x, QVector<double> y);
+    SharedLogVariableDataPtrT defineNewVariable(const QString desiredname, const QString &rUnit, const QString &rDescription);
+    //SharedLogVariableDataPtrT defineNewVariable(const QString desiredname, QVector<double> x, QVector<double> y);
+    SharedLogVariableDataPtrT defineTempVariable(QString desiredname);
 
     bool deleteVariable(SharedLogVariableDataPtrT a);
     bool deleteVariable(const QString &a);
@@ -70,6 +72,7 @@ public:
     SharedLogVariableDataPtrT getPlotData(int generation, QString componentName, QString portName, QString dataName); //!< @deprecated
     SharedLogVariableDataPtrT getPlotData(const QString fullName, const int generation);
     SharedLogVariableDataPtrT getPlotDataByAlias(const QString alias, const int generation);
+    bool hasPlotData(const QString &rFullName, const int generation=-1);
     QVector<SharedLogVariableDataPtrT> getAllVariablesAtNewestGeneration();
     QVector<SharedLogVariableDataPtrT> getOnlyVariablesAtGeneration(const int generation);
     int getLatestGeneration() const;
@@ -145,9 +148,6 @@ public:
     SharedLogVariableDataPtrT saveVariable(SharedLogVariableDataPtrT a);
     QString saveVariable(const QString &currName, const QString &newName);
 
-    SharedLogVariableDataPtrT defineTempVariable(QString desiredname);
-
-    void appendVariable(const SharedLogVariableDataPtrT a, const double x, const double y);
     void appendVariable(const QString &a, const double x, const double y);
 
     void takeOwnershipOfData(LogDataHandler *pOtherHandler, int generation=-2);

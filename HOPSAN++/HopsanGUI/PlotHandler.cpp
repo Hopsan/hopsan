@@ -114,6 +114,15 @@ QString PlotHandler::plotDataToWindow(QString windowName, SharedLogVariableDataP
     return "";
 }
 
+void PlotHandler::closeWindow(const QString &rWindowName)
+{
+    PlotWindow *pPW = getPlotWindow(rWindowName);
+    if (pPW)
+    {
+        pPW->close();
+    }
+}
+
 void PlotHandler::closeAllOpenWindows()
 {
     while (!mOpenPlotWindows.empty())
@@ -140,7 +149,6 @@ PlotWindow *PlotHandler::plotDataToWindow(PlotWindow *pPlotWindow, SharedLogVari
     {
         pPlotWindow = createNewPlotWindowOrGetCurrentOne();
     }
-    PlotCurve* pCurve = pPlotWindow->addPlotCurve(pDataY, axis, curveColor);
-    pCurve->setCustomXData(pDataX);
+    pPlotWindow->addPlotCurve(pDataX, pDataY, axis, curveColor);
     return pPlotWindow;
 }

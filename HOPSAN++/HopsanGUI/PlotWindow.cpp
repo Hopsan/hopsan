@@ -551,6 +551,16 @@ PlotCurve* PlotWindow::addPlotCurve(SharedLogVariableDataPtrT pData, int axisY, 
     return 0;
 }
 
+PlotCurve *PlotWindow::addPlotCurve(SharedLogVariableDataPtrT pXData, SharedLogVariableDataPtrT pYData, int axisY, QColor desiredColor)
+{
+    PlotCurve *pCurve = addPlotCurve(pYData, axisY, desiredColor);
+    if (pCurve)
+    {
+        pCurve->setCustomXData(pXData);
+    }
+    return pCurve;
+}
+
 
 void PlotWindow::addBarChart(QStandardItemModel *pItemModel)
 {
