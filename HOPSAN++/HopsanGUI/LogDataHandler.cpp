@@ -1016,7 +1016,7 @@ QString LogDataHandler::addVariables(const QString &a, const QString &b)
 
 SharedLogVariableDataPtrT LogDataHandler::addVariables(const SharedLogVariableDataPtrT a, const SharedLogVariableDataPtrT b)
 {
-    SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+b->getFullVariableName());
+    SharedLogVariableDataPtrT pTempVar = defineTempVariable(a->getFullVariableName()+"plus"+b->getFullVariableName());
     pTempVar->assignFrom(a);
     pTempVar->addToData(b);
     return pTempVar;

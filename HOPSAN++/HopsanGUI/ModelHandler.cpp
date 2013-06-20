@@ -357,30 +357,30 @@ bool ModelHandler::closeModel(int idx)
         }
 
 
-        if (pModelToClose->getTopLevelSystemContainer()->getLogDataHandler()->hasOpenPlotCurves())
-        {
-            QMessageBox msgBox;
-            msgBox.setWindowIcon(gpMainWindow->windowIcon());
-            msgBox.setText(QString("All open plot curves from this model will be lost."));
-            msgBox.setInformativeText("Are you sure you want to close?");
-            msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-            msgBox.setDefaultButton(QMessageBox::Cancel);
+//        if (pModelToClose->getTopLevelSystemContainer()->getLogDataHandler()->hasOpenPlotCurves())
+//        {
+//            QMessageBox msgBox;
+//            msgBox.setWindowIcon(gpMainWindow->windowIcon());
+//            msgBox.setText(QString("All open plot curves from this model will be lost."));
+//            msgBox.setInformativeText("Are you sure you want to close?");
+//            msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+//            msgBox.setDefaultButton(QMessageBox::Cancel);
 
-            int answer = msgBox.exec();
-            switch (answer)
-            {
-            case QMessageBox::Ok:
-                // Ok was clicked
-                getTopLevelSystem(idx)->getLogDataHandler()->closePlotsWithCurvesBasedOnOwnedData();
-                break;
-            case QMessageBox::Cancel:
-                // Cancel was clicked
-                return false;
-            default:
-                // should never be reached
-                return false;
-            }
-        }
+//            int answer = msgBox.exec();
+//            switch (answer)
+//            {
+//            case QMessageBox::Ok:
+//                // Ok was clicked
+//                getTopLevelSystem(idx)->getLogDataHandler()->closePlotsWithCurvesBasedOnOwnedData();
+//                break;
+//            case QMessageBox::Cancel:
+//                // Cancel was clicked
+//                return false;
+//            default:
+//                // should never be reached
+//                return false;
+//            }
+//        }
 
         // Disconnect signals
         disconnect(gpMainWindow->mpResetZoomAction,     SIGNAL(triggered()),    pModelToClose->getGraphicsView(),   SLOT(resetZoom()));

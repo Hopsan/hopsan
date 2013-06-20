@@ -101,7 +101,7 @@ public:
 typedef QSharedPointer<VariableDescription> SharedVariableDescriptionT;
 typedef QSharedPointer<LogVariableData> SharedLogVariableDataPtrT;
 
-SharedLogVariableDataPtrT makeFreeTimeVariabel(const QVector<double> &rTime);
+SharedLogVariableDataPtrT createFreeTimeVariabel(const QVector<double> &rTime);
 
 class LogVariableContainer : public QObject
 {
@@ -214,6 +214,7 @@ public:
     double indexOfMinOfData() const;
     double indexOfMaxOfData() const;
     void append(const double x, const double y);
+    void append(const double y);
 
     void preventAutoRemoval();
     void allowAutoRemoval();

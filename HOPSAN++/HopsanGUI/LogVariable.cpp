@@ -32,7 +32,7 @@
 #include <QMessageBox>
 
 //! @brief Creates a free unhandled time vector logvariable, it can not have generations or be cached
-SharedLogVariableDataPtrT makeFreeTimeVariabel(const QVector<double> &rTime)
+SharedLogVariableDataPtrT createFreeTimeVariabel(const QVector<double> &rTime)
 {
     SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription());
     pVarDesc->mDataName = "Time";
@@ -555,10 +555,8 @@ void LogVariableData::assignFrom(SharedLogVariableDataPtrT time, const QVector<d
 
 void LogVariableData::assignFrom(QVector<double> &rTime, QVector<double> &rData)
 {
-    //UniqueSharedTimeVectorPtrHelper timeVecHelper;
-    //SharedTimeVectorPtrT timeVecPtr = timeVecHelper.makeSureUnique(rTime);
-    this->assignFrom(rTime, rData);
-    //! @todo in this case a new unique timevector will be assigned
+    // We create a new non managed free timevector from the supplied time data
+    assignFrom(createFreeTimeVariabel(rTime), rData);
 }
 
 double LogVariableData::pokeData(const int index, const double value, QString &rErr)
@@ -664,8 +662,16 @@ void LogVariableData::append(const double x, const double y)
     DataVectorT *pData = mpCachedDataVector->beginFullVectorOperation();
     pData->append(y);
     mpCachedDataVector->endFullVectorOperation(pData);
-    //mSharedTimeVectorPtr.data()->append(x);
-    //! @todo FIXA Peter
+    mSharedTimeVectorPtr.data()->append(x);
+    //! @todo FIXA, it is bad to append x-data to shared time vector, there should be a custom private xvector Peter
+}
+
+//! @brief Appends one point to a curve, NEVER USE THIS UNLESS A CUSTOM (PRIVATE) Y and no X vector IS USED!
+void LogVariableData::append(const double y)
+{
+    DataVectorT *pData = mpCachedDataVector->beginFullVectorOperation();
+    pData->append(y);
+    mpCachedDataVector->endFullVectorOperation(pData);
 }
 
 
@@ -881,7 +887,7 @@ bool LogVariableContainer::hasDataGeneration(const int gen)
 
 SharedLogVariableDataPtrT LogVariableContainer::addDataGeneration(const int generation, const QVector<double> &rTime, const QVector<double> &rData)
 {
-    return addDataGeneration(generation, makeFreeTimeVariabel(rTime), rData);
+    return addDataGeneration(generation, createFreeTimeVariabel(rTime), rData);
 }
 
 SharedLogVariableDataPtrT LogVariableContainer::addDataGeneration(const int generation, const SharedLogVariableDataPtrT time, const QVector<double> &rData)
@@ -1041,7 +1047,7 @@ double LogVariableData::first() const
 
 double LogVariableData::last() const
 {
-    return peekData(mpCachedDataVector->size());
+    return peekData(mpCachedDataVector->size()-1);
 }
 
 

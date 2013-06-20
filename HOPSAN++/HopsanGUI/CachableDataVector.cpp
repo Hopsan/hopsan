@@ -319,6 +319,7 @@ CachableDataVector::~CachableDataVector()
 
 bool CachableDataVector::setCached(const bool cached)
 {
+    //! @todo should not try to move to from cache if alread cached/not cahced
     bool rc;
     if (cached)
     {
@@ -336,6 +337,7 @@ bool CachableDataVector::isCached() const
     // If we have a multicache then check if data vector is empty (data is in cache or should be in cache)
     if (mpMultiCache)
     {
+        //! @todo what if data in memory and empty, then we are not cahced but data stil empty
         return mDataVector.isEmpty();
     }
     // If no cache file then data can not be cached

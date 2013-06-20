@@ -2978,6 +2978,7 @@ bool HcomHandler::evaluateArithmeticExpression(QString cmd)
 
             gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->assignVariable(left, value);
             gpMainWindow->mpModelHandler->getCurrentTopLevelSystem()->getLogDataHandler()->getPlotData(left,-1).data()->preventAutoRemoval();
+            //! @todo maybe we should remove value if it is a temporary variable, or else it will remain for ever
             return true;
         }
         else
@@ -3946,13 +3947,13 @@ void HcomHandler::optPlotPoints()
         {
             parVar1 = pHandler->defineNewVariable(name, QVector<double>() << x, QVector<double>() << y);
             parVar1.data()->preventAutoRemoval();
-            gpPlotHandler->plotDataToWindow("parplot", parVar1, 0);
+
+            PlotWindow *pPW = gpPlotHandler->createNewOrReplacePlotwindow("parplot");
+            gpPlotHandler->plotDataToWindow(pPW, parVar1, 0);
         }
         else
         {
-            SharedLogVariableDataPtrT dummy = pHandler->defineNewVariable("dummy", QVector<double>() << x, QVector<double>() << y);
-
-            parVar1.data()->assignFrom(dummy);
+            parVar1->assignFrom(QVector<double>() << x, QVector<double>() << y);
         }
     }
 
@@ -4009,16 +4010,13 @@ void HcomHandler::optPlotBestWorstObj()
         pHandler->appendVariable(worstVar, worstVar.data()->getDataSize(), mOptObjectives[mOptWorstId]);
     }
 
-
+    // If this is the first time, then recreate the plotwindows
+    // Note! plots will autoupdate when new data is appended, so there is no need to call plotab->update()
     if(bestVar.data()->getDataSize() == 1)
     {
-        gpPlotHandler->plotDataToWindow("ObjectiveFunction", bestVar, 0, QColor("Green"));
-        gpPlotHandler->plotDataToWindow("ObjectiveFunction", worstVar, 0, QColor("Red"));
-    }
-    PlotWindow *pPlotWindow = gpPlotHandler->getPlotWindow("ObjectiveFunction");
-    if(pPlotWindow)
-    {
-        pPlotWindow->getCurrentPlotTab()->update();
+        PlotWindow *pPW = gpPlotHandler->createNewOrReplacePlotwindow("ObjectiveFunction");
+        gpPlotHandler->plotDataToWindow(pPW, bestVar, 0, QColor("Green"));
+        gpPlotHandler->plotDataToWindow(pPW, worstVar, 0, QColor("Red"));
     }
 }
 
