@@ -195,6 +195,7 @@ private:
     QString mLineSymbol;
     QwtSymbol *mpCurveSymbol;
     int mLineWidth;
+    int mCurveSymbolSize;
 };
 
 
@@ -210,12 +211,14 @@ public:
 
 public slots:
     void refreshLabel(const double x, const double y);
-    void refreshLabel(const QString label);
+    void refreshLabel(const QString &label);
 
 private:
     PlotCurve *mpCurve;
     PlotTab *mpPlotTab;
     QwtSymbol *mpMarkerSymbol;
+    Qt::Alignment mLabelAlignment;
+    int mMarkerSize;
     bool mIsBeingMoved;
     bool mIsMovable;
 };

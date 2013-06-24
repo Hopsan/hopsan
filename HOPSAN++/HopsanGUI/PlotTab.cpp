@@ -104,6 +104,7 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
         mpGrid[plotID]->enableYMin(true);
         mpGrid[plotID]->setMajorPen(QPen(Qt::black, 0, Qt::DotLine));
         mpGrid[plotID]->setMinorPen(QPen(Qt::gray, 0 , Qt::DotLine));
+        mpGrid[plotID]->setZ(GridLinesZOrderType);
         mpGrid[plotID]->attach(mpQwtPlots[plotID]);
 
         // Init curve counters
@@ -121,10 +122,12 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
     mpRightPlotLegend = new PlotLegend(QwtPlot::yRight);
     mpRightPlotLegend->attach(this->getPlot());
     mpRightPlotLegend->setAlignment(Qt::AlignRight | Qt::AlignTop);
+    mpRightPlotLegend->setZ(LegendBelowCurveZOrderType);
 
     mpLeftPlotLegend = new PlotLegend(QwtPlot::yLeft);
     mpLeftPlotLegend->attach(this->getPlot());
     mpLeftPlotLegend->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    mpLeftPlotLegend->setZ(LegendBelowCurveZOrderType);
 
 
     // Create the lock axis dialog
@@ -161,8 +164,6 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
     mpPainterWidget = new PainterWidget(this);
     mpPainterWidget->clearRect();
     mpTabLayout->addWidget(mpPainterWidget, 0, 0);
-
-    connect(mpQwtPlots[FirstPlot], SIGNAL(legendClicked(QwtPlotItem*)), this, SLOT(updateLegend(QwtPlotItem *)));//QwtPlotItem *, bool)));
 
     for(int plotID=1; plotID<2; ++plotID)       //Hide all plots except first one by default
     {
@@ -510,13 +511,13 @@ void PlotTab::addCurve(PlotCurve *pCurve, QColor desiredColor, HopsanPlotIDEnumT
     }
 
     mpQwtPlots[plotID]->enableAxis(pCurve->getAxisY());
-    rescaleAxesToCurves();
-    updateLabels();
-    pCurve->setZ(1000);
+    pCurve->setZ(CurveZOrderType);
     pCurve->setLineWidth(2);
 
     setLegendSymbol(mpLegendSymbolType->currentText());
 
+    rescaleAxesToCurves();
+    updateLabels();
     mpQwtPlots[plotID]->replot();
     mpQwtPlots[plotID]->updateGeometry();
 

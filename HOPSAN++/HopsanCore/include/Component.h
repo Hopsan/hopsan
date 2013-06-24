@@ -253,7 +253,7 @@ protected:
     double mTime;
 
     size_t mModelHierarchyDepth; //!< This variable containes the depth of the system in the model hierarchy, (used by connect to figure out where to store nodes)
-    std::vector< std::pair<double*, double*> > mDynamicParameterDataPtrs;
+    //std::vector< std::pair<double*, double*> > mDynamicParameterDataPtrs;
 
     ComponentSystem* mpSystemParent;
 

@@ -14,6 +14,19 @@
 #include <limits>
 const double DoubleMax = std::numeric_limits<double>::max();
 
+
+class AlignmentSelectionStruct
+{
+public:
+    AlignmentSelectionStruct(const Qt::Alignment alignment, const QString &label)
+    {
+        mAlignment = alignment;
+        mLabel = label;
+    }
+    Qt::Alignment mAlignment;
+    QString mLabel;
+};
+
 CustomXDataDropEdit::CustomXDataDropEdit(QWidget *pParent)
     : QLineEdit(pParent)
 {
@@ -322,6 +335,7 @@ void PlotCurve::commonConstructorCode(int axisY,
 {
     mCustomDataUnitScale = 1.0;
     mpCurveSymbol = 0;
+    mCurveSymbolSize = 8;
     mIsActive = false;
     mCurveType = curveType;
     mpParentPlotTab = parent;
@@ -878,7 +892,7 @@ void PlotCurve::setLineSymbol(QString lineSymbol)
     QPen tempPen = pen();
     tempPen.setStyle(Qt::SolidLine);
     mpCurveSymbol->setPen(tempPen);
-    mpCurveSymbol->setSize(8,8);
+    mpCurveSymbol->setSize(mCurveSymbolSize,mCurveSymbolSize);
     setSymbol(mpCurveSymbol);
 
     //! @todo Add a color or size picker for the markers
@@ -1194,12 +1208,15 @@ PlotMarker::PlotMarker(PlotCurve *pCurve, PlotTab *pPlotTab)
     mpPlotTab = pPlotTab;
     mIsBeingMoved = false;
     mIsMovable = true;
+    mMarkerSize = 12;
+    mLabelAlignment = Qt::AlignTop;
 
     mpMarkerSymbol = new QwtSymbol();
     mpMarkerSymbol->setStyle(QwtSymbol::XCross);
-    mpMarkerSymbol->setSize(10,10);
+    mpMarkerSymbol->setSize(mMarkerSize,mMarkerSize);
     mpMarkerSymbol->setPen(pCurve->pen().color(),3);
     setSymbol(mpMarkerSymbol); //!< @todo is this symbol auto removed with PlotMarker ?
+    this->setZ(CurveMarkerZOrderType);
 }
 
 
@@ -1213,20 +1230,65 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
     if(!mIsMovable)
         return false; //!< @todo this will also block delete, is that OK?
 
-    // Mouse press events, used to initiate moving of a marker if mouse cursor is close enough
-    if (event->type() == QEvent::MouseButtonPress)
+    if (event->type() == QEvent::ContextMenu)
     {
-        QCursor cursor;
         QPointF midPoint;
         midPoint.setX(this->plot()->transform(QwtPlot::xBottom, value().x()));
         midPoint.setY(this->plot()->transform(QwtPlot::yLeft, value().y()));
-
-        if(!mpPlotTab->mpZoomerLeft[FirstPlot]->isEnabled() && !mpPlotTab->mpPanner[FirstPlot]->isEnabled())
+        if((this->plot()->canvas()->mapToGlobal(midPoint.toPoint()) - QCursor::pos()).manhattanLength() < 35)
         {
-            if((this->plot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
+            QMenu *pContextMenu = new QMenu();
+            QMenu *pAlignmentMenu = new QMenu("Label Alignment");
+            pContextMenu->addMenu(pAlignmentMenu);
+
+            QList<AlignmentSelectionStruct> alignments;
+            alignments.append(AlignmentSelectionStruct(Qt::AlignTop|Qt::AlignLeft, "TopLeft"));
+            alignments.append(AlignmentSelectionStruct(Qt::AlignTop, "Top"));
+            alignments.append(AlignmentSelectionStruct(Qt::AlignTop|Qt::AlignRight, "TopRight"));
+            alignments.append(AlignmentSelectionStruct(Qt::AlignRight, "Right"));
+            alignments.append(AlignmentSelectionStruct(Qt::AlignBottom|Qt::AlignRight, "BottomRight"));
+            alignments.append(AlignmentSelectionStruct(Qt::AlignBottom, "Bottom"));
+            alignments.append(AlignmentSelectionStruct(Qt::AlignBottom|Qt::AlignLeft, "BottomLeft"));
+            alignments.append(AlignmentSelectionStruct(Qt::AlignLeft, "Left"));
+
+            QAction *pAction;
+            QMap<QAction*, AlignmentSelectionStruct*> alignSelectionMap;
+            for (int i=0; i<alignments.size(); ++i)
             {
-                mIsBeingMoved = true;
-                return true;
+                pAction = new QAction(alignments[i].mLabel,pContextMenu);
+                pAlignmentMenu->addAction(pAction);
+                alignSelectionMap.insert(pAction, &alignments[i]);
+            }
+
+            pAction = pContextMenu->exec(QCursor::pos());
+            if (alignSelectionMap.contains(pAction))
+            {
+                mLabelAlignment = alignSelectionMap.value(pAction)->mAlignment;
+                this->setLabelAlignment(mLabelAlignment);
+            }
+
+            pContextMenu->deleteLater();
+            return true;
+        }
+    }
+
+    // Mouse press events, used to initiate moving of a marker if mouse cursor is close enough
+    else if (event->type() == QEvent::MouseButtonPress)
+    {
+        if (static_cast<QMouseEvent*>(event)->button() == Qt::LeftButton)
+        {
+            QCursor cursor;
+            QPointF midPoint;
+            midPoint.setX(this->plot()->transform(QwtPlot::xBottom, value().x()));
+            midPoint.setY(this->plot()->transform(QwtPlot::yLeft, value().y()));
+
+            if(!mpPlotTab->mpZoomerLeft[FirstPlot]->isEnabled() && !mpPlotTab->mpPanner[FirstPlot]->isEnabled())
+            {
+                if((this->plot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
+                {
+                    mIsBeingMoved = true;
+                    return true;
+                }
             }
         }
     }
@@ -1242,7 +1304,6 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
         if((this->plot()->canvas()->mapToGlobal(midPoint.toPoint()) - cursor.pos()).manhattanLength() < 35)
         {
             mpMarkerSymbol->setPen(mpCurve->pen().color().lighter(165), 3);
-            //this->setSymbol(mpMarkerSymbol);
             this->plot()->replot();
             this->plot()->updateGeometry();
             retval=true;
@@ -1252,7 +1313,6 @@ bool PlotMarker::eventFilter(QObject */*object*/, QEvent *event)
             if(!mIsBeingMoved)
             {
                 mpMarkerSymbol->setPen(mpCurve->pen().color(), 3);
-                //this->setSymbol(mpMarkerSymbol);
                 this->plot()->replot();
                 this->plot()->updateGeometry();
             }
@@ -1313,18 +1373,19 @@ void PlotMarker::setMovable(bool movable)
 
 void PlotMarker::refreshLabel(const double x, const double y)
 {
-    refreshLabel(QString("(%1, %2)").arg(x).arg(y));
+    refreshLabel(QString("( %1,  %2 )").arg(x).arg(y));
 }
 
-void PlotMarker::refreshLabel(const QString label)
+void PlotMarker::refreshLabel(const QString &label)
 {
     QwtText qwtlabel(label);
     qwtlabel.setColor(Qt::black);
-    qwtlabel.setBackgroundBrush(QColor(255,255,255,220));
-    qwtlabel.setFont(QFont("Calibri", 12, QFont::Normal));
-    this->setLabel(qwtlabel);
-    this->setLabelAlignment(Qt::AlignTop);
+    qwtlabel.setBackgroundBrush(QColor(255,255,255,240));
+    qwtlabel.setFont(QFont("Calibri", 14, QFont::Normal));
+    setLabel(qwtlabel);
+    setLabelAlignment(mLabelAlignment);
 }
+
 
 
 //! @brief Returns a pointer to the curve a plot marker belongs to
