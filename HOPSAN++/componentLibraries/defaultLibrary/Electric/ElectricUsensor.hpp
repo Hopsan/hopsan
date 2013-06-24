@@ -4,6 +4,7 @@
 //! @brief Sensor of electric voltage
 //! @ingroup ElectricComponents
 //!
+//$Id$
 
 #ifndef ELECTRICUSENSOR_HPP_INCLUDED
 #define ELECTRICUSENSOR_HPP_INCLUDED
@@ -16,7 +17,6 @@ class ElectricUsensor : public ComponentSignal
 {
 private:
      Port *mpIn;
-     Port *mpOut;
      double *mpNDin, *mpNDout;
 
 public:
@@ -28,7 +28,7 @@ public:
      void configure()
      {
         mpIn=addReadPort("Pel1","NodeElectric");
-        addOutputVariable("Puout","Voltage","V", 0.0, &mpNDout);
+        addOutputVariable("Puout","Voltage","V", &mpNDout);
      }
 
     void initialize()

@@ -4,6 +4,7 @@
 //! @brief Sensor of electric current
 //! @ingroup ElectricComponents
 //!
+//$Id$
 
 #ifndef ELECTRICISENSOR_HPP_INCLUDED
 #define ELECTRICISENSOR_HPP_INCLUDED
@@ -27,7 +28,7 @@ public:
      void configure()
      {
         mpIn=addReadPort("Pel1","NodeElectric");
-        addOutputVariable("Piout","Current","A",0.0,&mpNDout);
+        addOutputVariable("Piout","Current","A",&mpNDout);
      }
 
      void initialize()

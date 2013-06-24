@@ -38,7 +38,7 @@ namespace hopsan {
     {
     private:
         double *mpND_w, *mpND_out;
-        Port *mpP1, *mpOut;
+        Port *mpP1;
 
 
     public:
@@ -51,14 +51,13 @@ namespace hopsan {
         {
 
             mpP1 = addReadPort("P1", "NodeMechanicRotational");
-            mpOut = addOutputVariable("out", "AngularVelocity", "rad/s");
+            addOutputVariable("out", "AngularVelocity", "rad/s", &mpND_out);
         }
 
 
         void initialize()
         {
             mpND_w = getSafeNodeDataPtr(mpP1, NodeMechanicRotational::AngularVelocity);
-            mpND_out = getSafeNodeDataPtr(mpOut, NodeSignal::Value);
             simulateOneTimestep();
         }
 
