@@ -220,7 +220,10 @@ void CurveInfoBox::updateInfo()
     if (mpParentPlotCurve->hasCustomXData())
     {
         mpCustomXDataDrop->setText(mpParentPlotCurve->getCustomXData()->getFullVariableName());
-        mpResetTimeButton->setEnabled(true);
+        if (mpParentPlotCurve->getTimeVectorPtr())
+        {
+            mpResetTimeButton->setEnabled(true);
+        }
     }
     else
     {
@@ -610,6 +613,9 @@ void PlotCurve::setCustomXData(const VariableDescription &rVarDesc, const QVecto
 
 void PlotCurve::setCustomXData(SharedLogVariableDataPtrT pData)
 {
+    //! @todo maybe prevent reset if timevector is null, but then it will (currently) be impossible to reset x vector in curve.
+//    if ( pData || mpData->getSharedTimePointer() )
+//    {
     // Disconnect any signals first, in case we are changing x-data
     if (mpCustomXdata)
     {
@@ -623,6 +629,7 @@ void PlotCurve::setCustomXData(SharedLogVariableDataPtrT pData)
     updateCurve();
     mpPlotCurveInfoBox->updateInfo();
     mpParentPlotTab->updateLabels();
+//    }
 }
 
 void PlotCurve::setCustomXData(const QString fullName)

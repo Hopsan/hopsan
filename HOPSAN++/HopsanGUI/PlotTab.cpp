@@ -946,12 +946,10 @@ void PlotTab::resetXTimeVector()
         mPlotCurvePtrs[FirstPlot].at(i)->setCustomXData(SharedLogVariableDataPtrT(0)); //Remove any custom x-data
     }
 
+    rescaleAxesToCurves();
+
     updateLabels();
     update();
-
-    rescaleAxesToCurves();
-    mpQwtPlots[FirstPlot]->replot();
-    mpQwtPlots[FirstPlot]->updateGeometry();
 
     mpParentPlotWindow->mpResetXVectorButton->setEnabled(false);
 }

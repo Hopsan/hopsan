@@ -92,10 +92,13 @@ ModelWidget *ModelHandler::addNewModel(QString modelName, bool hidden)
 
 void ModelHandler::setCurrentModel(int idx)
 {
-    mCurrentIdx = idx;
-    // Also switch tab if it is visible among the tabs
-    if(gpMainWindow->mpCentralTabs->indexOf(mModelPtrs[idx]) != -1)
-        gpMainWindow->mpCentralTabs->setCurrentWidget(mModelPtrs[idx]);
+    if ( (idx>0) && (idx<mModelPtrs.size()) )
+    {
+        mCurrentIdx = idx;
+        // Also switch tab if it is visible among the tabs
+        if(gpMainWindow->mpCentralTabs->indexOf(mModelPtrs[idx]) != -1)
+            gpMainWindow->mpCentralTabs->setCurrentWidget(mModelPtrs[idx]);
+    }
 }
 
 
