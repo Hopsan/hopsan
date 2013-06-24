@@ -290,7 +290,30 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
 
     if (pSys)
     {
+        // Determine fullname prefix
         prefix = prefix + pSys->getName().c_str() + "$";
+
+        // First save time vector for this system
+        //! @todo alias a for time ? is that even posible
+        if (howMany == Final)
+        {
+            *pFile << prefix.c_str() << "Time,,s," << pSys->getTime() << endl;
+        }
+        else if (howMany == Full)
+        {
+            vector<double> *pLogTimeVector = pSys->getLogTimeVector();
+            if (pLogTimeVector->size() > 0)
+            {
+                *pFile << prefix.c_str() << "Time,,s";
+                for (size_t t=0; t<pLogTimeVector->size(); ++t)
+                {
+                    *pFile << "," << (*pLogTimeVector)[t];//!< @todo what about precission
+                }
+                *pFile << endl;
+            }
+        }
+
+        // Now save log data vectors for all subcomponents
         vector<HString> names = pSys->getSubComponentNames();
         for (size_t c=0; c<names.size(); ++c)
         {
@@ -312,6 +335,7 @@ void saveResults(ComponentSystem *pSys, const string &rFileName, const SaveResul
                         Port *pPort = ports[p];
                         if (pPort->isMultiPort())
                         {
+                            // Ignore multiports, not possible to determin what we want to log anyway
                             continue;
                         }
                         const vector<NodeDataDescription> *pVars = pPort->getNodeDataDescriptions();
