@@ -117,11 +117,7 @@ ModelWidget *ModelHandler::getModel(int idx)
 
 ModelWidget *ModelHandler::getCurrentModel()
 {
-    if( mModelPtrs.isEmpty() || (mCurrentIdx < 0) )
-    {
-        return 0;
-    }
-    return mModelPtrs[mCurrentIdx];
+    return getModel(mCurrentIdx);
 }
 
 SystemContainer *ModelHandler::getTopLevelSystem(int idx)
@@ -383,6 +379,7 @@ bool ModelHandler::closeModel(int idx)
 //        }
 
         // Disconnect signals
+        //! @todo these should be in some manage connections function
         disconnect(gpMainWindow->mpResetZoomAction,     SIGNAL(triggered()),    pModelToClose->getGraphicsView(),   SLOT(resetZoom()));
         disconnect(gpMainWindow->mpZoomInAction,        SIGNAL(triggered()),    pModelToClose->getGraphicsView(),   SLOT(zoomIn()));
         disconnect(gpMainWindow->mpZoomOutAction,       SIGNAL(triggered()),    pModelToClose->getGraphicsView(),   SLOT(zoomOut()));
@@ -400,12 +397,20 @@ bool ModelHandler::closeModel(int idx)
         // Deactivate Undo to prevent each component from registering it being deleted in the undo stack (waste of time)
         pModelToClose->getViewContainerObject()->setUndoEnabled(false, true);
 
-        // Delete model tab if any
-        gpMainWindow->mpCentralTabs->removeTab(gpMainWindow->mpCentralTabs->indexOf(pModelToClose));
+        // Disconnect and delete model tab if any
+        int tabIdx = gpMainWindow->mpCentralTabs->indexOf(pModelToClose);
+        if (tabIdx >= 0)
+        {
+            // Disconnect all signals from this, to prevent a model change will be triggered when the tab is removed
+            disconnect(gpMainWindow->mpCentralTabs->widget(tabIdx));
+            // Remove the tab
+            gpMainWindow->mpCentralTabs->removeTab(tabIdx);
+        }
 
         // Remove and delete the model
-        mModelPtrs.removeAt(idx);
         delete pModelToClose;
+        mModelPtrs.removeAt(idx);
+        //!< @todo it is very important (right now) that we delete before remove and --mCurrentIdx, since the delete will cause (undowidget trying to refresh from current widget) we can not remove the widgete before it has been deletet because of this. This behavoir is really BAD and should be fixed. The destructor indirectly requires the use of one self by triggering a function in the undo widget
 
         // When a model widget is removed all previous indexes for later models will become incorrect,
         // lets set the new current to the latest in that case
@@ -414,8 +419,8 @@ bool ModelHandler::closeModel(int idx)
             --mCurrentIdx;
         }
 
-        // Run the changed slot to refresh connections
-        modelChanged();
+        // Refresh mainwindow sig/slot connections and button status to the new current model
+        refreshMainWindowConnections();
 
         // Refresh toolbar connections if tab has been changed
         gpMainWindow->updateToolBarsToNewTab();
@@ -437,7 +442,6 @@ bool ModelHandler::closeAllModels()
 
     while(mModelPtrs.size() > 0)
     {
-        mCurrentIdx = mModelPtrs.size()-1;
         gConfig.addLastSessionModel(getCurrentTopLevelSystem()->getModelFileInfo().filePath());
         if (!closeModel(mModelPtrs.size()-1))
         {
@@ -447,22 +451,24 @@ bool ModelHandler::closeAllModels()
     return true;
 }
 
-
-void ModelHandler::modelChanged()
+void ModelHandler::selectModelByTabIndex(int tabIdx)
 {
-    //! @todo We might need to change this
-    //if(mModelPtrs.size() > 0) { gpMainWindow->mpCentralTabs->show(); }
-    //else { gpMainWindow->mpCentralTabs->hide(); }
-
+    // Default is to have no current model, in case we click a tab that is not actually a model
     mCurrentIdx = -1;
+    // Find which model is selected (if any)
     for(int i=0; i<mModelPtrs.size(); ++i)
     {
-        if(mModelPtrs[i] == gpMainWindow->mpCentralTabs->currentWidget())
+        if(mModelPtrs[i] == gpMainWindow->mpCentralTabs->widget(tabIdx))
         {
             mCurrentIdx=i;
         }
     }
+    refreshMainWindowConnections();
+}
 
+
+void ModelHandler::refreshMainWindowConnections()
+{
     for(int i=0; i<mModelPtrs.size(); ++i)
     {
         //If you add a disconnect here, remember to also add it to the close tab function!

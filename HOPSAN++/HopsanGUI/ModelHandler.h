@@ -48,7 +48,7 @@ public slots:
     bool closeModel(int idx);
     bool closeModel(ModelWidget *pModel);
     bool closeAllModels();
-    void modelChanged();
+    void selectModelByTabIndex(int tabIdx);
     void saveState();
     void restoreState();
 
@@ -70,6 +70,7 @@ signals:
     void checkMessages();
 
 private:
+    void refreshMainWindowConnections();
     QList<ModelWidget*> mModelPtrs;
     int mCurrentIdx;
     int mNumberOfUntitledModels;
