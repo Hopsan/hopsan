@@ -253,6 +253,15 @@ void CurveInfoBox::refreshTitle()
 void CurveInfoBox::refreshActive(bool active)
 {
     mpColorBlob->setChecked(active);
+    if (active)
+    {
+        setAutoFillBackground(true);
+        setPalette(gConfig.getPalette());
+    }
+    else
+    {
+        setAutoFillBackground(false);
+    }
 }
 
 void CurveInfoBox::actiavateCurve(bool active)
@@ -1075,14 +1084,13 @@ void PlotCurve::markActive(bool value)
     if(value)
     {
         mIsActive = true;
-        //mpPlotInfoBox->setPalette(QPalette(QColor("lightgray"), QColor("lightgray")));
-        mpPlotCurveInfoBox->setAutoFillBackground(true);
-        mpPlotCurveInfoBox->setPalette(gConfig.getPalette());
+        //! @todo setZ to show selected on top, changes the actual curve order and legent order which looks strange, need to solve that somehow
+        //setZ(ActiveCurveZOrderType);
     }
     else
     {
         mIsActive = false;
-        mpPlotCurveInfoBox->setAutoFillBackground(true);
+        //setZ(CurveZOrderType);
     }
 
     setLineWidth(mLineWidth);

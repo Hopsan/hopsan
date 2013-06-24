@@ -31,7 +31,7 @@ class PlotMarker;
 class PlotLegend;
 class PainterWidget;
 
-enum PlotTabZOrderT {GridLinesZOrderType, LegendBelowCurveZOrderType, CurveZOrderType, LegendAboveCurveZOrderType, CurveMarkerZOrderType};
+enum PlotTabZOrderT {GridLinesZOrderType, LegendBelowCurveZOrderType, CurveZOrderType, ActiveCurveZOrderType, LegendAboveCurveZOrderType, CurveMarkerZOrderType};
 
 //! @brief Plot window tab containing a plot area with plot curves
 class PlotTab : public QWidget
