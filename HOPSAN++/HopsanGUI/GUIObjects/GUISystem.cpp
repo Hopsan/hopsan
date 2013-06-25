@@ -917,19 +917,7 @@ void SystemContainer::exportToFMU(QString savePath)
     saveDir.setFilter(QDir::NoFilter);
 
     //Save model to hmf in export directory
-    //! @todo This code is duplicated from ModelWidget::saveModel(), make it a common function somehow
-    QDomDocument domDocument;
-    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
-    saveToDomElement(hmfRoot);
-    QFile xmlhmf(savePath + "/" + mModelFileInfo.fileName());
-    if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-    {
-        gpMainWindow->mpMessageWidget->printGUIErrorMessage("Unable to open "+savePath+"/"+mModelFileInfo.fileName()+" for writing.");
-        return;
-    }
-    QTextStream out(&xmlhmf);
-    appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
-    domDocument.save(out, XMLINDENTATION);
+    mpModelWidget->saveTo(savePath+"/"+mModelFileInfo.fileName().replace(" ", "_"));
 
     CoreGeneratorAccess *pCoreAccess = new CoreGeneratorAccess();
     pCoreAccess->generateToFmu(savePath, this);
@@ -1451,23 +1439,8 @@ void SystemContainer::exportToSimulink()
     QFileInfo file(savePath);
     gConfig.setSimulinkExportDir(file.absolutePath());
 
-
-
-    //! @todo This code is duplicated from ModelWidget::saveModel(), make it a common function somehow
-        //Save xml document
-    QDomDocument domDocument;
-    QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
-    saveToDomElement(hmfRoot);
-    QFile xmlhmf(savePath + "/" + fileName);
-    if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-    {
-        return;
-    }
-    QTextStream out(&xmlhmf);
-    appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
-    domDocument.save(out, XMLINDENTATION);
-    xmlhmf.close();
-
+       //Save xml document
+    mpModelWidget->saveTo(savePath+"/"+fileName);
 
     int compiler;
     if(pMSVC2008RadioButton->isChecked() && p32bitRadioButton->isChecked())

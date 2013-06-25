@@ -57,6 +57,7 @@ public:
     QString getStartTime();
     QString getTimeStep();
     QString getStopTime();
+    void saveTo(QString path, SaveContentsEnumT contents=FullModel);
     bool isSaved();
     void setSaved(bool value);
     void hasChanged();
@@ -83,7 +84,6 @@ public slots:
     void setEditingEnabled(bool value);
     void openAnimation();
     void lockTab(bool locked);
-
 
 private slots:
     void collectPlotData();

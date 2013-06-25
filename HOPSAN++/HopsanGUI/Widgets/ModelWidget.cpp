@@ -294,6 +294,11 @@ void ModelWidget::setSaved(bool value)
 //! @note this is experimental code to replace madness simulation code in the future
 bool ModelWidget::simulate_nonblocking()
 {
+    //Save backup copy
+    QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
+    fileNameWithoutHmf.chop(4);
+    saveTo(gDesktopHandler.getBackupPath() + fileNameWithoutHmf + "_backup.hmf");
+
     if(!mSimulateMutex.tryLock()) return false;
 
     qDebug() << "Calling simulate_nonblocking()";
@@ -309,6 +314,11 @@ bool ModelWidget::simulate_nonblocking()
 
 bool ModelWidget::simulate_blocking()
 {
+    //Save backup copy
+    QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
+    fileNameWithoutHmf.chop(4);
+    saveTo(gDesktopHandler.getBackupPath() + fileNameWithoutHmf + "_backup.hmf");
+
     if(!mSimulateMutex.tryLock()) return false;
 
     mpSimulationThreadHandler->setSimulationTimeVariables(mStartTime.toDouble(), mStopTime.toDouble(), mpToplevelSystem->getNumberOfLogSamples());
@@ -634,7 +644,29 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
         gConfig.setLoadModelDir(fileInfo.absolutePath());
     }
 
-    QFile file(modelFilePathToSave);   //Create a QFile object
+    saveTo(modelFilePathToSave, contents);
+
+
+        //Set the tab name to the model name, efectively removing *, also mark the tab as saved
+    //! @todo this should not happen when saving parameters, This needs to be rewritten in a smarter way so that we do not need a special argument and lots of ifs to do special saving of parameters, actually parameters should be saved using the CLI method (and that code should be in a shared utility library)
+    QString tabName = mpToplevelSystem->getModelFileInfo().baseName();
+    gpMainWindow->mpCentralTabs->setTabText(gpMainWindow->mpCentralTabs->indexOf(mpParentModelHandler->getCurrentModel()), tabName);
+    if(contents == FullModel)
+    {
+        gConfig.addRecentModel(mpToplevelSystem->getModelFileInfo().filePath());
+        gpMainWindow->updateRecentList();
+        this->setSaved(true);
+    }
+
+    gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Saved model: " + modelFilePathToSave);
+
+    mpToplevelSystem->getCoreSystemAccessPtr()->addSearchPath(mpToplevelSystem->getModelFileInfo().absolutePath());
+}
+
+
+void ModelWidget::saveTo(QString path, SaveContentsEnumT contents)
+{
+    QFile file(path);   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
         gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not open the file: "+file.fileName()+" for writing." );
@@ -683,10 +715,10 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
     mpToplevelSystem->saveToDomElement(rootElement, contents);
 
         //Save to file
-    QFile xmlFile(modelFilePathToSave);
+    QFile xmlFile(path);
     if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
-        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not save to file: " + modelFilePathToSave);
+        gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not save to file: " + path);
         return;
     }
     QTextStream out(&xmlFile);
@@ -695,19 +727,4 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
 
     //Close the file
     xmlFile.close();
-
-        //Set the tab name to the model name, efectively removing *, also mark the tab as saved
-    //! @todo this should not happen when saving parameters, This needs to be rewritten in a smarter way so that we do not need a special argument and lots of ifs to do special saving of parameters, actually parameters should be saved using the CLI method (and that code should be in a shared utility library)
-    QString tabName = mpToplevelSystem->getModelFileInfo().baseName();
-    gpMainWindow->mpCentralTabs->setTabText(gpMainWindow->mpCentralTabs->indexOf(mpParentModelHandler->getCurrentModel()), tabName);
-    if(contents == FullModel)
-    {
-        gConfig.addRecentModel(mpToplevelSystem->getModelFileInfo().filePath());
-        gpMainWindow->updateRecentList();
-        this->setSaved(true);
-    }
-
-    gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Saved model: " + modelFilePathToSave);
-
-    mpToplevelSystem->getCoreSystemAccessPtr()->addSearchPath(mpToplevelSystem->getModelFileInfo().absolutePath());
 }

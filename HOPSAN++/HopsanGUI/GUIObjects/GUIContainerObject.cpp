@@ -2411,9 +2411,7 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
     }
     else if(pAction == saveAction)
     {
-        //! @todo This code is mostly duplicated from ModelWidget::saveModel(), it should either be moved to a save object or to a function in container object
-
-        //Get file name in case this is a save as operation
+        //Get file name
         QString modelFilePath;
         modelFilePath = QFileDialog::getSaveFileName(gpMainWindow, tr("Save Subsystem As"),
                                                      gConfig.getLoadModelDir(),
@@ -2424,52 +2422,7 @@ void ContainerObject::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
             return;
         }
 
-        QFileInfo fileInfo = QFileInfo(modelFilePath);
-        gConfig.setLoadModelDir(fileInfo.absolutePath());
-
-        QFile file(modelFilePath);   //Create a QFile object
-        //! @todo Why do we open this file?
-        if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-        {
-            return;
-        }
-
-
-            //Save xml document
-        QDomDocument domDocument;
-        QDomElement hmfRoot = appendHMFRootElement(domDocument, HMF_VERSIONNUM, HOPSANGUIVERSION, getHopsanCoreVersion());
-
-            // Save the required external lib names
-        QVector<QString> extLibNames;
-        CoreLibraryAccess coreLibAccess;
-        coreLibAccess.getLoadedLibNames(extLibNames);
-
-        QDomElement reqDom = appendDomElement(hmfRoot, "requirements");
-        for (int i=0; i<extLibNames.size(); ++i)
-        {
-            appendDomTextNode(reqDom, "componentlibrary", extLibNames[i]);
-        }
-
-            //Save the model component hierarcy
-        saveToDomElement(hmfRoot);
-
-        setModelFile(modelFilePath);
-        setName(getModelFileInfo().baseName());
-        setAppearanceDataBasePath(getModelFileInfo().absolutePath());
-
-            //Save to file
-        QFile xmlhmf(getModelFileInfo().filePath());
-        if (!xmlhmf.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
-        {
-            gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not save to file: " + getModelFileInfo().filePath());
-            return;
-        }
-        QTextStream out(&xmlhmf);
-        appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
-        domDocument.save(out, XMLINDENTATION);
-
-        //Close the file
-        xmlhmf.close();
+        mpModelWidget->saveTo(modelFilePath, FullModel);
     }
 
     //Dont call GUIModelObject::contextMenuEvent as that will open an other menu after this one is closed
