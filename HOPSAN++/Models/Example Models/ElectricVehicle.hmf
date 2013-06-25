@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5290" hopsancoreversion="0.6.x_r5281">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5565" hopsancoreversion="0.6.x_r5557">
   <requirements>
     <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
-    <componentlibrary>PettersComponentLibrary</componentlibrary>
+    <componentlibrary>HopsanFMULibrary_HopsanBrake</componentlibrary>
+    <componentlibrary>HopsanFMULibrary_HopsanEngine</componentlibrary>
+    <componentlibrary>HopsanFMULibrary_OpenModelicaGearBox</componentlibrary>
+    <componentlibrary>HopsanFMULibrary_OpenModelicaVehicle</componentlibrary>
+    <componentlibrary>HopsanFMULibrary_OpenModelicaWheel</componentlibrary>
   </requirements>
   <info>
     <author>Fluid &amp; Mechatronic Systems (Flumes)</author>
@@ -18,7 +22,7 @@
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="1"/>
       <animation flowspeed="100"/>
-      <viewport x="2304.5" y="2334.5" zoom="1"/>
+      <viewport x="2499.55" y="2499.55" zoom="0.842152"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>
@@ -51,15 +55,37 @@
       </optimization>
     </hopsangui>
     <objects>
+      <component typename="ElectricIsensor" name="Current_sensor_1">
+        <parameters>
+          <parameter unit="V" value="0" type="double" name="Pel1::Voltage"/>
+          <parameter unit="A" value="0" type="double" name="Pel1::Current"/>
+          <parameter unit="V" value="0" type="double" name="Pel1::WaveVariable"/>
+          <parameter unit="V/A" value="0" type="double" name="Pel1::CharImpedance"/>
+        </parameters>
+        <ports>
+          <port nodetype="NodeSignal" name="Piout"/>
+          <port nodetype="NodeElectric" name="Pel1"/>
+        </ports>
+        <hopsangui>
+          <pose x="2382.209803" y="2525.083195" flipped="false" a="0"/>
+          <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
+          <hopsanobjectappearance version="0.3">
+            <modelobject typename="ElectricIsensor" displayname="Current_sensor_1">
+              <ports/>
+            </modelobject>
+          </hopsanobjectappearance>
+        </hopsangui>
+      </component>
       <component typename="ElectricIcontroller" name="ElectricIcontroller">
         <parameters>
           <parameter unit="-" value="0" type="double" name="iref::Value"/>
-          <parameter unit="ohm" value="0.01" type="double" name="resist"/>
-          <parameter unit="rad/s" value="10" type="double" name="wf"/>
-          <parameter unit="V" value="1" type="double" name="umin"/>
-          <parameter unit="A" value="10000" type="double" name="imax"/>
-          <parameter unit="A" value="0.01" type="double" name="imin"/>
-          <parameter unit="V" value="1000" type="double" name="umax"/>
+          <parameter unit="-" value="0.01" type="double" name="resist::Value"/>
+          <parameter unit="-" value="10" type="double" name="wf::Value"/>
+          <parameter unit="-" value="1" type="double" name="umin::Value"/>
+          <parameter unit="-" value="10000" type="double" name="imax::Value"/>
+          <parameter unit="-" value="0.01" type="double" name="imin::Value"/>
+          <parameter unit="-" value="1000" type="double" name="umax::Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="iref"/>
@@ -67,34 +93,11 @@
           <port nodetype="NodeElectric" name="Pel2"/>
         </ports>
         <hopsangui>
-          <pose x="2089" y="2490.5" flipped="false" a="0"/>
+          <pose x="2325.209803" y="2533.838224" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="ElectricIcontroller" displayname="ElectricIcontroller">
-              <ports/>
-            </modelobject>
-          </hopsanobjectappearance>
-        </hopsangui>
-      </component>
-      <component typename="ElectricIsensor" name="Current_sensor_1">
-        <parameters>
-          <parameter unit="V" value="0" type="double" name="Pel1::Voltage"/>
-          <parameter unit="A" value="0" type="double" name="Pel1::Current"/>
-          <parameter unit="V" value="0" type="double" name="Pel1::WaveVariable"/>
-          <parameter unit="V/A" value="0" type="double" name="Pel1::CharImpedance"/>
-          <parameter unit="-" value="0" type="double" name="Piout::Value"/>
-        </parameters>
-        <ports>
-          <port nodetype="NodeSignal" name="Piout"/>
-          <port nodetype="NodeElectric" name="Pel1"/>
-        </ports>
-        <hopsangui>
-          <pose x="2146" y="2481.744971" flipped="false" a="0"/>
-          <nametext position="0" visible="0"/>
-          <animation flowspeed="100"/>
-          <hopsanobjectappearance version="0.3">
-            <modelobject typename="ElectricIsensor" displayname="Current_sensor_1">
               <ports/>
             </modelobject>
           </hopsanobjectappearance>
@@ -106,14 +109,13 @@
           <parameter unit="A" value="0" type="double" name="Pel1::Current"/>
           <parameter unit="V" value="0" type="double" name="Pel1::WaveVariable"/>
           <parameter unit="V/A" value="0" type="double" name="Pel1::CharImpedance"/>
-          <parameter unit="-" value="0" type="double" name="Piout::Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="Piout"/>
           <port nodetype="NodeElectric" name="Pel1"/>
         </ports>
         <hopsangui>
-          <pose x="2035" y="2481.744971" flipped="false" a="0"/>
+          <pose x="2271.209803" y="2525.083195" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -134,7 +136,7 @@
           <port nodetype="NodeElectric" name="Pel1"/>
         </ports>
         <hopsangui>
-          <pose x="2248.5" y="2673" flipped="false" a="0"/>
+          <pose x="2484.709803" y="2716.338224" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -146,12 +148,12 @@
       </component>
       <component typename="ElectricBattery" name="ElectricBattery">
         <parameters>
+          <parameter unit="-" value="50" type="double" name="cond::Value"/>
+          <parameter unit="-" value="48" type="double" name="unom::Value"/>
+          <parameter unit="-" value="41" type="double" name="capacity::Value"/>
+          <parameter unit="-" value="0.1" type="double" name="kappa::Value"/>
           <parameter unit="-" value="1" type="double" name="soc::Value"/>
           <parameter unit="-" value="0" type="double" name="ubatt::Value"/>
-          <parameter unit="1/ohm" value="50" type="double" name="cond"/>
-          <parameter unit="V" value="48" type="double" name="unom"/>
-          <parameter unit="Ah" value="41" type="double" name="capacity"/>
-          <parameter unit="" value="0.1" type="double" name="kappa"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="soc"/>
@@ -159,7 +161,7 @@
           <port nodetype="NodeSignal" name="ubatt"/>
         </ports>
         <hopsangui>
-          <pose x="1884" y="2558" flipped="false" a="0"/>
+          <pose x="2120.209803" y="2601.338224" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -179,15 +181,15 @@
           <parameter unit="A" value="0" type="double" name="Pel2::Current"/>
           <parameter unit="V" value="0" type="double" name="Pel2::WaveVariable"/>
           <parameter unit="V/A" value="0" type="double" name="Pel2::CharImpedance"/>
-          <parameter unit="(A s)/V" value="0.01" type="double" name="Cc"/>
-          <parameter unit="" value="0.3" type="double" name="alpha"/>
+          <parameter unit="-" value="0.01" type="double" name="Cc::Value"/>
+          <parameter unit="-" value="0.3" type="double" name="alpha::Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeElectric" name="Pel1"/>
           <port nodetype="NodeElectric" name="Pel2"/>
         </ports>
         <hopsangui>
-          <pose x="2193" y="2503.5" flipped="false" a="0"/>
+          <pose x="2429.209803" y="2546.838224" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -199,15 +201,15 @@
       </component>
       <component typename="MechanicVehicle1D" name="MechanicVehicle1D">
         <parameters>
+          <parameter unit="-" value="1000" type="double" name="Mc::Value"/>
+          <parameter unit="-" value="0.02" type="double" name="cfr::Value"/>
+          <parameter unit="-" value="0.5" type="double" name="CdA::Value"/>
+          <parameter unit="-" value="1" type="double" name="rwheel::Value"/>
+          <parameter unit="-" value="1.25" type="double" name="rho::Value"/>
           <parameter unit="-" value="0" type="double" name="vc::Value"/>
           <parameter unit="-" value="0" type="double" name="xc::Value"/>
           <parameter unit="-" value="0" type="double" name="fd::Value"/>
           <parameter unit="-" value="0" type="double" name="fr::Value"/>
-          <parameter unit="kg" value="1000" type="double" name="Mc"/>
-          <parameter unit="N/N" value="0.02" type="double" name="cfr"/>
-          <parameter unit="m2" value="0.5" type="double" name="CdA"/>
-          <parameter unit="m" value="1" type="double" name="rwheel"/>
-          <parameter unit="kg/m3" value="1.25" type="double" name="rho"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="fr"/>
@@ -218,7 +220,7 @@
           <port nodetype="NodeMechanicRotational" name="Pmr2"/>
         </ports>
         <hopsangui>
-          <pose x="2501" y="2442" flipped="false" a="0"/>
+          <pose x="2737.209803" y="2485.338224" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -241,7 +243,7 @@
           <port nodetype="NodeSignal" name="out"/>
         </ports>
         <hopsangui>
-          <pose x="2034" y="2365" flipped="false" a="0"/>
+          <pose x="2270.209803" y="2408.338224" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -261,7 +263,7 @@
           <port nodetype="NodeSignal" name="in_bottom"/>
         </ports>
         <hopsangui>
-          <pose x="1961" y="2577.4" flipped="false" a="0"/>
+          <pose x="2197.209803" y="2620.738224" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -285,7 +287,7 @@
           <port nodetype="NodeSignal" name="T"/>
         </ports>
         <hopsangui>
-          <pose x="2504" y="2553.285" flipped="false" a="0"/>
+          <pose x="2740.209803" y="2596.623224" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -306,7 +308,7 @@
           <port nodetype="NodeSignal" name="out"/>
         </ports>
         <hopsangui>
-          <pose x="1875" y="2365" flipped="false" a="0"/>
+          <pose x="2111.209803" y="2408.338224" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -326,7 +328,7 @@
           <port nodetype="NodeSignal" name="out"/>
         </ports>
         <hopsangui>
-          <pose x="2069" y="2421" flipped="false" a="0"/>
+          <pose x="2305.209803" y="2464.338224" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -346,15 +348,15 @@
           <parameter unit="A" value="0" type="double" name="Pel2::Current"/>
           <parameter unit="V" value="0" type="double" name="Pel2::WaveVariable"/>
           <parameter unit="V/A" value="0" type="double" name="Pel2::CharImpedance"/>
-          <parameter unit="(A s)/V" value="0.01" type="double" name="Cc"/>
-          <parameter unit="" value="0.3" type="double" name="alpha"/>
+          <parameter unit="-" value="0.01" type="double" name="Cc::Value"/>
+          <parameter unit="-" value="0.3" type="double" name="alpha::Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeElectric" name="Pel1"/>
           <port nodetype="NodeElectric" name="Pel2"/>
         </ports>
         <hopsangui>
-          <pose x="1986" y="2503.6" flipped="false" a="0"/>
+          <pose x="2222.209803" y="2546.938224" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -374,7 +376,7 @@
           <port nodetype="NodeSignal" name="in_bottom"/>
         </ports>
         <hopsangui>
-          <pose x="2262" y="2396" flipped="false" a="0"/>
+          <pose x="2498.209803" y="2439.338224" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -394,7 +396,7 @@
           <port nodetype="NodeSignal" name="in_bottom"/>
         </ports>
         <hopsangui>
-          <pose x="2683" y="2386" flipped="false" a="0"/>
+          <pose x="2919.209803" y="2429.338224" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -407,19 +409,19 @@
       <component typename="ElectricMotorGear" name="ElectricMotorGear">
         <parameters>
           <parameter unit="-" value="20" type="double" name="gearRatio::Value"/>
+          <parameter unit="-" value="0.13" type="double" name="Ke::Value"/>
+          <parameter unit="-" value="0.04" type="double" name="Ra::Value"/>
+          <parameter unit="-" value="0" type="double" name="Tm0::Value"/>
+          <parameter unit="-" value="1" type="double" name="wc::Value"/>
+          <parameter unit="-" value="0.0012" type="double" name="Bm::Value"/>
+          <parameter unit="-" value=".1" type="double" name="Jm::Value"/>
+          <parameter unit="-" value="0" type="double" name="BL::Value"/>
+          <parameter unit="-" value="1" type="double" name="JL::Value"/>
+          <parameter unit="-" value="0.01" type="double" name="myfric::Value"/>
           <parameter unit="-" value="0" type="double" name="wm::Value"/>
           <parameter unit="-" value="0" type="double" name="tormg::Value"/>
           <parameter unit="-" value="0" type="double" name="Pin::Value"/>
           <parameter unit="-" value="0" type="double" name="Pout::Value"/>
-          <parameter unit="V/rpm" value="0.13" type="double" name="Ke"/>
-          <parameter unit="Ohm" value="0.04" type="double" name="Ra"/>
-          <parameter unit="Nm" value="0" type="double" name="Tm0"/>
-          <parameter unit="rad/s" value="1" type="double" name="wc"/>
-          <parameter unit="Ns/m" value="0.0012" type="double" name="Bm"/>
-          <parameter unit="kg m^2" value=".1" type="double" name="Jm"/>
-          <parameter unit="Ns/m" value="0" type="double" name="BL"/>
-          <parameter unit="kg m^2" value="1" type="double" name="JL"/>
-          <parameter unit="" value="0.01" type="double" name="myfric"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="Pin"/>
@@ -431,7 +433,7 @@
           <port nodetype="NodeMechanicRotational" name="Pmr1"/>
         </ports>
         <hopsangui>
-          <pose x="2278" y="2551" flipped="false" a="0"/>
+          <pose x="2514.209803" y="2594.338224" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -451,7 +453,7 @@
           <port nodetype="NodeSignal" name="in_bottom"/>
         </ports>
         <hopsangui>
-          <pose x="2689" y="2477" flipped="false" a="0"/>
+          <pose x="2925.209803" y="2520.338224" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -471,7 +473,7 @@
           <port nodetype="NodeSignal" name="in_bottom"/>
         </ports>
         <hopsangui>
-          <pose x="2375" y="2662" flipped="false" a="0"/>
+          <pose x="2611.209803" y="2705.338224" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -491,7 +493,7 @@
           <port nodetype="NodeSignal" name="in_bottom"/>
         </ports>
         <hopsangui>
-          <pose x="2417" y="2599" flipped="false" a="0"/>
+          <pose x="2653.209803" y="2642.338224" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -507,14 +509,13 @@
           <parameter unit="A" value="0" type="double" name="Pel1::Current"/>
           <parameter unit="V" value="0" type="double" name="Pel1::WaveVariable"/>
           <parameter unit="V/A" value="0" type="double" name="Pel1::CharImpedance"/>
-          <parameter unit="-" value="0" type="double" name="Piout::Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="Piout"/>
           <port nodetype="NodeElectric" name="Pel1"/>
         </ports>
         <hopsangui>
-          <pose x="1931" y="2482" flipped="false" a="0"/>
+          <pose x="2167.209803" y="2525.338224" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -538,7 +539,8 @@
           <parameter unit="Nm" value="0" type="double" name="Pmr2::WaveVariable"/>
           <parameter unit="?" value="0" type="double" name="Pmr2::CharImpedance"/>
           <parameter unit="kgm^2" value="0" type="double" name="Pmr2::EquivalentInertia"/>
-          <parameter unit="Nm/rad" value="3000" type="double" name="Ks"/>
+          <parameter unit="-" value="3000" type="double" name="Ks::Value"/>
+          <parameter unit="-" value="0.9" type="double" name="alpha::Value"/>
           <parameter unit="" value="0.9" type="double" name="alpha"/>
         </parameters>
         <ports>
@@ -546,7 +548,7 @@
           <port nodetype="NodeMechanicRotational" name="Pmr2"/>
         </ports>
         <hopsangui>
-          <pose x="2385" y="2552" flipped="false" a="0"/>
+          <pose x="2621.209803" y="2595.338224" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
@@ -558,9 +560,9 @@
       </component>
       <textboxwidget>
         <hopsangui>
-          <pose x="2084.000000" y="2235.000000"/>
-          <textobject fontcolor="#000000" text="Example: Electric Vehicle" font="Calibri,26,-1,0,75,0,0,0,0,0"/>
-          <size width="389.000000" height="50.000000"/>
+          <pose x="2370.611312" y="2289.246970"/>
+          <textobject fontcolor="#005500" text="Example: Electric Vehicle" font="Calibri,20,-1,5,50,0,0,0,0,0"/>
+          <size width="278.000000" height="41.000000"/>
           <line width="2.000000" visible="0" style="solidline"/>
         </hopsangui>
       </textboxwidget>
@@ -569,10 +571,10 @@
       <connect endport="Pel1" endcomponent="ElectricCapacitance2" startport="Pel2" startcomponent="ElectricIcontroller">
         <hopsangui>
           <coordinates>
-            <coordinate x="2123.00000000000000000000" y="2480.74497148159980497439"/>
-            <coordinate x="2160.00000000000000000000" y="2480.74497148159980497439"/>
-            <coordinate x="2160.00000000000000000000" y="2482.23710073711981749511"/>
-            <coordinate x="2172.50000000000000000000" y="2482.23710073711981749511"/>
+            <coordinate x="2359.20980269536721607437" y="2524.08319518585813057143"/>
+            <coordinate x="2396.20980269536721607437" y="2524.08319518585813057143"/>
+            <coordinate x="2396.20980269536721607437" y="2525.57532444137814309215"/>
+            <coordinate x="2408.70980269536721607437" y="2525.57532444137814309215"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -585,10 +587,10 @@
       <connect endport="Pel1" endcomponent="ElectricIcontroller" startport="Pel2" startcomponent="ElectricCapacitance2_1">
         <hopsangui>
           <coordinates>
-            <coordinate x="2006.50000000000000000000" y="2482.33710073711972654564"/>
-            <coordinate x="2068.50000000000000000000" y="2482.33710073711972654564"/>
-            <coordinate x="2068.50000000000000000000" y="2480.74497148159980497439"/>
-            <coordinate x="2055.00000000000000000000" y="2480.74497148159980497439"/>
+            <coordinate x="2242.70980269536721607437" y="2525.67532444137805214268"/>
+            <coordinate x="2304.70980269536721607437" y="2525.67532444137805214268"/>
+            <coordinate x="2304.70980269536721607437" y="2524.08319518585813057143"/>
+            <coordinate x="2291.20980269536721607437" y="2524.08319518585813057143"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -601,9 +603,9 @@
       <connect endport="Pel1" endcomponent="ElectricCapacitance2_1" startport="Pel1" startcomponent="ElectricBattery">
         <hopsangui>
           <coordinates>
-            <coordinate x="1884.00000000000000000000" y="2536.00000000000000000000"/>
-            <coordinate x="1884.00000000000000000000" y="2482.33710073711972654564"/>
-            <coordinate x="1965.50000000000000000000" y="2482.33710073711972654564"/>
+            <coordinate x="2120.20980269536721607437" y="2579.33822370425832559704"/>
+            <coordinate x="2120.20980269536721607437" y="2525.67532444137805214268"/>
+            <coordinate x="2201.70980269536721607437" y="2525.67532444137805214268"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -615,10 +617,10 @@
       <connect endport="Pmr2" endcomponent="MechanicVehicle1D" startport="P1" startcomponent="Torque_Transformer">
         <hopsangui>
           <coordinates>
-            <coordinate x="2527.50000000000000000000" y="2553.28499999999985448085"/>
-            <coordinate x="2568.90000000000009094947" y="2553.28499999999985448085"/>
-            <coordinate x="2568.90000000000009094947" y="2504.00000000000000000000"/>
-            <coordinate x="2567.90000000000009094947" y="2504.00000000000000000000"/>
+            <coordinate x="2763.70980269536721607437" y="2596.62322370425818007789"/>
+            <coordinate x="2805.10980269536730702384" y="2596.62322370425818007789"/>
+            <coordinate x="2805.10980269536730702384" y="2547.33822370425832559704"/>
+            <coordinate x="2804.10980269536730702384" y="2547.33822370425832559704"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -631,9 +633,9 @@
       <connect endport="Pel1" endcomponent="ElectricMotorGear" startport="Pel2" startcomponent="ElectricCapacitance2">
         <hopsangui>
           <coordinates>
-            <coordinate x="2213.50000000000000000000" y="2482.23710073711981749511"/>
-            <coordinate x="2248.50000000000000000000" y="2482.23710073711981749511"/>
-            <coordinate x="2248.50000000000000000000" y="2499.50000000000000000000"/>
+            <coordinate x="2449.70980269536721607437" y="2525.57532444137814309215"/>
+            <coordinate x="2484.70980269536721607437" y="2525.57532444137814309215"/>
+            <coordinate x="2484.70980269536721607437" y="2542.83822370425832559704"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -645,10 +647,10 @@
       <connect endport="Pel1" endcomponent="ElectricGround" startport="Pel2" startcomponent="ElectricMotorGear">
         <hopsangui>
           <coordinates>
-            <coordinate x="2248.50000000000000000000" y="2602.50000000000000000000"/>
-            <coordinate x="2248.50000000000000000000" y="2635.50000000000000000000"/>
-            <coordinate x="2248.50000000000000000000" y="2635.50000000000000000000"/>
-            <coordinate x="2248.50000000000000000000" y="2666.00000000000000000000"/>
+            <coordinate x="2484.70980269536721607437" y="2645.83822370425832559704"/>
+            <coordinate x="2484.70980269536721607437" y="2678.83822370425832559704"/>
+            <coordinate x="2484.70980269536721607437" y="2678.83822370425832559704"/>
+            <coordinate x="2484.70980269536721607437" y="2709.33822370425832559704"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -661,9 +663,9 @@
       <connect endport="Pel1" endcomponent="Current_sensor" startport="Pel1" startcomponent="ElectricBattery">
         <hopsangui>
           <coordinates>
-            <coordinate x="1884.00000000000000000000" y="2536.00000000000000000000"/>
-            <coordinate x="1884.00000000000000000000" y="2482.00000000000000000000"/>
-            <coordinate x="1913.00000000000000000000" y="2482.00000000000000000000"/>
+            <coordinate x="2120.20980269536721607437" y="2579.33822370425832559704"/>
+            <coordinate x="2120.20980269536721607437" y="2525.33822370425832559704"/>
+            <coordinate x="2149.20980269536721607437" y="2525.33822370425832559704"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -675,10 +677,10 @@
       <connect endport="Pel1" endcomponent="Current_sensor_1" startport="Pel2" startcomponent="ElectricIcontroller">
         <hopsangui>
           <coordinates>
-            <coordinate x="2123.00000000000000000000" y="2480.74497148159980497439"/>
-            <coordinate x="2151.50000000000000000000" y="2480.74497148159980497439"/>
-            <coordinate x="2151.50000000000000000000" y="2481.74497100000007776543"/>
-            <coordinate x="2128.00000000000000000000" y="2481.74497100000007776543"/>
+            <coordinate x="2359.20980269536721607437" y="2524.08319518585813057143"/>
+            <coordinate x="2387.70980269536721607437" y="2524.08319518585813057143"/>
+            <coordinate x="2387.70980269536721607437" y="2525.08319470425840336247"/>
+            <coordinate x="2364.20980269536721607437" y="2525.08319470425840336247"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -691,9 +693,9 @@
       <connect endport="in" endcomponent="Sink_1" startport="Piout" startcomponent="Current_sensor">
         <hopsangui>
           <coordinates>
-            <coordinate x="1931.00000000000000000000" y="2464.00000000000000000000"/>
-            <coordinate x="1931.00000000000000000000" y="2396.00000000000000000000"/>
-            <coordinate x="2242.00000000000000000000" y="2396.00000000000000000000"/>
+            <coordinate x="2167.20980269536721607437" y="2507.33822370425832559704"/>
+            <coordinate x="2167.20980269536721607437" y="2439.33822370425832559704"/>
+            <coordinate x="2478.20980269536721607437" y="2439.33822370425832559704"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -705,9 +707,9 @@
       <connect endport="in" endcomponent="Sink_1" startport="Piout" startcomponent="Current_sensor_1">
         <hopsangui>
           <coordinates>
-            <coordinate x="2146.00000000000000000000" y="2463.74497100000007776543"/>
-            <coordinate x="2146.00000000000000000000" y="2396.00000000000000000000"/>
-            <coordinate x="2242.00000000000000000000" y="2396.00000000000000000000"/>
+            <coordinate x="2382.20980269536721607437" y="2507.08319470425840336247"/>
+            <coordinate x="2382.20980269536721607437" y="2439.33822370425832559704"/>
+            <coordinate x="2478.20980269536721607437" y="2439.33822370425832559704"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -719,10 +721,10 @@
       <connect endport="Pel1" endcomponent="ElectricIcontroller" startport="Pel1" startcomponent="Current_sensor_2">
         <hopsangui>
           <coordinates>
-            <coordinate x="2017.00000000000000000000" y="2481.74497100000007776543"/>
-            <coordinate x="2036.00000000000000000000" y="2481.74497100000007776543"/>
-            <coordinate x="2036.00000000000000000000" y="2480.74497148159980497439"/>
-            <coordinate x="2055.00000000000000000000" y="2480.74497148159980497439"/>
+            <coordinate x="2253.20980269536721607437" y="2525.08319470425840336247"/>
+            <coordinate x="2272.20980269536721607437" y="2525.08319470425840336247"/>
+            <coordinate x="2272.20980269536721607437" y="2524.08319518585813057143"/>
+            <coordinate x="2291.20980269536721607437" y="2524.08319518585813057143"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -735,9 +737,9 @@
       <connect endport="in" endcomponent="Gain" startport="Piout" startcomponent="Current_sensor_2">
         <hopsangui>
           <coordinates>
-            <coordinate x="2035.00000000000000000000" y="2463.74497100000007776543"/>
-            <coordinate x="2035.00000000000000000000" y="2421.00000000000000000000"/>
-            <coordinate x="2056.50000000000000000000" y="2421.00000000000000000000"/>
+            <coordinate x="2271.20980269536721607437" y="2507.08319470425840336247"/>
+            <coordinate x="2271.20980269536721607437" y="2464.33822370425832559704"/>
+            <coordinate x="2292.70980269536721607437" y="2464.33822370425832559704"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -749,10 +751,10 @@
       <connect endport="in" endcomponent="Sink_1" startport="out" startcomponent="Gain">
         <hopsangui>
           <coordinates>
-            <coordinate x="2081.50000000000000000000" y="2421.00000000000000000000"/>
-            <coordinate x="2124.00000000000000000000" y="2421.00000000000000000000"/>
-            <coordinate x="2124.00000000000000000000" y="2396.00000000000000000000"/>
-            <coordinate x="2242.00000000000000000000" y="2396.00000000000000000000"/>
+            <coordinate x="2317.70980269536721607437" y="2464.33822370425832559704"/>
+            <coordinate x="2360.20980269536721607437" y="2464.33822370425832559704"/>
+            <coordinate x="2360.20980269536721607437" y="2439.33822370425832559704"/>
+            <coordinate x="2478.20980269536721607437" y="2439.33822370425832559704"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -765,10 +767,10 @@
       <connect endport="Pmr1" endcomponent="MechanicVehicle1D" startport="Pmr2" startcomponent="MechanicRotShaft">
         <hopsangui>
           <coordinates>
-            <coordinate x="2419.00000000000000000000" y="2552.00000000000000000000"/>
-            <coordinate x="2419.00000000000000000000" y="2551.00000000000000000000"/>
-            <coordinate x="2434.09999999999990905053" y="2551.00000000000000000000"/>
-            <coordinate x="2434.09999999999990905053" y="2504.00000000000000000000"/>
+            <coordinate x="2655.20980269536721607437" y="2595.33822370425832559704"/>
+            <coordinate x="2655.20980269536721607437" y="2594.33822370425832559704"/>
+            <coordinate x="2670.30980269536712512490" y="2594.33822370425832559704"/>
+            <coordinate x="2670.30980269536712512490" y="2547.33822370425832559704"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -781,10 +783,10 @@
       <connect endport="Pmr1" endcomponent="ElectricMotorGear" startport="Pmr1" startcomponent="MechanicRotShaft">
         <hopsangui>
           <coordinates>
-            <coordinate x="2351.00000000000000000000" y="2552.00000000000000000000"/>
-            <coordinate x="2357.00000000000000000000" y="2552.00000000000000000000"/>
-            <coordinate x="2357.00000000000000000000" y="2551.00000000000000000000"/>
-            <coordinate x="2337.00000000000000000000" y="2551.00000000000000000000"/>
+            <coordinate x="2587.20980269536721607437" y="2595.33822370425832559704"/>
+            <coordinate x="2593.20980269536721607437" y="2595.33822370425832559704"/>
+            <coordinate x="2593.20980269536721607437" y="2594.33822370425832559704"/>
+            <coordinate x="2573.20980269536721607437" y="2594.33822370425832559704"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -797,10 +799,10 @@
       <connect endport="in" endcomponent="First_order_low_pass_filter" startport="out" startcomponent="Pulse">
         <hopsangui>
           <coordinates>
-            <coordinate x="1887.50000000000000000000" y="2365.00000000000000000000"/>
-            <coordinate x="1989.00000000000000000000" y="2365.00000000000000000000"/>
-            <coordinate x="1989.00000000000000000000" y="2365.00000000000000000000"/>
-            <coordinate x="2009.00000000000000000000" y="2365.00000000000000000000"/>
+            <coordinate x="2123.70980269536721607437" y="2408.33822370425832559704"/>
+            <coordinate x="2225.20980269536721607437" y="2408.33822370425832559704"/>
+            <coordinate x="2225.20980269536721607437" y="2408.33822370425832559704"/>
+            <coordinate x="2245.20980269536721607437" y="2408.33822370425832559704"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -813,10 +815,10 @@
       <connect endport="in" endcomponent="Sink_2" startport="vc" startcomponent="MechanicVehicle1D">
         <hopsangui>
           <coordinates>
-            <coordinate x="2612.50000000000000000000" y="2442.00000000000000000000"/>
-            <coordinate x="2630.00000000000000000000" y="2442.00000000000000000000"/>
-            <coordinate x="2630.00000000000000000000" y="2386.00000000000000000000"/>
-            <coordinate x="2663.00000000000000000000" y="2386.00000000000000000000"/>
+            <coordinate x="2848.70980269536721607437" y="2485.33822370425832559704"/>
+            <coordinate x="2866.20980269536721607437" y="2485.33822370425832559704"/>
+            <coordinate x="2866.20980269536721607437" y="2429.33822370425832559704"/>
+            <coordinate x="2899.20980269536721607437" y="2429.33822370425832559704"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -829,9 +831,9 @@
       <connect endport="in" endcomponent="Sink_4" startport="fd" startcomponent="MechanicVehicle1D">
         <hopsangui>
           <coordinates>
-            <coordinate x="2612.50000000000000000000" y="2466.80000000000018189894"/>
-            <coordinate x="2669.00000000000000000000" y="2466.80000000000018189894"/>
-            <coordinate x="2669.00000000000000000000" y="2477.00000000000000000000"/>
+            <coordinate x="2848.70980269536721607437" y="2510.13822370425850749598"/>
+            <coordinate x="2905.20980269536721607437" y="2510.13822370425850749598"/>
+            <coordinate x="2905.20980269536721607437" y="2520.33822370425832559704"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -843,9 +845,9 @@
       <connect endport="in" endcomponent="Sink_4" startport="fr" startcomponent="MechanicVehicle1D">
         <hopsangui>
           <coordinates>
-            <coordinate x="2612.50000000000000000000" y="2479.19999999999981810106"/>
-            <coordinate x="2669.00000000000000000000" y="2479.19999999999981810106"/>
-            <coordinate x="2669.00000000000000000000" y="2477.00000000000000000000"/>
+            <coordinate x="2848.70980269536721607437" y="2522.53822370425814369810"/>
+            <coordinate x="2905.20980269536721607437" y="2522.53822370425814369810"/>
+            <coordinate x="2905.20980269536721607437" y="2520.33822370425832559704"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -857,10 +859,10 @@
       <connect endport="in_right" endcomponent="Sink_2" startport="xc" startcomponent="MechanicVehicle1D">
         <hopsangui>
           <coordinates>
-            <coordinate x="2612.50000000000000000000" y="2454.40000000000009094947"/>
-            <coordinate x="2729.00000000000000000000" y="2454.40000000000009094947"/>
-            <coordinate x="2729.00000000000000000000" y="2386.00000000000000000000"/>
-            <coordinate x="2703.00000000000000000000" y="2386.00000000000000000000"/>
+            <coordinate x="2848.70980269536721607437" y="2497.73822370425841654651"/>
+            <coordinate x="2965.20980269536721607437" y="2497.73822370425841654651"/>
+            <coordinate x="2965.20980269536721607437" y="2429.33822370425832559704"/>
+            <coordinate x="2939.20980269536721607437" y="2429.33822370425832559704"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -873,10 +875,10 @@
       <connect endport="in" endcomponent="Sink_8" startport="wm" startcomponent="ElectricMotorGear">
         <hopsangui>
           <coordinates>
-            <coordinate x="2337.00000000000000000000" y="2571.59999999999990905053"/>
-            <coordinate x="2366.00000000000000000000" y="2571.59999999999990905053"/>
-            <coordinate x="2366.00000000000000000000" y="2599.00000000000000000000"/>
-            <coordinate x="2397.00000000000000000000" y="2599.00000000000000000000"/>
+            <coordinate x="2573.20980269536721607437" y="2614.93822370425823464757"/>
+            <coordinate x="2602.20980269536721607437" y="2614.93822370425823464757"/>
+            <coordinate x="2602.20980269536721607437" y="2642.33822370425832559704"/>
+            <coordinate x="2633.20980269536721607437" y="2642.33822370425832559704"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -889,9 +891,9 @@
       <connect endport="in" endcomponent="Sink_6" startport="Pout" startcomponent="ElectricMotorGear">
         <hopsangui>
           <coordinates>
-            <coordinate x="2325.19999999999981810106" y="2602.50000000000000000000"/>
-            <coordinate x="2325.19999999999981810106" y="2662.00000000000000000000"/>
-            <coordinate x="2355.00000000000000000000" y="2662.00000000000000000000"/>
+            <coordinate x="2561.40980269536703417543" y="2645.83822370425832559704"/>
+            <coordinate x="2561.40980269536703417543" y="2705.33822370425832559704"/>
+            <coordinate x="2591.20980269536721607437" y="2705.33822370425832559704"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -903,9 +905,9 @@
       <connect endport="in" endcomponent="Sink_6" startport="Pin" startcomponent="ElectricMotorGear">
         <hopsangui>
           <coordinates>
-            <coordinate x="2301.59999999999990905053" y="2602.50000000000000000000"/>
-            <coordinate x="2301.59999999999990905053" y="2662.00000000000000000000"/>
-            <coordinate x="2355.00000000000000000000" y="2662.00000000000000000000"/>
+            <coordinate x="2537.80980269536712512490" y="2645.83822370425832559704"/>
+            <coordinate x="2537.80980269536712512490" y="2705.33822370425832559704"/>
+            <coordinate x="2591.20980269536721607437" y="2705.33822370425832559704"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -917,10 +919,10 @@
       <connect endport="in" endcomponent="Sink" startport="ubatt" startcomponent="ElectricBattery">
         <hopsangui>
           <coordinates>
-            <coordinate x="1904.50000000000000000000" y="2549.19999999999981810106"/>
-            <coordinate x="1919.00000000000000000000" y="2549.19999999999981810106"/>
-            <coordinate x="1919.00000000000000000000" y="2577.40000000000009094947"/>
-            <coordinate x="1941.00000000000000000000" y="2577.40000000000009094947"/>
+            <coordinate x="2140.70980269536721607437" y="2592.53822370425814369810"/>
+            <coordinate x="2155.20980269536721607437" y="2592.53822370425814369810"/>
+            <coordinate x="2155.20980269536721607437" y="2620.73822370425841654651"/>
+            <coordinate x="2177.20980269536721607437" y="2620.73822370425841654651"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -933,10 +935,10 @@
       <connect endport="in_right" endcomponent="Sink" startport="soc" startcomponent="ElectricBattery">
         <hopsangui>
           <coordinates>
-            <coordinate x="1904.50000000000000000000" y="2540.40000000000009094947"/>
-            <coordinate x="2013.00000000000000000000" y="2540.40000000000009094947"/>
-            <coordinate x="2013.00000000000000000000" y="2577.40000000000009094947"/>
-            <coordinate x="1981.00000000000000000000" y="2577.40000000000009094947"/>
+            <coordinate x="2140.70980269536721607437" y="2583.73822370425841654651"/>
+            <coordinate x="2249.20980269536721607437" y="2583.73822370425841654651"/>
+            <coordinate x="2249.20980269536721607437" y="2620.73822370425841654651"/>
+            <coordinate x="2217.20980269536721607437" y="2620.73822370425841654651"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -949,9 +951,9 @@
       <connect endport="iref" endcomponent="ElectricIcontroller" startport="out" startcomponent="First_order_low_pass_filter">
         <hopsangui>
           <coordinates>
-            <coordinate x="2059.00000000000000000000" y="2365.00000000000000000000"/>
-            <coordinate x="2089.00000000000000000000" y="2365.00000000000000000000"/>
-            <coordinate x="2089.00000000000000000000" y="2468.50000000000000000000"/>
+            <coordinate x="2295.20980269536721607437" y="2408.33822370425832559704"/>
+            <coordinate x="2325.20980269536721607437" y="2408.33822370425832559704"/>
+            <coordinate x="2325.20980269536721607437" y="2511.83822370425832559704"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>

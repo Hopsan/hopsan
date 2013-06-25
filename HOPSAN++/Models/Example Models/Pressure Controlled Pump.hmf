@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5499" hopsancoreversion="0.6.x_r5500">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5552" hopsancoreversion="0.6.x_r5557">
   <requirements>
     <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+    <componentlibrary>HopsanFMULibrary_HopsanBrake</componentlibrary>
+    <componentlibrary>HopsanFMULibrary_HopsanEngine</componentlibrary>
+    <componentlibrary>HopsanFMULibrary_OpenModelicaGearBox</componentlibrary>
+    <componentlibrary>HopsanFMULibrary_OpenModelicaVehicle</componentlibrary>
+    <componentlibrary>HopsanFMULibrary_OpenModelicaWheel</componentlibrary>
   </requirements>
   <info>
     <author>Fluid &amp; Mechatronic Systems (Flumes)</author>
@@ -17,7 +22,7 @@
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="1"/>
       <animation flowspeed="100"/>
-      <viewport x="2500.32" y="2428.04" zoom="0.968475"/>
+      <viewport x="2499.81" y="2500.32" zoom="0.968475"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>

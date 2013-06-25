@@ -1,23 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5094" hopsancoreversion="0.6.x_r5098">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5565" hopsancoreversion="0.6.x_r5557">
   <requirements>
     <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
+    <componentlibrary>HopsanFMULibrary_HopsanBrake</componentlibrary>
+    <componentlibrary>HopsanFMULibrary_HopsanEngine</componentlibrary>
+    <componentlibrary>HopsanFMULibrary_OpenModelicaGearBox</componentlibrary>
+    <componentlibrary>HopsanFMULibrary_OpenModelicaVehicle</componentlibrary>
+    <componentlibrary>HopsanFMULibrary_OpenModelicaWheel</componentlibrary>
   </requirements>
   <info/>
-  <system logsamples="2048" typename="Subsystem" name="2D Look Up Table">
+  <system logsamples="2048" typename="Subsystem" name="2D_Look_Up_Table">
     <simulationtime stop="10" timestep="0.001" start="0" inherit_timestep="true"/>
     <parameters/>
     <aliases/>
     <hopsangui>
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="1"/>
-      <viewport x="2568" y="2457.5" zoom="1"/>
+      <animation flowspeed="100"/>
+      <viewport x="2500" y="2500" zoom="1"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>
       <scriptfile path=""/>
       <hopsanobjectappearance version="0.3">
-        <modelobject typename="Subsystem" displayname="2D Look Up Table">
+        <modelobject typename="Subsystem" displayname="2D_Look_Up_Table">
           <icons>
             <icon path="subsystemDefault.svg" type="defaultmissing"/>
           </icons>
@@ -46,17 +52,18 @@
     <objects>
       <component typename="SignalLookUpTable2D" name="LookUpTable2D">
         <parameters>
-          <parameter value="0" type="double" name="out::Value"/>
-          <parameter value="LookUpTable.csv" type="string" name="filename"/>
-          <parameter value="1" type="integer" name="outid"/>
+          <parameter unit="-" value="0" type="double" name="in::Value"/>
+          <parameter unit="" value="LookUpTable.csv" type="string" name="filename"/>
+          <parameter unit="" value="1" type="integer" name="outid"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
           <port nodetype="NodeSignal" name="out"/>
         </ports>
         <hopsangui>
-          <pose x="2217" y="2474" flipped="false" a="0"/>
+          <pose x="2504" y="2495" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalLookUpTable2D" displayname="LookUpTable2D">
               <ports/>
@@ -70,8 +77,9 @@
           <port nodetype="NodeSignal" name="out"/>
         </ports>
         <hopsangui>
-          <pose x="2105" y="2474" flipped="false" a="0"/>
+          <pose x="2392" y="2495" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalTime" displayname="Time">
               <ports/>
@@ -80,15 +88,18 @@
         </hopsangui>
       </component>
       <component typename="SignalSink" name="Scope">
-        <parameters/>
+        <parameters>
+          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+        </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in_right"/>
           <port nodetype="NodeSignal" name="in"/>
           <port nodetype="NodeSignal" name="in_bottom"/>
         </ports>
         <hopsangui>
-          <pose x="2345" y="2474" flipped="false" a="0"/>
+          <pose x="2618" y="2495" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
+          <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
             <modelobject typename="SignalSink" displayname="Scope">
               <ports/>
@@ -98,10 +109,18 @@
       </component>
       <textboxwidget>
         <hopsangui>
-          <pose x="2027.000000" y="2420.000000"/>
-          <textobject fontcolor="#556b2f" text="Looks up the square of the input using a Look Up Table." font="Ubuntu,12,-1,5,50,0,0,0,0,0"/>
-          <size width="408.828125" height="30.000000"/>
+          <pose x="2406.000000" y="2565.000000"/>
+          <textobject fontcolor="#556b2f" text="Looks up the square of the &#xa;input using a Look Up Table." font="Ubuntu,12,-1,5,50,0,0,0,0,0"/>
+          <size width="207.000000" height="48.000000"/>
           <line width="2.000000" visible="1" style="solidline"/>
+        </hopsangui>
+      </textboxwidget>
+      <textboxwidget>
+        <hopsangui>
+          <pose x="2355.500000" y="2379.500000"/>
+          <textobject fontcolor="#005500" text="Example: 2D Look-Up Table" font="Calibri,20,-1,5,50,0,0,0,0,0"/>
+          <size width="308.000000" height="41.000000"/>
+          <line width="2.000000" visible="0" style="solidline"/>
         </hopsangui>
       </textboxwidget>
     </objects>
@@ -109,10 +128,10 @@
       <connect endport="in" endcomponent="LookUpTable2D" startport="out" startcomponent="Time">
         <hopsangui>
           <coordinates>
-            <coordinate x="2117.50000000000000000000" y="2474.00000000000000000000"/>
-            <coordinate x="2177.00000000000000000000" y="2474.00000000000000000000"/>
-            <coordinate x="2177.00000000000000000000" y="2474.00000000000000000000"/>
-            <coordinate x="2197.00000000000000000000" y="2474.00000000000000000000"/>
+            <coordinate x="2404.50000000000000000000" y="2495.00000000000000000000"/>
+            <coordinate x="2464.00000000000000000000" y="2495.00000000000000000000"/>
+            <coordinate x="2464.00000000000000000000" y="2495.00000000000000000000"/>
+            <coordinate x="2484.00000000000000000000" y="2495.00000000000000000000"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
@@ -125,9 +144,9 @@
       <connect endport="in" endcomponent="Scope" startport="out" startcomponent="LookUpTable2D">
         <hopsangui>
           <coordinates>
-            <coordinate x="2237.00000000000000000000" y="2474.00000000000000000000"/>
-            <coordinate x="2325.00000000000000000000" y="2474.00000000000000000000"/>
-            <coordinate x="2325.00000000000000000000" y="2474.00000000000000000000"/>
+            <coordinate x="2524.00000000000000000000" y="2495.00000000000000000000"/>
+            <coordinate x="2598.00000000000000000000" y="2495.00000000000000000000"/>
+            <coordinate x="2598.00000000000000000000" y="2495.00000000000000000000"/>
           </coordinates>
           <geometries>
             <geometry>vertical</geometry>
