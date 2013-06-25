@@ -38,7 +38,7 @@
 #include "Widgets/PlotWidget.h"
 #include "Widgets/MessageWidget.h"
 #include "Widgets/HcomWidget.h"
-#include "Widgets/ProjectTabWidget.h"
+#include "Widgets/ModelWidget.h"
 #include "Utilities/GUIUtilities.h"
 #include "Dialogs/OptionsDialog.h"
 #include "GUIObjects/GUISystem.h"
@@ -49,6 +49,7 @@
 #include "Configuration.h"
 #include "loadFunctions.h"
 #include "version_gui.h"
+#include "ModelHandler.h"
 
 #include "qwt_scale_engine.h"
 #include "qwt_symbol.h"
@@ -784,7 +785,9 @@ void PlotWindow::createBodePlot()
     }
     pOutputGroupBox->setLayout(pOutputGroupBoxLayout);
 
-    double maxFreq = (getCurrentPlotTab()->getCurves(FirstPlot).first()->getTimeVectorPtr()->getDataSize()+1)/getCurrentPlotTab()->getCurves(FirstPlot).first()->getTimeVectorPtr()->last()/2;
+    double dataSize = getCurrentPlotTab()->getCurves(FirstPlot).first()->getTimeVectorPtr()->getDataSize()+1;
+    double stopTime = getCurrentPlotTab()->getCurves(FirstPlot).first()->getTimeVectorPtr()->last();
+    double maxFreq = dataSize/stopTime/2;
     QLabel *pMaxFrequencyLabel = new QLabel("Maximum frequency in bode plot:");
     QLabel *pMaxFrequencyValue = new QLabel();
     QLabel *pMaxFrequencyUnit = new QLabel("Hz");

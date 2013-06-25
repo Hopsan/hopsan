@@ -29,7 +29,7 @@
 #include "GUIObjects/GUISystem.h"
 #include "Utilities/GUIUtilities.h"
 #include "Widgets/PlotWidget.h"
-//#include "Widgets/ProjectTabWidget.h"
+#include "Widgets/ModelWidget.h"
 #include "ModelHandler.h"
 
 #ifndef WIN32

@@ -1,21 +1,46 @@
-#include "HVCWidget.h"
-#include "Utilities/XMLUtilities.h"
-#include "MainWindow.h"
-#include "ModelHandler.h"
-#include "common.h"
+/*-----------------------------------------------------------------------------
+ This source file is part of Hopsan NG
 
-#include "LogDataHandler.h"
-#include "PlotHandler.h"
-#include "GUIObjects/GUISystem.h"
+ Copyright (c) 2011
+    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
+    Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
+ This file is provided "as is", with no guarantee or warranty for the
+ functionality or reliability of the contents. All contents in this file is
+ the original work of the copyright holders at the Division of Fluid and
+ Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
+ redistributing any part of this file is prohibited without explicit
+ permission from the copyright holders.
+-----------------------------------------------------------------------------*/
+
+//!
+//! @file   HVCWidget.cpp
+//! @author Peter Nordin <peter.nordin@liu.se>
+//! @date   2012
+//!
+//! @brief Contains class for Hopsan validation widget
+//!
+//$Id: LibraryWidget.cpp 5499 2013-06-04 10:52:33Z robbr48 $
+
+//Qt includes
 #include <QCheckBox>
 #include <QLabel>
 #include <QFileDialog>
 #include <QToolButton>
-
 #include <QHBoxLayout>
 #include <QGridLayout>
 #include <QPushButton>
+
+//Hopsan includes
+#include "common.h"
+#include "GUIObjects/GUISystem.h"
+#include "HVCWidget.h"
+#include "LogDataHandler.h"
+#include "MainWindow.h"
+#include "ModelHandler.h"
+#include "PlotHandler.h"
+#include "Utilities/XMLUtilities.h"
+#include "Widgets/ModelWidget.h"
 
 
 HVCWidget::HVCWidget(QWidget *parent) :

@@ -49,6 +49,7 @@
 #include "Widgets/MessageWidget.h"
 #include "Widgets/HcomWidget.h"
 #include "Widgets/LibraryWidget.h"
+#include "Widgets/ModelWidget.h"
 #include "Widgets/ProjectTabWidget.h"
 #include "Widgets/PyDockWidget.h"
 #include "Widgets/SystemParametersWidget.h"

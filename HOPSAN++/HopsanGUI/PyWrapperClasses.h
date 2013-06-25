@@ -34,7 +34,7 @@
 #include "PlotWindow.h"
 #include "Widgets/LibraryWidget.h"
 #include "Widgets/MessageWidget.h"
-#include "Widgets/ProjectTabWidget.h"
+#include "Widgets/ModelWidget.h"
 #include "Widgets/PlotWidget.h"
 #include "Widgets/PyDockWidget.h"
 #include "Widgets/SystemParametersWidget.h"

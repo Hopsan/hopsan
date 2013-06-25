@@ -24,7 +24,7 @@
 
 
 #include "InitializationThread.h"
-#include "Widgets/ProjectTabWidget.h"
+#include "Widgets/ModelWidget.h"
 #include "MainWindow.h"
 #include "CoreAccess.h"
 

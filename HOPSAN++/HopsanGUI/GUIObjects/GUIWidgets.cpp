@@ -29,7 +29,7 @@
 
 #include "GUIWidgets.h"
 #include "GUISystem.h"
-#include "Widgets/ProjectTabWidget.h"
+#include "Widgets/ModelWidget.h"
 #include "MainWindow.h"
 #include "Utilities/GUIUtilities.h"
 #include "UndoStack.h"

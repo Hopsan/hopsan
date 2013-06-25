@@ -1,17 +1,42 @@
-#include "PlotCurve.h"
+/*-----------------------------------------------------------------------------
+ This source file is part of Hopsan NG
 
-#include "PlotWindow.h"
-#include "PlotTab.h"
+ Copyright (c) 2011
+    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
+    Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
+ This file is provided "as is", with no guarantee or warranty for the
+ functionality or reliability of the contents. All contents in this file is
+ the original work of the copyright holders at the Division of Fluid and
+ Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
+ redistributing any part of this file is prohibited without explicit
+ permission from the copyright holders.
+-----------------------------------------------------------------------------*/
+
+//!
+//! @file   PlutCurve.cpp
+//! @author Robert Braun <robert.braun@liu.se>
+//! @date   2010
+//!
+//! @brief Contains a class for plot curves
+//!
+//$Id: ModelHandler.cpp 5551 2013-06-20 08:54:16Z petno25 $
+
+//Hopsan includes
 #include "Configuration.h"
+#include "LogDataHandler.h"
 #include "MainWindow.h"
-
+#include "ModelHandler.h"
+#include "PlotCurve.h"
+#include "PlotTab.h"
+#include "PlotWindow.h"
+#include "Widgets/ModelWidget.h"
 #include "Widgets/ProjectTabWidget.h"
 #include "Utilities/GUIUtilities.h"
 
-#include "LogDataHandler.h"
-
+//Other includes
 #include <limits>
+
 const double DoubleMax = std::numeric_limits<double>::max();
 
 

@@ -4,7 +4,6 @@
 #include <QtGui>
 #include <QObject>
 #include <QDomElement>
-#include "Widgets/ProjectTabWidget.h"
 
 class ModelWidget;
 class CentralTabWidget;

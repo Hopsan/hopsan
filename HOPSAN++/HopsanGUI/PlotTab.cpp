@@ -23,8 +23,9 @@
 #include <qwt_dyngrid_layout.h>
 
 #include "MainWindow.h"
-#include "Widgets/ProjectTabWidget.h"
+#include "Widgets/ModelWidget.h"
 #include "Widgets/HcomWidget.h"
+#include "ModelHandler.h"
 
 #include "version_gui.h"
 

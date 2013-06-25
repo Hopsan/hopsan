@@ -22,20 +22,21 @@
 //!
 //$Id$
 
+//Qt includes
 #include <QDrag>
 
+//Hopsan includes
 #include "Configuration.h"
-#include "GraphicsView.h"
-#include "GUIPort.h"
-#include "PlotWindow.h"
 #include "Dialogs/ComponentPropertiesDialog.h"
 #include "Dialogs/ComponentPropertiesDialog3.h"
+#include "GraphicsView.h"
 #include "GUIObjects/GUIComponent.h"
 #include "GUIObjects/GUIContainerObject.h"
-#include "Widgets/ProjectTabWidget.h"
-#include "PlotTab.h"
-
+#include "GUIPort.h"
 #include "PlotHandler.h"
+#include "PlotTab.h"
+#include "PlotWindow.h"
+#include "Widgets/ModelWidget.h"
 
 
 Component::Component(QPointF position, qreal rotation, ModelObjectAppearance* pAppearanceData, ContainerObject *pParentContainer, SelectionStatusEnumT startSelected, GraphicsTypeEnumT gfxType)

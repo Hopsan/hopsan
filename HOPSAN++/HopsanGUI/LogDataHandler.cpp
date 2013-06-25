@@ -29,7 +29,7 @@
 #include "GUIObjects/GUIContainerObject.h"
 #include "MainWindow.h"
 #include "Widgets/HcomWidget.h"
-#include "Widgets/ProjectTabWidget.h"
+#include "Widgets/ModelWidget.h"
 #include "common.h"
 #include "version_gui.h"
 #include "Configuration.h"

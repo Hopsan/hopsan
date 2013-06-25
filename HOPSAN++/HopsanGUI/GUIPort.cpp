@@ -39,7 +39,7 @@
 #include "GUIObjects/GUIContainerObject.h"
 #include "Utilities/GUIUtilities.h"
 #include "Widgets/PlotWidget.h"
-#include "Widgets/ProjectTabWidget.h"
+#include "Widgets/ModelWidget.h"
 #include "Widgets/HcomWidget.h"
 
 

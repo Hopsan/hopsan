@@ -46,7 +46,7 @@
 #include "Dialogs/ParameterSettingsLayout.h"
 
 #include "Dialogs/ComponentGeneratorDialog.h"
-#include "Widgets/ProjectTabWidget.h"
+#include "Widgets/ModelWidget.h"
 
 
 

@@ -14,7 +14,7 @@
 #include "Widgets/LibraryWidget.h"
 #include "Widgets/PlotWidget.h" //!< @todo why is this needed in here
 #include "ModelHandler.h"
-//#include "Widgets/ProjectTabWidget.h"
+#include "Widgets/ProjectTabWidget.h"
 #include "Widgets/WelcomeWidget.h"
 
 WelcomeWidget::WelcomeWidget(QWidget *parent) :

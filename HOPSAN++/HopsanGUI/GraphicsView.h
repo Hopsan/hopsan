@@ -31,8 +31,8 @@
 #include "common.h"
 
 //Forward Declarations
-class ModelWidget;
 class ContainerObject;
+class ModelWidget;
 
 class GraphicsView : public QGraphicsView
 {

@@ -22,6 +22,7 @@
 //!
 //$Id$
 
+//Hopsan includes
 #include "common.h"
 #include "Configuration.h"
 #include "DesktopHandler.h"
@@ -35,6 +36,7 @@
 #include "Widgets/DebuggerWidget.h"
 #include "Widgets/HcomWidget.h"
 #include "Widgets/LibraryWidget.h"
+#include "Widgets/ModelWidget.h"
 #include "Widgets/ProjectTabWidget.h"
 
 ModelHandler::ModelHandler(QObject *parent)

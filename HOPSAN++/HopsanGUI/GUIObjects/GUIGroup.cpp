@@ -33,7 +33,7 @@
 #include "GUISystem.h"
 #include "GUIContainerObject.h"
 #include "GUIComponent.h"
-#include "Widgets/ProjectTabWidget.h"
+#include "Widgets/ModelWidget.h"
 #include "MainWindow.h"
 #include "Dialogs/ComponentPropertiesDialog.h"
 #include "GUIPort.h"

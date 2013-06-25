@@ -27,10 +27,11 @@
 #include "Widgets/UndoWidget.h"
 #include "UndoStack.h"
 #include "MainWindow.h"
-#include "ProjectTabWidget.h"
+#include "ModelWidget.h"
 #include "Utilities/GUIUtilities.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "common.h"
+#include "ModelHandler.h"
 
 
 //! @class UndoWidget

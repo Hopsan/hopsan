@@ -32,7 +32,7 @@
 #include "version_gui.h"
 #include "Widgets/LibraryWidget.h"
 #include "Widgets/HcomWidget.h"
-#include "Widgets/ProjectTabWidget.h"
+#include "Widgets/ModelWidget.h"
 #include "Dialogs/ContainerPropertiesDialog.h"
 #include "Utilities/GUIUtilities.h"
 #include "GUIObjects/GUIWidgets.h"

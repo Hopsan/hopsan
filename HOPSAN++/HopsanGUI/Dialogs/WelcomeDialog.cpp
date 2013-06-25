@@ -31,7 +31,7 @@
 #include "WelcomeDialog.h"
 #include "MainWindow.h"
 #include "ModelHandler.h"
-#include "Widgets/ProjectTabWidget.h"
+#include "Widgets/ModelWidget.h"
 #include "Configuration.h"
 #include "GraphicsView.h"
 #include "common.h"

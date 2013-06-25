@@ -33,7 +33,7 @@
 #include "GUIObjects/GUISystem.h"
 #include "Utilities/GUIUtilities.h"
 #include "Widgets/HcomWidget.h"
-#include "Widgets/ProjectTabWidget.h"
+#include "ModelHandler.h"
 #include "Widgets/PyDockWidget.h"
 
 class CentralTabWidget;

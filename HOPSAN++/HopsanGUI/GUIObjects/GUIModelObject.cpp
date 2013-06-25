@@ -25,7 +25,7 @@
 #include "GUIModelObject.h"
 
 #include "GUISystem.h"
-#include "Widgets/ProjectTabWidget.h"
+#include "Widgets/ModelWidget.h"
 #include "GraphicsView.h"
 #include "Utilities/GUIUtilities.h"
 #include "GUIConnector.h"

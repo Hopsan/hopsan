@@ -45,7 +45,7 @@
 #include "Dialogs/MovePortsDialog.h"
 #include "Dialogs/ParameterSettingsLayout.h"
 #include "Dialogs/ComponentGeneratorDialog.h"
-#include "Widgets/ProjectTabWidget.h"
+#include "Widgets/ModelWidget.h"
 
 #include "CoreAccess.h"
 

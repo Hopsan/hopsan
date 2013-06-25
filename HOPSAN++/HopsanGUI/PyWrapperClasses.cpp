@@ -28,6 +28,8 @@
 #include "PlotTab.h"
 #include "PlotHandler.h"
 #include "ModelHandler.h"
+#include "Widgets/QuickNavigationWidget.h"
+#include "Widgets/ModelWidget.h";
 
 //Implementations are done in h-file right now
 QString PyPortClassWrapper::plot(Port* o, const QString& dataName)

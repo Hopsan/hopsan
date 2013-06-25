@@ -31,11 +31,11 @@
 #include "common.h"
 #include "Configuration.h"
 #include "DesktopHandler.h"
-
+#include "ModelHandler.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUISystem.h"
 #include "Widgets/LibraryWidget.h"
-#include "Widgets/ProjectTabWidget.h"
+#include "Widgets/ModelWidget.h"
 #include "Dialogs/MovePortsDialog.h"
 #include "Dialogs/ParameterSettingsLayout.h"
 

@@ -30,12 +30,13 @@
 #include "GraphicsView.h"
 #include "AnimatedConnector.h"
 #include "GUIObjects/AnimatedComponent.h"
-#include "Widgets/ProjectTabWidget.h"
+#include "Widgets/ModelWidget.h"
 #include "GUIPort.h"
 #include "GUIObjects/GUIModelObject.h"
 #include "GUIConnectorAppearance.h"
 #include "GUIConnector.h"
 #include "GUIObjects/GUIContainerObject.h"
+#include "Widgets/AnimationWidget.h"
 
 class UndoStack;
 

@@ -28,7 +28,7 @@
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUIWidgets.h"
 #include "GraphicsView.h"
-#include "Widgets/ProjectTabWidget.h"
+#include "Widgets/ModelWidget.h"
 #include "UndoStack.h"
 #include "Utilities/GUIUtilities.h"
 #include <cassert>

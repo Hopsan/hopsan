@@ -23,21 +23,25 @@
 //!
 //$Id$
 
+//Qt includes
 #include <QVector>
 
+//Hopsan includes
 #include "AnimatedConnector.h"
 #include "Configuration.h"
 #include "GraphicsView.h"
-#include "GUIPort.h"
 #include "GUIConnector.h"
-#include "MainWindow.h"
 #include "GUIObjects/AnimatedComponent.h"
 #include "GUIObjects/GUIContainerObject.h"
 #include "GUIObjects/GUISystem.h"
 #include "GUIObjects/GUIWidgets.h"
+#include "GUIPort.h"
+#include "MainWindow.h"
+#include "ModelHandler.h"
+#include "ModelWidget.h"
 #include "Widgets/AnimationWidget.h"
 #include "Widgets/LibraryWidget.h"
-#include "Widgets/ProjectTabWidget.h"
+
 
 //! @brief Constructor for the animation widget class
 //! @param [in] parent Pointer to parent widget

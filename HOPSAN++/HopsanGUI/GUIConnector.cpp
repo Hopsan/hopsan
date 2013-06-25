@@ -32,7 +32,7 @@
 #include "GUIObjects/GUIModelObject.h"
 #include "GUIConnector.h"
 #include "UndoStack.h"
-#include "Widgets/ProjectTabWidget.h"
+#include "Widgets/ModelWidget.h"
 #include "GUIObjects/GUISystem.h"
 #include "loadFunctions.h"
 #include "Configuration.h"

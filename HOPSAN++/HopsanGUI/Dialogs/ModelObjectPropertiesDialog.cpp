@@ -30,7 +30,7 @@
 #include "Dialogs/ParameterSettingsLayout.h"
 
 #include "UndoStack.h"
-#include "Widgets/ProjectTabWidget.h"
+#include "Widgets/ModelWidget.h"
 
 
 ModelObjectPropertiesDialog::ModelObjectPropertiesDialog(ModelObject *pParentObject, QWidget *pParentWidget)

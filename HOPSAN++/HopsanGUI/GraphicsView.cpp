@@ -30,7 +30,7 @@
 #include "GUIConnector.h"
 #include "UndoStack.h"
 
-#include "Widgets/ProjectTabWidget.h"
+#include "Widgets/ModelWidget.h"
 #include "ModelHandler.h"
 #include "Widgets/PlotWidget.h"
 #include "Widgets/HcomWidget.h"

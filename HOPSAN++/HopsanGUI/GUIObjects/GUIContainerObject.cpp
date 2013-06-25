@@ -22,41 +22,44 @@
 //!
 //$Id$
 
-#include "GUIContainerObject.h"
-
-#include "MainWindow.h"
-#include "PlotWindow.h"
-#include "GUIPort.h"
-#include "GUIConnector.h"
-#include "UndoStack.h"
-#include "GraphicsView.h"
-#include "loadFunctions.h"
-#include "CoreAccess.h"
-#include "CopyStack.h"
-#include "DesktopHandler.h"
-#include "Widgets/ProjectTabWidget.h"
-#include "Widgets/MessageWidget.h"
-#include "Widgets/HcomWidget.h"
-#include "Widgets/LibraryWidget.h"
-#include "Widgets/PlotWidget.h"
-#include "PlotTab.h"
-#include "Widgets/SystemParametersWidget.h"
-#include "Widgets/PyDockWidget.h"
-#include "Widgets/UndoWidget.h"
-#include "Utilities/GUIUtilities.h"
-#include "GUIComponent.h"
-#include "GUIGroup.h"
-#include "GUIContainerPort.h"
-#include "GUIWidgets.h"
-#include "GUISystem.h"
-#include "Configuration.h"
-#include "qfile.h"
-#include "version_gui.h"
-
+//Qt/other includes
 #include <limits>
 #include <QDomElement>
 #include <QStandardItemModel>
 #include <QToolBar>
+#include "qfile.h"
+
+//Hopsan includes
+#include "Configuration.h"
+#include "CopyStack.h"
+#include "CoreAccess.h"
+#include "DesktopHandler.h"
+#include "GraphicsView.h"
+#include "GUIComponent.h"
+#include "GUIConnector.h"
+#include "GUIContainerObject.h"
+#include "GUIContainerPort.h"
+#include "GUIGroup.h"
+#include "GUIPort.h"
+#include "GUISystem.h"
+#include "GUIWidgets.h"
+#include "loadFunctions.h"
+#include "MainWindow.h"
+#include "ModelHandler.h"
+#include "PlotTab.h"
+#include "PlotWindow.h"
+#include "UndoStack.h"
+#include "Utilities/GUIUtilities.h"
+#include "version_gui.h"
+#include "Widgets/HcomWidget.h"
+#include "Widgets/LibraryWidget.h"
+#include "Widgets/MessageWidget.h"
+#include "Widgets/ModelWidget.h"
+#include "Widgets/PlotWidget.h"
+#include "Widgets/PyDockWidget.h"
+#include "Widgets/QuickNavigationWidget.h"
+#include "Widgets/SystemParametersWidget.h"
+#include "Widgets/UndoWidget.h"
 
 
 
