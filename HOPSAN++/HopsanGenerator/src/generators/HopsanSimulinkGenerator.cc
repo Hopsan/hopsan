@@ -483,10 +483,10 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     {
         jin = totIn+i*2;
         jout = totOut+i*2;
-        wrapperReplace16.append("    pInputNode"+QString::number(jin)+" = pComponentSystem->getSubComponent(\""+mechanicQComponents.at(i)+"\")->getPort(\""+mechanicQPorts.at(i)+"\")->getSafeNodeDataPtr(2, 0);\n");
-        wrapperReplace16.append("    pInputNode"+QString::number(jin+1)+" = pComponentSystem->getSubComponent(\""+mechanicQComponents.at(i)+"\")->getPort(\""+mechanicQPorts.at(i)+"\")->getSafeNodeDataPtr(0, 0);\n");
-        wrapperReplace16.append("    pOutputNode"+QString::number(jout)+" = pComponentSystem->getSubComponent(\""+mechanicQComponents.at(i)+"\")->getPort(\""+mechanicQPorts.at(i)+"\")->getSafeNodeDataPtr(3, 0);\n");
-        wrapperReplace16.append("    pOutputNode"+QString::number(jout+1)+" = pComponentSystem->getSubComponent(\""+mechanicQComponents.at(i)+"\")->getPort(\""+mechanicQPorts.at(i)+"\")->getSafeNodeDataPtr(4, 0);\n");
+        wrapperReplace16.append("    pInputNode"+QString::number(jin)+" = pComponentSystem->getSubComponent(\""+mechanicQComponents.at(i)+"\")->getSafeNodeDataPtr(\""+mechanicQPorts.at(i)+"\", 2);\n");
+        wrapperReplace16.append("    pInputNode"+QString::number(jin+1)+" = pComponentSystem->getSubComponent(\""+mechanicQComponents.at(i)+"\")->getSafeNodeDataPtr(\""+mechanicQPorts.at(i)+"\", 0);\n");
+        wrapperReplace16.append("    pOutputNode"+QString::number(jout)+" = pComponentSystem->getSubComponent(\""+mechanicQComponents.at(i)+"\")->getSafeNodeDataPtr(\""+mechanicQPorts.at(i)+"\", 3);\n");
+        wrapperReplace16.append("    pOutputNode"+QString::number(jout+1)+" = pComponentSystem->getSubComponent(\""+mechanicQComponents.at(i)+"\")->getSafeNodeDataPtr(\""+mechanicQPorts.at(i)+"\", 4);\n");
     }
     totIn+=nMechanicQ*2;
     totOut+=nMechanicQ*2;
@@ -494,10 +494,10 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     {
         jin = totIn+i*2;
         jout = totOut+i*2;
-        wrapperReplace16.append("    pInputNode"+QString::number(jin)+" = pComponentSystem->getSubComponent(\""+mechanicCComponents.at(i)+"\")->getPort(\""+mechanicCPorts.at(i)+"\")->getSafeNodeDataPtr(3, 0);\n");
-        wrapperReplace16.append("    pInputNode"+QString::number(jin+1)+" = pComponentSystem->getSubComponent(\""+mechanicCComponents.at(i)+"\")->getPort(\""+mechanicCPorts.at(i)+"\")->getSafeNodeDataPtr(4, 0);\n");
-        wrapperReplace16.append("    pOutputNode"+QString::number(jout)+" = pComponentSystem->getSubComponent(\""+mechanicCComponents.at(i)+"\")->getPort(\""+mechanicCPorts.at(i)+"\")->getSafeNodeDataPtr(2, 0;\n)");
-        wrapperReplace16.append("    pOutputNode"+QString::number(jout+1)+" = pComponentSystem->getSubComponent(\""+mechanicCComponents.at(i)+"\")->getPort(\""+mechanicCPorts.at(i)+"\")->getSafeNodeDataPtr(0, 0);\n");
+        wrapperReplace16.append("    pInputNode"+QString::number(jin)+" = pComponentSystem->getSubComponent(\""+mechanicCComponents.at(i)+"\")->getSafeNodeDataPtr(\""+mechanicCPorts.at(i)+"\", 3);\n");
+        wrapperReplace16.append("    pInputNode"+QString::number(jin+1)+" = pComponentSystem->getSubComponent(\""+mechanicCComponents.at(i)+"\")->getSafeNodeDataPtr(\""+mechanicCPorts.at(i)+"\", 4);\n");
+        wrapperReplace16.append("    pOutputNode"+QString::number(jout)+" = pComponentSystem->getSubComponent(\""+mechanicCComponents.at(i)+"\")->getSafeNodeDataPtr(\""+mechanicCPorts.at(i)+"\", 2;\n)");
+        wrapperReplace16.append("    pOutputNode"+QString::number(jout+1)+" = pComponentSystem->getSubComponent(\""+mechanicCComponents.at(i)+"\")->getSafeNodeDataPtr(\""+mechanicCPorts.at(i)+"\", 0);\n");
    }
     totIn+=nMechanicC*2;
     totOut+=nMechanicC*2;
@@ -505,10 +505,10 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     {
         jin = totIn+i*2;
         jout = totOut+i*2;
-        wrapperReplace16.append("    pInputNode"+QString::number(jin)+" = pComponentSystem->getSubComponent(\""+mechanicRotationalQComponents.at(i)+"\")->getPort(\""+mechanicRotationalQPorts.at(i)+"\")->getSafeNodeDataPtr(2, 0);\n");
-        wrapperReplace16.append("    pInputNode"+QString::number(jin+1)+" = pComponentSystem->getSubComponent(\""+mechanicRotationalQComponents.at(i)+"\")->getPort(\""+mechanicRotationalQPorts.at(i)+"\")->getSafeNodeDataPtr(0, 0);\n");
-        wrapperReplace16.append("    pOutputNode"+QString::number(jout)+" = pComponentSystem->getSubComponent(\""+mechanicRotationalQComponents.at(i)+"\")->getPort(\""+mechanicRotationalQPorts.at(i)+"\")->getSafeNodeDataPtr(3, 0);\n");
-        wrapperReplace16.append("    pOutputNode"+QString::number(jout+1)+" = pComponentSystem->getSubComponent(\""+mechanicRotationalQComponents.at(i)+"\")->getPort(\""+mechanicRotationalQPorts.at(i)+"\")->getSafeNodeDataPtr(4, 0);\n");
+        wrapperReplace16.append("    pInputNode"+QString::number(jin)+" = pComponentSystem->getSubComponent(\""+mechanicRotationalQComponents.at(i)+"\")->getSafeNodeDataPtr(\""+mechanicRotationalQPorts.at(i)+"\", 2);\n");
+        wrapperReplace16.append("    pInputNode"+QString::number(jin+1)+" = pComponentSystem->getSubComponent(\""+mechanicRotationalQComponents.at(i)+"\")->getSafeNodeDataPtr(\""+mechanicRotationalQPorts.at(i)+"\", 0);\n");
+        wrapperReplace16.append("    pOutputNode"+QString::number(jout)+" = pComponentSystem->getSubComponent(\""+mechanicRotationalQComponents.at(i)+"\")->getSafeNodeDataPtr(\""+mechanicRotationalQPorts.at(i)+"\", 3);\n");
+        wrapperReplace16.append("    pOutputNode"+QString::number(jout+1)+" = pComponentSystem->getSubComponent(\""+mechanicRotationalQComponents.at(i)+"\")->getSafeNodeDataPtr(\""+mechanicRotationalQPorts.at(i)+"\"), 4);\n");
     }
     totIn+=nMechanicRotationalQ*2;
     totOut+=nMechanicRotationalQ*2;
@@ -516,22 +516,22 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
     {
         jin = totIn+i*2;
         jout = totOut+i*2;
-        wrapperReplace16.append("    pInputNode"+QString::number(jin)+" = pComponentSystem->getSubComponent(\""+mechanicRotationalCComponents.at(i)+"\")->getPort(\""+mechanicRotationalCPorts.at(i)+"\")->getSafeNodeDataPtr(3, 0);\n");
-        wrapperReplace16.append("    pInputNode"+QString::number(jin+1)+" = pComponentSystem->getSubComponent(\""+mechanicRotationalCComponents.at(i)+"\")->getPort(\""+mechanicRotationalCPorts.at(i)+"\")->getSafeNodeDataPtr(4, 0);\n");
-        wrapperReplace16.append("    pOutputNode"+QString::number(jout)+" = pComponentSystem->getSubComponent(\""+mechanicRotationalCComponents.at(i)+"\")->getPort(\""+mechanicRotationalCPorts.at(i)+"\")->getSafeNodeDataPtr(2, 0);\n");
-        wrapperReplace16.append("    pOutputNode"+QString::number(jout+1)+" = pComponentSystem->getSubComponent(\""+mechanicRotationalCComponents.at(i)+"\")->getPort(\""+mechanicRotationalCPorts.at(i)+"\")->getSafeNodeDataPtr(0, 0);\n");
+        wrapperReplace16.append("    pInputNode"+QString::number(jin)+" = pComponentSystem->getSubComponent(\""+mechanicRotationalCComponents.at(i)+"\")->getSafeNodeDataPtr(\""+mechanicRotationalCPorts.at(i)+"\", 3);\n");
+        wrapperReplace16.append("    pInputNode"+QString::number(jin+1)+" = pComponentSystem->getSubComponent(\""+mechanicRotationalCComponents.at(i)+"\")->getSafeNodeDataPtr(\""+mechanicRotationalCPorts.at(i)+"\", 4);\n");
+        wrapperReplace16.append("    pOutputNode"+QString::number(jout)+" = pComponentSystem->getSubComponent(\""+mechanicRotationalCComponents.at(i)+"\")->getSafeNodeDataPtr(\""+mechanicRotationalCPorts.at(i)+"\", 2);\n");
+        wrapperReplace16.append("    pOutputNode"+QString::number(jout+1)+" = pComponentSystem->getSubComponent(\""+mechanicRotationalCComponents.at(i)+"\")->getSafeNodeDataPtr(\""+mechanicRotationalCPorts.at(i)+"\", 0);\n");
     }
     totIn+=nMechanicRotationalC*2;
     totOut+=nMechanicRotationalC*2;
     for(int i=0; i<nOutputs; ++i)
     {
         jout = totOut+i;
-        wrapperReplace16.append("    pOutputNode"+QString::number(jout)+" = pComponentSystem->getSubComponent(\""+outputComponents.at(i)+"\")->getPort(\""+outputPorts.at(i)+"\")->getSafeNodeDataPtr(0, 0);\n");
+        wrapperReplace16.append("    pOutputNode"+QString::number(jout)+" = pComponentSystem->getSubComponent(\""+outputComponents.at(i)+"\")->getSafeNodeDataPtr(\""+outputPorts.at(i)+"\", 0);\n");
     }
     for(int i=0; i<nInputs; ++i)
     {
         jin = totIn+i;
-        wrapperReplace16.append("    pInputNode"+QString::number(jin)+" = pComponentSystem->getSubComponent(\""+inputComponents.at(i)+"\")->getPort(\""+inputPorts.at(i)+"\")->getSafeNodeDataPtr(0, 0);\n");
+        wrapperReplace16.append("    pInputNode"+QString::number(jin)+" = pComponentSystem->getSubComponent(\""+inputComponents.at(i)+"\")->getSafeNodeDataPtr(\""+inputPorts.at(i)+"\", 0);\n");
     }
 
     savePath.replace("\\", "\\\\");
