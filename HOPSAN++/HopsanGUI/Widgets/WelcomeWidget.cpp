@@ -22,6 +22,7 @@
 //!
 //$Id: UndoWidget.h 3547 2011-10-25 11:48:47Z petno25 $
 
+//Qt includes
 #include <QLabel>
 #include <QGridLayout>
 #include <QDebug>
@@ -29,17 +30,19 @@
 #include <QWebFrame>
 #include <QtXml>
 
-#include "Configuration.h"
-#include "MainWindow.h"
+//Hopsan includes
 #include "common.h"
-#include "version_gui.h"
+#include "Configuration.h"
 #include "DesktopHandler.h"
 #include "Dialogs/OptionsDialog.h"
+#include "MainWindow.h"
+#include "ModelHandler.h"
+#include "version_gui.h"
 #include "Widgets/LibraryWidget.h"
 #include "Widgets/PlotWidget.h" //!< @todo why is this needed in here
-#include "ModelHandler.h"
 #include "Widgets/ProjectTabWidget.h"
 #include "Widgets/WelcomeWidget.h"
+
 
 WelcomeWidget::WelcomeWidget(QWidget *parent) :
     QWidget(parent)
@@ -66,7 +69,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
 //    tempFont.setPointSize(25);
 //    tempFont.setBold(true);
 //    mpHeading->setFont(tempFont);
-    mpHeading->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    //mpHeading->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     mpHeading->setAlignment(Qt::AlignCenter);
 
     mpNewIcon = new QLabel(this);
@@ -197,6 +200,7 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
 
     mpLoadingWebProgressBar = new QProgressBar(this);
     mpLoadingWebProgressBar->setRange(0, 0);
+    mpLoadingWebProgressBar->setFixedWidth(mFrameW*1.95);
     mpLoadingWebLabel = new QLabel("Loading news...", this);
     mpLoadingWebProgressBarTimer = new QTimer(this);
     connect(mpLoadingWebProgressBarTimer, SIGNAL(timeout()), this, SLOT(updateLoadingWebProgressBar()));
@@ -209,9 +213,9 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpLoadingWebLayout->setAlignment(mpLoadingWebLabel, Qt::AlignCenter);
     mpLoadingWebLayout->setAlignment(mpLoadingWebProgressBar, Qt::AlignCenter);
     mpLoadingWebWidget = new QWidget(this);
-    mpLoadingWebWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    //mpLoadingWebWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     mpLoadingWebWidget->setFixedHeight(168);
-    mpLoadingWebWidget->setFixedWidth(400);
+    //mpLoadingWebWidget->setFixedWidth(mFrameW*1.9);
     mpLoadingWebWidget->setLayout(mpLoadingWebLayout);
 
 
@@ -225,10 +229,10 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpFeed->get(QNetworkRequest(QUrl(NEWSLINK)));
 
     mpNewsScrollWidget = new QWidget(this);
-    mpNewsScrollWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    //mpNewsScrollWidget->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     mpNewsScrollLayout = new QVBoxLayout(mpNewsScrollWidget);
     mpNewsScrollArea = new QScrollArea(this);
-    mpNewsScrollArea->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    //mpNewsScrollArea->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     mpNewsScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     mpNewsScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     mpNewsScrollArea->setWidget(mpNewsScrollWidget);
@@ -237,14 +241,15 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     mpNewsText = new QLabel("Hopsan News", this);
     mpNewsText->setAlignment(Qt::AlignCenter);
     mpNewsText->setMouseTracking(true);
-    mpNewsText->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    //mpNewsText->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     mpNewsLayout = new QVBoxLayout(this);
     mpNewsLayout->addWidget(mpNewsText, 0, Qt::AlignTop);
     mpNewsLayout->addWidget(mpLoadingWebWidget);
+    //mpNewsLayout->setAlignment(mpLoadingWebWidget, Qt::AlignCenter);
     //mpNewsLayout->addWidget(mpWeb);
     mpNewsLayout->addWidget(mpNewsScrollArea);
     mpNewsFrame = new QFrame(this);
-    mpNewsFrame->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+    //mpNewsFrame->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
     mpNewsFrame->setFrameShape(QFrame::StyledPanel);
     mpNewsFrame->setMouseTracking(true);
     mpNewsFrame->setFixedSize(mFrameW*2,mFrameH*2+mSpacing);
@@ -507,7 +512,7 @@ void WelcomeWidget::showNews(QNetworkReply *pReply)
             mpNewsScrollLayout->addWidget(pTitleLabel);
             mpNewsScrollLayout->addWidget(pDateLabel);
             mpNewsScrollLayout->addWidget(pContentLabel);
-            mpNewsScrollLayout->setSizeConstraint(QLayout::SetNoConstraint);
+            //mpNewsScrollLayout->setSizeConstraint(QLayout::SetNoConstraint);
 
             entryElement = entryElement.nextSiblingElement("entry");
         }

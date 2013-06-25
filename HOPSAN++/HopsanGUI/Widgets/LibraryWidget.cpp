@@ -230,7 +230,7 @@ void LibraryWidget::checkForFailedComponents()
             }
         }
 
-        QDialog *pRecompDialog = new QDialog(this);
+        QDialog *pRecompDialog = new QDialog(0);
         pRecompDialog->setWindowFlags(pRecompDialog->windowFlags()  | Qt::WindowStaysOnTopHint);
         pRecompDialog->setWindowTitle("Failed Loading Libraries");
         QGridLayout *pRecompLayout = new QGridLayout();
@@ -1306,7 +1306,7 @@ void LibraryWidget::loadLibraryFolder(QString libDir, const QString libRootDir, 
         }
         else
         {
-            QMessageBox::information(window(), tr("Hopsan GUI read AppearanceData in %4"),
+            QMessageBox::information(0, tr("Hopsan GUI read AppearanceData in %4"),
                                      QString(file.fileName() + "\nParse error at line %1, column %2:\n%3")
                                      .arg(errorLine)
                                      .arg(errorColumn)

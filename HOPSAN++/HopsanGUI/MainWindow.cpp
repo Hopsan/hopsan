@@ -31,7 +31,7 @@
 
 #include <QDebug>
 #include <QFontDatabase>
-#include <QtNetwork/QNetworkReply>
+#include <QtNetwork>
 #include <QPixmap>
 
 #include "common.h"
