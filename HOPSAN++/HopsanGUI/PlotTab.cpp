@@ -1,35 +1,56 @@
-#include "PlotTab.h"
+/*-----------------------------------------------------------------------------
+ This source file is part of Hopsan NG
 
-#include "PlotWindow.h"
-#include "Configuration.h"
-#include "PlotCurve.h"
+ Copyright (c) 2011
+    Mikael Axin, Robert Braun, Alessandro Dell'Amico, Björn Eriksson,
+    Peter Nordin, Karl Pettersson, Petter Krus, Ingo Staack
 
-#include "GUIObjects/GUIContainerObject.h"
+ This file is provided "as is", with no guarantee or warranty for the
+ functionality or reliability of the contents. All contents in this file is
+ the original work of the copyright holders at the Division of Fluid and
+ Mechatronic Systems (Flumes) at Linköping University. Modifying, using or
+ redistributing any part of this file is prohibited without explicit
+ permission from the copyright holders.
+-----------------------------------------------------------------------------*/
 
-#include "Utilities/GUIUtilities.h"
+//!
+//! @file   PlotTab.cpp
+//! @author Peter Nordin <peter.nordin@liu.se>
+//! @date   2013
+//!
+//! @brief Contains a class for plot tabs
+//!
+//$Id: ModelHandler.cpp 5551 2013-06-20 08:54:16Z petno25 $
+
+//Other includes
+#include <cmath>
 #include <limits>
 
+//Hopsan includes
+#include "Configuration.h"
+#include "GUIObjects/GUIContainerObject.h"
+#include "MainWindow.h"
+#include "ModelHandler.h"
+#include "PlotCurve.h"
+#include "PlotTab.h"
+#include "PlotWindow.h"
+#include "Utilities/GUIUtilities.h"
+#include "version_gui.h"
+#include "Widgets/HcomWidget.h"
+#include "Widgets/ModelWidget.h"
+
+//Qwt includes
+#include "qwt_legend.h"
+#include "qwt_plot.h"
+#include "qwt_plot_renderer.h"
+#include "qwt_scale_draw.h"
 #include "qwt_scale_engine.h"
+#include "qwt_scale_map.h"
+#include "qwt_scale_widget.h"
 #include "qwt_symbol.h"
 #include "qwt_text_label.h"
-#include "qwt_plot_renderer.h"
-#include "qwt_scale_map.h"
-#include "qwt_plot.h"
-//#include "qwt_legend_item.h"
-#include "qwt_legend.h"
-//#include "q_layout.h"
-#include "qwt_scale_draw.h"
-#include "qwt_scale_widget.h"
 #include <qwt_dyngrid_layout.h>
 
-#include "MainWindow.h"
-#include "Widgets/ModelWidget.h"
-#include "Widgets/HcomWidget.h"
-#include "ModelHandler.h"
-
-#include "version_gui.h"
-
-#include <cmath>
 
 const double DoubleMax = std::numeric_limits<double>::max();
 const double DoubleEps = std::numeric_limits<double>::epsilon();

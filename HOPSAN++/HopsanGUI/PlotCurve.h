@@ -14,7 +14,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   PlutCurve.h
+//! @file   PlotCurve.h
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2010
 //!
