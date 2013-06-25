@@ -1018,9 +1018,9 @@ void PlotCurve::openScaleDialog()
     mpYScaleSpinBox->setSingleStep(0.1);
     mpYScaleSpinBox->setDecimals(10);
     mpYScaleSpinBox->setRange(-DoubleMax, DoubleMax);
-    if (mpData->getSharedTimePointer())
+    if (mpData)
     {
-        mpYScaleSpinBox->setValue(mpData->getSharedTimePointer()->getPlotScale());
+        mpYScaleSpinBox->setValue(mpData->getPlotScale());
     }
     else
     {
