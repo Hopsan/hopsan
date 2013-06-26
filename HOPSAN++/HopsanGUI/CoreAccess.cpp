@@ -112,7 +112,7 @@ bool CoreGeneratorAccess::generateFromFmu(QString path)
             }
         }
 
-        pHandler->callFmuImportGenerator(path.toStdString().c_str(), gDesktopHandler.getCoreIncludePath().toStdString().c_str(), gDesktopHandler.getExecPath().toStdString().c_str(), true);
+        pHandler->callFmuImportGenerator(path.toStdString().c_str(), gDesktopHandler.getFMUPath().toStdString().c_str(), gDesktopHandler.getCoreIncludePath().toStdString().c_str(), gDesktopHandler.getExecPath().toStdString().c_str(), true);
 
         if(QDir().exists(gDesktopHandler.getFMUPath() + fmuName))
         {

@@ -56,7 +56,7 @@ DesktopHandler::DesktopHandler()
     mMSVC2010X86Path = mExecPath+"MSVC2010_x86/";
     mMSVC2008X64Path = mExecPath+"MSVC2008_x64/";
     mMSVC2010X64Path = mExecPath+"MSVC2010_x64/";
-    mFMUPath = mExecPath+"../import/FMU/";
+    mFMUPath = mDefaultDocumentsPath+"import/FMU/";
     mLogDataPath = mDefaultDocumentsPath + "/LogData";
 }
 

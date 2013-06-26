@@ -138,10 +138,10 @@ extern "C" DLLIMPORTEXPORT void callCppGenerator(string cppCode, string coreIncl
 //! @param coreIncludePath Path to HopsanCore include files
 //! @param binPath Path to HopsanCore binary files
 //! @param showDialog True if generator output shall be displayed in a dialog window
-extern "C" DLLIMPORTEXPORT void callFmuImportGenerator(string path, string coreIncludePath, string binPath, bool showDialog=false)
+extern "C" DLLIMPORTEXPORT void callFmuImportGenerator(string path, string targetPath, string coreIncludePath, string binPath, bool showDialog=false)
 {
     HopsanFMIGenerator *pGenerator = new HopsanFMIGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
-    pGenerator->generateFromFmu(QString(path.c_str()));
+    pGenerator->generateFromFmu(QString(path.c_str()), QString(targetPath.c_str()));
     delete(pGenerator);
 }
 

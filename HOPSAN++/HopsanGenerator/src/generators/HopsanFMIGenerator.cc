@@ -24,7 +24,7 @@ HopsanFMIGenerator::HopsanFMIGenerator(QString coreIncludePath, QString binPath,
 
 
 
-void HopsanFMIGenerator::generateFromFmu(QString path)
+void HopsanFMIGenerator::generateFromFmu(QString path, QString targetPath)
 {
     printMessage("Initializing FMU import");
 
@@ -43,28 +43,24 @@ void HopsanFMIGenerator::generateFromFmu(QString path)
     QString cqsType="Signal";
 
     //Create import directory if it does not exist
-    if(!QDir(mExecPath + "../import").exists())
-        QDir().mkdir(mExecPath + "../import");
-
-    //Create FMU directory if it does not exist
-    if(!QDir(mExecPath + "../import/FMU").exists())
-        QDir().mkdir(mExecPath + "../import/FMU");
+    if(!QDir(targetPath).exists())
+        QDir().mkpath(targetPath);
 
     //Remove output directory if it already exists
-    if(QDir(mExecPath+"../import/FMU/"+fmuName).exists() && !removeDir(mExecPath+"../import/FMU/"+fmuName))
+    if(QDir(targetPath+"/"+fmuName).exists() && !removeDir(targetPath+"/"+fmuName))
     {
-        printErrorMessage("Unable to remove output directory: "+QDir().cleanPath(mExecPath+"../import/FMU/"+fmuName)+". Please remove it manually and try again.");
+        printErrorMessage("Unable to remove output directory: "+QDir().cleanPath(targetPath+"/"+fmuName)+". Please remove it manually and try again.");
         return;
     }
 
     //Create output directory
-    if(!QDir().mkdir(mExecPath + "../import/FMU/" + fmuName))
+    if(!QDir().mkdir(targetPath+"/" + fmuName))
     {
-        printErrorMessage("Unable to create output directory: "+QDir().cleanPath(mExecPath+"../import/FMU/"+fmuName)+". Please remove it manually and try again.");
+        printErrorMessage("Unable to create output directory: "+QDir().cleanPath(targetPath+"/"+fmuName)+". Please remove it manually and try again.");
         return;
     }
 
-    QString fmuPath = mExecPath + "../import/FMU/" + fmuName;
+    QString fmuPath = targetPath+"/" + fmuName;
     QDir fmuDir = QDir::cleanPath(fmuPath);
 
     printMessage("Unpacking files");
