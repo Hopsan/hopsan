@@ -119,7 +119,7 @@ bool VariableTableWidget::setAliasName(const int row)
     QString alias = item(row,VariableTableWidget::Alias)->text();
     //! @todo since alias=empty means unregister we can not skip it, but there should be some check if a variable has changed, so that we do not need to go thourgh set for all variables every freeking time
     QString name = item(row,VariableTableWidget::Name)->text();
-    QStringList parts = name.split("::");
+    QStringList parts = name.split("#");
     if (parts.size() == 2)
     {
         mpModelObject->getParentContainerObject()->setVariableAlias(mpModelObject->getName(), parts[0], parts[1], alias);
@@ -430,7 +430,7 @@ VariableTableWidget::VariableTableWidget(ModelObject *pModelObject, QWidget *pPa
     QVector<int> constantsIds;
     for (int i=0; i<parameters.size(); ++i)
     {
-        if (!parameters[i].mName.contains("::"))
+        if (!parameters[i].mName.contains("#"))
         {
             constantsIds.push_back(i);
         }
@@ -649,7 +649,7 @@ void VariableTableWidget::selectSystemParameterAtRow(int row)
 void VariableTableWidget::makePortAtRow(int row, bool isPort)
 {
 //! @todo hmm it does not make sense to have startvalues as ports (or maybe it does, but startvalues are run before init and simulate), but then you could have startvalue to startvalue to startvalue ...
-    const QString name = item(row,Name)->text().split("::").at(0);
+    const QString name = item(row,Name)->text().split("#").at(0);
     Port * pPort=0;
     if (isPort)
     {
@@ -697,7 +697,7 @@ void VariableTableWidget::createTableRow(const int row, const CoreVariameterDesc
     }
     else
     {
-        fullName = rData.mPortName+"::"+rData.mName;
+        fullName = rData.mPortName+"#"+rData.mName;
     }
 
     pItem = new QTableWidgetItem(fullName);

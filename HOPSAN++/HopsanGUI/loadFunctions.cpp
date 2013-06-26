@@ -146,27 +146,28 @@ void loadParameterValue(QDomElement &rDomElement, ModelObject* pObject, UndoStat
     QString parameterType;
 
     parameterName = rDomElement.attribute(HMF_NAMETAG);
+    parameterName.replace("::","#"); //!< @todo this can be removed in the future (after 0.7), used to upconvert old hmf file formats
     parameterValue = rDomElement.attribute(HMF_VALUETAG);
     parameterType = rDomElement.attribute(HMF_TYPE);
     parameterType = rDomElement.attribute(HMF_TYPENAME, parameterType); //!< @deprecated load old typename
 
     //! @todo Remove this check in teh future when models should have been updated
-    QStringList existinNames = pObject->getParameterNames();
+    QStringList existingNames = pObject->getParameterNames();
     // This code makes sure we can load old parameters from before they became ports
     bool tryingToAddColonColonValue = false;
-    if(!existinNames.contains(parameterName))
+    if(!existingNames.contains(parameterName))
     {
-        if (!parameterName.contains("::"))
+        if (!parameterName.contains("#"))
         {
-            parameterName = parameterName+"::Value";
+            parameterName = parameterName+"#Value";
             tryingToAddColonColonValue = true;
         }
     }
 
     //Use the setParameter method that mapps to System parameter
-    if(!parameterName.startsWith("noname_subport:") && !existinNames.contains(parameterName))
+    if(!parameterName.startsWith("noname_subport:") && !existingNames.contains(parameterName))
     {
-        if (parameterName.contains("::"))
+        if (parameterName.contains("#"))
         {
             gpMainWindow->mpTerminalWidget->mpConsole->printWarningMessage("Startvalue mismatch:  "+parameterName+" = "+parameterValue+"  in Component:  "+pObject->getName()+".  Startvalue ignored.", "startvaluemismatch");
         }

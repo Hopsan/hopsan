@@ -455,7 +455,7 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
 void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue, const ParamDynConstEnumT dynconst)
 {
     // We allow the : exception for registring start value parameters
-    if (!isNameValid(rName, ":"))
+    if (!isNameValid(rName, "#"))
     {
         addErrorMessage("Will not register Invalid parameter name: "+rName);
         return;
@@ -1175,7 +1175,7 @@ void Component::setDefaultStartValue(Port *pPort, const size_t idx, const double
     // If a description exist, then refresh the value text
     if (pPort->getNodeDataDescription(idx))
     {
-        mpParameters->refreshParameterValueText(pPort->getName()+"::"+pPort->getNodeDataDescription(idx)->name);
+        mpParameters->refreshParameterValueText(pPort->getName()+"#"+pPort->getNodeDataDescription(idx)->name);
     }
 }
 

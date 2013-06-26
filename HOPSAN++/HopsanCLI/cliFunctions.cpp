@@ -484,7 +484,6 @@ void exportParameterValuesToCSV(const std::string &rFileName, hopsan::ComponentS
                     {
                         //! @todo what about alias name
                         HString parname = pParameters->at(p)->getName();
-                        parname.replace("::","#"); //!< @todo this should not be needed once we stop using :: elsewere
                         HString fullname = prefix.c_str() + pComp->getName() + "#" + parname;
                         *pFile << fullname.c_str() << "," << pParameters->at(p)->getValue().c_str() << endl;
                     }
@@ -547,8 +546,9 @@ void importParameterValuesFromCSV(const std::string filePath, hopsan::ComponentS
                             }
                             if (nameVec.size() == 3)
                             {
+                                // Set component name and reset the parameter (startvalue) name
                                 componentName = nameVec[0];
-                                parameterName = nameVec[1]+"::"+nameVec[2]; //!< @todo "::" should not be needed in the future when we clean that up, (the thing is that it is currently part of parameter (constants/startvalues) names by default)
+                                parameterName = nameVec[1]+"#"+nameVec[2];
                             }
 
 

@@ -228,7 +228,7 @@ void DebuggerWidget::addVariable()
     QString data = mpVariablesList->currentItem()->text();
     if(component.isEmpty() || port.isEmpty() || data.isEmpty()) return;
 
-    QString fullName = component+"::"+port+"::"+data;
+    QString fullName = component+"#"+port+"#"+data;
 
     if(mVariables.contains(fullName)) return;
 
@@ -328,9 +328,9 @@ void DebuggerWidget::logLastData()
     mpTraceTable->setVerticalHeaderItem(mpTraceTable->rowCount()-1, pItem);
     Q_FOREACH(const QString &var, mVariables)
     {
-        QString component = var.split("::").at(0);
-        QString port = var.split("::").at(1);
-        QString data = var.split("::").at(2);
+        QString component = var.split("#").at(0);
+        QString port = var.split("#").at(1);
+        QString data = var.split("#").at(2);
 
         double value;
         mpSystem->getCoreSystemAccessPtr()->getLastNodeData(component, port, data, value);

@@ -98,7 +98,8 @@ void updateOldModelFileParameter(rapidxml::xml_node<> *pParameterNode, const HSt
         {
             // Fix renamed node data vaariables
             HString name = readStringAttribute(pParameterNode,"name","").c_str();
-            if (name.containes("::"))
+            name.replace("::","#"); //!< @todo remove this after 0.7 (it is used to update models prior to 0.6
+            if (name.containes("#"))
             {
                 // split string
                 HString part1 = name.substr(0, name.rfind(':')+1);
@@ -160,9 +161,9 @@ void updateRenamedPort(rapidxml::xml_node<> *pNode, const string &rComponentType
         while (pParamNode)
         {
             HString paramName = readStringAttribute(pParamNode, "name").c_str();
-            if (paramName.containes(rOldName+"::"))
+            if (paramName.containes(rOldName+"#"))
             {
-                paramName.replace(rOldName+"::", rNewName+"::");
+                paramName.replace(rOldName+"#", rNewName+"#");
                 writeStringAttribute(pParamNode, "name", paramName.c_str());
             }
             pParamNode = pParamNode->next_sibling("parameter");
@@ -244,9 +245,9 @@ void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSyste
                 //! @todo this is a hack to update old parameters, remove at some point in the future
                 if (!pComp->hasParameter(paramName))
                 {
-                    if (paramName.find("::") == HString::npos)
+                    if (paramName.find("#") == HString::npos)
                     {
-                        paramName=paramName+"::Value";
+                        paramName=paramName+"#Value";
                     }
                 }
 

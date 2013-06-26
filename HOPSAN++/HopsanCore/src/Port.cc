@@ -274,7 +274,7 @@ void Port::createStartNode(const HString &rNodeType)
         {
             const NodeDataDescription* pDesc = mpStartNode->getDataDescription(i);
             const HString desc = "startvalue: Port "+getName();
-            const HString name = getName()+"::"+pDesc->name;
+            const HString name = getName()+"#"+pDesc->name;
             getComponent()->addConstant(name, desc, pDesc->unit, *(mpStartNode->getDataPtr(pDesc->id)));
         }
     }
@@ -553,7 +553,7 @@ void Port::disableStartValue(const size_t idx)
     {
         // The start value has already been registered as a parameter in the component, so we must unregister it.
         // This is probably not the most beautiful solution.
-        HString name = getName()+"::"+mpStartNode->getDataDescription(idx)->name;
+        HString name = getName()+"#"+mpStartNode->getDataDescription(idx)->name;
         mpComponent->addDebugMessage("Disabling_StartValue: "+name);
         mpComponent->unRegisterParameter(name);
 

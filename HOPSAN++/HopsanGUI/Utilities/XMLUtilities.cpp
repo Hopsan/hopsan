@@ -494,9 +494,9 @@ void verifyHmfComponentCompatibility(QDomElement &element, const QString /*hmfVe
         while (!xmlParameter.isNull())
         {
             // Fix renamed node data vaariables
-            if (xmlParameter.attribute("name").contains("::"))
+            if (xmlParameter.attribute("name").contains("#"))
             {
-                QStringList parts = xmlParameter.attribute("name").split("::");
+                QStringList parts = xmlParameter.attribute("name").split("#");
                 if (parts[1] == "Angular Velocity")
                 {
                     parts[1] = "AngularVelocity";
@@ -509,7 +509,7 @@ void verifyHmfComponentCompatibility(QDomElement &element, const QString /*hmfVe
                 {
                     parts[1] = "CharImpedance";
                 }
-                xmlParameter.setAttribute("name", parts[0]+"::"+parts[1]);
+                xmlParameter.setAttribute("name", parts[0]+"#"+parts[1]);
             }
 
             // Fix parameter names with illegal chars
@@ -579,9 +579,9 @@ void updateRenamedPort(QDomElement &rDomElement, const QString componentType, co
         while (!parameter.isNull())
         {
             QString paramName = parameter.attribute(HMF_NAMETAG);
-            if (paramName.contains(oldName+"::"))
+            if (paramName.contains(oldName+"#"))
             {
-                paramName.replace(oldName+"::",newName+"::");
+                paramName.replace(oldName+"#",newName+"#");
                 parameter.setAttribute(HMF_NAMETAG, paramName);
             }
             parameter = parameter.nextSiblingElement(HMF_PARAMETERTAG);
