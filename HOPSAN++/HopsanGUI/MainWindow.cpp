@@ -151,7 +151,7 @@ MainWindow::MainWindow(QWidget *parent)
     mpAboutDialog = new AboutDialog(this);
     mpOptimizationDialog = new OptimizationDialog(this);
     mpSensitivityAnalysisDialog = new SensitivityAnalysisDialog(this);
-    mpHelpDialog = new HelpDialog(this);
+    mpHelpDialog = new HelpDialog(0);
 
     //Create the Python widget
     mpPyDockWidget = new PyDockWidget(this, this);
@@ -295,14 +295,12 @@ MainWindow::MainWindow(QWidget *parent)
     // Trigger splashscreen close in one second
     QTimer::singleShot(3000, gpSplash, SLOT(close()));
 
-    initializeWorkspace();
-
-
     mpWelcomeWidget = new WelcomeWidget(this);
-    //mpCentralGridLayout->addWidget(mpWelcomeWidget,0,0,4,4);
-    //mpCentralGridLayout->setAlignment(mpWelcomeWidget, Qt::AlignTop);
+
     mpCentralTabs->addTab(mpWelcomeWidget, "Welcome");
     mpCentralTabs->setTabNotClosable(0);
+
+    initializeWorkspace();
 
     this->updateRecentList();
 

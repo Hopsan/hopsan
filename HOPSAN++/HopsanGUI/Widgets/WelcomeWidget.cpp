@@ -295,7 +295,6 @@ WelcomeWidget::WelcomeWidget(QWidget *parent) :
     this->setLayout(mpLayout);
 
     connect(this, SIGNAL(hovered()), gpMainWindow->mpLibrary, SLOT(clearHoverEffects()));
-    connect(this, SIGNAL(hovered()), gpMainWindow->mpPlotWidget, SLOT(clearHoverEffects()));
     connect(gpMainWindow->mpCentralTabs, SIGNAL(currentChanged(int)), this, SLOT(autoHide()));
 }
 

@@ -22,6 +22,7 @@
 //!
 //$Id$
 
+//Qt includes
 #include <QDebug>
 #include <QSpinBox>
 #include <QColorDialog>
@@ -30,21 +31,22 @@
 #include <QAction>
 #include <QTextStream>
 
-#include "PlotWindow.h"
-#include "PlotWidget.h"
-#include "MainWindow.h"
-#include "ProjectTabWidget.h"
-#include "GUIObjects/GUIModelObject.h"
-#include "GUIPort.h"
-#include "GraphicsView.h"
-#include "GUIObjects/GUISystem.h"
-#include "Utilities/GUIUtilities.h"
-#include "loadFunctions.h"
-#include "MessageWidget.h"
+//Hopsan includes
 #include "Configuration.h"
+#include "GraphicsView.h"
 #include "GUIObjects/GUIContainerObject.h"
-
+#include "GUIObjects/GUIModelObject.h"
+#include "GUIObjects/GUISystem.h"
+#include "GUIPort.h"
+#include "LibraryWidget.h"
+#include "loadFunctions.h"
+#include "MainWindow.h"
+#include "MessageWidget.h"
 #include "PlotHandler.h"
+#include "PlotWidget.h"
+#include "PlotWindow.h"
+#include "ProjectTabWidget.h"
+#include "Utilities/GUIUtilities.h"
 
 
 //! @brief Constructor for the variable items in the variable tree
@@ -539,6 +541,8 @@ PlotTreeWidget::PlotTreeWidget(QWidget *pParent)
 
     connect(mpLoadButton, SIGNAL(clicked()),this,SLOT(loadFromXml()));
     mpLoadButton->setDisabled(true); //!< @todo Fix /Peter
+
+    connect(gpMainWindow->mpLibrary, SIGNAL(hovered()), this, SLOT(clearHoverEffects()));
 }
 
 

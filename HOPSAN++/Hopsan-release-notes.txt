@@ -14,6 +14,77 @@ Hopsan Release Notes
 
 
 -- Version History --
+0.6.0
+
+- Feautre: Log data can now be cached on hard disk	
+- Feature: Added support for 2D-animations
+- Feature: Exporting models to FMU Model Exchange
+- Feature: Importing models from FMU Model Exechange
+- Feature: Exporting models to LabVIEW/Veristand
+- Feature: Parameters are replaced with constants and variables, where variables are changable during simulation
+- Feature: Broken connectors now appear when loading a connector fails
+- Feature: Printing models
+- Feature: Components can now be recompiled automatically (requires MinGW compiler)
+- Feature: All ports now have a node and can be plotted even when not connected
+- Feature: Built-in tool for profiling components
+- Feature: Added save function for parameter set
+- Feature: Made it possible to export models to PNG bitmaps
+- Feature: Added "replace with similar component" function by right-clicking components
+- Feature: If documents path is not writable, user can select a different path
+- Feature: New terminal widget, using the HCOM language similar to the one in old Hopsan
+- Feature: Optimization dialog now generates HCOM scripts, increasing performance
+- Feature: Abort button for scripts
+- Feature: Script commands for adding/connecting components and entering/exiting subsystems
+- Feature: Each plot curve can now have an individual x-axis
+- Feature: Made it possible to lock axes in plots
+- Feature: Changing plot curve appearance (dots/lines/etc)
+- Feature: Importing data variables from PLO format
+- Feature: Pointer tool in plot window
+- Feature: Plot windows now shows model name in their window name
+- Feature: Plots can now be exported to PDF, SVG, PS, PNG or JPEG formats
+- Feature: Simulation settings can now be controlled with arguments to HopsanCLI
+- Feature: Importing and exporting parameters from CLI
+- Feature: Move ports dialog
+- Feature: System parameters can now be changed in exported S-functions
+- Feature: Plot widget and library widget now remember all expanded items when updating
+- Feature: Auto generated components now have comments telling you not to manually change the code
+- Feature: Added fatal message type
+- Feature: Replaced all assert(false) in HopsanCore with more clever solutions
+- Feature: Made it possible to save subsystems
+- Feature: Component test models can now be accessed from within program
+- Feature: Added release notes under help menu
+- Feature: All required system parameters are copied when copying components between models
+- Feature: Sensor components now have custom units on output signal
+
+- Enhancement: Simulink export no longer uses absolute path to HMF file
+- Enhancement: Plot legends are now on left or right, depending on which Y-axis they belong to
+- Enhancement: Sorting order for signal components are now displayed as debug output in terminal
+
+
+- Fixed: Most nodes now have reasonable default start values
+- Fixed: Aliases are now showed in plot legends
+- Fixed: It is now possible to use negative system parameters
+- Fixed: System parameters can now be edited in the system parameters widget
+- Fixed: Parameters can now be assigned with system parameters with same name
+- Fixed: XY-plots now updates correctly when changing generation
+- Fixed: Drag-n-drop rectangle are now visible on all operating systems
+- Fixed: When aborting simulations, the entire plot data is no longer collected
+- Fixed: Plot data is no longer collected when logging is disabled
+- Fixed: Memory leak in equation solver
+
+- Documentation: Added guide for sensitivity analysis
+- Documentation: Added descriptions of optimization algorithms
+- Documentation: Added documentation for animation function
+
+- Other: Replaced all std::string with new HString class, to avoid problems when communicating between executable and libraries
+- Other: Made it illegal to use other characters than letters and underscore in component names
+- Other: Algebraic loops are no longer allowed, and must be resolved by using a unit delay component
+- Other: Major performance improvements in SymHop library
+- Other: Node types and parameter units are now stored in HMF files
+- Other: Author information is now stored in HMF files
+- Other: Components now use a configure function instead of constructors	
+- Other: Removed singleton classes to avoid problems between DLLs
+
 0.5.6
 - Fixed: MechanicJlink component was broken since Delay changes in 0.5.4, it should now work again
 - Fixed: Instability problems in MechinicalGear components
