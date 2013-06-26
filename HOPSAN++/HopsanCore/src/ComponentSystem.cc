@@ -1434,9 +1434,8 @@ bool ComponentSystem::connect(Port *pPort1, Port *pPort2)
     }
 
 
-    // Prevent connection if ports are already connected to each other
-    //! @todo What will happend with multiports
-    if (pPort1->isConnectedTo(pPort2))
+    // Prevent connection if ports are already connected to each other, but we make an exception if one of the ports is aread multiport (to allow connecting same signal multiple times to scopes)
+    if (!((pPort1->getPortType() == ReadMultiportType) || ((pPort2->getPortType() == ReadMultiportType))) && pPort1->isConnectedTo(pPort2) )
     {
         addErrorMessage("Port: " + pComp1->getName()+"::"+pPort1->getName() + "  is already connected to: " + pComp2->getName()+"::"+pPort2->getName());
         return false;
