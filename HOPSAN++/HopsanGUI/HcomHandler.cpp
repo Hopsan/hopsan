@@ -2220,7 +2220,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
         {
             *returnType = DataVector;
             SharedLogVariableDataPtrT var = getVariablePtr(args);
-            return pLogData->diffVariables(var.data()->getFullVariableName(), "time");
+            return pLogData->diffVariables(var.data()->getFullVariableName(), TIMEVARIABLENAME);
         }
         else
         {
@@ -2238,7 +2238,7 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
             double freq = args.section(",",1,1).toDouble();
             *returnType = DataVector;
             SharedLogVariableDataPtrT var = getVariablePtr(args.section(",",0,0));
-            return pLogData->lowPassFilterVariable(var.data()->getFullVariableName(), "time", freq);
+            return pLogData->lowPassFilterVariable(var.data()->getFullVariableName(), TIMEVARIABLENAME, freq);
         }
         else if(args.count(",") == 2)
         {
@@ -2256,13 +2256,13 @@ QString HcomHandler::evaluateExpression(QString expr, VariableType *returnType, 
         {
             *returnType = DataVector;
             SharedLogVariableDataPtrT var = getVariablePtr(args.section(",",0,0));
-            return pLogData->fftVariable(var.data()->getFullVariableName(), "time", false);
+            return pLogData->fftVariable(var.data()->getFullVariableName(), TIMEVARIABLENAME, false);
         }
         if(args.count(",")==1)
         {
             QString arg2=args.section(",",1,1);
             bool power=false;
-            QString timeVec = "time";
+            QString timeVec = TIMEVARIABLENAME;
             if(arg2 == "true" || arg2 == "false")
             {
                 power = (args.section(",",1,1) == "true");

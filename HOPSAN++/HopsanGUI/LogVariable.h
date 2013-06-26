@@ -34,6 +34,8 @@
 
 #include "CachableDataVector.h"
 
+#define TIMEVARIABLENAME "Time"
+
 // Forward declaration
 class LogVariableData;
 class LogDataHandler;

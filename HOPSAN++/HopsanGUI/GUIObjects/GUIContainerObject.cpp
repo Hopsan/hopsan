@@ -2863,7 +2863,7 @@ void ContainerObject::measureSimulationTime()
     QStandardItemModel *pComponentModel = new QStandardItemModel();
     pComponentModel->insertColumn(0, nameList);
     pComponentModel->insertColumn(1, timeList);
-    QStandardItem *pComponentNameHeaderItem = new QStandardItem("Componetn Name");
+    QStandardItem *pComponentNameHeaderItem = new QStandardItem("Component Name");
     pComponentModel->setHorizontalHeaderItem(0, pComponentNameHeaderItem);
     QStandardItem *pComponentTimeHeaderItem = new QStandardItem("Time");
     pComponentModel->setHorizontalHeaderItem(1, pComponentTimeHeaderItem);

@@ -35,7 +35,7 @@
 SharedLogVariableDataPtrT createFreeTimeVariabel(const QVector<double> &rTime)
 {
     SharedVariableDescriptionT pVarDesc = SharedVariableDescriptionT(new VariableDescription());
-    pVarDesc->mDataName = "Time";
+    pVarDesc->mDataName = TIMEVARIABLENAME;
     pVarDesc->mDataUnit = "s";
     // Since there is no parent we can nog cahe this to disk or give it a generation, it is a free floating time vector (logvariable)
     // Note! the time vaariable does not have a time vector, the time is the data in this case
@@ -516,7 +516,7 @@ void LogVariableData::frequencySpectrum(const SharedLogVariableDataPtrT pTime, c
     //! @todo need an easier way to create individual free data variables, hmm dont I already have one in Logdatahandler ?
     //! @todo maybe need a special function to create a free time vector log data variable
     VariableDescription varDesc;
-    varDesc.mDataName = "time";
+    varDesc.mDataName = TIMEVARIABLENAME;
     varDesc.mDataUnit = "s";
     LogVariableContainer dummyTimeContainer(varDesc, 0);
     dummyTimeContainer.addDataGeneration(this->getGeneration(), SharedLogVariableDataPtrT(), timeVec);

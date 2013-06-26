@@ -111,7 +111,7 @@ void LogDataHandler::exportToPlo(QString filePath, QStringList variables)
     QStringList startvaluesList;
 
     QList<SharedLogVariableDataPtrT> dataPtrs;
-    dataPtrs.append(getPlotData("Time", -1)); //!< @todo this assumes that time exists and is named Time
+    dataPtrs.append(getPlotData(TIMEVARIABLENAME, -1)); //!< @todo this assumes that time exists and is named Time
     for(int v=0; v<variables.size(); ++v)
     {
         dataPtrs.append(getPlotData(variables[v],-1));
@@ -320,7 +320,7 @@ void LogDataHandler::importFromPlo(QString rImportFilePath)
         ++mGenerationNumber;
         SharedLogVariableDataPtrT timeVecPtr(0);
 
-        if (importedPLODataVector[0].mDataName == "Time")
+        if (importedPLODataVector[0].mDataName == TIMEVARIABLENAME)
         {
             timeVecPtr = insertTimeVariable(importedPLODataVector.first().mDataValues);
             timeVecPtr->mpVariableDescription->mVariableSourceType = VariableDescription::ImportedVariableType;
@@ -617,7 +617,7 @@ SharedLogVariableDataPtrT LogDataHandler::getPlotData(const QString fullName, co
 //! @param[in] generation Generation
 const SharedLogVariableDataPtrT LogDataHandler::getTimeVectorPtr(int generation) const
 {
-    LogVariableContainer *pCont = mLogDataMap.value("time",0);
+    LogVariableContainer *pCont = mLogDataMap.value(TIMEVARIABLENAME,0);
     if (pCont)
     {
         if (generation < 0)
@@ -1082,13 +1082,13 @@ QString LogDataHandler::diffVariables(const QString &a, const QString &b)
 {
     SharedLogVariableDataPtrT pData1 = getPlotData(a, -1);
     SharedLogVariableDataPtrT pData2;
-    if(b!="time")
+    if(b!=TIMEVARIABLENAME)
     {
         pData2 = getPlotData(b, -1);
     }
 
 
-    if( (pData1 == 0) || (pData2 == 0 && b != "time") )
+    if( (pData1 == 0) || (pData2 == 0 && b != TIMEVARIABLENAME) )
     {
         return QString();
     }
@@ -1111,13 +1111,13 @@ QString LogDataHandler::lowPassFilterVariable(const QString &a, const QString &b
 {
     SharedLogVariableDataPtrT pData1 = getPlotData(a, -1);
     SharedLogVariableDataPtrT pData2;
-    if(b!="time")
+    if(b!=TIMEVARIABLENAME)
     {
         pData2 = getPlotData(b, -1);
     }
 
 
-    if( (pData1 == 0) || (pData2 == 0 && b != "time") )
+    if( (pData1 == 0) || (pData2 == 0 && b != TIMEVARIABLENAME) )
     {
         return QString();
     }
@@ -1140,13 +1140,13 @@ QString LogDataHandler::fftVariable(const QString &a, const QString &b, const bo
 {
     SharedLogVariableDataPtrT pData1 = getPlotData(a, -1);
     SharedLogVariableDataPtrT pData2;
-    if(b!="time")
+    if(b!=TIMEVARIABLENAME)
     {
         pData2 = getPlotData(b, -1);
     }
 
 
-    if( (pData1 == 0) || (pData2 == 0 && b != "time") )
+    if( (pData1 == 0) || (pData2 == 0 && b != TIMEVARIABLENAME) )
     {
         return QString();
     }
@@ -1662,7 +1662,7 @@ SharedLogVariableDataPtrT LogDataHandler::insertVariableBasedOnDescription(Varia
 SharedLogVariableDataPtrT LogDataHandler::insertTimeVariable(QVector<double> &rTimeVector)
 {
     //! @todo this should not be done/checked here every time should have been prepered someewhere else, but no point in doing it properly now since we must rewrite logdatahandler to be global anyway
-    LogVariableContainer *pTime = mLogDataMap.value("Time");
+    LogVariableContainer *pTime = mLogDataMap.value(TIMEVARIABLENAME);
     if (pTime)
     {
         return pTime->addDataGeneration(mGenerationNumber, SharedLogVariableDataPtrT(), rTimeVector); //Note! Time vector itself does not have a time vector it only has a data vector
@@ -1671,7 +1671,7 @@ SharedLogVariableDataPtrT LogDataHandler::insertTimeVariable(QVector<double> &rT
     {
         VariableDescription varDesc;
         //varDesc.mModelPath = pModelObject->getParentContainerObject()->getModelFileInfo().fileName();
-        varDesc.mDataName = "Time"; //! @todo this name must be reserved
+        varDesc.mDataName = TIMEVARIABLENAME; //!< @todo this name must be reserved
         varDesc.mDataUnit = "s";
         varDesc.mVariableSourceType = VariableDescription::ModelVariableType; //! @todo maybe timetype (dont know, check with old hopsan)
 
