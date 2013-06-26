@@ -134,7 +134,7 @@ void DesktopHandler::setupPaths()
     mModelsPath = getDocumentsPath()+"/Models/";
     mScriptsPath = getDocumentsPath()+"/Scripts/";
     mLogDataPath = getDocumentsPath() + "/LogData/";
-
+    mFMUPath = getDocumentsPath() +"/import/FMU/";
 
      // Make sure backup folder exists, create it if not
     if (!QDir().exists(getBackupPath()))
