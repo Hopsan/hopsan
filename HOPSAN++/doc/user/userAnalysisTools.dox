@@ -1,6 +1,6 @@
 /*!
 \page userAnalysisTools Analysis Tools
-\todo write this
+Hopsan contains several tools that can be used to analyse models or visualize simulation results. 
 
 -# \subpage userOptimization \n
 -# \subpage userSensitivityAnalysis \n

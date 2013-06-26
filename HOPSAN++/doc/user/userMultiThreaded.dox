@@ -7,8 +7,6 @@ Though the intention of parallelizing is to reduce simulation time, there is no 
 
 In order to maximize the benefits, it is adviced to select processor affinity in Windows Task Manager to specify exactly which cores that shall be used (unless all cores are to be used of course). It is also recommended to disable the simulation progress bar before simulations using all cores, since it will slow down one of the simulation threads.
 
-\todo Skriv mer...
-
 \section multithreaded-references References:
 \htmlonly
 <a href = "http://urn.kb.se/resolve?urn=urn:nbn:se:liu:diva-68373">Braun R, Nordin P, Eriksson B, Krus P. High Performance System Simulation Using Multiple Processor Cores. In: The Twelfth Scandinavian International Conference on Fluid Power, SICFP'11. 2011.</a>
