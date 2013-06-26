@@ -875,8 +875,8 @@ void PlotWindow::createBodePlot(SharedLogVariableDataPtrT var1, SharedLogVariabl
 void PlotWindow::createBodePlot(PlotCurve *pInputCurve, PlotCurve *pOutputCurve, int Fmax)
 {
     //Create temporary real vectors
-    QVector<double> realYvector = pInputCurve->getDataVector();
-    QVector<double> realXvector = pOutputCurve->getDataVector();
+    QVector<double> realYvector = pInputCurve->getDataVectorCopy();
+    QVector<double> realXvector = pOutputCurve->getDataVectorCopy();
 
     //Abort and inform user if vectors are not of same size
     if(realXvector.size() != realYvector.size())

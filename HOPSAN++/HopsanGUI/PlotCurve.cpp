@@ -517,7 +517,7 @@ int PlotCurve::getAxisY()
 
 
 //! @brief Returns the (unscaled) data vector of a plot curve
-QVector<double> PlotCurve::getDataVector() const
+QVector<double> PlotCurve::getDataVectorCopy() const
 {
     //! @todo this is no longer a reference need to see where it was used to avoid REALY slow code feetching data all the time /Peter
     return mpData->getDataVectorCopy();
@@ -983,34 +983,53 @@ void PlotCurve::openScaleDialog()
     pScaleDialog->setWindowTitle("Change data plot-scale and plot-offsets");
 
     QLabel *pXScaleLabel = new QLabel("Time Axis Scale: ", pScaleDialog);
-    mpXScaleSpinBox = new QDoubleSpinBox(pScaleDialog);
-    mpXScaleSpinBox->setRange(-DoubleMax, DoubleMax);
-    mpXScaleSpinBox->setDecimals(10);
-    mpXScaleSpinBox->setSingleStep(0.1);
+
+    //! @todo this should not be handled here, it should be the same as custom units for variables such as pressure and similar
+    mpTimeScaleComboBox = new QComboBox(pScaleDialog);
+    mpTimeScaleComboBox->addItem("1 (s)");
+    mpTimeScaleComboBox->addItem("1e3 (ms)");
+    mpTimeScaleComboBox->addItem("1e6 ("+QObject::trUtf8("μ")+"s)");
+    mpTimeScaleComboBox->addItem("1e9 (ns)");
     if (mpData->getSharedTimePointer())
     {
-        mpXScaleSpinBox->setValue(mpData->getSharedTimePointer()->getPlotScale());
+        const double scale = mpData->getSharedTimePointer()->getPlotScale();
+        if (qFuzzyCompare(scale, 1))
+        {
+            mpTimeScaleComboBox->setCurrentIndex(0);
+        }
+        if (qFuzzyCompare(scale, 1e3))
+        {
+            mpTimeScaleComboBox->setCurrentIndex(1);
+        }
+        else if (qFuzzyCompare(scale, 1e6))
+        {
+            mpTimeScaleComboBox->setCurrentIndex(2);
+        }
+        else if (qFuzzyCompare(scale, 1e9))
+        {
+            mpTimeScaleComboBox->setCurrentIndex(3);
+        }
     }
     else
     {
-        mpXScaleSpinBox->setValue(0);
-        mpXScaleSpinBox->setEnabled(false);
+        mpTimeScaleComboBox->setCurrentIndex(0);
+        mpTimeScaleComboBox->setEnabled(false);
     }
 
 
     QLabel *pXOffsetLabel = new QLabel("Time Axis Offset: ", pScaleDialog);
-    mpXOffsetSpinBox = new QDoubleSpinBox(pScaleDialog);
-    mpXOffsetSpinBox->setDecimals(10);
-    mpXOffsetSpinBox->setRange(-DoubleMax, DoubleMax);
-    mpXOffsetSpinBox->setSingleStep(0.1);
+    mpTimeOffsetSpinBox = new QDoubleSpinBox(pScaleDialog);
+    mpTimeOffsetSpinBox->setDecimals(10);
+    mpTimeOffsetSpinBox->setRange(-DoubleMax, DoubleMax);
+    mpTimeOffsetSpinBox->setSingleStep(0.1);
     if (mpData->getSharedTimePointer())
     {
-        mpXOffsetSpinBox->setValue(mpData->getSharedTimePointer()->getPlotOffset());
+        mpTimeOffsetSpinBox->setValue(mpData->getSharedTimePointer()->getPlotOffset());
     }
     else
     {
-        mpXOffsetSpinBox->setValue(0);
-        mpXOffsetSpinBox->setEnabled(false);
+        mpTimeOffsetSpinBox->setValue(0);
+        mpTimeOffsetSpinBox->setEnabled(false);
     }
 
     QLabel *pYScaleLabel = new QLabel("Y-Axis Scale: ", pScaleDialog);
@@ -1049,9 +1068,9 @@ void PlotCurve::openScaleDialog()
 
     QGridLayout *pDialogLayout = new QGridLayout(pScaleDialog);
     pDialogLayout->addWidget(pXScaleLabel,0,0);
-    pDialogLayout->addWidget(mpXScaleSpinBox,0,1);
+    pDialogLayout->addWidget(mpTimeScaleComboBox,0,1);
     pDialogLayout->addWidget(pXOffsetLabel,1,0);
-    pDialogLayout->addWidget(mpXOffsetSpinBox,1,1);
+    pDialogLayout->addWidget(mpTimeOffsetSpinBox,1,1);
     pDialogLayout->addWidget(pYScaleLabel,2,0);
     pDialogLayout->addWidget(mpYScaleSpinBox,2,1);
     pDialogLayout->addWidget(pYOffsetLabel,3,0);
@@ -1061,8 +1080,8 @@ void PlotCurve::openScaleDialog()
     pScaleDialog->show();
 
     connect(pDoneButton,SIGNAL(clicked()),pScaleDialog,SLOT(close()));
-    connect(mpXScaleSpinBox, SIGNAL(valueChanged(double)), SLOT(updateTimePlotScaleFromDialog()));
-    connect(mpXOffsetSpinBox, SIGNAL(valueChanged(double)), SLOT(updateTimePlotScaleFromDialog()));
+    connect(mpTimeScaleComboBox, SIGNAL(currentIndexChanged(int)), SLOT(updateTimePlotScaleFromDialog()));
+    connect(mpTimeOffsetSpinBox, SIGNAL(valueChanged(double)), SLOT(updateTimePlotScaleFromDialog()));
     connect(mpYScaleSpinBox, SIGNAL(valueChanged(double)), SLOT(updateValuePlotScaleFromDialog()));
     connect(mpYOffsetSpinBox, SIGNAL(valueChanged(double)), SLOT(updateValuePlotScaleFromDialog()));
 }
@@ -1071,7 +1090,7 @@ void PlotCurve::openScaleDialog()
 //! @brief Updates the scaling of a plot curve form values in scaling dialog
 void PlotCurve::updateTimePlotScaleFromDialog()
 {
-    setTimePlotScalingAndOffset(mpXScaleSpinBox->value(), mpXOffsetSpinBox->value());
+    setTimePlotScalingAndOffset(mpTimeScaleComboBox->currentText().split(" ")[0].toDouble(), mpTimeOffsetSpinBox->value());
 }
 
 void PlotCurve::updateValuePlotScaleFromDialog()

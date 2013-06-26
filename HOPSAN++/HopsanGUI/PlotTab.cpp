@@ -1077,7 +1077,7 @@ void PlotTab::exportToCsv(QString fileName)
             fileStream << xvec[i];
             for(int j=0; j<mPlotCurvePtrs[FirstPlot].size(); ++j)
             {
-                fileStream << ", " << mPlotCurvePtrs[FirstPlot][j]->getDataVector()[i];
+                fileStream << ", " << mPlotCurvePtrs[FirstPlot][j]->getDataVectorCopy()[i];
             }
             fileStream << "\n";
         }
@@ -1091,7 +1091,7 @@ void PlotTab::exportToCsv(QString fileName)
             for(int j=0; j<mPlotCurvePtrs[FirstPlot].size(); ++j)
             {
                 //! @todo a stream function for the data vector should be nivce instead of madness copy every time
-                fileStream << ", " << mPlotCurvePtrs[FirstPlot][j]->getDataVector()[i];
+                fileStream << ", " << mPlotCurvePtrs[FirstPlot][j]->getDataVectorCopy()[i];
             }
             fileStream << "\n";
         }
@@ -1259,10 +1259,10 @@ void PlotTab::exportToMatlab()
         fileStream << "];\n";
 
         fileStream << "y" << i << "=[";                                             //Write data vector
-        for(int k=0; k<mPlotCurvePtrs[FirstPlot][i]->getDataVector().size(); ++k)
+        for(int k=0; k<mPlotCurvePtrs[FirstPlot][i]->getDataVectorCopy().size(); ++k)
         {
             if(k>0) fileStream << ",";
-            fileStream << mPlotCurvePtrs[FirstPlot][i]->getDataVector()[k];
+            fileStream << mPlotCurvePtrs[FirstPlot][i]->getDataVectorCopy()[k];
         }
         fileStream << "];\n";
     }
@@ -1293,10 +1293,10 @@ void PlotTab::exportToMatlab()
         fileStream << "];\n";
 
         fileStream << "y" << i+mPlotCurvePtrs[FirstPlot].size() << "=[";                                             //Write data vector
-        for(int k=0; k<mPlotCurvePtrs[SecondPlot][i]->getDataVector().size(); ++k)
+        for(int k=0; k<mPlotCurvePtrs[SecondPlot][i]->getDataVectorCopy().size(); ++k)
         {
             if(k>0) fileStream << ",";
-            fileStream << mPlotCurvePtrs[SecondPlot][i]->getDataVector()[k];
+            fileStream << mPlotCurvePtrs[SecondPlot][i]->getDataVectorCopy()[k];
         }
         fileStream << "];\n";
     }
@@ -1396,7 +1396,7 @@ void PlotTab::exportToGnuplot()
 
         for(int k=0; k<mPlotCurvePtrs[FirstPlot].size(); ++k)
         {
-            dummy.setNum(mPlotCurvePtrs[FirstPlot][k]->getDataVector()[i]);
+            dummy.setNum(mPlotCurvePtrs[FirstPlot][k]->getDataVectorCopy()[i]);
             fileStream << dummy;
             for(int j=0; j<20-dummy.size(); ++j) { fileStream << " "; }
         }
@@ -1990,7 +1990,7 @@ void PlotTab::saveToDomElement(QDomElement &rDomElement, bool dateTime, bool des
                 numTemp.setNum(i);
                 QDomElement varTag = appendDomElement(dataTag, mPlotCurvePtrs[FirstPlot][i]->getDataName()+numTemp);
                 QString valueString;
-                valueString.setNum(mPlotCurvePtrs[FirstPlot][i]->getDataVector()[j]);
+                valueString.setNum(mPlotCurvePtrs[FirstPlot][i]->getDataVectorCopy()[j]);
                 QDomText value = varTag.ownerDocument().createTextNode(valueString);
                 varTag.appendChild(value);
 
@@ -2517,7 +2517,7 @@ void PlotTab::constructAxisLabelDialog()
 
     mpUserDefinedLabelsCheckBox = new QCheckBox("Activate user defined labels");
     mpUserDefinedLabelsCheckBox->setCheckable(true);
-    mpUserDefinedLabelsCheckBox->setChecked(false);
+    mpUserDefinedLabelsCheckBox->setChecked(true);
 
     mpUserDefinedXLabel = new QLineEdit();
     mpUserDefinedYlLabel = new QLineEdit();

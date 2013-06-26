@@ -132,7 +132,7 @@ public:
 
     SharedLogVariableDataPtrT getLogDataVariablePtr(); //! @todo is this needed
     const SharedLogVariableDataPtrT getLogDataVariablePtr() const;
-    QVector<double> getDataVector() const;
+    QVector<double> getDataVectorCopy() const;
     const SharedLogVariableDataPtrT getTimeVectorPtr() const;
     bool hasCustomXData() const;
     const SharedLogVariableDataPtrT getCustomXData() const;
@@ -207,8 +207,8 @@ private:
     bool mAutoUpdate;
     bool mIsActive;
     int mAxisY;
-    QDoubleSpinBox *mpXScaleSpinBox;
-    QDoubleSpinBox *mpXOffsetSpinBox;
+    QComboBox *mpTimeScaleComboBox;
+    QDoubleSpinBox *mpTimeOffsetSpinBox;
     QDoubleSpinBox *mpYScaleSpinBox;
     QDoubleSpinBox *mpYOffsetSpinBox;
     PlotTab *mpParentPlotTab;
