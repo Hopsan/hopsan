@@ -644,33 +644,36 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
         gConfig.setLoadModelDir(fileInfo.absolutePath());
     }
 
-    saveTo(modelFilePathToSave, contents);
+    bool success = saveTo(modelFilePathToSave, contents);
 
 
-        //Set the tab name to the model name, efectively removing *, also mark the tab as saved
-    //! @todo this should not happen when saving parameters, This needs to be rewritten in a smarter way so that we do not need a special argument and lots of ifs to do special saving of parameters, actually parameters should be saved using the CLI method (and that code should be in a shared utility library)
-    QString tabName = mpToplevelSystem->getModelFileInfo().baseName();
-    gpMainWindow->mpCentralTabs->setTabText(gpMainWindow->mpCentralTabs->indexOf(mpParentModelHandler->getCurrentModel()), tabName);
-    if(contents == FullModel)
+    if(success)
     {
-        gConfig.addRecentModel(mpToplevelSystem->getModelFileInfo().filePath());
-        gpMainWindow->updateRecentList();
-        this->setSaved(true);
+            //Set the tab name to the model name, efectively removing *, also mark the tab as saved
+        //! @todo this should not happen when saving parameters, This needs to be rewritten in a smarter way so that we do not need a special argument and lots of ifs to do special saving of parameters, actually parameters should be saved using the CLI method (and that code should be in a shared utility library)
+        QString tabName = mpToplevelSystem->getModelFileInfo().baseName();
+        gpMainWindow->mpCentralTabs->setTabText(gpMainWindow->mpCentralTabs->indexOf(mpParentModelHandler->getCurrentModel()), tabName);
+        if(contents == FullModel)
+        {
+            gConfig.addRecentModel(mpToplevelSystem->getModelFileInfo().filePath());
+            gpMainWindow->updateRecentList();
+            this->setSaved(true);
+        }
+
+        gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Saved model: " + modelFilePathToSave);
+
+        mpToplevelSystem->getCoreSystemAccessPtr()->addSearchPath(mpToplevelSystem->getModelFileInfo().absolutePath());
     }
-
-    gpMainWindow->mpTerminalWidget->mpConsole->printInfoMessage("Saved model: " + modelFilePathToSave);
-
-    mpToplevelSystem->getCoreSystemAccessPtr()->addSearchPath(mpToplevelSystem->getModelFileInfo().absolutePath());
 }
 
 
-void ModelWidget::saveTo(QString path, SaveContentsEnumT contents)
+bool ModelWidget::saveTo(QString path, SaveContentsEnumT contents)
 {
     QFile file(path);   //Create a QFile object
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
         gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not open the file: "+file.fileName()+" for writing." );
-        return;
+        return false;
     }
 
     if(contents==FullModel)
@@ -719,7 +722,7 @@ void ModelWidget::saveTo(QString path, SaveContentsEnumT contents)
     if (!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))  //open file
     {
         gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage("Could not save to file: " + path);
-        return;
+        return false;
     }
     QTextStream out(&xmlFile);
     appendRootXMLProcessingInstruction(domDocument); //The xml "comment" on the first line
@@ -727,4 +730,6 @@ void ModelWidget::saveTo(QString path, SaveContentsEnumT contents)
 
     //Close the file
     xmlFile.close();
+
+    return true;
 }

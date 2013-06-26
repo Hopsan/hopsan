@@ -57,7 +57,7 @@ public:
     QString getStartTime();
     QString getTimeStep();
     QString getStopTime();
-    void saveTo(QString path, SaveContentsEnumT contents=FullModel);
+    bool saveTo(QString path, SaveContentsEnumT contents=FullModel);
     bool isSaved();
     void setSaved(bool value);
     void hasChanged();
