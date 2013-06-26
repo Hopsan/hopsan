@@ -433,6 +433,10 @@ def createInstallFiles():
         return False
     printSuccess("Created zip package!")
         
+    #Add files that should only be in setup script
+    open(tempDir+"\---DO_NOT_SAVE_FILE_IN_THIS_DIRECTORY---", 'a').close()
+    open(tempDir+"\models\Example Models\---DO_NOT_SAVE_FILE_IN_THIS_DIRECTORY---", 'a').close()
+        
     #Execute Inno compile script
     print "Generating install executable..."
     print r'"'+raw(innoDir)+r'\iscc.exe" /o"output" /f"Hopsan-'+version+r'-win32-installer" /dMyAppVersion="'+version+'r" "'+scriptFile+r'"'

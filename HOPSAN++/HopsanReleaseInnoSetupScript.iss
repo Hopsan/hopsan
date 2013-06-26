@@ -73,6 +73,7 @@ Source: "C:\temp_release\componentLibraries\defaultLibrary\*";  DestDir: "{app}\
 Source: "C:\temp_release\HopsanCore\*";                         DestDir: "{app}\HopsanCore";                        Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "C:\temp_release\hopsandefaults";                       DestDir: "{app}";                                   Flags: ignoreversion
 Source: "C:\temp_release\Hopsan-release-notes.txt";             DestDir: "{app}";                                   Flags: ignoreversion
+Source: "C:\temp_release\---DO_NOT_SAVE_FILE_IN_THIS_DIRECTORY---";     DestDir: "{app}";                           Flags: ignoreversion
 Source: "C:\temp_release\HopsanCoreSourceCode.zip";             DestDir: "{app}";                                   Flags: ignoreversion skipifsourcedoesntexist
 Source: "C:\temp_release\componentLibrariesSourceCode.zip";     DestDir: "{app}";                                   Flags: ignoreversion skipifsourcedoesntexist
 Source: "C:\temp_release\doc\*";                  	            DestDir: "{app}\doc";                               Flags: ignoreversion recursesubdirs createallsubdirs
