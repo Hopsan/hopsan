@@ -3,18 +3,19 @@
 import subprocess
 import os
 import ctypes
+import stat
 
 devversion="0.6."
 tbbversion="tbb30_20110704oss"
 tempDir="C:\\temp_release"
 scriptFile="HopsanReleaseInnoSetupScript.iss"
 hopsanDir=os.getcwd()
-dependecyBinFiles=".\\hopsan_bincontents_Qt484_MinGW44_Py273.7z"
+dependecyBinFiles=".\\hopsan_bincontents_Qt484_MinGW44_Py275_OpenSSL101e.7z"
 
 inkscapeDirList = ["C:\\Program Files\\Inkscape", "C:\\Program Files (x86)\\Inkscape"]
 innoDirList = ["C:\\Program Files\\Inno Setup 5", "C:\\Program Files (x86)\\Inno Setup 5"]
 qtlibDirList = ["C:\Qt\4.8.4"]
-qtcreatorDirList = ["C:\Qt\qtcreator-2.6.0", "C:\Qt\qtcreator-2.6.1", "C:\Qt\qtcreator-2.6.2"]
+qtcreatorDirList = ["C:\Qt\qtcreator-2.6.0", "C:\Qt\qtcreator-2.6.1", "C:\Qt\qtcreator-2.6.2", "C:\Qt\qtcreator-2.7.1"]
 mingwDirList = ["C:\mingw\bin", "C:\MinGW-gcc440_1\mingw\bin"]
 msvc2008DirList = ["C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin", "C:\Program (x86)\Microsoft SDKs\Windows\v7.0\Bin"]
 msvc2010DirList = ["C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin", "C:\Program (x86)\Microsoft SDKs\Windows\v7.1\Bin"]
@@ -122,6 +123,15 @@ def askYesNoQuestion(msg):
             return True
         elif ans=="n":
             return False
+
+def setReadOnlyForAllFilesInDir(dir):
+    for path, dirs, files in os.walk(dir,topdown=True):
+        for filename in files:
+            absPath = os.path.abspath(os.path.join(path, filename))
+            print "Setting read-only: "+ absPath
+            os.chmod(absPath, stat.S_IREAD)
+        for dirname in dirs:
+            setReadOnlyForAllFilesInDir(dirname)
 
 def verifyPaths():
     print "Verifying and selecting path variables..."
@@ -320,7 +330,7 @@ def copyFiles():
     os.system("mkdir \""+raw(tempDir)+"\"\\Scripts")
     os.system("mkdir \""+raw(tempDir)+"\"\\Scripts\\HCOM")    
     os.system("mkdir \""+raw(tempDir)+"\"\\bin")    
-    os.system("mkdir \""+raw(tempDir)+"\"\\HopsanCore")
+    #os.system("mkdir \""+raw(tempDir)+"\"\\HopsanCore")
     os.system("mkdir \""+raw(tempDir)+"\"\\componentLibraries")    
     os.system("mkdir \""+raw(tempDir)+"\"\\doc")
     os.system("mkdir \""+raw(tempDir)+"\"\\doc\\user")
@@ -329,8 +339,8 @@ def copyFiles():
     os.system("mkdir \""+raw(tempDir)+"\"\\ThirdParty\7z")
 
     
-    #Unpack depedency bin files to bin folder
-    os.system("\""+raw(hopsanDir)+"\"\\ThirdParty\\7z\\7z.exe x "+dependecyBinFiles+" -o"+tempDir+"\\bin")
+    #Unpack depedency bin files to bin folder without asking stupid questions
+    os.system("\""+raw(hopsanDir)+"\"\\ThirdParty\\7z\\7z.exe x "+dependecyBinFiles+" -o"+tempDir+"\\bin"+" -y")
 
     #Clear old output folder
     os.system("rd /s/q \""+raw(hopsanDir)+"\"\\output")
@@ -373,7 +383,7 @@ def copyFiles():
         printError("Failed to build user documentation")
 
     #Export "HopsanCore" SVN directory to "include" in temporary directory
-    os.system("svn export HopsanCore\include \""+raw(tempDir)+"\"\\HopsanCore\\include")
+    os.system("svn export HopsanCore \""+raw(tempDir)+"\"\\HopsanCore")
 
     #Copy the svnrevnum.h file Assume it exist, ONLY for DEV builds
     if dodevrelease:
@@ -381,7 +391,7 @@ def copyFiles():
 
     #Export "Example Models" SVN directory to temporary directory
     os.system(r'svn export "Models\Example Models" "'+raw(tempDir)+r'\models\Example Models"')
-
+    
     #Export "Test Models" SVN directory to temporary directory
     os.system(r'svn export "Models\Component Test" "'+raw(tempDir)+r'\models\Component Test"')
 
@@ -418,7 +428,10 @@ def copyFiles():
     
     #Copy 7zip to temporary directory
     os.system(r'xcopy ThirdParty\7z\* "'+raw(tempDir)+r'"\ThirdParty\7z\ /s')
-    
+
+    # Set all files to read-only
+    setReadOnlyForAllFilesInDir(tempDir)
+
     return True
     
     
