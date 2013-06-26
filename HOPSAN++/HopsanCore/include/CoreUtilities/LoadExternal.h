@@ -59,7 +59,7 @@ public:
     bool unLoad(const HString &rLibpath);
     void setFactory();
     void getLoadedLibNames(std::vector<HString> &rLibNames);
-    void getLibContents(const HString libpath, std::vector<HString> &rComponents, std::vector<HString> &rNodes);
+    void getLibContents(const HString &rLibpath, std::vector<HString> &rComponents, std::vector<HString> &rNodes);
 };
 }
 

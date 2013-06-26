@@ -150,5 +150,6 @@
         <file>graphics/uiicons/Hopsan-Print.png</file>
         <file>graphics/uiicons/Hopsan-Success.png</file>
         <file>graphics/uiicons/Hopsan-Debug.png</file>
+        <file>graphics/uiicons/Hopsan-ImportPlot.png</file>
     </qresource>
 </RCC>

@@ -98,9 +98,9 @@ public:
 
 protected:
     // Protected member functions
-    void setNiceName(const HString nicename);
-    void setDataCharacteristics(const size_t id, const HString name, const HString shortname,
-                                const HString unit, const NodeDataVariableTypeEnumT vartype=DefaultType);
+    void setNiceName(const HString &rNicename);
+    void setDataCharacteristics(const size_t id, const HString &rName, const HString &rShortname,
+                                const HString &rUnit, const NodeDataVariableTypeEnumT vartype=DefaultType);
 
     void copyNodeDataValuesTo(Node *pOtherNode) const;
     virtual void copySignalDataUnitAndDescriptionTo(Node *pOtherNode) const;

@@ -320,9 +320,9 @@ void LoadExternal::getLoadedLibNames(std::vector<HString> &rLibNames)
 //! @param libpath Path to library
 //! @param rComponents Reference to vector with components
 //! @param rNodes Reference to vector with nodes
-void LoadExternal::getLibContents(const HString libpath, std::vector<HString> &rComponents, std::vector<HString> &rNodes)
+void LoadExternal::getLibContents(const HString &rLibpath, std::vector<HString> &rComponents, std::vector<HString> &rNodes)
 {
-    LoadedExtLibsMapT::iterator lelit = mLoadedExtLibsMap.find(libpath);
+    LoadedExtLibsMapT::iterator lelit = mLoadedExtLibsMap.find(rLibpath);
     if (lelit != mLoadedExtLibsMap.end())
     {
         for (size_t i=0; i<lelit->second.mRegistredComponents.size(); ++i)

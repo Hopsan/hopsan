@@ -154,7 +154,7 @@ namespace hopsan {
         void unReserveUniqueName(const HString &rName);
 
         // System Parameter functions
-        bool renameParameter(const HString oldName, const HString newName);
+        bool renameParameter(const HString &rOldName, const HString &rNewName);
 
         // Handle system ports
         Port* addSystemPort(HString portName, const HString &rDescription="");
@@ -228,10 +228,10 @@ namespace hopsan {
         bool wasSimulationAborted();
 
         // System parameters
-        bool setSystemParameter(const HString name, const HString value, const HString type, const HString description="", const HString unit="", const bool force=false);
-        void unRegisterParameter(const HString name);
+        bool setSystemParameter(const HString &rName, const HString &rValue, const HString &rType, const HString &rDescription="", const HString &rUnit="", const bool force=false);
+        void unRegisterParameter(const HString &name);
         Parameters &getSystemParameters();
-        void addSearchPath(const HString searchPath);
+        void addSearchPath(const HString &searchPath);
 
         // Add and Remove sub-nodes
         void addSubNode(Node* pNode);

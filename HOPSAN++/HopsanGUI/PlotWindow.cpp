@@ -202,7 +202,7 @@ PlotWindow::PlotWindow(const QString name, QWidget *parent)
 
     mpImportClassicData = new QAction(this);
     mpImportClassicData->setToolTip("Import from Old Hopsan File (.plo)");
-    mpImportClassicData->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ExportPlot.png"));
+    mpImportClassicData->setIcon(QIcon(QString(ICONPATH) + "Hopsan-ImportPlot.png"));
     mpImportClassicData->setShortcut(QKeySequence("Ctrl+I"));
     connect(mpImportClassicData, SIGNAL(hovered()), this, SLOT(showToolBarHelpPopup()));
 

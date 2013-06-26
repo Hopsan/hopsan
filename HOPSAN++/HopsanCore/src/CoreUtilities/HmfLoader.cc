@@ -143,26 +143,26 @@ void updateOldModelFileComponent(rapidxml::xml_node<> */*pComponentNode*/, const
 
 }
 
-void updateRenamedComponentType(rapidxml::xml_node<> *pNode, const string oldType, const string newType)
+void updateRenamedComponentType(rapidxml::xml_node<> *pNode, const string &rOldType, const string &rNewType)
 {
-    if(readStringAttribute(pNode, "typename", "") == oldType)
+    if(readStringAttribute(pNode, "typename", "") == rOldType)
     {
-        writeStringAttribute(pNode, "typename", newType);
+        writeStringAttribute(pNode, "typename", rNewType);
     }
 }
 
-void updateRenamedPort(rapidxml::xml_node<> *pNode, const string componentType, const HString oldName, const HString newName)
+void updateRenamedPort(rapidxml::xml_node<> *pNode, const string &rComponentType, const HString &rOldName, const HString &rNewName)
 {
-    if(readStringAttribute(pNode, "typename", "") == componentType)
+    if(readStringAttribute(pNode, "typename", "") == rComponentType)
     {
         // Rename startvalue parameters
         rapidxml::xml_node<> *pParamNode = getGrandChild(pNode, "parameters", "parameter");
         while (pParamNode)
         {
             HString paramName = readStringAttribute(pParamNode, "name").c_str();
-            if (paramName.containes(oldName+"::"))
+            if (paramName.containes(rOldName+"::"))
             {
-                paramName.replace(oldName+"::", newName+"::");
+                paramName.replace(rOldName+"::", rNewName+"::");
                 writeStringAttribute(pParamNode, "name", paramName.c_str());
             }
             pParamNode = pParamNode->next_sibling("parameter");
@@ -178,16 +178,16 @@ void updateRenamedPort(rapidxml::xml_node<> *pNode, const string componentType, 
 
             if (startComp == compName)
             {
-                if (readStringAttribute(pConnNode, "startport").c_str() == oldName)
+                if (readStringAttribute(pConnNode, "startport").c_str() == rOldName)
                 {
-                    writeStringAttribute(pConnNode, "startport", newName.c_str());
+                    writeStringAttribute(pConnNode, "startport", rNewName.c_str());
                 }
             }
             if (endComp == compName)
             {
-                if (readStringAttribute(pConnNode, "endport").c_str() == oldName)
+                if (readStringAttribute(pConnNode, "endport").c_str() == rOldName)
                 {
-                    writeStringAttribute(pConnNode, "endport", newName.c_str());
+                    writeStringAttribute(pConnNode, "endport", rNewName.c_str());
                 }
             }
 
@@ -196,16 +196,16 @@ void updateRenamedPort(rapidxml::xml_node<> *pNode, const string componentType, 
     }
 }
 
-void updateRenamedParameter(rapidxml::xml_node<> *pNode, const string componentType, const string oldName, const string newName)
+void updateRenamedParameter(rapidxml::xml_node<> *pNode, const string &rComponentType, const string &rOldName, const string &rNewName)
 {
-    if(readStringAttribute(pNode,"typename") == componentType)
+    if(readStringAttribute(pNode,"typename") == rComponentType)
     {
         rapidxml::xml_node<> *pParamNode = getGrandChild(pNode, "parameters", "parameter");
         while (pParamNode)
         {
-            if (readStringAttribute(pParamNode, "name") == oldName)
+            if (readStringAttribute(pParamNode, "name") == rOldName)
             {
-                writeStringAttribute(pParamNode, "name", newName);
+                writeStringAttribute(pParamNode, "name", rNewName);
             }
             pParamNode = pParamNode->next_sibling("parameter");
         }
@@ -252,7 +252,7 @@ void loadComponent(rapidxml::xml_node<> *pComponentNode, ComponentSystem* pSyste
 
                 // We need force=true here to make sure that parameters with system variable names are set even if they can not yet be evaluated
                 //! @todo why cant they be evaluated, if everything loaded in correct order that should work
-                bool ok = pComp->setParameterValue(paramName.c_str(), val.c_str(), true);
+                bool ok = pComp->setParameterValue(paramName, val, true);
                 if(!ok)
                 {
                     pComp->addWarningMessage("Failed to set parameter: "+paramName+"="+val);
@@ -307,7 +307,7 @@ void loadSystemParameters(rapidxml::xml_node<> *pSysNode, ComponentSystem* pSyst
 
             // Here we use force=true to make sure system parameters laoded even if they do not evaluate
             //! @todo if system parameters are loaded in the correct order (top to bottom) they should evaluete, why dont they?
-            bool ok = pSystem->setSystemParameter(paramName.c_str(), val.c_str(), type.c_str(), "", "", true);
+            bool ok = pSystem->setSystemParameter(HString(paramName.c_str()), HString(val.c_str()), HString(type.c_str()), "", "", true);
             if(!ok)
             {
                 pSystem->addErrorMessage(HString("Failed to load parameter: ")+(paramName+"="+val).c_str());
@@ -510,21 +510,21 @@ ComponentSystem* loadHopsanModelFileActual(const rapidxml::xml_document<> &rDoc,
 //! @param [out] rStopTime A reference to the stoptime variable
 //! @returns A pointer to the rootsystem of the loaded model
 //! @todo if possible merge the two differen main load functions
-ComponentSystem* hopsan::loadHopsanModelFile(const HString filePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime)
+ComponentSystem* hopsan::loadHopsanModelFile(const HString &rFilePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime)
 {
-    addLogMess(("hopsan::loadHopsanModelFile("+filePath+")").c_str());
+    addLogMess(("hopsan::loadHopsanModelFile("+rFilePath+")").c_str());
     try
     {
-        rapidxml::file<> hmfFile(filePath.c_str());
+        rapidxml::file<> hmfFile(rFilePath.c_str());
         rapidxml::xml_document<> doc;
         doc.parse<0>(hmfFile.data());
 
-        return loadHopsanModelFileActual(doc, filePath, pHopsanEssentials, rStartTime, rStopTime);
+        return loadHopsanModelFileActual(doc, rFilePath, pHopsanEssentials, rStartTime, rStopTime);
     }
     catch(std::exception &e)
     {
         addLogMess("hopsan::loadHopsanModelFile(): Unable to open file.");
-        pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("Could not open file: "+filePath);
+        pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("Could not open file: "+rFilePath);
         cout << "Could not open file, throws: " << e.what() << endl;
     }
     addLogMess("hopsan::loadHopsanModelFile(): Failed.");
@@ -618,12 +618,12 @@ ComponentSystem* hopsan::loadHopsanModelFile(char* xmlStr, HopsanEssentials* pHo
 //! @param [out] rStartTime A reference to the starttime variable
 //! @param [out] rStopTime A reference to the stoptime variable
 //! @returns A pointer to the rootsystem of the loaded model
-void hopsan::loadHopsanParameterFile(const HString filePath, HopsanEssentials* pHopsanEssentials, ComponentSystem *pSystem)
+void hopsan::loadHopsanParameterFile(const HString &rFilePath, HopsanEssentials* pHopsanEssentials, ComponentSystem *pSystem)
 {
-    addLogMess(("hopsan::loadHopsanParameterFile("+filePath+")").c_str());
+    addLogMess(("hopsan::loadHopsanParameterFile("+rFilePath+")").c_str());
     try
     {
-        rapidxml::file<> hmfFile(filePath.c_str());
+        rapidxml::file<> hmfFile(rFilePath.c_str());
 
         rapidxml::xml_document<> doc;
         doc.parse<0>(hmfFile.data());
@@ -679,20 +679,20 @@ void hopsan::loadHopsanParameterFile(const HString filePath, HopsanEssentials* p
             else
             {
                 addLogMess("hopsan::loadHopsanParameterFile(): No system found in file.");
-                pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(filePath+" Has no system to load");
+                pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(rFilePath+" Has no system to load");
             }
         }
         else
         {
             addLogMess("hopsan::loadHopsanParameterFile(): Wrong root tag name.");
-            pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(filePath+" Has wrong root tag name: "+pRootNode->name());
+            pHopsanEssentials->getCoreMessageHandler()->addErrorMessage(rFilePath+" Has wrong root tag name: "+pRootNode->name());
             cout << "Not correct hmf file root node name: " << pRootNode->name() << endl;
         }
     }
     catch(std::exception &e)
     {
         addLogMess("hopsan::loadHopsanParameterFile(): Unable to open file.");
-        pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("Could not open file: "+filePath);
+        pHopsanEssentials->getCoreMessageHandler()->addErrorMessage("Could not open file: "+rFilePath);
         cout << "Could not open file, throws: " << e.what() << endl;
     }
 

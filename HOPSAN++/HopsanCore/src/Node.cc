@@ -88,9 +88,9 @@ double *Node::getDataPtr(const size_t data_type)
 }
 
 
-void Node::setNiceName(const HString nicename)
+void Node::setNiceName(const HString &rNicename)
 {
-    mNiceName = nicename;
+    mNiceName = rNicename;
 }
 
 
@@ -104,12 +104,12 @@ const HString &Node::getNiceName() const
 //! @param [in] id This is the ENUM data id
 //! @param [in] name The variable name
 //! @param [in] unit The variable unit
-void Node::setDataCharacteristics(const size_t id, const HString name, const HString shortname, const HString unit, const NodeDataVariableTypeEnumT vartype)
+void Node::setDataCharacteristics(const size_t id, const HString &rName, const HString &rShortname, const HString &rUnit, const NodeDataVariableTypeEnumT vartype)
 {
     mDataDescriptions[id].id = id;
-    mDataDescriptions[id].name = name;
-    mDataDescriptions[id].shortname = shortname;
-    mDataDescriptions[id].unit = unit;
+    mDataDescriptions[id].name = rName;
+    mDataDescriptions[id].shortname = rShortname;
+    mDataDescriptions[id].unit = rUnit;
     mDataDescriptions[id].varType = vartype;
 }
 

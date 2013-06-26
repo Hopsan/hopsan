@@ -88,9 +88,9 @@ void Component::getParameterNames(std::vector<HString> &rParameterNames)
     mpParameters->getParameterNames(rParameterNames);
 }
 
-const Parameter *Component::getParameter(const HString name)
+const Parameter *Component::getParameter(const HString &rName)
 {
-    return mpParameters->getParameter(name);
+    return mpParameters->getParameter(rName);
 }
 
 const std::vector<Parameter*> *Component::getParametersVectorPtr() const
@@ -99,27 +99,27 @@ const std::vector<Parameter*> *Component::getParametersVectorPtr() const
 }
 
 //! @brief Check if a component has a specific parameter
-bool Component::hasParameter(const HString name) const
+bool Component::hasParameter(const HString &rName) const
 {
-    return mpParameters->exist(name);
+    return mpParameters->exist(rName);
 }
 
-void Component::getParameterValue(const HString name, HString &rValue)
+void Component::getParameterValue(const HString &rName, HString &rValue)
 {
-    mpParameters->getParameterValue(name, rValue);
+    mpParameters->getParameterValue(rName, rValue);
 }
 
 //! @brief Returns a pointer directly to the parameter data variable
 //! @warning Dont use this function unless YOU REALLY KNOW WHAT YOU ARE DOING
 //! @warning This function may be removed in the future
-void* Component::getParameterDataPtr(const HString name)
+void* Component::getParameterDataPtr(const HString &rName)
 {
-    return mpParameters->getParameterDataPtr(name);
+    return mpParameters->getParameterDataPtr(rName);
 }
 
-bool Component::setParameterValue(const HString name, const HString value, bool force)
+bool Component::setParameterValue(const HString &rName, const HString &rValue, bool force)
 {
-    return mpParameters->setParameterValue(name, value, force);
+    return mpParameters->setParameterValue(rName, rValue, force);
 }
 
 
@@ -183,27 +183,27 @@ const std::vector<VariameterDescription>* Component::getVariameters()
 
 //! @note Dont use this function during simulation, it is slow
 //! @todo check returnvalue from setParameter check if Ok error emssage otherwise, also in the other functions
-void Component::setConstantValue(HString name, const double value)
+void Component::setConstantValue(HString &rName, const double value)
 {
-    setParameterValue(name, to_hstring(value), true);
+    setParameterValue(rName, to_hstring(value), true);
 }
 
 //! @note Dont use this function during simulation, it is slow
-void Component::setConstantValue(HString name, const int value)
+void Component::setConstantValue(HString &rName, const int value)
 {
-    setParameterValue(name, to_hstring(value), true);
+    setParameterValue(rName, to_hstring(value), true);
 }
 
 //! @note Dont use this function during simulation, it is slow
-void Component::setConstantValue(HString name, const HString &rValue)
+void Component::setConstantValue(HString &rName, const HString &rValue)
 {
-    setParameterValue(name, rValue, true);
+    setParameterValue(rName, rValue, true);
 }
 
 //! @note Dont use this function during simulation, it is slow
-void Component::setConstantValue(HString name, const bool value)
+void Component::setConstantValue(HString &rName, const bool value)
 {
-    setParameterValue(name, to_hstring(value), true);
+    setParameterValue(rName, to_hstring(value), true);
 }
 
 
@@ -397,50 +397,50 @@ void Component::addConstant(const HString &rName, const HString &description, co
     registerParameter(rName, description, unit, rData, Constant);
 }
 
-void Component::addConstant(const HString name, const HString description, const HString unit, const double defaultValue, double &rData)
+void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double &rData)
 {
     rData = defaultValue;
-    addConstant(name, description, unit, rData);
+    addConstant(rName, rDescription, rUnit, rData);
 }
 
-void Component::addConstant(const HString name, const HString description, const HString unit, int &rData)
+void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, int &rData)
 {
-    registerParameter(name, description, unit, rData);
+    registerParameter(rName, rDescription, rUnit, rData);
 }
 
-void Component::addConstant(const HString name, const HString description, const HString unit, const int defaultValue, int &rData)
-{
-    rData = defaultValue;
-    addConstant(name, description, unit, rData);
-}
-
-void Component::addConstant(const HString name, const HString description, const HString unit, HString &rData)
-{
-    registerParameter(name, description, unit, rData);
-}
-
-void Component::addConstant(const HString name, const HString description, const HString unit, const HString &defaultValue, HString &rData)
+void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const int defaultValue, int &rData)
 {
     rData = defaultValue;
-    addConstant(name, description, unit, rData);
+    addConstant(rName, rDescription, rUnit, rData);
 }
 
-void Component::addConstant(const HString name, const HString description, const HString unit, bool &rData)
+void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, HString &rData)
 {
-    registerParameter(name, description, unit, rData);
+    registerParameter(rName, rDescription, rUnit, rData);
 }
 
-void Component::addConstant(const HString name, const HString description, const HString unit, const bool defaultValue, bool &rData)
+void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const HString &defaultValue, HString &rData)
 {
     rData = defaultValue;
-    addConstant(name, description, unit, rData);
+    addConstant(rName, rDescription, rUnit, rData);
+}
+
+void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, bool &rData)
+{
+    registerParameter(rName, rDescription, rUnit, rData);
+}
+
+void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const bool defaultValue, bool &rData)
+{
+    rData = defaultValue;
+    addConstant(rName, rDescription, rUnit, rData);
 }
 
 //! @deprecated
-void Component::registerParameter(const HString name, const HString description, const HString unit, double &rValue)
+void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue)
 {
     addErrorMessage("registerParameter() is deprecated, use addConstant or addInputvariable instead!");
-    registerParameter(name,description,unit,rValue,Constant);
+    registerParameter(rName,rDescription,rUnit,rValue,Constant);
 }
 
 
@@ -489,18 +489,18 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
 //! @param [in] unit The unit of the parameter value
 //! @param [in] rValue A reference to the double variable representing the value, its adress will be registered
 //! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
-void Component::registerParameter(const HString name, const HString description, const HString unit, int &rValue)
+void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue)
 {
-    if (!isNameValid(name))
+    if (!isNameValid(rName))
     {
-        addErrorMessage("Will not register Invalid parameter name: "+name);
+        addErrorMessage("Will not register Invalid parameter name: "+rName);
         return;
     }
 
-    if(mpParameters->exist(name))
-        mpParameters->deleteParameter(name);     //Remove parameter if it is already registered
+    if(mpParameters->exist(rName))
+        mpParameters->deleteParameter(rName);     //Remove parameter if it is already registered
 
-    mpParameters->addParameter(name, to_hstring(rValue), description, unit, "integer", false, &rValue);
+    mpParameters->addParameter(rName, to_hstring(rValue), rDescription, rUnit, "integer", false, &rValue);
 }
 
 
@@ -511,18 +511,18 @@ void Component::registerParameter(const HString name, const HString description,
 //! @param [in] unit The unit of the parameter value
 //! @param [in] rValue A reference to the string variable representing the value, its adress will be registered
 //! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
-void Component::registerParameter(const HString name, const HString description, const HString unit, HString &rValue)
+void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, HString &rValue)
 {
-    if (!isNameValid(name))
+    if (!isNameValid(rName))
     {
-        addErrorMessage("Will not register Invalid parameter name: "+name);
+        addErrorMessage("Will not register Invalid parameter name: "+rName);
         return;
     }
 
-    if(mpParameters->exist(name))
-        mpParameters->deleteParameter(name);     //Remove parameter if it is already registered
+    if(mpParameters->exist(rName))
+        mpParameters->deleteParameter(rName);     //Remove parameter if it is already registered
 
-    mpParameters->addParameter(name, rValue, description, unit, "string", false, &rValue);
+    mpParameters->addParameter(rName, rValue, rDescription, rUnit, "string", false, &rValue);
 }
 
 
@@ -533,21 +533,21 @@ void Component::registerParameter(const HString name, const HString description,
 //! @param [in] unit The unit of the parameter value
 //! @param [in] rValue A reference to the bool variable representing the value, its adress will be registered
 //! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
-void Component::registerParameter(const HString name, const HString description, const HString unit, bool &rValue)
+void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, bool &rValue)
 {
-    if (!isNameValid(name))
+    if (!isNameValid(rName))
     {
-        addErrorMessage("Will not register Invalid parameter name: "+name);
+        addErrorMessage("Will not register Invalid parameter name: "+rName);
         return;
     }
 
-    if(mpParameters->exist(name))
-        mpParameters->deleteParameter(name);     //Remove parameter if it is already registered
+    if(mpParameters->exist(rName))
+        mpParameters->deleteParameter(rName);     //Remove parameter if it is already registered
 
     if(rValue)
-        mpParameters->addParameter(name, "true", description, unit, "bool", false, &rValue);
+        mpParameters->addParameter(rName, "true", rDescription, rUnit, "bool", false, &rValue);
     else
-        mpParameters->addParameter(name, "false", description, unit, "bool", false, &rValue);
+        mpParameters->addParameter(rName, "false", rDescription, rUnit, "bool", false, &rValue);
 }
 
 
@@ -1018,11 +1018,11 @@ void Component::setTimestep(const double timestep)
     mTimestep = timestep;
 }
 
-Port *Component::addInputVariable(const HString name, const HString description, const HString unit, const double defaultValue, double **ppNodeData)
+Port *Component::addInputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double **ppNodeData)
 {
     //! @todo suport more types
-    Port *pPort = addReadPort(name,"NodeSignal", Port::NotRequired);
-    pPort->setSignalNodeUnitAndDescription(unit, description);
+    Port *pPort = addReadPort(rName,"NodeSignal", Port::NotRequired);
+    pPort->setSignalNodeUnitAndDescription(rUnit, rDescription);
     setDefaultStartValue(pPort, 0, defaultValue);
 
     if (ppNodeData)
@@ -1033,10 +1033,10 @@ Port *Component::addInputVariable(const HString name, const HString description,
     return pPort;
 }
 
-Port *Component::addOutputVariable(const HString name, const HString description, const HString unit, double **ppNodeData)
+Port *Component::addOutputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, double **ppNodeData)
 {
-    Port *pPort = addWritePort(name, "NodeSignal", Port::NotRequired);
-    pPort->setSignalNodeUnitAndDescription(unit, description);
+    Port *pPort = addWritePort(rName, "NodeSignal", Port::NotRequired);
+    pPort->setSignalNodeUnitAndDescription(rUnit, rDescription);
     disableStartValue(pPort,0);
 
     if (ppNodeData)
@@ -1047,10 +1047,10 @@ Port *Component::addOutputVariable(const HString name, const HString description
     return pPort;
 }
 
-Port *Component::addOutputVariable(const HString name, const HString description, const HString unit, const double defaultValue, double **ppNodeData)
+Port *Component::addOutputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double **ppNodeData)
 {
-    Port *pPort = addWritePort(name, "NodeSignal", Port::NotRequired);
-    pPort->setSignalNodeUnitAndDescription(unit, description);
+    Port *pPort = addWritePort(rName, "NodeSignal", Port::NotRequired);
+    pPort->setSignalNodeUnitAndDescription(rUnit, rDescription);
     setDefaultStartValue(pPort, 0, defaultValue);
 
     if (ppNodeData)

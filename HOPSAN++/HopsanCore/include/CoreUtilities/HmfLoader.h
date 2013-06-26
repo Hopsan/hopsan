@@ -37,11 +37,11 @@ class HopsanEssentials;
 class HopsanCoreMessageHandler;
 
 
-ComponentSystem* loadHopsanModelFile(const HString filePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime);
+ComponentSystem* loadHopsanModelFile(const HString &rFilePath, HopsanEssentials* pHopsanEssentials, double &rStartTime, double &rStopTime);
 ComponentSystem* loadHopsanModelFile(const std::vector<unsigned char> xmlVector, HopsanEssentials* pHopsanEssentials);
 ComponentSystem* loadHopsanModelFile(const char* xmlStr, HopsanEssentials* pHopsanEssentials);
 ComponentSystem* loadHopsanModelFile(char* xmlStr, HopsanEssentials* pHopsanEssentials);
-void loadHopsanParameterFile(const HString filePath, HopsanEssentials* pHopsanEssentials, ComponentSystem *pSystem);
+void loadHopsanParameterFile(const HString &rFilePath, HopsanEssentials* pHopsanEssentials, ComponentSystem *pSystem);
 
 }
 

@@ -195,11 +195,6 @@ void SimulationHandler::runCoSimulation(ComponentSystem *pSystem)
 
     (*inputSockets[0]) = 34.125;
 
-    std::stringstream ss;
-    ss << "Input pointer address = " << inputSockets[0];
-    std::string temp = ss.str();
-
-
     while(!(*stop_socket))
     {
         if((*sim_socket)>5)
@@ -350,10 +345,10 @@ bool ComponentSystem::wasSimulationAborted()
 
 //! @brief Adds a search path that can be used by its components to look for external files, e.g. area curves
 //! @param searchPath the search path to be added
-void ComponentSystem::addSearchPath(const HString searchPath)
+void ComponentSystem::addSearchPath(const HString &rSearchPath)
 {
     HString fixedSearchString;
-    fixedSearchString = searchPath;
+    fixedSearchString = rSearchPath;
     if (!fixedSearchString.empty())
     {
         while( (!fixedSearchString.empty()) && ((fixedSearchString.back() == '/') || (fixedSearchString.back() == '\\')) )
@@ -380,26 +375,26 @@ Parameters &ComponentSystem::getSystemParameters()
 }
 
 //!
-bool ComponentSystem::setSystemParameter(const HString name, const HString value, const HString type, const HString description, const HString unit, const bool force)
+bool ComponentSystem::setSystemParameter(const HString &rName, const HString &rValue, const HString &rType, const HString &rDescription, const HString &rUnit, const bool force)
 {
     bool success;
-    if(mpParameters->exist(name.c_str()))
+    if(mpParameters->exist(rName.c_str()))
     {
-        success = mpParameters->setParameter(name.c_str(), value.c_str(), description.c_str(), unit.c_str(), type.c_str(), force);
+        success = mpParameters->setParameter(rName.c_str(), rValue.c_str(), rDescription.c_str(), rUnit.c_str(), rType.c_str(), force);
     }
     else
     {
-        if (this->hasReservedUniqueName(name) || !isNameValid(name))
+        if (this->hasReservedUniqueName(rName) || !isNameValid(rName))
         {
-            addErrorMessage("The desired system parameter name: " + name + " is invalid or already used by somthing else");
+            addErrorMessage("The desired system parameter name: " + rName + " is invalid or already used by somthing else");
             success=false;
         }
         else
         {
-            success = mpParameters->addParameter(name.c_str(), value.c_str(), description.c_str(), unit.c_str(), type.c_str(), false, 0, force);
+            success = mpParameters->addParameter(rName.c_str(), rValue.c_str(), rDescription.c_str(), rUnit.c_str(), rType.c_str(), false, 0, force);
             if (success)
             {
-                reserveUniqueName(name,UniqueSysparamNameType);
+                reserveUniqueName(rName,UniqueSysparamNameType);
             }
         }
     }
@@ -407,10 +402,10 @@ bool ComponentSystem::setSystemParameter(const HString name, const HString value
     return success;
 }
 
-void ComponentSystem::unRegisterParameter(const HString name)
+void ComponentSystem::unRegisterParameter(const HString &rName)
 {
-    Component::unRegisterParameter(name);
-    unReserveUniqueName(name);
+    Component::unRegisterParameter(rName);
+    unReserveUniqueName(rName);
 }
 
 //! @brief Add multiple components to the system
@@ -468,11 +463,10 @@ void ComponentSystem::renameSubComponent(const HString &rOld_name, const HString
 {
     // First find the post in the map where the old name resides, copy the data stored there
     SubComponentMapT::iterator it = mSubComponentMap.find(rOld_name);
-    Component* temp_comp_ptr;
     if (it != mSubComponentMap.end())
     {
         // If found, erase old record
-        temp_comp_ptr = it->second;
+        Component* temp_comp_ptr = it->second;
         mSubComponentMap.erase(it);
 
         // Insert new (with new name)
@@ -982,16 +976,16 @@ void ComponentSystem::logTimeAndNodes(const size_t simStep)
 }
 
 //! @brief Rename a system parameter
-bool ComponentSystem::renameParameter(const HString oldName, const HString newName)
+bool ComponentSystem::renameParameter(const HString &rOldName, const HString &rNewName)
 {
-    if (hasReservedUniqueName(newName))
+    if (hasReservedUniqueName(rNewName))
     {
-        addErrorMessage("The desired system parameter name: "+newName+" is already used");
+        addErrorMessage("The desired system parameter name: "+rNewName+" is already used");
     }
-    else if (mpParameters->renameParameter(oldName, newName))
+    else if (mpParameters->renameParameter(rOldName, rNewName))
     {
-        unReserveUniqueName(oldName);
-        reserveUniqueName(newName);
+        unReserveUniqueName(rOldName);
+        reserveUniqueName(rNewName);
         return true;
     }
     return false;
@@ -1915,16 +1909,13 @@ void ConnectionAssistant::removeNode(Node *pNode)
 //! @returns True if success, False if failed
 bool ComponentSystem::disconnect(const HString &compname1, const HString &portname1, const HString &compname2, const HString &portname2)
 {
-    Component *pComp1, *pComp2;
-    Port *pPort1, *pPort2;
-
-    pComp1 = getSubComponentOrThisIfSysPort(compname1);
-    pComp2 = getSubComponentOrThisIfSysPort(compname2);
+    Component *pComp1 = getSubComponentOrThisIfSysPort(compname1);
+    Component *pComp2 = getSubComponentOrThisIfSysPort(compname2);
 
     if ( (pComp1!=0) && (pComp2!=0) )
     {
-        pPort1 = pComp1->getPort(portname1);
-        pPort2 = pComp2->getPort(portname2);
+        Port *pPort1 = pComp1->getPort(portname1);
+        Port *pPort2 = pComp2->getPort(portname2);
 
         if ( (pComp1!=0) && (pComp2!=0) )
         {
@@ -2928,11 +2919,10 @@ double ComponentSystem::getTotalMeasuredTime()
 void SimulationHandler::sortSystemsByTotalMeasuredTime(std::vector<ComponentSystem*> &rSystemVector)
 {
     size_t i, j;
-    bool didSwap = true;
     ComponentSystem *tempSystem;
     for(i = 1; i < rSystemVector.size(); ++i)
     {
-        didSwap = false;
+        bool didSwap = false;
         for (j=0; j < (rSystemVector.size()-1); ++j)
         {
             if (rSystemVector[j+1]->getTotalMeasuredTime() > rSystemVector[j]->getTotalMeasuredTime())

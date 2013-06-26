@@ -112,28 +112,28 @@ public:
 
     // Constants
     void addConstant(const HString &rName, const HString &description, const HString &unit, double &rData);
-    void addConstant(const HString name, const HString description, const HString unit, const double defaultValue, double &rData);
-    void addConstant(const HString name, const HString description, const HString unit, int &rData);
-    void addConstant(const HString name, const HString description, const HString unit, const int defaultValue, int &rData);
-    void addConstant(const HString name, const HString description, const HString unit, HString &rData);
-    void addConstant(const HString name, const HString description, const HString unit, const HString &defaultValue, HString &rData);
-    void addConstant(const HString name, const HString description, const HString unit, bool &rData);
-    void addConstant(const HString name, const HString description, const HString unit, const bool defaultValue, bool &rData);
-    void setConstantValue(HString name, const double value);
-    void setConstantValue(HString name, const int value);
-    void setConstantValue(HString name, const HString &rValue);
-    void setConstantValue(HString name, const bool value);
+    void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double &rData);
+    void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, int &rData);
+    void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const int defaultValue, int &rData);
+    void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, HString &rData);
+    void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const HString &defaultValue, HString &rData);
+    void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, bool &rData);
+    void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const bool defaultValue, bool &rData);
+    void setConstantValue(HString &rName, const double value);
+    void setConstantValue(HString &rName, const int value);
+    void setConstantValue(HString &rName, const HString &rValue);
+    void setConstantValue(HString &rName, const bool value);
 
-    void registerParameter(const HString name, const HString description, const HString unit, double &rValue);
+    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue);
     virtual void unRegisterParameter(const HString &rName);
 
-    bool hasParameter(const HString name) const;
+    bool hasParameter(const HString &rName) const;
     const std::vector<Parameter*> *getParametersVectorPtr() const;
     void getParameterNames(std::vector<HString> &rParameterNames);
-    const Parameter *getParameter(const HString name);
-    void getParameterValue(const HString name, HString &rValue);
-    void* getParameterDataPtr(const HString name);
-    bool setParameterValue(const HString name, const HString value, bool force=false);
+    const Parameter *getParameter(const HString &rName);
+    void getParameterValue(const HString &rName, HString &rValue);
+    void* getParameterDataPtr(const HString &rName);
+    bool setParameterValue(const HString &rName, const HString &rValue, bool force=false);
     void updateParameters();
     bool checkParameters(HString &errParName);
 
@@ -211,9 +211,9 @@ protected:
     }
 
     // Interface variable functions
-    Port *addInputVariable(const HString name, const HString description, const HString unit, const double defaultValue, double **ppNodeData=0);
-    Port *addOutputVariable(const HString name, const HString description, const HString unit, double **ppNodeData=0);
-    Port *addOutputVariable(const HString name, const HString description, const HString unit, const double defaultValue, double **ppNodeData=0);
+    Port *addInputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double **ppNodeData=0);
+    Port *addOutputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, double **ppNodeData=0);
+    Port *addOutputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double **ppNodeData=0);
 
     void initializeAutoSignalNodeDataPtrs();
 
@@ -236,9 +236,9 @@ protected:
     // Parameter registration
     //! @todo clean this up /Peter
     void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue, const ParamDynConstEnumT dynconst);
-    void registerParameter(const HString name, const HString description, const HString unit, int &rValue);
-    void registerParameter(const HString name, const HString description, const HString unit, HString &rValue);
-    void registerParameter(const HString name, const HString description, const HString unit, bool &rValue);
+    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue);
+    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, HString &rValue);
+    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, bool &rValue);
 
     // NodeData ptr function
     //! @todo clean up this mess /Peter
