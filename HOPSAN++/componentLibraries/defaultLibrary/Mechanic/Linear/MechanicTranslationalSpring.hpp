@@ -47,7 +47,7 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeMechanic");
 
             //Register changable parameters to the HOPSAN++ core
-            addInputVariable("k", "Spring Coefficient", "[N/m]", 100.0,  &mpK);
+            addInputVariable("k", "Spring Coefficient", "N/m", 100.0,  &mpK);
         }
 
 

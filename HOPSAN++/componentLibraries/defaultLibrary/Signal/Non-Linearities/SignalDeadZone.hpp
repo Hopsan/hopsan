@@ -46,8 +46,8 @@ namespace hopsan {
             addInputVariable("in", "", "", 0.0, &mpND_in);
             addOutputVariable("out", "", "", &mpND_out);
 
-            addInputVariable("u_dstart", "Start of Dead Zone", "[-]", -1.0, &mpStartDead);
-            addInputVariable("u_dend", "End of Dead Zone", "[-]", 1.0, &mpEndDead);
+            addInputVariable("u_dstart", "Start of Dead Zone", "-", -1.0, &mpStartDead);
+            addInputVariable("u_dend", "End of Dead Zone", "-", 1.0, &mpEndDead);
         }
 
         void initialize()

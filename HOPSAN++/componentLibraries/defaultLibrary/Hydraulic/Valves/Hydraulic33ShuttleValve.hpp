@@ -65,17 +65,17 @@ namespace hopsan {
 
             addOutputVariable("xv_out", "Spool position", "", 0.0, &mpXvout);
 
-            addInputVariable("C_q", "Flow Coefficient", "[-]", 0.67, &mpCq);
-            addInputVariable("rho", "Oil Density", "[kg/m^3]", 890, &mpRho);
-            addInputVariable("d", "Spool Diameter", "[m]", 0.01, &mpD);
-            addInputVariable("f_pa", "Fraction of spool circumference that is opening P-A", "[-]", 1.0, &mpF_pa);
-            addInputVariable("f_at", "Fraction of spool circumference that is opening A-T", "[-]", 1.0, &mpF_at);
-            addInputVariable("x_pa", "Spool Overlap From Port P To A", "[m]", -1e-6, &mpX_pa);
-            addInputVariable("x_at", "Spool Overlap From Port A To T", "[m]", -1e-6, &mpX_at);
+            addInputVariable("C_q", "Flow Coefficient", "-", 0.67, &mpCq);
+            addInputVariable("rho", "Oil Density", "kg/m^3", 890, &mpRho);
+            addInputVariable("d", "Spool Diameter", "m", 0.01, &mpD);
+            addInputVariable("f_pa", "Fraction of spool circumference that is opening P-A", "-", 1.0, &mpF_pa);
+            addInputVariable("f_at", "Fraction of spool circumference that is opening A-T", "-", 1.0, &mpF_at);
+            addInputVariable("x_pa", "Spool Overlap From Port P To A", "m", -1e-6, &mpX_pa);
+            addInputVariable("x_at", "Spool Overlap From Port A To T", "m", -1e-6, &mpX_at);
 
-            addConstant("x_vmax", "Maximum Spool Displacement", "[m]", 0.01, xvmax);
-            addConstant("d_1", "Damp orifice 1 diam.", "[mm]", 1.0e-3, d1);
-            addConstant("d_2", "Damp orifice 2 diam.", "[mm]", 1.0e-3, d2);
+            addConstant("x_vmax", "Maximum Spool Displacement", "m", 0.01, xvmax);
+            addConstant("d_1", "Damp orifice 1 diam.", "mm", 1.0e-3, d1);
+            addConstant("d_2", "Damp orifice 2 diam.", "mm", 1.0e-3, d2);
         }
 
 

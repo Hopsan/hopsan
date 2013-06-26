@@ -54,11 +54,11 @@ namespace hopsan {
             addInputVariable("in","","",0.0,&mpND_in);
             addOutputVariable("out", "Filtered value", "", 0.0, &mpND_out);
 
-            addConstant("k", "Gain", "[-]", 1, k);
-            addConstant("omega_num", "Numerator break frequency", "[rad/s]", 1E+10, wnum);
-            addConstant("omega_den", "Denominator break frequency", "[rad/s]", 1000.0, wden);
-            addConstant("y_min", "Lower output limit", "[-]", -1.5E+300, min);
-            addConstant("y_max", "Upper output limit", "[-]", 1.5E+300, max);
+            addConstant("k", "Gain", "-", 1, k);
+            addConstant("omega_num", "Numerator break frequency", "rad/s", 1E+10, wnum);
+            addConstant("omega_den", "Denominator break frequency", "rad/s", 1000.0, wden);
+            addConstant("y_min", "Lower output limit", "-", -1.5E+300, min);
+            addConstant("y_max", "Upper output limit", "-", 1.5E+300, max);
         }
 
 

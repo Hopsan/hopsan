@@ -53,9 +53,9 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeHydraulic");
 
             addOutputVariable("a", "Angle", "rad", 0.0, &mpND_a);
-            addInputVariable("n_p", "Angular Velocity", "[rad/s]", 250.0, &mpN);
-            addInputVariable("D_p", "Displacement", "[m^3/rev]", 0.00005, &mpDp);
-            addInputVariable("C_lp", "Leakage Coefficient", "[(m^3/s)/Pa]", 0.0, &mpClp);
+            addInputVariable("n_p", "Angular Velocity", "rad/s", 250.0, &mpN);
+            addInputVariable("D_p", "Displacement", "m^3/rev", 0.00005, &mpDp);
+            addInputVariable("C_lp", "Leakage Coefficient", "(m^3/s)/Pa", 0.0, &mpClp);
         }
 
 

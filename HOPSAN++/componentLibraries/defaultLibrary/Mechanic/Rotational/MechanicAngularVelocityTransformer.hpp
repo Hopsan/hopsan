@@ -52,7 +52,7 @@ namespace hopsan {
         void configure()
         {
             mpOut = addPowerPort("out", "NodeMechanicRotational");
-            addInputVariable("omega", "Generated angular velocity", "[rad/s]", 0.0, &mpW);
+            addInputVariable("omega", "Generated angular velocity", "rad/s", 0.0, &mpW);
         }
 
 

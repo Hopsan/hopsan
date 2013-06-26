@@ -52,7 +52,7 @@ namespace hopsan {
         {
             mpP1 = addPowerPort("P1", "NodeMechanicRotational");
             mpP2 = addPowerPort("P2", "NodeMechanicRotational");
-            addConstant("k", "Spring Coefficient", "[Nm/rad]", 100.0, k);
+            addConstant("k", "Spring Coefficient", "Nm/rad", 100.0, k);
         }
 
 

@@ -50,11 +50,11 @@ namespace hopsan {
             mpPm1 = addPowerPort("Pm1", "NodeMechanic");
 
             //Register changable parameters to the HOPSAN++ core
-            mpVPort = addInputVariable("v", "Generated Velocity", "[m/s]", 0.0, &mpIn_v);
+            mpVPort = addInputVariable("v", "Generated Velocity", "m/s", 0.0, &mpIn_v);
             mpXPort = addInputVariable("x", "Generated Position", "m", 0.0, &mpIn_x);
 
             // add constants
-            addConstant("m_e", "Equivalent Mass", "[kg]", 10, me);
+            addConstant("m_e", "Equivalent Mass", "kg", 10, me);
         }
 
 

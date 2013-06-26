@@ -54,10 +54,10 @@ namespace hopsan {
         {
             mpP1 = addPowerPort("P1", "NodeMechanicRotational");
             mpP2 = addPowerPort("P2", "NodeMechanicRotational");
-            addInputVariable("J", "Inertia", "[kgm^2]", 1.0, &mpJ);
-            addInputVariable("B", "Viscous Friction Coefficient", "[Nms/rad]", 10, &mpB);
-            addConstant("t_s", "Static Friction Torque", "[Nm]", 50, ts);
-            addConstant("t_k", "Kinetic Friction Torque", "[Nm]", 45, tk);
+            addInputVariable("J", "Inertia", "kgm^2", 1.0, &mpJ);
+            addInputVariable("B", "Viscous Friction Coefficient", "Nms/rad", 10, &mpB);
+            addConstant("t_s", "Static Friction Torque", "Nm", 50, ts);
+            addConstant("t_k", "Kinetic Friction Torque", "Nm", 45, tk);
         }
 
 

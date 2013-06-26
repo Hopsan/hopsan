@@ -64,14 +64,14 @@ namespace hopsan {
 
             addInputVariable("in", "Desired spool position", "", 0.0, &mpXvIn);
             addOutputVariable("xv", "Spool position", "", 0.0, &mpXv);
-            addInputVariable("C_q", "Flow Coefficient", "[-]", 0.67, &mpCq);
-            addInputVariable("rho", "Oil Density", "[kg/m^3]", 890, &mpRho);
-            addInputVariable("d", "Spool Diameter", "[m]", 0.01, &mpD);
-            addInputVariable("f", "Spool Fraction of the Diameter", "[-]", 1.0, &mpF);
-            addInputVariable("x_vmax", "Maximum Spool Displacement", "[m]", 0.01, &mpXvmax);
+            addInputVariable("C_q", "Flow Coefficient", "-", 0.67, &mpCq);
+            addInputVariable("rho", "Oil Density", "kg/m^3", 890, &mpRho);
+            addInputVariable("d", "Spool Diameter", "m", 0.01, &mpD);
+            addInputVariable("f", "Spool Fraction of the Diameter", "-", 1.0, &mpF);
+            addInputVariable("x_vmax", "Maximum Spool Displacement", "m", 0.01, &mpXvmax);
 
-            addConstant("omega_h", "Resonance Frequency", "[rad/s]", 100.0, omegah);
-            addConstant("delta_h", "Damping Factor", "[-]", 1.0, deltah);
+            addConstant("omega_h", "Resonance Frequency", "rad/s", 100.0, omegah);
+            addConstant("delta_h", "Damping Factor", "-", 1.0, deltah);
         }
 
 

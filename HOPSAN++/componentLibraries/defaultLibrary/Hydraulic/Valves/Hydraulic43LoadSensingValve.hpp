@@ -65,21 +65,21 @@ namespace hopsan {
 
             addOutputVariable("xv", "Spool position", "m", 0.0, &mpXv);
             addInputVariable("in", "Desired spool position", "m", 0.0, &mpXvIn);
-            addInputVariable("C_q", "Flow Coefficient", "[-]", 0.67, &mpCq);
-            addInputVariable("rho", "Oil Density", "[kg/m^3]", 890, &mpRho);
-            addInputVariable("d", "Spool Diameter", "[m]", 0.01, &mpD);
-            addInputVariable("f_pa", "Fraction of spool circumference that is opening P-A", "[-]", 1.0, &mpF_pa);
-            addInputVariable("f_pb", "Fraction of spool circumference that is opening B-T", "[-]", 1.0, &mpF_pb);
-            addInputVariable("f_at", "Fraction of spool circumference that is opening P-A", "[-]", 1.0, &mpF_at);
-            addInputVariable("f_bt", "Fraction of spool circumference that is opening B-T", "[-]", 1.0, &mpF_bt);
-            addInputVariable("x_pa", "Spool Overlap From Port P To A", "[m]", -1e-6, &mpX_pa);
-            addInputVariable("x_pb", "Spool Overlap From Port A To T", "[m]", -1e-6, &mpX_pb);
-            addInputVariable("x_at", "Spool Overlap From Port P To A", "[m]", -1e-6, &mpX_at);
-            addInputVariable("x_bt", "Spool Overlap From Port A To T", "[m]", -1e-6, &mpX_bt);
-            addInputVariable("x_vmax", "Maximum Spool Displacement", "[m]", 0.01, &mpXvmax);
+            addInputVariable("C_q", "Flow Coefficient", "-", 0.67, &mpCq);
+            addInputVariable("rho", "Oil Density", "kg/m^3", 890, &mpRho);
+            addInputVariable("d", "Spool Diameter", "m", 0.01, &mpD);
+            addInputVariable("f_pa", "Fraction of spool circumference that is opening P-A", "-", 1.0, &mpF_pa);
+            addInputVariable("f_pb", "Fraction of spool circumference that is opening B-T", "-", 1.0, &mpF_pb);
+            addInputVariable("f_at", "Fraction of spool circumference that is opening P-A", "-", 1.0, &mpF_at);
+            addInputVariable("f_bt", "Fraction of spool circumference that is opening B-T", "-", 1.0, &mpF_bt);
+            addInputVariable("x_pa", "Spool Overlap From Port P To A", "m", -1e-6, &mpX_pa);
+            addInputVariable("x_pb", "Spool Overlap From Port A To T", "m", -1e-6, &mpX_pb);
+            addInputVariable("x_at", "Spool Overlap From Port P To A", "m", -1e-6, &mpX_at);
+            addInputVariable("x_bt", "Spool Overlap From Port A To T", "m", -1e-6, &mpX_bt);
+            addInputVariable("x_vmax", "Maximum Spool Displacement", "m", 0.01, &mpXvmax);
 
-            addConstant("omega_h", "Resonance Frequency", "[rad/s]", 100.0, omegah);
-            addConstant("delta_h", "Damping Factor", "[-]", 1.0, deltah);
+            addConstant("omega_h", "Resonance Frequency", "rad/s", 100.0, omegah);
+            addConstant("delta_h", "Damping Factor", "-", 1.0, deltah);
         }
 
 

@@ -65,14 +65,14 @@ namespace hopsan {
             mpP3 = addPowerPort("P3", "NodeMechanicRotational");
 
             addInputVariable("eps", "Displacement setting", "", 1, &mpEps);
-            addInputVariable("Beta_e", "Bulk modulus of oil", "[Pa]", 1000000000, &mpBetae);
-            addInputVariable("V_1", "Volume at port 1", "[m^3]", 0.005, &mpV1);
-            addInputVariable("V_2", "Volume at port 2", "[m^3]", 0.005, &mpV2);
-            addInputVariable("D_m", "Displacement", "[m^3/rev]", 0.00005, &mpDm);
-            addInputVariable("C_lm", "Leakage coefficient", "[]", 0.0, &mpClm);
-            addInputVariable("B_m", "Viscous friction coefficient", "[Nms/rad]", 0.0, &mpBm);
+            addInputVariable("Beta_e", "Bulk modulus of oil", "Pa", 1000000000, &mpBetae);
+            addInputVariable("V_1", "Volume at port 1", "m^3", 0.005, &mpV1);
+            addInputVariable("V_2", "Volume at port 2", "m^3", 0.005, &mpV2);
+            addInputVariable("D_m", "Displacement", "m^3/rev", 0.00005, &mpDm);
+            addInputVariable("C_lm", "Leakage coefficient", "", 0.0, &mpClm);
+            addInputVariable("B_m", "Viscous friction coefficient", "Nms/rad", 0.0, &mpBm);
 
-            addConstant("J_em", "Equivalent load of inertia", "[kg*m^2]", 1, je);
+            addConstant("J_em", "Equivalent load of inertia", "kg*m^2", 1, je);
 
             setDefaultStartValue(mpP1, NodeHydraulic::Pressure, 1.0e5);
             setDefaultStartValue(mpP2, NodeHydraulic::Pressure, 1.0e5);

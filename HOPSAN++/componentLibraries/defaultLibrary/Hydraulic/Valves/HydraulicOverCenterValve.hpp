@@ -63,15 +63,15 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpP_CONTROL = addPowerPort("P_CONTROL", "NodeHydraulic");
 
-            addInputVariable("p_ref", "Reference Opening Pressure", "[Pa]", 2000000, &mpPref);
-            addInputVariable("p_h", "Hysteresis Width", "[Pa]", 500000, &mpPh);
-            addInputVariable("a_ratio", "Area ratio", "[-]", 5.0, &mpArat);
+            addInputVariable("p_ref", "Reference Opening Pressure", "Pa", 2000000, &mpPref);
+            addInputVariable("p_h", "Hysteresis Width", "Pa", 500000, &mpPh);
+            addInputVariable("a_ratio", "Area ratio", "-", 5.0, &mpArat);
 
-            addConstant("tao", "Time Constant of Spool", "[s]", 0.01, tao);
-            addConstant("k_cs", "Steady State Characteristic due to Spring", "[(m^3/s)/Pa]", 0.00000001, Kcs);
-            addConstant("k_cf", "Steady State Characteristic due to Flow Forces", "[(m^3/s)/Pa]", 0.00000001, Kcf);
-            addConstant("q_nom", "Flow with Fully Open Valve and pressure drop p_nom", "[m^3/s]", 0.001, qnom);
-            addConstant("p_nom", "Nominal pressure drop", "[Pa]", 7e6, pnom);
+            addConstant("tao", "Time Constant of Spool", "s", 0.01, tao);
+            addConstant("k_cs", "Steady State Characteristic due to Spring", "(m^3/s)/Pa", 0.00000001, Kcs);
+            addConstant("k_cf", "Steady State Characteristic due to Flow Forces", "(m^3/s)/Pa", 0.00000001, Kcf);
+            addConstant("q_nom", "Flow with Fully Open Valve and pressure drop p_nom", "m^3/s", 0.001, qnom);
+            addConstant("p_nom", "Nominal pressure drop", "Pa", 7e6, pnom);
         }
 
 

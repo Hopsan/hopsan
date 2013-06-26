@@ -51,7 +51,7 @@ namespace hopsan {
 
         void configure()
         {
-            addConstant("deltat", "Time delay", "[s]", 1.0, mTimeDelay);
+            addConstant("deltat", "Time delay", "s", 1.0, mTimeDelay);
 
             addInputVariable("in", "", "", 0.0, &mpND_in);
             addOutputVariable("out", "", "", &mpND_out);

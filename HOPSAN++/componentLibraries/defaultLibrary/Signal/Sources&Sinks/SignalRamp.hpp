@@ -65,10 +65,10 @@ namespace hopsan {
 
         void configure()
         {
-            addInputVariable("y_0", "Base Value", "[-]", 0.0, &mpBaseValue);
-            addInputVariable("y_A", "Amplitude", "[-]", 1.0, &mpAmplitude);
-            addInputVariable("t_start", "Start Time", "[s]", 1.0, &mpStartTime);
-            addInputVariable("t_end", "Stop Time", "[s]", 2.0, &mpStopTime);
+            addInputVariable("y_0", "Base Value", "-", 0.0, &mpBaseValue);
+            addInputVariable("y_A", "Amplitude", "-", 1.0, &mpAmplitude);
+            addInputVariable("t_start", "Start Time", "s", 1.0, &mpStartTime);
+            addInputVariable("t_end", "Stop Time", "s", 2.0, &mpStopTime);
 
             addOutputVariable("out", "Ramp output", "-", &mpOut);
         }

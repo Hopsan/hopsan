@@ -58,8 +58,8 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
 
-            addInputVariable("K_s", "Restrictor Coefficient", "[]", 0.000000025, &mpKs);
-            addInputVariable("F_s", "Spring Pre-Load Tension", "[Pa]", 0.0, &mpFs);
+            addInputVariable("K_s", "Restrictor Coefficient", "", 0.000000025, &mpKs);
+            addInputVariable("F_s", "Spring Pre-Load Tension", "Pa", 0.0, &mpFs);
         }
 
 

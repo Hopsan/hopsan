@@ -76,11 +76,11 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpP3 = addPowerPort("P3", "NodeMechanic");
 
-            addInputVariable("A_1", "Piston Area 1", "[m^2]", 0.0001, &mpA1);
-            addInputVariable("A_2", "Piston Area 2", "[m^2]", 0.0001, &mpA2);
-            addInputVariable("B_p", "Viscous Friction Coefficient of Piston", "[Ns/m]", 0.0, &mpBp);
-            addInputVariable("B_l", "Viscous Friction of Load", "[Ns/m]", 0.0, &mpBl);
-            addInputVariable("k_l", "Stiffness of Load", "[N/m]", 1000, &mpKl);
+            addInputVariable("A_1", "Piston Area 1", "m^2", 0.0001, &mpA1);
+            addInputVariable("A_2", "Piston Area 2", "m^2", 0.0001, &mpA2);
+            addInputVariable("B_p", "Viscous Friction Coefficient of Piston", "Ns/m", 0.0, &mpBp);
+            addInputVariable("B_l", "Viscous Friction of Load", "Ns/m", 0.0, &mpBl);
+            addInputVariable("k_l", "Stiffness of Load", "N/m", 1000, &mpKl);
 
             addConstant("m_l", "Inertia Load", "kg", 0.05, M);
             addConstant("s_l", "Stroke", "m", 0.01, sl);

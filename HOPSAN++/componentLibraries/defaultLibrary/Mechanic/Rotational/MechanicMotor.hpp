@@ -56,10 +56,10 @@ namespace hopsan {
 
         void configure()
         {
-            addInputVariable("omega_ref", "Desired Angular Velocity", "[-]", 0.0, &mpWref);
-            addInputVariable("K_p", "Proportional Controller Gain", "[-]", 10.0, &mpKp);
-            addInputVariable("K_i", "Integrating Controller Gain", "[-]", 100.0, &mpKi);
-            addInputVariable("K_d", "Derivating Controller Gain", "[-]", 100.0, &mpKd);
+            addInputVariable("omega_ref", "Desired Angular Velocity", "-", 0.0, &mpWref);
+            addInputVariable("K_p", "Proportional Controller Gain", "-", 10.0, &mpKp);
+            addInputVariable("K_i", "Integrating Controller Gain", "-", 100.0, &mpKi);
+            addInputVariable("K_d", "Derivating Controller Gain", "-", 100.0, &mpKd);
             mpP1 = addPowerPort("P1", "NodeMechanicRotational");
         }
 

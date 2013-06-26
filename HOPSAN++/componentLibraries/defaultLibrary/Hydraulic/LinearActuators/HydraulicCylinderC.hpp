@@ -81,12 +81,12 @@ class HydraulicCylinderC : public ComponentC
             //Register changable parameters to the HOPSAN++ core
             addInputVariable("A_1", "Piston Area 1", "m^2", 0.001, &mpA1);
             addInputVariable("A_2", "Piston Area 2", "m^2", 0.001, &mpA2);
-            addInputVariable("s_l", "Stroke", "[m]", 1.0, &mpSl);
-            addInputVariable("V_1", "Dead Volume in Chamber 1", "[m^3]", 0.0003, &mpV01);
-            addInputVariable("V_2", "Dead Volume in Chamber 2", "[m^3]", 0.0003, &mpV02);
-            addInputVariable("B_p", "Viscous Friction", "[Ns/m]", 1000.0, &mpBp);
-            addInputVariable("Beta_e", "Bulk Modulus", "[Pa]", 1000000000.0, &mpBetae);
-            addInputVariable("c_leak", "Leakage Coefficient", "[]", 0.00000000001, &mpCLeak);
+            addInputVariable("s_l", "Stroke", "m", 1.0, &mpSl);
+            addInputVariable("V_1", "Dead Volume in Chamber 1", "m^3", 0.0003, &mpV01);
+            addInputVariable("V_2", "Dead Volume in Chamber 2", "m^3", 0.0003, &mpV02);
+            addInputVariable("B_p", "Viscous Friction", "Ns/m", 1000.0, &mpBp);
+            addInputVariable("Beta_e", "Bulk Modulus", "Pa", 1000000000.0, &mpBetae);
+            addInputVariable("c_leak", "Leakage Coefficient", "", 0.00000000001, &mpCLeak);
         }
 
 
@@ -450,15 +450,15 @@ class HydraulicCylinderC : public ComponentC
 //            mpP3 = addPowerPort("P3", "NodeMechanic");
 
 //            //Register changable parameters to the HOPSAN++ core
-//            registerParameter("A_1", "Piston Area 1", "[m^2]", A1);
-//            registerParameter("A_2", "Piston Area 2", "[m^2]", A2);
-//            registerParameter("s_l", "Stroke", "[m]", SL);
-//            registerParameter("m_e", "Equivalent Load Mass", "[kg]", ME);
-//            registerParameter("V_1", "Dead Volume in Chamber 1", "[m^3]", V01);
-//            registerParameter("V_2", "Dead Volume in Chamber 2", "[m^3]", V02);
-//            registerParameter("B_p", "Viscous Friction", "[Ns/m]", BP);
-//            registerParameter("Beta_e", "Bulk Modulus", "[Pa]", BETAE);
-//            registerParameter("c_leak", "Leakage Coefficient", "[]", CIP);
+//            registerParameter("A_1", "Piston Area 1", "m^2", A1);
+//            registerParameter("A_2", "Piston Area 2", "m^2", A2);
+//            registerParameter("s_l", "Stroke", "m", SL);
+//            registerParameter("m_e", "Equivalent Load Mass", "kg", ME);
+//            registerParameter("V_1", "Dead Volume in Chamber 1", "m^3", V01);
+//            registerParameter("V_2", "Dead Volume in Chamber 2", "m^3", V02);
+//            registerParameter("B_p", "Viscous Friction", "Ns/m", BP);
+//            registerParameter("Beta_e", "Bulk Modulus", "Pa", BETAE);
+//            registerParameter("c_leak", "Leakage Coefficient", "", CIP);
 
 //            setStartValue(mpP1, NodeHydraulic::Pressure, 1.0e5);
 //            setStartValue(mpP2, NodeHydraulic::Pressure, 1.0e5);
@@ -834,15 +834,15 @@ class HydraulicCylinderC : public ComponentC
 //            mpP3 = addPowerPort("P3", "NodeMechanic");
 
 //            //Register changable parameters to the HOPSAN++ core
-//            registerParameter("A_1", "Piston Area 1", "[m^2]", A1);
-//            registerParameter("A_2", "Piston Area 2", "[m^2]", A2);
-//            registerParameter("s_l", "Stroke", "[m]", sl);
-//            registerParameter("m_e", "Equivalent Load Mass", "[kg]", me);
-//            registerParameter("V_1", "Dead Volume in Chamber 1", "[m^3]", V01);
-//            registerParameter("V_2", "Dead Volume in Chamber 2", "[m^3]", V02);
-//            registerParameter("B_p", "Viscous Friction", "[Ns/m]", bp);
-//            registerParameter("Beta_e", "Bulk Modulus", "[Pa]", betae);
-//            registerParameter("c_leak", "Leakage Coefficient", "[]", cLeak);
+//            registerParameter("A_1", "Piston Area 1", "m^2", A1);
+//            registerParameter("A_2", "Piston Area 2", "m^2", A2);
+//            registerParameter("s_l", "Stroke", "m", sl);
+//            registerParameter("m_e", "Equivalent Load Mass", "kg", me);
+//            registerParameter("V_1", "Dead Volume in Chamber 1", "m^3", V01);
+//            registerParameter("V_2", "Dead Volume in Chamber 2", "m^3", V02);
+//            registerParameter("B_p", "Viscous Friction", "Ns/m", bp);
+//            registerParameter("Beta_e", "Bulk Modulus", "Pa", betae);
+//            registerParameter("c_leak", "Leakage Coefficient", "", cLeak);
 
 //            setStartValue(mpP1, NodeHydraulic::Pressure, 1.0e5);
 //            setStartValue(mpP2, NodeHydraulic::Pressure, 1.0e5);

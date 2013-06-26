@@ -64,13 +64,13 @@ namespace hopsan {
 
             addOutputVariable("xv", "Spool position", "m", 0.0, &mpXv);
 
-            addInputVariable("p_max", "Maximum opening pressure", "[Pa]", 20000000.0, &mpPmax);
-            addInputVariable("tao", "Time Constant of Spool", "[s]", 0.01, &mpTao);
-            addInputVariable("p_h", "Hysteresis Width", "[Pa]", 500000.0, &mpPh);
+            addInputVariable("p_max", "Maximum opening pressure", "Pa", 20000000.0, &mpPmax);
+            addInputVariable("tao", "Time Constant of Spool", "s", 0.01, &mpTao);
+            addInputVariable("p_h", "Hysteresis Width", "Pa", 500000.0, &mpPh);
 
-            addConstant("k_cs", "Steady State Characteristic due to Spring", "[(m^3/s)/Pa]", 0.00000001, Kcs);
-            addConstant("k_cf", "Steady State Characteristic due to Flow Forces", "[(m^3/s)/Pa]", 0.00000001, Kcf);
-            addConstant("q_nom", "Flow with Fully Open Valve and pressure drop Pnom", "[m^3/s]", 0.001, qnom);
+            addConstant("k_cs", "Steady State Characteristic due to Spring", "(m^3/s)/Pa", 0.00000001, Kcs);
+            addConstant("k_cf", "Steady State Characteristic due to Flow Forces", "(m^3/s)/Pa", 0.00000001, Kcf);
+            addConstant("q_nom", "Flow with Fully Open Valve and pressure drop Pnom", "m^3/s", 0.001, qnom);
       }
 
 

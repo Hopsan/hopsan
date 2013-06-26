@@ -52,7 +52,7 @@ namespace hopsan {
         void configure()
         {
             addInputVariable("in", "", "", 0.0, &mpND_in);
-            addInputVariable("y_h", "Width of the Hysteresis", "[-]", 1.0, &mpHysteresisWidth);
+            addInputVariable("y_h", "Width of the Hysteresis", "-", 1.0, &mpHysteresisWidth);
 
             addOutputVariable("out", "", "", &mpND_out);
         }

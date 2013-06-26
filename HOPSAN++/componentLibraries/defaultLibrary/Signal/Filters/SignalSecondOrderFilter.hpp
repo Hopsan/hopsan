@@ -55,13 +55,13 @@ namespace hopsan {
             addInputVariable("in","","", 0.0, &mpND_in);
             addOutputVariable("out", "","",0.0, &mpND_out);
 
-            addConstant("k", "Gain", "[-]", 1.0, mK);
-            addConstant("omega_1", "Numerator break frequency", "[rad/s]", 1.0e10, mWnum);
-            addConstant("delta_1", "Numerator damp coefficient", "[-]", 1.0, mDnum);
-            addConstant("omega_2", "Denominator break frequency", "[rad/s]", 1000, mWden);
-            addConstant("delta_2", "Denominator damp coefficient", "[-]", 1.0, mDden);
-            addConstant("y_min", "Lower output limit", "[-]", -1.5E+300, mMin);
-            addConstant("y_max", "Upper output limit", "[-]", 1.5E+300, mMax);
+            addConstant("k", "Gain", "-", 1.0, mK);
+            addConstant("omega_1", "Numerator break frequency", "rad/s", 1.0e10, mWnum);
+            addConstant("delta_1", "Numerator damp coefficient", "-", 1.0, mDnum);
+            addConstant("omega_2", "Denominator break frequency", "rad/s", 1000, mWden);
+            addConstant("delta_2", "Denominator damp coefficient", "-", 1.0, mDden);
+            addConstant("y_min", "Lower output limit", "-", -1.5E+300, mMin);
+            addConstant("y_max", "Upper output limit", "-", 1.5E+300, mMax);
         }
 
 

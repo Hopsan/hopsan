@@ -67,16 +67,16 @@ namespace hopsan {
             mpAC = addPowerPort("PC", "NodeHydraulic");
 
             addOutputVariable("xv_out", "Spool position", "", 0.0, &mpXvout);
-            addInputVariable("C_q", "Flow Coefficient", "[-]", 0.67, &mpCq);
-            addInputVariable("rho", "Oil Density", "[kg/m^3]", 890, &mpRho);
-            addInputVariable("d_1", "Small diameter", "[m]", 10e-3, &mpD1);
-            addInputVariable("d_2", "Big diameter", "[m]", 10e-3, &mpD2);
-            addInputVariable("k", "Spring constant", "[N/m]", 1e4, &mpK);
-            addInputVariable("F_0", "Spring pre-load", "[N]", 100.0, &mpF0);
-            addInputVariable("f", "Fraction of poppet diameter that is opening", "[-]", 1.0, &mpF);
+            addInputVariable("C_q", "Flow Coefficient", "-", 0.67, &mpCq);
+            addInputVariable("rho", "Oil Density", "kg/m^3", 890, &mpRho);
+            addInputVariable("d_1", "Small diameter", "m", 10e-3, &mpD1);
+            addInputVariable("d_2", "Big diameter", "m", 10e-3, &mpD2);
+            addInputVariable("k", "Spring constant", "N/m", 1e4, &mpK);
+            addInputVariable("F_0", "Spring pre-load", "N", 100.0, &mpF0);
+            addInputVariable("f", "Fraction of poppet diameter that is opening", "-", 1.0, &mpF);
 
-            addConstant("x_vmax", "Maximum Spool Displacement", "[m]", 0.01, xvmax);
-            addConstant("d_d", "Damp orifice diam.", "[m]", 0.1e-3, dd);
+            addConstant("x_vmax", "Maximum Spool Displacement", "m", 0.01, xvmax);
+            addConstant("d_d", "Damp orifice diam.", "m", 0.1e-3, dd);
         }
 
 

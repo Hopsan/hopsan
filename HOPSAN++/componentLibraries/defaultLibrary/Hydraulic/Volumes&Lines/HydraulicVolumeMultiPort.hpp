@@ -60,9 +60,9 @@ namespace hopsan {
         {
             mpP1 = addPowerMultiPort("P1", "NodeHydraulic");
 
-            addInputVariable("V", "Volume", "[m^3]", 1.0e-3, &mpV);
-            addInputVariable("Beta_e", "Bulkmodulus", "[Pa]", 1.0e9, &mpBetae);
-            addInputVariable("alpha", "Low pass coeficient to dampen standing delayline waves", "[-]", 0.1, &mpAlpha);
+            addInputVariable("V", "Volume", "m^3", 1.0e-3, &mpV);
+            addInputVariable("Beta_e", "Bulkmodulus", "Pa", 1.0e9, &mpBetae);
+            addInputVariable("alpha", "Low pass coeficient to dampen standing delayline waves", "-", 0.1, &mpAlpha);
 
             setDefaultStartValue(mpP1, NodeHydraulic::Flow, 0.0);
             setDefaultStartValue(mpP1, NodeHydraulic::Pressure, 1.0e5);

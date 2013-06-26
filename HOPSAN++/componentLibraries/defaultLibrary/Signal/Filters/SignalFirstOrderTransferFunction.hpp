@@ -54,11 +54,11 @@ namespace hopsan {
             addInputVariable("in", "","",0.0,&mpND_in);
             addOutputVariable("out","Filtered value","",0.0,&mpND_out);
 
-            addConstant("a_1", "S^1 numerator coefficient", "[-]", 1, mNum[1]);
-            addConstant("a_0", "S^0 numerator coefficient", "[-]", 1, mNum[0]);
+            addConstant("a_1", "S^1 numerator coefficient", "-", 1, mNum[1]);
+            addConstant("a_0", "S^0 numerator coefficient", "-", 1, mNum[0]);
 
-            addConstant("b_1", "S^1 denominator coefficient", "[-]", 1, mDen[1]);
-            addConstant("b_0", "S^0 denominator coefficient", "[-]", 1, mDen[0]);
+            addConstant("b_1", "S^1 denominator coefficient", "-", 1, mDen[1]);
+            addConstant("b_0", "S^0 denominator coefficient", "-", 1, mDen[0]);
         }
 
 

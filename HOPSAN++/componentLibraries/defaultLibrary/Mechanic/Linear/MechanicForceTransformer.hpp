@@ -41,7 +41,7 @@ namespace hopsan {
 
         void configure()
         {
-            addInputVariable("F", "Generated force", "[N]", 0.0, &mpND_signal);
+            addInputVariable("F", "Generated force", "N", 0.0, &mpND_signal);
             mpP1 = addPowerPort("P1", "NodeMechanic");
             disableStartValue(mpP1, NodeMechanic::Force);
         }

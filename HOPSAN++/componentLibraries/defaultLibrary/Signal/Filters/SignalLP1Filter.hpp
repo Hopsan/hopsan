@@ -53,9 +53,9 @@ namespace hopsan {
             addInputVariable("in","","", 0.0, &mpND_in);
             addOutputVariable("out", "","",0.0, &mpND_out);
 
-            addConstant("omega", "Break frequency", "[rad/s]", 1000.0, mW);
-            addConstant("y_min", "Lower output limit", "[-]", -1.5E+300, mMin);
-            addConstant("y_max", "Upper output limit", "[-]", 1.5E+300, mMax);
+            addConstant("omega", "Break frequency", "rad/s", 1000.0, mW);
+            addConstant("y_min", "Lower output limit", "-", -1.5E+300, mMin);
+            addConstant("y_max", "Upper output limit", "-", 1.5E+300, mMax);
         }
 
 

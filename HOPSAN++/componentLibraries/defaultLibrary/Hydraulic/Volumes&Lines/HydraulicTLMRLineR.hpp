@@ -59,12 +59,12 @@ namespace hopsan {
             mpP1 = addPowerPort("P1", "NodeHydraulic");
             mpP2 = addPowerPort("P2", "NodeHydraulic");
 
-            addInputVariable("alpha", "Low pass coefficient", "[-]", 0.0, &mpAlpha);
-            addInputVariable("Z_c", "Characteristic Impedance", "[Ns/m^5]",  1.0e9, &mpZc);
-            addInputVariable("R_1", "Resistance 1", "[Ns/m^5]",  0.5, &mpR1);
-            addInputVariable("R_2", "Resistance 2", "[Ns/m^5]",  0.5, &mpR2);
+            addInputVariable("alpha", "Low pass coefficient", "-", 0.0, &mpAlpha);
+            addInputVariable("Z_c", "Characteristic Impedance", "Ns/m^5",  1.0e9, &mpZc);
+            addInputVariable("R_1", "Resistance 1", "Ns/m^5",  0.5, &mpR1);
+            addInputVariable("R_2", "Resistance 2", "Ns/m^5",  0.5, &mpR2);
 
-            addConstant("deltat", "Time delay", "[s]",   0.1, mTimeDelay);
+            addConstant("deltat", "Time delay", "s",   0.1, mTimeDelay);
 
             setDefaultStartValue(mpP1, NodeHydraulic::Flow, 0.0);
             setDefaultStartValue(mpP1, NodeHydraulic::Pressure, 1.0e5);
