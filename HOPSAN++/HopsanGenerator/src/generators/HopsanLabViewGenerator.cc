@@ -566,25 +566,33 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
 
     printMessage("Extracting HopsanCore source code...");
 
-    QFileInfo sourceCodeFile(mBinPath+"../HopsanCoreSourceCode.zip");
-    if(sourceCodeFile.exists())
-    {
-        QDir zipDir;
-        zipDir = QDir::cleanPath(mExecPath + "../ThirdParty/7z");
-    #ifdef WIN32
-        QStringList arguments;
-        arguments << "x" << sourceCodeFile.absoluteFilePath() << "-o"+fileInfo.absoluteDir().path()+"/HopsanCore" << "-aoa" << "-phopsanhejsan";
-        callProcess(zipDir.path()+"/7z.exe", arguments, zipDir.path());
-    #else
-        //! @todo Not verified in Linux
-        QStringList arguments = QStringList() << sourceCodeFile.absoluteFilePath() << "-d" << fileInfo.absoluteDir().path()+"/HopsanCore" << "-phopsanhejsan";
-        callProcess("unzip", arguments, fileInfo.absoluteDir().path()+"/HopsanCore");
-    #endif
-    }
-    else
-    {
-        printMessage("\nNote: Package with HopsanCore source code could not be found. Source files must be copied to output folder manually before compiling. Contact Hopsan developers for assistance.\n");
-    }
+    //Copy HopsanCore files to export directory
+    if(!this->copyIncludeFilesToDir(fileInfo.absoluteDir().path()))
+        return;
+    if(!this->copySourceFilesToDir(fileInfo.absoluteDir().path()))
+        return;
+    if(!this->copyDefaultComponentCodeToDir(fileInfo.absoluteDir().path()))
+        return;
+
+//    QFileInfo sourceCodeFile(mBinPath+"../HopsanCoreSourceCode.zip");
+//    if(sourceCodeFile.exists())
+//    {
+//        QDir zipDir;
+//        zipDir = QDir::cleanPath(mExecPath + "../ThirdParty/7z");
+//    #ifdef WIN32
+//        QStringList arguments;
+//        arguments << "x" << sourceCodeFile.absoluteFilePath() << "-o"+fileInfo.absoluteDir().path()+"/HopsanCore" << "-aoa" << "-phopsanhejsan";
+//        callProcess(zipDir.path()+"/7z.exe", arguments, zipDir.path());
+//    #else
+//        //! @todo Not verified in Linux
+//        QStringList arguments = QStringList() << sourceCodeFile.absoluteFilePath() << "-d" << fileInfo.absoluteDir().path()+"/HopsanCore" << "-phopsanhejsan";
+//        callProcess("unzip", arguments, fileInfo.absoluteDir().path()+"/HopsanCore");
+//    #endif
+//    }
+//    else
+//    {
+//        printMessage("\nNote: Package with HopsanCore source code could not be found. Source files must be copied to output folder manually before compiling. Contact Hopsan developers for assistance.\n");
+//    }
 
 
     printMessage("Extracting component libraries source code...");
