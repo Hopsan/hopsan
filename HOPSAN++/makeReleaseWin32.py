@@ -337,6 +337,7 @@ def copyFiles():
     os.system("mkdir \""+raw(tempDir)+"\"\\doc\\user\\html")
     os.system("mkdir \""+raw(tempDir)+"\"\\ThirdParty")
     os.system("mkdir \""+raw(tempDir)+"\"\\ThirdParty\7z")
+    os.system("mkdir \""+raw(tempDir)+"\"\\ThirdParty\fmi")
 
     
     #Unpack depedency bin files to bin folder without asking stupid questions
@@ -432,6 +433,9 @@ def copyFiles():
     # Set all files to read-only
     setReadOnlyForAllFilesInDir(tempDir)
 
+    #Copy fmi to temporary directory
+    os.system(r'xcopy ThirdParty\fmi\* "'+raw(tempDir)+r'"\ThirdParty\fmi\ /s')
+    
     return True
     
     
