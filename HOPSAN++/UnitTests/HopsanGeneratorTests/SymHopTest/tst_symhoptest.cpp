@@ -208,6 +208,21 @@ private Q_SLOTS:
         QTest::newRow("11") << Expression("-x*y")       << false << true  << false << false << false << false << false << false << false << true;
         QTest::newRow("12") << Expression("-sin(x)")    << false << true  << false << false << false << false << false << false << false << true;
     }
+
+    void SymHop_Contains()
+    {
+        QFETCH(Expression, expr1);
+        QFETCH(Expression, expr2);
+        QString failmsg("Failure! Wrong value: "+expr1.toString()+".contains("+expr2.toString()+") = false");
+        QVERIFY2(expr1.contains(expr2), failmsg.toStdString().c_str());
+    }
+    void SymHop_Contains_data()
+    {
+        QTest::addColumn<Expression>("expr1");
+        QTest::addColumn<Expression>("expr2");
+        QTest::newRow("0") << Expression("(x+y)/(x+y^z)") << Expression("z");
+        QTest::newRow("1") << Expression("sin(cos(x))") << Expression("x");
+    }
 };
 
 QTEST_APPLESS_MAIN(SymHopTests)

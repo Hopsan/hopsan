@@ -3013,175 +3013,175 @@ void SymHop::validateFunctions()
     // Validate string constructor
 
     Expression expr = Expression("x=y");
-    hAssert(expr.mpLeft != 0 && expr.mpRight != 0);
+//    hAssert(expr.mpLeft != 0 && expr.mpRight != 0);
 
-    expr = Expression("x*y/z");
-    hAssert(expr.mFactors.size() == 2 && expr.mDivisors.size() == 1);
+//    expr = Expression("x*y/z");
+//    hAssert(expr.mFactors.size() == 2 && expr.mDivisors.size() == 1);
 
-    expr = Expression("x+y");
-    hAssert(expr.mTerms.size() == 2);
+//    expr = Expression("x+y");
+//    hAssert(expr.mTerms.size() == 2);
 
-    expr = Expression("x^y");
-    hAssert(expr.mpBase != 0 && expr.mpPower != 0);
+//    expr = Expression("x^y");
+//    hAssert(expr.mpBase != 0 && expr.mpPower != 0);
 
-    expr = Expression("sin(x)");
-    hAssert(expr.mFunction == "sin" && expr.mArguments.size() == 1);
+//    expr = Expression("sin(x)");
+//    hAssert(expr.mFunction == "sin" && expr.mArguments.size() == 1);
 
-    // Validate stringlist constructor
+//    // Validate stringlist constructor
 
-    expr = Expression(QStringList() << "x" << "*" << "y" << "/" << "z");
-    hAssert(expr.mFactors.size() == 2 && expr.mDivisors.size() == 1);
+//    expr = Expression(QStringList() << "x" << "*" << "y" << "/" << "z");
+//    hAssert(expr.mFactors.size() == 2 && expr.mDivisors.size() == 1);
 
-    // Validate double constructor
+//    // Validate double constructor
 
-    expr = Expression(5);
-    hAssert(expr.toDouble() == 5);
+//    expr = Expression(5);
+//    hAssert(expr.toDouble() == 5);
 
-    // Validate fromBasePower()
+//    // Validate fromBasePower()
 
-    expr = Expression::fromBasePower(Expression("x"), Expression("y"));
-    hAssert(expr.mpBase != 0 && expr.mpPower != 0);
+//    expr = Expression::fromBasePower(Expression("x"), Expression("y"));
+//    hAssert(expr.mpBase != 0 && expr.mpPower != 0);
 
-    //Validate fromEquation()
+//    //Validate fromEquation()
 
-    expr = Expression::fromEquation(Expression("x"), Expression("y"));
-    hAssert(expr.mpLeft != 0 && expr.mpRight != 0);
+//    expr = Expression::fromEquation(Expression("x"), Expression("y"));
+//    hAssert(expr.mpLeft != 0 && expr.mpRight != 0);
 
-    //Validate fromFactorDivisor()
+//    //Validate fromFactorDivisor()
 
-    expr = Expression::fromFactorDivisor(Expression("x"), Expression("y"));
-    hAssert(expr.mFactors.size() == 1 && expr.mDivisors.size() == 1);
+//    expr = Expression::fromFactorDivisor(Expression("x"), Expression("y"));
+//    hAssert(expr.mFactors.size() == 1 && expr.mDivisors.size() == 1);
 
-    //Validate fromFactorsDivisors()
+//    //Validate fromFactorsDivisors()
 
-    QList<Expression> factors = QList<Expression>() << Expression("x") << Expression("y");
-    QList<Expression> divisors = QList<Expression>() << Expression("z") << Expression("3");
-    expr = Expression::fromFactorsDivisors(factors, divisors);
-    hAssert(expr.mFactors.size() == 2 && expr.mDivisors.size() == 2);
+//    QList<Expression> factors = QList<Expression>() << Expression("x") << Expression("y");
+//    QList<Expression> divisors = QList<Expression>() << Expression("z") << Expression("3");
+//    expr = Expression::fromFactorsDivisors(factors, divisors);
+//    hAssert(expr.mFactors.size() == 2 && expr.mDivisors.size() == 2);
 
     //Valiadte fromFunctionArguments()
-
-    QList<Expression> args = QList<Expression>() << Expression("x") << Expression("y");
-    expr = Expression::fromFunctionArguments("foo", args);
-    hAssert(expr.mFunction == "foo" && expr.mArguments.size() == 2);
+//    QList<Expression> args = QList<Expression>() << Expression("x") << Expression("y");
+//    expr = Expression::fromFunctionArguments("foo", args);
+//    hAssert(expr.mFunction == "foo" && expr.mArguments.size() == 2);
 
     //Validate fromTerms()
 
-    QList<Expression> terms = QList<Expression>() << Expression("x") << Expression("y");
-    expr = Expression::fromTerms(terms);
-    hAssert(expr.mTerms.size() == 2);
+//    QList<Expression> terms = QList<Expression>() << Expression("x") << Expression("y");
+//    expr = Expression::fromTerms(terms);
+//    hAssert(expr.mTerms.size() == 2);
 
-    //Validate fromTwoFactors()
+//    //Validate fromTwoFactors()
 
-    expr = Expression::fromTwoFactors(Expression("x"), Expression("y"));
-    hAssert(expr.mFactors.size() == 2);
+//    expr = Expression::fromTwoFactors(Expression("x"), Expression("y"));
+//    hAssert(expr.mFactors.size() == 2);
 
-    //Validate fromTwoTerms()
+//    //Validate fromTwoTerms()
 
-    expr = Expression::fromTwoTerms(Expression("x"), Expression("y"));
-    hAssert(expr.mTerms.size() == 2);
+//    expr = Expression::fromTwoTerms(Expression("x"), Expression("y"));
+//    hAssert(expr.mTerms.size() == 2);
 
-    //Validate equality operator
-    Expression expr1 = Expression("sin(2^z)+2*x/(5+y)");
-    Expression expr2 = Expression("1/(y+5)*x*2+sin(2.0^z)");
-    hAssert(expr1 == expr2);
+//    //Validate equality operator
+//    Expression expr1 = Expression("sin(2^z)+2*x/(5+y)");
+//    Expression expr2 = Expression("1/(y+5)*x*2+sin(2.0^z)");
+//    hAssert(expr1 == expr2);
 
-    //Validate replaceBy()
-    expr1 = Expression(exprStr);
-    expr.replaceBy(expr1);
-    hAssert(expr == expr1);
+//    //Validate replaceBy()
+//    expr1 = Expression(exprStr);
+//    expr.replaceBy(expr1);
+//    hAssert(expr == expr1);
 
-    //Validate divideBy()
-    expr = Expression("x/y+3");
-    expr.divideBy(Expression("z"));
-    hAssert(expr == Expression("(x/y+3)/z"));
+//    //Validate divideBy()
+//    expr = Expression("x/y+3");
+//    expr.divideBy(Expression("z"));
+//    hAssert(expr == Expression("(x/y+3)/z"));
 
-    //Validate multiplyBy()
-    expr = Expression("y/z");
-    expr.multiplyBy(Expression("x"));
-    hAssert(expr == Expression("x*y/z"));
+//    //Validate multiplyBy()
+//    expr = Expression("y/z");
+//    expr.multiplyBy(Expression("x"));
+//    hAssert(expr == Expression("x*y/z"));
 
-    //Validate addBy()
-    expr = Expression("x");
-    expr.addBy(Expression("y"));
-    hAssert(expr == Expression("x+y"));
+//    //Validate addBy()
+//    expr = Expression("x");
+//    expr.addBy(Expression("y"));
+//    hAssert(expr == Expression("x+y"));
 
-    //Validate subtractBy()
-    expr = Expression("x");
-    expr.subtractBy(Expression("y"));
-    hAssert(expr == Expression("x-y"));
+//    //Validate subtractBy()
+//    expr = Expression("x");
+//    expr.subtractBy(Expression("y"));
+//    hAssert(expr == Expression("x-y"));
 
-    //Validate toDouble()
-    expr = Expression("x");
-    expr1 = Expression("43");
-    expr2 = Expression("-43");
-    bool ok, ok1, ok2;
-    double val = expr.toDouble(&ok);
-    double val1 = expr1.toDouble(&ok1);
-    double val2 = expr2.toDouble(&ok2);
-    hAssert(!ok && ok1 && ok2 && val == 0.0 && val1 == 43.0 && val2 == -43.0);
+//    //Validate toDouble()
+//    expr = Expression("x");
+//    expr1 = Expression("43");
+//    expr2 = Expression("-43");
+//    bool ok, ok1, ok2;
+//    double val = expr.toDouble(&ok);
+//    double val1 = expr1.toDouble(&ok1);
+//    double val2 = expr2.toDouble(&ok2);
+//    hAssert(!ok && ok1 && ok2 && val == 0.0 && val1 == 43.0 && val2 == -43.0);
 
     //Validate isPower()
-    expr1 = Expression("x^y");
-    expr2 = Expression("x+y");
-    hAssert(expr1.isPower() && !expr2.isPower());
+//    expr1 = Expression("x^y");
+//    expr2 = Expression("x+y");
+//    hAssert(expr1.isPower() && !expr2.isPower());
 
-    //Validate isMultiplyOrDivide()
-    expr = Expression("x*y");
-    expr1 = Expression("x/y");
-    expr2 = Expression("x+y/z");
-    hAssert(expr.isMultiplyOrDivide() && expr1.isMultiplyOrDivide() && !expr2.isMultiplyOrDivide());
+//    //Validate isMultiplyOrDivide()
+//    expr = Expression("x*y");
+//    expr1 = Expression("x/y");
+//    expr2 = Expression("x+y/z");
+//    hAssert(expr.isMultiplyOrDivide() && expr1.isMultiplyOrDivide() && !expr2.isMultiplyOrDivide());
 
-    //Validate isAdd()
-    expr1 = Expression("x+y*z");
-    expr2 = Expression("x*y");
-    hAssert(expr1.isAdd() && !expr2.isAdd());
+//    //Validate isAdd()
+//    expr1 = Expression("x+y*z");
+//    expr2 = Expression("x*y");
+//    hAssert(expr1.isAdd() && !expr2.isAdd());
 
-    //Validate isFunction()
-    expr1 = Expression("sin(x*y)");
-    expr2 = Expression("x*sin(y)");
-    hAssert(expr1.isFunction() && !expr2.isFunction());
+//    //Validate isFunction()
+//    expr1 = Expression("sin(x*y)");
+//    expr2 = Expression("x*sin(y)");
+//    hAssert(expr1.isFunction() && !expr2.isFunction());
 
-    //Valiadete isSymbol()
-    expr = Expression("x");
-    expr1 = Expression("12");
-    expr2 = Expression("x*y");
-    hAssert(expr.isSymbol() && expr1.isSymbol() && !expr2.isSymbol());
+//    //Valiadete isSymbol()
+//    expr = Expression("x");
+//    expr1 = Expression("12");
+//    expr2 = Expression("x*y");
+//    hAssert(expr.isSymbol() && expr1.isSymbol() && !expr2.isSymbol());
 
-    //Validate isNumericalSymbol()
-    expr1 = Expression("5.3");
-    expr2 = Expression("x");
-    hAssert(expr1.isNumericalSymbol() && !expr2.isNumericalSymbol());
+//    //Validate isNumericalSymbol()
+//    expr1 = Expression("5.3");
+//    expr2 = Expression("x");
+//    hAssert(expr1.isNumericalSymbol() && !expr2.isNumericalSymbol());
 
-    //Validate isVariable()
-    expr1 = Expression("5.3");
-    expr2 = Expression("x");
-    hAssert(!expr1.isVariable() && expr2.isVariable());
+//    //Validate isVariable()
+//    expr1 = Expression("5.3");
+//    expr2 = Expression("x");
+//    hAssert(!expr1.isVariable() && expr2.isVariable());
 
-    //Validate isAssignment()
-    expr1 = Expression("x=y+z");
-    expr2 = Expression("x+z=y");
-    hAssert(expr1.isAssignment() && !expr2.isAssignment());
+//    //Validate isAssignment()
+//    expr1 = Expression("x=y+z");
+//    expr2 = Expression("x+z=y");
+//    hAssert(expr1.isAssignment() && !expr2.isAssignment());
 
-    //Validate isEquation()
-    expr = Expression("x=y");
-    hAssert(expr.isEquation());
+//    //Validate isEquation()
+//    expr = Expression("x=y");
+//    hAssert(expr.isEquation());
 
-    //Validate isNegative()
-    expr = Expression("-x*y");
-    expr1 = Expression("-sin(x)");
-    expr2 = Expression("x*y");
-    hAssert(expr.isNegative() && expr1.isNegative() && !expr2.isNegative());
+//    //Validate isNegative()
+//    expr = Expression("-x*y");
+//    expr1 = Expression("-sin(x)");
+//    expr2 = Expression("x*y");
+//    hAssert(expr.isNegative() && expr1.isNegative() && !expr2.isNegative());
 
     //Validate changeSign()
-    expr = Expression("x*y");
-    expr.changeSign();
-    hAssert(expr == Expression("-x*y"));
+//    expr = Expression("x*y");
+//    expr.changeSign();
+//    hAssert(expr == Expression("-x*y"));
 
-    //Validate contains()
-    expr1 = Expression("(x+y)/(x+y^z)");
-    expr2 = Expression("(x+y)/(x+y^x)");
-    hAssert(expr1.contains(Expression("z")) && !expr2.contains(Expression("z")));
+//! @todo Move remaining tests to unit tester
+//    //Validate contains()
+//    expr1 = Expression("(x+y)/(x+y^z)");
+//    expr2 = Expression("(x+y)/(x+y^x)");
+//    hAssert(expr1.contains(Expression("z")) && !expr2.contains(Expression("z")));
 
     //Validate getFunctions()
     expr = Expression("foo(x)+1.0/bar(x)+sin(x^cos(y))");
@@ -3195,8 +3195,8 @@ void SymHop::validateFunctions()
     hAssert(expr.getFunctionName() == "foo");
 
     //Validate getSymbolName()
-    expr1 = Expression("x");
-    expr2 = Expression(3);
+    Expression expr1 = Expression("x");
+    Expression expr2 = Expression(3);
     hAssert(expr1.getSymbolName() == "x" && expr2.getSymbolName() == "3.0");
 
     //Validate getVariables()
@@ -3208,26 +3208,26 @@ void SymHop::validateFunctions()
 
     //Validate getArguments() and getArguments()
     expr = Expression("foo(x,y,z)");
-    args = expr.getArguments();
+    QList<Expression> args = expr.getArguments();
     hAssert(args.size() == 3 && args.contains(Expression("x")) &&
            args.contains(Expression("y")) && args.contains(Expression("z")));
     hAssert(expr.getArgument(1) == Expression("y"));
 
     //Validate getTerms()
     expr = Expression("x+y/z-2^x");
-    terms = expr.getTerms();
+    QList<Expression> terms = expr.getTerms();
     hAssert(terms.size() == 3 && terms.contains(Expression("x")) &&
            terms.contains(Expression("y/z")) && terms.contains(Expression("-2^x")));
 
     //Validate getFactors()
     expr = Expression("x*y/A");
-    factors = expr.getFactors();
+    QList<Expression> factors = expr.getFactors();
     hAssert(factors.size() == 2 && factors.contains(Expression("x")) &&
            factors.contains(Expression("y")));
 
     //Validate getDivisors()
     expr = Expression("(x+3)*y/z/sin(A)");
-    divisors = expr.getDivisors();
+    QList<Expression> divisors = expr.getDivisors();
     hAssert(divisors.size() == 2 && divisors.contains(Expression("z")) &&
            divisors.contains(Expression("sin(A)")));
 
@@ -3363,6 +3363,7 @@ void SymHop::validateFunctions()
 
     //Validate derivative()
     expr = Expression("2*x^5+3*x");
+    bool ok;
     expr1 = expr.derivative(Expression("x"),ok);
     retString = expr1.toString();
     hAssert(ok && expr1 == Expression("10.0*x^4.0+3.0"));
