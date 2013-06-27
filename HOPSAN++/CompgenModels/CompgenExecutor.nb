@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       157,          7]
-NotebookDataLength[      7037,        197]
-NotebookOptionsPosition[      6196,        167]
-NotebookOutlinePosition[      6617,        183]
-CellTagsIndexPosition[      6574,        180]
+NotebookDataLength[      7816,        214]
+NotebookOptionsPosition[      6936,        183]
+NotebookOutlinePosition[      7356,        199]
+CellTagsIndexPosition[      7313,        196]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -123,6 +123,21 @@ Cell[BoxData[
 
 Cell[BoxData[
  RowBox[{
+  RowBox[{"nb7", "=", 
+   RowBox[{"NotebookOpen", "[", 
+    RowBox[{"ToFileName", "[", 
+     RowBox[{"docpath", ",", "\"\<AeroAircraft6DOFSS.nb\>\""}], "]"}], 
+    "]"}]}], ";"}]], "Input",
+ CellChangeTimes->{
+  3.5757394354090014`*^9, {3.5757398354561043`*^9, 3.5757398420393157`*^9}, {
+   3.5757399002430177`*^9, 3.57573990163142*^9}, {3.5757400378508596`*^9, 
+   3.5757400730421214`*^9}, 3.5757405474991665`*^9, {3.5757410464504433`*^9, 
+   3.575741050100849*^9}, 3.5757412904064713`*^9, {3.5757415416009836`*^9, 
+   3.5757415496817975`*^9}, 3.575741674552017*^9, 3.5764113722652473`*^9, 
+   3.576509912887928*^9, 3.579160460869238*^9}],
+
+Cell[BoxData[
+ RowBox[{
   RowBox[{"nb8", "=", 
    RowBox[{"NotebookOpen", "[", 
     RowBox[{"ToFileName", "[", 
@@ -130,7 +145,8 @@ Cell[BoxData[
   ";"}]], "Input",
  CellChangeTimes->{{3.5757410552488585`*^9, 3.575741068602482*^9}, 
    3.5757411161669655`*^9, 3.575741314414913*^9, {3.5757413531341815`*^9, 
-   3.575741357002988*^9}, 3.5757416786704245`*^9, 3.5765099142610064`*^9}],
+   3.575741357002988*^9}, 3.5757416786704245`*^9, 3.5765099142610064`*^9, 
+   3.5810531378074713`*^9, 3.581057580855789*^9, 3.5813023779854403`*^9}],
 
 Cell[BoxData[
  RowBox[{
@@ -165,8 +181,8 @@ Cell[BoxData[
 }, Open  ]]
 }, Open  ]]
 },
-WindowSize->{710, 555},
-WindowMargins->{{120, Automatic}, {176, Automatic}},
+WindowSize->{967, 674},
+WindowMargins->{{103, Automatic}, {Automatic, 22}},
 FrontEndVersion->"8.0 for Microsoft Windows (64-bit) (October 6, 2011)",
 StyleDefinitions->FrontEnd`FileName[{"Creative"}, "PastelColor.nb", 
   CharacterEncoding -> "WindowsANSI"]
@@ -192,11 +208,12 @@ Cell[2558, 74, 383, 9, 41, "Input"],
 Cell[2944, 85, 431, 9, 41, "Input"],
 Cell[3378, 96, 486, 10, 41, "Input"],
 Cell[3867, 108, 638, 13, 41, "Input"],
-Cell[4508, 123, 425, 9, 41, "Input"],
-Cell[4936, 134, 504, 10, 41, "Input"],
+Cell[4508, 123, 663, 13, 41, "Input"],
+Cell[5174, 138, 499, 10, 41, "Input"],
+Cell[5676, 150, 504, 10, 41, "Input"],
 Cell[CellGroupData[{
-Cell[5465, 148, 105, 1, 23, "Subtitle"],
-Cell[5573, 151, 595, 12, 41, "Input"]
+Cell[6205, 164, 105, 1, 23, "Subtitle"],
+Cell[6313, 167, 595, 12, 41, "Input"]
 }, Open  ]]
 }, Open  ]]
 }
