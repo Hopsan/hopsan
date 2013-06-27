@@ -6,7 +6,7 @@
 QT       += testlib
 QT       -= gui
 
-TARGET = $${PWD}/../../../bin/tst_hstringtest
+TARGET = ../../../../bin/tst_hstringtest
 CONFIG   += console
 CONFIG   -= app_bundle
 
