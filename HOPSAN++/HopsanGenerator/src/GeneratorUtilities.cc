@@ -249,10 +249,11 @@ bool compileComponentLibrary(QString path, QString name, HopsanGenerator *pGener
     c.chop(1);
 
     QString i = pGenerator->getCoreIncludePath();
-    i.prepend("-I");
+    i.prepend("-I\"");
+    i.append("\"");
 
     QString binDir = pGenerator->getBinPath();
-    QString l = "-L"+binDir+" -lHopsanCore "+extraLinks;
+    QString l = "-L\""+binDir+"\" -lHopsanCore "+extraLinks;
 
     pGenerator->printMessage("\nCalling compiler utility:");
     pGenerator->printMessage("Path: "+path);
