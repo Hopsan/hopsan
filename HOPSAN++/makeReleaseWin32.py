@@ -52,6 +52,9 @@ def raw(text):
         except KeyError: new_string+=char
     return new_string
 
+def rawPath(text):
+    return r'"'+raw(text)+r'"'
+
 class bcolors:
   WHITE = 0x07
   GREEN= 0x0A
@@ -124,14 +127,39 @@ def askYesNoQuestion(msg):
         elif ans=="n":
             return False
 
-def setReadOnlyForAllFilesInDir(dir):
-    for path, dirs, files in os.walk(dir,topdown=True):
-        for filename in files:
-            absPath = os.path.abspath(os.path.join(path, filename))
-            print "Setting read-only: "+ absPath
-            os.chmod(absPath, stat.S_IREAD)
-        for dirname in dirs:
-            setReadOnlyForAllFilesInDir(dirname)
+def setReadOnlyForAllFilesInDir(rootDir):
+    for dirpath, dirnames, filenames in os.walk(rootDir,topdown=True):
+        print "Setting files read-only in directory: "+ dirpath
+        for filename in filenames:
+            #print "Setting files read-only: "+ os.path.join(dirpath, filename)
+            os.chmod(os.path.join(dirpath, filename), stat.S_IREAD)
+
+
+def writeDoNotSafeFileHereFileToAllDirectories(rootDir):
+    for dirpath, dirnames, filenames in os.walk(rootDir,topdown=True):
+        print "Adding DoNotSaveFile to directory: "+dirpath
+        open(dirpath+"\---DO_NOT_SAVE_FILES_IN_THIS_DIRECTORY---", 'a+').close()
+
+def svnExport(src, dst):
+    print "Exporting from "+rawPath(src)+ " to "+rawPath(dst)
+    os.system("svn export -q "+rawPath(src)+" "+rawPath(dst))
+
+def callXcopy(src, dst):
+    os.system("xcopy "+rawPath(src)+" "+rawPath(dst)+" /s /y")
+
+def callMkdir(dst):
+    os.system("mkdir "+rawPath(dst))
+
+def callRd(tgt):
+    os.system("rd "+rawPath(tgt)+" /s /q")
+
+def callEXE(cmd, args):
+    print "callEXE: "+rawPath(cmd)+" "+args
+    os.system(r'"'+rawPath(cmd)+" "+args+r'"')
+
+def callDel(tgt):
+    os.system("del "+rawPath(tgt))
+    
 
 def verifyPaths():
     print "Verifying and selecting path variables..."
@@ -213,22 +241,22 @@ def msvcCompile(version, architecture):
     exec "path = msvc"+version+"Dir"
     
     #Remove previous files
-    os.system("del "+hopsanDir+"\\bin\\HopsanCore*.*")
+    callDel(hopsanDir+"\\bin\\HopsanCore*.*")
 
     #Create build directory and enter it
-    os.system("rd \s\q "+hopsanDir+"\\HopsanCore_bd")
-    os.system("mkdir "+hopsanDir+"\\HopsanCore_bd")
+    callRd(hopsanDir+"\\HopsanCore_bd")
+    callMkdir(hopsanDir+"\\HopsanCore_bd")
     
     os.chdir(hopsanDir+"\\HopsanCore_bd")
       
     #Setup compiler and compile (using auxiliary batch script)
     os.chdir(hopsanDir)
-    os.system("compileMSVC.bat "+version+" "+architecture+" \""+raw(path)+"\" \""+raw(qmakeDir)+"\" \""+raw(hopsanDir)+"\"\\HopsanCore_bd \""+raw(jomDir)+"\" \""+raw(hopsanDir)+"\"")
+    os.system("compileMSVC.bat "+version+" "+architecture+" "+rawPath(path)+" "+rawPath(qmakeDir)+" "+rawPath(hopsanDir+"\\HopsanCore_bd")+" "+rawPath(jomDir)+" "+rawPath(hopsanDir))
 
     printDebug(os.environ["PATH"])
     
     #Remove build directory
-    os.system("rd /s/q \""+raw(hopsanDir)+r'\HopsanCore_bd"')
+    callRd(hopsanDir+"\\HopsanCore_bd")
 
     if not fileExists(hopsanDir+"\\bin\\HopsanCore.dll"):
         printError("Failed to build HopsanCore with Visual Studio "+version+" "+architecture)
@@ -296,8 +324,8 @@ def buildRelease():
     os.system("del "+hopsanDir+"\\bin\\HopsanCLI*.*")
 
     #Create build directory and enter it
-    os.system("rd \s\q "+hopsanDir+"\\HopsanNG_bd")
-    os.system("mkdir "+hopsanDir+"\\HopsanNG_bd")
+    callRd(hopsanDir+"\\HopsanNG_bd")
+    callMkdir(hopsanDir+"\\HopsanNG_bd")
     
     #Setup compiler and compile
     os.chdir(hopsanDir+"\\HopsanNG_bd")    
@@ -321,62 +349,54 @@ def copyFiles():
     global dodevrelease
     
     #Create a temporary release directory
-    os.system("mkdir \""+raw(tempDir)+"\"")
+    callMkdir(tempDir)
     if not pathExists(tempDir):
         printError("Failed to create temporary directory")
         return False
     
-    os.system("mkdir \""+raw(tempDir)+"\"\\models")
-    os.system("mkdir \""+raw(tempDir)+"\"\\Scripts")
-    os.system("mkdir \""+raw(tempDir)+"\"\\Scripts\\HCOM")    
-    os.system("mkdir \""+raw(tempDir)+"\"\\bin")    
-    #os.system("mkdir \""+raw(tempDir)+"\"\\HopsanCore")
-    os.system("mkdir \""+raw(tempDir)+"\"\\componentLibraries")    
-    os.system("mkdir \""+raw(tempDir)+"\"\\doc")
-    os.system("mkdir \""+raw(tempDir)+"\"\\doc\\user")
-    os.system("mkdir \""+raw(tempDir)+"\"\\doc\\user\\html")
-    os.system("mkdir \""+raw(tempDir)+"\"\\ThirdParty")
-    os.system("mkdir \""+raw(tempDir)+"\"\\ThirdParty\7z")
-    os.system("mkdir \""+raw(tempDir)+"\"\\ThirdParty\fmi")
-
+    callMkdir(tempDir+"\\models")
+    callMkdir(tempDir+"\\Scripts")
+    callMkdir(tempDir+"\\bin")
+    callMkdir(tempDir+"\\componentLibraries")
+    callMkdir(tempDir+"\\doc\\user\\html")
+    callMkdir(tempDir+"\\doc\\graphics")
+    callMkdir(tempDir+"\\ThirdParty")
     
     #Unpack depedency bin files to bin folder without asking stupid questions
-    os.system("\""+raw(hopsanDir)+"\"\\ThirdParty\\7z\\7z.exe x "+dependecyBinFiles+" -o"+tempDir+"\\bin"+" -y")
+    #os.system("\""+raw(hopsanDir)+"\"\\ThirdParty\\7z\\7z.exe -y x "+dependecyBinFiles+" -o"+tempDir+"\\bin")
+    callEXE(hopsanDir+"\\ThirdParty\\7z\\7z.exe", "x "+dependecyBinFiles+" -o"+rawPath(tempDir+"\\bin")+" -y")
 
     #Clear old output folder
-    os.system("rd /s/q \""+raw(hopsanDir)+"\"\\output")
+    callRd(hopsanDir+"\\output")
     if pathExists("\""+raw(hopsanDir)+"\"\\output"):
         printWarning("Unable to clear old output folder.")
         if not askYesNoQuestion("Continue? (y/n): "):
             return False
         
-  
     #Create new output folder
-    os.system("mkdir "+raw(hopsanDir)+"\\output")
+    callMkdir(hopsanDir+"\output")
     if not pathExists(raw(hopsanDir)+"\\output"):
         printError("Failed to create output folder.")
         return False
 
     #Copy "bin" folder to temporary directory
-    os.system("xcopy bin\\*.exe \""+raw(tempDir)+"\"\\bin /s")
-    os.system("xcopy bin\\*.dll \""+raw(tempDir)+"\"\\bin /s")
-    os.system("xcopy bin\\*.a \""+raw(tempDir)+"\"\\bin /s")
-    os.system("xcopy bin\\*.lib \""+raw(tempDir)+"\"\\bin /s")
-    os.system("xcopy bin\\*.exp \""+raw(tempDir)+"\"\\bin /s")
-    os.system("xcopy bin\\python27.zip \""+raw(tempDir)+"\"\\bin /s")
-    pythonFailed=True
-    if not fileExists(tempDir+"\\bin\\python27.zip"):
-        printError("Failed to find python27.zip.")
-        return False
+    callXcopy("bin\\*.exe", tempDir+"\\bin")
+    callXcopy("bin\\*.dll", tempDir+"\\bin")
+    callXcopy("bin\\*.a", tempDir+"\\bin")
+    callXcopy("bin\\*.lib", tempDir+"\\bin")
+    callXcopy("bin\\*.exp", tempDir+"\\bin")
+##    os.system("xcopy bin\\python27.zip \""+raw(tempDir)+"\"\\bin /s /y")
+##    pythonFailed=True
+##    if not fileExists(tempDir+"\\bin\\python27.zip"):
+##        printError("Failed to find python27.zip.")
+##        return False
         
     #Delete unwanted (debug) files from temporary directory
-    os.system("del \""+tempDir+"\"\\bin\HopsanCLI_d.exe")
-    os.system("del \""+tempDir+"\"\\bin\HopsanCore_d.exe")
-    os.system("del \""+tempDir+"\"\\bin\HopsanGUI_d.exe")
-    os.system("del \""+tempDir+"\"\\bin\libHopsanCore_d.a")
-    os.system("del \""+tempDir+r'"\bin\*_d.dll"')
-    os.system("del \""+tempDir+r'""\bin\tbb_debug.dll"')
-    os.system("del \""+tempDir+"\"\\bin\qwtd.dll")
+    callDel(tempDir+"\\bin\\*_d.exe")
+    callDel(tempDir+"\\bin\\*_d.a")
+    callDel(tempDir+"\\bin\\*_d.dll")
+    callDel(tempDir+"\\bin\\tbb_debug.dll")
+    callDel(tempDir+"\\bin\\qwtd.dll")
 
     #Build user documentation
     os.system("buildUserDocumentation")
@@ -384,58 +404,55 @@ def copyFiles():
         printError("Failed to build user documentation")
 
     #Export "HopsanCore" SVN directory to "include" in temporary directory
-    os.system("svn export HopsanCore \""+raw(tempDir)+"\"\\HopsanCore")
-
+    svnExport("HopsanCore", tempDir+"\\HopsanCore")
+ 
     #Copy the svnrevnum.h file Assume it exist, ONLY for DEV builds
     if dodevrelease:
-        os.system("xcopy HopsanCore\include\svnrevnum.h \""+raw(tempDir)+"\"\\HopsanCore\\include\\ /s")
+        callXcopy("HopsanCore\\include\\svnrevnum.h", tempDir+"\\HopsanCore\\include")
 
     #Export "Example Models" SVN directory to temporary directory
-    os.system(r'svn export "Models\Example Models" "'+raw(tempDir)+r'\models\Example Models"')
+    svnExport("Models\\Example Models", tempDir+"\\models\\Example Models")
     
     #Export "Test Models" SVN directory to temporary directory
-    os.system(r'svn export "Models\Component Test" "'+raw(tempDir)+r'\models\Component Test"')
+    svnExport("Models\\Component Test", tempDir+"\\models\\Component Test")
 
     #Export "Benchmark Models" SVN directory to temporary directory
-    os.system(r'svn export "Models\Benchmark Models" "'+raw(tempDir)+r'\models\Benchmark Models"')
+    svnExport("Models\\Benchmark Models", tempDir+"\\models\\Benchmark Models")
 
     #Export and copy "componentData" SVN directory to temporary directory
-    os.system(r'svn export "componentLibraries\defaultLibrary" "'+raw(tempDir)+r'\componentLibraries\defaultLibrary"')
+    svnExport("componentLibraries\\defaultLibrary", tempDir+"\\componentLibraries\\defaultLibrary")
 
     #Export "exampleComponentLib" SVN directory to temporary directory
-    os.system(r'svn export "componentLibraries\exampleComponentLib" "'+raw(tempDir)+r'\componentLibraries\exampleComponentLib"')
-
-    #Copy documentation to temporary directory
-    os.system(r'xcopy doc\user\html\* "'+raw(tempDir)+r'"\doc\user\html\ /s')
-    os.system(r'xcopy doc\graphics\* "'+raw(tempDir)+r'"\doc\graphics\ /s')
+    svnExport("componentLibraries\\exampleComponentLib", tempDir+"\\componentLibraries\\exampleComponentLib")
 
     #Export "Scripts" folder to temporary directory
-    os.system(r'xcopy Scripts\HopsanOptimization.py "'+raw(tempDir)+r'"\Scripts\ /s')
-    os.system(r'xcopy Scripts\OptimizationObjectiveFunctions.py "'+raw(tempDir)+r'"\Scripts\ /s')
-    os.system(r'xcopy Scripts\OptimizationObjectiveFunctions.xml "'+raw(tempDir)+r'"\Scripts\ /s')
-    os.system(r'xcopy Scripts\HCOM\* "'+raw(tempDir)+r'"\Scripts\HCOM\ /s')
+    svnExport("Scripts\\HopsanOptimization.py", tempDir+"\\Scripts")
+    svnExport("Scripts\\OptimizationObjectiveFunctions.py", tempDir+"\\Scripts")
+    svnExport("Scripts\\OptimizationObjectiveFunctions.xml", tempDir+"\\Scripts")
+    svnExport("Scripts\\HCOM", tempDir+"\\Scripts\\HCOM")
 
     #Copy "hopsandefaults" file to temporary directory
-    os.system(r'copy hopsandefaults "'+raw(tempDir)+r'"\hopsandefaults')
+    svnExport("hopsandefaults", tempDir+"\\hopsandefaults")
     
     #Copy "release notes" file to temporary directory
-    os.system(r'copy Hopsan-release-notes.txt "'+raw(tempDir)+r'"\Hopsan-release-notes.txt')
-    
-    #Copy HopsanCoreSourceCode.zip to temporary directory
-    os.system(r'copy HopsanCoreSourceCode.zip "'+raw(tempDir)+r'"\HopsanCoreSourceCode.zip')
-    
-    #Copy componentLibrariesSourceCode.zip to temporary directory
-    os.system(r'copy componentLibrariesSourceCode.zip "'+raw(tempDir)+r'"\componentLibrariesSourceCode.zip')
+    svnExport("Hopsan-release-notes.txt", tempDir+"\\Hopsan-release-notes.txt")
     
     #Copy 7zip to temporary directory
-    os.system(r'xcopy ThirdParty\7z\* "'+raw(tempDir)+r'"\ThirdParty\7z\ /s')
-
-    # Set all files to read-only
-    setReadOnlyForAllFilesInDir(tempDir)
+    svnExport("ThirdParty\\7z", tempDir+"\\ThirdParty\\7z")
 
     #Copy fmi to temporary directory
-    os.system(r'xcopy ThirdParty\fmi\* "'+raw(tempDir)+r'"\ThirdParty\fmi\ /s')
-    
+    svnExport("ThirdParty\\fmi", tempDir+"\\ThirdParty\\fmi")
+
+    #Copy documentation to temporary directory
+    callXcopy("doc\\user\\html\\*", tempDir+"\\doc\\user\\html")
+    callXcopy("doc\\graphics\\*", tempDir+"\\doc\\graphics")
+
+    #Write the do not save files here file 
+    writeDoNotSafeFileHereFileToAllDirectories(tempDir)
+
+    #Set all files to read-only
+    setReadOnlyForAllFilesInDir(tempDir)
+
     return True
     
     
@@ -443,16 +460,12 @@ def createInstallFiles():
     
     #Create zip package
     print "Creating zip package..."
-    os.system(r'""'+raw(hopsanDir)+r'\ThirdParty\7z\7z.exe" a -tzip Hopsan-'+version+r'-win32-zip.zip "'+raw(tempDir)+r'""\*')
+    callEXE(hopsanDir+"\\ThirdParty\\7z\\7z.exe", "a -tzip Hopsan-"+version+"-win32-zip.zip "+rawPath(tempDir+"\\*"))
     os.system(r'move Hopsan-'+version+r'-win32-zip.zip output/')
     if not fileExists("output/Hopsan-"+version+"-win32-zip.zip"):
         printError("Failed to create zip package.")
         return False
     printSuccess("Created zip package!")
-        
-    #Add files that should only be in setup script
-    open(tempDir+"\---DO_NOT_SAVE_FILE_IN_THIS_DIRECTORY---", 'a').close()
-    open(tempDir+"\models\Example Models\---DO_NOT_SAVE_FILE_IN_THIS_DIRECTORY---", 'a').close()
         
     #Execute Inno compile script
     print "Generating install executable..."
