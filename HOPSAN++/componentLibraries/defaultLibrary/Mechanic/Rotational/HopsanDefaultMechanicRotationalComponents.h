@@ -11,6 +11,7 @@
 #include "MechanicAngularVelocitySensor.hpp"
 #include "MechanicTorqueSensor.hpp"
 #include "MechanicJLink.hpp"
+#include "MechanicJLink2.hpp"
 #include "MechanicThetaSource.hpp"
 #include "MechanicMotor.hpp"
 #include "MechanicRotShaft.hpp"
