@@ -75,7 +75,7 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("AeroJetEngine", AeroJetEngine::Creator);
     pComponentFactory->registerCreatorFunction("AeroFuelTank", AeroFuelTank::Creator);
     pComponentFactory->registerCreatorFunction("AeroPropeller", AeroPropeller::Creator);
-    pComponentFactory->registerCreatorFunction("AeroCombustionChamberMono", AeroCombustionChamberMono::Creator);
+  //  pComponentFactory->registerCreatorFunction("AeroCombustionChamberMono", AeroCombustionChamberMono::Creator);
 
     pComponentFactory->registerCreatorFunction("SignalAttitudeControl", SignalAttitudeControl::Creator);
     pComponentFactory->registerCreatorFunction("SignalAttitudeTVCcontrol", SignalAttitudeTVCcontrol::Creator);
@@ -195,6 +195,7 @@ void hopsan::register_default_components(ComponentFactory* pComponentFactory)
     pComponentFactory->registerCreatorFunction("MechanicMultiPortTranslationalMass", MechanicMultiPortTranslationalMass::Creator);
     pComponentFactory->registerCreatorFunction("MechanicRackAndPinion", MechanicRackAndPinion::Creator);
     pComponentFactory->registerCreatorFunction("MechanicJLink", MechanicJLink::Creator);
+    pComponentFactory->registerCreatorFunction("MechanicJLink2", MechanicJLink2::Creator);
     pComponentFactory->registerCreatorFunction("MechanicThetaSource", MechanicThetaSource::Creator);
     pComponentFactory->registerCreatorFunction("MechanicVehicle1D", MechanicVehicle1D::Creator);
     pComponentFactory->registerCreatorFunction("MechanicRotationalInertiaWithCoulumbFriction", MechanicRotationalInertiaWithCoulombFriction::Creator);

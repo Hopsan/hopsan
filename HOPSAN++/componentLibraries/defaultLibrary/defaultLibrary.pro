@@ -255,6 +255,7 @@ HEADERS += \
     Mechanic/Rotational/MechanicThetaSource.hpp \
     Mechanic/Rotational/MechanicRotShaft.hpp \
     Mechanic/Rotational/MechanicJLink.hpp \
+    Mechanic/Rotational/MechanicJLink2.hpp \
     Mechanic/Rotational/MechanicMotor.hpp \
     Mechanic/Rotational/MechanicRackAndPinion.hpp \
     Signal/Sources&Sinks/SignalConstant.hpp \
