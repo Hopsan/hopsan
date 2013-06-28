@@ -8,8 +8,8 @@
           <icons/>
         <ports>
             <port x="1" y="0.5" enabled="true" a="180" name="Pp1" autoplaced="true"/>
-            <port x="0" y="0.333333" enabled="true" a="180" name="Ppinput" autoplaced="true"/>
-            <port x="0" y="0.666667" enabled="true" a="180" name="PTinput" autoplaced="true"/>
+            <port x="0" y="0.333333" enabled="true" a="180" name="pinput" autoplaced="true"/>
+            <port x="0" y="0.666667" enabled="true" a="180" name="Tinput" autoplaced="true"/>
         </ports>
         <animation flowspeed="100"/>
     </modelobject>

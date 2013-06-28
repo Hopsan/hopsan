@@ -33,6 +33,13 @@ public:
      {
         mpPp1=addReadPort("Pp1","NodePneumatic");
         addOutputVariable("out", "Flow", "kg/s", &mpND_qmsensor);
+
+        setStartValue(mpPp1, NodePneumatic::Pressure,100000.);
+        setStartValue(mpPp1, NodePneumatic::MassFlow,0.);
+        setStartValue(mpPp1, NodePneumatic::Temperature,293.);
+        setStartValue(mpPp1, NodePneumatic::EnergyFlow,0.);
+        setStartValue(mpPp1, NodePneumatic::WaveVariable,0.);
+        setStartValue(mpPp1, NodePneumatic::CharImpedance,0.);
      }
 
     void initialize()

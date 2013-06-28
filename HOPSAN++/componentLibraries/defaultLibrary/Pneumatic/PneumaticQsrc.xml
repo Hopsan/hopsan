@@ -7,8 +7,8 @@
         </icons>
         <ports>
             <port x="1" y="0.5" enabled="true" a="0" name="Pp1" autoplaced="true"/>
-            <port x="0" y="0.666667" enabled="true" a="180" name="PTinput" autoplaced="true"/>
-            <port x="0" y="0.333333" enabled="true" a="180" name="Pqminput" autoplaced="true"/>
+            <port x="0" y="0.666667" enabled="true" a="180" name="Tinput" autoplaced="true"/>
+            <port x="0" y="0.333333" enabled="true" a="180" name="qminput" autoplaced="true"/>
         </ports>
         <animation flowspeed="100"/>
     </modelobject>
