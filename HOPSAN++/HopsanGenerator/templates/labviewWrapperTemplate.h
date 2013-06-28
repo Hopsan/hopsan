@@ -38,7 +38,7 @@ void addComponent(string name, string type)
 	hopsan::Component *pCoreComponent;
     pCoreComponent = gHopsanCore.createComponent(type.c_str());
     spCoreComponentSystem->addComponent(pCoreComponent);
-    pCoreComponent->setName(name);
+    pCoreComponent->setName(name.c_str());
     sComponentNames.push_back(name);
 }
 
@@ -55,24 +55,24 @@ bool initSystem()
 
 bool connect(string comp1, string port1, string comp2, string port2)
 {
-    return spCoreComponentSystem->connect(comp1, port1, comp2, port2);
+    return spCoreComponentSystem->connect(comp1.c_str(), port1.c_str(), comp2.c_str(), port2.c_str());
 }
 
 void setParameter(string compname, string parname, double value)
 {
 	  std::stringstream ss;
 	  ss << value;
-    spCoreComponentSystem->getSubComponentOrThisIfSysPort(compname)->setParameterValue(parname, ss.str());
+    spCoreComponentSystem->getSubComponentOrThisIfSysPort(compname.c_str())->setParameterValue(parname.c_str(), ss.str().c_str());
 }
 
 void writeNodeData(string compname, string portname, int dataindex, double data)
 {
-	spCoreComponentSystem->getSubComponentOrThisIfSysPort(compname)->getPort(portname)->writeNode(dataindex, data);
+    spCoreComponentSystem->getSubComponentOrThisIfSysPort(compname.c_str())->getPort(portname.c_str())->writeNode(dataindex, data);
 }
 
 double readNodeData(string compname, string portname, int dataindex)
 {
-    return spCoreComponentSystem->getSubComponentOrThisIfSysPort(compname)->getPort(portname)->readNode(dataindex);
+    return spCoreComponentSystem->getSubComponentOrThisIfSysPort(compname.c_str())->getPort(portname.c_str())->readNode(dataindex);
 }
 
 bool simulateOneTimestep(double time)
