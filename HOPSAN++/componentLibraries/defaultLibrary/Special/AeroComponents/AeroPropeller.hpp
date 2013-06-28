@@ -9,7 +9,7 @@
 //!
 //! @file AeroPropeller.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 29 May 2013 14:46:24
+//! @date Fri 28 Jun 2013 13:41:26
 //! @brief Model of a propeller
 //! @ingroup AeroComponents
 //!
@@ -120,20 +120,20 @@ public:
             addInputVariable("rho","Air density","kg/m3",1.25,&mprho);
 
         //Add inputParammeters to the component
-            addInputVariable("dp", "&mpPropeller diameter", "m", 1.,&mpdp);
-            addInputVariable("b1", "&mpPropeller thrust coefficient", "m", \
+            addInputVariable("dp", "Propeller diameter", "m", 1.,&mpdp);
+            addInputVariable("b1", "Propeller thrust coefficient", "m", \
 0.2,&mpb1);
-            addInputVariable("b2", "&mpPropeller thrust coefficient", "m", \
+            addInputVariable("b2", "Propeller thrust coefficient", "m", \
 0.2,&mpb2);
-            addInputVariable("g1", "&mpPropeller torque coefficient", "m", \
+            addInputVariable("g1", "Propeller torque coefficient", "m", \
 0.205,&mpg1);
-            addInputVariable("g2", "&mpPropeller torque coefficient", "m", \
+            addInputVariable("g2", "Propeller torque coefficient", "m", \
 0.2,&mpg2);
-            addInputVariable("ct0", "&mpPropeller torque coefficient", "m", \
+            addInputVariable("ct0", "Propeller torque coefficient", "m", \
 0.12,&mpct0);
-            addInputVariable("cp0", "&mpPropeller torque coefficient", "m", \
+            addInputVariable("cp0", "Propeller torque coefficient", "m", \
 0.08,&mpcp0);
-            addInputVariable("k", "&mpexponent for transition", "", 4,&mpk);
+            addInputVariable("k", "exponent for transition", "", 4,&mpk);
         //Add outputVariables to the component
             addOutputVariable("thrust","Thrust","N",500.,&mpthrust);
             addOutputVariable("torque","Thrust","N",0.,&mptorque);

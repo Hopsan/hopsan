@@ -9,7 +9,7 @@
 //!
 //! @file SignalAttitudeControl.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 29 May 2013 14:44:35
+//! @date Fri 28 Jun 2013 13:03:57
 //! @brief Attitude control unit for an aircraft
 //! @ingroup SignalComponents
 //!
@@ -129,31 +129,30 @@ turn","rad",1.,&mpphimax);
             addInputVariable("Ub","actual speed","m/s",0.,&mpUb);
 
         //Add inputParammeters to the component
-            addInputVariable("Kphi", "&mpGain roll", "rad", 3.,&mpKphi);
-            addInputVariable("Kphipsi", "&mpGain yaw/roll", "rad", \
+            addInputVariable("Kphi", "Gain roll", "rad", 3.,&mpKphi);
+            addInputVariable("Kphipsi", "Gain yaw/roll", "rad", \
 2.,&mpKphipsi);
-            addInputVariable("Kelev", "&mpGain tip, default", "rad", \
+            addInputVariable("Kelev", "Gain tip, default", "rad", \
 4.,&mpKelev);
-            addInputVariable("Kdelev", "&mpGain tip, default", "rad", \
+            addInputVariable("Kdelev", "Gain tip, default", "rad", \
 1.,&mpKdelev);
-            addInputVariable("Krud", "&mpGain yaw, default", "rad", \
-1.,&mpKrud);
-            addInputVariable("Kdrud", "&mpGain yaw rate, default", "", \
+            addInputVariable("Krud", "Gain yaw, default", "rad", 1.,&mpKrud);
+            addInputVariable("Kdrud", "Gain yaw rate, default", "", \
 1.,&mpKdrud);
-            addInputVariable("u1min", "&mpMinium output signal roll", "rad", \
+            addInputVariable("u1min", "Minium output signal roll", "rad", \
 -0.9,&mpu1min);
-            addInputVariable("u1max", "&mpMaximum output signal roll", "rad", \
+            addInputVariable("u1max", "Maximum output signal roll", "rad", \
 0.9,&mpu1max);
-            addInputVariable("u2min", "&mpMinium output signal tip", "rad", \
+            addInputVariable("u2min", "Minium output signal tip", "rad", \
 -0.7,&mpu2min);
-            addInputVariable("u2max", "&mpMaximum output signal tip", "rad", \
+            addInputVariable("u2max", "Maximum output signal tip", "rad", \
 0.7,&mpu2max);
-            addInputVariable("u3min", "&mpMinium output signal yaw", "rad", \
+            addInputVariable("u3min", "Minium output signal yaw", "rad", \
 -0.7,&mpu3min);
-            addInputVariable("u3max", "&mpMaximum output signal yaw", "rad", \
+            addInputVariable("u3max", "Maximum output signal yaw", "rad", \
 0.7,&mpu3max);
-            addInputVariable("U0", "&mpReference speed for compensation", \
-"m/s", 100.,&mpU0);
+            addInputVariable("U0", "Reference speed for compensation", "m/s", \
+100.,&mpU0);
         //Add outputVariables to the component
             addOutputVariable("uaerL","left aerleron","rad",0.,&mpuaerL);
             addOutputVariable("uaerR","right aerleron","rad",0.,&mpuaerR);

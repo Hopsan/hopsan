@@ -9,7 +9,7 @@
 //!
 //! @file AeroJetEngine.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 29 May 2013 14:46:23
+//! @date Fri 28 Jun 2013 13:41:25
 //! @brief Calulates the mass of remaining fuel in tank
 //! @ingroup AeroComponents
 //!
@@ -43,7 +43,7 @@ private:
      //inputVariables
      double uin;
      double rho;
-     double T;
+     double Tav;
      double p0;
      double Vsound;
      double speed;
@@ -58,7 +58,7 @@ private:
      //inputVariables pointers
      double *mpuin;
      double *mprho;
-     double *mpT;
+     double *mpTav;
      double *mpp0;
      double *mpVsound;
      double *mpspeed;
@@ -105,7 +105,8 @@ public:
             addInputVariable("uin","Throttle setting 0-1","",1.,&mpuin);
             addInputVariable("rho","The density at altitude \
 h","kg/m3",1.25,&mprho);
-            addInputVariable("T","Temperature at altitude h","K",273.,&mpT);
+            addInputVariable("Tav","Temperature at altitude \
+h","K",273.,&mpTav);
             addInputVariable("p0","Pressure at altitude \
 h","Pa",100000.,&mpp0);
             addInputVariable("Vsound","Speed of sound at altitude \
@@ -113,14 +114,14 @@ h","m/s",340.,&mpVsound);
             addInputVariable("speed","Air speed","m/s",100.,&mpspeed);
 
         //Add inputParammeters to the component
-            addInputVariable("thrustmax", "&mpMax thrust", "N", \
+            addInputVariable("thrustmax", "Max thrust", "N", \
 5000.,&mpthrustmax);
-            addInputVariable("SFC", "&mpNominal thrust specific fuel \
+            addInputVariable("SFC", "Nominal thrust specific fuel \
 consumption", "kg/(N s)", 0.0000171,&mpSFC);
-            addInputVariable("BR", "&mpBypass ratio", "", 2,&mpBR);
-            addInputVariable("thau", "&mpEngine time constant", "s", \
+            addInputVariable("BR", "Bypass ratio", "", 2,&mpBR);
+            addInputVariable("thau", "Engine time constant", "s", \
 5.,&mpthau);
-            addInputVariable("Cspeed", "&mpthrust-speed coefficient", "", \
+            addInputVariable("Cspeed", "thrust-speed coefficient", "", \
 1.,&mpCspeed);
         //Add outputVariables to the component
             addOutputVariable("thrust","Thrust","N",5000.,&mpthrust);
@@ -144,7 +145,7 @@ flow","kg/s",1.,&mpqmfuel);
         //Read inputVariables from nodes
         uin = (*mpuin);
         rho = (*mprho);
-        T = (*mpT);
+        Tav = (*mpTav);
         p0 = (*mpp0);
         Vsound = (*mpVsound);
         speed = (*mpspeed);
@@ -186,7 +187,7 @@ flow","kg/s",1.,&mpqmfuel);
         //Read inputVariables from nodes
         uin = (*mpuin);
         rho = (*mprho);
-        T = (*mpT);
+        Tav = (*mpTav);
         p0 = (*mpp0);
         Vsound = (*mpVsound);
         speed = (*mpspeed);

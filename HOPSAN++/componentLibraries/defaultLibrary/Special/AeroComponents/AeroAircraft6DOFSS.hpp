@@ -9,7 +9,7 @@
 //!
 //! @file AeroAircraft6DOFSS.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 29 May 2013 13:41:41
+//! @date Thu 27 Jun 2013 21:59:58
 //! @brief Flight dynamics model of super-sonic aircraft
 //! @ingroup AeroComponents
 //!
@@ -536,149 +536,131 @@ y","rad/s",0.,&mpwturby);
 z","rad/s",0.,&mpwturbz);
 
         //Add inputParammeters to the component
-            addInputVariable("afin", "&mpbreak angle 1", "rad", 0.3,&mpafin);
-            addInputVariable("an1", "&mpNeg. break angle 1", "rad", \
-0.6,&mpan1);
-            addInputVariable("an2", "&mpNeg. break angle 2", "rad", \
-0.6,&mpan2);
-            addInputVariable("ap1", "&mpPos. break angle 1", "rad", \
-0.9,&mpap1);
-            addInputVariable("ap2", "&mpPos. break angle 2", "rad", \
-0.7,&mpap2);
-            addInputVariable("AR1", "&mpAspect ratio 1", "", 3.62,&mpAR1);
-            addInputVariable("AR2", "&mpAspect ratio 2", "", 3.62,&mpAR2);
-            addInputVariable("ARfin", "&mpAspect ratio fin", "", \
-1.5,&mpARfin);
-            addInputVariable("Cd01", "&mpDrag coef. 1", "", 0.0045,&mpCd01);
-            addInputVariable("Cd02", "&mpDrag coef. 2", "", 0.0045,&mpCd02);
-            addInputVariable("Cd0b", "&mpDrag coef. body", "", \
-0.004,&mpCd0b);
-            addInputVariable("Cd0fin", "&mpDrag coef. fin", "", \
+            addInputVariable("afin", "break angle 1", "rad", 0.3,&mpafin);
+            addInputVariable("an1", "Neg. break angle 1", "rad", 0.6,&mpan1);
+            addInputVariable("an2", "Neg. break angle 2", "rad", 0.6,&mpan2);
+            addInputVariable("ap1", "Pos. break angle 1", "rad", 0.9,&mpap1);
+            addInputVariable("ap2", "Pos. break angle 2", "rad", 0.7,&mpap2);
+            addInputVariable("AR1", "Aspect ratio 1", "", 3.62,&mpAR1);
+            addInputVariable("AR2", "Aspect ratio 2", "", 3.62,&mpAR2);
+            addInputVariable("ARfin", "Aspect ratio fin", "", 1.5,&mpARfin);
+            addInputVariable("Cd01", "Drag coef. 1", "", 0.0045,&mpCd01);
+            addInputVariable("Cd02", "Drag coef. 2", "", 0.0045,&mpCd02);
+            addInputVariable("Cd0b", "Drag coef. body", "", 0.004,&mpCd0b);
+            addInputVariable("Cd0fin", "Drag coef. fin", "", \
 0.0045,&mpCd0fin);
-            addInputVariable("CLalpha1", "&mpL. slope coef. 1", "", \
+            addInputVariable("CLalpha1", "L. slope coef. 1", "", \
 2.1,&mpCLalpha1);
-            addInputVariable("CLalpha2", "&mpL. slope coef. 2", "", \
+            addInputVariable("CLalpha2", "L. slope coef. 2", "", \
 2.2,&mpCLalpha2);
-            addInputVariable("CLalphabh", "&mpL. slope c. body h", "", \
+            addInputVariable("CLalphabh", "L. slope c. body h", "", \
 2.,&mpCLalphabh);
-            addInputVariable("CLalphabv", "&mpL. slope c. bodyv", "", \
+            addInputVariable("CLalphabv", "L. slope c. bodyv", "", \
 2.,&mpCLalphabv);
-            addInputVariable("CLalphafin", "&mpL. sl. c. fin", "", \
+            addInputVariable("CLalphafin", "L. sl. c. fin", "", \
 0.8,&mpCLalphafin);
-            addInputVariable("CLde1", "&mpCtrl surface coef 1", "", \
+            addInputVariable("CLde1", "Ctrl surface coef 1", "", \
 0.1,&mpCLde1);
-            addInputVariable("CLde12", "&mpFlap rudder coef 1", "", \
+            addInputVariable("CLde12", "Flap rudder coef 1", "", \
 0.2,&mpCLde12);
-            addInputVariable("Cdide1", "&mpFlap rudder drag coef 1", "", \
+            addInputVariable("Cdide1", "Flap rudder drag coef 1", "", \
 0.,&mpCdide1);
-            addInputVariable("Cdide12", "&mpFlap rudder drag coef 1", "", \
+            addInputVariable("Cdide12", "Flap rudder drag coef 1", "", \
 0.,&mpCdide12);
-            addInputVariable("Cdide112", "&mpFlap rudder cross drag coef 1", \
-"", 0.,&mpCdide112);
-            addInputVariable("de10", "&mprudder min drag angle 1", "", \
+            addInputVariable("Cdide112", "Flap rudder cross drag coef 1", "", \
+0.,&mpCdide112);
+            addInputVariable("de10", "rudder min drag angle 1", "", \
 0.01,&mpde10);
-            addInputVariable("de120", "&mpFlap min drag angle 1", "", \
+            addInputVariable("de120", "Flap min drag angle 1", "", \
 0.01,&mpde120);
-            addInputVariable("Cm01", "&mpMom coeff. wing 1", "", \
--0.1,&mpCm01);
-            addInputVariable("Cmfs1", "&mpMom coeff.1, fully separated", "", \
+            addInputVariable("Cm01", "Mom coeff. wing 1", "", -0.1,&mpCm01);
+            addInputVariable("Cmfs1", "Mom coeff.1, fully separated", "", \
 -0.5,&mpCmfs1);
-            addInputVariable("Cmde1", "&mpMom slop coeff 1", "", \
-0.02,&mpCmde1);
-            addInputVariable("Cmde12", "&mpFlap Mom slop coeff 1", "", \
+            addInputVariable("Cmde1", "Mom slop coeff 1", "", 0.02,&mpCmde1);
+            addInputVariable("Cmde12", "Flap Mom slop coeff 1", "", \
 0.1,&mpCmde12);
-            addInputVariable("CLdefin", "&mpRudder coef 1", "", \
+            addInputVariable("CLdefin", "Rudder coef 1", "", \
 0.0827084,&mpCLdefin);
-            addInputVariable("dah1", "&mpdown wash effect on 1", "", \
+            addInputVariable("dah1", "down wash effect on 1", "", \
 1.,&mpdah1);
-            addInputVariable("dah2", "&mpdown wash effect on 2", "", \
+            addInputVariable("dah2", "down wash effect on 2", "", \
 0.6,&mpdah2);
-            addInputVariable("e1", "&mpOsw. effic. factor 1", "", \
-0.95,&mpe1);
-            addInputVariable("e2", "&mpOsw. effic. factor 1", "", \
-0.95,&mpe2);
-            addInputVariable("efin", "&mpOsw. eff. f. fin", "", \
-0.95,&mpefin);
-            addInputVariable("awfin", "&mpCL exponent fin", "", \
-0.2,&mpawfin);
-            addInputVariable("awn1", "&mpCL exponent neg. 1", "", \
-0.2,&mpawn1);
-            addInputVariable("awn2", "&mpCL exponent neg. 2", "", \
-0.2,&mpawn2);
-            addInputVariable("awp1", "&mpCL exponent pos 1", "", \
-0.2,&mpawp1);
-            addInputVariable("awp2", "&mpCL exponent neg 1", "", \
-0.2,&mpawp2);
-            addInputVariable("gamma1", "&mpdehidral", "rad", \
+            addInputVariable("e1", "Osw. effic. factor 1", "", 0.95,&mpe1);
+            addInputVariable("e2", "Osw. effic. factor 1", "", 0.95,&mpe2);
+            addInputVariable("efin", "Osw. eff. f. fin", "", 0.95,&mpefin);
+            addInputVariable("awfin", "CL exponent fin", "", 0.2,&mpawfin);
+            addInputVariable("awn1", "CL exponent neg. 1", "", 0.2,&mpawn1);
+            addInputVariable("awn2", "CL exponent neg. 2", "", 0.2,&mpawn2);
+            addInputVariable("awp1", "CL exponent pos 1", "", 0.2,&mpawp1);
+            addInputVariable("awp2", "CL exponent neg 1", "", 0.2,&mpawp2);
+            addInputVariable("gamma1", "dehidral", "rad", \
 -0.0872665,&mpgamma1);
-            addInputVariable("gamma2", "&mpdehidral", "rad", \
+            addInputVariable("gamma2", "dehidral", "rad", \
 -0.0872665,&mpgamma2);
-            addInputVariable("hthrust0", "&mpengine vert. pos", "", \
+            addInputVariable("hthrust0", "engine vert. pos", "", \
 0.,&mphthrust0);
-            addInputVariable("ia1", "&mpincidence angle 1", "rad", \
-0.,&mpia1);
-            addInputVariable("ia2", "&mpincidence angle 1", " rad", \
+            addInputVariable("ia1", "incidence angle 1", "rad", 0.,&mpia1);
+            addInputVariable("ia2", "incidence angle 1", " rad", \
 0.02,&mpia2);
-            addInputVariable("Ix0", "&mpNorm. Inertia moment Ix/(Me S1)", " \
-", 0.0022,&mpIx0);
-            addInputVariable("Ixz0", "&mpNorm. Inertia moment", " ", \
-0.001,&mpIxz0);
-            addInputVariable("Iy0", "&mpNorm. Inertia moment", " ", \
-0.06,&mpIy0);
-            addInputVariable("Iz0", "&mpInertia moment", " ", 0.08,&mpIz0);
-            addInputVariable("lambda1", "&mpsweep 1", "rad", \
+            addInputVariable("Ix0", "Norm. Inertia moment Ix/(Me S1)", " ", \
+0.0147,&mpIx0);
+            addInputVariable("Ixz0", "Norm. Inertia moment", " ", \
+0.0055,&mpIxz0);
+            addInputVariable("Iy0", "Norm. Inertia moment", " ", \
+1.131,&mpIy0);
+            addInputVariable("Iz0", "Inertia moment", " ", 1.279,&mpIz0);
+            addInputVariable("lambda1", "sweep 1", "rad", \
 0.436332,&mplambda1);
-            addInputVariable("lambda2", "&mpsweep 2", "rad", \
+            addInputVariable("lambda2", "sweep 2", "rad", \
 0.436332,&mplambda2);
-            addInputVariable("lambdafin", "&mpsweep fin", "rad", \
+            addInputVariable("lambdafin", "sweep fin", "rad", \
 0.785398,&mplambdafin);
-            addInputVariable("lc10", "&mpnorm. ctrl surf. 1 ac fr hinge \
+            addInputVariable("lc10", "norm. ctrl surf. 1 ac fr hinge \
 lc1/sqrt(AR1 S1)", "", 0.01,&mplc10);
-            addInputVariable("lc20", "&mpnorm. ctrl surf. 2 ac fr hinge \
+            addInputVariable("lc20", "norm. ctrl surf. 2 ac fr hinge \
 lc1/sqrt(AR1 S1)", "", 0.05,&mplc20);
-            addInputVariable("lc120", "&mpnorm. flap 1 ac fr hinge", "", \
+            addInputVariable("lc120", "norm. flap 1 ac fr hinge", "", \
 0.01,&mplc120);
-            addInputVariable("lcfin0", "&mpctrl s. fin ac fr hinge", "", \
+            addInputVariable("lcfin0", "ctrl s. fin ac fr hinge", "", \
 0.01,&mplcfin0);
-            addInputVariable("Me", "&mpEmpty weight", "kg", 8700.,&mpMe);
-            addInputVariable("rc10", "&mpnorm. ctrl surface 1 mom. arm", "", \
+            addInputVariable("Me", "Empty weight", "kg", 8700.,&mpMe);
+            addInputVariable("rc10", "norm. ctrl surface 1 mom. arm", "", \
 0.25,&mprc10);
-            addInputVariable("rc20", "&mpnorm. ctrl surface 1 mom. arm", "", \
+            addInputVariable("rc20", "norm. ctrl surface 1 mom. arm", "", \
 0.15,&mprc20);
-            addInputVariable("rcfin0", "&mpnorm. ctrl surf. fin mom. arm", \
-"", 0.1,&mprcfin0);
-            addInputVariable("S1", "&mpwing area 1", "m2", 27.,&mpS1);
-            addInputVariable("S20", "&mpnorm. wing area 2", "", 0.36,&mpS20);
-            addInputVariable("Sbh0", "&mpnorm. hor. proj. area", "", \
+            addInputVariable("rcfin0", "norm. ctrl surf. fin mom. arm", "", \
+0.1,&mprcfin0);
+            addInputVariable("S1", "wing area 1", "m2", 27.,&mpS1);
+            addInputVariable("S20", "norm. wing area 2", "", 0.36,&mpS20);
+            addInputVariable("Sbh0", "norm. hor. proj. area", "", \
 0.1,&mpSbh0);
-            addInputVariable("Sbv0", "&mpnorm.body vert. proj. area", "", \
+            addInputVariable("Sbv0", "norm.body vert. proj. area", "", \
 0.1,&mpSbv0);
-            addInputVariable("Sfin0", "&mpnorm. fin area", "", \
-0.17,&mpSfin0);
-            addInputVariable("xbach0", "&mpnorm. body ac. hor.", "", \
+            addInputVariable("Sfin0", "norm. fin area", "", 0.17,&mpSfin0);
+            addInputVariable("xbach0", "norm. body ac. hor.", "", \
 3,&mpxbach0);
-            addInputVariable("xbacv0", "&mpnorm. body ac vert.", " ", \
+            addInputVariable("xbacv0", "norm. body ac vert.", " ", \
 3,&mpxbacv0);
-            addInputVariable("xbcge0", "&mpnorm. body cg", " ", 3,&mpxbcge0);
-            addInputVariable("xcargo0", "&mpnorm. cargo pos.", " ", \
+            addInputVariable("xbcge0", "norm. body cg", " ", 3,&mpxbcge0);
+            addInputVariable("xcargo0", "norm. cargo pos.", " ", \
 3,&mpxcargo0);
-            addInputVariable("xfuel0", "&mp", " ", 3,&mpxfuel0);
-            addInputVariable("xw10", "&mpnorm. wing1  position", " ", \
+            addInputVariable("xfuel0", "", " ", 3,&mpxfuel0);
+            addInputVariable("xw10", "norm. wing1  position", " ", \
 3,&mpxw10);
-            addInputVariable("xw20", "&mpnorm. wing 2 position", " ", \
+            addInputVariable("xw20", "norm. wing 2 position", " ", \
 4.8,&mpxw20);
-            addInputVariable("xwfin0", "&mpnorm. fin position", "", \
+            addInputVariable("xwfin0", "norm. fin position", "", \
 4.8,&mpxwfin0);
-            addInputVariable("xeng0", "&mpnorm. fin position", "", \
+            addInputVariable("xeng0", "norm. fin position", "", \
 4.8,&mpxeng0);
-            addInputVariable("yeng0", "&mpengines off. from center", "", \
+            addInputVariable("yeng0", "engines off. from center", "", \
 0.,&mpyeng0);
-            addInputVariable("g0", "&mpGravity acceleration", "m/s^2", \
+            addInputVariable("g0", "Gravity acceleration", "m/s^2", \
 9.81,&mpg0);
-            addInputVariable("kground", "&mpGround stiffness (for \
-limitiation)", "N/m", 10000.,&mpkground);
-            addInputVariable("cground", "&mpGround damping (for \
-limitiation)", "Ns/m", 1000.,&mpcground);
+            addInputVariable("kground", "Ground stiffness (for limitiation)", \
+"N/m", 10000.,&mpkground);
+            addInputVariable("cground", "Ground damping (for limitiation)", \
+"Ns/m", 1000.,&mpcground);
         //Add outputVariables to the component
             addOutputVariable("xcg","Horizontal position 1","m",0,&mpxcg);
             addOutputVariable("ycg","Horizontal position 2","m",0,&mpycg);
@@ -1004,8 +986,8 @@ Cos(Psi/2.)*Sin(Phi/2.)*Sin(Thetao/2.);
         //LocalExpressions
         hthrust = hthrust0*Sqrt(S1);
         Ix = AR1*Ix0*Me*S1;
-        Ixz = AR1*Ixz0*Me*S1;
-        Iy = Iy0*Me*S1;
+        Ixz = Ixz0*Me*S1;
+        Iy = (Iy0*Me*S1)/AR1;
         Iz = (Iz0*Me*S1)/AR1;
         lc1 = lc10*Sqrt(S1/AR1);
         lc2 = lc20*Sqrt(S1/AR1);
@@ -1238,8 +1220,8 @@ mTimestep*Power(q3,2)*Wb - 2*zcg)/2.;
         //LocalExpressions
         hthrust = hthrust0*Sqrt(S1);
         Ix = AR1*Ix0*Me*S1;
-        Ixz = AR1*Ixz0*Me*S1;
-        Iy = Iy0*Me*S1;
+        Ixz = Ixz0*Me*S1;
+        Iy = (Iy0*Me*S1)/AR1;
         Iz = (Iz0*Me*S1)/AR1;
         lc1 = lc10*Sqrt(S1/AR1);
         lc2 = lc20*Sqrt(S1/AR1);

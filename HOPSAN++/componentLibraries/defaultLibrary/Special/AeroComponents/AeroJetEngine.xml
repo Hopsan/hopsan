@@ -9,7 +9,7 @@
             <port x="0.4" y="1" enabled="true" visible="false" a="90" name="mfuel" autoplaced="true"/>
             <port x="0.2" y="1" enabled="true" visible="false" a="90" name="thrust" autoplaced="true"/>
             <port x="0.6" y="1" enabled="true" visible="false" a="90" name="Shspeed" autoplaced="true"/>
-            <port x="0.428571" y="0" enabled="true" visible="false" a="270" name="T" autoplaced="true"/>
+            <port x="0.428571" y="0" enabled="true" visible="false" a="270" name="Tav" autoplaced="true"/>
             <port x="0.857143" y="0" enabled="true" visible="false" a="270" name="speed" autoplaced="true"/>
             <port x="0.285714" y="0" enabled="true" visible="false" a="270" name="rho" autoplaced="true"/>
             <port x="0.142857" y="0" enabled="true" visible="false" a="270" name="uin" autoplaced="true"/>

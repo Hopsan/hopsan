@@ -9,7 +9,7 @@
 //!
 //! @file SignalTimeAccelerator.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 29 May 2013 14:44:37
+//! @date Fri 28 Jun 2013 13:03:58
 //! @brief Accelerate time in mission simulation
 //! @ingroup SignalComponents
 //!

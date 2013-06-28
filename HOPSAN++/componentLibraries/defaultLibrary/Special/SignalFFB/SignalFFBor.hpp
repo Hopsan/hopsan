@@ -9,7 +9,7 @@
 //!
 //! @file SignalFFBor.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 29 May 2013 14:02:22
+//! @date Fri 28 Jun 2013 13:01:40
 //! @brief FFBD OR out
 //! @ingroup SignalComponents
 //!

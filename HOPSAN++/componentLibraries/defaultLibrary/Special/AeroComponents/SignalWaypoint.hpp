@@ -9,7 +9,7 @@
 //!
 //! @file SignalWaypoint.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 29 May 2013 14:44:38
+//! @date Fri 28 Jun 2013 13:03:59
 //! @brief Waypoint Controller with way points
 //! @ingroup SignalComponents
 //!
@@ -81,14 +81,14 @@ public:
             addInputVariable("yc","y-position","m",0.,&mpyc);
 
         //Add inputParammeters to the component
-            addInputVariable("R", "&mpEarth radius", "m", 6.3675e6,&mpR);
-            addInputVariable("alt1", "&mpaltitude 1", "m", 0,&mpalt1);
-            addInputVariable("v1", "&mpref. velocity 1", "m/s", 200,&mpv1);
-            addInputVariable("wptol", "&mpwaypoint tolerance", "m", \
+            addInputVariable("R", "Earth radius", "m", 6.3675e6,&mpR);
+            addInputVariable("alt1", "altitude 1", "m", 0,&mpalt1);
+            addInputVariable("v1", "ref. velocity 1", "m/s", 200,&mpv1);
+            addInputVariable("wptol", "waypoint tolerance", "m", \
 500,&mpwptol);
-            addInputVariable("xcWp1", "&mpwaypoint longitude", "deg", \
+            addInputVariable("xcWp1", "waypoint longitude", "deg", \
 15.1669,&mpxcWp1);
-            addInputVariable("ycWp1", "&mpwaypoint lattitude", "deg", \
+            addInputVariable("ycWp1", "waypoint lattitude", "deg", \
 58.3812,&mpycWp1);
         //Add outputVariables to the component
             addOutputVariable("set1","set state","",1.,&mpset1);

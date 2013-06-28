@@ -9,7 +9,7 @@
 //!
 //! @file MechanicVehicle1D.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 29 May 2013 13:45:20
+//! @date Fri 28 Jun 2013 13:26:14
 //! @brief This is a one dimmensional model of a vehicle
 //! @ingroup MechanicComponents
 //!
@@ -132,14 +132,13 @@ public:
         //Add inputVariables to the component
 
         //Add inputParammeters to the component
-            addInputVariable("Mc", "&mpVehicle inertia at", "kg", \
-1000.,&mpMc);
-            addInputVariable("cfr", "&mpC roll. resist.coeff.", "N/N", \
+            addInputVariable("Mc", "Vehicle inertia at", "kg", 1000.,&mpMc);
+            addInputVariable("cfr", "C roll. resist.coeff.", "N/N", \
 0.02,&mpcfr);
-            addInputVariable("CdA", "&mpeffective front area", "m2", \
+            addInputVariable("CdA", "effective front area", "m2", \
 0.5,&mpCdA);
-            addInputVariable("rwheel", "&mpwheel radius", "m", 1.,&mprwheel);
-            addInputVariable("rho", "&mpair density", "kg/m3", 1.25,&mprho);
+            addInputVariable("rwheel", "wheel radius", "m", 1.,&mprwheel);
+            addInputVariable("rho", "air density", "kg/m3", 1.25,&mprho);
         //Add outputVariables to the component
             addOutputVariable("vc","Vehicle speed","m/s",0.,&mpvc);
             addOutputVariable("xc","Vehicle position","m",0.,&mpxc);

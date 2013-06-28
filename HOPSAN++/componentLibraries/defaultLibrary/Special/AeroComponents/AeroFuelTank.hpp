@@ -9,7 +9,7 @@
 //!
 //! @file AeroFuelTank.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 29 May 2013 14:46:23
+//! @date Fri 28 Jun 2013 13:41:25
 //! @brief Calulates the mass of remaining fuel in tank
 //! @ingroup AeroComponents
 //!
@@ -81,8 +81,8 @@ public:
 rate","kg/s",0.,&mpmassflow);
 
         //Add inputParammeters to the component
-            addInputVariable("massfuel0", "&mpThe intitial fuel mass", \
-"kg/s", 0.,&mpmassfuel0);
+            addInputVariable("massfuel0", "The intitial fuel mass", "kg/s", \
+0.,&mpmassfuel0);
         //Add outputVariables to the component
             addOutputVariable("massfuel","Fuel mass","kg",0.,&mpmassfuel);
             addOutputVariable("consfuel","Consumed fuel \

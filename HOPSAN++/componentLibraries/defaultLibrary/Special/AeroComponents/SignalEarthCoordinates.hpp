@@ -9,7 +9,7 @@
 //!
 //! @file SignalEarthCoordinates.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 29 May 2013 14:44:37
+//! @date Fri 28 Jun 2013 13:03:59
 //! @brief Calculates earth coordinates
 //! @ingroup SignalComponents
 //!
@@ -94,7 +94,7 @@ rate","",1.,&mptimecomp);
             addInputVariable("vycg","eastward speed","m/s",0.,&mpvycg);
 
         //Add inputParammeters to the component
-            addInputVariable("R", "&mpEarth radius", "m", 6.3675e6,&mpR);
+            addInputVariable("R", "Earth radius", "m", 6.3675e6,&mpR);
         //Add outputVariables to the component
             addOutputVariable("timeE","effective time","sec",0.,&mptimeE);
             addOutputVariable("longitude","Effective \
@@ -134,7 +134,7 @@ y-position","m",0.,&mplattitude);
 57.2958*mTimestep*timecomp*vxcg))/R;
         mDelayedPart11.initialize(mNstep,delayParts1[1]);
         delayParts2[1] = (0.5*(-2.*longitude*R - \
-57.2958*mTimestep*timecomp*vycg*Sec(0.0174533*lattitude)))/R;
+57.2958*mTimestep*timecomp*vycg*SecL(0.0174533*lattitude)))/R;
         mDelayedPart21.initialize(mNstep,delayParts2[1]);
         delayParts3[1] = (-(mTimestep*timecomp) - 2*timeE)/2.;
         mDelayedPart31.initialize(mNstep,delayParts3[1]);
@@ -173,7 +173,7 @@ y-position","m",0.,&mplattitude);
           systemEquations[0] =lattitude - (28.6479*mTimestep*timecomp*vxcg)/R \
 + delayedPart[1][1];
           systemEquations[1] =longitude + delayedPart[2][1] - \
-(28.6479*mTimestep*timecomp*vycg*Sec(0.0174533*lattitude))/R;
+(28.6479*mTimestep*timecomp*vycg*SecL(0.0174533*lattitude))/R;
           systemEquations[2] =-(mTimestep*timecomp)/2. + timeE + \
 delayedPart[3][1];
 
@@ -182,8 +182,7 @@ delayedPart[3][1];
           jacobianMatrix[0][1] = 0;
           jacobianMatrix[0][2] = 0;
           jacobianMatrix[1][0] = \
-(-0.5*mTimestep*timecomp*vycg*Sec(0.0174533*lattitude)*Tan(0.0174533*lattitud\
-e))/R;
+(-0.5*mTimestep*timecomp*vycg*DxSecL(0.0174533*lattitude))/R;
           jacobianMatrix[1][1] = 1;
           jacobianMatrix[1][2] = 0;
           jacobianMatrix[2][0] = 0;
@@ -202,7 +201,7 @@ e))/R;
         delayParts1[1] = (0.5*(-2.*lattitude*R - \
 57.2958*mTimestep*timecomp*vxcg))/R;
         delayParts2[1] = (0.5*(-2.*longitude*R - \
-57.2958*mTimestep*timecomp*vycg*Sec(0.0174533*lattitude)))/R;
+57.2958*mTimestep*timecomp*vycg*SecL(0.0174533*lattitude)))/R;
         delayParts3[1] = (-(mTimestep*timecomp) - 2*timeE)/2.;
 
         delayedPart[1][1] = delayParts1[1];

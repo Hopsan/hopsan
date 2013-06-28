@@ -9,7 +9,7 @@
 //!
 //! @file AeroAtmosphere.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Sun 2 Jun 2013 00:46:15
+//! @date Fri 28 Jun 2013 13:41:26
 //! @brief model of standard atmosphere
 //! @ingroup AeroComponents
 //!
@@ -85,22 +85,22 @@ public:
             addInputVariable("ha","Altitude","m",0.,&mpha);
 
         //Add inputParammeters to the component
-            addInputVariable("g0", "&mpGravitation acceleration", "m/s^2", \
+            addInputVariable("g0", "Gravitation acceleration", "m/s^2", \
 9.81,&mpg0);
-            addInputVariable("rhos", "&mpDensity at sea level", "kg/m3", \
+            addInputVariable("rhos", "Density at sea level", "kg/m3", \
 1.225,&mprhos);
-            addInputVariable("a", "&mp", "", -0.0065,&mpa);
-            addInputVariable("R", "&mp", "", 287,&mpR);
-            addInputVariable("gamma", "&mp", "", 1.4,&mpgamma);
-            addInputVariable("Ts", "&mpTemperature at sea level", "K", \
+            addInputVariable("a", "", "", -0.0065,&mpa);
+            addInputVariable("R", "", "", 287,&mpR);
+            addInputVariable("gamma", "", "", 1.4,&mpgamma);
+            addInputVariable("Ts", "Temperature at sea level", "K", \
 288.16,&mpTs);
-            addInputVariable("p0s", "&mp", "Pa", 101300.,&mpp0s);
-            addInputVariable("htp", "&mpOnset of tropopaus", "m", \
+            addInputVariable("p0s", "", "Pa", 101300.,&mpp0s);
+            addInputVariable("htp", "Onset of tropopaus", "m", \
 11000.,&mphtp);
-            addInputVariable("Ttp", "&mp", "K", 216.66,&mpTtp);
-            addInputVariable("ptp", "&mp", "Pa", 22610.,&mpptp);
-            addInputVariable("rhotp", "&mp", "kg/m3", 0.363649,&mprhotp);
-            addInputVariable("e", "&mpe", "", 2.71828,&mpe);
+            addInputVariable("Ttp", "", "K", 216.66,&mpTtp);
+            addInputVariable("ptp", "", "Pa", 22610.,&mpptp);
+            addInputVariable("rhotp", "", "kg/m3", 0.363649,&mprhotp);
+            addInputVariable("e", "e", "", 2.71828,&mpe);
         //Add outputVariables to the component
             addOutputVariable("rho","The density at altitude \
 h","kg/m3",1.25,&mprho);

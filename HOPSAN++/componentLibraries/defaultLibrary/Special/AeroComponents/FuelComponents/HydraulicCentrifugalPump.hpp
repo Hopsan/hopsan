@@ -9,7 +9,7 @@
 //!
 //! @file HydraulicCentrifugalPump.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 29 May 2013 13:43:40
+//! @date Fri 28 Jun 2013 13:04:38
 //! @brief Centrifugal pump
 //! @ingroup HydraulicComponents
 //!
@@ -132,18 +132,16 @@ public:
             addInputVariable("omegap","Speed","rad/s",157.,&mpomegap);
 
         //Add inputParammeters to the component
-            addInputVariable("kl", "&mpFlow loss koeff.", "", 1.,&mpkl);
-            addInputVariable("b", "&mpoutlet axial width", "m", 0.02,&mpb);
-            addInputVariable("d", "&mpDiameter", "m", 0.26,&mpd);
-            addInputVariable("beta2", "&mpOutlet flow angle", "rad", \
+            addInputVariable("kl", "Flow loss koeff.", "", 1.,&mpkl);
+            addInputVariable("b", "outlet axial width", "m", 0.02,&mpb);
+            addInputVariable("d", "Diameter", "m", 0.26,&mpd);
+            addInputVariable("beta2", "Outlet flow angle", "rad", \
 1.59,&mpbeta2);
-            addInputVariable("Ap", "&mpoutlet flow area", "m2", \
-0.0004,&mpAp);
-            addInputVariable("rho", "&mpFluid density", "kg/m2", 860,&mprho);
-            addInputVariable("Kcp", "&mpLeakage coeff", "m3/s/Pa", \
+            addInputVariable("Ap", "outlet flow area", "m2", 0.0004,&mpAp);
+            addInputVariable("rho", "Fluid density", "kg/m2", 860,&mprho);
+            addInputVariable("Kcp", "Leakage coeff", "m3/s/Pa", \
 1.e-9,&mpKcp);
-            addInputVariable("Bp", "&mpVisc friction coeff", "N/m/s", \
-1.,&mpBp);
+            addInputVariable("Bp", "Visc friction coeff", "N/m/s", 1.,&mpBp);
         //Add outputVariables to the component
             addOutputVariable("q2e","uncorrected flow","m3/s",0.,&mpq2e);
             addOutputVariable("torp","torque","Nm",0.,&mptorp);

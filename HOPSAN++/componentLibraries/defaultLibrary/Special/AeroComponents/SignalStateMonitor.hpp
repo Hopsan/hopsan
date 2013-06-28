@@ -9,7 +9,7 @@
 //!
 //! @file SignalStateMonitor.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 29 May 2013 14:44:37
+//! @date Fri 28 Jun 2013 13:03:59
 //! @brief Check for steady state
 //! @ingroup SignalComponents
 //!
@@ -105,13 +105,10 @@ public:
             addInputVariable("sOn","extra trigg signal","",0.,&mpsOn);
 
         //Add inputParammeters to the component
-            addInputVariable("y10", "&mptreashold variable 1", "", \
-0.02,&mpy10);
-            addInputVariable("y20", "&mptreashold variable 2", "", \
-0.02,&mpy20);
-            addInputVariable("y30", "&mptreashold variable 3", "", \
-0.02,&mpy30);
-            addInputVariable("thau", "&mpfilter time constant 2", "sec", \
+            addInputVariable("y10", "treashold variable 1", "", 0.02,&mpy10);
+            addInputVariable("y20", "treashold variable 2", "", 0.02,&mpy20);
+            addInputVariable("y30", "treashold variable 3", "", 0.02,&mpy30);
+            addInputVariable("thau", "filter time constant 2", "sec", \
 1.,&mpthau);
         //Add outputVariables to the component
             addOutputVariable("s1","One when varaibles in steady \

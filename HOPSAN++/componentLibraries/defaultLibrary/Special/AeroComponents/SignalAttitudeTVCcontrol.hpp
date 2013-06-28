@@ -9,7 +9,7 @@
 //!
 //! @file SignalAttitudeTVCcontrol.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 29 May 2013 14:44:36
+//! @date Fri 28 Jun 2013 13:03:58
 //! @brief Attitude control unit for an aircraft
 //! @ingroup SignalComponents
 //!
@@ -89,17 +89,16 @@ yaw","rad",0.,&mppsiref);
             addInputVariable("Rb","yaw angle rate","rad/s",0.,&mpRb);
 
         //Add inputParammeters to the component
-            addInputVariable("Kelev", "&mpGain tip, default", "rad", \
+            addInputVariable("Kelev", "Gain tip, default", "rad", \
 4.,&mpKelev);
-            addInputVariable("Krud", "&mpGain yaw, default", "rad", \
-1.,&mpKrud);
-            addInputVariable("KQrud", "&mpGain tip rate, default", "", \
+            addInputVariable("Krud", "Gain yaw, default", "rad", 1.,&mpKrud);
+            addInputVariable("KQrud", "Gain tip rate, default", "", \
 1.,&mpKQrud);
-            addInputVariable("KRrud", "&mpGain yaw rate, default", "", \
+            addInputVariable("KRrud", "Gain yaw rate, default", "", \
 1.,&mpKRrud);
-            addInputVariable("umin", "&mpMinium output signal roll", "rad", \
+            addInputVariable("umin", "Minium output signal roll", "rad", \
 -0.9,&mpumin);
-            addInputVariable("umax", "&mpMaximum output signal roll", "rad", \
+            addInputVariable("umax", "Maximum output signal roll", "rad", \
 0.9,&mpumax);
         //Add outputVariables to the component
             addOutputVariable("uelev","elevator","rad",0.,&mpuelev);

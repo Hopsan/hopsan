@@ -9,7 +9,7 @@
 //!
 //! @file HydraulicFuelTankG.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 29 May 2013 13:43:41
+//! @date Fri 28 Jun 2013 13:04:38
 //! @brief Calulates the mass of remaining fuel in tank
 //! @ingroup HydraulicComponents
 //!
@@ -105,14 +105,13 @@ public:
             addInputVariable("gx","acceleration","m/s2",9.82,&mpgx);
 
         //Add inputParammeters to the component
-            addInputVariable("rhofuel", "&mpFuel density", "kg/m3", \
+            addInputVariable("rhofuel", "Fuel density", "kg/m3", \
 700.,&mprhofuel);
-            addInputVariable("p0", "&mptank pressure", "Pa", 100000.,&mpp0);
-            addInputVariable("hf", "&mpfuel in tank height", "m/s2", \
-5.,&mphf);
-            addInputVariable("massfuel0", "&mpThe intitial fuel mass", \
-"kg/s", 1000.,&mpmassfuel0);
-            addInputVariable("massfuelmax", "&mpfuelmass at full tank", "kg", \
+            addInputVariable("p0", "tank pressure", "Pa", 100000.,&mpp0);
+            addInputVariable("hf", "fuel in tank height", "m/s2", 5.,&mphf);
+            addInputVariable("massfuel0", "The intitial fuel mass", "kg/s", \
+1000.,&mpmassfuel0);
+            addInputVariable("massfuelmax", "fuelmass at full tank", "kg", \
 1000.,&mpmassfuelmax);
         //Add outputVariables to the component
             addOutputVariable("massfuel","Fuel mass","kg",0.,&mpmassfuel);
