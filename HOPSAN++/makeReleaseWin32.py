@@ -154,7 +154,7 @@ def callRd(tgt):
     os.system("rd "+rawPath(tgt)+" /s /q")
 
 def callEXE(cmd, args):
-    print "callEXE: "+rawPath(cmd)+" "+args
+    #print "callEXE: "+rawPath(cmd)+" "+args
     os.system(r'"'+rawPath(cmd)+" "+args+r'"')
 
 def callDel(tgt):
@@ -354,7 +354,7 @@ def copyFiles():
         printError("Failed to create temporary directory")
         return False
     
-    callMkdir(tempDir+"\\models")
+    callMkdir(tempDir+"\\Models")
     callMkdir(tempDir+"\\Scripts")
     callMkdir(tempDir+"\\bin")
     callMkdir(tempDir+"\\componentLibraries")
@@ -385,11 +385,6 @@ def copyFiles():
     callXcopy("bin\\*.a", tempDir+"\\bin")
     callXcopy("bin\\*.lib", tempDir+"\\bin")
     callXcopy("bin\\*.exp", tempDir+"\\bin")
-##    os.system("xcopy bin\\python27.zip \""+raw(tempDir)+"\"\\bin /s /y")
-##    pythonFailed=True
-##    if not fileExists(tempDir+"\\bin\\python27.zip"):
-##        printError("Failed to find python27.zip.")
-##        return False
         
     #Delete unwanted (debug) files from temporary directory
     callDel(tempDir+"\\bin\\*_d.exe")
@@ -411,13 +406,13 @@ def copyFiles():
         callXcopy("HopsanCore\\include\\svnrevnum.h", tempDir+"\\HopsanCore\\include")
 
     #Export "Example Models" SVN directory to temporary directory
-    svnExport("Models\\Example Models", tempDir+"\\models\\Example Models")
+    svnExport("Models\\Example Models", tempDir+"\\Models\\Example Models")
     
     #Export "Test Models" SVN directory to temporary directory
-    svnExport("Models\\Component Test", tempDir+"\\models\\Component Test")
+    svnExport("Models\\Component Test", tempDir+"\\Models\\Component Test")
 
     #Export "Benchmark Models" SVN directory to temporary directory
-    svnExport("Models\\Benchmark Models", tempDir+"\\models\\Benchmark Models")
+    svnExport("Models\\Benchmark Models", tempDir+"\\Models\\Benchmark Models")
 
     #Export and copy "componentData" SVN directory to temporary directory
     svnExport("componentLibraries\\defaultLibrary", tempDir+"\\componentLibraries\\defaultLibrary")

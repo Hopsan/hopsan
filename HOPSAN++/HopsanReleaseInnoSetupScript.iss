@@ -53,34 +53,14 @@ Type: filesandordirs; Name: "{app}"
 
 [Dirs]
 ;Create installation directories
-Name: "{app}\bin"
-Name: "{app}\componentLibraries"
-Name: "{app}\componentLibraries\defaultLibrary"
-Name: "{app}\doc"
-Name: "{app}\HopsanCore"
-Name: "{app}\models"
-Name: "{app}\Scripts"
-Name: "{app}\ThirdParty"
-Name: "{app}\ThirdParty\7z"
-Name: "{app}\ThirdParty\fmi"
 Name: "{userdocs}\Hopsan"
 Name: "{userdocs}\Hopsan\Models"
 Name: "{userdocs}\Hopsan\Scripts"
                            
 [Files]
 ;Hopsan files
-Source: "C:\temp_release\hopsandefaults";                       DestDir: "{app}";                                   Flags: ignoreversion;                                        Attribs: readonly
-Source: "C:\temp_release\Hopsan-release-notes.txt";             DestDir: "{app}";                                   Flags: ignoreversion;                                        Attribs: readonly
-Source: "C:\temp_release\---DO_NOT_SAVE_FILES_IN_THIS_DIRECTORY---";     DestDir: "{app}";                           Flags: ignoreversion;                                        Attribs: readonly
-Source: "C:\temp_release\bin\*";                                DestDir: "{app}\bin";                               Flags: ignoreversion recursesubdirs createallsubdirs;        Attribs: readonly
-Source: "C:\temp_release\componentLibraries\defaultLibrary\*";  DestDir: "{app}\componentLibraries\defaultLibrary"; Flags: ignoreversion recursesubdirs createallsubdirs;        Attribs: readonly
-Source: "C:\temp_release\HopsanCore\*";                         DestDir: "{app}\HopsanCore";                        Flags: ignoreversion recursesubdirs createallsubdirs;        Attribs: readonly
-Source: "C:\temp_release\doc\*";                  	            DestDir: "{app}\doc";                               Flags: ignoreversion recursesubdirs createallsubdirs;        Attribs: readonly
-Source: "C:\temp_release\models\*";               	            DestDir: "{app}\Models";                            Flags: ignoreversion recursesubdirs createallsubdirs;        Attribs: readonly
-Source: "C:\temp_release\ThirdParty\7z\*";                      DestDir: "{app}\ThirdParty\7z";                     Flags: ignoreversion recursesubdirs createallsubdirs;        Attribs: readonly
-Source: "C:\temp_release\ThirdParty\fmi\*";                     DestDir: "{app}\ThirdParty\fmi";                    Flags: ignoreversion recursesubdirs createallsubdirs;        Attribs: readonly
-Source: "C:\temp_release\Scripts\*";              	            DestDir: "{userdocs}\Hopsan\Scripts";               Flags: ignoreversion recursesubdirs createallsubdirs;        Attribs: readonly
-Source: "C:\temp_release\Scripts\*";              	            DestDir: "{app}\Scripts";                           Flags: ignoreversion recursesubdirs createallsubdirs;        Attribs: readonly
+Source: "C:\temp_release\*";            DestDir: "{app}";                       Flags: ignoreversion recursesubdirs createallsubdirs uninsremovereadonly;   Attribs: readonly
+Source: "C:\temp_release\Scripts\*";    DestDir: "{userdocs}\Hopsan\Scripts";   Flags: ignoreversion recursesubdirs createallsubdirs uninsremovereadonly;   Attribs: readonly
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 
