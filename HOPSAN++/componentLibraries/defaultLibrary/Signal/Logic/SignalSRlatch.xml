@@ -6,10 +6,10 @@
             <icon scale="1" path="SignalSRlatch.svg" iconrotation="ON" type="iso"/>
         </icons>
         <ports>
-            <port x="0" y="0.25" a="-180" name="PsetCond"/>
-            <port x="0" y="0.75" a="-180" name="PresetCond"/>
-            <port x="1" y="0.25" a="0" name="PQstate"/>
-            <port x="1" y="0.75" a="0" name="PnotQstate"/>
+            <port x="0" y="0.25" a="-180" name="setCond"/>
+            <port x="0" y="0.75" a="-180" name="resetCond"/>
+            <port x="1" y="0.25" a="0" name="Qstate"/>
+            <port x="1" y="0.75" a="0" name="notQstate"/>
         </ports>
     </modelobject>
 </hopsanobjectappearance>
