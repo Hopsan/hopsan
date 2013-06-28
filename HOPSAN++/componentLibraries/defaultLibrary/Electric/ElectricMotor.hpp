@@ -9,7 +9,7 @@
 //!
 //! @file ElectricMotor.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 29 May 2013 13:44:51
+//! @date Fri 28 Jun 2013 13:12:19
 //! @brief Electric motor with inertia load
 //! @ingroup ElectricComponents
 //!
@@ -136,14 +136,14 @@ public:
         //Add inputVariables to the component
 
         //Add inputParammeters to the component
-            addInputVariable("Ke", "&mpemf constant", "V s/rad", 0.13,&mpKe);
-            addInputVariable("Ra", "&mpmotor resistance", "Ohm", 0.04,&mpRa);
-            addInputVariable("Tm0", "&mpzero speed friction of motor", "Nm", \
+            addInputVariable("Ke", "emf constant", "V s/rad", 0.13,&mpKe);
+            addInputVariable("Ra", "motor resistance", "Ohm", 0.04,&mpRa);
+            addInputVariable("Tm0", "zero speed friction of motor", "Nm", \
 0.,&mpTm0);
-            addInputVariable("wc", "&mpFriction speed", "rad/s", 1.,&mpwc);
-            addInputVariable("Bm", "&mpVisc. fric. coeff., motor", "Ns/m", \
+            addInputVariable("wc", "Friction speed", "rad/s", 1.,&mpwc);
+            addInputVariable("Bm", "Visc. fric. coeff., motor", "Ns/m", \
 0.0012,&mpBm);
-            addInputVariable("Jm", "&mpMoment of inertia, motor", "kg m^2", \
+            addInputVariable("Jm", "Moment of inertia, motor", "kg m^2", \
 1,&mpJm);
         //Add outputVariables to the component
             addOutputVariable("tormg","Generated motor \

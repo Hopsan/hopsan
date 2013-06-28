@@ -9,7 +9,7 @@
 //!
 //! @file ElectricBattery.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 29 May 2013 13:44:52
+//! @date Fri 28 Jun 2013 13:12:20
 //! @brief Battery with static behaviour
 //! @ingroup ElectricComponents
 //!
@@ -98,14 +98,13 @@ public:
         //Add inputVariables to the component
 
         //Add inputParammeters to the component
-            addInputVariable("cond", "&mpconductance (at 1)", "1/ohm", \
+            addInputVariable("cond", "conductance (at 1)", "1/ohm", \
 0.01,&mpcond);
-            addInputVariable("unom", "&mpnominal voltage of battery", "V", \
+            addInputVariable("unom", "nominal voltage of battery", "V", \
 12.,&mpunom);
-            addInputVariable("capacity", "&mpcapacity", "Ah", \
-41.,&mpcapacity);
-            addInputVariable("kappa", "&mpexponent of discharge function", \
-"", 0.1,&mpkappa);
+            addInputVariable("capacity", "capacity", "Ah", 41.,&mpcapacity);
+            addInputVariable("kappa", "exponent of discharge function", "", \
+0.1,&mpkappa);
         //Add outputVariables to the component
             addOutputVariable("soc","soc","",1.,&mpsoc);
             addOutputVariable("ubatt","battery voltage","V",0.,&mpubatt);

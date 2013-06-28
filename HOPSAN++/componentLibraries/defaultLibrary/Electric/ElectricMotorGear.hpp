@@ -9,7 +9,7 @@
 //!
 //! @file ElectricMotorGear.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 29 May 2013 13:44:51
+//! @date Fri 28 Jun 2013 13:12:20
 //! @brief Electric motor with gear and inertia load
 //! @ingroup ElectricComponents
 //!
@@ -147,21 +147,21 @@ public:
             addInputVariable("gearRatio","gearing w1/w2","",1.,&mpgearRatio);
 
         //Add inputParammeters to the component
-            addInputVariable("Ke", "&mpemf constant", "V/rpm", 0.13,&mpKe);
-            addInputVariable("Ra", "&mpmotor resistance", "Ohm", 0.04,&mpRa);
-            addInputVariable("Tm0", "&mpzero speed friction of motor", "Nm", \
+            addInputVariable("Ke", "emf constant", "V s/rad", 0.13,&mpKe);
+            addInputVariable("Ra", "motor resistance", "Ohm", 0.04,&mpRa);
+            addInputVariable("Tm0", "zero speed friction of motor", "Nm", \
 0.,&mpTm0);
-            addInputVariable("wc", "&mpFriction speed (for numerics)", \
-"rad/s", 1.,&mpwc);
-            addInputVariable("Bm", "&mpVisc. fric. coeff., motor", "Ns/m", \
+            addInputVariable("wc", "Friction speed (for numerics)", "rad/s", \
+1.,&mpwc);
+            addInputVariable("Bm", "Visc. fric. coeff., motor", "Ns/m", \
 0.0012,&mpBm);
-            addInputVariable("Jm", "&mpMoment of inertia, motor", "kg m^2", \
+            addInputVariable("Jm", "Moment of inertia, motor", "kg m^2", \
 0.1,&mpJm);
-            addInputVariable("BL", "&mpVisc. fric. coeff., motor", "Ns/m", \
+            addInputVariable("BL", "Visc. fric. coeff., motor", "Ns/m", \
 0.,&mpBL);
-            addInputVariable("JL", "&mpMoment of inertia, motor", "kg m^2", \
+            addInputVariable("JL", "Moment of inertia, motor", "kg m^2", \
 1,&mpJL);
-            addInputVariable("myfric", "&mpfriction. coeff. of gear (at \
+            addInputVariable("myfric", "friction. coeff. of gear (at \
 output)", "", 0.01,&mpmyfric);
         //Add outputVariables to the component
             addOutputVariable("wm","motor speed","rad/s",0.,&mpwm);

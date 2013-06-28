@@ -9,7 +9,7 @@
 //!
 //! @file ElectricPWMdceq.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 29 May 2013 13:44:53
+//! @date Fri 28 Jun 2013 13:12:21
 //! @brief This is an imaginary DC analog component that represents an \
 equivalent PWM controller.
 //! @ingroup ElectricComponents
@@ -113,13 +113,13 @@ public:
 on)","",1.,&mptfac);
 
         //Add inputParammeters to the component
-            addInputVariable("resist0", "&mploss resistans (at 2)", "ohm", \
+            addInputVariable("resist0", "loss resistans (at 2)", "ohm", \
 0.01,&mpresist0);
-            addInputVariable("resist1", "&mploss resistans (at 2)", "ohm", \
+            addInputVariable("resist1", "loss resistans (at 2)", "ohm", \
 10.,&mpresist1);
-            addInputVariable("umin", "&mpminimum voltage difference", "V", \
+            addInputVariable("umin", "minimum voltage difference", "V", \
 0.01,&mpumin);
-            addInputVariable("umax", "&mpu max limit", "V", 1000.,&mpumax);
+            addInputVariable("umax", "u max limit", "V", 1000.,&mpumax);
         //Add outputVariables to the component
             addOutputVariable("uel10","middle voltage","V",0.,&mpuel10);
 

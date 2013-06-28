@@ -9,7 +9,7 @@
 //!
 //! @file ElectricInductance.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 29 May 2013 13:44:51
+//! @date Fri 28 Jun 2013 13:12:19
 //! @brief Electric inductance
 //! @ingroup ElectricComponents
 //!
@@ -98,7 +98,7 @@ public:
         //Add inputVariables to the component
 
         //Add inputParammeters to the component
-            addInputVariable("Induct", "&mpInductance", "A/(Vs)", \
+            addInputVariable("Induct", "Inductance", "A/(Vs)", \
 0.1,&mpInduct);
         //Add outputVariables to the component
 

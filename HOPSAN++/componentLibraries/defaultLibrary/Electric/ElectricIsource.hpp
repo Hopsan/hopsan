@@ -9,7 +9,7 @@
 //!
 //! @file ElectricIsource.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 29 May 2013 13:44:51
+//! @date Fri 28 Jun 2013 13:12:19
 //! @brief Source of electric current
 //! @ingroup ElectricComponents
 //!
