@@ -9,7 +9,7 @@
 //!
 //! @file HydraulicValve43LS.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Tue 4 Jun 2013 00:05:18
+//! @date Fri 28 Jun 2013 13:04:37
 //! @brief A load sensing hydraulic directional valve
 //! @ingroup HydraulicComponents
 //!
@@ -209,32 +209,32 @@ public:
             addInputVariable("xv","Spool position","m",0.,&mpxv);
 
         //Add inputParammeters to the component
-            addInputVariable("rho", "&mpoil density", "kg/m3", 860.,&mprho);
-            addInputVariable("Cq", "&mpFlow coefficient.", "", 0.67,&mpCq);
-            addInputVariable("Sd", "&mpspool diameter", "m", 0.01,&mpSd);
-            addInputVariable("Frap", "&mpSpool cricle fraction(P-A)", "", \
+            addInputVariable("rho", "oil density", "kg/m3", 860.,&mprho);
+            addInputVariable("Cq", "Flow coefficient.", "", 0.67,&mpCq);
+            addInputVariable("Sd", "spool diameter", "m", 0.01,&mpSd);
+            addInputVariable("Frap", "Spool cricle fraction(P-A)", "", \
 1.,&mpFrap);
-            addInputVariable("Frat", "&mpSpool cricle fraction(A-T)", "", \
+            addInputVariable("Frat", "Spool cricle fraction(A-T)", "", \
 1.,&mpFrat);
-            addInputVariable("Frbp", "&mpSpool cricle fraction(P-B)", "", \
+            addInputVariable("Frbp", "Spool cricle fraction(P-B)", "", \
 1.,&mpFrbp);
-            addInputVariable("Frbt", "&mpSpool cricle fraction(B-T)", "", \
+            addInputVariable("Frbt", "Spool cricle fraction(B-T)", "", \
 1.,&mpFrbt);
-            addInputVariable("wls", "&mpArea gradient LS-port", "m", \
+            addInputVariable("wls", "Area gradient LS-port", "m", \
 0.01,&mpwls);
-            addInputVariable("Xap0", "&mpOverlap", "m", 0.0003,&mpXap0);
-            addInputVariable("Xat0", "&mpOverlap", "m", 0.0003,&mpXat0);
-            addInputVariable("Xbp0", "&mpOverlap", "m", 0.0003,&mpXbp0);
-            addInputVariable("Xbt0", "&mpOverlap", "m", 0.0003,&mpXbt0);
-            addInputVariable("Xlsa0", "&mpOverlap", "m", 0.0003,&mpXlsa0);
-            addInputVariable("Xlsb0", "&mpOverlap", "m", 0.0003,&mpXlsb0);
-            addInputVariable("Xls0", "&mpZero opening LS port", "m", \
+            addInputVariable("Xap0", "Overlap", "m", 0.0003,&mpXap0);
+            addInputVariable("Xat0", "Overlap", "m", 0.0003,&mpXat0);
+            addInputVariable("Xbp0", "Overlap", "m", 0.0003,&mpXbp0);
+            addInputVariable("Xbt0", "Overlap", "m", 0.0003,&mpXbt0);
+            addInputVariable("Xlsa0", "Overlap", "m", 0.0003,&mpXlsa0);
+            addInputVariable("Xlsb0", "Overlap", "m", 0.0003,&mpXlsb0);
+            addInputVariable("Xls0", "Zero opening LS port", "m", \
 0.0003,&mpXls0);
-            addInputVariable("Xvmax", "&mpMax valve opening", "m", \
+            addInputVariable("Xvmax", "Max valve opening", "m", \
 0.01,&mpXvmax);
-            addInputVariable("Xvlsmax", "&mpMax opening LS port", "m", \
+            addInputVariable("Xvlsmax", "Max opening LS port", "m", \
 0.001,&mpXvlsmax);
-            addInputVariable("plam", "&mpTurbulence onset pressure", "Pa", \
+            addInputVariable("plam", "Turbulence onset pressure", "Pa", \
 10000.,&mpplam);
         //Add outputVariables to the component
 

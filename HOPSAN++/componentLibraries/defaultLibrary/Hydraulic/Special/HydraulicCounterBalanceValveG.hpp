@@ -9,7 +9,7 @@
 //!
 //! @file HydraulicCounterBalanceValveG.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 29 May 2013 13:43:38
+//! @date Fri 28 Jun 2013 13:04:36
 //! @brief A hydraulic pressure relief valve based on geometry
 //! @ingroup HydraulicComponents
 //!
@@ -152,20 +152,20 @@ public:
             addInputVariable("pref","Reference pressure","Pa",1.e6,&mppref);
 
         //Add inputParammeters to the component
-            addInputVariable("rho", "&mpoil density", "kg/m3", 860.,&mprho);
-            addInputVariable("visc", "&mpviscosity ", "Ns/m2", 0.03,&mpvisc);
-            addInputVariable("Dv", "&mpSpool diameter", "m", 0.03,&mpDv);
-            addInputVariable("frac", "&mpFraction of spool opening", "", \
+            addInputVariable("rho", "oil density", "kg/m3", 860.,&mprho);
+            addInputVariable("visc", "viscosity ", "Ns/m2", 0.03,&mpvisc);
+            addInputVariable("Dv", "Spool diameter", "m", 0.03,&mpDv);
+            addInputVariable("frac", "Fraction of spool opening", "", \
 0.1,&mpfrac);
-            addInputVariable("kappa", "&mpArea fraction for P3", "", \
+            addInputVariable("kappa", "Area fraction for P3", "", \
 0.1,&mpkappa);
-            addInputVariable("Bv", "&mpDamping", "N/(m s)", 100.,&mpBv);
-            addInputVariable("Xvmax", "&mpMax spool displacement", "m", \
+            addInputVariable("Bv", "Damping", "N/(m s)", 100.,&mpBv);
+            addInputVariable("Xvmax", "Max spool displacement", "m", \
 0.03,&mpXvmax);
-            addInputVariable("Cq", "&mpFlow coefficient", " ", 0.67,&mpCq);
-            addInputVariable("phi", "&mpStream angle", "rad", 0.03,&mpphi);
-            addInputVariable("ks", "&mpSpring constant", "N/m", 100.,&mpks);
-            addInputVariable("p0", "&mpTurbulent pressure trans.", "Pa", \
+            addInputVariable("Cq", "Flow coefficient", " ", 0.67,&mpCq);
+            addInputVariable("phi", "Stream angle", "rad", 0.03,&mpphi);
+            addInputVariable("ks", "Spring constant", "N/m", 100.,&mpks);
+            addInputVariable("p0", "Turbulent pressure trans.", "Pa", \
 100000.,&mpp0);
         //Add outputVariables to the component
             addOutputVariable("xv","Spool position","m",0.,&mpxv);

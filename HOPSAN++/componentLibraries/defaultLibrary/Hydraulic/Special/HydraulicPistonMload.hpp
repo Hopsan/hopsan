@@ -9,7 +9,7 @@
 //!
 //! @file HydraulicPistonMload.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 29 May 2013 13:43:39
+//! @date Fri 28 Jun 2013 13:04:37
 //! @brief This is piston with an inertia load
 //! @ingroup HydraulicComponents
 //!
@@ -146,19 +146,18 @@ public:
         //Add inputVariables to the component
 
         //Add inputParammeters to the component
-            addInputVariable("A1", "&mpPiston area 1", "m2", 0.001,&mpA1);
-            addInputVariable("A2", "&mpPiston area 2", "m2", 0.001,&mpA2);
-            addInputVariable("SL", "&mpStroke", "m", 0.5,&mpSL);
-            addInputVariable("Cip", "&mpLeak coeff.", "m3/(s Pa)", \
-0.,&mpCip);
-            addInputVariable("Bp", "&mpVisc. friction coeff.", "N/m/s", \
+            addInputVariable("A1", "Piston area 1", "m2", 0.001,&mpA1);
+            addInputVariable("A2", "Piston area 2", "m2", 0.001,&mpA2);
+            addInputVariable("SL", "Stroke", "m", 0.5,&mpSL);
+            addInputVariable("Cip", "Leak coeff.", "m3/(s Pa)", 0.,&mpCip);
+            addInputVariable("Bp", "Visc. friction coeff.", "N/m/s", \
 0.,&mpBp);
-            addInputVariable("ML", "&mpInertia", "kg", 1000.,&mpML);
-            addInputVariable("BL", "&mpViscous friction coefficient of load", \
+            addInputVariable("ML", "Inertia", "kg", 1000.,&mpML);
+            addInputVariable("BL", "Viscous friction coefficient of load", \
 "Ns/m", 0.,&mpBL);
-            addInputVariable("xmin", "&mpLimitation on stroke", "m", \
+            addInputVariable("xmin", "Limitation on stroke", "m", \
 0.,&mpxmin);
-            addInputVariable("xmax", "&mpLimitation on stroke", "m", \
+            addInputVariable("xmax", "Limitation on stroke", "m", \
 0.5,&mpxmax);
         //Add outputVariables to the component
 

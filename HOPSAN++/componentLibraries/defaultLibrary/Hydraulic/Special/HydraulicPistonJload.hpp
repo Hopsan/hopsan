@@ -9,7 +9,7 @@
 //!
 //! @file HydraulicPistonJload.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Wed 29 May 2013 13:43:39
+//! @date Fri 28 Jun 2013 13:04:37
 //! @brief This is piston with a linked inertia load
 //! @ingroup HydraulicComponents
 //!
@@ -208,24 +208,23 @@ rot. node]}[[3,4]]");
         //Add inputVariables to the component
 
         //Add inputParammeters to the component
-            addInputVariable("A1", "&mpPiston area 1", "m2", 0.001,&mpA1);
-            addInputVariable("A2", "&mpPiston area 2", "m2", 0.001,&mpA2);
-            addInputVariable("SL", "&mpStroke", "m", 0.5,&mpSL);
-            addInputVariable("xp0", "&mpStroke pos at zero angle", "m", \
+            addInputVariable("A1", "Piston area 1", "m2", 0.001,&mpA1);
+            addInputVariable("A2", "Piston area 2", "m2", 0.001,&mpA2);
+            addInputVariable("SL", "Stroke", "m", 0.5,&mpSL);
+            addInputVariable("xp0", "Stroke pos at zero angle", "m", \
 0.5,&mpxp0);
-            addInputVariable("Lever", "&mpLever", "m", 0.5,&mpLever);
-            addInputVariable("Cip", "&mpLeak coeff.", "m3/(s Pa)", \
-0.,&mpCip);
-            addInputVariable("Bp", "&mpVisc. friction coeff.", "N/m/s", \
+            addInputVariable("Lever", "Lever", "m", 0.5,&mpLever);
+            addInputVariable("Cip", "Leak coeff.", "m3/(s Pa)", 0.,&mpCip);
+            addInputVariable("Bp", "Visc. friction coeff.", "N/m/s", \
 0.,&mpBp);
-            addInputVariable("JL", "&mpInertia", "kg m^2", 1000.,&mpJL);
-            addInputVariable("BL", "&mpViscous friction coefficient of load", \
+            addInputVariable("JL", "Inertia", "kg m^2", 1000.,&mpJL);
+            addInputVariable("BL", "Viscous friction coefficient of load", \
 "Nm s", 0.,&mpBL);
-            addInputVariable("KL", "&mpStiffness coefficient of load", "Nm", \
+            addInputVariable("KL", "Stiffness coefficient of load", "Nm", \
 0.,&mpKL);
-            addInputVariable("thetamin", "&mpLimitation on stroke", "rad", \
+            addInputVariable("thetamin", "Limitation on stroke", "rad", \
 -0.5,&mpthetamin);
-            addInputVariable("thetamax", "&mpLimitation on stroke", "rad", \
+            addInputVariable("thetamax", "Limitation on stroke", "rad", \
 0.5,&mpthetamax);
         //Add outputVariables to the component
             addOutputVariable("xp","Piston position","m",0.,&mpxp);

@@ -9,7 +9,7 @@
 //!
 //! @file HydraulicValve43.hpp
 //! @author Petter Krus <petter.krus@liu.se>
-//! @date Tue 4 Jun 2013 00:05:18
+//! @date Fri 28 Jun 2013 13:04:36
 //! @brief A hydraulic directional valve
 //! @ingroup HydraulicComponents
 //!
@@ -177,23 +177,23 @@ public:
             addInputVariable("xv","Spool position","m",0.,&mpxv);
 
         //Add inputParammeters to the component
-            addInputVariable("rho", "&mpoil density", "kg/m3", 860.,&mprho);
-            addInputVariable("Cq", "&mpFlow coefficient.", "", 0.67,&mpCq);
-            addInputVariable("Sd", "&mpspool diameter", "m", 0.01,&mpSd);
-            addInputVariable("Frap", "&mpSpool cricle fraction(P-A)", "", \
+            addInputVariable("rho", "oil density", "kg/m3", 860.,&mprho);
+            addInputVariable("Cq", "Flow coefficient.", "", 0.67,&mpCq);
+            addInputVariable("Sd", "spool diameter", "m", 0.01,&mpSd);
+            addInputVariable("Frap", "Spool cricle fraction(P-A)", "", \
 1.,&mpFrap);
-            addInputVariable("Frat", "&mpSpool cricle fraction(A-T)", "", \
+            addInputVariable("Frat", "Spool cricle fraction(A-T)", "", \
 1.,&mpFrat);
-            addInputVariable("Frbp", "&mpSpool cricle fraction(P-B)", "", \
+            addInputVariable("Frbp", "Spool cricle fraction(P-B)", "", \
 1.,&mpFrbp);
-            addInputVariable("Frbt", "&mpSpool cricle fraction(B-T)", "", \
+            addInputVariable("Frbt", "Spool cricle fraction(B-T)", "", \
 1.,&mpFrbt);
-            addInputVariable("Xap0", "&mpUnderlap", "m", 0.,&mpXap0);
-            addInputVariable("Xat0", "&mpUnderlap", "m", 0.,&mpXat0);
-            addInputVariable("Xbp0", "&mpUnderlap", "m", 0.,&mpXbp0);
-            addInputVariable("Xbt0", "&mpUnderlap", "m", 0.,&mpXbt0);
-            addInputVariable("Xvmax", "&mpMax opening", "m", 0.01,&mpXvmax);
-            addInputVariable("plam", "&mpTurbulence onset pressure", "Pa", \
+            addInputVariable("Xap0", "Underlap", "m", 0.,&mpXap0);
+            addInputVariable("Xat0", "Underlap", "m", 0.,&mpXat0);
+            addInputVariable("Xbp0", "Underlap", "m", 0.,&mpXbp0);
+            addInputVariable("Xbt0", "Underlap", "m", 0.,&mpXbt0);
+            addInputVariable("Xvmax", "Max opening", "m", 0.01,&mpXvmax);
+            addInputVariable("plam", "Turbulence onset pressure", "Pa", \
 10000.,&mpplam);
         //Add outputVariables to the component
 

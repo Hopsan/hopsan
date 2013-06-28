@@ -118,9 +118,8 @@ namespace hopsan {
             double y0, lpe/*, vmin, vmax*/;
 
             gamma = 1 / (Clp * (Zc1 + Zc2) + 1);
-            if (movement < .001) { movement = .001; }
             if (p2 < 1.0) { p2 = 1.0; }
-            lpe = lp * sqrt(pnom / p2) * (movementnom / movement);
+            lpe = lp * sqrt(pnom / p2) * (movementnom / movement+0.001);
             y0 = q2 * (lpe + rp * taov + Zc2 * gamma / wp1);
 
             (*mpND_p1) = p1;
@@ -168,8 +167,11 @@ namespace hopsan {
 
             double lpe, c1e, c2e, qp, ql, q1, q2, ymin, ymax, vmin, vmax;
 
+            qmaxl = qmax * (movement / movementnom);
+            qminl = qmin * (movement / movementnom);
+
             if (p2 < 1.0) { p2 = 1.0; }
-            lpe = lp * sqrt(pnom / p2) * (movementnom / movement);
+            lpe = lp * sqrt(pnom / p2) * (movementnom / (movement+0.001));
             if (c3 < 0.0) { c3 = 0.0; }
             gamma = 1 / (Clp * (Zc1 + Zc2) + 1);
 
