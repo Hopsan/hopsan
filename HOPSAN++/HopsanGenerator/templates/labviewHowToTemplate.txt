@@ -14,5 +14,6 @@ Note: This guide is verified against LabVIEW 2009. Other versions may require di
 STATICCORE
 BUILTINDEFAULTCOMPONENTLIB
 8. In the project properties, set "Struct member alignment" to 1 byte.
-9. Compile the DLL
-10. Use the DLL in NI Veristand
+9. You MAY need to chage the General->"Character Set" to "Not Set" under the project properties. (Disable unicode (WCHAR))
+10. Compile the DLL
+11. Use the DLL in NI Veristand
