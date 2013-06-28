@@ -59,8 +59,8 @@ Name: "{userdocs}\Hopsan\Scripts"
                            
 [Files]
 ;Hopsan files
-Source: "C:\temp_release\*";            DestDir: "{app}";                       Flags: ignoreversion recursesubdirs createallsubdirs uninsremovereadonly;   Attribs: readonly
-Source: "C:\temp_release\Scripts\*";    DestDir: "{userdocs}\Hopsan\Scripts";   Flags: ignoreversion recursesubdirs createallsubdirs uninsremovereadonly;   Attribs: readonly
+Source: "C:\temp_release\*";          DestDir: "{app}";     Flags: ignoreversion recursesubdirs createallsubdirs uninsremovereadonly;   Attribs: readonly
+Source: "C:\temp_release\Scripts\*";  Excludes: "---*---";  DestDir: "{userdocs}\Hopsan\Scripts";   Flags: ignoreversion recursesubdirs createallsubdirs uninsremovereadonly overwritereadonly;   Attribs: readonly
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 
