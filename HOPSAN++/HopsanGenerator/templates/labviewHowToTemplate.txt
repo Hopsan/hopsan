@@ -2,15 +2,17 @@ Note: This guide is verified against LabVIEW 2009. Other versions may require di
 
 1. Use Visual C++ 2003 compiler (included in Visual Studio .NET 2003).
 2. Create a new project. Use "Win32 Console Project", "DLL" and "Empty Project" settings.
-3. Add all header files and source files in this folder, including subfolders, EXCEPT codegen.c and SIT_API.h.
-4. In project properties, add the following include directories (absolute paths): 
-<thispath>\HopsanCore
+3. Add all header files and source files in this folder, EXCEPT codegen.c and SIT_API.h.
+4. Add all .cc/.cpp files from the HopsanCore/src and HopsanCore/Dependencies directories INCLUDING subdirectories to the project 
+5. Add the defaultComponentLibraryInternal.cc file from the componentLibraries/defaultLibrary to the project
+6. In project properties, add the following include directories (absolute paths): 
+<thispath>\HopsanCore\include
 <thispath>\HopsanCore\Dependencies\libcsv_parser++-1.0.0\include\csv_parser 
 <thispath>\HopsanCore\Dependencies\rapidxml-1.13
 <thispath>\componentLibraries\defaultLibrary
-5. In project properties, add the following preprocessor definitions:
+7. In the project properties, add the following preprocessor definitions:
 STATICCORE
 BUILTINDEFAULTCOMPONENTLIB
-6. In project properties, set "Struct member alignment" to 1 byte.
-7. Compile the DLL
-8. Use the DLL in NI Veristand
+8. In the project properties, set "Struct member alignment" to 1 byte.
+9. Compile the DLL
+10. Use the DLL in NI Veristand
