@@ -297,7 +297,7 @@ bool ModelWidget::simulate_nonblocking()
     //Save backup copy
     QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
     fileNameWithoutHmf.chop(4);
-    saveTo(gDesktopHandler.getBackupPath() + fileNameWithoutHmf + "_backup.hmf");
+    saveTo(gDesktopHandler.getBackupPath() + fileNameWithoutHmf + "_sim_backup.hmf");
 
     if(!mSimulateMutex.tryLock()) return false;
 
@@ -315,9 +315,10 @@ bool ModelWidget::simulate_nonblocking()
 bool ModelWidget::simulate_blocking()
 {
     //Save backup copy
+    //! @todo this should be a help function, also we may not want to call it every time when we run optimization (not sure if that is done now but probably)
     QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
     fileNameWithoutHmf.chop(4);
-    saveTo(gDesktopHandler.getBackupPath() + fileNameWithoutHmf + "_backup.hmf");
+    saveTo(gDesktopHandler.getBackupPath() + fileNameWithoutHmf + "_sim_backup.hmf");
 
     if(!mSimulateMutex.tryLock()) return false;
 
@@ -605,7 +606,7 @@ void ModelWidget::saveModel(SaveTargetEnumT saveAsFlag, SaveContentsEnumT conten
         QFile backupFile(mpToplevelSystem->getModelFileInfo().filePath());
         QString fileNameWithoutHmf = mpToplevelSystem->getModelFileInfo().fileName();
         fileNameWithoutHmf.chop(4);
-        QString backupFilePath = gDesktopHandler.getBackupPath() + fileNameWithoutHmf + "_backup.hmf";
+        QString backupFilePath = gDesktopHandler.getBackupPath() + fileNameWithoutHmf + "_save_backup.hmf";
         if(QFile::exists(backupFilePath))
         {
             QFile::remove(backupFilePath);
