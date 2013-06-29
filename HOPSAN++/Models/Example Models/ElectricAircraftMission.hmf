@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5339" hopsancoreversion="0.6.x_r5334">
+<hopsanmodelfile hmfversion="0.4" hopsanguiversion="0.6.x_r5584" hopsancoreversion="0.6.x_r5578">
   <requirements>
     <componentlibrary>HopsanDefaultComponentLibrary</componentlibrary>
-    <componentlibrary>PettersComponentLibrary</componentlibrary>
   </requirements>
   <info/>
   <system logsamples="2048" typename="Subsystem" name="ElectricAircraftMission">
-    <simulationtime stop="3000" timestep="0.005" start="0" inherit_timestep="true"/>
+    <simulationtime stop="3000" timestep="0.005" start="-1" inherit_timestep="true"/>
     <parameters/>
     <aliases/>
     <hopsangui>
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="1"/>
       <animation flowspeed="100"/>
-      <viewport x="2059.67" y="2617.33" zoom="0.502994"/>
+      <viewport x="2059.67" y="2332.04" zoom="0.502994"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>
@@ -48,8 +47,8 @@
     <objects>
       <component typename="MechanicThetaSource" name="Angle___Velocity_Source_5">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="thetain::Value"/>
-          <parameter unit="-" value="0" type="double" name="omega::Value"/>
+          <parameter unit="-" value="0" type="double" name="thetain#Value"/>
+          <parameter unit="-" value="0" type="double" name="omega#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="thetain"/>
@@ -69,8 +68,8 @@
       </component>
       <component typename="MechanicThetaSource" name="Angle___Velocity_Source_6">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="thetain::Value"/>
-          <parameter unit="-" value="0" type="double" name="omega::Value"/>
+          <parameter unit="-" value="0" type="double" name="thetain#Value"/>
+          <parameter unit="-" value="0" type="double" name="omega#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="thetain"/>
@@ -90,23 +89,23 @@
       </component>
       <component typename="AeroAtmosphere" name="AeroAtmosphere">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="ha::Value"/>
-          <parameter unit="-" value="1.25" type="double" name="rho::Value"/>
-          <parameter unit="-" value="273" type="double" name="Tav::Value"/>
-          <parameter unit="-" value="100000" type="double" name="p0::Value"/>
-          <parameter unit="-" value="340" type="double" name="Vsound::Value"/>
-          <parameter unit="m/s^2" value="9.81" type="double" name="g0"/>
-          <parameter unit="kg/m3" value="1.225" type="double" name="rhos"/>
-          <parameter unit="" value="-0.0065" type="double" name="a"/>
-          <parameter unit="" value="287" type="double" name="R"/>
-          <parameter unit="" value="1.4" type="double" name="gamma"/>
-          <parameter unit="K" value="288.16" type="double" name="Ts"/>
-          <parameter unit="Pa" value="101300" type="double" name="p0s"/>
-          <parameter unit="m" value="11000" type="double" name="htp"/>
-          <parameter unit="K" value="216.66" type="double" name="Ttp"/>
-          <parameter unit="Pa" value="22610" type="double" name="ptp"/>
-          <parameter unit="kg/m3" value="0.363649" type="double" name="rhotp"/>
-          <parameter unit="" value="2.71828" type="double" name="e"/>
+          <parameter unit="-" value="0" type="double" name="ha#Value"/>
+          <parameter unit="-" value="9.81" type="double" name="g0#Value"/>
+          <parameter unit="-" value="1.225" type="double" name="rhos#Value"/>
+          <parameter unit="-" value="-0.0065" type="double" name="a#Value"/>
+          <parameter unit="-" value="287" type="double" name="R#Value"/>
+          <parameter unit="-" value="1.4" type="double" name="gamma#Value"/>
+          <parameter unit="-" value="288.16" type="double" name="Ts#Value"/>
+          <parameter unit="-" value="101300" type="double" name="p0s#Value"/>
+          <parameter unit="-" value="11000" type="double" name="htp#Value"/>
+          <parameter unit="-" value="216.66" type="double" name="Ttp#Value"/>
+          <parameter unit="-" value="22610" type="double" name="ptp#Value"/>
+          <parameter unit="-" value="0.363649" type="double" name="rhotp#Value"/>
+          <parameter unit="-" value="2.71828" type="double" name="e#Value"/>
+          <parameter unit="-" value="1.25" type="double" name="rho#Value"/>
+          <parameter unit="-" value="273" type="double" name="T#Value"/>
+          <parameter unit="-" value="100000" type="double" name="p0#Value"/>
+          <parameter unit="-" value="340" type="double" name="Vsound#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="rho"/>
@@ -127,8 +126,8 @@
       </component>
       <component typename="MechanicThetaSource" name="Angle___Velocity_Source">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="thetain::Value"/>
-          <parameter unit="-" value="0" type="double" name="omega::Value"/>
+          <parameter unit="-" value="0" type="double" name="thetain#Value"/>
+          <parameter unit="-" value="0" type="double" name="omega#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="thetain"/>
@@ -148,34 +147,34 @@
       </component>
       <component typename="SignalAttitudeControl" name="SignalAttitudeControl">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="phiref::Value"/>
-          <parameter unit="-" value="0" type="double" name="thetaref::Value"/>
-          <parameter unit="-" value="0" type="double" name="psiref::Value"/>
-          <parameter unit="-" value="1" type="double" name="phimax::Value"/>
-          <parameter unit="-" value="0" type="double" name="phi::Value"/>
-          <parameter unit="-" value="0" type="double" name="theta::Value"/>
-          <parameter unit="-" value="0" type="double" name="psi::Value"/>
-          <parameter unit="-" value="0" type="double" name="beta::Value"/>
-          <parameter unit="-" value="0" type="double" name="Qb::Value"/>
-          <parameter unit="-" value="0" type="double" name="Rb::Value"/>
-          <parameter unit="-" value="0" type="double" name="Ub::Value"/>
-          <parameter unit="-" value="0" type="double" name="uaerL::Value"/>
-          <parameter unit="-" value="0" type="double" name="uaerR::Value"/>
-          <parameter unit="-" value="0" type="double" name="uelev::Value"/>
-          <parameter unit="-" value="0" type="double" name="urud::Value"/>
-          <parameter unit="rad" value="1" type="double" name="Kphi"/>
-          <parameter unit="rad" value=".5" type="double" name="Kphipsi"/>
-          <parameter unit="rad" value=".5" type="double" name="Kelev"/>
-          <parameter unit="rad" value="1" type="double" name="Kdelev"/>
-          <parameter unit="rad" value="5" type="double" name="Krud"/>
-          <parameter unit="" value="1" type="double" name="Kdrud"/>
-          <parameter unit="rad" value="-0.9" type="double" name="u1min"/>
-          <parameter unit="rad" value="0.9" type="double" name="u1max"/>
-          <parameter unit="rad" value="-0.7" type="double" name="u2min"/>
-          <parameter unit="rad" value="0.7" type="double" name="u2max"/>
-          <parameter unit="rad" value="-0.7" type="double" name="u3min"/>
-          <parameter unit="rad" value="0.7" type="double" name="u3max"/>
-          <parameter unit="m/s" value="100" type="double" name="U0"/>
+          <parameter unit="-" value="0" type="double" name="phiref#Value"/>
+          <parameter unit="-" value="0" type="double" name="thetaref#Value"/>
+          <parameter unit="-" value="0" type="double" name="psiref#Value"/>
+          <parameter unit="-" value="1" type="double" name="phimax#Value"/>
+          <parameter unit="-" value="0" type="double" name="phi#Value"/>
+          <parameter unit="-" value="0" type="double" name="theta#Value"/>
+          <parameter unit="-" value="0" type="double" name="psi#Value"/>
+          <parameter unit="-" value="0" type="double" name="beta#Value"/>
+          <parameter unit="-" value="0" type="double" name="Qb#Value"/>
+          <parameter unit="-" value="0" type="double" name="Rb#Value"/>
+          <parameter unit="-" value="0" type="double" name="Ub#Value"/>
+          <parameter unit="-" value="1" type="double" name="Kphi#Value"/>
+          <parameter unit="-" value=".5" type="double" name="Kphipsi#Value"/>
+          <parameter unit="-" value="1" type="double" name="Kelev#Value"/>
+          <parameter unit="-" value="1" type="double" name="Kdelev#Value"/>
+          <parameter unit="-" value="5" type="double" name="Krud#Value"/>
+          <parameter unit="-" value="1" type="double" name="Kdrud#Value"/>
+          <parameter unit="-" value="-0.9" type="double" name="u1min#Value"/>
+          <parameter unit="-" value="0.9" type="double" name="u1max#Value"/>
+          <parameter unit="-" value="-0.7" type="double" name="u2min#Value"/>
+          <parameter unit="-" value="0.7" type="double" name="u2max#Value"/>
+          <parameter unit="-" value="-0.7" type="double" name="u3min#Value"/>
+          <parameter unit="-" value="0.7" type="double" name="u3max#Value"/>
+          <parameter unit="-" value="100" type="double" name="U0#Value"/>
+          <parameter unit="-" value="0" type="double" name="uaerL#Value"/>
+          <parameter unit="-" value="0" type="double" name="uaerR#Value"/>
+          <parameter unit="-" value="0" type="double" name="uelev#Value"/>
+          <parameter unit="-" value="0" type="double" name="urud#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="psi"/>
@@ -206,14 +205,14 @@
         </hopsangui>
       </component>
       <system logsamples="2048" typename="Subsystem" name="Electric_propeller_drive">
-        <simulationtime stop="3000" timestep="0.001" start="0" inherit_timestep="true"/>
+        <simulationtime stop="3000" timestep="0.001" start="-1" inherit_timestep="true"/>
         <parameters/>
         <aliases/>
         <hopsangui>
           <pose x="2419.029126" y="2324.925698" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
-          <viewport x="2059.67" y="2617.33" zoom="0.502994"/>
+          <viewport x="2059.67" y="2332.04" zoom="0.502994"/>
           <ports hidden="1"/>
           <names hidden="0"/>
           <graphics type="user"/>
@@ -258,11 +257,10 @@
         <objects>
           <component typename="ElectricIsensor" name="Current_sensor_1">
             <parameters>
-              <parameter unit="V" value="0" type="double" name="Pel1::Voltage"/>
-              <parameter unit="A" value="0" type="double" name="Pel1::Current"/>
-              <parameter unit="V" value="0" type="double" name="Pel1::WaveVariable"/>
-              <parameter unit="V/A" value="0" type="double" name="Pel1::CharImpedance"/>
-              <parameter unit="-" value="0" type="double" name="Piout::Value"/>
+              <parameter unit="V" value="0" type="double" name="Pel1#Voltage"/>
+              <parameter unit="A" value="0" type="double" name="Pel1#Current"/>
+              <parameter unit="V" value="0" type="double" name="Pel1#WaveVariable"/>
+              <parameter unit="V/A" value="0" type="double" name="Pel1#CharImpedance"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="Piout"/>
@@ -281,13 +279,13 @@
           </component>
           <component typename="ElectricIcontroller" name="ElectricIcontroller">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="iref::Value"/>
-              <parameter unit="ohm" value="0.01" type="double" name="resist"/>
-              <parameter unit="rad/s" value="10" type="double" name="wf"/>
-              <parameter unit="V" value="10" type="double" name="umin"/>
-              <parameter unit="A" value="10000" type="double" name="imax"/>
-              <parameter unit="A" value="0.01" type="double" name="imin"/>
-              <parameter unit="V" value="50" type="double" name="umax"/>
+              <parameter unit="-" value="0" type="double" name="iref#Value"/>
+              <parameter unit="-" value="0.01" type="double" name="resist#Value"/>
+              <parameter unit="-" value="10" type="double" name="wf#Value"/>
+              <parameter unit="-" value="10" type="double" name="umin#Value"/>
+              <parameter unit="-" value="10000" type="double" name="imax#Value"/>
+              <parameter unit="-" value="0.01" type="double" name="imin#Value"/>
+              <parameter unit="-" value="50" type="double" name="umax#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="iref"/>
@@ -307,11 +305,10 @@
           </component>
           <component typename="ElectricIsensor" name="Current_sensor_2">
             <parameters>
-              <parameter unit="V" value="0" type="double" name="Pel1::Voltage"/>
-              <parameter unit="A" value="0" type="double" name="Pel1::Current"/>
-              <parameter unit="V" value="0" type="double" name="Pel1::WaveVariable"/>
-              <parameter unit="V/A" value="0" type="double" name="Pel1::CharImpedance"/>
-              <parameter unit="-" value="0" type="double" name="Piout::Value"/>
+              <parameter unit="V" value="0" type="double" name="Pel1#Voltage"/>
+              <parameter unit="A" value="0" type="double" name="Pel1#Current"/>
+              <parameter unit="V" value="0" type="double" name="Pel1#WaveVariable"/>
+              <parameter unit="V/A" value="0" type="double" name="Pel1#CharImpedance"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="Piout"/>
@@ -330,10 +327,10 @@
           </component>
           <component typename="ElectricGround" name="ElectricGround">
             <parameters>
-              <parameter unit="V" value="0" type="double" name="Pel1::Voltage"/>
-              <parameter unit="A" value="0" type="double" name="Pel1::Current"/>
-              <parameter unit="V" value="0" type="double" name="Pel1::WaveVariable"/>
-              <parameter unit="V/A" value="0" type="double" name="Pel1::CharImpedance"/>
+              <parameter unit="V" value="0" type="double" name="Pel1#Voltage"/>
+              <parameter unit="A" value="0" type="double" name="Pel1#Current"/>
+              <parameter unit="V" value="0" type="double" name="Pel1#WaveVariable"/>
+              <parameter unit="V/A" value="0" type="double" name="Pel1#CharImpedance"/>
             </parameters>
             <ports>
               <port nodetype="NodeElectric" name="Pel1"/>
@@ -351,27 +348,27 @@
           </component>
           <component typename="AeroPropeller" name="AeroPropeller">
             <parameters>
-              <parameter unit="rad/s" value="0" type="double" name="Pmr1::AngularVelocity"/>
-              <parameter unit="Nm" value="0" type="double" name="Pmr1::Torque"/>
-              <parameter unit="rad" value="0" type="double" name="Pmr1::Angle"/>
-              <parameter unit="Nm" value="0" type="double" name="Pmr1::WaveVariable"/>
-              <parameter unit="?" value="0" type="double" name="Pmr1::CharImpedance"/>
-              <parameter unit="kgm^2" value="0" type="double" name="Pmr1::EquivalentInertia"/>
-              <parameter unit="-" value="1.25" type="double" name="Up::Value"/>
-              <parameter unit="-" value="1.25" type="double" name="rho::Value"/>
-              <parameter unit="-" value="500" type="double" name="thrust::Value"/>
-              <parameter unit="-" value="0" type="double" name="torque::Value"/>
-              <parameter unit="-" value="0" type="double" name="Pin::Value"/>
-              <parameter unit="-" value="0" type="double" name="Pout::Value"/>
-              <parameter unit="-" value="0" type="double" name="Jp::Value"/>
-              <parameter unit="m" value=".5" type="double" name="dp"/>
-              <parameter unit="m" value="0.2" type="double" name="b1"/>
-              <parameter unit="m" value="0.2" type="double" name="b2"/>
-              <parameter unit="m" value="0.205" type="double" name="g1"/>
-              <parameter unit="m" value="0.2" type="double" name="g2"/>
-              <parameter unit="m" value="0.12" type="double" name="ct0"/>
-              <parameter unit="m" value="0.08" type="double" name="cp0"/>
-              <parameter unit="" value="4" type="double" name="k"/>
+              <parameter unit="rad/s" value="0" type="double" name="Pmr1#AngularVelocity"/>
+              <parameter unit="Nm" value="0" type="double" name="Pmr1#Torque"/>
+              <parameter unit="rad" value="0" type="double" name="Pmr1#Angle"/>
+              <parameter unit="Nm" value="0" type="double" name="Pmr1#WaveVariable"/>
+              <parameter unit="?" value="0" type="double" name="Pmr1#CharImpedance"/>
+              <parameter unit="kgm^2" value="0" type="double" name="Pmr1#EquivalentInertia"/>
+              <parameter unit="-" value="1.25" type="double" name="Up#Value"/>
+              <parameter unit="-" value="1.25" type="double" name="rho#Value"/>
+              <parameter unit="-" value=".5" type="double" name="dp#Value"/>
+              <parameter unit="-" value="0.2" type="double" name="b1#Value"/>
+              <parameter unit="-" value="0.2" type="double" name="b2#Value"/>
+              <parameter unit="-" value="0.205" type="double" name="g1#Value"/>
+              <parameter unit="-" value="0.2" type="double" name="g2#Value"/>
+              <parameter unit="-" value="0.12" type="double" name="ct0#Value"/>
+              <parameter unit="-" value="0.08" type="double" name="cp0#Value"/>
+              <parameter unit="-" value="4" type="double" name="k#Value"/>
+              <parameter unit="-" value="500" type="double" name="thrust#Value"/>
+              <parameter unit="-" value="0" type="double" name="torque#Value"/>
+              <parameter unit="-" value="0" type="double" name="Pin#Value"/>
+              <parameter unit="-" value="0" type="double" name="Pout#Value"/>
+              <parameter unit="-" value="0" type="double" name="Jp#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="Pin"/>
@@ -396,12 +393,12 @@
           </component>
           <component typename="ElectricBattery" name="ElectricBattery">
             <parameters>
-              <parameter unit="-" value="1" type="double" name="soc::Value"/>
-              <parameter unit="-" value="0" type="double" name="ubatt::Value"/>
-              <parameter unit="1/ohm" value="50" type="double" name="cond"/>
-              <parameter unit="V" value="50" type="double" name="unom"/>
-              <parameter unit="Ah" value="70" type="double" name="capacity"/>
-              <parameter unit="" value="0.1" type="double" name="kappa"/>
+              <parameter unit="-" value="50" type="double" name="cond#Value"/>
+              <parameter unit="-" value="50" type="double" name="unom#Value"/>
+              <parameter unit="-" value="70" type="double" name="capacity#Value"/>
+              <parameter unit="-" value="0.1" type="double" name="kappa#Value"/>
+              <parameter unit="-" value="1" type="double" name="soc#Value"/>
+              <parameter unit="-" value="0" type="double" name="ubatt#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="soc"/>
@@ -421,16 +418,16 @@
           </component>
           <component typename="ElectricCapacitance2" name="ElectricCapacitance2">
             <parameters>
-              <parameter unit="V" value="0" type="double" name="Pel1::Voltage"/>
-              <parameter unit="A" value="0" type="double" name="Pel1::Current"/>
-              <parameter unit="V" value="0" type="double" name="Pel1::WaveVariable"/>
-              <parameter unit="V/A" value="0" type="double" name="Pel1::CharImpedance"/>
-              <parameter unit="V" value="0" type="double" name="Pel2::Voltage"/>
-              <parameter unit="A" value="0" type="double" name="Pel2::Current"/>
-              <parameter unit="V" value="0" type="double" name="Pel2::WaveVariable"/>
-              <parameter unit="V/A" value="0" type="double" name="Pel2::CharImpedance"/>
-              <parameter unit="(A s)/V" value="0.01" type="double" name="Cc"/>
-              <parameter unit="" value="0.3" type="double" name="alpha"/>
+              <parameter unit="V" value="0" type="double" name="Pel1#Voltage"/>
+              <parameter unit="A" value="0" type="double" name="Pel1#Current"/>
+              <parameter unit="V" value="0" type="double" name="Pel1#WaveVariable"/>
+              <parameter unit="V/A" value="0" type="double" name="Pel1#CharImpedance"/>
+              <parameter unit="V" value="0" type="double" name="Pel2#Voltage"/>
+              <parameter unit="A" value="0" type="double" name="Pel2#Current"/>
+              <parameter unit="V" value="0" type="double" name="Pel2#WaveVariable"/>
+              <parameter unit="V/A" value="0" type="double" name="Pel2#CharImpedance"/>
+              <parameter unit="-" value="0.01" type="double" name="Cc#Value"/>
+              <parameter unit="-" value="0.3" type="double" name="alpha#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeElectric" name="Pel1"/>
@@ -449,11 +446,11 @@
           </component>
           <component typename="SignalLP1Filter" name="First_order_low_pass_filter">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
-              <parameter unit="-" value="0" type="double" name="out::Value"/>
-              <parameter unit="[rad/s]" value="10" type="double" name="omega"/>
-              <parameter unit="[-]" value="0" type="double" name="y_min"/>
-              <parameter unit="[-]" value="300" type="double" name="y_max"/>
+              <parameter unit="-" value="0" type="double" name="in#Value"/>
+              <parameter unit="-" value="0" type="double" name="out#Value"/>
+              <parameter unit="rad/s" value="10" type="double" name="omega"/>
+              <parameter unit="-" value="0" type="double" name="y_min"/>
+              <parameter unit="-" value="300" type="double" name="y_max"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
@@ -479,7 +476,7 @@
           </systemport>
           <component typename="SignalSink" name="Sink">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+              <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in_right"/>
@@ -499,8 +496,8 @@
           </component>
           <component typename="SignalGain" name="Gain">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
-              <parameter unit="-" value="-1" type="double" name="k::Value"/>
+              <parameter unit="-" value="0" type="double" name="in#Value"/>
+              <parameter unit="-" value="-1" type="double" name="k#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
@@ -519,16 +516,16 @@
           </component>
           <component typename="ElectricCapacitance2" name="ElectricCapacitance2_1">
             <parameters>
-              <parameter unit="V" value="0" type="double" name="Pel1::Voltage"/>
-              <parameter unit="A" value="0" type="double" name="Pel1::Current"/>
-              <parameter unit="V" value="0" type="double" name="Pel1::WaveVariable"/>
-              <parameter unit="V/A" value="0" type="double" name="Pel1::CharImpedance"/>
-              <parameter unit="V" value="0" type="double" name="Pel2::Voltage"/>
-              <parameter unit="A" value="0" type="double" name="Pel2::Current"/>
-              <parameter unit="V" value="0" type="double" name="Pel2::WaveVariable"/>
-              <parameter unit="V/A" value="0" type="double" name="Pel2::CharImpedance"/>
-              <parameter unit="(A s)/V" value="0.01" type="double" name="Cc"/>
-              <parameter unit="" value="0.3" type="double" name="alpha"/>
+              <parameter unit="V" value="0" type="double" name="Pel1#Voltage"/>
+              <parameter unit="A" value="0" type="double" name="Pel1#Current"/>
+              <parameter unit="V" value="0" type="double" name="Pel1#WaveVariable"/>
+              <parameter unit="V/A" value="0" type="double" name="Pel1#CharImpedance"/>
+              <parameter unit="V" value="0" type="double" name="Pel2#Voltage"/>
+              <parameter unit="A" value="0" type="double" name="Pel2#Current"/>
+              <parameter unit="V" value="0" type="double" name="Pel2#WaveVariable"/>
+              <parameter unit="V/A" value="0" type="double" name="Pel2#CharImpedance"/>
+              <parameter unit="-" value="0.01" type="double" name="Cc#Value"/>
+              <parameter unit="-" value="0.3" type="double" name="alpha#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeElectric" name="Pel1"/>
@@ -547,7 +544,7 @@
           </component>
           <component typename="SignalSink" name="Sink_1">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+              <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in_right"/>
@@ -567,7 +564,7 @@
           </component>
           <component typename="SignalSink" name="Sink_2">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+              <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in_right"/>
@@ -587,20 +584,20 @@
           </component>
           <component typename="ElectricMotorGear" name="ElectricMotorGear">
             <parameters>
-              <parameter unit="-" value="1" type="double" name="gearRatio::Value"/>
-              <parameter unit="-" value="0" type="double" name="wm::Value"/>
-              <parameter unit="-" value="0" type="double" name="tormg::Value"/>
-              <parameter unit="-" value="0" type="double" name="Pin::Value"/>
-              <parameter unit="-" value="0" type="double" name="Pout::Value"/>
-              <parameter unit="V/rpm" value="0.07" type="double" name="Ke"/>
-              <parameter unit="Ohm" value="0.04" type="double" name="Ra"/>
-              <parameter unit="Nm" value="0" type="double" name="Tm0"/>
-              <parameter unit="rad/s" value="1" type="double" name="wc"/>
-              <parameter unit="Ns/m" value="0.0012" type="double" name="Bm"/>
-              <parameter unit="kg m^2" value=".01" type="double" name="Jm"/>
-              <parameter unit="Ns/m" value="0" type="double" name="BL"/>
-              <parameter unit="kg m^2" value=".1" type="double" name="JL"/>
-              <parameter unit="" value="0.01" type="double" name="myfric"/>
+              <parameter unit="-" value="1" type="double" name="gearRatio#Value"/>
+              <parameter unit="-" value="0.07" type="double" name="Ke#Value"/>
+              <parameter unit="-" value="0.04" type="double" name="Ra#Value"/>
+              <parameter unit="-" value="0" type="double" name="Tm0#Value"/>
+              <parameter unit="-" value="1" type="double" name="wc#Value"/>
+              <parameter unit="-" value="0.0012" type="double" name="Bm#Value"/>
+              <parameter unit="-" value=".01" type="double" name="Jm#Value"/>
+              <parameter unit="-" value="0" type="double" name="BL#Value"/>
+              <parameter unit="-" value=".1" type="double" name="JL#Value"/>
+              <parameter unit="-" value="0.01" type="double" name="myfric#Value"/>
+              <parameter unit="-" value="0" type="double" name="wm#Value"/>
+              <parameter unit="-" value="0" type="double" name="tormg#Value"/>
+              <parameter unit="-" value="0" type="double" name="Pin#Value"/>
+              <parameter unit="-" value="0" type="double" name="Pout#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="Pin"/>
@@ -645,11 +642,10 @@
           </systemport>
           <component typename="ElectricIsensor" name="Current_sensor">
             <parameters>
-              <parameter unit="V" value="0" type="double" name="Pel1::Voltage"/>
-              <parameter unit="A" value="0" type="double" name="Pel1::Current"/>
-              <parameter unit="V" value="0" type="double" name="Pel1::WaveVariable"/>
-              <parameter unit="V/A" value="0" type="double" name="Pel1::CharImpedance"/>
-              <parameter unit="-" value="0" type="double" name="Piout::Value"/>
+              <parameter unit="V" value="0" type="double" name="Pel1#Voltage"/>
+              <parameter unit="A" value="0" type="double" name="Pel1#Current"/>
+              <parameter unit="V" value="0" type="double" name="Pel1#WaveVariable"/>
+              <parameter unit="V/A" value="0" type="double" name="Pel1#CharImpedance"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="Piout"/>
@@ -1017,8 +1013,8 @@
       </system>
       <component typename="SignalGain" name="Gain">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
-          <parameter unit="-" value="50" type="double" name="k::Value"/>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
+          <parameter unit="-" value="50" type="double" name="k#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -1037,8 +1033,8 @@
       </component>
       <component typename="SignalSubtract" name="Subtract">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in1::Value"/>
-          <parameter unit="-" value="0" type="double" name="in2::Value"/>
+          <parameter unit="-" value="0" type="double" name="in1#Value"/>
+          <parameter unit="-" value="0" type="double" name="in2#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="out"/>
@@ -1058,14 +1054,14 @@
       </component>
       <component typename="SignalPIlead" name="SignalPIlead">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="yref::Value"/>
-          <parameter unit="-" value="35" type="double" name="kx::Value"/>
-          <parameter unit="-" value="0" type="double" name="y::Value"/>
-          <parameter unit="-" value="0" type="double" name="u::Value"/>
-          <parameter unit="rad/s" value=".2" type="double" name="wa"/>
-          <parameter unit="" value="1" type="double" name="da"/>
-          <parameter unit="" value="-.5" type="double" name="umin"/>
-          <parameter unit="" value=".5" type="double" name="umax"/>
+          <parameter unit="-" value="0" type="double" name="yref#Value"/>
+          <parameter unit="-" value="35" type="double" name="kx#Value"/>
+          <parameter unit="-" value="0" type="double" name="y#Value"/>
+          <parameter unit="-" value=".2" type="double" name="wa#Value"/>
+          <parameter unit="-" value="1" type="double" name="da#Value"/>
+          <parameter unit="-" value="-.5" type="double" name="umin#Value"/>
+          <parameter unit="-" value=".5" type="double" name="umax#Value"/>
+          <parameter unit="-" value="0" type="double" name="u#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="y"/>
@@ -1086,170 +1082,170 @@
       </component>
       <component typename="AeroAircraft6DOFS" name="AeroAircraft6DOFS">
         <parameters>
-          <parameter unit="rad/s" value="0" type="double" name="Pal1::AngularVelocity"/>
-          <parameter unit="Nm" value="0" type="double" name="Pal1::Torque"/>
-          <parameter unit="rad" value="0" type="double" name="Pal1::Angle"/>
-          <parameter unit="Nm" value="0" type="double" name="Pal1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="Pal1::CharImpedance"/>
-          <parameter unit="kgm^2" value="0" type="double" name="Pal1::EquivalentInertia"/>
-          <parameter unit="rad/s" value="0" type="double" name="Par1::AngularVelocity"/>
-          <parameter unit="Nm" value="0" type="double" name="Par1::Torque"/>
-          <parameter unit="rad" value="0" type="double" name="Par1::Angle"/>
-          <parameter unit="Nm" value="0" type="double" name="Par1::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="Par1::CharImpedance"/>
-          <parameter unit="kgm^2" value="0" type="double" name="Par1::EquivalentInertia"/>
-          <parameter unit="rad/s" value="0" type="double" name="Pal12::AngularVelocity"/>
-          <parameter unit="Nm" value="0" type="double" name="Pal12::Torque"/>
-          <parameter unit="rad" value="0" type="double" name="Pal12::Angle"/>
-          <parameter unit="Nm" value="0" type="double" name="Pal12::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="Pal12::CharImpedance"/>
-          <parameter unit="kgm^2" value="0" type="double" name="Pal12::EquivalentInertia"/>
-          <parameter unit="rad/s" value="0" type="double" name="Par12::AngularVelocity"/>
-          <parameter unit="Nm" value="0" type="double" name="Par12::Torque"/>
-          <parameter unit="rad" value="0" type="double" name="Par12::Angle"/>
-          <parameter unit="Nm" value="0" type="double" name="Par12::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="Par12::CharImpedance"/>
-          <parameter unit="kgm^2" value="0" type="double" name="Par12::EquivalentInertia"/>
-          <parameter unit="rad/s" value="0" type="double" name="Pal2::AngularVelocity"/>
-          <parameter unit="Nm" value="0" type="double" name="Pal2::Torque"/>
-          <parameter unit="rad" value="0" type="double" name="Pal2::Angle"/>
-          <parameter unit="Nm" value="0" type="double" name="Pal2::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="Pal2::CharImpedance"/>
-          <parameter unit="kgm^2" value="0" type="double" name="Pal2::EquivalentInertia"/>
-          <parameter unit="rad/s" value="0" type="double" name="Par2::AngularVelocity"/>
-          <parameter unit="Nm" value="0" type="double" name="Par2::Torque"/>
-          <parameter unit="rad" value="0" type="double" name="Par2::Angle"/>
-          <parameter unit="Nm" value="0" type="double" name="Par2::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="Par2::CharImpedance"/>
-          <parameter unit="kgm^2" value="0" type="double" name="Par2::EquivalentInertia"/>
-          <parameter unit="rad/s" value="0" type="double" name="Pfin::AngularVelocity"/>
-          <parameter unit="Nm" value="0" type="double" name="Pfin::Torque"/>
-          <parameter unit="rad" value="0" type="double" name="Pfin::Angle"/>
-          <parameter unit="Nm" value="0" type="double" name="Pfin::WaveVariable"/>
-          <parameter unit="?" value="0" type="double" name="Pfin::CharImpedance"/>
-          <parameter unit="kgm^2" value="0" type="double" name="Pfin::EquivalentInertia"/>
-          <parameter unit="-" value="0" type="double" name="thrustl::Value"/>
-          <parameter unit="-" value="0" type="double" name="thrustr::Value"/>
-          <parameter unit="-" value="0" type="double" name="dezthrustl::Value"/>
-          <parameter unit="-" value="0" type="double" name="dezthrustr::Value"/>
-          <parameter unit="-" value="0" type="double" name="deythrustl::Value"/>
-          <parameter unit="-" value="0" type="double" name="deythrustr::Value"/>
-          <parameter unit="-" value="0" type="double" name="Mfuel::Value"/>
-          <parameter unit="-" value="0" type="double" name="Mcargo::Value"/>
-          <parameter unit="-" value="1.25" type="double" name="rho::Value"/>
-          <parameter unit="-" value="0" type="double" name="vturbx::Value"/>
-          <parameter unit="-" value="0" type="double" name="vturby::Value"/>
-          <parameter unit="-" value="0" type="double" name="vturbz::Value"/>
-          <parameter unit="-" value="0" type="double" name="wturbx::Value"/>
-          <parameter unit="-" value="0" type="double" name="wturby::Value"/>
-          <parameter unit="-" value="0" type="double" name="wturbz::Value"/>
-          <parameter unit="-" value="0" type="double" name="xcg::Value"/>
-          <parameter unit="-" value="0" type="double" name="ycg::Value"/>
-          <parameter unit="-" value="0" type="double" name="zcg::Value"/>
-          <parameter unit="-" value="0" type="double" name="vx::Value"/>
-          <parameter unit="-" value="0" type="double" name="vy::Value"/>
-          <parameter unit="-" value="0" type="double" name="vz::Value"/>
-          <parameter unit="-" value="0" type="double" name="Psi::Value"/>
-          <parameter unit="-" value="0" type="double" name="Thetao::Value"/>
-          <parameter unit="-" value="0" type="double" name="Phi::Value"/>
-          <parameter unit="-" value="1" type="double" name="Ub::Value"/>
-          <parameter unit="-" value="0" type="double" name="Vb::Value"/>
-          <parameter unit="-" value="0" type="double" name="Wb::Value"/>
-          <parameter unit="-" value="0" type="double" name="Pb::Value"/>
-          <parameter unit="-" value="0" type="double" name="Qb::Value"/>
-          <parameter unit="-" value="0" type="double" name="Rb::Value"/>
-          <parameter unit="-" value="0" type="double" name="q0::Value"/>
-          <parameter unit="-" value="0" type="double" name="q1::Value"/>
-          <parameter unit="-" value="0" type="double" name="q2::Value"/>
-          <parameter unit="-" value="0" type="double" name="q3::Value"/>
-          <parameter unit="-" value="0" type="double" name="AlphaAttack::Value"/>
-          <parameter unit="-" value="0" type="double" name="BetaSlip::Value"/>
-          <parameter unit="-" value="0" type="double" name="altitude::Value"/>
-          <parameter unit="-" value="0" type="double" name="gfx::Value"/>
-          <parameter unit="-" value="0" type="double" name="gfy::Value"/>
-          <parameter unit="-" value="0" type="double" name="gfz::Value"/>
-          <parameter unit="-" value="0" type="double" name="CL1::Value"/>
-          <parameter unit="-" value="0" type="double" name="Cd1::Value"/>
-          <parameter unit="-" value="0" type="double" name="Fax::Value"/>
-          <parameter unit="-" value="0" type="double" name="Faz::Value"/>
-          <parameter unit="rad" value="0.3" type="double" name="afin"/>
-          <parameter unit="rad" value="0.6" type="double" name="an1"/>
-          <parameter unit="rad" value="0.6" type="double" name="an2"/>
-          <parameter unit="rad" value="0.9" type="double" name="ap1"/>
-          <parameter unit="rad" value="0.7" type="double" name="ap2"/>
-          <parameter unit="" value="6" type="double" name="AR1"/>
-          <parameter unit="" value="4" type="double" name="AR2"/>
-          <parameter unit="" value="0.58" type="double" name="ARfin"/>
-          <parameter unit="" value="0.0045" type="double" name="Cd01"/>
-          <parameter unit="" value="0.0045" type="double" name="Cd02"/>
-          <parameter unit="" value="0.004" type="double" name="Cd0b"/>
-          <parameter unit="" value="0.0045" type="double" name="Cd0fin"/>
-          <parameter unit="" value="2.1" type="double" name="CLalpha1"/>
-          <parameter unit="" value="2.2" type="double" name="CLalpha2"/>
-          <parameter unit="" value="2" type="double" name="CLalphabh"/>
-          <parameter unit="" value="2" type="double" name="CLalphabv"/>
-          <parameter unit="" value="0.8" type="double" name="CLalphafin"/>
-          <parameter unit="" value="0.1" type="double" name="CLde1"/>
-          <parameter unit="" value="0.515" type="double" name="CLde2"/>
-          <parameter unit="" value="0.2" type="double" name="CLde12"/>
-          <parameter unit="" value="0" type="double" name="Cdide1"/>
-          <parameter unit="" value="0" type="double" name="Cdide12"/>
-          <parameter unit="" value="0" type="double" name="Cdide112"/>
-          <parameter unit="" value="0.01" type="double" name="de10"/>
-          <parameter unit="" value="0.01" type="double" name="de120"/>
-          <parameter unit="" value="-0.1" type="double" name="Cm01"/>
-          <parameter unit="" value="-0.5" type="double" name="Cmfs1"/>
-          <parameter unit="" value="0.02" type="double" name="Cmde1"/>
-          <parameter unit="" value="0.1" type="double" name="Cmde12"/>
-          <parameter unit="" value="0.0827084" type="double" name="CLdefin"/>
-          <parameter unit="" value="1" type="double" name="dah1"/>
-          <parameter unit="" value="0.6" type="double" name="dah2"/>
-          <parameter unit="" value="0.95" type="double" name="e1"/>
-          <parameter unit="" value="0.95" type="double" name="e2"/>
-          <parameter unit="" value="0.95" type="double" name="efin"/>
-          <parameter unit="" value="0.2" type="double" name="awfin"/>
-          <parameter unit="" value="0.2" type="double" name="awn1"/>
-          <parameter unit="" value="0.2" type="double" name="awn2"/>
-          <parameter unit="" value="0.2" type="double" name="awp1"/>
-          <parameter unit="" value="0.2" type="double" name="awp2"/>
-          <parameter unit="rad" value="-0.0872665" type="double" name="gamma1"/>
-          <parameter unit="rad" value="-0.0872665" type="double" name="gamma2"/>
-          <parameter unit="" value="0" type="double" name="hthrust0"/>
-          <parameter unit="rad" value="0" type="double" name="ia1"/>
-          <parameter unit=" rad" value="0.05" type="double" name="ia2"/>
-          <parameter unit=" " value="0.005" type="double" name="Ix0"/>
-          <parameter unit=" " value="0.003" type="double" name="Ixz0"/>
-          <parameter unit=" " value="0.2" type="double" name="Iy0"/>
-          <parameter unit=" " value="0.2" type="double" name="Iz0"/>
-          <parameter unit="rad" value="0.436332" type="double" name="lambda1"/>
-          <parameter unit="rad" value="0.436332" type="double" name="lambda2"/>
-          <parameter unit="rad" value="0.785398" type="double" name="lambdafin"/>
-          <parameter unit="" value="0.005" type="double" name="lc10"/>
-          <parameter unit="" value="0.005" type="double" name="lc20"/>
-          <parameter unit="" value="0.005" type="double" name="lc120"/>
-          <parameter unit="" value="0.005" type="double" name="lcfin0"/>
-          <parameter unit="kg" value="100" type="double" name="Me"/>
-          <parameter unit="" value="0.25" type="double" name="rc10"/>
-          <parameter unit="" value="0.15" type="double" name="rc20"/>
-          <parameter unit="" value="0.1" type="double" name="rcfin0"/>
-          <parameter unit="m2" value="8" type="double" name="S1"/>
-          <parameter unit="" value="0.5" type="double" name="S20"/>
-          <parameter unit="" value="0.2" type="double" name="Sbh0"/>
-          <parameter unit="" value="0.2" type="double" name="Sbv0"/>
-          <parameter unit="" value="0.17" type="double" name="Sfin0"/>
-          <parameter unit="" value="2" type="double" name="xbach0"/>
-          <parameter unit=" " value="2" type="double" name="xbacv0"/>
-          <parameter unit=" " value="1.55" type="double" name="xbcge0"/>
-          <parameter unit=" " value="1.55" type="double" name="xcargo0"/>
-          <parameter unit=" " value="1.55" type="double" name="xfuel0"/>
-          <parameter unit=" " value="1.55" type="double" name="xw10"/>
-          <parameter unit=" " value="4" type="double" name="xw20"/>
-          <parameter unit="" value="4" type="double" name="xwfin0"/>
-          <parameter unit="" value="2.7" type="double" name="xeng0"/>
-          <parameter unit="" value="0" type="double" name="yeng0"/>
-          <parameter unit="m/s^2" value="9.81" type="double" name="g0"/>
-          <parameter unit="N/m" value="1000" type="double" name="kground"/>
-          <parameter unit="Ns/m" value="10" type="double" name="cground"/>
+          <parameter unit="rad/s" value="0" type="double" name="Pal1#AngularVelocity"/>
+          <parameter unit="Nm" value="0" type="double" name="Pal1#Torque"/>
+          <parameter unit="rad" value="0" type="double" name="Pal1#Angle"/>
+          <parameter unit="Nm" value="0" type="double" name="Pal1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="Pal1#CharImpedance"/>
+          <parameter unit="kgm^2" value="0" type="double" name="Pal1#EquivalentInertia"/>
+          <parameter unit="rad/s" value="0" type="double" name="Par1#AngularVelocity"/>
+          <parameter unit="Nm" value="0" type="double" name="Par1#Torque"/>
+          <parameter unit="rad" value="0" type="double" name="Par1#Angle"/>
+          <parameter unit="Nm" value="0" type="double" name="Par1#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="Par1#CharImpedance"/>
+          <parameter unit="kgm^2" value="0" type="double" name="Par1#EquivalentInertia"/>
+          <parameter unit="rad/s" value="0" type="double" name="Pal12#AngularVelocity"/>
+          <parameter unit="Nm" value="0" type="double" name="Pal12#Torque"/>
+          <parameter unit="rad" value="0" type="double" name="Pal12#Angle"/>
+          <parameter unit="Nm" value="0" type="double" name="Pal12#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="Pal12#CharImpedance"/>
+          <parameter unit="kgm^2" value="0" type="double" name="Pal12#EquivalentInertia"/>
+          <parameter unit="rad/s" value="0" type="double" name="Par12#AngularVelocity"/>
+          <parameter unit="Nm" value="0" type="double" name="Par12#Torque"/>
+          <parameter unit="rad" value="0" type="double" name="Par12#Angle"/>
+          <parameter unit="Nm" value="0" type="double" name="Par12#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="Par12#CharImpedance"/>
+          <parameter unit="kgm^2" value="0" type="double" name="Par12#EquivalentInertia"/>
+          <parameter unit="rad/s" value="0" type="double" name="Pal2#AngularVelocity"/>
+          <parameter unit="Nm" value="0" type="double" name="Pal2#Torque"/>
+          <parameter unit="rad" value="0" type="double" name="Pal2#Angle"/>
+          <parameter unit="Nm" value="0" type="double" name="Pal2#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="Pal2#CharImpedance"/>
+          <parameter unit="kgm^2" value="0" type="double" name="Pal2#EquivalentInertia"/>
+          <parameter unit="rad/s" value="0" type="double" name="Par2#AngularVelocity"/>
+          <parameter unit="Nm" value="0" type="double" name="Par2#Torque"/>
+          <parameter unit="rad" value="0" type="double" name="Par2#Angle"/>
+          <parameter unit="Nm" value="0" type="double" name="Par2#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="Par2#CharImpedance"/>
+          <parameter unit="kgm^2" value="0" type="double" name="Par2#EquivalentInertia"/>
+          <parameter unit="rad/s" value="0" type="double" name="Pfin#AngularVelocity"/>
+          <parameter unit="Nm" value="0" type="double" name="Pfin#Torque"/>
+          <parameter unit="rad" value="0" type="double" name="Pfin#Angle"/>
+          <parameter unit="Nm" value="0" type="double" name="Pfin#WaveVariable"/>
+          <parameter unit="?" value="0" type="double" name="Pfin#CharImpedance"/>
+          <parameter unit="kgm^2" value="0" type="double" name="Pfin#EquivalentInertia"/>
+          <parameter unit="-" value="0" type="double" name="thrustl#Value"/>
+          <parameter unit="-" value="0" type="double" name="thrustr#Value"/>
+          <parameter unit="-" value="0" type="double" name="dezthrustl#Value"/>
+          <parameter unit="-" value="0" type="double" name="dezthrustr#Value"/>
+          <parameter unit="-" value="0" type="double" name="deythrustl#Value"/>
+          <parameter unit="-" value="0" type="double" name="deythrustr#Value"/>
+          <parameter unit="-" value="0" type="double" name="Mfuel#Value"/>
+          <parameter unit="-" value="0" type="double" name="Mcargo#Value"/>
+          <parameter unit="-" value="1.25" type="double" name="rho#Value"/>
+          <parameter unit="-" value="0" type="double" name="vturbx#Value"/>
+          <parameter unit="-" value="0" type="double" name="vturby#Value"/>
+          <parameter unit="-" value="0" type="double" name="vturbz#Value"/>
+          <parameter unit="-" value="0" type="double" name="wturbx#Value"/>
+          <parameter unit="-" value="0" type="double" name="wturby#Value"/>
+          <parameter unit="-" value="0" type="double" name="wturbz#Value"/>
+          <parameter unit="-" value="0.3" type="double" name="afin#Value"/>
+          <parameter unit="-" value="0.6" type="double" name="an1#Value"/>
+          <parameter unit="-" value="0.6" type="double" name="an2#Value"/>
+          <parameter unit="-" value="0.9" type="double" name="ap1#Value"/>
+          <parameter unit="-" value="0.7" type="double" name="ap2#Value"/>
+          <parameter unit="-" value="6" type="double" name="AR1#Value"/>
+          <parameter unit="-" value="4" type="double" name="AR2#Value"/>
+          <parameter unit="-" value="0.58" type="double" name="ARfin#Value"/>
+          <parameter unit="-" value="0.0045" type="double" name="Cd01#Value"/>
+          <parameter unit="-" value="0.0045" type="double" name="Cd02#Value"/>
+          <parameter unit="-" value="0.004" type="double" name="Cd0b#Value"/>
+          <parameter unit="-" value="0.0045" type="double" name="Cd0fin#Value"/>
+          <parameter unit="-" value="2.1" type="double" name="CLalpha1#Value"/>
+          <parameter unit="-" value="2.2" type="double" name="CLalpha2#Value"/>
+          <parameter unit="-" value="2" type="double" name="CLalphabh#Value"/>
+          <parameter unit="-" value="2" type="double" name="CLalphabv#Value"/>
+          <parameter unit="-" value="0.8" type="double" name="CLalphafin#Value"/>
+          <parameter unit="-" value="0.1" type="double" name="CLde1#Value"/>
+          <parameter unit="-" value="0.515" type="double" name="CLde2#Value"/>
+          <parameter unit="-" value="0.2" type="double" name="CLde12#Value"/>
+          <parameter unit="-" value="0" type="double" name="Cdide1#Value"/>
+          <parameter unit="-" value="0" type="double" name="Cdide12#Value"/>
+          <parameter unit="-" value="0" type="double" name="Cdide112#Value"/>
+          <parameter unit="-" value="0.01" type="double" name="de10#Value"/>
+          <parameter unit="-" value="0.01" type="double" name="de120#Value"/>
+          <parameter unit="-" value="-0.1" type="double" name="Cm01#Value"/>
+          <parameter unit="-" value="-0.5" type="double" name="Cmfs1#Value"/>
+          <parameter unit="-" value="0.02" type="double" name="Cmde1#Value"/>
+          <parameter unit="-" value="0.1" type="double" name="Cmde12#Value"/>
+          <parameter unit="-" value="0.0827084" type="double" name="CLdefin#Value"/>
+          <parameter unit="-" value="1" type="double" name="dah1#Value"/>
+          <parameter unit="-" value="0.6" type="double" name="dah2#Value"/>
+          <parameter unit="-" value="0.95" type="double" name="e1#Value"/>
+          <parameter unit="-" value="0.95" type="double" name="e2#Value"/>
+          <parameter unit="-" value="0.95" type="double" name="efin#Value"/>
+          <parameter unit="-" value="0.2" type="double" name="awfin#Value"/>
+          <parameter unit="-" value="0.2" type="double" name="awn1#Value"/>
+          <parameter unit="-" value="0.2" type="double" name="awn2#Value"/>
+          <parameter unit="-" value="0.2" type="double" name="awp1#Value"/>
+          <parameter unit="-" value="0.2" type="double" name="awp2#Value"/>
+          <parameter unit="-" value="-0.0872665" type="double" name="gamma1#Value"/>
+          <parameter unit="-" value="-0.0872665" type="double" name="gamma2#Value"/>
+          <parameter unit="-" value="0" type="double" name="hthrust0#Value"/>
+          <parameter unit="-" value="0" type="double" name="ia1#Value"/>
+          <parameter unit="-" value="0.05" type="double" name="ia2#Value"/>
+          <parameter unit="-" value="0.005" type="double" name="Ix0#Value"/>
+          <parameter unit="-" value="0.003" type="double" name="Ixz0#Value"/>
+          <parameter unit="-" value="0.2" type="double" name="Iy0#Value"/>
+          <parameter unit="-" value="0.2" type="double" name="Iz0#Value"/>
+          <parameter unit="-" value="0.436332" type="double" name="lambda1#Value"/>
+          <parameter unit="-" value="0.436332" type="double" name="lambda2#Value"/>
+          <parameter unit="-" value="0.785398" type="double" name="lambdafin#Value"/>
+          <parameter unit="-" value="0.005" type="double" name="lc10#Value"/>
+          <parameter unit="-" value="0.005" type="double" name="lc20#Value"/>
+          <parameter unit="-" value="0.005" type="double" name="lc120#Value"/>
+          <parameter unit="-" value="0.005" type="double" name="lcfin0#Value"/>
+          <parameter unit="-" value="100" type="double" name="Med#Value"/>
+          <parameter unit="-" value="0.25" type="double" name="rc10#Value"/>
+          <parameter unit="-" value="0.15" type="double" name="rc20#Value"/>
+          <parameter unit="-" value="0.1" type="double" name="rcfin0#Value"/>
+          <parameter unit="-" value="8" type="double" name="S1#Value"/>
+          <parameter unit="-" value="0.5" type="double" name="S20#Value"/>
+          <parameter unit="-" value="0.2" type="double" name="Sbh0#Value"/>
+          <parameter unit="-" value="0.2" type="double" name="Sbv0#Value"/>
+          <parameter unit="-" value="0.17" type="double" name="Sfin0#Value"/>
+          <parameter unit="-" value="2" type="double" name="xbach0#Value"/>
+          <parameter unit="-" value="2" type="double" name="xbacv0#Value"/>
+          <parameter unit="-" value="1.55" type="double" name="xbcge0#Value"/>
+          <parameter unit="-" value="1.55" type="double" name="xcargo0#Value"/>
+          <parameter unit="-" value="1.55" type="double" name="xfuel0#Value"/>
+          <parameter unit="-" value="1.55" type="double" name="xw10#Value"/>
+          <parameter unit="-" value="4" type="double" name="xw20#Value"/>
+          <parameter unit="-" value="4" type="double" name="xwfin0#Value"/>
+          <parameter unit="-" value="2.7" type="double" name="xeng0#Value"/>
+          <parameter unit="-" value="0" type="double" name="yeng0#Value"/>
+          <parameter unit="-" value="9.81" type="double" name="g0#Value"/>
+          <parameter unit="-" value="1000" type="double" name="kground#Value"/>
+          <parameter unit="-" value="10" type="double" name="cground#Value"/>
+          <parameter unit="-" value="0" type="double" name="xcg#Value"/>
+          <parameter unit="-" value="0" type="double" name="ycg#Value"/>
+          <parameter unit="-" value="0" type="double" name="zcg#Value"/>
+          <parameter unit="-" value="0" type="double" name="vx#Value"/>
+          <parameter unit="-" value="0" type="double" name="vy#Value"/>
+          <parameter unit="-" value="0" type="double" name="vz#Value"/>
+          <parameter unit="-" value="1.6" type="double" name="Psi#Value"/>
+          <parameter unit="-" value="0" type="double" name="Thetao#Value"/>
+          <parameter unit="-" value="0" type="double" name="Phi#Value"/>
+          <parameter unit="-" value="1" type="double" name="Ub#Value"/>
+          <parameter unit="-" value="0" type="double" name="Vb#Value"/>
+          <parameter unit="-" value="0" type="double" name="Wb#Value"/>
+          <parameter unit="-" value="0" type="double" name="Pb#Value"/>
+          <parameter unit="-" value="0" type="double" name="Qb#Value"/>
+          <parameter unit="-" value="0" type="double" name="Rb#Value"/>
+          <parameter unit="-" value="0" type="double" name="q0#Value"/>
+          <parameter unit="-" value="0" type="double" name="q1#Value"/>
+          <parameter unit="-" value="0" type="double" name="q2#Value"/>
+          <parameter unit="-" value="0" type="double" name="q3#Value"/>
+          <parameter unit="-" value="0" type="double" name="AlphaAttack#Value"/>
+          <parameter unit="-" value="0" type="double" name="BetaSlip#Value"/>
+          <parameter unit="-" value="0" type="double" name="altitude#Value"/>
+          <parameter unit="-" value="0" type="double" name="gfx#Value"/>
+          <parameter unit="-" value="0" type="double" name="gfy#Value"/>
+          <parameter unit="-" value="0" type="double" name="gfz#Value"/>
+          <parameter unit="-" value="0" type="double" name="CL1#Value"/>
+          <parameter unit="-" value="0" type="double" name="Cd1#Value"/>
+          <parameter unit="-" value="0" type="double" name="Fax#Value"/>
+          <parameter unit="-" value="0" type="double" name="Faz#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="vz"/>
@@ -1317,7 +1313,7 @@
       </component>
       <component typename="SignalSink" name="Sink_1">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+          <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in_right"/>
@@ -1337,7 +1333,7 @@
       </component>
       <component typename="SignalSink" name="Sink_2">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+          <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in_right"/>
@@ -1357,7 +1353,7 @@
       </component>
       <component typename="SignalSink" name="Sink_3">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+          <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in_right"/>
@@ -1376,14 +1372,14 @@
         </hopsangui>
       </component>
       <system logsamples="2048" typename="Subsystem" name="Subsystem">
-        <simulationtime stop="3000" timestep="0.008" start="0" inherit_timestep="true"/>
+        <simulationtime stop="3000" timestep="0.008" start="-1" inherit_timestep="true"/>
         <parameters/>
         <aliases/>
         <hopsangui>
           <pose x="1759.820003" y="2324.182647" flipped="false" a="0"/>
-          <nametext position="0" visible="0"/>
+          <nametext position="0" visible="1"/>
           <animation flowspeed="100"/>
-          <viewport x="2059.67" y="2617.33" zoom="0.502994"/>
+          <viewport x="2059.67" y="2332.04" zoom="0.502994"/>
           <ports hidden="1"/>
           <names hidden="1"/>
           <graphics type="user"/>
@@ -1423,6 +1419,12 @@
           </optimization>
           <hopsanundo>
             <post number="-1"/>
+            <post number="0" type="movedmultiple">
+              <stuff what="movedobject" name="SignalWaypoint">
+                <oldpos>1436.05 2312.53</oldpos>
+                <newpos>1434.06 2312.53</newpos>
+              </stuff>
+            </post>
           </hopsanundo>
         </hopsangui>
         <objects>
@@ -1483,13 +1485,13 @@
           </systemport>
           <component typename="SignalFFB" name="FFB">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="set::Value"/>
-              <parameter unit="-" value="0" type="double" name="exit::Value"/>
-              <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-              <parameter unit="-" value="0" type="double" name="leave::Value"/>
-              <parameter unit="-" value="0" type="double" name="state::Value"/>
-              <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-              <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+              <parameter unit="-" value="0" type="double" name="set#Value"/>
+              <parameter unit="-" value="0" type="double" name="exit#Value"/>
+              <parameter unit="-" value="0" type="double" name="exitb#Value"/>
+              <parameter unit="-" value="0" type="double" name="leave#Value"/>
+              <parameter unit="-" value="0" type="double" name="state#Value"/>
+              <parameter unit="-" value="0" type="double" name="exiting#Value"/>
+              <parameter unit="-" value="0" type="double" name="exitingb#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="leave"/>
@@ -1511,7 +1513,7 @@
           </component>
           <component typename="SignalUnitDelay" name="Unit_Delay_1">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
+              <parameter unit="-" value="0" type="double" name="in#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
@@ -1530,7 +1532,7 @@
           </component>
           <component typename="SignalUnitDelay" name="Unit_Delay_2">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
+              <parameter unit="-" value="0" type="double" name="in#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
@@ -1549,7 +1551,7 @@
           </component>
           <component typename="SignalUnitDelay" name="Unit_Delay_3">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
+              <parameter unit="-" value="0" type="double" name="in#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
@@ -1575,7 +1577,7 @@
           </systemport>
           <component typename="SignalUnitDelay" name="Unit_Delay_4">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
+              <parameter unit="-" value="0" type="double" name="in#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
@@ -1594,7 +1596,7 @@
           </component>
           <component typename="SignalSink" name="Sink">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+              <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in_right"/>
@@ -1614,7 +1616,7 @@
           </component>
           <component typename="SignalUnitDelay" name="Unit_Delay_5">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
+              <parameter unit="-" value="0" type="double" name="in#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
@@ -1633,7 +1635,7 @@
           </component>
           <component typename="SignalUnitDelay" name="Unit_Delay_6">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
+              <parameter unit="-" value="0" type="double" name="in#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
@@ -1652,7 +1654,7 @@
           </component>
           <component typename="SignalConstant" name="Constant">
             <parameters>
-              <parameter unit="-" value="0.2" type="double" name="y::Value"/>
+              <parameter unit="-" value="0.2" type="double" name="y#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="y"/>
@@ -1670,20 +1672,20 @@
           </component>
           <component typename="SignalWaypoint" name="SignalWaypoint">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="s1::Value"/>
-              <parameter unit="-" value="0" type="double" name="xc::Value"/>
-              <parameter unit="-" value="0" type="double" name="yc::Value"/>
-              <parameter unit="-" value="1" type="double" name="set1::Value"/>
-              <parameter unit="-" value="1000" type="double" name="altitudeRef::Value"/>
-              <parameter unit="-" value="1000" type="double" name="headingRef::Value"/>
-              <parameter unit="-" value="1000" type="double" name="velocityRef::Value"/>
-              <parameter unit="-" value="1000" type="double" name="distanceWp::Value"/>
-              <parameter unit="m" value="6.3675e+006" type="double" name="R"/>
-              <parameter unit="m" value="0" type="double" name="alt1"/>
-              <parameter unit="m/s" value="35" type="double" name="v1"/>
-              <parameter unit="m" value="500" type="double" name="wptol"/>
-              <parameter unit="deg" value="15." type="double" name="xcWp1"/>
-              <parameter unit="deg" value="58." type="double" name="ycWp1"/>
+              <parameter unit="-" value="0" type="double" name="s1#Value"/>
+              <parameter unit="-" value="0" type="double" name="xc#Value"/>
+              <parameter unit="-" value="0" type="double" name="yc#Value"/>
+              <parameter unit="-" value="6.3675e+006" type="double" name="R#Value"/>
+              <parameter unit="-" value="0" type="double" name="alt1#Value"/>
+              <parameter unit="-" value="35" type="double" name="v1#Value"/>
+              <parameter unit="-" value="500" type="double" name="wptol#Value"/>
+              <parameter unit="-" value="15." type="double" name="xcWp1#Value"/>
+              <parameter unit="-" value="58." type="double" name="ycWp1#Value"/>
+              <parameter unit="-" value="1" type="double" name="set1#Value"/>
+              <parameter unit="-" value="1000" type="double" name="altitudeRef#Value"/>
+              <parameter unit="-" value="1000" type="double" name="headingRef#Value"/>
+              <parameter unit="-" value="1000" type="double" name="velocityRef#Value"/>
+              <parameter unit="-" value="1000" type="double" name="distanceWp#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="headingRef"/>
@@ -1696,7 +1698,7 @@
               <port nodetype="NodeSignal" name="distanceWp"/>
             </ports>
             <hopsangui>
-              <pose x="1471.552211" y="2333.033377" flipped="false" a="0"/>
+              <pose x="1469.564116" y="2333.033377" flipped="false" a="0"/>
               <nametext position="0" visible="0"/>
               <animation flowspeed="100"/>
               <hopsanobjectappearance version="0.3">
@@ -1708,13 +1710,13 @@
           </component>
           <component typename="SignalFFB" name="FFB_1">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="set::Value"/>
-              <parameter unit="-" value="0" type="double" name="exit::Value"/>
-              <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-              <parameter unit="-" value="0" type="double" name="leave::Value"/>
-              <parameter unit="-" value="0" type="double" name="state::Value"/>
-              <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-              <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+              <parameter unit="-" value="0" type="double" name="set#Value"/>
+              <parameter unit="-" value="0" type="double" name="exit#Value"/>
+              <parameter unit="-" value="0" type="double" name="exitb#Value"/>
+              <parameter unit="-" value="0" type="double" name="leave#Value"/>
+              <parameter unit="-" value="0" type="double" name="state#Value"/>
+              <parameter unit="-" value="0" type="double" name="exiting#Value"/>
+              <parameter unit="-" value="0" type="double" name="exitingb#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="leave"/>
@@ -1736,13 +1738,13 @@
           </component>
           <component typename="SignalFFB" name="FFB_2">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="set::Value"/>
-              <parameter unit="-" value="0" type="double" name="exit::Value"/>
-              <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-              <parameter unit="-" value="0" type="double" name="leave::Value"/>
-              <parameter unit="-" value="0" type="double" name="state::Value"/>
-              <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-              <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+              <parameter unit="-" value="0" type="double" name="set#Value"/>
+              <parameter unit="-" value="0" type="double" name="exit#Value"/>
+              <parameter unit="-" value="0" type="double" name="exitb#Value"/>
+              <parameter unit="-" value="0" type="double" name="leave#Value"/>
+              <parameter unit="-" value="0" type="double" name="state#Value"/>
+              <parameter unit="-" value="0" type="double" name="exiting#Value"/>
+              <parameter unit="-" value="0" type="double" name="exitingb#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="leave"/>
@@ -1764,13 +1766,13 @@
           </component>
           <component typename="SignalFFB" name="FFB_3">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="set::Value"/>
-              <parameter unit="-" value="0" type="double" name="exit::Value"/>
-              <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-              <parameter unit="-" value="0" type="double" name="leave::Value"/>
-              <parameter unit="-" value="0" type="double" name="state::Value"/>
-              <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-              <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+              <parameter unit="-" value="0" type="double" name="set#Value"/>
+              <parameter unit="-" value="0" type="double" name="exit#Value"/>
+              <parameter unit="-" value="0" type="double" name="exitb#Value"/>
+              <parameter unit="-" value="0" type="double" name="leave#Value"/>
+              <parameter unit="-" value="0" type="double" name="state#Value"/>
+              <parameter unit="-" value="0" type="double" name="exiting#Value"/>
+              <parameter unit="-" value="0" type="double" name="exitingb#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="leave"/>
@@ -1792,13 +1794,13 @@
           </component>
           <component typename="SignalFFB" name="FFB_4">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="set::Value"/>
-              <parameter unit="-" value="0" type="double" name="exit::Value"/>
-              <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-              <parameter unit="-" value="0" type="double" name="leave::Value"/>
-              <parameter unit="-" value="0" type="double" name="state::Value"/>
-              <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-              <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+              <parameter unit="-" value="0" type="double" name="set#Value"/>
+              <parameter unit="-" value="0" type="double" name="exit#Value"/>
+              <parameter unit="-" value="0" type="double" name="exitb#Value"/>
+              <parameter unit="-" value="0" type="double" name="leave#Value"/>
+              <parameter unit="-" value="0" type="double" name="state#Value"/>
+              <parameter unit="-" value="0" type="double" name="exiting#Value"/>
+              <parameter unit="-" value="0" type="double" name="exitingb#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="leave"/>
@@ -1820,13 +1822,13 @@
           </component>
           <component typename="SignalFFB" name="FFB_5">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="set::Value"/>
-              <parameter unit="-" value="0" type="double" name="exit::Value"/>
-              <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-              <parameter unit="-" value="0" type="double" name="leave::Value"/>
-              <parameter unit="-" value="0" type="double" name="state::Value"/>
-              <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-              <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+              <parameter unit="-" value="0" type="double" name="set#Value"/>
+              <parameter unit="-" value="0" type="double" name="exit#Value"/>
+              <parameter unit="-" value="0" type="double" name="exitb#Value"/>
+              <parameter unit="-" value="0" type="double" name="leave#Value"/>
+              <parameter unit="-" value="0" type="double" name="state#Value"/>
+              <parameter unit="-" value="0" type="double" name="exiting#Value"/>
+              <parameter unit="-" value="0" type="double" name="exitingb#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="leave"/>
@@ -1848,13 +1850,13 @@
           </component>
           <component typename="SignalFFB" name="FFB_6">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="set::Value"/>
-              <parameter unit="-" value="0" type="double" name="exit::Value"/>
-              <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-              <parameter unit="-" value="0" type="double" name="leave::Value"/>
-              <parameter unit="-" value="0" type="double" name="state::Value"/>
-              <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-              <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+              <parameter unit="-" value="0" type="double" name="set#Value"/>
+              <parameter unit="-" value="0" type="double" name="exit#Value"/>
+              <parameter unit="-" value="0" type="double" name="exitb#Value"/>
+              <parameter unit="-" value="0" type="double" name="leave#Value"/>
+              <parameter unit="-" value="0" type="double" name="state#Value"/>
+              <parameter unit="-" value="0" type="double" name="exiting#Value"/>
+              <parameter unit="-" value="0" type="double" name="exitingb#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="leave"/>
@@ -1876,13 +1878,13 @@
           </component>
           <component typename="SignalFFB" name="FFB_7">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="set::Value"/>
-              <parameter unit="-" value="0" type="double" name="exit::Value"/>
-              <parameter unit="-" value="0" type="double" name="exitb::Value"/>
-              <parameter unit="-" value="0" type="double" name="leave::Value"/>
-              <parameter unit="-" value="0" type="double" name="state::Value"/>
-              <parameter unit="-" value="0" type="double" name="exiting::Value"/>
-              <parameter unit="-" value="0" type="double" name="exitingb::Value"/>
+              <parameter unit="-" value="0" type="double" name="set#Value"/>
+              <parameter unit="-" value="0" type="double" name="exit#Value"/>
+              <parameter unit="-" value="0" type="double" name="exitb#Value"/>
+              <parameter unit="-" value="0" type="double" name="leave#Value"/>
+              <parameter unit="-" value="0" type="double" name="state#Value"/>
+              <parameter unit="-" value="0" type="double" name="exiting#Value"/>
+              <parameter unit="-" value="0" type="double" name="exitingb#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="leave"/>
@@ -1904,7 +1906,7 @@
           </component>
           <component typename="SignalUnitDelay" name="Unit_Delay">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in::Value"/>
+              <parameter unit="-" value="0" type="double" name="in#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in"/>
@@ -1947,10 +1949,10 @@
           </component>
           <component typename="SignalPulse" name="Pulse_1">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="y_0::Value"/>
-              <parameter unit="-" value="5" type="double" name="t_start::Value"/>
-              <parameter unit="-" value="6" type="double" name="t_end::Value"/>
-              <parameter unit="-" value="1" type="double" name="y_A::Value"/>
+              <parameter unit="-" value="0" type="double" name="y_0#Value"/>
+              <parameter unit="-" value="5" type="double" name="t_start#Value"/>
+              <parameter unit="-" value="6" type="double" name="t_end#Value"/>
+              <parameter unit="-" value="1" type="double" name="y_A#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="out"/>
@@ -1968,10 +1970,10 @@
           </component>
           <component typename="SignalPulse" name="Pulse_2">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="y_0::Value"/>
-              <parameter unit="-" value="1" type="double" name="t_start::Value"/>
-              <parameter unit="-" value="2" type="double" name="t_end::Value"/>
-              <parameter unit="-" value="1" type="double" name="y_A::Value"/>
+              <parameter unit="-" value="0" type="double" name="y_0#Value"/>
+              <parameter unit="-" value="1" type="double" name="t_start#Value"/>
+              <parameter unit="-" value="2" type="double" name="t_end#Value"/>
+              <parameter unit="-" value="1" type="double" name="y_A#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="out"/>
@@ -1989,20 +1991,20 @@
           </component>
           <component typename="SignalWaypoint" name="SignalWaypoint_1">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="s1::Value"/>
-              <parameter unit="-" value="0" type="double" name="xc::Value"/>
-              <parameter unit="-" value="0" type="double" name="yc::Value"/>
-              <parameter unit="-" value="1" type="double" name="set1::Value"/>
-              <parameter unit="-" value="1000" type="double" name="altitudeRef::Value"/>
-              <parameter unit="-" value="1000" type="double" name="headingRef::Value"/>
-              <parameter unit="-" value="1000" type="double" name="velocityRef::Value"/>
-              <parameter unit="-" value="1000" type="double" name="distanceWp::Value"/>
-              <parameter unit="m" value="6.3675e+006" type="double" name="R"/>
-              <parameter unit="m" value="200" type="double" name="alt1"/>
-              <parameter unit="m/s" value="35" type="double" name="v1"/>
-              <parameter unit="m" value="500" type="double" name="wptol"/>
-              <parameter unit="deg" value="15.3" type="double" name="xcWp1"/>
-              <parameter unit="deg" value="58." type="double" name="ycWp1"/>
+              <parameter unit="-" value="0" type="double" name="s1#Value"/>
+              <parameter unit="-" value="0" type="double" name="xc#Value"/>
+              <parameter unit="-" value="0" type="double" name="yc#Value"/>
+              <parameter unit="-" value="6.3675e+006" type="double" name="R#Value"/>
+              <parameter unit="-" value="200" type="double" name="alt1#Value"/>
+              <parameter unit="-" value="35" type="double" name="v1#Value"/>
+              <parameter unit="-" value="500" type="double" name="wptol#Value"/>
+              <parameter unit="-" value="15.3" type="double" name="xcWp1#Value"/>
+              <parameter unit="-" value="58." type="double" name="ycWp1#Value"/>
+              <parameter unit="-" value="1" type="double" name="set1#Value"/>
+              <parameter unit="-" value="1000" type="double" name="altitudeRef#Value"/>
+              <parameter unit="-" value="1000" type="double" name="headingRef#Value"/>
+              <parameter unit="-" value="1000" type="double" name="velocityRef#Value"/>
+              <parameter unit="-" value="1000" type="double" name="distanceWp#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="headingRef"/>
@@ -2027,20 +2029,20 @@
           </component>
           <component typename="SignalWaypoint" name="SignalWaypoint_2">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="s1::Value"/>
-              <parameter unit="-" value="0" type="double" name="xc::Value"/>
-              <parameter unit="-" value="0" type="double" name="yc::Value"/>
-              <parameter unit="-" value="1" type="double" name="set1::Value"/>
-              <parameter unit="-" value="1000" type="double" name="altitudeRef::Value"/>
-              <parameter unit="-" value="1000" type="double" name="headingRef::Value"/>
-              <parameter unit="-" value="1000" type="double" name="velocityRef::Value"/>
-              <parameter unit="-" value="1000" type="double" name="distanceWp::Value"/>
-              <parameter unit="m" value="6.3675e+006" type="double" name="R"/>
-              <parameter unit="m" value="200" type="double" name="alt1"/>
-              <parameter unit="m/s" value="35" type="double" name="v1"/>
-              <parameter unit="m" value="3000" type="double" name="wptol"/>
-              <parameter unit="deg" value="15.3" type="double" name="xcWp1"/>
-              <parameter unit="deg" value="58.2" type="double" name="ycWp1"/>
+              <parameter unit="-" value="0" type="double" name="s1#Value"/>
+              <parameter unit="-" value="0" type="double" name="xc#Value"/>
+              <parameter unit="-" value="0" type="double" name="yc#Value"/>
+              <parameter unit="-" value="6.3675e+006" type="double" name="R#Value"/>
+              <parameter unit="-" value="200" type="double" name="alt1#Value"/>
+              <parameter unit="-" value="35" type="double" name="v1#Value"/>
+              <parameter unit="-" value="3000" type="double" name="wptol#Value"/>
+              <parameter unit="-" value="15.3" type="double" name="xcWp1#Value"/>
+              <parameter unit="-" value="58.2" type="double" name="ycWp1#Value"/>
+              <parameter unit="-" value="1" type="double" name="set1#Value"/>
+              <parameter unit="-" value="1000" type="double" name="altitudeRef#Value"/>
+              <parameter unit="-" value="1000" type="double" name="headingRef#Value"/>
+              <parameter unit="-" value="1000" type="double" name="velocityRef#Value"/>
+              <parameter unit="-" value="1000" type="double" name="distanceWp#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="headingRef"/>
@@ -2065,20 +2067,20 @@
           </component>
           <component typename="SignalWaypoint" name="SignalWaypoint_3">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="s1::Value"/>
-              <parameter unit="-" value="0" type="double" name="xc::Value"/>
-              <parameter unit="-" value="0" type="double" name="yc::Value"/>
-              <parameter unit="-" value="1" type="double" name="set1::Value"/>
-              <parameter unit="-" value="1000" type="double" name="altitudeRef::Value"/>
-              <parameter unit="-" value="1000" type="double" name="headingRef::Value"/>
-              <parameter unit="-" value="1000" type="double" name="velocityRef::Value"/>
-              <parameter unit="-" value="1000" type="double" name="distanceWp::Value"/>
-              <parameter unit="m" value="6.3675e+006" type="double" name="R"/>
-              <parameter unit="m" value="200" type="double" name="alt1"/>
-              <parameter unit="m/s" value="35" type="double" name="v1"/>
-              <parameter unit="m" value="500" type="double" name="wptol"/>
-              <parameter unit="deg" value="15." type="double" name="xcWp1"/>
-              <parameter unit="deg" value="58.2" type="double" name="ycWp1"/>
+              <parameter unit="-" value="0" type="double" name="s1#Value"/>
+              <parameter unit="-" value="0" type="double" name="xc#Value"/>
+              <parameter unit="-" value="0" type="double" name="yc#Value"/>
+              <parameter unit="-" value="6.3675e+006" type="double" name="R#Value"/>
+              <parameter unit="-" value="200" type="double" name="alt1#Value"/>
+              <parameter unit="-" value="35" type="double" name="v1#Value"/>
+              <parameter unit="-" value="500" type="double" name="wptol#Value"/>
+              <parameter unit="-" value="15." type="double" name="xcWp1#Value"/>
+              <parameter unit="-" value="58.2" type="double" name="ycWp1#Value"/>
+              <parameter unit="-" value="1" type="double" name="set1#Value"/>
+              <parameter unit="-" value="1000" type="double" name="altitudeRef#Value"/>
+              <parameter unit="-" value="1000" type="double" name="headingRef#Value"/>
+              <parameter unit="-" value="1000" type="double" name="velocityRef#Value"/>
+              <parameter unit="-" value="1000" type="double" name="distanceWp#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="headingRef"/>
@@ -2103,20 +2105,20 @@
           </component>
           <component typename="SignalWaypoint" name="SignalWaypoint_4">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="s1::Value"/>
-              <parameter unit="-" value="0" type="double" name="xc::Value"/>
-              <parameter unit="-" value="0" type="double" name="yc::Value"/>
-              <parameter unit="-" value="1" type="double" name="set1::Value"/>
-              <parameter unit="-" value="1000" type="double" name="altitudeRef::Value"/>
-              <parameter unit="-" value="1000" type="double" name="headingRef::Value"/>
-              <parameter unit="-" value="1000" type="double" name="velocityRef::Value"/>
-              <parameter unit="-" value="1000" type="double" name="distanceWp::Value"/>
-              <parameter unit="m" value="6.3675e+006" type="double" name="R"/>
-              <parameter unit="m" value="50" type="double" name="alt1"/>
-              <parameter unit="m/s" value="35" type="double" name="v1"/>
-              <parameter unit="m" value="500" type="double" name="wptol"/>
-              <parameter unit="deg" value="14.8" type="double" name="xcWp1"/>
-              <parameter unit="deg" value="58." type="double" name="ycWp1"/>
+              <parameter unit="-" value="0" type="double" name="s1#Value"/>
+              <parameter unit="-" value="0" type="double" name="xc#Value"/>
+              <parameter unit="-" value="0" type="double" name="yc#Value"/>
+              <parameter unit="-" value="6.3675e+006" type="double" name="R#Value"/>
+              <parameter unit="-" value="50" type="double" name="alt1#Value"/>
+              <parameter unit="-" value="35" type="double" name="v1#Value"/>
+              <parameter unit="-" value="500" type="double" name="wptol#Value"/>
+              <parameter unit="-" value="14.8" type="double" name="xcWp1#Value"/>
+              <parameter unit="-" value="58." type="double" name="ycWp1#Value"/>
+              <parameter unit="-" value="1" type="double" name="set1#Value"/>
+              <parameter unit="-" value="1000" type="double" name="altitudeRef#Value"/>
+              <parameter unit="-" value="1000" type="double" name="headingRef#Value"/>
+              <parameter unit="-" value="1000" type="double" name="velocityRef#Value"/>
+              <parameter unit="-" value="1000" type="double" name="distanceWp#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="headingRef"/>
@@ -2141,20 +2143,20 @@
           </component>
           <component typename="SignalWaypoint" name="SignalWaypoint_5">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="s1::Value"/>
-              <parameter unit="-" value="0" type="double" name="xc::Value"/>
-              <parameter unit="-" value="0" type="double" name="yc::Value"/>
-              <parameter unit="-" value="1" type="double" name="set1::Value"/>
-              <parameter unit="-" value="1000" type="double" name="altitudeRef::Value"/>
-              <parameter unit="-" value="1000" type="double" name="headingRef::Value"/>
-              <parameter unit="-" value="1000" type="double" name="velocityRef::Value"/>
-              <parameter unit="-" value="1000" type="double" name="distanceWp::Value"/>
-              <parameter unit="m" value="6.3675e+006" type="double" name="R"/>
-              <parameter unit="m" value="2" type="double" name="alt1"/>
-              <parameter unit="m/s" value="0" type="double" name="v1"/>
-              <parameter unit="m" value="500" type="double" name="wptol"/>
-              <parameter unit="deg" value="18" type="double" name="xcWp1"/>
-              <parameter unit="deg" value="58." type="double" name="ycWp1"/>
+              <parameter unit="-" value="0" type="double" name="s1#Value"/>
+              <parameter unit="-" value="0" type="double" name="xc#Value"/>
+              <parameter unit="-" value="0" type="double" name="yc#Value"/>
+              <parameter unit="-" value="6.3675e+006" type="double" name="R#Value"/>
+              <parameter unit="-" value="2" type="double" name="alt1#Value"/>
+              <parameter unit="-" value="0" type="double" name="v1#Value"/>
+              <parameter unit="-" value="500" type="double" name="wptol#Value"/>
+              <parameter unit="-" value="18" type="double" name="xcWp1#Value"/>
+              <parameter unit="-" value="58." type="double" name="ycWp1#Value"/>
+              <parameter unit="-" value="1" type="double" name="set1#Value"/>
+              <parameter unit="-" value="1000" type="double" name="altitudeRef#Value"/>
+              <parameter unit="-" value="1000" type="double" name="headingRef#Value"/>
+              <parameter unit="-" value="1000" type="double" name="velocityRef#Value"/>
+              <parameter unit="-" value="1000" type="double" name="distanceWp#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="headingRef"/>
@@ -2186,20 +2188,20 @@
           </systemport>
           <component typename="SignalWaypoint" name="SignalWaypoint_6">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="s1::Value"/>
-              <parameter unit="-" value="0" type="double" name="xc::Value"/>
-              <parameter unit="-" value="0" type="double" name="yc::Value"/>
-              <parameter unit="-" value="1" type="double" name="set1::Value"/>
-              <parameter unit="-" value="1000" type="double" name="altitudeRef::Value"/>
-              <parameter unit="-" value="1000" type="double" name="headingRef::Value"/>
-              <parameter unit="-" value="1000" type="double" name="velocityRef::Value"/>
-              <parameter unit="-" value="1000" type="double" name="distanceWp::Value"/>
-              <parameter unit="m" value="6.3675e+006" type="double" name="R"/>
-              <parameter unit="m" value="20" type="double" name="alt1"/>
-              <parameter unit="m/s" value="35" type="double" name="v1"/>
-              <parameter unit="m" value="500" type="double" name="wptol"/>
-              <parameter unit="deg" value="14.97" type="double" name="xcWp1"/>
-              <parameter unit="deg" value="58." type="double" name="ycWp1"/>
+              <parameter unit="-" value="0" type="double" name="s1#Value"/>
+              <parameter unit="-" value="0" type="double" name="xc#Value"/>
+              <parameter unit="-" value="0" type="double" name="yc#Value"/>
+              <parameter unit="-" value="6.3675e+006" type="double" name="R#Value"/>
+              <parameter unit="-" value="20" type="double" name="alt1#Value"/>
+              <parameter unit="-" value="35" type="double" name="v1#Value"/>
+              <parameter unit="-" value="500" type="double" name="wptol#Value"/>
+              <parameter unit="-" value="14.97" type="double" name="xcWp1#Value"/>
+              <parameter unit="-" value="58." type="double" name="ycWp1#Value"/>
+              <parameter unit="-" value="1" type="double" name="set1#Value"/>
+              <parameter unit="-" value="1000" type="double" name="altitudeRef#Value"/>
+              <parameter unit="-" value="1000" type="double" name="headingRef#Value"/>
+              <parameter unit="-" value="1000" type="double" name="velocityRef#Value"/>
+              <parameter unit="-" value="1000" type="double" name="distanceWp#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="headingRef"/>
@@ -2224,7 +2226,7 @@
           </component>
           <component typename="SignalSink" name="Sink_1">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+              <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in_right"/>
@@ -2244,7 +2246,7 @@
           </component>
           <component typename="SignalSink" name="Sink_2">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+              <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in_right"/>
@@ -2264,7 +2266,7 @@
           </component>
           <component typename="SignalSink" name="Sink_3">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+              <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in_right"/>
@@ -2284,7 +2286,7 @@
           </component>
           <component typename="SignalSink" name="Sink_4">
             <parameters>
-              <parameter unit="-" value="0" type="double" name="in_bottom::Value"/>
+              <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
             </parameters>
             <ports>
               <port nodetype="NodeSignal" name="in_right"/>
@@ -2474,8 +2476,8 @@
             <hopsangui>
               <coordinates>
                 <coordinate x="1167.36223700000005010224" y="2218.47721499999988736818"/>
-                <coordinate x="1471.55221099999994294194" y="2218.47721499999988736818"/>
-                <coordinate x="1471.55221099999994294194" y="2312.53337700000020049629"/>
+                <coordinate x="1469.56411571456897036114" y="2218.47721499999988736818"/>
+                <coordinate x="1469.56411571456897036114" y="2312.53337700000020049629"/>
               </coordinates>
               <geometries>
                 <geometry>vertical</geometry>
@@ -2572,8 +2574,8 @@
             <hopsangui>
               <coordinates>
                 <coordinate x="1167.43199000000004161848" y="2253.81339200000002165325"/>
-                <coordinate x="1489.30221099999994294194" y="2253.81339200000002165325"/>
-                <coordinate x="1489.30221099999994294194" y="2312.53337700000020049629"/>
+                <coordinate x="1487.31411571456897036114" y="2253.81339200000002165325"/>
+                <coordinate x="1487.31411571456897036114" y="2312.53337700000020049629"/>
               </coordinates>
               <geometries>
                 <geometry>vertical</geometry>
@@ -2769,8 +2771,8 @@
               <coordinates>
                 <coordinate x="1450.78230400000006738992" y="2178.25337799999988419586"/>
                 <coordinate x="1450.78230400000006738992" y="2292.53337700000020049629"/>
-                <coordinate x="1453.80221099999994294194" y="2292.53337700000020049629"/>
-                <coordinate x="1453.80221099999994294194" y="2312.53337700000020049629"/>
+                <coordinate x="1451.81411571456897036114" y="2292.53337700000020049629"/>
+                <coordinate x="1451.81411571456897036114" y="2312.53337700000020049629"/>
               </coordinates>
               <geometries>
                 <geometry>horizontal</geometry>
@@ -3021,8 +3023,8 @@
           <connect endport="in" endcomponent="Sum_2" startport="velocityRef" startcomponent="SignalWaypoint">
             <hopsangui>
               <coordinates>
-                <coordinate x="1483.38556799999992108496" y="2353.53337700000020049629"/>
-                <coordinate x="1483.38556799999992108496" y="2466.04620999999997366103"/>
+                <coordinate x="1481.39747271456894850417" y="2353.53337700000020049629"/>
+                <coordinate x="1481.39747271456894850417" y="2466.04620999999997366103"/>
                 <coordinate x="2253.02990700000009383075" y="2466.04620999999997366103"/>
               </coordinates>
               <geometries>
@@ -3119,8 +3121,8 @@
           <connect endport="in" endcomponent="Sum_1" startport="headingRef" startcomponent="SignalWaypoint">
             <hopsangui>
               <coordinates>
-                <coordinate x="1471.55221099999994294194" y="2353.53337700000020049629"/>
-                <coordinate x="1471.55221099999994294194" y="2417.17081400000006397022"/>
+                <coordinate x="1469.56411571456897036114" y="2353.53337700000020049629"/>
+                <coordinate x="1469.56411571456897036114" y="2417.17081400000006397022"/>
                 <coordinate x="2252.21734100000003309106" y="2417.17081400000006397022"/>
               </coordinates>
               <geometries>
@@ -3217,8 +3219,8 @@
           <connect endport="in" endcomponent="Sink_3" startport="distanceWp" startcomponent="SignalWaypoint">
             <hopsangui>
               <coordinates>
-                <coordinate x="1495.21885399999996479892" y="2353.53337700000020049629"/>
-                <coordinate x="1495.21885399999996479892" y="2403.52112500000021100277"/>
+                <coordinate x="1493.23075871456899221812" y="2353.53337700000020049629"/>
+                <coordinate x="1493.23075871456899221812" y="2403.52112500000021100277"/>
                 <coordinate x="2470.74401299999999537249" y="2403.52112500000021100277"/>
               </coordinates>
               <geometries>
@@ -3301,8 +3303,8 @@
           <connect endport="in" endcomponent="Sum" startport="altitudeRef" startcomponent="SignalWaypoint">
             <hopsangui>
               <coordinates>
-                <coordinate x="1459.71885399999996479892" y="2353.53337700000020049629"/>
-                <coordinate x="1459.71885399999996479892" y="2370.91949599999998099520"/>
+                <coordinate x="1457.73075871456899221812" y="2353.53337700000020049629"/>
+                <coordinate x="1457.73075871456899221812" y="2370.91949599999998099520"/>
                 <coordinate x="2251.15451200000006792834" y="2370.91949599999998099520"/>
               </coordinates>
               <geometries>
@@ -3399,8 +3401,8 @@
           <connect endport="in" endcomponent="Unit_Delay" startport="set1" startcomponent="SignalWaypoint">
             <hopsangui>
               <coordinates>
-                <coordinate x="1447.88556799999992108496" y="2353.53337700000020049629"/>
-                <coordinate x="1447.88556799999992108496" y="2305.88000000000010913936"/>
+                <coordinate x="1445.89747271456894850417" y="2353.53337700000020049629"/>
+                <coordinate x="1445.89747271456894850417" y="2305.88000000000010913936"/>
                 <coordinate x="1517.53118100000006052142" y="2305.88000000000010913936"/>
                 <coordinate x="1517.53118100000006052142" y="2285.88000000000010913936"/>
               </coordinates>
@@ -3654,9 +3656,9 @@
       </system>
       <component typename="SignalSaturation" name="Saturation">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="in::Value"/>
-          <parameter unit="-" value="500" type="double" name="y_upper::Value"/>
-          <parameter unit="-" value="3" type="double" name="y_lower::Value"/>
+          <parameter unit="-" value="0" type="double" name="in#Value"/>
+          <parameter unit="-" value="500" type="double" name="y_upper#Value"/>
+          <parameter unit="-" value="3" type="double" name="y_lower#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="in"/>
@@ -3675,13 +3677,13 @@
       </component>
       <component typename="SignalEarthCoordinates" name="SignalEarthCoordinates">
         <parameters>
-          <parameter unit="-" value="1" type="double" name="timecomp::Value"/>
-          <parameter unit="-" value="0" type="double" name="vxcg::Value"/>
-          <parameter unit="-" value="0" type="double" name="vycg::Value"/>
-          <parameter unit="-" value="0" type="double" name="timeE::Value"/>
-          <parameter unit="-" value="14.9" type="double" name="longitude::Value"/>
-          <parameter unit="-" value="58" type="double" name="lattitude::Value"/>
-          <parameter unit="m" value="6.3675e6" type="double" name="R"/>
+          <parameter unit="-" value="1" type="double" name="timecomp#Value"/>
+          <parameter unit="-" value="0" type="double" name="vxcg#Value"/>
+          <parameter unit="-" value="0" type="double" name="vycg#Value"/>
+          <parameter unit="-" value="6.3675e6" type="double" name="R#Value"/>
+          <parameter unit="-" value="0" type="double" name="timeE#Value"/>
+          <parameter unit="-" value="14.9" type="double" name="longitude#Value"/>
+          <parameter unit="-" value="58" type="double" name="lattitude#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="timeE"/>
@@ -3704,8 +3706,8 @@
       </component>
       <component typename="MechanicThetaSource" name="Angle___Velocity_Source_1">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="thetain::Value"/>
-          <parameter unit="-" value="0" type="double" name="omega::Value"/>
+          <parameter unit="-" value="0" type="double" name="thetain#Value"/>
+          <parameter unit="-" value="0" type="double" name="omega#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="thetain"/>
@@ -3725,8 +3727,8 @@
       </component>
       <component typename="MechanicThetaSource" name="Angle___Velocity_Source_2">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="thetain::Value"/>
-          <parameter unit="-" value="0" type="double" name="omega::Value"/>
+          <parameter unit="-" value="0" type="double" name="thetain#Value"/>
+          <parameter unit="-" value="0" type="double" name="omega#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="thetain"/>
@@ -3746,8 +3748,8 @@
       </component>
       <component typename="MechanicThetaSource" name="Angle___Velocity_Source_3">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="thetain::Value"/>
-          <parameter unit="-" value="0" type="double" name="omega::Value"/>
+          <parameter unit="-" value="0" type="double" name="thetain#Value"/>
+          <parameter unit="-" value="0" type="double" name="omega#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="thetain"/>
@@ -3767,8 +3769,8 @@
       </component>
       <component typename="MechanicThetaSource" name="Angle___Velocity_Source_4">
         <parameters>
-          <parameter unit="-" value="0" type="double" name="thetain::Value"/>
-          <parameter unit="-" value="0" type="double" name="omega::Value"/>
+          <parameter unit="-" value="0" type="double" name="thetain#Value"/>
+          <parameter unit="-" value="0" type="double" name="omega#Value"/>
         </parameters>
         <ports>
           <port nodetype="NodeSignal" name="thetain"/>
@@ -3812,7 +3814,7 @@
       </textboxwidget>
       <textboxwidget>
         <hopsangui>
-          <pose x="1621.000000" y="2231.000000"/>
+          <pose x="1597.000000" y="2223.000000"/>
           <textobject fontcolor="#556b2f" text="Mission controller&#xa;with waypoints" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
           <size width="126.000000" height="56.290009"/>
           <line width="2.000000" visible="1" style="solidline"/>
