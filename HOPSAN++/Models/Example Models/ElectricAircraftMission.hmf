@@ -12,7 +12,7 @@
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="1"/>
       <animation flowspeed="100"/>
-      <viewport x="2059.67" y="2332.04" zoom="0.502994"/>
+      <viewport x="2270.4" y="2436.41" zoom="0.502994"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>
@@ -205,14 +205,14 @@
         </hopsangui>
       </component>
       <system logsamples="2048" typename="Subsystem" name="Electric_propeller_drive">
-        <simulationtime stop="3000" timestep="0.001" start="-1" inherit_timestep="true"/>
+        <simulationtime stop="3000" timestep="0.005" start="-1" inherit_timestep="true"/>
         <parameters/>
         <aliases/>
         <hopsangui>
           <pose x="2419.029126" y="2324.925698" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
-          <viewport x="2059.67" y="2332.04" zoom="0.502994"/>
+          <viewport x="2270.4" y="2436.41" zoom="0.502994"/>
           <ports hidden="1"/>
           <names hidden="0"/>
           <graphics type="user"/>
@@ -223,11 +223,12 @@
                 <icon path="subsystemDefault.svg" type="defaultmissing"/>
               </icons>
               <ports>
-                <port x="1" y="0.5" enabled="true" a="0" name="speed" autoplaced="true"/>
-                <port x="1" y="0.25" enabled="true" a="0" name="rho" autoplaced="true"/>
+                <port x="1" y="0.4" enabled="true" a="0" name="speed" autoplaced="true"/>
+                <port x="1" y="0.2" enabled="true" a="0" name="rho" autoplaced="true"/>
                 <port x="0" y="0.5" enabled="true" a="180" name="ref. current" autoplaced="true"/>
-                <port x="0.5" y="1" enabled="true" a="90" name="thrust" autoplaced="true"/>
-                <port x="1" y="0.75" enabled="true" a="0" name="torque" autoplaced="true"/>
+                <port x="1" y="0.6" enabled="true" a="0" name="thrust" autoplaced="true"/>
+                <port x="0.8" y="1" enabled="true" a="90" name="M_battery" autoplaced="false"/>
+                <port x="1" y="0.8" enabled="true" a="0" name="torque" autoplaced="true"/>
                 <port x="0" y="0.5" enabled="true" a="180" name="ref__current" autoplaced="true"/>
               </ports>
               <animation flowspeed="100"/>
@@ -252,6 +253,505 @@
           </optimization>
           <hopsanundo>
             <post number="-1"/>
+            <post number="0">
+              <stuff what="addedobject">
+                <component typename="SignalConstant" name="Constant">
+                  <parameters>
+                    <parameter unit="-" value="1" type="double" name="y#Value"/>
+                  </parameters>
+                  <ports>
+                    <port nodetype="NodeSignal" name="y"/>
+                  </ports>
+                  <hopsangui>
+                    <pose x="1195.743413" y="2365.363335" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <animation flowspeed="100"/>
+                    <hopsanobjectappearance version="0.3">
+                      <modelobject typename="SignalConstant" displayname="Constant">
+                        <ports/>
+                      </modelobject>
+                    </hopsanobjectappearance>
+                  </hopsangui>
+                </component>
+              </stuff>
+            </post>
+            <post number="1">
+              <stuff what="addedobject">
+                <component typename="SignalConstant" name="Constant_1">
+                  <parameters>
+                    <parameter unit="-" value="1" type="double" name="y#Value"/>
+                  </parameters>
+                  <ports>
+                    <port nodetype="NodeSignal" name="y"/>
+                  </ports>
+                  <hopsangui>
+                    <pose x="1215.929746" y="2429.48463" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <animation flowspeed="100"/>
+                    <hopsanobjectappearance version="0.3">
+                      <modelobject typename="SignalConstant" displayname="Constant_1">
+                        <ports/>
+                      </modelobject>
+                    </hopsanobjectappearance>
+                  </hopsangui>
+                </component>
+              </stuff>
+            </post>
+            <post number="2">
+              <stuff what="addedconnector">
+                <connect endport="capacity" endcomponent="ElectricBattery" startport="y" startcomponent="Constant">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="1208.24341257878973010520" y="2365.36333451534164851182"/>
+                      <coordinate x="1380.35885800000005474431" y="2365.36333451534164851182"/>
+                      <coordinate x="1380.35885800000005474431" y="2384.89577699999972537626"/>
+                      <coordinate x="1400.35885800000005474431" y="2384.89577699999972537626"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+            </post>
+            <post number="3">
+              <stuff what="addedconnector">
+                <connect endport="unom" endcomponent="ElectricBattery" startport="y" startcomponent="Constant_1">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="1228.42974625688248124789" y="2429.48462972810693827341"/>
+                      <coordinate x="1380.35885800000005474431" y="2429.48462972810693827341"/>
+                      <coordinate x="1380.35885800000005474431" y="2398.09577699999999822467"/>
+                      <coordinate x="1400.35885800000005474431" y="2398.09577699999999822467"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+            </post>
+            <post number="4" type="changedparameters">
+              <stuff newvalue="70" what="changedparameter" oldvalue="1" parametername="y#Value" objectname="Constant"/>
+            </post>
+            <post number="5" type="movedmultiple">
+              <stuff what="movedobject" name="Constant_1">
+                <oldpos>1203.43 2416.98</oldpos>
+                <newpos>1182.06 2428.86</newpos>
+              </stuff>
+            </post>
+            <post number="6" type="movedmultiple">
+              <stuff what="movedobject" name="Constant_1">
+                <oldpos>1182.06 2428.86</oldpos>
+                <newpos>1183.24 2428.86</newpos>
+              </stuff>
+            </post>
+            <post number="7" type="changedparameters">
+              <stuff newvalue="50" what="changedparameter" oldvalue="1" parametername="y#Value" objectname="Constant_1"/>
+            </post>
+            <post number="8" type="movedmultiple">
+              <stuff what="movedobject" name="Constant">
+                <oldpos>1183.24 2352.86</oldpos>
+                <newpos>1180.87 2372.4</newpos>
+              </stuff>
+            </post>
+            <post number="9">
+              <stuff what="addedobject">
+                <component typename="SignalMultiply" name="Multiply">
+                  <parameters>
+                    <parameter unit="-" value="1" type="double" name="in1#Value"/>
+                    <parameter unit="-" value="1" type="double" name="in2#Value"/>
+                  </parameters>
+                  <ports>
+                    <port nodetype="NodeSignal" name="out"/>
+                    <port nodetype="NodeSignal" name="in1"/>
+                    <port nodetype="NodeSignal" name="in2"/>
+                  </ports>
+                  <hopsangui>
+                    <pose x="1451.041162" y="2511.417396" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <animation flowspeed="100"/>
+                    <hopsanobjectappearance version="0.3">
+                      <modelobject typename="SignalMultiply" displayname="Multiply">
+                        <ports/>
+                      </modelobject>
+                    </hopsanobjectappearance>
+                  </hopsangui>
+                </component>
+              </stuff>
+            </post>
+            <post number="10">
+              <stuff what="addedconnector">
+                <connect endport="in2" endcomponent="Multiply" startport="y" startcomponent="Constant">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="1205.86854979313170588284" y="2384.89577699999972537626"/>
+                      <coordinate x="1451.04116203702187704039" y="2384.89577699999972537626"/>
+                      <coordinate x="1451.04116203702187704039" y="2498.91739583330718232901"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+            </post>
+            <post number="11" type="movedmultiple">
+              <stuff what="movedobject" name="Multiply">
+                <oldpos>1438.54 2498.92</oldpos>
+                <newpos>1330.48 2506.04</newpos>
+              </stuff>
+            </post>
+            <post number="12">
+              <stuff what="addedconnector">
+                <connect endport="in1" endcomponent="Multiply" startport="y" startcomponent="Constant_1">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="1208.24341257878973010520" y="2441.35894365639660463785"/>
+                      <coordinate x="1231.36635436365941131953" y="2441.35894365639660463785"/>
+                      <coordinate x="1231.36635436365941131953" y="2518.54198419028080024873"/>
+                      <coordinate x="1330.48490528958404865989" y="2518.54198419028080024873"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+            </post>
+            <post number="13" type="movedmultiple">
+              <stuff what="movedobject" name="Multiply">
+                <oldpos>1330.48 2506.04</oldpos>
+                <newpos>1335.23 2510.79</newpos>
+              </stuff>
+            </post>
+            <post number="14">
+              <stuff what="addedobject">
+                <component typename="SignalGain" name="Gain_1">
+                  <parameters>
+                    <parameter unit="-" value="0" type="double" name="in#Value"/>
+                    <parameter unit="-" value="1" type="double" name="k#Value"/>
+                  </parameters>
+                  <ports>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="out"/>
+                  </ports>
+                  <hopsangui>
+                    <pose x="1440.35428" y="2523.29171" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <animation flowspeed="100"/>
+                    <hopsanobjectappearance version="0.3">
+                      <modelobject typename="SignalGain" displayname="Gain_1">
+                        <ports/>
+                      </modelobject>
+                    </hopsanobjectappearance>
+                  </hopsangui>
+                </component>
+              </stuff>
+            </post>
+            <post number="15">
+              <stuff what="addedconnector">
+                <connect endport="in" endcomponent="Gain_1" startport="out" startcomponent="Multiply">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="1360.23463086090009710460" y="2523.29170976159684869344"/>
+                      <coordinate x="1407.85427950156099541346" y="2523.29170976159684869344"/>
+                      <coordinate x="1407.85427950156099541346" y="2523.29170976159684869344"/>
+                      <coordinate x="1427.85427950156099541346" y="2523.29170976159684869344"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+            </post>
+            <post number="16">
+              <stuff what="deletedconnector">
+                <connect endport="in" endcomponent="Gain_1" startport="out" startcomponent="Multiply">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="1360.23463086090009710460" y="2523.29170976159684869344"/>
+                      <coordinate x="1407.85427950156099541346" y="2523.29170976159684869344"/>
+                      <coordinate x="1407.85427950156099541346" y="2523.29170976159684869344"/>
+                      <coordinate x="1427.85427950156099541346" y="2523.29170976159684869344"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+              <stuff what="deletedobject">
+                <component typename="SignalGain" name="Gain_1">
+                  <parameters>
+                    <parameter unit="-" value="0" type="double" name="in#Value"/>
+                    <parameter unit="-" value="1" type="double" name="k#Value"/>
+                  </parameters>
+                  <ports>
+                    <port nodetype="NodeSignal" name="in"/>
+                    <port nodetype="NodeSignal" name="out"/>
+                  </ports>
+                  <hopsangui>
+                    <pose x="1440.35428" y="2523.29171" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <animation flowspeed="100"/>
+                    <hopsanobjectappearance version="0.3">
+                      <modelobject typename="SignalGain" displayname="Gain_1">
+                        <ports/>
+                      </modelobject>
+                    </hopsanobjectappearance>
+                  </hopsangui>
+                </component>
+              </stuff>
+            </post>
+            <post number="17">
+              <stuff what="addedobject">
+                <component typename="SignalDivide" name="Divide">
+                  <parameters>
+                    <parameter unit="-" value="0" type="double" name="in1#Value"/>
+                    <parameter unit="-" value="0" type="double" name="in2#Value"/>
+                  </parameters>
+                  <ports>
+                    <port nodetype="NodeSignal" name="out"/>
+                    <port nodetype="NodeSignal" name="in1"/>
+                    <port nodetype="NodeSignal" name="in2"/>
+                  </ports>
+                  <hopsangui>
+                    <pose x="1411.855926" y="2522.104278" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <animation flowspeed="100"/>
+                    <hopsanobjectappearance version="0.3">
+                      <modelobject typename="SignalDivide" displayname="Divide">
+                        <ports/>
+                      </modelobject>
+                    </hopsanobjectappearance>
+                  </hopsangui>
+                </component>
+              </stuff>
+            </post>
+            <post number="18">
+              <stuff what="addedconnector">
+                <connect endport="in1" endcomponent="Divide" startport="out" startcomponent="Multiply">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="1360.23463086090009710460" y="2523.29170976159684869344"/>
+                      <coordinate x="1379.35592607366538686620" y="2523.29170976159684869344"/>
+                      <coordinate x="1379.35592607366538686620" y="2523.29170976159684869344"/>
+                      <coordinate x="1399.35592607366538686620" y="2523.29170976159684869344"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+            </post>
+            <post number="19">
+              <stuff what="verticalflip" objectname="Divide"/>
+            </post>
+            <post number="20">
+              <stuff what="addedobject">
+                <component typename="SignalConstant" name="Constant_2">
+                  <parameters>
+                    <parameter unit="-" value="1" type="double" name="y#Value"/>
+                  </parameters>
+                  <ports>
+                    <port nodetype="NodeSignal" name="y"/>
+                  </ports>
+                  <hopsangui>
+                    <pose x="1200.493138" y="2581.475848" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <animation flowspeed="100"/>
+                    <hopsanobjectappearance version="0.3">
+                      <modelobject typename="SignalConstant" displayname="Constant_2">
+                        <ports/>
+                      </modelobject>
+                    </hopsanobjectappearance>
+                  </hopsangui>
+                </component>
+              </stuff>
+            </post>
+            <post number="21">
+              <stuff what="addedconnector">
+                <connect endport="in2" endcomponent="Divide" startport="y" startcomponent="Constant_2">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="1212.99313815010555117624" y="2581.47584801021730527282"/>
+                      <coordinate x="1411.85592607366538686620" y="2581.47584801021730527282"/>
+                      <coordinate x="1411.85592607366538686620" y="2535.79170976159684869344"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+            </post>
+            <post number="22">
+              <stuff what="addedcontainerport">
+                <systemport typename="HopsanGUIContainerPort" name="Container_Port">
+                  <hopsangui>
+                    <pose x="1560.28485" y="2536.353455" flipped="false" a="0"/>
+                    <nametext position="0" visible="1"/>
+                    <animation flowspeed="100"/>
+                  </hopsangui>
+                </systemport>
+              </stuff>
+            </post>
+            <post number="23">
+              <stuff what="addedconnector">
+                <connect endport="Container_Port" endcomponent="Container_Port" startport="out" startcomponent="Divide">
+                  <hopsangui>
+                    <coordinates>
+                      <coordinate x="1424.35592607366538686620" y="2523.29170976159684869344"/>
+                      <coordinate x="1540.28485017728871753206" y="2523.29170976159684869344"/>
+                      <coordinate x="1540.28485017728871753206" y="2536.35345508271575454273"/>
+                      <coordinate x="1560.28485017728871753206" y="2536.35345508271575454273"/>
+                    </coordinates>
+                    <geometries>
+                      <geometry>vertical</geometry>
+                      <geometry>horizontal</geometry>
+                      <geometry>vertical</geometry>
+                    </geometries>
+                    <style>solid</style>
+                  </hopsangui>
+                </connect>
+              </stuff>
+            </post>
+            <post number="24" type="movedmultiple">
+              <stuff what="movedobject" name="Container_Port">
+                <oldpos>1540.28 2526.35</oldpos>
+                <newpos>1543.85 2513.29</newpos>
+              </stuff>
+            </post>
+            <post number="25">
+              <stuff newname="M_battery" what="rename" oldname="Container_Port"/>
+            </post>
+            <post number="26">
+              <stuff newname="Energy_density" what="rename" oldname="Constant_2"/>
+            </post>
+            <post number="27" type="changedparameters">
+              <stuff newvalue="200" what="changedparameter" oldvalue="1" parametername="y#Value" objectname="Energy_density"/>
+            </post>
+            <post number="28">
+              <stuff newname="Battery_Capacity__Ah_" what="rename" oldname="Constant"/>
+            </post>
+            <post number="29">
+              <stuff newname="Battery_Capacity_Ah" what="rename" oldname="Battery_Capacity__Ah_"/>
+            </post>
+            <post number="30">
+              <stuff newname="Nominal_voltage" what="rename" oldname="Constant_1"/>
+            </post>
+            <post number="31" type="movedmultiple">
+              <stuff what="movedobject" name="Nominal_voltage">
+                <oldpos>1183.24 2428.86</oldpos>
+                <newpos>1180.87 2428.86</newpos>
+              </stuff>
+            </post>
+            <post number="32" type="movedmultiple">
+              <stuff what="movedobject" name="Energy_density">
+                <oldpos>1187.99 2568.98</oldpos>
+                <newpos>1184.43 2553.54</newpos>
+              </stuff>
+            </post>
+            <post number="33" type="movedmultiple">
+              <stuff what="movedobject" name="Divide">
+                <oldpos>1399.36 2510.79</oldpos>
+                <newpos>1424.36 2510.79</newpos>
+              </stuff>
+            </post>
+            <post number="34">
+              <stuff what="addedtextboxwidget" index="0">
+                <textboxwidget>
+                  <hopsangui>
+                    <pose x="1282.000000" y="2746.000000"/>
+                    <textobject fontcolor="#556b2f" text="Text" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
+                    <size width="100.000000" height="100.000000"/>
+                    <line width="2.000000" visible="1" style="solidline"/>
+                  </hopsangui>
+                </textboxwidget>
+              </stuff>
+            </post>
+            <post number="35">
+              <stuff color_old="#556b2f" what="modifiedtextboxwidget" box_visible="1" linestyle="solidline" linestyle_old="solidline" index="0" text_old="Text" font_old="Calibri,12,-1,0,50,0,0,0,0,0" color="#556b2f" box_visible_before="1" text="Estimation of battery weight" font="Calibri,12,-1,0,50,0,0,0,0,0" linewidth_old="2" linewidth="2"/>
+            </post>
+            <post number="36">
+              <stuff what="movedwidget" index="0">
+                <oldpos>1282 2746</oldpos>
+                <newpos>1276.04 2483.57</newpos>
+              </stuff>
+            </post>
+            <post number="37">
+              <stuff h_new="100.000000" what="resizedtextboxwidget" w_old="100.000000" h_old="100.000000" index="0" w_new="193.000000">
+                <oldpos>1282 2746</oldpos>
+                <newpos>1276.04 2483.57</newpos>
+              </stuff>
+            </post>
+            <post number="38">
+              <stuff what="movedwidget" index="0">
+                <oldpos>1276.04 2483.57</oldpos>
+                <newpos>1246.21 2491.52</newpos>
+              </stuff>
+            </post>
+            <post number="39">
+              <stuff what="movedwidget" index="0">
+                <oldpos>1246.21 2491.52</oldpos>
+                <newpos>1248.2 2459.71</newpos>
+              </stuff>
+            </post>
+            <post number="40">
+              <stuff h_new="131.809525" what="resizedtextboxwidget" w_old="193.000000" h_old="100.000000" index="0" w_new="193.000000">
+                <oldpos>1248.2 2459.71</oldpos>
+                <newpos>1248.2 2459.71</newpos>
+              </stuff>
+            </post>
+            <post number="41" type="movedmultiple">
+              <stuff what="movedobject" name="Energy_density">
+                <oldpos>1184.43 2553.54</oldpos>
+                <newpos>1271.91 2551.55</newpos>
+              </stuff>
+            </post>
+            <post number="42" type="movedmultiple">
+              <stuff what="movedobject" name="thrust">
+                <oldpos>1952 2719</oldpos>
+                <newpos>2047.43 2722.98</newpos>
+              </stuff>
+            </post>
+            <post number="43" type="movedmultiple">
+              <stuff what="movedobject" name="speed">
+                <oldpos>2418.19 2245.94</oldpos>
+                <newpos>2231.31 2245.94</newpos>
+              </stuff>
+            </post>
+            <post number="44" type="movedmultiple">
+              <stuff what="movedobject" name="Sink_2">
+                <oldpos>1711.48 2138.07</oldpos>
+                <newpos>1777.08 2138.07</newpos>
+              </stuff>
+            </post>
           </hopsanundo>
         </hopsangui>
         <objects>
@@ -325,6 +825,24 @@
               </hopsanobjectappearance>
             </hopsangui>
           </component>
+          <component typename="SignalConstant" name="Energy_density">
+            <parameters>
+              <parameter unit="-" value="200" type="double" name="y#Value"/>
+            </parameters>
+            <ports>
+              <port nodetype="NodeSignal" name="y"/>
+            </ports>
+            <hopsangui>
+              <pose x="1284.407037" y="2564.051145" flipped="false" a="0"/>
+              <nametext position="0" visible="1"/>
+              <animation flowspeed="100"/>
+              <hopsanobjectappearance version="0.3">
+                <modelobject typename="SignalConstant" displayname="Energy_density">
+                  <ports/>
+                </modelobject>
+              </hopsanobjectappearance>
+            </hopsangui>
+          </component>
           <component typename="ElectricGround" name="ElectricGround">
             <parameters>
               <parameter unit="V" value="0" type="double" name="Pel1#Voltage"/>
@@ -391,6 +909,24 @@
               </hopsanobjectappearance>
             </hopsangui>
           </component>
+          <component typename="SignalConstant" name="Battery_Capacity_Ah">
+            <parameters>
+              <parameter unit="-" value="70" type="double" name="y#Value"/>
+            </parameters>
+            <ports>
+              <port nodetype="NodeSignal" name="y"/>
+            </ports>
+            <hopsangui>
+              <pose x="1193.36855" y="2384.895777" flipped="false" a="0"/>
+              <nametext position="0" visible="1"/>
+              <animation flowspeed="100"/>
+              <hopsanobjectappearance version="0.3">
+                <modelobject typename="SignalConstant" displayname="Battery_Capacity_Ah">
+                  <ports/>
+                </modelobject>
+              </hopsanobjectappearance>
+            </hopsangui>
+          </component>
           <component typename="ElectricBattery" name="ElectricBattery">
             <parameters>
               <parameter unit="-" value="50" type="double" name="cond#Value"/>
@@ -404,6 +940,8 @@
               <port nodetype="NodeSignal" name="soc"/>
               <port nodetype="NodeElectric" name="Pel1"/>
               <port nodetype="NodeSignal" name="ubatt"/>
+              <port nodetype="NodeSignal" name="capacity"/>
+              <port nodetype="NodeSignal" name="unom"/>
             </ports>
             <hopsangui>
               <pose x="1420.858858" y="2393.695777" flipped="false" a="0"/>
@@ -411,7 +949,10 @@
               <animation flowspeed="100"/>
               <hopsanobjectappearance version="0.3">
                 <modelobject typename="ElectricBattery" displayname="ElectricBattery">
-                  <ports/>
+                  <ports>
+                    <port x="0" y="0.3" enabled="true" a="180" name="capacity" autoplaced="false"/>
+                    <port x="0" y="0.6" enabled="true" a="180" name="unom" autoplaced="false"/>
+                  </ports>
                 </modelobject>
               </hopsanobjectappearance>
             </hopsangui>
@@ -469,7 +1010,7 @@
           </component>
           <systemport typename="HopsanGUIContainerPort" name="thrust">
             <hopsangui>
-              <pose x="1971.999591" y="2729.000429" flipped="false" a="0"/>
+              <pose x="2067.428165" y="2732.97662" flipped="false" a="0"/>
               <nametext position="0" visible="1"/>
               <animation flowspeed="100"/>
             </hopsangui>
@@ -542,6 +1083,48 @@
               </hopsanobjectappearance>
             </hopsangui>
           </component>
+          <component typename="SignalMultiply" name="Multiply">
+            <parameters>
+              <parameter unit="-" value="1" type="double" name="in1#Value"/>
+              <parameter unit="-" value="1" type="double" name="in2#Value"/>
+            </parameters>
+            <ports>
+              <port nodetype="NodeSignal" name="out"/>
+              <port nodetype="NodeSignal" name="in1"/>
+              <port nodetype="NodeSignal" name="in2"/>
+            </ports>
+            <hopsangui>
+              <pose x="1347.734631" y="2523.29171" flipped="false" a="0"/>
+              <nametext position="0" visible="1"/>
+              <animation flowspeed="100"/>
+              <hopsanobjectappearance version="0.3">
+                <modelobject typename="SignalMultiply" displayname="Multiply">
+                  <ports/>
+                </modelobject>
+              </hopsanobjectappearance>
+            </hopsangui>
+          </component>
+          <component typename="SignalDivide" name="Divide">
+            <parameters>
+              <parameter unit="-" value="0" type="double" name="in1#Value"/>
+              <parameter unit="-" value="0" type="double" name="in2#Value"/>
+            </parameters>
+            <ports>
+              <port nodetype="NodeSignal" name="out"/>
+              <port nodetype="NodeSignal" name="in1"/>
+              <port nodetype="NodeSignal" name="in2"/>
+            </ports>
+            <hopsangui>
+              <pose x="1411.855926" y="2523.29171" flipped="true" a="180"/>
+              <nametext position="0" visible="1"/>
+              <animation flowspeed="100"/>
+              <hopsanobjectappearance version="0.3">
+                <modelobject typename="SignalDivide" displayname="Divide">
+                  <ports/>
+                </modelobject>
+              </hopsanobjectappearance>
+            </hopsangui>
+          </component>
           <component typename="SignalSink" name="Sink_1">
             <parameters>
               <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
@@ -572,7 +1155,7 @@
               <port nodetype="NodeSignal" name="in_bottom"/>
             </ports>
             <hopsangui>
-              <pose x="1731.477512" y="2153.066906" flipped="false" a="0"/>
+              <pose x="1797.084656" y="2153.066906" flipped="false" a="0"/>
               <nametext position="0" visible="1"/>
               <animation flowspeed="100"/>
               <hopsanobjectappearance version="0.3">
@@ -619,6 +1202,13 @@
               </hopsanobjectappearance>
             </hopsangui>
           </component>
+          <systemport typename="HopsanGUIContainerPort" name="M_battery">
+            <hopsangui>
+              <pose x="1563.847144" y="2523.29171" flipped="false" a="0"/>
+              <nametext position="0" visible="1"/>
+              <animation flowspeed="100"/>
+            </hopsangui>
+          </systemport>
           <systemport typename="HopsanGUIContainerPort" name="rho">
             <hopsangui>
               <pose x="2248.626186" y="2161.063884" flipped="false" a="0"/>
@@ -653,7 +1243,7 @@
             </ports>
             <hopsangui>
               <pose x="1467.858858" y="2317.695777" flipped="false" a="0"/>
-              <nametext position="0" visible="0"/>
+              <nametext position="0" visible="1"/>
               <animation flowspeed="100"/>
               <hopsanobjectappearance version="0.3">
                 <modelobject typename="ElectricIsensor" displayname="Current_sensor">
@@ -664,11 +1254,37 @@
           </component>
           <systemport typename="HopsanGUIContainerPort" name="speed">
             <hopsangui>
-              <pose x="2438.188024" y="2255.936341" flipped="false" a="0"/>
+              <pose x="2251.307067" y="2255.936341" flipped="false" a="0"/>
               <nametext position="0" visible="1"/>
               <animation flowspeed="100"/>
             </hopsangui>
           </systemport>
+          <component typename="SignalConstant" name="Nominal_voltage">
+            <parameters>
+              <parameter unit="-" value="50" type="double" name="y#Value"/>
+            </parameters>
+            <ports>
+              <port nodetype="NodeSignal" name="y"/>
+            </ports>
+            <hopsangui>
+              <pose x="1193.36855" y="2441.358944" flipped="false" a="0"/>
+              <nametext position="0" visible="1"/>
+              <animation flowspeed="100"/>
+              <hopsanobjectappearance version="0.3">
+                <modelobject typename="SignalConstant" displayname="Nominal_voltage">
+                  <ports/>
+                </modelobject>
+              </hopsanobjectappearance>
+            </hopsangui>
+          </component>
+          <textboxwidget>
+            <hopsangui>
+              <pose x="1248.202380" y="2459.714279"/>
+              <textobject fontcolor="#556b2f" text="Estimation of battery weight" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
+              <size width="193.000000" height="131.809525"/>
+              <line width="2.000000" visible="1" style="solidline"/>
+            </hopsangui>
+          </textboxwidget>
         </objects>
         <connections>
           <connect endport="Pel1" endcomponent="ElectricCapacitance2" startport="Pel2" startcomponent="ElectricIcontroller">
@@ -842,7 +1458,7 @@
               <coordinates>
                 <coordinate x="2140.88392400000020643347" y="2329.19577699999990727520"/>
                 <coordinate x="2140.88392400000020643347" y="2255.93634100000008402276"/>
-                <coordinate x="2438.18802400000004126923" y="2255.93634100000008402276"/>
+                <coordinate x="2251.30706716950089685270" y="2255.93634100000008402276"/>
               </coordinates>
               <geometries>
                 <geometry>horizontal</geometry>
@@ -868,8 +1484,8 @@
           <connect endport="thrust" endcomponent="AeroPropeller" startport="thrust" startcomponent="thrust">
             <hopsangui>
               <coordinates>
-                <coordinate x="1971.99959100000000944419" y="2729.00042900000016743434"/>
-                <coordinate x="2136.88394000000016603735" y="2729.00042900000016743434"/>
+                <coordinate x="2067.42816470068055423326" y="2732.97661957086211259593"/>
+                <coordinate x="2136.88394000000016603735" y="2732.97661957086211259593"/>
                 <coordinate x="2136.88394000000016603735" y="2444.19577699999990727520"/>
               </coordinates>
               <geometries>
@@ -985,8 +1601,8 @@
             <hopsangui>
               <coordinates>
                 <coordinate x="1356.00002799999992930680" y="2200.69577699999990727520"/>
-                <coordinate x="1711.47751199999993332312" y="2200.69577699999990727520"/>
-                <coordinate x="1711.47751199999993332312" y="2153.06690600000001722947"/>
+                <coordinate x="1777.08465641921770838962" y="2200.69577699999990727520"/>
+                <coordinate x="1777.08465641921770838962" y="2153.06690600000001722947"/>
               </coordinates>
               <geometries>
                 <geometry>vertical</geometry>
@@ -999,12 +1615,120 @@
             <hopsangui>
               <coordinates>
                 <coordinate x="1591.62886400000002140587" y="2154.16584400000010646181"/>
-                <coordinate x="1711.47751199999993332312" y="2154.16584400000010646181"/>
-                <coordinate x="1711.47751199999993332312" y="2153.06690600000001722947"/>
+                <coordinate x="1777.08465641921770838962" y="2154.16584400000010646181"/>
+                <coordinate x="1777.08465641921770838962" y="2153.06690600000001722947"/>
               </coordinates>
               <geometries>
                 <geometry>vertical</geometry>
                 <geometry>horizontal</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="capacity" endcomponent="ElectricBattery" startport="y" startcomponent="Battery_Capacity_Ah">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="1205.86854979313170588284" y="2384.89577699999972537626"/>
+                <coordinate x="1380.35885800000005474431" y="2384.89577699999972537626"/>
+                <coordinate x="1380.35885800000005474431" y="2384.89577699999972537626"/>
+                <coordinate x="1400.35885800000005474431" y="2384.89577699999972537626"/>
+              </coordinates>
+              <geometries>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+                <geometry>vertical</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="unom" endcomponent="ElectricBattery" startport="y" startcomponent="Nominal_voltage">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="1205.86854979313193325652" y="2441.35894365639660463785"/>
+                <coordinate x="1380.35885800000005474431" y="2441.35894365639660463785"/>
+                <coordinate x="1380.35885800000005474431" y="2398.09577699999999822467"/>
+                <coordinate x="1400.35885800000005474431" y="2398.09577699999999822467"/>
+              </coordinates>
+              <geometries>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+                <geometry>vertical</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="in2" endcomponent="Multiply" startport="y" startcomponent="Battery_Capacity_Ah">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="1205.86854979313170588284" y="2384.89577699999972537626"/>
+                <coordinate x="1347.73463086090009710460" y="2384.89577699999972537626"/>
+                <coordinate x="1347.73463086090009710460" y="2510.79170976159684869344"/>
+              </coordinates>
+              <geometries>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="in1" endcomponent="Multiply" startport="y" startcomponent="Nominal_voltage">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="1205.86854979313193325652" y="2441.35894365639660463785"/>
+                <coordinate x="1231.36635436365941131953" y="2441.35894365639660463785"/>
+                <coordinate x="1231.36635436365941131953" y="2523.29170976159684869344"/>
+                <coordinate x="1335.23463086090009710460" y="2523.29170976159684869344"/>
+              </coordinates>
+              <geometries>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+                <geometry>vertical</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="in1" endcomponent="Divide" startport="out" startcomponent="Multiply">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="1360.23463086090009710460" y="2523.29170976159684869344"/>
+                <coordinate x="1379.35592607366538686620" y="2523.29170976159684869344"/>
+                <coordinate x="1379.35592607366538686620" y="2523.29170976159684869344"/>
+                <coordinate x="1399.35592607366538686620" y="2523.29170976159684869344"/>
+              </coordinates>
+              <geometries>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+                <geometry>vertical</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="in2" endcomponent="Divide" startport="y" startcomponent="Energy_density">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="1296.90703653057539668225" y="2564.05114461800985736772"/>
+                <coordinate x="1411.85592607366538686620" y="2564.05114461800985736772"/>
+                <coordinate x="1411.85592607366538686620" y="2535.79170976159684869344"/>
+              </coordinates>
+              <geometries>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+              </geometries>
+              <style>solid</style>
+            </hopsangui>
+          </connect>
+          <connect endport="M_battery" endcomponent="M_battery" startport="out" startcomponent="Divide">
+            <hopsangui>
+              <coordinates>
+                <coordinate x="1424.35592607366538686620" y="2523.29170976159684869344"/>
+                <coordinate x="1540.28485017728871753206" y="2523.29170976159684869344"/>
+                <coordinate x="1540.28485017728871753206" y="2523.29170976159684869344"/>
+                <coordinate x="1563.84714435577552649193" y="2523.29170976159684869344"/>
+              </coordinates>
+              <geometries>
+                <geometry>vertical</geometry>
+                <geometry>horizontal</geometry>
+                <geometry>vertical</geometry>
               </geometries>
               <style>solid</style>
             </hopsangui>
@@ -1131,7 +1855,7 @@
           <parameter unit="-" value="0" type="double" name="deythrustl#Value"/>
           <parameter unit="-" value="0" type="double" name="deythrustr#Value"/>
           <parameter unit="-" value="0" type="double" name="Mfuel#Value"/>
-          <parameter unit="-" value="0" type="double" name="Mcargo#Value"/>
+          <parameter unit="-" value="50" type="double" name="Mcargo#Value"/>
           <parameter unit="-" value="1.25" type="double" name="rho#Value"/>
           <parameter unit="-" value="0" type="double" name="vturbx#Value"/>
           <parameter unit="-" value="0" type="double" name="vturby#Value"/>
@@ -1195,11 +1919,11 @@
           <parameter unit="-" value="0.005" type="double" name="lc20#Value"/>
           <parameter unit="-" value="0.005" type="double" name="lc120#Value"/>
           <parameter unit="-" value="0.005" type="double" name="lcfin0#Value"/>
-          <parameter unit="-" value="100" type="double" name="Med#Value"/>
+          <parameter unit="-" value="70" type="double" name="Med#Value"/>
           <parameter unit="-" value="0.25" type="double" name="rc10#Value"/>
           <parameter unit="-" value="0.15" type="double" name="rc20#Value"/>
           <parameter unit="-" value="0.1" type="double" name="rcfin0#Value"/>
-          <parameter unit="-" value="8" type="double" name="S1#Value"/>
+          <parameter unit="-" value="4" type="double" name="S1#Value"/>
           <parameter unit="-" value="0.5" type="double" name="S20#Value"/>
           <parameter unit="-" value="0.2" type="double" name="Sbh0#Value"/>
           <parameter unit="-" value="0.2" type="double" name="Sbv0#Value"/>
@@ -1377,9 +2101,9 @@
         <aliases/>
         <hopsangui>
           <pose x="1759.820003" y="2324.182647" flipped="false" a="0"/>
-          <nametext position="0" visible="1"/>
+          <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
-          <viewport x="2059.67" y="2332.04" zoom="0.502994"/>
+          <viewport x="2270.4" y="2436.41" zoom="0.502994"/>
           <ports hidden="1"/>
           <names hidden="1"/>
           <graphics type="user"/>
@@ -4300,8 +5024,8 @@
         <hopsangui>
           <coordinates>
             <coordinate x="2570.46999100000039106817" y="2301.40994700000010197982"/>
-            <coordinate x="2570.46999100000039106817" y="2309.92569800000001123408"/>
-            <coordinate x="2464.02912599999990561628" y="2309.92569800000001123408"/>
+            <coordinate x="2570.46999100000039106817" y="2306.92569800000001123408"/>
+            <coordinate x="2464.02912599999990561628" y="2306.92569800000001123408"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -4411,8 +5135,8 @@
       <connect endport="thrustl" endcomponent="AeroAircraft6DOFS" startport="thrust" startcomponent="Electric_propeller_drive">
         <hopsangui>
           <coordinates>
-            <coordinate x="2419.02912599999990561628" y="2354.92569800000001123408"/>
-            <coordinate x="2419.02912599999990561628" y="2365.97660010818799491972"/>
+            <coordinate x="2464.02912599999990561628" y="2330.92569800000001123408"/>
+            <coordinate x="2464.02912599999990561628" y="2365.97660010818799491972"/>
             <coordinate x="2349.71833800000013070530" y="2365.97660010818799491972"/>
             <coordinate x="2349.71833800000013070530" y="2420.68835900000021865708"/>
           </coordinates>
@@ -4516,6 +5240,22 @@
             <geometry>vertical</geometry>
             <geometry>horizontal</geometry>
             <geometry>vertical</geometry>
+          </geometries>
+          <style>solid</style>
+        </hopsangui>
+      </connect>
+      <connect endport="Mfuel" endcomponent="AeroAircraft6DOFS" startport="M_battery" startcomponent="Electric_propeller_drive">
+        <hopsangui>
+          <coordinates>
+            <coordinate x="2446.02912599999990561628" y="2354.92569800000001123408"/>
+            <coordinate x="2446.02912599999990561628" y="2365.36333451534164851182"/>
+            <coordinate x="2484.71833800000013070530" y="2365.36333451534164851182"/>
+            <coordinate x="2484.71833800000013070530" y="2420.68835900000021865708"/>
+          </coordinates>
+          <geometries>
+            <geometry>horizontal</geometry>
+            <geometry>vertical</geometry>
+            <geometry>horizontal</geometry>
           </geometries>
           <style>solid</style>
         </hopsangui>
