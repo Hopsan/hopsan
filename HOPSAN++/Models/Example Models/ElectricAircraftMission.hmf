@@ -12,7 +12,7 @@
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="1"/>
       <animation flowspeed="100"/>
-      <viewport x="2243.53" y="2595.97" zoom="0.597272"/>
+      <viewport x="2603.5" y="2595.97" zoom="0.597272"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>
@@ -212,7 +212,7 @@
           <pose x="2419.029126" y="2324.925698" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
-          <viewport x="2243.53" y="2595.97" zoom="0.597272"/>
+          <viewport x="2603.5" y="2595.97" zoom="0.597272"/>
           <ports hidden="1"/>
           <names hidden="0"/>
           <graphics type="user"/>
@@ -223,12 +223,12 @@
                 <icon path="subsystemDefault.svg" type="defaultmissing"/>
               </icons>
               <ports>
-                <port x="1" y="0.4" enabled="true" a="0" name="speed" autoplaced="true"/>
-                <port x="1" y="0.2" enabled="true" a="0" name="rho" autoplaced="true"/>
+                <port x="1" y="0.6666666667" enabled="true" a="0" name="speed" autoplaced="true"/>
+                <port x="1" y="0.3333333333" enabled="true" a="0" name="rho" autoplaced="true"/>
                 <port x="0" y="0.5" enabled="true" a="180" name="ref. current" autoplaced="true"/>
-                <port x="1" y="0.6" enabled="true" a="0" name="thrust" autoplaced="true"/>
+                <port x="0.2" y="1" enabled="true" a="90" name="thrust" autoplaced="false"/>
                 <port x="0.8" y="1" enabled="true" a="90" name="M_battery" autoplaced="false"/>
-                <port x="1" y="0.8" enabled="true" a="0" name="torque" autoplaced="true"/>
+                <port x="0.5" y="1" enabled="true" a="90" name="torque" autoplaced="false"/>
                 <port x="0" y="0.5" enabled="true" a="180" name="ref__current" autoplaced="true"/>
               </ports>
               <animation flowspeed="100"/>
@@ -2103,7 +2103,7 @@
           <pose x="1759.820003" y="2324.182647" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
-          <viewport x="2243.53" y="2595.97" zoom="0.597272"/>
+          <viewport x="2603.5" y="2595.97" zoom="0.597272"/>
           <ports hidden="1"/>
           <names hidden="1"/>
           <graphics type="user"/>
@@ -5032,8 +5032,8 @@
         <hopsangui>
           <coordinates>
             <coordinate x="2570.46999100000039106817" y="2301.40994700000010197982"/>
-            <coordinate x="2570.46999100000039106817" y="2306.92569800000001123408"/>
-            <coordinate x="2464.02912599999990561628" y="2306.92569800000001123408"/>
+            <coordinate x="2570.46999100000039106817" y="2314.92569800000001123408"/>
+            <coordinate x="2464.02912599999990561628" y="2314.92569800000001123408"/>
           </coordinates>
           <geometries>
             <geometry>horizontal</geometry>
@@ -5143,8 +5143,8 @@
       <connect endport="thrustl" endcomponent="AeroAircraft6DOFS" startport="thrust" startcomponent="Electric_propeller_drive">
         <hopsangui>
           <coordinates>
-            <coordinate x="2464.02912599999990561628" y="2330.92569800000001123408"/>
-            <coordinate x="2464.02912599999990561628" y="2365.97660010818799491972"/>
+            <coordinate x="2392.02912599999990561628" y="2354.92569800000001123408"/>
+            <coordinate x="2392.02912599999990561628" y="2365.97660010818799491972"/>
             <coordinate x="2349.71833800000013070530" y="2365.97660010818799491972"/>
             <coordinate x="2349.71833800000013070530" y="2420.68835900000021865708"/>
           </coordinates>
