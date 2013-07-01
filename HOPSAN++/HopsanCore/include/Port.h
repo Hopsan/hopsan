@@ -59,6 +59,7 @@ namespace hopsan {
         virtual ~Port();
 
         //! @brief Reads a value from the connected node
+        //! @ingroup ComponentSimulationFunctions
         //! @param [in] idx The data id of the data to read
         //! @return The data value
         virtual inline double readNode(const size_t idx, const size_t /*portIdx*/=0) const
@@ -66,6 +67,7 @@ namespace hopsan {
             return mpNode->mDataValues[idx];
         }
         //! @brief Writes a value to the connected node
+        //! @ingroup ComponentSimulationFunctions
         //! @param [in] idx The data id of the data to write
         //! @param [in] value The value of the data to read
         virtual inline void writeNode(const size_t idx, const double value, const size_t /*portIdx*/=0) const
@@ -86,18 +88,18 @@ namespace hopsan {
         virtual int getNodeDataIdFromName(const HString &rName, const size_t portIdx=0);
         virtual void setSignalNodeUnitAndDescription(const HString &rUnit, const HString &rDescription);
 
+        const HString &getVariableAlias(const int id);
+        int getVariableIdByAlias(const HString &rAlias) const;
+
         virtual bool haveLogData(const size_t portIdx=0);
         virtual std::vector<double> *getLogTimeVectorPtr(const size_t portIdx=0);
         virtual std::vector<std::vector<double> > *getLogDataVectorPtr(const size_t portIdx=0);
-
-        virtual double getStartValue(const size_t idx, const size_t portIdx=0);
 
         virtual bool isConnected();
         virtual bool isConnectedTo(Port *pOtherPort);
         bool isConnectionRequired();
         virtual std::vector<Port*> &getConnectedPorts(const int portIdx=-1);
         size_t getNumConnectedPorts(const int portIdx=-1);
-
         virtual size_t getNumPorts();
 
         bool isMultiPort() const;
@@ -112,21 +114,17 @@ namespace hopsan {
         const HString &getDescription() const;
         void setDescription(const HString &rDescription);
 
+        virtual double getStartValue(const size_t idx, const size_t portIdx=0);
         virtual void loadStartValues();
         virtual void loadStartValuesFromSimulation();
 
         Component* getComponent() const;
 
-        const HString &getVariableAlias(const int id);
-        int getVariableIdByAlias(const HString &rAlias) const;
-
     protected:
         PortTypesEnumT mPortType;
         HString mNodeType;
 
-
         Component* mpComponent;
-
         Port* mpParentPort;
 
         std::vector<Port*> mConnectedPorts;

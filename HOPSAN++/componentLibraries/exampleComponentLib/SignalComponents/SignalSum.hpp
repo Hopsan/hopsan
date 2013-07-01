@@ -40,7 +40,7 @@ class SignalSum : public ComponentSignal
 private:
     // Private member variables
     size_t mnInputs;
-    Port *mpMultiInPort, *mpOutPort;
+    Port *mpMultiInPort, mpOutPort;
 
 public:
     // The creator function that is registered when a component lib is loaded into Hopsan
@@ -57,7 +57,7 @@ public:
     {
         // Add ports to the component
         mpMultiInPort = addReadMultiPort("in", "NodeSignal", Port::NotRequired);
-        mpOutPort = addWritePort("out", "NodeSignal", Port::NotRequired);
+        mpOutPort = addOutputVariable("out", "The sum of inputs", "");
     }
 
     // The initialize function is called before simulation begins.
@@ -66,8 +66,10 @@ public:
     // This function is optional but most likely needed
     void initialize()
     {
-        // We assume that noone will be disconnecting during simulation
+        // We assume that no-one will be disconnecting during simulation (that is not allowed)
         mnInputs = mpMultiInPort->getNumPorts();
+        // Simulate one timestep in order to initialize the output
+        simulateOneTimestep();
     }
 
     // The simulateOneTimestep() function is called ONCE every time step

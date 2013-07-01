@@ -402,8 +402,7 @@ def copyFiles():
     svnExport("HopsanCore", tempDir+"\\HopsanCore")
  
     #Copy the svnrevnum.h file Assume it exist, ONLY for DEV builds
-    if dodevrelease:
-        callXcopy("HopsanCore\\include\\svnrevnum.h", tempDir+"\\HopsanCore\\include")
+    callXcopy("HopsanCore\\include\\svnrevnum.h", tempDir+"\\HopsanCore\\include")
 
     #Export "Example Models" SVN directory to temporary directory
     svnExport("Models\\Example Models", tempDir+"\\Models\\Example Models")
@@ -414,7 +413,7 @@ def copyFiles():
     #Export "Benchmark Models" SVN directory to temporary directory
     svnExport("Models\\Benchmark Models", tempDir+"\\Models\\Benchmark Models")
 
-    #Export and copy "componentData" SVN directory to temporary directory
+    #Export defaultLibrary" SVN directory to temporary directory
     svnExport("componentLibraries\\defaultLibrary", tempDir+"\\componentLibraries\\defaultLibrary")
 
     #Export "exampleComponentLib" SVN directory to temporary directory

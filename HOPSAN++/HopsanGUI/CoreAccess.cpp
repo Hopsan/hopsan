@@ -44,14 +44,13 @@ using namespace std;
 hopsan::HopsanEssentials gHopsanCore;
 
 //! @brief Help function to copy parameter data from core to GUI class
-void copyParameterData(const hopsan::Parameter *pCoreParam, CoreParameterData &rGUIParam)
+void copyParameterData(const hopsan::ParameterEvaluator *pCoreParam, CoreParameterData &rGUIParam)
 {
     rGUIParam.mName = QString(pCoreParam->getName().c_str());
     rGUIParam.mType = QString(pCoreParam->getType().c_str());
     rGUIParam.mValue = QString(pCoreParam->getValue().c_str());
     rGUIParam.mUnit = QString(pCoreParam->getUnit().c_str());
     rGUIParam.mDescription = QString::fromStdString(pCoreParam->getDescription().c_str());
-    rGUIParam.mIsDynamic = pCoreParam->isDynamic();
     rGUIParam.mIsEnabled = pCoreParam->isEnabled();
 }
 
@@ -726,7 +725,7 @@ void CoreSystemAccess::getParameters(QString componentName, QVector<CoreParamete
     hopsan::Component* pComp =  mpCoreComponentSystem->getSubComponent(componentName.toStdString().c_str());
     if (pComp!=0)
     {
-        const std::vector<hopsan::Parameter*> *pParams = pComp->getParametersVectorPtr();
+        const std::vector<hopsan::ParameterEvaluator*> *pParams = pComp->getParametersVectorPtr();
 
         rParameterDataVec.resize(pParams->size()); //preAllocate storage
         for(size_t i=0; i<pParams->size(); ++i)
@@ -743,7 +742,7 @@ void CoreSystemAccess::getParameter(QString componentName, QString parameterName
     hopsan::Component* pComp =  mpCoreComponentSystem->getSubComponent(componentName.toStdString().c_str());
     if (pComp!=0)
     {
-        const hopsan::Parameter *pParam = pComp->getParameter(parameterName.toStdString().c_str());
+        const hopsan::ParameterEvaluator *pParam = pComp->getParameter(parameterName.toStdString().c_str());
         if (pParam!=0)
         {
             copyParameterData(pParam, rData);
@@ -1092,7 +1091,7 @@ void CoreSystemAccess::getVariableDescriptions(const QString compname, const QSt
 
 void CoreSystemAccess::getSystemParameter(const QString name, CoreParameterData &rParameterData)
 {
-    const hopsan::Parameter *pParam = mpCoreComponentSystem->getParameter(name.toStdString().c_str());
+    const hopsan::ParameterEvaluator *pParam = mpCoreComponentSystem->getParameter(name.toStdString().c_str());
     if (pParam!=0)
     {
         copyParameterData(pParam, rParameterData);
@@ -1103,7 +1102,7 @@ void CoreSystemAccess::getSystemParameter(const QString name, CoreParameterData 
 void CoreSystemAccess::getSystemParameters(QVector<CoreParameterData> &rParameterDataVec)
 {
     rParameterDataVec.clear();
-    const std::vector<hopsan::Parameter*> *pParams = mpCoreComponentSystem->getParametersVectorPtr();
+    const std::vector<hopsan::ParameterEvaluator*> *pParams = mpCoreComponentSystem->getParametersVectorPtr();
     rParameterDataVec.resize(pParams->size()); //preAllocate storage
     for(size_t i=0; i<pParams->size(); ++i)
     {

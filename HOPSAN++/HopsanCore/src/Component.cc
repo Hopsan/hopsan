@@ -42,15 +42,25 @@
 using namespace std;
 using namespace hopsan;
 
-//! @defgroup ConvenientComponentFunctions ConvenientComponentFunctions
-//! @defgroup ConvenientPortFunctions ConvenientPortFunctions
-//! @ingroup ConvenientComponentFunctions
-//! @defgroup ConvenientParameterFunctions ConvenientParameterFunctions
-//! @ingroup ConvenientComponentFunctions
-//! @defgroup ConvenientMessageFunctions ConvenientMessageFunctions
-//! @ingroup ConvenientComponentFunctions
-//! @defgroup ConvenientSimulationFunctions ConvenientSimulationFunctions
-//! @ingroup ConvenientComponentFunctions
+//! @defgroup ComponentAuthorFunctions ComponentAuthorFunctions
+
+//! @defgroup ComponentClassFunctions ComponentClassFunctions
+//! @ingroup ComponentAuthorFunctions
+
+//! @defgroup ComponentSetupFunctions ComponentSetupFunctions
+//! @ingroup ComponentAuthorFunctions
+
+//! @defgroup ComponentSimulationFunctions ComponentSimulationFunctions
+//! @ingroup ComponentAuthorFunctions
+
+//! @defgroup ComponentPowerAuthorFunctions ComponentPowerAuthorFunctions
+//! @ingroup ComponentAuthorFunctions
+
+//! @defgroup ComponentMessageFunctions ComponentMessageFunctions
+//! @ingroup ComponentAuthorFunctions
+
+// This is a dummy variable
+double dummyDouble;
 
 //! @brief Component base class Constructor
 Component::Component()
@@ -68,7 +78,7 @@ Component::Component()
     mpSystemParent = 0;
     mModelHierarchyDepth = 0;
 
-    mpParameters = new Parameters(this);
+    mpParameters = new ParameterEvaluatorHandler(this);
 
     mSearchPaths.clear();
 }
@@ -88,12 +98,12 @@ void Component::getParameterNames(std::vector<HString> &rParameterNames)
     mpParameters->getParameterNames(rParameterNames);
 }
 
-const Parameter *Component::getParameter(const HString &rName)
+const ParameterEvaluator *Component::getParameter(const HString &rName)
 {
     return mpParameters->getParameter(rName);
 }
 
-const std::vector<Parameter*> *Component::getParametersVectorPtr() const
+const std::vector<ParameterEvaluator*> *Component::getParametersVectorPtr() const
 {
     return mpParameters->getParametersVectorPtr();
 }
@@ -101,7 +111,7 @@ const std::vector<Parameter*> *Component::getParametersVectorPtr() const
 //! @brief Check if a component has a specific parameter
 bool Component::hasParameter(const HString &rName) const
 {
-    return mpParameters->exist(rName);
+    return mpParameters->hasParameter(rName);
 }
 
 void Component::getParameterValue(const HString &rName, HString &rValue)
@@ -181,26 +191,34 @@ const std::vector<VariameterDescription>* Component::getVariameters()
     return &mVariameters;
 }
 
+//! @brief Set the value of a constant parameter
 //! @note Dont use this function during simulation, it is slow
 //! @todo check returnvalue from setParameter check if Ok error emssage otherwise, also in the other functions
+//! @ingroup ComponentSetupFunctions
 void Component::setConstantValue(HString &rName, const double value)
 {
     setParameterValue(rName, to_hstring(value), true);
 }
 
+//! @brief Set the value of a constant parameter
 //! @note Dont use this function during simulation, it is slow
+//! @ingroup ComponentSetupFunctions
 void Component::setConstantValue(HString &rName, const int value)
 {
     setParameterValue(rName, to_hstring(value), true);
 }
 
+//! @brief Set the value of a constant parameter
 //! @note Dont use this function during simulation, it is slow
+//! @ingroup ComponentSetupFunctions
 void Component::setConstantValue(HString &rName, const HString &rValue)
 {
     setParameterValue(rName, rValue, true);
 }
 
+//! @brief Set the value of a constant parameter
 //! @note Dont use this function during simulation, it is slow
+//! @ingroup ComponentSetupFunctions
 void Component::setConstantValue(HString &rName, const bool value)
 {
     setParameterValue(rName, to_hstring(value), true);
@@ -229,7 +247,10 @@ void Component::simulate(const double stopT)
     }
 }
 
-
+//! @brief The initialize function must be overloaded in each component, it is used to initialize the component just before simulation begins
+//! @details In this function you should get node data ptrs and caluclate inital values to write to the nodes
+//! You are not allowed to reconnect internal connections in this function, as other components may already have initialized and fetch data porinters to poorts/nodes in this component
+//! @ingroup ComponentSimulationFunctions
 void Component::initialize()
 {
     addErrorMessage("You MUST! implement your own initialize method");
@@ -237,14 +258,18 @@ void Component::initialize()
 }
 
 
-//! @brief Simulates one time step
+//! @brief Simulates one time step. This component must be overloaded en each component.
+//! @details This is the function where all the component model equitions should be written.
+//! This function is called once for every time step
+//! @ingroup ComponentSimulationFunctions
 void Component::simulateOneTimestep()
 {
     addErrorMessage("You MUST! implement your own simulateOneTimestep() method");
     stopSimulation();
 }
 
-
+//! @brief Optional function that is called after every simulation, can be used to clean up memmory allocation made in initialize
+//! @ingroup ComponentSimulationFunctions
 void Component::finalize()
 {
     //Default does nothing
@@ -341,7 +366,7 @@ void Component::setSubTypeName(const HString &rSubTypeName)
 
 //! @brief Terminate/stop a running initialization or simulation
 //! @details Typically used inside components simulateOneTimestep method
-//! @ingroup ConvenientSimulationFunctions
+//! @ingroup ComponentSimulationFunctions
 void Component::stopSimulation()
 {
     mpSystemParent->stopSimulation();
@@ -352,107 +377,117 @@ HopsanEssentials *Component::getHopsanEssentials()
     return mpHopsanEssentials;
 }
 
-//! @deprecated
-void Component::initializeDynamicParameters()
+//! @brief Add (register) a double constant parameterto the component
+//! @param [in] rName The name of the constant
+//! @param [in] rDescription The description of the constant
+//! @param [in] rUnit The unit of the constant value
+//! @param [in] rData A reference to the data constant
+//! @todo Using a reference is not that clear, we should use a ptr instead
+//! @ingroup ComponentSetupFunctions
+void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, double &rData)
 {
-//    mDynamicParameterDataPtrs.clear();
-//    vector<HString> parNames;
-//    mpParameters->getParameterNames(parNames);
-
-//    for (size_t i=0; i<parNames.size(); ++i)
-//    {
-//        // For now make sure enabled by default
-//        //! @todo maybe this should be set when enabling disabling not every time
-//        mpParameters->enableParameter(parNames[i], true);
-
-//        // Check if dynamic parameter, Port with same name exist
-//        //! @todo must make sure that other ports with this name do not exist, of other types then signal 1d readport
-//        if (mPortPtrMap.count(toStdString(parNames[i])) > 0)
-//        {
-//            Port* pPort = mPortPtrMap.find(toStdString(parNames[i]))->second;
-//            if (pPort->isConnected())
-//            {
-//                mpParameters->enableParameter(parNames[i], false);
-//                //! @todo Not getNodeData(0) not hardcoded 0
-//                //! @todo this assumes signal node and double data ptr in parameter
-//                mDynamicParameterDataPtrs.push_back(std::pair<double*, double*>(pPort->getNodeDataPtr(0),
-//                                                              static_cast<double*>(mpParameters->getParameterDataPtr(parNames[i]))));
-
-//            }
-//        }
-//    }
+    registerParameter(rName, rDescription, rUnit, rData);
 }
 
-//! @deprecated
-void Component::updateDynamicParameterValues()
-{
-//    for (size_t i=0; i<mDynamicParameterDataPtrs.size(); ++i)
-//    {
-//        *(mDynamicParameterDataPtrs[i].second) = *(mDynamicParameterDataPtrs[i].first);
-//    }
-}
-
-void Component::addConstant(const HString &rName, const HString &description, const HString &unit, double &rData)
-{
-    registerParameter(rName, description, unit, rData, Constant);
-}
-
+//! @brief Add (register) a double constant parameterto the component
+//! @param [in] rName The name of the constant
+//! @param [in] rDescription The description of the constant
+//! @param [in] rUnit The unit of the constant value
+//! @param [in] defaultValue Default constant value
+//! @param [in] rData A reference to the data constant
+//! @todo Using a reference is not that clear, we should use a ptr instead
+//! @ingroup ComponentSetupFunctions
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double &rData)
 {
     rData = defaultValue;
     addConstant(rName, rDescription, rUnit, rData);
 }
 
+//! @brief Add (register) a integer constant parameterto the component
+//! @param [in] rName The name of the constant
+//! @param [in] rDescription The description of the constant
+//! @param [in] rUnit The unit of the constant value
+//! @param [in] rData A reference to the data constant
+//! @todo Using a reference is not that clear, we should use a ptr instead
+//! @ingroup ComponentSetupFunctions
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, int &rData)
 {
     registerParameter(rName, rDescription, rUnit, rData);
 }
 
+//! @brief Add (register) a integer constant parameterto the component
+//! @param [in] rName The name of the constant
+//! @param [in] rDescription The description of the constant
+//! @param [in] rUnit The unit of the constant value
+//! @param [in] defaultValue Default constant value
+//! @param [in] rData A reference to the data constant
+//! @todo Using a reference is not that clear, we should use a ptr instead
+//! @ingroup ComponentSetupFunctions
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const int defaultValue, int &rData)
 {
     rData = defaultValue;
     addConstant(rName, rDescription, rUnit, rData);
 }
 
+//! @brief Add (register) a HString constant parameterto the component
+//! @param [in] rName The name of the constant
+//! @param [in] rDescription The description of the constant
+//! @param [in] rUnit The unit of the constant value
+//! @param [in] rData A reference to the data constant
+//! @todo Using a reference is not that clear, we should use a ptr instead
+//! @ingroup ComponentSetupFunctions
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, HString &rData)
 {
     registerParameter(rName, rDescription, rUnit, rData);
 }
 
+//! @brief Add (register) a HString constant parameterto the component
+//! @param [in] rName The name of the constant
+//! @param [in] rDescription The description of the constant
+//! @param [in] rUnit The unit of the constant value
+//! @param [in] defaultValue Default constant value
+//! @param [in] rData A reference to the data constant
+//! @todo Using a reference is not that clear, we should use a ptr instead
+//! @ingroup ComponentSetupFunctions
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const HString &defaultValue, HString &rData)
 {
     rData = defaultValue;
     addConstant(rName, rDescription, rUnit, rData);
 }
 
+//! @brief Add (register) a bool constant parameterto the component
+//! @param [in] rName The name of the constant
+//! @param [in] rDescription The description of the constant
+//! @param [in] rUnit The unit of the constant value
+//! @param [in] rData A reference to the data constant
+//! @todo Using a reference is not that clear, we should use a ptr instead
+//! @ingroup ComponentSetupFunctions
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, bool &rData)
 {
     registerParameter(rName, rDescription, rUnit, rData);
 }
 
+//! @brief Add (register) a bool constant parameterto the component
+//! @param [in] rName The name of the constant
+//! @param [in] rDescription The description of the constant
+//! @param [in] rUnit The unit of the constant value
+//! @param [in] defaultValue Default constant value
+//! @param [in] rData A reference to the data constant
+//! @todo Using a reference is not that clear, we should use a ptr instead
+//! @ingroup ComponentSetupFunctions
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const bool defaultValue, bool &rData)
 {
     rData = defaultValue;
     addConstant(rName, rDescription, rUnit, rData);
 }
 
-//! @deprecated
-void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue)
-{
-    addErrorMessage("registerParameter() is deprecated, use addConstant or addInputvariable instead!");
-    registerParameter(rName,rDescription,rUnit,rValue,Constant);
-}
-
-
 //! @brief Register a double parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
-//! @ingroup ConvenientParameterFunctions
 //! @param [in] name The name of the parameter
 //! @param [in] description A description of the parameter
 //! @param [in] unit The unit of the parameter value
 //! @param [in] rValue A reference to the double variable representing the value, its adress will be registered
-//! @param [in] dynconst Choose if parameter is dynamic (default) or constant (one that can not be converted into a port)
 //! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
-void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue, const ParamDynConstEnumT dynconst)
+void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue)
 {
     // We allow the : exception for registring start value parameters
     if (!isNameValid(rName, "#"))
@@ -461,29 +496,15 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
         return;
     }
 
-    if(mpParameters->exist(rName))
+    if(mpParameters->hasParameter(rName))
         mpParameters->deleteParameter(rName);     //Remove parameter if it is already registered
 
-    //! @todo what if dynamic parameter should we not remove the port as well
     stringstream ss;
     ss << rValue;
-    if (dynconst == Dynamic)
-    {
-        //! @deprecated
-//        //! @todo remove this later in 0.7
-//        // Make a port with same name so that parameter can be switch to dynamic parameter that can be changed during simulation
-//        this->addReadPort(rName, "NodeSignal", Port::NotRequired);
-//        mpParameters->addParameter(rName, ss.str().c_str(), rDescription, rUnit, "double", true, &rValue);
-        this->addErrorMessage("Dynamic parmeters are no longer supported!!! Use:   addInputVariable()   instead!");
-    }
-    else
-    {
-        mpParameters->addParameter(rName, ss.str().c_str(), rDescription, rUnit, "double", false, &rValue);
-    }
+    mpParameters->addParameter(rName, ss.str().c_str(), rDescription, rUnit, "double", false, &rValue);
 }
 
 //! @brief Register a double parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
-//! @ingroup ConvenientParameterFunctions
 //! @param [in] name The name of the parameter
 //! @param [in] description A description of the parameter
 //! @param [in] unit The unit of the parameter value
@@ -497,7 +518,7 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
         return;
     }
 
-    if(mpParameters->exist(rName))
+    if(mpParameters->hasParameter(rName))
         mpParameters->deleteParameter(rName);     //Remove parameter if it is already registered
 
     mpParameters->addParameter(rName, to_hstring(rValue), rDescription, rUnit, "integer", false, &rValue);
@@ -505,7 +526,6 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
 
 
 //! @brief Register a string parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
-//! @ingroup ConvenientParameterFunctions
 //! @param [in] name The name of the parameter
 //! @param [in] description A description of the parameter
 //! @param [in] unit The unit of the parameter value
@@ -519,7 +539,7 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
         return;
     }
 
-    if(mpParameters->exist(rName))
+    if(mpParameters->hasParameter(rName))
         mpParameters->deleteParameter(rName);     //Remove parameter if it is already registered
 
     mpParameters->addParameter(rName, rValue, rDescription, rUnit, "string", false, &rValue);
@@ -527,7 +547,6 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
 
 
 //! @brief Register a bool parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
-//! @ingroup ConvenientParameterFunctions
 //! @param [in] name The name of the parameter
 //! @param [in] description A description of the parameter
 //! @param [in] unit The unit of the parameter value
@@ -541,7 +560,7 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
         return;
     }
 
-    if(mpParameters->exist(rName))
+    if(mpParameters->hasParameter(rName))
         mpParameters->deleteParameter(rName);     //Remove parameter if it is already registered
 
     if(rValue)
@@ -551,7 +570,7 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
 }
 
 
-//! @brief Removes a parameter value from the component
+//! @brief Removes a parameter from the component
 void Component::unRegisterParameter(const HString &rName)
 {
     mpParameters->deleteParameter(rName);
@@ -566,14 +585,16 @@ void Component::setDesiredTimestep(const double timestep)
     //addWarningMessage("Function setDesiredTimestep() is only available on subsystem components.");
 }
 
-
+//! @brief Set wheter teh component should inherit timestep from its system parent
+//! @param [in] inherit True or False
 void Component::setInheritTimestep(const bool inherit)
 {
     mInheritTimestep = inherit;
     //addWarningMessage("Function setInheritTimestep() is only available on subsystem components.");
 }
 
-
+//! @brief Check if a component inherits timestep from its system parent
+//! @returns True or False
 bool Component::doesInheritTimestep() const
 {
     return mInheritTimestep;
@@ -617,18 +638,19 @@ bool Component::isComponentSignal() const
     return false;
 }
 
-
+//! @brief Returns a pointer to the simulation time variable in the component
+//! @returns pointer to time variable
 double *Component::getTimePtr()
 {
     return &mTime;
 }
 
 
-//! @brief Adds a port to the component
-//! @param [in] portName The desired name of the port (may be automatically changed)
-//! @param [in] porttype The type of port
-//! @param [in] nodetype The type of node that must be connected to the port
-//! @param [in] connection_requirement Specify if the port must be connecteed or if it is optional
+//! @brief Adds a port to the component, do not call this function directlly unless you have to for some reason
+//! @param [in] rPortName The desired name of the port (may be automatically changed)
+//! @param [in] portType The type of port
+//! @param [in] rNodeType The type of node that must be connected to the port
+//! @param [in] reqConnection Specify if the port must be connecteed or if it is optional
 //! @return A pointer to the created port
 Port* Component::addPort(const HString &rPortName, const PortTypesEnumT portType, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnection)
 {
@@ -657,13 +679,13 @@ Port* Component::addPort(const HString &rPortName, const PortTypesEnumT portType
     return new_port;
 }
 
-//! @brief Adds a port to the component
-//! @param [in] portName The desired name of the port (may be automatically changed)
-//! @param [in] porttype The type of port
-//! @param [in] nodetype The type of node that must be connected to the port
-//! @param [in] description A description string describing the port
-//! @param [in] connection_requirement Specify if the port must be connecteed or if it is optional
-//! @return A pointer to the created port
+//! @brief Adds a port to the component, do not call this function directly unless you have to
+//! @param [in] rPortName The desired name of the port (may be automatically changed)
+//! @param [in] portType The type of port
+//! @param [in] rNodeType The type of node that must be connected to the port
+//! @param [in] rDescription A description string describing the port
+//! @param [in] reqConnection Specify if the port must be connecteed or if it is optional
+//! @returns A pointer to the created port
 Port *Component::addPort(const HString &rPortName, const PortTypesEnumT portType, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnection)
 {
     Port *pPort = addPort(rPortName, portType, rNodeType, reqConnection);
@@ -671,16 +693,10 @@ Port *Component::addPort(const HString &rPortName, const PortTypesEnumT portType
     return pPort;
 }
 
-Port *Component::addWritePort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect)
-{
-    return addPort(rPortName, WritePortType, rNodeType, rDescription, reqConnect);
-}
-
-
-//! @brief Convenience method to add a PowerPort
-//! @ingroup ConvenientPortFunctions
-//! @param [in] portName The desired name of the port (may be automatically changed)
-//! @param [in] nodeType The type of node that must be connected to the port
+//! @brief Add a PowerPort to the component
+//! @ingroup ComponentSetupFunctions
+//! @param [in] rPortName The desired name of the port (may be automatically changed)
+//! @param [in] rNodeType The type of node that must be connected to the port
 //! @param [in] reqConnect Specify if the port must be connecteed or if it is optional (Required or NotRequired)
 //! @return A pointer to the created port
 Port* Component::addPowerPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect)
@@ -688,8 +704,20 @@ Port* Component::addPowerPort(const HString &rPortName, const HString &rNodeType
     return addPort(rPortName, PowerPortType, rNodeType, reqConnect);
 }
 
-//! @brief Convenience method to add a PowerMultiPort
-//! @ingroup ConvenientPortFunctions
+//! @brief Add a PowerPort with description to the component
+//! @ingroup ComponentSetupFunctions
+//! @param [in] rPortName The desired name of the port (may be automatically changed)
+//! @param [in] rNodeType The type of node that must be connected to the port
+//! @param [in] rDescription The port description
+//! @param [in] reqConnect Specify if the port must be connecteed or if it is optional (Required or NotRequired)
+//! @return A pointer to the created port
+Port *Component::addPowerPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect)
+{
+    return addPort(rPortName, PowerPortType, rNodeType, rDescription, reqConnect);
+}
+
+//! @brief Add a PowerMultiPort to the component
+//! @ingroup ComponentSetupFunctions
 //! @param [in] portName The desired name of the port (may be automatically changed)
 //! @param [in] nodeType The type of node that must be connected to the port
 //! @param [in] reqConnect Specify if the port must be connecteed or if it is optional (Required or NotRequired)
@@ -699,10 +727,22 @@ Port* Component::addPowerMultiPort(const HString &rPortName, const HString &rNod
     return addPort(rPortName, PowerMultiportType, rNodeType, reqConnect);
 }
 
-//! @brief Convenience method to add a ReadMultiPort
-//! @ingroup ConvenientPortFunctions
+//! @brief Add a PowerMultiPort with description  to the component
+//! @ingroup ComponentSetupFunctions
 //! @param [in] portName The desired name of the port (may be automatically changed)
 //! @param [in] nodeType The type of node that must be connected to the port
+//! @param [in] rDescription The port description
+//! @param [in] reqConnect Specify if the port must be connecteed or if it is optional (Required or NotRequired)
+//! @return A pointer to the created port
+Port *Component::addPowerMultiPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect)
+{
+    return addPort(rPortName, PowerMultiportType, rNodeType, rDescription, reqConnect);
+}
+
+//! @brief Add a ReadMultiPort to the component
+//! @ingroup ComponentSetupFunctions
+//! @param [in] rPortName The desired name of the port (may be automatically changed)
+//! @param [in] rNodeType The type of node that must be connected to the port
 //! @param [in] reqConnect Specify if the port must be connecteed or if it is optional (Required or NotRequired)
 //! @return A pointer to the created port
 Port* Component::addReadMultiPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect)
@@ -710,30 +750,23 @@ Port* Component::addReadMultiPort(const HString &rPortName, const HString &rNode
     return addPort(rPortName, ReadMultiportType, rNodeType, reqConnect);
 }
 
-Port *Component::addPowerPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect)
-{
-    return addPort(rPortName, PowerPortType, rNodeType, rDescription, reqConnect);
-}
-
-Port *Component::addReadPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect)
-{
-    return addPort(rPortName, ReadPortType, rNodeType, rDescription, reqConnect);
-}
-
-Port *Component::addPowerMultiPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect)
-{
-    return addPort(rPortName, PowerMultiportType, rNodeType, rDescription, reqConnect);
-}
-
+//! @brief Add a ReadMultiPort with description to the component
+//! @ingroup ComponentSetupFunctions
+//! @param [in] rPortName The desired name of the port (may be automatically changed)
+//! @param [in] rNodeType The type of node that must be connected to the port
+//! @param [in] rDescription The port description
+//! @param [in] reqConnect Specify if the port must be connecteed or if it is optional (Required or NotRequired)
+//! @return A pointer to the created port
 Port *Component::addReadMultiPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect)
 {
     return addPort(rPortName, ReadMultiportType, rNodeType, rDescription, reqConnect);
 }
 
-//! @brief Convenience method to add a ReadPort
-//! @ingroup ConvenientPortFunctions
-//! @param [in] portName The desired name of the port (may be automatically changed)
-//! @param [in] nodeType The type of node that must be connected to the port
+//! @brief Add a ReadPort to the component
+//! @note Usually you should use addInputVariable instead of this one
+//! @ingroup ComponentSetupFunctions
+//! @param [in] rPortName The desired name of the port (may be automatically changed)
+//! @param [in] rNodeType The type of node that must be connected to the port
 //! @param [in] reqConnect Specify if the port must be connecteed or if it is optional (Required or NotRequired)
 //! @return A pointer to the created port
 Port* Component::addReadPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect)
@@ -741,16 +774,29 @@ Port* Component::addReadPort(const HString &rPortName, const HString &rNodeType,
     return addPort(rPortName, ReadPortType, rNodeType, reqConnect);
 }
 
-
-//! @brief Convenience method to add a WritePort
-//! @ingroup ConvenientPortFunctions
-//! @param [in] portName The desired name of the port (may be automatically changed)
-//! @param [in] nodeType The type of node that must be connected to the port
+//! @brief Add a ReadPort with description to the component
+//! @note Usually you should use addInputVariable instead of this one
+//! @ingroup ComponentSetupFunctions
+//! @param [in] rPortName The desired name of the port (may be automatically changed)
+//! @param [in] rNodeType The type of node that must be connected to the port
+//! @param [in] rDescription The port description
 //! @param [in] reqConnect Specify if the port must be connecteed or if it is optional (Required or NotRequired)
 //! @return A pointer to the created port
-Port* Component::addWritePort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect)
+Port *Component::addReadPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect)
 {
-    return addPort(rPortName, WritePortType, rNodeType, reqConnect);
+    return addPort(rPortName, ReadPortType, rNodeType, rDescription, reqConnect);
+}
+
+//! @brief Add a WritePort with description to the component
+//! @details Private help function, component authors should use addOutPutVariable or addPowerPort instead
+//! @param [in] rPortName The desired name of the port (may be automatically changed)
+//! @param [in] rNodeType The type of node that must be connected to the port
+//! @param [in] rDescription The port description
+//! @param [in] reqConnect Specify if the port must be connecteed or if it is optional (Required or NotRequired)
+//! @return A pointer to the created port
+Port *Component::addWritePort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect)
+{
+    return addPort(rPortName, WritePortType, rNodeType, rDescription, reqConnect);
 }
 
 
@@ -809,6 +855,15 @@ double *Component::getSafeNodeDataPtr(Port* pPort, const int dataId, const doubl
     return pData;
 }
 
+//! @brief Get a pointer to the node data variable, (Port pointer version)
+//! @ingroup ComponentSimulationFunctions
+//! @note This function is slow, you should not run it during simulation
+//! @details The safe in this version means that a dummy pointer will be returnd if the desired one was not found,
+//! this prevents krash and the need to check that return pointer is ok, giving cleaner component code
+//! An error message is given if the desired data was not found
+//! @param[in] pPort A pointer to the port from which to fetch the node data pointer
+//! @param[in] dataId The enum id for the node value to fetch pointer to, (Ex: ModeHydraulic::Pressure)
+//! @returns A pointer to the specified NodeData or a pointer to dummy NodeData
 double *Component::getSafeNodeDataPtr(Port *pPort, const int dataId)
 {
     double *pData=0;
@@ -821,21 +876,35 @@ double *Component::getSafeNodeDataPtr(Port *pPort, const int dataId)
     {
         addErrorMessage("Data pointer could not be retreived in getSafeNodeDataPtr(), Requested dataId: "+to_hstring(dataId));
         stopSimulation();
-        // Create a dummy double, this will cause a small memory leak
-        //! @todo maybe solve this somehow leak in the future, maybe keep a dumy variable somwhere to whcihc everyone will point
-        pData = new double();
+        // Return pointer to dummy data
+        pData = &dummyDouble;
     }
     return pData;
 }
 
-//! @brief This is a help function that returns a pointer to desired NodeData, only for Advanced Use instead of read/write Node
-//! @ingroup ConvenientPortFunctions
+//! @brief Get a pointer to the node data variable, (Port name version)
+//! @ingroup ComponentSimulationFunctions
+//! @note This function is slow, you should not run it during simulation
+//! @details The safe in this version means that a dummy pointer will be returnd if the desired one was not found,
+//! this prevents crash and the need to check that return pointer is ok, giving cleaner component code
+//! An error message is given if the desired data was not found
+//! @param[in] rPortName The name of the port from which to fetch the node data pointer
+//! @param[in] dataId The enum id for the node value to fetch pointer to, (Ex: ModeHydraulic::Pressure)
+//! @returns A pointer to the specified NodeData or a pointer to dummy NodeData
+double *Component::getSafeNodeDataPtr(const HString &rPortName, const int dataId)
+{
+    Port *pPort = this->getPort(rPortName);
+    if (!pPort)
+    {
+        addErrorMessage("Could not find Port: "+rPortName+" in getSafeNodeDataPtr()");
+    }
+    return getSafeNodeDataPtr(pPort, dataId);
+}
+
+//! @brief Returns node data pointer
 //! @param[in] pPort A pointer to the port from which to fetch NodeData pointer
 //! @param[in] dataId The enum id for the node value to fetch pointer to
-//! @param[in] defaultValue Optional default value if port should not be connected (optional), if ommitet it will be 0
-//! @returns A pointer to the specified NodeData or a pointer to dummy NodeData
-//! @details It is only ment to be used inside individual component code and automatically handles creation of dummy veriables in case optional ports are not connected
-//! @todo Dont know if name really good, should indicate that you should only run this once in initialize (otherwise a lot of new doubls may be created)
+//! @returns A pointer to the specified NodeData or a null pointer
 double *Component::getNodeDataPtr(Port *pPort, const int dataId)
 {
     addLogMess((getName()+"::getNodeDataPtr").c_str());
@@ -848,24 +917,14 @@ double *Component::getNodeDataPtr(Port *pPort, const int dataId)
     return pPort->getNodeDataPtr(dataId);
 }
 
-double *Component::getSafeNodeDataPtr(const HString &rPortName, const int dataId)
-{
-    Port *pPort = this->getPort(rPortName);
-    if (!pPort)
-    {
-        addErrorMessage("Could not find Port: "+rPortName+" in getNodeDataPtr()");
-    }
-    return getSafeNodeDataPtr(pPort, dataId);
-}
 
-//! @brief This is a help function that returns a pointer to desired NodeData, only for Advanced Use instead of read/write Node
-//! @ingroup ConvenientPortFunctions
+
+//! @brief Get a pointer to node data in a subport in a multiport
+//! @ingroup ComponentSimulationFunctions
 //! @param[in] pPort A pointer to the port from which to fetch NodeData pointer
 //! @param[in] portIdx The index of the subport in a multiport
 //! @param[in] dataId The enum id for the node value to fetch pointer to
 //! @returns A pointer to the specified NodeData or a pointer to dummy NodeData
-//! @details It is only ment to be used inside individual component code and automatically handles creation of dummy veriables in case optional ports are not connected
-//! @todo Dont know if name really good, should indicate that you should only run this once in initialize (otherwise a lot of new doubls may be created)
 double *Component::getSafeMultiPortNodeDataPtr(Port *pPort, const size_t portIdx, const int dataId)
 {
     addLogMess((getName()+"::getSafeMultiPortNodeDataPtr").c_str());
@@ -877,15 +936,12 @@ double *Component::getSafeMultiPortNodeDataPtr(Port *pPort, const size_t portIdx
     return pPort->getNodeDataPtr(dataId, portIdx);
 }
 
-//! @brief This is a help function that returns a pointer to desired NodeData, only for Advanced Use instead of read/write Node
-//! @ingroup ConvenientPortFunctions
+//! @brief Get a pointer to node data in a subport in a multiport (also setting initial value at the same time)
+//! @ingroup ComponentSimulationFunctions
 //! @param[in] pPort A pointer to the port from which to fetch NodeData pointer
 //! @param[in] portIdx The index of the subport in a multiport
 //! @param[in] dataId The enum id for the node value to fetch pointer to
-//! @param[in] defaultValue Optional default value if port should not be connected (optional), if ommitet it will be 0
 //! @returns A pointer to the specified NodeData or a pointer to dummy NodeData
-//! @details It is only ment to be used inside individual component code and automatically handles creation of dummy veriables in case optional ports are not connected
-//! @todo Dont know if name really good, should indicate that you should only run this once in initialize (otherwise a lot of new doubls may be created)
 double *Component::getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx, const int dataId, const double defaultValue)
 {
     double* pData = getSafeMultiPortNodeDataPtr(pPort, portIdx, dataId);
@@ -893,6 +949,13 @@ double *Component::getSafeMultiPortNodeDataPtr(Port* pPort, const size_t portIdx
     return pData;
 }
 
+//! @brief Read node data based on port and data name, also checks so that correct data is returned
+//! @note This functions is slow, do not use it during simulation
+//! @details It searches for data based on strings, this make it unsiutable for use during simualtion but its excelent for use in initialize when port pointers are not desired/availible
+//! This function will also check so that the desired data actually exist in the requested node
+//! @param [in] rPortName The port to get data from
+//! @param [in] rDataName The data variable name for the data to retreive
+//! @returns The node data value or -1 if failed. (And error message will also be sent)
 double Component::readNodeSafeSlow(const HString &rPortName, const HString &rDataName)
 {
     Port *pPort = getPort(rPortName);
@@ -911,6 +974,13 @@ double Component::readNodeSafeSlow(const HString &rPortName, const HString &rDat
     return -1;
 }
 
+//! @brief Write node data based on port and data name, also checks so that correct data is written
+//! @note This functions is slow, do not use it during simulation
+//! @details It searches for data based on strings, this make it unsiutable for use during simualtion but its excelent for use in initialize when port pointers are not desired/availible
+//! This function will also check so that the desired data actually exist in the requested node, error message will be sent if it does not
+//! @param [in] rPortName The port to write data to
+//! @param [in] rDataName The data variable name for the data to be written
+//! @param [in] value The value to write
 void Component::writeNodeSafeSlow(const HString &rPortName, const HString &rDataName, const double value)
 {
     Port *pPort = getPort(rPortName);
@@ -1018,6 +1088,14 @@ void Component::setTimestep(const double timestep)
     mTimestep = timestep;
 }
 
+//! @brief Add an inputVariable (Scalar signal ReadPort)
+//! @param [in] rName The name of the variable
+//! @param [in] rDescription The description of the variable
+//! @param [in] rUnit The unit of the variable value
+//! @param [in] defaultValue The default variable value (if not connected)
+//! @param [in,out] Optional pointer to pointer to data. The data pointer will be registered and automatically assigned before initialisation)
+//! @returns A pointer to the port created.
+//! @ingroup ComponentSetupFunctions
 Port *Component::addInputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double **ppNodeData)
 {
     //! @todo suport more types
@@ -1033,9 +1111,16 @@ Port *Component::addInputVariable(const HString &rName, const HString &rDescript
     return pPort;
 }
 
+//! @brief Add an outputVariable (Scalar signal WritePort) without default value
+//! @param [in] rName The name of the variable
+//! @param [in] rDescription The description of the variable
+//! @param [in] rUnit The unit of the variable value
+//! @param [in,out] Optional pointer to pointer to data. The data pointer will be registered and automatically assigned before initialisation)
+//! @returns A pointer to the port created.
+//! @ingroup ComponentSetupFunctions
 Port *Component::addOutputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, double **ppNodeData)
 {
-    Port *pPort = addWritePort(rName, "NodeSignal", Port::NotRequired);
+    Port *pPort = addWritePort(rName, "NodeSignal", rDescription, Port::NotRequired);
     pPort->setSignalNodeUnitAndDescription(rUnit, rDescription);
     disableStartValue(pPort,0);
 
@@ -1047,9 +1132,17 @@ Port *Component::addOutputVariable(const HString &rName, const HString &rDescrip
     return pPort;
 }
 
+//! @brief Add an outputVariable (Scalar signal WritePort) with default value
+//! @param [in] rName The name of the variable
+//! @param [in] rDescription The description of the variable
+//! @param [in] rUnit The unit of the variable value
+//! @param [in] defaultValue The default variable value (if not connected)
+//! @param [in,out] Optional pointer to pointer to data. The data pointer will be registered and automatically assigned before initialisation)
+//! @returns A pointer to the port created.
+//! @ingroup ComponentSetupFunctions
 Port *Component::addOutputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double **ppNodeData)
 {
-    Port *pPort = addWritePort(rName, "NodeSignal", Port::NotRequired);
+    Port *pPort = addWritePort(rName, "NodeSignal", rDescription, Port::NotRequired);
     pPort->setSignalNodeUnitAndDescription(rUnit, rDescription);
     setDefaultStartValue(pPort, 0, defaultValue);
 
@@ -1061,6 +1154,7 @@ Port *Component::addOutputVariable(const HString &rName, const HString &rDescrip
     return pPort;
 }
 
+//! @brief Automatically retrieve and assign node data pointers that have been registered
 void Component::initializeAutoSignalNodeDataPtrs()
 {
     map<Port*,double**>::iterator it;
@@ -1088,7 +1182,7 @@ double Component::getMeasuredTime() const
 
 
 //! @brief Write an Debug message, i.e. for debugging purposes.
-//! @ingroup ConvenientMessageFunctions
+//! @ingroup ComponentMessageFunctions
 //! @param [in] message The message string
 void Component::addDebugMessage(const HString &rMessage, const HString &rTag) const
 {
@@ -1100,7 +1194,7 @@ void Component::addDebugMessage(const HString &rMessage, const HString &rTag) co
 
 
 //! @brief Write an Warning message.
-//! @ingroup ConvenientMessageFunctions
+//! @ingroup ComponentMessageFunctions
 //! @param [in] message The message string
 void Component::addWarningMessage(const HString &rMessage, const HString &rTag) const
 {
@@ -1112,7 +1206,7 @@ void Component::addWarningMessage(const HString &rMessage, const HString &rTag) 
 
 
 //! @brief Write an Error message.
-//! @ingroup ConvenientMessageFunctions
+//! @ingroup ComponentMessageFunctions
 //! @param [in] message The message string
 void Component::addErrorMessage(const HString &rMessage, const HString &rTag) const
 {
@@ -1124,7 +1218,7 @@ void Component::addErrorMessage(const HString &rMessage, const HString &rTag) co
 
 
 //! @brief Write an Info message.
-//! @ingroup ConvenientMessageFunctions
+//! @ingroup ComponentMessageFunctions
 //! @param [in] message The message string
 void Component::addInfoMessage(const HString &rMessage, const HString &rTag) const
 {
@@ -1135,7 +1229,7 @@ void Component::addInfoMessage(const HString &rMessage, const HString &rTag) con
 }
 
 //! @brief Writes a Fatal message and tells the receiver of the message to close program in a controlled way. Also prints message to log file.
-//! @ingroup ConvenientMessageFunctions
+//! @ingroup ComponentMessageFunctions
 //! @param [in] message The message string
 void Component::addFatalMessage(const HString &rMessage, const HString &rTag) const
 {
@@ -1147,17 +1241,25 @@ void Component::addFatalMessage(const HString &rMessage, const HString &rTag) co
 }
 
 
+//! @deprecated Use getDefaultStartValue instead
+double Component::getStartValue(Port* pPort, const size_t idx, const size_t portIdx)
+{
+    addErrorMessage("getStartValue() is deprecated, use gettDefaultStartValue() instead. Note!, it will not return the initial value!");
+    return getDefaultStartValue(pPort, idx, portIdx);
+}
+
 //! @brief Get the an actual start value of a port
 //! @param[in] pPort is the port which should be read from
 //! @param[in] idx is the index of the start value e.g. NodeHydraulic::Pressure
-//! @returns the start value
-double Component::getStartValue(Port* pPort, const size_t idx, const size_t portIdx)
+//! @returns The default start value
+//! @ingroup ComponentSetupFunctions
+double Component::getDefaultStartValue(Port* pPort, const size_t idx, const size_t portIdx)
 {
     return pPort->getStartValue(idx, portIdx);
 }
 
 
-//! @deprecated
+//! @deprecated Use setDefaultStartValue instead
 void Component::setStartValue(Port* pPort, const size_t idx, const double value)
 {
     addErrorMessage("setStartValue() is deprecated, use setDefaultStartValue() instead. Note!, it will not set the initial value!");
@@ -1168,6 +1270,7 @@ void Component::setStartValue(Port* pPort, const size_t idx, const double value)
 //! @param[in] pPort is the port which should be written to
 //! @param[in] idx is the index of the start value e.g. NodeHydraulic::Pressure
 //! @param[in] value is the start value that should be written
+//! @ingroup ComponentSetupFunctions
 void Component::setDefaultStartValue(Port *pPort, const size_t idx, const double value)
 {
     addLogMess((getName()+"::setDefaultStartValue").c_str());
@@ -1209,37 +1312,45 @@ double Component::getTimestep() const
     return mTimestep;
 }
 
-
 Component::~Component()
 {
-    //! Remove the mapping to eventual system parameters to avoid cowboy-writing in memory after deleted component.
-//    for(size_t i = 0; i < mParameters.size(); ++i)
-//    {
-//        mpSystemParent->getSystemParameters().unMapParameter(mParameters[i].getValuePtr());
-//    }
-
-    //Delete any ports that have been added to the component
+    // Delete any ports that have been added to the component
     PortPtrMapT::iterator ppmit;
     for (ppmit=mPortPtrMap.begin(); ppmit!=mPortPtrMap.end(); ++ppmit)
     {
         delete (*ppmit).second;
     }
 
+    // Delete any registered parameters (Constants and start values)
     delete mpParameters;
 }
 
+//! @brief Configures a component by setting up ports, variabled, constants and other resources
+//! @details Every function must overload this function, in this function ports variablesd and constants will be added
+//! The component author is howere free to add any other desired code as well.
+//! This function is called immediately after a component instace has been created
+//! @ingroup ComponentSetup
 void Component::configure()
 {
     // This function ust be overloaded in every component
     addErrorMessage("You must overload the configure() function in Component: " + mTypeName);
 }
 
+//! @brief Deconfigure a component, use this to cleanup and memory/resource allocations you have made in configure
+//! @details This function can be optionally overloaded if it is needed
+//! You can use it to free memmory or other resources that you have created in configure
+//! This function is the last one called before a component instance is deleted (destructor called)
+//! @ingroup ComponentSetup
 void Component::deconfigure()
 {
-    // This function should be overloaded in every component
+    // This function can be overloaded in every component
     // Does nothing by default
 }
 
+//! @brief This function can be used to automate things prior to component initialization, only use this if you know what you are doing
+//! @detalis One example of what you can do, is reconnecting interanl connections in programed subsystems
+//! @returns True or False to signal sucess or failure
+//! @ingroup ComponentPowerAuthorFunctions
 bool Component::preInitialize()
 {
     // This function can be overloaded in components if needed
@@ -1248,7 +1359,7 @@ bool Component::preInitialize()
 }
 
 
-//! @brief Loads the start values to the connected Node from the "start value node" at each Port of the component
+//! @brief Loads the default start values to the connected node in each port on the component
 void Component::loadStartValues()
 {
     PortPtrMapT::iterator pit;
@@ -1258,7 +1369,8 @@ void Component::loadStartValues()
     }
 }
 
-
+//! @todo this function is strange, need to tfind a better name and make sure taht this really works in is really the thing you want to do
+//! @details The function saves the last values as default startvalues for the next simulation
 void Component::loadStartValuesFromSimulation()
 {
     PortPtrMapT::iterator pit;
@@ -1270,8 +1382,11 @@ void Component::loadStartValuesFromSimulation()
 
 
 //! @brief Find and return the full file path name of fileName within the system search path, parent systems included (path to HMF file is always in here)
-//! @param fileName the name of the searched file
+//! @details With this function you can find external files based on a path relative to the model file path
+//! This makes it possible to avoid absolut paths for external file resources
+//! @param fileName the name of the file to search for
 //! @return full file name path, empty string if it does not exsits
+//! @ingroup ComponentSetupFunctions
 HString Component::findFilePath(const HString &rFileName)
 {
     bool found = false;

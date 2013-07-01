@@ -154,7 +154,9 @@ void Port::loadStartValuesFromSimulation()
 
 //! @brief Reads a value from the connected node
 //! @param [in] idx The data id of the data to read
+//! @details Safe but slow version, will not crash if idx out of bounds
 //! @return The data value
+//! @ingroup ComponentSimulationFunctions
 double Port::readNodeSafe(const size_t idx, const size_t /*portIdx*/)
 {
     if (idx < mpNode->getNumDataVariables())
@@ -169,6 +171,8 @@ double Port::readNodeSafe(const size_t idx, const size_t /*portIdx*/)
 //! @brief Writes a value to the connected node
 //! @param [in] idx The data id of the data to write
 //! @param [in] value The value of the data to read
+//! @details Safe but slow version, will not crash if idx out of bounds
+//! @ingroup ComponentSimulationFunctions
 void Port::writeNodeSafe(const size_t idx, const double value, const size_t /*portIdx*/)
 {
     if (idx < mpNode->getNumDataVariables())
@@ -307,7 +311,9 @@ void Port::setVariableAlias(const HString &rAlias, const int id)
     }
 }
 
-//! @todo return reference to string instead, if that is possible
+//! @brief Get the alias name for a spcific node variable id
+//! @param [in] id The node data id of the requested variable (Ex: NodeHydraulic::Pressure)
+//! @return The alias name or empty string if no alias name exist for requested variable
 const HString &Port::getVariableAlias(const int id)
 {
     std::map<HString, int>::const_iterator it;
@@ -315,16 +321,15 @@ const HString &Port::getVariableAlias(const int id)
     {
         if (it->second == id)
         {
-            //copyString(&mpTempAlias, it->first);
-            //return mpTempAlias;
             return it->first;
         }
     }
-//    copyString(&mpTempAlias, "");
-//    return mpTempAlias;
     return mEmptyString;
 }
 
+//! @brief Get the variable id for a specific alias name
+//! @param [in] rAlias The alias name to search for
+//! @returns The variable id (integer value) (Ex:: NodeHydarulic::Pressure) or -1 if not found
 int Port::getVariableIdByAlias(const HString &rAlias) const
 {
     std::map<HString, int>::const_iterator it = mVariableAliasMap.find(rAlias);
@@ -337,63 +342,15 @@ int Port::getVariableIdByAlias(const HString &rAlias) const
     return -1;
 }
 
+//! @brief Get a pointer to the start node
+//! @returns StartNode ptr or 0 if no startnode
 Node *Port::getStartNodePtr()
 {
     return mpStartNode;
 }
 
-
-////! @brief Debug function to dump logged node data to a file
-////! @param [in] filename The name of the file to write to
-//void Port::saveLogData(string filename, const size_t /*portIdx*/)
-//{
-//    if (mpNode != 0)
-//    {
-//        HString header = getComponentName() + "::" + getName();
-
-//        ofstream out_file;
-//        out_file.open(filename.c_str());
-//        if (out_file.good())
-//        {
-//            vector<double>* pTimeStorage = mpNode->getOwnerSystem()->getLogTimeVector();
-//            if(pTimeStorage->size() != mpNode->mDataStorage.size())
-//            {
-//                mpComponent->addFatalMessage("Port::saveLogData(): pTimeStorage->size() != mpNode->mDataStorage.size()");
-//            }
-
-//            // First write HEADER info containing node info
-//            out_file << header.c_str() << " " << mpNode->getNodeType().c_str() << endl;
-//            out_file << "time";
-//            for (size_t i=0; i<mpNode->getNumDataVariables(); ++i)
-//            {
-//                out_file << " " << mpNode->getDataDescription(i)->name;
-//            }
-//            out_file << endl;
-
-//            //Write log data to file
-//            for (size_t row=0; row<pTimeStorage->size(); ++row)
-//            {
-//                out_file << pTimeStorage->at(row);
-//                for (size_t datacol=0; datacol<mpNode->getNumDataVariables(); ++datacol)
-//                {
-//                    out_file << " " << mpNode->mDataStorage[row][datacol];
-//                }
-//                out_file << endl;
-//            }
-//            out_file.close();
-//            cout << "Done! Saving node data to file: " << filename << endl;
-//        }
-//        else
-//        {
-//            cout << "Warning! Could not open out file for writing: " << filename << endl;
-//        }
-//    }
-//    else
-//    {
-//        cout << getComponentName().c_str() << "-port:" << mPortName.c_str() << " can not log data, the Port has no Node connected" << endl;
-//    }
-//}
-
+//! @brief Check if log data  exist in the ports node
+//! @returns True or False
 bool Port::haveLogData(const size_t /*portIdx*/)
 {
     if (mpNode)
@@ -455,6 +412,8 @@ int Port::getNodeDataIdFromName(const HString &rName, const size_t /*portIdx*/)
     }
 }
 
+//! @brief A help function taht makes it possible to overwrite the unit and description of scalar signal node variables
+//! @todo is this even needed anymore now taht we have in/out variables
 void Port::setSignalNodeUnitAndDescription(const HString &rUnit, const HString &rDescription)
 {
     //! @todo multiport version needed
@@ -505,6 +464,8 @@ vector<double> *Port::getDataVectorPtr(const size_t /*portIdx*/)
     }
 }
 
+//! @brief Returns the number of data variables in the node
+//! @returns The number of data varaibles in the node
 size_t Port::getNumDataVariables() const
 {
     return mpNode->getNumDataVariables();
@@ -565,6 +526,7 @@ void Port::disableStartValue(const size_t idx)
 
 
 //! @brief Check if the port is curently connected
+//! @brief Returns True or False
 bool Port::isConnected()
 {
     return (mConnectedPorts.size() > 0);
@@ -650,11 +612,15 @@ const HString &Port::getComponentName() const
     return getComponent()->getName();
 }
 
+//! @brief Get port description
+//! @returns Port description
 const HString &Port::getDescription() const
 {
     return mDescription;
 }
 
+//! @brief Set port description
+//! @param [in] rDescription The new description
 void Port::setDescription(const HString &rDescription)
 {
     mDescription = rDescription;

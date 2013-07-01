@@ -48,7 +48,7 @@ using namespace std;
 //! @param [in] type The type of the parameter e.g. double
 //! @param [in] pDataPtr Only used by Components, system parameters don't use this, default: 0
 //! @param [in] pParentParameters A pointer to the Parameters object that contains the Parameter
-Parameter::Parameter(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rUnit, const HString &rType, bool isDynamic, void* pDataPtr, Parameters* pParentParameters)
+ParameterEvaluator::ParameterEvaluator(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rUnit, const HString &rType, void* pDataPtr, ParameterEvaluatorHandler* pParentParameters)
 {
     mEnabled = true;
     mParameterName = rName;
@@ -57,7 +57,6 @@ Parameter::Parameter(const HString &rName, const HString &rValue, const HString 
     mUnit = rUnit;
     mType = rType;
 
-    mIsDynamic = isDynamic;
     mpData = pDataPtr;
     mpParentParameters = pParentParameters;
     evaluate();
@@ -67,18 +66,18 @@ Parameter::Parameter(const HString &rName, const HString &rValue, const HString 
 //! @brief Returns a pointer directly to the parameter data variable
 //! @warning Dont use this function unless YOU REALLY KNOW WHAT YOU ARE DOING
 //! @warning This function may be removed in teh future
-void* Parameter::getDataPtr()
+void* ParameterEvaluator::getDataPtr()
 {
     return mpData;
 }
 
-void Parameter::setEnabled(const bool enabled)
+void ParameterEvaluator::setEnabled(const bool enabled)
 {
     mEnabled = enabled;
 }
 
 
-bool Parameter::setParameter(const HString &rValue, const HString &rDescription, const HString &rUnit, const HString &rType, Parameter **pNeedEvaluation, bool force)
+bool ParameterEvaluator::setParameter(const HString &rValue, const HString &rDescription, const HString &rUnit, const HString &rType, ParameterEvaluator **pNeedEvaluation, bool force)
 {
     bool success;
     HString oldValue = mParameterValue;
@@ -119,7 +118,7 @@ bool Parameter::setParameter(const HString &rValue, const HString &rDescription,
 //! @return true if success, otherwise false
 //!
 //! This function is used by Parameters
-bool Parameter::setParameterValue(const HString &rValue, Parameter **pNeedEvaluation)
+bool ParameterEvaluator::setParameterValue(const HString &rValue, ParameterEvaluator **pNeedEvaluation)
 {
     bool success=false;
  //   if(!(mParameterName==value))
@@ -147,7 +146,7 @@ bool Parameter::setParameterValue(const HString &rValue, Parameter **pNeedEvalua
 
 //! @brief Returns the type of the parameter
 //! @return The type of the parameter
-const HString &Parameter::getType() const
+const HString &ParameterEvaluator::getType() const
 {
     return mType;
 }
@@ -159,13 +158,13 @@ const HString &Parameter::getType() const
 //! This function is used by Parameters. The point with run this function is
 //! to write the right value to the mData pointer.
 //! @see evaluate(HString &result)
-bool Parameter::evaluate()
+bool ParameterEvaluator::evaluate()
 {
     HString dummy;
     return evaluate(dummy);
 }
 
-bool Parameter::refreshParameterValueText()
+bool ParameterEvaluator::refreshParameterValueText()
 {
     if (mpData)
     {
@@ -210,7 +209,7 @@ bool Parameter::refreshParameterValueText()
 //!
 //! This function is used by Parameters
 //! @see evaluate()
-bool Parameter::evaluate(HString &rResult, Parameter *ignoreMe)
+bool ParameterEvaluator::evaluate(HString &rResult, ParameterEvaluator *ignoreMe)
 {
     (void)ignoreMe;
 
@@ -325,37 +324,32 @@ bool Parameter::evaluate(HString &rResult, Parameter *ignoreMe)
     return success;
 }
 
-const HString &Parameter::getName() const
+const HString &ParameterEvaluator::getName() const
 {
     return mParameterName;
 }
 
-const HString &Parameter::getValue() const
+const HString &ParameterEvaluator::getValue() const
 {
     return mParameterValue;
 }
 
-const HString &Parameter::getUnit() const
+const HString &ParameterEvaluator::getUnit() const
 {
     return mUnit;
 }
 
-const HString &Parameter::getDescription() const
+const HString &ParameterEvaluator::getDescription() const
 {
     return mDescription;
 }
 
-bool Parameter::isEnabled() const
+bool ParameterEvaluator::isEnabled() const
 {
     return mEnabled;
 }
 
-bool Parameter::isDynamic() const
-{
-    return mIsDynamic;
-}
-
-void Parameter::resolveSignPrefix(HString &rSignPrefix) const
+void ParameterEvaluator::resolveSignPrefix(HString &rSignPrefix) const
 {
     // Resolve prefix, check num -, ignore +
     size_t nMinus=0;
@@ -378,7 +372,7 @@ void Parameter::resolveSignPrefix(HString &rSignPrefix) const
     }
 }
 
-void Parameter::splitSignPrefix(const HString &rString, HString &rPrefix, HString &rValue)
+void ParameterEvaluator::splitSignPrefix(const HString &rString, HString &rPrefix, HString &rValue)
 {
     rPrefix.clear();
     size_t n=0;
@@ -405,13 +399,13 @@ void Parameter::splitSignPrefix(const HString &rString, HString &rPrefix, HStrin
 
 //! @brief Constructor
 //! @param [in] pParentComponent A pointer to the Component that contains the Parameters
-Parameters::Parameters(Component* pParentComponent)
+ParameterEvaluatorHandler::ParameterEvaluatorHandler(Component* pParentComponent)
 {
     mParentComponent = pParentComponent;
 }
 
 //! @brief Destructor
-Parameters::~Parameters()
+ParameterEvaluatorHandler::~ParameterEvaluatorHandler()
 {
     //Deleates all parameters stored in vector
     for (size_t i=0; i<mParameters.size(); ++i)
@@ -429,15 +423,15 @@ Parameters::~Parameters()
 //! @param [in] type The type of the parameter e.g. double, default: ""
 //! @param [in] pDataPtr Only used by Components, system parameters don't use this, default: 0
 //! @return true if success, otherwise false
-bool Parameters::addParameter(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rUnit, const HString &rType, bool isDynamic, void* dataPtr, bool force)
+bool ParameterEvaluatorHandler::addParameter(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rUnit, const HString &rType, void* dataPtr, bool force)
 {
     bool success = false;
     if (!rName.empty())
     {
-        if(!exist(rName))
+        if(!hasParameter(rName))
         {
             //! @todo should make sure that parameter names do not have + - * / . or similar as first charater
-            Parameter* newParameter = new Parameter(rName, rValue, rDescription, rUnit, rType, isDynamic, dataPtr, this);
+            ParameterEvaluator* newParameter = new ParameterEvaluator(rName, rValue, rDescription, rUnit, rType, dataPtr, this);
             success = newParameter && newParameter->evaluate();
             if(success || force)
             {
@@ -456,9 +450,9 @@ bool Parameters::addParameter(const HString &rName, const HString &rValue, const
 
 //! @brief Deletes a parameter
 //! @param parameterName The name of the paramter to delete
-void Parameters::deleteParameter(const HString &rName)
+void ParameterEvaluatorHandler::deleteParameter(const HString &rName)
 {
-    std::vector<Parameter*>::iterator parIt;
+    std::vector<ParameterEvaluator*>::iterator parIt;
     for(parIt=mParameters.begin(); parIt!=mParameters.end(); ++parIt)
     {
         if( rName == (*parIt)->getName() )
@@ -474,11 +468,11 @@ void Parameters::deleteParameter(const HString &rName)
 
 //! @brief Rename a parameter (only useful for system paramters)
 //! @todo do I need to call some needs evaluation here or ?
-bool Parameters::renameParameter(const HString &rOldName, const HString &rNewName)
+bool ParameterEvaluatorHandler::renameParameter(const HString &rOldName, const HString &rNewName)
 {
-    if (!exist(rNewName))
+    if (!hasParameter(rNewName))
     {
-        std::vector<Parameter*>::iterator parIt;
+        std::vector<ParameterEvaluator*>::iterator parIt;
         for(parIt=mParameters.begin(); parIt!=mParameters.end(); ++parIt)
         {
             if( rOldName == (*parIt)->getName() )
@@ -492,9 +486,9 @@ bool Parameters::renameParameter(const HString &rOldName, const HString &rNewNam
 }
 
 
-void Parameters::enableParameter(const HString &rName, const bool enable)
+void ParameterEvaluatorHandler::setParameterEnabled(const HString &rName, const bool enable)
 {
-    std::vector<Parameter*>::iterator parIt;
+    std::vector<ParameterEvaluator*>::iterator parIt;
     for(parIt=mParameters.begin(); parIt!=mParameters.end(); ++parIt)
     {
         if( rName == (*parIt)->getName() )
@@ -508,7 +502,7 @@ void Parameters::enableParameter(const HString &rName, const bool enable)
 }
 
 
-const Parameter* Parameters::getParameter(const HString &rName) const
+const ParameterEvaluator* ParameterEvaluatorHandler::getParameter(const HString &rName) const
 {
     for (size_t i=0; i<mParameters.size(); ++i)
     {
@@ -522,7 +516,7 @@ const Parameter* Parameters::getParameter(const HString &rName) const
     return 0;
 }
 
-void Parameters::getParameterNames(std::vector<HString> &rParameterNames)
+void ParameterEvaluatorHandler::getParameterNames(std::vector<HString> &rParameterNames)
 {
     rParameterNames.resize(mParameters.size());
     for(size_t i=0; i<mParameters.size(); ++i)
@@ -534,7 +528,7 @@ void Parameters::getParameterNames(std::vector<HString> &rParameterNames)
 //! @brief Get the value of specified parameter
 //! @param [in] name The parameter name to get value of
 //! @param [out] rValue Reference to the string variable that will contain the parameter value. The variable will be "" if parameter not found
-void Parameters::getParameterValue(const HString &rName, HString &rValue)
+void ParameterEvaluatorHandler::getParameterValue(const HString &rName, HString &rValue)
 {
     for(size_t i=0; i<mParameters.size(); ++i)
     {
@@ -550,7 +544,7 @@ void Parameters::getParameterValue(const HString &rName, HString &rValue)
 //! @brief Returns a pointer directly to the parameter data variable
 //! @warning Dont use this function unless YOU REALLY KNOW WHAT YOU ARE DOING
 //! @warning This function may be removed in the future
-void* Parameters::getParameterDataPtr(const HString &rName)
+void* ParameterEvaluatorHandler::getParameterDataPtr(const HString &rName)
 {
     for(size_t i=0; i<mParameters.size(); ++i)
     {
@@ -562,13 +556,13 @@ void* Parameters::getParameterDataPtr(const HString &rName)
     return 0;
 }
 
-const std::vector<Parameter*> *Parameters::getParametersVectorPtr() const
+const std::vector<ParameterEvaluator*> *ParameterEvaluatorHandler::getParametersVectorPtr() const
 {
     return &mParameters;
 }
 
 
-bool Parameters::setParameter(const HString &rName, const HString &rValue, const HString &rDescription,
+bool ParameterEvaluatorHandler::setParameter(const HString &rName, const HString &rValue, const HString &rDescription,
                               const HString &rUnit, const HString &rType,  const bool force)
 {
     bool success = false;
@@ -579,7 +573,7 @@ bool Parameters::setParameter(const HString &rName, const HString &rValue, const
         // If Found (It cannot find itself)
         if( (rName == mParameters[i]->getName()) )//&& (value != mParameters[i]->getName()) ) //By commenting this a parameter can be set to a systems parameter with same name as component parameter e.g. mass m = m (system parameter) related to issue #783
         {
-            Parameter *needEvaluation=0;
+            ParameterEvaluator *needEvaluation=0;
             success = mParameters[i]->setParameter(rValue, rDescription, rUnit, rType, &needEvaluation, force); //Sets the new value, if the parameter is of the type to need evaluation e.g. if it is a system parameter needEvaluation points to the parameter
             if(needEvaluation)
             {
@@ -590,7 +584,7 @@ bool Parameters::setParameter(const HString &rName, const HString &rValue, const
             }
             else //mParameters[i] don't need evaluation, this loop erases it from mParametersNeedEvaluation
             {
-                std::vector<Parameter*>::iterator parIt = mParametersNeedEvaluation.begin();
+                std::vector<ParameterEvaluator*>::iterator parIt = mParametersNeedEvaluation.begin();
                 while( parIt != mParametersNeedEvaluation.end() )
                 {
                     if(*parIt == mParameters[i])
@@ -613,7 +607,7 @@ bool Parameters::setParameter(const HString &rName, const HString &rValue, const
 //! @param [in] name The name of the parameter to be set
 //! @param [in] value The new value for the parameter
 //! @return true if success, otherwise false
-bool Parameters::setParameterValue(const HString &rName, const HString &rValue, bool force)
+bool ParameterEvaluatorHandler::setParameterValue(const HString &rName, const HString &rValue, bool force)
 {
     return setParameter(rName, rValue, "", "", "", force);
 }
@@ -624,7 +618,7 @@ bool Parameters::setParameterValue(const HString &rName, const HString &rValue, 
 //! @param [out] rEvaluatedParameterValue The result of the evaluation
 //! @param [in] type The type of how the parameter should be interpreted
 //! @return true if success, otherwise false
-bool Parameters::evaluateParameter(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType, Parameter *ignoreMe)
+bool ParameterEvaluatorHandler::evaluateParameter(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType, ParameterEvaluator *ignoreMe)
 {
     bool success = false;
     //Try our own parameters
@@ -654,7 +648,7 @@ bool Parameters::evaluateParameter(const HString &rName, HString &rEvaluatedPara
 
 //! @brief Evaluate all parameters
 //! @return true if success, otherwise false
-bool Parameters::evaluateParameters()
+bool ParameterEvaluatorHandler::evaluateParameters()
 {
     bool success = true;
     for(size_t i=0; i<mParameters.size(); ++i)
@@ -664,7 +658,7 @@ bool Parameters::evaluateParameters()
     return success;
 }
 
-bool Parameters::refreshParameterValueText(const HString &rParameterName)
+bool ParameterEvaluatorHandler::refreshParameterValueText(const HString &rParameterName)
 {
     for(size_t i=0; i<mParameters.size(); ++i)
     {
@@ -679,7 +673,7 @@ bool Parameters::refreshParameterValueText(const HString &rParameterName)
 //! @brief Check if a parameter with given name exist among the parameters
 //! @param [in] parameterName The name of the parameter to check for
 //! @returns true if found else false
-bool Parameters::exist(const HString &rName) const
+bool ParameterEvaluatorHandler::hasParameter(const HString &rName) const
 {
     for(size_t i=0; i<mParameters.size(); ++i)
     {
@@ -699,10 +693,10 @@ bool Parameters::exist(const HString &rName) const
 //! Check all parameters that need evaluation are able to be evaluated. The function will
 //! stop as soon as one parameter turns out to be faulty. So in the case of many bad parameters
 //! only the name of the first one is returned.
-bool Parameters::checkParameters(HString &rErrParName)
+bool ParameterEvaluatorHandler::checkParameters(HString &rErrParName)
 {
     bool success = true;
-    std::vector<Parameter*>::iterator parIt;
+    std::vector<ParameterEvaluator*>::iterator parIt;
     for(parIt = mParametersNeedEvaluation.begin(); (parIt != mParametersNeedEvaluation.end()) && (!mParametersNeedEvaluation.empty()); ++parIt)
     {
         success = (success && (*parIt)->evaluate());
@@ -716,7 +710,7 @@ bool Parameters::checkParameters(HString &rErrParName)
 }
 
 
-Component *Parameters::getParentComponent() const
+Component *ParameterEvaluatorHandler::getParentComponent() const
 {
     return this->mParentComponent;
 }

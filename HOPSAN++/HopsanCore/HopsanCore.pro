@@ -50,7 +50,6 @@ win32 {
     #DEFINES += STATICCORE      #Use this if you are compiling the core into a program directly or building a static lib
     DEFINES += DOCOREDLLEXPORT  #Use this if you are compiling the core as a DLL or SO
     DEFINES -= UNICODE
- #   LIBS += -L"C:\Program Files\Microsoft SDKs\Windows\v7.1\Lib"
     LIBS += -lole32
     LIBS += -loleaut32
 

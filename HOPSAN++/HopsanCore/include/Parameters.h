@@ -32,22 +32,22 @@ namespace hopsan {
 
 //Forward declaration
 class Component;
-class Parameters;
+class ParameterEvaluatorHandler;
 
-class DLLIMPORTEXPORT Parameter
+class DLLIMPORTEXPORT ParameterEvaluator
 {
-    friend class Parameters;
+    friend class ParameterEvaluatorHandler;
 public:
-    Parameter(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rUnit,
-              const HString &rType, bool isDynamic=false, void* pDataPtr=0, Parameters* parentParameters=0);
+    ParameterEvaluator(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rUnit,
+              const HString &rType, void* pDataPtr=0, ParameterEvaluatorHandler* parentParameters=0);
 
-    bool setParameterValue(const HString &rValue, Parameter **pNeedEvaluation=0);
+    bool setParameterValue(const HString &rValue, ParameterEvaluator **pNeedEvaluation=0);
     bool setParameter(const HString &rValue, const HString &rDescription, const HString &rUnit,
-                      const HString &rType, Parameter **pNeedEvaluation=0, bool force=false);
+                      const HString &rType, ParameterEvaluator **pNeedEvaluation=0, bool force=false);
 
     void setEnabled(const bool enabled);
 
-    bool evaluate(HString &rResult, Parameter *ignoreMe=0);
+    bool evaluate(HString &rResult, ParameterEvaluator *ignoreMe=0);
     bool evaluate();
     bool refreshParameterValueText();
 
@@ -60,61 +60,58 @@ public:
     const HString &getDescription() const;
 
     bool isEnabled() const;
-    bool isDynamic() const;
 
 protected:
     void resolveSignPrefix(HString &rSignPrefix) const;
     void splitSignPrefix(const HString &rString, HString &rPrefix, HString &rValue);
 
     bool mEnabled;
-    bool mIsDynamic;
     HString mParameterName;
     HString mParameterValue;
     HString mDescription;
     HString mUnit;
     HString mType;
     void* mpData;
-    Parameters* mpParentParameters;
+    ParameterEvaluatorHandler* mpParentParameters;
 };
 
 
-class DLLIMPORTEXPORT Parameters
+class DLLIMPORTEXPORT ParameterEvaluatorHandler
 {
 public:
-    Parameters(Component* parentComponent);
-    ~Parameters();
+    ParameterEvaluatorHandler(Component* parentComponent);
+    ~ParameterEvaluatorHandler();
 
     bool addParameter(const HString &rName, const HString &rValue, const HString &rDescription,
-                      const HString &rUnit, const HString &rType, bool isDynamic, void* dataPtr=0, bool force=false);
+                      const HString &rUnit, const HString &rType, void* dataPtr=0, bool force=false);
     void deleteParameter(const HString &rName);
     bool renameParameter(const HString &rOldName, const HString &rNewName);
 
-    void enableParameter(const HString &rName, const bool enable);
+    void setParameterEnabled(const HString &rName, const bool enable);
 
-    const std::vector<Parameter*> *getParametersVectorPtr() const;
-    const Parameter* getParameter(const HString &rName) const;
+    const std::vector<ParameterEvaluator*> *getParametersVectorPtr() const;
+    const ParameterEvaluator* getParameter(const HString &rName) const;
     void getParameterNames(std::vector<HString> &rParameterNames);
     bool setParameter(const HString &rName, const HString &rValue, const HString &rDescription="",
                       const HString &rUnit="", const HString &rType="", const bool force=false);
 
     void getParameterValue(const HString &rName, HString &rValue);
     bool setParameterValue(const HString &rName, const HString &rValue, bool force=false);
-
     void* getParameterDataPtr(const HString &rName);
 
-    bool evaluateParameter(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType, Parameter *ignoreMe=0);
+    bool evaluateParameter(const HString &rName, HString &rEvaluatedParameterValue, const HString &rType, ParameterEvaluator *ignoreMe=0);
     bool evaluateParameters();
     bool refreshParameterValueText(const HString &rParameterName);
 
-    bool exist(const HString &rName) const;
+    bool hasParameter(const HString &rName) const;
     bool checkParameters(HString &rErrParName);
 
     Component *getParentComponent() const;
 
 protected:
-    std::vector<Parameter*> mParameters;
     Component* mParentComponent;
-    std::vector<Parameter*> mParametersNeedEvaluation; //! @todo Use this vector to ensure parameters are valid at simulation time e.g. if a used system parameter is deleted before simulation
+    std::vector<ParameterEvaluator*> mParameters;
+    std::vector<ParameterEvaluator*> mParametersNeedEvaluation; //! @todo Use this vector to ensure parameters are valid at simulation time e.g. if a used system parameter is deleted before simulation
 };
 
 }

@@ -369,7 +369,7 @@ void ComponentSystem::addSearchPath(const HString &rSearchPath)
 
 
 //! @todo this one (if it should even exist) should be in component as parameter map is there, best is if we can code around having one
-Parameters &ComponentSystem::getSystemParameters()
+ParameterEvaluatorHandler &ComponentSystem::getSystemParameters()
 {
     return *mpParameters;
 }
@@ -378,7 +378,7 @@ Parameters &ComponentSystem::getSystemParameters()
 bool ComponentSystem::setSystemParameter(const HString &rName, const HString &rValue, const HString &rType, const HString &rDescription, const HString &rUnit, const bool force)
 {
     bool success;
-    if(mpParameters->exist(rName.c_str()))
+    if(mpParameters->hasParameter(rName.c_str()))
     {
         success = mpParameters->setParameter(rName.c_str(), rValue.c_str(), rDescription.c_str(), rUnit.c_str(), rType.c_str(), force);
     }
@@ -391,7 +391,7 @@ bool ComponentSystem::setSystemParameter(const HString &rName, const HString &rV
         }
         else
         {
-            success = mpParameters->addParameter(rName.c_str(), rValue.c_str(), rDescription.c_str(), rUnit.c_str(), rType.c_str(), false, 0, force);
+            success = mpParameters->addParameter(rName.c_str(), rValue.c_str(), rDescription.c_str(), rUnit.c_str(), rType.c_str(), 0, force);
             if (success)
             {
                 reserveUniqueName(rName,UniqueSysparamNameType);

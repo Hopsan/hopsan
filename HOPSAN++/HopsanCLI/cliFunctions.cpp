@@ -169,7 +169,7 @@ void printTsInfo(const ComponentSystem* pSystem)
 //! @param [in] pSystem The system to print info for
 void printSystemParams(ComponentSystem* pSystem)
 {
-    const vector<Parameter*> *pParams = pSystem->getParametersVectorPtr();
+    const vector<ParameterEvaluator*> *pParams = pSystem->getParametersVectorPtr();
     for (size_t i=0; i<pParams->size(); ++i)
     {
         cout << " SysParam: " << pParams->at(i)->getName().c_str() << "=" << pParams->at(i)->getValue().c_str();
@@ -457,7 +457,7 @@ void exportParameterValuesToCSV(const std::string &rFileName, hopsan::ComponentS
     if (pSystem)
     {
         // Handle own system parameters
-        const std::vector<Parameter*> *pSysParameters =  pSystem->getParametersVectorPtr();
+        const std::vector<ParameterEvaluator*> *pSysParameters =  pSystem->getParametersVectorPtr();
         for (size_t p=0; p<pSysParameters->size(); ++p)
         {
             //! @todo what about alias name
@@ -479,7 +479,7 @@ void exportParameterValuesToCSV(const std::string &rFileName, hopsan::ComponentS
                 }
                 else
                 {
-                    const std::vector<Parameter*> *pParameters =  pComp->getParametersVectorPtr();
+                    const std::vector<ParameterEvaluator*> *pParameters =  pComp->getParametersVectorPtr();
                     for (size_t p=0; p<pParameters->size(); ++p)
                     {
                         //! @todo what about alias name

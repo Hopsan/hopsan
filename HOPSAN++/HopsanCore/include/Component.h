@@ -47,10 +47,6 @@ class ComponentSystem;
 class HopsanEssentials;
 class HopsanCoreMessageHandler;
 
-//! @brief Enum type for parameters, describing if they are to be dynamic or constant
-//! @deprecated
-enum ParamDynConstEnumT {Dynamic, Constant};
-
 enum VariameterTypeEnumT {InputVariable, OutputVariable, OtherVariable};
 
 class VariameterDescription
@@ -82,13 +78,15 @@ public:
     virtual void configure();
     virtual void deconfigure();
     virtual bool preInitialize();
+    virtual bool checkModelBeforeSimulation();
     virtual bool initialize(const double startT, const double stopT);
     virtual void simulate(const double stopT);
     virtual void finalize(const double startT, const double Ts);
+
+    // Timestep functions
     void setDesiredTimestep(const double timestep);
     void setInheritTimestep(const bool inherit=true);
     bool doesInheritTimestep() const;
-    virtual bool checkModelBeforeSimulation();
 
     // Name and type
     void setName(HString name);
@@ -105,13 +103,8 @@ public:
     virtual bool isComponentSystem() const;
     virtual bool isComponentSignal() const;
 
-    // Parameters
-    //! @todo these two are deprecated
-    void initializeDynamicParameters();
-    void updateDynamicParameterValues();
-
     // Constants
-    void addConstant(const HString &rName, const HString &description, const HString &unit, double &rData);
+    void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, double &rData);
     void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double &rData);
     void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, int &rData);
     void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const int defaultValue, int &rData);
@@ -124,24 +117,24 @@ public:
     void setConstantValue(HString &rName, const HString &rValue);
     void setConstantValue(HString &rName, const bool value);
 
-    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue);
-    virtual void unRegisterParameter(const HString &rName);
+    // Variabels and Parameters
+    const std::vector<VariameterDescription>* getVariameters();
 
+    //! @todo clean this up /Peter
+    virtual void unRegisterParameter(const HString &rName);
     bool hasParameter(const HString &rName) const;
-    const std::vector<Parameter*> *getParametersVectorPtr() const;
+    const std::vector<ParameterEvaluator*> *getParametersVectorPtr() const;
     void getParameterNames(std::vector<HString> &rParameterNames);
-    const Parameter *getParameter(const HString &rName);
+    const ParameterEvaluator *getParameter(const HString &rName);
     void getParameterValue(const HString &rName, HString &rValue);
     void* getParameterDataPtr(const HString &rName);
     bool setParameterValue(const HString &rName, const HString &rValue, bool force=false);
     void updateParameters();
     bool checkParameters(HString &errParName);
 
-    // Variabels and Parameters
-    const std::vector<VariameterDescription>* getVariameters();
-
     // Start values
     double getStartValue(Port* pPort, const size_t idx, const size_t portIdx=0);
+    double getDefaultStartValue(Port *pPort, const size_t idx, const size_t portIdx=0);
     void setStartValue(Port* pPort, const size_t idx, const double value);
     void setDefaultStartValue(Port* pPort, const size_t idx, const double value);
     void disableStartValue(Port* pPort, const size_t idx);
@@ -219,14 +212,12 @@ protected:
 
     // Port functions
     Port* addPowerPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
-    Port* addReadPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
-    Port* addWritePort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
-    Port* addPowerMultiPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
-    Port* addReadMultiPort(const HString &rPortname, const HString &rNodetype, const Port::RequireConnectionEnumT reqConnect=Port::Required);
-
     Port* addPowerPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addReadPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
     Port* addReadPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addPowerMultiPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
     Port* addPowerMultiPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addReadMultiPort(const HString &rPortname, const HString &rNodetype, const Port::RequireConnectionEnumT reqConnect=Port::Required);
     Port* addReadMultiPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
 
     bool getPort(const HString &rPortname, Port* &rpPort);
@@ -235,7 +226,7 @@ protected:
 
     // Parameter registration
     //! @todo clean this up /Peter
-    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue, const ParamDynConstEnumT dynconst);
+    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue);
     void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue);
     void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, HString &rValue);
     void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, bool &rValue);
@@ -248,15 +239,11 @@ protected:
     virtual HString determineUniquePortName(const HString &rPortname);
 
     //==========Protected member variables==========
+    ComponentSystem* mpSystemParent;
     bool mInheritTimestep;
     double mTimestep, mDesiredTimestep;
     double mTime;
-
     size_t mModelHierarchyDepth; //!< This variable containes the depth of the system in the model hierarchy, (used by connect to figure out where to store nodes)
-    //std::vector< std::pair<double*, double*> > mDynamicParameterDataPtrs;
-
-    ComponentSystem* mpSystemParent;
-
     std::vector<HString> mSearchPaths;
 
 private:
@@ -269,13 +256,13 @@ private:
     double *getNodeDataPtr(Port* pPort, const int dataId);
     Port* addPort(const HString &rPortName, const PortTypesEnumT portType, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnection);
     Port* addPort(const HString &rPortName, const PortTypesEnumT portType, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnection);
-    Port* addWritePort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addWritePort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect);
 
     // Private member variables
     HString mName;
     HString mTypeName;
     HString mSubTypeName;
-    Parameters *mpParameters;
+    ParameterEvaluatorHandler *mpParameters;
     PortPtrMapT mPortPtrMap;
     double mMeasuredTime;
     HopsanEssentials *mpHopsanEssentials;

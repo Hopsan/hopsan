@@ -66,6 +66,7 @@ ParameterSettingsLayout::ParameterSettingsLayout(const CoreParameterData &rParam
     mSystemParameterToolButton.setToolTip("Map To System Parameter");
 
     // If dynamic parameter add switch button
+    //! @todo dynamic parameters are deprecated
     if (rParameterData.mIsDynamic)
     {
         bool checked=false;
