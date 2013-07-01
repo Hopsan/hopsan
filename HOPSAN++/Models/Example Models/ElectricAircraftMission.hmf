@@ -12,7 +12,7 @@
       <pose x="0" y="0" flipped="false" a="0"/>
       <nametext position="0" visible="1"/>
       <animation flowspeed="100"/>
-      <viewport x="2270.4" y="2436.41" zoom="0.502994"/>
+      <viewport x="2243.53" y="2595.97" zoom="0.597272"/>
       <ports hidden="1"/>
       <names hidden="1"/>
       <graphics type="user"/>
@@ -212,7 +212,7 @@
           <pose x="2419.029126" y="2324.925698" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
-          <viewport x="2270.4" y="2436.41" zoom="0.502994"/>
+          <viewport x="2243.53" y="2595.97" zoom="0.597272"/>
           <ports hidden="1"/>
           <names hidden="0"/>
           <graphics type="user"/>
@@ -2103,7 +2103,7 @@
           <pose x="1759.820003" y="2324.182647" flipped="false" a="0"/>
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
-          <viewport x="2270.4" y="2436.41" zoom="0.502994"/>
+          <viewport x="2243.53" y="2595.97" zoom="0.597272"/>
           <ports hidden="1"/>
           <names hidden="1"/>
           <graphics type="user"/>
@@ -4522,14 +4522,6 @@
       </textboxwidget>
       <textboxwidget>
         <hopsangui>
-          <pose x="1757.000000" y="2428.000000"/>
-          <textobject fontcolor="#ff0000" text="Flight controller" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
-          <size width="315.729957" height="150.097993"/>
-          <line width="2.000000" visible="1" style="dashline"/>
-        </hopsangui>
-      </textboxwidget>
-      <textboxwidget>
-        <hopsangui>
           <pose x="2423.000000" y="2889.000000"/>
           <textobject fontcolor="#556b2f" text="The trajectory in lattitude longitude&#xa;can be seen here" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
           <size width="239.000000" height="46.000000"/>
@@ -4538,7 +4530,7 @@
       </textboxwidget>
       <textboxwidget>
         <hopsangui>
-          <pose x="1597.000000" y="2223.000000"/>
+          <pose x="1620.439896" y="2228.022835"/>
           <textobject fontcolor="#556b2f" text="Mission controller&#xa;with waypoints" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
           <size width="126.000000" height="56.290009"/>
           <line width="2.000000" visible="1" style="solidline"/>
@@ -4557,6 +4549,22 @@
           <pose x="2340.000000" y="2220.000000"/>
           <textobject fontcolor="#556b2f" text="Propulsion system with&#xa;propeller driven by &#xa;electric motor" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
           <size width="159.000000" height="65.000000"/>
+          <line width="2.000000" visible="1" style="solidline"/>
+        </hopsangui>
+      </textboxwidget>
+      <textboxwidget>
+        <hopsangui>
+          <pose x="1762.626825" y="2430.543796"/>
+          <textobject fontcolor="#ff0000" text="Altitude control" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
+          <size width="146.069240" height="160.676473"/>
+          <line width="2.000000" visible="1" style="solidline"/>
+        </hopsangui>
+      </textboxwidget>
+      <textboxwidget>
+        <hopsangui>
+          <pose x="1942.232599" y="2432.218072"/>
+          <textobject fontcolor="#ff0000" text="Attitude control" font="Calibri,12,-1,0,50,0,0,0,0,0"/>
+          <size width="139.582513" height="159.935277"/>
           <line width="2.000000" visible="1" style="solidline"/>
         </hopsangui>
       </textboxwidget>
