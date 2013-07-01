@@ -788,7 +788,18 @@ Port *Component::addReadPort(const HString &rPortName, const HString &rNodeType,
 }
 
 //! @brief Add a WritePort with description to the component
-//! @details Private help function, component authors should use addOutPutVariable or addPowerPort instead
+//! @note Usually you should use addOutputVariable instead of this one unless you need a "sniffer port"
+//! @param [in] rPortName The desired name of the port (may be automatically changed)
+//! @param [in] rNodeType The type of node that must be connected to the port
+//! @param [in] reqConnect Specify if the port must be connecteed or if it is optional (Required or NotRequired)
+//! @return A pointer to the created port
+Port *Component::addWritePort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect)
+{
+    return addPort(rPortName, WritePortType, rNodeType, reqConnect);
+}
+
+//! @brief Add a WritePort with description to the component
+//! @note Usually you should use addOutputVariable instead of this one unless you need a "sniffer port"
 //! @param [in] rPortName The desired name of the port (may be automatically changed)
 //! @param [in] rNodeType The type of node that must be connected to the port
 //! @param [in] rDescription The port description

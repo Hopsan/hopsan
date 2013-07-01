@@ -40,7 +40,7 @@ class SignalSum : public ComponentSignal
 private:
     // Private member variables
     size_t mnInputs;
-    Port *mpMultiInPort, mpOutPort;
+    Port *mpMultiInPort, *mpOutPort;
 
 public:
     // The creator function that is registered when a component lib is loaded into Hopsan

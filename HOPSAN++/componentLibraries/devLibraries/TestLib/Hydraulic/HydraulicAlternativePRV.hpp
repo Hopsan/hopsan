@@ -72,23 +72,23 @@ namespace hopsan {
             mpP2 = addPowerPort("P2", "NodeHydraulic");
             mpX  = addWritePort("X", "NodeSignal");
 
-            registerParameter("p_ref", "Reference Opening Pressure", "[Pa]", mPref);
-            registerParameter("C_q", "Flow Coefficient", "[-]", mCq);
-            registerParameter("D_s", "Spool Diameter", "[m]", mSpoolDiameter);
-            registerParameter("frac", "Fraction of Spool Circumference that is Opening", "[-]", mFrac);
-            registerParameter("A_p", "Working Area of Pilot Pressure", "[m^2]", mPilotArea);
-            registerParameter("k", "Steady State Characheristics of Spring", "[N/m]", mK);
-            registerParameter("c", "Steady State Damping Coefficient", "[Ns/m]", mC);
-            registerParameter("m", "Ineretia of Spool", "[kg]", mMass);
-            registerParameter("x_hyst", "Hysteresis of Spool Position", "[m]", mXhyst);
-            registerParameter("x_max", "Maximum Spool Position", "[m]", mXmax);
+            addConstant("p_ref", "Reference Opening Pressure", "[Pa]", mPref);
+            addConstant("C_q", "Flow Coefficient", "[-]", mCq);
+            addConstant("D_s", "Spool Diameter", "[m]", mSpoolDiameter);
+            addConstant("frac", "Fraction of Spool Circumference that is Opening", "[-]", mFrac);
+            addConstant("A_p", "Working Area of Pilot Pressure", "[m^2]", mPilotArea);
+            addConstant("k", "Steady State Characheristics of Spring", "[N/m]", mK);
+            addConstant("c", "Steady State Damping Coefficient", "[Ns/m]", mC);
+            addConstant("m", "Ineretia of Spool", "[kg]", mMass);
+            addConstant("x_hyst", "Hysteresis of Spool Position", "[m]", mXhyst);
+            addConstant("x_max", "Maximum Spool Position", "[m]", mXmax);
 
             tid1 = 0.0;
             tid2 = 0.01;
             debug = 0;
-            registerParameter("debug", "debug", "[-]", debug);
-            registerParameter("t1", "debug", "[-]", tid1);
-            registerParameter("t2", "debug", "[-]", tid2);
+            addConstant("debug", "debug", "[-]", debug);
+            addConstant("t1", "debug", "[-]", tid1);
+            addConstant("t2", "debug", "[-]", tid2);
         }
 
 

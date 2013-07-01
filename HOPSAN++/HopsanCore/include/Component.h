@@ -219,17 +219,12 @@ protected:
     Port* addPowerMultiPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
     Port* addReadMultiPort(const HString &rPortname, const HString &rNodetype, const Port::RequireConnectionEnumT reqConnect=Port::Required);
     Port* addReadMultiPort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addWritePort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect=Port::Required);
+    Port* addWritePort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect=Port::Required);
 
     bool getPort(const HString &rPortname, Port* &rpPort);
     HString renamePort(const HString &rOldname, const HString &rNewname);
     void deletePort(const HString &rName);
-
-    // Parameter registration
-    //! @todo clean this up /Peter
-    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue);
-    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue);
-    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, HString &rValue);
-    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, bool &rValue);
 
     // NodeData ptr function
     //! @todo clean up this mess /Peter
@@ -256,7 +251,13 @@ private:
     double *getNodeDataPtr(Port* pPort, const int dataId);
     Port* addPort(const HString &rPortName, const PortTypesEnumT portType, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnection);
     Port* addPort(const HString &rPortName, const PortTypesEnumT portType, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnection);
-    Port* addWritePort(const HString &rPortName, const HString &rNodeType, const HString &rDescription, const Port::RequireConnectionEnumT reqConnect);
+
+    // Parameter registration
+    //! @todo clean this up /Peter
+    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue);
+    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue);
+    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, HString &rValue);
+    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, bool &rValue);
 
     // Private member variables
     HString mName;
