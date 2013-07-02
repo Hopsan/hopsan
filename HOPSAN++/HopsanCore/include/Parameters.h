@@ -83,7 +83,7 @@ public:
     ~ParameterEvaluatorHandler();
 
     bool addParameter(const HString &rName, const HString &rValue, const HString &rDescription,
-                      const HString &rUnit, const HString &rType, void* dataPtr=0, bool force=false);
+                      const HString &rUnit, const HString &rType, void* pData=0, bool force=false);
     void deleteParameter(const HString &rName);
     bool renameParameter(const HString &rOldName, const HString &rNewName);
 

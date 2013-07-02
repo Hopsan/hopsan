@@ -416,14 +416,14 @@ ParameterEvaluatorHandler::~ParameterEvaluatorHandler()
 
 
 //! @brief Add a new parameter
-//! @param [in] parameterName The desired parameter name, e.g. m
-//! @param [in] parameterValue The value of the parameter, always a string
-//! @param [in] description The description of the parameter e.g. Mass, default: ""
-//! @param [in] unit The physical unit of the parameter e.g. kg, default: "0""
-//! @param [in] type The type of the parameter e.g. double, default: ""
-//! @param [in] pDataPtr Only used by Components, system parameters don't use this, default: 0
+//! @param [in] rName The desired parameter name, e.g. m
+//! @param [in] rValue The value of the parameter, always a string
+//! @param [in] rDescription The description of the parameter e.g. Mass, default: ""
+//! @param [in] rUnit The physical unit of the parameter e.g. kg, default: "0""
+//! @param [in] rType The type of the parameter e.g. double, default: ""
+//! @param [in] pData Only used by Components, system parameters don't use this, default: 0
 //! @return true if success, otherwise false
-bool ParameterEvaluatorHandler::addParameter(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rUnit, const HString &rType, void* dataPtr, bool force)
+bool ParameterEvaluatorHandler::addParameter(const HString &rName, const HString &rValue, const HString &rDescription, const HString &rUnit, const HString &rType, void* pData, bool force)
 {
     bool success = false;
     if (!rName.empty())
@@ -431,7 +431,7 @@ bool ParameterEvaluatorHandler::addParameter(const HString &rName, const HString
         if(!hasParameter(rName))
         {
             //! @todo should make sure that parameter names do not have + - * / . or similar as first charater
-            ParameterEvaluator* newParameter = new ParameterEvaluator(rName, rValue, rDescription, rUnit, rType, dataPtr, this);
+            ParameterEvaluator* newParameter = new ParameterEvaluator(rName, rValue, rDescription, rUnit, rType, pData, this);
             success = newParameter && newParameter->evaluate();
             if(success || force)
             {

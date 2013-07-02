@@ -468,7 +468,7 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
 
     stringstream ss;
     ss << rValue;
-    mpParameters->addParameter(rName, ss.str().c_str(), rDescription, rUnit, "double", false, &rValue);
+    mpParameters->addParameter(rName, ss.str().c_str(), rDescription, rUnit, "double", &rValue);
 }
 
 void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue, int dummy)
@@ -482,7 +482,7 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
     if(mpParameters->hasParameter(rName))
         mpParameters->deleteParameter(rName);     //Remove parameter if it is already registered
 
-    mpParameters->addParameter(rName, to_hstring(rValue), rDescription, rUnit, "integer", false, &rValue);
+    mpParameters->addParameter(rName, to_hstring(rValue), rDescription, rUnit, "integer", &rValue);
 }
 
 void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, HString &rValue)
@@ -496,7 +496,7 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
     if(mpParameters->hasParameter(rName))
         mpParameters->deleteParameter(rName);     //Remove parameter if it is already registered
 
-    mpParameters->addParameter(rName, rValue, rDescription, rUnit, "string", false, &rValue);
+    mpParameters->addParameter(rName, rValue, rDescription, rUnit, "string", &rValue);
 }
 
 void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, bool &rValue)
@@ -511,9 +511,9 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
         mpParameters->deleteParameter(rName);     //Remove parameter if it is already registered
 
     if(rValue)
-        mpParameters->addParameter(rName, "true", rDescription, rUnit, "bool", false, &rValue);
+        mpParameters->addParameter(rName, "true", rDescription, rUnit, "bool", &rValue);
     else
-        mpParameters->addParameter(rName, "false", rDescription, rUnit, "bool", false, &rValue);
+        mpParameters->addParameter(rName, "false", rDescription, rUnit, "bool", &rValue);
 }
 ///@}
 
