@@ -104,7 +104,7 @@ const char *HopsanEssentials::getCoreVersion()
 }
 
 //! @brief Creates a component with the specified key-value and returns a pointer to this component.
-//! @param [in] rString The
+//! @param [in] rTypeName The unique type identifier of the component to create
 Component* HopsanEssentials::createComponent(const HString &rTypeName)
 {
     addLogMess((rTypeName+"::createComponent").c_str());
@@ -126,7 +126,7 @@ Component* HopsanEssentials::createComponent(const HString &rTypeName)
 }
 
 //! @brief Check if a component with given typename exist in the ComponentFactory
-//! @param [in] type The typename to check
+//! @param [in] rType The typename to check
 //! @returns True or False depending on if type exist
 bool HopsanEssentials::hasComponent(const HString &rType) const
 {
@@ -134,7 +134,7 @@ bool HopsanEssentials::hasComponent(const HString &rType) const
 }
 
 //! @brief Reserves a component TypeName in the component factory map
-//! @param [in] typeName The TypeName to reserve
+//! @param [in] rTypeName The TypeName to reserve
 bool HopsanEssentials::reserveComponentTypeName(const HString &rTypeName)
 {
     return mpComponentFactory->reserveKey(rTypeName);

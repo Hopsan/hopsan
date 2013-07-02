@@ -247,7 +247,7 @@ void registerParameter(const string name, const string description, const string
 void registerParameter(const string name, const string description, const string unit, bool &rValue);
 \endcode
 
-For more useful functions see \ref ConvenientFunctions
+For more useful functions see \ref ComponentAuthorFunctions
 
 The next member function that must be defined is the \e Initialize function.
 This function is run once before the first time step in the simulation. As this function is run after connections have been establish you can read or write to/from connected components. 

@@ -163,9 +163,7 @@ inline double sign(const double x)
 
 //! @brief Derivative of IfPositive with respect to y1.
 //! @ingroup AuxiliarySimulationFunctions
-//! @param x input value
-//! @param y1 dummy
-//! @param y2 dummy
+//! @param [in] x input value
 //! @returns Limited derivative of x
 inline double dtIfPositive(const double x, const double /*y1*/, const double /*y2*/)
 {
@@ -175,9 +173,7 @@ inline double dtIfPositive(const double x, const double /*y1*/, const double /*y
 
 //! @brief Derivative of IfPositive with respect to y1.
 //! @ingroup AuxiliarySimulationFunctions
-//! @param x input value
-//! @param y1 dummy
-//! @param y2 dummy
+//! @param [in] x input value
 //! @returns Limited derivative of x
 inline double dfIfPositive(const double x, const double /*y1*/, const double /*y2*/)
 {

@@ -52,10 +52,10 @@ HopsanCoreMessageHandler::~HopsanCoreMessageHandler()
 
 //! @brief Adds a message to the message queue
 //! @param [in] type The message type identifier
-//! @param [in] preFix A string to add before the message
-//! @param [in] message The message string
-//! @param [in] tag A tag describing the message
-//! @param [in] dbglevel The debuglevel for the message
+//! @param [in] rPreFix A string to add before the message
+//! @param [in] rMessage The message string
+//! @param [in] rTag A tag describing the message
+//! @param [in] debuglevel The debuglevel for the message
 void HopsanCoreMessageHandler::addMessage(const int type, const HString &rPreFix, const HString &rMessage, const HString &rTag, const int debuglevel)
 {
 #ifdef USETBB
@@ -97,8 +97,8 @@ void HopsanCoreMessageHandler::clear()
 }
 
 //! @brief Convenience function to add info message
-//! @param [in] message The message string
-//! @param [in] tag A tag describing the message
+//! @param [in] rMessage The message string
+//! @param [in] rTag A tag describing the message
 //! @param [in] dbglevel The debuglevel for the message
 void HopsanCoreMessageHandler::addInfoMessage(const HString &rMessage, const HString &rTag, const int dbglevel)
 {
@@ -106,8 +106,8 @@ void HopsanCoreMessageHandler::addInfoMessage(const HString &rMessage, const HSt
 }
 
 //! @brief Convenience function to add warning message
-//! @param [in] message The message string
-//! @param [in] tag A tag describing the message
+//! @param [in] rMessage The message string
+//! @param [in] rTag A tag describing the message
 //! @param [in] dbglevel The debuglevel for the message
 void HopsanCoreMessageHandler::addWarningMessage(const HString &rMessage, const HString &rTag, const int dbglevel)
 {
@@ -115,8 +115,8 @@ void HopsanCoreMessageHandler::addWarningMessage(const HString &rMessage, const 
 }
 
 //! @brief Convenience function to add error message
-//! @param [in] message The message string
-//! @param [in] tag A tag describing the message
+//! @param [in] rMessage The message string
+//! @param [in] rTag A tag describing the message
 //! @param [in] dbglevel The debuglevel for the message
 void HopsanCoreMessageHandler::addErrorMessage(const HString &rMessage, const HString &rTag, const int dbglevel)
 {
@@ -124,8 +124,8 @@ void HopsanCoreMessageHandler::addErrorMessage(const HString &rMessage, const HS
 }
 
 //! @brief Convenience function to add debug message
-//! @param [in] message The message string
-//! @param [in] tag A tag describing the message
+//! @param [in] rMessage The message string
+//! @param [in] rTag A tag describing the message
 //! @param [in] dbglevel The debuglevel for the message
 void HopsanCoreMessageHandler::addDebugMessage(const HString &rMessage, const HString &rTag, const int dbglevel)
 {
@@ -134,6 +134,9 @@ void HopsanCoreMessageHandler::addDebugMessage(const HString &rMessage, const HS
 
 
 //! @brief Convenience function to add fatal message. Also tells the receiver of the message to close program in a controlled way.
+//! @param [in] rMessage The message string
+//! @param [in] rTag A tag describing the message
+//! @param [in] dbglevel The debuglevel for the message
 void HopsanCoreMessageHandler::addFatalMessage(const HString &rMessage, const HString &rTag, const int dbglevel)
 {
     addMessage(HopsanCoreMessage::Fatal, "Fatal error: ", rMessage, rTag, dbglevel);
@@ -141,6 +144,9 @@ void HopsanCoreMessageHandler::addFatalMessage(const HString &rMessage, const HS
 
 
 //! @brief Returns the next, (pops) message on the message queue
+//! @param [out] rMessage The message string
+//! @param [out] rType The message type(Info, Error, Warning...)
+//! @param [out] rTag A tag describing the message
 void HopsanCoreMessageHandler::getMessage(HString &rMessage, HString &rType, HString &rTag)
 {
 #ifdef USETBB

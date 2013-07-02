@@ -666,8 +666,8 @@ Port *Component::addPowerPort(const HString &rPortName, const HString &rNodeType
 
 //! @brief Add a PowerMultiPort to the component
 //! @ingroup ComponentSetupFunctions
-//! @param [in] portName The desired name of the port (may be automatically changed)
-//! @param [in] nodeType The type of node that must be connected to the port
+//! @param [in] rPortName The desired name of the port (may be automatically changed)
+//! @param [in] rNodeType The type of node that must be connected to the port
 //! @param [in] reqConnect Specify if the port must be connecteed or if it is optional (Required or NotRequired)
 //! @return A pointer to the created port
 Port* Component::addPowerMultiPort(const HString &rPortName, const HString &rNodeType, const Port::RequireConnectionEnumT reqConnect)
@@ -677,8 +677,8 @@ Port* Component::addPowerMultiPort(const HString &rPortName, const HString &rNod
 
 //! @brief Add a PowerMultiPort with description  to the component
 //! @ingroup ComponentSetupFunctions
-//! @param [in] portName The desired name of the port (may be automatically changed)
-//! @param [in] nodeType The type of node that must be connected to the port
+//! @param [in] rPortName The desired name of the port (may be automatically changed)
+//! @param [in] rNodeType The type of node that must be connected to the port
 //! @param [in] rDescription The port description
 //! @param [in] reqConnect Specify if the port must be connecteed or if it is optional (Required or NotRequired)
 //! @return A pointer to the created port
@@ -760,8 +760,8 @@ Port *Component::addWritePort(const HString &rPortName, const HString &rNodeType
 
 
 //! @brief Rename a port
-//! @param [in] oldname The name of the the port to rename
-//! @param [in] newname The desired new name of the the port
+//! @param [in] rOldname The name of the the port to rename
+//! @param [in] rNewname The desired new name of the the port
 //! @return The actual new name of the port or old name if not renamed
 //! @todo this could be a template function to use with all rename in map
 HString Component::renamePort(const HString &rOldname, const HString &rNewname)
@@ -787,7 +787,7 @@ HString Component::renamePort(const HString &rOldname, const HString &rNewname)
 }
 
 //! @brief Removes and deletes a port from a component
-//! @param [in] name The name of the port to delete
+//! @param [in] rName The name of the port to delete
 //! @note Only use this function to remove systemports, removing ordinary ports from components is a bad idea
 void Component::deletePort(const HString &rName)
 {
@@ -1052,7 +1052,7 @@ void Component::setTimestep(const double timestep)
 //! @param [in] rDescription The description of the variable
 //! @param [in] rUnit The unit of the variable value
 //! @param [in] defaultValue The default variable value (if not connected)
-//! @param [in,out] Optional pointer to pointer to data. The data pointer will be registered and automatically assigned before initialisation)
+//! @param [in,out] ppNodeData Optional pointer to pointer to data. The data pointer will be registered and automatically assigned before initialisation)
 //! @returns A pointer to the port created.
 //! @ingroup ComponentSetupFunctions
 Port *Component::addInputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double **ppNodeData)
@@ -1074,7 +1074,7 @@ Port *Component::addInputVariable(const HString &rName, const HString &rDescript
 //! @param [in] rName The name of the variable
 //! @param [in] rDescription The description of the variable
 //! @param [in] rUnit The unit of the variable value
-//! @param [in,out] Optional pointer to pointer to data. The data pointer will be registered and automatically assigned before initialisation)
+//! @param [in,out] ppNodeData Optional pointer to pointer to data. The data pointer will be registered and automatically assigned before initialisation)
 //! @returns A pointer to the port created.
 //! @ingroup ComponentSetupFunctions
 Port *Component::addOutputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, double **ppNodeData)
@@ -1096,7 +1096,7 @@ Port *Component::addOutputVariable(const HString &rName, const HString &rDescrip
 //! @param [in] rDescription The description of the variable
 //! @param [in] rUnit The unit of the variable value
 //! @param [in] defaultValue The default variable value (if not connected)
-//! @param [in,out] Optional pointer to pointer to data. The data pointer will be registered and automatically assigned before initialisation)
+//! @param [in,out] ppNodeData Optional pointer to pointer to data. The data pointer will be registered and automatically assigned before initialisation)
 //! @returns A pointer to the port created.
 //! @ingroup ComponentSetupFunctions
 Port *Component::addOutputVariable(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double **ppNodeData)
@@ -1142,7 +1142,8 @@ double Component::getMeasuredTime() const
 
 //! @brief Write an Debug message, i.e. for debugging purposes.
 //! @ingroup ComponentMessageFunctions
-//! @param [in] message The message string
+//! @param [in] rMessage The message string
+//! @param [in] rTag The message tag, used to group similar messages
 void Component::addDebugMessage(const HString &rMessage, const HString &rTag) const
 {
     if (mpMessageHandler)
@@ -1154,7 +1155,8 @@ void Component::addDebugMessage(const HString &rMessage, const HString &rTag) co
 
 //! @brief Write an Warning message.
 //! @ingroup ComponentMessageFunctions
-//! @param [in] message The message string
+//! @param [in] rMessage The message string
+//! @param [in] rTag The message tag, used to group similar messages
 void Component::addWarningMessage(const HString &rMessage, const HString &rTag) const
 {
     if (mpMessageHandler)
@@ -1166,7 +1168,8 @@ void Component::addWarningMessage(const HString &rMessage, const HString &rTag) 
 
 //! @brief Write an Error message.
 //! @ingroup ComponentMessageFunctions
-//! @param [in] message The message string
+//! @param [in] rMessage The message string
+//! @param [in] rTag The message tag, used to group similar messages
 void Component::addErrorMessage(const HString &rMessage, const HString &rTag) const
 {
     if (mpMessageHandler)
@@ -1178,7 +1181,8 @@ void Component::addErrorMessage(const HString &rMessage, const HString &rTag) co
 
 //! @brief Write an Info message.
 //! @ingroup ComponentMessageFunctions
-//! @param [in] message The message string
+//! @param [in] rMessage The message string
+//! @param [in] rTag The message tag, used to group similar messages
 void Component::addInfoMessage(const HString &rMessage, const HString &rTag) const
 {
     if (mpMessageHandler)
@@ -1189,7 +1193,8 @@ void Component::addInfoMessage(const HString &rMessage, const HString &rTag) con
 
 //! @brief Writes a Fatal message and tells the receiver of the message to close program in a controlled way. Also prints message to log file.
 //! @ingroup ComponentMessageFunctions
-//! @param [in] message The message string
+//! @param [in] rMessage The message string
+//! @param [in] rTag The message tag, used to group similar messages
 void Component::addFatalMessage(const HString &rMessage, const HString &rTag) const
 {
     addLogMess(rMessage.c_str());
@@ -1226,9 +1231,9 @@ void Component::setStartValue(Port* pPort, const size_t idx, const double value)
 }
 
 //! @brief Set the default startvalue in a port
-//! @param[in] pPort is the port which should be written to
-//! @param[in] idx is the index of the start value e.g. NodeHydraulic::Pressure
-//! @param[in] value is the start value that should be written
+//! @param [in] pPort is the port which should be written to
+//! @param [in] idx is the index of the start value e.g. NodeHydraulic::Pressure
+//! @param [in] value is the start value that should be written
 //! @ingroup ComponentSetupFunctions
 void Component::setDefaultStartValue(Port *pPort, const size_t idx, const double value)
 {
@@ -1307,7 +1312,7 @@ void Component::deconfigure()
 }
 
 //! @brief This function can be used to automate things prior to component initialization, only use this if you know what you are doing
-//! @detalis One example of what you can do, is reconnecting interanl connections in programed subsystems
+//! @details One example of what you can do, is reconnecting interanl connections in programed subsystems
 //! @returns True or False to signal sucess or failure
 //! @ingroup ComponentPowerAuthorFunctions
 bool Component::preInitialize()

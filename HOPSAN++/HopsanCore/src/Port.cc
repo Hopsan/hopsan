@@ -491,8 +491,8 @@ double Port::getStartValue(const size_t idx, const size_t /*portIdx*/)
 
 
 //! @brief Set the an actual start value of the port
-//! @param[in] idx is the index of the start value e.g. NodeHydraulic::Pressure
-//! @param[in] value is the start value that should be written
+//! @param [in] idx is the index of the start value e.g. NodeHydraulic::Pressure
+//! @param [in] value is the start value that should be written
 void Port::setDefaultStartValue(const size_t idx, const double value, const size_t /*portIdx*/)
 {
     if(mpStartNode)

@@ -129,7 +129,7 @@ public:
     }
 
     //! @brief Resize the array, keeping old data if any.
-    //! @detailed If new size is smaller than old, old data will be truncated
+    //! @details If new size is smaller than old, old data will be truncated
     //! If new size is larger than old, the additional elements will be uninitialized
     //! @param [in] s New size
     void resize(const size_t s)

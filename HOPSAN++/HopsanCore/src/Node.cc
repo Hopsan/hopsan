@@ -134,7 +134,7 @@ void Node::setSignalDataUnitAndDescription(const HString &/*rUnit*/, const HStri
 
 
 //! @brief This function gives you the data Id for a names data variable
-//! @param [in] name The data name
+//! @param [in] rName The data name
 //! @return The Id, -1 if requested data name is not found
 int Node::getDataIdFromName(const HString &rName) const
 {
