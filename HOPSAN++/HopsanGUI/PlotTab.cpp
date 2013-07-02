@@ -645,30 +645,34 @@ void PlotTab::rescaleAxesToCurves()
                 yrAxisLim.max = 10;
             }
 
-
+            const double sameLimFrac = 0.1;
             // Max and min must not be same value; if they are, decrease/increase
             if ( (ylAxisLim.max - ylAxisLim.min) < QwtLowestAxisLabelValue)
             {
 //                ylAxisLim.max += ylAxisLim.max;
 //                ylAxisLim.min -= ylAxisLim.min;
-                ylAxisLim.max += QwtLowestAxisLabelValue;
-                ylAxisLim.min -= QwtLowestAxisLabelValue;
+                ylAxisLim.max += qMax(qAbs(ylAxisLim.max) * sameLimFrac, QwtLowestAxisLabelValue);
+                ylAxisLim.min -= qMax(qAbs(ylAxisLim.min) * sameLimFrac, QwtLowestAxisLabelValue);
             }
 
             if ( (yrAxisLim.max - yrAxisLim.min) < QwtLowestAxisLabelValue)
             {
 //                yrAxisLim.max += yrAxisLim.max;
 //                yrAxisLim.min -= yrAxisLim.min;
-                yrAxisLim.max += QwtLowestAxisLabelValue;
-                yrAxisLim.min -= QwtLowestAxisLabelValue;
+//                yrAxisLim.max += QwtLowestAxisLabelValue;
+//                yrAxisLim.min -= QwtLowestAxisLabelValue;
+                yrAxisLim.max += qMax(qAbs(yrAxisLim.max) * sameLimFrac, QwtLowestAxisLabelValue);
+                yrAxisLim.min -= qMax(qAbs(yrAxisLim.min) * sameLimFrac, QwtLowestAxisLabelValue);
             }
 
             if ( (xAxisLim.max - xAxisLim.min) < QwtLowestAxisLabelValue)
             {
 //                xAxisLim.max += xAxisLim.max;
 //                xAxisLim.min -= xAxisLim.min;
-                xAxisLim.max += QwtLowestAxisLabelValue;
-                xAxisLim.min -= QwtLowestAxisLabelValue;
+//                xAxisLim.max += QwtLowestAxisLabelValue;
+//                xAxisLim.min -= QwtLowestAxisLabelValue;
+                xAxisLim.max += qMax(qAbs(xAxisLim.max) * sameLimFrac, QwtLowestAxisLabelValue);
+                xAxisLim.min -= qMax(qAbs(xAxisLim.min) * sameLimFrac, QwtLowestAxisLabelValue);
             }
 
             // Calculate the axis ranges (used for calculating margins at top and bottom
