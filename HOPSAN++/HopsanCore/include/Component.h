@@ -112,15 +112,17 @@ public:
     void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const HString &defaultValue, HString &rData);
     void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, bool &rData);
     void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const bool defaultValue, bool &rData);
-    void setConstantValue(HString &rName, const double value);
-    void setConstantValue(HString &rName, const int value);
-    void setConstantValue(HString &rName, const HString &rValue);
-    void setConstantValue(HString &rName, const bool value);
+    void setConstantValue(const HString &rName, const double value);
+    void setConstantValue(const HString &rName, const int value);
+    void setConstantValue(const HString &rName, const HString &rValue);
+    void setConstantValue(const HString &rName, const bool value);
 
     // Variabels and Parameters
     const std::vector<VariameterDescription>* getVariameters();
 
     //! @todo clean this up /Peter
+    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue);
+    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue);
     virtual void unRegisterParameter(const HString &rName);
     bool hasParameter(const HString &rName) const;
     const std::vector<ParameterEvaluator*> *getParametersVectorPtr() const;
@@ -254,8 +256,8 @@ private:
 
     // Parameter registration
     //! @todo clean this up /Peter
-    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue);
-    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue);
+    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue, int dummy);
+    void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue, int dummy);
     void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, HString &rValue);
     void registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, bool &rValue);
 

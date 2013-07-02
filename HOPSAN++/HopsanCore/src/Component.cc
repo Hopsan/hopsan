@@ -191,11 +191,25 @@ const std::vector<VariameterDescription>* Component::getVariameters()
     return &mVariameters;
 }
 
+//! @deprecated use addConstant() instead, used for backwards compatibility but gives error message if used
+void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue)
+{
+    addErrorMessage("registerParameter() is deprecated, use addConstant() instead");
+    registerParameter(rName, rDescription, rUnit, rValue, 0);
+}
+
+//! @deprecated use addConstant() instead, used for backwards compatibility but gives error message if used
+void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue)
+{
+    addErrorMessage("registerParameter() is deprecated, use addConstant() instead");
+    registerParameter(rName, rDescription, rUnit, rValue, 0);
+}
+
 //! @brief Set the value of a constant parameter
 //! @note Dont use this function during simulation, it is slow
 //! @todo check returnvalue from setParameter check if Ok error emssage otherwise, also in the other functions
 //! @ingroup ComponentSetupFunctions
-void Component::setConstantValue(HString &rName, const double value)
+void Component::setConstantValue(const HString &rName, const double value)
 {
     setParameterValue(rName, to_hstring(value), true);
 }
@@ -203,7 +217,7 @@ void Component::setConstantValue(HString &rName, const double value)
 //! @brief Set the value of a constant parameter
 //! @note Dont use this function during simulation, it is slow
 //! @ingroup ComponentSetupFunctions
-void Component::setConstantValue(HString &rName, const int value)
+void Component::setConstantValue(const HString &rName, const int value)
 {
     setParameterValue(rName, to_hstring(value), true);
 }
@@ -211,7 +225,7 @@ void Component::setConstantValue(HString &rName, const int value)
 //! @brief Set the value of a constant parameter
 //! @note Dont use this function during simulation, it is slow
 //! @ingroup ComponentSetupFunctions
-void Component::setConstantValue(HString &rName, const HString &rValue)
+void Component::setConstantValue(const HString &rName, const HString &rValue)
 {
     setParameterValue(rName, rValue, true);
 }
@@ -219,7 +233,7 @@ void Component::setConstantValue(HString &rName, const HString &rValue)
 //! @brief Set the value of a constant parameter
 //! @note Dont use this function during simulation, it is slow
 //! @ingroup ComponentSetupFunctions
-void Component::setConstantValue(HString &rName, const bool value)
+void Component::setConstantValue(const HString &rName, const bool value)
 {
     setParameterValue(rName, to_hstring(value), true);
 }
@@ -386,7 +400,7 @@ HopsanEssentials *Component::getHopsanEssentials()
 //! @ingroup ComponentSetupFunctions
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, double &rData)
 {
-    registerParameter(rName, rDescription, rUnit, rData);
+    registerParameter(rName, rDescription, rUnit, rData, 0);
 }
 
 //! @brief Add (register) a double constant parameterto the component
@@ -412,7 +426,7 @@ void Component::addConstant(const HString &rName, const HString &rDescription, c
 //! @ingroup ComponentSetupFunctions
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, int &rData)
 {
-    registerParameter(rName, rDescription, rUnit, rData);
+    registerParameter(rName, rDescription, rUnit, rData, 0);
 }
 
 //! @brief Add (register) a integer constant parameterto the component
@@ -487,7 +501,8 @@ void Component::addConstant(const HString &rName, const HString &rDescription, c
 //! @param [in] unit The unit of the parameter value
 //! @param [in] rValue A reference to the double variable representing the value, its adress will be registered
 //! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
-void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue)
+//! @todo remove the dummy argument once the public deprecated version of this function is removed
+void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue, int dummy)
 {
     // We allow the : exception for registring start value parameters
     if (!isNameValid(rName, "#"))
@@ -510,7 +525,8 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
 //! @param [in] unit The unit of the parameter value
 //! @param [in] rValue A reference to the double variable representing the value, its adress will be registered
 //! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
-void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue)
+//!//! @todo remove the dummy argument once the public deprecated version of this function is removed
+void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue, int dummy)
 {
     if (!isNameValid(rName))
     {
