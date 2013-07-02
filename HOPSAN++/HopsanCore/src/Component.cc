@@ -44,9 +44,6 @@ using namespace hopsan;
 
 //! @defgroup ComponentAuthorFunctions ComponentAuthorFunctions
 
-//! @defgroup ComponentClassFunctions ComponentClassFunctions
-//! @ingroup ComponentAuthorFunctions
-
 //! @defgroup ComponentSetupFunctions ComponentSetupFunctions
 //! @ingroup ComponentAuthorFunctions
 
@@ -205,6 +202,9 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
     registerParameter(rName, rDescription, rUnit, rValue, 0);
 }
 
+
+
+///@{
 //! @brief Set the value of a constant parameter
 //! @note Dont use this function during simulation, it is slow
 //! @todo check returnvalue from setParameter check if Ok error emssage otherwise, also in the other functions
@@ -214,30 +214,21 @@ void Component::setConstantValue(const HString &rName, const double value)
     setParameterValue(rName, to_hstring(value), true);
 }
 
-//! @brief Set the value of a constant parameter
-//! @note Dont use this function during simulation, it is slow
-//! @ingroup ComponentSetupFunctions
 void Component::setConstantValue(const HString &rName, const int value)
 {
     setParameterValue(rName, to_hstring(value), true);
 }
 
-//! @brief Set the value of a constant parameter
-//! @note Dont use this function during simulation, it is slow
-//! @ingroup ComponentSetupFunctions
 void Component::setConstantValue(const HString &rName, const HString &rValue)
 {
     setParameterValue(rName, rValue, true);
 }
 
-//! @brief Set the value of a constant parameter
-//! @note Dont use this function during simulation, it is slow
-//! @ingroup ComponentSetupFunctions
 void Component::setConstantValue(const HString &rName, const bool value)
 {
     setParameterValue(rName, to_hstring(value), true);
 }
-
+///@}
 
 //! @brief Virtual Function, base version which gives you an error if you try to use it.
 void Component::finalize(const double /*startT*/, const double /*stopT*/)
@@ -391,7 +382,8 @@ HopsanEssentials *Component::getHopsanEssentials()
     return mpHopsanEssentials;
 }
 
-//! @brief Add (register) a double constant parameterto the component
+///@{
+//! @brief Add (register) a constant parameter to the component
 //! @param [in] rName The name of the constant
 //! @param [in] rDescription The description of the constant
 //! @param [in] rUnit The unit of the constant value
@@ -403,12 +395,29 @@ void Component::addConstant(const HString &rName, const HString &rDescription, c
     registerParameter(rName, rDescription, rUnit, rData, 0);
 }
 
-//! @brief Add (register) a double constant parameterto the component
+void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, int &rData)
+{
+    registerParameter(rName, rDescription, rUnit, rData, 0);
+}
+
+void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, HString &rData)
+{
+    registerParameter(rName, rDescription, rUnit, rData);
+}
+
+void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, bool &rData)
+{
+    registerParameter(rName, rDescription, rUnit, rData);
+}
+///@}
+
+///@{
+//! @brief Add (register) a constant parameter with a default value to the component
 //! @param [in] rName The name of the constant
 //! @param [in] rDescription The description of the constant
 //! @param [in] rUnit The unit of the constant value
 //! @param [in] defaultValue Default constant value
-//! @param [in] rData A reference to the data constant
+//! @param [in] rData A reference to the data variable
 //! @todo Using a reference is not that clear, we should use a ptr instead
 //! @ingroup ComponentSetupFunctions
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double &rData)
@@ -417,91 +426,34 @@ void Component::addConstant(const HString &rName, const HString &rDescription, c
     addConstant(rName, rDescription, rUnit, rData);
 }
 
-//! @brief Add (register) a integer constant parameterto the component
-//! @param [in] rName The name of the constant
-//! @param [in] rDescription The description of the constant
-//! @param [in] rUnit The unit of the constant value
-//! @param [in] rData A reference to the data constant
-//! @todo Using a reference is not that clear, we should use a ptr instead
-//! @ingroup ComponentSetupFunctions
-void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, int &rData)
-{
-    registerParameter(rName, rDescription, rUnit, rData, 0);
-}
-
-//! @brief Add (register) a integer constant parameterto the component
-//! @param [in] rName The name of the constant
-//! @param [in] rDescription The description of the constant
-//! @param [in] rUnit The unit of the constant value
-//! @param [in] defaultValue Default constant value
-//! @param [in] rData A reference to the data constant
-//! @todo Using a reference is not that clear, we should use a ptr instead
-//! @ingroup ComponentSetupFunctions
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const int defaultValue, int &rData)
 {
     rData = defaultValue;
     addConstant(rName, rDescription, rUnit, rData);
 }
 
-//! @brief Add (register) a HString constant parameterto the component
-//! @param [in] rName The name of the constant
-//! @param [in] rDescription The description of the constant
-//! @param [in] rUnit The unit of the constant value
-//! @param [in] rData A reference to the data constant
-//! @todo Using a reference is not that clear, we should use a ptr instead
-//! @ingroup ComponentSetupFunctions
-void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, HString &rData)
-{
-    registerParameter(rName, rDescription, rUnit, rData);
-}
-
-//! @brief Add (register) a HString constant parameterto the component
-//! @param [in] rName The name of the constant
-//! @param [in] rDescription The description of the constant
-//! @param [in] rUnit The unit of the constant value
-//! @param [in] defaultValue Default constant value
-//! @param [in] rData A reference to the data constant
-//! @todo Using a reference is not that clear, we should use a ptr instead
-//! @ingroup ComponentSetupFunctions
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const HString &defaultValue, HString &rData)
 {
     rData = defaultValue;
     addConstant(rName, rDescription, rUnit, rData);
 }
 
-//! @brief Add (register) a bool constant parameterto the component
-//! @param [in] rName The name of the constant
-//! @param [in] rDescription The description of the constant
-//! @param [in] rUnit The unit of the constant value
-//! @param [in] rData A reference to the data constant
-//! @todo Using a reference is not that clear, we should use a ptr instead
-//! @ingroup ComponentSetupFunctions
-void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, bool &rData)
-{
-    registerParameter(rName, rDescription, rUnit, rData);
-}
-
-//! @brief Add (register) a bool constant parameterto the component
-//! @param [in] rName The name of the constant
-//! @param [in] rDescription The description of the constant
-//! @param [in] rUnit The unit of the constant value
-//! @param [in] defaultValue Default constant value
-//! @param [in] rData A reference to the data constant
-//! @todo Using a reference is not that clear, we should use a ptr instead
-//! @ingroup ComponentSetupFunctions
 void Component::addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const bool defaultValue, bool &rData)
 {
     rData = defaultValue;
     addConstant(rName, rDescription, rUnit, rData);
 }
+///@}
 
-//! @brief Register a double parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
-//! @param [in] name The name of the parameter
-//! @param [in] description A description of the parameter
-//! @param [in] unit The unit of the parameter value
+///@{
+//! @brief Register a parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
+//! @param [in] rName The name of the parameter
+//! @param [in] rDescription A description of the parameter
+//! @param [in] rUnit The unit of the parameter value
 //! @param [in] rValue A reference to the double variable representing the value, its adress will be registered
 //! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
 //! @todo remove the dummy argument once the public deprecated version of this function is removed
+//! @todo Using a reference is not that clear, we should use a ptr instead
 void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, double &rValue, int dummy)
 {
     // We allow the : exception for registring start value parameters
@@ -519,13 +471,6 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
     mpParameters->addParameter(rName, ss.str().c_str(), rDescription, rUnit, "double", false, &rValue);
 }
 
-//! @brief Register a double parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
-//! @param [in] name The name of the parameter
-//! @param [in] description A description of the parameter
-//! @param [in] unit The unit of the parameter value
-//! @param [in] rValue A reference to the double variable representing the value, its adress will be registered
-//! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
-//!//! @todo remove the dummy argument once the public deprecated version of this function is removed
 void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, int &rValue, int dummy)
 {
     if (!isNameValid(rName))
@@ -540,13 +485,6 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
     mpParameters->addParameter(rName, to_hstring(rValue), rDescription, rUnit, "integer", false, &rValue);
 }
 
-
-//! @brief Register a string parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
-//! @param [in] name The name of the parameter
-//! @param [in] description A description of the parameter
-//! @param [in] unit The unit of the parameter value
-//! @param [in] rValue A reference to the string variable representing the value, its adress will be registered
-//! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
 void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, HString &rValue)
 {
     if (!isNameValid(rName))
@@ -561,13 +499,6 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
     mpParameters->addParameter(rName, rValue, rDescription, rUnit, "string", false, &rValue);
 }
 
-
-//! @brief Register a bool parameter value so that it can be accessed for read and write. Set a Name, Description and Unit.
-//! @param [in] name The name of the parameter
-//! @param [in] description A description of the parameter
-//! @param [in] unit The unit of the parameter value
-//! @param [in] rValue A reference to the bool variable representing the value, its adress will be registered
-//! @details This function is used in the constructor of the Component modelling code to register member attributes as HOPSAN parameters
 void Component::registerParameter(const HString &rName, const HString &rDescription, const HString &rUnit, bool &rValue)
 {
     if (!isNameValid(rName))
@@ -584,6 +515,7 @@ void Component::registerParameter(const HString &rName, const HString &rDescript
     else
         mpParameters->addParameter(rName, "false", rDescription, rUnit, "bool", false, &rValue);
 }
+///@}
 
 
 //! @brief Removes a parameter from the component

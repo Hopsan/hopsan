@@ -105,13 +105,14 @@ public:
 
     // Constants
     void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, double &rData);
-    void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double &rData);
     void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, int &rData);
-    void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const int defaultValue, int &rData);
     void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, HString &rData);
-    void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const HString &defaultValue, HString &rData);
     void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, bool &rData);
+    void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const double defaultValue, double &rData);
+    void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const int defaultValue, int &rData);
+    void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const HString &defaultValue, HString &rData);
     void addConstant(const HString &rName, const HString &rDescription, const HString &rUnit, const bool defaultValue, bool &rData);
+
     void setConstantValue(const HString &rName, const double value);
     void setConstantValue(const HString &rName, const int value);
     void setConstantValue(const HString &rName, const HString &rValue);
