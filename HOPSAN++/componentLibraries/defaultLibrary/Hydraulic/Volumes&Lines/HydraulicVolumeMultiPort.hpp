@@ -96,9 +96,9 @@ namespace hopsan {
                 mvpN_c[i]  = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::WaveVariable, 0.0);
                 mvpN_Zc[i] = getSafeMultiPortNodeDataPtr(mpP1, i, NodeHydraulic::CharImpedance, 0.0);
 
-                *mvpN_p[i]  = getStartValue(mpP1, NodeHydraulic::Pressure, i);
-                *mvpN_q[i]  = getStartValue(mpP1, NodeHydraulic::Flow, i);
-                pTot       += getStartValue(mpP1,NodeHydraulic::Pressure, i)+Zc*getStartValue(mpP1,NodeHydraulic::Flow, i);
+                *mvpN_p[i]  = getDefaultStartValue(mpP1, NodeHydraulic::Pressure, i);
+                *mvpN_q[i]  = getDefaultStartValue(mpP1, NodeHydraulic::Flow, i);
+                pTot       += getDefaultStartValue(mpP1,NodeHydraulic::Pressure, i)+Zc*getDefaultStartValue(mpP1,NodeHydraulic::Flow, i);
                 *mvpN_Zc[i] = Zc;
             }
             pTot = pTot/double(mNumPorts);

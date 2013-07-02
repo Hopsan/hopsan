@@ -80,7 +80,7 @@ namespace hopsan {
                 mND_Zc_vec[i] = getSafeMultiPortNodeDataPtr(mpMP, i, NodeHydraulic::CharImpedance);
 
                 *(mND_p_vec[i]) = p;    //Override the startvalue for the pressure
-                *(mND_q_vec[i]) = getStartValue(mpMP, NodeHydraulic::Flow);
+                *(mND_q_vec[i]) = getDefaultStartValue(mpMP, NodeHydraulic::Flow);
                 *(mND_c_vec[i]) = p;
                 *(mND_Zc_vec[i]) = Zc;
             }

@@ -76,7 +76,6 @@ public:
     virtual QString getNodeType();
     QString getPortDescription() const;
 
-    //void getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<QString> &rValuesTxt, QVector<QString> &rUnits);
     bool getLastNodeData(QString dataName, double& rData);
 
     void disconnectAndRemoveAllConnectedConnectors();

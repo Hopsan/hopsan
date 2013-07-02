@@ -636,12 +636,6 @@ QString Port::getPortDescription() const
 }
 
 
-//void Port::getStartValueDataNamesValuesAndUnits(QVector<QString> &rNames, QVector<QString> &rValuesTxt, QVector<QString> &rUnits)
-//{
-//    mpParentGuiModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getStartValueDataNamesValuesAndUnits(getGuiModelObjectName(), this->getName(), rNames, rValuesTxt, rUnits);
-//}
-
-
 PortDirectionT Port::getPortDirection()
 {
     //! @todo will this work if parentguimodelobject is flipped

@@ -85,9 +85,9 @@ namespace hopsan {
             Zc = betae/V*mTimestep/(1.0-alpha); //Need to be updated at simulation start since it is volume and bulk that are set.
 
             //Write to nodes
-            (*mpND_c1) = getStartValue(mpP2,NodeHydraulic::Pressure)+Zc*getStartValue(mpP2,NodeHydraulic::Flow);
+            (*mpND_c1) = getDefaultStartValue(mpP2,NodeHydraulic::Pressure)+Zc*getDefaultStartValue(mpP2,NodeHydraulic::Flow);
             (*mpND_Zc1) = Zc;
-            (*mpND_c2) = getStartValue(mpP1,NodeHydraulic::Pressure)+Zc*getStartValue(mpP1,NodeHydraulic::Flow);
+            (*mpND_c2) = getDefaultStartValue(mpP1,NodeHydraulic::Pressure)+Zc*getDefaultStartValue(mpP1,NodeHydraulic::Flow);
             (*mpND_Zc2) = Zc;
         }
 

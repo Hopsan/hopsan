@@ -91,9 +91,9 @@ namespace hopsan {
             r2 = (*mpR2);
 
             //Write to nodes
-            (*mpND_c1) = getStartValue(mpP1,NodeHydraulic::Pressure)+(Zc+r1)*getStartValue(mpP1,NodeHydraulic::Flow);
+            (*mpND_c1) = getDefaultStartValue(mpP1,NodeHydraulic::Pressure)+(Zc+r1)*getDefaultStartValue(mpP1,NodeHydraulic::Flow);
             (*mpND_Zc1) = Zc+r1;
-            (*mpND_c2) = getStartValue(mpP2,NodeHydraulic::Pressure)+(Zc+r2)*getStartValue(mpP2,NodeHydraulic::Flow);
+            (*mpND_c2) = getDefaultStartValue(mpP2,NodeHydraulic::Pressure)+(Zc+r2)*getDefaultStartValue(mpP2,NodeHydraulic::Flow);
             (*mpND_Zc2) = Zc+r2;
 
             if (mTimeDelay-mTimestep < 0)

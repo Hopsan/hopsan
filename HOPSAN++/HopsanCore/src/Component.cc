@@ -1271,7 +1271,7 @@ void Component::addFatalMessage(const HString &rMessage, const HString &rTag) co
 //! @deprecated Use getDefaultStartValue instead
 double Component::getStartValue(Port* pPort, const size_t idx, const size_t portIdx)
 {
-    addErrorMessage("getStartValue() is deprecated, use gettDefaultStartValue() instead. Note!, it will not return the initial value!");
+    addErrorMessage("getStartValue() is deprecated, use getDefaultStartValue() instead. Note!, it will not return the initial value!");
     return getDefaultStartValue(pPort, idx, portIdx);
 }
 
