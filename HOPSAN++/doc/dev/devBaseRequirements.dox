@@ -25,32 +25,29 @@ A short step by step description:
    -# Before you can build Hopsan you need to setup the required dependencies.
 
 
-\section qt-mscompiler VC++ (The Microsoft Visual C++ Compiler) 
-**This guide might be slightly outdated**
+\section qt-msvcompiler MSVC++ (The Microsoft Visual C++ Compiler) 
+This guide descrubes what you need to install to be able to build MSVC2008 and MSVC2010 versions of the HopsanCore
 
-Follow this guide only if you wish to use the Microsoft Visual C++ compiler with Qt Creator for Hopsan development.
+<b>Do NOT!</b> install the Microsoft Visual Studio 2010 Express development environment, it will not work with the build scripts (at least on 64-bit Windows). You should use the Windows SDKs instead.
 
-The Visual Studio compiled Qt-libraries that are currently available (2010-09-22), were compiled using VisualStudio2008.
-For this reason we should use the VC9 (Visual C++ 2008) compiler package with HopsanGUI and HopsanCore. This may change in the future.
-I (Peter) tried VC++ 2010 but was unable to make it work on my 64-bit computer.
+If you have previous installations of Microsoft Windows SDKs installed you need to uninstall them and all traces of Microsoft Visual C++ Compilers (not redistributable packages), "Application Verifier", "Debugging Tools for Windows" and "Performance Toolkit" (and maybe others). Otherwise Windows SDK installation may/will fail if newer versions of these components are already installed).
 
-You may either download and install Visual Studio 2008 (requires free registration after 30-days) or install the Windows SDK (recommended).
-As we already have an IDE (QtCreator) this guide will use the SDK.
-
-The guide assumes that you start from scratch, without the QtSDK installed. It should be possible to install into the SDK as well and then select between multiple Qt versions.
-
--# Download and install the Microsoft Windows SDK 7.0 from <a href="http://www.microsoft.com/downloads/en/default.aspx " target="_blank">Microsoft Download Center</a>.
+-# Download and install the "Microsoft Windows SDK for Windows 7 and .NET Framework 3.5 SP1" (Windows SDK 7.0) from <a href="http://www.microsoft.com/downloads/en/default.aspx " target="_blank">Microsoft Download Center</a>.
 You don't need to install the .NET stuff, but make sure that you install the "Debugging Tools for Windows"
--# If you are using a 64-bit OS you will also need to install the 32-bit version of the debugging tools. The SDK will autmatically install the 64-bit version. If you can not get the newest version manually then select version 6.11.1.404 from the archive downloads list that you can find <a href="http://www.microsoft.com/whdc/devtools/debugging/installx86.mspx#b " target="_blank">here</a>.
--# Download the Qt-libs compiled with VS from <a href="http://qt.nokia.com" target="_blank">http://qt.nokia.com</a> and then manually install the latest version of QtCreator (you can find it on the same download page).
--# When you start QtCreator for the first time go to Tools->Options->Qt4. Here you should manually find the qmake.exe for your VS compiled version of the Qt-Libs. You may find it in a place like "C:\Qt\4.6.3\bin". If the Microsoft SDK has been properly installed the Microsoft Visual C++ Compilers 9.0 toolchain should be automatically set up. Change the name to something indicating that VC++ is used. Be sure to rebuild the debugger helper.
--# Open your Qt projects and they should automatically add/readd build settings for your new Qt version wich VC++.
--# If you get an error about "cl.exe" not being found, add the "Visual Studio 9.0/VC/bin" folder to your PATH system environment variable.
+-# (Optional if you want to be able to debug) If you are using a 64-bit OS you will also need to install the 32-bit version of the debugging tools. The SDK will autmatically only install the 64-bit version. If you can not get the newest version manually then select version 6.11.1.404 from the archive downloads list that you can find <a href="http://msdn.microsoft.com/en-us/windows/hardware/gg463009" target="_blank">here</a>. This link does no longer seem to contain the needed file though.
+-# Pay attention to the messages in the last window in the installation, if you have an error here you will have to remove the conflicting version and then reinstall the SDK components that failed.
+-# Repete the above for "Microsoft Windows SDK for Windows 7 and .NET Framework 4" (Windows SDK 7.1)
+   -# If you are unable to install the Visual Compilers (because a newer version already seems to be installed) see Microsoft KB2519277 for a patch.
+      -# First install the Windows SDK 7.1 without compilers, then run the patch file to reinstall compilers.
+      -# The issue is moste likely cause by you having previously installed "MS Visual Studio 2010 Express SP1"
+      -# Unfortunattely the KB2519277 patch is missing files, this is also a known bug that will no be fixed by misrosoft (official statement)
+      -# Now go to add/remove programs and unsintall all Microsoft Visual C++ 2010 compilers
+      -# Hopefully you will now be able to reinstall Windows SDK 7.1 with compilers (which have a slighly older version then thos that came with Visual Studio and KB2519277)
 
-To get a working debugger
+If you get an error about "cl.exe" not being found when building, then the "Visual Studio 9.0/VC/bin" or "Visual Studio 10.0/VC/bin" folder has not been added to your PATH system environment variable.
+    -# Note! the release build script should do this automatically, adding the path manually is not recomended as that could mean that the wrong version will be used when you try to compile for a different MSVC version.
+	
+To get a working MSVC debugger in Qt creator
 -# Go into Tools->Options->Debugger->Cdb and check the Cdb box. Now set the path to the Debugging tools for Windows 32-bit version. (Autodetect should work).
 -# If you want the debugger to automatically download debugger symbols for the Windows libraries, then create a folder, eg. "C:\websymbols" and add the following line to "Symbol Paths:" under the Cdb tab: "SRV*c:\websymbols*http://msdl.microsoft.com/download/symbols" (without quotes). You websymbols folder will act as a cache for symbol retreival.
-
-Hints
--# You may need to add the directory to cl.exe to your PATH environment variable, e.g "C:\Program Files\Microsoft Visual Studio 9.0\VC\bin" (Be sure not to use spaces in Windows)
 */
