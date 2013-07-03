@@ -145,12 +145,15 @@ def svnExport(src, dst):
     os.system("svn export -q "+rawPath(src)+" "+rawPath(dst))
 
 def callXcopy(src, dst):
+    print "xcopy "+rawPath(src)+" "+rawPath(dst)
     os.system("xcopy "+rawPath(src)+" "+rawPath(dst)+" /s /y")
 
 def callMkdir(dst):
+    print "mkdir "+rawPath(dst)
     os.system("mkdir "+rawPath(dst))
 
 def callRd(tgt):
+    print "rd "+rawPath(tgt)
     os.system("rd "+rawPath(tgt)+" /s /q")
 
 def callEXE(cmd, args):
@@ -158,7 +161,11 @@ def callEXE(cmd, args):
     os.system(r'"'+rawPath(cmd)+" "+args+r'"')
 
 def callDel(tgt):
+    print "del "+rawPath(tgt)
     os.system("del "+rawPath(tgt))
+
+def makeMSVCDirName(version, arch):
+    return "MSVC"+version+"_"+arch
     
 
 def verifyPaths():
@@ -201,12 +208,12 @@ def verifyPaths():
         return False
 
     #Make sure Visual Studio 2008 is installed in correct location
-    msvc2008Dir=selectPathFromList(msvc2008DirList, "Microsoft Visual Studio 2008 is not installed in expected place.", "Found location of Microsoft Visual Studio 2008!")
+    msvc2008Dir=selectPathFromList(msvc2008DirList, "Microsoft Windows SDK 7.0 (MSVC2008) is not installed in expected place.", "Found location of Microsoft Windows SDK 7.0 (MSVC2008)!")
     if msvc2008Dir == "":
         return False
 
     #Make sure Visual Studio 2010 is installed in correct location
-    msvc2010Dir=selectPathFromList(msvc2010DirList, "Microsoft Visual Studio 2010 is not installed in expected place.", "Found location of Microsoft Visual Studio 2010!")
+    msvc2010Dir=selectPathFromList(msvc2010DirList, "Microsoft Windows SDK 7.1 (MSVC2010) is not installed in expected place.", "Found location of Microsoft Windows SDK 7.1 (MSVC2010)!")
     if msvc2010Dir == "":
         return False
     
@@ -263,9 +270,9 @@ def msvcCompile(version, architecture):
         return False
 
     #Move files to correct MSVC directory
-    targetDir = hopsanDir+"\\bin\\MSVC"+version+"_"+architecture
-    os.system("mkdir "+targetDir)
-    os.system("del /q "+targetDir+"\\*.*")
+    targetDir = hopsanDir+"\\bin\\"+makeMSVCDirName(version,architecture)
+    callRd(targetDir)
+    callMkdir(targetDir)
     os.system("move "+hopsanDir+"\\bin\\HopsanCore.dll "+targetDir+"\\HopsanCore.dll")
     os.system("move "+hopsanDir+"\\bin\\HopsanCore.lib "+targetDir+"\\HopsanCore.lib")
     os.system("move "+hopsanDir+"\\bin\\HopsanCore.exp "+targetDir+"\\HopsanCore.exp")
@@ -299,7 +306,7 @@ def buildRelease():
     #Rename TBB so it is not found when compiling with Visual Studio
     os.rename(hopsanDir+"\HopsanCore\Dependencies\\"+tbbversion, hopsanDir+"\HopsanCore\Dependencies\\"+tbbversion+"_nope")
     
-    #BUILD HOPSANCORE WITH MSVC
+    #Build HOPSANCORE with MSVC, else remove those folders
     if buildVCpp:
         if not msvcCompile("2008", "x86"):
             return False
@@ -309,6 +316,12 @@ def buildRelease():
             return False
         if not msvcCompile("2010", "x64"):
             return False
+    else:
+        hopsanBinDir=hopsanDir+"\\bin\\"
+        callRd(hopsanBinDir+makeMSVCDirName("2008", "x86"))
+        callRd(hopsanBinDir+makeMSVCDirName("2008", "x64"))
+        callRd(hopsanBinDir+makeMSVCDirName("2010", "x86"))
+        callRd(hopsanBinDir+makeMSVCDirName("2010", "x64"))
     
     #Make sure the MinGW compilation uses the MAINCORE define, so that log file is enabled
     runCmd("ThirdParty\\sed-4.2.1\\sed \"s|.*DEFINES \\*= MAINCORE|DEFINES *= MAINCORE|\" -i HopsanCore\\HopsanCore.pro")
