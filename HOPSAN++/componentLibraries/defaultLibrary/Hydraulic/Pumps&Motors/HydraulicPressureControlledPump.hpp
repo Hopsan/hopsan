@@ -14,7 +14,7 @@
 -----------------------------------------------------------------------------*/
 
 //!
-//! @file   Hydraulic22Valve.hpp
+//! @file   HydraulicPressureControlledPump.hpp
 //! @author Robert Braun <robert.braun@liu.se>
 //! @date   2010-12-20
 //!
@@ -117,6 +117,8 @@ namespace hopsan {
 
             double y0, lpe/*, vmin, vmax*/;
 
+            q2 = qmax * (*mpEps)*(movement / movementnom);
+
             gamma = 1 / (Clp * (Zc1 + Zc2) + 1);
             if (p2 < 1.0) { p2 = 1.0; }
             lpe = lp * sqrt(pnom / p2) * (movementnom / movement+0.001);
@@ -140,6 +142,8 @@ namespace hopsan {
             vd = 0.0;
 
             (*mpA) = 0;
+            (*mpND_q2) = q2;
+
         }
 
 
