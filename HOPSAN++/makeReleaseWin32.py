@@ -16,7 +16,7 @@ inkscapeDirList = ["C:\\Program Files\\Inkscape", "C:\\Program Files (x86)\\Inks
 innoDirList = ["C:\\Program Files\\Inno Setup 5", "C:\\Program Files (x86)\\Inno Setup 5"]
 qtlibDirList = ["C:\Qt\4.8.4"]
 qtcreatorDirList = ["C:\Qt\qtcreator-2.6.0", "C:\Qt\qtcreator-2.6.1", "C:\Qt\qtcreator-2.6.2", "C:\Qt\qtcreator-2.7.1"]
-mingwDirList = ["C:\mingw\bin", "C:\MinGW-gcc440_1\mingw\bin"]
+mingwDirList = ["C:\Qt\MinGW-gcc440_1\mingw\bin", "C:\mingw\bin"]
 msvc2008DirList = ["C:\Program Files\Microsoft SDKs\Windows\v7.0\Bin", "C:\Program (x86)\Microsoft SDKs\Windows\v7.0\Bin"]
 msvc2010DirList = ["C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin", "C:\Program (x86)\Microsoft SDKs\Windows\v7.1\Bin"]
 
@@ -179,54 +179,58 @@ def verifyPaths():
     global jomDir
     global qmakeDir
     global mingwDir
+
+    isOk = True
    
     #Check if Qt path exists
     qtDir=selectPathFromList(qtlibDirList, "Qt libs could not be found in one of the expected locations.", "Found Qt libs!")
     if qtDir == "":
-        return False;    
+        isOk = False    
 
     #Check if qtcreator path exist  
     creatorDir=selectPathFromList(qtcreatorDirList, "Qt Creator could not be found in one of the expected locations.", "Found Qt Creator!")
     if creatorDir == "":
-        return False;
+        isOk = False
         
     jomDir=creatorDir+"\\bin"
     qmakeDir=qtDir+"\\bin"
 
     mingwDir=selectPathFromList(mingwDirList, "MinGW could not be found in one of the expected locations.", "Found MinGW!")
     if mingwDir == "":
-        return False
+        isOk = False
 
     #Make sure the correct inno dir is used, 32 or 64 bit computers (Inno Setup is 32-bit)
     innoDir=selectPathFromList(innoDirList, "Inno Setup 5 is not installed in expected place.", "Found Inno Setup!")
     if innoDir == "":
-        return False;  
+        isOk = False  
             
     #Make sure the correct incskape dir is used, 32 or 64 bit computers (Inkscape is 32-bit)
     inkscapeDir=selectPathFromList(inkscapeDirList, "Inkscape is not installed in expected place.", "Found Inkscape!")
     if inkscapeDir == "":
-        return False
+        risOk = False
 
     #Make sure Visual Studio 2008 is installed in correct location
     msvc2008Dir=selectPathFromList(msvc2008DirList, "Microsoft Windows SDK 7.0 (MSVC2008) is not installed in expected place.", "Found location of Microsoft Windows SDK 7.0 (MSVC2008)!")
     if msvc2008Dir == "":
-        return False
+        isOk = False
 
     #Make sure Visual Studio 2010 is installed in correct location
     msvc2010Dir=selectPathFromList(msvc2010DirList, "Microsoft Windows SDK 7.1 (MSVC2010) is not installed in expected place.", "Found location of Microsoft Windows SDK 7.1 (MSVC2010)!")
     if msvc2010Dir == "":
-        return False
+        isOk = False
     
     #Make sure the 3d party dependency file exists
     if not pathExists(dependecyBinFiles+"\\", "The "+ dependecyBinFiles + " file containing needed bin files is NOT present. Get it from alice/fluid/programs/hopsan", "Found dependency binary files!"):
-        return False
+        isOk = False
         
     #Make sure TBB is installed in correct location
     if not pathExists("HopsanCore\\Dependencies\\"+tbbversion+"\\", "Cannot find correct TBB version, you must use "+ tbbversion+"\\", "Found correct TBB version!"):
-        return False
-    
-    printSuccess("Verification of path variables.")
-    return True
+        isOk = False
+
+    if isOk:
+        printSuccess("Verification of path variables.")
+
+    return isOk
 
 
 def askForVersion():
