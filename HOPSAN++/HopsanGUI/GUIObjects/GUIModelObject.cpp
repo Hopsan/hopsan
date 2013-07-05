@@ -1080,11 +1080,17 @@ QAction *ModelObject::buildBaseContextMenu(QMenu &rMenu, QGraphicsSceneContextMe
     rMenu.addSeparator();
     QAction *groupAction;
 
-    //! @todo Grouping is deactivated because it does not currently work!
     if (!this->scene()->selectedItems().empty())
+    {
+#ifdef DEVELOPMENT
+        //! @todo Grouping is deactivated because it does not currently work!
         groupAction = rMenu.addAction(tr("Group components"));
+#endif
+    }
     else
+    {
         groupAction = new QAction(this);
+    }
 
     QAction *pShowNameAction=0, *pExportComponentParam=0;
     QAction *pRotateRightAction=0, *pRotateLeftAction=0, *pFlipVerticalAction=0, *pFlipHorizontalAction=0;

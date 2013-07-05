@@ -1,9 +1,10 @@
-::$Id: buildDevDocumentation.bat 4117 2012-03-02 12:33:23Z petno25 $
+REM $Id: buildDevDocumentation.bat 4117 2012-03-02 12:33:23Z petno25 $
 @ECHO OFF
 
-:: Now we need to add the ghostscript bin folder to path so that formulas can be built, (the 32 bit version MUST be used)
-:: Lets add defualt path for installation on both 32 and 64 bit Windows
-set PATH=%PATH%;"C:\Program Files (x86)\gs\gs9.05\bin";"C:\Program Files\gs\gs9.05\bin"
+REM Now we need to add the ghostscript bin folder to path so that formulas can be built, (the 32 bit version MUST be used)
+REM Lets add defualt path for installation on both 32 and 64 bit Windows
+set PATH=%PATH%;C:\Program Files (x86)\gs\gs9.05\bin;C:\Program Files\gs\gs9.05\bin
+set PATH=%PATH%;C:\Program Files (x86)\gs\gs9.07\bin;C:\Program Files\gs\gs9.07\bin
 
 if "%~1" == "" (
   echo To few argumnets, requires one argument: user or dev
