@@ -1,6 +1,8 @@
 #include <QtTest>
 #include <QtTest>
 #include "HopsanEssentials.h"
+#include "CoreUtilities/HopsanCoreMessageHandler.h"
+#include <assert.h>
 
 #ifndef BUILTINDEFAULTCOMPONENTLIB
 #ifdef WIN32
@@ -13,19 +15,14 @@
 using namespace hopsan;
 
 Q_DECLARE_METATYPE(bool);
+Q_DECLARE_METATYPE(ComponentSystem*);
 
 class SimulationTests : public QObject
 {
     Q_OBJECT
 
-private Q_SLOTS:
-    void Load()
-    {
-        QFETCH(bool, value);
-        QString failmsg("Failure!");
-        QVERIFY2(value, failmsg.toStdString().c_str());
-    }
-    void Load_data()
+public:
+    SimulationTests()
     {
         HopsanEssentials pHopsanCore;
         pHopsanCore.loadExternalComponentLib(DEFAULTCOMPONENTLIB);
@@ -66,27 +63,143 @@ private Q_SLOTS:
                 "</hopsanmodelfile>"
                 "";
 
-        ComponentSystem *pSystem = pHopsanCore.loadHMFModel(xmlStr);
-        bool systemOk = pSystem;
+        mpSystemFromText = pHopsanCore.loadHMFModel(xmlStr);
+        double startT, stopT;
+        mpSystemFromFile = pHopsanCore.loadHMFModel("../../../Models/unittestmodel.hmf",startT,stopT);
+    }
 
-        QTest::addColumn<bool>("value");
-        QTest::newRow("0") << systemOk;
-        QTest::newRow("1") << pSystem->hasParameter("apa");
-        QTest::newRow("2") << pSystem->getParameter("apa")->getValue().compare("7");
-        QTest::newRow("3") << pSystem->haveSubComponent("TestStep");
-        QTest::newRow("4") << pSystem->haveSubComponent("TestScope");
-        Component *pStep = pSystem->getSubComponent("TestStep");
-        Component *pScope = pSystem->getSubComponent("TestScope");
-        QTest::newRow("5") << pStep->getPort("out")->isConnectedTo(pScope->getPort("in"));
+private:
+    ComponentSystem *mpSystemFromText;
+    ComponentSystem *mpSystemFromFile;
+
+private Q_SLOTS:
+    void Load_System()
+    {
+        QFETCH(ComponentSystem*, system);
+        QVERIFY2(system != 0,"Failed to load system!");
+    }
+
+    void Load_System_data()
+    {
+        QTest::addColumn<ComponentSystem*>("system");
+        QTest::newRow("0") << mpSystemFromText;
+        QTest::newRow("1") << mpSystemFromFile;
+    }
+
+    void Load_System_Parameter()
+    {
+        QFETCH(ComponentSystem*, system);
+        QVERIFY2(system->hasParameter("apa"), "Failed to load system parameter!");
+        QVERIFY2(system->getParameter("apa")->getValue().compare("7"), "Failed to load system parameter value!");
+    }
+
+    void Load_System_Parameter_data()
+    {
+        QTest::addColumn<ComponentSystem*>("system");
+        QTest::newRow("0") << mpSystemFromText;
+        QTest::newRow("1") << mpSystemFromFile;
+    }
+
+    void Load_Component()
+    {
+        QFETCH(ComponentSystem*, system);
+        QVERIFY2(system->haveSubComponent("TestStep"), "Failed to load sub component!");
+        QVERIFY2(system->haveSubComponent("TestScope"), "Failed to load sub component!");
+    }
+
+    void Load_Component_data()
+    {
+        QTest::addColumn<ComponentSystem*>("system");
+        QTest::newRow("0") << mpSystemFromText;
+        QTest::newRow("1") << mpSystemFromFile;
+    }
+
+    void Load_Connect()
+    {
+        QFETCH(ComponentSystem*, system);
+        Component *pStep = system->getSubComponent("TestStep");
+        Component *pScope = system->getSubComponent("TestScope");
+        QVERIFY2(pStep->getPort("out")->isConnectedTo(pScope->getPort("in")), "Failed to load connection!");
+    }
+
+    void Load_Connect_data()
+    {
+        QTest::addColumn<ComponentSystem*>("system");
+        QTest::newRow("0") << mpSystemFromText;
+        QTest::newRow("1") << mpSystemFromFile;
+    }
+
+    void Load_Parameter()
+    {
+        QFETCH(ComponentSystem*, system);
+        Component *pStep = system->getSubComponent("TestStep");
         HString parVal;
         pStep->getParameterValue("y_0#Value", parVal);
-        QTest::newRow("6") << parVal.compare("-5");
+        QVERIFY2(parVal.compare("-5"), "Failed to load sub component parameter value!");
         pStep->getParameterValue("y_A#Value", parVal);
-        QTest::newRow("7") << parVal.compare("5");
+        QVERIFY2(parVal.compare("5"),"Failed to load sub component parameter value!");
         pStep->getParameterValue("t_step#Value", parVal);
-        QTest::newRow("8") << parVal.compare("apa");
-
+        QVERIFY2(parVal.compare("apa"), "Failed to load sub component parameter value (system parameter)!");
     }
+
+    void Load_Parameter_data()
+    {
+        QTest::addColumn<ComponentSystem*>("system");
+        QTest::newRow("0") << mpSystemFromText;
+        QTest::newRow("1") << mpSystemFromFile;
+    }
+
+    void Set_System_Parameter()
+    {
+        QFETCH(ComponentSystem*, system);
+
+        system->setParameterValue("apa", "12");
+        HString value;
+        system->getParameterValue("apa", value);
+        QVERIFY2(value.compare("12"), "Failed to set system parameter.");
+    }
+
+    void Set_System_Parameter_data()
+    {
+        QTest::addColumn<ComponentSystem*>("system");
+        QTest::newRow("0") << mpSystemFromText;
+        QTest::newRow("1") << mpSystemFromFile;
+    }
+
+    void Set_Parameter()
+    {
+        QFETCH(ComponentSystem*, system);
+
+        system->getSubComponent("TestStep")->setParameterValue("y_0#Value", "4");
+        HString value;
+        system->getSubComponent("TestStep")->getParameterValue("y_0#Value", value);
+        QVERIFY2(value.compare("4"), "Failed to set parameter value.");
+
+        system->getSubComponent("TestStep")->setParameterValue("y_0#Value", "apa");
+        system->getSubComponent("TestStep")->getParameterValue("y_0#Value", value);
+        QVERIFY2(value.compare("apa"), "Failed to map parameter to system parameter.");
+    }
+
+    void Set_Parameter_data()
+    {
+        QTest::addColumn<ComponentSystem*>("system");
+        QTest::newRow("0") << mpSystemFromText;
+        QTest::newRow("1") << mpSystemFromFile;
+    }
+
+//    void Initialize()
+//    {
+//        QFETCH(ComponentSystem*, system);
+//        QString failmsg("Failed to initialize system!");
+//        QVERIFY2(system->initialize(0,1), failmsg.toStdString().c_str());
+//    }
+
+//    void Initialize_data()
+//    {
+//        QTest::addColumn<ComponentSystem*>("system");
+//        QTest::newRow("0") << mpSystemFromText;
+//        QTest::newRow("1") << mpSystemFromFile;
+//    }
 };
 
 QTEST_APPLESS_MAIN(SimulationTests)
