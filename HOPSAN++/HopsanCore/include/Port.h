@@ -120,6 +120,8 @@ namespace hopsan {
 
         Component* getComponent() const;
 
+        virtual Node *getNodePtr(const size_t portIdx=0);
+
     protected:
         PortTypesEnumT mPortType;
         HString mNodeType;
@@ -133,7 +135,6 @@ namespace hopsan {
         virtual void disableStartValue(const size_t idx);
 
         virtual Node *getStartNodePtr();
-        virtual Node *getNodePtr(const size_t portIdx=0);
         virtual void setNode(Node* pNode);
 
         virtual Port* addSubPort();

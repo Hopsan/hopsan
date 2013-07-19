@@ -65,7 +65,7 @@
           </hopsanobjectappearance>
         </hopsangui>
       </component>
-      <component typename="SignalSink" name="TestScope">
+      <component typename="SignalGain" name="TestGain">
         <parameters>
           <parameter unit="-" value="0" type="double" name="in_bottom#Value"/>
         </parameters>
@@ -79,7 +79,7 @@
           <nametext position="0" visible="0"/>
           <animation flowspeed="100"/>
           <hopsanobjectappearance version="0.3">
-            <modelobject typename="SignalSink" displayname="TestScope">
+            <modelobject typename="SignalGain" displayname="TestGain">
               <ports/>
             </modelobject>
           </hopsanobjectappearance>
@@ -87,7 +87,7 @@
       </component>
     </objects>
     <connections>
-      <connect endport="in" endcomponent="TestScope" startport="out" startcomponent="TestStep">
+      <connect endport="in" endcomponent="TestGain" startport="out" startcomponent="TestStep">
         <hopsangui>
           <coordinates>
             <coordinate x="2332.50000000000000000000" y="2494.00000000000000000000"/>
