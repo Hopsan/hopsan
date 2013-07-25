@@ -23,6 +23,12 @@ void HopsanSimulinkGenerator::generateToSimulink(QString savePath, QString model
 
     printMessage("Initializing Simulink S-function export...");
 
+    if(pSystem == 0)
+    {
+        printErrorMessage("System pointer is null. Aborting.");
+        return;
+    }
+
     QDir saveDir;
     saveDir.setPath(savePath);
 

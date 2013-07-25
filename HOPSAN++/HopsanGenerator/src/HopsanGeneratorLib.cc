@@ -155,6 +155,7 @@ extern "C" DLLIMPORTEXPORT void callFmuImportGenerator(string path, string targe
 extern "C" DLLIMPORTEXPORT void callFmuExportGenerator(string path, hopsan::ComponentSystem *pSystem, string coreIncludePath, string binPath, bool showDialog=false)
 {
     HopsanFMIGenerator *pGenerator = new HopsanFMIGenerator(QString(coreIncludePath.c_str()), QString(binPath.c_str()), showDialog);
+    pGenerator->setExecPath(QString(binPath.c_str()));
     pGenerator->generateToFmu(QString(path.c_str()), pSystem);
     delete(pGenerator);
 }

@@ -2,6 +2,7 @@
 #include <QtTest>
 #include "HopsanEssentials.h"
 #include "CoreUtilities/HopsanCoreMessageHandler.h"
+#include "CoreUtilities/GeneratorHandler.h"
 #include <assert.h>
 
 #ifndef BUILTINDEFAULTCOMPONENTLIB
@@ -77,84 +78,6 @@ private:
     ComponentSystem *mpSystemFromFile;
 
 private Q_SLOTS:
-    void Load_System()
-    {
-        QFETCH(ComponentSystem*, system);
-        QVERIFY2(system != 0,"Failed to load system!");
-    }
-
-    void Load_System_data()
-    {
-        QTest::addColumn<ComponentSystem*>("system");
-        QTest::newRow("0") << mpSystemFromText;
-        QTest::newRow("1") << mpSystemFromFile;
-    }
-
-    void Load_System_Parameter()
-    {
-        QFETCH(ComponentSystem*, system);
-        QVERIFY2(system->hasParameter("apa"), "Failed to load system parameter!");
-        QVERIFY2(system->getParameter("apa")->getValue().compare("7"), "Failed to load system parameter value!");
-    }
-
-    void Load_System_Parameter_data()
-    {
-        QTest::addColumn<ComponentSystem*>("system");
-        QTest::newRow("0") << mpSystemFromText;
-        QTest::newRow("1") << mpSystemFromFile;
-    }
-
-    void Load_Component()
-    {
-        QFETCH(ComponentSystem*, system);
-        QFETCH(HString, name);
-        QVERIFY2(system->haveSubComponent(name), "Failed to load sub component!");
-    }
-
-    void Load_Component_data()
-    {
-        QTest::addColumn<ComponentSystem*>("system");
-        QTest::addColumn<HString>("name");
-        QTest::newRow("0") << mpSystemFromText << HString("TestStep");
-        QTest::newRow("1") << mpSystemFromText << HString("TestGain");
-        QTest::newRow("2") << mpSystemFromFile << HString("TestStep");
-        QTest::newRow("3") << mpSystemFromFile << HString("TestGain");
-    }
-
-    void Load_Connect()
-    {
-        QFETCH(ComponentSystem*, system);
-        Component *pStep = system->getSubComponent("TestStep");
-        Component *pScope = system->getSubComponent("TestGain");
-        QVERIFY2(pStep->getPort("out")->isConnectedTo(pScope->getPort("in")), "Failed to load connection!");
-    }
-
-    void Load_Connect_data()
-    {
-        QTest::addColumn<ComponentSystem*>("system");
-        QTest::newRow("0") << mpSystemFromText;
-        QTest::newRow("1") << mpSystemFromFile;
-    }
-
-    void Load_Parameter()
-    {
-        QFETCH(Component*, comp);
-        HString parVal;
-        comp->getParameterValue("y_0#Value", parVal);
-        QVERIFY2(parVal.compare("-5"), "Failed to load sub component parameter value!");
-        comp->getParameterValue("y_A#Value", parVal);
-        QVERIFY2(parVal.compare("5"),"Failed to load sub component parameter value!");
-        comp->getParameterValue("t_step#Value", parVal);
-        QVERIFY2(parVal.compare("apa"), "Failed to load sub component parameter value (system parameter)!");
-    }
-
-    void Load_Parameter_data()
-    {
-        QTest::addColumn<Component*>("comp");
-        QTest::newRow("0") << mpSystemFromText->getSubComponent("TestStep");
-        QTest::newRow("1") << mpSystemFromFile->getSubComponent("TestStep");
-    }
-
     void HopsanCore_Create_Component()
     {
         QFETCH(HString, typeName);
@@ -264,6 +187,84 @@ private Q_SLOTS:
         QTest::newRow("3") << HString("NodeElectric");
         QTest::newRow("4") << HString("NodeMechanic");
         QTest::newRow("5") << HString("NodeMechanicRotational");
+    }
+
+    void Load_System()
+    {
+        QFETCH(ComponentSystem*, system);
+        QVERIFY2(system != 0,"Failed to load system!");
+    }
+
+    void Load_System_data()
+    {
+        QTest::addColumn<ComponentSystem*>("system");
+        QTest::newRow("0") << mpSystemFromText;
+        QTest::newRow("1") << mpSystemFromFile;
+    }
+
+    void Load_System_Parameter()
+    {
+        QFETCH(ComponentSystem*, system);
+        QVERIFY2(system->hasParameter("apa"), "Failed to load system parameter!");
+        QVERIFY2(system->getParameter("apa")->getValue().compare("7"), "Failed to load system parameter value!");
+    }
+
+    void Load_System_Parameter_data()
+    {
+        QTest::addColumn<ComponentSystem*>("system");
+        QTest::newRow("0") << mpSystemFromText;
+        QTest::newRow("1") << mpSystemFromFile;
+    }
+
+    void Load_Component()
+    {
+        QFETCH(ComponentSystem*, system);
+        QFETCH(HString, name);
+        QVERIFY2(system->haveSubComponent(name), "Failed to load sub component!");
+    }
+
+    void Load_Component_data()
+    {
+        QTest::addColumn<ComponentSystem*>("system");
+        QTest::addColumn<HString>("name");
+        QTest::newRow("0") << mpSystemFromText << HString("TestStep");
+        QTest::newRow("1") << mpSystemFromText << HString("TestGain");
+        QTest::newRow("2") << mpSystemFromFile << HString("TestStep");
+        QTest::newRow("3") << mpSystemFromFile << HString("TestGain");
+    }
+
+    void Load_Connect()
+    {
+        QFETCH(ComponentSystem*, system);
+        Component *pStep = system->getSubComponent("TestStep");
+        Component *pScope = system->getSubComponent("TestGain");
+        QVERIFY2(pStep->getPort("out")->isConnectedTo(pScope->getPort("in")), "Failed to load connection!");
+    }
+
+    void Load_Connect_data()
+    {
+        QTest::addColumn<ComponentSystem*>("system");
+        QTest::newRow("0") << mpSystemFromText;
+        QTest::newRow("1") << mpSystemFromFile;
+    }
+
+    void Load_Parameter()
+    {
+        QFETCH(Component*, comp);
+        HString parVal;
+        comp->getParameterValue("y_0#Value", parVal);
+        QVERIFY2(parVal.compare("-5"), "Failed to load sub component parameter value!");
+        comp->getParameterValue("y_A#Value", parVal);
+        QVERIFY2(parVal.compare("5"),"Failed to load sub component parameter value!");
+        comp->getParameterValue("t_step#Value", parVal);
+        QVERIFY2(parVal.compare("apa"), "Failed to load sub component parameter value (system parameter)!");
+    }
+
+    void Load_Parameter_data()
+    {
+        QTest::addColumn<Component*>("comp");
+        QTest::newRow("0") << mpSystemFromText->getSubComponent("TestStep");
+        QTest::newRow("1") << mpSystemFromFile->getSubComponent("TestStep");
     }
 
     void System_Set_Parameter()
@@ -634,6 +635,224 @@ private Q_SLOTS:
         QTest::addColumn<Node*>("node");
         QTest::addColumn<Component*>("comp");
         QTest::newRow("0") << mpSystemFromText->getSubComponent("TestGain")->getPort("in")->getNodePtr() << mpSystemFromText->getSubComponent("TestStep");
+    }
+
+    void Generator_FMU_Export()
+    {
+        QFETCH(ComponentSystem*, system);
+
+        QString pwd = QDir::currentPath();
+
+        //Generate FMU
+        //GeneratorHandler *pHandler = new GeneratorHandler();
+        //pHandler->callFmuExportGenerator(HString(pwd.toStdString().c_str())+"/fmu/", system, HString(pwd.toStdString().c_str())+"/../../../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/../../../bin/", false);
+
+        QString code = "#include \"ComponentEssentials.h\"\n"
+                "namespace hopsan {\n"
+                "  class HydraulicLaminarOrifice : public ComponentQ\n"
+                "    {\n"
+                "      public:\n"
+                "        double ko;\n"
+                "      private:\n"
+                "        int gris;\n"
+                "        Integrator katt;\n"
+                "      void simulateOneTimestep()\n"
+                "      {\n"
+                "        gris=ko+5;\n"
+                "      }\n"
+                "      bool initialize()\n"
+                "      {\n"
+                "        int x=gris*3;\n"
+                "        gris= 3;\n"
+                "        ko=5;\n"
+                "      }\n"
+                "    };\n"
+                "}\n";
+        QStringList errorMsgs;
+        examineCode(code, errorMsgs);
+
+        //Run FMUChecker
+        QStringList args;
+        args << QDir::currentPath()+"/fmu/unittestmodel_export.fmu";
+        QProcess p;
+        p.start(QDir::currentPath()+"/../../../ThirdParty/FMUChecker/fmuCheck.win32.exe", args);
+        p.waitForReadyRead();
+        QString output = p.readAllStandardError();
+        QStringList errors = output.split("\n");
+        for(int i=0; i<errors.size(); ++i)
+        {
+            if(!errors[i].contains("ERROR") && !errors[i].contains("WARNING"))
+            {
+                errors.removeAt(i);
+                --i;
+            }
+        }
+        errors.removeAll("[ERROR][FMUCHK] FMU does not make an internal copy of provided instance name (violation of fmiString handling)\r");
+
+        QVERIFY2(errors.isEmpty(), "Failed to generate FMU, FMU not accepted by FMUChecker.");
+    }
+
+    void Generator_FMU_Export_data()
+    {
+        QTest::addColumn<ComponentSystem*>("system");
+        double start, stop;
+        QString path = QDir::currentPath()+"/../../../Models/unittestmodel_export.hmf";
+        QFile file(path);
+        file.copy(QDir::currentPath()+"/fmu/unittestmodel_export.hmf");
+        QTest::newRow("0") << mHopsanCore.loadHMFModel(path.toStdString().c_str(),start,stop);
+    }
+
+    void Generator_Modelica()
+    {
+        QFETCH(HString, code);
+        QFETCH(HString, name);
+
+        QString pwd = QDir::currentPath();
+
+        //Generate FMU
+        GeneratorHandler *pHandler = new GeneratorHandler();
+        pHandler->callModelicaGenerator(code, HString(pwd.toStdString().c_str())+"/../../../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/../../../bin/", false, HString(pwd.toStdString().c_str())+"/modelica/", name);
+
+        QVERIFY2(QDir().exists(QString(HString(HString(pwd.toStdString().c_str())+HString("/modelica/")+name+HString(".dll")).c_str())), "Failure! Modelica generator failed to generate dll.");
+    }
+
+    void Generator_Modelica_data()
+    {
+        QTest::addColumn<HString>("code");
+        QTest::addColumn<HString>("name");
+
+        const char* moCode = "model MyLaminarOrifice \"Hydraulic Laminar Orifice\"\n"
+              "   annotation(hopsanCqsType = \"Q\");\n"
+              "   parameter Real Kc(unit=\"-\")=1e-11 \"Pressure-Flow Coefficient\";\n"
+              "   NodeHydraulic P1, P2;\n"
+              "equation\n"
+              "   P2.q = Kc*(P1.p-P2.p);\n"
+              "   P1.q = -P2.q;\n"
+              "   P1.p = P1.c + P1.Zc*P1.q;\n"
+              "   P2.p = P2.c + P2.Zc*P2.q;\n"
+              "end LaminarOrifice;\n";
+
+        QTest::newRow("0") << HString(moCode) << HString("MyLaminarOrifice");
+    }
+
+    void examineCode(QString code, QStringList &errors)
+    {
+        QStringList lines = code.split("\n");
+        bool includesOk=false;
+        bool nameSpaceOk=false;
+        bool inClass=false;
+        bool inPublic=false;
+        bool inPrivate=false;
+        bool publicMembers = false;
+        bool inFunction=false;
+        QString name, cqsType, funcName;
+        QStringList memberNames, memberTypes;
+        QList<bool> assigned, used, assignedBeforeUse;
+        int bal=0;
+        QStringList initLines, simLines;
+        for(int i=0; i<lines.size(); ++i)
+        {
+            QString l = lines[i].simplified();
+
+            if(!inClass && l == "#include \"ComponentEssentials.h\"") { includesOk = true; }
+            if(!inClass && l.startsWith("namespace hopsan {")) { nameSpaceOk = true; }
+            if(l.startsWith("class ") && l.contains(" : public Component"))
+            {
+                inClass = true;
+                name = l.section(" ",1,1);
+                cqsType = l.section(" : public Component",1,1);
+            }
+            if(inClass && "public:") inPublic=true;
+            if(inClass && l == "private:") inPrivate=true;
+            if(!inFunction && inClass && (inPublic || inPrivate) && l.count(" ") == 1 && l.endsWith(";"))
+            {
+                memberTypes.append(l.section(" ",0,0));
+                memberNames.append(l.section(" ",1,1).remove(";"));
+                assigned.append(false);
+                used.append(false);
+                assignedBeforeUse.append(true);
+                if(inPublic) publicMembers = true;
+            }
+            if((inPublic || inPrivate) && l.count("(") == 1 && l.count(")") == 1)
+            {
+                inFunction = true;
+                funcName = l.section(" ",1,1).section("(",0,0);
+            }
+            if(l.contains("{"))
+            {
+                bal = bal+l.count("{");
+            }
+            if(l.contains("}"))
+            {
+                bal = bal-l.count("}");
+                if(bal==2)
+                {
+                    inFunction=false;
+                    funcName="";
+                }
+                if(bal==1)
+                {
+                    inClass = false;
+                    inPrivate = false;
+                    inPublic = false;
+                }
+            }
+            if(inFunction && funcName == "initialize") initLines.append(l);
+            if(inFunction && funcName == "simulateOneTimestep") simLines.append(l);
+        }
+        initLines.removeAt(0);
+        initLines.removeAt(0);
+        simLines.removeAt(0);
+        simLines.removeAt(0);
+
+        QStringList initAndSimulate = initLines;
+        initAndSimulate.append(simLines);
+
+        for(int i=0; i<initAndSimulate.size(); ++i)
+        {
+            QString l = initAndSimulate[i];
+
+            if(l.count("=") == 1)
+            {
+                QString name = l.section("=",0,0).trimmed();
+                if(memberNames.contains(name))
+                    assigned[memberNames.indexOf(name)] = true;
+            }
+            l.remove(0,l.indexOf("="));
+            for(int j=0; j<l.size(); ++j)
+            {
+                if(!l[j].isLetterOrNumber())
+                {
+                    l[j] = ' ';
+                }
+            }
+            QStringList splitLine = l.split(" ");
+            for(int j=0; j<memberNames.size(); ++j)
+            {
+                if(splitLine.contains(memberNames[j]))
+                {
+                    used[j] = true;
+                    if(!assigned[j])
+                    {
+                        assignedBeforeUse[j] = false;
+                    }
+                }
+            }
+        }
+
+        if(!includesOk)
+            errors.append("WARNING: ComponentEssentials.h is not included!");
+        if(!nameSpaceOk)
+            errors.append("WARNING: \"hopsan\" namespace is not used!");
+        if(publicMembers)
+            errors.append("WARNING: Public member variables are not recommended!");
+        for(int i=0; i<used.size(); ++i)
+        {
+            if(!used[i])
+                errors.append("WARNING: Unused member variable \""+memberNames[i]+"\"!");
+            if(!assignedBeforeUse[i])
+                errors.append("WARNING: Member variable \""+memberNames[i]+"\" is used uninitialized!");
+        }
     }
 };
 

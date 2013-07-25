@@ -699,6 +699,12 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
 {
     printMessage("Initializing FMU export...");
 
+    if(pSystem == 0)
+    {
+        printErrorMessage("System pointer is null. Aborting.");
+        return;
+    }
+
     QDir saveDir;
     saveDir.setPath(savePath);
 

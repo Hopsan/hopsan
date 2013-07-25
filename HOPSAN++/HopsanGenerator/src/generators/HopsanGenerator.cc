@@ -118,6 +118,10 @@ void HopsanGenerator::printMessage(const QString &msg) const
         usleep(10000);
 #endif
     }
+    else
+    {
+        qDebug() << msg;
+    }
 }
 
 
@@ -133,6 +137,10 @@ void HopsanGenerator::printErrorMessage(const QString &msg) const
 #else
         usleep(10000);
 #endif
+    }
+    else
+    {
+        qDebug() << msg;
     }
 }
 
@@ -568,6 +576,13 @@ void HopsanGenerator::compileFromComponentObject(const QString &outputFile, cons
 }
 
 
+void HopsanGenerator::setExecPath(const QString path)
+{
+    mExecPath = path;
+    printMessage("Setting exeuctable path: " + path);
+}
+
+
 void HopsanGenerator::setOutputPath(const QString path)
 {
     mOutputPath = path;
@@ -763,7 +778,7 @@ bool HopsanGenerator::copyDefaultComponentCodeToDir(const QString &path) const
     saveDir.cd("componentLibraries");
     saveDir.cd("defaultLibrary");
 
-    copyDir( QString("../componentLibraries/defaultLibrary"), saveDir.path() );
+    copyDir( QString(mExecPath+"../componentLibraries/defaultLibrary"), saveDir.path() );
 
     return true;
 }

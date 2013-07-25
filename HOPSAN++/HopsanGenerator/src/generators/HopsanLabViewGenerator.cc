@@ -15,6 +15,11 @@ void HopsanLabViewGenerator::generateToLabViewSIT(QString savePath, hopsan::Comp
 {
     printMessage("Initializing LabVIEW/SIT export");
 
+    if(pSystem == 0)
+    {
+        printErrorMessage("System pointer is null. Aborting.");
+        return;
+    }
 
     QFileInfo fileInfo;
     fileInfo.setFile(savePath);

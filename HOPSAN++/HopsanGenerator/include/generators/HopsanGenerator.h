@@ -53,6 +53,7 @@ class DLLIMPORTEXPORT HopsanGenerator
 {
 public:
     HopsanGenerator(const QString coreIncludePath, const QString binPath, const bool showDialog=false);
+    void setExecPath(const QString path);
     void setOutputPath(const QString path);
     void setTarget(const QString fileName);
     QString getCoreIncludePath() const;
