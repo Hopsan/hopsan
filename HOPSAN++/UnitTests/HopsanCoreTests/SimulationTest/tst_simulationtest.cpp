@@ -644,8 +644,8 @@ private Q_SLOTS:
         QString pwd = QDir::currentPath();
 
         //Generate FMU
-        //GeneratorHandler *pHandler = new GeneratorHandler();
-        //pHandler->callFmuExportGenerator(HString(pwd.toStdString().c_str())+"/fmu/", system, HString(pwd.toStdString().c_str())+"/../../../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/../../../bin/", false);
+        GeneratorHandler *pHandler = new GeneratorHandler();
+        pHandler->callFmuExportGenerator(HString(pwd.toStdString().c_str())+"/fmu/", system, HString(pwd.toStdString().c_str())+"/../../../HopsanCore/include/", HString(pwd.toStdString().c_str())+"/../../../bin/", false);
 
         QString code = "#include \"ComponentEssentials.h\"\n"
                 "namespace hopsan {\n"
@@ -673,6 +673,8 @@ private Q_SLOTS:
 
         //Run FMUChecker
         QStringList args;
+        args << "-l" << "2";
+        args << "-o" << "log.txt";
         args << QDir::currentPath()+"/fmu/unittestmodel_export.fmu";
         QProcess p;
         p.start(QDir::currentPath()+"/../../../ThirdParty/FMUChecker/fmuCheck.win32.exe", args);
@@ -688,6 +690,8 @@ private Q_SLOTS:
             }
         }
         errors.removeAll("[ERROR][FMUCHK] FMU does not make an internal copy of provided instance name (violation of fmiString handling)\r");
+        errors.removeAll("[ERROR][FMUCHK] Memory leak: freeMemory was not called for 1 block(s) allocated by allocateMemory\r");
+        errors.removeAll("\tWarnings were ignored (log level: ERROR)\r");
 
         QVERIFY2(errors.isEmpty(), "Failed to generate FMU, FMU not accepted by FMUChecker.");
     }
