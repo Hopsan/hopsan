@@ -120,7 +120,7 @@ void HopsanGenerator::printMessage(const QString &msg) const
     }
     else
     {
-        qDebug() << msg;
+        //qDebug() << msg;
     }
 }
 
@@ -140,7 +140,7 @@ void HopsanGenerator::printErrorMessage(const QString &msg) const
     }
     else
     {
-        qDebug() << msg;
+        //qDebug() << msg;
     }
 }
 
@@ -470,7 +470,7 @@ void HopsanGenerator::compileFromComponentObject(const QString &outputFile, cons
         code = comp.plainCode;
     }
 
-    qDebug() << "Code: " << code;
+    //qDebug() << "Code: " << code;
 
     if(!QDir(mTempPath).exists())
     {
@@ -805,9 +805,9 @@ bool HopsanGenerator::copyBoostIncludeFilesToDir(const QString &path) const
     Q_FOREACH(const QString &fileName, binFiles)
     {
         QFile file(path+"/include/boost/bin/"+fileName);
-        qDebug() << "File: " << path+"/include/boost/bin/"+fileName;
+        //qDebug() << "File: " << path+"/include/boost/bin/"+fileName;
         file.copy(path+"/"+fileName);
-        qDebug() << "Target: " << path << "/" << fileName;
+        //qDebug() << "Target: " << path << "/" << fileName;
     }
 
     return true;

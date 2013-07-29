@@ -23,19 +23,19 @@ void HopsanModelicaGenerator::generateFromModelica(QString code)
     QList<VariableSpecification> variablesList;
     ComponentSpecification comp;
 
-    qDebug() << "Parsing!";
+    //qDebug() << "Parsing!";
     printMessage("Parsing Modelica code...");
 
     //Parse Modelica code and generate equation system
     parseModelicaModel(code, typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList);
 
-    qDebug() << "Transforming!";
+    //qDebug() << "Transforming!";
     printMessage("Transforming...");
 
     //Transform equation system, generate Jacobian
     generateComponentObject(comp, typeName, displayName, cqsType, initAlgorithms, equations, finalAlgorithms, portList, parametersList, variablesList);
 
-    qDebug() << "Compiling!";
+    //qDebug() << "Compiling!";
     printMessage("Generating component...");
 
     QString target;
@@ -52,7 +52,7 @@ void HopsanModelicaGenerator::generateFromModelica(QString code)
     moFile.write(code.toUtf8());
     moFile.close();
 
-    qDebug() << "Finished!";
+    //qDebug() << "Finished!";
     printMessage("HopsanGenerator finished!");
 }
 
@@ -373,7 +373,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     for(int e=0; e<plainEquations.size(); ++e)
     {
         equations.append(Expression(plainEquations.at(e)));
-        qDebug() << "EQUATION: " << equations[e].toString();
+        //qDebug() << "EQUATION: " << equations[e].toString();
         if(!equations[e].isEquation())
         {
             printErrorMessage("Equation is not an equation.");
@@ -471,7 +471,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     {
         allSymbolsList.append(allSymbols[a].toString());
     }
-    qDebug() << "All symbols: " << allSymbolsList;
+    //qDebug() << "All symbols: " << allSymbolsList;
 
 
     QList<Expression> initSymbols2;
@@ -614,7 +614,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     for(int e=0; e<equations.size(); ++e)
     {
         equations[e].toLeftSided();
-        qDebug() << "LEFT SIDED: " << equations[e].toString();
+        //qDebug() << "LEFT SIDED: " << equations[e].toString();
     }
 
     //Generate a preferred path for sorting, based on the location of derivatives of state variables
@@ -632,11 +632,11 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
             }
         }
     }
-    qDebug() << preferredPath;
+    //qDebug() << preferredPath;
 
     QList<int> preferredOrder;
     findPath(preferredOrder, preferredPath, 0);
-    qDebug() << preferredOrder;
+    //qDebug() << preferredOrder;
 
 
     //Apply bilinear transform
@@ -644,7 +644,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     {
         equations[e] = equations[e].bilinearTransform();
         equations[e]._simplify(Expression::FullSimplification, Expression::Recursive);
-        qDebug() << "BILINEAR TRANSFORM: " << equations[e].toString();
+        //qDebug() << "BILINEAR TRANSFORM: " << equations[e].toString();
     }
 
 
@@ -653,7 +653,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     {
         equations[e].linearize();
         equations[e]._simplify(Expression::FullSimplification, Expression::Recursive);
-        qDebug() << "LINEARIZED: " << equations[e].toString();
+        //qDebug() << "LINEARIZED: " << equations[e].toString();
         equations[e].replaceBy((*equations[e].getLeft()));
     }
 
@@ -666,7 +666,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         equations[e].expand();
         equations[e].toDelayForm(delayTerms, delaySteps);
         equations[e]._simplify(Expression::FullSimplification);
-        qDebug() << "TRANSFORMED TO DELAYS: " << equations[e].toString();
+        //qDebug() << "TRANSFORMED TO DELAYS: " << equations[e].toString();
     }
 
 
@@ -678,7 +678,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         rem.replace(limitedVariables[i], Expression(0));
         rem._simplify(Expression::FullSimplification, Expression::Recursive);
 
-        qDebug() << "REM: " << rem.toString();
+        //qDebug() << "REM: " << rem.toString();
 
         Expression div = equations[limitedVariableEquations[i]];
         div.subtractBy(rem);
@@ -686,18 +686,18 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
         div.expand();
        // div._simplify(Expression::FullSimplification, Expression::Recursive);
 
-        qDebug() << "DIV: " << div.toString();
+        //qDebug() << "DIV: " << div.toString();
 
         rem = Expression::fromFactorDivisor(rem, div);
         rem.changeSign();
         rem._simplify(Expression::FullSimplification, Expression::Recursive);
 
-        qDebug() << "REM AGAIN: " << rem.toString();
+        //qDebug() << "REM AGAIN: " << rem.toString();
 
-        qDebug() << "Limit string: -limit(("+rem.toString()+"),"+limitMinValues[i].toString()+","+limitMaxValues[i].toString()+")";
+        //qDebug() << "Limit string: -limit(("+rem.toString()+"),"+limitMinValues[i].toString()+","+limitMaxValues[i].toString()+")";
         equations[limitedVariableEquations[i]] = Expression::fromTwoTerms(limitedVariables[i], Expression("-limit(("+rem.toString()+"),"+limitMinValues[i].toString()+","+limitMaxValues[i].toString()+")"));
 
-        qDebug() << "Limited: " << equations[limitedVariableEquations[i]].toString();
+        //qDebug() << "Limited: " << equations[limitedVariableEquations[i]].toString();
 
         if(!limitedDerivatives[i].toString().isEmpty())      //Variable2Limits (has a derivative)
         {
@@ -741,8 +741,8 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
             //negExpr.changeSign();
             //tempExpr.replace(negExpr, Expression::fromFactorsDivisors(QList<Expression>() << stateVars[j] << Expression("-1.0", Expression::NoSimplifications), QList<Expression>()));
             Expression derExpr = tempExpr.derivative(stateVars[j], ok);
-            qDebug() << "Derivating \""+tempExpr.toString()+"\" with respect to \""+stateVars[j].toString();
-            qDebug() << "Result: \""+derExpr.toString()+"\"";
+            //qDebug() << "Derivating \""+tempExpr.toString()+"\" with respect to \""+stateVars[j].toString();
+            //qDebug() << "Result: \""+derExpr.toString()+"\"";
             jacobian[e].append(derExpr);
             if(!ok)
             {
@@ -759,7 +759,7 @@ void HopsanModelicaGenerator::generateComponentObject(ComponentSpecification &co
     if(!sortEquationSystem(equations, jacobian, stateVars, limitedVariableEquations, limitedDerivativeEquations, preferredOrder))
     {
         printErrorMessage("Could not sort equations. System is probably under-determined.");
-        qDebug() << "Could not sort equations. System is probably under-determined.";
+        //qDebug() << "Could not sort equations. System is probably under-determined.";
         return;
     }
 

@@ -681,19 +681,8 @@ private Q_SLOTS:
         p.waitForReadyRead();
         QString output = p.readAllStandardError();
         QStringList errors = output.split("\n");
-        for(int i=0; i<errors.size(); ++i)
-        {
-            if(!errors[i].contains("ERROR") && !errors[i].contains("WARNING"))
-            {
-                errors.removeAt(i);
-                --i;
-            }
-        }
-        errors.removeAll("[ERROR][FMUCHK] FMU does not make an internal copy of provided instance name (violation of fmiString handling)\r");
-        errors.removeAll("[ERROR][FMUCHK] Memory leak: freeMemory was not called for 1 block(s) allocated by allocateMemory\r");
-        errors.removeAll("\tWarnings were ignored (log level: ERROR)\r");
 
-        QVERIFY2(errors.isEmpty(), "Failed to generate FMU, FMU not accepted by FMUChecker.");
+        QVERIFY2(errors.contains("\t0 warning(s) and error(s)\r"), "Failed to generate FMU, FMU not acceted by FMUChecker.");
     }
 
     void Generator_FMU_Export_data()

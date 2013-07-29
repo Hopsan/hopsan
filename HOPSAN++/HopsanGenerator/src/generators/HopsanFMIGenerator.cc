@@ -1111,7 +1111,7 @@ void HopsanFMIGenerator::generateToFmu(QString savePath, hopsan::ComponentSystem
     findAllFilesInFolderAndSubFolders(savePath+"/componentLibraries/defaultLibrary", "h", componentFiles);
     Q_FOREACH(const QString &file, componentFiles)
     {
-        qDebug() << "Replacing component file: " << file;
+        //qDebug() << "Replacing component file: " << file;
         if(!replaceInFile(file, before, after))
             return;
     }

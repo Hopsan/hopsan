@@ -2858,17 +2858,17 @@ bool SymHop::findPath(QList<int> &order, QList<QList<int> > dependencies, int le
 //FIXED
 bool SymHop::sortEquationSystem(QList<Expression> &equations, QList<QList<Expression> > &jacobian, QList<Expression> stateVars, QList<int> &limitedVariableEquations, QList<int> &limitedDerivativeEquations, QList<int> preferredOrder)
 {
-    qDebug() << "Jacobian:";
-    for(int i=0; i<jacobian.size(); ++i)
-    {
-        QString line;
-        for(int j=0; j<jacobian.size(); ++j)
-        {
-            line.append(jacobian[i][j].toString());
-            line.append("  ");
-        }
-        qDebug() << line;
-    }
+//    qDebug() << "Jacobian:";
+//    for(int i=0; i<jacobian.size(); ++i)
+//    {
+//        QString line;
+//        for(int j=0; j<jacobian.size(); ++j)
+//        {
+//            line.append(jacobian[i][j].toString());
+//            line.append("  ");
+//        }
+//        qDebug() << line;
+//    }
 
     //Generate a dependency tree between equations and variables
     Expression zero = Expression(0.0);
@@ -2885,7 +2885,7 @@ bool SymHop::sortEquationSystem(QList<Expression> &equations, QList<QList<Expres
         }
     }
 
-    qDebug() << "Dependencies: " << dependencies;
+    //qDebug() << "Dependencies: " << dependencies;
 
     //Recurse dependency tree to find a good sorting order
     QList<int> order;
@@ -2894,7 +2894,7 @@ bool SymHop::sortEquationSystem(QList<Expression> &equations, QList<QList<Expres
         return false;
     }
 
-    qDebug() << "Order: " << order;
+    //qDebug() << "Order: " << order;
 
     //Sort equations to new order
     QList<Expression> sortedEquations;
