@@ -728,6 +728,7 @@ bool HopsanGenerator::copyIncludeFilesToDir(QString path, bool skipDependencies)
     Q_FOREACH(const QString &file, includeFiles)
     {
         if(!copyFile(mExecPath+file, path+file.right(file.size()-3))) return false;
+        QFile::setPermissions(path+file.right(file.size()-3), QFile::WriteOther);
     }
 
     return true;
@@ -758,6 +759,7 @@ bool HopsanGenerator::copySourceFilesToDir(QString path) const
     Q_FOREACH(const QString &file, srcFiles)
     {
         if(!copyFile(mExecPath+file, path+file.right(file.size()-3))) return false;
+        QFile::setPermissions(path+file.right(file.size()-3), QFile::WriteOther);
     }
 
     return true;
@@ -779,6 +781,17 @@ bool HopsanGenerator::copyDefaultComponentCodeToDir(const QString &path) const
     saveDir.cd("defaultLibrary");
 
     copyDir( QString(mExecPath+"../componentLibraries/defaultLibrary"), saveDir.path() );
+
+    QStringList allFiles;
+    findAllFilesInFolderAndSubFolders(saveDir.path(),".hpp",allFiles);
+    findAllFilesInFolderAndSubFolders(saveDir.path(),".h",allFiles);
+    findAllFilesInFolderAndSubFolders(saveDir.path(),".cc",allFiles);
+    findAllFilesInFolderAndSubFolders(saveDir.path(),".cpp",allFiles);
+
+    Q_FOREACH(const QString file, allFiles)
+    {
+        QFile::setPermissions(file, QFile::WriteOther);
+    }
 
     return true;
 }

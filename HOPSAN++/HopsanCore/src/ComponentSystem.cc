@@ -2734,7 +2734,7 @@ void ComponentSystem::simulateMultiThreaded(const double startT, const double st
         mSplitSignalVector.clear();
         mSplitNodeVector.clear();
 
-        simulateAndMeasureTime(5);                                  //Measure time
+        simulateAndMeasureTime(100);                                  //Measure time
         sortComponentVectorsByMeasuredTime();                       //Sort component vectors
 
         for(size_t q=0; q<mComponentQptrs.size(); ++q)
