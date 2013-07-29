@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanvalidationconfiguration hvcversion="0.1">
-  <validation>
+  <validation hopsanguiversion="0.6.0" time="140037" date="20130729" hopsancoreversion="0.6.0">
     <modelfile>../Example Models/Load Sensing System.hmf</modelfile>
-    <component name="Position_Sensor_1">
+    <component name="Position_Sensor">
       <port name="out">
         <variable name="Value">
           <csvfile>Load Sensing System.csv</csvfile>
@@ -11,7 +11,7 @@
         </variable>
       </port>
     </component>
-    <component name="Position_Sensor">
+    <component name="Position_Sensor_1">
       <port name="out">
         <variable name="Value">
           <csvfile>Load Sensing System.csv</csvfile>

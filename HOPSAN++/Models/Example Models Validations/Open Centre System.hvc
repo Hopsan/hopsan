@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanvalidationconfiguration hvcversion="0.1">
-  <validation>
-    <!--Optional path to model file, default is to use the same name (excluding ext) and path as this file-->
+  <validation hopsanguiversion="0.6.0" time="143057" date="20130729" hopsancoreversion="0.6.0">
     <modelfile>../Example Models/Open Centre System.hmf</modelfile>
-    <parameterset></parameterset>
     <component name="Angular_Velocity_Transducer">
       <port name="out">
-        <!--Optional path to csv file, default is to use the same name (excluding ext) and path as this file-->
-        <csvfile></csvfile>
         <variable name="Value">
-          <!-- Optional csvfile override for variable -->
-          <!-- <csvfile></csvfile> -->
-          <!--Column indexing begins at 0. Time vector is usualy at 0--> 
-          <column>1</column> 
-          <!--Tolerance, allowed deviation 0.01==1%-->
+          <csvfile>Open Centre System.csv</csvfile>
+          <column>1</column>
+          <tolerance>0.01</tolerance>
+        </variable>
+      </port>
+    </component>
+    <component name="Angular_Velocity_Transducer_1">
+      <port name="out">
+        <variable name="Value">
+          <csvfile>Open Centre System.csv</csvfile>
+          <column>2</column>
           <tolerance>0.01</tolerance>
         </variable>
       </port>

@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hopsanvalidationconfiguration hvcversion="0.1">
-  <validation>
-    <modelfile></modelfile>
-    <parameterset></parameterset>
+  <validation hopsanguiversion="0.6.0" time="135617" date="20130729" hopsancoreversion="0.6.0">
+    <modelfile>Variable Pump with Pressure Control.hmf</modelfile>
     <component name="Hydraulic_Volume">
       <port name="P1">
-        <csvfile></csvfile>
         <variable name="Pressure">
-          <column>1</column> 
-          <!--Tolerance, allowed deviation 0.01==1%-->
+          <csvfile>Variable Pump with Pressure Control.csv</csvfile>
+          <column>1</column>
           <tolerance>0.01</tolerance>
         </variable>
       </port>
