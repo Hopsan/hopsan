@@ -79,10 +79,10 @@ static void mdlInitializeSizes(SimStruct *S)
     readExternalLibsFromTxtFile("externalLibs.txt",extLibs);
     for (size_t i=0; i<extLibs.size(); ++i)
     {
-        gHopsanCore.loadExternalComponentLib(extLibs[i]);
+        gHopsanCore.loadExternalComponentLib(extLibs[i].c_str());
     }
 
-    std::string hmfFilePath = "<<<4>>>";
+    const char* hmfFilePath = "<<<4>>>";
     double startT, stopT;
     pComponentSystem = gHopsanCore.loadHMFModel(hmfFilePath, startT, stopT);
     if (pComponentSystem==0)

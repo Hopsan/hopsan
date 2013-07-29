@@ -783,10 +783,10 @@ bool HopsanGenerator::copyDefaultComponentCodeToDir(const QString &path) const
     copyDir( QString(mExecPath+"../componentLibraries/defaultLibrary"), saveDir.path() );
 
     QStringList allFiles;
-    findAllFilesInFolderAndSubFolders(saveDir.path(),".hpp",allFiles);
-    findAllFilesInFolderAndSubFolders(saveDir.path(),".h",allFiles);
-    findAllFilesInFolderAndSubFolders(saveDir.path(),".cc",allFiles);
-    findAllFilesInFolderAndSubFolders(saveDir.path(),".cpp",allFiles);
+    findAllFilesInFolderAndSubFolders(saveDir.path(),"hpp",allFiles);
+    findAllFilesInFolderAndSubFolders(saveDir.path(),"h",allFiles);
+    findAllFilesInFolderAndSubFolders(saveDir.path(),"cc",allFiles);
+    findAllFilesInFolderAndSubFolders(saveDir.path(),"cpp",allFiles);
 
     Q_FOREACH(const QString file, allFiles)
     {
