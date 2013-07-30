@@ -175,7 +175,7 @@ private:
     QList<PlotMarker *> mMarkerPtrs[2];
     PlotCurve *mpActivePlotCurve;
     QStringList mCurveColors;
-    QStringList mUsedColors;
+    QList<int> mUsedColorsCounter;
     PainterWidget *mpPainterWidget;
 
     bool mIsSpecialPlot;

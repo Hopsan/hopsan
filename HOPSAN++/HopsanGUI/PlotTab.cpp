@@ -74,6 +74,10 @@ PlotTab::PlotTab(PlotTabWidget *pParentPlotTabWidget, PlotWindow *pParentPlotWin
     mIsSpecialPlot = false;
 
     mCurveColors << "Blue" << "Red" << "Green" << "Orange" << "Pink" << "Brown" << "Purple" << "Gray";
+    for(int i=0; i<mCurveColors.size(); ++i)
+    {
+        mUsedColorsCounter.append(0);
+    }
 
     for(int plotID=0; plotID<2; ++plotID)
     {
@@ -504,22 +508,20 @@ void PlotTab::addCurve(PlotCurve *pCurve, QColor desiredColor, HopsanPlotIDEnumT
     mPlotCurvePtrs[plotID].append(pCurve);
     connect(pCurve, SIGNAL(curveDataUpdated()), this, SLOT(rescaleAxesToCurves()));
 
-    if(desiredColor == QColor())
+    for(int i=0; true; ++i)
     {
-        int i=0;
-        while(mUsedColors.contains(mCurveColors.first()))
+        bool stop=false;
+        for(int j=0; j<mUsedColorsCounter.size(); ++j)
         {
-            mCurveColors.append(mCurveColors.first());
-            mCurveColors.pop_front();
-            ++i;
-            if(i>mCurveColors.size()) break;
+            if(mUsedColorsCounter[j] == i)
+            {
+                pCurve->setLineColor(mCurveColors[j]);
+                ++mUsedColorsCounter[j];
+                stop=true;
+                break;
+            }
         }
-        mUsedColors.append(mCurveColors.first());
-        pCurve->setLineColor(mCurveColors.first());
-    }
-    else
-    {
-        pCurve->setLineColor(desiredColor);
+        if(stop) break;
     }
 
     // Count num curves by axis
@@ -757,11 +759,12 @@ void PlotTab::removeCurve(PlotCurve *curve)
         }
     }
 
-    for(int i=0; i<mUsedColors.size(); ++i)
+
+    for(int i=0; i<mCurveColors.size(); ++i)
     {
-        if(curve->pen().color() == mUsedColors.at(i))
+        if(curve->pen().color() == mCurveColors.at(i))
         {
-            mUsedColors.removeAt(i);
+            --mUsedColorsCounter[i];
             break;
         }
     }
