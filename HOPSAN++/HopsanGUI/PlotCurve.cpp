@@ -581,6 +581,7 @@ bool PlotCurve::setGeneration(int generation)
 
         updateCurve();
         updatePlotInfoBox();
+        mpParentPlotTab->update();
 
         return true;
     }
@@ -1114,6 +1115,8 @@ void PlotCurve::updateToNewGeneration()
         setGeneration(-1);
     }
     updatePlotInfoBox();    //Update the plot info box regardless of auto update setting, to show number of available generations correctly
+
+    mpParentPlotTab->update();
 }
 
 void PlotCurve::updatePlotInfoBox()
