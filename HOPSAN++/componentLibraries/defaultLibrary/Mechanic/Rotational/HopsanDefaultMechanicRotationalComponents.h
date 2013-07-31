@@ -4,6 +4,7 @@
 #include "MechanicAngularVelocityTransformer.hpp"
 #include "MechanicTorqueTransformer.hpp"
 #include "MechanicRotationalInertia.hpp"
+#include "MechanicRotationalInertiaMultiPort.hpp"
 #include "MechanicRotationalInertiaWithGearRatio.hpp"
 #include "MechanicRotationalInertiaWithSingleGear.hpp"
 #include "MechanicTorsionalSpring.hpp"

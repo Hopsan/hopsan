@@ -299,7 +299,8 @@ HEADERS += \
     Hydraulic/Special/HopsanDefaultHydraulicSpecial.h \
     Special/AeroComponents/AeroAircraft6DOFS.hpp \
     Special/AeroComponents/AeroAircraft6DOFSS.hpp \
-    Special/AeroComponents/AeroCombustionChamberMono.hpp
+    Special/AeroComponents/AeroCombustionChamberMono.hpp \
+    Mechanic/Rotational/MechanicRotationalInertiaMultiPort.hpp
 
 SOURCES += \
     defaultComponentLibraryInternal.cc \
