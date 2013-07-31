@@ -116,6 +116,8 @@ private:
     void refreshPortOverlayGraphics();
     void refreshPortLabelText();
 
+    void openDefineAliasDialog(QString var);
+
 //    QColor myLineColor;
 //    qreal myLineWidth;
 //    QGraphicsLineItem *lineH;

@@ -298,15 +298,24 @@ void Port::openRightClickMenu(QPoint screenPos)
 {
     QMenu menu;
 
+    QMenu *pAliasMenu = new QMenu("Define Alias");
+
     //! @todo maybe we should not show list if no data is availible for plotting (check with logdatahandler maybe)
     QVector<QString> variableNames;
     QVector<QString> variableUnits;
     mpParentModelObject->getParentContainerObject()->getCoreSystemAccessPtr()->getPlotDataNamesAndUnits(mpParentModelObject->getName(), this->getName(), variableNames, variableUnits);
 
-    QVector<QAction *> parameterActions;
+    bool hasData = !getParentContainerObject()->getLogDataHandler()->isEmpty();
+
+    QVector<QAction *> parameterActions;    //Why is it called "parameterActions"???
+    QVector<QAction *> aliasActions;
     QAction *tempAction;
+    QAction *aliasAction;
     for(int i=0; i<variableNames.size(); ++i)
     {
+        aliasAction = pAliasMenu->addAction(variableNames[i]);
+        aliasActions.append(aliasAction);
+
         //! @todo This is a ugly special hack for Siganl Vale but I cant thing of anything better, (maye make it impossible to have custom plotscales for Values)
         if (variableNames[i] == "Value" && variableUnits[i] != "-")
         {
@@ -317,7 +326,12 @@ void Port::openRightClickMenu(QPoint screenPos)
             tempAction = menu.addAction(QString("Plot "+variableNames[i]+" ["+gConfig.getDefaultUnit(variableNames[i])+"]"));
         }
         parameterActions.append(tempAction);
+
+        aliasAction->setEnabled(hasData);
+        tempAction->setEnabled(hasData);
     }
+    menu.addMenu(pAliasMenu);
+    pAliasMenu->setEnabled(hasData);
 
     QAction *selectedAction = menu.exec(screenPos);
 
@@ -328,6 +342,27 @@ void Port::openRightClickMenu(QPoint screenPos)
             //plot(parameterNames[i], parameterUnits[i]);
             plot(variableNames[i], "");
         }
+        else if(selectedAction == aliasActions[i])
+        {
+            openDefineAliasDialog(variableNames[i]);
+        }
+    }
+}
+
+
+void Port::openDefineAliasDialog(QString var)
+{
+    qDebug() << "Defining alias for: " << var;
+
+    bool ok;
+    QString dummy="";
+    QString alias = QInputDialog::getText(gpMainWindow, "Define alias for "+mpParentModelObject->getName()+"."+this->getName()+"."+var+".",
+                                          tr("Alias:"), QLineEdit::Normal,
+                                          dummy, &ok);
+    if(ok)
+    {
+        QString fullName = makeConcatName(mpParentModelObject->getName(),this->getName(),var);
+        getParentContainerObject()->getLogDataHandler()->definePlotAlias(alias, fullName);
     }
 }
 
