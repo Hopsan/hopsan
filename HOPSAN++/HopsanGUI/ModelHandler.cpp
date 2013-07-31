@@ -275,16 +275,17 @@ ModelWidget *ModelHandler::loadModel(QString modelFileName, bool ignoreAlreadyOp
             gpMainWindow->mpTerminalWidget->mpConsole->printDebugMessage("This model MIGHT require Lib: " + compLib.text());
             compLib = compLib.nextSiblingElement("componentlibrary");
         }
+        pNewModel->setSaved(true);
+        pNewModel->getTopLevelSystemContainer()->setUndoEnabled(true, true);
+        emit newModelWidgetAdded();
     }
     else
     {
         gpMainWindow->mpTerminalWidget->mpConsole->printErrorMessage(QString("Model does not contain a HMF root tag: ")+HMF_ROOTTAG);
+        closeModel(pNewModel);
+        gpMainWindow->unRegisterRecentModel(fileInfo);
+
     }
-    pNewModel->setSaved(true);
-
-    pNewModel->getTopLevelSystemContainer()->setUndoEnabled(true, true);
-
-    emit newModelWidgetAdded();
 
     return pNewModel;
 }

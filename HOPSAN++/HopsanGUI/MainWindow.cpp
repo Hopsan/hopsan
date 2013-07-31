@@ -1397,6 +1397,16 @@ void MainWindow::registerRecentModel(QFileInfo model)
     updateRecentList();
 }
 
+//! @brief Unregisters a model from the "Recent Models" list
+void MainWindow::unRegisterRecentModel(QFileInfo model)
+{
+    if(model.fileName() == "")
+        return;
+
+    gConfig.removeRecentModel(model.filePath());
+    updateRecentList();
+}
+
 
 //! @brief Updates the "Recent Models" list
 void MainWindow::updateRecentList()

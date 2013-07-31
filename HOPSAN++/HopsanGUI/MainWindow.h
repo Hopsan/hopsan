@@ -172,6 +172,7 @@ public slots:
     void refreshUndoWidgetList();
     void setProjectSimulationTimeParameterValues();
     void registerRecentModel(QFileInfo model);
+    void unRegisterRecentModel(QFileInfo model);
     void updateRecentList();
     void launchAutoUpdate();
     void openContextHelp();

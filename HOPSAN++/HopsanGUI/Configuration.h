@@ -118,6 +118,7 @@ public:
     bool hasUserLib(QString value) const;
     void setSnapping(bool value);
     void addRecentModel(QString value);
+    void removeRecentModel(QString value);
     void addRecentGeneratorModel(QString value);
     void addLastSessionModel(QString value);
     void clearLastSessionModels();

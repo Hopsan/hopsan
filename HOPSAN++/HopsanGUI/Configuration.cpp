@@ -1161,6 +1161,12 @@ void Configuration::addRecentModel(QString value)
     saveToXml();
 }
 
+void Configuration::removeRecentModel(QString value)
+{
+    mRecentModels.removeAll(value);
+    saveToXml();
+}
+
 
 //! @brief Adds a model to the list of recently opened models by component generator
 //! @brief value Path to the model
