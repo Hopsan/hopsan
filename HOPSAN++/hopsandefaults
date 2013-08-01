@@ -112,7 +112,7 @@
                         QGroupBox                   { border: 1px solid gray;   border-radius: 5px;  margin-top: 7px; }
                         QGroupBox::title            { subcontrol-origin: margin;    subcontrol-position: top center;    padding: 0 3px; }
 
-                        QScrollArea                 {  border: 0px;}
+                        QScrollArea                 { background-color: rgb(226,231,237);  border: 0px;}
             </stylesheet>
     </style>
     <units>

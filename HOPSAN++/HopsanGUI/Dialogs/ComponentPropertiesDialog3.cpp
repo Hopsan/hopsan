@@ -340,32 +340,34 @@ QWidget *ComponentPropertiesDialog3::createSourcodeBrowser(QString &rFilePath)
 
 void ComponentPropertiesDialog3::createEditStuff()
 {
-    QGridLayout* pMainLayout = new QGridLayout(this);
+    QGridLayout* pPropertiesLayout = new QGridLayout(this);
     int row=0;
 
     // Parents to new objects bellow should be set automatically when adding layout or widget to other layout or widget
 
     // Add help picture and text
     //------------------------------------------------------------------------------------------------------------------------------
-    QWidget* pHelpWidget = createHelpWidget();
-    if (pHelpWidget)
-    {
-        pMainLayout->addWidget(pHelpWidget, row, 0, 1, 2);
-        ++row;
-    }
+    QWidget *pHelpBoxWidget = createHelpWidget();
+    QWidget *pDummyWidget = new QWidget(this);
+    QVBoxLayout *pHelpLayout = new QVBoxLayout();
+    pHelpLayout->addWidget(pHelpBoxWidget);
+    pHelpLayout->addWidget(pDummyWidget);
+    pHelpLayout->setStretch(1,1);
+    QWidget *pHelpWidget = new QWidget(this);
+    pHelpWidget->setLayout(pHelpLayout);
     //------------------------------------------------------------------------------------------------------------------------------
 
     // Add name edit and type information
     //------------------------------------------------------------------------------------------------------------------------------
     QGridLayout *pNameTypeLayout = createNameAndTypeEdit();
-    pMainLayout->addLayout(pNameTypeLayout, row, 0, Qt::AlignLeft);
-    pMainLayout->setRowStretch(row,0);
+    pPropertiesLayout->addLayout(pNameTypeLayout, row, 0, Qt::AlignLeft);
+    pPropertiesLayout->setRowStretch(row,0);
     //------------------------------------------------------------------------------------------------------------------------------
 
     // Add button box with buttons
     //------------------------------------------------------------------------------------------------------------------------------
     QDialogButtonBox *pButtonBox = createButtonBox();
-    pMainLayout->addWidget(pButtonBox, row, 1);
+    pPropertiesLayout->addWidget(pButtonBox, row, 1);
     //------------------------------------------------------------------------------------------------------------------------------
     ++row;
 
@@ -373,31 +375,32 @@ void ComponentPropertiesDialog3::createEditStuff()
     //------------------------------------------------------------------------------------------------------------------------------
     mpVariableTableWidget = new VariableTableWidget(mpModelObject,this);
     mpVariableTableWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    pMainLayout->addWidget(mpVariableTableWidget, row, 0,1,2);
-    pMainLayout->setRowStretch(row,1);
+    pPropertiesLayout->addWidget(mpVariableTableWidget, row, 0,1,2);
+    pPropertiesLayout->setRowStretch(row,1);
     qDebug() << "Table: " << mpVariableTableWidget->sizeHint() << "  " << mpVariableTableWidget->minimumWidth() << "  " << mpVariableTableWidget->minimumHeight();
     //------------------------------------------------------------------------------------------------------------------------------
+
+    QWidget *pPropertiesWidget = new QWidget(this);
+    pPropertiesWidget->setLayout(pPropertiesLayout);
+    pPropertiesWidget->setPalette(gConfig.getPalette());
 
     // Add Code edit stuff, A new tab in a new widget will be created
     //------------------------------------------------------------------------------------------------------------------------------
     QString filePath = mpModelObject->getAppearanceData()->getSourceCodeFile();
+
+    QGridLayout *pMainLayout = new QGridLayout(this);
+
+    QTabWidget *pTabWidget = new QTabWidget(this);
+    pTabWidget->addTab(pPropertiesWidget, "Properties");
+    pTabWidget->addTab(pHelpWidget, "Description");
     if(!filePath.isEmpty())
     {
-        QGridLayout* pPropertiesLayout = pMainLayout;
-        pMainLayout = new QGridLayout(this);
-
-        QWidget *pPropertiesWidget = new QWidget(this);
-        pPropertiesWidget->setLayout(pPropertiesLayout);
-        pPropertiesWidget->setPalette(gConfig.getPalette());
-
         QWidget* pSourceBrowser = createSourcodeBrowser(filePath);
-
-        QTabWidget *pTabWidget = new QTabWidget(this);
-        pTabWidget->addTab(pPropertiesWidget, "Properties");
         pTabWidget->addTab(pSourceBrowser, "Source Code");
-        pMainLayout->addWidget(pTabWidget);
     }
-        //------------------------------------------------------------------------------------------------------------------------------
+    pMainLayout->addWidget(pTabWidget);
+
+    //------------------------------------------------------------------------------------------------------------------------------
 
     setLayout(pMainLayout);
 
